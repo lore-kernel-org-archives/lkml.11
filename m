@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B267C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F71BC43219
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 11:59:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350682AbiDELyS (ORCPT
+        id S1351994AbiDELy3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 07:54:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46836 "EHLO
+        Tue, 5 Apr 2022 07:54:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46814 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244911AbiDEIwr (ORCPT
+        with ESMTP id S244921AbiDEIwr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Apr 2022 04:52:47 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6A1F2495D;
-        Tue,  5 Apr 2022 01:46:13 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5B1C24965;
+        Tue,  5 Apr 2022 01:46:32 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6987560FFB;
-        Tue,  5 Apr 2022 08:46:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7FEB3C385A0;
-        Tue,  5 Apr 2022 08:46:12 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 610BB614FD;
+        Tue,  5 Apr 2022 08:46:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6EB0AC385A0;
+        Tue,  5 Apr 2022 08:46:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649148372;
-        bh=TwA/G5D1aguoJqEcmo6apo92p21wXULL1LEKJv35LcI=;
+        s=korg; t=1649148391;
+        bh=c145VdMyJxlm+hQ909vw+MZ3c4iyEE6L2ZmaXRhsthw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VGR7tqZTYFEx4Icl2BdO8iYl5H2PYR69nHLlsLbGllWCB9NY6CSFkYt4aWUF2MX+y
-         V4CxBiFq2nfnz9iGH1SZjNJIBa0J4gvHJHK4WbQPbr4rjW3JKjet43RvFUYhOBqRT5
-         w7W3yx5zNx1yZ3j63xioHxSl4jyK6HGwGvtfC3m4=
+        b=IhKD7BQdXtPYVIBHZAROnYHpJCJdqs+t7WJW5ghEDNXZA5NO27O4jDE14V8/9bdJm
+         HN7XxxHouX9+uNDaiK5ixnA6bjvn3rLd1asOIvMTTsCr6N3XxhYzdlLv/YvQAr9YFh
+         iie8S5YZ80oUbc4xYMRXpi3/5rhRZkEsC8bLdobo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tom Rix <trix@redhat.com>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        stable@vger.kernel.org,
+        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0332/1017] media: video/hdmi: handle short reads of hdmi info frame.
-Date:   Tue,  5 Apr 2022 09:20:45 +0200
-Message-Id: <20220405070404.136657970@linuxfoundation.org>
+Subject: [PATCH 5.16 0339/1017] ASoC: codecs: rx-macro: fix accessing array out of bounds for enum type
+Date:   Tue,  5 Apr 2022 09:20:52 +0200
+Message-Id: <20220405070404.345942687@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -51,64 +51,63 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tom Rix <trix@redhat.com>
+From: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
 
-[ Upstream commit 4a92fc6e55da5b87cecb572275deaff6ac9dd27e ]
+[ Upstream commit bcfe5f76cc4051ea3f9eb5d2c8ea621641f290a5 ]
 
-Calling hdmi_infoframe_unpack() with static sizeof(buffer) skips all
-the size checking done later in hdmi_infoframe_unpack().  A better
-value is the amount of data read into buffer.
+Accessing enums using integer would result in array out of bounds access
+on platforms like aarch64 where sizeof(long) is 8 compared to enum size
+which is 4 bytes.
 
-Fixes: 480b8b3e42c3 ("video/hdmi: Pass buffer size to infoframe unpack functions")
-Signed-off-by: Tom Rix <trix@redhat.com>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+Fixes: 4f692926f562 ("ASoC: codecs: lpass-rx-macro: add dapm widgets and route")
+Signed-off-by: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+Link: https://lore.kernel.org/r/20220222183212.11580-3-srinivas.kandagatla@linaro.org
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/i2c/adv7511-v4l2.c | 2 +-
- drivers/media/i2c/adv7604.c      | 2 +-
- drivers/media/i2c/adv7842.c      | 2 +-
- 3 files changed, 3 insertions(+), 3 deletions(-)
+ sound/soc/codecs/lpass-rx-macro.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/media/i2c/adv7511-v4l2.c b/drivers/media/i2c/adv7511-v4l2.c
-index 41f4e749a859..2217004264e4 100644
---- a/drivers/media/i2c/adv7511-v4l2.c
-+++ b/drivers/media/i2c/adv7511-v4l2.c
-@@ -544,7 +544,7 @@ static void log_infoframe(struct v4l2_subdev *sd, const struct adv7511_cfg_read_
- 	buffer[3] = 0;
- 	buffer[3] = hdmi_infoframe_checksum(buffer, len + 4);
+diff --git a/sound/soc/codecs/lpass-rx-macro.c b/sound/soc/codecs/lpass-rx-macro.c
+index 32e85d2e9b90..3a3dc0539d92 100644
+--- a/sound/soc/codecs/lpass-rx-macro.c
++++ b/sound/soc/codecs/lpass-rx-macro.c
+@@ -2272,7 +2272,7 @@ static int rx_macro_mux_get(struct snd_kcontrol *kcontrol,
+ 	struct snd_soc_component *component = snd_soc_dapm_to_component(widget->dapm);
+ 	struct rx_macro *rx = snd_soc_component_get_drvdata(component);
  
--	if (hdmi_infoframe_unpack(&frame, buffer, sizeof(buffer)) < 0) {
-+	if (hdmi_infoframe_unpack(&frame, buffer, len + 4) < 0) {
- 		v4l2_err(sd, "%s: unpack of %s infoframe failed\n", __func__, cri->desc);
- 		return;
- 	}
-diff --git a/drivers/media/i2c/adv7604.c b/drivers/media/i2c/adv7604.c
-index 44768b59a6ff..0ce323836dad 100644
---- a/drivers/media/i2c/adv7604.c
-+++ b/drivers/media/i2c/adv7604.c
-@@ -2484,7 +2484,7 @@ static int adv76xx_read_infoframe(struct v4l2_subdev *sd, int index,
- 		buffer[i + 3] = infoframe_read(sd,
- 				       adv76xx_cri[index].payload_addr + i);
+-	ucontrol->value.integer.value[0] =
++	ucontrol->value.enumerated.item[0] =
+ 			rx->rx_port_value[widget->shift];
+ 	return 0;
+ }
+@@ -2284,7 +2284,7 @@ static int rx_macro_mux_put(struct snd_kcontrol *kcontrol,
+ 	struct snd_soc_component *component = snd_soc_dapm_to_component(widget->dapm);
+ 	struct soc_enum *e = (struct soc_enum *)kcontrol->private_value;
+ 	struct snd_soc_dapm_update *update = NULL;
+-	u32 rx_port_value = ucontrol->value.integer.value[0];
++	u32 rx_port_value = ucontrol->value.enumerated.item[0];
+ 	u32 aif_rst;
+ 	struct rx_macro *rx = snd_soc_component_get_drvdata(component);
  
--	if (hdmi_infoframe_unpack(frame, buffer, sizeof(buffer)) < 0) {
-+	if (hdmi_infoframe_unpack(frame, buffer, len + 3) < 0) {
- 		v4l2_err(sd, "%s: unpack of %s infoframe failed\n", __func__,
- 			 adv76xx_cri[index].desc);
- 		return -ENOENT;
-diff --git a/drivers/media/i2c/adv7842.c b/drivers/media/i2c/adv7842.c
-index 7f8acbdf0db4..8ab4c63839b4 100644
---- a/drivers/media/i2c/adv7842.c
-+++ b/drivers/media/i2c/adv7842.c
-@@ -2593,7 +2593,7 @@ static void log_infoframe(struct v4l2_subdev *sd, const struct adv7842_cfg_read_
- 	for (i = 0; i < len; i++)
- 		buffer[i + 3] = infoframe_read(sd, cri->payload_addr + i);
+@@ -2396,7 +2396,7 @@ static int rx_macro_get_hph_pwr_mode(struct snd_kcontrol *kcontrol,
+ 	struct snd_soc_component *component = snd_soc_kcontrol_component(kcontrol);
+ 	struct rx_macro *rx = snd_soc_component_get_drvdata(component);
  
--	if (hdmi_infoframe_unpack(&frame, buffer, sizeof(buffer)) < 0) {
-+	if (hdmi_infoframe_unpack(&frame, buffer, len + 3) < 0) {
- 		v4l2_err(sd, "%s: unpack of %s infoframe failed\n", __func__, cri->desc);
- 		return;
- 	}
+-	ucontrol->value.integer.value[0] = rx->hph_pwr_mode;
++	ucontrol->value.enumerated.item[0] = rx->hph_pwr_mode;
+ 	return 0;
+ }
+ 
+@@ -2406,7 +2406,7 @@ static int rx_macro_put_hph_pwr_mode(struct snd_kcontrol *kcontrol,
+ 	struct snd_soc_component *component = snd_soc_kcontrol_component(kcontrol);
+ 	struct rx_macro *rx = snd_soc_component_get_drvdata(component);
+ 
+-	rx->hph_pwr_mode = ucontrol->value.integer.value[0];
++	rx->hph_pwr_mode = ucontrol->value.enumerated.item[0];
+ 	return 0;
+ }
+ 
 -- 
 2.34.1
 
