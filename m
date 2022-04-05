@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B0FDDC3527E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DF9ADC35294
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:40:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378168AbiDEUkQ (ORCPT
+        id S1379660AbiDEUkd (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 16:40:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39896 "EHLO
+        Tue, 5 Apr 2022 16:40:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52164 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349099AbiDEJtH (ORCPT
+        with ESMTP id S1353550AbiDEKIM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:49:07 -0400
+        Tue, 5 Apr 2022 06:08:12 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6EFAA997F;
-        Tue,  5 Apr 2022 02:40:51 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A68EDC1C98;
+        Tue,  5 Apr 2022 02:55:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 825D661368;
-        Tue,  5 Apr 2022 09:40:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8BC0CC385A2;
-        Tue,  5 Apr 2022 09:40:50 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 365A461500;
+        Tue,  5 Apr 2022 09:55:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4650DC385A2;
+        Tue,  5 Apr 2022 09:55:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649151650;
-        bh=kTwXVej5jnwI0ge7d0/k1GflTMj2Y/jFHaUkXu9gn7Y=;
+        s=korg; t=1649152517;
+        bh=Vsh+HEtCiPguM+o61XlDzjkagD1hYteDwNcaJuONtvk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FTbZR1Itp97KYlzM3vj0IA7NUK54TJ+AY3e7rbE/BtTPiawvi0QabAinsn9QtwG/1
-         tisCZTm6QChrw4ibPSMJ/AVh53YjZ1IkvHEmUXyi5EdXfFdItGk4jTQkRmsnqSIgcW
-         JBd3SSZuPn+ZzvLHc6BMaBavdVmNHFd/TW7QkF6o=
+        b=rFe/RGRUbsAYnNf9urz6+6SzPzexwCkdyRjLsD+sVjDsTD5LS4ehW2t4j0sdSV8lH
+         6MkWSvYXuKj3ITqN0G1BSdV5H5Voxw3GaUDVc1gx+IGbkfCG9dphW3TCdInLBB9Mhw
+         d2yiQYysyV/hrDjmWMiJnjHi6JHKEtMRV7mS52qU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yinjun Zhang <yinjun.zhang@corigine.com>,
-        Simon Horman <simon.horman@corigine.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        =?UTF-8?q?Niklas=20S=C3=B6derlund?= <niklas.soderlund@corigine.com>,
-        Jiri Olsa <jolsa@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 455/913] bpftool: Fix the error when lookup in no-btf maps
-Date:   Tue,  5 Apr 2022 09:25:17 +0200
-Message-Id: <20220405070353.487822593@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Himanshu Madhani <himanshu.madhani@oracle.com>,
+        Quinn Tran <qutran@marvell.com>,
+        Nilesh Javali <njavali@marvell.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>
+Subject: [PATCH 5.15 805/913] scsi: qla2xxx: Fix N2N inconsistent PLOGI
+Date:   Tue,  5 Apr 2022 09:31:07 +0200
+Message-Id: <20220405070403.961799345@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
 References: <20220405070339.801210740@linuxfoundation.org>
@@ -52,53 +52,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yinjun Zhang <yinjun.zhang@corigine.com>
+From: Quinn Tran <qutran@marvell.com>
 
-[ Upstream commit edc21dc909c6c133a2727f063eadd7907af51f94 ]
+commit c13ce47c64ea8f14e77eecb40d1e7c2ac667f898 upstream.
 
-When reworking btf__get_from_id() in commit a19f93cfafdf the error
-handling when calling bpf_btf_get_fd_by_id() changed. Before the rework
-if bpf_btf_get_fd_by_id() failed the error would not be propagated to
-callers of btf__get_from_id(), after the rework it is. This lead to a
-change in behavior in print_key_value() that now prints an error when
-trying to lookup keys in maps with no btf available.
+For N2N topology, ELS Passthrough is used to send PLOGI. On failure of ELS
+pass through PLOGI, driver flipped over to using LLIOCB PLOGI for N2N. This
+is not consistent. Delete the session to restart the connection where ELS
+pass through PLOGI would be used consistently.
 
-Fix this by following the way used in dumping maps to allow to look up
-keys in no-btf maps, by which it decides whether and where to get the
-btf info according to the btf value type.
-
-Fixes: a19f93cfafdf ("libbpf: Add internal helper to load BTF data by FD")
-Signed-off-by: Yinjun Zhang <yinjun.zhang@corigine.com>
-Signed-off-by: Simon Horman <simon.horman@corigine.com>
-Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
-Reviewed-by: Niklas Söderlund <niklas.soderlund@corigine.com>
-Acked-by: Jiri Olsa <jolsa@kernel.org>
-Link: https://lore.kernel.org/bpf/1644249625-22479-1-git-send-email-yinjun.zhang@corigine.com
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Link: https://lore.kernel.org/r/20220310092604.22950-7-njavali@marvell.com
+Fixes: c76ae845ea83 ("scsi: qla2xxx: Add error handling for PLOGI ELS passthrough")
+Cc: stable@vger.kernel.org
+Reviewed-by: Himanshu Madhani <himanshu.madhani@oracle.com>
+Signed-off-by: Quinn Tran <qutran@marvell.com>
+Signed-off-by: Nilesh Javali <njavali@marvell.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- tools/bpf/bpftool/map.c | 6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
+ drivers/scsi/qla2xxx/qla_iocb.c |    8 +++-----
+ 1 file changed, 3 insertions(+), 5 deletions(-)
 
-diff --git a/tools/bpf/bpftool/map.c b/tools/bpf/bpftool/map.c
-index 407071d54ab1..72ef9ddae260 100644
---- a/tools/bpf/bpftool/map.c
-+++ b/tools/bpf/bpftool/map.c
-@@ -1042,11 +1042,9 @@ static void print_key_value(struct bpf_map_info *info, void *key,
- 	json_writer_t *btf_wtr;
- 	struct btf *btf;
+--- a/drivers/scsi/qla2xxx/qla_iocb.c
++++ b/drivers/scsi/qla2xxx/qla_iocb.c
+@@ -2943,6 +2943,7 @@ static void qla2x00_els_dcmd2_sp_done(sr
+ 					set_bit(ISP_ABORT_NEEDED,
+ 					    &vha->dpc_flags);
+ 					qla2xxx_wake_dpc(vha);
++					break;
+ 				}
+ 				fallthrough;
+ 			default:
+@@ -2952,9 +2953,7 @@ static void qla2x00_els_dcmd2_sp_done(sr
+ 				    fw_status[0], fw_status[1], fw_status[2]);
  
--	btf = btf__load_from_kernel_by_id(info->btf_id);
--	if (libbpf_get_error(btf)) {
--		p_err("failed to get btf");
-+	btf = get_map_kv_btf(info);
-+	if (libbpf_get_error(btf))
- 		return;
--	}
+ 				fcport->flags &= ~FCF_ASYNC_SENT;
+-				qla2x00_set_fcport_disc_state(fcport,
+-				    DSC_LOGIN_FAILED);
+-				set_bit(RELOGIN_NEEDED, &vha->dpc_flags);
++				qlt_schedule_sess_for_deletion(fcport);
+ 				break;
+ 			}
+ 			break;
+@@ -2966,8 +2965,7 @@ static void qla2x00_els_dcmd2_sp_done(sr
+ 			    fw_status[0], fw_status[1], fw_status[2]);
  
- 	if (json_output) {
- 		print_entry_json(info, key, value, btf);
--- 
-2.34.1
-
+ 			sp->fcport->flags &= ~FCF_ASYNC_SENT;
+-			qla2x00_set_fcport_disc_state(fcport, DSC_LOGIN_FAILED);
+-			set_bit(RELOGIN_NEEDED, &vha->dpc_flags);
++			qlt_schedule_sess_for_deletion(fcport);
+ 			break;
+ 		}
+ 
 
 
