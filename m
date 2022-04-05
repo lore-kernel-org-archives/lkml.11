@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 78B72C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BEF43C38A02
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:20:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237707AbiDEISR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 04:18:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55580 "EHLO
+        id S237860AbiDEIS2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 04:18:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57606 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235620AbiDEH7x (ORCPT
+        with ESMTP id S235671AbiDEH77 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 03:59:53 -0400
+        Tue, 5 Apr 2022 03:59:59 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31F521835C;
-        Tue,  5 Apr 2022 00:56:27 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 115EA1A049;
+        Tue,  5 Apr 2022 00:57:21 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A08E3B81B14;
-        Tue,  5 Apr 2022 07:56:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 11585C340EE;
-        Tue,  5 Apr 2022 07:56:24 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AEA14B81B14;
+        Tue,  5 Apr 2022 07:57:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0463CC340EE;
+        Tue,  5 Apr 2022 07:57:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649145385;
-        bh=dzWhcPIWdsa4A39sNEcEVgjZ6v05Z816/SN2s+i6y/Y=;
+        s=korg; t=1649145438;
+        bh=3WCk8sBpIkZCS0IofelWfKv101rypvwobF2dXzA2GKA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ajz1SrUNNGF34EiL54Q2PCyKKEc3OQ2DrCyBbojoFSzTPGkB36bUrYhABaLDT/mrw
-         Uti92l3YMYAW/jD0Ufcie209VyfmgkFBgqDiA0bYM7db7znt0M06I8CE/ZRmU7Jivi
-         dx2lPEzloGpJbZgXf6EH+Nj4xGvVorYDe33DCa0k=
+        b=Bu0XZjhobqF7A3dCE1jaVjE3tgtnhxRv0tvQf8SmSddF79MjHULJLpajPbiysf4Bu
+         y0JjDnX6wrLMhC/m4LP2JRS8V48DH9XUvMQR/CssiwJ7T+HsAesaj2vegsU6SxPX+J
+         LGfuwhT+Gx5LMHAixSlEzhJcPaUYPuUFEVPaW8A8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Marek Vasut <marex@denx.de>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Chris Morgan <macromorgan@hotmail.com>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0348/1126] ARM: dts: imx: Add missing LVDS decoder on M53Menlo
-Date:   Tue,  5 Apr 2022 09:18:15 +0200
-Message-Id: <20220405070417.844099434@linuxfoundation.org>
+Subject: [PATCH 5.17 0405/1126] ASoC: rk817: Fix missing clk_disable_unprepare() in rk817_platform_probe
+Date:   Tue,  5 Apr 2022 09:19:12 +0200
+Message-Id: <20220405070419.513806222@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -51,79 +50,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Marek Vasut <marex@denx.de>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit 0c6f71176ea43d6f4003a4d57f7bb518c5ad6145 ]
+[ Upstream commit a6b44a2518a08348bd0f0401e4d2b99233bbabc2 ]
 
-The M53Menlo display unit uses an LVDS-to-DPI bridge, TI DS90CF364A.
-Describe this bridge in DT, otherwise the DT incorrectly describes
-DPI panel attached directly to LVDS source.
+Fix the missing clk_disable_unprepare() before return
+from rk817_platform_probe() in the error handling case.
 
-Fixes: 716be61d1869 ("ARM: dts: imx53: Add Menlosystems M53 board")
-Signed-off-by: Marek Vasut <marex@denx.de>
-Cc: Shawn Guo <shawnguo@kernel.org>
-Cc: Fabio Estevam <festevam@gmail.com>
-Cc: NXP Linux Team <linux-imx@nxp.com>
-Signed-off-by: Shawn Guo <shawnguo@kernel.org>
+Fixes: 0d6a04da9b25 ("ASoC: Add Rockchip rk817 audio CODEC support")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Tested-by: Chris Morgan <macromorgan@hotmail.com>
+Link: https://lore.kernel.org/r/20220307090146.4104-1-linmq006@gmail.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/boot/dts/imx53-m53menlo.dts | 29 ++++++++++++++++++++++++++--
- 1 file changed, 27 insertions(+), 2 deletions(-)
+ sound/soc/codecs/rk817_codec.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/arch/arm/boot/dts/imx53-m53menlo.dts b/arch/arm/boot/dts/imx53-m53menlo.dts
-index 4f88e96d81dd..d5c68d1ea707 100644
---- a/arch/arm/boot/dts/imx53-m53menlo.dts
-+++ b/arch/arm/boot/dts/imx53-m53menlo.dts
-@@ -53,6 +53,31 @@
- 		};
- 	};
+diff --git a/sound/soc/codecs/rk817_codec.c b/sound/soc/codecs/rk817_codec.c
+index 03f24edfe4f6..8fffe378618d 100644
+--- a/sound/soc/codecs/rk817_codec.c
++++ b/sound/soc/codecs/rk817_codec.c
+@@ -508,12 +508,14 @@ static int rk817_platform_probe(struct platform_device *pdev)
+ 	if (ret < 0) {
+ 		dev_err(&pdev->dev, "%s() register codec error %d\n",
+ 			__func__, ret);
+-		goto err_;
++		goto err_clk;
+ 	}
  
-+	lvds-decoder {
-+		compatible = "ti,ds90cf364a", "lvds-decoder";
-+
-+		ports {
-+			#address-cells = <1>;
-+			#size-cells = <0>;
-+
-+			port@0 {
-+				reg = <0>;
-+
-+				lvds_decoder_in: endpoint {
-+					remote-endpoint = <&lvds0_out>;
-+				};
-+			};
-+
-+			port@1 {
-+				reg = <1>;
-+
-+				lvds_decoder_out: endpoint {
-+					remote-endpoint = <&panel_in>;
-+				};
-+			};
-+		};
-+	};
-+
- 	panel {
- 		compatible = "edt,etm0700g0dh6";
- 		pinctrl-0 = <&pinctrl_display_gpio>;
-@@ -61,7 +86,7 @@
+ 	return 0;
+-err_:
  
- 		port {
- 			panel_in: endpoint {
--				remote-endpoint = <&lvds0_out>;
-+				remote-endpoint = <&lvds_decoder_out>;
- 			};
- 		};
- 	};
-@@ -450,7 +475,7 @@
- 			reg = <2>;
++err_clk:
++	clk_disable_unprepare(rk817_codec_data->mclk);
++err_:
+ 	return ret;
+ }
  
- 			lvds0_out: endpoint {
--				remote-endpoint = <&panel_in>;
-+				remote-endpoint = <&lvds_decoder_in>;
- 			};
- 		};
- 	};
 -- 
 2.34.1
 
