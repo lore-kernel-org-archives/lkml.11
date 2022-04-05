@@ -2,46 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 40DDBC433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C330C433EF
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 01:54:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1845038AbiDFBxr (ORCPT
+        id S1845052AbiDFBxw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 21:53:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39584 "EHLO
+        Tue, 5 Apr 2022 21:53:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47888 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348994AbiDEJsw (ORCPT
+        with ESMTP id S1349486AbiDEJt4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:48:52 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83784BE34;
-        Tue,  5 Apr 2022 02:38:47 -0700 (PDT)
+        Tue, 5 Apr 2022 05:49:56 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A87910DA;
+        Tue,  5 Apr 2022 02:47:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1A3F3615E5;
-        Tue,  5 Apr 2022 09:38:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 22029C385A2;
-        Tue,  5 Apr 2022 09:38:45 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 25F2EB818F3;
+        Tue,  5 Apr 2022 09:47:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8362EC385A1;
+        Tue,  5 Apr 2022 09:47:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649151526;
-        bh=4GVNTj2YOOxt86du6z4LnhR8s7JceT8i+SaFiQdlXpA=;
+        s=korg; t=1649152040;
+        bh=CpOct01/8FH3RaGhR7d1DqVufDqPf72qFqtnN+RjAHg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=R3QNB2cvd8TPd4MLu1iY2GvbOOv3rsBykY41gKfsRNdJ8s9S2fnqAZaplMrTQNuGR
-         DdMrVRGsQwqUQqKzAnY2HAh+EbEpfUKAJV0gdzayxTkd9Hg20FMIEarhjwUpEfxoQO
-         FEA1aGYZNI1v+38qCDmK/+3hn1xIWwO0BrEgUpao=
+        b=ckMUq93WndiNwoxIHKNlYbu+wThV2YlggFRLy0/QQR6CEUkd96EOGCs6+B3Dpdd76
+         cTxhlqZKcDrR13VJuBuDHajYvD6EdZk0fXd+MGaSo0VISsbRZRxsICP8b3SXJwn/I2
+         JSkob/Q8oS7BebT7Mw13X/ZUr0LEuE9KBJLBU2AU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        =?UTF-8?q?Alex=20Benn=C3=A9e?= <alex.bennee@linaro.org>,
-        Ben Widawsky <ben.widawsky@intel.com>,
-        Dan Williams <dan.j.williams@intel.com>,
+        stable@vger.kernel.org, Chen-Yu Tsai <wenst@chromium.org>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 446/913] cxl/regs: Fix size of CXL Capability Header Register
-Date:   Tue,  5 Apr 2022 09:25:08 +0200
-Message-Id: <20220405070353.216070330@linuxfoundation.org>
+Subject: [PATCH 5.15 634/913] pinctrl: mediatek: paris: Fix pingroup pin config state readback
+Date:   Tue,  5 Apr 2022 09:28:16 +0200
+Message-Id: <20220405070358.844249783@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
 References: <20220405070339.801210740@linuxfoundation.org>
@@ -53,69 +52,59 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+From: Chen-Yu Tsai <wenst@chromium.org>
 
-[ Upstream commit 74b0fe80409733055971bbfaf33c80a33fddeeb3 ]
+[ Upstream commit 54fe55fb384ade630ef20b9a8b8f3b2a89ad97f2 ]
 
-In CXL 2.0, 8.2.5.1 CXL Capability Header Register: this register
-is given as 32 bits.
+mtk_pconf_group_get(), used to read back pingroup pin config state,
+simply returns a set of configs saved from a previous invocation of
+mtk_pconf_group_set(). This is an unfiltered, unvalidated set passed
+in from the pinconf core, which does not match the current hardware
+state.
 
-8.2.3 which covers the CXL 2.0 Component registers, including the
-CXL Capability Header Register states that access restrictions
-specified in Section 8.2.2 apply.
+Since the driver library is designed to have one pin per group, pass
+through mtk_pconf_group_get() to mtk_pinconf_get(), to read back the
+current pin config state of the only pin in the group.
 
-8.2.2 includes:
-* A 32 bit register shall be accessed as a 4 Byte quantity.
-...
-If these rules are not followed, the behavior is undefined.
+Also drop the assignment of pin config state to the group.
 
-Discovered during review of CXL QEMU emulation. Alex Bennée pointed
-out there was a comment saying that 4 byte registers must be read
-with a 4 byte read, but 8 byte reads were being emulated.
-
-https://lore.kernel.org/qemu-devel/87bkzyd3c7.fsf@linaro.org/
-
-Fixing that, led to this code failing. Whilst a given hardware
-implementation 'might' work with an 8 byte read, it should not be relied
-upon. The QEMU emulation v5 will return 0 and log the wrong access width.
-
-The code moved, so one fixes tag for where this will directly apply and
-also a reference to the earlier introduction of the code for backports.
-
-Fixes: 0f06157e0135 ("cxl/core: Move register mapping infrastructure")
-Fixes: 08422378c4ad ("cxl/pci: Add HDM decoder capabilities")
-Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Cc: Alex Bennée <alex.bennee@linaro.org>
-Reviewed-by: Ben Widawsky <ben.widawsky@intel.com>
-Link: https://lore.kernel.org/r/20220201153437.2873-1-Jonathan.Cameron@huawei.com
-Signed-off-by: Dan Williams <dan.j.williams@intel.com>
+Fixes: 805250982bb5 ("pinctrl: mediatek: add pinctrl-paris that implements the vendor dt-bindings")
+Signed-off-by: Chen-Yu Tsai <wenst@chromium.org>
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+Link: https://lore.kernel.org/r/20220308100956.2750295-5-wenst@chromium.org
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/cxl/core/regs.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/pinctrl/mediatek/pinctrl-paris.c | 8 +++-----
+ 1 file changed, 3 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/cxl/core/regs.c b/drivers/cxl/core/regs.c
-index b8aa583a7642..2e7027a3fef3 100644
---- a/drivers/cxl/core/regs.c
-+++ b/drivers/cxl/core/regs.c
-@@ -35,7 +35,7 @@ void cxl_probe_component_regs(struct device *dev, void __iomem *base,
- 			      struct cxl_component_reg_map *map)
+diff --git a/drivers/pinctrl/mediatek/pinctrl-paris.c b/drivers/pinctrl/mediatek/pinctrl-paris.c
+index bcf359256ed4..2133964dfd59 100644
+--- a/drivers/pinctrl/mediatek/pinctrl-paris.c
++++ b/drivers/pinctrl/mediatek/pinctrl-paris.c
+@@ -714,10 +714,10 @@ static int mtk_pconf_group_get(struct pinctrl_dev *pctldev, unsigned group,
+ 			       unsigned long *config)
  {
- 	int cap, cap_count;
--	u64 cap_array;
-+	u32 cap_array;
+ 	struct mtk_pinctrl *hw = pinctrl_dev_get_drvdata(pctldev);
++	struct mtk_pinctrl_group *grp = &hw->groups[group];
  
- 	*map = (struct cxl_component_reg_map) { 0 };
+-	*config = hw->groups[group].config;
+-
+-	return 0;
++	 /* One pin per group only */
++	return mtk_pinconf_get(pctldev, grp->pin, config);
+ }
  
-@@ -45,7 +45,7 @@ void cxl_probe_component_regs(struct device *dev, void __iomem *base,
- 	 */
- 	base += CXL_CM_OFFSET;
+ static int mtk_pconf_group_set(struct pinctrl_dev *pctldev, unsigned group,
+@@ -733,8 +733,6 @@ static int mtk_pconf_group_set(struct pinctrl_dev *pctldev, unsigned group,
+ 				      pinconf_to_config_argument(configs[i]));
+ 		if (ret < 0)
+ 			return ret;
+-
+-		grp->config = configs[i];
+ 	}
  
--	cap_array = readq(base + CXL_CM_CAP_HDR_OFFSET);
-+	cap_array = readl(base + CXL_CM_CAP_HDR_OFFSET);
- 
- 	if (FIELD_GET(CXL_CM_CAP_HDR_ID_MASK, cap_array) != CM_CAP_HDR_CAP_ID) {
- 		dev_err(dev,
+ 	return 0;
 -- 
 2.34.1
 
