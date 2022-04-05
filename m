@@ -2,192 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F0B8C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:27:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 75CF3C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:27:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1588831AbiDFARd (ORCPT
+        id S1588906AbiDFARs (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 20:17:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36678 "EHLO
+        Tue, 5 Apr 2022 20:17:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53028 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354227AbiDEKMT (ORCPT
+        with ESMTP id S1387486AbiDEOcQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:12:19 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19D1C5A17D;
-        Tue,  5 Apr 2022 02:59:16 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C511CB81B93;
-        Tue,  5 Apr 2022 09:59:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2D788C385A4;
-        Tue,  5 Apr 2022 09:59:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649152753;
-        bh=JVi6iNnNgKNf/3WG5A4crMAJ/xLn832x/mT8K/pZK30=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QVnu9yr2FuqgGne8x6SEqpZhixj0yI2/XM8jd1OB2er6hfxSIgyNsTIMmqHOe0qWb
-         bO7rU72V5yuUHG/ovzrmIMSVLq4jLqqfLCDoI4P9P6Hbyp1TE2tIm941ckaoLcnsXB
-         S2BxKrQsuM3WkKUS68M5Qp+vSolC79vPtzfMYH00=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Janusz Krzysztofik <jmkrzyszt@gmail.com>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>
-Subject: [PATCH 5.15 890/913] media: ov6650: Add try support to selection API operations
-Date:   Tue,  5 Apr 2022 09:32:32 +0200
-Message-Id: <20220405070406.500243434@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 5 Apr 2022 10:32:16 -0400
+Received: from gnuweeb.org (gnuweeb.org [51.81.211.47])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 057D815719
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 06:13:50 -0700 (PDT)
+Received: from [192.168.137.80] (unknown [182.2.74.86])
+        by gnuweeb.org (Postfix) with ESMTPSA id E4BB47E342;
+        Tue,  5 Apr 2022 13:13:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gnuweeb.org;
+        s=default; t=1649164430;
+        bh=byKY6UTz0fK6TWtlSIwQIIwJ8VY6Tz2PXZQNSc6FFwU=;
+        h=Date:To:Cc:References:From:Subject:In-Reply-To:From;
+        b=qB9fXD5WlGBLJdi9FAcUvNx+Ou3+3qfnjcgD/3mYB9HWK/dVCRD7WzbNjjVWn6QEz
+         pWq1umCtX/WFdk2IpK3S6P+oYfjCd4hJlDFEY1fgxeyLhJEZ7umI2rPaluveg/dokC
+         eoG5noGnIYZ0JX1yVB45+Ont8l6x9d/SGFO0VMD9aqhKwYdyKefDbJLwfW+DFD/ILP
+         fmQyW6Iyl6Xp66LL64kwBUJwZ93lWoVJrSx7/EXedy8WTwUPp9RlyG4lboi12Hn9Y6
+         nmBDsvuUx6yR3Inx8i0sx87KlKgQ22fh56HhGddv5aigM2ptQfceZlfiMIpmEhezkk
+         wrDIQQkcCg/Ow==
+Message-ID: <675544de-3369-e26e-65ba-3b28fff5c126@gnuweeb.org>
+Date:   Tue, 5 Apr 2022 20:13:42 +0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Content-Language: en-US
+To:     Dietmar Eggemann <dietmar.eggemann@arm.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Cc:     Ben Segall <bsegall@google.com>,
+        Daniel Bristot de Oliveira <bristot@redhat.com>,
+        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Juri Lelli <juri.lelli@redhat.com>,
+        Mel Gorman <mgorman@suse.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Vincent Guittot <vincent.guittot@linaro.org>
+References: <b86541ea-7d96-5a24-1b65-37c24c70d3ff@gnuweeb.org>
+ <f71d132d-02a0-918c-ab2b-3234d0d492a4@arm.com>
+From:   Ammar Faizi <ammarfaizi2@gnuweeb.org>
+Subject: Re: [Linux 5.18-rc1] WARNING: CPU: 1 PID: 0 at
+ kernel/sched/fair.c:3355 update_blocked_averages
+In-Reply-To: <f71d132d-02a0-918c-ab2b-3234d0d492a4@arm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Janusz Krzysztofik <jmkrzyszt@gmail.com>
+On 4/5/22 7:21 PM, Dietmar Eggemann wrote:
+> Tried to recreate the issue but no success so far. I used you config
+> file, clang-14 and a Xeon CPU E5-2690 v2 (2 sockets 40 CPUs) with 20
+> two-level cgoupv1 taskgroups '/X/Y' with 'hackbench (10 groups, 40 fds)
+> + idling' running in all '/X/Y/'.
+> 
+> What userspace are you running?
 
-commit c74052646496ffe0bc606152e6b9653137020cbf upstream.
+HP Laptop, Intel i7-1165G7, 8 CPUs, with 16 GB of RAM. Ubuntu 21.10. Just for
+daily workstation. Compiling kernel, browsing and coding stuff.
 
-Try requests are now only supported by format processing pad operations
-implemented by the driver.  The driver selection API operations
-currently respond to them with -EINVAL.  While that is correct, it
-constraints video device drivers to not use subdevice cropping at all
-while processing user requested active frame size, otherwise their set
-try format results might differ from active.  As a consequence, we
-can't fix set format pad operation as not to touch crop rectangle since
-that would affect users not being able to set arbitrary frame sizes.
-Moreover, without a working set try selection support we are not able
-to use pad config crop rectangle as a reference while processing set
-try format requests.
+> There seemed to be some pressure on your machine when it happened?
 
-Implement missing try selection support.  Moreover, as it will be now
-possible to maintain the pad config crop rectangle via selection API,
-start using it instead of the active one as a reference while
-processing set try format requests.
+Yeah, might be, I don't fully remember the activity at the time it
+happened, though.
 
-is_unscaled_ok() helper, now also called from set selection operation,
-has been just moved up in the source file to avoid a prototype, with no
-functional changes.
+>> <6>[13420.623334][    C7] perf: interrupt took too long (2530 > 2500),
+>> lowering kernel.perf_event_max_sample_rate to 78900
+> 
+> Maybe you could split the SCHED_WARN_ON so we know which signal causes this?
 
-[Sakari Ailus: Rebase on subdev state patches]
+OK, I will apply the diff on top of 5.18-rc1 and will start using it for daily
+routine tomorrow morning. Let's see if I can hit this bug again. Will send an
+update later...
 
-Fixes: 717fd5b4907a ("[media] v4l2: replace try_mbus_fmt by set_fmt")
-Signed-off-by: Janusz Krzysztofik <jmkrzyszt@gmail.com>
-Signed-off-by: Sakari Ailus <sakari.ailus@linux.intel.com>
-Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- drivers/media/i2c/ov6650.c |   54 +++++++++++++++++++++++++++++++++++----------
- 1 file changed, 43 insertions(+), 11 deletions(-)
+Thank you.
 
---- a/drivers/media/i2c/ov6650.c
-+++ b/drivers/media/i2c/ov6650.c
-@@ -472,9 +472,16 @@ static int ov6650_get_selection(struct v
- {
- 	struct i2c_client *client = v4l2_get_subdevdata(sd);
- 	struct ov6650 *priv = to_ov6650(client);
-+	struct v4l2_rect *rect;
- 
--	if (sel->which != V4L2_SUBDEV_FORMAT_ACTIVE)
--		return -EINVAL;
-+	if (sel->which == V4L2_SUBDEV_FORMAT_TRY) {
-+		/* pre-select try crop rectangle */
-+		rect = &sd_state->pads->try_crop;
-+
-+	} else {
-+		/* pre-select active crop rectangle */
-+		rect = &priv->rect;
-+	}
- 
- 	switch (sel->target) {
- 	case V4L2_SEL_TGT_CROP_BOUNDS:
-@@ -483,14 +490,22 @@ static int ov6650_get_selection(struct v
- 		sel->r.width = W_CIF;
- 		sel->r.height = H_CIF;
- 		return 0;
-+
- 	case V4L2_SEL_TGT_CROP:
--		sel->r = priv->rect;
-+		/* use selected crop rectangle */
-+		sel->r = *rect;
- 		return 0;
-+
- 	default:
- 		return -EINVAL;
- 	}
- }
- 
-+static bool is_unscaled_ok(int width, int height, struct v4l2_rect *rect)
-+{
-+	return width > rect->width >> 1 || height > rect->height >> 1;
-+}
-+
- static void ov6650_bind_align_crop_rectangle(struct v4l2_rect *rect)
- {
- 	v4l_bound_align_image(&rect->width, 2, W_CIF, 1,
-@@ -510,12 +525,30 @@ static int ov6650_set_selection(struct v
- 	struct ov6650 *priv = to_ov6650(client);
- 	int ret;
- 
--	if (sel->which != V4L2_SUBDEV_FORMAT_ACTIVE ||
--	    sel->target != V4L2_SEL_TGT_CROP)
-+	if (sel->target != V4L2_SEL_TGT_CROP)
- 		return -EINVAL;
- 
- 	ov6650_bind_align_crop_rectangle(&sel->r);
- 
-+	if (sel->which == V4L2_SUBDEV_FORMAT_TRY) {
-+		struct v4l2_rect *crop = &sd_state->pads->try_crop;
-+		struct v4l2_mbus_framefmt *mf = &sd_state->pads->try_fmt;
-+		/* detect current pad config scaling factor */
-+		bool half_scale = !is_unscaled_ok(mf->width, mf->height, crop);
-+
-+		/* store new crop rectangle */
-+		*crop = sel->r;
-+
-+		/* adjust frame size */
-+		mf->width = crop->width >> half_scale;
-+		mf->height = crop->height >> half_scale;
-+
-+		return 0;
-+	}
-+
-+	/* V4L2_SUBDEV_FORMAT_ACTIVE */
-+
-+	/* apply new crop rectangle */
- 	ret = ov6650_reg_write(client, REG_HSTRT, sel->r.left >> 1);
- 	if (!ret) {
- 		priv->rect.width += priv->rect.left - sel->r.left;
-@@ -567,11 +600,6 @@ static int ov6650_get_fmt(struct v4l2_su
- 	return 0;
- }
- 
--static bool is_unscaled_ok(int width, int height, struct v4l2_rect *rect)
--{
--	return width > rect->width >> 1 || height > rect->height >> 1;
--}
--
- #define to_clkrc(div)	((div) - 1)
- 
- /* set the format we will capture in */
-@@ -692,7 +720,11 @@ static int ov6650_set_fmt(struct v4l2_su
- 		break;
- 	}
- 
--	*crop = priv->rect;
-+	if (format->which == V4L2_SUBDEV_FORMAT_TRY)
-+		*crop = sd_state->pads->try_crop;
-+	else
-+		*crop = priv->rect;
-+
- 	half_scale = !is_unscaled_ok(mf->width, mf->height, crop);
- 
- 	/* adjust new crop rectangle position against its current center */
+> diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
+> index d4bd299d67ab..0d45e09e5bfc 100644
+> --- a/kernel/sched/fair.c
+> +++ b/kernel/sched/fair.c
+> @@ -3350,9 +3350,9 @@ static inline bool cfs_rq_is_decayed(struct cfs_rq
+> *cfs_rq)
+>           * Make sure that rounding and/or propagation of PELT values never
+>           * break this.
+>           */
+> -       SCHED_WARN_ON(cfs_rq->avg.load_avg ||
+> -                     cfs_rq->avg.util_avg ||
+> -                     cfs_rq->avg.runnable_avg);
+> +       SCHED_WARN_ON(cfs_rq->avg.load_avg);
+> +       SCHED_WARN_ON(cfs_rq->avg.util_avg);
+> +       SCHED_WARN_ON(cfs_rq->avg.runnable_avg);
+> 
+>          return true;
+>   }
+> 
+> [...]
 
 
+-- 
+Ammar Faizi
