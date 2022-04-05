@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D02D1C43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E526AC43217
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 09:52:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346132AbiDEJoa (ORCPT
+        id S1346192AbiDEJoe (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 05:44:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45380 "EHLO
+        Tue, 5 Apr 2022 05:44:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34688 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239557AbiDEIUO (ORCPT
+        with ESMTP id S239435AbiDEIUF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:20:14 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1B5221AD;
-        Tue,  5 Apr 2022 01:16:09 -0700 (PDT)
+        Tue, 5 Apr 2022 04:20:05 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DFEC93981;
+        Tue,  5 Apr 2022 01:13:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5EC63B81BAC;
-        Tue,  5 Apr 2022 08:16:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A3748C385A1;
-        Tue,  5 Apr 2022 08:16:06 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C3771B81B92;
+        Tue,  5 Apr 2022 08:13:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 38E42C385A0;
+        Tue,  5 Apr 2022 08:13:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649146567;
-        bh=kIr5JhcaLshk79hym1GPm/MZv8EVmOacLbwDOQPyUlw=;
+        s=korg; t=1649146391;
+        bh=0UVw1YIHqiI61x9atIvc1XzjmQZco7kHz8d5msPmZN4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=f69BunrHFl3tM9/ukbZXt6dQeCuVy4hPL8c23sTfJyokubWk+uZXv9YK52ABHcFZQ
-         NFQvHf3ZmgkAjWTXrVlJFE5drC04ash+2zvHW/WYqyf7OepSt1hTuw//zytenOGfOe
-         HP7gCtpjQ0dKPtmGUFm9szf2o4HhFojgKmiOdGTA=
+        b=tGt0Fy6Hgs6xusDGzPfPPKVU00/HPRtn+lUWh05uwL+J8hyM9pCG0sxb+9ZTteReP
+         ni0nqmBwcw96SjV/P7IPFJIAGbwsLCoVnw2g5GWyUyDHutN3h91sPSNjkZf9Q7GAEx
+         KxLrFqrzotuSWsIQ9zMJWtrTBQyGa/Gg7qq5blGw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Florian Fainelli <f.fainelli@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
+        stable@vger.kernel.org, Taniya Das <tdas@codeaurora.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0811/1126] net: phy: broadcom: Fix brcm_fet_config_init()
-Date:   Tue,  5 Apr 2022 09:25:58 +0200
-Message-Id: <20220405070431.371012514@linuxfoundation.org>
+Subject: [PATCH 5.17 0746/1126] clk: qcom: clk-rcg2: Update logic to calculate D value for RCG
+Date:   Tue,  5 Apr 2022 09:24:53 +0200
+Message-Id: <20220405070429.480771077@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -50,77 +50,58 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Florian Fainelli <f.fainelli@gmail.com>
+From: Taniya Das <tdas@codeaurora.org>
 
-[ Upstream commit bf8bfc4336f7a34e48b3bbd19b1542bf085bdc3d ]
+[ Upstream commit 58922910add18583d5273c2edcdb9fd7bf4eca02 ]
 
-A Broadcom AC201 PHY (same entry as 5241) would be flagged by the
-Broadcom UniMAC MDIO controller as not completing the turn around
-properly since the PHY expects 65 MDC clock cycles to complete a write
-cycle, and the MDIO controller was only sending 64 MDC clock cycles as
-determined by looking at a scope shot.
+The display pixel clock has a requirement on certain newer platforms to
+support M/N as (2/3) and the final D value calculated results in
+underflow errors.
+As the current implementation does not check for D value is within
+the accepted range for a given M & N value. Update the logic to
+calculate the final D value based on the range.
 
-This would make the subsequent read fail with the UniMAC MDIO controller
-command field having MDIO_READ_FAIL set and we would abort the
-brcm_fet_config_init() function and thus not probe the PHY at all.
-
-After issuing a software reset, wait for at least 1ms which is well
-above the 1us reset delay advertised by the datasheet and issue a dummy
-read to let the PHY turn around the line properly. This read
-specifically ignores -EIO which would be returned by MDIO controllers
-checking for the line being turned around.
-
-If we have a genuine reaad failure, the next read of the interrupt
-status register would pick it up anyway.
-
-Fixes: d7a2ed9248a3 ("broadcom: Add AC131 phy support")
-Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
-Link: https://lore.kernel.org/r/20220324232438.1156812-1-f.fainelli@gmail.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Fixes: 99cbd064b059f ("clk: qcom: Support display RCG clocks")
+Signed-off-by: Taniya Das <tdas@codeaurora.org>
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Link: https://lore.kernel.org/r/20220227175536.3131-1-tdas@codeaurora.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/phy/broadcom.c | 21 +++++++++++++++++++++
- 1 file changed, 21 insertions(+)
+ drivers/clk/qcom/clk-rcg2.c | 13 +++++++++++--
+ 1 file changed, 11 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/phy/broadcom.c b/drivers/net/phy/broadcom.c
-index 3c683e0e40e9..e36809aa6d30 100644
---- a/drivers/net/phy/broadcom.c
-+++ b/drivers/net/phy/broadcom.c
-@@ -11,6 +11,7 @@
-  */
+diff --git a/drivers/clk/qcom/clk-rcg2.c b/drivers/clk/qcom/clk-rcg2.c
+index e1b1b426fae4..b831975a9606 100644
+--- a/drivers/clk/qcom/clk-rcg2.c
++++ b/drivers/clk/qcom/clk-rcg2.c
+@@ -264,7 +264,7 @@ static int clk_rcg2_determine_floor_rate(struct clk_hw *hw,
  
- #include "bcm-phy-lib.h"
-+#include <linux/delay.h>
- #include <linux/module.h>
- #include <linux/phy.h>
- #include <linux/brcmphy.h>
-@@ -602,6 +603,26 @@ static int brcm_fet_config_init(struct phy_device *phydev)
- 	if (err < 0)
- 		return err;
+ static int __clk_rcg2_configure(struct clk_rcg2 *rcg, const struct freq_tbl *f)
+ {
+-	u32 cfg, mask;
++	u32 cfg, mask, d_val, not2d_val, n_minus_m;
+ 	struct clk_hw *hw = &rcg->clkr.hw;
+ 	int ret, index = qcom_find_src_index(hw, rcg->parent_map, f->src);
  
-+	/* The datasheet indicates the PHY needs up to 1us to complete a reset,
-+	 * build some slack here.
-+	 */
-+	usleep_range(1000, 2000);
+@@ -283,8 +283,17 @@ static int __clk_rcg2_configure(struct clk_rcg2 *rcg, const struct freq_tbl *f)
+ 		if (ret)
+ 			return ret;
+ 
++		/* Calculate 2d value */
++		d_val = f->n;
 +
-+	/* The PHY requires 65 MDC clock cycles to complete a write operation
-+	 * and turnaround the line properly.
-+	 *
-+	 * We ignore -EIO here as the MDIO controller (e.g.: mdio-bcm-unimac)
-+	 * may flag the lack of turn-around as a read failure. This is
-+	 * particularly true with this combination since the MDIO controller
-+	 * only used 64 MDC cycles. This is not a critical failure in this
-+	 * specific case and it has no functional impact otherwise, so we let
-+	 * that one go through. If there is a genuine bus error, the next read
-+	 * of MII_BRCM_FET_INTREG will error out.
-+	 */
-+	err = phy_read(phydev, MII_BMCR);
-+	if (err < 0 && err != -EIO)
-+		return err;
++		n_minus_m = f->n - f->m;
++		n_minus_m *= 2;
 +
- 	reg = phy_read(phydev, MII_BRCM_FET_INTREG);
- 	if (reg < 0)
- 		return reg;
++		d_val = clamp_t(u32, d_val, f->m, n_minus_m);
++		not2d_val = ~d_val & mask;
++
+ 		ret = regmap_update_bits(rcg->clkr.regmap,
+-				RCG_D_OFFSET(rcg), mask, ~f->n);
++				RCG_D_OFFSET(rcg), mask, not2d_val);
+ 		if (ret)
+ 			return ret;
+ 	}
 -- 
 2.34.1
 
