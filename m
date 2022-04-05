@@ -2,117 +2,213 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A2D7C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A2BAC4332F
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 01:30:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1842140AbiDFB1M (ORCPT
+        id S1842124AbiDFB1J (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 21:27:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43504 "EHLO
+        Tue, 5 Apr 2022 21:27:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55220 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354897AbiDEKQa (ORCPT
+        with ESMTP id S1457587AbiDEQLI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:16:30 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DDFF11A;
-        Tue,  5 Apr 2022 03:03:41 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Tue, 5 Apr 2022 12:11:08 -0400
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8ACA2E0C4;
+        Tue,  5 Apr 2022 09:09:08 -0700 (PDT)
+Received: from [IPV6:2a01:e0a:120:3210:cf29:3f0:be4d:7211] (unknown [IPv6:2a01:e0a:120:3210:cf29:3f0:be4d:7211])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BFCDFB81C83;
-        Tue,  5 Apr 2022 10:03:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3657DC385A1;
-        Tue,  5 Apr 2022 10:03:38 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649153018;
-        bh=f5R8xVr5kUHPjjSTgAHG6sQa1CUFc8FtQRCPyki1CVU=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Su8Kv7LySmkbtMOFxVAm3X2D5GZ6oFbGE0WcJPZFM32Vy8WYdbHXSAvKpCvfvZMV2
-         9t0w6lUI1uIn8DUI9lBh24lFTcb+9JhU+wmMDWog0BpkiJeVus851OE9aMAcMP5Xo+
-         If5IsarbPepD7SRSX049g9wRzkHgKI2X03XSmg0c=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mohan Kumar <mkumard@nvidia.com>,
-        Takashi Iwai <tiwai@suse.de>
-Subject: [PATCH 5.10 071/599] ALSA: hda: Avoid unsol event during RPM suspending
-Date:   Tue,  5 Apr 2022 09:26:05 +0200
-Message-Id: <20220405070300.939324041@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
-User-Agent: quilt/0.66
+        (Authenticated sender: benjamin.gaignard)
+        by bhuna.collabora.co.uk (Postfix) with ESMTPSA id 2DFB51F43F0D;
+        Tue,  5 Apr 2022 17:09:06 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1649174946;
+        bh=eeySzn5IBf+PbYNi+kPSgsYzcuDGcdY6haFj9xgGbTc=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=bquGS9tF62KHpCx6KOlVue0u3BUHutbpdUkIswCR9dFWpqBqt9KTIZhdbkOkIg6S0
+         5n2xd1750ecQX63Vs8TOqs39NgYYpYhtRV1t6PM4HIs72OOS+5VQxoFH+nMl/jbwmM
+         MoMH95usmnc6FzA9zfnGsEhCZRd2dgBhftcFXzdzHxiElFBGm7MmpAFJrpct6Bj7ry
+         EUCsInrPWwVbscgnQHQbTPVSxraI7RLgCevVwI6GjR3tRDPDX639GJsAt8wId1HaOc
+         014r4nTSexAxfPlT6inGkQbKlLgmE1NOk4DqvEuLjCqTDgUGGP8Cy9z12GsYnUzX/k
+         ERkD9KOJMHJgQ==
+Message-ID: <7972feba-221c-9960-68d0-ee15ad2a4f1a@collabora.com>
+Date:   Tue, 5 Apr 2022 18:09:03 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [RFC PATCH 3/8] media: hantro: Support format filtering by depth
+Content-Language: en-US
+To:     Jernej Skrabec <jernej.skrabec@gmail.com>,
+        ezequiel@vanguardiasur.com.ar, p.zabel@pengutronix.de
+Cc:     mchehab@kernel.org, nicolas@ndufresne.ca, hverkuil-cisco@xs4all.nl,
+        gregkh@linuxfoundation.org, wens@csie.org, samuel@sholland.org,
+        linux-media@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-rockchip@lists.infradead.org, linux-staging@lists.linux.dev,
+        linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev
+References: <20220227144926.3006585-1-jernej.skrabec@gmail.com>
+ <20220227144926.3006585-4-jernej.skrabec@gmail.com>
+From:   Benjamin Gaignard <benjamin.gaignard@collabora.com>
+In-Reply-To: <20220227144926.3006585-4-jernej.skrabec@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mohan Kumar <mkumard@nvidia.com>
 
-commit 6ddc2f749621d5d45ca03edc9f0616bcda136d29 upstream.
+Le 27/02/2022 à 15:49, Jernej Skrabec a écrit :
+> In preparation for supporting 10-bit formats, add mechanism which will
+> filter formats based on pixel depth.
+>
+> Hantro G2 supports only one decoding format natively and that is based
+> on bit depth of current video frame. Additionally, it makes no sense to
+> upconvert bitness, so filter those out too.
+>
+> Signed-off-by: Jernej Skrabec <jernej.skrabec@gmail.com>
+> ---
+>   drivers/staging/media/hantro/hantro.h      |  4 ++
+>   drivers/staging/media/hantro/hantro_v4l2.c | 48 ++++++++++++++++++++--
+>   drivers/staging/media/hantro/hantro_v4l2.h |  1 +
+>   3 files changed, 50 insertions(+), 3 deletions(-)
+>
+> diff --git a/drivers/staging/media/hantro/hantro.h b/drivers/staging/media/hantro/hantro.h
+> index 06d0f3597694..c6525ee8d89a 100644
+> --- a/drivers/staging/media/hantro/hantro.h
+> +++ b/drivers/staging/media/hantro/hantro.h
+> @@ -227,6 +227,7 @@ struct hantro_dev {
+>    *
+>    * @ctrl_handler:	Control handler used to register controls.
+>    * @jpeg_quality:	User-specified JPEG compression quality.
+> + * @bit_depth:		Bit depth of current frame
+>    *
+>    * @codec_ops:		Set of operations related to codec mode.
+>    * @postproc:		Post-processing context.
+> @@ -252,6 +253,7 @@ struct hantro_ctx {
+>   
+>   	struct v4l2_ctrl_handler ctrl_handler;
+>   	int jpeg_quality;
+> +	int bit_depth;
+>   
+>   	const struct hantro_codec_ops *codec_ops;
+>   	struct hantro_postproc_ctx postproc;
+> @@ -278,6 +280,7 @@ struct hantro_ctx {
+>    * @enc_fmt:	Format identifier for encoder registers.
+>    * @frmsize:	Supported range of frame sizes (only for bitstream formats).
+>    * @postprocessed: Indicates if this format needs the post-processor.
+> + * @match_depth: Indicates if format bit depth must match video bit depth
+>    */
+>   struct hantro_fmt {
+>   	char *name;
+> @@ -288,6 +291,7 @@ struct hantro_fmt {
+>   	enum hantro_enc_fmt enc_fmt;
+>   	struct v4l2_frmsize_stepwise frmsize;
+>   	bool postprocessed;
+> +	bool match_depth;
+>   };
+>   
+>   struct hantro_reg {
+> diff --git a/drivers/staging/media/hantro/hantro_v4l2.c b/drivers/staging/media/hantro/hantro_v4l2.c
+> index e595905b3bd7..1214fa2f64ae 100644
+> --- a/drivers/staging/media/hantro/hantro_v4l2.c
+> +++ b/drivers/staging/media/hantro/hantro_v4l2.c
+> @@ -64,6 +64,42 @@ hantro_get_postproc_formats(const struct hantro_ctx *ctx,
+>   	return ctx->dev->variant->postproc_fmts;
+>   }
+>   
+> +int hantro_get_formath_depth(u32 fourcc)
 
-There is a corner case with unsol event handling during codec runtime
-suspending state. When the codec runtime suspend call initiated, the
-codec->in_pm atomic variable would be 0, currently the codec runtime
-suspend function calls snd_hdac_enter_pm() which will just increments
-the codec->in_pm atomic variable. Consider unsol event happened just
-after this step and before snd_hdac_leave_pm() in the codec runtime
-suspend function. The snd_hdac_power_up_pm() in the unsol event
-flow in hdmi_present_sense_via_verbs() function would just increment
-the codec->in_pm atomic variable without calling pm_runtime_get_sync
-function.
+Just a typo here:
 
-As codec runtime suspend flow is already in progress and in parallel
-unsol event is also accessing the codec verbs, as soon as codec
-suspend flow completes and clocks are  switched off before completing
-the unsol event handling as both functions doesn't wait for each other.
-This will result in below errors
+s/hantro_get_formath_depth -> hantro_get_format_depth
 
-[  589.428020] tegra-hda 3510000.hda: azx_get_response timeout, switching
-to polling mode: last cmd=0x505f2f57
-[  589.428344] tegra-hda 3510000.hda: spurious response 0x80000074:0x5,
-last cmd=0x505f2f57
-[  589.428547] tegra-hda 3510000.hda: spurious response 0x80000065:0x5,
-last cmd=0x505f2f57
+regards
+Benjamin
 
-To avoid this, the unsol event flow should not perform any codec verb
-related operations during RPM_SUSPENDING state.
-
-Signed-off-by: Mohan Kumar <mkumard@nvidia.com>
-Cc: <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/20220329155940.26331-1-mkumard@nvidia.com
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- sound/pci/hda/patch_hdmi.c |    8 +++++++-
- 1 file changed, 7 insertions(+), 1 deletion(-)
-
---- a/sound/pci/hda/patch_hdmi.c
-+++ b/sound/pci/hda/patch_hdmi.c
-@@ -1608,6 +1608,7 @@ static void hdmi_present_sense_via_verbs
- 	struct hda_codec *codec = per_pin->codec;
- 	struct hdmi_spec *spec = codec->spec;
- 	struct hdmi_eld *eld = &spec->temp_eld;
-+	struct device *dev = hda_codec_dev(codec);
- 	hda_nid_t pin_nid = per_pin->pin_nid;
- 	int dev_id = per_pin->dev_id;
- 	/*
-@@ -1621,8 +1622,13 @@ static void hdmi_present_sense_via_verbs
- 	int present;
- 	int ret;
- 
-+#ifdef	CONFIG_PM
-+	if (dev->power.runtime_status == RPM_SUSPENDING)
-+		return;
-+#endif
-+
- 	ret = snd_hda_power_up_pm(codec);
--	if (ret < 0 && pm_runtime_suspended(hda_codec_dev(codec)))
-+	if (ret < 0 && pm_runtime_suspended(dev))
- 		goto out;
- 
- 	present = snd_hda_jack_pin_sense(codec, pin_nid, dev_id);
-
-
+> +{
+> +	switch (fourcc) {
+> +	case V4L2_PIX_FMT_P010:
+> +	case V4L2_PIX_FMT_P010_4L4:
+> +		return 10;
+> +	default:
+> +		return 8;
+> +	}
+> +}
+> +
+> +static bool
+> +hantro_check_depth_match(const struct hantro_ctx *ctx,
+> +			 const struct hantro_fmt *fmt)
+> +{
+> +	int fmt_depth, ctx_depth = 8;
+> +
+> +	if (!fmt->match_depth && !fmt->postprocessed)
+> +		return true;
+> +
+> +	/* 0 means default depth, which is 8 */
+> +	if (ctx->bit_depth)
+> +		ctx_depth = ctx->bit_depth;
+> +
+> +	fmt_depth = hantro_get_formath_depth(fmt->fourcc);
+> +
+> +	/*
+> +	 * Allow only downconversion for postproc formats for now.
+> +	 * It may be possible to relax that on some HW.
+> +	 */
+> +	if (!fmt->match_depth)
+> +		return fmt_depth <= ctx_depth;
+> +
+> +	return fmt_depth == ctx_depth;
+> +}
+> +
+>   static const struct hantro_fmt *
+>   hantro_find_format(const struct hantro_ctx *ctx, u32 fourcc)
+>   {
+> @@ -91,7 +127,8 @@ hantro_get_default_fmt(const struct hantro_ctx *ctx, bool bitstream)
+>   	formats = hantro_get_formats(ctx, &num_fmts);
+>   	for (i = 0; i < num_fmts; i++) {
+>   		if (bitstream == (formats[i].codec_mode !=
+> -				  HANTRO_MODE_NONE))
+> +				  HANTRO_MODE_NONE) &&
+> +		    hantro_check_depth_match(ctx, &formats[i]))
+>   			return &formats[i];
+>   	}
+>   	return NULL;
+> @@ -163,11 +200,13 @@ static int vidioc_enum_fmt(struct file *file, void *priv,
+>   	formats = hantro_get_formats(ctx, &num_fmts);
+>   	for (i = 0; i < num_fmts; i++) {
+>   		bool mode_none = formats[i].codec_mode == HANTRO_MODE_NONE;
+> +		fmt = &formats[i];
+>   
+>   		if (skip_mode_none == mode_none)
+>   			continue;
+> +		if (!hantro_check_depth_match(ctx, fmt))
+> +			continue;
+>   		if (j == f->index) {
+> -			fmt = &formats[i];
+>   			f->pixelformat = fmt->fourcc;
+>   			return 0;
+>   		}
+> @@ -183,8 +222,11 @@ static int vidioc_enum_fmt(struct file *file, void *priv,
+>   		return -EINVAL;
+>   	formats = hantro_get_postproc_formats(ctx, &num_fmts);
+>   	for (i = 0; i < num_fmts; i++) {
+> +		fmt = &formats[i];
+> +
+> +		if (!hantro_check_depth_match(ctx, fmt))
+> +			continue;
+>   		if (j == f->index) {
+> -			fmt = &formats[i];
+>   			f->pixelformat = fmt->fourcc;
+>   			return 0;
+>   		}
+> diff --git a/drivers/staging/media/hantro/hantro_v4l2.h b/drivers/staging/media/hantro/hantro_v4l2.h
+> index 18bc682c8556..f4a5905ed518 100644
+> --- a/drivers/staging/media/hantro/hantro_v4l2.h
+> +++ b/drivers/staging/media/hantro/hantro_v4l2.h
+> @@ -22,5 +22,6 @@ extern const struct v4l2_ioctl_ops hantro_ioctl_ops;
+>   extern const struct vb2_ops hantro_queue_ops;
+>   
+>   void hantro_reset_fmts(struct hantro_ctx *ctx);
+> +int hantro_get_formath_depth(u32 fourcc);
+>   
+>   #endif /* HANTRO_V4L2_H_ */
