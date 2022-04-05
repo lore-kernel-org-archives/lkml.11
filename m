@@ -2,194 +2,74 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7003DC433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BC985C433FE
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 02:27:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376706AbiDFCZj (ORCPT
+        id S1391677AbiDFC0I (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 22:25:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41588 "EHLO
+        Tue, 5 Apr 2022 22:26:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39956 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344753AbiDEVIr (ORCPT
+        with ESMTP id S237138AbiDEVRT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 17:08:47 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 058785D5FF;
-        Tue,  5 Apr 2022 13:31:47 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B4D32B81FCB;
-        Tue,  5 Apr 2022 20:31:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 70C26C385A0;
-        Tue,  5 Apr 2022 20:31:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649190704;
-        bh=hVvEkc+QO11ZHsYNIQDJIVc5jdlWet/kgSfgUtvbG/A=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=jDpzZ/qW2fXYwFXtD8rfvPxLC+cmucdfq4k8q3Q/I1fZo1wrFvjpHT0dJgdgTXY2V
-         /l74OHoZD0DmfyAw2zWm4AbqNBMr7NkZlonch0Y2jF6dNJiESmV2TaXEs3bOpvdqPb
-         Btza7b5cdyfJujw+5H54+Mib4qI9nSSms2DVulBQPj3kw2JlckVyGGzHHDKKfM48nr
-         3NZH4wSnHyxKGKXNjkIUyxa0sUF1NR0uYis2f+AymQVbn5lsguCWXKImCPzC338loS
-         uM43snSY7JCMLQx53XPF5OLgULkGlybnsho4awM+fAuN7GffFU1mT1O+cSENJzTQEK
-         C8ao2ZdEm0eBQ==
-Date:   Tue, 5 Apr 2022 20:31:43 +0000
-From:   Eric Biggers <ebiggers@kernel.org>
-To:     Mimi Zohar <zohar@linux.ibm.com>
-Cc:     linux-integrity@vger.kernel.org,
-        Stefan Berger <stefanb@linux.ibm.com>,
-        linux-fscrypt@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v7 4/5] ima: support fs-verity file digest based version
- 3 signatures
-Message-ID: <YkynLz5ZuI3pnBk9@gmail.com>
-References: <20220325223824.310119-1-zohar@linux.ibm.com>
- <20220325223824.310119-5-zohar@linux.ibm.com>
+        Tue, 5 Apr 2022 17:17:19 -0400
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A0D470F5A;
+        Tue,  5 Apr 2022 13:44:45 -0700 (PDT)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: nicolas)
+        with ESMTPSA id D73C21F4480B
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1649191483;
+        bh=CR0Uld+xP65yR8nRZHFwyooNDEbFE3R+SnqsqiS63yI=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=R1zrHd5GzMeP0J2r7wzyt2CkELpIBsCmOdeHajueB6w5uHTNNWbd4xrBwSg190YC+
+         qY9zVQtj18o/NTCY0jLPY85TF3yzf+XJO0Elce1b+V1heD0cWT4ysV67/1xCV8TU+2
+         5rTXQRQdJ4AtPATChiiDib8i2siED0BdVw4mVnKHzVdlF001F7tVA0twPF3TzhVMfX
+         hkyvfIM3+cp1smEMdMkdVj5LR7+sVunPEGagcRiTLsB/E7je3yWVONTlMyGV1oSzlf
+         GM/XRLeNlsAeZlHDlOyf91V1mmnhgBrzISaxJyW3Tx+XjXdbkk7DSE759UZxiwIs0f
+         zhMWWNLlKKXNQ==
+From:   Nicolas Dufresne <nicolas.dufresne@collabora.com>
+To:     Mauro Carvalho Chehab <mchehab@kernel.org>
+Cc:     kernel@collabora.com, linux-kernel@vger.kernel.org,
+        Sebastian Fricke <sebastian.fricke@collabora.com>,
+        Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>,
+        linux-media@vger.kernel.org
+Subject: [PATCH v3 02/24] media: v4l2-mem2mem: Trace on implicit un-hold
+Date:   Tue,  5 Apr 2022 16:44:03 -0400
+Message-Id: <20220405204426.259074-3-nicolas.dufresne@collabora.com>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220405204426.259074-1-nicolas.dufresne@collabora.com>
+References: <20220405204426.259074-1-nicolas.dufresne@collabora.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220325223824.310119-5-zohar@linux.ibm.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-> The IMA policy defines "which" files are to be measured, verified, and/or
-> audited.  For those files being verified, the policy rules indicate "how"
-> the file should be verified.  For example to require a file be signed,
-> the appraise policy rule must include the 'appraise_type' option.
-> 
-> 	appraise_type:= [imasig] | [imasig|modsig] | [sigv3]
->            where 'imasig' is the original or v2 signature (default),
->            where 'modsig' is an appended signature,
->            where 'sigv3' is the signature v3 format.
-> 
-> The policy rule must also indicate the type of signature, if not the IMA
-> default, by specifying the digest type:
-> 
-> 	digest_type:= [verity]
+If the timestamp of the src buffer differs from the timestamp of a held
+dst buffer, the held buffer is implicitly removed and marked as done.
+Add a trace to help debugging if someone hits that case.
 
-I don't understand the above paragraph.  Should it say "type of digest" instead
-of "type of signature"?  And what does specifying the digest type do, exactly?
+Signed-off-by: Nicolas Dufresne <nicolas.dufresne@collabora.com>
+Reviewed-by: Sebastian Fricke <sebastian.fricke@collabora.com>
+Reviewed-by: Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>
+---
+ drivers/media/v4l2-core/v4l2-mem2mem.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-> diff --git a/Documentation/ABI/testing/ima_policy b/Documentation/ABI/testing/ima_policy
-> index 2e0c501ce9c8..acd17183ad8c 100644
-> --- a/Documentation/ABI/testing/ima_policy
-> +++ b/Documentation/ABI/testing/ima_policy
-> @@ -47,7 +47,11 @@ Description:
->  			fgroup:= decimal value
->  		  lsm:  are LSM specific
->  		  option:
-> -			appraise_type:= [imasig] [imasig|modsig]
-> +			appraise_type:= [imasig] | [imasig|modsig] | [sigv3]
-> +			    where 'imasig' is the original or v2 signature,
-> +			    where 'modsig' is an appended signature,
-> +			    where 'sigv3' is the IMA v3 signature.
-> +
+diff --git a/drivers/media/v4l2-core/v4l2-mem2mem.c b/drivers/media/v4l2-core/v4l2-mem2mem.c
+index 675e22895ebe..d1d29d6ab024 100644
+--- a/drivers/media/v4l2-core/v4l2-mem2mem.c
++++ b/drivers/media/v4l2-core/v4l2-mem2mem.c
+@@ -336,6 +336,7 @@ static void __v4l2_m2m_try_queue(struct v4l2_m2m_dev *m2m_dev,
+ 	if (src && dst && dst->is_held &&
+ 	    dst->vb2_buf.copied_timestamp &&
+ 	    dst->vb2_buf.timestamp != src->vb2_buf.timestamp) {
++		dprintk("Timestamp mismatch, returning held capture buffer\n");
+ 		dst->is_held = false;
+ 		v4l2_m2m_dst_buf_remove(m2m_ctx);
+ 		v4l2_m2m_buf_done(dst, VB2_BUF_STATE_DONE);
+-- 
+2.34.1
 
-The documentation should explain the differences between the different signature
-types, especially when a user would need to choose one or another.
-
-> +
-> +		Example of 'measure' and 'appraise' rules requiring fs-verity
-> +		signatures (version 3) stored in security.ima xattr.
-> +
-> +		The 'measure' rule specifies the 'ima-sigv2' template option,
-> +		which includes the indication of type of digest and the file
-> +		signature in the measurement list.
-> +
-> +			measure func=BPRM_CHECK digest_type=verity \
-> +				template=ima-sigv2
-
-This says it requires version 3 signatures, however it then uses "ima-sigv2".
-
-> @@ -183,13 +185,18 @@ enum hash_algo ima_get_hash_algo(const struct evm_ima_xattr_data *xattr_value,
->  		return ima_hash_algo;
->  
->  	switch (xattr_value->type) {
-> +	case IMA_VERITY_DIGSIG:
-> +		sig = (typeof(sig))xattr_value;
-> +		if (sig->version != 3 || xattr_len <= sizeof(*sig) ||
-> +		    sig->hash_algo >= HASH_ALGO__LAST)
-> +			return ima_hash_algo;
-> +		return sig->hash_algo;
-
-It looks like this is falling back to SHA-1 if the xattr is invalid:
-
-	int __ro_after_init ima_hash_algo = HASH_ALGO_SHA1;
-
-How about falling back to a more secure hash algorithm, or returning an error?
-
-> +/*
-> + * calc_file_id_hash - calculate the hash of the ima_file_id struct data
-> + * @type: xattr type [enum evm_ima_xattr_type]
-> + * @algo: hash algorithm [enum hash_algo]
-> + * @digest: pointer to the digest to be hashed
-> + * @hash: (out) pointer to the hash
-> + *
-> + * IMA signature version 3 disambiguates the data that is signed by
-> + * indirectly signing the hash of the ima_file_id structure data.
-> + *
-> + * Signing the ima_file_id struct is currently only supported for
-> + * IMA_VERITY_DIGSIG type xattrs.
-> + *
-> + * Return 0 on success, error code otherwise.
-> + */
-> +static int calc_file_id_hash(enum evm_ima_xattr_type type,
-> +			     enum hash_algo algo, const u8 *digest,
-> +			     struct ima_digest_data *hash)
-> +{
-> +	struct ima_file_id file_id = {
-> +		.hash_type = IMA_VERITY_DIGSIG, .hash_algorithm = algo};
-> +	uint unused = HASH_MAX_DIGESTSIZE - hash_digest_size[algo];
-
-'uint' is unusual in kernel code; please use 'unsigned int' instead.
-
-> @@ -1735,14 +1745,24 @@ static int ima_parse_rule(char *rule, struct ima_rule_entry *entry)
->  			break;
->  		case Opt_appraise_type:
->  			ima_log_string(ab, "appraise_type", args[0].from);
-> -			if ((strcmp(args[0].from, "imasig")) == 0)
-> +			if ((strcmp(args[0].from, "imasig")) == 0) {
->  				entry->flags |= IMA_DIGSIG_REQUIRED;
-> -			else if (IS_ENABLED(CONFIG_IMA_APPRAISE_MODSIG) &&
-> -				 strcmp(args[0].from, "imasig|modsig") == 0)
-> +			} else if (strcmp(args[0].from, "sigv3") == 0) {
-> +				/*
-> +				 * Only fsverity supports sigv3 for now.
-> +				 * No need to define a new flag.
-> +				 */
-> +				if (entry->flags & IMA_VERITY_REQUIRED)
-> +					entry->flags |= IMA_DIGSIG_REQUIRED;
-> +				else
-> +					result = -EINVAL;
-> +			} else if (IS_ENABLED(CONFIG_IMA_APPRAISE_MODSIG) &&
-> +				 strcmp(args[0].from, "imasig|modsig") == 0) {
->  				entry->flags |= IMA_DIGSIG_REQUIRED |
->  						IMA_MODSIG_ALLOWED;
-> -			else
-> +			} else {
->  				result = -EINVAL;
-> +			}
-
-This appears to be assuming that the appraise_type option is given after
-digest_type rather than befoore, as digest_type is what sets the
-IMA_VERITY_REQUIRED flag.  Is this intentional?  Does the order of options
-matter in IMA rules, and if so where are the ordering requirements documented?
-
-Also, it looks like this is allowing appraise_type=imasig or
-appraise_type=imasig|modsig in combination with digest_type=verity.  Is that
-intentional?  What is the use case for these combinations?
-
->  /*
-> - * signature format v2 - for using with asymmetric keys
-> + * signature header format v2 - for using with asymmetric keys
-> + *
-> + * signature format:
-> + * version 2: regular file data hash based signature
-> + * version 3: struct ima_file_id data based signature
->   */
->  struct signature_v2_hdr {
-
-Is this struct also used with version 3, despite having v2 in its name?
-The comment is not clear.
-
-- Eric
