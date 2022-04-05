@@ -2,95 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B420CC4167D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E40C9C35273
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:41:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1575924AbiDEXJo (ORCPT
+        id S1576011AbiDEXJ6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 19:09:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57646 "EHLO
+        Tue, 5 Apr 2022 19:09:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58496 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1449262AbiDEPtg (ORCPT
+        with ESMTP id S1358049AbiDEK15 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 11:49:36 -0400
-Received: from zju.edu.cn (mail.zju.edu.cn [61.164.42.155])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5A68D1AEC82
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 07:33:23 -0700 (PDT)
-Received: from ubuntu.localdomain (unknown [10.15.192.164])
-        by mail-app3 (Coremail) with SMTP id cC_KCgAHWsosU0xidy9rAQ--.61292S2;
-        Tue, 05 Apr 2022 22:33:20 +0800 (CST)
-From:   Duoming Zhou <duoming@zju.edu.cn>
+        Tue, 5 Apr 2022 06:27:57 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 856BD43ED4;
+        Tue,  5 Apr 2022 03:13:56 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9A9BF61562;
+        Tue,  5 Apr 2022 10:13:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AD0AEC385A1;
+        Tue,  5 Apr 2022 10:13:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649153635;
+        bh=vJX+VpH3VUk8KamOnmQF5yxlHAPiLnqdEl08cT2P28U=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=KIZufHkOP0nho5LKwzJjPRTg+WquDem13acCm59MmSDMPE7L4zXf1MccdF7ATS+1S
+         3e9V9Xot1SrkXjKu0nTK/yIjSc3+sYOQQsdTY6nHn+7zkJdfqb2sUyqSHJL/fplZ56
+         MYbrAik/cjkPaj/UuAEuIq4T765FOfMdDRmE8oUA=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
-Cc:     Duoming Zhou <duoming@zju.edu.cn>
-Subject: [PATCH] drivers: net: slip: fix NPD bug in sl_tx_timeout()
-Date:   Tue,  5 Apr 2022 22:33:16 +0800
-Message-Id: <20220405143316.56213-1-duoming@zju.edu.cn>
-X-Mailer: git-send-email 2.17.1
-X-CM-TRANSID: cC_KCgAHWsosU0xidy9rAQ--.61292S2
-X-Coremail-Antispam: 1UD129KBjvJXoW7tF15KF1rCr4UZw15WFyUWrg_yoW8Xry5pF
-        4jg3ZYkrWUGry2g3y8Ja1v9r4Fv348JryDGrW3K3ySyr1kJFZYqr1ftayq9FWxtFZFya42
-        vF1rA3y3Cr43AF7anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDU0xBIdaVrnRJUUUka1xkIjI8I6I8E6xAIw20EY4v20xvaj40_Wr0E3s1l1IIY67AE
-        w4v_Jr0_Jr4l8cAvFVAK0II2c7xJM28CjxkF64kEwVA0rcxSw2x7M28EF7xvwVC0I7IYx2
-        IY67AKxVWDJVCq3wA2z4x0Y4vE2Ix0cI8IcVCY1x0267AKxVW8Jr0_Cr1UM28EF7xvwVC2
-        z280aVAFwI0_GcCE3s1l84ACjcxK6I8E87Iv6xkF7I0E14v26rxl6s0DM2AIxVAIcxkEcV
-        Aq07x20xvEncxIr21l5I8CrVACY4xI64kE6c02F40Ex7xfMcIj6xIIjxv20xvE14v26r1j
-        6r18McIj6I8E87Iv67AKxVWUJVW8JwAm72CE4IkC6x0Yz7v_Jr0_Gr1lF7xvr2IYc2Ij64
-        vIr41lF7I21c0EjII2zVCS5cI20VAGYxC7MxAIw28IcxkI7VAKI48JMxAIw28IcVCjz48v
-        1sIEY20_GFWkJr1UJwCFx2IqxVCFs4IE7xkEbVWUJVW8JwC20s026c02F40E14v26r1j6r
-        18MI8I3I0E7480Y4vE14v26r106r1rMI8E67AF67kF1VAFwI0_Jrv_JF1lIxkGc2Ij64vI
-        r41lIxAIcVC0I7IYx2IY67AKxVWUJVWUCwCI42IY6xIIjxv20xvEc7CjxVAFwI0_Jr0_Gr
-        1lIxAIcVCF04k26cxKx2IYs7xG6r1j6r1xMIIF0xvEx4A2jsIE14v26r1j6r4UMIIF0xvE
-        x4A2jsIEc7CjxVAFwI0_Gr0_Gr1UYxBIdaVFxhVjvjDU0xZFpf9x0JUdHUDUUUUU=
-X-CM-SenderInfo: qssqjiasttq6lmxovvfxof0/1tbiAg4IAVZdtZAzNQAjsO
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        Christophe Leroy <christophe.leroy@csgroup.eu>,
+        Petr Mladek <pmladek@suse.com>,
+        Joe Lawrence <joe.lawrence@redhat.com>,
+        Miroslav Benes <mbenes@suse.cz>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 293/599] livepatch: Fix build failure on 32 bits processors
+Date:   Tue,  5 Apr 2022 09:29:47 +0200
+Message-Id: <20220405070307.552803423@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
+References: <20220405070258.802373272@linuxfoundation.org>
+User-Agent: quilt/0.66
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When a slip driver is detaching, the slip_close() will act to
-cleanup necessary resources and sl->tty is set to NULL in
-slip_close(). Meanwhile, the packet we transmit is blocked,
-sl_tx_timeout() will be called. Although slip_close() and
-sl_tx_timeout() use sl->lock to synchronize, we don`t judge
-whether sl->tty equals to NULL in sl_tx_timeout() and the
-null pointer dereference bug will happen.
+From: Christophe Leroy <christophe.leroy@csgroup.eu>
 
-   (Thread 1)                 |      (Thread 2)
-                              | slip_close()
-                              |   spin_lock_bh(&sl->lock)
-                              |   ...
-...                           |   sl->tty = NULL //(1)
-sl_tx_timeout()               |   spin_unlock_bh(&sl->lock)
-  spin_lock(&sl->lock);       |
-  ...                         |   ...
-  tty_chars_in_buffer(sl->tty)|
-    if (tty->ops->..) //(2)   |
-    ...                       |   synchronize_rcu()
+[ Upstream commit 2f293651eca3eacaeb56747dede31edace7329d2 ]
 
-We set NULL to sl->tty in position (1) and dereference sl->tty
-in position (2).
+Trying to build livepatch on powerpc/32 results in:
 
-This patch adds check in sl_tx_timeout(). If sl->tty equals to
-NULL, sl_tx_timeout() will goto out.
+	kernel/livepatch/core.c: In function 'klp_resolve_symbols':
+	kernel/livepatch/core.c:221:23: warning: cast to pointer from integer of different size [-Wint-to-pointer-cast]
+	  221 |                 sym = (Elf64_Sym *)sechdrs[symndx].sh_addr + ELF_R_SYM(relas[i].r_info);
+	      |                       ^
+	kernel/livepatch/core.c:221:21: error: assignment to 'Elf32_Sym *' {aka 'struct elf32_sym *'} from incompatible pointer type 'Elf64_Sym *' {aka 'struct elf64_sym *'} [-Werror=incompatible-pointer-types]
+	  221 |                 sym = (Elf64_Sym *)sechdrs[symndx].sh_addr + ELF_R_SYM(relas[i].r_info);
+	      |                     ^
+	kernel/livepatch/core.c: In function 'klp_apply_section_relocs':
+	kernel/livepatch/core.c:312:35: error: passing argument 1 of 'klp_resolve_symbols' from incompatible pointer type [-Werror=incompatible-pointer-types]
+	  312 |         ret = klp_resolve_symbols(sechdrs, strtab, symndx, sec, sec_objname);
+	      |                                   ^~~~~~~
+	      |                                   |
+	      |                                   Elf32_Shdr * {aka struct elf32_shdr *}
+	kernel/livepatch/core.c:193:44: note: expected 'Elf64_Shdr *' {aka 'struct elf64_shdr *'} but argument is of type 'Elf32_Shdr *' {aka 'struct elf32_shdr *'}
+	  193 | static int klp_resolve_symbols(Elf64_Shdr *sechdrs, const char *strtab,
+	      |                                ~~~~~~~~~~~~^~~~~~~
 
-Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
+Fix it by using the right types instead of forcing 64 bits types.
+
+Fixes: 7c8e2bdd5f0d ("livepatch: Apply vmlinux-specific KLP relocations early")
+Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
+Acked-by: Petr Mladek <pmladek@suse.com>
+Acked-by: Joe Lawrence <joe.lawrence@redhat.com>
+Acked-by: Miroslav Benes <mbenes@suse.cz>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/5288e11b018a762ea3351cc8fb2d4f15093a4457.1640017960.git.christophe.leroy@csgroup.eu
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/slip/slip.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ kernel/livepatch/core.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/slip/slip.c b/drivers/net/slip/slip.c
-index 88396ff99f0..6865d32270e 100644
---- a/drivers/net/slip/slip.c
-+++ b/drivers/net/slip/slip.c
-@@ -469,7 +469,7 @@ static void sl_tx_timeout(struct net_device *dev, unsigned int txqueue)
- 	spin_lock(&sl->lock);
+diff --git a/kernel/livepatch/core.c b/kernel/livepatch/core.c
+index f76fdb925532..e8bdce6fdd64 100644
+--- a/kernel/livepatch/core.c
++++ b/kernel/livepatch/core.c
+@@ -191,7 +191,7 @@ static int klp_find_object_symbol(const char *objname, const char *name,
+ 	return -EINVAL;
+ }
  
- 	if (netif_queue_stopped(dev)) {
--		if (!netif_running(dev))
-+		if (!netif_running(dev) || !sl->tty)
- 			goto out;
- 
- 		/* May be we must check transmitter timeout here ?
+-static int klp_resolve_symbols(Elf64_Shdr *sechdrs, const char *strtab,
++static int klp_resolve_symbols(Elf_Shdr *sechdrs, const char *strtab,
+ 			       unsigned int symndx, Elf_Shdr *relasec,
+ 			       const char *sec_objname)
+ {
+@@ -219,7 +219,7 @@ static int klp_resolve_symbols(Elf64_Shdr *sechdrs, const char *strtab,
+ 	relas = (Elf_Rela *) relasec->sh_addr;
+ 	/* For each rela in this klp relocation section */
+ 	for (i = 0; i < relasec->sh_size / sizeof(Elf_Rela); i++) {
+-		sym = (Elf64_Sym *)sechdrs[symndx].sh_addr + ELF_R_SYM(relas[i].r_info);
++		sym = (Elf_Sym *)sechdrs[symndx].sh_addr + ELF_R_SYM(relas[i].r_info);
+ 		if (sym->st_shndx != SHN_LIVEPATCH) {
+ 			pr_err("symbol %s is not marked as a livepatch symbol\n",
+ 			       strtab + sym->st_name);
 -- 
-2.17.1
+2.34.1
+
+
 
