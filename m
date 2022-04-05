@@ -2,121 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 32C7BC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 22:09:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E0A9DC47081
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 22:09:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1391844AbiDEWIq (ORCPT
+        id S1391725AbiDEWII (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 18:08:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39468 "EHLO
+        Tue, 5 Apr 2022 18:08:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51502 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243489AbiDEKhC (ORCPT
+        with ESMTP id S1457955AbiDERBh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:37:02 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 537B053E35;
-        Tue,  5 Apr 2022 03:22:04 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0920AB81B96;
-        Tue,  5 Apr 2022 10:22:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 54A2BC385A0;
-        Tue,  5 Apr 2022 10:22:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649154121;
-        bh=xm9x/FZCEUK/x/FQ/b38Amq5e9rRH5/BKJxWdvbog6E=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OQdMDUoCf7gNdNW2+bABiVG02LhiTQR9FgwgO0/PPb/4DeVVxhAMI4eRQKuOd7pzY
-         27z+OgbqyenRjiYQICXuqqDQ9buvi1e9bqJgxHjzKgqCGPlSVlVj8V2N4WxEctrqqa
-         tqmiYTmphPpJtlxNO03Crp8xlS79sl075XydikFc=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Darren Hart <darren@os.amperecomputing.com>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 465/599] ACPI/APEI: Limit printable size of BERT table data
-Date:   Tue,  5 Apr 2022 09:32:39 +0200
-Message-Id: <20220405070312.665406784@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 5 Apr 2022 13:01:37 -0400
+Received: from 7.mo575.mail-out.ovh.net (7.mo575.mail-out.ovh.net [46.105.63.230])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18D8678900
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 09:59:38 -0700 (PDT)
+Received: from player771.ha.ovh.net (unknown [10.108.20.113])
+        by mo575.mail-out.ovh.net (Postfix) with ESMTP id 5AA1A222DF
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 16:59:37 +0000 (UTC)
+Received: from sk2.org (82-65-25-201.subs.proxad.net [82.65.25.201])
+        (Authenticated sender: steve@sk2.org)
+        by player771.ha.ovh.net (Postfix) with ESMTPSA id 130DE293E36D4;
+        Tue,  5 Apr 2022 16:59:32 +0000 (UTC)
+Authentication-Results: garm.ovh; auth=pass (GARM-106R006684d1db8-587c-4aa8-aced-ea8bd21a0cfc,
+                    8AF55017BACD44284FC599BC4826E0280D36FCC4) smtp.auth=steve@sk2.org
+X-OVh-ClientIp: 82.65.25.201
+From:   Stephen Kitt <steve@sk2.org>
+To:     Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>
+Cc:     Wolfram Sang <wsa@kernel.org>, linux-kernel@vger.kernel.org,
+        Stephen Kitt <steve@sk2.org>
+Subject: [PATCH 04/14] ASoC: lm4857: use simple i2c probe function
+Date:   Tue,  5 Apr 2022 18:58:26 +0200
+Message-Id: <20220405165836.2165310-5-steve@sk2.org>
+X-Mailer: git-send-email 2.27.0
+In-Reply-To: <20220405165836.2165310-1-steve@sk2.org>
+References: <20220405165836.2165310-1-steve@sk2.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+X-Ovh-Tracer-Id: 8464796978746656390
+X-VR-SPAMSTATE: OK
+X-VR-SPAMSCORE: -100
+X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvvddrudejgedguddtgecutefuodetggdotefrodftvfcurfhrohhfihhlvgemucfqggfjpdevjffgvefmvefgnecuuegrihhlohhuthemucehtddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjughrpefhvffufffkofgjfhgggfestdekredtredttdenucfhrhhomhepufhtvghphhgvnhcumfhithhtuceoshhtvghvvgesshhkvddrohhrgheqnecuggftrfgrthhtvghrnhepjeelledvfeeiiedutdefveekgeeuheekkedvffegvdehudegkefgjeejkefgueegnecukfhppedtrddtrddtrddtpdekvddrieehrddvhedrvddtudenucevlhhushhtvghrufhiiigvpedunecurfgrrhgrmhepmhhouggvpehsmhhtphhouhhtpdhhvghlohepphhlrgihvghrjeejuddrhhgrrdhovhhhrdhnvghtpdhinhgvtheptddrtddrtddrtddpmhgrihhlfhhrohhmpehsthgvvhgvsehskhdvrdhorhhgpdhnsggprhgtphhtthhopedupdhrtghpthhtoheplhhinhhugidqkhgvrhhnvghlsehvghgvrhdrkhgvrhhnvghlrdhorhhg
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Darren Hart <darren@os.amperecomputing.com>
+The i2c probe functions here don't use the id information provided in
+their second argument, so the single-parameter i2c probe function
+("probe_new") can be used instead.
 
-[ Upstream commit 3f8dec116210ca649163574ed5f8df1e3b837d07 ]
+This avoids scanning the identifier tables during probes.
 
-Platforms with large BERT table data can trigger soft lockup errors
-while attempting to print the entire BERT table data to the console at
-boot:
-
-  watchdog: BUG: soft lockup - CPU#160 stuck for 23s! [swapper/0:1]
-
-Observed on Ampere Altra systems with a single BERT record of ~250KB.
-
-The original bert driver appears to have assumed relatively small table
-data. Since it is impractical to reassemble large table data from
-interwoven console messages, and the table data is available in
-
-  /sys/firmware/acpi/tables/data/BERT
-
-limit the size for tables printed to the console to 1024 (for no reason
-other than it seemed like a good place to kick off the discussion, would
-appreciate feedback from existing users in terms of what size would
-maintain their current usage model).
-
-Alternatively, we could make printing a CONFIG option, use the
-bert_disable boot arg (or something similar), or use a debug log level.
-However, all those solutions require extra steps or change the existing
-behavior for small table data. Limiting the size preserves existing
-behavior on existing platforms with small table data, and eliminates the
-soft lockups for platforms with large table data, while still making it
-available.
-
-Signed-off-by: Darren Hart <darren@os.amperecomputing.com>
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Stephen Kitt <steve@sk2.org>
 ---
- drivers/acpi/apei/bert.c | 8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+ sound/soc/codecs/lm4857.c | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/acpi/apei/bert.c b/drivers/acpi/apei/bert.c
-index 86211422f4ee..598fd19b65fa 100644
---- a/drivers/acpi/apei/bert.c
-+++ b/drivers/acpi/apei/bert.c
-@@ -29,6 +29,7 @@
+diff --git a/sound/soc/codecs/lm4857.c b/sound/soc/codecs/lm4857.c
+index 300b325e2fdd..dba161305de8 100644
+--- a/sound/soc/codecs/lm4857.c
++++ b/sound/soc/codecs/lm4857.c
+@@ -115,8 +115,7 @@ static const struct regmap_config lm4857_regmap_config = {
+ 	.num_reg_defaults = ARRAY_SIZE(lm4857_default_regs),
+ };
  
- #undef pr_fmt
- #define pr_fmt(fmt) "BERT: " fmt
-+#define ACPI_BERT_PRINT_MAX_LEN 1024
+-static int lm4857_i2c_probe(struct i2c_client *i2c,
+-			    const struct i2c_device_id *id)
++static int lm4857_i2c_probe(struct i2c_client *i2c)
+ {
+ 	struct regmap *regmap;
  
- static int bert_disable;
+@@ -138,7 +137,7 @@ static struct i2c_driver lm4857_i2c_driver = {
+ 	.driver = {
+ 		.name = "lm4857",
+ 	},
+-	.probe = lm4857_i2c_probe,
++	.probe_new = lm4857_i2c_probe,
+ 	.id_table = lm4857_i2c_id,
+ };
  
-@@ -58,8 +59,11 @@ static void __init bert_print_all(struct acpi_bert_region *region,
- 		}
- 
- 		pr_info_once("Error records from previous boot:\n");
--
--		cper_estatus_print(KERN_INFO HW_ERR, estatus);
-+		if (region_len < ACPI_BERT_PRINT_MAX_LEN)
-+			cper_estatus_print(KERN_INFO HW_ERR, estatus);
-+		else
-+			pr_info_once("Max print length exceeded, table data is available at:\n"
-+				     "/sys/firmware/acpi/tables/data/BERT");
- 
- 		/*
- 		 * Because the boot error source is "one-time polled" type,
 -- 
-2.34.1
-
-
+2.27.0
 
