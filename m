@@ -2,75 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 566DDC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 22:03:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B22FC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 22:04:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1390007AbiDEWC7 (ORCPT
+        id S1390046AbiDEWDF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 18:02:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55752 "EHLO
+        Tue, 5 Apr 2022 18:03:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56024 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1573490AbiDETL6 (ORCPT
+        with ESMTP id S1455041AbiDEP7d (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 15:11:58 -0400
-Received: from mail-oa1-x35.google.com (mail-oa1-x35.google.com [IPv6:2001:4860:4864:20::35])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F4005E885A
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 12:09:59 -0700 (PDT)
-Received: by mail-oa1-x35.google.com with SMTP id 586e51a60fabf-e2442907a1so40467fac.8
-        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 12:09:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:in-reply-to:references:from:user-agent:date:message-id
-         :subject:to:cc;
-        bh=sPMX429tI6hHm9JGLP4wtiS6WntCuwJ+oSIEAlhqQq4=;
-        b=HCOU4BHcfRd3p8bxiwuoftAjfLn3RfhjTUIBIg9b7YM/jJMdwkTSrJ84CkHkpB0v1s
-         uE0tKJ2IxoARUznnTrCPNS6G4Iie2aoFAv6s45x+yIC3tD6iE2p1vtqlk2PPQiZVzAJi
-         ANFvSL+vd5g/wFrh40eK3FIuUvVdZ5e0iNHLM=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:in-reply-to:references:from
-         :user-agent:date:message-id:subject:to:cc;
-        bh=sPMX429tI6hHm9JGLP4wtiS6WntCuwJ+oSIEAlhqQq4=;
-        b=4NdTDUvDNlBGkynrOe5Qq+PYXG9MFSMEc8oaiBXb8Xm0o/0iguYIfOm8GdZhnKfeB6
-         T0Vc+S9rVUtEfafZ9iFTxZziVVErS927sA8UoH6vV63FI77T07V5iyPYjftXeya1fcOm
-         tJ55iRQggJvuvkwzfLGgAcKWo6BJCnviq0GbwUYCVSCpEgK04wY8JRcB1DpNc+LwjX93
-         hamju0y+F3PNyUFSyM59VEBa+adR4+GORCqIwivE49i+fJ+ngv1PXkZcEuMT0AqvCJQG
-         uACnkKGhmwoWwZORq1iw61qMxp4yHkqRX/yCoJLW1HyWpbWjZ6sEowxTW//hdT4htAOt
-         Ve8Q==
-X-Gm-Message-State: AOAM5315psYQtjfb75CUaZOhScOCHoxQYEFGLI+SyyFqh7VxLftciVX/
-        BxSuLChJgFGrdPG89jnSwlVlRdQhOILYBhC0LLPHng==
-X-Google-Smtp-Source: ABdhPJxWEM7cBY41biQ2dGgAM1IQu7FyI39398w6FDLRT0cr5Eg7iPiQ04BRqK9rPG53e/kqf3JThjvF++uVHzzoPcI=
-X-Received: by 2002:a05:6870:558e:b0:e1:db7c:26aa with SMTP id
- n14-20020a056870558e00b000e1db7c26aamr2272235oao.63.1649185799403; Tue, 05
- Apr 2022 12:09:59 -0700 (PDT)
-Received: from 753933720722 named unknown by gmailapi.google.com with
- HTTPREST; Tue, 5 Apr 2022 14:09:59 -0500
-MIME-Version: 1.0
-In-Reply-To: <1649166633-25872-5-git-send-email-quic_c_skakit@quicinc.com>
-References: <1649166633-25872-1-git-send-email-quic_c_skakit@quicinc.com> <1649166633-25872-5-git-send-email-quic_c_skakit@quicinc.com>
-From:   Stephen Boyd <swboyd@chromium.org>
-User-Agent: alot/0.10
-Date:   Tue, 5 Apr 2022 14:09:59 -0500
-Message-ID: <CAE-0n53tXnOw_hRD-O9juAbJ1FDcEOx1rHqGijZs8fuanqMNfg@mail.gmail.com>
-Subject: Re: [PATCH V9 4/6] regulator: Add a regulator driver for the PM8008 PMIC
-To:     Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Tue, 5 Apr 2022 11:59:33 -0400
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D0AE1DF879;
+        Tue,  5 Apr 2022 08:08:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649171321; x=1680707321;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=AeNd77QICNkAN7eq+CSDcjKHvEE427NmCwyTIIhpM+I=;
+  b=YEaENLh7oWkCsnQpJGMx3sg55wdzwfV9SETKMHuGmqZonJWboqoJdiHL
+   D/DLncZ4DRfLrbApLxuefSRu1kpWiKEaWJsuG2J84cp+MZNC/QXQrSd61
+   kpSF0aN1V/VxrkmxHXudLvBRlyrkAZ8RVWUWTG1doDcrmnt1af260tNiM
+   ikXkgdP1tk2myivyplvTlJfxCnQV2BItC5YMn36L0eDCFEly7mpMSBiId
+   6vTHUzsUL10YviPuBOpo2F2OFcTAjvStEw1wvUYnbHYHB0lwhpGCv6W3I
+   MHm5cYsch0LlPlQEs9t8YVJpJWtR7xtFWM/P5kC2Cw6HtW32FYozAcuWh
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10307"; a="260947639"
+X-IronPort-AV: E=Sophos;i="5.90,236,1643702400"; 
+   d="scan'208";a="260947639"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2022 08:08:16 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,236,1643702400"; 
+   d="scan'208";a="587959371"
+Received: from lkp-server02.sh.intel.com (HELO a44fdfb70b94) ([10.239.97.151])
+  by orsmga001.jf.intel.com with ESMTP; 05 Apr 2022 08:08:12 -0700
+Received: from kbuild by a44fdfb70b94 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nbkmx-0003SB-JR;
+        Tue, 05 Apr 2022 15:08:11 +0000
+Date:   Tue, 5 Apr 2022 23:07:17 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Manoj Sai <abbaraju.manojsai@amarulasolutions.com>,
         Rob Herring <robh+dt@kernel.org>,
-        Satya Priya <quic_c_skakit@quicinc.com>
-Cc:     Lee Jones <lee.jones@linaro.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>, linux-arm-msm@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        quic_collinsd@quicinc.com, quic_subbaram@quicinc.com,
-        quic_jprakash@quicinc.com
-Content-Type: text/plain; charset="UTF-8"
+        Shawn Guo <shawnguo@kernel.org>, Li Yang <leoyang.li@nxp.com>,
+        Fabio Estevam <festevam@gmail.com>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        Matteo Lisi <matteo.lisi@engicam.com>
+Cc:     kbuild-all@lists.01.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        NXP Linux Team <linux-imx@nxp.com>,
+        linux-amarula@amarulasolutions.com,
+        Jagan Teki <jagan@amarulasolutions.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Suniel Mahesh <sunil@amarulasolutions.com>,
+        Michael Nazzareno Trimarchi <michael@amarulasolutions.com>,
+        Manoj Sai <abbaraju.manojsai@amarulasolutions.com>
+Subject: Re: [PATCH 3/3] arm64: dts: imx8mp: Add Engicam i.Core MX8M Plus
+ EDIMM2.2 Starter Kit
+Message-ID: <202204052339.ieCONM1Z-lkp@intel.com>
+References: <20220330191437.614065-4-abbaraju.manojsai@amarulasolutions.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220330191437.614065-4-abbaraju.manojsai@amarulasolutions.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Quoting Satya Priya (2022-04-05 06:50:31)
-> +
-> +static struct platform_driver pm8008_regulator_driver = {
-> +       .driver = {
-> +               .name           = "qcom,pm8008-regulators",
+Hi Manoj,
 
-Also, the name should be something like pm8008_regulators
+Thank you for the patch! Yet something to improve:
+
+[auto build test ERROR on robh/for-next]
+[also build test ERROR on shawnguo/for-next krzk/for-next v5.18-rc1 next-20220405]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch]
+
+url:    https://github.com/intel-lab-lkp/linux/commits/Manoj-Sai/add-support-for-engicam-icore-mx8m-plus-and-edimm2-2-starter-kit/20220331-031909
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/robh/linux.git for-next
+config: arm64-randconfig-r003-20220405 (https://download.01.org/0day-ci/archive/20220405/202204052339.ieCONM1Z-lkp@intel.com/config)
+compiler: aarch64-linux-gcc (GCC) 11.2.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/intel-lab-lkp/linux/commit/31bd60a72a241149df3e4fcb8f1055d2d0269335
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Manoj-Sai/add-support-for-engicam-icore-mx8m-plus-and-edimm2-2-starter-kit/20220331-031909
+        git checkout 31bd60a72a241149df3e4fcb8f1055d2d0269335
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=arm64 SHELL=/bin/bash
+
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
+
+All errors (new ones prefixed by >>):
+
+   also defined at arch/arm64/boot/dts/freescale/imx8mp-icore-mx8mp-edimm2.2.dts:169.9-176.3
+>> ERROR: Input tree has errors, aborting (use -f to force output)
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
