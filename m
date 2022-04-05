@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 38BF7C38162
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BA6FFC38A04
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:56:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380282AbiDEMxo (ORCPT
+        id S1380601AbiDEMyA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 08:53:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58194 "EHLO
+        Tue, 5 Apr 2022 08:54:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33358 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343739AbiDEJMm (ORCPT
+        with ESMTP id S1343809AbiDEJOQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:12:42 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A322636693;
-        Tue,  5 Apr 2022 02:00:24 -0700 (PDT)
+        Tue, 5 Apr 2022 05:14:16 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6C0F40E65;
+        Tue,  5 Apr 2022 02:00:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4EF00B818F3;
-        Tue,  5 Apr 2022 09:00:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BC148C385A0;
-        Tue,  5 Apr 2022 09:00:21 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4DF5A61003;
+        Tue,  5 Apr 2022 09:00:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5B921C385A1;
+        Tue,  5 Apr 2022 09:00:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649149222;
-        bh=2xrrqqAmurLYBbNH7gEODCEGzcqKSrwq1J93E5yRers=;
+        s=korg; t=1649149241;
+        bh=eGTpxXH09wxPDurXHU6C89R4dTMpZZ0TsDKQfzO4kZw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hbquNh/X0cuSG1GuBo4SB0L8bCCt4IM1i6DWZLoi/13O6YxSW3IKcc0GigcvAO6np
-         OvjGEJbHR9uMtZx0IIZA2uTnzAO2Yuy4oJcyq9NnbNvuZZjIzI81XVExWGiw6htcpU
-         ec1LacT4TuNJgLm6gXjkerOkDG3AYLyNFgaCqqUo=
+        b=cYVRaRJ+GoseclZ1QxXYfsitnHxtY5OAZy/1Gbca3yvhKoER0b+K3EB/wy20J+WYk
+         1yq212BkGMDsIaGtHCl7SoNboaHhU00J4b0mklzvtxW9UwBrta60vOs5LUV6C+UC+n
+         cFjIJ5ry2/J8X34rq6N2iARm28y73sgY1Pe1FJcU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jan Sondhauss <jan.sondhauss@wago.com>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Jakub Kicinski <kuba@kernel.org>,
+        stable@vger.kernel.org, Joel Stanley <joel@jms.id.au>,
+        Eddie James <eajames@linux.ibm.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0639/1017] drivers: ethernet: cpsw: fix panic when interrupt coaleceing is set via ethtool
-Date:   Tue,  5 Apr 2022 09:25:52 +0200
-Message-Id: <20220405070413.250573972@linuxfoundation.org>
+Subject: [PATCH 5.16 0646/1017] fsi: scom: Remove retries in indirect scoms
+Date:   Tue,  5 Apr 2022 09:25:59 +0200
+Message-Id: <20220405070413.458899590@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -51,52 +50,112 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sondhauß, Jan <Jan.Sondhauss@wago.com>
+From: Joel Stanley <joel@jms.id.au>
 
-[ Upstream commit 2844e2434385819f674d1fb4130c308c50ba681e ]
+[ Upstream commit ab1b79159ad5a6dc4e4994b49737f7feb13b7155 ]
 
-cpsw_ethtool_begin directly returns the result of pm_runtime_get_sync
-when successful.
-pm_runtime_get_sync returns -error code on failure and 0 on successful
-resume but also 1 when the device is already active. So the common case
-for cpsw_ethtool_begin is to return 1. That leads to inconsistent calls
-to pm_runtime_put in the call-chain so that pm_runtime_put is called
-one too many times and as result leaving the cpsw dev behind suspended.
+In commit f72ddbe1d7b7 ("fsi: scom: Remove retries") the retries were
+removed from get and put scoms. That patch missed the retires in get and
+put indirect scom.
 
-The suspended cpsw dev leads to an access violation later on by
-different parts of the cpsw driver.
+For the same reason, remove them from the scom driver to allow the
+caller to decide to retry.
 
-Fix this by calling the return-friendly pm_runtime_resume_and_get
-function.
+This removes the following special case which would have caused the
+retry code to return early:
 
-Fixes: d43c65b05b84 ("ethtool: runtime-resume netdev parent in ethnl_ops_begin")
-Signed-off-by: Jan Sondhauss <jan.sondhauss@wago.com>
-Reviewed-by: Vignesh Raghavendra <vigneshr@ti.com>
-Link: https://lore.kernel.org/r/20220323084725.65864-1-jan.sondhauss@wago.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+ -       if ((ind_data & XSCOM_DATA_IND_COMPLETE) || (err != SCOM_PIB_BLOCKED))
+ -               return 0;
+
+I believe this case is handled.
+
+Fixes: f72ddbe1d7b7 ("fsi: scom: Remove retries")
+Signed-off-by: Joel Stanley <joel@jms.id.au>
+Reviewed-by: Eddie James <eajames@linux.ibm.com>
+Link: https://lore.kernel.org/r/20211207033811.518981-3-joel@jms.id.au
+Signed-off-by: Joel Stanley <joel@jms.id.au>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/ti/cpsw_ethtool.c | 6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
+ drivers/fsi/fsi-scom.c | 41 +++++++++++++++--------------------------
+ 1 file changed, 15 insertions(+), 26 deletions(-)
 
-diff --git a/drivers/net/ethernet/ti/cpsw_ethtool.c b/drivers/net/ethernet/ti/cpsw_ethtool.c
-index 158c8d3793f4..b5bae6324970 100644
---- a/drivers/net/ethernet/ti/cpsw_ethtool.c
-+++ b/drivers/net/ethernet/ti/cpsw_ethtool.c
-@@ -364,11 +364,9 @@ int cpsw_ethtool_op_begin(struct net_device *ndev)
- 	struct cpsw_common *cpsw = priv->cpsw;
- 	int ret;
+diff --git a/drivers/fsi/fsi-scom.c b/drivers/fsi/fsi-scom.c
+index 3b427f7e9027..bcb756dc9866 100644
+--- a/drivers/fsi/fsi-scom.c
++++ b/drivers/fsi/fsi-scom.c
+@@ -145,7 +145,7 @@ static int put_indirect_scom_form0(struct scom_device *scom, uint64_t value,
+ 				   uint64_t addr, uint32_t *status)
+ {
+ 	uint64_t ind_data, ind_addr;
+-	int rc, retries, err = 0;
++	int rc, err;
  
--	ret = pm_runtime_get_sync(cpsw->dev);
--	if (ret < 0) {
-+	ret = pm_runtime_resume_and_get(cpsw->dev);
-+	if (ret < 0)
- 		cpsw_err(priv, drv, "ethtool begin failed %d\n", ret);
--		pm_runtime_put_noidle(cpsw->dev);
+ 	if (value & ~XSCOM_DATA_IND_DATA)
+ 		return -EINVAL;
+@@ -156,19 +156,14 @@ static int put_indirect_scom_form0(struct scom_device *scom, uint64_t value,
+ 	if (rc || (*status & SCOM_STATUS_ANY_ERR))
+ 		return rc;
+ 
+-	for (retries = 0; retries < SCOM_MAX_IND_RETRIES; retries++) {
+-		rc = __get_scom(scom, &ind_data, addr, status);
+-		if (rc || (*status & SCOM_STATUS_ANY_ERR))
+-			return rc;
++	rc = __get_scom(scom, &ind_data, addr, status);
++	if (rc || (*status & SCOM_STATUS_ANY_ERR))
++		return rc;
+ 
+-		err = (ind_data & XSCOM_DATA_IND_ERR_MASK) >> XSCOM_DATA_IND_ERR_SHIFT;
+-		*status = err << SCOM_STATUS_PIB_RESP_SHIFT;
+-		if ((ind_data & XSCOM_DATA_IND_COMPLETE) || (err != SCOM_PIB_BLOCKED))
+-			return 0;
++	err = (ind_data & XSCOM_DATA_IND_ERR_MASK) >> XSCOM_DATA_IND_ERR_SHIFT;
++	*status = err << SCOM_STATUS_PIB_RESP_SHIFT;
+ 
+-		msleep(1);
 -	}
- 
- 	return ret;
+-	return rc;
++	return 0;
  }
+ 
+ static int put_indirect_scom_form1(struct scom_device *scom, uint64_t value,
+@@ -188,7 +183,7 @@ static int get_indirect_scom_form0(struct scom_device *scom, uint64_t *value,
+ 				   uint64_t addr, uint32_t *status)
+ {
+ 	uint64_t ind_data, ind_addr;
+-	int rc, retries, err = 0;
++	int rc, err;
+ 
+ 	ind_addr = addr & XSCOM_ADDR_DIRECT_PART;
+ 	ind_data = (addr & XSCOM_ADDR_INDIRECT_PART) | XSCOM_DATA_IND_READ;
+@@ -196,21 +191,15 @@ static int get_indirect_scom_form0(struct scom_device *scom, uint64_t *value,
+ 	if (rc || (*status & SCOM_STATUS_ANY_ERR))
+ 		return rc;
+ 
+-	for (retries = 0; retries < SCOM_MAX_IND_RETRIES; retries++) {
+-		rc = __get_scom(scom, &ind_data, addr, status);
+-		if (rc || (*status & SCOM_STATUS_ANY_ERR))
+-			return rc;
+-
+-		err = (ind_data & XSCOM_DATA_IND_ERR_MASK) >> XSCOM_DATA_IND_ERR_SHIFT;
+-		*status = err << SCOM_STATUS_PIB_RESP_SHIFT;
+-		*value = ind_data & XSCOM_DATA_IND_DATA;
++	rc = __get_scom(scom, &ind_data, addr, status);
++	if (rc || (*status & SCOM_STATUS_ANY_ERR))
++		return rc;
+ 
+-		if ((ind_data & XSCOM_DATA_IND_COMPLETE) || (err != SCOM_PIB_BLOCKED))
+-			return 0;
++	err = (ind_data & XSCOM_DATA_IND_ERR_MASK) >> XSCOM_DATA_IND_ERR_SHIFT;
++	*status = err << SCOM_STATUS_PIB_RESP_SHIFT;
++	*value = ind_data & XSCOM_DATA_IND_DATA;
+ 
+-		msleep(1);
+-	}
+-	return rc;
++	return 0;
+ }
+ 
+ static int raw_put_scom(struct scom_device *scom, uint64_t value,
 -- 
 2.34.1
 
