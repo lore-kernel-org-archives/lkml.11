@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1EC9AC47089
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:21:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 95331C3527E
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:21:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239846AbiDEIVH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 04:21:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43932 "EHLO
+        id S237630AbiDEISJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 04:18:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43950 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235633AbiDEH74 (ORCPT
+        with ESMTP id S235624AbiDEH7x (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 03:59:56 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF6841AF1B;
-        Tue,  5 Apr 2022 00:56:33 -0700 (PDT)
+        Tue, 5 Apr 2022 03:59:53 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B62BA642C;
+        Tue,  5 Apr 2022 00:56:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9B517B81B18;
-        Tue,  5 Apr 2022 07:56:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DF1AEC340EE;
-        Tue,  5 Apr 2022 07:56:30 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 515736179A;
+        Tue,  5 Apr 2022 07:56:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5FBBDC340EE;
+        Tue,  5 Apr 2022 07:56:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649145391;
-        bh=arK/Jdx6Jya54jloe0rN7JBuzPaeDIP9HfZ2GK9PVNg=;
+        s=korg; t=1649145382;
+        bh=TUKxNNvhBlzZY1A9EPC3C6qsVhspfXYFcLCwTCMQ0j0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qx/E1JVrZ42YgazBO1J7fKevAowx5vgudt8gH3MP1M1VxMpEEpGlyFrjJD/AF1OGy
-         ACVXEL+sho1T+/BhZeYHGlpTIHqyl6VseothFnUf0o1+bp/DTXlr7Gtq+CuOd3tmXA
-         TdTd2YBpjVx66/MaCSIR0OLIGf3ndg7DWVZlTv/8=
+        b=mlRIDIEhW/iAtpHkToEC/rVEpVqon2PhrsT2hJLpcDf69+CwvrsvIa2dt1WcQVo7r
+         +iYKPrinL07Zvc/SA+rbHHtqj7X6I+qf2HH+g3pFt/WOqi07VfMJVBKedvd7YabiBc
+         QggismvZYRFMa2vfE8bsZfhfqfplfHxHyUdOkDe4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Nishanth Menon <nm@ti.com>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0340/1126] firmware: ti_sci: Fix compilation failure when CONFIG_TI_SCI_PROTOCOL is not defined
-Date:   Tue,  5 Apr 2022 09:18:07 +0200
-Message-Id: <20220405070417.595774113@linuxfoundation.org>
+        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 0347/1126] ARM: dts: qcom: sdx55: Fix the address used for PCIe EP local addr space
+Date:   Tue,  5 Apr 2022 09:18:14 +0200
+Message-Id: <20220405070417.814547657@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -49,34 +50,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+From: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
 
-[ Upstream commit 043cfff99a18933fda2fb2e163daee73cc07910b ]
+[ Upstream commit c8a8f755170719dde7964d5172a145dd27e107ec ]
 
-Remove an extra ";" which breaks compilation.
+Fix the address range used for mapping the PCIe host memory in the DDR.
 
-Fixes: 53bf2b0e4e4c ("firmware: ti_sci: Add support for getting resource with subtype")
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Signed-off-by: Nishanth Menon <nm@ti.com>
-Link: https://lore.kernel.org/r/e6c3cb793e1a6a2a0ae2528d5a5650dfe6a4b6ff.1640276505.git.christophe.jaillet@wanadoo.fr
+Fixes: e6b69813283f ("ARM: dts: qcom: sdx55: Add support for PCIe EP")
+Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Link: https://lore.kernel.org/r/20220208175222.415762-1-manivannan.sadhasivam@linaro.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/linux/soc/ti/ti_sci_protocol.h | 2 +-
+ arch/arm/boot/dts/qcom-sdx55.dtsi | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/include/linux/soc/ti/ti_sci_protocol.h b/include/linux/soc/ti/ti_sci_protocol.h
-index 0aad7009b50e..bd0d11af76c5 100644
---- a/include/linux/soc/ti/ti_sci_protocol.h
-+++ b/include/linux/soc/ti/ti_sci_protocol.h
-@@ -645,7 +645,7 @@ devm_ti_sci_get_of_resource(const struct ti_sci_handle *handle,
- 
- static inline struct ti_sci_resource *
- devm_ti_sci_get_resource(const struct ti_sci_handle *handle, struct device *dev,
--			 u32 dev_id, u32 sub_type);
-+			 u32 dev_id, u32 sub_type)
- {
- 	return ERR_PTR(-EINVAL);
- }
+diff --git a/arch/arm/boot/dts/qcom-sdx55.dtsi b/arch/arm/boot/dts/qcom-sdx55.dtsi
+index 8ac0492c7659..40f11159f061 100644
+--- a/arch/arm/boot/dts/qcom-sdx55.dtsi
++++ b/arch/arm/boot/dts/qcom-sdx55.dtsi
+@@ -413,7 +413,7 @@
+ 			      <0x40000000 0xf1d>,
+ 			      <0x40000f20 0xc8>,
+ 			      <0x40001000 0x1000>,
+-			      <0x40002000 0x10000>,
++			      <0x40200000 0x100000>,
+ 			      <0x01c03000 0x3000>;
+ 			reg-names = "parf", "dbi", "elbi", "atu", "addr_space",
+ 				    "mmio";
 -- 
 2.34.1
 
