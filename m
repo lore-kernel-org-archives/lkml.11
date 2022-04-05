@@ -2,66 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 226B2C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 12C59C433F5
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:22:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349570AbiDFAMl (ORCPT
+        id S1347858AbiDFAMV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 20:12:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53478 "EHLO
+        Tue, 5 Apr 2022 20:12:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48090 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1573460AbiDETLS (ORCPT
+        with ESMTP id S1348953AbiDEJst (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 15:11:18 -0400
-Received: from mail-pj1-f44.google.com (mail-pj1-f44.google.com [209.85.216.44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A1BB1EADB;
-        Tue,  5 Apr 2022 12:09:18 -0700 (PDT)
-Received: by mail-pj1-f44.google.com with SMTP id i10-20020a17090a2aca00b001ca56c9ab16so2443035pjg.1;
-        Tue, 05 Apr 2022 12:09:18 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=KqPdTTAkIPZEGxZKNABzyGtE0ndiZgNTYdvHB+Ojtik=;
-        b=CnLRwKfCCJtDdt0ElG2ODjhOu/eeHu0LM0XUyT8v4/gzgp1ZOcZ0WIqYOoqRZPxzhg
-         Wh2ZtmQeKZNmO49Fbu6Nu8h9YMycW7cnDKWhafqBSQ5drp+aotorHUas+IKmMxnNhphQ
-         ORDH4BqAnqFwUP3iRKc/wXCQRYLGcN9hhVlKPtxJi2ZNDhM+dIvY4C/VRSPi4wz0VQZq
-         6BWpc9h2UVomMgtU5jz1mvAiRSNgJjznOKnY6l3SrgThu/JeoByGuy7uBaYubP55vl9A
-         DcM6FyABqLtugmeXEeABNf3p/f7eWMl27uxw/87TtYi6Qth08BVuCe7As/Ga0EhoU/TW
-         sjZg==
-X-Gm-Message-State: AOAM531PjZK6EJs6R76AunwChAp22Iv2eo8JsL5Sj4aCiNUwF44JYwlw
-        GCAIhFObWsgbQyqxay0kdLs=
-X-Google-Smtp-Source: ABdhPJwhSNjuHo4h/4MK/MjyZC/rq8mAiS9T7IwWyWtBqMnrLhJ5JJt3LmMSYSZC3cqhWhcBP6faOw==
-X-Received: by 2002:a17:903:244b:b0:154:4104:4668 with SMTP id l11-20020a170903244b00b0015441044668mr4958750pls.30.1649185757702;
-        Tue, 05 Apr 2022 12:09:17 -0700 (PDT)
-Received: from ?IPV6:2601:647:4000:d7:feaa:14ff:fe9d:6dbd? ([2601:647:4000:d7:feaa:14ff:fe9d:6dbd])
-        by smtp.gmail.com with ESMTPSA id q6-20020a056a00150600b004fb2d266f97sm17149906pfu.115.2022.04.05.12.09.16
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 05 Apr 2022 12:09:16 -0700 (PDT)
-Message-ID: <ad7eb0c9-23b7-ac11-3de9-10393b9e526e@acm.org>
-Date:   Tue, 5 Apr 2022 12:09:15 -0700
+        Tue, 5 Apr 2022 05:48:49 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F38EA66C0;
+        Tue,  5 Apr 2022 02:38:09 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0838561577;
+        Tue,  5 Apr 2022 09:38:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 17ED5C385A0;
+        Tue,  5 Apr 2022 09:38:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649151488;
+        bh=I6VMpa5qO10NI83gO4a4CfkLjhd4lXYlFeykmMzwh50=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=rXm0ifKP2DSsgbnWZEj0KwTM7sm+eBYnKmIJN4Yud9y4s53GKGj63MPWDDM0N3u5G
+         MswFhJSci6IhPRIE5bhgbFCUX5MxXUsZ9+mLS2SWo3R7wnwy6iLgOZG5mONAyWN59d
+         Iha2AcFvn/8kePaQ5CIJuO0jeCgnJNTw66gDOTMU=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        Christophe Leroy <christophe.leroy@csgroup.eu>,
+        Petr Mladek <pmladek@suse.com>,
+        Joe Lawrence <joe.lawrence@redhat.com>,
+        Miroslav Benes <mbenes@suse.cz>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 433/913] livepatch: Fix build failure on 32 bits processors
+Date:   Tue,  5 Apr 2022 09:24:55 +0200
+Message-Id: <20220405070352.824515747@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH] scsi: sym53c500_cs: Stop using struct scsi_pointer
-Content-Language: en-US
-To:     Finn Thain <fthain@linux-m68k.org>,
-        "James E.J. Bottomley" <jejb@linux.ibm.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>
-Cc:     linux-scsi@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <4948f86703d23e5048f4e24e649680259b2610f9.1649146056.git.fthain@linux-m68k.org>
-From:   Bart Van Assche <bvanassche@acm.org>
-In-Reply-To: <4948f86703d23e5048f4e24e649680259b2610f9.1649146056.git.fthain@linux-m68k.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 4/5/22 01:07, Finn Thain wrote:
-> This driver doesn't use SCp.ptr to save a SCSI command data pointer which
-> means "scsi pointer" is a complete misnomer here. Only a few members of
-> struct scsi_pointer are needed so move those to private command data.
+From: Christophe Leroy <christophe.leroy@csgroup.eu>
 
-Reviewed-by: Bart Van Assche <bvanassche@acm.org>
+[ Upstream commit 2f293651eca3eacaeb56747dede31edace7329d2 ]
+
+Trying to build livepatch on powerpc/32 results in:
+
+	kernel/livepatch/core.c: In function 'klp_resolve_symbols':
+	kernel/livepatch/core.c:221:23: warning: cast to pointer from integer of different size [-Wint-to-pointer-cast]
+	  221 |                 sym = (Elf64_Sym *)sechdrs[symndx].sh_addr + ELF_R_SYM(relas[i].r_info);
+	      |                       ^
+	kernel/livepatch/core.c:221:21: error: assignment to 'Elf32_Sym *' {aka 'struct elf32_sym *'} from incompatible pointer type 'Elf64_Sym *' {aka 'struct elf64_sym *'} [-Werror=incompatible-pointer-types]
+	  221 |                 sym = (Elf64_Sym *)sechdrs[symndx].sh_addr + ELF_R_SYM(relas[i].r_info);
+	      |                     ^
+	kernel/livepatch/core.c: In function 'klp_apply_section_relocs':
+	kernel/livepatch/core.c:312:35: error: passing argument 1 of 'klp_resolve_symbols' from incompatible pointer type [-Werror=incompatible-pointer-types]
+	  312 |         ret = klp_resolve_symbols(sechdrs, strtab, symndx, sec, sec_objname);
+	      |                                   ^~~~~~~
+	      |                                   |
+	      |                                   Elf32_Shdr * {aka struct elf32_shdr *}
+	kernel/livepatch/core.c:193:44: note: expected 'Elf64_Shdr *' {aka 'struct elf64_shdr *'} but argument is of type 'Elf32_Shdr *' {aka 'struct elf32_shdr *'}
+	  193 | static int klp_resolve_symbols(Elf64_Shdr *sechdrs, const char *strtab,
+	      |                                ~~~~~~~~~~~~^~~~~~~
+
+Fix it by using the right types instead of forcing 64 bits types.
+
+Fixes: 7c8e2bdd5f0d ("livepatch: Apply vmlinux-specific KLP relocations early")
+Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
+Acked-by: Petr Mladek <pmladek@suse.com>
+Acked-by: Joe Lawrence <joe.lawrence@redhat.com>
+Acked-by: Miroslav Benes <mbenes@suse.cz>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/5288e11b018a762ea3351cc8fb2d4f15093a4457.1640017960.git.christophe.leroy@csgroup.eu
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ kernel/livepatch/core.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/kernel/livepatch/core.c b/kernel/livepatch/core.c
+index 335d988bd811..c0789383807b 100644
+--- a/kernel/livepatch/core.c
++++ b/kernel/livepatch/core.c
+@@ -190,7 +190,7 @@ static int klp_find_object_symbol(const char *objname, const char *name,
+ 	return -EINVAL;
+ }
+ 
+-static int klp_resolve_symbols(Elf64_Shdr *sechdrs, const char *strtab,
++static int klp_resolve_symbols(Elf_Shdr *sechdrs, const char *strtab,
+ 			       unsigned int symndx, Elf_Shdr *relasec,
+ 			       const char *sec_objname)
+ {
+@@ -218,7 +218,7 @@ static int klp_resolve_symbols(Elf64_Shdr *sechdrs, const char *strtab,
+ 	relas = (Elf_Rela *) relasec->sh_addr;
+ 	/* For each rela in this klp relocation section */
+ 	for (i = 0; i < relasec->sh_size / sizeof(Elf_Rela); i++) {
+-		sym = (Elf64_Sym *)sechdrs[symndx].sh_addr + ELF_R_SYM(relas[i].r_info);
++		sym = (Elf_Sym *)sechdrs[symndx].sh_addr + ELF_R_SYM(relas[i].r_info);
+ 		if (sym->st_shndx != SHN_LIVEPATCH) {
+ 			pr_err("symbol %s is not marked as a livepatch symbol\n",
+ 			       strtab + sym->st_name);
+-- 
+2.34.1
+
+
+
