@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 18590C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 07:43:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 39AC7C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 07:43:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231529AbiDEHpV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 03:45:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34262 "EHLO
+        id S232078AbiDEHp2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 03:45:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55378 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231979AbiDEHoJ (ORCPT
+        with ESMTP id S231486AbiDEHoI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 03:44:09 -0400
+        Tue, 5 Apr 2022 03:44:08 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 931B5931A7;
-        Tue,  5 Apr 2022 00:40:32 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 388B7939B1;
+        Tue,  5 Apr 2022 00:40:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2FFAD61607;
-        Tue,  5 Apr 2022 07:40:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 455E3C340EE;
-        Tue,  5 Apr 2022 07:40:31 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5BF3161682;
+        Tue,  5 Apr 2022 07:40:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6737DC340EE;
+        Tue,  5 Apr 2022 07:40:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649144431;
-        bh=8mb2t1vcLixCqqs5leqyvJaYwmzvz3X3Dz9GErrHCoM=;
+        s=korg; t=1649144428;
+        bh=nYF/5LlqJxR+dXjtyHU6EiTxJe3DQ65PTODezaKI2RE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hnlQnZEUgq92hs5p1qv9CqS5sYlZAimBRP9OcgujewoIYavzOQy8seRxlntyrVpKn
-         j+3NXkj1LAIiqbCdlzoEFnoDCau/0f0cGj1NRpI2SjkJ5DuBwXQM3Ms3Kgn/al5vo8
-         4yXYxdt5TJ9UfLRHrXso3WMuZ142qgJhYjdTyoTE=
+        b=m2y/eKiudXYRp4kHdvGBvEBFUFBYkZPA6jWJFZzW4/24PA79I0WPFc/ZcKkg9RP9m
+         CqXNJ+jfjkx5vEJNEMqaTZGjaMBs5CT1vybKza5JlguvP+EgLmA+oO7TK5F2UOptMl
+         jKEDqJ9hydXrHUGEKKORNUFeyD5m+H2Ctn80xlgE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Anssi Hannula <anssi.hannula@bitwise.fi>,
-        Mathias Nyman <mathias.nyman@linux.intel.com>
-Subject: [PATCH 5.17 0015/1126] xhci: fix garbage USBSTS being logged in some cases
-Date:   Tue,  5 Apr 2022 09:12:42 +0200
-Message-Id: <20220405070407.989114155@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Kunihiko Hayashi <hayashi.kunihiko@socionext.com>,
+        Stephen Boyd <sboyd@kernel.org>
+Subject: [PATCH 5.17 0041/1126] clk: uniphier: Fix fixed-rate initialization
+Date:   Tue,  5 Apr 2022 09:13:08 +0200
+Message-Id: <20220405070408.765008192@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -48,51 +49,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Anssi Hannula <anssi.hannula@bitwise.fi>
+From: Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
 
-commit 3105bc977d7cbf2edc35e24cc7e009686f6e4a56 upstream.
+commit ca85a66710a8a1f6b0719397225c3e9ee0abb692 upstream.
 
-xhci_decode_usbsts() is expected to return a zero-terminated string by
-its only caller, xhci_stop_endpoint_command_watchdog(), which directly
-logs the return value:
+Fixed-rate clocks in UniPhier don't have any parent clocks, however,
+initial data "init.flags" isn't initialized, so it might be determined
+that there is a parent clock for fixed-rate clock.
 
-  xhci_warn(xhci, "USBSTS:%s\n", xhci_decode_usbsts(str, usbsts));
+This sets init.flags to zero as initialization.
 
-However, if no recognized bits are set in usbsts, the function will
-return without having called any sprintf() and therefore return an
-untouched non-zero-terminated caller-provided buffer, causing garbage
-to be output to log.
-
-Fix that by always including the raw value in the output.
-
-Note that before commit 4843b4b5ec64 ("xhci: fix even more unsafe memory
-usage in xhci tracing") the result effect in the failure case was different
-as a static buffer was used here, but the code still worked incorrectly.
-
-Fixes: 9c1aa36efdae ("xhci: Show host status when watchdog triggers and host is assumed dead.")
-Cc: stable@vger.kernel.org
-Signed-off-by: Anssi Hannula <anssi.hannula@bitwise.fi>
-Signed-off-by: Mathias Nyman <mathias.nyman@linux.intel.com>
-Link: https://lore.kernel.org/r/20220303110903.1662404-3-mathias.nyman@linux.intel.com
+Cc: <stable@vger.kernel.org>
+Fixes: 734d82f4a678 ("clk: uniphier: add core support code for UniPhier clock driver")
+Signed-off-by: Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
+Link: https://lore.kernel.org/r/1646808918-30899-1-git-send-email-hayashi.kunihiko@socionext.com
+Signed-off-by: Stephen Boyd <sboyd@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/usb/host/xhci.h |    5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ drivers/clk/uniphier/clk-uniphier-fixed-rate.c |    1 +
+ 1 file changed, 1 insertion(+)
 
---- a/drivers/usb/host/xhci.h
-+++ b/drivers/usb/host/xhci.h
-@@ -2624,8 +2624,11 @@ static inline const char *xhci_decode_us
- {
- 	int ret = 0;
+--- a/drivers/clk/uniphier/clk-uniphier-fixed-rate.c
++++ b/drivers/clk/uniphier/clk-uniphier-fixed-rate.c
+@@ -24,6 +24,7 @@ struct clk_hw *uniphier_clk_register_fix
  
-+	ret = sprintf(str, " 0x%08x", usbsts);
-+
- 	if (usbsts == ~(u32)0)
--		return " 0xffffffff";
-+		return str;
-+
- 	if (usbsts & STS_HALT)
- 		ret += sprintf(str + ret, " HCHalted");
- 	if (usbsts & STS_FATAL)
+ 	init.name = name;
+ 	init.ops = &clk_fixed_rate_ops;
++	init.flags = 0;
+ 	init.parent_names = NULL;
+ 	init.num_parents = 0;
+ 
 
 
