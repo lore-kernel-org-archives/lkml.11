@@ -2,42 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9DCFAC433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E02AEC43217
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:18:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229806AbiDEW5A (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 18:57:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59198 "EHLO
+        id S1384117AbiDEW6V (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 18:58:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50790 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355855AbiDEKWK (ORCPT
+        with ESMTP id S1357795AbiDEK1O (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:22:10 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0905A5E99;
-        Tue,  5 Apr 2022 03:05:09 -0700 (PDT)
+        Tue, 5 Apr 2022 06:27:14 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA7293BA45;
+        Tue,  5 Apr 2022 03:10:46 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 029EDB81BC0;
-        Tue,  5 Apr 2022 10:05:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 47514C385A1;
-        Tue,  5 Apr 2022 10:05:06 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7EBE9B81C88;
+        Tue,  5 Apr 2022 10:10:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C6B36C385A1;
+        Tue,  5 Apr 2022 10:10:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649153106;
-        bh=WIur+IZSr4WUw7s7h6O+Yd9AzCOgKPc5ajD44zcjWiQ=;
+        s=korg; t=1649153444;
+        bh=DGfFICk0ZyhZyp7gehgdnGZsI2rdjdBF6ht5fhvYKxI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=wOYXBUt6/TgcyMpG/9m0FsB6UWaj57sIeySZ1nmVN1AVnZec87qOKMERNfGdSSPQf
-         hcyGfmzOGtPdjHz1M3h4taTpYZX9TvaffFiOWzsGw/HBi6kBPRs1jJjf+hElhTg7FI
-         +CK2Y+cMJqW/jK4HQpFqKIASF8ui3wFN72TWqJnM=
+        b=wlode+MLTbTKog4DX8NcPPjrzUdwINwHKj+2iffgYldxSYnje1pkWKZ/bPB5+uue/
+         xbfyZVg1zjJdAY6pSqzX7oonKczXrDPufQrcDJAIKtbkvGSoINNzBIPRwdRdxKffO6
+         sfhWIENZ92NTub7DGcyeKdqvd5N4kEhFDfwXg+8I=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Colin Ian King <colin.i.king@gmail.com>,
-        Stable@vger.kernel.org, Christian Lamparter <chunkeey@gmail.com>,
-        Kalle Valo <quic_kvalo@quicinc.com>
-Subject: [PATCH 5.10 104/599] carl9170: fix missing bit-wise or operator for tx_params
-Date:   Tue,  5 Apr 2022 09:26:38 +0200
-Message-Id: <20220405070301.928654551@linuxfoundation.org>
+        stable@vger.kernel.org, Kuldeep Singh <singh.kuldeep87k@gmail.com>,
+        Ray Jui <rjui@broadcom.com>,
+        Scott Branden <sbranden@broadcom.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 225/599] arm64: dts: ns2: Fix spi-cpol and spi-cpha property
+Date:   Tue,  5 Apr 2022 09:28:39 +0200
+Message-Id: <20220405070305.537796972@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
 References: <20220405070258.802373272@linuxfoundation.org>
@@ -49,39 +52,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Colin Ian King <colin.i.king@gmail.com>
+From: Kuldeep Singh <singh.kuldeep87k@gmail.com>
 
-commit 02a95374b5eebdbd3b6413fd7ddec151d2ea75a1 upstream.
+[ Upstream commit c953c764e505428f59ffe6afb1c73b89b5b1ac35 ]
 
-Currently tx_params is being re-assigned with a new value and the
-previous setting IEEE80211_HT_MCS_TX_RX_DIFF is being overwritten.
-The assignment operator is incorrect, the original intent was to
-bit-wise or the value in. Fix this by replacing the = operator
-with |= instead.
+Broadcom ns2 platform has spi-cpol and spi-cpho properties set
+incorrectly. As per spi-slave-peripheral-prop.yaml, these properties are
+of flag or boolean type and not integer type. Fix the values.
 
-Kudos to Christian Lamparter for suggesting the correct fix.
-
-Fixes: fe8ee9ad80b2 ("carl9170: mac80211 glue and command interface")
-Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
-Cc: <Stable@vger.kernel.org>
-Acked-by: Christian Lamparter <chunkeey@gmail.com>
-Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
-Link: https://lore.kernel.org/r/20220125004406.344422-1-colin.i.king@gmail.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: d69dbd9f41a7c (arm64: dts: Add ARM PL022 SPI DT nodes for NS2)
+Signed-off-by: Kuldeep Singh <singh.kuldeep87k@gmail.com>
+CC: Ray Jui <rjui@broadcom.com>
+CC: Scott Branden <sbranden@broadcom.com>
+CC: Florian Fainelli <f.fainelli@gmail.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/ath/carl9170/main.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/arm64/boot/dts/broadcom/northstar2/ns2-svk.dts | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
---- a/drivers/net/wireless/ath/carl9170/main.c
-+++ b/drivers/net/wireless/ath/carl9170/main.c
-@@ -1916,7 +1916,7 @@ static int carl9170_parse_eeprom(struct
- 		WARN_ON(!(tx_streams >= 1 && tx_streams <=
- 			IEEE80211_HT_MCS_TX_MAX_STREAMS));
- 
--		tx_params = (tx_streams - 1) <<
-+		tx_params |= (tx_streams - 1) <<
- 			    IEEE80211_HT_MCS_TX_MAX_STREAMS_SHIFT;
- 
- 		carl9170_band_2GHz.ht_cap.mcs.tx_params |= tx_params;
+diff --git a/arch/arm64/boot/dts/broadcom/northstar2/ns2-svk.dts b/arch/arm64/boot/dts/broadcom/northstar2/ns2-svk.dts
+index ec19fbf928a1..12a4b1c03390 100644
+--- a/arch/arm64/boot/dts/broadcom/northstar2/ns2-svk.dts
++++ b/arch/arm64/boot/dts/broadcom/northstar2/ns2-svk.dts
+@@ -111,8 +111,8 @@
+ 		compatible = "silabs,si3226x";
+ 		reg = <0>;
+ 		spi-max-frequency = <5000000>;
+-		spi-cpha = <1>;
+-		spi-cpol = <1>;
++		spi-cpha;
++		spi-cpol;
+ 		pl022,hierarchy = <0>;
+ 		pl022,interface = <0>;
+ 		pl022,slave-tx-disable = <0>;
+@@ -135,8 +135,8 @@
+ 		at25,byte-len = <0x8000>;
+ 		at25,addr-mode = <2>;
+ 		at25,page-size = <64>;
+-		spi-cpha = <1>;
+-		spi-cpol = <1>;
++		spi-cpha;
++		spi-cpol;
+ 		pl022,hierarchy = <0>;
+ 		pl022,interface = <0>;
+ 		pl022,slave-tx-disable = <0>;
+-- 
+2.34.1
+
 
 
