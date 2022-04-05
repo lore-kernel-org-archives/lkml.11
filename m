@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B362DC352A1
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 09:13:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BA1FFC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 09:14:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343914AbiDEJPf (ORCPT
+        id S1343933AbiDEJPw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 05:15:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34818 "EHLO
+        Tue, 5 Apr 2022 05:15:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34822 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239630AbiDEIUS (ORCPT
+        with ESMTP id S239649AbiDEIUX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:20:18 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FA1921C;
-        Tue,  5 Apr 2022 01:17:54 -0700 (PDT)
+        Tue, 5 Apr 2022 04:20:23 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38D542BD;
+        Tue,  5 Apr 2022 01:18:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D62F260B0F;
-        Tue,  5 Apr 2022 08:17:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E6478C385A1;
-        Tue,  5 Apr 2022 08:17:52 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E6F7CB81B92;
+        Tue,  5 Apr 2022 08:18:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 42A31C385A1;
+        Tue,  5 Apr 2022 08:18:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649146673;
-        bh=W/lcVOcoPY+v/WrwziGHG8JE2ki8hpSfLXopMnCP2oA=;
+        s=korg; t=1649146692;
+        bh=uKfwxnRdGV6bnGFbOE1aukn5+0ttKyN7SN8ugucYkHg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=saFpp+/vi06oSh4Y69JVZqHnHokN12Ysa60gbINM6bOHJ0PioAsIkgokl+TcY2KsF
-         U0HRU+aP4dkVVSqboCfEFff/osp1WML+0Cr/uFjLl1gZxaQQ5B0s4MhMyJ8lOoLc1F
-         FJAtoCh7hAOY/TU1CYX3gAAoGK5D/jEkf2ThzMUs=
+        b=mPcUt5Kwlf0+jXKOLJNFGBBjdEkGZCT/x20LlO5VrrUCvx9gDIXjg5a7BlrEl9bIt
+         +xX/ShMcm/6r2hwWbJEFs/Me8jRScEcmFSoHCUEEpy667WI528hT4LD6f9EZqEuxbY
+         j9erU29yFKwx7F/kcHsJHdBIyXGuAawwkgbZLisg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
+        stable@vger.kernel.org, Akira Kawata <akirakawata1@gmail.com>,
+        kernel test robot <lkp@intel.com>,
+        Kees Cook <keescook@chromium.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0848/1126] powercap/dtpm_cpu: Reset per_cpu variable in the release function
-Date:   Tue,  5 Apr 2022 09:26:35 +0200
-Message-Id: <20220405070432.439978412@linuxfoundation.org>
+Subject: [PATCH 5.17 0855/1126] fs/binfmt_elf: Fix AT_PHDR for unusual ELF files
+Date:   Tue,  5 Apr 2022 09:26:42 +0200
+Message-Id: <20220405070432.640064274@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -50,45 +51,116 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Daniel Lezcano <daniel.lezcano@linaro.org>
+From: Akira Kawata <akirakawata1@gmail.com>
 
-[ Upstream commit 0aea2e4ec2a2bfa2d7e8820e37ba5b5ce04f20a5 ]
+[ Upstream commit 0da1d5002745cdc721bc018b582a8a9704d56c42 ]
 
-The release function does not reset the per cpu variable when it is
-called. That will prevent creation again as the variable will be
-already from the previous creation.
+BugLink: https://bugzilla.kernel.org/show_bug.cgi?id=197921
 
-Fix it by resetting them.
+As pointed out in the discussion of buglink, we cannot calculate AT_PHDR
+as the sum of load_addr and exec->e_phoff.
 
-Signed-off-by: Daniel Lezcano <daniel.lezcano@linaro.org>
-Reviewed-by: Ulf Hansson <ulf.hansson@linaro.org>
-Link: https://lore.kernel.org/r/20220130210210.549877-2-daniel.lezcano@linaro.org
+: The AT_PHDR of ELF auxiliary vectors should point to the memory address
+: of program header. But binfmt_elf.c calculates this address as follows:
+:
+: NEW_AUX_ENT(AT_PHDR, load_addr + exec->e_phoff);
+:
+: which is wrong since e_phoff is the file offset of program header and
+: load_addr is the memory base address from PT_LOAD entry.
+:
+: The ld.so uses AT_PHDR as the memory address of program header. In normal
+: case, since the e_phoff is usually 64 and in the first PT_LOAD region, it
+: is the correct program header address.
+:
+: But if the address of program header isn't equal to the first PT_LOAD
+: address + e_phoff (e.g.  Put the program header in other non-consecutive
+: PT_LOAD region), ld.so will try to read program header from wrong address
+: then crash or use incorrect program header.
+
+This is because exec->e_phoff
+is the offset of PHDRs in the file and the address of PHDRs in the
+memory may differ from it. This patch fixes the bug by calculating the
+address of program headers from PT_LOADs directly.
+
+Signed-off-by: Akira Kawata <akirakawata1@gmail.com>
+Reported-by: kernel test robot <lkp@intel.com>
+Acked-by: Kees Cook <keescook@chromium.org>
+Signed-off-by: Kees Cook <keescook@chromium.org>
+Link: https://lore.kernel.org/r/20220127124014.338760-2-akirakawata1@gmail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/powercap/dtpm_cpu.c | 7 +++++++
- 1 file changed, 7 insertions(+)
+ fs/binfmt_elf.c | 24 ++++++++++++++++++------
+ 1 file changed, 18 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/powercap/dtpm_cpu.c b/drivers/powercap/dtpm_cpu.c
-index b740866b228d..1e8cac699646 100644
---- a/drivers/powercap/dtpm_cpu.c
-+++ b/drivers/powercap/dtpm_cpu.c
-@@ -150,10 +150,17 @@ static int update_pd_power_uw(struct dtpm *dtpm)
- static void pd_release(struct dtpm *dtpm)
+diff --git a/fs/binfmt_elf.c b/fs/binfmt_elf.c
+index d61543fbd652..af0965c10619 100644
+--- a/fs/binfmt_elf.c
++++ b/fs/binfmt_elf.c
+@@ -170,8 +170,8 @@ static int padzero(unsigned long elf_bss)
+ 
+ static int
+ create_elf_tables(struct linux_binprm *bprm, const struct elfhdr *exec,
+-		unsigned long load_addr, unsigned long interp_load_addr,
+-		unsigned long e_entry)
++		unsigned long interp_load_addr,
++		unsigned long e_entry, unsigned long phdr_addr)
  {
- 	struct dtpm_cpu *dtpm_cpu = to_dtpm_cpu(dtpm);
-+	struct cpufreq_policy *policy;
+ 	struct mm_struct *mm = current->mm;
+ 	unsigned long p = bprm->p;
+@@ -257,7 +257,7 @@ create_elf_tables(struct linux_binprm *bprm, const struct elfhdr *exec,
+ 	NEW_AUX_ENT(AT_HWCAP, ELF_HWCAP);
+ 	NEW_AUX_ENT(AT_PAGESZ, ELF_EXEC_PAGESIZE);
+ 	NEW_AUX_ENT(AT_CLKTCK, CLOCKS_PER_SEC);
+-	NEW_AUX_ENT(AT_PHDR, load_addr + exec->e_phoff);
++	NEW_AUX_ENT(AT_PHDR, phdr_addr);
+ 	NEW_AUX_ENT(AT_PHENT, sizeof(struct elf_phdr));
+ 	NEW_AUX_ENT(AT_PHNUM, exec->e_phnum);
+ 	NEW_AUX_ENT(AT_BASE, interp_load_addr);
+@@ -823,7 +823,7 @@ static int parse_elf_properties(struct file *f, const struct elf_phdr *phdr,
+ static int load_elf_binary(struct linux_binprm *bprm)
+ {
+ 	struct file *interpreter = NULL; /* to shut gcc up */
+- 	unsigned long load_addr = 0, load_bias = 0;
++	unsigned long load_addr, load_bias = 0, phdr_addr = 0;
+ 	int load_addr_set = 0;
+ 	unsigned long error;
+ 	struct elf_phdr *elf_ppnt, *elf_phdata, *interp_elf_phdata = NULL;
+@@ -1180,6 +1180,17 @@ static int load_elf_binary(struct linux_binprm *bprm)
+ 				reloc_func_desc = load_bias;
+ 			}
+ 		}
++
++		/*
++		 * Figure out which segment in the file contains the Program
++		 * Header table, and map to the associated memory address.
++		 */
++		if (elf_ppnt->p_offset <= elf_ex->e_phoff &&
++		    elf_ex->e_phoff < elf_ppnt->p_offset + elf_ppnt->p_filesz) {
++			phdr_addr = elf_ex->e_phoff - elf_ppnt->p_offset +
++				    elf_ppnt->p_vaddr;
++		}
++
+ 		k = elf_ppnt->p_vaddr;
+ 		if ((elf_ppnt->p_flags & PF_X) && k < start_code)
+ 			start_code = k;
+@@ -1215,6 +1226,7 @@ static int load_elf_binary(struct linux_binprm *bprm)
+ 	}
  
- 	if (freq_qos_request_active(&dtpm_cpu->qos_req))
- 		freq_qos_remove_request(&dtpm_cpu->qos_req);
+ 	e_entry = elf_ex->e_entry + load_bias;
++	phdr_addr += load_bias;
+ 	elf_bss += load_bias;
+ 	elf_brk += load_bias;
+ 	start_code += load_bias;
+@@ -1278,8 +1290,8 @@ static int load_elf_binary(struct linux_binprm *bprm)
+ 		goto out;
+ #endif /* ARCH_HAS_SETUP_ADDITIONAL_PAGES */
  
-+	policy = cpufreq_cpu_get(dtpm_cpu->cpu);
-+	if (policy) {
-+		for_each_cpu(dtpm_cpu->cpu, policy->related_cpus)
-+			per_cpu(dtpm_per_cpu, dtpm_cpu->cpu) = NULL;
-+	}
-+	
- 	kfree(dtpm_cpu);
- }
+-	retval = create_elf_tables(bprm, elf_ex,
+-			  load_addr, interp_load_addr, e_entry);
++	retval = create_elf_tables(bprm, elf_ex, interp_load_addr,
++				   e_entry, phdr_addr);
+ 	if (retval < 0)
+ 		goto out;
  
 -- 
 2.34.1
