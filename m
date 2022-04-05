@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3381AC4167B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 24B1AC43217
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:02:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355370AbiDELzX (ORCPT
+        id S1355297AbiDELzT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 07:55:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46546 "EHLO
+        Tue, 5 Apr 2022 07:55:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46826 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244938AbiDEIwt (ORCPT
+        with ESMTP id S244918AbiDEIwr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:52:49 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1FBB2497F;
-        Tue,  5 Apr 2022 01:47:15 -0700 (PDT)
+        Tue, 5 Apr 2022 04:52:47 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A89C24593;
+        Tue,  5 Apr 2022 01:46:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 237D0CE1BF9;
-        Tue,  5 Apr 2022 08:47:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3D506C385A1;
-        Tue,  5 Apr 2022 08:47:12 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 37DA86117A;
+        Tue,  5 Apr 2022 08:46:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4ACFDC385A0;
+        Tue,  5 Apr 2022 08:46:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649148432;
-        bh=DGfFICk0ZyhZyp7gehgdnGZsI2rdjdBF6ht5fhvYKxI=;
+        s=korg; t=1649148383;
+        bh=K3TAybxi+nsvSrrQJTUFlqvaiEsAWoqPvFcXFTD1X88=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tYeSknnw+6Q/06ZkCPSmBiZLy2kCu1XeqvjU/PrWycXR6A54tDl8nSqFg1rHkZQIL
-         /QKl9Ay1EOwKNMOZe71v4/OHTgDKy0gfAYPNf7+6sP/C7p0DqQNBDz/ajHIB2MSqmz
-         ZkDSNwfcDc7yRCYe+vACqmRFRl6fu3Nd1aB5qjAw=
+        b=pU258fIfQDhA+RUJUhxHZbOJzF6ad4P8iXR7OBiJqqn7PR22S0e9Bax/aeJTtBhI9
+         GWIIWEZHZlMPtSj/wxWDqk4OUlkkqbcS4wheKyTRqdNt7CzOo552sLf2neExR0ahHg
+         qP+6mudkCUcFtK11tMAYlPxpPq8VTjhWPwhIPJIs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kuldeep Singh <singh.kuldeep87k@gmail.com>,
-        Ray Jui <rjui@broadcom.com>,
-        Scott Branden <sbranden@broadcom.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
+        stable@vger.kernel.org, Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0356/1017] arm64: dts: ns2: Fix spi-cpol and spi-cpha property
-Date:   Tue,  5 Apr 2022 09:21:09 +0200
-Message-Id: <20220405070404.852789083@linuxfoundation.org>
+Subject: [PATCH 5.16 0336/1017] media: cedrus: H265: Fix neighbour info buffer size
+Date:   Tue,  5 Apr 2022 09:20:49 +0200
+Message-Id: <20220405070404.256229245@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -52,50 +50,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kuldeep Singh <singh.kuldeep87k@gmail.com>
+From: Jernej Skrabec <jernej.skrabec@gmail.com>
 
-[ Upstream commit c953c764e505428f59ffe6afb1c73b89b5b1ac35 ]
+[ Upstream commit ee8b887329c78971967506f3ac79b9302c9f83c1 ]
 
-Broadcom ns2 platform has spi-cpol and spi-cpho properties set
-incorrectly. As per spi-slave-peripheral-prop.yaml, these properties are
-of flag or boolean type and not integer type. Fix the values.
+Neighbour info buffer size needs to be 794 kiB in H6. This is actually
+already indirectly mentioned in the comment, but smaller size is used
+nevertheless.
 
-Fixes: d69dbd9f41a7c (arm64: dts: Add ARM PL022 SPI DT nodes for NS2)
-Signed-off-by: Kuldeep Singh <singh.kuldeep87k@gmail.com>
-CC: Ray Jui <rjui@broadcom.com>
-CC: Scott Branden <sbranden@broadcom.com>
-CC: Florian Fainelli <f.fainelli@gmail.com>
+Increase buffer size to cover H6 needs. Since increase is not that big
+in absolute numbers, it doesn't make sense to complicate logic for older
+generations.
+
+Bug was discovered using iommu, which reported access error when trying
+to play H265 video.
+
+Fixes: 86caab29da78 ("media: cedrus: Add HEVC/H.265 decoding support")
+Signed-off-by: Jernej Skrabec <jernej.skrabec@gmail.com>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/boot/dts/broadcom/northstar2/ns2-svk.dts | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ drivers/staging/media/sunxi/cedrus/cedrus_h265.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/arm64/boot/dts/broadcom/northstar2/ns2-svk.dts b/arch/arm64/boot/dts/broadcom/northstar2/ns2-svk.dts
-index ec19fbf928a1..12a4b1c03390 100644
---- a/arch/arm64/boot/dts/broadcom/northstar2/ns2-svk.dts
-+++ b/arch/arm64/boot/dts/broadcom/northstar2/ns2-svk.dts
-@@ -111,8 +111,8 @@
- 		compatible = "silabs,si3226x";
- 		reg = <0>;
- 		spi-max-frequency = <5000000>;
--		spi-cpha = <1>;
--		spi-cpol = <1>;
-+		spi-cpha;
-+		spi-cpol;
- 		pl022,hierarchy = <0>;
- 		pl022,interface = <0>;
- 		pl022,slave-tx-disable = <0>;
-@@ -135,8 +135,8 @@
- 		at25,byte-len = <0x8000>;
- 		at25,addr-mode = <2>;
- 		at25,page-size = <64>;
--		spi-cpha = <1>;
--		spi-cpol = <1>;
-+		spi-cpha;
-+		spi-cpol;
- 		pl022,hierarchy = <0>;
- 		pl022,interface = <0>;
- 		pl022,slave-tx-disable = <0>;
+diff --git a/drivers/staging/media/sunxi/cedrus/cedrus_h265.c b/drivers/staging/media/sunxi/cedrus/cedrus_h265.c
+index 8829a7bab07e..ffade5cbd2e4 100644
+--- a/drivers/staging/media/sunxi/cedrus/cedrus_h265.c
++++ b/drivers/staging/media/sunxi/cedrus/cedrus_h265.c
+@@ -23,7 +23,7 @@
+  * Subsequent BSP implementations seem to double the neighbor info buffer size
+  * for the H6 SoC, which may be related to 10 bit H265 support.
+  */
+-#define CEDRUS_H265_NEIGHBOR_INFO_BUF_SIZE	(397 * SZ_1K)
++#define CEDRUS_H265_NEIGHBOR_INFO_BUF_SIZE	(794 * SZ_1K)
+ #define CEDRUS_H265_ENTRY_POINTS_BUF_SIZE	(4 * SZ_1K)
+ #define CEDRUS_H265_MV_COL_BUF_UNIT_CTB_SIZE	160
+ 
 -- 
 2.34.1
 
