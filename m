@@ -2,44 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D1538C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 13:41:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E16BC43219
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 13:41:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1390179AbiDENhZ (ORCPT
+        id S1390250AbiDENhu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 09:37:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41500 "EHLO
+        Tue, 5 Apr 2022 09:37:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53070 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242408AbiDEJHx (ORCPT
+        with ESMTP id S1343967AbiDEJQn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:07:53 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51E526AA49;
-        Tue,  5 Apr 2022 01:56:52 -0700 (PDT)
+        Tue, 5 Apr 2022 05:16:43 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FAE4D5573;
+        Tue,  5 Apr 2022 02:02:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9D94961572;
-        Tue,  5 Apr 2022 08:56:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AF95CC385A0;
-        Tue,  5 Apr 2022 08:56:46 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DDBA1B80DA1;
+        Tue,  5 Apr 2022 09:02:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 51750C385A0;
+        Tue,  5 Apr 2022 09:02:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649149007;
-        bh=/P8TunVzWGpmmpgr6qat+AphEiaH/CrUmR30w+542Fs=;
+        s=korg; t=1649149327;
+        bh=PbU3Zy+C03rpWGayUy2MlpDNrRuZYXE7DvqU86BFgbo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1qQKjnNVytpUXwgHNWappBGfyHGqchqGTtOjjO5x56FBPd2SsJfeCGUZOjGO3UKm4
-         IS07dC8/XRLKiL7IjbY1AJXYdjBrF3MvnYXfrKb30AngiXuGQNkTDvo2IMgWEbOKae
-         UHGbzC3J7N4rbmc3PzY+1P8fvSTKQR5Dr2NzNS2k=
+        b=zy5RQS2jeJG3/HZF0ek9t+LIMLyfYtclN/kiY/dWkkTvYJ1JczavbFY1pSMrKa8N2
+         QN1drNQOiM5rQLJUBq0JdOERrVMoCh9jxHSgJ0rfP8y+/NUpxXX/gPLqLzlWcgCjgh
+         hd4+Rn8ToMAOW5hl4K890nQgUx+GmZJas3dpoqII=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ping Fang <pifang@redhat.com>,
-        Daniel Henrique Barboza <danielhb413@gmail.com>,
-        Michael Ellerman <mpe@ellerman.id.au>,
+        stable@vger.kernel.org,
+        Alexander Lobakin <alexandr.lobakin@intel.com>,
+        Michal Kubiak <michal.kubiak@intel.com>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0561/1017] powerpc/mm/numa: skip NUMA_NO_NODE onlining in parse_numa_properties()
-Date:   Tue,  5 Apr 2022 09:24:34 +0200
-Message-Id: <20220405070410.932484127@linuxfoundation.org>
+Subject: [PATCH 5.16 0638/1017] ice: dont allow to run ice_send_event_to_aux() in atomic ctx
+Date:   Tue,  5 Apr 2022 09:25:51 +0200
+Message-Id: <20220405070413.221449890@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -51,50 +54,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Daniel Henrique Barboza <danielhb413@gmail.com>
+From: Alexander Lobakin <alexandr.lobakin@intel.com>
 
-[ Upstream commit 749ed4a20657bcea66a6e082ca3dc0d228cbec80 ]
+[ Upstream commit 5a3156932da06f09953764de113419f254086faf ]
 
-Executing node_set_online() when nid = NUMA_NO_NODE results in an
-undefined behavior. node_set_online() will call node_set_state(), into
-__node_set(), into set_bit(), and since NUMA_NO_NODE is -1 we'll end up
-doing a negative shift operation inside
-arch/powerpc/include/asm/bitops.h. This potential UB was detected
-running a kernel with CONFIG_UBSAN.
+ice_send_event_to_aux() eventually descends to mutex_lock()
+(-> might_sched()), so it must not be called under non-task
+context. However, at least two fixes have happened already for the
+bug splats occurred due to this function being called from atomic
+context.
+To make the emergency landings softer, bail out early when executed
+in non-task context emitting a warn splat only once. This way we
+trade some events being potentially lost for system stability and
+avoid any related hangs and crashes.
 
-The behavior was introduced by commit 10f78fd0dabb ("powerpc/numa: Fix a
-regression on memoryless node 0"), where the check for nid > 0 was
-removed to fix a problem that was happening with nid = 0, but the result
-is that now we're trying to online NUMA_NO_NODE nids as well.
-
-Checking for nid >= 0 will allow node 0 to be onlined while avoiding
-this UB with NUMA_NO_NODE.
-
-Fixes: 10f78fd0dabb ("powerpc/numa: Fix a regression on memoryless node 0")
-Reported-by: Ping Fang <pifang@redhat.com>
-Signed-off-by: Daniel Henrique Barboza <danielhb413@gmail.com>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20220224182312.1012527-1-danielhb413@gmail.com
+Fixes: 348048e724a0e ("ice: Implement iidc operations")
+Signed-off-by: Alexander Lobakin <alexandr.lobakin@intel.com>
+Tested-by: Michal Kubiak <michal.kubiak@intel.com>
+Reviewed-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+Acked-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/powerpc/mm/numa.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/intel/ice/ice_idc.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/arch/powerpc/mm/numa.c b/arch/powerpc/mm/numa.c
-index 59d3cfcd7887..5fb829256b59 100644
---- a/arch/powerpc/mm/numa.c
-+++ b/arch/powerpc/mm/numa.c
-@@ -956,7 +956,9 @@ static int __init parse_numa_properties(void)
- 			of_node_put(cpu);
- 		}
+diff --git a/drivers/net/ethernet/intel/ice/ice_idc.c b/drivers/net/ethernet/intel/ice/ice_idc.c
+index adcc9a251595..a2714988dd96 100644
+--- a/drivers/net/ethernet/intel/ice/ice_idc.c
++++ b/drivers/net/ethernet/intel/ice/ice_idc.c
+@@ -34,6 +34,9 @@ void ice_send_event_to_aux(struct ice_pf *pf, struct iidc_event *event)
+ {
+ 	struct iidc_auxiliary_drv *iadrv;
  
--		node_set_online(nid);
-+		/* node_set_online() is an UB if 'nid' is negative */
-+		if (likely(nid >= 0))
-+			node_set_online(nid);
- 	}
++	if (WARN_ON_ONCE(!in_task()))
++		return;
++
+ 	if (!pf->adev)
+ 		return;
  
- 	get_n_mem_cells(&n_mem_addr_cells, &n_mem_size_cells);
 -- 
 2.34.1
 
