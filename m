@@ -2,107 +2,196 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A9328C4707F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DAE65C47081
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:28:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380836AbiDEU2x (ORCPT
+        id S1381300AbiDEU3F (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 16:28:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48376 "EHLO
+        Tue, 5 Apr 2022 16:29:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43206 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1384326AbiDEM1V (ORCPT
+        with ESMTP id S1354628AbiDEKO5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 08:27:21 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89A0B65A7;
-        Tue,  5 Apr 2022 04:41:10 -0700 (PDT)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out2.suse.de (Postfix) with ESMTP id 46F141F745;
-        Tue,  5 Apr 2022 11:41:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-        t=1649158869; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=XRRxg6udnXTabhP4kMhtiuHHu5+YdylTuzhfgNh5DT0=;
-        b=0wtAiHZ2XsShXe7cIptTg3k8X+4oHApryJqVK5hd+8cqRZjLseNjHnoZcQcoQxyD1OWXot
-        1ZeREICduo8y7r8BsKPU1y+qehLHwuE7pWYzuzwgfIeWIUC4Eykm5wBfzxrxDHVkTCnZCN
-        OIrZG9eU4ycjps7xaIJr/M1NryFB5rU=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-        s=susede2_ed25519; t=1649158869;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=XRRxg6udnXTabhP4kMhtiuHHu5+YdylTuzhfgNh5DT0=;
-        b=9+UNg7nWIBJgpgt0CtdlOpv95TMNTWHUt1bUOVG/Ue0N2y64KaP0ZmC0jpV692HZP1gqMa
-        YEUb3/5QV6AuxfCw==
-Received: from murzim.suse.de (murzim.suse.de [10.160.4.192])
+        Tue, 5 Apr 2022 06:14:57 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E28F6BDEC;
+        Tue,  5 Apr 2022 03:01:45 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 3FB16A3B94;
-        Tue,  5 Apr 2022 11:41:09 +0000 (UTC)
-Date:   Tue, 5 Apr 2022 13:41:09 +0200 (CEST)
-From:   Richard Biener <rguenther@suse.de>
-To:     Borislav Petkov <bp@alien8.de>
-cc:     linux-toolchains@vger.kernel.org, Michael Matz <matz@suse.de>,
-        lkml <linux-kernel@vger.kernel.org>
-Subject: Re: older gccs and case labels producing integer constants
-In-Reply-To: <YkwdtxNCpiERLFGW@zn.tnic>
-Message-ID: <rppnr36-25n9-nors-3p6-3oos06219s8@fhfr.qr>
-References: <YkwQ6+tIH8GQpuct@zn.tnic> <7o5nn52-nqn1-oo13-s6o9-59r85r91o768@fhfr.qr> <onrq8p1-582o-6rs9-r682-rs9sqoq7sq6p@fhfr.qr> <YkwbygWj/C3XooMV@zn.tnic> <YkwdtxNCpiERLFGW@zn.tnic>
+        by ams.source.kernel.org (Postfix) with ESMTPS id AF6DEB81B96;
+        Tue,  5 Apr 2022 10:01:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 203BCC385A2;
+        Tue,  5 Apr 2022 10:01:41 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649152902;
+        bh=j5OThtCkKw8wixPROr3bHPlF7VL+nQO2b6T38K84FyM=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=zZv/Lqv7Jg7KcklVQW4krWaN+0tQMGr5hM23DcBzl74f/jrjScO9rVLplM4FxDnAl
+         CCHKmGmMqrgD+rPxNVcjFhklT51PqheoxaNw1bjHWyeSrmWiuXMkzT92s3ixYy2Oz9
+         fwr2ZoZz8Rez9XXpfaHfIGgzB86vt3r9BYM1NBYw=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Johan Hovold <johan@kernel.org>
+Subject: [PATCH 5.10 003/599] USB: serial: simple: add Nokia phone driver
+Date:   Tue,  5 Apr 2022 09:24:57 +0200
+Message-Id: <20220405070258.912898995@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
+References: <20220405070258.802373272@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="-1609908220-1777648094-1649158869=:27745"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
+From: Johan Hovold <johan@kernel.org>
 
----1609908220-1777648094-1649158869=:27745
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8BIT
+commit c4b9c570965f75d0d55e639747f1e5ccdad2fae0 upstream.
 
-On Tue, 5 Apr 2022, Borislav Petkov wrote:
+Add a new "simple" driver for certain Nokia phones, including Nokia 130
+(RM-1035) which exposes two serial ports in "charging only" mode:
 
-> On Tue, Apr 05, 2022 at 12:36:58PM +0200, Borislav Petkov wrote:
-> > On Tue, Apr 05, 2022 at 12:06:45PM +0200, Richard Biener wrote:
-> > > Wird auch mit gcc 11 rejected.  Kanns sein dass mit gcc 7 andere
-> > > compiler flags genommen werden?
-> > 
-> > Found it:
-> > 
-> > $ gcc -fsanitize=shift -c switch.c
-> > switch.c: In function ‘foo’:
-> > switch.c:10:7: error: case label does not reduce to an integer constant
-> >        case (((0xfc08) << 16) | (0x0101)):;
-> > 
-> > $ gcc --version
-> > gcc (SUSE Linux) 7.4.1 20190905 [gcc-7-branch revision 275407]
-> > Copyright (C) 2017 Free Software Foundation, Inc.
-> > 
-> > Something not fully backported?
-> 
-> Ok, not really:
-> 
-> gcc-10 -fsanitize=shift -c switch.c
-> switch.c: In function ‘foo’:
-> switch.c:10:7: error: case label does not reduce to an integer constant
->    10 |       case (((0xfc08) << 16) | (0x0101)):;
->       |       ^~~~
-> 
-> BUT!
-> 
-> when more switches are set with gcc-10 (full gcc cmdline from a kernel
-> build), then that passes.
-> 
-> But it doesn't pass with gcc-7.
-> 
-> Weird...
+Bus 001 Device 009: ID 0421:069a Nokia Mobile Phones 130 [RM-1035] (Charging only)
+Device Descriptor:
+  bLength                18
+  bDescriptorType         1
+  bcdUSB               2.00
+  bDeviceClass            0
+  bDeviceSubClass         0
+  bDeviceProtocol         0
+  bMaxPacketSize0         8
+  idVendor           0x0421 Nokia Mobile Phones
+  idProduct          0x069a 130 [RM-1035] (Charging only)
+  bcdDevice            1.00
+  iManufacturer           1 Nokia
+  iProduct                2 Nokia 130 (RM-1035)
+  iSerial                 0
+  bNumConfigurations      1
+  Configuration Descriptor:
+    bLength                 9
+    bDescriptorType         2
+    wTotalLength       0x0037
+    bNumInterfaces          2
+    bConfigurationValue     1
+    iConfiguration          0
+    bmAttributes         0x80
+      (Bus Powered)
+    MaxPower              500mA
+    Interface Descriptor:
+      bLength                 9
+      bDescriptorType         4
+      bInterfaceNumber        0
+      bAlternateSetting       0
+      bNumEndpoints           2
+      bInterfaceClass       255 Vendor Specific Class
+      bInterfaceSubClass    255 Vendor Specific Subclass
+      bInterfaceProtocol    255 Vendor Specific Protocol
+      iInterface              0
+      Endpoint Descriptor:
+        bLength                 7
+        bDescriptorType         5
+        bEndpointAddress     0x81  EP 1 IN
+        bmAttributes            2
+          Transfer Type            Bulk
+          Synch Type               None
+          Usage Type               Data
+        wMaxPacketSize     0x0040  1x 64 bytes
+        bInterval               0
+      Endpoint Descriptor:
+        bLength                 7
+        bDescriptorType         5
+        bEndpointAddress     0x01  EP 1 OUT
+        bmAttributes            2
+          Transfer Type            Bulk
+          Synch Type               None
+          Usage Type               Data
+        wMaxPacketSize     0x0040  1x 64 bytes
+        bInterval               0
+    Interface Descriptor:
+      bLength                 9
+      bDescriptorType         4
+      bInterfaceNumber        1
+      bAlternateSetting       0
+      bNumEndpoints           2
+      bInterfaceClass       255 Vendor Specific Class
+      bInterfaceSubClass    255 Vendor Specific Subclass
+      bInterfaceProtocol    255 Vendor Specific Protocol
+      iInterface              0
+      Endpoint Descriptor:
+        bLength                 7
+        bDescriptorType         5
+        bEndpointAddress     0x82  EP 2 IN
+        bmAttributes            2
+          Transfer Type            Bulk
+          Synch Type               None
+          Usage Type               Data
+        wMaxPacketSize     0x0040  1x 64 bytes
+        bInterval               0
+      Endpoint Descriptor:
+        bLength                 7
+        bDescriptorType         5
+        bEndpointAddress     0x02  EP 2 OUT
+        bmAttributes            2
+          Transfer Type            Bulk
+          Synch Type               None
+          Usage Type               Data
+        wMaxPacketSize     0x0040  1x 64 bytes
+        bInterval               0
+Device Status:     0x0000
+  (Bus Powered)
 
-As was noted in https://gcc.gnu.org/bugzilla/show_bug.cgi?id=66880
-this is invalid C99+ but compilers are not required to diagnose that
-(you get it diagnosed with -pedantic).  -fsanitize=shift exposes
-it though since the non-integral-constant gets instrumented.
+Cc: stable@vger.kernel.org
+Link: https://lore.kernel.org/r/20220228084919.10656-1-johan@kernel.org
+Signed-off-by: Johan Hovold <johan@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ drivers/usb/serial/Kconfig             |    1 +
+ drivers/usb/serial/usb-serial-simple.c |    7 +++++++
+ 2 files changed, 8 insertions(+)
 
-Richard.
----1609908220-1777648094-1649158869=:27745--
+--- a/drivers/usb/serial/Kconfig
++++ b/drivers/usb/serial/Kconfig
+@@ -66,6 +66,7 @@ config USB_SERIAL_SIMPLE
+ 		- Libtransistor USB console
+ 		- a number of Motorola phones
+ 		- Motorola Tetra devices
++		- Nokia mobile phones
+ 		- Novatel Wireless GPS receivers
+ 		- Siemens USB/MPI adapter.
+ 		- ViVOtech ViVOpay USB device.
+--- a/drivers/usb/serial/usb-serial-simple.c
++++ b/drivers/usb/serial/usb-serial-simple.c
+@@ -91,6 +91,11 @@ DEVICE(moto_modem, MOTO_IDS);
+ 	{ USB_DEVICE(0x0cad, 0x9016) }	/* TPG2200 */
+ DEVICE(motorola_tetra, MOTOROLA_TETRA_IDS);
+ 
++/* Nokia mobile phone driver */
++#define NOKIA_IDS()			\
++	{ USB_DEVICE(0x0421, 0x069a) }	/* Nokia 130 (RM-1035) */
++DEVICE(nokia, NOKIA_IDS);
++
+ /* Novatel Wireless GPS driver */
+ #define NOVATEL_IDS()			\
+ 	{ USB_DEVICE(0x09d7, 0x0100) }	/* NovAtel FlexPack GPS */
+@@ -123,6 +128,7 @@ static struct usb_serial_driver * const
+ 	&vivopay_device,
+ 	&moto_modem_device,
+ 	&motorola_tetra_device,
++	&nokia_device,
+ 	&novatel_gps_device,
+ 	&hp4x_device,
+ 	&suunto_device,
+@@ -140,6 +146,7 @@ static const struct usb_device_id id_tab
+ 	VIVOPAY_IDS(),
+ 	MOTO_IDS(),
+ 	MOTOROLA_TETRA_IDS(),
++	NOKIA_IDS(),
+ 	NOVATEL_IDS(),
+ 	HP4X_IDS(),
+ 	SUUNTO_IDS(),
+
+
