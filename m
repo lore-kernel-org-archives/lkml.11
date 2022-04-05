@@ -2,119 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E1415C352A8
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 22:09:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D706C47087
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 22:09:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1392299AbiDEWJn (ORCPT
+        id S1392590AbiDEWKD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 18:09:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57258 "EHLO
+        Tue, 5 Apr 2022 18:10:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57610 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1573112AbiDESAs (ORCPT
+        with ESMTP id S1349798AbiDEJvd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 14:00:48 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CABA2246
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 10:58:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:Content-Type:
-        In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender
-        :Reply-To:Content-ID:Content-Description;
-        bh=IvBWmBbI9A2nfHfEQ5fw5taUfPeU2oNqR0njw9KESho=; b=gqxsxjVUFVtxRNlYtPkGeAokgL
-        nBe9SjwVtkav8yJ/gOpBxNDP/tgC4zPGII+UUa/7IYiLuqyWp2Q680vzBGZZGq+UBPv3r2vg9rX0o
-        TE+/Ew+4sRwH/p0pIYC453JYbWT64Q+P0px/53GQzQXLEEgwsBcp81+SEc6EP15K4Szl1gbZTb9EH
-        xrPRb4q6u0KsLSvRSDnD5CPqvnN+6GvkJmMuk1e6KK0wwMDnqaQrYB4+dKA9bjsHY4Pg45R1HtRpA
-        uBa6XgKeYJ8oid7QGnjylvarWXkEKnV05Fnt/bpeFuCYmcDGR5jmxReZgu8SEciJZkzhxKoAZLPJJ
-        GupTbMFQ==;
-Received: from [2601:1c0:6280:3f0::aa0b]
-        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nbnRv-006w06-Nn; Tue, 05 Apr 2022 17:58:40 +0000
-Message-ID: <c336dd9d-dae2-f654-4849-669c9b9b568f@infradead.org>
-Date:   Tue, 5 Apr 2022 10:58:34 -0700
+        Tue, 5 Apr 2022 05:51:33 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15DC01D306;
+        Tue,  5 Apr 2022 02:49:34 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AD6C7B81B76;
+        Tue,  5 Apr 2022 09:49:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 08891C385A2;
+        Tue,  5 Apr 2022 09:49:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649152172;
+        bh=3KGFa6EC32xjqdgLhOOEcMv8VXMCN8d2FHi3RO5nQi4=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=DLK2QYhwwNEt83m+Nt59xZ8TjiqyMlohuS/D63dsr7nDUstm4iL4EAv/IMt2ebtRF
+         h7LGTy6ztEa4cEdxwnlBppWQVn9ytuM/RBr3Fylmu1l/kBcZT1W6wVBn25LGsECxrU
+         UOZD+k+Xxx8MKDXfuehL9ByNUIZnXf8pzn2XFm6Q=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Fedor Pchelkin <aissur0002@gmail.com>,
+        Alexey Khoroshilov <khoroshilov@ispras.ru>,
+        Christian Brauner <brauner@kernel.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Sasha Levin <sashal@kernel.org>,
+        "Jason A . Donenfeld" <Jason@zx2c4.com>
+Subject: [PATCH 5.15 681/913] fs: fix fd table size alignment properly
+Date:   Tue,  5 Apr 2022 09:29:03 +0200
+Message-Id: <20220405070400.247751851@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH] drm/format_helper: fix a kernel-doc typo
-Content-Language: en-US
-To:     Simon Ser <contact@emersion.fr>
-Cc:     Javier Martinez Canillas <javierm@redhat.com>,
-        linux-kernel@vger.kernel.org,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        David Airlie <airlied@linux.ie>,
-        dri-devel@lists.freedesktop.org
-References: <20220403232902.1753-1-rdunlap@infradead.org>
- <ttcrpLw9HkdhAH5SkXylXDBi9SBf7LWgOeW09ZvTF4U4_zKJAOXBQZlFxfw6NKY0Hip6dXBFape6zkX09cstuOno72c-c00wmZ_VbNDg6xs=@emersion.fr>
- <b20bbd22-895c-9e74-e579-d2f3561a2fe1@infradead.org>
- <BzpH4s8ZYn84kTlJQ3BHVMQzZlESb2Fk6v-uO5KBaaeBNMvRvC98lpuBLUNLE3a5bdoYTb5JRvo6EU__5AGJ79LUirSppO39I1t1xlwx-fI=@emersion.fr>
- <fda186f7-2cf4-a69a-d68e-58073d35cbea@redhat.com>
- <c544d79e-90ec-7bbe-77ad-de96a700d711@infradead.org>
- <qjTlHAInyuxpFWsTWPGXoVeByVdVe-NF-kg-FUeLWQbKy9SovMzCcK-eDsijpDt1roaSubDr-8kBGKQSt_7CXFa4-BxQ6SrGSNeoZrdiq-s=@emersion.fr>
-From:   Randy Dunlap <rdunlap@infradead.org>
-In-Reply-To: <qjTlHAInyuxpFWsTWPGXoVeByVdVe-NF-kg-FUeLWQbKy9SovMzCcK-eDsijpDt1roaSubDr-8kBGKQSt_7CXFa4-BxQ6SrGSNeoZrdiq-s=@emersion.fr>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Simon,
+From: Linus Torvalds <torvalds@linux-foundation.org>
 
-On 4/5/22 08:05, Simon Ser wrote:
-> On Tuesday, April 5th, 2022 at 16:39, Randy Dunlap <rdunlap@infradead.org> wrote:
-> 
->> On 4/4/22 23:26, Javier Martinez Canillas wrote:
->>
->>> On 4/5/22 08:12, Simon Ser wrote:
->>>
->>>> On Monday, April 4th, 2022 at 23:35, Randy Dunlap rdunlap@infradead.org wrote:
->>>>
->>>>> On 4/4/22 09:04, Simon Ser wrote:
->>>>>
->>>>>> Both doc patches pushed, thanks. I had to manually edit them because they
->>>>>> wouldn't apply cleanly. Next time, please use git-send-email (see
->>>>>> https://git-send-email.io/ for setup instructions).
->>>>>
->>>>> That's odd. I did use 'git send-email' and I don't usually have any
->>>>> problems (AFAIK). I'll check those setup instructions.
->>>>
->>>> Hm, maybe the issue isn't git-send-email, but the way the patch was
->>>> generated? I had to manually edit these lines for the first patch to work:
->>>>
->>>> --- linux-next-20211217.orig/include/drm/drm_file.h
->>>> +++ linux-next-20211217/include/drm/drm_file.h
->>>>
->>>> I changed these to:
->>>>
->>>> --- a/include/drm/drm_file.h
->>>> +++ b/include/drm/drm_file.h
+[ Upstream commit d888c83fcec75194a8a48ccd283953bdba7b2550 ]
 
-quilt (which I am using) can generate a/ b/ patches instead of linux.orig/ and
-linux/ patches.
+Jason Donenfeld reports that my commit 1c24a186398f ("fs: fd tables have
+to be multiples of BITS_PER_LONG") doesn't work, and the reason is an
+embarrassing brown-paper-bag bug.
 
->>>> This wasn't enough for the second patch, I had to re-do the changes by hand
->>>> from scratch.
+Yes, we want to align the number of fds to BITS_PER_LONG, and yes, the
+reason they might not be aligned is because the incoming 'max_fd'
+argument might not be aligned.
 
-I would like more information about this one if it's not too much trouble
-for you.
+But aligining the argument - while simple - will cause a "infinitely
+big" maxfd (eg NR_OPEN_MAX) to just overflow to zero.  Which most
+definitely isn't what we want either.
 
->>> Yes, I believe the suggestion should be to use git-format-patch instead.
->>>
->>> To make sure that was is posted can be consumed by the git-am command.
->>
->>
->> Considering that I am not using git, I think it will be difficult
->> to use git-format-patch.
-> 
-> Ah, okay. Would you consider using Git for you next patches?
+The obvious fix was always just to do the alignment last, but I had
+moved it earlier just to make the patch smaller and the code look
+simpler.  Duh.  It certainly made _me_ look simple.
 
-Don't know. It's quite a big hurdle to jump over IMO.
+Fixes: 1c24a186398f ("fs: fd tables have to be multiples of BITS_PER_LONG")
+Reported-and-tested-by: Jason A. Donenfeld <Jason@zx2c4.com>
+Cc: Fedor Pchelkin <aissur0002@gmail.com>
+Cc: Alexey Khoroshilov <khoroshilov@ispras.ru>
+Cc: Christian Brauner <brauner@kernel.org>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ fs/file.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-> (FYI, I'll pass next time I hit a patch which doesn't apply cleanly.
-> Nothing personal, it's just that I don't have time to deal with broken
-> patches.)
-
-Yeah, I get it.
-
-thanks.
+diff --git a/fs/file.c b/fs/file.c
+index c01c29417ae6..ee9317346702 100644
+--- a/fs/file.c
++++ b/fs/file.c
+@@ -303,10 +303,9 @@ static unsigned int sane_fdtable_size(struct fdtable *fdt, unsigned int max_fds)
+ 	unsigned int count;
+ 
+ 	count = count_open_files(fdt);
+-	max_fds = ALIGN(max_fds, BITS_PER_LONG);
+ 	if (max_fds < NR_OPEN_DEFAULT)
+ 		max_fds = NR_OPEN_DEFAULT;
+-	return min(count, max_fds);
++	return ALIGN(min(count, max_fds), BITS_PER_LONG);
+ }
+ 
+ /*
 -- 
-~Randy
+2.34.1
+
+
+
