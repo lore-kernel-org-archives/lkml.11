@@ -2,42 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B2F5BC352AA
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:36:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C790C4332F
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:36:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241357AbiDEIdT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 04:33:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55916 "EHLO
+        id S241474AbiDEIdr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 04:33:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48426 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233223AbiDEH47 (ORCPT
+        with ESMTP id S232848AbiDEHzw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 03:56:59 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A064427DE;
-        Tue,  5 Apr 2022 00:50:51 -0700 (PDT)
+        Tue, 5 Apr 2022 03:55:52 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C85437A04;
+        Tue,  5 Apr 2022 00:50:35 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A047961740;
-        Tue,  5 Apr 2022 07:50:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AF58EC340EE;
-        Tue,  5 Apr 2022 07:50:49 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 25608B81B14;
+        Tue,  5 Apr 2022 07:50:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 791ADC36AEB;
+        Tue,  5 Apr 2022 07:50:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649145050;
-        bh=0m1s9fY8emgpod7a0c86QGW3B5W4ZS13ZfoY2qqIbTQ=;
+        s=korg; t=1649145032;
+        bh=C/2RzFuMXyAdxtBLOyaGPAXU8bReziUuLOA8zKiO+9Q=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=obkCqheVI4W2j3Crud5Xn6Ni3j9YkHIJIAfkBU6dfPCmnoLGeAKl+gMRaVkIaJlO7
-         5rXZYjKprR79YI1dh4EFSc9DBbIKeUP0yVjn3L3WQcV4xxtmY382clLz2re87AfRJc
-         DWXdbEYRYN/G3jh5yAgT+CVPOdzTOoyGOThguncU=
+        b=NnUTdoM2Jmp2a7bLFE6kM3h2JsE7+9XhLPnYvJbU6awHRVEFIw0D5JvgHQOoSCaM2
+         WtYsi7ZziGNxjGwVOd/b7XeWedJ4fV45qWRcTc8x+LRATy0vJczTaqy6QbK0lc3tYo
+         DfaudLrQS5sQPucJyuZe8zwkhI3ZyMFXpWkaIbWY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, David Howells <dhowells@redhat.com>,
-        Sasha Levin <sashal@kernel.org>,
-        syzbot+6e2de48f06cdb2884bfc@syzkaller.appspotmail.com
-Subject: [PATCH 5.17 0267/1126] watch_queue: Actually free the watch
-Date:   Tue,  5 Apr 2022 09:16:54 +0200
-Message-Id: <20220405070415.447858221@linuxfoundation.org>
+        stable@vger.kernel.org, Prashanth Prahlad <pprahlad@redhat.com>,
+        Xin Long <lucien.xin@gmail.com>,
+        Richard Haines <richard_c_haines@btinternet.com>,
+        Ondrej Mosnacek <omosnace@redhat.com>,
+        Paul Moore <paul@paul-moore.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 0221/1126] security: add sctp_assoc_established hook
+Date:   Tue,  5 Apr 2022 09:16:08 +0200
+Message-Id: <20220405070414.096659309@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -49,52 +52,205 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: David Howells <dhowells@redhat.com>
+From: Ondrej Mosnacek <omosnace@redhat.com>
 
-[ Upstream commit 3d8dcf278b1ee1eff1e90be848fa2237db4c07a7 ]
+[ Upstream commit 5e50f5d4ff31e95599d695df1f0a4e7d2d6fef99 ]
 
-free_watch() does everything barring actually freeing the watch object.  Fix
-this by adding the missing kfree.
+security_sctp_assoc_established() is added to replace
+security_inet_conn_established() called in
+sctp_sf_do_5_1E_ca(), so that asoc can be accessed in security
+subsystem and save the peer secid to asoc->peer_secid.
 
-kmemleak produces a report something like the following.  Note that as an
-address can be seen in the first word, the watch would appear to have gone
-through call_rcu().
-
-BUG: memory leak
-unreferenced object 0xffff88810ce4a200 (size 96):
-  comm "syz-executor352", pid 3605, jiffies 4294947473 (age 13.720s)
-  hex dump (first 32 bytes):
-    e0 82 48 0d 81 88 ff ff 00 00 00 00 00 00 00 00  ..H.............
-    80 a2 e4 0c 81 88 ff ff 00 00 00 00 00 00 00 00  ................
-  backtrace:
-    [<ffffffff8214e6cc>] kmalloc include/linux/slab.h:581 [inline]
-    [<ffffffff8214e6cc>] kzalloc include/linux/slab.h:714 [inline]
-    [<ffffffff8214e6cc>] keyctl_watch_key+0xec/0x2e0 security/keys/keyctl.c:1800
-    [<ffffffff8214ec84>] __do_sys_keyctl+0x3c4/0x490 security/keys/keyctl.c:2016
-    [<ffffffff84493a25>] do_syscall_x64 arch/x86/entry/common.c:50 [inline]
-    [<ffffffff84493a25>] do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
-    [<ffffffff84600068>] entry_SYSCALL_64_after_hwframe+0x44/0xae
-
-Fixes: c73be61cede5 ("pipe: Add general notification queue support")
-Reported-and-tested-by: syzbot+6e2de48f06cdb2884bfc@syzkaller.appspotmail.com
-Signed-off-by: David Howells <dhowells@redhat.com>
+Fixes: 72e89f50084c ("security: Add support for SCTP security hooks")
+Reported-by: Prashanth Prahlad <pprahlad@redhat.com>
+Based-on-patch-by: Xin Long <lucien.xin@gmail.com>
+Reviewed-by: Xin Long <lucien.xin@gmail.com>
+Tested-by: Richard Haines <richard_c_haines@btinternet.com>
+Signed-off-by: Ondrej Mosnacek <omosnace@redhat.com>
+Signed-off-by: Paul Moore <paul@paul-moore.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- kernel/watch_queue.c | 1 +
- 1 file changed, 1 insertion(+)
+ Documentation/security/SCTP.rst | 22 ++++++++++------------
+ include/linux/lsm_hook_defs.h   |  2 ++
+ include/linux/lsm_hooks.h       |  5 +++++
+ include/linux/security.h        |  8 ++++++++
+ net/sctp/sm_statefuns.c         |  8 +++++---
+ security/security.c             |  7 +++++++
+ 6 files changed, 37 insertions(+), 15 deletions(-)
 
-diff --git a/kernel/watch_queue.c b/kernel/watch_queue.c
-index 5848d4795816..3990e4df3d7b 100644
---- a/kernel/watch_queue.c
-+++ b/kernel/watch_queue.c
-@@ -395,6 +395,7 @@ static void free_watch(struct rcu_head *rcu)
- 	put_watch_queue(rcu_access_pointer(watch->queue));
- 	atomic_dec(&watch->cred->user->nr_watches);
- 	put_cred(watch->cred);
-+	kfree(watch);
- }
+diff --git a/Documentation/security/SCTP.rst b/Documentation/security/SCTP.rst
+index d5fd6ccc3dcb..406cc68b8808 100644
+--- a/Documentation/security/SCTP.rst
++++ b/Documentation/security/SCTP.rst
+@@ -15,10 +15,7 @@ For security module support, three SCTP specific hooks have been implemented::
+     security_sctp_assoc_request()
+     security_sctp_bind_connect()
+     security_sctp_sk_clone()
+-
+-Also the following security hook has been utilised::
+-
+-    security_inet_conn_established()
++    security_sctp_assoc_established()
  
- static void __put_watch(struct kref *kref)
+ The usage of these hooks are described below with the SELinux implementation
+ described in the `SCTP SELinux Support`_ chapter.
+@@ -122,11 +119,12 @@ calls **sctp_peeloff**\(3).
+     @newsk - pointer to new sock structure.
+ 
+ 
+-security_inet_conn_established()
++security_sctp_assoc_established()
+ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+-Called when a COOKIE ACK is received::
++Called when a COOKIE ACK is received, and the peer secid will be
++saved into ``@asoc->peer_secid`` for client::
+ 
+-    @sk  - pointer to sock structure.
++    @asoc - pointer to sctp association structure.
+     @skb - pointer to skbuff of the COOKIE ACK packet.
+ 
+ 
+@@ -134,7 +132,7 @@ Security Hooks used for Association Establishment
+ -------------------------------------------------
+ 
+ The following diagram shows the use of ``security_sctp_bind_connect()``,
+-``security_sctp_assoc_request()``, ``security_inet_conn_established()`` when
++``security_sctp_assoc_request()``, ``security_sctp_assoc_established()`` when
+ establishing an association.
+ ::
+ 
+@@ -172,7 +170,7 @@ establishing an association.
+           <------------------------------------------- COOKIE ACK
+           |                                               |
+     sctp_sf_do_5_1E_ca                                    |
+- Call security_inet_conn_established()                    |
++ Call security_sctp_assoc_established()                   |
+  to set the peer label.                                   |
+           |                                               |
+           |                               If SCTP_SOCKET_TCP or peeled off
+@@ -198,7 +196,7 @@ hooks with the SELinux specifics expanded below::
+     security_sctp_assoc_request()
+     security_sctp_bind_connect()
+     security_sctp_sk_clone()
+-    security_inet_conn_established()
++    security_sctp_assoc_established()
+ 
+ 
+ security_sctp_assoc_request()
+@@ -271,12 +269,12 @@ sockets sid and peer sid to that contained in the ``@asoc sid`` and
+     @newsk - pointer to new sock structure.
+ 
+ 
+-security_inet_conn_established()
++security_sctp_assoc_established()
+ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ Called when a COOKIE ACK is received where it sets the connection's peer sid
+ to that in ``@skb``::
+ 
+-    @sk  - pointer to sock structure.
++    @asoc - pointer to sctp association structure.
+     @skb - pointer to skbuff of the COOKIE ACK packet.
+ 
+ 
+diff --git a/include/linux/lsm_hook_defs.h b/include/linux/lsm_hook_defs.h
+index 819ec92dc2a8..db924fe379c9 100644
+--- a/include/linux/lsm_hook_defs.h
++++ b/include/linux/lsm_hook_defs.h
+@@ -332,6 +332,8 @@ LSM_HOOK(int, 0, sctp_bind_connect, struct sock *sk, int optname,
+ 	 struct sockaddr *address, int addrlen)
+ LSM_HOOK(void, LSM_RET_VOID, sctp_sk_clone, struct sctp_association *asoc,
+ 	 struct sock *sk, struct sock *newsk)
++LSM_HOOK(int, 0, sctp_assoc_established, struct sctp_association *asoc,
++	 struct sk_buff *skb)
+ #endif /* CONFIG_SECURITY_NETWORK */
+ 
+ #ifdef CONFIG_SECURITY_INFINIBAND
+diff --git a/include/linux/lsm_hooks.h b/include/linux/lsm_hooks.h
+index 3bf5c658bc44..419b5febc3ca 100644
+--- a/include/linux/lsm_hooks.h
++++ b/include/linux/lsm_hooks.h
+@@ -1046,6 +1046,11 @@
+  *	@asoc pointer to current sctp association structure.
+  *	@sk pointer to current sock structure.
+  *	@newsk pointer to new sock structure.
++ * @sctp_assoc_established:
++ *	Passes the @asoc and @chunk->skb of the association COOKIE_ACK packet
++ *	to the security module.
++ *	@asoc pointer to sctp association structure.
++ *	@skb pointer to skbuff of association packet.
+  *
+  * Security hooks for Infiniband
+  *
+diff --git a/include/linux/security.h b/include/linux/security.h
+index 6d72772182c8..25b3ef71f495 100644
+--- a/include/linux/security.h
++++ b/include/linux/security.h
+@@ -1422,6 +1422,8 @@ int security_sctp_bind_connect(struct sock *sk, int optname,
+ 			       struct sockaddr *address, int addrlen);
+ void security_sctp_sk_clone(struct sctp_association *asoc, struct sock *sk,
+ 			    struct sock *newsk);
++int security_sctp_assoc_established(struct sctp_association *asoc,
++				    struct sk_buff *skb);
+ 
+ #else	/* CONFIG_SECURITY_NETWORK */
+ static inline int security_unix_stream_connect(struct sock *sock,
+@@ -1641,6 +1643,12 @@ static inline void security_sctp_sk_clone(struct sctp_association *asoc,
+ 					  struct sock *newsk)
+ {
+ }
++
++static inline int security_sctp_assoc_established(struct sctp_association *asoc,
++						  struct sk_buff *skb)
++{
++	return 0;
++}
+ #endif	/* CONFIG_SECURITY_NETWORK */
+ 
+ #ifdef CONFIG_SECURITY_INFINIBAND
+diff --git a/net/sctp/sm_statefuns.c b/net/sctp/sm_statefuns.c
+index cc544a97c4af..7f342bc12735 100644
+--- a/net/sctp/sm_statefuns.c
++++ b/net/sctp/sm_statefuns.c
+@@ -930,6 +930,11 @@ enum sctp_disposition sctp_sf_do_5_1E_ca(struct net *net,
+ 	if (!sctp_vtag_verify(chunk, asoc))
+ 		return sctp_sf_pdiscard(net, ep, asoc, type, arg, commands);
+ 
++	/* Set peer label for connection. */
++	if (security_sctp_assoc_established((struct sctp_association *)asoc,
++					    chunk->skb))
++		return sctp_sf_pdiscard(net, ep, asoc, type, arg, commands);
++
+ 	/* Verify that the chunk length for the COOKIE-ACK is OK.
+ 	 * If we don't do this, any bundled chunks may be junked.
+ 	 */
+@@ -945,9 +950,6 @@ enum sctp_disposition sctp_sf_do_5_1E_ca(struct net *net,
+ 	 */
+ 	sctp_add_cmd_sf(commands, SCTP_CMD_INIT_COUNTER_RESET, SCTP_NULL());
+ 
+-	/* Set peer label for connection. */
+-	security_inet_conn_established(ep->base.sk, chunk->skb);
+-
+ 	/* RFC 2960 5.1 Normal Establishment of an Association
+ 	 *
+ 	 * E) Upon reception of the COOKIE ACK, endpoint "A" will move
+diff --git a/security/security.c b/security/security.c
+index 22261d79f333..e9526f005f09 100644
+--- a/security/security.c
++++ b/security/security.c
+@@ -2391,6 +2391,13 @@ void security_sctp_sk_clone(struct sctp_association *asoc, struct sock *sk,
+ }
+ EXPORT_SYMBOL(security_sctp_sk_clone);
+ 
++int security_sctp_assoc_established(struct sctp_association *asoc,
++				    struct sk_buff *skb)
++{
++	return call_int_hook(sctp_assoc_established, 0, asoc, skb);
++}
++EXPORT_SYMBOL(security_sctp_assoc_established);
++
+ #endif	/* CONFIG_SECURITY_NETWORK */
+ 
+ #ifdef CONFIG_SECURITY_INFINIBAND
 -- 
 2.34.1
 
