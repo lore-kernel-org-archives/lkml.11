@@ -2,47 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B09A5C35273
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 13:41:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C04F9C4707A
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 13:41:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1390444AbiDENip (ORCPT
+        id S1343685AbiDENj6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 09:38:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53072 "EHLO
+        Tue, 5 Apr 2022 09:39:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60050 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344297AbiDEJTJ (ORCPT
+        with ESMTP id S1345184AbiDEJWU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:19:09 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD62A23BEB;
-        Tue,  5 Apr 2022 02:07:27 -0700 (PDT)
+        Tue, 5 Apr 2022 05:22:20 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C68C29CA5;
+        Tue,  5 Apr 2022 02:09:25 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4A13661573;
-        Tue,  5 Apr 2022 09:07:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5B791C385A1;
-        Tue,  5 Apr 2022 09:07:26 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5ADABB818F3;
+        Tue,  5 Apr 2022 09:09:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B4A83C385A2;
+        Tue,  5 Apr 2022 09:09:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649149646;
-        bh=bGozNgv5tjLJ84Cay1tq/nxVZeU7A+W6BXdShzv6ds8=;
+        s=korg; t=1649149763;
+        bh=hP7Ta8lHWxh6NeT9h5JeWb6KQ3S+wTrRwcg0WqNvRtc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qANHCvoKEYK9MreRgxDxgNE6OR7+5Jbq20jsYlrSUVACoWH0jRtHgFLiARDc3D5id
-         oae41v9ZYxmhskXL5bJwJHaaEes2ennNxA/Ia+3vBtpvpeI/UzDNmIMOxz2jntUmpV
-         KUu2muM/Z1DOxQ2HPk25YyaqUKSrNwgwkLBIbHuY=
+        b=sUtgAi1uE5MW2AaS5+YzUYWDMo4RBLk33K7AqCmRzDwxlt8XVM0STaOikSvmHyW7N
+         r5HUic6ddH4Gnd7SK5XVlOndISJA7Bcbvk16+dWUfNBKvnTSX7zbENTklZc50ubKEi
+         OSvDfDckAvZKETZtbMI0GvcJzkpZzODLh2p53C6g=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>,
-        Valentin Schneider <valentin.schneider@arm.com>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        "Steven Rostedt (Google)" <rostedt@goodmis.org>,
+        stable@vger.kernel.org, Zeal Robot <zealci@zte.com.cn>,
+        Jing Yao <yao.jing2@zte.com.cn>, Helge Deller <deller@gmx.de>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0789/1017] sched/tracing: Report TASK_RTLOCK_WAIT tasks as TASK_UNINTERRUPTIBLE
-Date:   Tue,  5 Apr 2022 09:28:22 +0200
-Message-Id: <20220405070417.674637916@linuxfoundation.org>
+Subject: [PATCH 5.16 0831/1017] video: fbdev: udlfb: replace snprintf in show functions with sysfs_emit
+Date:   Tue,  5 Apr 2022 09:29:04 +0200
+Message-Id: <20220405070418.911338931@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -54,51 +50,58 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Valentin Schneider <valentin.schneider@arm.com>
+From: Jing Yao <yao.jing2@zte.com.cn>
 
-[ Upstream commit 25795ef6299f07ce3838f3253a9cb34f64efcfae ]
+[ Upstream commit 81a998288956d09d7a7a2303d47e4d60ad55c401 ]
 
-TASK_RTLOCK_WAIT currently isn't part of TASK_REPORT, thus a task blocking
-on an rtlock will appear as having a task state == 0, IOW TASK_RUNNING.
+Use sysfs_emit instead of scnprintf, snprintf or sprintf.
 
-The actual state is saved in p->saved_state, but reading it after reading
-p->__state has a few issues:
-o that could still be TASK_RUNNING in the case of e.g. rt_spin_lock
-o ttwu_state_match() might have changed that to TASK_RUNNING
-
-As pointed out by Eric, adding TASK_RTLOCK_WAIT to TASK_REPORT implies
-exposing a new state to userspace tools which way not know what to do with
-them. The only information that needs to be conveyed here is that a task is
-waiting on an rt_mutex, which matches TASK_UNINTERRUPTIBLE - there's no
-need for a new state.
-
-Reported-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
-Signed-off-by: Valentin Schneider <valentin.schneider@arm.com>
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Reviewed-by: Steven Rostedt (Google) <rostedt@goodmis.org>
-Link: https://lore.kernel.org/r/20220120162520.570782-3-valentin.schneider@arm.com
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: Jing Yao <yao.jing2@zte.com.cn>
+Signed-off-by: Helge Deller <deller@gmx.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/linux/sched.h | 8 ++++++++
- 1 file changed, 8 insertions(+)
+ drivers/video/fbdev/udlfb.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/include/linux/sched.h b/include/linux/sched.h
-index 084de9b70a77..46ef8c75802f 100644
---- a/include/linux/sched.h
-+++ b/include/linux/sched.h
-@@ -1622,6 +1622,14 @@ static inline unsigned int __task_state_index(unsigned int tsk_state,
- 	if (tsk_state == TASK_IDLE)
- 		state = TASK_REPORT_IDLE;
+diff --git a/drivers/video/fbdev/udlfb.c b/drivers/video/fbdev/udlfb.c
+index b9cdd02c1000..90f48b71fd8f 100644
+--- a/drivers/video/fbdev/udlfb.c
++++ b/drivers/video/fbdev/udlfb.c
+@@ -1426,7 +1426,7 @@ static ssize_t metrics_bytes_rendered_show(struct device *fbdev,
+ 				   struct device_attribute *a, char *buf) {
+ 	struct fb_info *fb_info = dev_get_drvdata(fbdev);
+ 	struct dlfb_data *dlfb = fb_info->par;
+-	return snprintf(buf, PAGE_SIZE, "%u\n",
++	return sysfs_emit(buf, "%u\n",
+ 			atomic_read(&dlfb->bytes_rendered));
+ }
  
-+	/*
-+	 * We're lying here, but rather than expose a completely new task state
-+	 * to userspace, we can make this appear as if the task has gone through
-+	 * a regular rt_mutex_lock() call.
-+	 */
-+	if (tsk_state == TASK_RTLOCK_WAIT)
-+		state = TASK_UNINTERRUPTIBLE;
-+
- 	return fls(state);
+@@ -1434,7 +1434,7 @@ static ssize_t metrics_bytes_identical_show(struct device *fbdev,
+ 				   struct device_attribute *a, char *buf) {
+ 	struct fb_info *fb_info = dev_get_drvdata(fbdev);
+ 	struct dlfb_data *dlfb = fb_info->par;
+-	return snprintf(buf, PAGE_SIZE, "%u\n",
++	return sysfs_emit(buf, "%u\n",
+ 			atomic_read(&dlfb->bytes_identical));
+ }
+ 
+@@ -1442,7 +1442,7 @@ static ssize_t metrics_bytes_sent_show(struct device *fbdev,
+ 				   struct device_attribute *a, char *buf) {
+ 	struct fb_info *fb_info = dev_get_drvdata(fbdev);
+ 	struct dlfb_data *dlfb = fb_info->par;
+-	return snprintf(buf, PAGE_SIZE, "%u\n",
++	return sysfs_emit(buf, "%u\n",
+ 			atomic_read(&dlfb->bytes_sent));
+ }
+ 
+@@ -1450,7 +1450,7 @@ static ssize_t metrics_cpu_kcycles_used_show(struct device *fbdev,
+ 				   struct device_attribute *a, char *buf) {
+ 	struct fb_info *fb_info = dev_get_drvdata(fbdev);
+ 	struct dlfb_data *dlfb = fb_info->par;
+-	return snprintf(buf, PAGE_SIZE, "%u\n",
++	return sysfs_emit(buf, "%u\n",
+ 			atomic_read(&dlfb->cpu_kcycles_used));
  }
  
 -- 
