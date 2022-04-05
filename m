@@ -2,50 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F8E9C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A3F88C4332F
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:15:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1391859AbiDEUGn (ORCPT
+        id S1392057AbiDEUGq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 16:06:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55166 "EHLO
+        Tue, 5 Apr 2022 16:06:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55966 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354112AbiDEKLs (ORCPT
+        with ESMTP id S1345131AbiDEKkp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:11:48 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BBD1C4EA06;
-        Tue,  5 Apr 2022 02:57:19 -0700 (PDT)
+        Tue, 5 Apr 2022 06:40:45 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E80032DD64;
+        Tue,  5 Apr 2022 03:26:01 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5C8266167E;
-        Tue,  5 Apr 2022 09:57:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6C661C385A2;
-        Tue,  5 Apr 2022 09:57:18 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 84F9E6141D;
+        Tue,  5 Apr 2022 10:26:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 96867C385A1;
+        Tue,  5 Apr 2022 10:26:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649152638;
-        bh=oPodn0ztNol+LNm49PEtGqL8jXdiQr3R6lw3KsHDegQ=;
+        s=korg; t=1649154361;
+        bh=8pB0J7RuG+0VRdERB0M6sy0avVjZh9WeAccoMSSevQo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lDVeZPk8OB7QW65lsOxrG7XOVGEbnzjSEF8a8hAmGoaHrwIWU51fYS4WejHUjtvsS
-         udIxsn46qsR587Wbum+g61hh3muJQ23GzTrgzmY8QN+7Iy4tDlXY+trt1SAQM6lo1s
-         iHE9GDuUF9gBT1b4oaA2mXuDPvkYd2yBklKO3Xuk=
+        b=xbYtaQyVEhGFO1nJZn81yrIAETQyR9tO+NxDP6tQQRFtWFTPKyq+/Yei62TFQxYdv
+         r1aGpHWnR1ket4t0SwGYGe2atac4DQoEA7EQH2aEO1NfDPqnvAlWxRZpkvox8Dp//F
+         KTohWCEX2T+dE0cLQ/jgN4byjDK8kVzkM+WrPX1U=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
-        kernel test robot <lkp@intel.com>,
-        Horatiu Vultur <horatiu.vultur@microchip.com>,
-        Lars Povlsen <lars.povlsen@microchip.com>,
-        Steen Hegelund <Steen.Hegelund@microchip.com>,
-        UNGLinuxDriver@microchip.com, Paolo Abeni <pabeni@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.15 849/913] net: sparx5: uses, depends on BRIDGE or !BRIDGE
-Date:   Tue,  5 Apr 2022 09:31:51 +0200
-Message-Id: <20220405070405.277914895@linuxfoundation.org>
+        stable@vger.kernel.org, Hugh Dickins <hughd@google.com>,
+        "Matthew Wilcox (Oracle)" <willy@infradead.org>
+Subject: [PATCH 5.10 552/599] XArray: Update the LRU list in xas_split()
+Date:   Tue,  5 Apr 2022 09:34:06 +0200
+Message-Id: <20220405070315.267256065@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
+References: <20220405070258.802373272@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -54,41 +49,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Randy Dunlap <rdunlap@infradead.org>
+From: Matthew Wilcox (Oracle) <willy@infradead.org>
 
-commit f9512d654f62604664251dedd437a22fe484974a upstream.
+commit 3ed4bb77156da0bc732847c8c9df92454c1fbeea upstream.
 
-Fix build errors when BRIDGE=m and SPARX5_SWITCH=y:
+When splitting a value entry, we may need to add the new nodes to the LRU
+list and remove the parent node from the LRU list.  The WARN_ON checks
+in shadow_lru_isolate() catch this oversight.  This bug was latent
+until we stopped splitting folios in shrink_page_list() with commit
+820c4e2e6f51 ("mm/vmscan: Free non-shmem folios without splitting them").
+That allows the creation of large shadow entries, and subsequently when
+trying to page in a small page, we will split the large shadow entry
+in __filemap_add_folio().
 
-riscv64-linux-ld: drivers/net/ethernet/microchip/sparx5/sparx5_switchdev.o: in function `.L305':
-sparx5_switchdev.c:(.text+0xdb0): undefined reference to `br_vlan_enabled'
-riscv64-linux-ld: drivers/net/ethernet/microchip/sparx5/sparx5_switchdev.o: in function `.L283':
-sparx5_switchdev.c:(.text+0xee0): undefined reference to `br_vlan_enabled'
-
-Fixes: 3cfa11bac9bb ("net: sparx5: add the basic sparx5 driver")
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Reported-by: kernel test robot <lkp@intel.com>
-Cc: Horatiu Vultur <horatiu.vultur@microchip.com>
-Cc: Lars Povlsen <lars.povlsen@microchip.com>
-Cc: Steen Hegelund <Steen.Hegelund@microchip.com>
-Cc: UNGLinuxDriver@microchip.com
-Cc: Paolo Abeni <pabeni@redhat.com>
-Link: https://lore.kernel.org/r/20220330012025.29560-1-rdunlap@infradead.org
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Fixes: 8fc75643c5e1 ("XArray: add xas_split")
+Reported-by: Hugh Dickins <hughd@google.com>
+Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/microchip/sparx5/Kconfig |    1 +
- 1 file changed, 1 insertion(+)
+ lib/xarray.c |    2 ++
+ 1 file changed, 2 insertions(+)
 
---- a/drivers/net/ethernet/microchip/sparx5/Kconfig
-+++ b/drivers/net/ethernet/microchip/sparx5/Kconfig
-@@ -5,6 +5,7 @@ config SPARX5_SWITCH
- 	depends on OF
- 	depends on ARCH_SPARX5 || COMPILE_TEST
- 	depends on PTP_1588_CLOCK_OPTIONAL
-+	depends on BRIDGE || BRIDGE=n
- 	select PHYLINK
- 	select PHY_SPARX5_SERDES
- 	select RESET_CONTROLLER
+--- a/lib/xarray.c
++++ b/lib/xarray.c
+@@ -1080,6 +1080,7 @@ void xas_split(struct xa_state *xas, voi
+ 					xa_mk_node(child));
+ 			if (xa_is_value(curr))
+ 				values--;
++			xas_update(xas, child);
+ 		} else {
+ 			unsigned int canon = offset - xas->xa_sibs;
+ 
+@@ -1094,6 +1095,7 @@ void xas_split(struct xa_state *xas, voi
+ 	} while (offset-- > xas->xa_offset);
+ 
+ 	node->nr_values += values;
++	xas_update(xas, node);
+ }
+ EXPORT_SYMBOL_GPL(xas_split);
+ #endif
 
 
