@@ -2,202 +2,278 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C8564C35273
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D711CC4707A
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 10:30:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357048AbiDEKZd (ORCPT
+        id S1357074AbiDEKZg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 06:25:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43946 "EHLO
+        Tue, 5 Apr 2022 06:25:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46048 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241154AbiDEIcw (ORCPT
+        with ESMTP id S241179AbiDEIcw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Apr 2022 04:32:52 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E419415A15;
-        Tue,  5 Apr 2022 01:28:54 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 74D6FB81A32;
-        Tue,  5 Apr 2022 08:28:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D4FD1C385A1;
-        Tue,  5 Apr 2022 08:28:51 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649147332;
-        bh=LuZ72yR3zA8xYuhPdNlrC+HdmP3HwSUgVvw+BOohrac=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mm+KN01+4W9WNN/Zl5FivPOUZz0hkGVlK4x8YvnrShRAdergRPoR3MbzSUA8MlZzC
-         xCJpYttUGrv6klg+MaBilM+pKqkZMIdcvXKYo5uAv+x0AIqBFpznRmsu2JfHWok2rb
-         91CMbgTNsUBjvFoAxsq/CyBpbRl4f4C+wvZWaFwU=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Marc Zyngier <maz@kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Vladimir Murzin <vladimir.murzin@arm.com>
-Subject: [PATCH 5.17 1048/1126] ARM: iop32x: offset IRQ numbers by 1
-Date:   Tue,  5 Apr 2022 09:29:55 +0200
-Message-Id: <20220405070438.232846332@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
-References: <20220405070407.513532867@linuxfoundation.org>
-User-Agent: quilt/0.66
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B63AE10FC2;
+        Tue,  5 Apr 2022 01:29:07 -0700 (PDT)
+Date:   Tue, 05 Apr 2022 08:29:05 -0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1649147346;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=fPYD5ZolEbkGH+EhuY0/H0+B93v4HcrMEWrGKmEgfjk=;
+        b=NoPpCL9D2M8KE0MpeeCKQwpmsK674tf4aCE6EF1D0NehnE11NSOi+UgAOFmRx22U1RYb9p
+        bwgU+iIW+CNa+0e0R3/gC9vTaPEB49dcnsezxY6pzj7ThvNipC/SE6DTzCFQ44EKhvQKVk
+        oO0Hd2oWg6z+qTRUEDCy1qefIM+dHW4nZlrz4cw0OM+Li7GECMoB5MbzlhxLQRs9n0YSL3
+        TzbKIZdHORRtkNGZ81m05njeKLT9D7sNM326NaqRRBqJifyLBBbYzXUxCff4TaIlYm1BUJ
+        +25neGhGpohbcvZq+EoCUqX4HbU9spJtPBpcfUOKo8AIvqFIpLgMgkw5lUC3AA==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1649147346;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=fPYD5ZolEbkGH+EhuY0/H0+B93v4HcrMEWrGKmEgfjk=;
+        b=KF98DyjCtbUL523mRFbxmWU6He9+EW7KR2D4YiCjTc4+PX8R1N+reNKw1iu8qv64dYu6qZ
+        0t0JMxQIQ9tN3HCQ==
+From:   "tip-bot2 for Chengming Zhou" <tip-bot2@linutronix.de>
+Sender: tip-bot2@linutronix.de
+Reply-to: linux-kernel@vger.kernel.org
+To:     linux-tip-commits@vger.kernel.org
+Subject: [tip: perf/urgent] perf/core: Don't pass task around when ctx sched in
+Cc:     Chengming Zhou <zhouchengming@bytedance.com>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>, x86@kernel.org,
+        linux-kernel@vger.kernel.org
+In-Reply-To: <20220329154523.86438-2-zhouchengming@bytedance.com>
+References: <20220329154523.86438-2-zhouchengming@bytedance.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Message-ID: <164914734514.389.17929255348417765123.tip-bot2@tip-bot2>
+Robot-ID: <tip-bot2@linutronix.de>
+Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Arnd Bergmann <arnd@arndb.de>
+The following commit has been merged into the perf/urgent branch of tip:
 
-commit 9d67412f24cc3a2c05f35f7c856addb07a2960ce upstream.
+Commit-ID:     a0827713e298d021d3c79ae7423aea408f3f7c3a
+Gitweb:        https://git.kernel.org/tip/a0827713e298d021d3c79ae7423aea408f3f7c3a
+Author:        Chengming Zhou <zhouchengming@bytedance.com>
+AuthorDate:    Tue, 29 Mar 2022 23:45:20 +08:00
+Committer:     Peter Zijlstra <peterz@infradead.org>
+CommitterDate: Tue, 05 Apr 2022 09:59:44 +02:00
 
-iop32x is one of the last platforms to use IRQ 0, and this has apparently
-stopped working in a 2014 cleanup without anyone noticing. This interrupt
-is used for the DMA engine, so most likely this has not actually worked
-in the past 7 years, but it's also not essential for using this board.
+perf/core: Don't pass task around when ctx sched in
 
-I'm splitting out this change from my GENERIC_IRQ_MULTI_HANDLER
-conversion so it can be backported if anyone cares.
+The current code pass task around for ctx_sched_in(), only
+to get perf_cgroup of the task, then update the timestamp
+of it and its ancestors and set them to active.
 
-Fixes: a71b092a9c68 ("ARM: Convert handle_IRQ to use __handle_domain_irq")
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-[ardb: take +1 offset into account in mask/unmask and init as well]
-Signed-off-by: Ard Biesheuvel <ardb@kernel.org>
-Tested-by: Marc Zyngier <maz@kernel.org>
-Tested-by: Vladimir Murzin <vladimir.murzin@arm.com> # ARMv7M
-Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+But we can use cpuctx->cgrp to get active perf_cgroup and
+its ancestors since cpuctx->cgrp has been set before
+ctx_sched_in().
+
+This patch remove the task argument in ctx_sched_in()
+and cleanup related code.
+
+Signed-off-by: Chengming Zhou <zhouchengming@bytedance.com>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Link: https://lore.kernel.org/r/20220329154523.86438-2-zhouchengming@bytedance.com
 ---
- arch/arm/mach-iop32x/include/mach/entry-macro.S |    2 
- arch/arm/mach-iop32x/include/mach/irqs.h        |    2 
- arch/arm/mach-iop32x/irq.c                      |    6 +-
- arch/arm/mach-iop32x/irqs.h                     |   60 ++++++++++++------------
- 4 files changed, 37 insertions(+), 33 deletions(-)
+ kernel/events/core.c | 58 +++++++++++++++++++------------------------
+ 1 file changed, 26 insertions(+), 32 deletions(-)
 
---- a/arch/arm/mach-iop32x/include/mach/entry-macro.S
-+++ b/arch/arm/mach-iop32x/include/mach/entry-macro.S
-@@ -20,7 +20,7 @@
- 	mrc     p6, 0, \irqstat, c8, c0, 0	@ Read IINTSRC
- 	cmp     \irqstat, #0
- 	clzne   \irqnr, \irqstat
--	rsbne   \irqnr, \irqnr, #31
-+	rsbne   \irqnr, \irqnr, #32
- 	.endm
+diff --git a/kernel/events/core.c b/kernel/events/core.c
+index 3980efc..6545020 100644
+--- a/kernel/events/core.c
++++ b/kernel/events/core.c
+@@ -574,8 +574,7 @@ static void cpu_ctx_sched_out(struct perf_cpu_context *cpuctx,
+ 			      enum event_type_t event_type);
  
- 	.macro arch_ret_to_user, tmp1, tmp2
---- a/arch/arm/mach-iop32x/include/mach/irqs.h
-+++ b/arch/arm/mach-iop32x/include/mach/irqs.h
-@@ -9,6 +9,6 @@
- #ifndef __IRQS_H
- #define __IRQS_H
+ static void cpu_ctx_sched_in(struct perf_cpu_context *cpuctx,
+-			     enum event_type_t event_type,
+-			     struct task_struct *task);
++			     enum event_type_t event_type);
  
--#define NR_IRQS			32
-+#define NR_IRQS			33
- 
- #endif
---- a/arch/arm/mach-iop32x/irq.c
-+++ b/arch/arm/mach-iop32x/irq.c
-@@ -32,14 +32,14 @@ static void intstr_write(u32 val)
- static void
- iop32x_irq_mask(struct irq_data *d)
- {
--	iop32x_mask &= ~(1 << d->irq);
-+	iop32x_mask &= ~(1 << (d->irq - 1));
- 	intctl_write(iop32x_mask);
+ static void update_context_time(struct perf_event_context *ctx);
+ static u64 perf_event_time(struct perf_event *event);
+@@ -801,10 +800,10 @@ static inline void update_cgrp_time_from_event(struct perf_event *event)
  }
  
- static void
- iop32x_irq_unmask(struct irq_data *d)
+ static inline void
+-perf_cgroup_set_timestamp(struct task_struct *task,
+-			  struct perf_event_context *ctx)
++perf_cgroup_set_timestamp(struct perf_cpu_context *cpuctx)
  {
--	iop32x_mask |= 1 << d->irq;
-+	iop32x_mask |= 1 << (d->irq - 1);
- 	intctl_write(iop32x_mask);
+-	struct perf_cgroup *cgrp;
++	struct perf_event_context *ctx = &cpuctx->ctx;
++	struct perf_cgroup *cgrp = cpuctx->cgrp;
+ 	struct perf_cgroup_info *info;
+ 	struct cgroup_subsys_state *css;
+ 
+@@ -813,10 +812,10 @@ perf_cgroup_set_timestamp(struct task_struct *task,
+ 	 * ensure we do not access cgroup data
+ 	 * unless we have the cgroup pinned (css_get)
+ 	 */
+-	if (!task || !ctx->nr_cgroups)
++	if (!cgrp)
+ 		return;
+ 
+-	cgrp = perf_cgroup_from_task(task, ctx);
++	WARN_ON_ONCE(!ctx->nr_cgroups);
+ 
+ 	for (css = &cgrp->css; css; css = css->parent) {
+ 		cgrp = container_of(css, struct perf_cgroup, css);
+@@ -869,14 +868,14 @@ static void perf_cgroup_switch(struct task_struct *task, int mode)
+ 			WARN_ON_ONCE(cpuctx->cgrp);
+ 			/*
+ 			 * set cgrp before ctxsw in to allow
+-			 * event_filter_match() to not have to pass
+-			 * task around
++			 * perf_cgroup_set_timestamp() in ctx_sched_in()
++			 * to not have to pass task around
+ 			 * we pass the cpuctx->ctx to perf_cgroup_from_task()
+ 			 * because cgorup events are only per-cpu
+ 			 */
+ 			cpuctx->cgrp = perf_cgroup_from_task(task,
+ 							     &cpuctx->ctx);
+-			cpu_ctx_sched_in(cpuctx, EVENT_ALL, task);
++			cpu_ctx_sched_in(cpuctx, EVENT_ALL);
+ 		}
+ 		perf_pmu_enable(cpuctx->ctx.pmu);
+ 		perf_ctx_unlock(cpuctx, cpuctx->task_ctx);
+@@ -1118,8 +1117,7 @@ static inline int perf_cgroup_connect(pid_t pid, struct perf_event *event,
  }
  
-@@ -65,7 +65,7 @@ void __init iop32x_init_irq(void)
- 	    machine_is_em7210())
- 		*IOP3XX_PCIIRSR = 0x0f;
+ static inline void
+-perf_cgroup_set_timestamp(struct task_struct *task,
+-			  struct perf_event_context *ctx)
++perf_cgroup_set_timestamp(struct perf_cpu_context *cpuctx)
+ {
+ }
  
--	for (i = 0; i < NR_IRQS; i++) {
-+	for (i = 1; i < NR_IRQS; i++) {
- 		irq_set_chip_and_handler(i, &ext_chip, handle_level_irq);
- 		irq_clear_status_flags(i, IRQ_NOREQUEST | IRQ_NOPROBE);
- 	}
---- a/arch/arm/mach-iop32x/irqs.h
-+++ b/arch/arm/mach-iop32x/irqs.h
-@@ -7,36 +7,40 @@
- #ifndef __IOP32X_IRQS_H
- #define __IOP32X_IRQS_H
+@@ -2713,8 +2711,7 @@ static void ctx_sched_out(struct perf_event_context *ctx,
+ static void
+ ctx_sched_in(struct perf_event_context *ctx,
+ 	     struct perf_cpu_context *cpuctx,
+-	     enum event_type_t event_type,
+-	     struct task_struct *task);
++	     enum event_type_t event_type);
  
-+/* Interrupts in Linux start at 1, hardware starts at 0 */
-+
-+#define IOP_IRQ(x) ((x) + 1)
-+
+ static void task_ctx_sched_out(struct perf_cpu_context *cpuctx,
+ 			       struct perf_event_context *ctx,
+@@ -2730,15 +2727,14 @@ static void task_ctx_sched_out(struct perf_cpu_context *cpuctx,
+ }
+ 
+ static void perf_event_sched_in(struct perf_cpu_context *cpuctx,
+-				struct perf_event_context *ctx,
+-				struct task_struct *task)
++				struct perf_event_context *ctx)
+ {
+-	cpu_ctx_sched_in(cpuctx, EVENT_PINNED, task);
++	cpu_ctx_sched_in(cpuctx, EVENT_PINNED);
+ 	if (ctx)
+-		ctx_sched_in(ctx, cpuctx, EVENT_PINNED, task);
+-	cpu_ctx_sched_in(cpuctx, EVENT_FLEXIBLE, task);
++		ctx_sched_in(ctx, cpuctx, EVENT_PINNED);
++	cpu_ctx_sched_in(cpuctx, EVENT_FLEXIBLE);
+ 	if (ctx)
+-		ctx_sched_in(ctx, cpuctx, EVENT_FLEXIBLE, task);
++		ctx_sched_in(ctx, cpuctx, EVENT_FLEXIBLE);
+ }
+ 
  /*
-  * IOP80321 chipset interrupts
-  */
--#define IRQ_IOP32X_DMA0_EOT	0
--#define IRQ_IOP32X_DMA0_EOC	1
--#define IRQ_IOP32X_DMA1_EOT	2
--#define IRQ_IOP32X_DMA1_EOC	3
--#define IRQ_IOP32X_AA_EOT	6
--#define IRQ_IOP32X_AA_EOC	7
--#define IRQ_IOP32X_CORE_PMON	8
--#define IRQ_IOP32X_TIMER0	9
--#define IRQ_IOP32X_TIMER1	10
--#define IRQ_IOP32X_I2C_0	11
--#define IRQ_IOP32X_I2C_1	12
--#define IRQ_IOP32X_MESSAGING	13
--#define IRQ_IOP32X_ATU_BIST	14
--#define IRQ_IOP32X_PERFMON	15
--#define IRQ_IOP32X_CORE_PMU	16
--#define IRQ_IOP32X_BIU_ERR	17
--#define IRQ_IOP32X_ATU_ERR	18
--#define IRQ_IOP32X_MCU_ERR	19
--#define IRQ_IOP32X_DMA0_ERR	20
--#define IRQ_IOP32X_DMA1_ERR	21
--#define IRQ_IOP32X_AA_ERR	23
--#define IRQ_IOP32X_MSG_ERR	24
--#define IRQ_IOP32X_SSP		25
--#define IRQ_IOP32X_XINT0	27
--#define IRQ_IOP32X_XINT1	28
--#define IRQ_IOP32X_XINT2	29
--#define IRQ_IOP32X_XINT3	30
--#define IRQ_IOP32X_HPI		31
-+#define IRQ_IOP32X_DMA0_EOT	IOP_IRQ(0)
-+#define IRQ_IOP32X_DMA0_EOC	IOP_IRQ(1)
-+#define IRQ_IOP32X_DMA1_EOT	IOP_IRQ(2)
-+#define IRQ_IOP32X_DMA1_EOC	IOP_IRQ(3)
-+#define IRQ_IOP32X_AA_EOT	IOP_IRQ(6)
-+#define IRQ_IOP32X_AA_EOC	IOP_IRQ(7)
-+#define IRQ_IOP32X_CORE_PMON	IOP_IRQ(8)
-+#define IRQ_IOP32X_TIMER0	IOP_IRQ(9)
-+#define IRQ_IOP32X_TIMER1	IOP_IRQ(10)
-+#define IRQ_IOP32X_I2C_0	IOP_IRQ(11)
-+#define IRQ_IOP32X_I2C_1	IOP_IRQ(12)
-+#define IRQ_IOP32X_MESSAGING	IOP_IRQ(13)
-+#define IRQ_IOP32X_ATU_BIST	IOP_IRQ(14)
-+#define IRQ_IOP32X_PERFMON	IOP_IRQ(15)
-+#define IRQ_IOP32X_CORE_PMU	IOP_IRQ(16)
-+#define IRQ_IOP32X_BIU_ERR	IOP_IRQ(17)
-+#define IRQ_IOP32X_ATU_ERR	IOP_IRQ(18)
-+#define IRQ_IOP32X_MCU_ERR	IOP_IRQ(19)
-+#define IRQ_IOP32X_DMA0_ERR	IOP_IRQ(20)
-+#define IRQ_IOP32X_DMA1_ERR	IOP_IRQ(21)
-+#define IRQ_IOP32X_AA_ERR	IOP_IRQ(23)
-+#define IRQ_IOP32X_MSG_ERR	IOP_IRQ(24)
-+#define IRQ_IOP32X_SSP		IOP_IRQ(25)
-+#define IRQ_IOP32X_XINT0	IOP_IRQ(27)
-+#define IRQ_IOP32X_XINT1	IOP_IRQ(28)
-+#define IRQ_IOP32X_XINT2	IOP_IRQ(29)
-+#define IRQ_IOP32X_XINT3	IOP_IRQ(30)
-+#define IRQ_IOP32X_HPI		IOP_IRQ(31)
+@@ -2788,7 +2784,7 @@ static void ctx_resched(struct perf_cpu_context *cpuctx,
+ 	else if (ctx_event_type & EVENT_PINNED)
+ 		cpu_ctx_sched_out(cpuctx, EVENT_FLEXIBLE);
  
- #endif
-
-
+-	perf_event_sched_in(cpuctx, task_ctx, current);
++	perf_event_sched_in(cpuctx, task_ctx);
+ 	perf_pmu_enable(cpuctx->ctx.pmu);
+ }
+ 
+@@ -3011,7 +3007,7 @@ static void __perf_event_enable(struct perf_event *event,
+ 		return;
+ 
+ 	if (!event_filter_match(event)) {
+-		ctx_sched_in(ctx, cpuctx, EVENT_TIME, current);
++		ctx_sched_in(ctx, cpuctx, EVENT_TIME);
+ 		return;
+ 	}
+ 
+@@ -3020,7 +3016,7 @@ static void __perf_event_enable(struct perf_event *event,
+ 	 * then don't put it on unless the group is on.
+ 	 */
+ 	if (leader != event && leader->state != PERF_EVENT_STATE_ACTIVE) {
+-		ctx_sched_in(ctx, cpuctx, EVENT_TIME, current);
++		ctx_sched_in(ctx, cpuctx, EVENT_TIME);
+ 		return;
+ 	}
+ 
+@@ -3865,8 +3861,7 @@ ctx_flexible_sched_in(struct perf_event_context *ctx,
+ static void
+ ctx_sched_in(struct perf_event_context *ctx,
+ 	     struct perf_cpu_context *cpuctx,
+-	     enum event_type_t event_type,
+-	     struct task_struct *task)
++	     enum event_type_t event_type)
+ {
+ 	int is_active = ctx->is_active;
+ 
+@@ -3878,7 +3873,7 @@ ctx_sched_in(struct perf_event_context *ctx,
+ 	if (is_active ^ EVENT_TIME) {
+ 		/* start ctx time */
+ 		__update_context_time(ctx, false);
+-		perf_cgroup_set_timestamp(task, ctx);
++		perf_cgroup_set_timestamp(cpuctx);
+ 		/*
+ 		 * CPU-release for the below ->is_active store,
+ 		 * see __load_acquire() in perf_event_time_now()
+@@ -3909,12 +3904,11 @@ ctx_sched_in(struct perf_event_context *ctx,
+ }
+ 
+ static void cpu_ctx_sched_in(struct perf_cpu_context *cpuctx,
+-			     enum event_type_t event_type,
+-			     struct task_struct *task)
++			     enum event_type_t event_type)
+ {
+ 	struct perf_event_context *ctx = &cpuctx->ctx;
+ 
+-	ctx_sched_in(ctx, cpuctx, event_type, task);
++	ctx_sched_in(ctx, cpuctx, event_type);
+ }
+ 
+ static void perf_event_context_sched_in(struct perf_event_context *ctx,
+@@ -3956,7 +3950,7 @@ static void perf_event_context_sched_in(struct perf_event_context *ctx,
+ 	 */
+ 	if (!RB_EMPTY_ROOT(&ctx->pinned_groups.tree))
+ 		cpu_ctx_sched_out(cpuctx, EVENT_FLEXIBLE);
+-	perf_event_sched_in(cpuctx, ctx, task);
++	perf_event_sched_in(cpuctx, ctx);
+ 
+ 	if (cpuctx->sched_cb_usage && pmu->sched_task)
+ 		pmu->sched_task(cpuctx->task_ctx, true);
+@@ -4267,7 +4261,7 @@ static bool perf_rotate_context(struct perf_cpu_context *cpuctx)
+ 	if (cpu_event)
+ 		rotate_ctx(&cpuctx->ctx, cpu_event);
+ 
+-	perf_event_sched_in(cpuctx, task_ctx, current);
++	perf_event_sched_in(cpuctx, task_ctx);
+ 
+ 	perf_pmu_enable(cpuctx->ctx.pmu);
+ 	perf_ctx_unlock(cpuctx, cpuctx->task_ctx);
+@@ -4339,7 +4333,7 @@ static void perf_event_enable_on_exec(int ctxn)
+ 		clone_ctx = unclone_ctx(ctx);
+ 		ctx_resched(cpuctx, ctx, event_type);
+ 	} else {
+-		ctx_sched_in(ctx, cpuctx, EVENT_TIME, current);
++		ctx_sched_in(ctx, cpuctx, EVENT_TIME);
+ 	}
+ 	perf_ctx_unlock(cpuctx, ctx);
+ 
