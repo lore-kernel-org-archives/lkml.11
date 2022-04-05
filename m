@@ -2,46 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ECF23C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 01:10:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3567DC43217
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 01:10:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1840106AbiDFBHL (ORCPT
+        id S1840150AbiDFBHW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 21:07:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55168 "EHLO
+        Tue, 5 Apr 2022 21:07:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47886 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354577AbiDEKOk (ORCPT
+        with ESMTP id S1348926AbiDEJss (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:14:40 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28D204991A;
-        Tue,  5 Apr 2022 03:01:27 -0700 (PDT)
+        Tue, 5 Apr 2022 05:48:48 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3ADCFA0BED;
+        Tue,  5 Apr 2022 02:37:46 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B87E461676;
-        Tue,  5 Apr 2022 10:01:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C345EC385A2;
-        Tue,  5 Apr 2022 10:01:25 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E06E6B81C6C;
+        Tue,  5 Apr 2022 09:37:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3795CC385A4;
+        Tue,  5 Apr 2022 09:37:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649152886;
-        bh=na5hAgnCaVoKY/ciAWchSLPD1IiKCXLoiXTbpqxLsgQ=;
+        s=korg; t=1649151463;
+        bh=HQ8WKX/MD7XlNHXrBNKlaeo+5o71NqqaQvKlW8Fz6Qo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fHl9h1uYxEAUJxIRukFflygXn3K0GEiuoOJbtR0qq+9jwXChDU6oIUMDUr71vJ+xx
-         a0/+KTSQvSC04oEZQ7qaS7uzHLfeQpY1SmWpsszoNDD+AZgJheEQGmY/ct1Qs+klTH
-         rbuCYzJBIynylu26tSbMcUNZh2zkYkbmrp3eDgBQ=
+        b=2wEt2sbL2OQLRjsDnUzkStMFXSmEV7fjX3fc9uFtyw6WAFvE6ZbTCB/VV0RF47BSD
+         qUpBqjrWZj6bpOVnVaT42okPdJZf2/cU5xmNMZQMIqkDKg48ZY/zvtS16L87BS7N1m
+         St7ZxGojZmtxDV6AaYieOqYJvtF7w/Cpv4g8IDXE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Xie Yongji <xieyongji@bytedance.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Jens Axboe <axboe@kernel.dk>, Lee Jones <lee.jones@linaro.org>
-Subject: [PATCH 5.10 024/599] virtio-blk: Use blk_validate_block_size() to validate block size
-Date:   Tue,  5 Apr 2022 09:25:18 +0200
-Message-Id: <20220405070259.539372553@linuxfoundation.org>
+        stable@vger.kernel.org, Lorenzo Bianconi <lorenzo@kernel.org>,
+        Felix Fietkau <nbd@nbd.name>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 425/913] mt76: mt7615: fix a leftover race in runtime-pm
+Date:   Tue,  5 Apr 2022 09:24:47 +0200
+Message-Id: <20220405070352.584530780@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,72 +49,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xie Yongji <xieyongji@bytedance.com>
+From: Lorenzo Bianconi <lorenzo@kernel.org>
 
-commit 57a13a5b8157d9a8606490aaa1b805bafe6c37e1 upstream.
+[ Upstream commit 42ce8d3b623162f3248db50a38359f294e6b06fd ]
 
-The block layer can't support a block size larger than
-page size yet. And a block size that's too small or
-not a power of two won't work either. If a misconfigured
-device presents an invalid block size in configuration space,
-it will result in the kernel crash something like below:
+Fix a possible race in mt7615_pm_power_save_work() if rx/tx napi
+schedules ps_work and we are currently accessing device register
+on a different cpu.
 
-[  506.154324] BUG: kernel NULL pointer dereference, address: 0000000000000008
-[  506.160416] RIP: 0010:create_empty_buffers+0x24/0x100
-[  506.174302] Call Trace:
-[  506.174651]  create_page_buffers+0x4d/0x60
-[  506.175207]  block_read_full_page+0x50/0x380
-[  506.175798]  ? __mod_lruvec_page_state+0x60/0xa0
-[  506.176412]  ? __add_to_page_cache_locked+0x1b2/0x390
-[  506.177085]  ? blkdev_direct_IO+0x4a0/0x4a0
-[  506.177644]  ? scan_shadow_nodes+0x30/0x30
-[  506.178206]  ? lru_cache_add+0x42/0x60
-[  506.178716]  do_read_cache_page+0x695/0x740
-[  506.179278]  ? read_part_sector+0xe0/0xe0
-[  506.179821]  read_part_sector+0x36/0xe0
-[  506.180337]  adfspart_check_ICS+0x32/0x320
-[  506.180890]  ? snprintf+0x45/0x70
-[  506.181350]  ? read_part_sector+0xe0/0xe0
-[  506.181906]  bdev_disk_changed+0x229/0x5c0
-[  506.182483]  blkdev_get_whole+0x6d/0x90
-[  506.183013]  blkdev_get_by_dev+0x122/0x2d0
-[  506.183562]  device_add_disk+0x39e/0x3c0
-[  506.184472]  virtblk_probe+0x3f8/0x79b [virtio_blk]
-[  506.185461]  virtio_dev_probe+0x15e/0x1d0 [virtio]
-
-So let's use a block layer helper to validate the block size.
-
-Signed-off-by: Xie Yongji <xieyongji@bytedance.com>
-Acked-by: Michael S. Tsirkin <mst@redhat.com>
-Link: https://lore.kernel.org/r/20211026144015.188-5-xieyongji@bytedance.com
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
-Signed-off-by: Lee Jones <lee.jones@linaro.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: db928f1ab9789 ("mt76: mt7663: rely on mt76_connac_pm_ref/mt76_connac_pm_unref in tx/rx napi")
+Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+Signed-off-by: Felix Fietkau <nbd@nbd.name>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/block/virtio_blk.c |   12 ++++++++++--
- 1 file changed, 10 insertions(+), 2 deletions(-)
+ drivers/net/wireless/mediatek/mt76/mt7615/mac.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
---- a/drivers/block/virtio_blk.c
-+++ b/drivers/block/virtio_blk.c
-@@ -825,9 +825,17 @@ static int virtblk_probe(struct virtio_d
- 	err = virtio_cread_feature(vdev, VIRTIO_BLK_F_BLK_SIZE,
- 				   struct virtio_blk_config, blk_size,
- 				   &blk_size);
--	if (!err)
-+	if (!err) {
-+		err = blk_validate_block_size(blk_size);
-+		if (err) {
-+			dev_err(&vdev->dev,
-+				"virtio_blk: invalid block size: 0x%x\n",
-+				blk_size);
-+			goto out_free_tags;
-+		}
-+
- 		blk_queue_logical_block_size(q, blk_size);
--	else
-+	} else
- 		blk_size = queue_logical_block_size(q);
+diff --git a/drivers/net/wireless/mediatek/mt76/mt7615/mac.c b/drivers/net/wireless/mediatek/mt76/mt7615/mac.c
+index f2704149834a..eb7bda91f2b3 100644
+--- a/drivers/net/wireless/mediatek/mt76/mt7615/mac.c
++++ b/drivers/net/wireless/mediatek/mt76/mt7615/mac.c
+@@ -2000,6 +2000,14 @@ void mt7615_pm_power_save_work(struct work_struct *work)
+ 	    test_bit(MT76_HW_SCHED_SCANNING, &dev->mphy.state))
+ 		goto out;
  
- 	/* Use topology information if available */
++	if (mutex_is_locked(&dev->mt76.mutex))
++		/* if mt76 mutex is held we should not put the device
++		 * to sleep since we are currently accessing device
++		 * register map. We need to wait for the next power_save
++		 * trigger.
++		 */
++		goto out;
++
+ 	if (time_is_after_jiffies(dev->pm.last_activity + delta)) {
+ 		delta = dev->pm.last_activity + delta - jiffies;
+ 		goto out;
+-- 
+2.34.1
+
 
 
