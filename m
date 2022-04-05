@@ -2,131 +2,136 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 141F7C4707A
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 360CDC3527B
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:40:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352347AbiDEUjQ (ORCPT
+        id S1355194AbiDEUjl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 16:39:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35102 "EHLO
+        Tue, 5 Apr 2022 16:39:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37384 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351915AbiDEKD3 (ORCPT
+        with ESMTP id S1451590AbiDEPxg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:03:29 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28101972DB;
-        Tue,  5 Apr 2022 02:52:33 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 63BE9B81B97;
-        Tue,  5 Apr 2022 09:52:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C9F1FC385A6;
-        Tue,  5 Apr 2022 09:52:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649152340;
-        bh=xuNZMXifvmTGhpPgK2BkPkaKp82sCR/h9SV2ylyFzog=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=t1s0Yh3UbcB+5mPLIjUwL5XuptyawVmLuIxTMmFZuNEnqsaLcwclPFhGYnIMNjzf9
-         dhbT9UAPO8bIzKluUr1iR4X8FzNfhHO+JocXzfGbn2mVzk/twdNbJGSA86pBNacP3K
-         R8yL3nBvFPRi1/UVyjJvjGm8cQp825gk850VqN0o=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, George Kennedy <george.kennedy@oracle.com>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Helge Deller <deller@gmx.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 739/913] video: fbdev: cirrusfb: check pixclock to avoid divide by zero
-Date:   Tue,  5 Apr 2022 09:30:01 +0200
-Message-Id: <20220405070401.986511973@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 5 Apr 2022 11:53:36 -0400
+Received: from mail-oa1-f48.google.com (mail-oa1-f48.google.com [209.85.160.48])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA0ED1C8A9E;
+        Tue,  5 Apr 2022 07:47:22 -0700 (PDT)
+Received: by mail-oa1-f48.google.com with SMTP id 586e51a60fabf-ddfa38f1c1so14589337fac.11;
+        Tue, 05 Apr 2022 07:47:22 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=8u0j6s/bnO1ru96ZH1GkIYKuWp6uTK4JpdnHlGfuDhA=;
+        b=CgnYOJhe9CIGcUbeahSe6iJ1U18lacubNo40QlQBzUV7bghD7Cdit1/i68D2p6ocO7
+         jFSTerVt0PZPxAIngnibhIe+jK8xedWID6pWbnR61RBj8LHKN80KEm7YrRhUP1TAjFAj
+         vTz192f/akBC8A7K6ZXzSJCtls7nU6k+pI3ZQ33b5uxG2v+vC5sNmhK40bVocwULmMaM
+         Hcc19osQjQbhfMlV70eoYOR6uSsFX7olHs2dl5uc9n2tCoUUsL/t+LBVl+UlsmmHDEZr
+         4Xaa5xxsIxzKTkJ1OynZK/99JpmZBCRe2XQyWi3IBY5JuNWMSQ/M5Pud2ZZu9LW6mKuN
+         1ZBA==
+X-Gm-Message-State: AOAM532TsKUa16iU0g4eF9oo7TaT4n7m9oYHj25EihvaO9oNHORCCYSh
+        DzB/lHgvJi2Sz2GTvFouaA==
+X-Google-Smtp-Source: ABdhPJxTv66QjljJi0z1Dgv/PMrNV/nc5x/lgqp82IxUqPbW5MQNlD8HiscKmc7xmHFADchiD0i1LQ==
+X-Received: by 2002:a05:6871:99:b0:d6:ac91:d53c with SMTP id u25-20020a056871009900b000d6ac91d53cmr1673287oaa.10.1649170041832;
+        Tue, 05 Apr 2022 07:47:21 -0700 (PDT)
+Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id a6-20020a9d4706000000b005cdff2d400bsm5740767otf.24.2022.04.05.07.47.20
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 05 Apr 2022 07:47:21 -0700 (PDT)
+Received: (nullmailer pid 3259938 invoked by uid 1000);
+        Tue, 05 Apr 2022 14:47:20 -0000
+Date:   Tue, 5 Apr 2022 09:47:20 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     =?iso-8859-1?Q?Cl=E9ment_L=E9ger?= <clement.leger@bootlin.com>,
+        Lizhi Hou <lizhi.hou@xilinx.com>,
+        Sonal Santan <sonal.santan@xilinx.com>
+Cc:     Philipp Zabel <p.zabel@pengutronix.de>,
+        Frank Rowand <frowand.list@gmail.com>,
+        Lars Povlsen <lars.povlsen@microchip.com>,
+        Steen Hegelund <Steen.Hegelund@microchip.com>,
+        UNGLinuxDriver@microchip.com,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Allan Nielsen <allan.nielsen@microchip.com>,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        Stefano Stabellini <sstabellini@kernel.org>
+Subject: Re: [PATCH v2 0/3] add fwnode support to reset subsystem
+Message-ID: <YkxWeMNw9Ba0KjHM@robh.at.kernel.org>
+References: <20220324141237.297207-1-clement.leger@bootlin.com>
+ <Ykst0Vb4fk+iALzc@robh.at.kernel.org>
+ <20220405092434.6e424ed4@fixe.home>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220405092434.6e424ed4@fixe.home>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: George Kennedy <george.kennedy@oracle.com>
++ some Xilinx folks
 
-[ Upstream commit 5c6f402bdcf9e7239c6bc7087eda71ac99b31379 ]
+On Tue, Apr 05, 2022 at 09:24:34AM +0200, Clément Léger wrote:
+> Le Mon, 4 Apr 2022 12:41:37 -0500,
+> Rob Herring <robh@kernel.org> a écrit :
+> 
+> > On Thu, Mar 24, 2022 at 03:12:34PM +0100, Clément Léger wrote:
+> > > This series is part of a larger series which aims at adding fwnode
+> > > support in multiple subsystems [1]. The goal of this series was to
+> > > add support for software node in various subsystem but in a first
+> > > time only the fwnode support had gained consensus and will be added
+> > > to multiple subsystems.  
+> > 
+> > The goal is describing a solution. What is the problem?
+> > 
+> > What's the scenario where you have a reset provider not described by 
+> > firmware providing resets to devices (consumers) also not described by 
+> > firmware.
+> 
+> Hi Rob, there was a link attached to this series since there was a
+> previous one that was sent which described the problem. Here is a link
+> to the same thread but to a specific message which clarifies the
+> problem and the solutions that were mentionned by other maintainers
+> (ACPI overlays, DT overlays, software nodes and so on):
+> 
+> https://lore.kernel.org/netdev/20220224154040.2633a4e4@fixe.home/
 
-Do a sanity check on pixclock value to avoid divide by zero.
+Thanks, but your commit message should explain the problem. The problem 
+is not subsystems don't support fwnode.
 
-If the pixclock value is zero, the cirrusfb driver will round up
-pixclock to get the derived frequency as close to maxclock as
-possible.
+This is the exact same problem the Xilinx folks are trying to solve with 
+their PCIe FPGA cards[1] (and that is not really a v1). They need to 
+describe h/w downstream from a 'discoverable' device. Their case is 
+further complicated with the dynamic nature of FPGAs. It's also not just 
+PCIe. Another usecase is describing downstream devices on USB FTDI 
+serial chips which can have GPIO, I2C, SPI downstream. And then you want 
+to plug in 10 of those.
 
-Syzkaller reported a divide error in cirrusfb_check_pixclock.
+I don't think swnodes are going to scale for these usecases. We moved 
+h/w description out of the kernel for a reason. Why are we adding that 
+back in a new form? The complexity for what folks want to describe is 
+only going to increase.
 
-divide error: 0000 [#1] SMP KASAN PTI
-CPU: 0 PID: 14938 Comm: cirrusfb_test Not tainted 5.15.0-rc6 #1
-Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.11.0-2
-RIP: 0010:cirrusfb_check_var+0x6f1/0x1260
+I think DT overlays is the right (or only) solution here. Of course the 
+DT maintainer would say that. Actually, I would be happier to not have 
+to support overlays in the kernel.
 
-Call Trace:
- fb_set_var+0x398/0xf90
- do_fb_ioctl+0x4b8/0x6f0
- fb_ioctl+0xeb/0x130
- __x64_sys_ioctl+0x19d/0x220
- do_syscall_64+0x3a/0x80
- entry_SYSCALL_64_after_hwframe+0x44/0xae
+I've told the Xilinx folks the same thing, but I would separate this 
+into 2 parts. First is just h/w work in a DT based system. Second is 
+creating a base tree an overlay can be applied to. The first part should 
+be pretty straightforward. We already have PCI bus bindings. The only 
+tricky part is getting address translation working from leaf device thru 
+the PCI bus to host bus, but support for that should all be in place 
+(given we support ISA buses off of PCI bus). The second part will 
+require generating PCI DT nodes at runtime. That may be needed for both 
+DT and ACPI systems as we don't always describe all the PCI hierarchy in 
+DT. That could work either by the PCI subsystem creating nodes as it
+populates devices or your driver could make a request to populate nodes 
+for its hierarchy. That's not a hard problem to solve. That's what 
+OpenFirmware implementations do already.
 
-Signed-off-by: George Kennedy <george.kennedy@oracle.com>
-Reviewed-by: Geert Uytterhoeven <geert@linux-m68k.org>
-Signed-off-by: Helge Deller <deller@gmx.de>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/video/fbdev/cirrusfb.c | 16 ++++++++--------
- 1 file changed, 8 insertions(+), 8 deletions(-)
-
-diff --git a/drivers/video/fbdev/cirrusfb.c b/drivers/video/fbdev/cirrusfb.c
-index 93802abbbc72..3d47c347b897 100644
---- a/drivers/video/fbdev/cirrusfb.c
-+++ b/drivers/video/fbdev/cirrusfb.c
-@@ -469,7 +469,7 @@ static int cirrusfb_check_mclk(struct fb_info *info, long freq)
- 	return 0;
- }
- 
--static int cirrusfb_check_pixclock(const struct fb_var_screeninfo *var,
-+static int cirrusfb_check_pixclock(struct fb_var_screeninfo *var,
- 				   struct fb_info *info)
- {
- 	long freq;
-@@ -478,9 +478,7 @@ static int cirrusfb_check_pixclock(const struct fb_var_screeninfo *var,
- 	unsigned maxclockidx = var->bits_per_pixel >> 3;
- 
- 	/* convert from ps to kHz */
--	freq = PICOS2KHZ(var->pixclock);
--
--	dev_dbg(info->device, "desired pixclock: %ld kHz\n", freq);
-+	freq = PICOS2KHZ(var->pixclock ? : 1);
- 
- 	maxclock = cirrusfb_board_info[cinfo->btype].maxclock[maxclockidx];
- 	cinfo->multiplexing = 0;
-@@ -488,11 +486,13 @@ static int cirrusfb_check_pixclock(const struct fb_var_screeninfo *var,
- 	/* If the frequency is greater than we can support, we might be able
- 	 * to use multiplexing for the video mode */
- 	if (freq > maxclock) {
--		dev_err(info->device,
--			"Frequency greater than maxclock (%ld kHz)\n",
--			maxclock);
--		return -EINVAL;
-+		var->pixclock = KHZ2PICOS(maxclock);
-+
-+		while ((freq = PICOS2KHZ(var->pixclock)) > maxclock)
-+			var->pixclock++;
- 	}
-+	dev_dbg(info->device, "desired pixclock: %ld kHz\n", freq);
-+
- 	/*
- 	 * Additional constraint: 8bpp uses DAC clock doubling to allow maximum
- 	 * pixel clock
--- 
-2.34.1
+Rob
 
 
-
+https://lore.kernel.org/lkml/20220216050056.311496-1-lizhi.hou@xilinx.com/
