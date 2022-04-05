@@ -2,45 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 52E15C4321E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C9F3C4167D
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 07:50:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232754AbiDEHvl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 03:51:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47534 "EHLO
+        id S233149AbiDEHwL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 03:52:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34082 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232725AbiDEHrG (ORCPT
+        with ESMTP id S232956AbiDEHrS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 03:47:06 -0400
+        Tue, 5 Apr 2022 03:47:18 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14BF0972B2;
-        Tue,  5 Apr 2022 00:42:53 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EEDAE9D04D;
+        Tue,  5 Apr 2022 00:43:20 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 42613B81B18;
-        Tue,  5 Apr 2022 07:42:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8D49FC340EE;
-        Tue,  5 Apr 2022 07:42:50 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9A325B81B18;
+        Tue,  5 Apr 2022 07:43:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0F2AFC340EE;
+        Tue,  5 Apr 2022 07:43:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649144570;
-        bh=Qkn4rQuY4vULlZ9kn3jjxMjdNkDLJ4Z9oqzqzL5TrYc=;
+        s=korg; t=1649144598;
+        bh=Ioh69ua165BbMXVW+E2e6d+Za5woHfANcKOg7vhADZw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=yFFvoeq5r6WBFv37M5OAbo2FhETicq7lv+Hoy5gxh2acCY9XWPdhI+MMwVq8KaoUq
-         48uEFV2R6ZYrGsf4RRNG9cXusR2xZ/ScOGytJYFiohFdxdu8V7NaDblll5dXOufh2d
-         IryQf7O7ohtJ7/LZGLA5B2lcKJEmdWUDZdinD4WM=
+        b=qa1lBG0WBhPUzvZ7pAvAyBVbydn9pK86PnbEEpoo246GUXv895/YnTPr9KgZO1xSu
+         u56hoFxFqjddntRqc/LI4izT5tOUtUDDWF95f8I+YiQXtbHbzfoQnSIZG7gMWIv8ee
+         syzE1al7plHzeRxeS0xzvEyMi3QvgOi6wMj380BU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Jos=C3=A9=20Exp=C3=B3sito?= <jose.exposito89@gmail.com>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Peter Hutterer <peter.hutterer@who-t.net>,
-        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>
-Subject: [PATCH 5.17 0091/1126] Revert "Input: clear BTN_RIGHT/MIDDLE on buttonpads"
-Date:   Tue,  5 Apr 2022 09:13:58 +0200
-Message-Id: <20220405070410.239619320@linuxfoundation.org>
+        stable@vger.kernel.org, NeilBrown <neilb@suse.de>,
+        Trond Myklebust <trond.myklebust@hammerspace.com>
+Subject: [PATCH 5.17 0054/1126] SUNRPC: avoid race between mod_timer() and del_timer_sync()
+Date:   Tue,  5 Apr 2022 09:13:21 +0200
+Message-Id: <20220405070409.152980751@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -52,59 +48,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: José Expósito <jose.exposito89@gmail.com>
+From: NeilBrown <neilb@suse.de>
 
-commit 8b188fba75195745026e11d408e4a7e94e01d701 upstream.
+commit 3848e96edf4788f772d83990022fa7023a233d83 upstream.
 
-This reverts commit 37ef4c19b4c659926ce65a7ac709ceaefb211c40.
+xprt_destory() claims XPRT_LOCKED and then calls del_timer_sync().
+Both xprt_unlock_connect() and xprt_release() call
+ ->release_xprt()
+which drops XPRT_LOCKED and *then* xprt_schedule_autodisconnect()
+which calls mod_timer().
 
-The touchpad present in the Dell Precision 7550 and 7750 laptops
-reports a HID_DG_BUTTONTYPE of type MT_BUTTONTYPE_CLICKPAD. However,
-the device is not a clickpad, it is a touchpad with physical buttons.
+This may result in mod_timer() being called *after* del_timer_sync().
+When this happens, the timer may fire long after the xprt has been freed,
+and run_timer_softirq() will probably crash.
 
-In order to fix this issue, a quirk for the device was introduced in
-libinput [1] [2] to disable the INPUT_PROP_BUTTONPAD property:
+The pairing of ->release_xprt() and xprt_schedule_autodisconnect() is
+always called under ->transport_lock.  So if we take ->transport_lock to
+call del_timer_sync(), we can be sure that mod_timer() will run first
+(if it runs at all).
 
-	[Precision 7x50 Touchpad]
-	MatchBus=i2c
-	MatchUdevType=touchpad
-	MatchDMIModalias=dmi:*svnDellInc.:pnPrecision7?50*
-	AttrInputPropDisable=INPUT_PROP_BUTTONPAD
-
-However, because of the change introduced in 37ef4c19b4 ("Input: clear
-BTN_RIGHT/MIDDLE on buttonpads") the BTN_RIGHT key bit is not mapped
-anymore breaking the device right click button and making impossible to
-workaround it in user space.
-
-In order to avoid breakage on other present or future devices, revert
-the patch causing the issue.
-
-Signed-off-by: José Expósito <jose.exposito89@gmail.com>
-Reviewed-by: Hans de Goede <hdegoede@redhat.com>
-Acked-by: Peter Hutterer <peter.hutterer@who-t.net>
-Acked-by: Benjamin Tissoires <benjamin.tissoires@redhat.com>
 Cc: stable@vger.kernel.org
-Link: https://lore.kernel.org/r/20220321184404.20025-1-jose.exposito89@gmail.com
-Signed-off-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Signed-off-by: NeilBrown <neilb@suse.de>
+Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/input/input.c |    6 ------
- 1 file changed, 6 deletions(-)
+ net/sunrpc/xprt.c |    7 +++++++
+ 1 file changed, 7 insertions(+)
 
---- a/drivers/input/input.c
-+++ b/drivers/input/input.c
-@@ -2285,12 +2285,6 @@ int input_register_device(struct input_d
- 	/* KEY_RESERVED is not supposed to be transmitted to userspace. */
- 	__clear_bit(KEY_RESERVED, dev->keybit);
+--- a/net/sunrpc/xprt.c
++++ b/net/sunrpc/xprt.c
+@@ -2112,7 +2112,14 @@ static void xprt_destroy(struct rpc_xprt
+ 	 */
+ 	wait_on_bit_lock(&xprt->state, XPRT_LOCKED, TASK_UNINTERRUPTIBLE);
  
--	/* Buttonpads should not map BTN_RIGHT and/or BTN_MIDDLE. */
--	if (test_bit(INPUT_PROP_BUTTONPAD, dev->propbit)) {
--		__clear_bit(BTN_RIGHT, dev->keybit);
--		__clear_bit(BTN_MIDDLE, dev->keybit);
--	}
--
- 	/* Make sure that bitmasks not mentioned in dev->evbit are clean. */
- 	input_cleanse_bitmasks(dev);
++	/*
++	 * xprt_schedule_autodisconnect() can run after XPRT_LOCKED
++	 * is cleared.  We use ->transport_lock to ensure the mod_timer()
++	 * can only run *before* del_time_sync(), never after.
++	 */
++	spin_lock(&xprt->transport_lock);
+ 	del_timer_sync(&xprt->timer);
++	spin_unlock(&xprt->transport_lock);
  
+ 	/*
+ 	 * Destroy sockets etc from the system workqueue so they can
 
 
