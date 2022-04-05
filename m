@@ -2,93 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 70543C43219
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 15:20:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E2314C47084
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 15:20:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386224AbiDEPPz (ORCPT
+        id S1385781AbiDEPPT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 11:15:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53164 "EHLO
+        Tue, 5 Apr 2022 11:15:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53872 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346705AbiDEJpV (ORCPT
+        with ESMTP id S1346680AbiDEJpV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Apr 2022 05:45:21 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7938E4B42E;
-        Tue,  5 Apr 2022 02:31:26 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FC4C6472;
+        Tue,  5 Apr 2022 02:31:21 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3BE15B81B14;
-        Tue,  5 Apr 2022 09:31:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 984E1C385A4;
-        Tue,  5 Apr 2022 09:31:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649151084;
-        bh=Fzz3ascwScSN8mlgX8AOFuaHlsRdXJCzGKE041uMtYo=;
-        h=From:To:Cc:In-Reply-To:References:Subject:Date:From;
-        b=sO1+eaDGwua4hTwxsxWvwQ4f9PWir/mw48Nu5p/k7OyC6gmrvDP7lBnwF26eLUenH
-         jfTfrQ5J/fLHjSaBEVrKDonwR9/M/NQDyihJIxaYf90frnR2KGF3kh0133LJxoKxnl
-         rkwuSapewEPukF55NcBd7yNegPZdodUzzybuLVpAD0V5IuQymM1e+BJ96bj77VvxKv
-         MAfbAedBidV7QuIggcgG8TEo/2CdqSZ97cn8CmHYJw8hjsSUZ7wCHemNSspUcV6YVa
-         y3/dtTe3HYOc7GvBbNT/Cj1OItEF9L5+q8xwf+DBvWaCqb37ZPyPxkTt6RLOqdQ+I/
-         0/aG2LQwVKxJQ==
-From:   Mark Brown <broonie@kernel.org>
-To:     tiwai@suse.com, xiam0nd.tong@gmail.com, perex@perex.cz,
-        lgirdwood@gmail.com
-Cc:     stable@vger.kernel.org, alsa-devel@alsa-project.org,
-        linux-kernel@vger.kernel.org
-In-Reply-To: <20220329012134.9375-1-xiam0nd.tong@gmail.com>
-References: <20220329012134.9375-1-xiam0nd.tong@gmail.com>
-Subject: Re: [PATCH v2] soc: soc-dapm: fix two incorrect uses of list iterator
-Message-Id: <164915108235.276574.3850661736822524747.b4-ty@kernel.org>
-Date:   Tue, 05 Apr 2022 10:31:22 +0100
+        by ams.source.kernel.org (Postfix) with ESMTPS id A396DB81B14;
+        Tue,  5 Apr 2022 09:31:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1353FC385A3;
+        Tue,  5 Apr 2022 09:31:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649151078;
+        bh=h2e4qYecj9Bm+D+7lf7mH8L5duW4UVKYn8UQDRd28xU=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=ElZ3l/c6my+ceK3uU3skBryGZ+a9x0V4+yoMxUIy72os/Xxhu2om5twg3TfEZwtMs
+         pmBK0Uw1xZuQnKccP/wFUibeLFZ8nmdKvsjX8JwkM73WmxHKpfT4Xizs47uduj5tlK
+         UbV20dpwwwVbtkvaSzRycA2pWJii7eBXqwLwu2pw=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 285/913] media: v4l: Avoid unaligned access warnings when printing 4cc modifiers
+Date:   Tue,  5 Apr 2022 09:22:27 +0200
+Message-Id: <20220405070348.400902612@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 29 Mar 2022 09:21:34 +0800, Xiaomeng Tong wrote:
-> These two bug are here:
-> 	list_for_each_entry_safe_continue(w, n, list,
-> 					power_list);
-> 	list_for_each_entry_safe_continue(w, n, list,
-> 					power_list);
-> 
-> After the list_for_each_entry_safe_continue() exits, the list iterator
-> will always be a bogus pointer which point to an invalid struct objdect
-> containing HEAD member. The funciton poniter 'w->event' will be a
-> invalid value which can lead to a control-flow hijack if the 'w' can be
-> controlled.
-> 
-> [...]
+From: Sakari Ailus <sakari.ailus@linux.intel.com>
 
-Applied to
+[ Upstream commit 24bb30c8c894ec7213ad810b46e2a6a4c12136c1 ]
 
-   https://git.kernel.org/pub/scm/linux/kernel/git/broonie/sound.git for-next
+Pointers V4L2 pixelformat and dataformat fields in a few packed structs
+are directly passed to printk family of functions. This could result in an
+unaligned access albeit no such possibility appears to exist at the
+moment i.e. this clang warning appears to be a false positive.
 
-Thanks!
+Address the warning by copying the pixelformat or dataformat value to a
+local variable first.
 
-[1/1] soc: soc-dapm: fix two incorrect uses of list iterator
-      commit: f730a46b931d894816af34a0ff8e4ad51565b39f
+Reported-by: kernel test robot <lkp@intel.com>
+Fixes: e927e1e0f0dd ("v4l: ioctl: Use %p4cc printk modifier to print FourCC codes")
+Signed-off-by: Sakari Ailus <sakari.ailus@linux.intel.com>
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/media/v4l2-core/v4l2-ioctl.c | 12 +++++++-----
+ 1 file changed, 7 insertions(+), 5 deletions(-)
 
-All being well this means that it will be integrated into the linux-next
-tree (usually sometime in the next 24 hours) and sent to Linus during
-the next merge window (or sooner if it is a bug fix), however if
-problems are discovered then the patch may be dropped or reverted.
+diff --git a/drivers/media/v4l2-core/v4l2-ioctl.c b/drivers/media/v4l2-core/v4l2-ioctl.c
+index c7308a2a80a0..7c596a85f34f 100644
+--- a/drivers/media/v4l2-core/v4l2-ioctl.c
++++ b/drivers/media/v4l2-core/v4l2-ioctl.c
+@@ -279,8 +279,8 @@ static void v4l_print_format(const void *arg, bool write_only)
+ 	const struct v4l2_vbi_format *vbi;
+ 	const struct v4l2_sliced_vbi_format *sliced;
+ 	const struct v4l2_window *win;
+-	const struct v4l2_sdr_format *sdr;
+ 	const struct v4l2_meta_format *meta;
++	u32 pixelformat;
+ 	u32 planes;
+ 	unsigned i;
+ 
+@@ -299,8 +299,9 @@ static void v4l_print_format(const void *arg, bool write_only)
+ 	case V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE:
+ 	case V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE:
+ 		mp = &p->fmt.pix_mp;
++		pixelformat = mp->pixelformat;
+ 		pr_cont(", width=%u, height=%u, format=%p4cc, field=%s, colorspace=%d, num_planes=%u, flags=0x%x, ycbcr_enc=%u, quantization=%u, xfer_func=%u\n",
+-			mp->width, mp->height, &mp->pixelformat,
++			mp->width, mp->height, &pixelformat,
+ 			prt_names(mp->field, v4l2_field_names),
+ 			mp->colorspace, mp->num_planes, mp->flags,
+ 			mp->ycbcr_enc, mp->quantization, mp->xfer_func);
+@@ -343,14 +344,15 @@ static void v4l_print_format(const void *arg, bool write_only)
+ 		break;
+ 	case V4L2_BUF_TYPE_SDR_CAPTURE:
+ 	case V4L2_BUF_TYPE_SDR_OUTPUT:
+-		sdr = &p->fmt.sdr;
+-		pr_cont(", pixelformat=%p4cc\n", &sdr->pixelformat);
++		pixelformat = p->fmt.sdr.pixelformat;
++		pr_cont(", pixelformat=%p4cc\n", &pixelformat);
+ 		break;
+ 	case V4L2_BUF_TYPE_META_CAPTURE:
+ 	case V4L2_BUF_TYPE_META_OUTPUT:
+ 		meta = &p->fmt.meta;
++		pixelformat = meta->dataformat;
+ 		pr_cont(", dataformat=%p4cc, buffersize=%u\n",
+-			&meta->dataformat, meta->buffersize);
++			&pixelformat, meta->buffersize);
+ 		break;
+ 	}
+ }
+-- 
+2.34.1
 
-You may get further e-mails resulting from automated or manual testing
-and review of the tree, please engage with people reporting problems and
-send followup patches addressing any issues that are reported if needed.
 
-If any updates are required or you are submitting further changes they
-should be sent as incremental updates against current git, existing
-patches will not be replaced.
 
-Please add any relevant lists and maintainers to the CCs when replying
-to this mail.
-
-Thanks,
-Mark
