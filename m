@@ -2,117 +2,216 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C5FAC4167B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E537C4332F
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 03:02:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1851045AbiDFDCC (ORCPT
+        id S1850879AbiDFDBS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 23:02:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39618 "EHLO
+        Tue, 5 Apr 2022 23:01:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35924 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1841121AbiDFBRq (ORCPT
+        with ESMTP id S1452786AbiDFBQ6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 21:17:46 -0400
-Received: from mail-io1-xd2d.google.com (mail-io1-xd2d.google.com [IPv6:2607:f8b0:4864:20::d2d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74648193C2
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 16:10:23 -0700 (PDT)
-Received: by mail-io1-xd2d.google.com with SMTP id k25so1000019iok.8
-        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 16:10:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linuxfoundation.org; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=D+Ivtg5pKoltKvJ46d3+6yYAIRcj64rTYJYvVX/xCjE=;
-        b=VBTLYQiwwEWtJaKWyH8SrAw2gJR2T2uiY2GBIbaJi75SCHq7sUutGpEG+98gPaUa6R
-         GXCVPsZXMsk6uOFgh3wAmU2vqsZ3ETCsQ+j3eixiln3NLdTMkf2gHX/qvazYCtTxCCEt
-         FKT3BwRXTImn6DFqire06gKsB9LPklQ0lSdkw=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=D+Ivtg5pKoltKvJ46d3+6yYAIRcj64rTYJYvVX/xCjE=;
-        b=uTDAjjt+KI99y6hWEgHyL1leal9yS7IaM4Pm7nU8rBNvHN4rvApd8XycyMNRp6+wlP
-         y8koJ24asngAdi2xwG3OhJWK1nG8vvedKKZoX8Ad5JL9Jdq4QctaSMAZOT9i7GiquA1V
-         ueDgEJ/rSzRZQR98W/GZDBES8CzinL11zGK3TT7KnWTG5y4tb2kqDlHU6wXTTu8AVIF4
-         0OCu1jNR/kvYSlC5Bki5ZwvaIZIbUIX2ZVND2u+9ZcuT8fDkGT/1WOBUfXIkuGwI+f/5
-         D6ZFm+IMjJwgUMVAjMhfYBxJsIF8Y7NNy+lFJdlqtSL/y6VscMBIhwhgw/rMvlGA0e48
-         3OYg==
-X-Gm-Message-State: AOAM532sWOQdyTjYJJohnZyZjjFCxG1cL/J9qbeZHDmyZdHYyQkONLsW
-        yxFbL8RpOsMr22yEB/lc/txWCQ==
-X-Google-Smtp-Source: ABdhPJzXe7Inoe5P30IZe++e3ZdQhUIC0BQKbn5qFsf+P5D0pL3zrierzfYF7+JpL3Owz0WPwKJpJQ==
-X-Received: by 2002:a5e:a717:0:b0:649:6328:792b with SMTP id b23-20020a5ea717000000b006496328792bmr2801638iod.54.1649200222863;
-        Tue, 05 Apr 2022 16:10:22 -0700 (PDT)
-Received: from [192.168.1.128] ([71.205.29.0])
-        by smtp.gmail.com with ESMTPSA id l10-20020a056e02066a00b002ca405211c7sm4252491ilt.12.2022.04.05.16.10.21
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 05 Apr 2022 16:10:22 -0700 (PDT)
-Subject: Re: [PATCH 5.10 000/599] 5.10.110-rc1 review
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org
-Cc:     stable@vger.kernel.org, torvalds@linux-foundation.org,
-        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
-        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
-        jonathanh@nvidia.com, f.fainelli@gmail.com,
-        sudipm.mukherjee@gmail.com, slade@sladewatkins.com,
-        Shuah Khan <skhan@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
-From:   Shuah Khan <skhan@linuxfoundation.org>
-Message-ID: <09201c80-bc6e-36ad-a4dc-82f54486b434@linuxfoundation.org>
-Date:   Tue, 5 Apr 2022 17:10:21 -0600
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.8.1
+        Tue, 5 Apr 2022 21:16:58 -0400
+Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2080.outbound.protection.outlook.com [40.107.92.80])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4B8750B1F;
+        Tue,  5 Apr 2022 16:09:33 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=L1of8WNjFz9yeN1SGMcDCs8W1yZnz0/gu9YEgC0FsUvBmvU9TMnX+RXnty+J1VIGEYbdexlYVN5YvCmqIiA5Fl684YQS+yIThlQJgHiyLgmt6I9znplnTVPjTUvUAfDvs1MbGByORtSpvEmBXSh66pFsOojZR3RPttQX7sFJnJl+rSdpFkYk3qZk8rh/0cZUT2vdXKJ0il3fUvrv7pX24XydtiW8FqTXUQII84q6KZQCkUUPTT4hS7rvtBKNibnhj1bOrJ84C4IQS5hth4KxwuO8btyuKq3kBtxKRRJ8WooDjF7LU7mqvNFVLgZeBSVyXsbIgljL6tFefwOjxMWZTA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=01k0lDFBrX4TSaFFTyGWe4vMN9NeCWfH/vZTEoeUjCY=;
+ b=HY/SeyYlHaidJTLtA4chOqIBwNKU7/OOjMMKvW21PBQgPk4oF3wGqTK0IG3eyGxFMCt9Xn2mxgye42Ds0q8dxMzwuegmVhGqSKLvQWJPTne+aNBR1rsdk73gKyrYbZQmWYmpjT9i2fV6L4xVIJ3zEUIMVJtlZDrv9m6AmWa8rz0axZs6Q97g/Ne/arGV26fcGv42JmlyU7tU8BFGAp9ufsiK+Gm8ECbqmaKyt5vx+fYXGqvUDf2BpRMyL+vrN0RaFiFOJQdPr7sRJYPfKnmFQuEFEFF+K7ifBU28RdGSs593FyCPQnda/3PlKWSWYKXatbao860gRZRuJFptVptYwg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 165.204.84.17) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=amd.com;
+ dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
+ header.from=amd.com; dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=01k0lDFBrX4TSaFFTyGWe4vMN9NeCWfH/vZTEoeUjCY=;
+ b=j4nrpcSf8iLoHPjp7jaRRfUZ/asaTtggLUmGqbXmc+Vk62M2SUqt83TfnY4RdrT8tm2DN45WSG8cca4zckTFnUTu9gmx6ij8MPnmKfNvG8YPl9/4ZBdYNk5C5AWnbdxb30wqgo8EE6kIG1zVPW6NVa1IY7KInyUCXLbdqTdIj7o=
+Received: from MW4PR04CA0075.namprd04.prod.outlook.com (2603:10b6:303:6b::20)
+ by MN2PR12MB2990.namprd12.prod.outlook.com (2603:10b6:208:cc::23) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5123.31; Tue, 5 Apr
+ 2022 23:09:31 +0000
+Received: from CO1NAM11FT008.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:303:6b:cafe::d6) by MW4PR04CA0075.outlook.office365.com
+ (2603:10b6:303:6b::20) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5123.31 via Frontend
+ Transport; Tue, 5 Apr 2022 23:09:31 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
+ smtp.mailfrom=amd.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=amd.com;
+Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
+ 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
+ client-ip=165.204.84.17; helo=SATLEXMB04.amd.com;
+Received: from SATLEXMB04.amd.com (165.204.84.17) by
+ CO1NAM11FT008.mail.protection.outlook.com (10.13.175.191) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.5144.20 via Frontend Transport; Tue, 5 Apr 2022 23:09:31 +0000
+Received: from sp5-759chost.amd.com (10.180.168.240) by SATLEXMB04.amd.com
+ (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Tue, 5 Apr
+ 2022 18:09:25 -0500
+From:   Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+To:     <linux-kernel@vger.kernel.org>, <kvm@vger.kernel.org>,
+        <x86@kernel.org>
+CC:     <mlevitsk@redhat.com>, <seanjc@google.com>, <pbonzini@redhat.com>,
+        <joro@8bytes.org>, <tglx@linutronix.de>, <mingo@redhat.com>,
+        <bp@alien8.de>, <peterz@infradead.org>, <hpa@zytor.com>,
+        <jon.grimm@amd.com>, <wei.huang2@amd.com>, <terry.bowman@amd.com>,
+        Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+        kernel test robot <lkp@intel.com>
+Subject: [PATCH 09/12] KVM: SVM: Introduce helper functions to (de)activate AVIC and x2AVIC
+Date:   Tue, 5 Apr 2022 18:08:52 -0500
+Message-ID: <20220405230855.15376-10-suravee.suthikulpanit@amd.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220405230855.15376-1-suravee.suthikulpanit@amd.com>
+References: <20220405230855.15376-1-suravee.suthikulpanit@amd.com>
 MIME-Version: 1.0
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.180.168.240]
+X-ClientProxiedBy: SATLEXMB03.amd.com (10.181.40.144) To SATLEXMB04.amd.com
+ (10.181.40.145)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: b8c3a912-21ce-4a12-a25d-08da175957a1
+X-MS-TrafficTypeDiagnostic: MN2PR12MB2990:EE_
+X-Microsoft-Antispam-PRVS: <MN2PR12MB299080B45B4744EC68C01876F3E49@MN2PR12MB2990.namprd12.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 1Ba+BB3k3v+n9QoxBHgL64O8LWKE8ZK2VgUmN1gwUQ8WbxVKU9A+ZIMR4Ig+0f1716CwYzYXaqrj07Bk2Q1jo7oXOA4/foLjVYi04qaqLNrLQSzD4hyTjwoRtWCk+QSAIw2FwG/Nxp+mXaAf0q/zseKYZZFZH1Ziq2PL0XmW6p6ISPrxgHHEdLG8zjz5TBqejljI0WQUrhNjGxrcx43m1aocrjk4PFsdMu1eF9rRNRVsRen0AJnnoJwCK5rn3cFos6hpi7HYec5aeNYWDdSBkPFWHeAO9ifqksPmBwlgiGuFJWs58k0P4mH8P7JbYr0N24rawst9ml4TK63xSHih6Ipl8QgCr9PoApZGt3A3KTWRnZKjrJ9iS6Zz4+PhV0M84j8BeJMMY0x7RxZliJBRKOXJbBe+aSyhq48afOKMU4vtDL8waOxiM/fl+DQ49ONbzIeG3O2fqCMjNowusxvENJoLHO5GerMaHRNeBIm/lrz7XlglSB+z0puDmLu0yvDdOb55CQ+BHIle7Mq5yiYui6h6QZ5ymyYcyzDdISQIpHJxn4wg8WDsMDkcN93VhqmqWRgR1Vwjf+kQ9K5D6q4N6dmnEFX6EE3s0hdJBqCR4DmQXuR80WyNXRrCCJkR3na8t4SjaH2jEqyqYieX9aEQfDyn1Vc52uCeYYcHynh+QgfvmzOf74Lod2dkXFzAY0sA05bmpkr60DMJyBp07Qy0rA==
+X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230001)(4636009)(40470700004)(46966006)(36840700001)(2906002)(356005)(81166007)(54906003)(110136005)(82310400005)(40460700003)(83380400001)(5660300002)(47076005)(44832011)(36860700001)(8936002)(86362001)(4326008)(7416002)(316002)(8676002)(70206006)(70586007)(16526019)(6666004)(7696005)(426003)(336012)(508600001)(1076003)(26005)(2616005)(186003)(36756003)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Apr 2022 23:09:31.3741
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: b8c3a912-21ce-4a12-a25d-08da175957a1
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
+X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT008.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR12MB2990
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 4/5/22 1:24 AM, Greg Kroah-Hartman wrote:
-> This is the start of the stable review cycle for the 5.10.110 release.
-> There are 599 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
-> 
-> Responses should be made by Thu, 07 Apr 2022 07:01:33 +0000.
-> Anything received after that time might be too late.
-> 
-> The whole patch series can be found in one patch at:
-> 	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.10.110-rc1.gz
-> or in the git tree and branch at:
-> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.10.y
-> and the diffstat can be found below.
-> 
-> thanks,
-> 
-> greg k-h
-> 
+Refactor the current logic for (de)activate AVIC into helper functions,
+and also add logic for (de)activate x2AVIC. The helper function are used
+when initializing AVIC and switching from AVIC to x2AVIC mode
+(handled by svm_refresh_spicv_exec_ctrl()).
 
-Build failed on my system. The following is the problem commit. There
-are no changes to the config between 5.15.32 and this build.
+When an AVIC-enabled guest switches from APIC to x2APIC mode during
+runtime, the SVM driver needs to perform the following steps:
 
-Ranjani Sridharan <ranjani.sridharan@linux.intel.com>
-     ASoC: SOF: Intel: hda: Remove link assignment limitation
+1. Set the x2APIC mode bit for AVIC in VMCB along with the maximum
+APIC ID support for each mode accodingly.
 
-sound/soc/sof/intel/hda-dai.c: In function ‘hda_link_stream_assign’:
-sound/soc/sof/intel/hda-dai.c:82:24: error: implicit declaration of function ‘get_chip_info’; did you mean ‘get_group_info’? [-Werror=implicit-function-declaration]
-    82 |                 chip = get_chip_info(sdev->pdata);
-       |                        ^~~~~~~~~~~~~
-       |                        get_group_info
-sound/soc/sof/intel/hda-dai.c:82:22: warning: assignment to ‘const struct sof_intel_dsp_desc *’ from ‘int’ makes pointer from integer without a cast [-Wint-conversion]
-    82 |                 chip = get_chip_info(sdev->pdata);
-       |                      ^
-sound/soc/sof/intel/hda-dai.c:90:35: error: ‘const struct sof_intel_dsp_desc’ has no member named ‘quirks’
-    90 |                         if (!(chip->quirks & SOF_INTEL_PROCEN_FMT_QUIRK)) {
-       |                                   ^~
-sound/soc/sof/intel/hda-dai.c:90:46: error: ‘SOF_INTEL_PROCEN_FMT_QUIRK’ undeclared (first use in this function)
-    90 |                         if (!(chip->quirks & SOF_INTEL_PROCEN_FMT_QUIRK)) {
-       |                                              ^~~~~~~~~~~~~~~~~~~~~~~~~~
-sound/soc/sof/intel/hda-dai.c:90:46: note: each undeclared identifier is reported only once for each function it appears in
-cc1: some warnings being treated as errors
+2. Disable x2APIC MSRs interception in order to allow the hardware
+to virtualize x2APIC MSRs accesses.
 
-thanks,
--- Shuah
+Reported-by: kernel test robot <lkp@intel.com>
+Reviewed-by: Maxim Levitsky <mlevitsk@redhat.com>
+Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+---
+ arch/x86/include/asm/svm.h |  1 +
+ arch/x86/kvm/svm/avic.c    | 48 ++++++++++++++++++++++++++++++++++----
+ 2 files changed, 44 insertions(+), 5 deletions(-)
+
+diff --git a/arch/x86/include/asm/svm.h b/arch/x86/include/asm/svm.h
+index 1ccf301648a0..2519209c5f4a 100644
+--- a/arch/x86/include/asm/svm.h
++++ b/arch/x86/include/asm/svm.h
+@@ -248,6 +248,7 @@ enum avic_ipi_failure_cause {
+ 	AVIC_IPI_FAILURE_INVALID_BACKING_PAGE,
+ };
+ 
++#define AVIC_PHYSICAL_MAX_INDEX_MASK	GENMASK_ULL(9, 0)
+ 
+ /*
+  * For AVIC, the max index allowed for physical APIC ID
+diff --git a/arch/x86/kvm/svm/avic.c b/arch/x86/kvm/svm/avic.c
+index 58b58a327826..4f9990526485 100644
+--- a/arch/x86/kvm/svm/avic.c
++++ b/arch/x86/kvm/svm/avic.c
+@@ -66,6 +66,45 @@ struct amd_svm_iommu_ir {
+ 	void *data;		/* Storing pointer to struct amd_ir_data */
+ };
+ 
++static inline void avic_set_x2apic_msr_interception(struct vcpu_svm *svm, bool disable)
++{
++	int i;
++
++	for (i = 0x800; i <= 0x8ff; i++)
++		set_msr_interception(&svm->vcpu, svm->msrpm, i,
++				     !disable, !disable);
++}
++
++static void avic_activate_vmcb(struct vcpu_svm *svm)
++{
++	struct vmcb *vmcb = svm->vmcb01.ptr;
++
++	vmcb->control.int_ctl &= ~(AVIC_ENABLE_MASK | X2APIC_MODE_MASK);
++	vmcb->control.avic_physical_id &= ~AVIC_PHYSICAL_MAX_INDEX_MASK;
++
++	vmcb->control.int_ctl |= AVIC_ENABLE_MASK;
++	if (apic_x2apic_mode(svm->vcpu.arch.apic)) {
++		vmcb->control.int_ctl |= X2APIC_MODE_MASK;
++		vmcb->control.avic_physical_id |= X2AVIC_MAX_PHYSICAL_ID;
++		/* Disabling MSR intercept for x2APIC registers */
++		avic_set_x2apic_msr_interception(svm, false);
++	} else {
++		vmcb->control.avic_physical_id |= AVIC_MAX_PHYSICAL_ID;
++		/* Enabling MSR intercept for x2APIC registers */
++		avic_set_x2apic_msr_interception(svm, true);
++	}
++}
++
++static void avic_deactivate_vmcb(struct vcpu_svm *svm)
++{
++	struct vmcb *vmcb = svm->vmcb01.ptr;
++
++	vmcb->control.int_ctl &= ~(AVIC_ENABLE_MASK | X2APIC_MODE_MASK);
++	vmcb->control.avic_physical_id &= ~AVIC_PHYSICAL_MAX_INDEX_MASK;
++
++	/* Enabling MSR intercept for x2APIC registers */
++	avic_set_x2apic_msr_interception(svm, true);
++}
+ 
+ /* Note:
+  * This function is called from IOMMU driver to notify
+@@ -183,13 +222,12 @@ void avic_init_vmcb(struct vcpu_svm *svm)
+ 	vmcb->control.avic_backing_page = bpa & AVIC_HPA_MASK;
+ 	vmcb->control.avic_logical_id = lpa & AVIC_HPA_MASK;
+ 	vmcb->control.avic_physical_id = ppa & AVIC_HPA_MASK;
+-	vmcb->control.avic_physical_id |= AVIC_MAX_PHYSICAL_ID;
+ 	vmcb->control.avic_vapic_bar = APIC_DEFAULT_PHYS_BASE & VMCB_AVIC_APIC_BAR_MASK;
+ 
+ 	if (kvm_apicv_activated(svm->vcpu.kvm))
+-		vmcb->control.int_ctl |= AVIC_ENABLE_MASK;
++		avic_activate_vmcb(svm);
+ 	else
+-		vmcb->control.int_ctl &= ~AVIC_ENABLE_MASK;
++		avic_deactivate_vmcb(svm);
+ }
+ 
+ static u64 *avic_get_physical_id_entry(struct kvm_vcpu *vcpu,
+@@ -691,9 +729,9 @@ void svm_refresh_apicv_exec_ctrl(struct kvm_vcpu *vcpu)
+ 		 * accordingly before re-activating.
+ 		 */
+ 		avic_post_state_restore(vcpu);
+-		vmcb->control.int_ctl |= AVIC_ENABLE_MASK;
++		avic_activate_vmcb(svm);
+ 	} else {
+-		vmcb->control.int_ctl &= ~AVIC_ENABLE_MASK;
++		avic_deactivate_vmcb(svm);
+ 	}
+ 	vmcb_mark_dirty(vmcb, VMCB_AVIC);
+ 
+-- 
+2.25.1
+
