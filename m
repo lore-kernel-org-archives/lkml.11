@@ -2,71 +2,63 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 77550C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 96A37C433FE
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 22:47:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1454244AbiDEWiJ (ORCPT
+        id S1454281AbiDEWiU convert rfc822-to-8bit (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 18:38:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37050 "EHLO
+        Tue, 5 Apr 2022 18:38:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56140 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1457471AbiDEQDQ (ORCPT
+        with ESMTP id S1455081AbiDEP7g (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 12:03:16 -0400
-Received: from ms.lwn.net (ms.lwn.net [IPv6:2600:3c01:e000:3a1::42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9F1A3BA47;
-        Tue,  5 Apr 2022 08:50:20 -0700 (PDT)
-Received: from localhost (unknown [IPv6:2601:281:8300:35:2589:2a93:190d:b787])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ms.lwn.net (Postfix) with ESMTPSA id 1B761608;
-        Tue,  5 Apr 2022 15:50:20 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 ms.lwn.net 1B761608
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=lwn.net; s=20201203;
-        t=1649173820; bh=7+lervbpy6gXxeBrivEVunvIrUU2KhGTP2hBrxL/QTA=;
-        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
-        b=pCL0S9JpbndAJVkCNAkIKwDxISi6nnxklloexQ6eeoGjdVbCYbUcS2nMV1GpRvtu6
-         9NQ0lkceS1cH5tCqvEs/MOTgPSGrtE/fhm9G/sdeNbUoH6dv+wSeuUolH/qe3QCeZc
-         BGUIdIJR1dCJDXfeI3ecF9FM4J1yizFYN59Iixc4w6h1r6XGEoaCDoRx6+2dgdtpr4
-         HSyGRMADKpho8RVLVzR71/bG5fT0y0P0QzF/IUdgqI0K153OheSBzrRR0wL0+8ZYtI
-         5LUw4JAVkkPjZs7rzKwZfgjh2zF0RYX3KTXhpc/6XrHLGjD/uwVbPUBWuG0WyoOPJl
-         5XRazNzgYMahA==
-From:   Jonathan Corbet <corbet@lwn.net>
-To:     Marcelo Schmitt <marcelo.schmitt1@gmail.com>,
-        Dongliang Mu <mudongliangabcd@gmail.com>
-Cc:     Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
-        dlatypov@google.com, davidgow@google.com,
-        linux-doc@vger.kernel.org, linux-sparse@vger.kernel.org,
-        cocci@inria.fr, smatch@vger.kernel.org,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        skhan@linuxfoundation.org,
-        Dan Carpenter <dan.carpenter@oracle.com>, julia.lawall@inria.fr
-Subject: Re: [PATCH v3 1/2] Documentation: dev-tools: Add a section for
- static analysis tools
-In-Reply-To: <YkWaL26K7UjKB0sa@marsc.168.1.7>
-References: <cover.1648674305.git.marcelo.schmitt1@gmail.com>
- <7d793c1b9f87d9cb8ac0e858e561e108c2bf0176.1648674305.git.marcelo.schmitt1@gmail.com>
- <CAD-N9QVvgCqbwiebjVX2_81pH_YhK+j4hhJPG3fbWbAtzFVJTQ@mail.gmail.com>
- <YkWaL26K7UjKB0sa@marsc.168.1.7>
-Date:   Tue, 05 Apr 2022 09:50:19 -0600
-Message-ID: <87y20jedhg.fsf@meer.lwn.net>
+        Tue, 5 Apr 2022 11:59:36 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6EBB1EA281
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 08:09:43 -0700 (PDT)
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <p.zabel@pengutronix.de>)
+        id 1nbkoF-0007Sl-Ih; Tue, 05 Apr 2022 17:09:31 +0200
+Received: from [2a0a:edc0:0:900:1d::4e] (helo=lupine)
+        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
+        (envelope-from <p.zabel@pengutronix.de>)
+        id 1nbkoG-001FZ2-2D; Tue, 05 Apr 2022 17:09:30 +0200
+Received: from pza by lupine with local (Exim 4.94.2)
+        (envelope-from <p.zabel@pengutronix.de>)
+        id 1nbkoE-0007ua-0i; Tue, 05 Apr 2022 17:09:30 +0200
+Message-ID: <ac31aebdd194fc559c43b08419a649ca32167e6d.camel@pengutronix.de>
+Subject: Re: [PATCH 4/8] dt-bindings: reset: add sama7g5 definitions
+From:   Philipp Zabel <p.zabel@pengutronix.de>
+To:     Claudiu Beznea <claudiu.beznea@microchip.com>, robh+dt@kernel.org,
+        nicolas.ferre@microchip.com, alexandre.belloni@bootlin.com,
+        sre@kernel.org
+Cc:     linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org
+Date:   Tue, 05 Apr 2022 17:09:29 +0200
+In-Reply-To: <20220405112724.2760905-5-claudiu.beznea@microchip.com>
+References: <20220405112724.2760905-1-claudiu.beznea@microchip.com>
+         <20220405112724.2760905-5-claudiu.beznea@microchip.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8BIT
+User-Agent: Evolution 3.38.3-1 
 MIME-Version: 1.0
-Content-Type: text/plain
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: p.zabel@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Marcelo Schmitt <marcelo.schmitt1@gmail.com> writes:
+On Di, 2022-04-05 at 14:27 +0300, Claudiu Beznea wrote:
+> Add reset bindings for SAMA7G5. At the moment only USB PHYs are
+> included.
 
-> On 03/31, Dongliang Mu wrote:
+What do you mean by "at the moment only USB PHYs are included"? Are
+those the only reset controls on sama7g5 and later hardware might have
+more?
 
->> Should we include static analysis tools based on LLVM? For example,
->> Clang static analysis.
->
-> I think that would be a good addition. I haven't checked out Clang tools
-> though, so it would take me a bit more time to write something about that.
-
-That seems like a good topic for a future patch.  Meanwhile I've applied
-this series, thanks.
-
-jon
+regards
+Philipp
