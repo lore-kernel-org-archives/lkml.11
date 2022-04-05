@@ -2,46 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A4D3AC433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 952BCC43219
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:57:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1838674AbiDFA4W (ORCPT
+        id S1838650AbiDFA4M (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 20:56:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43986 "EHLO
+        Tue, 5 Apr 2022 20:56:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60522 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348433AbiDEJrm (ORCPT
+        with ESMTP id S1356151AbiDEKXA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:47:42 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D87A9B7FE;
-        Tue,  5 Apr 2022 02:33:55 -0700 (PDT)
+        Tue, 5 Apr 2022 06:23:00 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7FB11BA306;
+        Tue,  5 Apr 2022 03:06:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A13F5B81C85;
-        Tue,  5 Apr 2022 09:33:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E7E37C385A2;
-        Tue,  5 Apr 2022 09:33:51 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1E264616E7;
+        Tue,  5 Apr 2022 10:06:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2B393C385A1;
+        Tue,  5 Apr 2022 10:06:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649151232;
-        bh=1IjPHnjIVZjOabLDm+ybTZPEAtPkmXIKYSb7izvV96I=;
+        s=korg; t=1649153218;
+        bh=gC9mmqjdDsldH0jwpnx+SrEPMbxFmXtb97UEUB0tsx4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=s2MpECMm4DQqAtAEk3qAJE01nTRILpLYJ4F2fBdKlzEnF2CgY0Ctu7CaWVCyHnadd
-         LVbXU9tMNiEQgWHDJMff4O1yRaxx9XMx2Ecrg4RN6xYn0eBTgXQ807WET3T2xSS7S1
-         LQRQtmDqhvnkq8vOCM5OksSz18TffKFc9UDu/K5Q=
+        b=GJwBvBYQzSP5ZBfXV8oNcaGoEpVZCQNKLlJ6mjua7P8Pw+IbCgDpWcwPw5Nhwy1dQ
+         zm+D7uVZwrF/vEYfaW+j1BOGrn2ePCONSZE8znCKW0f7k1md8SAhrCX1vX4f3BajFY
+         qGyBv/cd3zUBfhZ+v6lz+8LxHVCFzTY/klJqzTHM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        stable@vger.kernel.org,
+        Patrick Rudolph <patrick.rudolph@9elements.com>,
+        Marcello Sylvester Bauer <sylv@sylv.io>,
+        Alan Tull <atull@opensource.altera.com>,
+        Guenter Roeck <linux@roeck-us.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 342/913] memory: emif: Add check for setup_interrupts
-Date:   Tue,  5 Apr 2022 09:23:24 +0200
-Message-Id: <20220405070350.099195909@linuxfoundation.org>
+Subject: [PATCH 5.10 144/599] hwmon: (pmbus) Add mutex to regulator ops
+Date:   Tue,  5 Apr 2022 09:27:18 +0200
+Message-Id: <20220405070303.128456382@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
+References: <20220405070258.802373272@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,47 +53,69 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+From: Patrick Rudolph <patrick.rudolph@9elements.com>
 
-[ Upstream commit fd7bd80b46373887b390852f490f21b07e209498 ]
+[ Upstream commit 686d303ee6301261b422ea51e64833d7909a2c36 ]
 
-As the potential failure of the devm_request_threaded_irq(),
-it should be better to check the return value of the
-setup_interrupts() and return error if fails.
+On PMBUS devices with multiple pages, the regulator ops need to be
+protected with the update mutex. This prevents accidentally changing
+the page in a separate thread while operating on the PMBUS_OPERATION
+register.
 
-Fixes: 68b4aee35d1f ("memory: emif: add interrupt and temperature handling")
-Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Link: https://lore.kernel.org/r/20220224025444.3256530-1-jiasheng@iscas.ac.cn
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Tested on Infineon xdpe11280 while a separate thread polls for sensor
+data.
+
+Signed-off-by: Patrick Rudolph <patrick.rudolph@9elements.com>
+Signed-off-by: Marcello Sylvester Bauer <sylv@sylv.io>
+Link: https://lore.kernel.org/r/b991506bcbf665f7af185945f70bf9d5cf04637c.1645804976.git.sylv@sylv.io
+Fixes: ddbb4db4ced1b ("hwmon: (pmbus) Add regulator support")
+Cc: Alan Tull <atull@opensource.altera.com>
+Signed-off-by: Guenter Roeck <linux@roeck-us.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/memory/emif.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ drivers/hwmon/pmbus/pmbus_core.c | 16 +++++++++++++---
+ 1 file changed, 13 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/memory/emif.c b/drivers/memory/emif.c
-index 762d0c0f0716..d4d4044e05b3 100644
---- a/drivers/memory/emif.c
-+++ b/drivers/memory/emif.c
-@@ -1117,7 +1117,7 @@ static int __init_or_module emif_probe(struct platform_device *pdev)
+diff --git a/drivers/hwmon/pmbus/pmbus_core.c b/drivers/hwmon/pmbus/pmbus_core.c
+index 71798fde2ef0..7a13057007d9 100644
+--- a/drivers/hwmon/pmbus/pmbus_core.c
++++ b/drivers/hwmon/pmbus/pmbus_core.c
+@@ -2255,10 +2255,14 @@ static int pmbus_regulator_is_enabled(struct regulator_dev *rdev)
  {
- 	struct emif_data	*emif;
- 	struct resource		*res;
--	int			irq;
-+	int			irq, ret;
+ 	struct device *dev = rdev_get_dev(rdev);
+ 	struct i2c_client *client = to_i2c_client(dev->parent);
++	struct pmbus_data *data = i2c_get_clientdata(client);
+ 	u8 page = rdev_get_id(rdev);
+ 	int ret;
  
- 	if (pdev->dev.of_node)
- 		emif = of_get_memory_device_details(pdev->dev.of_node, &pdev->dev);
-@@ -1147,7 +1147,9 @@ static int __init_or_module emif_probe(struct platform_device *pdev)
- 	emif_onetime_settings(emif);
- 	emif_debugfs_init(emif);
- 	disable_and_clear_all_interrupts(emif);
--	setup_interrupts(emif, irq);
-+	ret = setup_interrupts(emif, irq);
-+	if (ret)
-+		goto error;
++	mutex_lock(&data->update_lock);
+ 	ret = pmbus_read_byte_data(client, page, PMBUS_OPERATION);
++	mutex_unlock(&data->update_lock);
++
+ 	if (ret < 0)
+ 		return ret;
  
- 	/* One-time actions taken on probing the first device */
- 	if (!emif1) {
+@@ -2269,11 +2273,17 @@ static int _pmbus_regulator_on_off(struct regulator_dev *rdev, bool enable)
+ {
+ 	struct device *dev = rdev_get_dev(rdev);
+ 	struct i2c_client *client = to_i2c_client(dev->parent);
++	struct pmbus_data *data = i2c_get_clientdata(client);
+ 	u8 page = rdev_get_id(rdev);
++	int ret;
+ 
+-	return pmbus_update_byte_data(client, page, PMBUS_OPERATION,
+-				      PB_OPERATION_CONTROL_ON,
+-				      enable ? PB_OPERATION_CONTROL_ON : 0);
++	mutex_lock(&data->update_lock);
++	ret = pmbus_update_byte_data(client, page, PMBUS_OPERATION,
++				     PB_OPERATION_CONTROL_ON,
++				     enable ? PB_OPERATION_CONTROL_ON : 0);
++	mutex_unlock(&data->update_lock);
++
++	return ret;
+ }
+ 
+ static int pmbus_regulator_enable(struct regulator_dev *rdev)
 -- 
 2.34.1
 
