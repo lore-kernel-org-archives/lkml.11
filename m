@@ -2,107 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 14ACBC433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3796BC41535
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:16:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1445803AbiDEUIp (ORCPT
+        id S1446149AbiDEUIx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 16:08:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59514 "EHLO
+        Tue, 5 Apr 2022 16:08:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37168 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1455441AbiDEQAC (ORCPT
+        with ESMTP id S1457387AbiDEQDK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 12:00:02 -0400
-Received: from mail.skyhub.de (mail.skyhub.de [IPv6:2a01:4f8:190:11c2::b:1457])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1133E17077
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 08:15:29 -0700 (PDT)
-Received: from zn.tnic (p2e55dff8.dip0.t-ipconnect.de [46.85.223.248])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id F21321EC04AD;
-        Tue,  5 Apr 2022 17:15:23 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
-        t=1649171724;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:in-reply-to:
-         references; bh=Hu6/55Y5RP0JeHRRHFzJWTLf8RYPBg7nbGCBlr4S73o=;
-        b=MnDYNBG22EWthkUZ/Ya63+V8MCVMmDtfcDxQItzPpBKA0JdMvsrm3P8FFsQ3YUnama26/p
-        Ot7+9BAebypZI1hG1PVISCd2eCHJECNaDOg9OBvmKFaVjqSM/Oft4sjf9A2M/35kxznZIP
-        inB4ZisU32YbZ5siQHNo3JdtyjO1oic=
-From:   Borislav Petkov <bp@alien8.de>
-To:     LKML <linux-kernel@vger.kernel.org>
-Subject: [PATCH 00/11] treewide: Fix a bunch of shift overflows
-Date:   Tue,  5 Apr 2022 17:15:06 +0200
-Message-Id: <20220405151517.29753-1-bp@alien8.de>
-X-Mailer: git-send-email 2.35.1
+        Tue, 5 Apr 2022 12:03:10 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EEF402AE1;
+        Tue,  5 Apr 2022 08:40:01 -0700 (PDT)
+Date:   Tue, 05 Apr 2022 15:39:59 -0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1649173200;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=CF1SEm6yplTkf5CDH5Ci9Fu4GP9Jj3yDWTJBOlnHqag=;
+        b=BPM3DQBiWEVv2TUQShQHWjiwkWHRKQ1/lphuNCOyBIqak1pVzTtyRvgv9OFn7SHid9UCBw
+        FN/VIr8UU/qS77RFf4VeOF9aS+1iX5qEY56yDErqo/KCX11QGyph+WUi3NFU5kxx3XN6uV
+        lEDxuT7d4P7VCdXSzKIsdQBF3xqVZLjVDhyb1BS/gn8Mbx2frg9K/UL+o1wN6xuYaELivn
+        wkBMMgHnpHERCKfWZjUbwGd834g+Ngltfzd2+inKl+jw4SYtnF0iR7QU4JansNIjsgHmPN
+        MkN5lMIc9YkQktjhBtRJzrL8TzMBGhiQNifBFfPYzjkH0KW/sGuPg81WlTJrXA==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1649173200;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=CF1SEm6yplTkf5CDH5Ci9Fu4GP9Jj3yDWTJBOlnHqag=;
+        b=Avy9u3VENAVlHZOVx8DcgMkKqaVf330spLReJWV9nTABk8d+MFmp1jhn4b4nNvkMi+DP6b
+        nHixnOssaaRXNdBA==
+From:   "irqchip-bot for Marc Zyngier" <tip-bot2@linutronix.de>
+Sender: tip-bot2@linutronix.de
+Reply-to: linux-kernel@vger.kernel.org
+To:     linux-kernel@vger.kernel.org
+Subject: [irqchip: irq/irqchip-fixes] irqchip/gic-v3: Fix GICR_CTLR.RWP polling
+Cc:     Marc Zyngier <maz@kernel.org>, stable@vger.kernel.org,
+        Andre Przywara <andre.przywara@arm.com>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        tglx@linutronix.de
+In-Reply-To: <20220315165034.794482-2-maz@kernel.org>
+References: <20220315165034.794482-2-maz@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Message-ID: <164917319947.389.16591150926204042875.tip-bot2@tip-bot2>
+Robot-ID: <tip-bot2@linutronix.de>
+Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Borislav Petkov <bp@suse.de>
+The following commit has been merged into the irq/irqchip-fixes branch of irqchip:
 
-Hi all,
+Commit-ID:     0df6664531a12cdd8fc873f0cac0dcb40243d3e9
+Gitweb:        https://git.kernel.org/pub/scm/linux/kernel/git/maz/arm-platforms/0df6664531a12cdd8fc873f0cac0dcb40243d3e9
+Author:        Marc Zyngier <maz@kernel.org>
+AuthorDate:    Tue, 15 Mar 2022 16:50:32 
+Committer:     Marc Zyngier <maz@kernel.org>
+CommitterDate: Tue, 05 Apr 2022 16:33:13 +01:00
 
-so this is the result of me trying to make allmodconfig actually build
-here.
+irqchip/gic-v3: Fix GICR_CTLR.RWP polling
 
-Due to some recent changes which added -fsanitize-shift to the build
-options of an allmodconfig, it started failing here with an old gcc
-because getting an overflow while shifting is undefined C99 behavior.
+It turns out that our polling of RWP is totally wrong when checking
+for it in the redistributors, as we test the *distributor* bit index,
+whereas it is a different bit number in the RDs... Oopsie boo.
 
-gcc warns/errors out with -Werror about this only on newer versions
-where -pedantic is present while older ones do so even without it. The
-whole details here:
+This is embarassing. Not only because it is wrong, but also because
+it took *8 years* to notice the blunder...
 
-  https://lore.kernel.org/r/YkwQ6%2BtIH8GQpuct@zn.tnic
+Just fix the damn thing.
 
-Fixing all those is trivial so please pick up at your convenience.
+Fixes: 021f653791ad ("irqchip: gic-v3: Initial support for GICv3")
+Signed-off-by: Marc Zyngier <maz@kernel.org>
+Cc: stable@vger.kernel.org
+Reviewed-by: Andre Przywara <andre.przywara@arm.com>
+Reviewed-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+Link: https://lore.kernel.org/r/20220315165034.794482-2-maz@kernel.org
+---
+ drivers/irqchip/irq-gic-v3.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-In order to avoid spamming people unnecessarily, I'm not CCing everyone
-on each patch but only the relevant maintainers and lists.
-
-Thx.
-
-Borislav Petkov (11):
-  scsi: aacraid: Fix undefined behavior due to shift overflowing the
-    constant
-  ALSA: usb-audio: Fix undefined behavior due to shift overflowing the
-    constant
-  bnx2x: Fix undefined behavior due to shift overflowing the constant
-  drm/r128: Fix undefined behavior due to shift overflowing the constant
-  i2c: ismt: Fix undefined behavior due to shift overflowing the
-    constant
-  brcmfmac: sdio: Fix undefined behavior due to shift overflowing the
-    constant
-  usb: typec: tcpm: Fix undefined behavior due to shift overflowing the
-    constant
-  mt76: Fix undefined behavior due to shift overflowing the constant
-  perf/imx_ddr: Fix undefined behavior due to shift overflowing the
-    constant
-  IB/mlx5: Fix undefined behavior due to shift overflowing the constant
-  drm/i915: Fix undefined behavior due to shift overflowing the constant
-
- .../gpu/drm/i915/gt/uc/abi/guc_actions_abi.h   |  2 +-
- .../i915/gt/uc/abi/guc_communication_ctb_abi.h |  2 +-
- .../gpu/drm/i915/gt/uc/abi/guc_messages_abi.h  |  2 +-
- drivers/gpu/drm/i915/gt/uc/intel_guc_reg.h     |  2 +-
- drivers/gpu/drm/i915/i915_reg.h                | 18 +++++++++---------
- drivers/gpu/drm/r128/r128_drv.h                |  4 ++--
- drivers/i2c/busses/i2c-ismt.c                  |  4 ++--
- .../net/ethernet/broadcom/bnx2x/bnx2x_reg.h    |  2 +-
- .../broadcom/brcm80211/brcmfmac/sdio.c         |  2 +-
- .../net/wireless/mediatek/mt76/mt76x2/pci.c    |  2 +-
- drivers/perf/fsl_imx8_ddr_perf.c               |  2 +-
- drivers/scsi/aacraid/aacraid.h                 |  2 +-
- include/linux/mlx5/port.h                      |  2 +-
- include/linux/usb/pd_bdo.h                     |  2 +-
- sound/usb/usbaudio.h                           |  2 +-
- 15 files changed, 25 insertions(+), 25 deletions(-)
-
--- 
-2.35.1
-
+diff --git a/drivers/irqchip/irq-gic-v3.c b/drivers/irqchip/irq-gic-v3.c
+index 0efe1a9..9b63165 100644
+--- a/drivers/irqchip/irq-gic-v3.c
++++ b/drivers/irqchip/irq-gic-v3.c
+@@ -206,11 +206,11 @@ static inline void __iomem *gic_dist_base(struct irq_data *d)
+ 	}
+ }
+ 
+-static void gic_do_wait_for_rwp(void __iomem *base)
++static void gic_do_wait_for_rwp(void __iomem *base, u32 bit)
+ {
+ 	u32 count = 1000000;	/* 1s! */
+ 
+-	while (readl_relaxed(base + GICD_CTLR) & GICD_CTLR_RWP) {
++	while (readl_relaxed(base + GICD_CTLR) & bit) {
+ 		count--;
+ 		if (!count) {
+ 			pr_err_ratelimited("RWP timeout, gone fishing\n");
+@@ -224,13 +224,13 @@ static void gic_do_wait_for_rwp(void __iomem *base)
+ /* Wait for completion of a distributor change */
+ static void gic_dist_wait_for_rwp(void)
+ {
+-	gic_do_wait_for_rwp(gic_data.dist_base);
++	gic_do_wait_for_rwp(gic_data.dist_base, GICD_CTLR_RWP);
+ }
+ 
+ /* Wait for completion of a redistributor change */
+ static void gic_redist_wait_for_rwp(void)
+ {
+-	gic_do_wait_for_rwp(gic_data_rdist_rd_base());
++	gic_do_wait_for_rwp(gic_data_rdist_rd_base(), GICR_CTLR_RWP);
+ }
+ 
+ #ifdef CONFIG_ARM64
