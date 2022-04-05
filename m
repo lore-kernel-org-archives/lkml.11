@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A876CC3527E
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:36:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F193C47080
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:36:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241640AbiDEIex (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 04:34:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54652 "EHLO
+        id S241678AbiDEIfJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 04:35:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54952 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236452AbiDEICR (ORCPT
+        with ESMTP id S236463AbiDEICW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:02:17 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A8D54DF76;
-        Tue,  5 Apr 2022 01:00:20 -0700 (PDT)
+        Tue, 5 Apr 2022 04:02:22 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 328DF4F9D9;
+        Tue,  5 Apr 2022 01:00:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 280D5B81B14;
-        Tue,  5 Apr 2022 08:00:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 764D5C340EE;
-        Tue,  5 Apr 2022 08:00:17 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C58AF61545;
+        Tue,  5 Apr 2022 08:00:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D6E6DC340EE;
+        Tue,  5 Apr 2022 08:00:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649145617;
-        bh=U4zrHvuKONmFfOKqwWcYvoIZQzfADdQU6l6uwhJOr6k=;
+        s=korg; t=1649145623;
+        bh=ILWExaWFs9IY44mWLEJ+w6njJpf64YYLdcomOi8/aGM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vuI8LfWmywdl3WeCsnrIPwQzItdfihsxgx3RSEyr1n/Nisd878LuvMxqdDHNWHDLs
-         1Nc/GXFLPVDEiOa1UtqOs5CLefeszDYxLKM6afBuOFGjkdj5RV2D/8fu3WccPvrMuy
-         yFz1EXDbsPQfSLY+TABz/IccgeSFu66c28DRlAEg=
+        b=eE3LUx1H3bW4ppBUX6pg+wzK/mXmcbNk85s3I+2DrIFatCclLHOacfV5q8Hn3TAQe
+         VnvYHyiTLD84nQmuUvR7pCa5Li6jvCuD32745dkB2LzvUgWLxJp9vPHOWLQ8RSAuBG
+         SgRJ7uLbWCpYqgITDwJK2vGvVpiRf7KwOLybydUk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hulk Robot <hulkci@huawei.com>,
-        Yang Yingliang <yangyingliang@huawei.com>,
-        Kalle Valo <quic_kvalo@quicinc.com>,
+        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
+        Melissa Wen <mwen@igalia.com>,
+        Melissa Wen <melissa.srw@gmail.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0429/1126] ath11k: add missing of_node_put() to avoid leak
-Date:   Tue,  5 Apr 2022 09:19:36 +0200
-Message-Id: <20220405070420.217140424@linuxfoundation.org>
+Subject: [PATCH 5.17 0431/1126] drm/v3d/v3d_drv: Check for error num after setting mask
+Date:   Tue,  5 Apr 2022 09:19:38 +0200
+Message-Id: <20220405070420.275711105@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -50,49 +50,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yang Yingliang <yangyingliang@huawei.com>
+From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
 
-[ Upstream commit 3d38faef0de1756994b3d95e47b2302842f729e2 ]
+[ Upstream commit 4a39156166b90465da0f9a33b3442d63b5651bec ]
 
-The node pointer is returned by of_find_node_by_type()
-or of_parse_phandle() with refcount incremented. Calling
-of_node_put() to aovid the refcount leak.
+Because of the possible failure of the dma_supported(), the
+dma_set_mask_and_coherent() may return error num.
+Therefore, it should be better to check it and return the error if
+fails.
+Also, we can create a variable for the mask to solve the
+alignment issue.
 
-Fixes: 6ac04bdc5edb ("ath11k: Use reserved host DDR addresses from DT for PCI devices")
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
-Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
-Link: https://lore.kernel.org/r/20211221114003.335557-1-yangyingliang@huawei.com
+Fixes: 334dd38a3878 ("drm/v3d: Set dma_mask as well as coherent_dma_mask")
+Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Reviewed-by: Melissa Wen <mwen@igalia.com>
+Signed-off-by: Melissa Wen <melissa.srw@gmail.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220110013807.4105270-1-jiasheng@iscas.ac.cn
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/ath/ath11k/mhi.c | 1 +
- drivers/net/wireless/ath/ath11k/qmi.c | 1 +
- 2 files changed, 2 insertions(+)
+ drivers/gpu/drm/v3d/v3d_drv.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/wireless/ath/ath11k/mhi.c b/drivers/net/wireless/ath/ath11k/mhi.c
-index e4250ba8dfee..cccaa348cf21 100644
---- a/drivers/net/wireless/ath/ath11k/mhi.c
-+++ b/drivers/net/wireless/ath/ath11k/mhi.c
-@@ -332,6 +332,7 @@ static int ath11k_mhi_read_addr_from_dt(struct mhi_controller *mhi_ctrl)
- 		return -ENOENT;
+diff --git a/drivers/gpu/drm/v3d/v3d_drv.c b/drivers/gpu/drm/v3d/v3d_drv.c
+index bd46396a1ae0..1afcd54fbbd5 100644
+--- a/drivers/gpu/drm/v3d/v3d_drv.c
++++ b/drivers/gpu/drm/v3d/v3d_drv.c
+@@ -219,6 +219,7 @@ static int v3d_platform_drm_probe(struct platform_device *pdev)
+ 	int ret;
+ 	u32 mmu_debug;
+ 	u32 ident1;
++	u64 mask;
  
- 	ret = of_address_to_resource(np, 0, &res);
-+	of_node_put(np);
- 	if (ret)
+ 	v3d = devm_drm_dev_alloc(dev, &v3d_drm_driver, struct v3d_dev, drm);
+ 	if (IS_ERR(v3d))
+@@ -237,8 +238,11 @@ static int v3d_platform_drm_probe(struct platform_device *pdev)
  		return ret;
  
-diff --git a/drivers/net/wireless/ath/ath11k/qmi.c b/drivers/net/wireless/ath/ath11k/qmi.c
-index 65d3c6ba35ae..42c2ad3e3668 100644
---- a/drivers/net/wireless/ath/ath11k/qmi.c
-+++ b/drivers/net/wireless/ath/ath11k/qmi.c
-@@ -1936,6 +1936,7 @@ static int ath11k_qmi_assign_target_mem_chunk(struct ath11k_base *ab)
- 			}
+ 	mmu_debug = V3D_READ(V3D_MMU_DEBUG_INFO);
+-	dma_set_mask_and_coherent(dev,
+-		DMA_BIT_MASK(30 + V3D_GET_FIELD(mmu_debug, V3D_MMU_PA_WIDTH)));
++	mask = DMA_BIT_MASK(30 + V3D_GET_FIELD(mmu_debug, V3D_MMU_PA_WIDTH));
++	ret = dma_set_mask_and_coherent(dev, mask);
++	if (ret)
++		return ret;
++
+ 	v3d->va_width = 30 + V3D_GET_FIELD(mmu_debug, V3D_MMU_VA_WIDTH);
  
- 			ret = of_address_to_resource(hremote_node, 0, &res);
-+			of_node_put(hremote_node);
- 			if (ret) {
- 				ath11k_dbg(ab, ATH11K_DBG_QMI,
- 					   "qmi fail to get reg from hremote\n");
+ 	ident1 = V3D_READ(V3D_HUB_IDENT1);
 -- 
 2.34.1
 
