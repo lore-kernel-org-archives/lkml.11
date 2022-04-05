@@ -2,47 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E16BC43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1EAC7C4321E
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 13:41:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1390250AbiDENhu (ORCPT
+        id S1390275AbiDENhy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 09:37:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53070 "EHLO
+        Tue, 5 Apr 2022 09:37:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60604 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343967AbiDEJQn (ORCPT
+        with ESMTP id S1344122AbiDEJSS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:16:43 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FAE4D5573;
-        Tue,  5 Apr 2022 02:02:10 -0700 (PDT)
+        Tue, 5 Apr 2022 05:18:18 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED61521E09;
+        Tue,  5 Apr 2022 02:04:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DDBA1B80DA1;
-        Tue,  5 Apr 2022 09:02:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 51750C385A0;
-        Tue,  5 Apr 2022 09:02:07 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8A43C61003;
+        Tue,  5 Apr 2022 09:04:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9C271C385A0;
+        Tue,  5 Apr 2022 09:04:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649149327;
-        bh=PbU3Zy+C03rpWGayUy2MlpDNrRuZYXE7DvqU86BFgbo=;
+        s=korg; t=1649149462;
+        bh=d7UCBwQEaTY8MrbFc29WL+NlLOS9fxPm1wuHsv6tbLk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=zy5RQS2jeJG3/HZF0ek9t+LIMLyfYtclN/kiY/dWkkTvYJ1JczavbFY1pSMrKa8N2
-         QN1drNQOiM5rQLJUBq0JdOERrVMoCh9jxHSgJ0rfP8y+/NUpxXX/gPLqLzlWcgCjgh
-         hd4+Rn8ToMAOW5hl4K890nQgUx+GmZJas3dpoqII=
+        b=s7f1DiwQC+0rnaIhfG/xVSrNvHmcXwEK73mBJb9lDMeR4c6TTv7M52pn7cTnEcfUI
+         ITtHKA/RA0EZw4MUMSr33K9/Qy0TG/uQvAIgWlvnr2C4p/1enwjANtMfeJ0n8ShVrf
+         v1MUQrluvfN9ACu6kbKX4bRNvaZj22Oibf/3bCtk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Alexander Lobakin <alexandr.lobakin@intel.com>,
-        Michal Kubiak <michal.kubiak@intel.com>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        stable@vger.kernel.org, "Michael S. Tsirkin" <mst@redhat.com>,
+        Stefan Hajnoczi <stefanha@redhat.com>,
+        Stefano Garzarella <sgarzare@redhat.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0638/1017] ice: dont allow to run ice_send_event_to_aux() in atomic ctx
-Date:   Tue,  5 Apr 2022 09:25:51 +0200
-Message-Id: <20220405070413.221449890@linuxfoundation.org>
+Subject: [PATCH 5.16 0724/1017] vsock/virtio: read the negotiated features before using VQs
+Date:   Tue,  5 Apr 2022 09:27:17 +0200
+Message-Id: <20220405070415.757179269@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -54,45 +52,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alexander Lobakin <alexandr.lobakin@intel.com>
+From: Stefano Garzarella <sgarzare@redhat.com>
 
-[ Upstream commit 5a3156932da06f09953764de113419f254086faf ]
+[ Upstream commit c1011c0b3a9c8d2065f425407475cbcc812540b7 ]
 
-ice_send_event_to_aux() eventually descends to mutex_lock()
-(-> might_sched()), so it must not be called under non-task
-context. However, at least two fixes have happened already for the
-bug splats occurred due to this function being called from atomic
-context.
-To make the emergency landings softer, bail out early when executed
-in non-task context emitting a warn splat only once. This way we
-trade some events being potentially lost for system stability and
-avoid any related hangs and crashes.
+Complete the driver configuration, reading the negotiated features,
+before using the VQs in the virtio_vsock_probe().
 
-Fixes: 348048e724a0e ("ice: Implement iidc operations")
-Signed-off-by: Alexander Lobakin <alexandr.lobakin@intel.com>
-Tested-by: Michal Kubiak <michal.kubiak@intel.com>
-Reviewed-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-Acked-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+Fixes: 53efbba12cc7 ("virtio/vsock: enable SEQPACKET for transport")
+Suggested-by: Michael S. Tsirkin <mst@redhat.com>
+Reviewed-by: Stefan Hajnoczi <stefanha@redhat.com>
+Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
+Acked-by: Michael S. Tsirkin <mst@redhat.com>
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/intel/ice/ice_idc.c | 3 +++
- 1 file changed, 3 insertions(+)
+ net/vmw_vsock/virtio_transport.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/ice/ice_idc.c b/drivers/net/ethernet/intel/ice/ice_idc.c
-index adcc9a251595..a2714988dd96 100644
---- a/drivers/net/ethernet/intel/ice/ice_idc.c
-+++ b/drivers/net/ethernet/intel/ice/ice_idc.c
-@@ -34,6 +34,9 @@ void ice_send_event_to_aux(struct ice_pf *pf, struct iidc_event *event)
- {
- 	struct iidc_auxiliary_drv *iadrv;
+diff --git a/net/vmw_vsock/virtio_transport.c b/net/vmw_vsock/virtio_transport.c
+index fb1b8f99f679..4a8548bdf86c 100644
+--- a/net/vmw_vsock/virtio_transport.c
++++ b/net/vmw_vsock/virtio_transport.c
+@@ -622,6 +622,9 @@ static int virtio_vsock_probe(struct virtio_device *vdev)
+ 	INIT_WORK(&vsock->event_work, virtio_transport_event_work);
+ 	INIT_WORK(&vsock->send_pkt_work, virtio_transport_send_pkt_work);
  
-+	if (WARN_ON_ONCE(!in_task()))
-+		return;
++	if (virtio_has_feature(vdev, VIRTIO_VSOCK_F_SEQPACKET))
++		vsock->seqpacket_allow = true;
 +
- 	if (!pf->adev)
- 		return;
+ 	vdev->priv = vsock;
  
+ 	mutex_lock(&vsock->tx_lock);
+@@ -638,9 +641,6 @@ static int virtio_vsock_probe(struct virtio_device *vdev)
+ 	vsock->event_run = true;
+ 	mutex_unlock(&vsock->event_lock);
+ 
+-	if (virtio_has_feature(vdev, VIRTIO_VSOCK_F_SEQPACKET))
+-		vsock->seqpacket_allow = true;
+-
+ 	rcu_assign_pointer(the_virtio_vsock, vsock);
+ 
+ 	mutex_unlock(&the_virtio_vsock_mutex);
 -- 
 2.34.1
 
