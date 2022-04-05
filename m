@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0688BC4321E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 59BC2C4167D
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 09:52:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346226AbiDEJom (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 05:44:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51830 "EHLO
+        id S233353AbiDEJoo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 05:44:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34798 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239746AbiDEIUp (ORCPT
+        with ESMTP id S239409AbiDEIUD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:20:45 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8AEA1384;
-        Tue,  5 Apr 2022 01:18:45 -0700 (PDT)
+        Tue, 5 Apr 2022 04:20:03 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00553C7499;
+        Tue,  5 Apr 2022 01:12:46 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3AB20B81A37;
-        Tue,  5 Apr 2022 08:18:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9932CC385A1;
-        Tue,  5 Apr 2022 08:18:42 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1C972B81B90;
+        Tue,  5 Apr 2022 08:12:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 63D2FC385A1;
+        Tue,  5 Apr 2022 08:12:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649146723;
-        bh=TzN9S2c1jJpI9v8G0EpdcxObJsrqJKiqIfBV48VR++4=;
+        s=korg; t=1649146363;
+        bh=u/EL/0GYyY+HGzHuNDThbtmHquTrLCD0k3PSgXrKSiE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NK6H9fBCQPENzYrp1LxYzq1JCIITvtC7XJYN5I5J00I0EI0HJDVvDOQ2IwCYw+0IZ
-         c2Rx8WkNX0G5VScIt4oM/2a6cbdnabpPQY05mFTrFUdsMpZv5KpTo3BzxxJK+ZyruD
-         H486/BYhuobWJSbGOqvdK6H8ChGzrk0Bq4owuc7w=
+        b=YUC6sB6auqiCI9GSSBE1qfGOPyPehJNFLfFr3j+cgMTAnctnP+j/B8e9IGq5ttMCw
+         uuun7ylOP/Z3XhBbWRbcKD2IgQKVq2AaSFXeU5P+k/KGUnBkXn4Ck8AKJulhVJsSck
+         KSmLddO/6ItPybXLELW0i8iqm+F7p8CE/7ipDFSo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, John David Anglin <dave.anglin@bell.net>,
-        Helge Deller <deller@gmx.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0865/1126] parisc: Fix non-access data TLB cache flush faults
-Date:   Tue,  5 Apr 2022 09:26:52 +0200
-Message-Id: <20220405070432.927657842@linuxfoundation.org>
+        stable@vger.kernel.org,
+        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 0737/1126] serial: 8250: Fix race condition in RTS-after-send handling
+Date:   Tue,  5 Apr 2022 09:24:44 +0200
+Message-Id: <20220405070429.221238083@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -49,90 +49,58 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: John David Anglin <dave.anglin@bell.net>
+From: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 
-[ Upstream commit f839e5f1cef36ce268950c387129b1bfefdaebc9 ]
+[ Upstream commit dedab69fd650ea74710b2e626e63fd35584ef773 ]
 
-When a page is not present, we get non-access data TLB faults from
-the fdc and fic instructions in flush_user_dcache_range_asm and
-flush_user_icache_range_asm. When these occur, the cache line is
-not invalidated and potentially we get memory corruption. The
-problem was hidden by the nullification of the flush instructions.
+Set em485->active_timer = NULL isn't always enough to take out the stop
+timer. While there is a check that it acts in the right state (i.e.
+waiting for RTS-after-send to pass after sending some chars) but the
+following might happen:
 
-These faults also affect performance. With pa8800/pa8900 processors,
-there will be 32 faults per 4 KB page since the cache line is 128
-bytes.  There will be more faults with earlier processors.
+ - CPU1: some chars send, shifter becomes empty, stop tx timer armed
+ - CPU0: more chars send before RTS-after-send expired
+ - CPU0: shifter empty irq, port lock taken
+ - CPU1: tx timer triggers, waits for port lock
+ - CPU0: em485->active_timer = &em485->stop_tx_timer, hrtimer_start(),
+   releases lock()
+ - CPU1: get lock, see em485->active_timer == &em485->stop_tx_timer,
+   tear down RTS too early
 
-The problem is fixed by using flush_cache_pages(). It does the flush
-using a tmp alias mapping.
+This fix bases on research done by Steffen Trumtrar.
 
-The flush_cache_pages() call in flush_cache_range() flushed too
-large a range.
-
-V2: Remove unnecessary preempt_disable() and preempt_enable() calls.
-
-Signed-off-by: John David Anglin <dave.anglin@bell.net>
-Signed-off-by: Helge Deller <deller@gmx.de>
+Fixes: b86f86e8e7c5 ("serial: 8250: fix potential deadlock in rs485-mode")
+Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+Link: https://lore.kernel.org/r/20220215160236.344236-1-u.kleine-koenig@pengutronix.de
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/parisc/kernel/cache.c | 28 +---------------------------
- 1 file changed, 1 insertion(+), 27 deletions(-)
+ drivers/tty/serial/8250/8250_port.c | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
 
-diff --git a/arch/parisc/kernel/cache.c b/arch/parisc/kernel/cache.c
-index 94150b91c96f..bce71cefe572 100644
---- a/arch/parisc/kernel/cache.c
-+++ b/arch/parisc/kernel/cache.c
-@@ -558,15 +558,6 @@ static void flush_cache_pages(struct vm_area_struct *vma, struct mm_struct *mm,
- 	}
- }
+diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
+index 973870ebff69..fd0339d22491 100644
+--- a/drivers/tty/serial/8250/8250_port.c
++++ b/drivers/tty/serial/8250/8250_port.c
+@@ -1623,6 +1623,18 @@ static inline void start_tx_rs485(struct uart_port *port)
+ 	struct uart_8250_port *up = up_to_u8250p(port);
+ 	struct uart_8250_em485 *em485 = up->em485;
  
--static void flush_user_cache_tlb(struct vm_area_struct *vma,
--				 unsigned long start, unsigned long end)
--{
--	flush_user_dcache_range_asm(start, end);
--	if (vma->vm_flags & VM_EXEC)
--		flush_user_icache_range_asm(start, end);
--	flush_tlb_range(vma, start, end);
--}
--
- void flush_cache_mm(struct mm_struct *mm)
- {
- 	struct vm_area_struct *vma;
-@@ -581,17 +572,8 @@ void flush_cache_mm(struct mm_struct *mm)
- 		return;
- 	}
++	/*
++	 * While serial8250_em485_handle_stop_tx() is a noop if
++	 * em485->active_timer != &em485->stop_tx_timer, it might happen that
++	 * the timer is still armed and triggers only after the current bunch of
++	 * chars is send and em485->active_timer == &em485->stop_tx_timer again.
++	 * So cancel the timer. There is still a theoretical race condition if
++	 * the timer is already running and only comes around to check for
++	 * em485->active_timer when &em485->stop_tx_timer is armed again.
++	 */
++	if (em485->active_timer == &em485->stop_tx_timer)
++		hrtimer_try_to_cancel(&em485->stop_tx_timer);
++
+ 	em485->active_timer = NULL;
  
--	preempt_disable();
--	if (mm->context == mfsp(3)) {
--		for (vma = mm->mmap; vma; vma = vma->vm_next)
--			flush_user_cache_tlb(vma, vma->vm_start, vma->vm_end);
--		preempt_enable();
--		return;
--	}
--
- 	for (vma = mm->mmap; vma; vma = vma->vm_next)
- 		flush_cache_pages(vma, mm, vma->vm_start, vma->vm_end);
--	preempt_enable();
- }
- 
- void flush_cache_range(struct vm_area_struct *vma,
-@@ -605,15 +587,7 @@ void flush_cache_range(struct vm_area_struct *vma,
- 		return;
- 	}
- 
--	preempt_disable();
--	if (vma->vm_mm->context == mfsp(3)) {
--		flush_user_cache_tlb(vma, start, end);
--		preempt_enable();
--		return;
--	}
--
--	flush_cache_pages(vma, vma->vm_mm, vma->vm_start, vma->vm_end);
--	preempt_enable();
-+	flush_cache_pages(vma, vma->vm_mm, start, end);
- }
- 
- void
+ 	if (em485->tx_stopped) {
 -- 
 2.34.1
 
