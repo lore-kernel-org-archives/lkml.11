@@ -2,98 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0426CC43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5786AC4332F
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:17:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1583202AbiDEXvd (ORCPT
+        id S1583146AbiDEXvX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 19:51:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48090 "EHLO
+        Tue, 5 Apr 2022 19:51:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37656 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349429AbiDEJtv (ORCPT
+        with ESMTP id S1450214AbiDEPvX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:49:51 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E932C23BD5;
-        Tue,  5 Apr 2022 02:45:39 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9A5DEB817D3;
-        Tue,  5 Apr 2022 09:45:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0512DC385A2;
-        Tue,  5 Apr 2022 09:45:36 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649151937;
-        bh=B4ZcG0QXqpeghTBVKDIRTsP/36gZD9K13i5RowxWSZc=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=aVbFNlTjiLf/Fkx+biRQg6/E2SzROgZaB/hV0znZIB+WM+ufO6DJ4WgJWCQls7lCw
-         oCeLq/kkfZ8LILIooYlhrTNow2+vVeBNN5pPET5bxOJzD8zl9M27a7+LFJdn1MitAp
-         yNdri+LkHsD2Bx61l/3B8fZ4NaQfT3L+Rn/Ovsm8=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 595/913] pinctrl: renesas: r8a77470: Reduce size for narrow VIN1 channel
-Date:   Tue,  5 Apr 2022 09:27:37 +0200
-Message-Id: <20220405070357.677623587@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 5 Apr 2022 11:51:23 -0400
+Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4412D12865B
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 07:39:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=desiato.20200630; h=Content-Transfer-Encoding:Content-Type
+        :In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:
+        Sender:Reply-To:Content-ID:Content-Description;
+        bh=yDe80dB3PcLLjC73bVCnCnNNULyXZtKg1Crra+A5bJo=; b=MKQPYpOohaUf88JeLFDJOO+/sW
+        rPWNUODd1G7R/GWtLPxD35hsZzHm7lfA2fgTRY1mJ918gJo/J7wkGFjIa2wz2qoQlxOzYC53p7OAx
+        WOKm2lEmAhkUtYkXsmFahxYNzl5WHpw1jT+/VU93Lv75N69qopw81Gf7e8O88HavJETlyLn63CNB4
+        /+5jUfCBH6tprXYmnn6c3KdrvsUFUZmz35pEvSfhaTOeJcTkt/A47k0zJlwqfo9QL0tricRrzIcPf
+        vw7gSENAliOUQALLMW/5mSYZ3lDnzVPkcW9wT71UGl1HMUaCyqGMXK8ACLdR0z6ACotd8vpEsgXJ8
+        TQhbEaHQ==;
+Received: from [2601:1c0:6280:3f0::aa0b]
+        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nbkLJ-001sTR-9Z; Tue, 05 Apr 2022 14:39:38 +0000
+Message-ID: <c544d79e-90ec-7bbe-77ad-de96a700d711@infradead.org>
+Date:   Tue, 5 Apr 2022 07:39:30 -0700
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH] drm/format_helper: fix a kernel-doc typo
+Content-Language: en-US
+To:     Javier Martinez Canillas <javierm@redhat.com>,
+        Simon Ser <contact@emersion.fr>
+Cc:     linux-kernel@vger.kernel.org,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        David Airlie <airlied@linux.ie>,
+        dri-devel@lists.freedesktop.org
+References: <20220403232902.1753-1-rdunlap@infradead.org>
+ <ttcrpLw9HkdhAH5SkXylXDBi9SBf7LWgOeW09ZvTF4U4_zKJAOXBQZlFxfw6NKY0Hip6dXBFape6zkX09cstuOno72c-c00wmZ_VbNDg6xs=@emersion.fr>
+ <b20bbd22-895c-9e74-e579-d2f3561a2fe1@infradead.org>
+ <BzpH4s8ZYn84kTlJQ3BHVMQzZlESb2Fk6v-uO5KBaaeBNMvRvC98lpuBLUNLE3a5bdoYTb5JRvo6EU__5AGJ79LUirSppO39I1t1xlwx-fI=@emersion.fr>
+ <fda186f7-2cf4-a69a-d68e-58073d35cbea@redhat.com>
+From:   Randy Dunlap <rdunlap@infradead.org>
+In-Reply-To: <fda186f7-2cf4-a69a-d68e-58073d35cbea@redhat.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Geert Uytterhoeven <geert+renesas@glider.be>
 
-[ Upstream commit 9e04a0eda84fccab0ac22a33825ad53f47c968c7 ]
 
-The second video-in channel on RZ/G1C has only 12 data lanes, but the
-pin control driver uses the vin_data union, which is meant for 24 data
-lanes, thus wasting space.
+On 4/4/22 23:26, Javier Martinez Canillas wrote:
+> On 4/5/22 08:12, Simon Ser wrote:
+>> On Monday, April 4th, 2022 at 23:35, Randy Dunlap <rdunlap@infradead.org> wrote:
+>>
+>>> On 4/4/22 09:04, Simon Ser wrote:
+>>>
+>>>> Both doc patches pushed, thanks. I had to manually edit them because they
+>>>> wouldn't apply cleanly. Next time, please use git-send-email (see
+>>>> https://git-send-email.io/ for setup instructions).
+>>>
+>>> That's odd. I did use 'git send-email' and I don't usually have any
+>>> problems (AFAIK). I'll check those setup instructions.
+>>
+>> Hm, maybe the issue isn't git-send-email, but the way the patch was
+>> generated? I had to manually edit these lines for the first patch to work:
+>>
+>>     --- linux-next-20211217.orig/include/drm/drm_file.h
+>>     +++ linux-next-20211217/include/drm/drm_file.h
+>>
+>> I changed these to:
+>>
+>>     --- a/include/drm/drm_file.h
+>>     +++ b/include/drm/drm_file.h
+>>
+>> This wasn't enough for the second patch, I had to re-do the changes by hand
+>> from scratch.
+>>
+> 
+> Yes, I believe the suggestion should be to use git-format-patch instead.
+> 
+> To make sure that was is posted can be consumed by the git-am command.
 
-Fix this by using the vin_data12 union instead.
+Considering that I am not using git, I think it will be difficult
+to use git-format-patch.
 
-This reduces kernel size by 96 bytes.
+(git-send-email is independent of git.)
 
-Fixes: 50f3f2d73e3426ba ("pinctrl: sh-pfc: Reduce kernel size for narrow VIN channels")
-Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
-Link: https://lore.kernel.org/r/52716fa89139f6f92592633edb52804d4c5e18f0.1640269757.git.geert+renesas@glider.be
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/pinctrl/renesas/pfc-r8a77470.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+Still, this is the first time in many years that I have heard
+of this problem.
 
-diff --git a/drivers/pinctrl/renesas/pfc-r8a77470.c b/drivers/pinctrl/renesas/pfc-r8a77470.c
-index e6e5487691c1..cf7153d06a95 100644
---- a/drivers/pinctrl/renesas/pfc-r8a77470.c
-+++ b/drivers/pinctrl/renesas/pfc-r8a77470.c
-@@ -2140,7 +2140,7 @@ static const unsigned int vin0_clk_mux[] = {
- 	VI0_CLK_MARK,
- };
- /* - VIN1 ------------------------------------------------------------------- */
--static const union vin_data vin1_data_pins = {
-+static const union vin_data12 vin1_data_pins = {
- 	.data12 = {
- 		RCAR_GP_PIN(3,  1), RCAR_GP_PIN(3, 2),
- 		RCAR_GP_PIN(3,  3), RCAR_GP_PIN(3, 4),
-@@ -2150,7 +2150,7 @@ static const union vin_data vin1_data_pins = {
- 		RCAR_GP_PIN(3, 15), RCAR_GP_PIN(3, 16),
- 	},
- };
--static const union vin_data vin1_data_mux = {
-+static const union vin_data12 vin1_data_mux = {
- 	.data12 = {
- 		VI1_DATA0_MARK, VI1_DATA1_MARK,
- 		VI1_DATA2_MARK, VI1_DATA3_MARK,
+Thanks for the info and insights.
+
 -- 
-2.34.1
-
-
-
+~Randy
