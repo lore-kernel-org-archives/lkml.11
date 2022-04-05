@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EFA7DC4167B
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 13:24:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B2C1C41535
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 13:24:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344409AbiDENFL (ORCPT
+        id S1388041AbiDENUl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 09:05:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40634 "EHLO
+        Tue, 5 Apr 2022 09:20:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44264 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238839AbiDEJQR (ORCPT
+        with ESMTP id S1344364AbiDEJTe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:16:17 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4061CF4B7;
-        Tue,  5 Apr 2022 02:01:42 -0700 (PDT)
+        Tue, 5 Apr 2022 05:19:34 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E798254;
+        Tue,  5 Apr 2022 02:07:58 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 74BD8B818F3;
-        Tue,  5 Apr 2022 09:01:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D8B04C385A1;
-        Tue,  5 Apr 2022 09:01:39 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BFF19614E4;
+        Tue,  5 Apr 2022 09:07:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CA97BC385A1;
+        Tue,  5 Apr 2022 09:07:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649149300;
-        bh=KoGQ+0vWP49KzgTOCU/ifdDn7F7KOjvEzSHR2vQTS+U=;
+        s=korg; t=1649149677;
+        bh=K/1JruDGt6uXiQBE2IgAYNU8fm+vGs7kPoKDYyu86Xs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=V9YmgRW+s6inMPeYwYHPM8NXcObQ5fTD5dQB4e6r9rC/kVFcpYGEOHEUCKdANRpGH
-         bZJZ1k54PzktQ7ENUYqZDDYAxYCOSNSyzqfSp7VPwpzoVxKE8u6BPlTGf1bHlCEmJe
-         z3N1sy+houiSxOXA96qWTkETeS7COzEWbUoGjclE=
+        b=RwqyLzOAj7g0mvsuBOmyVwzSoUqKQ6iNkvtjvwuei6aVuulcIfPvDaNhNC/h4O1vf
+         Ves+ltqaJ0IeNxkA9lwzlW9YmXS+zNy3/lxJD8CjMKDjkspLNWuxjLu5r9Ut7cGu6v
+         8zQVLJ+5BhuXXXb8U/KNUZJrEZg7iMP69K7Z21Dc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Qing Wang <wangqing@vivo.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        stable@vger.kernel.org, Josef Bacik <josef@toxicpanda.com>,
+        Anand Jain <anand.jain@oracle.com>,
+        David Sterba <dsterba@suse.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0665/1017] serial: 8250_mid: Balance reference count for PCI DMA device
-Date:   Tue,  5 Apr 2022 09:26:18 +0200
-Message-Id: <20220405070414.021776769@linuxfoundation.org>
+Subject: [PATCH 5.16 0794/1017] btrfs: harden identification of a stale device
+Date:   Tue,  5 Apr 2022 09:28:27 +0200
+Message-Id: <20220405070417.820794180@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -50,91 +51,99 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+From: Anand Jain <anand.jain@oracle.com>
 
-[ Upstream commit 67ec6dd0b257bd81b4e9fcac89b29da72f6265e5 ]
+[ Upstream commit 770c79fb65506fc7c16459855c3839429f46cb32 ]
 
-The pci_get_slot() increases its reference count, the caller
-must decrement the reference count by calling pci_dev_put().
+Identifying and removing the stale device from the fs_uuids list is done
+by btrfs_free_stale_devices().  btrfs_free_stale_devices() in turn
+depends on device_path_matched() to check if the device appears in more
+than one btrfs_device structure.
 
-Fixes: 90b9aacf912a ("serial: 8250_pci: add Intel Tangier support")
-Fixes: f549e94effa1 ("serial: 8250_pci: add Intel Penwell ports")
-Reported-by: Qing Wang <wangqing@vivo.com>
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Depends-on: d9eda9bab237 ("serial: 8250_pci: Intel MID UART support to its own driver")
-Link: https://lore.kernel.org/r/20220215100920.41984-1-andriy.shevchenko@linux.intel.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+The matching of the device happens by its path, the device path. However,
+when device mapper is in use, the dm device paths are nothing but a link
+to the actual block device, which leads to the device_path_matched()
+failing to match.
+
+Fix this by matching the dev_t as provided by lookup_bdev() instead of
+plain string compare of the device paths.
+
+Reported-by: Josef Bacik <josef@toxicpanda.com>
+Signed-off-by: Anand Jain <anand.jain@oracle.com>
+Signed-off-by: David Sterba <dsterba@suse.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/serial/8250/8250_mid.c | 19 +++++++++++++++----
- 1 file changed, 15 insertions(+), 4 deletions(-)
+ fs/btrfs/volumes.c | 45 ++++++++++++++++++++++++++++++++++++++-------
+ 1 file changed, 38 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/tty/serial/8250/8250_mid.c b/drivers/tty/serial/8250/8250_mid.c
-index efa0515139f8..e6c1791609dd 100644
---- a/drivers/tty/serial/8250/8250_mid.c
-+++ b/drivers/tty/serial/8250/8250_mid.c
-@@ -73,6 +73,11 @@ static int pnw_setup(struct mid8250 *mid, struct uart_port *p)
- 	return 0;
- }
- 
-+static void pnw_exit(struct mid8250 *mid)
-+{
-+	pci_dev_put(mid->dma_dev);
-+}
-+
- static int tng_handle_irq(struct uart_port *p)
- {
- 	struct mid8250 *mid = p->private_data;
-@@ -124,6 +129,11 @@ static int tng_setup(struct mid8250 *mid, struct uart_port *p)
- 	return 0;
- }
- 
-+static void tng_exit(struct mid8250 *mid)
-+{
-+	pci_dev_put(mid->dma_dev);
-+}
-+
- static int dnv_handle_irq(struct uart_port *p)
- {
- 	struct mid8250 *mid = p->private_data;
-@@ -330,9 +340,9 @@ static int mid8250_probe(struct pci_dev *pdev, const struct pci_device_id *id)
- 
- 	pci_set_drvdata(pdev, mid);
- 	return 0;
-+
- err:
--	if (mid->board->exit)
--		mid->board->exit(mid);
-+	mid->board->exit(mid);
+diff --git a/fs/btrfs/volumes.c b/fs/btrfs/volumes.c
+index 42391d4aeb11..02ee42d461be 100644
+--- a/fs/btrfs/volumes.c
++++ b/fs/btrfs/volumes.c
+@@ -530,15 +530,48 @@ btrfs_get_bdev_and_sb(const char *device_path, fmode_t flags, void *holder,
  	return ret;
  }
  
-@@ -342,8 +352,7 @@ static void mid8250_remove(struct pci_dev *pdev)
+-static bool device_path_matched(const char *path, struct btrfs_device *device)
++/*
++ * Check if the device in the path matches the device in the given struct device.
++ *
++ * Returns:
++ *   true  If it is the same device.
++ *   false If it is not the same device or on error.
++ */
++static bool device_matched(const struct btrfs_device *device, const char *path)
+ {
+-	int found;
++	char *device_name;
++	dev_t dev_old;
++	dev_t dev_new;
++	int ret;
++
++	/*
++	 * If we are looking for a device with the matching dev_t, then skip
++	 * device without a name (a missing device).
++	 */
++	if (!device->name)
++		return false;
++
++	device_name = kzalloc(BTRFS_PATH_NAME_MAX, GFP_KERNEL);
++	if (!device_name)
++		return false;
  
- 	serial8250_unregister_port(mid->line);
+ 	rcu_read_lock();
+-	found = strcmp(rcu_str_deref(device->name), path);
++	scnprintf(device_name, BTRFS_PATH_NAME_MAX, "%s", rcu_str_deref(device->name));
+ 	rcu_read_unlock();
  
--	if (mid->board->exit)
--		mid->board->exit(mid);
-+	mid->board->exit(mid);
+-	return found == 0;
++	ret = lookup_bdev(device_name, &dev_old);
++	kfree(device_name);
++	if (ret)
++		return false;
++
++	ret = lookup_bdev(path, &dev_new);
++	if (ret)
++		return false;
++
++	if (dev_old == dev_new)
++		return true;
++
++	return false;
  }
  
- static const struct mid8250_board pnw_board = {
-@@ -351,6 +360,7 @@ static const struct mid8250_board pnw_board = {
- 	.freq = 50000000,
- 	.base_baud = 115200,
- 	.setup = pnw_setup,
-+	.exit = pnw_exit,
- };
- 
- static const struct mid8250_board tng_board = {
-@@ -358,6 +368,7 @@ static const struct mid8250_board tng_board = {
- 	.freq = 38400000,
- 	.base_baud = 1843200,
- 	.setup = tng_setup,
-+	.exit = tng_exit,
- };
- 
- static const struct mid8250_board dnv_board = {
+ /*
+@@ -571,9 +604,7 @@ static int btrfs_free_stale_devices(const char *path,
+ 					 &fs_devices->devices, dev_list) {
+ 			if (skip_device && skip_device == device)
+ 				continue;
+-			if (path && !device->name)
+-				continue;
+-			if (path && !device_path_matched(path, device))
++			if (path && !device_matched(device, path))
+ 				continue;
+ 			if (fs_devices->opened) {
+ 				/* for an already deleted device return 0 */
 -- 
 2.34.1
 
