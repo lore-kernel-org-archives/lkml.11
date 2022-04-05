@@ -2,239 +2,234 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 658B0C35276
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:35:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D5754C46467
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:35:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1835084AbiDFATQ (ORCPT
+        id S1835068AbiDFATO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 20:19:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53668 "EHLO
+        Tue, 5 Apr 2022 20:19:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44228 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358086AbiDEK16 (ORCPT
+        with ESMTP id S1353831AbiDEPL6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:27:58 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43C6A63BFD;
-        Tue,  5 Apr 2022 03:15:02 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9936261777;
-        Tue,  5 Apr 2022 10:15:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A6BE4C385A1;
-        Tue,  5 Apr 2022 10:15:00 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649153701;
-        bh=ZdV6ezsMk3V6sM6lkStGF05ZOy84+4YG0suNH2uUlFw=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Y9h1druI6Fm5w2onkIY1X9RZLIRtWdLjcLwxsmBadbR33R6BGY6NnM1iyTuycAlWj
-         +SUFseSpQa6zPHZO8F61lEHreLB8o+6VazQ+wP9vcHLqLNaJBEfPKD32I6XcYiXUxC
-         wF8xz86nm6C3iARCECM43M0WgsXRcjCMCc9ZAqjI=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jack Wang <jinpu.wang@ionos.com>,
-        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 315/599] scsi: pm8001: Fix le32 values handling in pm80xx_chip_sata_req()
-Date:   Tue,  5 Apr 2022 09:30:09 +0200
-Message-Id: <20220405070308.206521927@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 5 Apr 2022 11:11:58 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89D79109A4C
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 06:25:43 -0700 (PDT)
+From:   John Ogness <john.ogness@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1649165140;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=A/7cUaplOmC+t/jIeiNitOokT+w2JM4UfkfA0L6jRLE=;
+        b=GbLUs+srw/DSjlePOGXQX1kh9BgYOnt1N7m4mkwjE9WMUmakyos4fvIKw2S+CLYqxFI3Yd
+        SybhRVTgX4vcwuh0lLwMFTQZrLbRz05uTg3cXBbAoVmuJYsAdif+kEEIU0mzphBhNQYNUj
+        C+yolb+Fexb6l3TyxZULteztEgTuwEuBpYH5/RDHDelN4CVbQzPsS2aFTq5YlgkA6OEcND
+        AEWOVK1sBJvyYF658hf4V8UE+OuIfIsCX2WQUJsjNKtSF9ZMIq06iZJcX2AQw77y4yxz0P
+        /mCw1UchLh4QIPOxeucmWNUk2MZLWkpPG8SBMS3tdxBLPfLdhPJPvctjX4j/3A==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1649165140;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=A/7cUaplOmC+t/jIeiNitOokT+w2JM4UfkfA0L6jRLE=;
+        b=nr2+XlUJRZe2weCsX7ckkrKqdZezOx1nTpyKylEJrRjEIgjQMEQP0opEskAw4y9A9ZrYgw
+        ZJ0M0YkHryIn5iCA==
+To:     Petr Mladek <pmladek@suse.com>
+Cc:     Sergey Senozhatsky <senozhatsky@chromium.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH printk v2 07/12] printk: move buffer definitions into console_emit_next_record() caller
+Date:   Tue,  5 Apr 2022 15:31:30 +0206
+Message-Id: <20220405132535.649171-8-john.ogness@linutronix.de>
+In-Reply-To: <20220405132535.649171-1-john.ogness@linutronix.de>
+References: <20220405132535.649171-1-john.ogness@linutronix.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Damien Le Moal <damien.lemoal@opensource.wdc.com>
+Extended consoles print extended messages and do not print messages about
+dropped records.
 
-[ Upstream commit fd6d0e376211d7ed759db96b0fbd9a1cee67d462 ]
+Non-extended consoles print "normal" messages as well as extra messages
+about dropped records.
 
-Make sure that the __le32 fields of struct sata_cmd are manipulated after
-applying the correct endian conversion. That is, use cpu_to_le32() for
-assigning values and le32_to_cpu() for consulting a field value.  In
-particular, make sure that the calculations for the 4G boundary check are
-done using CPU endianness and *not* little endian values. With these fixes,
-many sparse warnings are removed.
+Currently the buffers for these various message types are defined within
+the functions that might use them and their usage is based upon the
+CON_EXTENDED flag. This will be a problem when moving to kthread printers
+because each printer must be able to provide its own buffers.
 
-While at it, fix some code identation and add blank lines after variable
-declarations and in some other places to make this code more readable.
+Move all the message buffer definitions outside of
+console_emit_next_record(). The caller knows if extended or dropped
+messages should be printed and can specify the appropriate buffers to
+use. The console_emit_next_record() and call_console_driver() functions
+can know what to print based on whether specified buffers are non-NULL.
 
-Link: https://lore.kernel.org/r/20220220031810.738362-12-damien.lemoal@opensource.wdc.com
-Fixes: 0ecdf00ba6e5 ("[SCSI] pm80xx: 4G boundary fix.")
-Reviewed-by: Jack Wang <jinpu.wang@ionos.com>
-Signed-off-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+With this change, buffer definition/allocation/specification is separated
+from the code that does the various types of string printing.
+
+Signed-off-by: John Ogness <john.ogness@linutronix.de>
 ---
- drivers/scsi/pm8001/pm80xx_hwi.c | 82 ++++++++++++++++++--------------
- 1 file changed, 45 insertions(+), 37 deletions(-)
+ kernel/printk/printk.c | 60 ++++++++++++++++++++++++++++++------------
+ 1 file changed, 43 insertions(+), 17 deletions(-)
 
-diff --git a/drivers/scsi/pm8001/pm80xx_hwi.c b/drivers/scsi/pm8001/pm80xx_hwi.c
-index 33b5172d55cf..d620bb747a5b 100644
---- a/drivers/scsi/pm8001/pm80xx_hwi.c
-+++ b/drivers/scsi/pm8001/pm80xx_hwi.c
-@@ -4467,7 +4467,7 @@ static int pm80xx_chip_sata_req(struct pm8001_hba_info *pm8001_ha,
- 	u32 q_index, cpu_id;
- 	struct sata_start_req sata_cmd;
- 	u32 hdr_tag, ncg_tag = 0;
--	u64 phys_addr, start_addr, end_addr;
-+	u64 phys_addr, end_addr;
- 	u32 end_addr_high, end_addr_low;
- 	u32 ATAP = 0x0;
- 	u32 dir;
-@@ -4528,32 +4528,38 @@ static int pm80xx_chip_sata_req(struct pm8001_hba_info *pm8001_ha,
- 			pm8001_chip_make_sg(task->scatter,
- 						ccb->n_elem, ccb->buf_prd);
- 			phys_addr = ccb->ccb_dma_handle;
--			sata_cmd.enc_addr_low = lower_32_bits(phys_addr);
--			sata_cmd.enc_addr_high = upper_32_bits(phys_addr);
-+			sata_cmd.enc_addr_low =
-+				cpu_to_le32(lower_32_bits(phys_addr));
-+			sata_cmd.enc_addr_high =
-+				cpu_to_le32(upper_32_bits(phys_addr));
- 			sata_cmd.enc_esgl = cpu_to_le32(1 << 31);
- 		} else if (task->num_scatter == 1) {
- 			u64 dma_addr = sg_dma_address(task->scatter);
--			sata_cmd.enc_addr_low = lower_32_bits(dma_addr);
--			sata_cmd.enc_addr_high = upper_32_bits(dma_addr);
+diff --git a/kernel/printk/printk.c b/kernel/printk/printk.c
+index db9278dba775..06f0b29d909d 100644
+--- a/kernel/printk/printk.c
++++ b/kernel/printk/printk.c
+@@ -394,6 +394,9 @@ static struct latched_seq clear_seq = {
+ /* the maximum size of a formatted record (i.e. with prefix added per line) */
+ #define CONSOLE_LOG_MAX		1024
+ 
++/* the maximum size for a dropped text message */
++#define DROPPED_TEXT_MAX	64
 +
-+			sata_cmd.enc_addr_low =
-+				cpu_to_le32(lower_32_bits(dma_addr));
-+			sata_cmd.enc_addr_high =
-+				cpu_to_le32(upper_32_bits(dma_addr));
- 			sata_cmd.enc_len = cpu_to_le32(task->total_xfer_len);
- 			sata_cmd.enc_esgl = 0;
-+
- 			/* Check 4G Boundary */
--			start_addr = cpu_to_le64(dma_addr);
--			end_addr = (start_addr + sata_cmd.enc_len) - 1;
--			end_addr_low = cpu_to_le32(lower_32_bits(end_addr));
--			end_addr_high = cpu_to_le32(upper_32_bits(end_addr));
--			if (end_addr_high != sata_cmd.enc_addr_high) {
-+			end_addr = dma_addr + le32_to_cpu(sata_cmd.enc_len) - 1;
-+			end_addr_low = lower_32_bits(end_addr);
-+			end_addr_high = upper_32_bits(end_addr);
-+			if (end_addr_high != le32_to_cpu(sata_cmd.enc_addr_high)) {
- 				pm8001_dbg(pm8001_ha, FAIL,
- 					   "The sg list address start_addr=0x%016llx data_len=0x%x end_addr_high=0x%08x end_addr_low=0x%08x has crossed 4G boundary\n",
--					   start_addr, sata_cmd.enc_len,
-+					   dma_addr,
-+					   le32_to_cpu(sata_cmd.enc_len),
- 					   end_addr_high, end_addr_low);
- 				pm8001_chip_make_sg(task->scatter, 1,
- 					ccb->buf_prd);
- 				phys_addr = ccb->ccb_dma_handle;
- 				sata_cmd.enc_addr_low =
--					lower_32_bits(phys_addr);
-+					cpu_to_le32(lower_32_bits(phys_addr));
- 				sata_cmd.enc_addr_high =
--					upper_32_bits(phys_addr);
-+					cpu_to_le32(upper_32_bits(phys_addr));
- 				sata_cmd.enc_esgl =
- 					cpu_to_le32(1 << 31);
- 			}
-@@ -4564,7 +4570,8 @@ static int pm80xx_chip_sata_req(struct pm8001_hba_info *pm8001_ha,
- 			sata_cmd.enc_esgl = 0;
- 		}
- 		/* XTS mode. All other fields are 0 */
--		sata_cmd.key_index_mode = 0x6 << 4;
-+		sata_cmd.key_index_mode = cpu_to_le32(0x6 << 4);
-+
- 		/* set tweak values. Should be the start lba */
- 		sata_cmd.twk_val0 =
- 			cpu_to_le32((sata_cmd.sata_fis.lbal_exp << 24) |
-@@ -4590,31 +4597,31 @@ static int pm80xx_chip_sata_req(struct pm8001_hba_info *pm8001_ha,
- 			phys_addr = ccb->ccb_dma_handle;
- 			sata_cmd.addr_low = lower_32_bits(phys_addr);
- 			sata_cmd.addr_high = upper_32_bits(phys_addr);
--			sata_cmd.esgl = cpu_to_le32(1 << 31);
-+			sata_cmd.esgl = cpu_to_le32(1U << 31);
- 		} else if (task->num_scatter == 1) {
- 			u64 dma_addr = sg_dma_address(task->scatter);
-+
- 			sata_cmd.addr_low = lower_32_bits(dma_addr);
- 			sata_cmd.addr_high = upper_32_bits(dma_addr);
- 			sata_cmd.len = cpu_to_le32(task->total_xfer_len);
- 			sata_cmd.esgl = 0;
-+
- 			/* Check 4G Boundary */
--			start_addr = cpu_to_le64(dma_addr);
--			end_addr = (start_addr + sata_cmd.len) - 1;
--			end_addr_low = cpu_to_le32(lower_32_bits(end_addr));
--			end_addr_high = cpu_to_le32(upper_32_bits(end_addr));
-+			end_addr = dma_addr + le32_to_cpu(sata_cmd.len) - 1;
-+			end_addr_low = lower_32_bits(end_addr);
-+			end_addr_high = upper_32_bits(end_addr);
- 			if (end_addr_high != sata_cmd.addr_high) {
- 				pm8001_dbg(pm8001_ha, FAIL,
- 					   "The sg list address start_addr=0x%016llx data_len=0x%xend_addr_high=0x%08x end_addr_low=0x%08x has crossed 4G boundary\n",
--					   start_addr, sata_cmd.len,
-+					   dma_addr,
-+					   le32_to_cpu(sata_cmd.len),
- 					   end_addr_high, end_addr_low);
- 				pm8001_chip_make_sg(task->scatter, 1,
- 					ccb->buf_prd);
- 				phys_addr = ccb->ccb_dma_handle;
--				sata_cmd.addr_low =
--					lower_32_bits(phys_addr);
--				sata_cmd.addr_high =
--					upper_32_bits(phys_addr);
--				sata_cmd.esgl = cpu_to_le32(1 << 31);
-+				sata_cmd.addr_low = lower_32_bits(phys_addr);
-+				sata_cmd.addr_high = upper_32_bits(phys_addr);
-+				sata_cmd.esgl = cpu_to_le32(1U << 31);
- 			}
- 		} else if (task->num_scatter == 0) {
- 			sata_cmd.addr_low = 0;
-@@ -4622,27 +4629,28 @@ static int pm80xx_chip_sata_req(struct pm8001_hba_info *pm8001_ha,
- 			sata_cmd.len = cpu_to_le32(task->total_xfer_len);
- 			sata_cmd.esgl = 0;
- 		}
-+
- 		/* scsi cdb */
- 		sata_cmd.atapi_scsi_cdb[0] =
- 			cpu_to_le32(((task->ata_task.atapi_packet[0]) |
--			(task->ata_task.atapi_packet[1] << 8) |
--			(task->ata_task.atapi_packet[2] << 16) |
--			(task->ata_task.atapi_packet[3] << 24)));
-+				     (task->ata_task.atapi_packet[1] << 8) |
-+				     (task->ata_task.atapi_packet[2] << 16) |
-+				     (task->ata_task.atapi_packet[3] << 24)));
- 		sata_cmd.atapi_scsi_cdb[1] =
- 			cpu_to_le32(((task->ata_task.atapi_packet[4]) |
--			(task->ata_task.atapi_packet[5] << 8) |
--			(task->ata_task.atapi_packet[6] << 16) |
--			(task->ata_task.atapi_packet[7] << 24)));
-+				     (task->ata_task.atapi_packet[5] << 8) |
-+				     (task->ata_task.atapi_packet[6] << 16) |
-+				     (task->ata_task.atapi_packet[7] << 24)));
- 		sata_cmd.atapi_scsi_cdb[2] =
- 			cpu_to_le32(((task->ata_task.atapi_packet[8]) |
--			(task->ata_task.atapi_packet[9] << 8) |
--			(task->ata_task.atapi_packet[10] << 16) |
--			(task->ata_task.atapi_packet[11] << 24)));
-+				     (task->ata_task.atapi_packet[9] << 8) |
-+				     (task->ata_task.atapi_packet[10] << 16) |
-+				     (task->ata_task.atapi_packet[11] << 24)));
- 		sata_cmd.atapi_scsi_cdb[3] =
- 			cpu_to_le32(((task->ata_task.atapi_packet[12]) |
--			(task->ata_task.atapi_packet[13] << 8) |
--			(task->ata_task.atapi_packet[14] << 16) |
--			(task->ata_task.atapi_packet[15] << 24)));
-+				     (task->ata_task.atapi_packet[13] << 8) |
-+				     (task->ata_task.atapi_packet[14] << 16) |
-+				     (task->ata_task.atapi_packet[15] << 24)));
+ /* the maximum size allowed to be reserved for a record */
+ #define LOG_LINE_MAX		(CONSOLE_LOG_MAX - PREFIX_MAX)
+ 
+@@ -1901,18 +1904,18 @@ static int console_trylock_spinning(void)
+ 
+ /*
+  * Call the specified console driver, asking it to write out the specified
+- * text and length. For non-extended consoles, if any records have been
++ * text and length. If @dropped_text is non-NULL and any records have been
+  * dropped, a dropped message will be written out first.
+  */
+-static void call_console_driver(struct console *con, const char *text, size_t len)
++static void call_console_driver(struct console *con, const char *text, size_t len,
++				char *dropped_text)
+ {
+-	static char dropped_text[64];
+ 	size_t dropped_len;
+ 
+ 	trace_console_rcuidle(text, len);
+ 
+-	if (con->dropped && !(con->flags & CON_EXTENDED)) {
+-		dropped_len = snprintf(dropped_text, sizeof(dropped_text),
++	if (con->dropped && dropped_text) {
++		dropped_len = snprintf(dropped_text, DROPPED_TEXT_MAX,
+ 				       "** %lu printk messages dropped **\n",
+ 				       con->dropped);
+ 		con->dropped = 0;
+@@ -2274,6 +2277,7 @@ EXPORT_SYMBOL(_printk);
+ #else /* CONFIG_PRINTK */
+ 
+ #define CONSOLE_LOG_MAX		0
++#define DROPPED_TEXT_MAX	0
+ #define printk_time		false
+ 
+ #define prb_read_valid(rb, seq, r)	false
+@@ -2297,7 +2301,10 @@ static ssize_t msg_print_ext_body(char *buf, size_t size,
+ 				  struct dev_printk_info *dev_info) { return 0; }
+ static void console_lock_spinning_enable(void) { }
+ static int console_lock_spinning_disable_and_check(void) { return 0; }
+-static void call_console_driver(struct console *con, const char *text, size_t len) { }
++static void call_console_driver(struct console *con, const char *text, size_t len,
++				char *dropped_text)
++{
++}
+ static bool suppress_message_printing(int level) { return false; }
+ 
+ #endif /* CONFIG_PRINTK */
+@@ -2622,6 +2629,14 @@ static void __console_unlock(void)
+  * Print one record for the given console. The record printed is whatever
+  * record is the next available record for the given console.
+  *
++ * @text is a buffer of size CONSOLE_LOG_MAX.
++ *
++ * If extended messages should be printed, @ext_text is a buffer of size
++ * CONSOLE_EXT_LOG_MAX. Otherwise @ext_text must be NULL.
++ *
++ * If dropped messages should be printed, @dropped_text is a buffer of size
++ * DROPPED_TEXT_MAX. Otherwise @dropped_text must be NULL.
++ *
+  * Requires the console_lock.
+  *
+  * Returns false if the given console has no next record to print, otherwise
+@@ -2631,10 +2646,9 @@ static void __console_unlock(void)
+  * console_lock, in which case the caller is no longer holding the
+  * console_lock. Otherwise it is set to false.
+  */
+-static bool console_emit_next_record(struct console *con, bool *handover)
++static bool console_emit_next_record(struct console *con, char *text, char *ext_text,
++				     char *dropped_text, bool *handover)
+ {
+-	static char ext_text[CONSOLE_EXT_LOG_MAX];
+-	static char text[CONSOLE_LOG_MAX];
+ 	static int panic_console_dropped;
+ 	struct printk_info info;
+ 	struct printk_record r;
+@@ -2642,7 +2656,7 @@ static bool console_emit_next_record(struct console *con, bool *handover)
+ 	char *write_text;
+ 	size_t len;
+ 
+-	prb_rec_init_rd(&r, &info, text, sizeof(text));
++	prb_rec_init_rd(&r, &info, text, CONSOLE_LOG_MAX);
+ 
+ 	*handover = false;
+ 
+@@ -2664,13 +2678,13 @@ static bool console_emit_next_record(struct console *con, bool *handover)
+ 		goto skip;
  	}
  
- 	/* Check for read log for failed drive and return */
+-	if (con->flags & CON_EXTENDED) {
+-		write_text = &ext_text[0];
+-		len = info_print_ext_header(ext_text, sizeof(ext_text), r.info);
+-		len += msg_print_ext_body(ext_text + len, sizeof(ext_text) - len,
++	if (ext_text) {
++		write_text = ext_text;
++		len = info_print_ext_header(ext_text, CONSOLE_EXT_LOG_MAX, r.info);
++		len += msg_print_ext_body(ext_text + len, CONSOLE_EXT_LOG_MAX - len,
+ 					  &r.text_buf[0], r.info->text_len, &r.info->dev_info);
+ 	} else {
+-		write_text = &text[0];
++		write_text = text;
+ 		len = record_print_text(&r, console_msg_format & MSG_FORMAT_SYSLOG, printk_time);
+ 	}
+ 
+@@ -2688,7 +2702,7 @@ static bool console_emit_next_record(struct console *con, bool *handover)
+ 	console_lock_spinning_enable();
+ 
+ 	stop_critical_timings();	/* don't trace print latency */
+-	call_console_driver(con, write_text, len);
++	call_console_driver(con, write_text, len, dropped_text);
+ 	start_critical_timings();
+ 
+ 	con->seq++;
+@@ -2715,6 +2729,9 @@ static bool console_emit_next_record(struct console *con, bool *handover)
+  */
+ static bool console_flush_all(bool do_cond_resched, u64 *next_seq, bool *handover)
+ {
++	static char dropped_text[DROPPED_TEXT_MAX];
++	static char ext_text[CONSOLE_EXT_LOG_MAX];
++	static char text[CONSOLE_LOG_MAX];
+ 	bool any_usable = false;
+ 	struct console *con;
+ 	bool any_progress;
+@@ -2732,7 +2749,16 @@ static bool console_flush_all(bool do_cond_resched, u64 *next_seq, bool *handove
+ 				continue;
+ 			any_usable = true;
+ 
+-			progress = console_emit_next_record(con, handover);
++			if (con->flags & CON_EXTENDED) {
++				/* Extended consoles do not print "dropped messages". */
++				progress = console_emit_next_record(con, &text[0],
++								    &ext_text[0], NULL,
++								    handover);
++			} else {
++				progress = console_emit_next_record(con, &text[0],
++								    NULL, &dropped_text[0],
++								    handover);
++			}
+ 			if (*handover)
+ 				return true;
+ 
 -- 
-2.34.1
-
-
+2.30.2
 
