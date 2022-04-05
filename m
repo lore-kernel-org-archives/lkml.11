@@ -2,42 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F173C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DAB8BC433FE
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 13:23:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234919AbiDENPq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 09:15:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60612 "EHLO
+        id S1388083AbiDENUz (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 09:20:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44262 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344270AbiDEJTD (ORCPT
+        with ESMTP id S1344361AbiDEJTe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:19:03 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7972B22528;
-        Tue,  5 Apr 2022 02:06:43 -0700 (PDT)
+        Tue, 5 Apr 2022 05:19:34 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3C8011F;
+        Tue,  5 Apr 2022 02:07:56 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 18A7A614E4;
-        Tue,  5 Apr 2022 09:06:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2194AC385A0;
-        Tue,  5 Apr 2022 09:06:41 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9EE72B81A12;
+        Tue,  5 Apr 2022 09:07:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E940DC385A1;
+        Tue,  5 Apr 2022 09:07:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649149602;
-        bh=0koZQSOLgRW2kaRazCNUDwDk9THdGrokMdcTAp4Ow68=;
+        s=korg; t=1649149674;
+        bh=qBElXJ90QRgQ8W5VnsNr6T5Wz+r+3jv9YBNbGL+C/PI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=wgxgDKDORwuAkQtHyFBYhn638HBorMGuPeFuWtcVYtMHCxCR706hfMfJ39UYrer46
-         iyFBen7oeaWlpmRW5nZ+S7LmVz5pTQ/fVkFn8ajjstJDNq0NVfCf4M744NDbqUVCZ0
-         7CHijFQc3qiBLzOWMH2Q2T6p6h3TUVsydKlrhHlU=
+        b=adNZPA11YHOGWheHySjb7gIBxAO6jT+V8e0kM+DE/1sglWxZTV+bK/udLK4zsLEov
+         U/8EZhtG2D/sDILHttpMvWYxFOzsQDwn/lI9mCYSlR4nn+09tHTCO3RkrKFSRcKC35
+         5XN//MB8YDq9seyGXBeymjUke55v1bN9za1uMzeg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hans de Goede <hdegoede@redhat.com>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        stable@vger.kernel.org,
+        syzbot+d1e3b1d92d25abf97943@syzkaller.appspotmail.com,
+        Casey Schaufler <casey@schaufler-ca.com>,
+        James Morris <jamorris@linux.microsoft.com>,
+        Paul Moore <paul@paul-moore.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0774/1017] ACPICA: Avoid walking the ACPI Namespace if it is not there
-Date:   Tue,  5 Apr 2022 09:28:07 +0200
-Message-Id: <20220405070417.234521252@linuxfoundation.org>
+Subject: [PATCH 5.16 0751/1017] LSM: general protection fault in legacy_parse_param
+Date:   Tue,  5 Apr 2022 09:27:44 +0200
+Message-Id: <20220405070416.552864745@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -49,42 +53,77 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+From: Casey Schaufler <casey@schaufler-ca.com>
 
-[ Upstream commit 0c9992315e738e7d6e927ef36839a466b080dba6 ]
+[ Upstream commit ecff30575b5ad0eda149aadad247b7f75411fd47 ]
 
-ACPICA commit b1c3656ef4950098e530be68d4b589584f06cddc
+The usual LSM hook "bail on fail" scheme doesn't work for cases where
+a security module may return an error code indicating that it does not
+recognize an input.  In this particular case Smack sees a mount option
+that it recognizes, and returns 0. A call to a BPF hook follows, which
+returns -ENOPARAM, which confuses the caller because Smack has processed
+its data.
 
-Prevent acpi_ns_walk_namespace() from crashing when called with
-start_node equal to ACPI_ROOT_OBJECT if the Namespace has not been
-instantiated yet and acpi_gbl_root_node is NULL.
+The SELinux hook incorrectly returns 1 on success. There was a time
+when this was correct, however the current expectation is that it
+return 0 on success. This is repaired.
 
-For instance, this can happen if the kernel is run with "acpi=off"
-in the command line.
-
-Link: https://github.com/acpica/acpica/commit/b1c3656ef4950098e530be68d4b589584f06cddc
-Link: https://lore.kernel.org/linux-acpi/CAJZ5v0hJWW_vZ3wwajE7xT38aWjY7cZyvqMJpXHzUL98-SiCVQ@mail.gmail.com/
-Reported-by: Hans de Goede <hdegoede@redhat.com>
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Reported-by: syzbot+d1e3b1d92d25abf97943@syzkaller.appspotmail.com
+Signed-off-by: Casey Schaufler <casey@schaufler-ca.com>
+Acked-by: James Morris <jamorris@linux.microsoft.com>
+Signed-off-by: Paul Moore <paul@paul-moore.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/acpi/acpica/nswalk.c | 3 +++
- 1 file changed, 3 insertions(+)
+ security/security.c      | 17 +++++++++++++++--
+ security/selinux/hooks.c |  5 ++---
+ 2 files changed, 17 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/acpi/acpica/nswalk.c b/drivers/acpi/acpica/nswalk.c
-index 915c2433463d..e7c30ce06e18 100644
---- a/drivers/acpi/acpica/nswalk.c
-+++ b/drivers/acpi/acpica/nswalk.c
-@@ -169,6 +169,9 @@ acpi_ns_walk_namespace(acpi_object_type type,
+diff --git a/security/security.c b/security/security.c
+index cf6615b5e820..745a8bf66d91 100644
+--- a/security/security.c
++++ b/security/security.c
+@@ -884,9 +884,22 @@ int security_fs_context_dup(struct fs_context *fc, struct fs_context *src_fc)
+ 	return call_int_hook(fs_context_dup, 0, fc, src_fc);
+ }
  
- 	if (start_node == ACPI_ROOT_OBJECT) {
- 		start_node = acpi_gbl_root_node;
-+		if (!start_node) {
-+			return_ACPI_STATUS(AE_NO_NAMESPACE);
-+		}
- 	}
+-int security_fs_context_parse_param(struct fs_context *fc, struct fs_parameter *param)
++int security_fs_context_parse_param(struct fs_context *fc,
++				    struct fs_parameter *param)
+ {
+-	return call_int_hook(fs_context_parse_param, -ENOPARAM, fc, param);
++	struct security_hook_list *hp;
++	int trc;
++	int rc = -ENOPARAM;
++
++	hlist_for_each_entry(hp, &security_hook_heads.fs_context_parse_param,
++			     list) {
++		trc = hp->hook.fs_context_parse_param(fc, param);
++		if (trc == 0)
++			rc = 0;
++		else if (trc != -ENOPARAM)
++			return trc;
++	}
++	return rc;
+ }
  
- 	/* Null child means "get first node" */
+ int security_sb_alloc(struct super_block *sb)
+diff --git a/security/selinux/hooks.c b/security/selinux/hooks.c
+index 93eac9464c5f..69b0709bd156 100644
+--- a/security/selinux/hooks.c
++++ b/security/selinux/hooks.c
+@@ -2916,10 +2916,9 @@ static int selinux_fs_context_parse_param(struct fs_context *fc,
+ 		return opt;
+ 
+ 	rc = selinux_add_opt(opt, param->string, &fc->security);
+-	if (!rc) {
++	if (!rc)
+ 		param->string = NULL;
+-		rc = 1;
+-	}
++
+ 	return rc;
+ }
+ 
 -- 
 2.34.1
 
