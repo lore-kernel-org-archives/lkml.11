@@ -2,49 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8AAE1C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6BC9EC4332F
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:41:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1577987AbiDEXR5 (ORCPT
+        id S1577953AbiDEXRs (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 19:17:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39510 "EHLO
+        Tue, 5 Apr 2022 19:17:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48592 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349080AbiDEJtF (ORCPT
+        with ESMTP id S239746AbiDEKyt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:49:05 -0400
+        Tue, 5 Apr 2022 06:54:49 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7FA26A9951;
-        Tue,  5 Apr 2022 02:40:17 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57271ABF66;
+        Tue,  5 Apr 2022 03:28:27 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 35188B818F3;
-        Tue,  5 Apr 2022 09:40:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 915B2C385A1;
-        Tue,  5 Apr 2022 09:40:14 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 02CBEB81C99;
+        Tue,  5 Apr 2022 10:28:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 46C9AC385A1;
+        Tue,  5 Apr 2022 10:28:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649151615;
-        bh=pmz8VFRznL4qWCoGOrrIxTyP3DntmYhPsBWgkc/K+O4=;
+        s=korg; t=1649154504;
+        bh=957SGL9KQznzdENY4XdnryY6MFqclkMVRwcwl8CH+qQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jv4kdyUfQbQx9VfLwtLmLRBraBjP2aSKAERWqWq2DENO6gGyMWFeAgMUjMFFXiBK5
-         UG45qrneNjYksFRGL4Ems5NOBpePw3yU/aRpegCtLJCK+c3fo05KJ5dMzrsK3plkzm
-         kX26tHWMqN53QRohwAJRUQIIbZxwbWno89Vv7sac=
+        b=kOkvME/7wPjQ5Jru5ds/OerYBQfB/kgFeXBsTBu+twXPqny2zVUe8YSLleNQUwBVE
+         nPs8bE72F2Ly74IeAq5K67rRX8eLz/zWzoLglkj+uUWlP49hAnK7GUWry7zD7ft+QS
+         gbwVAlD8eEGDZZmnlJa2fZnZEMe1FUm9iSobKb7U=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hiral Patel <hiralpat@cisco.com>,
-        Hannes Reinecke <hare@suse.de>,
-        Himanshu Madhani <himanshu.madhani@oracle.com>,
-        Bart Van Assche <bvanassche@acm.org>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 479/913] scsi: fnic: Fix a tracing statement
-Date:   Tue,  5 Apr 2022 09:25:41 +0200
-Message-Id: <20220405070354.212134655@linuxfoundation.org>
+        stable@vger.kernel.org, Masami Hiramatsu <mhiramat@kernel.org>,
+        Zeal Robot <zealci@zte.com.cn>, Lv Ruyi <lv.ruyi@zte.com.cn>,
+        "Steven Rostedt (Google)" <rostedt@goodmis.org>
+Subject: [PATCH 5.10 572/599] proc: bootconfig: Add null pointer check
+Date:   Tue,  5 Apr 2022 09:34:26 +0200
+Message-Id: <20220405070315.865017293@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
+References: <20220405070258.802373272@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -53,40 +50,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Bart Van Assche <bvanassche@acm.org>
+From: Lv Ruyi <lv.ruyi@zte.com.cn>
 
-[ Upstream commit 3032ed77a28913203a4fe0ab8f05752331af79b3 ]
+commit bed5b60bf67ccd8957b8c0558fead30c4a3f5d3f upstream.
 
-Report both the command flags and command state instead of only the
-command state.
+kzalloc is a memory allocation function which can return NULL when some
+internal memory errors happen. It is safer to add null pointer check.
 
-Link: https://lore.kernel.org/r/20220218195117.25689-22-bvanassche@acm.org
-Fixes: 4d7007b49d52 ("[SCSI] fnic: Fnic Trace Utility")
-Cc: Hiral Patel <hiralpat@cisco.com>
-Reviewed-by: Hannes Reinecke <hare@suse.de>
-Reviewed-by: Himanshu Madhani <himanshu.madhani@oracle.com>
-Signed-off-by: Bart Van Assche <bvanassche@acm.org>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Link: https://lkml.kernel.org/r/20220329104004.2376879-1-lv.ruyi@zte.com.cn
+
+Cc: stable@vger.kernel.org
+Fixes: c1a3c36017d4 ("proc: bootconfig: Add /proc/bootconfig to show boot config list")
+Acked-by: Masami Hiramatsu <mhiramat@kernel.org>
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: Lv Ruyi <lv.ruyi@zte.com.cn>
+Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/scsi/fnic/fnic_scsi.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ fs/proc/bootconfig.c |    2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/scsi/fnic/fnic_scsi.c b/drivers/scsi/fnic/fnic_scsi.c
-index f8afbfb468dc..d084a7db3925 100644
---- a/drivers/scsi/fnic/fnic_scsi.c
-+++ b/drivers/scsi/fnic/fnic_scsi.c
-@@ -604,7 +604,7 @@ static int fnic_queuecommand_lck(struct scsi_cmnd *sc, void (*done)(struct scsi_
+--- a/fs/proc/bootconfig.c
++++ b/fs/proc/bootconfig.c
+@@ -32,6 +32,8 @@ static int __init copy_xbc_key_value_lis
+ 	int ret = 0;
  
- 	FNIC_TRACE(fnic_queuecommand, sc->device->host->host_no,
- 		  tag, sc, io_req, sg_count, cmd_trace,
--		  (((u64)CMD_FLAGS(sc) >> 32) | CMD_STATE(sc)));
-+		  (((u64)CMD_FLAGS(sc) << 32) | CMD_STATE(sc)));
+ 	key = kzalloc(XBC_KEYLEN_MAX, GFP_KERNEL);
++	if (!key)
++		return -ENOMEM;
  
- 	/* if only we issued IO, will we have the io lock */
- 	if (io_lock_acquired)
--- 
-2.34.1
-
+ 	xbc_for_each_key_value(leaf, val) {
+ 		ret = xbc_node_compose_key(leaf, key, XBC_KEYLEN_MAX);
 
 
