@@ -2,87 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 427F9C3527D
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:17:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DDA4BC4707A
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:17:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1583075AbiDEXvD (ORCPT
+        id S1582984AbiDEXur (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 19:51:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47430 "EHLO
+        Tue, 5 Apr 2022 19:50:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43484 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348595AbiDEJsG (ORCPT
+        with ESMTP id S1457754AbiDEQkC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:48:06 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14A7625FE;
-        Tue,  5 Apr 2022 02:34:15 -0700 (PDT)
+        Tue, 5 Apr 2022 12:40:02 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96F12D9E85;
+        Tue,  5 Apr 2022 09:38:04 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EF939616D1;
-        Tue,  5 Apr 2022 09:34:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 064E1C385A2;
-        Tue,  5 Apr 2022 09:34:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649151254;
-        bh=tCRK5JOcnZrv6VCnTAEkt+Ni/+cwLKY96V9qbg3K580=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=paMAKHRZ/PDJcHS4yiMpLV2oGlgT2Qs8kDY+sEOQAPo8f+Xn/0kxy8lu0Ox370U85
-         D4qNkKpsa6GZHa1JFRqJ52O5GZ89hRnOMj78LJ1dGj87jSIvxRxtZ0sTNjfT2ZErgp
-         Ehj0u21lZaVjjdlX+meqnU3QnmnQUi8DS4UpNXhk=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Codrin Ciubotariu <codrin.ciubotariu@microchip.com>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 349/913] ASoC: atmel: Add missing of_node_put() in at91sam9g20ek_audio_probe
-Date:   Tue,  5 Apr 2022 09:23:31 +0200
-Message-Id: <20220405070350.308008793@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
-User-Agent: quilt/0.66
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3137C617D2;
+        Tue,  5 Apr 2022 16:38:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 55BCEC385A1;
+        Tue,  5 Apr 2022 16:38:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649176683;
+        bh=tWvuX7ND9rBqkP1uSP+2Tul0OWLfm6+Xw2RC0nvxfWs=;
+        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
+        b=SowZPN9R+c/QuQhJLP77gmZJo761jO44XrZTN6J+ExNY9CbTnx9VqSV4dfeLiaLXD
+         6vMlasopq2teF36g8URsyYfOLwGSF+27+2AbU60100mN2eojAC/yJWaiO39LKoCWgR
+         XAWuCjOE/KjEnk/+rdEYq7Iu7EhzgANGoPywjj89iJvjLZbQrlSHIi0T5HFqVp9nIn
+         svGWwy3sVITBYukFBzAhNJnDfLcRpU3p0MN1a0mlEab6UGrYXHlhRQs5dGFHHl7vbW
+         04O8whMAbyX8ts4ZZufErL4YQMV6z+2KDQqfGMZbc04hxOt+Y9GVL9UDMC6FezdtaD
+         vTV6mvmhD0U8w==
+From:   Kalle Valo <kvalo@kernel.org>
+To:     Borislav Petkov <bp@alien8.de>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        Arend van Spriel <aspriel@gmail.com>,
+        Franky Lin <franky.lin@broadcom.com>,
+        Hante Meuleman <hante.meuleman@broadcom.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        brcm80211-dev-list.pdl@broadcom.com, netdev@vger.kernel.org,
+        linux-wireless@vger.kernel.org
+Subject: Re: [PATCH 06/11] brcmfmac: sdio: Fix undefined behavior due to shift overflowing the constant
+References: <20220405151517.29753-1-bp@alien8.de>
+        <20220405151517.29753-7-bp@alien8.de> <87y20jr1qt.fsf@kernel.org>
+        <YkxpIQHKLXmGBwV1@zn.tnic>
+Date:   Tue, 05 Apr 2022 19:37:59 +0300
+In-Reply-To: <YkxpIQHKLXmGBwV1@zn.tnic> (Borislav Petkov's message of "Tue, 5
+        Apr 2022 18:06:57 +0200")
+Message-ID: <87pmlvqye0.fsf@kernel.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+Borislav Petkov <bp@alien8.de> writes:
 
-[ Upstream commit f590797fa3c1bccdd19e55441592a23b46aef449 ]
+> On Tue, Apr 05, 2022 at 06:25:30PM +0300, Kalle Valo wrote:
+>> Via which tree is this going? I assume not the wireless tree, so:
+>
+> Whoever picks it up.
 
-This node pointer is returned by of_parse_phandle() with refcount
-incremented in this function.
-Calling of_node_put() to avoid the refcount leak.
+It would be good to have a plan so the patch is not forgotten :)
 
-Fixes: 531f67e41dcd ("ASoC: at91sam9g20ek-wm8731: convert to dt support")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Reviewed-by: Codrin Ciubotariu <codrin.ciubotariu@microchip.com>
-Link: https://lore.kernel.org/r/20220307124539.1743-1-linmq006@gmail.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- sound/soc/atmel/sam9g20_wm8731.c | 1 +
- 1 file changed, 1 insertion(+)
+Normally brcmfmac patches go via the wireless tree, so I could take this
+patch. But you didn't CC linux-wireless so our patchwork doesn't see it.
+So if you want me to take this you need to resend.
 
-diff --git a/sound/soc/atmel/sam9g20_wm8731.c b/sound/soc/atmel/sam9g20_wm8731.c
-index ed1f69b57024..8a55d59a6c2a 100644
---- a/sound/soc/atmel/sam9g20_wm8731.c
-+++ b/sound/soc/atmel/sam9g20_wm8731.c
-@@ -214,6 +214,7 @@ static int at91sam9g20ek_audio_probe(struct platform_device *pdev)
- 	cpu_np = of_parse_phandle(np, "atmel,ssc-controller", 0);
- 	if (!cpu_np) {
- 		dev_err(&pdev->dev, "dai and pcm info missing\n");
-+		of_node_put(codec_np);
- 		return -EINVAL;
- 	}
- 	at91sam9g20ek_dai.cpus->of_node = cpu_np;
 -- 
-2.34.1
+https://patchwork.kernel.org/project/linux-wireless/list/
 
-
-
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
