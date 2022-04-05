@@ -2,102 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5786AC4332F
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:17:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EF008C35295
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:17:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1583146AbiDEXvX (ORCPT
+        id S1583292AbiDEXwI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 19:51:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37656 "EHLO
+        Tue, 5 Apr 2022 19:52:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52342 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1450214AbiDEPvX (ORCPT
+        with ESMTP id S1354218AbiDEKMT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 11:51:23 -0400
-Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4412D12865B
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 07:39:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=desiato.20200630; h=Content-Transfer-Encoding:Content-Type
-        :In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:
-        Sender:Reply-To:Content-ID:Content-Description;
-        bh=yDe80dB3PcLLjC73bVCnCnNNULyXZtKg1Crra+A5bJo=; b=MKQPYpOohaUf88JeLFDJOO+/sW
-        rPWNUODd1G7R/GWtLPxD35hsZzHm7lfA2fgTRY1mJ918gJo/J7wkGFjIa2wz2qoQlxOzYC53p7OAx
-        WOKm2lEmAhkUtYkXsmFahxYNzl5WHpw1jT+/VU93Lv75N69qopw81Gf7e8O88HavJETlyLn63CNB4
-        /+5jUfCBH6tprXYmnn6c3KdrvsUFUZmz35pEvSfhaTOeJcTkt/A47k0zJlwqfo9QL0tricRrzIcPf
-        vw7gSENAliOUQALLMW/5mSYZ3lDnzVPkcW9wT71UGl1HMUaCyqGMXK8ACLdR0z6ACotd8vpEsgXJ8
-        TQhbEaHQ==;
-Received: from [2601:1c0:6280:3f0::aa0b]
-        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nbkLJ-001sTR-9Z; Tue, 05 Apr 2022 14:39:38 +0000
-Message-ID: <c544d79e-90ec-7bbe-77ad-de96a700d711@infradead.org>
-Date:   Tue, 5 Apr 2022 07:39:30 -0700
+        Tue, 5 Apr 2022 06:12:19 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 950C655BDA;
+        Tue,  5 Apr 2022 02:58:58 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 568CDB81B93;
+        Tue,  5 Apr 2022 09:58:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B10E2C385A3;
+        Tue,  5 Apr 2022 09:58:55 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649152736;
+        bh=uIZ4cyKu+0AMabIS03XwgpXcSNP3o7W7bZnGut3Ifu8=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=Szxc1lbsDcho/BRwCRzrtp2FE2SjQUSZZ8Oyse0EEYUX2nkx2L3DTQN0KITrcbpBg
+         TF6dz/jKkAUGDrjq8N+CgcXZl9H1SFg7ghZWet1Jr9NvqEZyrN8g1QX/oY8RhXg/+0
+         GmAAEN2NohDHxPNtXckW9Rs/cGz0G/7MJm2ml1MQ=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Yong Wu <yong.wu@mediatek.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Subject: [PATCH 5.15 884/913] dt-bindings: memory: mtk-smi: No need mediatek,larb-id for mt8167
+Date:   Tue,  5 Apr 2022 09:32:26 +0200
+Message-Id: <20220405070406.319832101@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH] drm/format_helper: fix a kernel-doc typo
-Content-Language: en-US
-To:     Javier Martinez Canillas <javierm@redhat.com>,
-        Simon Ser <contact@emersion.fr>
-Cc:     linux-kernel@vger.kernel.org,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        David Airlie <airlied@linux.ie>,
-        dri-devel@lists.freedesktop.org
-References: <20220403232902.1753-1-rdunlap@infradead.org>
- <ttcrpLw9HkdhAH5SkXylXDBi9SBf7LWgOeW09ZvTF4U4_zKJAOXBQZlFxfw6NKY0Hip6dXBFape6zkX09cstuOno72c-c00wmZ_VbNDg6xs=@emersion.fr>
- <b20bbd22-895c-9e74-e579-d2f3561a2fe1@infradead.org>
- <BzpH4s8ZYn84kTlJQ3BHVMQzZlESb2Fk6v-uO5KBaaeBNMvRvC98lpuBLUNLE3a5bdoYTb5JRvo6EU__5AGJ79LUirSppO39I1t1xlwx-fI=@emersion.fr>
- <fda186f7-2cf4-a69a-d68e-58073d35cbea@redhat.com>
-From:   Randy Dunlap <rdunlap@infradead.org>
-In-Reply-To: <fda186f7-2cf4-a69a-d68e-58073d35cbea@redhat.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+From: Yong Wu <yong.wu@mediatek.com>
+
+commit ddc3a324889686ec9b358de20fdeec0d2668c7a8 upstream.
+
+Mute the warning from "make dtbs_check":
+
+larb@14016000: 'mediatek,larb-id' is a required property
+	arch/arm64/boot/dts/mediatek/mt8167-pumpkin.dt.yaml
+larb@15001000: 'mediatek,larb-id' is a required property
+	arch/arm64/boot/dts/mediatek/mt8167-pumpkin.dt.yaml
+larb@16010000: 'mediatek,larb-id' is a required property
+	arch/arm64/boot/dts/mediatek/mt8167-pumpkin.dt.yaml
+
+As the description of mediatek,larb-id, the property is only
+required when the larbid is not consecutive from its IOMMU point of view.
+
+Also, from the description of mediatek,larbs in
+Documentation/devicetree/bindings/iommu/mediatek,iommu.yaml, all the larbs
+must sort by the larb index.
+
+In mt8167, there is only one IOMMU HW and three larbs. The drivers already
+know its larb index from the mediatek,larbs property of IOMMU, thus no
+need this property.
+
+Fixes: 27bb0e42855a ("dt-bindings: memory: mediatek: Convert SMI to DT schema")
+Signed-off-by: Yong Wu <yong.wu@mediatek.com>
+Acked-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+Link: https://lore.kernel.org/r/20220113111057.29918-3-yong.wu@mediatek.com
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ Documentation/devicetree/bindings/memory-controllers/mediatek,smi-larb.yaml |    1 -
+ 1 file changed, 1 deletion(-)
+
+--- a/Documentation/devicetree/bindings/memory-controllers/mediatek,smi-larb.yaml
++++ b/Documentation/devicetree/bindings/memory-controllers/mediatek,smi-larb.yaml
+@@ -106,7 +106,6 @@ allOf:
+               - mediatek,mt2701-smi-larb
+               - mediatek,mt2712-smi-larb
+               - mediatek,mt6779-smi-larb
+-              - mediatek,mt8167-smi-larb
+               - mediatek,mt8192-smi-larb
+ 
+     then:
 
 
-On 4/4/22 23:26, Javier Martinez Canillas wrote:
-> On 4/5/22 08:12, Simon Ser wrote:
->> On Monday, April 4th, 2022 at 23:35, Randy Dunlap <rdunlap@infradead.org> wrote:
->>
->>> On 4/4/22 09:04, Simon Ser wrote:
->>>
->>>> Both doc patches pushed, thanks. I had to manually edit them because they
->>>> wouldn't apply cleanly. Next time, please use git-send-email (see
->>>> https://git-send-email.io/ for setup instructions).
->>>
->>> That's odd. I did use 'git send-email' and I don't usually have any
->>> problems (AFAIK). I'll check those setup instructions.
->>
->> Hm, maybe the issue isn't git-send-email, but the way the patch was
->> generated? I had to manually edit these lines for the first patch to work:
->>
->>     --- linux-next-20211217.orig/include/drm/drm_file.h
->>     +++ linux-next-20211217/include/drm/drm_file.h
->>
->> I changed these to:
->>
->>     --- a/include/drm/drm_file.h
->>     +++ b/include/drm/drm_file.h
->>
->> This wasn't enough for the second patch, I had to re-do the changes by hand
->> from scratch.
->>
-> 
-> Yes, I believe the suggestion should be to use git-format-patch instead.
-> 
-> To make sure that was is posted can be consumed by the git-am command.
-
-Considering that I am not using git, I think it will be difficult
-to use git-format-patch.
-
-(git-send-email is independent of git.)
-
-Still, this is the first time in many years that I have heard
-of this problem.
-
-Thanks for the info and insights.
-
--- 
-~Randy
