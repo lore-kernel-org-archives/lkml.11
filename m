@@ -2,52 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 543E7C4167D
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:26:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 57ED3C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:27:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1588719AbiDFARH (ORCPT
+        id S1588775AbiDFARR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 20:17:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42294 "EHLO
+        Tue, 5 Apr 2022 20:17:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56674 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356732AbiDEKYw (ORCPT
+        with ESMTP id S1349731AbiDEJvJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:24:52 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55592BF516;
-        Tue,  5 Apr 2022 03:08:55 -0700 (PDT)
+        Tue, 5 Apr 2022 05:51:09 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48B6B13CF7;
+        Tue,  5 Apr 2022 02:49:11 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D51BCB81C89;
-        Tue,  5 Apr 2022 10:08:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0CACDC385A6;
-        Tue,  5 Apr 2022 10:08:52 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D8AE861577;
+        Tue,  5 Apr 2022 09:49:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E585FC385A1;
+        Tue,  5 Apr 2022 09:49:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649153332;
-        bh=s9JZTHU4ISnxMDiWXbfQdfcWMtbuXYw/drMU+c7jGpQ=;
+        s=korg; t=1649152150;
+        bh=PbNZRs7V0fNEXSyWkR/PcpcLLp5OESncjXOJnqkXlCQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Z+smV24ZXXGg6NQHDSCicgF2s41V5TA6S2CKe3ZNmlWRAavfXwgjwWPYJDS3kU35d
-         4Qd3W/BttlaxPjs9MNt61/7+tAPM1e+1W1tEix8AO4lxpHS+5gGgXvUHauT5/zCk8t
-         uOErlje415YkKqgnc+FTFHlUmRKTicaov0MvQdPM=
+        b=Db3CnS2b641nVOMKm2zIcR5kicHZbRPelnr+w/p0aku0e5oVuWzKWepJ8QSbk+Di7
+         TnUglt120QAB+E2Qs2n3QHWXk6VPlswbIijoW8UFO6RYy+tM2sQesLNPE3t/mmoGt9
+         pajLjhefDitpODy4MbOYyxFe8SRdMVRGza68ELIk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Guillaume Tucker <guillaume.tucker@collabora.com>,
-        "kernelci.org bot" <bot@kernelci.org>,
-        Guenter Roeck <groeck@google.com>,
-        Shuah Khan <shuah@kernel.org>, Borislav Petkov <bp@suse.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
+        stable@vger.kernel.org, Tom Rix <trix@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 185/599] selftests, x86: fix how check_cc.sh is being invoked
-Date:   Tue,  5 Apr 2022 09:27:59 +0200
-Message-Id: <20220405070304.347142989@linuxfoundation.org>
+Subject: [PATCH 5.15 674/913] octeontx2-af: initialize action variable
+Date:   Tue,  5 Apr 2022 09:28:56 +0200
+Message-Id: <20220405070400.039736574@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -56,71 +50,107 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Guillaume Tucker <guillaume.tucker@collabora.com>
+From: Tom Rix <trix@redhat.com>
 
-[ Upstream commit ef696f93ed9778d570bd5ac58414421cdd4f1aab ]
+[ Upstream commit 33b5bc9e703383e396f275d51fc4bafa48dbae5a ]
 
-The $(CC) variable used in Makefiles could contain several arguments
-such as "ccache gcc".  These need to be passed as a single string to
-check_cc.sh, otherwise only the first argument will be used as the
-compiler command.  Without quotes, the $(CC) variable is passed as
-distinct arguments which causes the script to fail to build trivial
-programs.
+Clang static analysis reports this representative issue
+rvu_npc.c:898:15: warning: Assigned value is garbage
+  or undefined
+  req.match_id = action.match_id;
+               ^ ~~~~~~~~~~~~~~~
 
-Fix this by adding quotes around $(CC) when calling check_cc.sh to pass
-the whole string as a single argument to the script even if it has
-several words such as "ccache gcc".
+The initial setting of action is conditional on
+ if (is_mcam_entry_enabled(...))
+The later check of action.op will sometimes be garbage.
+So initialize action.
 
-Link: https://lkml.kernel.org/r/d0d460d7be0107a69e3c52477761a6fe694c1840.1646991629.git.guillaume.tucker@collabora.com
-Fixes: e9886ace222e ("selftests, x86: Rework x86 target architecture detection")
-Signed-off-by: Guillaume Tucker <guillaume.tucker@collabora.com>
-Tested-by: "kernelci.org bot" <bot@kernelci.org>
-Reviewed-by: Guenter Roeck <groeck@google.com>
-Cc: Shuah Khan <shuah@kernel.org>
-Cc: Borislav Petkov <bp@suse.de>
-Cc: Dave Hansen <dave.hansen@linux.intel.com>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Reduce setting of
+  *(u64 *)&action = 0x00;
+to
+  *(u64 *)&action = 0;
+
+Fixes: 967db3529eca ("octeontx2-af: add support for multicast/promisc packet replication feature")
+Signed-off-by: Tom Rix <trix@redhat.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/testing/selftests/vm/Makefile  | 6 +++---
- tools/testing/selftests/x86/Makefile | 6 +++---
- 2 files changed, 6 insertions(+), 6 deletions(-)
+ .../net/ethernet/marvell/octeontx2/af/rvu_npc.c   | 15 +++++++--------
+ 1 file changed, 7 insertions(+), 8 deletions(-)
 
-diff --git a/tools/testing/selftests/vm/Makefile b/tools/testing/selftests/vm/Makefile
-index 2cf32e6b376e..01ec6876e8f5 100644
---- a/tools/testing/selftests/vm/Makefile
-+++ b/tools/testing/selftests/vm/Makefile
-@@ -40,9 +40,9 @@ TEST_GEN_FILES += userfaultfd
- TEST_GEN_FILES += khugepaged
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_npc.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu_npc.c
+index fbb573c40c1a..c4a46b295d40 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_npc.c
++++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_npc.c
+@@ -605,7 +605,7 @@ void rvu_npc_install_ucast_entry(struct rvu *rvu, u16 pcifunc,
+ 	struct npc_install_flow_req req = { 0 };
+ 	struct npc_install_flow_rsp rsp = { 0 };
+ 	struct npc_mcam *mcam = &rvu->hw->mcam;
+-	struct nix_rx_action action;
++	struct nix_rx_action action = { 0 };
+ 	int blkaddr, index;
  
- ifeq ($(MACHINE),x86_64)
--CAN_BUILD_I386 := $(shell ./../x86/check_cc.sh $(CC) ../x86/trivial_32bit_program.c -m32)
--CAN_BUILD_X86_64 := $(shell ./../x86/check_cc.sh $(CC) ../x86/trivial_64bit_program.c)
--CAN_BUILD_WITH_NOPIE := $(shell ./../x86/check_cc.sh $(CC) ../x86/trivial_program.c -no-pie)
-+CAN_BUILD_I386 := $(shell ./../x86/check_cc.sh "$(CC)" ../x86/trivial_32bit_program.c -m32)
-+CAN_BUILD_X86_64 := $(shell ./../x86/check_cc.sh "$(CC)" ../x86/trivial_64bit_program.c)
-+CAN_BUILD_WITH_NOPIE := $(shell ./../x86/check_cc.sh "$(CC)" ../x86/trivial_program.c -no-pie)
+ 	/* AF's and SDP VFs work in promiscuous mode */
+@@ -626,7 +626,6 @@ void rvu_npc_install_ucast_entry(struct rvu *rvu, u16 pcifunc,
+ 		*(u64 *)&action = npc_get_mcam_action(rvu, mcam,
+ 						      blkaddr, index);
+ 	} else {
+-		*(u64 *)&action = 0x00;
+ 		action.op = NIX_RX_ACTIONOP_UCAST;
+ 		action.pf_func = pcifunc;
+ 	}
+@@ -657,7 +656,7 @@ void rvu_npc_install_promisc_entry(struct rvu *rvu, u16 pcifunc,
+ 	struct npc_mcam *mcam = &rvu->hw->mcam;
+ 	struct rvu_hwinfo *hw = rvu->hw;
+ 	int blkaddr, ucast_idx, index;
+-	struct nix_rx_action action;
++	struct nix_rx_action action = { 0 };
+ 	u64 relaxed_mask;
  
- TARGETS := protection_keys
- BINARIES_32 := $(TARGETS:%=%_32)
-diff --git a/tools/testing/selftests/x86/Makefile b/tools/testing/selftests/x86/Makefile
-index 6703c7906b71..f1b675a4040b 100644
---- a/tools/testing/selftests/x86/Makefile
-+++ b/tools/testing/selftests/x86/Makefile
-@@ -6,9 +6,9 @@ include ../lib.mk
- .PHONY: all all_32 all_64 warn_32bit_failure clean
+ 	if (!hw->cap.nix_rx_multicast && is_cgx_vf(rvu, pcifunc))
+@@ -685,14 +684,14 @@ void rvu_npc_install_promisc_entry(struct rvu *rvu, u16 pcifunc,
+ 						      blkaddr, ucast_idx);
  
- UNAME_M := $(shell uname -m)
--CAN_BUILD_I386 := $(shell ./check_cc.sh $(CC) trivial_32bit_program.c -m32)
--CAN_BUILD_X86_64 := $(shell ./check_cc.sh $(CC) trivial_64bit_program.c)
--CAN_BUILD_WITH_NOPIE := $(shell ./check_cc.sh $(CC) trivial_program.c -no-pie)
-+CAN_BUILD_I386 := $(shell ./check_cc.sh "$(CC)" trivial_32bit_program.c -m32)
-+CAN_BUILD_X86_64 := $(shell ./check_cc.sh "$(CC)" trivial_64bit_program.c)
-+CAN_BUILD_WITH_NOPIE := $(shell ./check_cc.sh "$(CC)" trivial_program.c -no-pie)
+ 	if (action.op != NIX_RX_ACTIONOP_RSS) {
+-		*(u64 *)&action = 0x00;
++		*(u64 *)&action = 0;
+ 		action.op = NIX_RX_ACTIONOP_UCAST;
+ 	}
  
- TARGETS_C_BOTHBITS := single_step_syscall sysret_ss_attrs syscall_nt test_mremap_vdso \
- 			check_initial_reg_state sigreturn iopl ioperm \
+ 	/* RX_ACTION set to MCAST for CGX PF's */
+ 	if (hw->cap.nix_rx_multicast && pfvf->use_mce_list &&
+ 	    is_pf_cgxmapped(rvu, rvu_get_pf(pcifunc))) {
+-		*(u64 *)&action = 0x00;
++		*(u64 *)&action = 0;
+ 		action.op = NIX_RX_ACTIONOP_MCAST;
+ 		pfvf = rvu_get_pfvf(rvu, pcifunc & ~RVU_PFVF_FUNC_MASK);
+ 		action.index = pfvf->promisc_mce_idx;
+@@ -832,7 +831,7 @@ void rvu_npc_install_allmulti_entry(struct rvu *rvu, u16 pcifunc, int nixlf,
+ 	struct rvu_hwinfo *hw = rvu->hw;
+ 	int blkaddr, ucast_idx, index;
+ 	u8 mac_addr[ETH_ALEN] = { 0 };
+-	struct nix_rx_action action;
++	struct nix_rx_action action = { 0 };
+ 	struct rvu_pfvf *pfvf;
+ 	u16 vf_func;
+ 
+@@ -861,14 +860,14 @@ void rvu_npc_install_allmulti_entry(struct rvu *rvu, u16 pcifunc, int nixlf,
+ 							blkaddr, ucast_idx);
+ 
+ 	if (action.op != NIX_RX_ACTIONOP_RSS) {
+-		*(u64 *)&action = 0x00;
++		*(u64 *)&action = 0;
+ 		action.op = NIX_RX_ACTIONOP_UCAST;
+ 		action.pf_func = pcifunc;
+ 	}
+ 
+ 	/* RX_ACTION set to MCAST for CGX PF's */
+ 	if (hw->cap.nix_rx_multicast && pfvf->use_mce_list) {
+-		*(u64 *)&action = 0x00;
++		*(u64 *)&action = 0;
+ 		action.op = NIX_RX_ACTIONOP_MCAST;
+ 		action.index = pfvf->mcast_mce_idx;
+ 	}
 -- 
 2.34.1
 
