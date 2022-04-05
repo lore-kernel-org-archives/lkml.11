@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C41C1C41535
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 14:40:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 66C94C3527E
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 14:40:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1388270AbiDEOjf (ORCPT
+        id S1388655AbiDEOkg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 10:39:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37602 "EHLO
+        Tue, 5 Apr 2022 10:40:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50282 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242823AbiDEJiH (ORCPT
+        with ESMTP id S243692AbiDEJkQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:38:07 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B022AA6E3C;
-        Tue,  5 Apr 2022 02:24:31 -0700 (PDT)
+        Tue, 5 Apr 2022 05:40:16 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABD96B0A72;
+        Tue,  5 Apr 2022 02:24:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 22EC66144D;
-        Tue,  5 Apr 2022 09:24:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 333E0C385A4;
-        Tue,  5 Apr 2022 09:24:30 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 33EF8614F9;
+        Tue,  5 Apr 2022 09:24:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3FA0EC385A0;
+        Tue,  5 Apr 2022 09:24:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649150670;
-        bh=t8loBg/fTgDxUD2WMIQxHHzMkF2afWwHuMkk95hQsqg=;
+        s=korg; t=1649150692;
+        bh=xrHz9wZKNUYJ0hOqUhbpLhkKn96N95JVuiFTxojv6kA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=STzOUlz0IaV3Xs0suviA2CiSZh2OEmJDv2gSXnC+vuDHBcr9Lk2yaLMihHBJBL2bd
-         TqA5Z54LLwUiBghuNCethyvs2aUE8l7aDXZiS8zeogCREZOJb76+v3CN+nfbKroy5w
-         lo6rSdCGdAEi30rL6CJnSBoO8BCgn7ZVwNzJmCso=
+        b=PK+VHNagBo7HHqGD0ijO3uqaxsu19gjHJDh+KKw91gfbu0RHuKmejVeFoopuySMT5
+         cWXP41Vpl1Rgh7GKZfIE8TTQ9YcNt6FjIvEKSW0DTFPDRfjLZr1xO5bsr1s4kcbSfa
+         EF235o3HjwjUNqMYXoxGr8JQzCUMsEf+ipjePdns=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Shinichiro Kawasaki <shinichiro.kawasaki@wdc.com>,
-        Jens Axboe <axboe@kernel.dk>
-Subject: [PATCH 5.15 139/913] block: limit request dispatch loop duration
-Date:   Tue,  5 Apr 2022 09:20:01 +0200
-Message-Id: <20220405070343.998265301@linuxfoundation.org>
+        Tudor Ambarus <tudor.ambarus@microchip.com>,
+        Eugen Hristev <eugen.hristev@microchip.com>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>
+Subject: [PATCH 5.15 146/913] ARM: dts: at91: sama7g5: Remove unused properties in i2c nodes
+Date:   Tue,  5 Apr 2022 09:20:08 +0200
+Message-Id: <20220405070344.211954659@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
 References: <20220405070339.801210740@linuxfoundation.org>
@@ -50,85 +51,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Shin'ichiro Kawasaki <shinichiro.kawasaki@wdc.com>
+From: Tudor Ambarus <tudor.ambarus@microchip.com>
 
-commit 572299f03afd676dd4e20669cdaf5ed0fe1379d4 upstream.
+commit cbb92a7717d2e1c512b7e81c6b22c7298b58a881 upstream.
 
-When IO requests are made continuously and the target block device
-handles requests faster than request arrival, the request dispatch loop
-keeps on repeating to dispatch the arriving requests very long time,
-more than a minute. Since the loop runs as a workqueue worker task, the
-very long loop duration triggers workqueue watchdog timeout and BUG [1].
+The "atmel,use-dma-rx", "atmel,use-dma-rx" dt properties are not used by
+the i2c-at91 driver, nor they are defined in the bindings file, thus remove
+them.
 
-To avoid the very long loop duration, break the loop periodically. When
-opportunity to dispatch requests still exists, check need_resched(). If
-need_resched() returns true, the dispatch loop already consumed its time
-slice, then reschedule the dispatch work and break the loop. With heavy
-IO load, need_resched() does not return true for 20~30 seconds. To cover
-such case, check time spent in the dispatch loop with jiffies. If more
-than 1 second is spent, reschedule the dispatch work and break the loop.
-
-[1]
-
-[  609.691437] BUG: workqueue lockup - pool cpus=10 node=1 flags=0x0 nice=-20 stuck for 35s!
-[  609.701820] Showing busy workqueues and worker pools:
-[  609.707915] workqueue events: flags=0x0
-[  609.712615]   pwq 0: cpus=0 node=0 flags=0x0 nice=0 active=1/256 refcnt=2
-[  609.712626]     pending: drm_fb_helper_damage_work [drm_kms_helper]
-[  609.712687] workqueue events_freezable: flags=0x4
-[  609.732943]   pwq 0: cpus=0 node=0 flags=0x0 nice=0 active=1/256 refcnt=2
-[  609.732952]     pending: pci_pme_list_scan
-[  609.732968] workqueue events_power_efficient: flags=0x80
-[  609.751947]   pwq 0: cpus=0 node=0 flags=0x0 nice=0 active=1/256 refcnt=2
-[  609.751955]     pending: neigh_managed_work
-[  609.752018] workqueue kblockd: flags=0x18
-[  609.769480]   pwq 21: cpus=10 node=1 flags=0x0 nice=-20 active=3/256 refcnt=4
-[  609.769488]     in-flight: 1020:blk_mq_run_work_fn
-[  609.769498]     pending: blk_mq_timeout_work, blk_mq_run_work_fn
-[  609.769744] pool 21: cpus=10 node=1 flags=0x0 nice=-20 hung=35s workers=2 idle: 67
-[  639.899730] BUG: workqueue lockup - pool cpus=10 node=1 flags=0x0 nice=-20 stuck for 66s!
-[  639.909513] Showing busy workqueues and worker pools:
-[  639.915404] workqueue events: flags=0x0
-[  639.920197]   pwq 0: cpus=0 node=0 flags=0x0 nice=0 active=1/256 refcnt=2
-[  639.920215]     pending: drm_fb_helper_damage_work [drm_kms_helper]
-[  639.920365] workqueue kblockd: flags=0x18
-[  639.939932]   pwq 21: cpus=10 node=1 flags=0x0 nice=-20 active=3/256 refcnt=4
-[  639.939942]     in-flight: 1020:blk_mq_run_work_fn
-[  639.939955]     pending: blk_mq_timeout_work, blk_mq_run_work_fn
-[  639.940212] pool 21: cpus=10 node=1 flags=0x0 nice=-20 hung=66s workers=2 idle: 67
-
-Fixes: 6e6fcbc27e778 ("blk-mq: support batching dispatch in case of io")
-Signed-off-by: Shin'ichiro Kawasaki <shinichiro.kawasaki@wdc.com>
-Cc: stable@vger.kernel.org # v5.10+
-Link: https://lore.kernel.org/linux-block/20220310091649.zypaem5lkyfadymg@shindev/
-Link: https://lore.kernel.org/r/20220318022641.133484-1-shinichiro.kawasaki@wdc.com
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Cc: stable@vger.kernel.org
+Fixes: 7540629e2fc7 ("ARM: dts: at91: add sama7g5 SoC DT and sama7g5-ek")
+Signed-off-by: Tudor Ambarus <tudor.ambarus@microchip.com>
+Reviewed-by: Eugen Hristev <eugen.hristev@microchip.com>
+Signed-off-by: Nicolas Ferre <nicolas.ferre@microchip.com>
+Link: https://lore.kernel.org/r/20220302161854.32177-1-tudor.ambarus@microchip.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- block/blk-mq-sched.c |    9 ++++++++-
- 1 file changed, 8 insertions(+), 1 deletion(-)
+ arch/arm/boot/dts/sama7g5.dtsi |    6 ------
+ 1 file changed, 6 deletions(-)
 
---- a/block/blk-mq-sched.c
-+++ b/block/blk-mq-sched.c
-@@ -208,11 +208,18 @@ static int __blk_mq_do_dispatch_sched(st
- 
- static int blk_mq_do_dispatch_sched(struct blk_mq_hw_ctx *hctx)
- {
-+	unsigned long end = jiffies + HZ;
- 	int ret;
- 
- 	do {
- 		ret = __blk_mq_do_dispatch_sched(hctx);
--	} while (ret == 1);
-+		if (ret != 1)
-+			break;
-+		if (need_resched() || time_is_before_jiffies(end)) {
-+			blk_mq_delay_run_hw_queue(hctx, 0);
-+			break;
-+		}
-+	} while (1);
- 
- 	return ret;
- }
+--- a/arch/arm/boot/dts/sama7g5.dtsi
++++ b/arch/arm/boot/dts/sama7g5.dtsi
+@@ -319,8 +319,6 @@
+ 				dmas = <&dma0 AT91_XDMAC_DT_PERID(7)>,
+ 					<&dma0 AT91_XDMAC_DT_PERID(8)>;
+ 				dma-names = "rx", "tx";
+-				atmel,use-dma-rx;
+-				atmel,use-dma-tx;
+ 				status = "disabled";
+ 			};
+ 		};
+@@ -485,8 +483,6 @@
+ 				dmas = <&dma0 AT91_XDMAC_DT_PERID(21)>,
+ 					<&dma0 AT91_XDMAC_DT_PERID(22)>;
+ 				dma-names = "rx", "tx";
+-				atmel,use-dma-rx;
+-				atmel,use-dma-tx;
+ 				status = "disabled";
+ 			};
+ 		};
+@@ -511,8 +507,6 @@
+ 				dmas = <&dma0 AT91_XDMAC_DT_PERID(23)>,
+ 					<&dma0 AT91_XDMAC_DT_PERID(24)>;
+ 				dma-names = "rx", "tx";
+-				atmel,use-dma-rx;
+-				atmel,use-dma-tx;
+ 				status = "disabled";
+ 			};
+ 		};
 
 
