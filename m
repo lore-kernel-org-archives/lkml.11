@@ -2,88 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 502CFC4167D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E79BC4167E
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 15:20:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386703AbiDEPQS (ORCPT
+        id S1346496AbiDEPRy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 11:16:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39314 "EHLO
+        Tue, 5 Apr 2022 11:17:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39738 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346721AbiDEJpX (ORCPT
+        with ESMTP id S1346770AbiDEJp2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:45:23 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 420C8DB48A
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 02:31:28 -0700 (PDT)
+        Tue, 5 Apr 2022 05:45:28 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73B82C63;
+        Tue,  5 Apr 2022 02:31:44 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id EC8DEB81CC0
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 09:31:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6A514C385A3;
-        Tue,  5 Apr 2022 09:31:24 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649151085;
-        bh=sths/yLUf6l8l/Q/YW2CkxyCzaOS6Ye289f/mAv1VcA=;
-        h=From:To:Cc:In-Reply-To:References:Subject:Date:From;
-        b=GYDH1QLby77EqcvwL6yOSXoxj43pdwRO8odNEidkRfhT69oDRpMRLHq7FCg+YI+pM
-         Iwvsfi7rXPaSW+dYLBsVNoAdvrIzAo0Fp059rE64wF2ed79KXzwRldo8J0jYsIe7Zj
-         VculLap4vxSSG+gxBPiWV9BECNrhQAShI5MIVLCyPnnPU/E3nsCUS2+6c5ud/tcspn
-         v0EFlfGIC2ZkO6YQ4c12ilWm6R0qmKoVdHBwbsCybfiFUgLWiDBe6rbmMSOmg/V7Pc
-         XTnRxIshg1Qwmmks2bgKjm/crz8HKEd2VRDOWsqozvBiIW1W6piYA3rnk2hUlUS1Ea
-         jtb24YftzlIYA==
-From:   Mark Brown <broonie@kernel.org>
-To:     Lars-Peter Clausen <lars@metafoo.de>,
-        Liam Girdwood <lgirdwood@gmail.com>, steve@sk2.org,
-        nuno.sa@analog.com
-Cc:     wsa@kernel.org, linux-kernel@vger.kernel.org
-In-Reply-To: <20220325164828.1209201-1-steve@sk2.org>
-References: <20220325164828.1209201-1-steve@sk2.org>
-Subject: Re: [PATCH] ASoC: ada*, ssm*: use simple i2c probe function
-Message-Id: <164915108416.276574.1317659435834583998.b4-ty@kernel.org>
-Date:   Tue, 05 Apr 2022 10:31:24 +0100
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 726226165C;
+        Tue,  5 Apr 2022 09:31:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 81CF0C385A2;
+        Tue,  5 Apr 2022 09:31:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649151103;
+        bh=q+HweTIoMRUDs33SD84jX+bq8GXDyO/WMF9zN2kpg1M=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=gNrincy9k4gNxb96av4V6Jjcw+gmMAfS7JwgKJdPz/brkEGQNYlrSXWUVegTKkwqJ
+         VwQPm1AflMrgcrwavOTm8NdycLf6HspadO+sPsRkewBhShNSiMI5ZLrbGdY7zBtvT4
+         hvbzyXCPh2cxopgjTx964fjAKTz/50/L9gHK2huI=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, "Z. Liu" <liuzx@knownsec.com>,
+        Helge Deller <deller@gmx.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 288/913] video: fbdev: matroxfb: set maxvram of vbG200eW to the same as vbG200 to avoid black screen
+Date:   Tue,  5 Apr 2022 09:22:30 +0200
+Message-Id: <20220405070348.490797319@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 25 Mar 2022 17:48:28 +0100, Stephen Kitt wrote:
-> The i2c probe functions here don't use the id information provided in
-> their second argument, so the single-parameter i2c probe function
-> ("probe_new") can be used instead.
-> 
-> This avoids scanning the identifier tables during probes.
-> 
-> 
-> [...]
+From: Z. Liu <liuzx@knownsec.com>
 
-Applied to
+[ Upstream commit 62d89a7d49afe46e6b9bbe9e23b004ad848dbde4 ]
 
-   https://git.kernel.org/pub/scm/linux/kernel/git/broonie/sound.git for-next
+Start from commit 11be60bd66d54 "matroxfb: add Matrox MGA-G200eW board
+support", when maxvram is 0x800000, monitor become black w/ error message
+said: "The current input timing is not supported by the monitor display.
+Please change your input timing to 1920x1080@60Hz ...".
 
-Thanks!
+Fixes: 11be60bd66d5 ("matroxfb: add Matrox MGA-G200eW board support")
+Signed-off-by: Z. Liu <liuzx@knownsec.com>
+Signed-off-by: Helge Deller <deller@gmx.de>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/video/fbdev/matrox/matroxfb_base.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-[1/1] ASoC: ada*, ssm*: use simple i2c probe function
-      commit: b79bd63a66894ca6c75fb9827dc8f3f7fc1233e2
+diff --git a/drivers/video/fbdev/matrox/matroxfb_base.c b/drivers/video/fbdev/matrox/matroxfb_base.c
+index 5c82611e93d9..236521b19daf 100644
+--- a/drivers/video/fbdev/matrox/matroxfb_base.c
++++ b/drivers/video/fbdev/matrox/matroxfb_base.c
+@@ -1377,7 +1377,7 @@ static struct video_board vbG200 = {
+ 	.lowlevel = &matrox_G100
+ };
+ static struct video_board vbG200eW = {
+-	.maxvram = 0x800000,
++	.maxvram = 0x100000,
+ 	.maxdisplayable = 0x800000,
+ 	.accelID = FB_ACCEL_MATROX_MGAG200,
+ 	.lowlevel = &matrox_G100
+-- 
+2.34.1
 
-All being well this means that it will be integrated into the linux-next
-tree (usually sometime in the next 24 hours) and sent to Linus during
-the next merge window (or sooner if it is a bug fix), however if
-problems are discovered then the patch may be dropped or reverted.
 
-You may get further e-mails resulting from automated or manual testing
-and review of the tree, please engage with people reporting problems and
-send followup patches addressing any issues that are reported if needed.
 
-If any updates are required or you are submitting further changes they
-should be sent as incremental updates against current git, existing
-patches will not be replaced.
-
-Please add any relevant lists and maintainers to the CCs when replying
-to this mail.
-
-Thanks,
-Mark
