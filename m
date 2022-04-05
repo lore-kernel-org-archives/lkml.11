@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A7927C4707A
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 11:42:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B43AFC43219
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 11:42:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377947AbiDELbC (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 07:31:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46810 "EHLO
+        id S244359AbiDELcM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 07:32:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46834 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243979AbiDEIvX (ORCPT
+        with ESMTP id S244415AbiDEIwD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:51:23 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98EB5D0A83;
-        Tue,  5 Apr 2022 01:40:09 -0700 (PDT)
+        Tue, 5 Apr 2022 04:52:03 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66F57D5E8B;
+        Tue,  5 Apr 2022 01:41:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6137160FFB;
-        Tue,  5 Apr 2022 08:39:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 76900C385A1;
-        Tue,  5 Apr 2022 08:39:31 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8B882B81C19;
+        Tue,  5 Apr 2022 08:40:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D8167C385A0;
+        Tue,  5 Apr 2022 08:40:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649147971;
-        bh=toUIKSG7Y9lYiTObnBI3exiCjRwsy9pdblqnPZcepWY=;
+        s=korg; t=1649148036;
+        bh=dJqjmaqKxFV7sUbqP5+pRkKSgwrc/ZXn1ubpRSJTH04=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=s9XDr8qUxH19qQTVwgakgpMdjI+iiBkQSP+RjCD3e+0+jovdo+fAYBU8E0R8uoHWj
-         u0gdkctyGnA3dBi8F5smSobbub4Ia+9yqqmbgSfX+tc7YBsEmKJpY7htdk4AtkX/VL
-         ELR/Di2HGcvDCW24bEcIFav0s7UbL+uuZpN9xOFc=
+        b=FoQxibeYd0wyXtgExbi2nC+q7/N3FSAYcY8/O2iTEiQ4kKz+mvTDG2XipnYlSBwC5
+         jaNsEvt+5eU3/Zqtn6w7m2sWe8UxjU+czXeTtYj+rmw7hi9MnnP311C0SAPyjOuKKs
+         6tNaVCaJo8s/kse9mYSvoMJw0TQv0p+Hc1IswePw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Jann Horn <jannh@google.com>, Kees Cook <keescook@chromium.org>
-Subject: [PATCH 5.16 0161/1017] pstore: Dont use semaphores in always-atomic-context code
-Date:   Tue,  5 Apr 2022 09:17:54 +0200
-Message-Id: <20220405070358.998841592@linuxfoundation.org>
+        stable@vger.kernel.org, Shijith Thotton <sthotton@marvell.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 0211/1017] crypto: octeontx2 - remove CONFIG_DM_CRYPT check
+Date:   Tue,  5 Apr 2022 09:18:44 +0200
+Message-Id: <20220405070400.514428164@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -50,170 +49,67 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jann Horn <jannh@google.com>
+From: Shijith Thotton <sthotton@marvell.com>
 
-commit 8126b1c73108bc691f5643df19071a59a69d0bc6 upstream.
+[ Upstream commit 2d841af23ae8f398c85dd1ff2dc24b5ec8ba4569 ]
 
-pstore_dump() is *always* invoked in atomic context (nowadays in an RCU
-read-side critical section, before that under a spinlock).
-It doesn't make sense to try to use semaphores here.
+No issues were found while using the driver with dm-crypt enabled. So
+CONFIG_DM_CRYPT check in the driver can be removed.
 
-This is mostly a revert of commit ea84b580b955 ("pstore: Convert buf_lock
-to semaphore"), except that two parts aren't restored back exactly as they
-were:
+This also fixes the NULL pointer dereference in driver release if
+CONFIG_DM_CRYPT is enabled.
 
- - keep the lock initialization in pstore_register
- - in efi_pstore_write(), always set the "block" flag to false
- - omit "is_locked", that was unnecessary since
-   commit 959217c84c27 ("pstore: Actually give up during locking failure")
- - fix the bailout message
+...
+Unable to handle kernel NULL pointer dereference at virtual address 0000000000000008
+...
+Call trace:
+ crypto_unregister_alg+0x68/0xfc
+ crypto_unregister_skciphers+0x44/0x60
+ otx2_cpt_crypto_exit+0x100/0x1a0
+ otx2_cptvf_remove+0xf8/0x200
+ pci_device_remove+0x3c/0xd4
+ __device_release_driver+0x188/0x234
+ device_release_driver+0x2c/0x4c
+...
 
-The actual problem that the buggy commit was trying to address may have
-been that the use of preemptible() in efi_pstore_write() was wrong - it
-only looks at preempt_count() and the state of IRQs, but __rcu_read_lock()
-doesn't touch either of those under CONFIG_PREEMPT_RCU.
-(Sidenote: CONFIG_PREEMPT_RCU means that the scheduler can preempt tasks in
-RCU read-side critical sections, but you're not allowed to actively
-block/reschedule.)
-
-Lockdep probably never caught the problem because it's very rare that you
-actually hit the contended case, so lockdep always just sees the
-down_trylock(), not the down_interruptible(), and so it can't tell that
-there's a problem.
-
-Fixes: ea84b580b955 ("pstore: Convert buf_lock to semaphore")
-Cc: stable@vger.kernel.org
-Acked-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Signed-off-by: Jann Horn <jannh@google.com>
-Signed-off-by: Kees Cook <keescook@chromium.org>
-Link: https://lore.kernel.org/r/20220314185953.2068993-1-jannh@google.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 6f03f0e8b6c8 ("crypto: octeontx2 - register with linux crypto framework")
+Signed-off-by: Shijith Thotton <sthotton@marvell.com>
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/firmware/efi/efi-pstore.c |    2 +-
- fs/pstore/platform.c              |   38 ++++++++++++++++++--------------------
- include/linux/pstore.h            |    6 +++---
- 3 files changed, 22 insertions(+), 24 deletions(-)
+ .../crypto/marvell/octeontx2/otx2_cptvf_algs.c  | 17 +++++++----------
+ 1 file changed, 7 insertions(+), 10 deletions(-)
 
---- a/drivers/firmware/efi/efi-pstore.c
-+++ b/drivers/firmware/efi/efi-pstore.c
-@@ -266,7 +266,7 @@ static int efi_pstore_write(struct pstor
- 		efi_name[i] = name[i];
- 
- 	ret = efivar_entry_set_safe(efi_name, vendor, PSTORE_EFI_ATTRIBUTES,
--			      preemptible(), record->size, record->psi->buf);
-+			      false, record->size, record->psi->buf);
- 
- 	if (record->reason == KMSG_DUMP_OOPS && try_module_get(THIS_MODULE))
- 		if (!schedule_work(&efivar_work))
---- a/fs/pstore/platform.c
-+++ b/fs/pstore/platform.c
-@@ -143,21 +143,22 @@ static void pstore_timer_kick(void)
- 	mod_timer(&pstore_timer, jiffies + msecs_to_jiffies(pstore_update_ms));
- }
- 
--/*
-- * Should pstore_dump() wait for a concurrent pstore_dump()? If
-- * not, the current pstore_dump() will report a failure to dump
-- * and return.
-- */
--static bool pstore_cannot_wait(enum kmsg_dump_reason reason)
-+static bool pstore_cannot_block_path(enum kmsg_dump_reason reason)
+diff --git a/drivers/crypto/marvell/octeontx2/otx2_cptvf_algs.c b/drivers/crypto/marvell/octeontx2/otx2_cptvf_algs.c
+index 877a948469bd..570074e23b60 100644
+--- a/drivers/crypto/marvell/octeontx2/otx2_cptvf_algs.c
++++ b/drivers/crypto/marvell/octeontx2/otx2_cptvf_algs.c
+@@ -1634,16 +1634,13 @@ static inline int cpt_register_algs(void)
  {
--	/* In NMI path, pstore shouldn't block regardless of reason. */
-+	/*
-+	 * In case of NMI path, pstore shouldn't be blocked
-+	 * regardless of reason.
-+	 */
- 	if (in_nmi())
- 		return true;
+ 	int i, err = 0;
  
- 	switch (reason) {
- 	/* In panic case, other cpus are stopped by smp_send_stop(). */
- 	case KMSG_DUMP_PANIC:
--	/* Emergency restart shouldn't be blocked. */
-+	/*
-+	 * Emergency restart shouldn't be blocked by spinning on
-+	 * pstore_info::buf_lock.
-+	 */
- 	case KMSG_DUMP_EMERG:
- 		return true;
- 	default:
-@@ -389,21 +390,19 @@ static void pstore_dump(struct kmsg_dump
- 	unsigned long	total = 0;
- 	const char	*why;
- 	unsigned int	part = 1;
-+	unsigned long	flags = 0;
- 	int		ret;
- 
- 	why = kmsg_dump_reason_str(reason);
- 
--	if (down_trylock(&psinfo->buf_lock)) {
--		/* Failed to acquire lock: give up if we cannot wait. */
--		if (pstore_cannot_wait(reason)) {
--			pr_err("dump skipped in %s path: may corrupt error record\n",
--				in_nmi() ? "NMI" : why);
--			return;
--		}
--		if (down_interruptible(&psinfo->buf_lock)) {
--			pr_err("could not grab semaphore?!\n");
-+	if (pstore_cannot_block_path(reason)) {
-+		if (!spin_trylock_irqsave(&psinfo->buf_lock, flags)) {
-+			pr_err("dump skipped in %s path because of concurrent dump\n",
-+					in_nmi() ? "NMI" : why);
- 			return;
- 		}
-+	} else {
-+		spin_lock_irqsave(&psinfo->buf_lock, flags);
- 	}
- 
- 	kmsg_dump_rewind(&iter);
-@@ -467,8 +466,7 @@ static void pstore_dump(struct kmsg_dump
- 		total += record.size;
- 		part++;
- 	}
+-	if (!IS_ENABLED(CONFIG_DM_CRYPT)) {
+-		for (i = 0; i < ARRAY_SIZE(otx2_cpt_skciphers); i++)
+-			otx2_cpt_skciphers[i].base.cra_flags &=
+-							~CRYPTO_ALG_DEAD;
 -
--	up(&psinfo->buf_lock);
-+	spin_unlock_irqrestore(&psinfo->buf_lock, flags);
- }
+-		err = crypto_register_skciphers(otx2_cpt_skciphers,
+-						ARRAY_SIZE(otx2_cpt_skciphers));
+-		if (err)
+-			return err;
+-	}
++	for (i = 0; i < ARRAY_SIZE(otx2_cpt_skciphers); i++)
++		otx2_cpt_skciphers[i].base.cra_flags &= ~CRYPTO_ALG_DEAD;
++
++	err = crypto_register_skciphers(otx2_cpt_skciphers,
++					ARRAY_SIZE(otx2_cpt_skciphers));
++	if (err)
++		return err;
  
- static struct kmsg_dumper pstore_dumper = {
-@@ -594,7 +592,7 @@ int pstore_register(struct pstore_info *
- 		psi->write_user = pstore_write_user_compat;
- 	psinfo = psi;
- 	mutex_init(&psinfo->read_mutex);
--	sema_init(&psinfo->buf_lock, 1);
-+	spin_lock_init(&psinfo->buf_lock);
- 
- 	if (psi->flags & PSTORE_FLAGS_DMESG)
- 		allocate_buf_for_compression();
---- a/include/linux/pstore.h
-+++ b/include/linux/pstore.h
-@@ -14,7 +14,7 @@
- #include <linux/errno.h>
- #include <linux/kmsg_dump.h>
- #include <linux/mutex.h>
--#include <linux/semaphore.h>
-+#include <linux/spinlock.h>
- #include <linux/time.h>
- #include <linux/types.h>
- 
-@@ -87,7 +87,7 @@ struct pstore_record {
-  * @owner:	module which is responsible for this backend driver
-  * @name:	name of the backend driver
-  *
-- * @buf_lock:	semaphore to serialize access to @buf
-+ * @buf_lock:	spinlock to serialize access to @buf
-  * @buf:	preallocated crash dump buffer
-  * @bufsize:	size of @buf available for crash dump bytes (must match
-  *		smallest number of bytes available for writing to a
-@@ -178,7 +178,7 @@ struct pstore_info {
- 	struct module	*owner;
- 	const char	*name;
- 
--	struct semaphore buf_lock;
-+	spinlock_t	buf_lock;
- 	char		*buf;
- 	size_t		bufsize;
- 
+ 	for (i = 0; i < ARRAY_SIZE(otx2_cpt_aeads); i++)
+ 		otx2_cpt_aeads[i].base.cra_flags &= ~CRYPTO_ALG_DEAD;
+-- 
+2.34.1
+
 
 
