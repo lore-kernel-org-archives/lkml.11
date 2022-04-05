@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5AA85C4167B
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:34:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5CC83C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:34:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383365AbiDEMZl (ORCPT
+        id S1383384AbiDEMZq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 08:25:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59204 "EHLO
+        Tue, 5 Apr 2022 08:25:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57272 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245138AbiDEIyL (ORCPT
+        with ESMTP id S245101AbiDEIyC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:54:11 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 041FE10A3;
-        Tue,  5 Apr 2022 01:51:31 -0700 (PDT)
+        Tue, 5 Apr 2022 04:54:02 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 475F3F31;
+        Tue,  5 Apr 2022 01:51:28 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8E0A661509;
-        Tue,  5 Apr 2022 08:51:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A443BC385A0;
-        Tue,  5 Apr 2022 08:51:29 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D33E761504;
+        Tue,  5 Apr 2022 08:51:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E21FDC385A0;
+        Tue,  5 Apr 2022 08:51:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649148690;
-        bh=GRVYjGN0oVU3bLQLZkS30dh2b8ueNqwEcosPDjmYZFA=;
+        s=korg; t=1649148687;
+        bh=0C40SgLp/lwFglandYY9iJGkhMxzFWz9IyNwKsYpjig=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JvqHxUSk9gWKjpqrl7aKyOfLLHCcp1Sqz/3OvWrdABhwJPdtPBDGg75eHPpyqITvw
-         y/mK++6Cl5UoC2k8bXI32Nbyda2UhjIFkUwmbCJwP6BCcxDgb8EhIaP33XQjjgGmkx
-         pS9zzxbsbt+9TrrzaSPYpD6U9WZ7vUiOt1fAmysA=
+        b=IXrqBlvc5yLbfHWT1TJzThmCXbzREgERTwlsTwT3N0uaC3j5bq3fpW6dQTiR44J+a
+         R1cSOGZFjeF6r7O0obNmu80N7vkySFBQFA7IMOF+hBBPObjo28DLC941eeCG8ULdbQ
+         GzoC7TIBfHglTDvOJDzEOAmYN+vIpQBATuVpJ7wk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Sebastian Reichel <sebastian.reichel@collabora.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0446/1017] power: reset: gemini-poweroff: Fix IRQ check in gemini_poweroff_probe
-Date:   Tue,  5 Apr 2022 09:22:39 +0200
-Message-Id: <20220405070407.536371746@linuxfoundation.org>
+        stable@vger.kernel.org, Zhou Qingyang <zhou1615@umn.edu>,
+        Lyude Paul <lyude@redhat.com>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 0428/1017] drm/nouveau/acr: Fix undefined behavior in nvkm_acr_hsfw_load_bl()
+Date:   Tue,  5 Apr 2022 09:22:21 +0200
+Message-Id: <20220405070406.997309903@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -51,43 +49,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Zhou Qingyang <zhou1615@umn.edu>
 
-[ Upstream commit ba18dad0fb880cd29aa97b6b75560ef14d1061ba ]
+[ Upstream commit 2343bcdb4747d4f418a4daf2e898b94f86c24a59 ]
 
-platform_get_irq() returns negative error number instead 0 on failure.
-And the doc of platform_get_irq() provides a usage example:
+In nvkm_acr_hsfw_load_bl(), the return value of kmalloc() is directly
+passed to memcpy(), which could lead to undefined behavior on failure
+of kmalloc().
 
-    int irq = platform_get_irq(pdev, 0);
-    if (irq < 0)
-        return irq;
+Fix this bug by using kmemdup() instead of kmalloc()+memcpy().
 
-Fix the check of return value to catch errors correctly.
+This bug was found by a static analyzer.
 
-Fixes: f7a388d6cd1c ("power: reset: Add a driver for the Gemini poweroff")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
-Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
+Builds with 'make allyesconfig' show no new warnings,
+and our static analyzer no longer warns about this code.
+
+Fixes: 22dcda45a3d1 ("drm/nouveau/acr: implement new subdev to replace "secure boot"")
+Signed-off-by: Zhou Qingyang <zhou1615@umn.edu>
+Reviewed-by: Lyude Paul <lyude@redhat.com>
+Signed-off-by: Lyude Paul <lyude@redhat.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220124165856.57022-1-zhou1615@umn.edu
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/power/reset/gemini-poweroff.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/gpu/drm/nouveau/nvkm/subdev/acr/hsfw.c | 9 +++++----
+ 1 file changed, 5 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/power/reset/gemini-poweroff.c b/drivers/power/reset/gemini-poweroff.c
-index 90e35c07240a..b7f7a8225f22 100644
---- a/drivers/power/reset/gemini-poweroff.c
-+++ b/drivers/power/reset/gemini-poweroff.c
-@@ -107,8 +107,8 @@ static int gemini_poweroff_probe(struct platform_device *pdev)
- 		return PTR_ERR(gpw->base);
+diff --git a/drivers/gpu/drm/nouveau/nvkm/subdev/acr/hsfw.c b/drivers/gpu/drm/nouveau/nvkm/subdev/acr/hsfw.c
+index 667fa016496e..a6ea89a5d51a 100644
+--- a/drivers/gpu/drm/nouveau/nvkm/subdev/acr/hsfw.c
++++ b/drivers/gpu/drm/nouveau/nvkm/subdev/acr/hsfw.c
+@@ -142,11 +142,12 @@ nvkm_acr_hsfw_load_bl(struct nvkm_acr *acr, const char *name, int ver,
  
- 	irq = platform_get_irq(pdev, 0);
--	if (!irq)
--		return -EINVAL;
-+	if (irq < 0)
-+		return irq;
+ 	hsfw->imem_size = desc->code_size;
+ 	hsfw->imem_tag = desc->start_tag;
+-	hsfw->imem = kmalloc(desc->code_size, GFP_KERNEL);
+-	memcpy(hsfw->imem, data + desc->code_off, desc->code_size);
+-
++	hsfw->imem = kmemdup(data + desc->code_off, desc->code_size, GFP_KERNEL);
+ 	nvkm_firmware_put(fw);
+-	return 0;
++	if (!hsfw->imem)
++		return -ENOMEM;
++	else
++		return 0;
+ }
  
- 	gpw->dev = dev;
- 
+ int
 -- 
 2.34.1
 
