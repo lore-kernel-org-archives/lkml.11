@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 42601C35273
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:21:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C176C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:21:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1451976AbiDFAFi (ORCPT
+        id S1586893AbiDFAGT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 20:05:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44246 "EHLO
+        Tue, 5 Apr 2022 20:06:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54284 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349079AbiDEJtF (ORCPT
+        with ESMTP id S1349570AbiDEJuX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:49:05 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B957AA9950;
-        Tue,  5 Apr 2022 02:40:14 -0700 (PDT)
+        Tue, 5 Apr 2022 05:50:23 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E76589B;
+        Tue,  5 Apr 2022 02:48:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 79DF0B81B7F;
-        Tue,  5 Apr 2022 09:40:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DF78EC385A3;
-        Tue,  5 Apr 2022 09:40:11 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 745F961576;
+        Tue,  5 Apr 2022 09:48:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7C3E8C385A2;
+        Tue,  5 Apr 2022 09:48:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649151612;
-        bh=0iRwUtqp+93FnhFuEnkpLF4y24/ADWGj5PK9wIfCrAU=;
+        s=korg; t=1649152103;
+        bh=Z2fRyKtO0unBo5yv4F+hHOmM6Dx9c+nDJFB8oxsdOnA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gZbahMoY7iOECwh4bU9MTSciCcPv3H812cSTSvJROP6AzWVTWTXn0wLCXEJwcJDcm
-         AcNCTyCj/CLpER4gGArQ5PC4V9JK8SFl8OomoP6YyYqZPHhT6O3KWIggeAb9FATNRa
-         ASbrtRSE1CYY4P2XgkKi5+63jClryDTIJMZQrFYw=
+        b=N0spG58nshJfnsrudYxBalgtAtQwAoVgs2fJbMP6ausnuZC1UlTnI2WVX8emW9MZ0
+         /Jb4lwAbsf9fPo8RcLMnzu8WeD3TGhUAuqAHUVowZigCv0cU95MzZoqK8IfMxMngkX
+         UC1zw3+aWzn0s8ijZKg7A/Uw9mJY9od3r7aL3hWk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Abhishek Sahu <abhsahu@nvidia.com>,
-        Alex Williamson <alex.williamson@redhat.com>,
+        stable@vger.kernel.org, "Michael S. Tsirkin" <mst@redhat.com>,
+        Stefano Garzarella <sgarzare@redhat.com>,
+        Stefan Hajnoczi <stefanha@redhat.com>,
+        Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 478/913] vfio/pci: wake-up devices around reset functions
-Date:   Tue,  5 Apr 2022 09:25:40 +0200
-Message-Id: <20220405070354.182945646@linuxfoundation.org>
+Subject: [PATCH 5.15 655/913] vsock/virtio: initialize vdev->priv before using VQs
+Date:   Tue,  5 Apr 2022 09:28:37 +0200
+Message-Id: <20220405070359.472381602@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
 References: <20220405070339.801210740@linuxfoundation.org>
@@ -50,148 +52,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Abhishek Sahu <abhsahu@nvidia.com>
+From: Stefano Garzarella <sgarzare@redhat.com>
 
-[ Upstream commit 26a17b12d7f3dd8a7aa45a290e5b46e9cc775ddf ]
+[ Upstream commit 4b5f1ad5566ada230aaa2ce861b28d1895f1ea68 ]
 
-If 'vfio_pci_core_device::needs_pm_restore' is set (PCI device does
-not have No_Soft_Reset bit set in its PMCSR config register), then the
-current PCI state will be saved locally in
-'vfio_pci_core_device::pm_save' during D0->D3hot transition and same
-will be restored back during D3hot->D0 transition. For reset-related
-functionalities, vfio driver uses PCI reset API's. These
-API's internally change the PCI power state back to D0 first if
-the device power state is non-D0. This state change to D0 will happen
-without the involvement of vfio driver.
+When we fill VQs with empty buffers and kick the host, it may send
+an interrupt. `vdev->priv` must be initialized before this since it
+is used in the virtqueue callbacks.
 
-Let's consider the following example:
-
-1. The device is in D3hot.
-2. User invokes VFIO_DEVICE_RESET ioctl.
-3. pci_try_reset_function() will be called which internally
-   invokes pci_dev_save_and_disable().
-4. pci_set_power_state(dev, PCI_D0) will be called first.
-5. pci_save_state() will happen then.
-
-Now, for the devices which has NoSoftRst-, the pci_set_power_state()
-can trigger soft reset and the original PCI config state will be lost
-at step (4) and this state cannot be restored again. This original PCI
-state can include any setting which is performed by SBIOS or host
-linux kernel (for example LTR, ASPM L1 substates, etc.). When this
-soft reset will be triggered, then all these settings will be reset,
-and the device state saved at step (5) will also have this setting
-cleared so it cannot be restored. Since the vfio driver only exposes
-limited PCI capabilities to its user, so the vfio driver user also
-won't have the option to save and restore these capabilities state
-either and these original settings will be permanently lost.
-
-For pci_reset_bus() also, we can have the above situation.
-The other functions/devices can be in D3hot and the reset will change
-the power state of all devices to D0 without the involvement of vfio
-driver.
-
-So, before calling any reset-related API's, we need to make sure that
-the device state is D0. This is mainly to preserve the state around
-soft reset.
-
-For vfio_pci_core_disable(), we use __pci_reset_function_locked()
-which internally can use pci_pm_reset() for the function reset.
-pci_pm_reset() requires the device power state to be in D0, otherwise
-it returns error.
-
-This patch changes the device power state to D0 by invoking
-vfio_pci_set_power_state() explicitly before calling any reset related
-API's.
-
-Fixes: 51ef3a004b1e ("vfio/pci: Restore device state on PM transition")
-Signed-off-by: Abhishek Sahu <abhsahu@nvidia.com>
-Link: https://lore.kernel.org/r/20220217122107.22434-3-abhsahu@nvidia.com
-Signed-off-by: Alex Williamson <alex.williamson@redhat.com>
+Fixes: 0deab087b16a ("vsock/virtio: use RCU to avoid use-after-free on the_virtio_vsock")
+Suggested-by: Michael S. Tsirkin <mst@redhat.com>
+Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
+Acked-by: Michael S. Tsirkin <mst@redhat.com>
+Reviewed-by: Stefan Hajnoczi <stefanha@redhat.com>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/vfio/pci/vfio_pci_core.c | 48 ++++++++++++++++++++++++++++++++
- 1 file changed, 48 insertions(+)
+ net/vmw_vsock/virtio_transport.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/vfio/pci/vfio_pci_core.c b/drivers/vfio/pci/vfio_pci_core.c
-index 0c63091cc848..15d158bdcde0 100644
---- a/drivers/vfio/pci/vfio_pci_core.c
-+++ b/drivers/vfio/pci/vfio_pci_core.c
-@@ -335,6 +335,17 @@ void vfio_pci_core_disable(struct vfio_pci_core_device *vdev)
- 	/* For needs_reset */
- 	lockdep_assert_held(&vdev->vdev.dev_set->lock);
+diff --git a/net/vmw_vsock/virtio_transport.c b/net/vmw_vsock/virtio_transport.c
+index dad9ca65f4f9..fb1b8f99f679 100644
+--- a/net/vmw_vsock/virtio_transport.c
++++ b/net/vmw_vsock/virtio_transport.c
+@@ -622,6 +622,8 @@ static int virtio_vsock_probe(struct virtio_device *vdev)
+ 	INIT_WORK(&vsock->event_work, virtio_transport_event_work);
+ 	INIT_WORK(&vsock->send_pkt_work, virtio_transport_send_pkt_work);
  
-+	/*
-+	 * This function can be invoked while the power state is non-D0.
-+	 * This function calls __pci_reset_function_locked() which internally
-+	 * can use pci_pm_reset() for the function reset. pci_pm_reset() will
-+	 * fail if the power state is non-D0. Also, for the devices which
-+	 * have NoSoftRst-, the reset function can cause the PCI config space
-+	 * reset without restoring the original state (saved locally in
-+	 * 'vdev->pm_save').
-+	 */
-+	vfio_pci_set_power_state(vdev, PCI_D0);
++	vdev->priv = vsock;
 +
- 	/* Stop the device from further DMA */
- 	pci_clear_master(pdev);
+ 	mutex_lock(&vsock->tx_lock);
+ 	vsock->tx_run = true;
+ 	mutex_unlock(&vsock->tx_lock);
+@@ -639,7 +641,6 @@ static int virtio_vsock_probe(struct virtio_device *vdev)
+ 	if (virtio_has_feature(vdev, VIRTIO_VSOCK_F_SEQPACKET))
+ 		vsock->seqpacket_allow = true;
  
-@@ -934,6 +945,19 @@ long vfio_pci_core_ioctl(struct vfio_device *core_vdev, unsigned int cmd,
- 			return -EINVAL;
+-	vdev->priv = vsock;
+ 	rcu_assign_pointer(the_virtio_vsock, vsock);
  
- 		vfio_pci_zap_and_down_write_memory_lock(vdev);
-+
-+		/*
-+		 * This function can be invoked while the power state is non-D0.
-+		 * If pci_try_reset_function() has been called while the power
-+		 * state is non-D0, then pci_try_reset_function() will
-+		 * internally set the power state to D0 without vfio driver
-+		 * involvement. For the devices which have NoSoftRst-, the
-+		 * reset function can cause the PCI config space reset without
-+		 * restoring the original state (saved locally in
-+		 * 'vdev->pm_save').
-+		 */
-+		vfio_pci_set_power_state(vdev, PCI_D0);
-+
- 		ret = pci_try_reset_function(vdev->pdev);
- 		up_write(&vdev->memory_lock);
- 
-@@ -2077,6 +2101,18 @@ static int vfio_pci_dev_set_hot_reset(struct vfio_device_set *dev_set,
- 	}
- 	cur_mem = NULL;
- 
-+	/*
-+	 * The pci_reset_bus() will reset all the devices in the bus.
-+	 * The power state can be non-D0 for some of the devices in the bus.
-+	 * For these devices, the pci_reset_bus() will internally set
-+	 * the power state to D0 without vfio driver involvement.
-+	 * For the devices which have NoSoftRst-, the reset function can
-+	 * cause the PCI config space reset without restoring the original
-+	 * state (saved locally in 'vdev->pm_save').
-+	 */
-+	list_for_each_entry(cur, &dev_set->device_list, vdev.dev_set_list)
-+		vfio_pci_set_power_state(cur, PCI_D0);
-+
- 	ret = pci_reset_bus(pdev);
- 
- err_undo:
-@@ -2130,6 +2166,18 @@ static bool vfio_pci_dev_set_try_reset(struct vfio_device_set *dev_set)
- 	if (!pdev)
- 		return false;
- 
-+	/*
-+	 * The pci_reset_bus() will reset all the devices in the bus.
-+	 * The power state can be non-D0 for some of the devices in the bus.
-+	 * For these devices, the pci_reset_bus() will internally set
-+	 * the power state to D0 without vfio driver involvement.
-+	 * For the devices which have NoSoftRst-, the reset function can
-+	 * cause the PCI config space reset without restoring the original
-+	 * state (saved locally in 'vdev->pm_save').
-+	 */
-+	list_for_each_entry(cur, &dev_set->device_list, vdev.dev_set_list)
-+		vfio_pci_set_power_state(cur, PCI_D0);
-+
- 	ret = pci_reset_bus(pdev);
- 	if (ret)
- 		return false;
+ 	mutex_unlock(&the_virtio_vsock_mutex);
 -- 
 2.34.1
 
