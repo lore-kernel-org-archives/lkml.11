@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 86EBBC4332F
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:43:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 28008C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:51:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1576679AbiDEXaG (ORCPT
+        id S1577206AbiDEXaV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 19:30:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34940 "EHLO
+        Tue, 5 Apr 2022 19:30:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42296 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245747AbiDEKjg (ORCPT
+        with ESMTP id S1356087AbiDEKWy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:39:36 -0400
+        Tue, 5 Apr 2022 06:22:54 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8520CA66E4;
-        Tue,  5 Apr 2022 03:24:28 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60621B0A68;
+        Tue,  5 Apr 2022 03:06:01 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0400161425;
-        Tue,  5 Apr 2022 10:24:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0FAFDC385A0;
-        Tue,  5 Apr 2022 10:24:26 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id F10C8616E7;
+        Tue,  5 Apr 2022 10:06:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0ACE6C385A1;
+        Tue,  5 Apr 2022 10:05:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649154267;
-        bh=m4hiAk/6h/bxl2cO+xO51ij27/AqALOeX5LrEy91NfA=;
+        s=korg; t=1649153160;
+        bh=Kd1EwI8DEHPHhzj8Tdinpg96Cd7BY48Ei1VqwLuA90w=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=T9dgMV92zGVeJVhH+O8CmxaAdbS3CwKnfmPUyUf4Mwth5VMxlO1d9RqFPcGE1w9po
-         eDW0y2GdS/u5d9lv9S/mEMI/qm/xUyWjvGQhwfj5N2Cq12l5BuvBkDgbIibfG1BDER
-         H4Mk1PNpP0kgiSHTSG63nw6AkXkWlUtqyyqGgLII=
+        b=2lzwdQaSFBGS/4AkWoJaz1/chsZQwNRFGNn2wwBg9xqJMjWFFi9aq0NXvzwE6iBTc
+         GF+hrCUYZKbqX9IVF4wqpuJvL/+6v1I9a+aIoGLrH8mO4XTTrd2T8thR6CdQeRtLGL
+         OqS5QTZdzdguUYuX9OUJm2XkzPyB46lFWhhDVF5o=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Himanshu Madhani <himanshu.madhani@oracle.com>,
-        Quinn Tran <qutran@marvell.com>,
-        Nilesh Javali <njavali@marvell.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>
-Subject: [PATCH 5.10 517/599] scsi: qla2xxx: Fix stuck session in gpdb
-Date:   Tue,  5 Apr 2022 09:33:31 +0200
-Message-Id: <20220405070314.223703023@linuxfoundation.org>
+        stable@vger.kernel.org, David Engraf <david.engraf@sysgo.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>, Mark Brown <broonie@kernel.org>
+Subject: [PATCH 5.10 084/599] arm64: signal: nofpsimd: Do not allocate fp/simd context when not available
+Date:   Tue,  5 Apr 2022 09:26:18 +0200
+Message-Id: <20220405070301.326435854@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
 References: <20220405070258.802373272@linuxfoundation.org>
@@ -52,40 +50,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Quinn Tran <qutran@marvell.com>
+From: David Engraf <david.engraf@sysgo.com>
 
-commit 725d3a0d31a51c0debf970011e05f585e805165b upstream.
+commit 0a32c88ddb9af30e8a16d41d7b9b824c27d29459 upstream.
 
-Fix stuck sessions in get port database. When a thread is in the process of
-re-establishing a session, a flag is set to prevent multiple threads /
-triggers from doing the same task. This flag was left on, where any attempt
-to relogin was locked out. Clear this flag, if the attempt has failed.
+Commit 6d502b6ba1b2 ("arm64: signal: nofpsimd: Handle fp/simd context for
+signal frames") introduced saving the fp/simd context for signal handling
+only when support is available. But setup_sigframe_layout() always
+reserves memory for fp/simd context. The additional memory is not touched
+because preserve_fpsimd_context() is not called and thus the magic is
+invalid.
 
-Link: https://lore.kernel.org/r/20220110050218.3958-4-njavali@marvell.com
-Cc: stable@vger.kernel.org
-Reviewed-by: Himanshu Madhani <himanshu.madhani@oracle.com>
-Signed-off-by: Quinn Tran <qutran@marvell.com>
-Signed-off-by: Nilesh Javali <njavali@marvell.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+This may lead to an error when parse_user_sigframe() checks the fp/simd
+area and does not find a valid magic number.
+
+Signed-off-by: David Engraf <david.engraf@sysgo.com>
+Reviwed-by: Mark Brown <broonie@kernel.org>
+Fixes: 6d502b6ba1b267b3 ("arm64: signal: nofpsimd: Handle fp/simd context for signal frames")
+Cc: <stable@vger.kernel.org> # 5.6.x
+Reviewed-by: Catalin Marinas <catalin.marinas@arm.com>
+Link: https://lore.kernel.org/r/20220225104008.820289-1-david.engraf@sysgo.com
+Signed-off-by: Will Deacon <will@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/scsi/qla2xxx/qla_init.c |    6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ arch/arm64/kernel/signal.c |   10 ++++++----
+ 1 file changed, 6 insertions(+), 4 deletions(-)
 
---- a/drivers/scsi/qla2xxx/qla_init.c
-+++ b/drivers/scsi/qla2xxx/qla_init.c
-@@ -1316,9 +1316,9 @@ int qla24xx_async_gpdb(struct scsi_qla_h
- 	if (!vha->flags.online || (fcport->flags & FCF_ASYNC_SENT) ||
- 	    fcport->loop_id == FC_NO_LOOP_ID) {
- 		ql_log(ql_log_warn, vha, 0xffff,
--		    "%s: %8phC - not sending command.\n",
--		    __func__, fcport->port_name);
--		return rval;
-+		    "%s: %8phC online %d flags %x - not sending command.\n",
-+		    __func__, fcport->port_name, vha->flags.online, fcport->flags);
-+		goto done;
- 	}
+--- a/arch/arm64/kernel/signal.c
++++ b/arch/arm64/kernel/signal.c
+@@ -572,10 +572,12 @@ static int setup_sigframe_layout(struct
+ {
+ 	int err;
  
- 	sp = qla2x00_get_sp(vha, fcport, GFP_KERNEL);
+-	err = sigframe_alloc(user, &user->fpsimd_offset,
+-			     sizeof(struct fpsimd_context));
+-	if (err)
+-		return err;
++	if (system_supports_fpsimd()) {
++		err = sigframe_alloc(user, &user->fpsimd_offset,
++				     sizeof(struct fpsimd_context));
++		if (err)
++			return err;
++	}
+ 
+ 	/* fault information, if valid */
+ 	if (add_all || current->thread.fault_code) {
 
 
