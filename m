@@ -2,166 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D88F6C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 21:38:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 14FEDC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 21:38:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382987AbiDEVjO (ORCPT
+        id S1383198AbiDEVj3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 17:39:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35042 "EHLO
+        Tue, 5 Apr 2022 17:39:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55074 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1573512AbiDETP3 (ORCPT
+        with ESMTP id S1358212AbiDEK2H (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 15:15:29 -0400
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DA08E8863;
-        Tue,  5 Apr 2022 12:13:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649186010; x=1680722010;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=BNf83Q5/1PWslvUKwhpqfDSkCkwhO7rU7ZNMZq/zkYQ=;
-  b=Nt2ugVq6ZqMblcRfnRhyCnAxy015M6MbzzTPNbCb/H01NrCxC4uk/jyq
-   fTEuDmhHr+quQtYAmqZ4BxshifjuQsS+SuTJxihfGuuJAVixuGGAF+0o4
-   HH/8Lybx4V9Thi3oZUOfc2RoWJ+Cz9j1CydcV4ercgQmxthp8izNPxrlr
-   iZSsxGLiFqo2E7DnEUIQkaxrPlpDDoqn1MrKHkTcEYQQF+GwvbbeVY0CX
-   hX6AJrEHJIF2OwyluXlj+f6+N9yhwBkI6gzIRDoIxZncBLmCb7KZ6Bevy
-   7OES3n4SCWpv73ibtRG9yMv0yFVscSQlTSzm/GuDL9SYqv91ZfrEWD8PP
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10308"; a="240777555"
-X-IronPort-AV: E=Sophos;i="5.90,236,1643702400"; 
-   d="scan'208";a="240777555"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2022 12:13:30 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,236,1643702400"; 
-   d="scan'208";a="789979762"
-Received: from lkp-server02.sh.intel.com (HELO a44fdfb70b94) ([10.239.97.151])
-  by fmsmga006.fm.intel.com with ESMTP; 05 Apr 2022 12:13:27 -0700
-Received: from kbuild by a44fdfb70b94 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nbocI-0003gn-FR;
-        Tue, 05 Apr 2022 19:13:26 +0000
-Date:   Wed, 6 Apr 2022 03:12:36 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Vinod Koul <vkoul@kernel.org>, Rob Clark <robdclark@gmail.com>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        Jonathan Marek <jonathan@marek.ca>,
-        David Airlie <airlied@linux.ie>, linux-arm-msm@vger.kernel.org,
-        Abhinav Kumar <quic_abhinavk@quicinc.com>,
-        dri-devel@lists.freedesktop.org,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Vinod Koul <vkoul@kernel.org>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        freedreno@lists.freedesktop.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v6 14/14] drm/msm/dsi: Add support for DSC configuration
-Message-ID: <202204060308.OkAS3XG3-lkp@intel.com>
-References: <20220404163436.956875-15-vkoul@kernel.org>
+        Tue, 5 Apr 2022 06:28:07 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3964BF4E;
+        Tue,  5 Apr 2022 03:17:08 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 536FB617AA;
+        Tue,  5 Apr 2022 10:17:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 658A9C385A2;
+        Tue,  5 Apr 2022 10:17:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649153827;
+        bh=CSM//Rz3PDHvzk+BYq71+X+1Jm1t0/cBCElyGnnl1/g=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=yGFOtd9edQG6ixd4zV54l00AJOjMXFkO7h6LWZItm41QwWvfl6Ev6C3XnX7LhDSgX
+         69j1GRFiohyk1vQdBmkryR1YHO4yTU5omZxRQHJx/HnPWQ8wEn0JZAuhEx8BPhI7vi
+         RumHyMw4uqoeJX2FYAfZU4QCCDSQPW5Obnpf7LW8=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Alan Stern <stern@rowland.harvard.edu>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 360/599] USB: storage: ums-realtek: fix error code in rts51x_read_mem()
+Date:   Tue,  5 Apr 2022 09:30:54 +0200
+Message-Id: <20220405070309.545154045@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
+References: <20220405070258.802373272@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220404163436.956875-15-vkoul@kernel.org>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Vinod,
+From: Dan Carpenter <dan.carpenter@oracle.com>
 
-I love your patch! Perhaps something to improve:
+[ Upstream commit b07cabb8361dc692522538205552b1b9dab134be ]
 
-[auto build test WARNING on 05241de1f69eb7f56b0a5e0bec96a7752fad1b2f]
+The rts51x_read_mem() function should return negative error codes.
+Currently if the kmalloc() fails it returns USB_STOR_TRANSPORT_ERROR (3)
+which is treated as success by the callers.
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Vinod-Koul/drm-msm-Add-Display-Stream-Compression-Support/20220405-003745
-base:   05241de1f69eb7f56b0a5e0bec96a7752fad1b2f
-config: hexagon-randconfig-r004-20220405 (https://download.01.org/0day-ci/archive/20220406/202204060308.OkAS3XG3-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project c4a1b07d0979e7ff20d7d541af666d822d66b566)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/6c54db3ee1e02d639e568c37121f797ac586af3d
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Vinod-Koul/drm-msm-Add-Display-Stream-Compression-Support/20220405-003745
-        git checkout 6c54db3ee1e02d639e568c37121f797ac586af3d
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=hexagon SHELL=/bin/bash drivers/gpu/drm/msm/
+Fixes: 065e60964e29 ("ums_realtek: do not use stack memory for DMA")
+Acked-by: Alan Stern <stern@rowland.harvard.edu>
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+Link: https://lore.kernel.org/r/20220304073504.GA26464@kili
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/usb/storage/realtek_cr.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All warnings (new ones prefixed by >>):
-
->> drivers/gpu/drm/msm/dsi/dsi_host.c:918:23: warning: variable 'reg_ctrl' set but not used [-Wunused-but-set-variable]
-           u32 reg, intf_width, reg_ctrl, reg_ctrl2;
-                                ^
-   1 warning generated.
-
-
-vim +/reg_ctrl +918 drivers/gpu/drm/msm/dsi/dsi_host.c
-
-   914	
-   915	static void dsi_update_dsc_timing(struct msm_dsi_host *msm_host, bool is_cmd_mode, u32 hdisplay)
-   916	{
-   917		struct msm_display_dsc_config *dsc = msm_host->dsc;
- > 918		u32 reg, intf_width, reg_ctrl, reg_ctrl2;
-   919		u32 slice_per_intf, total_bytes_per_intf;
-   920		u32 pkt_per_line;
-   921		u32 bytes_in_slice;
-   922		u32 eol_byte_num;
-   923	
-   924		/* first calculate dsc parameters and then program
-   925		 * compress mode registers
-   926		 */
-   927		intf_width = hdisplay;
-   928		slice_per_intf = DIV_ROUND_UP(intf_width, dsc->drm->slice_width);
-   929	
-   930		/* If slice_per_pkt is greater than slice_per_intf
-   931		 * then default to 1. This can happen during partial
-   932		 * update.
-   933		 */
-   934		if (slice_per_intf > dsc->drm->slice_count)
-   935			dsc->drm->slice_count = 1;
-   936	
-   937		slice_per_intf = DIV_ROUND_UP(hdisplay, dsc->drm->slice_width);
-   938		bytes_in_slice = DIV_ROUND_UP(dsc->drm->slice_width * dsc->drm->bits_per_pixel, 8);
-   939	
-   940		dsc->drm->slice_chunk_size = bytes_in_slice;
-   941	
-   942		total_bytes_per_intf = bytes_in_slice * slice_per_intf;
-   943	
-   944		eol_byte_num = total_bytes_per_intf % 3;
-   945		pkt_per_line = slice_per_intf / dsc->drm->slice_count;
-   946	
-   947		if (is_cmd_mode) /* packet data type */
-   948			reg = DSI_COMMAND_COMPRESSION_MODE_CTRL_STREAM0_DATATYPE(MIPI_DSI_DCS_LONG_WRITE);
-   949		else
-   950			reg = DSI_VIDEO_COMPRESSION_MODE_CTRL_DATATYPE(MIPI_DSI_COMPRESSED_PIXEL_STREAM);
-   951	
-   952		/* DSI_VIDEO_COMPRESSION_MODE & DSI_COMMAND_COMPRESSION_MODE
-   953		 * registers have similar offsets, so for below common code use
-   954		 * DSI_VIDEO_COMPRESSION_MODE_XXXX for setting bits
-   955		 */
-   956		reg |= DSI_VIDEO_COMPRESSION_MODE_CTRL_PKT_PER_LINE(pkt_per_line >> 1);
-   957		reg |= DSI_VIDEO_COMPRESSION_MODE_CTRL_EOL_BYTE_NUM(eol_byte_num);
-   958		reg |= DSI_VIDEO_COMPRESSION_MODE_CTRL_EN;
-   959	
-   960		if (is_cmd_mode) {
-   961			reg_ctrl = dsi_read(msm_host, REG_DSI_COMMAND_COMPRESSION_MODE_CTRL);
-   962			reg_ctrl2 = dsi_read(msm_host, REG_DSI_COMMAND_COMPRESSION_MODE_CTRL2);
-   963	
-   964			reg_ctrl |= reg;
-   965			reg_ctrl2 |= DSI_COMMAND_COMPRESSION_MODE_CTRL2_STREAM0_SLICE_WIDTH(bytes_in_slice);
-   966	
-   967			dsi_write(msm_host, REG_DSI_COMMAND_COMPRESSION_MODE_CTRL, reg);
-   968			dsi_write(msm_host, REG_DSI_COMMAND_COMPRESSION_MODE_CTRL2, reg_ctrl2);
-   969		} else {
-   970			dsi_write(msm_host, REG_DSI_VIDEO_COMPRESSION_MODE_CTRL, reg);
-   971		}
-   972	}
-   973	
-
+diff --git a/drivers/usb/storage/realtek_cr.c b/drivers/usb/storage/realtek_cr.c
+index 3789698d9d3c..0c423916d7bf 100644
+--- a/drivers/usb/storage/realtek_cr.c
++++ b/drivers/usb/storage/realtek_cr.c
+@@ -365,7 +365,7 @@ static int rts51x_read_mem(struct us_data *us, u16 addr, u8 *data, u16 len)
+ 
+ 	buf = kmalloc(len, GFP_NOIO);
+ 	if (buf == NULL)
+-		return USB_STOR_TRANSPORT_ERROR;
++		return -ENOMEM;
+ 
+ 	usb_stor_dbg(us, "addr = 0x%x, len = %d\n", addr, len);
+ 
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+2.34.1
+
+
+
