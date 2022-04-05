@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F0F17C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 14:25:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 08FE0C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 14:31:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386840AbiDEO0H (ORCPT
+        id S1386914AbiDEO0Y (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 10:26:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55692 "EHLO
+        Tue, 5 Apr 2022 10:26:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40698 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239011AbiDEJdP (ORCPT
+        with ESMTP id S238956AbiDEJdN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:33:15 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C44992253C;
-        Tue,  5 Apr 2022 02:21:44 -0700 (PDT)
+        Tue, 5 Apr 2022 05:33:13 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F869659B;
+        Tue,  5 Apr 2022 02:21:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id CD9E3CE1B55;
-        Tue,  5 Apr 2022 09:21:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E6863C385A0;
-        Tue,  5 Apr 2022 09:21:40 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 9A0A5CE1C6A;
+        Tue,  5 Apr 2022 09:21:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AC0C9C385A0;
+        Tue,  5 Apr 2022 09:21:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649150501;
-        bh=RM0KKzpT8cLsJyrZoDbIHvg0ONgKHvUQdCMuQWGyK5Q=;
+        s=korg; t=1649150471;
+        bh=WaWtMQ1moedWleGc2K2Obq1MHj8BngFuX5HUmVv0cSk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YYllX3CCcY12mp+dfZiNgCVJSrVGQ3pH1ufYXbl8hca3DSyq91bn6iagbjym3dyy7
-         vkOZufzv+J0QW4ayPgvumXii+f4LpJhw2ua6UuaqrskmE092lcHXp/L3L8YNMm4FP8
-         T2UiFOITOzAbMvVBRUm5XSyEBDvoeKwMfZae14nk=
+        b=XH6KaJVqj/62SjNfYpAw+pUoN7RQm0ncNHlYQkD99PQSM1GBj3nu2IuZ0eTJjaiWH
+         keHdp/awUgeItESOVToFI+aVrpyUwlpbUi0NuwhNvBOePdxIp343n57iu6mXAdwNmZ
+         eEuZCi9F2o43Geu8oR22Q8buoDoC/mQ0BzfEMIhM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sebastian Haas <haas@ems-wuensche.com>,
-        Hangyu Hua <hbh25y@gmail.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>
-Subject: [PATCH 5.15 077/913] can: ems_usb: ems_usb_start_xmit(): fix double dev_kfree_skb() in error path
-Date:   Tue,  5 Apr 2022 09:18:59 +0200
-Message-Id: <20220405070342.132216232@linuxfoundation.org>
+        stable@vger.kernel.org, Pavel Machek <pavel@denx.de>,
+        Chao Yu <chao@kernel.org>, Jaegeuk Kim <jaegeuk@kernel.org>
+Subject: [PATCH 5.15 067/913] f2fs: fix to unlock page correctly in error path of is_alive()
+Date:   Tue,  5 Apr 2022 09:18:49 +0200
+Message-Id: <20220405070341.831433895@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
 References: <20220405070339.801210740@linuxfoundation.org>
@@ -50,34 +49,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hangyu Hua <hbh25y@gmail.com>
+From: Chao Yu <chao@kernel.org>
 
-commit c70222752228a62135cee3409dccefd494a24646 upstream.
+commit 6d18762ed5cd549fde74fd0e05d4d87bac5a3beb upstream.
 
-There is no need to call dev_kfree_skb() when usb_submit_urb() fails
-beacause can_put_echo_skb() deletes the original skb and
-can_free_echo_skb() deletes the cloned skb.
+As Pavel Machek reported in below link [1]:
 
-Link: https://lore.kernel.org/all/20220228083639.38183-1-hbh25y@gmail.com
-Fixes: 702171adeed3 ("ems_usb: Added support for EMS CPC-USB/ARM7 CAN/USB interface")
-Cc: stable@vger.kernel.org
-Cc: Sebastian Haas <haas@ems-wuensche.com>
-Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
-Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
+After commit 77900c45ee5c ("f2fs: fix to do sanity check in is_alive()"),
+node page should be unlock via calling f2fs_put_page() in the error path
+of is_alive(), otherwise, f2fs may hang when it tries to lock the node
+page, fix it.
+
+[1] https://lore.kernel.org/stable/20220124203637.GA19321@duo.ucw.cz/
+
+Fixes: 77900c45ee5c ("f2fs: fix to do sanity check in is_alive()")
+Cc: <stable@vger.kernel.org>
+Reported-by: Pavel Machek <pavel@denx.de>
+Signed-off-by: Pavel Machek <pavel@denx.de>
+Signed-off-by: Chao Yu <chao@kernel.org>
+Signed-off-by: Jaegeuk Kim <jaegeuk@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/can/usb/ems_usb.c |    1 -
- 1 file changed, 1 deletion(-)
+ fs/f2fs/gc.c |    4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
---- a/drivers/net/can/usb/ems_usb.c
-+++ b/drivers/net/can/usb/ems_usb.c
-@@ -823,7 +823,6 @@ static netdev_tx_t ems_usb_start_xmit(st
+--- a/fs/f2fs/gc.c
++++ b/fs/f2fs/gc.c
+@@ -1023,8 +1023,10 @@ static bool is_alive(struct f2fs_sb_info
+ 		set_sbi_flag(sbi, SBI_NEED_FSCK);
+ 	}
  
- 		usb_unanchor_urb(urb);
- 		usb_free_coherent(dev->udev, size, buf, urb->transfer_dma);
--		dev_kfree_skb(skb);
+-	if (f2fs_check_nid_range(sbi, dni->ino))
++	if (f2fs_check_nid_range(sbi, dni->ino)) {
++		f2fs_put_page(node_page, 1);
+ 		return false;
++	}
  
- 		atomic_dec(&dev->active_tx_urbs);
- 
+ 	*nofs = ofs_of_node(node_page);
+ 	source_blkaddr = data_blkaddr(NULL, node_page, ofs_in_node);
 
 
