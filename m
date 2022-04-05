@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A669C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CDE2C433EF
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:50:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1838138AbiDFAuS (ORCPT
+        id S1838124AbiDFAuN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 20:50:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47412 "EHLO
+        Tue, 5 Apr 2022 20:50:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60198 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348865AbiDEJsm (ORCPT
+        with ESMTP id S242799AbiDEKgB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:48:42 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3BEBB8229;
-        Tue,  5 Apr 2022 02:36:44 -0700 (PDT)
+        Tue, 5 Apr 2022 06:36:01 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8155C53A73;
+        Tue,  5 Apr 2022 03:21:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7F21CB81C86;
-        Tue,  5 Apr 2022 09:36:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C5699C385A2;
-        Tue,  5 Apr 2022 09:36:41 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 001CECE0B18;
+        Tue,  5 Apr 2022 10:21:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 17D22C385A0;
+        Tue,  5 Apr 2022 10:21:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649151402;
-        bh=/g8dXg0JypJ/RhYmeXw7ZH3eC2NvExYfPtmWzLtqMqs=;
+        s=korg; t=1649154110;
+        bh=V82YCVofDcJp2UeOewPYNjLw7osok72QqvEGOK08wYA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=J/NrTTTfoLtc2MhNFKYIXe+AZFOIeq17AIC0zVMfGkHKEkTKslvPjb5kYcMMWa7qS
-         2hqgNRuB7uBIu48QkEQxtTFoUcxxfoLtvcmc0znf8KdsHql1TEbG+iOMFqK5+LhlLZ
-         9e4VedL5iUCanii/b9U85XxexgUjXxjsQMuu7UOw=
+        b=uOJSshCDIO57XswrJuXj2xhTDFprnW++hhU7nisQ+DZM4kuaxBQsS71WjQydpokel
+         0HBzHWwYdGW4R5oLvlP+m6ESGiJyrtBoPpTFtUROqPqi6i24kDH2Z44enZQ+0vc47j
+         Pxxgz7CqwvtNmipjQlQ4y/phkAkqczmvCc+54NWA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zhou Qingyang <zhou1615@umn.edu>,
-        Alex Deucher <alexander.deucher@amd.com>,
+        stable@vger.kernel.org, Hans de Goede <hdegoede@redhat.com>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 401/913] drm/amd/display: Fix a NULL pointer dereference in amdgpu_dm_connector_add_common_modes()
-Date:   Tue,  5 Apr 2022 09:24:23 +0200
-Message-Id: <20220405070351.867418564@linuxfoundation.org>
+Subject: [PATCH 5.10 462/599] ACPICA: Avoid walking the ACPI Namespace if it is not there
+Date:   Tue,  5 Apr 2022 09:32:36 +0200
+Message-Id: <20220405070312.576652883@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
+References: <20220405070258.802373272@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,46 +50,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zhou Qingyang <zhou1615@umn.edu>
+From: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 
-[ Upstream commit 588a70177df3b1777484267584ef38ab2ca899a2 ]
+[ Upstream commit 0c9992315e738e7d6e927ef36839a466b080dba6 ]
 
-In amdgpu_dm_connector_add_common_modes(), amdgpu_dm_create_common_mode()
-is assigned to mode and is passed to drm_mode_probed_add() directly after
-that. drm_mode_probed_add() passes &mode->head to list_add_tail(), and
-there is a dereference of it in list_add_tail() without recoveries, which
-could lead to NULL pointer dereference on failure of
-amdgpu_dm_create_common_mode().
+ACPICA commit b1c3656ef4950098e530be68d4b589584f06cddc
 
-Fix this by adding a NULL check of mode.
+Prevent acpi_ns_walk_namespace() from crashing when called with
+start_node equal to ACPI_ROOT_OBJECT if the Namespace has not been
+instantiated yet and acpi_gbl_root_node is NULL.
 
-This bug was found by a static analyzer.
+For instance, this can happen if the kernel is run with "acpi=off"
+in the command line.
 
-Builds with 'make allyesconfig' show no new warnings,
-and our static analyzer no longer warns about this code.
-
-Fixes: e7b07ceef2a6 ("drm/amd/display: Merge amdgpu_dm_types and amdgpu_dm")
-Signed-off-by: Zhou Qingyang <zhou1615@umn.edu>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Link: https://github.com/acpica/acpica/commit/b1c3656ef4950098e530be68d4b589584f06cddc
+Link: https://lore.kernel.org/linux-acpi/CAJZ5v0hJWW_vZ3wwajE7xT38aWjY7cZyvqMJpXHzUL98-SiCVQ@mail.gmail.com/
+Reported-by: Hans de Goede <hdegoede@redhat.com>
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c | 3 +++
+ drivers/acpi/acpica/nswalk.c | 3 +++
  1 file changed, 3 insertions(+)
 
-diff --git a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
-index cd611444ad17..7983c01c007d 100644
---- a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
-+++ b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
-@@ -7554,6 +7554,9 @@ static void amdgpu_dm_connector_add_common_modes(struct drm_encoder *encoder,
- 		mode = amdgpu_dm_create_common_mode(encoder,
- 				common_modes[i].name, common_modes[i].w,
- 				common_modes[i].h);
-+		if (!mode)
-+			continue;
-+
- 		drm_mode_probed_add(connector, mode);
- 		amdgpu_dm_connector->num_modes++;
+diff --git a/drivers/acpi/acpica/nswalk.c b/drivers/acpi/acpica/nswalk.c
+index b7f3e8603ad8..901fa5ca284d 100644
+--- a/drivers/acpi/acpica/nswalk.c
++++ b/drivers/acpi/acpica/nswalk.c
+@@ -169,6 +169,9 @@ acpi_ns_walk_namespace(acpi_object_type type,
+ 
+ 	if (start_node == ACPI_ROOT_OBJECT) {
+ 		start_node = acpi_gbl_root_node;
++		if (!start_node) {
++			return_ACPI_STATUS(AE_NO_NAMESPACE);
++		}
  	}
+ 
+ 	/* Null child means "get first node" */
 -- 
 2.34.1
 
