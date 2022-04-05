@@ -2,98 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E1C52C35274
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 15:20:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D7212C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 15:20:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1387601AbiDEPTD (ORCPT
+        id S1387840AbiDEPT5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 11:19:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53096 "EHLO
+        Tue, 5 Apr 2022 11:19:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53116 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346788AbiDEJp3 (ORCPT
+        with ESMTP id S1346817AbiDEJpf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:45:29 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 973B0DBD05;
-        Tue,  5 Apr 2022 02:31:52 -0700 (PDT)
+        Tue, 5 Apr 2022 05:45:35 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30B3BE5E;
+        Tue,  5 Apr 2022 02:32:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4C8F1B81CBE;
-        Tue,  5 Apr 2022 09:31:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C7C1AC385A4;
-        Tue,  5 Apr 2022 09:31:47 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649151110;
-        bh=akJwXD5N3s4UPZe2aQccirJblgU77qRMdXJ8Vx02u74=;
-        h=From:To:Cc:In-Reply-To:References:Subject:Date:From;
-        b=QY5Z55casbm5lR6qsgeuDF3G8adn/VXiErF+RjsEtRsfg4GpaCYaLtvuCO7PosAxH
-         kkHB4iFMUltTTxoOVUAWWxvmuuENoZDt3kuzHs39r1ZJlxfJo0FdygNGNwcPqzn05n
-         alNWru1jDELUfjINuCrFeKn+QHu7c7guZdOzI3Ydp+JBlBhvMWG3hlkDXFuvqSvHwJ
-         U7Q/Eb5Lx3JOF0FPj5sUmQgVwgZuTweYoqr0Xm5Xuss8HGf8VTC/aTBs55mnupUSb6
-         0Gns2AVqDzFaYzE8FSOdZR42prBZ4S4Y3h/Je4fBzLhPxmb93jke+bOB178wwnQJwf
-         mSfQ0BvfzW62w==
-From:   Mark Brown <broonie@kernel.org>
-To:     Takashi Iwai <tiwai@suse.com>, Liam Girdwood <lgirdwood@gmail.com>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Rob Herring <robh+dt@kernel.org>, povik+lin@cutebit.org,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>
-Cc:     linux-kernel@vger.kernel.org, kettenis@openbsd.org,
-        marcan@marcan.st, alsa-devel@alsa-project.org, sven@svenpeter.dev,
-        devicetree@vger.kernel.org
-In-Reply-To: <20220331000449.41062-1-povik+lin@cutebit.org>
-References: <20220331000449.41062-1-povik+lin@cutebit.org>
-Subject: Re: (subset) [RFC PATCH 0/5] Apple Macs machine-level ASoC driver
-Message-Id: <164915110754.276574.17127953624002951420.b4-ty@kernel.org>
-Date:   Tue, 05 Apr 2022 10:31:47 +0100
+        by ams.source.kernel.org (Postfix) with ESMTPS id DCD15B81CBA;
+        Tue,  5 Apr 2022 09:31:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 363F5C385A2;
+        Tue,  5 Apr 2022 09:31:57 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649151117;
+        bh=7JlGFAX3nIh8Bdi+QO1H92Uxa8oFttFHscOXkUhewfs=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=g28pqjIOAKs4L2JFYC+yvUg+Tqr3dnOsLKk2+ODBJfYa7Fb0Evswd6cwVovvp5wvN
+         d1kLXnp1kpXq4wzBfig04tsO85BfAVuFBlMcNoVrpvn2OOqv9xRw6wCJw7mKyxzInJ
+         MH7GTXpUsAf4ffvSbG5wUG62fHA3+8sG/tWhVYmw=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        =?UTF-8?q?Rafa=C5=82=20Mi=C5=82ecki?= <rafal@milecki.pl>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 301/913] arm64: dts: broadcom: bcm4908: use proper TWD binding
+Date:   Tue,  5 Apr 2022 09:22:43 +0200
+Message-Id: <20220405070348.878635373@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 31 Mar 2022 02:04:44 +0200, Martin Povišer wrote:
-> I put together a machine-level ASoC driver for recent Apple Macs (the
-> ones with ARM64 SoCs) and want to gauge opinions.
-> 
-> Commit 1 is the binding. It is some subset of simple-audio-card with
-> the extra distinction of allowing multiple CPU/CODEC DAIs per a DAI
-> link. I want to draw special attention to the issue of describing
-> speaker topologies. The way it now works is that the driver expects
-> the speakers to be declared in a fixed order in the sound-dai= list.
-> This populates a topology the driver expects on a particular machine
-> model. Mark (in CC) has made the suggestion of keeping the topology
-> descriptions with the codec nodes themselves in some generic manner,
-> akin to how sound-name-prefix= already helps identify codecs to the
-> user.
-> 
-> [...]
+From: Rafał Miłecki <rafal@milecki.pl>
 
-Applied to
+[ Upstream commit 33826e9c6ba76b265d4e26cb95493fa27ed78974 ]
 
-   https://git.kernel.org/pub/scm/linux/kernel/git/broonie/sound.git for-next
+Block at <ff800400 0x4c> is a TWD that contains timers, watchdog and
+reset. Actual timers happen to be at block beginning but they only span
+across the first 0x28 registers. It means the old block description was
+incorrect (size 0x3c).
 
-Thanks!
+Drop timers binding for now and use documented TWD binding. Timers
+should be properly documented and defined as TWD subnode.
 
-[4/5] ASoC: Introduce snd_soc_of_get_dai_link_cpus
-      commit: 900dedd7e47cc3f8d93dfa0ae6ac6cf49eda0c97
+Fixes: 2961f69f151c ("arm64: dts: broadcom: add BCM4908 and Asus GT-AC5300 early DTS files")
+Signed-off-by: Rafał Miłecki <rafal@milecki.pl>
+Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ arch/arm64/boot/dts/broadcom/bcm4908/bcm4908.dtsi | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-All being well this means that it will be integrated into the linux-next
-tree (usually sometime in the next 24 hours) and sent to Linus during
-the next merge window (or sooner if it is a bug fix), however if
-problems are discovered then the patch may be dropped or reverted.
+diff --git a/arch/arm64/boot/dts/broadcom/bcm4908/bcm4908.dtsi b/arch/arm64/boot/dts/broadcom/bcm4908/bcm4908.dtsi
+index 5118816b1ed7..e8907d3fe2d1 100644
+--- a/arch/arm64/boot/dts/broadcom/bcm4908/bcm4908.dtsi
++++ b/arch/arm64/boot/dts/broadcom/bcm4908/bcm4908.dtsi
+@@ -273,9 +273,9 @@
+ 		#size-cells = <1>;
+ 		ranges = <0x00 0x00 0xff800000 0x3000>;
+ 
+-		timer: timer@400 {
+-			compatible = "brcm,bcm6328-timer", "syscon";
+-			reg = <0x400 0x3c>;
++		twd: timer-mfd@400 {
++			compatible = "brcm,bcm4908-twd", "simple-mfd", "syscon";
++			reg = <0x400 0x4c>;
+ 		};
+ 
+ 		gpio0: gpio-controller@500 {
+@@ -330,7 +330,7 @@
+ 
+ 	reboot {
+ 		compatible = "syscon-reboot";
+-		regmap = <&timer>;
++		regmap = <&twd>;
+ 		offset = <0x34>;
+ 		mask = <1>;
+ 	};
+-- 
+2.34.1
 
-You may get further e-mails resulting from automated or manual testing
-and review of the tree, please engage with people reporting problems and
-send followup patches addressing any issues that are reported if needed.
 
-If any updates are required or you are submitting further changes they
-should be sent as incremental updates against current git, existing
-patches will not be replaced.
 
-Please add any relevant lists and maintainers to the CCs when replying
-to this mail.
-
-Thanks,
-Mark
