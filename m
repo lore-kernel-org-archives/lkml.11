@@ -2,138 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D4B8C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7CE24C433FE
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:41:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1578133AbiDEXSe (ORCPT
+        id S1578146AbiDEXSi (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 19:18:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50656 "EHLO
+        Tue, 5 Apr 2022 19:18:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39988 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357777AbiDEK1M (ORCPT
+        with ESMTP id S1349195AbiDEJt0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:27:12 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5113339BB9
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 03:10:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Transfer-Encoding:
-        Content-Type:MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:
-        Sender:Reply-To:Content-ID:Content-Description;
-        bh=JRCtPql37TI0QCAvo5gW2Zck8T0P/CqvA5SiZrYJuYk=; b=P8Fdu3E46UH/j9cbM0vhZ3I4j4
-        P3hCnKljTXjPpOhVbNoxZbPnnfk27KD6EdpsVXRQHssmrcI+3FVTxjnsBl9pBUDZt3LfpTBUYhRgw
-        KRWmyMkFq27QsAgh6ZOFp1I3FmgmAJMyXXs2S6DZE2tXKeP2B86RgCPjfbwbNarCOv2ICByaJtg1Y
-        U/Mi1uoPFm2LQAl8MyKlTW3fGanNx840M0f9u83HcYFAhS2nYyK/obT1nkuz/js72ov5v7Ls2LTBE
-        C+lwefHBW8UpMOscSP7shKLI2UpkNPLXDG18jcRLnaly9S9wPNLZW62aG/T/WOFwB4xmpUqwpHg2z
-        u+iq5xAg==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=worktop.programming.kicks-ass.net)
-        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nbg8q-006aqi-SA; Tue, 05 Apr 2022 10:10:28 +0000
-Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
-        id 03E57986B5B; Tue,  5 Apr 2022 12:10:26 +0200 (CEST)
-Date:   Tue, 5 Apr 2022 12:10:26 +0200
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Cc:     Oleg Nesterov <oleg@redhat.com>, linux-kernel@vger.kernel.org,
-        Ben Segall <bsegall@google.com>,
-        Daniel Bristot de Oliveira <bristot@redhat.com>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        Ingo Molnar <mingo@redhat.com>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Mel Gorman <mgorman@suse.de>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Vincent Guittot <vincent.guittot@linaro.org>
-Subject: Re: [PATCH v2] ptrace: fix ptrace vs tasklist_lock race on
- PREEMPT_RT.
-Message-ID: <20220405101026.GB34954@worktop.programming.kicks-ass.net>
-References: <Yh/b19JikC+Vnm8i@linutronix.de>
- <20220314185429.GA30364@redhat.com>
- <YjBO8yzxdmjTGNiy@linutronix.de>
- <20220315142944.GA22670@redhat.com>
- <YkW55u6u2fo5QmV7@linutronix.de>
+        Tue, 5 Apr 2022 05:49:26 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C008D22298;
+        Tue,  5 Apr 2022 02:42:32 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6B5D6B81C19;
+        Tue,  5 Apr 2022 09:42:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C63F7C385A2;
+        Tue,  5 Apr 2022 09:42:29 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649151750;
+        bh=qQkG5DprhOohE/vv7FqAicjZ5OSnoUow72LwglFkNNY=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=0Dc4Ft3UeDWFQS6/Xrj5FpgY37SKUhDEE7y6c42DLkBNvNurmoyLzgG9UTRy0RDO9
+         0i/8SMbt6brF/1msNO1+W4o0mzoozLiwZT4rGeYCY6fyR++n2Uaz987yQBXGz21OYK
+         OECSiL8O/17DwOFwgxrlNYh7o1XZLtqBGGjnTRJY=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, TOTE Robot <oslab@tsinghua.edu.cn>,
+        Jia-Ju Bai <baijiaju1990@gmail.com>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 527/913] platform/x86: huawei-wmi: check the return value of device_create_file()
+Date:   Tue,  5 Apr 2022 09:26:29 +0200
+Message-Id: <20220405070355.648455368@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <YkW55u6u2fo5QmV7@linutronix.de>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Mar 31, 2022 at 04:25:42PM +0200, Sebastian Andrzej Siewior wrote:
-> As explained by Alexander Fyodorov <halcy@yandex.ru>:
-> 
-> |read_lock(&tasklist_lock) in ptrace_stop() is converted to sleeping
-> |lock on a PREEMPT_RT kernel, and it can remove __TASK_TRACED from
-> |task->__state (by moving  it to task->saved_state). If parent does
-> |wait() on child followed by a sys_ptrace call, the following race can
-> |happen:
-> |
-> |- child sets __TASK_TRACED in ptrace_stop()
-> |- parent does wait() which eventually calls wait_task_stopped() and returns
-> |  child's pid
-> |- child blocks on read_lock(&tasklist_lock) in ptrace_stop() and moves
-> |  __TASK_TRACED flag to saved_state
-> |- parent calls sys_ptrace, which calls ptrace_check_attach() and
-> |  wait_task_inactive()
-> 
-> The patch is based on his initial patch where an additional check is
-> added in case the __TASK_TRACED moved to ->saved_state. The pi_lock is
-> acquired to have stable view on ->__state and ->saved_state.
-> 
-> wait_task_inactive() needs to check both task states while waiting for the
-> expected task state. Should the expected task state be in ->saved_state then
-> the task is blocked on a sleeping lock. In this case wait_task_inactive() needs
-> to wait until the lock situtation has been resolved (the expected state is in
-> ->__state). This ensures that the task is idle and does not wakeup as part of
-> lock resolving and races for instance with __switch_to_xtra() while the
-> debugger clears TIF_BLOCKSTEP() (noted by Oleg Nesterov).
-> 
-> [ Fix for ptrace_unfreeze_traced() by Oleg Nesterov ]
-> 
-> Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-> ---
-> v1…v2:
->   - Use also ->saved_state in task_state_match_and_set().
->   - Wait in wait_task_inactive() until the desired task state is in
->     ->__state so that the task won't wake up a as part of lock
->     resolving. Pointed out by Oleg Nesterov.
-> 
->  include/linux/sched.h |  128 ++++++++++++++++++++++++++++++++++++++++++++++++--
->  kernel/ptrace.c       |   25 +++++----
->  kernel/sched/core.c   |   11 +++-
->  3 files changed, 146 insertions(+), 18 deletions(-)
-> 
-> --- a/include/linux/sched.h
-> +++ b/include/linux/sched.h
-> @@ -118,12 +118,8 @@ struct task_group;
->  
->  #define task_is_running(task)		(READ_ONCE((task)->__state) == TASK_RUNNING)
->  
-> -#define task_is_traced(task)		((READ_ONCE(task->__state) & __TASK_TRACED) != 0)
-> -
->  #define task_is_stopped(task)		((READ_ONCE(task->__state) & __TASK_STOPPED) != 0)
->  
-> -#define task_is_stopped_or_traced(task)	((READ_ONCE(task->__state) & (__TASK_STOPPED | __TASK_TRACED)) != 0)
-> -
->  /*
->   * Special states are those that do not use the normal wait-loop pattern. See
->   * the comment with set_special_state().
+From: Jia-Ju Bai <baijiaju1990@gmail.com>
 
-Urgh, so I have reworking all this somewhere on my todo list as well.
-Except I mean to move it away from using p->__state entirely. We should
-not be keeping canonical state in there.
+[ Upstream commit c91a5b1c221a58d008485cf7d02ccce73108b119 ]
 
-As is, I think we can write task_is_stopped() like:
+The function device_create_file() in huawei_wmi_battery_add() can fail,
+so its return value should be checked.
 
-#define task_is_stopped(task)	((task)->jobctl & JOBCTL_STOP_PENDING)
+Fixes: 355a070b09ab ("platform/x86: huawei-wmi: Add battery charging thresholds")
+Reported-by: TOTE Robot <oslab@tsinghua.edu.cn>
+Signed-off-by: Jia-Ju Bai <baijiaju1990@gmail.com>
+Link: https://lore.kernel.org/r/20220303022421.313-1-baijiaju1990@gmail.com
+Reviewed-by: Hans de Goede <hdegoede@redhat.com>
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/platform/x86/huawei-wmi.c | 13 ++++++++++---
+ 1 file changed, 10 insertions(+), 3 deletions(-)
 
-Because jobctl is in fact the canonical state. I'm still not sure if we
-can do the same with task_is_traced(), ideally that would be expressed
-in terms of (task)->ptrace. But ptrace_stop() hurts my brain. All that
-stuff is entirely to involved.
+diff --git a/drivers/platform/x86/huawei-wmi.c b/drivers/platform/x86/huawei-wmi.c
+index a2d846c4a7ee..eac3e6b4ea11 100644
+--- a/drivers/platform/x86/huawei-wmi.c
++++ b/drivers/platform/x86/huawei-wmi.c
+@@ -470,10 +470,17 @@ static DEVICE_ATTR_RW(charge_control_thresholds);
+ 
+ static int huawei_wmi_battery_add(struct power_supply *battery)
+ {
+-	device_create_file(&battery->dev, &dev_attr_charge_control_start_threshold);
+-	device_create_file(&battery->dev, &dev_attr_charge_control_end_threshold);
++	int err = 0;
+ 
+-	return 0;
++	err = device_create_file(&battery->dev, &dev_attr_charge_control_start_threshold);
++	if (err)
++		return err;
++
++	err = device_create_file(&battery->dev, &dev_attr_charge_control_end_threshold);
++	if (err)
++		device_remove_file(&battery->dev, &dev_attr_charge_control_start_threshold);
++
++	return err;
+ }
+ 
+ static int huawei_wmi_battery_remove(struct power_supply *battery)
+-- 
+2.34.1
 
-Anyway, let me see if I can page some of that back..
 
 
