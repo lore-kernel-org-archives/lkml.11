@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AD20AC46467
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F19B2C4707E
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 15:20:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346693AbiDEPSR (ORCPT
+        id S1387643AbiDEPTV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 11:18:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54030 "EHLO
+        Tue, 5 Apr 2022 11:19:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59292 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346746AbiDEJpZ (ORCPT
+        with ESMTP id S1346783AbiDEJp2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:45:25 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11D66DB4B0;
-        Tue,  5 Apr 2022 02:31:41 -0700 (PDT)
+        Tue, 5 Apr 2022 05:45:28 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE92DDB4BF;
+        Tue,  5 Apr 2022 02:31:51 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A4BF8B81CBC;
-        Tue,  5 Apr 2022 09:31:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7311FC385A2;
-        Tue,  5 Apr 2022 09:31:37 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 97250B81CC4;
+        Tue,  5 Apr 2022 09:31:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E01AFC385A3;
+        Tue,  5 Apr 2022 09:31:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649151098;
-        bh=73W+wrV+pltzRuWYHC+jUw+ORe5Zrq6RlCWY8xI8l3M=;
+        s=korg; t=1649151109;
+        bh=eVZftVlJ42o4VmZTs29/3AwJXmVvKUpsGDEe+yjvsqk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pk8kbJLg0EyT57EQ7AcGFFJcW0YES3iIQfzUznukgR0q/0wbBMrhxscZjuv+e4cwe
-         goQ6G3YX6fq+ewaCeis6Z9juR2ClhZoWnFJwhjSl7J73Oah6+ZbH0pdGnHQcY80hgn
-         Ma16a32O1yrYY49Id9qOmKGoJQcjciG5Ht6KDxvg=
+        b=zUMjfG53+cIsN6+5nFJznzk/wSm2iGk//y0Jt2vXa9F9EhM1iOMllC9ah1+K89cHa
+         sbvDXJVxU/TMmdYG8qy8MaW2LYrpMFqKdLeFbuL5N/UN0B7Q4Jv9GSS1QM+vgVN1kg
+         /CPvFKAU4xgvxd0dYZ7TEA9aC+IsfypyLiUuO74w=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jeff Layton <jlayton@kernel.org>,
-        Amir Goldstein <amir73il@gmail.com>,
-        Chuck Lever <chuck.lever@oracle.com>,
+        stable@vger.kernel.org,
+        Daniel Thompson <daniel.thompson@linaro.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 255/913] nfsd: more robust allocation failure handling in nfsd_file_cache_init
-Date:   Tue,  5 Apr 2022 09:21:57 +0200
-Message-Id: <20220405070347.499400402@linuxfoundation.org>
+Subject: [PATCH 5.15 298/913] soc: qcom: aoss: remove spurious IRQF_ONESHOT flags
+Date:   Tue,  5 Apr 2022 09:22:40 +0200
+Message-Id: <20220405070348.789077973@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
 References: <20220405070339.801210740@linuxfoundation.org>
@@ -51,61 +51,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Amir Goldstein <amir73il@gmail.com>
+From: Daniel Thompson <daniel.thompson@linaro.org>
 
-[ Upstream commit 4d2eeafecd6c83b4444db3dc0ada201c89b1aa44 ]
+[ Upstream commit 8030cb9a55688c1339edd284d9d6ce5f9fc75160 ]
 
-The nfsd file cache table can be pretty large and its allocation
-may require as many as 80 contigious pages.
+Quoting the header comments, IRQF_ONESHOT is "Used by threaded interrupts
+which need to keep the irq line disabled until the threaded handler has
+been run.". When applied to an interrupt that doesn't request a threaded
+irq then IRQF_ONESHOT has a lesser known (undocumented?) side effect,
+which it to disable the forced threading of the irq. For "normal" kernels
+(without forced threading) then, if there is no thread_fn, then
+IRQF_ONESHOT is a nop.
 
-Employ the same fix that was employed for similar issue that was
-reported for the reply cache hash table allocation several years ago
-by commit 8f97514b423a ("nfsd: more robust allocation failure handling
-in nfsd_reply_cache_init").
+In this case disabling forced threading is not appropriate for this driver
+because it calls wake_up_all() and this API cannot be called from
+no-thread interrupt handlers on PREEMPT_RT systems (deadlock risk, triggers
+sleeping-while-atomic warnings).
 
-Fixes: 65294c1f2c5e ("nfsd: add a new struct file caching facility to nfsd")
-Link: https://lore.kernel.org/linux-nfs/e3cdaeec85a6cfec980e87fc294327c0381c1778.camel@kernel.org/
-Suggested-by: Jeff Layton <jlayton@kernel.org>
-Signed-off-by: Amir Goldstein <amir73il@gmail.com>
-Reviewed-by: Jeff Layton <jlayton@kernel.org>
-Signed-off-by: Chuck Lever <chuck.lever@oracle.com>
-Tested-by: Amir Goldstein <amir73il@gmail.com>
+Fix this by removing IRQF_ONESHOT.
+
+Fixes: 2209481409b7 ("soc: qcom: Add AOSS QMP driver")
+Signed-off-by: Daniel Thompson <daniel.thompson@linaro.org>
+[bjorn: Added Fixes tag]
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Link: https://lore.kernel.org/r/20220127173554.158111-1-daniel.thompson@linaro.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/nfsd/filecache.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/soc/qcom/qcom_aoss.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/fs/nfsd/filecache.c b/fs/nfsd/filecache.c
-index be3c1aad50ea..7e23c588f484 100644
---- a/fs/nfsd/filecache.c
-+++ b/fs/nfsd/filecache.c
-@@ -641,7 +641,7 @@ nfsd_file_cache_init(void)
- 	if (!nfsd_filecache_wq)
- 		goto out;
+diff --git a/drivers/soc/qcom/qcom_aoss.c b/drivers/soc/qcom/qcom_aoss.c
+index 536c3e4114fb..a0659cf27845 100644
+--- a/drivers/soc/qcom/qcom_aoss.c
++++ b/drivers/soc/qcom/qcom_aoss.c
+@@ -548,7 +548,7 @@ static int qmp_probe(struct platform_device *pdev)
+ 	}
  
--	nfsd_file_hashtbl = kcalloc(NFSD_FILE_HASH_SIZE,
-+	nfsd_file_hashtbl = kvcalloc(NFSD_FILE_HASH_SIZE,
- 				sizeof(*nfsd_file_hashtbl), GFP_KERNEL);
- 	if (!nfsd_file_hashtbl) {
- 		pr_err("nfsd: unable to allocate nfsd_file_hashtbl\n");
-@@ -709,7 +709,7 @@ nfsd_file_cache_init(void)
- 	nfsd_file_slab = NULL;
- 	kmem_cache_destroy(nfsd_file_mark_slab);
- 	nfsd_file_mark_slab = NULL;
--	kfree(nfsd_file_hashtbl);
-+	kvfree(nfsd_file_hashtbl);
- 	nfsd_file_hashtbl = NULL;
- 	destroy_workqueue(nfsd_filecache_wq);
- 	nfsd_filecache_wq = NULL;
-@@ -855,7 +855,7 @@ nfsd_file_cache_shutdown(void)
- 	fsnotify_wait_marks_destroyed();
- 	kmem_cache_destroy(nfsd_file_mark_slab);
- 	nfsd_file_mark_slab = NULL;
--	kfree(nfsd_file_hashtbl);
-+	kvfree(nfsd_file_hashtbl);
- 	nfsd_file_hashtbl = NULL;
- 	destroy_workqueue(nfsd_filecache_wq);
- 	nfsd_filecache_wq = NULL;
+ 	irq = platform_get_irq(pdev, 0);
+-	ret = devm_request_irq(&pdev->dev, irq, qmp_intr, IRQF_ONESHOT,
++	ret = devm_request_irq(&pdev->dev, irq, qmp_intr, 0,
+ 			       "aoss-qmp", qmp);
+ 	if (ret < 0) {
+ 		dev_err(&pdev->dev, "failed to request interrupt\n");
 -- 
 2.34.1
 
