@@ -2,46 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E8F0C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 09:27:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BB85AC4167E
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 09:27:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347428AbiDEJ0a (ORCPT
+        id S1347453AbiDEJ0k (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 05:26:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34690 "EHLO
+        Tue, 5 Apr 2022 05:26:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34716 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239603AbiDEIUP (ORCPT
+        with ESMTP id S239598AbiDEIUP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Apr 2022 04:20:15 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07483E6;
-        Tue,  5 Apr 2022 01:17:15 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3742136;
+        Tue,  5 Apr 2022 01:17:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9D94DB81A37;
-        Tue,  5 Apr 2022 08:17:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E7B63C385A0;
-        Tue,  5 Apr 2022 08:17:11 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 609E7609D0;
+        Tue,  5 Apr 2022 08:17:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6F80DC385A1;
+        Tue,  5 Apr 2022 08:17:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649146632;
-        bh=ui0xX+3EfHqez5esO5GFYNBbb1jm6TCpq4dSldgq1bg=;
+        s=korg; t=1649146626;
+        bh=P3NtWkh9h3XTIlElB6Qko8BGssaTAw2AjqJ3aVe94Us=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mO919F/4dktM+vgSmWxyCbwn1UlCjvgCTefWDBjvgpCpBbQVYJJx8lEspSD9en/dW
-         K77c01mPLE2ig+4MB05PV/rREZx8CCIBWjRulUa2JgPksingbptydcdyuO4spC9sOK
-         yc0A0kQu0GQSKezZxXy8Gdm3znQZZd4IyuETLdFE=
+        b=ub+8ZWECkYc9Zzr7slZmwZqMFcrCBY9/z4GmdkrPronVwyhfc9R7ez784I2UpJVV3
+         qWNVnUW+XmhYtRpoD06V6CwHWn57a8xW6zGbIsd6PWnDXptRBMYER132c9g1krAVJY
+         dkuFXa1G0m1JeMPDSLUm/hMPNz3okl4ZPq4KtdEE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        syzbot+d1e3b1d92d25abf97943@syzkaller.appspotmail.com,
-        Casey Schaufler <casey@schaufler-ca.com>,
-        James Morris <jamorris@linux.microsoft.com>,
-        Paul Moore <paul@paul-moore.com>,
+        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
+        Luis Chamberlain <mcgrof@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0833/1126] LSM: general protection fault in legacy_parse_param
-Date:   Tue,  5 Apr 2022 09:26:20 +0200
-Message-Id: <20220405070432.008534375@linuxfoundation.org>
+Subject: [PATCH 5.17 0831/1126] lib/test: use after free in register_test_dev_kmod()
+Date:   Tue,  5 Apr 2022 09:26:18 +0200
+Message-Id: <20220405070431.950973665@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -53,76 +50,31 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Casey Schaufler <casey@schaufler-ca.com>
+From: Dan Carpenter <dan.carpenter@oracle.com>
 
-[ Upstream commit ecff30575b5ad0eda149aadad247b7f75411fd47 ]
+[ Upstream commit dc0ce6cc4b133f5f2beb8b47dacae13a7d283c2c ]
 
-The usual LSM hook "bail on fail" scheme doesn't work for cases where
-a security module may return an error code indicating that it does not
-recognize an input.  In this particular case Smack sees a mount option
-that it recognizes, and returns 0. A call to a BPF hook follows, which
-returns -ENOPARAM, which confuses the caller because Smack has processed
-its data.
+The "test_dev" pointer is freed but then returned to the caller.
 
-The SELinux hook incorrectly returns 1 on success. There was a time
-when this was correct, however the current expectation is that it
-return 0 on success. This is repaired.
-
-Reported-by: syzbot+d1e3b1d92d25abf97943@syzkaller.appspotmail.com
-Signed-off-by: Casey Schaufler <casey@schaufler-ca.com>
-Acked-by: James Morris <jamorris@linux.microsoft.com>
-Signed-off-by: Paul Moore <paul@paul-moore.com>
+Fixes: d9c6a72d6fa2 ("kmod: add test driver to stress test the module loader")
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+Signed-off-by: Luis Chamberlain <mcgrof@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- security/security.c      | 17 +++++++++++++++--
- security/selinux/hooks.c |  5 ++---
- 2 files changed, 17 insertions(+), 5 deletions(-)
+ lib/test_kmod.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/security/security.c b/security/security.c
-index e9526f005f09..b7cf5cbfdc67 100644
---- a/security/security.c
-+++ b/security/security.c
-@@ -884,9 +884,22 @@ int security_fs_context_dup(struct fs_context *fc, struct fs_context *src_fc)
- 	return call_int_hook(fs_context_dup, 0, fc, src_fc);
- }
- 
--int security_fs_context_parse_param(struct fs_context *fc, struct fs_parameter *param)
-+int security_fs_context_parse_param(struct fs_context *fc,
-+				    struct fs_parameter *param)
- {
--	return call_int_hook(fs_context_parse_param, -ENOPARAM, fc, param);
-+	struct security_hook_list *hp;
-+	int trc;
-+	int rc = -ENOPARAM;
-+
-+	hlist_for_each_entry(hp, &security_hook_heads.fs_context_parse_param,
-+			     list) {
-+		trc = hp->hook.fs_context_parse_param(fc, param);
-+		if (trc == 0)
-+			rc = 0;
-+		else if (trc != -ENOPARAM)
-+			return trc;
-+	}
-+	return rc;
- }
- 
- int security_sb_alloc(struct super_block *sb)
-diff --git a/security/selinux/hooks.c b/security/selinux/hooks.c
-index b55f5efd3e0d..047c63f923b8 100644
---- a/security/selinux/hooks.c
-+++ b/security/selinux/hooks.c
-@@ -2867,10 +2867,9 @@ static int selinux_fs_context_parse_param(struct fs_context *fc,
- 		return opt;
- 
- 	rc = selinux_add_opt(opt, param->string, &fc->security);
--	if (!rc) {
-+	if (!rc)
- 		param->string = NULL;
--		rc = 1;
--	}
-+
- 	return rc;
- }
+diff --git a/lib/test_kmod.c b/lib/test_kmod.c
+index ce1589391413..cb800b1d0d99 100644
+--- a/lib/test_kmod.c
++++ b/lib/test_kmod.c
+@@ -1149,6 +1149,7 @@ static struct kmod_test_device *register_test_dev_kmod(void)
+ 	if (ret) {
+ 		pr_err("could not register misc device: %d\n", ret);
+ 		free_test_dev_kmod(test_dev);
++		test_dev = NULL;
+ 		goto out;
+ 	}
  
 -- 
 2.34.1
