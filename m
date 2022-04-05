@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D0E48C43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F0FF2C4321E
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 11:42:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378352AbiDELdg (ORCPT
+        id S1378389AbiDELdz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 07:33:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46598 "EHLO
+        Tue, 5 Apr 2022 07:33:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50832 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244540AbiDEIwY (ORCPT
+        with ESMTP id S244567AbiDEIw0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:52:24 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53F97D64F4;
-        Tue,  5 Apr 2022 01:41:18 -0700 (PDT)
+        Tue, 5 Apr 2022 04:52:26 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FE2ED7615;
+        Tue,  5 Apr 2022 01:41:21 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5037CB81C6A;
-        Tue,  5 Apr 2022 08:41:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A0C58C385A0;
-        Tue,  5 Apr 2022 08:41:14 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0F37F614FD;
+        Tue,  5 Apr 2022 08:41:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 201DEC385A0;
+        Tue,  5 Apr 2022 08:41:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649148075;
-        bh=G/l9aUJULJwmI7YT0KaZ81Zov+Y/RRth+XG3A6aSc6U=;
+        s=korg; t=1649148080;
+        bh=SjknEhECGb1fUja6ZVAmAJQKcOM/RZ1nOx6+Lr4wAFE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KG50vT1f4NFFCHup4nFL157LAtUIxSeWsvxj1YVCciIhAz4YUn7K0ruaP0cFdOQ8+
-         CTYzSBW43WpsBAx6hrnnY2ereV7EJ4hZcv3YeqBoNLHsQI5aCmVxytCEKaGuATfaxw
-         YF7OwY/fvccEdmWd/wTyyru9GtlPGgbCITdsKITQ=
+        b=TnCtzD69knu5NS1w0sI1+YQo0zpRSi8gjYjUDgmVen0SW+10+grQ6tg4CKBxPonik
+         PxyNsH+sa37+slSO5z/9QfITZsNNOKJhNMcyR/NqNAf7Hl6vbl1HLBbiResekk7Eub
+         FwI3yJg5vKnZITup894UxQzReu5+kgAh/3RIwzTA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Christoph Anton Mitterer <calestyo@scientia.org>,
-        David Sterba <dsterba@suse.com>, ree.com@vger.kernel.org
-Subject: [PATCH 5.16 0182/1017] btrfs: verify the tranisd of the to-be-written dirty extent buffer
-Date:   Tue,  5 Apr 2022 09:18:15 +0200
-Message-Id: <20220405070359.640646036@linuxfoundation.org>
+        stable@vger.kernel.org, Guenter Roeck <linux@roeck-us.net>,
+        Armin Wolf <W_Armin@gmx.de>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 0228/1017] hwmon: (sch56xx-common) Replace WDOG_ACTIVE with WDOG_HW_RUNNING
+Date:   Tue,  5 Apr 2022 09:19:01 +0200
+Message-Id: <20220405070401.022835973@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -50,96 +51,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Qu Wenruo <wqu@suse.com>
+From: Armin Wolf <W_Armin@gmx.de>
 
-commit 3777369ff1518b579560611a0d0c33f930154f64 upstream.
+[ Upstream commit 647d6f09bea7dacf4cdb6d4ea7e3051883955297 ]
 
-[BUG]
-There is a bug report that a bitflip in the transid part of an extent
-buffer makes btrfs to reject certain tree blocks:
+If the watchdog was already enabled by the BIOS after booting, the
+watchdog infrastructure needs to regularly send keepalives to
+prevent a unexpected reset.
+WDOG_ACTIVE only serves as an status indicator for userspace,
+we want to use WDOG_HW_RUNNING instead.
 
-  BTRFS error (device dm-0): parent transid verify failed on 1382301696 wanted 262166 found 22
+Since my Fujitsu Esprimo P720 does not support the watchdog,
+this change is compile-tested only.
 
-[CAUSE]
-Note the failed transid check, hex(262166) = 0x40016, while
-hex(22) = 0x16.
-
-It's an obvious bitflip.
-
-Furthermore, the reporter also confirmed the bitflip is from the
-hardware, so it's a real hardware caused bitflip, and such problem can
-not be detected by the existing tree-checker framework.
-
-As tree-checker can only verify the content inside one tree block, while
-generation of a tree block can only be verified against its parent.
-
-So such problem remain undetected.
-
-[FIX]
-Although tree-checker can not verify it at write-time, we still have a
-quick (but not the most accurate) way to catch such obvious corruption.
-
-Function csum_one_extent_buffer() is called before we submit metadata
-write.
-
-Thus it means, all the extent buffer passed in should be dirty tree
-blocks, and should be newer than last committed transaction.
-
-Using that we can catch the above bitflip.
-
-Although it's not a perfect solution, as if the corrupted generation is
-higher than the correct value, we have no way to catch it at all.
-
-Reported-by: Christoph Anton Mitterer <calestyo@scientia.org>
-Link: https://lore.kernel.org/linux-btrfs/2dfcbc130c55cc6fd067b93752e90bd2b079baca.camel@scientia.org/
-CC: stable@vger.kernel.org # 5.15+
-Signed-off-by: Qu Wenruo <wqu@sus,ree.com>
-Reviewed-by: David Sterba <dsterba@suse.com>
-Signed-off-by: David Sterba <dsterba@suse.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Suggested-by: Guenter Roeck <linux@roeck-us.net>
+Fixes: fb551405c0f8 (watchdog: sch56xx: Use watchdog core)
+Signed-off-by: Armin Wolf <W_Armin@gmx.de>
+Link: https://lore.kernel.org/r/20220131211935.3656-5-W_Armin@gmx.de
+Reviewed-by: Hans de Goede <hdegoede@redhat.com>
+Signed-off-by: Guenter Roeck <linux@roeck-us.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/btrfs/disk-io.c |   26 ++++++++++++++++++++------
- 1 file changed, 20 insertions(+), 6 deletions(-)
+ drivers/hwmon/sch56xx-common.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/fs/btrfs/disk-io.c
-+++ b/fs/btrfs/disk-io.c
-@@ -441,17 +441,31 @@ static int csum_one_extent_buffer(struct
- 	else
- 		ret = btrfs_check_leaf_full(eb);
+diff --git a/drivers/hwmon/sch56xx-common.c b/drivers/hwmon/sch56xx-common.c
+index 40cdadad35e5..f85eede6d766 100644
+--- a/drivers/hwmon/sch56xx-common.c
++++ b/drivers/hwmon/sch56xx-common.c
+@@ -422,7 +422,7 @@ void sch56xx_watchdog_register(struct device *parent, u16 addr, u32 revision,
+ 	data->wddev.max_timeout = 255 * 60;
+ 	watchdog_set_nowayout(&data->wddev, nowayout);
+ 	if (output_enable & SCH56XX_WDOG_OUTPUT_ENABLE)
+-		set_bit(WDOG_ACTIVE, &data->wddev.status);
++		set_bit(WDOG_HW_RUNNING, &data->wddev.status);
  
--	if (ret < 0) {
--		btrfs_print_tree(eb, 0);
-+	if (ret < 0)
-+		goto error;
-+
-+	/*
-+	 * Also check the generation, the eb reached here must be newer than
-+	 * last committed. Or something seriously wrong happened.
-+	 */
-+	if (unlikely(btrfs_header_generation(eb) <= fs_info->last_trans_committed)) {
-+		ret = -EUCLEAN;
- 		btrfs_err(fs_info,
--			"block=%llu write time tree block corruption detected",
--			eb->start);
--		WARN_ON(IS_ENABLED(CONFIG_BTRFS_DEBUG));
--		return ret;
-+			"block=%llu bad generation, have %llu expect > %llu",
-+			  eb->start, btrfs_header_generation(eb),
-+			  fs_info->last_trans_committed);
-+		goto error;
- 	}
- 	write_extent_buffer(eb, result, 0, fs_info->csum_size);
- 
- 	return 0;
-+
-+error:
-+	btrfs_print_tree(eb, 0);
-+	btrfs_err(fs_info, "block=%llu write time tree block corruption detected",
-+		  eb->start);
-+	WARN_ON(IS_ENABLED(CONFIG_BTRFS_DEBUG));
-+	return ret;
- }
- 
- /* Checksum all dirty extent buffers in one bio_vec */
+ 	/* Since the watchdog uses a downcounter there is no register to read
+ 	   the BIOS set timeout from (if any was set at all) ->
+-- 
+2.34.1
+
 
 
