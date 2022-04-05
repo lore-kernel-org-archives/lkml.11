@@ -2,88 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1395BC4167B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 317E4C43219
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 15:20:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380599AbiDEPNr (ORCPT
+        id S1384587AbiDEPO6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 11:13:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39548 "EHLO
+        Tue, 5 Apr 2022 11:14:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39768 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346457AbiDEJpE (ORCPT
+        with ESMTP id S1346650AbiDEJpT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:45:04 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03EFCDA0B1;
-        Tue,  5 Apr 2022 02:30:41 -0700 (PDT)
+        Tue, 5 Apr 2022 05:45:19 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84686DAFEC
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 02:31:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9362661368;
-        Tue,  5 Apr 2022 09:30:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A9C12C385A2;
-        Tue,  5 Apr 2022 09:30:39 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649151040;
-        bh=GOCjvPSffRKuugb0uITMfSMEobaooJl1sG41hMr87RY=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HToBeCZAY3ziKVXeWYvcdVl+lx4lisKoMhvdjrHOmkVuS6tGdem9jxwjdffCx4m25
-         JURBQN4wxmdXv4bc5Dp7dW2kmPd3sNa5gzkOAFfVCP5X81u/oD+UTLBfoTS/pjn4Ko
-         fCMoUX6JVgXYZZmRr/8gxBZ2HS/EIANYs+b19loQ=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
-        Tzung-Bi Shih <tzungbi@google.com>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 272/913] media: mtk-vcodec: potential dereference of null pointer
-Date:   Tue,  5 Apr 2022 09:22:14 +0200
-Message-Id: <20220405070348.012092957@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
-User-Agent: quilt/0.66
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 11854616D0
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 09:31:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6F4B2C385A3;
+        Tue,  5 Apr 2022 09:31:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649151072;
+        bh=FZqszyvA+yXRm0uxyPuw51TFFxhoO2xqk3VDZrjdL+A=;
+        h=From:To:Cc:In-Reply-To:References:Subject:Date:From;
+        b=eFyI8GIS9Zft4Os2Zgj6HzrM1/zn8GAwRx2/EdJgVYoOoth63EfVcZx0iMz7oIKH9
+         sQ7q/8LORxjajshk3ROOilt5GvqXMGfGl//lOIusbFL9I+2sa34rzmZ6Njbm2gJeF3
+         dZAUNDsGYJXe4cszUQueFx3zJktxzIvXFAwRbSd+8mPYIkCauG+zysU8pmCAUoCfYw
+         jDeHlDLiyiFXtxAu+uVvE8DsPpuTNyLP4h2sHFPGdncQigbjg0fItNcdwoO/ndZzOJ
+         dK3yv4Efuf0/QGHE2H+GFAPxt8jmNC1beFj+1igHA/jZ3qesKaYHHrMVgRJiMsUNNI
+         w50CGCZfKcH1Q==
+From:   Mark Brown <broonie@kernel.org>
+To:     Liam Girdwood <lgirdwood@gmail.com>, steve@sk2.org
+Cc:     patches@opensource.cirrus.com, wsa@kernel.org,
+        linux-kernel@vger.kernel.org
+In-Reply-To: <20220325162515.1204107-1-steve@sk2.org>
+References: <20220325162515.1204107-1-steve@sk2.org>
+Subject: Re: [PATCH] ASoC: wm*: use i2c_match_id and simple i2c probe
+Message-Id: <164915107117.276574.5090942457362043907.b4-ty@kernel.org>
+Date:   Tue, 05 Apr 2022 10:31:11 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+On Fri, 25 Mar 2022 17:25:15 +0100, Stephen Kitt wrote:
+> As part of the ongoing i2c transition to the simple probe
+> ("probe_new"), this patch uses i2c_match_id to retrieve the
+> driver_data for the probed device. The id parameter is thus no longer
+> necessary and the simple probe can be used instead.
+> 
+> 
 
-[ Upstream commit e25a89f743b18c029bfbe5e1663ae0c7190912b0 ]
+Applied to
 
-The return value of devm_kzalloc() needs to be checked.
-To avoid use of null pointer in case of thefailure of alloc.
+   https://git.kernel.org/pub/scm/linux/kernel/git/broonie/sound.git for-next
 
-Fixes: 46233e91fa24 ("media: mtk-vcodec: move firmware implementations into their own files")
-Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Reviewed-by: Tzung-Bi Shih <tzungbi@google.com>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/media/platform/mtk-vcodec/mtk_vcodec_fw_vpu.c | 2 ++
- 1 file changed, 2 insertions(+)
+Thanks!
 
-diff --git a/drivers/media/platform/mtk-vcodec/mtk_vcodec_fw_vpu.c b/drivers/media/platform/mtk-vcodec/mtk_vcodec_fw_vpu.c
-index cd27f637dbe7..cfc7ebed8fb7 100644
---- a/drivers/media/platform/mtk-vcodec/mtk_vcodec_fw_vpu.c
-+++ b/drivers/media/platform/mtk-vcodec/mtk_vcodec_fw_vpu.c
-@@ -102,6 +102,8 @@ struct mtk_vcodec_fw *mtk_vcodec_fw_vpu_init(struct mtk_vcodec_dev *dev,
- 	vpu_wdt_reg_handler(fw_pdev, mtk_vcodec_vpu_reset_handler, dev, rst_id);
- 
- 	fw = devm_kzalloc(&dev->plat_dev->dev, sizeof(*fw), GFP_KERNEL);
-+	if (!fw)
-+		return ERR_PTR(-ENOMEM);
- 	fw->type = VPU;
- 	fw->ops = &mtk_vcodec_vpu_msg;
- 	fw->pdev = fw_pdev;
--- 
-2.34.1
+[1/1] ASoC: wm*: use i2c_match_id and simple i2c probe
+      commit: 6d8f318b949aaa43a415947ee834890546e4e81b
 
+All being well this means that it will be integrated into the linux-next
+tree (usually sometime in the next 24 hours) and sent to Linus during
+the next merge window (or sooner if it is a bug fix), however if
+problems are discovered then the patch may be dropped or reverted.
 
+You may get further e-mails resulting from automated or manual testing
+and review of the tree, please engage with people reporting problems and
+send followup patches addressing any issues that are reported if needed.
 
+If any updates are required or you are submitting further changes they
+should be sent as incremental updates against current git, existing
+patches will not be replaced.
+
+Please add any relevant lists and maintainers to the CCs when replying
+to this mail.
+
+Thanks,
+Mark
