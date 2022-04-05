@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D569C43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B974BC4167D
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:39:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385416AbiDEMdA (ORCPT
+        id S1385544AbiDEMd2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 08:33:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36258 "EHLO
+        Tue, 5 Apr 2022 08:33:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52356 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234876AbiDEJA4 (ORCPT
+        with ESMTP id S235459AbiDEJCF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:00:56 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8844227B2E;
-        Tue,  5 Apr 2022 01:53:41 -0700 (PDT)
+        Tue, 5 Apr 2022 05:02:05 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D38C6E86;
+        Tue,  5 Apr 2022 01:53:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 40982B81A0C;
-        Tue,  5 Apr 2022 08:53:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 83307C385A0;
-        Tue,  5 Apr 2022 08:53:38 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8B0CBB81BD9;
+        Tue,  5 Apr 2022 08:53:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CC802C385A0;
+        Tue,  5 Apr 2022 08:53:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649148818;
-        bh=JaKivd1E8T/qQbTOsMZOvw28xfh/ei1qq7W2qiEEdDc=;
+        s=korg; t=1649148835;
+        bh=EIQ75Iss0C+N32dhwHmXt/LiiU6YMzb9YdD0k8MwtBA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=A1ur3vvaHksw6/NP02t9ZqxrU/9fZOi42M8P9DPnkLuEuCPCwPNHgvl6CSj3+EosX
-         P4LTGtWP50+kZpriTvjHDeg+b+yiOKOGivua4opfzgG2X/QZZs011qq9XpXBMUVe0J
-         35DDWSQO/tV5Re62b1Bpct1a93hAnC9apmMFJ9jc=
+        b=iVaD0yx+N9EKK1+VRVwSFU1S7FkcnbdcQtFWO2FrjEtG1+IWjvr4DiVwNIuR/vDkR
+         ggF/Ekssg9DBYNaTo7sSza6HtTsGHfPJzXcuC5BQcqb6IBpvZuDxcaSwrEoTC1T2OZ
+         b7P71VRpF6ZMM3IbK/2T378pirLwoJP7LEX5PhII=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Andrii Nakryiko <andrii@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0492/1017] libbpf: Fix compilation warning due to mismatched printf format
-Date:   Tue,  5 Apr 2022 09:23:25 +0200
-Message-Id: <20220405070408.903681151@linuxfoundation.org>
+        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
+        Nikita Yushchenko <nikita.yoush@cogentembedded.com>,
+        Joerg Roedel <jroedel@suse.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 0497/1017] iommu/ipmmu-vmsa: Check for error num after setting mask
+Date:   Tue,  5 Apr 2022 09:23:30 +0200
+Message-Id: <20220405070409.052420079@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -50,36 +50,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Andrii Nakryiko <andrii@kernel.org>
+From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
 
-[ Upstream commit dc37dc617fabfb1c3a16d49f5d8cc20e9e3608ca ]
+[ Upstream commit 1fdbbfd5099f797a4dac05e7ef0192ba4a9c39b4 ]
 
-On ppc64le architecture __s64 is long int and requires %ld. Cast to
-ssize_t and use %zd to avoid architecture-specific specifiers.
+Because of the possible failure of the dma_supported(), the
+dma_set_mask_and_coherent() may return error num.
+Therefore, it should be better to check it and return the error if
+fails.
 
-Fixes: 4172843ed4a3 ("libbpf: Fix signedness bug in btf_dump_array_data()")
-Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
-Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
-Link: https://lore.kernel.org/bpf/20220209063909.1268319-1-andrii@kernel.org
+Fixes: 1c894225bf5b ("iommu/ipmmu-vmsa: IPMMU device is 40-bit bus master")
+Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Reviewed-by: Nikita Yushchenko <nikita.yoush@cogentembedded.com>
+Link: https://lore.kernel.org/r/20220106024302.2574180-1-jiasheng@iscas.ac.cn
+Signed-off-by: Joerg Roedel <jroedel@suse.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/lib/bpf/btf_dump.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/iommu/ipmmu-vmsa.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/tools/lib/bpf/btf_dump.c b/tools/lib/bpf/btf_dump.c
-index 700dfd362c4a..f2ab392a0e34 100644
---- a/tools/lib/bpf/btf_dump.c
-+++ b/tools/lib/bpf/btf_dump.c
-@@ -1847,7 +1847,8 @@ static int btf_dump_array_data(struct btf_dump *d,
- 	elem_type = skip_mods_and_typedefs(d->btf, elem_type_id, NULL);
- 	elem_size = btf__resolve_size(d->btf, elem_type_id);
- 	if (elem_size <= 0) {
--		pr_warn("unexpected elem size %lld for array type [%u]\n", elem_size, id);
-+		pr_warn("unexpected elem size %zd for array type [%u]\n",
-+			(ssize_t)elem_size, id);
- 		return -EINVAL;
- 	}
+diff --git a/drivers/iommu/ipmmu-vmsa.c b/drivers/iommu/ipmmu-vmsa.c
+index ca752bdc710f..61bd9a3004ed 100644
+--- a/drivers/iommu/ipmmu-vmsa.c
++++ b/drivers/iommu/ipmmu-vmsa.c
+@@ -1006,7 +1006,9 @@ static int ipmmu_probe(struct platform_device *pdev)
+ 	bitmap_zero(mmu->ctx, IPMMU_CTX_MAX);
+ 	mmu->features = of_device_get_match_data(&pdev->dev);
+ 	memset(mmu->utlb_ctx, IPMMU_CTX_INVALID, mmu->features->num_utlbs);
+-	dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(40));
++	ret = dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(40));
++	if (ret)
++		return ret;
  
+ 	/* Map I/O memory and request IRQ. */
+ 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
 -- 
 2.34.1
 
