@@ -2,97 +2,350 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2204DC4167E
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 03:31:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D6B26C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 03:31:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2360434AbiDFDbb (ORCPT
+        id S2360349AbiDFD3k (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 23:31:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51964 "EHLO
+        Tue, 5 Apr 2022 23:29:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47722 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1850366AbiDFCwO (ORCPT
+        with ESMTP id S1850045AbiDFCrJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 22:52:14 -0400
-Received: from mail-wm1-x361.google.com (mail-wm1-x361.google.com [IPv6:2a00:1450:4864:20::361])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13278179B24
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 16:52:09 -0700 (PDT)
-Received: by mail-wm1-x361.google.com with SMTP id q20so429212wmq.1
-        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 16:52:09 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:dkim-signature:from:to:cc:subject:date
-         :message-id:content-transfer-encoding;
-        bh=tjab0l+xfYR0aZEj5soCABbrSjfcWfiSiNw5bb6ADcc=;
-        b=oHMkoc/XeuTktLvmTb8IuaP6YjKaiKEx6dD9wStDjI4atEzVVbGRAYxO+uYtD1HSib
-         AHymz9LhwnZ46BwvGB1BwmvBCRAiZ+FU9oZ0sdQ7YVSIfDiGlJfB4BpJ4/jsOPParAVt
-         tpiNSJi2ctk6Kyjb+JidG5nDrZZSIzOAJ3nvYUmBWhhecH67i9Cb/X3HEp0esE/Q3bOO
-         1jfrYr4le19YCrHgEz4ihfbrGOfahUzzPUSOWVKrQ1RpmbWXV3IubBpa4yENxymVFiHo
-         Lx1cMgC0ivWsy6rE2hmrTDuuX7K3X+HKHici3xzEXVtTMwnqZY5ATFVfunZYbFK6G0JV
-         7w1w==
-X-Gm-Message-State: AOAM531Z0tq4loOzvoS8P8gPRbsN1I2a1uiYsQaXpmT/2PF5U/SJMiGy
-        iBk0Qxysht4EeXzKjrtK8mwnNOfu+7GspL5yHDUkG/X8NSNz
-X-Google-Smtp-Source: ABdhPJzjXl9lYXef6+e9Ggc2Y85pcIUJDGm5uhvKfava0TB3KoHRk4M3HKy4QO+yz963G18cVxs/3dEmP3Ap
-X-Received: by 2002:a7b:c381:0:b0:37b:e01f:c1c0 with SMTP id s1-20020a7bc381000000b0037be01fc1c0mr5174267wmj.98.1649202721448;
-        Tue, 05 Apr 2022 16:52:01 -0700 (PDT)
-Received: from smtp.aristanetworks.com (smtp.aristanetworks.com. [52.0.43.43])
-        by smtp-relay.gmail.com with ESMTPS id f13-20020a05600c4e8d00b0038c994092fbsm439961wmq.0.2022.04.05.16.52.01
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 05 Apr 2022 16:52:01 -0700 (PDT)
-X-Relaying-Domain: arista.com
-Received: from chmeee (unknown [10.95.70.41])
-        by smtp.aristanetworks.com (Postfix) with ESMTPS id 28C603002D04;
-        Tue,  5 Apr 2022 16:52:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=arista.com;
-        s=Arista-A; t=1649202720;
-        bh=tjab0l+xfYR0aZEj5soCABbrSjfcWfiSiNw5bb6ADcc=;
-        h=From:To:Cc:Subject:Date:From;
-        b=woP9fF3qZzunKXrRcPgDSyac21eIvuWWbeTXc12/yEUdySijANk8sRKdptJl6l5cV
-         iLcWQenoSPX2Ua0bGFCFKIClIsbbT65yMydGSEo0ET6l5uKpuHqFK61RohyHNSI0Kq
-         N+MjUi8fnrUaLZTjxB92POD5qaaEiDgFmSq4TIzgFSShKcjV2p+U/2HajpkGw7oVwX
-         Xbnd+gf0pkHohKyV6TZIsm4APNq+F+u8GWZm4iBIUbO2G1UxNT0QdN6rOWgHAL3CD+
-         qbi6ht0AIfArtaytZm0+cEir6F5+2bHfzNrmyt+2AcBxSrm/nEmbNJqmeleAy7LBGo
-         xAWf0YU6uw5RQ==
-Received: from kevmitch by chmeee with local (Exim 4.95)
-        (envelope-from <kevmitch@chmeee>)
-        id 1nbsxp-00188V-Sp;
-        Tue, 05 Apr 2022 16:51:57 -0700
-From:   Kevin Mitchell <kevmitch@arista.com>
-Cc:     kevmitch@arista.com, gal@nvidia.com,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Jozsef Kadlecsik <kadlec@netfilter.org>,
-        Florian Westphal <fw@strlen.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <nikolay@nvidia.com>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        bridge@lists.linux-foundation.org
-Subject: [PATCH v2 0/1] UDP traceroute packets with no checksum
-Date:   Tue,  5 Apr 2022 16:51:15 -0700
-Message-Id: <20220405235117.269511-1-kevmitch@arista.com>
+        Tue, 5 Apr 2022 22:47:09 -0400
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64D50294A33;
+        Tue,  5 Apr 2022 16:48:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649202521; x=1680738521;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=bHjOpRF0FH9a4fKmacsGbqTcyKL/garGb9vIFX8+JmU=;
+  b=d2xudDnw/rXJ16zDW0kypN9CMrA754m4j6/tOfQCQhtBDx+ExaF7Y9gM
+   jned6Y5a6Ksz2EUEdFoBdN3G35SjMhhhxUT4K0xFoOwmnzmc9B+sOVfz2
+   5TC6T0u2rVE2my18epAkxVKqVLiUc4V36WnWVdPE03PF0pOAPPz1XAwsO
+   mth46lQIxPKDm9OTvY3vWsHoZfhwKPZlyRpmS2ei1qHw3ACYk8Lp5dkmk
+   1//wGmIEU5PhHxOK0SqobObFBopSWtp9hzhklLMkSkGz5mXbp31ww3vcx
+   ZxYaXlt+BoIo7YeeudVT6PyUWlc4qoBow1B9z8uBVyR+Ktmm4+H89hdFZ
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10308"; a="258479964"
+X-IronPort-AV: E=Sophos;i="5.90,238,1643702400"; 
+   d="scan'208";a="258479964"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2022 16:48:41 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,238,1643702400"; 
+   d="scan'208";a="556723611"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by fmsmga007.fm.intel.com with ESMTP; 05 Apr 2022 16:48:34 -0700
+Received: by black.fi.intel.com (Postfix, from userid 1000)
+        id 838195C; Wed,  6 Apr 2022 02:43:47 +0300 (EEST)
+From:   "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
+To:     Borislav Petkov <bp@alien8.de>, Andy Lutomirski <luto@kernel.org>,
+        Sean Christopherson <seanjc@google.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Joerg Roedel <jroedel@suse.de>,
+        Ard Biesheuvel <ardb@kernel.org>
+Cc:     Andi Kleen <ak@linux.intel.com>,
+        Kuppuswamy Sathyanarayanan 
+        <sathyanarayanan.kuppuswamy@linux.intel.com>,
+        David Rientjes <rientjes@google.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Tom Lendacky <thomas.lendacky@amd.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Ingo Molnar <mingo@redhat.com>,
+        Varad Gautam <varad.gautam@suse.com>,
+        Dario Faggioli <dfaggioli@suse.com>,
+        Dave Hansen <dave.hansen@intel.com>,
+        Brijesh Singh <brijesh.singh@amd.com>,
+        Mike Rapoport <rppt@kernel.org>,
+        David Hildenbrand <david@redhat.com>, x86@kernel.org,
+        linux-mm@kvack.org, linux-coco@lists.linux.dev,
+        linux-efi@vger.kernel.org, linux-kernel@vger.kernel.org,
+        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
+        Mike Rapoport <rppt@linux.ibm.com>
+Subject: [PATCHv4 1/8] mm: Add support for unaccepted memory
+Date:   Wed,  6 Apr 2022 02:43:36 +0300
+Message-Id: <20220405234343.74045-2-kirill.shutemov@linux.intel.com>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405234343.74045-1-kirill.shutemov@linux.intel.com>
+References: <20220405234343.74045-1-kirill.shutemov@linux.intel.com>
+MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This is v2 of https://lkml.org/lkml/2022/1/14/1060
+UEFI Specification version 2.9 introduces the concept of memory
+acceptance. Some Virtual Machine platforms, such as Intel TDX or AMD
+SEV-SNP, requiring memory to be accepted before it can be used by the
+guest. Accepting happens via a protocol specific for the Virtual Machine
+platform.
 
-That patch was discovered to cause problems with UDP tunnels as
-described here:
+Accepting memory is costly and it makes VMM allocate memory for the
+accepted guest physical address range. It's better to postpone memory
+acceptance until memory is needed. It lowers boot time and reduces
+memory overhead.
 
-https://lore.kernel.org/netdev/7eed8111-42d7-63e1-d289-346a596fc933@nvidia.com/
+Support of such memory requires a few changes in core-mm code:
 
-This version addresses the issue by instead explicitly handling zero UDP
-checksum in the nf_reject_verify_csum() helper function.
+  - memblock has to accept memory on allocation;
 
-Unlike the previous patch, this one only allows zero UDP checksum in
-IPv4. I discovered that the non-netfilter IPv6 path would indeed drop
-zero UDP checksum packets, so it's probably best to remain consistent.
+  - page allocator has to accept memory on the first allocation of the
+    page;
 
+Memblock change is trivial.
+
+The page allocator is modified to accept pages on the first allocation.
+PageUnaccepted() is used to indicate that the page requires acceptance.
+
+Kernel only needs to accept memory once after boot, so during the boot
+and warm up phase there will be a lot of memory acceptance. After things
+are settled down the only price of the feature if couple of checks for
+PageUnaccepted() in allocate and free paths. The check refers a hot
+variable (that also encodes PageBuddy()), so it is cheap and not visible
+on profiles.
+
+Architecture has to provide two helpers if it wants to support
+unaccepted memory:
+
+ - accept_memory() makes a range of physical addresses accepted.
+
+ - memory_is_unaccepted() checks anything within the range of physical
+   addresses requires acceptance.
+
+Signed-off-by: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
+Acked-by: Mike Rapoport <rppt@linux.ibm.com>	# memblock
+---
+ include/linux/page-flags.h | 24 ++++++++++++++++
+ mm/internal.h              | 11 ++++++++
+ mm/memblock.c              |  9 ++++++
+ mm/page_alloc.c            | 57 ++++++++++++++++++++++++++++++++++++--
+ 4 files changed, 99 insertions(+), 2 deletions(-)
+
+diff --git a/include/linux/page-flags.h b/include/linux/page-flags.h
+index 9d8eeaa67d05..aaaedc111092 100644
+--- a/include/linux/page-flags.h
++++ b/include/linux/page-flags.h
+@@ -928,6 +928,7 @@ static inline bool is_page_hwpoison(struct page *page)
+ #define PG_offline	0x00000100
+ #define PG_table	0x00000200
+ #define PG_guard	0x00000400
++#define PG_unaccepted	0x00000800
+ 
+ #define PageType(page, flag)						\
+ 	((page->page_type & (PAGE_TYPE_BASE | flag)) == PAGE_TYPE_BASE)
+@@ -953,6 +954,18 @@ static __always_inline void __ClearPage##uname(struct page *page)	\
+ 	page->page_type |= PG_##lname;					\
+ }
+ 
++#define PAGE_TYPE_OPS_FALSE(uname)					\
++static __always_inline int Page##uname(struct page *page)		\
++{									\
++	return false;							\
++}									\
++static __always_inline void __SetPage##uname(struct page *page)		\
++{									\
++}									\
++static __always_inline void __ClearPage##uname(struct page *page)	\
++{									\
++}
++
+ /*
+  * PageBuddy() indicates that the page is free and in the buddy system
+  * (see mm/page_alloc.c).
+@@ -983,6 +996,17 @@ PAGE_TYPE_OPS(Buddy, buddy)
+  */
+ PAGE_TYPE_OPS(Offline, offline)
+ 
++ /*
++  * PageUnaccepted() indicates that the page has to be "accepted" before it can
++  * be used. Page allocator has to call accept_page() before returning the page
++  * to the caller.
++  */
++#ifdef CONFIG_UNACCEPTED_MEMORY
++PAGE_TYPE_OPS(Unaccepted, unaccepted)
++#else
++PAGE_TYPE_OPS_FALSE(Unaccepted)
++#endif
++
+ extern void page_offline_freeze(void);
+ extern void page_offline_thaw(void);
+ extern void page_offline_begin(void);
+diff --git a/mm/internal.h b/mm/internal.h
+index cf16280ce132..10302fe857c4 100644
+--- a/mm/internal.h
++++ b/mm/internal.h
+@@ -758,4 +758,15 @@ struct folio *try_grab_folio(struct page *page, int refs, unsigned int flags);
+ 
+ DECLARE_PER_CPU(struct per_cpu_nodestat, boot_nodestats);
+ 
++#ifndef CONFIG_UNACCEPTED_MEMORY
++static inline bool memory_is_unaccepted(phys_addr_t start, phys_addr_t end)
++{
++	return false;
++}
++
++static inline void accept_memory(phys_addr_t start, phys_addr_t end)
++{
++}
++#endif
++
+ #endif	/* __MM_INTERNAL_H */
+diff --git a/mm/memblock.c b/mm/memblock.c
+index e4f03a6e8e56..a1f7f8b304d5 100644
+--- a/mm/memblock.c
++++ b/mm/memblock.c
+@@ -1405,6 +1405,15 @@ phys_addr_t __init memblock_alloc_range_nid(phys_addr_t size,
+ 		 */
+ 		kmemleak_alloc_phys(found, size, 0, 0);
+ 
++	/*
++	 * Some Virtual Machine platforms, such as Intel TDX or AMD SEV-SNP,
++	 * require memory to be accepted before it can be used by the
++	 * guest.
++	 *
++	 * Accept the memory of the allocated buffer.
++	 */
++	accept_memory(found, found + size);
++
+ 	return found;
+ }
+ 
+diff --git a/mm/page_alloc.c b/mm/page_alloc.c
+index 2db95780e003..53f4aa1c92a7 100644
+--- a/mm/page_alloc.c
++++ b/mm/page_alloc.c
+@@ -121,6 +121,12 @@ typedef int __bitwise fpi_t;
+  */
+ #define FPI_SKIP_KASAN_POISON	((__force fpi_t)BIT(2))
+ 
++/*
++ * Check if the page needs to be marked as PageUnaccepted().
++ * Used for the new pages added to the buddy allocator for the first time.
++ */
++#define FPI_UNACCEPTED		((__force fpi_t)BIT(3))
++
+ /* prevent >1 _updater_ of zone percpu pageset ->high and ->batch fields */
+ static DEFINE_MUTEX(pcp_batch_high_lock);
+ #define MIN_PERCPU_PAGELIST_HIGH_FRACTION (8)
+@@ -1023,6 +1029,26 @@ buddy_merge_likely(unsigned long pfn, unsigned long buddy_pfn,
+ 	return page_is_buddy(higher_page, higher_buddy, order + 1);
+ }
+ 
++static void accept_page(struct page *page, unsigned int order)
++{
++	phys_addr_t start = page_to_phys(page);
++	int i;
++
++	accept_memory(start, start + (PAGE_SIZE << order));
++
++	for (i = 0; i < (1 << order); i++) {
++		if (PageUnaccepted(page + i))
++			__ClearPageUnaccepted(page + i);
++	}
++}
++
++static bool page_is_unaccepted(struct page *page, unsigned int order)
++{
++	phys_addr_t start = page_to_phys(page);
++
++	return memory_is_unaccepted(start, start + (PAGE_SIZE << order));
++}
++
+ /*
+  * Freeing function for a buddy system allocator.
+  *
+@@ -1058,6 +1084,7 @@ static inline void __free_one_page(struct page *page,
+ 	unsigned long combined_pfn;
+ 	struct page *buddy;
+ 	bool to_tail;
++	bool unaccepted = PageUnaccepted(page);
+ 
+ 	VM_BUG_ON(!zone_is_initialized(zone));
+ 	VM_BUG_ON_PAGE(page->flags & PAGE_FLAGS_CHECK_AT_PREP, page);
+@@ -1089,6 +1116,11 @@ static inline void __free_one_page(struct page *page,
+ 			clear_page_guard(zone, buddy, order, migratetype);
+ 		else
+ 			del_page_from_free_list(buddy, zone, order);
++
++		/* Mark page unaccepted if any of merged pages were unaccepted */
++		if (PageUnaccepted(buddy))
++			unaccepted = true;
++
+ 		combined_pfn = buddy_pfn & pfn;
+ 		page = page + (combined_pfn - pfn);
+ 		pfn = combined_pfn;
+@@ -1124,6 +1156,17 @@ static inline void __free_one_page(struct page *page,
+ done_merging:
+ 	set_buddy_order(page, order);
+ 
++	/*
++	 * Check if the page needs to be marked as PageUnaccepted().
++	 * Used for the new pages added to the buddy allocator for the first
++	 * time.
++	 */
++	if (!unaccepted && (fpi_flags & FPI_UNACCEPTED))
++		unaccepted = page_is_unaccepted(page, order);
++
++	if (unaccepted)
++		__SetPageUnaccepted(page);
++
+ 	if (fpi_flags & FPI_TO_TAIL)
+ 		to_tail = true;
+ 	else if (is_shuffle_order(order))
+@@ -1149,7 +1192,8 @@ static inline void __free_one_page(struct page *page,
+ static inline bool page_expected_state(struct page *page,
+ 					unsigned long check_flags)
+ {
+-	if (unlikely(atomic_read(&page->_mapcount) != -1))
++	if (unlikely(atomic_read(&page->_mapcount) != -1) &&
++	    !PageUnaccepted(page))
+ 		return false;
+ 
+ 	if (unlikely((unsigned long)page->mapping |
+@@ -1654,7 +1698,8 @@ void __free_pages_core(struct page *page, unsigned int order)
+ 	 * Bypass PCP and place fresh pages right to the tail, primarily
+ 	 * relevant for memory onlining.
+ 	 */
+-	__free_pages_ok(page, order, FPI_TO_TAIL | FPI_SKIP_KASAN_POISON);
++	__free_pages_ok(page, order,
++			FPI_TO_TAIL | FPI_SKIP_KASAN_POISON | FPI_UNACCEPTED);
+ }
+ 
+ #ifdef CONFIG_NUMA
+@@ -1807,6 +1852,7 @@ static void __init deferred_free_range(unsigned long pfn,
+ 		return;
+ 	}
+ 
++	accept_memory(pfn << PAGE_SHIFT, (pfn + nr_pages) << PAGE_SHIFT);
+ 	for (i = 0; i < nr_pages; i++, page++, pfn++) {
+ 		if ((pfn & (pageblock_nr_pages - 1)) == 0)
+ 			set_pageblock_migratetype(page, MIGRATE_MOVABLE);
+@@ -2266,6 +2312,10 @@ static inline void expand(struct zone *zone, struct page *page,
+ 		if (set_page_guard(zone, &page[size], high, migratetype))
+ 			continue;
+ 
++		/* Transfer PageUnaccepted() to the newly split pages */
++		if (PageUnaccepted(page))
++			__SetPageUnaccepted(&page[size]);
++
+ 		add_to_free_list(&page[size], zone, high, migratetype);
+ 		set_buddy_order(&page[size], high);
+ 	}
+@@ -2396,6 +2446,9 @@ inline void post_alloc_hook(struct page *page, unsigned int order,
+ 	 */
+ 	kernel_unpoison_pages(page, 1 << order);
+ 
++	if (PageUnaccepted(page))
++		accept_page(page, order);
++
+ 	/*
+ 	 * As memory initialization might be integrated into KASAN,
+ 	 * KASAN unpoisoning and memory initializion code must be
 -- 
 2.35.1
 
