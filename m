@@ -2,45 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CC608C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E0EE0C433FE
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 14:31:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1387436AbiDEOcL (ORCPT
+        id S1387459AbiDEOcN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 10:32:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39964 "EHLO
+        Tue, 5 Apr 2022 10:32:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39134 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240484AbiDEJe1 (ORCPT
+        with ESMTP id S240394AbiDEJeU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:34:27 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBFF48595F;
-        Tue,  5 Apr 2022 02:24:02 -0700 (PDT)
+        Tue, 5 Apr 2022 05:34:20 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A2118301C;
+        Tue,  5 Apr 2022 02:23:50 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9CC42B81C9A;
-        Tue,  5 Apr 2022 09:24:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DE26AC385A2;
-        Tue,  5 Apr 2022 09:23:59 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DAD0A61659;
+        Tue,  5 Apr 2022 09:23:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E5999C385A4;
+        Tue,  5 Apr 2022 09:23:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649150640;
-        bh=upjup/PH9p+NOiB48oXfZdK7fKPqGxjGolVx04MBn/8=;
+        s=korg; t=1649150629;
+        bh=1DgkdNFO6r6H+hSygsx8JZmtOvDEknQ6vZRdHvFtBQA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0twTTazuZcd/h3Kxb+95JP6UYCGgM5hbMpHGqEqQgEvLobsoL0azjCyn/XZHinnES
-         28rTp55D72EU5DQVZwyezWbbmc5QQJtbPfYr/Nay+XYP/AINv+7lggVBBXOi77rgvI
-         V4SGVMUii1+89EC2tOEeHWAUEBRbAxU4k86xUCpk=
+        b=EMvHHRE7cxFpc5KPlJGV2jewguDgDAthR0fM13EsZkQ7C873TmMO1Xm3dGdcQuVFg
+         ckH0jeBFNe5Q+24jfl2808RdiVr3lkp1RD5Zx1l0Z7/FzfrqeAqMmzKOd1FppPF7sI
+         1RKu8dlouGmD83/M0DmV3MPwNaN614e1KhYDqh50=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Shyam Sundar <ssundar@marvell.com>,
-        Nilesh Javali <njavali@marvell.com>,
-        Himanshu Madhani <himanshu.madhani@oracle.com>,
-        James Smart <jsmart2021@gmail.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>
-Subject: [PATCH 5.15 089/913] scsi: scsi_transport_fc: Fix FPIN Link Integrity statistics counters
-Date:   Tue,  5 Apr 2022 09:19:11 +0200
-Message-Id: <20220405070342.490913973@linuxfoundation.org>
+        stable@vger.kernel.org, Hugh Dickins <hughd@google.com>,
+        Oleg Nesterov <oleg@redhat.com>,
+        "Liam R. Howlett" <Liam.Howlett@oracle.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Subject: [PATCH 5.15 086/913] mempolicy: mbind_range() set_policy() after vma_merge()
+Date:   Tue,  5 Apr 2022 09:19:08 +0200
+Message-Id: <20220405070342.400563491@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
 References: <20220405070339.801210740@linuxfoundation.org>
@@ -52,128 +53,79 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: James Smart <jsmart2021@gmail.com>
+From: Hugh Dickins <hughd@google.com>
 
-commit 07e0984b96ec1ba8c6de1c092b986b00ea0c114c upstream.
+commit 4e0906008cdb56381638aa17d9c32734eae6d37a upstream.
 
-In the original FPIN commit, stats were incremented by the event_count.
-Event_count is the minimum # of events that must occur before an FPIN is
-sent. Thus, its not the actual number of events, and could be significantly
-off (too low) as it doesn't reflect anything not reported.  Rather than
-attempt to count events, have the statistic count how many FPINS cross the
-threshold and were reported.
+v2.6.34 commit 9d8cebd4bcd7 ("mm: fix mbind vma merge problem") introduced
+vma_merge() to mbind_range(); but unlike madvise, mlock and mprotect, it
+put a "continue" to next vma where its precedents go to update flags on
+current vma before advancing: that left vma with the wrong setting in the
+infamous vma_merge() case 8.
 
-Link: https://lore.kernel.org/r/20220301175536.60250-1-jsmart2021@gmail.com
-Fixes: 3dcfe0de5a97 ("scsi: fc: Parse FPIN packets and update statistics")
-Cc: <stable@vger.kernel.org> # v5.11+
-Cc: Shyam Sundar <ssundar@marvell.com>
-Cc: Nilesh Javali <njavali@marvell.com>
-Reviewed-by: Himanshu Madhani <himanshu.madhani@oracle.com>
-Signed-off-by: James Smart <jsmart2021@gmail.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+v3.10 commit 1444f92c8498 ("mm: merging memory blocks resets mempolicy")
+tried to fix that in vma_adjust(), without fully understanding the issue.
+
+v3.11 commit 3964acd0dbec ("mm: mempolicy: fix mbind_range() &&
+vma_adjust() interaction") reverted that, and went about the fix in the
+right way, but chose to optimize out an unnecessary mpol_dup() with a
+prior mpol_equal() test.  But on tmpfs, that also pessimized out the vital
+call to its ->set_policy(), leaving the new mbind unenforced.
+
+The user visible effect was that the pages got allocated on the local
+node (happened to be 0), after the mbind() caller had specifically
+asked for them to be allocated on node 1.  There was not any page
+migration involved in the case reported: the pages simply got allocated
+on the wrong node.
+
+Just delete that optimization now (though it could be made conditional on
+vma not having a set_policy).  Also remove the "next" variable: it turned
+out to be blameless, but also pointless.
+
+Link: https://lkml.kernel.org/r/319e4db9-64ae-4bca-92f0-ade85d342ff@google.com
+Fixes: 3964acd0dbec ("mm: mempolicy: fix mbind_range() && vma_adjust() interaction")
+Signed-off-by: Hugh Dickins <hughd@google.com>
+Acked-by: Oleg Nesterov <oleg@redhat.com>
+Reviewed-by: Liam R. Howlett <Liam.Howlett@oracle.com>
+Cc: Vlastimil Babka <vbabka@suse.cz>
+Cc: <stable@vger.kernel.org>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/scsi/scsi_transport_fc.c |   39 ++++++++++++++++-----------------------
- 1 file changed, 16 insertions(+), 23 deletions(-)
+ mm/mempolicy.c |    8 +-------
+ 1 file changed, 1 insertion(+), 7 deletions(-)
 
---- a/drivers/scsi/scsi_transport_fc.c
-+++ b/drivers/scsi/scsi_transport_fc.c
-@@ -34,7 +34,7 @@ static int fc_bsg_hostadd(struct Scsi_Ho
- static int fc_bsg_rportadd(struct Scsi_Host *, struct fc_rport *);
- static void fc_bsg_remove(struct request_queue *);
- static void fc_bsg_goose_queue(struct fc_rport *);
--static void fc_li_stats_update(struct fc_fn_li_desc *li_desc,
-+static void fc_li_stats_update(u16 event_type,
- 			       struct fc_fpin_stats *stats);
- static void fc_delivery_stats_update(u32 reason_code,
- 				     struct fc_fpin_stats *stats);
-@@ -670,42 +670,34 @@ fc_find_rport_by_wwpn(struct Scsi_Host *
- EXPORT_SYMBOL(fc_find_rport_by_wwpn);
- 
- static void
--fc_li_stats_update(struct fc_fn_li_desc *li_desc,
-+fc_li_stats_update(u16 event_type,
- 		   struct fc_fpin_stats *stats)
+--- a/mm/mempolicy.c
++++ b/mm/mempolicy.c
+@@ -783,7 +783,6 @@ static int vma_replace_policy(struct vm_
+ static int mbind_range(struct mm_struct *mm, unsigned long start,
+ 		       unsigned long end, struct mempolicy *new_pol)
  {
--	stats->li += be32_to_cpu(li_desc->event_count);
--	switch (be16_to_cpu(li_desc->event_type)) {
-+	stats->li++;
-+	switch (event_type) {
- 	case FPIN_LI_UNKNOWN:
--		stats->li_failure_unknown +=
--		    be32_to_cpu(li_desc->event_count);
-+		stats->li_failure_unknown++;
- 		break;
- 	case FPIN_LI_LINK_FAILURE:
--		stats->li_link_failure_count +=
--		    be32_to_cpu(li_desc->event_count);
-+		stats->li_link_failure_count++;
- 		break;
- 	case FPIN_LI_LOSS_OF_SYNC:
--		stats->li_loss_of_sync_count +=
--		    be32_to_cpu(li_desc->event_count);
-+		stats->li_loss_of_sync_count++;
- 		break;
- 	case FPIN_LI_LOSS_OF_SIG:
--		stats->li_loss_of_signals_count +=
--		    be32_to_cpu(li_desc->event_count);
-+		stats->li_loss_of_signals_count++;
- 		break;
- 	case FPIN_LI_PRIM_SEQ_ERR:
--		stats->li_prim_seq_err_count +=
--		    be32_to_cpu(li_desc->event_count);
-+		stats->li_prim_seq_err_count++;
- 		break;
- 	case FPIN_LI_INVALID_TX_WD:
--		stats->li_invalid_tx_word_count +=
--		    be32_to_cpu(li_desc->event_count);
-+		stats->li_invalid_tx_word_count++;
- 		break;
- 	case FPIN_LI_INVALID_CRC:
--		stats->li_invalid_crc_count +=
--		    be32_to_cpu(li_desc->event_count);
-+		stats->li_invalid_crc_count++;
- 		break;
- 	case FPIN_LI_DEVICE_SPEC:
--		stats->li_device_specific +=
--		    be32_to_cpu(li_desc->event_count);
-+		stats->li_device_specific++;
- 		break;
- 	}
- }
-@@ -767,6 +759,7 @@ fc_fpin_li_stats_update(struct Scsi_Host
- 	struct fc_rport *attach_rport = NULL;
- 	struct fc_host_attrs *fc_host = shost_to_fc_host(shost);
- 	struct fc_fn_li_desc *li_desc = (struct fc_fn_li_desc *)tlv;
-+	u16 event_type = be16_to_cpu(li_desc->event_type);
- 	u64 wwpn;
+-	struct vm_area_struct *next;
+ 	struct vm_area_struct *prev;
+ 	struct vm_area_struct *vma;
+ 	int err = 0;
+@@ -798,8 +797,7 @@ static int mbind_range(struct mm_struct
+ 	if (start > vma->vm_start)
+ 		prev = vma;
  
- 	rport = fc_find_rport_by_wwpn(shost,
-@@ -775,7 +768,7 @@ fc_fpin_li_stats_update(struct Scsi_Host
- 	    (rport->roles & FC_PORT_ROLE_FCP_TARGET ||
- 	     rport->roles & FC_PORT_ROLE_NVME_TARGET)) {
- 		attach_rport = rport;
--		fc_li_stats_update(li_desc, &attach_rport->fpin_stats);
-+		fc_li_stats_update(event_type, &attach_rport->fpin_stats);
- 	}
+-	for (; vma && vma->vm_start < end; prev = vma, vma = next) {
+-		next = vma->vm_next;
++	for (; vma && vma->vm_start < end; prev = vma, vma = vma->vm_next) {
+ 		vmstart = max(start, vma->vm_start);
+ 		vmend   = min(end, vma->vm_end);
  
- 	if (be32_to_cpu(li_desc->pname_count) > 0) {
-@@ -789,14 +782,14 @@ fc_fpin_li_stats_update(struct Scsi_Host
- 			    rport->roles & FC_PORT_ROLE_NVME_TARGET)) {
- 				if (rport == attach_rport)
- 					continue;
--				fc_li_stats_update(li_desc,
-+				fc_li_stats_update(event_type,
- 						   &rport->fpin_stats);
- 			}
+@@ -813,10 +811,6 @@ static int mbind_range(struct mm_struct
+ 				 new_pol, vma->vm_userfaultfd_ctx);
+ 		if (prev) {
+ 			vma = prev;
+-			next = vma->vm_next;
+-			if (mpol_equal(vma_policy(vma), new_pol))
+-				continue;
+-			/* vma_merge() joined vma && vma->next, case 8 */
+ 			goto replace;
  		}
- 	}
- 
- 	if (fc_host->port_name == be64_to_cpu(li_desc->attached_wwpn))
--		fc_li_stats_update(li_desc, &fc_host->fpin_stats);
-+		fc_li_stats_update(event_type, &fc_host->fpin_stats);
- }
- 
- /*
+ 		if (vma->vm_start != vmstart) {
 
 
