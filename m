@@ -2,46 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B5E6FC433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D6844C433F5
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:35:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1835098AbiDFATU (ORCPT
+        id S1835112AbiDFATX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 20:19:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53668 "EHLO
+        Tue, 5 Apr 2022 20:19:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52352 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357977AbiDEK1h (ORCPT
+        with ESMTP id S1353574AbiDEKIO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:27:37 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33DF5CF4AE;
-        Tue,  5 Apr 2022 03:12:04 -0700 (PDT)
+        Tue, 5 Apr 2022 06:08:14 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD6BEC3343;
+        Tue,  5 Apr 2022 02:55:25 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BC6466179E;
-        Tue,  5 Apr 2022 10:12:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CDE31C385A0;
-        Tue,  5 Apr 2022 10:12:02 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6CF4CB81B93;
+        Tue,  5 Apr 2022 09:55:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B3B92C385A1;
+        Tue,  5 Apr 2022 09:55:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649153523;
-        bh=f0i/LJ/rej/qlGXRfE9/Nw2sVL0swZ4PvX3YV1//QE0=;
+        s=korg; t=1649152523;
+        bh=1UUYMi3bjzdKnIhkTnNEObHL0h8mDv9RYUxrh2kdPcQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KKe7mMPBUZi2Iw0g8ZtsoMMP0HpHmDx5GhsZ8IfBTmg7XiEWM6fLyGSXE28dGxvuy
-         2HmzO3J5h94NhNpHf2PjP4nh7FnDTGU3W1BSpJmELDLrQPS+iilXdEwr1psSxUoqf5
-         phy8vDg4EB/a84SYaGD+zo2qCouUtFaLkLK8DStI=
+        b=kd0SjV2z568E2Q967ecQjJFetzKZGa94E6tslovWmhr5BeodAcGErYQZOmDD8tYzq
+         5lthR83LTRJOXYUE1ujgqr2zWH5Ziig9oXd2yGH/P5MDsxHDzh5gq4jwHFUzP/7pRX
+         2c7RjLNXYCVl3RIg3tRy6vPQ6FkpGu/gleSUn8EQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 253/599] ASoC: msm8916-wcd-digital: Fix missing clk_disable_unprepare() in msm8916_wcd_digital_probe
-Date:   Tue,  5 Apr 2022 09:29:07 +0200
-Message-Id: <20220405070306.368506986@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Himanshu Madhani <himanshu.madhani@oracle.com>,
+        Quinn Tran <qutran@marvell.com>,
+        Nilesh Javali <njavali@marvell.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>
+Subject: [PATCH 5.15 807/913] scsi: qla2xxx: Reduce false trigger to login
+Date:   Tue,  5 Apr 2022 09:31:09 +0200
+Message-Id: <20220405070404.022001020@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,47 +52,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Quinn Tran <qutran@marvell.com>
 
-[ Upstream commit 375a347da4889f64d86e1ab7f4e6702b6e9bf299 ]
+commit d2646eed7b19a206912f49101178cbbaa507256c upstream.
 
-Fix the missing clk_disable_unprepare() before return
-from msm8916_wcd_digital_probe in the error handling case.
+While a session is in the middle of a relogin, a late RSCN can be delivered
+from switch. RSCN trigger fabric scan where the scan logic can trigger
+another session login while a login is in progress.  Reduce the extra
+trigger to prevent multiple logins to the same session.
 
-Fixes: 150db8c5afa1 ("ASoC: codecs: Add msm8916-wcd digital codec")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Link: https://lore.kernel.org/r/20220307084523.28687-1-linmq006@gmail.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Link: https://lore.kernel.org/r/20220310092604.22950-10-njavali@marvell.com
+Fixes: bee8b84686c4 ("scsi: qla2xxx: Reduce redundant ADISC command for RSCNs")
+Cc: stable@vger.kernel.org
+Reviewed-by: Himanshu Madhani <himanshu.madhani@oracle.com>
+Signed-off-by: Quinn Tran <qutran@marvell.com>
+Signed-off-by: Nilesh Javali <njavali@marvell.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/soc/codecs/msm8916-wcd-digital.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ drivers/scsi/qla2xxx/qla_init.c |    5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/sound/soc/codecs/msm8916-wcd-digital.c b/sound/soc/codecs/msm8916-wcd-digital.c
-index fcc10c8bc625..9ad7fc0baf07 100644
---- a/sound/soc/codecs/msm8916-wcd-digital.c
-+++ b/sound/soc/codecs/msm8916-wcd-digital.c
-@@ -1201,7 +1201,7 @@ static int msm8916_wcd_digital_probe(struct platform_device *pdev)
- 	ret = clk_prepare_enable(priv->mclk);
- 	if (ret < 0) {
- 		dev_err(dev, "failed to enable mclk %d\n", ret);
--		return ret;
-+		goto err_clk;
+--- a/drivers/scsi/qla2xxx/qla_init.c
++++ b/drivers/scsi/qla2xxx/qla_init.c
+@@ -1645,7 +1645,8 @@ int qla24xx_fcport_handle_login(struct s
+ 	    fcport->login_gen, fcport->loop_id, fcport->scan_state,
+ 	    fcport->fc4_type);
+ 
+-	if (fcport->scan_state != QLA_FCPORT_FOUND)
++	if (fcport->scan_state != QLA_FCPORT_FOUND ||
++	    fcport->disc_state == DSC_DELETE_PEND)
+ 		return 0;
+ 
+ 	if ((fcport->loop_id != FC_NO_LOOP_ID) &&
+@@ -1666,7 +1667,7 @@ int qla24xx_fcport_handle_login(struct s
+ 	if (vha->host->active_mode == MODE_TARGET && !N2N_TOPO(vha->hw))
+ 		return 0;
+ 
+-	if (fcport->flags & FCF_ASYNC_SENT) {
++	if (fcport->flags & (FCF_ASYNC_SENT | FCF_ASYNC_ACTIVE)) {
+ 		set_bit(RELOGIN_NEEDED, &vha->dpc_flags);
+ 		return 0;
  	}
- 
- 	dev_set_drvdata(dev, priv);
-@@ -1209,6 +1209,9 @@ static int msm8916_wcd_digital_probe(struct platform_device *pdev)
- 	return devm_snd_soc_register_component(dev, &msm8916_wcd_digital,
- 				      msm8916_wcd_digital_dai,
- 				      ARRAY_SIZE(msm8916_wcd_digital_dai));
-+err_clk:
-+	clk_disable_unprepare(priv->ahbclk);
-+	return ret;
- }
- 
- static int msm8916_wcd_digital_remove(struct platform_device *pdev)
--- 
-2.34.1
-
 
 
