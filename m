@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A65DC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 07:47:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F90CC4332F
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 07:47:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232133AbiDEHt0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 03:49:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56890 "EHLO
+        id S230200AbiDEHth (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 03:49:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34204 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232215AbiDEHqY (ORCPT
+        with ESMTP id S232299AbiDEHq3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 03:46:24 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 311E998F4D;
-        Tue,  5 Apr 2022 00:41:48 -0700 (PDT)
+        Tue, 5 Apr 2022 03:46:29 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6E0A99ED0;
+        Tue,  5 Apr 2022 00:42:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B5F8B616C8;
-        Tue,  5 Apr 2022 07:41:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C1222C340EE;
-        Tue,  5 Apr 2022 07:41:46 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7D457B81B75;
+        Tue,  5 Apr 2022 07:41:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E086CC340EE;
+        Tue,  5 Apr 2022 07:41:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649144507;
-        bh=WEe9N+9ZPBN+kqaYXwCV27ckjVn4MxXXv0Z6t5+nE2c=;
+        s=korg; t=1649144518;
+        bh=EuNKLs0j/ektBoCOSqte+2f5ggiogIwjGgtIIGQzbsI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lauEI4ZFuYdFBzZK+N95QfVy6SYS7QljOu0RU9vjy2qa2WiIM9Xlb4j+7HD87N2ki
-         6oIqjO9FIJC2+jUavMo0zMeFvKUQyp2VTmaJOpljahD/o1Bvrz7Jc/DHbdkCTV0I9x
-         kxxmb3/oUw2phIj19XMTXNDfq4UIBPMucLg/h8RQ=
+        b=NMDrjrzNjwgF6kRRs7v24Qh3kBNt/Y4JcHjodASpt9+t2R2rAPuavHY+vMN2WpG2g
+         aEfxGIes3tbb6zC/HZpRhbRNqrPMhiak+v4ZUVjQAVSC61Iekxtm0yH8qn/iqU+tLH
+         e40ulPYVocLbqjeWsvWazccY8s5JZW4ougoGFIdY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sebastian Haas <haas@ems-wuensche.com>,
-        Hangyu Hua <hbh25y@gmail.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>
-Subject: [PATCH 5.17 0070/1126] can: ems_usb: ems_usb_start_xmit(): fix double dev_kfree_skb() in error path
-Date:   Tue,  5 Apr 2022 09:13:37 +0200
-Message-Id: <20220405070409.624648597@linuxfoundation.org>
+        stable@vger.kernel.org, Olga Kornievskaia <kolga@netapp.com>,
+        Trond Myklebust <trond.myklebust@hammerspace.com>
+Subject: [PATCH 5.17 0056/1126] NFS: NFSv2/v3 clients should never be setting NFS_CAP_XATTR
+Date:   Tue,  5 Apr 2022 09:13:23 +0200
+Message-Id: <20220405070409.211585519@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -49,34 +48,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hangyu Hua <hbh25y@gmail.com>
+From: Trond Myklebust <trond.myklebust@hammerspace.com>
 
-commit c70222752228a62135cee3409dccefd494a24646 upstream.
+commit b622ffe1d9ecbac71f0cddb52ff0831efdf8fb83 upstream.
 
-There is no need to call dev_kfree_skb() when usb_submit_urb() fails
-beacause can_put_echo_skb() deletes the original skb and
-can_free_echo_skb() deletes the cloned skb.
+Ensure that we always initialise the 'xattr_support' field in struct
+nfs_fsinfo, so that nfs_server_set_fsinfo() doesn't declare our NFSv2/v3
+client to be capable of supporting the NFSv4.2 xattr protocol by setting
+the NFS_CAP_XATTR capability.
 
-Link: https://lore.kernel.org/all/20220228083639.38183-1-hbh25y@gmail.com
-Fixes: 702171adeed3 ("ems_usb: Added support for EMS CPC-USB/ARM7 CAN/USB interface")
+This configuration can cause nfs_do_access() to set access mode bits
+that are unsupported by the NFSv3 ACCESS call, which may confuse
+spec-compliant servers.
+
+Reported-by: Olga Kornievskaia <kolga@netapp.com>
+Fixes: b78ef845c35d ("NFSv4.2: query the server for extended attribute support")
 Cc: stable@vger.kernel.org
-Cc: Sebastian Haas <haas@ems-wuensche.com>
-Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
-Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
+Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/can/usb/ems_usb.c |    1 -
- 1 file changed, 1 deletion(-)
+ fs/nfs/nfs3xdr.c |    1 +
+ fs/nfs/proc.c    |    1 +
+ 2 files changed, 2 insertions(+)
 
---- a/drivers/net/can/usb/ems_usb.c
-+++ b/drivers/net/can/usb/ems_usb.c
-@@ -819,7 +819,6 @@ static netdev_tx_t ems_usb_start_xmit(st
+--- a/fs/nfs/nfs3xdr.c
++++ b/fs/nfs/nfs3xdr.c
+@@ -2228,6 +2228,7 @@ static int decode_fsinfo3resok(struct xd
+ 	/* ignore properties */
+ 	result->lease_time = 0;
+ 	result->change_attr_type = NFS4_CHANGE_TYPE_IS_UNDEFINED;
++	result->xattr_support = 0;
+ 	return 0;
+ }
  
- 		usb_unanchor_urb(urb);
- 		usb_free_coherent(dev->udev, size, buf, urb->transfer_dma);
--		dev_kfree_skb(skb);
- 
- 		atomic_dec(&dev->active_tx_urbs);
+--- a/fs/nfs/proc.c
++++ b/fs/nfs/proc.c
+@@ -92,6 +92,7 @@ nfs_proc_get_root(struct nfs_server *ser
+ 	info->maxfilesize = 0x7FFFFFFF;
+ 	info->lease_time = 0;
+ 	info->change_attr_type = NFS4_CHANGE_TYPE_IS_UNDEFINED;
++	info->xattr_support = 0;
+ 	return 0;
+ }
  
 
 
