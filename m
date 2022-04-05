@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F094AC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 09:29:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5738FC4167B
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 09:29:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237061AbiDEJ3P (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 05:29:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34816 "EHLO
+        id S235753AbiDEJ3e (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 05:29:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34686 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239539AbiDEIUN (ORCPT
+        with ESMTP id S239542AbiDEIUN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Apr 2022 04:20:13 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23713108D;
-        Tue,  5 Apr 2022 01:15:43 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FB181116;
+        Tue,  5 Apr 2022 01:15:56 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B4F1C609AD;
-        Tue,  5 Apr 2022 08:15:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C11D3C385A0;
-        Tue,  5 Apr 2022 08:15:41 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AD2D3B81BB1;
+        Tue,  5 Apr 2022 08:15:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 08BEFC385A1;
+        Tue,  5 Apr 2022 08:15:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649146542;
-        bh=vW3aZppNUsxHLSbPNy/WFu/pdlhv+bbciT+wAcuOJ0I=;
+        s=korg; t=1649146553;
+        bh=ayq6nEFYeKQ4rTTk03T5HhbNUnV4aFceS1kpgzOf5MU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=iZOVnNI27NEqB0rv+ZgIGje6qhDNm2dGcOxj3M6ABx7cnPA50Ta5DZ/NicoJU3Syn
-         0PN8mFLSD+YPfzuZ8c7gDcNeUQ1CVmeZoQ3CHzj+ajR/f4KL0/Rfg1MDtfrPoJedsd
-         x/vbGVtoQiPB/yYQNMFOdF5g5Hgng5ZF8bEn1ndE=
+        b=jVDUPjQ01aOLwkV6CQ0BcwpakTceFgujWnZpzbmCUpASM24nmgSM2kw1qkPuhb3yD
+         GPryyptkmLGYwzCX5wIZcTJwnQqO7ZRLlBQwjuR9ZjyEMj/BxGWuN86AEmN+PAQAQD
+         kx9QfEamTW5/wO2bnZ2UOeZw7CYzWMrDDVRyKrmA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        stable@vger.kernel.org, Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0753/1126] remoteproc: qcom_q6v5_mss: Fix some leaks in q6v5_alloc_memory_region
-Date:   Tue,  5 Apr 2022 09:25:00 +0200
-Message-Id: <20220405070429.687880174@linuxfoundation.org>
+Subject: [PATCH 5.17 0806/1126] net: enetc: report software timestamping via SO_TIMESTAMPING
+Date:   Tue,  5 Apr 2022 09:25:53 +0200
+Message-Id: <20220405070431.226971058@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -49,72 +50,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-[ Upstream commit 07a5dcc4bed9d7cae54adf5aa10ff9f037a3204b ]
+[ Upstream commit feb13dcb1818b775fbd9191f797be67cd605f03e ]
 
-The device_node pointer is returned by of_parse_phandle() or
-of_get_child_by_name() with refcount incremented.
-We should use of_node_put() on it when done.
+Let user space properly determine that the enetc driver provides
+software timestamps.
 
-This function only call of_node_put(node) when of_address_to_resource
-succeeds, missing error cases.
-
-Fixes: 278d744c46fd ("remoteproc: qcom: Fix potential device node leaks")
-Fixes: 051fb70fd4ea ("remoteproc: qcom: Driver for the self-authenticating Hexagon v5")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Link: https://lore.kernel.org/r/20220308064522.13804-1-linmq006@gmail.com
+Fixes: 4caefbce06d1 ("enetc: add software timestamping")
+Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+Reviewed-by: Claudiu Manoil <claudiu.manoil@nxp.com>
+Link: https://lore.kernel.org/r/20220324161210.4122281-1-vladimir.oltean@nxp.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/remoteproc/qcom_q6v5_mss.c | 11 +++++++----
- 1 file changed, 7 insertions(+), 4 deletions(-)
+ drivers/net/ethernet/freescale/enetc/enetc_ethtool.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/remoteproc/qcom_q6v5_mss.c b/drivers/remoteproc/qcom_q6v5_mss.c
-index 43ea8455546c..b9ab91540b00 100644
---- a/drivers/remoteproc/qcom_q6v5_mss.c
-+++ b/drivers/remoteproc/qcom_q6v5_mss.c
-@@ -1806,18 +1806,20 @@ static int q6v5_alloc_memory_region(struct q6v5 *qproc)
- 	 * reserved memory regions from device's memory-region property.
- 	 */
- 	child = of_get_child_by_name(qproc->dev->of_node, "mba");
--	if (!child)
-+	if (!child) {
- 		node = of_parse_phandle(qproc->dev->of_node,
- 					"memory-region", 0);
--	else
-+	} else {
- 		node = of_parse_phandle(child, "memory-region", 0);
-+		of_node_put(child);
-+	}
+diff --git a/drivers/net/ethernet/freescale/enetc/enetc_ethtool.c b/drivers/net/ethernet/freescale/enetc/enetc_ethtool.c
+index fa5b4f885b17..60ec64bfb3f0 100644
+--- a/drivers/net/ethernet/freescale/enetc/enetc_ethtool.c
++++ b/drivers/net/ethernet/freescale/enetc/enetc_ethtool.c
+@@ -674,7 +674,10 @@ static int enetc_get_ts_info(struct net_device *ndev,
+ #ifdef CONFIG_FSL_ENETC_PTP_CLOCK
+ 	info->so_timestamping = SOF_TIMESTAMPING_TX_HARDWARE |
+ 				SOF_TIMESTAMPING_RX_HARDWARE |
+-				SOF_TIMESTAMPING_RAW_HARDWARE;
++				SOF_TIMESTAMPING_RAW_HARDWARE |
++				SOF_TIMESTAMPING_TX_SOFTWARE |
++				SOF_TIMESTAMPING_RX_SOFTWARE |
++				SOF_TIMESTAMPING_SOFTWARE;
  
- 	ret = of_address_to_resource(node, 0, &r);
-+	of_node_put(node);
- 	if (ret) {
- 		dev_err(qproc->dev, "unable to resolve mba region\n");
- 		return ret;
- 	}
--	of_node_put(node);
- 
- 	qproc->mba_phys = r.start;
- 	qproc->mba_size = resource_size(&r);
-@@ -1828,14 +1830,15 @@ static int q6v5_alloc_memory_region(struct q6v5 *qproc)
- 	} else {
- 		child = of_get_child_by_name(qproc->dev->of_node, "mpss");
- 		node = of_parse_phandle(child, "memory-region", 0);
-+		of_node_put(child);
- 	}
- 
- 	ret = of_address_to_resource(node, 0, &r);
-+	of_node_put(node);
- 	if (ret) {
- 		dev_err(qproc->dev, "unable to resolve mpss region\n");
- 		return ret;
- 	}
--	of_node_put(node);
- 
- 	qproc->mpss_phys = qproc->mpss_reloc = r.start;
- 	qproc->mpss_size = resource_size(&r);
+ 	info->tx_types = (1 << HWTSTAMP_TX_OFF) |
+ 			 (1 << HWTSTAMP_TX_ON) |
 -- 
 2.34.1
 
