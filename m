@@ -2,43 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 61DCEC4167E
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:19:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F156C43219
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:19:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382714AbiDEMQm (ORCPT
+        id S1382736AbiDEMQs (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 08:16:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46132 "EHLO
+        Tue, 5 Apr 2022 08:16:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48748 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244935AbiDEIws (ORCPT
+        with ESMTP id S244931AbiDEIws (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Apr 2022 04:52:48 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 712AA2497B;
-        Tue,  5 Apr 2022 01:47:07 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F9EB24976;
+        Tue,  5 Apr 2022 01:46:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id E2F67CE1BF8;
-        Tue,  5 Apr 2022 08:47:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0B55FC385A0;
-        Tue,  5 Apr 2022 08:47:03 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E329661504;
+        Tue,  5 Apr 2022 08:46:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F2871C385A0;
+        Tue,  5 Apr 2022 08:46:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649148424;
-        bh=xn5XjbNCQIGn7W+2fCIddx6tTuzdQS5XIwMYVgOCU0w=;
+        s=korg; t=1649148416;
+        bh=+B1K6yVJZhmk/O3MTEvRv6W2ZTCovqloX1k7D8NE4iU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lrCvAhXeYtYjZ91DWxHgAVaOctnG6sar4HSflSOmW8WTs2iYw8/kDA99ybcMSIDRd
-         yBjxriaZv21RH31rsaGfC3m7EmkpiO2mcj5/wHCKdTkJNwLKDT8f3/pkjOQ2mGCHAY
-         +JwFutddT6XESSWbRLDwsq0p4huK1PSepzijEYuw=
+        b=E8E2cWENb3fds7eVYeAfKjQYF37FNTDUwsDIHwNA0YZh20pMXE65Av/b81u5WTCPZ
+         PvW6/Uufch5RznOTRt9KZCcgccFVzHkm+NASSLUUhcMWQ65M2A1QtjWOWpHfs9fk36
+         Qfq+FhTePk9G3ZnxR9j0ZaNGwvNEJWNU/o0JU2Zk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Aswath Govindraju <a-govindraju@ti.com>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
+        stable@vger.kernel.org,
+        Marijn Suijten <marijn.suijten@somainline.org>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@somainline.org>,
+        Alex Elder <elder@linaro.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0353/1017] mmc: sdhci_am654: Fix the driver data of AM64 SoC
-Date:   Tue,  5 Apr 2022 09:21:06 +0200
-Message-Id: <20220405070404.762768265@linuxfoundation.org>
+Subject: [PATCH 5.16 0310/1017] firmware: qcom: scm: Remove reassignment to desc following initializer
+Date:   Tue,  5 Apr 2022 09:20:23 +0200
+Message-Id: <20220405070403.478014847@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -50,68 +54,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Aswath Govindraju <a-govindraju@ti.com>
+From: Marijn Suijten <marijn.suijten@somainline.org>
 
-[ Upstream commit 3b7340f1c89cc488e4df0b033bf7ae502ebbf5b2 ]
+[ Upstream commit 7823e5aa5d1dd9ed5849923c165eb8f29ad23c54 ]
 
-The MMCSD IPs used in AM64 are the same as the ones used in J721E.
-Therefore, fix this by using the driver data from J721E for AM64 too, for
-both 8 and 4 bit instances.
+Member assignments to qcom_scm_desc were moved into struct initializers
+in 57d3b816718c ("firmware: qcom_scm: Remove thin wrappers") including
+the case in qcom_scm_iommu_secure_ptbl_init, except that the - now
+duplicate - assignment to desc was left in place. While not harmful,
+remove this unnecessary extra reassignment.
 
-Fixes: 754b7f2f7d2a ("mmc: sdhci_am654: Add Support for TI's AM64 SoC")
-Signed-off-by: Aswath Govindraju <a-govindraju@ti.com>
-Link: https://lore.kernel.org/r/20220211075056.26179-1-a-govindraju@ti.com
-Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
+Fixes: 57d3b816718c ("firmware: qcom_scm: Remove thin wrappers")
+Signed-off-by: Marijn Suijten <marijn.suijten@somainline.org>
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@somainline.org>
+Reviewed-by: Alex Elder <elder@linaro.org>
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Link: https://lore.kernel.org/r/20211208083423.22037-2-marijn.suijten@somainline.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/mmc/host/sdhci_am654.c | 24 ++----------------------
- 1 file changed, 2 insertions(+), 22 deletions(-)
+ drivers/firmware/qcom_scm.c | 6 ------
+ 1 file changed, 6 deletions(-)
 
-diff --git a/drivers/mmc/host/sdhci_am654.c b/drivers/mmc/host/sdhci_am654.c
-index f654afbe8e83..b4891bb26648 100644
---- a/drivers/mmc/host/sdhci_am654.c
-+++ b/drivers/mmc/host/sdhci_am654.c
-@@ -514,26 +514,6 @@ static const struct sdhci_am654_driver_data sdhci_j721e_4bit_drvdata = {
- 	.flags = IOMUX_PRESENT,
- };
+diff --git a/drivers/firmware/qcom_scm.c b/drivers/firmware/qcom_scm.c
+index 7db8066b19fd..3f67bf774821 100644
+--- a/drivers/firmware/qcom_scm.c
++++ b/drivers/firmware/qcom_scm.c
+@@ -749,12 +749,6 @@ int qcom_scm_iommu_secure_ptbl_init(u64 addr, u32 size, u32 spare)
+ 	};
+ 	int ret;
  
--static const struct sdhci_pltfm_data sdhci_am64_8bit_pdata = {
--	.ops = &sdhci_j721e_8bit_ops,
--	.quirks2 = SDHCI_QUIRK2_PRESET_VALUE_BROKEN,
--};
+-	desc.args[0] = addr;
+-	desc.args[1] = size;
+-	desc.args[2] = spare;
+-	desc.arginfo = QCOM_SCM_ARGS(3, QCOM_SCM_RW, QCOM_SCM_VAL,
+-				     QCOM_SCM_VAL);
 -
--static const struct sdhci_am654_driver_data sdhci_am64_8bit_drvdata = {
--	.pdata = &sdhci_am64_8bit_pdata,
--	.flags = DLL_PRESENT | DLL_CALIB,
--};
--
--static const struct sdhci_pltfm_data sdhci_am64_4bit_pdata = {
--	.ops = &sdhci_j721e_4bit_ops,
--	.quirks2 = SDHCI_QUIRK2_PRESET_VALUE_BROKEN,
--};
--
--static const struct sdhci_am654_driver_data sdhci_am64_4bit_drvdata = {
--	.pdata = &sdhci_am64_4bit_pdata,
--	.flags = IOMUX_PRESENT,
--};
--
- static const struct soc_device_attribute sdhci_am654_devices[] = {
- 	{ .family = "AM65X",
- 	  .revision = "SR1.0",
-@@ -759,11 +739,11 @@ static const struct of_device_id sdhci_am654_of_match[] = {
- 	},
- 	{
- 		.compatible = "ti,am64-sdhci-8bit",
--		.data = &sdhci_am64_8bit_drvdata,
-+		.data = &sdhci_j721e_8bit_drvdata,
- 	},
- 	{
- 		.compatible = "ti,am64-sdhci-4bit",
--		.data = &sdhci_am64_4bit_drvdata,
-+		.data = &sdhci_j721e_4bit_drvdata,
- 	},
- 	{ /* sentinel */ }
- };
+ 	ret = qcom_scm_call(__scm->dev, &desc, NULL);
+ 
+ 	/* the pg table has been initialized already, ignore the error */
 -- 
 2.34.1
 
