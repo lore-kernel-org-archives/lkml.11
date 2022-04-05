@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AE5FFC3527A
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 990D6C4707A
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 11:21:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235692AbiDELSL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 07:18:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54274 "EHLO
+        id S1356422AbiDELP0 (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 07:15:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56482 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237068AbiDEIRl (ORCPT
+        with ESMTP id S237106AbiDEIRm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:17:41 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F715B0A4A;
-        Tue,  5 Apr 2022 01:05:03 -0700 (PDT)
+        Tue, 5 Apr 2022 04:17:42 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91BA2AFB0C;
+        Tue,  5 Apr 2022 01:05:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E95A3B81B14;
-        Tue,  5 Apr 2022 08:05:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6242DC385A0;
-        Tue,  5 Apr 2022 08:04:59 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4B76EB81BBF;
+        Tue,  5 Apr 2022 08:05:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AA778C385A7;
+        Tue,  5 Apr 2022 08:05:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649145899;
-        bh=UH8qcrciRiLN4wLZoKUH6pVekFxw8lYmaixyJYH8+Cc=;
+        s=korg; t=1649145911;
+        bh=bb88SYtp3zyNlkq/15otdBnpkl/912WXpaRl/MiFuJA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=MtmXxXcCxHJxIApqMPGC/AWc0/95u/LlKDGfK5tA7kmlxRGt9ZgcdQpINhv02Wj42
-         61QjYgBVOWRmk0WkRRYO1O8C1bc7KFu7EMFkbkHMeO3/HptVJx/0mk5Cp98MeY8hqu
-         XIdXzQVAR1j0h2OYycbeQ/BfsoLtyCNWgB5bouX8=
+        b=hGdvHT46JLLUxztU26V0IrQ2MZ6Y/LY8MB5IMZexXzNrVUzkDn6og2P9SvVyIaMmV
+         /yRUrtEZukVFogxq53mS1xREkk0QK8lxjKxyC6NK080u+YIMkitOg3gbnIXJ4wCqZN
+         nuziostoou2DjGSXMZy0isCiqJ46GtkDQHHRVZh4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Marijn Suijten <marijn.suijten@somainline.org>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@somainline.org>,
+        stable@vger.kernel.org, Abhinav Kumar <quic_abhinavk@quicinc.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Stephen Boyd <swboyd@chromium.org>,
         Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0570/1126] drm/msm/dsi: Use "ref" fw clock instead of global name for VCO parent
-Date:   Tue,  5 Apr 2022 09:21:57 +0200
-Message-Id: <20220405070424.364871790@linuxfoundation.org>
+Subject: [PATCH 5.17 0574/1126] drm/msm/dpu: remove msm_dp cached in dpu_encoder_virt
+Date:   Tue,  5 Apr 2022 09:22:01 +0200
+Message-Id: <20220405070424.481080231@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -52,133 +52,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Marijn Suijten <marijn.suijten@somainline.org>
+From: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
 
-[ Upstream commit 3a3ee71bd8e14c5e852c71f317eebfda8f88dff0 ]
+[ Upstream commit b78f30a5c8a396ca31a905982c8cd955cd35807e ]
 
-All DSI PHY/PLL drivers were referencing their VCO parent clock by a
-global name, most of which don't exist or have been renamed.  These
-clock drivers seem to function fine without that except the 14nm driver
-for sdm6xx [1].
+Stop caching msm_dp instance in dpu_encoder_virt since it's not used
+now.
 
-At the same time all DTs provide a "ref" clock as per the requirements
-of dsi-phy-common.yaml, but the clock is never used.  This patchset puts
-that clock to use without relying on a global clock name, so that all
-dependencies are explicitly defined in DT (the firmware) in the end.
-
-Note that this patch intentionally breaks older firmware (DT) that
-relies on the clock to be found globally instead.  The only affected
-platform is msm8974 [2] for whose dsi_phy_28nm a .name="xo" fallback is
-left in place to accommodate a more graceful transition period.  All
-other platforms had the "ref" clock added to their phy node since its
-inception, or in a followup patch some time after.  These patches
-wrongly assumed that the "ref" clock was actively used and have hence
-been listed as "Fixes:" below.
-Furthermore apq8064 was providing the wrong 19.2MHz cxo instead of
-27MHz pxo clock, which has been addressed in [3].
-
-It is expected that both [2] and [3] are applied to the tree well in
-advance of this patch such that any actual breakage is extremely
-unlikely, but might still occur if kernel upgrades are performed without
-the DT to match.  After some time the fallback for msm8974 can be
-removed again as well.
-
-[1]: https://lore.kernel.org/linux-arm-msm/386db1a6-a1cd-3c7d-a88e-dc83f8a1be96@somainline.org/
-[2]: https://lore.kernel.org/linux-arm-msm/20210830175739.143401-1-marijn.suijten@somainline.org/
-[3]: https://lore.kernel.org/linux-arm-msm/20210829203027.276143-2-marijn.suijten@somainline.org/
-
-Fixes: 79e51645a1dd ("arm64: dts: qcom: msm8916: Set 'xo_board' as ref clock of the DSI PHY")
-Fixes: 6969d1d9c615 ("ARM: dts: qcom-apq8064: Set 'cxo_board' as ref clock of the DSI PHY")
-Fixes: 0c0e72705a33 ("arm64: dts: sdm845: Set 'bi_tcxo' as ref clock of the DSI PHYs")
-Signed-off-by: Marijn Suijten <marijn.suijten@somainline.org>
-Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@somainline.org>
-Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Link: https://lore.kernel.org/r/20210911131922.387964-2-marijn.suijten@somainline.org
+Fixes: 8a3b4c17f863 ("drm/msm/dp: employ bridge mechanism for display enable and disable")
+Reviewed-by: Abhinav Kumar <quic_abhinavk@quicinc.com>
+Reviewed-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Reviewed-by: Stephen Boyd <swboyd@chromium.org>
+Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Link: https://lore.kernel.org/r/20220217035358.465904-4-dmitry.baryshkov@linaro.org
 Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/msm/dsi/phy/dsi_phy_10nm.c      | 4 +++-
- drivers/gpu/drm/msm/dsi/phy/dsi_phy_14nm.c      | 4 +++-
- drivers/gpu/drm/msm/dsi/phy/dsi_phy_28nm.c      | 4 +++-
- drivers/gpu/drm/msm/dsi/phy/dsi_phy_28nm_8960.c | 4 +++-
- drivers/gpu/drm/msm/dsi/phy/dsi_phy_7nm.c       | 4 +++-
- 5 files changed, 15 insertions(+), 5 deletions(-)
+ drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c | 5 -----
+ 1 file changed, 5 deletions(-)
 
-diff --git a/drivers/gpu/drm/msm/dsi/phy/dsi_phy_10nm.c b/drivers/gpu/drm/msm/dsi/phy/dsi_phy_10nm.c
-index d8128f50b0dd..0b782cc18b3f 100644
---- a/drivers/gpu/drm/msm/dsi/phy/dsi_phy_10nm.c
-+++ b/drivers/gpu/drm/msm/dsi/phy/dsi_phy_10nm.c
-@@ -562,7 +562,9 @@ static int pll_10nm_register(struct dsi_pll_10nm *pll_10nm, struct clk_hw **prov
- 	char clk_name[32], parent[32], vco_name[32];
- 	char parent2[32], parent3[32], parent4[32];
- 	struct clk_init_data vco_init = {
--		.parent_names = (const char *[]){ "xo" },
-+		.parent_data = &(const struct clk_parent_data) {
-+			.fw_name = "ref",
-+		},
- 		.num_parents = 1,
- 		.name = vco_name,
- 		.flags = CLK_IGNORE_UNUSED,
-diff --git a/drivers/gpu/drm/msm/dsi/phy/dsi_phy_14nm.c b/drivers/gpu/drm/msm/dsi/phy/dsi_phy_14nm.c
-index 7414966f198e..75557ac99adf 100644
---- a/drivers/gpu/drm/msm/dsi/phy/dsi_phy_14nm.c
-+++ b/drivers/gpu/drm/msm/dsi/phy/dsi_phy_14nm.c
-@@ -802,7 +802,9 @@ static int pll_14nm_register(struct dsi_pll_14nm *pll_14nm, struct clk_hw **prov
- {
- 	char clk_name[32], parent[32], vco_name[32];
- 	struct clk_init_data vco_init = {
--		.parent_names = (const char *[]){ "xo" },
-+		.parent_data = &(const struct clk_parent_data) {
-+			.fw_name = "ref",
-+		},
- 		.num_parents = 1,
- 		.name = vco_name,
- 		.flags = CLK_IGNORE_UNUSED,
-diff --git a/drivers/gpu/drm/msm/dsi/phy/dsi_phy_28nm.c b/drivers/gpu/drm/msm/dsi/phy/dsi_phy_28nm.c
-index 2da673a2add6..48eab80b548e 100644
---- a/drivers/gpu/drm/msm/dsi/phy/dsi_phy_28nm.c
-+++ b/drivers/gpu/drm/msm/dsi/phy/dsi_phy_28nm.c
-@@ -521,7 +521,9 @@ static int pll_28nm_register(struct dsi_pll_28nm *pll_28nm, struct clk_hw **prov
- {
- 	char clk_name[32], parent1[32], parent2[32], vco_name[32];
- 	struct clk_init_data vco_init = {
--		.parent_names = (const char *[]){ "xo" },
-+		.parent_data = &(const struct clk_parent_data) {
-+			.fw_name = "ref", .name = "xo",
-+		},
- 		.num_parents = 1,
- 		.name = vco_name,
- 		.flags = CLK_IGNORE_UNUSED,
-diff --git a/drivers/gpu/drm/msm/dsi/phy/dsi_phy_28nm_8960.c b/drivers/gpu/drm/msm/dsi/phy/dsi_phy_28nm_8960.c
-index 71ed4aa0dc67..fc56cdcc9ad6 100644
---- a/drivers/gpu/drm/msm/dsi/phy/dsi_phy_28nm_8960.c
-+++ b/drivers/gpu/drm/msm/dsi/phy/dsi_phy_28nm_8960.c
-@@ -385,7 +385,9 @@ static int pll_28nm_register(struct dsi_pll_28nm *pll_28nm, struct clk_hw **prov
- {
- 	char *clk_name, *parent_name, *vco_name;
- 	struct clk_init_data vco_init = {
--		.parent_names = (const char *[]){ "pxo" },
-+		.parent_data = &(const struct clk_parent_data) {
-+			.fw_name = "ref",
-+		},
- 		.num_parents = 1,
- 		.flags = CLK_IGNORE_UNUSED,
- 		.ops = &clk_ops_dsi_pll_28nm_vco,
-diff --git a/drivers/gpu/drm/msm/dsi/phy/dsi_phy_7nm.c b/drivers/gpu/drm/msm/dsi/phy/dsi_phy_7nm.c
-index 079613d2aaa9..36eb6109cb88 100644
---- a/drivers/gpu/drm/msm/dsi/phy/dsi_phy_7nm.c
-+++ b/drivers/gpu/drm/msm/dsi/phy/dsi_phy_7nm.c
-@@ -588,7 +588,9 @@ static int pll_7nm_register(struct dsi_pll_7nm *pll_7nm, struct clk_hw **provide
- 	char clk_name[32], parent[32], vco_name[32];
- 	char parent2[32], parent3[32], parent4[32];
- 	struct clk_init_data vco_init = {
--		.parent_names = (const char *[]){ "bi_tcxo" },
-+		.parent_data = &(const struct clk_parent_data) {
-+			.fw_name = "ref",
-+		},
- 		.num_parents = 1,
- 		.name = vco_name,
- 		.flags = CLK_IGNORE_UNUSED,
+diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c b/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c
+index 02d0fae1c6dc..16ae0cccbbb1 100644
+--- a/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c
++++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c
+@@ -168,7 +168,6 @@ enum dpu_enc_rc_states {
+  * @vsync_event_work:		worker to handle vsync event for autorefresh
+  * @topology:                   topology of the display
+  * @idle_timeout:		idle timeout duration in milliseconds
+- * @dp:				msm_dp pointer, for DP encoders
+  */
+ struct dpu_encoder_virt {
+ 	struct drm_encoder base;
+@@ -207,8 +206,6 @@ struct dpu_encoder_virt {
+ 	struct msm_display_topology topology;
+ 
+ 	u32 idle_timeout;
+-
+-	struct msm_dp *dp;
+ };
+ 
+ #define to_dpu_encoder_virt(x) container_of(x, struct dpu_encoder_virt, base)
+@@ -2128,8 +2125,6 @@ int dpu_encoder_setup(struct drm_device *dev, struct drm_encoder *enc,
+ 		timer_setup(&dpu_enc->vsync_event_timer,
+ 				dpu_encoder_vsync_event_handler,
+ 				0);
+-	else if (disp_info->intf_type == DRM_MODE_ENCODER_TMDS)
+-		dpu_enc->dp = priv->dp[disp_info->h_tile_instance[0]];
+ 
+ 	INIT_DELAYED_WORK(&dpu_enc->delayed_off_work,
+ 			dpu_encoder_off_work);
 -- 
 2.34.1
 
