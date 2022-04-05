@@ -2,45 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 02A63C4332F
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 10:34:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 79C94C4321E
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 10:46:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242644AbiDEKgA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 06:36:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45878 "EHLO
+        id S239633AbiDEKgT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 06:36:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50602 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240820AbiDEIce (ORCPT
+        with ESMTP id S241437AbiDEIdf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:32:34 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9AF438AE5C;
-        Tue,  5 Apr 2022 01:25:03 -0700 (PDT)
+        Tue, 5 Apr 2022 04:33:35 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47AE7C4;
+        Tue,  5 Apr 2022 01:31:38 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9DD7160FF5;
-        Tue,  5 Apr 2022 08:25:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A942DC385A0;
-        Tue,  5 Apr 2022 08:25:01 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id F0824B81C13;
+        Tue,  5 Apr 2022 08:31:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2F4B9C385A0;
+        Tue,  5 Apr 2022 08:31:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649147102;
-        bh=MkH5R5DF93Xd6h3fKtnqZk3hN/YKatJAjvoLBElU3d8=;
+        s=korg; t=1649147495;
+        bh=3NTQi5oH+umthG6g+QSNmlJ6ltU3a75OHdcTGs2xchc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Kr5gCoosneFtXH6CxB/bhNk2D4S1qoyWBBrF8Da7RTeJNS6wsyyffPPjMmC7VDpgf
-         C09IBDCgZBFxO6zE5b0Yj0gKH1SYrX0LpB1//GpzpmI4BoVXkWsnvcsO+kSusDQ93D
-         cCOia93E77q4+oFxw4OkH3tNeKRKxb90hELM04h0=
+        b=QQS0NoL8quIWbppVeZqR4HNKTdTI5ObS7hoNgrgS4Td9RCgNt6gAI8QKZxSegqDvz
+         SYalzSWuHnDia9uki2mr3xBhwMbX4WtEX7qEHNKSHjWK/kvni9c+ZFM/fTVPxBUktV
+         FarZYjLTeJZZZz5aB9jLIX6CRZAwFmFs2EaMiwwk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ben Gardon <bgardon@google.com>,
-        David Matlack <dmatlack@google.com>,
-        Paolo Bonzini <pbonzini@redhat.com>
-Subject: [PATCH 5.17 1000/1126] KVM: Prevent module exit until all VMs are freed
-Date:   Tue,  5 Apr 2022 09:29:07 +0200
-Message-Id: <20220405070436.843321635@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Biju Das <biju.das.jz@bp.renesas.com>,
+        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 0019/1017] spi: Fix erroneous sgs value with min_t()
+Date:   Tue,  5 Apr 2022 09:15:32 +0200
+Message-Id: <20220405070354.744463567@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
-References: <20220405070407.513532867@linuxfoundation.org>
+In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
+References: <20220405070354.155796697@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,75 +53,59 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: David Matlack <dmatlack@google.com>
+From: Biju Das <biju.das.jz@bp.renesas.com>
 
-commit 5f6de5cbebee925a612856fce6f9182bb3eee0db upstream.
+[ Upstream commit ebc4cb43ea5ada3db46c80156fca58a54b9bbca8 ]
 
-Tie the lifetime the KVM module to the lifetime of each VM via
-kvm.users_count. This way anything that grabs a reference to the VM via
-kvm_get_kvm() cannot accidentally outlive the KVM module.
+While computing sgs in spi_map_buf(), the data type
+used in min_t() for max_seg_size is 'unsigned int' where
+as that of ctlr->max_dma_len is 'size_t'.
 
-Prior to this commit, the lifetime of the KVM module was tied to the
-lifetime of /dev/kvm file descriptors, VM file descriptors, and vCPU
-file descriptors by their respective file_operations "owner" field.
-This approach is insufficient because references grabbed via
-kvm_get_kvm() do not prevent closing any of the aforementioned file
-descriptors.
+min_t(unsigned int,x,y) gives wrong results if one of x/y is
+'size_t'
 
-This fixes a long standing theoretical bug in KVM that at least affects
-async page faults. kvm_setup_async_pf() grabs a reference via
-kvm_get_kvm(), and drops it in an asynchronous work callback. Nothing
-prevents the VM file descriptor from being closed and the KVM module
-from being unloaded before this callback runs.
+Consider the below examples on a 64-bit machine (ie size_t is
+64-bits, and unsigned int is 32-bit).
+    case 1) min_t(unsigned int, 5, 0x100000001);
+    case 2) min_t(size_t, 5, 0x100000001);
 
-Fixes: af585b921e5d ("KVM: Halt vcpu if page it tries to access is swapped out")
-Fixes: 3d3aab1b973b ("KVM: set owner of cpu and vm file operations")
-Cc: stable@vger.kernel.org
-Suggested-by: Ben Gardon <bgardon@google.com>
-[ Based on a patch from Ben implemented for Google's kernel. ]
-Signed-off-by: David Matlack <dmatlack@google.com>
-Message-Id: <20220303183328.1499189-2-dmatlack@google.com>
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Case 1 returns '1', where as case 2 returns '5'. As you can see
+the result from case 1 is wrong.
+
+This patch fixes the above issue by using the data type of the
+parameters that are used in min_t with maximum data length.
+
+Fixes: commit 1a4e53d2fc4f68aa ("spi: Fix invalid sgs value")
+Reported-by: Linus Torvalds <torvalds@linux-foundation.org>
+Suggested-by: Geert Uytterhoeven <geert+renesas@glider.be>
+Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
+Reviewed-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+Link: https://lore.kernel.org/r/20220316175317.465-1-biju.das.jz@bp.renesas.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- virt/kvm/kvm_main.c |   13 +++++++++++++
- 1 file changed, 13 insertions(+)
+ drivers/spi/spi.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/virt/kvm/kvm_main.c
-+++ b/virt/kvm/kvm_main.c
-@@ -117,6 +117,8 @@ EXPORT_SYMBOL_GPL(kvm_debugfs_dir);
+diff --git a/drivers/spi/spi.c b/drivers/spi/spi.c
+index ed4e6983eda0..4e459516b74c 100644
+--- a/drivers/spi/spi.c
++++ b/drivers/spi/spi.c
+@@ -1021,10 +1021,10 @@ int spi_map_buf(struct spi_controller *ctlr, struct device *dev,
+ 	int i, ret;
  
- static const struct file_operations stat_fops_per_vm;
- 
-+static struct file_operations kvm_chardev_ops;
-+
- static long kvm_vcpu_ioctl(struct file *file, unsigned int ioctl,
- 			   unsigned long arg);
- #ifdef CONFIG_KVM_COMPAT
-@@ -1137,6 +1139,16 @@ static struct kvm *kvm_create_vm(unsigne
- 	preempt_notifier_inc();
- 	kvm_init_pm_notifier(kvm);
- 
-+	/*
-+	 * When the fd passed to this ioctl() is opened it pins the module,
-+	 * but try_module_get() also prevents getting a reference if the module
-+	 * is in MODULE_STATE_GOING (e.g. if someone ran "rmmod --wait").
-+	 */
-+	if (!try_module_get(kvm_chardev_ops.owner)) {
-+		r = -ENODEV;
-+		goto out_err;
-+	}
-+
- 	return kvm;
- 
- out_err:
-@@ -1226,6 +1238,7 @@ static void kvm_destroy_vm(struct kvm *k
- 	preempt_notifier_dec();
- 	hardware_disable_all();
- 	mmdrop(mm);
-+	module_put(kvm_chardev_ops.owner);
- }
- 
- void kvm_get_kvm(struct kvm *kvm)
+ 	if (vmalloced_buf || kmap_buf) {
+-		desc_len = min_t(unsigned int, max_seg_size, PAGE_SIZE);
++		desc_len = min_t(unsigned long, max_seg_size, PAGE_SIZE);
+ 		sgs = DIV_ROUND_UP(len + offset_in_page(buf), desc_len);
+ 	} else if (virt_addr_valid(buf)) {
+-		desc_len = min_t(unsigned int, max_seg_size, ctlr->max_dma_len);
++		desc_len = min_t(size_t, max_seg_size, ctlr->max_dma_len);
+ 		sgs = DIV_ROUND_UP(len, desc_len);
+ 	} else {
+ 		return -EINVAL;
+-- 
+2.34.1
+
 
 
