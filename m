@@ -2,165 +2,231 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CEB94C4707A
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:34:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D9E58C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:35:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346241AbiDEUeH (ORCPT
+        id S1351340AbiDEUe5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 16:34:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35790 "EHLO
+        Tue, 5 Apr 2022 16:34:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36682 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240675AbiDEMln (ORCPT
+        with ESMTP id S240600AbiDEKfq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 08:41:43 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB0CF1070B0
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 04:48:11 -0700 (PDT)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <p.zabel@pengutronix.de>)
-        id 1nbhfB-0004q9-7F; Tue, 05 Apr 2022 13:47:57 +0200
-Received: from [2a0a:edc0:0:900:1d::4e] (helo=lupine)
-        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
-        (envelope-from <p.zabel@pengutronix.de>)
-        id 1nbhfB-001DEo-FU; Tue, 05 Apr 2022 13:47:56 +0200
-Received: from pza by lupine with local (Exim 4.94.2)
-        (envelope-from <p.zabel@pengutronix.de>)
-        id 1nbhf9-00054N-7F; Tue, 05 Apr 2022 13:47:55 +0200
-Message-ID: <0ff9a7cd2e6261a0de32db3bf16901e3737efef8.camel@pengutronix.de>
-Subject: Re: [PATCH 6/8] power: reset: at91-reset: add reset_controller_dev
- support
-From:   Philipp Zabel <p.zabel@pengutronix.de>
-To:     Claudiu Beznea <claudiu.beznea@microchip.com>, robh+dt@kernel.org,
-        nicolas.ferre@microchip.com, alexandre.belloni@bootlin.com,
-        sre@kernel.org
-Cc:     linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org
-Date:   Tue, 05 Apr 2022 13:47:55 +0200
-In-Reply-To: <20220405112724.2760905-7-claudiu.beznea@microchip.com>
-References: <20220405112724.2760905-1-claudiu.beznea@microchip.com>
-         <20220405112724.2760905-7-claudiu.beznea@microchip.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: base64
-User-Agent: Evolution 3.38.3-1 
+        Tue, 5 Apr 2022 06:35:46 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE7A753A67;
+        Tue,  5 Apr 2022 03:21:50 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 2C2F2CE1C9D;
+        Tue,  5 Apr 2022 10:21:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3D9A0C385A1;
+        Tue,  5 Apr 2022 10:21:47 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649154107;
+        bh=QFe6QMfeqMy4yd7gMOsZYHy56sJcir2qQB3c5AmyZzQ=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=ncA+Ez4jpkrPgGuEjxdikVB9Gui767iEMb8HCxCiUKmUY6OaTt165ZviQDwPGf5kR
+         3Q7z6AHcMUJj0HQHSMn+MMeSUWkAtVBPckxo57Vow0sXxKqFDIxC0zSi43MPUYUMIv
+         DQ9g0lzg0Z9/eWDu7OlFGfwViGCC15/g5J9pBhkQ=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Hulk Robot <hulkci@huawei.com>,
+        Zhang Wensheng <zhangwensheng5@huawei.com>,
+        Jens Axboe <axboe@kernel.dk>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 461/599] bfq: fix use-after-free in bfq_dispatch_request
+Date:   Tue,  5 Apr 2022 09:32:35 +0200
+Message-Id: <20220405070312.547154819@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
+References: <20220405070258.802373272@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: p.zabel@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-SGkgQ2xhdWRpdSwKCk9uIERpLCAyMDIyLTA0LTA1IGF0IDE0OjI3ICswMzAwLCBDbGF1ZGl1IEJl
-em5lYSB3cm90ZToKPiBTQU1BN0c1IHJlc2V0IGNvbnRyb2xsZXIgaGFzIDUgZXh0cmEgbGluZXMg
-dGhhdCBnb2VzIHRvIGRpZmZlcmVudAo+IGRldmljZXMKPiAoMyBsaW5lcyB0byBVU0IgUEhZcywg
-MSBsaW5lIHRvIEREUiBjb250cm9sbGVyLCBvbmUgbGluZSBERFIgUEhZCj4gY29udHJvbGxlciku
-IFRoZXNlIHJlc2V0IGxpbmVzIGNvdWxkIGJlIHJlcXVlc3RlZCBieSBkaWZmZXJlbnQKPiBjb250
-cm9sbGVyCj4gZHJpdmVycyAoZS5nLiBVU0IgUEhZIGRyaXZlcikgYW5kIHRoZXNlIGNvbnRyb2xs
-ZXJzJyBkcml2ZXJzIGNvdWxkCj4gYXNzZXJ0L2RlYXNzZXJ0IHRoZXNlIGxpbmVzIHdoZW4gbmVj
-ZXNzYXJ5LiBUaHVzIGFkZCBzdXBwb3J0IGZvcgo+IHJlc2V0X2NvbnRyb2xsZXJfZGV2IHdoaWNo
-IGJyaW5ncyB0aGlzIGZ1bmN0aW9uYWxpdHkuCj4gCj4gU2lnbmVkLW9mZi1ieTogQ2xhdWRpdSBC
-ZXpuZWEgPGNsYXVkaXUuYmV6bmVhQG1pY3JvY2hpcC5jb20+Cj4gLS0tCj4gwqBkcml2ZXJzL3Bv
-d2VyL3Jlc2V0L2F0OTEtcmVzZXQuYyB8IDkyCj4gKysrKysrKysrKysrKysrKysrKysrKysrKysr
-KysrLS0KPiDCoDEgZmlsZSBjaGFuZ2VkLCA4OCBpbnNlcnRpb25zKCspLCA0IGRlbGV0aW9ucygt
-KQo+IAo+IGRpZmYgLS1naXQgYS9kcml2ZXJzL3Bvd2VyL3Jlc2V0L2F0OTEtcmVzZXQuYwo+IGIv
-ZHJpdmVycy9wb3dlci9yZXNldC9hdDkxLXJlc2V0LmMKPiBpbmRleCAwZDcyMWUyN2Y1NDUuLmIw
-NGRmNTRjMTVkMiAxMDA2NDQKPiAtLS0gYS9kcml2ZXJzL3Bvd2VyL3Jlc2V0L2F0OTEtcmVzZXQu
-Ywo+ICsrKyBiL2RyaXZlcnMvcG93ZXIvcmVzZXQvYXQ5MS1yZXNldC5jCj4gQEAgLTE3LDYgKzE3
-LDcgQEAKPiDCoCNpbmNsdWRlIDxsaW51eC9vZl9hZGRyZXNzLmg+Cj4gwqAjaW5jbHVkZSA8bGlu
-dXgvcGxhdGZvcm1fZGV2aWNlLmg+Cj4gwqAjaW5jbHVkZSA8bGludXgvcmVib290Lmg+Cj4gKyNp
-bmNsdWRlIDxsaW51eC9yZXNldC1jb250cm9sbGVyLmg+Cj4gwqAKPiDCoCNpbmNsdWRlIDxzb2Mv
-YXQ5MS9hdDkxc2FtOV9kZHJzZHIuaD4KPiDCoCNpbmNsdWRlIDxzb2MvYXQ5MS9hdDkxc2FtOV9z
-ZHJhbWMuaD4KPiBAQCAtNTMsMTIgKzU0LDE2IEBAIGVudW0gcmVzZXRfdHlwZSB7Cj4gwqBzdHJ1
-Y3QgYXQ5MV9yZXNldCB7Cj4gwqDCoMKgwqDCoMKgwqDCoHZvaWQgX19pb21lbSAqcnN0Y19iYXNl
-Owo+IMKgwqDCoMKgwqDCoMKgwqB2b2lkIF9faW9tZW0gKnJhbWNfYmFzZVsyXTsKPiArwqDCoMKg
-wqDCoMKgwqB2b2lkIF9faW9tZW0gKmRldl9iYXNlOwo+ICvCoMKgwqDCoMKgwqDCoHN0cnVjdCBy
-ZXNldF9jb250cm9sbGVyX2RldiByY2RldjsKPiDCoMKgwqDCoMKgwqDCoMKgc3RydWN0IGNsayAq
-c2NsazsKPiDCoMKgwqDCoMKgwqDCoMKgc3RydWN0IG5vdGlmaWVyX2Jsb2NrIG5iOwo+IMKgwqDC
-oMKgwqDCoMKgwqB1MzIgYXJnczsKPiDCoMKgwqDCoMKgwqDCoMKgdTMyIHJhbWNfbHByOwo+IMKg
-fTsKPiDCoAo+ICsjZGVmaW5lIHRvX2F0OTFfcmVzZXQocinCoMKgwqDCoMKgwqDCoGNvbnRhaW5l
-cl9vZihyLCBzdHJ1Y3QgYXQ5MV9yZXNldCwgcmNkZXYpCj4gKwo+IMKgc3RydWN0IGF0OTFfcmVz
-ZXRfZGF0YSB7Cj4gwqDCoMKgwqDCoMKgwqDCoHUzMiByZXNldF9hcmdzOwo+IMKgwqDCoMKgwqDC
-oMKgwqB1MzIgbl9kZXZpY2VfcmVzZXQ7Cj4gQEAgLTE5MSw2ICsxOTYsNzkgQEAgc3RhdGljIGNv
-bnN0IHN0cnVjdCBvZl9kZXZpY2VfaWQKPiBhdDkxX3Jlc2V0X29mX21hdGNoW10gPSB7Cj4gwqB9
-Owo+IMKgTU9EVUxFX0RFVklDRV9UQUJMRShvZiwgYXQ5MV9yZXNldF9vZl9tYXRjaCk7Cj4gwqAK
-PiArc3RhdGljIGludCBhdDkxX3Jlc2V0X3VwZGF0ZShzdHJ1Y3QgcmVzZXRfY29udHJvbGxlcl9k
-ZXYgKnJjZGV2LAo+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqAgdW5zaWduZWQgbG9uZyBpZCwgYm9vbCBhc3NlcnQpCj4gK3sKPiArwqDCoMKg
-wqDCoMKgwqBzdHJ1Y3QgYXQ5MV9yZXNldCAqcmVzZXQgPSB0b19hdDkxX3Jlc2V0KHJjZGV2KTsK
-PiArwqDCoMKgwqDCoMKgwqB1MzIgdmFsOwo+ICsKPiArwqDCoMKgwqDCoMKgwqB2YWwgPSByZWFk
-bF9yZWxheGVkKHJlc2V0LT5kZXZfYmFzZSk7Cj4gK8KgwqDCoMKgwqDCoMKgaWYgKGFzc2VydCkK
-PiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgdmFsIHw9IEJJVChpZCk7Cj4gK8KgwqDC
-oMKgwqDCoMKgZWxzZQo+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqB2YWwgJj0gfkJJ
-VChpZCk7Cj4gK8KgwqDCoMKgwqDCoMKgd3JpdGVsX3JlbGF4ZWQodmFsLCByZXNldC0+ZGV2X2Jh
-c2UpOwoKVGhpcyByZWFkLW1vZGlmeS11cGRhdGUgc2hvdWxkIGJlIHByb3RlY3RlZCBieSBhIHNw
-aW5sb2NrLgoKPiArCj4gK8KgwqDCoMKgwqDCoMKgcmV0dXJuIDA7Cj4gK30KPiArCj4gK3N0YXRp
-YyBpbnQgYXQ5MV9yZXNldF9hc3NlcnQoc3RydWN0IHJlc2V0X2NvbnRyb2xsZXJfZGV2ICpyY2Rl
-diwKPiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgIHVuc2lnbmVkIGxvbmcgaWQpCj4gK3sKPiArwqDCoMKgwqDCoMKgwqByZXR1cm4gYXQ5MV9y
-ZXNldF91cGRhdGUocmNkZXYsIGlkLCB0cnVlKTsKPiArfQo+ICsKPiArc3RhdGljIGludCBhdDkx
-X3Jlc2V0X2RlYXNzZXJ0KHN0cnVjdCByZXNldF9jb250cm9sbGVyX2RldiAqcmNkZXYsCj4gK8Kg
-wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAg
-dW5zaWduZWQgbG9uZyBpZCkKPiArewo+ICvCoMKgwqDCoMKgwqDCoHJldHVybiBhdDkxX3Jlc2V0
-X3VwZGF0ZShyY2RldiwgaWQsIGZhbHNlKTsKPiArfQo+ICsKPiArc3RhdGljIGludCBhdDkxX3Jl
-c2V0X2Rldl9zdGF0dXMoc3RydWN0IHJlc2V0X2NvbnRyb2xsZXJfZGV2ICpyY2RldiwKPiArwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
-wqAgdW5zaWduZWQgbG9uZyBpZCkKPiArewo+ICvCoMKgwqDCoMKgwqDCoHN0cnVjdCBhdDkxX3Jl
-c2V0ICpyZXNldCA9IHRvX2F0OTFfcmVzZXQocmNkZXYpOwo+ICvCoMKgwqDCoMKgwqDCoHUzMiB2
-YWw7Cj4gKwo+ICvCoMKgwqDCoMKgwqDCoHZhbCA9IHJlYWRsX3JlbGF4ZWQocmVzZXQtPmRldl9i
-YXNlKTsKPiArCj4gK8KgwqDCoMKgwqDCoMKgcmV0dXJuICEhKHZhbCAmIEJJVChpZCkpOwo+ICt9
-Cj4gKwo+ICtzdGF0aWMgY29uc3Qgc3RydWN0IHJlc2V0X2NvbnRyb2xfb3BzIGF0OTFfcmVzZXRf
-b3BzID0gewo+ICvCoMKgwqDCoMKgwqDCoC5hc3NlcnQgPSBhdDkxX3Jlc2V0X2Fzc2VydCwKPiAr
-wqDCoMKgwqDCoMKgwqAuZGVhc3NlcnQgPSBhdDkxX3Jlc2V0X2RlYXNzZXJ0LAo+ICvCoMKgwqDC
-oMKgwqDCoC5zdGF0dXMgPSBhdDkxX3Jlc2V0X2Rldl9zdGF0dXMsCj4gK307Cj4gKwo+ICtzdGF0
-aWMgaW50IGF0OTFfcmVzZXRfb2ZfeGxhdGUoc3RydWN0IHJlc2V0X2NvbnRyb2xsZXJfZGV2ICpy
-Y2RldiwKPiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
-wqDCoMKgwqDCoCBjb25zdCBzdHJ1Y3Qgb2ZfcGhhbmRsZV9hcmdzICpyZXNldF9zcGVjKQo+ICt7
-Cj4gK8KgwqDCoMKgwqDCoMKgcmV0dXJuIHJlc2V0X3NwZWMtPmFyZ3NbMF07Cj4gK30KCkZvciAx
-OjEgbWFwcGluZ3MgdGhlcmUgaXMgbm8gbmVlZCBmb3IgYSBjdXN0b20gb2ZfeGxhdGUgaGFuZGxl
-ci4gSnVzdApsZWF2ZSBvZl94bGF0ZSBhbmQgb2ZfcmVzZXRfbl9jZWxscyBlbXB0eS4KCj4gKwo+
-ICtzdGF0aWMgaW50IGF0OTFfcmNkZXZfaW5pdChzdHJ1Y3QgYXQ5MV9yZXNldCAqcmVzZXQsCj4g
-K8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIGNvbnN0
-IHN0cnVjdCBhdDkxX3Jlc2V0X2RhdGEgKmRhdGEsCj4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIHN0cnVjdCBwbGF0Zm9ybV9kZXZpY2UgKnBkZXYp
-Cj4gK3sKPiArwqDCoMKgwqDCoMKgwqBpZiAoIWRhdGEtPm5fZGV2aWNlX3Jlc2V0KQo+ICvCoMKg
-wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqByZXR1cm4gMDsKPiArCj4gK8KgwqDCoMKgwqDCoMKg
-cmVzZXQtPmRldl9iYXNlID0gZGV2bV9vZl9pb21hcCgmcGRldi0+ZGV2LCBwZGV2LT5kZXYub2Zf
-bm9kZSwgMSwKPiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgTlVMTCk7Cj4gK8KgwqDCoMKgwqDCoMKg
-aWYgKElTX0VSUihyZXNldC0+cnN0Y19iYXNlKSkKClNob3VsZCBjaGVjayByZXNldC0+ZGV2X2Jh
-c2UgaGVyZS4KCj4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoHJldHVybiAtRU5PREVW
-Owo+ICsKPiArwqDCoMKgwqDCoMKgwqByZXNldC0+cmNkZXYub3BzID0gJmF0OTFfcmVzZXRfb3Bz
-Owo+ICvCoMKgwqDCoMKgwqDCoHJlc2V0LT5yY2Rldi5vd25lciA9IFRISVNfTU9EVUxFOwo+ICvC
-oMKgwqDCoMKgwqDCoHJlc2V0LT5yY2Rldi5vZl9ub2RlID0gcGRldi0+ZGV2Lm9mX25vZGU7Cj4g
-K8KgwqDCoMKgwqDCoMKgcmVzZXQtPnJjZGV2Lm5yX3Jlc2V0cyA9IGRhdGEtPm5fZGV2aWNlX3Jl
-c2V0Owo+ICvCoMKgwqDCoMKgwqDCoHJlc2V0LT5yY2Rldi5vZl9yZXNldF9uX2NlbGxzID0gMTsK
-PiArwqDCoMKgwqDCoMKgwqByZXNldC0+cmNkZXYub2ZfeGxhdGUgPSBhdDkxX3Jlc2V0X29mX3hs
-YXRlOwo+ICsKPiArwqDCoMKgwqDCoMKgwqByZXR1cm4gZGV2bV9yZXNldF9jb250cm9sbGVyX3Jl
-Z2lzdGVyKCZwZGV2LT5kZXYsICZyZXNldC0+cmNkZXYpOwo+ICt9Cj4gKwo+IMKgc3RhdGljIGlu
-dCBfX2luaXQgYXQ5MV9yZXNldF9wcm9iZShzdHJ1Y3QgcGxhdGZvcm1fZGV2aWNlICpwZGV2KQo+
-IMKgewo+IMKgwqDCoMKgwqDCoMKgwqBjb25zdCBzdHJ1Y3Qgb2ZfZGV2aWNlX2lkICptYXRjaDsK
-PiBAQCAtMjQ0LDYgKzMyMiwxMCBAQCBzdGF0aWMgaW50IF9faW5pdCBhdDkxX3Jlc2V0X3Byb2Jl
-KHN0cnVjdAo+IHBsYXRmb3JtX2RldmljZSAqcGRldikKPiDCoAo+IMKgwqDCoMKgwqDCoMKgwqBw
-bGF0Zm9ybV9zZXRfZHJ2ZGF0YShwZGV2LCByZXNldCk7Cj4gwqAKPiArwqDCoMKgwqDCoMKgwqBy
-ZXQgPSBhdDkxX3JjZGV2X2luaXQocmVzZXQsIGRhdGEsIHBkZXYpOwo+ICvCoMKgwqDCoMKgwqDC
-oGlmIChyZXQpCj4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoGdvdG8gZGlzYWJsZV9j
-bGs7Cj4gKwo+IMKgwqDCoMKgwqDCoMKgwqBpZiAob2ZfZGV2aWNlX2lzX2NvbXBhdGlibGUocGRl
-di0+ZGV2Lm9mX25vZGUsCj4gIm1pY3JvY2hpcCxzYW05eDYwLXJzdGMiKSkgewo+IMKgwqDCoMKg
-wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgdTMyIHZhbCA9IHJlYWRsKHJlc2V0LT5yc3RjX2Jhc2Ug
-KyBBVDkxX1JTVENfTVIpOwo+IMKgCj4gQEAgLTI1MiwxNCArMzM0LDE2IEBAIHN0YXRpYyBpbnQg
-X19pbml0IGF0OTFfcmVzZXRfcHJvYmUoc3RydWN0Cj4gcGxhdGZvcm1fZGV2aWNlICpwZGV2KQo+
-IMKgwqDCoMKgwqDCoMKgwqB9Cj4gwqAKPiDCoMKgwqDCoMKgwqDCoMKgcmV0ID0gcmVnaXN0ZXJf
-cmVzdGFydF9oYW5kbGVyKCZyZXNldC0+bmIpOwo+IC3CoMKgwqDCoMKgwqDCoGlmIChyZXQpIHsK
-PiAtwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgY2xrX2Rpc2FibGVfdW5wcmVwYXJlKHJl
-c2V0LT5zY2xrKTsKPiAtwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgcmV0dXJuIHJldDsK
-PiAtwqDCoMKgwqDCoMKgwqB9Cj4gK8KgwqDCoMKgwqDCoMKgaWYgKHJldCkKPiArwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgZ290byBkaXNhYmxlX2NsazsKPiDCoAo+IMKgwqDCoMKgwqDC
-oMKgwqBhdDkxX3Jlc2V0X3N0YXR1cyhwZGV2LCByZXNldC0+cnN0Y19iYXNlKTsKPiDCoAo+IMKg
-wqDCoMKgwqDCoMKgwqByZXR1cm4gMDsKPiArCj4gK2Rpc2FibGVfY2xrOgo+ICvCoMKgwqDCoMKg
-wqDCoGNsa19kaXNhYmxlX3VucHJlcGFyZShyZXNldC0+c2Nsayk7Cj4gK8KgwqDCoMKgwqDCoMKg
-cmV0dXJuIHJldDsKPiDCoH0KPiDCoAo+IMKgc3RhdGljIGludCBfX2V4aXQgYXQ5MV9yZXNldF9y
-ZW1vdmUoc3RydWN0IHBsYXRmb3JtX2RldmljZSAqcGRldikKCnJlZ2FyZHMKUGhpbGlwcAo=
+From: Zhang Wensheng <zhangwensheng5@huawei.com>
+
+[ Upstream commit ab552fcb17cc9e4afe0e4ac4df95fc7b30e8490a ]
+
+KASAN reports a use-after-free report when doing normal scsi-mq test
+
+[69832.239032] ==================================================================
+[69832.241810] BUG: KASAN: use-after-free in bfq_dispatch_request+0x1045/0x44b0
+[69832.243267] Read of size 8 at addr ffff88802622ba88 by task kworker/3:1H/155
+[69832.244656]
+[69832.245007] CPU: 3 PID: 155 Comm: kworker/3:1H Not tainted 5.10.0-10295-g576c6382529e #8
+[69832.246626] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS rel-1.14.0-0-g155821a1990b-prebuilt.qemu.org 04/01/2014
+[69832.249069] Workqueue: kblockd blk_mq_run_work_fn
+[69832.250022] Call Trace:
+[69832.250541]  dump_stack+0x9b/0xce
+[69832.251232]  ? bfq_dispatch_request+0x1045/0x44b0
+[69832.252243]  print_address_description.constprop.6+0x3e/0x60
+[69832.253381]  ? __cpuidle_text_end+0x5/0x5
+[69832.254211]  ? vprintk_func+0x6b/0x120
+[69832.254994]  ? bfq_dispatch_request+0x1045/0x44b0
+[69832.255952]  ? bfq_dispatch_request+0x1045/0x44b0
+[69832.256914]  kasan_report.cold.9+0x22/0x3a
+[69832.257753]  ? bfq_dispatch_request+0x1045/0x44b0
+[69832.258755]  check_memory_region+0x1c1/0x1e0
+[69832.260248]  bfq_dispatch_request+0x1045/0x44b0
+[69832.261181]  ? bfq_bfqq_expire+0x2440/0x2440
+[69832.262032]  ? blk_mq_delay_run_hw_queues+0xf9/0x170
+[69832.263022]  __blk_mq_do_dispatch_sched+0x52f/0x830
+[69832.264011]  ? blk_mq_sched_request_inserted+0x100/0x100
+[69832.265101]  __blk_mq_sched_dispatch_requests+0x398/0x4f0
+[69832.266206]  ? blk_mq_do_dispatch_ctx+0x570/0x570
+[69832.267147]  ? __switch_to+0x5f4/0xee0
+[69832.267898]  blk_mq_sched_dispatch_requests+0xdf/0x140
+[69832.268946]  __blk_mq_run_hw_queue+0xc0/0x270
+[69832.269840]  blk_mq_run_work_fn+0x51/0x60
+[69832.278170]  process_one_work+0x6d4/0xfe0
+[69832.278984]  worker_thread+0x91/0xc80
+[69832.279726]  ? __kthread_parkme+0xb0/0x110
+[69832.280554]  ? process_one_work+0xfe0/0xfe0
+[69832.281414]  kthread+0x32d/0x3f0
+[69832.282082]  ? kthread_park+0x170/0x170
+[69832.282849]  ret_from_fork+0x1f/0x30
+[69832.283573]
+[69832.283886] Allocated by task 7725:
+[69832.284599]  kasan_save_stack+0x19/0x40
+[69832.285385]  __kasan_kmalloc.constprop.2+0xc1/0xd0
+[69832.286350]  kmem_cache_alloc_node+0x13f/0x460
+[69832.287237]  bfq_get_queue+0x3d4/0x1140
+[69832.287993]  bfq_get_bfqq_handle_split+0x103/0x510
+[69832.289015]  bfq_init_rq+0x337/0x2d50
+[69832.289749]  bfq_insert_requests+0x304/0x4e10
+[69832.290634]  blk_mq_sched_insert_requests+0x13e/0x390
+[69832.291629]  blk_mq_flush_plug_list+0x4b4/0x760
+[69832.292538]  blk_flush_plug_list+0x2c5/0x480
+[69832.293392]  io_schedule_prepare+0xb2/0xd0
+[69832.294209]  io_schedule_timeout+0x13/0x80
+[69832.295014]  wait_for_common_io.constprop.1+0x13c/0x270
+[69832.296137]  submit_bio_wait+0x103/0x1a0
+[69832.296932]  blkdev_issue_discard+0xe6/0x160
+[69832.297794]  blk_ioctl_discard+0x219/0x290
+[69832.298614]  blkdev_common_ioctl+0x50a/0x1750
+[69832.304715]  blkdev_ioctl+0x470/0x600
+[69832.305474]  block_ioctl+0xde/0x120
+[69832.306232]  vfs_ioctl+0x6c/0xc0
+[69832.306877]  __se_sys_ioctl+0x90/0xa0
+[69832.307629]  do_syscall_64+0x2d/0x40
+[69832.308362]  entry_SYSCALL_64_after_hwframe+0x44/0xa9
+[69832.309382]
+[69832.309701] Freed by task 155:
+[69832.310328]  kasan_save_stack+0x19/0x40
+[69832.311121]  kasan_set_track+0x1c/0x30
+[69832.311868]  kasan_set_free_info+0x1b/0x30
+[69832.312699]  __kasan_slab_free+0x111/0x160
+[69832.313524]  kmem_cache_free+0x94/0x460
+[69832.314367]  bfq_put_queue+0x582/0x940
+[69832.315112]  __bfq_bfqd_reset_in_service+0x166/0x1d0
+[69832.317275]  bfq_bfqq_expire+0xb27/0x2440
+[69832.318084]  bfq_dispatch_request+0x697/0x44b0
+[69832.318991]  __blk_mq_do_dispatch_sched+0x52f/0x830
+[69832.319984]  __blk_mq_sched_dispatch_requests+0x398/0x4f0
+[69832.321087]  blk_mq_sched_dispatch_requests+0xdf/0x140
+[69832.322225]  __blk_mq_run_hw_queue+0xc0/0x270
+[69832.323114]  blk_mq_run_work_fn+0x51/0x60
+[69832.323942]  process_one_work+0x6d4/0xfe0
+[69832.324772]  worker_thread+0x91/0xc80
+[69832.325518]  kthread+0x32d/0x3f0
+[69832.326205]  ret_from_fork+0x1f/0x30
+[69832.326932]
+[69832.338297] The buggy address belongs to the object at ffff88802622b968
+[69832.338297]  which belongs to the cache bfq_queue of size 512
+[69832.340766] The buggy address is located 288 bytes inside of
+[69832.340766]  512-byte region [ffff88802622b968, ffff88802622bb68)
+[69832.343091] The buggy address belongs to the page:
+[69832.344097] page:ffffea0000988a00 refcount:1 mapcount:0 mapping:0000000000000000 index:0xffff88802622a528 pfn:0x26228
+[69832.346214] head:ffffea0000988a00 order:2 compound_mapcount:0 compound_pincount:0
+[69832.347719] flags: 0x1fffff80010200(slab|head)
+[69832.348625] raw: 001fffff80010200 ffffea0000dbac08 ffff888017a57650 ffff8880179fe840
+[69832.354972] raw: ffff88802622a528 0000000000120008 00000001ffffffff 0000000000000000
+[69832.356547] page dumped because: kasan: bad access detected
+[69832.357652]
+[69832.357970] Memory state around the buggy address:
+[69832.358926]  ffff88802622b980: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+[69832.360358]  ffff88802622ba00: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+[69832.361810] >ffff88802622ba80: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+[69832.363273]                       ^
+[69832.363975]  ffff88802622bb00: fb fb fb fb fb fb fb fb fb fb fb fb fb fc fc fc
+[69832.375960]  ffff88802622bb80: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
+[69832.377405] ==================================================================
+
+In bfq_dispatch_requestfunction, it may have function call:
+
+bfq_dispatch_request
+	__bfq_dispatch_request
+		bfq_select_queue
+			bfq_bfqq_expire
+				__bfq_bfqd_reset_in_service
+					bfq_put_queue
+						kmem_cache_free
+In this function call, in_serv_queue has beed expired and meet the
+conditions to free. In the function bfq_dispatch_request, the address
+of in_serv_queue pointing to has been released. For getting the value
+of idle_timer_disabled, it will get flags value from the address which
+in_serv_queue pointing to, then the problem of use-after-free happens;
+
+Fix the problem by check in_serv_queue == bfqd->in_service_queue, to
+get the value of idle_timer_disabled if in_serve_queue is equel to
+bfqd->in_service_queue. If the space of in_serv_queue pointing has
+been released, this judge will aviod use-after-free problem.
+And if in_serv_queue may be expired or finished, the idle_timer_disabled
+will be false which would not give effects to bfq_update_dispatch_stats.
+
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Zhang Wensheng <zhangwensheng5@huawei.com>
+Link: https://lore.kernel.org/r/20220303070334.3020168-1-zhangwensheng5@huawei.com
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ block/bfq-iosched.c | 15 ++++++++-------
+ 1 file changed, 8 insertions(+), 7 deletions(-)
+
+diff --git a/block/bfq-iosched.c b/block/bfq-iosched.c
+index 8d95bf7765b1..138541996dd5 100644
+--- a/block/bfq-iosched.c
++++ b/block/bfq-iosched.c
+@@ -4799,7 +4799,7 @@ static struct request *bfq_dispatch_request(struct blk_mq_hw_ctx *hctx)
+ 	struct bfq_data *bfqd = hctx->queue->elevator->elevator_data;
+ 	struct request *rq;
+ 	struct bfq_queue *in_serv_queue;
+-	bool waiting_rq, idle_timer_disabled;
++	bool waiting_rq, idle_timer_disabled = false;
+ 
+ 	spin_lock_irq(&bfqd->lock);
+ 
+@@ -4807,14 +4807,15 @@ static struct request *bfq_dispatch_request(struct blk_mq_hw_ctx *hctx)
+ 	waiting_rq = in_serv_queue && bfq_bfqq_wait_request(in_serv_queue);
+ 
+ 	rq = __bfq_dispatch_request(hctx);
+-
+-	idle_timer_disabled =
+-		waiting_rq && !bfq_bfqq_wait_request(in_serv_queue);
++	if (in_serv_queue == bfqd->in_service_queue) {
++		idle_timer_disabled =
++			waiting_rq && !bfq_bfqq_wait_request(in_serv_queue);
++	}
+ 
+ 	spin_unlock_irq(&bfqd->lock);
+-
+-	bfq_update_dispatch_stats(hctx->queue, rq, in_serv_queue,
+-				  idle_timer_disabled);
++	bfq_update_dispatch_stats(hctx->queue, rq,
++			idle_timer_disabled ? in_serv_queue : NULL,
++				idle_timer_disabled);
+ 
+ 	return rq;
+ }
+-- 
+2.34.1
+
+
 
