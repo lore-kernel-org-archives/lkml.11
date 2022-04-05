@@ -2,67 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5EF7BC43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2DFE9C433FE
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 22:03:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1389465AbiDEWBM (ORCPT
+        id S1359830AbiDEWAc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 18:01:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54262 "EHLO
+        Tue, 5 Apr 2022 18:00:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48622 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1384246AbiDEPOy (ORCPT
+        with ESMTP id S1358857AbiDELRj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 11:14:54 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5A0E1AF3E;
-        Tue,  5 Apr 2022 06:29:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=mGMxaI04fi2rfMsZ7XkzQpBo/JY88ZvlXCI1clOCHlY=; b=E36doV9qxOO/pwTzU5pEA7irOI
-        tJ1JtQF9Y1F8a0dDxglHRE1OaiEO3lOuLAwxewZ2ROjyYTOo9rU5PVK2qvEGK/6IXC6IRPr9C9aVx
-        cWQ2mdwVvAomiwtAudK3UtKhhDLprdYHhdeSs4DZN3P/sBGXD745znUGFtm0LfOr5qc8=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1nbjF3-00EFiK-8s; Tue, 05 Apr 2022 15:29:05 +0200
-Date:   Tue, 5 Apr 2022 15:29:05 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Grygorii Strashko <grygorii.strashko@ti.com>
-Cc:     Kurt Kanzenbach <kurt@linutronix.de>,
-        Michael Walle <michael@walle.cc>, richardcochran@gmail.com,
-        davem@davemloft.net, kuba@kernel.org, linux-kernel@vger.kernel.org,
-        linux@armlinux.org.uk, mlichvar@redhat.com, netdev@vger.kernel.org,
-        qiangqing.zhang@nxp.com, vladimir.oltean@nxp.com
-Subject: Re: [PATCH RFC V1 net-next 3/4] net: Let the active time stamping
- layer be selectable.
-Message-ID: <YkxEIZfA0H8yvrzn@lunn.ch>
-References: <20220104014215.GA20062@hoboy.vegasvil.org>
- <20220404150508.3945833-1-michael@walle.cc>
- <YksMvHgXZxA+YZci@lunn.ch>
- <e5a6f6193b86388ed7a081939b8745be@walle.cc>
- <877d83rjjc.fsf@kurt>
- <ad4a8d3efbeaacf241a19bfbca5976f9@walle.cc>
- <87wng3pyjl.fsf@kurt>
- <defe77d9-1a41-7112-0ef6-a12aa2b725ab@ti.com>
+        Tue, 5 Apr 2022 07:17:39 -0400
+Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E380589305
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 03:49:27 -0700 (PDT)
+Received: by mail-ej1-x62a.google.com with SMTP id n6so11778267ejc.13
+        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 03:49:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=zD1kXeS1kclzzdV89Yh6GTfc9Fb/ROE7/kA41SKYvPA=;
+        b=JvijGFR0Mo9047KejSeh5imWsynBG2ab7mdKpGSk7iREVkHWUP3qVkSoBI0i3ZVSuy
+         mOy3gQC42UCpZuE4FUymaZWOexVhTNqRrF5NbQq73XC6wR4SVrJk5cy20KHR3+7Fhxcm
+         OP0uasULbcaUt+1O+/sRRcSJEGx8bS3LLDmwfvKf0HXlVdctfTDKdd4pMJtxIFgpnHhI
+         DxKL1+9KcO57fxRSSP+Bu+hV34vEgYuBJRz53q/Rz5bpg/xT7vPLOIK0b8txP4NVBPMh
+         aBGoRyyGSPkBMa0cOCAnpTUryFbV0A4fcouQpVkU3z6sxZ9XN14IIQEAG63rAnpelzxO
+         U+DA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=zD1kXeS1kclzzdV89Yh6GTfc9Fb/ROE7/kA41SKYvPA=;
+        b=W67/uXHBFAqB1Q6ZhKJZqu1vK8QE9HtpxgcGAYE/y5dM+3xwmCdZ7j8tsYMeVCs8te
+         mc5X7Dyj7N+3GbUDMwBKBfvbxSeyp/TIjnbxaoDXBiw9jZ5bMft2mI67WoDZtNqN1gAd
+         EJZW42OMsPG5caePljrLGJB9Uz3ZQJ+8QOVedhqmVb0a6SStAWAXAID+JJqJTnsk8Tax
+         Mj/GYkCgXk4Vj1UH5zjibaFhBNfb3sZcLsm4jj25ls5SksDJOGfrXoCbp4nULnpGjBqS
+         1ZQQVwJSjdPoMVCfMZpWVCjbwYWJnIb6bCDe9h8fcQPxlv1vYUw6JWBsUlzeiprvtj1A
+         PLpw==
+X-Gm-Message-State: AOAM530uoJfyN4k9sJeAdVieFidwrmJ7kBR9T6JYe9c1yzP5T4APHcx+
+        kzCictbL3cGibHLwVJ+TwFg=
+X-Google-Smtp-Source: ABdhPJwmvbxYcATdJGs6tIu5uarpASeWFbRGq3gJjHqxw8Y9mHDS0WnAWMzFzkswBpgf0+/IjidnQQ==
+X-Received: by 2002:a17:906:d146:b0:6da:f381:4dfe with SMTP id br6-20020a170906d14600b006daf3814dfemr2856426ejb.670.1649155766340;
+        Tue, 05 Apr 2022 03:49:26 -0700 (PDT)
+Received: from localhost.localdomain (ip5f5abb55.dynamic.kabel-deutschland.de. [95.90.187.85])
+        by smtp.gmail.com with ESMTPSA id j12-20020a50e0cc000000b0041cd813ac01sm2436702edl.28.2022.04.05.03.49.25
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 05 Apr 2022 03:49:25 -0700 (PDT)
+From:   Michael Straube <straube.linux@gmail.com>
+To:     gregkh@linuxfoundation.org
+Cc:     Larry.Finger@lwfinger.net, phil@philpotter.co.uk,
+        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
+        Michael Straube <straube.linux@gmail.com>
+Subject: [PATCH v2 1/4] staging: r8188eu: cur_ant is set but never used
+Date:   Tue,  5 Apr 2022 12:49:07 +0200
+Message-Id: <20220405104910.9769-2-straube.linux@gmail.com>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405104910.9769-1-straube.linux@gmail.com>
+References: <20220405104910.9769-1-straube.linux@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <defe77d9-1a41-7112-0ef6-a12aa2b725ab@ti.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-> > Yes, the limitations described above are exactly one of the reasons to
-> > make the timestamping layer configurable at run time as done by these
-> > patches.
-> 
-> Seems like PHY TS support belongs to HW description category, so could it be device tree material,
-> like generic property defining which layer should do timestamping?
+In rtw_select_and_join_from_scanned_queue() the local variable cur_ant
+is set but never used. Remove the variable and related dead code.
 
-Maybe. Device tree is supposed to describe the hardware, not how you
-configure the hardware. Which PTP you using is a configuration choice,
-so i expect some people will argue it should not be in DT.
+Signed-off-by: Michael Straube <straube.linux@gmail.com>
+---
+v2:
+- made it the first patch in the series
+- changed subject line
 
-   Andrew
+ drivers/staging/r8188eu/core/rtw_mlme.c | 7 -------
+ 1 file changed, 7 deletions(-)
+
+diff --git a/drivers/staging/r8188eu/core/rtw_mlme.c b/drivers/staging/r8188eu/core/rtw_mlme.c
+index f94b1536a177..24ceb8028f89 100644
+--- a/drivers/staging/r8188eu/core/rtw_mlme.c
++++ b/drivers/staging/r8188eu/core/rtw_mlme.c
+@@ -1458,7 +1458,6 @@ int rtw_select_and_join_from_scanned_queue(struct mlme_priv *pmlmepriv)
+ 	struct __queue *queue	= &pmlmepriv->scanned_queue;
+ 	struct	wlan_network	*pnetwork = NULL;
+ 	struct	wlan_network	*candidate = NULL;
+-	u8	supp_ant_div = false;
+ 
+ 	spin_lock_bh(&pmlmepriv->scanned_queue.lock);
+ 	phead = get_list_head(queue);
+@@ -1485,12 +1484,6 @@ int rtw_select_and_join_from_scanned_queue(struct mlme_priv *pmlmepriv)
+ 		rtw_free_assoc_resources(adapter, 0);
+ 	}
+ 
+-	GetHalDefVar8188EUsb(adapter, HAL_DEF_IS_SUPPORT_ANT_DIV, &supp_ant_div);
+-	if (supp_ant_div) {
+-		u8 cur_ant;
+-		GetHalDefVar8188EUsb(adapter, HAL_DEF_CURRENT_ANTENNA, &cur_ant);
+-	}
+-
+ 	ret = rtw_joinbss_cmd(adapter, candidate);
+ 
+ exit:
+-- 
+2.35.1
+
