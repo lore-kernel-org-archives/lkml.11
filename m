@@ -2,171 +2,131 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CA011C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:09:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C3999C35276
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:09:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1581945AbiDEXla (ORCPT
+        id S1582000AbiDEXln (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 19:41:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54290 "EHLO
+        Tue, 5 Apr 2022 19:41:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50690 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354551AbiDENH2 (ORCPT
+        with ESMTP id S1358171AbiDEK2D (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 09:07:28 -0400
-Received: from ssl.serverraum.org (ssl.serverraum.org [176.9.125.105])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B858022B20;
-        Tue,  5 Apr 2022 05:09:58 -0700 (PDT)
-Received: from mwalle01.kontron.local. (unknown [213.135.10.150])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        Tue, 5 Apr 2022 06:28:03 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 598F39D4FF;
+        Tue,  5 Apr 2022 03:16:11 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id E0ED922248;
-        Tue,  5 Apr 2022 14:09:55 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1649160596;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=fCggV6bqzjUPTh2UWexsbRy4IO96rl40cUnwkAVnT5I=;
-        b=o9rAEG5dNTu/qS3ZOBvruaB/fIHLjhKxrVXoek8KJ1TykK8P3RzBI/WsitXw4LUyQ9LLKm
-        D7g1rsSD0/r5bZvfsajnZKBHMqBqTsSP2/LDVzqpwLnnPaiymXtkDn49hzSwbFOfjQFH5T
-        xKp26b33xygscWr1W+LI+oxzn5Ko+54=
-From:   Michael Walle <michael@walle.cc>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>
-Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Michael Walle <michael@walle.cc>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [PATCH net-next v3 1/3] dt-bindings: net: convert mscc-miim to YAML format
-Date:   Tue,  5 Apr 2022 14:09:49 +0200
-Message-Id: <20220405120951.4044875-2-michael@walle.cc>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220405120951.4044875-1-michael@walle.cc>
-References: <20220405120951.4044875-1-michael@walle.cc>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 51556617AA;
+        Tue,  5 Apr 2022 10:16:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5AAC7C385A0;
+        Tue,  5 Apr 2022 10:16:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649153770;
+        bh=nt0P5PwaV4eV2/k32xMWQtKBrmy1jnzvbGj/CcjZ0BM=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=gDTc6PHQWvlPv4oWK75oRpPnKE1XKoJCdfh5ADZyp4CZOMs7tZkizdLuqkch7iCit
+         k15JBdBONWAS7WleVN5JhFntSbwVOuQZ+TW2FOjB+lalD3HP+pS/WYjyJGEFAwqXGh
+         tfLq0HdVsowcVD029ZEt/3VGbS4loBydKPFZv+DQ=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
+        kernel test robot <lkp@intel.com>,
+        Paul Burton <paulburton@kernel.org>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        "Maciej W. Rozycki" <macro@orcam.me.uk>,
+        linux-mips@vger.kernel.org, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 342/599] mips: DEC: honor CONFIG_MIPS_FP_SUPPORT=n
+Date:   Tue,  5 Apr 2022 09:30:36 +0200
+Message-Id: <20220405070309.010383068@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
+References: <20220405070258.802373272@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Convert the mscc-miim device tree binding to the new YAML format.
+From: Randy Dunlap <rdunlap@infradead.org>
 
-The original binding don't mention if the interrupt property is optional
-or not. But on the SparX-5 SoC, for example, the interrupt property isn't
-used, thus in the new binding that property is optional. FWIW the driver
-doesn't use interrupts at all.
+[ Upstream commit 97bf0395c226907e1a9b908511a35192bf1e09bb ]
 
-Signed-off-by: Michael Walle <michael@walle.cc>
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Include the DECstation interrupt handler in opting out of
+FPU support.
+
+Fixes a linker error:
+
+mips-linux-ld: arch/mips/dec/int-handler.o: in function `fpu':
+(.text+0x148): undefined reference to `handle_fpe_int'
+
+Fixes: 183b40f992c8 ("MIPS: Allow FP support to be disabled")
+Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+Reported-by: kernel test robot <lkp@intel.com>
+Cc: Paul Burton <paulburton@kernel.org>
+Cc: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+Cc: Maciej W. Rozycki <macro@orcam.me.uk>
+Cc: linux-mips@vger.kernel.org
+Acked-by: Maciej W. Rozycki <macro@orcam.me.uk>
+Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../devicetree/bindings/net/mscc,miim.yaml    | 56 +++++++++++++++++++
- .../devicetree/bindings/net/mscc-miim.txt     | 26 ---------
- 2 files changed, 56 insertions(+), 26 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/net/mscc,miim.yaml
- delete mode 100644 Documentation/devicetree/bindings/net/mscc-miim.txt
+ arch/mips/dec/int-handler.S | 6 +++---
+ arch/mips/dec/setup.c       | 3 ++-
+ 2 files changed, 5 insertions(+), 4 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/net/mscc,miim.yaml b/Documentation/devicetree/bindings/net/mscc,miim.yaml
-new file mode 100644
-index 000000000000..cdc39aa20683
---- /dev/null
-+++ b/Documentation/devicetree/bindings/net/mscc,miim.yaml
-@@ -0,0 +1,56 @@
-+# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/net/mscc,miim.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Microsemi MII Management Controller (MIIM)
-+
-+maintainers:
-+  - Alexandre Belloni <alexandre.belloni@bootlin.com>
-+
-+allOf:
-+  - $ref: "mdio.yaml#"
-+
-+properties:
-+  compatible:
-+    enum:
-+      - mscc,ocelot-miim
-+      - microchip,lan966x-miim
-+
-+  "#address-cells":
-+    const: 1
-+
-+  "#size-cells":
-+    const: 0
-+
-+  reg:
-+    items:
-+      - description: base address
-+      - description: associated reset register for internal PHYs
-+    minItems: 1
-+
-+  interrupts:
-+    maxItems: 1
-+
-+required:
-+  - compatible
-+  - reg
-+  - "#address-cells"
-+  - "#size-cells"
-+
-+unevaluatedProperties: false
-+
-+examples:
-+  - |
-+    mdio@107009c {
-+      compatible = "mscc,ocelot-miim";
-+      reg = <0x107009c 0x36>, <0x10700f0 0x8>;
-+      interrupts = <14>;
-+      #address-cells = <1>;
-+      #size-cells = <0>;
-+
-+      phy0: ethernet-phy@0 {
-+        reg = <0>;
-+      };
-+    };
-diff --git a/Documentation/devicetree/bindings/net/mscc-miim.txt b/Documentation/devicetree/bindings/net/mscc-miim.txt
-deleted file mode 100644
-index 70e0cb1ee485..000000000000
---- a/Documentation/devicetree/bindings/net/mscc-miim.txt
-+++ /dev/null
-@@ -1,26 +0,0 @@
--Microsemi MII Management Controller (MIIM) / MDIO
--=================================================
--
--Properties:
--- compatible: must be "mscc,ocelot-miim" or "microchip,lan966x-miim"
--- reg: The base address of the MDIO bus controller register bank. Optionally, a
--  second register bank can be defined if there is an associated reset register
--  for internal PHYs
--- #address-cells: Must be <1>.
--- #size-cells: Must be <0>.  MDIO addresses have no size component.
--- interrupts: interrupt specifier (refer to the interrupt binding)
--
--Typically an MDIO bus might have several children.
--
--Example:
--	mdio@107009c {
--		#address-cells = <1>;
--		#size-cells = <0>;
--		compatible = "mscc,ocelot-miim";
--		reg = <0x107009c 0x36>, <0x10700f0 0x8>;
--		interrupts = <14>;
--
--		phy0: ethernet-phy@0 {
--			reg = <0>;
--		};
--	};
+diff --git a/arch/mips/dec/int-handler.S b/arch/mips/dec/int-handler.S
+index ea5b5a83f1e1..011d1d678840 100644
+--- a/arch/mips/dec/int-handler.S
++++ b/arch/mips/dec/int-handler.S
+@@ -131,7 +131,7 @@
+ 		 */
+ 		mfc0	t0,CP0_CAUSE		# get pending interrupts
+ 		mfc0	t1,CP0_STATUS
+-#ifdef CONFIG_32BIT
++#if defined(CONFIG_32BIT) && defined(CONFIG_MIPS_FP_SUPPORT)
+ 		lw	t2,cpu_fpu_mask
+ #endif
+ 		andi	t0,ST0_IM		# CAUSE.CE may be non-zero!
+@@ -139,7 +139,7 @@
+ 
+ 		beqz	t0,spurious
+ 
+-#ifdef CONFIG_32BIT
++#if defined(CONFIG_32BIT) && defined(CONFIG_MIPS_FP_SUPPORT)
+ 		 and	t2,t0
+ 		bnez	t2,fpu			# handle FPU immediately
+ #endif
+@@ -280,7 +280,7 @@ handle_it:
+ 		j	dec_irq_dispatch
+ 		 nop
+ 
+-#ifdef CONFIG_32BIT
++#if defined(CONFIG_32BIT) && defined(CONFIG_MIPS_FP_SUPPORT)
+ fpu:
+ 		lw	t0,fpu_kstat_irq
+ 		nop
+diff --git a/arch/mips/dec/setup.c b/arch/mips/dec/setup.c
+index eaad0ed4b523..99b9b29750db 100644
+--- a/arch/mips/dec/setup.c
++++ b/arch/mips/dec/setup.c
+@@ -746,7 +746,8 @@ void __init arch_init_irq(void)
+ 		dec_interrupt[DEC_IRQ_HALT] = -1;
+ 
+ 	/* Register board interrupts: FPU and cascade. */
+-	if (dec_interrupt[DEC_IRQ_FPU] >= 0 && cpu_has_fpu) {
++	if (IS_ENABLED(CONFIG_MIPS_FP_SUPPORT) &&
++	    dec_interrupt[DEC_IRQ_FPU] >= 0 && cpu_has_fpu) {
+ 		struct irq_desc *desc_fpu;
+ 		int irq_fpu;
+ 
 -- 
-2.30.2
+2.34.1
+
+
 
