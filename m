@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D3447C4332F
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 22:04:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A57BC43219
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 22:04:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1390625AbiDEWEK (ORCPT
+        id S1390685AbiDEWET (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 18:04:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39896 "EHLO
+        Tue, 5 Apr 2022 18:04:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49402 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348829AbiDEJsk (ORCPT
+        with ESMTP id S244692AbiDEKjF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:48:40 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25CFFB3DCE;
-        Tue,  5 Apr 2022 02:36:31 -0700 (PDT)
+        Tue, 5 Apr 2022 06:39:05 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3AD6A27C5;
+        Tue,  5 Apr 2022 03:24:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C837DB81B93;
-        Tue,  5 Apr 2022 09:36:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3138FC385A0;
-        Tue,  5 Apr 2022 09:36:28 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 73A3F61676;
+        Tue,  5 Apr 2022 10:24:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7E1BEC385A0;
+        Tue,  5 Apr 2022 10:24:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649151388;
-        bh=jh9CllG9PsAXX5BVlSm7J62a8oQ3Hy7djmNXGAhkUiM=;
+        s=korg; t=1649154255;
+        bh=7CDUD80sMxN61iY7oXs7CaIgA5Pu4VqjZ0AQy754SNQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=An+cltzTsqXahPWZFFa8s8E9Qm9kainBAXkVQylCcpvwis2xeXzNLVq0+c9C8r3XA
-         ufjuzQ6LDZQ9VTgRzYa8GVGR54QqMhZjAtsUta8WMyj8Ul+MKaR67c7Lb8uOck+7hI
-         MXZWWGD93oOV1wrraOCp/0zWpHFWm5eiWBVF6xVQ=
+        b=y0vvuQVJEYhEC5Jd9xDTy8hVJhCIxRHm0v640mvR1hPVnr/NzBOilwOV9SyxMpHwJ
+         Jy1diZzOBNOzk7PDV1N6oBOocKBlM2LrIHpJYYQVpEOJJRq9AMZ7XHEq7EGFZb3Sr6
+         VvolHfn72HlwPxBpqaOX34Q9xAyrebGKtF8O6XkA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Shannon Nelson <snelson@pensando.io>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 397/913] ionic: fix type complaint in ionic_dev_cmd_clean()
-Date:   Tue,  5 Apr 2022 09:24:19 +0200
-Message-Id: <20220405070351.748311758@linuxfoundation.org>
+        stable@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>,
+        Anders Roxell <anders.roxell@linaro.org>,
+        Michael Ellerman <mpe@ellerman.id.au>
+Subject: [PATCH 5.10 514/599] powerpc/lib/sstep: Fix sthcx instruction
+Date:   Tue,  5 Apr 2022 09:33:28 +0200
+Message-Id: <20220405070314.134442557@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
+References: <20220405070258.802373272@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,51 +50,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Shannon Nelson <snelson@pensando.io>
+From: Anders Roxell <anders.roxell@linaro.org>
 
-[ Upstream commit bc0bf9de6f48268f4ee59e57fb42ac751be3ecda ]
+commit a633cb1edddaa643fadc70abc88f89a408fa834a upstream.
 
-Sparse seems to have gotten a little more picky lately and
-we need to revisit this bit of code to make sparse happy.
+Looks like there been a copy paste mistake when added the instruction
+'stbcx' twice and one was probably meant to be 'sthcx'. Changing to
+'sthcx' from 'stbcx'.
 
-warning: incorrect type in initializer (different address spaces)
-   expected union ionic_dev_cmd_regs *regs
-   got union ionic_dev_cmd_regs [noderef] __iomem *dev_cmd_regs
-warning: incorrect type in argument 2 (different address spaces)
-   expected void [noderef] __iomem *
-   got unsigned int *
-warning: incorrect type in argument 1 (different address spaces)
-   expected void volatile [noderef] __iomem *
-   got union ionic_dev_cmd *
-
-Fixes: d701ec326a31 ("ionic: clean up sparse complaints")
-Signed-off-by: Shannon Nelson <snelson@pensando.io>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 350779a29f11 ("powerpc: Handle most loads and stores in instruction emulation code")
+Cc: stable@vger.kernel.org # v4.14+
+Reported-by: Arnd Bergmann <arnd@arndb.de>
+Signed-off-by: Anders Roxell <anders.roxell@linaro.org>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/20220224162215.3406642-1-anders.roxell@linaro.org
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/pensando/ionic/ionic_main.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ arch/powerpc/lib/sstep.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/pensando/ionic/ionic_main.c b/drivers/net/ethernet/pensando/ionic/ionic_main.c
-index 6f07bf509efe..f4af760cfa73 100644
---- a/drivers/net/ethernet/pensando/ionic/ionic_main.c
-+++ b/drivers/net/ethernet/pensando/ionic/ionic_main.c
-@@ -328,10 +328,10 @@ int ionic_adminq_post_wait(struct ionic_lif *lif, struct ionic_admin_ctx *ctx)
- 
- static void ionic_dev_cmd_clean(struct ionic *ionic)
- {
--	union __iomem ionic_dev_cmd_regs *regs = ionic->idev.dev_cmd_regs;
-+	struct ionic_dev *idev = &ionic->idev;
- 
--	iowrite32(0, &regs->doorbell);
--	memset_io(&regs->cmd, 0, sizeof(regs->cmd));
-+	iowrite32(0, &idev->dev_cmd_regs->doorbell);
-+	memset_io(&idev->dev_cmd_regs->cmd, 0, sizeof(idev->dev_cmd_regs->cmd));
- }
- 
- int ionic_dev_cmd_wait(struct ionic *ionic, unsigned long max_seconds)
--- 
-2.34.1
-
+--- a/arch/powerpc/lib/sstep.c
++++ b/arch/powerpc/lib/sstep.c
+@@ -3187,7 +3187,7 @@ int emulate_loadstore(struct pt_regs *re
+ 			__put_user_asmx(op->val, ea, err, "stbcx.", cr);
+ 			break;
+ 		case 2:
+-			__put_user_asmx(op->val, ea, err, "stbcx.", cr);
++			__put_user_asmx(op->val, ea, err, "sthcx.", cr);
+ 			break;
+ #endif
+ 		case 4:
 
 
