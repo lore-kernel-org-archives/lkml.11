@@ -2,164 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 55D85C43217
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:15:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D6C5EC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:15:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383757AbiDEUFG (ORCPT
+        id S1384626AbiDEUFK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 16:05:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44580 "EHLO
+        Tue, 5 Apr 2022 16:05:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36768 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241825AbiDEKcm (ORCPT
+        with ESMTP id S1457297AbiDEQDE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:32:42 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15077DE905;
-        Tue,  5 Apr 2022 03:18:41 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C17A7B81C9B;
-        Tue,  5 Apr 2022 10:18:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1990CC385A0;
-        Tue,  5 Apr 2022 10:18:37 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649153918;
-        bh=sjwe6HTk+VrskoTOBUJ0owPBc/lWtZnBAMxd+IY/hNY=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Pd1K2PC9d9lQv119CSeIEQGQX6xUfiv4WLNMiYvVsRt5FA4TpllsD17aJg+gXVJPC
-         njui2zKmKfYJKpJxTdT2bWbo+CIgiClXJ02URShWt9WMWkmvsEuivJXhMJ//2q6v7F
-         RzreOoIFEtTnRlMOa4C9zzVBkqr/PFjzQA5fqrAQ=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Guillaume Nault <gnault@redhat.com>,
-        David Ahern <dsahern@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 367/599] ipv4: Fix route lookups when handling ICMP redirects and PMTU updates
-Date:   Tue,  5 Apr 2022 09:31:01 +0200
-Message-Id: <20220405070309.752208890@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 5 Apr 2022 12:03:04 -0400
+Received: from mail-io1-xd34.google.com (mail-io1-xd34.google.com [IPv6:2607:f8b0:4864:20::d34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 742F024F39
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 08:37:18 -0700 (PDT)
+Received: by mail-io1-xd34.google.com with SMTP id h63so15561021iof.12
+        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 08:37:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=FtaEgz69DQ819AKh/JUIG3OQ4Q+fmie3I0z6sDwsCCk=;
+        b=dFZM9Jrm29mfxGpXaOsvIRZmFBKbc0AgfvSqpX3EioHJtIEsvWDD/GYPxV+38Ss6kK
+         aSi5BlXbacPVXocOH787r6+R/vBk3hUUaZKk6t1gUvTV1szQ4wil+I9AUrXlJushPlL0
+         AUBAoWK2P/GkBgUjPd2KTB1I+cGHLXiYQLVf8QiRIZP2IuJwEOOq9A221Zbju6o70rWR
+         Ti+4hXQ5CukVYwGcjeurbmjEzT6ndHMrkpAgA3Zx+OtFytIL3FcUgvGTIxPJLyKTB9SS
+         SGZ37SJm00UTH/TDwyQGs9OOhfNB8HHKRQ33tHsCsm2Iybrwo2AwkIFF07Y/u09MzsvZ
+         3s4w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=FtaEgz69DQ819AKh/JUIG3OQ4Q+fmie3I0z6sDwsCCk=;
+        b=ZmjCWbDpxNhMGGoIiRiPpx73h8U/15RQMx9aEr8js1UjwXdGzLMAvOztUmeikQRi6z
+         1FsNo9WqRy+K0q+EF2j5FpS8R94wpcenDqeA9RLxUjpRqGEcvHekPK7ueG+S/boPMLOT
+         grirEILVTMVbhaJe+odL72ct5nRY+fUos8bofZ26gw2BEOH1xE5oA6iwiFU6Z4YROH4c
+         M7wn9W8Da2onVcCPxmgVfbZhcMGRUfeg0wmxG6fkssePOj/HyfZnbwPvwOqP5vm+4YJ8
+         MC2i9lPq2wiGJWNP4ING8HfLAHNCCjbpHF3gMGFGBuUkG6H6TvAcA6FRuO9kSM7EeNXb
+         35/g==
+X-Gm-Message-State: AOAM5331OTjvyDgRbiQRJu1EN6SVjQwRZNZ9PgJtdcPCTvwKIqPbDDxG
+        IlzoGNvFs2e0oPwPI7JNbsaR9onzeP9dX0Qpslk=
+X-Google-Smtp-Source: ABdhPJzKvUXA4HEqXhmBIGdqKNw+wxPo77cFowOrT7xA9Lsny2Cp5v64TzdBY34Vz1GLSofqMqmZ5tQubR2ncnnPI8M=
+X-Received: by 2002:a02:b687:0:b0:323:60e7:121a with SMTP id
+ i7-20020a02b687000000b0032360e7121amr2473005jam.22.1649173037888; Tue, 05 Apr
+ 2022 08:37:17 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <cover.1648049113.git.andreyknvl@google.com> <21e3e20ea58e242e3c82c19abbfe65b579e0e4b8.1648049113.git.andreyknvl@google.com>
+ <YkVyGdniIBXf4t8/@FVFF77S0Q05N>
+In-Reply-To: <YkVyGdniIBXf4t8/@FVFF77S0Q05N>
+From:   Andrey Konovalov <andreyknvl@gmail.com>
+Date:   Tue, 5 Apr 2022 17:37:06 +0200
+Message-ID: <CA+fCnZeVKv9iJknyHiKWF0QA3vx+SznJCDJ10Q_HmnzHmnpt=w@mail.gmail.com>
+Subject: Re: [PATCH v2 1/4] stacktrace: add interface based on shadow call stack
+To:     Mark Rutland <mark.rutland@arm.com>
+Cc:     andrey.konovalov@linux.dev, Marco Elver <elver@google.com>,
+        Alexander Potapenko <glider@google.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        Andrey Ryabinin <ryabinin.a.a@gmail.com>,
+        kasan-dev <kasan-dev@googlegroups.com>,
+        Vincenzo Frascino <vincenzo.frascino@arm.com>,
+        Sami Tolvanen <samitolvanen@google.com>,
+        Peter Collingbourne <pcc@google.com>,
+        Evgenii Stepanov <eugenis@google.com>,
+        Florian Mayer <fmayer@google.com>,
+        Linux Memory Management List <linux-mm@kvack.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Andrey Konovalov <andreyknvl@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Guillaume Nault <gnault@redhat.com>
+On Thu, Mar 31, 2022 at 11:19 AM Mark Rutland <mark.rutland@arm.com> wrote:
+>
+> > Collecting stack traces this way is significantly faster: boot time
+> > of a defconfig build with KASAN enabled gets descreased by ~30%.
+>
+> Hmm... just to check, do ou know if that's just because of hte linear copy, or
+> because we're skipping other work we have to do in the regular stacktrace?
 
-[ Upstream commit 544b4dd568e3b09c1ab38a759d3187e7abda11a0 ]
+No, I haven't looked into this.
 
-The PMTU update and ICMP redirect helper functions initialise their fl4
-variable with either __build_flow_key() or build_sk_flow_key(). These
-initialisation functions always set ->flowi4_scope with
-RT_SCOPE_UNIVERSE and might set the ECN bits of ->flowi4_tos. This is
-not a problem when the route lookup is later done via
-ip_route_output_key_hash(), which properly clears the ECN bits from
-->flowi4_tos and initialises ->flowi4_scope based on the RTO_ONLINK
-flag. However, some helpers call fib_lookup() directly, without
-sanitising the tos and scope fields, so the route lookup can fail and,
-as a result, the ICMP redirect or PMTU update aren't taken into
-account.
+> > The implementation of the added interface is not meant to use
+> > stack_trace_consume_fn to avoid making a function call for each
+> > collected frame to further improve performance.
+>
+> ... because we could easily provide an inline-optimized stack copy *without*
+> having to write a distinct unwinder, and I'd *really* like to avoid having a
+> bunch of distinct unwinders for arm64, as it really hinders maintenance. We're
+> working on fixing/improving the arm64 unwinder for things like
+> RELIABLE_STACKTRACE, and I know that some of that work is non-trivial to make
+> work with an SCS-based unwind rather than an FP-based unwind, and/or will
+> undermine the saving anyway.
 
-Fix this by extracting the ->flowi4_tos and ->flowi4_scope sanitisation
-code into ip_rt_fix_tos(), then use this function in handlers that call
-fib_lookup() directly.
+Responded on the cover letter wrt this.
 
-Note 1: We can't sanitise ->flowi4_tos and ->flowi4_scope in a central
-place (like __build_flow_key() or flowi4_init_output()), because
-ip_route_output_key_hash() expects non-sanitised values. When called
-with sanitised values, it can erroneously overwrite RT_SCOPE_LINK with
-RT_SCOPE_UNIVERSE in ->flowi4_scope. Therefore we have to be careful to
-sanitise the values only for those paths that don't call
-ip_route_output_key_hash().
+> > +int stack_trace_save_shadow(unsigned long *store, unsigned int size,
+> > +                         unsigned int skipnr)
+> > +{
+> > +     /*
+> > +      * Do not use stack_trace_consume_fn to avoid making a function
+> > +      * call for each collected frame to improve performance.
+> > +      * Skip + 1 frame to skip stack_trace_save_shadow.
+> > +      */
+> > +     return arch_stack_walk_shadow(store, size, skipnr + 1);
+> > +}
+> > +#endif
+>
+> If we really need this, can we make it an __always_inline in a header so that
+> we can avoid the skip? Generally the skipping is problematic due to
+> inlining/outlining and LTO, and I'd like to avoid adding more of it
+> unnecessarily.
 
-Note 2: The problem is mostly about sanitising ->flowi4_tos. Having
-->flowi4_scope initialised with RT_SCOPE_UNIVERSE instead of
-RT_SCOPE_LINK probably wasn't really a problem: sockets with the
-SOCK_LOCALROUTE flag set (those that'd result in RTO_ONLINK being set)
-normally shouldn't receive ICMP redirects or PMTU updates.
+Yes, I think this should work.
 
-Fixes: 4895c771c7f0 ("ipv4: Add FIB nexthop exceptions.")
-Signed-off-by: Guillaume Nault <gnault@redhat.com>
-Reviewed-by: David Ahern <dsahern@kernel.org>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- net/ipv4/route.c | 18 ++++++++++++++----
- 1 file changed, 14 insertions(+), 4 deletions(-)
+However, if we keep the implementation in mm/kasan, this integration
+will not be required.
 
-diff --git a/net/ipv4/route.c b/net/ipv4/route.c
-index ce787c386793..c72d0de8bf71 100644
---- a/net/ipv4/route.c
-+++ b/net/ipv4/route.c
-@@ -529,6 +529,15 @@ void __ip_select_ident(struct net *net, struct iphdr *iph, int segs)
- }
- EXPORT_SYMBOL(__ip_select_ident);
- 
-+static void ip_rt_fix_tos(struct flowi4 *fl4)
-+{
-+	__u8 tos = RT_FL_TOS(fl4);
-+
-+	fl4->flowi4_tos = tos & IPTOS_RT_MASK;
-+	fl4->flowi4_scope = tos & RTO_ONLINK ?
-+			    RT_SCOPE_LINK : RT_SCOPE_UNIVERSE;
-+}
-+
- static void __build_flow_key(const struct net *net, struct flowi4 *fl4,
- 			     const struct sock *sk,
- 			     const struct iphdr *iph,
-@@ -853,6 +862,7 @@ static void ip_do_redirect(struct dst_entry *dst, struct sock *sk, struct sk_buf
- 	rt = (struct rtable *) dst;
- 
- 	__build_flow_key(net, &fl4, sk, iph, oif, tos, prot, mark, 0);
-+	ip_rt_fix_tos(&fl4);
- 	__ip_do_redirect(rt, skb, &fl4, true);
- }
- 
-@@ -1077,6 +1087,7 @@ static void ip_rt_update_pmtu(struct dst_entry *dst, struct sock *sk,
- 	struct flowi4 fl4;
- 
- 	ip_rt_build_flow_key(&fl4, sk, skb);
-+	ip_rt_fix_tos(&fl4);
- 
- 	/* Don't make lookup fail for bridged encapsulations */
- 	if (skb && netif_is_any_bridge_port(skb->dev))
-@@ -1151,6 +1162,8 @@ void ipv4_sk_update_pmtu(struct sk_buff *skb, struct sock *sk, u32 mtu)
- 			goto out;
- 
- 		new = true;
-+	} else {
-+		ip_rt_fix_tos(&fl4);
- 	}
- 
- 	__ip_rt_update_pmtu((struct rtable *)xfrm_dst_path(&rt->dst), &fl4, mtu);
-@@ -2524,7 +2537,6 @@ static struct rtable *__mkroute_output(const struct fib_result *res,
- struct rtable *ip_route_output_key_hash(struct net *net, struct flowi4 *fl4,
- 					const struct sk_buff *skb)
- {
--	__u8 tos = RT_FL_TOS(fl4);
- 	struct fib_result res = {
- 		.type		= RTN_UNSPEC,
- 		.fi		= NULL,
-@@ -2534,9 +2546,7 @@ struct rtable *ip_route_output_key_hash(struct net *net, struct flowi4 *fl4,
- 	struct rtable *rth;
- 
- 	fl4->flowi4_iif = LOOPBACK_IFINDEX;
--	fl4->flowi4_tos = tos & IPTOS_RT_MASK;
--	fl4->flowi4_scope = ((tos & RTO_ONLINK) ?
--			 RT_SCOPE_LINK : RT_SCOPE_UNIVERSE);
-+	ip_rt_fix_tos(fl4);
- 
- 	rcu_read_lock();
- 	rth = ip_route_output_key_hash_rcu(net, fl4, &res, skb);
--- 
-2.34.1
-
-
-
+Thanks!
