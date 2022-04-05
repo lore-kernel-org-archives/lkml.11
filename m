@@ -2,46 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2CB29C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 01:54:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 62B0FC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 01:54:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1845106AbiDFBx6 (ORCPT
+        id S1845321AbiDFByO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 21:53:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42284 "EHLO
+        Tue, 5 Apr 2022 21:54:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39896 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356611AbiDEKYl (ORCPT
+        with ESMTP id S1349393AbiDEJtr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:24:41 -0400
+        Tue, 5 Apr 2022 05:49:47 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57692BD8BF;
-        Tue,  5 Apr 2022 03:08:36 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5638C15FFD;
+        Tue,  5 Apr 2022 02:44:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 079C96179D;
-        Tue,  5 Apr 2022 10:08:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 19CE8C385A2;
-        Tue,  5 Apr 2022 10:08:34 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E739761675;
+        Tue,  5 Apr 2022 09:44:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 05FAEC385A1;
+        Tue,  5 Apr 2022 09:44:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649153315;
-        bh=p1uM7BKYAoQHxtNwuGB9OLzumRFPK1hyR1Yt4U4IkAA=;
+        s=korg; t=1649151892;
+        bh=vjsrtqUyE3qmQ6zDoHeGzm8tnzALeS3OuodQrayDuPM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tiHbcFtwHLekAljOWm0uRYW5XnBR9SFvyZrfn+70YAwmtnNY8ff/v9bO6PvupuuGL
-         pG/pHEEGto2CUDNNVisPq/rWoF8ClQVxVTkhAaRW+LLmdYdIHQWQCTiO2nM6XQ8uSA
-         iuBuDH+EAJXPN5hSXadbIIdhwwaTl0eCg8eWj8RY=
+        b=0mV/OJUF344rRvnJLmR5K4+YFhU2M4zbTPjx9s6jn4VW62NpA6PoOh21ybmvV1W+4
+         qxIry2+CD+Oh5K3jWrjc1bqfDNMNNf4lPlB9oFHlLWBQKA2rnUVQIvYFIUHCDQbMn/
+         Lj5USYsK7TMLTdhjxevFLp47JpkD/uGdnwv7321o=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Chao Yu <chao@kernel.org>,
-        Jaegeuk Kim <jaegeuk@kernel.org>,
+        stable@vger.kernel.org, Wang Yufen <wangyufen@huawei.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        John Fastabend <john.fastabend@gmail.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 179/599] f2fs: fix missing free nid in f2fs_handle_failed_inode
-Date:   Tue,  5 Apr 2022 09:27:53 +0200
-Message-Id: <20220405070304.168613400@linuxfoundation.org>
+Subject: [PATCH 5.15 541/913] bpf, sockmap: Fix memleak in tcp_bpf_sendmsg while sk msg is full
+Date:   Tue,  5 Apr 2022 09:26:43 +0200
+Message-Id: <20220405070356.064605865@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,107 +51,107 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jaegeuk Kim <jaegeuk@kernel.org>
+From: Wang Yufen <wangyufen@huawei.com>
 
-[ Upstream commit 2fef99b8372c1ae3d8445ab570e888b5a358dbe9 ]
+[ Upstream commit 9c34e38c4a870eb30b13f42f5b44f42e9d19ccb8 ]
 
-This patch fixes xfstests/generic/475 failure.
+If tcp_bpf_sendmsg() is running while sk msg is full. When sk_msg_alloc()
+returns -ENOMEM error, tcp_bpf_sendmsg() goes to wait_for_memory. If partial
+memory has been alloced by sk_msg_alloc(), that is, msg_tx->sg.size is
+greater than osize after sk_msg_alloc(), memleak occurs. To fix we use
+sk_msg_trim() to release the allocated memory, then goto wait for memory.
 
-[  293.680694] F2FS-fs (dm-1): May loss orphan inode, run fsck to fix.
-[  293.685358] Buffer I/O error on dev dm-1, logical block 8388592, async page read
-[  293.691527] Buffer I/O error on dev dm-1, logical block 8388592, async page read
-[  293.691764] sh (7615): drop_caches: 3
-[  293.691819] sh (7616): drop_caches: 3
-[  293.694017] Buffer I/O error on dev dm-1, logical block 1, async page read
-[  293.695659] sh (7618): drop_caches: 3
-[  293.696979] sh (7617): drop_caches: 3
-[  293.700290] sh (7623): drop_caches: 3
-[  293.708621] sh (7626): drop_caches: 3
-[  293.711386] sh (7628): drop_caches: 3
-[  293.711825] sh (7627): drop_caches: 3
-[  293.716738] sh (7630): drop_caches: 3
-[  293.719613] sh (7632): drop_caches: 3
-[  293.720971] sh (7633): drop_caches: 3
-[  293.727741] sh (7634): drop_caches: 3
-[  293.730783] sh (7636): drop_caches: 3
-[  293.732681] sh (7635): drop_caches: 3
-[  293.732988] sh (7637): drop_caches: 3
-[  293.738836] sh (7639): drop_caches: 3
-[  293.740568] sh (7641): drop_caches: 3
-[  293.743053] sh (7640): drop_caches: 3
-[  293.821889] ------------[ cut here ]------------
-[  293.824654] kernel BUG at fs/f2fs/node.c:3334!
-[  293.826226] invalid opcode: 0000 [#1] PREEMPT SMP PTI
-[  293.828713] CPU: 0 PID: 7653 Comm: umount Tainted: G           OE     5.17.0-rc1-custom #1
-[  293.830946] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.15.0-1 04/01/2014
-[  293.832526] RIP: 0010:f2fs_destroy_node_manager+0x33f/0x350 [f2fs]
-[  293.833905] Code: e8 d6 3d f9 f9 48 8b 45 d0 65 48 2b 04 25 28 00 00 00 75 1a 48 81 c4 28 03 00 00 5b 41 5c 41 5d 41 5e 41 5f 5d c3 0f 0b
-[  293.837783] RSP: 0018:ffffb04ec31e7a20 EFLAGS: 00010202
-[  293.839062] RAX: 0000000000000001 RBX: ffff9df947db2eb8 RCX: 0000000080aa0072
-[  293.840666] RDX: 0000000000000000 RSI: ffffe86c0432a140 RDI: ffffffffc0b72a21
-[  293.842261] RBP: ffffb04ec31e7d70 R08: ffff9df94ca85780 R09: 0000000080aa0072
-[  293.843909] R10: ffff9df94ca85700 R11: ffff9df94e1ccf58 R12: ffff9df947db2e00
-[  293.845594] R13: ffff9df947db2ed0 R14: ffff9df947db2eb8 R15: ffff9df947db2eb8
-[  293.847855] FS:  00007f5a97379800(0000) GS:ffff9dfa77c00000(0000) knlGS:0000000000000000
-[  293.850647] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[  293.852940] CR2: 00007f5a97528730 CR3: 000000010bc76005 CR4: 0000000000370ef0
-[  293.854680] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-[  293.856423] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-[  293.858380] Call Trace:
-[  293.859302]  <TASK>
-[  293.860311]  ? ttwu_do_wakeup+0x1c/0x170
-[  293.861800]  ? ttwu_do_activate+0x6d/0xb0
-[  293.863057]  ? _raw_spin_unlock_irqrestore+0x29/0x40
-[  293.864411]  ? try_to_wake_up+0x9d/0x5e0
-[  293.865618]  ? debug_smp_processor_id+0x17/0x20
-[  293.866934]  ? debug_smp_processor_id+0x17/0x20
-[  293.868223]  ? free_unref_page+0xbf/0x120
-[  293.869470]  ? __free_slab+0xcb/0x1c0
-[  293.870614]  ? preempt_count_add+0x7a/0xc0
-[  293.871811]  ? __slab_free+0xa0/0x2d0
-[  293.872918]  ? __wake_up_common_lock+0x8a/0xc0
-[  293.874186]  ? __slab_free+0xa0/0x2d0
-[  293.875305]  ? free_inode_nonrcu+0x20/0x20
-[  293.876466]  ? free_inode_nonrcu+0x20/0x20
-[  293.877650]  ? debug_smp_processor_id+0x17/0x20
-[  293.878949]  ? call_rcu+0x11a/0x240
-[  293.880060]  ? f2fs_destroy_stats+0x59/0x60 [f2fs]
-[  293.881437]  ? kfree+0x1fe/0x230
-[  293.882674]  f2fs_put_super+0x160/0x390 [f2fs]
-[  293.883978]  generic_shutdown_super+0x7a/0x120
-[  293.885274]  kill_block_super+0x27/0x50
-[  293.886496]  kill_f2fs_super+0x7f/0x100 [f2fs]
-[  293.887806]  deactivate_locked_super+0x35/0xa0
-[  293.889271]  deactivate_super+0x40/0x50
-[  293.890513]  cleanup_mnt+0x139/0x190
-[  293.891689]  __cleanup_mnt+0x12/0x20
-[  293.892850]  task_work_run+0x64/0xa0
-[  293.894035]  exit_to_user_mode_prepare+0x1b7/0x1c0
-[  293.895409]  syscall_exit_to_user_mode+0x27/0x50
-[  293.896872]  do_syscall_64+0x48/0xc0
-[  293.898090]  entry_SYSCALL_64_after_hwframe+0x44/0xae
-[  293.899517] RIP: 0033:0x7f5a975cd25b
+Other call paths of sk_msg_alloc() have the similar issue, such as
+tls_sw_sendmsg(), so handle sk_msg_trim logic inside sk_msg_alloc(),
+as Cong Wang suggested.
 
-Fixes: 7735730d39d7 ("f2fs: fix to propagate error from __get_meta_page()")
-Reviewed-by: Chao Yu <chao@kernel.org>
-Signed-off-by: Jaegeuk Kim <jaegeuk@kernel.org>
+This issue can cause the following info:
+WARNING: CPU: 3 PID: 7950 at net/core/stream.c:208 sk_stream_kill_queues+0xd4/0x1a0
+Call Trace:
+ <TASK>
+ inet_csk_destroy_sock+0x55/0x110
+ __tcp_close+0x279/0x470
+ tcp_close+0x1f/0x60
+ inet_release+0x3f/0x80
+ __sock_release+0x3d/0xb0
+ sock_close+0x11/0x20
+ __fput+0x92/0x250
+ task_work_run+0x6a/0xa0
+ do_exit+0x33b/0xb60
+ do_group_exit+0x2f/0xa0
+ get_signal+0xb6/0x950
+ arch_do_signal_or_restart+0xac/0x2a0
+ exit_to_user_mode_prepare+0xa9/0x200
+ syscall_exit_to_user_mode+0x12/0x30
+ do_syscall_64+0x46/0x80
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+ </TASK>
+
+WARNING: CPU: 3 PID: 2094 at net/ipv4/af_inet.c:155 inet_sock_destruct+0x13c/0x260
+Call Trace:
+ <TASK>
+ __sk_destruct+0x24/0x1f0
+ sk_psock_destroy+0x19b/0x1c0
+ process_one_work+0x1b3/0x3c0
+ kthread+0xe6/0x110
+ ret_from_fork+0x22/0x30
+ </TASK>
+
+Fixes: 604326b41a6f ("bpf, sockmap: convert to generic sk_msg interface")
+Signed-off-by: Wang Yufen <wangyufen@huawei.com>
+Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+Acked-by: John Fastabend <john.fastabend@gmail.com>
+Link: https://lore.kernel.org/bpf/20220304081145.2037182-3-wangyufen@huawei.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/f2fs/inode.c | 1 +
- 1 file changed, 1 insertion(+)
+ net/core/skmsg.c | 17 +++++++++++++----
+ 1 file changed, 13 insertions(+), 4 deletions(-)
 
-diff --git a/fs/f2fs/inode.c b/fs/f2fs/inode.c
-index a35fcf43ad5a..98483f50e5e9 100644
---- a/fs/f2fs/inode.c
-+++ b/fs/f2fs/inode.c
-@@ -848,6 +848,7 @@ void f2fs_handle_failed_inode(struct inode *inode)
- 	err = f2fs_get_node_info(sbi, inode->i_ino, &ni);
- 	if (err) {
- 		set_sbi_flag(sbi, SBI_NEED_FSCK);
-+		set_inode_flag(inode, FI_FREE_NID);
- 		f2fs_warn(sbi, "May loss orphan inode, run fsck to fix.");
- 		goto out;
+diff --git a/net/core/skmsg.c b/net/core/skmsg.c
+index 929a2b096b04..cc381165ea08 100644
+--- a/net/core/skmsg.c
++++ b/net/core/skmsg.c
+@@ -27,6 +27,7 @@ int sk_msg_alloc(struct sock *sk, struct sk_msg *msg, int len,
+ 		 int elem_first_coalesce)
+ {
+ 	struct page_frag *pfrag = sk_page_frag(sk);
++	u32 osize = msg->sg.size;
+ 	int ret = 0;
+ 
+ 	len -= msg->sg.size;
+@@ -35,13 +36,17 @@ int sk_msg_alloc(struct sock *sk, struct sk_msg *msg, int len,
+ 		u32 orig_offset;
+ 		int use, i;
+ 
+-		if (!sk_page_frag_refill(sk, pfrag))
+-			return -ENOMEM;
++		if (!sk_page_frag_refill(sk, pfrag)) {
++			ret = -ENOMEM;
++			goto msg_trim;
++		}
+ 
+ 		orig_offset = pfrag->offset;
+ 		use = min_t(int, len, pfrag->size - orig_offset);
+-		if (!sk_wmem_schedule(sk, use))
+-			return -ENOMEM;
++		if (!sk_wmem_schedule(sk, use)) {
++			ret = -ENOMEM;
++			goto msg_trim;
++		}
+ 
+ 		i = msg->sg.end;
+ 		sk_msg_iter_var_prev(i);
+@@ -71,6 +76,10 @@ int sk_msg_alloc(struct sock *sk, struct sk_msg *msg, int len,
  	}
+ 
+ 	return ret;
++
++msg_trim:
++	sk_msg_trim(sk, msg, osize);
++	return ret;
+ }
+ EXPORT_SYMBOL_GPL(sk_msg_alloc);
+ 
 -- 
 2.34.1
 
