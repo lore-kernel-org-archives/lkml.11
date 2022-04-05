@@ -2,99 +2,192 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 21485C43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 104BBC433EF
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:42:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1578884AbiDEXZO (ORCPT
+        id S1578869AbiDEXZK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 19:25:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60474 "EHLO
+        Tue, 5 Apr 2022 19:25:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60304 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350035AbiDEJwX (ORCPT
+        with ESMTP id S1443612AbiDEPj7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:52:23 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CBBD393F8;
-        Tue,  5 Apr 2022 02:50:25 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DD3DD615E3;
-        Tue,  5 Apr 2022 09:50:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EF834C385A2;
-        Tue,  5 Apr 2022 09:50:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649152224;
-        bh=K5Crn6yXtLbwhyzjB+6a+anwNgGjHY/VMwKVfElBrEs=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=u1OER+6z32eY28u/lzALq7HMlyBqSsOHL56EZJPqOZMnbW7VJ0PmGil3GsTjTbQ1Z
-         Cs+Ncs+mKi9NLp0AOp75pkFpThgDzlDJLJmIuvamfUHFonzgHrmSrxL5hHvCbt76Ik
-         uAJ4unIPKH2x6LbTZjTKd9bLyCkHF6PbTjKB5od4=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        "Souptick Joarder (HPE)" <jrdr.linux@gmail.com>,
-        Marc Zyngier <maz@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 698/913] irqchip/nvic: Release nvic_base upon failure
-Date:   Tue,  5 Apr 2022 09:29:20 +0200
-Message-Id: <20220405070400.756875352@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 5 Apr 2022 11:39:59 -0400
+Received: from mail-qt1-x831.google.com (mail-qt1-x831.google.com [IPv6:2607:f8b0:4864:20::831])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B87C613CA2C
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 06:57:14 -0700 (PDT)
+Received: by mail-qt1-x831.google.com with SMTP id j21so11151062qta.0
+        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 06:57:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=ooVTJG6qHCp0yXAPzRm26+nzLP9pRyshNnyYCdC2/cI=;
+        b=IjO1lAYG9dMjEoFuBKubL4solYQl93gBLvk38hPySmUXvALA+uoqB5JW6jq462kv3w
+         XAv4VTxdhTe/Ar+F3ht8PctXXH1Z/CEFWL8rIGHVVnKhc8NrYKoeNDSb+gwniYzUwdqy
+         cPCbAw7DBwC9H/iGurSWWopq5BX213OioWQjNpms7RtaNWffKommNV11P0techfv+VWq
+         jmsl/Xrr/T99SAhsTZABhIAE2rf0H6z4BIeaC/xRBzZudWiZxfRd5sdUll3mUyKzmwBM
+         mhubX3e2dDLaS2a/nEk3lBLHP4BdREc3DkUve465WChVkkGjPKvW4m2oQ5IIZOJ7aAL6
+         m6WQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=ooVTJG6qHCp0yXAPzRm26+nzLP9pRyshNnyYCdC2/cI=;
+        b=blDb588nXSl2mSjy5zqLWgFQIU00zpMDYdSbA/seiYPbwVBU2HO964+M3se0CuHyox
+         5gpUVlBnj6a4hmRtNwQe619JCY//cASrrg/J7RB03zsjkpq1XlhnlOdpxYeRkcAQWwzo
+         vW9h77I8CcfUMuYBValAgfEm5Tyg/zy8SMaj9KLhHuV246nPFIoike9caD/Z0a6LY5CC
+         /hgOSMNXN+hQsDrJJ9FiwjlKRlGUuFMkLrt3xRoy1JHKsAm7WfFbBJPrjbfFOIoQFsln
+         1WUn3AgcbkeZRgTxGNlrS/7eYyKMtkNk6m6LFcM1y61gTXoIrdWm3AJ3xRwAnJFCaBH6
+         O9cw==
+X-Gm-Message-State: AOAM531mj0Llp2AG6xsu4rLswF3sidN9X6R8VLZgCa6lIinlvPb6VQUR
+        1Ajn6JwjLkME5WEjzHv54yHyYr5AAwQ9P7PF0peqJA==
+X-Google-Smtp-Source: ABdhPJyvUqZgngY2xTxFZn28xhxZyEZiZ6UDJJnFxcDrOQUW4IEe+56aagmVfjuPhPAcWrPVD5R+J8V5qHnj4OpopWI=
+X-Received: by 2002:ac8:4e52:0:b0:2e1:dad8:5141 with SMTP id
+ e18-20020ac84e52000000b002e1dad85141mr3050575qtw.62.1649167033885; Tue, 05
+ Apr 2022 06:57:13 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <20220404163436.956875-1-vkoul@kernel.org> <20220404163436.956875-14-vkoul@kernel.org>
+In-Reply-To: <20220404163436.956875-14-vkoul@kernel.org>
+From:   Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Date:   Tue, 5 Apr 2022 16:57:02 +0300
+Message-ID: <CAA8EJprGaix=6q0X4HVb2-yFb1LoF9M7qJE3Vgr5oxZZFp6tFQ@mail.gmail.com>
+Subject: Re: [PATCH v6 13/14] drm/msm: Update generated headers
+To:     Vinod Koul <vkoul@kernel.org>
+Cc:     Rob Clark <robdclark@gmail.com>, linux-arm-msm@vger.kernel.org,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Jonathan Marek <jonathan@marek.ca>,
+        Abhinav Kumar <quic_abhinavk@quicinc.com>,
+        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        freedreno@lists.freedesktop.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Souptick Joarder (HPE) <jrdr.linux@gmail.com>
+On Mon, 4 Apr 2022 at 19:35, Vinod Koul <vkoul@kernel.org> wrote:
+>
+> Update headers from mesa commit:
+>
+>   commit 28ae397be111c37c6ced397e12d453a7695701bd
+>   Author: Vinod Koul <vkoul@kernel.org>
+>   Date:   Fri Apr 1 16:53:04 2022 +0530
+>
+>       freedreno/registers: update dsi registers to support dsc
+>
+>       Display Stream compression (DSC) compresses the display stream in
+>       host which is later decoded by panel. This requires addition of 3 new
+>       DSI registers to support DSC over DSI.
+>
+>       Signed-off-by: Vinod Koul <vkoul@kernel.org>
+>       Part-of: <https://gitlab.freedesktop.org/mesa/mesa/-/merge_requests/14967>
+>
+> Signed-off-by: Vinod Koul <vkoul@kernel.org>
 
-[ Upstream commit e414c25e3399b2b3d7337dc47abccab5c71b7c8f ]
+Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
 
-smatch warning was reported as below ->
 
-smatch warnings:
-drivers/irqchip/irq-nvic.c:131 nvic_of_init()
-warn: 'nvic_base' not released on lines: 97.
+> ---
+>  drivers/gpu/drm/msm/dsi/dsi.xml.h | 80 +++++++++++++++++++++++++++++++
+>  1 file changed, 80 insertions(+)
+>
+> diff --git a/drivers/gpu/drm/msm/dsi/dsi.xml.h b/drivers/gpu/drm/msm/dsi/dsi.xml.h
+> index 4dee6f0bdda6..d1b2a17b0a66 100644
+> --- a/drivers/gpu/drm/msm/dsi/dsi.xml.h
+> +++ b/drivers/gpu/drm/msm/dsi/dsi.xml.h
+> @@ -704,5 +704,85 @@ static inline uint32_t DSI_VERSION_MAJOR(uint32_t val)
+>
+>  #define REG_DSI_CPHY_MODE_CTRL                                 0x000002d4
+>
+> +#define REG_DSI_VIDEO_COMPRESSION_MODE_CTRL                    0x0000029c
+> +#define DSI_VIDEO_COMPRESSION_MODE_CTRL_WC__MASK               0xffff0000
+> +#define DSI_VIDEO_COMPRESSION_MODE_CTRL_WC__SHIFT              16
+> +static inline uint32_t DSI_VIDEO_COMPRESSION_MODE_CTRL_WC(uint32_t val)
+> +{
+> +       return ((val) << DSI_VIDEO_COMPRESSION_MODE_CTRL_WC__SHIFT) & DSI_VIDEO_COMPRESSION_MODE_CTRL_WC__MASK;
+> +}
+> +#define DSI_VIDEO_COMPRESSION_MODE_CTRL_DATATYPE__MASK         0x00003f00
+> +#define DSI_VIDEO_COMPRESSION_MODE_CTRL_DATATYPE__SHIFT                8
+> +static inline uint32_t DSI_VIDEO_COMPRESSION_MODE_CTRL_DATATYPE(uint32_t val)
+> +{
+> +       return ((val) << DSI_VIDEO_COMPRESSION_MODE_CTRL_DATATYPE__SHIFT) & DSI_VIDEO_COMPRESSION_MODE_CTRL_DATATYPE__MASK;
+> +}
+> +#define DSI_VIDEO_COMPRESSION_MODE_CTRL_PKT_PER_LINE__MASK     0x000000c0
+> +#define DSI_VIDEO_COMPRESSION_MODE_CTRL_PKT_PER_LINE__SHIFT    6
+> +static inline uint32_t DSI_VIDEO_COMPRESSION_MODE_CTRL_PKT_PER_LINE(uint32_t val)
+> +{
+> +       return ((val) << DSI_VIDEO_COMPRESSION_MODE_CTRL_PKT_PER_LINE__SHIFT) & DSI_VIDEO_COMPRESSION_MODE_CTRL_PKT_PER_LINE__MASK;
+> +}
+> +#define DSI_VIDEO_COMPRESSION_MODE_CTRL_EOL_BYTE_NUM__MASK     0x00000030
+> +#define DSI_VIDEO_COMPRESSION_MODE_CTRL_EOL_BYTE_NUM__SHIFT    4
+> +static inline uint32_t DSI_VIDEO_COMPRESSION_MODE_CTRL_EOL_BYTE_NUM(uint32_t val)
+> +{
+> +       return ((val) << DSI_VIDEO_COMPRESSION_MODE_CTRL_EOL_BYTE_NUM__SHIFT) & DSI_VIDEO_COMPRESSION_MODE_CTRL_EOL_BYTE_NUM__MASK;
+> +}
+> +#define DSI_VIDEO_COMPRESSION_MODE_CTRL_EN                     0x00000001
+> +
+> +#define REG_DSI_COMMAND_COMPRESSION_MODE_CTRL                  0x000002a4
+> +#define DSI_COMMAND_COMPRESSION_MODE_CTRL_STREAM1_DATATYPE__MASK       0x3f000000
+> +#define DSI_COMMAND_COMPRESSION_MODE_CTRL_STREAM1_DATATYPE__SHIFT      24
+> +static inline uint32_t DSI_COMMAND_COMPRESSION_MODE_CTRL_STREAM1_DATATYPE(uint32_t val)
+> +{
+> +       return ((val) << DSI_COMMAND_COMPRESSION_MODE_CTRL_STREAM1_DATATYPE__SHIFT) & DSI_COMMAND_COMPRESSION_MODE_CTRL_STREAM1_DATATYPE__MASK;
+> +}
+> +#define DSI_COMMAND_COMPRESSION_MODE_CTRL_STREAM1_PKT_PER_LINE__MASK   0x00c00000
+> +#define DSI_COMMAND_COMPRESSION_MODE_CTRL_STREAM1_PKT_PER_LINE__SHIFT  22
+> +static inline uint32_t DSI_COMMAND_COMPRESSION_MODE_CTRL_STREAM1_PKT_PER_LINE(uint32_t val)
+> +{
+> +       return ((val) << DSI_COMMAND_COMPRESSION_MODE_CTRL_STREAM1_PKT_PER_LINE__SHIFT) & DSI_COMMAND_COMPRESSION_MODE_CTRL_STREAM1_PKT_PER_LINE__MASK;
+> +}
+> +#define DSI_COMMAND_COMPRESSION_MODE_CTRL_STREAM1_EOL_BYTE_NUM__MASK   0x00300000
+> +#define DSI_COMMAND_COMPRESSION_MODE_CTRL_STREAM1_EOL_BYTE_NUM__SHIFT  20
+> +static inline uint32_t DSI_COMMAND_COMPRESSION_MODE_CTRL_STREAM1_EOL_BYTE_NUM(uint32_t val)
+> +{
+> +       return ((val) << DSI_COMMAND_COMPRESSION_MODE_CTRL_STREAM1_EOL_BYTE_NUM__SHIFT) & DSI_COMMAND_COMPRESSION_MODE_CTRL_STREAM1_EOL_BYTE_NUM__MASK;
+> +}
+> +#define DSI_COMMAND_COMPRESSION_MODE_CTRL_STREAM1_EN           0x00010000
+> +#define DSI_COMMAND_COMPRESSION_MODE_CTRL_STREAM0_DATATYPE__MASK       0x00003f00
+> +#define DSI_COMMAND_COMPRESSION_MODE_CTRL_STREAM0_DATATYPE__SHIFT      8
+> +static inline uint32_t DSI_COMMAND_COMPRESSION_MODE_CTRL_STREAM0_DATATYPE(uint32_t val)
+> +{
+> +       return ((val) << DSI_COMMAND_COMPRESSION_MODE_CTRL_STREAM0_DATATYPE__SHIFT) & DSI_COMMAND_COMPRESSION_MODE_CTRL_STREAM0_DATATYPE__MASK;
+> +}
+> +#define DSI_COMMAND_COMPRESSION_MODE_CTRL_STREAM0_PKT_PER_LINE__MASK   0x000000c0
+> +#define DSI_COMMAND_COMPRESSION_MODE_CTRL_STREAM0_PKT_PER_LINE__SHIFT  6
+> +static inline uint32_t DSI_COMMAND_COMPRESSION_MODE_CTRL_STREAM0_PKT_PER_LINE(uint32_t val)
+> +{
+> +       return ((val) << DSI_COMMAND_COMPRESSION_MODE_CTRL_STREAM0_PKT_PER_LINE__SHIFT) & DSI_COMMAND_COMPRESSION_MODE_CTRL_STREAM0_PKT_PER_LINE__MASK;
+> +}
+> +#define DSI_COMMAND_COMPRESSION_MODE_CTRL_STREAM0_EOL_BYTE_NUM__MASK   0x00000030
+> +#define DSI_COMMAND_COMPRESSION_MODE_CTRL_STREAM0_EOL_BYTE_NUM__SHIFT  4
+> +static inline uint32_t DSI_COMMAND_COMPRESSION_MODE_CTRL_STREAM0_EOL_BYTE_NUM(uint32_t val)
+> +{
+> +       return ((val) << DSI_COMMAND_COMPRESSION_MODE_CTRL_STREAM0_EOL_BYTE_NUM__SHIFT) & DSI_COMMAND_COMPRESSION_MODE_CTRL_STREAM0_EOL_BYTE_NUM__MASK;
+> +}
+> +#define DSI_COMMAND_COMPRESSION_MODE_CTRL_STREAM0_EN           0x00000001
+> +
+> +#define REG_DSI_COMMAND_COMPRESSION_MODE_CTRL2                 0x000002a8
+> +#define DSI_COMMAND_COMPRESSION_MODE_CTRL2_STREAM1_SLICE_WIDTH__MASK   0xffff0000
+> +#define DSI_COMMAND_COMPRESSION_MODE_CTRL2_STREAM1_SLICE_WIDTH__SHIFT  16
+> +static inline uint32_t DSI_COMMAND_COMPRESSION_MODE_CTRL2_STREAM1_SLICE_WIDTH(uint32_t val)
+> +{
+> +       return ((val) << DSI_COMMAND_COMPRESSION_MODE_CTRL2_STREAM1_SLICE_WIDTH__SHIFT) & DSI_COMMAND_COMPRESSION_MODE_CTRL2_STREAM1_SLICE_WIDTH__MASK;
+> +}
+> +#define DSI_COMMAND_COMPRESSION_MODE_CTRL2_STREAM0_SLICE_WIDTH__MASK   0x0000ffff
+> +#define DSI_COMMAND_COMPRESSION_MODE_CTRL2_STREAM0_SLICE_WIDTH__SHIFT  0
+> +static inline uint32_t DSI_COMMAND_COMPRESSION_MODE_CTRL2_STREAM0_SLICE_WIDTH(uint32_t val)
+> +{
+> +       return ((val) << DSI_COMMAND_COMPRESSION_MODE_CTRL2_STREAM0_SLICE_WIDTH__SHIFT) & DSI_COMMAND_COMPRESSION_MODE_CTRL2_STREAM0_SLICE_WIDTH__MASK;
+> +}
+>
+>  #endif /* DSI_XML */
+> --
+> 2.34.1
+>
 
-Release nvic_base upon failure.
 
-Reported-by: kernel test robot <lkp@intel.com>
-Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
-Signed-off-by: Souptick Joarder (HPE) <jrdr.linux@gmail.com>
-Signed-off-by: Marc Zyngier <maz@kernel.org>
-Link: https://lore.kernel.org/r/20220218163303.33344-1-jrdr.linux@gmail.com
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/irqchip/irq-nvic.c | 2 ++
- 1 file changed, 2 insertions(+)
-
-diff --git a/drivers/irqchip/irq-nvic.c b/drivers/irqchip/irq-nvic.c
-index 599bb6fc5f0a..47b3b165479e 100644
---- a/drivers/irqchip/irq-nvic.c
-+++ b/drivers/irqchip/irq-nvic.c
-@@ -92,6 +92,7 @@ static int __init nvic_of_init(struct device_node *node,
- 
- 	if (!nvic_irq_domain) {
- 		pr_warn("Failed to allocate irq domain\n");
-+		iounmap(nvic_base);
- 		return -ENOMEM;
- 	}
- 
-@@ -101,6 +102,7 @@ static int __init nvic_of_init(struct device_node *node,
- 	if (ret) {
- 		pr_warn("Failed to allocate irq chips\n");
- 		irq_domain_remove(nvic_irq_domain);
-+		iounmap(nvic_base);
- 		return ret;
- 	}
- 
 -- 
-2.34.1
-
-
-
+With best wishes
+Dmitry
