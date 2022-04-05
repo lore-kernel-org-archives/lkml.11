@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 55587C43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D10FFC4167E
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 11:46:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379199AbiDELkd (ORCPT
+        id S1379261AbiDELkj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 07:40:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46804 "EHLO
+        Tue, 5 Apr 2022 07:40:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50802 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244793AbiDEIwj (ORCPT
+        with ESMTP id S244791AbiDEIwj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Apr 2022 04:52:39 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 400D11EAF6;
-        Tue,  5 Apr 2022 01:44:06 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 049C71DA7F;
+        Tue,  5 Apr 2022 01:44:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E5FE5B81BC5;
-        Tue,  5 Apr 2022 08:44:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4D180C385A1;
-        Tue,  5 Apr 2022 08:44:03 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 951496117A;
+        Tue,  5 Apr 2022 08:44:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9F792C385A0;
+        Tue,  5 Apr 2022 08:44:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649148243;
-        bh=5a4w0X02E9XeqceD8KGfG2dRL/J743LjSjuw3PThuj0=;
+        s=korg; t=1649148241;
+        bh=GOCjvPSffRKuugb0uITMfSMEobaooJl1sG41hMr87RY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kjZCyML79APX6pjzoGZ+PZHut//OIGB5SiwGq1wHOh2uBaiVoi/pAzQdYc6ItQxHt
-         +HrB6x4RhtB9OXjm3U2KHT6zXv/l/dNpBqPCCbl4NLWOhbo6wtYTCD+QQQNPbMiTF2
-         mK9t8pNTcwJXsR+l0dSkpopZSE6MkhRXmAwiX1GE=
+        b=dU69/yyIqs6voWRaD3Ov7ar1Yp/26QT0EhbyqpPOa544ZmzAYZ47dKUINLaOd8xJ8
+         UDuvRpoOf+RnZisYF0/d0kd5egHmf65pPB/JC+BSEF/Oh1yJMQeOlhqN9ZCZ/gVDoY
+         4+TEGqkAniWMszxfmnqKLK/0+rdAjrxOjic2guVU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Martin Kepplinger <martin.kepplinger@puri.sm>,
+        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
+        Tzung-Bi Shih <tzungbi@google.com>,
         Hans Verkuil <hverkuil-cisco@xs4all.nl>,
         Mauro Carvalho Chehab <mchehab@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0286/1017] media: imx: imx8mq-mipi-csi2: remove wrong irq config write operation
-Date:   Tue,  5 Apr 2022 09:19:59 +0200
-Message-Id: <20220405070402.760885065@linuxfoundation.org>
+Subject: [PATCH 5.16 0285/1017] media: mtk-vcodec: potential dereference of null pointer
+Date:   Tue,  5 Apr 2022 09:19:58 +0200
+Message-Id: <20220405070402.730368977@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -52,39 +52,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Martin Kepplinger <martin.kepplinger@puri.sm>
+From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
 
-[ Upstream commit 59c2b6d51803ad6b7af28f2a60a843b24374e692 ]
+[ Upstream commit e25a89f743b18c029bfbe5e1663ae0c7190912b0 ]
 
-The place where this register writel() that masks one interrupt is placed
-does not guarantee that the device is powered so that's not allowed.
-Moreover imx8mq_mipi_csi_start_stream() masks the interrupt anyway so the
-write is not even needed. Remove it as this is a mistake that slipped in
-with the driver.
+The return value of devm_kzalloc() needs to be checked.
+To avoid use of null pointer in case of thefailure of alloc.
 
-Fixes: f33fd8d77dd0 ("media: imx: add a driver for i.MX8MQ mipi csi rx phy and controller")
-Signed-off-by: Martin Kepplinger <martin.kepplinger@puri.sm>
+Fixes: 46233e91fa24 ("media: mtk-vcodec: move firmware implementations into their own files")
+Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Reviewed-by: Tzung-Bi Shih <tzungbi@google.com>
 Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
 Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/staging/media/imx/imx8mq-mipi-csi2.c | 3 ---
- 1 file changed, 3 deletions(-)
+ drivers/media/platform/mtk-vcodec/mtk_vcodec_fw_vpu.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/staging/media/imx/imx8mq-mipi-csi2.c b/drivers/staging/media/imx/imx8mq-mipi-csi2.c
-index 7adbdd14daa9..8f3cc138c52c 100644
---- a/drivers/staging/media/imx/imx8mq-mipi-csi2.c
-+++ b/drivers/staging/media/imx/imx8mq-mipi-csi2.c
-@@ -398,9 +398,6 @@ static int imx8mq_mipi_csi_s_stream(struct v4l2_subdev *sd, int enable)
- 	struct csi_state *state = mipi_sd_to_csi2_state(sd);
- 	int ret = 0;
+diff --git a/drivers/media/platform/mtk-vcodec/mtk_vcodec_fw_vpu.c b/drivers/media/platform/mtk-vcodec/mtk_vcodec_fw_vpu.c
+index cd27f637dbe7..cfc7ebed8fb7 100644
+--- a/drivers/media/platform/mtk-vcodec/mtk_vcodec_fw_vpu.c
++++ b/drivers/media/platform/mtk-vcodec/mtk_vcodec_fw_vpu.c
+@@ -102,6 +102,8 @@ struct mtk_vcodec_fw *mtk_vcodec_fw_vpu_init(struct mtk_vcodec_dev *dev,
+ 	vpu_wdt_reg_handler(fw_pdev, mtk_vcodec_vpu_reset_handler, dev, rst_id);
  
--	imx8mq_mipi_csi_write(state, CSI2RX_IRQ_MASK,
--			      CSI2RX_IRQ_MASK_ULPS_STATUS_CHANGE);
--
- 	if (enable) {
- 		ret = pm_runtime_resume_and_get(state->dev);
- 		if (ret < 0)
+ 	fw = devm_kzalloc(&dev->plat_dev->dev, sizeof(*fw), GFP_KERNEL);
++	if (!fw)
++		return ERR_PTR(-ENOMEM);
+ 	fw->type = VPU;
+ 	fw->ops = &mtk_vcodec_vpu_msg;
+ 	fw->pdev = fw_pdev;
 -- 
 2.34.1
 
