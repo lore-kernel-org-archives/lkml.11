@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F44BC4332F
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 11:45:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 91895C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 11:45:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378810AbiDELjI (ORCPT
+        id S1378846AbiDELjV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 07:39:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48748 "EHLO
+        Tue, 5 Apr 2022 07:39:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51012 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244723AbiDEIwf (ORCPT
+        with ESMTP id S244716AbiDEIwf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Apr 2022 04:52:35 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3E3319C2B;
-        Tue,  5 Apr 2022 01:42:49 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6CED31705A;
+        Tue,  5 Apr 2022 01:42:27 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3D582609D0;
-        Tue,  5 Apr 2022 08:42:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4B21CC385A0;
-        Tue,  5 Apr 2022 08:42:48 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 07B986117A;
+        Tue,  5 Apr 2022 08:42:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 13179C385A1;
+        Tue,  5 Apr 2022 08:42:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649148168;
-        bh=3Im5ZbTV8VowMePxr5eHh7Cs9Smgl/aP7ej0Z09rs6M=;
+        s=korg; t=1649148146;
+        bh=QdZzKpYR0Ak0Jkw0efMXTY/uKg67msQsuJfRVbPyVW4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HoO2P0fEYDFiomJckPHovAmGZ3+Ck5MQa9+6IcbEzO6bp4fBxH3uv/eE5OK8XRoPY
-         mMHnmPnOpYxlEtioPeqduMUiVqEQWMc67gm4xLAfBx/W8YssBoPq9K4i3KfcYsQrI1
-         63gvPNAggHOBv6PVn8xEwxvf3kCQsuVNZEJS5cfQ=
+        b=eSkkqc+jHI3C2me6fhr0oC5VnrhTN74dSo04TOaHbt7X9ooODrYQ5Qqyfx8ipvATY
+         l0lD04uBewF+hRuWEeF65w6pFlorX+WnBOUGu8Y43EC5W088zV0hUHsfNk4drMLfrG
+         WkWfZQb64aYuItRSTIWiIuP5/T/c5q5/C0/+1IDY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Richard Guy Briggs <rgb@redhat.com>,
-        Paul Moore <paul@paul-moore.com>,
+        stable@vger.kernel.org,
+        =?UTF-8?q?D=C4=81vis=20Mos=C4=81ns?= <davispuh@gmail.com>,
+        John Allen <john.allen@amd.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0222/1017] audit: log AUDIT_TIME_* records only from rules
-Date:   Tue,  5 Apr 2022 09:18:55 +0200
-Message-Id: <20220405070400.841485460@linuxfoundation.org>
+Subject: [PATCH 5.16 0250/1017] crypto: ccp - ccp_dmaengine_unregister release dma channels
+Date:   Tue,  5 Apr 2022 09:19:23 +0200
+Message-Id: <20220405070401.682234856@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -50,165 +52,64 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Richard Guy Briggs <rgb@redhat.com>
+From: Dāvis Mosāns <davispuh@gmail.com>
 
-[ Upstream commit 272ceeaea355214b301530e262a0df8600bfca95 ]
+[ Upstream commit 54cce8ecb9254f971b40a72911c6da403720a2d2 ]
 
-AUDIT_TIME_* events are generated when there are syscall rules present
-that are not related to time keeping.  This will produce noisy log
-entries that could flood the logs and hide events we really care about.
+ccp_dmaengine_register adds dma_chan->device_node to dma_dev->channels list
+but ccp_dmaengine_unregister didn't remove them.
+That can cause crashes in various dmaengine methods that tries to use dma_dev->channels
 
-Rather than immediately produce the AUDIT_TIME_* records, store the data
-in the context and log it at syscall exit time respecting the filter
-rules.
-
-Note: This eats the audit_buffer, unlike any others in show_special().
-
-Please see https://bugzilla.redhat.com/show_bug.cgi?id=1991919
-
-Fixes: 7e8eda734d30 ("ntp: Audit NTP parameters adjustment")
-Fixes: 2d87a0674bd6 ("timekeeping: Audit clock adjustments")
-Signed-off-by: Richard Guy Briggs <rgb@redhat.com>
-[PM: fixed style/whitespace issues]
-Signed-off-by: Paul Moore <paul@paul-moore.com>
+Fixes: 58ea8abf4904 ("crypto: ccp - Register the CCP as a DMA...")
+Signed-off-by: Dāvis Mosāns <davispuh@gmail.com>
+Acked-by: John Allen <john.allen@amd.com>
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- kernel/audit.h   |  4 +++
- kernel/auditsc.c | 87 +++++++++++++++++++++++++++++++++++++-----------
- 2 files changed, 71 insertions(+), 20 deletions(-)
+ drivers/crypto/ccp/ccp-dmaengine.c | 16 ++++++++++++++++
+ 1 file changed, 16 insertions(+)
 
-diff --git a/kernel/audit.h b/kernel/audit.h
-index c4498090a5bd..58b66543b4d5 100644
---- a/kernel/audit.h
-+++ b/kernel/audit.h
-@@ -201,6 +201,10 @@ struct audit_context {
- 		struct {
- 			char			*name;
- 		} module;
-+		struct {
-+			struct audit_ntp_data	ntp_data;
-+			struct timespec64	tk_injoffset;
-+		} time;
- 	};
- 	int fds[2];
- 	struct audit_proctitle proctitle;
-diff --git a/kernel/auditsc.c b/kernel/auditsc.c
-index 2dc94a0e3447..321904af2311 100644
---- a/kernel/auditsc.c
-+++ b/kernel/auditsc.c
-@@ -1331,6 +1331,53 @@ static void audit_log_fcaps(struct audit_buffer *ab, struct audit_names *name)
- 			 from_kuid(&init_user_ns, name->fcap.rootid));
+diff --git a/drivers/crypto/ccp/ccp-dmaengine.c b/drivers/crypto/ccp/ccp-dmaengine.c
+index d718db224be4..7d4b4ad1db1f 100644
+--- a/drivers/crypto/ccp/ccp-dmaengine.c
++++ b/drivers/crypto/ccp/ccp-dmaengine.c
+@@ -632,6 +632,20 @@ static int ccp_terminate_all(struct dma_chan *dma_chan)
+ 	return 0;
  }
  
-+static void audit_log_time(struct audit_context *context, struct audit_buffer **ab)
++static void ccp_dma_release(struct ccp_device *ccp)
 +{
-+	const struct audit_ntp_data *ntp = &context->time.ntp_data;
-+	const struct timespec64 *tk = &context->time.tk_injoffset;
-+	static const char * const ntp_name[] = {
-+		"offset",
-+		"freq",
-+		"status",
-+		"tai",
-+		"tick",
-+		"adjust",
-+	};
-+	int type;
++	struct ccp_dma_chan *chan;
++	struct dma_chan *dma_chan;
++	unsigned int i;
 +
-+	if (context->type == AUDIT_TIME_ADJNTPVAL) {
-+		for (type = 0; type < AUDIT_NTP_NVALS; type++) {
-+			if (ntp->vals[type].newval != ntp->vals[type].oldval) {
-+				if (!*ab) {
-+					*ab = audit_log_start(context,
-+							GFP_KERNEL,
-+							AUDIT_TIME_ADJNTPVAL);
-+					if (!*ab)
-+						return;
-+				}
-+				audit_log_format(*ab, "op=%s old=%lli new=%lli",
-+						 ntp_name[type],
-+						 ntp->vals[type].oldval,
-+						 ntp->vals[type].newval);
-+				audit_log_end(*ab);
-+				*ab = NULL;
-+			}
-+		}
-+	}
-+	if (tk->tv_sec != 0 || tk->tv_nsec != 0) {
-+		if (!*ab) {
-+			*ab = audit_log_start(context, GFP_KERNEL,
-+					      AUDIT_TIME_INJOFFSET);
-+			if (!*ab)
-+				return;
-+		}
-+		audit_log_format(*ab, "sec=%lli nsec=%li",
-+				 (long long)tk->tv_sec, tk->tv_nsec);
-+		audit_log_end(*ab);
-+		*ab = NULL;
++	for (i = 0; i < ccp->cmd_q_count; i++) {
++		chan = ccp->ccp_dma_chan + i;
++		dma_chan = &chan->dma_chan;
++		tasklet_kill(&chan->cleanup_tasklet);
++		list_del_rcu(&dma_chan->device_node);
 +	}
 +}
 +
- static void show_special(struct audit_context *context, int *call_panic)
+ int ccp_dmaengine_register(struct ccp_device *ccp)
  {
- 	struct audit_buffer *ab;
-@@ -1445,6 +1492,11 @@ static void show_special(struct audit_context *context, int *call_panic)
- 			audit_log_format(ab, "(null)");
+ 	struct ccp_dma_chan *chan;
+@@ -736,6 +750,7 @@ int ccp_dmaengine_register(struct ccp_device *ccp)
+ 	return 0;
  
- 		break;
-+	case AUDIT_TIME_ADJNTPVAL:
-+	case AUDIT_TIME_INJOFFSET:
-+		/* this call deviates from the rest, eating the buffer */
-+		audit_log_time(context, &ab);
-+		break;
- 	}
- 	audit_log_end(ab);
- }
-@@ -2840,31 +2892,26 @@ void __audit_fanotify(unsigned int response)
+ err_reg:
++	ccp_dma_release(ccp);
+ 	kmem_cache_destroy(ccp->dma_desc_cache);
  
- void __audit_tk_injoffset(struct timespec64 offset)
- {
--	audit_log(audit_context(), GFP_KERNEL, AUDIT_TIME_INJOFFSET,
--		  "sec=%lli nsec=%li",
--		  (long long)offset.tv_sec, offset.tv_nsec);
--}
--
--static void audit_log_ntp_val(const struct audit_ntp_data *ad,
--			      const char *op, enum audit_ntp_type type)
--{
--	const struct audit_ntp_val *val = &ad->vals[type];
--
--	if (val->newval == val->oldval)
--		return;
-+	struct audit_context *context = audit_context();
+ err_cache:
+@@ -752,6 +767,7 @@ void ccp_dmaengine_unregister(struct ccp_device *ccp)
+ 		return;
  
--	audit_log(audit_context(), GFP_KERNEL, AUDIT_TIME_ADJNTPVAL,
--		  "op=%s old=%lli new=%lli", op, val->oldval, val->newval);
-+	/* only set type if not already set by NTP */
-+	if (!context->type)
-+		context->type = AUDIT_TIME_INJOFFSET;
-+	memcpy(&context->time.tk_injoffset, &offset, sizeof(offset));
- }
+ 	dma_async_device_unregister(dma_dev);
++	ccp_dma_release(ccp);
  
- void __audit_ntp_log(const struct audit_ntp_data *ad)
- {
--	audit_log_ntp_val(ad, "offset",	AUDIT_NTP_OFFSET);
--	audit_log_ntp_val(ad, "freq",	AUDIT_NTP_FREQ);
--	audit_log_ntp_val(ad, "status",	AUDIT_NTP_STATUS);
--	audit_log_ntp_val(ad, "tai",	AUDIT_NTP_TAI);
--	audit_log_ntp_val(ad, "tick",	AUDIT_NTP_TICK);
--	audit_log_ntp_val(ad, "adjust",	AUDIT_NTP_ADJUST);
-+	struct audit_context *context = audit_context();
-+	int type;
-+
-+	for (type = 0; type < AUDIT_NTP_NVALS; type++)
-+		if (ad->vals[type].newval != ad->vals[type].oldval) {
-+			/* unconditionally set type, overwriting TK */
-+			context->type = AUDIT_TIME_ADJNTPVAL;
-+			memcpy(&context->time.ntp_data, ad, sizeof(*ad));
-+			break;
-+		}
- }
- 
- void __audit_log_nfcfg(const char *name, u8 af, unsigned int nentries,
+ 	kmem_cache_destroy(ccp->dma_desc_cache);
+ 	kmem_cache_destroy(ccp->dma_cmd_cache);
 -- 
 2.34.1
 
