@@ -2,184 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 71B07C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 00:50:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F089DC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 01:24:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229502AbiDEAwA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 20:52:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54082 "EHLO
+        id S229508AbiDEB0p (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 4 Apr 2022 21:26:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41092 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229449AbiDEAvw (ORCPT
+        with ESMTP id S229518AbiDEB0m (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 20:51:52 -0400
-Received: from mail-il1-x134.google.com (mail-il1-x134.google.com [IPv6:2607:f8b0:4864:20::134])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3511E2AD0B8
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 17:43:45 -0700 (PDT)
-Received: by mail-il1-x134.google.com with SMTP id d3so8112441ilr.10
-        for <linux-kernel@vger.kernel.org>; Mon, 04 Apr 2022 17:43:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=qk2vTGXRGqf3BpKwQtYdBLCMBP+WWND1mbOCTeq7Wd8=;
-        b=M8Y3mkCyz4+DCsjQDgiHQLuP6ZxBkxl0uN10+U2ZHu9akhKgM8UGUz5wmW7tJAPQP3
-         QTmFA2BUcbFUPrczakTRxGwXBdWfXzPfzDvgeaSSKTX2ETyxQaRXiOE8pcIv+QItZV1R
-         YcAIj9+gpFvBzBQxhy4lAJ7VtG96ODgzuR27VBTeIi8VzSBA5K9IB4Wn2REubsm/4ZEj
-         GWMbLa9EdZrL7Q04meUTwExAMH1Je0IY5Ff4RSMzfMEnJSIERJgUtGHNZW4s0xmMGGUW
-         EACEBdpiTsmDRnB6GQOWobQzAd3yXuZYlxfQkd9pW77edOHHriaRDYcIP8UOoF+xZbtl
-         sllA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=qk2vTGXRGqf3BpKwQtYdBLCMBP+WWND1mbOCTeq7Wd8=;
-        b=aJKdt1gfLkXwChjVnZxIz0v+GzjmEHDi2e7eChY6DuScH6bY1S9gdeSf7ki+QAXDcR
-         d1Ko3VDZ95XVr6XX4KiCblUgAB9VLWOzF6PsvzNjmmxek9GsiWrdkTCXns0CMIK3ICOu
-         AlGF2gfp7lJeW+SNs5WYqGkeWkBTQJBJd9ggZJgdCkUtm/wQ5Ec1302uTwvRs1GHZ+ge
-         FELOtwgg+GPdDxl6hkGuBJ3/+EjuJkNQkU4e2qsVg+Od+Bo4Ykg6j5I3UxT638T9+VUH
-         ma/eqHX7/CHup0tS25ReBoKipMGdQzTEByAfYm5poJYyilUMOEPF4/nYwo8Rh3DWi6fG
-         mUWA==
-X-Gm-Message-State: AOAM531lERs9Ex2O1A5nt/KJ5DEAmPQwgfl/SWLxdU+SVk3sy06aeea5
-        PNYd5YsydURCTZVMI6vuHly0K2Q43qM2gA==
-X-Google-Smtp-Source: ABdhPJyjA0jJqHDz/DH9qTaHPbID/6l5iy6vv0UwOj0FN0hUEVJXEqnuhpyz8BqJv3fl3Gsmm5CxSA==
-X-Received: by 2002:a65:63d9:0:b0:374:6b38:c6b3 with SMTP id n25-20020a6563d9000000b003746b38c6b3mr636129pgv.195.1649118289900;
-        Mon, 04 Apr 2022 17:24:49 -0700 (PDT)
-Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
-        by smtp.gmail.com with ESMTPSA id m17-20020a17090a859100b001bc20ddcc67sm261755pjn.34.2022.04.04.17.24.49
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 04 Apr 2022 17:24:49 -0700 (PDT)
-Date:   Tue, 5 Apr 2022 00:24:45 +0000
-From:   Sean Christopherson <seanjc@google.com>
-To:     Brijesh Singh <brijesh.singh@amd.com>
-Cc:     x86@kernel.org, linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
-        linux-efi@vger.kernel.org, platform-driver-x86@vger.kernel.org,
-        linux-coco@lists.linux.dev, linux-mm@kvack.org,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Joerg Roedel <jroedel@suse.de>,
-        Tom Lendacky <thomas.lendacky@amd.com>,
-        "H. Peter Anvin" <hpa@zytor.com>, Ard Biesheuvel <ardb@kernel.org>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Jim Mattson <jmattson@google.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Sergio Lopez <slp@redhat.com>, Peter Gonda <pgonda@google.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
-        David Rientjes <rientjes@google.com>,
-        Dov Murik <dovmurik@linux.ibm.com>,
-        Tobin Feldman-Fitzthum <tobin@ibm.com>,
-        Borislav Petkov <bp@alien8.de>,
-        Michael Roth <michael.roth@amd.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
-        Andi Kleen <ak@linux.intel.com>,
-        "Dr . David Alan Gilbert" <dgilbert@redhat.com>,
-        brijesh.ksingh@gmail.com, tony.luck@intel.com, marcorr@google.com,
-        sathyanarayanan.kuppuswamy@linux.intel.com
-Subject: Re: [PATCH v12 22/46] x86/sev: Use SEV-SNP AP creation to start
- secondary CPUs
-Message-ID: <YkuMTdckSgSB9M6f@google.com>
-References: <20220307213356.2797205-1-brijesh.singh@amd.com>
- <20220307213356.2797205-23-brijesh.singh@amd.com>
+        Mon, 4 Apr 2022 21:26:42 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F456282560;
+        Mon,  4 Apr 2022 17:38:26 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6F128B81ACE;
+        Tue,  5 Apr 2022 00:33:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BB376C2BBE4;
+        Tue,  5 Apr 2022 00:33:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649118805;
+        bh=YSFtuUAqB2/ReZ8hG4SKRlDqnAPGKpbCyB9tK2n6JDg=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=hLVyFlpfDATmZr5XGDrA5o2tW4Uc/njYc3HnyYS97SwPrMihRlv8F5i9GKUHv9kE7
+         zuttzYRilaN1bC1amXThpboMBXg4PIlW6SpLPDvBv419u6QE2v+W+GR15gxy6UeYS6
+         X2hb+RmYygXnGkr11tkfWxwYtokTT8Qwh6W/z/fGwwJsQsm70tYw7LX+MFkBGyeZHq
+         RLIQzG+ChmmiQFwcbQwh1ZSTlQyNJAg+9yr+DEx8Xgz+mWdPXi7Ut+28690acjXHYD
+         D7DdIVKxpJGnqbSTkM5/eWReADCF099Mnj5mMmvVeIjzeJ5tJ64kftaaFGD7CfOygJ
+         j7a0KanXvwr4Q==
+Date:   Mon, 4 Apr 2022 17:33:22 -0700
+From:   Saeed Mahameed <saeed@kernel.org>
+To:     Leon Romanovsky <leon@kernel.org>
+Cc:     Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+        Leon Romanovsky <leonro@nvidia.com>,
+        Jason Gunthorpe <jgg@nvidia.com>, linux-kernel@vger.kernel.org,
+        linux-rdma@vger.kernel.org, netdev@vger.kernel.org,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Tariq Toukan <tariqt@nvidia.com>
+Subject: Re: [PATCH mlx5-next 4/5] net/mlx5: Remove tls vs. ktls separation
+ as it is the same
+Message-ID: <20220405003322.afko7uo527w5j3zu@sx1>
+References: <cover.1649073691.git.leonro@nvidia.com>
+ <67e596599edcffb0de43f26551208dfd34ac777e.1649073691.git.leonro@nvidia.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=us-ascii; format=flowed
 Content-Disposition: inline
-In-Reply-To: <20220307213356.2797205-23-brijesh.singh@amd.com>
+In-Reply-To: <67e596599edcffb0de43f26551208dfd34ac777e.1649073691.git.leonro@nvidia.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Mar 07, 2022, Brijesh Singh wrote:
-> From: Tom Lendacky <thomas.lendacky@amd.com>
-> 
-> To provide a more secure way to start APs under SEV-SNP, use the SEV-SNP
-> AP Creation NAE event. This allows for guest control over the AP register
-> state rather than trusting the hypervisor with the SEV-ES Jump Table
-> address.
-> 
-> During native_smp_prepare_cpus(), invoke an SEV-SNP function that, if
-> SEV-SNP is active, will set/override apic->wakeup_secondary_cpu. This
-> will allow the SEV-SNP AP Creation NAE event method to be used to boot
-> the APs. As a result of installing the override when SEV-SNP is active,
-> this method of starting the APs becomes the required method. The override
-> function will fail to start the AP if the hypervisor does not have
-> support for AP creation.
+On 04 Apr 15:08, Leon Romanovsky wrote:
+>From: Leon Romanovsky <leonro@nvidia.com>
+>
+>After removal FPGA TLS, we can remove tls->ktls indirection too,
+>as it is the same thing.
+>
+>Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
+>Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
+>---
+> .../net/ethernet/mellanox/mlx5/core/Makefile  |  2 +-
+> .../ethernet/mellanox/mlx5/core/en/params.c   |  2 +-
+> .../mellanox/mlx5/core/en_accel/en_accel.h    | 11 +--
+> .../mellanox/mlx5/core/en_accel/ktls.c        | 22 ++++-
+> .../mellanox/mlx5/core/en_accel/ktls.h        | 32 +++++++
+> .../mellanox/mlx5/core/en_accel/ktls_rx.c     |  2 +-
+> .../en_accel/{tls_stats.c => ktls_stats.c}    | 38 ++++-----
+> .../mellanox/mlx5/core/en_accel/ktls_tx.c     | 18 +++-
+> .../mellanox/mlx5/core/en_accel/ktls_txrx.h   | 28 +++++-
+> .../mellanox/mlx5/core/en_accel/tls.c         | 70 ---------------
+> .../mellanox/mlx5/core/en_accel/tls.h         | 85 -------------------
+> .../mellanox/mlx5/core/en_accel/tls_rxtx.c    | 70 ---------------
+> .../mellanox/mlx5/core/en_accel/tls_rxtx.h    | 85 -------------------
+> .../net/ethernet/mellanox/mlx5/core/en_main.c |  8 +-
+> .../net/ethernet/mellanox/mlx5/core/en_rx.c   |  5 +-
+> .../ethernet/mellanox/mlx5/core/en_stats.c    |  8 +-
+> 16 files changed, 130 insertions(+), 356 deletions(-)
+> rename drivers/net/ethernet/mellanox/mlx5/core/en_accel/{tls_stats.c => ktls_stats.c} (76%)
 
-...
+Why not ktls_*.c => tls_*.c ? 
 
-> @@ -823,6 +843,230 @@ void snp_set_memory_private(unsigned long vaddr, unsigned int npages)
->  	pvalidate_pages(vaddr, npages, true);
->  }
->  
-> +static int snp_set_vmsa(void *va, bool vmsa)
-> +{
-> +	u64 attrs;
-> +
-> +	/*
-> +	 * Running at VMPL0 allows the kernel to change the VMSA bit for a page
-> +	 * using the RMPADJUST instruction. However, for the instruction to
-> +	 * succeed it must target the permissions of a lesser privileged
-> +	 * VMPL level, so use VMPL1 (refer to the RMPADJUST instruction in the
-> +	 * AMD64 APM Volume 3).
-> +	 */
-> +	attrs = 1;
-> +	if (vmsa)
-> +		attrs |= RMPADJUST_VMSA_PAGE_BIT;
-> +
-> +	return rmpadjust((unsigned long)va, RMP_PG_SIZE_4K, attrs);
-> +}
-> +
-> +#define __ATTR_BASE		(SVM_SELECTOR_P_MASK | SVM_SELECTOR_S_MASK)
-> +#define INIT_CS_ATTRIBS		(__ATTR_BASE | SVM_SELECTOR_READ_MASK | SVM_SELECTOR_CODE_MASK)
-> +#define INIT_DS_ATTRIBS		(__ATTR_BASE | SVM_SELECTOR_WRITE_MASK)
-> +
-> +#define INIT_LDTR_ATTRIBS	(SVM_SELECTOR_P_MASK | 2)
-> +#define INIT_TR_ATTRIBS		(SVM_SELECTOR_P_MASK | 3)
-> +
-> +static void *snp_alloc_vmsa_page(void)
-> +{
-> +	struct page *p;
-> +
-> +	/*
-> +	 * Allocate VMSA page to work around the SNP erratum where the CPU will
-> +	 * incorrectly signal an RMP violation #PF if a large page (2MB or 1GB)
-> +	 * collides with the RMP entry of VMSA page. The recommended workaround
-> +	 * is to not use a large page.
-> +	 */
-> +
-> +	/* Allocate an 8k page which is also 8k-aligned */
-> +	p = alloc_pages(GFP_KERNEL_ACCOUNT | __GFP_ZERO, 1);
-> +	if (!p)
-> +		return NULL;
-> +
-> +	split_page(p, 1);
-> +
-> +	/* Free the first 4k. This page may be 2M/1G aligned and cannot be used. */
-> +	__free_page(p);
-> +
-> +	return page_address(p + 1);
-> +}
-> +
-> +static void snp_cleanup_vmsa(struct sev_es_save_area *vmsa)
-> +{
-> +	int err;
-> +
-> +	err = snp_set_vmsa(vmsa, false);
+Since we now have one TLS implementation, it would've been easier to maybe
+repurpose TLS to be KTLS only and avoid renaming every TLS to KTLS in all
+functions and files.
 
-Uh, so what happens if a malicious guest does RMPADJUST to convert a VMSA page
-back to a "normal" page while the host is trying to VMRUN that VMSA?  Does VMRUN
-fault?
+So just keep tls.c and all mlx5_tls_xyz functions and implement ktls
+directly in them, the renaming will be done only on the ktls implementation
+part of the code rather than in every caller.
 
-Can Linux refuse to support this madness and instead require the ACPI MP wakeup
-protocol being proposed/implemented for TDX?  That would allow KVM to have at
-least a chance of refusing to support AP "creation", which IMO is a CVE or three
-waiting to happen.  From a KVM perspective, I don't ever want to be running a
-guest-defined VMSA.
+> delete mode 100644 drivers/net/ethernet/mellanox/mlx5/core/en_accel/tls.c
+> delete mode 100644 drivers/net/ethernet/mellanox/mlx5/core/en_accel/tls.h
+> delete mode 100644 drivers/net/ethernet/mellanox/mlx5/core/en_accel/tls_rxtx.c
+> delete mode 100644 drivers/net/ethernet/mellanox/mlx5/core/en_accel/tls_rxtx.h
+>
 
-https://lore.kernel.org/all/YWnbfCet84Vup6q9@google.com
-
-> +	if (err)
-> +		pr_err("clear VMSA page failed (%u), leaking page\n", err);
-> +	else
-> +		free_page((unsigned long)vmsa);
