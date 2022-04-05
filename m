@@ -2,44 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 440DEC4321E
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 10:30:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E4966C4332F
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 10:30:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241062AbiDEK2g (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 06:28:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45930 "EHLO
+        id S1358410AbiDEK2W (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 06:28:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49606 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241030AbiDEIco (ORCPT
+        with ESMTP id S241363AbiDEIdW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:32:44 -0400
+        Tue, 5 Apr 2022 04:33:22 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2A44B53DE;
-        Tue,  5 Apr 2022 01:26:05 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A9E6C4;
+        Tue,  5 Apr 2022 01:31:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 568BFB81BAF;
-        Tue,  5 Apr 2022 08:26:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C0452C385A1;
-        Tue,  5 Apr 2022 08:26:02 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id F2D90B81BB1;
+        Tue,  5 Apr 2022 08:31:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5DA24C385A1;
+        Tue,  5 Apr 2022 08:31:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649147163;
-        bh=ddMf/Q2OYNRAJxNBRf3ZcvSR2v8ceJNOuWDRf7eIQjU=;
+        s=korg; t=1649147481;
+        bh=VneNOaM9mJpTwqnsaz3AMAgYN5lJVKmSjFQ175D3ec4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=q0xKiF+ltz1LTFBSX7p53sfZxG4OGBdz/FvcdxTX16feOg7nJj/rLBlPz6iRgAzdo
-         MRIFCQmifSeZluxkgns/35Hm7lco6jrB/Wi5xr74Beo24sEUqHJx2zUoaKyLBaZKSJ
-         jO17WMDrmv0HeLdCMlumGWlT8KuUAjQXr6QuoKfI=
+        b=o+w4Sn/pDfkD+oWqWZBK2hpo52IBXS7J12FSJI+3MYXHQamnfE7ZxTu+JrLPZrYyY
+         65gPjewLO5OVws0ZM71r174HgZuIGXAjMqbzZlifWfoK+1OCMNI1uk0Ru3FiBBeUDw
+         wVpCJjGYcj83+Y+TnDwEKBD6cZqJunklOxuDnqO8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hugh Dickins <hughd@google.com>,
-        "Matthew Wilcox (Oracle)" <willy@infradead.org>
-Subject: [PATCH 5.17 1024/1126] XArray: Update the LRU list in xas_split()
-Date:   Tue,  5 Apr 2022 09:29:31 +0200
-Message-Id: <20220405070437.539339237@linuxfoundation.org>
+        stable@vger.kernel.org, Zheyu Ma <zheyuma97@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 0014/1017] ethernet: sun: Free the coherent when failing in probing
+Date:   Tue,  5 Apr 2022 09:15:27 +0200
+Message-Id: <20220405070354.596557807@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
-References: <20220405070407.513532867@linuxfoundation.org>
+In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
+References: <20220405070354.155796697@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -48,44 +51,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Matthew Wilcox (Oracle) <willy@infradead.org>
+From: Zheyu Ma <zheyuma97@gmail.com>
 
-commit 3ed4bb77156da0bc732847c8c9df92454c1fbeea upstream.
+[ Upstream commit bb77bd31c281f70ec77c9c4f584950a779e05cf8 ]
 
-When splitting a value entry, we may need to add the new nodes to the LRU
-list and remove the parent node from the LRU list.  The WARN_ON checks
-in shadow_lru_isolate() catch this oversight.  This bug was latent
-until we stopped splitting folios in shrink_page_list() with commit
-820c4e2e6f51 ("mm/vmscan: Free non-shmem folios without splitting them").
-That allows the creation of large shadow entries, and subsequently when
-trying to page in a small page, we will split the large shadow entry
-in __filemap_add_folio().
+When the driver fails to register net device, it should free the DMA
+region first, and then do other cleanup.
 
-Fixes: 8fc75643c5e1 ("XArray: add xas_split")
-Reported-by: Hugh Dickins <hughd@google.com>
-Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- lib/xarray.c |    2 ++
- 1 file changed, 2 insertions(+)
+ drivers/net/ethernet/sun/sunhme.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
---- a/lib/xarray.c
-+++ b/lib/xarray.c
-@@ -1081,6 +1081,7 @@ void xas_split(struct xa_state *xas, voi
- 					xa_mk_node(child));
- 			if (xa_is_value(curr))
- 				values--;
-+			xas_update(xas, child);
- 		} else {
- 			unsigned int canon = offset - xas->xa_sibs;
+diff --git a/drivers/net/ethernet/sun/sunhme.c b/drivers/net/ethernet/sun/sunhme.c
+index ad9029ae6848..77e5dffb558f 100644
+--- a/drivers/net/ethernet/sun/sunhme.c
++++ b/drivers/net/ethernet/sun/sunhme.c
+@@ -3146,7 +3146,7 @@ static int happy_meal_pci_probe(struct pci_dev *pdev,
+ 	if (err) {
+ 		printk(KERN_ERR "happymeal(PCI): Cannot register net device, "
+ 		       "aborting.\n");
+-		goto err_out_iounmap;
++		goto err_out_free_coherent;
+ 	}
  
-@@ -1095,6 +1096,7 @@ void xas_split(struct xa_state *xas, voi
- 	} while (offset-- > xas->xa_offset);
+ 	pci_set_drvdata(pdev, hp);
+@@ -3179,6 +3179,10 @@ static int happy_meal_pci_probe(struct pci_dev *pdev,
  
- 	node->nr_values += values;
-+	xas_update(xas, node);
- }
- EXPORT_SYMBOL_GPL(xas_split);
- #endif
+ 	return 0;
+ 
++err_out_free_coherent:
++	dma_free_coherent(hp->dma_dev, PAGE_SIZE,
++			  hp->happy_block, hp->hblock_dvma);
++
+ err_out_iounmap:
+ 	iounmap(hp->gregs);
+ 
+-- 
+2.34.1
+
 
 
