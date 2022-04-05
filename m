@@ -2,100 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1ED3DC4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 08DE8C433F5
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:41:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1575822AbiDEXJU (ORCPT
+        id S1575796AbiDEXJP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 19:09:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53188 "EHLO
+        Tue, 5 Apr 2022 19:09:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52174 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1452239AbiDEPyk (ORCPT
+        with ESMTP id S1354206AbiDEKMP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 11:54:40 -0400
-Received: from mail-pf1-x434.google.com (mail-pf1-x434.google.com [IPv6:2607:f8b0:4864:20::434])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39F4560CCD;
-        Tue,  5 Apr 2022 07:51:10 -0700 (PDT)
-Received: by mail-pf1-x434.google.com with SMTP id h19so12324502pfv.1;
-        Tue, 05 Apr 2022 07:51:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=q+15Oawdm+s4IbChY8Qhyeh/dopVPtV/8IyA3nSGdqc=;
-        b=br+1UKd3iP8/h3pi8B267stHZwGSECHyUjToTb4xSF6sJ8ITrZNGuEld7tOA4x+kAk
-         TOtiwQBmyt/VV00wBE6EGSpluZpLMs0COncJEQE0fUiixo094sBc5ErDPbt3kpIg2zH8
-         4aBzDK5CtKt1euYVRp3soMX0oXg43GARrWrY6s/L7PKGjw9IA/aQn2MzH3IeYjZcm0H5
-         TWDB9onOg4mExGPS+iiA7XluM8/5TrfE/4M+cOCiAMVdGhMukgAP8DlhXXPop2e/jpdd
-         eYzbcEjRbPcpYWfMTyA/6VlTJyId9/YzC/iEe0AosU+2cutD80lWTiWt55V5ANoT9kU7
-         awIw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=q+15Oawdm+s4IbChY8Qhyeh/dopVPtV/8IyA3nSGdqc=;
-        b=iYS+3KS8qLB35D5knWKggS6pPF/JwryW6bl/oaB45tavB15kzDRamPeECcrEH070kC
-         h82pkitGE9B4N0iOWdw2Ybajro7dyXNLeidSN+AVd1TdH74rNS9liq3ouyPojY0ik+ER
-         gs3yNZdDkZigmjTasOo1bWqcyAvG08L6cLuZFwEC056uZkQqkpp2jUpKrBwcQMX4ZgrV
-         9XvOr1scs99cNRBV8ly6Dlg+aH4odd5NOwRTHRDZ4MVqL4vVlGnJcjLFWPhN1U276YW6
-         qU5LnbcbFQCP2gIgeLJkiUbbzLauc6v4Dwq36hdXtWGvsd7D1zjRNWo+ZCkW9qy7cEPf
-         qOZw==
-X-Gm-Message-State: AOAM530dcHkjeYzgKgZzFn5Swcu/+Ds96oinEEKJBq2MBrGFkjfMKWzy
-        HxNjVd4g7A6Dt73fSNAb9YM=
-X-Google-Smtp-Source: ABdhPJz11ti+4wlG2/u+BVt7lhWyMOCDEaK9wUqU1ciZmcGl6lq6OEnK95hxlzJP+oFnZ7gRyIKm7A==
-X-Received: by 2002:a63:ed45:0:b0:399:5116:312a with SMTP id m5-20020a63ed45000000b003995116312amr3084061pgk.611.1649170269609;
-        Tue, 05 Apr 2022 07:51:09 -0700 (PDT)
-Received: from [10.230.29.214] ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id u15-20020a056a00098f00b004faa58d44eesm17487493pfg.145.2022.04.05.07.51.06
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 05 Apr 2022 07:51:08 -0700 (PDT)
-Message-ID: <2c3809ad-4302-a8b2-1282-74efff2f77ff@gmail.com>
-Date:   Tue, 5 Apr 2022 07:51:05 -0700
+        Tue, 5 Apr 2022 06:12:15 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D3B054BC3;
+        Tue,  5 Apr 2022 02:58:41 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 43267B817D3;
+        Tue,  5 Apr 2022 09:58:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AAF06C385A2;
+        Tue,  5 Apr 2022 09:58:38 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649152719;
+        bh=QvVBerDKdoCVfQK/+ujmnOE/1XqAbYOn7pRFuVZg8nk=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=Pf31a6kOcM3IjMNmdEGZR29P17fY229pkxC26NUipHk9JNLiNGHgPH+F4rB+6jKpI
+         VpWK55/s9eeRSICj0qNLz/+9W1z7ogB/fVIYjYVQgh9gzm6Z8oDsRvI24fOXoJvgnp
+         pU88W307X0WCSVTjtMlJrTyPA/imgNTH3w2bw8pI=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Hengqi Chen <hengqi.chen@gmail.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Yonghong Song <yhs@fb.com>
+Subject: [PATCH 5.15 879/913] bpf: Fix comment for helper bpf_current_task_under_cgroup()
+Date:   Tue,  5 Apr 2022 09:32:21 +0200
+Message-Id: <20220405070406.171460911@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH 5.10 000/599] 5.10.110-rc1 review
-Content-Language: en-US
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org
-Cc:     stable@vger.kernel.org, torvalds@linux-foundation.org,
-        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
-        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
-        jonathanh@nvidia.com, sudipm.mukherjee@gmail.com,
-        slade@sladewatkins.com
-References: <20220405070258.802373272@linuxfoundation.org>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+From: Hengqi Chen <hengqi.chen@gmail.com>
+
+commit 58617014405ad5c9f94f464444f4972dabb71ca7 upstream.
+
+Fix the descriptions of the return values of helper bpf_current_task_under_cgroup().
+
+Fixes: c6b5fb8690fa ("bpf: add documentation for eBPF helpers (42-50)")
+Signed-off-by: Hengqi Chen <hengqi.chen@gmail.com>
+Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+Acked-by: Yonghong Song <yhs@fb.com>
+Link: https://lore.kernel.org/bpf/20220310155335.1278783-1-hengqi.chen@gmail.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ include/uapi/linux/bpf.h       |    4 ++--
+ tools/include/uapi/linux/bpf.h |    4 ++--
+ 2 files changed, 4 insertions(+), 4 deletions(-)
+
+--- a/include/uapi/linux/bpf.h
++++ b/include/uapi/linux/bpf.h
+@@ -2276,8 +2276,8 @@ union bpf_attr {
+  * 	Return
+  * 		The return value depends on the result of the test, and can be:
+  *
+- *		* 0, if current task belongs to the cgroup2.
+- *		* 1, if current task does not belong to the cgroup2.
++ *		* 1, if current task belongs to the cgroup2.
++ *		* 0, if current task does not belong to the cgroup2.
+  * 		* A negative error code, if an error occurred.
+  *
+  * long bpf_skb_change_tail(struct sk_buff *skb, u32 len, u64 flags)
+--- a/tools/include/uapi/linux/bpf.h
++++ b/tools/include/uapi/linux/bpf.h
+@@ -2276,8 +2276,8 @@ union bpf_attr {
+  * 	Return
+  * 		The return value depends on the result of the test, and can be:
+  *
+- *		* 0, if current task belongs to the cgroup2.
+- *		* 1, if current task does not belong to the cgroup2.
++ *		* 1, if current task belongs to the cgroup2.
++ *		* 0, if current task does not belong to the cgroup2.
+  * 		* A negative error code, if an error occurred.
+  *
+  * long bpf_skb_change_tail(struct sk_buff *skb, u32 len, u64 flags)
 
 
-On 4/5/2022 12:24 AM, Greg Kroah-Hartman wrote:
-> This is the start of the stable review cycle for the 5.10.110 release.
-> There are 599 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
-> 
-> Responses should be made by Thu, 07 Apr 2022 07:01:33 +0000.
-> Anything received after that time might be too late.
-> 
-> The whole patch series can be found in one patch at:
-> 	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.10.110-rc1.gz
-> or in the git tree and branch at:
-> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.10.y
-> and the diffstat can be found below.
-> 
-> thanks,
-> 
-> greg k-h
-
-On ARCH_BRCMSTB using 32-bit and 64-bit ARM kernels:
-
-Tested-by: Florian Fainelli <f.fainelli@gmail.com>
--- 
-Florian
