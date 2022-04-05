@@ -2,109 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E3EBC4321E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C49CFC41535
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:41:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1575888AbiDEXJg (ORCPT
+        id S1575980AbiDEXJs (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 19:09:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45540 "EHLO
+        Tue, 5 Apr 2022 19:09:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43736 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1457528AbiDEQEh (ORCPT
+        with ESMTP id S1354371AbiDEKN7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 12:04:37 -0400
-Received: from netrider.rowland.org (netrider.rowland.org [192.131.102.5])
-        by lindbergh.monkeyblade.net (Postfix) with SMTP id CF27BCD
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 09:02:38 -0700 (PDT)
-Received: (qmail 155879 invoked by uid 1000); 5 Apr 2022 12:02:37 -0400
-Date:   Tue, 5 Apr 2022 12:02:37 -0400
-From:   Alan Stern <stern@rowland.harvard.edu>
-To:     "WeitaoWang-oc@zhaoxin.com" <WeitaoWang-oc@zhaoxin.com>
-Cc:     gregkh@linuxfoundation.org, linux-usb@vger.kernel.org,
-        linux-kernel@vger.kernel.org, CobeChen@zhaoxin.com,
-        TimGuo@zhaoxin.com, tonywwang@zhaoxin.com, weitaowang@zhaoxin.com
-Subject: Re: [PATCH] USB:Fix ehci infinite suspend-resume loop issue in
- zhaoxin
-Message-ID: <YkxoHY2SVomGwGdh@rowland.harvard.edu>
-References: <3d0ae3ca-9dad-bb8f-5c41-45bdcb07b9cd@zhaoxin.com>
- <Yi9QIk+6VIWW6V/W@rowland.harvard.edu>
- <320584eb-ef89-3759-509c-e7e9cb10f983@zhaoxin.com>
- <YjCuOXRFZ8CjK9SD@rowland.harvard.edu>
- <ac40c227-ea26-bccd-d254-5a2034103184@zhaoxin.com>
+        Tue, 5 Apr 2022 06:13:59 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BE69694B2;
+        Tue,  5 Apr 2022 02:59:38 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B49A2B81C83;
+        Tue,  5 Apr 2022 09:59:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 08AC9C385A1;
+        Tue,  5 Apr 2022 09:59:34 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649152775;
+        bh=nlm8p+tTQwhGjPD/lcR+yMaGdpDQ15VBJt2fFe08qzk=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=cItoeJDBIIRuosIIyfg3x3GCZcf3eNS3rD7Kw+TPlQjGrCdUZMUts16yoA2PYy+Vs
+         BxVwViygzkGJ6hnLZcS8pvDBiUsa7YoMvFPPUi22TX7+hZch/B1Lg0SP07M/OZGXEz
+         WOmvcVh+sEulbeN+RVSlEX326AsWG63AlOQ9OfL8=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
+        Richard Weinberger <richard@nod.at>
+Subject: [PATCH 5.15 897/913] um: Fix uml_mconsole stop/go
+Date:   Tue,  5 Apr 2022 09:32:39 +0200
+Message-Id: <20220405070406.708239163@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <ac40c227-ea26-bccd-d254-5a2034103184@zhaoxin.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Mar 16, 2022 at 10:18:39AM +0800, WeitaoWang-oc@zhaoxin.com wrote:
-> On 2022/3/15 11:18, Alan Stern wrote:
-> > On Tue, Mar 15, 2022 at 08:39:09PM +0800, WeitaoWang-oc@zhaoxin.com wrote:
-> > > I have encountered the following situation if EHCI runtime suspend is
-> > > enabled by default.
+From: Anton Ivanov <anton.ivanov@cambridgegreys.com>
 
-Some things about this still confuse me...
+commit 1a3a6a2a035bb6c3a7ef4c788d8fd69a7b2d6284 upstream.
 
-> > > 1.Wake from system to disk and boot OS.
-> > 
-> > You're talking about resuming after hibernation, right?
-> 
-> You're right.
-> > > 2.EHCI will entry runtime suspend after enumerated by driver during boot
-> > > phase of suspend to disk
-> > 
-> > I'm not sure what you mean by "boot phase of suspend to disk".  This is
-> > while the restore kernel is starting up at the beginning of resume from
-> > hibernation, right?
-> > 
-> You understood exactly what I was saying.
+Moving to an EPOLL based IRQ controller broke uml_mconsole stop/go
+commands. This fixes it and restores stop/go functionality.
 
-Okay, so we're waking up from hibernation.
+Fixes: ff6a17989c08 ("Epoll based IRQ controller")
+Signed-off-by: Anton Ivanov <anton.ivanov@cambridgegreys.com>
+Signed-off-by: Richard Weinberger <richard@nod.at>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ arch/um/drivers/mconsole_kern.c |    3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-> > > 3.EHCI will be placed to freeze state and ehci_resume is called after image
-> > > is loaded.
-> > 
-> > ehci_resume is called to leave runtime suspend.  Going into the freeze
-> > state doesn't require any changes.
+--- a/arch/um/drivers/mconsole_kern.c
++++ b/arch/um/drivers/mconsole_kern.c
+@@ -224,7 +224,7 @@ void mconsole_go(struct mc_request *req)
+ 
+ void mconsole_stop(struct mc_request *req)
+ {
+-	deactivate_fd(req->originating_fd, MCONSOLE_IRQ);
++	block_signals();
+ 	os_set_fd_block(req->originating_fd, 1);
+ 	mconsole_reply(req, "stopped", 0, 0);
+ 	for (;;) {
+@@ -247,6 +247,7 @@ void mconsole_stop(struct mc_request *re
+ 	}
+ 	os_set_fd_block(req->originating_fd, 0);
+ 	mconsole_reply(req, "", 0, 0);
++	unblock_signals();
+ }
+ 
+ static DEFINE_SPINLOCK(mc_devices_lock);
 
-In fact, the resume kernel doesn't call ehci_resume at all.  Here's what 
-it does:
 
-	The resume kernel boots;
-
-	If your patch causes STS_PCD to be set at this point, the flag 
-	should get cleared shortly afterward by ehci_irq;
-
-	ehci-hcd goes into runtime suspend;
-
-	The kernel reads the system image that was stored earlier when
-	hibernation began;
-
-	After the image is loaded, the system goes into the freeze
-	state (this does not call any routines in ehci-hcd);
-
-	The resume kernel transfers control to the image kernel;
-
-Now the image kernel is running.  It goes into the restore state, which 
-involves calling ehci_resume.  Presumably your patch cases the STS_PCD 
-flag to get set at this point.
-
-But that's all!  The system is now back up, out of hibernation, and 
-running normally.  There are no more calls to check_root_hub_suspended
-
-> > > 4.If PCD flag is set(caused by patch), then HCD_FLAG_RH_RUNNING will be set.
-> > > 
-> > > 5.Pci_pm_freeze_noirq is called to check ehci root hub state and return
-> > > value is -EBUSY. which will cause
-> > >   quiesce phase of suspend to disk fail.
-> > 
-> > You're talking about check_root_hub_suspended() in hcd-pci.c, right?
-> > 
-> It's right.
-
-So how can this happen, given that the image kernel doesn't call 
-pci_pm_freeze_noirq?
-
-Alan Stern
