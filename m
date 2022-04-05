@@ -2,103 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 52FEDC4332F
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 01:53:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D05BC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 01:53:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1391276AbiDFBsn (ORCPT
+        id S1455431AbiDFBtG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 21:48:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53362 "EHLO
+        Tue, 5 Apr 2022 21:49:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34662 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1457970AbiDERCV (ORCPT
+        with ESMTP id S242895AbiDEKfX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 13:02:21 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 334F788B0E;
-        Tue,  5 Apr 2022 10:00:23 -0700 (PDT)
+        Tue, 5 Apr 2022 06:35:23 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C4BD51314;
+        Tue,  5 Apr 2022 03:21:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C272C615AF;
-        Tue,  5 Apr 2022 17:00:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C4FBBC385A5;
-        Tue,  5 Apr 2022 17:00:21 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 076BAB81C6C;
+        Tue,  5 Apr 2022 10:21:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 42530C385A0;
+        Tue,  5 Apr 2022 10:21:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649178022;
-        bh=zb1JFQP4vJ/gYj1rlsoqkkSJjt4zifG3LrmGqsQ055U=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=LKBetFmeA75o9XU4QGhMx54eDMYGRe6Polah3FawFP3ub9F9PvXz8KyjNQwvnu8hG
-         20c1vv60qUF70wyTBjWbRC3ZyrFXVxWxbD6Jp1sWltN7+VJhhrdGESUJLulGn4yoCg
-         UtkoFG8fjZROl67hOi1TfLJt66UAX2gCLwW7nCOg=
-Date:   Tue, 5 Apr 2022 19:00:19 +0200
+        s=korg; t=1649154062;
+        bh=fa4i5XgvX8rmlhEnQNKyPUqlBni4aLsihvQesM+ie5k=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=uJdnp1jT51r00wZK4w6NS7/nA40phvEvI6LpkY5GZMbnzyaYt6dcc2tjcEzVutXNp
+         JTLqZ0pUrN627e1CeD7EizNHsHTrEaqKi7m6iXEhEH37OjYE9QfnecGbNfXEgKmn52
+         a1MnFV11+axU0S9w0T8qOK+Blx9N2ljKhQhTvwlE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     dann frazier <dann.frazier@canonical.com>
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        Marc Zyngier <maz@kernel.org>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Rob Herring <robh@kernel.org>,
-        Toan Le <toan@os.amperecomputing.com>,
-        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        =?iso-8859-1?Q?St=E9phane?= Graber <stgraber@ubuntu.com>
-Subject: Re: [PATCH 5.16 0199/1017] PCI: xgene: Revert "PCI: xgene: Fix IB
- window setup"
-Message-ID: <Ykx1o2PbNzGlp1ds@kroah.com>
-References: <20220405070354.155796697@linuxfoundation.org>
- <20220405070400.156176848@linuxfoundation.org>
- <YkxjbVp3W2LeVIeL@xps13.dannf>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Duoming Zhou <duoming@zju.edu.cn>,
+        Lin Ma <linma@zju.edu.cn>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 443/599] net/x25: Fix null-ptr-deref caused by x25_disconnect
+Date:   Tue,  5 Apr 2022 09:32:17 +0200
+Message-Id: <20220405070312.014226420@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
+References: <20220405070258.802373272@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <YkxjbVp3W2LeVIeL@xps13.dannf>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 05, 2022 at 09:42:37AM -0600, dann frazier wrote:
-> On Tue, Apr 05, 2022 at 09:18:32AM +0200, Greg Kroah-Hartman wrote:
-> > From: Marc Zyngier <maz@kernel.org>
-> > 
-> > commit 825da4e9cec68713fbb02dc6f71fe1bf65fe8050 upstream.
-> > 
-> > Commit c7a75d07827a ("PCI: xgene: Fix IB window setup") tried to
-> > fix the damages that 6dce5aa59e0b ("PCI: xgene: Use inbound resources
-> > for setup") caused, but actually didn't improve anything for some
-> > plarforms (at least Mustang and m400 are still broken).
-> > 
-> > Given that 6dce5aa59e0b has been reverted, revert this patch as well,
-> > restoring the PCIe support on XGene to its pre-5.5, working state.
-> > 
-> > Link: https://lore.kernel.org/r/YjN8pT5e6/8cRohQ@xps13.dannf
-> > Link: https://lore.kernel.org/r/20220321104843.949645-3-maz@kernel.org
-> > Fixes: c7a75d07827a ("PCI: xgene: Fix IB window setup")
-> > Signed-off-by: Marc Zyngier <maz@kernel.org>
-> > Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-> > Cc: stable@vger.kernel.org
-> > Cc: Rob Herring <robh@kernel.org>
-> > Cc: Toan Le <toan@os.amperecomputing.com>
-> > Cc: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-> > Cc: Krzysztof Wilczyński <kw@linux.com>
-> > Cc: Bjorn Helgaas <bhelgaas@google.com>
-> > Cc: Stéphane Graber <stgraber@ubuntu.com>
-> > Cc: dann frazier <dann.frazier@canonical.com>
-> > Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> > ---
-> >  drivers/pci/controller/pci-xgene.c |    2 +-
-> >  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> Hi Greg,
-> 
->   I don't think it makes sense to apply this to 5.10.y, 5.15.y &
-> 5.16.y w/o also applying a backport of 1874b6d7ab1, because without
-> that we will regress support for Stéphane's X-Gene2-based systems. The
-> backport of 1874b6d7ab1 was rejected for these trees because it doesn't
-> apply cleanly, but I've just submitted new versions that do.
+From: Duoming Zhou <duoming@zju.edu.cn>
 
-Where were those patches sent to?  I don't seem to see them on the
-stable list, did I miss them?
+[ Upstream commit 7781607938c8371d4c2b243527430241c62e39c2 ]
 
-thanks,
+When the link layer is terminating, x25->neighbour will be set to NULL
+in x25_disconnect(). As a result, it could cause null-ptr-deref bugs in
+x25_sendmsg(),x25_recvmsg() and x25_connect(). One of the bugs is
+shown below.
 
-greg k-h
+    (Thread 1)                 |  (Thread 2)
+x25_link_terminated()          | x25_recvmsg()
+ x25_kill_by_neigh()           |  ...
+  x25_disconnect()             |  lock_sock(sk)
+   ...                         |  ...
+   x25->neighbour = NULL //(1) |
+   ...                         |  x25->neighbour->extended //(2)
+
+The code sets NULL to x25->neighbour in position (1) and dereferences
+x25->neighbour in position (2), which could cause null-ptr-deref bug.
+
+This patch adds lock_sock() in x25_kill_by_neigh() in order to synchronize
+with x25_sendmsg(), x25_recvmsg() and x25_connect(). What`s more, the
+sock held by lock_sock() is not NULL, because it is extracted from x25_list
+and uses x25_list_lock to synchronize.
+
+Fixes: 4becb7ee5b3d ("net/x25: Fix x25_neigh refcnt leak when x25 disconnect")
+Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
+Reviewed-by: Lin Ma <linma@zju.edu.cn>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ net/x25/af_x25.c | 11 ++++++++---
+ 1 file changed, 8 insertions(+), 3 deletions(-)
+
+diff --git a/net/x25/af_x25.c b/net/x25/af_x25.c
+index 03ed170b8125..d231d4620c38 100644
+--- a/net/x25/af_x25.c
++++ b/net/x25/af_x25.c
+@@ -1775,10 +1775,15 @@ void x25_kill_by_neigh(struct x25_neigh *nb)
+ 
+ 	write_lock_bh(&x25_list_lock);
+ 
+-	sk_for_each(s, &x25_list)
+-		if (x25_sk(s)->neighbour == nb)
++	sk_for_each(s, &x25_list) {
++		if (x25_sk(s)->neighbour == nb) {
++			write_unlock_bh(&x25_list_lock);
++			lock_sock(s);
+ 			x25_disconnect(s, ENETUNREACH, 0, 0);
+-
++			release_sock(s);
++			write_lock_bh(&x25_list_lock);
++		}
++	}
+ 	write_unlock_bh(&x25_list_lock);
+ 
+ 	/* Remove any related forwards */
+-- 
+2.34.1
+
+
+
