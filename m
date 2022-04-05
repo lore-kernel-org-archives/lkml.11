@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E519C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E45EC433F5
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 11:06:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348525AbiDELC5 (ORCPT
+        id S1348633AbiDELDD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 07:02:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53418 "EHLO
+        Tue, 5 Apr 2022 07:03:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45570 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236917AbiDEIlX (ORCPT
+        with ESMTP id S236789AbiDEIlX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Apr 2022 04:41:23 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 703CC108F;
-        Tue,  5 Apr 2022 01:33:52 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 351C51146;
+        Tue,  5 Apr 2022 01:34:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 96861B81A32;
-        Tue,  5 Apr 2022 08:33:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 082F2C385A1;
-        Tue,  5 Apr 2022 08:33:49 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C03D161470;
+        Tue,  5 Apr 2022 08:34:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C7302C385A2;
+        Tue,  5 Apr 2022 08:34:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649147630;
-        bh=Sh0QQE6Im+ltsXniwn3yKBMEg1ii9KCtVpujyjDWYJQ=;
+        s=korg; t=1649147655;
+        bh=ASnc9FDZf1wHSpDpLCWAY4La/zEnqsA6WV75XtASLQA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=iQ1n1G4vTDfp2Nb+o+QH2tW+iODlkR32Xy10Z66UhYsc9LzMsfvHt1EtKCSgAbAkm
-         jH2WOn1FG7OQy/v36ljJwenpV8etVa/Glr8o8iIWCAJjiv7qQ4gNBbWiTobDb9uVcu
-         UfiOunI+mdAO79NwMym1a2g3DCBs++jdzdKrxI0s=
+        b=OpjdMMhz3IGFjSVFB8ivTa17gsdERQipBGHai3EFC7uw92HWGbGXRLQx3CL0QTXgc
+         F4jdJv5WaNlFM0K5NZyTB6O6yaQ0N19qAlzp2lD/Y51iWcqFDIpzyMnvt2pMdVpWE+
+         mZnS472ntbZ6rF4LGXvc3ZkTuW35k8FIxidKsGqw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Gwendal Grignou <gwendal@chromium.org>,
-        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
-        Jiri Kosina <jkosina@suse.cz>
-Subject: [PATCH 5.16 0064/1017] HID: intel-ish-hid: Use dma_alloc_coherent for firmware update
-Date:   Tue,  5 Apr 2022 09:16:17 +0200
-Message-Id: <20220405070356.086938898@linuxfoundation.org>
+        stable@vger.kernel.org, Sergey Shtylyov <s.shtylyov@omp.ru>,
+        Pavan Kondeti <quic_pkondeti@quicinc.com>,
+        Mathias Nyman <mathias.nyman@linux.intel.com>
+Subject: [PATCH 5.16 0036/1017] xhci: make xhci_handshake timeout for xhci_reset() adjustable
+Date:   Tue,  5 Apr 2022 09:15:49 +0200
+Message-Id: <20220405070355.251263865@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -50,92 +50,176 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Gwendal Grignou <gwendal@chromium.org>
+From: Mathias Nyman <mathias.nyman@linux.intel.com>
 
-commit f97ec5d75e9261a5da78dc28a8955b7cc0c4468b upstream.
+commit 14073ce951b5919da450022c050772902f24f054 upstream.
 
-Allocating memory with kmalloc and GPF_DMA32 is not allowed, the
-allocator will ignore the attribute.
+xhci_reset() timeout was increased from 250ms to 10 seconds in order to
+give Renesas 720201 xHC enough time to get ready in probe.
 
-Instead, use dma_alloc_coherent() API as we allocate a small amount of
-memory to transfer firmware fragment to the ISH.
+xhci_reset() is called with interrupts disabled in other places, and
+waiting for 10 seconds there is not acceptable.
 
-On Arcada chromebook, after the patch the warning:
-"Unexpected gfp: 0x4 (GFP_DMA32). Fixing up to gfp: 0xcc0 (GFP_KERNEL).  Fix your code!"
-is gone. The ISH firmware is loaded properly and we can interact with
-the ISH:
-> ectool  --name cros_ish version
-...
-Build info:    arcada_ish_v2.0.3661+3c1a1c1ae0 2022-02-08 05:37:47 @localhost
-Tool version:  v2.0.12300-900b03ec7f 2022-02-08 10:01:48 @localhost
+Add a timeout parameter to xhci_reset(), and adjust it back to 250ms
+when called from xhci_stop() or xhci_shutdown() where interrupts are
+disabled, and successful reset isn't that critical.
+This solves issues when deactivating host mode on platforms like SM8450.
 
-Fixes: commit 91b228107da3 ("HID: intel-ish-hid: ISH firmware loader client driver")
-Signed-off-by: Gwendal Grignou <gwendal@chromium.org>
-Acked-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+For now don't change the timeout if xHC is reset in xhci_resume().
+No issues are reported for it, and we need the reset to succeed.
+Locking around that reset needs to be revisited later.
+
+Additionally change the signed integer timeout parameter in
+xhci_handshake() to a u64 to match the timeout value we pass to
+readl_poll_timeout_atomic()
+
+Fixes: 22ceac191211 ("xhci: Increase reset timeout for Renesas 720201 host.")
 Cc: stable@vger.kernel.org
-Signed-off-by: Jiri Kosina <jkosina@suse.cz>
+Reported-by: Sergey Shtylyov <s.shtylyov@omp.ru>
+Reported-by: Pavan Kondeti <quic_pkondeti@quicinc.com>
+Tested-by: Pavan Kondeti <quic_pkondeti@quicinc.com>
+Signed-off-by: Mathias Nyman <mathias.nyman@linux.intel.com>
+Link: https://lore.kernel.org/r/20220303110903.1662404-2-mathias.nyman@linux.intel.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/hid/intel-ish-hid/ishtp-fw-loader.c |   29 ++--------------------------
- 1 file changed, 3 insertions(+), 26 deletions(-)
+ drivers/usb/host/xhci-hub.c |    2 +-
+ drivers/usb/host/xhci-mem.c |    2 +-
+ drivers/usb/host/xhci.c     |   20 +++++++++-----------
+ drivers/usb/host/xhci.h     |    7 +++++--
+ 4 files changed, 16 insertions(+), 15 deletions(-)
 
---- a/drivers/hid/intel-ish-hid/ishtp-fw-loader.c
-+++ b/drivers/hid/intel-ish-hid/ishtp-fw-loader.c
-@@ -660,21 +660,12 @@ static int ish_fw_xfer_direct_dma(struct
- 	 */
- 	payload_max_size &= ~(L1_CACHE_BYTES - 1);
- 
--	dma_buf = kmalloc(payload_max_size, GFP_KERNEL | GFP_DMA32);
-+	dma_buf = dma_alloc_coherent(devc, payload_max_size, &dma_buf_phy, GFP_KERNEL);
- 	if (!dma_buf) {
- 		client_data->flag_retry = true;
- 		return -ENOMEM;
+--- a/drivers/usb/host/xhci-hub.c
++++ b/drivers/usb/host/xhci-hub.c
+@@ -762,7 +762,7 @@ static int xhci_exit_test_mode(struct xh
  	}
- 
--	dma_buf_phy = dma_map_single(devc, dma_buf, payload_max_size,
--				     DMA_TO_DEVICE);
--	if (dma_mapping_error(devc, dma_buf_phy)) {
--		dev_err(cl_data_to_dev(client_data), "DMA map failed\n");
--		client_data->flag_retry = true;
--		rv = -ENOMEM;
--		goto end_err_dma_buf_release;
--	}
--
- 	ldr_xfer_dma_frag.fragment.hdr.command = LOADER_CMD_XFER_FRAGMENT;
- 	ldr_xfer_dma_frag.fragment.xfer_mode = LOADER_XFER_MODE_DIRECT_DMA;
- 	ldr_xfer_dma_frag.ddr_phys_addr = (u64)dma_buf_phy;
-@@ -694,14 +685,7 @@ static int ish_fw_xfer_direct_dma(struct
- 		ldr_xfer_dma_frag.fragment.size = fragment_size;
- 		memcpy(dma_buf, &fw->data[fragment_offset], fragment_size);
- 
--		dma_sync_single_for_device(devc, dma_buf_phy,
--					   payload_max_size,
--					   DMA_TO_DEVICE);
--
--		/*
--		 * Flush cache here because the dma_sync_single_for_device()
--		 * does not do for x86.
--		 */
-+		/* Flush cache to be sure the data is in main memory. */
- 		clflush_cache_range(dma_buf, payload_max_size);
- 
- 		dev_dbg(cl_data_to_dev(client_data),
-@@ -724,15 +708,8 @@ static int ish_fw_xfer_direct_dma(struct
- 		fragment_offset += fragment_size;
- 	}
- 
--	dma_unmap_single(devc, dma_buf_phy, payload_max_size, DMA_TO_DEVICE);
--	kfree(dma_buf);
--	return 0;
--
- end_err_resp_buf_release:
--	/* Free ISH buffer if not done already, in error case */
--	dma_unmap_single(devc, dma_buf_phy, payload_max_size, DMA_TO_DEVICE);
--end_err_dma_buf_release:
--	kfree(dma_buf);
-+	dma_free_coherent(devc, payload_max_size, dma_buf, dma_buf_phy);
- 	return rv;
+ 	pm_runtime_allow(xhci_to_hcd(xhci)->self.controller);
+ 	xhci->test_mode = 0;
+-	return xhci_reset(xhci);
++	return xhci_reset(xhci, XHCI_RESET_SHORT_USEC);
  }
  
+ void xhci_set_link_state(struct xhci_hcd *xhci, struct xhci_port *port,
+--- a/drivers/usb/host/xhci-mem.c
++++ b/drivers/usb/host/xhci-mem.c
+@@ -2583,7 +2583,7 @@ int xhci_mem_init(struct xhci_hcd *xhci,
+ 
+ fail:
+ 	xhci_halt(xhci);
+-	xhci_reset(xhci);
++	xhci_reset(xhci, XHCI_RESET_SHORT_USEC);
+ 	xhci_mem_cleanup(xhci);
+ 	return -ENOMEM;
+ }
+--- a/drivers/usb/host/xhci.c
++++ b/drivers/usb/host/xhci.c
+@@ -65,7 +65,7 @@ static bool td_on_ring(struct xhci_td *t
+  * handshake done).  There are two failure modes:  "usec" have passed (major
+  * hardware flakeout), or the register reads as all-ones (hardware removed).
+  */
+-int xhci_handshake(void __iomem *ptr, u32 mask, u32 done, int usec)
++int xhci_handshake(void __iomem *ptr, u32 mask, u32 done, u64 timeout_us)
+ {
+ 	u32	result;
+ 	int	ret;
+@@ -73,7 +73,7 @@ int xhci_handshake(void __iomem *ptr, u3
+ 	ret = readl_poll_timeout_atomic(ptr, result,
+ 					(result & mask) == done ||
+ 					result == U32_MAX,
+-					1, usec);
++					1, timeout_us);
+ 	if (result == U32_MAX)		/* card removed */
+ 		return -ENODEV;
+ 
+@@ -162,7 +162,7 @@ int xhci_start(struct xhci_hcd *xhci)
+  * Transactions will be terminated immediately, and operational registers
+  * will be set to their defaults.
+  */
+-int xhci_reset(struct xhci_hcd *xhci)
++int xhci_reset(struct xhci_hcd *xhci, u64 timeout_us)
+ {
+ 	u32 command;
+ 	u32 state;
+@@ -195,8 +195,7 @@ int xhci_reset(struct xhci_hcd *xhci)
+ 	if (xhci->quirks & XHCI_INTEL_HOST)
+ 		udelay(1000);
+ 
+-	ret = xhci_handshake(&xhci->op_regs->command,
+-			CMD_RESET, 0, 10 * 1000 * 1000);
++	ret = xhci_handshake(&xhci->op_regs->command, CMD_RESET, 0, timeout_us);
+ 	if (ret)
+ 		return ret;
+ 
+@@ -209,8 +208,7 @@ int xhci_reset(struct xhci_hcd *xhci)
+ 	 * xHCI cannot write to any doorbells or operational registers other
+ 	 * than status until the "Controller Not Ready" flag is cleared.
+ 	 */
+-	ret = xhci_handshake(&xhci->op_regs->status,
+-			STS_CNR, 0, 10 * 1000 * 1000);
++	ret = xhci_handshake(&xhci->op_regs->status, STS_CNR, 0, timeout_us);
+ 
+ 	xhci->usb2_rhub.bus_state.port_c_suspend = 0;
+ 	xhci->usb2_rhub.bus_state.suspended_ports = 0;
+@@ -731,7 +729,7 @@ static void xhci_stop(struct usb_hcd *hc
+ 	xhci->xhc_state |= XHCI_STATE_HALTED;
+ 	xhci->cmd_ring_state = CMD_RING_STATE_STOPPED;
+ 	xhci_halt(xhci);
+-	xhci_reset(xhci);
++	xhci_reset(xhci, XHCI_RESET_SHORT_USEC);
+ 	spin_unlock_irq(&xhci->lock);
+ 
+ 	xhci_cleanup_msix(xhci);
+@@ -784,7 +782,7 @@ void xhci_shutdown(struct usb_hcd *hcd)
+ 	xhci_halt(xhci);
+ 	/* Workaround for spurious wakeups at shutdown with HSW */
+ 	if (xhci->quirks & XHCI_SPURIOUS_WAKEUP)
+-		xhci_reset(xhci);
++		xhci_reset(xhci, XHCI_RESET_SHORT_USEC);
+ 	spin_unlock_irq(&xhci->lock);
+ 
+ 	xhci_cleanup_msix(xhci);
+@@ -1170,7 +1168,7 @@ int xhci_resume(struct xhci_hcd *xhci, b
+ 		xhci_dbg(xhci, "Stop HCD\n");
+ 		xhci_halt(xhci);
+ 		xhci_zero_64b_regs(xhci);
+-		retval = xhci_reset(xhci);
++		retval = xhci_reset(xhci, XHCI_RESET_LONG_USEC);
+ 		spin_unlock_irq(&xhci->lock);
+ 		if (retval)
+ 			return retval;
+@@ -5318,7 +5316,7 @@ int xhci_gen_setup(struct usb_hcd *hcd,
+ 
+ 	xhci_dbg(xhci, "Resetting HCD\n");
+ 	/* Reset the internal HC memory state and registers. */
+-	retval = xhci_reset(xhci);
++	retval = xhci_reset(xhci, XHCI_RESET_LONG_USEC);
+ 	if (retval)
+ 		return retval;
+ 	xhci_dbg(xhci, "Reset complete\n");
+--- a/drivers/usb/host/xhci.h
++++ b/drivers/usb/host/xhci.h
+@@ -229,6 +229,9 @@ struct xhci_op_regs {
+ #define CMD_ETE		(1 << 14)
+ /* bits 15:31 are reserved (and should be preserved on writes). */
+ 
++#define XHCI_RESET_LONG_USEC		(10 * 1000 * 1000)
++#define XHCI_RESET_SHORT_USEC		(250 * 1000)
++
+ /* IMAN - Interrupt Management Register */
+ #define IMAN_IE		(1 << 1)
+ #define IMAN_IP		(1 << 0)
+@@ -2083,11 +2086,11 @@ void xhci_free_container_ctx(struct xhci
+ 
+ /* xHCI host controller glue */
+ typedef void (*xhci_get_quirks_t)(struct device *, struct xhci_hcd *);
+-int xhci_handshake(void __iomem *ptr, u32 mask, u32 done, int usec);
++int xhci_handshake(void __iomem *ptr, u32 mask, u32 done, u64 timeout_us);
+ void xhci_quiesce(struct xhci_hcd *xhci);
+ int xhci_halt(struct xhci_hcd *xhci);
+ int xhci_start(struct xhci_hcd *xhci);
+-int xhci_reset(struct xhci_hcd *xhci);
++int xhci_reset(struct xhci_hcd *xhci, u64 timeout_us);
+ int xhci_run(struct usb_hcd *hcd);
+ int xhci_gen_setup(struct usb_hcd *hcd, xhci_get_quirks_t get_quirks);
+ void xhci_shutdown(struct usb_hcd *hcd);
 
 
