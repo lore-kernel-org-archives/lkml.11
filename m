@@ -2,97 +2,174 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3DDCFC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:10:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9857EC4332F
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:10:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377631AbiDEUEO (ORCPT
+        id S1378858AbiDEUEV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 16:04:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50646 "EHLO
+        Tue, 5 Apr 2022 16:04:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45680 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358038AbiDEK14 (ORCPT
+        with ESMTP id S1384128AbiDEM1M (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:27:56 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95F1A694B3;
-        Tue,  5 Apr 2022 03:13:23 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 45159B81BC5;
-        Tue,  5 Apr 2022 10:13:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A90F3C385A1;
-        Tue,  5 Apr 2022 10:13:20 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649153601;
-        bh=FcVAWg6Iu/UB8Zve+Ak/qOk+BWPewdVuO26u+6lF8xo=;
+        Tue, 5 Apr 2022 08:27:12 -0400
+Received: from conuserg-12.nifty.com (conuserg-12.nifty.com [210.131.2.79])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C342957B02;
+        Tue,  5 Apr 2022 04:35:18 -0700 (PDT)
+Received: from grover.. (133-32-177-133.west.xps.vectant.ne.jp [133.32.177.133]) (authenticated)
+        by conuserg-12.nifty.com with ESMTP id 235BYCGp000464;
+        Tue, 5 Apr 2022 20:34:14 +0900
+DKIM-Filter: OpenDKIM Filter v2.10.3 conuserg-12.nifty.com 235BYCGp000464
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
+        s=dec2015msa; t=1649158454;
+        bh=EKCTJzUdUAuHIhmyqzQO5DkjoUd5sMZA3XV4MtVgo6g=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VKSerCzGio99KKE6fCFO34bnPNrz0eFRmSnW4NRNmO1pxUGlGA/pmST1yh9z70kJk
-         6ZAMH/0E3/PalpOVFTuAEvUp+5VJrMYoV+cCGvpo2Y0cb8TqwI9AfIrQCOddjXKxk3
-         VffWSY3d8fsKvJ/+kdYIkE05+ngaUmt87VfNoAAU=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Fabiano Rosas <farosas@linux.ibm.com>,
-        Nicholas Piggin <npiggin@gmail.com>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 279/599] KVM: PPC: Fix vmx/vsx mixup in mmio emulation
-Date:   Tue,  5 Apr 2022 09:29:33 +0200
-Message-Id: <20220405070307.138361351@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
-User-Agent: quilt/0.66
+        b=DWk37DbYUH+hKAxMwDTIpp4kMMEj+RJPnrCiqJ07xppk6Up0RBLZ+4DTHM7fLj0iK
+         /xbtGtmyRMylOKuKjhH42edScU0bLJ+jsJAcCnsj6Y62upLX/ZUkr6bv/NIXgOnmmo
+         M8snVpltT/XM37UiUKKsR89rVjlcALGWVo9zrOU6HUQ/r1tHhODKq9frJbEVaXVw8i
+         kgwhyvkl8jjozVQ1BjZXdg0wOpmOke2A4huZax8zw1M3iDJdjYWXNVM3VIlUlT51tl
+         YktT6Ccqx7R/NLsCYUo2YZf0CDDnRtuouzREtLeUmsDqpDSAoaetk9Xos+SSjb7OCM
+         tDrin0mmTl/IA==
+X-Nifty-SrcIP: [133.32.177.133]
+From:   Masahiro Yamada <masahiroy@kernel.org>
+To:     linux-kbuild@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Michal Marek <michal.lkml@markovi.net>
+Subject: [PATCH v2 03/10] modpost: remove useless export_from_sec()
+Date:   Tue,  5 Apr 2022 20:33:51 +0900
+Message-Id: <20220405113359.2880241-4-masahiroy@kernel.org>
+X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20220405113359.2880241-1-masahiroy@kernel.org>
+References: <20220405113359.2880241-1-masahiroy@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Fabiano Rosas <farosas@linux.ibm.com>
+With commit 1743694eb235 ("modpost: stop symbol preloading for
+modversion CRC") applied, now export_from_sec() is useless.
 
-[ Upstream commit b99234b918c6e36b9aa0a5b2981e86b6bd11f8e2 ]
+handle_symbol() is called for every symbol in the ELF.
 
-The MMIO emulation code for vector instructions is duplicated between
-VSX and VMX. When emulating VMX we should check the VMX copy size
-instead of the VSX one.
+When 'symname' does not start with "__ksymtab", export_from_sec() is
+called, and the returned value is stored in 'export'.
 
-Fixes: acc9eb9305fe ("KVM: PPC: Reimplement LOAD_VMX/STORE_VMX instruction ...")
-Signed-off-by: Fabiano Rosas <farosas@linux.ibm.com>
-Reviewed-by: Nicholas Piggin <npiggin@gmail.com>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20220125215655.1026224-3-farosas@linux.ibm.com
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+It is used in the last part of handle_symbol():
+
+    if (strstarts(symname, "__ksymtab_")) {
+            name = symname + strlen("__ksymtab_");
+            sym_add_exported(name, mod, export);
+    }
+
+'export' is used only when 'symname' starts with "__ksymtab_".
+
+So, the value returned by export_from_sec() is never used.
+
+Remove useless export_from_sec(). This makes further cleanups possible.
+
+I put the temporary code:
+
+    export = export_unknown;
+
+Otherwise, I would get the compiler warning:
+
+    warning: 'export' may be used uninitialized in this function [-Wmaybe-uninitialized]
+
+This is apparently false positive because
+
+    if (strstarts(symname, "__ksymtab_")
+
+... is a stronger condition than:
+
+    if (strstarts(symname, "__ksymtab")
+
+Anyway, this part will be cleaned up by the next commit.
+
+Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
 ---
- arch/powerpc/kvm/powerpc.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/arch/powerpc/kvm/powerpc.c b/arch/powerpc/kvm/powerpc.c
-index 543db9157f3b..ef8077a739b8 100644
---- a/arch/powerpc/kvm/powerpc.c
-+++ b/arch/powerpc/kvm/powerpc.c
-@@ -1500,7 +1500,7 @@ int kvmppc_handle_vmx_load(struct kvm_vcpu *vcpu,
+Changes in v2:
+  - Fix compiler warning
+
+ scripts/mod/modpost.c | 17 ++---------------
+ scripts/mod/modpost.h |  4 ----
+ 2 files changed, 2 insertions(+), 19 deletions(-)
+
+diff --git a/scripts/mod/modpost.c b/scripts/mod/modpost.c
+index ed9d056d2108..eebb32689816 100644
+--- a/scripts/mod/modpost.c
++++ b/scripts/mod/modpost.c
+@@ -369,16 +369,6 @@ static enum export export_from_secname(struct elf_info *elf, unsigned int sec)
+ 		return export_unknown;
+ }
+ 
+-static enum export export_from_sec(struct elf_info *elf, unsigned int sec)
+-{
+-	if (sec == elf->export_sec)
+-		return export_plain;
+-	else if (sec == elf->export_gpl_sec)
+-		return export_gpl;
+-	else
+-		return export_unknown;
+-}
+-
+ static const char *namespace_from_kstrtabns(const struct elf_info *info,
+ 					    const Elf_Sym *sym)
  {
- 	enum emulation_result emulated = EMULATE_DONE;
+@@ -576,10 +566,7 @@ static int parse_elf(struct elf_info *info, const char *filename)
+ 				fatal("%s has NOBITS .modinfo\n", filename);
+ 			info->modinfo = (void *)hdr + sechdrs[i].sh_offset;
+ 			info->modinfo_len = sechdrs[i].sh_size;
+-		} else if (strcmp(secname, "__ksymtab") == 0)
+-			info->export_sec = i;
+-		else if (strcmp(secname, "__ksymtab_gpl") == 0)
+-			info->export_gpl_sec = i;
++		}
  
--	if (vcpu->arch.mmio_vsx_copy_nums > 2)
-+	if (vcpu->arch.mmio_vmx_copy_nums > 2)
- 		return EMULATE_FAIL;
+ 		if (sechdrs[i].sh_type == SHT_SYMTAB) {
+ 			unsigned int sh_link_idx;
+@@ -703,7 +690,7 @@ static void handle_symbol(struct module *mod, struct elf_info *info,
+ 	if (strstarts(symname, "__ksymtab"))
+ 		export = export_from_secname(info, get_secindex(info, sym));
+ 	else
+-		export = export_from_sec(info, get_secindex(info, sym));
++		export = export_unknown;
  
- 	while (vcpu->arch.mmio_vmx_copy_nums) {
-@@ -1597,7 +1597,7 @@ int kvmppc_handle_vmx_store(struct kvm_vcpu *vcpu,
- 	unsigned int index = rs & KVM_MMIO_REG_MASK;
- 	enum emulation_result emulated = EMULATE_DONE;
+ 	switch (sym->st_shndx) {
+ 	case SHN_COMMON:
+diff --git a/scripts/mod/modpost.h b/scripts/mod/modpost.h
+index 0c47ff95c0e2..a85dcec3669a 100644
+--- a/scripts/mod/modpost.h
++++ b/scripts/mod/modpost.h
+@@ -25,7 +25,6 @@
+ #define Elf_Sym     Elf32_Sym
+ #define Elf_Addr    Elf32_Addr
+ #define Elf_Sword   Elf64_Sword
+-#define Elf_Section Elf32_Half
+ #define ELF_ST_BIND ELF32_ST_BIND
+ #define ELF_ST_TYPE ELF32_ST_TYPE
  
--	if (vcpu->arch.mmio_vsx_copy_nums > 2)
-+	if (vcpu->arch.mmio_vmx_copy_nums > 2)
- 		return EMULATE_FAIL;
+@@ -40,7 +39,6 @@
+ #define Elf_Sym     Elf64_Sym
+ #define Elf_Addr    Elf64_Addr
+ #define Elf_Sword   Elf64_Sxword
+-#define Elf_Section Elf64_Half
+ #define ELF_ST_BIND ELF64_ST_BIND
+ #define ELF_ST_TYPE ELF64_ST_TYPE
  
- 	vcpu->arch.io_gpr = rs;
+@@ -138,8 +136,6 @@ struct elf_info {
+ 	Elf_Shdr     *sechdrs;
+ 	Elf_Sym      *symtab_start;
+ 	Elf_Sym      *symtab_stop;
+-	Elf_Section  export_sec;
+-	Elf_Section  export_gpl_sec;
+ 	char         *strtab;
+ 	char	     *modinfo;
+ 	unsigned int modinfo_len;
 -- 
-2.34.1
-
-
+2.32.0
 
