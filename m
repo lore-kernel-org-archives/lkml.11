@@ -2,119 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 17D7EC433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 26CE0C4332F
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:03:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357472AbiDELz7 (ORCPT
+        id S1359365AbiDEL5A (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 07:55:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46856 "EHLO
+        Tue, 5 Apr 2022 07:57:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46566 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244960AbiDEIwv (ORCPT
+        with ESMTP id S244976AbiDEIww (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:52:51 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B86121C12B;
-        Tue,  5 Apr 2022 01:47:57 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        Tue, 5 Apr 2022 04:52:52 -0400
+Received: from ssl.serverraum.org (ssl.serverraum.org [176.9.125.105])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E55C1D0DD;
+        Tue,  5 Apr 2022 01:48:24 -0700 (PDT)
+Received: from ssl.serverraum.org (web.serverraum.org [172.16.0.2])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5406361504;
-        Tue,  5 Apr 2022 08:47:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 62364C385A0;
-        Tue,  5 Apr 2022 08:47:56 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649148476;
-        bh=sRY6U65i0znfe3KehcP3ZybCJpLi0ibCWb/vy8ikJbg=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nrknhYeZLJUk6Wo6kgfnbjXsgsQGiY1oDGUJowHtcd5XFCAmWehzkpbXqmr5vMsGI
-         PtaQEBFF24A1aZnvOUqqar5md8qmwIwfY05cYbiOA5urMv1QnEO1NKG5IgVtA374o1
-         T/ztW3QyrShJKa5SGEinzskkAYdo7obFY2ZnQYtA=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0369/1017] media: vidtv: Check for null return of vzalloc
-Date:   Tue,  5 Apr 2022 09:21:22 +0200
-Message-Id: <20220405070405.238860696@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
-References: <20220405070354.155796697@linuxfoundation.org>
-User-Agent: quilt/0.66
+        by ssl.serverraum.org (Postfix) with ESMTPSA id D943E221D4;
+        Tue,  5 Apr 2022 10:48:21 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
+        t=1649148502;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=x/+zyXUcDmdndIIui1WDqypJvYDMYDrXZERNBQ0ecKk=;
+        b=aveEuHEhPZQK2Uwn++JVqUY23++YtQ2Iog5KE9xDadFiSBB9b3U5iB3yh8MN6rQH3Ij9Jq
+        W4neXVvnU1lja2kSQ35ur8KKaEpcANmZUPVFd3h1XfmeGmmaenwP4aZ/Jaw3UgCKWoM+A7
+        hJOlxIxVSNwizXEPqxE9Sj9Sd59uUbo=
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+Date:   Tue, 05 Apr 2022 10:48:21 +0200
+From:   Michael Walle <michael@walle.cc>
+To:     Richard Cochran <richardcochran@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>, davem@davemloft.net,
+        grygorii.strashko@ti.com, kuba@kernel.org, kurt@linutronix.de,
+        linux-kernel@vger.kernel.org, linux@armlinux.org.uk,
+        mlichvar@redhat.com, netdev@vger.kernel.org,
+        qiangqing.zhang@nxp.com, vladimir.oltean@nxp.com,
+        Horatiu Vultur <horatiu.vultur@microchip.com>
+Subject: Re: [PATCH RFC V1 net-next 3/4] net: Let the active time stamping
+ layer be selectable.
+In-Reply-To: <20220405055954.GB91955@hoboy.vegasvil.org>
+References: <20220104014215.GA20062@hoboy.vegasvil.org>
+ <20220404150508.3945833-1-michael@walle.cc> <YksMvHgXZxA+YZci@lunn.ch>
+ <e5a6f6193b86388ed7a081939b8745be@walle.cc>
+ <20220405055954.GB91955@hoboy.vegasvil.org>
+User-Agent: Roundcube Webmail/1.4.13
+Message-ID: <d38744cbe67474b3c83b84547ec3cb4f@walle.cc>
+X-Sender: michael@walle.cc
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Am 2022-04-05 07:59, schrieb Richard Cochran:
+> On Mon, Apr 04, 2022 at 07:12:11PM +0200, Michael Walle wrote:
+> 
+>> That would make sense. I guess what bothers me with the current
+>> mechanism is that a feature addition to the PHY in the *future* (the
+>> timestamping support) might break a board - or at least changes the
+>> behavior by suddenly using PHY timestamping.
+> 
+> That is a good point, but then something will break in any case.
 
-[ Upstream commit e6a21a14106d9718aa4f8e115b1e474888eeba44 ]
+Can the ethernet driver select the default one? So any current
+driver which has "if phy_has_hwtstamp() forward_ioctl;" can set
+it to PHY while newer drivers can (or should actually) leave it as
+MAC.
 
-As the possible failure of the vzalloc(), e->encoder_buf might be NULL.
-Therefore, it should be better to check it in order
-to guarantee the success of the initialization.
-If fails, we need to free not only 'e' but also 'e->name'.
-Also, if the allocation for ctx fails, we need to free 'e->encoder_buf'
-else.
+This doesn't really fix the problem per se. But at least new
+drivers won't be affected. For my problem at hand, I'd need to
+convince Microchip to default to MAC although the driver is
+already in the tree (but there is no user of it in mainline
+right now).
 
-Fixes: f90cf6079bf6 ("media: vidtv: add a bridge driver")
-Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/media/test-drivers/vidtv/vidtv_s302m.c | 17 +++++++++++++----
- 1 file changed, 13 insertions(+), 4 deletions(-)
-
-diff --git a/drivers/media/test-drivers/vidtv/vidtv_s302m.c b/drivers/media/test-drivers/vidtv/vidtv_s302m.c
-index d79b65854627..4676083cee3b 100644
---- a/drivers/media/test-drivers/vidtv/vidtv_s302m.c
-+++ b/drivers/media/test-drivers/vidtv/vidtv_s302m.c
-@@ -455,6 +455,9 @@ struct vidtv_encoder
- 		e->name = kstrdup(args.name, GFP_KERNEL);
- 
- 	e->encoder_buf = vzalloc(VIDTV_S302M_BUF_SZ);
-+	if (!e->encoder_buf)
-+		goto out_kfree_e;
-+
- 	e->encoder_buf_sz = VIDTV_S302M_BUF_SZ;
- 	e->encoder_buf_offset = 0;
- 
-@@ -467,10 +470,8 @@ struct vidtv_encoder
- 	e->is_video_encoder = false;
- 
- 	ctx = kzalloc(priv_sz, GFP_KERNEL);
--	if (!ctx) {
--		kfree(e);
--		return NULL;
--	}
-+	if (!ctx)
-+		goto out_kfree_buf;
- 
- 	e->ctx = ctx;
- 	ctx->last_duration = 0;
-@@ -498,6 +499,14 @@ struct vidtv_encoder
- 	e->next = NULL;
- 
- 	return e;
-+
-+out_kfree_buf:
-+	kfree(e->encoder_buf);
-+
-+out_kfree_e:
-+	kfree(e->name);
-+	kfree(e);
-+	return NULL;
- }
- 
- void vidtv_s302m_encoder_destroy(struct vidtv_encoder *e)
--- 
-2.34.1
-
-
-
+-michael
