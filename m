@@ -2,201 +2,160 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4CF0EC4167E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 212AFC43217
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 21:04:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346503AbiDEVD2 (ORCPT
+        id S1345829AbiDEVDL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 17:03:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60370 "EHLO
+        Tue, 5 Apr 2022 17:03:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45260 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1443774AbiDEPkR (ORCPT
+        with ESMTP id S1573088AbiDERzg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 11:40:17 -0400
-Received: from mail-pg1-x532.google.com (mail-pg1-x532.google.com [IPv6:2607:f8b0:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6AB0D6D965
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 06:59:27 -0700 (PDT)
-Received: by mail-pg1-x532.google.com with SMTP id 66so3579744pga.12
-        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 06:59:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=E+SQkI8tVlI4jEqDsrvXcRJCPOkCJbjsifs7DqmFPQU=;
-        b=F1th3g0JNq7sNSNfOm0ALiRYeuYZM2iXOmWzzZJL+8GNoC4jx3HDXMgv+cj5iYZlMo
-         H/7Vti5RLX2H/SZEO1xcjNqYUiBJ4ZFzAXNDX5+cmapCQVVJZ/tw9dqf99Tvm2dfkPFI
-         oI5Y3NhvX3hHF11OtPMa1zhFIV2vwQLsnPhzC7Bsh2R+59S66USau1r0ipKudYrCS1dI
-         sWdqXhKfJvoGlmPFFKM3+dejVKIqmKp8DrIiH1DEggkRELlYVL2U9jqmH1+J29rHGoOk
-         lGvveewF/wHrHHvPGp3j+caIeriGg3q7SWo8YFiNz2/KR+rh27E9hDMVRv1Mp1j/v3l5
-         E3Fw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=E+SQkI8tVlI4jEqDsrvXcRJCPOkCJbjsifs7DqmFPQU=;
-        b=gj0mHyPR+yucDStvCWkGgquZMpQtdFLOqtx+aKzojyg43dUOhay5t2UdFcoCFuNM53
-         wbODMZOQA2XQxU74El/XeJ3qSbtwyWMbmopGX1VboaiaYXNWw6kN512RxfQunT+kHuEf
-         Xihw7EdiqCPstyxBudzZ0/iLxcvDEMfbkqclazb7uNcn5W7g0P13y9TDh/TP2pveUf1q
-         kiH+d1mRKEbEDwljr89vBe2jHJcA/9vIjOm3I6qoWUdmybrudatoL7MP1MBfM1U5UOnS
-         gcwC7dpW45f7698g2BboiAX/0Gs1xlReNDZHtIWx9NQY4B31XAwyeJkQDfUyX3MVgYxc
-         B8xg==
-X-Gm-Message-State: AOAM5315N88FkQwos5GsJ6RGQS3gs41W0pi7HNfJes48h0t6mtzQtrnv
-        FFRkVHzctO2gCuUFvJhz68AK
-X-Google-Smtp-Source: ABdhPJyDpYxf/V8Kk/gaKC49XkK63Vb4EcJoGHtj0kKmpW/eoGeklX0IKjacsqaCE818+pL8lMiBMw==
-X-Received: by 2002:a63:ea51:0:b0:380:7c35:188e with SMTP id l17-20020a63ea51000000b003807c35188emr2990713pgk.607.1649167166725;
-        Tue, 05 Apr 2022 06:59:26 -0700 (PDT)
-Received: from localhost.localdomain ([59.92.98.98])
-        by smtp.gmail.com with ESMTPSA id u14-20020a056a00124e00b004fab8f3245fsm16785402pfi.149.2022.04.05.06.59.21
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 05 Apr 2022 06:59:26 -0700 (PDT)
-From:   Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-To:     gregkh@linuxfoundation.org
-Cc:     linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        elder@linaro.org, mhi@lists.linux.dev, quic_hemantk@quicinc.com,
-        quic_bbhatt@quicinc.com, quic_jhugo@quicinc.com,
-        bjorn.andersson@linaro.org, dmitry.baryshkov@linaro.org,
-        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-Subject: [PATCH 16/18] bus: mhi: ep: Add support for queueing SKBs to the host
-Date:   Tue,  5 Apr 2022 19:27:52 +0530
-Message-Id: <20220405135754.6622-17-manivannan.sadhasivam@linaro.org>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220405135754.6622-1-manivannan.sadhasivam@linaro.org>
-References: <20220405135754.6622-1-manivannan.sadhasivam@linaro.org>
-MIME-Version: 1.0
+        Tue, 5 Apr 2022 13:55:36 -0400
+Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2079.outbound.protection.outlook.com [40.107.223.79])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA840C53;
+        Tue,  5 Apr 2022 10:53:35 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=JF1+LxTe2qiU3qpt5EQyT0gqHpY7rs1xGXU7qDN7XVUdOwuEGFHl0BFFXsfFfUY/NTtqiR3GZbWJ/SXlk4ObZPpAmqZ1XM3vhuZXr1lP1k0lO1xXvLCekM96SuHIiK5qv/55Aiv2di/0UAptcpVL/jHYU6/mF1fHWcqwRbsrJ1P8hWpexv2HyN5nZY0r6EUtpfaCXN+4rGj3UDpijIb3b90Ynv63yq/ovhve3kPsGlUpDZQq/3oQIIsjBmR3cdXdb3T75sb2smrHAsdWkdcK/LFiDW9Qsv8sVsJNyoQICMr9Z1e6WUHoeObIxSDUAXuAb2KzJxmJRqxKSpejbXrO8A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=cx0Md85+OjQl+K3dA8Y50XnOsnMOptANWRBjNvTs12c=;
+ b=EddQpUNsDsQYY93A6J6fygARxm/95nDscMrMH5K81XrzM+/AXBqcEDP8Sw/pVo3qOzFOtgmm43Wz0h30lGzIzYzqTF04FrOaI0+8g8T76pB71pcqkwLGEaD/2NFuF89TERwZllw3o3u3qVS6CGnJE65SzzRh5IafEogud9kWbsm+pREYhWu/yR0CQlkdxWqXdhKfM1ScdYvt6P8S9i6+kxlx1Qv6N0Fw6lW4GTiT1xLi5dQ2lnL4pn18zWDvvIeELFAGowig+aXt7uSHRn/gWKYY/+ogeGU/fwzdERjdKQYYIj5DL6JiNqfn0Am3MfbJ3YhZzV10b8ar2kYwBCHRqw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=cx0Md85+OjQl+K3dA8Y50XnOsnMOptANWRBjNvTs12c=;
+ b=Xmk9n5U7mahqHeFWo1JS2HqGf4+/IvcUfCbZ7grFjaCgHhF4WYQRUfLtizE50Iqor6gZDhySiM9w8Wi3bK5wcO5fUHUQYcMcXqs4A3l6mdyMabWMopu+YvCvyJONIausj94OqTFijv4dI9l2BFYufPxfH3Bpbr+uuhHCGKga7D0=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=amd.com;
+Received: from DM4PR12MB5229.namprd12.prod.outlook.com (2603:10b6:5:398::12)
+ by DM5PR12MB1849.namprd12.prod.outlook.com (2603:10b6:3:107::23) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5123.31; Tue, 5 Apr
+ 2022 17:53:33 +0000
+Received: from DM4PR12MB5229.namprd12.prod.outlook.com
+ ([fe80::1946:2337:6656:ae2e]) by DM4PR12MB5229.namprd12.prod.outlook.com
+ ([fe80::1946:2337:6656:ae2e%9]) with mapi id 15.20.5123.031; Tue, 5 Apr 2022
+ 17:53:33 +0000
+Message-ID: <700e336a-7d2f-e468-f38b-96e6d35174e7@amd.com>
+Date:   Tue, 5 Apr 2022 12:53:30 -0500
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [RFC PATCH v5 101/104] KVM: TDX: Silently ignore INIT/SIPI
+Content-Language: en-US
+To:     Paolo Bonzini <pbonzini@redhat.com>, isaku.yamahata@intel.com,
+        kvm@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     isaku.yamahata@gmail.com, Jim Mattson <jmattson@google.com>,
+        erdemaktas@google.com, Connor Kuehl <ckuehl@redhat.com>,
+        Sean Christopherson <seanjc@google.com>
+References: <cover.1646422845.git.isaku.yamahata@intel.com>
+ <d0eb8fa53e782a244397168df856f9f904e4d1cd.1646422845.git.isaku.yamahata@intel.com>
+ <efbe06a7-3624-2a5a-c1c4-be86f63951e3@redhat.com>
+From:   Tom Lendacky <thomas.lendacky@amd.com>
+In-Reply-To: <efbe06a7-3624-2a5a-c1c4-be86f63951e3@redhat.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: BL0PR1501CA0022.namprd15.prod.outlook.com
+ (2603:10b6:207:17::35) To DM4PR12MB5229.namprd12.prod.outlook.com
+ (2603:10b6:5:398::12)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: bef6279a-302a-4310-60e7-08da172d3375
+X-MS-TrafficTypeDiagnostic: DM5PR12MB1849:EE_
+X-Microsoft-Antispam-PRVS: <DM5PR12MB1849635AD0CF3BB0D2A05019ECE49@DM5PR12MB1849.namprd12.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 7pQkoUL9rNeFdMBi7OWm6P42tcz6Vieizr6+NJdLrN545w9v6UhkGd5Aou1T7iqiXnjxyZbrkW94T8iyoGFmWZq7FxgdRFHZZxI/kVk2xJbhZxi4pF1Tv/eTOIXdYDefkuqi8D/LM5Qmf7+NANi7wNw119bNH5cFvc7SyoICrkQGigGM+PM3FiXh7WmWpsx7bb5p3JHQuQd3nDG6+Rjj3FsP0NFVMg9kLSW6RdK0WoT/M42eUPsIFYenh+xS5Z32xfRmGFBO1LpQcV09Ou8fJUbgbU4b2p//2+fb1l7BoiQYwoKF7NrmZiD0acnr1gG1BmD2LFjjOengVhmnzFxvgJwgWH+R5gok7xkkadhjPRPO3N/e07m2afZcDvNjxojEyaXK5keJhYXu5K7YPU5Ljwu+jbgZ3g1hDO1fw1W2QJ1MGkHjMiy5KNjE14wvg2eflrCR455sd/JHnXtd5wQ+WRhf7j/lvRtHRJ/tKlWc3i+1goNl8XxoeuBN8QxaB3pZqJjBkmCyoBmORYQreDohJOJtv/RMN8vlyCm9gfrsqcxMujnuhLr6vAVvT/DJUHRUDu5Eks0LLKoy/ywT6u9WbCAZdMZWqqg+TsTsDBlYEw5XUrJFGODx0aSg8Mwp+PGyql7Ll/24pZrJbxNqBkqRiO6NhOqU1rOlNQqkL3icqy3mDfwsOoqSTx97pqjMCKZDS1IkzIeckOLmAeunxe7lVDsNZ7gOMm69c/3gqn+qC0g=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM4PR12MB5229.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(8936002)(26005)(31696002)(54906003)(6486002)(186003)(86362001)(316002)(2616005)(508600001)(66946007)(66556008)(66476007)(4326008)(53546011)(6506007)(6512007)(8676002)(36756003)(31686004)(2906002)(83380400001)(38100700002)(5660300002)(45980500001)(43740500002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?YUlON0didXRHYUZrREdyL2d6ZkZrcngzUUlsdCtDQmo5TC84Qmg0UGhBOE03?=
+ =?utf-8?B?Z0VBYW8xamFaZThSSUNNYkN2TWUxQ2x0UVFjWGVGb1RObTljWFo2MUM0WnFQ?=
+ =?utf-8?B?dW9PWmdLQnkvTmRLTkpFRktEQlYrdnd3REtsWEpWMkovSVVDcGZYeVdna0Jm?=
+ =?utf-8?B?NDd2SXQ3Rk53cmQvM3JnelBOSXkzTW0vclU3SmNEU0x2ZWtUM3ZNZTJZWHpT?=
+ =?utf-8?B?SWUzVFgxbG5vNjJBazlRVWVqRWozQlVlTXNXdWk0QlBVUmJER0N3VWRxWmw1?=
+ =?utf-8?B?aEluc3VrZ3RWWUk4VmRPUk4wVURQYVZwUDlGK0puMXZnTWVqQXhZdW9IQTJP?=
+ =?utf-8?B?cnkxMWFhUk52UmxTMW5VZklKcGpNcG5mS0hObkZndkZZRHVGTnB5NWc4aTFF?=
+ =?utf-8?B?NTMrZjN4RDU0ZFJ4T3g4V1VsclpMcGkrTXd1QXpLM3FnQUlUeG42MTNvbWls?=
+ =?utf-8?B?Zkt3SFRXQklQWDBnemVOZU11K3pKbndLSXlHd3EvMDBFZzNZUmIxb3hMaTN2?=
+ =?utf-8?B?N1doT1o4RUhua1BsVS8vREgxQmpGOWs5M0N0U1ZSdkIxZzFrVjU5bXI5WGsy?=
+ =?utf-8?B?TXFlekw2dXRzby9aNnVoSytlYjhEa1VOaENmUEVpQlNWY3lyWUpLYUFhNVZP?=
+ =?utf-8?B?U1o2N0FxMFlmbnN0OC8xVU1jc1NZa3BvTGwyTGNyVExvc3YyVkhVWHR4QldR?=
+ =?utf-8?B?ZzZ5bWNJQklPM1IxSmdhbEJhNExwZ1RLaWdYSXF4cEpZYU5aWkV0alBUN1ds?=
+ =?utf-8?B?MlBsN3AxeWRxU3cxOHQwUmUySUVleTRZZWVmTS9zZDB2Z1RyYnpGUWhTWmNo?=
+ =?utf-8?B?MitCVGtUMGZDelpJcEI4VDdHNlJuQU1jeC9oWnArWmt0U1JLZER0Sk1FNFBP?=
+ =?utf-8?B?TWFIYjJYMGJVOEMrb1NxNmtwUkhaTHNtclhWZW5KTFJ1OGMycWgwWTFzL2tu?=
+ =?utf-8?B?Ym5VcXlhMXgzRURuandnbDkvd3puM0N3THdHdXorUkZrSVBXdmljM1oyak5m?=
+ =?utf-8?B?SHJwNzRjRWxSR3hOTGkvNmM1RHRiTnh2LzFmdnJtdjB0ZXptYldTY3dHc0lF?=
+ =?utf-8?B?ZjZFbFZPc1hPaTlLZEZSUlAxa0FWTnl1U2lpLzVjWExocU1DNVpTM1lWZjkx?=
+ =?utf-8?B?bEs1MEQvVkwvRUU0SWxLR2dVd2MxRTFxV0xzRnNvRXg1YTRJY1lOK1lBd2lr?=
+ =?utf-8?B?eWlYdWwzRkVsTWhHak9IdzJqTlVRMlg2d0o3S2ZOMENOektMdjBmVEZKQUNi?=
+ =?utf-8?B?R0xUM2dxZ0hEbUt4U0phVUEyUjF2YlVwUGtPOTRzMW9oazRmQlhYekJZQ1RV?=
+ =?utf-8?B?YThnZXhVTXFjcVV4SUtuODJvY2JvcnRjYmVuNEh6ZUNSRDllR1REVWxSa3h6?=
+ =?utf-8?B?Z00zODd4a2lkNGNIRUI1bStsZG5JUXBnZUZuQmtVMmVvWm9Ud2dwd1lDc2tB?=
+ =?utf-8?B?TTBNTUl0VnNGenFDRWlqSFNZSUxOV1VXU2ozNTFnMHpjdVBqUmxjTlpCZ2VG?=
+ =?utf-8?B?RTk5dktWNTBHWE91WVNiYXFZMDh5Q0ZrUWxqMVhJeDkwVGExMk55NXlOMlFp?=
+ =?utf-8?B?eHd2OEx5TERmZVMwU2I1Q2tjYldNZG9kZUhrdzRubTRqM0l1SC9KbXB2RllL?=
+ =?utf-8?B?WHNTOWJFMlV5OGdFbjFOSEdKUWszSHNCUUdUTyt5eFRiUUdzUlpnY3p3SUlI?=
+ =?utf-8?B?UU9Od1ppd1BUMy9wQmtNNkh0UTNGNE0wTGtFRVEwT0ZuNmZrUmNyZzU3Rk5E?=
+ =?utf-8?B?bWFMYU9uMnhJQmVkOXp1RWphUW5vSG14VG0wUXNKUXJ0NjhmZk40ODVZMUt1?=
+ =?utf-8?B?V1B6Tzhxei8vN1RqWGF4TGRWNmkxQzYxQlpzQjhpZEZDVzBrSkorMUF0Rnd2?=
+ =?utf-8?B?bmR2cldzTlMyNklzWThUb2l3YzlubGhZSXd0dXZHdXV1ZmpvSVY4M2N3RHBk?=
+ =?utf-8?B?TS9IbTc4bU9ieXYzQm45UkVHVFVMV0lYTEY1SVBwOWF5VDlEVlFScFRwcHpI?=
+ =?utf-8?B?QmEyeU9LdHd4WjJFbzE1R3pDZEhHb3pZckVRQWJTaDJLM2xnbFA1NVhwaEtO?=
+ =?utf-8?B?ZU9DYlFRdFgzbElIdXpLeVM4K2RrNk1sQlRmK29ZK0R5SzY4M0QrVGhrK1Bs?=
+ =?utf-8?B?R3JrcFVESHJDY040WjlMRVRZSnEzci9sYXpNZjVPL1dNa0NiZ3FheEZ6Tm1R?=
+ =?utf-8?B?UEZFemdnL3VQdFVTQWF4S25OUFNFbHBibWdJVU1ERXBhVitRRjdvaVdIVkhW?=
+ =?utf-8?B?cEpFK2xPU1hDditPV0U3clFId1M1cjZKMlIwN2J5L1k0UFd3K25QZGNvRVVW?=
+ =?utf-8?B?azVXRE1JLzlNd1BJOVZxcjJzeWF0WW5yYmFlM3lmVEJvTmREODMzUT09?=
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: bef6279a-302a-4310-60e7-08da172d3375
+X-MS-Exchange-CrossTenant-AuthSource: DM4PR12MB5229.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Apr 2022 17:53:33.2831
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: aDjYfTRsBnD3yVp3tXT3tZk0NGY5OwWPAC+2nnaOkx/Akp0FVDe9qeoYDYmYtbnUgnsCH/c9uQitZUeEO3X+KQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR12MB1849
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add support for queueing SKBs to the host over the transfer ring of the
-relevant channel. The mhi_ep_queue_skb() API will be used by the client
-networking drivers to queue the SKBs to the host over MHI bus.
+On 4/5/22 10:48, Paolo Bonzini wrote:
+> On 3/4/22 20:49, isaku.yamahata@intel.com wrote:
+>> +        if (kvm_init_sipi_unsupported(vcpu->kvm))
+>> +            /*
+>> +             * TDX doesn't support INIT.  Ignore INIT event.  In the
+>> +             * case of SIPI, the callback of
+>> +             * vcpu_deliver_sipi_vector ignores it.
+>> +             */
+>>               vcpu->arch.mp_state = KVM_MP_STATE_RUNNABLE;
+>> -        else
+>> -            vcpu->arch.mp_state = KVM_MP_STATE_INIT_RECEIVED;
+>> +        else {
+>> +            kvm_vcpu_reset(vcpu, true);
+>> +            if (kvm_vcpu_is_bsp(apic->vcpu))
+>> +                vcpu->arch.mp_state = KVM_MP_STATE_RUNNABLE;
+>> +            else
+>> +                vcpu->arch.mp_state = KVM_MP_STATE_INIT_RECEIVED;
+>> +        }
+> 
+> Should you check vcpu->arch.guest_state_protected instead of 
+> special-casing TDX?  KVM_APIC_INIT is not valid for SEV-ES either, if I 
+> remember correctly.
 
-The host will add ring elements to the transfer ring periodically for
-the device and the device will write SKBs to the ring elements. If a
-single SKB doesn't fit in a ring element (TRE), it will be placed in
-multiple ring elements and the overflow event will be sent for all ring
-elements except the last one. For the last ring element, the EOT event
-will be sent indicating the packet boundary.
+While the INIT doesn't update any actual state that is in the encrypted 
+VMSA, SEV-ES still calls kvm_vcpu_reset() to allow KVM to set any internal 
+tracking state, etc. I haven't ever tested SEV-ES where that is bypassed.
 
-Reviewed-by: Alex Elder <elder@linaro.org>
-Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
----
- drivers/bus/mhi/ep/main.c | 82 +++++++++++++++++++++++++++++++++++++++
- include/linux/mhi_ep.h    |  9 +++++
- 2 files changed, 91 insertions(+)
+Thanks,
+Tom
 
-diff --git a/drivers/bus/mhi/ep/main.c b/drivers/bus/mhi/ep/main.c
-index e2ed10b4a9d2..660d1e9791d3 100644
---- a/drivers/bus/mhi/ep/main.c
-+++ b/drivers/bus/mhi/ep/main.c
-@@ -434,6 +434,88 @@ static int mhi_ep_process_ch_ring(struct mhi_ep_ring *ring, struct mhi_ring_elem
- 	return 0;
- }
- 
-+/* TODO: Handle partially formed TDs */
-+int mhi_ep_queue_skb(struct mhi_ep_device *mhi_dev, struct sk_buff *skb)
-+{
-+	struct mhi_ep_cntrl *mhi_cntrl = mhi_dev->mhi_cntrl;
-+	struct mhi_ep_chan *mhi_chan = mhi_dev->dl_chan;
-+	struct device *dev = &mhi_chan->mhi_dev->dev;
-+	struct mhi_ring_element *el;
-+	u32 buf_left, read_offset;
-+	struct mhi_ep_ring *ring;
-+	enum mhi_ev_ccs code;
-+	void *read_addr;
-+	u64 write_addr;
-+	size_t tr_len;
-+	u32 tre_len;
-+	int ret;
-+
-+	buf_left = skb->len;
-+	ring = &mhi_cntrl->mhi_chan[mhi_chan->chan].ring;
-+
-+	mutex_lock(&mhi_chan->lock);
-+
-+	do {
-+		/* Don't process the transfer ring if the channel is not in RUNNING state */
-+		if (mhi_chan->state != MHI_CH_STATE_RUNNING) {
-+			dev_err(dev, "Channel not available\n");
-+			ret = -ENODEV;
-+			goto err_exit;
-+		}
-+
-+		if (mhi_ep_queue_is_empty(mhi_dev, DMA_FROM_DEVICE)) {
-+			dev_err(dev, "TRE not available!\n");
-+			ret = -ENOSPC;
-+			goto err_exit;
-+		}
-+
-+		el = &ring->ring_cache[ring->rd_offset];
-+		tre_len = MHI_TRE_DATA_GET_LEN(el);
-+
-+		tr_len = min(buf_left, tre_len);
-+		read_offset = skb->len - buf_left;
-+		read_addr = skb->data + read_offset;
-+		write_addr = MHI_TRE_DATA_GET_PTR(el);
-+
-+		dev_dbg(dev, "Writing %zd bytes to channel (%u)\n", tr_len, ring->ch_id);
-+		ret = mhi_cntrl->write_to_host(mhi_cntrl, read_addr, write_addr, tr_len);
-+		if (ret < 0) {
-+			dev_err(dev, "Error writing to the channel\n");
-+			goto err_exit;
-+		}
-+
-+		buf_left -= tr_len;
-+		/*
-+		 * For all TREs queued by the host for DL channel, only the EOT flag will be set.
-+		 * If the packet doesn't fit into a single TRE, send the OVERFLOW event to
-+		 * the host so that the host can adjust the packet boundary to next TREs. Else send
-+		 * the EOT event to the host indicating the packet boundary.
-+		 */
-+		if (buf_left)
-+			code = MHI_EV_CC_OVERFLOW;
-+		else
-+			code = MHI_EV_CC_EOT;
-+
-+		ret = mhi_ep_send_completion_event(mhi_cntrl, ring, el, tr_len, code);
-+		if (ret) {
-+			dev_err(dev, "Error sending transfer completion event\n");
-+			goto err_exit;
-+		}
-+
-+		mhi_ep_ring_inc_index(ring);
-+	} while (buf_left);
-+
-+	mutex_unlock(&mhi_chan->lock);
-+
-+	return 0;
-+
-+err_exit:
-+	mutex_unlock(&mhi_chan->lock);
-+
-+	return ret;
-+}
-+EXPORT_SYMBOL_GPL(mhi_ep_queue_skb);
-+
- static int mhi_ep_cache_host_cfg(struct mhi_ep_cntrl *mhi_cntrl)
- {
- 	size_t cmd_ctx_host_size, ch_ctx_host_size, ev_ctx_host_size;
-diff --git a/include/linux/mhi_ep.h b/include/linux/mhi_ep.h
-index eecc8f35d630..478aece17046 100644
---- a/include/linux/mhi_ep.h
-+++ b/include/linux/mhi_ep.h
-@@ -265,4 +265,13 @@ void mhi_ep_power_down(struct mhi_ep_cntrl *mhi_cntrl);
-  */
- bool mhi_ep_queue_is_empty(struct mhi_ep_device *mhi_dev, enum dma_data_direction dir);
- 
-+/**
-+ * mhi_ep_queue_skb - Send SKBs to host over MHI Endpoint
-+ * @mhi_dev: Device associated with the DL channel
-+ * @skb: SKBs to be queued
-+ *
-+ * Return: 0 if the SKBs has been sent successfully, a negative error code otherwise.
-+ */
-+int mhi_ep_queue_skb(struct mhi_ep_device *mhi_dev, struct sk_buff *skb);
-+
- #endif
--- 
-2.25.1
-
+> 
+> Paolo
