@@ -2,103 +2,136 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4EA5EC43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5EE23C4167B
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:41:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1575857AbiDEXJ1 (ORCPT
+        id S1575873AbiDEXJd (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 19:09:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51522 "EHLO
+        Tue, 5 Apr 2022 19:09:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56094 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354090AbiDEKLf (ORCPT
+        with ESMTP id S1454522AbiDEP6f (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:11:35 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EE9B49245;
-        Tue,  5 Apr 2022 02:57:13 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D2E1FB817D3;
-        Tue,  5 Apr 2022 09:57:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 35CFFC385A1;
-        Tue,  5 Apr 2022 09:57:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649152630;
-        bh=GkMbuM0N3bx8zk89Q8KBknMKfuJoWp/romGhKcSfTfs=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Vb8a/aUIJwZv5XdqafCXu11kyW1oY9nqHqr783vO2+U5T1L+VLKug7Hj0uPfPjNp9
-         hXPCe+2uiLH4gXit5YxXw9J6dMQtZxKpySIVZFQ50SrTdI8ppuU4mdgFeQex5Mr71k
-         pYbrE+J4y2GtbCIORYFUtv9yv7NwT1FDeaidlITs=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        syzbot+25ea042ae28f3888727a@syzkaller.appspotmail.com,
-        Eric Dumazet <edumazet@google.com>,
-        David Howells <dhowells@redhat.com>,
-        Jann Horn <jannh@google.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [PATCH 5.15 846/913] watch_queue: Free the page array when watch_queue is dismantled
-Date:   Tue,  5 Apr 2022 09:31:48 +0200
-Message-Id: <20220405070405.188001686@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 5 Apr 2022 11:58:35 -0400
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 019E638D8B;
+        Tue,  5 Apr 2022 08:04:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649171072; x=1680707072;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=JuJEj7FBhgDkCn5WeO0N79dzrUVDGVen+PgutrVZgfs=;
+  b=T61m0Sc35fW/mdLnUJsw5clVpEA1Cq7PtwqvxU5b3fy/SU7zp7eV2Hw2
+   VXcrnxtq8N3vefpnLOJTT5KhMjbo19qik5MmQV+vkEKCuj9bZ2H7g2gPJ
+   EB+3yh8CJ3Md4QDj1q8CblmquNEWy7GT4FG6Xf+yYZAxGT07W0up/AuYs
+   ZKdb1B+hAl/f5fccFSKH+Ua3qr55TwuRfCkqnuusBSyiXzxefo9fT9Hpq
+   JrhxusgEAohGJRJ6LNJ/nCtY+4lzXbnVvT7hFfYRb/h16jGECtMe5bi4T
+   8ikQQBfJboZ+lgEcI2Mzh9k7qaLwZA44idbi5QjEcVwxEkjMhaBzQvsAS
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10307"; a="242912032"
+X-IronPort-AV: E=Sophos;i="5.90,236,1643702400"; 
+   d="scan'208";a="242912032"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2022 08:04:23 -0700
+X-IronPort-AV: E=Sophos;i="5.90,236,1643702400"; 
+   d="scan'208";a="620387693"
+Received: from smile.fi.intel.com ([10.237.72.59])
+  by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2022 08:04:15 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.95)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1nbkid-00DQTI-OJ;
+        Tue, 05 Apr 2022 18:03:43 +0300
+Date:   Tue, 5 Apr 2022 18:03:43 +0300
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     John Ogness <john.ogness@linutronix.de>
+Cc:     Petr Mladek <pmladek@suse.com>,
+        Sergey Senozhatsky <senozhatsky@chromium.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        linux-kernel@vger.kernel.org,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Marco Elver <elver@google.com>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Alexander Potapenko <glider@google.com>,
+        Stephen Boyd <swboyd@chromium.org>,
+        Nicholas Piggin <npiggin@gmail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        "Paul E. McKenney" <paulmck@kernel.org>,
+        Frederic Weisbecker <frederic@kernel.org>,
+        Neeraj Upadhyay <quic_neeraju@quicinc.com>,
+        Josh Triplett <josh@joshtriplett.org>,
+        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+        Lai Jiangshan <jiangshanlai@gmail.com>,
+        Joel Fernandes <joel@joelfernandes.org>,
+        Kees Cook <keescook@chromium.org>,
+        Luis Chamberlain <mcgrof@kernel.org>,
+        Wei Liu <wei.liu@kernel.org>,
+        Xiaoming Ni <nixiaoming@huawei.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Helge Deller <deller@gmx.de>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Shawn Guo <shawn.guo@linaro.org>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>,
+        "Eric W. Biederman" <ebiederm@xmission.com>,
+        Phil Auld <pauld@redhat.com>,
+        Juri Lelli <juri.lelli@redhat.com>,
+        Wang Qing <wangqing@vivo.com>, rcu@vger.kernel.org
+Subject: Re: [PATCH printk v2 00/12] implement threaded console printing
+Message-ID: <YkxaTy08ClcNj0P3@smile.fi.intel.com>
+References: <20220405132535.649171-1-john.ogness@linutronix.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220405132535.649171-1-john.ogness@linutronix.de>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+On Tue, Apr 05, 2022 at 03:31:23PM +0206, John Ogness wrote:
+> This is v2 of a series to implement a kthread for each registered
+> console. v1 is here [0]. The kthreads locklessly retrieve the
+> records from the printk ringbuffer and also do not cause any lock
+> contention between each other. This allows consoles to run at full
+> speed. For example, a netconsole is able to dump records much
+> faster than a serial or vt console. Also, during normal operation,
+> it completely decouples printk() callers from console printing.
+> 
+> There are situations where kthread printing is not sufficient. For
+> example, during panic situations, where the kthreads may not get a
+> chance to schedule. In such cases, the current method of attempting
+> to print directly within the printk() caller context is used. New
+> functions printk_prefer_direct_enter() and
+> printk_prefer_direct_exit() are made available to mark areas of the
+> kernel where direct printing is preferred. (These should only be
+> areas that do not occur during normal operation.)
+> 
+> This series also introduces pr_flush(): a might_sleep() function
+> that will block until all active printing threads have caught up
+> to the latest record at the time of the pr_flush() call. This
+> function is useful, for example, to wait until pending records
+> are flushed to consoles before suspending.
+> 
+> Note that this series does *not* increase the reliability of console
+> printing. Rather it focuses on the non-interference aspect of
+> printk() by decoupling printk() callers from printing (during normal
+> operation). Nonetheless, the reliability aspect should not worsen
+> due to this series.
 
-commit b490207017ba237d97b735b2aa66dc241ccd18f5 upstream.
+From the list of patches and the only one I am Cc'ed to I can't find the
+answer to my question, i.e. does it take care about console_unregister()
+cases at run time? (We have some drivers to call ->exit() for console in
+that case, perhaps it should do something before calling it.)
 
-Commit 7ea1a0124b6d ("watch_queue: Free the alloc bitmap when the
-watch_queue is torn down") took care of the bitmap, but not the page
-array.
+Would be nice to see some pointers where I can find the answer and
+maybe even describing in the cover-letter/commit message/documentation.
 
-  BUG: memory leak
-  unreferenced object 0xffff88810d9bc140 (size 32):
-  comm "syz-executor335", pid 3603, jiffies 4294946994 (age 12.840s)
-  hex dump (first 32 bytes):
-    40 a7 40 04 00 ea ff ff 00 00 00 00 00 00 00 00  @.@.............
-    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
-  backtrace:
-     kmalloc_array include/linux/slab.h:621 [inline]
-     kcalloc include/linux/slab.h:652 [inline]
-     watch_queue_set_size+0x12f/0x2e0 kernel/watch_queue.c:251
-     pipe_ioctl+0x82/0x140 fs/pipe.c:632
-     vfs_ioctl fs/ioctl.c:51 [inline]
-     __do_sys_ioctl fs/ioctl.c:874 [inline]
-     __se_sys_ioctl fs/ioctl.c:860 [inline]
-     __x64_sys_ioctl+0xfc/0x140 fs/ioctl.c:860
-     do_syscall_x64 arch/x86/entry/common.c:50 [inline]
-
-Reported-by: syzbot+25ea042ae28f3888727a@syzkaller.appspotmail.com
-Fixes: c73be61cede5 ("pipe: Add general notification queue support")
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Signed-off-by: David Howells <dhowells@redhat.com>
-Cc: Jann Horn <jannh@google.com>
-Link: https://lore.kernel.org/r/20220322004654.618274-1-eric.dumazet@gmail.com/
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- kernel/watch_queue.c |    1 +
- 1 file changed, 1 insertion(+)
-
---- a/kernel/watch_queue.c
-+++ b/kernel/watch_queue.c
-@@ -373,6 +373,7 @@ static void __put_watch_queue(struct kre
- 
- 	for (i = 0; i < wqueue->nr_pages; i++)
- 		__free_page(wqueue->notes[i]);
-+	kfree(wqueue->notes);
- 	bitmap_free(wqueue->notes_bitmap);
- 
- 	wfilter = rcu_access_pointer(wqueue->filter);
+-- 
+With Best Regards,
+Andy Shevchenko
 
 
