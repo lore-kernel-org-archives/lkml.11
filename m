@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8245FC4167E
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:20:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 69078C35295
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:20:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237391AbiDEIR6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 04:17:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43954 "EHLO
+        id S236161AbiDEIQd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 04:16:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53046 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235631AbiDEH74 (ORCPT
+        with ESMTP id S235552AbiDEH7v (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 03:59:56 -0400
+        Tue, 5 Apr 2022 03:59:51 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 540E31AF1A;
-        Tue,  5 Apr 2022 00:56:29 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E9D63FBF7;
+        Tue,  5 Apr 2022 00:55:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E417F6179B;
-        Tue,  5 Apr 2022 07:56:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EB977C340EE;
-        Tue,  5 Apr 2022 07:56:27 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CF68E615CD;
+        Tue,  5 Apr 2022 07:55:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E4220C340EE;
+        Tue,  5 Apr 2022 07:55:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649145388;
-        bh=1svdJ2AKn28hyj1/xHu6DgEkXapWfzQJ39MN6QrfE6k=;
+        s=korg; t=1649145328;
+        bh=zU+CWYBYU/8pJUNeNTS9RmWcQvumA7Jb/SBfIxAI/3I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=j7mz+qHZwWVpxOlv/FmaTTooqsZDwTYy9psUmrligtf1RpMMI9YS5SCTGT9AUEXlC
-         +o6qpEgiwZjGRAmylj/pa/1t1SzG2DXetNQ8+DPEmG6z5/yNTw9mSXpUhVv5tAj+UG
-         ORG9x7/my/t3yUNKcKxviy11ojG60nP4YS1YDZsw=
+        b=l7bI+vEMcXxCu5wuspnoxZgFUsUPtndkDMSqrzvVoljeR4bxQP82LQsK7jjc0vdXS
+         As3mnTSxBSBxAtuRexe3nbXwj7ZLVwuwTPuMOXea0YMWQiZlzdxzDDn4PnrdF02Sf1
+         1N1/WSXxR9iJFjRw8WW+gX6jUoSBd0V2BdaT22uk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Neil Armstrong <narmstrong@baylibre.com>,
+        stable@vger.kernel.org,
+        Nicolas Dufresne <nicolas.dufresne@collabora.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
         Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0349/1126] media: mexon-ge2d: fixup frames size in registers
-Date:   Tue,  5 Apr 2022 09:18:16 +0200
-Message-Id: <20220405070417.873311665@linuxfoundation.org>
+Subject: [PATCH 5.17 0365/1126] media: v4l2-core: Initialize h264 scaling matrix
+Date:   Tue,  5 Apr 2022 09:18:32 +0200
+Message-Id: <20220405070418.341509882@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -50,77 +52,62 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Neil Armstrong <narmstrong@baylibre.com>
+From: Nicolas Dufresne <nicolas.dufresne@collabora.com>
 
-[ Upstream commit 79e8c421a099bfbcebe59740153e55aa0442ced6 ]
+[ Upstream commit 0f6146d476fc99862899e70f2554ee77b444b7b9 ]
 
-The CLIP, SRC & DST registers are coded to take the pixel/line start & end,
-starting from 0. Thus the end should be the width/height minus 1.
+In the final H264 API, it is not required to set scaling matrix if
+they are not present in the bitstream. A flag was added in order to let
+the driver know. The downside is that it leaves the default control
+value to 0, which isn't valid. As per the spec (see formulas 7-8/7-9),
+when the scaling matrix are absent from the bitstream, flat values
+of 16 should be used. This improves this control semantic in a way
+that the control value are always valid. Drivers can then use
+the scaling_matrix control values without having to check its presence.
+Same method was employed for MPEG2_QUANTISATION.
 
-It can be an issue with clipping and rotation, where it will add spurious
-lines from uninitialized or unwanted data with a shift in the result.
+This fixes issues with MTK VCODEC H264 decoder when using GStreamer.
+GStreamer does not set this control if its not present in the bitstream.
+As MTK VDCODEC was using the initialized to 0 values, the frames ended
+up completely gray.
 
-Fixes: 59a635327ca7 ("media: meson: Add M2M driver for the Amlogic GE2D Accelerator Unit")
-Signed-off-by: Neil Armstrong <narmstrong@baylibre.com>
+Fixes: 54889c51b833d236 ("media: uapi: h264: Rename and clarify PPS_FLAG_SCALING_MATRIX_PRESENT")
+Signed-off-by: Nicolas Dufresne <nicolas.dufresne@collabora.com>
+Tested-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
 Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/platform/meson/ge2d/ge2d.c | 24 ++++++++++++------------
- 1 file changed, 12 insertions(+), 12 deletions(-)
+ drivers/media/v4l2-core/v4l2-ctrls-core.c | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
 
-diff --git a/drivers/media/platform/meson/ge2d/ge2d.c b/drivers/media/platform/meson/ge2d/ge2d.c
-index ccda18e5a377..5e7b319f300d 100644
---- a/drivers/media/platform/meson/ge2d/ge2d.c
-+++ b/drivers/media/platform/meson/ge2d/ge2d.c
-@@ -215,35 +215,35 @@ static void ge2d_hw_start(struct meson_ge2d *ge2d)
+diff --git a/drivers/media/v4l2-core/v4l2-ctrls-core.c b/drivers/media/v4l2-core/v4l2-ctrls-core.c
+index b25c77b8a445..df8cff47a7fb 100644
+--- a/drivers/media/v4l2-core/v4l2-ctrls-core.c
++++ b/drivers/media/v4l2-core/v4l2-ctrls-core.c
+@@ -114,6 +114,7 @@ static void std_init_compound(const struct v4l2_ctrl *ctrl, u32 idx,
+ 	struct v4l2_ctrl_vp8_frame *p_vp8_frame;
+ 	struct v4l2_ctrl_vp9_frame *p_vp9_frame;
+ 	struct v4l2_ctrl_fwht_params *p_fwht_params;
++	struct v4l2_ctrl_h264_scaling_matrix *p_h264_scaling_matrix;
+ 	void *p = ptr.p + idx * ctrl->elem_size;
  
- 	regmap_write(ge2d->map, GE2D_SRC1_CLIPY_START_END,
- 		     FIELD_PREP(GE2D_START, ctx->in.crop.top) |
--		     FIELD_PREP(GE2D_END, ctx->in.crop.top + ctx->in.crop.height));
-+		     FIELD_PREP(GE2D_END, ctx->in.crop.top + ctx->in.crop.height - 1));
- 	regmap_write(ge2d->map, GE2D_SRC1_CLIPX_START_END,
- 		     FIELD_PREP(GE2D_START, ctx->in.crop.left) |
--		     FIELD_PREP(GE2D_END, ctx->in.crop.left + ctx->in.crop.width));
-+		     FIELD_PREP(GE2D_END, ctx->in.crop.left + ctx->in.crop.width - 1));
- 	regmap_write(ge2d->map, GE2D_SRC2_CLIPY_START_END,
- 		     FIELD_PREP(GE2D_START, ctx->out.crop.top) |
--		     FIELD_PREP(GE2D_END, ctx->out.crop.top + ctx->out.crop.height));
-+		     FIELD_PREP(GE2D_END, ctx->out.crop.top + ctx->out.crop.height - 1));
- 	regmap_write(ge2d->map, GE2D_SRC2_CLIPX_START_END,
- 		     FIELD_PREP(GE2D_START, ctx->out.crop.left) |
--		     FIELD_PREP(GE2D_END, ctx->out.crop.left + ctx->out.crop.width));
-+		     FIELD_PREP(GE2D_END, ctx->out.crop.left + ctx->out.crop.width - 1));
- 	regmap_write(ge2d->map, GE2D_DST_CLIPY_START_END,
- 		     FIELD_PREP(GE2D_START, ctx->out.crop.top) |
--		     FIELD_PREP(GE2D_END, ctx->out.crop.top + ctx->out.crop.height));
-+		     FIELD_PREP(GE2D_END, ctx->out.crop.top + ctx->out.crop.height - 1));
- 	regmap_write(ge2d->map, GE2D_DST_CLIPX_START_END,
- 		     FIELD_PREP(GE2D_START, ctx->out.crop.left) |
--		     FIELD_PREP(GE2D_END, ctx->out.crop.left + ctx->out.crop.width));
-+		     FIELD_PREP(GE2D_END, ctx->out.crop.left + ctx->out.crop.width - 1));
+ 	if (ctrl->p_def.p_const)
+@@ -168,6 +169,15 @@ static void std_init_compound(const struct v4l2_ctrl *ctrl, u32 idx,
+ 		p_fwht_params->flags = V4L2_FWHT_FL_PIXENC_YUV |
+ 			(2 << V4L2_FWHT_FL_COMPONENTS_NUM_OFFSET);
+ 		break;
++	case V4L2_CTRL_TYPE_H264_SCALING_MATRIX:
++		p_h264_scaling_matrix = p;
++		/*
++		 * The default (flat) H.264 scaling matrix when none are
++		 * specified in the bitstream, this is according to formulas
++		 *  (7-8) and (7-9) of the specification.
++		 */
++		memset(p_h264_scaling_matrix, 16, sizeof(*p_h264_scaling_matrix));
++		break;
+ 	}
+ }
  
- 	regmap_write(ge2d->map, GE2D_SRC1_Y_START_END,
--		     FIELD_PREP(GE2D_END, ctx->in.pix_fmt.height));
-+		     FIELD_PREP(GE2D_END, ctx->in.pix_fmt.height - 1));
- 	regmap_write(ge2d->map, GE2D_SRC1_X_START_END,
--		     FIELD_PREP(GE2D_END, ctx->in.pix_fmt.width));
-+		     FIELD_PREP(GE2D_END, ctx->in.pix_fmt.width - 1));
- 	regmap_write(ge2d->map, GE2D_SRC2_Y_START_END,
--		     FIELD_PREP(GE2D_END, ctx->out.pix_fmt.height));
-+		     FIELD_PREP(GE2D_END, ctx->out.pix_fmt.height - 1));
- 	regmap_write(ge2d->map, GE2D_SRC2_X_START_END,
--		     FIELD_PREP(GE2D_END, ctx->out.pix_fmt.width));
-+		     FIELD_PREP(GE2D_END, ctx->out.pix_fmt.width - 1));
- 	regmap_write(ge2d->map, GE2D_DST_Y_START_END,
--		     FIELD_PREP(GE2D_END, ctx->out.pix_fmt.height));
-+		     FIELD_PREP(GE2D_END, ctx->out.pix_fmt.height - 1));
- 	regmap_write(ge2d->map, GE2D_DST_X_START_END,
--		     FIELD_PREP(GE2D_END, ctx->out.pix_fmt.width));
-+		     FIELD_PREP(GE2D_END, ctx->out.pix_fmt.width - 1));
- 
- 	/* Color, no blend, use source color */
- 	reg = GE2D_ALU_DO_COLOR_OPERATION_LOGIC(LOGIC_OPERATION_COPY,
 -- 
 2.34.1
 
