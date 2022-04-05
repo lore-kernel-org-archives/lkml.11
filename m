@@ -2,136 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C21DC43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C90CC433EF
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:15:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1444388AbiDEUIM (ORCPT
+        id S1444522AbiDEUIP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 16:08:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60768 "EHLO
+        Tue, 5 Apr 2022 16:08:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37040 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356221AbiDEKXa (ORCPT
+        with ESMTP id S1352019AbiDEPLv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:23:30 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 935E54AE19;
-        Tue,  5 Apr 2022 03:07:53 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4B504B81B7A;
-        Tue,  5 Apr 2022 10:07:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7C612C385A2;
-        Tue,  5 Apr 2022 10:07:50 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649153271;
-        bh=ES3X17Y01QRt0jn6W30I/2/ntU0WYkz9qFCvGLKNurI=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ByjWzPeRt33PcSqfOiefYDAu/94DutCw+3ksofD56A0g2Ckk+ltq5a7MvFiLUc3CN
-         Er4Ppzr9fyBCxJKGn+KCExylr0BdchSl102SkYZIaeZGFmHH35aRi8yf+NaRMlpZoP
-         9LDyvmN1BCL1J63KO6nxrMGXZbb+TPLVuOHBeUow=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Mastan Katragadda <mastanx.katragadda@intel.com>,
-        Adam Zabrocki <adamza@microsoft.com>,
-        Jackson Cody <cody.jackson@intel.com>,
-        Chris Wilson <chris@chris-wilson.co.uk>,
-        Jon Bloomfield <jon.bloomfield@intel.com>,
-        Sudeep Dutt <sudeep.dutt@intel.com>,
-        Matthew Auld <matthew.auld@intel.com>,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>
-Subject: [PATCH 5.10 125/599] drm/i915/gem: add missing boundary check in vm_access
-Date:   Tue,  5 Apr 2022 09:26:59 +0200
-Message-Id: <20220405070302.558663250@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 5 Apr 2022 11:11:51 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4393B108740
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 06:25:40 -0700 (PDT)
+From:   John Ogness <john.ogness@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1649165138;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=w6/o/PjZ0Qpg9L4OKIrmGvdcvR+21LH+ujrVsqfiSt0=;
+        b=vTX9PptTisS4B8CBAJwM/Vt3Innqkp0IOmP3EfSf0o3TJbgWvw4uMWAXno+zj0xKS5gmXm
+        h48mChyV9dtz3Jz+PUjBqAIWm+5xr/bE775UIcJkQjBvty+w9Tk0I5/9sqEH0kwnyODRro
+        7FTymDUVvdch6af6pTAZCTfsqn8FqEVHa7yrbunD0TvHo/5lOCx0tAFOMR0JJ6BKRrWjWX
+        ruP9k94SLnEvFsGA2hD1gI6Ehm6aTpED92hEW41AbPzpatkFRH6C+RxFbhU16BwYR/tdQv
+        NaoQtQOysaW8oB4AjBIvCCxCwn43dhNyN7pvPSbYR0s54N4JDQA4MPs1YgLdkg==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1649165138;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=w6/o/PjZ0Qpg9L4OKIrmGvdcvR+21LH+ujrVsqfiSt0=;
+        b=VIRHzr2fjG0CztJXCAS8nOaDklkaoRPnvTp89xiTp/mEeqw8+0obiAxx9udA4gnOMwZUk2
+        ejEvSeO1bAJYNNBw==
+To:     Petr Mladek <pmladek@suse.com>
+Cc:     Sergey Senozhatsky <senozhatsky@chromium.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH printk v2 02/12] printk: cpu sync always disable interrupts
+Date:   Tue,  5 Apr 2022 15:31:25 +0206
+Message-Id: <20220405132535.649171-3-john.ogness@linutronix.de>
+In-Reply-To: <20220405132535.649171-1-john.ogness@linutronix.de>
+References: <20220405132535.649171-1-john.ogness@linutronix.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mastan Katragadda <mastanx.katragadda@intel.com>
+The CPU sync functions are a NOP for !CONFIG_SMP. But for
+!CONFIG_SMP they still need to disable interrupts in order to
+preserve context within the CPU sync sections.
 
-commit 3886a86e7e6cc6ce2ce93c440fecd8f42aed0ce7 upstream.
-
-A missing bounds check in vm_access() can lead to an out-of-bounds read
-or write in the adjacent memory area, since the len attribute is not
-validated before the memcpy later in the function, potentially hitting:
-
-[  183.637831] BUG: unable to handle page fault for address: ffffc90000c86000
-[  183.637934] #PF: supervisor read access in kernel mode
-[  183.637997] #PF: error_code(0x0000) - not-present page
-[  183.638059] PGD 100000067 P4D 100000067 PUD 100258067 PMD 106341067 PTE 0
-[  183.638144] Oops: 0000 [#2] PREEMPT SMP NOPTI
-[  183.638201] CPU: 3 PID: 1790 Comm: poc Tainted: G      D           5.17.0-rc6-ci-drm-11296+ #1
-[  183.638298] Hardware name: Intel Corporation CoffeeLake Client Platform/CoffeeLake H DDR4 RVP, BIOS CNLSFWR1.R00.X208.B00.1905301319 05/30/2019
-[  183.638430] RIP: 0010:memcpy_erms+0x6/0x10
-[  183.640213] RSP: 0018:ffffc90001763d48 EFLAGS: 00010246
-[  183.641117] RAX: ffff888109c14000 RBX: ffff888111bece40 RCX: 0000000000000ffc
-[  183.642029] RDX: 0000000000001000 RSI: ffffc90000c86000 RDI: ffff888109c14004
-[  183.642946] RBP: 0000000000000ffc R08: 800000000000016b R09: 0000000000000000
-[  183.643848] R10: ffffc90000c85000 R11: 0000000000000048 R12: 0000000000001000
-[  183.644742] R13: ffff888111bed190 R14: ffff888109c14000 R15: 0000000000001000
-[  183.645653] FS:  00007fe5ef807540(0000) GS:ffff88845b380000(0000) knlGS:0000000000000000
-[  183.646570] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[  183.647481] CR2: ffffc90000c86000 CR3: 000000010ff02006 CR4: 00000000003706e0
-[  183.648384] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-[  183.649271] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-[  183.650142] Call Trace:
-[  183.650988]  <TASK>
-[  183.651793]  vm_access+0x1f0/0x2a0 [i915]
-[  183.652726]  __access_remote_vm+0x224/0x380
-[  183.653561]  mem_rw.isra.0+0xf9/0x190
-[  183.654402]  vfs_read+0x9d/0x1b0
-[  183.655238]  ksys_read+0x63/0xe0
-[  183.656065]  do_syscall_64+0x38/0xc0
-[  183.656882]  entry_SYSCALL_64_after_hwframe+0x44/0xae
-[  183.657663] RIP: 0033:0x7fe5ef725142
-[  183.659351] RSP: 002b:00007ffe1e81c7e8 EFLAGS: 00000246 ORIG_RAX: 0000000000000000
-[  183.660227] RAX: ffffffffffffffda RBX: 0000557055dfb780 RCX: 00007fe5ef725142
-[  183.661104] RDX: 0000000000001000 RSI: 00007ffe1e81d880 RDI: 0000000000000005
-[  183.661972] RBP: 00007ffe1e81e890 R08: 0000000000000030 R09: 0000000000000046
-[  183.662832] R10: 0000557055dfc2e0 R11: 0000000000000246 R12: 0000557055dfb1c0
-[  183.663691] R13: 00007ffe1e81e980 R14: 0000000000000000 R15: 0000000000000000
-
-Changes since v1:
-     - Updated if condition with range_overflows_t [Chris Wilson]
-
-Fixes: 9f909e215fea ("drm/i915: Implement vm_ops->access for gdb access into mmaps")
-Signed-off-by: Mastan Katragadda <mastanx.katragadda@intel.com>
-Suggested-by: Adam Zabrocki <adamza@microsoft.com>
-Reported-by: Jackson Cody <cody.jackson@intel.com>
-Cc: Chris Wilson <chris@chris-wilson.co.uk>
-Cc: Jon Bloomfield <jon.bloomfield@intel.com>
-Cc: Sudeep Dutt <sudeep.dutt@intel.com>
-Cc: <stable@vger.kernel.org> # v5.8+
-Reviewed-by: Matthew Auld <matthew.auld@intel.com>
-[mauld: tidy up the commit message and add Cc: stable]
-Signed-off-by: Matthew Auld <matthew.auld@intel.com>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220303060428.1668844-1-mastanx.katragadda@intel.com
-(cherry picked from commit 661412e301e2ca86799aa4f400d1cf0bd38c57c6)
-Signed-off-by: Joonas Lahtinen <joonas.lahtinen@linux.intel.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: John Ogness <john.ogness@linutronix.de>
+Reviewed-by: Petr Mladek <pmladek@suse.com>
+Reviewed-by: Sergey Senozhatsky <senozhatsky@chromium.org>
 ---
- drivers/gpu/drm/i915/gem/i915_gem_mman.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ include/linux/printk.h | 18 +++++++++---------
+ 1 file changed, 9 insertions(+), 9 deletions(-)
 
---- a/drivers/gpu/drm/i915/gem/i915_gem_mman.c
-+++ b/drivers/gpu/drm/i915/gem/i915_gem_mman.c
-@@ -423,7 +423,7 @@ vm_access(struct vm_area_struct *area, u
- 		return -EACCES;
+diff --git a/include/linux/printk.h b/include/linux/printk.h
+index 859323a52985..b70a42f94031 100644
+--- a/include/linux/printk.h
++++ b/include/linux/printk.h
+@@ -281,9 +281,16 @@ extern int __printk_cpu_sync_try_get(void);
+ extern void __printk_cpu_sync_wait(void);
+ extern void __printk_cpu_sync_put(void);
  
- 	addr -= area->vm_start;
--	if (addr >= obj->base.size)
-+	if (range_overflows_t(u64, addr, len, obj->base.size))
- 		return -EINVAL;
++#else
++
++#define __printk_cpu_sync_try_get() true
++#define __printk_cpu_sync_wait()
++#define __printk_cpu_sync_put()
++#endif /* CONFIG_SMP */
++
+ /**
+- * printk_cpu_sync_get_irqsave() - Acquire the printk cpu-reentrant spinning
+- *                                 lock and disable interrupts.
++ * printk_cpu_sync_get_irqsave() - Disable interrupts and acquire the printk
++ *                                 cpu-reentrant spinning lock.
+  * @flags: Stack-allocated storage for saving local interrupt state,
+  *         to be passed to printk_cpu_sync_put_irqrestore().
+  *
+@@ -322,13 +329,6 @@ extern void __printk_cpu_sync_put(void);
+ 		local_irq_restore(flags);	\
+ 	} while (0)
  
- 	/* As this is primarily for debugging, let's focus on simplicity */
-
+-#else
+-
+-#define printk_cpu_sync_get_irqsave(flags) ((void)flags)
+-#define printk_cpu_sync_put_irqrestore(flags) ((void)flags)
+-
+-#endif /* CONFIG_SMP */
+-
+ extern int kptr_restrict;
+ 
+ /**
+-- 
+2.30.2
 
