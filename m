@@ -2,78 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F9EAC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 10:08:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 19574C3527A
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 10:08:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238081AbiDEKHH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 06:07:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33912 "EHLO
+        id S239968AbiDEKH2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 06:07:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45702 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240968AbiDEIcl (ORCPT
+        with ESMTP id S240969AbiDEIcl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Apr 2022 04:32:41 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DF3491341;
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 950BD9398C;
         Tue,  5 Apr 2022 01:25:32 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by smtp-out2.suse.de (Postfix) with ESMTPS id A20121F37E;
-        Tue,  5 Apr 2022 08:25:30 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-        t=1649147130; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:  content-transfer-encoding:content-transfer-encoding;
-        bh=xzto3jOtflbOG3/cNYqAPCn/Axn/FLld8h6se3wYmZE=;
-        b=ChdIPMtso4JJwBpqRzHAhGLRP30X+9pHNGNiuTgjaH1hXuobELrD9qzt5jax1ipyMJybXx
-        t7mgY0Lx+URG5o+W74f2VVB0Bjc2Eapjm6JeOHHAXOZ+3pzifKaxU2OwXzsoYFUbjP6val
-        RQzTZnG4rleh3yzt+76DjH5A1K+WH4s=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-        s=susede2_ed25519; t=1649147130;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:  content-transfer-encoding:content-transfer-encoding;
-        bh=xzto3jOtflbOG3/cNYqAPCn/Axn/FLld8h6se3wYmZE=;
-        b=RrkIJBOVI265E6joX/1kUqUm8sazSgGWVoholWR1rp/jUWoIoQOs3SfxcWJXcCOHtDCz5d
-        xd17nyXdeNxR+gDg==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 889BE13A04;
-        Tue,  5 Apr 2022 08:25:30 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id aWISIfr8S2JwEQAAMHmgww
-        (envelope-from <iivanov@suse.de>); Tue, 05 Apr 2022 08:25:30 +0000
-From:   "Ivan T. Ivanov" <iivanov@suse.de>
-To:     Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>
-Cc:     Maxime Ripard <maxime@cerno.tech>, linux-clk@vger.kernel.org,
-        linux-kernel@vger.kernel.org, "Ivan T. Ivanov" <iivanov@suse.de>
-Subject: [PATCH v2 0/2] clk: bcm: rpi: Add support for two more clocks
-Date:   Tue,  5 Apr 2022 11:25:01 +0300
-Message-Id: <20220405082503.61041-1-iivanov@suse.de>
-X-Mailer: git-send-email 2.26.2
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1BBF3B81BAF;
+        Tue,  5 Apr 2022 08:25:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 727A1C385A2;
+        Tue,  5 Apr 2022 08:25:29 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649147129;
+        bh=jl6Snp2v0QTf7bMzCJgP0Dv9BzB/beZVOt0Nxq39c78=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=kQs5mbcNLQ/ejN12DlwQUq4HvYymnLwz8ofM9ugq7xaZcJwHDMaNyPbCCx5l2Hzmp
+         CEFelsStbz76IDNnyf8OrzTvFX+Y8rjgDv/15FsD9Ha3LYgmhQcKXO6iXUcVDrjW7R
+         32CkYXHhEbrlFfswvUKVzUuqO1tLO8y1oUmWK4GQ=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Zhihao Cheng <chengzhihao1@huawei.com>,
+        Baokun Li <libaokun1@huawei.com>,
+        Richard Weinberger <richard@nod.at>
+Subject: [PATCH 5.17 1013/1126] ubifs: rename_whiteout: correct old_dir size computing
+Date:   Tue,  5 Apr 2022 09:29:20 +0200
+Message-Id: <20220405070437.222069130@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
+References: <20220405070407.513532867@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add missing clock required by RPiVid video decoder and make HDMI
-pixel clock more reliable.
+From: Baokun Li <libaokun1@huawei.com>
 
-Changes since v1
-- Drop RPI_FIRMWARE_VEC_CLK_ID clock it doesn't seems to be used.
-- Rework downstream changes on top of recent Maxime changes.
+commit 705757274599e2e064dd3054aabc74e8af31a095 upstream.
 
-Ivan T. Ivanov (2):
-  clk: bcm: rpi: Add support HEVC clock
-  clk: bcm: rpi: Handle pixel clock in firmware
+When renaming the whiteout file, the old whiteout file is not deleted.
+Therefore, we add the old dentry size to the old dir like XFS.
+Otherwise, an error may be reported due to `fscki->calc_sz != fscki->size`
+in check_indes.
 
- drivers/clk/bcm/clk-raspberrypi.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+Fixes: 9e0a1fff8db56ea ("ubifs: Implement RENAME_WHITEOUT")
+Reported-by: Zhihao Cheng <chengzhihao1@huawei.com>
+Signed-off-by: Baokun Li <libaokun1@huawei.com>
+Signed-off-by: Richard Weinberger <richard@nod.at>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ fs/ubifs/dir.c |    3 +++
+ 1 file changed, 3 insertions(+)
 
--- 
-2.26.2
+--- a/fs/ubifs/dir.c
++++ b/fs/ubifs/dir.c
+@@ -1402,6 +1402,9 @@ static int do_rename(struct inode *old_d
+ 			iput(whiteout);
+ 			goto out_release;
+ 		}
++
++		/* Add the old_dentry size to the old_dir size. */
++		old_sz -= CALC_DENT_SIZE(fname_len(&old_nm));
+ 	}
+ 
+ 	lock_4_inodes(old_dir, new_dir, new_inode, whiteout);
+
 
