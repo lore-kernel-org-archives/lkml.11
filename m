@@ -2,95 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8860DC433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D51EAC4321E
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 01:30:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1456279AbiDFB3x (ORCPT
+        id S1842302AbiDFBaZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 21:29:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59112 "EHLO
+        Tue, 5 Apr 2022 21:30:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50638 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1384480AbiDEOSH (ORCPT
+        with ESMTP id S1358241AbiDEK2K (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 10:18:07 -0400
-Received: from smtp2.axis.com (smtp2.axis.com [195.60.68.18])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1689F6E7B9;
-        Tue,  5 Apr 2022 06:04:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=axis.com; q=dns/txt; s=axis-central1; t=1649163848;
-  x=1680699848;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=7cRqrzsYNIRfiAOotHa409y/Hl5ia/NeruEwkXktTvU=;
-  b=lvFF5QW+7lsDkZ3D6AwCQwU1n259IjfBXJKmpbYXegYsg+2HyBzr4W+m
-   qweFLZlhHJqKzzJrXjuFsr/HQ2HAb+12Fl8TCxkDlKKhuzgCMHZn08dXc
-   iA4cBKmNbgwAmgnLdNpYPqTb0H/ih+rsxTJwNBI5iztYJvnYuxM49eDFP
-   bXWQlDfsWBROAsE7T0w74WYcPtPUPXBx7otBu52Qeb14LcVUvGkmWEoj4
-   uiysNqzIb6GEjtCjqNz9/Yied1cVX/1oVvdiKJkvhR8IQEW9EB/CvYV9o
-   h+rsmilshnu2Fier3gFN1oedzS+WvE1uk1fWhBTULCdd/fHMqs7bLZcbS
-   Q==;
-From:   Vincent Whitchurch <vincent.whitchurch@axis.com>
-To:     <vigneshr@ti.com>, <richard@nod.at>, <miquel.raynal@bootlin.com>,
-        <joern@lazybastard.org>
-CC:     <kernel@axis.com>,
-        Vincent Whitchurch <vincent.whitchurch@axis.com>,
-        <linux-mtd@lists.infradead.org>, <devicetree@vger.kernel.org>,
-        <robh+dt@kernel.org>, <krzk+dt@kernel.org>,
-        <frowand.list@gmail.com>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH v2 1/4] mtd: core: Check devicetree alias for index
-Date:   Tue, 5 Apr 2022 15:03:47 +0200
-Message-ID: <20220405130350.1640985-2-vincent.whitchurch@axis.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220405130350.1640985-1-vincent.whitchurch@axis.com>
-References: <20220405130350.1640985-1-vincent.whitchurch@axis.com>
+        Tue, 5 Apr 2022 06:28:10 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2401BC84;
+        Tue,  5 Apr 2022 03:17:22 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7E5386176C;
+        Tue,  5 Apr 2022 10:17:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 82624C385A1;
+        Tue,  5 Apr 2022 10:17:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649153841;
+        bh=acjGa2Mds/qC0cT2/655emFjJYDB8+CxawsXEriSDkw=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=duH2xNCnvK2x4lAJzTnJvw2Cw+a89VNVMs7gP1B4D/JbjMlDAVIFfW+6T3uzRjZYT
+         W5LXS6V/l4a4uXcnNenGGOoJuOqu695+ADHPMLWX17Gzt8qf2eskxQaWQADZe8o1D9
+         /5d+yzOB9tPrdlyqTgIbNHNxk4qk3XzBgcRzihL4=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Daniel Borkmann <daniel@iogearbox.net>,
+        Hou Tao <houtao1@huawei.com>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 328/599] bpf, arm64: Feed byte-offset into bpf line info
+Date:   Tue,  5 Apr 2022 09:30:22 +0200
+Message-Id: <20220405070308.593452798@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
+References: <20220405070258.802373272@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Allow the MTD index to be specified via a devicetree alias, so that the
-number does not just depend on probe order.  This is useful to allow
-pseudo-devices like phram to be optionally used on systems, without
-having this affect the numbering of the real hardware MTD devices.
+From: Hou Tao <houtao1@huawei.com>
 
-Signed-off-by: Vincent Whitchurch <vincent.whitchurch@axis.com>
+[ Upstream commit dda7596c109fc382876118627e29db7607cde35d ]
+
+insn_to_jit_off passed to bpf_prog_fill_jited_linfo() is calculated in
+instruction granularity instead of bytes granularity, but BPF line info
+requires byte offset.
+
+bpf_prog_fill_jited_linfo() will be the last user of ctx.offset before
+it is freed, so convert the offset into byte-offset before calling into
+bpf_prog_fill_jited_linfo() in order to fix the line info dump on arm64.
+
+Fixes: 37ab566c178d ("bpf: arm64: Enable arm64 jit to provide bpf_line_info")
+Suggested-by: Daniel Borkmann <daniel@iogearbox.net>
+Signed-off-by: Hou Tao <houtao1@huawei.com>
+Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+Link: https://lore.kernel.org/bpf/20220226121906.5709-3-houtao1@huawei.com
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/mtd/mtdcore.c | 11 +++++++++--
- 1 file changed, 9 insertions(+), 2 deletions(-)
+ arch/arm64/net/bpf_jit_comp.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-diff --git a/drivers/mtd/mtdcore.c b/drivers/mtd/mtdcore.c
-index 7731796024e0..9eb0680db312 100644
---- a/drivers/mtd/mtdcore.c
-+++ b/drivers/mtd/mtdcore.c
-@@ -557,9 +557,10 @@ static int mtd_nvmem_add(struct mtd_info *mtd)
+diff --git a/arch/arm64/net/bpf_jit_comp.c b/arch/arm64/net/bpf_jit_comp.c
+index 880f50c53086..9c6cab71ba98 100644
+--- a/arch/arm64/net/bpf_jit_comp.c
++++ b/arch/arm64/net/bpf_jit_comp.c
+@@ -1124,6 +1124,11 @@ struct bpf_prog *bpf_int_jit_compile(struct bpf_prog *prog)
+ 	prog->jited_len = prog_size;
  
- int add_mtd_device(struct mtd_info *mtd)
- {
-+	struct device_node *np = mtd_get_of_node(mtd);
- 	struct mtd_info *master = mtd_get_master(mtd);
- 	struct mtd_notifier *not;
--	int i, error;
-+	int i, error, ofidx;
- 
- 	/*
- 	 * May occur, for instance, on buggy drivers which call
-@@ -598,7 +599,13 @@ int add_mtd_device(struct mtd_info *mtd)
- 
- 	mutex_lock(&mtd_table_mutex);
- 
--	i = idr_alloc(&mtd_idr, mtd, 0, 0, GFP_KERNEL);
-+	ofidx = -1;
-+	if (np)
-+		ofidx = of_alias_get_id(np, "mtd");
-+	if (ofidx >= 0)
-+		i = idr_alloc(&mtd_idr, mtd, ofidx, ofidx + 1, GFP_KERNEL);
-+	else
-+		i = idr_alloc(&mtd_idr, mtd, 0, 0, GFP_KERNEL);
- 	if (i < 0) {
- 		error = i;
- 		goto fail_locked;
+ 	if (!prog->is_func || extra_pass) {
++		int i;
++
++		/* offset[prog->len] is the size of program */
++		for (i = 0; i <= prog->len; i++)
++			ctx.offset[i] *= AARCH64_INSN_SIZE;
+ 		bpf_prog_fill_jited_linfo(prog, ctx.offset + 1);
+ out_off:
+ 		kfree(ctx.offset);
 -- 
 2.34.1
+
+
 
