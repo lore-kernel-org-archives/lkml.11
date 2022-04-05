@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BB85AC4167E
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 09:27:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 551E0C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 09:27:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347453AbiDEJ0k (ORCPT
+        id S1347486AbiDEJ0v (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 05:26:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34716 "EHLO
+        Tue, 5 Apr 2022 05:26:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34730 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239598AbiDEIUP (ORCPT
+        with ESMTP id S239629AbiDEIUS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:20:15 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3742136;
-        Tue,  5 Apr 2022 01:17:07 -0700 (PDT)
+        Tue, 5 Apr 2022 04:20:18 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3135A218;
+        Tue,  5 Apr 2022 01:17:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 609E7609D0;
-        Tue,  5 Apr 2022 08:17:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6F80DC385A1;
-        Tue,  5 Apr 2022 08:17:06 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C2CF9B81B18;
+        Tue,  5 Apr 2022 08:17:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 36BD7C385A1;
+        Tue,  5 Apr 2022 08:17:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649146626;
-        bh=P3NtWkh9h3XTIlElB6Qko8BGssaTAw2AjqJ3aVe94Us=;
+        s=korg; t=1649146670;
+        bh=89xXn0X7jKD6fsMt0GTqE26Ef7bdfK9tTe/F0aAiEa4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ub+8ZWECkYc9Zzr7slZmwZqMFcrCBY9/z4GmdkrPronVwyhfc9R7ez784I2UpJVV3
-         qWNVnUW+XmhYtRpoD06V6CwHWn57a8xW6zGbIsd6PWnDXptRBMYER132c9g1krAVJY
-         dkuFXa1G0m1JeMPDSLUm/hMPNz3okl4ZPq4KtdEE=
+        b=dJohg1uyZzSYXbuSFMGRnwM/Mgk6z3Tcs524HKdmKJXaTB+gQAFP9zTKPqjZ3+e5j
+         vrL4XRstQQ0JAQRElT3b7t0uG+jIdH22FyX0ukHVIjp3u+FVEhJdHaA/THXwlkFN3g
+         5KgwPvkb6cfNhI52k8TTbj0Fn1grANJ2N2Pg9YBM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
-        Luis Chamberlain <mcgrof@kernel.org>,
+        stable@vger.kernel.org,
+        =?UTF-8?q?Christian=20G=C3=B6ttsche?= <cgzones@googlemail.com>,
+        Paul Moore <paul@paul-moore.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0831/1126] lib/test: use after free in register_test_dev_kmod()
-Date:   Tue,  5 Apr 2022 09:26:18 +0200
-Message-Id: <20220405070431.950973665@linuxfoundation.org>
+Subject: [PATCH 5.17 0847/1126] selinux: use correct type for context length
+Date:   Tue,  5 Apr 2022 09:26:34 +0200
+Message-Id: <20220405070432.411601223@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -50,32 +51,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dan Carpenter <dan.carpenter@oracle.com>
+From: Christian Göttsche <cgzones@googlemail.com>
 
-[ Upstream commit dc0ce6cc4b133f5f2beb8b47dacae13a7d283c2c ]
+[ Upstream commit b97df7c098c531010e445da88d02b7bf7bf59ef6 ]
 
-The "test_dev" pointer is freed but then returned to the caller.
+security_sid_to_context() expects a pointer to an u32 as the address
+where to store the length of the computed context.
 
-Fixes: d9c6a72d6fa2 ("kmod: add test driver to stress test the module loader")
-Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
-Signed-off-by: Luis Chamberlain <mcgrof@kernel.org>
+Reported by sparse:
+
+    security/selinux/xfrm.c:359:39: warning: incorrect type in arg 4
+                                    (different signedness)
+    security/selinux/xfrm.c:359:39:    expected unsigned int
+                                       [usertype] *scontext_len
+    security/selinux/xfrm.c:359:39:    got int *
+
+Signed-off-by: Christian Göttsche <cgzones@googlemail.com>
+[PM: wrapped commit description]
+Signed-off-by: Paul Moore <paul@paul-moore.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- lib/test_kmod.c | 1 +
- 1 file changed, 1 insertion(+)
+ security/selinux/xfrm.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/lib/test_kmod.c b/lib/test_kmod.c
-index ce1589391413..cb800b1d0d99 100644
---- a/lib/test_kmod.c
-+++ b/lib/test_kmod.c
-@@ -1149,6 +1149,7 @@ static struct kmod_test_device *register_test_dev_kmod(void)
- 	if (ret) {
- 		pr_err("could not register misc device: %d\n", ret);
- 		free_test_dev_kmod(test_dev);
-+		test_dev = NULL;
- 		goto out;
- 	}
+diff --git a/security/selinux/xfrm.c b/security/selinux/xfrm.c
+index 90697317895f..c576832febc6 100644
+--- a/security/selinux/xfrm.c
++++ b/security/selinux/xfrm.c
+@@ -347,7 +347,7 @@ int selinux_xfrm_state_alloc_acquire(struct xfrm_state *x,
+ 	int rc;
+ 	struct xfrm_sec_ctx *ctx;
+ 	char *ctx_str = NULL;
+-	int str_len;
++	u32 str_len;
  
+ 	if (!polsec)
+ 		return 0;
 -- 
 2.34.1
 
