@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C70B5C4167D
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:57:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5BF77C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:57:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343543AbiDEI47 (ORCPT
+        id S1343594AbiDEI5J (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 04:56:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55452 "EHLO
+        Tue, 5 Apr 2022 04:57:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56794 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234663AbiDEINu (ORCPT
+        with ESMTP id S235436AbiDEIQK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:13:50 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D06D8EB4E;
-        Tue,  5 Apr 2022 01:03:06 -0700 (PDT)
+        Tue, 5 Apr 2022 04:16:10 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20576A94F3;
+        Tue,  5 Apr 2022 01:03:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5FD33B81BB1;
-        Tue,  5 Apr 2022 08:03:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ADA08C385A2;
-        Tue,  5 Apr 2022 08:03:03 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8F0A861753;
+        Tue,  5 Apr 2022 08:03:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A44B5C385A3;
+        Tue,  5 Apr 2022 08:03:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649145784;
-        bh=jURNLkHfvs90xixxz7QuJxYbOrABtK6FRPQkbVAFdjQ=;
+        s=korg; t=1649145803;
+        bh=a1m4cMTbuV1ChAmpSXyVBeKDPl09KCXziqzprdAqbWM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=wmDSAnY0/JYY6v03G/rXQ3sStA0wB2ZZPNpRbdKhJSB7oqL8aRumT2hcqUmoxxufo
-         oP2CTXDhqOV5sqHd9y3YyQlh5z/CM83o12l5UCfU0wl3LFWrzoE5dfkUkR0DfmVw0k
-         GDPiWeqkWJz221ew3vPLpp8SF/79USsZiAm7SAnk=
+        b=c+ZsCLfiEy8+hylUcjX+nwP12SdKpsSYQpBPGeGilK6y+vKTzdgH1tq78eVKpDu2x
+         LKT9y0pb7I3+aiyvJA8jlhJpQUJQFQOLSJq+AFWg2FcM4yftgCE6wQz9hXK48+mGOg
+         BsFamjRp9CQ59i/dIE1RFEiBvoSBfExqXDGWg3aM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Yonghong Song <yhs@fb.com>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0528/1126] libbpf: Fix signedness bug in btf_dump_array_data()
-Date:   Tue,  5 Apr 2022 09:21:15 +0200
-Message-Id: <20220405070423.128853815@linuxfoundation.org>
+        stable@vger.kernel.org, Peter Chiu <chui-hao.chiu@mediatek.com>,
+        Felix Fietkau <nbd@nbd.name>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 0508/1126] mt76: mt7915: fix mcs_map in mt7915_mcu_set_sta_he_mcs()
+Date:   Tue,  5 Apr 2022 09:20:55 +0200
+Message-Id: <20220405070422.539038765@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -50,43 +49,91 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dan Carpenter <dan.carpenter@oracle.com>
+From: Peter Chiu <chui-hao.chiu@mediatek.com>
 
-[ Upstream commit 4172843ed4a38f97084032f74f07b2037b5da3a6 ]
+[ Upstream commit ade25ca7950bc8930356d98ec89aa41560a9dab5 ]
 
-The btf__resolve_size() function returns negative error codes so
-"elem_size" must be signed for the error handling to work.
+Should use peer's bandwidth instead of chandef->width to
+get correct mcs_map.
 
-Fixes: 920d16af9b42 ("libbpf: BTF dumper support for typed data")
-Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
-Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
-Acked-by: Yonghong Song <yhs@fb.com>
-Link: https://lore.kernel.org/bpf/20220208071552.GB10495@kili
+Fixes: 76be6c076c077 ("mt76: mt7915: add .set_bitrate_mask() callback")
+Signed-off-by: Peter Chiu <chui-hao.chiu@mediatek.com>
+Signed-off-by: Felix Fietkau <nbd@nbd.name>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/lib/bpf/btf_dump.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ .../net/wireless/mediatek/mt76/mt7915/mcu.c   | 29 +++++--------------
+ 1 file changed, 8 insertions(+), 21 deletions(-)
 
-diff --git a/tools/lib/bpf/btf_dump.c b/tools/lib/bpf/btf_dump.c
-index b9a3260c83cb..55aed9e398c3 100644
---- a/tools/lib/bpf/btf_dump.c
-+++ b/tools/lib/bpf/btf_dump.c
-@@ -1861,14 +1861,15 @@ static int btf_dump_array_data(struct btf_dump *d,
- {
- 	const struct btf_array *array = btf_array(t);
- 	const struct btf_type *elem_type;
--	__u32 i, elem_size = 0, elem_type_id;
-+	__u32 i, elem_type_id;
-+	__s64 elem_size;
- 	bool is_array_member;
+diff --git a/drivers/net/wireless/mediatek/mt76/mt7915/mcu.c b/drivers/net/wireless/mediatek/mt76/mt7915/mcu.c
+index 1afeb7493268..f7b97b7ab21f 100644
+--- a/drivers/net/wireless/mediatek/mt76/mt7915/mcu.c
++++ b/drivers/net/wireless/mediatek/mt76/mt7915/mcu.c
+@@ -211,24 +211,12 @@ mt7915_mcu_get_sta_nss(u16 mcs_map)
  
- 	elem_type_id = array->type;
- 	elem_type = skip_mods_and_typedefs(d->btf, elem_type_id, NULL);
- 	elem_size = btf__resolve_size(d->btf, elem_type_id);
- 	if (elem_size <= 0) {
--		pr_warn("unexpected elem size %d for array type [%u]\n", elem_size, id);
-+		pr_warn("unexpected elem size %lld for array type [%u]\n", elem_size, id);
- 		return -EINVAL;
+ static void
+ mt7915_mcu_set_sta_he_mcs(struct ieee80211_sta *sta, __le16 *he_mcs,
+-			  const u16 *mask)
++			  u16 mcs_map)
+ {
+ 	struct mt7915_sta *msta = (struct mt7915_sta *)sta->drv_priv;
+-	struct cfg80211_chan_def *chandef = &msta->vif->phy->mt76->chandef;
++	enum nl80211_band band = msta->vif->phy->mt76->chandef.chan->band;
++	const u16 *mask = msta->vif->bitrate_mask.control[band].he_mcs;
+ 	int nss, max_nss = sta->rx_nss > 3 ? 4 : sta->rx_nss;
+-	u16 mcs_map;
+-
+-	switch (chandef->width) {
+-	case NL80211_CHAN_WIDTH_80P80:
+-		mcs_map = le16_to_cpu(sta->he_cap.he_mcs_nss_supp.rx_mcs_80p80);
+-		break;
+-	case NL80211_CHAN_WIDTH_160:
+-		mcs_map = le16_to_cpu(sta->he_cap.he_mcs_nss_supp.rx_mcs_160);
+-		break;
+-	default:
+-		mcs_map = le16_to_cpu(sta->he_cap.he_mcs_nss_supp.rx_mcs_80);
+-		break;
+-	}
+ 
+ 	for (nss = 0; nss < max_nss; nss++) {
+ 		int mcs;
+@@ -1345,11 +1333,9 @@ static void
+ mt7915_mcu_sta_he_tlv(struct sk_buff *skb, struct ieee80211_sta *sta,
+ 		      struct ieee80211_vif *vif)
+ {
+-	struct mt7915_sta *msta = (struct mt7915_sta *)sta->drv_priv;
+ 	struct mt7915_vif *mvif = (struct mt7915_vif *)vif->drv_priv;
+ 	struct ieee80211_he_cap_elem *elem = &sta->he_cap.he_cap_elem;
+-	enum nl80211_band band = msta->vif->phy->mt76->chandef.chan->band;
+-	const u16 *mcs_mask = msta->vif->bitrate_mask.control[band].he_mcs;
++	struct ieee80211_he_mcs_nss_supp mcs_map;
+ 	struct sta_rec_he *he;
+ 	struct tlv *tlv;
+ 	u32 cap = 0;
+@@ -1439,22 +1425,23 @@ mt7915_mcu_sta_he_tlv(struct sk_buff *skb, struct ieee80211_sta *sta,
+ 
+ 	he->he_cap = cpu_to_le32(cap);
+ 
++	mcs_map = sta->he_cap.he_mcs_nss_supp;
+ 	switch (sta->bandwidth) {
+ 	case IEEE80211_STA_RX_BW_160:
+ 		if (elem->phy_cap_info[0] &
+ 		    IEEE80211_HE_PHY_CAP0_CHANNEL_WIDTH_SET_80PLUS80_MHZ_IN_5G)
+ 			mt7915_mcu_set_sta_he_mcs(sta,
+ 						  &he->max_nss_mcs[CMD_HE_MCS_BW8080],
+-						  mcs_mask);
++						  le16_to_cpu(mcs_map.rx_mcs_80p80));
+ 
+ 		mt7915_mcu_set_sta_he_mcs(sta,
+ 					  &he->max_nss_mcs[CMD_HE_MCS_BW160],
+-					  mcs_mask);
++					  le16_to_cpu(mcs_map.rx_mcs_160));
+ 		fallthrough;
+ 	default:
+ 		mt7915_mcu_set_sta_he_mcs(sta,
+ 					  &he->max_nss_mcs[CMD_HE_MCS_BW80],
+-					  mcs_mask);
++					  le16_to_cpu(mcs_map.rx_mcs_80));
+ 		break;
  	}
  
 -- 
