@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 13048C4167E
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 10:51:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AED21C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 10:51:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235677AbiDEKwM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 06:52:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34412 "EHLO
+        id S229582AbiDEKxQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 06:53:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52676 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240288AbiDEIbv (ORCPT
+        with ESMTP id S240236AbiDEIbs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:31:51 -0400
+        Tue, 5 Apr 2022 04:31:48 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49B516B0BC;
-        Tue,  5 Apr 2022 01:23:59 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27988101F7;
+        Tue,  5 Apr 2022 01:23:41 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C6C74B81BC0;
-        Tue,  5 Apr 2022 08:23:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3C7BEC385A1;
-        Tue,  5 Apr 2022 08:23:57 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E7CB2B81BCE;
+        Tue,  5 Apr 2022 08:23:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3C94CC385C4;
+        Tue,  5 Apr 2022 08:23:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649147037;
-        bh=ikSxT9pj5gq8C7xxZTzQaN50E1eobY1Xe6l3yY+D4Jw=;
+        s=korg; t=1649147015;
+        bh=BBrYdWG++MCLrSKzmXHsgOOi+WKZDpUEzM+K/Ckpuzk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KgpUJ/DhbLhjwySXuRpHV60vvo5kuhqS/iwxbGUrsG+ZZ04oWAn2wY8iRQxZlUJSf
-         OWSzl7LCT+OgjyGG0YoXOBSCiIXPgqicEopQbfdLuhfvjfjHxqi/ET+YL+kO7ObeJZ
-         1yDhnn4AXE8ruhARUKvGgEgWZ1o7wt+13Jq2xaBk=
+        b=PkCzIuP4sYMtMQmiX2iFqiD7ulVI5KKFuBhnd/qvO7ewpGCFNg2XsXf/e6uS0jBnr
+         hwXb0e5ATk2ntXgVZVuDujj5uhS7qKSJEcmAkZjgdtRoFO0IRp1GvBfDx8zpgtet5u
+         CiBbdfYv1g47UzT3Yf+mB6O8A9+2vlYm0DlY70Qk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>,
-        Anders Roxell <anders.roxell@linaro.org>,
-        Michael Ellerman <mpe@ellerman.id.au>
-Subject: [PATCH 5.17 0962/1126] powerpc/lib/sstep: Fix sthcx instruction
-Date:   Tue,  5 Apr 2022 09:28:29 +0200
-Message-Id: <20220405070435.744821540@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Himanshu Madhani <himanshu.madhani@oracle.com>,
+        Quinn Tran <qutran@marvell.com>,
+        Nilesh Javali <njavali@marvell.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>
+Subject: [PATCH 5.17 0972/1126] scsi: qla2xxx: Fix stuck session in gpdb
+Date:   Tue,  5 Apr 2022 09:28:39 +0200
+Message-Id: <20220405070436.032980844@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -49,35 +51,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Anders Roxell <anders.roxell@linaro.org>
+From: Quinn Tran <qutran@marvell.com>
 
-commit a633cb1edddaa643fadc70abc88f89a408fa834a upstream.
+commit 725d3a0d31a51c0debf970011e05f585e805165b upstream.
 
-Looks like there been a copy paste mistake when added the instruction
-'stbcx' twice and one was probably meant to be 'sthcx'. Changing to
-'sthcx' from 'stbcx'.
+Fix stuck sessions in get port database. When a thread is in the process of
+re-establishing a session, a flag is set to prevent multiple threads /
+triggers from doing the same task. This flag was left on, where any attempt
+to relogin was locked out. Clear this flag, if the attempt has failed.
 
-Fixes: 350779a29f11 ("powerpc: Handle most loads and stores in instruction emulation code")
-Cc: stable@vger.kernel.org # v4.14+
-Reported-by: Arnd Bergmann <arnd@arndb.de>
-Signed-off-by: Anders Roxell <anders.roxell@linaro.org>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20220224162215.3406642-1-anders.roxell@linaro.org
+Link: https://lore.kernel.org/r/20220110050218.3958-4-njavali@marvell.com
+Cc: stable@vger.kernel.org
+Reviewed-by: Himanshu Madhani <himanshu.madhani@oracle.com>
+Signed-off-by: Quinn Tran <qutran@marvell.com>
+Signed-off-by: Nilesh Javali <njavali@marvell.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/powerpc/lib/sstep.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/scsi/qla2xxx/qla_init.c |    6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
---- a/arch/powerpc/lib/sstep.c
-+++ b/arch/powerpc/lib/sstep.c
-@@ -3389,7 +3389,7 @@ int emulate_loadstore(struct pt_regs *re
- 			__put_user_asmx(op->val, ea, err, "stbcx.", cr);
- 			break;
- 		case 2:
--			__put_user_asmx(op->val, ea, err, "stbcx.", cr);
-+			__put_user_asmx(op->val, ea, err, "sthcx.", cr);
- 			break;
- #endif
- 		case 4:
+--- a/drivers/scsi/qla2xxx/qla_init.c
++++ b/drivers/scsi/qla2xxx/qla_init.c
+@@ -1332,9 +1332,9 @@ int qla24xx_async_gpdb(struct scsi_qla_h
+ 	if (!vha->flags.online || (fcport->flags & FCF_ASYNC_SENT) ||
+ 	    fcport->loop_id == FC_NO_LOOP_ID) {
+ 		ql_log(ql_log_warn, vha, 0xffff,
+-		    "%s: %8phC - not sending command.\n",
+-		    __func__, fcport->port_name);
+-		return rval;
++		    "%s: %8phC online %d flags %x - not sending command.\n",
++		    __func__, fcport->port_name, vha->flags.online, fcport->flags);
++		goto done;
+ 	}
+ 
+ 	sp = qla2x00_get_sp(vha, fcport, GFP_KERNEL);
 
 
