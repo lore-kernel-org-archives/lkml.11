@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 93F32C41535
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 11:04:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1DBECC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 11:04:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245338AbiDEK7a (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 06:59:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53000 "EHLO
+        id S1343800AbiDEK7i (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 06:59:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58354 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239142AbiDEIbL (ORCPT
+        with ESMTP id S242291AbiDEIhS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:31:11 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6ED534EA1A;
-        Tue,  5 Apr 2022 01:23:16 -0700 (PDT)
+        Tue, 5 Apr 2022 04:37:18 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDB151CB13;
+        Tue,  5 Apr 2022 01:32:39 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D840CB81B13;
-        Tue,  5 Apr 2022 08:23:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 44D8FC385A0;
-        Tue,  5 Apr 2022 08:23:13 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8CF7960B0E;
+        Tue,  5 Apr 2022 08:32:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 97857C385A0;
+        Tue,  5 Apr 2022 08:32:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649146993;
-        bh=/P0Gworf+MZWqn8uVYF0WQI5NDcHE43hF8WNqe7l7NA=;
+        s=korg; t=1649147559;
+        bh=u8cclAT3USm2ckXvRzJKzZhIhuNCejG+lU+PnBp3YA8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jmmwv83QljcgOXO7+nExpckgqmwrqgmua3szNWECAk0yL9rfOOknsfS1YX8XEOqV5
-         U2814sbpZvHNGaPMfXiTRIaF7rL+0RYMJYO6WKIWP4+6737WPa7ogiDYWuRNxoSSq2
-         lgBgnv2zFQSQQ5cUX2S9RWgy8mOcig16S8+C1THI=
+        b=RuDP2zcUy3V4AmS2EW2CcDXknhjYO0iCcyUw9rP+ucBMZMZZV0z3trIF3ZD4q7cWX
+         TKGdVbnB7R5Zv7lyqI6ajG/nYGGDarYKBR5yzi301jLZD15G5CllpVLd1v4iXGkBNd
+         g9qYzDqJHyAXGUzZfNc3GSlooEq0tfYt1xQcTCVA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
-        Christoph Hellwig <hch@lst.de>,
-        Dinh Nguyen <dinguyen@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0925/1126] uaccess: fix type mismatch warnings from access_ok()
-Date:   Tue,  5 Apr 2022 09:27:52 +0200
-Message-Id: <20220405070434.670791292@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Alexander Usyskin <alexander.usyskin@intel.com>,
+        Tomas Winkler <tomas.winkler@intel.com>
+Subject: [PATCH 5.16 0040/1017] mei: avoid iterator usage outside of list_for_each_entry
+Date:   Tue,  5 Apr 2022 09:15:53 +0200
+Message-Id: <20220405070355.369810367@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
-References: <20220405070407.513532867@linuxfoundation.org>
+In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
+References: <20220405070354.155796697@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,232 +50,78 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Arnd Bergmann <arnd@arndb.de>
+From: Alexander Usyskin <alexander.usyskin@intel.com>
 
-[ Upstream commit 23fc539e81295b14b50c6ccc5baeb4f3d59d822d ]
+commit c10187b1c5ebb8681ca467ab7b0ded5ea415d258 upstream.
 
-On some architectures, access_ok() does not do any argument type
-checking, so replacing the definition with a generic one causes
-a few warnings for harmless issues that were never caught before.
+Usage of the iterator outside of the list_for_each_entry
+is considered harmful. https://lkml.org/lkml/2022/2/17/1032
 
-Fix the ones that I found either through my own test builds or
-that were reported by the 0-day bot.
+Do not reference the loop variable outside of the loop,
+by rearranging the orders of execution.
+Instead of performing search loop and checking outside the loop
+if the end of the list was hit and no matching element was found,
+the execution is performed inside the loop upon a successful match
+followed by a goto statement to the next step,
+therefore no condition has to be performed after the loop has ended.
 
-Reported-by: kernel test robot <lkp@intel.com>
-Reviewed-by: Christoph Hellwig <hch@lst.de>
-Acked-by: Dinh Nguyen <dinguyen@kernel.org>
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Cc: <stable@vger.kernel.org>
+Signed-off-by: Alexander Usyskin <alexander.usyskin@intel.com>
+Signed-off-by: Tomas Winkler <tomas.winkler@intel.com>
+Link: https://lore.kernel.org/r/20220308095926.300412-1-tomas.winkler@intel.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arc/kernel/process.c          |  2 +-
- arch/arm/kernel/swp_emulate.c      |  2 +-
- arch/arm/kernel/traps.c            |  2 +-
- arch/csky/kernel/perf_callchain.c  |  2 +-
- arch/csky/kernel/signal.c          |  2 +-
- arch/nios2/kernel/signal.c         | 20 +++++++++++---------
- arch/powerpc/lib/sstep.c           |  4 ++--
- arch/riscv/kernel/perf_callchain.c |  4 ++--
- arch/sparc/kernel/signal_32.c      |  2 +-
- lib/test_lockup.c                  |  4 ++--
- 10 files changed, 23 insertions(+), 21 deletions(-)
+ drivers/misc/mei/interrupt.c |   35 +++++++++++++++--------------------
+ 1 file changed, 15 insertions(+), 20 deletions(-)
 
-diff --git a/arch/arc/kernel/process.c b/arch/arc/kernel/process.c
-index 8e90052f6f05..5f7f5aab361f 100644
---- a/arch/arc/kernel/process.c
-+++ b/arch/arc/kernel/process.c
-@@ -43,7 +43,7 @@ SYSCALL_DEFINE0(arc_gettls)
- 	return task_thread_info(current)->thr_ptr;
- }
+--- a/drivers/misc/mei/interrupt.c
++++ b/drivers/misc/mei/interrupt.c
+@@ -424,31 +424,26 @@ int mei_irq_read_handler(struct mei_devi
+ 	list_for_each_entry(cl, &dev->file_list, link) {
+ 		if (mei_cl_hbm_equal(cl, mei_hdr)) {
+ 			cl_dbg(dev, cl, "got a message\n");
+-			break;
++			ret = mei_cl_irq_read_msg(cl, mei_hdr, meta_hdr, cmpl_list);
++			goto reset_slots;
+ 		}
+ 	}
  
--SYSCALL_DEFINE3(arc_usr_cmpxchg, int *, uaddr, int, expected, int, new)
-+SYSCALL_DEFINE3(arc_usr_cmpxchg, int __user *, uaddr, int, expected, int, new)
- {
- 	struct pt_regs *regs = current_pt_regs();
- 	u32 uval;
-diff --git a/arch/arm/kernel/swp_emulate.c b/arch/arm/kernel/swp_emulate.c
-index 6166ba38bf99..b74bfcf94fb1 100644
---- a/arch/arm/kernel/swp_emulate.c
-+++ b/arch/arm/kernel/swp_emulate.c
-@@ -195,7 +195,7 @@ static int swp_handler(struct pt_regs *regs, unsigned int instr)
- 		 destreg, EXTRACT_REG_NUM(instr, RT2_OFFSET), data);
+ 	/* if no recipient cl was found we assume corrupted header */
+-	if (&cl->link == &dev->file_list) {
+-		/* A message for not connected fixed address clients
+-		 * should be silently discarded
+-		 * On power down client may be force cleaned,
+-		 * silently discard such messages
+-		 */
+-		if (hdr_is_fixed(mei_hdr) ||
+-		    dev->dev_state == MEI_DEV_POWER_DOWN) {
+-			mei_irq_discard_msg(dev, mei_hdr, mei_hdr->length);
+-			ret = 0;
+-			goto reset_slots;
+-		}
+-		dev_err(dev->dev, "no destination client found 0x%08X\n",
+-				dev->rd_msg_hdr[0]);
+-		ret = -EBADMSG;
+-		goto end;
++	/* A message for not connected fixed address clients
++	 * should be silently discarded
++	 * On power down client may be force cleaned,
++	 * silently discard such messages
++	 */
++	if (hdr_is_fixed(mei_hdr) ||
++	    dev->dev_state == MEI_DEV_POWER_DOWN) {
++		mei_irq_discard_msg(dev, mei_hdr, mei_hdr->length);
++		ret = 0;
++		goto reset_slots;
+ 	}
+-
+-	ret = mei_cl_irq_read_msg(cl, mei_hdr, meta_hdr, cmpl_list);
+-
++	dev_err(dev->dev, "no destination client found 0x%08X\n", dev->rd_msg_hdr[0]);
++	ret = -EBADMSG;
++	goto end;
  
- 	/* Check access in reasonable access range for both SWP and SWPB */
--	if (!access_ok((address & ~3), 4)) {
-+	if (!access_ok((void __user *)(address & ~3), 4)) {
- 		pr_debug("SWP{B} emulation: access to %p not allowed!\n",
- 			 (void *)address);
- 		res = -EFAULT;
-diff --git a/arch/arm/kernel/traps.c b/arch/arm/kernel/traps.c
-index cae4a748811f..5d58aee24087 100644
---- a/arch/arm/kernel/traps.c
-+++ b/arch/arm/kernel/traps.c
-@@ -577,7 +577,7 @@ do_cache_op(unsigned long start, unsigned long end, int flags)
- 	if (end < start || flags)
- 		return -EINVAL;
- 
--	if (!access_ok(start, end - start))
-+	if (!access_ok((void __user *)start, end - start))
- 		return -EFAULT;
- 
- 	return __do_cache_op(start, end);
-diff --git a/arch/csky/kernel/perf_callchain.c b/arch/csky/kernel/perf_callchain.c
-index 92057de08f4f..1612f4354087 100644
---- a/arch/csky/kernel/perf_callchain.c
-+++ b/arch/csky/kernel/perf_callchain.c
-@@ -49,7 +49,7 @@ static unsigned long user_backtrace(struct perf_callchain_entry_ctx *entry,
- {
- 	struct stackframe buftail;
- 	unsigned long lr = 0;
--	unsigned long *user_frame_tail = (unsigned long *)fp;
-+	unsigned long __user *user_frame_tail = (unsigned long __user *)fp;
- 
- 	/* Check accessibility of one struct frame_tail beyond */
- 	if (!access_ok(user_frame_tail, sizeof(buftail)))
-diff --git a/arch/csky/kernel/signal.c b/arch/csky/kernel/signal.c
-index c7b763d2f526..8867ddf3e6c7 100644
---- a/arch/csky/kernel/signal.c
-+++ b/arch/csky/kernel/signal.c
-@@ -136,7 +136,7 @@ static inline void __user *get_sigframe(struct ksignal *ksig,
- static int
- setup_rt_frame(struct ksignal *ksig, sigset_t *set, struct pt_regs *regs)
- {
--	struct rt_sigframe *frame;
-+	struct rt_sigframe __user *frame;
- 	int err = 0;
- 
- 	frame = get_sigframe(ksig, regs, sizeof(*frame));
-diff --git a/arch/nios2/kernel/signal.c b/arch/nios2/kernel/signal.c
-index 2009ae2d3c3b..386e46443b60 100644
---- a/arch/nios2/kernel/signal.c
-+++ b/arch/nios2/kernel/signal.c
-@@ -36,10 +36,10 @@ struct rt_sigframe {
- 
- static inline int rt_restore_ucontext(struct pt_regs *regs,
- 					struct switch_stack *sw,
--					struct ucontext *uc, int *pr2)
-+					struct ucontext __user *uc, int *pr2)
- {
- 	int temp;
--	unsigned long *gregs = uc->uc_mcontext.gregs;
-+	unsigned long __user *gregs = uc->uc_mcontext.gregs;
- 	int err;
- 
- 	/* Always make any pending restarted system calls return -EINTR */
-@@ -102,10 +102,11 @@ asmlinkage int do_rt_sigreturn(struct switch_stack *sw)
- {
- 	struct pt_regs *regs = (struct pt_regs *)(sw + 1);
- 	/* Verify, can we follow the stack back */
--	struct rt_sigframe *frame = (struct rt_sigframe *) regs->sp;
-+	struct rt_sigframe __user *frame;
- 	sigset_t set;
- 	int rval;
- 
-+	frame = (struct rt_sigframe __user *) regs->sp;
- 	if (!access_ok(frame, sizeof(*frame)))
- 		goto badframe;
- 
-@@ -124,10 +125,10 @@ asmlinkage int do_rt_sigreturn(struct switch_stack *sw)
- 	return 0;
- }
- 
--static inline int rt_setup_ucontext(struct ucontext *uc, struct pt_regs *regs)
-+static inline int rt_setup_ucontext(struct ucontext __user *uc, struct pt_regs *regs)
- {
- 	struct switch_stack *sw = (struct switch_stack *)regs - 1;
--	unsigned long *gregs = uc->uc_mcontext.gregs;
-+	unsigned long __user *gregs = uc->uc_mcontext.gregs;
- 	int err = 0;
- 
- 	err |= __put_user(MCONTEXT_VERSION, &uc->uc_mcontext.version);
-@@ -162,8 +163,9 @@ static inline int rt_setup_ucontext(struct ucontext *uc, struct pt_regs *regs)
- 	return err;
- }
- 
--static inline void *get_sigframe(struct ksignal *ksig, struct pt_regs *regs,
--				 size_t frame_size)
-+static inline void __user *get_sigframe(struct ksignal *ksig,
-+					struct pt_regs *regs,
-+					size_t frame_size)
- {
- 	unsigned long usp;
- 
-@@ -174,13 +176,13 @@ static inline void *get_sigframe(struct ksignal *ksig, struct pt_regs *regs,
- 	usp = sigsp(usp, ksig);
- 
- 	/* Verify, is it 32 or 64 bit aligned */
--	return (void *)((usp - frame_size) & -8UL);
-+	return (void __user *)((usp - frame_size) & -8UL);
- }
- 
- static int setup_rt_frame(struct ksignal *ksig, sigset_t *set,
- 			  struct pt_regs *regs)
- {
--	struct rt_sigframe *frame;
-+	struct rt_sigframe __user *frame;
- 	int err = 0;
- 
- 	frame = get_sigframe(ksig, regs, sizeof(*frame));
-diff --git a/arch/powerpc/lib/sstep.c b/arch/powerpc/lib/sstep.c
-index bd3734d5be89..5ed88fbee0db 100644
---- a/arch/powerpc/lib/sstep.c
-+++ b/arch/powerpc/lib/sstep.c
-@@ -112,9 +112,9 @@ static nokprobe_inline long address_ok(struct pt_regs *regs,
- {
- 	if (!user_mode(regs))
- 		return 1;
--	if (__access_ok(ea, nb))
-+	if (access_ok((void __user *)ea, nb))
- 		return 1;
--	if (__access_ok(ea, 1))
-+	if (access_ok((void __user *)ea, 1))
- 		/* Access overlaps the end of the user region */
- 		regs->dar = TASK_SIZE_MAX - 1;
- 	else
-diff --git a/arch/riscv/kernel/perf_callchain.c b/arch/riscv/kernel/perf_callchain.c
-index 7aca6a238173..3348a61de7d9 100644
---- a/arch/riscv/kernel/perf_callchain.c
-+++ b/arch/riscv/kernel/perf_callchain.c
-@@ -15,8 +15,8 @@ static unsigned long user_backtrace(struct perf_callchain_entry_ctx *entry,
- {
- 	struct stackframe buftail;
- 	unsigned long ra = 0;
--	unsigned long *user_frame_tail =
--			(unsigned long *)(fp - sizeof(struct stackframe));
-+	unsigned long __user *user_frame_tail =
-+		(unsigned long __user *)(fp - sizeof(struct stackframe));
- 
- 	/* Check accessibility of one struct frame_tail beyond */
- 	if (!access_ok(user_frame_tail, sizeof(buftail)))
-diff --git a/arch/sparc/kernel/signal_32.c b/arch/sparc/kernel/signal_32.c
-index ffab16369bea..74f80443b195 100644
---- a/arch/sparc/kernel/signal_32.c
-+++ b/arch/sparc/kernel/signal_32.c
-@@ -65,7 +65,7 @@ struct rt_signal_frame {
-  */
- static inline bool invalid_frame_pointer(void __user *fp, int fplen)
- {
--	if ((((unsigned long) fp) & 15) || !__access_ok((unsigned long)fp, fplen))
-+	if ((((unsigned long) fp) & 15) || !access_ok(fp, fplen))
- 		return true;
- 
- 	return false;
-diff --git a/lib/test_lockup.c b/lib/test_lockup.c
-index 906b598740a7..6a0f329a794a 100644
---- a/lib/test_lockup.c
-+++ b/lib/test_lockup.c
-@@ -417,8 +417,8 @@ static bool test_kernel_ptr(unsigned long addr, int size)
- 		return false;
- 
- 	/* should be at least readable kernel address */
--	if (access_ok(ptr, 1) ||
--	    access_ok(ptr + size - 1, 1) ||
-+	if (access_ok((void __user *)ptr, 1) ||
-+	    access_ok((void __user *)ptr + size - 1, 1) ||
- 	    get_kernel_nofault(buf, ptr) ||
- 	    get_kernel_nofault(buf, ptr + size - 1)) {
- 		pr_err("invalid kernel ptr: %#lx\n", addr);
--- 
-2.34.1
-
+ reset_slots:
+ 	/* reset the number of slots and header */
 
 
