@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D53CC433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D562C433FE
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 14:32:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1387671AbiDEOcl (ORCPT
+        id S1387692AbiDEOco (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 10:32:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40698 "EHLO
+        Tue, 5 Apr 2022 10:32:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55270 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237179AbiDEJey (ORCPT
+        with ESMTP id S238856AbiDEJdC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:34:54 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85C6E888C5;
-        Tue,  5 Apr 2022 02:24:12 -0700 (PDT)
+        Tue, 5 Apr 2022 05:33:02 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73C48B48;
+        Tue,  5 Apr 2022 02:20:27 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1038161674;
-        Tue,  5 Apr 2022 09:24:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 219EBC385A4;
-        Tue,  5 Apr 2022 09:24:10 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0EE3E6144D;
+        Tue,  5 Apr 2022 09:20:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1D505C385A0;
+        Tue,  5 Apr 2022 09:20:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649150651;
-        bh=CivaMEJcjGKzvh+1Jmorpx4K3eBk7/KE099dJ8YzTMc=;
+        s=korg; t=1649150426;
+        bh=Os+qxn1DhxDjshDTdAdlcK8Fy8Mz/bgvQq9b255khpM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hM3NgalpK7kdsiQijBdvjhb2EHOudbEk+wLNBAFIyVBK3DVrj/emglQwKtLkjjQvQ
-         Dn/t0hWYiKr9beQYggb5/54LHhiu3/RaxmxCZ25RwzZSC1p06NW0149h7tPs8H57S9
-         Qw0UCq52iX8x/wQJ3whaXPpSJhGzZGEWQ/aBNtl8=
+        b=E1TzdodME7QPIUeOwJwneS9vpA7DBrLZ1K4Dg//Nvm4PDYXCLMk89GluQ9ML8Ayvj
+         lQdaimOGirySgQ0C2nd6oJJcFoD+0knkdqr1zntLCARHd+ZAA5ud6Nak8sbS9QzjU0
+         e+FVCslZM80hTAEIoebSTMB1eEkf1pMtElDKOBGA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Marc Zyngier <maz@kernel.org>,
-        Nishanth Menon <nm@ti.com>
-Subject: [PATCH 5.15 124/913] arm64: dts: ti: k3-am65: Fix gic-v3 compatible regs
-Date:   Tue,  5 Apr 2022 09:19:46 +0200
-Message-Id: <20220405070343.544601532@linuxfoundation.org>
+        stable@vger.kernel.org, stable@kernel.org,
+        Jann Horn <jannh@google.com>,
+        "Eric W. Biederman" <ebiederm@xmission.com>
+Subject: [PATCH 5.15 052/913] ptrace: Check PTRACE_O_SUSPEND_SECCOMP permission on PTRACE_SEIZE
+Date:   Tue,  5 Apr 2022 09:18:34 +0200
+Message-Id: <20220405070341.379725350@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
 References: <20220405070339.801210740@linuxfoundation.org>
@@ -49,59 +50,105 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nishanth Menon <nm@ti.com>
+From: Jann Horn <jannh@google.com>
 
-commit 8cae268b70f387ff9e697ccd62fb2384079124e7 upstream.
+commit ee1fee900537b5d9560e9f937402de5ddc8412f3 upstream.
 
-Though GIC ARE option is disabled for no GIC-v2 compatibility,
-Cortex-A53 is free to implement the CPU interface as long as it
-communicates with the GIC using the stream protocol. This requires
-that the SoC integration mark out the PERIPHBASE[1] as reserved area
-within the SoC. See longer discussion in [2] for further information.
+Setting PTRACE_O_SUSPEND_SECCOMP is supposed to be a highly privileged
+operation because it allows the tracee to completely bypass all seccomp
+filters on kernels with CONFIG_CHECKPOINT_RESTORE=y. It is only supposed to
+be settable by a process with global CAP_SYS_ADMIN, and only if that
+process is not subject to any seccomp filters at all.
 
-Update the GIC register map to indicate offsets from PERIPHBASE based
-on [3]. Without doing this, systems like kvm will not function with
-gic-v2 emulation.
+However, while these permission checks were done on the PTRACE_SETOPTIONS
+path, they were missing on the PTRACE_SEIZE path, which also sets
+user-specified ptrace flags.
 
-[1] https://developer.arm.com/documentation/ddi0500/e/system-control/aarch64-register-descriptions/configuration-base-address-register--el1
-[2] https://lore.kernel.org/all/87k0e0tirw.wl-maz@kernel.org/
-[3] https://developer.arm.com/documentation/ddi0500/e/generic-interrupt-controller-cpu-interface/gic-programmers-model/memory-map
+Move the permissions checks out into a helper function and let both
+ptrace_attach() and ptrace_setoptions() call it.
 
-Cc: stable@vger.kernel.org # 5.10+
-Fixes: ea47eed33a3f ("arm64: dts: ti: Add Support for AM654 SoC")
-Reported-by: Marc Zyngier <maz@kernel.org>
-Signed-off-by: Nishanth Menon <nm@ti.com>
-Acked-by: Marc Zyngier <maz@kernel.org>
-Link: https://lore.kernel.org/r/20220215201008.15235-2-nm@ti.com
+Cc: stable@kernel.org
+Fixes: 13c4a90119d2 ("seccomp: add ptrace options for suspend/resume")
+Signed-off-by: Jann Horn <jannh@google.com>
+Link: https://lkml.kernel.org/r/20220319010838.1386861-1-jannh@google.com
+Signed-off-by: Eric W. Biederman <ebiederm@xmission.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm64/boot/dts/ti/k3-am65-main.dtsi |    5 ++++-
- arch/arm64/boot/dts/ti/k3-am65.dtsi      |    1 +
- 2 files changed, 5 insertions(+), 1 deletion(-)
+ kernel/ptrace.c |   47 ++++++++++++++++++++++++++++++++---------------
+ 1 file changed, 32 insertions(+), 15 deletions(-)
 
---- a/arch/arm64/boot/dts/ti/k3-am65-main.dtsi
-+++ b/arch/arm64/boot/dts/ti/k3-am65-main.dtsi
-@@ -35,7 +35,10 @@
- 		#interrupt-cells = <3>;
- 		interrupt-controller;
- 		reg = <0x00 0x01800000 0x00 0x10000>,	/* GICD */
--		      <0x00 0x01880000 0x00 0x90000>;	/* GICR */
-+		      <0x00 0x01880000 0x00 0x90000>,	/* GICR */
-+		      <0x00 0x6f000000 0x00 0x2000>,	/* GICC */
-+		      <0x00 0x6f010000 0x00 0x1000>,	/* GICH */
-+		      <0x00 0x6f020000 0x00 0x2000>;	/* GICV */
- 		/*
- 		 * vcpumntirq:
- 		 * virtual CPU interface maintenance interrupt
---- a/arch/arm64/boot/dts/ti/k3-am65.dtsi
-+++ b/arch/arm64/boot/dts/ti/k3-am65.dtsi
-@@ -84,6 +84,7 @@
- 			 <0x00 0x46000000 0x00 0x46000000 0x00 0x00200000>,
- 			 <0x00 0x47000000 0x00 0x47000000 0x00 0x00068400>,
- 			 <0x00 0x50000000 0x00 0x50000000 0x00 0x8000000>,
-+			 <0x00 0x6f000000 0x00 0x6f000000 0x00 0x00310000>, /* A53 PERIPHBASE */
- 			 <0x00 0x70000000 0x00 0x70000000 0x00 0x200000>,
- 			 <0x05 0x00000000 0x05 0x00000000 0x01 0x0000000>,
- 			 <0x07 0x00000000 0x07 0x00000000 0x01 0x0000000>;
+--- a/kernel/ptrace.c
++++ b/kernel/ptrace.c
+@@ -371,6 +371,26 @@ bool ptrace_may_access(struct task_struc
+ 	return !err;
+ }
+ 
++static int check_ptrace_options(unsigned long data)
++{
++	if (data & ~(unsigned long)PTRACE_O_MASK)
++		return -EINVAL;
++
++	if (unlikely(data & PTRACE_O_SUSPEND_SECCOMP)) {
++		if (!IS_ENABLED(CONFIG_CHECKPOINT_RESTORE) ||
++		    !IS_ENABLED(CONFIG_SECCOMP))
++			return -EINVAL;
++
++		if (!capable(CAP_SYS_ADMIN))
++			return -EPERM;
++
++		if (seccomp_mode(&current->seccomp) != SECCOMP_MODE_DISABLED ||
++		    current->ptrace & PT_SUSPEND_SECCOMP)
++			return -EPERM;
++	}
++	return 0;
++}
++
+ static int ptrace_attach(struct task_struct *task, long request,
+ 			 unsigned long addr,
+ 			 unsigned long flags)
+@@ -382,8 +402,16 @@ static int ptrace_attach(struct task_str
+ 	if (seize) {
+ 		if (addr != 0)
+ 			goto out;
++		/*
++		 * This duplicates the check in check_ptrace_options() because
++		 * ptrace_attach() and ptrace_setoptions() have historically
++		 * used different error codes for unknown ptrace options.
++		 */
+ 		if (flags & ~(unsigned long)PTRACE_O_MASK)
+ 			goto out;
++		retval = check_ptrace_options(flags);
++		if (retval)
++			return retval;
+ 		flags = PT_PTRACED | PT_SEIZED | (flags << PT_OPT_FLAG_SHIFT);
+ 	} else {
+ 		flags = PT_PTRACED;
+@@ -656,22 +684,11 @@ int ptrace_writedata(struct task_struct
+ static int ptrace_setoptions(struct task_struct *child, unsigned long data)
+ {
+ 	unsigned flags;
++	int ret;
+ 
+-	if (data & ~(unsigned long)PTRACE_O_MASK)
+-		return -EINVAL;
+-
+-	if (unlikely(data & PTRACE_O_SUSPEND_SECCOMP)) {
+-		if (!IS_ENABLED(CONFIG_CHECKPOINT_RESTORE) ||
+-		    !IS_ENABLED(CONFIG_SECCOMP))
+-			return -EINVAL;
+-
+-		if (!capable(CAP_SYS_ADMIN))
+-			return -EPERM;
+-
+-		if (seccomp_mode(&current->seccomp) != SECCOMP_MODE_DISABLED ||
+-		    current->ptrace & PT_SUSPEND_SECCOMP)
+-			return -EPERM;
+-	}
++	ret = check_ptrace_options(data);
++	if (ret)
++		return ret;
+ 
+ 	/* Avoid intermediate state when all opts are cleared */
+ 	flags = child->ptrace;
 
 
