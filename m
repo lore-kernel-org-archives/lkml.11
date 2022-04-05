@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E7EA5C38A02
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:01:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0840AC38A04
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:01:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236434AbiDEICP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 04:02:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56882 "EHLO
+        id S236453AbiDEICS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 04:02:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57244 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233104AbiDEHwH (ORCPT
+        with ESMTP id S233065AbiDEHwF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 03:52:07 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7020B9A9BC;
-        Tue,  5 Apr 2022 00:48:27 -0700 (PDT)
+        Tue, 5 Apr 2022 03:52:05 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B3E79A98F;
+        Tue,  5 Apr 2022 00:48:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2C5A6B81B92;
-        Tue,  5 Apr 2022 07:48:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 768E3C340EE;
-        Tue,  5 Apr 2022 07:48:24 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 02591B81B18;
+        Tue,  5 Apr 2022 07:48:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 64611C340EE;
+        Tue,  5 Apr 2022 07:48:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649144904;
-        bh=7yAJT0P2zKjYM/wcoGY9vt7JST9ygM79lEQeGJgC5PE=;
+        s=korg; t=1649144893;
+        bh=tvO/3D6CFdPDaHRXYaUegP0jGzL9pB/dr5JAGUtgmak=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pG/keVLK3iWIHvuVkaWWSGWLjERWet3AJ6sGAiuYaq3aDhRtPorCsC4k/ueYr6nFv
-         uWlDHufyaU+xCB+LLPdzbXthhAJ5Wyf1xiqtg7s8luNPgTJKxkYFKrA3pATt9R/H3v
-         qSaAKl7a9O0x8EdY3Z/kxfZyHKtsqoGLAf01+P94=
+        b=0PqQ+2HC16ceEL1kgQL08M/L7V+36Q/Bm/fiH4MY9mTZy72TWYSm+FjwOCiJbcewR
+         R4l8f97txnyyqp5vxcFVPj/CK9aqi5VAGAftJgmO8xMQ9s20EXPa4Kt8dEM8jsPdEg
+         p2277MCj5bjZxEFyZ9xf5NLqOX23T4H6lfduF1UM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Shijith Thotton <sthotton@marvell.com>,
         Herbert Xu <herbert@gondor.apana.org.au>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0212/1126] crypto: octeontx2 - remove CONFIG_DM_CRYPT check
-Date:   Tue,  5 Apr 2022 09:15:59 +0200
-Message-Id: <20220405070413.832117178@linuxfoundation.org>
+Subject: [PATCH 5.17 0208/1126] crypto: octeontx2 - select CONFIG_NET_DEVLINK
+Date:   Tue,  5 Apr 2022 09:15:55 +0200
+Message-Id: <20220405070413.714881700@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -51,63 +51,38 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Shijith Thotton <sthotton@marvell.com>
 
-[ Upstream commit 2d841af23ae8f398c85dd1ff2dc24b5ec8ba4569 ]
+[ Upstream commit 85872d1a6f38d133133784c8027d25d1c5328f4f ]
 
-No issues were found while using the driver with dm-crypt enabled. So
-CONFIG_DM_CRYPT check in the driver can be removed.
+OcteonTX2 CPT driver will fail to link without devlink support.
 
-This also fixes the NULL pointer dereference in driver release if
-CONFIG_DM_CRYPT is enabled.
+aarch64-linux-gnu-ld: otx2_cpt_devlink.o: in function `otx2_cpt_dl_egrp_delete':
+otx2_cpt_devlink.c:18: undefined reference to `devlink_priv'
+aarch64-linux-gnu-ld: otx2_cpt_devlink.o: in function `otx2_cpt_dl_egrp_create':
+otx2_cpt_devlink.c:9: undefined reference to `devlink_priv'
+aarch64-linux-gnu-ld: otx2_cpt_devlink.o: in function `otx2_cpt_dl_uc_info':
+otx2_cpt_devlink.c:27: undefined reference to `devlink_priv'
 
-...
-Unable to handle kernel NULL pointer dereference at virtual address 0000000000000008
-...
-Call trace:
- crypto_unregister_alg+0x68/0xfc
- crypto_unregister_skciphers+0x44/0x60
- otx2_cpt_crypto_exit+0x100/0x1a0
- otx2_cptvf_remove+0xf8/0x200
- pci_device_remove+0x3c/0xd4
- __device_release_driver+0x188/0x234
- device_release_driver+0x2c/0x4c
-...
+Fixes: fed8f4d5f946 ("crypto: octeontx2 - parameters for custom engine groups")
 
-Fixes: 6f03f0e8b6c8 ("crypto: octeontx2 - register with linux crypto framework")
 Signed-off-by: Shijith Thotton <sthotton@marvell.com>
 Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../crypto/marvell/octeontx2/otx2_cptvf_algs.c  | 17 +++++++----------
- 1 file changed, 7 insertions(+), 10 deletions(-)
+ drivers/crypto/marvell/Kconfig | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/crypto/marvell/octeontx2/otx2_cptvf_algs.c b/drivers/crypto/marvell/octeontx2/otx2_cptvf_algs.c
-index 2748a3327e39..f8f8542ce3e4 100644
---- a/drivers/crypto/marvell/octeontx2/otx2_cptvf_algs.c
-+++ b/drivers/crypto/marvell/octeontx2/otx2_cptvf_algs.c
-@@ -1634,16 +1634,13 @@ static inline int cpt_register_algs(void)
- {
- 	int i, err = 0;
- 
--	if (!IS_ENABLED(CONFIG_DM_CRYPT)) {
--		for (i = 0; i < ARRAY_SIZE(otx2_cpt_skciphers); i++)
--			otx2_cpt_skciphers[i].base.cra_flags &=
--							~CRYPTO_ALG_DEAD;
--
--		err = crypto_register_skciphers(otx2_cpt_skciphers,
--						ARRAY_SIZE(otx2_cpt_skciphers));
--		if (err)
--			return err;
--	}
-+	for (i = 0; i < ARRAY_SIZE(otx2_cpt_skciphers); i++)
-+		otx2_cpt_skciphers[i].base.cra_flags &= ~CRYPTO_ALG_DEAD;
-+
-+	err = crypto_register_skciphers(otx2_cpt_skciphers,
-+					ARRAY_SIZE(otx2_cpt_skciphers));
-+	if (err)
-+		return err;
- 
- 	for (i = 0; i < ARRAY_SIZE(otx2_cpt_aeads); i++)
- 		otx2_cpt_aeads[i].base.cra_flags &= ~CRYPTO_ALG_DEAD;
+diff --git a/drivers/crypto/marvell/Kconfig b/drivers/crypto/marvell/Kconfig
+index 9125199f1702..a48591af12d0 100644
+--- a/drivers/crypto/marvell/Kconfig
++++ b/drivers/crypto/marvell/Kconfig
+@@ -47,6 +47,7 @@ config CRYPTO_DEV_OCTEONTX2_CPT
+ 	select CRYPTO_SKCIPHER
+ 	select CRYPTO_HASH
+ 	select CRYPTO_AEAD
++	select NET_DEVLINK
+ 	help
+ 		This driver allows you to utilize the Marvell Cryptographic
+ 		Accelerator Unit(CPT) found in OcteonTX2 series of processors.
 -- 
 2.34.1
 
