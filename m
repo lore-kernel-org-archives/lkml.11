@@ -2,96 +2,224 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D948C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7031FC433EF
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 22:31:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1450536AbiDEW2X (ORCPT
+        id S1450503AbiDEW2I (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 18:28:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38704 "EHLO
+        Tue, 5 Apr 2022 18:28:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34942 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1573605AbiDETXZ (ORCPT
+        with ESMTP id S231926AbiDEKx2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 15:23:25 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED25452E58;
-        Tue,  5 Apr 2022 12:21:25 -0700 (PDT)
+        Tue, 5 Apr 2022 06:53:28 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2EAFAA024;
+        Tue,  5 Apr 2022 03:28:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A0ED6B81F6B;
-        Tue,  5 Apr 2022 19:21:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A35DAC385A0;
-        Tue,  5 Apr 2022 19:21:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649186484;
-        bh=NzNofCR/iPD4n8NmCcwDkvJcDdRZrg0H4oSDZpMwm5g=;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 01BCE617F2;
+        Tue,  5 Apr 2022 10:28:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 17765C385A0;
+        Tue,  5 Apr 2022 10:28:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649154496;
+        bh=TsfQp/7X+3iKvuFdGqSGi4rv7cpIaKJQNzVQuYkNsGk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=I2PqqTco0eMmgV7MjGFlRaVDoaN5RCLPnK+jV42sF+/aQKvyPvPzv0AWOaarOYh5A
-         zrxsUfI1R79VQvVjmBronkc9hmuB/SaHF9DqGcWZxVEO4suT33IazwZlfEwegj7PzP
-         OBuasJ7pb+YWAi64TvsadzW4/bLHVHzv+wIJe+qPOytJRjQgtEUBgymDbnAeYWDMIV
-         M2ObCdNL9NWbYJFvDDPrUTuM/kwwS+4EEkYcCGLiPTPMDjfY9bWFm0D21GoKhhuXfS
-         9sa7DSt4wMMrh+U6D1MBu+Txl9CoPyvY2nfHKCIpYBbsJEd7tGPpScMUsm6NzeOG54
-         Se4mOcQXBNZig==
-From:   Jeff Layton <jlayton@kernel.org>
-To:     idryomov@gmail.com, xiubli@redhat.com
-Cc:     ceph-devel@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        linux-fscrypt@vger.kernel.org, linux-kernel@vger.kernel.org,
-        lhenriques@suse.de
-Subject: [PATCH v13 57/59] ceph: set i_blkbits to crypto block size for encrypted inodes
-Date:   Tue,  5 Apr 2022 15:20:28 -0400
-Message-Id: <20220405192030.178326-58-jlayton@kernel.org>
+        b=xVRxeOKW/ElHWrvgTELJ2eIlaNzB/vqfL5/Ftn/TXD/9udhf+byNtZrNTGAVX52vU
+         M+JtXDNhoHb3D84vTdBtX5ANrI5II683UTqeUTshpvsAQGLXkddRCyimJKQdlxakld
+         fR1jCP1LA9lRiuTnOWtMR9kAmIugCN4DxyfTR9qc=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Matthew Wilcox <willy@infradead.org>,
+        Kees Cook <keescook@chromium.org>,
+        "Eric W. Biederman" <ebiederm@xmission.com>
+Subject: [PATCH 5.10 598/599] coredump: Use the vma snapshot in fill_files_note
+Date:   Tue,  5 Apr 2022 09:34:52 +0200
+Message-Id: <20220405070316.634888893@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405192030.178326-1-jlayton@kernel.org>
-References: <20220405192030.178326-1-jlayton@kernel.org>
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
+References: <20220405070258.802373272@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Some of the underlying infrastructure for fscrypt relies on i_blkbits
-being aligned to the crypto blocksize.
+From: Eric W. Biederman <ebiederm@xmission.com>
 
-Signed-off-by: Jeff Layton <jlayton@kernel.org>
+commit 390031c942116d4733310f0684beb8db19885fe6 upstream.
+
+Matthew Wilcox reported that there is a missing mmap_lock in
+file_files_note that could possibly lead to a user after free.
+
+Solve this by using the existing vma snapshot for consistency
+and to avoid the need to take the mmap_lock anywhere in the
+coredump code except for dump_vma_snapshot.
+
+Update the dump_vma_snapshot to capture vm_pgoff and vm_file
+that are neeeded by fill_files_note.
+
+Add free_vma_snapshot to free the captured values of vm_file.
+
+Reported-by: Matthew Wilcox <willy@infradead.org>
+Link: https://lkml.kernel.org/r/20220131153740.2396974-1-willy@infradead.org
+Cc: stable@vger.kernel.org
+Fixes: a07279c9a8cd ("binfmt_elf, binfmt_elf_fdpic: use a VMA list snapshot")
+Fixes: 2aa362c49c31 ("coredump: extend core dump note section to contain file names of mapped files")
+Reviewed-by: Kees Cook <keescook@chromium.org>
+Signed-off-by: "Eric W. Biederman" <ebiederm@xmission.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/ceph/inode.c | 16 +++++++++-------
- 1 file changed, 9 insertions(+), 7 deletions(-)
+ fs/binfmt_elf.c          |   24 ++++++++++++------------
+ fs/coredump.c            |   22 +++++++++++++++++++++-
+ include/linux/coredump.h |    2 ++
+ 3 files changed, 35 insertions(+), 13 deletions(-)
 
-diff --git a/fs/ceph/inode.c b/fs/ceph/inode.c
-index eb8f066975a8..45ca4e598ef0 100644
---- a/fs/ceph/inode.c
-+++ b/fs/ceph/inode.c
-@@ -976,13 +976,6 @@ int ceph_fill_inode(struct inode *inode, struct page *locked_page,
- 	issued |= __ceph_caps_dirty(ci);
- 	new_issued = ~issued & info_caps;
+--- a/fs/binfmt_elf.c
++++ b/fs/binfmt_elf.c
+@@ -1613,17 +1613,16 @@ static void fill_siginfo_note(struct mem
+  *   long file_ofs
+  * followed by COUNT filenames in ASCII: "FILE1" NUL "FILE2" NUL...
+  */
+-static int fill_files_note(struct memelfnote *note)
++static int fill_files_note(struct memelfnote *note, struct coredump_params *cprm)
+ {
+-	struct mm_struct *mm = current->mm;
+-	struct vm_area_struct *vma;
+ 	unsigned count, size, names_ofs, remaining, n;
+ 	user_long_t *data;
+ 	user_long_t *start_end_ofs;
+ 	char *name_base, *name_curpos;
++	int i;
  
--	/* directories have fl_stripe_unit set to zero */
--	if (le32_to_cpu(info->layout.fl_stripe_unit))
--		inode->i_blkbits =
--			fls(le32_to_cpu(info->layout.fl_stripe_unit)) - 1;
--	else
--		inode->i_blkbits = CEPH_BLOCK_SHIFT;
--
- 	__ceph_update_quota(ci, iinfo->max_bytes, iinfo->max_files);
+ 	/* *Estimated* file count and total data size needed */
+-	count = mm->map_count;
++	count = cprm->vma_count;
+ 	if (count > UINT_MAX / 64)
+ 		return -EINVAL;
+ 	size = count * 64;
+@@ -1645,11 +1644,12 @@ static int fill_files_note(struct memelf
+ 	name_base = name_curpos = ((char *)data) + names_ofs;
+ 	remaining = size - names_ofs;
+ 	count = 0;
+-	for (vma = mm->mmap; vma != NULL; vma = vma->vm_next) {
++	for (i = 0; i < cprm->vma_count; i++) {
++		struct core_vma_metadata *m = &cprm->vma_meta[i];
+ 		struct file *file;
+ 		const char *filename;
  
- #ifdef CONFIG_FS_ENCRYPTION
-@@ -1008,6 +1001,15 @@ int ceph_fill_inode(struct inode *inode, struct page *locked_page,
- 		ceph_decode_timespec64(&ci->i_snap_btime, &iinfo->snap_btime);
+-		file = vma->vm_file;
++		file = m->file;
+ 		if (!file)
+ 			continue;
+ 		filename = file_path(file, name_curpos, remaining);
+@@ -1669,9 +1669,9 @@ static int fill_files_note(struct memelf
+ 		memmove(name_curpos, filename, n);
+ 		name_curpos += n;
+ 
+-		*start_end_ofs++ = vma->vm_start;
+-		*start_end_ofs++ = vma->vm_end;
+-		*start_end_ofs++ = vma->vm_pgoff;
++		*start_end_ofs++ = m->start;
++		*start_end_ofs++ = m->end;
++		*start_end_ofs++ = m->pgoff;
+ 		count++;
  	}
  
-+	/* directories have fl_stripe_unit set to zero */
-+	if (IS_ENCRYPTED(inode))
-+		inode->i_blkbits = CEPH_FSCRYPT_BLOCK_SHIFT;
-+	else if (le32_to_cpu(info->layout.fl_stripe_unit))
-+		inode->i_blkbits =
-+			fls(le32_to_cpu(info->layout.fl_stripe_unit)) - 1;
-+	else
-+		inode->i_blkbits = CEPH_BLOCK_SHIFT;
+@@ -1682,7 +1682,7 @@ static int fill_files_note(struct memelf
+ 	 * Count usually is less than mm->map_count,
+ 	 * we need to move filenames down.
+ 	 */
+-	n = mm->map_count - count;
++	n = cprm->vma_count - count;
+ 	if (n != 0) {
+ 		unsigned shift_bytes = n * 3 * sizeof(data[0]);
+ 		memmove(name_base - shift_bytes, name_base,
+@@ -1884,7 +1884,7 @@ static int fill_note_info(struct elfhdr
+ 	fill_auxv_note(&info->auxv, current->mm);
+ 	info->size += notesize(&info->auxv);
+ 
+-	if (fill_files_note(&info->files) == 0)
++	if (fill_files_note(&info->files, cprm) == 0)
+ 		info->size += notesize(&info->files);
+ 
+ 	return 1;
+@@ -2073,7 +2073,7 @@ static int fill_note_info(struct elfhdr
+ 	fill_auxv_note(info->notes + 3, current->mm);
+ 	info->numnote = 4;
+ 
+-	if (fill_files_note(info->notes + info->numnote) == 0) {
++	if (fill_files_note(info->notes + info->numnote, cprm) == 0) {
+ 		info->notes_files = info->notes + info->numnote;
+ 		info->numnote++;
+ 	}
+--- a/fs/coredump.c
++++ b/fs/coredump.c
+@@ -54,6 +54,7 @@
+ #include <trace/events/sched.h>
+ 
+ static bool dump_vma_snapshot(struct coredump_params *cprm);
++static void free_vma_snapshot(struct coredump_params *cprm);
+ 
+ int core_uses_pid;
+ unsigned int core_pipe_limit;
+@@ -816,7 +817,7 @@ void do_coredump(const kernel_siginfo_t
+ 		file_start_write(cprm.file);
+ 		core_dumped = binfmt->core_dump(&cprm);
+ 		file_end_write(cprm.file);
+-		kvfree(cprm.vma_meta);
++		free_vma_snapshot(&cprm);
+ 	}
+ 	if (ispipe && core_pipe_limit)
+ 		wait_for_dump_helpers(cprm.file);
+@@ -1088,6 +1089,20 @@ static struct vm_area_struct *next_vma(s
+ 	return gate_vma;
+ }
+ 
++static void free_vma_snapshot(struct coredump_params *cprm)
++{
++	if (cprm->vma_meta) {
++		int i;
++		for (i = 0; i < cprm->vma_count; i++) {
++			struct file *file = cprm->vma_meta[i].file;
++			if (file)
++				fput(file);
++		}
++		kvfree(cprm->vma_meta);
++		cprm->vma_meta = NULL;
++	}
++}
 +
- 	if ((new_version || (new_issued & CEPH_CAP_LINK_SHARED)) &&
- 	    (issued & CEPH_CAP_LINK_EXCL) == 0)
- 		set_nlink(inode, le32_to_cpu(info->nlink));
--- 
-2.35.1
+ /*
+  * Under the mmap_lock, take a snapshot of relevant information about the task's
+  * VMAs.
+@@ -1124,6 +1139,11 @@ static bool dump_vma_snapshot(struct cor
+ 		m->end = vma->vm_end;
+ 		m->flags = vma->vm_flags;
+ 		m->dump_size = vma_dump_size(vma, cprm->mm_flags);
++		m->pgoff = vma->vm_pgoff;
++
++		m->file = vma->vm_file;
++		if (m->file)
++			get_file(m->file);
+ 	}
+ 
+ 	mmap_write_unlock(mm);
+--- a/include/linux/coredump.h
++++ b/include/linux/coredump.h
+@@ -11,6 +11,8 @@ struct core_vma_metadata {
+ 	unsigned long start, end;
+ 	unsigned long flags;
+ 	unsigned long dump_size;
++	unsigned long pgoff;
++	struct file   *file;
+ };
+ 
+ /*
+
 
