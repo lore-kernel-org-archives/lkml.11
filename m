@@ -2,42 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A8E7C3527A
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C4744C3527E
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:02:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381888AbiDEL75 (ORCPT
+        id S1381950AbiDEMAL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 07:59:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38468 "EHLO
+        Tue, 5 Apr 2022 08:00:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56736 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243323AbiDEIuV (ORCPT
+        with ESMTP id S245094AbiDEIxO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:50:21 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5BFB913D35;
-        Tue,  5 Apr 2022 01:38:38 -0700 (PDT)
+        Tue, 5 Apr 2022 04:53:14 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D1A7EA;
+        Tue,  5 Apr 2022 01:51:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4FD54B81BBF;
-        Tue,  5 Apr 2022 08:38:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A1E43C385A2;
-        Tue,  5 Apr 2022 08:38:36 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AF63D61504;
+        Tue,  5 Apr 2022 08:51:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8E7A6C385A1;
+        Tue,  5 Apr 2022 08:51:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649147917;
-        bh=FUcnqxzjXH5u3vbw4nDqrygn9TouK/7YERh2EEo0v3w=;
+        s=korg; t=1649148676;
+        bh=opiEEy8Zkh9teV55fjvoiiH/gqsoGMYbbK0t9H7hr2E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hZ9KVrrS8pTFxDNNc5Q65OIpjrwYAB8d18F3eEpK+sHKicqm5LY0EihkZzJ1UDiar
-         7XViUCsZKb7TCbysWjdAaEaglZftF4nJHldTCDT1mIU1RG8qorxKvX6BVlPj2+kYt4
-         8wKwc/STja53WA7WF3ZpkZgH9SV9ywjmigvYV0H8=
+        b=nGQL6fMC5CDD+WrSqraUK+qcoxj01E5NrV2QaRSiSXWyoxlj21b7e+BPHYaS8JJj1
+         cuTAb9zpgqfpWRohw0zixbM6P4RRK+wB0TGQRkdcTCY6F3UvffvgnSpWSaHwWS+K6t
+         HVjh+8o0oTJwWwJFPnaJYsYmFd+hbgcrrA0SXgME=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mingzhe Zou <mingzhe.zou@easystack.cn>,
-        Coly Li <colyli@suse.de>
-Subject: [PATCH 5.16 0169/1017] bcache: fixup multiple threads crash
-Date:   Tue,  5 Apr 2022 09:18:02 +0200
-Message-Id: <20220405070359.242350780@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Alexander Lobakin <alexandr.lobakin@intel.com>,
+        Michal Swiatkowski <michal.swiatkowski@linux.intel.com>,
+        Nechama Kraus <nechamax.kraus@linux.intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 0442/1017] igc: dont reserve excessive XDP_PACKET_HEADROOM on XSK Rx to skb
+Date:   Tue,  5 Apr 2022 09:22:35 +0200
+Message-Id: <20220405070407.415901628@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -49,67 +53,66 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mingzhe Zou <mingzhe.zou@easystack.cn>
+From: Alexander Lobakin <alexandr.lobakin@intel.com>
 
-commit 887554ab96588de2917b6c8c73e552da082e5368 upstream.
+[ Upstream commit f9e61d365bafdee40fe2586fc6be490c3e824dad ]
 
-When multiple threads to check btree nodes in parallel, the main
-thread wait for all threads to stop or CACHE_SET_IO_DISABLE flag:
+{__,}napi_alloc_skb() allocates and reserves additional NET_SKB_PAD
++ NET_IP_ALIGN for any skb.
+OTOH, igc_construct_skb_zc() currently allocates and reserves
+additional `xdp->data_meta - xdp->data_hard_start`, which is about
+XDP_PACKET_HEADROOM for XSK frames.
+There's no need for that at all as the frame is post-XDP and will
+go only to the networking stack core.
+Pass the size of the actual data only (+ meta) to
+__napi_alloc_skb() and don't reserve anything. This will give
+enough headroom for stack processing.
+Also, net_prefetch() xdp->data_meta and align the copy size to
+speed-up memcpy() a little and better match igc_construct_skb().
 
-wait_event_interruptible(check_state->wait,
-                         atomic_read(&check_state->started) == 0 ||
-                         test_bit(CACHE_SET_IO_DISABLE, &c->flags));
-
-However, the bch_btree_node_read and bch_btree_node_read_done
-maybe call bch_cache_set_error, then the CACHE_SET_IO_DISABLE
-will be set. If the flag already set, the main thread return
-error. At the same time, maybe some threads still running and
-read NULL pointer, the kernel will crash.
-
-This patch change the event wait condition, the main thread must
-wait for all threads to stop.
-
-Fixes: 8e7102273f597 ("bcache: make bch_btree_check() to be multithreaded")
-Signed-off-by: Mingzhe Zou <mingzhe.zou@easystack.cn>
-Cc: stable@vger.kernel.org # v5.7+
-Signed-off-by: Coly Li <colyli@suse.de>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: fc9df2a0b520 ("igc: Enable RX via AF_XDP zero-copy")
+Signed-off-by: Alexander Lobakin <alexandr.lobakin@intel.com>
+Reviewed-by: Michal Swiatkowski <michal.swiatkowski@linux.intel.com>
+Tested-by: Nechama Kraus <nechamax.kraus@linux.intel.com>
+Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/md/bcache/btree.c     |    6 ++++--
- drivers/md/bcache/writeback.c |    6 ++++--
- 2 files changed, 8 insertions(+), 4 deletions(-)
+ drivers/net/ethernet/intel/igc/igc_main.c | 13 +++++++------
+ 1 file changed, 7 insertions(+), 6 deletions(-)
 
---- a/drivers/md/bcache/btree.c
-+++ b/drivers/md/bcache/btree.c
-@@ -2060,9 +2060,11 @@ int bch_btree_check(struct cache_set *c)
- 		}
- 	}
+diff --git a/drivers/net/ethernet/intel/igc/igc_main.c b/drivers/net/ethernet/intel/igc/igc_main.c
+index d83e665b3a4f..a156738dc9b6 100644
+--- a/drivers/net/ethernet/intel/igc/igc_main.c
++++ b/drivers/net/ethernet/intel/igc/igc_main.c
+@@ -2435,19 +2435,20 @@ static int igc_clean_rx_irq(struct igc_q_vector *q_vector, const int budget)
+ static struct sk_buff *igc_construct_skb_zc(struct igc_ring *ring,
+ 					    struct xdp_buff *xdp)
+ {
++	unsigned int totalsize = xdp->data_end - xdp->data_meta;
+ 	unsigned int metasize = xdp->data - xdp->data_meta;
+-	unsigned int datasize = xdp->data_end - xdp->data;
+-	unsigned int totalsize = metasize + datasize;
+ 	struct sk_buff *skb;
  
-+	/*
-+	 * Must wait for all threads to stop.
-+	 */
- 	wait_event_interruptible(check_state->wait,
--				 atomic_read(&check_state->started) == 0 ||
--				  test_bit(CACHE_SET_IO_DISABLE, &c->flags));
-+				 atomic_read(&check_state->started) == 0);
+-	skb = __napi_alloc_skb(&ring->q_vector->napi,
+-			       xdp->data_end - xdp->data_hard_start,
++	net_prefetch(xdp->data_meta);
++
++	skb = __napi_alloc_skb(&ring->q_vector->napi, totalsize,
+ 			       GFP_ATOMIC | __GFP_NOWARN);
+ 	if (unlikely(!skb))
+ 		return NULL;
  
- 	for (i = 0; i < check_state->total_threads; i++) {
- 		if (check_state->infos[i].result) {
---- a/drivers/md/bcache/writeback.c
-+++ b/drivers/md/bcache/writeback.c
-@@ -998,9 +998,11 @@ void bch_sectors_dirty_init(struct bcach
- 		}
- 	}
- 
-+	/*
-+	 * Must wait for all threads to stop.
-+	 */
- 	wait_event_interruptible(state->wait,
--		 atomic_read(&state->started) == 0 ||
--		 test_bit(CACHE_SET_IO_DISABLE, &c->flags));
-+		 atomic_read(&state->started) == 0);
- 
- out:
- 	kfree(state);
+-	skb_reserve(skb, xdp->data_meta - xdp->data_hard_start);
+-	memcpy(__skb_put(skb, totalsize), xdp->data_meta, totalsize);
++	memcpy(__skb_put(skb, totalsize), xdp->data_meta,
++	       ALIGN(totalsize, sizeof(long)));
++
+ 	if (metasize) {
+ 		skb_metadata_set(skb, metasize);
+ 		__skb_pull(skb, metasize);
+-- 
+2.34.1
+
 
 
