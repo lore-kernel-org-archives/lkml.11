@@ -2,143 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 34EE0C4167E
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 01:26:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CA4EFC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 01:26:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1841845AbiDFB0D (ORCPT
+        id S1841881AbiDFB0O (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 21:26:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47660 "EHLO
+        Tue, 5 Apr 2022 21:26:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46864 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349269AbiDEJtc (ORCPT
+        with ESMTP id S1354828AbiDEKQJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:49:32 -0400
-Received: from mail.zeus03.de (www.zeus03.de [194.117.254.33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BB0D229
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 02:43:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple; d=sang-engineering.com; h=
-        date:from:to:cc:subject:message-id:references:mime-version
-        :content-type:in-reply-to; s=k1; bh=Bfwz8y1D94kMO0NGJwC/qIDtqe69
-        /v7hVn9ltcVOOLk=; b=3fz/f6TTSAA6ubzJLmWhDyPH0xB/bI6vdo5YRouQJ0e0
-        u0sKeWDz4AE4jjfGDw6X6E2939FpSF5FuGHyHvsoARv0i8aI8TmCXReeZiE6wBAf
-        yTHBNTpSWyObbHHGo33bzFH5xT3Y3XHhVPHnoWr+kIF0+Ix2DqgcQyxf+G+4m40=
-Received: (qmail 2236509 invoked from network); 5 Apr 2022 11:43:29 +0200
-Received: by mail.zeus03.de with ESMTPSA (TLS_AES_256_GCM_SHA384 encrypted, authenticated); 5 Apr 2022 11:43:29 +0200
-X-UD-Smtp-Session: l3s3148p1@W1XIE+XbQLggAQnoAHlrADXnfPIF6sP/
-Date:   Tue, 5 Apr 2022 11:43:29 +0200
-From:   Wolfram Sang <wsa+renesas@sang-engineering.com>
-To:     Eugeniu Rosca <erosca@de.adit-jv.com>
-Cc:     Andrew Gabbasov <andrew_gabbasov@mentor.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        linux-renesas-soc@vger.kernel.org, linux-i2c@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Bhuvanesh Surachari <bhuvanesh_surachari@mentor.com>,
-        Eugeniu Rosca <roscaeugeniu@gmail.com>
-Subject: Re: [PATCH v2] i2c: rcar: add SMBus block read support
-Message-ID: <YkwPQSPed18iyHox@ninjato>
-Mail-Followup-To: Wolfram Sang <wsa+renesas@sang-engineering.com>,
-        Eugeniu Rosca <erosca@de.adit-jv.com>,
-        Andrew Gabbasov <andrew_gabbasov@mentor.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        linux-renesas-soc@vger.kernel.org, linux-i2c@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Bhuvanesh Surachari <bhuvanesh_surachari@mentor.com>,
-        Eugeniu Rosca <roscaeugeniu@gmail.com>
-References: <CAMuHMdVVDpBAQR+H1TAnpf65aVbAL0Mm0km7Z9L7+1JuF6n1gQ@mail.gmail.com>
- <000001d7badd$a8512d30$f8f38790$@mentor.com>
- <20211006182314.10585-1-andrew_gabbasov@mentor.com>
- <Yg6ls0zyTDe7LQbK@kunai>
- <20220323215229.GA9403@lxhi-065>
- <YkQ31VMqj1MXqBd3@shikoro>
- <YkQ6XRITOFZ7hLXV@shikoro>
- <20220331160207.GA27757@lxhi-065>
- <YkcqoIMF2uw4FSZh@ninjato>
- <20220405093048.GA7151@lxhi-065>
+        Tue, 5 Apr 2022 06:16:09 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C05476C93D;
+        Tue,  5 Apr 2022 03:02:59 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7B0B0B81BC0;
+        Tue,  5 Apr 2022 10:02:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E368CC385A2;
+        Tue,  5 Apr 2022 10:02:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649152977;
+        bh=5IqUjJTSOJ5iA71G3v7PMy802c6wfxcw7Yd0aVsWReA=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=mJjKbHsoO3GUe++/kLFqcD2SzKBmBUqiFEDb8vXvjWpYciufNHxT/8uo7stwnI10o
+         9mew8m/PYgT+gm6dmgC2uR6a+xON2tq5Xc2bnMtJikUtvh5kR70S/+iK4R961Ku7Lg
+         7V9+I0K7LToev98L+SW8DIWLk05bxFuWYcxK+vH0=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Baokun Li <libaokun1@huawei.com>,
+        Richard Weinberger <richard@nod.at>
+Subject: [PATCH 5.10 057/599] jffs2: fix memory leak in jffs2_do_mount_fs
+Date:   Tue,  5 Apr 2022 09:25:51 +0200
+Message-Id: <20220405070300.524656148@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
+References: <20220405070258.802373272@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="RrYwz9n59qpjVHlS"
-Content-Disposition: inline
-In-Reply-To: <20220405093048.GA7151@lxhi-065>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+From: Baokun Li <libaokun1@huawei.com>
 
---RrYwz9n59qpjVHlS
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+commit d051cef784de4d54835f6b6836d98a8f6935772c upstream.
 
-Hi Eugeniu,
+If jffs2_build_filesystem() in jffs2_do_mount_fs() returns an error,
+we can observe the following kmemleak report:
 
-> The idea was to push it to LKML, once/after you are happy with it.
+--------------------------------------------
+unreferenced object 0xffff88811b25a640 (size 64):
+  comm "mount", pid 691, jiffies 4294957728 (age 71.952s)
+  hex dump (first 32 bytes):
+    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+  backtrace:
+    [<ffffffffa493be24>] kmem_cache_alloc_trace+0x584/0x880
+    [<ffffffffa5423a06>] jffs2_sum_init+0x86/0x130
+    [<ffffffffa5400e58>] jffs2_do_mount_fs+0x798/0xac0
+    [<ffffffffa540acf3>] jffs2_do_fill_super+0x383/0xc30
+    [<ffffffffa540c00a>] jffs2_fill_super+0x2ea/0x4c0
+    [...]
+unreferenced object 0xffff88812c760000 (size 65536):
+  comm "mount", pid 691, jiffies 4294957728 (age 71.952s)
+  hex dump (first 32 bytes):
+    bb bb bb bb bb bb bb bb bb bb bb bb bb bb bb bb  ................
+    bb bb bb bb bb bb bb bb bb bb bb bb bb bb bb bb  ................
+  backtrace:
+    [<ffffffffa493a449>] __kmalloc+0x6b9/0x910
+    [<ffffffffa5423a57>] jffs2_sum_init+0xd7/0x130
+    [<ffffffffa5400e58>] jffs2_do_mount_fs+0x798/0xac0
+    [<ffffffffa540acf3>] jffs2_do_fill_super+0x383/0xc30
+    [<ffffffffa540c00a>] jffs2_fill_super+0x2ea/0x4c0
+    [...]
+--------------------------------------------
 
-I see.
+This is because the resources allocated in jffs2_sum_init() are not
+released. Call jffs2_sum_exit() to release these resources to solve
+the problem.
 
-> Thanks for the precious feedback. We've requested Renesas to revert the
-> obsolete BSP commit, based on your recommendation.
+Fixes: e631ddba5887 ("[JFFS2] Add erase block summary support (mount time improvement)")
+Cc: stable@vger.kernel.org
+Signed-off-by: Baokun Li <libaokun1@huawei.com>
+Signed-off-by: Richard Weinberger <richard@nod.at>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ fs/jffs2/build.c |    4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-Thank you!
-
-> In general, the Renesas kernel always carries a set of patches with
-> non-mainlined changes, Fortunately, for i2c specifically (as opposed
-> to other subsystems), it is narrow enough to not raise major concerns:
-
-Well, yes, that shows that I am mostly successful with reporting back to
-the BSP team :D But some are still missing, as you can see.
-
-> $ git log --oneline v5.10.41..rcar-5.1.2 -- drivers/i2c/busses/i2c-rcar.c
-> 6745303b2bfa i2c: rcar: Add support for r8a77961 (R-Car M3-W+)
-
-Can be dropped: "Driver matches against family-specific compatible
-value, which has always been present in upstream DTS"
-
-> 3422d3131700 i2c: rcar: Support the suspend/resume
-
-Already upstream: "18569fa89a4db9ed6b5181624788a1574a9b6ed7 # i2c: rcar:
-add suspend/resume support"
-
-> 5680e77f2427 i2c: rcar: Tidy up the register order for hardware specification ver1.00.
-
-Relevant parts upstream: "e7f4264821a4ee07775f3775f8530cfa9a6d4b5d #
-i2c: rcar: enable interrupts before starting transfer"
-
-Other parts can be dropped.
-
-> 41394ab7420f i2c: rcar: Fix I2C DMA transmission by setting sequence
-
-Upstream: "94e290b0e9a6c360a5660c480c1ba996d892c650 # i2c: rcar: wait
-for data empty before starting DMA"
-
-> Thank you for the review comments. We are still working on a cleaner
-> solution. In case it comes from you first, we are very much keen to
-> give it a try on the target and report the results.
-
-I have a cleaner solution quite ready. Give me another hour for testing
-before I send it out.
-
-All the best,
-
-   Wolfram
+--- a/fs/jffs2/build.c
++++ b/fs/jffs2/build.c
+@@ -415,13 +415,15 @@ int jffs2_do_mount_fs(struct jffs2_sb_in
+ 		jffs2_free_ino_caches(c);
+ 		jffs2_free_raw_node_refs(c);
+ 		ret = -EIO;
+-		goto out_free;
++		goto out_sum_exit;
+ 	}
+ 
+ 	jffs2_calc_trigger_levels(c);
+ 
+ 	return 0;
+ 
++ out_sum_exit:
++	jffs2_sum_exit(c);
+  out_free:
+ 	kvfree(c->blocks);
+ 
 
 
---RrYwz9n59qpjVHlS
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCgAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAmJMDz0ACgkQFA3kzBSg
-KbaOhxAAoI0omHSuhycLfshFJ6BI5W7Ur+QhwOpvdww1A0/conrlyXCee3HawtyP
-MPA3WP8MFSis50yXz07zMkGvhvrHpqFaEMlxSikXCYn08yf4lBK0WwiGh82FdrJs
-Ar6DeylyG+NRBQpd/l3YZ3YJPVlqXfqUOsKPfmeHR3oUrnrEfzw4uk8P9E4oUvsT
-Ntz66NY9uEdcP+c2/RM/8aRhI2/ZLBH+HfZJb62WswsH/w8pQceuVRvzXEG0F1jy
-U39QWRL2wFz1NS+Bs3Nf/oMhZzBqLtY5p0ByzAOY+sxfr7nmCQDeXZtEHXWJ80uS
-vF89pAGvlMDZD8RUBISIihjsEqcADoad8qj3MSBG+Ln4RGOf+vr65D92CquOA5W0
-zgEUZ3UBt1x38F/3ka6O6LgpLpna4goJ5A7vVvAXxLUEh/7F4y9hmiUDU5oHlyT8
-dnnPZR8yFiE8MxOU7Zj6WETYRopEe2JCvLWHlUwb6pC+tFPfRPCYjI5u6ilgos/w
-EMgpPR6YL+9ujpmF1Ep057yrTcxMyiYmal91TD3CWzpCPXl3yJU9TdA/Q8XFsRyB
-QVjgdDX0cHyeMAn5wLw4ECYkl9yl7ZcIrTI/ZuZF5YN/8ZHaSYxbGrAMbtrH9Uve
-cTIcee5hrXjceaJdMSnz1ObT3/VBABHHzZdt3crgpi8R9TkJts8=
-=lfpu
------END PGP SIGNATURE-----
-
---RrYwz9n59qpjVHlS--
