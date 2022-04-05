@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C2FADC352B6
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:32:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C1913C35273
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:32:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236095AbiDEI1U (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 04:27:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48212 "EHLO
+        id S236282AbiDEI1h (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 04:27:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43838 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235838AbiDEIA2 (ORCPT
+        with ESMTP id S235150AbiDEH7Z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:00:28 -0400
+        Tue, 5 Apr 2022 03:59:25 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2B0E3D4A8;
-        Tue,  5 Apr 2022 00:58:30 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8F7F5748A;
+        Tue,  5 Apr 2022 00:53:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 61CB961725;
-        Tue,  5 Apr 2022 07:58:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7405FC340EE;
-        Tue,  5 Apr 2022 07:58:29 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 42616615C3;
+        Tue,  5 Apr 2022 07:53:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4CB56C34110;
+        Tue,  5 Apr 2022 07:53:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649145509;
-        bh=vHQjIyodvSNE/8GncM3QAk2FrhwvFw6zUYkbN+IhmRM=;
+        s=korg; t=1649145233;
+        bh=MBJNukljmwQnzR5zg24hkhfWMssQy3eMfwPIH82ryCA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GhLsoVhN31255E4F6E3NQ3pEoKWJ7X+sQf0dDJ5bV1xCZ2txRZlFy5XiWNiXInf2q
-         378pio1eccd8be2L44vMhHwRZnL8R5MboqCkAhsXk8bp8WpJ0hMHuNiVTdjoFquuIw
-         fzmQK/p+o9ytYDg91mci9NpC+Zr2Je3puhiWtk18=
+        b=ayPieFVQK+tDGUwAv21FtmkErjt1kNA8I8BuPePfPVQS46dr0ryACSmSmErCg+GXl
+         +od+e+pQTQJutTDkJphuNGZ022rR+PsEJc0xOC8w5hrPtrSVpgwMMv5ReUugEM57+1
+         ge1rMhHUk7N6EYWyyXeXT99HjgVlICfLGaUanEW0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
-        Luiz Augusto von Dentz <luiz.von.dentz@intel.com>,
+        stable@vger.kernel.org,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0432/1126] Bluetooth: hci_sync: unlock on error in hci_inquiry_result_with_rssi_evt()
-Date:   Tue,  5 Apr 2022 09:19:39 +0200
-Message-Id: <20220405070420.304930215@linuxfoundation.org>
+Subject: [PATCH 5.17 0332/1126] arm64: dts: qcom: sm8250: fix PCIe bindings to follow schema
+Date:   Tue,  5 Apr 2022 09:17:59 +0200
+Message-Id: <20220405070417.361513582@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -49,51 +51,63 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dan Carpenter <dan.carpenter@oracle.com>
+From: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
 
-[ Upstream commit c07ba878ca199a6089cdb323bf526adbeeb4201f ]
+[ Upstream commit d60507200485bc778bf6a5556271d784ab09d913 ]
 
-Add unlocks to two error paths in hci_inquiry_result_with_rssi_evt().
+Replace (unused) enable-gpio binding with schema-defined wake-gpios. The
+GPIO line is still unused, but at least we'd follow the defined schema.
 
-Fixes: fee645033e2c ("Bluetooth: hci_event: Use skb_pull_data when processing inquiry results")
-Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
-Signed-off-by: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
+While we are at it, change perst-gpio property to follow the preferred
+naming schema (perst-gpios).
+
+Fixes: 13e948a36db7 ("arm64: dts: qcom: sm8250: Commonize PCIe pins")
+Cc: Konrad Dybcio <konrad.dybcio@somainline.org>
+Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Link: https://lore.kernel.org/r/20211214231448.2044987-1-dmitry.baryshkov@linaro.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/bluetooth/hci_event.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ arch/arm64/boot/dts/qcom/sm8250.dtsi | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
 
-diff --git a/net/bluetooth/hci_event.c b/net/bluetooth/hci_event.c
-index fc30f4c03d29..05997dff5666 100644
---- a/net/bluetooth/hci_event.c
-+++ b/net/bluetooth/hci_event.c
-@@ -4534,7 +4534,7 @@ static void hci_inquiry_result_with_rssi_evt(struct hci_dev *hdev, void *edata,
- 			if (!info) {
- 				bt_dev_err(hdev, "Malformed HCI Event: 0x%2.2x",
- 					   HCI_EV_INQUIRY_RESULT_WITH_RSSI);
--				return;
-+				goto unlock;
- 			}
+diff --git a/arch/arm64/boot/dts/qcom/sm8250.dtsi b/arch/arm64/boot/dts/qcom/sm8250.dtsi
+index e2a5dfa7b1a0..a92230bec1dd 100644
+--- a/arch/arm64/boot/dts/qcom/sm8250.dtsi
++++ b/arch/arm64/boot/dts/qcom/sm8250.dtsi
+@@ -1740,8 +1740,8 @@
+ 			phys = <&pcie0_lane>;
+ 			phy-names = "pciephy";
  
- 			bacpy(&data.bdaddr, &info->bdaddr);
-@@ -4565,7 +4565,7 @@ static void hci_inquiry_result_with_rssi_evt(struct hci_dev *hdev, void *edata,
- 			if (!info) {
- 				bt_dev_err(hdev, "Malformed HCI Event: 0x%2.2x",
- 					   HCI_EV_INQUIRY_RESULT_WITH_RSSI);
--				return;
-+				goto unlock;
- 			}
+-			perst-gpio = <&tlmm 79 GPIO_ACTIVE_LOW>;
+-			enable-gpio = <&tlmm 81 GPIO_ACTIVE_HIGH>;
++			perst-gpios = <&tlmm 79 GPIO_ACTIVE_LOW>;
++			wake-gpios = <&tlmm 81 GPIO_ACTIVE_HIGH>;
  
- 			bacpy(&data.bdaddr, &info->bdaddr);
-@@ -4587,7 +4587,7 @@ static void hci_inquiry_result_with_rssi_evt(struct hci_dev *hdev, void *edata,
- 		bt_dev_err(hdev, "Malformed HCI Event: 0x%2.2x",
- 			   HCI_EV_INQUIRY_RESULT_WITH_RSSI);
- 	}
--
-+unlock:
- 	hci_dev_unlock(hdev);
- }
+ 			pinctrl-names = "default";
+ 			pinctrl-0 = <&pcie0_default_state>;
+@@ -1844,8 +1844,8 @@
+ 			phys = <&pcie1_lane>;
+ 			phy-names = "pciephy";
  
+-			perst-gpio = <&tlmm 82 GPIO_ACTIVE_LOW>;
+-			enable-gpio = <&tlmm 84 GPIO_ACTIVE_HIGH>;
++			perst-gpios = <&tlmm 82 GPIO_ACTIVE_LOW>;
++			wake-gpios = <&tlmm 84 GPIO_ACTIVE_HIGH>;
+ 
+ 			pinctrl-names = "default";
+ 			pinctrl-0 = <&pcie1_default_state>;
+@@ -1950,8 +1950,8 @@
+ 			phys = <&pcie2_lane>;
+ 			phy-names = "pciephy";
+ 
+-			perst-gpio = <&tlmm 85 GPIO_ACTIVE_LOW>;
+-			enable-gpio = <&tlmm 87 GPIO_ACTIVE_HIGH>;
++			perst-gpios = <&tlmm 85 GPIO_ACTIVE_LOW>;
++			wake-gpios = <&tlmm 87 GPIO_ACTIVE_HIGH>;
+ 
+ 			pinctrl-names = "default";
+ 			pinctrl-0 = <&pcie2_default_state>;
 -- 
 2.34.1
 
