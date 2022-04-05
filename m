@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A6619C35274
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1DEF8C35273
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 13:23:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244642AbiDENEc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 09:04:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40632 "EHLO
+        id S1344728AbiDENFR (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 09:05:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60612 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238821AbiDEJQR (ORCPT
+        with ESMTP id S239586AbiDEJQR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Apr 2022 05:16:17 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4443BD1CCC;
-        Tue,  5 Apr 2022 02:01:48 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43F09D444E;
+        Tue,  5 Apr 2022 02:02:03 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id EE601B81A12;
-        Tue,  5 Apr 2022 09:01:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4A30AC385A0;
-        Tue,  5 Apr 2022 09:01:45 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D017F61573;
+        Tue,  5 Apr 2022 09:02:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E298AC385A1;
+        Tue,  5 Apr 2022 09:02:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649149305;
-        bh=c4RVyvYRsj9YXVP3ghCAxHj+YV5+ROVijwrQU5DYrUM=;
+        s=korg; t=1649149322;
+        bh=xtIMnYy/oN7Xfj9rTXRq6O2uWaiAM06WmjSw/S5HbOU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2bnFFliwoRLqJGWIFTkqzDx8GPEo2eRxhf6S5f7Jp1KpEtAfLMnomicvgMGB9CvM5
-         nWW1Dndu6CSp0V3jvXQ5OjHUoxdhwkEA9w+9RkpdBDPEJOXs+fB1/U3MbZLWVNB+xl
-         TUmVgerJj1mPiG5BGRxZj95JSuekEKR0yYf34l1o=
+        b=B4orbou8AWStV1MWdmeCyfDwsGTslHduHpEVzS/C/RVfcZbKp2yfOoqQhN+i5c+3Y
+         RyJhrnOTgb+BxQ2sdnKQds2NpGzHrSk4A6xDdZedX8YsC823Cf/AgRGyWPnY8Irr9h
+         bKU5Ec47S6BNSWCiOV+DiKfOLyV8fhVFRcdRKdfU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Trond Myklebust <trond.myklebust@hammerspace.com>,
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Lee Jones <lee.jones@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0667/1017] NFS: Use of mapping_set_error() results in spurious errors
-Date:   Tue,  5 Apr 2022 09:26:20 +0200
-Message-Id: <20220405070414.081004263@linuxfoundation.org>
+Subject: [PATCH 5.16 0636/1017] mfd: asic3: Add missing iounmap() on error asic3_mfd_probe
+Date:   Tue,  5 Apr 2022 09:25:49 +0200
+Message-Id: <20220405070413.162413585@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -49,37 +50,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Trond Myklebust <trond.myklebust@hammerspace.com>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit 6c984083ec2453dfd3fcf98f392f34500c73e3f2 ]
+[ Upstream commit e84ee1a75f944a0fe3c277aaa10c426603d2b0bc ]
 
-The use of mapping_set_error() in conjunction with calls to
-filemap_check_errors() is problematic because every error gets reported
-as either an EIO or an ENOSPC by filemap_check_errors() in functions
-such as filemap_write_and_wait() or filemap_write_and_wait_range().
-In almost all cases, we prefer to use the more nuanced wb errors.
+Add the missing iounmap() before return from asic3_mfd_probe
+in the error handling case.
 
-Fixes: b8946d7bfb94 ("NFS: Revalidate the file mapping on all fatal writeback errors")
-Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
+Fixes: 64e8867ba809 ("mfd: tmio_mmc hardware abstraction for CNF area")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Signed-off-by: Lee Jones <lee.jones@linaro.org>
+Link: https://lore.kernel.org/r/20220307072947.5369-1-linmq006@gmail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/nfs/write.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ drivers/mfd/asic3.c | 10 +++++++---
+ 1 file changed, 7 insertions(+), 3 deletions(-)
 
-diff --git a/fs/nfs/write.c b/fs/nfs/write.c
-index 9b7619ce17a7..7a23b4644507 100644
---- a/fs/nfs/write.c
-+++ b/fs/nfs/write.c
-@@ -315,7 +315,10 @@ static void nfs_mapping_set_error(struct page *page, int error)
- 	struct address_space *mapping = page_file_mapping(page);
+diff --git a/drivers/mfd/asic3.c b/drivers/mfd/asic3.c
+index 8d58c8df46cf..56338f9dbd0b 100644
+--- a/drivers/mfd/asic3.c
++++ b/drivers/mfd/asic3.c
+@@ -906,14 +906,14 @@ static int __init asic3_mfd_probe(struct platform_device *pdev,
+ 		ret = mfd_add_devices(&pdev->dev, pdev->id,
+ 			&asic3_cell_ds1wm, 1, mem, asic->irq_base, NULL);
+ 		if (ret < 0)
+-			goto out;
++			goto out_unmap;
+ 	}
  
- 	SetPageError(page);
--	mapping_set_error(mapping, error);
-+	filemap_set_wb_err(mapping, error);
-+	if (mapping->host)
-+		errseq_set(&mapping->host->i_sb->s_wb_err,
-+			   error == -ENOSPC ? -ENOSPC : -EIO);
- 	nfs_set_pageerror(mapping);
+ 	if (mem_sdio && (irq >= 0)) {
+ 		ret = mfd_add_devices(&pdev->dev, pdev->id,
+ 			&asic3_cell_mmc, 1, mem_sdio, irq, NULL);
+ 		if (ret < 0)
+-			goto out;
++			goto out_unmap;
+ 	}
+ 
+ 	ret = 0;
+@@ -927,8 +927,12 @@ static int __init asic3_mfd_probe(struct platform_device *pdev,
+ 		ret = mfd_add_devices(&pdev->dev, 0,
+ 			asic3_cell_leds, ASIC3_NUM_LEDS, NULL, 0, NULL);
+ 	}
++	return ret;
+ 
+- out:
++out_unmap:
++	if (asic->tmio_cnf)
++		iounmap(asic->tmio_cnf);
++out:
+ 	return ret;
  }
  
 -- 
