@@ -2,179 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DFA37C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:40:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E6616C4332F
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:40:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1836130AbiDFAfG (ORCPT
+        id S1836173AbiDFAfO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 20:35:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37028 "EHLO
+        Tue, 5 Apr 2022 20:35:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45328 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357922AbiDEPMb (ORCPT
+        with ESMTP id S1392097AbiDENtd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 11:12:31 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 8C6DD16B15B
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 06:25:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1649165150;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=AVwNzNitG33HKNZ/ddogzhAKEzWphu605lg3oK1brLg=;
-        b=hMf5rBNxfkMM2V8frQoa1xQ8stqOCpjX7Nhjn/HWhQpP39KXUcegOzd0COkdGLEUibLiAw
-        yKggbuHrgRVdvhGLrEp0CxBsjdkyDawFuCaCZsx3nzVBZSyoxeTnmvYXnhuziI8HS1/Fp2
-        NPGdOxRULn2Ge6P6vvi0cf6MdLJ/y5Y=
-Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
- [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-139-rn-Am5DtMuOZoRgnZETPfQ-1; Tue, 05 Apr 2022 09:25:49 -0400
-X-MC-Unique: rn-Am5DtMuOZoRgnZETPfQ-1
-Received: by mail-wm1-f72.google.com with SMTP id x8-20020a7bc768000000b0038e73173886so1248185wmk.6
-        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 06:25:49 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=AVwNzNitG33HKNZ/ddogzhAKEzWphu605lg3oK1brLg=;
-        b=qJ+fcSLJCUJ0lZWq5+W8/jK1xxJDGrv4r9HPn/vGn2cZn5W2RyfDZg5qKoqDZnHz7Z
-         TrMcH243RT3+7ofZPOC2ZEobmYIyBcg8ft7UCNLaxqInp0nGkM0oFdILjrFx5TGQ6l9F
-         EF11nhKMOTbQ9a9mwYnDiCQprK8vYcG7oRKpApOmC+5hTfYZ27RDNInmteBXDXbywkvP
-         zD1U7IMjMsu9Q4nWN/5HvbmpgwR7JxABK5jQ4BfKk/pgjTr3eJzed2TQPaJPAU4l3kYD
-         93+TG28EXlKHKcy5ybF9mgIhVXm6xBNozvSiQCQJX7NETe6U9aAqte+Sdkz7+2dCsN3I
-         goeg==
-X-Gm-Message-State: AOAM532fB+vJB05a62xGjaVnI+CiGtRlDkxkdIbboKJyRxKTzIMVjxiX
-        8ET/mK8u0dHK1kyfn0f8QkxNAlLAghd3/xq6QayJYizLTb04vW1muYUIE/G0hECmu1itKEki1fa
-        Om6QFIaDuOwm1h2qo2AKJbzBi
-X-Received: by 2002:adf:a394:0:b0:206:1cfd:13f6 with SMTP id l20-20020adfa394000000b002061cfd13f6mr2933797wrb.604.1649165148406;
-        Tue, 05 Apr 2022 06:25:48 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJywL4YFUMFLKEGNJyDnDhZAXs0fvhVQ+PmfmqjWs4+T5znYDxv/BEV3ZRmK9KLv1H6lO/13xA==
-X-Received: by 2002:adf:a394:0:b0:206:1cfd:13f6 with SMTP id l20-20020adfa394000000b002061cfd13f6mr2933768wrb.604.1649165148093;
-        Tue, 05 Apr 2022 06:25:48 -0700 (PDT)
-Received: from [192.168.1.102] ([92.176.231.205])
-        by smtp.gmail.com with ESMTPSA id l15-20020a05600c4f0f00b0038cbdf5221dsm2294778wmq.41.2022.04.05.06.25.46
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 05 Apr 2022 06:25:47 -0700 (PDT)
-Message-ID: <54f4cb72-1640-939d-0b7b-9a1b989cd5eb@redhat.com>
-Date:   Tue, 5 Apr 2022 15:25:45 +0200
+        Tue, 5 Apr 2022 09:49:33 -0400
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7307715A19
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 05:50:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649163014; x=1680699014;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=Qxoy9OT5Ut6sbXF8QToZ++jWRIjeGEhQJxFwexjVZxs=;
+  b=h06K7gYCJDvlUb5n7a231PNZjoZEppGxqXBpbWbq5BHiGwY9ZpQ94YOE
+   rli8+dUOI9XD4OvaWCMNWyPqJbgmaLWOhNgtqejdVx5ftLT+K9bWmzaSu
+   rJQa+6ESl9f3QL6HD8LVDi5eHsrqEaZ5UTl04sYZ3u9xKsZWserMag5OI
+   avCRXQATRWPWB5JT+/0D+r10+Iyy8Yyz72RsTBSQjQjPFRkH8J+Uj8ikq
+   ddpAS5YzSkQ7M+T0PMWypRsXoJSqLys47FzngP+8o6czTsZdh0jZHgLSd
+   MBQ7D8vShl1xOd2ftTAu0fCTHlZGkMmRVFIUlh9g0fyCW2O0MtAPQltcR
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10307"; a="241325672"
+X-IronPort-AV: E=Sophos;i="5.90,236,1643702400"; 
+   d="scan'208";a="241325672"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2022 05:50:14 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,236,1643702400"; 
+   d="scan'208";a="523980426"
+Received: from lkp-server02.sh.intel.com (HELO a44fdfb70b94) ([10.239.97.151])
+  by orsmga006.jf.intel.com with ESMTP; 05 Apr 2022 05:50:12 -0700
+Received: from kbuild by a44fdfb70b94 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nbidP-0003Hv-Ps;
+        Tue, 05 Apr 2022 12:50:11 +0000
+Date:   Tue, 5 Apr 2022 20:49:45 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        Jessica Zhang <quic_jesszhan@quicinc.com>
+Subject: drivers/gpu/drm/msm/msm_io_utils.c:65:31: sparse: sparse: incorrect
+ type in return expression (different address spaces)
+Message-ID: <202204052038.RxcTSgob-lkp@intel.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH v2 18/19] Revert "fbdev: Prevent probing generic drivers
- if a FB is already registered"
-Content-Language: en-US
-To:     Daniel Vetter <daniel@ffwll.ch>,
-        Greg KH <gregkh@linuxfoundation.org>
-Cc:     DRI Development <dri-devel@lists.freedesktop.org>,
-        Intel Graphics Development <intel-gfx@lists.freedesktop.org>,
-        linux-fbdev@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Zack Rusin <zackr@vmware.com>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Ilya Trukhanov <lahvuun@gmail.com>,
-        Daniel Vetter <daniel.vetter@intel.com>,
-        Peter Jones <pjones@redhat.com>
-References: <20220208210824.2238981-1-daniel.vetter@ffwll.ch>
- <20220208210824.2238981-19-daniel.vetter@ffwll.ch>
- <4ae20b63-f452-fdb4-ced6-d4968a8d69f0@redhat.com>
- <Ykv/k/WoVemoCJJA@phenom.ffwll.local> <YkwAhSt9HlbxcuZo@phenom.ffwll.local>
- <408ffe9b-f09f-dc7e-7f5e-a93b311a06fa@redhat.com>
- <CAKMK7uHf6H8mhSm6eDHUruWK5Xc2cSPkJUX6v-jpeQfjS19dKw@mail.gmail.com>
- <e124af06-4f24-277a-543a-82b383f48cea@redhat.com>
- <CAKMK7uH4GgDQJZguT-k0QmgEAHYHuDEbBtjYje51_Rtqzud0yw@mail.gmail.com>
-From:   Javier Martinez Canillas <javierm@redhat.com>
-In-Reply-To: <CAKMK7uH4GgDQJZguT-k0QmgEAHYHuDEbBtjYje51_Rtqzud0yw@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 4/5/22 12:34, Daniel Vetter wrote:
-> On Tue, 5 Apr 2022 at 11:52, Javier Martinez Canillas
-> <javierm@redhat.com> wrote:
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+head:   3123109284176b1532874591f7c81f3837bbdc17
+commit: d89e5028346bd80f79c3073d132123e7a17e1177 drm/msm: move utility functions from msm_drv.c
+date:   7 weeks ago
+config: sparc64-randconfig-s031-20220405 (https://download.01.org/0day-ci/archive/20220405/202204052038.RxcTSgob-lkp@intel.com/config)
+compiler: sparc64-linux-gcc (GCC) 11.2.0
+reproduce:
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # apt-get install sparse
+        # sparse version: v0.6.4-dirty
+        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=d89e5028346bd80f79c3073d132123e7a17e1177
+        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+        git fetch --no-tags linus master
+        git checkout d89e5028346bd80f79c3073d132123e7a17e1177
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=sparc64 SHELL=/bin/bash drivers/gpu/drm/msm/
 
-[snip]
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
->>
->> I believe the correct fix would be for the fbdev core to keep a list of
->> the apertures struct that are passed to remove_conflicting_framebuffers(),
->> that way it will know what apertures are not available anymore and prevent
->> to register any fbdev framebuffer that conflicts with one already present.
-> 
-> Hm that still feels like reinventing a driver model, badly.
->
 
-Yeah, you are correct.
- 
-> I think there's two cleaner solutions:
-> - move all the firmware driver platform_dev into sysfb.c, and then
-> just bind the special cases against that (e.g. offb, vga16fb and all
-> these). Then we'd have one sysfb_try_unregister(struct device *dev)
-> interface that fbmem.c uses.
+sparse warnings: (new ones prefixed by >>)
+>> drivers/gpu/drm/msm/msm_io_utils.c:65:31: sparse: sparse: incorrect type in return expression (different address spaces) @@     expected void [noderef] __iomem * @@     got void * @@
+   drivers/gpu/drm/msm/msm_io_utils.c:65:31: sparse:     expected void [noderef] __iomem *
+   drivers/gpu/drm/msm/msm_io_utils.c:65:31: sparse:     got void *
+   drivers/gpu/drm/msm/msm_io_utils.c:74:31: sparse: sparse: incorrect type in return expression (different address spaces) @@     expected void [noderef] __iomem * @@     got void * @@
+   drivers/gpu/drm/msm/msm_io_utils.c:74:31: sparse:     expected void [noderef] __iomem *
+   drivers/gpu/drm/msm/msm_io_utils.c:74:31: sparse:     got void *
 
-I think this is the cleaner option. And makes sense to consolidate all
-the firmware drivers platform device registration to sysfb.c.
+vim +65 drivers/gpu/drm/msm/msm_io_utils.c
 
-Already does for VIDEO_TYPE_EFI ("efi-framebuffer") and VIDEO_TYPE_VLFB
-("vesa-framebuffer"), so need to also make it cope with VIDEO_TYPE_EGAC
-and VIDEO_TYPE_VGAC ("vga16fb").
-
-For offb is less clear since currently the offb driver does not really
-use the Linux device model, that is the driver does not match a device
-that's registered, there's no device which is the bug that was reported
-to Thomas in the other thread.
-
-It's unclear how to properly fix that since we will need to convert the
-offb driver to register a platform driver and match against a device that
-is registered by some platform code that parses the OF...
-
-> - let fbmem.c call into each of these firmware device providers, which
-> means some loops most likely (like we can't call into vga16fb), so
-> probably need to move that into fbmem.c and it all gets a bit messy.
-> 
-
-Yup, that would get messy indeed so not a good option.
-
->> Let me know if you think that makes sense and I can attempt to write a fix.
-> 
-> I still think unregistering the platform_dev properly makes the most
-> sense, and feels like the most proper linux device model solution
-> instead of hacks on top - if the firmware fb is unuseable because a
-> native driver has taken over, we should nuke that. And also the
-> firmware fb driver would then just bind to that platform_dev if it
-> exists, and only if it exists. Also I think it should be the
-> responsibility of whichever piece of code that registers these
-> platform devices to ensure that platform_dev actually still exists.
-> That's why I think pushing all that code into sysfb.c is probably the
-> cleanest solution.
->
-
-Agreed. Not registering the platform devices if there is already a DRM
-driver for the same device is what makes the most sense. What I don't
-understand is how sysfb would know that if run after a DRM registration.
-
-The only way that could know is if sysfb would keep a list of apertures
-for all the DRM drivers registered or if the DRM core somewhat notifies
-to sysfb that a native driver was already registered.
-
-Another option and probably the cleanest although the harder solution is
-to finally bite the bullet and make all the DRM drivers to request their
-memory region.
-
-Or as you mentioned in the past, to move that logic into the device model
-and then not allow to register devices that require an overlapping region.
-
-And there could be a request_mem_region_remove_conflicting() or something
-that real DRM drivers could use to force a memory region request and make
-the device model to unregister any device that may already have that mem.
+    49	
+    50	static void __iomem *_msm_ioremap(struct platform_device *pdev, const char *name,
+    51					  bool quiet, phys_addr_t *psize)
+    52	{
+    53		struct resource *res;
+    54		unsigned long size;
+    55		void __iomem *ptr;
+    56	
+    57		if (name)
+    58			res = platform_get_resource_byname(pdev, IORESOURCE_MEM, name);
+    59		else
+    60			res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+    61	
+    62		if (!res) {
+    63			if (!quiet)
+    64				DRM_DEV_ERROR(&pdev->dev, "failed to get memory resource: %s\n", name);
+  > 65			return ERR_PTR(-EINVAL);
+    66		}
+    67	
+    68		size = resource_size(res);
+    69	
+    70		ptr = devm_ioremap(&pdev->dev, res->start, size);
+    71		if (!ptr) {
+    72			if (!quiet)
+    73				DRM_DEV_ERROR(&pdev->dev, "failed to ioremap: %s\n", name);
+    74			return ERR_PTR(-ENOMEM);
+    75		}
+    76	
+    77		if (psize)
+    78			*psize = size;
+    79	
+    80		return ptr;
+    81	}
+    82	
 
 -- 
-Best regards,
-
-Javier Martinez Canillas
-Linux Engineering
-Red Hat
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
