@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 985A4C4167D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AF733C4167E
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 10:08:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353134AbiDEKFp (ORCPT
+        id S1353170AbiDEKFu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 06:05:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52874 "EHLO
+        Tue, 5 Apr 2022 06:05:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53144 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240294AbiDEIbv (ORCPT
+        with ESMTP id S240321AbiDEIbw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:31:51 -0400
+        Tue, 5 Apr 2022 04:31:52 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE2856C952;
-        Tue,  5 Apr 2022 01:24:06 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B2816C973;
+        Tue,  5 Apr 2022 01:24:01 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CBACD61188;
-        Tue,  5 Apr 2022 08:24:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DAF20C385A5;
-        Tue,  5 Apr 2022 08:23:59 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5DD7D60FF7;
+        Tue,  5 Apr 2022 08:23:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 65D8CC385A0;
+        Tue,  5 Apr 2022 08:23:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649147040;
-        bh=kO3WJ73DitG29cTikD/o9Ep73Mwj4s1IjAcA6DnvDcs=;
+        s=korg; t=1649147034;
+        bh=Wn3JxQQnYj5scrd2H9Ydr3wFpxUS1p1tfgW+6PBkh4A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Q6bd6hSaf9mPz8yfnxKY5/ccOIITMHwD36XlN8Dpg7IYquLWwwyV8nseGCG8sYaI3
-         K+6JhMgbEcJr/5tR8KeIHVpTT9sW3c2Knx+Pk2kFfDP3yJLHX3IRAiS19brco0nUCi
-         NADPfVInT2Nu7mGEdfL0UXHxwqrantcA4SbPyYgw=
+        b=kflPRL2lnDvaF9yvx7QDfHxndLYFlzIPtKLRi87o1GqMq8c7YxyoJPaVvk+gVMc0C
+         g2E0682r4eI3Z5FgfJXBbaim8nsDYMrIAr3h8ktPlF0MfQHq6eggOcpO9ee/EaQ4yf
+         SUzXykVh4yNUBtRG/Rfj6RemhKi4AFsuYxiNy+a8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
+        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
         Himanshu Madhani <himanshu.madhani@oracle.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        Joe Carnuccio <joe.carnuccio@cavium.com>,
-        Nilesh Javali <njavali@marvell.com>
-Subject: [PATCH 5.17 0980/1126] scsi: qla2xxx: Fix T10 PI tag escape and IP guard options for 28XX adapters
-Date:   Tue,  5 Apr 2022 09:28:47 +0200
-Message-Id: <20220405070436.265883637@linuxfoundation.org>
+        Quinn Tran <qutran@marvell.com>,
+        Nilesh Javali <njavali@marvell.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>
+Subject: [PATCH 5.17 0979/1126] scsi: qla2xxx: edif: Fix clang warning
+Date:   Tue,  5 Apr 2022 09:28:46 +0200
+Message-Id: <20220405070436.237076091@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -52,40 +52,94 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Joe Carnuccio <joe.carnuccio@cavium.com>
+From: Quinn Tran <qutran@marvell.com>
 
-commit 4c103a802c69fca63976af6b372ccba39ed74370 upstream.
+commit 73825fd7a37c1a685e9e9e27c9dc91ef1f3e2971 upstream.
 
-28XX adapters are capable of detecting both T10 PI tag escape values as
-well as IP guard. This was missed due to the adapter type missed in the
-corresponding macros. Fix this by adding support for 28xx in those macros.
+Silence compile warning due to unaligned memory access.
 
-Link: https://lore.kernel.org/r/20220110050218.3958-14-njavali@marvell.com
+qla_edif.c:713:45: warning: taking address of packed member 'u' of class or
+   structure 'auth_complete_cmd' may result in an unaligned pointer value
+   [-Waddress-of-packed-member]
+    fcport = qla2x00_find_fcport_by_pid(vha, &appplogiok.u.d_id);
+
+Link: https://lore.kernel.org/r/20220110050218.3958-13-njavali@marvell.com
 Cc: stable@vger.kernel.org
+Reported-by: kernel test robot <lkp@intel.com>
 Reviewed-by: Himanshu Madhani <himanshu.madhani@oracle.com>
-Tested-by: Martin K. Petersen <martin.petersen@oracle.com>
-Signed-off-by: Joe Carnuccio <joe.carnuccio@cavium.com>
+Signed-off-by: Quinn Tran <qutran@marvell.com>
 Signed-off-by: Nilesh Javali <njavali@marvell.com>
 Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/scsi/qla2xxx/qla_def.h |    6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ drivers/scsi/qla2xxx/qla_edif.c |   22 +++++++++++++++++++---
+ 1 file changed, 19 insertions(+), 3 deletions(-)
 
---- a/drivers/scsi/qla2xxx/qla_def.h
-+++ b/drivers/scsi/qla2xxx/qla_def.h
-@@ -4271,8 +4271,10 @@ struct qla_hw_data {
- #define QLA_ABTS_WAIT_ENABLED(_sp) \
- 	(QLA_NVME_IOS(_sp) && QLA_ABTS_FW_ENABLED(_sp->fcport->vha->hw))
+--- a/drivers/scsi/qla2xxx/qla_edif.c
++++ b/drivers/scsi/qla2xxx/qla_edif.c
+@@ -668,6 +668,11 @@ qla_edif_app_authok(scsi_qla_host_t *vha
+ 	    bsg_job->request_payload.sg_cnt, &appplogiok,
+ 	    sizeof(struct auth_complete_cmd));
  
--#define IS_PI_UNINIT_CAPABLE(ha)	(IS_QLA83XX(ha) || IS_QLA27XX(ha))
--#define IS_PI_IPGUARD_CAPABLE(ha)	(IS_QLA83XX(ha) || IS_QLA27XX(ha))
-+#define IS_PI_UNINIT_CAPABLE(ha)	(IS_QLA83XX(ha) || IS_QLA27XX(ha) || \
-+					 IS_QLA28XX(ha))
-+#define IS_PI_IPGUARD_CAPABLE(ha)	(IS_QLA83XX(ha) || IS_QLA27XX(ha) || \
-+					 IS_QLA28XX(ha))
- #define IS_PI_DIFB_DIX0_CAPABLE(ha)	(0)
- #define IS_PI_SPLIT_DET_CAPABLE_HBA(ha)	(IS_QLA83XX(ha) || IS_QLA27XX(ha) || \
- 					IS_QLA28XX(ha))
++	/* silent unaligned access warning */
++	portid.b.domain = appplogiok.u.d_id.b.domain;
++	portid.b.area   = appplogiok.u.d_id.b.area;
++	portid.b.al_pa  = appplogiok.u.d_id.b.al_pa;
++
+ 	switch (appplogiok.type) {
+ 	case PL_TYPE_WWPN:
+ 		fcport = qla2x00_find_fcport_by_wwpn(vha,
+@@ -678,7 +683,7 @@ qla_edif_app_authok(scsi_qla_host_t *vha
+ 			    __func__, appplogiok.u.wwpn);
+ 		break;
+ 	case PL_TYPE_DID:
+-		fcport = qla2x00_find_fcport_by_pid(vha, &appplogiok.u.d_id);
++		fcport = qla2x00_find_fcport_by_pid(vha, &portid);
+ 		if (!fcport)
+ 			ql_dbg(ql_dbg_edif, vha, 0x911d,
+ 			    "%s d_id lookup failed: %x\n", __func__,
+@@ -777,6 +782,11 @@ qla_edif_app_authfail(scsi_qla_host_t *v
+ 	    bsg_job->request_payload.sg_cnt, &appplogifail,
+ 	    sizeof(struct auth_complete_cmd));
+ 
++	/* silent unaligned access warning */
++	portid.b.domain = appplogifail.u.d_id.b.domain;
++	portid.b.area   = appplogifail.u.d_id.b.area;
++	portid.b.al_pa  = appplogifail.u.d_id.b.al_pa;
++
+ 	/*
+ 	 * TODO: edif: app has failed this plogi. Inform driver to
+ 	 * take any action (if any).
+@@ -788,7 +798,7 @@ qla_edif_app_authfail(scsi_qla_host_t *v
+ 		SET_DID_STATUS(bsg_reply->result, DID_OK);
+ 		break;
+ 	case PL_TYPE_DID:
+-		fcport = qla2x00_find_fcport_by_pid(vha, &appplogifail.u.d_id);
++		fcport = qla2x00_find_fcport_by_pid(vha, &portid);
+ 		if (!fcport)
+ 			ql_dbg(ql_dbg_edif, vha, 0x911d,
+ 			    "%s d_id lookup failed: %x\n", __func__,
+@@ -1253,6 +1263,7 @@ qla24xx_sadb_update(struct bsg_job *bsg_
+ 	int result = 0;
+ 	struct qla_sa_update_frame sa_frame;
+ 	struct srb_iocb *iocb_cmd;
++	port_id_t portid;
+ 
+ 	ql_dbg(ql_dbg_edif + ql_dbg_verbose, vha, 0x911d,
+ 	    "%s entered, vha: 0x%p\n", __func__, vha);
+@@ -1276,7 +1287,12 @@ qla24xx_sadb_update(struct bsg_job *bsg_
+ 		goto done;
+ 	}
+ 
+-	fcport = qla2x00_find_fcport_by_pid(vha, &sa_frame.port_id);
++	/* silent unaligned access warning */
++	portid.b.domain = sa_frame.port_id.b.domain;
++	portid.b.area   = sa_frame.port_id.b.area;
++	portid.b.al_pa  = sa_frame.port_id.b.al_pa;
++
++	fcport = qla2x00_find_fcport_by_pid(vha, &portid);
+ 	if (fcport) {
+ 		found = 1;
+ 		if (sa_frame.flags == QLA_SA_UPDATE_FLAGS_TX_KEY)
 
 
