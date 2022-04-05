@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D22DC47081
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:55:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1065CC4708E
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:56:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240363AbiDEIqP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 04:46:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36592 "EHLO
+        id S240559AbiDEIqt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 04:46:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58414 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233367AbiDEIGW (ORCPT
+        with ESMTP id S233770AbiDEIIx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:06:22 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47F6069CC4;
-        Tue,  5 Apr 2022 01:01:44 -0700 (PDT)
+        Tue, 5 Apr 2022 04:08:53 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D04BE6C498;
+        Tue,  5 Apr 2022 01:02:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4C868617BD;
-        Tue,  5 Apr 2022 08:01:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4E5D5C385A0;
-        Tue,  5 Apr 2022 08:01:43 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2C8C4B81B16;
+        Tue,  5 Apr 2022 08:02:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 963C5C385A0;
+        Tue,  5 Apr 2022 08:02:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649145703;
-        bh=M07nTir5uJAh2RXjL2uD9Y/H2ywZv65EE3UFaYDtTiI=;
+        s=korg; t=1649145740;
+        bh=0C40SgLp/lwFglandYY9iJGkhMxzFWz9IyNwKsYpjig=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=m0euoDSbFlqPyl96lUGglJkXS6IQxr2g18kmurEHCymdCh75jCOIn8IC/2pw9bzTX
-         gIXd+NP0c7ubjgHuoNRT18MY1NG8q/DKF3IXmFPfZsQ+VLsL3otMN6TjMEhrIxDUK+
-         bwWrlU8FyaZOlHWYMN/oh7BQLfkI83+somY+ReW8=
+        b=Eoh+4BWmoCZUKMF7LHyio//bVv8YJrKjMYc/0zDYt1CH6w+eJHLFf3CGmfyjhmWmK
+         rKf7m4nh7PZK896YDf/MXA3jl5f3fm/8UT6tMqJQBNjvE3t+PuLWOklKfMKtVyw7pO
+         bHGHG2ZejeRDRLZs34JdPUzcqK5sp8GxbrZ22kvo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Lorenzo Bianconi <lorenzo@kernel.org>,
-        Felix Fietkau <nbd@nbd.name>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0498/1126] mt76: mt7921: fix a leftover race in runtime-pm
-Date:   Tue,  5 Apr 2022 09:20:45 +0200
-Message-Id: <20220405070422.244519556@linuxfoundation.org>
+        stable@vger.kernel.org, Zhou Qingyang <zhou1615@umn.edu>,
+        Lyude Paul <lyude@redhat.com>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 0464/1126] drm/nouveau/acr: Fix undefined behavior in nvkm_acr_hsfw_load_bl()
+Date:   Tue,  5 Apr 2022 09:20:11 +0200
+Message-Id: <20220405070421.245619603@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -48,41 +48,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lorenzo Bianconi <lorenzo@kernel.org>
+From: Zhou Qingyang <zhou1615@umn.edu>
 
-[ Upstream commit 591cdccebdd4d02eb46d400dea911136400cc567 ]
+[ Upstream commit 2343bcdb4747d4f418a4daf2e898b94f86c24a59 ]
 
-Fix a possible race in mt7921_pm_power_save_work() if rx/tx napi
-schedules ps_work and we are currently accessing device register
-on a different cpu.
+In nvkm_acr_hsfw_load_bl(), the return value of kmalloc() is directly
+passed to memcpy(), which could lead to undefined behavior on failure
+of kmalloc().
 
-Fixes: 1d8efc741df8 ("mt76: mt7921: introduce Runtime PM support")
-Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
-Signed-off-by: Felix Fietkau <nbd@nbd.name>
+Fix this bug by using kmemdup() instead of kmalloc()+memcpy().
+
+This bug was found by a static analyzer.
+
+Builds with 'make allyesconfig' show no new warnings,
+and our static analyzer no longer warns about this code.
+
+Fixes: 22dcda45a3d1 ("drm/nouveau/acr: implement new subdev to replace "secure boot"")
+Signed-off-by: Zhou Qingyang <zhou1615@umn.edu>
+Reviewed-by: Lyude Paul <lyude@redhat.com>
+Signed-off-by: Lyude Paul <lyude@redhat.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220124165856.57022-1-zhou1615@umn.edu
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/mediatek/mt76/mt7921/mac.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
+ drivers/gpu/drm/nouveau/nvkm/subdev/acr/hsfw.c | 9 +++++----
+ 1 file changed, 5 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/wireless/mediatek/mt76/mt7921/mac.c b/drivers/net/wireless/mediatek/mt76/mt7921/mac.c
-index ec10f95a4649..3e83a0c33143 100644
---- a/drivers/net/wireless/mediatek/mt76/mt7921/mac.c
-+++ b/drivers/net/wireless/mediatek/mt76/mt7921/mac.c
-@@ -1551,6 +1551,14 @@ void mt7921_pm_power_save_work(struct work_struct *work)
- 	    test_bit(MT76_HW_SCHED_SCANNING, &mphy->state))
- 		goto out;
+diff --git a/drivers/gpu/drm/nouveau/nvkm/subdev/acr/hsfw.c b/drivers/gpu/drm/nouveau/nvkm/subdev/acr/hsfw.c
+index 667fa016496e..a6ea89a5d51a 100644
+--- a/drivers/gpu/drm/nouveau/nvkm/subdev/acr/hsfw.c
++++ b/drivers/gpu/drm/nouveau/nvkm/subdev/acr/hsfw.c
+@@ -142,11 +142,12 @@ nvkm_acr_hsfw_load_bl(struct nvkm_acr *acr, const char *name, int ver,
  
-+	if (mutex_is_locked(&dev->mt76.mutex))
-+		/* if mt76 mutex is held we should not put the device
-+		 * to sleep since we are currently accessing device
-+		 * register map. We need to wait for the next power_save
-+		 * trigger.
-+		 */
-+		goto out;
-+
- 	if (time_is_after_jiffies(dev->pm.last_activity + delta)) {
- 		delta = dev->pm.last_activity + delta - jiffies;
- 		goto out;
+ 	hsfw->imem_size = desc->code_size;
+ 	hsfw->imem_tag = desc->start_tag;
+-	hsfw->imem = kmalloc(desc->code_size, GFP_KERNEL);
+-	memcpy(hsfw->imem, data + desc->code_off, desc->code_size);
+-
++	hsfw->imem = kmemdup(data + desc->code_off, desc->code_size, GFP_KERNEL);
+ 	nvkm_firmware_put(fw);
+-	return 0;
++	if (!hsfw->imem)
++		return -ENOMEM;
++	else
++		return 0;
+ }
+ 
+ int
 -- 
 2.34.1
 
