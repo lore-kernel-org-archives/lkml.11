@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 86017C43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 23C3DC38161
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:19:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234640AbiDEINq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 04:13:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55916 "EHLO
+        id S234483AbiDEINQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 04:13:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47998 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234509AbiDEH6h (ORCPT
+        with ESMTP id S234207AbiDEH6D (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 03:58:37 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AACB5A5E9E;
-        Tue,  5 Apr 2022 00:52:38 -0700 (PDT)
+        Tue, 5 Apr 2022 03:58:03 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2ACCB98F7B;
+        Tue,  5 Apr 2022 00:52:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 205136172C;
-        Tue,  5 Apr 2022 07:52:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2764DC340EE;
-        Tue,  5 Apr 2022 07:52:36 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 15A7DB81B9C;
+        Tue,  5 Apr 2022 07:52:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6885BC34111;
+        Tue,  5 Apr 2022 07:52:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649145157;
-        bh=QdZzKpYR0Ak0Jkw0efMXTY/uKg67msQsuJfRVbPyVW4=;
+        s=korg; t=1649145121;
+        bh=PJWGIhznlwDa6zonBzMyklkj0mkLnKHkQDd53wid34U=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0mHJb9yTjgJAwsn3tBEhqlW3XmUNawgFh4/4ygZZxACXXRYYpZUroHG/5z/jzkNtE
-         KJ/r3dwzoyQGBh5FLzvs+Mev3PgA5PbxKBO9l5ONQEvY9eg9ROoU3fYfg4Biz0JlRg
-         lOGVywluG2PmwiDOXXg3EKkh6Zk4cl3Yd2JzHIps=
+        b=Hh0Q+0gjXqHPvDH+NNdZrUvUpk5O5RM3IWk7TTYGgkyvH3PQnpRp8VWvvTOYKknlY
+         j7ug96k8TbstnExRNX8v8jh8opSvX9KZ8gnE4nGPIoXoZYigsWXrH+PLpJ9eLBfpAB
+         Or4bKvk65Elhee2ci+hWF6gzw/1qel4XfUecRa4E=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?D=C4=81vis=20Mos=C4=81ns?= <davispuh@gmail.com>,
-        John Allen <john.allen@amd.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
+        stable@vger.kernel.org, Sam Protsenko <semen.protsenko@linaro.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0257/1126] crypto: ccp - ccp_dmaengine_unregister release dma channels
-Date:   Tue,  5 Apr 2022 09:16:44 +0200
-Message-Id: <20220405070415.154399786@linuxfoundation.org>
+Subject: [PATCH 5.17 0291/1126] pinctrl: samsung: Remove EINT handler for Exynos850 ALIVE and CMGP gpios
+Date:   Tue,  5 Apr 2022 09:17:18 +0200
+Message-Id: <20220405070416.156152781@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -51,64 +49,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dāvis Mosāns <davispuh@gmail.com>
+From: Sam Protsenko <semen.protsenko@linaro.org>
 
-[ Upstream commit 54cce8ecb9254f971b40a72911c6da403720a2d2 ]
+[ Upstream commit 96f79935015cf3d7ca6fabf63cd13b8af45a7713 ]
 
-ccp_dmaengine_register adds dma_chan->device_node to dma_dev->channels list
-but ccp_dmaengine_unregister didn't remove them.
-That can cause crashes in various dmaengine methods that tries to use dma_dev->channels
+GPIO_ALIVE and GPIO_CMGP blocks in Exynos850 SoC don't have EINT
+capabilities (like EINT_SVC register), and there are no corresponding
+interrupts wired to GIC. Instead those blocks have wake-up interrupts
+for each pin. The ".eint_gpio_init" callbacks were specified by mistake
+for these blocks, when porting pinctrl code from downstream kernel. That
+leads to error messages like this:
 
-Fixes: 58ea8abf4904 ("crypto: ccp - Register the CCP as a DMA...")
-Signed-off-by: Dāvis Mosāns <davispuh@gmail.com>
-Acked-by: John Allen <john.allen@amd.com>
-Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+    samsung-pinctrl 11850000.pinctrl: irq number not available
+
+Remove ".eint_gpio_init" for pinctrl_alive and pinctrl_gpmc to fix this
+error. This change doesn't affect proper interrupt handling for related
+pins, as all those pins are handled in ".eint_wkup_init".
+
+Fixes: cdd3d945dcec ("pinctrl: samsung: Add Exynos850 SoC specific data")
+Signed-off-by: Sam Protsenko <semen.protsenko@linaro.org>
+Link: https://lore.kernel.org/r/20220114203757.4860-1-semen.protsenko@linaro.org
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/crypto/ccp/ccp-dmaengine.c | 16 ++++++++++++++++
- 1 file changed, 16 insertions(+)
+ drivers/pinctrl/samsung/pinctrl-exynos-arm64.c | 2 --
+ 1 file changed, 2 deletions(-)
 
-diff --git a/drivers/crypto/ccp/ccp-dmaengine.c b/drivers/crypto/ccp/ccp-dmaengine.c
-index d718db224be4..7d4b4ad1db1f 100644
---- a/drivers/crypto/ccp/ccp-dmaengine.c
-+++ b/drivers/crypto/ccp/ccp-dmaengine.c
-@@ -632,6 +632,20 @@ static int ccp_terminate_all(struct dma_chan *dma_chan)
- 	return 0;
- }
- 
-+static void ccp_dma_release(struct ccp_device *ccp)
-+{
-+	struct ccp_dma_chan *chan;
-+	struct dma_chan *dma_chan;
-+	unsigned int i;
-+
-+	for (i = 0; i < ccp->cmd_q_count; i++) {
-+		chan = ccp->ccp_dma_chan + i;
-+		dma_chan = &chan->dma_chan;
-+		tasklet_kill(&chan->cleanup_tasklet);
-+		list_del_rcu(&dma_chan->device_node);
-+	}
-+}
-+
- int ccp_dmaengine_register(struct ccp_device *ccp)
- {
- 	struct ccp_dma_chan *chan;
-@@ -736,6 +750,7 @@ int ccp_dmaengine_register(struct ccp_device *ccp)
- 	return 0;
- 
- err_reg:
-+	ccp_dma_release(ccp);
- 	kmem_cache_destroy(ccp->dma_desc_cache);
- 
- err_cache:
-@@ -752,6 +767,7 @@ void ccp_dmaengine_unregister(struct ccp_device *ccp)
- 		return;
- 
- 	dma_async_device_unregister(dma_dev);
-+	ccp_dma_release(ccp);
- 
- 	kmem_cache_destroy(ccp->dma_desc_cache);
- 	kmem_cache_destroy(ccp->dma_cmd_cache);
+diff --git a/drivers/pinctrl/samsung/pinctrl-exynos-arm64.c b/drivers/pinctrl/samsung/pinctrl-exynos-arm64.c
+index 2e490e7696f4..4102ce955bd7 100644
+--- a/drivers/pinctrl/samsung/pinctrl-exynos-arm64.c
++++ b/drivers/pinctrl/samsung/pinctrl-exynos-arm64.c
+@@ -585,13 +585,11 @@ static const struct samsung_pin_ctrl exynos850_pin_ctrl[] __initconst = {
+ 		/* pin-controller instance 0 ALIVE data */
+ 		.pin_banks	= exynos850_pin_banks0,
+ 		.nr_banks	= ARRAY_SIZE(exynos850_pin_banks0),
+-		.eint_gpio_init = exynos_eint_gpio_init,
+ 		.eint_wkup_init = exynos_eint_wkup_init,
+ 	}, {
+ 		/* pin-controller instance 1 CMGP data */
+ 		.pin_banks	= exynos850_pin_banks1,
+ 		.nr_banks	= ARRAY_SIZE(exynos850_pin_banks1),
+-		.eint_gpio_init = exynos_eint_gpio_init,
+ 		.eint_wkup_init = exynos_eint_wkup_init,
+ 	}, {
+ 		/* pin-controller instance 2 AUD data */
 -- 
 2.34.1
 
