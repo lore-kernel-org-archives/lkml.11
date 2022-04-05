@@ -2,75 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CEF2C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 52369C43219
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 02:08:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1445657AbiDFCGS (ORCPT
+        id S1846595AbiDFCH3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 22:06:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50674 "EHLO
+        Tue, 5 Apr 2022 22:07:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52438 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1457633AbiDEQWq (ORCPT
+        with ESMTP id S1354221AbiDEKMT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 12:22:46 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8823366FA4;
-        Tue,  5 Apr 2022 09:20:48 -0700 (PDT)
+        Tue, 5 Apr 2022 06:12:19 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 338375A0B3;
+        Tue,  5 Apr 2022 02:59:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 242656181D;
-        Tue,  5 Apr 2022 16:20:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2C7BDC385A0;
-        Tue,  5 Apr 2022 16:20:47 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649175647;
-        bh=HeFS7lEAWZqOwBk9QGxbfXzbnQohh/dOySuSdkYeJ2s=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=YkK+L2CHvDG+MpJnr4NtEJT6GXQT49oMpvk9f3EO/SOMI8HOUBJZVYQxh1NfaN/KS
-         dsL4dpf7Is/fDx7mz6qfLycZH/CsKvO1bQZYo8qlXPvBoBWv7smYddYteBzdB5O+La
-         XRHXXPlKqPw0Uiqg7iII4sRmrs1gbzrPbB6TLAXio+2EOoZH/sZBg9LydmI0NXqFCX
-         gmrAEZUmwj+imCb4oqkea27jm01Hven5RFZ6dLmKFLhoT5J9vjCWVdHArmmnfqYsPh
-         UU9sGY8uEBDg4LfcyuNSItLPEvMaNsZ+iXw3vWFOvSFVyFc/e1eEpuU0CW5Q+9zMVB
-         x2A++9nRvvV6w==
-Date:   Tue, 5 Apr 2022 09:20:46 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Kalle Valo <kvalo@kernel.org>
-Cc:     =?UTF-8?B?SsOpcsO0bWU=?= Pouiller <jerome.pouiller@silabs.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        devel@driverdev.osuosl.org, linux-kernel@vger.kernel.org,
-        "David S . Miller" <davem@davemloft.net>
-Subject: Re: [PATCH v10 0/1] wfx: get out from the staging area
-Message-ID: <20220405092046.465ff7e5@kernel.org>
-In-Reply-To: <878rskrod1.fsf@kernel.org>
-References: <20220226092142.10164-1-Jerome.Pouiller@silabs.com>
-        <YhojjHGp4EfsTpnG@kroah.com>
-        <87wnhhsr9m.fsf@kernel.org>
-        <5830958.DvuYhMxLoT@pc-42>
-        <878rslt975.fsf@tynnyri.adurom.net>
-        <20220404232247.01cc6567@kernel.org>
-        <20220404232930.05dd49cf@kernel.org>
-        <878rskrod1.fsf@kernel.org>
+        by ams.source.kernel.org (Postfix) with ESMTPS id D9993B817D3;
+        Tue,  5 Apr 2022 09:59:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 31455C385A2;
+        Tue,  5 Apr 2022 09:59:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649152744;
+        bh=7uhkbtOUa9s8KzYDK74oftBUK3hU4EOK2/CM37NcBEU=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=2d18AOwxakmjGV21a6J30WZ3O9jtIYRkbHITVH2ba73whvMIEntNcBZLeBEfvTQYo
+         5qF7qsFNHDo7alj3lUn8U27WDXw447yX3hZ9pcf+j8kBoVe8NiaPKLsmxIzB86y8oB
+         ZIBE14oZE+M8N854LDwQhz9WoE39fYhwQ9V33YqQ=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Hulk Robot <hulkci@huawei.com>,
+        Zheng Bin <zhengbin13@huawei.com>,
+        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
+        Mark Brown <broonie@kernel.org>
+Subject: [PATCH 5.15 887/913] ASoC: SOF: Intel: Fix build error without SND_SOC_SOF_PCI_DEV
+Date:   Tue,  5 Apr 2022 09:32:29 +0200
+Message-Id: <20220405070406.408478571@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 05 Apr 2022 10:16:58 +0300 Kalle Valo wrote:
-> Sure, that would technically work. But I just think it's cleaner to use
-> -rc1 (or later) as the baseline for an immutable branch. If the baseline
-> is an arbitrary commit somewhere within merge windows commits, it's more
-> work for everyone to verify the branch is suitable.
-> 
-> Also in general I would also prefer to base -next trees to -rc1 or newer
-> to make the bisect cleaner. The less we need to test kernels from the
-> merge window (ie. commits after the final release and before -rc1) the
-> better.
-> 
-> But this is just a small wish from me, I fully understand that it might
-> be too much changes to your process. Wanted to point out this anyway.
+From: Zheng Bin <zhengbin13@huawei.com>
 
-Forwarded!
+commit 664d66dc0a64b32e60a5ad59a9aebb08676a612b upstream.
+
+If SND_SOC_SOF_PCI_DEV is n, bulding fails:
+
+sound/soc/sof/intel/pci-tng.o:(.data+0x1c0): undefined reference to `sof_pci_probe'
+sound/soc/sof/intel/pci-tng.o:(.data+0x1c8): undefined reference to `sof_pci_remove'
+sound/soc/sof/intel/pci-tng.o:(.data+0x1e0): undefined reference to `sof_pci_shutdown'
+sound/soc/sof/intel/pci-tng.o:(.data+0x290): undefined reference to `sof_pci_pm'
+
+Make SND_SOC_SOF_MERRIFIELD select SND_SOC_SOF_PCI_DEV to fix this.
+
+Fixes: 8d4ba1be3d22 ("ASoC: SOF: pci: split PCI into different drivers")
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Zheng Bin <zhengbin13@huawei.com>
+Acked-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+Link: https://lore.kernel.org/r/20220323092501.145879-1-zhengbin13@huawei.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ sound/soc/sof/intel/Kconfig |    1 +
+ 1 file changed, 1 insertion(+)
+
+--- a/sound/soc/sof/intel/Kconfig
++++ b/sound/soc/sof/intel/Kconfig
+@@ -84,6 +84,7 @@ if SND_SOC_SOF_PCI
+ config SND_SOC_SOF_MERRIFIELD
+ 	tristate "SOF support for Tangier/Merrifield"
+ 	default SND_SOC_SOF_PCI
++	select SND_SOC_SOF_PCI_DEV
+ 	select SND_SOC_SOF_INTEL_ATOM_HIFI_EP
+ 	help
+ 	  This adds support for Sound Open Firmware for Intel(R) platforms
+
+
