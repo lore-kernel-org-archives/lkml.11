@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3BC43C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D2335C41535
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:37:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241979AbiDEIgP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 04:36:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52988 "EHLO
+        id S242012AbiDEIgZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 04:36:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51740 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234414AbiDEH6O (ORCPT
+        with ESMTP id S234618AbiDEH6m (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 03:58:14 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B79ABA2040;
-        Tue,  5 Apr 2022 00:52:27 -0700 (PDT)
+        Tue, 5 Apr 2022 03:58:42 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE4F729C9E;
+        Tue,  5 Apr 2022 00:53:01 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E166E615C3;
-        Tue,  5 Apr 2022 07:52:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EF5B1C340EE;
-        Tue,  5 Apr 2022 07:52:25 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 622D8B81A32;
+        Tue,  5 Apr 2022 07:53:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CC266C3410F;
+        Tue,  5 Apr 2022 07:52:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649145146;
-        bh=xMuBtpSMi0tR4uqVjAuMkRQrPn1kVymN+i1l75YiSig=;
+        s=korg; t=1649145179;
+        bh=zTGxfhkK5wluCdAjhpp4Ym61n6JhTc9Lz1TCOvhc6Ag=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fdDdDn3kVSeD6jlaqig18SbmfC1nIDTVpUiEnMRJgMwLIExh/1fDDlUK266dvusUT
-         4NwpUA1mxROFyG7+9IXtOos1TzNi/GXYXbTCYTkKqIkaqpXsQk1FN7Bf7He04rHCNB
-         nY0/KqW4YYzuUj+h5IdP7D4r9UZOMWfo0mCJ37Kk=
+        b=Fy2TErkG6qkaKitgJ1RnvFbkaYKRwu7InmALxgbgcjTFZVoEgel5Iq7q44L4hqy+J
+         Uj6nfxu/a3O3SzSZH6Ep6qAA/7ecFkzCumb6mdtkHrp9HzhDsp3CFiYoKs+LojlPx+
+         +7aWtCIaLUj0V6PicAt8GsItm31OF8mFpu1xtdv8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
-        Igor Zhbanov <i.zhbanov@omprussia.ru>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
+        Paul Kocialkowski <paul.kocialkowski@bootlin.com>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0263/1126] clocksource: acpi_pm: fix return value of __setup handler
-Date:   Tue,  5 Apr 2022 09:16:50 +0200
-Message-Id: <20220405070415.330085387@linuxfoundation.org>
+Subject: [PATCH 5.17 0314/1126] media: ov5648: Dont pack controls struct
+Date:   Tue,  5 Apr 2022 09:17:41 +0200
+Message-Id: <20220405070416.832916923@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -50,48 +51,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Randy Dunlap <rdunlap@infradead.org>
+From: Sakari Ailus <sakari.ailus@linux.intel.com>
 
-[ Upstream commit 6a861abceecb68497dd82a324fee45a5332dcece ]
+[ Upstream commit edd4fbff5378a8103470304809195dc8f4b1d42a ]
 
-__setup() handlers should return 1 to obsolete_checksetup() in
-init/main.c to indicate that the boot option has been handled.
-A return of 0 causes the boot option/value to be listed as an Unknown
-kernel parameter and added to init's (limited) environment strings.
+Don't pack the driver specific struct containing control pointers. This
+lead to potential alignment issues when working with the pointers.
 
-The __setup() handler interface isn't meant to handle negative return
-values -- they are non-zero, so they mean "handled" (like a return
-value of 1 does), but that's just a quirk. So return 1 from
-parse_pmtmr(). Also print a warning message if kstrtouint() returns
-an error.
-
-Fixes: 6b148507d3d0 ("pmtmr: allow command line override of ioport")
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Reported-by: Igor Zhbanov <i.zhbanov@omprussia.ru>
-Link: lore.kernel.org/r/64644a2f-4a20-bab3-1e15-3b2cdd0defe3@omprussia.ru
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Reported-by: kernel test robot <lkp@intel.com>
+Fixes: e43ccb0a045f ("media: i2c: Add support for the OV5648 image sensor")
+Reviewed-by: Paul Kocialkowski <paul.kocialkowski@bootlin.com>
+Signed-off-by: Sakari Ailus <sakari.ailus@linux.intel.com>
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/clocksource/acpi_pm.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ drivers/media/i2c/ov5648.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/clocksource/acpi_pm.c b/drivers/clocksource/acpi_pm.c
-index eb596ff9e7bb..279ddff81ab4 100644
---- a/drivers/clocksource/acpi_pm.c
-+++ b/drivers/clocksource/acpi_pm.c
-@@ -229,8 +229,10 @@ static int __init parse_pmtmr(char *arg)
- 	int ret;
+diff --git a/drivers/media/i2c/ov5648.c b/drivers/media/i2c/ov5648.c
+index 947d437ed0ef..78040f0ac02f 100644
+--- a/drivers/media/i2c/ov5648.c
++++ b/drivers/media/i2c/ov5648.c
+@@ -639,7 +639,7 @@ struct ov5648_ctrls {
+ 	struct v4l2_ctrl *pixel_rate;
  
- 	ret = kstrtouint(arg, 16, &base);
--	if (ret)
--		return ret;
-+	if (ret) {
-+		pr_warn("PMTMR: invalid 'pmtmr=' value: '%s'\n", arg);
-+		return 1;
-+	}
+ 	struct v4l2_ctrl_handler handler;
+-} __packed;
++};
  
- 	pr_info("PMTMR IOPort override: 0x%04x -> 0x%04x\n", pmtmr_ioport,
- 		base);
+ struct ov5648_sensor {
+ 	struct device *dev;
 -- 
 2.34.1
 
