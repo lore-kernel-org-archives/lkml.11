@@ -2,305 +2,153 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 791E2C35295
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 22:55:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B08EC43217
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 22:55:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1456307AbiDEWpl (ORCPT
+        id S1456587AbiDEWqY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 18:45:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45732 "EHLO
+        Tue, 5 Apr 2022 18:46:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44178 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1388908AbiDEPUo (ORCPT
+        with ESMTP id S1349260AbiDEJtb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 11:20:44 -0400
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1033C625B;
-        Tue,  5 Apr 2022 06:35:13 -0700 (PDT)
-X-UUID: cc3c544588a74722b01236958dfe2cf2-20220405
-X-UUID: cc3c544588a74722b01236958dfe2cf2-20220405
-Received: from mtkexhb01.mediatek.inc [(172.21.101.102)] by mailgw01.mediatek.com
-        (envelope-from <lecopzer.chen@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 1758654438; Tue, 05 Apr 2022 21:35:05 +0800
-Received: from mtkcas10.mediatek.inc (172.21.101.39) by
- mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
- Tue, 5 Apr 2022 21:35:03 +0800
-Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas10.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Tue, 5 Apr 2022 21:35:03 +0800
-From:   Lecopzer Chen <lecopzer.chen@mediatek.com>
-To:     <pmladek@suse.com>
-CC:     <acme@kernel.org>, <akpm@linux-foundation.org>,
-        <alexander.shishkin@linux.intel.com>, <catalin.marinas@arm.com>,
-        <davem@davemloft.net>, <jolsa@redhat.com>, <jthierry@redhat.com>,
-        <keescook@chromium.org>, <kernelfans@gmail.com>,
-        <lecopzer.chen@mediatek.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <linux-perf-users@vger.kernel.org>, <mark.rutland@arm.com>,
-        <masahiroy@kernel.org>, <matthias.bgg@gmail.com>, <maz@kernel.org>,
-        <mcgrof@kernel.org>, <mingo@redhat.com>, <namhyung@kernel.org>,
-        <nixiaoming@huawei.com>, <peterz@infradead.org>,
-        <sparclinux@vger.kernel.org>, <sumit.garg@linaro.org>,
-        <wangqing@vivo.com>, <will@kernel.org>, <yj.chiang@mediatek.com>
-Subject: Re: [PATCH v3 4/5] kernel/watchdog: Adapt the watchdog_hld interface for async model 
-Date:   Tue, 5 Apr 2022 21:35:03 +0800
-Message-ID: <20220405133503.4487-1-lecopzer.chen@mediatek.com>
-X-Mailer: git-send-email 2.18.0
-In-Reply-To: <20220404144113.GB26840@pathway.suse.cz>
-References: <20220404144113.GB26840@pathway.suse.cz>
+        Tue, 5 Apr 2022 05:49:31 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86A63AB;
+        Tue,  5 Apr 2022 02:43:27 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2657F6164D;
+        Tue,  5 Apr 2022 09:43:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 32838C385A1;
+        Tue,  5 Apr 2022 09:43:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649151806;
+        bh=SFZhGojlTJsFtEcOoR6TsDZqCuHRKYKgaXsoBWxvPMc=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=wsAaXplorpXAHaQGyH1G7Y0yl10x3YT6jInzObjwGDzf5w1hHxsrlGI6hC6UnzTFH
+         imryDRU1uXYiAiIeB9+GNNfJ+myvZwqxv4DxMnwdbRkxJuAzUjmZuxXnJHu3MpqzMS
+         aFdSz6jnsSDjhcZhGDtq5vf6LsYu4sQVGuCKMolA=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        syzbot+2339c27f5c66c652843e@syzkaller.appspotmail.com,
+        Oliver Hartkopp <socketcan@hartkopp.net>,
+        Marc Kleine-Budde <mkl@pengutronix.de>
+Subject: [PATCH 5.15 549/913] can: isotp: sanitize CAN ID checks in isotp_bind()
+Date:   Tue,  5 Apr 2022 09:26:51 +0200
+Message-Id: <20220405070356.303888570@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain
-X-MTK:  N
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-> On Thu 2022-03-24 22:14:04, Lecopzer Chen wrote:
-> > When lockup_detector_init()->watchdog_nmi_probe(), PMU may be not ready
-> > yet. E.g. on arm64, PMU is not ready until
-> > device_initcall(armv8_pmu_driver_init).  And it is deeply integrated
-> > with the driver model and cpuhp. Hence it is hard to push this
-> > initialization before smp_init().
-> > 
-> > But it is easy to take an opposite approach and try to initialize
-> > the watchdog once again later.
-> > The delayed probe is called using workqueues. It need to allocate
-> > memory and must be proceed in a normal context.
-> > The delayed probe is queued only when the early one returns -EBUSY.
-> > It is the return code returned when PMU is not ready yet.
-> > 
-> > Provide an API - retry_lockup_detector_init() for anyone who needs
-> > to delayed init lockup detector.
-> > 
-> > The original assumption is: nobody should use delayed probe after
-> > lockup_detector_check() which has __init attribute.
-> > That is, anyone uses this API must call between lockup_detector_init()
-> > and lockup_detector_check(), and the caller must have __init attribute
-> > 
-> > Co-developed-by: Pingfan Liu <kernelfans@gmail.com>
-> > Signed-off-by: Pingfan Liu <kernelfans@gmail.com>
-> > Signed-off-by: Lecopzer Chen <lecopzer.chen@mediatek.com>
-> > Suggested-by: Petr Mladek <pmladek@suse.com>
-> > ---
-> >  include/linux/nmi.h |  3 ++
-> >  kernel/watchdog.c   | 69 +++++++++++++++++++++++++++++++++++++++++++--
-> >  2 files changed, 70 insertions(+), 2 deletions(-)
-> > 
-> > diff --git a/include/linux/nmi.h b/include/linux/nmi.h
-> > index b7bcd63c36b4..1d84c9a8b460 100644
-> > --- a/include/linux/nmi.h
-> > +++ b/include/linux/nmi.h
-> > @@ -118,6 +118,9 @@ static inline int hardlockup_detector_perf_init(void) { return 0; }
-> >  
-> >  void watchdog_nmi_stop(void);
-> >  void watchdog_nmi_start(void);
-> > +
-> > +extern bool allow_lockup_detector_init_retry;
-> > +void retry_lockup_detector_init(void);
-> >  int watchdog_nmi_probe(void);
-> >  void watchdog_nmi_enable(unsigned int cpu);
-> >  void watchdog_nmi_disable(unsigned int cpu);
-> > diff --git a/kernel/watchdog.c b/kernel/watchdog.c
-> > index b71d434cf648..308ba29f8f0f 100644
-> > --- a/kernel/watchdog.c
-> > +++ b/kernel/watchdog.c
-> > @@ -103,7 +103,13 @@ void __weak watchdog_nmi_disable(unsigned int cpu)
-> >  	hardlockup_detector_perf_disable();
-> >  }
-> >  
-> > -/* Return 0, if a NMI watchdog is available. Error code otherwise */
-> > +/*
-> > + * Arch specific API.
-> > + *
-> > + * Return 0 when NMI watchdog is available, negative value otherwise.
-> > + * The error code -EBUSY is special. It means that a deferred probe
-> > + * might succeed later.
-> > + */
-> >  int __weak __init watchdog_nmi_probe(void)
-> >  {
-> >  	return hardlockup_detector_perf_init();
-> > @@ -839,16 +845,75 @@ static void __init watchdog_sysctl_init(void)
-> >  #define watchdog_sysctl_init() do { } while (0)
-> >  #endif /* CONFIG_SYSCTL */
-> >  
-> > +static void lockup_detector_delay_init(struct work_struct *work);
-> > +bool allow_lockup_detector_init_retry __initdata;
-> > +
-> > +static struct work_struct detector_work __initdata =
-> > +		__WORK_INITIALIZER(detector_work, lockup_detector_delay_init);
-> > +
-> > +static void __init lockup_detector_delay_init(struct work_struct *work)
-> > +{
-> > +	int ret;
-> > +
-> > +	ret = watchdog_nmi_probe();
-> > +	if (ret) {
-> > +		pr_info("Delayed init of the lockup detector failed: %d\n", ret);
-> > +		pr_info("Perf NMI watchdog permanently disabled\n");
-> > +		return;
-> > +	}
-> > +
-> > +	nmi_watchdog_available = true;
-> > +	lockup_detector_setup();
-> 
-> The name of the variable "allow_lockup_detector_init_retry" is
-> slightly confusing in this context. I suggest to add a comment:
-> 
-> 	/* Retry is not needed any longer. */
-> > +	allow_lockup_detector_init_retry = false;
-> 
+From: Oliver Hartkopp <socketcan@hartkopp.net>
 
-Got it, I'll add it, thanks.
+commit 3ea566422cbde9610c2734980d1286ab681bb40e upstream.
 
+Syzbot created an environment that lead to a state machine status that
+can not be reached with a compliant CAN ID address configuration.
+The provided address information consisted of CAN ID 0x6000001 and 0xC28001
+which both boil down to 11 bit CAN IDs 0x001 in sending and receiving.
 
-> 
-> > +}
-> > +
-> > +/*
-> > + * retry_lockup_detector_init - retry init lockup detector if possible.
-> > + *
-> > + * Only take effect when allow_lockup_detector_init_retry is true, which
-> > + * means it must call between lockup_detector_init() and lockup_detector_check().
-> > + * Be aware that caller must have __init attribute, relative functions
-> > + * will be freed after kernel initialization.
-> > + */
-> > +void __init retry_lockup_detector_init(void)
-> > +{
-> > +	if (!allow_lockup_detector_init_retry)
-> > +		return;
-> > +
-> > +	queue_work_on(__smp_processor_id(), system_wq, &detector_work);
-> > +}
-> > +
-> > +/* Ensure the check is called after the initialization of driver */
-> > +static int __init lockup_detector_check(void)
-> > +{
-> > +	/* Make sure no work is pending. */
-> > +	flush_work(&detector_work);
-> 
-> This is racy. We should first disable
-> "allow_lockup_detector_init_retry" to make sure
-> that retry_lockup_detector_init() will not queue
-> the work any longer.
+Sanitize the SFF/EFF CAN ID values before performing the address checks.
 
-But disable before flush_work will make the 
-    lockup_detector_delay_init() ->
-    watchdog_nmi_probe ->
-    +	if (!allow_lockup_detector_init_retry)
-    +		return -EBUSY;
+Fixes: e057dd3fc20f ("can: add ISO 15765-2:2016 transport protocol")
+Link: https://lore.kernel.org/all/20220316164258.54155-1-socketcan@hartkopp.net
+Reported-by: syzbot+2339c27f5c66c652843e@syzkaller.appspotmail.com
+Signed-off-by: Oliver Hartkopp <socketcan@hartkopp.net>
+Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ net/can/isotp.c |   38 ++++++++++++++++++++------------------
+ 1 file changed, 20 insertions(+), 18 deletions(-)
 
-Plese check the code I provide below.
+--- a/net/can/isotp.c
++++ b/net/can/isotp.c
+@@ -1104,6 +1104,7 @@ static int isotp_bind(struct socket *soc
+ 	struct net *net = sock_net(sk);
+ 	int ifindex;
+ 	struct net_device *dev;
++	canid_t tx_id, rx_id;
+ 	int err = 0;
+ 	int notify_enetdown = 0;
+ 	int do_rx_reg = 1;
+@@ -1111,8 +1112,18 @@ static int isotp_bind(struct socket *soc
+ 	if (len < ISOTP_MIN_NAMELEN)
+ 		return -EINVAL;
+ 
+-	if (addr->can_addr.tp.tx_id & (CAN_ERR_FLAG | CAN_RTR_FLAG))
+-		return -EADDRNOTAVAIL;
++	/* sanitize tx/rx CAN identifiers */
++	tx_id = addr->can_addr.tp.tx_id;
++	if (tx_id & CAN_EFF_FLAG)
++		tx_id &= (CAN_EFF_FLAG | CAN_EFF_MASK);
++	else
++		tx_id &= CAN_SFF_MASK;
++
++	rx_id = addr->can_addr.tp.rx_id;
++	if (rx_id & CAN_EFF_FLAG)
++		rx_id &= (CAN_EFF_FLAG | CAN_EFF_MASK);
++	else
++		rx_id &= CAN_SFF_MASK;
+ 
+ 	if (!addr->can_ifindex)
+ 		return -ENODEV;
+@@ -1124,21 +1135,13 @@ static int isotp_bind(struct socket *soc
+ 		do_rx_reg = 0;
+ 
+ 	/* do not validate rx address for functional addressing */
+-	if (do_rx_reg) {
+-		if (addr->can_addr.tp.rx_id == addr->can_addr.tp.tx_id) {
+-			err = -EADDRNOTAVAIL;
+-			goto out;
+-		}
+-
+-		if (addr->can_addr.tp.rx_id & (CAN_ERR_FLAG | CAN_RTR_FLAG)) {
+-			err = -EADDRNOTAVAIL;
+-			goto out;
+-		}
++	if (do_rx_reg && rx_id == tx_id) {
++		err = -EADDRNOTAVAIL;
++		goto out;
+ 	}
+ 
+ 	if (so->bound && addr->can_ifindex == so->ifindex &&
+-	    addr->can_addr.tp.rx_id == so->rxid &&
+-	    addr->can_addr.tp.tx_id == so->txid)
++	    rx_id == so->rxid && tx_id == so->txid)
+ 		goto out;
+ 
+ 	dev = dev_get_by_index(net, addr->can_ifindex);
+@@ -1162,8 +1165,7 @@ static int isotp_bind(struct socket *soc
+ 	ifindex = dev->ifindex;
+ 
+ 	if (do_rx_reg)
+-		can_rx_register(net, dev, addr->can_addr.tp.rx_id,
+-				SINGLE_MASK(addr->can_addr.tp.rx_id),
++		can_rx_register(net, dev, rx_id, SINGLE_MASK(rx_id),
+ 				isotp_rcv, sk, "isotp", sk);
+ 
+ 	dev_put(dev);
+@@ -1183,8 +1185,8 @@ static int isotp_bind(struct socket *soc
+ 
+ 	/* switch to new settings */
+ 	so->ifindex = ifindex;
+-	so->rxid = addr->can_addr.tp.rx_id;
+-	so->txid = addr->can_addr.tp.tx_id;
++	so->rxid = rx_id;
++	so->txid = tx_id;
+ 	so->bound = 1;
+ 
+ out:
 
 
-> 
-> > +	if (!allow_lockup_detector_init_retry)
-> > +		return 0;
-> > +
-> > +	allow_lockup_detector_init_retry = false;
-> > +	pr_info("Delayed init checking failed, please check your driver.\n");
-> 
-> This prints that the init failed without checking the state
-> of the watchdog. I guess that it works but it is far from
-> obvious and any further change might break it.
-> 
-> Is the message really needed?
-> Does it help?
-> What exact driver needs checking?
-> 
-> IMHO, it just makes the code more complicated and
-> it is not worth it.
-> 
-
-I think you're right, the message was needed in the patch v2 because we
-did another retry in lockup_detector_check().
-But now we only do "checking" and the failed message in
-lockup_detector_delay_init should be enough.
-
-
-> I suggest to keep it simple:
-> 
-> /*
->  * Ensure the check is called after the initialization of driver
->  * and before removing init code.
->  */
-> static int __init lockup_detector_check(void)
-> {
-> 	allow_lockup_detector_init_retry = false;
-> 	flush_work(&detector_work);
-> 
-> 	return 0;
-> }
-> 
-
-
-Combine with the first racy problem, let me limit retry_lockup_detector_init
-can be called only once.
-
-how about:
-...
-static bool __init delayed_init_allowed = true;
-...
-/*
- * retry_lockup_detector_init - retry init lockup detector if possible.
- *
- * Only take effect when allow_lockup_detector_init_retry is true, which
- * means it must call between lockup_detector_init() and lockup_detector_check().
- * Be aware that caller must have __init attribute, relative functions
- * will be freed after kernel initialization.
- */
-void __init retry_lockup_detector_init(void)
-{
-	if (!allow_lockup_detector_init_retry || !delayed_init_allowed)
-		return;
-
-	/* 
-	 * we shouldn't queue any delayed init work twice to avoid
-	 * any unwanted racy.
-	 */
-	delayed_init_allowed = false;
-	queue_work_on(__smp_processor_id(), system_wq, &detector_work);
-}
-
-
-/*
- * Ensure the check is called after the initialization of driver
- * and before removing init code.
- */
-static int __init lockup_detector_check(void)
-{
-	delayed_init_allowed = false;
-	flush_work(&detector_work);
-	allow_lockup_detector_init_retry = false;
-
-	return 0;
-}
-
-
-
-> or if you really want that message then I would do:
-> 
-> /*
->  * Ensure the check is called after the initialization of driver
->  * and before removing init code.
->  */
-> static int __init lockup_detector_check(void)
-> {
-> 	bool delayed_init_allowed = allow_lockup_detector_init_retry;
-> 
-> 	allow_lockup_detector_init_retry = false;
-> 	flush_work(&detector_work);
-> 
-> 	if (delayed_init_allowed && !nmi_watchdog_available)
-> 		pr_info("Delayed init failed. Please, check your driver.\n");
-> 
-> 	return 0;
-> }
-> 
-
-
-thanks
-BRs,
-Lecopzer
