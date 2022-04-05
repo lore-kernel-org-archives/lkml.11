@@ -2,47 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 60326C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B649DC43219
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:02:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381312AbiDEL7G (ORCPT
+        id S1381758AbiDEL7d (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 07:59:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47834 "EHLO
+        Tue, 5 Apr 2022 07:59:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46572 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245075AbiDEIxH (ORCPT
+        with ESMTP id S245057AbiDEIxE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:53:07 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93B7C1097;
-        Tue,  5 Apr 2022 01:51:08 -0700 (PDT)
+        Tue, 5 Apr 2022 04:53:04 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4F74F76;
+        Tue,  5 Apr 2022 01:50:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2F9E861509;
-        Tue,  5 Apr 2022 08:51:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 40B8DC385A0;
-        Tue,  5 Apr 2022 08:51:07 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7A006B81BBF;
+        Tue,  5 Apr 2022 08:50:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DE210C385A0;
+        Tue,  5 Apr 2022 08:50:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649148667;
-        bh=vo2l9ZPlJPVhjO2uQ2ACZYHyIJ7GtH8lJKq6iOGV7Tk=;
+        s=korg; t=1649148651;
+        bh=RuudkV80NbnUWQJ3ZBBUJ5p0VXcyoR2tIBAnss2jxn8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=zfrKNTQCb/bAAAJXD5TSAjMUY5Gj3AS+fGsb4DwHPcM+RyNAG7IUQNQUflpPXXiXX
-         oeNiq/i7w1S0qI63gzJRUc49Z6Nk60qBOw2897YUUaI8erIDyjN8LYLd58NZIWCJvY
-         j+TzJ9AMg7N950musNMrmECiMH1a3sqH8HSBjPh8=
+        b=y+5HSTldipMgndUHybpyArCf1H8eEkbTfjbGyxf/ZS+3W/xAxQRqmNoH3hYgCzgJw
+         sO6f6aJLraM82JIcwzOTGlqSlOoXumgjK5AWOjcufdPTXwec0r35TgSTkwJ/poMXCV
+         gytzNH+UcPDsvI5C28jIX+RnSmmuWHDMJT2BWKHo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jesper Dangaard Brouer <brouer@redhat.com>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        Alexander Lobakin <alexandr.lobakin@intel.com>,
-        Michal Swiatkowski <michal.swiatkowski@linux.intel.com>,
-        Kiran Bhandare <kiranx.bhandare@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0439/1017] i40e: respect metadata on XSK Rx to skb
-Date:   Tue,  5 Apr 2022 09:22:32 +0200
-Message-Id: <20220405070407.325572312@linuxfoundation.org>
+Subject: [PATCH 5.16 0393/1017] ASoC: msm8916-wcd-analog: Fix error handling in pm8916_wcd_analog_spmi_probe
+Date:   Tue,  5 Apr 2022 09:21:46 +0200
+Message-Id: <20220405070405.951366644@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -54,66 +50,77 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alexander Lobakin <alexandr.lobakin@intel.com>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit 6dba29537c0f639b482bd8f8bbd50ab4ae74b48d ]
+[ Upstream commit 9ebd62d60edcd4d9c75485e5ccd0b79581ad3c49 ]
 
-For now, if the XDP prog returns XDP_PASS on XSK, the metadata will
-be lost as it doesn't get copied to the skb.
+In the error handling path, the clk_prepare_enable() function
+call should be balanced by a corresponding 'clk_disable_unprepare()'
+call , as already done in the remove function.
 
-Copy it along with the frame headers. Account its size on skb
-allocation, and when copying just treat it as a part of the frame
-and do a pull after to "move" it to the "reserved" zone.
-
-net_prefetch() xdp->data_meta and align the copy size to speed-up
-memcpy() a little and better match i40e_construct_skb().
-
-Fixes: 0a714186d3c0 ("i40e: add AF_XDP zero-copy Rx support")
-Suggested-by: Jesper Dangaard Brouer <brouer@redhat.com>
-Suggested-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-Signed-off-by: Alexander Lobakin <alexandr.lobakin@intel.com>
-Reviewed-by: Michal Swiatkowski <michal.swiatkowski@linux.intel.com>
-Tested-by: Kiran Bhandare <kiranx.bhandare@intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+Fixes: de66b3455023 ("ASoC: codecs: msm8916-wcd-analog: add MBHC support")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Link: https://lore.kernel.org/r/20220316041924.17560-1-linmq006@gmail.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/intel/i40e/i40e_xsk.c | 14 ++++++++++----
- 1 file changed, 10 insertions(+), 4 deletions(-)
+ sound/soc/codecs/msm8916-wcd-analog.c | 22 ++++++++++++++++------
+ 1 file changed, 16 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/i40e/i40e_xsk.c b/drivers/net/ethernet/intel/i40e/i40e_xsk.c
-index dff7c7fcc329..2553b130108d 100644
---- a/drivers/net/ethernet/intel/i40e/i40e_xsk.c
-+++ b/drivers/net/ethernet/intel/i40e/i40e_xsk.c
-@@ -241,19 +241,25 @@ bool i40e_alloc_rx_buffers_zc(struct i40e_ring *rx_ring, u16 count)
- static struct sk_buff *i40e_construct_skb_zc(struct i40e_ring *rx_ring,
- 					     struct xdp_buff *xdp)
- {
-+	unsigned int totalsize = xdp->data_end - xdp->data_meta;
- 	unsigned int metasize = xdp->data - xdp->data_meta;
--	unsigned int datasize = xdp->data_end - xdp->data;
- 	struct sk_buff *skb;
+diff --git a/sound/soc/codecs/msm8916-wcd-analog.c b/sound/soc/codecs/msm8916-wcd-analog.c
+index 3ddd822240e3..971b8360b5b1 100644
+--- a/sound/soc/codecs/msm8916-wcd-analog.c
++++ b/sound/soc/codecs/msm8916-wcd-analog.c
+@@ -1221,8 +1221,10 @@ static int pm8916_wcd_analog_spmi_probe(struct platform_device *pdev)
+ 	}
  
-+	net_prefetch(xdp->data_meta);
-+
- 	/* allocate a skb to store the frags */
--	skb = __napi_alloc_skb(&rx_ring->q_vector->napi, datasize,
-+	skb = __napi_alloc_skb(&rx_ring->q_vector->napi, totalsize,
- 			       GFP_ATOMIC | __GFP_NOWARN);
- 	if (unlikely(!skb))
- 		goto out;
- 
--	memcpy(__skb_put(skb, datasize), xdp->data, datasize);
--	if (metasize)
-+	memcpy(__skb_put(skb, totalsize), xdp->data_meta,
-+	       ALIGN(totalsize, sizeof(long)));
-+
-+	if (metasize) {
- 		skb_metadata_set(skb, metasize);
-+		__skb_pull(skb, metasize);
+ 	irq = platform_get_irq_byname(pdev, "mbhc_switch_int");
+-	if (irq < 0)
+-		return irq;
++	if (irq < 0) {
++		ret = irq;
++		goto err_disable_clk;
 +	}
  
- out:
- 	xsk_buff_free(xdp);
+ 	ret = devm_request_threaded_irq(dev, irq, NULL,
+ 			       pm8916_mbhc_switch_irq_handler,
+@@ -1234,8 +1236,10 @@ static int pm8916_wcd_analog_spmi_probe(struct platform_device *pdev)
+ 
+ 	if (priv->mbhc_btn_enabled) {
+ 		irq = platform_get_irq_byname(pdev, "mbhc_but_press_det");
+-		if (irq < 0)
+-			return irq;
++		if (irq < 0) {
++			ret = irq;
++			goto err_disable_clk;
++		}
+ 
+ 		ret = devm_request_threaded_irq(dev, irq, NULL,
+ 				       mbhc_btn_press_irq_handler,
+@@ -1246,8 +1250,10 @@ static int pm8916_wcd_analog_spmi_probe(struct platform_device *pdev)
+ 			dev_err(dev, "cannot request mbhc button press irq\n");
+ 
+ 		irq = platform_get_irq_byname(pdev, "mbhc_but_rel_det");
+-		if (irq < 0)
+-			return irq;
++		if (irq < 0) {
++			ret = irq;
++			goto err_disable_clk;
++		}
+ 
+ 		ret = devm_request_threaded_irq(dev, irq, NULL,
+ 				       mbhc_btn_release_irq_handler,
+@@ -1264,6 +1270,10 @@ static int pm8916_wcd_analog_spmi_probe(struct platform_device *pdev)
+ 	return devm_snd_soc_register_component(dev, &pm8916_wcd_analog,
+ 				      pm8916_wcd_analog_dai,
+ 				      ARRAY_SIZE(pm8916_wcd_analog_dai));
++
++err_disable_clk:
++	clk_disable_unprepare(priv->mclk);
++	return ret;
+ }
+ 
+ static int pm8916_wcd_analog_spmi_remove(struct platform_device *pdev)
 -- 
 2.34.1
 
