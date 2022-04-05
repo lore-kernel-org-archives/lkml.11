@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EA8AAC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 11:07:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 30074C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 11:07:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237553AbiDELGx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 07:06:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33774 "EHLO
+        id S239189AbiDELHN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 07:07:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53422 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238835AbiDEIa7 (ORCPT
+        with ESMTP id S237691AbiDEInM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:30:59 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D96B4552C;
-        Tue,  5 Apr 2022 01:22:58 -0700 (PDT)
+        Tue, 5 Apr 2022 04:43:12 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEBDE19C2B;
+        Tue,  5 Apr 2022 01:35:45 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 04B8D614D7;
-        Tue,  5 Apr 2022 08:22:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0F21CC385A1;
-        Tue,  5 Apr 2022 08:22:56 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7ADDA614E4;
+        Tue,  5 Apr 2022 08:35:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 86534C385A0;
+        Tue,  5 Apr 2022 08:35:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649146977;
-        bh=lDJ14n+h0TDjSebOjNA/MtyyT1OVEDsvAT9/xrtn/jI=;
+        s=korg; t=1649147744;
+        bh=n+BFEzwOApYau1OiRTnqO3M1ncuHVMLsMx7/cfFVaHU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=e+h2fivrvwmamAhGjlT5+3X2HiqMGN/HNuBYLsroYStn+JYTTA/QWUFW1yM/Ra7ya
-         jI1fLcJ+wGzKgj5yhR9bVZHy/mocIgRIq9d48QoHcC7ztg+fmKXYkERWph2Xlo+XGg
-         JHxc1GJ0ATBcpLHsyTr7h8gbBEJmiXC5srpKPO7o=
+        b=a5Xeiy08yXDrGtH4L9uU6bDyW7y7AFEJizHoJNHSvx3fLJOjDQ9YLnymGYhhXDf5s
+         2aCYbr5mG6304aIY+lopIt1fHxB1S8ixbt4J1detX+oETK0kJdbCfc1bPnftW6rBwP
+         HnVUGaG6vx4MXO5UyoTCS1ZmdlL8Jm9lLwvBWUbw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Paolo Bonzini <pbonzini@redhat.com>
-Subject: [PATCH 5.17 0956/1126] KVM: x86: hyper-v: Drop redundant ex parameter from kvm_hv_send_ipi()
-Date:   Tue,  5 Apr 2022 09:28:23 +0200
-Message-Id: <20220405070435.564359777@linuxfoundation.org>
+        stable@vger.kernel.org, Mohan Kumar <mkumard@nvidia.com>,
+        Takashi Iwai <tiwai@suse.de>
+Subject: [PATCH 5.16 0105/1017] ALSA: hda: Avoid unsol event during RPM suspending
+Date:   Tue,  5 Apr 2022 09:16:58 +0200
+Message-Id: <20220405070357.313351047@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
-References: <20220405070407.513532867@linuxfoundation.org>
+In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
+References: <20220405070354.155796697@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -48,60 +48,70 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vitaly Kuznetsov <vkuznets@redhat.com>
+From: Mohan Kumar <mkumard@nvidia.com>
 
-commit 50e523dd79f6a856d793ce5711719abe27cffbf2 upstream.
+commit 6ddc2f749621d5d45ca03edc9f0616bcda136d29 upstream.
 
-'struct kvm_hv_hcall' has all the required information already,
-there's no need to pass 'ex' additionally.
+There is a corner case with unsol event handling during codec runtime
+suspending state. When the codec runtime suspend call initiated, the
+codec->in_pm atomic variable would be 0, currently the codec runtime
+suspend function calls snd_hdac_enter_pm() which will just increments
+the codec->in_pm atomic variable. Consider unsol event happened just
+after this step and before snd_hdac_leave_pm() in the codec runtime
+suspend function. The snd_hdac_power_up_pm() in the unsol event
+flow in hdmi_present_sense_via_verbs() function would just increment
+the codec->in_pm atomic variable without calling pm_runtime_get_sync
+function.
 
-No functional change intended.
+As codec runtime suspend flow is already in progress and in parallel
+unsol event is also accessing the codec verbs, as soon as codec
+suspend flow completes and clocks are  switched off before completing
+the unsol event handling as both functions doesn't wait for each other.
+This will result in below errors
 
-Cc: stable@vger.kernel.org # 5.14.x
-Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
-Message-Id: <20220222154642.684285-2-vkuznets@redhat.com>
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+[  589.428020] tegra-hda 3510000.hda: azx_get_response timeout, switching
+to polling mode: last cmd=0x505f2f57
+[  589.428344] tegra-hda 3510000.hda: spurious response 0x80000074:0x5,
+last cmd=0x505f2f57
+[  589.428547] tegra-hda 3510000.hda: spurious response 0x80000065:0x5,
+last cmd=0x505f2f57
+
+To avoid this, the unsol event flow should not perform any codec verb
+related operations during RPM_SUSPENDING state.
+
+Signed-off-by: Mohan Kumar <mkumard@nvidia.com>
+Cc: <stable@vger.kernel.org>
+Link: https://lore.kernel.org/r/20220329155940.26331-1-mkumard@nvidia.com
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/kvm/hyperv.c |    8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ sound/pci/hda/patch_hdmi.c |    8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
 
---- a/arch/x86/kvm/hyperv.c
-+++ b/arch/x86/kvm/hyperv.c
-@@ -1875,7 +1875,7 @@ static void kvm_send_ipi_to_many(struct
- 	}
- }
+--- a/sound/pci/hda/patch_hdmi.c
++++ b/sound/pci/hda/patch_hdmi.c
+@@ -1617,6 +1617,7 @@ static void hdmi_present_sense_via_verbs
+ 	struct hda_codec *codec = per_pin->codec;
+ 	struct hdmi_spec *spec = codec->spec;
+ 	struct hdmi_eld *eld = &spec->temp_eld;
++	struct device *dev = hda_codec_dev(codec);
+ 	hda_nid_t pin_nid = per_pin->pin_nid;
+ 	int dev_id = per_pin->dev_id;
+ 	/*
+@@ -1630,8 +1631,13 @@ static void hdmi_present_sense_via_verbs
+ 	int present;
+ 	int ret;
  
--static u64 kvm_hv_send_ipi(struct kvm_vcpu *vcpu, struct kvm_hv_hcall *hc, bool ex)
-+static u64 kvm_hv_send_ipi(struct kvm_vcpu *vcpu, struct kvm_hv_hcall *hc)
- {
- 	struct kvm *kvm = vcpu->kvm;
- 	struct hv_send_ipi_ex send_ipi_ex;
-@@ -1889,7 +1889,7 @@ static u64 kvm_hv_send_ipi(struct kvm_vc
- 	u32 vector;
- 	bool all_cpus;
++#ifdef	CONFIG_PM
++	if (dev->power.runtime_status == RPM_SUSPENDING)
++		return;
++#endif
++
+ 	ret = snd_hda_power_up_pm(codec);
+-	if (ret < 0 && pm_runtime_suspended(hda_codec_dev(codec)))
++	if (ret < 0 && pm_runtime_suspended(dev))
+ 		goto out;
  
--	if (!ex) {
-+	if (hc->code == HVCALL_SEND_IPI) {
- 		if (!hc->fast) {
- 			if (unlikely(kvm_read_guest(kvm, hc->ingpa, &send_ipi,
- 						    sizeof(send_ipi))))
-@@ -2279,14 +2279,14 @@ int kvm_hv_hypercall(struct kvm_vcpu *vc
- 			ret = HV_STATUS_INVALID_HYPERCALL_INPUT;
- 			break;
- 		}
--		ret = kvm_hv_send_ipi(vcpu, &hc, false);
-+		ret = kvm_hv_send_ipi(vcpu, &hc);
- 		break;
- 	case HVCALL_SEND_IPI_EX:
- 		if (unlikely(hc.fast || hc.rep)) {
- 			ret = HV_STATUS_INVALID_HYPERCALL_INPUT;
- 			break;
- 		}
--		ret = kvm_hv_send_ipi(vcpu, &hc, true);
-+		ret = kvm_hv_send_ipi(vcpu, &hc);
- 		break;
- 	case HVCALL_POST_DEBUG_DATA:
- 	case HVCALL_RETRIEVE_DEBUG_DATA:
+ 	present = snd_hda_jack_pin_sense(codec, pin_nid, dev_id);
 
 
