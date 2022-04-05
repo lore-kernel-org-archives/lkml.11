@@ -2,124 +2,328 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D6C5EC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:15:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 96E34C4167B
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:15:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384626AbiDEUFK (ORCPT
+        id S1385023AbiDEUFP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 16:05:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36768 "EHLO
+        Tue, 5 Apr 2022 16:05:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49476 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1457297AbiDEQDE (ORCPT
+        with ESMTP id S1447085AbiDEPpp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 12:03:04 -0400
-Received: from mail-io1-xd34.google.com (mail-io1-xd34.google.com [IPv6:2607:f8b0:4864:20::d34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 742F024F39
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 08:37:18 -0700 (PDT)
-Received: by mail-io1-xd34.google.com with SMTP id h63so15561021iof.12
-        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 08:37:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=FtaEgz69DQ819AKh/JUIG3OQ4Q+fmie3I0z6sDwsCCk=;
-        b=dFZM9Jrm29mfxGpXaOsvIRZmFBKbc0AgfvSqpX3EioHJtIEsvWDD/GYPxV+38Ss6kK
-         aSi5BlXbacPVXocOH787r6+R/vBk3hUUaZKk6t1gUvTV1szQ4wil+I9AUrXlJushPlL0
-         AUBAoWK2P/GkBgUjPd2KTB1I+cGHLXiYQLVf8QiRIZP2IuJwEOOq9A221Zbju6o70rWR
-         Ti+4hXQ5CukVYwGcjeurbmjEzT6ndHMrkpAgA3Zx+OtFytIL3FcUgvGTIxPJLyKTB9SS
-         SGZ37SJm00UTH/TDwyQGs9OOhfNB8HHKRQ33tHsCsm2Iybrwo2AwkIFF07Y/u09MzsvZ
-         3s4w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=FtaEgz69DQ819AKh/JUIG3OQ4Q+fmie3I0z6sDwsCCk=;
-        b=ZmjCWbDpxNhMGGoIiRiPpx73h8U/15RQMx9aEr8js1UjwXdGzLMAvOztUmeikQRi6z
-         1FsNo9WqRy+K0q+EF2j5FpS8R94wpcenDqeA9RLxUjpRqGEcvHekPK7ueG+S/boPMLOT
-         grirEILVTMVbhaJe+odL72ct5nRY+fUos8bofZ26gw2BEOH1xE5oA6iwiFU6Z4YROH4c
-         M7wn9W8Da2onVcCPxmgVfbZhcMGRUfeg0wmxG6fkssePOj/HyfZnbwPvwOqP5vm+4YJ8
-         MC2i9lPq2wiGJWNP4ING8HfLAHNCCjbpHF3gMGFGBuUkG6H6TvAcA6FRuO9kSM7EeNXb
-         35/g==
-X-Gm-Message-State: AOAM5331OTjvyDgRbiQRJu1EN6SVjQwRZNZ9PgJtdcPCTvwKIqPbDDxG
-        IlzoGNvFs2e0oPwPI7JNbsaR9onzeP9dX0Qpslk=
-X-Google-Smtp-Source: ABdhPJzKvUXA4HEqXhmBIGdqKNw+wxPo77cFowOrT7xA9Lsny2Cp5v64TzdBY34Vz1GLSofqMqmZ5tQubR2ncnnPI8M=
-X-Received: by 2002:a02:b687:0:b0:323:60e7:121a with SMTP id
- i7-20020a02b687000000b0032360e7121amr2473005jam.22.1649173037888; Tue, 05 Apr
- 2022 08:37:17 -0700 (PDT)
+        Tue, 5 Apr 2022 11:45:45 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1178D7E583;
+        Tue,  5 Apr 2022 07:20:04 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 73F9BB81E3D;
+        Tue,  5 Apr 2022 14:20:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E9FB7C385A0;
+        Tue,  5 Apr 2022 14:20:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649168402;
+        bh=dc45WnQh0XkwaqeGUyTJ67z7YNeqRTjfgC0FPHFrHso=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=MRGWno1cU58iqjN429BjD9E+uM/lLD15OlF3SPmpxxGquaHaRzXhXdVaLcBgbYxsr
+         tOCdfTjIE8Gu1mQTkzqPOsrypjTcrejI5FvWccefvcMdogpeFtHWcemsr2WWtn6k+c
+         x4NUDhx9iHux5PPQHirACc1I/JcuGdzFl9eLmUjEsPWGR1Wn1U1Xk9chXGVTbFn+zz
+         i8BJjosrU02/ABpipgWUuu8XzdH6aECeHZ5HPOHfYUHx3zSAYbDV9PDSFwjJsUrejA
+         bSrJTcVryg+ajrcxt3jhc9JVtpmSYF3uSzuYKx2y9JG/kAFWh99t88nq0Uw6/5Izmn
+         dRJqjM+0XhdnQ==
+Received: from sofa.misterjones.org ([185.219.108.64] helo=why.lan)
+        by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <maz@kernel.org>)
+        id 1nbjeA-001q4g-AF; Tue, 05 Apr 2022 14:55:02 +0100
+From:   Marc Zyngier <maz@kernel.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Linus Walleij <linus.walleij@linaro.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Joey Gouly <joey.gouly@arm.com>,
+        Jonathan Hunter <jonathanh@nvidia.com>,
+        Hector Martin <marcan@marcan.st>,
+        Sven Peter <sven@svenpeter.dev>,
+        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Andy Gross <agross@kernel.org>,
+        Jeffrey Hugo <jeffrey.l.hugo@gmail.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Basavaraj Natikar <Basavaraj.Natikar@amd.com>,
+        Shyam Sundar S K <Shyam-sundar.S-k@amd.com>,
+        linux-gpio@vger.kernel.org, linux-tegra@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-arm-msm@vger.kernel.org, kernel-team@android.com
+Subject: [PATCH v2 10/10] Documentation: Update the recommended pattern for GPIO irqchips
+Date:   Tue,  5 Apr 2022 14:54:44 +0100
+Message-Id: <20220405135444.199295-11-maz@kernel.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220405135444.199295-1-maz@kernel.org>
+References: <20220405135444.199295-1-maz@kernel.org>
 MIME-Version: 1.0
-References: <cover.1648049113.git.andreyknvl@google.com> <21e3e20ea58e242e3c82c19abbfe65b579e0e4b8.1648049113.git.andreyknvl@google.com>
- <YkVyGdniIBXf4t8/@FVFF77S0Q05N>
-In-Reply-To: <YkVyGdniIBXf4t8/@FVFF77S0Q05N>
-From:   Andrey Konovalov <andreyknvl@gmail.com>
-Date:   Tue, 5 Apr 2022 17:37:06 +0200
-Message-ID: <CA+fCnZeVKv9iJknyHiKWF0QA3vx+SznJCDJ10Q_HmnzHmnpt=w@mail.gmail.com>
-Subject: Re: [PATCH v2 1/4] stacktrace: add interface based on shadow call stack
-To:     Mark Rutland <mark.rutland@arm.com>
-Cc:     andrey.konovalov@linux.dev, Marco Elver <elver@google.com>,
-        Alexander Potapenko <glider@google.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        Andrey Ryabinin <ryabinin.a.a@gmail.com>,
-        kasan-dev <kasan-dev@googlegroups.com>,
-        Vincenzo Frascino <vincenzo.frascino@arm.com>,
-        Sami Tolvanen <samitolvanen@google.com>,
-        Peter Collingbourne <pcc@google.com>,
-        Evgenii Stepanov <eugenis@google.com>,
-        Florian Mayer <fmayer@google.com>,
-        Linux Memory Management List <linux-mm@kvack.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Andrey Konovalov <andreyknvl@google.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 185.219.108.64
+X-SA-Exim-Rcpt-To: linux-kernel@vger.kernel.org, linus.walleij@linaro.org, brgl@bgdev.pl, thierry.reding@gmail.com, joey.gouly@arm.com, jonathanh@nvidia.com, marcan@marcan.st, sven@svenpeter.dev, alyssa@rosenzweig.io, bjorn.andersson@linaro.org, agross@kernel.org, jeffrey.l.hugo@gmail.com, tglx@linutronix.de, Basavaraj.Natikar@amd.com, Shyam-sundar.S-k@amd.com, linux-gpio@vger.kernel.org, linux-tegra@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-arm-msm@vger.kernel.org, kernel-team@android.com
+X-SA-Exim-Mail-From: maz@kernel.org
+X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Mar 31, 2022 at 11:19 AM Mark Rutland <mark.rutland@arm.com> wrote:
->
-> > Collecting stack traces this way is significantly faster: boot time
-> > of a defconfig build with KASAN enabled gets descreased by ~30%.
->
-> Hmm... just to check, do ou know if that's just because of hte linear copy, or
-> because we're skipping other work we have to do in the regular stacktrace?
+Update the documentation to get rid of the per-gpio_irq_chip
+irq_chip structure, and give examples of the new pattern.
 
-No, I haven't looked into this.
+Signed-off-by: Marc Zyngier <maz@kernel.org>
+---
+ Documentation/driver-api/gpio/driver.rst | 175 ++++++++++++++++++-----
+ 1 file changed, 142 insertions(+), 33 deletions(-)
 
-> > The implementation of the added interface is not meant to use
-> > stack_trace_consume_fn to avoid making a function call for each
-> > collected frame to further improve performance.
->
-> ... because we could easily provide an inline-optimized stack copy *without*
-> having to write a distinct unwinder, and I'd *really* like to avoid having a
-> bunch of distinct unwinders for arm64, as it really hinders maintenance. We're
-> working on fixing/improving the arm64 unwinder for things like
-> RELIABLE_STACKTRACE, and I know that some of that work is non-trivial to make
-> work with an SCS-based unwind rather than an FP-based unwind, and/or will
-> undermine the saving anyway.
+diff --git a/Documentation/driver-api/gpio/driver.rst b/Documentation/driver-api/gpio/driver.rst
+index bbc53920d4dd..7e9f1167ea7d 100644
+--- a/Documentation/driver-api/gpio/driver.rst
++++ b/Documentation/driver-api/gpio/driver.rst
+@@ -417,30 +417,66 @@ struct gpio_irq_chip inside struct gpio_chip before adding the gpio_chip.
+ If you do this, the additional irq_chip will be set up by gpiolib at the
+ same time as setting up the rest of the GPIO functionality. The following
+ is a typical example of a chained cascaded interrupt handler using
+-the gpio_irq_chip:
++the gpio_irq_chip. Note how the mask/unmask (or disable/enable) functions
++call into the core gpiolib code:
+ 
+ .. code-block:: c
+ 
+-  /* Typical state container with dynamic irqchip */
++  /* Typical state container */
+   struct my_gpio {
+       struct gpio_chip gc;
+-      struct irq_chip irq;
++  };
++
++  static void my_gpio_mask_irq(struct irq_data *d)
++  {
++      struct gpio_chip *gc = irq_desc_get_handler_data(d);
++
++      /*
++       * Perform any necessary action to mask the interrupt,
++       * and then call into the core code to synchronise the
++       * state.
++       */
++
++      gpiochip_disable_irq(gc, d->hwirq);
++  }
++
++  static void my_gpio_unmask_irq(struct irq_data *d)
++  {
++      struct gpio_chip *gc = irq_desc_get_handler_data(d);
++
++      gpiochip_disable_irq(gc, d->hwirq);
++
++      /*
++       * Perform any necessary action to unmask the interrupt,
++       * after having called into the core code to synchronise
++       * the state.
++       */
++  }
++
++  /*
++   * Statically populate the irqchip. Note that it is made const
++   * (further indicated by the IRQCHIP_IMMUTABLE flag), and that
++   * the GPIOCHIP_IRQ_RESOURCE_HELPER macro adds some extra
++   * callbacks to the structure.
++   */
++  static const struct irq_chip my_gpio_irq_chip = {
++      .name		= "my_gpio_irq",
++      .irq_ack		= my_gpio_ack_irq,
++      .irq_mask		= my_gpio_mask_irq,
++      .irq_unmask	= my_gpio_unmask_irq,
++      .irq_set_type	= my_gpio_set_irq_type,
++      .flags		= IRQCHIP_IMMUTABLE,
++      /* Provide the gpio resource callbacks */
++      GPIOCHIP_IRQ_RESOURCE_HELPERS,
+   };
+ 
+   int irq; /* from platform etc */
+   struct my_gpio *g;
+   struct gpio_irq_chip *girq;
+ 
+-  /* Set up the irqchip dynamically */
+-  g->irq.name = "my_gpio_irq";
+-  g->irq.irq_ack = my_gpio_ack_irq;
+-  g->irq.irq_mask = my_gpio_mask_irq;
+-  g->irq.irq_unmask = my_gpio_unmask_irq;
+-  g->irq.irq_set_type = my_gpio_set_irq_type;
+-
+   /* Get a pointer to the gpio_irq_chip */
+   girq = &g->gc.irq;
+-  girq->chip = &g->irq;
++  gpio_irq_chip_set_chip(girq, &my_gpio_irq_chip);
+   girq->parent_handler = ftgpio_gpio_irq_handler;
+   girq->num_parents = 1;
+   girq->parents = devm_kcalloc(dev, 1, sizeof(*girq->parents),
+@@ -458,23 +494,58 @@ the interrupt separately and go with it:
+ 
+ .. code-block:: c
+ 
+-  /* Typical state container with dynamic irqchip */
++  /* Typical state container */
+   struct my_gpio {
+       struct gpio_chip gc;
+-      struct irq_chip irq;
++  };
++
++  static void my_gpio_mask_irq(struct irq_data *d)
++  {
++      struct gpio_chip *gc = irq_desc_get_handler_data(d);
++
++      /*
++       * Perform any necessary action to mask the interrupt,
++       * and then call into the core code to synchronise the
++       * state.
++       */
++
++      gpiochip_disable_irq(gc, d->hwirq);
++  }
++
++  static void my_gpio_unmask_irq(struct irq_data *d)
++  {
++      struct gpio_chip *gc = irq_desc_get_handler_data(d);
++
++      gpiochip_disable_irq(gc, d->hwirq);
++
++      /*
++       * Perform any necessary action to unmask the interrupt,
++       * after having called into the core code to synchronise
++       * the state.
++       */
++  }
++
++  /*
++   * Statically populate the irqchip. Note that it is made const
++   * (further indicated by the IRQCHIP_IMMUTABLE flag), and that
++   * the GPIOCHIP_IRQ_RESOURCE_HELPER macro adds some extra
++   * callbacks to the structure.
++   */
++  static const struct irq_chip my_gpio_irq_chip = {
++      .name		= "my_gpio_irq",
++      .irq_ack		= my_gpio_ack_irq,
++      .irq_mask		= my_gpio_mask_irq,
++      .irq_unmask	= my_gpio_unmask_irq,
++      .irq_set_type	= my_gpio_set_irq_type,
++      .flags		= IRQCHIP_IMMUTABLE,
++      /* Provide the gpio resource callbacks */
++      GPIOCHIP_IRQ_RESOURCE_HELPERS,
+   };
+ 
+   int irq; /* from platform etc */
+   struct my_gpio *g;
+   struct gpio_irq_chip *girq;
+ 
+-  /* Set up the irqchip dynamically */
+-  g->irq.name = "my_gpio_irq";
+-  g->irq.irq_ack = my_gpio_ack_irq;
+-  g->irq.irq_mask = my_gpio_mask_irq;
+-  g->irq.irq_unmask = my_gpio_unmask_irq;
+-  g->irq.irq_set_type = my_gpio_set_irq_type;
+-
+   ret = devm_request_threaded_irq(dev, irq, NULL,
+ 		irq_thread_fn, IRQF_ONESHOT, "my-chip", g);
+   if (ret < 0)
+@@ -482,7 +553,7 @@ the interrupt separately and go with it:
+ 
+   /* Get a pointer to the gpio_irq_chip */
+   girq = &g->gc.irq;
+-  girq->chip = &g->irq;
++  gpio_irq_chip_set_chip(girq, &my_gpio_irq_chip);
+   /* This will let us handle the parent IRQ in the driver */
+   girq->parent_handler = NULL;
+   girq->num_parents = 0;
+@@ -500,24 +571,61 @@ In this case the typical set-up will look like this:
+   /* Typical state container with dynamic irqchip */
+   struct my_gpio {
+       struct gpio_chip gc;
+-      struct irq_chip irq;
+       struct fwnode_handle *fwnode;
+   };
+ 
+-  int irq; /* from platform etc */
++  static void my_gpio_mask_irq(struct irq_data *d)
++  {
++      struct gpio_chip *gc = irq_desc_get_handler_data(d);
++
++      /*
++       * Perform any necessary action to mask the interrupt,
++       * and then call into the core code to synchronise the
++       * state.
++       */
++
++      gpiochip_disable_irq(gc, d->hwirq);
++      irq_mask_mask_parent(d);
++  }
++
++  static void my_gpio_unmask_irq(struct irq_data *d)
++  {
++      struct gpio_chip *gc = irq_desc_get_handler_data(d);
++
++      gpiochip_disable_irq(gc, d->hwirq);
++
++      /*
++       * Perform any necessary action to unmask the interrupt,
++       * after having called into the core code to synchronise
++       * the state.
++       */
++
++      irq_mask_unmask_parent(d);
++  }
++
++  /*
++   * Statically populate the irqchip. Note that it is made const
++   * (further indicated by the IRQCHIP_IMMUTABLE flag), and that
++   * the GPIOCHIP_IRQ_RESOURCE_HELPER macro adds some extra
++   * callbacks to the structure.
++   */
++  static const struct irq_chip my_gpio_irq_chip = {
++      .name		= "my_gpio_irq",
++      .irq_ack		= my_gpio_ack_irq,
++      .irq_mask		= my_gpio_mask_irq,
++      .irq_unmask	= my_gpio_unmask_irq,
++      .irq_set_type	= my_gpio_set_irq_type,
++      .flags		= IRQCHIP_IMMUTABLE,
++      /* Provide the gpio resource callbacks */
++      GPIOCHIP_IRQ_RESOURCE_HELPERS,
++  };
++
+   struct my_gpio *g;
+   struct gpio_irq_chip *girq;
+ 
+-  /* Set up the irqchip dynamically */
+-  g->irq.name = "my_gpio_irq";
+-  g->irq.irq_ack = my_gpio_ack_irq;
+-  g->irq.irq_mask = my_gpio_mask_irq;
+-  g->irq.irq_unmask = my_gpio_unmask_irq;
+-  g->irq.irq_set_type = my_gpio_set_irq_type;
+-
+   /* Get a pointer to the gpio_irq_chip */
+   girq = &g->gc.irq;
+-  girq->chip = &g->irq;
++  gpio_irq_chip_set_chip(girq, &my_gpio_irq_chip);
+   girq->default_type = IRQ_TYPE_NONE;
+   girq->handler = handle_bad_irq;
+   girq->fwnode = g->fwnode;
+@@ -605,8 +713,9 @@ When implementing an irqchip inside a GPIO driver, these two functions should
+ typically be called in the .irq_disable() and .irq_enable() callbacks from the
+ irqchip.
+ 
+-When using the gpiolib irqchip helpers, these callbacks are automatically
+-assigned.
++When IRQCHIP_IMMUTABLE is not advertised by the irqchip, these callbacks
++are automatically assigned. This behaviour is deprecated and on its way
++to be removed from the kernel.
+ 
+ 
+ Real-Time compliance for GPIO IRQ chips
+-- 
+2.34.1
 
-Responded on the cover letter wrt this.
-
-> > +int stack_trace_save_shadow(unsigned long *store, unsigned int size,
-> > +                         unsigned int skipnr)
-> > +{
-> > +     /*
-> > +      * Do not use stack_trace_consume_fn to avoid making a function
-> > +      * call for each collected frame to improve performance.
-> > +      * Skip + 1 frame to skip stack_trace_save_shadow.
-> > +      */
-> > +     return arch_stack_walk_shadow(store, size, skipnr + 1);
-> > +}
-> > +#endif
->
-> If we really need this, can we make it an __always_inline in a header so that
-> we can avoid the skip? Generally the skipping is problematic due to
-> inlining/outlining and LTO, and I'd like to avoid adding more of it
-> unnecessarily.
-
-Yes, I think this should work.
-
-However, if we keep the implementation in mm/kasan, this integration
-will not be required.
-
-Thanks!
