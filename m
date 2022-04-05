@@ -2,89 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F247C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 02:46:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 81BA8C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 02:46:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230131AbiDECsU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 22:48:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40496 "EHLO
+        id S230043AbiDECs3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 4 Apr 2022 22:48:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48112 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230113AbiDECqH (ORCPT
+        with ESMTP id S230097AbiDECsL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 22:46:07 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C7303F7DC6
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 18:51:26 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8DF8260DF4
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 01:51:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B523FC2BBE4;
-        Tue,  5 Apr 2022 01:51:24 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linux-foundation.org;
-        s=korg; t=1649123485;
-        bh=FUZOU/Zn0+hZCBwK2e+4+p0g7CLULnGx2JfDvAvsADs=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=IpU2thuQeNKvYD6CYRgqr/cFuvGZb+Tpddf2ICMSZSIViQJXCFZVasjVw4SdeRjtt
-         31SDzw45/X1ijxvol2oA981Bgm0i6wvclpyzHJJG+j3PZOdD7plY8fD2ffvO/H2cjW
-         qXsjUWT/q4xsdAYI3mzSeGskOsTX8W8VwUnMLOgY=
-Date:   Mon, 4 Apr 2022 18:51:23 -0700
-From:   Andrew Morton <akpm@linux-foundation.org>
-To:     HORIGUCHI =?UTF-8?B?TkFPWUE=?= (=?UTF-8?B?5aCA5Y+j44CA55u05Lmf?=) 
-        <naoya.horiguchi@nec.com>
-Cc:     Naoya Horiguchi <naoya.horiguchi@linux.dev>,
-        "linux-mm@kvack.org" <linux-mm@kvack.org>,
-        Mike Kravetz <mike.kravetz@oracle.com>,
-        Miaohe Lin <linmiaohe@huawei.com>,
-        Yang Shi <shy828301@gmail.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v6] mm/hwpoison: fix race between hugetlb free/demotion
- and memory_failure_hugetlb()
-Message-Id: <20220404185123.5be4389d99a0e4665a775da1@linux-foundation.org>
-In-Reply-To: <20220405014544.GA2583652@hori.linux.bs1.fc.nec.co.jp>
-References: <20220404092131.751733-1-naoya.horiguchi@linux.dev>
-        <20220404115333.8cf80b9d3a7a55993ed60c57@linux-foundation.org>
-        <20220405014544.GA2583652@hori.linux.bs1.fc.nec.co.jp>
-X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.33; x86_64-redhat-linux-gnu)
-Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+        Mon, 4 Apr 2022 22:48:11 -0400
+Received: from mail-io1-xd2a.google.com (mail-io1-xd2a.google.com [IPv6:2607:f8b0:4864:20::d2a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B31010EDF4
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 19:30:33 -0700 (PDT)
+Received: by mail-io1-xd2a.google.com with SMTP id r2so13580246iod.9
+        for <linux-kernel@vger.kernel.org>; Mon, 04 Apr 2022 19:30:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=JTzIzbrqZyK9WcizVERi7qlxh5xxIEK+9IqWImCqDAY=;
+        b=YcMVYnQMKz2NhQbrK0HjGTOXQmTu+Vk9t1j3Nfgnp7gS4pAl9K8ReC7ZTF3NS0ao62
+         +k6BganfzYE1RHEvww+e/oOwq6C1n3EDSdgXuZrPrUp/3uVwkyfn+h+4qiNGraccB4KQ
+         nIfDzn7o26dbdKpb851QTXPT7ZhljzDSnSko5y404+cDtwPiIHYDokLbazUURxbzDJYf
+         0wCUTDsNI802WAuIUoPq6xTRWniX7nxbPjm5nqHr5UFiVd2OkMiVpH3V//O4UytUclaa
+         R0jpdX1UgmZmW10eiTYtRmFvTG/l/HJtjLd+9wWEiVF0naJ4VQ9kG+1P5NjKQrF+efCb
+         Vk2w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=JTzIzbrqZyK9WcizVERi7qlxh5xxIEK+9IqWImCqDAY=;
+        b=gtbOLAwHUQka9GLXwnOhswGA8W2ojY0+R8aIf+TgNK8/X4ymstvgGWFjAVTTMGYa6T
+         zyb/yxhsCUQhRNgfMv7XMi1s4cGfOmi/GRAyIH6evK3X0rLVGXBAzKQRojZUBps8Xfqy
+         FtGioB/zOGUC/n3Z4swmo04YFLddS5oOYS0MstTpYzs9lZ9BGyNGu0pZuev0WNiCbigP
+         3D+iRd2V8edeDH1EXZ0Ju8cpRaCH4b0r9bEi69BVhvTzzvwd2LRVMPMQI0Q3gOW0feA8
+         h36tASCIyJmU9v4yXnHNMUHOeBgl+VNMo0PNb2dgmWEoPk5fVvfQ7U3HQ3tE4vnYTAf6
+         eIPg==
+X-Gm-Message-State: AOAM533FHwbtUEkUXA2SndxNvllANUtlAw5HbtXdy+z2KpgM8pUczkCN
+        HGO6NEwFA56EA6Mk3XjXt4zSkgmNrSyyBnyvFfbgqA==
+X-Google-Smtp-Source: ABdhPJwODLum9ilGhChVng+UBA9UPlj2zbdInzRba3Olr4b4wDij4kupJU4FIgzVrCfK1I45tTbjXWS8CK+5nB/27Fs=
+X-Received: by 2002:a02:84c9:0:b0:31a:1cf2:4468 with SMTP id
+ f67-20020a0284c9000000b0031a1cf24468mr806877jai.31.1649125832511; Mon, 04 Apr
+ 2022 19:30:32 -0700 (PDT)
+MIME-Version: 1.0
+References: <20220331084151.2600229-1-yosryahmed@google.com>
+ <CAAPL-u8g2qkhdTQtFtBS3GNYz0WnyahWEXvR4g_OSaKv+7EozA@mail.gmail.com>
+ <YkcYq8F6MYlMi+yS@cmpxchg.org> <CAAPL-u-za-TTyyC5uMVev9eQyhxZS7q3pVqaUxCFjqk+Sv9+ig@mail.gmail.com>
+ <CALvZod4-fKfv6vbZPZ3nCE=Bue4FUnC+9t27wsznmyd+JKgDbg@mail.gmail.com>
+In-Reply-To: <CALvZod4-fKfv6vbZPZ3nCE=Bue4FUnC+9t27wsznmyd+JKgDbg@mail.gmail.com>
+From:   Wei Xu <weixugc@google.com>
+Date:   Mon, 4 Apr 2022 19:30:21 -0700
+Message-ID: <CAAPL-u-7Vnq8tmmRNDOz7Jw1ei_Vw=idJaPzMPoq5=sBrpyrRA@mail.gmail.com>
+Subject: Re: [PATCH resend] memcg: introduce per-memcg reclaim interface
+To:     Shakeel Butt <shakeelb@google.com>
+Cc:     Johannes Weiner <hannes@cmpxchg.org>,
+        Yosry Ahmed <yosryahmed@google.com>,
+        Michal Hocko <mhocko@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        David Rientjes <rientjes@google.com>,
+        Tejun Heo <tj@kernel.org>, Zefan Li <lizefan.x@bytedance.com>,
+        Roman Gushchin <roman.gushchin@linux.dev>,
+        Cgroups <cgroups@vger.kernel.org>,
+        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux MM <linux-mm@kvack.org>,
+        Jonathan Corbet <corbet@lwn.net>, Yu Zhao <yuzhao@google.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Greg Thelen <gthelen@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 5 Apr 2022 01:45:45 +0000 HORIGUCHI NAOYA(堀口　直也) <naoya.horiguchi@nec.com> wrote:
+On Mon, Apr 4, 2022 at 10:08 AM Shakeel Butt <shakeelb@google.com> wrote:
+>
+> On Fri, Apr 1, 2022 at 1:14 PM Wei Xu <weixugc@google.com> wrote:
+> >
+> [...]
+> >
+> > -EAGAIN sounds good, too.  Given that the userspace requests to
+> > reclaim a specified number of bytes, I think it is generally better to
+> > tell the userspace whether the request has been successfully
+> > fulfilled. Ideally, it would be even better to return how many bytes
+> > that have been reclaimed, though that is not easy to do through the
+> > cgroup interface.
+>
+> What would be the challenge on returning the number of bytes reclaimed
+> through cgroup interface?
 
-> On Mon, Apr 04, 2022 at 11:53:33AM -0700, Andrew Morton wrote:
-> > On Mon,  4 Apr 2022 18:21:31 +0900 Naoya Horiguchi <naoya.horiguchi@linux.dev> wrote:
-> > 
-> > > There is a race condition between memory_failure_hugetlb() and hugetlb
-> > > free/demotion, which causes setting PageHWPoison flag on the wrong page.
-> > > The one simple result is that wrong processes can be killed, but another
-> > > (more serious) one is that the actual error is left unhandled, so no one
-> > > prevents later access to it, and that might lead to more serious results
-> > > like consuming corrupted data.
-> > 
-> > Should this fix be backported into stable kernels?
-> 
-> This is a bug fix, so eligible to send to stable. But I thought that this
-> patch is larger than 100 lines (and hard to separeter to finer patches),
-> which seems to violate the rule stated in
-> Documentation/process/stable-kernel-rules.rst.
-> 
-> But actually this rule might not be strictly applied (some patches in
-> v5.16.y do have more than 100 lines diff...). So if we can ignore this rule
-> exceptionally, that's OK and I'll add CC to stable again.
-
-I never actually knew about that rule ;)
-
-Thanks, I added the cc:stable.
-
-> The target commit of Fixed: tag is 761ad8d7c7b5 ("mm: hwpoison: introduce
-> memory_failure_hugetlb()") which was introduced in 4.13, so most of active
-> stable trees are affected.
-
-Oh. That's good to know.  The original patch didn't have a Fixes: line.
-I added that as well.
-
+write() syscall is used to write the command into memory.reclaim,
+which should return either the number of command bytes written or -1
+(errno is set to indicate the actual error).  I think we should not
+return the number of bytes reclaimed through write().  A new
+sys_reclaim() is better in this regard because we can define its
+return value, though it would need a cgroup argument, which is not
+commonly defined for syscalls.
