@@ -2,95 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D02EC433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3820BC43217
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 21:32:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378247AbiDEVbb (ORCPT
+        id S1378573AbiDEVbv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 17:31:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34750 "EHLO
+        Tue, 5 Apr 2022 17:31:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59004 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244448AbiDEKiv (ORCPT
+        with ESMTP id S1572998AbiDERoz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:38:51 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8071D1706D;
-        Tue,  5 Apr 2022 03:23:42 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2F760B81B18;
-        Tue,  5 Apr 2022 10:23:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 95E24C385A2;
-        Tue,  5 Apr 2022 10:23:39 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649154219;
-        bh=F60sn2dNhMzWGLeWPjD2F3i4dvAVumbpwBD0iIpj0VQ=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hJsuSwmIFwtiK1Anz74cFSbQq6uFfTwFpjXnnxZ/11W9g2X7ArWiIhA6ivDl7VhNZ
-         yWc3N7axNRVmbP1KMH7QjaiSmiRYYDDpQtXWSfUlLhJUSayCYbjaCLiup8X1ykd7H6
-         7CwChmZegGIXa9YozSPf7tMs94ZstbhZWJCQjyxI=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 502/599] lib/test_lockup: fix kernel pointer check for separate address spaces
-Date:   Tue,  5 Apr 2022 09:33:16 +0200
-Message-Id: <20220405070313.767428936@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 5 Apr 2022 13:44:55 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 954D0B91A9;
+        Tue,  5 Apr 2022 10:42:56 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id 5355C1F37D;
+        Tue,  5 Apr 2022 17:42:55 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1649180575;
+        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
+         cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=A9/opB1dmrwwRT1K8TkAgykRgtJiuStwy16fQBFlZuk=;
+        b=Ve0Ai/3r2vOGSGF38312vXaPCgD+Jep/JZ7TUsUGdK6wkFrx0GHHCk1L9kYIP/kWdojjX0
+        02y1/fRVihYsLxf17SY2R1bJ+FpW+JPZ1RRA/SJ0b1nuRepSXnbin/q0XzqYZJodjKZCte
+        E8xtKq1xcAf5KWbClw5Ifp1ufOK4GCI=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1649180575;
+        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
+         cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=A9/opB1dmrwwRT1K8TkAgykRgtJiuStwy16fQBFlZuk=;
+        b=U1hmDdR/n3fC5qSuwAkR424KokOpvccEIAIKnPx2BWtQIUEXFffg4TpBssNxHNpBRqya6v
+        wWtKC9d3pXX3R0Cg==
+Received: from ds.suse.cz (ds.suse.cz [10.100.12.205])
+        by relay2.suse.de (Postfix) with ESMTP id 44EFCA3B83;
+        Tue,  5 Apr 2022 17:42:55 +0000 (UTC)
+Received: by ds.suse.cz (Postfix, from userid 10065)
+        id DEE7CDA80E; Tue,  5 Apr 2022 19:38:53 +0200 (CEST)
+Date:   Tue, 5 Apr 2022 19:38:53 +0200
+From:   David Sterba <dsterba@suse.cz>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     David Sterba <dsterba@suse.com>,
+        linux-btrfs <linux-btrfs@vger.kernel.org>,
+        lkml <linux-kernel@vger.kernel.org>
+Subject: Re: [GIT PULL] Btrfs fixes for 5.18-rc2
+Message-ID: <20220405173853.GZ15609@suse.cz>
+Reply-To: dsterba@suse.cz
+Mail-Followup-To: dsterba@suse.cz,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        David Sterba <dsterba@suse.com>,
+        linux-btrfs <linux-btrfs@vger.kernel.org>,
+        lkml <linux-kernel@vger.kernel.org>
+References: <cover.1649109877.git.dsterba@suse.com>
+ <CAADWXX-XPrfiD0TLGwMuzmGfs9pZ+HiTo1v9cs-mxb6x0OXpZw@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAADWXX-XPrfiD0TLGwMuzmGfs9pZ+HiTo1v9cs-mxb6x0OXpZw@mail.gmail.com>
+User-Agent: Mutt/1.5.23.1-rc1 (2014-03-12)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Arnd Bergmann <arnd@arndb.de>
+On Tue, Apr 05, 2022 at 08:58:35AM -0700, Linus Torvalds wrote:
+> On Tue, Apr 5, 2022 at 6:28 AM David Sterba <dsterba@suse.com> wrote:
+> >
+> > please pull the following fixes for btrfs, thanks.
+> 
+> Hmm. I got two copies of this...
+> 
+> ...and both were in my spam folder.
+> 
+> I don't see anything wrong with the message (spf and dkim both
+> fine).so I assume it's something about suse.sz or suse.de that gmail
+> doesn't like. Presumably some spammer sitting on a nearby network on
+> the same ISP.
 
-[ Upstream commit 5a06fcb15b43d1f7bf740c672950122331cb5655 ]
+I don't know what could be wrong. Regular mails I send from mutt and the
+pull request with 'git send-email'. Today I sent the first pull request
+mail from mutt to see if there's a change from last time when you found
+the mail in spam. The mail delivery took longer than expected, I think
+more than half an hour which could be the gray listing period that I saw
+on vger in the past. So I sent it again with git send-mail, just to be
+sure. But if both end up in spam then it's probably something in the
+mail body, other mails seem to be delivered.
 
-test_kernel_ptr() uses access_ok() to figure out if a given address
-points to user space instead of kernel space. However on architectures
-that set CONFIG_ALTERNATE_USER_ADDRESS_SPACE, a pointer can be valid
-for both, and the check always fails because access_ok() returns true.
+> Anyway, not much you can do about it except perhaps ask whatever MIS
+> people to see if they got put on some blacklist or whatever.
+> 
+> I've obviously noticed the pull request despite it being in my spam folder.
 
-Make the check for user space pointers conditional on the type of
-address space layout.
-
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- lib/test_lockup.c | 11 ++++++++---
- 1 file changed, 8 insertions(+), 3 deletions(-)
-
-diff --git a/lib/test_lockup.c b/lib/test_lockup.c
-index 07f476317187..78a630bbd03d 100644
---- a/lib/test_lockup.c
-+++ b/lib/test_lockup.c
-@@ -417,9 +417,14 @@ static bool test_kernel_ptr(unsigned long addr, int size)
- 		return false;
- 
- 	/* should be at least readable kernel address */
--	if (access_ok((void __user *)ptr, 1) ||
--	    access_ok((void __user *)ptr + size - 1, 1) ||
--	    get_kernel_nofault(buf, ptr) ||
-+	if (!IS_ENABLED(CONFIG_ALTERNATE_USER_ADDRESS_SPACE) &&
-+	    (access_ok((void __user *)ptr, 1) ||
-+	     access_ok((void __user *)ptr + size - 1, 1))) {
-+		pr_err("user space ptr invalid in kernel: %#lx\n", addr);
-+		return true;
-+	}
-+
-+	if (get_kernel_nofault(buf, ptr) ||
- 	    get_kernel_nofault(buf, ptr + size - 1)) {
- 		pr_err("invalid kernel ptr: %#lx\n", addr);
- 		return true;
--- 
-2.34.1
-
-
-
+Good to know, thanks, I'll check if there's anything to do in my mail
+setup.
