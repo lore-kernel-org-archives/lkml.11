@@ -2,171 +2,164 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E62C3C35280
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B18E9C3527D
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 10:50:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346027AbiDEKmi (ORCPT
+        id S1345115AbiDEKko (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 06:42:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33834 "EHLO
+        Tue, 5 Apr 2022 06:40:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56394 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241197AbiDEIcy (ORCPT
+        with ESMTP id S237511AbiDEISE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:32:54 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 358C917A86;
-        Tue,  5 Apr 2022 01:29:24 -0700 (PDT)
-Date:   Tue, 05 Apr 2022 08:29:21 -0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1649147362;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=weL/Y/0bLbSr89Udbwco2BymGNu3H+Z73Jcjq6NeTuI=;
-        b=PPDV1NnBtSFLvt+bcYKiG4rGphZi2oyC3AxUFgeFR9azd2m3bY5YILSwXRH9zUEYevKbSf
-        6TgHUz7gPyC36Cul2Lh5ecKuM5r5ro/ZQdDhljRgq9DFCZzp4G9O0ZtvACwMc3D68gyiz8
-        h7XSSH5vUz69vCQP90l9SjYJu2ZntIk/exYEPgyxhE0EFT3tGlfcGtBWovfZ68oqhoC9sN
-        JZmu52rUUAzhG/CzCo6u7t9Am9nNhfynUJHeG1wCDLmzQZUhig/dncBKOaGJmS2ExxdcY3
-        Oxa6g5ZnL0jwIHJmCgXwttzUvo8aSzXjrGEd8ZeRxFI7S+Bs+TgntsMNBwzpJA==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1649147362;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=weL/Y/0bLbSr89Udbwco2BymGNu3H+Z73Jcjq6NeTuI=;
-        b=f3PzWIp1F/sCFHuDCAPpTCS7V1P+VizleOlgVky2nSdFgu4dQLNEi8ZWjVFAk0V9bgVqmO
-        ElUnO1IoQ+aBq1AQ==
-From:   "tip-bot2 for Valentin Schneider" <tip-bot2@linutronix.de>
-Sender: tip-bot2@linutronix.de
-Reply-to: linux-kernel@vger.kernel.org
-To:     linux-tip-commits@vger.kernel.org
-Subject: [tip: sched/core] preempt/dynamic: Introduce preemption model accessors
-Cc:     Marco Elver <elver@google.com>,
-        Valentin Schneider <valentin.schneider@arm.com>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Frederic Weisbecker <frederic@kernel.org>, x86@kernel.org,
-        linux-kernel@vger.kernel.org
-In-Reply-To: <20211112185203.280040-3-valentin.schneider@arm.com>
-References: <20211112185203.280040-3-valentin.schneider@arm.com>
+        Tue, 5 Apr 2022 04:18:04 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CEE1D6A021;
+        Tue,  5 Apr 2022 01:06:34 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 85F9DB81B92;
+        Tue,  5 Apr 2022 08:06:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BBFFEC385A2;
+        Tue,  5 Apr 2022 08:06:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649145992;
+        bh=weF/+fdsg4H1uMnMRru4rmj6Vwi3n8PJR9iKpewABAA=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=JNLVnZ2PsQNXsbZz9qt8XLbDMXijzgKvBtJ7/7dUVeyQOcKjWSB9twr++pdn6Wqzl
+         ZUyzSAK5K9uQkST5ZDa3yHAYrTLXA85yi+MOYNYiKOL7wAmTwnfX5xqE7of+Wat8NM
+         gL18VbRq3I7dRUbcRQfL0JXJxpqoOJjd89f+ocvY=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Daniel Vetter <daniel@ffwll.ch>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        David Airlie <airlied@linux.ie>,
+        dri-devel@lists.freedesktop.org, Kees Cook <keescook@chromium.org>,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        Jani Nikula <jani.nikula@intel.com>,
+        Thierry Reding <treding@nvidia.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 0604/1126] drm/dp: Fix OOB read when handling Post Cursor2 register
+Date:   Tue,  5 Apr 2022 09:22:31 +0200
+Message-Id: <20220405070425.363510901@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
+References: <20220405070407.513532867@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Message-ID: <164914736184.389.17168803226310097171.tip-bot2@tip-bot2>
-Robot-ID: <tip-bot2@linutronix.de>
-Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The following commit has been merged into the sched/core branch of tip:
+From: Kees Cook <keescook@chromium.org>
 
-Commit-ID:     cfe43f478b79ba45573ca22d52d0d8823be068fa
-Gitweb:        https://git.kernel.org/tip/cfe43f478b79ba45573ca22d52d0d8823be068fa
-Author:        Valentin Schneider <valentin.schneider@arm.com>
-AuthorDate:    Fri, 12 Nov 2021 18:52:01 
-Committer:     Peter Zijlstra <peterz@infradead.org>
-CommitterDate: Tue, 05 Apr 2022 10:24:42 +02:00
+[ Upstream commit a2151490cc6c57b368d7974ffd447a8b36ade639 ]
 
-preempt/dynamic: Introduce preemption model accessors
+The link_status array was not large enough to read the Adjust Request
+Post Cursor2 register, so remove the common helper function to avoid
+an OOB read, found with a -Warray-bounds build:
 
-CONFIG_PREEMPT{_NONE, _VOLUNTARY} designate either:
-o The build-time preemption model when !PREEMPT_DYNAMIC
-o The default boot-time preemption model when PREEMPT_DYNAMIC
+drivers/gpu/drm/drm_dp_helper.c: In function 'drm_dp_get_adjust_request_post_cursor':
+drivers/gpu/drm/drm_dp_helper.c:59:27: error: array subscript 10 is outside array bounds of 'const u8[6]' {aka 'const unsigned char[6]'} [-Werror=array-bounds]
+   59 |         return link_status[r - DP_LANE0_1_STATUS];
+      |                ~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~
+drivers/gpu/drm/drm_dp_helper.c:147:51: note: while referencing 'link_status'
+  147 | u8 drm_dp_get_adjust_request_post_cursor(const u8 link_status[DP_LINK_STATUS_SIZE],
+      |                                          ~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-IOW, using those on PREEMPT_DYNAMIC kernels is meaningless - the actual
-model could have been set to something else by the "preempt=foo" cmdline
-parameter. Same problem applies to CONFIG_PREEMPTION.
+Replace the only user of the helper with an open-coded fetch and decode,
+similar to drivers/gpu/drm/amd/display/dc/core/dc_link_dp.c.
 
-Introduce a set of helpers to determine the actual preemption model used by
-the live kernel.
-
-Suggested-by: Marco Elver <elver@google.com>
-Signed-off-by: Valentin Schneider <valentin.schneider@arm.com>
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Reviewed-by: Marco Elver <elver@google.com>
-Acked-by: Frederic Weisbecker <frederic@kernel.org>
-Link: https://lore.kernel.org/r/20211112185203.280040-3-valentin.schneider@arm.com
+Cc: Daniel Vetter <daniel@ffwll.ch>
+Cc: Maarten Lankhorst <maarten.lankhorst@linux.intel.com>
+Cc: Maxime Ripard <mripard@kernel.org>
+Cc: Thomas Zimmermann <tzimmermann@suse.de>
+Cc: David Airlie <airlied@linux.ie>
+Cc: dri-devel@lists.freedesktop.org
+Fixes: 79465e0ffeb9 ("drm/dp: Add helper to get post-cursor adjustments")
+Signed-off-by: Kees Cook <keescook@chromium.org>
+Reviewed-by: Gustavo A. R. Silva <gustavoars@kernel.org>
+Reviewed-by: Jani Nikula <jani.nikula@intel.com>
+Link: https://lore.kernel.org/r/20220105173507.2420910-1-keescook@chromium.org
+Signed-off-by: Thierry Reding <treding@nvidia.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/linux/sched.h | 41 +++++++++++++++++++++++++++++++++++++++++
- kernel/sched/core.c   | 12 ++++++++++++
- 2 files changed, 53 insertions(+)
+ drivers/gpu/drm/drm_dp_helper.c | 10 ----------
+ drivers/gpu/drm/tegra/dp.c      | 11 ++++++++++-
+ include/drm/drm_dp_helper.h     |  2 --
+ 3 files changed, 10 insertions(+), 13 deletions(-)
 
-diff --git a/include/linux/sched.h b/include/linux/sched.h
-index d5e3c00..67f06f7 100644
---- a/include/linux/sched.h
-+++ b/include/linux/sched.h
-@@ -2117,6 +2117,47 @@ static inline void cond_resched_rcu(void)
- #endif
+diff --git a/drivers/gpu/drm/drm_dp_helper.c b/drivers/gpu/drm/drm_dp_helper.c
+index 23f9073bc473..c9528aa62c9c 100644
+--- a/drivers/gpu/drm/drm_dp_helper.c
++++ b/drivers/gpu/drm/drm_dp_helper.c
+@@ -144,16 +144,6 @@ u8 drm_dp_get_adjust_tx_ffe_preset(const u8 link_status[DP_LINK_STATUS_SIZE],
  }
+ EXPORT_SYMBOL(drm_dp_get_adjust_tx_ffe_preset);
  
-+#ifdef CONFIG_PREEMPT_DYNAMIC
+-u8 drm_dp_get_adjust_request_post_cursor(const u8 link_status[DP_LINK_STATUS_SIZE],
+-					 unsigned int lane)
+-{
+-	unsigned int offset = DP_ADJUST_REQUEST_POST_CURSOR2;
+-	u8 value = dp_link_status(link_status, offset);
+-
+-	return (value >> (lane << 1)) & 0x3;
+-}
+-EXPORT_SYMBOL(drm_dp_get_adjust_request_post_cursor);
+-
+ static int __8b10b_clock_recovery_delay_us(const struct drm_dp_aux *aux, u8 rd_interval)
+ {
+ 	if (rd_interval > 4)
+diff --git a/drivers/gpu/drm/tegra/dp.c b/drivers/gpu/drm/tegra/dp.c
+index 70dfb7d1dec5..f5535eb04c6b 100644
+--- a/drivers/gpu/drm/tegra/dp.c
++++ b/drivers/gpu/drm/tegra/dp.c
+@@ -549,6 +549,15 @@ static void drm_dp_link_get_adjustments(struct drm_dp_link *link,
+ {
+ 	struct drm_dp_link_train_set *adjust = &link->train.adjust;
+ 	unsigned int i;
++	u8 post_cursor;
++	int err;
 +
-+extern bool preempt_model_none(void);
-+extern bool preempt_model_voluntary(void);
-+extern bool preempt_model_full(void);
-+
-+#else
-+
-+static inline bool preempt_model_none(void)
-+{
-+	return IS_ENABLED(CONFIG_PREEMPT_NONE);
-+}
-+static inline bool preempt_model_voluntary(void)
-+{
-+	return IS_ENABLED(CONFIG_PREEMPT_VOLUNTARY);
-+}
-+static inline bool preempt_model_full(void)
-+{
-+	return IS_ENABLED(CONFIG_PREEMPT);
-+}
-+
-+#endif
-+
-+static inline bool preempt_model_rt(void)
-+{
-+	return IS_ENABLED(CONFIG_PREEMPT_RT);
-+}
-+
-+/*
-+ * Does the preemption model allow non-cooperative preemption?
-+ *
-+ * For !CONFIG_PREEMPT_DYNAMIC kernels this is an exact match with
-+ * CONFIG_PREEMPTION; for CONFIG_PREEMPT_DYNAMIC this doesn't work as the
-+ * kernel is *built* with CONFIG_PREEMPTION=y but may run with e.g. the
-+ * PREEMPT_NONE model.
-+ */
-+static inline bool preempt_model_preemptible(void)
-+{
-+	return preempt_model_full() || preempt_model_rt();
-+}
-+
- /*
-  * Does a critical section need to be broken due to another
-  * task waiting?: (technically does not depend on CONFIG_PREEMPTION,
-diff --git a/kernel/sched/core.c b/kernel/sched/core.c
-index d575b49..068c088 100644
---- a/kernel/sched/core.c
-+++ b/kernel/sched/core.c
-@@ -8409,6 +8409,18 @@ static void __init preempt_dynamic_init(void)
++	err = drm_dp_dpcd_read(link->aux, DP_ADJUST_REQUEST_POST_CURSOR2,
++			       &post_cursor, sizeof(post_cursor));
++	if (err < 0) {
++		DRM_ERROR("failed to read post_cursor2: %d\n", err);
++		post_cursor = 0;
++	}
+ 
+ 	for (i = 0; i < link->lanes; i++) {
+ 		adjust->voltage_swing[i] =
+@@ -560,7 +569,7 @@ static void drm_dp_link_get_adjustments(struct drm_dp_link *link,
+ 				DP_TRAIN_PRE_EMPHASIS_SHIFT;
+ 
+ 		adjust->post_cursor[i] =
+-			drm_dp_get_adjust_request_post_cursor(status, i);
++			(post_cursor >> (i << 1)) & 0x3;
  	}
  }
  
-+#define PREEMPT_MODEL_ACCESSOR(mode) \
-+	bool preempt_model_##mode(void)						 \
-+	{									 \
-+		WARN_ON_ONCE(preempt_dynamic_mode == preempt_dynamic_undefined); \
-+		return preempt_dynamic_mode == preempt_dynamic_##mode;		 \
-+	}									 \
-+	EXPORT_SYMBOL_GPL(preempt_model_##mode)
-+
-+PREEMPT_MODEL_ACCESSOR(none);
-+PREEMPT_MODEL_ACCESSOR(voluntary);
-+PREEMPT_MODEL_ACCESSOR(full);
-+
- #else /* !CONFIG_PREEMPT_DYNAMIC */
+diff --git a/include/drm/drm_dp_helper.h b/include/drm/drm_dp_helper.h
+index 30359e434c3f..28378db676c8 100644
+--- a/include/drm/drm_dp_helper.h
++++ b/include/drm/drm_dp_helper.h
+@@ -1528,8 +1528,6 @@ u8 drm_dp_get_adjust_request_pre_emphasis(const u8 link_status[DP_LINK_STATUS_SI
+ 					  int lane);
+ u8 drm_dp_get_adjust_tx_ffe_preset(const u8 link_status[DP_LINK_STATUS_SIZE],
+ 				   int lane);
+-u8 drm_dp_get_adjust_request_post_cursor(const u8 link_status[DP_LINK_STATUS_SIZE],
+-					 unsigned int lane);
  
- static inline void preempt_dynamic_init(void) { }
+ #define DP_BRANCH_OUI_HEADER_SIZE	0xc
+ #define DP_RECEIVER_CAP_SIZE		0xf
+-- 
+2.34.1
+
+
+
