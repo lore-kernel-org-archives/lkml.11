@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8487EC4321E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 71ADFC4167B
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 09:52:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243342AbiDEJjl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 05:39:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34718 "EHLO
+        id S243319AbiDEJjg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 05:39:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46206 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239348AbiDEIT7 (ORCPT
+        with ESMTP id S239342AbiDEIT7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Apr 2022 04:19:59 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90CD6BC872;
-        Tue,  5 Apr 2022 01:11:43 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DE84BB90D;
+        Tue,  5 Apr 2022 01:11:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2BD58609AD;
-        Tue,  5 Apr 2022 08:11:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3CBFDC385A1;
-        Tue,  5 Apr 2022 08:11:42 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1EF22B81A37;
+        Tue,  5 Apr 2022 08:11:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 839E9C385A4;
+        Tue,  5 Apr 2022 08:11:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649146302;
-        bh=EHsZ8E2Brdkpwt7Xp80ysA7vNQCtBemTSOm/CnO5Ew4=;
+        s=korg; t=1649146288;
+        bh=bz1y2BMhzRgU6QOc4hsMgy4aO7O/Ui4cg5DeTP931ak=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Ntj3CCwtWIE5pOZrJLShMWJ2Zng3Zy519OgQjVrwecNi3VJASNRxL+iWdv66N+m27
-         QbX7XGHxwDLM94E5Ef22cn0dcJClJMq7We+pdD9HL5j9vs+TENkkJSJw23i4ZoTm8Z
-         nj4wjIafMPZJaz3SVuf3l69HEPv1hrMGrJZ+wctY=
+        b=uVU13jSMHRpYaRCmXfy9uHELcgI8y5XluFVD2r22MLNbaeVQ33VBAARZHpFOfiZ0q
+         zURLhb4awzz0Cxs+ZGQFXI74MtmsBsvfcwbZGU3BL72wIxM+i3LskOxCIcvAvhwosU
+         OARnUzRvaUboC9oiT/lAe0gyuy8Iulag1auQWOw8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jianlin Shi <jishi@redhat.com>,
-        Hangbin Liu <liuhangbin@gmail.com>,
+        stable@vger.kernel.org, Jan Sondhauss <jan.sondhauss@wago.com>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0677/1126] bareudp: use ipv6_mod_enabled to check if IPv6 enabled
-Date:   Tue,  5 Apr 2022 09:23:44 +0200
-Message-Id: <20220405070427.494809987@linuxfoundation.org>
+Subject: [PATCH 5.17 0709/1126] drivers: ethernet: cpsw: fix panic when interrupt coaleceing is set via ethtool
+Date:   Tue,  5 Apr 2022 09:24:16 +0200
+Message-Id: <20220405070428.411100222@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -50,90 +50,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hangbin Liu <liuhangbin@gmail.com>
+From: Sondhauß, Jan <Jan.Sondhauss@wago.com>
 
-[ Upstream commit e077ed58c243afc197bc2a2ba0e1ff61135e4ec2 ]
+[ Upstream commit 2844e2434385819f674d1fb4130c308c50ba681e ]
 
-bareudp_create_sock() use AF_INET6 by default if IPv6 CONFIG enabled.
-But if user start kernel with ipv6.disable=1, the bareudp sock will
-created failed, which cause the interface open failed even with ethertype
-ip. e.g.
+cpsw_ethtool_begin directly returns the result of pm_runtime_get_sync
+when successful.
+pm_runtime_get_sync returns -error code on failure and 0 on successful
+resume but also 1 when the device is already active. So the common case
+for cpsw_ethtool_begin is to return 1. That leads to inconsistent calls
+to pm_runtime_put in the call-chain so that pm_runtime_put is called
+one too many times and as result leaving the cpsw dev behind suspended.
 
- # ip link add bareudp1 type bareudp dstport 2 ethertype ip
- # ip link set bareudp1 up
- RTNETLINK answers: Address family not supported by protocol
+The suspended cpsw dev leads to an access violation later on by
+different parts of the cpsw driver.
 
-Fix it by using ipv6_mod_enabled() to check if IPv6 enabled. There is
-no need to check IS_ENABLED(CONFIG_IPV6) as ipv6_mod_enabled() will
-return false when CONFIG_IPV6 no enabled in include/linux/ipv6.h.
+Fix this by calling the return-friendly pm_runtime_resume_and_get
+function.
 
-Reported-by: Jianlin Shi <jishi@redhat.com>
-Fixes: 571912c69f0e ("net: UDP tunnel encapsulation module for tunnelling different protocols like MPLS, IP, NSH etc.")
-Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
-Link: https://lore.kernel.org/r/20220315062618.156230-1-liuhangbin@gmail.com
+Fixes: d43c65b05b84 ("ethtool: runtime-resume netdev parent in ethnl_ops_begin")
+Signed-off-by: Jan Sondhauss <jan.sondhauss@wago.com>
+Reviewed-by: Vignesh Raghavendra <vigneshr@ti.com>
+Link: https://lore.kernel.org/r/20220323084725.65864-1-jan.sondhauss@wago.com
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/bareudp.c | 19 ++++++++++---------
- 1 file changed, 10 insertions(+), 9 deletions(-)
+ drivers/net/ethernet/ti/cpsw_ethtool.c | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/bareudp.c b/drivers/net/bareudp.c
-index ba587e5fc24f..683203f87ae2 100644
---- a/drivers/net/bareudp.c
-+++ b/drivers/net/bareudp.c
-@@ -148,14 +148,14 @@ static int bareudp_udp_encap_recv(struct sock *sk, struct sk_buff *skb)
- 	skb_reset_network_header(skb);
- 	skb_reset_mac_header(skb);
+diff --git a/drivers/net/ethernet/ti/cpsw_ethtool.c b/drivers/net/ethernet/ti/cpsw_ethtool.c
+index aa42141be3c0..a557a477d039 100644
+--- a/drivers/net/ethernet/ti/cpsw_ethtool.c
++++ b/drivers/net/ethernet/ti/cpsw_ethtool.c
+@@ -364,11 +364,9 @@ int cpsw_ethtool_op_begin(struct net_device *ndev)
+ 	struct cpsw_common *cpsw = priv->cpsw;
+ 	int ret;
  
--	if (!IS_ENABLED(CONFIG_IPV6) || family == AF_INET)
-+	if (!ipv6_mod_enabled() || family == AF_INET)
- 		err = IP_ECN_decapsulate(oiph, skb);
- 	else
- 		err = IP6_ECN_decapsulate(oiph, skb);
+-	ret = pm_runtime_get_sync(cpsw->dev);
+-	if (ret < 0) {
++	ret = pm_runtime_resume_and_get(cpsw->dev);
++	if (ret < 0)
+ 		cpsw_err(priv, drv, "ethtool begin failed %d\n", ret);
+-		pm_runtime_put_noidle(cpsw->dev);
+-	}
  
- 	if (unlikely(err)) {
- 		if (log_ecn_error) {
--			if  (!IS_ENABLED(CONFIG_IPV6) || family == AF_INET)
-+			if  (!ipv6_mod_enabled() || family == AF_INET)
- 				net_info_ratelimited("non-ECT from %pI4 "
- 						     "with TOS=%#x\n",
- 						     &((struct iphdr *)oiph)->saddr,
-@@ -221,11 +221,12 @@ static struct socket *bareudp_create_sock(struct net *net, __be16 port)
- 	int err;
- 
- 	memset(&udp_conf, 0, sizeof(udp_conf));
--#if IS_ENABLED(CONFIG_IPV6)
--	udp_conf.family = AF_INET6;
--#else
--	udp_conf.family = AF_INET;
--#endif
-+
-+	if (ipv6_mod_enabled())
-+		udp_conf.family = AF_INET6;
-+	else
-+		udp_conf.family = AF_INET;
-+
- 	udp_conf.local_udp_port = port;
- 	/* Open UDP socket */
- 	err = udp_sock_create(net, &udp_conf, &sock);
-@@ -448,7 +449,7 @@ static netdev_tx_t bareudp_xmit(struct sk_buff *skb, struct net_device *dev)
- 	}
- 
- 	rcu_read_lock();
--	if (IS_ENABLED(CONFIG_IPV6) && info->mode & IP_TUNNEL_INFO_IPV6)
-+	if (ipv6_mod_enabled() && info->mode & IP_TUNNEL_INFO_IPV6)
- 		err = bareudp6_xmit_skb(skb, dev, bareudp, info);
- 	else
- 		err = bareudp_xmit_skb(skb, dev, bareudp, info);
-@@ -478,7 +479,7 @@ static int bareudp_fill_metadata_dst(struct net_device *dev,
- 
- 	use_cache = ip_tunnel_dst_cache_usable(skb, info);
- 
--	if (!IS_ENABLED(CONFIG_IPV6) || ip_tunnel_info_af(info) == AF_INET) {
-+	if (!ipv6_mod_enabled() || ip_tunnel_info_af(info) == AF_INET) {
- 		struct rtable *rt;
- 		__be32 saddr;
- 
+ 	return ret;
+ }
 -- 
 2.34.1
 
