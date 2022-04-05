@@ -2,48 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9CBB0C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 11:04:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 18A4BC43219
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 11:04:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243383AbiDEK6G (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 06:58:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52854 "EHLO
+        id S243530AbiDEK60 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 06:58:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33912 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241492AbiDEIeB (ORCPT
+        with ESMTP id S239204AbiDEIbM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:34:01 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02BB165AD;
-        Tue,  5 Apr 2022 01:32:01 -0700 (PDT)
+        Tue, 5 Apr 2022 04:31:12 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 576B65DA23;
+        Tue,  5 Apr 2022 01:23:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8CCDC60AFB;
-        Tue,  5 Apr 2022 08:32:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9E413C385A0;
-        Tue,  5 Apr 2022 08:31:59 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 43BF16146E;
+        Tue,  5 Apr 2022 08:23:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 547DFC385A0;
+        Tue,  5 Apr 2022 08:23:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649147520;
-        bh=x+MfrSWBfQ88jjgjPsoU0dTJnhaZQ+91OiSyJnCtbyQ=;
+        s=korg; t=1649147001;
+        bh=cmQjIDOiyu6i0WOxV+vP3qJn8wa2woRKYCESBKH7hvg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ir98MPPbSVBAt74HAJQnfX7lCOHja21LEXzk/X6GI6K3ZKa63/6NhU88kUZAUyPPt
-         mnhtld2e9fMXcydTEZIzHDEfdegqFeOqfNWvXPx61o5wHeAgWDPDsWGVl6o/t7/NiO
-         iEI5ICq4XJoPG4ZmrxmR1hBQH7zJWDKBQz0e1TR0=
+        b=xLRJLgRjlnXojKzmAKWjnS1xqNjzMANzvVFXUv6OnVH9/ymSXUlcgXXvvi4nnyXVm
+         t0WLGNLADNs+OeAoESwalSrX1UeH+5riXTKLObAHrbX3rEQVrOMfRw971J3MJEmvCG
+         HYkdw4QhxtpUCr4dfPVD13RlQEWGw5MbIwt/Ze8g=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>,
-        Waiman Long <longman@redhat.com>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Bart Van Assche <bvanassche@acm.org>,
-        Cheng-Jui Wang <cheng-jui.wang@mediatek.com>
-Subject: [PATCH 5.16 0025/1017] locking/lockdep: Avoid potential access of invalid memory in lock_class
-Date:   Tue,  5 Apr 2022 09:15:38 +0200
-Message-Id: <20220405070354.923625558@linuxfoundation.org>
+        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>, Arnd Bergmann <arnd@arndb.de>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 0928/1126] ARM: mmp: Fix failure to remove sram device
+Date:   Tue,  5 Apr 2022 09:27:55 +0200
+Message-Id: <20220405070434.756278067@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
-References: <20220405070354.155796697@linuxfoundation.org>
+In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
+References: <20220405070407.513532867@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -52,87 +50,76 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Waiman Long <longman@redhat.com>
+From: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 
-commit 61cc4534b6550997c97a03759ab46b29d44c0017 upstream.
+[ Upstream commit 4036b29a146b2749af3bb213b003eb69f3e5ecc4 ]
 
-It was found that reading /proc/lockdep after a lockdep splat may
-potentially cause an access to freed memory if lockdep_unregister_key()
-is called after the splat but before access to /proc/lockdep [1]. This
-is due to the fact that graph_lock() call in lockdep_unregister_key()
-fails after the clearing of debug_locks by the splat process.
+Make sure in .probe() to set driver data before the function is left to
+make it possible in .remove() to undo the actions done.
 
-After lockdep_unregister_key() is called, the lock_name may be freed
-but the corresponding lock_class structure still have a reference to
-it. That invalid memory pointer will then be accessed when /proc/lockdep
-is read by a user and a use-after-free (UAF) error will be reported if
-KASAN is enabled.
+This fixes a potential memory leak and stops returning an error code in
+.remove() that is ignored by the driver core anyhow.
 
-To fix this problem, lockdep_unregister_key() is now modified to always
-search for a matching key irrespective of the debug_locks state and
-zap the corresponding lock class if a matching one is found.
-
-[1] https://lore.kernel.org/lkml/77f05c15-81b6-bddd-9650-80d5f23fe330@i-love.sakura.ne.jp/
-
-Fixes: 8b39adbee805 ("locking/lockdep: Make lockdep_unregister_key() honor 'debug_locks' again")
-Reported-by: Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>
-Signed-off-by: Waiman Long <longman@redhat.com>
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Reviewed-by: Bart Van Assche <bvanassche@acm.org>
-Cc: Cheng-Jui Wang <cheng-jui.wang@mediatek.com>
-Link: https://lkml.kernel.org/r/20220103023558.1377055-1-longman@redhat.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+Reviewed-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- kernel/locking/lockdep.c |   24 +++++++++++++++---------
- 1 file changed, 15 insertions(+), 9 deletions(-)
+ arch/arm/mach-mmp/sram.c | 22 ++++++++++++----------
+ 1 file changed, 12 insertions(+), 10 deletions(-)
 
---- a/kernel/locking/lockdep.c
-+++ b/kernel/locking/lockdep.c
-@@ -6288,7 +6288,13 @@ void lockdep_reset_lock(struct lockdep_m
- 		lockdep_reset_lock_reg(lock);
+diff --git a/arch/arm/mach-mmp/sram.c b/arch/arm/mach-mmp/sram.c
+index 6794e2db1ad5..ecc46c31004f 100644
+--- a/arch/arm/mach-mmp/sram.c
++++ b/arch/arm/mach-mmp/sram.c
+@@ -72,6 +72,8 @@ static int sram_probe(struct platform_device *pdev)
+ 	if (!info)
+ 		return -ENOMEM;
+ 
++	platform_set_drvdata(pdev, info);
++
+ 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+ 	if (res == NULL) {
+ 		dev_err(&pdev->dev, "no memory resource defined\n");
+@@ -107,8 +109,6 @@ static int sram_probe(struct platform_device *pdev)
+ 	list_add(&info->node, &sram_bank_list);
+ 	mutex_unlock(&sram_lock);
+ 
+-	platform_set_drvdata(pdev, info);
+-
+ 	dev_info(&pdev->dev, "initialized\n");
+ 	return 0;
+ 
+@@ -127,17 +127,19 @@ static int sram_remove(struct platform_device *pdev)
+ 	struct sram_bank_info *info;
+ 
+ 	info = platform_get_drvdata(pdev);
+-	if (info == NULL)
+-		return -ENODEV;
+ 
+-	mutex_lock(&sram_lock);
+-	list_del(&info->node);
+-	mutex_unlock(&sram_lock);
++	if (info->sram_size) {
++		mutex_lock(&sram_lock);
++		list_del(&info->node);
++		mutex_unlock(&sram_lock);
++
++		gen_pool_destroy(info->gpool);
++		iounmap(info->sram_virt);
++		kfree(info->pool_name);
++	}
+ 
+-	gen_pool_destroy(info->gpool);
+-	iounmap(info->sram_virt);
+-	kfree(info->pool_name);
+ 	kfree(info);
++
+ 	return 0;
  }
  
--/* Unregister a dynamically allocated key. */
-+/*
-+ * Unregister a dynamically allocated key.
-+ *
-+ * Unlike lockdep_register_key(), a search is always done to find a matching
-+ * key irrespective of debug_locks to avoid potential invalid access to freed
-+ * memory in lock_class entry.
-+ */
- void lockdep_unregister_key(struct lock_class_key *key)
- {
- 	struct hlist_head *hash_head = keyhashentry(key);
-@@ -6303,10 +6309,8 @@ void lockdep_unregister_key(struct lock_
- 		return;
- 
- 	raw_local_irq_save(flags);
--	if (!graph_lock())
--		goto out_irq;
-+	lockdep_lock();
- 
--	pf = get_pending_free();
- 	hlist_for_each_entry_rcu(k, hash_head, hash_entry) {
- 		if (k == key) {
- 			hlist_del_rcu(&k->hash_entry);
-@@ -6314,11 +6318,13 @@ void lockdep_unregister_key(struct lock_
- 			break;
- 		}
- 	}
--	WARN_ON_ONCE(!found);
--	__lockdep_free_key_range(pf, key, 1);
--	call_rcu_zapped(pf);
--	graph_unlock();
--out_irq:
-+	WARN_ON_ONCE(!found && debug_locks);
-+	if (found) {
-+		pf = get_pending_free();
-+		__lockdep_free_key_range(pf, key, 1);
-+		call_rcu_zapped(pf);
-+	}
-+	lockdep_unlock();
- 	raw_local_irq_restore(flags);
- 
- 	/* Wait until is_dynamic_key() has finished accessing k->hash_entry. */
+-- 
+2.34.1
+
 
 
