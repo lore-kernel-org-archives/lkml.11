@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D1D0C47081
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A2616C35295
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 14:06:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357801AbiDEODc (ORCPT
+        id S1358215AbiDEODh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 10:03:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38662 "EHLO
+        Tue, 5 Apr 2022 10:03:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45890 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235451AbiDEJah (ORCPT
+        with ESMTP id S235497AbiDEJap (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:30:37 -0400
+        Tue, 5 Apr 2022 05:30:45 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B258E540B;
-        Tue,  5 Apr 2022 02:17:36 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B12A1E7F61;
+        Tue,  5 Apr 2022 02:17:50 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6A830B80DA1;
-        Tue,  5 Apr 2022 09:17:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BF260C385A0;
-        Tue,  5 Apr 2022 09:17:33 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 65D25B818F3;
+        Tue,  5 Apr 2022 09:17:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C99F0C385A0;
+        Tue,  5 Apr 2022 09:17:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649150254;
-        bh=hkzJKH+9ntGpKLU8MpszvUYKaLGgVtdAemBPeotoG9c=;
+        s=korg; t=1649150268;
+        bh=vK/yrbUh/EhxBu261dRYQfC4zTET2FQj/zRa7+VU4/c=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0N1wQOGXpA8HR8aqqgBoGIJ0oCobM0S8YOlFV1spklCz1mxr6GsqDxsYPXkAVfjnP
-         BIyT5H6azdAY0mFFdxRcpZSyfl8knmAYPMlRlF6Tod7UCpoeQtkLmY7KeEF96Z7R9K
-         kd9BsRVIyGCosPB0/rFOFN5vUdwDJZf4ruftBIdM=
+        b=WfwqLLvWRrCPUW6IHd1/uXjD/Zw64AEsNMTj4AhHlwwnBZgMjVkBphebj9ORQV779
+         bzOj8w92iNowf2m1LdROI7Cbf7zPdcpX9GytYlzbd145YxXHiU+3ajBjC/5z7BsZOl
+         IAmX60X2BkV0T/hco9sTBvlhoZve2Kl/I4vcC4Vg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, "Gabriel L. Somlo" <somlo@cmu.edu>,
-        Borislav Petkov <bp@alien8.de>, Jens Axboe <axboe@kernel.dk>
-Subject: [PATCH 5.16 1010/1017] Revert "nbd: fix possible overflow on first_minor in nbd_dev_add()"
-Date:   Tue,  5 Apr 2022 09:32:03 +0200
-Message-Id: <20220405070424.178136408@linuxfoundation.org>
+        stable@vger.kernel.org, Jann Horn <jannh@google.com>,
+        Kees Cook <keescook@chromium.org>,
+        "Eric W. Biederman" <ebiederm@xmission.com>
+Subject: [PATCH 5.16 1015/1017] coredump: Remove the WARN_ON in dump_vma_snapshot
+Date:   Tue,  5 Apr 2022 09:32:08 +0200
+Message-Id: <20220405070424.324180474@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -49,69 +50,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jens Axboe <axboe@kernel.dk>
+From: Eric W. Biederman <ebiederm@xmission.com>
 
-commit 7198bfc2017644c6b92d2ecef9b8b8e0363bb5fd upstream.
+commit 49c1866348f364478a0c4d3dd13fd08bb82d3a5b upstream.
 
-This reverts commit 6d35d04a9e18990040e87d2bbf72689252669d54.
+The condition is impossible and to the best of my knowledge has never
+triggered.
 
-Both Gabriel and Borislav report that this commit casues a regression
-with nbd:
+We are in deep trouble if that conditions happens and we walk past
+the end of our allocated array.
 
-sysfs: cannot create duplicate filename '/dev/block/43:0'
+So delete the WARN_ON and the code that makes it look like the kernel
+can handle the case of walking past the end of it's vma_meta array.
 
-Revert it before 5.18-rc1 and we'll investigage this separately in
-due time.
-
-Link: https://lore.kernel.org/all/YkiJTnFOt9bTv6A2@zn.tnic/
-Reported-by: Gabriel L. Somlo <somlo@cmu.edu>
-Reported-by: Borislav Petkov <bp@alien8.de>
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Reviewed-by: Jann Horn <jannh@google.com>
+Reviewed-by: Kees Cook <keescook@chromium.org>
+Signed-off-by: "Eric W. Biederman" <ebiederm@xmission.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/block/nbd.c |   24 ++++++++++++------------
- 1 file changed, 12 insertions(+), 12 deletions(-)
+ fs/coredump.c |    6 ------
+ 1 file changed, 6 deletions(-)
 
---- a/drivers/block/nbd.c
-+++ b/drivers/block/nbd.c
-@@ -1800,6 +1800,17 @@ static struct nbd_device *nbd_dev_add(in
- 	refcount_set(&nbd->refs, 0);
- 	INIT_LIST_HEAD(&nbd->list);
- 	disk->major = NBD_MAJOR;
-+
-+	/* Too big first_minor can cause duplicate creation of
-+	 * sysfs files/links, since index << part_shift might overflow, or
-+	 * MKDEV() expect that the max bits of first_minor is 20.
-+	 */
-+	disk->first_minor = index << part_shift;
-+	if (disk->first_minor < index || disk->first_minor > MINORMASK) {
-+		err = -EINVAL;
-+		goto out_free_work;
-+	}
-+
- 	disk->minors = 1 << part_shift;
- 	disk->fops = &nbd_fops;
- 	disk->private_data = nbd;
-@@ -1904,19 +1915,8 @@ static int nbd_genl_connect(struct sk_bu
- 	if (!netlink_capable(skb, CAP_SYS_ADMIN))
- 		return -EPERM;
+--- a/fs/coredump.c
++++ b/fs/coredump.c
+@@ -1085,12 +1085,6 @@ static bool dump_vma_snapshot(struct cor
  
--	if (info->attrs[NBD_ATTR_INDEX]) {
-+	if (info->attrs[NBD_ATTR_INDEX])
- 		index = nla_get_u32(info->attrs[NBD_ATTR_INDEX]);
--
--		/*
--		 * Too big first_minor can cause duplicate creation of
--		 * sysfs files/links, since index << part_shift might overflow, or
--		 * MKDEV() expect that the max bits of first_minor is 20.
--		 */
--		if (index < 0 || index > MINORMASK >> part_shift) {
--			printk(KERN_ERR "nbd: illegal input index %d\n", index);
--			return -EINVAL;
--		}
+ 	mmap_write_unlock(mm);
+ 
+-	if (WARN_ON(i != cprm->vma_count)) {
+-		kvfree(cprm->vma_meta);
+-		return false;
 -	}
- 	if (!info->attrs[NBD_ATTR_SOCKETS]) {
- 		printk(KERN_ERR "nbd: must specify at least one socket\n");
- 		return -EINVAL;
+-
+-
+ 	for (i = 0; i < cprm->vma_count; i++) {
+ 		struct core_vma_metadata *m = cprm->vma_meta + i;
+ 
 
 
