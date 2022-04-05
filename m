@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 99088C4321E
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:57:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 76423C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:57:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1838595AbiDFAzl (ORCPT
+        id S1838616AbiDFA4A (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 20:55:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47312 "EHLO
+        Tue, 5 Apr 2022 20:56:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39194 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349419AbiDEJtu (ORCPT
+        with ESMTP id S244650AbiDEKjF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:49:50 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1A9A1CFD8;
-        Tue,  5 Apr 2022 02:45:15 -0700 (PDT)
+        Tue, 5 Apr 2022 06:39:05 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6024CA205E;
+        Tue,  5 Apr 2022 03:24:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6CA9D61368;
-        Tue,  5 Apr 2022 09:45:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 79393C385A1;
-        Tue,  5 Apr 2022 09:45:14 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B09DE617CF;
+        Tue,  5 Apr 2022 10:24:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BE60AC385A0;
+        Tue,  5 Apr 2022 10:24:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649151914;
-        bh=LlfPEpuO2RmOjuU3Q2iGNRyCQCE6XCPmkT3/gfEHe7M=;
+        s=korg; t=1649154253;
+        bh=Ytr58gnACPtIgX8wj6A+Rgu50Y/LfhHdm8jAbP6A5yc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UufaTZ6WTkoUSwVmM69ETZdDMhiHnRrSpGlKszULvVW0aYoD311NIVRlctnl5k8d2
-         m1Q7CkWVFilT5vf9S9tJs6M2gJDq4t45guhZok3Dc3Ul3/HXqQvRG7YUO+UcspH9i4
-         n82dCOfUfELOewxfhGR5URuaInuh6ZyCIGpB7Vtc=
+        b=U/LJATG/xKwGVkj2uZroUhu9977m7Y+ijMbfjaz5X0BsXmIFNEQ97nmkUjgP4p5MF
+         Tn4GDopBdmPx6iJMpVRw4QbbW6AQzQx+/S7mVITmXAC0Q1i8/xo9VP82O8RfZv7pka
+         iOcW+XpY/6B7HU4o1dTyEJ0KeIe4+kKd6Hy1ZQi0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Robert Marko <robimarko@gmail.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 588/913] clk: qcom: ipq8074: fix PCI-E clock oops
-Date:   Tue,  5 Apr 2022 09:27:30 +0200
-Message-Id: <20220405070357.469602231@linuxfoundation.org>
+        stable@vger.kernel.org, Chen Jingwen <chenjingwen6@huawei.com>,
+        Christophe Leroy <christophe.leroy@csgroup.eu>,
+        Michael Ellerman <mpe@ellerman.id.au>
+Subject: [PATCH 5.10 513/599] powerpc/kasan: Fix early region not updated correctly
+Date:   Tue,  5 Apr 2022 09:33:27 +0200
+Message-Id: <20220405070314.102871212@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
+References: <20220405070258.802373272@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,163 +50,86 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Robert Marko <robimarko@gmail.com>
+From: Chen Jingwen <chenjingwen6@huawei.com>
 
-[ Upstream commit bf8f5182b8f59309809b41c1d1730ed9ca6134b1 ]
+commit dd75080aa8409ce10d50fb58981c6b59bf8707d3 upstream.
 
-Fix PCI-E clock related kernel oops that are caused by a missing clock
-parent.
+The shadow's page table is not updated when PTE_RPN_SHIFT is 24
+and PAGE_SHIFT is 12. It not only causes false positives but
+also false negative as shown the following text.
 
-pcie0_rchng_clk_src has num_parents set to 2 but only one parent is
-actually set via parent_hws, it should also have "XO" defined.
-This will cause the kernel to panic on a NULL pointer in
-clk_core_get_parent_by_index().
+Fix it by bringing the logic of kasan_early_shadow_page_entry here.
 
-So, to fix this utilize clk_parent_data to provide gcc_xo_gpll0 parent
-data.
-Since there is already an existing static const char * const gcc_xo_gpll0[]
-used to provide the same parents via parent_names convert those users to
-clk_parent_data as well.
+1. False Positive:
+==================================================================
+BUG: KASAN: vmalloc-out-of-bounds in pcpu_alloc+0x508/0xa50
+Write of size 16 at addr f57f3be0 by task swapper/0/1
 
-Without this earlycon is needed to even catch the OOPS as it will reset
-the board before serial is initialized with the following:
+CPU: 0 PID: 1 Comm: swapper/0 Not tainted 5.15.0-12267-gdebe436e77c7 #1
+Call Trace:
+[c80d1c20] [c07fe7b8] dump_stack_lvl+0x4c/0x6c (unreliable)
+[c80d1c40] [c02ff668] print_address_description.constprop.0+0x88/0x300
+[c80d1c70] [c02ff45c] kasan_report+0x1ec/0x200
+[c80d1cb0] [c0300b20] kasan_check_range+0x160/0x2f0
+[c80d1cc0] [c03018a4] memset+0x34/0x90
+[c80d1ce0] [c0280108] pcpu_alloc+0x508/0xa50
+[c80d1d40] [c02fd7bc] __kmem_cache_create+0xfc/0x570
+[c80d1d70] [c0283d64] kmem_cache_create_usercopy+0x274/0x3e0
+[c80d1db0] [c2036580] init_sd+0xc4/0x1d0
+[c80d1de0] [c00044a0] do_one_initcall+0xc0/0x33c
+[c80d1eb0] [c2001624] kernel_init_freeable+0x2c8/0x384
+[c80d1ef0] [c0004b14] kernel_init+0x24/0x170
+[c80d1f10] [c001b26c] ret_from_kernel_thread+0x5c/0x64
 
-[    0.232279] Unable to handle kernel paging request at virtual address 0000a00000000000
-[    0.232322] Mem abort info:
-[    0.239094]   ESR = 0x96000004
-[    0.241778]   EC = 0x25: DABT (current EL), IL = 32 bits
-[    0.244908]   SET = 0, FnV = 0
-[    0.250377]   EA = 0, S1PTW = 0
-[    0.253236]   FSC = 0x04: level 0 translation fault
-[    0.256277] Data abort info:
-[    0.261141]   ISV = 0, ISS = 0x00000004
-[    0.264262]   CM = 0, WnR = 0
-[    0.267820] [0000a00000000000] address between user and kernel address ranges
-[    0.270954] Internal error: Oops: 96000004 [#1] SMP
-[    0.278067] Modules linked in:
-[    0.282751] CPU: 1 PID: 1 Comm: swapper/0 Not tainted 5.15.10 #0
-[    0.285882] Hardware name: Xiaomi AX3600 (DT)
-[    0.292043] pstate: 20400005 (nzCv daif +PAN -UAO -TCO -DIT -SSBS BTYPE=--)
-[    0.296299] pc : clk_core_get_parent_by_index+0x68/0xec
-[    0.303067] lr : __clk_register+0x1d8/0x820
-[    0.308273] sp : ffffffc01111b7d0
-[    0.312438] x29: ffffffc01111b7d0 x28: 0000000000000000 x27: 0000000000000040
-[    0.315919] x26: 0000000000000002 x25: 0000000000000000 x24: ffffff8000308800
-[    0.323037] x23: ffffff8000308850 x22: ffffff8000308880 x21: ffffff8000308828
-[    0.330155] x20: 0000000000000028 x19: ffffff8000309700 x18: 0000000000000020
-[    0.337272] x17: 000000005cc86990 x16: 0000000000000004 x15: ffffff80001d9d0a
-[    0.344391] x14: 0000000000000000 x13: 0000000000000000 x12: 0000000000000006
-[    0.351508] x11: 0000000000000003 x10: 0101010101010101 x9 : 0000000000000000
-[    0.358626] x8 : 7f7f7f7f7f7f7f7f x7 : 6468626f5e626266 x6 : 17000a3a403c1b06
-[    0.365744] x5 : 061b3c403a0a0017 x4 : 0000000000000000 x3 : 0000000000000001
-[    0.372863] x2 : 0000a00000000000 x1 : 0000000000000001 x0 : ffffff8000309700
-[    0.379982] Call trace:
-[    0.387091]  clk_core_get_parent_by_index+0x68/0xec
-[    0.389351]  __clk_register+0x1d8/0x820
-[    0.394210]  devm_clk_hw_register+0x5c/0xe0
-[    0.398030]  devm_clk_register_regmap+0x44/0x8c
-[    0.402198]  qcom_cc_really_probe+0x17c/0x1d0
-[    0.406711]  qcom_cc_probe+0x34/0x44
-[    0.411224]  gcc_ipq8074_probe+0x18/0x30
-[    0.414869]  platform_probe+0x68/0xe0
-[    0.418776]  really_probe.part.0+0x9c/0x30c
-[    0.422336]  __driver_probe_device+0x98/0x144
-[    0.426329]  driver_probe_device+0x44/0x11c
-[    0.430842]  __device_attach_driver+0xb4/0x120
-[    0.434836]  bus_for_each_drv+0x68/0xb0
-[    0.439349]  __device_attach+0xb0/0x170
-[    0.443081]  device_initial_probe+0x14/0x20
-[    0.446901]  bus_probe_device+0x9c/0xa4
-[    0.451067]  device_add+0x35c/0x834
-[    0.454886]  of_device_add+0x54/0x64
-[    0.458360]  of_platform_device_create_pdata+0xc0/0x100
-[    0.462181]  of_platform_bus_create+0x114/0x370
-[    0.467128]  of_platform_bus_create+0x15c/0x370
-[    0.471641]  of_platform_populate+0x50/0xcc
-[    0.476155]  of_platform_default_populate_init+0xa8/0xc8
-[    0.480324]  do_one_initcall+0x50/0x1b0
-[    0.485877]  kernel_init_freeable+0x234/0x29c
-[    0.489436]  kernel_init+0x24/0x120
-[    0.493948]  ret_from_fork+0x10/0x20
-[    0.497253] Code: d50323bf d65f03c0 f94002a2 b4000302 (f9400042)
-[    0.501079] ---[ end trace 4ca7e1129da2abce ]---
+Memory state around the buggy address:
+ f57f3a80: f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8
+ f57f3b00: f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8
+>f57f3b80: f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8
+                                               ^
+ f57f3c00: f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8
+ f57f3c80: f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8
+==================================================================
 
-Fixes: f0cfcf1a ("clk: qcom: ipq8074: Add missing clocks for pcie")
-Signed-off-by: Robert Marko <robimarko@gmail.com>
-Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Link: https://lore.kernel.org/r/20211220114119.465247-1-robimarko@gmail.com
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+2. False Negative (with KASAN tests):
+==================================================================
+Before fix:
+    ok 45 - kmalloc_double_kzfree
+    # vmalloc_oob: EXPECTATION FAILED at lib/test_kasan.c:1039
+    KASAN failure expected in "((volatile char *)area)[3100]", but none occurred
+    not ok 46 - vmalloc_oob
+    not ok 1 - kasan
+
+==================================================================
+After fix:
+    ok 1 - kasan
+
+Fixes: cbd18991e24fe ("powerpc/mm: Fix an Oops in kasan_mmu_init()")
+Cc: stable@vger.kernel.org # 5.4.x
+Signed-off-by: Chen Jingwen <chenjingwen6@huawei.com>
+Reviewed-by: Christophe Leroy <christophe.leroy@csgroup.eu>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/20211229035226.59159-1-chenjingwen6@huawei.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/clk/qcom/gcc-ipq8074.c | 19 +++++++++----------
- 1 file changed, 9 insertions(+), 10 deletions(-)
+ arch/powerpc/mm/kasan/kasan_init_32.c |    3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/drivers/clk/qcom/gcc-ipq8074.c b/drivers/clk/qcom/gcc-ipq8074.c
-index 108fe27bee10..b09d99343e09 100644
---- a/drivers/clk/qcom/gcc-ipq8074.c
-+++ b/drivers/clk/qcom/gcc-ipq8074.c
-@@ -60,11 +60,6 @@ static const struct parent_map gcc_xo_gpll0_gpll0_out_main_div2_map[] = {
- 	{ P_GPLL0_DIV2, 4 },
- };
+--- a/arch/powerpc/mm/kasan/kasan_init_32.c
++++ b/arch/powerpc/mm/kasan/kasan_init_32.c
+@@ -83,13 +83,12 @@ void __init
+ kasan_update_early_region(unsigned long k_start, unsigned long k_end, pte_t pte)
+ {
+ 	unsigned long k_cur;
+-	phys_addr_t pa = __pa(kasan_early_shadow_page);
  
--static const char * const gcc_xo_gpll0[] = {
--	"xo",
--	"gpll0",
--};
--
- static const struct parent_map gcc_xo_gpll0_map[] = {
- 	{ P_XO, 0 },
- 	{ P_GPLL0, 1 },
-@@ -956,6 +951,11 @@ static struct clk_rcg2 blsp1_uart6_apps_clk_src = {
- 	},
- };
+ 	for (k_cur = k_start; k_cur != k_end; k_cur += PAGE_SIZE) {
+ 		pmd_t *pmd = pmd_off_k(k_cur);
+ 		pte_t *ptep = pte_offset_kernel(pmd, k_cur);
  
-+static const struct clk_parent_data gcc_xo_gpll0[] = {
-+	{ .fw_name = "xo" },
-+	{ .hw = &gpll0.clkr.hw },
-+};
-+
- static const struct freq_tbl ftbl_pcie_axi_clk_src[] = {
- 	F(19200000, P_XO, 1, 0, 0),
- 	F(200000000, P_GPLL0, 4, 0, 0),
-@@ -969,7 +969,7 @@ static struct clk_rcg2 pcie0_axi_clk_src = {
- 	.parent_map = gcc_xo_gpll0_map,
- 	.clkr.hw.init = &(struct clk_init_data){
- 		.name = "pcie0_axi_clk_src",
--		.parent_names = gcc_xo_gpll0,
-+		.parent_data = gcc_xo_gpll0,
- 		.num_parents = 2,
- 		.ops = &clk_rcg2_ops,
- 	},
-@@ -1016,7 +1016,7 @@ static struct clk_rcg2 pcie1_axi_clk_src = {
- 	.parent_map = gcc_xo_gpll0_map,
- 	.clkr.hw.init = &(struct clk_init_data){
- 		.name = "pcie1_axi_clk_src",
--		.parent_names = gcc_xo_gpll0,
-+		.parent_data = gcc_xo_gpll0,
- 		.num_parents = 2,
- 		.ops = &clk_rcg2_ops,
- 	},
-@@ -1330,7 +1330,7 @@ static struct clk_rcg2 nss_ce_clk_src = {
- 	.parent_map = gcc_xo_gpll0_map,
- 	.clkr.hw.init = &(struct clk_init_data){
- 		.name = "nss_ce_clk_src",
--		.parent_names = gcc_xo_gpll0,
-+		.parent_data = gcc_xo_gpll0,
- 		.num_parents = 2,
- 		.ops = &clk_rcg2_ops,
- 	},
-@@ -4329,8 +4329,7 @@ static struct clk_rcg2 pcie0_rchng_clk_src = {
- 	.parent_map = gcc_xo_gpll0_map,
- 	.clkr.hw.init = &(struct clk_init_data){
- 		.name = "pcie0_rchng_clk_src",
--		.parent_hws = (const struct clk_hw *[]) {
--				&gpll0.clkr.hw },
-+		.parent_data = gcc_xo_gpll0,
- 		.num_parents = 2,
- 		.ops = &clk_rcg2_ops,
- 	},
--- 
-2.34.1
-
+-		if ((pte_val(*ptep) & PTE_RPN_MASK) != pa)
++		if (pte_page(*ptep) != virt_to_page(lm_alias(kasan_early_shadow_page)))
+ 			continue;
+ 
+ 		__set_pte_at(&init_mm, k_cur, ptep, pte, 0);
 
 
