@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 377DCC3527B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C050C3527E
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 10:30:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357286AbiDEK0H (ORCPT
+        id S1357550AbiDEK0e (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 06:26:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47170 "EHLO
+        Tue, 5 Apr 2022 06:26:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45766 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241125AbiDEIcv (ORCPT
+        with ESMTP id S241111AbiDEIct (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:32:51 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3AD4715FE9;
-        Tue,  5 Apr 2022 01:28:11 -0700 (PDT)
+        Tue, 5 Apr 2022 04:32:49 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82C011583E;
+        Tue,  5 Apr 2022 01:27:46 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D7BFCB81B18;
-        Tue,  5 Apr 2022 08:28:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2264DC385A1;
-        Tue,  5 Apr 2022 08:28:07 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 35C84B81B13;
+        Tue,  5 Apr 2022 08:27:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 99D97C385A2;
+        Tue,  5 Apr 2022 08:27:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649147288;
-        bh=Rd5nw3jDuLAv2KMmI7ewgk5evQITYPwffFCbrPD6p1k=;
+        s=korg; t=1649147264;
+        bh=e8M3m26qr3VKHSlMi/VvMyNC/NrvzXKmemOXvTAkL4s=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gcYS7a8Ia2lpBMUrKyzWL1c6DxFftKODL2HqxSxpqUGgYmcS4oTtGA4WdVoV+brYe
-         9Z7vj5dOFJOO5q5XHX6LMX2j4/2GvhQDs3tA6JiLiUCsYAWcRJr5Oi6VOerujbr/v4
-         Yr7Ai+bJD/B2lywrn3Cj1IWvQgLRvvdm30C15cEk=
+        b=ASlefjH7DVGX3yrrHJMsotRY8ziNar54VBYwD85HUeeOoTqMx/FSicKcrj4kYaqos
+         BDQKBPXjTyaZ/rsv6oQMqjxZGJtNkTqgob3wo9GsmBl6+cMsP0xbGTHYb7wC/vLJDr
+         ZyHH1lqyU0N8sXNlQbvi1CN2ZSZ/eB3IiUGYZ8mE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Wan Jiabing <wanjiabing@vivo.com>,
-        Xin Long <lucien.xin@gmail.com>,
-        Paul Moore <paul@paul-moore.com>
-Subject: [PATCH 5.17 1070/1126] docs: fix make htmldocs warning in SCTP.rst
-Date:   Tue,  5 Apr 2022 09:30:17 +0200
-Message-Id: <20220405070438.863033340@linuxfoundation.org>
+        stable@vger.kernel.org, Hans de Goede <hdegoede@redhat.com>,
+        Abhijeet V <abhijeetviswa@gmail.com>
+Subject: [PATCH 5.17 1062/1126] platform/x86: asus-wmi: Fix regression when probing for fan curve control
+Date:   Tue,  5 Apr 2022 09:30:09 +0200
+Message-Id: <20220405070438.633178279@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -50,52 +49,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Wan Jiabing <wanjiabing@vivo.com>
+From: Hans de Goede <hdegoede@redhat.com>
 
-commit 70868c6b8fd80db585da57a264c50a69af8fd3c3 upstream.
+commit d717e4509af0380a94dbc28b61839df39f17e1eb upstream.
 
-Fix following 'make htmldocs' warnings:
-./Documentation/security/SCTP.rst:123: WARNING: Title underline too short.
-security_sctp_assoc_established()
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-./Documentation/security/SCTP.rst:123: WARNING: Title underline too short.
-security_sctp_assoc_established()
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-./Documentation/security/SCTP.rst:273: WARNING: Title underline too short.
-security_sctp_assoc_established()
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-./Documentation/security/SCTP.rst:273: WARNING: Title underline too short.
-security_sctp_assoc_established()
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+The fan curve control patches introduced a regression for at least the
+TUF FX506 and possibly other TUF series laptops that do not have support
+for fan curve control.
 
-Fixes: 5e50f5d4ff31 ("security: add sctp_assoc_established hook")
-Signed-off-by: Wan Jiabing <wanjiabing@vivo.com>
-Reviewed-by: Xin Long <lucien.xin@gmail.com>
-Signed-off-by: Paul Moore <paul@paul-moore.com>
+As part of the probing process, asus_wmi_evaluate_method_buf is called
+to get the factory default fan curve . The WMI management function
+returns 0 on certain laptops to indicate lack of fan curve control
+instead of ASUS_WMI_UNSUPPORTED_METHOD. This 0 is transformed to
+-ENODATA which results in failure when probing.
+
+Fixes: 0f0ac158d28f ("platform/x86: asus-wmi: Add support for custom fan curves")
+Reported-and-tested-by: Abhijeet V <abhijeetviswa@gmail.com>
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+Link: https://lore.kernel.org/r/20220205112840.33095-1-hdegoede@redhat.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- Documentation/security/SCTP.rst |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/platform/x86/asus-wmi.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/Documentation/security/SCTP.rst
-+++ b/Documentation/security/SCTP.rst
-@@ -120,7 +120,7 @@ calls **sctp_peeloff**\(3).
- 
- 
- security_sctp_assoc_established()
--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- Called when a COOKIE ACK is received, and the peer secid will be
- saved into ``@asoc->peer_secid`` for client::
- 
-@@ -270,7 +270,7 @@ sockets sid and peer sid to that contain
- 
- 
- security_sctp_assoc_established()
--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- Called when a COOKIE ACK is received where it sets the connection's peer sid
- to that in ``@skb``::
- 
+--- a/drivers/platform/x86/asus-wmi.c
++++ b/drivers/platform/x86/asus-wmi.c
+@@ -2059,7 +2059,7 @@ static int fan_boost_mode_check_present(
+ 	err = asus_wmi_get_devstate(asus, ASUS_WMI_DEVID_FAN_BOOST_MODE,
+ 				    &result);
+ 	if (err) {
+-		if (err == -ENODEV)
++		if (err == -ENODEV || err == -ENODATA)
+ 			return 0;
+ 		else
+ 			return err;
 
 
