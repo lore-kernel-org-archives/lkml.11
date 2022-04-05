@@ -2,46 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A0425C4167B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 813D8C4167D
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 11:21:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353272AbiDELOH (ORCPT
+        id S1356758AbiDELPm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 07:14:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52916 "EHLO
+        Tue, 5 Apr 2022 07:15:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56394 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238187AbiDEIaX (ORCPT
+        with ESMTP id S237087AbiDEIRl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:30:23 -0400
+        Tue, 5 Apr 2022 04:17:41 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 212CC21E2C;
-        Tue,  5 Apr 2022 01:21:49 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6A21B0A57;
+        Tue,  5 Apr 2022 01:05:06 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 814BD60FF7;
-        Tue,  5 Apr 2022 08:21:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8AE7AC385A0;
-        Tue,  5 Apr 2022 08:21:47 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 452806167A;
+        Tue,  5 Apr 2022 08:05:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4810AC385A1;
+        Tue,  5 Apr 2022 08:05:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649146907;
-        bh=Cah0xlxi9vX/JXqn6RvksIYmQRGk5+CJsMN43zZ9Jn4=;
+        s=korg; t=1649145905;
+        bh=bpHXttM/e3cLQHkW0j8q0tlu0YafmBGpQxC5mr2uDeU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=wsW5nLKCwmGvXFQiEV7cjgg0mBPoqOmuQyRDjDZSdaH5gMN1/QjV2kO31m8AMc1qR
-         Czp9Z3Wi+L3XtKfBUxDATokzth+9xShnYhZat0GjTnxzPewuJ70mUs7zYnemL4PaXF
-         HqnQjrz73EZYzNEYnHnJBeeXZ0wzAao6KcIZXaVA=
+        b=ZVfQtl1VROnkz3WEW/lgQO2wNlzse7Ntvc0gJQDc/jD/MGrdXd6ICVjbZ25bKNjes
+         0vvMt8vqAyVaC+jrSdHRHywM+BDk78HH+CU7XvFQJLK2ZQfO+FU9E7bcPNDFqFHREO
+         sv6rOf2N3Rqq3xBg5ldmGe02kgkCLTt/ThyjqynI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        =?UTF-8?q?Maximilian=20B=C3=B6hm?= <maximilian.boehm@elbmurf.de>,
-        Pavel Skripkin <paskripkin@gmail.com>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Stephen Boyd <swboyd@chromium.org>,
+        Abhinav Kumar <quic_abhinavk@quicinc.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0933/1126] media: Revert "media: em28xx: add missing em28xx_close_extension"
-Date:   Tue,  5 Apr 2022 09:28:00 +0200
-Message-Id: <20220405070434.900578812@linuxfoundation.org>
+Subject: [PATCH 5.17 0572/1126] drm/msm/dpu: add DSPP blocks teardown
+Date:   Tue,  5 Apr 2022 09:21:59 +0200
+Message-Id: <20220405070424.423744398@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -53,45 +52,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pavel Skripkin <paskripkin@gmail.com>
+From: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
 
-[ Upstream commit fde18c3bac3f964d8333ae53b304d8fee430502b ]
+[ Upstream commit d5c5e78f217172e87d8fb2c3418dd8b58b4adfcb ]
 
-This reverts commit 2c98b8a3458df03abdc6945bbef67ef91d181938.
+Add missing calls to dpu_hw_dspp_destroy() to free resources allocated
+for DSPP hardware blocks.
 
-Reverted patch causes problems with Hauppauge WinTV dualHD as Maximilian
-reported [1]. Since quick solution didn't come up let's just revert it
-to make this device work with upstream kernels.
-
-Link: https://lore.kernel.org/all/6a72a37b-e972-187d-0322-16336e12bdc5@elbmurf.de/ [1]
-
-Reported-by: Maximilian Böhm <maximilian.boehm@elbmurf.de>
-Tested-by: Maximilian Böhm <maximilian.boehm@elbmurf.de>
-Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+Fixes: e47616df008b ("drm/msm/dpu: add support for color processing blocks in dpu driver")
+Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Reviewed-by: Stephen Boyd <swboyd@chromium.org>
+Reviewed-by: Abhinav Kumar <quic_abhinavk@quicinc.com>
+Link: https://lore.kernel.org/r/20220121210618.3482550-3-dmitry.baryshkov@linaro.org
+Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/usb/em28xx/em28xx-cards.c | 5 +----
- 1 file changed, 1 insertion(+), 4 deletions(-)
+ drivers/gpu/drm/msm/disp/dpu1/dpu_rm.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
-diff --git a/drivers/media/usb/em28xx/em28xx-cards.c b/drivers/media/usb/em28xx/em28xx-cards.c
-index f3b56c065ee1..ae25d2cbfdfe 100644
---- a/drivers/media/usb/em28xx/em28xx-cards.c
-+++ b/drivers/media/usb/em28xx/em28xx-cards.c
-@@ -4150,11 +4150,8 @@ static void em28xx_usb_disconnect(struct usb_interface *intf)
+diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_rm.c b/drivers/gpu/drm/msm/disp/dpu1/dpu_rm.c
+index f9c83d6e427a..24fbaf562d41 100644
+--- a/drivers/gpu/drm/msm/disp/dpu1/dpu_rm.c
++++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_rm.c
+@@ -35,6 +35,14 @@ int dpu_rm_destroy(struct dpu_rm *rm)
+ {
+ 	int i;
  
- 	em28xx_close_extension(dev);
++	for (i = 0; i < ARRAY_SIZE(rm->dspp_blks); i++) {
++		struct dpu_hw_dspp *hw;
++
++		if (rm->dspp_blks[i]) {
++			hw = to_dpu_hw_dspp(rm->dspp_blks[i]);
++			dpu_hw_dspp_destroy(hw);
++		}
++	}
+ 	for (i = 0; i < ARRAY_SIZE(rm->pingpong_blks); i++) {
+ 		struct dpu_hw_pingpong *hw;
  
--	if (dev->dev_next) {
--		em28xx_close_extension(dev->dev_next);
-+	if (dev->dev_next)
- 		em28xx_release_resources(dev->dev_next);
--	}
--
- 	em28xx_release_resources(dev);
- 
- 	if (dev->dev_next) {
 -- 
 2.34.1
 
