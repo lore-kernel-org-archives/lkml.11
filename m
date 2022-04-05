@@ -2,104 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DABF8C43217
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 22:56:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 82BD8C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 22:56:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1456908AbiDEWqw (ORCPT
+        id S1457732AbiDEWrk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 18:46:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48930 "EHLO
+        Tue, 5 Apr 2022 18:47:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46816 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380217AbiDEMxl (ORCPT
+        with ESMTP id S242775AbiDEKfS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 08:53:41 -0400
-Received: from mx07-00178001.pphosted.com (mx08-00178001.pphosted.com [91.207.212.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84D3CE095;
-        Tue,  5 Apr 2022 04:53:38 -0700 (PDT)
-Received: from pps.filterd (m0046661.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 2358i9ao002139;
-        Tue, 5 Apr 2022 13:52:58 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=from : to : cc :
- subject : date : message-id : mime-version : content-transfer-encoding :
- content-type; s=selector1;
- bh=ahMNFWxzpaVmVp3viku9IaBrdSUCBM3LW49uPEPbvxU=;
- b=AOxt4YrYB/LoekLRTWYYtVuMG3+PLFJzeUn29lBTkGZa3ek7xYQZnOOGVb7exI9rDJGo
- EmbWbNLQYZU05k5hGR9B9IGQlM9eJJSvNfOBVjVCwj+uCTubQb+U/fzk4qYEbVXJA4Xx
- OTPm7FsfKjPSWMl5QdTxw+M1nWXQ6trXXL9g4AhGy0kUO1l8YgWsVXg6i4UlKXoeAOyh
- 2d/dysRHJgXKEM7Vcxe8UUzu8iMDAkxaL3ZM5THKOp8zPn51c3CJ4GyTd1V8rgLB06a/
- elErddY4//H/Nnoj0AWanhffmXC3EgtYuohqqXd9T+kHG5m2sgHsOt/lc+f+RieA4Kg9 Sw== 
-Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3f6dcgsr66-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 05 Apr 2022 13:52:58 +0200
-Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 09BEE10002A;
-        Tue,  5 Apr 2022 13:52:55 +0200 (CEST)
-Received: from Webmail-eu.st.com (sfhdag2node2.st.com [10.75.127.5])
-        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id EFBFF21A239;
-        Tue,  5 Apr 2022 13:52:54 +0200 (CEST)
-Received: from localhost (10.75.127.46) by SFHDAG2NODE2.st.com (10.75.127.5)
- with Microsoft SMTP Server (TLS) id 15.0.1497.26; Tue, 5 Apr 2022 13:52:54
- +0200
-From:   Arnaud Pouliquen <arnaud.pouliquen@foss.st.com>
-To:     Russell King <linux@armlinux.org.uk>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Manivannan Sadhasivam <mani@kernel.org>,
-        Douglas Anderson <dianders@chromium.org>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        <linux-arm-kernel@lists.infradead.org>
-CC:     <arnaud.pouliquen@foss.st.com>, <linux-kernel@vger.kernel.org>,
-        <linux-remoteproc@vger.kernel.org>
-Subject: [PATCH v2] arm: configs: Configs that had RPMSG_CHAR now get RPMSG_CTRL
-Date:   Tue, 5 Apr 2022 13:52:36 +0200
-Message-ID: <20220405115236.1019955-1-arnaud.pouliquen@foss.st.com>
-X-Mailer: git-send-email 2.25.1
+        Tue, 5 Apr 2022 06:35:18 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6EFA4A920;
+        Tue,  5 Apr 2022 03:20:59 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 568BBB81BC5;
+        Tue,  5 Apr 2022 10:20:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BD4A0C385A1;
+        Tue,  5 Apr 2022 10:20:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649154057;
+        bh=WTTgE0jq1ET24nxFgkUnERXPbOwuOz6l4qpBGMY5MV0=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=DJf1RUzKmTIBoSPMbVGl97qAEdIxzwa1SO318SypLmwvz5j3741W8LWExNBF3A+zC
+         I5WDTdpPAQtC7uouk2CWZjI6iWzcAeBidoMZYgiIRKm2XFKQ/J6Cy0S/eF8wk9+epy
+         F11irdxnb+Kd65jWoooxSTctAnISCB7ZsnfjVaig=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Ido Schimmel <idosch@nvidia.com>,
+        David Ahern <dsahern@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 441/599] selftests: test_vxlan_under_vrf: Fix broken test case
+Date:   Tue,  5 Apr 2022 09:32:15 +0200
+Message-Id: <20220405070311.955504838@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
+References: <20220405070258.802373272@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.75.127.46]
-X-ClientProxiedBy: SFHDAG2NODE2.st.com (10.75.127.5) To SFHDAG2NODE2.st.com
- (10.75.127.5)
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.850,Hydra:6.0.425,FMLib:17.11.64.514
- definitions=2022-04-05_02,2022-04-05_01,2022-02-23_01
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In the commit 617d32938d1b ("rpmsg: Move the rpmsg control device
-from rpmsg_char to rpmsg_ctrl"), we split the rpmsg_char driver in two.
-By default give everyone who had the old driver enabled the rpmsg_ctrl
-driver too.
+From: Ido Schimmel <idosch@nvidia.com>
 
-Signed-off-by: Arnaud Pouliquen <arnaud.pouliquen@foss.st.com>
+[ Upstream commit b50d3b46f84282d795ae3076111acb75ae1031f3 ]
+
+The purpose of the last test case is to test VXLAN encapsulation and
+decapsulation when the underlay lookup takes place in a non-default VRF.
+This is achieved by enslaving the physical device of the tunnel to a
+VRF.
+
+The binding of the VXLAN UDP socket to the VRF happens when the VXLAN
+device itself is opened, not when its physical device is opened. This
+was also mentioned in the cited commit ("tests that moving the underlay
+from a VRF to another works when down/up the VXLAN interface"), but the
+test did something else.
+
+Fix it by reopening the VXLAN device instead of its physical device.
+
+Before:
+
+ # ./test_vxlan_under_vrf.sh
+ Checking HV connectivity                                           [ OK ]
+ Check VM connectivity through VXLAN (underlay in the default VRF)  [ OK ]
+ Check VM connectivity through VXLAN (underlay in a VRF)            [FAIL]
+
+After:
+
+ # ./test_vxlan_under_vrf.sh
+ Checking HV connectivity                                           [ OK ]
+ Check VM connectivity through VXLAN (underlay in the default VRF)  [ OK ]
+ Check VM connectivity through VXLAN (underlay in a VRF)            [ OK ]
+
+Fixes: 03f1c26b1c56 ("test/net: Add script for VXLAN underlay in a VRF")
+Signed-off-by: Ido Schimmel <idosch@nvidia.com>
+Reviewed-by: David Ahern <dsahern@kernel.org>
+Link: https://lore.kernel.org/r/20220324200514.1638326-1-idosch@nvidia.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
+ tools/testing/selftests/net/test_vxlan_under_vrf.sh | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-This patch is extracted from the series [1] that has been partially
-integrated in the Linux Kernel 5.18-rc1.
-
-Update vs previous version:
-- remove "Fixes:" tag in commit, requested by Mathieu Poirier in [2]
-
-[1]https://lore.kernel.org/lkml/15be2f08-ba03-2b80-6f53-2056359d5c41@gmail.com/T/
-[2]https://lore.kernel.org/linux-arm-kernel/CANLsYky1_b80qPbgOaLGVYD-GEr21V6C653iGEB7VCU=GbGvAQ@mail.gmail.com/T/
----
- arch/arm/configs/qcom_defconfig | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/arch/arm/configs/qcom_defconfig b/arch/arm/configs/qcom_defconfig
-index 9981566f2096..2e7e9a4f31f6 100644
---- a/arch/arm/configs/qcom_defconfig
-+++ b/arch/arm/configs/qcom_defconfig
-@@ -241,6 +241,7 @@ CONFIG_QCOM_Q6V5_PAS=y
- CONFIG_QCOM_Q6V5_PIL=y
- CONFIG_QCOM_WCNSS_PIL=y
- CONFIG_RPMSG_CHAR=y
-+CONFIG_RPMSG_CTRL=y
- CONFIG_RPMSG_QCOM_GLINK_SMEM=y
- CONFIG_RPMSG_QCOM_SMD=y
- CONFIG_QCOM_COMMAND_DB=y
+diff --git a/tools/testing/selftests/net/test_vxlan_under_vrf.sh b/tools/testing/selftests/net/test_vxlan_under_vrf.sh
+index 09f9ed92cbe4..a44b9aca7427 100755
+--- a/tools/testing/selftests/net/test_vxlan_under_vrf.sh
++++ b/tools/testing/selftests/net/test_vxlan_under_vrf.sh
+@@ -118,11 +118,11 @@ echo "[ OK ]"
+ 
+ # Move the underlay to a non-default VRF
+ ip -netns hv-1 link set veth0 vrf vrf-underlay
+-ip -netns hv-1 link set veth0 down
+-ip -netns hv-1 link set veth0 up
++ip -netns hv-1 link set vxlan0 down
++ip -netns hv-1 link set vxlan0 up
+ ip -netns hv-2 link set veth0 vrf vrf-underlay
+-ip -netns hv-2 link set veth0 down
+-ip -netns hv-2 link set veth0 up
++ip -netns hv-2 link set vxlan0 down
++ip -netns hv-2 link set vxlan0 up
+ 
+ echo -n "Check VM connectivity through VXLAN (underlay in a VRF)            "
+ ip netns exec vm-1 ping -c 1 -W 1 10.0.0.2 &> /dev/null || (echo "[FAIL]"; false)
 -- 
-2.25.1
+2.34.1
+
+
 
