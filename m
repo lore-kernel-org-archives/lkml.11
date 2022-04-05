@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3334EC433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 877FFC433EF
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 13:37:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1388794AbiDENdC (ORCPT
+        id S1388859AbiDENdH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 09:33:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36022 "EHLO
+        Tue, 5 Apr 2022 09:33:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60032 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346071AbiDEJX0 (ORCPT
+        with ESMTP id S1346007AbiDEJXP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:23:26 -0400
+        Tue, 5 Apr 2022 05:23:15 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 537B1AFB02;
-        Tue,  5 Apr 2022 02:12:53 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9DCD35AB3;
+        Tue,  5 Apr 2022 02:12:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D5CF5B81B14;
-        Tue,  5 Apr 2022 09:12:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 40D4FC385AC;
-        Tue,  5 Apr 2022 09:12:50 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 484E0B81C6A;
+        Tue,  5 Apr 2022 09:12:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A64B4C385C1;
+        Tue,  5 Apr 2022 09:12:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649149970;
-        bh=fywS0SO7tp8sPRJmZFhQFeRorWt9giLj0GkaAOpgxdc=;
+        s=korg; t=1649149965;
+        bh=T3kgODDX5p1Yhno/gHslKFRgBU4Q7T8204hWf0ApzHI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gVroX/AHlqntmnOuk0VTt2kzLGV5Y5sqgZnIFAihm1FpZ4zXu8soOAIJYB4XdSY/R
-         /76nPTwAqdXchE10G1eLu3F8v18Ukn1FD6tS90IRI0EA2yFxsSMyCFPVrxKEOvBd5W
-         V62J6hQWmuKi1rxaMBK7KFIKVXAXrfI2Pl6zJ+v0=
+        b=mpVtiDpncM8WZX782Gy4Mnuo39uHyjiVMKJ0fl0RClCfcwr7DjBxgM5rWFnuZXbBD
+         xAPEVpYLkPo9Hlod1a3VBBIZ49igcxIHb3GcoXwQKmpaROIcxlC8kiEj+Q06tw5IkY
+         Z5oK/7h4QHvSBbvytcy/MtZMx+F+NMko8wEhCBjY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yi Liu <liu.yi24@zte.com.cn>,
-        Yi Wang <wang.yi59@zte.com.cn>,
-        Paolo Bonzini <pbonzini@redhat.com>
-Subject: [PATCH 5.16 0906/1017] KVM: SVM: fix panic on out-of-bounds guest IRQ
-Date:   Tue,  5 Apr 2022 09:30:19 +0200
-Message-Id: <20220405070421.117379364@linuxfoundation.org>
+        stable@vger.kernel.org, Abdul Haleem <abdhalee@linux.vnet.ibm.com>,
+        Himanshu Madhani <himanshu.madhani@oracle.com>,
+        Quinn Tran <qutran@marvell.com>,
+        Nilesh Javali <njavali@marvell.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>
+Subject: [PATCH 5.16 0878/1017] scsi: qla2xxx: Fix warning message due to adisc being flushed
+Date:   Tue,  5 Apr 2022 09:29:51 +0200
+Message-Id: <20220405070420.296853940@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -50,81 +52,84 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yi Wang <wang.yi59@zte.com.cn>
+From: Quinn Tran <qutran@marvell.com>
 
-commit a80ced6ea514000d34bf1239d47553de0d1ee89e upstream.
+commit 64f24af75b79cba3b86b0760e27e0fa904db570f upstream.
 
-As guest_irq is coming from KVM_IRQFD API call, it may trigger
-crash in svm_update_pi_irte() due to out-of-bounds:
+Fix warning message due to adisc being flushed.  Linux kernel triggered a
+warning message where a different error code type is not matching up with
+the expected type. Add additional translation of one error code type to
+another.
 
-crash> bt
-PID: 22218  TASK: ffff951a6ad74980  CPU: 73  COMMAND: "vcpu8"
- #0 [ffffb1ba6707fa40] machine_kexec at ffffffff8565b397
- #1 [ffffb1ba6707fa90] __crash_kexec at ffffffff85788a6d
- #2 [ffffb1ba6707fb58] crash_kexec at ffffffff8578995d
- #3 [ffffb1ba6707fb70] oops_end at ffffffff85623c0d
- #4 [ffffb1ba6707fb90] no_context at ffffffff856692c9
- #5 [ffffb1ba6707fbf8] exc_page_fault at ffffffff85f95b51
- #6 [ffffb1ba6707fc50] asm_exc_page_fault at ffffffff86000ace
-    [exception RIP: svm_update_pi_irte+227]
-    RIP: ffffffffc0761b53  RSP: ffffb1ba6707fd08  RFLAGS: 00010086
-    RAX: ffffb1ba6707fd78  RBX: ffffb1ba66d91000  RCX: 0000000000000001
-    RDX: 00003c803f63f1c0  RSI: 000000000000019a  RDI: ffffb1ba66db2ab8
-    RBP: 000000000000019a   R8: 0000000000000040   R9: ffff94ca41b82200
-    R10: ffffffffffffffcf  R11: 0000000000000001  R12: 0000000000000001
-    R13: 0000000000000001  R14: ffffffffffffffcf  R15: 000000000000005f
-    ORIG_RAX: ffffffffffffffff  CS: 0010  SS: 0018
- #7 [ffffb1ba6707fdb8] kvm_irq_routing_update at ffffffffc09f19a1 [kvm]
- #8 [ffffb1ba6707fde0] kvm_set_irq_routing at ffffffffc09f2133 [kvm]
- #9 [ffffb1ba6707fe18] kvm_vm_ioctl at ffffffffc09ef544 [kvm]
-    RIP: 00007f143c36488b  RSP: 00007f143a4e04b8  RFLAGS: 00000246
-    RAX: ffffffffffffffda  RBX: 00007f05780041d0  RCX: 00007f143c36488b
-    RDX: 00007f05780041d0  RSI: 000000004008ae6a  RDI: 0000000000000020
-    RBP: 00000000000004e8   R8: 0000000000000008   R9: 00007f05780041e0
-    R10: 00007f0578004560  R11: 0000000000000246  R12: 00000000000004e0
-    R13: 000000000000001a  R14: 00007f1424001c60  R15: 00007f0578003bc0
-    ORIG_RAX: 0000000000000010  CS: 0033  SS: 002b
+WARNING: CPU: 2 PID: 1131623 at drivers/scsi/qla2xxx/qla_init.c:498
+qla2x00_async_adisc_sp_done+0x294/0x2b0 [qla2xxx]
+CPU: 2 PID: 1131623 Comm: drmgr Not tainted 5.13.0-rc1-autotest #1
+..
+GPR28: c000000aaa9c8890 c0080000079ab678 c00000140a104800 c00000002bd19000
+NIP [c00800000790857c] qla2x00_async_adisc_sp_done+0x294/0x2b0 [qla2xxx]
+LR [c008000007908578] qla2x00_async_adisc_sp_done+0x290/0x2b0 [qla2xxx]
+Call Trace:
+[c00000001cdc3620] [c008000007908578] qla2x00_async_adisc_sp_done+0x290/0x2b0 [qla2xxx] (unreliable)
+[c00000001cdc3710] [c0080000078f3080] __qla2x00_abort_all_cmds+0x1b8/0x580 [qla2xxx]
+[c00000001cdc3840] [c0080000078f589c] qla2x00_abort_all_cmds+0x34/0xd0 [qla2xxx]
+[c00000001cdc3880] [c0080000079153d8] qla2x00_abort_isp_cleanup+0x3f0/0x570 [qla2xxx]
+[c00000001cdc3920] [c0080000078fb7e8] qla2x00_remove_one+0x3d0/0x480 [qla2xxx]
+[c00000001cdc39b0] [c00000000071c274] pci_device_remove+0x64/0x120
+[c00000001cdc39f0] [c0000000007fb818] device_release_driver_internal+0x168/0x2a0
+[c00000001cdc3a30] [c00000000070e304] pci_stop_bus_device+0xb4/0x100
+[c00000001cdc3a70] [c00000000070e4f0] pci_stop_and_remove_bus_device+0x20/0x40
+[c00000001cdc3aa0] [c000000000073940] pci_hp_remove_devices+0x90/0x130
+[c00000001cdc3b30] [c0080000070704d0] disable_slot+0x38/0x90 [rpaphp] [
+c00000001cdc3b60] [c00000000073eb4c] power_write_file+0xcc/0x180
+[c00000001cdc3be0] [c0000000007354bc] pci_slot_attr_store+0x3c/0x60
+[c00000001cdc3c00] [c00000000055f820] sysfs_kf_write+0x60/0x80 [c00000001cdc3c20]
+[c00000000055df10] kernfs_fop_write_iter+0x1a0/0x290
+[c00000001cdc3c70] [c000000000447c4c] new_sync_write+0x14c/0x1d0
+[c00000001cdc3d10] [c00000000044b134] vfs_write+0x224/0x330
+[c00000001cdc3d60] [c00000000044b3f4] ksys_write+0x74/0x130
+[c00000001cdc3db0] [c00000000002df70] system_call_exception+0x150/0x2d0
+[c00000001cdc3e10] [c00000000000d45c] system_call_common+0xec/0x278
 
-Vmx have been fix this in commit 3a8b0677fc61 (KVM: VMX: Do not BUG() on
-out-of-bounds guest IRQ), so we can just copy source from that to fix
-this.
-
-Co-developed-by: Yi Liu <liu.yi24@zte.com.cn>
-Signed-off-by: Yi Liu <liu.yi24@zte.com.cn>
-Signed-off-by: Yi Wang <wang.yi59@zte.com.cn>
-Message-Id: <20220309113025.44469-1-wang.yi59@zte.com.cn>
+Link: https://lore.kernel.org/r/20220110050218.3958-5-njavali@marvell.com
 Cc: stable@vger.kernel.org
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+Reported-by: Abdul Haleem <abdhalee@linux.vnet.ibm.com>
+Reviewed-by: Himanshu Madhani <himanshu.madhani@oracle.com>
+Signed-off-by: Quinn Tran <qutran@marvell.com>
+Signed-off-by: Nilesh Javali <njavali@marvell.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/kvm/svm/avic.c |   10 ++++++++--
- 1 file changed, 8 insertions(+), 2 deletions(-)
+ drivers/scsi/qla2xxx/qla_init.c |    6 ++++++
+ 1 file changed, 6 insertions(+)
 
---- a/arch/x86/kvm/svm/avic.c
-+++ b/arch/x86/kvm/svm/avic.c
-@@ -799,7 +799,7 @@ int svm_update_pi_irte(struct kvm *kvm,
- {
- 	struct kvm_kernel_irq_routing_entry *e;
- 	struct kvm_irq_routing_table *irq_rt;
--	int idx, ret = -EINVAL;
-+	int idx, ret = 0;
+--- a/drivers/scsi/qla2xxx/qla_init.c
++++ b/drivers/scsi/qla2xxx/qla_init.c
+@@ -295,6 +295,8 @@ static void qla2x00_async_login_sp_done(
+ 		ea.iop[0] = lio->u.logio.iop[0];
+ 		ea.iop[1] = lio->u.logio.iop[1];
+ 		ea.sp = sp;
++		if (res)
++			ea.data[0] = MBS_COMMAND_ERROR;
+ 		qla24xx_handle_plogi_done_event(vha, &ea);
+ 	}
  
- 	if (!kvm_arch_has_assigned_device(kvm) ||
- 	    !irq_remapping_cap(IRQ_POSTING_CAP))
-@@ -810,7 +810,13 @@ int svm_update_pi_irte(struct kvm *kvm,
+@@ -557,6 +559,8 @@ static void qla2x00_async_adisc_sp_done(
+ 	ea.iop[1] = lio->u.logio.iop[1];
+ 	ea.fcport = sp->fcport;
+ 	ea.sp = sp;
++	if (res)
++		ea.data[0] = MBS_COMMAND_ERROR;
  
- 	idx = srcu_read_lock(&kvm->irq_srcu);
- 	irq_rt = srcu_dereference(kvm->irq_routing, &kvm->irq_srcu);
--	WARN_ON(guest_irq >= irq_rt->nr_rt_entries);
-+
-+	if (guest_irq >= irq_rt->nr_rt_entries ||
-+		hlist_empty(&irq_rt->map[guest_irq])) {
-+		pr_warn_once("no route for guest_irq %u/%u (broken user space?)\n",
-+			     guest_irq, irq_rt->nr_rt_entries);
-+		goto out;
-+	}
+ 	qla24xx_handle_adisc_event(vha, &ea);
+ 	/* ref: INIT */
+@@ -1237,6 +1241,8 @@ static void qla2x00_async_prli_sp_done(s
+ 		ea.sp = sp;
+ 		if (res == QLA_OS_TIMER_EXPIRED)
+ 			ea.data[0] = QLA_OS_TIMER_EXPIRED;
++		else if (res)
++			ea.data[0] = MBS_COMMAND_ERROR;
  
- 	hlist_for_each_entry(e, &irq_rt->map[guest_irq], link) {
- 		struct vcpu_data vcpu_info;
+ 		qla24xx_handle_prli_done_event(vha, &ea);
+ 	}
 
 
