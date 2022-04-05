@@ -2,107 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5EFB7C4167D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F115C4167B
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 21:50:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385402AbiDEVtl (ORCPT
+        id S1385333AbiDEVtf (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 17:49:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43462 "EHLO
+        Tue, 5 Apr 2022 17:49:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53932 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349209AbiDEJt1 (ORCPT
+        with ESMTP id S1457548AbiDEQKZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:49:27 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AEA3822B0F;
-        Tue,  5 Apr 2022 02:42:44 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4CE6461576;
-        Tue,  5 Apr 2022 09:42:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5EEB1C385A1;
-        Tue,  5 Apr 2022 09:42:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649151763;
-        bh=Okagw7fie1fM2en2TnMuv+aoslOZlViKQELnMUuOEYg=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JOeMnUQEhiHGX4ip0YxnBypBh64CYxDk64w0Kvtzb4QfWI5OWHl2Sw4MBI541VP9k
-         92c8zBYg8zY3M/h2lxIt6GIzLSq+AflKi/dXMfGPBrMg+fYBfS4mwehx1OTH0/3m8k
-         YjtM+r3esxMDJ0W1zhQv81WU9g2p4dkXuWEU8Zpo=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Bastien Nocera <hadess@hadess.net>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Sebastian Reichel <sebastian.reichel@collabora.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 496/913] power: supply: bq24190_charger: Fix bq24190_vbus_is_enabled() wrong false return
-Date:   Tue,  5 Apr 2022 09:25:58 +0200
-Message-Id: <20220405070354.722366911@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 5 Apr 2022 12:10:25 -0400
+Received: from mail-il1-x133.google.com (mail-il1-x133.google.com [IPv6:2607:f8b0:4864:20::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB5BF25CD;
+        Tue,  5 Apr 2022 09:08:26 -0700 (PDT)
+Received: by mail-il1-x133.google.com with SMTP id 8so9556552ilq.4;
+        Tue, 05 Apr 2022 09:08:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=hW77YXphKvERuG5H+iUJ9uDZUjTyhWglFK1sbd/bTfk=;
+        b=fUC31B96e41c6xmeoqpvrYUa+mUJ1GYiAW7u8dnTGZSOQ7OWqfyoSDvmCBT+eQyqiM
+         UNdcfy7aDYv4YEBK6yTK4m94iqB4mpunTxsY35VKeoiyjYBvjZlArvV/DuQ1TafofBsN
+         B8jnMYbhZHuAtG0EsMlbVVyM5/HNlK6BRp6Hl4XkThnT78hLnj3HpF4llnx3+OYAEU5U
+         x3+rpPlMUisFFcYPr6dB1CgV3FqngwVsHqBKUAIg5DreEgngpLsbr+alvkf5CRYW+Tcu
+         pxzT1+QZCWMKPsEZ8VNqb0XAtv+y2b5SWNMcGsIME24NejuAZ2pboYge6GEjQcCKTQBQ
+         O4Ug==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=hW77YXphKvERuG5H+iUJ9uDZUjTyhWglFK1sbd/bTfk=;
+        b=X3Yex+MEBVhAG3/uZ8d6gsQ+pFedAT/jzjz+4U5Hgt4rTpenIrhM/lOr3PiYAm2qwN
+         eooQBUfQj6+umEpIiRTHC0B6HX7Ve1TKFNeqds0G2r+AXLkqI6qgNRPXtPOyoLJL33lw
+         AqANT7Om+Fnxtsa1fMsywqU/0dJNGG3knh/PxXVe0+fIdlhe1YlQX5bQniTK4jz2Cksh
+         nB6garagGC048M//npDyJZxD1IlwiG3cEffSnlKTViXy5VTpO2iRFCXMHT7/mvWpFVcV
+         3ZRsnGQsOAN+KkjZIvhBQSBI0/RqFTm8DB1f1R9ikTmtC9ktDi/5wa+bfPSkVP3PBbap
+         4vfg==
+X-Gm-Message-State: AOAM531/ssIyQKmteSgBSeIGHIjitpNzfFsoI4H7luqs2hPB0Q7iVL1m
+        nhTcDZHiZz8mh6VZsMKQr3WliDNvST5s7lwTGB8=
+X-Google-Smtp-Source: ABdhPJz0ff0WGn+zTKCeGfDo2EgfINMJ8I4npVJmeR2s6MXHr0OMaXaR8zU6qWKRN7KTFA46Gm77KGlaYFiEhbvOSdU=
+X-Received: by 2002:a92:7f11:0:b0:2ca:50f9:63d6 with SMTP id
+ a17-20020a927f11000000b002ca50f963d6mr2222344ild.150.1649174906221; Tue, 05
+ Apr 2022 09:08:26 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <20220404131818.1817794-1-gch981213@gmail.com> <20220404131818.1817794-5-gch981213@gmail.com>
+ <1649088538.050456.1436949.nullmailer@robh.at.kernel.org> <CAJsYDVLaXAoL=TcPun6rckcA_cdUS-zFy_7M6uCpfzX+jbQEag@mail.gmail.com>
+ <20220405092024.25d97c33@xps13> <YkxlsU+P33ip2oWH@robh.at.kernel.org>
+In-Reply-To: <YkxlsU+P33ip2oWH@robh.at.kernel.org>
+From:   Chuanhong Guo <gch981213@gmail.com>
+Date:   Wed, 6 Apr 2022 00:08:15 +0800
+Message-ID: <CAJsYDVL_-dkxRsU24NmWA4KuHTVSJwjbr_9kcVcLao=LYSz+Jw@mail.gmail.com>
+Subject: Re: [PATCH v3 4/5] dt-bindings: spi: add binding doc for spi-mtk-snfi
+To:     Rob Herring <robh@kernel.org>
+Cc:     Miquel Raynal <miquel.raynal@bootlin.com>,
+        linux-spi@vger.kernel.org,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Wolfram Sang <wsa+renesas@sang-engineering.com>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Richard Weinberger <richard@nod.at>,
+        Pratyush Yadav <p.yadav@ti.com>,
+        linux-arm-kernel@lists.infradead.org,
+        Cai Huoqing <cai.huoqing@linux.dev>,
+        Roger Quadros <rogerq@kernel.org>,
+        Yu Kuai <yukuai3@huawei.com>,
+        linux-mediatek@lists.infradead.org,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        devicetree@vger.kernel.org, Mark Brown <broonie@kernel.org>,
+        linux-kernel@vger.kernel.org, Paul Cercueil <paul@crapouillou.net>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Colin Ian King <colin.king@intel.com>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        linux-mtd@lists.infradead.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hans de Goede <hdegoede@redhat.com>
+Hi!
 
-[ Upstream commit f7731754fdce33dad19be746f647d6ac47c5d695 ]
+On Tue, Apr 5, 2022 at 11:52 PM Rob Herring <robh@kernel.org> wrote:
+> > You can try including spi-nand.yaml (like you do with
+> > spi-controller.yaml). You should no longer need to define
+> > nand-ecc-engine then as it is already described there?
+>
+> Including spi-nand.yaml is wrong. If that just landed, then this may
+> have run before the base moved to v5.18-rc1.
 
-The datasheet says that the BQ24190_REG_POC_CHG_CONFIG bits can
-have a value of either 10(0x2) or 11(0x3) for OTG (5V boost regulator)
-mode.
+spi-nand.yaml is in v5.18 only and I'm able to reproduce the
+spi-nand complaint by cherry-picking the commit to v5.17 and
+running the check.
+This means I don't need to do anything with the spi-nand error
+then.
+Thanks for the hint.
 
-Sofar bq24190_vbus_is_enabled() was only checking for 10 but some BIOS-es
-uses 11 when enabling the regulator at boot.
-
-Make bq24190_vbus_is_enabled() also check for 11 so that it does not
-wrongly returns false when the bits are set to 11.
-
-Fixes: 66b6bef2c4e0 ("power: supply: bq24190_charger: Export 5V boost converter as regulator")
-Cc: Bastien Nocera <hadess@hadess.net>
-Signed-off-by: Hans de Goede <hdegoede@redhat.com>
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/power/supply/bq24190_charger.c | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/power/supply/bq24190_charger.c b/drivers/power/supply/bq24190_charger.c
-index 35ff0c8fe96f..16c4876fe5af 100644
---- a/drivers/power/supply/bq24190_charger.c
-+++ b/drivers/power/supply/bq24190_charger.c
-@@ -39,6 +39,7 @@
- #define BQ24190_REG_POC_CHG_CONFIG_DISABLE		0x0
- #define BQ24190_REG_POC_CHG_CONFIG_CHARGE		0x1
- #define BQ24190_REG_POC_CHG_CONFIG_OTG			0x2
-+#define BQ24190_REG_POC_CHG_CONFIG_OTG_ALT		0x3
- #define BQ24190_REG_POC_SYS_MIN_MASK		(BIT(3) | BIT(2) | BIT(1))
- #define BQ24190_REG_POC_SYS_MIN_SHIFT		1
- #define BQ24190_REG_POC_SYS_MIN_MIN			3000
-@@ -550,7 +551,11 @@ static int bq24190_vbus_is_enabled(struct regulator_dev *dev)
- 	pm_runtime_mark_last_busy(bdi->dev);
- 	pm_runtime_put_autosuspend(bdi->dev);
- 
--	return ret ? ret : val == BQ24190_REG_POC_CHG_CONFIG_OTG;
-+	if (ret)
-+		return ret;
-+
-+	return (val == BQ24190_REG_POC_CHG_CONFIG_OTG ||
-+		val == BQ24190_REG_POC_CHG_CONFIG_OTG_ALT);
- }
- 
- static const struct regulator_ops bq24190_vbus_ops = {
 -- 
-2.34.1
-
-
-
+Regards,
+Chuanhong Guo
