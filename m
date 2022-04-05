@@ -2,162 +2,134 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 52EB4C43219
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:52:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B740C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:52:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1579590AbiDEXcC (ORCPT
+        id S1580039AbiDEXdk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 19:32:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43898 "EHLO
+        Tue, 5 Apr 2022 19:33:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56018 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349466AbiDEJtz (ORCPT
+        with ESMTP id S1452785AbiDEPzb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:49:55 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5CB1E033;
-        Tue,  5 Apr 2022 02:46:43 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 51B4A61675;
-        Tue,  5 Apr 2022 09:46:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 59564C385A2;
-        Tue,  5 Apr 2022 09:46:42 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649152002;
-        bh=eGTpxXH09wxPDurXHU6C89R4dTMpZZ0TsDKQfzO4kZw=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xzAGA+Y7oJL3xGTDU7C8L0gz32nfchISASk8ldMTd07WFW7gYG3pHfAVqbI3UhfAK
-         j8WDJbk5iVAohu8AJP33JLNy3deYfbf/Hz/rC/g9ZXQFKPVtqbmJykCf0/OLkp7qtJ
-         DA19+1yR55nbY7ejgKph45/j90f+3wJZIe7iqGS4=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Joel Stanley <joel@jms.id.au>,
-        Eddie James <eajames@linux.ibm.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 581/913] fsi: scom: Remove retries in indirect scoms
-Date:   Tue,  5 Apr 2022 09:27:23 +0200
-Message-Id: <20220405070357.260412447@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 5 Apr 2022 11:55:31 -0400
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FF1479381
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 07:57:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649170635; x=1680706635;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=HUuCde5QwQYg6TXe9MSQ6TekH6j3hvkYuaUQC0febew=;
+  b=h1L9i1dAUhQ3zGWOYL5d7w7x7Gh6PGKTaCXcttpiOIspqf82hgw53sVM
+   z968nfPryvMWAS30LUV7onvmaSSv7HY6dfmn3nJDRKO7iiHsBDezYlMwF
+   9v/zru+aeTmZQxcdkNrayM9k2HQDoqlXicRWxxk7gAvC1tpswEPo3dXzG
+   rq8fpUi18llLjeTPUZdqmNw+bIxfptUV+/8yHrZTUpY+9P1tf9Wn5lbeh
+   /19s/ldOK2i49KhBRzzRZfgWD5koXunrH/URzDliMvBjz6mc/59srtKVO
+   iB4m0e1QkTmybzgvD3HhEvQuvQ7jgTk7rLWt+QyGwL5WtHgFBPNUvUP82
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10307"; a="242909581"
+X-IronPort-AV: E=Sophos;i="5.90,236,1643702400"; 
+   d="scan'208";a="242909581"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2022 07:57:13 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,236,1643702400"; 
+   d="scan'208";a="524025802"
+Received: from lkp-server02.sh.intel.com (HELO a44fdfb70b94) ([10.239.97.151])
+  by orsmga006.jf.intel.com with ESMTP; 05 Apr 2022 07:57:11 -0700
+Received: from kbuild by a44fdfb70b94 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nbkcJ-0003Rz-6j;
+        Tue, 05 Apr 2022 14:57:11 +0000
+Date:   Tue, 5 Apr 2022 22:56:51 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Sven Peter <sven@svenpeter.dev>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
+Subject: [asahilinux:nvme-v2 5/6] drivers/soc/apple/rtkit.c:591:21: warning:
+ no previous prototype for 'apple_rtkit_init'
+Message-ID: <202204052220.DC2iBfq3-lkp@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Joel Stanley <joel@jms.id.au>
+tree:   https://github.com/AsahiLinux/linux nvme-v2
+head:   76835054c23e3e3505f5967d8580d86618aca6ec
+commit: 689dd69e59bb68b19066104c34670d5dc272c946 [5/6] soc: apple: Add RTKit IPC library
+config: ia64-buildonly-randconfig-r002-20220405 (https://download.01.org/0day-ci/archive/20220405/202204052220.DC2iBfq3-lkp@intel.com/config)
+compiler: ia64-linux-gcc (GCC) 11.2.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/AsahiLinux/linux/commit/689dd69e59bb68b19066104c34670d5dc272c946
+        git remote add asahilinux https://github.com/AsahiLinux/linux
+        git fetch --no-tags asahilinux nvme-v2
+        git checkout 689dd69e59bb68b19066104c34670d5dc272c946
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=ia64 SHELL=/bin/bash drivers/soc/apple/
 
-[ Upstream commit ab1b79159ad5a6dc4e4994b49737f7feb13b7155 ]
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-In commit f72ddbe1d7b7 ("fsi: scom: Remove retries") the retries were
-removed from get and put scoms. That patch missed the retires in get and
-put indirect scom.
+All warnings (new ones prefixed by >>):
 
-For the same reason, remove them from the scom driver to allow the
-caller to decide to retry.
+>> drivers/soc/apple/rtkit.c:591:21: warning: no previous prototype for 'apple_rtkit_init' [-Wmissing-prototypes]
+     591 | struct apple_rtkit *apple_rtkit_init(struct device *dev, void *cookie,
+         |                     ^~~~~~~~~~~~~~~~
+>> drivers/soc/apple/rtkit.c:805:6: warning: no previous prototype for 'apple_rtkit_free' [-Wmissing-prototypes]
+     805 | void apple_rtkit_free(struct apple_rtkit *rtk)
+         |      ^~~~~~~~~~~~~~~~
 
-This removes the following special case which would have caused the
-retry code to return early:
 
- -       if ((ind_data & XSCOM_DATA_IND_COMPLETE) || (err != SCOM_PIB_BLOCKED))
- -               return 0;
+vim +/apple_rtkit_init +591 drivers/soc/apple/rtkit.c
 
-I believe this case is handled.
+   590	
+ > 591	struct apple_rtkit *apple_rtkit_init(struct device *dev, void *cookie,
+   592					     const char *mbox_name, int mbox_idx,
+   593					     const struct apple_rtkit_ops *ops)
+   594	{
+   595		struct apple_rtkit *rtk;
+   596		int ret;
+   597	
+   598		if (!ops)
+   599			return ERR_PTR(-EINVAL);
+   600	
+   601		rtk = kzalloc(sizeof(*rtk), GFP_KERNEL);
+   602		if (!rtk)
+   603			return ERR_PTR(-ENOMEM);
+   604	
+   605		rtk->dev = dev;
+   606		rtk->cookie = cookie;
+   607		rtk->ops = ops;
+   608	
+   609		init_completion(&rtk->epmap_completion);
+   610		init_completion(&rtk->reinit_completion);
+   611		init_completion(&rtk->iop_pwr_ack_completion);
+   612		init_completion(&rtk->ap_pwr_ack_completion);
+   613	
+   614		bitmap_zero(rtk->endpoints, APPLE_RTKIT_MAX_ENDPOINTS);
+   615		set_bit(APPLE_RTKIT_EP_MGMT, rtk->endpoints);
+   616	
+   617		rtk->mbox_name = mbox_name;
+   618		rtk->mbox_idx = mbox_idx;
+   619		rtk->mbox_cl.dev = dev;
+   620		rtk->mbox_cl.tx_block = true;
+   621		rtk->mbox_cl.knows_txdone = false;
+   622		rtk->mbox_cl.rx_callback = &apple_rtkit_rx_callback;
+   623	
+   624		ret = apple_rtkit_request_mbox_chan(rtk);
+   625		if (ret)
+   626			return (struct apple_rtkit *)ERR_PTR(ret);
+   627	
+   628		return rtk;
+   629	}
+   630	
 
-Fixes: f72ddbe1d7b7 ("fsi: scom: Remove retries")
-Signed-off-by: Joel Stanley <joel@jms.id.au>
-Reviewed-by: Eddie James <eajames@linux.ibm.com>
-Link: https://lore.kernel.org/r/20211207033811.518981-3-joel@jms.id.au
-Signed-off-by: Joel Stanley <joel@jms.id.au>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/fsi/fsi-scom.c | 41 +++++++++++++++--------------------------
- 1 file changed, 15 insertions(+), 26 deletions(-)
-
-diff --git a/drivers/fsi/fsi-scom.c b/drivers/fsi/fsi-scom.c
-index 3b427f7e9027..bcb756dc9866 100644
---- a/drivers/fsi/fsi-scom.c
-+++ b/drivers/fsi/fsi-scom.c
-@@ -145,7 +145,7 @@ static int put_indirect_scom_form0(struct scom_device *scom, uint64_t value,
- 				   uint64_t addr, uint32_t *status)
- {
- 	uint64_t ind_data, ind_addr;
--	int rc, retries, err = 0;
-+	int rc, err;
- 
- 	if (value & ~XSCOM_DATA_IND_DATA)
- 		return -EINVAL;
-@@ -156,19 +156,14 @@ static int put_indirect_scom_form0(struct scom_device *scom, uint64_t value,
- 	if (rc || (*status & SCOM_STATUS_ANY_ERR))
- 		return rc;
- 
--	for (retries = 0; retries < SCOM_MAX_IND_RETRIES; retries++) {
--		rc = __get_scom(scom, &ind_data, addr, status);
--		if (rc || (*status & SCOM_STATUS_ANY_ERR))
--			return rc;
-+	rc = __get_scom(scom, &ind_data, addr, status);
-+	if (rc || (*status & SCOM_STATUS_ANY_ERR))
-+		return rc;
- 
--		err = (ind_data & XSCOM_DATA_IND_ERR_MASK) >> XSCOM_DATA_IND_ERR_SHIFT;
--		*status = err << SCOM_STATUS_PIB_RESP_SHIFT;
--		if ((ind_data & XSCOM_DATA_IND_COMPLETE) || (err != SCOM_PIB_BLOCKED))
--			return 0;
-+	err = (ind_data & XSCOM_DATA_IND_ERR_MASK) >> XSCOM_DATA_IND_ERR_SHIFT;
-+	*status = err << SCOM_STATUS_PIB_RESP_SHIFT;
- 
--		msleep(1);
--	}
--	return rc;
-+	return 0;
- }
- 
- static int put_indirect_scom_form1(struct scom_device *scom, uint64_t value,
-@@ -188,7 +183,7 @@ static int get_indirect_scom_form0(struct scom_device *scom, uint64_t *value,
- 				   uint64_t addr, uint32_t *status)
- {
- 	uint64_t ind_data, ind_addr;
--	int rc, retries, err = 0;
-+	int rc, err;
- 
- 	ind_addr = addr & XSCOM_ADDR_DIRECT_PART;
- 	ind_data = (addr & XSCOM_ADDR_INDIRECT_PART) | XSCOM_DATA_IND_READ;
-@@ -196,21 +191,15 @@ static int get_indirect_scom_form0(struct scom_device *scom, uint64_t *value,
- 	if (rc || (*status & SCOM_STATUS_ANY_ERR))
- 		return rc;
- 
--	for (retries = 0; retries < SCOM_MAX_IND_RETRIES; retries++) {
--		rc = __get_scom(scom, &ind_data, addr, status);
--		if (rc || (*status & SCOM_STATUS_ANY_ERR))
--			return rc;
--
--		err = (ind_data & XSCOM_DATA_IND_ERR_MASK) >> XSCOM_DATA_IND_ERR_SHIFT;
--		*status = err << SCOM_STATUS_PIB_RESP_SHIFT;
--		*value = ind_data & XSCOM_DATA_IND_DATA;
-+	rc = __get_scom(scom, &ind_data, addr, status);
-+	if (rc || (*status & SCOM_STATUS_ANY_ERR))
-+		return rc;
- 
--		if ((ind_data & XSCOM_DATA_IND_COMPLETE) || (err != SCOM_PIB_BLOCKED))
--			return 0;
-+	err = (ind_data & XSCOM_DATA_IND_ERR_MASK) >> XSCOM_DATA_IND_ERR_SHIFT;
-+	*status = err << SCOM_STATUS_PIB_RESP_SHIFT;
-+	*value = ind_data & XSCOM_DATA_IND_DATA;
- 
--		msleep(1);
--	}
--	return rc;
-+	return 0;
- }
- 
- static int raw_put_scom(struct scom_device *scom, uint64_t value,
 -- 
-2.34.1
-
-
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
