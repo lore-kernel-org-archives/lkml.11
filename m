@@ -2,93 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 90535C43219
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:17:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 707F8C3527E
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:17:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1583187AbiDEXv3 (ORCPT
+        id S1583110AbiDEXvS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 19:51:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58568 "EHLO
+        Tue, 5 Apr 2022 19:51:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56118 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1444216AbiDEPlC (ORCPT
+        with ESMTP id S1452904AbiDEPzl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 11:41:02 -0400
-Received: from conuserg-09.nifty.com (conuserg-09.nifty.com [210.131.2.76])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C9A99FC0;
-        Tue,  5 Apr 2022 07:03:31 -0700 (PDT)
-Received: from grover.. (133-32-177-133.west.xps.vectant.ne.jp [133.32.177.133]) (authenticated)
-        by conuserg-09.nifty.com with ESMTP id 235E2k8P021295;
-        Tue, 5 Apr 2022 23:02:51 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conuserg-09.nifty.com 235E2k8P021295
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1649167371;
-        bh=14THH7OGjq9Th9kYojci8epMYGgACRtH/hVpWkrrFWI=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=AHRXWSvHIn/Itms1OHzLnWPnfTi6I6ES3+aHFhkhJubI1sS1fK3FasYxAuNHMLJrF
-         38F+0OVJBLrIP2I5SdD9IRatQGXP97wfzqXYQdWLenhQHbuRrGf3CdVF7ILZnNrteW
-         rBOamsiDr4mp+D6FXARE37JjaJZRwZDXKwst0g45RJZczTi7G2kmCPce/buFAY0BKy
-         AB3vP1gDmM2TeOJLDcR/3smwqHJZ/+1QL7+XIXUwk6C9twrGiZRTB/o0GKWpvSX5j7
-         jj8rY8Og4fpFXR1YTj2XfyUw+8005VX5j/IiHTpik52FNhFwrj3X9Y6kX3IzcMTrLT
-         Dj2BKi9Jchreg==
-X-Nifty-SrcIP: [133.32.177.133]
-From:   Masahiro Yamada <masahiroy@kernel.org>
-To:     linux-kbuild@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Michal Marek <michal.lkml@markovi.net>,
-        Nick Desaulniers <ndesaulniers@google.com>
-Subject: [PATCH v2 07/10] kbuild: get rid of duplication in the first line of *.mod files
-Date:   Tue,  5 Apr 2022 23:02:26 +0900
-Message-Id: <20220405140229.2895394-8-masahiroy@kernel.org>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220405140229.2895394-1-masahiroy@kernel.org>
-References: <20220405140229.2895394-1-masahiroy@kernel.org>
+        Tue, 5 Apr 2022 11:55:41 -0400
+X-Greylist: delayed 8707 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 05 Apr 2022 07:58:07 PDT
+Received: from 4.mo583.mail-out.ovh.net (4.mo583.mail-out.ovh.net [178.33.111.247])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C3D2D371B
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 07:58:04 -0700 (PDT)
+Received: from player688.ha.ovh.net (unknown [10.111.172.22])
+        by mo583.mail-out.ovh.net (Postfix) with ESMTP id 0B28224B9A
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 12:32:58 +0000 (UTC)
+Received: from sk2.org (82-65-25-201.subs.proxad.net [82.65.25.201])
+        (Authenticated sender: steve@sk2.org)
+        by player688.ha.ovh.net (Postfix) with ESMTPSA id 7DBA2291068A7;
+        Tue,  5 Apr 2022 12:32:52 +0000 (UTC)
+Authentication-Results: garm.ovh; auth=pass (GARM-103G00552102515-f355-46c0-857e-560b28840b63,
+                    8AF55017BACD44284FC599BC4826E0280D36FCC4) smtp.auth=steve@sk2.org
+X-OVh-ClientIp: 82.65.25.201
+From:   Stephen Kitt <steve@sk2.org>
+To:     Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>
+Cc:     patches@opensource.cirrus.com, Wolfram Sang <wsa@kernel.org>,
+        linux-kernel@vger.kernel.org, Stephen Kitt <steve@sk2.org>
+Subject: [PATCH] ASoC: wm8731: use simple i2c probe function
+Date:   Tue,  5 Apr 2022 14:32:36 +0200
+Message-Id: <20220405123236.2099063-1-steve@sk2.org>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+X-Ovh-Tracer-Id: 3961197347742844550
+X-VR-SPAMSTATE: OK
+X-VR-SPAMSCORE: -100
+X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvvddrudejgedggeelucetufdoteggodetrfdotffvucfrrhhofhhilhgvmecuqfggjfdpvefjgfevmfevgfenuceurghilhhouhhtmecuhedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmnecujfgurhephffvufffkffoggfgsedtkeertdertddtnecuhfhrohhmpefuthgvphhhvghnucfmihhtthcuoehsthgvvhgvsehskhdvrdhorhhgqeenucggtffrrghtthgvrhhnpeetgedugfelkeeikeetgeegteevfeeufeetuefgudeiiedthfehtdeffeekvdeffeenucfkpheptddrtddrtddrtddpkedvrdeihedrvdehrddvtddunecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmohguvgepshhmthhpohhuthdphhgvlhhopehplhgrhigvrheikeekrdhhrgdrohhvhhdrnhgvthdpihhnvghtpedtrddtrddtrddtpdhmrghilhhfrhhomhepshhtvghvvgesshhkvddrohhrghdpnhgspghrtghpthhtohepuddprhgtphhtthhopehlihhnuhigqdhkvghrnhgvlhesvhhgvghrrdhkvghrnhgvlhdrohhrgh
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The first line of *.mod lists the object files that consist of the
-module. This may contain duplication if the same object is added
-multiple times, like this:
+The i2c probe functions here don't use the id information provided in
+their second argument, so the single-parameter i2c probe function
+("probe_new") can be used instead.
 
-  obj-m := foo.o
-  foo-$(CONFIG_FOO1_X) += foo1.o
-  foo-$(CONFIG_FOO1_Y) += foo1.o
-  foo-$(CONFIG_FOO2_X) += foo2.o
-  foo-$(CONFIG_FOO2_Y) += foo2.o
+This avoids scanning the identifier tables during probes.
 
-This is probably not a big deal. As far as I know, the only small
-problem is scripts/mod/sumversion.c parses the same file over again.
-This can be avoided by adding $(sort ...). It has a side-effect that
-sorts the objects alphabetically, but it is not a big deal, either.
-
-Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+Signed-off-by: Stephen Kitt <steve@sk2.org>
 ---
+ sound/soc/codecs/wm8731.c | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
 
-Changes in v2:
-  - new
-
- scripts/Makefile.build | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
-
-diff --git a/scripts/Makefile.build b/scripts/Makefile.build
-index 3ef2373f0a57..63625877aeae 100644
---- a/scripts/Makefile.build
-+++ b/scripts/Makefile.build
-@@ -307,8 +307,10 @@ $(obj)/%.prelink.o: $(obj)/%.o FORCE
- 	$(call if_changed,cc_prelink_modules)
- endif
+diff --git a/sound/soc/codecs/wm8731.c b/sound/soc/codecs/wm8731.c
+index 5d4949c2ec9b..c430f169eb24 100644
+--- a/sound/soc/codecs/wm8731.c
++++ b/sound/soc/codecs/wm8731.c
+@@ -723,8 +723,7 @@ static struct spi_driver wm8731_spi_driver = {
+ #endif /* CONFIG_SPI_MASTER */
  
-+multi-m-prereqs = $(sort $(addprefix $(obj)/, $($*-objs) $($*-y) $($*-m)))
-+
- cmd_mod = { \
--	echo $(if $($*-objs)$($*-y)$($*-m), $(addprefix $(obj)/, $($*-objs) $($*-y) $($*-m)), $(@:.mod=.o)); \
-+	echo $(if $(multi-m-prereqs), $(multi-m-prereqs), $(@:.mod=.o)); \
- 	$(undefined_syms) echo; \
- 	} > $@
- 
+ #if IS_ENABLED(CONFIG_I2C)
+-static int wm8731_i2c_probe(struct i2c_client *i2c,
+-			    const struct i2c_device_id *id)
++static int wm8731_i2c_probe(struct i2c_client *i2c)
+ {
+ 	struct wm8731_priv *wm8731;
+ 	int ret;
+@@ -788,7 +787,7 @@ static struct i2c_driver wm8731_i2c_driver = {
+ 		.name = "wm8731",
+ 		.of_match_table = wm8731_of_match,
+ 	},
+-	.probe =    wm8731_i2c_probe,
++	.probe_new = wm8731_i2c_probe,
+ 	.id_table = wm8731_i2c_id,
+ };
+ #endif
 -- 
-2.32.0
+2.27.0
 
