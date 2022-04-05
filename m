@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 136A2C4167E
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:22:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 97945C4332F
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:22:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1587429AbiDFAJP (ORCPT
+        id S1587349AbiDFAIr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 20:09:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46718 "EHLO
+        Tue, 5 Apr 2022 20:08:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39718 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358461AbiDEK2Z (ORCPT
+        with ESMTP id S1348828AbiDEJsk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:28:25 -0400
+        Tue, 5 Apr 2022 05:48:40 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2EB0BA325;
-        Tue,  5 Apr 2022 03:18:03 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1CAEB0A7B;
+        Tue,  5 Apr 2022 02:36:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5CBB461777;
-        Tue,  5 Apr 2022 10:18:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6FBF4C385A0;
-        Tue,  5 Apr 2022 10:18:02 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 780BB61368;
+        Tue,  5 Apr 2022 09:36:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 86E32C385A0;
+        Tue,  5 Apr 2022 09:36:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649153882;
-        bh=3SyFg1Ox2BVv77hwr5Q+brbLvYJwdOjO6I/B8CTdJ5k=;
+        s=korg; t=1649151382;
+        bh=KbOJmrCYI/tPWvMS0mNsAb+2B9qS9w9YvfcfjYDuH/0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TFRb0JRtSmUneYTMtm+T523bX1K3ipI78fWC3Yth0iUMDWYK3gEFwCowNmdfehZ75
-         YfAgVlD5ijA/P2BSUoq6h2d2HCbNKjScUBbwt5Xd7kMloEp+R7JmQHlUQNKD1QdvfM
-         tyH/L3bOpUWO9Qz1pnV+/3DyJBWy/5AcsF1S2cjg=
+        b=THNra1VeHIPHiwJI+5L9FRaqLVNgNBEGwt7bYr2eDnzA/S6dbdnhpS9tsBUdtxYsS
+         5DLS9lJm6NRTGLh2E83qLrNDyywYJp3LQTlFRe3Jc5D6u5e+JhjtNBKpLqnfSYKvK6
+         UJ+v6NiAWM8FF3xKVa5E/ImgKt2NqiA8cOhN6sdY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Oleksij Rempel <o.rempel@pengutronix.de>,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 382/599] misc: alcor_pci: Fix an error handling path
-Date:   Tue,  5 Apr 2022 09:31:16 +0200
-Message-Id: <20220405070310.198300048@linuxfoundation.org>
+        stable@vger.kernel.org, Maxime Ripard <maxime@cerno.tech>,
+        =?UTF-8?q?Ville=20Syrj=C3=A4l=C3=A4?= 
+        <ville.syrjala@linux.intel.com>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 395/913] drm/edid: Dont clear formats if using deep color
+Date:   Tue,  5 Apr 2022 09:24:17 +0200
+Message-Id: <20220405070351.688043605@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,72 +50,68 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+From: Maxime Ripard <maxime@cerno.tech>
 
-[ Upstream commit 5b3dc949f554379edcb8ef6111aa5ecb78feb798 ]
+[ Upstream commit 75478b3b393bcbdca4e6da76fe3a9f1a4133ec5d ]
 
-A successful ida_simple_get() should be balanced by a corresponding
-ida_simple_remove().
+The current code, when parsing the EDID Deep Color depths, that the
+YUV422 cannot be used, referring to the HDMI 1.3 Specification.
 
-Add the missing call in the error handling path of the probe.
+This specification, in its section 6.2.4, indeed states:
 
-While at it, switch to ida_alloc()/ida_free() instead to
-ida_simple_get()/ida_simple_remove().
-The latter is deprecated and more verbose.
+  For each supported Deep Color mode, RGB 4:4:4 shall be supported and
+  optionally YCBCR 4:4:4 may be supported.
 
-Fixes: 4f556bc04e3c ("misc: cardreader: add new Alcor Micro Cardreader PCI driver")
-Reviewed-by: Oleksij Rempel <o.rempel@pengutronix.de>
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Link: https://lore.kernel.org/r/918a9875b7f67b7f8f123c4446452603422e8c5e.1644136776.git.christophe.jaillet@wanadoo.fr
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+  YCBCR 4:2:2 is not permitted for any Deep Color mode.
+
+This indeed can be interpreted like the code does, but the HDMI 1.4
+specification further clarifies that statement in its section 6.2.4:
+
+  For each supported Deep Color mode, RGB 4:4:4 shall be supported and
+  optionally YCBCR 4:4:4 may be supported.
+
+  YCBCR 4:2:2 is also 36-bit mode but does not require the further use
+  of the Deep Color modes described in section 6.5.2 and 6.5.3.
+
+This means that, even though YUV422 can be used with 12 bit per color,
+it shouldn't be treated as a deep color mode.
+
+This is also broken with YUV444 if it's supported by the display, but
+DRM_EDID_HDMI_DC_Y444 isn't set. In such a case, the code will clear
+color_formats of the YUV444 support set previously in
+drm_parse_cea_ext(), but will not set it back.
+
+Since the formats supported are already setup properly in
+drm_parse_cea_ext(), let's just remove the code modifying the formats in
+drm_parse_hdmi_deep_color_info()
+
+Fixes: d0c94692e0a3 ("drm/edid: Parse and handle HDMI deep color modes.")
+Signed-off-by: Maxime Ripard <maxime@cerno.tech>
+Reviewed-by: Ville Syrjälä <ville.syrjala@linux.intel.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220120151625.594595-3-maxime@cerno.tech
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/misc/cardreader/alcor_pci.c | 9 ++++++---
- 1 file changed, 6 insertions(+), 3 deletions(-)
+ drivers/gpu/drm/drm_edid.c |    8 --------
+ 1 file changed, 8 deletions(-)
 
-diff --git a/drivers/misc/cardreader/alcor_pci.c b/drivers/misc/cardreader/alcor_pci.c
-index de6d44a158bb..3f514d77a843 100644
---- a/drivers/misc/cardreader/alcor_pci.c
-+++ b/drivers/misc/cardreader/alcor_pci.c
-@@ -266,7 +266,7 @@ static int alcor_pci_probe(struct pci_dev *pdev,
- 	if (!priv)
- 		return -ENOMEM;
+--- a/drivers/gpu/drm/drm_edid.c
++++ b/drivers/gpu/drm/drm_edid.c
+@@ -5033,16 +5033,8 @@ static void drm_parse_hdmi_deep_color_in
+ 		  connector->name, dc_bpc);
+ 	info->bpc = dc_bpc;
  
--	ret = ida_simple_get(&alcor_pci_idr, 0, 0, GFP_KERNEL);
-+	ret = ida_alloc(&alcor_pci_idr, GFP_KERNEL);
- 	if (ret < 0)
- 		return ret;
- 	priv->id = ret;
-@@ -280,7 +280,8 @@ static int alcor_pci_probe(struct pci_dev *pdev,
- 	ret = pci_request_regions(pdev, DRV_NAME_ALCOR_PCI);
- 	if (ret) {
- 		dev_err(&pdev->dev, "Cannot request region\n");
--		return -ENOMEM;
-+		ret = -ENOMEM;
-+		goto error_free_ida;
+-	/*
+-	 * Deep color support mandates RGB444 support for all video
+-	 * modes and forbids YCRCB422 support for all video modes per
+-	 * HDMI 1.3 spec.
+-	 */
+-	info->color_formats = DRM_COLOR_FORMAT_RGB444;
+-
+ 	/* YCRCB444 is optional according to spec. */
+ 	if (hdmi[6] & DRM_EDID_HDMI_DC_Y444) {
+-		info->color_formats |= DRM_COLOR_FORMAT_YCRCB444;
+ 		DRM_DEBUG("%s: HDMI sink does YCRCB444 in deep color.\n",
+ 			  connector->name);
  	}
- 
- 	if (!(pci_resource_flags(pdev, bar) & IORESOURCE_MEM)) {
-@@ -324,6 +325,8 @@ static int alcor_pci_probe(struct pci_dev *pdev,
- 
- error_release_regions:
- 	pci_release_regions(pdev);
-+error_free_ida:
-+	ida_free(&alcor_pci_idr, priv->id);
- 	return ret;
- }
- 
-@@ -337,7 +340,7 @@ static void alcor_pci_remove(struct pci_dev *pdev)
- 
- 	mfd_remove_devices(&pdev->dev);
- 
--	ida_simple_remove(&alcor_pci_idr, priv->id);
-+	ida_free(&alcor_pci_idr, priv->id);
- 
- 	pci_release_regions(pdev);
- 	pci_set_drvdata(pdev, NULL);
--- 
-2.34.1
-
 
 
