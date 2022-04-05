@@ -2,166 +2,142 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 93B37C3527E
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:41:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6EB0EC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:41:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1576591AbiDEXKv (ORCPT
+        id S1576738AbiDEXK7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 19:10:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39858 "EHLO
+        Tue, 5 Apr 2022 19:10:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36512 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349392AbiDEJtr (ORCPT
+        with ESMTP id S1573570AbiDETWw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:49:47 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A908B15A38;
-        Tue,  5 Apr 2022 02:44:50 -0700 (PDT)
+        Tue, 5 Apr 2022 15:22:52 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D4AA47050;
+        Tue,  5 Apr 2022 12:20:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 462BE6164D;
-        Tue,  5 Apr 2022 09:44:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 57A56C385A2;
-        Tue,  5 Apr 2022 09:44:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649151889;
-        bh=/QAlbnO1eNnDrzOkcmzLTG7zRvW4gaOjytGF8jHWc7s=;
+        by sin.source.kernel.org (Postfix) with ESMTPS id 4AA77CE1FB6;
+        Tue,  5 Apr 2022 19:20:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 18778C385A1;
+        Tue,  5 Apr 2022 19:20:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649186450;
+        bh=4gK8ZAn+TacGcAjwCDK5lhYYnjJ7LL+dT0yZHFaadd0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=e3Ur3uDdjlOuyAs0X5oEXcoKhRs6rtdPaiEPeeZ5X8cVz+aDlcby8mKXR56V6QTQH
-         xgPrGr23N1VPNM54Ut8gUi/aCHd5xOnnmIs3wdUlM3gHmxe5wQ9pHFIsAfEeE5BaLz
-         FwwO4vOEclhLEAGinD3ugvfOeeWkrUEv5C2zCLOs=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Wang Yufen <wangyufen@huawei.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 540/913] bpf, sockmap: Fix memleak in sk_psock_queue_msg
-Date:   Tue,  5 Apr 2022 09:26:42 +0200
-Message-Id: <20220405070356.035060358@linuxfoundation.org>
+        b=h3vPiIxfkK6OiYb/165G98js1mP4pade1hlyPqwCLOvWG47or0gv3JuZz2PzrhdeW
+         LEGz361/FC7O/xfSPkIV/SJG0WEwEk98VAFZ3Tvk2MFbkwJsljtP1Tueh4ji9g/UpZ
+         WfOKEqy9nSA4+mDWZl+mGCxzFyeYrQSYLvFbhEtBnk2ctUsiJsC+N63QUwbmi9YTdr
+         C7kv5ohRf44g1IoriEV3OgQVzt7/5bWnQ2RpSESLGg1L9erv90p18H0cJ33Sm+/FyI
+         LuATH4VtQJt47boufQaIYAOWq3jdd/BnQHnHQdHz8hD3byTOgfG5bC61qqfGM+MnQ3
+         aaDVyC2xxMFgw==
+From:   Jeff Layton <jlayton@kernel.org>
+To:     idryomov@gmail.com, xiubli@redhat.com
+Cc:     ceph-devel@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        linux-fscrypt@vger.kernel.org, linux-kernel@vger.kernel.org,
+        lhenriques@suse.de
+Subject: [PATCH v13 20/59] ceph: make ceph_msdc_build_path use ref-walk
+Date:   Tue,  5 Apr 2022 15:19:51 -0400
+Message-Id: <20220405192030.178326-21-jlayton@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
-User-Agent: quilt/0.66
+In-Reply-To: <20220405192030.178326-1-jlayton@kernel.org>
+References: <20220405192030.178326-1-jlayton@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Wang Yufen <wangyufen@huawei.com>
+Encryption potentially requires allocation, at which point we'll need to
+be in a non-atomic context. Convert ceph_msdc_build_path to take dentry
+spinlocks and references instead of using rcu_read_lock to walk the
+path.
 
-[ Upstream commit 938d3480b92fa5e454b7734294f12a7b75126f09 ]
+This is slightly less efficient, and we may want to eventually allow
+using RCU when the leaf dentry isn't encrypted.
 
-If tcp_bpf_sendmsg is running during a tear down operation we may enqueue
-data on the ingress msg queue while tear down is trying to free it.
-
- sk1 (redirect sk2)                         sk2
- -------------------                      ---------------
-tcp_bpf_sendmsg()
- tcp_bpf_send_verdict()
-  tcp_bpf_sendmsg_redir()
-   bpf_tcp_ingress()
-                                          sock_map_close()
-                                           lock_sock()
-    lock_sock() ... blocking
-                                           sk_psock_stop
-                                            sk_psock_clear_state(psock, SK_PSOCK_TX_ENABLED);
-                                           release_sock(sk);
-    lock_sock()
-    sk_mem_charge()
-    get_page()
-    sk_psock_queue_msg()
-     sk_psock_test_state(psock, SK_PSOCK_TX_ENABLED);
-      drop_sk_msg()
-    release_sock()
-
-While drop_sk_msg(), the msg has charged memory form sk by sk_mem_charge
-and has sg pages need to put. To fix we use sk_msg_free() and then kfee()
-msg.
-
-This issue can cause the following info:
-WARNING: CPU: 0 PID: 9202 at net/core/stream.c:205 sk_stream_kill_queues+0xc8/0xe0
-Call Trace:
- <IRQ>
- inet_csk_destroy_sock+0x55/0x110
- tcp_rcv_state_process+0xe5f/0xe90
- ? sk_filter_trim_cap+0x10d/0x230
- ? tcp_v4_do_rcv+0x161/0x250
- tcp_v4_do_rcv+0x161/0x250
- tcp_v4_rcv+0xc3a/0xce0
- ip_protocol_deliver_rcu+0x3d/0x230
- ip_local_deliver_finish+0x54/0x60
- ip_local_deliver+0xfd/0x110
- ? ip_protocol_deliver_rcu+0x230/0x230
- ip_rcv+0xd6/0x100
- ? ip_local_deliver+0x110/0x110
- __netif_receive_skb_one_core+0x85/0xa0
- process_backlog+0xa4/0x160
- __napi_poll+0x29/0x1b0
- net_rx_action+0x287/0x300
- __do_softirq+0xff/0x2fc
- do_softirq+0x79/0x90
- </IRQ>
-
-WARNING: CPU: 0 PID: 531 at net/ipv4/af_inet.c:154 inet_sock_destruct+0x175/0x1b0
-Call Trace:
- <TASK>
- __sk_destruct+0x24/0x1f0
- sk_psock_destroy+0x19b/0x1c0
- process_one_work+0x1b3/0x3c0
- ? process_one_work+0x3c0/0x3c0
- worker_thread+0x30/0x350
- ? process_one_work+0x3c0/0x3c0
- kthread+0xe6/0x110
- ? kthread_complete_and_exit+0x20/0x20
- ret_from_fork+0x22/0x30
- </TASK>
-
-Fixes: 9635720b7c88 ("bpf, sockmap: Fix memleak on ingress msg enqueue")
-Signed-off-by: Wang Yufen <wangyufen@huawei.com>
-Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
-Acked-by: John Fastabend <john.fastabend@gmail.com>
-Link: https://lore.kernel.org/bpf/20220304081145.2037182-2-wangyufen@huawei.com
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Jeff Layton <jlayton@kernel.org>
 ---
- include/linux/skmsg.h | 13 ++++---------
- 1 file changed, 4 insertions(+), 9 deletions(-)
+ fs/ceph/mds_client.c | 35 +++++++++++++++++++----------------
+ 1 file changed, 19 insertions(+), 16 deletions(-)
 
-diff --git a/include/linux/skmsg.h b/include/linux/skmsg.h
-index b4256847c707..73bedd128d52 100644
---- a/include/linux/skmsg.h
-+++ b/include/linux/skmsg.h
-@@ -310,21 +310,16 @@ static inline void sock_drop(struct sock *sk, struct sk_buff *skb)
- 	kfree_skb(skb);
- }
- 
--static inline void drop_sk_msg(struct sk_psock *psock, struct sk_msg *msg)
--{
--	if (msg->skb)
--		sock_drop(psock->sk, msg->skb);
--	kfree(msg);
--}
--
- static inline void sk_psock_queue_msg(struct sk_psock *psock,
- 				      struct sk_msg *msg)
+diff --git a/fs/ceph/mds_client.c b/fs/ceph/mds_client.c
+index 2f2f8221eb25..28315053e116 100644
+--- a/fs/ceph/mds_client.c
++++ b/fs/ceph/mds_client.c
+@@ -2398,7 +2398,8 @@ static inline  u64 __get_oldest_tid(struct ceph_mds_client *mdsc)
+ char *ceph_mdsc_build_path(struct dentry *dentry, int *plen, u64 *pbase,
+ 			   int stop_on_nosnap)
  {
- 	spin_lock_bh(&psock->ingress_lock);
- 	if (sk_psock_test_state(psock, SK_PSOCK_TX_ENABLED))
- 		list_add_tail(&msg->list, &psock->ingress_msg);
--	else
--		drop_sk_msg(psock, msg);
-+	else {
-+		sk_msg_free(psock->sk, msg);
-+		kfree(msg);
-+	}
- 	spin_unlock_bh(&psock->ingress_lock);
- }
+-	struct dentry *temp;
++	struct dentry *cur;
++	struct inode *inode;
+ 	char *path;
+ 	int pos;
+ 	unsigned seq;
+@@ -2415,34 +2416,35 @@ char *ceph_mdsc_build_path(struct dentry *dentry, int *plen, u64 *pbase,
+ 	path[pos] = '\0';
  
+ 	seq = read_seqbegin(&rename_lock);
+-	rcu_read_lock();
+-	temp = dentry;
++	cur = dget(dentry);
+ 	for (;;) {
+-		struct inode *inode;
++		struct dentry *temp;
+ 
+-		spin_lock(&temp->d_lock);
+-		inode = d_inode(temp);
++		spin_lock(&cur->d_lock);
++		inode = d_inode(cur);
+ 		if (inode && ceph_snap(inode) == CEPH_SNAPDIR) {
+ 			dout("build_path path+%d: %p SNAPDIR\n",
+-			     pos, temp);
+-		} else if (stop_on_nosnap && inode && dentry != temp &&
++			     pos, cur);
++		} else if (stop_on_nosnap && inode && dentry != cur &&
+ 			   ceph_snap(inode) == CEPH_NOSNAP) {
+-			spin_unlock(&temp->d_lock);
++			spin_unlock(&cur->d_lock);
+ 			pos++; /* get rid of any prepended '/' */
+ 			break;
+ 		} else {
+-			pos -= temp->d_name.len;
++			pos -= cur->d_name.len;
+ 			if (pos < 0) {
+-				spin_unlock(&temp->d_lock);
++				spin_unlock(&cur->d_lock);
+ 				break;
+ 			}
+-			memcpy(path + pos, temp->d_name.name, temp->d_name.len);
++			memcpy(path + pos, cur->d_name.name, cur->d_name.len);
+ 		}
++		temp = cur;
+ 		spin_unlock(&temp->d_lock);
+-		temp = READ_ONCE(temp->d_parent);
++		cur = dget_parent(temp);
++		dput(temp);
+ 
+ 		/* Are we at the root? */
+-		if (IS_ROOT(temp))
++		if (IS_ROOT(cur))
+ 			break;
+ 
+ 		/* Are we out of buffer? */
+@@ -2451,8 +2453,9 @@ char *ceph_mdsc_build_path(struct dentry *dentry, int *plen, u64 *pbase,
+ 
+ 		path[pos] = '/';
+ 	}
+-	base = ceph_ino(d_inode(temp));
+-	rcu_read_unlock();
++	inode = d_inode(cur);
++	base = inode ? ceph_ino(inode) : 0;
++	dput(cur);
+ 
+ 	if (read_seqretry(&rename_lock, seq))
+ 		goto retry;
 -- 
-2.34.1
-
-
+2.35.1
 
