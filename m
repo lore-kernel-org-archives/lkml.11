@@ -2,205 +2,183 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B2B29C4332F
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:09:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 598ECC4321E
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:09:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1582328AbiDEXmm (ORCPT
+        id S1582428AbiDEXnK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 19:42:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59114 "EHLO
+        Tue, 5 Apr 2022 19:43:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58720 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1384483AbiDEOSH (ORCPT
+        with ESMTP id S1353144AbiDEKFp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 10:18:07 -0400
-Received: from smtp2.axis.com (smtp2.axis.com [195.60.68.18])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18F2199EDD;
-        Tue,  5 Apr 2022 06:04:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=axis.com; q=dns/txt; s=axis-central1; t=1649163848;
-  x=1680699848;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=SRDguBSs1Y1J0kKrsj8H5WlSWoje+dTygZTrpaj2/6I=;
-  b=M04nl71coNVbG2fv/0z56zzyyJfVDcMraxWfrECBCe+tu+a+0QEHfgWf
-   c3B/1qZZMSrHnk3j0YYnQJbkiwt1SuCpAjIPfuVYHLz3qydKMbCPO16zR
-   r9ih6s8weXPOlAzQo/7rKjiyXXnWBODpbyzaydKrx9nJqSkGtC8vQYXRf
-   LhXCjnAA1s1i3aDowW+PN/yYkgjvrXHDlihfg7RP5yTJoMdjQWaca0swD
-   biGFcbimL+lVV8sLTpd+rflwCIyrbS098Rn999X+KpGAqL7mFOCCWOS5a
-   JWbwqCs5yKBmkPqIBLx5cSu/86XUsEMipguMhPHK7iOA0dZnDRlk3w+Vj
-   Q==;
-From:   Vincent Whitchurch <vincent.whitchurch@axis.com>
-To:     <vigneshr@ti.com>, <richard@nod.at>, <miquel.raynal@bootlin.com>,
-        <joern@lazybastard.org>
-CC:     <kernel@axis.com>,
-        Vincent Whitchurch <vincent.whitchurch@axis.com>,
-        <linux-mtd@lists.infradead.org>, <devicetree@vger.kernel.org>,
-        <robh+dt@kernel.org>, <krzk+dt@kernel.org>,
-        <frowand.list@gmail.com>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH v2 3/4] mtd: phram: Allow probing via reserved-memory
-Date:   Tue, 5 Apr 2022 15:03:49 +0200
-Message-ID: <20220405130350.1640985-4-vincent.whitchurch@axis.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220405130350.1640985-1-vincent.whitchurch@axis.com>
-References: <20220405130350.1640985-1-vincent.whitchurch@axis.com>
+        Tue, 5 Apr 2022 06:05:45 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E09CBE9C7;
+        Tue,  5 Apr 2022 02:54:23 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D0DE0616DC;
+        Tue,  5 Apr 2022 09:54:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D34EDC385A2;
+        Tue,  5 Apr 2022 09:54:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649152462;
+        bh=IrqnNTvRac6zDFBz8lPZ519erod6BwbMDCIQfnHanu8=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=1+8gRSYAboUzG+B/dhJr+k6PWWQhgHLl2fqtL1S6DiNjp0rf+te65+29aS7W8SKEA
+         IGrA0UursmMh8AIh7r61UYwoMytQQh1Boyy+gdNK+r9gmoGLdRLDp150WsobzHzhGN
+         y+ho/tKkBRXGaijWxy/Lx8AGK/HVqPub0wYZ7PzY=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Ard Biesheuvel <ardb@kernel.org>,
+        "Steven Rostedt (Google)" <rostedt@goodmis.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 746/913] ARM: ftrace: avoid redundant loads or clobbering IP
+Date:   Tue,  5 Apr 2022 09:30:08 +0200
+Message-Id: <20220405070402.195698649@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Allow phram to be probed from the devicetree.  It expects to be in a
-reserved-memory node as documented by the bindings.  This allows things
-like partitioning to be specified via the devicetree.
+From: Ard Biesheuvel <ardb@kernel.org>
 
-Signed-off-by: Vincent Whitchurch <vincent.whitchurch@axis.com>
+[ Upstream commit d11967870815b5ab89843980e35aab616c97c463 ]
+
+Tweak the ftrace return paths to avoid redundant loads of SP, as well as
+unnecessary clobbering of IP.
+
+This also fixes the inconsistency of using MOV to perform a function
+return, which is sub-optimal on recent micro-architectures but more
+importantly, does not perform an interworking return, unlike compiler
+generated function returns in Thumb2 builds.
+
+Let's fix this by popping PC from the stack like most ordinary code
+does.
+
+Signed-off-by: Ard Biesheuvel <ardb@kernel.org>
+Reviewed-by: Steven Rostedt (Google) <rostedt@goodmis.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/mtd/devices/phram.c | 67 ++++++++++++++++++++++++++++++++++---
- drivers/of/platform.c       |  1 +
- 2 files changed, 64 insertions(+), 4 deletions(-)
+ arch/arm/kernel/entry-ftrace.S | 51 +++++++++++++++-------------------
+ 1 file changed, 22 insertions(+), 29 deletions(-)
 
-diff --git a/drivers/mtd/devices/phram.c b/drivers/mtd/devices/phram.c
-index d503821a3e60..6dfe9401a3c5 100644
---- a/drivers/mtd/devices/phram.c
-+++ b/drivers/mtd/devices/phram.c
-@@ -27,6 +27,9 @@
- #include <linux/slab.h>
- #include <linux/mtd/mtd.h>
- #include <asm/div64.h>
-+#include <linux/platform_device.h>
-+#include <linux/of_address.h>
-+#include <linux/of.h>
+diff --git a/arch/arm/kernel/entry-ftrace.S b/arch/arm/kernel/entry-ftrace.S
+index f4886fb6e9ba..f33c171e3090 100644
+--- a/arch/arm/kernel/entry-ftrace.S
++++ b/arch/arm/kernel/entry-ftrace.S
+@@ -22,10 +22,7 @@
+  * mcount can be thought of as a function called in the middle of a subroutine
+  * call.  As such, it needs to be transparent for both the caller and the
+  * callee: the original lr needs to be restored when leaving mcount, and no
+- * registers should be clobbered.  (In the __gnu_mcount_nc implementation, we
+- * clobber the ip register.  This is OK because the ARM calling convention
+- * allows it to be clobbered in subroutines and doesn't use it to hold
+- * parameters.)
++ * registers should be clobbered.
+  *
+  * When using dynamic ftrace, we patch out the mcount call by a "pop {lr}"
+  * instead of the __gnu_mcount_nc call (see arch/arm/kernel/ftrace.c).
+@@ -70,26 +67,25 @@
  
- struct phram_mtd_list {
- 	struct mtd_info mtd;
-@@ -89,8 +92,10 @@ static void unregister_devices(void)
- 	}
- }
+ .macro __ftrace_regs_caller
  
--static int register_device(char *name, phys_addr_t start, size_t len, uint32_t erasesize)
-+static int register_device(struct platform_device *pdev, const char *name,
-+			   phys_addr_t start, size_t len, uint32_t erasesize)
- {
-+	struct device_node *np = pdev ? pdev->dev.of_node : NULL;
- 	struct phram_mtd_list *new;
- 	int ret = -ENOMEM;
+-	sub	sp, sp, #8	@ space for PC and CPSR OLD_R0,
++	str	lr, [sp, #-8]!	@ store LR as PC and make space for CPSR/OLD_R0,
+ 				@ OLD_R0 will overwrite previous LR
  
-@@ -119,13 +124,19 @@ static int register_device(char *name, phys_addr_t start, size_t len, uint32_t e
- 	new->mtd.erasesize = erasesize;
- 	new->mtd.writesize = 1;
+-	add 	ip, sp, #12	@ move in IP the value of SP as it was
+-				@ before the push {lr} of the mcount mechanism
++	ldr	lr, [sp, #8]    @ get previous LR
  
-+	mtd_set_of_node(&new->mtd, np);
-+
- 	ret = -EAGAIN;
- 	if (mtd_device_register(&new->mtd, NULL, 0)) {
- 		pr_err("Failed to register new device\n");
- 		goto out2;
- 	}
+-	str     lr, [sp, #0]    @ store LR instead of PC
++	str	r0, [sp, #8]	@ write r0 as OLD_R0 over previous LR
  
--	list_add_tail(&new->list, &phram_list);
-+	if (pdev)
-+		platform_set_drvdata(pdev, new);
-+	else
-+		list_add_tail(&new->list, &phram_list);
-+
- 	return 0;
+-	ldr     lr, [sp, #8]    @ get previous LR
++	str	lr, [sp, #-4]!	@ store previous LR as LR
  
- out2:
-@@ -278,7 +289,7 @@ static int phram_setup(const char *val)
- 		goto error;
- 	}
+-	str	r0, [sp, #8]	@ write r0 as OLD_R0 over previous LR
++	add 	lr, sp, #16	@ move in LR the value of SP as it was
++				@ before the push {lr} of the mcount mechanism
  
--	ret = register_device(name, start, len, (uint32_t)erasesize);
-+	ret = register_device(NULL, name, start, len, (uint32_t)erasesize);
- 	if (ret)
- 		goto error;
+-	stmdb   sp!, {ip, lr}
+-	stmdb   sp!, {r0-r11, lr}
++	push	{r0-r11, ip, lr}
  
-@@ -325,10 +336,54 @@ static int phram_param_call(const char *val, const struct kernel_param *kp)
- module_param_call(phram, phram_param_call, NULL, NULL, 0200);
- MODULE_PARM_DESC(phram, "Memory region to map. \"phram=<name>,<start>,<length>[,<erasesize>]\"");
+ 	@ stack content at this point:
+ 	@ 0  4          48   52       56            60   64    68       72
+-	@ R0 | R1 | ... | LR | SP + 4 | previous LR | LR | PSR | OLD_R0 |
++	@ R0 | R1 | ... | IP | SP + 4 | previous LR | LR | PSR | OLD_R0 |
  
-+#ifdef CONFIG_OF
-+static const struct of_device_id phram_of_match[] = {
-+	{ .compatible = "phram" },
-+	{}
-+};
-+MODULE_DEVICE_TABLE(of, phram_of_match)
-+#endif
-+
-+static int phram_probe(struct platform_device *pdev)
-+{
-+	struct resource *res;
-+
-+	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-+	if (!res)
-+		return -ENOMEM;
-+
-+	/* mtd_set_of_node() reads name from "label" */
-+	return register_device(pdev, NULL, res->start, resource_size(res),
-+			       PAGE_SIZE);
-+}
-+
-+static int phram_remove(struct platform_device *pdev)
-+{
-+	struct phram_mtd_list *phram = platform_get_drvdata(pdev);
-+
-+	mtd_device_unregister(&phram->mtd);
-+	iounmap(phram->mtd.priv);
-+	kfree(phram);
-+
-+	return 0;
-+}
-+
-+static struct platform_driver phram_driver = {
-+	.probe		= phram_probe,
-+	.remove		= phram_remove,
-+	.driver		= {
-+		.name		= "phram",
-+		.of_match_table	= of_match_ptr(phram_of_match),
-+	},
-+};
+-	mov r3, sp				@ struct pt_regs*
++	mov	r3, sp				@ struct pt_regs*
  
- static int __init init_phram(void)
- {
--	int ret = 0;
-+	int ret;
-+
-+	ret = platform_driver_register(&phram_driver);
-+	if (ret)
-+		return ret;
- 
- #ifndef MODULE
- 	if (phram_paramline[0])
-@@ -336,12 +391,16 @@ static int __init init_phram(void)
- 	phram_init_called = 1;
+ 	ldr r2, =function_trace_op
+ 	ldr r2, [r2]				@ pointer to the current
+@@ -112,11 +108,9 @@ ftrace_graph_regs_call:
  #endif
  
-+	if (ret)
-+		platform_driver_unregister(&phram_driver);
-+
- 	return ret;
- }
+ 	@ pop saved regs
+-	ldmia   sp!, {r0-r12}			@ restore r0 through r12
+-	ldr	ip, [sp, #8]			@ restore PC
+-	ldr	lr, [sp, #4]			@ restore LR
+-	ldr	sp, [sp, #0]			@ restore SP
+-	mov	pc, ip				@ return
++	pop	{r0-r11, ip, lr}		@ restore r0 through r12
++	ldr	lr, [sp], #4			@ restore LR
++	ldr	pc, [sp], #12
+ .endm
  
- static void __exit cleanup_phram(void)
- {
- 	unregister_devices();
-+	platform_driver_unregister(&phram_driver);
- }
+ #ifdef CONFIG_FUNCTION_GRAPH_TRACER
+@@ -132,11 +126,9 @@ ftrace_graph_regs_call:
+ 	bl	prepare_ftrace_return
  
- module_init(init_phram);
-diff --git a/drivers/of/platform.c b/drivers/of/platform.c
-index a16b74f32aa9..55d62b82c650 100644
---- a/drivers/of/platform.c
-+++ b/drivers/of/platform.c
-@@ -509,6 +509,7 @@ EXPORT_SYMBOL_GPL(of_platform_default_populate);
+ 	@ pop registers saved in ftrace_regs_caller
+-	ldmia   sp!, {r0-r12}			@ restore r0 through r12
+-	ldr	ip, [sp, #8]			@ restore PC
+-	ldr	lr, [sp, #4]			@ restore LR
+-	ldr	sp, [sp, #0]			@ restore SP
+-	mov	pc, ip				@ return
++	pop	{r0-r11, ip, lr}		@ restore r0 through r12
++	ldr	lr, [sp], #4			@ restore LR
++	ldr	pc, [sp], #12
  
- #ifndef CONFIG_PPC
- static const struct of_device_id reserved_mem_matches[] = {
-+	{ .compatible = "phram" },
- 	{ .compatible = "qcom,rmtfs-mem" },
- 	{ .compatible = "qcom,cmd-db" },
- 	{ .compatible = "qcom,smem" },
+ .endm
+ #endif
+@@ -202,16 +194,17 @@ ftrace_graph_call\suffix:
+ .endm
+ 
+ .macro mcount_exit
+-	ldmia	sp!, {r0-r3, ip, lr}
+-	ret	ip
++	ldmia	sp!, {r0-r3}
++	ldr	lr, [sp, #4]
++	ldr	pc, [sp], #8
+ .endm
+ 
+ ENTRY(__gnu_mcount_nc)
+ UNWIND(.fnstart)
+ #ifdef CONFIG_DYNAMIC_FTRACE
+-	mov	ip, lr
+-	ldmia	sp!, {lr}
+-	ret	ip
++	push	{lr}
++	ldr	lr, [sp, #4]
++	ldr	pc, [sp], #8
+ #else
+ 	__mcount
+ #endif
 -- 
 2.34.1
+
+
 
