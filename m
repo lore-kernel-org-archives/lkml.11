@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4FE4CC433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 67E62C433EF
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 13:24:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344244AbiDENRG (ORCPT
+        id S1358137AbiDENJF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 09:17:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60616 "EHLO
+        Tue, 5 Apr 2022 09:09:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34302 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344274AbiDEJTD (ORCPT
+        with ESMTP id S1344139AbiDEJSV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:19:03 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A395022B17;
-        Tue,  5 Apr 2022 02:06:50 -0700 (PDT)
+        Tue, 5 Apr 2022 05:18:21 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C60C3403D0;
+        Tue,  5 Apr 2022 02:04:32 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 52A3EB81BBF;
-        Tue,  5 Apr 2022 09:06:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9EF2AC385A0;
-        Tue,  5 Apr 2022 09:06:47 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8251FB80DA1;
+        Tue,  5 Apr 2022 09:04:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E1CC3C385A0;
+        Tue,  5 Apr 2022 09:04:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649149608;
-        bh=HmgySWAgI7lbWNhdt5YYN+F4pSLogygYEPz8K+p7vu8=;
+        s=korg; t=1649149470;
+        bh=sKYJE0vhOXUN5ml/5yNAdoAhK2lGQzBJqERc2eEdIlE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NUPrTL4GujOB/eKeVlOrNM/rpklQVH3AdMA4CCBvNO4nNaGw3SXNw0462MSqmMLad
-         KCrtuEKHzkumfQTXc7bkfnahw2IbniGlb1e1Zr7jmscqrLtD/TTvliq76gRq/GPtqZ
-         a69t9HZGTQ6eMS/gMpEjzAgpUvVrKhzUv2W6Y/JU=
+        b=R6XI0yRB1Jyg4xBBHrluUSu91s4ixZmfzq6E0hRQQNMjH15C51G5UR7lfiv1wS8zM
+         IyYiSAOUP4QlyBavg1imb5fYZgZVkqQQ2228RoXQhiUledliIAcl2BL08ANfKrqzVV
+         WjPoErkBsKKXa0NIRKF+KUCi6JD49Es8kawxkWlE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        =?UTF-8?q?Holger=20Hoffst=C3=A4tte?= 
-        <holger@applied-asynchrony.com>,
-        Paolo Valente <paolo.valente@linaro.org>,
-        Jens Axboe <axboe@kernel.dk>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0776/1017] Revert "Revert "block, bfq: honor already-setup queue merges""
-Date:   Tue,  5 Apr 2022 09:28:09 +0200
-Message-Id: <20220405070417.293216641@linuxfoundation.org>
+        =?UTF-8?q?Marek=20Marczykowski-G=C3=B3recki?= 
+        <marmarek@invisiblethingslab.com>, Juergen Gross <jgross@suse.com>,
+        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 0727/1017] xen: fix is_xen_pmu()
+Date:   Tue,  5 Apr 2022 09:27:20 +0200
+Message-Id: <20220405070415.846340757@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -52,73 +52,122 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Paolo Valente <paolo.valente@linaro.org>
+From: Juergen Gross <jgross@suse.com>
 
-[ Upstream commit 15729ff8143f8135b03988a100a19e66d7cb7ecd ]
+[ Upstream commit de2ae403b4c0e79a3410e63bc448542fbb9f9bfc ]
 
-A crash [1] happened to be triggered in conjunction with commit
-2d52c58b9c9b ("block, bfq: honor already-setup queue merges"). The
-latter was then reverted by commit ebc69e897e17 ("Revert "block, bfq:
-honor already-setup queue merges""). Yet, the reverted commit was not
-the one introducing the bug. In fact, it actually triggered a UAF
-introduced by a different commit, and now fixed by commit d29bd41428cf
-("block, bfq: reset last_bfqq_created on group change").
+is_xen_pmu() is taking the cpu number as parameter, but it is not using
+it. Instead it just tests whether the Xen PMU initialization on the
+current cpu did succeed. As this test is done by checking a percpu
+pointer, preemption needs to be disabled in order to avoid switching
+the cpu while doing the test. While resuming from suspend() this seems
+not to be the case:
 
-So, there is no point in keeping commit 2d52c58b9c9b ("block, bfq:
-honor already-setup queue merges") out. This commit restores it.
+[   88.082751] ACPI: PM: Low-level resume complete
+[   88.087933] ACPI: EC: EC started
+[   88.091464] ACPI: PM: Restoring platform NVS memory
+[   88.097166] xen_acpi_processor: Uploading Xen processor PM info
+[   88.103850] Enabling non-boot CPUs ...
+[   88.108128] installing Xen timer for CPU 1
+[   88.112763] BUG: using smp_processor_id() in preemptible [00000000] code: systemd-sleep/7138
+[   88.122256] caller is is_xen_pmu+0x12/0x30
+[   88.126937] CPU: 0 PID: 7138 Comm: systemd-sleep Tainted: G        W         5.16.13-2.fc32.qubes.x86_64 #1
+[   88.137939] Hardware name: Star Labs StarBook/StarBook, BIOS 7.97 03/21/2022
+[   88.145930] Call Trace:
+[   88.148757]  <TASK>
+[   88.151193]  dump_stack_lvl+0x48/0x5e
+[   88.155381]  check_preemption_disabled+0xde/0xe0
+[   88.160641]  is_xen_pmu+0x12/0x30
+[   88.164441]  xen_smp_intr_init_pv+0x75/0x100
 
-[1] https://bugzilla.kernel.org/show_bug.cgi?id=214503
+Fix that by replacing is_xen_pmu() by a simple boolean variable which
+reflects the Xen PMU initialization state on cpu 0.
 
-Reported-by: Holger Hoffstätte <holger@applied-asynchrony.com>
-Signed-off-by: Paolo Valente <paolo.valente@linaro.org>
-Link: https://lore.kernel.org/r/20211125181510.15004-1-paolo.valente@linaro.org
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Modify xen_pmu_init() to return early in case it is being called for a
+cpu other than cpu 0 and the boolean variable not being set.
+
+Fixes: bf6dfb154d93 ("xen/PMU: PMU emulation code")
+Reported-by: Marek Marczykowski-Górecki <marmarek@invisiblethingslab.com>
+Signed-off-by: Juergen Gross <jgross@suse.com>
+Reviewed-by: Boris Ostrovsky <boris.ostrovsky@oracle.com>
+Link: https://lore.kernel.org/r/20220325142002.31789-1-jgross@suse.com
+Signed-off-by: Boris Ostrovsky <boris.ostrovsky@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- block/bfq-iosched.c | 16 +++++++++++++---
- 1 file changed, 13 insertions(+), 3 deletions(-)
+ arch/x86/xen/pmu.c    | 10 ++++------
+ arch/x86/xen/pmu.h    |  3 ++-
+ arch/x86/xen/smp_pv.c |  2 +-
+ 3 files changed, 7 insertions(+), 8 deletions(-)
 
-diff --git a/block/bfq-iosched.c b/block/bfq-iosched.c
-index 7eecd3200d83..342e927f213b 100644
---- a/block/bfq-iosched.c
-+++ b/block/bfq-iosched.c
-@@ -2662,6 +2662,15 @@ bfq_setup_merge(struct bfq_queue *bfqq, struct bfq_queue *new_bfqq)
- 	 * are likely to increase the throughput.
- 	 */
- 	bfqq->new_bfqq = new_bfqq;
-+	/*
-+	 * The above assignment schedules the following redirections:
-+	 * each time some I/O for bfqq arrives, the process that
-+	 * generated that I/O is disassociated from bfqq and
-+	 * associated with new_bfqq. Here we increases new_bfqq->ref
-+	 * in advance, adding the number of processes that are
-+	 * expected to be associated with new_bfqq as they happen to
-+	 * issue I/O.
-+	 */
- 	new_bfqq->ref += process_refs;
- 	return new_bfqq;
+diff --git a/arch/x86/xen/pmu.c b/arch/x86/xen/pmu.c
+index e13b0b49fcdf..d7249f4c90f1 100644
+--- a/arch/x86/xen/pmu.c
++++ b/arch/x86/xen/pmu.c
+@@ -512,10 +512,7 @@ irqreturn_t xen_pmu_irq_handler(int irq, void *dev_id)
+ 	return ret;
  }
-@@ -2724,6 +2733,10 @@ bfq_setup_cooperator(struct bfq_data *bfqd, struct bfq_queue *bfqq,
+ 
+-bool is_xen_pmu(int cpu)
+-{
+-	return (get_xenpmu_data() != NULL);
+-}
++bool is_xen_pmu;
+ 
+ void xen_pmu_init(int cpu)
  {
- 	struct bfq_queue *in_service_bfqq, *new_bfqq;
+@@ -526,7 +523,7 @@ void xen_pmu_init(int cpu)
  
-+	/* if a merge has already been setup, then proceed with that first */
-+	if (bfqq->new_bfqq)
-+		return bfqq->new_bfqq;
+ 	BUILD_BUG_ON(sizeof(struct xen_pmu_data) > PAGE_SIZE);
+ 
+-	if (xen_hvm_domain())
++	if (xen_hvm_domain() || (cpu != 0 && !is_xen_pmu))
+ 		return;
+ 
+ 	xenpmu_data = (struct xen_pmu_data *)get_zeroed_page(GFP_KERNEL);
+@@ -547,7 +544,8 @@ void xen_pmu_init(int cpu)
+ 	per_cpu(xenpmu_shared, cpu).xenpmu_data = xenpmu_data;
+ 	per_cpu(xenpmu_shared, cpu).flags = 0;
+ 
+-	if (cpu == 0) {
++	if (!is_xen_pmu) {
++		is_xen_pmu = true;
+ 		perf_register_guest_info_callbacks(&xen_guest_cbs);
+ 		xen_pmu_arch_init();
+ 	}
+diff --git a/arch/x86/xen/pmu.h b/arch/x86/xen/pmu.h
+index 0e83a160589b..65c58894fc79 100644
+--- a/arch/x86/xen/pmu.h
++++ b/arch/x86/xen/pmu.h
+@@ -4,6 +4,8 @@
+ 
+ #include <xen/interface/xenpmu.h>
+ 
++extern bool is_xen_pmu;
 +
- 	/*
- 	 * Check delayed stable merge for rotational or non-queueing
- 	 * devs. For this branch to be executed, bfqq must not be
-@@ -2825,9 +2838,6 @@ bfq_setup_cooperator(struct bfq_data *bfqd, struct bfq_queue *bfqq,
- 	if (bfq_too_late_for_merging(bfqq))
- 		return NULL;
+ irqreturn_t xen_pmu_irq_handler(int irq, void *dev_id);
+ #ifdef CONFIG_XEN_HAVE_VPMU
+ void xen_pmu_init(int cpu);
+@@ -12,7 +14,6 @@ void xen_pmu_finish(int cpu);
+ static inline void xen_pmu_init(int cpu) {}
+ static inline void xen_pmu_finish(int cpu) {}
+ #endif
+-bool is_xen_pmu(int cpu);
+ bool pmu_msr_read(unsigned int msr, uint64_t *val, int *err);
+ bool pmu_msr_write(unsigned int msr, uint32_t low, uint32_t high, int *err);
+ int pmu_apic_update(uint32_t reg);
+diff --git a/arch/x86/xen/smp_pv.c b/arch/x86/xen/smp_pv.c
+index 4a6019238ee7..688aa8b6ae29 100644
+--- a/arch/x86/xen/smp_pv.c
++++ b/arch/x86/xen/smp_pv.c
+@@ -129,7 +129,7 @@ int xen_smp_intr_init_pv(unsigned int cpu)
+ 	per_cpu(xen_irq_work, cpu).irq = rc;
+ 	per_cpu(xen_irq_work, cpu).name = callfunc_name;
  
--	if (bfqq->new_bfqq)
--		return bfqq->new_bfqq;
--
- 	if (!io_struct || unlikely(bfqq == &bfqd->oom_bfqq))
- 		return NULL;
- 
+-	if (is_xen_pmu(cpu)) {
++	if (is_xen_pmu) {
+ 		pmu_name = kasprintf(GFP_KERNEL, "pmu%d", cpu);
+ 		rc = bind_virq_to_irqhandler(VIRQ_XENPMU, cpu,
+ 					     xen_pmu_irq_handler,
 -- 
 2.34.1
 
