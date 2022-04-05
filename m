@@ -2,84 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 39E43C3527B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 089B9C433F5
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 22:39:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230131AbiDEWdd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 18:33:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45346 "EHLO
+        id S1453579AbiDEWdU (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 18:33:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46442 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1387971AbiDENUQ (ORCPT
+        with ESMTP id S240911AbiDEKfN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 09:20:16 -0400
-Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EE59D95D5;
-        Tue,  5 Apr 2022 05:23:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Transfer-Encoding:
-        Content-Type:MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:
-        Sender:Reply-To:Content-ID:Content-Description;
-        bh=E3zotaW1dbgZPSLuwko0wembR1SFboZ06zEGfDaR1Q4=; b=SpJ0FYLIVRfgL1ql9NafIxHBTk
-        BWwcskNqRk7OMiga0j8XKJLMZbg0euqmaPZtVo13hltNk45VVcrsUp3Xs9Ul1FModE6HDvLgKQSEP
-        nV1v9/rBdaSUupc/AF/o0Kogzjif0FBSMYzweFig8FjlWYA0VECv5+iXZjPwUveBhdgA7cTgaTRGS
-        v9H3aY29hKR45cjXU5ytSBbm+YCBMJxJMcTvLWiRhJooFLSWhLypLyW2dOTnuOs6gs2VjU0jvcv62
-        iGcdlMy3XYnOQZDhbRIer9AOXGCiY1rRtBzyuwZ1DqfhqetQiQhgsstfd0coTmKLf6fZnMQq1ft8P
-        hO3fwNMQ==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
-        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nbiDd-001qvS-Eh; Tue, 05 Apr 2022 12:23:34 +0000
-Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits))
-        (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id E0F2E3001EA;
-        Tue,  5 Apr 2022 14:23:31 +0200 (CEST)
-Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
-        id 819002019C0B6; Tue,  5 Apr 2022 14:23:31 +0200 (CEST)
-Date:   Tue, 5 Apr 2022 14:23:31 +0200
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Borislav Petkov <bp@alien8.de>
-Cc:     linux-toolchains@vger.kernel.org, Michael Matz <matz@suse.de>,
-        Richard Biener <rguenther@suse.de>,
-        lkml <linux-kernel@vger.kernel.org>
-Subject: Re: older gccs and case labels producing integer constants
-Message-ID: <Ykw0wzdab0ICUFvy@hirez.programming.kicks-ass.net>
-References: <YkwQ6+tIH8GQpuct@zn.tnic>
+        Tue, 5 Apr 2022 06:35:13 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78CBB9FC0;
+        Tue,  5 Apr 2022 03:19:52 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1178261676;
+        Tue,  5 Apr 2022 10:19:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 22BEAC385A0;
+        Tue,  5 Apr 2022 10:19:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649153991;
+        bh=IZaxfL+Er97/lWRvXq1SC3CC6f14wZtrVoYFDN97XY4=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=fkql8dPob0o+WRHhU5oAWip5M/OgLQ1HUIug2oU/GfOTTVmcy4yvuqYMA8RSPmdA0
+         oBL77PdXvHiYNAwrdiLEkuwtjaSqunSLHKk00kLqS20KiMNdjDstjWUIgA7v7wdKJj
+         QGnSf8igu5R/xigrgwj8FF5osb6Bh+PbejYL018U=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Chen-Yu Tsai <wenst@chromium.org>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 419/599] pinctrl: mediatek: paris: Fix PIN_CONFIG_BIAS_* readback
+Date:   Tue,  5 Apr 2022 09:31:53 +0200
+Message-Id: <20220405070311.301666980@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
+References: <20220405070258.802373272@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <YkwQ6+tIH8GQpuct@zn.tnic>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 05, 2022 at 11:50:35AM +0200, Borislav Petkov wrote:
-> Hi folks,
-> 
-> I'm starting to see failures like this on allmodconfig builds:
-> 
-> sound/usb/midi.c: In function ‘snd_usbmidi_out_endpoint_create’:
-> sound/usb/midi.c:1389:2: error: case label does not reduce to an integer constant
->   case (((0xfc08) << 16) | (0x0101)):
->   ^~~~
-> 
-> (The case statement is a macro but it evaluates to what I have there)
-> 
-> and that thing fails with
-> 
-> $ gcc --version
-> gcc (SUSE Linux) 7.5.0
-> 
-> although it doesn't have any problems building with newer compilers.
-> 
-> I'm presuming older gccs consider those case statements signed ints and
-> the following fixes it:
-> 
->   case ((((unsigned int)0xfc08) << 16) | (0x0101)):
-> 
-> and I guess we can whack the couple of occurrences but what I'm
-> wondering is why does this work with newer gccs?
+From: Chen-Yu Tsai <wenst@chromium.org>
 
-IIRC GCC-8 fixed a bunch of -wrapv issues. Could be this is one of them
-I suppose.
+[ Upstream commit 3e8c6bc608480010f360c4a59578d7841726137d ]
+
+When reading back pin bias settings, if the pin is not in the
+corresponding bias state, the function should return -EINVAL.
+
+Fix this in the mediatek-paris pinctrl library so that the read back
+state is not littered with bogus a "input bias disabled" combined with
+"pull up" or "pull down" states.
+
+Fixes: 805250982bb5 ("pinctrl: mediatek: add pinctrl-paris that implements the vendor dt-bindings")
+Signed-off-by: Chen-Yu Tsai <wenst@chromium.org>
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+Link: https://lore.kernel.org/r/20220308100956.2750295-3-wenst@chromium.org
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/pinctrl/mediatek/pinctrl-paris.c | 16 ++++++----------
+ 1 file changed, 6 insertions(+), 10 deletions(-)
+
+diff --git a/drivers/pinctrl/mediatek/pinctrl-paris.c b/drivers/pinctrl/mediatek/pinctrl-paris.c
+index 623af4410b07..4dd5bd2f135e 100644
+--- a/drivers/pinctrl/mediatek/pinctrl-paris.c
++++ b/drivers/pinctrl/mediatek/pinctrl-paris.c
+@@ -96,20 +96,16 @@ static int mtk_pinconf_get(struct pinctrl_dev *pctldev,
+ 			err = hw->soc->bias_get_combo(hw, desc, &pullup, &ret);
+ 			if (err)
+ 				goto out;
++			if (ret == MTK_PUPD_SET_R1R0_00)
++				ret = MTK_DISABLE;
+ 			if (param == PIN_CONFIG_BIAS_DISABLE) {
+-				if (ret == MTK_PUPD_SET_R1R0_00)
+-					ret = MTK_DISABLE;
++				if (ret != MTK_DISABLE)
++					err = -EINVAL;
+ 			} else if (param == PIN_CONFIG_BIAS_PULL_UP) {
+-				/* When desire to get pull-up value, return
+-				 *  error if current setting is pull-down
+-				 */
+-				if (!pullup)
++				if (!pullup || ret == MTK_DISABLE)
+ 					err = -EINVAL;
+ 			} else if (param == PIN_CONFIG_BIAS_PULL_DOWN) {
+-				/* When desire to get pull-down value, return
+-				 *  error if current setting is pull-up
+-				 */
+-				if (pullup)
++				if (pullup || ret == MTK_DISABLE)
+ 					err = -EINVAL;
+ 			}
+ 		} else {
+-- 
+2.34.1
+
+
+
