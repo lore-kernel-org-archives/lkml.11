@@ -2,54 +2,54 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B0DFC433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 99F26C433FE
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 02:40:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1849764AbiDFCkW (ORCPT
+        id S1849806AbiDFCkk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 22:40:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40494 "EHLO
+        Tue, 5 Apr 2022 22:40:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40206 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1575597AbiDEXIW (ORCPT
+        with ESMTP id S1575818AbiDEXJS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 19:08:22 -0400
-Received: from mail-pl1-x636.google.com (mail-pl1-x636.google.com [IPv6:2607:f8b0:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 490E21AD1DB
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 14:40:06 -0700 (PDT)
-Received: by mail-pl1-x636.google.com with SMTP id s11so260607pla.8
-        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 14:40:06 -0700 (PDT)
+        Tue, 5 Apr 2022 19:09:18 -0400
+Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4AC124E38C
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 14:40:23 -0700 (PDT)
+Received: by mail-pj1-x102d.google.com with SMTP id j20-20020a17090ae61400b001ca9553d073so756709pjy.5
+        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 14:40:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=date:from:to:cc:subject:in-reply-to:message-id:references
          :mime-version;
-        bh=zKtk8IB6XHTmH0rCMSyzNZth13clvLYrEOIwPUoghbk=;
-        b=S5IX/7UJx34NsUTApmyYCV0F/JLcTJY4iR5N1wG9UIzjBrqYqkgvGk1o8HH9iJY9mG
-         jCCsZDzVU86SFHE5ozcmOBigOFi05AzbzIO+dJaqhBsApL6y8fLHQrHglt3pKo174ZHn
-         zHMcwxxlvTbg4QrGWC9hOKcjEuBz8E+tFbRtEJrNPdcPb1QfWD55UzuTVVih31SaEaKz
-         TS3GUgnzQ95tPpjzuiGUjsDu7G8weuIbzoGLoaxZN6u4OlyNMUYLza/0dG0wC4Ng8IQK
-         jU6jTkst9VzN41g0Gf9EReaup3pyzB38l5FJ8OgTzfASbMqb7+n52CJgZ3/3n2aAJlUL
-         dOkg==
+        bh=uFEEhi2BINl2XkuJDW73R9CLR4ne8XETRZnn1nmyzxA=;
+        b=Sot2K/6pM4dz106o9LGTkElXpd2fwWCwwtWHv7QKYEK9OV6t2oqMz5weDsRqBU+L0D
+         XjoYPv4Iuyq+Mw9zcbzBaYD3+AThxYVR9x0yZoTAVvN4ngekXwY3j3XXIf3HlrM+nKjy
+         xO69QATXXQCgBvIu056HVeYHzhVraHK9Nc/4N6X0qSBRuoqJqvSw461vjAeZKPaVyo0M
+         xxRSVGqfgxYwobufKwDZhdD1mP45Y9UqIbrcGQG0k0j6tyskeVLUB4la0xo3snERbB/4
+         jD+y1C8VX0RiU6BEItVuQT3NAMHcsCl2GJEVv8GQP4/qevrnilt1aAlwokRkECcTNBYh
+         HcWA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:in-reply-to:message-id
          :references:mime-version;
-        bh=zKtk8IB6XHTmH0rCMSyzNZth13clvLYrEOIwPUoghbk=;
-        b=ti1dsS5pgafUN9Fun1X7q3BoRxZMUs/aJ1InyYVELMcynWoVHylseXtNDlxkkq2qjK
-         291Sx7PPjXa3b3FV4CkNADG591yqj+muH7AW9v/M7uQQZvxl7N78NCnjUljn47Fuac97
-         XLzwB506nMt0WMmLiKBftR75T0r4kSjYJxINY3sCtscRFf7j8QbHQa2/iAh2EUUxZky8
-         5ngP+16VQsUsX8ydq/AsoZOx/12qJv+/J63sGmlL5C7zfR9ya6LAWcWLMysFNoncPB9H
-         Ujw2pI554WeQ7O2c861exp4Lpz6NzdyzRzFSJp+aLbHFuJm8Rdu3ystkJUZGR81UnYQt
-         NdQA==
-X-Gm-Message-State: AOAM530OULeXGcWNs9XKxn6pusAwVHbYxxP1LomR8bmAwlXDzXUBWtea
-        LDa+OvZdRkV9UKyKGDA01dl/dw==
-X-Google-Smtp-Source: ABdhPJxe5rGvLugDy5hnVIrZMk9Aay9zhdwj6790D9RZgURPBRtDTauGOf1wpuNP1IMEZfRxBh8d5Q==
-X-Received: by 2002:a17:903:2309:b0:153:ad3f:b074 with SMTP id d9-20020a170903230900b00153ad3fb074mr5272861plh.82.1649194804269;
-        Tue, 05 Apr 2022 14:40:04 -0700 (PDT)
+        bh=uFEEhi2BINl2XkuJDW73R9CLR4ne8XETRZnn1nmyzxA=;
+        b=cLzq9fVPfsl8Gjhrfv1ia9jkFlkJy26XbluDPR50vbES9oncXHK+/8U7gn5xxhr4gr
+         5QWeORoclsE02KEqrHfPBJq08swsgwbZ4OXu6upcYt3ArDXuxLf6RRMYMZqjykNT+/dg
+         9sAT6yu5SOe/uvhI+ziY3WMV09mU0Ajr813UQVIQ+KZ9rBlVtGJv/6C952Z96s0lYzib
+         +YrRPUSvoNbupP/bYQ9ZlJ5CUttUviTkcG2xhIST+F6FVsK62Eu8wEzt90dIe1WRdu4j
+         Bm2LZ4/N1aXNXR93ptzoHW2DJTlmX0kwxzgMZwairBAFh5L7tSREx5OwmYbAJeKtJ08x
+         nOwA==
+X-Gm-Message-State: AOAM532PySI7P2gf9gETub8nIDODC9mVhTmCnOvkLsw7lokXHdStgXcX
+        JSyibFAW7Mv6Eb2k1C5ITV7FaQ==
+X-Google-Smtp-Source: ABdhPJy6p41JuzEMqtw3sIwHpEGcfUeno6ruD35L1g2gt33alVOEmKeqkDBJL+Ia6dv3MJirFBK/Bg==
+X-Received: by 2002:a17:90b:3b8c:b0:1c6:eb72:24b4 with SMTP id pc12-20020a17090b3b8c00b001c6eb7224b4mr6290221pjb.171.1649194812948;
+        Tue, 05 Apr 2022 14:40:12 -0700 (PDT)
 Received: from [2620:15c:29:204:be3e:5e1c:99cc:513f] ([2620:15c:29:204:be3e:5e1c:99cc:513f])
-        by smtp.gmail.com with ESMTPSA id f3-20020a17090aa78300b001ca7dfab2e4sm3270192pjq.25.2022.04.05.14.40.03
+        by smtp.gmail.com with ESMTPSA id i2-20020a17090ac40200b001bd0e552d27sm3126341pjt.11.2022.04.05.14.40.12
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 05 Apr 2022 14:40:03 -0700 (PDT)
-Date:   Tue, 5 Apr 2022 14:40:03 -0700 (PDT)
+        Tue, 05 Apr 2022 14:40:12 -0700 (PDT)
+Date:   Tue, 5 Apr 2022 14:40:12 -0700 (PDT)
 From:   David Rientjes <rientjes@google.com>
 To:     Vlastimil Babka <vbabka@suse.cz>
 cc:     Christoph Lameter <cl@linux.com>,
@@ -63,11 +63,11 @@ cc:     Christoph Lameter <cl@linux.com>,
         Mike Rapoport <rppt@linux.ibm.com>,
         Hyeonggon Yoo <42.hyeyoo@gmail.com>,
         Imran Khan <imran.f.khan@oracle.com>
-Subject: Re: [PATCH v3 1/6] lib/stackdepot: allow requesting early initialization
- dynamically
-In-Reply-To: <20220404164112.18372-2-vbabka@suse.cz>
-Message-ID: <8a13e52b-f4ff-4fd9-1f8a-fdea3868bc1@google.com>
-References: <20220404164112.18372-1-vbabka@suse.cz> <20220404164112.18372-2-vbabka@suse.cz>
+Subject: Re: [PATCH v3 3/6] mm/slub: use stackdepot to save stack trace in
+ objects
+In-Reply-To: <20220404164112.18372-4-vbabka@suse.cz>
+Message-ID: <5f7d33ec-1e73-cdfc-54e5-e93d346ac78@google.com>
+References: <20220404164112.18372-1-vbabka@suse.cz> <20220404164112.18372-4-vbabka@suse.cz>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
@@ -76,147 +76,243 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 On Mon, 4 Apr 2022, Vlastimil Babka wrote:
 
-> In a later patch we want to add stackdepot support for object owner
-> tracking in slub caches, which is enabled by slub_debug boot parameter.
-> This creates a bootstrap problem as some caches are created early in
-> boot when slab_is_available() is false and thus stack_depot_init()
-> tries to use memblock. But, as reported by Hyeonggon Yoo [1] we are
-> already beyond memblock_free_all(). Ideally memblock allocation should
-> fail, yet it succeeds, but later the system crashes, which is a
-> separately handled issue.
+> From: Oliver Glitta <glittao@gmail.com>
 > 
-> To resolve this boostrap issue in a robust way, this patch adds another
-> way to request stack_depot_early_init(), which happens at a well-defined
-> point of time. In addition to build-time CONFIG_STACKDEPOT_ALWAYS_INIT,
-> code that's e.g. processing boot parameters (which happens early enough)
-> can call a new function stack_depot_want_early_init(), which sets a flag
-> that stack_depot_early_init() will check.
+> Many stack traces are similar so there are many similar arrays.
+> Stackdepot saves each unique stack only once.
 > 
-> In this patch we also convert page_owner to this approach. While it
-> doesn't have the bootstrap issue as slub, it's also a functionality
-> enabled by a boot param and can thus request stack_depot_early_init()
-> with memblock allocation instead of later initialization with
-> kvmalloc().
+> Replace field addrs in struct track with depot_stack_handle_t handle.  Use
+> stackdepot to save stack trace.
 > 
-> As suggested by Mike, make stack_depot_early_init() only attempt
-> memblock allocation and stack_depot_init() only attempt kvmalloc().
-> Also change the latter to kvcalloc(). In both cases we can lose the
-> explicit array zeroing, which the allocations do already.
+> The benefits are smaller memory overhead and possibility to aggregate
+> per-cache statistics in the following patch using the stackdepot handle
+> instead of matching stacks manually.
 > 
-> As suggested by Marco, provide empty implementations of the init
-> functions for !CONFIG_STACKDEPOT builds to simplify the callers.
+> [ vbabka@suse.cz: rebase to 5.17-rc1 and adjust accordingly ]
 > 
-> [1] https://lore.kernel.org/all/YhnUcqyeMgCrWZbd@ip-172-31-19-208.ap-northeast-1.compute.internal/
+> This was initially merged as commit 788691464c29 and reverted by commit
+> ae14c63a9f20 due to several issues, that should now be fixed.
+> The problem of unconditional memory overhead by stackdepot has been
+> addressed by commit 2dba5eb1c73b ("lib/stackdepot: allow optional init
+> and stack_table allocation by kvmalloc()"), so the dependency on
+> stackdepot will result in extra memory usage only when a slab cache
+> tracking is actually enabled, and not for all CONFIG_SLUB_DEBUG builds.
+> The build failures on some architectures were also addressed, and the
+> reported issue with xfs/433 test did not reproduce on 5.17-rc1 with this
+> patch.
 > 
-> Reported-by: Hyeonggon Yoo <42.hyeyoo@gmail.com>
-> Suggested-by: Mike Rapoport <rppt@linux.ibm.com>
-> Suggested-by: Marco Elver <elver@google.com>
+> Signed-off-by: Oliver Glitta <glittao@gmail.com>
 > Signed-off-by: Vlastimil Babka <vbabka@suse.cz>
-> Reviewed-by: Marco Elver <elver@google.com>
 > Reviewed-and-tested-by: Hyeonggon Yoo <42.hyeyoo@gmail.com>
-> Reviewed-by: Mike Rapoport <rppt@linux.ibm.com>
+> Cc: David Rientjes <rientjes@google.com>
+> Cc: Christoph Lameter <cl@linux.com>
+> Cc: Pekka Enberg <penberg@kernel.org>
+> Cc: Joonsoo Kim <iamjoonsoo.kim@lge.com>
 > ---
->  include/linux/stackdepot.h | 26 ++++++++++++---
->  lib/stackdepot.c           | 66 +++++++++++++++++++++++++-------------
->  mm/page_owner.c            |  9 ++++--
->  3 files changed, 72 insertions(+), 29 deletions(-)
+>  init/Kconfig      |  1 +
+>  lib/Kconfig.debug |  1 +
+>  mm/slab_common.c  |  5 ++++
+>  mm/slub.c         | 71 ++++++++++++++++++++++++++---------------------
+>  4 files changed, 47 insertions(+), 31 deletions(-)
 > 
-> diff --git a/include/linux/stackdepot.h b/include/linux/stackdepot.h
-> index 17f992fe6355..bc2797955de9 100644
-> --- a/include/linux/stackdepot.h
-> +++ b/include/linux/stackdepot.h
-> @@ -20,18 +20,36 @@ depot_stack_handle_t __stack_depot_save(unsigned long *entries,
->  					gfp_t gfp_flags, bool can_alloc);
+> diff --git a/init/Kconfig b/init/Kconfig
+> index ddcbefe535e9..adc57f989d87 100644
+> --- a/init/Kconfig
+> +++ b/init/Kconfig
+> @@ -1875,6 +1875,7 @@ config SLUB_DEBUG
+>  	default y
+>  	bool "Enable SLUB debugging support" if EXPERT
+>  	depends on SLUB && SYSFS
+> +	select STACKDEPOT if STACKTRACE_SUPPORT
+>  	help
+>  	  SLUB has extensive debug support features. Disabling these can
+>  	  result in significant savings in code size. This also disables
+> diff --git a/lib/Kconfig.debug b/lib/Kconfig.debug
+> index 075cd25363ac..78d6139111cd 100644
+> --- a/lib/Kconfig.debug
+> +++ b/lib/Kconfig.debug
+> @@ -709,6 +709,7 @@ config DEBUG_SLAB
+>  config SLUB_DEBUG_ON
+>  	bool "SLUB debugging on by default"
+>  	depends on SLUB && SLUB_DEBUG
+> +	select STACKDEPOT_ALWAYS_INIT if STACKTRACE_SUPPORT
+>  	default n
+>  	help
+>  	  Boot with debugging on by default. SLUB boots by default with
+> diff --git a/mm/slab_common.c b/mm/slab_common.c
+> index 6ee64d6208b3..73943479a2b7 100644
+> --- a/mm/slab_common.c
+> +++ b/mm/slab_common.c
+> @@ -24,6 +24,7 @@
+>  #include <asm/tlbflush.h>
+>  #include <asm/page.h>
+>  #include <linux/memcontrol.h>
+> +#include <linux/stackdepot.h>
 >  
->  /*
-> - * Every user of stack depot has to call this during its own init when it's
-> - * decided that it will be calling stack_depot_save() later.
-> + * Every user of stack depot has to call stack_depot_init() during its own init
-> + * when it's decided that it will be calling stack_depot_save() later. This is
-> + * recommended for e.g. modules initialized later in the boot process, when
-> + * slab_is_available() is true.
->   *
->   * The alternative is to select STACKDEPOT_ALWAYS_INIT to have stack depot
->   * enabled as part of mm_init(), for subsystems where it's known at compile time
->   * that stack depot will be used.
-> + *
-> + * Another alternative is to call stack_depot_want_early_init(), when the
-> + * decision to use stack depot is taken e.g. when evaluating kernel boot
-> + * parameters, which precedes the enablement point in mm_init().
-> + *
-> + * stack_depot_init() and stack_depot_want_early_init() can be called regardless
-> + * of CONFIG_STACKDEPOT and are no-op when disabled. The actual save/fetch/print
-> + * functions should only be called from code that makes sure CONFIG_STACKDEPOT
-> + * is enabled.
->   */
-> +#ifdef CONFIG_STACKDEPOT
->  int stack_depot_init(void);
->  
-> -#ifdef CONFIG_STACKDEPOT_ALWAYS_INIT
-> -static inline int stack_depot_early_init(void)	{ return stack_depot_init(); }
-> +void __init stack_depot_want_early_init(void);
-> +
-> +/* This is supposed to be called only from mm_init() */
-> +int __init stack_depot_early_init(void);
->  #else
-> +static inline int stack_depot_init(void) { return 0; }
-> +
-> +static inline void stack_depot_want_early_init(void) { }
-> +
->  static inline int stack_depot_early_init(void)	{ return 0; }
+>  #define CREATE_TRACE_POINTS
+>  #include <trace/events/kmem.h>
+> @@ -314,9 +315,13 @@ kmem_cache_create_usercopy(const char *name,
+>  	 * If no slub_debug was enabled globally, the static key is not yet
+>  	 * enabled by setup_slub_debug(). Enable it if the cache is being
+>  	 * created with any of the debugging flags passed explicitly.
+> +	 * It's also possible that this is the first cache created with
+> +	 * SLAB_STORE_USER and we should init stack_depot for it.
+>  	 */
+>  	if (flags & SLAB_DEBUG_FLAGS)
+>  		static_branch_enable(&slub_debug_enabled);
+> +	if (flags & SLAB_STORE_USER)
+> +		stack_depot_init();
 >  #endif
 >  
-> diff --git a/lib/stackdepot.c b/lib/stackdepot.c
-> index bf5ba9af0500..6c4644c9ed44 100644
-> --- a/lib/stackdepot.c
-> +++ b/lib/stackdepot.c
-> @@ -66,6 +66,9 @@ struct stack_record {
->  	unsigned long entries[];	/* Variable-sized array of entries. */
->  };
->  
-> +static bool __stack_depot_want_early_init __initdata = IS_ENABLED(CONFIG_STACKDEPOT_ALWAYS_INIT);
-> +static bool __stack_depot_early_init_passed __initdata;
-> +
->  static void *stack_slabs[STACK_ALLOC_MAX_SLABS];
->  
->  static int depot_index;
-> @@ -162,38 +165,57 @@ static int __init is_stack_depot_disabled(char *str)
+>  	mutex_lock(&slab_mutex);
+> diff --git a/mm/slub.c b/mm/slub.c
+> index cd4fd0159911..98c1450c23f0 100644
+> --- a/mm/slub.c
+> +++ b/mm/slub.c
+> @@ -26,6 +26,7 @@
+>  #include <linux/cpuset.h>
+>  #include <linux/mempolicy.h>
+>  #include <linux/ctype.h>
+> +#include <linux/stackdepot.h>
+>  #include <linux/debugobjects.h>
+>  #include <linux/kallsyms.h>
+>  #include <linux/kfence.h>
+> @@ -264,8 +265,8 @@ static inline bool kmem_cache_has_cpu_partial(struct kmem_cache *s)
+>  #define TRACK_ADDRS_COUNT 16
+>  struct track {
+>  	unsigned long addr;	/* Called from address */
+> -#ifdef CONFIG_STACKTRACE
+> -	unsigned long addrs[TRACK_ADDRS_COUNT];	/* Called from address */
+> +#ifdef CONFIG_STACKDEPOT
+> +	depot_stack_handle_t handle;
+>  #endif
+>  	int cpu;		/* Was running on cpu */
+>  	int pid;		/* Pid context */
+> @@ -724,22 +725,19 @@ static struct track *get_track(struct kmem_cache *s, void *object,
+>  	return kasan_reset_tag(p + alloc);
 >  }
->  early_param("stack_depot_disable", is_stack_depot_disabled);
 >  
-> -/*
-> - * __ref because of memblock_alloc(), which will not be actually called after
-> - * the __init code is gone, because at that point slab_is_available() is true
-> - */
-> -__ref int stack_depot_init(void)
-> +void __init stack_depot_want_early_init(void)
-> +{
-> +	/* Too late to request early init now */
-> +	WARN_ON(__stack_depot_early_init_passed);
-> +
-> +	__stack_depot_want_early_init = true;
-> +}
-> +
-> +int __init stack_depot_early_init(void)
-> +{
-> +	size_t size;
-> +
-> +	/* This is supposed to be called only once, from mm_init() */
-> +	if (WARN_ON(__stack_depot_early_init_passed))
-> +		return 0;
-> +
-> +	__stack_depot_early_init_passed = true;
-> +
-> +	if (!__stack_depot_want_early_init || stack_depot_disable)
-> +		return 0;
-> +
-> +	pr_info("Stack Depot early init allocating hash table with memblock_alloc\n");
-> +	size = (STACK_HASH_SIZE * sizeof(struct stack_record *));
+> -static void set_track(struct kmem_cache *s, void *object,
+> +static void noinline set_track(struct kmem_cache *s, void *object,
+>  			enum track_item alloc, unsigned long addr)
+>  {
+>  	struct track *p = get_track(s, object, alloc);
+>  
+> -#ifdef CONFIG_STACKTRACE
+> +#ifdef CONFIG_STACKDEPOT
+> +	unsigned long entries[TRACK_ADDRS_COUNT];
+>  	unsigned int nr_entries;
+>  
+> -	metadata_access_enable();
+> -	nr_entries = stack_trace_save(kasan_reset_tag(p->addrs),
+> -				      TRACK_ADDRS_COUNT, 3);
+> -	metadata_access_disable();
+> -
+> -	if (nr_entries < TRACK_ADDRS_COUNT)
+> -		p->addrs[nr_entries] = 0;
+> +	nr_entries = stack_trace_save(entries, ARRAY_SIZE(entries), 3);
+> +	p->handle = stack_depot_save(entries, nr_entries, GFP_NOWAIT);
 
-I think the kvcalloc() in the main init path is very unlikely to fail, but 
-perhaps this memblock_alloc() might?  If so, a nit might be to include 
-this size as part of the printk.
+I think this should also have __GFP_NOWARN set since this allocation could 
+easily fail and it would unnecessarily spam the kernel log unless we 
+actually care about the stack trace being printed later (and the patch 
+already indicates the allocation failed in print_track() when it matters).
 
-Either way:
+Otherwise:
 
 Acked-by: David Rientjes <rientjes@google.com>
+
+>  #endif
+> +
+>  	p->addr = addr;
+>  	p->cpu = smp_processor_id();
+>  	p->pid = current->pid;
+> @@ -759,20 +757,19 @@ static void init_tracking(struct kmem_cache *s, void *object)
+>  
+>  static void print_track(const char *s, struct track *t, unsigned long pr_time)
+>  {
+> +	depot_stack_handle_t handle __maybe_unused;
+> +
+>  	if (!t->addr)
+>  		return;
+>  
+>  	pr_err("%s in %pS age=%lu cpu=%u pid=%d\n",
+>  	       s, (void *)t->addr, pr_time - t->when, t->cpu, t->pid);
+> -#ifdef CONFIG_STACKTRACE
+> -	{
+> -		int i;
+> -		for (i = 0; i < TRACK_ADDRS_COUNT; i++)
+> -			if (t->addrs[i])
+> -				pr_err("\t%pS\n", (void *)t->addrs[i]);
+> -			else
+> -				break;
+> -	}
+> +#ifdef CONFIG_STACKDEPOT
+> +	handle = READ_ONCE(t->handle);
+> +	if (handle)
+> +		stack_depot_print(handle);
+> +	else
+> +		pr_err("object allocation/free stack trace missing\n");
+>  #endif
+>  }
+>  
+> @@ -1532,6 +1529,8 @@ static int __init setup_slub_debug(char *str)
+>  			global_slub_debug_changed = true;
+>  		} else {
+>  			slab_list_specified = true;
+> +			if (flags & SLAB_STORE_USER)
+> +				stack_depot_want_early_init();
+>  		}
+>  	}
+>  
+> @@ -1549,6 +1548,8 @@ static int __init setup_slub_debug(char *str)
+>  	}
+>  out:
+>  	slub_debug = global_flags;
+> +	if (slub_debug & SLAB_STORE_USER)
+> +		stack_depot_want_early_init();
+>  	if (slub_debug != 0 || slub_debug_string)
+>  		static_branch_enable(&slub_debug_enabled);
+>  	else
+> @@ -4342,18 +4343,26 @@ void kmem_obj_info(struct kmem_obj_info *kpp, void *object, struct slab *slab)
+>  	objp = fixup_red_left(s, objp);
+>  	trackp = get_track(s, objp, TRACK_ALLOC);
+>  	kpp->kp_ret = (void *)trackp->addr;
+> -#ifdef CONFIG_STACKTRACE
+> -	for (i = 0; i < KS_ADDRS_COUNT && i < TRACK_ADDRS_COUNT; i++) {
+> -		kpp->kp_stack[i] = (void *)trackp->addrs[i];
+> -		if (!kpp->kp_stack[i])
+> -			break;
+> -	}
+> +#ifdef CONFIG_STACKDEPOT
+> +	{
+> +		depot_stack_handle_t handle;
+> +		unsigned long *entries;
+> +		unsigned int nr_entries;
+> +
+> +		handle = READ_ONCE(trackp->handle);
+> +		if (handle) {
+> +			nr_entries = stack_depot_fetch(handle, &entries);
+> +			for (i = 0; i < KS_ADDRS_COUNT && i < nr_entries; i++)
+> +				kpp->kp_stack[i] = (void *)entries[i];
+> +		}
+>  
+> -	trackp = get_track(s, objp, TRACK_FREE);
+> -	for (i = 0; i < KS_ADDRS_COUNT && i < TRACK_ADDRS_COUNT; i++) {
+> -		kpp->kp_free_stack[i] = (void *)trackp->addrs[i];
+> -		if (!kpp->kp_free_stack[i])
+> -			break;
+> +		trackp = get_track(s, objp, TRACK_FREE);
+> +		handle = READ_ONCE(trackp->handle);
+> +		if (handle) {
+> +			nr_entries = stack_depot_fetch(handle, &entries);
+> +			for (i = 0; i < KS_ADDRS_COUNT && i < nr_entries; i++)
+> +				kpp->kp_free_stack[i] = (void *)entries[i];
+> +		}
+>  	}
+>  #endif
+>  #endif
+> -- 
+> 2.35.1
+> 
+> 
