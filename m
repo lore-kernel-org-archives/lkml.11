@@ -2,203 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 09B7EC47080
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 01:34:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 389A8C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 01:42:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239473AbiDFBfx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 21:35:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36104 "EHLO
+        id S1842982AbiDFBfo (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 21:35:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40312 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1573565AbiDETWr (ORCPT
+        with ESMTP id S1343881AbiDEM47 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 15:22:47 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0685E41996;
-        Tue,  5 Apr 2022 12:20:49 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 98746616C5;
-        Tue,  5 Apr 2022 19:20:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5C95FC385A0;
-        Tue,  5 Apr 2022 19:20:47 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649186448;
-        bh=ShhHqYfBpf9JsbMiXI8G2iZFROdQeYH5+nM3VSH0nCI=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dKHViOiZAF8ltnCy75v1geQHPUV3YPHu0rqq8dpG7YpkQs61r73lUO9MHKA/dA5Ko
-         vrpOoJP7fgGvLjlJTaYGbR7CQ8IRQvPC+N3DVZd6guEK8PmgfVB8DocSpjjPx0krPa
-         R0DBwmFqMBBu75AWDTpNRyG2oxYljfYQ62sWfo+AXOEWuzgqqIIEVjKvEuv7h8Z9hR
-         lp7eIdcCsZh6wZjN1B61iDKAwVkAAi+Gv/WOGRfdeCkynnTulGP0cWJufpuHaXI2gg
-         Gl1IQRunszg/NxN8kWmKpLZIZByHcPEO5qh1of3y7yVa8gEQc65CigL426u+LAkK6E
-         y1OLcnVKDWgSw==
-From:   Jeff Layton <jlayton@kernel.org>
-To:     idryomov@gmail.com, xiubli@redhat.com
-Cc:     ceph-devel@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        linux-fscrypt@vger.kernel.org, linux-kernel@vger.kernel.org,
-        lhenriques@suse.de
-Subject: [PATCH v13 17/59] ceph: decode alternate_name in lease info
-Date:   Tue,  5 Apr 2022 15:19:48 -0400
-Message-Id: <20220405192030.178326-18-jlayton@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405192030.178326-1-jlayton@kernel.org>
-References: <20220405192030.178326-1-jlayton@kernel.org>
+        Tue, 5 Apr 2022 08:56:59 -0400
+Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4604F6BDF0
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 04:59:40 -0700 (PDT)
+Received: by mail-ej1-x62c.google.com with SMTP id p15so26158320ejc.7
+        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 04:59:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=oKfl96ffJzP0jk2BGX9X8+oVaB0Jilri5i9RHEz+bkk=;
+        b=bVV5ndjxBJSAES/HgU+ux2AI7Bty9KrqQwHtYKeW9eSIQv4Po2YJsQHgLPohipx8IP
+         PxRvdXLmsyIPVjT9j4Tc5Yhxic4T/Eja6UcPn/nQcTeR2sqwT2wwtKPdYinJD9KpPznu
+         zCTrlPZc0fsA263zJHGypILi1/yZ5y0WzBYeTNtNggQ3nEkCAPcxxCxVv5u6a9a58Rkn
+         pzDpJHUhJ6nirgZljWXvZYVvZD3eBtaK2lihlc9+NR4rKdxtDH1QAXNBC9VEKEKYrdSQ
+         8/RMef6ffPxTX3CBb9hBjgZkYMuXNHdWx640l+5/ar95azlmk9Puv8QtSjUjoYWo4mB8
+         hDVQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=oKfl96ffJzP0jk2BGX9X8+oVaB0Jilri5i9RHEz+bkk=;
+        b=m22ucuTRnF3JCJscFMy8eNP1By+1x/UD3nJQxds20SDgPXs3V7blmQ/Ho6+YygRnaK
+         Zo4utQt7aU4WgAzdp/5NeQXxWA6dggcPWGs7jJ4G+9Nwbj1sxptVzjxT2mIJMQURU6lf
+         4BXowyeABPAjCDOKUKDVLfKANgSLC8lViSHL79IakKElTDXUjtelKhaIGbwgC1L/F7Sx
+         4W22tKZAJSYnkf9x8FEzMZVVe4ujtY8Ffa1s2MmLtLaAIZnev4Ed+sAeXMQ49Cn/kX7j
+         lgXjdVD+QYbrgCwLOvtviZxBJ/bWRD06wx9xdHh9TrD4Y6pYASShvQ7IWNxr2si23grI
+         crDA==
+X-Gm-Message-State: AOAM5319v5WarX+gVZy0ucJZz8cvc1ec1n3MYqyIOJKH0XAD5YB+7RUT
+        0ds54fNdVJ7Y8G8uQaS0INnjrw==
+X-Google-Smtp-Source: ABdhPJzMcNUjaa3bb1bVgn7DmGJkg+zPMPP6CGc9NuQO6JPcTcmni3gRSsg5r+DqqBrN5dw/F5Rurg==
+X-Received: by 2002:a17:907:6d9b:b0:6db:8eab:94e0 with SMTP id sb27-20020a1709076d9b00b006db8eab94e0mr3116827ejc.687.1649159978936;
+        Tue, 05 Apr 2022 04:59:38 -0700 (PDT)
+Received: from [192.168.0.181] (xdsl-188-155-201-27.adslplus.ch. [188.155.201.27])
+        by smtp.gmail.com with ESMTPSA id f1-20020a056402194100b00416b174987asm6660211edz.35.2022.04.05.04.59.37
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 05 Apr 2022 04:59:38 -0700 (PDT)
+Message-ID: <14ce8189-6ea7-75d8-1b03-56dcb8eda2ac@linaro.org>
+Date:   Tue, 5 Apr 2022 13:59:37 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH RFC net-next v2 1/3] dt-bindings: net: convert mscc-miim
+ to YAML format
+Content-Language: en-US
+To:     Michael Walle <michael@walle.cc>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>
+Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220401215834.3757692-1-michael@walle.cc>
+ <20220401215834.3757692-2-michael@walle.cc>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220401215834.3757692-2-michael@walle.cc>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Ceph is a bit different from local filesystems, in that we don't want
-to store filenames as raw binary data, since we may also be dealing
-with clients that don't support fscrypt.
+On 01/04/2022 23:58, Michael Walle wrote:
+> Convert the mscc-miim device tree binding to the new YAML format.
+> 
+> The original binding don't mention if the interrupt property is optional
+> or not. But on the SparX-5 SoC, for example, the interrupt property isn't
+> used, thus in the new binding that property is optional. FWIW the driver
+> doesn't use interrupts at all.
+> 
+> Signed-off-by: Michael Walle <michael@walle.cc>
+> ---
+>  .../devicetree/bindings/net/mscc,miim.yaml    | 56 +++++++++++++++++++
+>  .../devicetree/bindings/net/mscc-miim.txt     | 26 ---------
+>  2 files changed, 56 insertions(+), 26 deletions(-)
+>  create mode 100644 Documentation/devicetree/bindings/net/mscc,miim.yaml
+>  delete mode 100644 Documentation/devicetree/bindings/net/mscc-miim.txt
+> 
 
-We could just base64-encode the encrypted filenames, but that could
-leave us with filenames longer than NAME_MAX. It turns out that the
-MDS doesn't care much about filename length, but the clients do.
 
-To manage this, we've added a new "alternate name" field that can be
-optionally added to any dentry that we'll use to store the binary
-crypttext of the filename if its base64-encoded value will be longer
-than NAME_MAX. When a dentry has one of these names attached, the MDS
-will send it along in the lease info, which we can then store for
-later usage.
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
-Signed-off-by: Jeff Layton <jlayton@kernel.org>
-Signed-off-by: Xiubo Li <xiubli@redhat.com>
----
- fs/ceph/mds_client.c | 43 +++++++++++++++++++++++++++++++++----------
- fs/ceph/mds_client.h | 11 +++++++----
- 2 files changed, 40 insertions(+), 14 deletions(-)
 
-diff --git a/fs/ceph/mds_client.c b/fs/ceph/mds_client.c
-index dcb800675dec..2f2f8221eb25 100644
---- a/fs/ceph/mds_client.c
-+++ b/fs/ceph/mds_client.c
-@@ -308,27 +308,47 @@ static int parse_reply_info_dir(void **p, void *end,
- 
- static int parse_reply_info_lease(void **p, void *end,
- 				  struct ceph_mds_reply_lease **lease,
--				  u64 features)
-+				  u64 features, u32 *altname_len, u8 **altname)
- {
-+	u8 struct_v;
-+	u32 struct_len;
-+	void *lend;
-+
- 	if (features == (u64)-1) {
--		u8 struct_v, struct_compat;
--		u32 struct_len;
-+		u8 struct_compat;
-+
- 		ceph_decode_8_safe(p, end, struct_v, bad);
- 		ceph_decode_8_safe(p, end, struct_compat, bad);
-+
- 		/* struct_v is expected to be >= 1. we only understand
- 		 * encoding whose struct_compat == 1. */
- 		if (!struct_v || struct_compat != 1)
- 			goto bad;
-+
- 		ceph_decode_32_safe(p, end, struct_len, bad);
--		ceph_decode_need(p, end, struct_len, bad);
--		end = *p + struct_len;
-+	} else {
-+		struct_len = sizeof(**lease);
-+		*altname_len = 0;
-+		*altname = NULL;
- 	}
- 
--	ceph_decode_need(p, end, sizeof(**lease), bad);
-+	lend = *p + struct_len;
-+	ceph_decode_need(p, end, struct_len, bad);
- 	*lease = *p;
- 	*p += sizeof(**lease);
--	if (features == (u64)-1)
--		*p = end;
-+
-+	if (features == (u64)-1) {
-+		if (struct_v >= 2) {
-+			ceph_decode_32_safe(p, end, *altname_len, bad);
-+			ceph_decode_need(p, end, *altname_len, bad);
-+			*altname = *p;
-+			*p += *altname_len;
-+		} else {
-+			*altname = NULL;
-+			*altname_len = 0;
-+		}
-+	}
-+	*p = lend;
- 	return 0;
- bad:
- 	return -EIO;
-@@ -358,7 +378,8 @@ static int parse_reply_info_trace(void **p, void *end,
- 		info->dname = *p;
- 		*p += info->dname_len;
- 
--		err = parse_reply_info_lease(p, end, &info->dlease, features);
-+		err = parse_reply_info_lease(p, end, &info->dlease, features,
-+					     &info->altname_len, &info->altname);
- 		if (err < 0)
- 			goto out_bad;
- 	}
-@@ -425,9 +446,11 @@ static int parse_reply_info_readdir(void **p, void *end,
- 		dout("parsed dir dname '%.*s'\n", rde->name_len, rde->name);
- 
- 		/* dentry lease */
--		err = parse_reply_info_lease(p, end, &rde->lease, features);
-+		err = parse_reply_info_lease(p, end, &rde->lease, features,
-+					     &rde->altname_len, &rde->altname);
- 		if (err)
- 			goto out_bad;
-+
- 		/* inode */
- 		err = parse_reply_info_in(p, end, &rde->inode, features);
- 		if (err < 0)
-diff --git a/fs/ceph/mds_client.h b/fs/ceph/mds_client.h
-index aab3ab284fce..2cc75f9ae7c7 100644
---- a/fs/ceph/mds_client.h
-+++ b/fs/ceph/mds_client.h
-@@ -29,8 +29,8 @@ enum ceph_feature_type {
- 	CEPHFS_FEATURE_MULTI_RECONNECT,
- 	CEPHFS_FEATURE_DELEG_INO,
- 	CEPHFS_FEATURE_METRIC_COLLECT,
--
--	CEPHFS_FEATURE_MAX = CEPHFS_FEATURE_METRIC_COLLECT,
-+	CEPHFS_FEATURE_ALTERNATE_NAME,
-+	CEPHFS_FEATURE_MAX = CEPHFS_FEATURE_ALTERNATE_NAME,
- };
- 
- /*
-@@ -45,8 +45,7 @@ enum ceph_feature_type {
- 	CEPHFS_FEATURE_MULTI_RECONNECT,		\
- 	CEPHFS_FEATURE_DELEG_INO,		\
- 	CEPHFS_FEATURE_METRIC_COLLECT,		\
--						\
--	CEPHFS_FEATURE_MAX,			\
-+	CEPHFS_FEATURE_ALTERNATE_NAME,		\
- }
- #define CEPHFS_FEATURES_CLIENT_REQUIRED {}
- 
-@@ -98,7 +97,9 @@ struct ceph_mds_reply_info_in {
- 
- struct ceph_mds_reply_dir_entry {
- 	char                          *name;
-+	u8			      *altname;
- 	u32                           name_len;
-+	u32			      altname_len;
- 	struct ceph_mds_reply_lease   *lease;
- 	struct ceph_mds_reply_info_in inode;
- 	loff_t			      offset;
-@@ -122,7 +123,9 @@ struct ceph_mds_reply_info_parsed {
- 	struct ceph_mds_reply_info_in diri, targeti;
- 	struct ceph_mds_reply_dirfrag *dirfrag;
- 	char                          *dname;
-+	u8			      *altname;
- 	u32                           dname_len;
-+	u32                           altname_len;
- 	struct ceph_mds_reply_lease   *dlease;
- 	struct ceph_mds_reply_xattr   xattr_info;
- 
--- 
-2.35.1
-
+Best regards,
+Krzysztof
