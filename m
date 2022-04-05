@@ -2,46 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 39D0DC47080
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B761C433EF
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 13:24:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1388196AbiDENV3 (ORCPT
+        id S1356421AbiDENIF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 09:21:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34658 "EHLO
+        Tue, 5 Apr 2022 09:08:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43858 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344402AbiDEJTv (ORCPT
+        with ESMTP id S1344024AbiDEJQu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:19:51 -0400
+        Tue, 5 Apr 2022 05:16:50 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC567305;
-        Tue,  5 Apr 2022 02:08:10 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 666CB1BEB8;
+        Tue,  5 Apr 2022 02:03:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 729D6B81A12;
-        Tue,  5 Apr 2022 09:08:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D856BC385A0;
-        Tue,  5 Apr 2022 09:08:07 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 11A4EB81BBF;
+        Tue,  5 Apr 2022 09:03:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 709E8C385A0;
+        Tue,  5 Apr 2022 09:03:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649149688;
-        bh=5UMlgXP9Kt7zNY8E5AlJDpLF7i4vLGx8OtzMkKu8RiA=;
+        s=korg; t=1649149417;
+        bh=q9sK/WaOZNRPr2VqWX/aW0cqtIBUU+WYW2Pf4EKTIJs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=IsLzvvlGNtGRTgGRf3H/T+PZbnXtdzxkTv1ueBaCYcKTMbOKdWDOpnlR505+k6d4D
-         gaH1qPxIay9iBXc8/Q4Y4fcOFbr0euTWWk++IcAkHPig9OGZq/edDd/Qoy3Tl5elRw
-         LDzJ6hhII1x4igqjROkmnwK2/qX5wJ67/s41iDYo=
+        b=d+pApIU63HPT1wdaomPt6vhPtUMq0WW89J6NaedsVfRCckBQvscmCJt89/Tt9v1VZ
+         qikqkEs75graT9CsjzlXMlpeefkIbJ5nSq5YapVt2LR8FqHkRYCFpxiAKO4EP0JQ/o
+         3fR9pOso+WDFR2pEkXeiXtRaHd6uu5KVlq/wP6RU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Eugen Hristev <eugen.hristev@microchip.com>,
-        Jacopo Mondi <jacopo@jmondi.org>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        stable@vger.kernel.org, Gilles Buloz <gilles.buloz@kontron.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0806/1017] media: atmel: atmel-isc-base: report frame sizes as full supported range
-Date:   Tue,  5 Apr 2022 09:28:39 +0200
-Message-Id: <20220405070418.173782477@linuxfoundation.org>
+Subject: [PATCH 5.16 0706/1017] serial: 8250: fix XOFF/XON sending when DMA is used
+Date:   Tue,  5 Apr 2022 09:26:59 +0200
+Message-Id: <20220405070415.227462552@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -53,71 +51,120 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eugen Hristev <eugen.hristev@microchip.com>
+From: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
 
-[ Upstream commit 72802a86e11c34e819fbfb38f58c5aef668f833d ]
+[ Upstream commit f58c252e30cf74f68b0054293adc03b5923b9f0e ]
 
-The ISC supports a full broad range of frame sizes.
-Until now, the subdevice was queried for possible frame sizes and these
-were reported to the user space.
-However, the ISC should not care about which frame sizes the subdev
-supports, as long as this frame size is supported.
-Thus, report a continuous range from smallest frame size up to the max
-resolution.
+When 8250 UART is using DMA, x_char (XON/XOFF) is never sent
+to the wire. After this change, x_char is injected correctly.
 
-Signed-off-by: Eugen Hristev <eugen.hristev@microchip.com>
-Reviewed-by: Jacopo Mondi <jacopo@jmondi.org>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+Create uart_xchar_out() helper for sending the x_char out and
+accounting related to it. It seems that almost every driver
+does these same steps with x_char. Except for 8250, however,
+almost all currently lack .serial_out so they cannot immediately
+take advantage of this new helper.
+
+The downside of this patch is that it might reintroduce
+the problems some devices faced with mixed DMA/non-DMA transfer
+which caused revert f967fc8f165f (Revert "serial: 8250_dma:
+don't bother DMA with small transfers"). However, the impact
+should be limited to cases with XON/XOFF (that didn't work
+with DMA capable devices to begin with so this problem is not
+very likely to cause a major issue, if any at all).
+
+Fixes: 9ee4b83e51f74 ("serial: 8250: Add support for dmaengine")
+Reported-by: Gilles Buloz <gilles.buloz@kontron.com>
+Tested-by: Gilles Buloz <gilles.buloz@kontron.com>
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+Link: https://lore.kernel.org/r/20220314091432.4288-2-ilpo.jarvinen@linux.intel.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/platform/atmel/atmel-isc-base.c | 22 +++++++++----------
- 1 file changed, 10 insertions(+), 12 deletions(-)
+ drivers/tty/serial/8250/8250_dma.c  | 11 ++++++++++-
+ drivers/tty/serial/8250/8250_port.c |  4 +---
+ drivers/tty/serial/serial_core.c    | 14 ++++++++++++++
+ include/linux/serial_core.h         |  2 ++
+ 4 files changed, 27 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/media/platform/atmel/atmel-isc-base.c b/drivers/media/platform/atmel/atmel-isc-base.c
-index 660cd0ab6749..24807782c9e5 100644
---- a/drivers/media/platform/atmel/atmel-isc-base.c
-+++ b/drivers/media/platform/atmel/atmel-isc-base.c
-@@ -1369,14 +1369,12 @@ static int isc_enum_framesizes(struct file *file, void *fh,
- 			       struct v4l2_frmsizeenum *fsize)
- {
- 	struct isc_device *isc = video_drvdata(file);
--	struct v4l2_subdev_frame_size_enum fse = {
--		.code = isc->config.sd_format->mbus_code,
--		.index = fsize->index,
--		.which = V4L2_SUBDEV_FORMAT_ACTIVE,
--	};
- 	int ret = -EINVAL;
- 	int i;
+diff --git a/drivers/tty/serial/8250/8250_dma.c b/drivers/tty/serial/8250/8250_dma.c
+index 890fa7ddaa7f..b3c3f7e5851a 100644
+--- a/drivers/tty/serial/8250/8250_dma.c
++++ b/drivers/tty/serial/8250/8250_dma.c
+@@ -64,10 +64,19 @@ int serial8250_tx_dma(struct uart_8250_port *p)
+ 	struct uart_8250_dma		*dma = p->dma;
+ 	struct circ_buf			*xmit = &p->port.state->xmit;
+ 	struct dma_async_tx_descriptor	*desc;
++	struct uart_port		*up = &p->port;
+ 	int ret;
  
-+	if (fsize->index)
-+		return -EINVAL;
-+
- 	for (i = 0; i < isc->num_user_formats; i++)
- 		if (isc->user_formats[i]->fourcc == fsize->pixel_format)
- 			ret = 0;
-@@ -1388,14 +1386,14 @@ static int isc_enum_framesizes(struct file *file, void *fh,
- 	if (ret)
- 		return ret;
+-	if (dma->tx_running)
++	if (dma->tx_running) {
++		if (up->x_char) {
++			dmaengine_pause(dma->txchan);
++			uart_xchar_out(up, UART_TX);
++			dmaengine_resume(dma->txchan);
++		}
+ 		return 0;
++	} else if (up->x_char) {
++		uart_xchar_out(up, UART_TX);
++	}
  
--	ret = v4l2_subdev_call(isc->current_subdev->sd, pad, enum_frame_size,
--			       NULL, &fse);
--	if (ret)
--		return ret;
-+	fsize->type = V4L2_FRMSIZE_TYPE_CONTINUOUS;
+ 	if (uart_tx_stopped(&p->port) || uart_circ_empty(xmit)) {
+ 		/* We have been called from __dma_tx_complete() */
+diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
+index 344fbe7426f6..1e1750a9614e 100644
+--- a/drivers/tty/serial/8250/8250_port.c
++++ b/drivers/tty/serial/8250/8250_port.c
+@@ -1819,9 +1819,7 @@ void serial8250_tx_chars(struct uart_8250_port *up)
+ 	int count;
  
--	fsize->type = V4L2_FRMSIZE_TYPE_DISCRETE;
--	fsize->discrete.width = fse.max_width;
--	fsize->discrete.height = fse.max_height;
-+	fsize->stepwise.min_width = 16;
-+	fsize->stepwise.max_width = isc->max_width;
-+	fsize->stepwise.min_height = 16;
-+	fsize->stepwise.max_height = isc->max_height;
-+	fsize->stepwise.step_width = 1;
-+	fsize->stepwise.step_height = 1;
- 
- 	return 0;
+ 	if (port->x_char) {
+-		serial_out(up, UART_TX, port->x_char);
+-		port->icount.tx++;
+-		port->x_char = 0;
++		uart_xchar_out(port, UART_TX);
+ 		return;
+ 	}
+ 	if (uart_tx_stopped(port)) {
+diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+index dc6129ddef85..eb15423f935a 100644
+--- a/drivers/tty/serial/serial_core.c
++++ b/drivers/tty/serial/serial_core.c
+@@ -652,6 +652,20 @@ static void uart_flush_buffer(struct tty_struct *tty)
+ 	tty_port_tty_wakeup(&state->port);
  }
+ 
++/*
++ * This function performs low-level write of high-priority XON/XOFF
++ * character and accounting for it.
++ *
++ * Requires uart_port to implement .serial_out().
++ */
++void uart_xchar_out(struct uart_port *uport, int offset)
++{
++	serial_port_out(uport, offset, uport->x_char);
++	uport->icount.tx++;
++	uport->x_char = 0;
++}
++EXPORT_SYMBOL_GPL(uart_xchar_out);
++
+ /*
+  * This function is used to send a high-priority XON/XOFF character to
+  * the device
+diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
+index c58cc142d23f..8c32935e1059 100644
+--- a/include/linux/serial_core.h
++++ b/include/linux/serial_core.h
+@@ -458,6 +458,8 @@ extern void uart_handle_cts_change(struct uart_port *uport,
+ extern void uart_insert_char(struct uart_port *port, unsigned int status,
+ 		 unsigned int overrun, unsigned int ch, unsigned int flag);
+ 
++void uart_xchar_out(struct uart_port *uport, int offset);
++
+ #ifdef CONFIG_MAGIC_SYSRQ_SERIAL
+ #define SYSRQ_TIMEOUT	(HZ * 5)
+ 
 -- 
 2.34.1
 
