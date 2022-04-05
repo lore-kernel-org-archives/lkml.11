@@ -2,81 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 11F1EC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 11:42:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C355C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 11:42:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377982AbiDELbJ (ORCPT
+        id S1378007AbiDELbR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 07:31:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41420 "EHLO
+        Tue, 5 Apr 2022 07:31:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47636 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244017AbiDEIvZ (ORCPT
+        with ESMTP id S244164AbiDEIvr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:51:25 -0400
+        Tue, 5 Apr 2022 04:51:47 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 726ABD1CDF;
-        Tue,  5 Apr 2022 01:40:14 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA7BBD3AC4;
+        Tue,  5 Apr 2022 01:40:26 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 108D5B81C6F;
-        Tue,  5 Apr 2022 08:40:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 9FF91C385A1;
-        Tue,  5 Apr 2022 08:40:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649148012;
-        bh=Zc1lPH1m7basa7ZzhirPvPyfn9KWw84TMvg3+N1Z3Iw=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=FUBoPWaBBUeCm7ZIaQtsGiOm3qmKp+ZwPu10zFqFnHisNR+OYrz2B+817AwmUTTQz
-         Zwn7z1nDRS7lTzduKDR6Hb6mI4CxXmlBkEeir+RNjrzvtZUsTRg4c2qClAZ4Harj9x
-         G+9hrX6/rxo7o7kXVDtEWSSQb9Wyn1kfihWlFJsayS+OPAhudymvoCBZBxkTv5HJrW
-         yTIxe9fgcElmIW9hNkcLi048dH9GiRQ2ryIWs66h1FFP5AN3oYAZKSWCTgz/Xs6p2w
-         uepNGF+ajKgSiM5zhxwKWAdg5/TdZibiUuDZGBtpQrEajpzd7e+9Kr8yi932mYZx8N
-         tmGYwk0WOfdqg==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 7B208E85D15;
-        Tue,  5 Apr 2022 08:40:12 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        by ams.source.kernel.org (Postfix) with ESMTPS id 465D9B81BBF;
+        Tue,  5 Apr 2022 08:40:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 98C9EC385A1;
+        Tue,  5 Apr 2022 08:40:24 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649148025;
+        bh=EIqZGIC3MEY6zK++/3lavNvUv7djR+iZn/Z4aFTomR0=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=r/vHtTnmCOWrGPF/ynyA0PZfOtZCMTuVm4vCfKV/hJJy04q8f687FPSrn+OZPwu+l
+         5mpAYyZWUWVQH05kxmIN6AeXy0GWNbGNEBW9Jyh3viexeOGaHNWcaEK2q1AQlZw2O9
+         Ph4j8ny6q7gxBQkJUtniVRSTf+f8YHkel8SQWXEw=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Corentin Labbe <clabbe.montjoie@gmail.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 0207/1017] crypto: authenc - Fix sleep in atomic context in decrypt_tail
+Date:   Tue,  5 Apr 2022 09:18:40 +0200
+Message-Id: <20220405070400.395510344@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
+References: <20220405070354.155796697@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v4 net] sctp: count singleton chunks in assoc user stats
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164914801250.9044.11217465324374083651.git-patchwork-notify@kernel.org>
-Date:   Tue, 05 Apr 2022 08:40:12 +0000
-References: <c9ba8785789880cf07923b8a5051e174442ea9ee.1649029663.git.jamie.bainbridge@gmail.com>
-In-Reply-To: <c9ba8785789880cf07923b8a5051e174442ea9ee.1649029663.git.jamie.bainbridge@gmail.com>
-To:     Jamie Bainbridge <jamie.bainbridge@gmail.com>
-Cc:     vyasevich@gmail.com, nhorman@tuxdriver.com,
-        marcelo.leitner@gmail.com, davem@davemloft.net, kuba@kernel.org,
-        pabeni@redhat.com, linux-sctp@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello:
+From: Herbert Xu <herbert@gondor.apana.org.au>
 
-This patch was applied to netdev/net.git (master)
-by Paolo Abeni <pabeni@redhat.com>:
+[ Upstream commit 66eae850333d639fc278d6f915c6fc01499ea893 ]
 
-On Mon,  4 Apr 2022 09:47:48 +1000 you wrote:
-> Singleton chunks (INIT, HEARTBEAT PMTU probes, and SHUTDOWN-
-> COMPLETE) are not counted in SCTP_GET_ASOC_STATS "sas_octrlchunks"
-> counter available to the assoc owner.
-> 
-> These are all control chunks so they should be counted as such.
-> 
-> Add counting of singleton chunks so they are properly accounted for.
-> 
-> [...]
+The function crypto_authenc_decrypt_tail discards its flags
+argument and always relies on the flags from the original request
+when starting its sub-request.
 
-Here is the summary with links:
-  - [v4,net] sctp: count singleton chunks in assoc user stats
-    https://git.kernel.org/netdev/net/c/e3d37210df5c
+This is clearly wrong as it may cause the SLEEPABLE flag to be
+set when it shouldn't.
 
-You are awesome, thank you!
+Fixes: 92d95ba91772 ("crypto: authenc - Convert to new AEAD interface")
+Reported-by: Corentin Labbe <clabbe.montjoie@gmail.com>
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+Tested-by: Corentin Labbe <clabbe.montjoie@gmail.com>
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ crypto/authenc.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/crypto/authenc.c b/crypto/authenc.c
+index 670bf1a01d00..17f674a7cdff 100644
+--- a/crypto/authenc.c
++++ b/crypto/authenc.c
+@@ -253,7 +253,7 @@ static int crypto_authenc_decrypt_tail(struct aead_request *req,
+ 		dst = scatterwalk_ffwd(areq_ctx->dst, req->dst, req->assoclen);
+ 
+ 	skcipher_request_set_tfm(skreq, ctx->enc);
+-	skcipher_request_set_callback(skreq, aead_request_flags(req),
++	skcipher_request_set_callback(skreq, flags,
+ 				      req->base.complete, req->base.data);
+ 	skcipher_request_set_crypt(skreq, src, dst,
+ 				   req->cryptlen - authsize, req->iv);
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+2.34.1
+
 
 
