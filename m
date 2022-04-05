@@ -2,124 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 61B37C4321E
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 21:24:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B07FAC35276
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 21:24:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346887AbiDEVWm (ORCPT
+        id S1347757AbiDEVXC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 17:22:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53862 "EHLO
+        Tue, 5 Apr 2022 17:23:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35302 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1457547AbiDEQKH (ORCPT
+        with ESMTP id S1384122AbiDEM1L (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 12:10:07 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9F6025CD;
-        Tue,  5 Apr 2022 09:08:04 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4A1B0B81B13;
-        Tue,  5 Apr 2022 16:08:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9524EC385A0;
-        Tue,  5 Apr 2022 16:08:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649174881;
-        bh=AoQfSTw72a5g3VVtNzddJxgTV8CHG8MijsAxNddLzcM=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:From;
-        b=Rvy2MyaS/ZPWOuRNjBC+N85V1Wd9YOS+7DkIESmc76SW7ds7bScLypq4XmbROFeFV
-         Vt0Kf7sBAH7ncizQ+q+wMrJEE4IGtZpMl7cDoStPiigR+qwKiRs9D9wJ0u9tAF0zRd
-         S755OJbnfXqP2UCubJlvAGKCKmCCiJ+DVrhFHejYnVl0Ej+uaVfUwZ/L8XhgycgKyO
-         EpRB5HzyFqO6SDVDvDleSt6EOGt24w908Wkh2kBH6OfgZyCIhRvd04A/iwEH4LxVNn
-         8Nkbz4cLxpKqOdQKnCN0tiRQHnwBgmsByBnIolMol/U5hXodx06K2wGpP8CiZ2fQbd
-         rzXojXTMhQ/Tw==
-Date:   Tue, 5 Apr 2022 11:08:00 -0500
-From:   Bjorn Helgaas <helgaas@kernel.org>
-To:     Prasad Malisetty <quic_pmaliset@quicinc.com>
-Cc:     agross@kernel.org, bjorn.andersson@linaro.org,
-        lorenzo.pieralisi@arm.com, robh@kernel.org, kw@linux.com,
-        bhelgaas@google.com, linux-pci@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        rajatja@google.com, refactormyself@gmail.com,
-        quic_vbadigan@quicinc.com, quic_ramkri@quicinc.com,
-        manivannan.sadhasivam@linaro.org, swboyd@chromium.org
-Subject: Re: [PATCH v2] [RFC PATCH] PCI: Update LTR threshold based on LTRME
- bit
-Message-ID: <20220405160800.GA69953@bhelgaas>
+        Tue, 5 Apr 2022 08:27:11 -0400
+Received: from conuserg-12.nifty.com (conuserg-12.nifty.com [210.131.2.79])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4D39574BC;
+        Tue,  5 Apr 2022 04:35:18 -0700 (PDT)
+Received: from grover.. (133-32-177-133.west.xps.vectant.ne.jp [133.32.177.133]) (authenticated)
+        by conuserg-12.nifty.com with ESMTP id 235BYCGt000464;
+        Tue, 5 Apr 2022 20:34:17 +0900
+DKIM-Filter: OpenDKIM Filter v2.10.3 conuserg-12.nifty.com 235BYCGt000464
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
+        s=dec2015msa; t=1649158457;
+        bh=g76dlQF6mmZzr43YQ6WiTAVzfZji/JTWeTt9/x6nhy8=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=fhkX7GfZ1icPtiA7cEpfvegqzI8mfJATIDbetdt2odNtdCLvwcVJbCeOwONU77Vz4
+         nSePOhux0lQk44IYWxfyYxJwmKw8ZT5qQwaQuMa5RRkjeByWbGxewF0m8GzKNhEjpw
+         3mU7LXD1uWZhPhC1MGCcPsytnpd6qEDZCSRBIG9xJU5clVEv4nv0OImbzNqdgNIc+w
+         qo+J86PA3PYHQr/pkfo5OdrBlC7XpaF3HaBw8740gCbiiKgtIXY7z0/ZilnObun8OT
+         /qBp6C97UmE0EJKvHrXoC8t1Wuct2SKs4qOzErdjGLh5jpcHfrUWWjudhk5MWbXJya
+         dvzaDo8oWbJeg==
+X-Nifty-SrcIP: [133.32.177.133]
+From:   Masahiro Yamada <masahiroy@kernel.org>
+To:     linux-kbuild@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Michal Marek <michal.lkml@markovi.net>,
+        Nick Desaulniers <ndesaulniers@google.com>
+Subject: [PATCH v2 07/10] kbuild: get rid of duplication in the first line of *.mod files
+Date:   Tue,  5 Apr 2022 20:33:55 +0900
+Message-Id: <20220405113359.2880241-8-masahiroy@kernel.org>
+X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20220405113359.2880241-1-masahiroy@kernel.org>
+References: <20220405113359.2880241-1-masahiroy@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1646679549-12494-1-git-send-email-quic_pmaliset@quicinc.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Mar 08, 2022 at 12:29:09AM +0530, Prasad Malisetty wrote:
-> Update LTR threshold scale and value based on LTRME (Latency
-> Tolenrance Reporting Mechanism) from device capabilities.
+The first line of *.mod lists the member objects of the module.
+This list may contain duplication if the same object is added multiple
+times, like this:
 
-s/Tolenrance/Tolerance/
+  obj-m := foo.o
+  foo-$(CONFIG_FOO1_X) += foo1.o
+  foo-$(CONFIG_FOO1_Y) += foo1.o
+  foo-$(CONFIG_FOO2_X) += foo2.o
+  foo-$(CONFIG_FOO2_Y) += foo2.o
 
-I'm not familiar with "LTRME" and it doesn't appear in the PCI spec.
-Please use the PCIe terminology whenever possible.
+This is probably not a big deal. As far as I know, the only small
+problem is scripts/mod/sumversion.c parses the same file over again.
+This can be avoided by adding $(sort ...). It has a side-effect that
+sorts the objects alphabetically, but it is not a big deal, either.
 
-> In ASPM driver, LTR threshold scale and value is updating
-> based on tcommon_mode and t_poweron values. In kioxia NVMe,
-> L1.2 is failing due to LTR threshold scale and value is
-> greater values than max snoop/non snoop value.
-> 
-> In general, updated LTR threshold scale and value should be
-> less than max snoop/non snoop value to enter the device
-> into L1.2 state.
+Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+---
 
-This affects all PCIe devices, so please include the PCIe spec
-citation that leads to this change.
+Changes in v2:
+  - new
 
-Please wrap the commit log to fill 75 columns.
+ scripts/Makefile.build | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-Thanks a lot for looking at this!  L1.2 and LTR is real problem area,
-and it would be great if we could get it all sorted out.
+diff --git a/scripts/Makefile.build b/scripts/Makefile.build
+index 3ef2373f0a57..63625877aeae 100644
+--- a/scripts/Makefile.build
++++ b/scripts/Makefile.build
+@@ -307,8 +307,10 @@ $(obj)/%.prelink.o: $(obj)/%.o FORCE
+ 	$(call if_changed,cc_prelink_modules)
+ endif
+ 
++multi-m-prereqs = $(sort $(addprefix $(obj)/, $($*-objs) $($*-y) $($*-m)))
++
+ cmd_mod = { \
+-	echo $(if $($*-objs)$($*-y)$($*-m), $(addprefix $(obj)/, $($*-objs) $($*-y) $($*-m)), $(@:.mod=.o)); \
++	echo $(if $(multi-m-prereqs), $(multi-m-prereqs), $(@:.mod=.o)); \
+ 	$(undefined_syms) echo; \
+ 	} > $@
+ 
+-- 
+2.32.0
 
-> Signed-off-by: Prasad Malisetty <quic_pmaliset@quicinc.com>
-> 
-> ---
-> Changes since v1:
-> 	- Added missing variable declaration in v1 patch.
-> ---
->  drivers/pci/pcie/aspm.c | 12 +++++++++---
->  1 file changed, 9 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/pci/pcie/aspm.c b/drivers/pci/pcie/aspm.c
-> index a96b742..a67746c 100644
-> --- a/drivers/pci/pcie/aspm.c
-> +++ b/drivers/pci/pcie/aspm.c
-> @@ -463,6 +463,7 @@ static void aspm_calc_l1ss_info(struct pcie_link_state *link,
->  	u32 val1, val2, scale1, scale2;
->  	u32 t_common_mode, t_power_on, l1_2_threshold, scale, value;
->  	u32 ctl1 = 0, ctl2 = 0;
-> +	u32 cap;
->  	u32 pctl1, pctl2, cctl1, cctl2;
->  	u32 pl1_2_enables, cl1_2_enables;
->  
-> @@ -499,9 +500,14 @@ static void aspm_calc_l1ss_info(struct pcie_link_state *link,
->  	 * Table 5-11.  T(POWER_OFF) is at most 2us and T(L1.2) is at
->  	 * least 4us.
->  	 */
-> -	l1_2_threshold = 2 + 4 + t_common_mode + t_power_on;
-> -	encode_l12_threshold(l1_2_threshold, &scale, &value);
-> -	ctl1 |= t_common_mode << 8 | scale << 29 | value << 16;
-> +	pcie_capability_read_dword(child, PCI_EXP_DEVCAP2, &cap);
-> +	if (!(cap & PCI_EXP_DEVCAP2_LTR)) {
-> +		l1_2_threshold = 2 + 4 + t_common_mode + t_power_on;
-> +		encode_l12_threshold(l1_2_threshold, &scale, &value);
-> +		ctl1 |= scale << 29 | value << 16;
-> +	}
-> +
-> +	ctl1 |= t_common_mode;
->  
->  	/* Some broken devices only support dword access to L1 SS */
->  	pci_read_config_dword(parent, parent->l1ss + PCI_L1SS_CTL1, &pctl1);
-> -- 
-> QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member 
-> of Code Aurora Forum, hosted by The Linux Foundation
-> 
