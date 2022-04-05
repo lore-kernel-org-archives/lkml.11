@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 07B14C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:20:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 815C0C4332F
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:20:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235169AbiDEIPO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 04:15:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44084 "EHLO
+        id S235220AbiDEIPa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 04:15:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43928 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235426AbiDEH7n (ORCPT
+        with ESMTP id S235480AbiDEH7q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 03:59:43 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7EEAF58E4C;
-        Tue,  5 Apr 2022 00:54:25 -0700 (PDT)
+        Tue, 5 Apr 2022 03:59:46 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C6245E775;
+        Tue,  5 Apr 2022 00:54:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B3765B81B90;
-        Tue,  5 Apr 2022 07:54:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1ECA7C340EE;
-        Tue,  5 Apr 2022 07:54:21 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C6977615CD;
+        Tue,  5 Apr 2022 07:54:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D161EC340EE;
+        Tue,  5 Apr 2022 07:54:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649145262;
-        bh=+K8QVbvjVCkB+pHCfAmdtlCO8MMFBvdObYLBU5VrA+I=;
+        s=korg; t=1649145276;
+        bh=HWxjACHl9Ir8KVcVfW8mCP3H8HhaV08T+cFUkUDcZTQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Kj9uWOxB00ra0HfMjOxg4QqmCZVM9lYB8Hk1jWa48QeFR+71hOuZfKsMkjsMxxS/v
-         MZPo+iujnBblU08GWdstwrtsQPkEIgeV6LR3x9ZY+p5QX2wr1PFboSgjpxT7Dldnew
-         e6Z/0UugxmtswpYAYiDVM3CLZieSYYIZ+UysoL5w=
+        b=KdlQDIRSdwqWOOS1PLODbnQcX2d8UanFWZuVvcHYbzhYjCSgkJ13p15o17s3GriB0
+         vAAPN/0a2KJQ21K6l9yIAADrPzDhmKfAKCCUvf5eoz2tdAUuVnJSxSTiTEurcjHM54
+         M9teIK2JN42Xk8cnfjgBS+mW6uL0kD1kyWvxN9Vk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Pavel Machek <pavel@denx.de>,
-        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        Biju Das <biju.das.jz@bp.renesas.com>,
-        Mark Brown <broonie@kernel.org>,
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Nishanth Menon <nm@ti.com>, Dave Gerlach <d-gerlach@ti.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0304/1126] ASoC: sh: rz-ssi: Drop calling rz_ssi_pio_recv() recursively
-Date:   Tue,  5 Apr 2022 09:17:31 +0200
-Message-Id: <20220405070416.537912192@linuxfoundation.org>
+Subject: [PATCH 5.17 0341/1126] soc: ti: wkup_m3_ipc: Fix IRQ check in wkup_m3_ipc_probe
+Date:   Tue,  5 Apr 2022 09:18:08 +0200
+Message-Id: <20220405070417.625297451@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -51,121 +49,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit 6570f991582e32b7992601d0497c61962a2c5dcc ]
+[ Upstream commit c3d66a164c726cc3b072232d3b6d87575d194084 ]
 
-Instead of recursively calling rz_ssi_pio_recv() use a while loop
-to read the samples from RX fifo.
+platform_get_irq() returns negative error number instead 0 on failure.
+And the doc of platform_get_irq() provides a usage example:
 
-This also fixes an issue where the return value of rz_ssi_pio_recv()
-was ignored when called recursively.
+    int irq = platform_get_irq(pdev, 0);
+    if (irq < 0)
+        return irq;
 
-Fixes: 03e786bd4341 ("ASoC: sh: Add RZ/G2L SSIF-2 driver")
-Reported-by: Pavel Machek <pavel@denx.de>
-Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-Reviewed-by: Biju Das <biju.das.jz@bp.renesas.com>
-Link: https://lore.kernel.org/r/20220110094711.8574-2-prabhakar.mahadev-lad.rj@bp.renesas.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Fix the check of return value to catch errors correctly.
+
+Fixes: cdd5de500b2c ("soc: ti: Add wkup_m3_ipc driver")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Signed-off-by: Nishanth Menon <nm@ti.com>
+Acked-by: Dave Gerlach <d-gerlach@ti.com>
+Link: https://lore.kernel.org/r/20220114062840.16620-1-linmq006@gmail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/sh/rz-ssi.c | 68 ++++++++++++++++++++++---------------------
- 1 file changed, 35 insertions(+), 33 deletions(-)
+ drivers/soc/ti/wkup_m3_ipc.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/sound/soc/sh/rz-ssi.c b/sound/soc/sh/rz-ssi.c
-index e8d98b362f9d..2ac2c9722b3b 100644
---- a/sound/soc/sh/rz-ssi.c
-+++ b/sound/soc/sh/rz-ssi.c
-@@ -411,54 +411,56 @@ static int rz_ssi_pio_recv(struct rz_ssi_priv *ssi, struct rz_ssi_stream *strm)
- {
- 	struct snd_pcm_substream *substream = strm->substream;
- 	struct snd_pcm_runtime *runtime;
-+	bool done = false;
- 	u16 *buf;
- 	int fifo_samples;
- 	int frames_left;
--	int samples = 0;
-+	int samples;
- 	int i;
+diff --git a/drivers/soc/ti/wkup_m3_ipc.c b/drivers/soc/ti/wkup_m3_ipc.c
+index 72386bd393fe..2f03ced0f411 100644
+--- a/drivers/soc/ti/wkup_m3_ipc.c
++++ b/drivers/soc/ti/wkup_m3_ipc.c
+@@ -450,9 +450,9 @@ static int wkup_m3_ipc_probe(struct platform_device *pdev)
+ 		return PTR_ERR(m3_ipc->ipc_mem_base);
  
- 	if (!rz_ssi_stream_is_valid(ssi, strm))
- 		return -EINVAL;
+ 	irq = platform_get_irq(pdev, 0);
+-	if (!irq) {
++	if (irq < 0) {
+ 		dev_err(&pdev->dev, "no irq resource\n");
+-		return -ENXIO;
++		return irq;
+ 	}
  
- 	runtime = substream->runtime;
--	/* frames left in this period */
--	frames_left = runtime->period_size - (strm->buffer_pos %
--					      runtime->period_size);
--	if (frames_left == 0)
--		frames_left = runtime->period_size;
- 
--	/* Samples in RX FIFO */
--	fifo_samples = (rz_ssi_reg_readl(ssi, SSIFSR) >>
--			SSIFSR_RDC_SHIFT) & SSIFSR_RDC_MASK;
--
--	/* Only read full frames at a time */
--	while (frames_left && (fifo_samples >= runtime->channels)) {
--		samples += runtime->channels;
--		fifo_samples -= runtime->channels;
--		frames_left--;
--	}
-+	while (!done) {
-+		/* frames left in this period */
-+		frames_left = runtime->period_size -
-+			      (strm->buffer_pos % runtime->period_size);
-+		if (!frames_left)
-+			frames_left = runtime->period_size;
-+
-+		/* Samples in RX FIFO */
-+		fifo_samples = (rz_ssi_reg_readl(ssi, SSIFSR) >>
-+				SSIFSR_RDC_SHIFT) & SSIFSR_RDC_MASK;
-+
-+		/* Only read full frames at a time */
-+		samples = 0;
-+		while (frames_left && (fifo_samples >= runtime->channels)) {
-+			samples += runtime->channels;
-+			fifo_samples -= runtime->channels;
-+			frames_left--;
-+		}
- 
--	/* not enough samples yet */
--	if (samples == 0)
--		return 0;
-+		/* not enough samples yet */
-+		if (!samples)
-+			break;
- 
--	/* calculate new buffer index */
--	buf = (u16 *)(runtime->dma_area);
--	buf += strm->buffer_pos * runtime->channels;
-+		/* calculate new buffer index */
-+		buf = (u16 *)(runtime->dma_area);
-+		buf += strm->buffer_pos * runtime->channels;
- 
--	/* Note, only supports 16-bit samples */
--	for (i = 0; i < samples; i++)
--		*buf++ = (u16)(rz_ssi_reg_readl(ssi, SSIFRDR) >> 16);
-+		/* Note, only supports 16-bit samples */
-+		for (i = 0; i < samples; i++)
-+			*buf++ = (u16)(rz_ssi_reg_readl(ssi, SSIFRDR) >> 16);
- 
--	rz_ssi_reg_mask_setl(ssi, SSIFSR, SSIFSR_RDF, 0);
--	rz_ssi_pointer_update(strm, samples / runtime->channels);
-+		rz_ssi_reg_mask_setl(ssi, SSIFSR, SSIFSR_RDF, 0);
-+		rz_ssi_pointer_update(strm, samples / runtime->channels);
- 
--	/*
--	 * If we finished this period, but there are more samples in
--	 * the RX FIFO, call this function again
--	 */
--	if (frames_left == 0 && fifo_samples >= runtime->channels)
--		rz_ssi_pio_recv(ssi, strm);
-+		/* check if there are no more samples in the RX FIFO */
-+		if (!(!frames_left && fifo_samples >= runtime->channels))
-+			done = true;
-+	}
- 
- 	return 0;
- }
+ 	ret = devm_request_irq(dev, irq, wkup_m3_txev_handler,
 -- 
 2.34.1
 
