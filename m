@@ -2,43 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2801CC433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 380CBC433FE
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:44:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240759AbiDFAlS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 20:41:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46876 "EHLO
+        id S239487AbiDFAlZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 20:41:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34414 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354833AbiDEKQJ (ORCPT
+        with ESMTP id S1354894AbiDEKQa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:16:09 -0400
+        Tue, 5 Apr 2022 06:16:30 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2AEB96C967;
-        Tue,  5 Apr 2022 03:03:12 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE5F01EC70;
+        Tue,  5 Apr 2022 03:03:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9964D616E7;
-        Tue,  5 Apr 2022 10:03:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A3746C385A1;
-        Tue,  5 Apr 2022 10:03:10 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4BC2961673;
+        Tue,  5 Apr 2022 10:03:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5E194C385A3;
+        Tue,  5 Apr 2022 10:03:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649152991;
-        bh=oEwV9TdDwQb2akMVnS/or1jUizn35IGFlLvBM0ImMXQ=;
+        s=korg; t=1649153015;
+        bh=VyPMBV7TTks1pk5+FCIN8TMQLHba/6ctFX8uhteFhYs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kxABCOXy4zmFJ13/vkJsRQQEVVcG+j7aMTUy5QQFOSt+vyZHE5P1qXNTNB68Q2EGY
-         T4B1WVhxFMHEQRCTAHslq8SxHDzl1z/AcgkAWRdnY9f147jKnTelsVAusrL3oo9xi6
-         829OG80HTl93+vhPmtn7rQSnUOobJRq/NIh82bmQ=
+        b=LskSVzGlRmjzi4YGfA0SUg3U9G6ZcjRYvz/RZBwaaqJL+Bqrdtq/hAQrHWSZ/XciP
+         fteWlj1DWBNgIUrVltra7ris/xaMVEAgg0TynX3uTrRyFIEVaMg4R2t3uerF/uxX1C
+         tA87DZB7/RSIWhbIKKQkasWXKSKM6uAitFzAyQ3Q=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, John Garry <john.garry@huawei.com>,
-        Jack Wang <jinpu.wang@ionos.com>,
-        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>
-Subject: [PATCH 5.10 062/599] scsi: libsas: Fix sas_ata_qc_issue() handling of NCQ NON DATA commands
-Date:   Tue,  5 Apr 2022 09:25:56 +0200
-Message-Id: <20220405070300.674194206@linuxfoundation.org>
+        stable@vger.kernel.org, Xiaomeng Tong <xiam0nd.tong@gmail.com>,
+        Takashi Iwai <tiwai@suse.de>
+Subject: [PATCH 5.10 070/599] ALSA: cs4236: fix an incorrect NULL check on list iterator
+Date:   Tue,  5 Apr 2022 09:26:04 +0200
+Message-Id: <20220405070300.909450661@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
 References: <20220405070258.802373272@linuxfoundation.org>
@@ -50,41 +48,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Damien Le Moal <damien.lemoal@opensource.wdc.com>
+From: Xiaomeng Tong <xiam0nd.tong@gmail.com>
 
-commit 8454563e4c2aafbfb81a383ab423ea8b9b430a25 upstream.
+commit 0112f822f8a6d8039c94e0bc9b264d7ffc5d4704 upstream.
 
-To detect for the DMA_NONE (no data transfer) DMA direction,
-sas_ata_qc_issue() tests if the command protocol is ATA_PROT_NODATA.  This
-test does not include the ATA_CMD_NCQ_NON_DATA command as this command
-protocol is defined as ATA_PROT_NCQ_NODATA (equal to ATA_PROT_FLAG_NCQ) and
-not as ATA_PROT_NODATA.
+The bug is here:
+	err = snd_card_cs423x_pnp(dev, card->private_data, pdev, cdev);
 
-To include both NCQ and non-NCQ commands when testing for the DMA_NONE DMA
-direction, use "!ata_is_data()".
+The list iterator value 'cdev' will *always* be set and non-NULL
+by list_for_each_entry(), so it is incorrect to assume that the
+iterator value will be NULL if the list is empty or no element
+is found.
 
-Link: https://lore.kernel.org/r/20220220031810.738362-2-damien.lemoal@opensource.wdc.com
-Fixes: 176ddd89171d ("scsi: libsas: Reset num_scatter if libata marks qc as NODATA")
+To fix the bug, use a new variable 'iter' as the list iterator,
+while use the original variable 'cdev' as a dedicated pointer
+to point to the found element. And snd_card_cs423x_pnp() itself
+has NULL check for cdev.
+
 Cc: stable@vger.kernel.org
-Reviewed-by: John Garry <john.garry@huawei.com>
-Reviewed-by: Jack Wang <jinpu.wang@ionos.com>
-Signed-off-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Fixes: c2b73d1458014 ("ALSA: cs4236: cs4232 and cs4236 driver merge to solve PnP BIOS detection")
+Signed-off-by: Xiaomeng Tong <xiam0nd.tong@gmail.com>
+Link: https://lore.kernel.org/r/20220327060822.4735-1-xiam0nd.tong@gmail.com
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/scsi/libsas/sas_ata.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ sound/isa/cs423x/cs4236.c |    8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
 
---- a/drivers/scsi/libsas/sas_ata.c
-+++ b/drivers/scsi/libsas/sas_ata.c
-@@ -202,7 +202,7 @@ static unsigned int sas_ata_qc_issue(str
- 		task->total_xfer_len = qc->nbytes;
- 		task->num_scatter = qc->n_elem;
- 		task->data_dir = qc->dma_dir;
--	} else if (qc->tf.protocol == ATA_PROT_NODATA) {
-+	} else if (!ata_is_data(qc->tf.protocol)) {
- 		task->data_dir = DMA_NONE;
- 	} else {
- 		for_each_sg(qc->sg, sg, qc->n_elem, si)
+--- a/sound/isa/cs423x/cs4236.c
++++ b/sound/isa/cs423x/cs4236.c
+@@ -544,7 +544,7 @@ static int snd_cs423x_pnpbios_detect(str
+ 	static int dev;
+ 	int err;
+ 	struct snd_card *card;
+-	struct pnp_dev *cdev;
++	struct pnp_dev *cdev, *iter;
+ 	char cid[PNP_ID_LEN];
+ 
+ 	if (pnp_device_is_isapnp(pdev))
+@@ -560,9 +560,11 @@ static int snd_cs423x_pnpbios_detect(str
+ 	strcpy(cid, pdev->id[0].id);
+ 	cid[5] = '1';
+ 	cdev = NULL;
+-	list_for_each_entry(cdev, &(pdev->protocol->devices), protocol_list) {
+-		if (!strcmp(cdev->id[0].id, cid))
++	list_for_each_entry(iter, &(pdev->protocol->devices), protocol_list) {
++		if (!strcmp(iter->id[0].id, cid)) {
++			cdev = iter;
+ 			break;
++		}
+ 	}
+ 	err = snd_cs423x_card_new(&pdev->dev, dev, &card);
+ 	if (err < 0)
 
 
