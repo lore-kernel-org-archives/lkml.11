@@ -2,159 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 88B3FC43217
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:34:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 18214C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:34:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350987AbiDEUex (ORCPT
+        id S1348876AbiDEUei (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 16:34:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36798 "EHLO
+        Tue, 5 Apr 2022 16:34:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37184 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1384781AbiDEOSY (ORCPT
+        with ESMTP id S1457006AbiDEQCi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 10:18:24 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7EB0F11DD34;
-        Tue,  5 Apr 2022 06:04:52 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 41AECD6E;
-        Tue,  5 Apr 2022 06:04:52 -0700 (PDT)
-Received: from FVFF77S0Q05N (unknown [10.57.8.234])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 9B8213F5A1;
-        Tue,  5 Apr 2022 06:04:49 -0700 (PDT)
-Date:   Tue, 5 Apr 2022 14:04:45 +0100
-From:   Mark Rutland <mark.rutland@arm.com>
-To:     linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Cc:     linux-arch@vger.kernel.org, gcc@gcc.gnu.org,
-        catalin.marinas@arm.com, will@kernel.org, marcan@marcan.st,
-        maz@kernel.org, szabolcs.nagy@arm.com, f.fainelli@gmail.com,
-        opendmb@gmail.com, Andrew Pinski <pinskia@gmail.com>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>, x86@kernel.org,
-        andrew.cooper3@citrix.com, Jeremy Linton <jeremy.linton@arm.com>
-Subject: Re: GCC 12 miscompilation of volatile asm (was: Re: [PATCH]
- arm64/io: Remind compiler that there is a memory side effect)
-Message-ID: <Ykw+bVS9WY/JfoYO@FVFF77S0Q05N>
-References: <20220401164406.61583-1-jeremy.linton@arm.com>
- <Ykc0xrLv391/jdJj@FVFF77S0Q05N>
- <Ykw7UnlTnx63z/Ca@FVFF77S0Q05N>
+        Tue, 5 Apr 2022 12:02:38 -0400
+Received: from mail-pf1-x432.google.com (mail-pf1-x432.google.com [IPv6:2607:f8b0:4864:20::432])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C133AE8853
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 08:26:00 -0700 (PDT)
+Received: by mail-pf1-x432.google.com with SMTP id w7so12366058pfu.11
+        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 08:26:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=nlcDYyeczHYZLKKspnEu5slcPvr1pfijlItskO0pzK4=;
+        b=WSNHXs0W5TvbEOpBlw4zJj47ZPJYMlXRx38aBCLgqNH7+XypYFRt5yKXe0RB33UwAd
+         9GXSl3H2QZdgdjjw1DVmkeiCWy7OFsGJxQ9AIJDl9xWsI3LdmBemt/xfgkP0ylPygVwm
+         6dp/v+CS1pNAxhx9s0/pxXqeNriszfYAbVUQ5CwEq3s+78WvdQuOKuIeQZuQwSj5Y39c
+         apKLZoESUXrIz+8bjtHnRzregsiWaIWvOv2Pfh4CT1FccGCCM7kG/UwKr+4UY1KooFuR
+         Uweewlazq2UY4f4rRh3J8byLQIKBjp3zMT9N77YtIfQnlBye/0nKv4vcd73+az/yI7+X
+         xY7w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=nlcDYyeczHYZLKKspnEu5slcPvr1pfijlItskO0pzK4=;
+        b=Q3zsbFFxe+ytYWMDGl6uuKw7huqhCpqA3Aon7FBcwtrKR8E2fXLgEDg1WMIrdMQxQ0
+         K2DKBEm6qckAkvqaw6n21GaPmgkyTkNdULP3RNEHiOT5PnWZqy47plp8y8WlM55h0JFs
+         Tsq1MDdOnY6G7k6lVLKM7ts3D+PSlBe9U3nbYU25ZZ8goZIsSDDi9nGGMVhUj5nGORrT
+         a8BfBQDhQZGzUcXhgHX+L46Vn8o/Lm5vqIzhh2CTe16pS8nAW2d5lH9GyOyjGygqmhOL
+         1KFXg/RCyRNJ134zXc/cfzB4Tn0meucUmQBpTAsE3ILRp05TolOls1hWgHh7aK9lvcMn
+         UwYQ==
+X-Gm-Message-State: AOAM530H5U/c9jZaFUwNDKqR6JIeev6MdupCe8u5tUERlnWDDCZjAVT9
+        ZE9rTl1QSMLigwWaHlioIhMjCQ==
+X-Google-Smtp-Source: ABdhPJz7yF6N9ZNXE6NMcS2CsOkoYIqxjjYdWdWKVmamt8X+07AjeWC8YH9Zx5T3RQEHz4C5J9vmJA==
+X-Received: by 2002:a63:a902:0:b0:398:cdd3:f85e with SMTP id u2-20020a63a902000000b00398cdd3f85emr3358626pge.122.1649172360274;
+        Tue, 05 Apr 2022 08:26:00 -0700 (PDT)
+Received: from p14s (S0106889e681aac74.cg.shawcable.net. [68.147.0.187])
+        by smtp.gmail.com with ESMTPSA id i6-20020a633c46000000b003817d623f72sm13886071pgn.24.2022.04.05.08.25.56
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 05 Apr 2022 08:25:57 -0700 (PDT)
+Date:   Tue, 5 Apr 2022 09:25:55 -0600
+From:   Mathieu Poirier <mathieu.poirier@linaro.org>
+To:     Arnaud Pouliquen <arnaud.pouliquen@foss.st.com>
+Cc:     Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-remoteproc@vger.kernel.org
+Subject: Re: [PATCH v2] arm64: defconfig: Config that had RPMSG_CHAR now gets
+ RPMSG_CTRL
+Message-ID: <20220405152555.GB4147585@p14s>
+References: <20220405115524.1020499-1-arnaud.pouliquen@foss.st.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <Ykw7UnlTnx63z/Ca@FVFF77S0Q05N>
+In-Reply-To: <20220405115524.1020499-1-arnaud.pouliquen@foss.st.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Sorry, I copied the wrong version of the x86_64 assembly as generated by GCC
-11.2.0). Updated below.
+On Tue, Apr 05, 2022 at 01:55:24PM +0200, Arnaud Pouliquen wrote:
+> In the commit 617d32938d1b ("rpmsg: Move the rpmsg control device
+> from rpmsg_char to rpmsg_ctrl"), we split the rpmsg_char driver in two.
+> By default give everyone who had the old driver enabled the rpmsg_ctrl
+> driver too.
+> 
+> Signed-off-by: Arnaud Pouliquen <arnaud.pouliquen@foss.st.com>
 
-On Tue, Apr 05, 2022 at 01:51:30PM +0100, Mark Rutland wrote:
-> My x86_64 test case is:
-> 
-> | unsigned long rdmsr(unsigned long reg)
-> | {
-> |     unsigned int lo, hi;
-> | 
-> |     asm volatile(
-> |     "rdmsr"
-> |     : "=d" (hi), "=a" (lo)
-> |     : "c" (reg)
-> |     );
-> | 
-> |     return ((unsigned long)hi << 32) | lo;
-> | }
-> | 
-> | void wrmsr(unsigned long reg, unsigned long val)
-> | {
-> |     unsigned int lo = val;
-> |     unsigned int hi = val >> 32;
-> | 
-> |     asm volatile(
-> |     "wrmsr"
-> |     :
-> |     : "d" (hi), "a" (lo), "c" (reg)
-> |     );
-> | }
-> | 
-> | void msr_rmw_set_bits(unsigned long reg, unsigned long bits)
-> | {
-> |     unsigned long val;
-> | 
-> |     val = rdmsr(reg);
-> |     val |= bits;
-> |     wrmsr(reg, val);
-> | }
-> | 
-> | void func_with_msr_side_effects(unsigned long reg)
-> | {
-> |     msr_rmw_set_bits(reg, 1UL << 0);
-> |     msr_rmw_set_bits(reg, 1UL << 1);
-> |     msr_rmw_set_bits(reg, 1UL << 2);
-> |     msr_rmw_set_bits(reg, 1UL << 3);
-> | }
-> 
-> Per compiler explorer (https://godbolt.org/z/cveff9hq5) GCC trunk currently
-> compiles this as:
-> 
-> | msr_rmw_set_bits:
-> |         mov     rcx, rdi
-> |         rdmsr
-> |         sal     rdx, 32
-> |         mov     eax, eax
-> |         or      rax, rsi
-> |         or      rax, rdx
-> |         mov     rdx, rax
-> |         shr     rdx, 32
-> |         wrmsr
-> |         ret
-> | func_with_msr_side_effects:
-> |         ret
-> 
-
-GCC 11.2 compiles that as:
-
-| rdmsr:
-|         mov     rcx, rdi
-|         rdmsr
-|         sal     rdx, 32
-|         mov     eax, eax
-|         or      rax, rdx
-|         ret
-| wrmsr:
-|         mov     rax, rsi
-|         mov     rdx, rsi
-|         shr     rdx, 32
-|         mov     rcx, rdi
-|         wrmsr
-|         ret
-| msr_rmw_set_bits:
-|         mov     rcx, rdi
-|         rdmsr
-|         sal     rdx, 32
-|         mov     eax, eax
-|         or      rax, rsi
-|         or      rax, rdx
-|         mov     rdx, rax
-|         shr     rdx, 32
-|         wrmsr
-|         ret
-| func_with_msr_side_effects:
-|         push    rbx
-|         mov     rbx, rdi
-|         mov     esi, 1
-|         call    msr_rmw_set_bits
-|         mov     esi, 2
-|         mov     rdi, rbx
-|         call    msr_rmw_set_bits
-|         mov     esi, 4
-|         mov     rdi, rbx
-|         call    msr_rmw_set_bits
-|         mov     esi, 8
-|         mov     rdi, rbx
-|         call    msr_rmw_set_bits
-|         pop     rbx
-|         ret
+This patch is missing a separation marker, i.e "---", just above.  Without it
+the text below is also included in the changelog, and it shouldn't.
 
 Thanks,
-Mark.
+Mathieu
+
+> 
+> This patch is extracted from the series [1] that has been partially
+> integrated in the Linux Kernel 5.18-rc1.
+> 
+> Update vs previous version:
+> - remove "Fixes:" tag in commit, requested by Mathieu Poirier in [2]
+> 
+> [1]https://lore.kernel.org/lkml/15be2f08-ba03-2b80-6f53-2056359d5c41@gmail.com/T/
+> [2]https://lore.kernel.org/linux-arm-kernel/CANLsYky1_b80qPbgOaLGVYD-GEr21V6C653iGEB7VCU=GbGvAQ@mail.gmail.com/T/
+> ---
+>  arch/arm64/configs/defconfig | 1 +
+>  1 file changed, 1 insertion(+)
+> 
+> diff --git a/arch/arm64/configs/defconfig b/arch/arm64/configs/defconfig
+> index 50aa3d75ab4f..3f8906b8a2ca 100644
+> --- a/arch/arm64/configs/defconfig
+> +++ b/arch/arm64/configs/defconfig
+> @@ -1053,6 +1053,7 @@ CONFIG_QCOM_Q6V5_PAS=m
+>  CONFIG_QCOM_SYSMON=m
+>  CONFIG_QCOM_WCNSS_PIL=m
+>  CONFIG_RPMSG_CHAR=m
+> +CONFIG_RPMSG_CTRL=m
+>  CONFIG_RPMSG_QCOM_GLINK_RPM=y
+>  CONFIG_RPMSG_QCOM_GLINK_SMEM=m
+>  CONFIG_RPMSG_QCOM_SMD=y
+> -- 
+> 2.25.1
+> 
