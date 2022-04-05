@@ -2,43 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 070B8C4707F
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:03:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 563EDC43219
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:03:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245057AbiDEMCU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 08:02:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46614 "EHLO
+        id S1354784AbiDEMCg (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 08:02:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46800 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243056AbiDEItt (ORCPT
+        with ESMTP id S243181AbiDEIuN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:49:49 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D7981D0DD;
-        Tue,  5 Apr 2022 01:38:13 -0700 (PDT)
+        Tue, 5 Apr 2022 04:50:13 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E807B6D25;
+        Tue,  5 Apr 2022 01:38:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 06D1AB81B18;
-        Tue,  5 Apr 2022 08:37:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 692BFC385A1;
-        Tue,  5 Apr 2022 08:37:46 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D62D361538;
+        Tue,  5 Apr 2022 08:37:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E2951C385A0;
+        Tue,  5 Apr 2022 08:37:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649147866;
-        bh=+cvy/v5TGZXagD6fIYk4pEytVC1K83ILUAf1awavJYs=;
+        s=korg; t=1649147872;
+        bh=6s8M9Id1hc1E3XlOJxnCdy+HOfCUPObYt1vklKduNtc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PSGZrzyBO5vhLMgFcgWU7Zk2GIkTQHaXIL3ioYzRC6Jv7N67AXeSLFzWadrLOaT1a
-         V25oc34QF5gr8Oo7L2xBe03CVgae9UPB1BfDfKACscmjIumZeLjmVM7sDm0gVRQm4i
-         +wGgN6Z34R0K2lIAyjeBBE9WzNr2PvmjNR3goj5I=
+        b=XiLDTHlLmBlXDyOlnr5B8otE4DyIj2Baq9haEmabLKFaw/KSm+FaAvDWWj5lQ1zKn
+         /RBoFFeFVNydRgpSiMogiNthXdBHhO0neMZyor4sS6kK6UMVf9zx+nZDoZrgE/F4cn
+         CG1AJJNvmK2hW1xKfpHJxoQheRab/Y6Acv6Byg2k=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jani Nikula <jani.nikula@intel.com>,
-        Shawn C Lee <shawn.c.lee@intel.com>,
-        intel-gfx <intel-gfx@lists.freedesktop.org>,
-        Cooper Chiou <cooper.chiou@intel.com>
-Subject: [PATCH 5.16 0149/1017] drm/edid: check basic audio support on CEA extension block
-Date:   Tue,  5 Apr 2022 09:17:42 +0200
-Message-Id: <20220405070358.630157664@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Charan Teja Kalla <quic_charante@quicinc.com>,
+        Michal Hocko <mhocko@suse.com>,
+        Suren Baghdasaryan <surenb@google.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        David Rientjes <rientjes@google.com>,
+        Nadav Amit <nadav.amit@gmail.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Subject: [PATCH 5.16 0115/1017] Revert "mm: madvise: skip unmapped vma holes passed to process_madvise"
+Date:   Tue,  5 Apr 2022 09:17:08 +0200
+Message-Id: <20220405070357.610639306@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -50,42 +56,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Cooper Chiou <cooper.chiou@intel.com>
+From: Charan Teja Kalla <quic_charante@quicinc.com>
 
-commit 5662abf6e21338be6d085d6375d3732ac6147fd2 upstream.
+commit e6b0a7b357659c332231621e4315658d062c23ee upstream.
 
-Tag code stored in bit7:5 for CTA block byte[3] is not the same as
-CEA extension block definition. Only check CEA block has
-basic audio support.
+This reverts commit 08095d6310a7 ("mm: madvise: skip unmapped vma holes
+passed to process_madvise") as process_madvise() fails to return the
+exact processed bytes in other cases too.
 
-v3: update commit message.
+As an example: if process_madvise() hits mlocked pages after processing
+some initial bytes passed in [start, end), it just returns EINVAL
+although some bytes are processed.  Thus making an exception only for
+ENOMEM is partially fixing the problem of returning the proper advised
+bytes.
 
-Cc: stable@vger.kernel.org
-Cc: Jani Nikula <jani.nikula@intel.com>
-Cc: Shawn C Lee <shawn.c.lee@intel.com>
-Cc: intel-gfx <intel-gfx@lists.freedesktop.org>
-Signed-off-by: Cooper Chiou <cooper.chiou@intel.com>
-Signed-off-by: Lee Shawn C <shawn.c.lee@intel.com>
-Fixes: e28ad544f462 ("drm/edid: parse CEA blocks embedded in DisplayID")
-Reviewed-by: Jani Nikula <jani.nikula@intel.com>
-Signed-off-by: Jani Nikula <jani.nikula@intel.com>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220324061218.32739-1-shawn.c.lee@intel.com
+Thus revert this patch and return proper bytes advised.
+
+Link: https://lkml.kernel.org/r/e73da1304a88b6a8a11907045117cccf4c2b8374.1648046642.git.quic_charante@quicinc.com
+Fixes: 08095d6310a7ce ("mm: madvise: skip unmapped vma holes passed to process_madvise")
+Signed-off-by: Charan Teja Kalla <quic_charante@quicinc.com>
+Acked-by: Michal Hocko <mhocko@suse.com>
+Cc: Suren Baghdasaryan <surenb@google.com>
+Cc: Vlastimil Babka <vbabka@suse.cz>
+Cc: David Rientjes <rientjes@google.com>
+Cc: Nadav Amit <nadav.amit@gmail.com>
+Cc: <stable@vger.kernel.org>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/drm_edid.c |    3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ mm/madvise.c |    9 +--------
+ 1 file changed, 1 insertion(+), 8 deletions(-)
 
---- a/drivers/gpu/drm/drm_edid.c
-+++ b/drivers/gpu/drm/drm_edid.c
-@@ -4848,7 +4848,8 @@ bool drm_detect_monitor_audio(struct edi
- 	if (!edid_ext)
- 		goto end;
+--- a/mm/madvise.c
++++ b/mm/madvise.c
+@@ -1280,16 +1280,9 @@ SYSCALL_DEFINE5(process_madvise, int, pi
  
--	has_audio = ((edid_ext[3] & EDID_BASIC_AUDIO) != 0);
-+	has_audio = (edid_ext[0] == CEA_EXT &&
-+		    (edid_ext[3] & EDID_BASIC_AUDIO) != 0);
- 
- 	if (has_audio) {
- 		DRM_DEBUG_KMS("Monitor has basic audio support\n");
+ 	while (iov_iter_count(&iter)) {
+ 		iovec = iov_iter_iovec(&iter);
+-		/*
+-		 * do_madvise returns ENOMEM if unmapped holes are present
+-		 * in the passed VMA. process_madvise() is expected to skip
+-		 * unmapped holes passed to it in the 'struct iovec' list
+-		 * and not fail because of them. Thus treat -ENOMEM return
+-		 * from do_madvise as valid and continue processing.
+-		 */
+ 		ret = do_madvise(mm, (unsigned long)iovec.iov_base,
+ 					iovec.iov_len, behavior);
+-		if (ret < 0 && ret != -ENOMEM)
++		if (ret < 0)
+ 			break;
+ 		iov_iter_advance(&iter, iovec.iov_len);
+ 	}
 
 
