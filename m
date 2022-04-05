@@ -2,92 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B11A5C4167D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 99B91C43219
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 21:27:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232360AbiDEVZz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 17:25:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47504 "EHLO
+        id S1351764AbiDEVYS (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 17:24:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35836 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349240AbiDEJt2 (ORCPT
+        with ESMTP id S1455062AbiDEP7e (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:49:28 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8577523151;
-        Tue,  5 Apr 2022 02:43:03 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id E07D9CE1C6F;
-        Tue,  5 Apr 2022 09:43:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0C982C385A1;
-        Tue,  5 Apr 2022 09:42:59 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649151780;
-        bh=ZYk0CNHgZuiWpDdSQFnDnwESFchksbpwfapp1FW5hKk=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NFAAaRgMWXr6lb9vtB9llqDMsghX1jaFFk0ZONzOy7mYxnukHMnRUAZ7PnHfVdNkR
-         /EuohcJvkZvJU77Usg1SaWimYlwZ+5+dDbaOM+Pd+G3zq6dmPwZ0vo0RmjM5dbw6MU
-         PjxuOH657s0WaXAoM7k/FKvBLwy7yb2AZt3DraC8=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Daniel Borkmann <daniel@iogearbox.net>,
-        Hou Tao <houtao1@huawei.com>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 500/913] bpf, arm64: Feed byte-offset into bpf line info
-Date:   Tue,  5 Apr 2022 09:26:02 +0200
-Message-Id: <20220405070354.842042643@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 5 Apr 2022 11:59:34 -0400
+Received: from mail-qt1-x830.google.com (mail-qt1-x830.google.com [IPv6:2607:f8b0:4864:20::830])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA8B4D3723
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 08:09:19 -0700 (PDT)
+Received: by mail-qt1-x830.google.com with SMTP id v2so11506261qtc.5
+        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 08:09:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:subject:message-id:mime-version:content-disposition;
+        bh=YZkbL+GyCYshGd2SxK7PvgiiaFokGhdvBjFhAiL3mJE=;
+        b=ZJO9yRZp6P90RZT3XEvaUufFTHnVskvsXvvmkYd9SwzpPfgQ/EG7qq7XxWlnwiAWZo
+         P87Oj4KT6pQfjRrCT+DpXN5an1xn0JKcq13+wFXorFDrN7JcfMlNb5TWDfnUUdJj1+am
+         u/COgwXV/FL5IXcjkoE6ZJu8OXTt34vQyZjsGz7DWRMSrtnX1PJo/os3xrYpXg42KcBN
+         rnZO8Lts3yrMffecZZBrIk1/RZKUlrubFkJjuldbUXB5gB1TdX70eAdcZucVRfiMem6K
+         NbNXuSftzcBcc6NzXtkTRUFZo31VAtvKDKOAFFPu01z1GS0yn8EcAeqkhmn3robIPMwE
+         rSuw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:subject:message-id:mime-version
+         :content-disposition;
+        bh=YZkbL+GyCYshGd2SxK7PvgiiaFokGhdvBjFhAiL3mJE=;
+        b=PDqR27+pVAZ6t3vtA1B6iZCoVOyeeESivPVKFtWiVJfxv/1KdlQolDiKRf0hvUVTOr
+         9siuhdr1PRAa0bWSFDXu2YyUptYuuZ7UGTKWFSwK5GvTaoZTOHoJTmEU5DBhBa+/F/B0
+         UIasBEs35RZTJz62H6w5w9o+MKcvxmiFL4gkVteioOCY0n8sxQBq/QTKMvBFxGAthyzG
+         Mc9dxHafP1iXiQoRcxMEdczLIO0aNeSYheGBvRh+2i306tZdnckC7XVzgkGewZtMGomu
+         aM9p8Jns9PWTiC3a4fEGcmcIzE3owd1NyxEz4WNuWra71f7ubo0H6iQn1UuunFfuonS+
+         tw/g==
+X-Gm-Message-State: AOAM531ywncEFsoq63FUf+41SH/WZ0FvYUU4kIeuGb9OY1UtEo+dqUuG
+        l1qMf4kifs6d37RxtjdJnQzXh5FImv5ITw==
+X-Google-Smtp-Source: ABdhPJzBcKEnmfMxzO4pTwXmDLNbb647BPIfA5UOISMSbZI4aCTntBXAPD1cj/qU/bDGmO4X+wqKOQ==
+X-Received: by 2002:a05:620a:4612:b0:67e:be08:b079 with SMTP id br18-20020a05620a461200b0067ebe08b079mr2633660qkb.422.1649171358837;
+        Tue, 05 Apr 2022 08:09:18 -0700 (PDT)
+Received: from euclid ([71.58.109.160])
+        by smtp.gmail.com with ESMTPSA id n8-20020ac85a08000000b002e06aa02021sm11266239qta.49.2022.04.05.08.09.17
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 05 Apr 2022 08:09:18 -0700 (PDT)
+Date:   Tue, 5 Apr 2022 11:09:12 -0400
+From:   Sevinj Aghayeva <sevinj.aghayeva@gmail.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
+        outreachy@lists.linux.dev
+Subject: [PATCH v2] staging: rtl8723bs: fix indentation
+Message-ID: <20220405150912.GA625670@euclid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hou Tao <houtao1@huawei.com>
+Adhere to Linux kernel coding style.
 
-[ Upstream commit dda7596c109fc382876118627e29db7607cde35d ]
+Reported by checkpatch:
 
-insn_to_jit_off passed to bpf_prog_fill_jited_linfo() is calculated in
-instruction granularity instead of bytes granularity, but BPF line info
-requires byte offset.
+WARNING: suspect code indent for conditional statements
 
-bpf_prog_fill_jited_linfo() will be the last user of ctx.offset before
-it is freed, so convert the offset into byte-offset before calling into
-bpf_prog_fill_jited_linfo() in order to fix the line info dump on arm64.
-
-Fixes: 37ab566c178d ("bpf: arm64: Enable arm64 jit to provide bpf_line_info")
-Suggested-by: Daniel Borkmann <daniel@iogearbox.net>
-Signed-off-by: Hou Tao <houtao1@huawei.com>
-Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
-Link: https://lore.kernel.org/bpf/20220226121906.5709-3-houtao1@huawei.com
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Sevinj Aghayeva <sevinj.aghayeva@gmail.com>
 ---
- arch/arm64/net/bpf_jit_comp.c | 5 +++++
- 1 file changed, 5 insertions(+)
 
-diff --git a/arch/arm64/net/bpf_jit_comp.c b/arch/arm64/net/bpf_jit_comp.c
-index d13d9e5085a7..b56e7bd96594 100644
---- a/arch/arm64/net/bpf_jit_comp.c
-+++ b/arch/arm64/net/bpf_jit_comp.c
-@@ -1126,6 +1126,11 @@ struct bpf_prog *bpf_int_jit_compile(struct bpf_prog *prog)
- 	prog->jited_len = prog_size;
+v1 -> v2: Remove the comments that became irrelevant with proper indentation.
+
+ drivers/staging/rtl8723bs/core/rtw_mlme_ext.c | 14 +++-----------
+ 1 file changed, 3 insertions(+), 11 deletions(-)
+
+diff --git a/drivers/staging/rtl8723bs/core/rtw_mlme_ext.c b/drivers/staging/rtl8723bs/core/rtw_mlme_ext.c
+index 04e29e228c1e..1bdbd0971f73 100644
+--- a/drivers/staging/rtl8723bs/core/rtw_mlme_ext.c
++++ b/drivers/staging/rtl8723bs/core/rtw_mlme_ext.c
+@@ -5143,17 +5143,9 @@ void link_timer_hdl(struct timer_list *t)
+ 	} else if (pmlmeinfo->state & WIFI_FW_AUTH_STATE) {
+ 		/* re-auth timer */
+ 		if (++pmlmeinfo->reauth_count > REAUTH_LIMIT) {
+-			/* if (pmlmeinfo->auth_algo != dot11AuthAlgrthm_Auto) */
+-			/*  */
+-				pmlmeinfo->state = 0;
+-				report_join_res(padapter, -1);
+-				return;
+-			/*  */
+-			/* else */
+-			/*  */
+-			/* 	pmlmeinfo->auth_algo = dot11AuthAlgrthm_Shared; */
+-			/* 	pmlmeinfo->reauth_count = 0; */
+-			/*  */
++			pmlmeinfo->state = 0;
++			report_join_res(padapter, -1);
++			return;
+ 		}
  
- 	if (!prog->is_func || extra_pass) {
-+		int i;
-+
-+		/* offset[prog->len] is the size of program */
-+		for (i = 0; i <= prog->len; i++)
-+			ctx.offset[i] *= AARCH64_INSN_SIZE;
- 		bpf_prog_fill_jited_linfo(prog, ctx.offset + 1);
- out_off:
- 		kfree(ctx.offset);
+ 		pmlmeinfo->auth_seq = 1;
 -- 
-2.34.1
-
-
+2.25.1
 
