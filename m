@@ -2,101 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 05093C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 01:26:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F0C8C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 01:27:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1841916AbiDFB0W (ORCPT
+        id S1841981AbiDFB0m (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 21:26:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60370 "EHLO
+        Tue, 5 Apr 2022 21:26:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37866 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1443698AbiDEPkK (ORCPT
+        with ESMTP id S240777AbiDEK4B (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 11:40:10 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B703184B58
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 06:58:07 -0700 (PDT)
+        Tue, 5 Apr 2022 06:56:01 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92139AC074;
+        Tue,  5 Apr 2022 03:28:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E29A461632
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 13:58:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 686A6C385AA;
-        Tue,  5 Apr 2022 13:58:04 +0000 (UTC)
-From:   Catalin Marinas <catalin.marinas@arm.com>
-To:     Will Deacon <will@kernel.org>, Marc Zyngier <maz@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6A923617CA;
+        Tue,  5 Apr 2022 10:28:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7A138C385A0;
+        Tue,  5 Apr 2022 10:28:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649154515;
+        bh=1AVVexJzBtKmTwg7xOXKXxno2QnfOG+PLPOMEaOtcOg=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=oHmQJGN40QX9oFxFPy7tBUZa8sjbTGxHauVbFL0zen7iW/gCDTJbP6HzR+6nCwNu6
+         opXcmLaZpNWcWkQzk8foVUxxtffDra0PVpq9iE4BGuopfTjwaMCnq9m6VsHXn3hexA
+         0NUk+9CHxnAgAxku8jQ3Od/8/ugoXnraKkZmF9zI=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
+        Igor Zhbanov <i.zhbanov@omprussia.ru>,
+        Hugh Dickins <hughd@google.com>,
         Andrew Morton <akpm@linux-foundation.org>,
         Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     linux-mm@kvack.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH 01/10] mm/slab: Decouple ARCH_KMALLOC_MINALIGN from ARCH_DMA_MINALIGN
-Date:   Tue,  5 Apr 2022 14:57:49 +0100
-Message-Id: <20220405135758.774016-2-catalin.marinas@arm.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220405135758.774016-1-catalin.marinas@arm.com>
-References: <20220405135758.774016-1-catalin.marinas@arm.com>
+Subject: [PATCH 5.10 576/599] mm/mmap: return 1 from stack_guard_gap __setup() handler
+Date:   Tue,  5 Apr 2022 09:34:30 +0200
+Message-Id: <20220405070315.983964031@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
+References: <20220405070258.802373272@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In preparation for supporting a dynamic kmalloc() minimum alignment,
-allow architectures to define ARCH_KMALLOC_MINALIGN independently of
-ARCH_DMA_MINALIGN. In addition, always define ARCH_DMA_MINALIGN even if
-an architecture does not override it.
+From: Randy Dunlap <rdunlap@infradead.org>
 
-After this patch, ARCH_DMA_MINALIGN is expected to be used in static
-alignment annotations and defined by an architecture to be the maximum
-alignment for all supported configurations/SoCs in a single Image.
-ARCH_KMALLOC_MINALIGN, if different, is the minimum alignment guaranteed
-by kmalloc().
+commit e6d094936988910ce6e8197570f2753898830081 upstream.
 
-Signed-off-by: Catalin Marinas <catalin.marinas@arm.com>
-Cc: Andrew Morton <akpm@linux-foundation.org>
+__setup() handlers should return 1 if the command line option is handled
+and 0 if not (or maybe never return 0; it just pollutes init's
+environment).  This prevents:
+
+  Unknown kernel command line parameters \
+  "BOOT_IMAGE=/boot/bzImage-517rc5 stack_guard_gap=100", will be \
+  passed to user space.
+
+  Run /sbin/init as init process
+   with arguments:
+     /sbin/init
+   with environment:
+     HOME=/
+     TERM=linux
+     BOOT_IMAGE=/boot/bzImage-517rc5
+     stack_guard_gap=100
+
+Return 1 to indicate that the boot option has been handled.
+
+Note that there is no warning message if someone enters:
+	stack_guard_gap=anything_invalid
+and 'val' and stack_guard_gap are both set to 0 due to the use of
+simple_strtoul(). This could be improved by using kstrtoxxx() and
+checking for an error.
+
+It appears that having stack_guard_gap == 0 is valid (if unexpected) since
+using "stack_guard_gap=0" on the kernel command line does that.
+
+Link: https://lkml.kernel.org/r/20220222005817.11087-1-rdunlap@infradead.org
+Link: lore.kernel.org/r/64644a2f-4a20-bab3-1e15-3b2cdd0defe3@omprussia.ru
+Fixes: 1be7107fbe18e ("mm: larger stack guard gap, between vmas")
+Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+Reported-by: Igor Zhbanov <i.zhbanov@omprussia.ru>
+Cc: Hugh Dickins <hughd@google.com>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- include/linux/slab.h | 23 ++++++++++++++++++-----
- 1 file changed, 18 insertions(+), 5 deletions(-)
+ mm/mmap.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/include/linux/slab.h b/include/linux/slab.h
-index 373b3ef99f4e..d58211bdeceb 100644
---- a/include/linux/slab.h
-+++ b/include/linux/slab.h
-@@ -187,17 +187,30 @@ bool kmem_valid_obj(void *object);
- void kmem_dump_obj(void *object);
- #endif
+--- a/mm/mmap.c
++++ b/mm/mmap.c
+@@ -2577,7 +2577,7 @@ static int __init cmdline_parse_stack_gu
+ 	if (!*endptr)
+ 		stack_guard_gap = val << PAGE_SHIFT;
  
-+/*
-+ * slob does not support independent control of ARCH_KMALLOC_MINALIGN and
-+ * ARCH_DMA_MINALIGN.
-+ */
-+#ifdef CONFIG_SLOB
-+#undef ARCH_KMALLOC_MINALIGN
-+#endif
-+
- /*
-  * Some archs want to perform DMA into kmalloc caches and need a guaranteed
-  * alignment larger than the alignment of a 64-bit integer.
-- * Setting ARCH_KMALLOC_MINALIGN in arch headers allows that.
-+ * Setting ARCH_DMA_MINALIGN in arch headers allows that.
-  */
--#if defined(ARCH_DMA_MINALIGN) && ARCH_DMA_MINALIGN > 8
-+#ifndef ARCH_DMA_MINALIGN
-+#define ARCH_DMA_MINALIGN __alignof__(unsigned long long)
-+#elif ARCH_DMA_MINALIGN > 8 && !defined(ARCH_KMALLOC_MINALIGN)
- #define ARCH_KMALLOC_MINALIGN ARCH_DMA_MINALIGN
--#define KMALLOC_MIN_SIZE ARCH_DMA_MINALIGN
--#define KMALLOC_SHIFT_LOW ilog2(ARCH_DMA_MINALIGN)
--#else
-+#endif
-+
-+#ifndef ARCH_KMALLOC_MINALIGN
- #define ARCH_KMALLOC_MINALIGN __alignof__(unsigned long long)
-+#else
-+#define KMALLOC_MIN_SIZE ARCH_KMALLOC_MINALIGN
-+#define KMALLOC_SHIFT_LOW ilog2(KMALLOC_MIN_SIZE)
- #endif
+-	return 0;
++	return 1;
+ }
+ __setup("stack_guard_gap=", cmdline_parse_stack_guard_gap);
  
- /*
+
+
