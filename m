@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 63435C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7244BC4332F
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 21:15:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353977AbiDEVOy (ORCPT
+        id S1356755AbiDEVO7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 17:14:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43050 "EHLO
+        Tue, 5 Apr 2022 17:14:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51208 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349064AbiDEJtD (ORCPT
+        with ESMTP id S1350555AbiDEJ6w (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:49:03 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9C1B9682D;
-        Tue,  5 Apr 2022 02:39:33 -0700 (PDT)
+        Tue, 5 Apr 2022 05:58:52 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4565765434;
+        Tue,  5 Apr 2022 02:51:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6B0AC615E5;
-        Tue,  5 Apr 2022 09:39:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 79E2AC385A3;
-        Tue,  5 Apr 2022 09:39:32 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A66F561673;
+        Tue,  5 Apr 2022 09:51:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AF372C385A1;
+        Tue,  5 Apr 2022 09:51:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649151572;
-        bh=2w7bBj4tgoZF311c8KSGA9qi0/m+8Nb4Ri8/8MzK1rU=;
+        s=korg; t=1649152272;
+        bh=/I26JbtONVAeteWoFQTGjczew1GeyEqS2guztUZ+bYY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qkAFsk7kFXOJbpxooP/SZ1roRzwge+l/DzAvTSRIfjXDn0mpEAELKHLcqFzsx/1+C
-         dq63SbzNELU/JEEVX2LQrbXkb//CUZKHNqT4HQhhBuAkWTWnF4xhrBMuUWQTQJe0b9
-         pXVtk4SciZs/mQkgqBFKC5lZzCd+bZ+SjqmM6M3I=
+        b=04Seav4LI5W6Ivb0OG+LK5bKQZs3UaQ+MiQJnx/bon1MI00y/bNZjYmzZ8Ov/KAbb
+         hksyjgnHMgbZPFAcgXk+VpmGg/44Kg7H4gUfCND/nKX+zpEUrKGauMWvEjzdJmYjo7
+         59x1eCfLWO2kACSmlDqpM82bgkF2BbErmrMJk+UY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Rotem Saado <rotem.saado@intel.com>,
-        Luca Coelho <luciano.coelho@intel.com>,
+        stable@vger.kernel.org, Chao Yu <chao@kernel.org>,
+        Jaegeuk Kim <jaegeuk@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 465/913] iwlwifi: yoyo: remove DBGI_SRAM address reset writing
-Date:   Tue,  5 Apr 2022 09:25:27 +0200
-Message-Id: <20220405070353.786762755@linuxfoundation.org>
+Subject: [PATCH 5.15 718/913] f2fs: dont get FREEZE lock in f2fs_evict_inode in frozen fs
+Date:   Tue,  5 Apr 2022 09:29:40 +0200
+Message-Id: <20220405070401.355238370@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
 References: <20220405070339.801210740@linuxfoundation.org>
@@ -50,52 +50,115 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Rotem Saado <rotem.saado@intel.com>
+From: Jaegeuk Kim <jaegeuk@kernel.org>
 
-[ Upstream commit ce014c9861544bb4e789323d0d8956a5ad262e25 ]
+[ Upstream commit ba900534f807f0b327c92d5141c85d2313e2d55c ]
 
-Due to preg protection we cannot write to this register
-while FW is running (when FW in Halt it is ok).
-since we have some cases that we need to dump this
-region while FW is running remove this writing from DRV.
-FW will do this writing.
+Let's purge inode cache in order to avoid the below deadlock.
 
-Signed-off-by: Rotem Saado <rotem.saado@intel.com>
-Fixes: 89639e06d0f3 ("iwlwifi: yoyo: support for new DBGI_SRAM region")
-Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
-Link: https://lore.kernel.org/r/iwlwifi.20220129105618.209f3078bc74.I463530bd2f40daedb39f6d9df987bb7cee209033@changeid
-Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
+[freeze test]                         shrinkder
+freeze_super
+ - pwercpu_down_write(SB_FREEZE_FS)
+                                       - super_cache_scan
+                                         - down_read(&sb->s_umount)
+                                           - prune_icache_sb
+                                            - dispose_list
+                                             - evict
+                                              - f2fs_evict_inode
+thaw_super
+ - down_write(&sb->s_umount);
+                                              - __percpu_down_read(SB_FREEZE_FS)
+
+Reviewed-by: Chao Yu <chao@kernel.org>
+Signed-off-by: Jaegeuk Kim <jaegeuk@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/intel/iwlwifi/fw/dbg.c   | 2 --
- drivers/net/wireless/intel/iwlwifi/iwl-prph.h | 2 --
- 2 files changed, 4 deletions(-)
+ Documentation/ABI/testing/sysfs-fs-f2fs | 1 +
+ fs/f2fs/debug.c                         | 1 +
+ fs/f2fs/f2fs.h                          | 1 +
+ fs/f2fs/inode.c                         | 6 ++++--
+ fs/f2fs/super.c                         | 4 ++++
+ 5 files changed, 11 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/wireless/intel/iwlwifi/fw/dbg.c b/drivers/net/wireless/intel/iwlwifi/fw/dbg.c
-index 6dcafd0a3d4b..b00cf92c8965 100644
---- a/drivers/net/wireless/intel/iwlwifi/fw/dbg.c
-+++ b/drivers/net/wireless/intel/iwlwifi/fw/dbg.c
-@@ -1532,8 +1532,6 @@ iwl_dump_ini_dbgi_sram_iter(struct iwl_fw_runtime *fwrt,
- 		return -EBUSY;
+diff --git a/Documentation/ABI/testing/sysfs-fs-f2fs b/Documentation/ABI/testing/sysfs-fs-f2fs
+index f627e705e663..48d41b669627 100644
+--- a/Documentation/ABI/testing/sysfs-fs-f2fs
++++ b/Documentation/ABI/testing/sysfs-fs-f2fs
+@@ -425,6 +425,7 @@ Description:	Show status of f2fs superblock in real time.
+ 		0x800  SBI_QUOTA_SKIP_FLUSH  skip flushing quota in current CP
+ 		0x1000 SBI_QUOTA_NEED_REPAIR quota file may be corrupted
+ 		0x2000 SBI_IS_RESIZEFS       resizefs is in process
++		0x4000 SBI_IS_FREEZING       freefs is in process
+ 		====== ===================== =================================
  
- 	range->range_data_size = reg->dev_addr.size;
--	iwl_write_prph_no_grab(fwrt->trans, DBGI_SRAM_TARGET_ACCESS_CFG,
--			       DBGI_SRAM_TARGET_ACCESS_CFG_RESET_ADDRESS_MSK);
- 	for (i = 0; i < (le32_to_cpu(reg->dev_addr.size) / 4); i++) {
- 		prph_data = iwl_read_prph(fwrt->trans, (i % 2) ?
- 					  DBGI_SRAM_TARGET_ACCESS_RDATA_MSB :
-diff --git a/drivers/net/wireless/intel/iwlwifi/iwl-prph.h b/drivers/net/wireless/intel/iwlwifi/iwl-prph.h
-index d0a7d58336a9..6c4f1c949541 100644
---- a/drivers/net/wireless/intel/iwlwifi/iwl-prph.h
-+++ b/drivers/net/wireless/intel/iwlwifi/iwl-prph.h
-@@ -350,8 +350,6 @@
- #define WFPM_GP2			0xA030B4
+ What:		/sys/fs/f2fs/<disk>/ckpt_thread_ioprio
+diff --git a/fs/f2fs/debug.c b/fs/f2fs/debug.c
+index 8c50518475a9..07ad0d81f0c5 100644
+--- a/fs/f2fs/debug.c
++++ b/fs/f2fs/debug.c
+@@ -338,6 +338,7 @@ static char *s_flag[] = {
+ 	[SBI_QUOTA_SKIP_FLUSH]	= " quota_skip_flush",
+ 	[SBI_QUOTA_NEED_REPAIR]	= " quota_need_repair",
+ 	[SBI_IS_RESIZEFS]	= " resizefs",
++	[SBI_IS_FREEZING]	= " freezefs",
+ };
  
- /* DBGI SRAM Register details */
--#define DBGI_SRAM_TARGET_ACCESS_CFG			0x00A2E14C
--#define DBGI_SRAM_TARGET_ACCESS_CFG_RESET_ADDRESS_MSK	0x10000
- #define DBGI_SRAM_TARGET_ACCESS_RDATA_LSB		0x00A2E154
- #define DBGI_SRAM_TARGET_ACCESS_RDATA_MSB		0x00A2E158
+ static int stat_show(struct seq_file *s, void *v)
+diff --git a/fs/f2fs/f2fs.h b/fs/f2fs/f2fs.h
+index c68817d83a53..0a0fa1a64d06 100644
+--- a/fs/f2fs/f2fs.h
++++ b/fs/f2fs/f2fs.h
+@@ -1253,6 +1253,7 @@ enum {
+ 	SBI_QUOTA_SKIP_FLUSH,			/* skip flushing quota in current CP */
+ 	SBI_QUOTA_NEED_REPAIR,			/* quota file may be corrupted */
+ 	SBI_IS_RESIZEFS,			/* resizefs is in process */
++	SBI_IS_FREEZING,			/* freezefs is in process */
+ };
+ 
+ enum {
+diff --git a/fs/f2fs/inode.c b/fs/f2fs/inode.c
+index 6488f5ff250c..2272000fb10b 100644
+--- a/fs/f2fs/inode.c
++++ b/fs/f2fs/inode.c
+@@ -769,7 +769,8 @@ void f2fs_evict_inode(struct inode *inode)
+ 	f2fs_remove_ino_entry(sbi, inode->i_ino, UPDATE_INO);
+ 	f2fs_remove_ino_entry(sbi, inode->i_ino, FLUSH_INO);
+ 
+-	sb_start_intwrite(inode->i_sb);
++	if (!is_sbi_flag_set(sbi, SBI_IS_FREEZING))
++		sb_start_intwrite(inode->i_sb);
+ 	set_inode_flag(inode, FI_NO_ALLOC);
+ 	i_size_write(inode, 0);
+ retry:
+@@ -800,7 +801,8 @@ void f2fs_evict_inode(struct inode *inode)
+ 		if (dquot_initialize_needed(inode))
+ 			set_sbi_flag(sbi, SBI_QUOTA_NEED_REPAIR);
+ 	}
+-	sb_end_intwrite(inode->i_sb);
++	if (!is_sbi_flag_set(sbi, SBI_IS_FREEZING))
++		sb_end_intwrite(inode->i_sb);
+ no_delete:
+ 	dquot_drop(inode);
+ 
+diff --git a/fs/f2fs/super.c b/fs/f2fs/super.c
+index 7b744ceb17a5..6dc66b7bc1f5 100644
+--- a/fs/f2fs/super.c
++++ b/fs/f2fs/super.c
+@@ -1663,11 +1663,15 @@ static int f2fs_freeze(struct super_block *sb)
+ 	/* ensure no checkpoint required */
+ 	if (!llist_empty(&F2FS_SB(sb)->cprc_info.issue_list))
+ 		return -EINVAL;
++
++	/* to avoid deadlock on f2fs_evict_inode->SB_FREEZE_FS */
++	set_sbi_flag(F2FS_SB(sb), SBI_IS_FREEZING);
+ 	return 0;
+ }
+ 
+ static int f2fs_unfreeze(struct super_block *sb)
+ {
++	clear_sbi_flag(F2FS_SB(sb), SBI_IS_FREEZING);
+ 	return 0;
+ }
  
 -- 
 2.34.1
