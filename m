@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6CC79C4167D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 57642C4321E
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 10:30:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356604AbiDEKYk (ORCPT
+        id S1356584AbiDEKY0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 06:24:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58686 "EHLO
+        Tue, 5 Apr 2022 06:24:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60900 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241242AbiDEIc5 (ORCPT
+        with ESMTP id S241240AbiDEIc5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Apr 2022 04:32:57 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2194B60C0;
-        Tue,  5 Apr 2022 01:30:22 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 729E95FE7;
+        Tue,  5 Apr 2022 01:30:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B5469609D0;
-        Tue,  5 Apr 2022 08:30:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C60E7C385A2;
-        Tue,  5 Apr 2022 08:30:20 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0F9B260FF5;
+        Tue,  5 Apr 2022 08:30:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2066AC385A2;
+        Tue,  5 Apr 2022 08:30:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649147421;
-        bh=1Y2tJszXJ8mM7Vg/4Mf9uvXQFr8vz3unAZ/gygB5MPE=;
+        s=korg; t=1649147415;
+        bh=W5KT8gJMhEm4bt1ufYnqIkD9RSkVG+G0ErDT+4VMW4U=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=u8O0iZ6HwKLwArFzvZpIADIFG7eABKrKMmn0CkYYH3ula8pQT7Mxd0NvIqG9sSavJ
-         G+dOZP0TfsFswDO4uCbqWEvn0FVQBED0wT7QZenlgEkUbatQ0kmLD6DvKKtWDF+tKO
-         4JO3NHPKt1OMW25Q/tTxSIO5j9S6ebA5jZQ/YOuw=
+        b=01F8xcqDx6AMbu6X9FjLNf8QKXt2HzY7JGVgxG5rnQLinwpW93e6lbk5K/JHYRg9l
+         pFtwpZ9Zotm0+9eumjqlOXO20MQ2ZHHuh+D4y+HtxZe8+PcldTz8Lye8QlMLccQR1R
+         WD9zOyRLq5mpFgaf0pTqfDMTfs+/1kwcrqrmj7yU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Martin Varghese <martin.varghese@nokia.com>,
-        Paolo Abeni <pabeni@redhat.com>
-Subject: [PATCH 5.17 1117/1126] openvswitch: Fixed nd target mask field in the flow dump.
-Date:   Tue,  5 Apr 2022 09:31:04 +0200
-Message-Id: <20220405070440.216919630@linuxfoundation.org>
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        Alexei Starovoitov <ast@kernel.org>
+Subject: [PATCH 5.17 1115/1126] ice: xsk: Fix indexing in ice_tx_xsk_pool()
+Date:   Tue,  5 Apr 2022 09:31:02 +0200
+Message-Id: <20220405070440.159433907@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -50,49 +50,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Martin Varghese <martin.varghese@nokia.com>
+From: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
 
-commit f19c44452b58a84d95e209b847f5495d91c9983a upstream.
+commit 1ac2524de7b366633fc336db6c94062768d0ab03 upstream.
 
-IPv6 nd target mask was not getting populated in flow dump.
+Ice driver tries to always create XDP rings array to be
+num_possible_cpus() sized, regardless of user's queue count setting that
+can be changed via ethtool -L for example.
 
-In the function __ovs_nla_put_key the icmp code mask field was checked
-instead of icmp code key field to classify the flow as neighbour discovery.
+Currently, ice_tx_xsk_pool() calculates the qid by decrementing the
+ring->q_index by the count of XDP queues, but ring->q_index is set to 'i
++ vsi->alloc_txq'.
 
-ufid:bdfbe3e5-60c2-43b0-a5ff-dfcac1c37328, recirc_id(0),dp_hash(0/0),
-skb_priority(0/0),in_port(ovs-nm1),skb_mark(0/0),ct_state(0/0),
-ct_zone(0/0),ct_mark(0/0),ct_label(0/0),
-eth(src=00:00:00:00:00:00/00:00:00:00:00:00,
-dst=00:00:00:00:00:00/00:00:00:00:00:00),
-eth_type(0x86dd),
-ipv6(src=::/::,dst=::/::,label=0/0,proto=58,tclass=0/0,hlimit=0/0,frag=no),
-icmpv6(type=135,code=0),
-nd(target=2001::2/::,
-sll=00:00:00:00:00:00/00:00:00:00:00:00,
-tll=00:00:00:00:00:00/00:00:00:00:00:00),
-packets:10, bytes:860, used:0.504s, dp:ovs, actions:ovs-nm2
+When user did ethtool -L $IFACE combined 1, alloc_txq is 1, but
+vsi->num_xdp_txq is still num_possible_cpus(). Then, ice_tx_xsk_pool()
+will do OOB access and in the final result ring would not get xsk_pool
+pointer assigned. Then, each ice_xsk_wakeup() call will fail with error
+and it will not be possible to get into NAPI and do the processing from
+driver side.
 
-Fixes: e64457191a25 (openvswitch: Restructure datapath.c and flow.c)
-Signed-off-by: Martin Varghese <martin.varghese@nokia.com>
-Link: https://lore.kernel.org/r/20220328054148.3057-1-martinvarghesenokia@gmail.com
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+Fix this by decrementing vsi->alloc_txq instead of vsi->num_xdp_txq from
+ring-q_index in ice_tx_xsk_pool() so the calculation is reflected to the
+setting of ring->q_index.
+
+Fixes: 22bf877e528f ("ice: introduce XDP_TX fallback path")
+Signed-off-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+Link: https://lore.kernel.org/bpf/20220328142123.170157-5-maciej.fijalkowski@intel.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/openvswitch/flow_netlink.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/intel/ice/ice.h |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/net/openvswitch/flow_netlink.c
-+++ b/net/openvswitch/flow_netlink.c
-@@ -2201,8 +2201,8 @@ static int __ovs_nla_put_key(const struc
- 			icmpv6_key->icmpv6_type = ntohs(output->tp.src);
- 			icmpv6_key->icmpv6_code = ntohs(output->tp.dst);
+--- a/drivers/net/ethernet/intel/ice/ice.h
++++ b/drivers/net/ethernet/intel/ice/ice.h
+@@ -712,7 +712,7 @@ static inline struct xsk_buff_pool *ice_
+ 	struct ice_vsi *vsi = ring->vsi;
+ 	u16 qid;
  
--			if (icmpv6_key->icmpv6_type == NDISC_NEIGHBOUR_SOLICITATION ||
--			    icmpv6_key->icmpv6_type == NDISC_NEIGHBOUR_ADVERTISEMENT) {
-+			if (swkey->tp.src == htons(NDISC_NEIGHBOUR_SOLICITATION) ||
-+			    swkey->tp.src == htons(NDISC_NEIGHBOUR_ADVERTISEMENT)) {
- 				struct ovs_key_nd *nd_key;
+-	qid = ring->q_index - vsi->num_xdp_txq;
++	qid = ring->q_index - vsi->alloc_txq;
  
- 				nla = nla_reserve(skb, OVS_KEY_ATTR_ND, sizeof(*nd_key));
+ 	if (!ice_is_xdp_ena_vsi(vsi) || !test_bit(qid, vsi->af_xdp_zc_qps))
+ 		return NULL;
 
 
