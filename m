@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8396DC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 22:10:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B6AAC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 22:10:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1391929AbiDEWI6 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 18:08:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50662 "EHLO
+        id S231604AbiDEWLR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 18:11:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34788 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358010AbiDEK1n (ORCPT
+        with ESMTP id S1343966AbiDEKjp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:27:43 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B2FBDA6E8;
-        Tue,  5 Apr 2022 03:12:53 -0700 (PDT)
+        Tue, 5 Apr 2022 06:39:45 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40A43222B7;
+        Tue,  5 Apr 2022 03:24:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DF1E4B81BC5;
-        Tue,  5 Apr 2022 10:12:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 30867C385A0;
-        Tue,  5 Apr 2022 10:12:50 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D011D6141D;
+        Tue,  5 Apr 2022 10:24:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DC6DDC385A0;
+        Tue,  5 Apr 2022 10:24:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649153570;
-        bh=K4HnywraBUnPEWGJzdB751IfLGz1lbcbvOEYdLz463c=;
+        s=korg; t=1649154292;
+        bh=dJPumnA6KTq5umrU0fNyR0/UzVzoQ2sShZxOvbIk0d0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=czhyGyESKg1XxDiXQtq2ZaTV9PGuAj41tybkD3WVaOoM/Y2vm7uZb1gABVac/a8fU
-         O2loCAtslCkTk4PxPwzHSLImScHyFSJBjrwsa6cOk/FOkqr9T8Cry28lflgFtRwNnQ
-         0+wQ6gmQU2dWD1Y1+tJE4D5eC0ADILUcvxg/5QXw=
+        b=iUv8wg/VOKJwGsiVjLa/7EXfCqC8NrXvlTbb3usaNPyyXJLKptw9JzkJc/MazWw7R
+         G0nskrvalVspmV2vr4Q4CxEsEHzaoS6i7y2DZWboum6KW2nhHRpwrQ7GZXKoGFXoSW
+         DvqSe+tWrlYrkE4N8teCcDneqWcnLjFko6ytV+CA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yiru Xu <xyru1999@gmail.com>,
-        Pavel Skripkin <paskripkin@gmail.com>,
-        Marcel Holtmann <marcel@holtmann.org>,
+        stable@vger.kernel.org, Hans de Goede <hdegoede@redhat.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 269/599] Bluetooth: hci_serdev: call init_rwsem() before p->open()
-Date:   Tue,  5 Apr 2022 09:29:23 +0200
-Message-Id: <20220405070306.841348371@linuxfoundation.org>
+Subject: [PATCH 5.10 490/599] media: atomisp_gmin_platform: Add DMI quirk to not turn AXP ELDO2 regulator off on some boards
+Date:   Tue,  5 Apr 2022 09:33:04 +0200
+Message-Id: <20220405070313.410127845@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
 References: <20220405070258.802373272@linuxfoundation.org>
@@ -51,69 +49,65 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pavel Skripkin <paskripkin@gmail.com>
+From: Hans de Goede <hdegoede@redhat.com>
 
-[ Upstream commit 9d7cbe2b9cf5f650067df4f402fdd799d4bbb4e1 ]
+[ Upstream commit 2c39a01154ea57d596470afa1d278e3be3b37f6a ]
 
-kvartet reported, that hci_uart_tx_wakeup() uses uninitialized rwsem.
-The problem was in wrong place for percpu_init_rwsem() call.
+The TrekStor SurfTab duo W1 10.1 has a hw bug where turning eldo2 back on
+after having turned it off causes the CPLM3218 ambient-light-sensor on
+the front camera sensor's I2C bus to crash, hanging the bus.
 
-hci_uart_proto::open() may register a timer whose callback may call
-hci_uart_tx_wakeup(). There is a chance, that hci_uart_register_device()
-thread won't be fast enough to call percpu_init_rwsem().
+Add a DMI quirk table for systems on which to leave eldo2 on.
 
-Fix it my moving percpu_init_rwsem() call before p->open().
+Note an alternative fix is to turn off the CPLM3218 ambient-light-sensor
+as long as the camera sensor is being used, this is what Windows seems
+to do as a workaround (based on analyzing the DSDT). But that is not
+easy to do cleanly under Linux.
 
-INFO: trying to register non-static key.
-The code is fine but needs lockdep annotation, or maybe
-you didn't initialize this object before use?
-turning off the locking correctness validator.
-CPU: 2 PID: 18524 Comm: syz-executor.5 Not tainted 5.16.0-rc6 #9
-...
-Call Trace:
- <IRQ>
- __dump_stack lib/dump_stack.c:88 [inline]
- dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
- assign_lock_key kernel/locking/lockdep.c:951 [inline]
- register_lock_class+0x148d/0x1950 kernel/locking/lockdep.c:1263
- __lock_acquire+0x106/0x57e0 kernel/locking/lockdep.c:4906
- lock_acquire kernel/locking/lockdep.c:5637 [inline]
- lock_acquire+0x1ab/0x520 kernel/locking/lockdep.c:5602
- percpu_down_read_trylock include/linux/percpu-rwsem.h:92 [inline]
- hci_uart_tx_wakeup+0x12e/0x490 drivers/bluetooth/hci_ldisc.c:124
- h5_timed_event+0x32f/0x6a0 drivers/bluetooth/hci_h5.c:188
- call_timer_fn+0x1a5/0x6b0 kernel/time/timer.c:1421
-
-Fixes: d73e17281665 ("Bluetooth: hci_serdev: Init hci_uart proto_lock to avoid oops")
-Reported-by: Yiru Xu <xyru1999@gmail.com>
-Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
-Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
+Link: https://lore.kernel.org/linux-media/20220116215204.307649-10-hdegoede@redhat.com
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/bluetooth/hci_serdev.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ .../media/atomisp/pci/atomisp_gmin_platform.c  | 18 ++++++++++++++++++
+ 1 file changed, 18 insertions(+)
 
-diff --git a/drivers/bluetooth/hci_serdev.c b/drivers/bluetooth/hci_serdev.c
-index 9e03402ef1b3..e9a44ab3812d 100644
---- a/drivers/bluetooth/hci_serdev.c
-+++ b/drivers/bluetooth/hci_serdev.c
-@@ -305,6 +305,8 @@ int hci_uart_register_device(struct hci_uart *hu,
- 	if (err)
- 		return err;
+diff --git a/drivers/staging/media/atomisp/pci/atomisp_gmin_platform.c b/drivers/staging/media/atomisp/pci/atomisp_gmin_platform.c
+index 34480ca16474..c9ee85037644 100644
+--- a/drivers/staging/media/atomisp/pci/atomisp_gmin_platform.c
++++ b/drivers/staging/media/atomisp/pci/atomisp_gmin_platform.c
+@@ -729,6 +729,21 @@ static int axp_regulator_set(struct device *dev, struct gmin_subdev *gs,
+ 	return 0;
+ }
  
-+	percpu_init_rwsem(&hu->proto_lock);
++/*
++ * Some boards contain a hw-bug where turning eldo2 back on after having turned
++ * it off causes the CPLM3218 ambient-light-sensor on the image-sensor's I2C bus
++ * to crash, hanging the bus. Do not turn eldo2 off on these systems.
++ */
++static const struct dmi_system_id axp_leave_eldo2_on_ids[] = {
++	{
++		.matches = {
++			DMI_MATCH(DMI_SYS_VENDOR, "TrekStor"),
++			DMI_MATCH(DMI_PRODUCT_NAME, "SurfTab duo W1 10.1 (VT4)"),
++		},
++	},
++	{ }
++};
 +
- 	err = p->open(hu);
- 	if (err)
- 		goto err_open;
-@@ -327,7 +329,6 @@ int hci_uart_register_device(struct hci_uart *hu,
+ static int axp_v1p8_on(struct device *dev, struct gmin_subdev *gs)
+ {
+ 	int ret;
+@@ -763,6 +778,9 @@ static int axp_v1p8_off(struct device *dev, struct gmin_subdev *gs)
+ 	if (ret)
+ 		return ret;
  
- 	INIT_WORK(&hu->init_ready, hci_uart_init_work);
- 	INIT_WORK(&hu->write_work, hci_uart_write_work);
--	percpu_init_rwsem(&hu->proto_lock);
- 
- 	/* Only when vendor specific setup callback is provided, consider
- 	 * the manufacturer information valid. This avoids filling in the
++	if (dmi_check_system(axp_leave_eldo2_on_ids))
++		return 0;
++
+ 	ret = axp_regulator_set(dev, gs, gs->eldo2_sel_reg, gs->eldo2_1p8v,
+ 				ELDO_CTRL_REG, gs->eldo2_ctrl_shift, false);
+ 	return ret;
 -- 
 2.34.1
 
