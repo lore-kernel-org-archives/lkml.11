@@ -2,42 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D3ED6C4707E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F9B1C4707A
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:02:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381964AbiDEMAO (ORCPT
+        id S1381906AbiDEMAD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 08:00:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41420 "EHLO
+        Tue, 5 Apr 2022 08:00:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52326 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242522AbiDEIsy (ORCPT
+        with ESMTP id S245087AbiDEIxL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:48:54 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06C944B1C8;
-        Tue,  5 Apr 2022 01:37:20 -0700 (PDT)
+        Tue, 5 Apr 2022 04:53:11 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56A9DEA;
+        Tue,  5 Apr 2022 01:51:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 36C506153A;
-        Tue,  5 Apr 2022 08:37:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 47C99C385B3;
-        Tue,  5 Apr 2022 08:37:13 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id C8B7BCE1C6B;
+        Tue,  5 Apr 2022 08:51:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E03FBC385A0;
+        Tue,  5 Apr 2022 08:51:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649147833;
-        bh=95vMahAfUKw1PtQifHx+UoIMYCOQAJPVxnMWai3wuWw=;
+        s=korg; t=1649148670;
+        bh=f3FJfWn7DmcATIM4sOwwrHVAaKOBB2oLf62yYRi2Q1M=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1KTvwdP0z76Kes71nCpB83Z+E/0IoR4FSc6aTUFYYunAaLL5TLFnYajJVR+LYUz9D
-         cJ6E6NtLA2uiKCcgGtnrhSuqt9yDhq4/KHhC7Karcsfv1ToPojsxSwuP9RTFDN2uRV
-         RqVj6TgL0joqgShqhlwMRCpZel7pPnfvNY3Hjuh8=
+        b=ucP6UxrAaDEd1fzsfAquERzZCa1LEW7II4Dbt/0ma2JcMg2l7VGMsT+0Zuvclqe2B
+         MsHU8rwFYLSK5PP4rn56gOKFgCZMUGYr5APsnuLjtSpW9y2YbIxFeUo9Ah9aXM1zgq
+         1tf/4zlAveGH93daoTj1ByiPzE0bY5LB2KV+ogjA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Bill Messmer <wmessmer@microsoft.com>,
-        Jann Horn <jannh@google.com>, Kees Cook <keescook@chromium.org>
-Subject: [PATCH 5.16 0138/1017] coredump: Also dump first pages of non-executable ELF libraries
-Date:   Tue,  5 Apr 2022 09:17:31 +0200
-Message-Id: <20220405070358.299984448@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Alexander Lobakin <alexandr.lobakin@intel.com>,
+        Michal Swiatkowski <michal.swiatkowski@linux.intel.com>,
+        Kiran Bhandare <kiranx.bhandare@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 0440/1017] ice: dont reserve excessive XDP_PACKET_HEADROOM on XSK Rx to skb
+Date:   Tue,  5 Apr 2022 09:22:33 +0200
+Message-Id: <20220405070407.355033141@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -49,109 +53,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jann Horn <jannh@google.com>
+From: Alexander Lobakin <alexandr.lobakin@intel.com>
 
-commit 84158b7f6a0624b81800b4e7c90f7fb7fdecf66c upstream.
+[ Upstream commit dc44572d195e10ec41a03e09b3b5addab4af5cea ]
 
-When I rewrote the VMA dumping logic for coredumps, I changed it to
-recognize ELF library mappings based on the file being executable instead
-of the mapping having an ELF header. But turns out, distros ship many ELF
-libraries as non-executable, so the heuristic goes wrong...
+{__,}napi_alloc_skb() allocates and reserves additional NET_SKB_PAD
++ NET_IP_ALIGN for any skb.
+OTOH, ice_construct_skb_zc() currently allocates and reserves
+additional `xdp->data - xdp->data_hard_start`, which is
+XDP_PACKET_HEADROOM for XSK frames.
+There's no need for that at all as the frame is post-XDP and will
+go only to the networking stack core.
+Pass the size of the actual data only to __napi_alloc_skb() and
+don't reserve anything. This will give enough headroom for stack
+processing.
 
-Restore the old behavior where FILTER(ELF_HEADERS) dumps the first page of
-any offset-0 readable mapping that starts with the ELF magic.
-
-This fix is technically layer-breaking a bit, because it checks for
-something ELF-specific in fs/coredump.c; but since we probably want to
-share this between standard ELF and FDPIC ELF anyway, I guess it's fine?
-And this also keeps the change small for backporting.
-
-Cc: stable@vger.kernel.org
-Fixes: 429a22e776a2 ("coredump: rework elf/elf_fdpic vma_dump_size() into common helper")
-Reported-by: Bill Messmer <wmessmer@microsoft.com>
-Signed-off-by: Jann Horn <jannh@google.com>
-Signed-off-by: Kees Cook <keescook@chromium.org>
-Link: https://lore.kernel.org/r/20220126025739.2014888-1-jannh@google.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 2d4238f55697 ("ice: Add support for AF_XDP")
+Signed-off-by: Alexander Lobakin <alexandr.lobakin@intel.com>
+Reviewed-by: Michal Swiatkowski <michal.swiatkowski@linux.intel.com>
+Tested-by: Kiran Bhandare <kiranx.bhandare@intel.com>
+Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/coredump.c |   39 ++++++++++++++++++++++++++++++++++-----
- 1 file changed, 34 insertions(+), 5 deletions(-)
+ drivers/net/ethernet/intel/ice/ice_xsk.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
 
---- a/fs/coredump.c
-+++ b/fs/coredump.c
-@@ -41,6 +41,7 @@
- #include <linux/fs.h>
- #include <linux/path.h>
- #include <linux/timekeeping.h>
-+#include <linux/elf.h>
+diff --git a/drivers/net/ethernet/intel/ice/ice_xsk.c b/drivers/net/ethernet/intel/ice/ice_xsk.c
+index c895351b25e0..a2c79431afd8 100644
+--- a/drivers/net/ethernet/intel/ice/ice_xsk.c
++++ b/drivers/net/ethernet/intel/ice/ice_xsk.c
+@@ -428,17 +428,15 @@ static void ice_bump_ntc(struct ice_rx_ring *rx_ring)
+ static struct sk_buff *
+ ice_construct_skb_zc(struct ice_rx_ring *rx_ring, struct xdp_buff *xdp)
+ {
+-	unsigned int datasize_hard = xdp->data_end - xdp->data_hard_start;
+ 	unsigned int metasize = xdp->data - xdp->data_meta;
+ 	unsigned int datasize = xdp->data_end - xdp->data;
+ 	struct sk_buff *skb;
  
- #include <linux/uaccess.h>
- #include <asm/mmu_context.h>
-@@ -926,6 +927,8 @@ static bool always_dump_vma(struct vm_ar
- 	return false;
- }
+-	skb = __napi_alloc_skb(&rx_ring->q_vector->napi, datasize_hard,
++	skb = __napi_alloc_skb(&rx_ring->q_vector->napi, datasize,
+ 			       GFP_ATOMIC | __GFP_NOWARN);
+ 	if (unlikely(!skb))
+ 		return NULL;
  
-+#define DUMP_SIZE_MAYBE_ELFHDR_PLACEHOLDER 1
-+
- /*
-  * Decide how much of @vma's contents should be included in a core dump.
-  */
-@@ -985,9 +988,20 @@ static unsigned long vma_dump_size(struc
- 	 * dump the first page to aid in determining what was mapped here.
- 	 */
- 	if (FILTER(ELF_HEADERS) &&
--	    vma->vm_pgoff == 0 && (vma->vm_flags & VM_READ) &&
--	    (READ_ONCE(file_inode(vma->vm_file)->i_mode) & 0111) != 0)
--		return PAGE_SIZE;
-+	    vma->vm_pgoff == 0 && (vma->vm_flags & VM_READ)) {
-+		if ((READ_ONCE(file_inode(vma->vm_file)->i_mode) & 0111) != 0)
-+			return PAGE_SIZE;
-+
-+		/*
-+		 * ELF libraries aren't always executable.
-+		 * We'll want to check whether the mapping starts with the ELF
-+		 * magic, but not now - we're holding the mmap lock,
-+		 * so copy_from_user() doesn't work here.
-+		 * Use a placeholder instead, and fix it up later in
-+		 * dump_vma_snapshot().
-+		 */
-+		return DUMP_SIZE_MAYBE_ELFHDR_PLACEHOLDER;
-+	}
- 
- #undef	FILTER
- 
-@@ -1062,8 +1076,6 @@ int dump_vma_snapshot(struct coredump_pa
- 		m->end = vma->vm_end;
- 		m->flags = vma->vm_flags;
- 		m->dump_size = vma_dump_size(vma, cprm->mm_flags);
--
--		vma_data_size += m->dump_size;
- 	}
- 
- 	mmap_write_unlock(mm);
-@@ -1073,6 +1085,23 @@ int dump_vma_snapshot(struct coredump_pa
- 		return -EFAULT;
- 	}
- 
-+	for (i = 0; i < *vma_count; i++) {
-+		struct core_vma_metadata *m = (*vma_meta) + i;
-+
-+		if (m->dump_size == DUMP_SIZE_MAYBE_ELFHDR_PLACEHOLDER) {
-+			char elfmag[SELFMAG];
-+
-+			if (copy_from_user(elfmag, (void __user *)m->start, SELFMAG) ||
-+					memcmp(elfmag, ELFMAG, SELFMAG) != 0) {
-+				m->dump_size = 0;
-+			} else {
-+				m->dump_size = PAGE_SIZE;
-+			}
-+		}
-+
-+		vma_data_size += m->dump_size;
-+	}
-+
- 	*vma_data_size_ptr = vma_data_size;
- 	return 0;
- }
+-	skb_reserve(skb, xdp->data - xdp->data_hard_start);
+ 	memcpy(__skb_put(skb, datasize), xdp->data, datasize);
+ 	if (metasize)
+ 		skb_metadata_set(skb, metasize);
+-- 
+2.34.1
+
 
 
