@@ -2,165 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C91C8C41535
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ECA91C46467
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:17:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1574256AbiDEWzM (ORCPT
+        id S1574289AbiDEWzV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 18:55:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48528 "EHLO
+        Tue, 5 Apr 2022 18:55:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50890 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1573615AbiDETZv (ORCPT
+        with ESMTP id S1457634AbiDEQWt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 15:25:51 -0400
-Received: from fllv0016.ext.ti.com (fllv0016.ext.ti.com [198.47.19.142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D27FD1FA70;
-        Tue,  5 Apr 2022 12:23:49 -0700 (PDT)
-Received: from lelv0265.itg.ti.com ([10.180.67.224])
-        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 235JMjDv005917;
-        Tue, 5 Apr 2022 14:22:45 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1649186565;
-        bh=gyTjrVE6XZL0s0mFe2hpv610AmkYDUb5iT13rkgmKRc=;
-        h=Date:From:To:CC:Subject:References:In-Reply-To;
-        b=PKBKT8masPEuR2LOHeC3RosC3UfwVAOBbmci39ci03yRnQIY7L693HlQISqV5EhBi
-         Pf851tANHiSV/1GhVdsERrDoEtTUvfdEe//BrbqWiTHGsHPqvSkgPqqMtwCcOjlfxA
-         b+oHaewX2Mtkj8jRegPfopO8NDUb3Ee1k9Dei77w=
-Received: from DFLE115.ent.ti.com (dfle115.ent.ti.com [10.64.6.36])
-        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 235JMjtb023636
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Tue, 5 Apr 2022 14:22:45 -0500
-Received: from DFLE106.ent.ti.com (10.64.6.27) by DFLE115.ent.ti.com
- (10.64.6.36) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Tue, 5
- Apr 2022 14:22:45 -0500
-Received: from lelv0327.itg.ti.com (10.180.67.183) by DFLE106.ent.ti.com
- (10.64.6.27) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
- Frontend Transport; Tue, 5 Apr 2022 14:22:45 -0500
-Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 235JMiEb104214;
-        Tue, 5 Apr 2022 14:22:45 -0500
-Date:   Wed, 6 Apr 2022 00:52:43 +0530
-From:   Pratyush Yadav <p.yadav@ti.com>
-To:     =?utf-8?Q?C=C3=A9dric?= Le Goater <clg@kaod.org>
-CC:     <linux-spi@vger.kernel.org>, <linux-mtd@lists.infradead.org>,
-        Mark Brown <broonie@kernel.org>,
-        Tudor Ambarus <tudor.ambarus@microchip.com>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Richard Weinberger <richard@nod.at>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        <linux-aspeed@lists.ozlabs.org>, Joel Stanley <joel@jms.id.au>,
-        Andrew Jeffery <andrew@aj.id.au>,
-        Chin-Ting Kuo <chin-ting_kuo@aspeedtech.com>,
-        <devicetree@vger.kernel.org>, Rob Herring <robh+dt@kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, Tao Ren <rentao.bupt@gmail.com>
-Subject: Re: [PATCH v4 08/11] spi: aspeed: Calibrate read timings
-Message-ID: <20220405192243.7ilibbsyomg42uwg@ti.com>
-References: <20220325100849.2019209-1-clg@kaod.org>
- <20220325100849.2019209-9-clg@kaod.org>
- <20220331164115.w5q3wxlmwcg3w4ns@ti.com>
- <8c88e726-0ddb-e2ba-35df-676cfc3d0475@kaod.org>
+        Tue, 5 Apr 2022 12:22:49 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 783EA68FB8;
+        Tue,  5 Apr 2022 09:20:51 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 33847B81E76;
+        Tue,  5 Apr 2022 16:20:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id C1895C385A5;
+        Tue,  5 Apr 2022 16:20:48 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649175648;
+        bh=9P0bvPQE7TMYUDS1QHIUxX2gPSQ2fjCXf7+fuJtJhZk=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=DuxV52lKFd1sgfEeUDu9tOfV6G4bvXzk2hAfEUif0dtsVbADNdPFBYFfsMNXTfLkv
+         VPz+SSuWPJiz/2Pt29cWiLakeKR0SIbLT84b2Pt3E8GKMocCT6NBf1+gMiUYSpZR1U
+         5ZrQH2eFiZTVw6Hwf/VR+BVKI8oRuthYG7GkA2B8QeH761kRvg1kukLjz/SiXVMT8k
+         ogt3jYFymRus/NVEDcAyE5tQwCYaN4j3V/CVD6nPyHAEBZ/PbhYFUHS/ZELeTrdjLp
+         4eNyIQomhhBu43ddy3oWEs94w4OA/uuD9XExE+t+c0XbjFvAE88gftmwPdqD5hhn7h
+         wLsEkzxX4J6Ow==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 9972CE85D15;
+        Tue,  5 Apr 2022 16:20:48 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <8c88e726-0ddb-e2ba-35df-676cfc3d0475@kaod.org>
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+Subject: Re: [PATCH] tracing: Move user_events.h temporarily out of include/uapi
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <164917564862.18481.12734568923836492201.git-patchwork-notify@kernel.org>
+Date:   Tue, 05 Apr 2022 16:20:48 +0000
+References: <20220401143903.188384f3@gandalf.local.home>
+In-Reply-To: <20220401143903.188384f3@gandalf.local.home>
+To:     Steven Rostedt <rostedt@goodmis.org>
+Cc:     linux-kernel@vger.kernel.org, mathieu.desnoyers@efficios.com,
+        beaub@linux.microsoft.com, mhiramat@kernel.org,
+        linux-trace-devel@vger.kernel.org, bpf@vger.kernel.org,
+        netdev@vger.kernel.org, alexei.starovoitov@gmail.com,
+        torvalds@linux-foundation.org, michal.lkml@markovi.net,
+        ndesaulniers@google.com, linux-kbuild@vger.kernel.org,
+        masahiroy@kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 04/04/22 09:30AM, Cédric Le Goater wrote:
-> On 3/31/22 18:41, Pratyush Yadav wrote:
-> > Hi,
-> > 
-> > On 25/03/22 11:08AM, Cédric Le Goater wrote:
-> > > To accommodate the different response time of SPI transfers on different
-> > > boards and different SPI NOR devices, the Aspeed controllers provide a
-> > > set of Read Timing Compensation registers to tune the timing delays
-> > > depending on the frequency being used. The AST2600 SoC has one of these
-> > > registers per device. On the AST2500 and AST2400 SoCs, the timing
-> > > register is shared by all devices which is problematic to get good
-> > > results other than for one device.
-> > > 
-> > > The algorithm first reads a golden buffer at low speed and then performs
-> > > reads with different clocks and delay cycle settings to find a breaking
-> > > point. This selects a default good frequency for the CEx control register.
-> > > The current settings are a bit optimistic as we pick the first delay giving
-> > > good results. A safer approach would be to determine an interval and
-> > > choose the middle value.
-> > > 
-> > > Calibration is performed when the direct mapping for reads is created.
-> > > Since the underlying spi-nor object needs to be initialized to create
-> > > the spi_mem operation for direct mapping, we should be fine. Having a
-> > > specific API would clarify the requirements though.
-> > > 
-> > > Cc: Pratyush Yadav <p.yadav@ti.com>
-> > > Reviewed-by: Joel Stanley <joel@jms.id.au>
-> > > Tested-by: Joel Stanley <joel@jms.id.au>
-> > > Tested-by: Tao Ren <rentao.bupt@gmail.com>
-> > > Signed-off-by: Cédric Le Goater <clg@kaod.org>
-> > > ---
-> > >   drivers/spi/spi-aspeed-smc.c | 281 +++++++++++++++++++++++++++++++++++
-> > >   1 file changed, 281 insertions(+)
-> > > 
-> > [...]
-> > > @@ -517,6 +527,8 @@ static int aspeed_spi_chip_adjust_window(struct aspeed_spi_chip *chip,
-> > >   	return 0;
-> > >   }
-> > > +static int aspeed_spi_do_calibration(struct aspeed_spi_chip *chip);
-> > > +
-> > >   static int aspeed_spi_dirmap_create(struct spi_mem_dirmap_desc *desc)
-> > >   {
-> > >   	struct aspeed_spi *aspi = spi_controller_get_devdata(desc->mem->spi->master);
-> > > @@ -565,6 +577,8 @@ static int aspeed_spi_dirmap_create(struct spi_mem_dirmap_desc *desc)
-> > >   	chip->ctl_val[ASPEED_SPI_READ] = ctl_val;
-> > >   	writel(chip->ctl_val[ASPEED_SPI_READ], chip->ctl);
-> > > +	ret = aspeed_spi_do_calibration(chip);
-> > > +
-> > 
-> > I am still not convinced this is a good idea. The API does not say
-> > anywhere what dirmap_create must be called after the flash is completely
-> > initialized, though that is what is done currently in practice.
-> 
-> Yes because we wouldn't have a correct 'spi_mem_dirmap_info' if it wasn't
-> the case. May be change the documentation ?
+Hello:
 
-SPI NOR knows what protocol and opcodes it would use before it actually 
-puts the flash in that mode. So in theory it could call dirmap_create() 
-before it has put the flash in say 8D-8D-8D mode. I don't see much 
-reason to do so in practice, but who knows, that might change. This is 
-why I would like to hear what other people think.
+This patch was applied to netdev/net-next.git (master)
+by Steven Rostedt (Google) <rostedt@goodmis.org>:
 
+On Fri, 1 Apr 2022 14:39:03 -0400 you wrote:
+> From: "Steven Rostedt (Google)" <rostedt@goodmis.org>
 > 
-> > I think
-> > an explicit API to mark flash as "ready for calibration" would be a
-> > better idea.
+> While user_events API is under development and has been marked for broken
+> to not let the API become fixed, move the header file out of the uapi
+> directory. This is to prevent it from being installed, then later changed,
+> and then have an old distro user space update with a new kernel, where
+> applications see the user_events being available, but the old header is in
+> place, and then they get compiled incorrectly.
 > 
-> OK. Since the above is a oneliner, it should not be a problem to move
-> it under a new handler if needed.
-> 
-> The dirmap_create() handler expects the spi-mem descriptor and the field
-> 'desc->info.op_tmpl' to be correctly initialized in order to compute the
-> control register value, which is a requirement for dirmap_read(). The
-> calibration sequence simply comes after.
-> 
-> AFAICT, there is nothing incorrect today.
+> [...]
 
-In practice, no there is nothing incorrect. But as I explained above, it 
-is certainly possible to call dirmap_create() before the flash is ready.
+Here is the summary with links:
+  - tracing: Move user_events.h temporarily out of include/uapi
+    https://git.kernel.org/netdev/net-next/c/5cfff569cab8
 
-> 
-> > Tudor/Mark/Miquel, what do you think?
-> 
-> 
-> Thanks,
-> 
-> C.
-
+You are awesome, thank you!
 -- 
-Regards,
-Pratyush Yadav
-Texas Instruments Inc.
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
