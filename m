@@ -2,76 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 90588C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B16F6C43219
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:41:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234664AbiDEXMy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 19:12:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59452 "EHLO
+        id S240724AbiDEXNJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 19:13:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49022 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353169AbiDEKFt (ORCPT
+        with ESMTP id S1573252AbiDESeg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:05:49 -0400
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 385E2BE9D3;
-        Tue,  5 Apr 2022 02:54:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649152465; x=1680688465;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=FvrfFAwIBkVcQbb44q338G+GvCQgvfd7wKltudNp7nY=;
-  b=hhOW0vpitTEhCP8nc2qeltOhLzwnDzEgjFoVOlq6WKo/MkNN8vZcojXN
-   FE0bDOvgd2gW7m+F88iRODUsH1GyVrmWrTr/Vs9J3VZetdLwXonY/p4u7
-   Ius0XkJI+OSRMCMjI1Coz4WWeUMI8A2idxgEwiA6CffOdh0TPbnIBHIum
-   UqL+xCpg/ujcZlexuK7ZD6aiBQvni8oXv5yPIPT7P1JwLU+WagVQyvX2P
-   wpDwVDc5XGE5EIjFUWywBeWIeqWtAuItnv4yNJb3+oG8/Utf2pUK52Mid
-   j2XasMRuahzsz7JZAP1mQbcCKwT9NZjpfVSn+7nz6Hg/7vJZdxx78RXfc
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10307"; a="347150668"
-X-IronPort-AV: E=Sophos;i="5.90,236,1643702400"; 
-   d="scan'208";a="347150668"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2022 02:54:24 -0700
-X-IronPort-AV: E=Sophos;i="5.90,236,1643702400"; 
-   d="scan'208";a="556460066"
-Received: from lahna.fi.intel.com (HELO lahna) ([10.237.72.162])
-  by fmsmga007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2022 02:54:21 -0700
-Received: by lahna (sSMTP sendmail emulation); Tue, 05 Apr 2022 12:54:19 +0300
-Date:   Tue, 5 Apr 2022 12:54:19 +0300
-From:   Mika Westerberg <mika.westerberg@linux.intel.com>
-To:     "Rafael J. Wysocki" <rjw@rjwysocki.net>
-Cc:     Linux PCI <linux-pci@vger.kernel.org>,
-        Linux PM <linux-pm@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Bjorn Helgaas <helgaas@kernel.org>
-Subject: Re: [PATCH v1 2/2] PCI: PM: Resume bus after putting the bridge into
- D0 entirely
-Message-ID: <YkwRyxJWTFs7HnDM@lahna>
-References: <4198163.ejJDZkT8p0@kreacher>
- <1807986.atdPhlSkOF@kreacher>
+        Tue, 5 Apr 2022 14:34:36 -0400
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2062.outbound.protection.outlook.com [40.107.94.62])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C74813F6F;
+        Tue,  5 Apr 2022 11:32:37 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=hYrH2F9nCHNyaZ/pIuU2C3PCoy/uZVu0EjGMSYJNJgP4S+rMvp/HR09g24MV1jTNyK50iVjrJQQyq0sS0AH+GS0kbcwXHY1L9T+AjRUKYPs66z7QcNNIBwXsNpwWgofGRJxfY1mW/eUUnVXaBzLPjUWBwKYUlM/RFd2PnTOzkmyULc98xJKQkvqz44Gyh9yEi7i6L//hcun5W0TBq/3iCH7hyHas24bv/4PyeGwByyVQsTkAb0rwEsdsTm/ZVHdUxJvXLUToANRGLKnYDwrAIhK/u7q5AXcfIMMMIOhH7FyBqnFieD0Hhxhcmcy1vsdT8d/2JuIpv+oOOa/6RJjBkQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=zIW66FtLtyRL6AQP7SjLFr33sMFJ1cRKJ151pIJvpo0=;
+ b=hC7jdwHbQvf1aAUB4pKSyHmkLCUMIEPY2+yD5qEyH3JzTu/jFnOrpRODqen0XMgFEs3/pAUWQpNjz1LBlMDHRHxoosz7ZJOO0/LPR6QOsQjNDIU0OIisMtILBKko2NQTnp11aZkF/o32x+AVozKBNv45tpAXHZJ6R5/5ri2UQPKkPURvn3PELNY/ZSy9+mEpq7ciaoNY+E1r2fsU/kfZq5VeJMSZc52QHgxHMiAKdSjvOd8d6MyYiOKh6a1P6LUNNERWBbbrchlrVsnQKbWl9uRCaz+Jog1lUSHSvWIfnZi50hX0Fnz5xl7OHtvlt70huq7UDaO2iNvXSVzOtNoHLw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 165.204.84.17) smtp.rcpttodomain=alien8.de smtp.mailfrom=amd.com; dmarc=pass
+ (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=zIW66FtLtyRL6AQP7SjLFr33sMFJ1cRKJ151pIJvpo0=;
+ b=nU7TK2zlBTPExkF6jBxivGliOnNInhvlz8xWH+k/TKF0eqMC7FkKsZ33jzJ1eqWSS+dkXbo2dxmT+wQCURy9yN2Udr1InxZi8H1sNve7gwwblUx8107c7vx1K2Qe2z5FKgaS5bEd9BnKv/26rIkQXVpdlPsvSE9fyJTZ/qa4BWY=
+Received: from BN6PR22CA0033.namprd22.prod.outlook.com (2603:10b6:404:37::19)
+ by BN9PR12MB5065.namprd12.prod.outlook.com (2603:10b6:408:132::12) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5123.31; Tue, 5 Apr
+ 2022 18:32:35 +0000
+Received: from BN8NAM11FT041.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:404:37:cafe::56) by BN6PR22CA0033.outlook.office365.com
+ (2603:10b6:404:37::19) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5123.31 via Frontend
+ Transport; Tue, 5 Apr 2022 18:32:35 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
+ smtp.mailfrom=amd.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=amd.com;
+Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
+ 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
+ client-ip=165.204.84.17; helo=SATLEXMB04.amd.com;
+Received: from SATLEXMB04.amd.com (165.204.84.17) by
+ BN8NAM11FT041.mail.protection.outlook.com (10.13.177.18) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.5123.19 via Frontend Transport; Tue, 5 Apr 2022 18:32:33 +0000
+Received: from ethanolx1ade-milan-genesis.amd.com (10.180.168.240) by
+ SATLEXMB04.amd.com (10.181.40.145) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Tue, 5 Apr 2022 13:32:32 -0500
+From:   Carlos Bilbao <carlos.bilbao@amd.com>
+To:     <bp@alien8.de>, <yazen.ghannam@amd.com>
+CC:     <tglx@linutronix.de>, <mingo@redhat.com>,
+        <dave.hansen@linux.intel.com>, <x86@kernel.org>,
+        <linux-kernel@vger.kernel.org>, <linux-edac@vger.kernel.org>,
+        <bilbao@vt.edu>, Carlos Bilbao <carlos.bilbao@amd.com>
+Subject: [PATCH 0/2] x86/mce: Simplify AMD MCEs severity grading and include messages for panic cases
+Date:   Tue, 5 Apr 2022 13:32:11 -0500
+Message-ID: <20220405183212.354606-1-carlos.bilbao@amd.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1807986.atdPhlSkOF@kreacher>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.180.168.240]
+X-ClientProxiedBy: SATLEXMB03.amd.com (10.181.40.144) To SATLEXMB04.amd.com
+ (10.181.40.145)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 49e29d01-8f3f-4920-05be-08da1732a6a2
+X-MS-TrafficTypeDiagnostic: BN9PR12MB5065:EE_
+X-Microsoft-Antispam-PRVS: <BN9PR12MB5065F2641D366453E83DC678F8E49@BN9PR12MB5065.namprd12.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: buwXvagm+UZeHzjajuO+s6ILMCnzyy5XCbAipNL6cbQHv6+DIBR6ifJcSaGhwmM8aF9hFJOduWc3Ur3edAw/peGdHzSela0OYlzoZP8PM4j12ep0duZJxqfuJTmMiLU8wauvVwI+puAPwzNe4ClrBuQ9b2LuETy1HIu0UkvJBE7ZSm59AlHNwGVp9gapaOQ/AGgj8l5Ab71jucbcyA6W7VTeijAJGb2vlknEjH9hDR5r8dFnzVdeCJnkBqD7Xlxs3+O6OGb/2PDF+qXv2PnVlD3OhXlvRLGOYPPovFVw9v2DLJBZ/I5ynYhConZcBY5hw9mTl+2MjPcd2PQPzM2aBESr9cblXI3e/L6cUoJeRa6mVHnYsP5eqPgig6MGz1xFTAfJovmkWPj47j14GRYLNZ6XDoJta2vDyzx4/ENl7EiIC/3ICbCK/SKAyCmBQU6jhbLF62e5acX1LD+7b54hUrkwJat7Z6Y8DrhGABr+KjHQNAVAKvItSDbZc/G0kILD0zqnvDRR9hyBYgYvFNZnvJBF60ty+vCkkqXTRcK4gaHbjNIKB7Uu7xPgkYCdLInBsLNJjPJFXMR2MFm43xw15Eay0Nr0ww05S6b+2T7L/PRa5ID9ej+gePr1X3sMZpZytGuYvdCRvrbrZ3ztqhf+Oft1ZpsqNr9nqs4QdvdKNWBlVZy5NEEGGur5yzsHpaOR30YElmskjDOTZSFN8wukkQ==
+X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230001)(4636009)(40470700004)(46966006)(36840700001)(70586007)(36860700001)(16526019)(356005)(186003)(2906002)(26005)(8936002)(8676002)(36756003)(110136005)(15650500001)(6636002)(1076003)(316002)(2616005)(54906003)(336012)(426003)(70206006)(83380400001)(4744005)(47076005)(4326008)(81166007)(82310400005)(6666004)(44832011)(40460700003)(5660300002)(86362001)(508600001)(7696005)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Apr 2022 18:32:33.7005
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 49e29d01-8f3f-4920-05be-08da1732a6a2
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
+X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT041.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN9PR12MB5065
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Apr 04, 2022 at 05:42:27PM +0200, Rafael J. Wysocki wrote:
-> From: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
-> 
-> It is rather counter-intuitive to attempt to resume devices on a bus
-> segment before completing a transition of their parent bridge into
-> D0, so do that when the transition is complete.
-> 
-> This matters especially when the transition in question is not
-> successful, in which case it doesn't make sense to even try to
-> resume the child devices at all.
+This patchset simplifies the grading of machine errors on AMD's MCE
+grading logic mce_severity_amd(), which helps the MCE handler determine
+what actions to take. If the error is graded as a PANIC, the EDAC driver
+will not decode; so we also include new error messages to describe the MCE
+and help debugging critical errors.
 
-Good point.
+Carlos Bilbao (2):
+  x86/mce: x86/mce: Simplify AMD severity grading logic
+  x86/mce: Add messages for panic errors in AMD's MCE grading
+---
+ arch/x86/kernel/cpu/mce/severity.c | 113 ++++++++++++-----------------
+ 1 file changed, 48 insertions(+), 65 deletions(-)
 
-> Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+-- 
+2.31.1
 
-Reviewed-by: Mika Westerberg <mika.westerberg@linux.intel.com>
