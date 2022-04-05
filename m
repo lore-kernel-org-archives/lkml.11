@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5FF80C43217
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 07:46:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 96CE7C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 07:46:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231437AbiDEHsi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 03:48:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56104 "EHLO
+        id S232140AbiDEHso (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 03:48:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54904 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231985AbiDEHpf (ORCPT
+        with ESMTP id S232142AbiDEHpf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Apr 2022 03:45:35 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7FBE92D2C;
-        Tue,  5 Apr 2022 00:41:24 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39F4897B8F;
+        Tue,  5 Apr 2022 00:41:26 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7E46BB81B75;
-        Tue,  5 Apr 2022 07:41:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C77B9C340EE;
-        Tue,  5 Apr 2022 07:41:21 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A8B2E616C4;
+        Tue,  5 Apr 2022 07:41:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AECB9C340EE;
+        Tue,  5 Apr 2022 07:41:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649144482;
-        bh=u8cclAT3USm2ckXvRzJKzZhIhuNCejG+lU+PnBp3YA8=;
+        s=korg; t=1649144485;
+        bh=G+YiT66kRz8BTTb98UipvbU30K5XF4BkKoHnpGnAnow=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ev6EWY1UZyhYdqeVt2j+Fy/JGjZ4OnhsJ88Fzzvag7RbmLuD0KngHmbVmrouebECq
-         0za+Ia1KTc8UBzholJ8cfiIkYcCFlBjOnu74xbda60i6qZOMvxR+1xGNQt9FdBbAv5
-         y1jfUNqiJitb00Jdf9hSY+8NuLH3fuVyKf97aOD8=
+        b=1uRV3RRo4O5qyqa+SUW0pzMuSuybCSUtHDRIuereHJTvhODRwzt90UBzT9eY/z8pX
+         d/kAkfCzMphjHgS8SP4KBAsJDYVQ3H2yiEgvf1vqH9gWTgNndNp/e0kKb7vuggPIr6
+         RfgKCt9IcQhW1V4h+hKrYGr98ioAxPaIdSai2yDQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Alexander Usyskin <alexander.usyskin@intel.com>,
-        Tomas Winkler <tomas.winkler@intel.com>
-Subject: [PATCH 5.17 0021/1126] mei: avoid iterator usage outside of list_for_each_entry
-Date:   Tue,  5 Apr 2022 09:12:48 +0200
-Message-Id: <20220405070408.167043842@linuxfoundation.org>
+        stable@vger.kernel.org, Song Liu <songliubraving@fb.com>,
+        Jens Axboe <axboe@kernel.dk>, Song Liu <song@kernel.org>
+Subject: [PATCH 5.17 0012/1126] block: ensure plug merging checks the correct queue at least once
+Date:   Tue,  5 Apr 2022 09:12:39 +0200
+Message-Id: <20220405070407.899704431@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -49,78 +48,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alexander Usyskin <alexander.usyskin@intel.com>
+From: Jens Axboe <axboe@kernel.dk>
 
-commit c10187b1c5ebb8681ca467ab7b0ded5ea415d258 upstream.
+commit 5b2050718d095cd3242d1f42aaaea3a2fec8e6f0 upstream.
 
-Usage of the iterator outside of the list_for_each_entry
-is considered harmful. https://lkml.org/lkml/2022/2/17/1032
+Song reports that a RAID rebuild workload runs much slower recently,
+and it is seeing a lot less merging than it did previously. The reason
+is that a previous commit reduced the amount of work we do for plug
+merging. RAID rebuild interleaves requests between disks, so a last-entry
+check in plug merging always misses a merge opportunity since we always
+find a different disk than what we are looking for.
 
-Do not reference the loop variable outside of the loop,
-by rearranging the orders of execution.
-Instead of performing search loop and checking outside the loop
-if the end of the list was hit and no matching element was found,
-the execution is performed inside the loop upon a successful match
-followed by a goto statement to the next step,
-therefore no condition has to be performed after the loop has ended.
+Modify the logic such that it's still a one-hit cache, but ensure that
+we check enough to find the right target before giving up.
 
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Alexander Usyskin <alexander.usyskin@intel.com>
-Signed-off-by: Tomas Winkler <tomas.winkler@intel.com>
-Link: https://lore.kernel.org/r/20220308095926.300412-1-tomas.winkler@intel.com
+Fixes: d38a9c04c0d5 ("block: only check previous entry for plug merge attempt")
+Reported-and-tested-by: Song Liu <song@kernel.org>
+Reviewed-by: Song Liu <songliubraving@fb.com>
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/misc/mei/interrupt.c |   35 +++++++++++++++--------------------
- 1 file changed, 15 insertions(+), 20 deletions(-)
+ block/blk-merge.c |   20 ++++++++++++++------
+ 1 file changed, 14 insertions(+), 6 deletions(-)
 
---- a/drivers/misc/mei/interrupt.c
-+++ b/drivers/misc/mei/interrupt.c
-@@ -424,31 +424,26 @@ int mei_irq_read_handler(struct mei_devi
- 	list_for_each_entry(cl, &dev->file_list, link) {
- 		if (mei_cl_hbm_equal(cl, mei_hdr)) {
- 			cl_dbg(dev, cl, "got a message\n");
--			break;
-+			ret = mei_cl_irq_read_msg(cl, mei_hdr, meta_hdr, cmpl_list);
-+			goto reset_slots;
- 		}
- 	}
+--- a/block/blk-merge.c
++++ b/block/blk-merge.c
+@@ -1089,12 +1089,20 @@ bool blk_attempt_plug_merge(struct reque
+ 	if (!plug || rq_list_empty(plug->mq_list))
+ 		return false;
  
- 	/* if no recipient cl was found we assume corrupted header */
--	if (&cl->link == &dev->file_list) {
--		/* A message for not connected fixed address clients
--		 * should be silently discarded
--		 * On power down client may be force cleaned,
--		 * silently discard such messages
--		 */
--		if (hdr_is_fixed(mei_hdr) ||
--		    dev->dev_state == MEI_DEV_POWER_DOWN) {
--			mei_irq_discard_msg(dev, mei_hdr, mei_hdr->length);
--			ret = 0;
--			goto reset_slots;
--		}
--		dev_err(dev->dev, "no destination client found 0x%08X\n",
--				dev->rd_msg_hdr[0]);
--		ret = -EBADMSG;
--		goto end;
-+	/* A message for not connected fixed address clients
-+	 * should be silently discarded
-+	 * On power down client may be force cleaned,
-+	 * silently discard such messages
-+	 */
-+	if (hdr_is_fixed(mei_hdr) ||
-+	    dev->dev_state == MEI_DEV_POWER_DOWN) {
-+		mei_irq_discard_msg(dev, mei_hdr, mei_hdr->length);
-+		ret = 0;
-+		goto reset_slots;
+-	/* check the previously added entry for a quick merge attempt */
+-	rq = rq_list_peek(&plug->mq_list);
+-	if (rq->q == q) {
+-		if (blk_attempt_bio_merge(q, rq, bio, nr_segs, false) ==
+-				BIO_MERGE_OK)
+-			return true;
++	rq_list_for_each(&plug->mq_list, rq) {
++		if (rq->q == q) {
++			if (blk_attempt_bio_merge(q, rq, bio, nr_segs, false) ==
++			    BIO_MERGE_OK)
++				return true;
++			break;
++		}
++
++		/*
++		 * Only keep iterating plug list for merges if we have multiple
++		 * queues
++		 */
++		if (!plug->multiple_queues)
++			break;
  	}
--
--	ret = mei_cl_irq_read_msg(cl, mei_hdr, meta_hdr, cmpl_list);
--
-+	dev_err(dev->dev, "no destination client found 0x%08X\n", dev->rd_msg_hdr[0]);
-+	ret = -EBADMSG;
-+	goto end;
- 
- reset_slots:
- 	/* reset the number of slots and header */
+ 	return false;
+ }
 
 
