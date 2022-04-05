@@ -2,48 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C1F1BC4167E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9423DC4167B
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 10:50:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348084AbiDEKpn (ORCPT
+        id S1347966AbiDEKpb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 06:45:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52206 "EHLO
+        Tue, 5 Apr 2022 06:45:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45766 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234409AbiDEIdz (ORCPT
+        with ESMTP id S240797AbiDEIcc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:33:55 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFEE3DE7;
-        Tue,  5 Apr 2022 01:31:55 -0700 (PDT)
+        Tue, 5 Apr 2022 04:32:32 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DBE5B8A32C;
+        Tue,  5 Apr 2022 01:25:01 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1970F61001;
-        Tue,  5 Apr 2022 08:31:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 264CCC385A1;
-        Tue,  5 Apr 2022 08:31:53 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7CCC4B81B13;
+        Tue,  5 Apr 2022 08:25:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D4C49C385A0;
+        Tue,  5 Apr 2022 08:24:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649147514;
-        bh=tzu4ubjxmqozK98KomH+7/MS5yAMop4h8j39lIkn8Dk=;
+        s=korg; t=1649147099;
+        bh=/l/iLNcIVgBl6tLCGjPlH9RZNhMIyV8EQX/3Y4TFIDo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=sp2ayaC7Q0UOMT7+2UrkmAnJayYWkziRqIhhif8wrVoGo9x+8rFqBf66oHiMIX38W
-         OOImkwqV/L5j0nfCTWUpCO/ogdY6+RIX5Jm+pvzLQQLvYKdU9V6QTgqRtWxUpZo5Mm
-         s+nF/OrJ4y59Qlv2wf2bcvzIpM9Za61nHiHXDdFQ=
+        b=BRJer2+zOO+JLl8DYRgpQB67qn10W5vitOSZ4aBv8F4hnn/SUerFpwotoErYsZUSm
+         6/6Fvc62rxRnn2xZs9qyBJ9Gny4wN67GqQt9VGeAlB4fEKXanAfF5tpSjWbmqguoMQ
+         SgNfAxkO8su8k6X5DyauoCJOMxYDFJGvQt1jz7CI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Laurence Oberman <loberman@redhat.com>,
-        Ming Lei <ming.lei@redhat.com>,
-        David Jeffery <djeffery@redhat.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0023/1017] scsi: fnic: Finish scsi_cmnd before dropping the spinlock
-Date:   Tue,  5 Apr 2022 09:15:36 +0200
-Message-Id: <20220405070354.863867911@linuxfoundation.org>
+        stable@vger.kernel.org, Maxime Bizon <mbizon@freebox.fr>,
+        Christophe Leroy <christophe.leroy@csgroup.eu>,
+        Russell Currey <ruscur@russell.cc>,
+        Michael Ellerman <mpe@ellerman.id.au>
+Subject: [PATCH 5.17 0964/1126] powerpc: Add set_memory_{p/np}() and remove set_memory_attr()
+Date:   Tue,  5 Apr 2022 09:28:31 +0200
+Message-Id: <20220405070435.803465471@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
-References: <20220405070354.155796697@linuxfoundation.org>
+In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
+References: <20220405070407.513532867@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -52,84 +51,178 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: David Jeffery <djeffery@redhat.com>
+From: Christophe Leroy <christophe.leroy@csgroup.eu>
 
-[ Upstream commit 733ab7e1b5d1041204c4ca7373f6e6f9d08e3283 ]
+commit f222ab83df92acf72691a2021e1f0d99880dcdf1 upstream.
 
-When aborting a SCSI command through fnic, there is a race with the fnic
-interrupt handler which can result in the SCSI command and its request
-being completed twice. If the interrupt handler claims the command by
-setting CMD_SP to NULL first, the abort handler assumes the interrupt
-handler has completed the command and returns SUCCESS, causing the request
-for the scsi_cmnd to be re-queued.
+set_memory_attr() was implemented by commit 4d1755b6a762 ("powerpc/mm:
+implement set_memory_attr()") because the set_memory_xx() couldn't
+be used at that time to modify memory "on the fly" as explained it
+the commit.
 
-But the interrupt handler may not have finished the command yet. After it
-drops the spinlock protecting CMD_SP, it does memory cleanup before finally
-calling scsi_done() to complete the scsi_cmnd. If the call to scsi_done
-occurs after the abort handler finishes and re-queues the request, the
-completion of the scsi_cmnd will advance and try to double complete a
-request already queued for retry.
+But set_memory_attr() uses set_pte_at() which leads to warnings when
+CONFIG_DEBUG_VM is selected, because set_pte_at() is unexpected for
+updating existing page table entries.
 
-This patch fixes the issue by moving scsi_done() and any other use of
-scsi_cmnd to before the spinlock is released by the interrupt handler.
+The check could be bypassed by using __set_pte_at() instead,
+as it was the case before commit c988cfd38e48 ("powerpc/32:
+use set_memory_attr()") but since commit 9f7853d7609d ("powerpc/mm:
+Fix set_memory_*() against concurrent accesses") it is now possible
+to use set_memory_xx() functions to update page table entries
+"on the fly" because the update is now atomic.
 
-Link: https://lore.kernel.org/r/20220311184359.2345319-1-djeffery@redhat.com
-Reviewed-by: Laurence Oberman <loberman@redhat.com>
-Reviewed-by: Ming Lei <ming.lei@redhat.com>
-Signed-off-by: David Jeffery <djeffery@redhat.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+For DEBUG_PAGEALLOC we need to clear and set back _PAGE_PRESENT.
+Add set_memory_np() and set_memory_p() for that.
+
+Replace all uses of set_memory_attr() by the relevant set_memory_xx()
+and remove set_memory_attr().
+
+Fixes: c988cfd38e48 ("powerpc/32: use set_memory_attr()")
+Cc: stable@vger.kernel.org
+Reported-by: Maxime Bizon <mbizon@freebox.fr>
+Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
+Tested-by: Maxime Bizon <mbizon@freebox.fr>
+Reviewed-by: Russell Currey <ruscur@russell.cc>
+Depends-on: 9f7853d7609d ("powerpc/mm: Fix set_memory_*() against concurrent accesses")
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/cda2b44b55c96f9ac69fa92e68c01084ec9495c5.1640344012.git.christophe.leroy@csgroup.eu
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/scsi/fnic/fnic_scsi.c | 13 ++++++-------
- 1 file changed, 6 insertions(+), 7 deletions(-)
+ arch/powerpc/include/asm/set_memory.h |   12 +++++++++-
+ arch/powerpc/mm/pageattr.c            |   39 +++++-----------------------------
+ arch/powerpc/mm/pgtable_32.c          |   24 +++++++++-----------
+ 3 files changed, 28 insertions(+), 47 deletions(-)
 
-diff --git a/drivers/scsi/fnic/fnic_scsi.c b/drivers/scsi/fnic/fnic_scsi.c
-index 88c549f257db..40a52feb315d 100644
---- a/drivers/scsi/fnic/fnic_scsi.c
-+++ b/drivers/scsi/fnic/fnic_scsi.c
-@@ -986,8 +986,6 @@ static void fnic_fcpio_icmnd_cmpl_handler(struct fnic *fnic,
- 	CMD_SP(sc) = NULL;
- 	CMD_FLAGS(sc) |= FNIC_IO_DONE;
+--- a/arch/powerpc/include/asm/set_memory.h
++++ b/arch/powerpc/include/asm/set_memory.h
+@@ -6,6 +6,8 @@
+ #define SET_MEMORY_RW	1
+ #define SET_MEMORY_NX	2
+ #define SET_MEMORY_X	3
++#define SET_MEMORY_NP	4	/* Set memory non present */
++#define SET_MEMORY_P	5	/* Set memory present */
  
--	spin_unlock_irqrestore(io_lock, flags);
--
- 	if (hdr_status != FCPIO_SUCCESS) {
- 		atomic64_inc(&fnic_stats->io_stats.io_failures);
- 		shost_printk(KERN_ERR, fnic->lport->host, "hdr status = %s\n",
-@@ -996,8 +994,6 @@ static void fnic_fcpio_icmnd_cmpl_handler(struct fnic *fnic,
+ int change_memory_attr(unsigned long addr, int numpages, long action);
  
- 	fnic_release_ioreq_buf(fnic, io_req, sc);
- 
--	mempool_free(io_req, fnic->io_req_pool);
--
- 	cmd_trace = ((u64)hdr_status << 56) |
- 		  (u64)icmnd_cmpl->scsi_status << 48 |
- 		  (u64)icmnd_cmpl->flags << 40 | (u64)sc->cmnd[0] << 32 |
-@@ -1021,6 +1017,12 @@ static void fnic_fcpio_icmnd_cmpl_handler(struct fnic *fnic,
- 	} else
- 		fnic->lport->host_stats.fcp_control_requests++;
- 
-+	/* Call SCSI completion function to complete the IO */
-+	scsi_done(sc);
-+	spin_unlock_irqrestore(io_lock, flags);
-+
-+	mempool_free(io_req, fnic->io_req_pool);
-+
- 	atomic64_dec(&fnic_stats->io_stats.active_ios);
- 	if (atomic64_read(&fnic->io_cmpl_skip))
- 		atomic64_dec(&fnic->io_cmpl_skip);
-@@ -1049,9 +1051,6 @@ static void fnic_fcpio_icmnd_cmpl_handler(struct fnic *fnic,
- 		if(io_duration_time > atomic64_read(&fnic_stats->io_stats.current_max_io_time))
- 			atomic64_set(&fnic_stats->io_stats.current_max_io_time, io_duration_time);
- 	}
--
--	/* Call SCSI completion function to complete the IO */
--	scsi_done(sc);
+@@ -29,6 +31,14 @@ static inline int set_memory_x(unsigned
+ 	return change_memory_attr(addr, numpages, SET_MEMORY_X);
  }
  
- /* fnic_fcpio_itmf_cmpl_handler
--- 
-2.34.1
-
+-int set_memory_attr(unsigned long addr, int numpages, pgprot_t prot);
++static inline int set_memory_np(unsigned long addr, int numpages)
++{
++	return change_memory_attr(addr, numpages, SET_MEMORY_NP);
++}
++
++static inline int set_memory_p(unsigned long addr, int numpages)
++{
++	return change_memory_attr(addr, numpages, SET_MEMORY_P);
++}
+ 
+ #endif
+--- a/arch/powerpc/mm/pageattr.c
++++ b/arch/powerpc/mm/pageattr.c
+@@ -48,6 +48,12 @@ static int change_page_attr(pte_t *ptep,
+ 	case SET_MEMORY_X:
+ 		pte = pte_mkexec(pte);
+ 		break;
++	case SET_MEMORY_NP:
++		pte_update(&init_mm, addr, ptep, _PAGE_PRESENT, 0, 0);
++		break;
++	case SET_MEMORY_P:
++		pte_update(&init_mm, addr, ptep, 0, _PAGE_PRESENT, 0);
++		break;
+ 	default:
+ 		WARN_ON_ONCE(1);
+ 		break;
+@@ -96,36 +102,3 @@ int change_memory_attr(unsigned long add
+ 	return apply_to_existing_page_range(&init_mm, start, size,
+ 					    change_page_attr, (void *)action);
+ }
+-
+-/*
+- * Set the attributes of a page:
+- *
+- * This function is used by PPC32 at the end of init to set final kernel memory
+- * protection. It includes changing the maping of the page it is executing from
+- * and data pages it is using.
+- */
+-static int set_page_attr(pte_t *ptep, unsigned long addr, void *data)
+-{
+-	pgprot_t prot = __pgprot((unsigned long)data);
+-
+-	spin_lock(&init_mm.page_table_lock);
+-
+-	set_pte_at(&init_mm, addr, ptep, pte_modify(*ptep, prot));
+-	flush_tlb_kernel_range(addr, addr + PAGE_SIZE);
+-
+-	spin_unlock(&init_mm.page_table_lock);
+-
+-	return 0;
+-}
+-
+-int set_memory_attr(unsigned long addr, int numpages, pgprot_t prot)
+-{
+-	unsigned long start = ALIGN_DOWN(addr, PAGE_SIZE);
+-	unsigned long sz = numpages * PAGE_SIZE;
+-
+-	if (numpages <= 0)
+-		return 0;
+-
+-	return apply_to_existing_page_range(&init_mm, start, sz, set_page_attr,
+-					    (void *)pgprot_val(prot));
+-}
+--- a/arch/powerpc/mm/pgtable_32.c
++++ b/arch/powerpc/mm/pgtable_32.c
+@@ -135,10 +135,12 @@ void mark_initmem_nx(void)
+ 	unsigned long numpages = PFN_UP((unsigned long)_einittext) -
+ 				 PFN_DOWN((unsigned long)_sinittext);
+ 
+-	if (v_block_mapped((unsigned long)_sinittext))
++	if (v_block_mapped((unsigned long)_sinittext)) {
+ 		mmu_mark_initmem_nx();
+-	else
+-		set_memory_attr((unsigned long)_sinittext, numpages, PAGE_KERNEL);
++	} else {
++		set_memory_nx((unsigned long)_sinittext, numpages);
++		set_memory_rw((unsigned long)_sinittext, numpages);
++	}
+ }
+ 
+ #ifdef CONFIG_STRICT_KERNEL_RWX
+@@ -152,18 +154,14 @@ void mark_rodata_ro(void)
+ 		return;
+ 	}
+ 
+-	numpages = PFN_UP((unsigned long)_etext) -
+-		   PFN_DOWN((unsigned long)_stext);
+-
+-	set_memory_attr((unsigned long)_stext, numpages, PAGE_KERNEL_ROX);
+ 	/*
+-	 * mark .rodata as read only. Use __init_begin rather than __end_rodata
+-	 * to cover NOTES and EXCEPTION_TABLE.
++	 * mark .text and .rodata as read only. Use __init_begin rather than
++	 * __end_rodata to cover NOTES and EXCEPTION_TABLE.
+ 	 */
+ 	numpages = PFN_UP((unsigned long)__init_begin) -
+-		   PFN_DOWN((unsigned long)__start_rodata);
++		   PFN_DOWN((unsigned long)_stext);
+ 
+-	set_memory_attr((unsigned long)__start_rodata, numpages, PAGE_KERNEL_RO);
++	set_memory_ro((unsigned long)_stext, numpages);
+ 
+ 	// mark_initmem_nx() should have already run by now
+ 	ptdump_check_wx();
+@@ -179,8 +177,8 @@ void __kernel_map_pages(struct page *pag
+ 		return;
+ 
+ 	if (enable)
+-		set_memory_attr(addr, numpages, PAGE_KERNEL);
++		set_memory_p(addr, numpages);
+ 	else
+-		set_memory_attr(addr, numpages, __pgprot(0));
++		set_memory_np(addr, numpages);
+ }
+ #endif /* CONFIG_DEBUG_PAGEALLOC */
 
 
