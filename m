@@ -2,47 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 90AB6C3527E
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 21:09:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 91216C4167E
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 21:10:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348274AbiDEVJe (ORCPT
+        id S1352064AbiDEVKK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 17:09:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59282 "EHLO
+        Tue, 5 Apr 2022 17:10:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43216 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356139AbiDEKW7 (ORCPT
+        with ESMTP id S1349426AbiDEJtu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:22:59 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EA89B82DB;
-        Tue,  5 Apr 2022 03:06:44 -0700 (PDT)
+        Tue, 5 Apr 2022 05:49:50 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DF4D22284;
+        Tue,  5 Apr 2022 02:45:30 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1B4D3B81BC0;
-        Tue,  5 Apr 2022 10:06:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 698A2C385A2;
-        Tue,  5 Apr 2022 10:06:41 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9C61D61576;
+        Tue,  5 Apr 2022 09:45:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A8135C385A3;
+        Tue,  5 Apr 2022 09:45:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649153201;
-        bh=Jc+JzbY33FN9h8pyG2ldw03fJ9OJVncRfFwxDY8PMaw=;
+        s=korg; t=1649151929;
+        bh=V/Q7HNgsqsem44bPKXcSU/aQJQJuM9QmL0binbVJQA8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cRcBN7VuWCLHl/tVwMvLnN5CXZElXBW5knDGQCY9lD23YyHSshcrlGzI+LfzoQGis
-         48khSqBAW5WL83oxXVL2J3SYVGBQqoomWtmgk9CzXCc5pQQSUWOGsaQ9pbNhLpHjpm
-         wtew+7LcKicxRGY85hFPK4N4FeVfTw1EwIZAAgE0=
+        b=JDI1sfhujywQCoKb9rvVQzKdlxjjS9ilALYpBiKIWl6nW6EwD6cu9dV+NXNdkDbQO
+         WX+470hdemlbhz9pBpre+m99anpYXV7KwNJvkgLwPkhp4ARymjwjsZgE//K6pBPsyJ
+         3dNRuFLfY3Vgp2zzRF3DlGWc4mVh/zE5pXLdx++8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, "kernelci.org bot" <bot@kernelci.org>,
-        Muhammad Usama Anjum <usama.anjum@collabora.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
+        stable@vger.kernel.org,
+        Konstantin Aladyshev <aladyshev22@gmail.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Zev Weiss <zev@bewilderbeest.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 138/599] selftests/x86: Add validity check and allow field splitting
-Date:   Tue,  5 Apr 2022 09:27:12 +0200
-Message-Id: <20220405070302.948561867@linuxfoundation.org>
+Subject: [PATCH 5.15 593/913] serial: 8250_aspeed_vuart: add PORT_ASPEED_VUART port type
+Date:   Tue,  5 Apr 2022 09:27:35 +0200
+Message-Id: <20220405070357.617553343@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,38 +52,88 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Muhammad Usama Anjum <usama.anjum@collabora.com>
+From: Zev Weiss <zev@bewilderbeest.net>
 
-[ Upstream commit b06e15ebd5bfb670f93c7f11a29b8299c1178bc6 ]
+[ Upstream commit a603ca60cebff8589882427a67f870ed946b3fc8 ]
 
-Add check to test if CC has a string. CC can have multiple sub-strings
-like "ccache gcc". Erorr pops up if it is treated as single string and
-double quotes are used around it. This can be fixed by removing the
-quotes and not treating CC as a single string.
+Commit 54da3e381c2b ("serial: 8250_aspeed_vuart: use UPF_IOREMAP to
+set up register mapping") fixed a bug that had, as a side-effect,
+prevented the 8250_aspeed_vuart driver from enabling the VUART's
+FIFOs.  However, fixing that (and hence enabling the FIFOs) has in
+turn revealed what appears to be a hardware bug in the ASPEED VUART in
+which the host-side THRE bit doesn't get if the BMC-side receive FIFO
+trigger level is set to anything but one byte.  This causes problems
+for polled-mode writes from the host -- for example, Linux kernel
+console writes proceed at a glacial pace (less than 100 bytes per
+second) because the write path waits for a 10ms timeout to expire
+after every character instead of being able to continue on to the next
+character upon seeing THRE asserted.  (GRUB behaves similarly.)
 
-Fixes: e9886ace222e ("selftests, x86: Rework x86 target architecture detection")
-Reported-by: "kernelci.org bot" <bot@kernelci.org>
-Signed-off-by: Muhammad Usama Anjum <usama.anjum@collabora.com>
-Signed-off-by: Dave Hansen <dave.hansen@linux.intel.com>
-Link: https://lkml.kernel.org/r/20220214184109.3739179-2-usama.anjum@collabora.com
+As a workaround, introduce a new port type for the ASPEED VUART that's
+identical to PORT_16550A as it had previously been using, but with
+UART_FCR_R_TRIG_00 instead to set the receive FIFO trigger level to
+one byte, which (experimentally) seems to avoid the problematic THRE
+behavior.
+
+Fixes: 54da3e381c2b ("serial: 8250_aspeed_vuart: use UPF_IOREMAP to set up register mapping")
+Tested-by: Konstantin Aladyshev <aladyshev22@gmail.com>
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Signed-off-by: Zev Weiss <zev@bewilderbeest.net>
+Link: https://lore.kernel.org/r/20220211004203.14915-1-zev@bewilderbeest.net
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/testing/selftests/x86/check_cc.sh | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/tty/serial/8250/8250_aspeed_vuart.c | 2 +-
+ drivers/tty/serial/8250/8250_port.c         | 8 ++++++++
+ include/uapi/linux/serial_core.h            | 3 +++
+ 3 files changed, 12 insertions(+), 1 deletion(-)
 
-diff --git a/tools/testing/selftests/x86/check_cc.sh b/tools/testing/selftests/x86/check_cc.sh
-index 3e2089c8cf54..8c669c0d662e 100755
---- a/tools/testing/selftests/x86/check_cc.sh
-+++ b/tools/testing/selftests/x86/check_cc.sh
-@@ -7,7 +7,7 @@ CC="$1"
- TESTPROG="$2"
- shift 2
+diff --git a/drivers/tty/serial/8250/8250_aspeed_vuart.c b/drivers/tty/serial/8250/8250_aspeed_vuart.c
+index 2350fb3bb5e4..c2cecc6f47db 100644
+--- a/drivers/tty/serial/8250/8250_aspeed_vuart.c
++++ b/drivers/tty/serial/8250/8250_aspeed_vuart.c
+@@ -487,7 +487,7 @@ static int aspeed_vuart_probe(struct platform_device *pdev)
+ 	port.port.irq = irq_of_parse_and_map(np, 0);
+ 	port.port.handle_irq = aspeed_vuart_handle_irq;
+ 	port.port.iotype = UPIO_MEM;
+-	port.port.type = PORT_16550A;
++	port.port.type = PORT_ASPEED_VUART;
+ 	port.port.uartclk = clk;
+ 	port.port.flags = UPF_SHARE_IRQ | UPF_BOOT_AUTOCONF | UPF_IOREMAP
+ 		| UPF_FIXED_PORT | UPF_FIXED_TYPE | UPF_NO_THRE_TEST;
+diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
+index ec88b706e882..b470bc747b99 100644
+--- a/drivers/tty/serial/8250/8250_port.c
++++ b/drivers/tty/serial/8250/8250_port.c
+@@ -307,6 +307,14 @@ static const struct serial8250_config uart_config[] = {
+ 		.rxtrig_bytes	= {1, 32, 64, 112},
+ 		.flags		= UART_CAP_FIFO | UART_CAP_SLEEP,
+ 	},
++	[PORT_ASPEED_VUART] = {
++		.name		= "ASPEED VUART",
++		.fifo_size	= 16,
++		.tx_loadsz	= 16,
++		.fcr		= UART_FCR_ENABLE_FIFO | UART_FCR_R_TRIG_00,
++		.rxtrig_bytes	= {1, 4, 8, 14},
++		.flags		= UART_CAP_FIFO,
++	},
+ };
  
--if "$CC" -o /dev/null "$TESTPROG" -O0 "$@" 2>/dev/null; then
-+if [ -n "$CC" ] && $CC -o /dev/null "$TESTPROG" -O0 "$@" 2>/dev/null; then
-     echo 1
- else
-     echo 0
+ /* Uart divisor latch read */
+diff --git a/include/uapi/linux/serial_core.h b/include/uapi/linux/serial_core.h
+index c4042dcfdc0c..8885e69178bd 100644
+--- a/include/uapi/linux/serial_core.h
++++ b/include/uapi/linux/serial_core.h
+@@ -68,6 +68,9 @@
+ /* NVIDIA Tegra Combined UART */
+ #define PORT_TEGRA_TCU	41
+ 
++/* ASPEED AST2x00 virtual UART */
++#define PORT_ASPEED_VUART	42
++
+ /* Intel EG20 */
+ #define PORT_PCH_8LINE	44
+ #define PORT_PCH_2LINE	45
 -- 
 2.34.1
 
