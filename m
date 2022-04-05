@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C3D2FC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 07:46:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7CF69C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 07:46:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232537AbiDEHqi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 03:46:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56922 "EHLO
+        id S232332AbiDEHqb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 03:46:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34126 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232103AbiDEHpY (ORCPT
+        with ESMTP id S232039AbiDEHoo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 03:45:24 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 752F092860;
-        Tue,  5 Apr 2022 00:41:21 -0700 (PDT)
+        Tue, 5 Apr 2022 03:44:44 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DBC0797B87;
+        Tue,  5 Apr 2022 00:41:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id DF857CE1BF4;
-        Tue,  5 Apr 2022 07:41:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E8426C340EE;
-        Tue,  5 Apr 2022 07:41:17 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 702D46164B;
+        Tue,  5 Apr 2022 07:41:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7D2CCC340EE;
+        Tue,  5 Apr 2022 07:41:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649144478;
-        bh=JAcNIEr1LPWrk+L53Ncmi4AbV1sJxXCTFWiNjxRRQuQ=;
+        s=korg; t=1649144472;
+        bh=cJgNiIRKs43WwxcFvB9IigSsDaV6t6vyU5S0AYz5shw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=IYDJKQ8THkIjK+wbWVZjYFjmsNmZl49LL7sECQIOZ0RQBHGshQHZEqv3ney3Bs4zk
-         eLGHQUoklV7K0KOPPVmX1migBTToAikwWBiWg6pYqJFDs0lvfC1L7jH50O9FJl9QM7
-         IalobCAHVLbGVONcvvMCVnWpfDaJrPMpRxYqpTVE=
+        b=Qkntiv3QT2AxXHBtF510/wrA4xOUR1BOVzEcPhqEGgYBfPW0m46TKvv4FAmx9b3Z5
+         3+6Qr78Rb57LXmkRinwQp+p4vLtTjmObos+2pglsWoJtc6HOPodRJywqA4IrQPOk7G
+         8i4r7Tkx+PWsD/SOLtDmfGvCQDB4MUM7PhvUvpaU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Alexander Usyskin <alexander.usyskin@intel.com>,
-        Tomas Winkler <tomas.winkler@intel.com>
-Subject: [PATCH 5.17 0020/1126] mei: me: add Alder Lake N device id.
-Date:   Tue,  5 Apr 2022 09:12:47 +0200
-Message-Id: <20220405070408.137530765@linuxfoundation.org>
+        stable@vger.kernel.org, Anssi Hannula <anssi.hannula@bitwise.fi>,
+        Mathias Nyman <mathias.nyman@linux.intel.com>
+Subject: [PATCH 5.17 0018/1126] xhci: fix uninitialized string returned by xhci_decode_ctrl_ctx()
+Date:   Tue,  5 Apr 2022 09:12:45 +0200
+Message-Id: <20220405070408.078203683@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -49,41 +48,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alexander Usyskin <alexander.usyskin@intel.com>
+From: Anssi Hannula <anssi.hannula@bitwise.fi>
 
-commit 7bbbd0845818cffa9fa8ccfe52fa1cad58e7e4f2 upstream.
+commit 05519b8589a679edb8fa781259893d20bece04ad upstream.
 
-Add Alder Lake N device ID.
+xhci_decode_ctrl_ctx() returns the untouched buffer as-is if both "drop"
+and "add" parameters are zero.
 
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Alexander Usyskin <alexander.usyskin@intel.com>
-Signed-off-by: Tomas Winkler <tomas.winkler@intel.com>
-Link: https://lore.kernel.org/r/20220301071115.96145-1-tomas.winkler@intel.com
+Fix the function to return an empty string in that case.
+
+It was not immediately clear from the possible call chains whether this
+issue is currently actually triggerable or not.
+
+Note that before commit 4843b4b5ec64 ("xhci: fix even more unsafe memory
+usage in xhci tracing") the result effect in the failure case was different
+as a static buffer was used here, but the code still worked incorrectly.
+
+Fixes: 90d6d5731da7 ("xhci: Add tracing for input control context")
+Cc: stable@vger.kernel.org
+Signed-off-by: Anssi Hannula <anssi.hannula@bitwise.fi>
+Signed-off-by: Mathias Nyman <mathias.nyman@linux.intel.com>
+commit 4843b4b5ec64 ("xhci: fix even more unsafe memory usage in xhci tracing")
+Link: https://lore.kernel.org/r/20220303110903.1662404-4-mathias.nyman@linux.intel.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/misc/mei/hw-me-regs.h |    1 +
- drivers/misc/mei/pci-me.c     |    1 +
- 2 files changed, 2 insertions(+)
+ drivers/usb/host/xhci.h |    2 ++
+ 1 file changed, 2 insertions(+)
 
---- a/drivers/misc/mei/hw-me-regs.h
-+++ b/drivers/misc/mei/hw-me-regs.h
-@@ -107,6 +107,7 @@
- #define MEI_DEV_ID_ADP_S      0x7AE8  /* Alder Lake Point S */
- #define MEI_DEV_ID_ADP_LP     0x7A60  /* Alder Lake Point LP */
- #define MEI_DEV_ID_ADP_P      0x51E0  /* Alder Lake Point P */
-+#define MEI_DEV_ID_ADP_N      0x54E0  /* Alder Lake Point N */
+--- a/drivers/usb/host/xhci.h
++++ b/drivers/usb/host/xhci.h
+@@ -2470,6 +2470,8 @@ static inline const char *xhci_decode_ct
+ 	unsigned int	bit;
+ 	int		ret = 0;
  
- /*
-  * MEI HW Section
---- a/drivers/misc/mei/pci-me.c
-+++ b/drivers/misc/mei/pci-me.c
-@@ -113,6 +113,7 @@ static const struct pci_device_id mei_me
- 	{MEI_PCI_DEVICE(MEI_DEV_ID_ADP_S, MEI_ME_PCH15_CFG)},
- 	{MEI_PCI_DEVICE(MEI_DEV_ID_ADP_LP, MEI_ME_PCH15_CFG)},
- 	{MEI_PCI_DEVICE(MEI_DEV_ID_ADP_P, MEI_ME_PCH15_CFG)},
-+	{MEI_PCI_DEVICE(MEI_DEV_ID_ADP_N, MEI_ME_PCH15_CFG)},
- 
- 	/* required last entry */
- 	{0, }
++	str[0] = '\0';
++
+ 	if (drop) {
+ 		ret = sprintf(str, "Drop:");
+ 		for_each_set_bit(bit, &drop, 32)
 
 
