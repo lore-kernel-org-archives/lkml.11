@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C566C4167B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9339DC35273
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 01:06:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1839497AbiDFBEK (ORCPT
+        id S1839555AbiDFBEt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 21:04:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50650 "EHLO
+        Tue, 5 Apr 2022 21:04:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44238 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241150AbiDEK2w (ORCPT
+        with ESMTP id S1356190AbiDEKXU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:28:52 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CAAE7DCA82;
-        Tue,  5 Apr 2022 03:18:08 -0700 (PDT)
+        Tue, 5 Apr 2022 06:23:20 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE8F7BAB81;
+        Tue,  5 Apr 2022 03:07:32 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CB5C9B81C98;
-        Tue,  5 Apr 2022 10:18:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 21C10C385A0;
-        Tue,  5 Apr 2022 10:18:04 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6AD9E6172B;
+        Tue,  5 Apr 2022 10:07:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 72691C385A2;
+        Tue,  5 Apr 2022 10:07:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649153885;
-        bh=wqbPfyi7RvYZHdPCYAxM7ej+NA3443hfkZmvaukFEtU=;
+        s=korg; t=1649153251;
+        bh=PCrH6URjmuB5guwZhaskUFJLccnRisVbZQOv3UYszQI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=INMEHX22umhbA4IiDs9tl7U+bkmRNRibZrGtizajnbarPxWqx7gmx6QsKp7AleWXj
-         RPXcATnRpU8KP/TPPbHH65+mqZS7LdrNr58da3XnQNx0ZkuIf0LHkHNNVluV9TxzkO
-         tvmJwHAUB/+SvpK8T0I4ViJLRSapLMa4GvvD1a20=
+        b=Osjra9+o8VJYNUMxq45/7+qjwnTS+yR4Edj72KM1tNa0eILBGWaxsn08z7ndOThCe
+         GCjlvamcru7XH+NcjMGfXi29DOetpc5exdFHD9lc9qwB88WwTjbBHoVmEb+ohidzXT
+         2Z+PtZPATZl6Sj8u1sUJKrfwrlliz1Uf9QAzA4Pc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Luca Weiss <luca@z3ntu.xyz>,
-        Viresh Kumar <viresh.kumar@linaro.org>,
+        stable@vger.kernel.org, Nicolai Stange <nstange@suse.de>,
+        Petr Vorel <pvorel@suse.cz>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 383/599] cpufreq: qcom-cpufreq-nvmem: fix reading of PVS Valid fuse
-Date:   Tue,  5 Apr 2022 09:31:17 +0200
-Message-Id: <20220405070310.227908021@linuxfoundation.org>
+Subject: [PATCH 5.10 155/599] crypto: vmx - add missing dependencies
+Date:   Tue,  5 Apr 2022 09:27:29 +0200
+Message-Id: <20220405070303.455481280@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
 References: <20220405070258.802373272@linuxfoundation.org>
@@ -50,36 +51,60 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Luca Weiss <luca@z3ntu.xyz>
+From: Petr Vorel <pvorel@suse.cz>
 
-[ Upstream commit 4a8a77abf0e2b6468ba0281e33384cbec5fb476a ]
+[ Upstream commit 647d41d3952d726d4ae49e853a9eff68ebad3b3f ]
 
-The fuse consists of 64 bits, with this statement we're supposed to get
-the upper 32 bits but it actually read out of bounds and got 0 instead
-of the desired value which lead to the "PVS bin not set." codepath being
-run resetting our pvs value.
+vmx-crypto module depends on CRYPTO_AES, CRYPTO_CBC, CRYPTO_CTR or
+CRYPTO_XTS, thus add them.
 
-Fixes: a8811ec764f9 ("cpufreq: qcom: Add support for krait based socs")
-Signed-off-by: Luca Weiss <luca@z3ntu.xyz>
-Signed-off-by: Viresh Kumar <viresh.kumar@linaro.org>
+These dependencies are likely to be enabled, but if
+CRYPTO_DEV_VMX=y && !CRYPTO_MANAGER_DISABLE_TESTS
+and either of CRYPTO_AES, CRYPTO_CBC, CRYPTO_CTR or CRYPTO_XTS is built
+as module or disabled, alg_test() from crypto/testmgr.c complains during
+boot about failing to allocate the generic fallback implementations
+(2 == ENOENT):
+
+[    0.540953] Failed to allocate xts(aes) fallback: -2
+[    0.541014] alg: skcipher: failed to allocate transform for p8_aes_xts: -2
+[    0.541120] alg: self-tests for p8_aes_xts (xts(aes)) failed (rc=-2)
+[    0.544440] Failed to allocate ctr(aes) fallback: -2
+[    0.544497] alg: skcipher: failed to allocate transform for p8_aes_ctr: -2
+[    0.544603] alg: self-tests for p8_aes_ctr (ctr(aes)) failed (rc=-2)
+[    0.547992] Failed to allocate cbc(aes) fallback: -2
+[    0.548052] alg: skcipher: failed to allocate transform for p8_aes_cbc: -2
+[    0.548156] alg: self-tests for p8_aes_cbc (cbc(aes)) failed (rc=-2)
+[    0.550745] Failed to allocate transformation for 'aes': -2
+[    0.550801] alg: cipher: Failed to load transform for p8_aes: -2
+[    0.550892] alg: self-tests for p8_aes (aes) failed (rc=-2)
+
+Fixes: c07f5d3da643 ("crypto: vmx - Adding support for XTS")
+Fixes: d2e3ae6f3aba ("crypto: vmx - Enabling VMX module for PPC64")
+
+Suggested-by: Nicolai Stange <nstange@suse.de>
+Signed-off-by: Petr Vorel <pvorel@suse.cz>
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/cpufreq/qcom-cpufreq-nvmem.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/crypto/vmx/Kconfig | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/drivers/cpufreq/qcom-cpufreq-nvmem.c b/drivers/cpufreq/qcom-cpufreq-nvmem.c
-index fba9937a406b..7fdd30e92e42 100644
---- a/drivers/cpufreq/qcom-cpufreq-nvmem.c
-+++ b/drivers/cpufreq/qcom-cpufreq-nvmem.c
-@@ -130,7 +130,7 @@ static void get_krait_bin_format_b(struct device *cpu_dev,
- 	}
- 
- 	/* Check PVS_BLOW_STATUS */
--	pte_efuse = *(((u32 *)buf) + 4);
-+	pte_efuse = *(((u32 *)buf) + 1);
- 	pte_efuse &= BIT(21);
- 	if (pte_efuse) {
- 		dev_dbg(cpu_dev, "PVS bin: %d\n", *pvs);
+diff --git a/drivers/crypto/vmx/Kconfig b/drivers/crypto/vmx/Kconfig
+index c85fab7ef0bd..b2c28b87f14b 100644
+--- a/drivers/crypto/vmx/Kconfig
++++ b/drivers/crypto/vmx/Kconfig
+@@ -2,7 +2,11 @@
+ config CRYPTO_DEV_VMX_ENCRYPT
+ 	tristate "Encryption acceleration support on P8 CPU"
+ 	depends on CRYPTO_DEV_VMX
++	select CRYPTO_AES
++	select CRYPTO_CBC
++	select CRYPTO_CTR
+ 	select CRYPTO_GHASH
++	select CRYPTO_XTS
+ 	default m
+ 	help
+ 	  Support for VMX cryptographic acceleration instructions on Power8 CPU.
 -- 
 2.34.1
 
