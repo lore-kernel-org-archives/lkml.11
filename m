@@ -2,86 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B007BC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 05:21:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 34798C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 05:27:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229842AbiDEFXw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 01:23:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56248 "EHLO
+        id S229851AbiDEF3Q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 01:29:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51840 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229798AbiDEFXa (ORCPT
+        with ESMTP id S229537AbiDEF3N (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 01:23:30 -0400
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A3252AC2
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 22:20:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649136048; x=1680672048;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=I2cqu9zR8Hvr659S+cqTNexV0FQBHlsrbXNoITWNdLk=;
-  b=mQBS467zBuKQWUvYMHOpO/kp3P7YVj1asB//+8O8nzsZTXQH56lnxmTT
-   L8viGekoeHdad1TCd/6Yk7Sm+i4mw0tLk8sFUAWrIghzc5pHw9dVNgGJF
-   ftajBa6UMYii38yRIstJs9UPrefhwPkFOZ/yCZGoYDRLSgcvt3n6EM/HM
-   //BCnj8rezmgAnRr+GLjAOj7QTEuKlQH6hbzOzm6x3FsLWmOhfclOpowv
-   X2nSGJ/rbz2WveO3CHX+3hemuJF+1AZ1Zw5TOGOgdaek3F2NhjhiAICLm
-   9uToALJTzu4MRpidcM7dfQ13CU8xL899zWmd4L4V6q0k7Tu7bfGuafMQx
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10307"; a="240603567"
-X-IronPort-AV: E=Sophos;i="5.90,235,1643702400"; 
-   d="scan'208";a="240603567"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Apr 2022 22:20:48 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,235,1643702400"; 
-   d="scan'208";a="721912208"
-Received: from lkp-server02.sh.intel.com (HELO a44fdfb70b94) ([10.239.97.151])
-  by orsmga005.jf.intel.com with ESMTP; 04 Apr 2022 22:20:46 -0700
-Received: from kbuild by a44fdfb70b94 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nbbcT-0002ft-CR;
-        Tue, 05 Apr 2022 05:20:45 +0000
-Date:   Tue, 5 Apr 2022 13:19:55 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     David Howells <dhowells@redhat.com>
-Cc:     kbuild-all@lists.01.org,
-        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
-        linux-kernel@vger.kernel.org
-Subject: [ammarfaizi2-block:dhowells/linux-fs/netfs-maple 33/40] ERROR:
- modpost: "mas_walk" [fs/netfs/netfs.ko] undefined!
-Message-ID: <202204051321.rd4HYoy6-lkp@intel.com>
+        Tue, 5 Apr 2022 01:29:13 -0400
+Received: from conssluserg-03.nifty.com (conssluserg-03.nifty.com [210.131.2.82])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 887A238DB9;
+        Mon,  4 Apr 2022 22:27:15 -0700 (PDT)
+Received: from mail-pj1-f44.google.com (mail-pj1-f44.google.com [209.85.216.44]) (authenticated)
+        by conssluserg-03.nifty.com with ESMTP id 2355Qr35032029;
+        Tue, 5 Apr 2022 14:26:53 +0900
+DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-03.nifty.com 2355Qr35032029
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
+        s=dec2015msa; t=1649136413;
+        bh=9Mjbanc1uTbEmK1mnz01B4FzZRbSAyqrQAUwcuIQyrc=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=Q7N13ho2VG5rLtdaeG8wrsIrzV2MyavvOTH5wV/PEuj70ICAWET40QbPV5Na0UYu5
+         gr/o8vs8tVjR6GQXuQ9pGjJuCSsB9CzJ2IjWe3oA6QIA4mzE2pV2XLfQ+sY71zNdg5
+         +iXM5AHZ0/PSYam2Pvbwg0ygnLWKI99gDwZbqZ6l6jEvFoxRIgcSTZsJZbtWfdX1ko
+         q/D2JRyuouAYUJ+pRvroBlVKdbxCZUzX+wMceUb19jZomC+ZPHgUqWcEuOWkTLT2Xy
+         DA/frOTo7xheZI0XTJxKvUAe02Mc7lnsfKDA5FuAY/KivXHRHb6f3WUEri5r/8nkyS
+         sSidnkjfA2G7w==
+X-Nifty-SrcIP: [209.85.216.44]
+Received: by mail-pj1-f44.google.com with SMTP id ch16-20020a17090af41000b001ca867ef52bso1428381pjb.0;
+        Mon, 04 Apr 2022 22:26:53 -0700 (PDT)
+X-Gm-Message-State: AOAM533Gsaw0t7ysT9t08Dx25gL4JrvYA0iNwczQKwEOmNJxqZ7t6fqv
+        7W0arHWQRgYjs7mdlp+d+FSE8arqqF+6cBjztwo=
+X-Google-Smtp-Source: ABdhPJwkdPkqgeF6q282Mp9Vwdv0ZWc0PT6lrZqUk8B5WAzSE3LH6/hQ1oXDCHHPqxwcsVJRZWFxeeXmOrr8mqbYLlk=
+X-Received: by 2002:a17:90b:4d01:b0:1c9:ec79:1b35 with SMTP id
+ mw1-20020a17090b4d0100b001c9ec791b35mr2005151pjb.77.1649136412823; Mon, 04
+ Apr 2022 22:26:52 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <20220329021520.308997-1-masahiroy@kernel.org> <CAKwvOdkP12zrGu4iJStSJ5-pAKFBar=Cxf=CYO5gE9L636q8-w@mail.gmail.com>
+ <CAK7LNASisGfD4vrk2Duswg_tj+LQutd+zdyq9qyFiTptCM7NWA@mail.gmail.com>
+In-Reply-To: <CAK7LNASisGfD4vrk2Duswg_tj+LQutd+zdyq9qyFiTptCM7NWA@mail.gmail.com>
+From:   Masahiro Yamada <masahiroy@kernel.org>
+Date:   Tue, 5 Apr 2022 14:26:05 +0900
+X-Gmail-Original-Message-ID: <CAK7LNAReCMMkOvs13jNyDoEnTgRJ36MC=KrUwCWv0x0TXbQ+fg@mail.gmail.com>
+Message-ID: <CAK7LNAReCMMkOvs13jNyDoEnTgRJ36MC=KrUwCWv0x0TXbQ+fg@mail.gmail.com>
+Subject: Re: [PATCH 1/2] kbuild: factor out genksyms command from cmd_gensymtypes_{c,S}
+To:     Nick Desaulniers <ndesaulniers@google.com>
+Cc:     Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Michal Marek <michal.lkml@markovi.net>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/ammarfaizi2/linux-block dhowells/linux-fs/netfs-maple
-head:   674eea41fc70a740ff83ec590f9833f805852464
-commit: 073b0ba90614945b31bccfede6e00102b7eb460e [33/40] netfs: Implement buffered writes through netfs_file_write_iter()
-config: x86_64-randconfig-c001 (https://download.01.org/0day-ci/archive/20220405/202204051321.rd4HYoy6-lkp@intel.com/config)
-compiler: gcc-11 (Debian 11.2.0-19) 11.2.0
-reproduce (this is a W=1 build):
-        # https://github.com/ammarfaizi2/linux-block/commit/073b0ba90614945b31bccfede6e00102b7eb460e
-        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
-        git fetch --no-tags ammarfaizi2-block dhowells/linux-fs/netfs-maple
-        git checkout 073b0ba90614945b31bccfede6e00102b7eb460e
-        # save the config file to linux build tree
-        mkdir build_dir
-        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash
+On Tue, Apr 5, 2022 at 10:55 AM Masahiro Yamada <masahiroy@kernel.org> wrote:
+>
+> On Wed, Mar 30, 2022 at 3:18 AM Nick Desaulniers
+> <ndesaulniers@google.com> wrote:
+> >
+> > On Mon, Mar 28, 2022 at 7:15 PM Masahiro Yamada <masahiroy@kernel.org> wrote:
+> > >
+> > > The genksyms command part in cmd_gensymtypes_{c,S} is duplicated.
+> > > Factor it out into the 'genksyms' macro.
+> > >
+> > > For the readability, I slightly refactor the arguments to genksyms.
+> >
+> > Looks nicer, thanks for the patch!
+> > Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
+> >
+> > >
+>
+> Applied to linux-kbuild.
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+No, this patch is wrong.
+I will send v2 later.
 
-All errors (new ones prefixed by >>, old ones prefixed by <<):
+>
+>
+> > > Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+> > > ---
+> > >
+> > >  scripts/Makefile.build | 19 ++++++++-----------
+> > >  1 file changed, 8 insertions(+), 11 deletions(-)
+> > >
+> > > diff --git a/scripts/Makefile.build b/scripts/Makefile.build
+> > > index 9717e6f6fb31..3f2985df4d60 100644
+> > > --- a/scripts/Makefile.build
+> > > +++ b/scripts/Makefile.build
+> > > @@ -125,13 +125,14 @@ cmd_cpp_i_c       = $(CPP) $(c_flags) -o $@ $<
+> > >  $(obj)/%.i: $(src)/%.c FORCE
+> > >         $(call if_changed_dep,cpp_i_c)
+> > >
+> > > +genksyms = scripts/genksyms/genksyms           \
+> > > +       $(if $(1), -T $(2))                     \
+> > > +       $(if $(CONFIG_MODULE_REL_CRCS), -R)     \
+> > > +       $(if $(KBUILD_PRESERVE), -p)            \
+> > > +       -r $(or $(wildcard $(2:.symtypes=.symref), /dev/null))
 
->> ERROR: modpost: "mas_walk" [fs/netfs/netfs.ko] undefined!
->> ERROR: modpost: "mas_destroy" [fs/netfs/netfs.ko] undefined!
->> ERROR: modpost: "mas_expected_entries" [fs/netfs/netfs.ko] undefined!
->> ERROR: modpost: "mas_store" [fs/netfs/netfs.ko] undefined!
+The position of the closing parenthesis was wrong.
+
+    -r $(or $(wildcard $(2:.symtypes=.symref)), /dev/null)
+
+
+
+
+
+
 
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Best Regards
+Masahiro Yamada
