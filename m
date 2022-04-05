@@ -2,43 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F77BC4707F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BCE0BC35296
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:55:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239310AbiDEIpJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 04:45:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60596 "EHLO
+        id S239863AbiDEIpO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 04:45:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40682 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233098AbiDEIFK (ORCPT
+        with ESMTP id S233061AbiDEIFD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:05:10 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1474A68336;
-        Tue,  5 Apr 2022 01:01:21 -0700 (PDT)
+        Tue, 5 Apr 2022 04:05:03 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 006B16663D;
+        Tue,  5 Apr 2022 01:01:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C5AE2B81B90;
-        Tue,  5 Apr 2022 08:01:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 116EBC340EE;
-        Tue,  5 Apr 2022 08:01:17 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 947E9616DF;
+        Tue,  5 Apr 2022 08:01:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 94D42C340EE;
+        Tue,  5 Apr 2022 08:01:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649145678;
-        bh=3DLPFpwpBfYmtbHQR4E9B3L8j/zW8+jMh4WpLzPmq9o=;
+        s=korg; t=1649145673;
+        bh=tq/To8jVh1mvFDi3w64M21F7yGLggTqHun//0zGuXVw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KIkjv8ypOekBuxRklTmctCq5ObYlAzJeOx0zl9TsWOJ8VkQDlxxQr7PYu5bPwhvGB
-         /ufPDRBi8ies6N9djrApxe6+CCEYa3nNMpM/QApAbdsxjF743tJ37NHbXCy5pxjT45
-         d6zHX9RHeqr+VpT1YdTy9maN0V/NRdfvpqHCLoRQ=
+        b=1VefRi1yLjLbP1HLbwFygZWmQvJprmmsqPazL24WlD/rlisoa33QLJJQqUIJy2LNM
+         UNq2Xy6J3yMcHWpBWTFbW/CY2gtT7ap3Y/+XW5qxWkxmfkzn3850xAmNdVtgwcVL0e
+         lthLsGDVhIcKFFbvmR+Jd+9OCI3z2HNA+EJ9ZIHI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Fabiano Rosas <farosas@linux.ibm.com>,
-        Nicholas Piggin <npiggin@gmail.com>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0490/1126] KVM: PPC: Book3S HV: Check return value of kvmppc_radix_init
-Date:   Tue,  5 Apr 2022 09:20:37 +0200
-Message-Id: <20220405070422.010412441@linuxfoundation.org>
+        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
+        Kalle Valo <kvalo@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 0488/1126] ray_cs: Check ioremap return value
+Date:   Tue,  5 Apr 2022 09:20:35 +0200
+Message-Id: <20220405070421.951684822@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -50,40 +48,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Fabiano Rosas <farosas@linux.ibm.com>
+From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
 
-[ Upstream commit 69ab6ac380a00244575de02c406dcb9491bf3368 ]
+[ Upstream commit 7e4760713391ee46dc913194b33ae234389a174e ]
 
-The return of the function is being shadowed by the call to
-kvmppc_uvmem_init.
+As the possible failure of the ioremap(), the 'local->sram' and other
+two could be NULL.
+Therefore it should be better to check it in order to avoid the later
+dev_dbg.
 
-Fixes: ca9f4942670c ("KVM: PPC: Book3S HV: Support for running secure guests")
-Signed-off-by: Fabiano Rosas <farosas@linux.ibm.com>
-Reviewed-by: Nicholas Piggin <npiggin@gmail.com>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20220125155735.1018683-2-farosas@linux.ibm.com
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Signed-off-by: Kalle Valo <kvalo@kernel.org>
+Link: https://lore.kernel.org/r/20211230022926.1846757-1-jiasheng@iscas.ac.cn
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/powerpc/kvm/book3s_hv.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ drivers/net/wireless/ray_cs.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/arch/powerpc/kvm/book3s_hv.c b/arch/powerpc/kvm/book3s_hv.c
-index 84c89f08ae9a..791db769080d 100644
---- a/arch/powerpc/kvm/book3s_hv.c
-+++ b/arch/powerpc/kvm/book3s_hv.c
-@@ -6137,8 +6137,11 @@ static int kvmppc_book3s_init_hv(void)
- 	if (r)
- 		return r;
+diff --git a/drivers/net/wireless/ray_cs.c b/drivers/net/wireless/ray_cs.c
+index 2987ad9271f6..87e98ab068ed 100644
+--- a/drivers/net/wireless/ray_cs.c
++++ b/drivers/net/wireless/ray_cs.c
+@@ -382,6 +382,8 @@ static int ray_config(struct pcmcia_device *link)
+ 		goto failed;
+ 	local->sram = ioremap(link->resource[2]->start,
+ 			resource_size(link->resource[2]));
++	if (!local->sram)
++		goto failed;
  
--	if (kvmppc_radix_possible())
-+	if (kvmppc_radix_possible()) {
- 		r = kvmppc_radix_init();
-+		if (r)
-+			return r;
-+	}
+ /*** Set up 16k window for shared memory (receive buffer) ***************/
+ 	link->resource[3]->flags |=
+@@ -396,6 +398,8 @@ static int ray_config(struct pcmcia_device *link)
+ 		goto failed;
+ 	local->rmem = ioremap(link->resource[3]->start,
+ 			resource_size(link->resource[3]));
++	if (!local->rmem)
++		goto failed;
  
- 	r = kvmppc_uvmem_init();
- 	if (r < 0)
+ /*** Set up window for attribute memory ***********************************/
+ 	link->resource[4]->flags |=
+@@ -410,6 +414,8 @@ static int ray_config(struct pcmcia_device *link)
+ 		goto failed;
+ 	local->amem = ioremap(link->resource[4]->start,
+ 			resource_size(link->resource[4]));
++	if (!local->amem)
++		goto failed;
+ 
+ 	dev_dbg(&link->dev, "ray_config sram=%p\n", local->sram);
+ 	dev_dbg(&link->dev, "ray_config rmem=%p\n", local->rmem);
 -- 
 2.34.1
 
