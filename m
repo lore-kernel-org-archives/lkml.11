@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C1A3C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9FF9BC433F5
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:41:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1577927AbiDEXRl (ORCPT
+        id S1578014AbiDEXSB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 19:17:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60512 "EHLO
+        Tue, 5 Apr 2022 19:18:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37026 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356132AbiDEKW7 (ORCPT
+        with ESMTP id S1348089AbiDEJq5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:22:59 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 050D0B7C4C;
-        Tue,  5 Apr 2022 03:06:31 -0700 (PDT)
+        Tue, 5 Apr 2022 05:46:57 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 544C5E2F70;
+        Tue,  5 Apr 2022 02:33:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A40A0B81C83;
-        Tue,  5 Apr 2022 10:06:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F27EDC385A2;
-        Tue,  5 Apr 2022 10:06:27 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C13AC616AE;
+        Tue,  5 Apr 2022 09:33:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CB226C385A2;
+        Tue,  5 Apr 2022 09:33:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649153188;
-        bh=ptSRzUMxPsDpFQvmnSaM+FCNXlPRlJK5ik2D7AfvW6I=;
+        s=korg; t=1649151196;
+        bh=SiWQfNK6upuvyL25sOXXFwldcQxeRu/FiH4eEINwg/w=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rA9JlnT4nkaxZ26Og3CGjmGLUZUVgHaqh+OL/VaqQk3/KjCMAfvecS/Inpu3rlMhq
-         Bz1Aq7U4OjlpQN26/qVxdeKfqNZa8dl6MHhz3zvPpwdQB6Wgn8i/U2YCyxFFXm1l3X
-         ztVmMBxvTboc6iUkkQ5D1aAOIiMLP2p8QxcJviqI=
+        b=rChFkmpUQ4NCt8WvS+xnJiDEoRnwz5/3po2/YAFiSgGhejeFrD1plIsUXN7baXg9G
+         vtlpE/AUGnanE/V1zdsXd9e8tRgOSJFVmSwgyFANLzl4tDk0tUO1g6QudYfaB9MS9J
+         0eJbIH71JwJvxn3hxZhfunB3CPkduO6FzawuNml8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tomas Paukrt <tomaspaukrt@email.cz>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 134/599] crypto: mxs-dcp - Fix scatterlist processing
-Date:   Tue,  5 Apr 2022 09:27:08 +0200
-Message-Id: <20220405070302.829074106@linuxfoundation.org>
+        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        Helge Deller <deller@gmx.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 291/913] video: fbdev: atmel_lcdfb: fix an error code in atmel_lcdfb_probe()
+Date:   Tue,  5 Apr 2022 09:22:33 +0200
+Message-Id: <20220405070348.579876453@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,33 +50,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tomas Paukrt <tomaspaukrt@email.cz>
+From: Dan Carpenter <dan.carpenter@oracle.com>
 
-[ Upstream commit 28e9b6d8199a3f124682b143800c2dacdc3d70dd ]
+[ Upstream commit fee5c1e4b789e41719af9fee0e2dd397cd31988f ]
 
-This patch fixes a bug in scatterlist processing that may cause incorrect AES block encryption/decryption.
+If "sinfo->config" is not found, then return -ENODEV.  Don't
+return success.
 
-Fixes: 2e6d793e1bf0 ("crypto: mxs-dcp - Use sg_mapping_iter to copy data")
-Signed-off-by: Tomas Paukrt <tomaspaukrt@email.cz>
-Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+Fixes: b985172b328a ("video: atmel_lcdfb: add device tree suport")
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+Acked-by: Nicolas Ferre <nicolas.ferre@microchip.com>
+Signed-off-by: Helge Deller <deller@gmx.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/crypto/mxs-dcp.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/video/fbdev/atmel_lcdfb.c | 11 ++++++-----
+ 1 file changed, 6 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/crypto/mxs-dcp.c b/drivers/crypto/mxs-dcp.c
-index 5edc91cdb4e6..a9d3e675f7ff 100644
---- a/drivers/crypto/mxs-dcp.c
-+++ b/drivers/crypto/mxs-dcp.c
-@@ -330,7 +330,7 @@ static int mxs_dcp_aes_block_crypt(struct crypto_async_request *arq)
- 		memset(key + AES_KEYSIZE_128, 0, AES_KEYSIZE_128);
+diff --git a/drivers/video/fbdev/atmel_lcdfb.c b/drivers/video/fbdev/atmel_lcdfb.c
+index 355b6120dc4f..1fc8de4ecbeb 100644
+--- a/drivers/video/fbdev/atmel_lcdfb.c
++++ b/drivers/video/fbdev/atmel_lcdfb.c
+@@ -1062,15 +1062,16 @@ static int __init atmel_lcdfb_probe(struct platform_device *pdev)
+ 
+ 	INIT_LIST_HEAD(&info->modelist);
+ 
+-	if (pdev->dev.of_node) {
+-		ret = atmel_lcdfb_of_init(sinfo);
+-		if (ret)
+-			goto free_info;
+-	} else {
++	if (!pdev->dev.of_node) {
+ 		dev_err(dev, "cannot get default configuration\n");
+ 		goto free_info;
  	}
  
--	for_each_sg(req->src, src, sg_nents(src), i) {
-+	for_each_sg(req->src, src, sg_nents(req->src), i) {
- 		src_buf = sg_virt(src);
- 		len = sg_dma_len(src);
- 		tlen += len;
++	ret = atmel_lcdfb_of_init(sinfo);
++	if (ret)
++		goto free_info;
++
++	ret = -ENODEV;
+ 	if (!sinfo->config)
+ 		goto free_info;
+ 
 -- 
 2.34.1
 
