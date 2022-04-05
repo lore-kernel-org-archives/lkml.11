@@ -2,74 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B215C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 68CC8C43217
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:35:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1835802AbiDFAdb (ORCPT
+        id S1835862AbiDFAdq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 20:33:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45624 "EHLO
+        Tue, 5 Apr 2022 20:33:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50694 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355719AbiDELz0 (ORCPT
+        with ESMTP id S1358036AbiDEK14 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 07:55:26 -0400
-Received: from elvis.franken.de (elvis.franken.de [193.175.24.41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9916A276;
-        Tue,  5 Apr 2022 04:12:45 -0700 (PDT)
-Received: from uucp (helo=alpha)
-        by elvis.franken.de with local-bsmtp (Exim 3.36 #1)
-        id 1nbh70-0007Zp-00; Tue, 05 Apr 2022 13:12:38 +0200
-Received: by alpha.franken.de (Postfix, from userid 1000)
-        id 23706C4E65; Tue,  5 Apr 2022 12:45:06 +0200 (CEST)
-Date:   Tue, 5 Apr 2022 12:45:06 +0200
-From:   Thomas Bogendoerfer <tsbogend@alpha.franken.de>
-To:     "Maciej W. Rozycki" <macro@orcam.me.uk>
-Cc:     Andrew Powers-Holmes <aholmes@omnom.net>,
-        yaliang.wang@windriver.com, rppt@kernel.org, huangpei@loongson.cn,
-        Andrew Morton <akpm@linux-foundation.org>, kumba@gentoo.org,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        anshuman.khandual@arm.com, penberg@kernel.org,
-        linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Greg KH <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH] MIPS: pgalloc: fix memory leak caused by pgd_free()
-Message-ID: <20220405104506.GA17085@alpha.franken.de>
-References: <20220310113116.2068859-1-yaliang.wang@windriver.com>
- <alpine.DEB.2.21.2204021446370.47162@angie.orcam.me.uk>
- <9cc88b1c-8a8c-95ea-2cf7-31be3b771495@omnom.net>
- <alpine.DEB.2.21.2204031122020.47162@angie.orcam.me.uk>
- <b273a9b7-82f7-5883-14d2-973dd005b005@omnom.net>
- <alpine.DEB.2.21.2204051027490.47162@angie.orcam.me.uk>
+        Tue, 5 Apr 2022 06:27:56 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81EE4694B4;
+        Tue,  5 Apr 2022 03:13:26 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3B0DFB81BC5;
+        Tue,  5 Apr 2022 10:13:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A07B2C385A0;
+        Tue,  5 Apr 2022 10:13:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649153604;
+        bh=90d+GGgfuvveDttGu7IroOu8aqlCrJGjh/c9SDHvU0g=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=HcY2asybvu1n1cOomDXYOd24yFx9WvGp2UpqKOQw7SbNAymLNlKdDr/gu11TizKTM
+         InvG0mFV5qaJ4TW/YqRKbVkBkFIV5U8WKzI8NfXcd9fnlB6xcSP1cG2qexc1i7u5iq
+         pCnnrhZA5/8utguY2ycmTu0GwmjylO7A0E2b90aU=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        Alexander Lobakin <alexandr.lobakin@intel.com>,
+        Michal Swiatkowski <michal.swiatkowski@linux.intel.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Kiran Bhandare <kiranx.bhandare@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 280/599] i40e: dont reserve excessive XDP_PACKET_HEADROOM on XSK Rx to skb
+Date:   Tue,  5 Apr 2022 09:29:34 +0200
+Message-Id: <20220405070307.167560968@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
+References: <20220405070258.802373272@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <alpine.DEB.2.21.2204051027490.47162@angie.orcam.me.uk>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 05, 2022 at 10:42:21AM +0100, Maciej W. Rozycki wrote:
-> On Mon, 4 Apr 2022, Andrew Powers-Holmes wrote:
-> 
-> > Would the best way to get this merged into 5.10/15 (and maybe .16 just
-> > for good measure) be to email the stable team (since it's already in
-> > Linus' tree)? Documentation/process/stable-kernel-rules seems to say
-> > yes, but I'd like to avoid stepping on anyone's toes given that it's not
-> > my patch.
-> 
->  You seem the most severely affected so far, so why not act in your best 
-> interest?  I think option #2 applies here and seems quite straightforward 
-> to follow, referring commit 2bc5bab9a763 and using your use case as the 
-> justification.  It doesn't have to be the author to request a backport.
-> 
->  NB I think it has to be backported to all the stable branches made since 
-> the original breakage; i.e. v5.9+ (I haven't kept track of what they are).
+From: Alexander Lobakin <alexandr.lobakin@intel.com>
 
-the fix has a Fixes tag so it will usually ported to stable/longterm kernels.
-I already saw it in Greg's patch bombs.
+[ Upstream commit bc97f9c6f988b31b728eb47a94ca825401dbeffe ]
 
-Thomas.
+{__,}napi_alloc_skb() allocates and reserves additional NET_SKB_PAD
++ NET_IP_ALIGN for any skb.
+OTOH, i40e_construct_skb_zc() currently allocates and reserves
+additional `xdp->data - xdp->data_hard_start`, which is
+XDP_PACKET_HEADROOM for XSK frames.
+There's no need for that at all as the frame is post-XDP and will
+go only to the networking stack core.
+Pass the size of the actual data only to __napi_alloc_skb() and
+don't reserve anything. This will give enough headroom for stack
+processing.
 
+Fixes: 0a714186d3c0 ("i40e: add AF_XDP zero-copy Rx support")
+Signed-off-by: Alexander Lobakin <alexandr.lobakin@intel.com>
+Reviewed-by: Michal Swiatkowski <michal.swiatkowski@linux.intel.com>
+Acked-by: Jesper Dangaard Brouer <brouer@redhat.com>
+Tested-by: Kiran Bhandare <kiranx.bhandare@intel.com>
+Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/net/ethernet/intel/i40e/i40e_xsk.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
+
+diff --git a/drivers/net/ethernet/intel/i40e/i40e_xsk.c b/drivers/net/ethernet/intel/i40e/i40e_xsk.c
+index 86c79f71c685..d444e38360c1 100644
+--- a/drivers/net/ethernet/intel/i40e/i40e_xsk.c
++++ b/drivers/net/ethernet/intel/i40e/i40e_xsk.c
+@@ -252,13 +252,11 @@ static struct sk_buff *i40e_construct_skb_zc(struct i40e_ring *rx_ring,
+ 	struct sk_buff *skb;
+ 
+ 	/* allocate a skb to store the frags */
+-	skb = __napi_alloc_skb(&rx_ring->q_vector->napi,
+-			       xdp->data_end - xdp->data_hard_start,
++	skb = __napi_alloc_skb(&rx_ring->q_vector->napi, datasize,
+ 			       GFP_ATOMIC | __GFP_NOWARN);
+ 	if (unlikely(!skb))
+ 		return NULL;
+ 
+-	skb_reserve(skb, xdp->data - xdp->data_hard_start);
+ 	memcpy(__skb_put(skb, datasize), xdp->data, datasize);
+ 	if (metasize)
+ 		skb_metadata_set(skb, metasize);
 -- 
-Crap can work. Given enough thrust pigs will fly, but it's not necessarily a
-good idea.                                                [ RFC1925, 2.3 ]
+2.34.1
+
+
+
