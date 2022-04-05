@@ -2,47 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8CDC6C43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A1C66C43217
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 01:48:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1844059AbiDFBnD (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 21:43:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33210 "EHLO
+        id S239843AbiDFBnJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 21:43:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44352 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350068AbiDEJwk (ORCPT
+        with ESMTP id S1357431AbiDEK0V (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:52:40 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 710EC47AC2;
-        Tue,  5 Apr 2022 02:50:41 -0700 (PDT)
+        Tue, 5 Apr 2022 06:26:21 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D5476249;
+        Tue,  5 Apr 2022 03:10:09 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 28B9CB818F3;
-        Tue,  5 Apr 2022 09:50:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 78242C385A1;
-        Tue,  5 Apr 2022 09:50:38 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1C0F9617A4;
+        Tue,  5 Apr 2022 10:10:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 26FA8C385A0;
+        Tue,  5 Apr 2022 10:10:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649152238;
-        bh=BYLceQ27HCG3skTU1Q/nNGBO22BIEfWtYYg8LclAFG0=;
+        s=korg; t=1649153408;
+        bh=7PbildU4fVy2AP3yvxFY7nRP8gtRqmn3F61F8jyqIRQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Yy+OJjA6OfMiVrL2s+UA0R5TFHOwYvGnkV3NmafU0IWz95CTyl5SoboQLBoJ3/LxR
-         FnT+Ze+rznoieNpy+kECqUiO6zniQzQUceBLJ7M3PfyS/aRIgMJHfglfVjV0LI/LDl
-         WGkneZVC//0BEKUkU6g0aZwZGGlXKlrsu3aSO0pU=
+        b=FYHqIhEXeNkeVNt1gNha4JRnQqVZgYuM+Un4cc72NqGkcEN6zQe40nYRKiwWxfP7O
+         JlZhibqeS+p2J6GWtl8Hy00aTjyWPV63Kaqq8xTgzkpHs9pskG4VVEYP0gpL675eeW
+         nTHX7ETLXJX69u5OyUlbcEKO75CtqNAT/2nMwG2g=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ido Schimmel <idosch@nvidia.com>,
-        David Ahern <dsahern@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
+        stable@vger.kernel.org, Ard Biesheuvel <ardb@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        "Steven Rostedt (Google)" <rostedt@goodmis.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 667/913] selftests: test_vxlan_under_vrf: Fix broken test case
-Date:   Tue,  5 Apr 2022 09:28:49 +0200
-Message-Id: <20220405070359.829072423@linuxfoundation.org>
+Subject: [PATCH 5.10 213/599] ARM: ftrace: ensure that ADR takes the Thumb bit into account
+Date:   Tue,  5 Apr 2022 09:28:27 +0200
+Message-Id: <20220405070305.181038401@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
+References: <20220405070258.802373272@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,67 +51,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ido Schimmel <idosch@nvidia.com>
+From: Ard Biesheuvel <ardb@kernel.org>
 
-[ Upstream commit b50d3b46f84282d795ae3076111acb75ae1031f3 ]
+[ Upstream commit dd88b03ff0c84f4bcbe1419b93a4bed429fed3be ]
 
-The purpose of the last test case is to test VXLAN encapsulation and
-decapsulation when the underlay lookup takes place in a non-default VRF.
-This is achieved by enslaving the physical device of the tunnel to a
-VRF.
+Using ADR to take the address of 'ftrace_stub' via a local label
+produces an address that has the Thumb bit cleared, which means the
+subsequent comparison is guaranteed to fail. Instead, use the badr
+macro, which forces the Thumb bit to be set.
 
-The binding of the VXLAN UDP socket to the VRF happens when the VXLAN
-device itself is opened, not when its physical device is opened. This
-was also mentioned in the cited commit ("tests that moving the underlay
-from a VRF to another works when down/up the VXLAN interface"), but the
-test did something else.
-
-Fix it by reopening the VXLAN device instead of its physical device.
-
-Before:
-
- # ./test_vxlan_under_vrf.sh
- Checking HV connectivity                                           [ OK ]
- Check VM connectivity through VXLAN (underlay in the default VRF)  [ OK ]
- Check VM connectivity through VXLAN (underlay in a VRF)            [FAIL]
-
-After:
-
- # ./test_vxlan_under_vrf.sh
- Checking HV connectivity                                           [ OK ]
- Check VM connectivity through VXLAN (underlay in the default VRF)  [ OK ]
- Check VM connectivity through VXLAN (underlay in a VRF)            [ OK ]
-
-Fixes: 03f1c26b1c56 ("test/net: Add script for VXLAN underlay in a VRF")
-Signed-off-by: Ido Schimmel <idosch@nvidia.com>
-Reviewed-by: David Ahern <dsahern@kernel.org>
-Link: https://lore.kernel.org/r/20220324200514.1638326-1-idosch@nvidia.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Fixes: a3ba87a61499 ("ARM: 6316/1: ftrace: add Thumb-2 support")
+Signed-off-by: Ard Biesheuvel <ardb@kernel.org>
+Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
+Reviewed-by: Steven Rostedt (Google) <rostedt@goodmis.org>
+Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/testing/selftests/net/test_vxlan_under_vrf.sh | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ arch/arm/kernel/entry-ftrace.S | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/tools/testing/selftests/net/test_vxlan_under_vrf.sh b/tools/testing/selftests/net/test_vxlan_under_vrf.sh
-index 534c8b7699ab..6fadc8e2f116 100755
---- a/tools/testing/selftests/net/test_vxlan_under_vrf.sh
-+++ b/tools/testing/selftests/net/test_vxlan_under_vrf.sh
-@@ -118,11 +118,11 @@ echo "[ OK ]"
+diff --git a/arch/arm/kernel/entry-ftrace.S b/arch/arm/kernel/entry-ftrace.S
+index a74289ebc803..f4886fb6e9ba 100644
+--- a/arch/arm/kernel/entry-ftrace.S
++++ b/arch/arm/kernel/entry-ftrace.S
+@@ -40,7 +40,7 @@
+ 	mcount_enter
+ 	ldr	r0, =ftrace_trace_function
+ 	ldr	r2, [r0]
+-	adr	r0, .Lftrace_stub
++	badr	r0, .Lftrace_stub
+ 	cmp	r0, r2
+ 	bne	1f
  
- # Move the underlay to a non-default VRF
- ip -netns hv-1 link set veth0 vrf vrf-underlay
--ip -netns hv-1 link set veth0 down
--ip -netns hv-1 link set veth0 up
-+ip -netns hv-1 link set vxlan0 down
-+ip -netns hv-1 link set vxlan0 up
- ip -netns hv-2 link set veth0 vrf vrf-underlay
--ip -netns hv-2 link set veth0 down
--ip -netns hv-2 link set veth0 up
-+ip -netns hv-2 link set vxlan0 down
-+ip -netns hv-2 link set vxlan0 up
- 
- echo -n "Check VM connectivity through VXLAN (underlay in a VRF)            "
- ip netns exec vm-1 ping -c 1 -W 1 10.0.0.2 &> /dev/null || (echo "[FAIL]"; false)
 -- 
 2.34.1
 
