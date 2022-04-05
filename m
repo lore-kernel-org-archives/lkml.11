@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3567DC43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C657C433F5
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 01:10:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1840150AbiDFBHW (ORCPT
+        id S1840136AbiDFBHS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 21:07:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47886 "EHLO
+        Tue, 5 Apr 2022 21:07:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39584 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348926AbiDEJss (ORCPT
+        with ESMTP id S1349263AbiDEJtb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:48:48 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3ADCFA0BED;
-        Tue,  5 Apr 2022 02:37:46 -0700 (PDT)
+        Tue, 5 Apr 2022 05:49:31 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E67F196;
+        Tue,  5 Apr 2022 02:43:26 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E06E6B81C6C;
-        Tue,  5 Apr 2022 09:37:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3795CC385A4;
-        Tue,  5 Apr 2022 09:37:43 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E743DB81B7A;
+        Tue,  5 Apr 2022 09:43:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5A5CBC385A2;
+        Tue,  5 Apr 2022 09:43:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649151463;
-        bh=HQ8WKX/MD7XlNHXrBNKlaeo+5o71NqqaQvKlW8Fz6Qo=;
+        s=korg; t=1649151803;
+        bh=ilqLsuz/Ma+wTb22AXwt8jOnSVqdW4vrad/y6wPbT/c=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2wEt2sbL2OQLRjsDnUzkStMFXSmEV7fjX3fc9uFtyw6WAFvE6ZbTCB/VV0RF47BSD
-         qUpBqjrWZj6bpOVnVaT42okPdJZf2/cU5xmNMZQMIqkDKg48ZY/zvtS16L87BS7N1m
-         St7ZxGojZmtxDV6AaYieOqYJvtF7w/Cpv4g8IDXE=
+        b=pLtBKR3kcFL+YD7d/rHm/LcSfzeGbkSUdnRJt6/mL4OfL8fZsFHkqQ9Jwf46D6j6A
+         G9wbdWPwbABlQ7TYxPG7AkCgnt/e3A1koi3zdiaIhdYpkCaUSp2+DKkoiM68QcXi1a
+         ymnPj7OWYr5tv5aOY767FdrPcDkIYVHDAp1X7HZo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Lorenzo Bianconi <lorenzo@kernel.org>,
         Felix Fietkau <nbd@nbd.name>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 425/913] mt76: mt7615: fix a leftover race in runtime-pm
-Date:   Tue,  5 Apr 2022 09:24:47 +0200
-Message-Id: <20220405070352.584530780@linuxfoundation.org>
+Subject: [PATCH 5.15 548/913] mt76: mt7921: fix mt7921_queues_acq implementation
+Date:   Tue,  5 Apr 2022 09:26:50 +0200
+Message-Id: <20220405070356.274488132@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
 References: <20220405070339.801210740@linuxfoundation.org>
@@ -51,39 +51,76 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Lorenzo Bianconi <lorenzo@kernel.org>
 
-[ Upstream commit 42ce8d3b623162f3248db50a38359f294e6b06fd ]
+[ Upstream commit 849ee6ac9dd3efd0a57cbc98b9a9d6ae87374aff ]
 
-Fix a possible race in mt7615_pm_power_save_work() if rx/tx napi
-schedules ps_work and we are currently accessing device register
-on a different cpu.
+Fix mt7921_queues_acq implementation according to the vendor sdk.
 
-Fixes: db928f1ab9789 ("mt76: mt7663: rely on mt76_connac_pm_ref/mt76_connac_pm_unref in tx/rx napi")
+Fixes: 474a9f21e2e20 ("mt76: mt7921: add debugfs support")
 Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
 Signed-off-by: Felix Fietkau <nbd@nbd.name>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/mediatek/mt76/mt7615/mac.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
+ drivers/net/wireless/mediatek/mt76/mt7921/debugfs.c | 13 ++++++-------
+ drivers/net/wireless/mediatek/mt76/mt7921/regs.h    | 11 +++++------
+ 2 files changed, 11 insertions(+), 13 deletions(-)
 
-diff --git a/drivers/net/wireless/mediatek/mt76/mt7615/mac.c b/drivers/net/wireless/mediatek/mt76/mt7615/mac.c
-index f2704149834a..eb7bda91f2b3 100644
---- a/drivers/net/wireless/mediatek/mt76/mt7615/mac.c
-+++ b/drivers/net/wireless/mediatek/mt76/mt7615/mac.c
-@@ -2000,6 +2000,14 @@ void mt7615_pm_power_save_work(struct work_struct *work)
- 	    test_bit(MT76_HW_SCHED_SCANNING, &dev->mphy.state))
- 		goto out;
+diff --git a/drivers/net/wireless/mediatek/mt76/mt7921/debugfs.c b/drivers/net/wireless/mediatek/mt76/mt7921/debugfs.c
+index 30f3b3085c78..8d5e261cd10f 100644
+--- a/drivers/net/wireless/mediatek/mt76/mt7921/debugfs.c
++++ b/drivers/net/wireless/mediatek/mt76/mt7921/debugfs.c
+@@ -130,23 +130,22 @@ mt7921_queues_acq(struct seq_file *s, void *data)
  
-+	if (mutex_is_locked(&dev->mt76.mutex))
-+		/* if mt76 mutex is held we should not put the device
-+		 * to sleep since we are currently accessing device
-+		 * register map. We need to wait for the next power_save
-+		 * trigger.
-+		 */
-+		goto out;
-+
- 	if (time_is_after_jiffies(dev->pm.last_activity + delta)) {
- 		delta = dev->pm.last_activity + delta - jiffies;
- 		goto out;
+ 	mt7921_mutex_acquire(dev);
+ 
+-	for (i = 0; i < 16; i++) {
+-		int j, acs = i / 4, index = i % 4;
++	for (i = 0; i < 4; i++) {
+ 		u32 ctrl, val, qlen = 0;
++		int j;
+ 
+-		val = mt76_rr(dev, MT_PLE_AC_QEMPTY(acs, index));
+-		ctrl = BIT(31) | BIT(15) | (acs << 8);
++		val = mt76_rr(dev, MT_PLE_AC_QEMPTY(i));
++		ctrl = BIT(31) | BIT(11) | (i << 24);
+ 
+ 		for (j = 0; j < 32; j++) {
+ 			if (val & BIT(j))
+ 				continue;
+ 
+-			mt76_wr(dev, MT_PLE_FL_Q0_CTRL,
+-				ctrl | (j + (index << 5)));
++			mt76_wr(dev, MT_PLE_FL_Q0_CTRL, ctrl | j);
+ 			qlen += mt76_get_field(dev, MT_PLE_FL_Q3_CTRL,
+ 					       GENMASK(11, 0));
+ 		}
+-		seq_printf(s, "AC%d%d: queued=%d\n", acs, index, qlen);
++		seq_printf(s, "AC%d: queued=%d\n", i, qlen);
+ 	}
+ 
+ 	mt7921_mutex_release(dev);
+diff --git a/drivers/net/wireless/mediatek/mt76/mt7921/regs.h b/drivers/net/wireless/mediatek/mt76/mt7921/regs.h
+index 26fb11823762..41c2855e7a3d 100644
+--- a/drivers/net/wireless/mediatek/mt76/mt7921/regs.h
++++ b/drivers/net/wireless/mediatek/mt76/mt7921/regs.h
+@@ -17,13 +17,12 @@
+ #define MT_PLE_BASE			0x8000
+ #define MT_PLE(ofs)			(MT_PLE_BASE + (ofs))
+ 
+-#define MT_PLE_FL_Q0_CTRL		MT_PLE(0x1b0)
+-#define MT_PLE_FL_Q1_CTRL		MT_PLE(0x1b4)
+-#define MT_PLE_FL_Q2_CTRL		MT_PLE(0x1b8)
+-#define MT_PLE_FL_Q3_CTRL		MT_PLE(0x1bc)
++#define MT_PLE_FL_Q0_CTRL		MT_PLE(0x3e0)
++#define MT_PLE_FL_Q1_CTRL		MT_PLE(0x3e4)
++#define MT_PLE_FL_Q2_CTRL		MT_PLE(0x3e8)
++#define MT_PLE_FL_Q3_CTRL		MT_PLE(0x3ec)
+ 
+-#define MT_PLE_AC_QEMPTY(ac, n)		MT_PLE(0x300 + 0x10 * (ac) + \
+-					       ((n) << 2))
++#define MT_PLE_AC_QEMPTY(_n)		MT_PLE(0x500 + 0x40 * (_n))
+ #define MT_PLE_AMSDU_PACK_MSDU_CNT(n)	MT_PLE(0x10e0 + ((n) << 2))
+ 
+ #define MT_MDP_BASE			0xf000
 -- 
 2.34.1
 
