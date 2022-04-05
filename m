@@ -2,49 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7321FC46467
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 56148C41535
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:15:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1443157AbiDEUHi (ORCPT
+        id S1442815AbiDEUHY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 16:07:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50354 "EHLO
+        Tue, 5 Apr 2022 16:07:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39768 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358197AbiDEK2F (ORCPT
+        with ESMTP id S1348751AbiDEJsb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:28:05 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31951205EB;
-        Tue,  5 Apr 2022 03:16:51 -0700 (PDT)
+        Tue, 5 Apr 2022 05:48:31 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E80F48321;
+        Tue,  5 Apr 2022 02:34:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C5AAA61562;
-        Tue,  5 Apr 2022 10:16:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D947AC385A1;
-        Tue,  5 Apr 2022 10:16:49 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B04E5B81C6F;
+        Tue,  5 Apr 2022 09:34:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EFEA7C385A2;
+        Tue,  5 Apr 2022 09:34:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649153810;
-        bh=bJ4pzWP873/SXGNUTzG7+GAv1s1i+Ck5sZq98p1Sp4Y=;
+        s=korg; t=1649151285;
+        bh=vOzsy4dCO55H8J9nLmLlOgkfuzre8MNWIEBAqKkF684=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JTAo2zjLdZq2MeyGtTJWBIffou7Dv/SssarTYPmK4KmmDR7we1/klMzxrYslUU2xJ
-         GYosoagRm7MZSahOihnfMeRP1bgABJvLZg1lF/vJfTDklr/TCaBLYyCGUhPsDPBL6+
-         vFXM+JFTgZWGncHOzWGAq7ZFMID1UXZtEamazQo0=
+        b=id7mDuHaBPj3jy+kQz+6D4o4Rbp+MUzpB2JmbK1y3o58PKo9mVtaW6SvRRqs/Ph2u
+         zELT82oQJl1EH/rbPXZ1Zsitvo6oRvKVcxD58CEVdHww9V6t8ZlkuFHBDYDzxs+D0J
+         iR72GohdFAJnGh47COyWgTrvntTRgeq2XEl7lMx4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Xiyu Yang <xiyuyang19@fudan.edu.cn>,
-        Xin Tan <tanxin.ctf@gmail.com>,
-        Xin Xiong <xiongx18@fudan.edu.cn>,
-        Claudiu Beznea <claudiu.beznea@microchip.com>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Tzung-Bi Shih <tzungbi@kernel.org>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 354/599] mtd: rawnand: atmel: fix refcount issue in atmel_nand_controller_init
-Date:   Tue,  5 Apr 2022 09:30:48 +0200
-Message-Id: <20220405070309.360589501@linuxfoundation.org>
+Subject: [PATCH 5.15 359/913] ASoC: mediatek: mt8192-mt6359: Fix error handling in mt8192_mt6359_dev_probe
+Date:   Tue,  5 Apr 2022 09:23:41 +0200
+Message-Id: <20220405070350.606451968@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -53,73 +51,73 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xin Xiong <xiongx18@fudan.edu.cn>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit fecbd4a317c95d73c849648c406bcf1b6a0ec1cf ]
+[ Upstream commit e45ac7831ff3e2934d58cce319c17c8ec763c95c ]
 
-The reference counting issue happens in several error handling paths
-on a refcounted object "nc->dmac". In these paths, the function simply
-returns the error code, forgetting to balance the reference count of
-"nc->dmac", increased earlier by dma_request_channel(), which may
-cause refcount leaks.
+The device_node pointer is returned by of_parse_phandle()  with refcount
+incremented. We should use of_node_put() on it when done.
 
-Fix it by decrementing the refcount of specific object in those error
-paths.
+This function only calls of_node_put() in the regular path.
+And it will cause refcount leak in error paths.
+Fix this by calling of_node_put() in error handling too.
 
-Fixes: f88fc122cc34 ("mtd: nand: Cleanup/rework the atmel_nand driver")
-Co-developed-by: Xiyu Yang <xiyuyang19@fudan.edu.cn>
-Signed-off-by: Xiyu Yang <xiyuyang19@fudan.edu.cn>
-Co-developed-by: Xin Tan <tanxin.ctf@gmail.com>
-Signed-off-by: Xin Tan <tanxin.ctf@gmail.com>
-Signed-off-by: Xin Xiong <xiongx18@fudan.edu.cn>
-Reviewed-by: Claudiu Beznea <claudiu.beznea@microchip.com>
-Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-Link: https://lore.kernel.org/linux-mtd/20220304085330.3610-1-xiongx18@fudan.edu.cn
+Fixes: 4e28491a7a19 ("ASoC: mediatek: mt8192-mt6359: fix device_node leak")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Reviewed-by: Tzung-Bi Shih <tzungbi@kernel.org>
+Link: https://lore.kernel.org/r/20220308015224.23585-1-linmq006@gmail.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/mtd/nand/raw/atmel/nand-controller.c | 14 +++++++++++---
- 1 file changed, 11 insertions(+), 3 deletions(-)
+ .../mt8192/mt8192-mt6359-rt1015-rt5682.c       | 18 ++++++++++++------
+ 1 file changed, 12 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/mtd/nand/raw/atmel/nand-controller.c b/drivers/mtd/nand/raw/atmel/nand-controller.c
-index 8aab1017b460..c048e826746a 100644
---- a/drivers/mtd/nand/raw/atmel/nand-controller.c
-+++ b/drivers/mtd/nand/raw/atmel/nand-controller.c
-@@ -2057,13 +2057,15 @@ static int atmel_nand_controller_init(struct atmel_nand_controller *nc,
- 	nc->mck = of_clk_get(dev->parent->of_node, 0);
- 	if (IS_ERR(nc->mck)) {
- 		dev_err(dev, "Failed to retrieve MCK clk\n");
--		return PTR_ERR(nc->mck);
-+		ret = PTR_ERR(nc->mck);
-+		goto out_release_dma;
+diff --git a/sound/soc/mediatek/mt8192/mt8192-mt6359-rt1015-rt5682.c b/sound/soc/mediatek/mt8192/mt8192-mt6359-rt1015-rt5682.c
+index ab449d0e4e9b..c1d225b49851 100644
+--- a/sound/soc/mediatek/mt8192/mt8192-mt6359-rt1015-rt5682.c
++++ b/sound/soc/mediatek/mt8192/mt8192-mt6359-rt1015-rt5682.c
+@@ -1116,8 +1116,10 @@ static int mt8192_mt6359_dev_probe(struct platform_device *pdev)
  	}
  
- 	np = of_parse_phandle(dev->parent->of_node, "atmel,smc", 0);
- 	if (!np) {
- 		dev_err(dev, "Missing or invalid atmel,smc property\n");
+ 	card = (struct snd_soc_card *)of_device_get_match_data(&pdev->dev);
+-	if (!card)
 -		return -EINVAL;
++	if (!card) {
 +		ret = -EINVAL;
-+		goto out_release_dma;
++		goto put_platform_node;
++	}
+ 	card->dev = &pdev->dev;
+ 
+ 	hdmi_codec = of_parse_phandle(pdev->dev.of_node,
+@@ -1159,20 +1161,24 @@ static int mt8192_mt6359_dev_probe(struct platform_device *pdev)
  	}
  
- 	nc->smc = syscon_node_to_regmap(np);
-@@ -2071,10 +2073,16 @@ static int atmel_nand_controller_init(struct atmel_nand_controller *nc,
- 	if (IS_ERR(nc->smc)) {
- 		ret = PTR_ERR(nc->smc);
- 		dev_err(dev, "Could not get SMC regmap (err = %d)\n", ret);
+ 	priv = devm_kzalloc(&pdev->dev, sizeof(*priv), GFP_KERNEL);
+-	if (!priv)
+-		return -ENOMEM;
++	if (!priv) {
++		ret = -ENOMEM;
++		goto put_hdmi_codec;
++	}
+ 	snd_soc_card_set_drvdata(card, priv);
+ 
+ 	ret = mt8192_afe_gpio_init(&pdev->dev);
+ 	if (ret) {
+ 		dev_err(&pdev->dev, "init gpio error %d\n", ret);
 -		return ret;
-+		goto out_release_dma;
++		goto put_hdmi_codec;
  	}
  
- 	return 0;
-+
-+out_release_dma:
-+	if (nc->dmac)
-+		dma_release_channel(nc->dmac);
-+
-+	return ret;
+ 	ret = devm_snd_soc_register_card(&pdev->dev, card);
+ 
+-	of_node_put(platform_node);
++put_hdmi_codec:
+ 	of_node_put(hdmi_codec);
++put_platform_node:
++	of_node_put(platform_node);
+ 	return ret;
  }
  
- static int
 -- 
 2.34.1
 
