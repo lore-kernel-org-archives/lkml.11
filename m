@@ -2,102 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 38E2EC41535
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 21:04:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 52277C4167B
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 21:04:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346270AbiDEVDV (ORCPT
+        id S1347708AbiDEVDy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 17:03:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44278 "EHLO
+        Tue, 5 Apr 2022 17:03:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33212 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348920AbiDEJsr (ORCPT
+        with ESMTP id S1573371AbiDES7U (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:48:47 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CC42EE4EC;
-        Tue,  5 Apr 2022 02:37:30 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2925961368;
-        Tue,  5 Apr 2022 09:37:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 39A09C385A2;
-        Tue,  5 Apr 2022 09:37:29 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649151449;
-        bh=ksj7NaMP7Eh/EV7FFmcfWjOot3c2gY7+vG8k34T7j4o=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Gj6422Wb9976BZXx8dytej13MlfV/NY/kv48UuXqTi3J1+KNMhTXXxc4FWrpoPt3S
-         qIy4Iv5+2yiXEEF3GIoPJiFUrPNtssQ4YMGTxJvdK+9JWIq9Kq8iFyc1ty+crU0Dqg
-         gysFOl8Opwdgwute6G+HTFLl4SKLDhbzTbwUm1x4=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Athira Rajeev <atrajeev@linux.vnet.ibm.com>,
-        Madhavan Srinivasan <maddy@linux.vnet.ibm.com>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 420/913] powerpc/perf: Dont use perf_hw_context for trace IMC PMU
-Date:   Tue,  5 Apr 2022 09:24:42 +0200
-Message-Id: <20220405070352.435852317@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 5 Apr 2022 14:59:20 -0400
+Received: from mail-oi1-x229.google.com (mail-oi1-x229.google.com [IPv6:2607:f8b0:4864:20::229])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2A07CD338
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 11:57:19 -0700 (PDT)
+Received: by mail-oi1-x229.google.com with SMTP id e4so76708oif.2
+        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 11:57:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:in-reply-to:references:from:user-agent:date:message-id
+         :subject:to:cc:content-transfer-encoding;
+        bh=Eg+uJvzARiyK+y5kdwfhnsez9dPo6iD29SbfPJ5zFbo=;
+        b=SOQSZKy52LDl9ojVoe9ifg4gZDbfedX3HkeMtnOMdhgKQ+qR+r52Y+dGcz4uJd5Bob
+         kv/cVP780ma8L1IWC4Xds1yYirTqiu52lXC03y3odfB52De0YP3povQqDRNnsie5Tbh+
+         8gR0b7LCVS0p02zuIW9kppHpg2JdutvLf5iDg=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:in-reply-to:references:from
+         :user-agent:date:message-id:subject:to:cc:content-transfer-encoding;
+        bh=Eg+uJvzARiyK+y5kdwfhnsez9dPo6iD29SbfPJ5zFbo=;
+        b=SNqH1eT/8ilfUG7mGvW7LEQMM+Hi6S1CBDtampzyLqb5CeD9nTxTRDxa6Jev+Kzl6l
+         fAm2yv+5vRBE4SxdnZAQ3ckmUgJjkZ51Cpo1d2n3s4Fiscp+iefCXX7F0QqffHXuVfeK
+         D3BVfxAIAuJOJE8RPVqaSAXTD8CCKmINz1k9Bc1PBWiSCMK4MOn/pl3bKJqsRXWI6+p9
+         Gi9jQC7PK0lWpzLL36pkpxPlIJIjActCdJWdF4W3XnR5AM2IoOqolugCFyniqfp9FKY8
+         Gf/0vcj8EOhabK2gSjipnElrqAYQOV9PmqyOhZB1L7YG4tDDM4hHZAD5JfMIOsqANmN0
+         6Q8w==
+X-Gm-Message-State: AOAM5326FDlxnS89NEHL1U/PwBFiLHscbMR0Th5kOqj6VFk/UMnrYAPX
+        JaXxd+ENveKiGcvCMWwYRIwCLhWhF7ClVJqb8frBsA==
+X-Google-Smtp-Source: ABdhPJxqFrAK9XKNfLSTAKp/DpPKoy3w3eYu+cvQpWHQQxYLJz3gqwv6wMtk9iToYxT4AHG9aUy+iRPRwFP3QOpCpz8=
+X-Received: by 2002:aca:bd41:0:b0:2ec:ff42:814f with SMTP id
+ n62-20020acabd41000000b002ecff42814fmr2062655oif.63.1649185039185; Tue, 05
+ Apr 2022 11:57:19 -0700 (PDT)
+Received: from 753933720722 named unknown by gmailapi.google.com with
+ HTTPREST; Tue, 5 Apr 2022 13:57:18 -0500
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <CO1PR02MB853729533D004EB671B273BAE9E49@CO1PR02MB8537.namprd02.prod.outlook.com>
+References: <1646679549-12494-1-git-send-email-quic_pmaliset@quicinc.com>
+ <CAE-0n51HZKXCtrzf3_5wnoCZfhRoq8AqmUwsdk31iaiteVRDYg@mail.gmail.com> <CO1PR02MB853729533D004EB671B273BAE9E49@CO1PR02MB8537.namprd02.prod.outlook.com>
+From:   Stephen Boyd <swboyd@chromium.org>
+User-Agent: alot/0.10
+Date:   Tue, 5 Apr 2022 13:57:18 -0500
+Message-ID: <CAE-0n51oA99uOu4S3Sywx7FpK1SJKACgX27UN9z2kKP8UfwGOw@mail.gmail.com>
+Subject: RE: [PATCH v2] [RFC PATCH] PCI: Update LTR threshold based on LTRME bit
+To:     Prasad Malisetty <quic_pmaliset@quicinc.com>,
+        Prasad Malisetty <pmaliset@qti.qualcomm.com>,
+        agross@kernel.org, bhelgaas@google.com, bjorn.andersson@linaro.org,
+        kw@linux.com, linux-arm-msm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org,
+        lorenzo.pieralisi@arm.com, rajatja@google.com,
+        refactormyself@gmail.com, robh@kernel.org
+Cc:     Veerabhadrarao Badiganti <quic_vbadigan@quicinc.com>,
+        Rama Krishna <quic_ramkri@quicinc.com>,
+        "manivannan.sadhasivam@linaro.org" <manivannan.sadhasivam@linaro.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Athira Rajeev <atrajeev@linux.vnet.ibm.com>
+Quoting Prasad Malisetty (Temp) (2022-04-04 23:24:39)
+> > From: Stephen Boyd <swboyd@chromium.org>
+> > Quoting Prasad Malisetty (2022-03-07 10:59:09)
+> > > Update LTR threshold scale and value based on LTRME (Latency
+> > > Tolenrance Reporting Mechanism) from device capabilities.
+> > >
+> > > In ASPM driver, LTR threshold scale and value is updating based on
+> > > tcommon_mode and t_poweron values. In kioxia NVMe,
+> > > L1.2 is failing due to LTR threshold scale and value is greater value=
+s
+> > > than max snoop/non snoop value.
+> > >
+> > > In general, updated LTR threshold scale and value should be less than
+> > > max snoop/non snoop value to enter the device into L1.2 state.
+> > >
+> > > Signed-off-by: Prasad Malisetty <quic_pmaliset@quicinc.com>
+> > >
+> >
+> > Any Fixes tag?
+> No, we don=E2=80=99t have any fixes tag as this is new issue identified i=
+n kioxia NVMe only as of now.
 
-[ Upstream commit 0198322379c25215b2778482bf1221743a76e2b5 ]
-
-Trace IMC (In-Memory collection counters) in powerpc is useful for
-application level profiling.
-
-For trace_imc, presently task context (task_ctx_nr) is set to
-perf_hw_context. But perf_hw_context should only be used for CPU PMU.
-See commit 26657848502b ("perf/core: Verify we have a single
-perf_hw_context PMU").
-
-So for trace_imc, even though it is per thread PMU, it is preferred to
-use sw_context in order to be able to do application level monitoring.
-Hence change the task_ctx_nr to use perf_sw_context.
-
-Fixes: 012ae244845f ("powerpc/perf: Trace imc PMU functions")
-Signed-off-by: Athira Rajeev <atrajeev@linux.vnet.ibm.com>
-Reviewed-by: Madhavan Srinivasan <maddy@linux.vnet.ibm.com>
-[mpe: Update subject & incorporate notes into change log, reflow comment]
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20220202041837.65968-1-atrajeev@linux.vnet.ibm.com
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- arch/powerpc/perf/imc-pmu.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
-
-diff --git a/arch/powerpc/perf/imc-pmu.c b/arch/powerpc/perf/imc-pmu.c
-index e106909ff9c3..e7583fbcc8fa 100644
---- a/arch/powerpc/perf/imc-pmu.c
-+++ b/arch/powerpc/perf/imc-pmu.c
-@@ -1457,7 +1457,11 @@ static int trace_imc_event_init(struct perf_event *event)
- 
- 	event->hw.idx = -1;
- 
--	event->pmu->task_ctx_nr = perf_hw_context;
-+	/*
-+	 * There can only be a single PMU for perf_hw_context events which is assigned to
-+	 * core PMU. Hence use "perf_sw_context" for trace_imc.
-+	 */
-+	event->pmu->task_ctx_nr = perf_sw_context;
- 	event->destroy = reset_global_refc;
- 	return 0;
- }
--- 
-2.34.1
-
-
-
+Just because you found it now doesn't mean it hasn't been broken for
+some time. Can you look through the history and figure out when it
+didn't work and use that commit for the fixes tag?
