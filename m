@@ -2,89 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 24D64C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 14:56:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C830C4167B
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 14:56:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350446AbiDEOzw (ORCPT
+        id S1355042AbiDEO4a (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 10:55:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40196 "EHLO
+        Tue, 5 Apr 2022 10:56:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54986 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343962AbiDEJlz (ORCPT
+        with ESMTP id S1344470AbiDEJmF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:41:55 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04E5ABD7F1;
-        Tue,  5 Apr 2022 02:27:28 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E7EAC61693;
-        Tue,  5 Apr 2022 09:27:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E90AAC385A2;
-        Tue,  5 Apr 2022 09:27:26 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649150847;
-        bh=ChCoChCJ+bm2s/23Tdv+MYjgZvCiKzNdR0c3alOGOmQ=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=y+08oAqrWFaBmFJzNiWtp/451PDe5ZcAKLGCSbDVihC/wlTowpiNKn7CfwnLqRYAJ
-         sA+vLpu+gJ/IMFALwUINYoBodtHpYANZ8VfiHdpxVYkDg9Pn91/Jo/UCLaCTJ0rZpK
-         7kkbamYOHn34kOzs94cwJRep9DVn5XSvGZUklAmw=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 201/913] spi: tegra114: Add missing IRQ check in tegra_spi_probe
-Date:   Tue,  5 Apr 2022 09:21:03 +0200
-Message-Id: <20220405070345.884270021@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 5 Apr 2022 05:42:05 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A7470BD8BC
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 02:27:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1649150863;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=sC0gvByyqOGxIVvKWID+U5sKeDMIxLfDoP4bDsHoAHY=;
+        b=bnSLLb+xH2vL3anio4wBtlyOwEJYezZ+4ZSvLJNfBVzlHXjFMtNSLSQWUuBm2LbAWiOBCU
+        woDKbrib3nLq5b5oJyo6ieSXv9Pd2f7x3teEIa8IMOidln7vGXV42A+/kDi5z7wnQ3gZ0c
+        4lGOioNRZyEscEXhBaOsKn5xcONyNSg=
+Received: from mail-ej1-f71.google.com (mail-ej1-f71.google.com
+ [209.85.218.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-2-49kc0B_GPu-8aPF9iqD69g-1; Tue, 05 Apr 2022 05:27:42 -0400
+X-MC-Unique: 49kc0B_GPu-8aPF9iqD69g-1
+Received: by mail-ej1-f71.google.com with SMTP id m12-20020a1709062acc00b006cfc98179e2so6063859eje.6
+        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 02:27:41 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=sC0gvByyqOGxIVvKWID+U5sKeDMIxLfDoP4bDsHoAHY=;
+        b=hF14zcHZxIHOdbDXareIb4bV2I0P2ra2gSfARQMUU36Fjk35MvEdXodpstWltV52Bw
+         5yChURa8LzciBtmBwBGwa4ehgaIJr0JOR62TXgI91mKLttgjx/UAKEpXu38XSnQOzxDz
+         NNCkshqh8efnZWl9LbaQUCnO+8G0K4MT7gHCWc/rno72TNNQzHcYcDTSdKjEj039oM/k
+         0/PUGZzGdJXokRWWsRy4Zdt9KnQTdBVlqiPLpJx7XLnTnawjgm2TgwIb5v/dRt/0ZmRE
+         Ag7lbBeo2nt/SdilHfCz6iAy49TZ5AgpDilxuDYJodYvI7lw4an5XUBZZWmJjxJW4Poi
+         QK/g==
+X-Gm-Message-State: AOAM530TcAluB2lRXjLC6B8LBn6SbnVzqSUFBrLvQiR0xZiNKJn98NTv
+        RQjiJXUUbOsESkOr+82ij0809Bg4C99tVFESVQQNZbSiCWwlG7Fuak/KuVeHF+oiiv0XHVMxeCO
+        mrvMGsnaqCjUy1f3Y0AZz1Hem
+X-Received: by 2002:a17:906:4fc7:b0:6da:92b2:f572 with SMTP id i7-20020a1709064fc700b006da92b2f572mr2546891ejw.184.1649150860480;
+        Tue, 05 Apr 2022 02:27:40 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwB3WmfzMOeRCORZ3nBWh1rSBws5rjaDTBJFWt5XN0IsrvTgQnvj9Ej10hBnbU9VbZ7HTRF4Q==
+X-Received: by 2002:a17:906:4fc7:b0:6da:92b2:f572 with SMTP id i7-20020a1709064fc700b006da92b2f572mr2546593ejw.184.1649150854567;
+        Tue, 05 Apr 2022 02:27:34 -0700 (PDT)
+Received: from ?IPV6:2001:1c00:c1e:bf00:1db8:22d3:1bc9:8ca1? (2001-1c00-0c1e-bf00-1db8-22d3-1bc9-8ca1.cable.dynamic.v6.ziggo.nl. [2001:1c00:c1e:bf00:1db8:22d3:1bc9:8ca1])
+        by smtp.gmail.com with ESMTPSA id y8-20020a50d8c8000000b0041c80bb88c7sm5906692edj.8.2022.04.05.02.27.33
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 05 Apr 2022 02:27:34 -0700 (PDT)
+Message-ID: <7b545c5a-cab5-cfdd-4dad-c2f9bc62655c@redhat.com>
+Date:   Tue, 5 Apr 2022 11:27:33 +0200
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: linux-next: Fixes tag needs some work in the drivers-x86-fixes
+ tree
+Content-Language: en-US
+To:     Stephen Rothwell <sfr@canb.auug.org.au>,
+        Mark Gross <markgross@kernel.org>
+Cc:     Mario Limonciello <mario.limonciello@amd.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+References: <20220405075041.7a73e2a3@canb.auug.org.au>
+From:   Hans de Goede <hdegoede@redhat.com>
+In-Reply-To: <20220405075041.7a73e2a3@canb.auug.org.au>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+Hi,
 
-[ Upstream commit 4f92724d4b92c024e721063f520d66e11ca4b54b ]
+On 4/4/22 23:50, Stephen Rothwell wrote:
+> Hi all,
+> 
+> In commit
+> 
+>   753ee989f7cf ("platform/x86: amd-pmc: Fix compilation without CONFIG_SUSPEND")
+> 
+> Fixes tag
+> 
+>   Fixes: commit b1f66033cd4e ("platform/x86: amd-pmc: Move to later in the suspend process")
+> 
+> has these problem(s):
+> 
+>   - leading word 'commit' unexpected
 
-This func misses checking for platform_get_irq()'s call and may passes the
-negative error codes to request_threaded_irq(), which takes unsigned IRQ #,
-causing it to fail with -EINVAL, overriding an original error code.
-Stop calling request_threaded_irq() with invalid IRQ #s.
+Stephen, thank you for the report. I've just done a forced push
+to the drivers-x86-fixes branch fixing this.
 
-Fixes: f333a331adfa ("spi/tegra114: add spi driver")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Link: https://lore.kernel.org/r/20220128165238.25615-1-linmq006@gmail.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/spi/spi-tegra114.c | 4 ++++
- 1 file changed, 4 insertions(+)
+Regards,
 
-diff --git a/drivers/spi/spi-tegra114.c b/drivers/spi/spi-tegra114.c
-index e9de1d958bbd..8f345247a8c3 100644
---- a/drivers/spi/spi-tegra114.c
-+++ b/drivers/spi/spi-tegra114.c
-@@ -1352,6 +1352,10 @@ static int tegra_spi_probe(struct platform_device *pdev)
- 	tspi->phys = r->start;
- 
- 	spi_irq = platform_get_irq(pdev, 0);
-+	if (spi_irq < 0) {
-+		ret = spi_irq;
-+		goto exit_free_master;
-+	}
- 	tspi->irq = spi_irq;
- 
- 	tspi->clk = devm_clk_get(&pdev->dev, "spi");
--- 
-2.34.1
-
-
+Hans
 
