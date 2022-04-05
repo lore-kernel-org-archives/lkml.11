@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 66CC8C4167D
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 14:44:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ABEF6C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 14:44:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1389598AbiDEOpG (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 10:45:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41934 "EHLO
+        id S236496AbiDEOq3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 10:46:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50092 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244413AbiDEJlR (ORCPT
+        with ESMTP id S244460AbiDEJlV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:41:17 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15136BB911;
-        Tue,  5 Apr 2022 02:26:24 -0700 (PDT)
+        Tue, 5 Apr 2022 05:41:21 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBB99BB91C;
+        Tue,  5 Apr 2022 02:26:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A55C561659;
-        Tue,  5 Apr 2022 09:26:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B76F9C385A2;
-        Tue,  5 Apr 2022 09:26:22 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 67AAA61659;
+        Tue,  5 Apr 2022 09:26:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 71FC1C385A0;
+        Tue,  5 Apr 2022 09:26:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649150783;
-        bh=jdhV1ARZqjVBNBTFdsNBzGc69eetyP1wwgKMcVbjsh8=;
+        s=korg; t=1649150788;
+        bh=gXaSowdSzdHDz/SLK+lkSj4IXT9ETjfxO2NaDq+DOw8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ziSTaEOeucRBhDnenH2TdfNdJzyNDZntF0okMyisxPyoIjrVQigpTQRdg/Q1mYpFd
-         ZFBrMtV/H0WZ4iLdvLryZleko9peK3KUbdTSFyMeL7HlWmylbVCuFESRbZQ0FrYr40
-         12NwvWaU8/MgeJwSU/wGC00GHvm3ehTrNTPaLcs8=
+        b=XPZZS1AqU6v0RgWrOtdOaztcctdnYcU82+Z5v1oQjrV+KseB9A61zkxmNMS9CMhMd
+         ZOu4jcylg1rAdFQz7BxmVhiUUm4C3lkLhViVF4kfobHs9aX+f7J/do9rt1H6ZNqLA9
+         ZRVxSF9D1bKT5cNF+UrQRx2gZzDmwR+pX8DRHBF0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Max Filippov <jcmvbkbc@gmail.com>
-Subject: [PATCH 5.15 172/913] xtensa: define update_mmu_tlb function
-Date:   Tue,  5 Apr 2022 09:20:34 +0200
-Message-Id: <20220405070345.007358677@linuxfoundation.org>
+        stable@vger.kernel.org, Linus Walleij <linus.walleij@linaro.org>,
+        Arend van Spriel <arend.vanspriel@broadcom.com>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Hector Martin <marcan@marcan.st>, Kalle Valo <kvalo@kernel.org>
+Subject: [PATCH 5.15 182/913] brcmfmac: pcie: Replace brcmf_pcie_copy_mem_todev with memcpy_toio
+Date:   Tue,  5 Apr 2022 09:20:44 +0200
+Message-Id: <20220405070345.310353456@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
 References: <20220405070339.801210740@linuxfoundation.org>
@@ -48,56 +50,108 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Max Filippov <jcmvbkbc@gmail.com>
+From: Hector Martin <marcan@marcan.st>
 
-commit 1c4664faa38923330d478f046dc743a00c1e2dec upstream.
+commit 9466987f246758eb7e9071ae58005253f631271e upstream.
 
-Before the commit f9ce0be71d1f ("mm: Cleanup faultaround and finish_fault()
-codepaths") there was a call to update_mmu_cache in alloc_set_pte that
-used to invalidate TLB entry caching invalid PTE that caused a page
-fault. That commit removed that call so now invalid TLB entry survives
-causing repetitive page faults on the CPU that took the initial fault
-until that TLB entry is occasionally evicted. This issue is spotted by
-the xtensa TLB sanity checker.
+The alignment check was wrong (e.g. & 4 instead of & 3), and the logic
+was also inefficient if the length was not a multiple of 4, since it
+would needlessly fall back to copying the entire buffer bytewise.
 
-Fix this issue by defining update_mmu_tlb function that flushes TLB entry
-for the faulting address.
+We already have a perfectly good memcpy_toio function, so just call that
+instead of rolling our own copy logic here. brcmf_pcie_init_ringbuffers
+was already using it anyway.
 
-Cc: stable@vger.kernel.org # 5.12+
-Signed-off-by: Max Filippov <jcmvbkbc@gmail.com>
+Fixes: 9e37f045d5e7 ("brcmfmac: Adding PCIe bus layer support.")
+Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
+Reviewed-by: Arend van Spriel <arend.vanspriel@broadcom.com>
+Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc: stable@vger.kernel.org
+Signed-off-by: Hector Martin <marcan@marcan.st>
+Signed-off-by: Kalle Valo <kvalo@kernel.org>
+Link: https://lore.kernel.org/r/20220131160713.245637-6-marcan@marcan.st
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/xtensa/include/asm/pgtable.h |    4 ++++
- arch/xtensa/mm/tlb.c              |    6 ++++++
- 2 files changed, 10 insertions(+)
+ drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c |   48 +---------------
+ 1 file changed, 4 insertions(+), 44 deletions(-)
 
---- a/arch/xtensa/include/asm/pgtable.h
-+++ b/arch/xtensa/include/asm/pgtable.h
-@@ -411,6 +411,10 @@ extern  void update_mmu_cache(struct vm_
+--- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c
++++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c
+@@ -12,6 +12,7 @@
+ #include <linux/interrupt.h>
+ #include <linux/bcma/bcma.h>
+ #include <linux/sched.h>
++#include <linux/io.h>
+ #include <asm/unaligned.h>
  
- typedef pte_t *pte_addr_t;
+ #include <soc.h>
+@@ -455,47 +456,6 @@ brcmf_pcie_write_ram32(struct brcmf_pcie
  
-+void update_mmu_tlb(struct vm_area_struct *vma,
-+		    unsigned long address, pte_t *ptep);
-+#define __HAVE_ARCH_UPDATE_MMU_TLB
-+
- #endif /* !defined (__ASSEMBLY__) */
  
- #define __HAVE_ARCH_PTEP_TEST_AND_CLEAR_YOUNG
---- a/arch/xtensa/mm/tlb.c
-+++ b/arch/xtensa/mm/tlb.c
-@@ -162,6 +162,12 @@ void local_flush_tlb_kernel_range(unsign
- 	}
- }
+ static void
+-brcmf_pcie_copy_mem_todev(struct brcmf_pciedev_info *devinfo, u32 mem_offset,
+-			  void *srcaddr, u32 len)
+-{
+-	void __iomem *address = devinfo->tcm + mem_offset;
+-	__le32 *src32;
+-	__le16 *src16;
+-	u8 *src8;
+-
+-	if (((ulong)address & 4) || ((ulong)srcaddr & 4) || (len & 4)) {
+-		if (((ulong)address & 2) || ((ulong)srcaddr & 2) || (len & 2)) {
+-			src8 = (u8 *)srcaddr;
+-			while (len) {
+-				iowrite8(*src8, address);
+-				address++;
+-				src8++;
+-				len--;
+-			}
+-		} else {
+-			len = len / 2;
+-			src16 = (__le16 *)srcaddr;
+-			while (len) {
+-				iowrite16(le16_to_cpu(*src16), address);
+-				address += 2;
+-				src16++;
+-				len--;
+-			}
+-		}
+-	} else {
+-		len = len / 4;
+-		src32 = (__le32 *)srcaddr;
+-		while (len) {
+-			iowrite32(le32_to_cpu(*src32), address);
+-			address += 4;
+-			src32++;
+-			len--;
+-		}
+-	}
+-}
+-
+-
+-static void
+ brcmf_pcie_copy_dev_tomem(struct brcmf_pciedev_info *devinfo, u32 mem_offset,
+ 			  void *dstaddr, u32 len)
+ {
+@@ -1570,8 +1530,8 @@ static int brcmf_pcie_download_fw_nvram(
+ 		return err;
  
-+void update_mmu_tlb(struct vm_area_struct *vma,
-+		    unsigned long address, pte_t *ptep)
-+{
-+	local_flush_tlb_page(vma, address);
-+}
-+
- #ifdef CONFIG_DEBUG_TLB_SANITY
+ 	brcmf_dbg(PCIE, "Download FW %s\n", devinfo->fw_name);
+-	brcmf_pcie_copy_mem_todev(devinfo, devinfo->ci->rambase,
+-				  (void *)fw->data, fw->size);
++	memcpy_toio(devinfo->tcm + devinfo->ci->rambase,
++		    (void *)fw->data, fw->size);
  
- static unsigned get_pte_for_vaddr(unsigned vaddr)
+ 	resetintr = get_unaligned_le32(fw->data);
+ 	release_firmware(fw);
+@@ -1585,7 +1545,7 @@ static int brcmf_pcie_download_fw_nvram(
+ 		brcmf_dbg(PCIE, "Download NVRAM %s\n", devinfo->nvram_name);
+ 		address = devinfo->ci->rambase + devinfo->ci->ramsize -
+ 			  nvram_len;
+-		brcmf_pcie_copy_mem_todev(devinfo, address, nvram, nvram_len);
++		memcpy_toio(devinfo->tcm + address, nvram, nvram_len);
+ 		brcmf_fw_nvram_free(nvram);
+ 	} else {
+ 		brcmf_dbg(PCIE, "No matching NVRAM file found %s\n",
 
 
