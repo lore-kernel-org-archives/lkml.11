@@ -2,42 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C9A5C38A2D
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:55:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 24E3EC3A59F
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:55:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239154AbiDEIoi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 04:44:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36474 "EHLO
+        id S239197AbiDEIov (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 04:44:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39458 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232875AbiDEIEV (ORCPT
+        with ESMTP id S232990AbiDEIEx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:04:21 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA57858E52;
-        Tue,  5 Apr 2022 01:01:01 -0700 (PDT)
+        Tue, 5 Apr 2022 04:04:53 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56C2762C94;
+        Tue,  5 Apr 2022 01:01:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 545C7B81B18;
-        Tue,  5 Apr 2022 08:01:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C25DDC340EE;
-        Tue,  5 Apr 2022 08:00:58 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E729061668;
+        Tue,  5 Apr 2022 08:01:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EEF6CC3410F;
+        Tue,  5 Apr 2022 08:01:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649145659;
-        bh=5I/RLfgBX6c5mspTVHVaPkGuMGxNuOsnnKaZo+oTV0o=;
+        s=korg; t=1649145667;
+        bh=bVEPAGwn5Sk1aFoFushqrnLjvlDtDg7rK9rf5Q4UiIE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NxxyCYxWuQ/1+cYTrsgMTeH/GDbWtf28mE5MvuVgRCSWZ1XaVhYiibTwxpCOhKM6H
-         0JAJzsObrb5gdqocBFlXDDDbGdM4PZc+H6sHeScTRUSJUhqSqIA54AFg0Gwq88z0O4
-         Ypl8o4feMUmcaMz1bE+6+lMQW7PTWsY+hL8A3xEw=
+        b=L3dlVKB1h/yQZEoWn7su3Ozth5ZuaPUV0dI8dCAYGdWy0iboJwvGr42nd7uet3O31
+         DZ15btWgJ8PSrkZufgNfCOwol6iSQreRLFDhhnBjhfrd1zXXnWfOoDUsGn+hYdRaFu
+         cZeA6WncWhiRFmT3O1JlvFutuR99KU7teyuonj64=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zhou Qingyang <zhou1615@umn.edu>,
-        Alex Deucher <alexander.deucher@amd.com>,
+        stable@vger.kernel.org, Jesper Dangaard Brouer <brouer@redhat.com>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        Alexander Lobakin <alexandr.lobakin@intel.com>,
+        Michal Swiatkowski <michal.swiatkowski@linux.intel.com>,
+        Sandeep Penigalapati <sandeep.penigalapati@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0466/1126] drm/amd/display: Fix a NULL pointer dereference in amdgpu_dm_connector_add_common_modes()
-Date:   Tue,  5 Apr 2022 09:20:13 +0200
-Message-Id: <20220405070421.306046036@linuxfoundation.org>
+Subject: [PATCH 5.17 0486/1126] ixgbe: respect metadata on XSK Rx to skb
+Date:   Tue,  5 Apr 2022 09:20:33 +0200
+Message-Id: <20220405070421.892272259@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -49,46 +53,66 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zhou Qingyang <zhou1615@umn.edu>
+From: Alexander Lobakin <alexandr.lobakin@intel.com>
 
-[ Upstream commit 588a70177df3b1777484267584ef38ab2ca899a2 ]
+[ Upstream commit f322a620be69e95594eda89502b478aa7dbf6ec2 ]
 
-In amdgpu_dm_connector_add_common_modes(), amdgpu_dm_create_common_mode()
-is assigned to mode and is passed to drm_mode_probed_add() directly after
-that. drm_mode_probed_add() passes &mode->head to list_add_tail(), and
-there is a dereference of it in list_add_tail() without recoveries, which
-could lead to NULL pointer dereference on failure of
-amdgpu_dm_create_common_mode().
+For now, if the XDP prog returns XDP_PASS on XSK, the metadata
+will be lost as it doesn't get copied to the skb.
 
-Fix this by adding a NULL check of mode.
+Copy it along with the frame headers. Account its size on skb
+allocation, and when copying just treat it as a part of the frame
+and do a pull after to "move" it to the "reserved" zone.
 
-This bug was found by a static analyzer.
+net_prefetch() xdp->data_meta and align the copy size to speed-up
+memcpy() a little and better match ixgbe_construct_skb().
 
-Builds with 'make allyesconfig' show no new warnings,
-and our static analyzer no longer warns about this code.
-
-Fixes: e7b07ceef2a6 ("drm/amd/display: Merge amdgpu_dm_types and amdgpu_dm")
-Signed-off-by: Zhou Qingyang <zhou1615@umn.edu>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Fixes: d0bcacd0a130 ("ixgbe: add AF_XDP zero-copy Rx support")
+Suggested-by: Jesper Dangaard Brouer <brouer@redhat.com>
+Suggested-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+Signed-off-by: Alexander Lobakin <alexandr.lobakin@intel.com>
+Reviewed-by: Michal Swiatkowski <michal.swiatkowski@linux.intel.com>
+Tested-by: Sandeep Penigalapati <sandeep.penigalapati@intel.com>
+Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c | 14 ++++++++++----
+ 1 file changed, 10 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
-index 075429bea427..5f4a346c9c2a 100644
---- a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
-+++ b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
-@@ -8144,6 +8144,9 @@ static void amdgpu_dm_connector_add_common_modes(struct drm_encoder *encoder,
- 		mode = amdgpu_dm_create_common_mode(encoder,
- 				common_modes[i].name, common_modes[i].w,
- 				common_modes[i].h);
-+		if (!mode)
-+			continue;
+diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c
+index eec42c907d57..dd7ff66d422f 100644
+--- a/drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c
++++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c
+@@ -209,19 +209,25 @@ bool ixgbe_alloc_rx_buffers_zc(struct ixgbe_ring *rx_ring, u16 count)
+ static struct sk_buff *ixgbe_construct_skb_zc(struct ixgbe_ring *rx_ring,
+ 					      const struct xdp_buff *xdp)
+ {
++	unsigned int totalsize = xdp->data_end - xdp->data_meta;
+ 	unsigned int metasize = xdp->data - xdp->data_meta;
+-	unsigned int datasize = xdp->data_end - xdp->data;
+ 	struct sk_buff *skb;
+ 
++	net_prefetch(xdp->data_meta);
 +
- 		drm_mode_probed_add(connector, mode);
- 		amdgpu_dm_connector->num_modes++;
- 	}
+ 	/* allocate a skb to store the frags */
+-	skb = __napi_alloc_skb(&rx_ring->q_vector->napi, datasize,
++	skb = __napi_alloc_skb(&rx_ring->q_vector->napi, totalsize,
+ 			       GFP_ATOMIC | __GFP_NOWARN);
+ 	if (unlikely(!skb))
+ 		return NULL;
+ 
+-	memcpy(__skb_put(skb, datasize), xdp->data, datasize);
+-	if (metasize)
++	memcpy(__skb_put(skb, totalsize), xdp->data_meta,
++	       ALIGN(totalsize, sizeof(long)));
++
++	if (metasize) {
+ 		skb_metadata_set(skb, metasize);
++		__skb_pull(skb, metasize);
++	}
+ 
+ 	return skb;
+ }
 -- 
 2.34.1
 
