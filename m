@@ -2,99 +2,161 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 35AB0C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 54AC8C43219
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 01:54:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1845424AbiDFByk (ORCPT
+        id S1845472AbiDFBy5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 21:54:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35816 "EHLO
+        Tue, 5 Apr 2022 21:54:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39768 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239199AbiDEPBP (ORCPT
+        with ESMTP id S1349029AbiDEJs7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 11:01:15 -0400
-Received: from mail-oa1-x31.google.com (mail-oa1-x31.google.com [IPv6:2001:4860:4864:20::31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4981F27B02
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 06:23:49 -0700 (PDT)
-Received: by mail-oa1-x31.google.com with SMTP id 586e51a60fabf-df0940c4eeso14342191fac.8
-        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 06:23:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=6ScfzVYhoR0LHfyaru7LJ12VrLihpLGnKs+dyoaqZBU=;
-        b=bwM7MQ2CaERMuk5JUO51JviRs0GLe4rNKdBujPdlUJBzMHbt83Xm1/BfCx2S/bGpkt
-         YAi4FwH9eRFr2dxMt51ZgG7+C31WBhBvTjqU00QRQBbH1NDRlVYSh6TmLsSrrJCiDjkp
-         Mw34VPzQNst68DPRw25PP5suiV8z1xnnYlAQA0ZwO7U1/TEZ5jGaoUeG4pC5keRlIxYo
-         +/n31B07cpDqvUTsSLHD23wv93GjPx0EqFEwA04V5LEVy7aFc+l7KRDV7XkQtwUs77wD
-         yEvxY1cgO1wvyAD4uNRkIBQIDpML2g8ayWb9E1WxSFQJ1NF2wtJYumNNgb5/GIwu8kLy
-         SuOA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=6ScfzVYhoR0LHfyaru7LJ12VrLihpLGnKs+dyoaqZBU=;
-        b=HTWyo1o61FT6vM/KInIYLYDDozHcuXSGc5EUmIwi3Z5SIvcLdv6lL520tiaoZD3jVX
-         HeP/QFE3ejQ1lHZkVwfYBm+gEVUfx3IJzH8mJzHXaLw/PO7XZwAqbHzN/NH3swzxpdUd
-         Bxo8gIrEaFjourWcDfOS1XaspfLYjf9wNVdCJIggsiS3h/JvqbSnJxw/Q58bnxe2y53O
-         LayzslmoDrMQ2aHcieBqWLRk6dYm0yafSHTFXhDQ0O2b2oVCRkAzM97C+404opzysmrp
-         zCUuH6XvpoX20GE0jyPeMpq81xneYh46pVF+q3e1VGxhMFmv7zb+7w2Q8BH3rQDZwSWU
-         JZMA==
-X-Gm-Message-State: AOAM530bmBg8YPSqArt4Youopf4F2fsnGsIS154kFOEtO5Xy8fqJyY2M
-        BZRhfrj4y5bCDpeIlUPkb6eNOnDbARdDfspbaUM=
-X-Google-Smtp-Source: ABdhPJxsuNcRKCVnvwc6SiCT2E01/8qtrsJ9bRYQ6b3xCmhFmyTyi6bLE+dqO1fRo6Uwjo4tbwo9zjJTJQl8jycO/hg=
-X-Received: by 2002:a05:6870:311d:b0:de:9b6c:362b with SMTP id
- v29-20020a056870311d00b000de9b6c362bmr1416658oaa.200.1649165029203; Tue, 05
- Apr 2022 06:23:49 -0700 (PDT)
+        Tue, 5 Apr 2022 05:48:59 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3CD3A8897;
+        Tue,  5 Apr 2022 02:39:11 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6F46C61368;
+        Tue,  5 Apr 2022 09:39:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7D546C385A2;
+        Tue,  5 Apr 2022 09:39:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649151550;
+        bh=D9I+rGgfR4xsdgyZ9tEUcIy10T7OjvR2xyL8W/yW+GE=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=EnKb0mw2MBcBx5oxXsd2XRJdiRnK01METHlLTMZaaUYqN8gSUPgWu5Gc5qg//BG5W
+         70R5RBw0ksd6rzdJc59lumiiNpVx8PS5FtUn9/2wUCm7xxr2kqa2QUDLpP/9tou1fd
+         l7YAgCvICrbVoJeIh25yL4YO4g1JEzHpqtEzpJLU=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Maxim Kiselev <bigunclemax@gmail.com>,
+        Maxim Kochetkov <fido_max@inbox.ru>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 418/913] powerpc: dts: t1040rdb: fix ports names for Seville Ethernet switch
+Date:   Tue,  5 Apr 2022 09:24:40 +0200
+Message-Id: <20220405070352.376273359@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-References: <20220401025930.16365-1-guozhengkui@vivo.com>
-In-Reply-To: <20220401025930.16365-1-guozhengkui@vivo.com>
-From:   Alex Deucher <alexdeucher@gmail.com>
-Date:   Tue, 5 Apr 2022 09:23:38 -0400
-Message-ID: <CADnq5_O5K60qP5Khgz7Ja+5yiHHt=juBNBj5o=+AK5CJwyjRRA@mail.gmail.com>
-Subject: Re: [PATCH] drm/radeon: simplify if-if to if-else
-To:     Guo Zhengkui <guozhengkui@vivo.com>
-Cc:     Alex Deucher <alexander.deucher@amd.com>,
-        =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>,
-        "Pan, Xinhui" <Xinhui.Pan@amd.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        "open list:RADEON and AMDGPU DRM DRIVERS" 
-        <amd-gfx@lists.freedesktop.org>,
-        "open list:DRM DRIVERS" <dri-devel@lists.freedesktop.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        zhengkui_guo@outlook.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Applied.  Thanks!
+From: Maxim Kiselev <bigunclemax@gmail.com>
 
-Alex
+[ Upstream commit 5ebb74749202a25da4b3cc2eb15470225a05527c ]
 
-On Thu, Mar 31, 2022 at 11:00 PM Guo Zhengkui <guozhengkui@vivo.com> wrote:
->
-> Replace `if (!ret)` with `else` for simplification.
->
-> Signed-off-by: Guo Zhengkui <guozhengkui@vivo.com>
-> ---
->  drivers/gpu/drm/radeon/radeon_pm.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/drivers/gpu/drm/radeon/radeon_pm.c b/drivers/gpu/drm/radeon/radeon_pm.c
-> index c67b6ddb29a4..e765abcb3b01 100644
-> --- a/drivers/gpu/drm/radeon/radeon_pm.c
-> +++ b/drivers/gpu/drm/radeon/radeon_pm.c
-> @@ -1629,7 +1629,7 @@ int radeon_pm_late_init(struct radeon_device *rdev)
->                         ret = device_create_file(rdev->dev, &dev_attr_power_method);
->                         if (ret)
->                                 DRM_ERROR("failed to create device file for power method\n");
-> -                       if (!ret)
-> +                       else
->                                 rdev->pm.sysfs_initialized = true;
->                 }
->         }
-> --
-> 2.20.1
->
+On board rev A, the network interface labels for the switch ports
+written on the front panel are different than on rev B and later.
+
+This patch fixes network interface names for the switch ports according
+to labels that are written on the front panel of the board rev B.
+They start from ETH3 and end at ETH10.
+
+This patch also introduces a separate device tree for rev A.
+The main device tree is supposed to cover rev B and later.
+
+Fixes: e69eb0824d8c ("powerpc: dts: t1040rdb: add ports for Seville Ethernet switch")
+Signed-off-by: Maxim Kiselev <bigunclemax@gmail.com>
+Reviewed-by: Maxim Kochetkov <fido_max@inbox.ru>
+Reviewed-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/20220121091447.3412907-1-bigunclemax@gmail.com
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ arch/powerpc/boot/dts/fsl/t1040rdb-rev-a.dts | 30 ++++++++++++++++++++
+ arch/powerpc/boot/dts/fsl/t1040rdb.dts       |  8 +++---
+ 2 files changed, 34 insertions(+), 4 deletions(-)
+ create mode 100644 arch/powerpc/boot/dts/fsl/t1040rdb-rev-a.dts
+
+diff --git a/arch/powerpc/boot/dts/fsl/t1040rdb-rev-a.dts b/arch/powerpc/boot/dts/fsl/t1040rdb-rev-a.dts
+new file mode 100644
+index 000000000000..73f8c998c64d
+--- /dev/null
++++ b/arch/powerpc/boot/dts/fsl/t1040rdb-rev-a.dts
+@@ -0,0 +1,30 @@
++// SPDX-License-Identifier: GPL-2.0-or-later
++/*
++ * T1040RDB-REV-A Device Tree Source
++ *
++ * Copyright 2014 - 2015 Freescale Semiconductor Inc.
++ *
++ */
++
++#include "t1040rdb.dts"
++
++/ {
++	model = "fsl,T1040RDB-REV-A";
++	compatible = "fsl,T1040RDB-REV-A";
++};
++
++&seville_port0 {
++	label = "ETH5";
++};
++
++&seville_port2 {
++	label = "ETH7";
++};
++
++&seville_port4 {
++	label = "ETH9";
++};
++
++&seville_port6 {
++	label = "ETH11";
++};
+diff --git a/arch/powerpc/boot/dts/fsl/t1040rdb.dts b/arch/powerpc/boot/dts/fsl/t1040rdb.dts
+index af0c8a6f5613..b6733e7e6580 100644
+--- a/arch/powerpc/boot/dts/fsl/t1040rdb.dts
++++ b/arch/powerpc/boot/dts/fsl/t1040rdb.dts
+@@ -119,7 +119,7 @@
+ 	managed = "in-band-status";
+ 	phy-handle = <&phy_qsgmii_0>;
+ 	phy-mode = "qsgmii";
+-	label = "ETH5";
++	label = "ETH3";
+ 	status = "okay";
+ };
+ 
+@@ -135,7 +135,7 @@
+ 	managed = "in-band-status";
+ 	phy-handle = <&phy_qsgmii_2>;
+ 	phy-mode = "qsgmii";
+-	label = "ETH7";
++	label = "ETH5";
+ 	status = "okay";
+ };
+ 
+@@ -151,7 +151,7 @@
+ 	managed = "in-band-status";
+ 	phy-handle = <&phy_qsgmii_4>;
+ 	phy-mode = "qsgmii";
+-	label = "ETH9";
++	label = "ETH7";
+ 	status = "okay";
+ };
+ 
+@@ -167,7 +167,7 @@
+ 	managed = "in-band-status";
+ 	phy-handle = <&phy_qsgmii_6>;
+ 	phy-mode = "qsgmii";
+-	label = "ETH11";
++	label = "ETH9";
+ 	status = "okay";
+ };
+ 
+-- 
+2.34.1
+
+
+
