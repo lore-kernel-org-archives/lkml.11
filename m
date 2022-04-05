@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EC996C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 15:02:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F12E3C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 15:03:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237697AbiDEPEP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 11:04:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54984 "EHLO
+        id S235433AbiDEPE7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 11:04:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56990 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345112AbiDEJnB (ORCPT
+        with ESMTP id S230405AbiDEJnS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:43:01 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8949D6550;
-        Tue,  5 Apr 2022 02:28:33 -0700 (PDT)
+        Tue, 5 Apr 2022 05:43:18 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E86248E65;
+        Tue,  5 Apr 2022 02:28:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1209AB81CB8;
-        Tue,  5 Apr 2022 09:28:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 73139C385A6;
-        Tue,  5 Apr 2022 09:28:30 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E0AE5B81C9D;
+        Tue,  5 Apr 2022 09:28:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4BA92C385A0;
+        Tue,  5 Apr 2022 09:28:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649150910;
-        bh=dXBza7TD+YoPMa9zfIkCunjP9xDZ6gtzlNfgpEIYRcc=;
+        s=korg; t=1649150913;
+        bh=2O2qi9G29+1tq670OXCv1SbgmBO+GBQAThVfE/FwPEU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0bx28xq61BwuO9utTe+wFfhcBidoDaHRl7MpT3Dix7VFZ5m83exAclrEToQkxcfgG
-         o3ECGZl7gPPnyAV8ZF9QnHQflrGc8GtMNERtGIkOj/87ZcPFZ+23CtwCPpE1LJUaDa
-         wI5WtlHr3l2oAYT/t2Vs2AtUj/CHp/wVLTw5AK44=
+        b=fkcd2uI/3Ksdkfm6Y18GcXCa+2AF9IOSCZmua+mZM2nW/TTAJf3q8bWS7zpykuY3i
+         ZUS+jRiOqvQhOLe3s8mL1WbZ2rFpLGt8SobJthuyYXTXPITu56l619Hw1gbGxqAtV9
+         LelD8kGXoDKtSsU8mAbBnhL8W1kNtzr3qOju9NgQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Corentin Labbe <clabbe@baylibre.com>,
         Herbert Xu <herbert@gondor.apana.org.au>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 208/913] crypto: rockchip - ECB does not need IV
-Date:   Tue,  5 Apr 2022 09:21:10 +0200
-Message-Id: <20220405070346.093524500@linuxfoundation.org>
+Subject: [PATCH 5.15 226/913] crypto: gemini - call finalize with bh disabled
+Date:   Tue,  5 Apr 2022 09:21:28 +0200
+Message-Id: <20220405070346.631698308@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
 References: <20220405070339.801210740@linuxfoundation.org>
@@ -51,32 +51,33 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Corentin Labbe <clabbe@baylibre.com>
 
-[ Upstream commit 973d74e93820d99d8ea203882631c76edab699c9 ]
+[ Upstream commit 7f22421103c5a7f9a1726f0ed125274c38174ddb ]
 
-When loading rockchip crypto module, testmgr complains that ivsize of ecb-des3-ede-rk
-is not the same than generic implementation.
-In fact ECB does not use an IV.
+Doing ipsec produces a spinlock recursion warning.
+This is due to not disabling BH during crypto completion function.
 
-Fixes: ce0183cb6464b ("crypto: rockchip - switch to skcipher API")
+Fixes: 46c5338db7bd45b2 ("crypto: sl3516 - Add sl3516 crypto engine")
 Signed-off-by: Corentin Labbe <clabbe@baylibre.com>
 Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/crypto/rockchip/rk3288_crypto_skcipher.c | 1 -
- 1 file changed, 1 deletion(-)
+ drivers/crypto/gemini/sl3516-ce-cipher.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/crypto/rockchip/rk3288_crypto_skcipher.c b/drivers/crypto/rockchip/rk3288_crypto_skcipher.c
-index 1cece1a7d3f0..5bbf0d2722e1 100644
---- a/drivers/crypto/rockchip/rk3288_crypto_skcipher.c
-+++ b/drivers/crypto/rockchip/rk3288_crypto_skcipher.c
-@@ -506,7 +506,6 @@ struct rk_crypto_tmp rk_ecb_des3_ede_alg = {
- 		.exit			= rk_ablk_exit_tfm,
- 		.min_keysize		= DES3_EDE_KEY_SIZE,
- 		.max_keysize		= DES3_EDE_KEY_SIZE,
--		.ivsize			= DES_BLOCK_SIZE,
- 		.setkey			= rk_tdes_setkey,
- 		.encrypt		= rk_des3_ede_ecb_encrypt,
- 		.decrypt		= rk_des3_ede_ecb_decrypt,
+diff --git a/drivers/crypto/gemini/sl3516-ce-cipher.c b/drivers/crypto/gemini/sl3516-ce-cipher.c
+index c1c2b1d86663..f2be0a7d7f7a 100644
+--- a/drivers/crypto/gemini/sl3516-ce-cipher.c
++++ b/drivers/crypto/gemini/sl3516-ce-cipher.c
+@@ -264,7 +264,9 @@ static int sl3516_ce_handle_cipher_request(struct crypto_engine *engine, void *a
+ 	struct skcipher_request *breq = container_of(areq, struct skcipher_request, base);
+ 
+ 	err = sl3516_ce_cipher(breq);
++	local_bh_disable();
+ 	crypto_finalize_skcipher_request(engine, breq, err);
++	local_bh_enable();
+ 
+ 	return 0;
+ }
 -- 
 2.34.1
 
