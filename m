@@ -2,98 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 50FEDC47080
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 42A69C3527D
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 10:26:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354729AbiDEKPR (ORCPT
+        id S1354710AbiDEKPP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 06:15:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45670 "EHLO
+        Tue, 5 Apr 2022 06:15:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60894 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241193AbiDEIcy (ORCPT
+        with ESMTP id S241191AbiDEIcy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Apr 2022 04:32:54 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2611B1707A;
-        Tue,  5 Apr 2022 01:29:17 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CB9DCB81BDC;
-        Tue,  5 Apr 2022 08:29:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 15987C385A7;
-        Tue,  5 Apr 2022 08:29:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649147354;
-        bh=OetyBOk4mrcK+T3SRboB5bEBJ2oi11RtEDB8Da2zZ5g=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=AEDu7JjBYHOoHTFhWy25Gw2nHIUgfZuNj77v690Va92ej00dGdyoJlVcmK1pUa9Pc
-         qkTH3zNprpmTngxjmRM/jRpfcX9Cx/x8mZqVYqrKKSxJVNls+f/x2U6JTrw2jTTKkN
-         cznPdFTcGEafRgPV4rsIzG5IQthHfuKC+ou7lxgk=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yong Wu <yong.wu@mediatek.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Subject: [PATCH 5.17 1095/1126] dt-bindings: memory: mtk-smi: No need mediatek,larb-id for mt8167
-Date:   Tue,  5 Apr 2022 09:30:42 +0200
-Message-Id: <20220405070439.585379272@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
-References: <20220405070407.513532867@linuxfoundation.org>
-User-Agent: quilt/0.66
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 252A017070;
+        Tue,  5 Apr 2022 01:29:12 -0700 (PDT)
+Date:   Tue, 05 Apr 2022 08:29:10 -0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1649147351;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=Od4ziOiKeQ/jjCBhqAj+AU5QzqCu91hE4cMK0pLFXYE=;
+        b=qXnvbuPSVAqPxOmoS7huLahkBarnv4jzT+sUvi35nqqcfk63mJuG3Q676E53O/57TRih/h
+        fwfay+zcB+Q6wTL1vCev4xy1VgDohOxgcoiIMHyfEE50MnRy7CHRW/T9AwBX4yOSyeSvb6
+        INW6w/MvOVjNL8QSZmmvhvRXAE3Wh/cTspg9WdWSMOjH8+/PbThfMEhND88Uv6jE1/DYUA
+        W2M7OzCgnHakQpA7qX60/SJTOOHo8ovQLKuhywcrrlo0XsjJEHmMTbyjT+3bOMhGUqQr5z
+        MnGktkwHyLmh8CEDy5LYudFPT3pvLbTptzUUsij27O0WKuzkI692Tb+RCBtdmA==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1649147351;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=Od4ziOiKeQ/jjCBhqAj+AU5QzqCu91hE4cMK0pLFXYE=;
+        b=8q54xvi1gCg0up2AgK9eWomGt37o1/Gt9ECW5tgzqrfhaDVRNM0oH27dthpjOy/473mGBv
+        VByWpBdL7zim9RCA==
+From:   "tip-bot2 for Kan Liang" <tip-bot2@linutronix.de>
+Sender: tip-bot2@linutronix.de
+Reply-to: linux-kernel@vger.kernel.org
+To:     linux-tip-commits@vger.kernel.org
+Subject: [tip: perf/urgent] perf/x86/msr: Add Raptor Lake CPU support
+Cc:     Kan Liang <kan.liang@linux.intel.com>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>, x86@kernel.org,
+        linux-kernel@vger.kernel.org
+In-Reply-To: <1647366360-82824-3-git-send-email-kan.liang@linux.intel.com>
+References: <1647366360-82824-3-git-send-email-kan.liang@linux.intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Message-ID: <164914735035.389.18407088404676331471.tip-bot2@tip-bot2>
+Robot-ID: <tip-bot2@linutronix.de>
+Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yong Wu <yong.wu@mediatek.com>
+The following commit has been merged into the perf/urgent branch of tip:
 
-commit ddc3a324889686ec9b358de20fdeec0d2668c7a8 upstream.
+Commit-ID:     82cd83047a9a80e52c0849e56885279166215310
+Gitweb:        https://git.kernel.org/tip/82cd83047a9a80e52c0849e56885279166215310
+Author:        Kan Liang <kan.liang@linux.intel.com>
+AuthorDate:    Tue, 15 Mar 2022 10:45:59 -07:00
+Committer:     Peter Zijlstra <peterz@infradead.org>
+CommitterDate: Tue, 05 Apr 2022 09:59:43 +02:00
 
-Mute the warning from "make dtbs_check":
+perf/x86/msr: Add Raptor Lake CPU support
 
-larb@14016000: 'mediatek,larb-id' is a required property
-	arch/arm64/boot/dts/mediatek/mt8167-pumpkin.dt.yaml
-larb@15001000: 'mediatek,larb-id' is a required property
-	arch/arm64/boot/dts/mediatek/mt8167-pumpkin.dt.yaml
-larb@16010000: 'mediatek,larb-id' is a required property
-	arch/arm64/boot/dts/mediatek/mt8167-pumpkin.dt.yaml
+Raptor Lake is Intel's successor to Alder lake. PPERF and SMI_COUNT MSRs
+are also supported.
 
-As the description of mediatek,larb-id, the property is only
-required when the larbid is not consecutive from its IOMMU point of view.
-
-Also, from the description of mediatek,larbs in
-Documentation/devicetree/bindings/iommu/mediatek,iommu.yaml, all the larbs
-must sort by the larb index.
-
-In mt8167, there is only one IOMMU HW and three larbs. The drivers already
-know its larb index from the mediatek,larbs property of IOMMU, thus no
-need this property.
-
-Fixes: 27bb0e42855a ("dt-bindings: memory: mediatek: Convert SMI to DT schema")
-Signed-off-by: Yong Wu <yong.wu@mediatek.com>
-Acked-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-Link: https://lore.kernel.org/r/20220113111057.29918-3-yong.wu@mediatek.com
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Kan Liang <kan.liang@linux.intel.com>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Link: https://lore.kernel.org/r/1647366360-82824-3-git-send-email-kan.liang@linux.intel.com
 ---
- Documentation/devicetree/bindings/memory-controllers/mediatek,smi-larb.yaml |    1 -
- 1 file changed, 1 deletion(-)
+ arch/x86/events/msr.c | 1 +
+ 1 file changed, 1 insertion(+)
 
---- a/Documentation/devicetree/bindings/memory-controllers/mediatek,smi-larb.yaml
-+++ b/Documentation/devicetree/bindings/memory-controllers/mediatek,smi-larb.yaml
-@@ -106,7 +106,6 @@ allOf:
-               - mediatek,mt2701-smi-larb
-               - mediatek,mt2712-smi-larb
-               - mediatek,mt6779-smi-larb
--              - mediatek,mt8167-smi-larb
-               - mediatek,mt8192-smi-larb
-               - mediatek,mt8195-smi-larb
- 
-
-
+diff --git a/arch/x86/events/msr.c b/arch/x86/events/msr.c
+index 96c775a..6d759f8 100644
+--- a/arch/x86/events/msr.c
++++ b/arch/x86/events/msr.c
+@@ -103,6 +103,7 @@ static bool test_intel(int idx, void *data)
+ 	case INTEL_FAM6_ROCKETLAKE:
+ 	case INTEL_FAM6_ALDERLAKE:
+ 	case INTEL_FAM6_ALDERLAKE_L:
++	case INTEL_FAM6_RAPTORLAKE:
+ 		if (idx == PERF_MSR_SMI || idx == PERF_MSR_PPERF)
+ 			return true;
+ 		break;
