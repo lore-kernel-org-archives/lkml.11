@@ -2,43 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4757DC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 09:12:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CC2D3C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 09:12:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243583AbiDEJJG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 05:09:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45478 "EHLO
+        id S243744AbiDEJJP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 05:09:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43700 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239483AbiDEIUH (ORCPT
+        with ESMTP id S239500AbiDEIUI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:20:07 -0400
+        Tue, 5 Apr 2022 04:20:08 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8FDF0B0D26;
-        Tue,  5 Apr 2022 01:14:08 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 727E8B62;
+        Tue,  5 Apr 2022 01:14:41 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9C3AC60AFB;
-        Tue,  5 Apr 2022 08:14:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ADD4FC385A0;
-        Tue,  5 Apr 2022 08:14:06 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 11762609D0;
+        Tue,  5 Apr 2022 08:14:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EEC28C385A0;
+        Tue,  5 Apr 2022 08:14:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649146447;
-        bh=WHog4N/cB+r7Q5qVBu/VTZU2oQBTeZ6/4VO5wSsfzc0=;
+        s=korg; t=1649146480;
+        bh=gf6hFb0IBIczvzNtHPPSa+xIRoepqNHHLtYzglD/wDk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GtoolzIK+OJdHI1CLlmRp5Zl5yPEyrNHUl9su5HHf1FFzZ7wllLvddw0cmTsZYMBu
-         A/5V6tECpd14rCoxMXYXdf6qNDSL9soHsscnAUMewCpE9VjkZfq2lPwgZaKQMqQz9+
-         2yxhAVuhCoYYkv8OjOukk1tAxSOP1zYh88NO7mMM=
+        b=uDmAVmJ50imVhHiMQj+Rqyz2SpSRqzAfbgf6lJtPKw4oEpbqRVhle+cyJEQtjEZa9
+         lEGRAYA1Fuob0Sk9EAmNylpozc0ewt3NKUhU+IZFe66pE8Efw99RTqbyrIvXQN3pT2
+         DGLB37ADQh6Fmx7cpHI7grymdy+x76YPmGhP6mH8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Michael Walle <michael@walle.cc>,
-        Colin Foster <colin.foster@in-advantage.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
+        stable@vger.kernel.org, Jingoo Han <jg1.han@samsung.com>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Julian Wiedmann <jwi@linux.ibm.com>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        linuxppc-dev@lists.ozlabs.org,
+        Igor Zhbanov <i.zhbanov@omprussia.ru>,
+        Randy Dunlap <rdunlap@infradead.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0768/1126] pinctrl: ocelot: fix duplicate debugfs entry
-Date:   Tue,  5 Apr 2022 09:25:15 +0200
-Message-Id: <20220405070430.125185334@linuxfoundation.org>
+Subject: [PATCH 5.17 0779/1126] tty: hvc: fix return value of __setup handler
+Date:   Tue,  5 Apr 2022 09:25:26 +0200
+Message-Id: <20220405070430.442762174@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -50,40 +55,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Michael Walle <michael@walle.cc>
+From: Randy Dunlap <rdunlap@infradead.org>
 
-[ Upstream commit 359afd90fef3ec9285432f50720c813987df4a89 ]
+[ Upstream commit 53819a0d97aace1425bb042829e3446952a9e8a9 ]
 
-This driver can have up to two regmaps. If the second one is registered
-its debugfs entry will have the same name as the first one and the
-following error will be printed:
+__setup() handlers should return 1 to indicate that the boot option
+has been handled or 0 to indicate that it was not handled.
+Add a pr_warn() message if the option value is invalid and then
+always return 1.
 
-[    2.242568] debugfs: Directory 'e2004064.pinctrl' with parent 'regmap' already present!
-
-Give the second regmap a name to avoid this.
-
-Fixes: 076d9e71bcf8 ("pinctrl: ocelot: convert pinctrl to regmap")
-Signed-off-by: Michael Walle <michael@walle.cc>
-Reviewed-by: Colin Foster <colin.foster@in-advantage.com>
-Link: https://lore.kernel.org/r/20220216122727.1005041-1-michael@walle.cc
-Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+Link: lore.kernel.org/r/64644a2f-4a20-bab3-1e15-3b2cdd0defe3@omprussia.ru
+Fixes: 86b40567b917 ("tty: replace strict_strtoul() with kstrtoul()")
+Cc: Jingoo Han <jg1.han@samsung.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jiri Slaby <jirislaby@kernel.org>
+Cc: Michael Ellerman <mpe@ellerman.id.au>
+Cc: Julian Wiedmann <jwi@linux.ibm.com>
+Cc: Vasily Gorbik <gor@linux.ibm.com>
+Cc: linuxppc-dev@lists.ozlabs.org
+Reported-by: Igor Zhbanov <i.zhbanov@omprussia.ru>
+Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+Link: https://lore.kernel.org/r/20220308024228.20477-1-rdunlap@infradead.org
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pinctrl/pinctrl-ocelot.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/tty/hvc/hvc_iucv.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/pinctrl/pinctrl-ocelot.c b/drivers/pinctrl/pinctrl-ocelot.c
-index a719c0bfbc91..9c13a7c90fc3 100644
---- a/drivers/pinctrl/pinctrl-ocelot.c
-+++ b/drivers/pinctrl/pinctrl-ocelot.c
-@@ -1788,6 +1788,7 @@ static struct regmap *ocelot_pinctrl_create_pincfg(struct platform_device *pdev)
- 		.val_bits = 32,
- 		.reg_stride = 4,
- 		.max_register = 32,
-+		.name = "pincfg",
- 	};
+diff --git a/drivers/tty/hvc/hvc_iucv.c b/drivers/tty/hvc/hvc_iucv.c
+index 82a76cac94de..32366caca662 100644
+--- a/drivers/tty/hvc/hvc_iucv.c
++++ b/drivers/tty/hvc/hvc_iucv.c
+@@ -1417,7 +1417,9 @@ static int __init hvc_iucv_init(void)
+  */
+ static	int __init hvc_iucv_config(char *val)
+ {
+-	 return kstrtoul(val, 10, &hvc_iucv_devices);
++	if (kstrtoul(val, 10, &hvc_iucv_devices))
++		pr_warn("hvc_iucv= invalid parameter value '%s'\n", val);
++	return 1;
+ }
  
- 	base = devm_platform_ioremap_resource(pdev, 1);
+ 
 -- 
 2.34.1
 
