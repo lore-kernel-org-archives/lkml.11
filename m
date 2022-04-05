@@ -2,47 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F34E4C4321E
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:39:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D9F3C4167D
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:39:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385041AbiDEMbB (ORCPT
+        id S1385068AbiDEMbG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 08:31:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54466 "EHLO
+        Tue, 5 Apr 2022 08:31:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59240 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234868AbiDEIOX (ORCPT
+        with ESMTP id S1343495AbiDEI44 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:14:23 -0400
+        Tue, 5 Apr 2022 04:56:56 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33551986F5;
-        Tue,  5 Apr 2022 01:03:11 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FDCE1CB06;
+        Tue,  5 Apr 2022 01:52:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EBF22617D4;
-        Tue,  5 Apr 2022 08:03:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 076E4C385A0;
-        Tue,  5 Apr 2022 08:03:08 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B3122609D0;
+        Tue,  5 Apr 2022 08:52:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BE77BC385A0;
+        Tue,  5 Apr 2022 08:52:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649145789;
-        bh=xKmTIuWGghxPlamgA+4jpkdwdalBgdMukXmT3MDoh0Y=;
+        s=korg; t=1649148768;
+        bh=RMDCIpgqoRMmnnuBwu/bpCkTKuBa8Q1wElxe8DXBVS0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=oxGEe6a4fcS3d+6/+KsRtIL6YAqBqahdLlk/gTc+ga04568xBkRg5cFBG6uAWwOSw
-         XJTVQYUOB1JoAfm2QxGyOSDqe6JZIvoBEQ31LCmTeEUHqO8H2FtpOXPAveYk/7MN75
-         +tW/UjScEPdmr5T0mlEnsYA9FyNHJyzJz9Wk3TxM=
+        b=VDnhiI6fJBAdyITiKu6d/ovopCceed+TY3v+MO2Q9G8Fx0Rhzukcu3QbcYsAuwkjt
+         qzkF+Ow/YYUNhd9X2R1+StHWPvYtt5zLbEVIOS8mElfFHMWNy3/ssb/5rnUzBfK0GE
+         gtXMZo3IRtDTFCQbOznFXRpbfnrQ04xy0joQ5XCM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Dan Williams <dan.j.williams@intel.com>,
+        stable@vger.kernel.org, Shannon Nelson <snelson@pensando.io>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0530/1126] cxl/core: Fix cxl_probe_component_regs() error message
-Date:   Tue,  5 Apr 2022 09:21:17 +0200
-Message-Id: <20220405070423.188083070@linuxfoundation.org>
+Subject: [PATCH 5.16 0426/1017] ionic: fix up printing of timeout error
+Date:   Tue,  5 Apr 2022 09:22:19 +0200
+Message-Id: <20220405070406.937720244@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
-References: <20220405070407.513532867@linuxfoundation.org>
+In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
+References: <20220405070354.155796697@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,35 +50,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dan Williams <dan.j.williams@intel.com>
+From: Shannon Nelson <snelson@pensando.io>
 
-[ Upstream commit d621bc2e7282f9955033a6359877fd4ac4be60e1 ]
+[ Upstream commit 4cc787bd88be6974f3362fa49fd8c5609bd039b8 ]
 
-Fix a '\n' vs '/n' typo.
+Make sure we print the TIMEOUT string if we had a timeout
+error, rather than printing the wrong status.
 
-Fixes: 08422378c4ad ("cxl/pci: Add HDM decoder capabilities")
-Acked-by: Ben Widawsky <ben.widawsky@intel.com
-Reviewed-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Link: https://lore.kernel.org/r/164298418268.3018233.17790073375430834911.stgit@dwillia2-desk3.amr.corp.intel.com
-Signed-off-by: Dan Williams <dan.j.williams@intel.com>
+Fixes: 8c9d956ab6fb ("ionic: allow adminq requests to override default error message")
+Signed-off-by: Shannon Nelson <snelson@pensando.io>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/cxl/core/regs.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/ethernet/pensando/ionic/ionic_main.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/cxl/core/regs.c b/drivers/cxl/core/regs.c
-index e37e23bf4355..cdc0b75d94f2 100644
---- a/drivers/cxl/core/regs.c
-+++ b/drivers/cxl/core/regs.c
-@@ -49,7 +49,7 @@ void cxl_probe_component_regs(struct device *dev, void __iomem *base,
+diff --git a/drivers/net/ethernet/pensando/ionic/ionic_main.c b/drivers/net/ethernet/pensando/ionic/ionic_main.c
+index a548f2a01806..2e4294a4fa83 100644
+--- a/drivers/net/ethernet/pensando/ionic/ionic_main.c
++++ b/drivers/net/ethernet/pensando/ionic/ionic_main.c
+@@ -215,9 +215,13 @@ static void ionic_adminq_flush(struct ionic_lif *lif)
+ void ionic_adminq_netdev_err_print(struct ionic_lif *lif, u8 opcode,
+ 				   u8 status, int err)
+ {
++	const char *stat_str;
++
++	stat_str = (err == -ETIMEDOUT) ? "TIMEOUT" :
++					 ionic_error_to_str(status);
++
+ 	netdev_err(lif->netdev, "%s (%d) failed: %s (%d)\n",
+-		   ionic_opcode_to_str(opcode), opcode,
+-		   ionic_error_to_str(status), err);
++		   ionic_opcode_to_str(opcode), opcode, stat_str, err);
+ }
  
- 	if (FIELD_GET(CXL_CM_CAP_HDR_ID_MASK, cap_array) != CM_CAP_HDR_CAP_ID) {
- 		dev_err(dev,
--			"Couldn't locate the CXL.cache and CXL.mem capability array header./n");
-+			"Couldn't locate the CXL.cache and CXL.mem capability array header.\n");
- 		return;
- 	}
- 
+ static int ionic_adminq_check_err(struct ionic_lif *lif,
 -- 
 2.34.1
 
