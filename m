@@ -2,123 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 32444C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 80D80C43219
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 22:55:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1454901AbiDEWjm (ORCPT
+        id S1455021AbiDEWj6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 18:39:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57860 "EHLO
+        Tue, 5 Apr 2022 18:39:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44106 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348266AbiDEKqT (ORCPT
+        with ESMTP id S1357413AbiDELQY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:46:19 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6485737AAA;
-        Tue,  5 Apr 2022 03:27:02 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        Tue, 5 Apr 2022 07:16:24 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 387B813CDB
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 03:43:44 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id CF62F1F390;
+        Tue,  5 Apr 2022 10:43:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1649155422; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=ZV6J9Il753rBNuhU1RPeVKSIez37U0dfz5W2smwY0X4=;
+        b=eb00yWHMq9w1ZkkiXOQR2T4sGf+wUVynhUp66A9hY0CVxtite1vGwNZ6BPzb1UlU2BL28d
+        wTKf5ISHxuLw0xTrZeVg13mSC3JyfTO62/IGZv0f6GZutjtwNLvkg41UFt8cdhdaPGNu6A
+        Jc6p/QZRaGS1QklGnXhx3JQS5q7ylDc=
+Received: from suse.cz (unknown [10.100.201.86])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A5EBE61514;
-        Tue,  5 Apr 2022 10:27:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B4D37C385A0;
-        Tue,  5 Apr 2022 10:27:00 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649154421;
-        bh=2M2GSlG1gdDH0I5LmjQfdjZVPecAAyHujJAVOg0VaU4=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GIeJPrVhPKkdB8EPw6f/DnXHL9uRjDeFwzKppVECLJfZu7m5NR0vtXFLFIviaP/X/
-         Hi/+ehNFW2mcKlPmoMjLzKbUobbeBgXQPEJ/3U+na2NUHMLYlRMhOcUYN5bw+ACsJA
-         6m//W1vbMPZKqfBA2ZBRi4QayHbIynA3NMe48p2g=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ben Gardon <bgardon@google.com>,
-        David Matlack <dmatlack@google.com>,
-        Paolo Bonzini <pbonzini@redhat.com>
-Subject: [PATCH 5.10 534/599] KVM: Prevent module exit until all VMs are freed
-Date:   Tue,  5 Apr 2022 09:33:48 +0200
-Message-Id: <20220405070314.732033644@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
-User-Agent: quilt/0.66
+        by relay2.suse.de (Postfix) with ESMTPS id 95D3EA3B93;
+        Tue,  5 Apr 2022 10:43:42 +0000 (UTC)
+Date:   Tue, 5 Apr 2022 12:43:41 +0200
+From:   Michal Hocko <mhocko@suse.com>
+To:     Alexander Sverdlin <alexander.sverdlin@nokia.com>
+Cc:     Nicholas Piggin <npiggin@gmail.com>,
+        Alexander Duyck <alexanderduyck@fb.com>,
+        Matthew Wilcox <willy@infradead.org>,
+        Hugh Dickins <hughd@google.com>, Yu Zhao <yuzhao@google.com>,
+        Mel Gorman <mgorman@techsingularity.net>,
+        Lee Schermerhorn <lee.schermerhorn@hp.com>,
+        Sasha Levin <sashal@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: mm: swap: locking in release_pages()
+Message-ID: <YkwdRnuQBjoJ01YK@dhcp22.suse.cz>
+References: <89009285-c75d-0f09-5b08-d133c42a18f9@nokia.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <89009285-c75d-0f09-5b08-d133c42a18f9@nokia.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: David Matlack <dmatlack@google.com>
+On Tue 05-04-22 12:20:15, Alexander Sverdlin wrote:
+> Dear mm developers!
+> 
+> After experiencing a crash in release_pages() [1] I'm trying to understand the locking in the release_pages():
+> 
+> No matter if we consider v5.17 or v5.4 (as in my case), they both have similar locking patterns:
 
-commit 5f6de5cbebee925a612856fce6f9182bb3eee0db upstream.
+Similar but the notable difference is that 5.4 used per node lru locking
+while newer versions 5.11+ kernels use per memcg locking. If you see the
+issue on 5.4 then this is unlikely a regression.
+[...]
+> What I don't understand here is, what guarantees us that "if (PageLRU(page))" condition
+> is still valid after we swap the locks in "if (pgdat != locked_pgdat)" case?
 
-Tie the lifetime the KVM module to the lifetime of each VM via
-kvm.users_count. This way anything that grabs a reference to the VM via
-kvm_get_kvm() cannot accidentally outlive the KVM module.
+The underlying reasoning is that the PageLRU handling is done after the
+last reference has been dropped. isolate_lru_page and others should
+elevate the reference count before isolating page from LRU lists.
+Some callers user TestClearPageLRU
 
-Prior to this commit, the lifetime of the KVM module was tied to the
-lifetime of /dev/kvm file descriptors, VM file descriptors, and vCPU
-file descriptors by their respective file_operations "owner" field.
-This approach is insufficient because references grabbed via
-kvm_get_kvm() do not prevent closing any of the aforementioned file
-descriptors.
+> If we check under one lock and VM_BUG_ON_PAGE() under another lock, what actually stops
+> it from crashing as below or BUG() from time to time?
+G
 
-This fixes a long standing theoretical bug in KVM that at least affects
-async page faults. kvm_setup_async_pf() grabs a reference via
-kvm_get_kvm(), and drops it in an asynchronous work callback. Nothing
-prevents the VM file descriptor from being closed and the KVM module
-from being unloaded before this callback runs.
+> 
+> 1. Crash of v5.4.170 on an ARM32 machine:
+> 
+> Unable to handle kernel NULL pointer dereference at virtual address 00000104
+> pgd = e138149d
+> [00000104] *pgd=84d2fd003, *pmd=8ffd6f003
+> Internal error: Oops: a07 [#1] PREEMPT SMP ARM
+> ...
+> CPU: 1 PID: 6172 Comm: AaSysInfoRColle Tainted: G    B      O      5.4.170-... #1
+> Hardware name: Keystone
+> PC is at release_pages+0x194/0x358
+> LR is at release_pages+0x10c/0x358
 
-Fixes: af585b921e5d ("KVM: Halt vcpu if page it tries to access is swapped out")
-Fixes: 3d3aab1b973b ("KVM: set owner of cpu and vm file operations")
-Cc: stable@vger.kernel.org
-Suggested-by: Ben Gardon <bgardon@google.com>
-[ Based on a patch from Ben implemented for Google's kernel. ]
-Signed-off-by: David Matlack <dmatlack@google.com>
-Message-Id: <20220303183328.1499189-2-dmatlack@google.com>
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- virt/kvm/kvm_main.c |   13 +++++++++++++
- 1 file changed, 13 insertions(+)
-
---- a/virt/kvm/kvm_main.c
-+++ b/virt/kvm/kvm_main.c
-@@ -114,6 +114,8 @@ EXPORT_SYMBOL_GPL(kvm_debugfs_dir);
- static int kvm_debugfs_num_entries;
- static const struct file_operations stat_fops_per_vm;
- 
-+static struct file_operations kvm_chardev_ops;
-+
- static long kvm_vcpu_ioctl(struct file *file, unsigned int ioctl,
- 			   unsigned long arg);
- #ifdef CONFIG_KVM_COMPAT
-@@ -818,6 +820,16 @@ static struct kvm *kvm_create_vm(unsigne
- 
- 	preempt_notifier_inc();
- 
-+	/*
-+	 * When the fd passed to this ioctl() is opened it pins the module,
-+	 * but try_module_get() also prevents getting a reference if the module
-+	 * is in MODULE_STATE_GOING (e.g. if someone ran "rmmod --wait").
-+	 */
-+	if (!try_module_get(kvm_chardev_ops.owner)) {
-+		r = -ENODEV;
-+		goto out_err;
-+	}
-+
- 	return kvm;
- 
- out_err:
-@@ -896,6 +908,7 @@ static void kvm_destroy_vm(struct kvm *k
- 	preempt_notifier_dec();
- 	hardware_disable_all();
- 	mmdrop(mm);
-+	module_put(kvm_chardev_ops.owner);
- }
- 
- void kvm_get_kvm(struct kvm *kvm)
-
-
+Which LOC does this correspond to? (faddr2line should give you a nice
+output).
+-- 
+Michal Hocko
+SUSE Labs
