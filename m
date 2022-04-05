@@ -2,84 +2,203 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BF040C3527D
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 01:33:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 09B7EC47080
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 01:34:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1842963AbiDFBfh (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 21:35:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41912 "EHLO
+        id S239473AbiDFBfx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 21:35:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36104 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1390678AbiDENmz (ORCPT
+        with ESMTP id S1573565AbiDETWr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 09:42:55 -0400
-Received: from mail-pg1-x530.google.com (mail-pg1-x530.google.com [IPv6:2607:f8b0:4864:20::530])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1AE3527B1F
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 05:43:35 -0700 (PDT)
-Received: by mail-pg1-x530.google.com with SMTP id q142so9154717pgq.9
-        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 05:43:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=pFy1qZhdMdbp63fvqatp60F+TUWmD+XE3qD2we3Q3/E=;
-        b=ICHmkjwoT02evQPvLG67fwtfT+/HO34QaDa64NIblo3dX6mBddVU4pztRQ3PiNWgV8
-         Q0atQj4u8oNo9+UKieBwV9ZSUi0gX8g6YmUUkG7ROH5NlrwVNyJUy05Ht6G+QDTCaeyG
-         Mv1OIFqk98ytWz415A3HlO64EKjnlwpok1u+MnoORc3QBmzBC4YJTJ5NIokC0Q0f3LUX
-         7IqjjjiDnbWIhf0fAe1OZR1bG6XlOr3YwqYmO5nDUKhnpyec1xesRMYWb7wyDJ8ABL/u
-         NMsJKvTA5/JDa4gpiHwmq8dVoyh7mO1SIZaipTf6SJlAqGh/cHjXNFPmpUQCsL/U//Yu
-         YOzA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=pFy1qZhdMdbp63fvqatp60F+TUWmD+XE3qD2we3Q3/E=;
-        b=trFrTzYpBkLKaG9sAHAA5w6tuk+lVxqgsK+vq4jxTgSh4BT3075gcojYV33Aq9eF5S
-         G2vc6/kkBC5qvlZZ8kfY7X5TVXRXs5KNGiys49vVz84SHOB0bPpBLuNJ0CVHH1OrJKCc
-         GjI5Qun6pNzOCGnkGF1cjF3LUmwAGkUuEs1cKhsAC7S+kiwtkgkUJVt//MlSKoaOdAWn
-         E8ms32WcuTx+AtwuGQUiRR1+hxF/V5cXIsS5qCO2v8EKUN3iba424QGLVlqx+ilrqRsj
-         SlQLq9FDQKoyWJHhOUesNq/UD4dKm0dwaX8n7v+Lbu6y+5ub3MhSf7oMKupyKtQzQWm2
-         R7dA==
-X-Gm-Message-State: AOAM531YYSpUimag/tN3Z440gzX2mEErJc7N12TT9aorbN4eogDwZt98
-        XarAk4Z82pgV8AviCvu9Nts=
-X-Google-Smtp-Source: ABdhPJyDfpN+1H4PfHUqp+rp8XEL538Oc78MuEILvTB/wjQSaNjaqZgkugyg7zTaw6Hwc9tuD+WpFA==
-X-Received: by 2002:a63:3756:0:b0:398:4086:16 with SMTP id g22-20020a633756000000b0039840860016mr2741728pgn.55.1649162615312;
-        Tue, 05 Apr 2022 05:43:35 -0700 (PDT)
-Received: from vihas.localhost.com ([103.85.9.59])
-        by smtp.gmail.com with ESMTPSA id nl17-20020a17090b385100b001c70883f6ccsm2760014pjb.36.2022.04.05.05.43.32
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 05 Apr 2022 05:43:34 -0700 (PDT)
-From:   Vihas Makwana <makvihas@gmail.com>
-To:     Larry Finger <Larry.Finger@lwfinger.net>,
-        Phillip Potter <phil@philpotter.co.uk>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Michael Straube <straube.linux@gmail.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Pavel Skripkin <paskripkin@gmail.com>
-Cc:     linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
-        Vihas Makwana <makvihas@gmail.com>
-Subject: [PATCH 0/3] staging: r8188eu: some refactoring and cleanup
-Date:   Tue,  5 Apr 2022 18:12:37 +0530
-Message-Id: <20220405124239.3372-1-makvihas@gmail.com>
-X-Mailer: git-send-email 2.30.2
+        Tue, 5 Apr 2022 15:22:47 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0685E41996;
+        Tue,  5 Apr 2022 12:20:49 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 98746616C5;
+        Tue,  5 Apr 2022 19:20:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5C95FC385A0;
+        Tue,  5 Apr 2022 19:20:47 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649186448;
+        bh=ShhHqYfBpf9JsbMiXI8G2iZFROdQeYH5+nM3VSH0nCI=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=dKHViOiZAF8ltnCy75v1geQHPUV3YPHu0rqq8dpG7YpkQs61r73lUO9MHKA/dA5Ko
+         vrpOoJP7fgGvLjlJTaYGbR7CQ8IRQvPC+N3DVZd6guEK8PmgfVB8DocSpjjPx0krPa
+         R0DBwmFqMBBu75AWDTpNRyG2oxYljfYQ62sWfo+AXOEWuzgqqIIEVjKvEuv7h8Z9hR
+         lp7eIdcCsZh6wZjN1B61iDKAwVkAAi+Gv/WOGRfdeCkynnTulGP0cWJufpuHaXI2gg
+         Gl1IQRunszg/NxN8kWmKpLZIZByHcPEO5qh1of3y7yVa8gEQc65CigL426u+LAkK6E
+         y1OLcnVKDWgSw==
+From:   Jeff Layton <jlayton@kernel.org>
+To:     idryomov@gmail.com, xiubli@redhat.com
+Cc:     ceph-devel@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        linux-fscrypt@vger.kernel.org, linux-kernel@vger.kernel.org,
+        lhenriques@suse.de
+Subject: [PATCH v13 17/59] ceph: decode alternate_name in lease info
+Date:   Tue,  5 Apr 2022 15:19:48 -0400
+Message-Id: <20220405192030.178326-18-jlayton@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405192030.178326-1-jlayton@kernel.org>
+References: <20220405192030.178326-1-jlayton@kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Drop some redundant checks and cleanup the unused functions.
+Ceph is a bit different from local filesystems, in that we don't want
+to store filenames as raw binary data, since we may also be dealing
+with clients that don't support fscrypt.
 
-Vihas Makwana (3):
-  staging: r8188eu: drop redundant if check in IS_MCAST
-  staging: r8188eu: drop redundant if check in check_fwstate
-  staging: r8188eu: simplify rtw_inc_and_chk_continual_urb_error
+We could just base64-encode the encrypted filenames, but that could
+leave us with filenames longer than NAME_MAX. It turns out that the
+MDS doesn't care much about filename length, but the clients do.
 
- drivers/staging/r8188eu/include/rtw_mlme.h | 43 +---------------------
- drivers/staging/r8188eu/include/usb_ops.h  |  7 +---
- drivers/staging/r8188eu/include/wifi.h     |  5 +--
- 3 files changed, 3 insertions(+), 52 deletions(-)
+To manage this, we've added a new "alternate name" field that can be
+optionally added to any dentry that we'll use to store the binary
+crypttext of the filename if its base64-encoded value will be longer
+than NAME_MAX. When a dentry has one of these names attached, the MDS
+will send it along in the lease info, which we can then store for
+later usage.
 
+Signed-off-by: Jeff Layton <jlayton@kernel.org>
+Signed-off-by: Xiubo Li <xiubli@redhat.com>
+---
+ fs/ceph/mds_client.c | 43 +++++++++++++++++++++++++++++++++----------
+ fs/ceph/mds_client.h | 11 +++++++----
+ 2 files changed, 40 insertions(+), 14 deletions(-)
+
+diff --git a/fs/ceph/mds_client.c b/fs/ceph/mds_client.c
+index dcb800675dec..2f2f8221eb25 100644
+--- a/fs/ceph/mds_client.c
++++ b/fs/ceph/mds_client.c
+@@ -308,27 +308,47 @@ static int parse_reply_info_dir(void **p, void *end,
+ 
+ static int parse_reply_info_lease(void **p, void *end,
+ 				  struct ceph_mds_reply_lease **lease,
+-				  u64 features)
++				  u64 features, u32 *altname_len, u8 **altname)
+ {
++	u8 struct_v;
++	u32 struct_len;
++	void *lend;
++
+ 	if (features == (u64)-1) {
+-		u8 struct_v, struct_compat;
+-		u32 struct_len;
++		u8 struct_compat;
++
+ 		ceph_decode_8_safe(p, end, struct_v, bad);
+ 		ceph_decode_8_safe(p, end, struct_compat, bad);
++
+ 		/* struct_v is expected to be >= 1. we only understand
+ 		 * encoding whose struct_compat == 1. */
+ 		if (!struct_v || struct_compat != 1)
+ 			goto bad;
++
+ 		ceph_decode_32_safe(p, end, struct_len, bad);
+-		ceph_decode_need(p, end, struct_len, bad);
+-		end = *p + struct_len;
++	} else {
++		struct_len = sizeof(**lease);
++		*altname_len = 0;
++		*altname = NULL;
+ 	}
+ 
+-	ceph_decode_need(p, end, sizeof(**lease), bad);
++	lend = *p + struct_len;
++	ceph_decode_need(p, end, struct_len, bad);
+ 	*lease = *p;
+ 	*p += sizeof(**lease);
+-	if (features == (u64)-1)
+-		*p = end;
++
++	if (features == (u64)-1) {
++		if (struct_v >= 2) {
++			ceph_decode_32_safe(p, end, *altname_len, bad);
++			ceph_decode_need(p, end, *altname_len, bad);
++			*altname = *p;
++			*p += *altname_len;
++		} else {
++			*altname = NULL;
++			*altname_len = 0;
++		}
++	}
++	*p = lend;
+ 	return 0;
+ bad:
+ 	return -EIO;
+@@ -358,7 +378,8 @@ static int parse_reply_info_trace(void **p, void *end,
+ 		info->dname = *p;
+ 		*p += info->dname_len;
+ 
+-		err = parse_reply_info_lease(p, end, &info->dlease, features);
++		err = parse_reply_info_lease(p, end, &info->dlease, features,
++					     &info->altname_len, &info->altname);
+ 		if (err < 0)
+ 			goto out_bad;
+ 	}
+@@ -425,9 +446,11 @@ static int parse_reply_info_readdir(void **p, void *end,
+ 		dout("parsed dir dname '%.*s'\n", rde->name_len, rde->name);
+ 
+ 		/* dentry lease */
+-		err = parse_reply_info_lease(p, end, &rde->lease, features);
++		err = parse_reply_info_lease(p, end, &rde->lease, features,
++					     &rde->altname_len, &rde->altname);
+ 		if (err)
+ 			goto out_bad;
++
+ 		/* inode */
+ 		err = parse_reply_info_in(p, end, &rde->inode, features);
+ 		if (err < 0)
+diff --git a/fs/ceph/mds_client.h b/fs/ceph/mds_client.h
+index aab3ab284fce..2cc75f9ae7c7 100644
+--- a/fs/ceph/mds_client.h
++++ b/fs/ceph/mds_client.h
+@@ -29,8 +29,8 @@ enum ceph_feature_type {
+ 	CEPHFS_FEATURE_MULTI_RECONNECT,
+ 	CEPHFS_FEATURE_DELEG_INO,
+ 	CEPHFS_FEATURE_METRIC_COLLECT,
+-
+-	CEPHFS_FEATURE_MAX = CEPHFS_FEATURE_METRIC_COLLECT,
++	CEPHFS_FEATURE_ALTERNATE_NAME,
++	CEPHFS_FEATURE_MAX = CEPHFS_FEATURE_ALTERNATE_NAME,
+ };
+ 
+ /*
+@@ -45,8 +45,7 @@ enum ceph_feature_type {
+ 	CEPHFS_FEATURE_MULTI_RECONNECT,		\
+ 	CEPHFS_FEATURE_DELEG_INO,		\
+ 	CEPHFS_FEATURE_METRIC_COLLECT,		\
+-						\
+-	CEPHFS_FEATURE_MAX,			\
++	CEPHFS_FEATURE_ALTERNATE_NAME,		\
+ }
+ #define CEPHFS_FEATURES_CLIENT_REQUIRED {}
+ 
+@@ -98,7 +97,9 @@ struct ceph_mds_reply_info_in {
+ 
+ struct ceph_mds_reply_dir_entry {
+ 	char                          *name;
++	u8			      *altname;
+ 	u32                           name_len;
++	u32			      altname_len;
+ 	struct ceph_mds_reply_lease   *lease;
+ 	struct ceph_mds_reply_info_in inode;
+ 	loff_t			      offset;
+@@ -122,7 +123,9 @@ struct ceph_mds_reply_info_parsed {
+ 	struct ceph_mds_reply_info_in diri, targeti;
+ 	struct ceph_mds_reply_dirfrag *dirfrag;
+ 	char                          *dname;
++	u8			      *altname;
+ 	u32                           dname_len;
++	u32                           altname_len;
+ 	struct ceph_mds_reply_lease   *dlease;
+ 	struct ceph_mds_reply_xattr   xattr_info;
+ 
 -- 
-2.30.2
+2.35.1
 
