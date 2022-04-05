@@ -2,47 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AD892C4332F
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:21:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 651C3C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:21:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235716AbiDEXyG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 19:54:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45586 "EHLO
+        id S1349719AbiDEXys (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 19:54:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55526 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354825AbiDEKQJ (ORCPT
+        with ESMTP id S1345013AbiDEKka (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:16:09 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3AC26C954;
-        Tue,  5 Apr 2022 03:03:03 -0700 (PDT)
+        Tue, 5 Apr 2022 06:40:30 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F4D22CE2F;
+        Tue,  5 Apr 2022 03:25:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2785B616E7;
-        Tue,  5 Apr 2022 10:03:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1534EC385A2;
-        Tue,  5 Apr 2022 10:03:02 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C0379B81C8B;
+        Tue,  5 Apr 2022 10:25:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 207C0C385A0;
+        Tue,  5 Apr 2022 10:25:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649152982;
-        bh=rMkDyMAy8tgZhH5NoxgtKM/qQKn45VbcqeVtM9To590=;
+        s=korg; t=1649154333;
+        bh=WHpE2mMXl9yK+mOZUg2FVsUyo8N1IaqdQUGsRIVYU5I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XU3z7/xBlMBv9+JScfsburHoY+ilzEgEEv+iWzo6zRceah95bC8bgh8TABhxRyTRb
-         Fwkp0/DFMDbF6PXLNXkE866flGAsD5WlyLgO9kfTE/AZqJSyGgMX4eNu2R/AeKL6rM
-         +6meoq4Isj24bL0CR23TXFdzOtyH8nWh6rZCw474=
+        b=BTE/y9KkOjPL/T7EU+95AWPVTgvgKOiOdMaVshqU+ohPegSXgtHQdW14/zlSSkN7N
+         jC1Ur+k3VvFCIOj9bbGC9oSQSgrLPuqw9MhsEhMSuEwHqppChz4AeLs+ERejzg9k8M
+         wYTbePQniRShXughoscwiNAgUgxmVZAfav7a3A6U=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Alistair Popple <apopple@nvidia.com>,
-        David Hildenbrand <david@redhat.com>,
-        Mel Gorman <mgorman@techsingularity.net>,
-        John Hubbard <jhubbard@nvidia.com>, Zi Yan <ziy@nvidia.com>,
-        Anshuman Khandual <anshuman.khandual@arm.com>,
-        Oscar Salvador <osalvador@suse.de>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [PATCH 5.10 059/599] mm/pages_alloc.c: dont create ZONE_MOVABLE beyond the end of a node
-Date:   Tue,  5 Apr 2022 09:25:53 +0200
-Message-Id: <20220405070300.584276718@linuxfoundation.org>
+        stable@vger.kernel.org, Zhihao Cheng <chengzhihao1@huawei.com>,
+        Richard Weinberger <richard@nod.at>
+Subject: [PATCH 5.10 543/599] ubifs: Fix to add refcount once page is set private
+Date:   Tue,  5 Apr 2022 09:33:57 +0200
+Message-Id: <20220405070315.001744775@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
 References: <20220405070258.802373272@linuxfoundation.org>
@@ -54,105 +49,184 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alistair Popple <apopple@nvidia.com>
+From: Zhihao Cheng <chengzhihao1@huawei.com>
 
-commit ddbc84f3f595cf1fc8234a191193b5d20ad43938 upstream.
+commit 3b67db8a6ca83e6ff90b756d3da0c966f61cd37b upstream.
 
-ZONE_MOVABLE uses the remaining memory in each node.  Its starting pfn
-is also aligned to MAX_ORDER_NR_PAGES.  It is possible for the remaining
-memory in a node to be less than MAX_ORDER_NR_PAGES, meaning there is
-not enough room for ZONE_MOVABLE on that node.
+MM defined the rule [1] very clearly that once page was set with PG_private
+flag, we should increment the refcount in that page, also main flows like
+pageout(), migrate_page() will assume there is one additional page
+reference count if page_has_private() returns true. Otherwise, we may
+get a BUG in page migration:
 
-Unfortunately this condition is not checked for.  This leads to
-zone_movable_pfn[] getting set to a pfn greater than the last pfn in a
-node.
-
-calculate_node_totalpages() then sets zone->present_pages to be greater
-than zone->spanned_pages which is invalid, as spanned_pages represents
-the maximum number of pages in a zone assuming no holes.
-
-Subsequently it is possible free_area_init_core() will observe a zone of
-size zero with present pages.  In this case it will skip setting up the
-zone, including the initialisation of free_lists[].
-
-However populated_zone() checks zone->present_pages to see if a zone has
-memory available.  This is used by iterators such as
-walk_zones_in_node().  pagetypeinfo_showfree() uses this to walk the
-free_list of each zone in each node, which are assumed to be initialised
-due to the zone not being empty.
-
-As free_area_init_core() never initialised the free_lists[] this results
-in the following kernel crash when trying to read /proc/pagetypeinfo:
-
-  BUG: kernel NULL pointer dereference, address: 0000000000000000
-  #PF: supervisor read access in kernel mode
-  #PF: error_code(0x0000) - not-present page
-  PGD 0 P4D 0
-  Oops: 0000 [#1] PREEMPT SMP DEBUG_PAGEALLOC NOPTI
-  CPU: 0 PID: 456 Comm: cat Not tainted 5.16.0 #461
-  Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.14.0-2 04/01/2014
-  RIP: 0010:pagetypeinfo_show+0x163/0x460
-  Code: 9e 82 e8 80 57 0e 00 49 8b 06 b9 01 00 00 00 4c 39 f0 75 16 e9 65 02 00 00 48 83 c1 01 48 81 f9 a0 86 01 00 0f 84 48 02 00 00 <48> 8b 00 4c 39 f0 75 e7 48 c7 c2 80 a2 e2 82 48 c7 c6 79 ef e3 82
-  RSP: 0018:ffffc90001c4bd10 EFLAGS: 00010003
-  RAX: 0000000000000000 RBX: ffff88801105f638 RCX: 0000000000000001
-  RDX: 0000000000000001 RSI: 000000000000068b RDI: ffff8880163dc68b
-  RBP: ffffc90001c4bd90 R08: 0000000000000001 R09: ffff8880163dc67e
-  R10: 656c6261766f6d6e R11: 6c6261766f6d6e55 R12: ffff88807ffb4a00
-  R13: ffff88807ffb49f8 R14: ffff88807ffb4580 R15: ffff88807ffb3000
-  FS:  00007f9c83eff5c0(0000) GS:ffff88807dc00000(0000) knlGS:0000000000000000
-  CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-  CR2: 0000000000000000 CR3: 0000000013c8e000 CR4: 0000000000350ef0
+  page:0000000080d05b9d refcount:-1 mapcount:0 mapping:000000005f4d82a8
+  index:0xe2 pfn:0x14c12
+  aops:ubifs_file_address_operations [ubifs] ino:8f1 dentry name:"f30e"
+  flags: 0x1fffff80002405(locked|uptodate|owner_priv_1|private|node=0|
+  zone=1|lastcpupid=0x1fffff)
+  page dumped because: VM_BUG_ON_PAGE(page_count(page) != 0)
+  ------------[ cut here ]------------
+  kernel BUG at include/linux/page_ref.h:184!
+  invalid opcode: 0000 [#1] SMP
+  CPU: 3 PID: 38 Comm: kcompactd0 Not tainted 5.15.0-rc5
+  RIP: 0010:migrate_page_move_mapping+0xac3/0xe70
   Call Trace:
-   seq_read_iter+0x128/0x460
-   proc_reg_read_iter+0x51/0x80
-   new_sync_read+0x113/0x1a0
-   vfs_read+0x136/0x1d0
-   ksys_read+0x70/0xf0
-   __x64_sys_read+0x1a/0x20
-   do_syscall_64+0x3b/0xc0
-   entry_SYSCALL_64_after_hwframe+0x44/0xae
+    ubifs_migrate_page+0x22/0xc0 [ubifs]
+    move_to_new_page+0xb4/0x600
+    migrate_pages+0x1523/0x1cc0
+    compact_zone+0x8c5/0x14b0
+    kcompactd+0x2bc/0x560
+    kthread+0x18c/0x1e0
+    ret_from_fork+0x1f/0x30
 
-Fix this by checking that the aligned zone_movable_pfn[] does not exceed
-the end of the node, and if it does skip creating a movable zone on this
-node.
+Before the time, we should make clean a concept, what does refcount means
+in page gotten from grab_cache_page_write_begin(). There are 2 situations:
+Situation 1: refcount is 3, page is created by __page_cache_alloc.
+  TYPE_A - the write process is using this page
+  TYPE_B - page is assigned to one certain mapping by calling
+	   __add_to_page_cache_locked()
+  TYPE_C - page is added into pagevec list corresponding current cpu by
+	   calling lru_cache_add()
+Situation 2: refcount is 2, page is gotten from the mapping's tree
+  TYPE_B - page has been assigned to one certain mapping
+  TYPE_A - the write process is using this page (by calling
+	   page_cache_get_speculative())
+Filesystem releases one refcount by calling put_page() in xxx_write_end(),
+the released refcount corresponds to TYPE_A (write task is using it). If
+there are any processes using a page, page migration process will skip the
+page by judging whether expected_page_refs() equals to page refcount.
 
-Link: https://lkml.kernel.org/r/20220215025831.2113067-1-apopple@nvidia.com
-Fixes: 2a1e274acf0b ("Create the ZONE_MOVABLE zone")
-Signed-off-by: Alistair Popple <apopple@nvidia.com>
-Acked-by: David Hildenbrand <david@redhat.com>
-Acked-by: Mel Gorman <mgorman@techsingularity.net>
-Cc: John Hubbard <jhubbard@nvidia.com>
-Cc: Zi Yan <ziy@nvidia.com>
-Cc: Anshuman Khandual <anshuman.khandual@arm.com>
-Cc: Oscar Salvador <osalvador@suse.de>
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+The BUG is caused by following process:
+    PA(cpu 0)                           kcompactd(cpu 1)
+				compact_zone
+ubifs_write_begin
+  page_a = grab_cache_page_write_begin
+    add_to_page_cache_lru
+      lru_cache_add
+        pagevec_add // put page into cpu 0's pagevec
+  (refcnf = 3, for page creation process)
+ubifs_write_end
+  SetPagePrivate(page_a) // doesn't increase page count !
+  unlock_page(page_a)
+  put_page(page_a)  // refcnt = 2
+				[...]
+
+    PB(cpu 0)
+filemap_read
+  filemap_get_pages
+    add_to_page_cache_lru
+      lru_cache_add
+        __pagevec_lru_add // traverse all pages in cpu 0's pagevec
+	  __pagevec_lru_add_fn
+	    SetPageLRU(page_a)
+				isolate_migratepages
+                                  isolate_migratepages_block
+				    get_page_unless_zero(page_a)
+				    // refcnt = 3
+                                      list_add(page_a, from_list)
+				migrate_pages(from_list)
+				  __unmap_and_move
+				    move_to_new_page
+				      ubifs_migrate_page(page_a)
+				        migrate_page_move_mapping
+					  expected_page_refs get 3
+                                  (migration[1] + mapping[1] + private[1])
+	 release_pages
+	   put_page_testzero(page_a) // refcnt = 3
+                                          page_ref_freeze  // refcnt = 0
+	     page_ref_dec_and_test(0 - 1 = -1)
+                                          page_ref_unfreeze
+                                            VM_BUG_ON_PAGE(-1 != 0, page)
+
+UBIFS doesn't increase the page refcount after setting private flag, which
+leads to page migration task believes the page is not used by any other
+processes, so the page is migrated. This causes concurrent accessing on
+page refcount between put_page() called by other process(eg. read process
+calls lru_cache_add) and page_ref_unfreeze() called by migration task.
+
+Actually zhangjun has tried to fix this problem [2] by recalculating page
+refcnt in ubifs_migrate_page(). It's better to follow MM rules [1], because
+just like Kirill suggested in [2], we need to check all users of
+page_has_private() helper. Like f2fs does in [3], fix it by adding/deleting
+refcount when setting/clearing private for a page. BTW, according to [4],
+we set 'page->private' as 1 because ubifs just simply SetPagePrivate().
+And, [5] provided a common helper to set/clear page private, ubifs can
+use this helper following the example of iomap, afs, btrfs, etc.
+
+Jump [6] to find a reproducer.
+
+[1] https://lore.kernel.org/lkml/2b19b3c4-2bc4-15fa-15cc-27a13e5c7af1@aol.com
+[2] https://www.spinics.net/lists/linux-mtd/msg04018.html
+[3] http://lkml.iu.edu/hypermail/linux/kernel/1903.0/03313.html
+[4] https://lore.kernel.org/linux-f2fs-devel/20210422154705.GO3596236@casper.infradead.org
+[5] https://lore.kernel.org/all/20200517214718.468-1-guoqing.jiang@cloud.ionos.com
+[6] https://bugzilla.kernel.org/show_bug.cgi?id=214961
+
+Fixes: 1e51764a3c2ac0 ("UBIFS: add new flash file system")
+Signed-off-by: Zhihao Cheng <chengzhihao1@huawei.com>
+Signed-off-by: Richard Weinberger <richard@nod.at>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- mm/page_alloc.c |    9 ++++++++-
- 1 file changed, 8 insertions(+), 1 deletion(-)
+ fs/ubifs/file.c |   14 +++++++-------
+ 1 file changed, 7 insertions(+), 7 deletions(-)
 
---- a/mm/page_alloc.c
-+++ b/mm/page_alloc.c
-@@ -7402,10 +7402,17 @@ restart:
+--- a/fs/ubifs/file.c
++++ b/fs/ubifs/file.c
+@@ -570,7 +570,7 @@ static int ubifs_write_end(struct file *
+ 	}
  
- out2:
- 	/* Align start of ZONE_MOVABLE on all nids to MAX_ORDER_NR_PAGES */
--	for (nid = 0; nid < MAX_NUMNODES; nid++)
-+	for (nid = 0; nid < MAX_NUMNODES; nid++) {
-+		unsigned long start_pfn, end_pfn;
-+
- 		zone_movable_pfn[nid] =
- 			roundup(zone_movable_pfn[nid], MAX_ORDER_NR_PAGES);
+ 	if (!PagePrivate(page)) {
+-		SetPagePrivate(page);
++		attach_page_private(page, (void *)1);
+ 		atomic_long_inc(&c->dirty_pg_cnt);
+ 		__set_page_dirty_nobuffers(page);
+ 	}
+@@ -947,7 +947,7 @@ static int do_writepage(struct page *pag
+ 		release_existing_page_budget(c);
  
-+		get_pfn_range_for_nid(nid, &start_pfn, &end_pfn);
-+		if (zone_movable_pfn[nid] >= end_pfn)
-+			zone_movable_pfn[nid] = 0;
-+	}
-+
- out:
- 	/* restore the node_state */
- 	node_states[N_MEMORY] = saved_node_state;
+ 	atomic_long_dec(&c->dirty_pg_cnt);
+-	ClearPagePrivate(page);
++	detach_page_private(page);
+ 	ClearPageChecked(page);
+ 
+ 	kunmap(page);
+@@ -1303,7 +1303,7 @@ static void ubifs_invalidatepage(struct
+ 		release_existing_page_budget(c);
+ 
+ 	atomic_long_dec(&c->dirty_pg_cnt);
+-	ClearPagePrivate(page);
++	detach_page_private(page);
+ 	ClearPageChecked(page);
+ }
+ 
+@@ -1470,8 +1470,8 @@ static int ubifs_migrate_page(struct add
+ 		return rc;
+ 
+ 	if (PagePrivate(page)) {
+-		ClearPagePrivate(page);
+-		SetPagePrivate(newpage);
++		detach_page_private(page);
++		attach_page_private(newpage, (void *)1);
+ 	}
+ 
+ 	if (mode != MIGRATE_SYNC_NO_COPY)
+@@ -1495,7 +1495,7 @@ static int ubifs_releasepage(struct page
+ 		return 0;
+ 	ubifs_assert(c, PagePrivate(page));
+ 	ubifs_assert(c, 0);
+-	ClearPagePrivate(page);
++	detach_page_private(page);
+ 	ClearPageChecked(page);
+ 	return 1;
+ }
+@@ -1566,7 +1566,7 @@ static vm_fault_t ubifs_vm_page_mkwrite(
+ 	else {
+ 		if (!PageChecked(page))
+ 			ubifs_convert_page_budget(c);
+-		SetPagePrivate(page);
++		attach_page_private(page, (void *)1);
+ 		atomic_long_inc(&c->dirty_pg_cnt);
+ 		__set_page_dirty_nobuffers(page);
+ 	}
 
 
