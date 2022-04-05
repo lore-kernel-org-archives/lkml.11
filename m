@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C617EC46467
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:02:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 06604C4707A
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:02:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357990AbiDEL4W (ORCPT
+        id S1358390AbiDEL4f (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 07:56:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46832 "EHLO
+        Tue, 5 Apr 2022 07:56:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51136 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244927AbiDEIws (ORCPT
+        with ESMTP id S244821AbiDEIwl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:52:48 -0400
+        Tue, 5 Apr 2022 04:52:41 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89E1424969;
-        Tue,  5 Apr 2022 01:46:42 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7D3A3DA71;
+        Tue,  5 Apr 2022 01:44:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 444CEB81B18;
-        Tue,  5 Apr 2022 08:46:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9E4E3C385A1;
-        Tue,  5 Apr 2022 08:46:39 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 709DEB81BC5;
+        Tue,  5 Apr 2022 08:44:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A9505C385A1;
+        Tue,  5 Apr 2022 08:44:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649148400;
-        bh=UtAF4TJdgd6LI56pIhGRnVTmygJzn7Y55xHYTWv0Fco=;
+        s=korg; t=1649148260;
+        bh=5R3cOyVOje9ogKOuX1pQMS8618OF7hLTfVlwYPX72VY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=a2Rcp6fX8is9IxRhFFCWU8nSP8i6RiONqb7kCvwWuST7h7+czE4olmiscTi8ktZai
-         wI3u93/grtqKvYQG6LOz4uPhn/Q7V4ymDnpBqbcRvSy7Is8n/vj+MrGYILTw76fUNk
-         L/rMMyox1PbwZGg3T//za1ai0IqYf4uDV0gDg+5Y=
+        b=0DhbEuH33zAp2bSm/y/+fIGEeQW5W7sWdhwAwmqYyrD1noQVDzvpLV1NaHC5MInZx
+         lSlYHK+1pd0EsZOJGGnRLMZ4CCffu7PnT9jNmyjvNfly+mGnRgYwS0oHRcbdNSZUYL
+         w2ldlI0uDw+NPWFlRrftgOIt5HnggKJ3vYHOYDAo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
         Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0341/1017] ASoC: codecs: wc938x: fix accessing array out of bounds for enum type
-Date:   Tue,  5 Apr 2022 09:20:54 +0200
-Message-Id: <20220405070404.405359777@linuxfoundation.org>
+Subject: [PATCH 5.16 0291/1017] ASoC: codecs: Check for error pointer after calling devm_regmap_init_mmio
+Date:   Tue,  5 Apr 2022 09:20:04 +0200
+Message-Id: <20220405070402.909614171@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -51,47 +50,68 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
 
-[ Upstream commit cc587b7c8fbbe128f6bd0dad025a0caea5e6d164 ]
+[ Upstream commit aa505ecccf2ae7546e0e262d574e18a9241f3005 ]
 
-Accessing enums using integer would result in array out of bounds access
-on platforms like aarch64 where sizeof(long) is 8 compared to enum size
-which is 4 bytes.
+Since the potential failure of the devm_regmap_init_mmio(), it will
+return error pointer and be assigned to the regmap.
+Then the error pointer will be dereferenced.
+For example rx->regmap will be used in rx_macro_mclk_enable().
+Therefore, it should be better to check it.
 
-Fix this by using enumerated items instead of integers.
-
-Fixes: e8ba1e05bdc0 ("ASoC: codecs: wcd938x: add basic controls")
-Signed-off-by: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
-Link: https://lore.kernel.org/r/20220222183212.11580-7-srinivas.kandagatla@linaro.org
+Fixes: af3d54b99764 ("ASoC: codecs: lpass-rx-macro: add support for lpass rx macro")
+Fixes: c39667ddcfc5 ("ASoC: codecs: lpass-tx-macro: add support for lpass tx macro")
+Fixes: 809bcbcecebf ("ASoC: codecs: lpass-wsa-macro: Add support to WSA Macro")
+Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Link: https://lore.kernel.org/r/20220121171031.2826198-1-jiasheng@iscas.ac.cn
 Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/codecs/wcd938x.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ sound/soc/codecs/lpass-rx-macro.c  | 2 ++
+ sound/soc/codecs/lpass-tx-macro.c  | 2 ++
+ sound/soc/codecs/lpass-wsa-macro.c | 2 ++
+ 3 files changed, 6 insertions(+)
 
-diff --git a/sound/soc/codecs/wcd938x.c b/sound/soc/codecs/wcd938x.c
-index bbc261ab2025..54671bbf7471 100644
---- a/sound/soc/codecs/wcd938x.c
-+++ b/sound/soc/codecs/wcd938x.c
-@@ -2504,7 +2504,7 @@ static int wcd938x_tx_mode_get(struct snd_kcontrol *kcontrol,
- 	struct soc_enum *e = (struct soc_enum *)kcontrol->private_value;
- 	int path = e->shift_l;
+diff --git a/sound/soc/codecs/lpass-rx-macro.c b/sound/soc/codecs/lpass-rx-macro.c
+index 6ffe88345de5..2b272a82eabf 100644
+--- a/sound/soc/codecs/lpass-rx-macro.c
++++ b/sound/soc/codecs/lpass-rx-macro.c
+@@ -3542,6 +3542,8 @@ static int rx_macro_probe(struct platform_device *pdev)
+ 		return PTR_ERR(base);
  
--	ucontrol->value.integer.value[0] = wcd938x->tx_mode[path];
-+	ucontrol->value.enumerated.item[0] = wcd938x->tx_mode[path];
+ 	rx->regmap = devm_regmap_init_mmio(dev, base, &rx_regmap_config);
++	if (IS_ERR(rx->regmap))
++		return PTR_ERR(rx->regmap);
  
- 	return 0;
- }
-@@ -2528,7 +2528,7 @@ static int wcd938x_rx_hph_mode_get(struct snd_kcontrol *kcontrol,
- 	struct snd_soc_component *component = snd_soc_kcontrol_component(kcontrol);
- 	struct wcd938x_priv *wcd938x = snd_soc_component_get_drvdata(component);
+ 	dev_set_drvdata(dev, rx);
  
--	ucontrol->value.integer.value[0] = wcd938x->hph_mode;
-+	ucontrol->value.enumerated.item[0] = wcd938x->hph_mode;
+diff --git a/sound/soc/codecs/lpass-tx-macro.c b/sound/soc/codecs/lpass-tx-macro.c
+index a4c0a155af56..9c96ab1bf84f 100644
+--- a/sound/soc/codecs/lpass-tx-macro.c
++++ b/sound/soc/codecs/lpass-tx-macro.c
+@@ -1821,6 +1821,8 @@ static int tx_macro_probe(struct platform_device *pdev)
+ 	}
  
- 	return 0;
- }
+ 	tx->regmap = devm_regmap_init_mmio(dev, base, &tx_regmap_config);
++	if (IS_ERR(tx->regmap))
++		return PTR_ERR(tx->regmap);
+ 
+ 	dev_set_drvdata(dev, tx);
+ 
+diff --git a/sound/soc/codecs/lpass-wsa-macro.c b/sound/soc/codecs/lpass-wsa-macro.c
+index 75baf8eb7029..69d2915f40d8 100644
+--- a/sound/soc/codecs/lpass-wsa-macro.c
++++ b/sound/soc/codecs/lpass-wsa-macro.c
+@@ -2405,6 +2405,8 @@ static int wsa_macro_probe(struct platform_device *pdev)
+ 		return PTR_ERR(base);
+ 
+ 	wsa->regmap = devm_regmap_init_mmio(dev, base, &wsa_regmap_config);
++	if (IS_ERR(wsa->regmap))
++		return PTR_ERR(wsa->regmap);
+ 
+ 	dev_set_drvdata(dev, wsa);
+ 
 -- 
 2.34.1
 
