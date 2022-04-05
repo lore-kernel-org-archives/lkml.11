@@ -2,164 +2,148 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E12FC4167B
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:44:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E10FEC3527D
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:44:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1391261AbiDFAmL (ORCPT
+        id S1442933AbiDFAma (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 20:42:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48860 "EHLO
+        Tue, 5 Apr 2022 20:42:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49232 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1443755AbiDEPkP (ORCPT
+        with ESMTP id S1349413AbiDEJtt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 11:40:15 -0400
-Received: from mail-pl1-x629.google.com (mail-pl1-x629.google.com [IPv6:2607:f8b0:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69D7836E02
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 06:59:07 -0700 (PDT)
-Received: by mail-pl1-x629.google.com with SMTP id n8so3993709plh.1
-        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 06:59:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=FlDX9fQV9YwI2F2bsF/EhT89ZCpPX/Uxw6NOPcG/zWs=;
-        b=vpfHXe2NKDpDlZOUubw/epseFWJYmzTK8I77LrHDUtVgVvNxWJLYVFm4Nw6VlN9whs
-         Kxln9wEZ2CRA8FsH9PU5mi95PNoHoP4GWEapJH4Xc4U/PGwzruUl1h93BQlSvnQcdyPe
-         y0YtQEVbBngqi2TDqoSexbidaWxDM8Tp8ht1yMXLHWsIdRZdcPv1QdnlYuo9c8FCPE89
-         Nn/SFJmJKbIQuh5k/DtqmvQKF/kJWgO7D2kdmy6w7w0ZBqO7VrPBkMBEttF6JVVKhmG7
-         QLUOVZxVU0YbWzDp6ydW7J8xT6qUkJeLpVIponOsgiyiBbqFyvaEEcoibQcBj1xbqbJ/
-         fj5w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=FlDX9fQV9YwI2F2bsF/EhT89ZCpPX/Uxw6NOPcG/zWs=;
-        b=3JKdqAgsR62ytSWw7Fiadhqeqt16D+cYyz9QV+C/lGxMNDuin0t3Ma6WiCHbJRUmnD
-         ZOE9ooMc9PpPTqFQMK0Ff69QybICtM8y9vuRaPl/YQX+E0dmytH64omdQRa3Hx2+bxO9
-         Yh3/Nykxv1fXxCiS2ubMu1JRx5tKIR12Ly/B0VhzuWnywMoZXv4LNdaFs5vFL9P2tEu6
-         ZcFKnVT5L3vZgHQlhX2Hj4u03UjMplTgMF1tUwTuZGq81tgZDST/BqxrxgtgUFdKgC4f
-         1FMT/5I8D/zQNKGZEwni/eKbdUR1ZOZs3DFHgxIwZGw+SlaPy4yiBtllgTF/1QBfu8s2
-         9CIw==
-X-Gm-Message-State: AOAM5330CUiJF26pw7ss0z6cMVoPGmIsIrj+LtJ7OXVf7KOlwAolfCPE
-        h/+k4TiZYA6KFD/MwTfH54wC+57xEVEu
-X-Google-Smtp-Source: ABdhPJx9jXnVCoeYIBfz9Q4nYaydHk89UYiMnWdYdSATjinvEhEEvVQ+jncDXj6i4vUE9kjQAl0gmA==
-X-Received: by 2002:a17:903:40c7:b0:156:8b56:5fa1 with SMTP id t7-20020a17090340c700b001568b565fa1mr3657852pld.108.1649167146927;
-        Tue, 05 Apr 2022 06:59:06 -0700 (PDT)
-Received: from localhost.localdomain ([59.92.98.98])
-        by smtp.gmail.com with ESMTPSA id u14-20020a056a00124e00b004fab8f3245fsm16785402pfi.149.2022.04.05.06.59.02
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 05 Apr 2022 06:59:06 -0700 (PDT)
-From:   Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-To:     gregkh@linuxfoundation.org
-Cc:     linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        elder@linaro.org, mhi@lists.linux.dev, quic_hemantk@quicinc.com,
-        quic_bbhatt@quicinc.com, quic_jhugo@quicinc.com,
-        bjorn.andersson@linaro.org, dmitry.baryshkov@linaro.org,
-        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-Subject: [PATCH 12/18] bus: mhi: ep: Add support for handling SYS_ERR condition
-Date:   Tue,  5 Apr 2022 19:27:48 +0530
-Message-Id: <20220405135754.6622-13-manivannan.sadhasivam@linaro.org>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220405135754.6622-1-manivannan.sadhasivam@linaro.org>
-References: <20220405135754.6622-1-manivannan.sadhasivam@linaro.org>
+        Tue, 5 Apr 2022 05:49:49 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1371519C32;
+        Tue,  5 Apr 2022 02:45:05 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AB41BB817D3;
+        Tue,  5 Apr 2022 09:45:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1B72CC385A2;
+        Tue,  5 Apr 2022 09:45:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649151903;
+        bh=ZoRe7guTkoNEAclCUVLRBKzRkuDaJ6fCr6jIj2JxNFc=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=OxTzfoCrNixuaC22DsmsARby8fVQAAmpfdpu0ofVjMyMkWp0mUsk/u1SvF0TcgUS8
+         YeVD89issOGv/qTlbp9/LsUIik1TWEUGZn8htsS6TbFAXE/QPYZEn+k0K2uF7OeRQl
+         7hfcJKL57paIZCZDpZUZ7Nd8EfQmhaS12UFhspTU=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Miaohe Lin <linmiaohe@huawei.com>,
+        David Hildenbrand <david@redhat.com>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Alistair Popple <apopple@nvidia.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 576/913] kernel/resource: fix kfree() of bootmem memory again
+Date:   Tue,  5 Apr 2022 09:27:18 +0200
+Message-Id: <20220405070357.112421057@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add support for handling SYS_ERR (System Error) condition in the MHI
-endpoint stack. The SYS_ERR flag will be asserted by the endpoint device
-when it detects an internal error. The host will then issue reset and
-reinitializes MHI to recover from the error state.
+From: Miaohe Lin <linmiaohe@huawei.com>
 
-Reviewed-by: Alex Elder <elder@linaro.org>
-Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+[ Upstream commit 0cbcc92917c5de80f15c24d033566539ad696892 ]
+
+Since commit ebff7d8f270d ("mem hotunplug: fix kfree() of bootmem
+memory"), we could get a resource allocated during boot via
+alloc_resource().  And it's required to release the resource using
+free_resource().  Howerver, many people use kfree directly which will
+result in kernel BUG.  In order to fix this without fixing every call
+site, just leak a couple of bytes in such corner case.
+
+Link: https://lkml.kernel.org/r/20220217083619.19305-1-linmiaohe@huawei.com
+Fixes: ebff7d8f270d ("mem hotunplug: fix kfree() of bootmem memory")
+Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
+Suggested-by: David Hildenbrand <david@redhat.com>
+Cc: Dan Williams <dan.j.williams@intel.com>
+Cc: Alistair Popple <apopple@nvidia.com>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/bus/mhi/ep/internal.h |  1 +
- drivers/bus/mhi/ep/main.c     | 20 ++++++++++++++++++++
- drivers/bus/mhi/ep/sm.c       | 11 +++++++++--
- 3 files changed, 30 insertions(+), 2 deletions(-)
+ kernel/resource.c | 41 ++++++++---------------------------------
+ 1 file changed, 8 insertions(+), 33 deletions(-)
 
-diff --git a/drivers/bus/mhi/ep/internal.h b/drivers/bus/mhi/ep/internal.h
-index 4f2e26841702..d201d755560c 100644
---- a/drivers/bus/mhi/ep/internal.h
-+++ b/drivers/bus/mhi/ep/internal.h
-@@ -211,5 +211,6 @@ int mhi_ep_set_mhi_state(struct mhi_ep_cntrl *mhi_cntrl, enum mhi_state mhi_stat
- int mhi_ep_set_m0_state(struct mhi_ep_cntrl *mhi_cntrl);
- int mhi_ep_set_m3_state(struct mhi_ep_cntrl *mhi_cntrl);
- int mhi_ep_set_ready_state(struct mhi_ep_cntrl *mhi_cntrl);
-+void mhi_ep_handle_syserr(struct mhi_ep_cntrl *mhi_cntrl);
+diff --git a/kernel/resource.c b/kernel/resource.c
+index ca9f5198a01f..20e10e48f052 100644
+--- a/kernel/resource.c
++++ b/kernel/resource.c
+@@ -56,14 +56,6 @@ struct resource_constraint {
  
- #endif
-diff --git a/drivers/bus/mhi/ep/main.c b/drivers/bus/mhi/ep/main.c
-index d36708d43eb6..706473ea4918 100644
---- a/drivers/bus/mhi/ep/main.c
-+++ b/drivers/bus/mhi/ep/main.c
-@@ -516,6 +516,26 @@ static void mhi_ep_reset_worker(struct work_struct *work)
- 	}
- }
+ static DEFINE_RWLOCK(resource_lock);
  
-+/*
-+ * We don't need to do anything special other than setting the MHI SYS_ERR
-+ * state. The host will reset all contexts and issue MHI RESET so that we
-+ * could also recover from error state.
-+ */
-+void mhi_ep_handle_syserr(struct mhi_ep_cntrl *mhi_cntrl)
-+{
-+	struct device *dev = &mhi_cntrl->mhi_dev->dev;
-+	int ret;
-+
-+	ret = mhi_ep_set_mhi_state(mhi_cntrl, MHI_STATE_SYS_ERR);
-+	if (ret)
-+		return;
-+
-+	/* Signal host that the device went to SYS_ERR state */
-+	ret = mhi_ep_send_state_change_event(mhi_cntrl, MHI_STATE_SYS_ERR);
-+	if (ret)
-+		dev_err(dev, "Failed sending SYS_ERR state change event: %d\n", ret);
-+}
-+
- int mhi_ep_power_up(struct mhi_ep_cntrl *mhi_cntrl)
+-/*
+- * For memory hotplug, there is no way to free resource entries allocated
+- * by boot mem after the system is up. So for reusing the resource entry
+- * we need to remember the resource.
+- */
+-static struct resource *bootmem_resource_free;
+-static DEFINE_SPINLOCK(bootmem_resource_lock);
+-
+ static struct resource *next_resource(struct resource *p)
  {
- 	struct device *dev = &mhi_cntrl->mhi_dev->dev;
-diff --git a/drivers/bus/mhi/ep/sm.c b/drivers/bus/mhi/ep/sm.c
-index ffc02f5d0a0d..e3865b85399d 100644
---- a/drivers/bus/mhi/ep/sm.c
-+++ b/drivers/bus/mhi/ep/sm.c
-@@ -68,8 +68,10 @@ int mhi_ep_set_m0_state(struct mhi_ep_cntrl *mhi_cntrl)
- 	ret = mhi_ep_set_mhi_state(mhi_cntrl, MHI_STATE_M0);
- 	spin_unlock_bh(&mhi_cntrl->state_lock);
+ 	if (p->child)
+@@ -148,36 +140,19 @@ __initcall(ioresources_init);
  
--	if (ret)
-+	if (ret) {
-+		mhi_ep_handle_syserr(mhi_cntrl);
- 		return ret;
-+	}
- 
- 	/* Signal host that the device moved to M0 */
- 	ret = mhi_ep_send_state_change_event(mhi_cntrl, MHI_STATE_M0);
-@@ -99,8 +101,10 @@ int mhi_ep_set_m3_state(struct mhi_ep_cntrl *mhi_cntrl)
- 	ret = mhi_ep_set_mhi_state(mhi_cntrl, MHI_STATE_M3);
- 	spin_unlock_bh(&mhi_cntrl->state_lock);
- 
--	if (ret)
-+	if (ret) {
-+		mhi_ep_handle_syserr(mhi_cntrl);
- 		return ret;
-+	}
- 
- 	/* Signal host that the device moved to M3 */
- 	ret = mhi_ep_send_state_change_event(mhi_cntrl, MHI_STATE_M3);
-@@ -132,5 +136,8 @@ int mhi_ep_set_ready_state(struct mhi_ep_cntrl *mhi_cntrl)
- 	ret = mhi_ep_set_mhi_state(mhi_cntrl, MHI_STATE_READY);
- 	spin_unlock_bh(&mhi_cntrl->state_lock);
- 
-+	if (ret)
-+		mhi_ep_handle_syserr(mhi_cntrl);
-+
- 	return ret;
+ static void free_resource(struct resource *res)
+ {
+-	if (!res)
+-		return;
+-
+-	if (!PageSlab(virt_to_head_page(res))) {
+-		spin_lock(&bootmem_resource_lock);
+-		res->sibling = bootmem_resource_free;
+-		bootmem_resource_free = res;
+-		spin_unlock(&bootmem_resource_lock);
+-	} else {
++	/**
++	 * If the resource was allocated using memblock early during boot
++	 * we'll leak it here: we can only return full pages back to the
++	 * buddy and trying to be smart and reusing them eventually in
++	 * alloc_resource() overcomplicates resource handling.
++	 */
++	if (res && PageSlab(virt_to_head_page(res)))
+ 		kfree(res);
+-	}
  }
+ 
+ static struct resource *alloc_resource(gfp_t flags)
+ {
+-	struct resource *res = NULL;
+-
+-	spin_lock(&bootmem_resource_lock);
+-	if (bootmem_resource_free) {
+-		res = bootmem_resource_free;
+-		bootmem_resource_free = res->sibling;
+-	}
+-	spin_unlock(&bootmem_resource_lock);
+-
+-	if (res)
+-		memset(res, 0, sizeof(struct resource));
+-	else
+-		res = kzalloc(sizeof(struct resource), flags);
+-
+-	return res;
++	return kzalloc(sizeof(struct resource), flags);
+ }
+ 
+ /* Return the conflict entry if you can't request it */
 -- 
-2.25.1
+2.34.1
+
+
 
