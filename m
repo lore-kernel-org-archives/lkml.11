@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 00AE9C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 13:23:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 16B93C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 13:23:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357453AbiDENIp (ORCPT
+        id S1382320AbiDENOt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 09:08:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51034 "EHLO
+        Tue, 5 Apr 2022 09:14:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38248 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344120AbiDEJSS (ORCPT
+        with ESMTP id S1344237AbiDEJSz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:18:18 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4673E39163;
-        Tue,  5 Apr 2022 02:04:20 -0700 (PDT)
+        Tue, 5 Apr 2022 05:18:55 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4988448390;
+        Tue,  5 Apr 2022 02:06:06 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D5B8D61573;
-        Tue,  5 Apr 2022 09:04:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DEB19C385A1;
-        Tue,  5 Apr 2022 09:04:18 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9F30AB818F3;
+        Tue,  5 Apr 2022 09:06:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0BB50C385A3;
+        Tue,  5 Apr 2022 09:06:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649149459;
-        bh=Z2fRyKtO0unBo5yv4F+hHOmM6Dx9c+nDJFB8oxsdOnA=;
+        s=korg; t=1649149563;
+        bh=p4qOkgGo1/eyoeVeoSnjF3H2g47JG7CGB9P5oxsXQkc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0qPZBBiz/cH26Hr3xI4fE3V601XLwqsE2LDGyGXrc4uk1pSDPACtl2dpqRhSEQyum
-         P6rNnyoBsVQeuZ6JtSNzUxXqESAxoubsthRiI74d/qwe1MQZaeU9Y3CAXKLhmcyHBi
-         RYNaK/jv7ulAxeIhm6m2dF21C9WfcIs+35pQw4Pg=
+        b=m+D4YZFTOkZy+NtjCmwWySJM09BNlf1ev9kWDBG/wboS2pjvIVWzCUbkJNdkCku6H
+         gw1rVw8AeeAnjKIuqYjx9dwKqXHwVg//Z52IzFO6BHPyNxpaon55MTRvkLmsvd0Mkm
+         R5ZrFSbZeFbiHB7v4RXoX0I5wLRJMsi+CeFx4Z2Y=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, "Michael S. Tsirkin" <mst@redhat.com>,
-        Stefano Garzarella <sgarzare@redhat.com>,
-        Stefan Hajnoczi <stefanha@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>,
+        stable@vger.kernel.org, rftc <rftc@gmx.de>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0723/1017] vsock/virtio: initialize vdev->priv before using VQs
-Date:   Tue,  5 Apr 2022 09:27:16 +0200
-Message-Id: <20220405070415.727670051@linuxfoundation.org>
+Subject: [PATCH 5.16 0761/1017] crypto: xts - Add softdep on ecb
+Date:   Tue,  5 Apr 2022 09:27:54 +0200
+Message-Id: <20220405070416.847694647@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -52,46 +50,30 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Stefano Garzarella <sgarzare@redhat.com>
+From: Herbert Xu <herbert@gondor.apana.org.au>
 
-[ Upstream commit 4b5f1ad5566ada230aaa2ce861b28d1895f1ea68 ]
+[ Upstream commit dfe085d8dcd0bb1fe20cc2327e81c8064cead441 ]
 
-When we fill VQs with empty buffers and kick the host, it may send
-an interrupt. `vdev->priv` must be initialized before this since it
-is used in the virtqueue callbacks.
+The xts module needs ecb to be present as it's meant to work
+on top of ecb.  This patch adds a softdep so ecb can be included
+automatically into the initramfs.
 
-Fixes: 0deab087b16a ("vsock/virtio: use RCU to avoid use-after-free on the_virtio_vsock")
-Suggested-by: Michael S. Tsirkin <mst@redhat.com>
-Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
-Acked-by: Michael S. Tsirkin <mst@redhat.com>
-Reviewed-by: Stefan Hajnoczi <stefanha@redhat.com>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Reported-by: rftc <rftc@gmx.de>
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/vmw_vsock/virtio_transport.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ crypto/xts.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/net/vmw_vsock/virtio_transport.c b/net/vmw_vsock/virtio_transport.c
-index dad9ca65f4f9..fb1b8f99f679 100644
---- a/net/vmw_vsock/virtio_transport.c
-+++ b/net/vmw_vsock/virtio_transport.c
-@@ -622,6 +622,8 @@ static int virtio_vsock_probe(struct virtio_device *vdev)
- 	INIT_WORK(&vsock->event_work, virtio_transport_event_work);
- 	INIT_WORK(&vsock->send_pkt_work, virtio_transport_send_pkt_work);
- 
-+	vdev->priv = vsock;
-+
- 	mutex_lock(&vsock->tx_lock);
- 	vsock->tx_run = true;
- 	mutex_unlock(&vsock->tx_lock);
-@@ -639,7 +641,6 @@ static int virtio_vsock_probe(struct virtio_device *vdev)
- 	if (virtio_has_feature(vdev, VIRTIO_VSOCK_F_SEQPACKET))
- 		vsock->seqpacket_allow = true;
- 
--	vdev->priv = vsock;
- 	rcu_assign_pointer(the_virtio_vsock, vsock);
- 
- 	mutex_unlock(&the_virtio_vsock_mutex);
+diff --git a/crypto/xts.c b/crypto/xts.c
+index 6c12f30dbdd6..63c85b9e64e0 100644
+--- a/crypto/xts.c
++++ b/crypto/xts.c
+@@ -466,3 +466,4 @@ MODULE_LICENSE("GPL");
+ MODULE_DESCRIPTION("XTS block cipher mode");
+ MODULE_ALIAS_CRYPTO("xts");
+ MODULE_IMPORT_NS(CRYPTO_INTERNAL);
++MODULE_SOFTDEP("pre: ecb");
 -- 
 2.34.1
 
