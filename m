@@ -2,92 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AC9B1C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4AD30C352A7
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 15:20:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384972AbiDEPPJ (ORCPT
+        id S1384337AbiDEPOz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 11:15:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53872 "EHLO
+        Tue, 5 Apr 2022 11:14:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59708 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346515AbiDEJpJ (ORCPT
+        with ESMTP id S1346652AbiDEJpT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:45:09 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5953DA6F4;
-        Tue,  5 Apr 2022 02:30:53 -0700 (PDT)
+        Tue, 5 Apr 2022 05:45:19 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC1C3DAFF1
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 02:31:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4EA56B81CB4;
-        Tue,  5 Apr 2022 09:30:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9F2A3C385A0;
-        Tue,  5 Apr 2022 09:30:50 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649151051;
-        bh=Bs37qhupQrzrwShQLMKh2eR5EW+wmQdn3FX3+6XNFbM=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=P8uxzZo0gUjnttNn0MGIILS+q3DS2ukkZrPK2UP+X1gALWztrwe7aGv65wq79Mg9f
-         Pxzs6UaKLsTaLlrVElNqpb0eOtyHN06cDrWphYYsfNinYlh9otS1YmgAIRUdPqzAlw
-         z4M2wRoTL/71lJvkIQo5fPEmbJmAFC/C9R1nOBfY=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Qais Yousef <qais.yousef@arm.com>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 249/913] sched/uclamp: Fix iowait boost escaping uclamp restriction
-Date:   Tue,  5 Apr 2022 09:21:51 +0200
-Message-Id: <20220405070347.320837737@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
-User-Agent: quilt/0.66
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4F8F0B81CB9
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 09:31:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C0D97C385A0;
+        Tue,  5 Apr 2022 09:31:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649151071;
+        bh=6MwsuXDRjEq94GOgLMbEvcC+juAuLqlZNLDbjEN5PaA=;
+        h=From:To:Cc:In-Reply-To:References:Subject:Date:From;
+        b=RWsdilXUL4D6CQUAY2ovCLLU77VJ/YRXtyI9C7ydSH4Q2uQych47dCUTcGFCmCnhS
+         WFWeADaoppamZr8C9YR6NSwb7UDd4qtdWGVV/Fz3d0inN7WNtLWHesHucOMMiD7gnR
+         cr++Hwki9rM2P1xDENAIMMEkFDf6KkVcSKCjhO/tIsBVDV7mxhQzj2vlIqKcmb2PrK
+         RPFlLlt47zb/jgNWuse1VYLRVdA9iOjtY5Y2pJpVy2d2lFqo2NRPCeBQD2EJWiXzgW
+         tf3HnPqB7ffFHtJQVMxBZmpX+A+9ADd0HbUFZa21JhuqOHB8IXl3H2QESPHNRKXAM6
+         VrfNOfn0BQjLA==
+From:   Mark Brown <broonie@kernel.org>
+To:     Liam Girdwood <lgirdwood@gmail.com>, steve@sk2.org,
+        support.opensource@diasemi.com
+Cc:     patches@opensource.cirrus.com, wsa@kernel.org,
+        linux-kernel@vger.kernel.org
+In-Reply-To: <20220325171904.1223539-1-steve@sk2.org>
+References: <20220325171904.1223539-1-steve@sk2.org>
+Subject: Re: [PATCH] ASoC: da7218: use i2c_match_id and simple i2c probe
+Message-Id: <164915106951.276574.12214473275004613648.b4-ty@kernel.org>
+Date:   Tue, 05 Apr 2022 10:31:09 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Qais Yousef <qais.yousef@arm.com>
+On Fri, 25 Mar 2022 18:19:04 +0100, Stephen Kitt wrote:
+> As part of the ongoing i2c transition to the simple probe
+> ("probe_new"), this patch uses i2c_match_id to retrieve the
+> driver_data for the probed device. The id parameter is thus no longer
+> necessary and the simple probe can be used instead.
+> 
+> This patch follows the model set by da7218_of_get_id().
+> 
+> [...]
 
-[ Upstream commit d37aee9018e68b0d356195caefbb651910e0bbfa ]
+Applied to
 
-iowait_boost signal is applied independently of util and doesn't take
-into account uclamp settings of the rq. An io heavy task that is capped
-by uclamp_max could still request higher frequency because
-sugov_iowait_apply() doesn't clamp the boost via uclamp_rq_util_with()
-like effective_cpu_util() does.
+   https://git.kernel.org/pub/scm/linux/kernel/git/broonie/sound.git for-next
 
-Make sure that iowait_boost honours uclamp requests by calling
-uclamp_rq_util_with() when applying the boost.
+Thanks!
 
-Fixes: 982d9cdc22c9 ("sched/cpufreq, sched/uclamp: Add clamps for FAIR and RT tasks")
-Signed-off-by: Qais Yousef <qais.yousef@arm.com>
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Acked-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
-Link: https://lore.kernel.org/r/20211216225320.2957053-3-qais.yousef@arm.com
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- kernel/sched/cpufreq_schedutil.c | 1 +
- 1 file changed, 1 insertion(+)
+[1/1] ASoC: da7218: use i2c_match_id and simple i2c probe
+      commit: 5e9058ea2bc6e73aeb54b585af38d043490a8509
 
-diff --git a/kernel/sched/cpufreq_schedutil.c b/kernel/sched/cpufreq_schedutil.c
-index e7af18857371..7f6bb37d3a2f 100644
---- a/kernel/sched/cpufreq_schedutil.c
-+++ b/kernel/sched/cpufreq_schedutil.c
-@@ -289,6 +289,7 @@ static void sugov_iowait_apply(struct sugov_cpu *sg_cpu, u64 time)
- 	 * into the same scale so we can compare.
- 	 */
- 	boost = (sg_cpu->iowait_boost * sg_cpu->max) >> SCHED_CAPACITY_SHIFT;
-+	boost = uclamp_rq_util_with(cpu_rq(sg_cpu->cpu), boost, NULL);
- 	if (sg_cpu->util < boost)
- 		sg_cpu->util = boost;
- }
--- 
-2.34.1
+All being well this means that it will be integrated into the linux-next
+tree (usually sometime in the next 24 hours) and sent to Linus during
+the next merge window (or sooner if it is a bug fix), however if
+problems are discovered then the patch may be dropped or reverted.
 
+You may get further e-mails resulting from automated or manual testing
+and review of the tree, please engage with people reporting problems and
+send followup patches addressing any issues that are reported if needed.
 
+If any updates are required or you are submitting further changes they
+should be sent as incremental updates against current git, existing
+patches will not be replaced.
 
+Please add any relevant lists and maintainers to the CCs when replying
+to this mail.
+
+Thanks,
+Mark
