@@ -2,46 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D3089C4167E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 02DC2C41535
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:48:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243768AbiDEUrB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 16:47:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47290 "EHLO
+        id S244413AbiDEUra (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 16:47:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39510 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357952AbiDEK1c (ORCPT
+        with ESMTP id S1348813AbiDEJsj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:27:32 -0400
+        Tue, 5 Apr 2022 05:48:39 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E433972D5;
-        Tue,  5 Apr 2022 03:11:38 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9BA09F6C7;
+        Tue,  5 Apr 2022 02:36:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E9B66B81C89;
-        Tue,  5 Apr 2022 10:11:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5A7D7C385A1;
-        Tue,  5 Apr 2022 10:11:35 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9CD1DB81C86;
+        Tue,  5 Apr 2022 09:36:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 17D36C385A0;
+        Tue,  5 Apr 2022 09:35:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649153495;
-        bh=41oa2V21gkwHryt3xAkM08QuvZpZF2TW4fviTnLf6Ww=;
+        s=korg; t=1649151360;
+        bh=vfQKJU19UMrW5LwepiqtiviNOCGXgKRJ9KQlocnkT/4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LUh1aoqeT1n+ibFy3JI1fuiO/L+vh2eP4txV/oo0xrGcFE9G9U6ZGQuMO2Po5KtAY
-         ZXcerYlmLlgd6FCd/M7QESktoU/KamXflYZmVhpJWN6Va1i7Ie2M/b+1IRGXJikVrD
-         KC8eO8zrk+p4SVvq2fdJRwNFNNfY298nqN3MFGNU=
+        b=Ocq8ImcJ2WEHHTw0gASsHdFerZLGRemAoMjf5ioEQQ/ll4UBd1W7vZPuwhVQHNrAK
+         NQ3IcjYT/d4BN9L2qGwQPGIzF44zUQkrG9MxgAiV4P81wad66en5SaNk7qWy3Ng36J
+         HscK7w3jeklX+MA+D82iPRBG/FhTSnUR0g6d6+hI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
-        Charles Keepax <ckeepax@opensource.cirrus.com>,
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
         Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 240/599] ASoC: wm8350: Handle error for wm8350_register_irq
-Date:   Tue,  5 Apr 2022 09:28:54 +0200
-Message-Id: <20220405070305.983746868@linuxfoundation.org>
+Subject: [PATCH 5.15 370/913] ASoC: codecs: wcd934x: Add missing of_node_put() in wcd934x_codec_parse_data
+Date:   Tue,  5 Apr 2022 09:23:52 +0200
+Message-Id: <20220405070350.937503010@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,71 +49,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit db0350da8084ad549bca16cc0486c11cc70a1f9b ]
+[ Upstream commit 9531a631379169d57756b2411178c6238655df88 ]
 
-As the potential failure of the wm8350_register_irq(),
-it should be better to check it and return error if fails.
-Also, use 'free_' in order to avoid the same code.
+The device_node pointer is returned by of_parse_phandle()  with refcount
+incremented. We should use of_node_put() on it when done.
+This is similar to commit 64b92de9603f
+("ASoC: wcd9335: fix a leaked reference by adding missing of_node_put")
 
-Fixes: a6ba2b2dabb5 ("ASoC: Implement WM8350 headphone jack detection")
-Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Acked-by: Charles Keepax <ckeepax@opensource.cirrus.com>
-Link: https://lore.kernel.org/r/20220304023821.391936-1-jiasheng@iscas.ac.cn
+Fixes: a61f3b4f476e ("ASoC: wcd934x: add support to wcd9340/wcd9341 codec")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Link: https://lore.kernel.org/r/20220316083631.14103-1-linmq006@gmail.com
 Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/codecs/wm8350.c | 28 ++++++++++++++++++++++++----
- 1 file changed, 24 insertions(+), 4 deletions(-)
+ sound/soc/codecs/wcd934x.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/sound/soc/codecs/wm8350.c b/sound/soc/codecs/wm8350.c
-index a6aa212fa0c8..ec5d997725b9 100644
---- a/sound/soc/codecs/wm8350.c
-+++ b/sound/soc/codecs/wm8350.c
-@@ -1536,18 +1536,38 @@ static  int wm8350_component_probe(struct snd_soc_component *component)
- 	wm8350_clear_bits(wm8350, WM8350_JACK_DETECT,
- 			  WM8350_JDL_ENA | WM8350_JDR_ENA);
+diff --git a/sound/soc/codecs/wcd934x.c b/sound/soc/codecs/wcd934x.c
+index 654d847a050e..7b99318070cf 100644
+--- a/sound/soc/codecs/wcd934x.c
++++ b/sound/soc/codecs/wcd934x.c
+@@ -5888,6 +5888,7 @@ static int wcd934x_codec_parse_data(struct wcd934x_codec *wcd)
+ 	}
  
--	wm8350_register_irq(wm8350, WM8350_IRQ_CODEC_JCK_DET_L,
-+	ret = wm8350_register_irq(wm8350, WM8350_IRQ_CODEC_JCK_DET_L,
- 			    wm8350_hpl_jack_handler, 0, "Left jack detect",
- 			    priv);
--	wm8350_register_irq(wm8350, WM8350_IRQ_CODEC_JCK_DET_R,
-+	if (ret != 0)
-+		goto err;
-+
-+	ret = wm8350_register_irq(wm8350, WM8350_IRQ_CODEC_JCK_DET_R,
- 			    wm8350_hpr_jack_handler, 0, "Right jack detect",
- 			    priv);
--	wm8350_register_irq(wm8350, WM8350_IRQ_CODEC_MICSCD,
-+	if (ret != 0)
-+		goto free_jck_det_l;
-+
-+	ret = wm8350_register_irq(wm8350, WM8350_IRQ_CODEC_MICSCD,
- 			    wm8350_mic_handler, 0, "Microphone short", priv);
--	wm8350_register_irq(wm8350, WM8350_IRQ_CODEC_MICD,
-+	if (ret != 0)
-+		goto free_jck_det_r;
-+
-+	ret = wm8350_register_irq(wm8350, WM8350_IRQ_CODEC_MICD,
- 			    wm8350_mic_handler, 0, "Microphone detect", priv);
-+	if (ret != 0)
-+		goto free_micscd;
- 
- 	return 0;
-+
-+free_micscd:
-+	wm8350_free_irq(wm8350, WM8350_IRQ_CODEC_MICSCD, priv);
-+free_jck_det_r:
-+	wm8350_free_irq(wm8350, WM8350_IRQ_CODEC_JCK_DET_R, priv);
-+free_jck_det_l:
-+	wm8350_free_irq(wm8350, WM8350_IRQ_CODEC_JCK_DET_L, priv);
-+err:
-+	return ret;
- }
- 
- static void wm8350_component_remove(struct snd_soc_component *component)
+ 	wcd->sidev = of_slim_get_device(wcd->sdev->ctrl, ifc_dev_np);
++	of_node_put(ifc_dev_np);
+ 	if (!wcd->sidev) {
+ 		dev_err(dev, "Unable to get SLIM Interface device\n");
+ 		return -EINVAL;
 -- 
 2.34.1
 
