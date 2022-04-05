@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B5F59C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 07:42:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 68EE6C4332F
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 07:42:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232011AbiDEHoj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 03:44:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34128 "EHLO
+        id S232056AbiDEHop (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 03:44:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56490 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232019AbiDEHoR (ORCPT
+        with ESMTP id S232103AbiDEHoV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 03:44:17 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D243995482;
-        Tue,  5 Apr 2022 00:40:39 -0700 (PDT)
+        Tue, 5 Apr 2022 03:44:21 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1523796810;
+        Tue,  5 Apr 2022 00:40:52 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5A977B81B92;
-        Tue,  5 Apr 2022 07:40:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B51C8C340EE;
-        Tue,  5 Apr 2022 07:40:36 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 77F8E61607;
+        Tue,  5 Apr 2022 07:40:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8926EC340EE;
+        Tue,  5 Apr 2022 07:40:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649144437;
-        bh=Fb4riB0jEURomykj+1J8g5qsThUapKp//UiRoyJN0MM=;
+        s=korg; t=1649144450;
+        bh=eg+x736kktKum9CLjZaUEIRNFMQuDWNp3YHLcTRCvkk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jXw9+tCks2dFhMp9GTqXiEq3P1IvbjaiiEy3Hc1nzLhm0pIh9kwiHXTx7eWWVmfXO
-         zg7oSm/nCRQiC3JlHGU/XogHCp5IdrFH1GyZXMuTqTAD/2EQjTLEjO/W2vXD9edMsF
-         GwPXybsRUPypZjAHON4p87lzWQbT3pZS0TSEGR2o=
+        b=wJ13XpBs+oxt00993qZiCiDi52xwxHBbftj9xH96kRA+oWBg/ftlT+69sRtx5qelS
+         CxwvriW5ueVcvi1ac1AZKPzOcJCR0v05MsQq1HnOP1G5Qrt6cbthKyiVKY5YIG2jXp
+         9vA5fNqaENs5J21gAiDWjp56r6iVn7Pg0CPHtaJk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Xiaoli Feng <xifeng@redhat.com>,
-        kernel test robot <lkp@intel.com>,
-        Ronnie Sahlberg <lsahlber@redhat.com>,
-        Steve French <stfrench@microsoft.com>
-Subject: [PATCH 5.17 0043/1126] cifs: truncate the inode and mapping when we simulate fcollapse
-Date:   Tue,  5 Apr 2022 09:13:10 +0200
-Message-Id: <20220405070408.823275754@linuxfoundation.org>
+        stable@vger.kernel.org, Stefan Berger <stefanb@linux.ibm.com>,
+        Tianjia Zhang <tianjia.zhang@linux.alibaba.com>,
+        Eric Biggers <ebiggers@google.com>,
+        Vitaly Chikunov <vt@altlinux.org>,
+        Jarkko Sakkinen <jarkko@kernel.org>
+Subject: [PATCH 5.17 0048/1126] KEYS: asymmetric: properly validate hash_algo and encoding
+Date:   Tue,  5 Apr 2022 09:13:15 +0200
+Message-Id: <20220405070408.974352539@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -50,99 +51,188 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ronnie Sahlberg <lsahlber@redhat.com>
+From: Eric Biggers <ebiggers@google.com>
 
-commit 84330d41efb12bc227899e54dbdbe7d9590cb2b7 upstream.
+commit 590bfb57b2328951d5833979e7ca1d5fde2e609a upstream.
 
-RHBZ:1997367
+It is insecure to allow arbitrary hash algorithms and signature
+encodings to be used with arbitrary signature algorithms.  Notably,
+ECDSA, ECRDSA, and SM2 all sign/verify raw hash values and don't
+disambiguate between different hash algorithms like RSA PKCS#1 v1.5
+padding does.  Therefore, they need to be restricted to certain sets of
+hash algorithms (ideally just one, but in practice small sets are used).
+Additionally, the encoding is an integral part of modern signature
+algorithms, and is not supposed to vary.
 
-When we collapse a range in smb3_collapse_range() we must make sure
-we update the inode size and pagecache accordingly.
+Therefore, tighten the checks of hash_algo and encoding done by
+software_key_determine_akcipher().
 
-If not, both inode size and pagecahce may be stale until it is refreshed.
+Also rearrange the parameters to software_key_determine_akcipher() to
+put the public_key first, as this is the most important parameter and it
+often determines everything else.
 
-This can be demonstrated for the inode size by running :
-
-xfs_io -i -f -c "truncate 320k" -c "fcollapse 64k 128k" -c "fiemap -v"  \
-/mnt/testfile
-
-where we can see the result of stale data in the fiemap output.
-The third line of the output is wrong, all this data should be truncated.
-
- EXT: FILE-OFFSET      BLOCK-RANGE      TOTAL FLAGS
-   0: [0..127]:        hole               128
-   1: [128..383]:      128..383           256   0x1
-   2: [384..639]:      hole               256
-
-And the correct output, when the inode size has been updated correctly should
-look like this:
-
- EXT: FILE-OFFSET      BLOCK-RANGE      TOTAL FLAGS
-   0: [0..127]:        hole               128
-   1: [128..383]:      128..383           256   0x1
-
-Reported-by: Xiaoli Feng <xifeng@redhat.com>
-Reported-by: kernel test robot <lkp@intel.com>
+Fixes: 299f561a6693 ("x509: Add support for parsing x509 certs with ECDSA keys")
+Fixes: 215525639631 ("X.509: support OSCCA SM2-with-SM3 certificate verification")
+Fixes: 0d7a78643f69 ("crypto: ecrdsa - add EC-RDSA (GOST 34.10) algorithm")
 Cc: stable@vger.kernel.org
-Signed-off-by: Ronnie Sahlberg <lsahlber@redhat.com>
-Signed-off-by: Steve French <stfrench@microsoft.com>
+Tested-by: Stefan Berger <stefanb@linux.ibm.com>
+Tested-by: Tianjia Zhang <tianjia.zhang@linux.alibaba.com>
+Signed-off-by: Eric Biggers <ebiggers@google.com>
+Reviewed-by: Vitaly Chikunov <vt@altlinux.org>
+Reviewed-by: Jarkko Sakkinen <jarkko@kernel.org>
+Signed-off-by: Jarkko Sakkinen <jarkko@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/cifs/smb2ops.c |   18 ++++++++++++++----
- 1 file changed, 14 insertions(+), 4 deletions(-)
+ crypto/asymmetric_keys/public_key.c |  111 ++++++++++++++++++++++++------------
+ 1 file changed, 76 insertions(+), 35 deletions(-)
 
---- a/fs/cifs/smb2ops.c
-+++ b/fs/cifs/smb2ops.c
-@@ -25,6 +25,7 @@
- #include "smb2glob.h"
- #include "cifs_ioctl.h"
- #include "smbdirect.h"
-+#include "fscache.h"
- #include "fs_context.h"
+--- a/crypto/asymmetric_keys/public_key.c
++++ b/crypto/asymmetric_keys/public_key.c
+@@ -60,39 +60,83 @@ static void public_key_destroy(void *pay
+ }
  
- /* Change credits for different ops and return the total number of credits */
-@@ -3887,29 +3888,38 @@ static long smb3_collapse_range(struct f
+ /*
+- * Determine the crypto algorithm name.
++ * Given a public_key, and an encoding and hash_algo to be used for signing
++ * and/or verification with that key, determine the name of the corresponding
++ * akcipher algorithm.  Also check that encoding and hash_algo are allowed.
+  */
+-static
+-int software_key_determine_akcipher(const char *encoding,
+-				    const char *hash_algo,
+-				    const struct public_key *pkey,
+-				    char alg_name[CRYPTO_MAX_ALG_NAME])
++static int
++software_key_determine_akcipher(const struct public_key *pkey,
++				const char *encoding, const char *hash_algo,
++				char alg_name[CRYPTO_MAX_ALG_NAME])
  {
- 	int rc;
- 	unsigned int xid;
-+	struct inode *inode;
- 	struct cifsFileInfo *cfile = file->private_data;
-+	struct cifsInodeInfo *cifsi;
- 	__le64 eof;
+ 	int n;
  
- 	xid = get_xid();
- 
--	if (off >= i_size_read(file->f_inode) ||
--	    off + len >= i_size_read(file->f_inode)) {
-+	inode = d_inode(cfile->dentry);
-+	cifsi = CIFS_I(inode);
+-	if (strcmp(encoding, "pkcs1") == 0) {
+-		/* The data wangled by the RSA algorithm is typically padded
+-		 * and encoded in some manner, such as EMSA-PKCS1-1_5 [RFC3447
+-		 * sec 8.2].
++	if (!encoding)
++		return -EINVAL;
 +
-+	if (off >= i_size_read(inode) ||
-+	    off + len >= i_size_read(inode)) {
- 		rc = -EINVAL;
- 		goto out;
++	if (strcmp(pkey->pkey_algo, "rsa") == 0) {
++		/*
++		 * RSA signatures usually use EMSA-PKCS1-1_5 [RFC3447 sec 8.2].
++		 */
++		if (strcmp(encoding, "pkcs1") == 0) {
++			if (!hash_algo)
++				n = snprintf(alg_name, CRYPTO_MAX_ALG_NAME,
++					     "pkcs1pad(%s)",
++					     pkey->pkey_algo);
++			else
++				n = snprintf(alg_name, CRYPTO_MAX_ALG_NAME,
++					     "pkcs1pad(%s,%s)",
++					     pkey->pkey_algo, hash_algo);
++			return n >= CRYPTO_MAX_ALG_NAME ? -EINVAL : 0;
++		}
++		if (strcmp(encoding, "raw") != 0)
++			return -EINVAL;
++		/*
++		 * Raw RSA cannot differentiate between different hash
++		 * algorithms.
++		 */
++		if (hash_algo)
++			return -EINVAL;
++	} else if (strncmp(pkey->pkey_algo, "ecdsa", 5) == 0) {
++		if (strcmp(encoding, "x962") != 0)
++			return -EINVAL;
++		/*
++		 * ECDSA signatures are taken over a raw hash, so they don't
++		 * differentiate between different hash algorithms.  That means
++		 * that the verifier should hard-code a specific hash algorithm.
++		 * Unfortunately, in practice ECDSA is used with multiple SHAs,
++		 * so we have to allow all of them and not just one.
+ 		 */
+ 		if (!hash_algo)
+-			n = snprintf(alg_name, CRYPTO_MAX_ALG_NAME,
+-				     "pkcs1pad(%s)",
+-				     pkey->pkey_algo);
+-		else
+-			n = snprintf(alg_name, CRYPTO_MAX_ALG_NAME,
+-				     "pkcs1pad(%s,%s)",
+-				     pkey->pkey_algo, hash_algo);
+-		return n >= CRYPTO_MAX_ALG_NAME ? -EINVAL : 0;
+-	}
+-
+-	if (strcmp(encoding, "raw") == 0 ||
+-	    strcmp(encoding, "x962") == 0) {
+-		strcpy(alg_name, pkey->pkey_algo);
+-		return 0;
++			return -EINVAL;
++		if (strcmp(hash_algo, "sha1") != 0 &&
++		    strcmp(hash_algo, "sha224") != 0 &&
++		    strcmp(hash_algo, "sha256") != 0 &&
++		    strcmp(hash_algo, "sha384") != 0 &&
++		    strcmp(hash_algo, "sha512") != 0)
++			return -EINVAL;
++	} else if (strcmp(pkey->pkey_algo, "sm2") == 0) {
++		if (strcmp(encoding, "raw") != 0)
++			return -EINVAL;
++		if (!hash_algo)
++			return -EINVAL;
++		if (strcmp(hash_algo, "sm3") != 0)
++			return -EINVAL;
++	} else if (strcmp(pkey->pkey_algo, "ecrdsa") == 0) {
++		if (strcmp(encoding, "raw") != 0)
++			return -EINVAL;
++		if (!hash_algo)
++			return -EINVAL;
++		if (strcmp(hash_algo, "streebog256") != 0 &&
++		    strcmp(hash_algo, "streebog512") != 0)
++			return -EINVAL;
++	} else {
++		/* Unknown public key algorithm */
++		return -ENOPKG;
+ 	}
+-
+-	return -ENOPKG;
++	if (strscpy(alg_name, pkey->pkey_algo, CRYPTO_MAX_ALG_NAME) < 0)
++		return -EINVAL;
++	return 0;
+ }
+ 
+ static u8 *pkey_pack_u32(u8 *dst, u32 val)
+@@ -113,9 +157,8 @@ static int software_key_query(const stru
+ 	u8 *key, *ptr;
+ 	int ret, len;
+ 
+-	ret = software_key_determine_akcipher(params->encoding,
+-					      params->hash_algo,
+-					      pkey, alg_name);
++	ret = software_key_determine_akcipher(pkey, params->encoding,
++					      params->hash_algo, alg_name);
+ 	if (ret < 0)
+ 		return ret;
+ 
+@@ -179,9 +222,8 @@ static int software_key_eds_op(struct ke
+ 
+ 	pr_devel("==>%s()\n", __func__);
+ 
+-	ret = software_key_determine_akcipher(params->encoding,
+-					      params->hash_algo,
+-					      pkey, alg_name);
++	ret = software_key_determine_akcipher(pkey, params->encoding,
++					      params->hash_algo, alg_name);
+ 	if (ret < 0)
+ 		return ret;
+ 
+@@ -340,9 +382,8 @@ int public_key_verify_signature(const st
+ 			return -EKEYREJECTED;
  	}
  
- 	rc = smb2_copychunk_range(xid, cfile, cfile, off + len,
--				  i_size_read(file->f_inode) - off - len, off);
-+				  i_size_read(inode) - off - len, off);
- 	if (rc < 0)
- 		goto out;
+-	ret = software_key_determine_akcipher(sig->encoding,
+-					      sig->hash_algo,
+-					      pkey, alg_name);
++	ret = software_key_determine_akcipher(pkey, sig->encoding,
++					      sig->hash_algo, alg_name);
+ 	if (ret < 0)
+ 		return ret;
  
--	eof = cpu_to_le64(i_size_read(file->f_inode) - len);
-+	eof = cpu_to_le64(i_size_read(inode) - len);
- 	rc = SMB2_set_eof(xid, tcon, cfile->fid.persistent_fid,
- 			  cfile->fid.volatile_fid, cfile->pid, &eof);
- 	if (rc < 0)
- 		goto out;
- 
- 	rc = 0;
-+
-+	cifsi->server_eof = i_size_read(inode) - len;
-+	truncate_setsize(inode, cifsi->server_eof);
-+	fscache_resize_cookie(cifs_inode_cookie(inode), cifsi->server_eof);
-  out:
- 	free_xid(xid);
- 	return rc;
 
 
