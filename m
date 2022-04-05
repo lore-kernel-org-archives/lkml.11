@@ -2,168 +2,226 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 02B4AC433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 03:31:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 12019C4332F
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 03:31:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2360390AbiDFDaY (ORCPT
+        id S2360408AbiDFDa4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 23:30:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44616 "EHLO
+        Tue, 5 Apr 2022 23:30:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49434 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1850026AbiDFCqv (ORCPT
+        with ESMTP id S1850365AbiDFCwO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 22:46:51 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F37B9293E7D;
-        Tue,  5 Apr 2022 16:48:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649202520; x=1680738520;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=tsti2G/5iL+RgXBI2ZibkXK3KW/Q8xOXVOQ6AV2zHjs=;
-  b=iS9JyyzEN14fQGeyVuL5VnxLtsPYhQmpWQRYYb5DF8Y+7ilvbd8oWIt2
-   1WTn/fYcB/lXV1gl2+b1Ibrzh4PcvsLe5RFAdi+wp2Dhttv+VXeqcSe9E
-   jZbxjcrf1szfMIeB2nkkRkQdXJa6bIBoWpubZhQcRkS26jT5fnlwl04R/
-   H9if96JC+q6vphBz/7IPSIdqs00/jqQGWsTF7MzPj/RHT7bwMQQ8iXV+S
-   1XNH+ckNta6WBnr7H/f2j91GQt7xgejVBIdYnaxk68Q/dIHVeSiMYYejn
-   32DbbuFKrNKyIcwcaF7/6iSqvzG7hzvMHCANfjvpeToNGzGENtI8oQzeG
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10308"; a="261068996"
-X-IronPort-AV: E=Sophos;i="5.90,238,1643702400"; 
-   d="scan'208";a="261068996"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2022 16:48:40 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,238,1643702400"; 
-   d="scan'208";a="620560765"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by fmsmga004.fm.intel.com with ESMTP; 05 Apr 2022 16:48:34 -0700
-Received: by black.fi.intel.com (Postfix, from userid 1000)
-        id 78046132; Wed,  6 Apr 2022 02:43:47 +0300 (EEST)
-From:   "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
-To:     Borislav Petkov <bp@alien8.de>, Andy Lutomirski <luto@kernel.org>,
-        Sean Christopherson <seanjc@google.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Joerg Roedel <jroedel@suse.de>,
-        Ard Biesheuvel <ardb@kernel.org>
-Cc:     Andi Kleen <ak@linux.intel.com>,
-        Kuppuswamy Sathyanarayanan 
-        <sathyanarayanan.kuppuswamy@linux.intel.com>,
-        David Rientjes <rientjes@google.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Tom Lendacky <thomas.lendacky@amd.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Ingo Molnar <mingo@redhat.com>,
-        Varad Gautam <varad.gautam@suse.com>,
-        Dario Faggioli <dfaggioli@suse.com>,
-        Dave Hansen <dave.hansen@intel.com>,
-        Brijesh Singh <brijesh.singh@amd.com>,
-        Mike Rapoport <rppt@kernel.org>,
-        David Hildenbrand <david@redhat.com>, x86@kernel.org,
-        linux-mm@kvack.org, linux-coco@lists.linux.dev,
-        linux-efi@vger.kernel.org, linux-kernel@vger.kernel.org,
-        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
-Subject: [PATCHv4 0/8] mm, x86/cc: Implement support for unaccepted memory
-Date:   Wed,  6 Apr 2022 02:43:35 +0300
-Message-Id: <20220405234343.74045-1-kirill.shutemov@linux.intel.com>
-X-Mailer: git-send-email 2.35.1
-MIME-Version: 1.0
+        Tue, 5 Apr 2022 22:52:14 -0400
+Received: from mail-wr1-x463.google.com (mail-wr1-x463.google.com [IPv6:2a00:1450:4864:20::463])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B95619022
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 16:52:11 -0700 (PDT)
+Received: by mail-wr1-x463.google.com with SMTP id w4so715435wrg.12
+        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 16:52:11 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:dkim-signature:from:to:cc:subject:date
+         :message-id:in-reply-to:references:content-transfer-encoding;
+        bh=9kdpNgsn3CncHbqtialrLPvzG1lWo7Pqp9XRY5xEnjw=;
+        b=znSTGQvYB9CVI3LvbWHQQCjGEr9UXy5fi3xLLqQ1hrmflNGcmxQTa4QklxOXGiOwYm
+         gwK7GwDvht048jgQc3SU7qKwj5PTlzgmBTTKk/eqpTanM+xMxJFlRVO0RdF2bcmZs2/X
+         B6OMsPp3U1cyDkGIuIzvffGMcSjF7qBqAtNWG5d6AlXG6lab0u2kjizVt6YNrZz+BIFx
+         3NYG09R1IfJPyLS/cFLoebMA3Kbz36I8nEx2kPlPYM+weAgOculYv2oh2QyaGS16RT5s
+         M8VApRBH5lkE+rR6R6YUVcPBh3K+FeWIGqXp8i3XKMDfOF3eyjqE3WO46e5AQaZop8VZ
+         NPaQ==
+X-Gm-Message-State: AOAM530NbYh080nr5Yor819d7K61f9sTaSxyjo/xsgra12eemrRxGWeI
+        jI8E/Cv602IW4965pDoACHdw5bDp1f7ggBCV4H2nGxvm/P8+
+X-Google-Smtp-Source: ABdhPJw7fbh6YcFpW3uxxsOtpsPSL4QhlUtPvjdsJvnXFz1fdpaCsiL2R3Bjvftj4aypegVxSCjiXJpF/sNl
+X-Received: by 2002:a5d:6e84:0:b0:206:147b:1f59 with SMTP id k4-20020a5d6e84000000b00206147b1f59mr4339389wrz.86.1649202724104;
+        Tue, 05 Apr 2022 16:52:04 -0700 (PDT)
+Received: from smtp.aristanetworks.com (smtp.aristanetworks.com. [52.0.43.43])
+        by smtp-relay.gmail.com with ESMTPS id l9-20020a7bc349000000b00389efb7a601sm368543wmj.6.2022.04.05.16.52.03
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 05 Apr 2022 16:52:04 -0700 (PDT)
+X-Relaying-Domain: arista.com
+Received: from chmeee (unknown [10.95.70.41])
+        by smtp.aristanetworks.com (Postfix) with ESMTPS id D6EEC3002D04;
+        Tue,  5 Apr 2022 16:52:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=arista.com;
+        s=Arista-A; t=1649202723;
+        bh=9kdpNgsn3CncHbqtialrLPvzG1lWo7Pqp9XRY5xEnjw=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=fzQ19VBdiqY3CF/xb83ZjfywlR4HnCBIVvkwfXSMkR6Q1PUp9Uhyu0Qke0Zxy0d2Q
+         pUC9JsUtR2pkI9ztPqSCCud9wbX+RIBeWPe3A7a/EzZhKP6v3rwlaGMqK0Mh6HH3Vv
+         +K00t8zszUrg30lIoZBkN7Q12wBc8ynIu0vp5RwkROVgUVRuMcsyDzQTjJCU+N5oYb
+         3aTtpyDry2c9WdRzW357mRn1Rn7TDJYF9vMuurIxYOgHXq9RQmr67WkHb3KFgqFY87
+         /2+i1dNiUcMKbiqonv8tBt9D3CQDrHMFoSWA6F9nCZWplhfMMTG8eGaNyZZ+HZ1lI9
+         utxxzKBvaoE2g==
+Received: from kevmitch by chmeee with local (Exim 4.95)
+        (envelope-from <kevmitch@chmeee>)
+        id 1nbsxs-00188e-QU;
+        Tue, 05 Apr 2022 16:52:00 -0700
+From:   Kevin Mitchell <kevmitch@arista.com>
+Cc:     kevmitch@arista.com, gal@nvidia.com,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Jozsef Kadlecsik <kadlec@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <nikolay@nvidia.com>,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        bridge@lists.linux-foundation.org
+Subject: [PATCH 1/1] netfilter: conntrack: skip verification of zero UDP checksum
+Date:   Tue,  5 Apr 2022 16:51:16 -0700
+Message-Id: <20220405235117.269511-2-kevmitch@arista.com>
+In-Reply-To: <20220405235117.269511-1-kevmitch@arista.com>
+References: <20220405235117.269511-1-kevmitch@arista.com>
 Content-Transfer-Encoding: 8bit
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-UEFI Specification version 2.9 introduces the concept of memory
-acceptance: some Virtual Machine platforms, such as Intel TDX or AMD
-SEV-SNP, requiring memory to be accepted before it can be used by the
-guest. Accepting happens via a protocol specific for the Virtual
-Machine platform.
+The checksum is optional for UDP packets in IPv4. However nf_reject
+would previously require a valid checksum to illicit a response such as
+ICMP_DEST_UNREACH.
 
-Accepting memory is costly and it makes VMM allocate memory for the
-accepted guest physical address range. It's better to postpone memory
-acceptance until memory is needed. It lowers boot time and reduces
-memory overhead.
+Add some logic to nf_reject_verify_csum to determine if a UDP packet has
+a zero checksum and should therefore not be verified. Explicitly require
+a valid checksum for IPv6 consistent RFC 2460 and with the non-netfilter
+stack (see udp6_csum_zero_error).
 
-The kernel needs to know what memory has been accepted. Firmware
-communicates this information via memory map: a new memory type --
-EFI_UNACCEPTED_MEMORY -- indicates such memory.
+Signed-off-by: Kevin Mitchell <kevmitch@arista.com>
+---
+ include/net/netfilter/nf_reject.h        | 27 ++++++++++++++++++++----
+ net/bridge/netfilter/nft_reject_bridge.c |  6 ++++--
+ net/ipv4/netfilter/nf_reject_ipv4.c      |  6 ++++--
+ net/ipv6/netfilter/nf_reject_ipv6.c      |  2 +-
+ 4 files changed, 32 insertions(+), 9 deletions(-)
 
-Range-based tracking works fine for firmware, but it gets bulky for
-the kernel: e820 has to be modified on every page acceptance. It leads
-to table fragmentation, but there's a limited number of entries in the
-e820 table
-
-Another option is to mark such memory as usable in e820 and track if the
-range has been accepted in a bitmap. One bit in the bitmap represents
-2MiB in the address space: one 4k page is enough to track 64GiB or
-physical address space.
-
-In the worst-case scenario -- a huge hole in the middle of the
-address space -- It needs 256MiB to handle 4PiB of the address
-space.
-
-Any unaccepted memory that is not aligned to 2M gets accepted upfront.
-
-The approach lowers boot time substantially. Boot to shell is ~2.5x
-faster for 4G TDX VM and ~4x faster for 64G.
-
-Patches 1-6/7 are generic and don't have any dependencies on TDX. They
-should serve AMD SEV needs as well. TDX-specific code isolated in the
-last patch. This patch requires the core TDX patchset which is currently
-under review.
-
-v4:
- - PageBuddyUnaccepted() -> PageUnaccepted;
- - Use separate page_type, not shared with offline;
- - Rework interface between core-mm and arch code;
- - Adjust commit messages;
- - Ack from Mike;
-Kirill A. Shutemov (8):
-  mm: Add support for unaccepted memory
-  efi/x86: Get full memory map in allocate_e820()
-  efi/x86: Implement support for unaccepted memory
-  x86/boot/compressed: Handle unaccepted memory
-  x86/mm: Reserve unaccepted memory bitmap
-  x86/mm: Provide helpers for unaccepted memory
-  x86/tdx: Unaccepted memory support
-  mm/vmstat: Add counter for memory accepting
-
- Documentation/x86/zero-page.rst              |  1 +
- arch/x86/Kconfig                             |  1 +
- arch/x86/boot/compressed/Makefile            |  1 +
- arch/x86/boot/compressed/bitmap.c            | 86 +++++++++++++++++++
- arch/x86/boot/compressed/kaslr.c             | 14 +++-
- arch/x86/boot/compressed/misc.c              | 11 +++
- arch/x86/boot/compressed/tdx.c               | 41 +++++++++
- arch/x86/boot/compressed/unaccepted_memory.c | 88 ++++++++++++++++++++
- arch/x86/coco/tdx/tdx.c                      | 29 +++++--
- arch/x86/include/asm/page.h                  |  5 ++
- arch/x86/include/asm/shared/tdx.h            | 20 +++++
- arch/x86/include/asm/tdx.h                   | 19 -----
- arch/x86/include/asm/unaccepted_memory.h     | 15 ++++
- arch/x86/include/uapi/asm/bootparam.h        |  3 +-
- arch/x86/kernel/e820.c                       | 10 +++
- arch/x86/mm/Makefile                         |  2 +
- arch/x86/mm/unaccepted_memory.c              | 58 +++++++++++++
- drivers/firmware/efi/Kconfig                 | 15 ++++
- drivers/firmware/efi/efi.c                   |  1 +
- drivers/firmware/efi/libstub/x86-stub.c      | 88 ++++++++++++++++----
- include/linux/efi.h                          |  3 +-
- include/linux/page-flags.h                   | 24 ++++++
- include/linux/vm_event_item.h                |  3 +
- mm/internal.h                                | 11 +++
- mm/memblock.c                                |  9 ++
- mm/page_alloc.c                              | 57 ++++++++++++-
- mm/vmstat.c                                  |  3 +
- 27 files changed, 569 insertions(+), 49 deletions(-)
- create mode 100644 arch/x86/boot/compressed/bitmap.c
- create mode 100644 arch/x86/boot/compressed/unaccepted_memory.c
- create mode 100644 arch/x86/include/asm/unaccepted_memory.h
- create mode 100644 arch/x86/mm/unaccepted_memory.c
-
+diff --git a/include/net/netfilter/nf_reject.h b/include/net/netfilter/nf_reject.h
+index 9051c3a0c8e7..f248c1ff8b22 100644
+--- a/include/net/netfilter/nf_reject.h
++++ b/include/net/netfilter/nf_reject.h
+@@ -5,12 +5,34 @@
+ #include <linux/types.h>
+ #include <uapi/linux/in.h>
+ 
+-static inline bool nf_reject_verify_csum(__u8 proto)
++static inline bool nf_reject_verify_csum(struct sk_buff *skb, int dataoff,
++					  __u8 proto)
+ {
+ 	/* Skip protocols that don't use 16-bit one's complement checksum
+ 	 * of the entire payload.
+ 	 */
+ 	switch (proto) {
++		/* Protocols with optional checksums. */
++		case IPPROTO_UDP: {
++			const struct udphdr *udp_hdr;
++			struct udphdr _udp_hdr;
++
++			/* Checksum is required in IPv6
++			 * see RFC 2460 section 8.1
++			 */
++			if (skb->protocol == htons(ETH_P_IPV6))
++				return true;
++
++			udp_hdr = skb_header_pointer(skb, dataoff,
++						     sizeof(_udp_hdr),
++						     &_udp_hdr);
++			if (!udp_hdr || udp_hdr->check)
++				return true;
++
++			return false;
++		}
++		case IPPROTO_GRE:
++
+ 		/* Protocols with other integrity checks. */
+ 		case IPPROTO_AH:
+ 		case IPPROTO_ESP:
+@@ -19,9 +41,6 @@ static inline bool nf_reject_verify_csum(__u8 proto)
+ 		/* Protocols with partial checksums. */
+ 		case IPPROTO_UDPLITE:
+ 		case IPPROTO_DCCP:
+-
+-		/* Protocols with optional checksums. */
+-		case IPPROTO_GRE:
+ 			return false;
+ 	}
+ 	return true;
+diff --git a/net/bridge/netfilter/nft_reject_bridge.c b/net/bridge/netfilter/nft_reject_bridge.c
+index deae2c9a0f69..e6d62de95378 100644
+--- a/net/bridge/netfilter/nft_reject_bridge.c
++++ b/net/bridge/netfilter/nft_reject_bridge.c
+@@ -111,6 +111,7 @@ static void nft_reject_br_send_v4_unreach(struct net *net,
+ 	unsigned int len;
+ 	__wsum csum;
+ 	u8 proto;
++	int dataoff;
+ 
+ 	if (!nft_bridge_iphdr_validate(oldskb))
+ 		return;
+@@ -129,9 +130,10 @@ static void nft_reject_br_send_v4_unreach(struct net *net,
+ 		return;
+ 
+ 	proto = ip_hdr(oldskb)->protocol;
++	dataoff = ip_hdrlen(oldskb);
+ 
+ 	if (!skb_csum_unnecessary(oldskb) &&
+-	    nf_reject_verify_csum(proto) &&
++	    nf_reject_verify_csum(oldskb, dataoff, proto) &&
+ 	    nf_ip_checksum(oldskb, hook, ip_hdrlen(oldskb), proto))
+ 		return;
+ 
+@@ -234,7 +236,7 @@ static bool reject6_br_csum_ok(struct sk_buff *skb, int hook)
+ 	if (thoff < 0 || thoff >= skb->len || (fo & htons(~0x7)) != 0)
+ 		return false;
+ 
+-	if (!nf_reject_verify_csum(proto))
++	if (!nf_reject_verify_csum(skb, thoff, proto))
+ 		return true;
+ 
+ 	return nf_ip6_checksum(skb, hook, thoff, proto) == 0;
+diff --git a/net/ipv4/netfilter/nf_reject_ipv4.c b/net/ipv4/netfilter/nf_reject_ipv4.c
+index 93b07739807b..7a83fe1c2675 100644
+--- a/net/ipv4/netfilter/nf_reject_ipv4.c
++++ b/net/ipv4/netfilter/nf_reject_ipv4.c
+@@ -189,6 +189,7 @@ void nf_send_unreach(struct sk_buff *skb_in, int code, int hook)
+ {
+ 	struct iphdr *iph = ip_hdr(skb_in);
+ 	u8 proto = iph->protocol;
++	int dataoff = ip_hdrlen(skb_in);
+ 
+ 	if (iph->frag_off & htons(IP_OFFSET))
+ 		return;
+@@ -196,12 +197,13 @@ void nf_send_unreach(struct sk_buff *skb_in, int code, int hook)
+ 	if (hook == NF_INET_PRE_ROUTING && nf_reject_fill_skb_dst(skb_in))
+ 		return;
+ 
+-	if (skb_csum_unnecessary(skb_in) || !nf_reject_verify_csum(proto)) {
++	if (skb_csum_unnecessary(skb_in) ||
++	    !nf_reject_verify_csum(skb_in, dataoff, proto)) {
+ 		icmp_send(skb_in, ICMP_DEST_UNREACH, code, 0);
+ 		return;
+ 	}
+ 
+-	if (nf_ip_checksum(skb_in, hook, ip_hdrlen(skb_in), proto) == 0)
++	if (nf_ip_checksum(skb_in, hook, dataoff, proto) == 0)
+ 		icmp_send(skb_in, ICMP_DEST_UNREACH, code, 0);
+ }
+ EXPORT_SYMBOL_GPL(nf_send_unreach);
+diff --git a/net/ipv6/netfilter/nf_reject_ipv6.c b/net/ipv6/netfilter/nf_reject_ipv6.c
+index 4aef6baaa55e..ac9574c6068f 100644
+--- a/net/ipv6/netfilter/nf_reject_ipv6.c
++++ b/net/ipv6/netfilter/nf_reject_ipv6.c
+@@ -253,7 +253,7 @@ static bool reject6_csum_ok(struct sk_buff *skb, int hook)
+ 	if (thoff < 0 || thoff >= skb->len || (fo & htons(~0x7)) != 0)
+ 		return false;
+ 
+-	if (!nf_reject_verify_csum(proto))
++	if (!nf_reject_verify_csum(skb, thoff, proto))
+ 		return true;
+ 
+ 	return nf_ip6_checksum(skb, hook, thoff, proto) == 0;
 -- 
 2.35.1
 
