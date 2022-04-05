@@ -2,129 +2,193 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 492EFC4321E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 29739C43219
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 21:18:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233095AbiDEVRE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 17:17:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35832 "EHLO
+        id S232069AbiDEVQy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 17:16:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50854 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379607AbiDELl0 (ORCPT
+        with ESMTP id S1355436AbiDELOr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 07:41:26 -0400
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2081.outbound.protection.outlook.com [40.107.94.81])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45D6A1B788;
-        Tue,  5 Apr 2022 04:01:13 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=cqCwQh0/FplUjABynj/PXpZdkbwr3gc9n9RYkuqGGnxk7XBd/W4XxItegsM+DTZYggYccKH+/noCsIkVbfYUlKFj4GXQc9nKnkYYECnR/haEyq9n/jPmAZvlznBzoaEqxSVi+bpcqX+nifodE3E2LlbzKmYJLUKNc0yGBVUlq/pA8fsldd3nHquBCv1yUGR0vgslPYLFJPbJ07ZR6K/bE4cLKPGAo3N5fofDLqjt/PvM6wuqf5SZW8Wp0JUTuCBwePl4awunalhxaUP7AWG5SAvC0j0n3B6Pwa9ViMUG/Ejb6DJax20ytTin3e8qtc5f2S3jRpzu6eBa19sBzXEUzg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=xS2nU0RhIeg1LduQ6MFdszX7otdZKsKhumsD//Aoqd8=;
- b=XjCDtdY8As3hyvSG2DYJkp9EFvVsLM+wEHRDQw7L7eTOhsCrsmBzzinBUkSbYPnQFkz3EZfvbC9I5OXiHImWNaIH0Yhca4kdTgJGvFZyHqrptEtsjWSxFpY9ocLOAbXki1GPyEUK1IeqmnmjbR6gCOET/JjM+HRLAsqhD10nibfCHebbTBG/JvTrAdXrLlHKwWjTjUhtnTIHOxFGIyXAL1UD8u1NiAASsVkRqxMaOG3GmW38QytI/yrwujr23EX/8joYZq2hRalPLSC6EFB6hig0u7g7fQxuDrafNGG4/7aDPbweGuxWzCyHJH1I1U2J6Gj+Di+UDxSDhe4xTRxS1A==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 149.199.62.198) smtp.rcpttodomain=gmail.com smtp.mailfrom=xilinx.com;
- dmarc=pass (p=none sp=none pct=100) action=none header.from=xilinx.com;
- dkim=none (message not signed); arc=none
+        Tue, 5 Apr 2022 07:14:47 -0400
+Received: from mail-oi1-x22a.google.com (mail-oi1-x22a.google.com [IPv6:2607:f8b0:4864:20::22a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84F194D62A
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 03:34:44 -0700 (PDT)
+Received: by mail-oi1-x22a.google.com with SMTP id z8so12937958oix.3
+        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 03:34:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=xilinx.onmicrosoft.com; s=selector2-xilinx-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=xS2nU0RhIeg1LduQ6MFdszX7otdZKsKhumsD//Aoqd8=;
- b=BK8ynb4Jc5iwEOnIrjMLxdTtKSWq7AZbXsKHJ9LUa4X2Nn2+9ZB6K73quq7By5eQDc5WIEbji7O88GAHHaE/1OVIhdvDRR673bOnkGhhuIcK2+jI1yKmt2nWsxhRXFoHVPoggrx7ExONPbHWKenUz74ZOvHLPXybLU+q1pfLodM=
-Received: from SN4PR0501CA0013.namprd05.prod.outlook.com
- (2603:10b6:803:40::26) by BL3PR02MB7859.namprd02.prod.outlook.com
- (2603:10b6:208:33e::5) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5123.31; Tue, 5 Apr
- 2022 11:01:11 +0000
-Received: from SN1NAM02FT0003.eop-nam02.prod.protection.outlook.com
- (2603:10b6:803:40:cafe::10) by SN4PR0501CA0013.outlook.office365.com
- (2603:10b6:803:40::26) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5144.19 via Frontend
- Transport; Tue, 5 Apr 2022 11:01:11 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 149.199.62.198)
- smtp.mailfrom=xilinx.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=xilinx.com;
-Received-SPF: Pass (protection.outlook.com: domain of xilinx.com designates
- 149.199.62.198 as permitted sender) receiver=protection.outlook.com;
- client-ip=149.199.62.198; helo=xsj-pvapexch02.xlnx.xilinx.com;
-Received: from xsj-pvapexch02.xlnx.xilinx.com (149.199.62.198) by
- SN1NAM02FT0003.mail.protection.outlook.com (10.97.4.80) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.5123.19 via Frontend Transport; Tue, 5 Apr 2022 11:01:11 +0000
-Received: from xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) by
- xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.14; Tue, 5 Apr 2022 04:01:04 -0700
-Received: from smtp.xilinx.com (172.19.127.95) by
- xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) with Microsoft SMTP Server id
- 15.1.2176.14 via Frontend Transport; Tue, 5 Apr 2022 04:01:04 -0700
-Envelope-to: git@xilinx.com,
- saikrishna12468@gmail.com,
- broonie@kernel.org,
- robh+dt@kernel.org,
- p.yadav@ti.com,
- devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org,
- linux-spi@vger.kernel.org
-Received: from [172.23.64.7] (port=48929 helo=xhdvnc107.xilinx.com)
-        by smtp.xilinx.com with esmtp (Exim 4.90)
-        (envelope-from <lakshmi.sai.krishna.potthuri@xilinx.com>)
-        id 1nbgvn-000FiG-UO; Tue, 05 Apr 2022 04:01:04 -0700
-Received: by xhdvnc107.xilinx.com (Postfix, from userid 14964)
-        id 2DE416050D; Tue,  5 Apr 2022 16:31:03 +0530 (IST)
-From:   Sai Krishna Potthuri <lakshmi.sai.krishna.potthuri@xilinx.com>
-To:     Mark Brown <broonie@kernel.org>, Rob Herring <robh+dt@kernel.org>,
-        Pratyush Yadav <p.yadav@ti.com>
-CC:     <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-spi@vger.kernel.org>,
-        Michal Simek <michal.simek@xilinx.com>, <git@xilinx.com>,
-        <saikrishna12468@gmail.com>, <sgoud@xilinx.com>,
-        "Sai Krishna Potthuri" <lakshmi.sai.krishna.potthuri@xilinx.com>
-Subject: [PATCH 0/2] spi: cadence-quadspi: Add OSPI device reset support
-Date:   Tue, 5 Apr 2022 16:30:35 +0530
-Message-ID: <1649156437-15609-1-git-send-email-lakshmi.sai.krishna.potthuri@xilinx.com>
-X-Mailer: git-send-email 2.1.1
+        d=ffwll.ch; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=tzmhcp5RxadQONeu9KvciYKiNgXbRJejI1iC090AVWg=;
+        b=Ckyr/H4Efk9eg4/2J/KBC2fSKKkO3KzksdjLcY3RBSzT9NMCmfFcmXQP/tFtKO/470
+         cq+ZnczUI9w3TuhLKpo/lVk0VJYzTyel84GgUrfYKCT9mv2hijbapBsI0e1FG7FrRJmb
+         fLucT+sdtvHXDNR/H3K7C3fno1IoUuh9gjqUQ=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=tzmhcp5RxadQONeu9KvciYKiNgXbRJejI1iC090AVWg=;
+        b=RmAjORmcNhejd4HCi9U9MkW++uipkhHohUZ0DOqWhcMWp1PpRJ6QLXXpIcgk+dNvLW
+         APvLyl4gBLIuAchy1dP7aTu1lojV1CmC52GqPv+6WvnDz75nih5j2GbFojX3UnoewFZa
+         PkTJNI8wQYxS8ih1+nXj7TTgNZw8A78U14uUzunNKWxaXnU1b5apo958lXsLiZtr8fd4
+         Ui0Z4jTn40XxT01p/xR/TeU9LuN3MDhv9ZexdooJQrVqyNnpjIu1I1u1EnbQz5DinpyX
+         /I7Twby5DfMPk4/F1nZPpoehm9JWwl9wGr/qgXt6KGAWsGbTVqVJrVkoAHaEMU7noSkQ
+         BmKQ==
+X-Gm-Message-State: AOAM53171uJSW0SDI7AjSplq7lK/1thR5Yy0GAby7+FftrwjYIUki2fp
+        jNw8ThULr1QUrcoOSWvMv8ComtqdU6cuvogMLtyP9Q==
+X-Google-Smtp-Source: ABdhPJzqoYVSx47i8TUU2SwXKC01iWiGjmQ1+pUIxIWzSlGlgOjCn7FBVo4L4bnb1FUmBmYZzaS59mRu1JbpVJ6Lf+k=
+X-Received: by 2002:a05:6808:1596:b0:2f7:5d89:eec7 with SMTP id
+ t22-20020a056808159600b002f75d89eec7mr1125899oiw.228.1649154883395; Tue, 05
+ Apr 2022 03:34:43 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 0c68d1a7-5c09-4267-fe41-08da16f39868
-X-MS-TrafficTypeDiagnostic: BL3PR02MB7859:EE_
-X-Microsoft-Antispam-PRVS: <BL3PR02MB7859AA95B0AF6ED090A27B25BDE49@BL3PR02MB7859.namprd02.prod.outlook.com>
-X-Auto-Response-Suppress: DR, RN, NRN, OOF, AutoReply
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: vyw4nmrsJfvEsdWlJZbQtA7zFL2ZxoM3Sjy/Yx4arWjTW5rDUffhjah1foxXd6Mjud4/zsZ1BXt5wfS9bD8FF0awNnF8TCL6acrF8Q8I5StRdWkNIqsFAl/QEI27V2VfSNfHl/A/U4D1u/ZOUl5SThBfS3uL/dI2qR7PVtXjMN4AM/edAK6GhLwuM28qTXrC4G3sDSG11a9F00F4EyRtLDIYOLRgXOmSaESfCCVE9lGeYNqQ2jWomqwpp7uBd1bCIMUxhX3O4qGjeO6N4KMs4mrPpG7milki6qcww8MLMNskxxjbVvmq1oAgaOFfyRQacW6Du4383n6ixfqiGoULUYvmdQkCX9zCvSrpSWEz7Jn01AkHNjVk+0BMbQXXbpfTLarbdT9c7vLJwV2odWIibNG/gm6Kq4S+WQykcon6qtMhpELP8anxfdTAIQ6ZnvobfORWCioAfCCzRfj+vrad+Akhf06b/5HqotzAMWYgTX7kOBKN2P6+sT2NqAdMckd8LjgIpRhqK543Hc7vXnwZzvJXeq5Z9F4cJ06TKJm8hqXvsADRhfklvujD9Z1N2cVd3hIqqv4rEumhrA6m9AXaezAqRmIFo8avDVjICNpRoJtpS6IG0x9hhN4zF+KsmVcVn5W+RLjmY8Njfh2gcQozQGyCgaUnblbm43B6dyJzh1BsZBAVxAUXNXrXu920EXy0rIfwywD0/M7i3dCdAh9CZQ==
-X-Forefront-Antispam-Report: CIP:149.199.62.198;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:xsj-pvapexch02.xlnx.xilinx.com;PTR:unknown-62-198.xilinx.com;CAT:NONE;SFS:(13230001)(4636009)(46966006)(36840700001)(40470700004)(356005)(8676002)(5660300002)(6266002)(54906003)(7636003)(6666004)(110136005)(42186006)(316002)(4326008)(508600001)(83380400001)(70206006)(107886003)(47076005)(40460700003)(82310400005)(36756003)(336012)(26005)(426003)(186003)(36860700001)(70586007)(2616005)(4744005)(2906002)(8936002)(102446001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: xilinx.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Apr 2022 11:01:11.4040
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 0c68d1a7-5c09-4267-fe41-08da16f39868
-X-MS-Exchange-CrossTenant-Id: 657af505-d5df-48d0-8300-c31994686c5c
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=657af505-d5df-48d0-8300-c31994686c5c;Ip=[149.199.62.198];Helo=[xsj-pvapexch02.xlnx.xilinx.com]
-X-MS-Exchange-CrossTenant-AuthSource: SN1NAM02FT0003.eop-nam02.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL3PR02MB7859
+References: <20220208210824.2238981-1-daniel.vetter@ffwll.ch>
+ <20220208210824.2238981-19-daniel.vetter@ffwll.ch> <4ae20b63-f452-fdb4-ced6-d4968a8d69f0@redhat.com>
+ <Ykv/k/WoVemoCJJA@phenom.ffwll.local> <YkwAhSt9HlbxcuZo@phenom.ffwll.local>
+ <408ffe9b-f09f-dc7e-7f5e-a93b311a06fa@redhat.com> <CAKMK7uHf6H8mhSm6eDHUruWK5Xc2cSPkJUX6v-jpeQfjS19dKw@mail.gmail.com>
+ <e124af06-4f24-277a-543a-82b383f48cea@redhat.com>
+In-Reply-To: <e124af06-4f24-277a-543a-82b383f48cea@redhat.com>
+From:   Daniel Vetter <daniel@ffwll.ch>
+Date:   Tue, 5 Apr 2022 12:34:31 +0200
+Message-ID: <CAKMK7uH4GgDQJZguT-k0QmgEAHYHuDEbBtjYje51_Rtqzud0yw@mail.gmail.com>
+Subject: Re: [PATCH v2 18/19] Revert "fbdev: Prevent probing generic drivers
+ if a FB is already registered"
+To:     Javier Martinez Canillas <javierm@redhat.com>,
+        Greg KH <gregkh@linuxfoundation.org>
+Cc:     DRI Development <dri-devel@lists.freedesktop.org>,
+        Intel Graphics Development <intel-gfx@lists.freedesktop.org>,
+        linux-fbdev@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Zack Rusin <zackr@vmware.com>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Ilya Trukhanov <lahvuun@gmail.com>,
+        Daniel Vetter <daniel.vetter@intel.com>,
+        Peter Jones <pjones@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patch series update dt-binding and OSPI driver to support OSPI flash
-device reset on Xilinx Versal platform.
+On Tue, 5 Apr 2022 at 11:52, Javier Martinez Canillas
+<javierm@redhat.com> wrote:
+>
+> On 4/5/22 11:24, Daniel Vetter wrote:
+> > On Tue, 5 Apr 2022 at 11:19, Javier Martinez Canillas
+>
+> [snip]
+>
+> >>
+> >> This is how I think that work, please let me know if you see something
+> >> wrong in my logic:
+> >>
+> >> 1) A PCI device of OF device is registered for the GPU, this attempt to
+> >>    match a registered driver but no driver was registered that match yet.
+> >>
+> >> 2) The efifb driver is built-in, will be initialized according to the link
+> >>    order of the objects under drivers/video and the fbdev driver is registered.
+> >>
+> >>    There is no platform device or PCI/OF device registered that matches.
+> >>
+> >> 3) The DRM driver is built-in, will be initialized according to the link
+> >>    order of the objects under drivers/gpu and the DRM driver is registered.
+> >>
+> >>    This matches the device registered in (1) and the DRM driver probes.
+> >>
+> >> 4) The DRM driver .probe kicks out any conflicting DRM drivers and pdev
+> >>    before registering the DRM device.
+> >>
+> >>    There are no conflicting drivers or platform device at this point.
+> >>
+> >> 5) Latter at some point the drivers/firmware/sysfb.c init function is
+> >>    executed, and this registers a platform device for the generic fb.
+> >>
+> >>    This device matches the efifb driver registered in (2) and the fbdev
+> >>    driver probes.
+> >>
+> >>    Since that happens *after* the DRM driver already matched, probed
+> >>    and registered the DRM device, that is a bug and what the reverted
+> >>    patch worked around.
+> >>
+> >> So we need to prevent (5) if (1) and (3) already happened. Having a flag
+> >> set in the fbdev core somewhere when remove_conflicting_framebuffers()
+> >> is called could be a solution indeed.
+> >>
+> >> That is, the fbdev core needs to know that a DRM driver already probed
+> >> and make register_framebuffer() fail if info->flag & FBINFO_MISC_FIRMWARE
+> >>
+> >> I can attempt to write a patch for that.
+> >
+> > Ah yeah that could be an issue. I think the right fix is to replace
+> > the platform dev unregister with a sysfb_unregister() function in
+> > sysfb.c, which is synced with a common lock with the sysfb_init
+> > function and a small boolean. I think I can type that up quickly for
+> > v3.
+>
+> It's more complicated than that since sysfb is just *one* of the several
+> places where platform devices can be registered for video devices.
+>
+> For instance, the vga16fb driver registers its own platform device in
+> its module_init() function so that can also happen after the conflicting
+> framebuffers (and associated devices) were removed by a DRM driver probe.
+>
+> I tried to minimize the issue for that particular driver with commit:
+>
+> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=0499f419b76f
+>
+> But the point stands, it all boils down to the fact that you have two
+> different subsystems registering video drivers and they don't know all
+> about each other to take a proper decision.
+>
+> Right now the drm_aperture_remove_conflicting_framebuffers() call signals
+> in one direction from DRM to fbdev but there isn't a communication in the
+> other direction, from fbdev to DRM.
+>
+> I believe the correct fix would be for the fbdev core to keep a list of
+> the apertures struct that are passed to remove_conflicting_framebuffers(),
+> that way it will know what apertures are not available anymore and prevent
+> to register any fbdev framebuffer that conflicts with one already present.
 
-BRANCH: for-next
+Hm that still feels like reinventing a driver model, badly.
 
-Sai Krishna Potthuri (2):
-  dt-bindings: spi: cadence-quadspi: Add reset-gpios for Xilinx Versal
-    OSPI
-  spi: cadence-quadspi: Add support for OSPI device reset
+I think there's two cleaner solutions:
+- move all the firmware driver platform_dev into sysfb.c, and then
+just bind the special cases against that (e.g. offb, vga16fb and all
+these). Then we'd have one sysfb_try_unregister(struct device *dev)
+interface that fbmem.c uses.
+- let fbmem.c call into each of these firmware device providers, which
+means some loops most likely (like we can't call into vga16fb), so
+probably need to move that into fbmem.c and it all gets a bit messy.
 
- .../bindings/spi/cdns,qspi-nor.yaml           |  7 ++
- drivers/spi/spi-cadence-quadspi.c             | 72 +++++++++++++++++++
- 2 files changed, 79 insertions(+)
+> Let me know if you think that makes sense and I can attempt to write a fix.
+
+I still think unregistering the platform_dev properly makes the most
+sense, and feels like the most proper linux device model solution
+instead of hacks on top - if the firmware fb is unuseable because a
+native driver has taken over, we should nuke that. And also the
+firmware fb driver would then just bind to that platform_dev if it
+exists, and only if it exists. Also I think it should be the
+responsibility of whichever piece of code that registers these
+platform devices to ensure that platform_dev actually still exists.
+That's why I think pushing all that code into sysfb.c is probably the
+cleanest solution.
+
+fbdev predates all that stuff by a lot, hence the hand-rolling.
+
+But maybe Greg has some more thoughts here too?
+-Daniel
+
+>
+> --
+> Best regards,
+>
+> Javier Martinez Canillas
+> Linux Engineering
+> Red Hat
+>
+
 
 -- 
-2.17.1
-
+Daniel Vetter
+Software Engineer, Intel Corporation
+http://blog.ffwll.ch
