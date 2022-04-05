@@ -2,106 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C2A5C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:57:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 95D82C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:57:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1838749AbiDFA4l (ORCPT
+        id S1838810AbiDFA5E (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 20:56:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37400 "EHLO
+        Tue, 5 Apr 2022 20:57:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60180 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239766AbiDEOmF (ORCPT
+        with ESMTP id S1349996AbiDEJwQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 10:42:05 -0400
-Received: from gateway23.websitewelcome.com (gateway23.websitewelcome.com [192.185.48.251])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13E6B27CD8
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 06:18:06 -0700 (PDT)
-Received: from cm11.websitewelcome.com (cm11.websitewelcome.com [100.42.49.5])
-        by gateway23.websitewelcome.com (Postfix) with ESMTP id 4BB4A15945
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 08:18:06 -0500 (CDT)
-Received: from 162-215-252-75.unifiedlayer.com ([208.91.199.152])
-        by cmsmtp with SMTP
-        id bj4Qn7J6zdx86bj4QnY5ew; Tue, 05 Apr 2022 08:18:06 -0500
-X-Authority-Reason: nr=8
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=roeck-us.net; s=default; h=Content-Transfer-Encoding:Content-Type:
-        In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender
-        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
-        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
-        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=x+f3jWcojSlFA+ZZ0pJlnzELpcaYSX7f8bbsqUkUiLc=; b=SeH0C6R6Bg1boiO9t0nVHpAKJH
-        LD5kJXC20mkbH2n9LpvZwPvz1L+0YmglCdasF7qeiDMddy6SlslCZxA6Q2na94TAyUP7BwFqVIvEM
-        XHVj+PxWxn8k2PxR/3lAAcgNbOUasmxTUXZZArZkPH/r3IXR1dpK9sDHV7ShrhTUGNgk3acJ7Av6Y
-        rWl7FPSX7ueoF+uQJOZMR1hqiV4k8gf45i8VEHKU/D0JcDdpUjnz3sWrMYjyont9U6qLlApmkDKmP
-        ldwUXYCSwP/QIl4o3Ap9YpeKGU3u/Wrjlb3gHmlEsgQ94VCUUcJee6WZ+uAYGRzFWKCeJTnKlrC1L
-        yLg1Fm7w==;
-Received: from 108-223-40-66.lightspeed.sntcca.sbcglobal.net ([108.223.40.66]:54730)
-        by bh-25.webhostbox.net with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@roeck-us.net>)
-        id 1nbj4P-002s2v-Um; Tue, 05 Apr 2022 13:18:06 +0000
-Message-ID: <dc26e88b-ab7e-755b-13fd-8710883ac80b@roeck-us.net>
-Date:   Tue, 5 Apr 2022 06:18:04 -0700
+        Tue, 5 Apr 2022 05:52:16 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 968CC35DF4;
+        Tue,  5 Apr 2022 02:50:18 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5A455B81B76;
+        Tue,  5 Apr 2022 09:50:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BF862C385A3;
+        Tue,  5 Apr 2022 09:50:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649152216;
+        bh=8rzxR8C9aV5joxDkLw1fv1HzRyps0zkC5tErCCANSjw=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=Ccg5LMaYYmbkTgTeLs7/ZmmtgUHBVOmwUbfcMaHcYuKuMxF7MxX3JP+hK+M/Ob4k6
+         2ld7xLiZeJLF7PvQWFHD27MDvCoUd9uxmhA/R1E2jDznGQXmPftvR/6igKa4xgfrSg
+         RqHc64e3IcMQFf94zw1hpeD7m0SOXqmPo6jK9xcU=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
+        Casey Schaufler <casey@schaufler-ca.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 696/913] Fix incorrect type in assignment of ipv6 port for audit
+Date:   Tue,  5 Apr 2022 09:29:18 +0200
+Message-Id: <20220405070400.697492322@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: Linux 5.18-rc1
-Content-Language: en-US
-To:     Sudip Mukherjee <sudipm.mukherjee@gmail.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>
-References: <CAHk-=wg6FWL1xjVyHx7DdjD2dHZETA5_=FqqW17Z19X-WTfWSg@mail.gmail.com>
- <20220404022239.GA1186352@roeck-us.net> <YkwzzANkBRzrYAuq@debian>
-From:   Guenter Roeck <linux@roeck-us.net>
-In-Reply-To: <YkwzzANkBRzrYAuq@debian>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - bh-25.webhostbox.net
-X-AntiAbuse: Original Domain - vger.kernel.org
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - roeck-us.net
-X-BWhitelist: no
-X-Source-IP: 108.223.40.66
-X-Source-L: No
-X-Exim-ID: 1nbj4P-002s2v-Um
-X-Source: 
-X-Source-Args: 
-X-Source-Dir: 
-X-Source-Sender: 108-223-40-66.lightspeed.sntcca.sbcglobal.net [108.223.40.66]:54730
-X-Source-Auth: linux@roeck-us.net
-X-Email-Count: 15
-X-Source-Cap: cm9lY2s7YWN0aXZzdG07YmgtMjUud2ViaG9zdGJveC5uZXQ=
-X-Local-Domain: yes
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 4/5/22 05:19, Sudip Mukherjee wrote:
-> On Sun, Apr 03, 2022 at 07:22:39PM -0700, Guenter Roeck wrote:
->> On Sun, Apr 03, 2022 at 03:14:19PM -0700, Linus Torvalds wrote:
->>> So here we are, two weeks later, and the merge window is closed.
->>>
-> 
-> <snip>
-> 
->>>
->>> Go test, please,
->>
->> Build results:
->> 	total: 151 pass: 142 fail: 9
->> Failed builds:
->> 	alpha:allmodconfig
->> 	arm:allmodconfig
-> 
-> Apart from the ones Guenter reported, arm imote2_defconfig fails due to:
-> 28f74201e37c ("ARM: pxa: remove Intel Imote2 and Stargate 2 boards")
-> 
+From: Casey Schaufler <casey@schaufler-ca.com>
 
-Not entirely surprising, since its support was removed with that patch.
-The error is "arm-linux-gnueabi-ld: no machine record defined", which is
-consistent with that removal. So the fix would be to remove that
-configuration file.
+[ Upstream commit a5cd1ab7ab679d252a6d2f483eee7d45ebf2040c ]
 
-Guenter
+Remove inappropriate use of ntohs() and assign the
+port value directly.
+
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Casey Schaufler <casey@schaufler-ca.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ security/smack/smack_lsm.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/security/smack/smack_lsm.c b/security/smack/smack_lsm.c
+index 21a0e7c3b8de..3f3f56f6be4d 100644
+--- a/security/smack/smack_lsm.c
++++ b/security/smack/smack_lsm.c
+@@ -2505,7 +2505,7 @@ static int smk_ipv6_check(struct smack_known *subject,
+ #ifdef CONFIG_AUDIT
+ 	smk_ad_init_net(&ad, __func__, LSM_AUDIT_DATA_NET, &net);
+ 	ad.a.u.net->family = PF_INET6;
+-	ad.a.u.net->dport = ntohs(address->sin6_port);
++	ad.a.u.net->dport = address->sin6_port;
+ 	if (act == SMK_RECEIVING)
+ 		ad.a.u.net->v6info.saddr = address->sin6_addr;
+ 	else
+-- 
+2.34.1
+
+
+
