@@ -2,92 +2,133 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B4BDAC4167D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D9051C4167E
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:44:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1837145AbiDFApE (ORCPT
+        id S1837220AbiDFApR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 20:45:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50616 "EHLO
+        Tue, 5 Apr 2022 20:45:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44228 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357601AbiDEK0h (ORCPT
+        with ESMTP id S1573228AbiDES2U (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:26:37 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9974231517;
-        Tue,  5 Apr 2022 03:10:28 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2BFC7617A4;
-        Tue,  5 Apr 2022 10:10:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 331D7C385A0;
-        Tue,  5 Apr 2022 10:10:27 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649153427;
-        bh=Qa3RGJUb/13qAmle082Sl0DJGE+PN6Kzlk1E+pmBBJQ=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=iF2+jJufP/I5bR4H4PQvTzLJ24GM2aO2CzMAuxzGuGJdH1iShE00SoFN0ZIZZ4/Zm
-         wtd88viFb/mpm5XB/JiQ/bT6UcqxuCQdAMVoyPHixthxslfsKMEv7XB7PkEsI79Y+0
-         3kzuCqYhlOL951lFTTEr8mrQ9YLieVnUeOv1yH9Y=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 219/599] media: cedrus: h264: Fix neighbour info buffer size
-Date:   Tue,  5 Apr 2022 09:28:33 +0200
-Message-Id: <20220405070305.361043377@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 5 Apr 2022 14:28:20 -0400
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E489725C2
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 11:26:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:Content-Type:
+        In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender
+        :Reply-To:Content-ID:Content-Description;
+        bh=C5VgPld09iYiqC751h87aH+aMCuoBzx6fK1WSSESdHU=; b=SwViTp0djw63Y6CABGQ1kgy1MK
+        Sg10F6y4NOV61Rir++P/63S/FDRiwka1up4YV6y051CJP7shE80m6qmKXXDsczK1vX8f2WKP/NjCZ
+        Cj66jHxR6zi9Xx8507YAx1+F5xPyMjjvkV4J0t4jYmx3bfR2Nz3lFYHw3dSljv0jje09m/E2KkB4w
+        KHtNtxVR8Q9eDKh1MccF4Ajd8SFB4xWUzBDuxTtApOaQSxvv9qe81W32p0JJbHPTK2GYyA8NRnJr8
+        X91FZOL/Wbc8LXLnP4xXbiBpQszZNSdqgvbDwdqVx1MrEZxRwek7RYcv2W7/G6w8x/Z0oc3fG4TXA
+        T0Spj4cQ==;
+Received: from [2601:1c0:6280:3f0::aa0b]
+        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nbnsY-006x9i-PI; Tue, 05 Apr 2022 18:26:11 +0000
+Message-ID: <019baa48-a594-ba00-67a9-b0eb62b32ac0@infradead.org>
+Date:   Tue, 5 Apr 2022 11:26:05 -0700
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: drivers/cpuidle/cpuidle-riscv-sbi.c:79:16: error: variable has
+ incomplete type 'struct sbiret'
+Content-Language: en-US
+To:     kernel test robot <lkp@intel.com>, Anup Patel <anup.patel@wdc.com>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org, Palmer Dabbelt <palmer@rivosinc.com>
+References: <202204051441.dQ4w35Ga-lkp@intel.com>
+From:   Randy Dunlap <rdunlap@infradead.org>
+In-Reply-To: <202204051441.dQ4w35Ga-lkp@intel.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jernej Skrabec <jernej.skrabec@gmail.com>
+Hi,
 
-[ Upstream commit fecd363ae2d5042553370b0adf60c47e35c34a83 ]
+On 4/4/22 23:11, kernel test robot wrote:
+> Hi Anup,
+> 
+> First bad commit (maybe != root cause):
+> 
+> tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+> head:   3123109284176b1532874591f7c81f3837bbdc17
+> commit: c5179ef1ca0c39dab6955be6b0e3c034cc4164c8 RISC-V: Enable RISC-V SBI CPU Idle driver for QEMU virt machine
+> date:   4 weeks ago
+> config: riscv-randconfig-r022-20220405 (https://download.01.org/0day-ci/archive/20220405/202204051441.dQ4w35Ga-lkp@intel.com/config)
+> compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project c4a1b07d0979e7ff20d7d541af666d822d66b566)
+> reproduce (this is a W=1 build):
+>         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+>         chmod +x ~/bin/make.cross
+>         # install riscv cross compiling tool for clang build
+>         # apt-get install binutils-riscv64-linux-gnu
+>         # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=c5179ef1ca0c39dab6955be6b0e3c034cc4164c8
+>         git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+>         git fetch --no-tags linus master
+>         git checkout c5179ef1ca0c39dab6955be6b0e3c034cc4164c8
+>         # save the config file to linux build tree
+>         mkdir build_dir
+>         COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=riscv SHELL=/bin/bash drivers/
+> 
+> If you fix the issue, kindly add following tag as appropriate
+> Reported-by: kernel test robot <lkp@intel.com>
+> 
+> All errors (new ones prefixed by >>):
+> 
 
-According to BSP library source, H264 neighbour info buffer size needs
-to be 32 kiB for H6. This is similar to H265 decoding, which also needs
-double buffer size in comparison to older Cedrus core generations.
+[delete many build warnings and errors]
 
-Increase buffer size to cover H6 needs. Since increase is not that big
-in absolute numbers, it doesn't make sense to complicate logic for older
-generations.
+>    3 warnings and 17 errors generated.
+> 
+> Kconfig warnings: (for reference only)
+>    WARNING: unmet direct dependencies detected for RISCV_SBI_CPUIDLE
+>    Depends on CPU_IDLE && RISCV && RISCV_SBI
+>    Selected by
+>    - SOC_VIRT && CPU_IDLE
 
-Issue was discovered using iommu and cross checked with BSP library
-source.
+This Kconfig warning is the root of the problem. All of the build errors
+and warnings can be fixed by something like so. Is it OK?
 
-Fixes: 6eb9b758e307 ("media: cedrus: Add H264 decoding support")
-Signed-off-by: Jernej Skrabec <jernej.skrabec@gmail.com>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/staging/media/sunxi/cedrus/cedrus_h264.c | 2 +-
+ arch/riscv/Kconfig.socs |    2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/staging/media/sunxi/cedrus/cedrus_h264.c b/drivers/staging/media/sunxi/cedrus/cedrus_h264.c
-index de7442d4834d..d3e26bfe6c90 100644
---- a/drivers/staging/media/sunxi/cedrus/cedrus_h264.c
-+++ b/drivers/staging/media/sunxi/cedrus/cedrus_h264.c
-@@ -38,7 +38,7 @@ struct cedrus_h264_sram_ref_pic {
+--- linux-next-20220404.orig/arch/riscv/Kconfig.socs
++++ linux-next-20220404/arch/riscv/Kconfig.socs
+@@ -38,7 +38,7 @@ config SOC_VIRT
+ 	select SIFIVE_PLIC
+ 	select PM_GENERIC_DOMAINS if PM
+ 	select PM_GENERIC_DOMAINS_OF if PM && OF
+-	select RISCV_SBI_CPUIDLE if CPU_IDLE
++	select RISCV_SBI_CPUIDLE if CPU_IDLE && RISCV_SBI
+ 	help
+ 	  This enables support for QEMU Virt Machine.
  
- #define CEDRUS_H264_FRAME_NUM		18
- 
--#define CEDRUS_NEIGHBOR_INFO_BUF_SIZE	(16 * SZ_1K)
-+#define CEDRUS_NEIGHBOR_INFO_BUF_SIZE	(32 * SZ_1K)
- #define CEDRUS_MIN_PIC_INFO_BUF_SIZE       (130 * SZ_1K)
- 
- static void cedrus_h264_write_sram(struct cedrus_dev *dev,
+[snip]
+
+Also, to the @bot:
+
+Why does the reported Kconfig warning look like it was generated
+by some older kconfig software?  Current Kconfig reports more info:
+
+WARNING: unmet direct dependencies detected for RISCV_SBI_CPUIDLE
+  Depends on [n]: CPU_IDLE [=y] && RISCV [=y] && RISCV_SBI [=n]
+  Selected by [y]:
+  - SOC_VIRT [=y] && CPU_IDLE [=y]
+
+Thanks.
+> 
+> :::::: The code at line 79 was first introduced by commit
+> :::::: 6abf32f1d9c5009dcccded2c1e7ca899a4ab587b cpuidle: Add RISC-V SBI CPU idle driver
+> 
+> :::::: TO: Anup Patel <anup.patel@wdc.com>
+> :::::: CC: Palmer Dabbelt <palmer@rivosinc.com>
+> 
+
 -- 
-2.34.1
-
-
-
+~Randy
