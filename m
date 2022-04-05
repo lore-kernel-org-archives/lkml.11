@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ADFEEC43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C05D0C4167B
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 10:08:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350864AbiDEKAI (ORCPT
+        id S1350880AbiDEKAM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 06:00:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53314 "EHLO
+        Tue, 5 Apr 2022 06:00:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55728 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234101AbiDEIYB (ORCPT
+        with ESMTP id S240095AbiDEIWg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:24:01 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1795656D;
-        Tue,  5 Apr 2022 01:20:01 -0700 (PDT)
+        Tue, 5 Apr 2022 04:22:36 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 724FBDFF5;
+        Tue,  5 Apr 2022 01:19:50 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3651860B14;
-        Tue,  5 Apr 2022 08:20:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 38B11C385A1;
-        Tue,  5 Apr 2022 08:20:00 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1086660B17;
+        Tue,  5 Apr 2022 08:19:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1DA14C385A0;
+        Tue,  5 Apr 2022 08:19:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649146800;
-        bh=yabt7gsKamsJmhyhC/GiZx+Gr2L2ZeO+RNvb2IP5TjU=;
+        s=korg; t=1649146789;
+        bh=1mzmburc3X+szuNAEo1tXUhYMeph1aGhucbEOTahC2s=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YQe59He7OXjilg+9/1gveVNOwchbNhLTnmA6ACF5Jyn9agGeNB+wdHJXEfhr4NaBa
-         6qIvqjKOWaUqXBFKibCw3To+c02K+c7li80XLeCc6TWrMZ+egfE5v3K6hmJOklARpu
-         v45YqDklspBqdngq1v0zypevkYOQnQFcX9s2Kk8Y=
+        b=Y5bXabKy3E8aZNoqsrim1NwNLIPKphH1IzO0mcAizMwIgSjG78yE3avE9M6ICGqXh
+         aRIRF1+uUSd0kbBE/ZsUcfAncEEekKYwsJMgAe9BdpqzQSgvdgiG2l1q8h6OwlDNcZ
+         soxhdss7LRrLLpFo/tUfESW6gd35jwqrQy74Jbd4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Pavel Machek <pavel@denx.de>,
-        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        Biju Das <biju.das.jz@bp.renesas.com>,
-        Mark Brown <broonie@kernel.org>,
+        stable@vger.kernel.org, Corentin Labbe <clabbe@baylibre.com>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0894/1126] ASoC: sh: rz-ssi: Make the data structures available before registering the handlers
-Date:   Tue,  5 Apr 2022 09:27:21 +0200
-Message-Id: <20220405070433.764952941@linuxfoundation.org>
+Subject: [PATCH 5.17 0890/1126] media: staging: media: zoran: calculate the right buffer number for zoran_reap_stat_com
+Date:   Tue,  5 Apr 2022 09:27:17 +0200
+Message-Id: <20220405070433.650734450@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -52,46 +51,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+From: Corentin Labbe <clabbe@baylibre.com>
 
-[ Upstream commit 0788785c78342d422f93b1c9831c2b2b7f137937 ]
+[ Upstream commit e3b86f4e558cea9eed71d894df2f19b10d60a207 ]
 
-Initialize the spinlock and make the data structures available before
-registering the interrupt handlers.
+On the case tmp_dcim=1, the index of buffer is miscalculated.
+This generate a NULL pointer dereference later.
 
-Reported-by: Pavel Machek <pavel@denx.de>
-Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-Reviewed-by: Biju Das <biju.das.jz@bp.renesas.com>
-Link: https://lore.kernel.org/r/20220110094711.8574-3-prabhakar.mahadev-lad.rj@bp.renesas.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+So let's fix the calcul and add a check to prevent this to reappear.
+
+Signed-off-by: Corentin Labbe <clabbe@baylibre.com>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/sh/rz-ssi.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ drivers/staging/media/zoran/zoran_device.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
-diff --git a/sound/soc/sh/rz-ssi.c b/sound/soc/sh/rz-ssi.c
-index 2ac2c9722b3b..7379b1489e35 100644
---- a/sound/soc/sh/rz-ssi.c
-+++ b/sound/soc/sh/rz-ssi.c
-@@ -977,6 +977,9 @@ static int rz_ssi_probe(struct platform_device *pdev)
- 	ssi->playback.priv = ssi;
- 	ssi->capture.priv = ssi;
+diff --git a/drivers/staging/media/zoran/zoran_device.c b/drivers/staging/media/zoran/zoran_device.c
+index 5b12a730a229..fb1f0465ca87 100644
+--- a/drivers/staging/media/zoran/zoran_device.c
++++ b/drivers/staging/media/zoran/zoran_device.c
+@@ -814,7 +814,7 @@ static void zoran_reap_stat_com(struct zoran *zr)
+ 		if (zr->jpg_settings.tmp_dcm == 1)
+ 			i = (zr->jpg_dma_tail - zr->jpg_err_shift) & BUZ_MASK_STAT_COM;
+ 		else
+-			i = ((zr->jpg_dma_tail - zr->jpg_err_shift) & 1) * 2 + 1;
++			i = ((zr->jpg_dma_tail - zr->jpg_err_shift) & 1) * 2;
  
-+	spin_lock_init(&ssi->lock);
-+	dev_set_drvdata(&pdev->dev, ssi);
-+
- 	/* Error Interrupt */
- 	ssi->irq_int = platform_get_irq_byname(pdev, "int_req");
- 	if (ssi->irq_int < 0)
-@@ -1029,8 +1032,6 @@ static int rz_ssi_probe(struct platform_device *pdev)
- 		return dev_err_probe(ssi->dev, ret, "pm_runtime_resume_and_get failed\n");
- 	}
+ 		stat_com = le32_to_cpu(zr->stat_com[i]);
+ 		if ((stat_com & 1) == 0) {
+@@ -826,6 +826,11 @@ static void zoran_reap_stat_com(struct zoran *zr)
+ 		size = (stat_com & GENMASK(22, 1)) >> 1;
  
--	spin_lock_init(&ssi->lock);
--	dev_set_drvdata(&pdev->dev, ssi);
- 	ret = devm_snd_soc_register_component(&pdev->dev, &rz_ssi_soc_component,
- 					      rz_ssi_soc_dai,
- 					      ARRAY_SIZE(rz_ssi_soc_dai));
+ 		buf = zr->inuse[i];
++		if (!buf) {
++			spin_unlock_irqrestore(&zr->queued_bufs_lock, flags);
++			pci_err(zr->pci_dev, "No buffer at slot %d\n", i);
++			return;
++		}
+ 		buf->vbuf.vb2_buf.timestamp = ktime_get_ns();
+ 
+ 		if (zr->codec_mode == BUZ_MODE_MOTION_COMPRESS) {
 -- 
 2.34.1
 
