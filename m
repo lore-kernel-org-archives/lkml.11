@@ -2,172 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 429B2C43217
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:15:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 51D34C4167E
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:15:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382425AbiDEUEz (ORCPT
+        id S1383265AbiDEUFA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 16:04:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35276 "EHLO
+        Tue, 5 Apr 2022 16:05:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53780 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1573551AbiDETWf (ORCPT
+        with ESMTP id S1457546AbiDEQJq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 15:22:35 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C65443B2B0;
-        Tue,  5 Apr 2022 12:20:36 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Tue, 5 Apr 2022 12:09:46 -0400
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A85A25CD;
+        Tue,  5 Apr 2022 09:07:46 -0700 (PDT)
+Received: from [IPV6:2a01:e0a:120:3210:cf29:3f0:be4d:7211] (unknown [IPv6:2a01:e0a:120:3210:cf29:3f0:be4d:7211])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 59D9EB81F6B;
-        Tue,  5 Apr 2022 19:20:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 611E1C385A0;
-        Tue,  5 Apr 2022 19:20:33 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649186434;
-        bh=WUMUKws9bRjZTrkHwsGynA7tUQA6j+UO+nipvx8/Pxc=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ViqzZ1njQjHURsQFB+bQws/EXFJXBVZ0713Vy6dx/7ZW2JLu/xJiUvM59gv19WtuH
-         jfUpil6gly2i2pNknMzzqQLgdSP/9zSp1jWAsMzq31/yBk1ZmtSHwQo8W93YF+gpoH
-         q6gA5ImURC+5w6E7ZP7KxFXbq5yPmvGsDpR55YX9rpAnUorWYz8YyWWxca89/CYEGb
-         dCmAQsLRhI+xEKB9lYpcxr7hUR7Dp1hQy01Plzo+DQB9eu66rhzwF1tqLuh0RVcn/E
-         8dUtp6FjBKqDcfNtEjqOTl56bgrKgfjt0ySudygn2hIFJ1pt3dBuGefss3n3vS2CxR
-         5uhc00PJzXdlQ==
-From:   Jeff Layton <jlayton@kernel.org>
-To:     idryomov@gmail.com, xiubli@redhat.com
-Cc:     ceph-devel@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        linux-fscrypt@vger.kernel.org, linux-kernel@vger.kernel.org,
-        lhenriques@suse.de
-Subject: [PATCH v13 02/59] libceph: define struct ceph_sparse_extent and add some helpers
-Date:   Tue,  5 Apr 2022 15:19:33 -0400
-Message-Id: <20220405192030.178326-3-jlayton@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405192030.178326-1-jlayton@kernel.org>
-References: <20220405192030.178326-1-jlayton@kernel.org>
+        (Authenticated sender: benjamin.gaignard)
+        by bhuna.collabora.co.uk (Postfix) with ESMTPSA id 511F61F43BDC;
+        Tue,  5 Apr 2022 17:07:44 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1649174864;
+        bh=Y7AMfmbF+pTW6heGBBOtMSPe72VwTuirLOp6bmUM2l8=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=YdiGwf54xZ2SQaL3Kg7d0z6H9yFy3jkfu5wqfmvXDG3Yoo43FV4nvSf8M7bozm3vQ
+         VVZW2A3dSj2jG45xLSvt3K2OZwoa/XmIf31XNDejfWFZ4JEAtRNyxWjl7M38ydvyLK
+         B/ELY4LHhInWRfNGtOqjHaytIuFg5ccxSSMzxTDcelnc1USAD0Ay5gysapFchtZ19D
+         tGy4YnI0AxLEchVvhSDflRaVbn8ISxd+soOSaX/Bu+cTN4ObX5nvsybHapgxlzoCdJ
+         vr+c8fj31gKs28+vpiZDH/FzwrxgFzYoJ41xyTDKpuPMLsqRupBjcVQjMZTf6IQroH
+         vvGU7AI/NHllA==
+Message-ID: <b6987a9a-56af-f63f-b60a-37df141d6e89@collabora.com>
+Date:   Tue, 5 Apr 2022 18:07:41 +0200
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [RFC PATCH 0/8] media: hantro: Add 10-bit support
+Content-Language: en-US
+To:     Jernej Skrabec <jernej.skrabec@gmail.com>,
+        ezequiel@vanguardiasur.com.ar, p.zabel@pengutronix.de
+Cc:     mchehab@kernel.org, nicolas@ndufresne.ca, hverkuil-cisco@xs4all.nl,
+        gregkh@linuxfoundation.org, wens@csie.org, samuel@sholland.org,
+        linux-media@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-rockchip@lists.infradead.org, linux-staging@lists.linux.dev,
+        linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev
+References: <20220227144926.3006585-1-jernej.skrabec@gmail.com>
+From:   Benjamin Gaignard <benjamin.gaignard@collabora.com>
+In-Reply-To: <20220227144926.3006585-1-jernej.skrabec@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When the OSD sends back a sparse read reply, it contains an array of
-these structures. Define the structure and add a couple of helpers for
-dealing with them.
 
-Also add a place in struct ceph_osd_req_op to store the extent buffer,
-and code to free it if it's populated when the req is torn down.
+Le 27/02/2022 à 15:49, Jernej Skrabec a écrit :
+> First two patches add 10-bit formats to UAPI, third extends filtering
+> mechanism, fourth fixes incorrect assumption, fifth moves register
+> configuration code to proper place, sixth and seventh enable 10-bit
+> VP9 decoding on Allwinner H6 and last increases core frequency on
+> Allwinner H6.
+>
+> I'm sending this as RFC to get some comments:
+> 1. format definitions - are fourcc's ok? are comments/descriptions ok?
+> 2. is extended filtering mechanism ok?
+>
+> I would also like if these patches are tested on some more HW.
+> Additionally, can someone test tiled P010?
+>
+> Please take a look.
 
-Reviewed-by: Xiubo Li <xiubli@redhat.com>
-Signed-off-by: Jeff Layton <jlayton@kernel.org>
----
- include/linux/ceph/osd_client.h | 43 ++++++++++++++++++++++++++++++++-
- net/ceph/osd_client.c           | 13 ++++++++++
- 2 files changed, 55 insertions(+), 1 deletion(-)
+Hi Jernej,
 
-diff --git a/include/linux/ceph/osd_client.h b/include/linux/ceph/osd_client.h
-index 3122c1a3205f..1dd02240d00d 100644
---- a/include/linux/ceph/osd_client.h
-+++ b/include/linux/ceph/osd_client.h
-@@ -29,6 +29,17 @@ typedef void (*ceph_osdc_callback_t)(struct ceph_osd_request *);
- 
- #define CEPH_HOMELESS_OSD	-1
- 
-+/*
-+ * A single extent in a SPARSE_READ reply.
-+ *
-+ * Note that these come from the OSD as little-endian values. On BE arches,
-+ * we convert them in-place after receipt.
-+ */
-+struct ceph_sparse_extent {
-+	u64	off;
-+	u64	len;
-+} __packed;
-+
- /*
-  * A given osd we're communicating with.
-  *
-@@ -104,6 +115,8 @@ struct ceph_osd_req_op {
- 			u64 offset, length;
- 			u64 truncate_size;
- 			u32 truncate_seq;
-+			int sparse_ext_cnt;
-+			struct ceph_sparse_extent *sparse_ext;
- 			struct ceph_osd_data osd_data;
- 		} extent;
- 		struct {
-@@ -507,6 +520,20 @@ extern struct ceph_osd_request *ceph_osdc_new_request(struct ceph_osd_client *,
- 				      u32 truncate_seq, u64 truncate_size,
- 				      bool use_mempool);
- 
-+int __ceph_alloc_sparse_ext_map(struct ceph_osd_req_op *op, int cnt);
-+
-+/*
-+ * How big an extent array should we preallocate for a sparse read? This is
-+ * just a starting value.  If we get more than this back from the OSD, the
-+ * receiver will reallocate.
-+ */
-+#define CEPH_SPARSE_EXT_ARRAY_INITIAL  16
-+
-+static inline int ceph_alloc_sparse_ext_map(struct ceph_osd_req_op *op)
-+{
-+	return __ceph_alloc_sparse_ext_map(op, CEPH_SPARSE_EXT_ARRAY_INITIAL);
-+}
-+
- extern void ceph_osdc_get_request(struct ceph_osd_request *req);
- extern void ceph_osdc_put_request(struct ceph_osd_request *req);
- 
-@@ -562,5 +589,19 @@ int ceph_osdc_list_watchers(struct ceph_osd_client *osdc,
- 			    struct ceph_object_locator *oloc,
- 			    struct ceph_watch_item **watchers,
- 			    u32 *num_watchers);
--#endif
- 
-+/* Find offset into the buffer of the end of the extent map */
-+static inline u64 ceph_sparse_ext_map_end(struct ceph_osd_req_op *op)
-+{
-+	struct ceph_sparse_extent *ext;
-+
-+	/* No extents? No data */
-+	if (op->extent.sparse_ext_cnt == 0)
-+		return 0;
-+
-+	ext = &op->extent.sparse_ext[op->extent.sparse_ext_cnt - 1];
-+
-+	return ext->off + ext->len - op->extent.offset;
-+}
-+
-+#endif
-diff --git a/net/ceph/osd_client.c b/net/ceph/osd_client.c
-index 17c792b32343..c150683f2a2f 100644
---- a/net/ceph/osd_client.c
-+++ b/net/ceph/osd_client.c
-@@ -378,6 +378,7 @@ static void osd_req_op_data_release(struct ceph_osd_request *osd_req,
- 	case CEPH_OSD_OP_READ:
- 	case CEPH_OSD_OP_WRITE:
- 	case CEPH_OSD_OP_WRITEFULL:
-+		kfree(op->extent.sparse_ext);
- 		ceph_osd_data_release(&op->extent.osd_data);
- 		break;
- 	case CEPH_OSD_OP_CALL:
-@@ -1141,6 +1142,18 @@ struct ceph_osd_request *ceph_osdc_new_request(struct ceph_osd_client *osdc,
- }
- EXPORT_SYMBOL(ceph_osdc_new_request);
- 
-+int __ceph_alloc_sparse_ext_map(struct ceph_osd_req_op *op, int cnt)
-+{
-+	op->extent.sparse_ext_cnt = cnt;
-+	op->extent.sparse_ext = kmalloc_array(cnt,
-+					      sizeof(*op->extent.sparse_ext),
-+					      GFP_NOFS);
-+	if (!op->extent.sparse_ext)
-+		return -ENOMEM;
-+	return 0;
-+}
-+EXPORT_SYMBOL(__ceph_alloc_sparse_ext_map);
-+
- /*
-  * We keep osd requests in an rbtree, sorted by ->r_tid.
-  */
--- 
-2.35.1
+I have create a branch to test this series with VP9 and HEVC:
+https://gitlab.collabora.com/benjamin.gaignard/for-upstream/-/tree/10bit_imx8m
+Feel free to pick what I may need in it.
 
+That doesn't improve fluster scores, I think more dev are still needed in GST
+before getting something fully functional.
+Anyway I able to select P010 pixel format if the input is a 10bit bitstream.
+
+Regards,
+Benjamin
+
+>
+> Best regards,
+> Jernej
+>
+> Ezequiel Garcia (1):
+>    media: Add P010 tiled format
+>
+> Jernej Skrabec (7):
+>    media: Add P010 format
+>    media: hantro: Support format filtering by depth
+>    media: hantro: postproc: Fix buffer size calculation
+>    media: hantro: postproc: Fix legacy regs configuration
+>    media: hantro: Store VP9 bit depth in context
+>    media: hantro: sunxi: Enable 10-bit decoding
+>    media: hantro: sunxi: Increase frequency
+>
+>   drivers/media/v4l2-core/v4l2-common.c         |  3 ++
+>   drivers/media/v4l2-core/v4l2-ioctl.c          |  2 +
+>   drivers/staging/media/hantro/hantro.h         |  4 ++
+>   drivers/staging/media/hantro/hantro_drv.c     | 23 +++++++++
+>   .../staging/media/hantro/hantro_g2_vp9_dec.c  |  8 ---
+>   .../staging/media/hantro/hantro_postproc.c    | 34 ++++++++++---
+>   drivers/staging/media/hantro/hantro_v4l2.c    | 50 +++++++++++++++++--
+>   drivers/staging/media/hantro/hantro_v4l2.h    |  3 ++
+>   drivers/staging/media/hantro/sunxi_vpu_hw.c   | 13 ++++-
+>   include/uapi/linux/videodev2.h                |  2 +
+>   10 files changed, 122 insertions(+), 20 deletions(-)
+>
