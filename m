@@ -2,181 +2,138 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B7EB9C4332F
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:41:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D4B8C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:41:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1578101AbiDEXS2 (ORCPT
+        id S1578133AbiDEXSe (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 19:18:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41586 "EHLO
+        Tue, 5 Apr 2022 19:18:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50656 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1572984AbiDERkN (ORCPT
+        with ESMTP id S1357777AbiDEK1M (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 13:40:13 -0400
-Received: from 16.mo561.mail-out.ovh.net (16.mo561.mail-out.ovh.net [188.165.56.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35592B8202
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 10:38:14 -0700 (PDT)
-Received: from player771.ha.ovh.net (unknown [10.110.115.164])
-        by mo561.mail-out.ovh.net (Postfix) with ESMTP id 8E9CB23B0B
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 17:00:09 +0000 (UTC)
-Received: from sk2.org (82-65-25-201.subs.proxad.net [82.65.25.201])
-        (Authenticated sender: steve@sk2.org)
-        by player771.ha.ovh.net (Postfix) with ESMTPSA id 18863293E387E;
-        Tue,  5 Apr 2022 17:00:04 +0000 (UTC)
-Authentication-Results: garm.ovh; auth=pass (GARM-106R00643f7ca1c-cfdc-4bdb-9e7b-5dcba98903d2,
-                    8AF55017BACD44284FC599BC4826E0280D36FCC4) smtp.auth=steve@sk2.org
-X-OVh-ClientIp: 82.65.25.201
-From:   Stephen Kitt <steve@sk2.org>
-To:     Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>
-Cc:     Wolfram Sang <wsa@kernel.org>, linux-kernel@vger.kernel.org,
-        Stephen Kitt <steve@sk2.org>
-Subject: [PATCH 10/14] ASoC: tas*: use simple i2c probe function
-Date:   Tue,  5 Apr 2022 18:58:32 +0200
-Message-Id: <20220405165836.2165310-11-steve@sk2.org>
-X-Mailer: git-send-email 2.27.0
-In-Reply-To: <20220405165836.2165310-1-steve@sk2.org>
-References: <20220405165836.2165310-1-steve@sk2.org>
+        Tue, 5 Apr 2022 06:27:12 -0400
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5113339BB9
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 03:10:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Transfer-Encoding:
+        Content-Type:MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:
+        Sender:Reply-To:Content-ID:Content-Description;
+        bh=JRCtPql37TI0QCAvo5gW2Zck8T0P/CqvA5SiZrYJuYk=; b=P8Fdu3E46UH/j9cbM0vhZ3I4j4
+        P3hCnKljTXjPpOhVbNoxZbPnnfk27KD6EdpsVXRQHssmrcI+3FVTxjnsBl9pBUDZt3LfpTBUYhRgw
+        KRWmyMkFq27QsAgh6ZOFp1I3FmgmAJMyXXs2S6DZE2tXKeP2B86RgCPjfbwbNarCOv2ICByaJtg1Y
+        U/Mi1uoPFm2LQAl8MyKlTW3fGanNx840M0f9u83HcYFAhS2nYyK/obT1nkuz/js72ov5v7Ls2LTBE
+        C+lwefHBW8UpMOscSP7shKLI2UpkNPLXDG18jcRLnaly9S9wPNLZW62aG/T/WOFwB4xmpUqwpHg2z
+        u+iq5xAg==;
+Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=worktop.programming.kicks-ass.net)
+        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nbg8q-006aqi-SA; Tue, 05 Apr 2022 10:10:28 +0000
+Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
+        id 03E57986B5B; Tue,  5 Apr 2022 12:10:26 +0200 (CEST)
+Date:   Tue, 5 Apr 2022 12:10:26 +0200
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Cc:     Oleg Nesterov <oleg@redhat.com>, linux-kernel@vger.kernel.org,
+        Ben Segall <bsegall@google.com>,
+        Daniel Bristot de Oliveira <bristot@redhat.com>,
+        Dietmar Eggemann <dietmar.eggemann@arm.com>,
+        Ingo Molnar <mingo@redhat.com>,
+        Juri Lelli <juri.lelli@redhat.com>,
+        Mel Gorman <mgorman@suse.de>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Vincent Guittot <vincent.guittot@linaro.org>
+Subject: Re: [PATCH v2] ptrace: fix ptrace vs tasklist_lock race on
+ PREEMPT_RT.
+Message-ID: <20220405101026.GB34954@worktop.programming.kicks-ass.net>
+References: <Yh/b19JikC+Vnm8i@linutronix.de>
+ <20220314185429.GA30364@redhat.com>
+ <YjBO8yzxdmjTGNiy@linutronix.de>
+ <20220315142944.GA22670@redhat.com>
+ <YkW55u6u2fo5QmV7@linutronix.de>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-X-Ovh-Tracer-Id: 8473804174955742854
-X-VR-SPAMSTATE: OK
-X-VR-SPAMSCORE: -100
-X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvvddrudejgedguddtgecutefuodetggdotefrodftvfcurfhrohhfihhlvgemucfqggfjpdevjffgvefmvefgnecuuegrihhlohhuthemucehtddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjughrpefhvffufffkofgjfhgggfestdekredtredttdenucfhrhhomhepufhtvghphhgvnhcumfhithhtuceoshhtvghvvgesshhkvddrohhrgheqnecuggftrfgrthhtvghrnhepjeelledvfeeiiedutdefveekgeeuheekkedvffegvdehudegkefgjeejkefgueegnecukfhppedtrddtrddtrddtpdekvddrieehrddvhedrvddtudenucevlhhushhtvghrufhiiigvpedunecurfgrrhgrmhepmhhouggvpehsmhhtphhouhhtpdhhvghlohepphhlrgihvghrjeejuddrhhgrrdhovhhhrdhnvghtpdhinhgvtheptddrtddrtddrtddpmhgrihhlfhhrohhmpehsthgvvhgvsehskhdvrdhorhhgpdhnsggprhgtphhtthhopedupdhrtghpthhtoheplhhinhhugidqkhgvrhhnvghlsehvghgvrhdrkhgvrhhnvghlrdhorhhg
+In-Reply-To: <YkW55u6u2fo5QmV7@linutronix.de>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The i2c probe functions here don't use the id information provided in
-their second argument, so the single-parameter i2c probe function
-("probe_new") can be used instead.
+On Thu, Mar 31, 2022 at 04:25:42PM +0200, Sebastian Andrzej Siewior wrote:
+> As explained by Alexander Fyodorov <halcy@yandex.ru>:
+> 
+> |read_lock(&tasklist_lock) in ptrace_stop() is converted to sleeping
+> |lock on a PREEMPT_RT kernel, and it can remove __TASK_TRACED from
+> |task->__state (by moving  it to task->saved_state). If parent does
+> |wait() on child followed by a sys_ptrace call, the following race can
+> |happen:
+> |
+> |- child sets __TASK_TRACED in ptrace_stop()
+> |- parent does wait() which eventually calls wait_task_stopped() and returns
+> |  child's pid
+> |- child blocks on read_lock(&tasklist_lock) in ptrace_stop() and moves
+> |  __TASK_TRACED flag to saved_state
+> |- parent calls sys_ptrace, which calls ptrace_check_attach() and
+> |  wait_task_inactive()
+> 
+> The patch is based on his initial patch where an additional check is
+> added in case the __TASK_TRACED moved to ->saved_state. The pi_lock is
+> acquired to have stable view on ->__state and ->saved_state.
+> 
+> wait_task_inactive() needs to check both task states while waiting for the
+> expected task state. Should the expected task state be in ->saved_state then
+> the task is blocked on a sleeping lock. In this case wait_task_inactive() needs
+> to wait until the lock situtation has been resolved (the expected state is in
+> ->__state). This ensures that the task is idle and does not wakeup as part of
+> lock resolving and races for instance with __switch_to_xtra() while the
+> debugger clears TIF_BLOCKSTEP() (noted by Oleg Nesterov).
+> 
+> [ Fix for ptrace_unfreeze_traced() by Oleg Nesterov ]
+> 
+> Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+> ---
+> v1…v2:
+>   - Use also ->saved_state in task_state_match_and_set().
+>   - Wait in wait_task_inactive() until the desired task state is in
+>     ->__state so that the task won't wake up a as part of lock
+>     resolving. Pointed out by Oleg Nesterov.
+> 
+>  include/linux/sched.h |  128 ++++++++++++++++++++++++++++++++++++++++++++++++--
+>  kernel/ptrace.c       |   25 +++++----
+>  kernel/sched/core.c   |   11 +++-
+>  3 files changed, 146 insertions(+), 18 deletions(-)
+> 
+> --- a/include/linux/sched.h
+> +++ b/include/linux/sched.h
+> @@ -118,12 +118,8 @@ struct task_group;
+>  
+>  #define task_is_running(task)		(READ_ONCE((task)->__state) == TASK_RUNNING)
+>  
+> -#define task_is_traced(task)		((READ_ONCE(task->__state) & __TASK_TRACED) != 0)
+> -
+>  #define task_is_stopped(task)		((READ_ONCE(task->__state) & __TASK_STOPPED) != 0)
+>  
+> -#define task_is_stopped_or_traced(task)	((READ_ONCE(task->__state) & (__TASK_STOPPED | __TASK_TRACED)) != 0)
+> -
+>  /*
+>   * Special states are those that do not use the normal wait-loop pattern. See
+>   * the comment with set_special_state().
 
-This avoids scanning the identifier tables during probes.
+Urgh, so I have reworking all this somewhere on my todo list as well.
+Except I mean to move it away from using p->__state entirely. We should
+not be keeping canonical state in there.
 
-Signed-off-by: Stephen Kitt <steve@sk2.org>
----
- sound/soc/codecs/tas2552.c | 5 ++---
- sound/soc/codecs/tas2764.c | 5 ++---
- sound/soc/codecs/tas2770.c | 5 ++---
- sound/soc/codecs/tas5086.c | 5 ++---
- sound/soc/codecs/tas6424.c | 5 ++---
- 5 files changed, 10 insertions(+), 15 deletions(-)
+As is, I think we can write task_is_stopped() like:
 
-diff --git a/sound/soc/codecs/tas2552.c b/sound/soc/codecs/tas2552.c
-index 700baa6314aa..b5c9c61ff5a8 100644
---- a/sound/soc/codecs/tas2552.c
-+++ b/sound/soc/codecs/tas2552.c
-@@ -681,8 +681,7 @@ static const struct regmap_config tas2552_regmap_config = {
- 	.cache_type = REGCACHE_RBTREE,
- };
- 
--static int tas2552_probe(struct i2c_client *client,
--			   const struct i2c_device_id *id)
-+static int tas2552_probe(struct i2c_client *client)
- {
- 	struct device *dev;
- 	struct tas2552_data *data;
-@@ -764,7 +763,7 @@ static struct i2c_driver tas2552_i2c_driver = {
- 		.of_match_table = of_match_ptr(tas2552_of_match),
- 		.pm = &tas2552_pm,
- 	},
--	.probe = tas2552_probe,
-+	.probe_new = tas2552_probe,
- 	.remove = tas2552_i2c_remove,
- 	.id_table = tas2552_id,
- };
-diff --git a/sound/soc/codecs/tas2764.c b/sound/soc/codecs/tas2764.c
-index 9265af41c235..d395feffb30b 100644
---- a/sound/soc/codecs/tas2764.c
-+++ b/sound/soc/codecs/tas2764.c
-@@ -621,8 +621,7 @@ static int tas2764_parse_dt(struct device *dev, struct tas2764_priv *tas2764)
- 	return 0;
- }
- 
--static int tas2764_i2c_probe(struct i2c_client *client,
--			const struct i2c_device_id *id)
-+static int tas2764_i2c_probe(struct i2c_client *client)
- {
- 	struct tas2764_priv *tas2764;
- 	int result;
-@@ -678,7 +677,7 @@ static struct i2c_driver tas2764_i2c_driver = {
- 		.name   = "tas2764",
- 		.of_match_table = of_match_ptr(tas2764_of_match),
- 	},
--	.probe      = tas2764_i2c_probe,
-+	.probe_new  = tas2764_i2c_probe,
- 	.id_table   = tas2764_i2c_id,
- };
- module_i2c_driver(tas2764_i2c_driver);
-diff --git a/sound/soc/codecs/tas2770.c b/sound/soc/codecs/tas2770.c
-index c5ea3b115966..c1dbd978d550 100644
---- a/sound/soc/codecs/tas2770.c
-+++ b/sound/soc/codecs/tas2770.c
-@@ -672,8 +672,7 @@ static int tas2770_parse_dt(struct device *dev, struct tas2770_priv *tas2770)
- 	return 0;
- }
- 
--static int tas2770_i2c_probe(struct i2c_client *client,
--			const struct i2c_device_id *id)
-+static int tas2770_i2c_probe(struct i2c_client *client)
- {
- 	struct tas2770_priv *tas2770;
- 	int result;
-@@ -739,7 +738,7 @@ static struct i2c_driver tas2770_i2c_driver = {
- 		.name   = "tas2770",
- 		.of_match_table = of_match_ptr(tas2770_of_match),
- 	},
--	.probe      = tas2770_i2c_probe,
-+	.probe_new  = tas2770_i2c_probe,
- 	.id_table   = tas2770_i2c_id,
- };
- module_i2c_driver(tas2770_i2c_driver);
-diff --git a/sound/soc/codecs/tas5086.c b/sound/soc/codecs/tas5086.c
-index 7831c96d0d83..5c0df3cd4832 100644
---- a/sound/soc/codecs/tas5086.c
-+++ b/sound/soc/codecs/tas5086.c
-@@ -911,8 +911,7 @@ static const struct regmap_config tas5086_regmap = {
- 	.reg_write		= tas5086_reg_write,
- };
- 
--static int tas5086_i2c_probe(struct i2c_client *i2c,
--			     const struct i2c_device_id *id)
-+static int tas5086_i2c_probe(struct i2c_client *i2c)
- {
- 	struct tas5086_private *priv;
- 	struct device *dev = &i2c->dev;
-@@ -994,7 +993,7 @@ static struct i2c_driver tas5086_i2c_driver = {
- 		.of_match_table = of_match_ptr(tas5086_dt_ids),
- 	},
- 	.id_table	= tas5086_i2c_id,
--	.probe		= tas5086_i2c_probe,
-+	.probe_new	= tas5086_i2c_probe,
- 	.remove		= tas5086_i2c_remove,
- };
- 
-diff --git a/sound/soc/codecs/tas6424.c b/sound/soc/codecs/tas6424.c
-index 59543d392110..f06d2ad613f8 100644
---- a/sound/soc/codecs/tas6424.c
-+++ b/sound/soc/codecs/tas6424.c
-@@ -682,8 +682,7 @@ static const struct of_device_id tas6424_of_ids[] = {
- MODULE_DEVICE_TABLE(of, tas6424_of_ids);
- #endif
- 
--static int tas6424_i2c_probe(struct i2c_client *client,
--			     const struct i2c_device_id *id)
-+static int tas6424_i2c_probe(struct i2c_client *client)
- {
- 	struct device *dev = &client->dev;
- 	struct tas6424_data *tas6424;
-@@ -805,7 +804,7 @@ static struct i2c_driver tas6424_i2c_driver = {
- 		.name = "tas6424",
- 		.of_match_table = of_match_ptr(tas6424_of_ids),
- 	},
--	.probe = tas6424_i2c_probe,
-+	.probe_new = tas6424_i2c_probe,
- 	.remove = tas6424_i2c_remove,
- 	.id_table = tas6424_i2c_ids,
- };
--- 
-2.27.0
+#define task_is_stopped(task)	((task)->jobctl & JOBCTL_STOP_PENDING)
+
+Because jobctl is in fact the canonical state. I'm still not sure if we
+can do the same with task_is_traced(), ideally that would be expressed
+in terms of (task)->ptrace. But ptrace_stop() hurts my brain. All that
+stuff is entirely to involved.
+
+Anyway, let me see if I can page some of that back..
+
 
