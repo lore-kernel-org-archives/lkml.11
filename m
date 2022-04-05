@@ -2,158 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CCF09C35294
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 76276C35280
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 13:24:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356053AbiDENHv (ORCPT
+        id S1359089AbiDENKG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 09:07:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43614 "EHLO
+        Tue, 5 Apr 2022 09:10:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44262 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344012AbiDEJQr (ORCPT
+        with ESMTP id S1344188AbiDEJSg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:16:47 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 850491088;
-        Tue,  5 Apr 2022 02:03:26 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Tue, 5 Apr 2022 05:18:36 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 51D3663BF7
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 02:05:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1649149500;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=rIfAwkshslHsyBEcRq37RepeRC/o2pa9Iv1u9kDoOp8=;
+        b=WbC+BfJlhN3t2C6UH1yh7lSm5ezh5EKlFb0BaqHkPDWuVCuObFOYYfxGvja+dATx9Zyboh
+        h0OKb6A6GsN+0ONWNfd8yozij3IXZom83pY7cI6qJldzGZ2QC6X2zsE5iy5EOvDejL7504
+        TuKn9iFGGNCOncUlGeNK4rKLCVat3d4=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-317-TgqGk4AON6G7A7V85iHh5w-1; Tue, 05 Apr 2022 05:04:57 -0400
+X-MC-Unique: TgqGk4AON6G7A7V85iHh5w-1
+Received: from smtp.corp.redhat.com (int-mx10.intmail.prod.int.rdu2.redhat.com [10.11.54.10])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3F30FB81BAE;
-        Tue,  5 Apr 2022 09:03:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A0AF1C385A0;
-        Tue,  5 Apr 2022 09:03:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649149404;
-        bh=H/Bje5hmDtCNNdNb6F1c/bsu09pr84sD2glYE/vcp/I=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lGqSZZ+SrwRlUeCRMJlEEP1q3cEeBYRJIVsMrJB5xbl13lXFXMamDolvVuLMckO8k
-         u6NEcE4cCkXKRRmY48fDz2xqxiqc+QEIP1WSTaCiUUFhZh8VFscDdB7AvvwzJNc6yW
-         lw2NDsAVxxrDiKKI945C/LINjeLtSYfD/G22vLMI=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Michael Walle <michael@walle.cc>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0701/1017] pinctrl: microchip-sgpio: lock RMW access
-Date:   Tue,  5 Apr 2022 09:26:54 +0200
-Message-Id: <20220405070415.079501816@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
-References: <20220405070354.155796697@linuxfoundation.org>
-User-Agent: quilt/0.66
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 8D79B3801ECB;
+        Tue,  5 Apr 2022 09:04:56 +0000 (UTC)
+Received: from localhost (ovpn-12-104.pek2.redhat.com [10.72.12.104])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 6DE8041617C;
+        Tue,  5 Apr 2022 09:04:55 +0000 (UTC)
+Date:   Tue, 5 Apr 2022 17:04:51 +0800
+From:   Baoquan He <bhe@redhat.com>
+To:     Andrew Morton <akpm@linux-foundation.org>
+Cc:     willy@infradead.org, linux-kernel@vger.kernel.org,
+        kexec@lists.infradead.org, yangtiezhu@loongson.cn,
+        amit.kachhap@arm.com, hch@lst.de, linux-fsdevel@vger.kernel.org,
+        viro@zeniv.linux.org.uk
+Subject: Re: [PATCH v5 0/3] Convert vmcore to use an iov_iter
+Message-ID: <YkwGM9yVb1lZ2HL7@MiWiFi-R3L-srv>
+References: <20220402043008.458679-1-bhe@redhat.com>
+ <20220404143443.2258fc7e97b45172f7608a77@linux-foundation.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220404143443.2258fc7e97b45172f7608a77@linux-foundation.org>
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.10
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Michael Walle <michael@walle.cc>
+On 04/04/22 at 02:34pm, Andrew Morton wrote:
+> > On Sat,  2 Apr 2022 12:30:05 +0800 Baoquan He <bhe@redhat.com> wrote:
+> 
+> You were on the patch delivery path, so these patches should have had
+> your signoff.  Documentation/process/submitting-patches.rst explains.
 
-[ Upstream commit 7996c5f5ec7a20b3f6b8fae93fcf3cb8f1c01743 ]
+OK, will update and repost after our IT replying and fixing the mail issue.
 
-Protect any RMW access to the registers by a spinlock.
+> 
+> > Copy the description of v3 cover letter from Willy:
+> > ===
+> > For some reason several people have been sending bad patches to fix
+> > compiler warnings in vmcore recently.  Here's how it should be done.
+> > Compile-tested only on x86.  As noted in the first patch, s390 should
+> > take this conversion a bit further, but I'm not inclined to do that
+> > work myself.
+> 
+> We should tell the S390 maintainers this!
+> 
+> Can you please fix the signoff issue, add the S390 team to Cc and resend?
 
-Fixes: 7e5ea974e61c ("pinctrl: pinctrl-microchip-sgpio: Add pinctrl driver for Microsemi Serial GPIO")
-Signed-off-by: Michael Walle <michael@walle.cc>
-Link: https://lore.kernel.org/r/20220226204507.2511633-2-michael@walle.cc
-Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/pinctrl/pinctrl-microchip-sgpio.c | 15 +++++++++++++++
- 1 file changed, 15 insertions(+)
-
-diff --git a/drivers/pinctrl/pinctrl-microchip-sgpio.c b/drivers/pinctrl/pinctrl-microchip-sgpio.c
-index 78765faa245a..dfa374195694 100644
---- a/drivers/pinctrl/pinctrl-microchip-sgpio.c
-+++ b/drivers/pinctrl/pinctrl-microchip-sgpio.c
-@@ -18,6 +18,7 @@
- #include <linux/platform_device.h>
- #include <linux/property.h>
- #include <linux/reset.h>
-+#include <linux/spinlock.h>
- 
- #include "core.h"
- #include "pinconf.h"
-@@ -115,6 +116,7 @@ struct sgpio_priv {
- 	u32 clock;
- 	u32 __iomem *regs;
- 	const struct sgpio_properties *properties;
-+	spinlock_t lock;
- };
- 
- struct sgpio_port_addr {
-@@ -216,6 +218,7 @@ static void sgpio_output_set(struct sgpio_priv *priv,
- 			     int value)
- {
- 	unsigned int bit = SGPIO_SRC_BITS * addr->bit;
-+	unsigned long flags;
- 	u32 clr, set;
- 
- 	switch (priv->properties->arch) {
-@@ -234,7 +237,10 @@ static void sgpio_output_set(struct sgpio_priv *priv,
- 	default:
- 		return;
- 	}
-+
-+	spin_lock_irqsave(&priv->lock, flags);
- 	sgpio_clrsetbits(priv, REG_PORT_CONFIG, addr->port, clr, set);
-+	spin_unlock_irqrestore(&priv->lock, flags);
- }
- 
- static int sgpio_output_get(struct sgpio_priv *priv,
-@@ -562,10 +568,13 @@ static void microchip_sgpio_irq_settype(struct irq_data *data,
- 	struct sgpio_bank *bank = gpiochip_get_data(chip);
- 	unsigned int gpio = irqd_to_hwirq(data);
- 	struct sgpio_port_addr addr;
-+	unsigned long flags;
- 	u32 ena;
- 
- 	sgpio_pin_to_addr(bank->priv, gpio, &addr);
- 
-+	spin_lock_irqsave(&bank->priv->lock, flags);
-+
- 	/* Disable interrupt while changing type */
- 	ena = sgpio_readl(bank->priv, REG_INT_ENABLE, addr.bit);
- 	sgpio_writel(bank->priv, ena & ~BIT(addr.port), REG_INT_ENABLE, addr.bit);
-@@ -582,6 +591,8 @@ static void microchip_sgpio_irq_settype(struct irq_data *data,
- 
- 	/* Possibly re-enable interrupts */
- 	sgpio_writel(bank->priv, ena, REG_INT_ENABLE, addr.bit);
-+
-+	spin_unlock_irqrestore(&bank->priv->lock, flags);
- }
- 
- static void microchip_sgpio_irq_setreg(struct irq_data *data,
-@@ -592,13 +603,16 @@ static void microchip_sgpio_irq_setreg(struct irq_data *data,
- 	struct sgpio_bank *bank = gpiochip_get_data(chip);
- 	unsigned int gpio = irqd_to_hwirq(data);
- 	struct sgpio_port_addr addr;
-+	unsigned long flags;
- 
- 	sgpio_pin_to_addr(bank->priv, gpio, &addr);
- 
-+	spin_lock_irqsave(&bank->priv->lock, flags);
- 	if (clear)
- 		sgpio_clrsetbits(bank->priv, reg, addr.bit, BIT(addr.port), 0);
- 	else
- 		sgpio_clrsetbits(bank->priv, reg, addr.bit, 0, BIT(addr.port));
-+	spin_unlock_irqrestore(&bank->priv->lock, flags);
- }
- 
- static void microchip_sgpio_irq_mask(struct irq_data *data)
-@@ -814,6 +828,7 @@ static int microchip_sgpio_probe(struct platform_device *pdev)
- 		return -ENOMEM;
- 
- 	priv->dev = dev;
-+	spin_lock_init(&priv->lock);
- 
- 	reset = devm_reset_control_get_optional_shared(&pdev->dev, "switch");
- 	if (IS_ERR(reset))
--- 
-2.34.1
-
-
+S390 maintainer has already known this. Heiko replied to v1 saying he
+will take care of the s390 part, please see his comment from below link.
+I will add Heiko in CC when resend.
+https://lore.kernel.org/all/YbsGxJRo1153aykr@osiris/T/#u
 
