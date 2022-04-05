@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 71F93C4167E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 895B3C433F5
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 13:41:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1390400AbiDENi1 (ORCPT
+        id S1390411AbiDENic (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 09:38:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34474 "EHLO
+        Tue, 5 Apr 2022 09:38:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53070 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344351AbiDEJTe (ORCPT
+        with ESMTP id S1344346AbiDEJTd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:19:34 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 956AA2A1;
-        Tue,  5 Apr 2022 02:07:44 -0700 (PDT)
+        Tue, 5 Apr 2022 05:19:33 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D11B23BF7;
+        Tue,  5 Apr 2022 02:07:32 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E9466614E4;
-        Tue,  5 Apr 2022 09:07:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 029A9C385A1;
-        Tue,  5 Apr 2022 09:07:42 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D020FB81C15;
+        Tue,  5 Apr 2022 09:07:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 232D8C385A0;
+        Tue,  5 Apr 2022 09:07:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649149663;
-        bh=aHqT1HFZ5CvSbqfy/C/L/NOwod6STlMUwvXPGsSKQro=;
+        s=korg; t=1649149649;
+        bh=fHWOggZ0S4hvTFd4G0AD1ngfqFQeOt9QOGZoZs+G7so=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2gTgpYkSEGPPLWsbv8mYgCYWIKpy1on72Zaavmc9yslEegKPvzwODsO//xZQDOwyj
-         T3iSPy6dfQbvpiW3esawNarHAb6iu2UzFcEknO00Ccy+mz0XiDVjLdj+AsASMdLIeA
-         xJq8Z2JuRWOClJNxYZDjfeXt7tseXiJMBTW5GUc8=
+        b=L9UC9+ovCVrEFQzEwZSAZ8shiW2mUTqOkKJU0NvALIOLkCXLxCmxGQ9X69PjgWJCR
+         sNBlayIKPL6r/LthYf4NgUTbSORWeKdYcYQ3/sYaBS9Y4gGtR0FcwjsUvZW/ugYZIN
+         9QHv22gxDWwQTC0Rbc4KBTZFYyDbcoOBzRsGtP9Q=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zhouyi Zhou <zhouzhouyi@gmail.com>,
-        "Paul E. McKenney" <paulmck@kernel.org>,
-        Frederic Weisbecker <frederic@kernel.org>,
+        stable@vger.kernel.org,
+        syzbot+d59332e2db681cf18f0318a06e994ebbb529a8db@syzkaller.appspotmail.com,
+        Lee Jones <lee.jones@linaro.org>, Theodore Tso <tytso@mit.edu>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0757/1017] rcu: Mark writes to the rcu_segcblist structures ->flags field
-Date:   Tue,  5 Apr 2022 09:27:50 +0200
-Message-Id: <20220405070416.729358398@linuxfoundation.org>
+Subject: [PATCH 5.16 0790/1017] ext4: dont BUG if someone dirty pages without asking ext4 first
+Date:   Tue,  5 Apr 2022 09:28:23 +0200
+Message-Id: <20220405070417.703356282@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -51,45 +51,82 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Paul E. McKenney <paulmck@kernel.org>
+From: Theodore Ts'o <tytso@mit.edu>
 
-[ Upstream commit c09929031018913b5783872a8b8cdddef4a543c7 ]
+[ Upstream commit cc5095747edfb054ca2068d01af20be3fcc3634f ]
 
-KCSAN reports data races between the rcu_segcblist_clear_flags() and
-rcu_segcblist_set_flags() functions, though misreporting the latter
-as a call to rcu_segcblist_is_enabled() from call_rcu().  This commit
-converts the updates of this field to WRITE_ONCE(), relying on the
-resulting unmarked reads to continue to detect buggy concurrent writes
-to this field.
+[un]pin_user_pages_remote is dirtying pages without properly warning
+the file system in advance.  A related race was noted by Jan Kara in
+2018[1]; however, more recently instead of it being a very hard-to-hit
+race, it could be reliably triggered by process_vm_writev(2) which was
+discovered by Syzbot[2].
 
-Reported-by: Zhouyi Zhou <zhouzhouyi@gmail.com>
-Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
-Cc: Frederic Weisbecker <frederic@kernel.org>
+This is technically a bug in mm/gup.c, but arguably ext4 is fragile in
+that if some other kernel subsystem dirty pages without properly
+notifying the file system using page_mkwrite(), ext4 will BUG, while
+other file systems will not BUG (although data will still be lost).
+
+So instead of crashing with a BUG, issue a warning (since there may be
+potential data loss) and just mark the page as clean to avoid
+unprivileged denial of service attacks until the problem can be
+properly fixed.  More discussion and background can be found in the
+thread starting at [2].
+
+[1] https://lore.kernel.org/linux-mm/20180103100430.GE4911@quack2.suse.cz
+[2] https://lore.kernel.org/r/Yg0m6IjcNmfaSokM@google.com
+
+Reported-by: syzbot+d59332e2db681cf18f0318a06e994ebbb529a8db@syzkaller.appspotmail.com
+Reported-by: Lee Jones <lee.jones@linaro.org>
+Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+Link: https://lore.kernel.org/r/YiDS9wVfq4mM2jGK@mit.edu
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- kernel/rcu/rcu_segcblist.h | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ fs/ext4/inode.c | 25 +++++++++++++++++++++++++
+ 1 file changed, 25 insertions(+)
 
-diff --git a/kernel/rcu/rcu_segcblist.h b/kernel/rcu/rcu_segcblist.h
-index 9a19328ff251..5d405943823e 100644
---- a/kernel/rcu/rcu_segcblist.h
-+++ b/kernel/rcu/rcu_segcblist.h
-@@ -56,13 +56,13 @@ static inline long rcu_segcblist_n_cbs(struct rcu_segcblist *rsclp)
- static inline void rcu_segcblist_set_flags(struct rcu_segcblist *rsclp,
- 					   int flags)
- {
--	rsclp->flags |= flags;
-+	WRITE_ONCE(rsclp->flags, rsclp->flags | flags);
- }
+diff --git a/fs/ext4/inode.c b/fs/ext4/inode.c
+index 2f5686dfa30d..a61d1e4e1026 100644
+--- a/fs/ext4/inode.c
++++ b/fs/ext4/inode.c
+@@ -1992,6 +1992,15 @@ static int ext4_writepage(struct page *page,
+ 	else
+ 		len = PAGE_SIZE;
  
- static inline void rcu_segcblist_clear_flags(struct rcu_segcblist *rsclp,
- 					     int flags)
- {
--	rsclp->flags &= ~flags;
-+	WRITE_ONCE(rsclp->flags, rsclp->flags & ~flags);
- }
++	/* Should never happen but for bugs in other kernel subsystems */
++	if (!page_has_buffers(page)) {
++		ext4_warning_inode(inode,
++		   "page %lu does not have buffers attached", page->index);
++		ClearPageDirty(page);
++		unlock_page(page);
++		return 0;
++	}
++
+ 	page_bufs = page_buffers(page);
+ 	/*
+ 	 * We cannot do block allocation or other extent handling in this
+@@ -2595,6 +2604,22 @@ static int mpage_prepare_extent_to_map(struct mpage_da_data *mpd)
+ 			wait_on_page_writeback(page);
+ 			BUG_ON(PageWriteback(page));
  
- static inline bool rcu_segcblist_test_flags(struct rcu_segcblist *rsclp,
++			/*
++			 * Should never happen but for buggy code in
++			 * other subsystems that call
++			 * set_page_dirty() without properly warning
++			 * the file system first.  See [1] for more
++			 * information.
++			 *
++			 * [1] https://lore.kernel.org/linux-mm/20180103100430.GE4911@quack2.suse.cz
++			 */
++			if (!page_has_buffers(page)) {
++				ext4_warning_inode(mpd->inode, "page %lu does not have buffers attached", page->index);
++				ClearPageDirty(page);
++				unlock_page(page);
++				continue;
++			}
++
+ 			if (mpd->map.m_len == 0)
+ 				mpd->first_page = page->index;
+ 			mpd->next_page = page->index + 1;
 -- 
 2.34.1
 
