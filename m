@@ -2,88 +2,147 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D543C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6ACD1C433F5
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 11:05:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345981AbiDELBE (ORCPT
+        id S1345908AbiDELA7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 07:01:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48466 "EHLO
+        Tue, 5 Apr 2022 07:00:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48464 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235506AbiDEIjy (ORCPT
+        with ESMTP id S235505AbiDEIjy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Apr 2022 04:39:54 -0400
-Received: from mail-io1-xd2e.google.com (mail-io1-xd2e.google.com [IPv6:2607:f8b0:4864:20::d2e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BBF25B87;
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D066B78;
         Tue,  5 Apr 2022 01:33:36 -0700 (PDT)
-Received: by mail-io1-xd2e.google.com with SMTP id r2so14271902iod.9;
-        Tue, 05 Apr 2022 01:33:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=mylkO58ZKq1iBj80uJdfaHLKrfd/MmPSeOlKdlAN2g0=;
-        b=iBAh71Mhiz3dylNCqZo+yDdLJKHX7Ups2H7UShUJq9aLEVD+v/UN+esg2OInSOp5eR
-         qvwe656xyvQiVAOv2OVxK5ZZSjQkfewL3pNXUdN70ByDSmVqmu0Zx3vT7wfK1MP0/MVt
-         HISlGvX/tlI0uOfIlc4Ma/qL76vQv2D0ceU5GVbmucnU65zfj/NtDmfkm4mFZtmcOw7O
-         W5Qheo8WSoFs5cJ75vHsokH98+9pTpwERAc2S5c0RQs50gBe2zf6ZHKwRRHPUgkeOr7C
-         NT4QV/TckpGkTeuxPaWu964ZgslgqYRXix0btKt7SxTt2WoZWgSqtC6jVDcZtqMwS99u
-         5iJA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=mylkO58ZKq1iBj80uJdfaHLKrfd/MmPSeOlKdlAN2g0=;
-        b=wFNy8fIYr79iTI/nb17r/AgAA3WR9idrtNSPWrGpqOy0gGxnQGmwxbuIe8pfRx8+DO
-         GwI5XElXHinVvzARs+u3drQ/V2AbMO10CzymwPI313mUwi+QW8ZjAP3NoV0auy38DilL
-         Fxowg1z+PWKaSDOUSB33wCOpsEPrZg5Gx891RXoPoAfzZmmY4lckz8kapx7B13Ciyo0x
-         uaM89+hgi/gaqq8pGawu1oXPt4RrJYKhNgl3mI4mD4IZ+EZYDVCK2KIGHjcULu+y7GUG
-         Wq5JWQ1KaGWcsAr52FF8YVfkT/jzduR0LBvjnNRl2XTs9bZCTeuzWT8tM8butIyglVr8
-         LbCA==
-X-Gm-Message-State: AOAM533QjB/5kQo/hqRvJr8KsTaZgEC4nUsawCpU+q4JbWULOGUKgjpN
-        PeG0YYkckQTZ2BAJN44LiBOxxQ3Vn5tuRA2DHeM=
-X-Google-Smtp-Source: ABdhPJz31mODfRf19/XwGfqFgcDFZs9wfyNoZm+PEmbmm8OtKipv6FNIiNgPJ1ZoLDVD0q2ZrQeH9IKSUdZPNp+Wevg=
-X-Received: by 2002:a05:6602:1341:b0:637:d4dc:6f85 with SMTP id
- i1-20020a056602134100b00637d4dc6f85mr1069163iov.155.1649147616151; Tue, 05
- Apr 2022 01:33:36 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 40016B81B13;
+        Tue,  5 Apr 2022 08:33:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A297EC385A0;
+        Tue,  5 Apr 2022 08:33:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649147614;
+        bh=S5JSbPs7QsysBWhnR3G8MjqokpkFfZdd3XOVDP5puGs=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=slGYqOvdnKruYiWPeixrrGS+PuHkCNfh5kbjRCh3p8AZ/c/swW+yIogg5mBE17d/K
+         saAnNsbWa2mDl0esMmTaW00ppi20hbKEc+e1GWylshKGEpuP+1xHgAS4+CWyWv23/t
+         gZ/G1/c/aIfdOJ3bFiCJZ1e+mAEAOYmBWmR0hUtE=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Stefan Berger <stefanb@linux.ibm.com>,
+        Tianjia Zhang <tianjia.zhang@linux.alibaba.com>,
+        Eric Biggers <ebiggers@google.com>,
+        Vitaly Chikunov <vt@altlinux.org>,
+        Jarkko Sakkinen <jarkko@kernel.org>
+Subject: [PATCH 5.16 0058/1017] KEYS: asymmetric: enforce that sig algo matches key algo
+Date:   Tue,  5 Apr 2022 09:16:11 +0200
+Message-Id: <20220405070355.907534859@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
+References: <20220405070354.155796697@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-References: <20220405131412.381b8a97@canb.auug.org.au>
-In-Reply-To: <20220405131412.381b8a97@canb.auug.org.au>
-From:   Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>
-Date:   Tue, 5 Apr 2022 10:33:25 +0200
-Message-ID: <CANiq72kvTE2u=9ahNhSbnchfxT9_xrD8JBTJYbw=oe8j8zCbig@mail.gmail.com>
-Subject: Re: linux-next: manual merge of the rust tree with the kbuild tree
-To:     Stephen Rothwell <sfr@canb.auug.org.au>
-Cc:     Masahiro Yamada <masahiroy@kernel.org>,
-        Adam Bratschi-Kaye <ark.email@gmail.com>,
-        Alex Gaynor <alex.gaynor@gmail.com>,
-        Antonio Terceiro <antonio.terceiro@linaro.org>,
-        Boqun Feng <boqun.feng@gmail.com>,
-        Boris-Chengbiao Zhou <bobo1239@web.de>,
-        Chun-Tse Shao <ctshao@google.com>, Daniel Xu <dxu@dxuuu.xyz>,
-        Dariusz Sosnowski <dsosnowski@dsosnowski.pl>,
-        Douglas Su <d0u9.su@outlook.com>, Finn Behrens <me@kloenk.de>,
-        Gary Guo <gary@garyguo.net>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Miguel Cano <macanroj@gmail.com>,
-        Miguel Ojeda <ojeda@kernel.org>,
-        Sven Van Asbroeck <thesven73@gmail.com>,
-        Wedson Almeida Filho <wedsonaf@google.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 5, 2022 at 5:14 AM Stephen Rothwell <sfr@canb.auug.org.au> wrote:
->
-> I fixed it up (see below) and can carry the fix as necessary. This
+From: Eric Biggers <ebiggers@google.com>
 
-Looks fine, thanks Stephen!
+commit 2abc9c246e0548e52985b10440c9ea3e9f65f793 upstream.
 
-I will likely rebase again for -rc2 like for -rc1 (done to avoid a
-build error on our side and a conflict on yours).
+Most callers of public_key_verify_signature(), including most indirect
+callers via verify_signature() as well as pkcs7_verify_sig_chain(),
+don't check that public_key_signature::pkey_algo matches
+public_key::pkey_algo.  These should always match.  However, a malicious
+signature could intentionally declare an unintended algorithm.  It is
+essential that such signatures be rejected outright, or that the
+algorithm of the *key* be used -- not the algorithm of the signature as
+that would allow attackers to choose the algorithm used.
 
-Cheers,
-Miguel
+Currently, public_key_verify_signature() correctly uses the key's
+algorithm when deciding which akcipher to allocate.  That's good.
+However, it uses the signature's algorithm when deciding whether to do
+the first step of SM2, which is incorrect.  Also, v4.19 and older
+kernels used the signature's algorithm for the entire process.
+
+Prevent such errors by making public_key_verify_signature() enforce that
+the signature's algorithm (if given) matches the key's algorithm.
+
+Also remove two checks of this done by callers, which are now redundant.
+
+Cc: stable@vger.kernel.org
+Tested-by: Stefan Berger <stefanb@linux.ibm.com>
+Tested-by: Tianjia Zhang <tianjia.zhang@linux.alibaba.com>
+Signed-off-by: Eric Biggers <ebiggers@google.com>
+Reviewed-by: Vitaly Chikunov <vt@altlinux.org>
+Reviewed-by: Jarkko Sakkinen <jarkko@kernel.org>
+Signed-off-by: Jarkko Sakkinen <jarkko@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ crypto/asymmetric_keys/pkcs7_verify.c    |    6 ------
+ crypto/asymmetric_keys/public_key.c      |   15 +++++++++++++++
+ crypto/asymmetric_keys/x509_public_key.c |    6 ------
+ 3 files changed, 15 insertions(+), 12 deletions(-)
+
+--- a/crypto/asymmetric_keys/pkcs7_verify.c
++++ b/crypto/asymmetric_keys/pkcs7_verify.c
+@@ -174,12 +174,6 @@ static int pkcs7_find_key(struct pkcs7_m
+ 		pr_devel("Sig %u: Found cert serial match X.509[%u]\n",
+ 			 sinfo->index, certix);
+ 
+-		if (strcmp(x509->pub->pkey_algo, sinfo->sig->pkey_algo) != 0) {
+-			pr_warn("Sig %u: X.509 algo and PKCS#7 sig algo don't match\n",
+-				sinfo->index);
+-			continue;
+-		}
+-
+ 		sinfo->signer = x509;
+ 		return 0;
+ 	}
+--- a/crypto/asymmetric_keys/public_key.c
++++ b/crypto/asymmetric_keys/public_key.c
+@@ -325,6 +325,21 @@ int public_key_verify_signature(const st
+ 	BUG_ON(!sig);
+ 	BUG_ON(!sig->s);
+ 
++	/*
++	 * If the signature specifies a public key algorithm, it *must* match
++	 * the key's actual public key algorithm.
++	 *
++	 * Small exception: ECDSA signatures don't specify the curve, but ECDSA
++	 * keys do.  So the strings can mismatch slightly in that case:
++	 * "ecdsa-nist-*" for the key, but "ecdsa" for the signature.
++	 */
++	if (sig->pkey_algo) {
++		if (strcmp(pkey->pkey_algo, sig->pkey_algo) != 0 &&
++		    (strncmp(pkey->pkey_algo, "ecdsa-", 6) != 0 ||
++		     strcmp(sig->pkey_algo, "ecdsa") != 0))
++			return -EKEYREJECTED;
++	}
++
+ 	ret = software_key_determine_akcipher(sig->encoding,
+ 					      sig->hash_algo,
+ 					      pkey, alg_name);
+--- a/crypto/asymmetric_keys/x509_public_key.c
++++ b/crypto/asymmetric_keys/x509_public_key.c
+@@ -128,12 +128,6 @@ int x509_check_for_self_signed(struct x5
+ 			goto out;
+ 	}
+ 
+-	ret = -EKEYREJECTED;
+-	if (strcmp(cert->pub->pkey_algo, cert->sig->pkey_algo) != 0 &&
+-	    (strncmp(cert->pub->pkey_algo, "ecdsa-", 6) != 0 ||
+-	     strcmp(cert->sig->pkey_algo, "ecdsa") != 0))
+-		goto out;
+-
+ 	ret = public_key_verify_signature(cert->pub, cert->sig);
+ 	if (ret < 0) {
+ 		if (ret == -ENOPKG) {
+
+
