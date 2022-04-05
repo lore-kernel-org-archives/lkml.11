@@ -2,385 +2,459 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F7C5C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 02:19:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 22148C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 02:19:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1847179AbiDFCQh (ORCPT
+        id S1847233AbiDFCQu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 22:16:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47616 "EHLO
+        Tue, 5 Apr 2022 22:16:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40088 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352019AbiDEUP3 (ORCPT
+        with ESMTP id S245006AbiDEUUt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 16:15:29 -0400
-Received: from nbd.name (nbd.name [IPv6:2a01:4f8:221:3d45::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 955895DA37;
-        Tue,  5 Apr 2022 12:58:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=nbd.name;
-         s=20160729; h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:
-        Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=eSvaP/RLtQFkk6D6f5eOORg/rJd9Ncw8dIAjCfQfips=; b=BKKGVgoUqMUHloWTSQSPed6bih
-        tzARnkv72zctv73L9a607+njiuvm4c7BYngyoIl0XuwCOfneFuTNisMwgdRZQe9e9nZ8CYt6a85C9
-        vll88BdiE+2/0NyM6Fa2hMbhYmuuDZZhy3ZEkd0vOByuOLS9C2G6nu7LshS96mmO/bbE=;
-Received: from p200300daa70ef200456864e8b8d10029.dip0.t-ipconnect.de ([2003:da:a70e:f200:4568:64e8:b8d1:29] helo=Maecks.lan)
-        by ds12 with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.89)
-        (envelope-from <nbd@nbd.name>)
-        id 1nbpJP-00035V-TR; Tue, 05 Apr 2022 21:58:00 +0200
-From:   Felix Fietkau <nbd@nbd.name>
-To:     netdev@vger.kernel.org, John Crispin <john@phrozen.org>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Mark Lee <Mark-MC.Lee@mediatek.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>
-Cc:     linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v2 02/14] net: ethernet: mtk_eth_soc: add support for coherent DMA
-Date:   Tue,  5 Apr 2022 21:57:43 +0200
-Message-Id: <20220405195755.10817-3-nbd@nbd.name>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405195755.10817-1-nbd@nbd.name>
-References: <20220405195755.10817-1-nbd@nbd.name>
+        Tue, 5 Apr 2022 16:20:49 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A06B3FCBFC
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 13:00:20 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3382BB81FC5
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 20:00:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 77786C385A1;
+        Tue,  5 Apr 2022 20:00:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649188817;
+        bh=f5u+MX+n0t/69OJvMISPODR50dUWsRu7dxGKMm8HAOc=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=sshONivINtJy56qvSJaDrrbdj1mYMv4DU3K+lkMxm+XjbM897kZXzkSNjkhHC2uSu
+         UdRPMOO02RZ3PPwUTH2NAlvoDjtJkUjiPB70/LA+al0SzgCCk6nXKMUr9K71QXXaIW
+         p81Q09R67wrVJd/QQ+J03BHa7IXTNTRy5a+lbB7Wc8BlhSEDJeCBEkAF6bc8wB9oFG
+         08ssqE1aAYMc+ed68zHT0S+xHbjrnWZolnJei5VxZGyvnTr0OvUjUoeDWw/pFA3ewX
+         GUUXWz7aGiqf1qdI1Sho/SzwEVrk8sKdbD7Koc82rvf3jchTN1iH5FkXuNB3cc5hzU
+         z3IXgKgQjtZLw==
+Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
+        id 7D09B40407; Tue,  5 Apr 2022 17:00:14 -0300 (-03)
+Date:   Tue, 5 Apr 2022 17:00:14 -0300
+From:   Arnaldo Carvalho de Melo <acme@kernel.org>
+To:     Sedat Dilek <sedat.dilek@gmail.com>
+Cc:     Arnaldo Carvalho de Melo <arnaldo.melo@gmail.com>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Adrian Hunter <adrian.hunter@intel.com>,
+        Fangrui Song <maskray@google.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Ian Rogers <irogers@google.com>, Jiri Olsa <jolsa@kernel.org>,
+        John Keeping <john@metanate.com>, Leo Yan <leo.yan@linaro.org>,
+        Michael Petlan <mpetlan@redhat.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Subject: Re: Build perf with clang, failure with libperf
+Message-ID: <Ykyfzn6Z8Wkf1Ccl@kernel.org>
+References: <YktYX2OnLtyobRYD@kernel.org>
+ <Ykto1FgmPMMCysbI@dev-arch.thelio-3990X>
+ <YkxWcYzph5pC1EK8@kernel.org>
+ <CA+icZUVMtrqRA-a3k8N0fVcszm=Sn2Jb9nMfF8mXqvSTu2HUhw@mail.gmail.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <CA+icZUVMtrqRA-a3k8N0fVcszm=Sn2Jb9nMfF8mXqvSTu2HUhw@mail.gmail.com>
+X-Url:  http://acmel.wordpress.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-It improves performance by eliminating the need for a cache flush on rx and tx
-In preparation for supporting WED (Wireless Ethernet Dispatch), also add a
-function for disabling coherent DMA at runtime.
+Em Tue, Apr 05, 2022 at 05:46:00PM +0200, Sedat Dilek escreveu:
+> On Tue, Apr 5, 2022 at 4:47 PM Arnaldo Carvalho de Melo <arnaldo.melo@gmail.com> wrote:
+> > Em Mon, Apr 04, 2022 at 02:53:24PM -0700, Nathan Chancellor escreveu:
 
-Signed-off-by: Felix Fietkau <nbd@nbd.name>
----
- drivers/net/ethernet/mediatek/mtk_eth_soc.c | 95 +++++++++++++++------
- drivers/net/ethernet/mediatek/mtk_eth_soc.h |  9 ++
- 2 files changed, 80 insertions(+), 24 deletions(-)
+> > +++ b/tools/build/feature/Makefile
+> > @@ -220,6 +220,13 @@ PERL_EMBED_LIBADD = $(call grep-libs,$(PERL_EMBED_LDOPTS))
+> >  PERL_EMBED_CCOPTS = $(shell perl -MExtUtils::Embed -e ccopts 2>/dev/null)
+> >  FLAGS_PERL_EMBED=$(PERL_EMBED_CCOPTS) $(PERL_EMBED_LDOPTS)
+> >
+> > +ifeq ($(CC_NO_CLANG), 0)
+> > +  PERL_EMBED_LDOPTS := $(filter-out -specs=%,$(PERL_EMBED_LDOPTS))
+> > +  PERL_EMBED_CCOPTS := $(filter-out -flto=auto -ffat-lto-objects, $(PERL_EMBED_CCOPTS))
+> 
+> ^^ This affects CONFIG_LTO_CLANG=y only, so check for it?
 
-diff --git a/drivers/net/ethernet/mediatek/mtk_eth_soc.c b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-index f02d07ec5ccb..70db217ed831 100644
---- a/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-+++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-@@ -9,6 +9,7 @@
- #include <linux/of_device.h>
- #include <linux/of_mdio.h>
- #include <linux/of_net.h>
-+#include <linux/of_address.h>
- #include <linux/mfd/syscon.h>
- #include <linux/regmap.h>
- #include <linux/clk.h>
-@@ -786,7 +787,7 @@ static int mtk_init_fq_dma(struct mtk_eth *eth)
- 	dma_addr_t dma_addr;
- 	int i;
- 
--	eth->scratch_ring = dma_alloc_coherent(eth->dev,
-+	eth->scratch_ring = dma_alloc_coherent(eth->dma_dev,
- 					       cnt * sizeof(struct mtk_tx_dma),
- 					       &eth->phy_scratch_ring,
- 					       GFP_ATOMIC);
-@@ -798,10 +799,10 @@ static int mtk_init_fq_dma(struct mtk_eth *eth)
- 	if (unlikely(!eth->scratch_head))
- 		return -ENOMEM;
- 
--	dma_addr = dma_map_single(eth->dev,
-+	dma_addr = dma_map_single(eth->dma_dev,
- 				  eth->scratch_head, cnt * MTK_QDMA_PAGE_SIZE,
- 				  DMA_FROM_DEVICE);
--	if (unlikely(dma_mapping_error(eth->dev, dma_addr)))
-+	if (unlikely(dma_mapping_error(eth->dma_dev, dma_addr)))
- 		return -ENOMEM;
- 
- 	phy_ring_tail = eth->phy_scratch_ring +
-@@ -855,26 +856,26 @@ static void mtk_tx_unmap(struct mtk_eth *eth, struct mtk_tx_buf *tx_buf,
- {
- 	if (MTK_HAS_CAPS(eth->soc->caps, MTK_QDMA)) {
- 		if (tx_buf->flags & MTK_TX_FLAGS_SINGLE0) {
--			dma_unmap_single(eth->dev,
-+			dma_unmap_single(eth->dma_dev,
- 					 dma_unmap_addr(tx_buf, dma_addr0),
- 					 dma_unmap_len(tx_buf, dma_len0),
- 					 DMA_TO_DEVICE);
- 		} else if (tx_buf->flags & MTK_TX_FLAGS_PAGE0) {
--			dma_unmap_page(eth->dev,
-+			dma_unmap_page(eth->dma_dev,
- 				       dma_unmap_addr(tx_buf, dma_addr0),
- 				       dma_unmap_len(tx_buf, dma_len0),
- 				       DMA_TO_DEVICE);
- 		}
- 	} else {
- 		if (dma_unmap_len(tx_buf, dma_len0)) {
--			dma_unmap_page(eth->dev,
-+			dma_unmap_page(eth->dma_dev,
- 				       dma_unmap_addr(tx_buf, dma_addr0),
- 				       dma_unmap_len(tx_buf, dma_len0),
- 				       DMA_TO_DEVICE);
- 		}
- 
- 		if (dma_unmap_len(tx_buf, dma_len1)) {
--			dma_unmap_page(eth->dev,
-+			dma_unmap_page(eth->dma_dev,
- 				       dma_unmap_addr(tx_buf, dma_addr1),
- 				       dma_unmap_len(tx_buf, dma_len1),
- 				       DMA_TO_DEVICE);
-@@ -952,9 +953,9 @@ static int mtk_tx_map(struct sk_buff *skb, struct net_device *dev,
- 	if (skb_vlan_tag_present(skb))
- 		txd4 |= TX_DMA_INS_VLAN | skb_vlan_tag_get(skb);
- 
--	mapped_addr = dma_map_single(eth->dev, skb->data,
-+	mapped_addr = dma_map_single(eth->dma_dev, skb->data,
- 				     skb_headlen(skb), DMA_TO_DEVICE);
--	if (unlikely(dma_mapping_error(eth->dev, mapped_addr)))
-+	if (unlikely(dma_mapping_error(eth->dma_dev, mapped_addr)))
- 		return -ENOMEM;
- 
- 	WRITE_ONCE(itxd->txd1, mapped_addr);
-@@ -993,10 +994,10 @@ static int mtk_tx_map(struct sk_buff *skb, struct net_device *dev,
- 
- 
- 			frag_map_size = min(frag_size, MTK_TX_DMA_BUF_LEN);
--			mapped_addr = skb_frag_dma_map(eth->dev, frag, offset,
-+			mapped_addr = skb_frag_dma_map(eth->dma_dev, frag, offset,
- 						       frag_map_size,
- 						       DMA_TO_DEVICE);
--			if (unlikely(dma_mapping_error(eth->dev, mapped_addr)))
-+			if (unlikely(dma_mapping_error(eth->dma_dev, mapped_addr)))
- 				goto err_dma;
- 
- 			if (i == nr_frags - 1 &&
-@@ -1274,18 +1275,18 @@ static int mtk_poll_rx(struct napi_struct *napi, int budget,
- 			netdev->stats.rx_dropped++;
- 			goto release_desc;
- 		}
--		dma_addr = dma_map_single(eth->dev,
-+		dma_addr = dma_map_single(eth->dma_dev,
- 					  new_data + NET_SKB_PAD +
- 					  eth->ip_align,
- 					  ring->buf_size,
- 					  DMA_FROM_DEVICE);
--		if (unlikely(dma_mapping_error(eth->dev, dma_addr))) {
-+		if (unlikely(dma_mapping_error(eth->dma_dev, dma_addr))) {
- 			skb_free_frag(new_data);
- 			netdev->stats.rx_dropped++;
- 			goto release_desc;
- 		}
- 
--		dma_unmap_single(eth->dev, trxd.rxd1,
-+		dma_unmap_single(eth->dma_dev, trxd.rxd1,
- 				 ring->buf_size, DMA_FROM_DEVICE);
- 
- 		/* receive data */
-@@ -1558,7 +1559,7 @@ static int mtk_tx_alloc(struct mtk_eth *eth)
- 	if (!ring->buf)
- 		goto no_tx_mem;
- 
--	ring->dma = dma_alloc_coherent(eth->dev, MTK_DMA_SIZE * sz,
-+	ring->dma = dma_alloc_coherent(eth->dma_dev, MTK_DMA_SIZE * sz,
- 				       &ring->phys, GFP_ATOMIC);
- 	if (!ring->dma)
- 		goto no_tx_mem;
-@@ -1576,7 +1577,7 @@ static int mtk_tx_alloc(struct mtk_eth *eth)
- 	 * descriptors in ring->dma_pdma.
- 	 */
- 	if (!MTK_HAS_CAPS(eth->soc->caps, MTK_QDMA)) {
--		ring->dma_pdma = dma_alloc_coherent(eth->dev, MTK_DMA_SIZE * sz,
-+		ring->dma_pdma = dma_alloc_coherent(eth->dma_dev, MTK_DMA_SIZE * sz,
- 						    &ring->phys_pdma,
- 						    GFP_ATOMIC);
- 		if (!ring->dma_pdma)
-@@ -1635,7 +1636,7 @@ static void mtk_tx_clean(struct mtk_eth *eth)
- 	}
- 
- 	if (ring->dma) {
--		dma_free_coherent(eth->dev,
-+		dma_free_coherent(eth->dma_dev,
- 				  MTK_DMA_SIZE * sizeof(*ring->dma),
- 				  ring->dma,
- 				  ring->phys);
-@@ -1643,7 +1644,7 @@ static void mtk_tx_clean(struct mtk_eth *eth)
- 	}
- 
- 	if (ring->dma_pdma) {
--		dma_free_coherent(eth->dev,
-+		dma_free_coherent(eth->dma_dev,
- 				  MTK_DMA_SIZE * sizeof(*ring->dma_pdma),
- 				  ring->dma_pdma,
- 				  ring->phys_pdma);
-@@ -1688,18 +1689,18 @@ static int mtk_rx_alloc(struct mtk_eth *eth, int ring_no, int rx_flag)
- 			return -ENOMEM;
- 	}
- 
--	ring->dma = dma_alloc_coherent(eth->dev,
-+	ring->dma = dma_alloc_coherent(eth->dma_dev,
- 				       rx_dma_size * sizeof(*ring->dma),
- 				       &ring->phys, GFP_ATOMIC);
- 	if (!ring->dma)
- 		return -ENOMEM;
- 
- 	for (i = 0; i < rx_dma_size; i++) {
--		dma_addr_t dma_addr = dma_map_single(eth->dev,
-+		dma_addr_t dma_addr = dma_map_single(eth->dma_dev,
- 				ring->data[i] + NET_SKB_PAD + eth->ip_align,
- 				ring->buf_size,
- 				DMA_FROM_DEVICE);
--		if (unlikely(dma_mapping_error(eth->dev, dma_addr)))
-+		if (unlikely(dma_mapping_error(eth->dma_dev, dma_addr)))
- 			return -ENOMEM;
- 		ring->dma[i].rxd1 = (unsigned int)dma_addr;
- 
-@@ -1735,7 +1736,7 @@ static void mtk_rx_clean(struct mtk_eth *eth, struct mtk_rx_ring *ring)
- 				continue;
- 			if (!ring->dma[i].rxd1)
- 				continue;
--			dma_unmap_single(eth->dev,
-+			dma_unmap_single(eth->dma_dev,
- 					 ring->dma[i].rxd1,
- 					 ring->buf_size,
- 					 DMA_FROM_DEVICE);
-@@ -1746,7 +1747,7 @@ static void mtk_rx_clean(struct mtk_eth *eth, struct mtk_rx_ring *ring)
- 	}
- 
- 	if (ring->dma) {
--		dma_free_coherent(eth->dev,
-+		dma_free_coherent(eth->dma_dev,
- 				  ring->dma_size * sizeof(*ring->dma),
- 				  ring->dma,
- 				  ring->phys);
-@@ -2099,7 +2100,7 @@ static void mtk_dma_free(struct mtk_eth *eth)
- 		if (eth->netdev[i])
- 			netdev_reset_queue(eth->netdev[i]);
- 	if (eth->scratch_ring) {
--		dma_free_coherent(eth->dev,
-+		dma_free_coherent(eth->dma_dev,
- 				  MTK_DMA_SIZE * sizeof(struct mtk_tx_dma),
- 				  eth->scratch_ring,
- 				  eth->phy_scratch_ring);
-@@ -2448,6 +2449,8 @@ static void mtk_dim_tx(struct work_struct *work)
- 
- static int mtk_hw_init(struct mtk_eth *eth)
- {
-+	u32 dma_mask = ETHSYS_DMA_AG_MAP_PDMA | ETHSYS_DMA_AG_MAP_QDMA |
-+		       ETHSYS_DMA_AG_MAP_PPE;
- 	int i, val, ret;
- 
- 	if (test_and_set_bit(MTK_HW_INIT, &eth->state))
-@@ -2460,6 +2463,10 @@ static int mtk_hw_init(struct mtk_eth *eth)
- 	if (ret)
- 		goto err_disable_pm;
- 
-+	if (eth->ethsys)
-+		regmap_update_bits(eth->ethsys, ETHSYS_DMA_AG_MAP, dma_mask,
-+				   of_dma_is_coherent(eth->dma_dev->of_node) * dma_mask);
-+
- 	if (MTK_HAS_CAPS(eth->soc->caps, MTK_SOC_MT7628)) {
- 		ret = device_reset(eth->dev);
- 		if (ret) {
-@@ -3040,6 +3047,35 @@ static int mtk_add_mac(struct mtk_eth *eth, struct device_node *np)
- 	return err;
- }
- 
-+void mtk_eth_set_dma_device(struct mtk_eth *eth, struct device *dma_dev)
-+{
-+	struct net_device *dev, *tmp;
-+	LIST_HEAD(dev_list);
-+	int i;
-+
-+	rtnl_lock();
-+
-+	for (i = 0; i < MTK_MAC_COUNT; i++) {
-+		dev = eth->netdev[i];
-+
-+		if (!dev || !(dev->flags & IFF_UP))
-+			continue;
-+
-+		list_add_tail(&dev->close_list, &dev_list);
-+	}
-+
-+	dev_close_many(&dev_list, false);
-+
-+	eth->dma_dev = dma_dev;
-+
-+	list_for_each_entry_safe(dev, tmp, &dev_list, close_list) {
-+		list_del_init(&dev->close_list);
-+		dev_open(dev, NULL);
-+	}
-+
-+	rtnl_unlock();
-+}
-+
- static int mtk_probe(struct platform_device *pdev)
- {
- 	struct device_node *mac_np;
-@@ -3053,6 +3089,7 @@ static int mtk_probe(struct platform_device *pdev)
- 	eth->soc = of_device_get_match_data(&pdev->dev);
- 
- 	eth->dev = &pdev->dev;
-+	eth->dma_dev = &pdev->dev;
- 	eth->base = devm_platform_ioremap_resource(pdev, 0);
- 	if (IS_ERR(eth->base))
- 		return PTR_ERR(eth->base);
-@@ -3101,6 +3138,16 @@ static int mtk_probe(struct platform_device *pdev)
- 		}
- 	}
- 
-+	if (of_dma_is_coherent(pdev->dev.of_node)) {
-+		struct regmap *cci;
-+
-+		cci = syscon_regmap_lookup_by_phandle(pdev->dev.of_node,
-+						      "mediatek,cci-control");
-+		/* enable CPU/bus coherency */
-+		if (!IS_ERR(cci))
-+			regmap_write(cci, 0, 3);
-+	}
-+
- 	if (MTK_HAS_CAPS(eth->soc->caps, MTK_SGMII)) {
- 		eth->sgmii = devm_kzalloc(eth->dev, sizeof(*eth->sgmii),
- 					  GFP_KERNEL);
-diff --git a/drivers/net/ethernet/mediatek/mtk_eth_soc.h b/drivers/net/ethernet/mediatek/mtk_eth_soc.h
-index c9d42be314b5..e701544c4287 100644
---- a/drivers/net/ethernet/mediatek/mtk_eth_soc.h
-+++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.h
-@@ -465,6 +465,12 @@
- #define RSTCTRL_FE		BIT(6)
- #define RSTCTRL_PPE		BIT(31)
- 
-+/* ethernet dma channel agent map */
-+#define ETHSYS_DMA_AG_MAP	0x408
-+#define ETHSYS_DMA_AG_MAP_PDMA	BIT(0)
-+#define ETHSYS_DMA_AG_MAP_QDMA	BIT(1)
-+#define ETHSYS_DMA_AG_MAP_PPE	BIT(2)
-+
- /* SGMII subsystem config registers */
- /* Register to auto-negotiation restart */
- #define SGMSYS_PCS_CONTROL_1	0x0
-@@ -882,6 +888,7 @@ struct mtk_sgmii {
- /* struct mtk_eth -	This is the main datasructure for holding the state
-  *			of the driver
-  * @dev:		The device pointer
-+ * @dev:		The device pointer used for dma mapping/alloc
-  * @base:		The mapped register i/o base
-  * @page_lock:		Make sure that register operations are atomic
-  * @tx_irq__lock:	Make sure that IRQ register operations are atomic
-@@ -925,6 +932,7 @@ struct mtk_sgmii {
- 
- struct mtk_eth {
- 	struct device			*dev;
-+	struct device			*dma_dev;
- 	void __iomem			*base;
- 	spinlock_t			page_lock;
- 	spinlock_t			tx_irq_lock;
-@@ -1023,6 +1031,7 @@ int mtk_gmac_rgmii_path_setup(struct mtk_eth *eth, int mac_id);
- int mtk_eth_offload_init(struct mtk_eth *eth);
- int mtk_eth_setup_tc(struct net_device *dev, enum tc_setup_type type,
- 		     void *type_data);
-+void mtk_eth_set_dma_device(struct mtk_eth *eth, struct device *dma_dev);
- 
- 
- #endif /* MTK_ETH_H */
--- 
-2.35.1
+Well, at this point when trying to build with CC=clang one won't get
+libperf detected, so the priority is to make it work, i.e. filter out
+the options that prevent this type of build to complete.
 
+And looking at kernel config options is something we try not to do
+ 
+> > +  PERL_EMBED_CCOPTS := $(filter-out -specs=%,$(PERL_EMBED_CCOPTS))
+> > +  FLAGS_PERL_EMBED += -Wno-compound-token-split-by-macro
+> 
+> ^^ Maybe add a comment here or in the commit message that this occurs
+> with perl v5.34.
+> Together with the links Nathan pointing to the perl BTS?
+
+Ok, I'll add these notes to the commit log message.
+ 
+> > +endif
+> > +
+> >  $(OUTPUT)test-libperl.bin:
+> >         $(BUILD) $(FLAGS_PERL_EMBED)
+
+> > diff --git a/tools/perf/Makefile.config b/tools/perf/Makefile.config
+> > index 96ad944ca6a885cd..5b5ba475a5c00c0f 100644
+> > --- a/tools/perf/Makefile.config
+> > +++ b/tools/perf/Makefile.config
+> > @@ -790,6 +790,9 @@ else
+> >      LDFLAGS += $(PERL_EMBED_LDFLAGS)
+> >      EXTLIBS += $(PERL_EMBED_LIBADD)
+> >      CFLAGS += -DHAVE_LIBPERL_SUPPORT
+> > +    ifeq ($(CC_NO_CLANG), 0)
+> > +      CFLAGS += -Wno-compound-token-split-by-macro
+> > +    endif
+> >      $(call detected,CONFIG_LIBPERL)
+> >    endif
+> >  endif
+
+> ( I am here on Linux v5.17 + kbuild-gnu11-v5.18 and kbuild-v5.18 fixes. )
+> ( My goal was to build perf with LLVM/Clang v13/v14 and -std=gnu11. )
+> ( Debian/unstable switched to perl v5.34 in February. )
+> ( That is the background I hit these issues. )
+
+> Link: https://marc.info/?t=164646683300002&r=1&w=2
+> Link: https://marc.info/?t=164689324800001&r=1&w=2
+
+> Unsure what your base is.
+
+git://git.kernel.org/pub/scm/linux/kernel/git/acme/linux.git tmp.perf/urgent
+ 
+> When I recall correctly we have CLANG_FLAGS exported in the top-level Makefile?
+> Oh no, now it is here.
+
+CLANG_FLAGS?
+
+⬢[acme@toolbox perf]$ grep -r CLANG_FLAGS tools/
+tools/testing/selftests/rseq/Makefile:CLANG_FLAGS += -no-integrated-as
+tools/testing/selftests/rseq/Makefile:	  $(CLANG_FLAGS)
+tools/testing/selftests/tc-testing/Makefile:CLANG_FLAGS = -I. -I$(APIDIR) \
+tools/testing/selftests/tc-testing/Makefile:	$(CLANG) $(CLANG_FLAGS) \
+tools/testing/selftests/sched/Makefile:CLANG_FLAGS += -no-integrated-as
+tools/testing/selftests/sched/Makefile:	  $(CLANG_FLAGS)
+⬢[acme@toolbox perf]$
+
+That is not used in perf or tools/build/
+ 
+> $ git grep CLANG_FLAGS scripts/Makefile.clang
+> scripts/Makefile.clang:CLANG_FLAGS      += --target=$(CLANG_TARGET_FLAGS)
+> scripts/Makefile.clang:CLANG_FLAGS      += --target=$(notdir
+> $(CROSS_COMPILE:%-=%))
+> scripts/Makefile.clang:CLANG_FLAGS      += -fno-integrated-as
+> scripts/Makefile.clang:CLANG_FLAGS      +=
+> --prefix=$(GCC_TOOLCHAIN_DIR)$(notdir $(CROSS_COMPILE))
+> scripts/Makefile.clang:CLANG_FLAGS      += -fintegrated-as
+> scripts/Makefile.clang:CLANG_FLAGS      += -Werror=unknown-warning-option
+> scripts/Makefile.clang:CLANG_FLAGS      += -Werror=ignored-optimization-argument
+> scripts/Makefile.clang:KBUILD_CFLAGS    += $(CLANG_FLAGS)
+> scripts/Makefile.clang:KBUILD_AFLAGS    += $(CLANG_FLAGS)
+> scripts/Makefile.clang:export CLANG_FLAGS
+> 
+> So, are all these CLANG_FLAGS "inherited" to tools/ build ECO systems?
+
+Not really
+
+> I think no - it has its own rules :-(.
+
+yes
+ 
+> So, we should include scripts/Makefile.clang or enhance
+> tools/scripts/Makefile.include where LLVM/Clang stuff is defined (and
+> can be overridden).
+
+> Jiri pointed out he needed two options (when I recall correctly):
+> 
+> [1] -Wno-unused-command-line-argument
+> 
+> Example:
+> tools/testing/selftests/bpf/Makefile-# Silence some warnings when
+> compiled with clang
+> tools/testing/selftests/bpf/Makefile-ifneq ($(LLVM),)
+> tools/testing/selftests/bpf/Makefile:CFLAGS += -Wno-unused-command-line-argument
+> tools/testing/selftests/bpf/Makefile-endif
+> 
+> ^^ Here you see it is checked for LLVM.
+> Again, put that stuff in one single place - tools/scripts/Makefile.include
+> 
+> [2] -Wno-ignored-optimization-argument
+> 
+> Both [1] and [2] were not needed in my case.
+> 
+> [1] is always good to have - not only for perf.
+> 
+> AFAICS, you wanted to consolidate PERL_EMBED_XXX and FLAGS_PERL_EMBED
+> at a single place.
+> 1. tools/build/feature/Makefile
+> 2. tools/perf/Makefile.config
+
+Yeah, at some point I'll do it, probably in the 5.19 window.
+ 
+> Can not say where we all need perl check/requirement - maybe put that
+> stuff to the place where we define/check for toolchain/compiler (see
+> above)?
+> 
+> Again, all these issues happen because of -Werror is strictly set.
+> 
+> I put my patches around that area (see 2nd patch) - without checking
+> if the LLVM/Clang toolchain is used or not.
+> Both patches are attached.
+
+I saw those patches, even added a:
+
+Based-on-a-patch-by: Sedat Dilek <sedat.dilek@gmail.com>
+ 
+> $ git show -1 for-5.17/tools-feature_detect_libperl-clang-dileks-v3
+> commit 72ba634c9b39547197900d8b64ff36134af3ed08
+> (for-5.17/tools-feature_detect_libperl-clang-dileks-v3)
+> Author: Sedat Dilek <sedat.dilek@gmail.com>
+> Date:   Sun Mar 13 12:37:06 2022 +0100
+> 
+>    tools: feature-detect: libperl: Sync PERL_EMBED_CCOPTS with perf
+> 
+> diff --git a/tools/build/feature/Makefile b/tools/build/feature/Makefile
+> index 1480910c792e..fa6be127f483 100644
+> --- a/tools/build/feature/Makefile
+> +++ b/tools/build/feature/Makefile
+> @@ -217,7 +217,8 @@ strip-libs = $(filter-out -l%,$(1))
+> PERL_EMBED_LDOPTS = $(shell perl -MExtUtils::Embed -e ldopts 2>/dev/null)
+> PERL_EMBED_LDFLAGS = $(call strip-libs,$(PERL_EMBED_LDOPTS))
+> PERL_EMBED_LIBADD = $(call grep-libs,$(PERL_EMBED_LDOPTS))
+> -PERL_EMBED_CCOPTS = `perl -MExtUtils::Embed -e ccopts 2>/dev/null`
+> +PERL_EMBED_CCOPTS = $(perl -MExtUtils::Embed -e ccopts 2>/dev/null)
+> +PERL_EMBED_CCOPTS := $(filter-out -ffat-lto-objects, $(PERL_EMBED_CCOPTS))
+> FLAGS_PERL_EMBED=$(PERL_EMBED_CCOPTS) $(PERL_EMBED_LDOPTS)
+> 
+> $(OUTPUT)test-libperl.bin:
+> 
+> $ git show -1 for-5.17/perf-libperl_support-clang-dileks
+> commit 316a1917ec05772ab0f99dad534fabdd74547865
+> (for-5.17/perf-libperl_support-clang-dileks)
+> Author: Sedat Dilek <sedat.dilek@gmail.com>
+> Date:   Sun Mar 6 11:29:50 2022 +0100
+> 
+>    perf: Fix libperl support with clang and perl v5.34
+> 
+> diff --git a/tools/build/feature/Makefile b/tools/build/feature/Makefile
+> index 1480910c792e..ef9b37c5c652 100644
+> --- a/tools/build/feature/Makefile
+> +++ b/tools/build/feature/Makefile
+> @@ -81,7 +81,7 @@ PKG_CONFIG ?= $(CROSS_COMPILE)pkg-config
+> 
+> all: $(FILES)
+> 
+> -__BUILD = $(CC) $(CFLAGS) -MD -Wall -Werror -o $@ $(patsubst
+> %.bin,%.c,$(@F)) $(LDFLAGS)
+> +__BUILD = $(CC) $(CFLAGS) -MD -Wall -Werror
+> -Wno-compound-token-split-by-macro -o $@ $(patsubst %.bin,%.c,$(@F))
+> $(LDFLAGS)
+>   BUILD = $(__BUILD) > $(@:.bin=.make.output) 2>&1
+> 
+> __BUILDXX = $(CXX) $(CXXFLAGS) -MD -Wall -Werror -o $@ $(patsubst
+> %.bin,%.cpp,$(@F)) $(LDFLAGS)
+> diff --git a/tools/perf/Makefile.config b/tools/perf/Makefile.config
+> index 96ad944ca6a8..acc987daf56e 100644
+> --- a/tools/perf/Makefile.config
+> +++ b/tools/perf/Makefile.config
+> @@ -213,7 +213,7 @@ endif
+> 
+> # Treat warnings as errors unless directed not to
+> ifneq ($(WERROR),0)
+> -  CORE_CFLAGS += -Werror
+> +  CORE_CFLAGS += -Werror -Wno-compound-token-split-by-macro
+
+Ok, you added it right after -Werror, which is equivalent, in the
+feature test case, to what I did.
+
+I'll take that into account when working on having all this in a single
+place, next merge window.
+
+>   CXXFLAGS += -Werror
+>   HOSTCFLAGS += -Werror
+> endif
+> 
+> With both patches I am able to build perf-5.17 with LLVM/Clang v14 and
+> -std=gnu11 and perl v5.34.
+> 
+> It's good when Jiri tests on his system.
+
+Right, I'll test on these containers, with many gcc and clang versions:
+
+   1 almalinux:8                   : Ok   gcc (GCC) 8.5.0 20210514 (Red Hat 8.5.0-4) , clang version 12.0.1 (Red Hat 12.0.1-4.module_el8.5.0+1025+93159d6c)
+   2 alpine:3.4                    : Ok   gcc (Alpine 5.3.0) 5.3.0 , clang version 3.8.0 (tags/RELEASE_380/final)
+   3 alpine:3.5                    : Ok   gcc (Alpine 6.2.1) 6.2.1 20160822 , clang version 3.8.1 (tags/RELEASE_381/final)
+   4 alpine:3.6                    : Ok   gcc (Alpine 6.3.0) 6.3.0 , clang version 4.0.0 (tags/RELEASE_400/final)
+   5 alpine:3.7                    : Ok   gcc (Alpine 6.4.0) 6.4.0 , Alpine clang version 5.0.0 (tags/RELEASE_500/final) (based on LLVM 5.0.0)
+   6 alpine:3.8                    : Ok   gcc (Alpine 6.4.0) 6.4.0 , Alpine clang version 5.0.1 (tags/RELEASE_501/final) (based on LLVM 5.0.1)
+   7 alpine:3.9                    : Ok   gcc (Alpine 8.3.0) 8.3.0 , Alpine clang version 5.0.1 (tags/RELEASE_502/final) (based on LLVM 5.0.1)
+   8 alpine:3.10                   : Ok   gcc (Alpine 8.3.0) 8.3.0 , Alpine clang version 8.0.0 (tags/RELEASE_800/final) (based on LLVM 8.0.0)
+   9 alpine:3.11                   : Ok   gcc (Alpine 9.3.0) 9.3.0 , Alpine clang version 9.0.0 (https://git.alpinelinux.org/aports f7f0d2c2b8bcd6a5843401a9a702029556492689) (based on LLVM 9.0.0)
+  10 alpine:3.12                   : Ok   gcc (Alpine 9.3.0) 9.3.0 , Alpine clang version 10.0.0 (https://gitlab.alpinelinux.org/alpine/aports.git 7445adce501f8473efdb93b17b5eaf2f1445ed4c)
+  11 alpine:3.13                   : Ok   gcc (Alpine 10.2.1_pre1) 10.2.1 20201203 , Alpine clang version 10.0.1 
+  12 alpine:3.14                   : Ok   gcc (Alpine 10.3.1_git20210424) 10.3.1 20210424 , Alpine clang version 11.1.0
+  13 alpine:3.15                   : Ok   gcc (Alpine 10.3.1_git20211027) 10.3.1 20211027 , Alpine clang version 12.0.1
+  14 alpine:edge                   : Ok   gcc (Alpine 11.2.1_git20220219) 11.2.1 20220219 , Alpine clang version 13.0.1
+  15 alt:p8                        : Ok   x86_64-alt-linux-gcc (GCC) 5.3.1 20151207 (ALT p8 5.3.1-alt3.M80P.1) , clang version 3.8.0 (tags/RELEASE_380/final)
+  16 alt:p9                        : Ok   x86_64-alt-linux-gcc (GCC) 8.4.1 20200305 (ALT p9 8.4.1-alt0.p9.1) , clang version 10.0.0 
+  17 alt:p10                       : Ok   x86_64-alt-linux-gcc (GCC) 10.3.1 20210703 (ALT Sisyphus 10.3.1-alt2) , clang version 11.0.1
+  18 alt:sisyphus                  : Ok   x86_64-alt-linux-gcc (GCC) 11.2.1 20211202 (ALT Sisyphus 11.2.1-alt2) , ALT Linux Team clang version 12.0.1
+  19 amazonlinux:1                 : Ok   gcc (GCC) 7.2.1 20170915 (Red Hat 7.2.1-2) , clang version 3.6.2 (tags/RELEASE_362/final)
+  20 amazonlinux:2                 : Ok   gcc (GCC) 7.3.1 20180712 (Red Hat 7.3.1-13) , clang version 11.1.0 (Amazon Linux 2 11.1.0-1.amzn2.0.2)
+  21 amazonlinux:devel             : Ok   gcc (GCC) 11.2.1 20210728 (Red Hat 11.2.1-2) , clang version 12.0.1 (Fedora 12.0.1-1.amzn2022)
+  22 archlinux:base                : FAIL clang version 13.0.1
+  23 centos:8                      : Ok   gcc (GCC) 8.4.1 20200928 (Red Hat 8.4.1-1) , clang version 11.0.1 (Red Hat 11.0.1-1.module_el8.4.0+966+2995ef20)
+  24 centos:stream                 : Ok   gcc (GCC) 8.5.0 20210514 (Red Hat 8.5.0-10) , clang version 13.0.0 (Red Hat 13.0.0-3.module_el8.6.0+1074+380cef3f)
+  25 clearlinux:latest             : Ok   gcc (Clear Linux OS for Intel Architecture) 11.2.1 20220322 releases/gcc-11.2.0-884-gf45603f39b , clang version 13.0.0
+  26 debian:9                      : Ok   gcc (Debian 6.3.0-18+deb9u1) 6.3.0 20170516 , clang version 3.8.1-24 (tags/RELEASE_381/final)
+  27 debian:10                     : Ok   gcc (Debian 8.3.0-6) 8.3.0 , Debian clang version 11.0.1-2~deb10u1
+  28 debian:11                     : Ok   gcc (Debian 10.2.1-6) 10.2.1 20210110 , Debian clang version 11.0.1-2
+  29 debian:experimental           : Ok   gcc (Debian 11.2.0-19) 11.2.0 , Debian clang version 13.0.1-3+b2
+  30 debian:experimental-x-arm64   : Ok   aarch64-linux-gnu-gcc (Debian 11.2.0-18) 11.2.0 
+  31 debian:experimental-x-mips    : Ok   mips-linux-gnu-gcc (Debian 11.2.0-18) 11.2.0 
+  32 debian:experimental-x-mips64  : Ok   mips64-linux-gnuabi64-gcc (Debian 10.2.1-6) 10.2.1 20210110 
+  33 debian:experimental-x-mipsel  : Ok   mipsel-linux-gnu-gcc (Debian 11.2.0-18) 11.2.0 
+  34 fedora:22                     : Ok   gcc (GCC) 5.3.1 20160406 (Red Hat 5.3.1-6) , clang version 3.5.0 (tags/RELEASE_350/final)
+  35 fedora:23                     : Ok   gcc (GCC) 5.3.1 20160406 (Red Hat 5.3.1-6) , clang version 3.7.0 (tags/RELEASE_370/final)
+  36 fedora:24                     : Ok   gcc (GCC) 6.3.1 20161221 (Red Hat 6.3.1-1) , clang version 3.8.1 (tags/RELEASE_381/final)
+  37 fedora:24-x-ARC-uClibc        : Ok   arc-linux-gcc (ARCompact ISA Linux uClibc toolchain 2017.09-rc2) 7.1.1 20170710 
+  38 fedora:25                     : Ok   gcc (GCC) 6.4.1 20170727 (Red Hat 6.4.1-1) , clang version 3.9.1 (tags/RELEASE_391/final)
+  39 fedora:26                     : Ok   gcc (GCC) 7.3.1 20180130 (Red Hat 7.3.1-2) , clang version 4.0.1 (tags/RELEASE_401/final)
+  40 fedora:27                     : Ok   gcc (GCC) 7.3.1 20180712 (Red Hat 7.3.1-6) , clang version 5.0.2 (tags/RELEASE_502/final)
+  41 fedora:28                     : Ok   gcc (GCC) 8.3.1 20190223 (Red Hat 8.3.1-2) , clang version 6.0.1 (tags/RELEASE_601/final)
+  42 fedora:29                     : Ok   gcc (GCC) 8.3.1 20190223 (Red Hat 8.3.1-2) , clang version 7.0.1 (Fedora 7.0.1-6.fc29)
+  43 fedora:30                     : Ok   gcc (GCC) 9.3.1 20200408 (Red Hat 9.3.1-2) , clang version 8.0.0 (Fedora 8.0.0-3.fc30)
+  44 fedora:31                     : Ok   gcc (GCC) 9.3.1 20200408 (Red Hat 9.3.1-2) , clang version 9.0.1 (Fedora 9.0.1-4.fc31)
+  45 fedora:32                     : Ok   gcc (GCC) 10.3.1 20210422 (Red Hat 10.3.1-1) , clang version 10.0.1 (Fedora 10.0.1-3.fc32)
+  46 fedora:33                     : Ok   gcc (GCC) 10.3.1 20210422 (Red Hat 10.3.1-1) , clang version 11.0.0 (Fedora 11.0.0-3.fc33)
+  47 fedora:34                     : Ok   gcc (GCC) 11.2.1 20220127 (Red Hat 11.2.1-9) , clang version 12.0.1 (Fedora 12.0.1-1.fc34)
+  48 fedora:34-x-ARC-glibc         : Ok   arc-linux-gcc (ARC HS GNU/Linux glibc toolchain 2019.03-rc1) 8.3.1 20190225 
+  49 fedora:34-x-ARC-uClibc        : Ok   arc-linux-gcc (ARCv2 ISA Linux uClibc toolchain 2019.03-rc1) 8.3.1 20190225 
+  50 fedora:35                     : Ok   gcc (GCC) 11.2.1 20220127 (Red Hat 11.2.1-9) , clang version 13.0.0 (Fedora 13.0.0-3.fc35)
+  51 fedora:36                     : FAIL gcc version 12.0.1 20220308 (Red Hat 12.0.1-0) (GCC) 
+  52 fedora:rawhide                : Ok   gcc (GCC) 12.0.1 20220308 (Red Hat 12.0.1-0) , clang version 13.0.1 (Fedora 13.0.1-1.fc37)
+  53 gentoo-stage3:latest          : Ok   gcc (Gentoo 11.2.0 p1) 11.2.0 , clang version 13.0.0
+  54 mageia:6                      : Ok   gcc (Mageia 5.5.0-1.mga6) 5.5.0 , clang version 3.9.1 (tags/RELEASE_391/final)
+  55 mageia:7                      : FAIL clang version 8.0.0 (Mageia 8.0.0-1.mga7)
+  56 manjaro:base                  : Ok   gcc (GCC) 11.1.0 , clang version 13.0.0
+  57 openmandriva:4.2              : FAIL gcc version 11.2.0 20210728 (OpenMandriva) (GCC) 
+  58 openmandriva:cooker           : FAIL gcc version 11.2.0 20210728 (OpenMandriva) (GCC) 
+  59 opensuse:15.0                 : Ok   gcc (SUSE Linux) 7.4.1 20190905 [gcc-7-branch revision 275407] , clang version 5.0.1 (tags/RELEASE_501/final 312548)
+  60 opensuse:15.1                 : Ok   gcc (SUSE Linux) 7.5.0 , clang version 7.0.1 (tags/RELEASE_701/final 349238)
+  61 opensuse:15.2                 : Ok   gcc (SUSE Linux) 7.5.0 , clang version 9.0.1 
+  62 opensuse:15.3                 : Ok   gcc (SUSE Linux) 7.5.0 , clang version 11.0.1
+  63 opensuse:15.4                 : Ok   gcc (SUSE Linux) 7.5.0 , clang version 11.0.1
+  64 opensuse:tumbleweed           : Ok   gcc (SUSE Linux) 11.2.1 20211124 [revision 7510c23c1ec53aa4a62705f0384079661342ff7b] , clang version 13.0.0
+  65 oraclelinux:8                 : Ok   gcc (GCC) 8.5.0 20210514 (Red Hat 8.5.0-4.0.1) , clang version 12.0.1 (Red Hat 12.0.1-4.0.1.module+el8.5.0+20428+2b4ecd47)
+  66 rockylinux:8                  : Ok   gcc (GCC) 8.5.0 20210514 (Red Hat 8.5.0-4) , clang version 12.0.1 (Red Hat 12.0.1-4.module+el8.5.0+715+58f51d49)
+  67 ubuntu:16.04                  : Ok   gcc (Ubuntu 5.4.0-6ubuntu1~16.04.12) 5.4.0 20160609 , clang version 3.8.0-2ubuntu4 (tags/RELEASE_380/final)
+  68 ubuntu:16.04-x-arm            : Ok   arm-linux-gnueabihf-gcc (Ubuntu/Linaro 5.4.0-6ubuntu1~16.04.9) 5.4.0 20160609 
+  69 ubuntu:16.04-x-arm64          : Ok   aarch64-linux-gnu-gcc (Ubuntu/Linaro 5.4.0-6ubuntu1~16.04.9) 5.4.0 20160609 
+  70 ubuntu:16.04-x-powerpc        : Ok   powerpc-linux-gnu-gcc (Ubuntu 5.4.0-6ubuntu1~16.04.9) 5.4.0 20160609 
+  71 ubuntu:16.04-x-powerpc64      : Ok   powerpc64-linux-gnu-gcc (Ubuntu/IBM 5.4.0-6ubuntu1~16.04.9) 5.4.0 20160609 
+  72 ubuntu:16.04-x-powerpc64el    : Ok   powerpc64le-linux-gnu-gcc (Ubuntu/IBM 5.4.0-6ubuntu1~16.04.9) 5.4.0 20160609 
+  73 ubuntu:16.04-x-s390           : Ok   s390x-linux-gnu-gcc (Ubuntu 5.4.0-6ubuntu1~16.04.9) 5.4.0 20160609 
+  74 ubuntu:18.04                  : Ok   gcc (Ubuntu 7.5.0-3ubuntu1~18.04) 7.5.0 , clang version 6.0.0-1ubuntu2 (tags/RELEASE_600/final)
+  75 ubuntu:18.04-x-arm            : Ok   arm-linux-gnueabihf-gcc (Ubuntu/Linaro 7.5.0-3ubuntu1~18.04) 7.5.0 
+  76 ubuntu:18.04-x-arm64          : Ok   aarch64-linux-gnu-gcc (Ubuntu/Linaro 7.5.0-3ubuntu1~18.04) 7.5.0 
+  77 ubuntu:18.04-x-m68k           : Ok   m68k-linux-gnu-gcc (Ubuntu 7.5.0-3ubuntu1~18.04) 7.5.0 
+  78 ubuntu:18.04-x-powerpc        : Ok   powerpc-linux-gnu-gcc (Ubuntu 7.5.0-3ubuntu1~18.04) 7.5.0 
+  79 ubuntu:18.04-x-powerpc64      : Ok   powerpc64-linux-gnu-gcc (Ubuntu 7.5.0-3ubuntu1~18.04) 7.5.0 
+  80 ubuntu:18.04-x-powerpc64el    : Ok   powerpc64le-linux-gnu-gcc (Ubuntu 7.5.0-3ubuntu1~18.04) 7.5.0 
+  81 ubuntu:18.04-x-riscv64        : Ok   riscv64-linux-gnu-gcc (Ubuntu 7.5.0-3ubuntu1~18.04) 7.5.0 
+  82 ubuntu:18.04-x-s390           : Ok   s390x-linux-gnu-gcc (Ubuntu 7.5.0-3ubuntu1~18.04) 7.5.0 
+  83 ubuntu:18.04-x-sh4            : Ok   sh4-linux-gnu-gcc (Ubuntu 7.5.0-3ubuntu1~18.04) 7.5.0 
+  84 ubuntu:18.04-x-sparc64        : Ok   sparc64-linux-gnu-gcc (Ubuntu 7.5.0-3ubuntu1~18.04) 7.5.0 
+  85 ubuntu:20.04                  : FAIL clang version 10.0.0-4ubuntu1 
+  86 ubuntu:20.04-x-powerpc64el    : Ok   powerpc64le-linux-gnu-gcc (Ubuntu 10.3.0-1ubuntu1~20.04) 10.3.0 
+  87 ubuntu:20.10                  : Ok   gcc (Ubuntu 10.3.0-1ubuntu1~20.10) 10.3.0 , Ubuntu clang version 11.0.0-2
+  88 ubuntu:21.04                  : Ok   gcc (Ubuntu 10.3.0-1ubuntu1) 10.3.0 , Ubuntu clang version 12.0.0-3ubuntu1~21.04.2
+  89 ubuntu:21.10                  : Ok   gcc (Ubuntu 11.2.0-7ubuntu2) 11.2.0 , Ubuntu clang version 13.0.0-2
+  90 ubuntu:22.04                  : FAIL gcc version 11.2.0 (Ubuntu 11.2.0-18ubuntu1) 
+ 
+> I can test your patch with my next kernel-build, but can not promise.
+> Do you have it somewhere in a Git repo/branch or a (LORE) link for
+> easy application?
+
+git://git.kernel.org/pub/scm/linux/kernel/git/acme/linux.git tmp.perf/urgent
+
+> Did not check if b4 tool is able to extract it as patch out of your
+> original email.
+> 
+> - Sedat -
+
+> From 72ba634c9b39547197900d8b64ff36134af3ed08 Mon Sep 17 00:00:00 2001
+> From: Sedat Dilek <sedat.dilek@gmail.com>
+> Date: Sun, 13 Mar 2022 12:37:06 +0100
+> Subject: [PATCH] tools: feature-detect: libperl: Sync PERL_EMBED_CCOPTS with
+>  perf
+> 
+> ---
+>  tools/build/feature/Makefile | 3 ++-
+>  1 file changed, 2 insertions(+), 1 deletion(-)
+> 
+> diff --git a/tools/build/feature/Makefile b/tools/build/feature/Makefile
+> index 1480910c792e..fa6be127f483 100644
+> --- a/tools/build/feature/Makefile
+> +++ b/tools/build/feature/Makefile
+> @@ -217,7 +217,8 @@ strip-libs = $(filter-out -l%,$(1))
+>  PERL_EMBED_LDOPTS = $(shell perl -MExtUtils::Embed -e ldopts 2>/dev/null)
+>  PERL_EMBED_LDFLAGS = $(call strip-libs,$(PERL_EMBED_LDOPTS))
+>  PERL_EMBED_LIBADD = $(call grep-libs,$(PERL_EMBED_LDOPTS))
+> -PERL_EMBED_CCOPTS = `perl -MExtUtils::Embed -e ccopts 2>/dev/null`
+> +PERL_EMBED_CCOPTS = $(perl -MExtUtils::Embed -e ccopts 2>/dev/null)
+> +PERL_EMBED_CCOPTS := $(filter-out -ffat-lto-objects, $(PERL_EMBED_CCOPTS))
+>  FLAGS_PERL_EMBED=$(PERL_EMBED_CCOPTS) $(PERL_EMBED_LDOPTS)
+>  
+>  $(OUTPUT)test-libperl.bin:
+> -- 
+> 2.35.1
+> 
+
+> From 316a1917ec05772ab0f99dad534fabdd74547865 Mon Sep 17 00:00:00 2001
+> From: Sedat Dilek <sedat.dilek@gmail.com>
+> Date: Sun, 6 Mar 2022 11:29:50 +0100
+> Subject: [PATCH] perf: Fix libperl support with clang and perl v5.34
+> 
+> ---
+>  tools/build/feature/Makefile | 2 +-
+>  tools/perf/Makefile.config   | 2 +-
+>  2 files changed, 2 insertions(+), 2 deletions(-)
+> 
+> diff --git a/tools/build/feature/Makefile b/tools/build/feature/Makefile
+> index 1480910c792e..ef9b37c5c652 100644
+> --- a/tools/build/feature/Makefile
+> +++ b/tools/build/feature/Makefile
+> @@ -81,7 +81,7 @@ PKG_CONFIG ?= $(CROSS_COMPILE)pkg-config
+>  
+>  all: $(FILES)
+>  
+> -__BUILD = $(CC) $(CFLAGS) -MD -Wall -Werror -o $@ $(patsubst %.bin,%.c,$(@F)) $(LDFLAGS)
+> +__BUILD = $(CC) $(CFLAGS) -MD -Wall -Werror -Wno-compound-token-split-by-macro -o $@ $(patsubst %.bin,%.c,$(@F)) $(LDFLAGS)
+>    BUILD = $(__BUILD) > $(@:.bin=.make.output) 2>&1
+>  
+>  __BUILDXX = $(CXX) $(CXXFLAGS) -MD -Wall -Werror -o $@ $(patsubst %.bin,%.cpp,$(@F)) $(LDFLAGS)
+> diff --git a/tools/perf/Makefile.config b/tools/perf/Makefile.config
+> index 96ad944ca6a8..acc987daf56e 100644
+> --- a/tools/perf/Makefile.config
+> +++ b/tools/perf/Makefile.config
+> @@ -213,7 +213,7 @@ endif
+>  
+>  # Treat warnings as errors unless directed not to
+>  ifneq ($(WERROR),0)
+> -  CORE_CFLAGS += -Werror
+> +  CORE_CFLAGS += -Werror -Wno-compound-token-split-by-macro
+>    CXXFLAGS += -Werror
+>    HOSTCFLAGS += -Werror
+>  endif
+> -- 
+> 2.35.1
+> 
+
+
+- Arnaldo
