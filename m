@@ -2,219 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5960FC4167B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AD644C41535
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 22:31:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1443930AbiDEWUr (ORCPT
+        id S1444004AbiDEWU4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 18:20:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35470 "EHLO
+        Tue, 5 Apr 2022 18:20:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44588 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1455710AbiDEQA3 (ORCPT
+        with ESMTP id S238926AbiDEKcZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 12:00:29 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5EB771D310;
-        Tue,  5 Apr 2022 08:19:33 -0700 (PDT)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id EDAF6210DE;
-        Tue,  5 Apr 2022 15:19:31 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1649171971; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=AUaCL0W4jHwKamsmD5VqBN+3A3UfQ6aVKoMK0LhECXY=;
-        b=a4sG92MVGf37CQeLB+XZVjYv2GHIwuzBOfLNOrkSLltR8rVJAMiL70GClf7Ilj5pI58Ug+
-        r5J4lVPcvWThTyiJH0rb9jdVD1/cT6W4UlE+3rv+qg8vTg7+udhg1Jf+hxs6Q0tU3+5bx+
-        kfxmTkkuL0P3NjRxrXZ57wrS9n8o60k=
-Received: from suse.cz (unknown [10.100.224.162])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id DE2A6A3B82;
-        Tue,  5 Apr 2022 15:19:30 +0000 (UTC)
-Date:   Tue, 5 Apr 2022 17:19:28 +0200
-From:   Petr Mladek <pmladek@suse.com>
-To:     Lecopzer Chen <lecopzer.chen@mediatek.com>
-Cc:     acme@kernel.org, akpm@linux-foundation.org,
-        alexander.shishkin@linux.intel.com, catalin.marinas@arm.com,
-        davem@davemloft.net, jolsa@redhat.com, jthierry@redhat.com,
-        keescook@chromium.org, kernelfans@gmail.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-mediatek@lists.infradead.org,
-        linux-perf-users@vger.kernel.org, mark.rutland@arm.com,
-        masahiroy@kernel.org, matthias.bgg@gmail.com, maz@kernel.org,
-        mcgrof@kernel.org, mingo@redhat.com, namhyung@kernel.org,
-        nixiaoming@huawei.com, peterz@infradead.org,
-        sparclinux@vger.kernel.org, sumit.garg@linaro.org,
-        wangqing@vivo.com, will@kernel.org, yj.chiang@mediatek.com
-Subject: Re: [PATCH v3 4/5] kernel/watchdog: Adapt the watchdog_hld interface
- for async model
-Message-ID: <YkxeAM+SwYHAnJE1@alley>
-References: <20220404144113.GB26840@pathway.suse.cz>
- <20220405133503.4487-1-lecopzer.chen@mediatek.com>
+        Tue, 5 Apr 2022 06:32:25 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 453B42252F;
+        Tue,  5 Apr 2022 03:18:31 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 2B709D6E;
+        Tue,  5 Apr 2022 03:18:31 -0700 (PDT)
+Received: from [10.57.41.19] (unknown [10.57.41.19])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 971AA3F5A1;
+        Tue,  5 Apr 2022 03:18:28 -0700 (PDT)
+Message-ID: <00bcebba-4955-cbbd-e7f4-e344f9b932a0@arm.com>
+Date:   Tue, 5 Apr 2022 11:18:23 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220405133503.4487-1-lecopzer.chen@mediatek.com>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH] drm/msm: use orig_nents to iterate over scatterlist with
+ per-process tables
+Content-Language: en-GB
+To:     Jonathan Marek <jonathan@marek.ca>, freedreno@lists.freedesktop.org
+Cc:     David Airlie <airlied@linux.ie>,
+        "open list:DRM DRIVER FOR MSM ADRENO GPU" 
+        <linux-arm-msm@vger.kernel.org>,
+        Jordan Crouse <jordan@cosmicpenguin.net>, dpiliaiev@igalia.com,
+        "open list:DRM DRIVER FOR MSM ADRENO GPU" 
+        <dri-devel@lists.freedesktop.org>,
+        Abhinav Kumar <quic_abhinavk@quicinc.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Sean Paul <sean@poorly.run>,
+        open list <linux-kernel@vger.kernel.org>
+References: <20220328125505.31605-1-jonathan@marek.ca>
+From:   Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <20220328125505.31605-1-jonathan@marek.ca>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue 2022-04-05 21:35:03, Lecopzer Chen wrote:
-> > On Thu 2022-03-24 22:14:04, Lecopzer Chen wrote:
-> > > When lockup_detector_init()->watchdog_nmi_probe(), PMU may be not ready
-> > > yet. E.g. on arm64, PMU is not ready until
-> > > device_initcall(armv8_pmu_driver_init).  And it is deeply integrated
-> > > with the driver model and cpuhp. Hence it is hard to push this
-> > > initialization before smp_init().
-> > > 
-> > > But it is easy to take an opposite approach and try to initialize
-> > > the watchdog once again later.
-> > > The delayed probe is called using workqueues. It need to allocate
-> > > memory and must be proceed in a normal context.
-> > > The delayed probe is queued only when the early one returns -EBUSY.
-> > > It is the return code returned when PMU is not ready yet.
-> > > 
-> > > Provide an API - retry_lockup_detector_init() for anyone who needs
-> > > to delayed init lockup detector.
-> > > 
-> > > The original assumption is: nobody should use delayed probe after
-> > > lockup_detector_check() which has __init attribute.
-> > > That is, anyone uses this API must call between lockup_detector_init()
-> > > and lockup_detector_check(), and the caller must have __init attribute
-> > > 
-> > > --- a/kernel/watchdog.c
-> > > +++ b/kernel/watchdog.c
-> > > +}
-> > > +
-> > > +/*
-> > > + * retry_lockup_detector_init - retry init lockup detector if possible.
-> > > + *
-> > > + * Only take effect when allow_lockup_detector_init_retry is true, which
-> > > + * means it must call between lockup_detector_init() and lockup_detector_check().
-> > > + * Be aware that caller must have __init attribute, relative functions
-> > > + * will be freed after kernel initialization.
-> > > + */
-> > > +void __init retry_lockup_detector_init(void)
-> > > +{
-> > > +	if (!allow_lockup_detector_init_retry)
-> > > +		return;
-> > > +
-> > > +	queue_work_on(__smp_processor_id(), system_wq, &detector_work);
-> > > +}
-> > > +
-> > > +/* Ensure the check is called after the initialization of driver */
-> > > +static int __init lockup_detector_check(void)
-> > > +{
-> > > +	/* Make sure no work is pending. */
-> > > +	flush_work(&detector_work);
-> > 
-> > This is racy. We should first disable
-> > "allow_lockup_detector_init_retry" to make sure
-> > that retry_lockup_detector_init() will not queue
-> > the work any longer.
+On 2022-03-28 13:55, Jonathan Marek wrote:
+> This matches the implementation of iommu_map_sgtable() used for the
+> non-per-process page tables path.
 > 
-> But disable before flush_work will make the 
->     lockup_detector_delay_init() ->
->     watchdog_nmi_probe ->
->     +	if (!allow_lockup_detector_init_retry)
->     +		return -EBUSY;
+> This works around the dma_map_sgtable() call (used to invalidate cache)
+> overwriting sgt->nents with 1 (which is probably a separate issue).
 
-I see. It is exactly the reason why I suggest to remove the
-optimization and keep the code simple.
+FWIW that's expected behaviour. The sgtable APIs use nents to keep track 
+of the number of DMA segments, while orig_nents represents the physical 
+segments. IIUC you're not actually using the DMA mapping, just relying 
+on its side-effects, so it's still the physical segments that you care 
+about for your private IOMMU mapping here.
 
-> how about:
-> ...
-> static bool __init delayed_init_allowed = true;
-> ...
-> /*
->  * retry_lockup_detector_init - retry init lockup detector if possible.
->  *
->  * Only take effect when allow_lockup_detector_init_retry is true, which
->  * means it must call between lockup_detector_init() and lockup_detector_check().
->  * Be aware that caller must have __init attribute, relative functions
->  * will be freed after kernel initialization.
->  */
-> void __init retry_lockup_detector_init(void)
-> {
-> 	if (!allow_lockup_detector_init_retry || !delayed_init_allowed)
-> 		return;
+> Fixes: b145c6e65eb0 ("drm/msm: Add support to create a local pagetable")
+> Signed-off-by: Jonathan Marek <jonathan@marek.ca>
+> ---
+>   drivers/gpu/drm/msm/msm_iommu.c | 2 +-
+>   1 file changed, 1 insertion(+), 1 deletion(-)
 > 
-> 	/* 
-> 	 * we shouldn't queue any delayed init work twice to avoid
-> 	 * any unwanted racy.
-> 	 */
-> 	delayed_init_allowed = false;
+> diff --git a/drivers/gpu/drm/msm/msm_iommu.c b/drivers/gpu/drm/msm/msm_iommu.c
+> index bcaddbba564df..22935ef26a3a1 100644
+> --- a/drivers/gpu/drm/msm/msm_iommu.c
+> +++ b/drivers/gpu/drm/msm/msm_iommu.c
+> @@ -58,7 +58,7 @@ static int msm_iommu_pagetable_map(struct msm_mmu *mmu, u64 iova,
+>   	u64 addr = iova;
+>   	unsigned int i;
+>   
+> -	for_each_sg(sgt->sgl, sg, sgt->nents, i) {
+> +	for_each_sg(sgt->sgl, sg, sgt->orig_nents, i) {
 
-Grrr, this is so complicated and confusing. It might be because of
-badly selected variable names or comments. But I think that it is
-simply a bad approach.
+Even better would be to use for_each_sgtable_sg(), which exists 
+primarily for the sake of avoiding this exact confusion.
 
-OK, you suggest two variables. If I get it correctly:
+Robin.
 
-    + The variable "delayed_init_allowed"
-     tries to prevent the race in lockup_detector_check().
-
-     It will make sure that the work could not be queued after
-     flush_work() finishes.
-
-     Is this obvious from the comment?
-     Is this obvious from the variable name?
-
-     I am sorry. But it is not obvious to me. I understand it only
-     because I see it together in this mail. It will be pretty
-     hard to get it from the code when I see it one year later.
-
-
-   + The variable "allow_lockup_detector_init_retry" has an unclear
-     meaning. It might mean:
-
-	+ watchdog_nmi_probe() ended with -EBUSY in
-	  lockup_detector_init() and we can try the delayed init.
-
-	+ but it also means that watchdog_nmi_probe() succeeded in
-	  lockup_detector_delay_init() and there is no need to
-	  try the delayed init any longer.
-
-       Is this obvious from the variable name?
-       Is it explained anywhere?
-       Is it easy to understand?
-
-       No, from my POV. It is really bad idea to have a single
-       variable with so many meanings.
-
-
-And this is my problem with this approach. There was one variable with
-unclear meanting. And you are trying to fix it by two variables
-with unclear meaning.
-
-> 	queue_work_on(__smp_processor_id(), system_wq, &detector_work);
-> }
-> 
-> 
-> /*
->  * Ensure the check is called after the initialization of driver
->  * and before removing init code.
->  */
-> static int __init lockup_detector_check(void)
-> {
-> 	delayed_init_allowed = false;
-> 	flush_work(&detector_work);
-> 	allow_lockup_detector_init_retry = false;
-> 
-> 	return 0;
-> }
-
-No, please keep it simple. Just have one variable that will say
-whether we are allowed to queue the work:
-
-  + It will be allowed when watchdog_nmi_probe() ended
-    with -EBUSY in lockup_detector_init()
-
-  + It will not longer be allowed when watchdog_nmi_probe()
-    succeeded or when lockup_detector_check() flushes
-    the pending works.
-
-
-Best Regards,
-Petr
+>   		size_t size = sg->length;
+>   		phys_addr_t phys = sg_phys(sg);
+>   
