@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A9FF3C4167B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B895FC4321E
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 11:07:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351889AbiDELF2 (ORCPT
+        id S1351924AbiDELFb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 07:05:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45578 "EHLO
+        Tue, 5 Apr 2022 07:05:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45586 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237664AbiDEInE (ORCPT
+        with ESMTP id S237578AbiDEImt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:43:04 -0400
+        Tue, 5 Apr 2022 04:42:49 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48BFA17E3E;
-        Tue,  5 Apr 2022 01:35:35 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0657BE0F8;
+        Tue,  5 Apr 2022 01:35:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 08F08B81A32;
-        Tue,  5 Apr 2022 08:35:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 633A9C385A0;
-        Tue,  5 Apr 2022 08:35:32 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A8B01B81A32;
+        Tue,  5 Apr 2022 08:35:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 14A3EC385A0;
+        Tue,  5 Apr 2022 08:35:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649147732;
-        bh=MCow+EIfs9h55hYNTV4RqMgF0B+/1q8tBPB3QDPDfrY=;
+        s=korg; t=1649147702;
+        bh=PtiUFmJWekEDwY8UObS7pyYJvrAHvgLHr0gp6vBSGeo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=j2RtNzokccjlzS/JYEGVf7jePVnvthzTrI0/I64rpkn1tTKVa4NQFDbHLHTHYlDtA
-         ddv5SReSF+nW3CuwzaWuzhqxTN/TU+mtbp0hKLoM37SxGIyyHS5RldiUb3ru2FCUlh
-         RZi3acsaGhndGhTWiI4WnwFcoRuUT4NW/lbGHAFw=
+        b=J/U4cjRXzd6+ZUDenPcZJIybOuw3Py16lBxvGWkAOVI93bAWATx4ZMW9lXrNnncdq
+         g/lLB0rGMqLVm24bfHxFzYh4y1Dix4jkFA7ZzA6CYszLDOu7K3j/EXEYfiTDcMTeB3
+         K5J2jnvfTSAyvyxsKDljqTHx+3r+mnYbhtVYP76U=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, "Paulo Alcantara (SUSE)" <pc@cjr.nz>,
-        Steve French <stfrench@microsoft.com>
-Subject: [PATCH 5.16 0101/1017] cifs: do not skip link targets when an I/O fails
-Date:   Tue,  5 Apr 2022 09:16:54 +0200
-Message-Id: <20220405070357.194710436@linuxfoundation.org>
+        stable@vger.kernel.org, Adrian Hunter <adrian.hunter@intel.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>
+Subject: [PATCH 5.16 0091/1017] scsi: core: sd: Add silence_suspend flag to suppress some PM messages
+Date:   Tue,  5 Apr 2022 09:16:44 +0200
+Message-Id: <20220405070356.895353746@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -49,63 +49,78 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Paulo Alcantara <pc@cjr.nz>
+From: Adrian Hunter <adrian.hunter@intel.com>
 
-commit 5d7e282541fc91b831a5c4477c5d72881c623df9 upstream.
+commit af4edb1d50c6d1044cb34bc43621411b7ba2cffe upstream.
 
-When I/O fails in one of the currently connected DFS targets, retry it
-from other targets as specified in MS-DFSC "3.1.5.2 I/O Operation to
-+Target Fails with an Error Other Than STATUS_PATH_NOT_COVERED."
+Kernel messages produced during runtime PM can cause a never-ending cycle
+because user space utilities (e.g. journald or rsyslog) write the messages
+back to storage, causing runtime resume, more messages, and so on.
 
-Signed-off-by: Paulo Alcantara (SUSE) <pc@cjr.nz>
+Messages that tell of things that are expected to happen are arguably
+unnecessary, so add a flag to suppress them. This flag is used by the UFS
+driver.
+
+Link: https://lore.kernel.org/r/20220228113652.970857-2-adrian.hunter@intel.com
 Cc: stable@vger.kernel.org
-Signed-off-by: Steve French <stfrench@microsoft.com>
+Signed-off-by: Adrian Hunter <adrian.hunter@intel.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/cifs/connect.c |   14 +++++++++++---
- 1 file changed, 11 insertions(+), 3 deletions(-)
+ drivers/scsi/scsi_error.c  |    9 +++++++--
+ drivers/scsi/sd.c          |    6 ++++--
+ include/scsi/scsi_device.h |    1 +
+ 3 files changed, 12 insertions(+), 4 deletions(-)
 
---- a/fs/cifs/connect.c
-+++ b/fs/cifs/connect.c
-@@ -3401,6 +3401,9 @@ static int connect_dfs_target(struct mou
- 	struct cifs_sb_info *cifs_sb = mnt_ctx->cifs_sb;
- 	char *oldmnt = cifs_sb->ctx->mount_options;
+--- a/drivers/scsi/scsi_error.c
++++ b/drivers/scsi/scsi_error.c
+@@ -483,8 +483,13 @@ static void scsi_report_sense(struct scs
  
-+	cifs_dbg(FYI, "%s: full_path=%s ref_path=%s target=%s\n", __func__, full_path, ref_path,
-+		 dfs_cache_get_tgt_name(tit));
-+
- 	rc = dfs_cache_get_tgt_referral(ref_path, tit, &ref);
- 	if (rc)
- 		goto out;
-@@ -3499,13 +3502,18 @@ static int __follow_dfs_link(struct moun
- 	if (rc)
- 		goto out;
- 
--	/* Try all dfs link targets */
-+	/* Try all dfs link targets.  If an I/O fails from currently connected DFS target with an
-+	 * error other than STATUS_PATH_NOT_COVERED (-EREMOTE), then retry it from other targets as
-+	 * specified in MS-DFSC "3.1.5.2 I/O Operation to Target Fails with an Error Other Than
-+	 * STATUS_PATH_NOT_COVERED."
-+	 */
- 	for (rc = -ENOENT, tit = dfs_cache_get_tgt_iterator(&tl);
- 	     tit; tit = dfs_cache_get_next_tgt(&tl, tit)) {
- 		rc = connect_dfs_target(mnt_ctx, full_path, mnt_ctx->leaf_fullpath + 1, tit);
- 		if (!rc) {
- 			rc = is_path_remote(mnt_ctx);
--			break;
-+			if (!rc || rc == -EREMOTE)
-+				break;
+ 		if (sshdr->asc == 0x29) {
+ 			evt_type = SDEV_EVT_POWER_ON_RESET_OCCURRED;
+-			sdev_printk(KERN_WARNING, sdev,
+-				    "Power-on or device reset occurred\n");
++			/*
++			 * Do not print message if it is an expected side-effect
++			 * of runtime PM.
++			 */
++			if (!sdev->silence_suspend)
++				sdev_printk(KERN_WARNING, sdev,
++					    "Power-on or device reset occurred\n");
  		}
+ 
+ 		if (sshdr->asc == 0x2a && sshdr->ascq == 0x01) {
+--- a/drivers/scsi/sd.c
++++ b/drivers/scsi/sd.c
+@@ -3754,7 +3754,8 @@ static int sd_suspend_common(struct devi
+ 		return 0;
+ 
+ 	if (sdkp->WCE && sdkp->media_present) {
+-		sd_printk(KERN_NOTICE, sdkp, "Synchronizing SCSI cache\n");
++		if (!sdkp->device->silence_suspend)
++			sd_printk(KERN_NOTICE, sdkp, "Synchronizing SCSI cache\n");
+ 		ret = sd_sync_cache(sdkp, &sshdr);
+ 
+ 		if (ret) {
+@@ -3776,7 +3777,8 @@ static int sd_suspend_common(struct devi
  	}
  
-@@ -3579,7 +3587,7 @@ int cifs_mount(struct cifs_sb_info *cifs
- 		goto error;
+ 	if (sdkp->device->manage_start_stop) {
+-		sd_printk(KERN_NOTICE, sdkp, "Stopping disk\n");
++		if (!sdkp->device->silence_suspend)
++			sd_printk(KERN_NOTICE, sdkp, "Stopping disk\n");
+ 		/* an error is not worth aborting a system sleep */
+ 		ret = sd_start_stop_device(sdkp, 0);
+ 		if (ignore_stop_errors)
+--- a/include/scsi/scsi_device.h
++++ b/include/scsi/scsi_device.h
+@@ -206,6 +206,7 @@ struct scsi_device {
+ 	unsigned rpm_autosuspend:1;	/* Enable runtime autosuspend at device
+ 					 * creation time */
+ 	unsigned ignore_media_change:1; /* Ignore MEDIA CHANGE on resume */
++	unsigned silence_suspend:1;	/* Do not print runtime PM related messages */
  
- 	rc = is_path_remote(&mnt_ctx);
--	if (rc == -EREMOTE)
-+	if (rc)
- 		rc = follow_dfs_link(&mnt_ctx);
- 	if (rc)
- 		goto error;
+ 	unsigned int queue_stopped;	/* request queue is quiesced */
+ 	bool offline_already;		/* Device offline message logged */
 
 
