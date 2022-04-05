@@ -2,143 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D3BAC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:32:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 657B0C3527E
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:32:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234843AbiDEI02 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 04:26:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53018 "EHLO
+        id S235335AbiDEI0p (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 04:26:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43840 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235352AbiDEH7j (ORCPT
+        with ESMTP id S235348AbiDEH7j (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Apr 2022 03:59:39 -0400
-Received: from mx.socionext.com (mx.socionext.com [202.248.49.38])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 30EF957B3A;
-        Tue,  5 Apr 2022 00:54:15 -0700 (PDT)
-Received: from unknown (HELO iyokan2-ex.css.socionext.com) ([172.31.9.54])
-  by mx.socionext.com with ESMTP; 05 Apr 2022 16:53:05 +0900
-Received: from mail.mfilter.local (m-filter-2 [10.213.24.62])
-        by iyokan2-ex.css.socionext.com (Postfix) with ESMTP id 822FE2058B50;
-        Tue,  5 Apr 2022 16:53:05 +0900 (JST)
-Received: from 172.31.9.51 (172.31.9.51) by m-FILTER with ESMTP; Tue, 5 Apr 2022 16:53:05 +0900
-Received: from plum.e01.socionext.com (unknown [10.212.243.119])
-        by kinkan2.css.socionext.com (Postfix) with ESMTP id 3D4F1B6389;
-        Tue,  5 Apr 2022 16:53:05 +0900 (JST)
-From:   Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>
-Cc:     Masami Hiramatsu <mhiramat@kernel.org>, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org,
-        Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
-Subject: [PATCH 1/2] dt-bindings: net: ave: Clean up clocks, resets, and their names using compatible string
-Date:   Tue,  5 Apr 2022 16:53:00 +0900
-Message-Id: <1649145181-30001-2-git-send-email-hayashi.kunihiko@socionext.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1649145181-30001-1-git-send-email-hayashi.kunihiko@socionext.com>
-References: <1649145181-30001-1-git-send-email-hayashi.kunihiko@socionext.com>
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A88BE57491;
+        Tue,  5 Apr 2022 00:54:05 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 29DA661722;
+        Tue,  5 Apr 2022 07:54:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3AAD6C34111;
+        Tue,  5 Apr 2022 07:54:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649145244;
+        bh=k5R7zHG+JGBCo1Mf88SDA+mrmcIevYFylf9t74xM0Ec=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=nZO8xeHEaicYWYJmIBOwPYzrkx2rMoY7YUcEyskS8tpmfxiupjMp2cYuLNMGO0Rb1
+         21SFfRNDUeY21qCUk4MQcYV9sgw++UHuqxPhIPizwALqeZD8/ouCa2CjaGSsPpEATJ
+         n9RtlXuYnl8nwZxIaLMFr4k+PTqWb2cWJEo7APMs=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, devicetree@vger.kernel.org,
+        Maulik Shah <quic_mkshah@quicinc.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 0336/1126] arm64: dts: qcom: sm8350: Correct TCS configuration for apps rsc
+Date:   Tue,  5 Apr 2022 09:18:03 +0200
+Message-Id: <20220405070417.478351415@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
+References: <20220405070407.513532867@linuxfoundation.org>
+User-Agent: quilt/0.66
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Instead of "oneOf:" choices, use "allOf:" and "if:" to define clocks,
-resets, and their names that can be taken by the compatible string.
+From: Maulik Shah <quic_mkshah@quicinc.com>
 
-The order of clock-names and reset-names doesn't change here.
+[ Upstream commit a131255e4ad1ef8d4873ecba21561ba272b2547a ]
 
-Signed-off-by: Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
+Correct the TCS config by updating the number of TCSes for each type.
+
+Cc: devicetree@vger.kernel.org
+Fixes: b7e8f433a673 ("arm64: dts: qcom: Add basic devicetree support for SM8350 SoC")
+Signed-off-by: Maulik Shah <quic_mkshah@quicinc.com>
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Link: https://lore.kernel.org/r/1641749107-31979-4-git-send-email-quic_mkshah@quicinc.com
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../bindings/net/socionext,uniphier-ave4.yaml | 55 +++++++++++++------
- 1 file changed, 38 insertions(+), 17 deletions(-)
+ arch/arm64/boot/dts/qcom/sm8350.dtsi | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/Documentation/devicetree/bindings/net/socionext,uniphier-ave4.yaml b/Documentation/devicetree/bindings/net/socionext,uniphier-ave4.yaml
-index e602761f7b14..f257520b9a7e 100644
---- a/Documentation/devicetree/bindings/net/socionext,uniphier-ave4.yaml
-+++ b/Documentation/devicetree/bindings/net/socionext,uniphier-ave4.yaml
-@@ -13,9 +13,6 @@ description: |
-   This describes the devicetree bindings for AVE ethernet controller
-   implemented on Socionext UniPhier SoCs.
+diff --git a/arch/arm64/boot/dts/qcom/sm8350.dtsi b/arch/arm64/boot/dts/qcom/sm8350.dtsi
+index 4b19744bcfb3..765d018e6306 100644
+--- a/arch/arm64/boot/dts/qcom/sm8350.dtsi
++++ b/arch/arm64/boot/dts/qcom/sm8350.dtsi
+@@ -1820,7 +1820,7 @@
+ 			qcom,tcs-offset = <0xd00>;
+ 			qcom,drv-id = <2>;
+ 			qcom,tcs-config = <ACTIVE_TCS  2>, <SLEEP_TCS   3>,
+-					  <WAKE_TCS    3>, <CONTROL_TCS 1>;
++					  <WAKE_TCS    3>, <CONTROL_TCS 0>;
  
--allOf:
--  - $ref: ethernet-controller.yaml#
--
- properties:
-   compatible:
-     enum:
-@@ -44,25 +41,13 @@ properties:
-     minItems: 1
-     maxItems: 4
- 
--  clock-names:
--    oneOf:
--      - items:          # for Pro4
--          - const: gio
--          - const: ether
--          - const: ether-gb
--          - const: ether-phy
--      - const: ether    # for others
-+  clock-names: true
- 
-   resets:
-     minItems: 1
-     maxItems: 2
- 
--  reset-names:
--    oneOf:
--      - items:          # for Pro4
--          - const: gio
--          - const: ether
--      - const: ether    # for others
-+  reset-names: true
- 
-   socionext,syscon-phy-mode:
-     $ref: /schemas/types.yaml#/definitions/phandle-array
-@@ -78,6 +63,42 @@ properties:
-     $ref: mdio.yaml#
-     unevaluatedProperties: false
- 
-+allOf:
-+  - $ref: ethernet-controller.yaml#
-+  - if:
-+      properties:
-+        compatible:
-+          contains:
-+            const: socionext,uniphier-pro4-ave4
-+    then:
-+      properties:
-+        clocks:
-+          minItems: 4
-+          maxItems: 4
-+        clock-names:
-+          items:
-+            - const: gio
-+            - const: ether
-+            - const: ether-gb
-+            - const: ether-phy
-+        resets:
-+          minItems: 2
-+          maxItems: 2
-+        reset-names:
-+          items:
-+            - const: gio
-+            - const: ether
-+    else:
-+      properties:
-+        clocks:
-+          maxItems: 1
-+        clock-names:
-+          const: ether
-+        resets:
-+          maxItems: 1
-+        reset-names:
-+          const: ether
-+
- required:
-   - compatible
-   - reg
+ 			rpmhcc: clock-controller {
+ 				compatible = "qcom,sm8350-rpmh-clk";
 -- 
-2.25.1
+2.34.1
+
+
 
