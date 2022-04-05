@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DE9DDC35280
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:20:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8604DC35296
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:20:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235298AbiDEIP5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 04:15:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55910 "EHLO
+        id S236405AbiDEIQo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 04:16:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43928 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235503AbiDEH7s (ORCPT
+        with ESMTP id S235606AbiDEH7x (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 03:59:48 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D5E26660A;
-        Tue,  5 Apr 2022 00:54:53 -0700 (PDT)
+        Tue, 5 Apr 2022 03:59:53 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4E2E1AF00;
+        Tue,  5 Apr 2022 00:56:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4092A61668;
-        Tue,  5 Apr 2022 07:54:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 516E0C340EE;
-        Tue,  5 Apr 2022 07:54:52 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6EAEAB81B18;
+        Tue,  5 Apr 2022 07:55:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BDCA2C340EE;
+        Tue,  5 Apr 2022 07:55:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649145292;
-        bh=K3TAybxi+nsvSrrQJTUFlqvaiEsAWoqPvFcXFTD1X88=;
+        s=korg; t=1649145358;
+        bh=xn5XjbNCQIGn7W+2fCIddx6tTuzdQS5XIwMYVgOCU0w=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=wAZOU37vd/dEajbEsWOGMY40xuMGvreF5c8crxGA7rYYbbwVK88LyDV4rV7e1FI2X
-         8f3nbw2P6CQ/5cjFyxyUAIYDPvr1jMBnzgvUE8+QUuSGryKHGsgJx14BF6XcWAqNge
-         nz2q/rceG+2Jhh63OPC5oucv6CS5zljvE59MI/wU=
+        b=SD/Le3i6bGloXSFL4ZN7ARZgQSyh4LYj/XybntfCrNjryGIfeZDUnntYyPPKDiwdY
+         avhVyq+CYXr81HVM77zAMW2RktmotTWVjFMx0T942XPBnA3TcAQJlrvfgF57F/B2de
+         4QScrzVE+naJh4JcDj5QTuEPLs7ZGG+mzfPm9C1o=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        stable@vger.kernel.org, Aswath Govindraju <a-govindraju@ti.com>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0355/1126] media: cedrus: H265: Fix neighbour info buffer size
-Date:   Tue,  5 Apr 2022 09:18:22 +0200
-Message-Id: <20220405070418.049098515@linuxfoundation.org>
+Subject: [PATCH 5.17 0375/1126] mmc: sdhci_am654: Fix the driver data of AM64 SoC
+Date:   Tue,  5 Apr 2022 09:18:42 +0200
+Message-Id: <20220405070418.633441612@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -49,42 +49,68 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jernej Skrabec <jernej.skrabec@gmail.com>
+From: Aswath Govindraju <a-govindraju@ti.com>
 
-[ Upstream commit ee8b887329c78971967506f3ac79b9302c9f83c1 ]
+[ Upstream commit 3b7340f1c89cc488e4df0b033bf7ae502ebbf5b2 ]
 
-Neighbour info buffer size needs to be 794 kiB in H6. This is actually
-already indirectly mentioned in the comment, but smaller size is used
-nevertheless.
+The MMCSD IPs used in AM64 are the same as the ones used in J721E.
+Therefore, fix this by using the driver data from J721E for AM64 too, for
+both 8 and 4 bit instances.
 
-Increase buffer size to cover H6 needs. Since increase is not that big
-in absolute numbers, it doesn't make sense to complicate logic for older
-generations.
-
-Bug was discovered using iommu, which reported access error when trying
-to play H265 video.
-
-Fixes: 86caab29da78 ("media: cedrus: Add HEVC/H.265 decoding support")
-Signed-off-by: Jernej Skrabec <jernej.skrabec@gmail.com>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Fixes: 754b7f2f7d2a ("mmc: sdhci_am654: Add Support for TI's AM64 SoC")
+Signed-off-by: Aswath Govindraju <a-govindraju@ti.com>
+Link: https://lore.kernel.org/r/20220211075056.26179-1-a-govindraju@ti.com
+Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/staging/media/sunxi/cedrus/cedrus_h265.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/mmc/host/sdhci_am654.c | 24 ++----------------------
+ 1 file changed, 2 insertions(+), 22 deletions(-)
 
-diff --git a/drivers/staging/media/sunxi/cedrus/cedrus_h265.c b/drivers/staging/media/sunxi/cedrus/cedrus_h265.c
-index 8829a7bab07e..ffade5cbd2e4 100644
---- a/drivers/staging/media/sunxi/cedrus/cedrus_h265.c
-+++ b/drivers/staging/media/sunxi/cedrus/cedrus_h265.c
-@@ -23,7 +23,7 @@
-  * Subsequent BSP implementations seem to double the neighbor info buffer size
-  * for the H6 SoC, which may be related to 10 bit H265 support.
-  */
--#define CEDRUS_H265_NEIGHBOR_INFO_BUF_SIZE	(397 * SZ_1K)
-+#define CEDRUS_H265_NEIGHBOR_INFO_BUF_SIZE	(794 * SZ_1K)
- #define CEDRUS_H265_ENTRY_POINTS_BUF_SIZE	(4 * SZ_1K)
- #define CEDRUS_H265_MV_COL_BUF_UNIT_CTB_SIZE	160
+diff --git a/drivers/mmc/host/sdhci_am654.c b/drivers/mmc/host/sdhci_am654.c
+index f654afbe8e83..b4891bb26648 100644
+--- a/drivers/mmc/host/sdhci_am654.c
++++ b/drivers/mmc/host/sdhci_am654.c
+@@ -514,26 +514,6 @@ static const struct sdhci_am654_driver_data sdhci_j721e_4bit_drvdata = {
+ 	.flags = IOMUX_PRESENT,
+ };
  
+-static const struct sdhci_pltfm_data sdhci_am64_8bit_pdata = {
+-	.ops = &sdhci_j721e_8bit_ops,
+-	.quirks2 = SDHCI_QUIRK2_PRESET_VALUE_BROKEN,
+-};
+-
+-static const struct sdhci_am654_driver_data sdhci_am64_8bit_drvdata = {
+-	.pdata = &sdhci_am64_8bit_pdata,
+-	.flags = DLL_PRESENT | DLL_CALIB,
+-};
+-
+-static const struct sdhci_pltfm_data sdhci_am64_4bit_pdata = {
+-	.ops = &sdhci_j721e_4bit_ops,
+-	.quirks2 = SDHCI_QUIRK2_PRESET_VALUE_BROKEN,
+-};
+-
+-static const struct sdhci_am654_driver_data sdhci_am64_4bit_drvdata = {
+-	.pdata = &sdhci_am64_4bit_pdata,
+-	.flags = IOMUX_PRESENT,
+-};
+-
+ static const struct soc_device_attribute sdhci_am654_devices[] = {
+ 	{ .family = "AM65X",
+ 	  .revision = "SR1.0",
+@@ -759,11 +739,11 @@ static const struct of_device_id sdhci_am654_of_match[] = {
+ 	},
+ 	{
+ 		.compatible = "ti,am64-sdhci-8bit",
+-		.data = &sdhci_am64_8bit_drvdata,
++		.data = &sdhci_j721e_8bit_drvdata,
+ 	},
+ 	{
+ 		.compatible = "ti,am64-sdhci-4bit",
+-		.data = &sdhci_am64_4bit_drvdata,
++		.data = &sdhci_j721e_4bit_drvdata,
+ 	},
+ 	{ /* sentinel */ }
+ };
 -- 
 2.34.1
 
