@@ -2,158 +2,172 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A6C7AC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 09:51:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 91111C4332F
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 09:52:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232344AbiDEJiu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 05:38:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51984 "EHLO
+        id S243089AbiDEJiy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 05:38:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51972 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239764AbiDEIUu (ORCPT
+        with ESMTP id S239760AbiDEIUu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Apr 2022 04:20:50 -0400
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14CB8B3C
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 01:18:48 -0700 (PDT)
-Received: from fraeml740-chm.china.huawei.com (unknown [172.18.147.201])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4KXgV63YyFz67ydH;
-        Tue,  5 Apr 2022 16:17:02 +0800 (CST)
-Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
- fraeml740-chm.china.huawei.com (10.206.15.221) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 5 Apr 2022 10:18:46 +0200
-Received: from [10.47.91.157] (10.47.91.157) by lhreml724-chm.china.huawei.com
- (10.201.108.75) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Tue, 5 Apr
- 2022 09:18:45 +0100
-Message-ID: <ba5aa606-54bf-e19f-39ba-a21998781a6c@huawei.com>
-Date:   Tue, 5 Apr 2022 09:18:43 +0100
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F644B28;
+        Tue,  5 Apr 2022 01:18:47 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 22917B81BAC;
+        Tue,  5 Apr 2022 08:18:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 59B7AC385A2;
+        Tue,  5 Apr 2022 08:18:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649146725;
+        bh=GtXm7TP4FiF7Hh17CXHOhSXHFwXsRaUDFmn/WhLxqg0=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=iprSq1n/3JGmZchJU2QDLjJJuOPNdKWQAwwYL0LlomCscpr/0igflP05+iP1z45nD
+         Swf0dzvD7IxQ4MPg0dWHFpee5msikTsGf1IkFkkexVNNT5d7IZKNtB/ishbFQkq9xG
+         n81y2FT53Ecl8KdfT/Dcp7+NZlVZ58lFKtnDEvqQ=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Marc Zyngier <maz@kernel.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 0839/1126] pinctrl: npcm: Fix broken references to chip->parent_device
+Date:   Tue,  5 Apr 2022 09:26:26 +0200
+Message-Id: <20220405070432.182014113@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
+References: <20220405070407.513532867@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.1
-Subject: Re: [PATCH v3 1/2] drivers/perf: hisi: Associate PMUs in SICL with
- CPUs online
-To:     Qi Liu <liuqi115@huawei.com>, "will@kernel.org" <will@kernel.org>,
-        "mark.rutland@arm.com" <mark.rutland@arm.com>
-CC:     Zhangshaokun <zhangshaokun@hisilicon.com>,
-        Linuxarm <linuxarm@huawei.com>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-References: <20220321070124.41338-1-liuqi115@huawei.com>
- <20220321070124.41338-2-liuqi115@huawei.com>
-From:   John Garry <john.garry@huawei.com>
-In-Reply-To: <20220321070124.41338-2-liuqi115@huawei.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.47.91.157]
-X-ClientProxiedBy: lhreml747-chm.china.huawei.com (10.201.108.197) To
- lhreml724-chm.china.huawei.com (10.201.108.75)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 21/03/2022 07:01, Qi Liu wrote:
-> If a PMU is in SICL, we associate it with all CPUs online, rather
+From: Marc Zyngier <maz@kernel.org>
 
-/s/in SICL/in a SICL/ [and all other places, including the code change], 
-or maybe it is better mention "IO super cluster" as well for people who 
-would not know or remember.
+[ Upstream commit f7e53e2255808ca3abcc8f38d18ad0823425e771 ]
 
-> than CPUs in the nearest SCCL.
+The npcm driver has a bunch of references to the irq_chip parent_device
+field, but never sets it.
 
-You are not really saying why. I would mention that we do it as it is 
-not appropiate to associate with a CPU die, and you can also mention 
-problems that associating with a SICL creates.
+Fix it by fishing that reference from somewhere else, but it is
+obvious that these debug statements were never used. Also remove
+an unused field in a local data structure.
 
-Please also mention how changing FW definition is ok at this stage.
+Signed-off-by: Marc Zyngier <maz@kernel.org>
+Acked-by: Bartosz Golaszewski <brgl@bgdev.pl>
+Link: https://lore.kernel.org/r/20220201120310.878267-11-maz@kernel.org
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/pinctrl/nuvoton/pinctrl-npcm7xx.c | 25 +++++++++++------------
+ 1 file changed, 12 insertions(+), 13 deletions(-)
 
-> 
-> Signed-off-by: Qi Liu <liuqi115@huawei.com>
-> ---
->   drivers/perf/hisilicon/hisi_uncore_pa_pmu.c | 18 +++++++-----------
->   drivers/perf/hisilicon/hisi_uncore_pmu.c    |  4 ++++
->   drivers/perf/hisilicon/hisi_uncore_pmu.h    |  1 +
->   3 files changed, 12 insertions(+), 11 deletions(-)
-> 
-> diff --git a/drivers/perf/hisilicon/hisi_uncore_pa_pmu.c b/drivers/perf/hisilicon/hisi_uncore_pa_pmu.c
-> index bad99d149172..54c604c0d404 100644
-> --- a/drivers/perf/hisilicon/hisi_uncore_pa_pmu.c
-> +++ b/drivers/perf/hisilicon/hisi_uncore_pa_pmu.c
-> @@ -258,13 +258,12 @@ static int hisi_pa_pmu_init_data(struct platform_device *pdev,
->   				   struct hisi_pmu *pa_pmu)
->   {
->   	/*
-> -	 * Use the SCCL_ID and the index ID to identify the PA PMU,
-> -	 * while SCCL_ID is the nearst SCCL_ID from this SICL and
-> -	 * CPU core is chosen from this SCCL to manage this PMU.
-> +	 * As PA PMU is in SICL, use the SICL_ID and the index ID
+diff --git a/drivers/pinctrl/nuvoton/pinctrl-npcm7xx.c b/drivers/pinctrl/nuvoton/pinctrl-npcm7xx.c
+index 4d81908d6725..ba536fd4d674 100644
+--- a/drivers/pinctrl/nuvoton/pinctrl-npcm7xx.c
++++ b/drivers/pinctrl/nuvoton/pinctrl-npcm7xx.c
+@@ -78,7 +78,6 @@ struct npcm7xx_gpio {
+ 	struct gpio_chip	gc;
+ 	int			irqbase;
+ 	int			irq;
+-	void			*priv;
+ 	struct irq_chip		irq_chip;
+ 	u32			pinctrl_id;
+ 	int (*direction_input)(struct gpio_chip *chip, unsigned offset);
+@@ -226,7 +225,7 @@ static void npcmgpio_irq_handler(struct irq_desc *desc)
+ 	chained_irq_enter(chip, desc);
+ 	sts = ioread32(bank->base + NPCM7XX_GP_N_EVST);
+ 	en  = ioread32(bank->base + NPCM7XX_GP_N_EVEN);
+-	dev_dbg(chip->parent_device, "==> got irq sts %.8x %.8x\n", sts,
++	dev_dbg(bank->gc.parent, "==> got irq sts %.8x %.8x\n", sts,
+ 		en);
+ 
+ 	sts &= en;
+@@ -241,33 +240,33 @@ static int npcmgpio_set_irq_type(struct irq_data *d, unsigned int type)
+ 		gpiochip_get_data(irq_data_get_irq_chip_data(d));
+ 	unsigned int gpio = BIT(d->hwirq);
+ 
+-	dev_dbg(d->chip->parent_device, "setirqtype: %u.%u = %u\n", gpio,
++	dev_dbg(bank->gc.parent, "setirqtype: %u.%u = %u\n", gpio,
+ 		d->irq, type);
+ 	switch (type) {
+ 	case IRQ_TYPE_EDGE_RISING:
+-		dev_dbg(d->chip->parent_device, "edge.rising\n");
++		dev_dbg(bank->gc.parent, "edge.rising\n");
+ 		npcm_gpio_clr(&bank->gc, bank->base + NPCM7XX_GP_N_EVBE, gpio);
+ 		npcm_gpio_clr(&bank->gc, bank->base + NPCM7XX_GP_N_POL, gpio);
+ 		break;
+ 	case IRQ_TYPE_EDGE_FALLING:
+-		dev_dbg(d->chip->parent_device, "edge.falling\n");
++		dev_dbg(bank->gc.parent, "edge.falling\n");
+ 		npcm_gpio_clr(&bank->gc, bank->base + NPCM7XX_GP_N_EVBE, gpio);
+ 		npcm_gpio_set(&bank->gc, bank->base + NPCM7XX_GP_N_POL, gpio);
+ 		break;
+ 	case IRQ_TYPE_EDGE_BOTH:
+-		dev_dbg(d->chip->parent_device, "edge.both\n");
++		dev_dbg(bank->gc.parent, "edge.both\n");
+ 		npcm_gpio_set(&bank->gc, bank->base + NPCM7XX_GP_N_EVBE, gpio);
+ 		break;
+ 	case IRQ_TYPE_LEVEL_LOW:
+-		dev_dbg(d->chip->parent_device, "level.low\n");
++		dev_dbg(bank->gc.parent, "level.low\n");
+ 		npcm_gpio_set(&bank->gc, bank->base + NPCM7XX_GP_N_POL, gpio);
+ 		break;
+ 	case IRQ_TYPE_LEVEL_HIGH:
+-		dev_dbg(d->chip->parent_device, "level.high\n");
++		dev_dbg(bank->gc.parent, "level.high\n");
+ 		npcm_gpio_clr(&bank->gc, bank->base + NPCM7XX_GP_N_POL, gpio);
+ 		break;
+ 	default:
+-		dev_dbg(d->chip->parent_device, "invalid irq type\n");
++		dev_dbg(bank->gc.parent, "invalid irq type\n");
+ 		return -EINVAL;
+ 	}
+ 
+@@ -289,7 +288,7 @@ static void npcmgpio_irq_ack(struct irq_data *d)
+ 		gpiochip_get_data(irq_data_get_irq_chip_data(d));
+ 	unsigned int gpio = d->hwirq;
+ 
+-	dev_dbg(d->chip->parent_device, "irq_ack: %u.%u\n", gpio, d->irq);
++	dev_dbg(bank->gc.parent, "irq_ack: %u.%u\n", gpio, d->irq);
+ 	iowrite32(BIT(gpio), bank->base + NPCM7XX_GP_N_EVST);
+ }
+ 
+@@ -301,7 +300,7 @@ static void npcmgpio_irq_mask(struct irq_data *d)
+ 	unsigned int gpio = d->hwirq;
+ 
+ 	/* Clear events */
+-	dev_dbg(d->chip->parent_device, "irq_mask: %u.%u\n", gpio, d->irq);
++	dev_dbg(bank->gc.parent, "irq_mask: %u.%u\n", gpio, d->irq);
+ 	iowrite32(BIT(gpio), bank->base + NPCM7XX_GP_N_EVENC);
+ }
+ 
+@@ -313,7 +312,7 @@ static void npcmgpio_irq_unmask(struct irq_data *d)
+ 	unsigned int gpio = d->hwirq;
+ 
+ 	/* Enable events */
+-	dev_dbg(d->chip->parent_device, "irq_unmask: %u.%u\n", gpio, d->irq);
++	dev_dbg(bank->gc.parent, "irq_unmask: %u.%u\n", gpio, d->irq);
+ 	iowrite32(BIT(gpio), bank->base + NPCM7XX_GP_N_EVENS);
+ }
+ 
+@@ -323,7 +322,7 @@ static unsigned int npcmgpio_irq_startup(struct irq_data *d)
+ 	unsigned int gpio = d->hwirq;
+ 
+ 	/* active-high, input, clear interrupt, enable interrupt */
+-	dev_dbg(d->chip->parent_device, "startup: %u.%u\n", gpio, d->irq);
++	dev_dbg(gc->parent, "startup: %u.%u\n", gpio, d->irq);
+ 	npcmgpio_direction_input(gc, gpio);
+ 	npcmgpio_irq_ack(d);
+ 	npcmgpio_irq_unmask(d);
+-- 
+2.34.1
 
-"a SICL"
 
-> +	 * to identify the PA PMU.
->   	 */
->   	if (device_property_read_u32(&pdev->dev, "hisilicon,scl-id",
-> -				     &pa_pmu->sccl_id)) {
-> -		dev_err(&pdev->dev, "Cannot read sccl-id!\n");
-> +				     &pa_pmu->sicl_id)) {
-> +		dev_err(&pdev->dev, "Cannot read sicl-id!\n");
->   		return -EINVAL;
->   	}
->   
-> @@ -275,6 +274,7 @@ static int hisi_pa_pmu_init_data(struct platform_device *pdev,
->   	}
->   
->   	pa_pmu->ccl_id = -1;
-> +	pa_pmu->sccl_id = -1;
->   
->   	pa_pmu->base = devm_platform_ioremap_resource(pdev, 0);
->   	if (IS_ERR(pa_pmu->base)) {
-> @@ -399,13 +399,9 @@ static int hisi_pa_pmu_probe(struct platform_device *pdev)
->   	ret = hisi_pa_pmu_dev_probe(pdev, pa_pmu);
->   	if (ret)
->   		return ret;
-> -	/*
-> -	 * PA is attached in SICL and the CPU core is chosen to manage this
-> -	 * PMU which is the nearest SCCL, while its SCCL_ID is greater than
-> -	 * one with the SICL_ID.
-> -	 */
-> +
->   	name = devm_kasprintf(&pdev->dev, GFP_KERNEL, "hisi_sicl%u_pa%u",
-> -			      pa_pmu->sccl_id - 1, pa_pmu->index_id);
-> +			      pa_pmu->sicl_id, pa_pmu->index_id);
->   	if (!name)
->   		return -ENOMEM;
->   
-> diff --git a/drivers/perf/hisilicon/hisi_uncore_pmu.c b/drivers/perf/hisilicon/hisi_uncore_pmu.c
-> index a738aeab5c04..31930166c34b 100644
-> --- a/drivers/perf/hisilicon/hisi_uncore_pmu.c
-> +++ b/drivers/perf/hisilicon/hisi_uncore_pmu.c
-> @@ -458,6 +458,10 @@ static bool hisi_pmu_cpu_is_associated_pmu(struct hisi_pmu *hisi_pmu)
->   {
->   	int sccl_id, ccl_id;
->   
-> +	/* If SCCL_ID is -1, the PMU is in SICL and can be associated this PMU with any CPU */
-
-too long, just have "The PMU is in a SICL and has no CPU affinity"
-
-> +	if (hisi_pmu->sccl_id == -1)
-> +		return true;
-> +
->   	if (hisi_pmu->ccl_id == -1) {
->   		/* If CCL_ID is -1, the PMU only shares the same SCCL */
->   		hisi_read_sccl_and_ccl_id(&sccl_id, NULL);
-> diff --git a/drivers/perf/hisilicon/hisi_uncore_pmu.h b/drivers/perf/hisilicon/hisi_uncore_pmu.h
-> index 7f5841d6f592..96eeddad55ff 100644
-> --- a/drivers/perf/hisilicon/hisi_uncore_pmu.h
-> +++ b/drivers/perf/hisilicon/hisi_uncore_pmu.h
-> @@ -81,6 +81,7 @@ struct hisi_pmu {
->   	struct device *dev;
->   	struct hlist_node node;
->   	int sccl_id;
-> +	int sicl_id;
->   	int ccl_id;
->   	void __iomem *base;
->   	/* the ID of the PMU modules */
 
