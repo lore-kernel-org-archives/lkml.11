@@ -2,241 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 93758C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C31CBC433FE
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:40:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343500AbiDFAhX (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 20:37:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41328 "EHLO
+        id S243504AbiDFATt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 20:19:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33856 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1457741AbiDEQhl (ORCPT
+        with ESMTP id S236782AbiDEKfq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 12:37:41 -0400
-Received: from out0.migadu.com (out0.migadu.com [IPv6:2001:41d0:2:267::])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D420D0804
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 09:35:42 -0700 (PDT)
-Date:   Tue, 5 Apr 2022 09:35:34 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-        t=1649176540;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=oZ9kiXxzTKEJjU33Jcbxu+aPRX7HK5Opx+ZIkgUc6mI=;
-        b=ngs/04UO42BsXVwI5+s5lF20T8mq4FKb/ZIy24q2LGXqGnhCxLfop0TcHmuxiEFpObrnjU
-        tziVsGiBh0Pm99vOJmrweFWzm2QQpQOCxrKeHE+sijVbzIiKCn6NqPdzcRkx5UqGPQ3GHw
-        qLIg5Z5SZQHU2WiWHBFgGfTMySp922g=
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-From:   Roman Gushchin <roman.gushchin@linux.dev>
-To:     Dave Chinner <david@fromorbit.com>
-Cc:     Hillf Danton <hdanton@sina.com>, MM <linux-mm@kvack.org>,
-        Matthew Wilcox <willy@infradead.org>,
-        Mel Gorman <mgorman@techsingularity.net>,
-        Stephen Brennan <stephen.s.brennan@oracle.com>,
-        Yu Zhao <yuzhao@google.com>,
-        David Hildenbrand <david@redhat.com>,
-        LKML <linux-kernel@vger.kernel.org>
-Subject: Re: [RFC] mm/vmscan: add periodic slab shrinker
-Message-ID: <Ykxv1j9dxlz1BS5N@carbon.dhcp.thefacebook.com>
-References: <20220402072103.5140-1-hdanton@sina.com>
- <20220403005618.5263-1-hdanton@sina.com>
- <20220404010948.GV1609613@dread.disaster.area>
- <YktCKVbChtC+YjOk@carbon.dhcp.thefacebook.com>
- <20220405051710.GW1609613@dread.disaster.area>
+        Tue, 5 Apr 2022 06:35:46 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 661F14AE19;
+        Tue,  5 Apr 2022 03:21:42 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 91556B81BC5;
+        Tue,  5 Apr 2022 10:21:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E72CDC385A1;
+        Tue,  5 Apr 2022 10:21:38 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649154099;
+        bh=vYsMLDYVMr0DTK/i9DNXbMo0fVtarin0N+Axfv9aNdA=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=NhUJXBcpKhaZf/ljG4jgsnezmajVcY5ohtatF2bWTGXPj+hSAet6sI+S0r5htoVVM
+         WrvXAYqa13gBqV8sYKG4NuwhCcM9Pb1veOaO6kOpHB3c93ek/nGL1SP8z7xnfit73s
+         cN8xhjoKKxNJzaskAKsmFDYSRe5GCRM75gZ8n6lA=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Marc Zyngier <maz@kernel.org>,
+        Maulik Shah <quic_mkshah@quicinc.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 458/599] irqchip/qcom-pdc: Fix broken locking
+Date:   Tue,  5 Apr 2022 09:32:32 +0200
+Message-Id: <20220405070312.458810745@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
+References: <20220405070258.802373272@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220405051710.GW1609613@dread.disaster.area>
-X-Migadu-Flow: FLOW_OUT
-X-Migadu-Auth-User: linux.dev
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 05, 2022 at 03:17:10PM +1000, Dave Chinner wrote:
-> On Mon, Apr 04, 2022 at 12:08:25PM -0700, Roman Gushchin wrote:
-> > On Mon, Apr 04, 2022 at 11:09:48AM +1000, Dave Chinner wrote:
-> > > i.e. the amount of work that shrinkers need to do in a periodic scan
-> > > is largerly determined by the rate of shrinkable cache memory usage
-> > > growth rather than memory reclaim priority as it is now. Hence there
-> > > needs to be different high level "shrinker needs to do X amount of
-> > > work" calculation for periodic reclaim than there is now.
-> > > 
-> > > e.g. we calculate a rolling average of the size of the cache and a
-> > > rate of change over a series of polling operations (i.e. calling
-> > > ->scan_count) and then when sustained growth is detected we start
-> > > trying to shrink the cache to limit the rate of growth of the cache.
-> > > 
-> > > If the cache keeps growing, then it's objects are being repeatedly
-> > > referenced and it *should* keep growing. If it's one-off objects
-> > > that are causing the growth of the cache and so objects are being
-> > > reclaimed by the shrinker, then matching the periodic shrink scan to
-> > > the growth rate will substantially reduce the rate of growth of that
-> > > cache.
-> > 
-> > A clever idea!
-> > 
-> > It seems like we need to add some stats to the list_lru API or maybe to
-> > the shrinker API (and let list_lru to use it).
-> > E.g. total/scanned/reclaimed, maybe with a time decay
-> > 
-> > I'm also thinking about:
-> > 1) adding a sysfs/debugfs interface to expose shrinkers current size and
-> >    statistics, with an ability to call into the reclaim manually.
-> 
-> I've thought about it, too, and can see where it could be useful.
-> However, when I consider the list_lru memcg integration, I suspect
-> it becomes a "can't see the forest for the trees" problem. We're
-> going to end up with millions of sysfs objects with no obvious way
-> to navigate, iterate or search them if we just take the naive "sysfs
-> object + stats per list_lru instance" approach.
+From: Marc Zyngier <maz@kernel.org>
 
-Ok, I'll try to master something and share patches. I assume it would be useful
-to have statistics and be able to trigger a reclaim of a particular shrinker
-without creating a real memory pressure. I anticipate many interesting
-findings in the implementation of individual shrinkers...
+[ Upstream commit a6aca2f460e203781dc41391913cc5b54f4bc0ce ]
 
-> 
-> Also, if you look at commit 6a6b7b77cc0f mm: ("list_lru: transpose the
-> array of per-node per-memcg lru lists") that went into 5.18-rc1,
-> you'll get an idea of the amount of memory overhead just tracking
-> the list_lru x memcg infrastructure consumes at scale:
-> 
->     I had done a easy test to show the optimization.  I create 10k memory
->     cgroups and mount 10k filesystems in the systems.  We use free command to
->     show how many memory does the systems comsumes after this operation (There
->     are 2 numa nodes in the system).
-> 
->             +-----------------------+------------------------+
->             |      condition        |   memory consumption   |
->             +-----------------------+------------------------+
->             | without this patchset |        24464 MB        |
->             +-----------------------+------------------------+
->             |     after patch 1     |        21957 MB        | <--------+
->             +-----------------------+------------------------+          |
->             |     after patch 10    |         6895 MB        |          |
->             +-----------------------+------------------------+          |
->             |     after patch 12    |         4367 MB        |          |
->             +-----------------------+------------------------+          |
->                                                                         |
->             The more the number of nodes, the more obvious the effect---+
+pdc_enable_intr() serves as a primitive to qcom_pdc_gic_{en,dis}able,
+and has a raw spinlock for mutual exclusion, which is uses with
+interruptible primitives.
 
-Yes, I know, I've reviewed this patchset. However, 10k cgroups _and_ 10k
-mounts look a bit artificial. It's hard to believe that there are 100M
-LRUs containing hot objects. If most of them are cold, it's actually
-a question how to efficiently reclaim them and free the wasted memory.
+This means that this critical section can itself be interrupted.
+Should the interrupt also be a PDC interrupt, and the endpoint driver
+perform an irq_disable() on that interrupt, we end-up in a deadlock.
 
-> 
-> If we now add sysfs objects and stats arrays to each of the
-> list_lrus that we initiate even now on 5.18-rc1, we're going to
-> massively blow out the memory footprint again.
+Fix this by using the irqsave/irqrestore variants of the locking
+primitives.
 
-sysfs can be a config option, it doesn't have to be enabled in prod.
-But I agree, because of memory constraints we're very limited in the size
-of statistics which can be used for reclaim decisions.
+Signed-off-by: Marc Zyngier <maz@kernel.org>
+Reviewed-by: Maulik Shah <quic_mkshah@quicinc.com>
+Link: https://lore.kernel.org/r/20220224101226.88373-5-maz@kernel.org
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/irqchip/qcom-pdc.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-> 
-> So, nice idea, but I'm not sure we can make it useful and not
-> consume huge amounts of memory....
-> 
-> What might be more useful is a way of getting the kernel to tell us
-> what the, say, 20 biggest slab caches are in the system and then
-> provide a way to selectively shrink them. We generally don't really
-> care about tiny caches, just the ones consuming all the memory. This
-> isn't my idea - Kent has been looking at this because of how useless
-> OOM kill output is for debugging slab cache based OOM triggers. See
-> this branch for an example:
-> 
-> https://evilpiepirate.org/git/bcachefs.git/log/?h=shrinker_to_text
-> 
-> Even a sysfs entry that you echo a number into and it returns
-> the "top N" largest LRU lists. echo -1 into it and it returns every
-> single one if you want all the information.
-> 
-> The whole "one sysfs file, one value" architecture falls completely
-> apart when we might have to indexing *millions* of internal
-> structures with many parameters per structure...
+diff --git a/drivers/irqchip/qcom-pdc.c b/drivers/irqchip/qcom-pdc.c
+index 5dc63c20b67e..fc747b7f4983 100644
+--- a/drivers/irqchip/qcom-pdc.c
++++ b/drivers/irqchip/qcom-pdc.c
+@@ -74,17 +74,18 @@ static int qcom_pdc_gic_set_irqchip_state(struct irq_data *d,
+ static void pdc_enable_intr(struct irq_data *d, bool on)
+ {
+ 	int pin_out = d->hwirq;
++	unsigned long flags;
+ 	u32 index, mask;
+ 	u32 enable;
+ 
+ 	index = pin_out / 32;
+ 	mask = pin_out % 32;
+ 
+-	raw_spin_lock(&pdc_lock);
++	raw_spin_lock_irqsave(&pdc_lock, flags);
+ 	enable = pdc_reg_read(IRQ_ENABLE_BANK, index);
+ 	enable = on ? ENABLE_INTR(enable, mask) : CLEAR_INTR(enable, mask);
+ 	pdc_reg_write(IRQ_ENABLE_BANK, index, enable);
+-	raw_spin_unlock(&pdc_lock);
++	raw_spin_unlock_irqrestore(&pdc_lock, flags);
+ }
+ 
+ static void qcom_pdc_gic_disable(struct irq_data *d)
+-- 
+2.34.1
 
-It's a good point, I need to think what can we do here.
 
-Actually, if it's so hard and inefficient for a sysfs interface,
-it also means it's inefficient for the reclaim path. So if we have
-an ability to quickly find beefy LRU lists worth shrinking, it might
-improve the reclaim efficiency too.
 
-Actually, thinking of reducing the memory footprint, it would be great
-to combine LRU's belonging to different superblocks (of the same type).
-Pagecache analogy: we have an LRU for all pagecache pages, it's not
-per-file or per-sb. Not sure how easy/viable it is.
-
-> 
-> > 2) formalizing a reference bit/counter API on the shrinkers level, so that
-> >    shrinker users can explicitly mark objects (re)-"activation".
-> 
-> Not 100% certain what you are refering to here - something to do
-> with active object rotation? Or an active/inactive list split with period
-> demotion like we have for the page LRUs? Or workingset refault
-> detection? Can you explain in more detail?
-
-It's a vague thinking at this point, but you got me right, I was thinking about
-all the listed ideas above. In general I'm trying to understand whether
-the existing model is sufficient for a more or less effective management
-of hot/cold objects and if we can improve it borrowing some ideas from
-the page reclaim code.
-Shadow entries would be great but likely not possible because of the memory
-footprint.
-
-> 
-> > 3) _maybe_ we need to change the shrinkers API from a number of objects to
-> >    bytes, so that releasing a small number of large objects can compete with
-> >    a releasing on many small objects. But I'm not sure.
-> 
-> I think I suggested something similar a long time ago. We have
-> shrinkers that track things other than slab objects. e.g. IIRC the
-> ttm graphics allocator shrinker tracks sets of pages and frees
-> pages, not slab objects. The XFS buffer cache tracks variable sized
-> objects, from 512 bytes to 64KB in length, so the amount of memory
-> it frees is variable even if the number of handles it scans and
-> reclaims is fixed and consistent. Other subsystems have different
-> "non object" shrinker needs as well.
-
-It's true for many objects, because it's not unusual for kernel objects
-to have attached kmallocs or pin other objects in the memory. Unlikely
-we can be 100% accurate, but we might improve the "smoothness" of the
-reclaim process.
-
-> 
-> The long and short of it is that two shrinkers might have the same
-> object count, but one might free 10x the amount of memory than the
-> other for the same amount of shrinking work. Being able to focus
-> reclaim work on caches that can free a lot of memory much more
-> quickly would be a great idea.
-
-Right. It's also about "bytes freed/seeks" ratio. Why would we reclaim
-expensive small objects if there are big and cheap.
-
-> 
-> It also means that a shrinker that scans a fragmented slab can keep
-> going until a set number of slab pages have been freed, rather than
-> a set number of slab objects. We can push reclaim of fragmented slab
-> caches much harder when necessary if we are reclaiming by freed byte
-> counts...
-
-I thought about it, but it's tricky. If all slabs are almost full (fragmentation
-is low), we want to shrink aggressively, otherwise we end up allocating
-more slabs and fragmenting more memory. If slabs are almost empty (fragmentation
-is very high), we also want to shrink more aggressively with a hope to release
-physical memory, as you said. But setting a target in pages is dangerous: slab caches
-can be merged or slab pages can be pinned by objects belonging to a different
-memory cgroup, so it might be not possible to reclaim pages no matter how hard
-we're trying.
-
-> 
-> So, yeah, byte-count based reclaim definitely has merit compared to
-> what we currently do. It's more generic and more flexible...
-
-Great, I'm glad we're on the same page here.
-
-Thank you for the answers, I think it's a really useful discussion!
-
-Roman
