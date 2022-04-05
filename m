@@ -2,102 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 328B8C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 11FFEC433F5
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 02:27:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1848704AbiDFC17 (ORCPT
+        id S1848106AbiDFC1g (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 22:27:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47046 "EHLO
+        Tue, 5 Apr 2022 22:27:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45202 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355453AbiDEVZH (ORCPT
+        with ESMTP id S1351921AbiDEVYT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 17:25:07 -0400
-Received: from mail104.syd.optusnet.com.au (mail104.syd.optusnet.com.au [211.29.132.246])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 8CD3B45781;
-        Tue,  5 Apr 2022 14:05:19 -0700 (PDT)
-Received: from dread.disaster.area (pa49-180-43-123.pa.nsw.optusnet.com.au [49.180.43.123])
-        by mail104.syd.optusnet.com.au (Postfix) with ESMTPS id 192125343E2;
-        Wed,  6 Apr 2022 07:05:15 +1000 (AEST)
-Received: from dave by dread.disaster.area with local (Exim 4.92.3)
-        (envelope-from <david@fromorbit.com>)
-        id 1nbqMT-00ECQO-OU; Wed, 06 Apr 2022 07:05:13 +1000
-Date:   Wed, 6 Apr 2022 07:05:13 +1000
-From:   Dave Chinner <david@fromorbit.com>
-To:     Arnd Bergmann <arnd@arndb.de>
-Cc:     Geert Uytterhoeven <geert@linux-m68k.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-xfs <linux-xfs@vger.kernel.org>
-Subject: Re: Build regressions/improvements in v5.18-rc1
-Message-ID: <20220405210513.GX1544202@dread.disaster.area>
-References: <CAHk-=wg6FWL1xjVyHx7DdjD2dHZETA5_=FqqW17Z19X-WTfWSg@mail.gmail.com>
- <20220404074734.1092959-1-geert@linux-m68k.org>
- <alpine.DEB.2.22.394.2204041006230.1941618@ramsan.of.borg>
- <20220404092655.GR1544202@dread.disaster.area>
- <CAMuHMdWgqdR1o3wT9pjB=w8z=2xaDFv5DJX58-HPHOFRm3Tr8Q@mail.gmail.com>
- <CAK8P3a0QrihBR_2FQ7uZ5w2JmLjv7czfrrarCMmJOhvNdJ3p9g@mail.gmail.com>
- <20220404221605.GS1544202@dread.disaster.area>
- <CAMuHMdWak-zarKA_eCxWm5uhejWAXi0XkAuekfpAKRczLfhq3g@mail.gmail.com>
- <CAK8P3a1JArChbzRDFU0YPCy-7QZgqSoHe8JTH4g0yOz_Mi_MEA@mail.gmail.com>
+        Tue, 5 Apr 2022 17:24:19 -0400
+Received: from aposti.net (aposti.net [89.234.176.197])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A58545AD8;
+        Tue,  5 Apr 2022 14:03:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=crapouillou.net;
+        s=mail; t=1649192633; h=from:from:sender:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=3+gXLZmqhdPrOBrGZGktTeGHOT6E2+rkUcU65w77U9Q=;
+        b=icYQV0HoG9hcJUDeXuXeIU1WoXR6RQR8NP3K1VENb68F67Fe9qy7Gpm8XDNK8j16fqLl4N
+        kfR9fgtlPy/TXgEMLtLBxyy9fbdqmL1pEz43M9c99nYM+sfaV8N8a9AHvYeQsoWYW4L+bc
+        rFYBlHPAcvbgiPNfgIvsDiTEuof8ogg=
+Date:   Tue, 05 Apr 2022 22:03:38 +0100
+From:   Paul Cercueil <paul@crapouillou.net>
+Subject: Re: [PATCH v5 0/3] Ingenic DRM bridge_atomic_enable proposal
+To:     Christophe Branchereau <cbranchereau@gmail.com>
+Cc:     David Airlie <airlied@linux.ie>, Daniel Vetter <daniel@ffwll.ch>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        Rob Herring <robh+dt@kernel.org>, linux-kernel@vger.kernel.org,
+        linux-mips@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        devicetree@vger.kernel.org
+Message-Id: <26XV9R.735J8E0AH281@crapouillou.net>
+In-Reply-To: <20220321133651.291592-1-cbranchereau@gmail.com>
+References: <20220321133651.291592-1-cbranchereau@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAK8P3a1JArChbzRDFU0YPCy-7QZgqSoHe8JTH4g0yOz_Mi_MEA@mail.gmail.com>
-X-Optus-CM-Score: 0
-X-Optus-CM-Analysis: v=2.4 cv=deDjYVbe c=1 sm=1 tr=0 ts=624caf0e
-        a=MV6E7+DvwtTitA3W+3A2Lw==:117 a=MV6E7+DvwtTitA3W+3A2Lw==:17
-        a=kj9zAlcOel0A:10 a=z0gMJWrwH1QA:10 a=tBb2bbeoAAAA:8 a=7-415B0cAAAA:8
-        a=1b_iF-D28r213wdehakA:9 a=CjuIK1q_8ugA:10 a=Oj-tNtZlA1e06AYgeCfH:22
-        a=biEYGPWJfzWAr4FL6Ov7:22
+Content-Type: text/plain; charset=iso-8859-1; format=flowed
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 05, 2022 at 09:08:13AM +0200, Arnd Bergmann wrote:
-> ?On Tue, Apr 5, 2022 at 8:47 AM Geert Uytterhoeven <geert@linux-m68k.org> wrote:
-> > On Tue, Apr 5, 2022 at 12:16 AM Dave Chinner <david@fromorbit.com> wrote:
-> > > So XFS only uses these flags in unsigned int fields that are
-> > > typed via:
-> > >
-> > > typedef unsigned int xfs_buf_flags_t;
-> > >
-> > > So on the surface, declaring the flag values as ULONG and then writing
-> > > them into a UINT field is not a nice thing to be doing.
-> > >
-> > > I really don't want to change the xfs_buf_flags_t type to an
-> > > unsigned long, because that changes the packing of the first
-> > > cacheline of the struct xfs_buf and the contents of that cacheline
-> > > are performance critical for the lookup fastpath....
-> >
-> > Hence just use "1u << n" instead of "1ul << n"?
-> 
-> Right, that avoids the error as well. I picked '1ul' to match the type of
-> the variable it's assigned to, but as Dave said the intended type is
-> 'u32', so '1u' is better here.
+Hi Christophe,
 
-Ok, I'll queue up a patch to make this modification. I'll also need
-to check all the other trace flags fields we print as well, as they
-likely have the same issue but there's no warnings from them because
-they don't use the high bit in the 32 bit field yet...
+Merged to drm-misc-next.
 
-> > > Looking at __print_flags, the internal array type declaration is:
-> > >
-> > > struct trace_print_flags {
-> > >         unsigned long           mask;
-> > >         const char              *name;
-> > > };
-> > >
-> > > and that's the source of the problem.  I notice __print_flags_u64()
-> > > exists, but __print_flags_u32() does not. Should it?
-> 
-> It's not the source of the error, as there is no signed integer
-> overflow when assigning an unsigned int to an unsigned long.
+Thanks,
+-Paul
 
-Thanks for the clarification!
 
-Cheers,
+Le lun., mars 21 2022 at 14:36:48 +0100, Christophe Branchereau=20
+<cbranchereau@gmail.com> a =E9crit :
+> Hello,
+>=20
+> v5 :
+>=20
+> - this set doesn't include the nv3052c bindings doc anymore,
+>   as it's already applied
+>=20
+> - nv3052c panel driver : removed empty lines, proceed to turn it off
+>   even is sleeping in fails instead of stopping there
+>=20
+> - abt panel : switched to REGCACHE_FLAT so we can disable sleep mode
+>   in .enable with regmap_set_bits() instead of doing it at init time
+>=20
+> - ingenic-drm-drv : added ingenic_drm_bridge_atomic_disable to balance
+>   out ingenic_drm_bridge_atomic_enable
+>=20
+> Tested working on the rg350m and rg280m
+>=20
+> Christophe Branchereau (3):
+>   drm/ingenic : add ingenic_drm_bridge_atomic_enable and disable
+>   drm/panel: Add panel driver for NewVision NV3052C based LCDs
+>   drm/panel : innolux-ej030na and abt-y030xx067a : add .enable and
+>     .disable
+>=20
+>  drivers/gpu/drm/ingenic/ingenic-drm-drv.c     |  34 +-
+>  drivers/gpu/drm/panel/Kconfig                 |   9 +
+>  drivers/gpu/drm/panel/Makefile                |   1 +
+>  drivers/gpu/drm/panel/panel-abt-y030xx067a.c  |  31 +-
+>  drivers/gpu/drm/panel/panel-innolux-ej030na.c |  31 +-
+>  .../gpu/drm/panel/panel-newvision-nv3052c.c   | 484=20
+> ++++++++++++++++++
+>  6 files changed, 572 insertions(+), 18 deletions(-)
+>  create mode 100644 drivers/gpu/drm/panel/panel-newvision-nv3052c.c
+>=20
+> --
+> 2.35.1
+>=20
 
-Dave.
--- 
-Dave Chinner
-david@fromorbit.com
+
