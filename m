@@ -2,140 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 62709C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B8F7CC43219
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 21:53:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385594AbiDEVtu (ORCPT
+        id S1385899AbiDEVuN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 17:49:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47148 "EHLO
+        Tue, 5 Apr 2022 17:50:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38410 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356905AbiDEKZD (ORCPT
+        with ESMTP id S1572978AbiDERjY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:25:03 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B755C1CB1;
-        Tue,  5 Apr 2022 03:09:14 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9093A617A7;
-        Tue,  5 Apr 2022 10:09:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9AD81C385A0;
-        Tue,  5 Apr 2022 10:09:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649153353;
-        bh=IsYGMWcOLC2kDDO8OFJfhbKJ+skf8w8cVCluqFXU9Jw=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QtNTPIdbJRz95hv2cMnmc7rPI6Ls5P9iHZ/hb3bYy+KpkAt/jGei33j/cB7apvZ3N
-         JdAGOx4LJ9SObdzMA0Zp1yd0qpC+NKRNsjFQk5h5MFWt+0E7lLLg2GLwcpQVc79usI
-         BtTxGINaCxeeyEANGCaslC9Ggq6gmFPOLNTJtjSU=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Robert Hancock <robert.hancock@calian.com>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 191/599] ASoC: xilinx: xlnx_formatter_pcm: Handle sysclk setting
-Date:   Tue,  5 Apr 2022 09:28:05 +0200
-Message-Id: <20220405070304.524638747@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 5 Apr 2022 13:39:24 -0400
+Received: from mail-lf1-x133.google.com (mail-lf1-x133.google.com [IPv6:2a00:1450:4864:20::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18994B8203
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 10:37:25 -0700 (PDT)
+Received: by mail-lf1-x133.google.com with SMTP id y32so9262073lfa.6
+        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 10:37:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linux-foundation.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=FbbKQlV6u6KKQgV3kF0cSGptF4idzq+5FojEhxitZgw=;
+        b=dZ4XXEaJnpTbQNQk046zF6zDvjCUN0Cv1mS/hPtBMnKZaaN5nR3MO1fx0X2r36ErIJ
+         NFjVv+WN61WB6ydyCfBXQab73AARWTP69mMuJ4Z1v/ekYSBKIDAbOp4JYqco+Bai/m9M
+         xlyXw37jjONTNQfZFUJHuN1SQRQoNMyJtm2ac=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=FbbKQlV6u6KKQgV3kF0cSGptF4idzq+5FojEhxitZgw=;
+        b=Rlu9kbc1rQR68RNL3QetQwsoXXK256ARxHfnUkLRWXzwdXyTg9gNntWiIqtnlE9ge/
+         ug1KsMhVlWfrK4j01GBYq9bJa2jM/FmVGAurR9CZ+Sun8w4hcyZX/PXLM4XLRUi75MKO
+         VXS0Abh7HoPaMebjlsq21jyFBb9P8Z+fJa6Xi5JYRu3NTdSgF1/vVBqq6dIE7EMd8RA0
+         SGYmHTjgdOsW+z6dEwIK8f3H+louqPpFSaoYNTh4JwI2N75uLh0PFMlC7kgI6CkE0mDf
+         X+kO7Q7D8vCdSFvx7ouJUwL9hqUhzkt7b+0HGxuyGZ+/Y7vkh8khREYHELKriHc4F0+n
+         11ZA==
+X-Gm-Message-State: AOAM532X9Yrya0YDuU4pWBcG/R5rWcw5DXsdH5Yw3ny2DA0HmVBsAbI+
+        cNrxbtX5XqmJgSjRLD6kR0oKsJRG1V5D+/6aKJI=
+X-Google-Smtp-Source: ABdhPJxiKPhnWAiroPFaSrdtxTb19hBpokrFwUJ1oDsSNyCQHxYmdRWsevCHhD9HYrvADcdJnCG4Sw==
+X-Received: by 2002:a05:6512:3b0a:b0:44a:2e21:ef25 with SMTP id f10-20020a0565123b0a00b0044a2e21ef25mr3327241lfv.333.1649180243024;
+        Tue, 05 Apr 2022 10:37:23 -0700 (PDT)
+Received: from mail-lf1-f49.google.com (mail-lf1-f49.google.com. [209.85.167.49])
+        by smtp.gmail.com with ESMTPSA id q28-20020ac24a7c000000b0044ade90e498sm1464971lfp.144.2022.04.05.10.37.21
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 05 Apr 2022 10:37:22 -0700 (PDT)
+Received: by mail-lf1-f49.google.com with SMTP id k21so24570264lfe.4
+        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 10:37:21 -0700 (PDT)
+X-Received: by 2002:a05:6512:3c93:b0:44b:4ba:c334 with SMTP id
+ h19-20020a0565123c9300b0044b04bac334mr3435604lfv.27.1649180241247; Tue, 05
+ Apr 2022 10:37:21 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <20220405140906.222350-1-Jason@zx2c4.com>
+In-Reply-To: <20220405140906.222350-1-Jason@zx2c4.com>
+From:   Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Tue, 5 Apr 2022 10:37:05 -0700
+X-Gmail-Original-Message-ID: <CAHk-=wjFSsa7ZTFOiDCpZbwQsCKdAo3KFetSpGCjusqjjcb2XA@mail.gmail.com>
+Message-ID: <CAHk-=wjFSsa7ZTFOiDCpZbwQsCKdAo3KFetSpGCjusqjjcb2XA@mail.gmail.com>
+Subject: Re: [PATCH] random: opportunistically initialize on /dev/urandom reads
+To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
+        "Theodore Ts'o" <tytso@mit.edu>,
+        Dominik Brodowski <linux@dominikbrodowski.net>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Robert Hancock <robert.hancock@calian.com>
+On Tue, Apr 5, 2022 at 7:10 AM Jason A. Donenfeld <Jason@zx2c4.com> wrote:
+>
+> Practically speaking, this means that at least on x86, /dev/urandom
+> becomes safe. Probably other architectures with working cycle counters
+> will also become safe. And architectures with slow or broken cycle
+> counters at least won't be affected at all by this change.
 
-[ Upstream commit 1c5091fbe7e0d0804158200b7feac5123f7b4fbd ]
+I think this is a good change, as it's a bit pointless to warn about
+uninitialized random data if we can just initialize it.
 
-This driver did not set the MM2S Fs Multiplier Register to the proper
-value for playback streams. This needs to be set to the sample rate to
-MCLK multiplier, or random stream underflows can occur on the downstream
-I2S transmitter.
+I do wonder if it wouldn't be better to perhaps move this all into
+wait_for_random_bytes(), though, and add an argument to that function
+for "no delay".
 
-Store the sysclk value provided via the set_sysclk callback and use that
-in conjunction with the sample rate in the hw_params callback to calculate
-the proper value to set for this register.
+Because I think we should at the same time also add a warning to
+wait_for_random_bytes() for the "uhhhuh, it timed out".
 
-Fixes: 6f6c3c36f091 ("ASoC: xlnx: add pcm formatter platform driver")
-Signed-off-by: Robert Hancock <robert.hancock@calian.com>
-Link: https://lore.kernel.org/r/20220120195832.1742271-2-robert.hancock@calian.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- sound/soc/xilinx/xlnx_formatter_pcm.c | 25 +++++++++++++++++++++++++
- 1 file changed, 25 insertions(+)
+Right now wait_for_random_bytes() returns an error that most people
+then just ignore. Including drivers/net/wireguard/cookie.c.
 
-diff --git a/sound/soc/xilinx/xlnx_formatter_pcm.c b/sound/soc/xilinx/xlnx_formatter_pcm.c
-index ce19a6058b27..5c4158069a5a 100644
---- a/sound/soc/xilinx/xlnx_formatter_pcm.c
-+++ b/sound/soc/xilinx/xlnx_formatter_pcm.c
-@@ -84,6 +84,7 @@ struct xlnx_pcm_drv_data {
- 	struct snd_pcm_substream *play_stream;
- 	struct snd_pcm_substream *capture_stream;
- 	struct clk *axi_clk;
-+	unsigned int sysclk;
- };
- 
- /*
-@@ -314,6 +315,15 @@ static irqreturn_t xlnx_s2mm_irq_handler(int irq, void *arg)
- 	return IRQ_NONE;
- }
- 
-+static int xlnx_formatter_set_sysclk(struct snd_soc_component *component,
-+				     int clk_id, int source, unsigned int freq, int dir)
-+{
-+	struct xlnx_pcm_drv_data *adata = dev_get_drvdata(component->dev);
-+
-+	adata->sysclk = freq;
-+	return 0;
-+}
-+
- static int xlnx_formatter_pcm_open(struct snd_soc_component *component,
- 				   struct snd_pcm_substream *substream)
- {
-@@ -450,11 +460,25 @@ static int xlnx_formatter_pcm_hw_params(struct snd_soc_component *component,
- 	u64 size;
- 	struct snd_pcm_runtime *runtime = substream->runtime;
- 	struct xlnx_pcm_stream_param *stream_data = runtime->private_data;
-+	struct xlnx_pcm_drv_data *adata = dev_get_drvdata(component->dev);
- 
- 	active_ch = params_channels(params);
- 	if (active_ch > stream_data->ch_limit)
- 		return -EINVAL;
- 
-+	if (substream->stream == SNDRV_PCM_STREAM_PLAYBACK &&
-+	    adata->sysclk) {
-+		unsigned int mclk_fs = adata->sysclk / params_rate(params);
-+
-+		if (adata->sysclk % params_rate(params) != 0) {
-+			dev_warn(component->dev, "sysclk %u not divisible by rate %u\n",
-+				 adata->sysclk, params_rate(params));
-+			return -EINVAL;
-+		}
-+
-+		writel(mclk_fs, stream_data->mmio + XLNX_AUD_FS_MULTIPLIER);
-+	}
-+
- 	if (substream->stream == SNDRV_PCM_STREAM_CAPTURE &&
- 	    stream_data->xfer_mode == AES_TO_PCM) {
- 		val = readl(stream_data->mmio + XLNX_AUD_STS);
-@@ -552,6 +576,7 @@ static int xlnx_formatter_pcm_new(struct snd_soc_component *component,
- 
- static const struct snd_soc_component_driver xlnx_asoc_component = {
- 	.name		= DRV_NAME,
-+	.set_sysclk	= xlnx_formatter_set_sysclk,
- 	.open		= xlnx_formatter_pcm_open,
- 	.close		= xlnx_formatter_pcm_close,
- 	.hw_params	= xlnx_formatter_pcm_hw_params,
--- 
-2.34.1
+So instead of returning an error that nobody can do much about, how
+about we move the warning code into wait_for_random_bytes()?
 
+And make that urandom_read() call the same wait_for_random_bytes()
+that random_read() calls, just with GRND_NONBLOCK as an argument?
 
+Not a big deal. Your patch is fine by me too.
 
+                    Linus
