@@ -2,102 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BE677C35296
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 11:17:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C0CE8C3527E
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 11:17:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353061AbiDELNs (ORCPT
+        id S1353120AbiDELN4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 07:13:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60902 "EHLO
+        Tue, 5 Apr 2022 07:13:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33828 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238287AbiDEIa1 (ORCPT
+        with ESMTP id S238234AbiDEIaZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:30:27 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB36C245B7;
-        Tue,  5 Apr 2022 01:22:03 -0700 (PDT)
-Date:   Tue, 05 Apr 2022 08:22:01 -0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1649146922;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=l+xUYv6gdZsjBlMimQWLTKtSrNhHai4I0pW5bOZsXo4=;
-        b=o7a0WX1+82rPz7+R5wyQMyN3+HOr4Wz8RKw9ysNFrG2V4/gXB5JnAYrkH/Zt1Pi9F0zmwc
-        GUlQ6ROOqYycGL2PUCJCoaBad7NzII8NZJsO+gErN3hVlneu8J67pwwp64tW0EqAre8WDD
-        7hTu647GjwUr1glcwuI8VKPU3pgO8WEVc5rPuk4Xb//uDWZIk7+rRqoCUw+2evSOKlKhKK
-        I2GcWs+mgTqGvXnWMD0XOl5+ZR0cVjegjTp4kN8NU0PBMsqztoqQ6ISB9PnKXUDd8oPs2X
-        itBr3axY2d64RGTudrqgHFTx07wnJLMoiYCX2u921By3yCPthIENtkdWKe3BgA==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1649146922;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=l+xUYv6gdZsjBlMimQWLTKtSrNhHai4I0pW5bOZsXo4=;
-        b=SuCYPPCkjJFGlSdOxpigCfqddH5Qmj0Tzj8uylBk29udUPKWXbi41L7A3cCHdFWfEdupsy
-        suz3BgVXaufUsxDw==
-From:   "tip-bot2 for Sebastian Andrzej Siewior" <tip-bot2@linutronix.de>
-Sender: tip-bot2@linutronix.de
-Reply-to: linux-kernel@vger.kernel.org
-To:     linux-tip-commits@vger.kernel.org
-Subject: [tip: sched/urgent] sched: Teach the forced-newidle balancer about
- CPU affinity limitation.
-Cc:     Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>, x86@kernel.org,
-        linux-kernel@vger.kernel.org
-In-Reply-To: <YjNK9El+3fzGmswf@linutronix.de>
-References: <YjNK9El+3fzGmswf@linutronix.de>
+        Tue, 5 Apr 2022 04:30:25 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23C8B245B5;
+        Tue,  5 Apr 2022 01:21:59 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BAE15B81BBD;
+        Tue,  5 Apr 2022 08:21:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0BCA0C385A0;
+        Tue,  5 Apr 2022 08:21:55 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649146916;
+        bh=uqLAIvzQVZ7zsBQfr13bl/skVcfcHbCBT+09pEPcM8g=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=FN/uRdj3LIpZrdJlTg3ZaR75M2HLpBcX7Jr+Jf8/rejQeqZaZnKqLGYcTIuSRts1G
+         RTfVw3Raq6eACmgX0FNnyu9uBojU6zU57K1OQIXlxAMqE7BNniQcrtN29JKC+WE8dv
+         borxBeq+FfinmeOsmGU5nzkIrzSWIPg/1v3B6JKs=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Rander Wang <rander.wang@intel.com>,
+        Anthony I Gilea <i@cpp.in>,
+        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
+        Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 0936/1126] ASoC: Intel: sof_sdw: fix quirks for 2022 HP Spectre x360 13"
+Date:   Tue,  5 Apr 2022 09:28:03 +0200
+Message-Id: <20220405070434.987421554@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
+References: <20220405070407.513532867@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Message-ID: <164914692120.389.11878203217805894208.tip-bot2@tip-bot2>
-Robot-ID: <tip-bot2@linutronix.de>
-Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The following commit has been merged into the sched/urgent branch of tip:
+From: Anthony I Gilea <i@cpp.in>
 
-Commit-ID:     386ef214c3c6ab111d05e1790e79475363abaa05
-Gitweb:        https://git.kernel.org/tip/386ef214c3c6ab111d05e1790e79475363abaa05
-Author:        Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-AuthorDate:    Thu, 17 Mar 2022 15:51:32 +01:00
-Committer:     Peter Zijlstra <peterz@infradead.org>
-CommitterDate: Tue, 05 Apr 2022 09:59:36 +02:00
+[ Upstream commit ce73ef6ec67104d1fcc4c5911d77ce83288a0998 ]
 
-sched: Teach the forced-newidle balancer about CPU affinity limitation.
+HP changed the DMI identification for 2022 devices:
+Product Name: HP Spectre x360 Conv 13-ap0001na
+Product Name: 8709
+This patch relaxes the DMI_MATCH criterion to work with all versions of this product.
 
-try_steal_cookie() looks at task_struct::cpus_mask to decide if the
-task could be moved to `this' CPU. It ignores that the task might be in
-a migration disabled section while not on the CPU. In this case the task
-must not be moved otherwise per-CPU assumption are broken.
-
-Use is_cpu_allowed(), as suggested by Peter Zijlstra, to decide if the a
-task can be moved.
-
-Fixes: d2dfa17bc7de6 ("sched: Trivial forced-newidle balancer")
-Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Link: https://lkml.kernel.org/r/YjNK9El+3fzGmswf@linutronix.de
+Reviewed-by: Rander Wang <rander.wang@intel.com>
+Signed-off-by: Anthony I Gilea <i@cpp.in>
+Signed-off-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+Link: https://lore.kernel.org/r/20220304204532.54675-4-pierre-louis.bossart@linux.intel.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- kernel/sched/core.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/soundwire/dmi-quirks.c   | 2 +-
+ sound/soc/intel/boards/sof_sdw.c | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/kernel/sched/core.c b/kernel/sched/core.c
-index 017ee78..51efaab 100644
---- a/kernel/sched/core.c
-+++ b/kernel/sched/core.c
-@@ -6006,7 +6006,7 @@ static bool try_steal_cookie(int this, int that)
- 		if (p == src->core_pick || p == src->curr)
- 			goto next;
- 
--		if (!cpumask_test_cpu(this, &p->cpus_mask))
-+		if (!is_cpu_allowed(p, this))
- 			goto next;
- 
- 		if (p->core_occupation > dst->idle->core_occupation)
+diff --git a/drivers/soundwire/dmi-quirks.c b/drivers/soundwire/dmi-quirks.c
+index 0ca2a3e3a02e..747983743a14 100644
+--- a/drivers/soundwire/dmi-quirks.c
++++ b/drivers/soundwire/dmi-quirks.c
+@@ -59,7 +59,7 @@ static const struct dmi_system_id adr_remap_quirk_table[] = {
+ 	{
+ 		.matches = {
+ 			DMI_MATCH(DMI_SYS_VENDOR, "HP"),
+-			DMI_MATCH(DMI_PRODUCT_NAME, "HP Spectre x360 Convertible"),
++			DMI_MATCH(DMI_PRODUCT_NAME, "HP Spectre x360 Conv"),
+ 		},
+ 		.driver_data = (void *)intel_tgl_bios,
+ 	},
+diff --git a/sound/soc/intel/boards/sof_sdw.c b/sound/soc/intel/boards/sof_sdw.c
+index da515eb1ddbe..1f00679b4240 100644
+--- a/sound/soc/intel/boards/sof_sdw.c
++++ b/sound/soc/intel/boards/sof_sdw.c
+@@ -185,7 +185,7 @@ static const struct dmi_system_id sof_sdw_quirk_table[] = {
+ 		.callback = sof_sdw_quirk_cb,
+ 		.matches = {
+ 			DMI_MATCH(DMI_SYS_VENDOR, "HP"),
+-			DMI_MATCH(DMI_PRODUCT_NAME, "HP Spectre x360 Convertible"),
++			DMI_MATCH(DMI_PRODUCT_NAME, "HP Spectre x360 Conv"),
+ 		},
+ 		.driver_data = (void *)(SOF_SDW_TGL_HDMI |
+ 					SOF_SDW_PCH_DMIC |
+-- 
+2.34.1
+
+
+
