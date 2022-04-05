@@ -2,46 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0244AC4167E
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:19:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E6F9DC41535
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:19:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382928AbiDEMRZ (ORCPT
+        id S1382914AbiDEMRR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 08:17:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46156 "EHLO
+        Tue, 5 Apr 2022 08:17:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46854 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244952AbiDEIwu (ORCPT
+        with ESMTP id S244956AbiDEIwu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Apr 2022 04:52:50 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 304B71BEAD;
-        Tue,  5 Apr 2022 01:47:33 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E0CE1BEB8;
+        Tue,  5 Apr 2022 01:47:41 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C2A90614F9;
-        Tue,  5 Apr 2022 08:47:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CF3B8C385A1;
-        Tue,  5 Apr 2022 08:47:31 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2C11160FFB;
+        Tue,  5 Apr 2022 08:47:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 363BAC385A0;
+        Tue,  5 Apr 2022 08:47:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649148452;
-        bh=1LZ8fotZSm4eQU/oN7SWa3oKTSpE6lIwBc6KvTf1Ti4=;
+        s=korg; t=1649148460;
+        bh=2oZ6o3YYR84xrbyRZvsWvVcONdqA2nZyWHB3WsSIGY8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pgdC5Fr8VkoB8YX/G/ZaCMMOyn8E4a3vHgTbQ027urqBpRIYXF1g7sVvipCj1l1P9
-         WAE9lQiCuKB1A+T8JXDhml9U3IxAjo8UJrH+AdAU7d0E7SwZT0L/cbKVeNyXNpWLH0
-         yEwGulnxSasYt6yED0D9sibMZH/9I5/mDCWUhrgc=
+        b=OhBS29SgqixC5kjr2jUGSxMRTI7+uHWS+4MZjn2i6JdzYJgfzdsrvPTqkOn8Mxnzt
+         SN53Om8bRoyTfepFlcSDLkBS8eVgRhwh7DhUZ7/XNgKvmy/no0GQp3nxJkXwginSnv
+         tNeMnCA1VHSBNO5GfgIkX3jTbOQkcyKJ7+vVs0yo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Nicolas Dufresne <nicolas.dufresne@collabora.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0345/1017] media: v4l2-core: Initialize h264 scaling matrix
-Date:   Tue,  5 Apr 2022 09:20:58 +0200
-Message-Id: <20220405070404.523528515@linuxfoundation.org>
+        stable@vger.kernel.org, Takashi Sakamoto <o-takashi@sakamocchi.jp>,
+        Takashi Iwai <tiwai@suse.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 0365/1017] ALSA: firewire-lib: fix uninitialized flag for AV/C deferred transaction
+Date:   Tue,  5 Apr 2022 09:21:18 +0200
+Message-Id: <20220405070405.119827526@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -53,62 +49,81 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nicolas Dufresne <nicolas.dufresne@collabora.com>
+From: Takashi Sakamoto <o-takashi@sakamocchi.jp>
 
-[ Upstream commit 0f6146d476fc99862899e70f2554ee77b444b7b9 ]
+[ Upstream commit bf0cd60b7e33cf221fbe1114e4acb2c828b0af0d ]
 
-In the final H264 API, it is not required to set scaling matrix if
-they are not present in the bitstream. A flag was added in order to let
-the driver know. The downside is that it leaves the default control
-value to 0, which isn't valid. As per the spec (see formulas 7-8/7-9),
-when the scaling matrix are absent from the bitstream, flat values
-of 16 should be used. This improves this control semantic in a way
-that the control value are always valid. Drivers can then use
-the scaling_matrix control values without having to check its presence.
-Same method was employed for MPEG2_QUANTISATION.
+AV/C deferred transaction was supported at a commit 00a7bb81c20f ("ALSA:
+firewire-lib: Add support for deferred transaction") while 'deferrable'
+flag can be uninitialized for non-control/notify AV/C transactions.
+UBSAN reports it:
 
-This fixes issues with MTK VCODEC H264 decoder when using GStreamer.
-GStreamer does not set this control if its not present in the bitstream.
-As MTK VDCODEC was using the initialized to 0 values, the frames ended
-up completely gray.
+kernel: ================================================================================
+kernel: UBSAN: invalid-load in /build/linux-aa0B4d/linux-5.15.0/sound/firewire/fcp.c:363:9
+kernel: load of value 158 is not a valid value for type '_Bool'
+kernel: CPU: 3 PID: 182227 Comm: irq/35-firewire Tainted: P           OE     5.15.0-18-generic #18-Ubuntu
+kernel: Hardware name: Gigabyte Technology Co., Ltd. AX370-Gaming 5/AX370-Gaming 5, BIOS F42b 08/01/2019
+kernel: Call Trace:
+kernel:  <IRQ>
+kernel:  show_stack+0x52/0x58
+kernel:  dump_stack_lvl+0x4a/0x5f
+kernel:  dump_stack+0x10/0x12
+kernel:  ubsan_epilogue+0x9/0x45
+kernel:  __ubsan_handle_load_invalid_value.cold+0x44/0x49
+kernel:  fcp_response.part.0.cold+0x1a/0x2b [snd_firewire_lib]
+kernel:  fcp_response+0x28/0x30 [snd_firewire_lib]
+kernel:  fw_core_handle_request+0x230/0x3d0 [firewire_core]
+kernel:  handle_ar_packet+0x1d9/0x200 [firewire_ohci]
+kernel:  ? handle_ar_packet+0x1d9/0x200 [firewire_ohci]
+kernel:  ? transmit_complete_callback+0x9f/0x120 [firewire_core]
+kernel:  ar_context_tasklet+0xa8/0x2e0 [firewire_ohci]
+kernel:  tasklet_action_common.constprop.0+0xea/0xf0
+kernel:  tasklet_action+0x22/0x30
+kernel:  __do_softirq+0xd9/0x2e3
+kernel:  ? irq_finalize_oneshot.part.0+0xf0/0xf0
+kernel:  do_softirq+0x75/0xa0
+kernel:  </IRQ>
+kernel:  <TASK>
+kernel:  __local_bh_enable_ip+0x50/0x60
+kernel:  irq_forced_thread_fn+0x7e/0x90
+kernel:  irq_thread+0xba/0x190
+kernel:  ? irq_thread_fn+0x60/0x60
+kernel:  kthread+0x11e/0x140
+kernel:  ? irq_thread_check_affinity+0xf0/0xf0
+kernel:  ? set_kthread_struct+0x50/0x50
+kernel:  ret_from_fork+0x22/0x30
+kernel:  </TASK>
+kernel: ================================================================================
 
-Fixes: 54889c51b833d236 ("media: uapi: h264: Rename and clarify PPS_FLAG_SCALING_MATRIX_PRESENT")
-Signed-off-by: Nicolas Dufresne <nicolas.dufresne@collabora.com>
-Tested-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+This commit fixes the bug. The bug has no disadvantage for the non-
+control/notify AV/C transactions since the flag has an effect for AV/C
+response with INTERIM (0x0f) status which is not used for the transactions
+in AV/C general specification.
+
+Fixes: 00a7bb81c20f ("ALSA: firewire-lib: Add support for deferred transaction")
+Signed-off-by: Takashi Sakamoto <o-takashi@sakamocchi.jp>
+Link: https://lore.kernel.org/r/20220304125647.78430-1-o-takashi@sakamocchi.jp
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/v4l2-core/v4l2-ctrls-core.c | 10 ++++++++++
- 1 file changed, 10 insertions(+)
+ sound/firewire/fcp.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
 
-diff --git a/drivers/media/v4l2-core/v4l2-ctrls-core.c b/drivers/media/v4l2-core/v4l2-ctrls-core.c
-index 70adfc1b9c81..fb9b99e9e12b 100644
---- a/drivers/media/v4l2-core/v4l2-ctrls-core.c
-+++ b/drivers/media/v4l2-core/v4l2-ctrls-core.c
-@@ -113,6 +113,7 @@ static void std_init_compound(const struct v4l2_ctrl *ctrl, u32 idx,
- 	struct v4l2_ctrl_mpeg2_quantisation *p_mpeg2_quant;
- 	struct v4l2_ctrl_vp8_frame *p_vp8_frame;
- 	struct v4l2_ctrl_fwht_params *p_fwht_params;
-+	struct v4l2_ctrl_h264_scaling_matrix *p_h264_scaling_matrix;
- 	void *p = ptr.p + idx * ctrl->elem_size;
+diff --git a/sound/firewire/fcp.c b/sound/firewire/fcp.c
+index bbfbebf4affb..df44dd5dc4b2 100644
+--- a/sound/firewire/fcp.c
++++ b/sound/firewire/fcp.c
+@@ -240,9 +240,7 @@ int fcp_avc_transaction(struct fw_unit *unit,
+ 	t.response_match_bytes = response_match_bytes;
+ 	t.state = STATE_PENDING;
+ 	init_waitqueue_head(&t.wait);
+-
+-	if (*(const u8 *)command == 0x00 || *(const u8 *)command == 0x03)
+-		t.deferrable = true;
++	t.deferrable = (*(const u8 *)command == 0x00 || *(const u8 *)command == 0x03);
  
- 	if (ctrl->p_def.p_const)
-@@ -160,6 +161,15 @@ static void std_init_compound(const struct v4l2_ctrl *ctrl, u32 idx,
- 		p_fwht_params->flags = V4L2_FWHT_FL_PIXENC_YUV |
- 			(2 << V4L2_FWHT_FL_COMPONENTS_NUM_OFFSET);
- 		break;
-+	case V4L2_CTRL_TYPE_H264_SCALING_MATRIX:
-+		p_h264_scaling_matrix = p;
-+		/*
-+		 * The default (flat) H.264 scaling matrix when none are
-+		 * specified in the bitstream, this is according to formulas
-+		 *  (7-8) and (7-9) of the specification.
-+		 */
-+		memset(p_h264_scaling_matrix, 16, sizeof(*p_h264_scaling_matrix));
-+		break;
- 	}
- }
- 
+ 	spin_lock_irq(&transactions_lock);
+ 	list_add_tail(&t.list, &transactions);
 -- 
 2.34.1
 
