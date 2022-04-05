@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B6632C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:21:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C51FC43217
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:21:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1586981AbiDFAGo (ORCPT
+        id S1586999AbiDFAG4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 20:06:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48558 "EHLO
+        Tue, 5 Apr 2022 20:06:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45286 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349295AbiDEJtf (ORCPT
+        with ESMTP id S242359AbiDEKcm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:49:35 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2EF813CC5;
-        Tue,  5 Apr 2022 02:43:45 -0700 (PDT)
+        Tue, 5 Apr 2022 06:32:42 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 491D9DE92E;
+        Tue,  5 Apr 2022 03:18:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id AEAA0B81B76;
-        Tue,  5 Apr 2022 09:43:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 043E5C385A3;
-        Tue,  5 Apr 2022 09:43:42 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E7BBDB81C98;
+        Tue,  5 Apr 2022 10:18:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 40616C385A0;
+        Tue,  5 Apr 2022 10:18:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649151823;
-        bh=k5xEwT2EpCrvE2/ecRxQ9L6o9jtoomLXGOZUR/EcBEE=;
+        s=korg; t=1649153926;
+        bh=LyU0UCjIMK28Y/+3dy2ewi5N3bhvr2nkJBhF+Msbu9w=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RnfscOi39nXOoGnCWUqdUi5gY8SM1gGWj+vlka3NWNH8OR1aY9hQbDUWsOYGiB87U
-         7jBmxaH34700WEctNRzp1gwitkl2ySt+YTL+84CNw2JBkF0m+aYfQ+uCnIFfyixtR7
-         ACqjw4R2rKdLdkHNm41BGMnmllsmMNhwvGMlgk10=
+        b=zHFsjodAqc5T/rW7IHW7DlzEd/KWkwNHWxSvveE/sEqRKffP9WTavSHLi4pMxPetE
+         x/F0xhC1yeN6AZo+H9FpPCh7UKicuHrXxMCypqbfO/0k5diDyVsD15BRAMjI/4+7JU
+         u9CJiDo+cZW/guCD2LSfITTBKhq3lbATOUUrfon8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.co.jp>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 554/913] af_unix: Fix some data-races around unix_sk(sk)->oob_skb.
-Date:   Tue,  5 Apr 2022 09:26:56 +0200
-Message-Id: <20220405070356.453123879@linuxfoundation.org>
+Subject: [PATCH 5.10 396/599] iio: adc: Add check for devm_request_threaded_irq
+Date:   Tue,  5 Apr 2022 09:31:30 +0200
+Message-Id: <20220405070310.615265669@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
+References: <20220405070258.802373272@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,107 +50,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kuniyuki Iwashima <kuniyu@amazon.co.jp>
+From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
 
-[ Upstream commit e82025c623e2bf04d162bafceb66a59115814479 ]
+[ Upstream commit b30537a4cedcacf0ade2f33ebb7610178ed1e7d7 ]
 
-Out-of-band data automatically places a "mark" showing wherein the
-sequence the out-of-band data would have been.  If the out-of-band data
-implies cancelling everything sent so far, the "mark" is helpful to flush
-them.  When the socket's read pointer reaches the "mark", the ioctl() below
-sets a non zero value to the arg `atmark`:
+As the potential failure of the devm_request_threaded_irq(),
+it should be better to check the return value and return
+error if fails.
 
-The out-of-band data is queued in sk->sk_receive_queue as well as ordinary
-data and also saved in unix_sk(sk)->oob_skb.  It can be used to test if the
-head of the receive queue is the out-of-band data meaning the socket is at
-the "mark".
-
-While testing that, unix_ioctl() reads unix_sk(sk)->oob_skb locklessly.
-Thus, all accesses to oob_skb need some basic protection to avoid
-load/store tearing which KCSAN detects when these are called concurrently:
-
-  - ioctl(fd_a, SIOCATMARK, &atmark, sizeof(atmark))
-  - send(fd_b_connected_to_a, buf, sizeof(buf), MSG_OOB)
-
-BUG: KCSAN: data-race in unix_ioctl / unix_stream_sendmsg
-
-write to 0xffff888003d9cff0 of 8 bytes by task 175 on cpu 1:
- unix_stream_sendmsg (net/unix/af_unix.c:2087 net/unix/af_unix.c:2191)
- sock_sendmsg (net/socket.c:705 net/socket.c:725)
- __sys_sendto (net/socket.c:2040)
- __x64_sys_sendto (net/socket.c:2048)
- do_syscall_64 (arch/x86/entry/common.c:50 arch/x86/entry/common.c:80)
- entry_SYSCALL_64_after_hwframe (arch/x86/entry/entry_64.S:113)
-
-read to 0xffff888003d9cff0 of 8 bytes by task 176 on cpu 0:
- unix_ioctl (net/unix/af_unix.c:3101 (discriminator 1))
- sock_do_ioctl (net/socket.c:1128)
- sock_ioctl (net/socket.c:1242)
- __x64_sys_ioctl (fs/ioctl.c:52 fs/ioctl.c:874 fs/ioctl.c:860 fs/ioctl.c:860)
- do_syscall_64 (arch/x86/entry/common.c:50 arch/x86/entry/common.c:80)
- entry_SYSCALL_64_after_hwframe (arch/x86/entry/entry_64.S:113)
-
-value changed: 0xffff888003da0c00 -> 0xffff888003da0d00
-
-Reported by Kernel Concurrency Sanitizer on:
-CPU: 0 PID: 176 Comm: unix_race_oob_i Not tainted 5.17.0-rc5-59529-g83dc4c2af682 #12
-Hardware name: Red Hat KVM, BIOS 1.11.0-2.amzn2 04/01/2014
-
-Fixes: 314001f0bf92 ("af_unix: Add OOB support")
-Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.co.jp>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Fixes: fa659a40b80b ("iio: adc: twl6030-gpadc: Use devm_* API family")
+Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Link: https://lore.kernel.org/r/20220224062849.3280966-1-jiasheng@iscas.ac.cn
+Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/unix/af_unix.c | 12 +++++-------
- 1 file changed, 5 insertions(+), 7 deletions(-)
+ drivers/iio/adc/twl6030-gpadc.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/net/unix/af_unix.c b/net/unix/af_unix.c
-index b0bfc78e421c..826ac391a7a4 100644
---- a/net/unix/af_unix.c
-+++ b/net/unix/af_unix.c
-@@ -1996,7 +1996,7 @@ static int queue_oob(struct socket *sock, struct msghdr *msg, struct sock *other
- 	if (ousk->oob_skb)
- 		consume_skb(ousk->oob_skb);
+diff --git a/drivers/iio/adc/twl6030-gpadc.c b/drivers/iio/adc/twl6030-gpadc.c
+index c6416ad795ca..256177b15c51 100644
+--- a/drivers/iio/adc/twl6030-gpadc.c
++++ b/drivers/iio/adc/twl6030-gpadc.c
+@@ -911,6 +911,8 @@ static int twl6030_gpadc_probe(struct platform_device *pdev)
+ 	ret = devm_request_threaded_irq(dev, irq, NULL,
+ 				twl6030_gpadc_irq_handler,
+ 				IRQF_ONESHOT, "twl6030_gpadc", indio_dev);
++	if (ret)
++		return ret;
  
--	ousk->oob_skb = skb;
-+	WRITE_ONCE(ousk->oob_skb, skb);
- 
- 	scm_stat_add(other, skb);
- 	skb_queue_tail(&other->sk_receive_queue, skb);
-@@ -2514,9 +2514,8 @@ static int unix_stream_recv_urg(struct unix_stream_read_state *state)
- 
- 	oob_skb = u->oob_skb;
- 
--	if (!(state->flags & MSG_PEEK)) {
--		u->oob_skb = NULL;
--	}
-+	if (!(state->flags & MSG_PEEK))
-+		WRITE_ONCE(u->oob_skb, NULL);
- 
- 	unix_state_unlock(sk);
- 
-@@ -2551,7 +2550,7 @@ static struct sk_buff *manage_oob(struct sk_buff *skb, struct sock *sk,
- 				skb = NULL;
- 			} else if (sock_flag(sk, SOCK_URGINLINE)) {
- 				if (!(flags & MSG_PEEK)) {
--					u->oob_skb = NULL;
-+					WRITE_ONCE(u->oob_skb, NULL);
- 					consume_skb(skb);
- 				}
- 			} else if (!(flags & MSG_PEEK)) {
-@@ -3006,11 +3005,10 @@ static int unix_ioctl(struct socket *sock, unsigned int cmd, unsigned long arg)
- 	case SIOCATMARK:
- 		{
- 			struct sk_buff *skb;
--			struct unix_sock *u = unix_sk(sk);
- 			int answ = 0;
- 
- 			skb = skb_peek(&sk->sk_receive_queue);
--			if (skb && skb == u->oob_skb)
-+			if (skb && skb == READ_ONCE(unix_sk(sk)->oob_skb))
- 				answ = 1;
- 			err = put_user(answ, (int __user *)arg);
- 		}
+ 	ret = twl6030_gpadc_enable_irq(TWL6030_GPADC_RT_SW1_EOC_MASK);
+ 	if (ret < 0) {
 -- 
 2.34.1
 
