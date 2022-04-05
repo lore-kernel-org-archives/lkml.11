@@ -2,45 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D8741C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ED966C433F5
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 01:30:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1842090AbiDFB05 (ORCPT
+        id S1842106AbiDFB1C (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 21:26:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49700 "EHLO
+        Tue, 5 Apr 2022 21:27:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53978 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234591AbiDEKfQ (ORCPT
+        with ESMTP id S242638AbiDEKcm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:35:16 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1305E3B2B7;
-        Tue,  5 Apr 2022 03:20:46 -0700 (PDT)
+        Tue, 5 Apr 2022 06:32:42 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BBC8F167F6;
+        Tue,  5 Apr 2022 03:18:55 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C1933B81BC5;
-        Tue,  5 Apr 2022 10:20:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3F1CBC385A1;
-        Tue,  5 Apr 2022 10:20:43 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5789461676;
+        Tue,  5 Apr 2022 10:18:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6DF1CC385A0;
+        Tue,  5 Apr 2022 10:18:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649154043;
-        bh=iGOaU2i15VbzWQLnZXbCeWm1YGT/GMhnFIK35uqmUXc=;
+        s=korg; t=1649153934;
+        bh=r88hWIB6vNyoCMJJysi09WXaUEqZwlMCiIF3eh30XLA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ChlkDajjTLZ9qClQdbZ1XsvVy2qGGZ/wg7+7W9ZR2cHIQnnn3hK1DUMxhOdYpD1Jg
-         EwUZQSr2ukc1/1iE4hRJwYRSvgxA8GjaK3+bp7Vmlzvy6tDs32eq2jVQQKVoiNz/vr
-         29VyxtnEC5Y1yRJd/5G+vH6njEl7BFAy/c2HTaZc=
+        b=s+MOrU2jXB4nhkf8jfKzzfx/Vz8dzFNGEXigg4XHuqHXX9cTAZSRMsLT53+4jHPyR
+         RHLdV2y1Jbu+flutO0lefhnfGAqkN8gZ4qQS/U1u2bEm71PFbrikHp7nv5WaVgcEAF
+         rgV0LcWT2Y0MxSitlEzWhCL5o0x0wJ7OHJtjCtzg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Dmitry Osipenko <dmitry.osipenko@collabora.com>,
-        Maxime Ripard <maxime@cerno.tech>,
-        Stephen Boyd <sboyd@kernel.org>,
+        stable@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
+        Igor Zhbanov <i.zhbanov@omprussia.ru>,
+        Joerg Roedel <joro@8bytes.org>, Christoph Hellwig <hch@lst.de>,
+        Marek Szyprowski <m.szyprowski@samsung.com>,
+        iommu@lists.linux-foundation.org,
+        Robin Murphy <robin.murphy@arm.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 436/599] clk: Initialize orphan req_rate
-Date:   Tue,  5 Apr 2022 09:32:10 +0200
-Message-Id: <20220405070311.806309623@linuxfoundation.org>
+Subject: [PATCH 5.10 399/599] dma-debug: fix return value of __setup handlers
+Date:   Tue,  5 Apr 2022 09:31:33 +0200
+Message-Id: <20220405070310.704342906@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
 References: <20220405070258.802373272@linuxfoundation.org>
@@ -52,66 +54,70 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Maxime Ripard <maxime@cerno.tech>
+From: Randy Dunlap <rdunlap@infradead.org>
 
-[ Upstream commit 5f7e2af00807f2117650e711a58b7f0e986ce1df ]
+[ Upstream commit 80e4390981618e290616dbd06ea190d4576f219d ]
 
-When registering a clock that doesn't have a recalc_rate implementation,
-and doesn't have its parent registered yet, we initialize the clk_core
-rate and 'req_rate' fields to 0.
+When valid kernel command line parameters
+  dma_debug=off dma_debug_entries=100
+are used, they are reported as Unknown parameters and added to init's
+environment strings, polluting it.
 
-The rate field is later updated when the parent is registered in
-clk_core_reparent_orphans_nolock() using __clk_recalc_rates(), but the
-'req_rate' field is never updated.
+  Unknown kernel command line parameters "BOOT_IMAGE=/boot/bzImage-517rc5
+    dma_debug=off dma_debug_entries=100", will be passed to user space.
 
-This leads to an issue in clk_set_rate_range() and clk_put(), since
-those functions will call clk_set_rate() with the content of 'req_rate'
-to provide drivers with the opportunity to change the rate based on the
-new boundaries. In this case, we would call clk_set_rate() with a rate
-of 0, effectively enforcing the minimum allowed for this clock whenever
-we would call one of those two functions, even though the actual rate
-might be within range.
+and
 
-Let's fix this by setting 'req_rate' in
-clk_core_reparent_orphans_nolock() with the rate field content just
-updated by the call to __clk_recalc_rates().
+ Run /sbin/init as init process
+   with arguments:
+     /sbin/init
+   with environment:
+     HOME=/
+     TERM=linux
+     BOOT_IMAGE=/boot/bzImage-517rc5
+     dma_debug=off
+     dma_debug_entries=100
 
-Fixes: 1c8e600440c7 ("clk: Add rate constraints to clocks")
-Reported-by: Dmitry Osipenko <dmitry.osipenko@collabora.com>
-Tested-by: Dmitry Osipenko <dmitry.osipenko@collabora.com> # T30 Nexus7
-Signed-off-by: Maxime Ripard <maxime@cerno.tech>
-Link: https://lore.kernel.org/r/20220325161144.1901695-2-maxime@cerno.tech
-[sboyd@kernel.org: Reword comment]
-Signed-off-by: Stephen Boyd <sboyd@kernel.org>
+Return 1 from these __setup handlers to indicate that the command line
+option has been handled.
+
+Fixes: 59d3daafa1726 ("dma-debug: add kernel command line parameters")
+Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+Reported-by: Igor Zhbanov <i.zhbanov@omprussia.ru>
+Link: lore.kernel.org/r/64644a2f-4a20-bab3-1e15-3b2cdd0defe3@omprussia.ru
+Cc: Joerg Roedel <joro@8bytes.org>
+Cc: Christoph Hellwig <hch@lst.de>
+Cc: Marek Szyprowski <m.szyprowski@samsung.com>
+Cc: iommu@lists.linux-foundation.org
+Cc: Robin Murphy <robin.murphy@arm.com>
+Signed-off-by: Christoph Hellwig <hch@lst.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/clk/clk.c | 13 +++++++++++++
- 1 file changed, 13 insertions(+)
+ kernel/dma/debug.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/clk/clk.c b/drivers/clk/clk.c
-index b8a0e3d23698..92fc084203b7 100644
---- a/drivers/clk/clk.c
-+++ b/drivers/clk/clk.c
-@@ -3384,6 +3384,19 @@ static void clk_core_reparent_orphans_nolock(void)
- 			__clk_set_parent_after(orphan, parent, NULL);
- 			__clk_recalc_accuracies(orphan);
- 			__clk_recalc_rates(orphan, 0);
-+
-+			/*
-+			 * __clk_init_parent() will set the initial req_rate to
-+			 * 0 if the clock doesn't have clk_ops::recalc_rate and
-+			 * is an orphan when it's registered.
-+			 *
-+			 * 'req_rate' is used by clk_set_rate_range() and
-+			 * clk_put() to trigger a clk_set_rate() call whenever
-+			 * the boundaries are modified. Let's make sure
-+			 * 'req_rate' is set to something non-zero so that
-+			 * clk_set_rate_range() doesn't drop the frequency.
-+			 */
-+			orphan->req_rate = orphan->rate;
- 		}
+diff --git a/kernel/dma/debug.c b/kernel/dma/debug.c
+index 10d07ace46c1..f8ae54679865 100644
+--- a/kernel/dma/debug.c
++++ b/kernel/dma/debug.c
+@@ -928,7 +928,7 @@ static __init int dma_debug_cmdline(char *str)
+ 		global_disable = true;
  	}
+ 
+-	return 0;
++	return 1;
  }
+ 
+ static __init int dma_debug_entries_cmdline(char *str)
+@@ -937,7 +937,7 @@ static __init int dma_debug_entries_cmdline(char *str)
+ 		return -EINVAL;
+ 	if (!get_option(&str, &nr_prealloc_entries))
+ 		nr_prealloc_entries = PREALLOC_DMA_DEBUG_ENTRIES;
+-	return 0;
++	return 1;
+ }
+ 
+ __setup("dma_debug=", dma_debug_cmdline);
 -- 
 2.34.1
 
