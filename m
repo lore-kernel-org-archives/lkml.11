@@ -2,46 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 03D1DC3527D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1EBA3C4707F
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 21:09:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346518AbiDEVJX (ORCPT
+        id S1346995AbiDEVJ1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 17:09:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49232 "EHLO
+        Tue, 5 Apr 2022 17:09:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50650 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349206AbiDEJt0 (ORCPT
+        with ESMTP id S1357252AbiDEKZ5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:49:26 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 787572253A;
-        Tue,  5 Apr 2022 02:42:41 -0700 (PDT)
+        Tue, 5 Apr 2022 06:25:57 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEB41424A0;
+        Tue,  5 Apr 2022 03:09:52 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id EF202CE1C9A;
-        Tue,  5 Apr 2022 09:42:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EDE44C385A1;
-        Tue,  5 Apr 2022 09:42:37 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4CF5D6179E;
+        Tue,  5 Apr 2022 10:09:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5DAAEC385A0;
+        Tue,  5 Apr 2022 10:09:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649151758;
-        bh=765nafgncPzYKlYm6M6NLm/ZoKn9hQoPlzRpDgfuRZE=;
+        s=korg; t=1649153391;
+        bh=ueapUc85Of3/Cvqvv//FCEs2fr5rsCIo9e2Rfc8HXr0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=EjHxxEsd97FKVNjnzSmRPbjVnfdWsTxtecqimh1MnOHCJ/81g/sXRp0HBL54ivDgj
-         bb2keKrrkjhpuU+cGA7/Y61+h09/vnOLGtvFHcULTIVX4a+qBzXiqbhVhR7rMltoLR
-         h4DiebnyNwSkbHmV2hOpJuRpJVe4TROkcYs9G9uE=
+        b=REATpm8l7AAHH298ix2BFtTP285mU16lkDWGl3kLpupGO0/mjpyCmquh75PAcMJZH
+         B54KCWhuk0ZhHil8CaphqyhvZnFR437b2ZESJ2zR6zotnqADwdygUZHQ2mitlFffNw
+         1w2WQh7nlilRje9hHu2oWACm0jSXxe9IvscfhfQM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Oliver Hartkopp <socketcan@hartkopp.net>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
+        stable@vger.kernel.org,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Alim Akhtar <alim.akhtar@samsung.com>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 530/913] vxcan: enable local echo for sent CAN frames
-Date:   Tue,  5 Apr 2022 09:26:32 +0200
-Message-Id: <20220405070355.737824509@linuxfoundation.org>
+Subject: [PATCH 5.10 158/599] clocksource/drivers/exynos_mct: Handle DTS with higher number of interrupts
+Date:   Tue,  5 Apr 2022 09:27:32 +0200
+Message-Id: <20220405070303.544064840@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
+References: <20220405070258.802373272@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,44 +52,62 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Oliver Hartkopp <socketcan@hartkopp.net>
+From: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
 
-[ Upstream commit 259bdba27e32368b4404f69d613b1c1014c07cbf ]
+[ Upstream commit ab8da93dc06d82f464c47ab30e6c75190702f369 ]
 
-The vxcan driver provides a pair of virtual CAN interfaces to exchange
-CAN traffic between different namespaces - analogue to veth.
+The driver statically defines maximum number of interrupts it can
+handle, however it does not respect that limit when configuring them.
+When provided with a DTS with more interrupts than assumed, the driver
+will overwrite static array mct_irqs leading to silent memory
+corruption.
 
-In opposite to the vcan driver the local sent CAN traffic on this interface
-is not echo'ed back but only sent to the remote peer. This is unusual and
-can be easily fixed by removing IFF_ECHO from the netdevice flags that
-are set for vxcan interfaces by default at startup.
+Validate the interrupts coming from DTS to avoid this.  This does not
+change the fact that such DTS might not boot at all, because it is
+simply incompatible, however at least some warning will be printed.
 
-Without IFF_ECHO set on driver level, the local sent CAN frames are echo'ed
-in af_can.c in can_send(). This patch makes vxcan interfaces adopt the
-same local echo behavior and procedures as known from the vcan interfaces.
-
-Fixes: a8f820a380a2 ("can: add Virtual CAN Tunnel driver (vxcan)")
-Link: https://lore.kernel.org/all/20220309120416.83514-5-socketcan@hartkopp.net
-Signed-off-by: Oliver Hartkopp <socketcan@hartkopp.net>
-Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
+Fixes: 36ba5d527e95 ("ARM: EXYNOS: add device tree support for MCT controller driver")
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Reviewed-by: Alim Akhtar <alim.akhtar@samsung.com>
+Link: https://lore.kernel.org/r/20220220103815.135380-1-krzysztof.kozlowski@canonical.com
+Signed-off-by: Daniel Lezcano <daniel.lezcano@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/can/vxcan.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/clocksource/exynos_mct.c | 10 +++++++++-
+ 1 file changed, 9 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/can/vxcan.c b/drivers/net/can/vxcan.c
-index 8861a7d875e7..be5566168d0f 100644
---- a/drivers/net/can/vxcan.c
-+++ b/drivers/net/can/vxcan.c
-@@ -148,7 +148,7 @@ static void vxcan_setup(struct net_device *dev)
- 	dev->hard_header_len	= 0;
- 	dev->addr_len		= 0;
- 	dev->tx_queue_len	= 0;
--	dev->flags		= (IFF_NOARP|IFF_ECHO);
-+	dev->flags		= IFF_NOARP;
- 	dev->netdev_ops		= &vxcan_netdev_ops;
- 	dev->needs_free_netdev	= true;
+diff --git a/drivers/clocksource/exynos_mct.c b/drivers/clocksource/exynos_mct.c
+index 5533c9afc088..df194b05e944 100644
+--- a/drivers/clocksource/exynos_mct.c
++++ b/drivers/clocksource/exynos_mct.c
+@@ -531,6 +531,11 @@ static int __init exynos4_timer_interrupts(struct device_node *np,
+ 	 * irqs are specified.
+ 	 */
+ 	nr_irqs = of_irq_count(np);
++	if (nr_irqs > ARRAY_SIZE(mct_irqs)) {
++		pr_err("exynos-mct: too many (%d) interrupts configured in DT\n",
++			nr_irqs);
++		nr_irqs = ARRAY_SIZE(mct_irqs);
++	}
+ 	for (i = MCT_L0_IRQ; i < nr_irqs; i++)
+ 		mct_irqs[i] = irq_of_parse_and_map(np, i);
  
+@@ -543,11 +548,14 @@ static int __init exynos4_timer_interrupts(struct device_node *np,
+ 		     mct_irqs[MCT_L0_IRQ], err);
+ 	} else {
+ 		for_each_possible_cpu(cpu) {
+-			int mct_irq = mct_irqs[MCT_L0_IRQ + cpu];
++			int mct_irq;
+ 			struct mct_clock_event_device *pcpu_mevt =
+ 				per_cpu_ptr(&percpu_mct_tick, cpu);
+ 
+ 			pcpu_mevt->evt.irq = -1;
++			if (MCT_L0_IRQ + cpu >= ARRAY_SIZE(mct_irqs))
++				break;
++			mct_irq = mct_irqs[MCT_L0_IRQ + cpu];
+ 
+ 			irq_set_status_flags(mct_irq, IRQ_NOAUTOEN);
+ 			if (request_irq(mct_irq,
 -- 
 2.34.1
 
