@@ -2,115 +2,175 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EF361C47080
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 21:37:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 79320C35296
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 21:37:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381524AbiDEViD (ORCPT
+        id S1382234AbiDEVim (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 17:38:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45146 "EHLO
+        Tue, 5 Apr 2022 17:38:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43464 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354452AbiDEKOQ (ORCPT
+        with ESMTP id S1573696AbiDETnG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:14:16 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38C2269CF7;
-        Tue,  5 Apr 2022 03:00:03 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C76E6B81C8B;
-        Tue,  5 Apr 2022 10:00:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 16E9CC385A2;
-        Tue,  5 Apr 2022 09:59:59 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649152800;
-        bh=/MJv/HabMeOOpo77f3rdPIfuw68ubruu6J3fo5Cw0l8=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=voA7g3ChMYy3zZ5auKW6pp10bxNptr7lt68VpgA/86hxiz0uZ7pyJY4fp/hDDOVdk
-         fV5cbJhwqi/Xu8fh9kAMtdnU9adh6cCPpP7ol3Zae1PnLDH77LrD9v5TN8UoMGBCny
-         jdnEgz+x4gbTn41WT+c3rc7m4+l9dsllzEnOMm2I=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, David Stevens <stevensd@chromium.org>,
-        Christoph Hellwig <hch@lst.de>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Joerg Roedel <jroedel@suse.de>,
-        Mario Limonciello <Mario.Limonciello@amd.com>
-Subject: [PATCH 5.15 905/913] iommu/dma: Skip extra sync during unmap w/swiotlb
-Date:   Tue,  5 Apr 2022 09:32:47 +0200
-Message-Id: <20220405070406.946278545@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 5 Apr 2022 15:43:06 -0400
+Received: from mail-pf1-x431.google.com (mail-pf1-x431.google.com [IPv6:2607:f8b0:4864:20::431])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92DB5208
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 12:41:07 -0700 (PDT)
+Received: by mail-pf1-x431.google.com with SMTP id b13so468607pfv.0
+        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 12:41:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=mSWn+bwJl0JXyj3IYwZGhRTiDd7qYXvMXLFtGw/g+rg=;
+        b=AlCCPq+JKrSyY6/MdAWK+LJuFWEhXLOG2iRM8eu949iBowZOgYJpjjEZpvcwItS8+d
+         FEsIJdYmNNMsbMLSdUVjIs4nmz5vT7bZ7g0IC7PS/W33SVLgyOhPMKVc1hrkM/ybgdzd
+         i2jtISpWLxcxVWQR/Nn5bREeHtnuDwJpw37LvO7wCQo11vKt0AwUemLOuwYj1VFxKVXR
+         hMIICCbOonqXvUjzSbqP4umdws0neDr1awH1mbCXQOE1HRfpfmMRHUA++iIBc/IcROVl
+         uvLnKsuTqIOV5nEgg1TUvo47C8T7k/JqnB0mapIqQiPSvV58KN+OHoUlSQjUoTb3h1mP
+         6oAw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=mSWn+bwJl0JXyj3IYwZGhRTiDd7qYXvMXLFtGw/g+rg=;
+        b=k9c29M0/t8QfwwIzqkN/4HhpiJK/Kr9fvnqIqOz/2p5Ul7AiE+u5ebVzVvr6aSwGxK
+         yU0sY+DdE4bSO+anJvtjyVw20oERSvKXShjWG9JdWMUcQecPNBCJhBMSUS1yiSXIHFSD
+         +2019J/j/aXzgENRNrVxP+byZixfQIvcZvvl94UJ46O4RZWvDrQd6nULF8WbQj6/+t2Z
+         J1iWq1jlo76BAzdMqyizKkFWt13x0OqnyDsYd1tTlEqxZm1ilcaD5GVPy+vrxbCuvggk
+         Zzk2gRnGFQiCoP+U+ZagKDGmRdmic9gUAMWY80xo3KffPLPwDdMqQZ1ld6GgRE/T9Ipv
+         kqDQ==
+X-Gm-Message-State: AOAM530HFTelENtMezat/Dgegyr2vVQSmBXIoekjwpbjIGvpsa5LlGhb
+        vbl/Irnxes7qDUG7nJ9sivwqAFR7kB/+eA==
+X-Google-Smtp-Source: ABdhPJwz4yMK7s1pjudVER/qr9fFsGeQA/N/GsijRhlaiArSrhqko6pULldJx680awQe2eXzGIRGzw==
+X-Received: by 2002:a05:6a00:1828:b0:4fd:e0e5:6115 with SMTP id y40-20020a056a00182800b004fde0e56115mr5257368pfa.52.1649187666833;
+        Tue, 05 Apr 2022 12:41:06 -0700 (PDT)
+Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
+        by smtp.gmail.com with ESMTPSA id j9-20020aa78009000000b004fde2dd78b0sm11969754pfi.109.2022.04.05.12.41.05
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 05 Apr 2022 12:41:06 -0700 (PDT)
+Date:   Tue, 5 Apr 2022 19:41:02 +0000
+From:   Sean Christopherson <seanjc@google.com>
+To:     Brijesh Singh <brijesh.singh@amd.com>
+Cc:     x86@kernel.org, linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
+        linux-efi@vger.kernel.org, platform-driver-x86@vger.kernel.org,
+        linux-coco@lists.linux.dev, linux-mm@kvack.org,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Joerg Roedel <jroedel@suse.de>,
+        Tom Lendacky <thomas.lendacky@amd.com>,
+        "H. Peter Anvin" <hpa@zytor.com>, Ard Biesheuvel <ardb@kernel.org>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Jim Mattson <jmattson@google.com>,
+        Andy Lutomirski <luto@kernel.org>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Sergio Lopez <slp@redhat.com>, Peter Gonda <pgonda@google.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+        David Rientjes <rientjes@google.com>,
+        Dov Murik <dovmurik@linux.ibm.com>,
+        Tobin Feldman-Fitzthum <tobin@ibm.com>,
+        Borislav Petkov <bp@alien8.de>,
+        Michael Roth <michael.roth@amd.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
+        Andi Kleen <ak@linux.intel.com>,
+        "Dr . David Alan Gilbert" <dgilbert@redhat.com>,
+        brijesh.ksingh@gmail.com, tony.luck@intel.com, marcorr@google.com,
+        sathyanarayanan.kuppuswamy@linux.intel.com
+Subject: Re: [PATCH v12 22/46] x86/sev: Use SEV-SNP AP creation to start
+ secondary CPUs
+Message-ID: <YkybTnVYBKZ1zvz6@google.com>
+References: <20220307213356.2797205-1-brijesh.singh@amd.com>
+ <20220307213356.2797205-23-brijesh.singh@amd.com>
+ <YkuMTdckSgSB9M6f@google.com>
+ <f4369605-7c8d-1a89-bd0e-b82710d0772a@amd.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <f4369605-7c8d-1a89-bd0e-b82710d0772a@amd.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: David Stevens <stevensd@chromium.org>
+On Tue, Apr 05, 2022, Brijesh Singh wrote:
+> Hi Sean,
+>
+> On 4/4/22 19:24, Sean Christopherson wrote:
+>
+> > > +static void snp_cleanup_vmsa(struct sev_es_save_area *vmsa)
+> > > +{
+> > > + int err;
+> > > +
+> > > + err = snp_set_vmsa(vmsa, false);
+> >
+> > Uh, so what happens if a malicious guest does RMPADJUST to convert a VMSA page
+> > back to a "normal" page while the host is trying to VMRUN that VMSA?  Does VMRUN
+> > fault?
+>
+> When SEV-SNP is enabled, the VMRUN instruction performs an additional
+> security checks on various memory pages. In the case of VMSA page, hardware
+> enforce that page is marked as "VMSA" in the RMP table. If not,  VMRUN will
+> fail with VMEXIT_INVALID.
+>
+> After the VMRUN is successful, the VMSA page is marked IN_USE by the
+> hardware, any attempt to modify the RMP entries will result in FAIL_INUSE
+> error. The IN_USE marking is automatically cleared by the hardware after the
+> #VMEXIT.
+>
+> Please see the APM vol2 section 15.36.12 for additional information.
 
-commit ee9d4097cc145dcaebedf6b113d17c91c21333a0 upstream.
+Thanks!
 
-Calling the iommu_dma_sync_*_for_cpu functions during unmap can cause
-two copies out of the swiotlb buffer. Do the arch sync directly in
-__iommu_dma_unmap_swiotlb instead to avoid this. This makes the call to
-iommu_dma_sync_sg_for_cpu for untrusted devices in iommu_dma_unmap_sg no
-longer necessary, so move that invocation later in the function.
+> > Can Linux refuse to support this madness and instead require the ACPI MP wakeup
+> > protocol being proposed/implemented for TDX?  That would allow KVM to have at
+>
+> My two cents
+>
+> In the current architecture, the HV track VMSAs by their SPA and guest
+> controls when they are runnable. It provides flexibility to the guest, which
+> can add and remove the VMSA. This flexibility may come in handy to support
+> the kexec and reboot use cases.
 
-Signed-off-by: David Stevens <stevensd@chromium.org>
-Reviewed-by: Christoph Hellwig <hch@lst.de>
-Reviewed-by: Robin Murphy <robin.murphy@arm.com>
-Link: https://lore.kernel.org/r/20210929023300.335969-4-stevensd@google.com
-Signed-off-by: Joerg Roedel <jroedel@suse.de>
-Cc: Mario Limonciello <Mario.Limonciello@amd.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- drivers/iommu/dma-iommu.c |   11 ++++++-----
- 1 file changed, 6 insertions(+), 5 deletions(-)
+I understand it provides the guest flexibility, but IMO it completely inverts the
+separation of concerns between host and guest.  The host should have control of
+when a vCPU is added/removed and with what state, and the guest should be able to
+verify/acknowledge any changes.  This scheme gives the guest the bulk of the control,
+and doesn't even let the host verify much at all since the VMSA is opaque.
 
---- a/drivers/iommu/dma-iommu.c
-+++ b/drivers/iommu/dma-iommu.c
-@@ -521,6 +521,9 @@ static void __iommu_dma_unmap_swiotlb(st
- 	if (WARN_ON(!phys))
- 		return;
- 
-+	if (!(attrs & DMA_ATTR_SKIP_CPU_SYNC) && !dev_is_dma_coherent(dev))
-+		arch_sync_dma_for_cpu(phys, size, dir);
-+
- 	__iommu_dma_unmap(dev, dma_addr, size);
- 
- 	if (unlikely(is_swiotlb_buffer(dev, phys)))
-@@ -871,8 +874,6 @@ static dma_addr_t iommu_dma_map_page(str
- static void iommu_dma_unmap_page(struct device *dev, dma_addr_t dma_handle,
- 		size_t size, enum dma_data_direction dir, unsigned long attrs)
- {
--	if (!(attrs & DMA_ATTR_SKIP_CPU_SYNC))
--		iommu_dma_sync_single_for_cpu(dev, dma_handle, size, dir);
- 	__iommu_dma_unmap_swiotlb(dev, dma_handle, size, dir, attrs);
- }
- 
-@@ -1089,14 +1090,14 @@ static void iommu_dma_unmap_sg(struct de
- 	struct scatterlist *tmp;
- 	int i;
- 
--	if (!(attrs & DMA_ATTR_SKIP_CPU_SYNC))
--		iommu_dma_sync_sg_for_cpu(dev, sg, nents, dir);
--
- 	if (dev_is_untrusted(dev)) {
- 		iommu_dma_unmap_sg_swiotlb(dev, sg, nents, dir, attrs);
- 		return;
- 	}
- 
-+	if (!(attrs & DMA_ATTR_SKIP_CPU_SYNC))
-+		iommu_dma_sync_sg_for_cpu(dev, sg, nents, dir);
-+
- 	/*
- 	 * The scatterlist segments are mapped into a single
- 	 * contiguous IOVA allocation, so this is incredibly easy.
+That the guest can yank the rug out from the host at any time just adds to the pain.
+VMEXIT_INVALID isn't the end of the world, but it breaks the assumption that such
+errors are host bugs.  To guard against such behavior, the host would have to unmap
+the VMSA page in order to prevent unwanted RMPADJUST, and that gets ugly fast if a
+VMSA can be any arbitrary guest page.
 
+Another example is the 2mb alignment erratum.  Technically, the guest can't workaround
+the erratum with 100% certainty because there's no guarantee that the host uses the
+same alignment for gfns and pfns.  I don't actually expect a host to use unaligned
+mappings, just pointing out how backwards this is.
 
+I fully realize there's basically zero chance of getting any of this changed in
+hardware/firmware, but I'm hoping we can concoct a software/GHCB solution to the
+worst issues.
+
+I don't see an way easy to address the guest getting to shove state directly into
+the VMSA, but the location of the VMSA gfn/pfn is a very solvable problem.  E.g.
+the host gets full control over each vCPU's VMSA, and the host-provided VMSA is
+discoverable in the guest.  That allows the guest to change vCPU state, e.g. for AP
+bringup, kexec, etc..., but gives the host the ability to protect itself without
+having to support arbitrary VMSA pages.  E.g. the host can dynamically map/unmap the
+VMSA from the guest: map on fault, unmap on AP "creation", refuse to run the vCPU if
+its VMSA isn't in the unmap state.  The VMSA pfn is fully host controlled, so
+there's no need for the guest to be aware of the 2mb alignment erratum.
+
+Requiring such GHCB extensions in the guest would make Linux incompatible with
+hypervisors that aren't updated, but IMO that's not a ridiculous ask given that
+it would be in the best interested of any hypervisor that isn't running a fully
+trusted, paravirt VMPL0.
+
+> The current approach does not depend on
+> ACPI; it will also come in handy to support microvm (minimalist machine type
+> without PCI nor ACPI support).
+
+Eh, a microvm really shouldn't need AP bringup in the first place, just run all
+APs from time zero and route them to where they need to be.
