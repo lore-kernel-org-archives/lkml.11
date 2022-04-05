@@ -2,170 +2,140 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 29208C43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A6E2C4332F
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:16:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1448553AbiDEUKD (ORCPT
+        id S1448396AbiDEUJ5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 16:10:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56800 "EHLO
+        Tue, 5 Apr 2022 16:09:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53020 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350331AbiDEKKf (ORCPT
+        with ESMTP id S1377213AbiDENMq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:10:35 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A5B94D241;
-        Tue,  5 Apr 2022 02:56:33 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0673261676;
-        Tue,  5 Apr 2022 09:56:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 11736C385A2;
-        Tue,  5 Apr 2022 09:56:31 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649152592;
-        bh=Xt7afQvQqXUQxnHQRQb7yFraVXo0NKAKwUkzf0P7wPQ=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=N2aXAL8VSICG8McLMXDs4lUiWWmKRbPkzz13vsgNkHTZgTye44AiJXT6u5s6a6NaK
-         YbP+oXf5WBHABXGWj+UoCbSGjpG60C7n0VdkbxX33l825OPRWY6UwNW/D0cBWYrBol
-         K4EAP6lNfpuuY9OolFCIAAwSRil+n4r5+pNxog0k=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Pavel Skripkin <paskripkin@gmail.com>,
-        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        syzbot+3bc1dce0cc0052d60fde@syzkaller.appspotmail.com
-Subject: [PATCH 5.15 833/913] can: mcba_usb: properly check endpoint type
-Date:   Tue,  5 Apr 2022 09:31:35 +0200
-Message-Id: <20220405070404.800333657@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 5 Apr 2022 09:12:46 -0400
+Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1312F1210BA
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 05:13:02 -0700 (PDT)
+Received: by mail-ed1-x52e.google.com with SMTP id b15so14651051edn.4
+        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 05:13:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bgdev-pl.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=MPvaywVSzLQsDypuAZWtv58R2kwucV8I6O2XfMn8CQ0=;
+        b=K14qIg6mMRkLPr4OiAE9Cpu4U+tbA3P91G4RHNesqQyi39uh/EQnwZQg47N4I1HFGa
+         VaAqAu3jWh3kOpu/vkFSBsrj1wlQcT4uTVYmxgreiwzNn3G4cU5MD051hiN68+YGuGmY
+         cWQCyd0GCycNunk8Wgl1kQf10tQCes43bS272nOze5ZBtFeq/ovHUODYcVLcH0YQyWiB
+         gjAhy8svdiXMCYEiMuuZdKtDH70VTPDrXTpKYTpEPlY5O8uUWZtdPs0P7eBHzY2zgCU7
+         sPECd23ZpDiAOHiDWi0xlIBEdLwSexx11IbYL6ItqaYg5rExP1x8AxgVNc8xIyvnJDdV
+         uHvQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=MPvaywVSzLQsDypuAZWtv58R2kwucV8I6O2XfMn8CQ0=;
+        b=rU2Fq5vi94nlixMrCDwdEmePEesbtNtLwtxqG/jbO8cLyRBvZvNuV18USQFQDzzXm/
+         z5fF60OgMIKqU5lNCH9mlwqAsy/JU/rgZ/g/YZ9lE6Mnr2KaOigyzU5fztCgX2ba0tlV
+         Ghu8zNpKrNN67Y7yHGOPNW03BK1Ci3KLb8wAT6pShagiJ0eHqusJAStIU8YK/3iXuVSY
+         B52TPPIegJbbjoz4rK1tf+z47B1e6jthFKeXtToSqkmIUxW7V/t1jt9HVbpU8wGqllF4
+         IWAF2VtN89Rp1yDLkQY1z8fm4ZnN8q3MX4BzITchY4hWP66JCG4kfL1wmgWM/r8TPNC6
+         y2KQ==
+X-Gm-Message-State: AOAM532CMzDv2rZCSQ4yHUKodBIzsUBX8z/UF21XV/2/+ziq7I9WdFJH
+        +VmRmmD0IhCijsVp0YeeSWXjYJYAU6fTLJiroNe2Jw==
+X-Google-Smtp-Source: ABdhPJyK6ciXtk4jJTmoikX0fzgqwOpbxHs/TrQKtZElemmsFiXP5Rij+6j+c5XTQ4r1vrmfsngJLLE7wspd4bNThOM=
+X-Received: by 2002:a05:6402:d4c:b0:410:a415:fd95 with SMTP id
+ ec12-20020a0564020d4c00b00410a415fd95mr3310237edb.288.1649160780633; Tue, 05
+ Apr 2022 05:13:00 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <20220401103604.8705-1-andriy.shevchenko@linux.intel.com> <20220401103604.8705-2-andriy.shevchenko@linux.intel.com>
+In-Reply-To: <20220401103604.8705-2-andriy.shevchenko@linux.intel.com>
+From:   Bartosz Golaszewski <brgl@bgdev.pl>
+Date:   Tue, 5 Apr 2022 14:12:50 +0200
+Message-ID: <CAMRc=McWk1piiJu60Zgzkiw5zJPmH=1Pizdn06H7YKn0HzVTHA@mail.gmail.com>
+Subject: Re: [PATCH v4 01/13] gpiolib: Introduce for_each_gpiochip_node() loop helper
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     Qianggui Song <qianggui.song@amlogic.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        Marc Zyngier <maz@kernel.org>,
+        Fabien Dessenne <fabien.dessenne@foss.st.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        linux-amlogic@lists.infradead.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        OpenBMC Maillist <openbmc@lists.ozlabs.org>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        linux-samsung-soc@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Jerome Brunet <jbrunet@baylibre.com>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Gregory Clement <gregory.clement@bootlin.com>,
+        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
+        Avi Fishman <avifishman70@gmail.com>,
+        Tomer Maimon <tmaimon77@gmail.com>,
+        Tali Perry <tali.perry1@gmail.com>,
+        Patrick Venture <venture@google.com>,
+        Nancy Yuen <yuenn@google.com>,
+        Benjamin Fair <benjaminfair@google.com>,
+        Tomasz Figa <tomasz.figa@gmail.com>,
+        Sylwester Nawrocki <s.nawrocki@samsung.com>,
+        Alim Akhtar <alim.akhtar@samsung.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Philipp Zabel <p.zabel@pengutronix.de>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pavel Skripkin <paskripkin@gmail.com>
+On Fri, Apr 1, 2022 at 12:36 PM Andy Shevchenko
+<andriy.shevchenko@linux.intel.com> wrote:
+>
+> Introduce for_each_gpiochip_node() loop helper which iterates over
+> the GPIO controller child nodes of a given device.
+>
+> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+> Tested-by: Geert Uytterhoeven <geert+renesas@glider.be>
+> ---
+>  include/linux/gpio/driver.h | 7 ++++++-
+>  1 file changed, 6 insertions(+), 1 deletion(-)
+>
+> diff --git a/include/linux/gpio/driver.h b/include/linux/gpio/driver.h
+> index 98c93510640e..bfc91f122d5f 100644
+> --- a/include/linux/gpio/driver.h
+> +++ b/include/linux/gpio/driver.h
+> @@ -3,13 +3,14 @@
+>  #define __LINUX_GPIO_DRIVER_H
+>
+>  #include <linux/device.h>
+> -#include <linux/types.h>
+>  #include <linux/irq.h>
+>  #include <linux/irqchip/chained_irq.h>
+>  #include <linux/irqdomain.h>
+>  #include <linux/lockdep.h>
+>  #include <linux/pinctrl/pinctrl.h>
+>  #include <linux/pinctrl/pinconf-generic.h>
+> +#include <linux/property.h>
+> +#include <linux/types.h>
+>
+>  struct gpio_desc;
+>  struct of_phandle_args;
+> @@ -750,4 +751,8 @@ static inline void gpiochip_unlock_as_irq(struct gpio_chip *gc,
+>  }
+>  #endif /* CONFIG_GPIOLIB */
+>
+> +#define for_each_gpiochip_node(dev, child)                                     \
+> +       device_for_each_child_node(dev, child)                                  \
+> +               if (!fwnode_property_present(child, "gpio-controller")) {} else
+> +
+>  #endif /* __LINUX_GPIO_DRIVER_H */
+> --
+> 2.35.1
+>
 
-commit 136bed0bfd3bc9c95c88aafff2d22ecb3a919f23 upstream.
-
-Syzbot reported warning in usb_submit_urb() which is caused by wrong
-endpoint type. We should check that in endpoint is actually present to
-prevent this warning.
-
-Found pipes are now saved to struct mcba_priv and code uses them
-directly instead of making pipes in place.
-
-Fail log:
-
-| usb 5-1: BOGUS urb xfer, pipe 3 != type 1
-| WARNING: CPU: 1 PID: 49 at drivers/usb/core/urb.c:502 usb_submit_urb+0xed2/0x18a0 drivers/usb/core/urb.c:502
-| Modules linked in:
-| CPU: 1 PID: 49 Comm: kworker/1:2 Not tainted 5.17.0-rc6-syzkaller-00184-g38f80f42147f #0
-| Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.14.0-2 04/01/2014
-| Workqueue: usb_hub_wq hub_event
-| RIP: 0010:usb_submit_urb+0xed2/0x18a0 drivers/usb/core/urb.c:502
-| ...
-| Call Trace:
-|  <TASK>
-|  mcba_usb_start drivers/net/can/usb/mcba_usb.c:662 [inline]
-|  mcba_usb_probe+0x8a3/0xc50 drivers/net/can/usb/mcba_usb.c:858
-|  usb_probe_interface+0x315/0x7f0 drivers/usb/core/driver.c:396
-|  call_driver_probe drivers/base/dd.c:517 [inline]
-
-Fixes: 51f3baad7de9 ("can: mcba_usb: Add support for Microchip CAN BUS Analyzer")
-Link: https://lore.kernel.org/all/20220313100903.10868-1-paskripkin@gmail.com
-Reported-and-tested-by: syzbot+3bc1dce0cc0052d60fde@syzkaller.appspotmail.com
-Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
-Reviewed-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
-Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- drivers/net/can/usb/mcba_usb.c |   26 ++++++++++++++++----------
- 1 file changed, 16 insertions(+), 10 deletions(-)
-
---- a/drivers/net/can/usb/mcba_usb.c
-+++ b/drivers/net/can/usb/mcba_usb.c
-@@ -33,10 +33,6 @@
- #define MCBA_USB_RX_BUFF_SIZE 64
- #define MCBA_USB_TX_BUFF_SIZE (sizeof(struct mcba_usb_msg))
- 
--/* MCBA endpoint numbers */
--#define MCBA_USB_EP_IN 1
--#define MCBA_USB_EP_OUT 1
--
- /* Microchip command id */
- #define MBCA_CMD_RECEIVE_MESSAGE 0xE3
- #define MBCA_CMD_I_AM_ALIVE_FROM_CAN 0xF5
-@@ -84,6 +80,8 @@ struct mcba_priv {
- 	atomic_t free_ctx_cnt;
- 	void *rxbuf[MCBA_MAX_RX_URBS];
- 	dma_addr_t rxbuf_dma[MCBA_MAX_RX_URBS];
-+	int rx_pipe;
-+	int tx_pipe;
- };
- 
- /* CAN frame */
-@@ -272,10 +270,8 @@ static netdev_tx_t mcba_usb_xmit(struct
- 
- 	memcpy(buf, usb_msg, MCBA_USB_TX_BUFF_SIZE);
- 
--	usb_fill_bulk_urb(urb, priv->udev,
--			  usb_sndbulkpipe(priv->udev, MCBA_USB_EP_OUT), buf,
--			  MCBA_USB_TX_BUFF_SIZE, mcba_usb_write_bulk_callback,
--			  ctx);
-+	usb_fill_bulk_urb(urb, priv->udev, priv->tx_pipe, buf, MCBA_USB_TX_BUFF_SIZE,
-+			  mcba_usb_write_bulk_callback, ctx);
- 
- 	urb->transfer_flags |= URB_NO_TRANSFER_DMA_MAP;
- 	usb_anchor_urb(urb, &priv->tx_submitted);
-@@ -610,7 +606,7 @@ static void mcba_usb_read_bulk_callback(
- resubmit_urb:
- 
- 	usb_fill_bulk_urb(urb, priv->udev,
--			  usb_rcvbulkpipe(priv->udev, MCBA_USB_EP_OUT),
-+			  priv->rx_pipe,
- 			  urb->transfer_buffer, MCBA_USB_RX_BUFF_SIZE,
- 			  mcba_usb_read_bulk_callback, priv);
- 
-@@ -655,7 +651,7 @@ static int mcba_usb_start(struct mcba_pr
- 		urb->transfer_dma = buf_dma;
- 
- 		usb_fill_bulk_urb(urb, priv->udev,
--				  usb_rcvbulkpipe(priv->udev, MCBA_USB_EP_IN),
-+				  priv->rx_pipe,
- 				  buf, MCBA_USB_RX_BUFF_SIZE,
- 				  mcba_usb_read_bulk_callback, priv);
- 		urb->transfer_flags |= URB_NO_TRANSFER_DMA_MAP;
-@@ -809,6 +805,13 @@ static int mcba_usb_probe(struct usb_int
- 	struct mcba_priv *priv;
- 	int err;
- 	struct usb_device *usbdev = interface_to_usbdev(intf);
-+	struct usb_endpoint_descriptor *in, *out;
-+
-+	err = usb_find_common_endpoints(intf->cur_altsetting, &in, &out, NULL, NULL);
-+	if (err) {
-+		dev_err(&intf->dev, "Can't find endpoints\n");
-+		return err;
-+	}
- 
- 	netdev = alloc_candev(sizeof(struct mcba_priv), MCBA_MAX_TX_URBS);
- 	if (!netdev) {
-@@ -854,6 +857,9 @@ static int mcba_usb_probe(struct usb_int
- 		goto cleanup_free_candev;
- 	}
- 
-+	priv->rx_pipe = usb_rcvbulkpipe(priv->udev, in->bEndpointAddress);
-+	priv->tx_pipe = usb_sndbulkpipe(priv->udev, out->bEndpointAddress);
-+
- 	devm_can_led_init(netdev);
- 
- 	/* Start USB dev only if we have successfully registered CAN device */
-
-
+Acked-by: Bartosz Golaszewski <brgl@bgdev.pl>
