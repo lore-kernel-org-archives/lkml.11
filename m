@@ -2,47 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 363FEC433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 25FF3C4332F
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:17:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1574132AbiDEWyf (ORCPT
+        id S1574110AbiDEWyb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 18:54:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59382 "EHLO
+        Tue, 5 Apr 2022 18:54:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39108 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356144AbiDEKW7 (ORCPT
+        with ESMTP id S1348791AbiDEJsg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:22:59 -0400
+        Tue, 5 Apr 2022 05:48:36 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A5D1BA304;
-        Tue,  5 Apr 2022 03:06:58 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 321E882D19;
+        Tue,  5 Apr 2022 02:35:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 03434B81C86;
-        Tue,  5 Apr 2022 10:06:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 42538C385A2;
-        Tue,  5 Apr 2022 10:06:55 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BEC0AB81C6F;
+        Tue,  5 Apr 2022 09:35:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 28A58C385A2;
+        Tue,  5 Apr 2022 09:35:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649153215;
-        bh=pgtTMJ3lOChN0sZhtkEWGnw/cn/E2bkd2HKG/XVMGcY=;
+        s=korg; t=1649151330;
+        bh=RuudkV80NbnUWQJ3ZBBUJ5p0VXcyoR2tIBAnss2jxn8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Io+E+qvbUfo87R0h9hCWQpD8RT7LopNftIzdErXeEBf6PZ1xO8BO+FzQGXR/R+Ugt
-         j340dKuqz7pJ2Q138V8+OOSzQVwoLgUMA0vp6TsTIEr9UiHCgSdyS/aeZXPHSRKIkp
-         PZkS44pRav44bZ9jmBp1LH8KAuVIaYEtKgUglm9o=
+        b=mUnsIqKsYugCaWtwh9itMfHsRI9xNqT0Fk/ITIPs4booj/R6eVQg0u1GC7TOHBRwl
+         c5qoAGCbm5bJxxLKCAj99it+z4Q83xj86UZlaxnO07Ra7M+T3fVQ4dNP/g9Isr9ULF
+         yx3HEAVSEmBRNd9DwXMHbjfo5grTWiVKV07OzJQQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Wang Qing <wangqing@vivo.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
         Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 143/599] spi: pxa2xx-pci: Balance reference count for PCI DMA device
-Date:   Tue,  5 Apr 2022 09:27:17 +0200
-Message-Id: <20220405070303.098160106@linuxfoundation.org>
+Subject: [PATCH 5.15 369/913] ASoC: msm8916-wcd-analog: Fix error handling in pm8916_wcd_analog_spmi_probe
+Date:   Tue,  5 Apr 2022 09:23:51 +0200
+Message-Id: <20220405070350.907531198@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,75 +50,77 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit 609d7ffdc42199a0ec949db057e3b4be6745d6c5 ]
+[ Upstream commit 9ebd62d60edcd4d9c75485e5ccd0b79581ad3c49 ]
 
-The pci_get_slot() increases its reference count, the caller
-must decrement the reference count by calling pci_dev_put().
+In the error handling path, the clk_prepare_enable() function
+call should be balanced by a corresponding 'clk_disable_unprepare()'
+call , as already done in the remove function.
 
-Fixes: 743485ea3bee ("spi: pxa2xx-pci: Do a specific setup in a separate function")
-Fixes: 25014521603f ("spi: pxa2xx-pci: Enable DMA for Intel Merrifield")
-Reported-by: Wang Qing <wangqing@vivo.com>
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Link: https://lore.kernel.org/r/20220223191637.31147-1-andriy.shevchenko@linux.intel.com
+Fixes: de66b3455023 ("ASoC: codecs: msm8916-wcd-analog: add MBHC support")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Link: https://lore.kernel.org/r/20220316041924.17560-1-linmq006@gmail.com
 Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/spi/spi-pxa2xx-pci.c | 17 ++++++++++++++++-
- 1 file changed, 16 insertions(+), 1 deletion(-)
+ sound/soc/codecs/msm8916-wcd-analog.c | 22 ++++++++++++++++------
+ 1 file changed, 16 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/spi/spi-pxa2xx-pci.c b/drivers/spi/spi-pxa2xx-pci.c
-index aafac128bb5f..4eb979a096c7 100644
---- a/drivers/spi/spi-pxa2xx-pci.c
-+++ b/drivers/spi/spi-pxa2xx-pci.c
-@@ -74,14 +74,23 @@ static bool lpss_dma_filter(struct dma_chan *chan, void *param)
- 	return true;
- }
- 
-+static void lpss_dma_put_device(void *dma_dev)
-+{
-+	pci_dev_put(dma_dev);
-+}
-+
- static int lpss_spi_setup(struct pci_dev *dev, struct pxa_spi_info *c)
- {
- 	struct pci_dev *dma_dev;
-+	int ret;
- 
- 	c->num_chipselect = 1;
- 	c->max_clk_rate = 50000000;
- 
- 	dma_dev = pci_get_slot(dev->bus, PCI_DEVFN(PCI_SLOT(dev->devfn), 0));
-+	ret = devm_add_action_or_reset(&dev->dev, lpss_dma_put_device, dma_dev);
-+	if (ret)
-+		return ret;
- 
- 	if (c->tx_param) {
- 		struct dw_dma_slave *slave = c->tx_param;
-@@ -105,8 +114,9 @@ static int lpss_spi_setup(struct pci_dev *dev, struct pxa_spi_info *c)
- 
- static int mrfld_spi_setup(struct pci_dev *dev, struct pxa_spi_info *c)
- {
--	struct pci_dev *dma_dev = pci_get_slot(dev->bus, PCI_DEVFN(21, 0));
- 	struct dw_dma_slave *tx, *rx;
-+	struct pci_dev *dma_dev;
-+	int ret;
- 
- 	switch (PCI_FUNC(dev->devfn)) {
- 	case 0:
-@@ -131,6 +141,11 @@ static int mrfld_spi_setup(struct pci_dev *dev, struct pxa_spi_info *c)
- 		return -ENODEV;
+diff --git a/sound/soc/codecs/msm8916-wcd-analog.c b/sound/soc/codecs/msm8916-wcd-analog.c
+index 3ddd822240e3..971b8360b5b1 100644
+--- a/sound/soc/codecs/msm8916-wcd-analog.c
++++ b/sound/soc/codecs/msm8916-wcd-analog.c
+@@ -1221,8 +1221,10 @@ static int pm8916_wcd_analog_spmi_probe(struct platform_device *pdev)
  	}
  
-+	dma_dev = pci_get_slot(dev->bus, PCI_DEVFN(21, 0));
-+	ret = devm_add_action_or_reset(&dev->dev, lpss_dma_put_device, dma_dev);
-+	if (ret)
-+		return ret;
-+
- 	tx = c->tx_param;
- 	tx->dma_dev = &dma_dev->dev;
+ 	irq = platform_get_irq_byname(pdev, "mbhc_switch_int");
+-	if (irq < 0)
+-		return irq;
++	if (irq < 0) {
++		ret = irq;
++		goto err_disable_clk;
++	}
  
+ 	ret = devm_request_threaded_irq(dev, irq, NULL,
+ 			       pm8916_mbhc_switch_irq_handler,
+@@ -1234,8 +1236,10 @@ static int pm8916_wcd_analog_spmi_probe(struct platform_device *pdev)
+ 
+ 	if (priv->mbhc_btn_enabled) {
+ 		irq = platform_get_irq_byname(pdev, "mbhc_but_press_det");
+-		if (irq < 0)
+-			return irq;
++		if (irq < 0) {
++			ret = irq;
++			goto err_disable_clk;
++		}
+ 
+ 		ret = devm_request_threaded_irq(dev, irq, NULL,
+ 				       mbhc_btn_press_irq_handler,
+@@ -1246,8 +1250,10 @@ static int pm8916_wcd_analog_spmi_probe(struct platform_device *pdev)
+ 			dev_err(dev, "cannot request mbhc button press irq\n");
+ 
+ 		irq = platform_get_irq_byname(pdev, "mbhc_but_rel_det");
+-		if (irq < 0)
+-			return irq;
++		if (irq < 0) {
++			ret = irq;
++			goto err_disable_clk;
++		}
+ 
+ 		ret = devm_request_threaded_irq(dev, irq, NULL,
+ 				       mbhc_btn_release_irq_handler,
+@@ -1264,6 +1270,10 @@ static int pm8916_wcd_analog_spmi_probe(struct platform_device *pdev)
+ 	return devm_snd_soc_register_component(dev, &pm8916_wcd_analog,
+ 				      pm8916_wcd_analog_dai,
+ 				      ARRAY_SIZE(pm8916_wcd_analog_dai));
++
++err_disable_clk:
++	clk_disable_unprepare(priv->mclk);
++	return ret;
+ }
+ 
+ static int pm8916_wcd_analog_spmi_remove(struct platform_device *pdev)
 -- 
 2.34.1
 
