@@ -2,98 +2,150 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 84936C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 19:56:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C0AF2C43217
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 19:56:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233961AbiDET42 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 15:56:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39330 "EHLO
+        id S1344710AbiDET5l (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 15:57:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37852 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349431AbiDEJtv (ORCPT
+        with ESMTP id S1573592AbiDETXN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:49:51 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4AB2C24955;
-        Tue,  5 Apr 2022 02:45:45 -0700 (PDT)
+        Tue, 5 Apr 2022 15:23:13 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 687EC4C420;
+        Tue,  5 Apr 2022 12:21:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id F2902B817D3;
-        Tue,  5 Apr 2022 09:45:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6155AC385A3;
-        Tue,  5 Apr 2022 09:45:42 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649151942;
-        bh=hgwv3Bsh45tJ1pWCJ/OiWav3TISg2Dhm7A/oWtm79mM=;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 05A53618A0;
+        Tue,  5 Apr 2022 19:21:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B9DECC385A3;
+        Tue,  5 Apr 2022 19:21:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649186473;
+        bh=QuApRqh0fnTOdYhO0fpJUYwLgpx0svD4Wr/+e96NUFE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fl9tf04lWs5tPrA+aL+N8vv9Fc8itOlYB/NNAL8gb5YTwaedjF41tUTZSIaZqRF8e
-         BKzbVBlMcP9THHJIKLQW8qSUSbEHAcrGOcacA/RNZOcuRePfcZhL7W5wsv6+Vmg9f8
-         OERq4s5Sz0eCrVud3ZMRNuymL6oTKlm18p7FURIM=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dirk Buchwalder <buchwalder@posteo.de>,
-        Robert Marko <robimarko@gmail.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 597/913] clk: qcom: ipq8074: Use floor ops for SDCC1 clock
-Date:   Tue,  5 Apr 2022 09:27:39 +0200
-Message-Id: <20220405070357.737012667@linuxfoundation.org>
+        b=V85DtXBr19bL+lTEDoSEjYy0ajvW1aTrwCTptYwEHBNr64twKPsNY58LaE9PgGkBz
+         5fkatuYc5XIVY8nIkIy6NqIV3NBQrzOJ7Q3xeX7KoXb4UybNGQiYZaMRtu301iLFX2
+         o21Le4mQtxYecUZoJJek9iT+fWw+/wBQCN1Qax4df0VBEIfokFhmgUfAfE4QnJYsSJ
+         Rcd5EcbdYgldUTUG8p9j6NIF8g7PdJAAVe+FDbmo1rgknfaVkB0Px/Tm5QYnXpqVbf
+         zMnqHiS4VVHJNkw86fLoofCyYH7QysAXVtyUnI8OF1JhKtYamVaQM3XNEDv3ZFwZwg
+         +ox9LNGTbZZ6w==
+From:   Jeff Layton <jlayton@kernel.org>
+To:     idryomov@gmail.com, xiubli@redhat.com
+Cc:     ceph-devel@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        linux-fscrypt@vger.kernel.org, linux-kernel@vger.kernel.org,
+        lhenriques@suse.de
+Subject: [PATCH v13 45/59] ceph: add __ceph_sync_read helper support
+Date:   Tue,  5 Apr 2022 15:20:16 -0400
+Message-Id: <20220405192030.178326-46-jlayton@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
-User-Agent: quilt/0.66
+In-Reply-To: <20220405192030.178326-1-jlayton@kernel.org>
+References: <20220405192030.178326-1-jlayton@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dirk Buchwalder <buchwalder@posteo.de>
+From: Xiubo Li <xiubli@redhat.com>
 
-[ Upstream commit b77d8306d84f83d1da68028a68c91da9c867b6f6 ]
+Turn the guts of ceph_sync_read into a new helper that takes an inode
+and an offset instead of a kiocb struct, and make ceph_sync_read call
+the helper as a wrapper.
 
-Use floor ops on SDCC1 APPS clock in order to round down selected clock
-frequency and avoid overclocking SD/eMMC cards.
-
-For example, currently HS200 cards were failling tuning as they were
-actually being clocked at 384MHz instead of 192MHz.
-This caused some boards to disable 1.8V I/O and force the eMMC into the
-standard HS mode (50MHz) and that appeared to work despite the eMMC being
-overclocked to 96Mhz in that case.
-
-There was a previous commit to use floor ops on SDCC clocks, but it looks
-to have only covered SDCC2 clock.
-
-Fixes: 9607f6224b39 ("clk: qcom: ipq8074: add PCIE, USB and SDCC clocks")
-
-Signed-off-by: Dirk Buchwalder <buchwalder@posteo.de>
-Signed-off-by: Robert Marko <robimarko@gmail.com>
-Reviewed-by: Stephen Boyd <sboyd@kernel.org>
-Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Link: https://lore.kernel.org/r/20220210173100.505128-1-robimarko@gmail.com
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Xiubo Li <xiubli@redhat.com>
+Signed-off-by: Jeff Layton <jlayton@kernel.org>
 ---
- drivers/clk/qcom/gcc-ipq8074.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ fs/ceph/file.c  | 33 +++++++++++++++++++++------------
+ fs/ceph/super.h |  2 ++
+ 2 files changed, 23 insertions(+), 12 deletions(-)
 
-diff --git a/drivers/clk/qcom/gcc-ipq8074.c b/drivers/clk/qcom/gcc-ipq8074.c
-index b09d99343e09..541016db3c4b 100644
---- a/drivers/clk/qcom/gcc-ipq8074.c
-+++ b/drivers/clk/qcom/gcc-ipq8074.c
-@@ -1074,7 +1074,7 @@ static struct clk_rcg2 sdcc1_apps_clk_src = {
- 		.name = "sdcc1_apps_clk_src",
- 		.parent_names = gcc_xo_gpll0_gpll2_gpll0_out_main_div2,
- 		.num_parents = 4,
--		.ops = &clk_rcg2_ops,
-+		.ops = &clk_rcg2_floor_ops,
- 	},
- };
+diff --git a/fs/ceph/file.c b/fs/ceph/file.c
+index b7e2594cc296..c4300381851e 100644
+--- a/fs/ceph/file.c
++++ b/fs/ceph/file.c
+@@ -927,22 +927,19 @@ enum {
+  * If we get a short result from the OSD, check against i_size; we need to
+  * only return a short read to the caller if we hit EOF.
+  */
+-static ssize_t ceph_sync_read(struct kiocb *iocb, struct iov_iter *to,
+-			      int *retry_op)
++ssize_t __ceph_sync_read(struct inode *inode, loff_t *ki_pos,
++			 struct iov_iter *to, int *retry_op)
+ {
+-	struct file *file = iocb->ki_filp;
+-	struct inode *inode = file_inode(file);
+ 	struct ceph_inode_info *ci = ceph_inode(inode);
+ 	struct ceph_fs_client *fsc = ceph_inode_to_client(inode);
+ 	struct ceph_osd_client *osdc = &fsc->client->osdc;
+ 	ssize_t ret;
+-	u64 off = iocb->ki_pos;
++	u64 off = *ki_pos;
+ 	u64 len = iov_iter_count(to);
+ 	u64 i_size = i_size_read(inode);
+ 	bool sparse = ceph_test_mount_opt(fsc, SPARSEREAD);
  
+-	dout("sync_read on file %p %llu~%u %s\n", file, off, (unsigned)len,
+-	     (file->f_flags & O_DIRECT) ? "O_DIRECT" : "");
++	dout("sync_read on inode %p %llx~%llx\n", inode, *ki_pos, len);
+ 
+ 	if (!len)
+ 		return 0;
+@@ -1061,14 +1058,14 @@ static ssize_t ceph_sync_read(struct kiocb *iocb, struct iov_iter *to,
+ 			break;
+ 	}
+ 
+-	if (off > iocb->ki_pos) {
++	if (off > *ki_pos) {
+ 		if (off >= i_size) {
+ 			*retry_op = CHECK_EOF;
+-			ret = i_size - iocb->ki_pos;
+-			iocb->ki_pos = i_size;
++			ret = i_size - *ki_pos;
++			*ki_pos = i_size;
+ 		} else {
+-			ret = off - iocb->ki_pos;
+-			iocb->ki_pos = off;
++			ret = off - *ki_pos;
++			*ki_pos = off;
+ 		}
+ 	}
+ 
+@@ -1076,6 +1073,18 @@ static ssize_t ceph_sync_read(struct kiocb *iocb, struct iov_iter *to,
+ 	return ret;
+ }
+ 
++static ssize_t ceph_sync_read(struct kiocb *iocb, struct iov_iter *to,
++			      int *retry_op)
++{
++	struct file *file = iocb->ki_filp;
++	struct inode *inode = file_inode(file);
++
++	dout("sync_read on file %p %llx~%zx %s\n", file, iocb->ki_pos,
++	     iov_iter_count(to), (file->f_flags & O_DIRECT) ? "O_DIRECT" : "");
++
++	return __ceph_sync_read(inode, &iocb->ki_pos, to, retry_op);
++}
++
+ struct ceph_aio_request {
+ 	struct kiocb *iocb;
+ 	size_t total_len;
+diff --git a/fs/ceph/super.h b/fs/ceph/super.h
+index 752bc3c820ca..d7ab820aed34 100644
+--- a/fs/ceph/super.h
++++ b/fs/ceph/super.h
+@@ -1258,6 +1258,8 @@ extern int ceph_renew_caps(struct inode *inode, int fmode);
+ extern int ceph_open(struct inode *inode, struct file *file);
+ extern int ceph_atomic_open(struct inode *dir, struct dentry *dentry,
+ 			    struct file *file, unsigned flags, umode_t mode);
++extern ssize_t __ceph_sync_read(struct inode *inode, loff_t *ki_pos,
++				struct iov_iter *to, int *retry_op);
+ extern int ceph_release(struct inode *inode, struct file *filp);
+ extern void ceph_fill_inline_data(struct inode *inode, struct page *locked_page,
+ 				  char *data, size_t len);
 -- 
-2.34.1
-
-
+2.35.1
 
