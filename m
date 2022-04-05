@@ -2,103 +2,135 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6FAB2C4321E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5BE5AC43217
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 21:53:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386002AbiDEVuZ (ORCPT
+        id S1385944AbiDEVuX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 17:50:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43724 "EHLO
+        Tue, 5 Apr 2022 17:50:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53668 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1392232AbiDEPfx (ORCPT
+        with ESMTP id S1358231AbiDEK2J (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 11:35:53 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 301D92DE
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 06:48:23 -0700 (PDT)
+        Tue, 5 Apr 2022 06:28:09 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6511AD93;
+        Tue,  5 Apr 2022 03:17:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 23933618B3
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 13:48:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E9AD0C385AA;
-        Tue,  5 Apr 2022 13:48:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649166502;
-        bh=L940+BjtIFTE/F2hK7zJ5314fCg6+o2jSl+cZo4AB4U=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=FNuQeoqhWp7RKDV5m0kQMwRKrARsSVoOgz0olHveaHVLxFYUjdbVZffcnzjXejyQr
-         mf8FSBreaRxwnvRMY/OY7wmmp6BJ015NqBl5ORDOnL+N96VODQ6srMUkpNeTGmAFA9
-         2krQIhtoV8wwCwd7kPPkIjaPLFa/2ev4jyw+X9Pu5zPIJuggg1Ftz5LxOECCuLRiP4
-         Pe3qUEbcDVpZokm30yH44Y41SZ4mzmfDq4KKvY7qbx0G6hdaA9GY8nV4BcwwXJbZIZ
-         GHPSDkA4aq3ZYrg1yfyffUmvOjylqxRct/CybycerRgkggSilFau1F0xcPrQrWheav
-         KQZ5zaK5yoWeg==
-Date:   Tue, 5 Apr 2022 15:48:16 +0200
-From:   Mauro Carvalho Chehab <mchehab@kernel.org>
-To:     Hans de Goede <hdegoede@redhat.com>
-Cc:     Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
-        =?UTF-8?B?UMOpdGVy?= Ujfalusi <peter.ujfalusi@linux.intel.com>,
-        Bard Liao <yung-chuan.liao@linux.intel.com>,
-        Cezary Rojewski <cezary.rojewski@intel.com>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Jie Yang <yang.jie@linux.intel.com>,
-        Liam Girdwood <liam.r.girdwood@linux.intel.com>,
-        Mark Brown <broonie@kernel.org>, Takashi Iwai <tiwai@suse.com>,
-        alsa-devel@alsa-project.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 0/2] Make headphone work on Huawei Matebook D15
-Message-ID: <20220405154816.5cfdc49c@coco.lan>
-In-Reply-To: <168fe6c3-6a7d-4019-16e3-066caf394b8a@redhat.com>
-References: <cover.1649147890.git.mchehab@kernel.org>
-        <168fe6c3-6a7d-4019-16e3-066caf394b8a@redhat.com>
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.31; x86_64-redhat-linux-gnu)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 024FB617AA;
+        Tue,  5 Apr 2022 10:17:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0EADCC385A2;
+        Tue,  5 Apr 2022 10:17:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649153833;
+        bh=Wu9EoBb4bBXtOyqt/h2vb+Y/ya1Bxiwt1yRBhqJpw4w=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=OdYN2DlMqgj/qwdQZJxrSVxlxKAQP0tznHEJip5uhDDw1l4p2VVhGRX1UtRyePF98
+         WRppTgzWXx8BNjq5gEGAqnMuyd0ZZMyoYv2Ex0hc7H03N7MDw7izM0H9af0OaKmuOs
+         jxDv1cnGpvq/c55WFxgsAxf3BzaRaxeQSXGbZpB4=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Derek Will <derekrobertwill@gmail.com>,
+        Oliver Hartkopp <socketcan@hartkopp.net>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 362/599] can: isotp: support MSG_TRUNC flag when reading from socket
+Date:   Tue,  5 Apr 2022 09:30:56 +0200
+Message-Id: <20220405070309.604358102@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
+References: <20220405070258.802373272@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Em Tue, 5 Apr 2022 11:00:44 +0200
-Hans de Goede <hdegoede@redhat.com> escreveu:
+From: Oliver Hartkopp <socketcan@hartkopp.net>
 
-> Hi,
-> 
-> On 4/5/22 10:44, Mauro Carvalho Chehab wrote:
-> > At Huawei Matebook D15 two different GPIOs are used to control the output:
-> > 	- gpio0 controls the speaker output;
-> > 	- gpio1 controls the headphone output.
-> > 
-> > Changing both at the same time cause spurious events that are mis-interpreted
-> > as input events, causing troubles on apps. So, a delay is needed before turning
-> > on such gpios.
-> > 
-> > With this patch, plugging a headphone causes a jack event to trigger the speaker
-> > supply, powering down the speaker and powering up the headphone output.
-> > Removing the headphone also triggers the power supply, powering up the speaker
-> > and powering down the headphone.
-> > 
-> > Mauro Carvalho Chehab (2):
-> >   ASoC: Intel: sof_es8336: support a separate gpio to control headphone
-> >   ASoC: Intel: sof_es8336: Huawei Matebook D15 uses a headphone gpio  
-> 
-> There is something weird with the patches here, at least for me in Thunderbird
-> both patches show up as nameless attachments to emails with empty bodies.
+[ Upstream commit 42bf50a1795a1854d48717b7361dbdbce496b16b ]
 
-Weird... I tested here on Thunderbird (Fedora 35), reading it from the ML
-and they opened ok here.
+When providing the MSG_TRUNC flag via recvmsg() syscall the return value
+provides the real length of the packet or datagram, even when it was longer
+than the passed buffer.
 
-There *is* an issue on such patches though: they ended using my past
-e-mail :-) 
+Fixes: e057dd3fc20f ("can: add ISO 15765-2:2016 transport protocol")
+Link: https://github.com/linux-can/can-utils/issues/347#issuecomment-1065932671
+Link: https://lore.kernel.org/all/20220316164258.54155-3-socketcan@hartkopp.net
+Suggested-by: Derek Will <derekrobertwill@gmail.com>
+Signed-off-by: Oliver Hartkopp <socketcan@hartkopp.net>
+Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ net/can/isotp.c | 27 +++++++++++++++------------
+ 1 file changed, 15 insertions(+), 12 deletions(-)
 
-I'll re-send those with your ack using the right SoB/From
-mchehab@kernel.org.
+diff --git a/net/can/isotp.c b/net/can/isotp.c
+index cb5546c186bc..518014506fff 100644
+--- a/net/can/isotp.c
++++ b/net/can/isotp.c
+@@ -1004,29 +1004,28 @@ static int isotp_recvmsg(struct socket *sock, struct msghdr *msg, size_t size,
+ 	struct sock *sk = sock->sk;
+ 	struct sk_buff *skb;
+ 	struct isotp_sock *so = isotp_sk(sk);
+-	int err = 0;
+-	int noblock;
++	int noblock = flags & MSG_DONTWAIT;
++	int ret = 0;
+ 
+-	noblock = flags & MSG_DONTWAIT;
+-	flags &= ~MSG_DONTWAIT;
++	if (flags & ~(MSG_DONTWAIT | MSG_TRUNC))
++		return -EINVAL;
+ 
+ 	if (!so->bound)
+ 		return -EADDRNOTAVAIL;
+ 
+-	skb = skb_recv_datagram(sk, flags, noblock, &err);
++	flags &= ~MSG_DONTWAIT;
++	skb = skb_recv_datagram(sk, flags, noblock, &ret);
+ 	if (!skb)
+-		return err;
++		return ret;
+ 
+ 	if (size < skb->len)
+ 		msg->msg_flags |= MSG_TRUNC;
+ 	else
+ 		size = skb->len;
+ 
+-	err = memcpy_to_msg(msg, skb->data, size);
+-	if (err < 0) {
+-		skb_free_datagram(sk, skb);
+-		return err;
+-	}
++	ret = memcpy_to_msg(msg, skb->data, size);
++	if (ret < 0)
++		goto out_err;
+ 
+ 	sock_recv_timestamp(msg, sk, skb);
+ 
+@@ -1036,9 +1035,13 @@ static int isotp_recvmsg(struct socket *sock, struct msghdr *msg, size_t size,
+ 		memcpy(msg->msg_name, skb->cb, msg->msg_namelen);
+ 	}
+ 
++	/* set length of return value */
++	ret = (flags & MSG_TRUNC) ? skb->len : size;
++
++out_err:
+ 	skb_free_datagram(sk, skb);
+ 
+-	return size;
++	return ret;
+ }
+ 
+ static int isotp_release(struct socket *sock)
+-- 
+2.34.1
 
-> 
-> After saving the attachments the patches look good to me, so:
-> 
-> Acked-by: Hans de Goede <hdegoede@redhat.com>
 
-Thanks!
 
-Regards,
-Mauro
