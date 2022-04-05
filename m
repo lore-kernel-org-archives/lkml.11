@@ -2,97 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CB5A2C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DF92DC433F5
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:25:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1575252AbiDEXD3 (ORCPT
+        id S1575302AbiDEXDf (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 19:03:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51098 "EHLO
+        Tue, 5 Apr 2022 19:03:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45472 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1390729AbiDENnK (ORCPT
+        with ESMTP id S1354783AbiDEKPt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 09:43:10 -0400
-Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BA3B29833
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 05:43:39 -0700 (PDT)
-Received: by mail-pl1-x62c.google.com with SMTP id n18so10799261plg.5
-        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 05:43:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=FkFtcq8jG36lKpEqQXtgVBWpO9PXs+dvDcrkyl4I1JE=;
-        b=K3A6+NSJs8BRIGtFtREYuYGdt+I2mfbSCX/qAgVN8Llkj+IqkdCnfKCE0OmVCR0oTL
-         ZuQ3c53uY19nlODYpvTvtL6e+pdMZJzomxMY2twipmZFpfCjtCvMDW6n91+hsCXCjO/9
-         SEJ4wUwiPIoumxXLjQKMitubVLWNKHTeOuDRaoprMeakAxZYyQMAULiHDXdNvPtbmOLs
-         UXC4VhPTrG5tTZ2mzWL9Pc7C5YqeDBJ6ZKI+Hl6AESA4BgIIrbFskHFl7AOOmGuIr4Oa
-         hbMKmf5C/jKh8/gf+IzMn5ywVlKLy0IPwvSBH8P2FO1gh+Y2a3Gxsjb63cktIDXT7UNV
-         oCGQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=FkFtcq8jG36lKpEqQXtgVBWpO9PXs+dvDcrkyl4I1JE=;
-        b=Ut3XkyU6HrSdkOnIoAF3NFbyZnIiGFnFgeltQ5h/vMidnjTzlDFBjjSsSh5l6YAjd4
-         XPJJFtzssqcnDAgf6WgBTmPpqYFN/7xDpu2DVIkE86XKYCIji/HYEEOhDLKqvxFne1zS
-         osFdvlci817NkN6sGYEnYUgULT+o24q2Efe90fA72yHG+tE307Rqk2MTYr6MUK7HY4OV
-         h9VaxoXbUaj+LF1BziYje1VCnnEylml53o2jmtnKtQ0y+WfMRhTDS13isLqovhbDue7C
-         TKh3v5qHytTyPHJTLvJWHdf53PYRUSwTSl5teSu91C+GKE/5qpxLP5UYZsxXqtK2ELYU
-         ynqw==
-X-Gm-Message-State: AOAM533kPO1La/s2dbpeW4DJxgd36m0JNStmYi9SWNvQNCGxmu0DNjEX
-        HE2xds8HQqHnJ5LHlfLM5wc=
-X-Google-Smtp-Source: ABdhPJxA7BYupDalxQpTgWbwDIy06f39XbgqEQMzEvGNOezRhIRWoxVZMoYFVgURNXmPQjcaobeYZA==
-X-Received: by 2002:a17:902:f243:b0:156:b615:dd38 with SMTP id j3-20020a170902f24300b00156b615dd38mr3322253plc.174.1649162618681;
-        Tue, 05 Apr 2022 05:43:38 -0700 (PDT)
-Received: from vihas.localhost.com ([103.85.9.59])
-        by smtp.gmail.com with ESMTPSA id nl17-20020a17090b385100b001c70883f6ccsm2760014pjb.36.2022.04.05.05.43.35
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 05 Apr 2022 05:43:38 -0700 (PDT)
-From:   Vihas Makwana <makvihas@gmail.com>
-To:     Larry Finger <Larry.Finger@lwfinger.net>,
-        Phillip Potter <phil@philpotter.co.uk>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Michael Straube <straube.linux@gmail.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Pavel Skripkin <paskripkin@gmail.com>
-Cc:     linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
-        Vihas Makwana <makvihas@gmail.com>
-Subject: [PATCH 1/3] staging: r8188eu: drop redundant if check in IS_MCAST
-Date:   Tue,  5 Apr 2022 18:12:38 +0530
-Message-Id: <20220405124239.3372-2-makvihas@gmail.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220405124239.3372-1-makvihas@gmail.com>
-References: <20220405124239.3372-1-makvihas@gmail.com>
+        Tue, 5 Apr 2022 06:15:49 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0E846C93B;
+        Tue,  5 Apr 2022 03:02:52 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 69264616E7;
+        Tue,  5 Apr 2022 10:02:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7023FC385A1;
+        Tue,  5 Apr 2022 10:02:51 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649152971;
+        bh=RM0KKzpT8cLsJyrZoDbIHvg0ONgKHvUQdCMuQWGyK5Q=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=K96x80/S/LSJC0knU6J/3iAt8q04PSZM5cnYiMCM60AGWEN5n8ImbDJUFrm11wfvT
+         +JHrwEYetQ0F8DUbCEu4BmyM/nXqGTmNBaefhadEnFofjhEa3jre2fpcnzWuKrMeYw
+         NySjXHwMXjmhU219ID1bIuNNiCMjCsZkmyAWa1AE=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Sebastian Haas <haas@ems-wuensche.com>,
+        Hangyu Hua <hbh25y@gmail.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>
+Subject: [PATCH 5.10 055/599] can: ems_usb: ems_usb_start_xmit(): fix double dev_kfree_skb() in error path
+Date:   Tue,  5 Apr 2022 09:25:49 +0200
+Message-Id: <20220405070300.465505942@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
+References: <20220405070258.802373272@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The if check is redundant. Drop it and simplify the funciton.
+From: Hangyu Hua <hbh25y@gmail.com>
 
-Signed-off-by: Vihas Makwana <makvihas@gmail.com>
+commit c70222752228a62135cee3409dccefd494a24646 upstream.
+
+There is no need to call dev_kfree_skb() when usb_submit_urb() fails
+beacause can_put_echo_skb() deletes the original skb and
+can_free_echo_skb() deletes the cloned skb.
+
+Link: https://lore.kernel.org/all/20220228083639.38183-1-hbh25y@gmail.com
+Fixes: 702171adeed3 ("ems_usb: Added support for EMS CPC-USB/ARM7 CAN/USB interface")
+Cc: stable@vger.kernel.org
+Cc: Sebastian Haas <haas@ems-wuensche.com>
+Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
+Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/staging/r8188eu/include/wifi.h | 5 +----
- 1 file changed, 1 insertion(+), 4 deletions(-)
+ drivers/net/can/usb/ems_usb.c |    1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/drivers/staging/r8188eu/include/wifi.h b/drivers/staging/r8188eu/include/wifi.h
-index e10cf17d6..88ed6b4a0 100644
---- a/drivers/staging/r8188eu/include/wifi.h
-+++ b/drivers/staging/r8188eu/include/wifi.h
-@@ -244,10 +244,7 @@ enum WIFI_REG_DOMAIN {
+--- a/drivers/net/can/usb/ems_usb.c
++++ b/drivers/net/can/usb/ems_usb.c
+@@ -823,7 +823,6 @@ static netdev_tx_t ems_usb_start_xmit(st
  
- static inline bool IS_MCAST(unsigned char *da)
- {
--	if ((*da) & 0x01)
--		return true;
--	else
--		return false;
-+	return (*da) & 0x01;
- }
+ 		usb_unanchor_urb(urb);
+ 		usb_free_coherent(dev->udev, size, buf, urb->transfer_dma);
+-		dev_kfree_skb(skb);
  
- static inline unsigned char *get_da(unsigned char *pframe)
--- 
-2.30.2
+ 		atomic_dec(&dev->active_tx_urbs);
+ 
+
 
