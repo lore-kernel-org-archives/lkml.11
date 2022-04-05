@@ -2,133 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D741C41535
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C85CC46467
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 01:33:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1842760AbiDFBeg (ORCPT
+        id S1842789AbiDFBeq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 21:34:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51086 "EHLO
+        Tue, 5 Apr 2022 21:34:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45298 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1443188AbiDEPjI (ORCPT
+        with ESMTP id S1349194AbiDEJt0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 11:39:08 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B1AA14753D;
-        Tue,  5 Apr 2022 06:55:04 -0700 (PDT)
+        Tue, 5 Apr 2022 05:49:26 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2853521E39;
+        Tue,  5 Apr 2022 02:42:30 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E6E05B81BA8;
-        Tue,  5 Apr 2022 13:55:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7BD12C385A4;
-        Tue,  5 Apr 2022 13:55:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649166901;
-        bh=iB8V/cO3JDHg3B4uaq4JA6GvE9hxQZX/fsJc7mMx4Fw=;
-        h=From:To:Cc:Subject:Date:From;
-        b=JhEBLwku9Xc18r0NykUeJRpimrF/ZQ7Vy2v5FtpfNKp9TFQV8SCLWd3YfLSCkoZWj
-         nQ5A2lhhzkC2vDDOLS2fLFyRvZxjVweUFNChghZAlbqcrbC8/h9EjHgSTIqsg7fPsj
-         PeJo5uheX/Wkb0siHrvHYvvGdA2KuMrQejv1bwSTdgHD5zpl2zGCmBLKzt55eA8J0v
-         pkg0PsKScqzB51rkSgMMs2UrQqyX27Y4khUssjIy6AAutuC1LSJ9v1DeM7Mr7EI5w6
-         KSPtZ0NMJGh0sv1+hb63xtf6/ucXGTc65OLTwLgfmFundA1Z7xEP9yqvyzIkQbzuRi
-         QUk3HlObdvTfw==
-Received: from sofa.misterjones.org ([185.219.108.64] helo=why.lan)
-        by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <maz@kernel.org>)
-        id 1nbje7-001q4g-37; Tue, 05 Apr 2022 14:54:59 +0100
-From:   Marc Zyngier <maz@kernel.org>
+        by sin.source.kernel.org (Postfix) with ESMTPS id 074B5CE1C6F;
+        Tue,  5 Apr 2022 09:42:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1FE47C385A1;
+        Tue,  5 Apr 2022 09:42:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649151747;
+        bh=vC3HpaQC66yZXonEgmL5Uq5YOTH5rq+MgVEPdR036Wo=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=qK1FZV5cf/lhr+U1lbjTqBgupu2epqisnZsifQ9rNEJHbJthbDi121r+qvLDvJ81f
+         QH1M4p6MatEDJ5Q427YtR8g11BpzomFWeowXg3KA6OEts+uZ40Cjo2uSEbkIXC37iY
+         j7PbG5dUxw/NlXzNqJ9E9w9Lx6B+WgWJc1zqsMXY=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
-Cc:     Linus Walleij <linus.walleij@linaro.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Joey Gouly <joey.gouly@arm.com>,
-        Jonathan Hunter <jonathanh@nvidia.com>,
-        Hector Martin <marcan@marcan.st>,
-        Sven Peter <sven@svenpeter.dev>,
-        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Andy Gross <agross@kernel.org>,
-        Jeffrey Hugo <jeffrey.l.hugo@gmail.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Basavaraj Natikar <Basavaraj.Natikar@amd.com>,
-        Shyam Sundar S K <Shyam-sundar.S-k@amd.com>,
-        linux-gpio@vger.kernel.org, linux-tegra@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-arm-msm@vger.kernel.org, kernel-team@android.com
-Subject: [PATCH v2 00/10] gpiolib: Handle immutable irq_chip structures
-Date:   Tue,  5 Apr 2022 14:54:34 +0100
-Message-Id: <20220405135444.199295-1-maz@kernel.org>
-X-Mailer: git-send-email 2.34.1
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Felix Maurer <fmaurer@redhat.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 526/913] selftests/bpf: Make test_lwt_ip_encap more stable and faster
+Date:   Tue,  5 Apr 2022 09:26:28 +0200
+Message-Id: <20220405070355.618225207@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 185.219.108.64
-X-SA-Exim-Rcpt-To: linux-kernel@vger.kernel.org, linus.walleij@linaro.org, brgl@bgdev.pl, thierry.reding@gmail.com, joey.gouly@arm.com, jonathanh@nvidia.com, marcan@marcan.st, sven@svenpeter.dev, alyssa@rosenzweig.io, bjorn.andersson@linaro.org, agross@kernel.org, jeffrey.l.hugo@gmail.com, tglx@linutronix.de, Basavaraj.Natikar@amd.com, Shyam-sundar.S-k@amd.com, linux-gpio@vger.kernel.org, linux-tegra@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-arm-msm@vger.kernel.org, kernel-team@android.com
-X-SA-Exim-Mail-From: maz@kernel.org
-X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This is a followup from [1].
+From: Felix Maurer <fmaurer@redhat.com>
 
-I recently realised that the gpiolib play ugly tricks on the
-unsuspecting irq_chip structures by patching the callbacks.
+[ Upstream commit d23a8720327d33616f584d76c80824bfa4699be6 ]
 
-Not only this breaks when an irq_chip structure is made const (which
-really should be the default case), but it also forces this structure
-to be copied at nauseam for each instance of the GPIO block, which is
-a waste of memory.
+In test_lwt_ip_encap, the ingress IPv6 encap test failed from time to
+time. The failure occured when an IPv4 ping through the IPv6 GRE
+encapsulation did not receive a reply within the timeout. The IPv4 ping
+and the IPv6 ping in the test used different timeouts (1 sec for IPv4
+and 6 sec for IPv6), probably taking into account that IPv6 might need
+longer to successfully complete. However, when IPv4 pings (with the
+short timeout) are encapsulated into the IPv6 tunnel, the delays of IPv6
+apply.
 
-My current approach is to add a new irq_chip flag (IRQCHIP_IMMUTABLE)
-which does what it says on the tin: don't you dare writing to them.
-Gpiolib is further updated not to install its own callbacks, and it
-becomes the responsibility of the driver to call into the gpiolib when
-required. This is similar to what we do for other subsystems such as
-PCI-MSI.
+The actual reason for the long delays with IPv6 was that the IPv6
+neighbor discovery sometimes did not complete in time. This was caused
+by the outgoing interface only having a tentative link local address,
+i.e., not having completed DAD for that lladdr. The ND was successfully
+retried after 1 sec but that was too late for the ping timeout.
 
-5 drivers are updated to this new model: M1, QC, Tegra, pl061 and AMD
-(as I actively use them) keeping a single irq_chip structure, marking
-it const, and exposing the new flag.
+The IPv6 addresses for the test were already added with nodad. However,
+for the lladdrs, DAD was still performed. We now disable DAD in the test
+netns completely and just assume that the two lladdrs on each veth pair
+do not collide. This removes all the delays for IPv6 traffic in the
+test.
 
-Nothing breaks, the volume of change is small, the memory usage goes
-down and we have fewer callbacks that can be used as attack vectors.
-What's not to love?
+Without the delays, we can now also reduce the delay of the IPv6 ping to
+1 sec. This makes the whole test complete faster because we don't need
+to wait for the excessive timeout for each IPv6 ping that is supposed
+to fail.
 
-* From v1 [1]:
-  - pl061 and AMD drivers converted
-  - New helpers to keep the changes small
-  - New warning for non-converted drivers
-  - Documentation and TODO updates
+Fixes: 0fde56e4385b0 ("selftests: bpf: add test_lwt_ip_encap selftest")
+Signed-off-by: Felix Maurer <fmaurer@redhat.com>
+Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+Link: https://lore.kernel.org/bpf/4987d549d48b4e316cd5b3936de69c8d4bc75a4f.1646305899.git.fmaurer@redhat.com
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ tools/testing/selftests/bpf/test_lwt_ip_encap.sh | 10 +++++++++-
+ 1 file changed, 9 insertions(+), 1 deletion(-)
 
-[1] https://lore.kernel.org/r/20220223154405.54912-1-maz@kernel.org
-
-Marc Zyngier (10):
-  gpio: Don't fiddle with irqchips marked as immutable
-  gpio: Expose the gpiochip_irq_re[ql]res helpers
-  gpio: Add helpers to ease the transition towards immutable irq_chip
-  gpio: tegra186: Make the irqchip immutable
-  gpio: pl061: Make the irqchip immutable
-  pinctrl: apple-gpio: Make the irqchip immutable
-  pinctrl: msmgpio: Make the irqchip immutable
-  pinctrl: amd: Make the irqchip immutable
-  gpio: Update TODO to mention immutable irq_chip structures
-  Documentation: Update the recommended pattern for GPIO irqchips
-
- Documentation/driver-api/gpio/driver.rst | 175 ++++++++++++++++++-----
- drivers/gpio/TODO                        |  19 +++
- drivers/gpio/gpio-pl061.c                |  32 +++--
- drivers/gpio/gpio-tegra186.c             |  32 +++--
- drivers/gpio/gpiolib.c                   |  13 +-
- drivers/pinctrl/pinctrl-amd.c            |  11 +-
- drivers/pinctrl/pinctrl-apple-gpio.c     |  29 ++--
- drivers/pinctrl/qcom/pinctrl-msm.c       |  53 ++++---
- include/linux/gpio/driver.h              |  16 +++
- include/linux/irq.h                      |   2 +
- kernel/irq/debugfs.c                     |   1 +
- 11 files changed, 293 insertions(+), 90 deletions(-)
-
+diff --git a/tools/testing/selftests/bpf/test_lwt_ip_encap.sh b/tools/testing/selftests/bpf/test_lwt_ip_encap.sh
+index b497bb85b667..6c69c42b1d60 100755
+--- a/tools/testing/selftests/bpf/test_lwt_ip_encap.sh
++++ b/tools/testing/selftests/bpf/test_lwt_ip_encap.sh
+@@ -120,6 +120,14 @@ setup()
+ 	ip netns exec ${NS2} sysctl -wq net.ipv4.conf.default.rp_filter=0
+ 	ip netns exec ${NS3} sysctl -wq net.ipv4.conf.default.rp_filter=0
+ 
++	# disable IPv6 DAD because it sometimes takes too long and fails tests
++	ip netns exec ${NS1} sysctl -wq net.ipv6.conf.all.accept_dad=0
++	ip netns exec ${NS2} sysctl -wq net.ipv6.conf.all.accept_dad=0
++	ip netns exec ${NS3} sysctl -wq net.ipv6.conf.all.accept_dad=0
++	ip netns exec ${NS1} sysctl -wq net.ipv6.conf.default.accept_dad=0
++	ip netns exec ${NS2} sysctl -wq net.ipv6.conf.default.accept_dad=0
++	ip netns exec ${NS3} sysctl -wq net.ipv6.conf.default.accept_dad=0
++
+ 	ip link add veth1 type veth peer name veth2
+ 	ip link add veth3 type veth peer name veth4
+ 	ip link add veth5 type veth peer name veth6
+@@ -289,7 +297,7 @@ test_ping()
+ 		ip netns exec ${NS1} ping  -c 1 -W 1 -I veth1 ${IPv4_DST} 2>&1 > /dev/null
+ 		RET=$?
+ 	elif [ "${PROTO}" == "IPv6" ] ; then
+-		ip netns exec ${NS1} ping6 -c 1 -W 6 -I veth1 ${IPv6_DST} 2>&1 > /dev/null
++		ip netns exec ${NS1} ping6 -c 1 -W 1 -I veth1 ${IPv6_DST} 2>&1 > /dev/null
+ 		RET=$?
+ 	else
+ 		echo "    test_ping: unknown PROTO: ${PROTO}"
 -- 
 2.34.1
+
+
 
