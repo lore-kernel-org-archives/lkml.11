@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 95D82C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AB3FDC433FE
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:57:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1838810AbiDFA5E (ORCPT
+        id S1838856AbiDFA5J (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 20:57:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60180 "EHLO
+        Tue, 5 Apr 2022 20:57:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39730 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349996AbiDEJwQ (ORCPT
+        with ESMTP id S1349482AbiDEJtz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:52:16 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 968CC35DF4;
-        Tue,  5 Apr 2022 02:50:18 -0700 (PDT)
+        Tue, 5 Apr 2022 05:49:55 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FAAF10E2;
+        Tue,  5 Apr 2022 02:47:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5A455B81B76;
-        Tue,  5 Apr 2022 09:50:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BF862C385A3;
-        Tue,  5 Apr 2022 09:50:15 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E0BA261673;
+        Tue,  5 Apr 2022 09:47:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 00CF4C385A2;
+        Tue,  5 Apr 2022 09:47:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649152216;
-        bh=8rzxR8C9aV5joxDkLw1fv1HzRyps0zkC5tErCCANSjw=;
+        s=korg; t=1649152035;
+        bh=/WL/XM3/H0Lg+0D7s476QqDbw1UR+SMZFreuA6ACZHA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Ccg5LMaYYmbkTgTeLs7/ZmmtgUHBVOmwUbfcMaHcYuKuMxF7MxX3JP+hK+M/Ob4k6
-         2ld7xLiZeJLF7PvQWFHD27MDvCoUd9uxmhA/R1E2jDznGQXmPftvR/6igKa4xgfrSg
-         RqHc64e3IcMQFf94zw1hpeD7m0SOXqmPo6jK9xcU=
+        b=Xks8jMu/BMMUySqlo0HcUkAaRLk8TX/3FMHmEOxoD8ddVZIIZmo1AsTPUIx5QnRVw
+         /o7PR3CvDJjYru225tTNzd21DFjmB8TuDn+PKxlnVRaB69naCIXiBQJFtHljklKd+j
+         EB1Jnm1ImUZVKeOIQOSK9axooePd/6PbX/niY0FM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
-        Casey Schaufler <casey@schaufler-ca.com>,
+        stable@vger.kernel.org, Chen-Yu Tsai <wenst@chromium.org>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 696/913] Fix incorrect type in assignment of ipv6 port for audit
-Date:   Tue,  5 Apr 2022 09:29:18 +0200
-Message-Id: <20220405070400.697492322@linuxfoundation.org>
+Subject: [PATCH 5.15 632/913] pinctrl: mediatek: paris: Fix PIN_CONFIG_BIAS_* readback
+Date:   Tue,  5 Apr 2022 09:28:14 +0200
+Message-Id: <20220405070358.783800972@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
 References: <20220405070339.801210740@linuxfoundation.org>
@@ -50,33 +52,58 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Casey Schaufler <casey@schaufler-ca.com>
+From: Chen-Yu Tsai <wenst@chromium.org>
 
-[ Upstream commit a5cd1ab7ab679d252a6d2f483eee7d45ebf2040c ]
+[ Upstream commit 3e8c6bc608480010f360c4a59578d7841726137d ]
 
-Remove inappropriate use of ntohs() and assign the
-port value directly.
+When reading back pin bias settings, if the pin is not in the
+corresponding bias state, the function should return -EINVAL.
 
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: Casey Schaufler <casey@schaufler-ca.com>
+Fix this in the mediatek-paris pinctrl library so that the read back
+state is not littered with bogus a "input bias disabled" combined with
+"pull up" or "pull down" states.
+
+Fixes: 805250982bb5 ("pinctrl: mediatek: add pinctrl-paris that implements the vendor dt-bindings")
+Signed-off-by: Chen-Yu Tsai <wenst@chromium.org>
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+Link: https://lore.kernel.org/r/20220308100956.2750295-3-wenst@chromium.org
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- security/smack/smack_lsm.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/pinctrl/mediatek/pinctrl-paris.c | 16 ++++++----------
+ 1 file changed, 6 insertions(+), 10 deletions(-)
 
-diff --git a/security/smack/smack_lsm.c b/security/smack/smack_lsm.c
-index 21a0e7c3b8de..3f3f56f6be4d 100644
---- a/security/smack/smack_lsm.c
-+++ b/security/smack/smack_lsm.c
-@@ -2505,7 +2505,7 @@ static int smk_ipv6_check(struct smack_known *subject,
- #ifdef CONFIG_AUDIT
- 	smk_ad_init_net(&ad, __func__, LSM_AUDIT_DATA_NET, &net);
- 	ad.a.u.net->family = PF_INET6;
--	ad.a.u.net->dport = ntohs(address->sin6_port);
-+	ad.a.u.net->dport = address->sin6_port;
- 	if (act == SMK_RECEIVING)
- 		ad.a.u.net->v6info.saddr = address->sin6_addr;
- 	else
+diff --git a/drivers/pinctrl/mediatek/pinctrl-paris.c b/drivers/pinctrl/mediatek/pinctrl-paris.c
+index 85db2e4377f0..5bdf8b7acd23 100644
+--- a/drivers/pinctrl/mediatek/pinctrl-paris.c
++++ b/drivers/pinctrl/mediatek/pinctrl-paris.c
+@@ -96,20 +96,16 @@ static int mtk_pinconf_get(struct pinctrl_dev *pctldev,
+ 			err = hw->soc->bias_get_combo(hw, desc, &pullup, &ret);
+ 			if (err)
+ 				goto out;
++			if (ret == MTK_PUPD_SET_R1R0_00)
++				ret = MTK_DISABLE;
+ 			if (param == PIN_CONFIG_BIAS_DISABLE) {
+-				if (ret == MTK_PUPD_SET_R1R0_00)
+-					ret = MTK_DISABLE;
++				if (ret != MTK_DISABLE)
++					err = -EINVAL;
+ 			} else if (param == PIN_CONFIG_BIAS_PULL_UP) {
+-				/* When desire to get pull-up value, return
+-				 *  error if current setting is pull-down
+-				 */
+-				if (!pullup)
++				if (!pullup || ret == MTK_DISABLE)
+ 					err = -EINVAL;
+ 			} else if (param == PIN_CONFIG_BIAS_PULL_DOWN) {
+-				/* When desire to get pull-down value, return
+-				 *  error if current setting is pull-up
+-				 */
+-				if (pullup)
++				if (pullup || ret == MTK_DISABLE)
+ 					err = -EINVAL;
+ 			}
+ 		} else {
 -- 
 2.34.1
 
