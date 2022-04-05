@@ -2,115 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A9185C43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 62413C35295
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 21:37:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382485AbiDEVix (ORCPT
+        id S1382097AbiDEVif (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 17:38:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47634 "EHLO
+        Tue, 5 Apr 2022 17:38:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51148 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1386444AbiDEOjU (ORCPT
+        with ESMTP id S239049AbiDEKfQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 10:39:20 -0400
-Received: from lelv0142.ext.ti.com (lelv0142.ext.ti.com [198.47.23.249])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 719B05EBD5;
-        Tue,  5 Apr 2022 06:16:13 -0700 (PDT)
-Received: from lelv0266.itg.ti.com ([10.180.67.225])
-        by lelv0142.ext.ti.com (8.15.2/8.15.2) with ESMTP id 235DFOsL038335;
-        Tue, 5 Apr 2022 08:15:24 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1649164524;
-        bh=JYdCG3TAoNbKpALXnh21WRPhuqXFTS0WBJhqewUEdCQ=;
-        h=Date:Subject:To:CC:References:From:In-Reply-To;
-        b=Vnl2EmkA6sfzsx2ccbIzJiMsHX1n/wKxf+zgFCW8p9J7ov2+B8OGi8nB9zWtPrjt6
-         vOkuz5TCROSq5qBzY4zn3PemosER2jll/k6f7A6By1RoyjVA+QJsDrmiSmkCQL27R8
-         zs/5BCk53ntaO0AGU/yZVjXtQquQ+7FtDiep2AIo=
-Received: from DFLE100.ent.ti.com (dfle100.ent.ti.com [10.64.6.21])
-        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 235DFO0Y061587
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Tue, 5 Apr 2022 08:15:24 -0500
-Received: from DFLE102.ent.ti.com (10.64.6.23) by DFLE100.ent.ti.com
- (10.64.6.21) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Tue, 5
- Apr 2022 08:15:24 -0500
-Received: from lelv0327.itg.ti.com (10.180.67.183) by DFLE102.ent.ti.com
- (10.64.6.23) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
- Frontend Transport; Tue, 5 Apr 2022 08:15:24 -0500
-Received: from [10.250.100.73] (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 235DFGEe099167;
-        Tue, 5 Apr 2022 08:15:16 -0500
-Message-ID: <defe77d9-1a41-7112-0ef6-a12aa2b725ab@ti.com>
-Date:   Tue, 5 Apr 2022 16:15:05 +0300
+        Tue, 5 Apr 2022 06:35:16 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ADF144754B;
+        Tue,  5 Apr 2022 03:20:51 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5AAA2B81C6C;
+        Tue,  5 Apr 2022 10:20:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A95C7C385A0;
+        Tue,  5 Apr 2022 10:20:48 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649154049;
+        bh=XlP7HXLijpUCZrGFNfLtcGTa9+j9uamf9UHn+cZ05m4=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=Vp40FzOW1GDcU9Ph4+cfkDTbxSetWtiyodYHysHOA5pJMkul48DNbiw8mda+rELmh
+         hcknJY76EKRD5iUaBQHgu/U+xZx/t18o34pOQU5vQ/OtvT8nsSaldWjc6ZP7iHd4X7
+         QjcxogOL5ak2DimJ5OIkFLa3B4XfGePF06RGZPV4=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 438/599] net: enetc: report software timestamping via SO_TIMESTAMPING
+Date:   Tue,  5 Apr 2022 09:32:12 +0200
+Message-Id: <20220405070311.867236584@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
+References: <20220405070258.802373272@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH RFC V1 net-next 3/4] net: Let the active time stamping
- layer be selectable.
-Content-Language: en-US
-To:     Kurt Kanzenbach <kurt@linutronix.de>,
-        Michael Walle <michael@walle.cc>
-CC:     Andrew Lunn <andrew@lunn.ch>, <richardcochran@gmail.com>,
-        <davem@davemloft.net>, <kuba@kernel.org>,
-        <linux-kernel@vger.kernel.org>, <linux@armlinux.org.uk>,
-        <mlichvar@redhat.com>, <netdev@vger.kernel.org>,
-        <qiangqing.zhang@nxp.com>, <vladimir.oltean@nxp.com>
-References: <20220104014215.GA20062@hoboy.vegasvil.org>
- <20220404150508.3945833-1-michael@walle.cc> <YksMvHgXZxA+YZci@lunn.ch>
- <e5a6f6193b86388ed7a081939b8745be@walle.cc> <877d83rjjc.fsf@kurt>
- <ad4a8d3efbeaacf241a19bfbca5976f9@walle.cc> <87wng3pyjl.fsf@kurt>
-From:   Grygorii Strashko <grygorii.strashko@ti.com>
-In-Reply-To: <87wng3pyjl.fsf@kurt>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
+[ Upstream commit feb13dcb1818b775fbd9191f797be67cd605f03e ]
 
-On 05/04/2022 14:19, Kurt Kanzenbach wrote:
-> On Tue Apr 05 2022, Michael Walle wrote:
->> Am 2022-04-05 11:01, schrieb Kurt Kanzenbach:
->>> On Mon Apr 04 2022, Michael Walle wrote:
->>>> That would make sense. I guess what bothers me with the current
->>>> mechanism is that a feature addition to the PHY in the *future* (the
->>>> timestamping support) might break a board - or at least changes the
->>>> behavior by suddenly using PHY timestamping.
->>>
->>> Currently PHY timestamping is hidden behind a configuration option
->>> (NETWORK_PHY_TIMESTAMPING). By disabling this option the default
->>> behavior should stay at MAC timestamping even if additional features
->>> are added on top of the PHY drivers at later stages. Or not?
->>
->> That is correct. But a Kconfig option has several drawbacks:
->> (1) Doesn't work with boards where I might want PHY timestamping
->>       on *some* ports, thus I need to enable it and then stumple
->>       across the same problem.
->> (2) Doesn't work with generic distro support, which is what is
->>       ARM pushing right now with their SystemReady stuff (among other
->>       things also for embeddem system). Despite that, I have two boards
->>       which are already ready for booting debian out of the box for
->>       example. While I might convince Debian to enable that option
->>       (as I see it, that option is there to disable the additional
->>       overhead) it certainly won't be on a per board basis.
->>       Actually for keeping the MAC timestamping as is, you'd need to
->>       convince a distribution to never enable the PHY timestamping
->>       kconfig option.
->>
->> So yes, I agree it will work when you have control over your
->> kconfig options, after all (1) might be more academic. But I'm
->> really concerned about (2).
-> 
-> Yes, the limitations described above are exactly one of the reasons to
-> make the timestamping layer configurable at run time as done by these
-> patches.
+Let user space properly determine that the enetc driver provides
+software timestamps.
 
-Seems like PHY TS support belongs to HW description category, so could it be device tree material,
-like generic property defining which layer should do timestamping?
+Fixes: 4caefbce06d1 ("enetc: add software timestamping")
+Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+Reviewed-by: Claudiu Manoil <claudiu.manoil@nxp.com>
+Link: https://lore.kernel.org/r/20220324161210.4122281-1-vladimir.oltean@nxp.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/net/ethernet/freescale/enetc/enetc_ethtool.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
+diff --git a/drivers/net/ethernet/freescale/enetc/enetc_ethtool.c b/drivers/net/ethernet/freescale/enetc/enetc_ethtool.c
+index 9c1690f64a02..cf98a00296ed 100644
+--- a/drivers/net/ethernet/freescale/enetc/enetc_ethtool.c
++++ b/drivers/net/ethernet/freescale/enetc/enetc_ethtool.c
+@@ -651,7 +651,10 @@ static int enetc_get_ts_info(struct net_device *ndev,
+ #ifdef CONFIG_FSL_ENETC_PTP_CLOCK
+ 	info->so_timestamping = SOF_TIMESTAMPING_TX_HARDWARE |
+ 				SOF_TIMESTAMPING_RX_HARDWARE |
+-				SOF_TIMESTAMPING_RAW_HARDWARE;
++				SOF_TIMESTAMPING_RAW_HARDWARE |
++				SOF_TIMESTAMPING_TX_SOFTWARE |
++				SOF_TIMESTAMPING_RX_SOFTWARE |
++				SOF_TIMESTAMPING_SOFTWARE;
+ 
+ 	info->tx_types = (1 << HWTSTAMP_TX_OFF) |
+ 			 (1 << HWTSTAMP_TX_ON);
 -- 
-Best regards,
-Grygorii, Ukraine
+2.34.1
+
+
+
