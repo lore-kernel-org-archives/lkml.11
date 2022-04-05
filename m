@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D3A1C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:03:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C5539C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:03:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233112AbiDEIFM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 04:05:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55638 "EHLO
+        id S233169AbiDEIFY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 04:05:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54548 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232382AbiDEHxW (ORCPT
+        with ESMTP id S231984AbiDEHxV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 03:53:22 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 767DFC36;
-        Tue,  5 Apr 2022 00:48:54 -0700 (PDT)
+        Tue, 5 Apr 2022 03:53:21 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BF021D0FB;
+        Tue,  5 Apr 2022 00:49:04 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 76C07B81B18;
-        Tue,  5 Apr 2022 07:48:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D9585C340EE;
-        Tue,  5 Apr 2022 07:48:51 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8E2E9616DE;
+        Tue,  5 Apr 2022 07:49:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 96078C34111;
+        Tue,  5 Apr 2022 07:49:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649144932;
-        bh=eHC9hM/jmV7ih56Vke9QDbcNIvYXsGeLVS2lbiILUgg=;
+        s=korg; t=1649144943;
+        bh=cHlysSGxH3/ZHuRkBmnRpvSMKRf5BTYimY2JJA1trDs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=zG7S4YKBUxgc6sp0XIx7MwIcNtVtbiZg5XTMJIrOn4Z7GljaqR1Xfv+jKXmLS4hir
-         Or7DLWgC7NBa9/s+LT6vOJp4icSvBOc1OSH1mQY8uTj6DICCKDkkK5U0n7mVHR8W+1
-         kNpn2V3WeT5QggQBT/gsY0FYV/F3rT25lcYKHfh0=
+        b=u8JMfY3U/7rNHnDJ1PyQFdLP2AVwyf7sb21QlOXopsxG+bjAnOZp8msdzhk7HNQ8B
+         grvSpw3p+NKFC1DYo3C3J83AdXnTGAiGkqapLTfczmm2foMJkpIDwTe9r5fpomf3Q4
+         neSurkqKeQYlV+sSvrnieMtIsb8xeGJ5gVY7dfL4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Reinette Chatre <reinette.chatre@intel.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Shuah Khan <skhan@linuxfoundation.org>,
+        stable@vger.kernel.org, Richard Guy Briggs <rgb@redhat.com>,
+        Paul Moore <paul@paul-moore.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0216/1126] selftests/sgx: Fix NULL-pointer-dereference upon early test failure
-Date:   Tue,  5 Apr 2022 09:16:03 +0200
-Message-Id: <20220405070413.949749123@linuxfoundation.org>
+Subject: [PATCH 5.17 0228/1126] audit: log AUDIT_TIME_* records only from rules
+Date:   Tue,  5 Apr 2022 09:16:15 +0200
+Message-Id: <20220405070414.301196183@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -51,69 +49,165 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Reinette Chatre <reinette.chatre@intel.com>
+From: Richard Guy Briggs <rgb@redhat.com>
 
-[ Upstream commit 2d03861e0d1d1ee81efc59338101cdd86a7474f6 ]
+[ Upstream commit 272ceeaea355214b301530e262a0df8600bfca95 ]
 
-== Background ==
+AUDIT_TIME_* events are generated when there are syscall rules present
+that are not related to time keeping.  This will produce noisy log
+entries that could flood the logs and hide events we really care about.
 
-The SGX selftests track parts of the enclave binaries in an array:
-encl->segment_tbl[]. That array is dynamically allocated early
-(but not first) in the test's lifetime. The array is referenced
-at the end of the test in encl_delete().
+Rather than immediately produce the AUDIT_TIME_* records, store the data
+in the context and log it at syscall exit time respecting the filter
+rules.
 
-== Problem ==
+Note: This eats the audit_buffer, unlike any others in show_special().
 
-encl->segment_tbl[] can be NULL if the test fails before its
-allocation. That leads to a NULL-pointer-dereference in encl_delete().
-This is triggered during early failures of the selftest like if the
-enclave binary ("test_encl.elf") is deleted.
+Please see https://bugzilla.redhat.com/show_bug.cgi?id=1991919
 
-== Solution ==
-
-Ensure encl->segment_tbl[] is valid before attempting to access
-its members. The offset with which it is accessed, encl->nr_segments,
-is initialized before encl->segment_tbl[] and thus considered valid
-to use after the encl->segment_tbl[] check succeeds.
-
-Fixes: 3200505d4de6 ("selftests/sgx: Create a heap for the test enclave")
-Signed-off-by: Reinette Chatre <reinette.chatre@intel.com>
-Signed-off-by: Dave Hansen <dave.hansen@linux.intel.com>
-Acked-by: Shuah Khan <skhan@linuxfoundation.org>
-Link: https://lkml.kernel.org/r/90a31dfd640ea756fa324712e7cbab4a90fa7518.1644355600.git.reinette.chatre@intel.com
+Fixes: 7e8eda734d30 ("ntp: Audit NTP parameters adjustment")
+Fixes: 2d87a0674bd6 ("timekeeping: Audit clock adjustments")
+Signed-off-by: Richard Guy Briggs <rgb@redhat.com>
+[PM: fixed style/whitespace issues]
+Signed-off-by: Paul Moore <paul@paul-moore.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/testing/selftests/sgx/load.c | 9 +++++----
- 1 file changed, 5 insertions(+), 4 deletions(-)
+ kernel/audit.h   |  4 +++
+ kernel/auditsc.c | 87 +++++++++++++++++++++++++++++++++++++-----------
+ 2 files changed, 71 insertions(+), 20 deletions(-)
 
-diff --git a/tools/testing/selftests/sgx/load.c b/tools/testing/selftests/sgx/load.c
-index 9d4322c946e2..006b464c8fc9 100644
---- a/tools/testing/selftests/sgx/load.c
-+++ b/tools/testing/selftests/sgx/load.c
-@@ -21,7 +21,7 @@
- 
- void encl_delete(struct encl *encl)
- {
--	struct encl_segment *heap_seg = &encl->segment_tbl[encl->nr_segments - 1];
-+	struct encl_segment *heap_seg;
- 
- 	if (encl->encl_base)
- 		munmap((void *)encl->encl_base, encl->encl_size);
-@@ -32,10 +32,11 @@ void encl_delete(struct encl *encl)
- 	if (encl->fd)
- 		close(encl->fd);
- 
--	munmap(heap_seg->src, heap_seg->size);
--
--	if (encl->segment_tbl)
-+	if (encl->segment_tbl) {
-+		heap_seg = &encl->segment_tbl[encl->nr_segments - 1];
-+		munmap(heap_seg->src, heap_seg->size);
- 		free(encl->segment_tbl);
-+	}
- 
- 	memset(encl, 0, sizeof(*encl));
+diff --git a/kernel/audit.h b/kernel/audit.h
+index c4498090a5bd..58b66543b4d5 100644
+--- a/kernel/audit.h
++++ b/kernel/audit.h
+@@ -201,6 +201,10 @@ struct audit_context {
+ 		struct {
+ 			char			*name;
+ 		} module;
++		struct {
++			struct audit_ntp_data	ntp_data;
++			struct timespec64	tk_injoffset;
++		} time;
+ 	};
+ 	int fds[2];
+ 	struct audit_proctitle proctitle;
+diff --git a/kernel/auditsc.c b/kernel/auditsc.c
+index a83928cbdcb7..ea2ee1181921 100644
+--- a/kernel/auditsc.c
++++ b/kernel/auditsc.c
+@@ -1340,6 +1340,53 @@ static void audit_log_fcaps(struct audit_buffer *ab, struct audit_names *name)
+ 			 from_kuid(&init_user_ns, name->fcap.rootid));
  }
+ 
++static void audit_log_time(struct audit_context *context, struct audit_buffer **ab)
++{
++	const struct audit_ntp_data *ntp = &context->time.ntp_data;
++	const struct timespec64 *tk = &context->time.tk_injoffset;
++	static const char * const ntp_name[] = {
++		"offset",
++		"freq",
++		"status",
++		"tai",
++		"tick",
++		"adjust",
++	};
++	int type;
++
++	if (context->type == AUDIT_TIME_ADJNTPVAL) {
++		for (type = 0; type < AUDIT_NTP_NVALS; type++) {
++			if (ntp->vals[type].newval != ntp->vals[type].oldval) {
++				if (!*ab) {
++					*ab = audit_log_start(context,
++							GFP_KERNEL,
++							AUDIT_TIME_ADJNTPVAL);
++					if (!*ab)
++						return;
++				}
++				audit_log_format(*ab, "op=%s old=%lli new=%lli",
++						 ntp_name[type],
++						 ntp->vals[type].oldval,
++						 ntp->vals[type].newval);
++				audit_log_end(*ab);
++				*ab = NULL;
++			}
++		}
++	}
++	if (tk->tv_sec != 0 || tk->tv_nsec != 0) {
++		if (!*ab) {
++			*ab = audit_log_start(context, GFP_KERNEL,
++					      AUDIT_TIME_INJOFFSET);
++			if (!*ab)
++				return;
++		}
++		audit_log_format(*ab, "sec=%lli nsec=%li",
++				 (long long)tk->tv_sec, tk->tv_nsec);
++		audit_log_end(*ab);
++		*ab = NULL;
++	}
++}
++
+ static void show_special(struct audit_context *context, int *call_panic)
+ {
+ 	struct audit_buffer *ab;
+@@ -1454,6 +1501,11 @@ static void show_special(struct audit_context *context, int *call_panic)
+ 			audit_log_format(ab, "(null)");
+ 
+ 		break;
++	case AUDIT_TIME_ADJNTPVAL:
++	case AUDIT_TIME_INJOFFSET:
++		/* this call deviates from the rest, eating the buffer */
++		audit_log_time(context, &ab);
++		break;
+ 	}
+ 	audit_log_end(ab);
+ }
+@@ -2849,31 +2901,26 @@ void __audit_fanotify(unsigned int response)
+ 
+ void __audit_tk_injoffset(struct timespec64 offset)
+ {
+-	audit_log(audit_context(), GFP_KERNEL, AUDIT_TIME_INJOFFSET,
+-		  "sec=%lli nsec=%li",
+-		  (long long)offset.tv_sec, offset.tv_nsec);
+-}
+-
+-static void audit_log_ntp_val(const struct audit_ntp_data *ad,
+-			      const char *op, enum audit_ntp_type type)
+-{
+-	const struct audit_ntp_val *val = &ad->vals[type];
+-
+-	if (val->newval == val->oldval)
+-		return;
++	struct audit_context *context = audit_context();
+ 
+-	audit_log(audit_context(), GFP_KERNEL, AUDIT_TIME_ADJNTPVAL,
+-		  "op=%s old=%lli new=%lli", op, val->oldval, val->newval);
++	/* only set type if not already set by NTP */
++	if (!context->type)
++		context->type = AUDIT_TIME_INJOFFSET;
++	memcpy(&context->time.tk_injoffset, &offset, sizeof(offset));
+ }
+ 
+ void __audit_ntp_log(const struct audit_ntp_data *ad)
+ {
+-	audit_log_ntp_val(ad, "offset",	AUDIT_NTP_OFFSET);
+-	audit_log_ntp_val(ad, "freq",	AUDIT_NTP_FREQ);
+-	audit_log_ntp_val(ad, "status",	AUDIT_NTP_STATUS);
+-	audit_log_ntp_val(ad, "tai",	AUDIT_NTP_TAI);
+-	audit_log_ntp_val(ad, "tick",	AUDIT_NTP_TICK);
+-	audit_log_ntp_val(ad, "adjust",	AUDIT_NTP_ADJUST);
++	struct audit_context *context = audit_context();
++	int type;
++
++	for (type = 0; type < AUDIT_NTP_NVALS; type++)
++		if (ad->vals[type].newval != ad->vals[type].oldval) {
++			/* unconditionally set type, overwriting TK */
++			context->type = AUDIT_TIME_ADJNTPVAL;
++			memcpy(&context->time.ntp_data, ad, sizeof(*ad));
++			break;
++		}
+ }
+ 
+ void __audit_log_nfcfg(const char *name, u8 af, unsigned int nentries,
 -- 
 2.34.1
 
