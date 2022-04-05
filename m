@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EC57DC43217
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:35:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 17815C4167B
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:35:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384644AbiDEM1u (ORCPT
+        id S1384897AbiDEM2L (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 08:27:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58136 "EHLO
+        Tue, 5 Apr 2022 08:28:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33136 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245208AbiDEIyN (ORCPT
+        with ESMTP id S245661AbiDEI4q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:54:13 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12C315FB5;
-        Tue,  5 Apr 2022 01:52:06 -0700 (PDT)
+        Tue, 5 Apr 2022 04:56:46 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C378113D1C;
+        Tue,  5 Apr 2022 01:52:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A79D8B81BC0;
-        Tue,  5 Apr 2022 08:52:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E4CB8C385A1;
-        Tue,  5 Apr 2022 08:52:02 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0C2D761511;
+        Tue,  5 Apr 2022 08:52:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1D80FC385A0;
+        Tue,  5 Apr 2022 08:52:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649148723;
-        bh=ZpYxQzMbWq9VFdzbyTTC+uP5ynNLub8AhNQdYd8W74o=;
+        s=korg; t=1649148748;
+        bh=hK8FHhsYT2+byT0t0KwNPnJY44RdRl84eOg4/ueCyuc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Zx+bAoK7wfYOQNaWmj1B9YdS044gGFrP6V4hUkxo06CfTDUg8DhPadwPvcur16h3c
-         svAA574J0Bot3s0l7csdx115TED66Pr8ghYmK02cczmtwTMNoB504O7Fwp2ZQREHDF
-         QovkXVB0nSpNvtJNCkYV7EFNuUGuC/M0T7h5VrpQ=
+        b=Wzd38Atm775WFOZgkrlwxbpqtP6Hh35V5BAid8x8oBrvBLLnraqJQnACj/FQ+waEB
+         Bvj4+q2ZBL7uxRSKSl2OoxJ9eRTL3V1UjfKCaPJSVIbmVmqK8twWyQC7JaU07kBJzc
+         +ZF2pTlW/V3QV16qzzqUl2uQcf/fvug4tZR8NM+c=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Lorenzo Bianconi <lorenzo@kernel.org>,
-        Felix Fietkau <nbd@nbd.name>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0457/1017] mt76: mt7921: fix a leftover race in runtime-pm
-Date:   Tue,  5 Apr 2022 09:22:50 +0200
-Message-Id: <20220405070407.864554065@linuxfoundation.org>
+        stable@vger.kernel.org, Tom Rix <trix@redhat.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 0430/1017] drm/amd/pm: return -ENOTSUPP if there is no get_dpm_ultimate_freq function
+Date:   Tue,  5 Apr 2022 09:22:23 +0200
+Message-Id: <20220405070407.058356730@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -49,41 +50,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lorenzo Bianconi <lorenzo@kernel.org>
+From: Tom Rix <trix@redhat.com>
 
-[ Upstream commit 591cdccebdd4d02eb46d400dea911136400cc567 ]
+[ Upstream commit 430e6a0212b2a0eb1de5e9d47a016fa79edf3978 ]
 
-Fix a possible race in mt7921_pm_power_save_work() if rx/tx napi
-schedules ps_work and we are currently accessing device register
-on a different cpu.
+clang static analysis reports this represenative problem
+amdgpu_smu.c:144:18: warning: The left operand of '*' is a garbage value
+        return clk_freq * 100;
+               ~~~~~~~~ ^
 
-Fixes: 1d8efc741df8 ("mt76: mt7921: introduce Runtime PM support")
-Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
-Signed-off-by: Felix Fietkau <nbd@nbd.name>
+If there is no get_dpm_ultimate_freq function,
+smu_get_dpm_freq_range returns success without setting the
+output min,max parameters.  So return an -ENOTSUPP error.
+
+Fixes: e5ef784b1e17 ("drm/amd/powerplay: revise calling chain on retrieving frequency range")
+Signed-off-by: Tom Rix <trix@redhat.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/mediatek/mt76/mt7921/mac.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
+ drivers/gpu/drm/amd/pm/swsmu/amdgpu_smu.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/wireless/mediatek/mt76/mt7921/mac.c b/drivers/net/wireless/mediatek/mt76/mt7921/mac.c
-index fc21a78b37c4..1fea9266d4b8 100644
---- a/drivers/net/wireless/mediatek/mt76/mt7921/mac.c
-+++ b/drivers/net/wireless/mediatek/mt76/mt7921/mac.c
-@@ -1472,6 +1472,14 @@ void mt7921_pm_power_save_work(struct work_struct *work)
- 	    test_bit(MT76_HW_SCHED_SCANNING, &mphy->state))
- 		goto out;
+diff --git a/drivers/gpu/drm/amd/pm/swsmu/amdgpu_smu.c b/drivers/gpu/drm/amd/pm/swsmu/amdgpu_smu.c
+index 9d7d64fdf410..9b54c1b89ea4 100644
+--- a/drivers/gpu/drm/amd/pm/swsmu/amdgpu_smu.c
++++ b/drivers/gpu/drm/amd/pm/swsmu/amdgpu_smu.c
+@@ -138,7 +138,7 @@ int smu_get_dpm_freq_range(struct smu_context *smu,
+ 			   uint32_t *min,
+ 			   uint32_t *max)
+ {
+-	int ret = 0;
++	int ret = -ENOTSUPP;
  
-+	if (mutex_is_locked(&dev->mt76.mutex))
-+		/* if mt76 mutex is held we should not put the device
-+		 * to sleep since we are currently accessing device
-+		 * register map. We need to wait for the next power_save
-+		 * trigger.
-+		 */
-+		goto out;
-+
- 	if (time_is_after_jiffies(dev->pm.last_activity + delta)) {
- 		delta = dev->pm.last_activity + delta - jiffies;
- 		goto out;
+ 	if (!min && !max)
+ 		return -EINVAL;
 -- 
 2.34.1
 
