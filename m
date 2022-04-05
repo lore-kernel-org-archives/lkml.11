@@ -2,189 +2,139 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 33D7AC4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 23FD9C433F5
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:22:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1587231AbiDFAIM (ORCPT
+        id S1587207AbiDFAIJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 20:08:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58500 "EHLO
+        Tue, 5 Apr 2022 20:08:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54860 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358166AbiDEK2D (ORCPT
+        with ESMTP id S1573261AbiDEShI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:28:03 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEA9D9D4FE;
-        Tue,  5 Apr 2022 03:16:08 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7A6A461777;
-        Tue,  5 Apr 2022 10:16:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8CBABC385A0;
-        Tue,  5 Apr 2022 10:16:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649153767;
-        bh=zZEuxgGk8rvxo6si7nkjBxxalp/3KomTIUr2lNv5mmk=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=btXYDWlqLgHlOEqR5CF2qZEUFZiywBT6vWZRzZIi9C2cEEgGdaLSt66fyVV2Fg7YL
-         OsBf3kQKwzEBU1grvGIdzT9sJm1c3IkxNP4Bqx2olw5RVe/xaDGnrJdQuxQuAOvYXL
-         aqFNYTOAH8rkYYIEFp+tGsyabfJfCus3m1H6BUew=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Robert Hancock <robert.hancock@calian.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 341/599] net: axienet: fix RX ring refill allocation failure handling
-Date:   Tue,  5 Apr 2022 09:30:35 +0200
-Message-Id: <20220405070308.981244679@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
-User-Agent: quilt/0.66
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+        Tue, 5 Apr 2022 14:37:08 -0400
+Received: from mail-pg1-x54a.google.com (mail-pg1-x54a.google.com [IPv6:2607:f8b0:4864:20::54a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFE8B167E3
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 11:35:09 -0700 (PDT)
+Received: by mail-pg1-x54a.google.com with SMTP id p9-20020a63f449000000b0035ec8c16f0bso58519pgk.11
+        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 11:35:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=K74uTYo0p50+68Eav5hPTlnLwyyYs0SvA0+aQKwvrcM=;
+        b=KQEqtHlUIrCMPDEZNKiPS9MvgfELfDBKde+wsTIq1ryHFf4ypzTaT5ALjkqm0JVA/K
+         97yK54GjAMf/hbNvHEfcLoErQsv6rPoLKHy2OA9GpDLManJ08OL6cBliH1pE8PSbtm7x
+         Egplaa+kzgODwKtSCsT31nZ0UmtGrh8hUA9msDIyH4k5N+aHpal+4rr8KrD7SYUpXE3m
+         nBRZDzeYOKQosGLkqviomA/pOiSPf+ru1BtqjlgFBULpSQyd2phEdgIk9HV/Y5NxCLe8
+         iqooldC/WoJSZZ1Savcf5GCUvvf+FBFSipfwHPk+DR5bRvXG/cGwBk20mzlgOlgGncf3
+         D7Mw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=K74uTYo0p50+68Eav5hPTlnLwyyYs0SvA0+aQKwvrcM=;
+        b=eyHsI5p2G9koB164nx4oA1WN2qVz1gCJY3L6vPRx8n70/1SLrIjzxa+8a3HpjrgUzq
+         03p9sG9n1TWgo2qkwJhxlue3vezNzlA1pNBR6KGScV9DhFEn7AFg8ccI9YXl+vKIrZXL
+         r6XzcPddhtMBnA3sZvxaALIb6HEQj0mOjv53gLeUdov325kbQTHElENV+tgbA/3XTEXm
+         v0mevYBkJyrC+iyQWqoqJXLmVuh7+iojRZC/1mzwoACV3eRuQv9q0yrm1z/KUDYNoDdl
+         mIaM++WSHZnsmVSwkVSU2A/Rv6WcyPl848J07iNF9/pDjE1ILfz1JHkR4O9SfNqE5fV9
+         /llQ==
+X-Gm-Message-State: AOAM530xuYj0Kvs9MkEAyhCBlDvrs1k1vfQVNM+TPNEcO4h3X7TYdEyo
+        Grmj3KuhlLdmzecxB8ioBg5jlEsX7oQ=
+X-Google-Smtp-Source: ABdhPJwWLVGLr/vHL4lq1ATs4OZuBgElqxvfAYIpOrbOfXGyZoR0O+W+IABkWZEAFyqxM0aqFqnkdt8jf2k=
+X-Received: from pgonda1.kir.corp.google.com ([2620:15c:29:203:9f5c:353e:771c:7686])
+ (user=pgonda job=sendgmr) by 2002:a17:902:e545:b0:154:4d5b:2006 with SMTP id
+ n5-20020a170902e54500b001544d5b2006mr4889343plf.94.1649183709169; Tue, 05 Apr
+ 2022 11:35:09 -0700 (PDT)
+Date:   Tue,  5 Apr 2022 11:35:06 -0700
+Message-Id: <20220405183506.2138403-1-pgonda@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.35.1.1094.g7c7d902a7c-goog
+Subject: [PATCH V4] KVM, SEV: Add KVM_EXIT_SYSTEM_EVENT metadata for SEV-ES
+From:   Peter Gonda <pgonda@google.com>
+To:     kvm@vger.kernel.org
+Cc:     Peter Gonda <pgonda@google.com>,
+        Sean Christopherson <seanjc@google.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Borislav Petkov <bp@alien8.de>,
+        Tom Lendacky <thomas.lendacky@amd.com>,
+        Brijesh Singh <brijesh.singh@amd.com>,
+        Joerg Roedel <jroedel@suse.de>, Marc Orr <marcorr@google.com>,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Robert Hancock <robert.hancock@calian.com>
+SEV-ES guests can request termination using the GHCB's MSR protocol. See
+AMD's GHCB spec section '4.1.13 Termination Request'. Currently when a
+guest does this the userspace VMM sees an KVM_EXIT_UNKNOWN (-EVINAL)
+return code from KVM_RUN. By adding a KVM_EXIT_SYSTEM_EVENT to kvm_run
+struct the userspace VMM can clearly see the guest has requested a SEV-ES
+termination including the termination reason code set and reason code.
 
-[ Upstream commit 7a7d340ba4d9351e4c8847b898a2b996727a922a ]
+Signed-off-by: Peter Gonda <pgonda@google.com>
+Suggested-by: Sean Christopherson <seanjc@google.com>
+Cc: Vitaly Kuznetsov <vkuznets@redhat.com>
+Cc: Borislav Petkov <bp@alien8.de>
+Cc: Tom Lendacky <thomas.lendacky@amd.com>
+Cc: Brijesh Singh <brijesh.singh@amd.com>
+Cc: Joerg Roedel <jroedel@suse.de>
+Cc: Marc Orr <marcorr@google.com>
+Cc: kvm@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
 
-If a memory allocation error occurred during an attempt to refill a slot
-in the RX ring after the packet was received, the hardware tail pointer
-would still have been updated to point to or past the slot which remained
-marked as previously completed. This would likely result in the DMA engine
-raising an error when it eventually tried to use that slot again.
-
-If a slot cannot be refilled, then just stop processing and do not move
-the tail pointer past it. On the next attempt, we should skip receiving
-the packet from the empty slot and just try to refill it again.
-
-This failure mode has not actually been observed, but was found as part
-of other driver updates.
-
-Fixes: 8a3b7a252dca ("drivers/net/ethernet/xilinx: added Xilinx AXI Ethernet driver")
-Signed-off-by: Robert Hancock <robert.hancock@calian.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../net/ethernet/xilinx/xilinx_axienet_main.c | 72 +++++++++++--------
- 1 file changed, 42 insertions(+), 30 deletions(-)
 
-diff --git a/drivers/net/ethernet/xilinx/xilinx_axienet_main.c b/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
-index 0baf85122f5a..bbdcba88c021 100644
---- a/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
-+++ b/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
-@@ -857,46 +857,53 @@ static void axienet_recv(struct net_device *ndev)
- 	while ((cur_p->status & XAXIDMA_BD_STS_COMPLETE_MASK)) {
- 		dma_addr_t phys;
+V4
+ * Switch to using KVM_SYSTEM_EVENT exit reason.
+
+V3
+ * Add Documentation/ update.
+ * Updated other KVM_EXIT_SHUTDOWN exits to clear ndata and set reason
+   to KVM_SHUTDOWN_REQ.
+
+V2
+ * Add KVM_CAP_EXIT_SHUTDOWN_REASON check for KVM_CHECK_EXTENSION.
+
+Tested by making an SEV-ES guest call sev_es_terminate() with hardcoded
+reason code set and reason code and then observing the codes from the
+userspace VMM in the kvm_run.system_event fields.
+
+---
+ arch/x86/kvm/svm/sev.c   | 7 +++++--
+ include/uapi/linux/kvm.h | 1 +
+ 2 files changed, 6 insertions(+), 2 deletions(-)
+
+diff --git a/arch/x86/kvm/svm/sev.c b/arch/x86/kvm/svm/sev.c
+index 75fa6dd268f0..039b241a9fb5 100644
+--- a/arch/x86/kvm/svm/sev.c
++++ b/arch/x86/kvm/svm/sev.c
+@@ -2735,8 +2735,11 @@ static int sev_handle_vmgexit_msr_protocol(struct vcpu_svm *svm)
+ 		pr_info("SEV-ES guest requested termination: %#llx:%#llx\n",
+ 			reason_set, reason_code);
  
--		tail_p = lp->rx_bd_p + sizeof(*lp->rx_bd_v) * lp->rx_bd_ci;
--
- 		/* Ensure we see complete descriptor update */
- 		dma_rmb();
--		phys = desc_get_phys_addr(lp, cur_p);
--		dma_unmap_single(ndev->dev.parent, phys, lp->max_frm_size,
--				 DMA_FROM_DEVICE);
- 
- 		skb = cur_p->skb;
- 		cur_p->skb = NULL;
--		length = cur_p->app4 & 0x0000FFFF;
--
--		skb_put(skb, length);
--		skb->protocol = eth_type_trans(skb, ndev);
--		/*skb_checksum_none_assert(skb);*/
--		skb->ip_summed = CHECKSUM_NONE;
--
--		/* if we're doing Rx csum offload, set it up */
--		if (lp->features & XAE_FEATURE_FULL_RX_CSUM) {
--			csumstatus = (cur_p->app2 &
--				      XAE_FULL_CSUM_STATUS_MASK) >> 3;
--			if ((csumstatus == XAE_IP_TCP_CSUM_VALIDATED) ||
--			    (csumstatus == XAE_IP_UDP_CSUM_VALIDATED)) {
--				skb->ip_summed = CHECKSUM_UNNECESSARY;
+-		ret = -EINVAL;
+-		break;
++		vcpu->run->exit_reason = KVM_EXIT_SHUTDOWN;
++		vcpu->run->system_event.type = KVM_SYSTEM_EVENT_SEV_TERM;
++		vcpu->run->system_event.flags = control->ghcb_gpa;
 +
-+		/* skb could be NULL if a previous pass already received the
-+		 * packet for this slot in the ring, but failed to refill it
-+		 * with a newly allocated buffer. In this case, don't try to
-+		 * receive it again.
-+		 */
-+		if (likely(skb)) {
-+			length = cur_p->app4 & 0x0000FFFF;
-+
-+			phys = desc_get_phys_addr(lp, cur_p);
-+			dma_unmap_single(ndev->dev.parent, phys, lp->max_frm_size,
-+					 DMA_FROM_DEVICE);
-+
-+			skb_put(skb, length);
-+			skb->protocol = eth_type_trans(skb, ndev);
-+			/*skb_checksum_none_assert(skb);*/
-+			skb->ip_summed = CHECKSUM_NONE;
-+
-+			/* if we're doing Rx csum offload, set it up */
-+			if (lp->features & XAE_FEATURE_FULL_RX_CSUM) {
-+				csumstatus = (cur_p->app2 &
-+					      XAE_FULL_CSUM_STATUS_MASK) >> 3;
-+				if (csumstatus == XAE_IP_TCP_CSUM_VALIDATED ||
-+				    csumstatus == XAE_IP_UDP_CSUM_VALIDATED) {
-+					skb->ip_summed = CHECKSUM_UNNECESSARY;
-+				}
-+			} else if ((lp->features & XAE_FEATURE_PARTIAL_RX_CSUM) != 0 &&
-+				   skb->protocol == htons(ETH_P_IP) &&
-+				   skb->len > 64) {
-+				skb->csum = be32_to_cpu(cur_p->app3 & 0xFFFF);
-+				skb->ip_summed = CHECKSUM_COMPLETE;
- 			}
--		} else if ((lp->features & XAE_FEATURE_PARTIAL_RX_CSUM) != 0 &&
--			   skb->protocol == htons(ETH_P_IP) &&
--			   skb->len > 64) {
--			skb->csum = be32_to_cpu(cur_p->app3 & 0xFFFF);
--			skb->ip_summed = CHECKSUM_COMPLETE;
--		}
- 
--		netif_rx(skb);
-+			netif_rx(skb);
- 
--		size += length;
--		packets++;
-+			size += length;
-+			packets++;
-+		}
- 
- 		new_skb = netdev_alloc_skb_ip_align(ndev, lp->max_frm_size);
- 		if (!new_skb)
--			return;
-+			break;
- 
- 		phys = dma_map_single(ndev->dev.parent, new_skb->data,
- 				      lp->max_frm_size,
-@@ -905,7 +912,7 @@ static void axienet_recv(struct net_device *ndev)
- 			if (net_ratelimit())
- 				netdev_err(ndev, "RX DMA mapping error\n");
- 			dev_kfree_skb(new_skb);
--			return;
-+			break;
- 		}
- 		desc_set_phys_addr(lp, phys, cur_p);
- 
-@@ -913,6 +920,11 @@ static void axienet_recv(struct net_device *ndev)
- 		cur_p->status = 0;
- 		cur_p->skb = new_skb;
- 
-+		/* Only update tail_p to mark this slot as usable after it has
-+		 * been successfully refilled.
-+		 */
-+		tail_p = lp->rx_bd_p + sizeof(*lp->rx_bd_v) * lp->rx_bd_ci;
-+
- 		if (++lp->rx_bd_ci >= lp->rx_bd_num)
- 			lp->rx_bd_ci = 0;
- 		cur_p = &lp->rx_bd_v[lp->rx_bd_ci];
++		return 0;
+ 	}
+ 	default:
+ 		/* Error, keep GHCB MSR value as-is */
+diff --git a/include/uapi/linux/kvm.h b/include/uapi/linux/kvm.h
+index 8616af85dc5d..d9d24db12930 100644
+--- a/include/uapi/linux/kvm.h
++++ b/include/uapi/linux/kvm.h
+@@ -444,6 +444,7 @@ struct kvm_run {
+ #define KVM_SYSTEM_EVENT_SHUTDOWN       1
+ #define KVM_SYSTEM_EVENT_RESET          2
+ #define KVM_SYSTEM_EVENT_CRASH          3
++#define KVM_SYSTEM_EVENT_SEV_TERM       4
+ 			__u32 type;
+ 			__u64 flags;
+ 		} system_event;
 -- 
-2.34.1
-
-
+2.35.1.1094.g7c7d902a7c-goog
 
