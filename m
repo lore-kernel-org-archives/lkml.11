@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 36DCCC43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4747DC4167D
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 13:41:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1390289AbiDENiA (ORCPT
+        id S1390338AbiDENiM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 09:38:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44272 "EHLO
+        Tue, 5 Apr 2022 09:38:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44250 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344190AbiDEJSh (ORCPT
+        with ESMTP id S1344185AbiDEJSg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:18:37 -0400
+        Tue, 5 Apr 2022 05:18:36 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B0D5673FC;
-        Tue,  5 Apr 2022 02:05:12 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3EAA463BF0;
+        Tue,  5 Apr 2022 02:05:01 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id AF38D614E4;
-        Tue,  5 Apr 2022 09:05:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BFA18C385A0;
-        Tue,  5 Apr 2022 09:05:10 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D38CE61003;
+        Tue,  5 Apr 2022 09:05:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E3865C385A1;
+        Tue,  5 Apr 2022 09:04:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649149511;
-        bh=eUsgjC8EUy7Jhy7bQB65UsbKAQIwSW3Ze00Fs+nIr/o=;
+        s=korg; t=1649149500;
+        bh=jtts4EIn3bSlWLtcuwwlFHqNizJ20ULSnxSDmVAhUVo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=c8LHuhjBHxmwpxdOyq/Fcc+UJ/0TZs6EUptSSN67bNGnE/kk5ztPJQ5xJfxa6ch1O
-         K6zYxGNltm5LxuOyz+b1fV+uDCwt/Sfqs1X830S8uqL56TO7UwX+uH3AGrqIVWa084
-         SiIKQhCcSnr+MOrmFxIDnVbOKF5L8N+OHLwH80Lw=
+        b=g4SJN6ShgVsRLQRTIRsdgUej+KRymIPmVB+9EKZJvhpCaV16KAsqvgZ4Jb0pRHPRl
+         8neGCwSa2qW/ydzUxaJ6CzBViKRPJYl1BUVWlM536cz9zhnmHelX+ZF/ilFZLDDTRA
+         ZyZ2chiZ1AEC4JjsDLNQjU320fwUw6mT5Ka215TI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, NeilBrown <neilb@suse.de>,
-        Trond Myklebust <trond.myklebust@hammerspace.com>,
-        Sasha Levin <sashal@kernel.org>,
-        Chuck Lever <chuck.lever@oracle.com>
-Subject: [PATCH 5.16 0714/1017] SUNRPC: improve swap handling: scheduling and PF_MEMALLOC
-Date:   Tue,  5 Apr 2022 09:27:07 +0200
-Message-Id: <20220405070415.463278689@linuxfoundation.org>
+        stable@vger.kernel.org, Peng Li <lipeng321@huawei.com>,
+        Guangbin Huang <huangguangbin2@huawei.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 0737/1017] net: hns3: clean residual vf config after disable sriov
+Date:   Tue,  5 Apr 2022 09:27:30 +0200
+Message-Id: <20220405070416.141856233@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -51,236 +51,151 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: NeilBrown <neilb@suse.de>
+From: Peng Li <lipeng321@huawei.com>
 
-[ Upstream commit 8db55a032ac7ac1ed7b98d6b1dc980e6378c652f ]
+[ Upstream commit 671cb8cbb9c9e24b681d21b1bfae991e2386ac73 ]
 
-rpc tasks can be marked as RPC_TASK_SWAPPER.  This causes GFP_MEMALLOC
-to be used for some allocations.  This is needed in some cases, but not
-in all where it is currently provided, and in some where it isn't
-provided.
+After disable sriov, VF still has some config and info need to be
+cleaned, which configured by PF. This patch clean the HW config
+and SW struct vport->vf_info.
 
-Currently *all* tasks associated with a rpc_client on which swap is
-enabled get the flag and hence some GFP_MEMALLOC support.
-
-GFP_MEMALLOC is provided for ->buf_alloc() but only swap-writes need it.
-However xdr_alloc_bvec does not get GFP_MEMALLOC - though it often does
-need it.
-
-xdr_alloc_bvec is called while the XPRT_LOCK is held.  If this blocks,
-then it blocks all other queued tasks.  So this allocation needs
-GFP_MEMALLOC for *all* requests, not just writes, when the xprt is used
-for any swap writes.
-
-Similarly, if the transport is not connected, that will block all
-requests including swap writes, so memory allocations should get
-GFP_MEMALLOC if swap writes are possible.
-
-So with this patch:
- 1/ we ONLY set RPC_TASK_SWAPPER for swap writes.
- 2/ __rpc_execute() sets PF_MEMALLOC while handling any task
-    with RPC_TASK_SWAPPER set, or when handling any task that
-    holds the XPRT_LOCKED lock on an xprt used for swap.
-    This removes the need for the RPC_IS_SWAPPER() test
-    in ->buf_alloc handlers.
- 3/ xprt_prepare_transmit() sets PF_MEMALLOC after locking
-    any task to a swapper xprt.  __rpc_execute() will clear it.
- 3/ PF_MEMALLOC is set for all the connect workers.
-
-Reviewed-by: Chuck Lever <chuck.lever@oracle.com> (for xprtrdma parts)
-Signed-off-by: NeilBrown <neilb@suse.de>
-Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
+Fixes: fa8d82e853e8 ("net: hns3: Add support of .sriov_configure in HNS3 driver")
+Signed-off-by: Peng Li<lipeng321@huawei.com>
+Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/nfs/write.c                  |  2 ++
- net/sunrpc/clnt.c               |  2 --
- net/sunrpc/sched.c              | 20 +++++++++++++++++---
- net/sunrpc/xprt.c               |  3 +++
- net/sunrpc/xprtrdma/transport.c |  6 ++++--
- net/sunrpc/xprtsock.c           |  8 ++++++++
- 6 files changed, 34 insertions(+), 7 deletions(-)
+ drivers/net/ethernet/hisilicon/hns3/hnae3.h   |  3 ++
+ .../net/ethernet/hisilicon/hns3/hns3_enet.c   | 18 +++++++
+ .../hisilicon/hns3/hns3pf/hclge_main.c        | 50 +++++++++++++++++++
+ 3 files changed, 71 insertions(+)
 
-diff --git a/fs/nfs/write.c b/fs/nfs/write.c
-index 7a23b4644507..e86aff429993 100644
---- a/fs/nfs/write.c
-+++ b/fs/nfs/write.c
-@@ -1411,6 +1411,8 @@ static void nfs_initiate_write(struct nfs_pgio_header *hdr,
- {
- 	int priority = flush_task_priority(how);
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hnae3.h b/drivers/net/ethernet/hisilicon/hns3/hnae3.h
+index 9298fbecb31a..adea528d79ad 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hnae3.h
++++ b/drivers/net/ethernet/hisilicon/hns3/hnae3.h
+@@ -536,6 +536,8 @@ struct hnae3_ae_dev {
+  *   Get 1588 rx hwstamp
+  * get_ts_info
+  *   Get phc info
++ * clean_vf_config
++ *   Clean residual vf info after disable sriov
+  */
+ struct hnae3_ae_ops {
+ 	int (*init_ae_dev)(struct hnae3_ae_dev *ae_dev);
+@@ -729,6 +731,7 @@ struct hnae3_ae_ops {
+ 			   struct ethtool_ts_info *info);
+ 	int (*get_link_diagnosis_info)(struct hnae3_handle *handle,
+ 				       u32 *status_code);
++	void (*clean_vf_config)(struct hnae3_ae_dev *ae_dev, int num_vfs);
+ };
  
-+	if (IS_SWAPFILE(hdr->inode))
-+		task_setup_data->flags |= RPC_TASK_SWAPPER;
- 	task_setup_data->priority = priority;
- 	rpc_ops->write_setup(hdr, msg, &task_setup_data->rpc_client);
- 	trace_nfs_initiate_write(hdr);
-diff --git a/net/sunrpc/clnt.c b/net/sunrpc/clnt.c
-index c83fe618767c..5985b78eddf1 100644
---- a/net/sunrpc/clnt.c
-+++ b/net/sunrpc/clnt.c
-@@ -1085,8 +1085,6 @@ void rpc_task_set_client(struct rpc_task *task, struct rpc_clnt *clnt)
- 		task->tk_flags |= RPC_TASK_TIMEOUT;
- 	if (clnt->cl_noretranstimeo)
- 		task->tk_flags |= RPC_TASK_NO_RETRANS_TIMEOUT;
--	if (atomic_read(&clnt->cl_swapper))
--		task->tk_flags |= RPC_TASK_SWAPPER;
- 	/* Add to the client's list of all tasks */
- 	spin_lock(&clnt->cl_lock);
- 	list_add_tail(&task->tk_task, &clnt->cl_tasks);
-diff --git a/net/sunrpc/sched.c b/net/sunrpc/sched.c
-index d5b6e897f5a5..ae295844ac55 100644
---- a/net/sunrpc/sched.c
-+++ b/net/sunrpc/sched.c
-@@ -876,6 +876,15 @@ void rpc_release_calldata(const struct rpc_call_ops *ops, void *calldata)
- 		ops->rpc_release(calldata);
+ struct hnae3_dcb_ops {
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
+index 8303863774ff..ef75223b0b55 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
+@@ -2954,6 +2954,21 @@ static int hns3_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 	return ret;
  }
  
-+static bool xprt_needs_memalloc(struct rpc_xprt *xprt, struct rpc_task *tk)
++/**
++ * hns3_clean_vf_config
++ * @pdev: pointer to a pci_dev structure
++ * @num_vfs: number of VFs allocated
++ *
++ * Clean residual vf config after disable sriov
++ **/
++static void hns3_clean_vf_config(struct pci_dev *pdev, int num_vfs)
 +{
-+	if (!xprt)
-+		return false;
-+	if (!atomic_read(&xprt->swapper))
-+		return false;
-+	return test_bit(XPRT_LOCKED, &xprt->state) && xprt->snd_task == tk;
++	struct hnae3_ae_dev *ae_dev = pci_get_drvdata(pdev);
++
++	if (ae_dev->ops->clean_vf_config)
++		ae_dev->ops->clean_vf_config(ae_dev, num_vfs);
 +}
 +
- /*
-  * This is the RPC `scheduler' (or rather, the finite state machine).
+ /* hns3_remove - Device removal routine
+  * @pdev: PCI device information struct
   */
-@@ -884,6 +893,7 @@ static void __rpc_execute(struct rpc_task *task)
- 	struct rpc_wait_queue *queue;
- 	int task_is_async = RPC_IS_ASYNC(task);
- 	int status = 0;
-+	unsigned long pflags = current->flags;
- 
- 	WARN_ON_ONCE(RPC_IS_QUEUED(task));
- 	if (RPC_IS_QUEUED(task))
-@@ -906,6 +916,10 @@ static void __rpc_execute(struct rpc_task *task)
- 		}
- 		if (!do_action)
- 			break;
-+		if (RPC_IS_SWAPPER(task) ||
-+		    xprt_needs_memalloc(task->tk_xprt, task))
-+			current->flags |= PF_MEMALLOC;
+@@ -2992,7 +3007,10 @@ static int hns3_pci_sriov_configure(struct pci_dev *pdev, int num_vfs)
+ 		else
+ 			return num_vfs;
+ 	} else if (!pci_vfs_assigned(pdev)) {
++		int num_vfs_pre = pci_num_vf(pdev);
 +
- 		trace_rpc_task_run_action(task, do_action);
- 		do_action(task);
- 
-@@ -943,7 +957,7 @@ static void __rpc_execute(struct rpc_task *task)
- 		rpc_clear_running(task);
- 		spin_unlock(&queue->lock);
- 		if (task_is_async)
--			return;
-+			goto out;
- 
- 		/* sync task: sleep here */
- 		trace_rpc_task_sync_sleep(task, task->tk_action);
-@@ -967,6 +981,8 @@ static void __rpc_execute(struct rpc_task *task)
- 
- 	/* Release all resources associated with the task */
- 	rpc_release_task(task);
-+out:
-+	current_restore_flags(pflags, PF_MEMALLOC);
+ 		pci_disable_sriov(pdev);
++		hns3_clean_vf_config(pdev, num_vfs_pre);
+ 	} else {
+ 		dev_warn(&pdev->dev,
+ 			 "Unable to free VFs because some are assigned to VMs.\n");
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
+index cf3c798e5400..c8202d9b9e2c 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
+@@ -13146,6 +13146,55 @@ static int hclge_get_link_diagnosis_info(struct hnae3_handle *handle,
+ 	return 0;
  }
  
- /*
-@@ -1025,8 +1041,6 @@ int rpc_malloc(struct rpc_task *task)
++/* After disable sriov, VF still has some config and info need clean,
++ * which configed by PF.
++ */
++static void hclge_clear_vport_vf_info(struct hclge_vport *vport, int vfid)
++{
++	struct hclge_dev *hdev = vport->back;
++	struct hclge_vlan_info vlan_info;
++	int ret;
++
++	/* after disable sriov, clean VF rate configured by PF */
++	ret = hclge_tm_qs_shaper_cfg(vport, 0);
++	if (ret)
++		dev_err(&hdev->pdev->dev,
++			"failed to clean vf%d rate config, ret = %d\n",
++			vfid, ret);
++
++	vlan_info.vlan_tag = 0;
++	vlan_info.qos = 0;
++	vlan_info.vlan_proto = ETH_P_8021Q;
++	ret = hclge_update_port_base_vlan_cfg(vport,
++					      HNAE3_PORT_BASE_VLAN_DISABLE,
++					      &vlan_info);
++	if (ret)
++		dev_err(&hdev->pdev->dev,
++			"failed to clean vf%d port base vlan, ret = %d\n",
++			vfid, ret);
++
++	ret = hclge_set_vf_spoofchk_hw(hdev, vport->vport_id, false);
++	if (ret)
++		dev_err(&hdev->pdev->dev,
++			"failed to clean vf%d spoof config, ret = %d\n",
++			vfid, ret);
++
++	memset(&vport->vf_info, 0, sizeof(vport->vf_info));
++}
++
++static void hclge_clean_vport_config(struct hnae3_ae_dev *ae_dev, int num_vfs)
++{
++	struct hclge_dev *hdev = ae_dev->priv;
++	struct hclge_vport *vport;
++	int i;
++
++	for (i = 0; i < num_vfs; i++) {
++		vport = &hdev->vport[i + HCLGE_VF_VPORT_START_NUM];
++
++		hclge_clear_vport_vf_info(vport, i);
++	}
++}
++
+ static const struct hnae3_ae_ops hclge_ops = {
+ 	.init_ae_dev = hclge_init_ae_dev,
+ 	.uninit_ae_dev = hclge_uninit_ae_dev,
+@@ -13247,6 +13296,7 @@ static const struct hnae3_ae_ops hclge_ops = {
+ 	.get_rx_hwts = hclge_ptp_get_rx_hwts,
+ 	.get_ts_info = hclge_ptp_get_ts_info,
+ 	.get_link_diagnosis_info = hclge_get_link_diagnosis_info,
++	.clean_vf_config = hclge_clean_vport_config,
+ };
  
- 	if (RPC_IS_ASYNC(task))
- 		gfp = GFP_NOWAIT | __GFP_NOWARN;
--	if (RPC_IS_SWAPPER(task))
--		gfp |= __GFP_MEMALLOC;
- 
- 	size += sizeof(struct rpc_buffer);
- 	if (size <= RPC_BUFFER_MAXSIZE)
-diff --git a/net/sunrpc/xprt.c b/net/sunrpc/xprt.c
-index 5388263f8fc8..396a74974f60 100644
---- a/net/sunrpc/xprt.c
-+++ b/net/sunrpc/xprt.c
-@@ -1503,6 +1503,9 @@ bool xprt_prepare_transmit(struct rpc_task *task)
- 		return false;
- 
- 	}
-+	if (atomic_read(&xprt->swapper))
-+		/* This will be clear in __rpc_execute */
-+		current->flags |= PF_MEMALLOC;
- 	return true;
- }
- 
-diff --git a/net/sunrpc/xprtrdma/transport.c b/net/sunrpc/xprtrdma/transport.c
-index a52277115500..6268af7e0310 100644
---- a/net/sunrpc/xprtrdma/transport.c
-+++ b/net/sunrpc/xprtrdma/transport.c
-@@ -239,8 +239,11 @@ xprt_rdma_connect_worker(struct work_struct *work)
- 	struct rpcrdma_xprt *r_xprt = container_of(work, struct rpcrdma_xprt,
- 						   rx_connect_worker.work);
- 	struct rpc_xprt *xprt = &r_xprt->rx_xprt;
-+	unsigned int pflags = current->flags;
- 	int rc;
- 
-+	if (atomic_read(&xprt->swapper))
-+		current->flags |= PF_MEMALLOC;
- 	rc = rpcrdma_xprt_connect(r_xprt);
- 	xprt_clear_connecting(xprt);
- 	if (!rc) {
-@@ -254,6 +257,7 @@ xprt_rdma_connect_worker(struct work_struct *work)
- 		rpcrdma_xprt_disconnect(r_xprt);
- 	xprt_unlock_connect(xprt, r_xprt);
- 	xprt_wake_pending_tasks(xprt, rc);
-+	current_restore_flags(pflags, PF_MEMALLOC);
- }
- 
- /**
-@@ -576,8 +580,6 @@ xprt_rdma_allocate(struct rpc_task *task)
- 	flags = RPCRDMA_DEF_GFP;
- 	if (RPC_IS_ASYNC(task))
- 		flags = GFP_NOWAIT | __GFP_NOWARN;
--	if (RPC_IS_SWAPPER(task))
--		flags |= __GFP_MEMALLOC;
- 
- 	if (!rpcrdma_check_regbuf(r_xprt, req->rl_sendbuf, rqst->rq_callsize,
- 				  flags))
-diff --git a/net/sunrpc/xprtsock.c b/net/sunrpc/xprtsock.c
-index 056fa0230359..821eeea1c83b 100644
---- a/net/sunrpc/xprtsock.c
-+++ b/net/sunrpc/xprtsock.c
-@@ -2070,7 +2070,10 @@ static void xs_udp_setup_socket(struct work_struct *work)
- 	struct rpc_xprt *xprt = &transport->xprt;
- 	struct socket *sock;
- 	int status = -EIO;
-+	unsigned int pflags = current->flags;
- 
-+	if (atomic_read(&xprt->swapper))
-+		current->flags |= PF_MEMALLOC;
- 	sock = xs_create_sock(xprt, transport,
- 			xs_addr(xprt)->sa_family, SOCK_DGRAM,
- 			IPPROTO_UDP, false);
-@@ -2090,6 +2093,7 @@ static void xs_udp_setup_socket(struct work_struct *work)
- 	xprt_clear_connecting(xprt);
- 	xprt_unlock_connect(xprt, transport);
- 	xprt_wake_pending_tasks(xprt, status);
-+	current_restore_flags(pflags, PF_MEMALLOC);
- }
- 
- /**
-@@ -2249,7 +2253,10 @@ static void xs_tcp_setup_socket(struct work_struct *work)
- 	struct socket *sock = transport->sock;
- 	struct rpc_xprt *xprt = &transport->xprt;
- 	int status;
-+	unsigned int pflags = current->flags;
- 
-+	if (atomic_read(&xprt->swapper))
-+		current->flags |= PF_MEMALLOC;
- 	if (!sock) {
- 		sock = xs_create_sock(xprt, transport,
- 				xs_addr(xprt)->sa_family, SOCK_STREAM,
-@@ -2314,6 +2321,7 @@ static void xs_tcp_setup_socket(struct work_struct *work)
- 	xprt_clear_connecting(xprt);
- out_unlock:
- 	xprt_unlock_connect(xprt, transport);
-+	current_restore_flags(pflags, PF_MEMALLOC);
- }
- 
- /**
+ static struct hnae3_ae_algo ae_algo = {
 -- 
 2.34.1
 
