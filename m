@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 70ADEC4321E
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 09:12:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ECC90C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 09:12:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244333AbiDEJJx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 05:09:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34818 "EHLO
+        id S244585AbiDEJKE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 05:10:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34698 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239525AbiDEIUM (ORCPT
+        with ESMTP id S239530AbiDEIUM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Apr 2022 04:20:12 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 642EBF19;
-        Tue,  5 Apr 2022 01:15:14 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC0A9F25;
+        Tue,  5 Apr 2022 01:15:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 00CB2609AD;
-        Tue,  5 Apr 2022 08:15:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 07ECFC385A1;
-        Tue,  5 Apr 2022 08:15:12 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6914860B0E;
+        Tue,  5 Apr 2022 08:15:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 727DFC385A0;
+        Tue,  5 Apr 2022 08:15:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649146513;
-        bh=fo3CLXscQi7YLlRm7IF1RVemPrlemWp/VJcFuLwkDLw=;
+        s=korg; t=1649146521;
+        bh=fb9efia5mVrZlJD4idK/NLmTQmEyTQOi7uyPx6MOOJs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0gUGEZ6iozZtMR9H0+EtPRp0UyZsfK3IJcy5bGFxCx4RX6kDKEBAbi0Un5aWp7qCL
-         CpAFOD6Hvq8iKgVhgT5UGc5jlP6xy+EKiaopR9+Ktvo597rGwJT4dKSpanW6giBXKY
-         Vq8SO2xX2Npee0mec+v5ShFFAeD9Yrt2mQefkR/U=
+        b=j8n7U2Iq8sjRbt1cIG9yj58Ka+i3nKoy38FN8gv46tgX+YzTyx0B3uMCfjKyPnYi7
+         eq+ZA2PMOYRDfnCXlVfGFCKmvyqCUinfS/AAWZ+lq8iE7Qkh7SulWpBWZ0ukVhdutt
+         OWp5ROO1LF9NzwGZVBl08ymTofoPVJtMhSOMRmEY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, NeilBrown <neilb@suse.de>,
-        Trond Myklebust <trond.myklebust@hammerspace.com>,
-        Sasha Levin <sashal@kernel.org>,
-        Chuck Lever <chuck.lever@oracle.com>
-Subject: [PATCH 5.17 0790/1126] SUNRPC: improve swap handling: scheduling and PF_MEMALLOC
-Date:   Tue,  5 Apr 2022 09:25:37 +0200
-Message-Id: <20220405070430.760682513@linuxfoundation.org>
+        stable@vger.kernel.org,
+        =?UTF-8?q?Jonathan=20Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 0757/1126] clk: hisilicon: Terminate clk_div_table with sentinel element
+Date:   Tue,  5 Apr 2022 09:25:04 +0200
+Message-Id: <20220405070429.804312004@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -50,236 +50,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: NeilBrown <neilb@suse.de>
+From: Jonathan Neuschäfer <j.neuschaefer@gmx.net>
 
-[ Upstream commit 8db55a032ac7ac1ed7b98d6b1dc980e6378c652f ]
+[ Upstream commit 113b261bdf2b4fd34e7769a147a7acd0a4d9137f ]
 
-rpc tasks can be marked as RPC_TASK_SWAPPER.  This causes GFP_MEMALLOC
-to be used for some allocations.  This is needed in some cases, but not
-in all where it is currently provided, and in some where it isn't
-provided.
+In order that the end of a clk_div_table can be detected, it must be
+terminated with a sentinel element (.div = 0).
 
-Currently *all* tasks associated with a rpc_client on which swap is
-enabled get the flag and hence some GFP_MEMALLOC support.
-
-GFP_MEMALLOC is provided for ->buf_alloc() but only swap-writes need it.
-However xdr_alloc_bvec does not get GFP_MEMALLOC - though it often does
-need it.
-
-xdr_alloc_bvec is called while the XPRT_LOCK is held.  If this blocks,
-then it blocks all other queued tasks.  So this allocation needs
-GFP_MEMALLOC for *all* requests, not just writes, when the xprt is used
-for any swap writes.
-
-Similarly, if the transport is not connected, that will block all
-requests including swap writes, so memory allocations should get
-GFP_MEMALLOC if swap writes are possible.
-
-So with this patch:
- 1/ we ONLY set RPC_TASK_SWAPPER for swap writes.
- 2/ __rpc_execute() sets PF_MEMALLOC while handling any task
-    with RPC_TASK_SWAPPER set, or when handling any task that
-    holds the XPRT_LOCKED lock on an xprt used for swap.
-    This removes the need for the RPC_IS_SWAPPER() test
-    in ->buf_alloc handlers.
- 3/ xprt_prepare_transmit() sets PF_MEMALLOC after locking
-    any task to a swapper xprt.  __rpc_execute() will clear it.
- 3/ PF_MEMALLOC is set for all the connect workers.
-
-Reviewed-by: Chuck Lever <chuck.lever@oracle.com> (for xprtrdma parts)
-Signed-off-by: NeilBrown <neilb@suse.de>
-Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
+Fixes: 6c81966107dc0 ("clk: hisilicon: Add clock driver for hi3559A SoC")
+Signed-off-by: Jonathan Neuschäfer <j.neuschaefer@gmx.net>
+Link: https://lore.kernel.org/r/20220218000922.134857-4-j.neuschaefer@gmx.net
+Signed-off-by: Stephen Boyd <sboyd@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/nfs/write.c                  |  2 ++
- net/sunrpc/clnt.c               |  2 --
- net/sunrpc/sched.c              | 20 +++++++++++++++++---
- net/sunrpc/xprt.c               |  3 +++
- net/sunrpc/xprtrdma/transport.c |  6 ++++--
- net/sunrpc/xprtsock.c           |  8 ++++++++
- 6 files changed, 34 insertions(+), 7 deletions(-)
+ drivers/clk/hisilicon/clk-hi3559a.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/fs/nfs/write.c b/fs/nfs/write.c
-index da7e57645dcf..60693ab6a032 100644
---- a/fs/nfs/write.c
-+++ b/fs/nfs/write.c
-@@ -1412,6 +1412,8 @@ static void nfs_initiate_write(struct nfs_pgio_header *hdr,
- {
- 	int priority = flush_task_priority(how);
+diff --git a/drivers/clk/hisilicon/clk-hi3559a.c b/drivers/clk/hisilicon/clk-hi3559a.c
+index 56012a3d0219..9ea1a80acbe8 100644
+--- a/drivers/clk/hisilicon/clk-hi3559a.c
++++ b/drivers/clk/hisilicon/clk-hi3559a.c
+@@ -611,8 +611,8 @@ static struct hisi_mux_clock hi3559av100_shub_mux_clks[] = {
  
-+	if (IS_SWAPFILE(hdr->inode))
-+		task_setup_data->flags |= RPC_TASK_SWAPPER;
- 	task_setup_data->priority = priority;
- 	rpc_ops->write_setup(hdr, msg, &task_setup_data->rpc_client);
- 	trace_nfs_initiate_write(hdr);
-diff --git a/net/sunrpc/clnt.c b/net/sunrpc/clnt.c
-index c83fe618767c..5985b78eddf1 100644
---- a/net/sunrpc/clnt.c
-+++ b/net/sunrpc/clnt.c
-@@ -1085,8 +1085,6 @@ void rpc_task_set_client(struct rpc_task *task, struct rpc_clnt *clnt)
- 		task->tk_flags |= RPC_TASK_TIMEOUT;
- 	if (clnt->cl_noretranstimeo)
- 		task->tk_flags |= RPC_TASK_NO_RETRANS_TIMEOUT;
--	if (atomic_read(&clnt->cl_swapper))
--		task->tk_flags |= RPC_TASK_SWAPPER;
- 	/* Add to the client's list of all tasks */
- 	spin_lock(&clnt->cl_lock);
- 	list_add_tail(&task->tk_task, &clnt->cl_tasks);
-diff --git a/net/sunrpc/sched.c b/net/sunrpc/sched.c
-index d5b6e897f5a5..ae295844ac55 100644
---- a/net/sunrpc/sched.c
-+++ b/net/sunrpc/sched.c
-@@ -876,6 +876,15 @@ void rpc_release_calldata(const struct rpc_call_ops *ops, void *calldata)
- 		ops->rpc_release(calldata);
- }
  
-+static bool xprt_needs_memalloc(struct rpc_xprt *xprt, struct rpc_task *tk)
-+{
-+	if (!xprt)
-+		return false;
-+	if (!atomic_read(&xprt->swapper))
-+		return false;
-+	return test_bit(XPRT_LOCKED, &xprt->state) && xprt->snd_task == tk;
-+}
-+
- /*
-  * This is the RPC `scheduler' (or rather, the finite state machine).
-  */
-@@ -884,6 +893,7 @@ static void __rpc_execute(struct rpc_task *task)
- 	struct rpc_wait_queue *queue;
- 	int task_is_async = RPC_IS_ASYNC(task);
- 	int status = 0;
-+	unsigned long pflags = current->flags;
+ /* shub div clk */
+-static struct clk_div_table shub_spi_clk_table[] = {{0, 8}, {1, 4}, {2, 2}};
+-static struct clk_div_table shub_uart_div_clk_table[] = {{1, 8}, {2, 4}};
++static struct clk_div_table shub_spi_clk_table[] = {{0, 8}, {1, 4}, {2, 2}, {/*sentinel*/}};
++static struct clk_div_table shub_uart_div_clk_table[] = {{1, 8}, {2, 4}, {/*sentinel*/}};
  
- 	WARN_ON_ONCE(RPC_IS_QUEUED(task));
- 	if (RPC_IS_QUEUED(task))
-@@ -906,6 +916,10 @@ static void __rpc_execute(struct rpc_task *task)
- 		}
- 		if (!do_action)
- 			break;
-+		if (RPC_IS_SWAPPER(task) ||
-+		    xprt_needs_memalloc(task->tk_xprt, task))
-+			current->flags |= PF_MEMALLOC;
-+
- 		trace_rpc_task_run_action(task, do_action);
- 		do_action(task);
- 
-@@ -943,7 +957,7 @@ static void __rpc_execute(struct rpc_task *task)
- 		rpc_clear_running(task);
- 		spin_unlock(&queue->lock);
- 		if (task_is_async)
--			return;
-+			goto out;
- 
- 		/* sync task: sleep here */
- 		trace_rpc_task_sync_sleep(task, task->tk_action);
-@@ -967,6 +981,8 @@ static void __rpc_execute(struct rpc_task *task)
- 
- 	/* Release all resources associated with the task */
- 	rpc_release_task(task);
-+out:
-+	current_restore_flags(pflags, PF_MEMALLOC);
- }
- 
- /*
-@@ -1025,8 +1041,6 @@ int rpc_malloc(struct rpc_task *task)
- 
- 	if (RPC_IS_ASYNC(task))
- 		gfp = GFP_NOWAIT | __GFP_NOWARN;
--	if (RPC_IS_SWAPPER(task))
--		gfp |= __GFP_MEMALLOC;
- 
- 	size += sizeof(struct rpc_buffer);
- 	if (size <= RPC_BUFFER_MAXSIZE)
-diff --git a/net/sunrpc/xprt.c b/net/sunrpc/xprt.c
-index 5388263f8fc8..396a74974f60 100644
---- a/net/sunrpc/xprt.c
-+++ b/net/sunrpc/xprt.c
-@@ -1503,6 +1503,9 @@ bool xprt_prepare_transmit(struct rpc_task *task)
- 		return false;
- 
- 	}
-+	if (atomic_read(&xprt->swapper))
-+		/* This will be clear in __rpc_execute */
-+		current->flags |= PF_MEMALLOC;
- 	return true;
- }
- 
-diff --git a/net/sunrpc/xprtrdma/transport.c b/net/sunrpc/xprtrdma/transport.c
-index 5714bf880e95..ff78a296fa81 100644
---- a/net/sunrpc/xprtrdma/transport.c
-+++ b/net/sunrpc/xprtrdma/transport.c
-@@ -235,8 +235,11 @@ xprt_rdma_connect_worker(struct work_struct *work)
- 	struct rpcrdma_xprt *r_xprt = container_of(work, struct rpcrdma_xprt,
- 						   rx_connect_worker.work);
- 	struct rpc_xprt *xprt = &r_xprt->rx_xprt;
-+	unsigned int pflags = current->flags;
- 	int rc;
- 
-+	if (atomic_read(&xprt->swapper))
-+		current->flags |= PF_MEMALLOC;
- 	rc = rpcrdma_xprt_connect(r_xprt);
- 	xprt_clear_connecting(xprt);
- 	if (!rc) {
-@@ -250,6 +253,7 @@ xprt_rdma_connect_worker(struct work_struct *work)
- 		rpcrdma_xprt_disconnect(r_xprt);
- 	xprt_unlock_connect(xprt, r_xprt);
- 	xprt_wake_pending_tasks(xprt, rc);
-+	current_restore_flags(pflags, PF_MEMALLOC);
- }
- 
- /**
-@@ -572,8 +576,6 @@ xprt_rdma_allocate(struct rpc_task *task)
- 	flags = RPCRDMA_DEF_GFP;
- 	if (RPC_IS_ASYNC(task))
- 		flags = GFP_NOWAIT | __GFP_NOWARN;
--	if (RPC_IS_SWAPPER(task))
--		flags |= __GFP_MEMALLOC;
- 
- 	if (!rpcrdma_check_regbuf(r_xprt, req->rl_sendbuf, rqst->rq_callsize,
- 				  flags))
-diff --git a/net/sunrpc/xprtsock.c b/net/sunrpc/xprtsock.c
-index e9b2091c9981..5f22671b8abd 100644
---- a/net/sunrpc/xprtsock.c
-+++ b/net/sunrpc/xprtsock.c
-@@ -2070,7 +2070,10 @@ static void xs_udp_setup_socket(struct work_struct *work)
- 	struct rpc_xprt *xprt = &transport->xprt;
- 	struct socket *sock;
- 	int status = -EIO;
-+	unsigned int pflags = current->flags;
- 
-+	if (atomic_read(&xprt->swapper))
-+		current->flags |= PF_MEMALLOC;
- 	sock = xs_create_sock(xprt, transport,
- 			xs_addr(xprt)->sa_family, SOCK_DGRAM,
- 			IPPROTO_UDP, false);
-@@ -2090,6 +2093,7 @@ static void xs_udp_setup_socket(struct work_struct *work)
- 	xprt_clear_connecting(xprt);
- 	xprt_unlock_connect(xprt, transport);
- 	xprt_wake_pending_tasks(xprt, status);
-+	current_restore_flags(pflags, PF_MEMALLOC);
- }
- 
- /**
-@@ -2249,7 +2253,10 @@ static void xs_tcp_setup_socket(struct work_struct *work)
- 	struct socket *sock = transport->sock;
- 	struct rpc_xprt *xprt = &transport->xprt;
- 	int status;
-+	unsigned int pflags = current->flags;
- 
-+	if (atomic_read(&xprt->swapper))
-+		current->flags |= PF_MEMALLOC;
- 	if (!sock) {
- 		sock = xs_create_sock(xprt, transport,
- 				xs_addr(xprt)->sa_family, SOCK_STREAM,
-@@ -2314,6 +2321,7 @@ static void xs_tcp_setup_socket(struct work_struct *work)
- 	xprt_clear_connecting(xprt);
- out_unlock:
- 	xprt_unlock_connect(xprt, transport);
-+	current_restore_flags(pflags, PF_MEMALLOC);
- }
- 
- /**
+ static struct hisi_divider_clock hi3559av100_shub_div_clks[] = {
+ 	{ HI3559AV100_SHUB_SPI_SOURCE_CLK, "clk_spi_clk", "shub_clk", 0, 0x20, 24, 2,
 -- 
 2.34.1
 
