@@ -2,47 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 09B36C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 11:23:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 050D8C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 11:24:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359764AbiDELUq (ORCPT
+        id S1359803AbiDELUy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 07:20:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34730 "EHLO
+        Tue, 5 Apr 2022 07:20:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38086 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236218AbiDEIQk (ORCPT
+        with ESMTP id S240721AbiDEIra (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:16:40 -0400
+        Tue, 5 Apr 2022 04:47:30 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BA476E57D;
-        Tue,  5 Apr 2022 01:03:52 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 447AD25C6C;
+        Tue,  5 Apr 2022 01:36:26 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BAEF6B81BB3;
-        Tue,  5 Apr 2022 08:03:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 18A7AC385A0;
-        Tue,  5 Apr 2022 08:03:44 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CA0A1B81BC0;
+        Tue,  5 Apr 2022 08:36:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3C4C6C385A0;
+        Tue,  5 Apr 2022 08:36:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649145825;
-        bh=jLruKmILlgbBgaSZn6Gfot+4tRiKmAdDXmu2BVM3Du4=;
+        s=korg; t=1649147775;
+        bh=3TnHiDcoE4UN7piXzw8IEQIziQxDeP2KahwoBf8cuVg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=anape+oc2IqCWme6OWL/UZie8XanyIXa+vRfE9H7xLDyXs3CCDpsFpONBNRRSZ1s5
-         p/9OaK82zJuxG16fuV125cuOBcwZZVdXabXLk4w665Otg0zn20+Im2qX/uMq5q+AzZ
-         640803Ut1JLSmferXbWMLh3pLlTqEqm2eOHYEFcY=
+        b=X3sDX8ec/Mxr45hjEXtV2oYUB063QL3vi4WJ/OVf4+mZom6ZmFEadxv7eFkJVZ6Xr
+         rlG5TNeZXHXrcrt5GrsEnPBm3Sc4FYtw1W3Ij9E6+8wVj0siDpVk05e2HxSkGkG2zA
+         0aQqP2Pg8C0C2cAOWI5toWvNWWUvjeiuNioGgGnY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
-        Jiri Kosina <jkosina@suse.cz>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0542/1126] HID: i2c-hid: fix GET/SET_REPORT for unnumbered reports
-Date:   Tue,  5 Apr 2022 09:21:29 +0200
-Message-Id: <20220405070423.541532287@linuxfoundation.org>
+        stable@vger.kernel.org, Mason Yang <masonccyang@mxic.com.tw>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Zhengxun Li <zhengxunli@mxic.com.tw>,
+        Mark Brown <broonie@kernel.org>
+Subject: [PATCH 5.16 0078/1017] spi: mxic: Fix the transmit path
+Date:   Tue,  5 Apr 2022 09:16:31 +0200
+Message-Id: <20220405070356.506732153@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
-References: <20220405070407.513532867@linuxfoundation.org>
+In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
+References: <20220405070354.155796697@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,91 +51,66 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+From: Miquel Raynal <miquel.raynal@bootlin.com>
 
-[ Upstream commit a5e5e03e94764148a01757b2fa4737d3445c13a6 ]
+commit 5fd6739e0df7e320bcac103dfb95fe75941fea17 upstream.
 
-Internally kernel prepends all report buffers, for both numbered and
-unnumbered reports, with report ID, therefore to properly handle unnumbered
-reports we should prepend it ourselves.
+By working with external hardware ECC engines, we figured out that
+Under certain circumstances, it is needed for the SPI controller to
+check INT_TX_EMPTY and INT_RX_NOT_EMPTY in both receive and transmit
+path (not only in the receive path). The delay penalty being
+negligible, move this code in the common path.
 
-For the same reason we should skip the first byte of the buffer when
-calling i2c_hid_set_or_send_report() which then will take care of properly
-formatting the transfer buffer based on its separate report ID argument
-along with report payload.
-
-[jkosina@suse.cz: finalize trimmed sentence in changelog as spotted by Benjamin]
-Fixes: 9b5a9ae88573 ("HID: i2c-hid: implement ll_driver transport-layer callbacks")
-Signed-off-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
-Tested-by: Benjamin Tissoires <benjamin.tissoires@redhat.com>
-Signed-off-by: Jiri Kosina <jkosina@suse.cz>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: b942d80b0a39 ("spi: Add MXIC controller driver")
+Cc: stable@vger.kernel.org
+Suggested-by: Mason Yang <masonccyang@mxic.com.tw>
+Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+Reviewed-by: Zhengxun Li <zhengxunli@mxic.com.tw>
+Reviewed-by: Mark Brown <broonie@kernel.org>
+Link: https://lore.kernel.org/linux-mtd/20220127091808.1043392-10-miquel.raynal@bootlin.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/hid/i2c-hid/i2c-hid-core.c | 32 ++++++++++++++++++++++--------
- 1 file changed, 24 insertions(+), 8 deletions(-)
+ drivers/spi/spi-mxic.c |   26 +++++++++++---------------
+ 1 file changed, 11 insertions(+), 15 deletions(-)
 
-diff --git a/drivers/hid/i2c-hid/i2c-hid-core.c b/drivers/hid/i2c-hid/i2c-hid-core.c
-index 6726567d7297..8d6fc50dab65 100644
---- a/drivers/hid/i2c-hid/i2c-hid-core.c
-+++ b/drivers/hid/i2c-hid/i2c-hid-core.c
-@@ -618,6 +618,17 @@ static int i2c_hid_get_raw_report(struct hid_device *hid,
- 	if (report_type == HID_OUTPUT_REPORT)
- 		return -EINVAL;
+--- a/drivers/spi/spi-mxic.c
++++ b/drivers/spi/spi-mxic.c
+@@ -304,25 +304,21 @@ static int mxic_spi_data_xfer(struct mxi
  
-+	/*
-+	 * In case of unnumbered reports the response from the device will
-+	 * not have the report ID that the upper layers expect, so we need
-+	 * to stash it the buffer ourselves and adjust the data size.
-+	 */
-+	if (!report_number) {
-+		buf[0] = 0;
-+		buf++;
-+		count--;
-+	}
-+
- 	/* +2 bytes to include the size of the reply in the query buffer */
- 	ask_count = min(count + 2, (size_t)ihid->bufsize);
+ 		writel(data, mxic->regs + TXD(nbytes % 4));
  
-@@ -639,6 +650,9 @@ static int i2c_hid_get_raw_report(struct hid_device *hid,
- 	count = min(count, ret_count - 2);
- 	memcpy(buf, ihid->rawbuf + 2, count);
+-		if (rxbuf) {
+-			ret = readl_poll_timeout(mxic->regs + INT_STS, sts,
+-						 sts & INT_TX_EMPTY, 0,
+-						 USEC_PER_SEC);
+-			if (ret)
+-				return ret;
++		ret = readl_poll_timeout(mxic->regs + INT_STS, sts,
++					 sts & INT_TX_EMPTY, 0, USEC_PER_SEC);
++		if (ret)
++			return ret;
  
-+	if (!report_number)
-+		count++;
-+
- 	return count;
- }
+-			ret = readl_poll_timeout(mxic->regs + INT_STS, sts,
+-						 sts & INT_RX_NOT_EMPTY, 0,
+-						 USEC_PER_SEC);
+-			if (ret)
+-				return ret;
++		ret = readl_poll_timeout(mxic->regs + INT_STS, sts,
++					 sts & INT_RX_NOT_EMPTY, 0,
++					 USEC_PER_SEC);
++		if (ret)
++			return ret;
  
-@@ -655,17 +669,19 @@ static int i2c_hid_output_raw_report(struct hid_device *hid, __u8 *buf,
+-			data = readl(mxic->regs + RXD);
++		data = readl(mxic->regs + RXD);
++		if (rxbuf) {
+ 			data >>= (8 * (4 - nbytes));
+ 			memcpy(rxbuf + pos, &data, nbytes);
+-			WARN_ON(readl(mxic->regs + INT_STS) & INT_RX_NOT_EMPTY);
+-		} else {
+-			readl(mxic->regs + RXD);
+ 		}
+ 		WARN_ON(readl(mxic->regs + INT_STS) & INT_RX_NOT_EMPTY);
  
- 	mutex_lock(&ihid->reset_lock);
- 
--	if (report_id) {
--		buf++;
--		count--;
--	}
--
-+	/*
-+	 * Note that both numbered and unnumbered reports passed here
-+	 * are supposed to have report ID stored in the 1st byte of the
-+	 * buffer, so we strip it off unconditionally before passing payload
-+	 * to i2c_hid_set_or_send_report which takes care of encoding
-+	 * everything properly.
-+	 */
- 	ret = i2c_hid_set_or_send_report(client,
- 				report_type == HID_FEATURE_REPORT ? 0x03 : 0x02,
--				report_id, buf, count, use_data);
-+				report_id, buf + 1, count - 1, use_data);
- 
--	if (report_id && ret >= 0)
--		ret++; /* add report_id to the number of transfered bytes */
-+	if (ret >= 0)
-+		ret++; /* add report_id to the number of transferred bytes */
- 
- 	mutex_unlock(&ihid->reset_lock);
- 
--- 
-2.34.1
-
 
 
