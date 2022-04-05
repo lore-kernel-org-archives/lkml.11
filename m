@@ -2,108 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 34A89C4167D
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:26:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 23699C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:26:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242173AbiDEXEv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 19:04:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39906 "EHLO
+        id S1349336AbiDEXFP (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 19:05:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47442 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1457700AbiDEQgS (ORCPT
+        with ESMTP id S1348774AbiDEJsf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 12:36:18 -0400
-X-Greylist: delayed 13570 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 05 Apr 2022 09:34:18 PDT
-Received: from 7.mo583.mail-out.ovh.net (7.mo583.mail-out.ovh.net [178.32.124.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75B5065D3A
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 09:34:16 -0700 (PDT)
-Received: from player728.ha.ovh.net (unknown [10.111.208.112])
-        by mo583.mail-out.ovh.net (Postfix) with ESMTP id 70E2722CEB
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 16:34:15 +0000 (UTC)
-Received: from sk2.org (82-65-25-201.subs.proxad.net [82.65.25.201])
-        (Authenticated sender: steve@sk2.org)
-        by player728.ha.ovh.net (Postfix) with ESMTPSA id 53C7D2918CC09;
-        Tue,  5 Apr 2022 16:34:04 +0000 (UTC)
-Authentication-Results: garm.ovh; auth=pass (GARM-98R00216734794-6a76-4f86-9128-4ef53b3b435f,
-                    8BB3F008109FF1ACF458F8D30695C50246D29715) smtp.auth=steve@sk2.org
-X-OVh-ClientIp: 82.65.25.201
-From:   Stephen Kitt <steve@sk2.org>
-To:     Steven Eckhoff <steven.eckhoff.opensource@gmail.com>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>
-Cc:     Wolfram Sang <wsa@kernel.org>, linux-kernel@vger.kernel.org,
-        Stephen Kitt <steve@sk2.org>
-Subject: [PATCH] ASoC: tscs*: use simple i2c probe function
-Date:   Tue,  5 Apr 2022 18:34:00 +0200
-Message-Id: <20220405163400.2156631-1-steve@sk2.org>
-X-Mailer: git-send-email 2.27.0
+        Tue, 5 Apr 2022 05:48:35 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE6FB68FB6;
+        Tue,  5 Apr 2022 02:35:02 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8AC6961368;
+        Tue,  5 Apr 2022 09:35:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 91A15C385A2;
+        Tue,  5 Apr 2022 09:35:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649151302;
+        bh=IcD/mUMeJltN3g1oXRNUutDn3tkimWMEQM50t7/AaHY=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=zcjHNGwKL5fcHZrIErH71290Yp1SD1jtMR784nnsTihiHgZyNTEJzRv/j1XU3bW6q
+         /VlSR8+Copq+kKX2dyBxDPQEndhP1wgr0ylHbqdcHD9dqVr5RapJm2rK/MIGyggvFw
+         R5CUZ/+lXB4QuH5gcG4h6jd5y9S1Nj1m76SWhp+8=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        Ranjani Sridharan <ranjani.sridharan@linux.intel.com>,
+        =?UTF-8?q?P=C3=A9ter=20Ujfalusi?= <peter.ujfalusi@linux.intel.com>,
+        Kai Vehmanen <kai.vehmanen@linux.intel.com>,
+        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
+        Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 365/913] ASoC: SOF: Intel: enable DMI L1 for playback streams
+Date:   Tue,  5 Apr 2022 09:23:47 +0200
+Message-Id: <20220405070350.786342590@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-Ovh-Tracer-Id: 8036392060513846918
-X-VR-SPAMSTATE: OK
-X-VR-SPAMSCORE: -100
-X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvvddrudejgedgleelucetufdoteggodetrfdotffvucfrrhhofhhilhgvmecuqfggjfdpvefjgfevmfevgfenuceurghilhhouhhtmecuhedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmnecujfgurhephffvufffkffoggfgsedtkeertdertddtnecuhfhrohhmpefuthgvphhhvghnucfmihhtthcuoehsthgvvhgvsehskhdvrdhorhhgqeenucggtffrrghtthgvrhhnpeetgedugfelkeeikeetgeegteevfeeufeetuefgudeiiedthfehtdeffeekvdeffeenucfkpheptddrtddrtddrtddpkedvrdeihedrvdehrddvtddunecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmohguvgepshhmthhpohhuthdphhgvlhhopehplhgrhigvrhejvdekrdhhrgdrohhvhhdrnhgvthdpihhnvghtpedtrddtrddtrddtpdhmrghilhhfrhhomhepshhtvghvvgesshhkvddrohhrghdpnhgspghrtghpthhtohepuddprhgtphhtthhopehlihhnuhigqdhkvghrnhgvlhesvhhgvghrrdhkvghrnhgvlhdrohhrgh
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The i2c probe functions here don't use the id information provided in
-their second argument, so the single-parameter i2c probe function
-("probe_new") can be used instead.
+From: Kai Vehmanen <kai.vehmanen@linux.intel.com>
 
-This avoids scanning the identifier tables during probes.
+[ Upstream commit a174e72e2355b9025205b4b6727bf43047eac6c6 ]
 
-Signed-off-by: Stephen Kitt <steve@sk2.org>
+Add back logic to mark all playback streams as L1 compatible.
+
+Fixes: 246dd4287dfb ("ASoC: SOF: Intel: make DMI L1 selection more robust")
+Reviewed-by: Ranjani Sridharan <ranjani.sridharan@linux.intel.com>
+Reviewed-by: Péter Ujfalusi <peter.ujfalusi@linux.intel.com>
+Signed-off-by: Kai Vehmanen <kai.vehmanen@linux.intel.com>
+Signed-off-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+Link: https://lore.kernel.org/r/20220310171651.249385-2-pierre-louis.bossart@linux.intel.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/codecs/tscs42xx.c | 5 ++---
- sound/soc/codecs/tscs454.c  | 5 ++---
- 2 files changed, 4 insertions(+), 6 deletions(-)
+ sound/soc/sof/intel/hda-pcm.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/sound/soc/codecs/tscs42xx.c b/sound/soc/codecs/tscs42xx.c
-index 5b63e017a43b..4fb0bb01bcdc 100644
---- a/sound/soc/codecs/tscs42xx.c
-+++ b/sound/soc/codecs/tscs42xx.c
-@@ -1409,8 +1409,7 @@ static const struct reg_sequence tscs42xx_patch[] = {
- static char const * const src_names[TSCS42XX_PLL_SRC_CNT] = {
- 	"xtal", "mclk1", "mclk2"};
+diff --git a/sound/soc/sof/intel/hda-pcm.c b/sound/soc/sof/intel/hda-pcm.c
+index cc8ddef37f37..d81e87e304e4 100644
+--- a/sound/soc/sof/intel/hda-pcm.c
++++ b/sound/soc/sof/intel/hda-pcm.c
+@@ -242,6 +242,7 @@ int hda_dsp_pcm_open(struct snd_sof_dev *sdev,
+ 		runtime->hw.info &= ~SNDRV_PCM_INFO_PAUSE;
  
--static int tscs42xx_i2c_probe(struct i2c_client *i2c,
--		const struct i2c_device_id *id)
-+static int tscs42xx_i2c_probe(struct i2c_client *i2c)
- {
- 	struct tscs42xx *tscs42xx;
- 	int src;
-@@ -1505,7 +1504,7 @@ static struct i2c_driver tscs42xx_i2c_driver = {
- 		.name = "tscs42xx",
- 		.of_match_table = tscs42xx_of_match,
- 	},
--	.probe =    tscs42xx_i2c_probe,
-+	.probe_new = tscs42xx_i2c_probe,
- 	.id_table = tscs42xx_i2c_id,
- };
- 
-diff --git a/sound/soc/codecs/tscs454.c b/sound/soc/codecs/tscs454.c
-index 7e1826d6f06f..b34a8b516484 100644
---- a/sound/soc/codecs/tscs454.c
-+++ b/sound/soc/codecs/tscs454.c
-@@ -3400,8 +3400,7 @@ static struct snd_soc_dai_driver tscs454_dais[] = {
- static char const * const src_names[] = {
- 	"xtal", "mclk1", "mclk2", "bclk"};
- 
--static int tscs454_i2c_probe(struct i2c_client *i2c,
--		const struct i2c_device_id *id)
-+static int tscs454_i2c_probe(struct i2c_client *i2c)
- {
- 	struct tscs454 *tscs454;
- 	int src;
-@@ -3474,7 +3473,7 @@ static struct i2c_driver tscs454_i2c_driver = {
- 		.name = "tscs454",
- 		.of_match_table = tscs454_of_match,
- 	},
--	.probe =    tscs454_i2c_probe,
-+	.probe_new = tscs454_i2c_probe,
- 	.id_table = tscs454_i2c_id,
- };
+ 	if (hda_always_enable_dmi_l1 ||
++	    direction == SNDRV_PCM_STREAM_PLAYBACK ||
+ 	    spcm->stream[substream->stream].d0i3_compatible)
+ 		flags |= SOF_HDA_STREAM_DMI_L1_COMPATIBLE;
  
 -- 
-2.27.0
+2.34.1
+
+
 
