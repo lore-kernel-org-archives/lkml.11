@@ -2,106 +2,209 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F675C43217
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 22:39:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C2BD2C4332F
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 22:39:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1450950AbiDEW3Y (ORCPT
+        id S1450845AbiDEW3N (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 18:29:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37236 "EHLO
+        Tue, 5 Apr 2022 18:29:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45470 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1457298AbiDEQDE (ORCPT
+        with ESMTP id S1354785AbiDEKPt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 12:03:04 -0400
-Received: from m12-12.163.com (m12-12.163.com [220.181.12.12])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 569CC2408C
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 08:37:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=9Zptn
-        J9HIkGLxORVjLEavHV+h6BLMZSlJ7O+XMPB3t8=; b=X6drxuX2boPSFAhIJ5UNM
-        Soerm0MLgm/omF7hN5zkwwebGTrhXgI3EOsDa/DuLd2K25twH+dofSxFzNrzOB4W
-        Gx1YADMRCXJdbYqgE62AHwvlgD8vseqt5EWYdoynkeLJDhNmZdidl2aytgihBpQo
-        /qoY9srWSMq5jGMwKciuGo=
-Received: from localhost (unknown [113.116.48.218])
-        by smtp8 (Coremail) with SMTP id DMCowAAnVX4BYkxikcMtAg--.50405S2;
-        Tue, 05 Apr 2022 23:36:34 +0800 (CST)
-From:   wujunwen <wudaemon@163.com>
-To:     gregkh@linuxfoundation.org, jirislaby@kernel.org
-Cc:     linux-kernel@vger.kernel.org, wujunwen <wudaemon@163.com>
-Subject: [PATCH v1] tty/sysrq: change the definition of sysrq_key_table's element to make it more readable
-Date:   Tue,  5 Apr 2022 15:36:25 +0000
-Message-Id: <20220405153625.55689-1-wudaemon@163.com>
-X-Mailer: git-send-email 2.25.1
+        Tue, 5 Apr 2022 06:15:49 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01F744A3F6;
+        Tue,  5 Apr 2022 03:02:49 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 910F0616E7;
+        Tue,  5 Apr 2022 10:02:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A1C15C385A1;
+        Tue,  5 Apr 2022 10:02:48 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649152969;
+        bh=j4snWJe9nUqm/qqeWyVMDCxVVL4IKFAL6keBPT7uBzQ=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=PtG+X1ytDp3Hq8oY3J+YWCjtr1RpIq3IngfKKLdt6v6sY7U17SKu4CtrnmTv9LuzF
+         4hr9aMe9SEnoCh0BtNPFt0S2o6ly8b3jgxdDKxemI2CLzIeogfrRJQlBBqVEVSFaxu
+         Vq/cuOqJiQlsK9bVM8Zru9SQr/vUNXa2SlQhNag8=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Sean Nyekjaer <sean@geanix.com>,
+        Boris Brezillon <boris.brezillon@collabora.com>,
+        Miquel Raynal <miquel.raynal@bootlin.com>
+Subject: [PATCH 5.10 054/599] mtd: rawnand: protect access to rawnand devices while in suspend
+Date:   Tue,  5 Apr 2022 09:25:48 +0200
+Message-Id: <20220405070300.435966919@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
+References: <20220405070258.802373272@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: DMCowAAnVX4BYkxikcMtAg--.50405S2
-X-Coremail-Antispam: 1Uf129KBjvJXoW7uFykurWfZw47CFyDuF15Arb_yoW8Ary5pa
-        yxCryqyF15uF4jqw4xCa1jqF4ayr93Ga4a9r15Ga4S93s8Gr18JFWjyaySyryrJrW8GF1j
-        gr40vF15X3W8J37anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x0zNXd1wUUUUU=
-X-Originating-IP: [113.116.48.218]
-X-CM-SenderInfo: 5zxgtvxprqqiywtou0bp/1tbiLALZbVspdVcn3gAAsz
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-the definition of sysrq_key_table's elements, like sysrq_thaw_op and 
-sysrq_showallcpus_op are massive, so we should make it consistent.
+From: Sean Nyekjaer <sean@geanix.com>
 
-Signed-off-by: wujunwen <wudaemon@163.com>
+commit 8cba323437a49a45756d661f500b324fc2d486fe upstream.
+
+Prevent rawnand access while in a suspended state.
+
+Commit 013e6292aaf5 ("mtd: rawnand: Simplify the locking") allows the
+rawnand layer to return errors rather than waiting in a blocking wait.
+
+Tested on a iMX6ULL.
+
+Fixes: 013e6292aaf5 ("mtd: rawnand: Simplify the locking")
+Signed-off-by: Sean Nyekjaer <sean@geanix.com>
+Reviewed-by: Boris Brezillon <boris.brezillon@collabora.com>
+Cc: stable@vger.kernel.org
+Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+Link: https://lore.kernel.org/linux-mtd/20220208085213.1838273-1-sean@geanix.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/tty/sysrq.c | 14 ++++++--------
- 1 file changed, 6 insertions(+), 8 deletions(-)
+ drivers/mtd/nand/raw/nand_base.c |   44 +++++++++++++++++----------------------
+ include/linux/mtd/rawnand.h      |    2 +
+ 2 files changed, 22 insertions(+), 24 deletions(-)
 
-diff --git a/drivers/tty/sysrq.c b/drivers/tty/sysrq.c
-index bbfd004449b5..9485156bf48b 100644
---- a/drivers/tty/sysrq.c
-+++ b/drivers/tty/sysrq.c
-@@ -274,6 +274,8 @@ static const struct sysrq_key_op sysrq_showallcpus_op = {
- 	.action_msg	= "Show backtrace of all active CPUs",
- 	.enable_mask	= SYSRQ_ENABLE_DUMP,
- };
-+#else
-+#define sysrq_showallcpus_op (*(const struct sysrq_key_op *)NULL)
- #endif
- 
- static void sysrq_handle_showregs(int key)
-@@ -405,6 +407,7 @@ static const struct sysrq_key_op sysrq_moom_op = {
- 	.enable_mask	= SYSRQ_ENABLE_SIGNAL,
- };
- 
-+#ifdef CONFIG_BLOCK
- static void sysrq_handle_thaw(int key)
+--- a/drivers/mtd/nand/raw/nand_base.c
++++ b/drivers/mtd/nand/raw/nand_base.c
+@@ -297,16 +297,19 @@ static int nand_isbad_bbm(struct nand_ch
+  *
+  * Return: -EBUSY if the chip has been suspended, 0 otherwise
+  */
+-static int nand_get_device(struct nand_chip *chip)
++static void nand_get_device(struct nand_chip *chip)
  {
- 	emergency_thaw_all();
-@@ -415,6 +418,9 @@ static const struct sysrq_key_op sysrq_thaw_op = {
- 	.action_msg	= "Emergency Thaw of all frozen filesystems",
- 	.enable_mask	= SYSRQ_ENABLE_SIGNAL,
- };
-+#else
-+#define sysrq_thaw_op (*(const struct sysrq_key_op *)NULL)
-+#endif
+-	mutex_lock(&chip->lock);
+-	if (chip->suspended) {
++	/* Wait until the device is resumed. */
++	while (1) {
++		mutex_lock(&chip->lock);
++		if (!chip->suspended) {
++			mutex_lock(&chip->controller->lock);
++			return;
++		}
+ 		mutex_unlock(&chip->lock);
+-		return -EBUSY;
+-	}
+-	mutex_lock(&chip->controller->lock);
  
- static void sysrq_handle_kill(int key)
+-	return 0;
++		wait_event(chip->resume_wq, !chip->suspended);
++	}
+ }
+ 
+ /**
+@@ -531,9 +534,7 @@ static int nand_block_markbad_lowlevel(s
+ 		nand_erase_nand(chip, &einfo, 0);
+ 
+ 		/* Write bad block marker to OOB */
+-		ret = nand_get_device(chip);
+-		if (ret)
+-			return ret;
++		nand_get_device(chip);
+ 
+ 		ret = nand_markbad_bbm(chip, ofs);
+ 		nand_release_device(chip);
+@@ -3534,9 +3535,7 @@ static int nand_read_oob(struct mtd_info
+ 	    ops->mode != MTD_OPS_RAW)
+ 		return -ENOTSUPP;
+ 
+-	ret = nand_get_device(chip);
+-	if (ret)
+-		return ret;
++	nand_get_device(chip);
+ 
+ 	if (!ops->datbuf)
+ 		ret = nand_do_read_oob(chip, from, ops);
+@@ -4119,13 +4118,11 @@ static int nand_write_oob(struct mtd_inf
+ 			  struct mtd_oob_ops *ops)
  {
-@@ -468,17 +474,9 @@ static const struct sysrq_key_op *sysrq_key_table[62] = {
- 	NULL,				/* g */
- 	NULL,				/* h - reserved for help */
- 	&sysrq_kill_op,			/* i */
--#ifdef CONFIG_BLOCK
- 	&sysrq_thaw_op,			/* j */
--#else
--	NULL,				/* j */
--#endif
- 	&sysrq_SAK_op,			/* k */
--#ifdef CONFIG_SMP
- 	&sysrq_showallcpus_op,		/* l */
--#else
--	NULL,				/* l */
--#endif
- 	&sysrq_showmem_op,		/* m */
- 	&sysrq_unrt_op,			/* n */
- 	/* o: This will often be registered as 'Off' at init time */
--- 
-2.25.1
+ 	struct nand_chip *chip = mtd_to_nand(mtd);
+-	int ret;
++	int ret = 0;
+ 
+ 	ops->retlen = 0;
+ 
+-	ret = nand_get_device(chip);
+-	if (ret)
+-		return ret;
++	nand_get_device(chip);
+ 
+ 	switch (ops->mode) {
+ 	case MTD_OPS_PLACE_OOB:
+@@ -4181,9 +4178,7 @@ int nand_erase_nand(struct nand_chip *ch
+ 		return -EINVAL;
+ 
+ 	/* Grab the lock and see if the device is available */
+-	ret = nand_get_device(chip);
+-	if (ret)
+-		return ret;
++	nand_get_device(chip);
+ 
+ 	/* Shift to get first page */
+ 	page = (int)(instr->addr >> chip->page_shift);
+@@ -4270,7 +4265,7 @@ static void nand_sync(struct mtd_info *m
+ 	pr_debug("%s: called\n", __func__);
+ 
+ 	/* Grab the lock and see if the device is available */
+-	WARN_ON(nand_get_device(chip));
++	nand_get_device(chip);
+ 	/* Release it and go back */
+ 	nand_release_device(chip);
+ }
+@@ -4287,9 +4282,7 @@ static int nand_block_isbad(struct mtd_i
+ 	int ret;
+ 
+ 	/* Select the NAND device */
+-	ret = nand_get_device(chip);
+-	if (ret)
+-		return ret;
++	nand_get_device(chip);
+ 
+ 	nand_select_target(chip, chipnr);
+ 
+@@ -4360,6 +4353,8 @@ static void nand_resume(struct mtd_info
+ 			__func__);
+ 	}
+ 	mutex_unlock(&chip->lock);
++
++	wake_up_all(&chip->resume_wq);
+ }
+ 
+ /**
+@@ -5068,6 +5063,7 @@ static int nand_scan_ident(struct nand_c
+ 	chip->cur_cs = -1;
+ 
+ 	mutex_init(&chip->lock);
++	init_waitqueue_head(&chip->resume_wq);
+ 
+ 	/* Enforce the right timings for reset/detection */
+ 	chip->current_interface_config = nand_get_reset_interface_config();
+--- a/include/linux/mtd/rawnand.h
++++ b/include/linux/mtd/rawnand.h
+@@ -1083,6 +1083,7 @@ struct nand_manufacturer {
+  * @lock: Lock protecting the suspended field. Also used to serialize accesses
+  *        to the NAND device
+  * @suspended: Set to 1 when the device is suspended, 0 when it's not
++ * @resume_wq: wait queue to sleep if rawnand is in suspended state.
+  * @cur_cs: Currently selected target. -1 means no target selected, otherwise we
+  *          should always have cur_cs >= 0 && cur_cs < nanddev_ntargets().
+  *          NAND Controller drivers should not modify this value, but they're
+@@ -1135,6 +1136,7 @@ struct nand_chip {
+ 	/* Internals */
+ 	struct mutex lock;
+ 	unsigned int suspended : 1;
++	wait_queue_head_t resume_wq;
+ 	int cur_cs;
+ 	int read_retries;
+ 
+
 
