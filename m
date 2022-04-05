@@ -2,46 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 78EE9C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D37CC433FE
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:16:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1442610AbiDEUHW (ORCPT
+        id S1445689AbiDEUIl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 16:07:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57788 "EHLO
+        Tue, 5 Apr 2022 16:08:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56134 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349809AbiDEJvg (ORCPT
+        with ESMTP id S1354477AbiDEKOU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:51:36 -0400
+        Tue, 5 Apr 2022 06:14:20 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3BCC1FCD2;
-        Tue,  5 Apr 2022 02:49:37 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49AC36A426;
+        Tue,  5 Apr 2022 03:00:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 85005B81B14;
-        Tue,  5 Apr 2022 09:49:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D7576C385A1;
-        Tue,  5 Apr 2022 09:49:34 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id F0EE6B81B96;
+        Tue,  5 Apr 2022 10:00:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 43392C385A2;
+        Tue,  5 Apr 2022 10:00:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649152175;
-        bh=02vN4Sxu3Mspd3SCD/KExVELM6QtsTgtq7JitGYxUVE=;
+        s=korg; t=1649152833;
+        bh=kembSRW7NQwV00BZOi0C5N16H7Aj9inc7Or9Ws7k17U=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qgbuDT+i39whwRO6a4SJLh3AbdDHtwCl9KVRtVzjm+UvLxghLGyr/rkNd01iNqti9
-         LA1mXYFm0JeK8Oetc8xPHuOY/TY9wft/Z3c8kBsI9KFtV6rG3MsLpcgKkHEQhokbyI
-         V8wD4bduJ0mPryD9ixSwgGQ4S671MOaWX3aB5QYY=
+        b=lGLfAY8q+zjBYMNK+P8OpZLgIRRjyIF2V3Ts2MV9RjF5vUNFqAjo/CdMd3mz9OCdU
+         e1WMgVYqvq60Pe/s+CCMv/pwNgiNW7TNNl0nLqozuCytu9awQZ8tjpP5aszWtR4Jty
+         wwybYYhjYAnz3PDuqYf7M+phsQNE3JiRM6P2NCZ0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        syzbot+d1e3b1d92d25abf97943@syzkaller.appspotmail.com,
-        Casey Schaufler <casey@schaufler-ca.com>,
-        James Morris <jamorris@linux.microsoft.com>,
-        Paul Moore <paul@paul-moore.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 682/913] LSM: general protection fault in legacy_parse_param
-Date:   Tue,  5 Apr 2022 09:29:04 +0200
-Message-Id: <20220405070400.278041421@linuxfoundation.org>
+        stable@vger.kernel.org, Jann Horn <jannh@google.com>,
+        Kees Cook <keescook@chromium.org>,
+        "Eric W. Biederman" <ebiederm@xmission.com>
+Subject: [PATCH 5.15 912/913] coredump/elf: Pass coredump_params into fill_note_info
+Date:   Tue,  5 Apr 2022 09:32:54 +0200
+Message-Id: <20220405070407.156589363@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
 References: <20220405070339.801210740@linuxfoundation.org>
@@ -53,79 +50,107 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Casey Schaufler <casey@schaufler-ca.com>
+From: Eric W. Biederman <ebiederm@xmission.com>
 
-[ Upstream commit ecff30575b5ad0eda149aadad247b7f75411fd47 ]
+commit 9ec7d3230717b4fe9b6c7afeb4811909c23fa1d7 upstream.
 
-The usual LSM hook "bail on fail" scheme doesn't work for cases where
-a security module may return an error code indicating that it does not
-recognize an input.  In this particular case Smack sees a mount option
-that it recognizes, and returns 0. A call to a BPF hook follows, which
-returns -ENOPARAM, which confuses the caller because Smack has processed
-its data.
+Instead of individually passing cprm->siginfo and cprm->regs
+into fill_note_info pass all of struct coredump_params.
 
-The SELinux hook incorrectly returns 1 on success. There was a time
-when this was correct, however the current expectation is that it
-return 0 on success. This is repaired.
+This is preparation to allow fill_files_note to use the existing
+vma snapshot.
 
-Reported-by: syzbot+d1e3b1d92d25abf97943@syzkaller.appspotmail.com
-Signed-off-by: Casey Schaufler <casey@schaufler-ca.com>
-Acked-by: James Morris <jamorris@linux.microsoft.com>
-Signed-off-by: Paul Moore <paul@paul-moore.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Reviewed-by: Jann Horn <jannh@google.com>
+Reviewed-by: Kees Cook <keescook@chromium.org>
+Signed-off-by: "Eric W. Biederman" <ebiederm@xmission.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- security/security.c      | 17 +++++++++++++++--
- security/selinux/hooks.c |  5 ++---
- 2 files changed, 17 insertions(+), 5 deletions(-)
+ fs/binfmt_elf.c |   22 +++++++++++-----------
+ 1 file changed, 11 insertions(+), 11 deletions(-)
 
-diff --git a/security/security.c b/security/security.c
-index 67264cb08fb3..da631339e969 100644
---- a/security/security.c
-+++ b/security/security.c
-@@ -884,9 +884,22 @@ int security_fs_context_dup(struct fs_context *fc, struct fs_context *src_fc)
- 	return call_int_hook(fs_context_dup, 0, fc, src_fc);
- }
+--- a/fs/binfmt_elf.c
++++ b/fs/binfmt_elf.c
+@@ -1799,7 +1799,7 @@ static int fill_thread_core_info(struct
  
--int security_fs_context_parse_param(struct fs_context *fc, struct fs_parameter *param)
-+int security_fs_context_parse_param(struct fs_context *fc,
-+				    struct fs_parameter *param)
+ static int fill_note_info(struct elfhdr *elf, int phdrs,
+ 			  struct elf_note_info *info,
+-			  const kernel_siginfo_t *siginfo, struct pt_regs *regs)
++			  struct coredump_params *cprm)
  {
--	return call_int_hook(fs_context_parse_param, -ENOPARAM, fc, param);
-+	struct security_hook_list *hp;
-+	int trc;
-+	int rc = -ENOPARAM;
-+
-+	hlist_for_each_entry(hp, &security_hook_heads.fs_context_parse_param,
-+			     list) {
-+		trc = hp->hook.fs_context_parse_param(fc, param);
-+		if (trc == 0)
-+			rc = 0;
-+		else if (trc != -ENOPARAM)
-+			return trc;
-+	}
-+	return rc;
- }
+ 	struct task_struct *dump_task = current;
+ 	const struct user_regset_view *view = task_user_regset_view(dump_task);
+@@ -1871,7 +1871,7 @@ static int fill_note_info(struct elfhdr
+ 	 * Now fill in each thread's information.
+ 	 */
+ 	for (t = info->thread; t != NULL; t = t->next)
+-		if (!fill_thread_core_info(t, view, siginfo->si_signo, &info->size))
++		if (!fill_thread_core_info(t, view, cprm->siginfo->si_signo, &info->size))
+ 			return 0;
  
- int security_sb_alloc(struct super_block *sb)
-diff --git a/security/selinux/hooks.c b/security/selinux/hooks.c
-index f3c8acf45ed9..9a89e456d378 100644
---- a/security/selinux/hooks.c
-+++ b/security/selinux/hooks.c
-@@ -2915,10 +2915,9 @@ static int selinux_fs_context_parse_param(struct fs_context *fc,
- 		return opt;
+ 	/*
+@@ -1880,7 +1880,7 @@ static int fill_note_info(struct elfhdr
+ 	fill_psinfo(psinfo, dump_task->group_leader, dump_task->mm);
+ 	info->size += notesize(&info->psinfo);
  
- 	rc = selinux_add_opt(opt, param->string, &fc->security);
--	if (!rc) {
-+	if (!rc)
- 		param->string = NULL;
--		rc = 1;
--	}
-+
- 	return rc;
- }
+-	fill_siginfo_note(&info->signote, &info->csigdata, siginfo);
++	fill_siginfo_note(&info->signote, &info->csigdata, cprm->siginfo);
+ 	info->size += notesize(&info->signote);
  
--- 
-2.34.1
-
+ 	fill_auxv_note(&info->auxv, current->mm);
+@@ -2028,7 +2028,7 @@ static int elf_note_info_init(struct elf
+ 
+ static int fill_note_info(struct elfhdr *elf, int phdrs,
+ 			  struct elf_note_info *info,
+-			  const kernel_siginfo_t *siginfo, struct pt_regs *regs)
++			  struct coredump_params *cprm)
+ {
+ 	struct core_thread *ct;
+ 	struct elf_thread_status *ets;
+@@ -2049,13 +2049,13 @@ static int fill_note_info(struct elfhdr
+ 	list_for_each_entry(ets, &info->thread_list, list) {
+ 		int sz;
+ 
+-		sz = elf_dump_thread_status(siginfo->si_signo, ets);
++		sz = elf_dump_thread_status(cprm->siginfo->si_signo, ets);
+ 		info->thread_status_size += sz;
+ 	}
+ 	/* now collect the dump for the current */
+ 	memset(info->prstatus, 0, sizeof(*info->prstatus));
+-	fill_prstatus(&info->prstatus->common, current, siginfo->si_signo);
+-	elf_core_copy_regs(&info->prstatus->pr_reg, regs);
++	fill_prstatus(&info->prstatus->common, current, cprm->siginfo->si_signo);
++	elf_core_copy_regs(&info->prstatus->pr_reg, cprm->regs);
+ 
+ 	/* Set up header */
+ 	fill_elf_header(elf, phdrs, ELF_ARCH, ELF_CORE_EFLAGS);
+@@ -2071,7 +2071,7 @@ static int fill_note_info(struct elfhdr
+ 	fill_note(info->notes + 1, "CORE", NT_PRPSINFO,
+ 		  sizeof(*info->psinfo), info->psinfo);
+ 
+-	fill_siginfo_note(info->notes + 2, &info->csigdata, siginfo);
++	fill_siginfo_note(info->notes + 2, &info->csigdata, cprm->siginfo);
+ 	fill_auxv_note(info->notes + 3, current->mm);
+ 	info->numnote = 4;
+ 
+@@ -2081,8 +2081,8 @@ static int fill_note_info(struct elfhdr
+ 	}
+ 
+ 	/* Try to dump the FPU. */
+-	info->prstatus->pr_fpvalid = elf_core_copy_task_fpregs(current, regs,
+-							       info->fpu);
++	info->prstatus->pr_fpvalid =
++		elf_core_copy_task_fpregs(current, cprm->regs, info->fpu);
+ 	if (info->prstatus->pr_fpvalid)
+ 		fill_note(info->notes + info->numnote++,
+ 			  "CORE", NT_PRFPREG, sizeof(*info->fpu), info->fpu);
+@@ -2195,7 +2195,7 @@ static int elf_core_dump(struct coredump
+ 	 * Collect all the non-memory information about the process for the
+ 	 * notes.  This also sets up the file header.
+ 	 */
+-	if (!fill_note_info(&elf, e_phnum, &info, cprm->siginfo, cprm->regs))
++	if (!fill_note_info(&elf, e_phnum, &info, cprm))
+ 		goto end_coredump;
+ 
+ 	has_dumped = 1;
 
 
