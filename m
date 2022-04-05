@@ -2,60 +2,60 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AEFD8C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 02:41:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D8BCFC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 02:41:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230000AbiDECng (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 22:43:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49502 "EHLO
+        id S230025AbiDECnl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 4 Apr 2022 22:43:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49530 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229970AbiDECnI (ORCPT
+        with ESMTP id S230024AbiDECnK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 22:43:08 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A986D71EC5
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 18:48:44 -0700 (PDT)
+        Mon, 4 Apr 2022 22:43:10 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 51C442AE9CA
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 18:48:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1649123323;
+        s=mimecast20190719; t=1649123329;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=U8n+4P5JjRaDUHKZYY8oH8Iy0i6vYl4G2VE7hAdGm3Q=;
-        b=XYqWP2IOZP/UU5FPWFCBJQ+q+zF2wpogoTeForttZeLMTkUrGMwdtJnR7genFKEeb05hwc
-        lt5UInW0d31rmawsfOkUEBThCp3Z6dijJ+LzZ9tlfjS085b8UyAFOfxq1sjP7aNUsaFIZ1
-        KAFDK9UfESZsZt9k6Uqfa+Fke85QaHw=
+        bh=Fw6KWLeUFN89OSB0e6nh5J0fTPBfve4te3QhwRo4Loc=;
+        b=LUEylUBj5/6qb4WhFA/BsuRVsHZM/JmHgyEEgIlkR2WooOJ2QmMzHQ1jGAVA5BYkGnJVji
+        QjZ0C9huFQhFdVynzG8GZ15Jhhp/q4Xr1ps6fcegNGDos2mLAYlG2YEtn4Hg6z7WZ69euJ
+        a2fFGIHj71fGtLqbiwcHnGWge+2/Mhc=
 Received: from mail-il1-f197.google.com (mail-il1-f197.google.com
  [209.85.166.197]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-447-lQqqXMKxPqeKenshi0aNSQ-1; Mon, 04 Apr 2022 21:48:42 -0400
-X-MC-Unique: lQqqXMKxPqeKenshi0aNSQ-1
-Received: by mail-il1-f197.google.com with SMTP id f18-20020a926a12000000b002be48b02bc6so7180847ilc.17
-        for <linux-kernel@vger.kernel.org>; Mon, 04 Apr 2022 18:48:42 -0700 (PDT)
+ us-mta-326-rX5Fmf9mP729tvveIqKRzQ-1; Mon, 04 Apr 2022 21:48:48 -0400
+X-MC-Unique: rX5Fmf9mP729tvveIqKRzQ-1
+Received: by mail-il1-f197.google.com with SMTP id x1-20020a056e020f0100b002c98fce9c13so7221709ilj.3
+        for <linux-kernel@vger.kernel.org>; Mon, 04 Apr 2022 18:48:48 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=U8n+4P5JjRaDUHKZYY8oH8Iy0i6vYl4G2VE7hAdGm3Q=;
-        b=HEMA8i7TF0pjLLZqzLr5xJWLbup3atpL/gXuGYUHqk9Ed236hX0Hu3MvrioldgKHXY
-         uiU9bnuOCz6ImkCVmFRTwTKsPHz9CVXbHNl6BLnn6KLbIdFwDIIitDSlxPseKPDwUVHU
-         RNu+d6YI0xh6ihdBJ8sTD9/eWsMSUo+CjoRbOMfrAGjY54TdT0YTQI+lzZu0UwRzcbPJ
-         WBaPiIZUdIPMaV/URgyc3yqv9QVo52y4Iux2hHFfMNQ6iF/BfB6h7/BLJNwQSVetTxv5
-         UGYvBcfRmkbdZaPclbW0aLr105GUQO19UxZJ2fWvrDbWbh1oXGnuBZyG+9JZSxeMXVa8
-         ik4A==
-X-Gm-Message-State: AOAM531YOvelJf6gXc4y+1C78YHevJrKiyBJ1tGOuvVjWr4U/BwyBHW6
-        JtuMFp3S+FLhkPyArEFIyRBlYBjYe86XpweUa9Wyv01ugHnOdr50sSiV3Lsr0hYAJZypnvI9lB0
-        OfuFnzzrha0nDmJdeAqMGraAmrnP6Cwqd/tV9NCrrg6j0ssrXlib5kkG/Og5NGOEbQvf5rM2HdQ
+        bh=Fw6KWLeUFN89OSB0e6nh5J0fTPBfve4te3QhwRo4Loc=;
+        b=aB3SJyspUqmMxm7d9nV3lRVQA2ioCBs3REhZT4i0LsXyEPDWH/Z59Z1JSM0ozF2JmD
+         8A+iPN9e96etRzQF8tmBBafeALA/DU7ebRJkNAQhhUSGSrMnpAwBR2Ry+ZBdPWmYgBCR
+         NXk0jT+Sjme1L1nUtzYjd1OtfIYnJqd8wF4TnCMrhYOPJ1/AauAGJf0fMz7FI80yisM1
+         lGGxrTnQn2VNODFUlG15Sm37mrPd8gYC7kjm/FyRR2Tk2hO1ZDLZRRRfMVHzuQxSLnFp
+         4PSN5ACPqnH/JH/XclunIi+GmS/A+ph91K74SCPBF5XFvibw7+0fDaZjkDcxAYuJZM6X
+         Jvgg==
+X-Gm-Message-State: AOAM533JFaeZTE+5iTTVEe2am2+40GoH93QRXcAn2W0mfk+TtDyfnz9L
+        i6hgoz6WtyDjt+1mFZjH7wGjROkVrVSLVsUISNTyMEywr6W3gK1XGFSsKTTUiVGNKQPb6n3XI/f
+        2NMZVk/ZWP2+aR1+HEk5czlNre259fr/o3+mU7LB0YDRrX7G4JmAbZX/4ymuih5Lrq40tK99FHg
         ==
-X-Received: by 2002:a05:6602:490:b0:638:c8ed:1e38 with SMTP id y16-20020a056602049000b00638c8ed1e38mr589245iov.202.1649123321824;
-        Mon, 04 Apr 2022 18:48:41 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzBgvwBVvGE1Vqojm5+pnVWt3lmiOe9Zr6Q3Q9kFVvDL2PkJIvmVaEpRNWmsAlmIdguH9c/+A==
-X-Received: by 2002:a05:6602:490:b0:638:c8ed:1e38 with SMTP id y16-20020a056602049000b00638c8ed1e38mr589217iov.202.1649123321422;
-        Mon, 04 Apr 2022 18:48:41 -0700 (PDT)
+X-Received: by 2002:a92:6c0c:0:b0:2c7:ace3:7ecc with SMTP id h12-20020a926c0c000000b002c7ace37eccmr567927ilc.124.1649123327554;
+        Mon, 04 Apr 2022 18:48:47 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJx84rejRE/kakXdjuASUjJL9LRrkKumCkwNt6LzBT3SqnMgqMybL7GwNEjDRDEuJ5YeMeE60w==
+X-Received: by 2002:a92:6c0c:0:b0:2c7:ace3:7ecc with SMTP id h12-20020a926c0c000000b002c7ace37eccmr567899ilc.124.1649123327154;
+        Mon, 04 Apr 2022 18:48:47 -0700 (PDT)
 Received: from localhost.localdomain (cpec09435e3e0ee-cmc09435e3e0ec.cpe.net.cable.rogers.com. [99.241.198.116])
-        by smtp.gmail.com with ESMTPSA id s5-20020a056602168500b0064c82210ce4sm7650607iow.13.2022.04.04.18.48.40
+        by smtp.gmail.com with ESMTPSA id m4-20020a0566022e8400b006463059bf2fsm7314659iow.49.2022.04.04.18.48.45
         (version=TLS1_3 cipher=TLS_CHACHA20_POLY1305_SHA256 bits=256/256);
-        Mon, 04 Apr 2022 18:48:41 -0700 (PDT)
+        Mon, 04 Apr 2022 18:48:46 -0700 (PDT)
 From:   Peter Xu <peterx@redhat.com>
 To:     linux-kernel@vger.kernel.org, linux-mm@kvack.org
 Cc:     Mike Kravetz <mike.kravetz@oracle.com>,
@@ -70,9 +70,9 @@ Cc:     Mike Kravetz <mike.kravetz@oracle.com>,
         Andrew Morton <akpm@linux-foundation.org>,
         Axel Rasmussen <axelrasmussen@google.com>,
         Alistair Popple <apopple@nvidia.com>, peterx@redhat.com
-Subject: [PATCH v8 04/23] mm/uffd: PTE_MARKER_UFFD_WP
-Date:   Mon,  4 Apr 2022 21:48:38 -0400
-Message-Id: <20220405014838.14131-1-peterx@redhat.com>
+Subject: [PATCH v8 06/23] mm/shmem: Handle uffd-wp special pte in page fault handler
+Date:   Mon,  4 Apr 2022 21:48:44 -0400
+Message-Id: <20220405014844.14239-1-peterx@redhat.com>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <20220405014646.13522-1-peterx@redhat.com>
 References: <20220405014646.13522-1-peterx@redhat.com>
@@ -82,127 +82,190 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patch introduces the 1st user of pte marker: the uffd-wp marker.
+File-backed memories are prone to unmap/swap so the ptes are always unstable,
+because they can be easily faulted back later using the page cache.  This could
+lead to uffd-wp getting lost when unmapping or swapping out such memory.  One
+example is shmem.  PTE markers are needed to store those information.
 
-When the pte marker is installed with the uffd-wp bit set, it means this pte
-was wr-protected by uffd.
+This patch prepares it by handling uffd-wp pte markers first it is applied
+elsewhere, so that the page fault handler can recognize uffd-wp pte markers.
 
-We will use this special pte to arm the ptes that got either unmapped or
-swapped out for a file-backed region that was previously wr-protected.  This
-special pte could trigger a page fault just like swap entries.
+The handling of uffd-wp pte markers is similar to missing fault, it's just that
+we'll handle this "missing fault" when we see the pte markers, meanwhile we
+need to make sure the marker information is kept during processing the fault.
 
-This idea is greatly inspired by Hugh and Andrea in the discussion, which is
-referenced in the links below.
+This is a slow path of uffd-wp handling, because zapping of wr-protected shmem
+ptes should be rare.  So far it should only trigger in two conditions:
 
-Some helpers are introduced to detect whether a swap pte is uffd wr-protected.
-After the pte marker introduced, one swap pte can be wr-protected in two forms:
-either it is a normal swap pte and it has _PAGE_SWP_UFFD_WP set, or it's a pte
-marker that has PTE_MARKER_UFFD_WP set.
+  (1) When trying to punch holes in shmem_fallocate(), there is an optimization
+      to zap the pgtables before evicting the page.
 
-Link: https://lore.kernel.org/lkml/20201126222359.8120-1-peterx@redhat.com/
-Link: https://lore.kernel.org/lkml/20201130230603.46187-1-peterx@redhat.com/
-Suggested-by: Andrea Arcangeli <aarcange@redhat.com>
-Suggested-by: Hugh Dickins <hughd@google.com>
+  (2) When swapping out shmem pages.
+
+Because of this, the page fault handling is simplifed too by not sending the
+wr-protect message in the 1st page fault, instead the page will be installed
+read-only, so the uffd-wp message will be generated in the next fault, which
+will trigger the do_wp_page() path of general uffd-wp handling.
+
+Disable fault-around for all uffd-wp registered ranges for extra safety just
+like uffd-minor fault, and clean the code up.
+
 Signed-off-by: Peter Xu <peterx@redhat.com>
 ---
- include/linux/swapops.h       |  3 ++-
- include/linux/userfaultfd_k.h | 43 +++++++++++++++++++++++++++++++++++
- mm/Kconfig                    |  9 ++++++++
- 3 files changed, 54 insertions(+), 1 deletion(-)
+ include/linux/userfaultfd_k.h | 17 +++++++++
+ mm/memory.c                   | 67 ++++++++++++++++++++++++++++++-----
+ 2 files changed, 75 insertions(+), 9 deletions(-)
 
-diff --git a/include/linux/swapops.h b/include/linux/swapops.h
-index 7a00627845f0..fffbba0036f6 100644
---- a/include/linux/swapops.h
-+++ b/include/linux/swapops.h
-@@ -276,7 +276,8 @@ static inline int is_readable_migration_entry(swp_entry_t entry)
- 
- typedef unsigned long pte_marker;
- 
--#define  PTE_MARKER_MASK     (0)
-+#define  PTE_MARKER_UFFD_WP  BIT(0)
-+#define  PTE_MARKER_MASK     (PTE_MARKER_UFFD_WP)
- 
- #ifdef CONFIG_PTE_MARKER
- 
 diff --git a/include/linux/userfaultfd_k.h b/include/linux/userfaultfd_k.h
-index 33cea484d1ad..bd09c3c89b59 100644
+index bd09c3c89b59..827e38b7be65 100644
 --- a/include/linux/userfaultfd_k.h
 +++ b/include/linux/userfaultfd_k.h
-@@ -15,6 +15,8 @@
+@@ -96,6 +96,18 @@ static inline bool uffd_disable_huge_pmd_share(struct vm_area_struct *vma)
+ 	return vma->vm_flags & (VM_UFFD_WP | VM_UFFD_MINOR);
+ }
  
- #include <linux/fcntl.h>
- #include <linux/mm.h>
-+#include <linux/swap.h>
-+#include <linux/swapops.h>
- #include <asm-generic/pgtable_uffd.h>
- 
- /* The set of all possible UFFD-related VM flags. */
-@@ -236,4 +238,45 @@ static inline void userfaultfd_unmap_complete(struct mm_struct *mm,
- 
- #endif /* CONFIG_USERFAULTFD */
- 
-+static inline bool pte_marker_entry_uffd_wp(swp_entry_t entry)
++/*
++ * Don't do fault around for either WP or MINOR registered uffd range.  For
++ * MINOR registered range, fault around will be a total disaster and ptes can
++ * be installed without notifications; for WP it should mostly be fine as long
++ * as the fault around checks for pte_none() before the installation, however
++ * to be super safe we just forbid it.
++ */
++static inline bool uffd_disable_fault_around(struct vm_area_struct *vma)
 +{
-+	return is_pte_marker_entry(entry) &&
-+	    (pte_marker_get(entry) & PTE_MARKER_UFFD_WP);
++	return vma->vm_flags & (VM_UFFD_WP | VM_UFFD_MINOR);
 +}
 +
-+static inline bool pte_marker_uffd_wp(pte_t pte)
+ static inline bool userfaultfd_missing(struct vm_area_struct *vma)
+ {
+ 	return vma->vm_flags & VM_UFFD_MISSING;
+@@ -236,6 +248,11 @@ static inline void userfaultfd_unmap_complete(struct mm_struct *mm,
+ {
+ }
+ 
++static inline bool uffd_disable_fault_around(struct vm_area_struct *vma)
 +{
-+#ifdef CONFIG_PTE_MARKER_UFFD_WP
-+	swp_entry_t entry;
-+
-+	if (!is_swap_pte(pte))
-+		return false;
-+
-+	entry = pte_to_swp_entry(pte);
-+
-+	return pte_marker_entry_uffd_wp(entry);
-+#else
 +	return false;
-+#endif
++}
++
+ #endif /* CONFIG_USERFAULTFD */
+ 
+ static inline bool pte_marker_entry_uffd_wp(swp_entry_t entry)
+diff --git a/mm/memory.c b/mm/memory.c
+index b1af996b09ca..21abb8a30553 100644
+--- a/mm/memory.c
++++ b/mm/memory.c
+@@ -3559,6 +3559,39 @@ static inline bool should_try_to_free_swap(struct page *page,
+ 		page_count(page) == 2;
+ }
+ 
++static vm_fault_t pte_marker_clear(struct vm_fault *vmf)
++{
++	vmf->pte = pte_offset_map_lock(vmf->vma->vm_mm, vmf->pmd,
++				       vmf->address, &vmf->ptl);
++	/*
++	 * Be careful so that we will only recover a special uffd-wp pte into a
++	 * none pte.  Otherwise it means the pte could have changed, so retry.
++	 */
++	if (is_pte_marker(*vmf->pte))
++		pte_clear(vmf->vma->vm_mm, vmf->address, vmf->pte);
++	pte_unmap_unlock(vmf->pte, vmf->ptl);
++	return 0;
 +}
 +
 +/*
-+ * Returns true if this is a swap pte and was uffd-wp wr-protected in either
-+ * forms (pte marker or a normal swap pte), false otherwise.
++ * This is actually a page-missing access, but with uffd-wp special pte
++ * installed.  It means this pte was wr-protected before being unmapped.
 + */
-+static inline bool pte_swp_uffd_wp_any(pte_t pte)
++static vm_fault_t pte_marker_handle_uffd_wp(struct vm_fault *vmf)
 +{
-+#ifdef CONFIG_PTE_MARKER_UFFD_WP
-+	if (!is_swap_pte(pte))
-+		return false;
++	/*
++	 * Just in case there're leftover special ptes even after the region
++	 * got unregistered - we can simply clear them.  We can also do that
++	 * proactively when e.g. when we do UFFDIO_UNREGISTER upon some uffd-wp
++	 * ranges, but it should be more efficient to be done lazily here.
++	 */
++	if (unlikely(!userfaultfd_wp(vmf->vma) || vma_is_anonymous(vmf->vma)))
++		return pte_marker_clear(vmf);
 +
-+	if (pte_swp_uffd_wp(pte))
-+		return true;
-+
-+	if (pte_marker_uffd_wp(pte))
-+		return true;
-+#endif
-+	return false;
++	/* do_fault() can handle pte markers too like none pte */
++	return do_fault(vmf);
 +}
 +
- #endif /* _LINUX_USERFAULTFD_K_H */
-diff --git a/mm/Kconfig b/mm/Kconfig
-index a1688b9314b2..6e7c2d59fa96 100644
---- a/mm/Kconfig
-+++ b/mm/Kconfig
-@@ -915,6 +915,15 @@ config PTE_MARKER
- 	help
- 	  Allows to create marker PTEs for file-backed memory.
+ static vm_fault_t handle_pte_marker(struct vm_fault *vmf)
+ {
+ 	swp_entry_t entry = pte_to_swp_entry(vmf->orig_pte);
+@@ -3572,8 +3605,11 @@ static vm_fault_t handle_pte_marker(struct vm_fault *vmf)
+ 	if (WARN_ON_ONCE(vma_is_anonymous(vmf->vma) || !marker))
+ 		return VM_FAULT_SIGBUS;
  
-+config PTE_MARKER_UFFD_WP
-+	bool "Marker PTEs support for userfaultfd write protection"
-+	depends on PTE_MARKER && HAVE_ARCH_USERFAULTFD_WP
+-	/* TODO: handle pte markers */
+-	return 0;
++	if (pte_marker_entry_uffd_wp(entry))
++		return pte_marker_handle_uffd_wp(vmf);
 +
-+	help
-+	  Allows to create marker PTEs for userfaultfd write protection
-+	  purposes.  It is required to enable userfaultfd write protection on
-+	  file-backed memory types like shmem and hugetlbfs.
-+
- source "mm/damon/Kconfig"
++	/* This is an unknown pte marker */
++	return VM_FAULT_SIGBUS;
+ }
  
- endmenu
+ /*
+@@ -4157,6 +4193,7 @@ vm_fault_t do_set_pmd(struct vm_fault *vmf, struct page *page)
+ void do_set_pte(struct vm_fault *vmf, struct page *page, unsigned long addr)
+ {
+ 	struct vm_area_struct *vma = vmf->vma;
++	bool uffd_wp = pte_marker_uffd_wp(vmf->orig_pte);
+ 	bool write = vmf->flags & FAULT_FLAG_WRITE;
+ 	bool prefault = vmf->address != addr;
+ 	pte_t entry;
+@@ -4171,6 +4208,8 @@ void do_set_pte(struct vm_fault *vmf, struct page *page, unsigned long addr)
+ 
+ 	if (write)
+ 		entry = maybe_mkwrite(pte_mkdirty(entry), vma);
++	if (unlikely(uffd_wp))
++		entry = pte_mkuffd_wp(pte_wrprotect(entry));
+ 	/* copy-on-write page */
+ 	if (write && !(vma->vm_flags & VM_SHARED)) {
+ 		inc_mm_counter_fast(vma->vm_mm, MM_ANONPAGES);
+@@ -4344,9 +4383,21 @@ static vm_fault_t do_fault_around(struct vm_fault *vmf)
+ 	return vmf->vma->vm_ops->map_pages(vmf, start_pgoff, end_pgoff);
+ }
+ 
++/* Return true if we should do read fault-around, false otherwise */
++static inline bool should_fault_around(struct vm_fault *vmf)
++{
++	/* No ->map_pages?  No way to fault around... */
++	if (!vmf->vma->vm_ops->map_pages)
++		return false;
++
++	if (uffd_disable_fault_around(vmf->vma))
++		return false;
++
++	return fault_around_bytes >> PAGE_SHIFT > 1;
++}
++
+ static vm_fault_t do_read_fault(struct vm_fault *vmf)
+ {
+-	struct vm_area_struct *vma = vmf->vma;
+ 	vm_fault_t ret = 0;
+ 
+ 	/*
+@@ -4354,12 +4405,10 @@ static vm_fault_t do_read_fault(struct vm_fault *vmf)
+ 	 * if page by the offset is not ready to be mapped (cold cache or
+ 	 * something).
+ 	 */
+-	if (vma->vm_ops->map_pages && fault_around_bytes >> PAGE_SHIFT > 1) {
+-		if (likely(!userfaultfd_minor(vmf->vma))) {
+-			ret = do_fault_around(vmf);
+-			if (ret)
+-				return ret;
+-		}
++	if (should_fault_around(vmf)) {
++		ret = do_fault_around(vmf);
++		if (ret)
++			return ret;
+ 	}
+ 
+ 	ret = __do_fault(vmf);
 -- 
 2.32.0
 
