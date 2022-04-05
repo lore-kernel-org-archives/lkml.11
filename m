@@ -2,109 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 86B6BC433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B17BBC4332F
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 01:13:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1448930AbiDFBMU (ORCPT
+        id S1840821AbiDFBM6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 21:12:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55080 "EHLO
+        Tue, 5 Apr 2022 21:12:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39808 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1457877AbiDEQzF (ORCPT
+        with ESMTP id S1349132AbiDEJtM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 12:55:05 -0400
-Received: from 14.mo581.mail-out.ovh.net (14.mo581.mail-out.ovh.net [178.33.251.19])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 586BC326E9
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 09:53:06 -0700 (PDT)
-Received: from player734.ha.ovh.net (unknown [10.110.171.5])
-        by mo581.mail-out.ovh.net (Postfix) with ESMTP id E660823BE0
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 16:35:42 +0000 (UTC)
-Received: from sk2.org (82-65-25-201.subs.proxad.net [82.65.25.201])
-        (Authenticated sender: steve@sk2.org)
-        by player734.ha.ovh.net (Postfix) with ESMTPSA id 85D1D28FEBF99;
-        Tue,  5 Apr 2022 16:35:36 +0000 (UTC)
-Authentication-Results: garm.ovh; auth=pass (GARM-102R004d61553c7-e202-4547-945e-565ecbb11848,
-                    8AF55017BACD44284FC599BC4826E0280D36FCC4) smtp.auth=steve@sk2.org
-X-OVh-ClientIp: 82.65.25.201
-From:   Stephen Kitt <steve@sk2.org>
-To:     M R Swami Reddy <mr.swami.reddy@ti.com>,
-        Vishwas A Deshpande <vishwas.a.deshpande@ti.com>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>
-Cc:     Wolfram Sang <wsa@kernel.org>, linux-kernel@vger.kernel.org,
-        Stephen Kitt <steve@sk2.org>
-Subject: [PATCH] ASoC: lm49xxx: use simple i2c probe function
-Date:   Tue,  5 Apr 2022 18:35:33 +0200
-Message-Id: <20220405163533.2157401-1-steve@sk2.org>
-X-Mailer: git-send-email 2.27.0
+        Tue, 5 Apr 2022 05:49:12 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 714C4AC044;
+        Tue,  5 Apr 2022 02:41:11 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0F31161675;
+        Tue,  5 Apr 2022 09:41:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1AD2BC385A3;
+        Tue,  5 Apr 2022 09:41:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649151670;
+        bh=s0Xl/tDZ/nn9ljOEmMoDjIHW5BTj9WeUhGDK0Dd9ojI=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=fpROFFrMfgDvr6ZNya6F5LqqYvdPTDSH1nOQHwjvl9D0pBw6TmgwUEVFcVRNXL51c
+         naPp+XOtTq/VdYhBwkPpVTOrGHc7xhS4IEQ5/v+PDDpfOB+HQazKK5mpFbtmNVfVqv
+         4AAO5TGg4XfrFSHicsaGYJemn+WJy0DwTWI8UhyE=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Sebastian Reichel <sebastian.reichel@collabora.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 451/913] power: supply: ab8500: Fix memory leak in ab8500_fg_sysfs_init
+Date:   Tue,  5 Apr 2022 09:25:13 +0200
+Message-Id: <20220405070353.367451209@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-Ovh-Tracer-Id: 8060880383069685382
-X-VR-SPAMSTATE: OK
-X-VR-SPAMSCORE: -100
-X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvvddrudejgedgleelucetufdoteggodetrfdotffvucfrrhhofhhilhgvmecuqfggjfdpvefjgfevmfevgfenuceurghilhhouhhtmecuhedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmnecujfgurhephffvufffkffoggfgsedtkeertdertddtnecuhfhrohhmpefuthgvphhhvghnucfmihhtthcuoehsthgvvhgvsehskhdvrdhorhhgqeenucggtffrrghtthgvrhhnpeetgedugfelkeeikeetgeegteevfeeufeetuefgudeiiedthfehtdeffeekvdeffeenucfkpheptddrtddrtddrtddpkedvrdeihedrvdehrddvtddunecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmohguvgepshhmthhpohhuthdphhgvlhhopehplhgrhigvrhejfeegrdhhrgdrohhvhhdrnhgvthdpihhnvghtpedtrddtrddtrddtpdhmrghilhhfrhhomhepshhtvghvvgesshhkvddrohhrghdpnhgspghrtghpthhtohepuddprhgtphhtthhopehlihhnuhigqdhkvghrnhgvlhesvhhgvghrrdhkvghrnhgvlhdrohhrgh
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The i2c probe functions here don't use the id information provided in
-their second argument, so the single-parameter i2c probe function
-("probe_new") can be used instead.
+From: Miaoqian Lin <linmq006@gmail.com>
 
-This avoids scanning the identifier tables during probes.
+[ Upstream commit 6a4760463dbc6b603690938c468839985189ce0a ]
 
-Signed-off-by: Stephen Kitt <steve@sk2.org>
+kobject_init_and_add() takes reference even when it fails.
+According to the doc of kobject_init_and_add()：
+
+   If this function returns an error, kobject_put() must be called to
+   properly clean up the memory associated with the object.
+
+Fix memory leak by calling kobject_put().
+
+Fixes: 8c0984e5a753 ("power: move power supply drivers to power/supply")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/codecs/isabelle.c | 5 ++---
- sound/soc/codecs/lm49453.c  | 5 ++---
- 2 files changed, 4 insertions(+), 6 deletions(-)
+ drivers/power/supply/ab8500_fg.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/sound/soc/codecs/isabelle.c b/sound/soc/codecs/isabelle.c
-index 1d86b6a0eb9d..39be31e1282e 100644
---- a/sound/soc/codecs/isabelle.c
-+++ b/sound/soc/codecs/isabelle.c
-@@ -1108,8 +1108,7 @@ static const struct regmap_config isabelle_regmap_config = {
- 	.cache_type = REGCACHE_RBTREE,
- };
+diff --git a/drivers/power/supply/ab8500_fg.c b/drivers/power/supply/ab8500_fg.c
+index 05fe9724ba50..57799a8079d4 100644
+--- a/drivers/power/supply/ab8500_fg.c
++++ b/drivers/power/supply/ab8500_fg.c
+@@ -2545,8 +2545,10 @@ static int ab8500_fg_sysfs_init(struct ab8500_fg *di)
+ 	ret = kobject_init_and_add(&di->fg_kobject,
+ 		&ab8500_fg_ktype,
+ 		NULL, "battery");
+-	if (ret < 0)
++	if (ret < 0) {
++		kobject_put(&di->fg_kobject);
+ 		dev_err(di->dev, "failed to create sysfs entry\n");
++	}
  
--static int isabelle_i2c_probe(struct i2c_client *i2c,
--			      const struct i2c_device_id *id)
-+static int isabelle_i2c_probe(struct i2c_client *i2c)
- {
- 	struct regmap *isabelle_regmap;
- 	int ret = 0;
-@@ -1144,7 +1143,7 @@ static struct i2c_driver isabelle_i2c_driver = {
- 	.driver = {
- 		.name = "isabelle",
- 	},
--	.probe = isabelle_i2c_probe,
-+	.probe_new = isabelle_i2c_probe,
- 	.id_table = isabelle_i2c_id,
- };
- 
-diff --git a/sound/soc/codecs/lm49453.c b/sound/soc/codecs/lm49453.c
-index 973d781b4b6a..bd0078e4499b 100644
---- a/sound/soc/codecs/lm49453.c
-+++ b/sound/soc/codecs/lm49453.c
-@@ -1412,8 +1412,7 @@ static const struct regmap_config lm49453_regmap_config = {
- 	.cache_type = REGCACHE_RBTREE,
- };
- 
--static int lm49453_i2c_probe(struct i2c_client *i2c,
--			     const struct i2c_device_id *id)
-+static int lm49453_i2c_probe(struct i2c_client *i2c)
- {
- 	struct lm49453_priv *lm49453;
- 	int ret = 0;
-@@ -1458,7 +1457,7 @@ static struct i2c_driver lm49453_i2c_driver = {
- 	.driver = {
- 		.name = "lm49453",
- 	},
--	.probe = lm49453_i2c_probe,
-+	.probe_new = lm49453_i2c_probe,
- 	.remove = lm49453_i2c_remove,
- 	.id_table = lm49453_i2c_id,
- };
+ 	return ret;
+ }
 -- 
-2.27.0
+2.34.1
+
+
 
