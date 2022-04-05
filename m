@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C36EC35273
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A13B5C3527A
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 13:24:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240938AbiDENCe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 09:02:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40636 "EHLO
+        id S1353324AbiDENHN (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 09:07:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34658 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237181AbiDEJQR (ORCPT
+        with ESMTP id S1343996AbiDEJQo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:16:17 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86B3DCFB89;
-        Tue,  5 Apr 2022 02:01:38 -0700 (PDT)
+        Tue, 5 Apr 2022 05:16:44 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A57BC10FFB;
+        Tue,  5 Apr 2022 02:02:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2203861562;
-        Tue,  5 Apr 2022 09:01:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2CC99C385A1;
-        Tue,  5 Apr 2022 09:01:37 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5479FB81BAE;
+        Tue,  5 Apr 2022 09:02:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B352BC385A0;
+        Tue,  5 Apr 2022 09:02:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649149297;
-        bh=9gVJ8hVCaDqgoBzxse+4FYk1575fvUVWdDSL9iRYPdw=;
+        s=korg; t=1649149371;
+        bh=q1UeRlLEWK3JLoRsaXN04m0q8F3HuCNVdsPigD7nWpE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OpB+Uq+L7cjuMNIC5sz1FvfmxkKiXBFsD2H5Y03giBXL2isQuYh2UAFvAb24ANVGQ
-         +GZtE+V9i6psLKPlt5WT0ad00b/lU588bhrw/09166sJhXBxIpJlhFm/upy2gqGz0Q
-         3hDAbdY4OA0M6sKYKKdiYsRZSZ97vtvC8eG0jCuo=
+        b=K6PVNIiv82Qe+3nuubNep0Y5mfYkBGt3eZLqgLIAKe+SGQDfpS9p9gmC6ZI1uOL4o
+         TF2N8HTJVR041lzlVxaMkMGRhN+Ygu8u5a3eRCBcqHnstdFh3sZ5lYqnmkIqm+nD8V
+         mP6FTKqYwcygpwQHAqwHL/e/5WEtGhu0JldxDrQ4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Rafa=C5=82=20Mi=C5=82ecki?= <rafal@milecki.pl>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vinod Koul <vkoul@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0664/1017] phy: phy-brcm-usb: fixup BCM4908 support
-Date:   Tue,  5 Apr 2022 09:26:17 +0200
-Message-Id: <20220405070413.992387130@linuxfoundation.org>
+        stable@vger.kernel.org, Jacky Bai <ping.bai@nxp.com>,
+        Robin Gong <yibin.gong@nxp.com>, Peng Fan <peng.fan@nxp.com>,
+        Jassi Brar <jaswinder.singh@linaro.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 0690/1017] mailbox: imx: fix crash in resume on i.mx8ulp
+Date:   Tue,  5 Apr 2022 09:26:43 +0200
+Message-Id: <20220405070414.756491194@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -50,156 +51,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Rafał Miłecki <rafal@milecki.pl>
+From: Robin Gong <yibin.gong@nxp.com>
 
-[ Upstream commit 32942d33d63d27714ed16a4176e5a99547adb6e0 ]
+[ Upstream commit 8219efd08a0aa1d7944bdb66d84ba57549258968 ]
 
-Just like every other family BCM4908 should get its own enum value. That
-is required to properly handle it in chipset conditional code.
+check 'priv->clk' before 'imx_mu_read()' otherwise crash happens on
+i.mx8ulp, since clock not enabled.
 
-The real change is excluding BCM4908 from the PLL reprogramming code
-(see brcmusb_usb3_pll_54mhz()). I'm not sure what's the BCM4908
-reference clock frequency but:
-1. BCM4908 custom driver from Broadcom's SDK doesn't reprogram PLL
-2. Doing that in Linux driver stopped PHY handling some USB 3.0 devices
-
-This change makes USB 3.0 PHY recognize e.g.:
-1. 04e8:6860 - Samsung Electronics Co., Ltd Galaxy series, misc. (MTP mode)
-2. 1058:259f - Western Digital My Passport 259F
-
-Broadcom's STB SoCs come with a set of SUN_TOP_CTRL_* registers that
-allow reading chip family and product ids. Such a block & register is
-missing on BCM4908 so this commit introduces "compatible" string
-specific binding.
-
-Fixes: 4b402fa8e0b7 ("phy: phy-brcm-usb: support PHY on the BCM4908")
-Signed-off-by: Rafał Miłecki <rafal@milecki.pl>
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
-Link: https://lore.kernel.org/r/20220218172459.10431-1-zajec5@gmail.com
-Signed-off-by: Vinod Koul <vkoul@kernel.org>
+Fixes: 4f0b776ef5831 ("mailbox: imx-mailbox: support i.MX8ULP MU")
+Reviewed-by: Jacky Bai <ping.bai@nxp.com>
+Signed-off-by: Robin Gong <yibin.gong@nxp.com>
+Signed-off-by: Peng Fan <peng.fan@nxp.com>
+Signed-off-by: Jassi Brar <jaswinder.singh@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/phy/broadcom/phy-brcm-usb-init.c | 36 ++++++++++++++++++++++++
- drivers/phy/broadcom/phy-brcm-usb-init.h |  1 +
- drivers/phy/broadcom/phy-brcm-usb.c      | 11 +++++++-
- 3 files changed, 47 insertions(+), 1 deletion(-)
+ drivers/mailbox/imx-mailbox.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/phy/broadcom/phy-brcm-usb-init.c b/drivers/phy/broadcom/phy-brcm-usb-init.c
-index 9391ab42a12b..dd0f66288fbd 100644
---- a/drivers/phy/broadcom/phy-brcm-usb-init.c
-+++ b/drivers/phy/broadcom/phy-brcm-usb-init.c
-@@ -79,6 +79,7 @@
- 
- enum brcm_family_type {
- 	BRCM_FAMILY_3390A0,
-+	BRCM_FAMILY_4908,
- 	BRCM_FAMILY_7250B0,
- 	BRCM_FAMILY_7271A0,
- 	BRCM_FAMILY_7364A0,
-@@ -96,6 +97,7 @@ enum brcm_family_type {
- 
- static const char *family_names[BRCM_FAMILY_COUNT] = {
- 	USB_BRCM_FAMILY(3390A0),
-+	USB_BRCM_FAMILY(4908),
- 	USB_BRCM_FAMILY(7250B0),
- 	USB_BRCM_FAMILY(7271A0),
- 	USB_BRCM_FAMILY(7364A0),
-@@ -203,6 +205,27 @@ usb_reg_bits_map_table[BRCM_FAMILY_COUNT][USB_CTRL_SELECTOR_COUNT] = {
- 		USB_CTRL_USB_PM_USB20_HC_RESETB_VAR_MASK,
- 		ENDIAN_SETTINGS, /* USB_CTRL_SETUP ENDIAN bits */
- 	},
-+	/* 4908 */
-+	[BRCM_FAMILY_4908] = {
-+		0, /* USB_CTRL_SETUP_SCB1_EN_MASK */
-+		0, /* USB_CTRL_SETUP_SCB2_EN_MASK */
-+		0, /* USB_CTRL_SETUP_SS_EHCI64BIT_EN_MASK */
-+		0, /* USB_CTRL_SETUP_STRAP_IPP_SEL_MASK */
-+		0, /* USB_CTRL_SETUP_OC3_DISABLE_MASK */
-+		0, /* USB_CTRL_PLL_CTL_PLL_IDDQ_PWRDN_MASK */
-+		0, /* USB_CTRL_USB_PM_BDC_SOFT_RESETB_MASK */
-+		USB_CTRL_USB_PM_XHC_SOFT_RESETB_MASK,
-+		USB_CTRL_USB_PM_USB_PWRDN_MASK,
-+		0, /* USB_CTRL_USB30_CTL1_XHC_SOFT_RESETB_MASK */
-+		0, /* USB_CTRL_USB30_CTL1_USB3_IOC_MASK */
-+		0, /* USB_CTRL_USB30_CTL1_USB3_IPP_MASK */
-+		0, /* USB_CTRL_USB_DEVICE_CTL1_PORT_MODE_MASK */
-+		0, /* USB_CTRL_USB_PM_SOFT_RESET_MASK */
-+		0, /* USB_CTRL_SETUP_CC_DRD_MODE_ENABLE_MASK */
-+		0, /* USB_CTRL_SETUP_STRAP_CC_DRD_MODE_ENABLE_SEL_MASK */
-+		0, /* USB_CTRL_USB_PM_USB20_HC_RESETB_VAR_MASK */
-+		0, /* USB_CTRL_SETUP ENDIAN bits */
-+	},
- 	/* 7250b0 */
- 	[BRCM_FAMILY_7250B0] = {
- 		USB_CTRL_SETUP_SCB1_EN_MASK,
-@@ -559,6 +582,7 @@ static void brcmusb_usb3_pll_54mhz(struct brcm_usb_init_params *params)
+diff --git a/drivers/mailbox/imx-mailbox.c b/drivers/mailbox/imx-mailbox.c
+index 544de2db6453..3c9c87b9c872 100644
+--- a/drivers/mailbox/imx-mailbox.c
++++ b/drivers/mailbox/imx-mailbox.c
+@@ -718,7 +718,7 @@ static int __maybe_unused imx_mu_resume_noirq(struct device *dev)
+ 	 * send failed, may lead to system freeze. This issue
+ 	 * is observed by testing freeze mode suspend.
  	 */
- 	switch (params->selected_family) {
- 	case BRCM_FAMILY_3390A0:
-+	case BRCM_FAMILY_4908:
- 	case BRCM_FAMILY_7250B0:
- 	case BRCM_FAMILY_7366C0:
- 	case BRCM_FAMILY_74371A0:
-@@ -1004,6 +1028,18 @@ static const struct brcm_usb_init_ops bcm7445_ops = {
- 	.set_dual_select = usb_set_dual_select,
- };
- 
-+void brcm_usb_dvr_init_4908(struct brcm_usb_init_params *params)
-+{
-+	int fam;
-+
-+	fam = BRCM_FAMILY_4908;
-+	params->selected_family = fam;
-+	params->usb_reg_bits_map =
-+		&usb_reg_bits_map_table[fam][0];
-+	params->family_name = family_names[fam];
-+	params->ops = &bcm7445_ops;
-+}
-+
- void brcm_usb_dvr_init_7445(struct brcm_usb_init_params *params)
- {
- 	int fam;
-diff --git a/drivers/phy/broadcom/phy-brcm-usb-init.h b/drivers/phy/broadcom/phy-brcm-usb-init.h
-index a39f30fa2e99..1ccb5ddab865 100644
---- a/drivers/phy/broadcom/phy-brcm-usb-init.h
-+++ b/drivers/phy/broadcom/phy-brcm-usb-init.h
-@@ -64,6 +64,7 @@ struct  brcm_usb_init_params {
- 	bool suspend_with_clocks;
- };
- 
-+void brcm_usb_dvr_init_4908(struct brcm_usb_init_params *params);
- void brcm_usb_dvr_init_7445(struct brcm_usb_init_params *params);
- void brcm_usb_dvr_init_7216(struct brcm_usb_init_params *params);
- void brcm_usb_dvr_init_7211b0(struct brcm_usb_init_params *params);
-diff --git a/drivers/phy/broadcom/phy-brcm-usb.c b/drivers/phy/broadcom/phy-brcm-usb.c
-index 0f1deb6e0eab..2cb3779fcdf8 100644
---- a/drivers/phy/broadcom/phy-brcm-usb.c
-+++ b/drivers/phy/broadcom/phy-brcm-usb.c
-@@ -283,6 +283,15 @@ static const struct attribute_group brcm_usb_phy_group = {
- 	.attrs = brcm_usb_phy_attrs,
- };
- 
-+static const struct match_chip_info chip_info_4908 = {
-+	.init_func = &brcm_usb_dvr_init_4908,
-+	.required_regs = {
-+		BRCM_REGS_CTRL,
-+		BRCM_REGS_XHCI_EC,
-+		-1,
-+	},
-+};
-+
- static const struct match_chip_info chip_info_7216 = {
- 	.init_func = &brcm_usb_dvr_init_7216,
- 	.required_regs = {
-@@ -318,7 +327,7 @@ static const struct match_chip_info chip_info_7445 = {
- static const struct of_device_id brcm_usb_dt_ids[] = {
- 	{
- 		.compatible = "brcm,bcm4908-usb-phy",
--		.data = &chip_info_7445,
-+		.data = &chip_info_4908,
- 	},
- 	{
- 		.compatible = "brcm,bcm7216-usb-phy",
+-	if (!imx_mu_read(priv, priv->dcfg->xCR[0]) && !priv->clk) {
++	if (!priv->clk && !imx_mu_read(priv, priv->dcfg->xCR[0])) {
+ 		for (i = 0; i < IMX_MU_xCR_MAX; i++)
+ 			imx_mu_write(priv, priv->xcr[i], priv->dcfg->xCR[i]);
+ 	}
 -- 
 2.34.1
 
