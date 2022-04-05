@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B5536C4321E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 77955C4332F
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 13:24:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243746AbiDENDc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 09:03:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42102 "EHLO
+        id S1387389AbiDENPF (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 09:15:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41972 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242685AbiDEJIS (ORCPT
+        with ESMTP id S1344257AbiDEJTC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:08:18 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36D4D6F4B7;
-        Tue,  5 Apr 2022 01:57:05 -0700 (PDT)
+        Tue, 5 Apr 2022 05:19:02 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DEDE4992D;
+        Tue,  5 Apr 2022 02:06:25 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6A0BC6117A;
-        Tue,  5 Apr 2022 08:57:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 77F75C385A0;
-        Tue,  5 Apr 2022 08:57:03 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2E6AFB81B75;
+        Tue,  5 Apr 2022 09:06:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6EBDAC385A1;
+        Tue,  5 Apr 2022 09:06:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649149023;
-        bh=+JEE0Ko2epQOw9p8Y1HZu2AvWRrrxNXwTXSbRl53Sw0=;
+        s=korg; t=1649149582;
+        bh=8IQB+YCfSpDf96JH1d8nrwhqf/Z8XCqWA/juA9C6MN8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tMa6NvIhwZEhb9+MRURppIqj+4EqBT0aZr0WxTZUMEyX27rMEmD9Of1lXyWVXlkaA
-         f0KRi3LWwZuUpgDDmf8/ag1trPWuf00ThOYhUI4ymEwQvQ/eEuUIOazNo7BsCsvWqs
-         t144bNbgwVUMHC0D/YXduq0jWIsBemAzX5G6yGyU=
+        b=ULaeXfmOfSObz2AoyIB5DUO3VVz+cIY+reC44FmiA3iMWmg2C/dDNtRyL73ufSPfB
+         i0jCQ/YPMbf5mmuS+D5Jqb8GNySClYPZSrsmncveWO0Vb+cqLwnbOYktGFZYMWVWEP
+         0ogY0dcdagbYcdKI2qfZImgjwjF9Bbfh2CPWlFh4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mark Brown <broonie@kernel.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Marc Zyngier <maz@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0567/1017] KVM: arm64: Enable Cortex-A510 erratum 2077057 by default
-Date:   Tue,  5 Apr 2022 09:24:40 +0200
-Message-Id: <20220405070411.110755242@linuxfoundation.org>
+        stable@vger.kernel.org, Chaitanya Kulkarni <kch@nvidia.com>,
+        Himanshu Madhani <himanshu.madhani@oracle.com>,
+        Jens Axboe <axboe@kernel.dk>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 0768/1017] loop: use sysfs_emit() in the sysfs xxx show()
+Date:   Tue,  5 Apr 2022 09:28:01 +0200
+Message-Id: <20220405070417.057578042@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -49,37 +50,71 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mark Brown <broonie@kernel.org>
+From: Chaitanya Kulkarni <kch@nvidia.com>
 
-[ Upstream commit 4c11113c1a3d10f5b617e5d2b9acd8d1d715450f ]
+[ Upstream commit b27824d31f09ea7b4a6ba2c1b18bd328df3e8bed ]
 
-The recently added configuration option for Cortex A510 erratum 2077057 does
-not have a "default y" unlike other errata fixes. This appears to simply be
-an oversight since the help text suggests enabling the option if unsure and
-there's nothing in the commit log to suggest it is intentional.
+sprintf does not know the PAGE_SIZE maximum of the temporary buffer
+used for outputting sysfs content and it's possible to overrun the
+PAGE_SIZE buffer length.
 
-Fixes: 1dd498e5e26ad ("KVM: arm64: Workaround Cortex-A510's single-step and PAC trap errata")
-Signed-off-by: Mark Brown <broonie@kernel.org>
-Acked-by: Catalin Marinas <catalin.marinas@arm.com>
-Signed-off-by: Marc Zyngier <maz@kernel.org>
-Link: https://lore.kernel.org/r/20220225184658.172527-1-broonie@kernel.org
+Use a generic sysfs_emit function that knows the size of the
+temporary buffer and ensures that no overrun is done for offset
+attribute in
+loop_attr_[offset|sizelimit|autoclear|partscan|dio]_show() callbacks.
+
+Signed-off-by: Chaitanya Kulkarni <kch@nvidia.com>
+Reviewed-by: Himanshu Madhani <himanshu.madhani@oracle.com>
+Link: https://lore.kernel.org/r/20220215213310.7264-2-kch@nvidia.com
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/Kconfig | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/block/loop.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
-diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
-index d05d94d2b28b..0a83e1728f7e 100644
---- a/arch/arm64/Kconfig
-+++ b/arch/arm64/Kconfig
-@@ -683,6 +683,7 @@ config ARM64_ERRATUM_2051678
+diff --git a/drivers/block/loop.c b/drivers/block/loop.c
+index fdb4798cb006..1422967bf5c1 100644
+--- a/drivers/block/loop.c
++++ b/drivers/block/loop.c
+@@ -681,33 +681,33 @@ static ssize_t loop_attr_backing_file_show(struct loop_device *lo, char *buf)
  
- config ARM64_ERRATUM_2077057
- 	bool "Cortex-A510: 2077057: workaround software-step corrupting SPSR_EL2"
-+	default y
- 	help
- 	  This option adds the workaround for ARM Cortex-A510 erratum 2077057.
- 	  Affected Cortex-A510 may corrupt SPSR_EL2 when the a step exception is
+ static ssize_t loop_attr_offset_show(struct loop_device *lo, char *buf)
+ {
+-	return sprintf(buf, "%llu\n", (unsigned long long)lo->lo_offset);
++	return sysfs_emit(buf, "%llu\n", (unsigned long long)lo->lo_offset);
+ }
+ 
+ static ssize_t loop_attr_sizelimit_show(struct loop_device *lo, char *buf)
+ {
+-	return sprintf(buf, "%llu\n", (unsigned long long)lo->lo_sizelimit);
++	return sysfs_emit(buf, "%llu\n", (unsigned long long)lo->lo_sizelimit);
+ }
+ 
+ static ssize_t loop_attr_autoclear_show(struct loop_device *lo, char *buf)
+ {
+ 	int autoclear = (lo->lo_flags & LO_FLAGS_AUTOCLEAR);
+ 
+-	return sprintf(buf, "%s\n", autoclear ? "1" : "0");
++	return sysfs_emit(buf, "%s\n", autoclear ? "1" : "0");
+ }
+ 
+ static ssize_t loop_attr_partscan_show(struct loop_device *lo, char *buf)
+ {
+ 	int partscan = (lo->lo_flags & LO_FLAGS_PARTSCAN);
+ 
+-	return sprintf(buf, "%s\n", partscan ? "1" : "0");
++	return sysfs_emit(buf, "%s\n", partscan ? "1" : "0");
+ }
+ 
+ static ssize_t loop_attr_dio_show(struct loop_device *lo, char *buf)
+ {
+ 	int dio = (lo->lo_flags & LO_FLAGS_DIRECT_IO);
+ 
+-	return sprintf(buf, "%s\n", dio ? "1" : "0");
++	return sysfs_emit(buf, "%s\n", dio ? "1" : "0");
+ }
+ 
+ LOOP_ATTR_RO(backing_file);
 -- 
 2.34.1
 
