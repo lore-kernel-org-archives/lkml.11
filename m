@@ -2,193 +2,246 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A0A7C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 80357C4332F
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 01:10:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1840185AbiDFBHe (ORCPT
+        id S1840201AbiDFBHj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 21:07:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39738 "EHLO
+        Tue, 5 Apr 2022 21:07:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60138 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348554AbiDEJsB (ORCPT
+        with ESMTP id S1444333AbiDEPlS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:48:01 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5BF6748E40;
-        Tue,  5 Apr 2022 02:34:09 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6BC06616D5;
-        Tue,  5 Apr 2022 09:34:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7B31FC385A2;
-        Tue,  5 Apr 2022 09:34:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649151248;
-        bh=zNQWId7GFV3MSfuKM0SOFMdZIuG2jfxnhD7InNj7Ftg=;
+        Tue, 5 Apr 2022 11:41:18 -0400
+Received: from conuserg-09.nifty.com (conuserg-09.nifty.com [210.131.2.76])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 004F38FE7F;
+        Tue,  5 Apr 2022 07:04:13 -0700 (PDT)
+Received: from grover.. (133-32-177-133.west.xps.vectant.ne.jp [133.32.177.133]) (authenticated)
+        by conuserg-09.nifty.com with ESMTP id 235E2k8Q021295;
+        Tue, 5 Apr 2022 23:02:51 +0900
+DKIM-Filter: OpenDKIM Filter v2.10.3 conuserg-09.nifty.com 235E2k8Q021295
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
+        s=dec2015msa; t=1649167372;
+        bh=oXu2FC2tHikCnI54og5MXSRnhCbAnmIjyeEOCWmBBwA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=A/MJg2+4wAjzdvuS2TxdJQYsxAVZDdExrbxPXhIrpg1oA6geexMYxi3z9BejJw0p+
-         XIuDc5lPMdFNFXBYcElFFcLZxK6bYl6EmN8b0xtba8N6C/Gwc2lPbE7o5lD5Z+31FW
-         ekGAqHBhJeQDtxDQ9b3QPlAJF3H/hG8RkWtEQyvs=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Dafna Hirschfeld <dafna.hirschfeld@collabora.com>,
-        Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 347/913] media: stk1160: If start stream fails, return buffers with VB2_BUF_STATE_QUEUED
-Date:   Tue,  5 Apr 2022 09:23:29 +0200
-Message-Id: <20220405070350.246863330@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
-User-Agent: quilt/0.66
+        b=PwNT30EmdbIk6ELYPbn69wxNB+UFuvu0SqD7EoH/me8iKt5evsxltJNLAI3P7lzVn
+         Ziiz5yE0wNk+mrk+CMShgipp+7SF0ikJnrlNqQoVn9m4Y9koP7Z1Y1KTDI7CtKa7KQ
+         iNlA5LKtA1wE83TBVpRhZwdJlmtktVhfS8/aFsWqIPl3+RO6EEy1ytAdqoEmkaFDXS
+         fXI6ARh01qh8rqVP2hMD7WHukR/NGO/2wuCtKWPCPJfj4C76YnlmKHpD3+phs7Csf9
+         /tKdIikZUUvuLmL7z3PNM1h0n/tdJNffr0Pn8XMSYipaXdpBRVvQpxiEmDWK7X8c4S
+         Cbzdi4nc6erfw==
+X-Nifty-SrcIP: [133.32.177.133]
+From:   Masahiro Yamada <masahiroy@kernel.org>
+To:     linux-kbuild@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Alexander Lobakin <alobakin@pm.me>,
+        Michal Marek <michal.lkml@markovi.net>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Nicolas Schier <n.schier@avm.de>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        Sami Tolvanen <samitolvanen@google.com>
+Subject: [PATCH v2 08/10] kbuild: split the second line of *.mod into *.usyms
+Date:   Tue,  5 Apr 2022 23:02:27 +0900
+Message-Id: <20220405140229.2895394-9-masahiroy@kernel.org>
+X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20220405140229.2895394-1-masahiroy@kernel.org>
+References: <20220405140229.2895394-1-masahiroy@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dafna Hirschfeld <dafna.hirschfeld@collabora.com>
+The *.mod files have two lines; the first line lists the member objects
+of the module, and the second line, if CONFIG_TRIM_UNUSED_KSYMS=y, lists
+the undefined symbols.
 
-[ Upstream commit fbe04b49a54e31f4321d632270207f0e6304cd16 ]
+These two are orthogonal. For further cleanups, let's split the second
+line out to separate *.usyms files, which are generated only when
+CONFIG_TRIM_UNUSED_KSYMS=y.
 
-If the callback 'start_streaming' fails, then all
-queued buffers in the driver should be returned with
-state 'VB2_BUF_STATE_QUEUED'. Currently, they are
-returned with 'VB2_BUF_STATE_ERROR' which is wrong.
-Fix this. This also fixes the warning:
+Previously, the list of undefined symbols ended up with a very long
+line, but now symbols are split by new lines.
 
-[   65.583633] WARNING: CPU: 5 PID: 593 at drivers/media/common/videobuf2/videobuf2-core.c:1612 vb2_start_streaming+0xd4/0x160 [videobuf2_common]
-[   65.585027] Modules linked in: snd_usb_audio snd_hwdep snd_usbmidi_lib snd_rawmidi snd_soc_hdmi_codec dw_hdmi_i2s_audio saa7115 stk1160 videobuf2_vmalloc videobuf2_memops videobuf2_v4l2 videobuf2_common videodev mc crct10dif_ce panfrost snd_soc_simple_card snd_soc_audio_graph_card snd_soc_spdif_tx snd_soc_simple_card_utils gpu_sched phy_rockchip_pcie snd_soc_rockchip_i2s rockchipdrm analogix_dp dw_mipi_dsi dw_hdmi cec drm_kms_helper drm rtc_rk808 rockchip_saradc industrialio_triggered_buffer kfifo_buf rockchip_thermal pcie_rockchip_host ip_tables x_tables ipv6
-[   65.589383] CPU: 5 PID: 593 Comm: v4l2src0:src Tainted: G        W         5.16.0-rc4-62408-g32447129cb30-dirty #14
-[   65.590293] Hardware name: Radxa ROCK Pi 4B (DT)
-[   65.590696] pstate: 80000005 (Nzcv daif -PAN -UAO -TCO -DIT -SSBS BTYPE=--)
-[   65.591304] pc : vb2_start_streaming+0xd4/0x160 [videobuf2_common]
-[   65.591850] lr : vb2_start_streaming+0x6c/0x160 [videobuf2_common]
-[   65.592395] sp : ffff800012bc3ad0
-[   65.592685] x29: ffff800012bc3ad0 x28: 0000000000000000 x27: ffff800012bc3cd8
-[   65.593312] x26: 0000000000000000 x25: ffff00000d8a7800 x24: 0000000040045612
-[   65.593938] x23: ffff800011323000 x22: ffff800012bc3cd8 x21: ffff00000908a8b0
-[   65.594562] x20: ffff00000908a8c8 x19: 00000000fffffff4 x18: ffffffffffffffff
-[   65.595188] x17: 000000040044ffff x16: 00400034b5503510 x15: ffff800011323f78
-[   65.595813] x14: ffff000013163886 x13: ffff000013163885 x12: 00000000000002ce
-[   65.596439] x11: 0000000000000028 x10: 0000000000000001 x9 : 0000000000000228
-[   65.597064] x8 : 0101010101010101 x7 : 7f7f7f7f7f7f7f7f x6 : fefefeff726c5e78
-[   65.597690] x5 : ffff800012bc3990 x4 : 0000000000000000 x3 : ffff000009a34880
-[   65.598315] x2 : 0000000000000000 x1 : 0000000000000000 x0 : ffff000007cd99f0
-[   65.598940] Call trace:
-[   65.599155]  vb2_start_streaming+0xd4/0x160 [videobuf2_common]
-[   65.599672]  vb2_core_streamon+0x17c/0x1a8 [videobuf2_common]
-[   65.600179]  vb2_streamon+0x54/0x88 [videobuf2_v4l2]
-[   65.600619]  vb2_ioctl_streamon+0x54/0x60 [videobuf2_v4l2]
-[   65.601103]  v4l_streamon+0x3c/0x50 [videodev]
-[   65.601521]  __video_do_ioctl+0x1a4/0x428 [videodev]
-[   65.601977]  video_usercopy+0x320/0x828 [videodev]
-[   65.602419]  video_ioctl2+0x3c/0x58 [videodev]
-[   65.602830]  v4l2_ioctl+0x60/0x90 [videodev]
-[   65.603227]  __arm64_sys_ioctl+0xa8/0xe0
-[   65.603576]  invoke_syscall+0x54/0x118
-[   65.603911]  el0_svc_common.constprop.3+0x84/0x100
-[   65.604332]  do_el0_svc+0x34/0xa0
-[   65.604625]  el0_svc+0x1c/0x50
-[   65.604897]  el0t_64_sync_handler+0x88/0xb0
-[   65.605264]  el0t_64_sync+0x16c/0x170
-[   65.605587] ---[ end trace 578e0ba07742170d ]---
+Use 'sed' like we did before commit 7d32358be8ac ("kbuild: avoid split
+lines in .mod files").
 
-Fixes: 8ac456495a33d ("[media] stk1160: Stop device and unqueue buffers when start_streaming() fails")
-Signed-off-by: Dafna Hirschfeld <dafna.hirschfeld@collabora.com>
-Reviewed-by: Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
 ---
- drivers/media/usb/stk1160/stk1160-core.c |  2 +-
- drivers/media/usb/stk1160/stk1160-v4l.c  | 10 +++++-----
- drivers/media/usb/stk1160/stk1160.h      |  2 +-
- 3 files changed, 7 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/media/usb/stk1160/stk1160-core.c b/drivers/media/usb/stk1160/stk1160-core.c
-index 4e1698f78818..ce717502ea4c 100644
---- a/drivers/media/usb/stk1160/stk1160-core.c
-+++ b/drivers/media/usb/stk1160/stk1160-core.c
-@@ -403,7 +403,7 @@ static void stk1160_disconnect(struct usb_interface *interface)
- 	/* Here is the only place where isoc get released */
- 	stk1160_uninit_isoc(dev);
+Changes in v2:
+  - new
+
+ .gitignore                  |  1 +
+ Makefile                    |  2 +-
+ scripts/Makefile.build      | 17 +++++++++--------
+ scripts/adjust_autoksyms.sh |  2 +-
+ scripts/gen_autoksyms.sh    | 18 +++++++++++-------
+ scripts/mod/sumversion.c    | 11 ++---------
+ 6 files changed, 25 insertions(+), 26 deletions(-)
+
+diff --git a/.gitignore b/.gitignore
+index 7afd412dadd2..265959544978 100644
+--- a/.gitignore
++++ b/.gitignore
+@@ -45,6 +45,7 @@
+ *.symversions
+ *.tab.[ch]
+ *.tar
++*.usyms
+ *.xz
+ *.zst
+ Module.symvers
+diff --git a/Makefile b/Makefile
+index d9336e783be3..82ee893909e9 100644
+--- a/Makefile
++++ b/Makefile
+@@ -1848,7 +1848,7 @@ clean: $(clean-dirs)
+ 		-o -name '*.ko.*' \
+ 		-o -name '*.dtb' -o -name '*.dtbo' -o -name '*.dtb.S' -o -name '*.dt.yaml' \
+ 		-o -name '*.dwo' -o -name '*.lst' \
+-		-o -name '*.su' -o -name '*.mod' \
++		-o -name '*.su' -o -name '*.mod' -o -name '*.usyms' \
+ 		-o -name '.*.d' -o -name '.*.tmp' -o -name '*.mod.c' \
+ 		-o -name '*.lex.c' -o -name '*.tab.[ch]' \
+ 		-o -name '*.asn1.[ch]' \
+diff --git a/scripts/Makefile.build b/scripts/Makefile.build
+index 63625877aeae..d934bdf84de4 100644
+--- a/scripts/Makefile.build
++++ b/scripts/Makefile.build
+@@ -85,7 +85,8 @@ ifdef need-builtin
+ targets-for-builtin += $(obj)/built-in.a
+ endif
  
--	stk1160_clear_queue(dev);
-+	stk1160_clear_queue(dev, VB2_BUF_STATE_ERROR);
+-targets-for-modules := $(patsubst %.o, %.mod, $(filter %.o, $(obj-m)))
++targets-for-modules := $(foreach suffix, mod $(if $(CONFIG_TRIM_UNUSED_KSYMS), usyms), \
++				$(patsubst %.o, %.$(suffix), $(filter %.o, $(obj-m))))
  
- 	video_unregister_device(&dev->vdev);
- 	v4l2_device_disconnect(&dev->v4l2_dev);
-diff --git a/drivers/media/usb/stk1160/stk1160-v4l.c b/drivers/media/usb/stk1160/stk1160-v4l.c
-index 6a4eb616d516..1aa953469402 100644
---- a/drivers/media/usb/stk1160/stk1160-v4l.c
-+++ b/drivers/media/usb/stk1160/stk1160-v4l.c
-@@ -258,7 +258,7 @@ static int stk1160_start_streaming(struct stk1160 *dev)
- 	stk1160_uninit_isoc(dev);
- out_stop_hw:
- 	usb_set_interface(dev->udev, 0, 0);
--	stk1160_clear_queue(dev);
-+	stk1160_clear_queue(dev, VB2_BUF_STATE_QUEUED);
+ ifneq ($(CONFIG_LTO_CLANG)$(CONFIG_X86_KERNEL_IBT),)
+ targets-for-modules += $(patsubst %.o, %.prelink.o, $(filter %.o, $(obj-m)))
+@@ -260,9 +261,6 @@ endif
+ ifdef CONFIG_TRIM_UNUSED_KSYMS
+ cmd_gen_ksymdeps = \
+ 	$(CONFIG_SHELL) $(srctree)/scripts/gen_ksymdeps.sh $@ >> $(dot-target).cmd
+-
+-# List module undefined symbols
+-undefined_syms = $(NM) $< | $(AWK) '$$1 == "U" { printf("%s%s", x++ ? " " : "", $$2) }';
+ endif
  
- 	mutex_unlock(&dev->v4l_lock);
+ define rule_cc_o_c
+@@ -309,14 +307,17 @@ endif
  
-@@ -306,7 +306,7 @@ static int stk1160_stop_streaming(struct stk1160 *dev)
+ multi-m-prereqs = $(sort $(addprefix $(obj)/, $($*-objs) $($*-y) $($*-m)))
  
- 	stk1160_stop_hw(dev);
+-cmd_mod = { \
+-	echo $(if $(multi-m-prereqs), $(multi-m-prereqs), $(@:.mod=.o)); \
+-	$(undefined_syms) echo; \
+-	} > $@
++cmd_mod = echo $(if $(multi-m-prereqs), $(multi-m-prereqs), $(@:.mod=.o)) > $@
  
--	stk1160_clear_queue(dev);
-+	stk1160_clear_queue(dev, VB2_BUF_STATE_ERROR);
+ $(obj)/%.mod: $(obj)/%$(mod-prelink-ext).o FORCE
+ 	$(call if_changed,mod)
  
- 	stk1160_dbg("streaming stopped\n");
++# List module undefined symbols
++cmd_undefined_syms = $(NM) $< | sed -n 's/^  *U //p' > $@
++
++$(obj)/%.usyms: $(obj)/%$(mod-prelink-ext).o FORCE
++	$(call if_changed,undefined_syms)
++
+ quiet_cmd_cc_lst_c = MKLST   $@
+       cmd_cc_lst_c = $(CC) $(c_flags) -g -c -o $*.o $< && \
+ 		     $(CONFIG_SHELL) $(srctree)/scripts/makelst $*.o \
+diff --git a/scripts/adjust_autoksyms.sh b/scripts/adjust_autoksyms.sh
+index 59fdb875e818..f1b5ac818411 100755
+--- a/scripts/adjust_autoksyms.sh
++++ b/scripts/adjust_autoksyms.sh
+@@ -35,7 +35,7 @@ case "$KBUILD_VERBOSE" in
+ esac
  
-@@ -745,7 +745,7 @@ static const struct video_device v4l_template = {
- /********************************************************************/
+ # Generate a new symbol list file
+-$CONFIG_SHELL $srctree/scripts/gen_autoksyms.sh "$new_ksyms_file"
++$CONFIG_SHELL $srctree/scripts/gen_autoksyms.sh --modorder "$new_ksyms_file"
  
- /* Must be called with both v4l_lock and vb_queue_lock hold */
--void stk1160_clear_queue(struct stk1160 *dev)
-+void stk1160_clear_queue(struct stk1160 *dev, enum vb2_buffer_state vb2_state)
+ # Extract changes between old and new list and touch corresponding
+ # dependency files.
+diff --git a/scripts/gen_autoksyms.sh b/scripts/gen_autoksyms.sh
+index 120225c541c5..faacf7062122 100755
+--- a/scripts/gen_autoksyms.sh
++++ b/scripts/gen_autoksyms.sh
+@@ -2,13 +2,10 @@
+ # SPDX-License-Identifier: GPL-2.0-only
+ 
+ # Create an autoksyms.h header file from the list of all module's needed symbols
+-# as recorded on the second line of *.mod files and the user-provided symbol
+-# whitelist.
++# as recorded in *.usyms files and the user-provided symbol whitelist.
+ 
+ set -e
+ 
+-output_file="$1"
+-
+ # Use "make V=1" to debug this script.
+ case "$KBUILD_VERBOSE" in
+ *1*)
+@@ -16,6 +13,15 @@ case "$KBUILD_VERBOSE" in
+ 	;;
+ esac
+ 
++read_modorder=
++
++if [ "$1" = --modorder ]; then
++	shift
++	read_modorder=1
++fi
++
++output_file="$1"
++
+ needed_symbols=
+ 
+ # Special case for modversions (see modpost.c)
+@@ -41,10 +47,8 @@ cat > "$output_file" << EOT
+ 
+ EOT
+ 
+-[ -f modules.order ] && modlist=modules.order || modlist=/dev/null
+-
  {
- 	struct stk1160_buffer *buf;
- 	unsigned long flags;
-@@ -756,7 +756,7 @@ void stk1160_clear_queue(struct stk1160 *dev)
- 		buf = list_first_entry(&dev->avail_bufs,
- 			struct stk1160_buffer, list);
- 		list_del(&buf->list);
--		vb2_buffer_done(&buf->vb.vb2_buf, VB2_BUF_STATE_ERROR);
-+		vb2_buffer_done(&buf->vb.vb2_buf, vb2_state);
- 		stk1160_dbg("buffer [%p/%d] aborted\n",
- 			    buf, buf->vb.vb2_buf.index);
- 	}
-@@ -766,7 +766,7 @@ void stk1160_clear_queue(struct stk1160 *dev)
- 		buf = dev->isoc_ctl.buf;
- 		dev->isoc_ctl.buf = NULL;
+-	sed 's/ko$/mod/' $modlist | xargs -n1 sed -n -e '2p'
++	[ -n "${read_modorder}" ] && sed 's/ko$/usyms/' modules.order | xargs cat
+ 	echo "$needed_symbols"
+ 	[ -n "$ksym_wl" ] && cat "$ksym_wl"
+ } | sed -e 's/ /\n/g' | sed -n -e '/^$/!p' |
+diff --git a/scripts/mod/sumversion.c b/scripts/mod/sumversion.c
+index 905c0ec291e1..0125698f2037 100644
+--- a/scripts/mod/sumversion.c
++++ b/scripts/mod/sumversion.c
+@@ -387,7 +387,7 @@ static int parse_source_files(const char *objfile, struct md4_ctx *md)
+ /* Calc and record src checksum. */
+ void get_src_version(const char *modname, char sum[], unsigned sumlen)
+ {
+-	char *buf, *pos, *firstline;
++	char *buf;
+ 	struct md4_ctx md;
+ 	char *fname;
+ 	char filelist[PATH_MAX + 1];
+@@ -397,15 +397,8 @@ void get_src_version(const char *modname, char sum[], unsigned sumlen)
  
--		vb2_buffer_done(&buf->vb.vb2_buf, VB2_BUF_STATE_ERROR);
-+		vb2_buffer_done(&buf->vb.vb2_buf, vb2_state);
- 		stk1160_dbg("buffer [%p/%d] aborted\n",
- 			    buf, buf->vb.vb2_buf.index);
- 	}
-diff --git a/drivers/media/usb/stk1160/stk1160.h b/drivers/media/usb/stk1160/stk1160.h
-index a31ea1c80f25..a70963ce8753 100644
---- a/drivers/media/usb/stk1160/stk1160.h
-+++ b/drivers/media/usb/stk1160/stk1160.h
-@@ -166,7 +166,7 @@ struct regval {
- int stk1160_vb2_setup(struct stk1160 *dev);
- int stk1160_video_register(struct stk1160 *dev);
- void stk1160_video_unregister(struct stk1160 *dev);
--void stk1160_clear_queue(struct stk1160 *dev);
-+void stk1160_clear_queue(struct stk1160 *dev, enum vb2_buffer_state vb2_state);
+ 	buf = read_text_file(filelist);
  
- /* Provided by stk1160-video.c */
- int stk1160_alloc_isoc(struct stk1160 *dev);
+-	pos = buf;
+-	firstline = get_line(&pos);
+-	if (!firstline) {
+-		warn("bad ending versions file for %s\n", modname);
+-		goto free;
+-	}
+-
+ 	md4_init(&md);
+-	while ((fname = strsep(&firstline, " "))) {
++	while ((fname = strsep(&buf, " \n"))) {
+ 		if (!*fname)
+ 			continue;
+ 		if (!(is_static_library(fname)) &&
 -- 
-2.34.1
-
-
+2.32.0
 
