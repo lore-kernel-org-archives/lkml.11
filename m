@@ -2,88 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E5BDC433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6033EC433F5
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 15:20:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1387185AbiDEPQb (ORCPT
+        id S1387038AbiDEPQ0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 11:16:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54028 "EHLO
+        Tue, 5 Apr 2022 11:16:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39398 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346727AbiDEJpX (ORCPT
+        with ESMTP id S1346728AbiDEJpX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Apr 2022 05:45:23 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 841D4DB494
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 02:31:30 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 237E1DB495;
+        Tue,  5 Apr 2022 02:31:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1181F616D4
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 09:31:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 35960C385A4;
-        Tue,  5 Apr 2022 09:31:28 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649151089;
-        bh=uiHlZ9B3W5lGU7aCGfu3OCnkS1lVxbCtOKddSVWv370=;
-        h=From:To:Cc:In-Reply-To:References:Subject:Date:From;
-        b=Aw/uVEikYg8w3z5RTaGTNwjjbtuQmJM8DVW6rEK0C8n4NeO/0vceVMQqZnybRJheT
-         oHX+s9DXOpjM3QFZQN92Se2ntxM/2zWzZN3Hd8OuXO+BBF90CtCu/kuY4aR8OQ7LfF
-         w1T0hYlrTiK2NNewvy9WGaslxhv1ltyZdKhQ/+9c2lXTviiWD2UxOK3f6J8YwSEhYG
-         lGO4Wa8wuHSL4F9QaS+c0PypM85PvX+WmfYiJEEdPMr5TkCFd5F3actAy/YxPG5rXq
-         7s7Yyy7treNrWRXWH9HaNSikWHwPG9Vjtuwidt5niqeRz9gsPldh1x3ms7giwpJ3pV
-         l4p3JRPez9bUg==
-From:   Mark Brown <broonie@kernel.org>
-To:     Liam Girdwood <lgirdwood@gmail.com>, steve@sk2.org,
-        support.opensource@diasemi.com
-Cc:     patches@opensource.cirrus.com, wsa@kernel.org,
-        linux-kernel@vger.kernel.org
-In-Reply-To: <20220325171243.1218003-1-steve@sk2.org>
-References: <20220325171243.1218003-1-steve@sk2.org>
-Subject: Re: [PATCH] ASoC: da[79]*: use simple i2c probe function
-Message-Id: <164915108791.276574.934197360062835441.b4-ty@kernel.org>
-Date:   Tue, 05 Apr 2022 10:31:27 +0100
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B443F616AE;
+        Tue,  5 Apr 2022 09:31:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BD743C385A3;
+        Tue,  5 Apr 2022 09:31:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649151092;
+        bh=yV2hPjB/jtmxLEg8vq2KEb0Zc5FmKz4KI8HVcPMVrYE=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=s08NUPWJCvfZnHH9dQgj0o+xETptsz9s3mM6+UE8wBJXimTavkDnFbya+hiADxPbC
+         ZZ1ExCMC5UQ2g53F8hXmh5NxvB13VM+zcHD4hmrFXZuV+wxsoF+NA4KEh1K2eT0otL
+         bBoli8PvJwJ9xBkeQJDRQMyDQ2tvW32a31PZwra8=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Mel Gorman <mgorman@techsingularity.net>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        "Gautham R. Shenoy" <gautham.shenoy@amd.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 253/913] sched/fair: Improve consistency of allowed NUMA balance calculations
+Date:   Tue,  5 Apr 2022 09:21:55 +0200
+Message-Id: <20220405070347.439697995@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 25 Mar 2022 18:12:43 +0100, Stephen Kitt wrote:
-> The i2c probe functions here don't use the id information provided in
-> their second argument, so the single-parameter i2c probe function
-> ("probe_new") can be used instead.
-> 
-> This avoids scanning the identifier tables during probes.
-> 
-> 
-> [...]
+From: Mel Gorman <mgorman@techsingularity.net>
 
-Applied to
+[ Upstream commit 2cfb7a1b031b0e816af7a6ee0c6ab83b0acdf05a ]
 
-   https://git.kernel.org/pub/scm/linux/kernel/git/broonie/sound.git for-next
+There are inconsistencies when determining if a NUMA imbalance is allowed
+that should be corrected.
 
-Thanks!
+o allow_numa_imbalance changes types and is not always examining
+  the destination group so both the type should be corrected as
+  well as the naming.
+o find_idlest_group uses the sched_domain's weight instead of the
+  group weight which is different to find_busiest_group
+o find_busiest_group uses the source group instead of the destination
+  which is different to task_numa_find_cpu
+o Both find_idlest_group and find_busiest_group should account
+  for the number of running tasks if a move was allowed to be
+  consistent with task_numa_find_cpu
 
-[1/1] ASoC: da[79]*: use simple i2c probe function
-      commit: 89be5dc60d67b377be60b47dd12d1a3ee142aacb
+Fixes: 7d2b5dd0bcc4 ("sched/numa: Allow a floating imbalance between NUMA nodes")
+Signed-off-by: Mel Gorman <mgorman@techsingularity.net>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Reviewed-by: Gautham R. Shenoy <gautham.shenoy@amd.com>
+Link: https://lore.kernel.org/r/20220208094334.16379-2-mgorman@techsingularity.net
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ kernel/sched/fair.c | 18 ++++++++++--------
+ 1 file changed, 10 insertions(+), 8 deletions(-)
 
-All being well this means that it will be integrated into the linux-next
-tree (usually sometime in the next 24 hours) and sent to Linus during
-the next merge window (or sooner if it is a bug fix), however if
-problems are discovered then the patch may be dropped or reverted.
+diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
+index 6420580f2730..02766f3fe206 100644
+--- a/kernel/sched/fair.c
++++ b/kernel/sched/fair.c
+@@ -9005,9 +9005,10 @@ static bool update_pick_idlest(struct sched_group *idlest,
+  * This is an approximation as the number of running tasks may not be
+  * related to the number of busy CPUs due to sched_setaffinity.
+  */
+-static inline bool allow_numa_imbalance(int dst_running, int dst_weight)
++static inline bool
++allow_numa_imbalance(unsigned int running, unsigned int weight)
+ {
+-	return (dst_running < (dst_weight >> 2));
++	return (running < (weight >> 2));
+ }
+ 
+ /*
+@@ -9141,12 +9142,13 @@ find_idlest_group(struct sched_domain *sd, struct task_struct *p, int this_cpu)
+ 				return idlest;
+ #endif
+ 			/*
+-			 * Otherwise, keep the task on this node to stay close
+-			 * its wakeup source and improve locality. If there is
+-			 * a real need of migration, periodic load balance will
+-			 * take care of it.
++			 * Otherwise, keep the task close to the wakeup source
++			 * and improve locality if the number of running tasks
++			 * would remain below threshold where an imbalance is
++			 * allowed. If there is a real need of migration,
++			 * periodic load balance will take care of it.
+ 			 */
+-			if (allow_numa_imbalance(local_sgs.sum_nr_running, sd->span_weight))
++			if (allow_numa_imbalance(local_sgs.sum_nr_running + 1, local_sgs.group_weight))
+ 				return NULL;
+ 		}
+ 
+@@ -9352,7 +9354,7 @@ static inline void calculate_imbalance(struct lb_env *env, struct sd_lb_stats *s
+ 		/* Consider allowing a small imbalance between NUMA groups */
+ 		if (env->sd->flags & SD_NUMA) {
+ 			env->imbalance = adjust_numa_imbalance(env->imbalance,
+-				busiest->sum_nr_running, busiest->group_weight);
++				local->sum_nr_running + 1, local->group_weight);
+ 		}
+ 
+ 		return;
+-- 
+2.34.1
 
-You may get further e-mails resulting from automated or manual testing
-and review of the tree, please engage with people reporting problems and
-send followup patches addressing any issues that are reported if needed.
 
-If any updates are required or you are submitting further changes they
-should be sent as incremental updates against current git, existing
-patches will not be replaced.
 
-Please add any relevant lists and maintainers to the CCs when replying
-to this mail.
-
-Thanks,
-Mark
