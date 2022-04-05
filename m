@@ -2,114 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 85445C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 02:07:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 63FC3C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 02:07:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1846235AbiDFCD0 (ORCPT
+        id S1846251AbiDFCDc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 22:03:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54978 "EHLO
+        Tue, 5 Apr 2022 22:03:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48830 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1457641AbiDEQX4 (ORCPT
+        with ESMTP id S244503AbiDEKi5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 12:23:56 -0400
-Received: from mail-lj1-x231.google.com (mail-lj1-x231.google.com [IPv6:2a00:1450:4864:20::231])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDA1E9AE40
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 09:21:56 -0700 (PDT)
-Received: by mail-lj1-x231.google.com with SMTP id b43so17752026ljr.10
-        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 09:21:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Vp1rKhW9xVfHaAk1bIcVHB9UucHbWp+Gn42oU0LRglU=;
-        b=ggFQtYxL98uH1FVRJXq9oNgXvUh7G5864YICyxdISp6UW19aXb07z9VuR5PMLBY9J7
-         1ui4V2QkWdkQ8b+SvbpnoVGwCd1Xm02G2YDLHM6A4pqxne0L5WoMoFMYuZgLcRqLJjkC
-         uKq28daKE3d0BLTdAnyJv5iAaRu+NZxP204AOOf+LazUkzaZw+bEcHptjluNHTEJ+2NS
-         su+sVW++A74Gk3/Yxi+n1rFG80u7M/hcS4c9qCh+3iguKOYC7ufS0mmLaXLHxq4XsL8B
-         44aqeMZIWPQhhm1dPwhh1WyO8HMOfWgERO26dW/LEqO5oepBnpNLwGozUUlZu05Xo5Sm
-         V/PA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Vp1rKhW9xVfHaAk1bIcVHB9UucHbWp+Gn42oU0LRglU=;
-        b=66WsbSsHml4DNKl7BOlj27KABQS9ip9t4tP5W4AwXzdGX2ghkY2jj+S6iTh2XT5IJE
-         VDywnzBUH1wU0S7D9n3JKfMOlAURS/B40ITUd087RSX2g1HqmpYn1iWZX9FsxxO+yfzc
-         X0D/MaPyy8PzTkOkN+RQkZfOPokOVLtS0Q3VHQIb1sp0JqnL0Jl0LVa25NKDOW7Tq0uL
-         +b0ub9YbEhou0gihPjthv0IfqYZ5kYUYBsaAXsg11+GdWidJ33cGM9NJMAnWl2yLw+gZ
-         ae+BXZWG/aOtIZAUrcedYveEUshIYC/5Uw5vi0U+IgvhmJMRPRE5EOjlfQ/ysGLe1XeV
-         qDhQ==
-X-Gm-Message-State: AOAM530lkYtY7Baia9dJCKMPANqcsg2fnZfSxDyHSFLdj5RdXuVwKU+X
-        I3/COZTZnnGZCTOWBfGenXVyHhUpQSB3S+sOKuHG4g==
-X-Google-Smtp-Source: ABdhPJyrxb/EGFbBM6TVvfBKSHKHKzPwAFDSG4hhB1aZNQj7iew86HRktdhcL2l9aehOjQKObYiAlmHTMTw1SQCBzbw=
-X-Received: by 2002:a2e:611a:0:b0:249:83e5:9f9b with SMTP id
- v26-20020a2e611a000000b0024983e59f9bmr2738675ljb.165.1649175713574; Tue, 05
- Apr 2022 09:21:53 -0700 (PDT)
+        Tue, 5 Apr 2022 06:38:57 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C50C585653;
+        Tue,  5 Apr 2022 03:23:54 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 61B76617CC;
+        Tue,  5 Apr 2022 10:23:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7306AC385A1;
+        Tue,  5 Apr 2022 10:23:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649154233;
+        bh=448mKTsBEz0DnRdr32XdTlD++ObnVvp4g3D93DwxPpU=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=bGzlDb0pdzWMVBt9DQpNvJbsBCj6LWtL9iY5N73FVz4Bzza0qjW5W3wHLFw3WgpbS
+         BmATm40QTzN2Uk0MobRcN1zjMyB/mmj/OYqWTZRUFiB61GFrYUirL4YCDeaCYbNbWY
+         VWeMIx903KJnBv0Vec/AE3QuA/S0Of62D1ZvVO3o=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        =?UTF-8?q?Maximilian=20B=C3=B6hm?= <maximilian.boehm@elbmurf.de>,
+        Pavel Skripkin <paskripkin@gmail.com>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 506/599] media: Revert "media: em28xx: add missing em28xx_close_extension"
+Date:   Tue,  5 Apr 2022 09:33:20 +0200
+Message-Id: <20220405070313.886826820@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
+References: <20220405070258.802373272@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-References: <20220405113359.2880241-1-masahiroy@kernel.org> <20220405113359.2880241-6-masahiroy@kernel.org>
-In-Reply-To: <20220405113359.2880241-6-masahiroy@kernel.org>
-From:   Nick Desaulniers <ndesaulniers@google.com>
-Date:   Tue, 5 Apr 2022 09:21:42 -0700
-Message-ID: <CAKwvOdn7DAR5ct+sGaXynLX5W1mBRpLMu7ZWJG51j-OEWDkP+w@mail.gmail.com>
-Subject: Re: [PATCH v2 05/10] modpost: remove redundant initializes for static variables
-To:     Masahiro Yamada <masahiroy@kernel.org>
-Cc:     linux-kbuild@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Michal Marek <michal.lkml@markovi.net>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 5, 2022 at 4:34 AM Masahiro Yamada <masahiroy@kernel.org> wrote:
->
-> These are initialized with zeros without explicit initializes.
+From: Pavel Skripkin <paskripkin@gmail.com>
 
-s/initializes/initializers/
+[ Upstream commit fde18c3bac3f964d8333ae53b304d8fee430502b ]
 
-Thanks for the patch!
-Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
+This reverts commit 2c98b8a3458df03abdc6945bbef67ef91d181938.
 
->
-> Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
-> ---
->
-> Changes in v2:
->   - New
->
->  scripts/mod/modpost.c | 10 +++++-----
->  1 file changed, 5 insertions(+), 5 deletions(-)
->
-> diff --git a/scripts/mod/modpost.c b/scripts/mod/modpost.c
-> index f9e54247ae1d..2a202764ff48 100644
-> --- a/scripts/mod/modpost.c
-> +++ b/scripts/mod/modpost.c
-> @@ -23,15 +23,15 @@
->  #include "../../include/linux/license.h"
->
->  /* Are we using CONFIG_MODVERSIONS? */
-> -static int modversions = 0;
-> +static int modversions;
->  /* Is CONFIG_MODULE_SRCVERSION_ALL set? */
-> -static int all_versions = 0;
-> +static int all_versions;
->  /* If we are modposting external module set to 1 */
-> -static int external_module = 0;
-> +static int external_module;
->  /* Only warn about unresolved symbols */
-> -static int warn_unresolved = 0;
-> +static int warn_unresolved;
->  /* How a symbol is exported */
-> -static int sec_mismatch_count = 0;
-> +static int sec_mismatch_count;
->  static int sec_mismatch_warn_only = true;
->  /* ignore missing files */
->  static int ignore_missing_files;
-> --
-> 2.32.0
->
+Reverted patch causes problems with Hauppauge WinTV dualHD as Maximilian
+reported [1]. Since quick solution didn't come up let's just revert it
+to make this device work with upstream kernels.
 
+Link: https://lore.kernel.org/all/6a72a37b-e972-187d-0322-16336e12bdc5@elbmurf.de/ [1]
 
+Reported-by: Maximilian Böhm <maximilian.boehm@elbmurf.de>
+Tested-by: Maximilian Böhm <maximilian.boehm@elbmurf.de>
+Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/media/usb/em28xx/em28xx-cards.c | 5 +----
+ 1 file changed, 1 insertion(+), 4 deletions(-)
+
+diff --git a/drivers/media/usb/em28xx/em28xx-cards.c b/drivers/media/usb/em28xx/em28xx-cards.c
+index b6490f611687..26408a972b44 100644
+--- a/drivers/media/usb/em28xx/em28xx-cards.c
++++ b/drivers/media/usb/em28xx/em28xx-cards.c
+@@ -4095,11 +4095,8 @@ static void em28xx_usb_disconnect(struct usb_interface *intf)
+ 
+ 	em28xx_close_extension(dev);
+ 
+-	if (dev->dev_next) {
+-		em28xx_close_extension(dev->dev_next);
++	if (dev->dev_next)
+ 		em28xx_release_resources(dev->dev_next);
+-	}
+-
+ 	em28xx_release_resources(dev);
+ 
+ 	if (dev->dev_next) {
 -- 
-Thanks,
-~Nick Desaulniers
+2.34.1
+
+
+
