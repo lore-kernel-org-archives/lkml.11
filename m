@@ -2,101 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B0017C43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C53EBC4321E
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 21:09:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353992AbiDEVFT (ORCPT
+        id S1354442AbiDEVFY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 17:05:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59398 "EHLO
+        Tue, 5 Apr 2022 17:05:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59454 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1445980AbiDEPnz (ORCPT
+        with ESMTP id S1353042AbiDEKFd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 11:43:55 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id AA489195325
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 07:10:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1649167831;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=4VpbSrB1Dcjr9uq5ClWUOMNjtNo7OeAGb6rOgQHDZtI=;
-        b=bu6qCuL6tAqH4SG7ApDz3rRCB1SghzYVe8LCcHJbGIbO62Jy29z19vLmT8mvgbO4qF3G6V
-        Rp9M32zRAll/2aIbDWg1+28zLFf5kCfJP1MQhLElBmmHxUv1vKLXIDxmq3hRHiYWuTZRKa
-        8fzmHR+7xcVIfAQAoLLQbFcaHUFdoY0=
-Received: from mail-qv1-f71.google.com (mail-qv1-f71.google.com
- [209.85.219.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-185-zdapzBluMlCNry8wy6_MMw-1; Tue, 05 Apr 2022 10:10:29 -0400
-X-MC-Unique: zdapzBluMlCNry8wy6_MMw-1
-Received: by mail-qv1-f71.google.com with SMTP id a13-20020a0562140c2d00b00443dc12c9ebso4812121qvd.1
-        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 07:10:29 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=4VpbSrB1Dcjr9uq5ClWUOMNjtNo7OeAGb6rOgQHDZtI=;
-        b=2Uu83k+oZNpnKFNmuDxoiV8eFUSWJcaBUtO3DP+8KCg4EBu9mEB+3HlJ8mgQr7PnnV
-         IbuLzI7d0I9VsnHtNIsXK44YVTjjSIT0ICfVzd3IgbcUPQs5qVx9tqNf9ldonsO1vVaV
-         xO9U0zVNxyJERJ0cxDR1NuR39TVAS3QKciGFTWMxdiwIGzdMB2XB2Iuf5BBW3x8wHX/l
-         CMuBT3D0DsbHSHX+5AQHHZfrlJzy8lHoF3Az5L8Pf95DhJ4pwQAYP0TFTk/N1QYSN+94
-         97Qncv+RBFayt7lJXtN1NreilNTF4/CFQ+HBj44GsGhK/UqeC1jcPKfdhFaAOF8ergB7
-         ZaSw==
-X-Gm-Message-State: AOAM532w45YDSBy8iaXyB6ywtAKrQJCU/rZw0pmBDfFSq7f3Vz4C3w98
-        u8QpngO4A9ijpcEUcvjMr77sdJrP3FhKxyCAG4np7fX4X1i7Sm4/k+1/AAMRFq1jK/2gffJCmtO
-        z1xWWXIbqiMI2ASC1L4sX1ytm
-X-Received: by 2002:a05:622a:1792:b0:2e1:cdb8:41f6 with SMTP id s18-20020a05622a179200b002e1cdb841f6mr3166050qtk.10.1649167828610;
-        Tue, 05 Apr 2022 07:10:28 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJxkB5YEBJt1011IJ5YN9w3/3uCOCHgbQt6r2OE8C1Ts/Te+oRJXc//6zeW0BDSRbooWdA3G5w==
-X-Received: by 2002:a05:622a:1792:b0:2e1:cdb8:41f6 with SMTP id s18-20020a05622a179200b002e1cdb841f6mr3166027qtk.10.1649167828337;
-        Tue, 05 Apr 2022 07:10:28 -0700 (PDT)
-Received: from [10.32.181.87] (nat-pool-mxp-t.redhat.com. [149.6.153.186])
-        by smtp.googlemail.com with ESMTPSA id d4-20020a37c404000000b0067d67adea0fsm8136342qki.84.2022.04.05.07.10.25
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 05 Apr 2022 07:10:27 -0700 (PDT)
-Message-ID: <6fb0889f-090d-740b-8ace-8b95b97ebf71@redhat.com>
-Date:   Tue, 5 Apr 2022 16:10:25 +0200
+        Tue, 5 Apr 2022 06:05:33 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C224BD7D9;
+        Tue,  5 Apr 2022 02:54:11 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6D4E961743;
+        Tue,  5 Apr 2022 09:54:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7B4D6C385A1;
+        Tue,  5 Apr 2022 09:54:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649152450;
+        bh=9kDFyJtz5aRFD1HOBnwM1kO3is+NlX0c7whwfOn5IIw=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=eD2XDz5cYFX0eWXcZI330shMgpH2GN1EBy0bddRUryRhZ2OE3SsMybpAjk2WT4Pf8
+         tI7Oqp17cGnJiaXRgrFEfZiRJqC+NnBI2FfVU0Hl3QVqaP4ZRYZmnu9OKoDqrb3J23
+         UzN78wlZgbw1o8gP94QV4QorTfDMFkHM6K4LVxuw=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Hans de Goede <hdegoede@redhat.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 744/913] media: atomisp_gmin_platform: Add DMI quirk to not turn AXP ELDO2 regulator off on some boards
+Date:   Tue,  5 Apr 2022 09:30:06 +0200
+Message-Id: <20220405070402.135881972@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [RFC PATCH v5 037/104] KVM: x86/mmu: Allow non-zero init value
- for shadow PTE
-Content-Language: en-US
-To:     isaku.yamahata@intel.com, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     isaku.yamahata@gmail.com, Jim Mattson <jmattson@google.com>,
-        erdemaktas@google.com, Connor Kuehl <ckuehl@redhat.com>,
-        Sean Christopherson <seanjc@google.com>
-References: <cover.1646422845.git.isaku.yamahata@intel.com>
- <b74b3660f9d16deafe83f2670539a8287bef988f.1646422845.git.isaku.yamahata@intel.com>
-From:   Paolo Bonzini <pbonzini@redhat.com>
-In-Reply-To: <b74b3660f9d16deafe83f2670539a8287bef988f.1646422845.git.isaku.yamahata@intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 3/4/22 20:48, isaku.yamahata@intel.com wrote:
->   static void mmu_spte_clear_no_track(u64 *sptep)
->   {
-> -	__update_clear_spte_fast(sptep, 0ull);
-> +	__update_clear_spte_fast(sptep, shadow_init_value);
->   }
->   
+From: Hans de Goede <hdegoede@redhat.com>
 
-Please WARN_ON_ONCE if shadow_init_value is nonzero, and then keep 0ull 
-as the argument.
+[ Upstream commit 2c39a01154ea57d596470afa1d278e3be3b37f6a ]
 
-I have not thought much of the steps that are needed if were to flip 
-both bit 0 and bit 63, so let's at least document that with a WARN.
+The TrekStor SurfTab duo W1 10.1 has a hw bug where turning eldo2 back on
+after having turned it off causes the CPLM3218 ambient-light-sensor on
+the front camera sensor's I2C bus to crash, hanging the bus.
 
-Otherwise,
+Add a DMI quirk table for systems on which to leave eldo2 on.
 
-Reviewed-by: Paolo Bonzini <pbonzini@redhat.com>
+Note an alternative fix is to turn off the CPLM3218 ambient-light-sensor
+as long as the camera sensor is being used, this is what Windows seems
+to do as a workaround (based on analyzing the DSDT). But that is not
+easy to do cleanly under Linux.
 
-Paolo
+Link: https://lore.kernel.org/linux-media/20220116215204.307649-10-hdegoede@redhat.com
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ .../media/atomisp/pci/atomisp_gmin_platform.c  | 18 ++++++++++++++++++
+ 1 file changed, 18 insertions(+)
+
+diff --git a/drivers/staging/media/atomisp/pci/atomisp_gmin_platform.c b/drivers/staging/media/atomisp/pci/atomisp_gmin_platform.c
+index 62dc06e22476..cd0a771454da 100644
+--- a/drivers/staging/media/atomisp/pci/atomisp_gmin_platform.c
++++ b/drivers/staging/media/atomisp/pci/atomisp_gmin_platform.c
+@@ -729,6 +729,21 @@ static int axp_regulator_set(struct device *dev, struct gmin_subdev *gs,
+ 	return 0;
+ }
+ 
++/*
++ * Some boards contain a hw-bug where turning eldo2 back on after having turned
++ * it off causes the CPLM3218 ambient-light-sensor on the image-sensor's I2C bus
++ * to crash, hanging the bus. Do not turn eldo2 off on these systems.
++ */
++static const struct dmi_system_id axp_leave_eldo2_on_ids[] = {
++	{
++		.matches = {
++			DMI_MATCH(DMI_SYS_VENDOR, "TrekStor"),
++			DMI_MATCH(DMI_PRODUCT_NAME, "SurfTab duo W1 10.1 (VT4)"),
++		},
++	},
++	{ }
++};
++
+ static int axp_v1p8_on(struct device *dev, struct gmin_subdev *gs)
+ {
+ 	int ret;
+@@ -763,6 +778,9 @@ static int axp_v1p8_off(struct device *dev, struct gmin_subdev *gs)
+ 	if (ret)
+ 		return ret;
+ 
++	if (dmi_check_system(axp_leave_eldo2_on_ids))
++		return 0;
++
+ 	ret = axp_regulator_set(dev, gs, gs->eldo2_sel_reg, gs->eldo2_1p8v,
+ 				ELDO_CTRL_REG, gs->eldo2_ctrl_shift, false);
+ 	return ret;
+-- 
+2.34.1
+
+
 
