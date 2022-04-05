@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 896B5C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 11:59:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ACBD7C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:02:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352350AbiDELyh (ORCPT
+        id S1352813AbiDELyn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 07:54:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47530 "EHLO
+        Tue, 5 Apr 2022 07:54:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51136 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244922AbiDEIwr (ORCPT
+        with ESMTP id S244919AbiDEIwr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Apr 2022 04:52:47 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14D4524961;
-        Tue,  5 Apr 2022 01:46:29 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E84B824586;
+        Tue,  5 Apr 2022 01:46:21 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C1769B81A32;
-        Tue,  5 Apr 2022 08:46:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0F321C385A0;
-        Tue,  5 Apr 2022 08:46:25 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8807B614EB;
+        Tue,  5 Apr 2022 08:46:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 96E55C385A0;
+        Tue,  5 Apr 2022 08:46:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649148386;
-        bh=FNWouC3CoH6+dXI5kygOzexAVVRXN9qg89YVmFU1Dbg=;
+        s=korg; t=1649148381;
+        bh=TdNHD+ThQdFDNYzUnyywSIQFu/8Rmrh1akcMl4pdADg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lt6xTsDPt6zL5n7a9mjQQ3KaL0hdBxHk3hSAnlBCiajgnRAYTW7PMLOs0xyApNhyL
-         vwwe+iwG2Im7aw5l3vDfRLCjrUgdbrDfeTLJCEhHbzhb/Hw9Do6Lyo2bXhW8GCaK5a
-         +plnJiLUsHikNIN1LsOKosTPuz3+QknjZQWN3Yd4=
+        b=sZQxVep+7F04FN8B945OGAihhN191NAqaqjgqIc7pPqZAJbhMqgEmxvFkBahvzBQ5
+         X99rT5PmhbCWrPiIQ+d5ArAj0nXMXMZwzfIl7/dUnlA3A5U6+IIQUSOEGIk6sJcO7M
+         VujKgTWVo3ZpIFWExSQtqqTe3vbiapKGRJX1orvM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jernej Skrabec <jernej.skrabec@gmail.com>,
+        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
         Hans Verkuil <hverkuil-cisco@xs4all.nl>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0337/1017] media: cedrus: h264: Fix neighbour info buffer size
-Date:   Tue,  5 Apr 2022 09:20:50 +0200
-Message-Id: <20220405070404.286121619@linuxfoundation.org>
+Subject: [PATCH 5.16 0335/1017] media: usb: go7007: s2250-board: fix leak in probe()
+Date:   Tue,  5 Apr 2022 09:20:48 +0200
+Message-Id: <20220405070404.226332231@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -50,42 +50,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jernej Skrabec <jernej.skrabec@gmail.com>
+From: Dan Carpenter <dan.carpenter@oracle.com>
 
-[ Upstream commit fecd363ae2d5042553370b0adf60c47e35c34a83 ]
+[ Upstream commit 67e4550ecd6164bfbdff54c169e5bbf9ccfaf14d ]
 
-According to BSP library source, H264 neighbour info buffer size needs
-to be 32 kiB for H6. This is similar to H265 decoding, which also needs
-double buffer size in comparison to older Cedrus core generations.
+Call i2c_unregister_device(audio) on this error path.
 
-Increase buffer size to cover H6 needs. Since increase is not that big
-in absolute numbers, it doesn't make sense to complicate logic for older
-generations.
-
-Issue was discovered using iommu and cross checked with BSP library
-source.
-
-Fixes: 6eb9b758e307 ("media: cedrus: Add H264 decoding support")
-Signed-off-by: Jernej Skrabec <jernej.skrabec@gmail.com>
+Fixes: d3b2ccd9e307 ("[media] s2250: convert to the control framework")
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
 Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/staging/media/sunxi/cedrus/cedrus_h264.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/media/usb/go7007/s2250-board.c | 10 ++++------
+ 1 file changed, 4 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/staging/media/sunxi/cedrus/cedrus_h264.c b/drivers/staging/media/sunxi/cedrus/cedrus_h264.c
-index b4173a8926d6..d8fb93035470 100644
---- a/drivers/staging/media/sunxi/cedrus/cedrus_h264.c
-+++ b/drivers/staging/media/sunxi/cedrus/cedrus_h264.c
-@@ -38,7 +38,7 @@ struct cedrus_h264_sram_ref_pic {
+diff --git a/drivers/media/usb/go7007/s2250-board.c b/drivers/media/usb/go7007/s2250-board.c
+index c742cc88fac5..1fa6f10ee157 100644
+--- a/drivers/media/usb/go7007/s2250-board.c
++++ b/drivers/media/usb/go7007/s2250-board.c
+@@ -504,6 +504,7 @@ static int s2250_probe(struct i2c_client *client,
+ 	u8 *data;
+ 	struct go7007 *go = i2c_get_adapdata(adapter);
+ 	struct go7007_usb *usb = go->hpi_context;
++	int err = -EIO;
  
- #define CEDRUS_H264_FRAME_NUM		18
+ 	audio = i2c_new_dummy_device(adapter, TLV320_ADDRESS >> 1);
+ 	if (IS_ERR(audio))
+@@ -532,11 +533,8 @@ static int s2250_probe(struct i2c_client *client,
+ 		V4L2_CID_HUE, -512, 511, 1, 0);
+ 	sd->ctrl_handler = &state->hdl;
+ 	if (state->hdl.error) {
+-		int err = state->hdl.error;
+-
+-		v4l2_ctrl_handler_free(&state->hdl);
+-		kfree(state);
+-		return err;
++		err = state->hdl.error;
++		goto fail;
+ 	}
  
--#define CEDRUS_NEIGHBOR_INFO_BUF_SIZE	(16 * SZ_1K)
-+#define CEDRUS_NEIGHBOR_INFO_BUF_SIZE	(32 * SZ_1K)
- #define CEDRUS_MIN_PIC_INFO_BUF_SIZE       (130 * SZ_1K)
+ 	state->std = V4L2_STD_NTSC;
+@@ -600,7 +598,7 @@ static int s2250_probe(struct i2c_client *client,
+ 	i2c_unregister_device(audio);
+ 	v4l2_ctrl_handler_free(&state->hdl);
+ 	kfree(state);
+-	return -EIO;
++	return err;
+ }
  
- static void cedrus_h264_write_sram(struct cedrus_dev *dev,
+ static int s2250_remove(struct i2c_client *client)
 -- 
 2.34.1
 
