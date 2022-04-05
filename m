@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AE6D9C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:51:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7AC57C4321E
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:51:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233723AbiDEIlM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 04:41:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57662 "EHLO
+        id S237053AbiDEIlb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 04:41:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51572 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234557AbiDEH6j (ORCPT
+        with ESMTP id S236117AbiDEIB2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 03:58:39 -0400
+        Tue, 5 Apr 2022 04:01:28 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A375A7776;
-        Tue,  5 Apr 2022 00:52:49 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5C944B431;
+        Tue,  5 Apr 2022 00:59:30 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EAF656172D;
-        Tue,  5 Apr 2022 07:52:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 05EFAC340EE;
-        Tue,  5 Apr 2022 07:52:47 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 721F361545;
+        Tue,  5 Apr 2022 07:59:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 81FACC340EE;
+        Tue,  5 Apr 2022 07:59:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649145168;
-        bh=4tDHO8R7fbkzaglbA3yDt+X3Z7Cvwg36UlQwwqURRI0=;
+        s=korg; t=1649145569;
+        bh=xZFlO/Ssj0ilwMz4LbbFsHCf7q/ubFY/jXMHM64j43U=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=k/yDb4aZDE8bmWRrG3jY8CldxCBRCWsaplJ/RkDaIINbzXB7JmZYMCj5td8Ily3Pu
-         NaUHvCgEILXuC0c4W4tFi97h9Fmpo+ZhEHebXHlLoBO6IwAvlmBmLJ+nFRHcZyDIeL
-         J+R2qF/x9HKsSqXD11a0ZubMJ5I1O/57UONT8kJ8=
+        b=qxUHoE8x1ZN9P99ela5TV5vT4E+Gz0M6Z4UdHWEA1N0uN6qgs2oStq8EcvEj2Hgd7
+         72NICVQes5i+5wcdkbI4ZWpQGVhQRbnmdJEuopWg4Mmv1HimLfFJ9OB5lyOf0U3GOS
+         CdRgQFSmkzq/00KDATmIQIeZvfZLrH7ZtUwRfF1o=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0310/1126] media: meson: vdec: potential dereference of null pointer
-Date:   Tue,  5 Apr 2022 09:17:37 +0200
-Message-Id: <20220405070416.713314576@linuxfoundation.org>
+Subject: [PATCH 5.17 0451/1126] mtd: onenand: Check for error irq
+Date:   Tue,  5 Apr 2022 09:19:58 +0200
+Message-Id: <20220405070420.862240003@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -53,92 +51,43 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
 
-[ Upstream commit c8c80c996182239ff9b05eda4db50184cf3b2e99 ]
+[ Upstream commit 3e68f331c8c759c0daa31cc92c3449b23119a215 ]
 
-As the possible failure of the kzalloc(), the 'new_ts' could be NULL
-pointer.
-Therefore, it should be better to check it in order to avoid the
-dereference of the NULL pointer.
-Also, the caller esparser_queue() needs to deal with the return value of
-the amvdec_add_ts().
+For the possible failure of the platform_get_irq(), the returned irq
+could be error number and will finally cause the failure of the
+request_irq().
+Consider that platform_get_irq() can now in certain cases return
+-EPROBE_DEFER, and the consequences of letting request_irq() effectively
+convert that into -EINVAL, even at probe time rather than later on.
+So it might be better to check just now.
 
-Fixes: 876f123b8956 ("media: meson: vdec: bring up to compliance")
+Fixes: 2c22120fbd01 ("MTD: OneNAND: interrupt based wait support")
 Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Suggested-by: Neil Armstrong <narmstrong@baylibre.com>
-Reviewed-by: Neil Armstrong <narmstrong@baylibre.com>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+Link: https://lore.kernel.org/linux-mtd/20220104162658.1988142-1-jiasheng@iscas.ac.cn
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/staging/media/meson/vdec/esparser.c     | 7 ++++++-
- drivers/staging/media/meson/vdec/vdec_helpers.c | 8 ++++++--
- drivers/staging/media/meson/vdec/vdec_helpers.h | 4 ++--
- 3 files changed, 14 insertions(+), 5 deletions(-)
+ drivers/mtd/nand/onenand/generic.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/staging/media/meson/vdec/esparser.c b/drivers/staging/media/meson/vdec/esparser.c
-index db7022707ff8..86ccc8937afc 100644
---- a/drivers/staging/media/meson/vdec/esparser.c
-+++ b/drivers/staging/media/meson/vdec/esparser.c
-@@ -328,7 +328,12 @@ esparser_queue(struct amvdec_session *sess, struct vb2_v4l2_buffer *vbuf)
+diff --git a/drivers/mtd/nand/onenand/generic.c b/drivers/mtd/nand/onenand/generic.c
+index 8b6f4da5d720..a4b8b65fe15f 100644
+--- a/drivers/mtd/nand/onenand/generic.c
++++ b/drivers/mtd/nand/onenand/generic.c
+@@ -53,7 +53,12 @@ static int generic_onenand_probe(struct platform_device *pdev)
+ 	}
  
- 	offset = esparser_get_offset(sess);
- 
--	amvdec_add_ts(sess, vb->timestamp, vbuf->timecode, offset, vbuf->flags);
-+	ret = amvdec_add_ts(sess, vb->timestamp, vbuf->timecode, offset, vbuf->flags);
-+	if (ret) {
-+		v4l2_m2m_buf_done(vbuf, VB2_BUF_STATE_ERROR);
-+		return ret;
-+	}
+ 	info->onenand.mmcontrol = pdata ? pdata->mmcontrol : NULL;
+-	info->onenand.irq = platform_get_irq(pdev, 0);
 +
- 	dev_dbg(core->dev, "esparser: ts = %llu pld_size = %u offset = %08X flags = %08X\n",
- 		vb->timestamp, payload_size, offset, vbuf->flags);
- 
-diff --git a/drivers/staging/media/meson/vdec/vdec_helpers.c b/drivers/staging/media/meson/vdec/vdec_helpers.c
-index 203d7afa085d..7d2a75653250 100644
---- a/drivers/staging/media/meson/vdec/vdec_helpers.c
-+++ b/drivers/staging/media/meson/vdec/vdec_helpers.c
-@@ -227,13 +227,16 @@ int amvdec_set_canvases(struct amvdec_session *sess,
- }
- EXPORT_SYMBOL_GPL(amvdec_set_canvases);
- 
--void amvdec_add_ts(struct amvdec_session *sess, u64 ts,
--		   struct v4l2_timecode tc, u32 offset, u32 vbuf_flags)
-+int amvdec_add_ts(struct amvdec_session *sess, u64 ts,
-+		  struct v4l2_timecode tc, u32 offset, u32 vbuf_flags)
- {
- 	struct amvdec_timestamp *new_ts;
- 	unsigned long flags;
- 
- 	new_ts = kzalloc(sizeof(*new_ts), GFP_KERNEL);
-+	if (!new_ts)
-+		return -ENOMEM;
++	err = platform_get_irq(pdev, 0);
++	if (err < 0)
++		goto out_iounmap;
 +
- 	new_ts->ts = ts;
- 	new_ts->tc = tc;
- 	new_ts->offset = offset;
-@@ -242,6 +245,7 @@ void amvdec_add_ts(struct amvdec_session *sess, u64 ts,
- 	spin_lock_irqsave(&sess->ts_spinlock, flags);
- 	list_add_tail(&new_ts->list, &sess->timestamps);
- 	spin_unlock_irqrestore(&sess->ts_spinlock, flags);
-+	return 0;
- }
- EXPORT_SYMBOL_GPL(amvdec_add_ts);
++	info->onenand.irq = err;
  
-diff --git a/drivers/staging/media/meson/vdec/vdec_helpers.h b/drivers/staging/media/meson/vdec/vdec_helpers.h
-index 88137d15aa3a..4bf3e61d081b 100644
---- a/drivers/staging/media/meson/vdec/vdec_helpers.h
-+++ b/drivers/staging/media/meson/vdec/vdec_helpers.h
-@@ -56,8 +56,8 @@ void amvdec_dst_buf_done_offset(struct amvdec_session *sess,
-  * @offset: offset in the VIFIFO where the associated packet was written
-  * @flags: the vb2_v4l2_buffer flags
-  */
--void amvdec_add_ts(struct amvdec_session *sess, u64 ts,
--		   struct v4l2_timecode tc, u32 offset, u32 flags);
-+int amvdec_add_ts(struct amvdec_session *sess, u64 ts,
-+		  struct v4l2_timecode tc, u32 offset, u32 flags);
- void amvdec_remove_ts(struct amvdec_session *sess, u64 ts);
- 
- /**
+ 	info->mtd.dev.parent = &pdev->dev;
+ 	info->mtd.priv = &info->onenand;
 -- 
 2.34.1
 
