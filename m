@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C2B1C43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F69BC43219
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:34:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242050AbiDEUce (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 16:32:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47660 "EHLO
+        id S243753AbiDEUdP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 16:33:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39510 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349485AbiDEJtz (ORCPT
+        with ESMTP id S1349478AbiDEJtz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Apr 2022 05:49:55 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B8A421BF;
-        Tue,  5 Apr 2022 02:47:21 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3DB0B67;
+        Tue,  5 Apr 2022 02:47:06 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 8EE24CE1BE5;
-        Tue,  5 Apr 2022 09:47:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A91DBC385A2;
-        Tue,  5 Apr 2022 09:47:17 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B0D8EB818F3;
+        Tue,  5 Apr 2022 09:47:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 208F1C385A2;
+        Tue,  5 Apr 2022 09:47:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649152038;
-        bh=LtbL+NctI2lPnOdJskINY7IUF608Dvnr7ibw88k9yPA=;
+        s=korg; t=1649152024;
+        bh=MwpI0A3swHzrHWq8nSzg3WNEjrJHPUTBAbo9N7PY73M=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1v6LPeZdOQn0Dzoam0+G6Nk0t3slNnP3tRybiWyHwFEFOzs2t+q40Ug8wi8mR40xM
-         UgS+BCpMcT/x67hsbFnI7/5a9qldaLLlykxjLnpePorUnjLcF/l/BcO/fVcefxLHLh
-         luOHDXzas2YKYWnhi1E83ispN8NhDJBz/7wd/I6I=
+        b=den/OtFFWaOo+pCn56yGY/f1HMDnlcSyoUlADv2Bd0rrtiJ50NRVh/2D5V4/dkgE+
+         ndRoMduGCB6Pa45xWOt8OZUp2YiitCO0u7SmafUdqHhXvBfA81cZ2TkniN3gT7lnk1
+         J3ce5d0Gzp8kZiOXelT3Ti/Sb4naYDhT2hXeJZig=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Chen-Yu Tsai <wenst@chromium.org>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
+        stable@vger.kernel.org,
+        Sergio Paracuellos <sergio.paracuellos@gmail.com>,
+        =?UTF-8?q?Ar=C4=B1n=C3=A7=20=C3=9CNAL?= <arinc.unal@arinc9.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 633/913] pinctrl: mediatek: paris: Fix "argument" argument type for mtk_pinconf_get()
-Date:   Tue,  5 Apr 2022 09:28:15 +0200
-Message-Id: <20220405070358.814319010@linuxfoundation.org>
+Subject: [PATCH 5.15 628/913] staging: mt7621-dts: fix formatting
+Date:   Tue,  5 Apr 2022 09:28:10 +0200
+Message-Id: <20220405070358.663025839@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
 References: <20220405070339.801210740@linuxfoundation.org>
@@ -51,42 +50,109 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chen-Yu Tsai <wenst@chromium.org>
+From: Arınç ÜNAL <arinc.unal@arinc9.com>
 
-[ Upstream commit 19bce7ce0a593c7024030a0cda9e23facea3c93d ]
+[ Upstream commit 7eeec44d33f6be7caca4fe9ca4e653cf315a36c1 ]
 
-For mtk_pinconf_get(), the "argument" argument is typically returned by
-pinconf_to_config_argument(), which holds the value for a given pinconf
-parameter. It certainly should not have the type of "enum pin_config_param",
-which describes the type of the pinconf parameter itself.
+Fix formatting on mt7621.dtsi.
 
-Change the type to u32, which matches the return type of
-pinconf_to_config_argument().
-
-Fixes: 805250982bb5 ("pinctrl: mediatek: add pinctrl-paris that implements the vendor dt-bindings")
-Signed-off-by: Chen-Yu Tsai <wenst@chromium.org>
-Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-Link: https://lore.kernel.org/r/20220308100956.2750295-4-wenst@chromium.org
-Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+Reviewed-by: Sergio Paracuellos <sergio.paracuellos@gmail.com>
+Signed-off-by: Arınç ÜNAL <arinc.unal@arinc9.com>
+Link: https://lore.kernel.org/r/20220125153903.1469-2-arinc.unal@arinc9.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pinctrl/mediatek/pinctrl-paris.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ drivers/staging/mt7621-dts/mt7621.dtsi | 15 ++++++++++++---
+ 1 file changed, 12 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/pinctrl/mediatek/pinctrl-paris.c b/drivers/pinctrl/mediatek/pinctrl-paris.c
-index 5bdf8b7acd23..bcf359256ed4 100644
---- a/drivers/pinctrl/mediatek/pinctrl-paris.c
-+++ b/drivers/pinctrl/mediatek/pinctrl-paris.c
-@@ -184,8 +184,7 @@ static int mtk_pinconf_get(struct pinctrl_dev *pctldev,
- }
+diff --git a/drivers/staging/mt7621-dts/mt7621.dtsi b/drivers/staging/mt7621-dts/mt7621.dtsi
+index eeabe9c0f4fb..eca384cdec39 100644
+--- a/drivers/staging/mt7621-dts/mt7621.dtsi
++++ b/drivers/staging/mt7621-dts/mt7621.dtsi
+@@ -36,9 +36,9 @@
+ 		regulator-max-microvolt = <3300000>;
+ 		enable-active-high;
+ 		regulator-always-on;
+-	  };
++	};
  
- static int mtk_pinconf_set(struct pinctrl_dev *pctldev, unsigned int pin,
--			   enum pin_config_param param,
--			   enum pin_config_param arg)
-+			   enum pin_config_param param, u32 arg)
- {
- 	struct mtk_pinctrl *hw = pinctrl_dev_get_drvdata(pctldev);
- 	const struct mtk_pin_desc *desc;
+-	  mmc_fixed_1v8_io: fixedregulator@1 {
++	mmc_fixed_1v8_io: fixedregulator@1 {
+ 		compatible = "regulator-fixed";
+ 		regulator-name = "mmc_io";
+ 		regulator-min-microvolt = <1800000>;
+@@ -391,17 +391,18 @@
+ 
+ 		mediatek,ethsys = <&sysc>;
+ 
+-
+ 		gmac0: mac@0 {
+ 			compatible = "mediatek,eth-mac";
+ 			reg = <0>;
+ 			phy-mode = "rgmii";
++
+ 			fixed-link {
+ 				speed = <1000>;
+ 				full-duplex;
+ 				pause;
+ 			};
+ 		};
++
+ 		gmac1: mac@1 {
+ 			compatible = "mediatek,eth-mac";
+ 			reg = <1>;
+@@ -409,6 +410,7 @@
+ 			phy-mode = "rgmii-rxid";
+ 			phy-handle = <&phy_external>;
+ 		};
++
+ 		mdio-bus {
+ 			#address-cells = <1>;
+ 			#size-cells = <0>;
+@@ -439,36 +441,43 @@
+ 					#address-cells = <1>;
+ 					#size-cells = <0>;
+ 					reg = <0>;
++
+ 					port@0 {
+ 						status = "off";
+ 						reg = <0>;
+ 						label = "lan0";
+ 					};
++
+ 					port@1 {
+ 						status = "off";
+ 						reg = <1>;
+ 						label = "lan1";
+ 					};
++
+ 					port@2 {
+ 						status = "off";
+ 						reg = <2>;
+ 						label = "lan2";
+ 					};
++
+ 					port@3 {
+ 						status = "off";
+ 						reg = <3>;
+ 						label = "lan3";
+ 					};
++
+ 					port@4 {
+ 						status = "off";
+ 						reg = <4>;
+ 						label = "lan4";
+ 					};
++
+ 					port@6 {
+ 						reg = <6>;
+ 						label = "cpu";
+ 						ethernet = <&gmac0>;
+ 						phy-mode = "trgmii";
++
+ 						fixed-link {
+ 							speed = <1000>;
+ 							full-duplex;
 -- 
 2.34.1
 
