@@ -2,130 +2,164 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 83DD4C352A7
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B0079C352A8
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 21:53:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1388414AbiDEVyV (ORCPT
+        id S1388537AbiDEVyr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 17:54:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47296 "EHLO
+        Tue, 5 Apr 2022 17:54:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49094 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348479AbiDEJrt (ORCPT
+        with ESMTP id S1573254AbiDESew (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:47:49 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2426C6F483;
-        Tue,  5 Apr 2022 02:34:00 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 41F6EB81CB3;
-        Tue,  5 Apr 2022 09:33:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8EAABC385A0;
-        Tue,  5 Apr 2022 09:33:57 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649151237;
-        bh=2oZ6o3YYR84xrbyRZvsWvVcONdqA2nZyWHB3WsSIGY8=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JOlLrgLUCcOMbLPlfEiIV4F5g7I/EioraRBU4In69KOCXjulAmU0HvuikJg0Xj576
-         up7NrUPVTsFwrSTX7mu6nl0GaA5a5IQ0ai+UlcbNbuqPlhHTgVoBQ+zPc3LM8uV8ft
-         O/q66w99fTHIZ75eVRt4TugDBJ4FxN2brizGxZj4=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Takashi Sakamoto <o-takashi@sakamocchi.jp>,
-        Takashi Iwai <tiwai@suse.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 344/913] ALSA: firewire-lib: fix uninitialized flag for AV/C deferred transaction
-Date:   Tue,  5 Apr 2022 09:23:26 +0200
-Message-Id: <20220405070350.158000824@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 5 Apr 2022 14:34:52 -0400
+Received: from NAM02-DM3-obe.outbound.protection.outlook.com (mail-dm3nam07on2054.outbound.protection.outlook.com [40.107.95.54])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6891513F81;
+        Tue,  5 Apr 2022 11:32:53 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=ar5DTNrfsVDpzJ18qat7gw05iLeMuePCjNwY0DPcmmmaJyXcRcaJanXQyXARWRzX2vxPRQDLYZQZVyHADmHj7jcY7qIwVf3E5Ec/O5i2JBhswKXlp+T4p8vEkBL99JLiyNfUHMlFHAN85U71ZLluxPyeEh68pNYbK2Xy/Fu0Zlv4aDWP3+L+aefHVlZnU4YgIGuu5xTNEVqETiMroyhMoqxcW2mTI21DASq2eoP4/RCdb3c1afRAsJfG9TiZU/v7JZYBgCyVqaxzYGXncyF1ho0avPiuqU6iWEM9Do0HzpMrLA51dzyVOKH6c8eqcaR15J/ZQ41dFfknrTWBnfkQng==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=6XvWXcsd/ooj2GETJGzB2GyQWI/90H3qlgjd33qld+c=;
+ b=W8Y3A0N9V649sOL46bs1P+fg3kVnuE7JDrBAy5qrdfA8Oe74soi7vtouGH4SZW1Foeh81tM0Yt94nZlAERKeU/DWyD2lsi86Ok0dPkSHKpUABg09vXf49YZlBB93EQiyvy+YPihWhnXcGCFYf4Euvu1+igDSPEqVdAtvL3NmxnqHul7JFt1F5DEHfT3Z/LhBorWAkCxw/U5vdaMojbSiXpCqvyNGI2RBSAQxXeCUwR3IFvcyRUfks+Cj1qRpdyAX+JgD9BZ7roN04Y23pnEoIkvjmRnyIVEp5ts2al333l93+ovmMNkl3hCcR6R6s2SHfIfZ/bw7b0fL6EZiOVTJlA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 165.204.84.17) smtp.rcpttodomain=alien8.de smtp.mailfrom=amd.com; dmarc=pass
+ (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=6XvWXcsd/ooj2GETJGzB2GyQWI/90H3qlgjd33qld+c=;
+ b=LvMi6IC8D6uHyD1SVPu5PqSHTw0pfgWy/O8KQEHInF6P5VaJWeEGYHHw8GijqtEf33uvQGDY9MLjM0biMqfp4kFolPgJIXz1/xxtShIYljEArh1z4AdeTsptiW4VEpKG4Zi6uzmvgQUVfbbUNvNYq+Te8sG7kRx0MAN67y2vOoE=
+Received: from BN0PR04CA0118.namprd04.prod.outlook.com (2603:10b6:408:ec::33)
+ by MN2PR12MB3934.namprd12.prod.outlook.com (2603:10b6:208:167::14) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5123.31; Tue, 5 Apr
+ 2022 18:32:51 +0000
+Received: from BN8NAM11FT065.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:408:ec:cafe::f0) by BN0PR04CA0118.outlook.office365.com
+ (2603:10b6:408:ec::33) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5123.31 via Frontend
+ Transport; Tue, 5 Apr 2022 18:32:51 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
+ smtp.mailfrom=amd.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=amd.com;
+Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
+ 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
+ client-ip=165.204.84.17; helo=SATLEXMB04.amd.com;
+Received: from SATLEXMB04.amd.com (165.204.84.17) by
+ BN8NAM11FT065.mail.protection.outlook.com (10.13.177.63) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.5123.19 via Frontend Transport; Tue, 5 Apr 2022 18:32:50 +0000
+Received: from ethanolx1ade-milan-genesis.amd.com (10.180.168.240) by
+ SATLEXMB04.amd.com (10.181.40.145) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Tue, 5 Apr 2022 13:32:50 -0500
+From:   Carlos Bilbao <carlos.bilbao@amd.com>
+To:     <bp@alien8.de>, <yazen.ghannam@amd.com>
+CC:     <tglx@linutronix.de>, <mingo@redhat.com>,
+        <dave.hansen@linux.intel.com>, <x86@kernel.org>,
+        <linux-kernel@vger.kernel.org>, <linux-edac@vger.kernel.org>,
+        <bilbao@vt.edu>, Carlos Bilbao <carlos.bilbao@amd.com>
+Subject: [PATCH 2/2] x86/mce: Add messages for panic errors in AMD's MCE grading
+Date:   Tue, 5 Apr 2022 13:32:14 -0500
+Message-ID: <20220405183212.354606-3-carlos.bilbao@amd.com>
+X-Mailer: git-send-email 2.31.1
+In-Reply-To: <20220405183212.354606-1-carlos.bilbao@amd.com>
+References: <20220405183212.354606-1-carlos.bilbao@amd.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.180.168.240]
+X-ClientProxiedBy: SATLEXMB03.amd.com (10.181.40.144) To SATLEXMB04.amd.com
+ (10.181.40.145)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 52dd1b1f-a28e-4436-3879-08da1732b0eb
+X-MS-TrafficTypeDiagnostic: MN2PR12MB3934:EE_
+X-Microsoft-Antispam-PRVS: <MN2PR12MB393454F781F13B3AFE2C80C4F8E49@MN2PR12MB3934.namprd12.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: SG2SV/JYvAuZTr5hhPvombDGGcU1RMermtJEQghiBZZnEnZcBXeShw4ayQBjBlm3hjHToMTwNPEnUO0EgsfCwDUn+ipnrDomEfjAbP+flH8f+WNGtLqOw2477Lyhx8MFauSSs1NAMTlunM+HTnJyPSkMcp1mXrCak6CQhtRoewwKWB6FJ1xuc/Kb/C2r8/oMvPc3Pla3BPbK8O5hgCTaqyt+9we7UsGazExSWrh0tVBd1zbzIjmPyf2PSBoMM5VkM9JJbK15MvMzMfL0to59wwaWwCKJsGEf1SLBNA2tApPtRGFhxJAYfvv44x6a/Zn3tJUPRg93ltEjmXjFN/f485x7RhYm36TGyBvF2TxP/ZewtWg9xuiQXIhlu9vzsVBfbKW7vr4tL3RNwQaa9P8wRyLZF++WwkiNbzPHqXo1dHcZsr5ZeqrBPs/ZeFY0afHTbxqv0xHfLOrCA90yOCcRPMucWT4HF6hcmY7QsaPqjjkaJ51rSWL3+56T0s+CUbZy4Nx2yPXe+IKpzU21UecasDDblxg4DZ6u0ZC8RCbMuk2q9F7aGkuDjt4FUNoC6IicXgjPakeKLyl/pAsHXgb5ZyjB9wBuXWXech4AZ8oJEcgXJM5GnBk3DW5U3WlObj3HHPNVofENJHPPZIpcRVIyghSG25zTcEuAqhgJtFVWUaiWM1tVIUblvTk4Jm3E7RzAbBM0ldnLv6LCaiN/7anTGw==
+X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230001)(4636009)(46966006)(36840700001)(40470700004)(6636002)(40460700003)(15650500001)(47076005)(110136005)(54906003)(8676002)(83380400001)(508600001)(8936002)(86362001)(316002)(2906002)(4326008)(44832011)(81166007)(356005)(26005)(82310400005)(1076003)(7696005)(16526019)(186003)(2616005)(70586007)(36860700001)(70206006)(426003)(5660300002)(336012)(6666004)(36756003)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Apr 2022 18:32:50.9730
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 52dd1b1f-a28e-4436-3879-08da1732b0eb
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
+X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT065.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR12MB3934
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Takashi Sakamoto <o-takashi@sakamocchi.jp>
+When a machine error is graded as PANIC by AMD grading logic, the MCE
+handler calls mce_panic(). The notification chain does not come into effect
+so the AMD EDAC driver does not decode the errors. In these cases, the
+messages displayed to the user are more cryptic and miss information
+that might be relevant, like the context in which the error took place.
 
-[ Upstream commit bf0cd60b7e33cf221fbe1114e4acb2c828b0af0d ]
+Fix the above issue including messages on AMD's grading logic for machine
+errors graded as PANIC.
 
-AV/C deferred transaction was supported at a commit 00a7bb81c20f ("ALSA:
-firewire-lib: Add support for deferred transaction") while 'deferrable'
-flag can be uninitialized for non-control/notify AV/C transactions.
-UBSAN reports it:
-
-kernel: ================================================================================
-kernel: UBSAN: invalid-load in /build/linux-aa0B4d/linux-5.15.0/sound/firewire/fcp.c:363:9
-kernel: load of value 158 is not a valid value for type '_Bool'
-kernel: CPU: 3 PID: 182227 Comm: irq/35-firewire Tainted: P           OE     5.15.0-18-generic #18-Ubuntu
-kernel: Hardware name: Gigabyte Technology Co., Ltd. AX370-Gaming 5/AX370-Gaming 5, BIOS F42b 08/01/2019
-kernel: Call Trace:
-kernel:  <IRQ>
-kernel:  show_stack+0x52/0x58
-kernel:  dump_stack_lvl+0x4a/0x5f
-kernel:  dump_stack+0x10/0x12
-kernel:  ubsan_epilogue+0x9/0x45
-kernel:  __ubsan_handle_load_invalid_value.cold+0x44/0x49
-kernel:  fcp_response.part.0.cold+0x1a/0x2b [snd_firewire_lib]
-kernel:  fcp_response+0x28/0x30 [snd_firewire_lib]
-kernel:  fw_core_handle_request+0x230/0x3d0 [firewire_core]
-kernel:  handle_ar_packet+0x1d9/0x200 [firewire_ohci]
-kernel:  ? handle_ar_packet+0x1d9/0x200 [firewire_ohci]
-kernel:  ? transmit_complete_callback+0x9f/0x120 [firewire_core]
-kernel:  ar_context_tasklet+0xa8/0x2e0 [firewire_ohci]
-kernel:  tasklet_action_common.constprop.0+0xea/0xf0
-kernel:  tasklet_action+0x22/0x30
-kernel:  __do_softirq+0xd9/0x2e3
-kernel:  ? irq_finalize_oneshot.part.0+0xf0/0xf0
-kernel:  do_softirq+0x75/0xa0
-kernel:  </IRQ>
-kernel:  <TASK>
-kernel:  __local_bh_enable_ip+0x50/0x60
-kernel:  irq_forced_thread_fn+0x7e/0x90
-kernel:  irq_thread+0xba/0x190
-kernel:  ? irq_thread_fn+0x60/0x60
-kernel:  kthread+0x11e/0x140
-kernel:  ? irq_thread_check_affinity+0xf0/0xf0
-kernel:  ? set_kthread_struct+0x50/0x50
-kernel:  ret_from_fork+0x22/0x30
-kernel:  </TASK>
-kernel: ================================================================================
-
-This commit fixes the bug. The bug has no disadvantage for the non-
-control/notify AV/C transactions since the flag has an effect for AV/C
-response with INTERIM (0x0f) status which is not used for the transactions
-in AV/C general specification.
-
-Fixes: 00a7bb81c20f ("ALSA: firewire-lib: Add support for deferred transaction")
-Signed-off-by: Takashi Sakamoto <o-takashi@sakamocchi.jp>
-Link: https://lore.kernel.org/r/20220304125647.78430-1-o-takashi@sakamocchi.jp
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Carlos Bilbao <carlos.bilbao@amd.com>
 ---
- sound/firewire/fcp.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+ arch/x86/kernel/cpu/mce/severity.c | 11 ++++++++++-
+ 1 file changed, 10 insertions(+), 1 deletion(-)
 
-diff --git a/sound/firewire/fcp.c b/sound/firewire/fcp.c
-index bbfbebf4affb..df44dd5dc4b2 100644
---- a/sound/firewire/fcp.c
-+++ b/sound/firewire/fcp.c
-@@ -240,9 +240,7 @@ int fcp_avc_transaction(struct fw_unit *unit,
- 	t.response_match_bytes = response_match_bytes;
- 	t.state = STATE_PENDING;
- 	init_waitqueue_head(&t.wait);
--
--	if (*(const u8 *)command == 0x00 || *(const u8 *)command == 0x03)
--		t.deferrable = true;
-+	t.deferrable = (*(const u8 *)command == 0x00 || *(const u8 *)command == 0x03);
+diff --git a/arch/x86/kernel/cpu/mce/severity.c b/arch/x86/kernel/cpu/mce/severity.c
+index 25aec5a27899..c09fa4f01616 100644
+--- a/arch/x86/kernel/cpu/mce/severity.c
++++ b/arch/x86/kernel/cpu/mce/severity.c
+@@ -306,6 +306,7 @@ static noinstr int error_context(struct mce *m, struct pt_regs *regs)
+  */
+ static noinstr int mce_severity_amd(struct mce *m, struct pt_regs *regs, char **msg, bool is_excp)
+ {
++	char *panic_msg = NULL;
+ 	int ret;
  
- 	spin_lock_irq(&transactions_lock);
- 	list_add_tail(&t.list, &transactions);
+ 	/*
+@@ -316,6 +317,7 @@ static noinstr int mce_severity_amd(struct mce *m, struct pt_regs *regs, char **
+ 
+ 	/* Processor Context Corrupt, no need to fumble too much, die! */
+ 	if (m->status & MCI_STATUS_PCC) {
++		panic_msg = "Processor Context Corrupt";
+ 		ret = MCE_PANIC_SEVERITY;
+ 		goto out_amd_severity;
+ 	}
+@@ -339,20 +341,27 @@ static noinstr int mce_severity_amd(struct mce *m, struct pt_regs *regs, char **
+ 	 * system will not be able to recover.
+ 	 */
+ 	if ((m->status & MCI_STATUS_OVER) && !mce_flags.overflow_recov) {
++		panic_msg = "Overflowed uncorrected error without MCA Overflow Recovery";
+ 		ret = MCE_PANIC_SEVERITY;
+ 		goto out_amd_severity;
+ 	}
+ 
+ 	if (!mce_flags.succor) {
++		panic_msg = "Uncorrected error without MCA Recovery";
+ 		ret = MCE_PANIC_SEVERITY;
+ 		goto out_amd_severity;
+ 	}
+ 
+-	if (error_context(m, regs) == IN_KERNEL)
++	if (error_context(m, regs) == IN_KERNEL) {
++		panic_msg = "Uncorrected unrecoverable error in kernel context";
+ 		ret = MCE_PANIC_SEVERITY;
++	}
+ 
+ out_amd_severity:
+ 
++	if (msg && panic_msg)
++		*msg = panic_msg;
++
+ 	return ret;
+ }
+ 
 -- 
-2.34.1
-
-
+2.31.1
 
