@@ -2,147 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A85CC35273
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5BB52C4707A
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 01:33:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1842821AbiDFBfC (ORCPT
+        id S1842847AbiDFBfG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 21:35:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39826 "EHLO
+        Tue, 5 Apr 2022 21:35:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58568 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349261AbiDEJtb (ORCPT
+        with ESMTP id S1443911AbiDEPk1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:49:31 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 169B1237C6;
-        Tue,  5 Apr 2022 02:43:21 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B84A9B817D3;
-        Tue,  5 Apr 2022 09:43:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 05D38C385A2;
-        Tue,  5 Apr 2022 09:43:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649151798;
-        bh=7Xpp+cKNrQRxV2DdvRzJyaHKgKrhq2oSnuOB1NF+8JU=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Yjwe2PJvCuy+q/CmP+Qw7WYmjGUJzuPNJXSALxybpVny87Sdwn0N8w/gMsIs3Qbb7
-         6YuwYQA6lDtCAxpky32JtkTi5BNxw+LO/Op5LBT9/rsmQrry2BKO0FdXufsi+IqfWZ
-         siPpifPnChl8+SIo9VS+MjJL/vvepeOhOHfH6660=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Anshuman Gupta <anshuman.gupta@intel.com>,
-        Jani Nikula <jani.nikula@intel.com>,
-        Uma Shankar <uma.shankar@intel.com>,
-        =?UTF-8?q?Ville=20Syrj=C3=A4l=C3=A4?= 
-        <ville.syrjala@linux.intel.com>,
-        =?UTF-8?q?Jos=C3=A9=20Roberto=20de=20Souza?= <jose.souza@intel.com>,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 546/913] drm/i915/display: Fix HPD short pulse handling for eDP
-Date:   Tue,  5 Apr 2022 09:26:48 +0200
-Message-Id: <20220405070356.214980113@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 5 Apr 2022 11:40:27 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 344C414DFDA
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 07:02:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1649167333;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=nJYEigw7gcZXWEyFZUr/9QDtSTka9JkbzhfWwkRGDd4=;
+        b=icU7AB6YYKUnvftN2X8qG4stY5ePjwlHLdPkODSV/UPwWm0DOkeaPxIUp1HmTmylXjt3rX
+        81tY0owgw4gM/oVB/C9N6Ym0krpDvyyDi2tr0h2SODjGZcFiDMmVSEZQ6wCs1sSRK6Ct+g
+        2+RJsYGWuuGlIjhp/6IxsTR/Rgs9Cgs=
+Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com
+ [209.85.221.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-29-XspWuqyBNMSuMfuyvcVjLg-1; Tue, 05 Apr 2022 10:02:12 -0400
+X-MC-Unique: XspWuqyBNMSuMfuyvcVjLg-1
+Received: by mail-wr1-f69.google.com with SMTP id j67-20020adf9149000000b00203e6b7d151so2494439wrj.13
+        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 07:02:11 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=nJYEigw7gcZXWEyFZUr/9QDtSTka9JkbzhfWwkRGDd4=;
+        b=3feWaPW86kUCi7p0B7iKhQs19aJg+asqCntOO/NehW+vlptH9EBZbsLlkWB1cZUY3a
+         uVcyMnoSUTeH0j28jw+csLdyGjX61Lr2JSpz9Eg3lt+5XsOmWQ7LGCS0hd6PvJ43gM4Q
+         Wv9mnjH9CYxdQYQhxg2bOG4ro4EcgP2WAsmFlntCTRCSXisIaxFK+ttFY2OUr4wv8Ak9
+         bTzPNMlMwCDCmW4jMRCxW68Wc2ZBWfdLkTCxOT9+hlcELlGqEhBrex8eFjozAnICo0He
+         /p8MGt1KT2iGvPV0e/7P8PDgLmw6Q/5ZUULaGW3YBtUAiUbNIVKV5U4cRFasEZPYmkHQ
+         J3zQ==
+X-Gm-Message-State: AOAM533W1zl0VoUe5LzlHrt/6hQi3dmvML2b9yzOLdGCKx+nFSxtDcZl
+        R9Cg0ldK5wcmdEG6otIPjzMy7/7z7J4fZjUWbnh9IxhawPoBPYipLAz4DfN33/ZofhB1kbWGIrS
+        LMeBUOm+ATvmcfPtpX5R1QsFn
+X-Received: by 2002:a05:600c:4e8a:b0:380:e340:bfba with SMTP id f10-20020a05600c4e8a00b00380e340bfbamr3263452wmq.80.1649167330585;
+        Tue, 05 Apr 2022 07:02:10 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJyrHlRseRHCErT1uO73tFAno9TovB88a0z4HJ3eP+jBDO4+00dj5Ln+r/duaMsX+o8AkGwlEg==
+X-Received: by 2002:a05:600c:4e8a:b0:380:e340:bfba with SMTP id f10-20020a05600c4e8a00b00380e340bfbamr3263429wmq.80.1649167330381;
+        Tue, 05 Apr 2022 07:02:10 -0700 (PDT)
+Received: from [10.32.181.87] (nat-pool-mxp-t.redhat.com. [149.6.153.186])
+        by smtp.googlemail.com with ESMTPSA id t9-20020adfa2c9000000b002061561d4a7sm5011314wra.96.2022.04.05.07.02.08
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 05 Apr 2022 07:02:09 -0700 (PDT)
+Message-ID: <0d18e8aa-93ac-ea3e-37ee-d104d681459d@redhat.com>
+Date:   Tue, 5 Apr 2022 16:02:08 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [RFC PATCH v5 033/104] KVM: x86: Add infrastructure for stolen
+ GPA bits
+Content-Language: en-US
+To:     Isaku Yamahata <isaku.yamahata@gmail.com>,
+        Kai Huang <kai.huang@intel.com>
+Cc:     isaku.yamahata@intel.com, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Jim Mattson <jmattson@google.com>,
+        erdemaktas@google.com, Connor Kuehl <ckuehl@redhat.com>,
+        Sean Christopherson <seanjc@google.com>,
+        Chao Peng <chao.p.peng@linux.intel.com>
+References: <cover.1646422845.git.isaku.yamahata@intel.com>
+ <a21c1f9065cf27db54820b2b504db4e507835584.1646422845.git.isaku.yamahata@intel.com>
+ <2b8038c17b85658a054191b362840240bd66e46b.camel@intel.com>
+ <20220401023426.GF2084469@ls.amr.corp.intel.com>
+From:   Paolo Bonzini <pbonzini@redhat.com>
+In-Reply-To: <20220401023426.GF2084469@ls.amr.corp.intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: José Roberto de Souza <jose.souza@intel.com>
+On 4/1/22 04:34, Isaku Yamahata wrote:
+> Sure, this patch heavily changed from the original patch Now.  One suggestion
+> is that private/shared is characteristic to kvm page fault, not gpa/gfn.
+> It's TDX specific.
+> 
+> - Add a helper function to check if KVM MMU is TD or VM. Right now
+>    kvm_gfn_stolen_mask() is used.  Probably kvm_mmu_has_private_bit().
+>    (any better name?)
 
-[ Upstream commit 3a84fd1ed53582b31e843a152ee3219e9e4ccb8c ]
+I think use of kvm_gfn_stolen_mask() should be minimized anyway.  I 
+would rename it to to kvm_{gfn,gpa}_private_mask and not return bool.
 
-Commit 13ea6db2cf24 ("drm/i915/edp: Ignore short pulse when panel
-powered off") completely broke short pulse handling for eDP as it is
-usually generated by sink when it is displaying image and there is
-some error or status that source needs to handle.
+> - Let's keep address conversion functions: address => unalias/shared/private
 
-When power panel is enabled, this state is enough to power aux
-transactions and VDD override is disabled, so intel_pps_have_power()
-is always returning false causing short pulses to be ignored.
+unalias is the same as private.  It doesn't seem to have a lot of uses. 
+  I would just inline "x & ~gfn_private_mask", or "x & 
+~kvm_gfn_private_mask(kvm)"; or the same with gpa of course.
 
-So here better naming this function that intends to check if aux
-lines are powered to avoid the endless cycle mentioned in the commit
-being fixed and fixing the check for what it is intended.
+The shared and private conversion functions should remain.
 
-v2:
-- renamed to intel_pps_have_panel_power_or_vdd()
-- fixed indentation
+> - Add struct kvm_page_fault.is_private
+>    see how kvm_is_private_{gpa, gfn}() can be removed (or reduced).
 
-Fixes: 13ea6db2cf24 ("drm/i915/edp: Ignore short pulse when panel powered off")
-Cc: Anshuman Gupta <anshuman.gupta@intel.com>
-Cc: Jani Nikula <jani.nikula@intel.com>
-Cc: Uma Shankar <uma.shankar@intel.com>
-Cc: Ville Syrjälä <ville.syrjala@linux.intel.com>
-Reviewed-by: Ville Syrjälä <ville.syrjala@linux.intel.com>
-Signed-off-by: José Roberto de Souza <jose.souza@intel.com>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220311185149.110527-1-jose.souza@intel.com
-(cherry picked from commit 8f0c1c0949b609acfad62b8d5f742a3b5e7b05ab)
-Signed-off-by: Joonas Lahtinen <joonas.lahtinen@linux.intel.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/gpu/drm/i915/display/intel_dp.c  | 2 +-
- drivers/gpu/drm/i915/display/intel_pps.c | 6 +++---
- drivers/gpu/drm/i915/display/intel_pps.h | 2 +-
- 3 files changed, 5 insertions(+), 5 deletions(-)
+Agreed.
 
-diff --git a/drivers/gpu/drm/i915/display/intel_dp.c b/drivers/gpu/drm/i915/display/intel_dp.c
-index dbff4b6aa22b..631cf7d4323c 100644
---- a/drivers/gpu/drm/i915/display/intel_dp.c
-+++ b/drivers/gpu/drm/i915/display/intel_dp.c
-@@ -4599,7 +4599,7 @@ intel_dp_hpd_pulse(struct intel_digital_port *dig_port, bool long_hpd)
- 	struct intel_dp *intel_dp = &dig_port->dp;
- 
- 	if (dig_port->base.type == INTEL_OUTPUT_EDP &&
--	    (long_hpd || !intel_pps_have_power(intel_dp))) {
-+	    (long_hpd || !intel_pps_have_panel_power_or_vdd(intel_dp))) {
- 		/*
- 		 * vdd off can generate a long/short pulse on eDP which
- 		 * would require vdd on to handle it, and thus we
-diff --git a/drivers/gpu/drm/i915/display/intel_pps.c b/drivers/gpu/drm/i915/display/intel_pps.c
-index a36ec4a818ff..466bf6820641 100644
---- a/drivers/gpu/drm/i915/display/intel_pps.c
-+++ b/drivers/gpu/drm/i915/display/intel_pps.c
-@@ -1074,14 +1074,14 @@ static void intel_pps_vdd_sanitize(struct intel_dp *intel_dp)
- 	edp_panel_vdd_schedule_off(intel_dp);
- }
- 
--bool intel_pps_have_power(struct intel_dp *intel_dp)
-+bool intel_pps_have_panel_power_or_vdd(struct intel_dp *intel_dp)
- {
- 	intel_wakeref_t wakeref;
- 	bool have_power = false;
- 
- 	with_intel_pps_lock(intel_dp, wakeref) {
--		have_power = edp_have_panel_power(intel_dp) &&
--						  edp_have_panel_vdd(intel_dp);
-+		have_power = edp_have_panel_power(intel_dp) ||
-+			     edp_have_panel_vdd(intel_dp);
- 	}
- 
- 	return have_power;
-diff --git a/drivers/gpu/drm/i915/display/intel_pps.h b/drivers/gpu/drm/i915/display/intel_pps.h
-index fbbcca782e7b..9fe7be4fe867 100644
---- a/drivers/gpu/drm/i915/display/intel_pps.h
-+++ b/drivers/gpu/drm/i915/display/intel_pps.h
-@@ -36,7 +36,7 @@ void intel_pps_vdd_on(struct intel_dp *intel_dp);
- void intel_pps_on(struct intel_dp *intel_dp);
- void intel_pps_off(struct intel_dp *intel_dp);
- void intel_pps_vdd_off_sync(struct intel_dp *intel_dp);
--bool intel_pps_have_power(struct intel_dp *intel_dp);
-+bool intel_pps_have_panel_power_or_vdd(struct intel_dp *intel_dp);
- void intel_pps_wait_power_cycle(struct intel_dp *intel_dp);
- 
- void intel_pps_init(struct intel_dp *intel_dp);
--- 
-2.34.1
-
-
+Paolo
 
