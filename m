@@ -2,122 +2,157 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 055CAC433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B2B2C4332F
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 14:44:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1389367AbiDEOog (ORCPT
+        id S1389389AbiDEOon (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 10:44:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36286 "EHLO
+        Tue, 5 Apr 2022 10:44:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38324 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244219AbiDEJlK (ORCPT
+        with ESMTP id S244310AbiDEJlO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:41:10 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D4E9BB088;
-        Tue,  5 Apr 2022 02:25:43 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 5A3A9CE1C79;
-        Tue,  5 Apr 2022 09:25:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 73780C385A0;
-        Tue,  5 Apr 2022 09:25:38 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649150738;
-        bh=lyl/QYeOAOaVkyrba6LwCYjzbpaPtg3ddCAsSWp4+5E=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PXztr1PJopqy26NYFmP7qzfp3hyPeQUO53t4E5feUEN/IQZvDvlx7TpPNnTKAQQg5
-         vSEzFDsNCHyFn6cZgW8pE2eKYK0PaRZGJ4Ex5nQBGM0+B1NiUpdjN/fzHk031tIr80
-         bJ/pm2bPiSfUldHJ/U40TtyawxS2QqMk+TkkALyA=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Shawn Guo <shawn.guo@linaro.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
-Subject: [PATCH 5.15 162/913] PM: domains: Fix sleep-in-atomic bug caused by genpd_debug_remove()
-Date:   Tue,  5 Apr 2022 09:20:24 +0200
-Message-Id: <20220405070344.699889540@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 5 Apr 2022 05:41:14 -0400
+Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74B5ABB0B0;
+        Tue,  5 Apr 2022 02:26:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1649150767; x=1680686767;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=jOEbnMPtQMwuK425EZS6fVgSTtL1flC7VoLKMawu8iI=;
+  b=blcqS08JedfX1/cs/h38KZsSCEJwx6AUQ7J35VKlTTA4D3hbbTEj0dVc
+   7sxw04nofV+yjamjSk/BT2fzRA1Z/yEkumEjZWJLhhyPXyRlFYui4+DKx
+   KEMZwW28TplR9bY0bhjxgNA6tw3AUBx65p4ai/t6NmKJ39qlkAgzDbwgW
+   I=;
+Received: from unknown (HELO ironmsg02-sd.qualcomm.com) ([10.53.140.142])
+  by alexa-out-sd-02.qualcomm.com with ESMTP; 05 Apr 2022 02:26:06 -0700
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg02-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2022 02:26:06 -0700
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Tue, 5 Apr 2022 02:26:05 -0700
+Received: from hu-pkondeti-hyd.qualcomm.com (10.80.80.8) by
+ nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Tue, 5 Apr 2022 02:26:01 -0700
+Date:   Tue, 5 Apr 2022 14:55:57 +0530
+From:   Pavan Kondeti <quic_pkondeti@quicinc.com>
+To:     Pavan Kondeti <quic_pkondeti@quicinc.com>
+CC:     Sandeep Maheswaram <quic_c_sanm@quicinc.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Felipe Balbi <balbi@kernel.org>,
+        Stephen Boyd <swboyd@chromium.org>,
+        Doug Anderson <dianders@chromium.org>,
+        "Matthias Kaehlcke" <mka@chromium.org>,
+        Mathias Nyman <mathias.nyman@intel.com>,
+        <linux-arm-msm@vger.kernel.org>, <linux-usb@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <quic_ppratap@quicinc.com>,
+        <quic_kriskura@quicinc.com>
+Subject: Re: [PATCH v11 2/5] usb: dwc3: core: Host wake up support from
+ system suspend
+Message-ID: <20220405092557.GA15621@hu-pkondeti-hyd.qualcomm.com>
+References: <1647932876-23249-1-git-send-email-quic_c_sanm@quicinc.com>
+ <1647932876-23249-3-git-send-email-quic_c_sanm@quicinc.com>
+ <20220322083221.GJ23316@hu-pkondeti-hyd.qualcomm.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <20220322083221.GJ23316@hu-pkondeti-hyd.qualcomm.com>
+User-Agent: Mutt/1.5.24 (2015-08-30)
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Shawn Guo <shawn.guo@linaro.org>
+Hi Sandeep,
 
-commit f6bfe8b5b2c2a5ac8bd2fc7bca3706e6c3fc26d8 upstream.
+On Tue, Mar 22, 2022 at 02:02:21PM +0530, Pavan Kondeti wrote:
+> Hi Sandeep,
+> 
+> On Tue, Mar 22, 2022 at 12:37:53PM +0530, Sandeep Maheswaram wrote:
+> > During suspend read the status of all port and make sure the PHYs
+> > are in the correct mode based on current speed.
+> > Phy interrupt masks are set based on this mode. Keep track of the mode
+> > of the HS PHY to be able to configure wakeup properly.
+> > 
+> > Also check during suspend if any wakeup capable devices are
+> > connected to the controller (directly or through hubs), if there
+> > are none set a flag to indicate that the PHY is powered
+> > down during suspend.
+> > 
+> > Signed-off-by: Sandeep Maheswaram <quic_c_sanm@quicinc.com>
+> > ---
+> >  drivers/usb/dwc3/core.c | 54 ++++++++++++++++++++++++++++++++++++++++---------
+> >  1 file changed, 45 insertions(+), 9 deletions(-)
+> > 
+> > diff --git a/drivers/usb/dwc3/core.c b/drivers/usb/dwc3/core.c
+> > index 1170b80..232a734 100644
+> > --- a/drivers/usb/dwc3/core.c
+> > +++ b/drivers/usb/dwc3/core.c
+> > @@ -32,12 +32,14 @@
+> >  #include <linux/usb/gadget.h>
+> >  #include <linux/usb/of.h>
+> >  #include <linux/usb/otg.h>
+> > +#include <linux/usb/hcd.h>
+> >  
+> >  #include "core.h"
+> >  #include "gadget.h"
+> >  #include "io.h"
+> >  
+> >  #include "debug.h"
+> > +#include "../host/xhci.h"
+> >  
+> >  #define DWC3_DEFAULT_AUTOSUSPEND_DELAY	5000 /* ms */
+> >  
+> > @@ -1861,10 +1863,36 @@ static int dwc3_core_init_for_resume(struct dwc3 *dwc)
+> >  	return ret;
+> >  }
+> >  
+> > +static void dwc3_set_phy_speed_mode(struct dwc3 *dwc)
+> > +{
+> > +
+> > +	int i, num_ports;
+> > +	u32 reg;
+> > +	struct usb_hcd	*hcd = platform_get_drvdata(dwc->xhci);
+> > +	struct xhci_hcd	*xhci_hcd = hcd_to_xhci(hcd);
+> > +
+> > +	dwc->hs_phy_mode = 0;
+> > +
+> > +	reg = readl(&xhci_hcd->cap_regs->hcs_params1);
+> > +
+> > +	num_ports = HCS_MAX_PORTS(reg);
+> > +	for (i = 0; i < num_ports; i++) {
+> > +		reg = readl(&xhci_hcd->op_regs->port_status_base + i * 0x04);
+> > +		if (reg & PORT_PE) {
+> > +			if (DEV_HIGHSPEED(reg) || DEV_FULLSPEED(reg))
+> > +				dwc->hs_phy_mode |= PHY_MODE_USB_HOST_HS;
+> > +			else if (DEV_LOWSPEED(reg))
+> > +				dwc->hs_phy_mode |= PHY_MODE_USB_HOST_LS;
+> > +		}
+> > +	}
+> > +	phy_set_mode(dwc->usb2_generic_phy, dwc->hs_phy_mode);
+> > +}
+> 
+> Are these flags cleared somewhere? Also qcom-snps-hs phy driver checks
+> for (hsphy->mode == PHY_MODE_USB_HOST) condition in qcom_snps_hsphy_suspend
+> to enable auto-resume. PHY_MODE_USB_HOST_HS/PHY_MODE_USB_HOST_LS flags
+> are different from PHY_MODE_USB_HOST. Currently this flag is set from
+> __dwc3_set_mode() when entering host mode. Can you clarify your intention
+> in calling phy_set_mode() here.
 
-When a genpd with GENPD_FLAG_IRQ_SAFE gets removed, the following
-sleep-in-atomic bug will be seen, as genpd_debug_remove() will be called
-with a spinlock being held.
+I think re-purposing phy_set_mode() to override PHY_MODE_USB_HOST with
+PHY_MODE_USB_HOST_HS/PHY_MODE_USB_HOST_LS might break other drivers. All
+most all the phy drivers are checking against PHY_MODE_USB_HOST.
 
-[    0.029183] BUG: sleeping function called from invalid context at kernel/locking/rwsem.c:1460
-[    0.029204] in_atomic(): 1, irqs_disabled(): 128, non_block: 0, pid: 1, name: swapper/0
-[    0.029219] preempt_count: 1, expected: 0
-[    0.029230] CPU: 1 PID: 1 Comm: swapper/0 Not tainted 5.17.0-rc4+ #489
-[    0.029245] Hardware name: Thundercomm TurboX CM2290 (DT)
-[    0.029256] Call trace:
-[    0.029265]  dump_backtrace.part.0+0xbc/0xd0
-[    0.029285]  show_stack+0x3c/0xa0
-[    0.029298]  dump_stack_lvl+0x7c/0xa0
-[    0.029311]  dump_stack+0x18/0x34
-[    0.029323]  __might_resched+0x10c/0x13c
-[    0.029338]  __might_sleep+0x4c/0x80
-[    0.029351]  down_read+0x24/0xd0
-[    0.029363]  lookup_one_len_unlocked+0x9c/0xcc
-[    0.029379]  lookup_positive_unlocked+0x10/0x50
-[    0.029392]  debugfs_lookup+0x68/0xac
-[    0.029406]  genpd_remove.part.0+0x12c/0x1b4
-[    0.029419]  of_genpd_remove_last+0xa8/0xd4
-[    0.029434]  psci_cpuidle_domain_probe+0x174/0x53c
-[    0.029449]  platform_probe+0x68/0xe0
-[    0.029462]  really_probe+0x190/0x430
-[    0.029473]  __driver_probe_device+0x90/0x18c
-[    0.029485]  driver_probe_device+0x40/0xe0
-[    0.029497]  __driver_attach+0xf4/0x1d0
-[    0.029508]  bus_for_each_dev+0x70/0xd0
-[    0.029523]  driver_attach+0x24/0x30
-[    0.029534]  bus_add_driver+0x164/0x22c
-[    0.029545]  driver_register+0x78/0x130
-[    0.029556]  __platform_driver_register+0x28/0x34
-[    0.029569]  psci_idle_init_domains+0x1c/0x28
-[    0.029583]  do_one_initcall+0x50/0x1b0
-[    0.029595]  kernel_init_freeable+0x214/0x280
-[    0.029609]  kernel_init+0x2c/0x13c
-[    0.029622]  ret_from_fork+0x10/0x20
+Why do we need to set phy_set_mode() here? The next patch in this series
+only uses dwc->hs_phy_mode. can we drop phy_set_mode() call here?
 
-It doesn't seem necessary to call genpd_debug_remove() with the lock, so
-move it out from locking to fix the problem.
-
-Fixes: 718072ceb211 ("PM: domains: create debugfs nodes when adding power domains")
-Signed-off-by: Shawn Guo <shawn.guo@linaro.org>
-Reviewed-by: Ulf Hansson <ulf.hansson@linaro.org>
-Cc: 5.11+ <stable@vger.kernel.org> # 5.11+
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- drivers/base/power/domain.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
---- a/drivers/base/power/domain.c
-+++ b/drivers/base/power/domain.c
-@@ -2058,9 +2058,9 @@ static int genpd_remove(struct generic_p
- 		kfree(link);
- 	}
- 
--	genpd_debug_remove(genpd);
- 	list_del(&genpd->gpd_list_node);
- 	genpd_unlock(genpd);
-+	genpd_debug_remove(genpd);
- 	cancel_work_sync(&genpd->power_off_work);
- 	if (genpd_is_cpu_domain(genpd))
- 		free_cpumask_var(genpd->cpus);
-
-
+Thanks,
+Pavan
