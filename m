@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E0763C4167D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EFA7DC4167B
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 13:24:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1388149AbiDENVS (ORCPT
+        id S1344409AbiDENFL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 09:21:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34662 "EHLO
+        Tue, 5 Apr 2022 09:05:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40634 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344366AbiDEJTe (ORCPT
+        with ESMTP id S238839AbiDEJQR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:19:34 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB4E22DB;
-        Tue,  5 Apr 2022 02:08:03 -0700 (PDT)
+        Tue, 5 Apr 2022 05:16:17 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4061CF4B7;
+        Tue,  5 Apr 2022 02:01:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 627D561571;
-        Tue,  5 Apr 2022 09:08:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 78742C385A1;
-        Tue,  5 Apr 2022 09:08:02 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 74BD8B818F3;
+        Tue,  5 Apr 2022 09:01:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D8B04C385A1;
+        Tue,  5 Apr 2022 09:01:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649149682;
-        bh=1mzmburc3X+szuNAEo1tXUhYMeph1aGhucbEOTahC2s=;
+        s=korg; t=1649149300;
+        bh=KoGQ+0vWP49KzgTOCU/ifdDn7F7KOjvEzSHR2vQTS+U=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=oyL2Z6FUb/5ZRfHUEy9GSzbcDp3pTa8WJKGcyL6k64sGXMAGpTPfKXPUl8OiHe245
-         dxrjr0aXy69MHnd6mZOPD7SdvJyc8q9E6J5rQJazfsxgdzDPH4TnQ3KSEGsewjDK27
-         UGTDbMFYwHyZvqx3EXmJ6nnBc4lR1ZIFUChyBagY=
+        b=V9YmgRW+s6inMPeYwYHPM8NXcObQ5fTD5dQB4e6r9rC/kVFcpYGEOHEUCKdANRpGH
+         bZJZ1k54PzktQ7ENUYqZDDYAxYCOSNSyzqfSp7VPwpzoVxKE8u6BPlTGf1bHlCEmJe
+         z3N1sy+houiSxOXA96qWTkETeS7COzEWbUoGjclE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Corentin Labbe <clabbe@baylibre.com>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        stable@vger.kernel.org, Qing Wang <wangqing@vivo.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0804/1017] media: staging: media: zoran: calculate the right buffer number for zoran_reap_stat_com
-Date:   Tue,  5 Apr 2022 09:28:37 +0200
-Message-Id: <20220405070418.115025989@linuxfoundation.org>
+Subject: [PATCH 5.16 0665/1017] serial: 8250_mid: Balance reference count for PCI DMA device
+Date:   Tue,  5 Apr 2022 09:26:18 +0200
+Message-Id: <20220405070414.021776769@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -51,48 +50,91 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Corentin Labbe <clabbe@baylibre.com>
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 
-[ Upstream commit e3b86f4e558cea9eed71d894df2f19b10d60a207 ]
+[ Upstream commit 67ec6dd0b257bd81b4e9fcac89b29da72f6265e5 ]
 
-On the case tmp_dcim=1, the index of buffer is miscalculated.
-This generate a NULL pointer dereference later.
+The pci_get_slot() increases its reference count, the caller
+must decrement the reference count by calling pci_dev_put().
 
-So let's fix the calcul and add a check to prevent this to reappear.
-
-Signed-off-by: Corentin Labbe <clabbe@baylibre.com>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+Fixes: 90b9aacf912a ("serial: 8250_pci: add Intel Tangier support")
+Fixes: f549e94effa1 ("serial: 8250_pci: add Intel Penwell ports")
+Reported-by: Qing Wang <wangqing@vivo.com>
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Depends-on: d9eda9bab237 ("serial: 8250_pci: Intel MID UART support to its own driver")
+Link: https://lore.kernel.org/r/20220215100920.41984-1-andriy.shevchenko@linux.intel.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/staging/media/zoran/zoran_device.c | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
+ drivers/tty/serial/8250/8250_mid.c | 19 +++++++++++++++----
+ 1 file changed, 15 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/staging/media/zoran/zoran_device.c b/drivers/staging/media/zoran/zoran_device.c
-index 5b12a730a229..fb1f0465ca87 100644
---- a/drivers/staging/media/zoran/zoran_device.c
-+++ b/drivers/staging/media/zoran/zoran_device.c
-@@ -814,7 +814,7 @@ static void zoran_reap_stat_com(struct zoran *zr)
- 		if (zr->jpg_settings.tmp_dcm == 1)
- 			i = (zr->jpg_dma_tail - zr->jpg_err_shift) & BUZ_MASK_STAT_COM;
- 		else
--			i = ((zr->jpg_dma_tail - zr->jpg_err_shift) & 1) * 2 + 1;
-+			i = ((zr->jpg_dma_tail - zr->jpg_err_shift) & 1) * 2;
+diff --git a/drivers/tty/serial/8250/8250_mid.c b/drivers/tty/serial/8250/8250_mid.c
+index efa0515139f8..e6c1791609dd 100644
+--- a/drivers/tty/serial/8250/8250_mid.c
++++ b/drivers/tty/serial/8250/8250_mid.c
+@@ -73,6 +73,11 @@ static int pnw_setup(struct mid8250 *mid, struct uart_port *p)
+ 	return 0;
+ }
  
- 		stat_com = le32_to_cpu(zr->stat_com[i]);
- 		if ((stat_com & 1) == 0) {
-@@ -826,6 +826,11 @@ static void zoran_reap_stat_com(struct zoran *zr)
- 		size = (stat_com & GENMASK(22, 1)) >> 1;
++static void pnw_exit(struct mid8250 *mid)
++{
++	pci_dev_put(mid->dma_dev);
++}
++
+ static int tng_handle_irq(struct uart_port *p)
+ {
+ 	struct mid8250 *mid = p->private_data;
+@@ -124,6 +129,11 @@ static int tng_setup(struct mid8250 *mid, struct uart_port *p)
+ 	return 0;
+ }
  
- 		buf = zr->inuse[i];
-+		if (!buf) {
-+			spin_unlock_irqrestore(&zr->queued_bufs_lock, flags);
-+			pci_err(zr->pci_dev, "No buffer at slot %d\n", i);
-+			return;
-+		}
- 		buf->vbuf.vb2_buf.timestamp = ktime_get_ns();
++static void tng_exit(struct mid8250 *mid)
++{
++	pci_dev_put(mid->dma_dev);
++}
++
+ static int dnv_handle_irq(struct uart_port *p)
+ {
+ 	struct mid8250 *mid = p->private_data;
+@@ -330,9 +340,9 @@ static int mid8250_probe(struct pci_dev *pdev, const struct pci_device_id *id)
  
- 		if (zr->codec_mode == BUZ_MODE_MOTION_COMPRESS) {
+ 	pci_set_drvdata(pdev, mid);
+ 	return 0;
++
+ err:
+-	if (mid->board->exit)
+-		mid->board->exit(mid);
++	mid->board->exit(mid);
+ 	return ret;
+ }
+ 
+@@ -342,8 +352,7 @@ static void mid8250_remove(struct pci_dev *pdev)
+ 
+ 	serial8250_unregister_port(mid->line);
+ 
+-	if (mid->board->exit)
+-		mid->board->exit(mid);
++	mid->board->exit(mid);
+ }
+ 
+ static const struct mid8250_board pnw_board = {
+@@ -351,6 +360,7 @@ static const struct mid8250_board pnw_board = {
+ 	.freq = 50000000,
+ 	.base_baud = 115200,
+ 	.setup = pnw_setup,
++	.exit = pnw_exit,
+ };
+ 
+ static const struct mid8250_board tng_board = {
+@@ -358,6 +368,7 @@ static const struct mid8250_board tng_board = {
+ 	.freq = 38400000,
+ 	.base_baud = 1843200,
+ 	.setup = tng_setup,
++	.exit = tng_exit,
+ };
+ 
+ static const struct mid8250_board dnv_board = {
 -- 
 2.34.1
 
