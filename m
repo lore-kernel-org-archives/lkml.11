@@ -2,136 +2,174 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C2BAC4707A
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E409C35276
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:15:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386948AbiDEUFg (ORCPT
+        id S1386620AbiDEUFa (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 16:05:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52508 "EHLO
+        Tue, 5 Apr 2022 16:05:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56634 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1443195AbiDEPjI (ORCPT
+        with ESMTP id S243466AbiDEKgr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 11:39:08 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C582E147AC8;
-        Tue,  5 Apr 2022 06:55:04 -0700 (PDT)
+        Tue, 5 Apr 2022 06:36:47 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AEBB3546A5;
+        Tue,  5 Apr 2022 03:22:12 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 213AC61944;
-        Tue,  5 Apr 2022 13:55:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E7369C385A4;
-        Tue,  5 Apr 2022 13:55:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649166903;
-        bh=K+uacYcRnrL7HPJFjNCi+sJ/H54EyMHrWY0d9kLsLks=;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 14598B81B96;
+        Tue,  5 Apr 2022 10:22:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 84B3FC385A0;
+        Tue,  5 Apr 2022 10:22:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649154129;
+        bh=o8wKoUb2M1W9qRi7fF9bUG326XYmoANmb7pml3OIOJs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kj55MBHO78oT2tA3RQmc362wFfV7zxDRyJHTu/s4kOktimn7ps4PXJBMkhwurREwD
-         zCtI6fKBrMn882wy2KrU49jagjTkQXoV6FKGIYlCaqKXZT9SJZpRGl9S7bMHUBv/t9
-         X4nBZCzjgswHJ0SQs3pjEDac3TZ1B1MWbgs7/pqM3FufbHQyaPCNwCV9za8R8uWVG1
-         /bm6wmItsd4mSR5EDEEfaDM3h2YHThXflRE3BhkD0LvWBUH4mY1Jsdu5c4l2a4pWsv
-         tjb2su7J79XYlyhrcNy9ZRB309QWDkAnMLPHg/vH3SgjOpq21ubwzJV56RgV2bC+ik
-         av/6somdipLtQ==
-Received: from sofa.misterjones.org ([185.219.108.64] helo=why.lan)
-        by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <maz@kernel.org>)
-        id 1nbje9-001q4g-Np; Tue, 05 Apr 2022 14:55:01 +0100
-From:   Marc Zyngier <maz@kernel.org>
+        b=W/upWr6XmbA7LU08offxO3GPhKjJd2kvwKPj8ucgN4l7TWm92H29JAxOrKeVbf8b/
+         uiEJCe+azpCxK5Lo/q3TpLEqmMk1cTLKAxJvBb5S03ZjwjiTvBE/R0wyD8y3VIcgcU
+         z4ArtYb1ah2Nx98YPSooy/bhSngS0KbRt+w6x3wg=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
-Cc:     Linus Walleij <linus.walleij@linaro.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Joey Gouly <joey.gouly@arm.com>,
-        Jonathan Hunter <jonathanh@nvidia.com>,
-        Hector Martin <marcan@marcan.st>,
-        Sven Peter <sven@svenpeter.dev>,
-        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Andy Gross <agross@kernel.org>,
-        Jeffrey Hugo <jeffrey.l.hugo@gmail.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Basavaraj Natikar <Basavaraj.Natikar@amd.com>,
-        Shyam Sundar S K <Shyam-sundar.S-k@amd.com>,
-        linux-gpio@vger.kernel.org, linux-tegra@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-arm-msm@vger.kernel.org, kernel-team@android.com
-Subject: [PATCH v2 08/10] pinctrl: amd: Make the irqchip immutable
-Date:   Tue,  5 Apr 2022 14:54:42 +0100
-Message-Id: <20220405135444.199295-9-maz@kernel.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220405135444.199295-1-maz@kernel.org>
-References: <20220405135444.199295-1-maz@kernel.org>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Chris Leech <cleech@redhat.com>,
+        Christoph Hellwig <hch@lst.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 468/599] nvme-tcp: lockdep: annotate in-kernel sockets
+Date:   Tue,  5 Apr 2022 09:32:42 +0200
+Message-Id: <20220405070312.754073685@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
+References: <20220405070258.802373272@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 185.219.108.64
-X-SA-Exim-Rcpt-To: linux-kernel@vger.kernel.org, linus.walleij@linaro.org, brgl@bgdev.pl, thierry.reding@gmail.com, joey.gouly@arm.com, jonathanh@nvidia.com, marcan@marcan.st, sven@svenpeter.dev, alyssa@rosenzweig.io, bjorn.andersson@linaro.org, agross@kernel.org, jeffrey.l.hugo@gmail.com, tglx@linutronix.de, Basavaraj.Natikar@amd.com, Shyam-sundar.S-k@amd.com, linux-gpio@vger.kernel.org, linux-tegra@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-arm-msm@vger.kernel.org, kernel-team@android.com
-X-SA-Exim-Mail-From: maz@kernel.org
-X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Prevent gpiolib from messing with the irqchip by advertising
-the irq_chip structure as immutable, making it const, and adding
-the various calls that gpiolib relies upon.
+From: Chris Leech <cleech@redhat.com>
 
-Signed-off-by: Marc Zyngier <maz@kernel.org>
+[ Upstream commit 841aee4d75f18fdfb53935080b03de0c65e9b92c ]
+
+Put NVMe/TCP sockets in their own class to avoid some lockdep warnings.
+Sockets created by nvme-tcp are not exposed to user-space, and will not
+trigger certain code paths that the general socket API exposes.
+
+Lockdep complains about a circular dependency between the socket and
+filesystem locks, because setsockopt can trigger a page fault with a
+socket lock held, but nvme-tcp sends requests on the socket while file
+system locks are held.
+
+  ======================================================
+  WARNING: possible circular locking dependency detected
+  5.15.0-rc3 #1 Not tainted
+  ------------------------------------------------------
+  fio/1496 is trying to acquire lock:
+  (sk_lock-AF_INET){+.+.}-{0:0}, at: tcp_sendpage+0x23/0x80
+
+  but task is already holding lock:
+  (&xfs_dir_ilock_class/5){+.+.}-{3:3}, at: xfs_ilock+0xcf/0x290 [xfs]
+
+  which lock already depends on the new lock.
+
+  other info that might help us debug this:
+
+  chain exists of:
+   sk_lock-AF_INET --> sb_internal --> &xfs_dir_ilock_class/5
+
+  Possible unsafe locking scenario:
+
+        CPU0                    CPU1
+        ----                    ----
+   lock(&xfs_dir_ilock_class/5);
+                                lock(sb_internal);
+                                lock(&xfs_dir_ilock_class/5);
+   lock(sk_lock-AF_INET);
+
+  *** DEADLOCK ***
+
+  6 locks held by fio/1496:
+   #0: (sb_writers#13){.+.+}-{0:0}, at: path_openat+0x9fc/0xa20
+   #1: (&inode->i_sb->s_type->i_mutex_dir_key){++++}-{3:3}, at: path_openat+0x296/0xa20
+   #2: (sb_internal){.+.+}-{0:0}, at: xfs_trans_alloc_icreate+0x41/0xd0 [xfs]
+   #3: (&xfs_dir_ilock_class/5){+.+.}-{3:3}, at: xfs_ilock+0xcf/0x290 [xfs]
+   #4: (hctx->srcu){....}-{0:0}, at: hctx_lock+0x51/0xd0
+   #5: (&queue->send_mutex){+.+.}-{3:3}, at: nvme_tcp_queue_rq+0x33e/0x380 [nvme_tcp]
+
+This annotation lets lockdep analyze nvme-tcp controlled sockets
+independently of what the user-space sockets API does.
+
+Link: https://lore.kernel.org/linux-nvme/CAHj4cs9MDYLJ+q+2_GXUK9HxFizv2pxUryUR0toX974M040z7g@mail.gmail.com/
+
+Signed-off-by: Chris Leech <cleech@redhat.com>
+Signed-off-by: Christoph Hellwig <hch@lst.de>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pinctrl/pinctrl-amd.c | 11 ++++++++---
- 1 file changed, 8 insertions(+), 3 deletions(-)
+ drivers/nvme/host/tcp.c | 40 ++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 40 insertions(+)
 
-diff --git a/drivers/pinctrl/pinctrl-amd.c b/drivers/pinctrl/pinctrl-amd.c
-index 1a7d686494ff..0645c2c24f50 100644
---- a/drivers/pinctrl/pinctrl-amd.c
-+++ b/drivers/pinctrl/pinctrl-amd.c
-@@ -387,6 +387,8 @@ static void amd_gpio_irq_enable(struct irq_data *d)
- 	struct gpio_chip *gc = irq_data_get_irq_chip_data(d);
- 	struct amd_gpio *gpio_dev = gpiochip_get_data(gc);
+diff --git a/drivers/nvme/host/tcp.c b/drivers/nvme/host/tcp.c
+index 6105894a218a..7e3932033707 100644
+--- a/drivers/nvme/host/tcp.c
++++ b/drivers/nvme/host/tcp.c
+@@ -30,6 +30,44 @@ static int so_priority;
+ module_param(so_priority, int, 0644);
+ MODULE_PARM_DESC(so_priority, "nvme tcp socket optimize priority");
  
-+	gpiochip_enable_irq(gc, d->hwirq);
++#ifdef CONFIG_DEBUG_LOCK_ALLOC
++/* lockdep can detect a circular dependency of the form
++ *   sk_lock -> mmap_lock (page fault) -> fs locks -> sk_lock
++ * because dependencies are tracked for both nvme-tcp and user contexts. Using
++ * a separate class prevents lockdep from conflating nvme-tcp socket use with
++ * user-space socket API use.
++ */
++static struct lock_class_key nvme_tcp_sk_key[2];
++static struct lock_class_key nvme_tcp_slock_key[2];
 +
- 	raw_spin_lock_irqsave(&gpio_dev->lock, flags);
- 	pin_reg = readl(gpio_dev->base + (d->hwirq)*4);
- 	pin_reg |= BIT(INTERRUPT_ENABLE_OFF);
-@@ -408,6 +410,8 @@ static void amd_gpio_irq_disable(struct irq_data *d)
- 	pin_reg &= ~BIT(INTERRUPT_MASK_OFF);
- 	writel(pin_reg, gpio_dev->base + (d->hwirq)*4);
- 	raw_spin_unlock_irqrestore(&gpio_dev->lock, flags);
++static void nvme_tcp_reclassify_socket(struct socket *sock)
++{
++	struct sock *sk = sock->sk;
 +
-+	gpiochip_disable_irq(gc, d->hwirq);
- }
++	if (WARN_ON_ONCE(!sock_allow_reclassification(sk)))
++		return;
++
++	switch (sk->sk_family) {
++	case AF_INET:
++		sock_lock_init_class_and_name(sk, "slock-AF_INET-NVME",
++					      &nvme_tcp_slock_key[0],
++					      "sk_lock-AF_INET-NVME",
++					      &nvme_tcp_sk_key[0]);
++		break;
++	case AF_INET6:
++		sock_lock_init_class_and_name(sk, "slock-AF_INET6-NVME",
++					      &nvme_tcp_slock_key[1],
++					      "sk_lock-AF_INET6-NVME",
++					      &nvme_tcp_sk_key[1]);
++		break;
++	default:
++		WARN_ON_ONCE(1);
++	}
++}
++#else
++static void nvme_tcp_reclassify_socket(struct socket *sock) { }
++#endif
++
+ enum nvme_tcp_send_state {
+ 	NVME_TCP_SEND_CMD_PDU = 0,
+ 	NVME_TCP_SEND_H2C_PDU,
+@@ -1422,6 +1460,8 @@ static int nvme_tcp_alloc_queue(struct nvme_ctrl *nctrl,
+ 		goto err_destroy_mutex;
+ 	}
  
- static void amd_gpio_irq_mask(struct irq_data *d)
-@@ -577,7 +581,7 @@ static void amd_irq_ack(struct irq_data *d)
- 	*/
- }
++	nvme_tcp_reclassify_socket(queue->sock);
++
+ 	/* Single syn retry */
+ 	tcp_sock_set_syncnt(queue->sock->sk, 1);
  
--static struct irq_chip amd_gpio_irqchip = {
-+static const struct irq_chip amd_gpio_irqchip = {
- 	.name         = "amd_gpio",
- 	.irq_ack      = amd_irq_ack,
- 	.irq_enable   = amd_gpio_irq_enable,
-@@ -593,7 +597,8 @@ static struct irq_chip amd_gpio_irqchip = {
- 	 * the wake event. Otherwise the wake event will never clear and
- 	 * prevent the system from suspending.
- 	 */
--	.flags        = IRQCHIP_ENABLE_WAKEUP_ON_SUSPEND,
-+	.flags        = IRQCHIP_ENABLE_WAKEUP_ON_SUSPEND | IRQCHIP_IMMUTABLE,
-+	GPIOCHIP_IRQ_RESOURCE_HELPERS,
- };
- 
- #define PIN_IRQ_PENDING	(BIT(INTERRUPT_STS_OFF) | BIT(WAKE_STS_OFF))
-@@ -1026,7 +1031,7 @@ static int amd_gpio_probe(struct platform_device *pdev)
- 	amd_gpio_irq_init(gpio_dev);
- 
- 	girq = &gpio_dev->gc.irq;
--	girq->chip = &amd_gpio_irqchip;
-+	gpio_irq_chip_set_chip(girq, &amd_gpio_irqchip);
- 	/* This will let us handle the parent IRQ in the driver */
- 	girq->parent_handler = NULL;
- 	girq->num_parents = 0;
 -- 
 2.34.1
+
+
 
