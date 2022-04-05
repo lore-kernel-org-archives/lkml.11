@@ -2,157 +2,154 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 011A9C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D56BDC433EF
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 22:09:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1391247AbiDEWFD (ORCPT
+        id S1391207AbiDEWFA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 18:05:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50590 "EHLO
+        Tue, 5 Apr 2022 18:05:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58504 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1457950AbiDERBW (ORCPT
+        with ESMTP id S1573213AbiDESY1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 13:01:22 -0400
-Received: from 6.mo560.mail-out.ovh.net (6.mo560.mail-out.ovh.net [87.98.165.38])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6493A51E46
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 09:59:23 -0700 (PDT)
-Received: from player771.ha.ovh.net (unknown [10.109.156.133])
-        by mo560.mail-out.ovh.net (Postfix) with ESMTP id 58ADD23B90
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 16:59:21 +0000 (UTC)
-Received: from sk2.org (82-65-25-201.subs.proxad.net [82.65.25.201])
-        (Authenticated sender: steve@sk2.org)
-        by player771.ha.ovh.net (Postfix) with ESMTPSA id F24EE293E366C;
-        Tue,  5 Apr 2022 16:59:15 +0000 (UTC)
-Authentication-Results: garm.ovh; auth=pass (GARM-106R0069cd6cc63-6d12-4d77-a5d0-44e51e431b9e,
-                    8AF55017BACD44284FC599BC4826E0280D36FCC4) smtp.auth=steve@sk2.org
-X-OVh-ClientIp: 82.65.25.201
-From:   Stephen Kitt <steve@sk2.org>
-To:     Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>
-Cc:     Wolfram Sang <wsa@kernel.org>, linux-kernel@vger.kernel.org,
-        Stephen Kitt <steve@sk2.org>
-Subject: [PATCH 01/14] ASoC: ak4*: use simple i2c probe function
-Date:   Tue,  5 Apr 2022 18:58:23 +0200
-Message-Id: <20220405165836.2165310-2-steve@sk2.org>
-X-Mailer: git-send-email 2.27.0
-In-Reply-To: <20220405165836.2165310-1-steve@sk2.org>
-References: <20220405165836.2165310-1-steve@sk2.org>
+        Tue, 5 Apr 2022 14:24:27 -0400
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A260419A4
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 11:22:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649182948; x=1680718948;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=YCQkJ0iRM6TI/iB59VjFGfFcnXrCeNHW0pUNSI++j60=;
+  b=NIFAMvX+dUXsZbm5CRL1je+YuXZyD3EPZYTV8Fa4nRfLngFtouF9S3eU
+   +PtX3lJ68thj0Srv6uarlimQvohGbi2uJi0DpauLyd1bLNZItSXf/XVMC
+   RTMLgT/iRO9sRFH/oaMfHm2j81xMP20LfqhQt4cQ4zqgcq87Gc7UG5slj
+   q/gte5GKZlSqF1wEr/BDza+1NaE7BBlF4WvXlUwhe14h7oRXi4W3MtDC0
+   bqwXajqPDZ1LjqGe8IkPUiuVHUBqENJLQ4tQQ6tFSd9Kv7O3Bq1epobl0
+   nsVlMBuvsfCxvhq6mC4PBq8gtSOjkoTvoU51lJ2Cv0HkVGo990cF/nCTP
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10308"; a="258416608"
+X-IronPort-AV: E=Sophos;i="5.90,236,1643702400"; 
+   d="scan'208";a="258416608"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2022 11:22:27 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,236,1643702400"; 
+   d="scan'208";a="524115047"
+Received: from lkp-server02.sh.intel.com (HELO a44fdfb70b94) ([10.239.97.151])
+  by orsmga006.jf.intel.com with ESMTP; 05 Apr 2022 11:22:25 -0700
+Received: from kbuild by a44fdfb70b94 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nbnov-0003et-0b;
+        Tue, 05 Apr 2022 18:22:25 +0000
+Date:   Wed, 6 Apr 2022 02:21:25 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Ben Widawsky <ben.widawsky@intel.com>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        Dan Williams <dan.j.williams@intel.com>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Subject: drivers/cxl/pci.c:439:7: warning: Local variable 'rc' shadows outer
+ variable [shadowVariable]
+Message-ID: <202204060228.GdRDR2Xx-lkp@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Ovh-Tracer-Id: 8460293375399265926
-X-VR-SPAMSTATE: OK
-X-VR-SPAMSCORE: -100
-X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvvddrudejgedguddtgecutefuodetggdotefrodftvfcurfhrohhfihhlvgemucfqggfjpdevjffgvefmvefgnecuuegrihhlohhuthemucehtddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjughrpefhvffufffkofgjfhgggfestdekredtredttdenucfhrhhomhepufhtvghphhgvnhcumfhithhtuceoshhtvghvvgesshhkvddrohhrgheqnecuggftrfgrthhtvghrnhepjeelledvfeeiiedutdefveekgeeuheekkedvffegvdehudegkefgjeejkefgueegnecukfhppedtrddtrddtrddtpdekvddrieehrddvhedrvddtudenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhhouggvpehsmhhtphhouhhtpdhhvghlohepphhlrgihvghrjeejuddrhhgrrdhovhhhrdhnvghtpdhinhgvtheptddrtddrtddrtddpmhgrihhlfhhrohhmpehsthgvvhgvsehskhdvrdhorhhgpdhnsggprhgtphhtthhopedupdhrtghpthhtoheplhhinhhugidqkhgvrhhnvghlsehvghgvrhdrkhgvrhhnvghlrdhorhhg
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The i2c probe functions here don't use the id information provided in
-their second argument, so the single-parameter i2c probe function
-("probe_new") can be used instead.
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+head:   3123109284176b1532874591f7c81f3837bbdc17
+commit: 523e594d9cc03db962c741ce02c8a58aab58a123 cxl/pci: Implement wait for media active
+date:   8 weeks ago
+config: mips-randconfig-p001-20220404 (https://download.01.org/0day-ci/archive/20220406/202204060228.GdRDR2Xx-lkp@intel.com/config)
+compiler: mips64-linux-gcc (GCC) 11.2.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=523e594d9cc03db962c741ce02c8a58aab58a123
+        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+        git fetch --no-tags linus master
+        git checkout 523e594d9cc03db962c741ce02c8a58aab58a123
+        # save the config file to linux build tree
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross ARCH=mips 
 
-This avoids scanning the identifier tables during probes.
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-Signed-off-by: Stephen Kitt <steve@sk2.org>
----
- sound/soc/codecs/ak4118.c | 5 ++---
- sound/soc/codecs/ak4535.c | 5 ++---
- sound/soc/codecs/ak4641.c | 5 ++---
- sound/soc/codecs/ak4671.c | 5 ++---
- 4 files changed, 8 insertions(+), 12 deletions(-)
+All errors (new ones prefixed by >>):
 
-diff --git a/sound/soc/codecs/ak4118.c b/sound/soc/codecs/ak4118.c
-index 2e6bafd2a821..5c4a78c16733 100644
---- a/sound/soc/codecs/ak4118.c
-+++ b/sound/soc/codecs/ak4118.c
-@@ -356,8 +356,7 @@ static const struct regmap_config ak4118_regmap = {
- 	.max_register = AK4118_REG_MAX - 1,
- };
- 
--static int ak4118_i2c_probe(struct i2c_client *i2c,
--			    const struct i2c_device_id *id)
-+static int ak4118_i2c_probe(struct i2c_client *i2c)
- {
- 	struct ak4118_priv *ak4118;
- 	int ret;
-@@ -416,7 +415,7 @@ static struct i2c_driver ak4118_i2c_driver = {
- 		.of_match_table = of_match_ptr(ak4118_of_match),
- 	},
- 	.id_table = ak4118_id_table,
--	.probe  = ak4118_i2c_probe,
-+	.probe_new = ak4118_i2c_probe,
- };
- 
- module_i2c_driver(ak4118_i2c_driver);
-diff --git a/sound/soc/codecs/ak4535.c b/sound/soc/codecs/ak4535.c
-index 91e7a57c43da..cc803e730c6e 100644
---- a/sound/soc/codecs/ak4535.c
-+++ b/sound/soc/codecs/ak4535.c
-@@ -405,8 +405,7 @@ static const struct snd_soc_component_driver soc_component_dev_ak4535 = {
- 	.non_legacy_dai_naming	= 1,
- };
- 
--static int ak4535_i2c_probe(struct i2c_client *i2c,
--			    const struct i2c_device_id *id)
-+static int ak4535_i2c_probe(struct i2c_client *i2c)
- {
- 	struct ak4535_priv *ak4535;
- 	int ret;
-@@ -441,7 +440,7 @@ static struct i2c_driver ak4535_i2c_driver = {
- 	.driver = {
- 		.name = "ak4535",
- 	},
--	.probe =    ak4535_i2c_probe,
-+	.probe_new = ak4535_i2c_probe,
- 	.id_table = ak4535_i2c_id,
- };
- 
-diff --git a/sound/soc/codecs/ak4641.c b/sound/soc/codecs/ak4641.c
-index 04aef0e72aa5..d8d9cc712d67 100644
---- a/sound/soc/codecs/ak4641.c
-+++ b/sound/soc/codecs/ak4641.c
-@@ -548,8 +548,7 @@ static const struct regmap_config ak4641_regmap = {
- 	.cache_type = REGCACHE_RBTREE,
- };
- 
--static int ak4641_i2c_probe(struct i2c_client *i2c,
--			    const struct i2c_device_id *id)
-+static int ak4641_i2c_probe(struct i2c_client *i2c)
- {
- 	struct ak4641_platform_data *pdata = i2c->dev.platform_data;
- 	struct ak4641_priv *ak4641;
-@@ -632,7 +631,7 @@ static struct i2c_driver ak4641_i2c_driver = {
- 	.driver = {
- 		.name = "ak4641",
- 	},
--	.probe =    ak4641_i2c_probe,
-+	.probe_new = ak4641_i2c_probe,
- 	.remove =   ak4641_i2c_remove,
- 	.id_table = ak4641_i2c_id,
- };
-diff --git a/sound/soc/codecs/ak4671.c b/sound/soc/codecs/ak4671.c
-index e9d1251c4265..60edcbe56014 100644
---- a/sound/soc/codecs/ak4671.c
-+++ b/sound/soc/codecs/ak4671.c
-@@ -629,8 +629,7 @@ static const struct regmap_config ak4671_regmap = {
- 	.cache_type = REGCACHE_RBTREE,
- };
- 
--static int ak4671_i2c_probe(struct i2c_client *client,
--			    const struct i2c_device_id *id)
-+static int ak4671_i2c_probe(struct i2c_client *client)
- {
- 	struct regmap *regmap;
- 	int ret;
-@@ -657,7 +656,7 @@ static struct i2c_driver ak4671_i2c_driver = {
- 	.driver = {
- 		.name = "ak4671-codec",
- 	},
--	.probe = ak4671_i2c_probe,
-+	.probe_new = ak4671_i2c_probe,
- 	.id_table = ak4671_i2c_id,
- };
- 
+   mips64-linux-ld: arch/mips/kernel/signal.o: in function `restore_hw_fp_context':
+   signal.c:(.text+0x1d8): undefined reference to `_restore_fp_context'
+   mips64-linux-ld: arch/mips/kernel/signal.o: in function `save_hw_fp_context':
+   signal.c:(.text+0x200): undefined reference to `_save_fp_context'
+   mips64-linux-ld: arch/mips/kernel/traps.o: in function `trap_init':
+>> (.init.text+0x4f8): undefined reference to `handle_fpe'
+   mips64-linux-ld: (.init.text+0x504): undefined reference to `handle_fpe'
+   mips64-linux-ld: (.init.text+0x510): undefined reference to `handle_fpe'
+
+
+cppcheck warnings: (new ones prefixed by >>)
+>> drivers/cxl/pci.c:439:7: warning: Local variable 'rc' shadows outer variable [shadowVariable]
+     int rc;
+         ^
+   drivers/cxl/pci.c:431:6: note: Shadowed declaration
+    int rc, i;
+        ^
+   drivers/cxl/pci.c:439:7: note: Shadow variable
+     int rc;
+         ^
+
+vim +/rc +439 drivers/cxl/pci.c
+
+   420	
+   421	/*
+   422	 * Wait up to @mbox_ready_timeout for the device to report memory
+   423	 * active.
+   424	 */
+   425	static int wait_for_media_ready(struct cxl_dev_state *cxlds)
+   426	{
+   427		struct pci_dev *pdev = to_pci_dev(cxlds->dev);
+   428		int d = cxlds->cxl_dvsec;
+   429		bool active = false;
+   430		u64 md_status;
+   431		int rc, i;
+   432	
+   433		rc = wait_for_valid(cxlds);
+   434		if (rc)
+   435			return rc;
+   436	
+   437		for (i = mbox_ready_timeout; i; i--) {
+   438			u32 temp;
+ > 439			int rc;
+   440	
+   441			rc = pci_read_config_dword(
+   442				pdev, d + CXL_DVSEC_RANGE_SIZE_LOW(0), &temp);
+   443			if (rc)
+   444				return rc;
+   445	
+   446			active = FIELD_GET(CXL_DVSEC_MEM_ACTIVE, temp);
+   447			if (active)
+   448				break;
+   449			msleep(1000);
+   450		}
+   451	
+   452		if (!active) {
+   453			dev_err(&pdev->dev,
+   454				"timeout awaiting memory active after %d seconds\n",
+   455				mbox_ready_timeout);
+   456			return -ETIMEDOUT;
+   457		}
+   458	
+   459		md_status = readq(cxlds->regs.memdev + CXLMDEV_STATUS_OFFSET);
+   460		if (!CXLMDEV_READY(md_status))
+   461			return -EIO;
+   462	
+   463		return 0;
+   464	}
+   465	
+
 -- 
-2.27.0
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
