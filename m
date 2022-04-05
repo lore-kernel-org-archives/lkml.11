@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4ED87C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:53:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D50DC4167E
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:53:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349320AbiDEMs7 (ORCPT
+        id S1348940AbiDEMsu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 08:48:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41500 "EHLO
+        Tue, 5 Apr 2022 08:48:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46838 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243806AbiDEJJR (ORCPT
+        with ESMTP id S243624AbiDEJJI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:09:17 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7BF8C7F;
-        Tue,  5 Apr 2022 01:58:40 -0700 (PDT)
+        Tue, 5 Apr 2022 05:09:08 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77590C74B1;
+        Tue,  5 Apr 2022 01:58:21 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6AC4361594;
-        Tue,  5 Apr 2022 08:58:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7B777C385A8;
-        Tue,  5 Apr 2022 08:58:39 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1297C61562;
+        Tue,  5 Apr 2022 08:58:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1C0D7C385A0;
+        Tue,  5 Apr 2022 08:58:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649149119;
-        bh=vZCYosMR3xAeEcqaIxxhaQzuSAuF9vWSVdw/VukUcbY=;
+        s=korg; t=1649149100;
+        bh=r91jElRvQN2IYdOEUX6cggvgiowglxtTlKd9Phaicio=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Qgef9G6xTu7DjiJe3WKC7Tn9qII7H5VrISoBSLM/wJy3ny3LIfB3/AKxnI3X02Cz0
-         qtWP2yeI15DQqqpNFxmOjQ2yTrwpYVi4+wFLoE+sJXBHiaR7OtsZoiBT02x0M6qnq8
-         /RRAjIJ1fWIgVNpOUxrzPZP2rJ9/7aXDlZqFcvdI=
+        b=x+m13pDkAcVEPDrX2lG0x3lQhMADVnKsoF3W0sEv2o4Ea71ouwVNzmn3AytQpmLcC
+         YsNi+0Cq0SlpmcDPXvwrA1vSAzD3ygusmfmVXoxLn2DNIIYMp3ja+3jHXFD8+D4sUm
+         zNr9bZowKUNSDV3DBjZcEjMv5YOgGCFQ8AonKG+E=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Wang Yufen <wangyufen@huawei.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        John Fastabend <john.fastabend@gmail.com>,
+        stable@vger.kernel.org, Mustafa Ismail <mustafa.ismail@intel.com>,
+        Shiraz Saleem <shiraz.saleem@intel.com>,
+        Leon Romanovsky <leonro@nvidia.com>,
+        Jason Gunthorpe <jgg@nvidia.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0602/1017] bpf, sockmap: Fix double uncharge the mem of sk_msg
-Date:   Tue,  5 Apr 2022 09:25:15 +0200
-Message-Id: <20220405070412.147578366@linuxfoundation.org>
+Subject: [PATCH 5.16 0556/1017] RDMA/irdma: Fix netdev notifications for vlans
+Date:   Tue,  5 Apr 2022 09:24:29 +0200
+Message-Id: <20220405070410.786442335@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -51,70 +52,138 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Wang Yufen <wangyufen@huawei.com>
+From: Mustafa Ismail <mustafa.ismail@intel.com>
 
-[ Upstream commit 2486ab434b2c2a14e9237296db00b1e1b7ae3273 ]
+[ Upstream commit 6702bc14744847842a87fed21a795b6e8bab6965 ]
 
-If tcp_bpf_sendmsg is running during a tear down operation, psock may be
-freed.
+Currently, events on vlan netdevs are being ignored. Fix this by finding
+the real netdev and processing the notifications for vlan netdevs.
 
-tcp_bpf_sendmsg()
- tcp_bpf_send_verdict()
-  sk_msg_return()
-  tcp_bpf_sendmsg_redir()
-   unlikely(!psock))
-     sk_msg_free()
-
-The mem of msg has been uncharged in tcp_bpf_send_verdict() by
-sk_msg_return(), and would be uncharged by sk_msg_free() again. When psock
-is null, we can simply returning an error code, this would then trigger
-the sk_msg_free_nocharge in the error path of __SK_REDIRECT and would have
-the side effect of throwing an error up to user space. This would be a
-slight change in behavior from user side but would look the same as an
-error if the redirect on the socket threw an error.
-
-This issue can cause the following info:
-WARNING: CPU: 0 PID: 2136 at net/ipv4/af_inet.c:155 inet_sock_destruct+0x13c/0x260
-Call Trace:
- <TASK>
- __sk_destruct+0x24/0x1f0
- sk_psock_destroy+0x19b/0x1c0
- process_one_work+0x1b3/0x3c0
- worker_thread+0x30/0x350
- ? process_one_work+0x3c0/0x3c0
- kthread+0xe6/0x110
- ? kthread_complete_and_exit+0x20/0x20
- ret_from_fork+0x22/0x30
- </TASK>
-
-Fixes: 604326b41a6f ("bpf, sockmap: convert to generic sk_msg interface")
-Signed-off-by: Wang Yufen <wangyufen@huawei.com>
-Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
-Acked-by: John Fastabend <john.fastabend@gmail.com>
-Link: https://lore.kernel.org/bpf/20220304081145.2037182-5-wangyufen@huawei.com
+Fixes: 915cc7ac0f8e ("RDMA/irdma: Add miscellaneous utility definitions")
+Link: https://lore.kernel.org/r/20220225163211.127-2-shiraz.saleem@intel.com
+Signed-off-by: Mustafa Ismail <mustafa.ismail@intel.com>
+Signed-off-by: Shiraz Saleem <shiraz.saleem@intel.com>
+Reviewed-by: Leon Romanovsky <leonro@nvidia.com>
+Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/ipv4/tcp_bpf.c | 7 +++----
- 1 file changed, 3 insertions(+), 4 deletions(-)
+ drivers/infiniband/hw/irdma/utils.c | 48 ++++++++++++++++++-----------
+ 1 file changed, 30 insertions(+), 18 deletions(-)
 
-diff --git a/net/ipv4/tcp_bpf.c b/net/ipv4/tcp_bpf.c
-index 304800c60427..1cdcb4df0eb7 100644
---- a/net/ipv4/tcp_bpf.c
-+++ b/net/ipv4/tcp_bpf.c
-@@ -138,10 +138,9 @@ int tcp_bpf_sendmsg_redir(struct sock *sk, struct sk_msg *msg,
- 	struct sk_psock *psock = sk_psock_get(sk);
- 	int ret;
+diff --git a/drivers/infiniband/hw/irdma/utils.c b/drivers/infiniband/hw/irdma/utils.c
+index 398736d8c78a..e81b74a518dd 100644
+--- a/drivers/infiniband/hw/irdma/utils.c
++++ b/drivers/infiniband/hw/irdma/utils.c
+@@ -150,31 +150,35 @@ int irdma_inetaddr_event(struct notifier_block *notifier, unsigned long event,
+ 			 void *ptr)
+ {
+ 	struct in_ifaddr *ifa = ptr;
+-	struct net_device *netdev = ifa->ifa_dev->dev;
++	struct net_device *real_dev, *netdev = ifa->ifa_dev->dev;
+ 	struct irdma_device *iwdev;
+ 	struct ib_device *ibdev;
+ 	u32 local_ipaddr;
  
--	if (unlikely(!psock)) {
--		sk_msg_free(sk, msg);
--		return 0;
--	}
-+	if (unlikely(!psock))
-+		return -EPIPE;
+-	ibdev = ib_device_get_by_netdev(netdev, RDMA_DRIVER_IRDMA);
++	real_dev = rdma_vlan_dev_real_dev(netdev);
++	if (!real_dev)
++		real_dev = netdev;
 +
- 	ret = ingress ? bpf_tcp_ingress(sk, psock, msg, bytes, flags) :
- 			tcp_bpf_push_locked(sk, msg, bytes, flags, false);
- 	sk_psock_put(sk, psock);
++	ibdev = ib_device_get_by_netdev(real_dev, RDMA_DRIVER_IRDMA);
+ 	if (!ibdev)
+ 		return NOTIFY_DONE;
+ 
+ 	iwdev = to_iwdev(ibdev);
+ 	local_ipaddr = ntohl(ifa->ifa_address);
+ 	ibdev_dbg(&iwdev->ibdev,
+-		  "DEV: netdev %p event %lu local_ip=%pI4 MAC=%pM\n", netdev,
+-		  event, &local_ipaddr, netdev->dev_addr);
++		  "DEV: netdev %p event %lu local_ip=%pI4 MAC=%pM\n", real_dev,
++		  event, &local_ipaddr, real_dev->dev_addr);
+ 	switch (event) {
+ 	case NETDEV_DOWN:
+-		irdma_manage_arp_cache(iwdev->rf, netdev->dev_addr,
++		irdma_manage_arp_cache(iwdev->rf, real_dev->dev_addr,
+ 				       &local_ipaddr, true, IRDMA_ARP_DELETE);
+-		irdma_if_notify(iwdev, netdev, &local_ipaddr, true, false);
++		irdma_if_notify(iwdev, real_dev, &local_ipaddr, true, false);
+ 		irdma_gid_change_event(&iwdev->ibdev);
+ 		break;
+ 	case NETDEV_UP:
+ 	case NETDEV_CHANGEADDR:
+-		irdma_add_arp(iwdev->rf, &local_ipaddr, true, netdev->dev_addr);
+-		irdma_if_notify(iwdev, netdev, &local_ipaddr, true, true);
++		irdma_add_arp(iwdev->rf, &local_ipaddr, true, real_dev->dev_addr);
++		irdma_if_notify(iwdev, real_dev, &local_ipaddr, true, true);
+ 		irdma_gid_change_event(&iwdev->ibdev);
+ 		break;
+ 	default:
+@@ -196,32 +200,36 @@ int irdma_inet6addr_event(struct notifier_block *notifier, unsigned long event,
+ 			  void *ptr)
+ {
+ 	struct inet6_ifaddr *ifa = ptr;
+-	struct net_device *netdev = ifa->idev->dev;
++	struct net_device *real_dev, *netdev = ifa->idev->dev;
+ 	struct irdma_device *iwdev;
+ 	struct ib_device *ibdev;
+ 	u32 local_ipaddr6[4];
+ 
+-	ibdev = ib_device_get_by_netdev(netdev, RDMA_DRIVER_IRDMA);
++	real_dev = rdma_vlan_dev_real_dev(netdev);
++	if (!real_dev)
++		real_dev = netdev;
++
++	ibdev = ib_device_get_by_netdev(real_dev, RDMA_DRIVER_IRDMA);
+ 	if (!ibdev)
+ 		return NOTIFY_DONE;
+ 
+ 	iwdev = to_iwdev(ibdev);
+ 	irdma_copy_ip_ntohl(local_ipaddr6, ifa->addr.in6_u.u6_addr32);
+ 	ibdev_dbg(&iwdev->ibdev,
+-		  "DEV: netdev %p event %lu local_ip=%pI6 MAC=%pM\n", netdev,
+-		  event, local_ipaddr6, netdev->dev_addr);
++		  "DEV: netdev %p event %lu local_ip=%pI6 MAC=%pM\n", real_dev,
++		  event, local_ipaddr6, real_dev->dev_addr);
+ 	switch (event) {
+ 	case NETDEV_DOWN:
+-		irdma_manage_arp_cache(iwdev->rf, netdev->dev_addr,
++		irdma_manage_arp_cache(iwdev->rf, real_dev->dev_addr,
+ 				       local_ipaddr6, false, IRDMA_ARP_DELETE);
+-		irdma_if_notify(iwdev, netdev, local_ipaddr6, false, false);
++		irdma_if_notify(iwdev, real_dev, local_ipaddr6, false, false);
+ 		irdma_gid_change_event(&iwdev->ibdev);
+ 		break;
+ 	case NETDEV_UP:
+ 	case NETDEV_CHANGEADDR:
+ 		irdma_add_arp(iwdev->rf, local_ipaddr6, false,
+-			      netdev->dev_addr);
+-		irdma_if_notify(iwdev, netdev, local_ipaddr6, false, true);
++			      real_dev->dev_addr);
++		irdma_if_notify(iwdev, real_dev, local_ipaddr6, false, true);
+ 		irdma_gid_change_event(&iwdev->ibdev);
+ 		break;
+ 	default:
+@@ -243,14 +251,18 @@ int irdma_net_event(struct notifier_block *notifier, unsigned long event,
+ 		    void *ptr)
+ {
+ 	struct neighbour *neigh = ptr;
++	struct net_device *real_dev, *netdev = (struct net_device *)neigh->dev;
+ 	struct irdma_device *iwdev;
+ 	struct ib_device *ibdev;
+ 	__be32 *p;
+ 	u32 local_ipaddr[4] = {};
+ 	bool ipv4 = true;
+ 
+-	ibdev = ib_device_get_by_netdev((struct net_device *)neigh->dev,
+-					RDMA_DRIVER_IRDMA);
++	real_dev = rdma_vlan_dev_real_dev(netdev);
++	if (!real_dev)
++		real_dev = netdev;
++
++	ibdev = ib_device_get_by_netdev(real_dev, RDMA_DRIVER_IRDMA);
+ 	if (!ibdev)
+ 		return NOTIFY_DONE;
+ 
 -- 
 2.34.1
 
