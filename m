@@ -2,42 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 72007C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 10:28:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2CCDDC43219
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 10:28:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355975AbiDEKWe (ORCPT
+        id S1355999AbiDEKWl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 06:22:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46000 "EHLO
+        Tue, 5 Apr 2022 06:22:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46070 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241259AbiDEIc6 (ORCPT
+        with ESMTP id S241258AbiDEIc6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Apr 2022 04:32:58 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09E3B62E7;
-        Tue,  5 Apr 2022 01:30:51 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4887F0E;
+        Tue,  5 Apr 2022 01:30:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C345EB81BC0;
-        Tue,  5 Apr 2022 08:30:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3A638C385A1;
-        Tue,  5 Apr 2022 08:30:48 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4195C60FF5;
+        Tue,  5 Apr 2022 08:30:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 52D0FC385A2;
+        Tue,  5 Apr 2022 08:30:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649147448;
-        bh=+1uthk7lYAmO9wnvrPL07V5fVwTvslmy0jK66nFRxSs=;
+        s=korg; t=1649147456;
+        bh=wHYZx+aC3TOMhk8Yv90DSLdpEeTUOTnRrQR0mwZOoRo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KOuy0ZbkdOYAwGAeRdjF1q+cNfGzra1iJp4b1QwOk6ovYMBQEHg/Qvb4tNGGdKxAn
-         zLkAtKIiz7G4nHprXbF3tG8+3OsD25aC3VP32mWFHXrmVnXhhcQZ5nkpZ7mTtNSYJX
-         GL1qG+DYM/Z1aHlgn/+7qTig+w1FCxuqhah++JsY=
+        b=mogbORoHNTgHxS9eLyuC01oI/UGy9jyGBW8/dAufpsMhxZ4/FweAZpDoxEdxMXRUQ
+         nmgUkRXZqs6Otn+EeznieWVV5HznbPkHYzNmWU4+Mub0ZC3Q54sTHtowsdbOhPv96D
+         Yot2txJTtQkbAvUQfnvZhc64zy+dIgYDNMo4/SVA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miquel Raynal <miquel.raynal@bootlin.com>,
-        Rob Herring <robh@kernel.org>
-Subject: [PATCH 5.17 1089/1126] dt-bindings: mtd: nand-controller: Fix the reg property description
-Date:   Tue,  5 Apr 2022 09:30:36 +0200
-Message-Id: <20220405070439.413895406@linuxfoundation.org>
+        stable@vger.kernel.org, Geert Uytterhoeven <geert@linux-m68k.org>,
+        Martin Kepplinger <martin.kepplinger@puri.sm>,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        Rob Herring <robh@kernel.org>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>
+Subject: [PATCH 5.17 1092/1126] media: dt-binding: media: hynix,hi846: use $defs/port-base port description
+Date:   Tue,  5 Apr 2022 09:30:39 +0200
+Message-Id: <20220405070439.498943456@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -49,33 +53,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miquel Raynal <miquel.raynal@bootlin.com>
+From: Martin Kepplinger <martin.kepplinger@puri.sm>
 
-commit 93f2ec9e401276fb4ea9903194a5bfcf175f9a2c upstream.
+commit 6492eba4fafb5a9715ecf78b7155e88f8f88909a upstream.
 
-The reg property of a NAND device always references the chip-selects.
-The ready/busy lines are described in the nand-rb property. I believe
-this was a harmless copy/paste error during the conversion to yaml.
+This fixes "make dt_binding_check":
 
-Fixes: 212e49693592 ("dt-bindings: mtd: Add YAML schemas for the generic NAND options")
-Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-Acked-by: Rob Herring <robh@kernel.org>
-Link: https://lore.kernel.org/linux-mtd/20211216111654.238086-2-miquel.raynal@bootlin.com
+    Documentation/devicetree/bindings/media/i2c/hynix,hi846.example.dt.yaml:
+camera@20: port:endpoint: Unevaluated properties are not allowed
+('link-frequencies', 'data-lanes' were unexpected)
+    From schema: Documentation/devicetree/bindings/media/i2c/hynix,hi846.yaml
+
+[Sakari Ailus: Reword commit message]
+
+Fixes: f3ce7200ca18 ("media: dt-bindings: media: document SK Hynix Hi-846 MIPI CSI-2 8M pixel sensor")
+Reported-by: Geert Uytterhoeven <geert@linux-m68k.org>
+Signed-off-by: Martin Kepplinger <martin.kepplinger@puri.sm>
+Reviewed-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Reviewed-by: Rob Herring <robh@kernel.org>
+Signed-off-by: Sakari Ailus <sakari.ailus@linux.intel.com>
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- Documentation/devicetree/bindings/mtd/nand-controller.yaml |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ Documentation/devicetree/bindings/media/i2c/hynix,hi846.yaml |    3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
---- a/Documentation/devicetree/bindings/mtd/nand-controller.yaml
-+++ b/Documentation/devicetree/bindings/mtd/nand-controller.yaml
-@@ -55,7 +55,7 @@ patternProperties:
-     properties:
-       reg:
-         description:
--          Contains the native Ready/Busy IDs.
-+          Contains the chip-select IDs.
+--- a/Documentation/devicetree/bindings/media/i2c/hynix,hi846.yaml
++++ b/Documentation/devicetree/bindings/media/i2c/hynix,hi846.yaml
+@@ -49,7 +49,8 @@ properties:
+     description: Definition of the regulator used for the VDDD power supply.
  
-       nand-ecc-engine:
-         allOf:
+   port:
+-    $ref: /schemas/graph.yaml#/properties/port
++    $ref: /schemas/graph.yaml#/$defs/port-base
++    unevaluatedProperties: false
+ 
+     properties:
+       endpoint:
 
 
