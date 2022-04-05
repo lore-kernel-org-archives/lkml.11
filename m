@@ -2,44 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E8C41C4332F
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 09:12:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A980C43217
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 09:12:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242123AbiDEJHj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 05:07:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37238 "EHLO
+        id S242396AbiDEJHx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 05:07:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34736 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239393AbiDEIUC (ORCPT
+        with ESMTP id S239364AbiDEIUA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:20:02 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3642A8EB4C;
-        Tue,  5 Apr 2022 01:12:27 -0700 (PDT)
+        Tue, 5 Apr 2022 04:20:00 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1BADBE9EB;
+        Tue,  5 Apr 2022 01:11:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DAFEAB81B92;
-        Tue,  5 Apr 2022 08:12:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3DA97C385A1;
-        Tue,  5 Apr 2022 08:12:24 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3F9D960B0B;
+        Tue,  5 Apr 2022 08:11:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4C9F9C385A0;
+        Tue,  5 Apr 2022 08:11:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649146344;
-        bh=hgwv3Bsh45tJ1pWCJ/OiWav3TISg2Dhm7A/oWtm79mM=;
+        s=korg; t=1649146313;
+        bh=aTqnT2hnmZ63NvztSKRQ9i4po/9pPjtNqmDf8qAzhBk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=MVYcs5i+21EqVA7VdLP6IXmxGE1PtqBM7xu6HyVDaM+bp/x0PzA4SKkFYSUejTyTX
-         KfnA0UlK76fJF4xvBCQf32pv3rO12LKTBn+5y2LIRA7xGrVVDhJhRf1hq9yN/Ugu83
-         H6scyoFGB5BX4lc8Hkb8RRzkSzjtYAAzd5UVhR6w=
+        b=yE6fYtk1a8Xrrhx2njg4BCckaV++WTfNYQDhA8ekIB80aaIA/31p0XtPw8q+mjhtF
+         BaQ5kk9Qwx9y1n+m9gFSs9Up1Ts9DBmfKESn7SRu/hBWV3iKy8DUsG3wnnmwnzSmNy
+         fWlFosdulwuypjixVziag3XeZJVu6ii7oGAlNfA4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dirk Buchwalder <buchwalder@posteo.de>,
-        Robert Marko <robimarko@gmail.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        stable@vger.kernel.org, Anshuman Gupta <anshuman.gupta@intel.com>,
+        Jani Nikula <jani.nikula@intel.com>,
+        Uma Shankar <uma.shankar@intel.com>,
+        =?UTF-8?q?Ville=20Syrj=C3=A4l=C3=A4?= 
+        <ville.syrjala@linux.intel.com>,
+        =?UTF-8?q?Jos=C3=A9=20Roberto=20de=20Souza?= <jose.souza@intel.com>,
+        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0731/1126] clk: qcom: ipq8074: Use floor ops for SDCC1 clock
-Date:   Tue,  5 Apr 2022 09:24:38 +0200
-Message-Id: <20220405070429.046370460@linuxfoundation.org>
+Subject: [PATCH 5.17 0671/1126] drm/i915/display: Fix HPD short pulse handling for eDP
+Date:   Tue,  5 Apr 2022 09:23:38 +0200
+Message-Id: <20220405070427.321935376@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -51,47 +54,92 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dirk Buchwalder <buchwalder@posteo.de>
+From: José Roberto de Souza <jose.souza@intel.com>
 
-[ Upstream commit b77d8306d84f83d1da68028a68c91da9c867b6f6 ]
+[ Upstream commit 3a84fd1ed53582b31e843a152ee3219e9e4ccb8c ]
 
-Use floor ops on SDCC1 APPS clock in order to round down selected clock
-frequency and avoid overclocking SD/eMMC cards.
+Commit 13ea6db2cf24 ("drm/i915/edp: Ignore short pulse when panel
+powered off") completely broke short pulse handling for eDP as it is
+usually generated by sink when it is displaying image and there is
+some error or status that source needs to handle.
 
-For example, currently HS200 cards were failling tuning as they were
-actually being clocked at 384MHz instead of 192MHz.
-This caused some boards to disable 1.8V I/O and force the eMMC into the
-standard HS mode (50MHz) and that appeared to work despite the eMMC being
-overclocked to 96Mhz in that case.
+When power panel is enabled, this state is enough to power aux
+transactions and VDD override is disabled, so intel_pps_have_power()
+is always returning false causing short pulses to be ignored.
 
-There was a previous commit to use floor ops on SDCC clocks, but it looks
-to have only covered SDCC2 clock.
+So here better naming this function that intends to check if aux
+lines are powered to avoid the endless cycle mentioned in the commit
+being fixed and fixing the check for what it is intended.
 
-Fixes: 9607f6224b39 ("clk: qcom: ipq8074: add PCIE, USB and SDCC clocks")
+v2:
+- renamed to intel_pps_have_panel_power_or_vdd()
+- fixed indentation
 
-Signed-off-by: Dirk Buchwalder <buchwalder@posteo.de>
-Signed-off-by: Robert Marko <robimarko@gmail.com>
-Reviewed-by: Stephen Boyd <sboyd@kernel.org>
-Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Link: https://lore.kernel.org/r/20220210173100.505128-1-robimarko@gmail.com
+Fixes: 13ea6db2cf24 ("drm/i915/edp: Ignore short pulse when panel powered off")
+Cc: Anshuman Gupta <anshuman.gupta@intel.com>
+Cc: Jani Nikula <jani.nikula@intel.com>
+Cc: Uma Shankar <uma.shankar@intel.com>
+Cc: Ville Syrjälä <ville.syrjala@linux.intel.com>
+Reviewed-by: Ville Syrjälä <ville.syrjala@linux.intel.com>
+Signed-off-by: José Roberto de Souza <jose.souza@intel.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220311185149.110527-1-jose.souza@intel.com
+(cherry picked from commit 8f0c1c0949b609acfad62b8d5f742a3b5e7b05ab)
+Signed-off-by: Joonas Lahtinen <joonas.lahtinen@linux.intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/clk/qcom/gcc-ipq8074.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/gpu/drm/i915/display/intel_dp.c  | 2 +-
+ drivers/gpu/drm/i915/display/intel_pps.c | 6 +++---
+ drivers/gpu/drm/i915/display/intel_pps.h | 2 +-
+ 3 files changed, 5 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/clk/qcom/gcc-ipq8074.c b/drivers/clk/qcom/gcc-ipq8074.c
-index b09d99343e09..541016db3c4b 100644
---- a/drivers/clk/qcom/gcc-ipq8074.c
-+++ b/drivers/clk/qcom/gcc-ipq8074.c
-@@ -1074,7 +1074,7 @@ static struct clk_rcg2 sdcc1_apps_clk_src = {
- 		.name = "sdcc1_apps_clk_src",
- 		.parent_names = gcc_xo_gpll0_gpll2_gpll0_out_main_div2,
- 		.num_parents = 4,
--		.ops = &clk_rcg2_ops,
-+		.ops = &clk_rcg2_floor_ops,
- 	},
- };
+diff --git a/drivers/gpu/drm/i915/display/intel_dp.c b/drivers/gpu/drm/i915/display/intel_dp.c
+index b5e2508db1cf..62e763faf0aa 100644
+--- a/drivers/gpu/drm/i915/display/intel_dp.c
++++ b/drivers/gpu/drm/i915/display/intel_dp.c
+@@ -4831,7 +4831,7 @@ intel_dp_hpd_pulse(struct intel_digital_port *dig_port, bool long_hpd)
+ 	struct intel_dp *intel_dp = &dig_port->dp;
  
+ 	if (dig_port->base.type == INTEL_OUTPUT_EDP &&
+-	    (long_hpd || !intel_pps_have_power(intel_dp))) {
++	    (long_hpd || !intel_pps_have_panel_power_or_vdd(intel_dp))) {
+ 		/*
+ 		 * vdd off can generate a long/short pulse on eDP which
+ 		 * would require vdd on to handle it, and thus we
+diff --git a/drivers/gpu/drm/i915/display/intel_pps.c b/drivers/gpu/drm/i915/display/intel_pps.c
+index e9c679bb1b2e..5edd188d9747 100644
+--- a/drivers/gpu/drm/i915/display/intel_pps.c
++++ b/drivers/gpu/drm/i915/display/intel_pps.c
+@@ -1075,14 +1075,14 @@ static void intel_pps_vdd_sanitize(struct intel_dp *intel_dp)
+ 	edp_panel_vdd_schedule_off(intel_dp);
+ }
+ 
+-bool intel_pps_have_power(struct intel_dp *intel_dp)
++bool intel_pps_have_panel_power_or_vdd(struct intel_dp *intel_dp)
+ {
+ 	intel_wakeref_t wakeref;
+ 	bool have_power = false;
+ 
+ 	with_intel_pps_lock(intel_dp, wakeref) {
+-		have_power = edp_have_panel_power(intel_dp) &&
+-						  edp_have_panel_vdd(intel_dp);
++		have_power = edp_have_panel_power(intel_dp) ||
++			     edp_have_panel_vdd(intel_dp);
+ 	}
+ 
+ 	return have_power;
+diff --git a/drivers/gpu/drm/i915/display/intel_pps.h b/drivers/gpu/drm/i915/display/intel_pps.h
+index fbb47f6f453e..e64144659d31 100644
+--- a/drivers/gpu/drm/i915/display/intel_pps.h
++++ b/drivers/gpu/drm/i915/display/intel_pps.h
+@@ -37,7 +37,7 @@ void intel_pps_vdd_on(struct intel_dp *intel_dp);
+ void intel_pps_on(struct intel_dp *intel_dp);
+ void intel_pps_off(struct intel_dp *intel_dp);
+ void intel_pps_vdd_off_sync(struct intel_dp *intel_dp);
+-bool intel_pps_have_power(struct intel_dp *intel_dp);
++bool intel_pps_have_panel_power_or_vdd(struct intel_dp *intel_dp);
+ void intel_pps_wait_power_cycle(struct intel_dp *intel_dp);
+ 
+ void intel_pps_init(struct intel_dp *intel_dp);
 -- 
 2.34.1
 
