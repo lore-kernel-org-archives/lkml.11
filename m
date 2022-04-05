@@ -2,217 +2,159 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CA01CC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:23:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 046FBC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:23:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243401AbiDEUUV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 16:20:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33070 "EHLO
+        id S245455AbiDEUVC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 16:21:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43648 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1573179AbiDESJK (ORCPT
+        with ESMTP id S1349087AbiDEJtG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 14:09:10 -0400
-Received: from mail-oa1-x34.google.com (mail-oa1-x34.google.com [IPv6:2001:4860:4864:20::34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33DF21FA69
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 11:07:09 -0700 (PDT)
-Received: by mail-oa1-x34.google.com with SMTP id 586e51a60fabf-d39f741ba0so182607fac.13
-        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 11:07:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=p23li6dT00AJl3hRn5GLCpGGZV7Mde/F/ZC6fP/JEqE=;
-        b=BADiZnSp78f9ZfxjlasetO+C2Swva/fEryHvZCHweafMOdoIX0m57hfulFwzprUsBB
-         5NO3j0ERJTi0OIIihE8sjSrXI/ueYUhpzuyzUvDnj/rraSlSTYcBjV3vc+GP9NtnhzkI
-         VM96wegARllDkf3644nEdixuvBQTRlgo0J5z3sG6cbiClK2MFU5FQEMNxQ3kr0ozGy8b
-         H0v0wy7xBeY27WgEwcBToKdEfjz5/a8PRSTPfNS/C9WTKMFTLaYVjUzE1+aWoW7GlT8m
-         l9irSkp9XsXAqCpbUokn14g9EtjANf+Eja8ATrFsehV0xTGHq1NWrkarTq4fmuMSRcMt
-         X6iw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=p23li6dT00AJl3hRn5GLCpGGZV7Mde/F/ZC6fP/JEqE=;
-        b=sByAnDbkthCvruWV98By+MTDYbEKZTAKag9vae8Q3EfdfW1efLi+TltR8HNKMcr1RH
-         azFyxS5pUToK7zEyapqiTTXgyc7L8YbkPai17EYuynwPLfeWFBIALBhJpmriSPilzEi2
-         SRQ9MrVccSyXN2E9q4g73G/m9cW4rorDYWDnBHn5aKLOykMKABjmkX1mlaaD0SfmegLg
-         WjuhKnv3sAA41RGoyMHEq9eNg5KIxOuslegxMmSStmi4jMe9iW55E+MeNkIDVstJoMBW
-         j7Lo8DvHWiLWdRg1lya6FSs7z8r6G4OXCW1apqnU4gZfiIXoMDshC9fVNNdXtsiZQ786
-         WVsw==
-X-Gm-Message-State: AOAM530toQgUKDvh8FYweevDJ3JyjOUYBWBfZ/0cfSBpO7edLNZE7pDR
-        Mw+HslKPbFlxb0leBrtOMAxAGyVelltlkZuouQfcNQ==
-X-Google-Smtp-Source: ABdhPJwYioIcf3roWcw+7eBY8YdFqDjjHYzBDCjQs9Td/wpB5Go+w8ufPzRoqDbMsrdiR1b646s6qcFXd+sb+pgP2sE=
-X-Received: by 2002:a05:6870:1709:b0:e1:ea02:2001 with SMTP id
- h9-20020a056870170900b000e1ea022001mr2164491oae.241.1649182028168; Tue, 05
- Apr 2022 11:07:08 -0700 (PDT)
+        Tue, 5 Apr 2022 05:49:06 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D1BFA995A;
+        Tue,  5 Apr 2022 02:40:31 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4C749B81C14;
+        Tue,  5 Apr 2022 09:40:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9BF46C385A2;
+        Tue,  5 Apr 2022 09:40:28 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649151629;
+        bh=VcKJ1b7hlR38oeDFWrv/Bduu0TTbaFFTrfTsQgagKYE=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=zV4AgYfoSL1ppVq97sswIi6sFgXUBD3anT6iLXVyetmnddkFYm1EXiOL8TLzkYrOa
+         eV5517oCDIelfXxtmlAwnvWWMNFhIGvwN0WOf2Swa0NiA8+5KECcmLU9btPNKKG/o3
+         e/0sKu3aNhtSpyzf/cAHXVdQZvE0Z0t1wBps8xno=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Jack Wang <jinpu.wang@ionos.com>,
+        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 483/913] scsi: pm8001: Fix le32 values handling in pm80xx_set_sas_protocol_timer_config()
+Date:   Tue,  5 Apr 2022 09:25:45 +0200
+Message-Id: <20220405070354.333407463@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-References: <CAE=gft4a-QL82iFJE_xRQ3JrMmz-KZKWREtz=MghhjFbJeK=8A@mail.gmail.com>
- <87a6cz39qd.ffs@tglx>
-In-Reply-To: <87a6cz39qd.ffs@tglx>
-From:   Evan Green <evgreen@google.com>
-Date:   Tue, 5 Apr 2022 11:06:31 -0700
-Message-ID: <CAE=gft521_W6uaCBovjr5RJ-RV3vVE2Ex0OV91FxpnuXThYHLA@mail.gmail.com>
-Subject: Re: Lost MSIs during hibernate
-To:     Thomas Gleixner <tglx@linutronix.de>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        Rajat Jain <rajatja@chromium.org>,
-        Linux PM <linux-pm@vger.kernel.org>,
-        linux-pci <linux-pci@vger.kernel.org>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Mathias Nyman <mathias.nyman@intel.com>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 5, 2022 at 7:06 AM Thomas Gleixner <tglx@linutronix.de> wrote:
->
-> Evan!
->
-> On Mon, Apr 04 2022 at 12:11, Evan Green wrote:
-> > To my surprise, I'm back with another MSI problem, and hoping to get
-> > some advice on how to approach fixing it.
->
-> Why am I not surprised?
+From: Damien Le Moal <damien.lemoal@opensource.wdc.com>
 
-I swear I don't intersect with this stuff that often. Maybe the
-reality is I always intersect with this stuff, it just usually works
-perfectly :)
+[ Upstream commit ca374f5d92b8ae778f6a37dd3e7ed809bbf7a953 ]
 
->
-> > What worries me is those IRQ "no longer affine" messages, as well as
-> > my "EVAN don't touch hw" prints, indicating that requests to change
-> > the MSI are being dropped. These ignored requests are coming in when
-> > we try to migrate all IRQs off of the non-boot CPU, and they get
-> > ignored because all devices are "frozen" at this point, and presumably
-> > not in D0.
->
-> They are disabled at that point.
->
-> > To further try and prove that theory, I wrote a script to do the
-> > hibernate prepare image step in a loop, but messed with XHCI's IRQ
-> > affinity beforehand. If I move the IRQ to core 0, so far I have never
-> > seen a hang. But if I move it to another core, I can usually get a
-> > hang in the first attempt. I also very occasionally see wifi splats
-> > when trying this, and those "no longer affine" prints are all the wifi
-> > queue IRQs. So I think a wifi packet coming in at the wrong time can
-> > do the same thing.
-> >
-> > I wanted to see what thoughts you might have on this. Should I try to
-> > make a patch that moves all IRQs to CPU 0 *before* the devices all
-> > freeze? Sounds a little unpleasant. Or should PCI be doing something
-> > different to avoid this combination of "you're not allowed to modify
-> > my MSIs, but I might still generate interrupts that must not be lost"?
->
-> PCI cannot do much here and moving interrupts around is papering over
-> the underlying problem.
->
-> xhci_hcd 0000:00:0d.0: EVAN Write MSI 0 fee1e000 4023
->
->   This sets up the interrupt when the driver is loaded
->
-> xhci_hcd 0000:00:14.0: EVAN Write MSI 0 fee01000 4024
->
->   Ditto
->
-> xhci_hcd 0000:00:0d.0: calling pci_pm_freeze+0x0/0xad @ 423, parent: pci0000:00
-> xhci_hcd 0000:00:14.0: calling pci_pm_freeze+0x0/0xad @ 4644, parent: pci0000:00
-> xhci_hcd 0000:00:14.0: pci_pm_freeze+0x0/0xad returned 0 after 0 usecs
-> xhci_hcd 0000:00:0d.0: EVAN Write MSI 0 fee1e000 4023
-> xhci_hcd 0000:00:0d.0: pci_pm_freeze+0x0/0xad returned 0 after 196000 usecs
->
-> Those freeze() calls end up in xhci_suspend(), which tears down the XHCI
-> and ensures that no interrupts are on flight.
+All fields of the SASProtocolTimerConfig structure have the __le32 type.
+As such, use cpu_to_le32() to initialize them. This change suppresses many
+sparse warnings:
 
-Your hint here about xhci_suspend() was helpful. It turns out this is
-not called in the freeze path, usb_hcd_pci_pm_ops just calls
-check_root_hub_suspended(). The documentation in devices.rst is pretty
-clear about this:
+warning: incorrect type in assignment (different base types)
+   expected restricted __le32 [addressable] [usertype] pageCode
+   got int
 
-```
-The ``->freeze`` methods should quiesce the device so that it doesn't
-generate IRQs or DMA
-```
+Note that the check to limit the value of the STP_IDLE_TMO field is removed
+as this field is initialized using the fixed (and small) value defined by
+the STP_IDLE_TIME macro.
 
-So I think you're right that the PM layer is doing everything right
-(though with a bit of a footgun that if you mess up and generate an
-interrupt after freeze it may just be gone forever), and usb core is
-at fault here. I've been testing with this patch (mangled in email),
-and so far the issue seems to be gone:
+The pm8001_dbg() calls printing the values of the SASProtocolTimerConfig
+structure fileds are changed to use le32_to_cpu() to present the values in
+human readable form.
 
-@@ -614,10 +622,10 @@ const struct dev_pm_ops usb_hcd_pci_pm_ops = {
-        .suspend_noirq  = hcd_pci_suspend_noirq,
-        .resume_noirq   = hcd_pci_resume_noirq,
-        .resume         = hcd_pci_resume,
--       .freeze         = check_root_hub_suspended,
--       .freeze_noirq   = check_root_hub_suspended,
--       .thaw_noirq     = NULL,
--       .thaw           = NULL,
-+       .freeze         = hcd_pci_suspend,
-+       .freeze_noirq   = hcd_pci_suspend_noirq,
-+       .thaw_noirq     = hcd_pci_resume_noirq,
-+       .thaw           = hcd_pci_resume,
-        .poweroff       = hcd_pci_suspend,
-        .poweroff_noirq = hcd_pci_suspend_noirq,
-        .restore_noirq  = hcd_pci_resume_noirq,
+Link: https://lore.kernel.org/r/20220220031810.738362-9-damien.lemoal@opensource.wdc.com
+Fixes: a6cb3d012b98 ("[SCSI] pm80xx: thermal, sas controller config and error handling update")
+Reviewed-by: Jack Wang <jinpu.wang@ionos.com>
+Signed-off-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/scsi/pm8001/pm80xx_hwi.c | 52 +++++++++++++++-----------------
+ 1 file changed, 25 insertions(+), 27 deletions(-)
+
+diff --git a/drivers/scsi/pm8001/pm80xx_hwi.c b/drivers/scsi/pm8001/pm80xx_hwi.c
+index ed6b5e7c2136..69789aa73fd1 100644
+--- a/drivers/scsi/pm8001/pm80xx_hwi.c
++++ b/drivers/scsi/pm8001/pm80xx_hwi.c
+@@ -1246,43 +1246,41 @@ pm80xx_set_sas_protocol_timer_config(struct pm8001_hba_info *pm8001_ha)
+ 	circularQ = &pm8001_ha->inbnd_q_tbl[0];
+ 	payload.tag = cpu_to_le32(tag);
+ 
+-	SASConfigPage.pageCode        =  SAS_PROTOCOL_TIMER_CONFIG_PAGE;
+-	SASConfigPage.MST_MSI         =  3 << 15;
+-	SASConfigPage.STP_SSP_MCT_TMO =  (STP_MCT_TMO << 16) | SSP_MCT_TMO;
+-	SASConfigPage.STP_FRM_TMO     = (SAS_MAX_OPEN_TIME << 24) |
+-				(SMP_MAX_CONN_TIMER << 16) | STP_FRM_TIMER;
+-	SASConfigPage.STP_IDLE_TMO    =  STP_IDLE_TIME;
+-
+-	if (SASConfigPage.STP_IDLE_TMO > 0x3FFFFFF)
+-		SASConfigPage.STP_IDLE_TMO = 0x3FFFFFF;
+-
+-
+-	SASConfigPage.OPNRJT_RTRY_INTVL =         (SAS_MFD << 16) |
+-						SAS_OPNRJT_RTRY_INTVL;
+-	SASConfigPage.Data_Cmd_OPNRJT_RTRY_TMO =  (SAS_DOPNRJT_RTRY_TMO << 16)
+-						| SAS_COPNRJT_RTRY_TMO;
+-	SASConfigPage.Data_Cmd_OPNRJT_RTRY_THR =  (SAS_DOPNRJT_RTRY_THR << 16)
+-						| SAS_COPNRJT_RTRY_THR;
+-	SASConfigPage.MAX_AIP =  SAS_MAX_AIP;
++	SASConfigPage.pageCode = cpu_to_le32(SAS_PROTOCOL_TIMER_CONFIG_PAGE);
++	SASConfigPage.MST_MSI = cpu_to_le32(3 << 15);
++	SASConfigPage.STP_SSP_MCT_TMO =
++		cpu_to_le32((STP_MCT_TMO << 16) | SSP_MCT_TMO);
++	SASConfigPage.STP_FRM_TMO =
++		cpu_to_le32((SAS_MAX_OPEN_TIME << 24) |
++			    (SMP_MAX_CONN_TIMER << 16) | STP_FRM_TIMER);
++	SASConfigPage.STP_IDLE_TMO = cpu_to_le32(STP_IDLE_TIME);
++
++	SASConfigPage.OPNRJT_RTRY_INTVL =
++		cpu_to_le32((SAS_MFD << 16) | SAS_OPNRJT_RTRY_INTVL);
++	SASConfigPage.Data_Cmd_OPNRJT_RTRY_TMO =
++		cpu_to_le32((SAS_DOPNRJT_RTRY_TMO << 16) | SAS_COPNRJT_RTRY_TMO);
++	SASConfigPage.Data_Cmd_OPNRJT_RTRY_THR =
++		cpu_to_le32((SAS_DOPNRJT_RTRY_THR << 16) | SAS_COPNRJT_RTRY_THR);
++	SASConfigPage.MAX_AIP = cpu_to_le32(SAS_MAX_AIP);
+ 
+ 	pm8001_dbg(pm8001_ha, INIT, "SASConfigPage.pageCode 0x%08x\n",
+-		   SASConfigPage.pageCode);
++		   le32_to_cpu(SASConfigPage.pageCode));
+ 	pm8001_dbg(pm8001_ha, INIT, "SASConfigPage.MST_MSI  0x%08x\n",
+-		   SASConfigPage.MST_MSI);
++		   le32_to_cpu(SASConfigPage.MST_MSI));
+ 	pm8001_dbg(pm8001_ha, INIT, "SASConfigPage.STP_SSP_MCT_TMO  0x%08x\n",
+-		   SASConfigPage.STP_SSP_MCT_TMO);
++		   le32_to_cpu(SASConfigPage.STP_SSP_MCT_TMO));
+ 	pm8001_dbg(pm8001_ha, INIT, "SASConfigPage.STP_FRM_TMO  0x%08x\n",
+-		   SASConfigPage.STP_FRM_TMO);
++		   le32_to_cpu(SASConfigPage.STP_FRM_TMO));
+ 	pm8001_dbg(pm8001_ha, INIT, "SASConfigPage.STP_IDLE_TMO  0x%08x\n",
+-		   SASConfigPage.STP_IDLE_TMO);
++		   le32_to_cpu(SASConfigPage.STP_IDLE_TMO));
+ 	pm8001_dbg(pm8001_ha, INIT, "SASConfigPage.OPNRJT_RTRY_INTVL  0x%08x\n",
+-		   SASConfigPage.OPNRJT_RTRY_INTVL);
++		   le32_to_cpu(SASConfigPage.OPNRJT_RTRY_INTVL));
+ 	pm8001_dbg(pm8001_ha, INIT, "SASConfigPage.Data_Cmd_OPNRJT_RTRY_TMO  0x%08x\n",
+-		   SASConfigPage.Data_Cmd_OPNRJT_RTRY_TMO);
++		   le32_to_cpu(SASConfigPage.Data_Cmd_OPNRJT_RTRY_TMO));
+ 	pm8001_dbg(pm8001_ha, INIT, "SASConfigPage.Data_Cmd_OPNRJT_RTRY_THR  0x%08x\n",
+-		   SASConfigPage.Data_Cmd_OPNRJT_RTRY_THR);
++		   le32_to_cpu(SASConfigPage.Data_Cmd_OPNRJT_RTRY_THR));
+ 	pm8001_dbg(pm8001_ha, INIT, "SASConfigPage.MAX_AIP  0x%08x\n",
+-		   SASConfigPage.MAX_AIP);
++		   le32_to_cpu(SASConfigPage.MAX_AIP));
+ 
+ 	memcpy(&payload.cfg_pg, &SASConfigPage,
+ 			 sizeof(SASProtocolTimerConfig_t));
+-- 
+2.34.1
 
 
-As an aside, one might wonder "why don't we see this everywhere
-then?". I think that's because Intel missed a patch enabling runtime
-pm on one of these XHCI controllers (8086:51ed). See the quirks below,
-that missing 2 on 00:14.0 is XHCI_DEFAULT_PM_RUNTIME_ALLOW:
-# dmesg | grep quirks
-[    2.804073] xhci_hcd 0000:00:0d.0: hcc params 0x20007fc1 hci
-version 0x120 quirks 0x0000000200009810
-[    3.108045] xhci_hcd 0000:00:14.0: hcc params 0x20007fc1 hci
-version 0x120 quirks 0x0000000000009810
 
-If the XHCI controller were usually in runtime suspend when freeze()
-got called, it would be fully quiesced and would not lose its
-interrupt. I had noticed this earlier, and it did reduce the repro
-rate, but did not reduce it to zero. Now it makes sense why.
-
-I think I have enough info to go make a USB patch now. Thank you for you help!
--Evan
-
->
-> xhci_hcd 0000:00:0d.0: calling pci_pm_freeze_noirq+0x0/0xb2 @ 4645, parent: pci0000:00
-> xhci_hcd 0000:00:0d.0: pci_pm_freeze_noirq+0x0/0xb2 returned 0 after 30 usecs
-> xhci_hcd 0000:00:14.0: calling pci_pm_freeze_noirq+0x0/0xb2 @ 4644, parent: pci0000:00
-> xhci_hcd 0000:00:14.0: pci_pm_freeze_noirq+0x0/0xb2 returned 0 after 3118 usecs
->
->    Now the devices are disabled and not accessible
->
-> xhci_hcd 0000:00:14.0: EVAN Don't touch hw 0 fee00000 4024
-> xhci_hcd 0000:00:0d.0: EVAN Don't touch hw 0 fee1e000 4045
-> xhci_hcd 0000:00:0d.0: EVAN Don't touch hw 0 fee00000 4045
-> xhci_hcd 0000:00:14.0: calling pci_pm_thaw_noirq+0x0/0x70 @ 9, parent: pci0000:00
-> xhci_hcd 0000:00:14.0: EVAN Write MSI 0 fee00000 4024
->
->    This is the early restore _before_ the XHCI resume code is called
->    This interrupt is targeted at CPU0 (it's the one which could not be
->    written above).
->
-> xhci_hcd 0000:00:14.0: pci_pm_thaw_noirq+0x0/0x70 returned 0 after 5272 usecs
-> xhci_hcd 0000:00:0d.0: calling pci_pm_thaw_noirq+0x0/0x70 @ 1123, parent: pci0000:00
-> xhci_hcd 0000:00:0d.0: EVAN Write MSI 0 fee00000 4045
->
->    Ditto
->
-> xhci_hcd 0000:00:0d.0: pci_pm_thaw_noirq+0x0/0x70 returned 0 after 623 usecs
-> xhci_hcd 0000:00:14.0: calling pci_pm_thaw+0x0/0x7c @ 3856, parent: pci0000:00
-> xhci_hcd 0000:00:14.0: pci_pm_thaw+0x0/0x7c returned 0 after 0 usecs
-> xhci_hcd 0000:00:0d.0: calling pci_pm_thaw+0x0/0x7c @ 4664, parent: pci0000:00
-> xhci_hcd 0000:00:0d.0: pci_pm_thaw+0x0/0x7c returned 0 after 0 usecs
->
-> That means the suspend/resume logic is doing the right thing.
->
-> How the XHCI ends up being confused here is a mystery. Cc'ed a few more folks.
->
-> Thanks,
->
->         tglx
->
->
