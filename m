@@ -2,112 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 78CF1C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E5C0C433FE
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 02:39:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1849582AbiDFCjD (ORCPT
+        id S1849597AbiDFCjO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 22:39:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33702 "EHLO
+        Tue, 5 Apr 2022 22:39:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39398 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1442091AbiDEWKn (ORCPT
+        with ESMTP id S1452819AbiDEWc2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 18:10:43 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5AFC128E24;
-        Tue,  5 Apr 2022 13:56:20 -0700 (PDT)
-Date:   Tue, 05 Apr 2022 20:56:17 -0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1649192179;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=csCYSZXs/k/y3JYV+c94UAameL8Wjh0jsXSIlb67K8Q=;
-        b=Zr4sKJQNms3Vp7nOKsP72FCqJfO4TRJz7omngb9vSBMDJDAf7n74gXj5GCTRs+ZcvFEuIu
-        B5ttCJJzeUrXEtTkG/0L0ajHfAt1bkS/LmBQgbrn3Fo2jDu8phAsjiig+F7HAcAmk3QAlJ
-        iHgjnOgiRjvIfz5lBIBaptu6SVyEjAwY4tZ1jUFMaTpMRbsKBAtUsKYlmx/1Qs7xsHWfj6
-        vxzbZeF8vBco+5medXHnq5IJLbV2gZuyI2Acnm3Dl+T9x4f9eqwpu+999BZn4vYI2cMwz5
-        ZWfp8OL+y3keD/NO2r54CDkk+Q1h4UzF1R813auQG3Reirt/eZtiiVD5RGOW3g==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1649192179;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=csCYSZXs/k/y3JYV+c94UAameL8Wjh0jsXSIlb67K8Q=;
-        b=XzVbtc0PhLoeBULUpsFatERhaBFi0mVkI83ccJvS6jdX6s4U2t3B1GwXQqy3yYn62wiGab
-        nPv+KADNT84x3qCg==
-From:   "tip-bot2 for Smita Koralahalli" <tip-bot2@linutronix.de>
-Sender: tip-bot2@linutronix.de
-Reply-to: linux-kernel@vger.kernel.org
-To:     linux-tip-commits@vger.kernel.org
-Subject: [tip: ras/core] x86/mce: Avoid unnecessary padding in struct mce_bank
-Cc:     Smita Koralahalli <Smita.KoralahalliChannabasappa@amd.com>,
-        Borislav Petkov <bp@suse.de>, x86@kernel.org,
-        linux-kernel@vger.kernel.org
-In-Reply-To: <20220225193342.215780-2-Smita.KoralahalliChannabasappa@amd.com>
-References: <20220225193342.215780-2-Smita.KoralahalliChannabasappa@amd.com>
+        Tue, 5 Apr 2022 18:32:28 -0400
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D02191A3BB;
+        Tue,  5 Apr 2022 14:26:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649193999; x=1680729999;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=+oTJs1jfnV9NW0n9SL3+E3IODEjehGaO0faXtMV5Vvo=;
+  b=bggTod5tcaE8W4le11d67CSJn7zWg4hJdb1i4ZVnNMwxYMk9yNjviSIx
+   Xkb70JazRAekFm3YtV3AJ1VnjRfXmPjWPHxRYYWIGQA82a15W0ZG1AB5C
+   +xnNaqypsoxbvMS59UWXX9JOXwd+IM3az0HpHiXoDvp6WlAavV3z+H2oZ
+   ZSFVDR7TYOfeTWoI2kANPXBbjNnJJAFaz3BAUW6dryNo3ysLQ7JuRjQSe
+   7Uw9QYEQ+Wuq+I7sAP7OahdlXoUrVcDyvF0vmo41/Z9bcppoGPjXt0c35
+   sIEY+I29s5pARRqSkcPtDmzH1+yDnCOyZIlIkHLo2k9gu46RVXa1nLURC
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10308"; a="347310054"
+X-IronPort-AV: E=Sophos;i="5.90,238,1643702400"; 
+   d="scan'208";a="347310054"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2022 14:26:39 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,238,1643702400"; 
+   d="scan'208";a="641773595"
+Received: from lkp-server02.sh.intel.com (HELO a44fdfb70b94) ([10.239.97.151])
+  by FMSMGA003.fm.intel.com with ESMTP; 05 Apr 2022 14:26:34 -0700
+Received: from kbuild by a44fdfb70b94 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nbqh8-0003ly-3e;
+        Tue, 05 Apr 2022 21:26:34 +0000
+Date:   Wed, 6 Apr 2022 05:25:49 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Masami Hiramatsu <mhiramat@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Shubham Bansal <illusionist.neo@gmail.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Masami Hiramatsu <mhiramat@kernel.org>, bpf@vger.kernel.org,
+        kernel-team@fb.com, Jiri Olsa <jolsa@kernel.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        "Naveen N . Rao" <naveen.n.rao@linux.ibm.com>,
+        Anil S Keshavamurthy <anil.s.keshavamurthy@intel.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        linux-kernel@vger.kernel.org, Mark Rutland <mark.rutland@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Russell King <linux@armlinux.org.uk>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH bpf 4/4] arm64: rethook: Replace kretprobe trampoline
+ with rethook
+Message-ID: <202204060512.Pzw5bnTd-lkp@intel.com>
+References: <164915126392.982637.10302202550404803304.stgit@devnote2>
 MIME-Version: 1.0
-Message-ID: <164919217791.389.16926889046664512675.tip-bot2@tip-bot2>
-Robot-ID: <tip-bot2@linutronix.de>
-Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <164915126392.982637.10302202550404803304.stgit@devnote2>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The following commit has been merged into the ras/core branch of tip:
+Hi Masami,
 
-Commit-ID:     9f1b19b977ee3cbd3fe9135ff63dbf221eac1d6a
-Gitweb:        https://git.kernel.org/tip/9f1b19b977ee3cbd3fe9135ff63dbf221eac1d6a
-Author:        Smita Koralahalli <Smita.KoralahalliChannabasappa@amd.com>
-AuthorDate:    Fri, 25 Feb 2022 13:33:40 -06:00
-Committer:     Borislav Petkov <bp@suse.de>
-CommitterDate: Tue, 05 Apr 2022 21:23:34 +02:00
+I love your patch! Perhaps something to improve:
 
-x86/mce: Avoid unnecessary padding in struct mce_bank
+[auto build test WARNING on bpf/master]
 
-Convert struct mce_bank member "init" from bool to a bitfield to get rid
-of unnecessary padding.
+url:    https://github.com/intel-lab-lkp/linux/commits/Masami-Hiramatsu/kprobes-rethook-ARM-arm64-Replace-kretprobe-trampoline-with-rethook/20220405-195153
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf.git master
+config: arm64-randconfig-r022-20220405 (https://download.01.org/0day-ci/archive/20220406/202204060512.Pzw5bnTd-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project c4a1b07d0979e7ff20d7d541af666d822d66b566)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # install arm64 cross compiling tool for clang build
+        # apt-get install binutils-aarch64-linux-gnu
+        # https://github.com/intel-lab-lkp/linux/commit/74084aa7903f112b1c3df1f864d49b15d8aba270
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Masami-Hiramatsu/kprobes-rethook-ARM-arm64-Replace-kretprobe-trampoline-with-rethook/20220405-195153
+        git checkout 74084aa7903f112b1c3df1f864d49b15d8aba270
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm64 SHELL=/bin/bash arch/arm64/kernel/
 
-$ pahole -C mce_bank arch/x86/kernel/cpu/mce/core.o
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-before:
+All warnings (new ones prefixed by >>):
 
-  /* size: 16, cachelines: 1, members: 2 */
-  /* padding: 7 */
-  /* last cacheline: 16 bytes */
+>> arch/arm64/kernel/rethook.c:11:22: warning: no previous prototype for function 'arch_rethook_trampoline_callback' [-Wmissing-prototypes]
+   unsigned long __used arch_rethook_trampoline_callback(struct pt_regs *regs)
+                        ^
+   arch/arm64/kernel/rethook.c:11:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
+   unsigned long __used arch_rethook_trampoline_callback(struct pt_regs *regs)
+   ^
+   static 
+   1 warning generated.
 
-after:
 
-  /* size: 16, cachelines: 1, members: 3 */
-  /* last cacheline: 16 bytes */
+vim +/arch_rethook_trampoline_callback +11 arch/arm64/kernel/rethook.c
 
-No functional changes.
+     9	
+    10	/* This is called from arch_rethook_trampoline() */
+  > 11	unsigned long __used arch_rethook_trampoline_callback(struct pt_regs *regs)
+    12	{
+    13		return rethook_trampoline_handler(regs, regs->regs[29]);
+    14	}
+    15	NOKPROBE_SYMBOL(arch_rethook_trampoline_callback);
+    16	
 
-Signed-off-by: Smita Koralahalli <Smita.KoralahalliChannabasappa@amd.com>
-Signed-off-by: Borislav Petkov <bp@suse.de>
-Link: https://lore.kernel.org/r/20220225193342.215780-2-Smita.KoralahalliChannabasappa@amd.com
----
- arch/x86/kernel/cpu/mce/core.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
-
-diff --git a/arch/x86/kernel/cpu/mce/core.c b/arch/x86/kernel/cpu/mce/core.c
-index 981496e..d775fcd 100644
---- a/arch/x86/kernel/cpu/mce/core.c
-+++ b/arch/x86/kernel/cpu/mce/core.c
-@@ -69,7 +69,9 @@ DEFINE_PER_CPU_READ_MOSTLY(unsigned int, mce_num_banks);
- 
- struct mce_bank {
- 	u64			ctl;			/* subevents to enable */
--	bool			init;			/* initialise bank? */
-+
-+	__u64 init			: 1,		/* initialise bank? */
-+	      __reserved_1		: 63;
- };
- static DEFINE_PER_CPU_READ_MOSTLY(struct mce_bank[MAX_NR_BANKS], mce_banks_array);
- 
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
