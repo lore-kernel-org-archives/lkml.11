@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E73FC35276
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 10:46:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 57113C35280
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 10:46:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243623AbiDEKhQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 06:37:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43946 "EHLO
+        id S243674AbiDEKh2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 06:37:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50954 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240745AbiDEIc3 (ORCPT
+        with ESMTP id S241457AbiDEIdk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:32:29 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B227084ECB;
-        Tue,  5 Apr 2022 01:24:54 -0700 (PDT)
+        Tue, 5 Apr 2022 04:33:40 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33215E7;
+        Tue,  5 Apr 2022 01:31:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 38E9560FFC;
-        Tue,  5 Apr 2022 08:24:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3FAFAC385A2;
-        Tue,  5 Apr 2022 08:24:53 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C39F760FF5;
+        Tue,  5 Apr 2022 08:31:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D2AE0C385A0;
+        Tue,  5 Apr 2022 08:31:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649147093;
-        bh=uwEM9yJd8yQV8YVnMIu1YlcaI8etPYsnFYaOdz+jFvI=;
+        s=korg; t=1649147501;
+        bh=Y1v8fu2Y1p+s/RFwt//XCiGvgEoAtY+3ZUcAltp7kvE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vMS6rOtvgPDUkRb+WKZe5MR/87aVcUxviIJRaXGJgdZs3tTlsMNUAUqxZBPkkxNu4
-         CNiSJI6TVeKY7pjMgS92Efz9BjD/AquGKUUj5ohlkGAhirvQccrTFJ9dg6CJ8mqV4i
-         fum1kTaHCtI3d2bJJf4INSeH8nax+XHg516bbDz0=
+        b=tWpuyKWLHAYkvoL/oXt8b0GrKOaClbQPdV/wWN7rNWtNOWv1qLG4ECfLpRwMYcAJM
+         NtOyK4oJXhpTEnrvyGCT6F+jeGXZ/iU7Dpx/ETuv5yOcBUuUEX0hSH48fO52qBsvh1
+         hvUW/XBf+k/JU5yLF/cw8SvY1LruhnrK0oJ2yLbA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Paolo Bonzini <pbonzini@redhat.com>
-Subject: [PATCH 5.17 0998/1126] KVM: x86: Forbid VMM to set SYNIC/STIMER MSRs when SynIC wasnt activated
-Date:   Tue,  5 Apr 2022 09:29:05 +0200
-Message-Id: <20220405070436.785764964@linuxfoundation.org>
+        stable@vger.kernel.org, Linus Walleij <linus.walleij@linaro.org>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 0020/1017] Input: zinitix - do not report shadow fingers
+Date:   Tue,  5 Apr 2022 09:15:33 +0200
+Message-Id: <20220405070354.774396460@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
-References: <20220405070407.513532867@linuxfoundation.org>
+In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
+References: <20220405070354.155796697@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -48,66 +49,150 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vitaly Kuznetsov <vkuznets@redhat.com>
+From: Linus Walleij <linus.walleij@linaro.org>
 
-commit b1e34d325397a33d97d845e312d7cf2a8b646b44 upstream.
+[ Upstream commit e941dc13fd3717122207d74539ab95da07ef797f ]
 
-Setting non-zero values to SYNIC/STIMER MSRs activates certain features,
-this should not happen when KVM_CAP_HYPERV_SYNIC{,2} was not activated.
+I observed the following problem with the BT404 touch pad
+running the Phosh UI:
 
-Note, it would've been better to forbid writing anything to SYNIC/STIMER
-MSRs, including zeroes, however, at least QEMU tries clearing
-HV_X64_MSR_STIMER0_CONFIG without SynIC. HV_X64_MSR_EOM MSR is somewhat
-'special' as writing zero there triggers an action, this also should not
-happen when SynIC wasn't activated.
+When e.g. typing on the virtual keyboard pressing "g" would
+produce "ggg".
 
-Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
-Message-Id: <20220325132140.25650-4-vkuznets@redhat.com>
-Cc: stable@vger.kernel.org
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+After some analysis it turns out the firmware reports that three
+fingers hit that coordinate at the same time, finger 0, 2 and
+4 (of the five available 0,1,2,3,4).
+
+DOWN
+  Zinitix-TS 3-0020: finger 0 down (246, 395)
+  Zinitix-TS 3-0020: finger 1 up (0, 0)
+  Zinitix-TS 3-0020: finger 2 down (246, 395)
+  Zinitix-TS 3-0020: finger 3 up (0, 0)
+  Zinitix-TS 3-0020: finger 4 down (246, 395)
+UP
+  Zinitix-TS 3-0020: finger 0 up (246, 395)
+  Zinitix-TS 3-0020: finger 2 up (246, 395)
+  Zinitix-TS 3-0020: finger 4 up (246, 395)
+
+This is one touch and release: i.e. this is all reported on
+touch (down) and release.
+
+There is a field in the struct touch_event called finger_cnt
+which is actually a bitmask of the fingers active in the
+event.
+
+Rename this field finger_mask as this matches the use contents
+better, then use for_each_set_bit() to iterate over just the
+fingers that are actally active.
+
+Factor out a finger reporting function zinitix_report_fingers()
+to handle all fingers.
+
+Also be more careful in reporting finger down/up: we were
+reporting every event with input_mt_report_slot_state(..., true);
+but this should only be reported on finger down or move,
+not on finger up, so also add code to check p->sub_status
+to see what is happening and report correctly.
+
+After this my Zinitix BT404 touchscreen report fingers
+flawlessly.
+
+The vendor drive I have notably does not use the "finger_cnt"
+and contains obviously incorrect code like this:
+
+  if (touch_dev->touch_info.finger_cnt > MAX_SUPPORTED_FINGER_NUM)
+      touch_dev->touch_info.finger_cnt = MAX_SUPPORTED_FINGER_NUM;
+
+As MAX_SUPPORTED_FINGER_NUM is an ordinal and the field is
+a bitmask this seems quite confused.
+
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+Link: https://lore.kernel.org/r/20220228233017.2270599-1-linus.walleij@linaro.org
+Signed-off-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/kvm/hyperv.c |    9 ++++++---
- 1 file changed, 6 insertions(+), 3 deletions(-)
+ drivers/input/touchscreen/zinitix.c | 44 +++++++++++++++++++++++------
+ 1 file changed, 35 insertions(+), 9 deletions(-)
 
---- a/arch/x86/kvm/hyperv.c
-+++ b/arch/x86/kvm/hyperv.c
-@@ -236,7 +236,7 @@ static int synic_set_msr(struct kvm_vcpu
- 	struct kvm_vcpu *vcpu = hv_synic_to_vcpu(synic);
- 	int ret;
+diff --git a/drivers/input/touchscreen/zinitix.c b/drivers/input/touchscreen/zinitix.c
+index 1e70b8d2a8d7..400957f4c8c9 100644
+--- a/drivers/input/touchscreen/zinitix.c
++++ b/drivers/input/touchscreen/zinitix.c
+@@ -135,7 +135,7 @@ struct point_coord {
  
--	if (!synic->active && !host)
-+	if (!synic->active && (!host || data))
- 		return 1;
- 
- 	trace_kvm_hv_synic_set_msr(vcpu->vcpu_id, msr, data, host);
-@@ -282,6 +282,9 @@ static int synic_set_msr(struct kvm_vcpu
- 	case HV_X64_MSR_EOM: {
- 		int i;
- 
-+		if (!synic->active)
-+			break;
+ struct touch_event {
+ 	__le16	status;
+-	u8	finger_cnt;
++	u8	finger_mask;
+ 	u8	time_stamp;
+ 	struct point_coord point_coord[MAX_SUPPORTED_FINGER_NUM];
+ };
+@@ -311,11 +311,32 @@ static int zinitix_send_power_on_sequence(struct bt541_ts_data *bt541)
+ static void zinitix_report_finger(struct bt541_ts_data *bt541, int slot,
+ 				  const struct point_coord *p)
+ {
++	u16 x, y;
 +
- 		for (i = 0; i < ARRAY_SIZE(synic->sint); i++)
- 			kvm_hv_notify_acked_sint(vcpu, i);
- 		break;
-@@ -661,7 +664,7 @@ static int stimer_set_config(struct kvm_
- 	struct kvm_vcpu_hv *hv_vcpu = to_hv_vcpu(vcpu);
- 	struct kvm_vcpu_hv_synic *synic = to_hv_synic(vcpu);
++	if (unlikely(!(p->sub_status &
++		       (SUB_BIT_UP | SUB_BIT_DOWN | SUB_BIT_MOVE)))) {
++		dev_dbg(&bt541->client->dev, "unknown finger event %#02x\n",
++			p->sub_status);
++		return;
++	}
++
++	x = le16_to_cpu(p->x);
++	y = le16_to_cpu(p->y);
++
+ 	input_mt_slot(bt541->input_dev, slot);
+-	input_mt_report_slot_state(bt541->input_dev, MT_TOOL_FINGER, true);
+-	touchscreen_report_pos(bt541->input_dev, &bt541->prop,
+-			       le16_to_cpu(p->x), le16_to_cpu(p->y), true);
+-	input_report_abs(bt541->input_dev, ABS_MT_TOUCH_MAJOR, p->width);
++	if (input_mt_report_slot_state(bt541->input_dev, MT_TOOL_FINGER,
++				       !(p->sub_status & SUB_BIT_UP))) {
++		touchscreen_report_pos(bt541->input_dev,
++				       &bt541->prop, x, y, true);
++		input_report_abs(bt541->input_dev,
++				 ABS_MT_TOUCH_MAJOR, p->width);
++		dev_dbg(&bt541->client->dev, "finger %d %s (%u, %u)\n",
++			slot, p->sub_status & SUB_BIT_DOWN ? "down" : "move",
++			x, y);
++	} else {
++		dev_dbg(&bt541->client->dev, "finger %d up (%u, %u)\n",
++			slot, x, y);
++	}
+ }
  
--	if (!synic->active && !host)
-+	if (!synic->active && (!host || config))
- 		return 1;
+ static irqreturn_t zinitix_ts_irq_handler(int irq, void *bt541_handler)
+@@ -323,6 +344,7 @@ static irqreturn_t zinitix_ts_irq_handler(int irq, void *bt541_handler)
+ 	struct bt541_ts_data *bt541 = bt541_handler;
+ 	struct i2c_client *client = bt541->client;
+ 	struct touch_event touch_event;
++	unsigned long finger_mask;
+ 	int error;
+ 	int i;
  
- 	if (unlikely(!host && hv_vcpu->enforce_cpuid && new_config.direct_mode &&
-@@ -690,7 +693,7 @@ static int stimer_set_count(struct kvm_v
- 	struct kvm_vcpu *vcpu = hv_stimer_to_vcpu(stimer);
- 	struct kvm_vcpu_hv_synic *synic = to_hv_synic(vcpu);
+@@ -335,10 +357,14 @@ static irqreturn_t zinitix_ts_irq_handler(int irq, void *bt541_handler)
+ 		goto out;
+ 	}
  
--	if (!synic->active && !host)
-+	if (!synic->active && (!host || count))
- 		return 1;
+-	for (i = 0; i < MAX_SUPPORTED_FINGER_NUM; i++)
+-		if (touch_event.point_coord[i].sub_status & SUB_BIT_EXIST)
+-			zinitix_report_finger(bt541, i,
+-					      &touch_event.point_coord[i]);
++	finger_mask = touch_event.finger_mask;
++	for_each_set_bit(i, &finger_mask, MAX_SUPPORTED_FINGER_NUM) {
++		const struct point_coord *p = &touch_event.point_coord[i];
++
++		/* Only process contacts that are actually reported */
++		if (p->sub_status & SUB_BIT_EXIST)
++			zinitix_report_finger(bt541, i, p);
++	}
  
- 	trace_kvm_hv_stimer_set_count(hv_stimer_to_vcpu(stimer)->vcpu_id,
+ 	input_mt_sync_frame(bt541->input_dev);
+ 	input_sync(bt541->input_dev);
+-- 
+2.34.1
+
 
 
