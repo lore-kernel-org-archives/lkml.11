@@ -2,47 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 81D56C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:22:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 136A2C4167E
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:22:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1587328AbiDFAIn (ORCPT
+        id S1587429AbiDFAJP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 20:08:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47442 "EHLO
+        Tue, 5 Apr 2022 20:09:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46718 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349435AbiDEJtw (ORCPT
+        with ESMTP id S1358461AbiDEK2Z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:49:52 -0400
+        Tue, 5 Apr 2022 06:28:25 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51A0C2529B;
-        Tue,  5 Apr 2022 02:45:49 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2EB0BA325;
+        Tue,  5 Apr 2022 03:18:03 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D916361368;
-        Tue,  5 Apr 2022 09:45:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EC76DC385A2;
-        Tue,  5 Apr 2022 09:45:47 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5CBB461777;
+        Tue,  5 Apr 2022 10:18:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6FBF4C385A0;
+        Tue,  5 Apr 2022 10:18:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649151948;
-        bh=9gVJ8hVCaDqgoBzxse+4FYk1575fvUVWdDSL9iRYPdw=;
+        s=korg; t=1649153882;
+        bh=3SyFg1Ox2BVv77hwr5Q+brbLvYJwdOjO6I/B8CTdJ5k=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JdoxcJjEZqZ5d03Q3J/9AVcRzv4A1dmhCI3TZrNubSB6EFAtAuPzS+7h7GMIcm9gN
-         OARFZqgldo82AX0voV/mrquSpWkS1KiPVx8SlyBsyEbaFEsIzs9PZFiWtBqaOiuk+a
-         hEV89lZ3eE80zYw3ePYKkaXTBWjKDpfxXLadE8bk=
+        b=TFRb0JRtSmUneYTMtm+T523bX1K3ipI78fWC3Yth0iUMDWYK3gEFwCowNmdfehZ75
+         YfAgVlD5ijA/P2BSUoq6h2d2HCbNKjScUBbwt5Xd7kMloEp+R7JmQHlUQNKD1QdvfM
+         tyH/L3bOpUWO9Qz1pnV+/3DyJBWy/5AcsF1S2cjg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Rafa=C5=82=20Mi=C5=82ecki?= <rafal@milecki.pl>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vinod Koul <vkoul@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 599/913] phy: phy-brcm-usb: fixup BCM4908 support
-Date:   Tue,  5 Apr 2022 09:27:41 +0200
-Message-Id: <20220405070357.797366659@linuxfoundation.org>
+        stable@vger.kernel.org, Oleksij Rempel <o.rempel@pengutronix.de>,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 382/599] misc: alcor_pci: Fix an error handling path
+Date:   Tue,  5 Apr 2022 09:31:16 +0200
+Message-Id: <20220405070310.198300048@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
+References: <20220405070258.802373272@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,156 +50,70 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Rafał Miłecki <rafal@milecki.pl>
+From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 
-[ Upstream commit 32942d33d63d27714ed16a4176e5a99547adb6e0 ]
+[ Upstream commit 5b3dc949f554379edcb8ef6111aa5ecb78feb798 ]
 
-Just like every other family BCM4908 should get its own enum value. That
-is required to properly handle it in chipset conditional code.
+A successful ida_simple_get() should be balanced by a corresponding
+ida_simple_remove().
 
-The real change is excluding BCM4908 from the PLL reprogramming code
-(see brcmusb_usb3_pll_54mhz()). I'm not sure what's the BCM4908
-reference clock frequency but:
-1. BCM4908 custom driver from Broadcom's SDK doesn't reprogram PLL
-2. Doing that in Linux driver stopped PHY handling some USB 3.0 devices
+Add the missing call in the error handling path of the probe.
 
-This change makes USB 3.0 PHY recognize e.g.:
-1. 04e8:6860 - Samsung Electronics Co., Ltd Galaxy series, misc. (MTP mode)
-2. 1058:259f - Western Digital My Passport 259F
+While at it, switch to ida_alloc()/ida_free() instead to
+ida_simple_get()/ida_simple_remove().
+The latter is deprecated and more verbose.
 
-Broadcom's STB SoCs come with a set of SUN_TOP_CTRL_* registers that
-allow reading chip family and product ids. Such a block & register is
-missing on BCM4908 so this commit introduces "compatible" string
-specific binding.
-
-Fixes: 4b402fa8e0b7 ("phy: phy-brcm-usb: support PHY on the BCM4908")
-Signed-off-by: Rafał Miłecki <rafal@milecki.pl>
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
-Link: https://lore.kernel.org/r/20220218172459.10431-1-zajec5@gmail.com
-Signed-off-by: Vinod Koul <vkoul@kernel.org>
+Fixes: 4f556bc04e3c ("misc: cardreader: add new Alcor Micro Cardreader PCI driver")
+Reviewed-by: Oleksij Rempel <o.rempel@pengutronix.de>
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Link: https://lore.kernel.org/r/918a9875b7f67b7f8f123c4446452603422e8c5e.1644136776.git.christophe.jaillet@wanadoo.fr
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/phy/broadcom/phy-brcm-usb-init.c | 36 ++++++++++++++++++++++++
- drivers/phy/broadcom/phy-brcm-usb-init.h |  1 +
- drivers/phy/broadcom/phy-brcm-usb.c      | 11 +++++++-
- 3 files changed, 47 insertions(+), 1 deletion(-)
+ drivers/misc/cardreader/alcor_pci.c | 9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/phy/broadcom/phy-brcm-usb-init.c b/drivers/phy/broadcom/phy-brcm-usb-init.c
-index 9391ab42a12b..dd0f66288fbd 100644
---- a/drivers/phy/broadcom/phy-brcm-usb-init.c
-+++ b/drivers/phy/broadcom/phy-brcm-usb-init.c
-@@ -79,6 +79,7 @@
+diff --git a/drivers/misc/cardreader/alcor_pci.c b/drivers/misc/cardreader/alcor_pci.c
+index de6d44a158bb..3f514d77a843 100644
+--- a/drivers/misc/cardreader/alcor_pci.c
++++ b/drivers/misc/cardreader/alcor_pci.c
+@@ -266,7 +266,7 @@ static int alcor_pci_probe(struct pci_dev *pdev,
+ 	if (!priv)
+ 		return -ENOMEM;
  
- enum brcm_family_type {
- 	BRCM_FAMILY_3390A0,
-+	BRCM_FAMILY_4908,
- 	BRCM_FAMILY_7250B0,
- 	BRCM_FAMILY_7271A0,
- 	BRCM_FAMILY_7364A0,
-@@ -96,6 +97,7 @@ enum brcm_family_type {
+-	ret = ida_simple_get(&alcor_pci_idr, 0, 0, GFP_KERNEL);
++	ret = ida_alloc(&alcor_pci_idr, GFP_KERNEL);
+ 	if (ret < 0)
+ 		return ret;
+ 	priv->id = ret;
+@@ -280,7 +280,8 @@ static int alcor_pci_probe(struct pci_dev *pdev,
+ 	ret = pci_request_regions(pdev, DRV_NAME_ALCOR_PCI);
+ 	if (ret) {
+ 		dev_err(&pdev->dev, "Cannot request region\n");
+-		return -ENOMEM;
++		ret = -ENOMEM;
++		goto error_free_ida;
+ 	}
  
- static const char *family_names[BRCM_FAMILY_COUNT] = {
- 	USB_BRCM_FAMILY(3390A0),
-+	USB_BRCM_FAMILY(4908),
- 	USB_BRCM_FAMILY(7250B0),
- 	USB_BRCM_FAMILY(7271A0),
- 	USB_BRCM_FAMILY(7364A0),
-@@ -203,6 +205,27 @@ usb_reg_bits_map_table[BRCM_FAMILY_COUNT][USB_CTRL_SELECTOR_COUNT] = {
- 		USB_CTRL_USB_PM_USB20_HC_RESETB_VAR_MASK,
- 		ENDIAN_SETTINGS, /* USB_CTRL_SETUP ENDIAN bits */
- 	},
-+	/* 4908 */
-+	[BRCM_FAMILY_4908] = {
-+		0, /* USB_CTRL_SETUP_SCB1_EN_MASK */
-+		0, /* USB_CTRL_SETUP_SCB2_EN_MASK */
-+		0, /* USB_CTRL_SETUP_SS_EHCI64BIT_EN_MASK */
-+		0, /* USB_CTRL_SETUP_STRAP_IPP_SEL_MASK */
-+		0, /* USB_CTRL_SETUP_OC3_DISABLE_MASK */
-+		0, /* USB_CTRL_PLL_CTL_PLL_IDDQ_PWRDN_MASK */
-+		0, /* USB_CTRL_USB_PM_BDC_SOFT_RESETB_MASK */
-+		USB_CTRL_USB_PM_XHC_SOFT_RESETB_MASK,
-+		USB_CTRL_USB_PM_USB_PWRDN_MASK,
-+		0, /* USB_CTRL_USB30_CTL1_XHC_SOFT_RESETB_MASK */
-+		0, /* USB_CTRL_USB30_CTL1_USB3_IOC_MASK */
-+		0, /* USB_CTRL_USB30_CTL1_USB3_IPP_MASK */
-+		0, /* USB_CTRL_USB_DEVICE_CTL1_PORT_MODE_MASK */
-+		0, /* USB_CTRL_USB_PM_SOFT_RESET_MASK */
-+		0, /* USB_CTRL_SETUP_CC_DRD_MODE_ENABLE_MASK */
-+		0, /* USB_CTRL_SETUP_STRAP_CC_DRD_MODE_ENABLE_SEL_MASK */
-+		0, /* USB_CTRL_USB_PM_USB20_HC_RESETB_VAR_MASK */
-+		0, /* USB_CTRL_SETUP ENDIAN bits */
-+	},
- 	/* 7250b0 */
- 	[BRCM_FAMILY_7250B0] = {
- 		USB_CTRL_SETUP_SCB1_EN_MASK,
-@@ -559,6 +582,7 @@ static void brcmusb_usb3_pll_54mhz(struct brcm_usb_init_params *params)
- 	 */
- 	switch (params->selected_family) {
- 	case BRCM_FAMILY_3390A0:
-+	case BRCM_FAMILY_4908:
- 	case BRCM_FAMILY_7250B0:
- 	case BRCM_FAMILY_7366C0:
- 	case BRCM_FAMILY_74371A0:
-@@ -1004,6 +1028,18 @@ static const struct brcm_usb_init_ops bcm7445_ops = {
- 	.set_dual_select = usb_set_dual_select,
- };
+ 	if (!(pci_resource_flags(pdev, bar) & IORESOURCE_MEM)) {
+@@ -324,6 +325,8 @@ static int alcor_pci_probe(struct pci_dev *pdev,
  
-+void brcm_usb_dvr_init_4908(struct brcm_usb_init_params *params)
-+{
-+	int fam;
-+
-+	fam = BRCM_FAMILY_4908;
-+	params->selected_family = fam;
-+	params->usb_reg_bits_map =
-+		&usb_reg_bits_map_table[fam][0];
-+	params->family_name = family_names[fam];
-+	params->ops = &bcm7445_ops;
-+}
-+
- void brcm_usb_dvr_init_7445(struct brcm_usb_init_params *params)
- {
- 	int fam;
-diff --git a/drivers/phy/broadcom/phy-brcm-usb-init.h b/drivers/phy/broadcom/phy-brcm-usb-init.h
-index a39f30fa2e99..1ccb5ddab865 100644
---- a/drivers/phy/broadcom/phy-brcm-usb-init.h
-+++ b/drivers/phy/broadcom/phy-brcm-usb-init.h
-@@ -64,6 +64,7 @@ struct  brcm_usb_init_params {
- 	bool suspend_with_clocks;
- };
+ error_release_regions:
+ 	pci_release_regions(pdev);
++error_free_ida:
++	ida_free(&alcor_pci_idr, priv->id);
+ 	return ret;
+ }
  
-+void brcm_usb_dvr_init_4908(struct brcm_usb_init_params *params);
- void brcm_usb_dvr_init_7445(struct brcm_usb_init_params *params);
- void brcm_usb_dvr_init_7216(struct brcm_usb_init_params *params);
- void brcm_usb_dvr_init_7211b0(struct brcm_usb_init_params *params);
-diff --git a/drivers/phy/broadcom/phy-brcm-usb.c b/drivers/phy/broadcom/phy-brcm-usb.c
-index 0f1deb6e0eab..2cb3779fcdf8 100644
---- a/drivers/phy/broadcom/phy-brcm-usb.c
-+++ b/drivers/phy/broadcom/phy-brcm-usb.c
-@@ -283,6 +283,15 @@ static const struct attribute_group brcm_usb_phy_group = {
- 	.attrs = brcm_usb_phy_attrs,
- };
+@@ -337,7 +340,7 @@ static void alcor_pci_remove(struct pci_dev *pdev)
  
-+static const struct match_chip_info chip_info_4908 = {
-+	.init_func = &brcm_usb_dvr_init_4908,
-+	.required_regs = {
-+		BRCM_REGS_CTRL,
-+		BRCM_REGS_XHCI_EC,
-+		-1,
-+	},
-+};
-+
- static const struct match_chip_info chip_info_7216 = {
- 	.init_func = &brcm_usb_dvr_init_7216,
- 	.required_regs = {
-@@ -318,7 +327,7 @@ static const struct match_chip_info chip_info_7445 = {
- static const struct of_device_id brcm_usb_dt_ids[] = {
- 	{
- 		.compatible = "brcm,bcm4908-usb-phy",
--		.data = &chip_info_7445,
-+		.data = &chip_info_4908,
- 	},
- 	{
- 		.compatible = "brcm,bcm7216-usb-phy",
+ 	mfd_remove_devices(&pdev->dev);
+ 
+-	ida_simple_remove(&alcor_pci_idr, priv->id);
++	ida_free(&alcor_pci_idr, priv->id);
+ 
+ 	pci_release_regions(pdev);
+ 	pci_set_drvdata(pdev, NULL);
 -- 
 2.34.1
 
