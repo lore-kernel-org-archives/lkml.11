@@ -2,90 +2,73 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 559A8C4167B
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 22:04:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EC7B6C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 22:04:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1391087AbiDEWEu (ORCPT
+        id S1390935AbiDEWE3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 18:04:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47990 "EHLO
+        Tue, 5 Apr 2022 18:04:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35868 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354641AbiDEKO5 (ORCPT
+        with ESMTP id S1456849AbiDEQCZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:14:57 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3D5F6B0BE;
-        Tue,  5 Apr 2022 03:02:01 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Tue, 5 Apr 2022 12:02:25 -0400
+Received: from bedivere.hansenpartnership.com (bedivere.hansenpartnership.com [IPv6:2607:fcd0:100:8a00::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E814915D3AA;
+        Tue,  5 Apr 2022 08:25:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+        d=hansenpartnership.com; s=20151216; t=1649172298;
+        bh=ySu+WdbLhJy7RbHw1+FFBWYzYY6iBwBvKC8kGG4udH8=;
+        h=Message-ID:Subject:From:To:Date:In-Reply-To:References:From;
+        b=Qn7HJhLc1YnnJeD1uH+YD8JszCg3jcUfDll4fIeNiJETSxOeOCF7GwBes4YO9K6Ck
+         FYTGOyt8SIUswtDPGr4Jv7xDnWcVtExfP2ixKeP+CpFNeks7V33teQzcKPqkGY30rj
+         Wlasc6tpicOp/LYhi/VFAnoF35SVwEzgbIjx/CAY=
+Received: from localhost (localhost [127.0.0.1])
+        by bedivere.hansenpartnership.com (Postfix) with ESMTP id 0C7C612878FE;
+        Tue,  5 Apr 2022 11:24:58 -0400 (EDT)
+Received: from bedivere.hansenpartnership.com ([127.0.0.1])
+        by localhost (bedivere.hansenpartnership.com [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id GiwgNUSrnlUz; Tue,  5 Apr 2022 11:24:57 -0400 (EDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+        d=hansenpartnership.com; s=20151216; t=1649172297;
+        bh=ySu+WdbLhJy7RbHw1+FFBWYzYY6iBwBvKC8kGG4udH8=;
+        h=Message-ID:Subject:From:To:Date:In-Reply-To:References:From;
+        b=AE5O0qlUuh4PfAJRZm3mQXR58Jv3mXkovnqsVGx8PD23lYOV7eLg1L/JOBhVddg+8
+         Yhkji33jf1xqka1UL8d+M+WeQBN2goZetlmA7wK9/u8sZFW2DgRPRp9/RXhTOYweNV
+         lAlOAFpVSaEGWclbnyGVT8I1C5DzkNd6CrG4csxQ=
+Received: from lingrow.int.hansenpartnership.com (unknown [IPv6:2601:5c4:4300:c551::3774])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5E6BFB818F6;
-        Tue,  5 Apr 2022 10:02:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A596BC385A1;
-        Tue,  5 Apr 2022 10:01:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649152919;
-        bh=1rGSpeBSpvqcj8+jDNvyQPYJVe85AOM5TdBODRr442U=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=wQKSLGqsO8+nkE8pcebCAYYyGdSwFte02GPuyCGwaAdM7KiFICGq/wN/3zcJoUk94
-         5J1Lg+/c1goZLytefAwaBQxu5daXaGyr5iz6fldIc5EKWVL4gKRY7vh3NFC5NNBoAh
-         CMGWGtP0lkJI3GaOq5WVZgT8LOZmjRek6rB56tNg=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yajun Deng <yajun.deng@linux.dev>,
-        "David S. Miller" <davem@davemloft.net>,
-        Pavel Machek <pavel@denx.de>
-Subject: [PATCH 5.10 005/599] netdevice: add the case if dev is NULL
-Date:   Tue,  5 Apr 2022 09:24:59 +0200
-Message-Id: <20220405070258.973215990@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
-User-Agent: quilt/0.66
+        by bedivere.hansenpartnership.com (Postfix) with ESMTPSA id 5B9CB12878FB;
+        Tue,  5 Apr 2022 11:24:57 -0400 (EDT)
+Message-ID: <175195a9b7840e883677c6f351ee186089ab2b6d.camel@HansenPartnership.com>
+Subject: Re: RIP: 0010:ahd_init.cold+0x96/0x98 [aic79xx] - 5.17.0
+From:   James Bottomley <James.Bottomley@HansenPartnership.com>
+To:     Bruno Goncalves <bgoncalv@redhat.com>,
+        LKML <linux-kernel@vger.kernel.org>, linux-scsi@vger.kernel.org
+Cc:     CKI Project <cki-project@redhat.com>
+Date:   Tue, 05 Apr 2022 11:24:56 -0400
+In-Reply-To: <CA+QYu4qTtXgVegAd7S5bjJQye+kmtPaFau4dg3YPU2tH9faBjg@mail.gmail.com>
+References: <CA+QYu4qTtXgVegAd7S5bjJQye+kmtPaFau4dg3YPU2tH9faBjg@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.34.4 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yajun Deng <yajun.deng@linux.dev>
+On Tue, 2022-04-05 at 09:14 +0200, Bruno Goncalves wrote:
+> Hello,
+> 
+> We've been hitting the panic below when testing mainline kernel. More
+> logs can be found on [1] and CKI tracker [2].
 
-commit b37a466837393af72fe8bcb8f1436410f3f173f3 upstream.
+When was the last time this driver passed the test?  I'm asking because
+nothing significant has changed in this driver for a while and the
+trivial changes all seem to check out.
 
-Add the case if dev is NULL in dev_{put, hold}, so the caller doesn't
-need to care whether dev is NULL or not.
-
-Signed-off-by: Yajun Deng <yajun.deng@linux.dev>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Cc: Pavel Machek <pavel@denx.de>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- include/linux/netdevice.h |    6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
-
---- a/include/linux/netdevice.h
-+++ b/include/linux/netdevice.h
-@@ -3980,7 +3980,8 @@ void netdev_run_todo(void);
-  */
- static inline void dev_put(struct net_device *dev)
- {
--	this_cpu_dec(*dev->pcpu_refcnt);
-+	if (dev)
-+		this_cpu_dec(*dev->pcpu_refcnt);
- }
- 
- /**
-@@ -3991,7 +3992,8 @@ static inline void dev_put(struct net_de
-  */
- static inline void dev_hold(struct net_device *dev)
- {
--	this_cpu_inc(*dev->pcpu_refcnt);
-+	if (dev)
-+		this_cpu_inc(*dev->pcpu_refcnt);
- }
- 
- /* Carrier loss detection, dial on demand. The functions netif_carrier_on
+James
 
 
