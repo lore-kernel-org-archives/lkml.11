@@ -2,144 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B0A0C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A997BC43219
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:16:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1449860AbiDEUK2 (ORCPT
+        id S1452433AbiDEULD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 16:10:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50206 "EHLO
+        Tue, 5 Apr 2022 16:11:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50638 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1573406AbiDETIX (ORCPT
+        with ESMTP id S1357998AbiDEK1k (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 15:08:23 -0400
-Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55953DFFAD
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 12:06:24 -0700 (PDT)
-Received: by mail-yb1-xb49.google.com with SMTP id z15-20020a25bb0f000000b00613388c7d99so45728ybg.8
-        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 12:06:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:message-id:mime-version:subject:from:to:cc;
-        bh=tybtDUXPQXhYvxy9gX9DtZoGahyOTlz+nyL3O6sS+eo=;
-        b=h55LQ5UM26LmuR62itH0V3ChlAvpYZ42TMOG+f3rw/mp6yjZnbWVTBqCVC/cYwSpbJ
-         0slhnsMw8p5HDGyheffeBMt9zi/aVwh5t8Gf7LrBGxT0cPJmANCdN7zFwWMilsAMUZa6
-         TzzBiH0fBhF0mSBYx1fyC0NSJlwUVBxpPtE5Ca/Mxtbz6VpeTZv/xwCB7nrQJzv/SJAT
-         ZJuw8JE3e9gE0Z2uRNM9YJ9BYy0WKQ+QJ2f04nE2hqdD8T4vfJg8iP4/CSwBE6xw9t9C
-         DVfEUEfehQdRIJRmTihSNwrCHnUIVOonp5jTmy6cY1aNVMPQQzOdZfVnn0fiJC3lJrLi
-         VunA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-        bh=tybtDUXPQXhYvxy9gX9DtZoGahyOTlz+nyL3O6sS+eo=;
-        b=B9v/AbOZ6bBCSedl75wk14Z4ZefoONJjccbEvtZI88io21DQ3tdVXCazRwI+GNMPlM
-         Za9dnEQdULWgiI3BwLtVk9WU4Xw2DAw+q6RCONPBqJHTWWZlNn5Y+n+fvqGXECoWx9q/
-         HEPp5+yBS86F218Fb/3w+xh+vpB1j6ASOjaF5ThCOFjFIcDED7kEMJHEIgxTj7KgEi5b
-         7XBiQKyk8pDN97gq5qErKE+hSGRD6p8FHsBrr1O2+lgNHagUethT/pnf9TGp8X4oZgM8
-         +ZGFi/lWEIPtBegTy1odcpaz2Ql39gnj1DTrfUZo+ybdBBiid9yh31qhRJYWsrlWBe1B
-         Mi/A==
-X-Gm-Message-State: AOAM533VYURPAieatAY/SkfU+S6Mgwdq1PFx2Mc0B9Sya0T9Q0dIPtkh
-        OudltzpGDYrBtttzJMvF3J0+PEm708sxZQ==
-X-Google-Smtp-Source: ABdhPJyS4HtUjq4SgKDYWs2pqZ3jGC7+tr0ONFznLmh0DXJtM1MTD9FYY9//H3zpss6UMjYo3owbHd6QA24s0Q==
-X-Received: from dlatypov.svl.corp.google.com ([2620:15c:2cd:202:83dd:c30c:6cd0:4323])
- (user=dlatypov job=sendgmr) by 2002:a25:5d0d:0:b0:633:25c8:380 with SMTP id
- r13-20020a255d0d000000b0063325c80380mr3608330ybb.167.1649185583488; Tue, 05
- Apr 2022 12:06:23 -0700 (PDT)
-Date:   Tue,  5 Apr 2022 12:06:19 -0700
-Message-Id: <20220405190619.540177-1-dlatypov@google.com>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.35.1.1094.g7c7d902a7c-goog
-Subject: [PATCH] lib/Kconfig.debug: change KUnit tests to default to KUNIT_ALL_TESTS
-From:   Daniel Latypov <dlatypov@google.com>
-To:     brendanhiggins@google.com, davidgow@google.com
-Cc:     linux-kernel@vger.kernel.org, kunit-dev@googlegroups.com,
-        linux-kselftest@vger.kernel.org, skhan@linuxfoundation.org,
-        Daniel Latypov <dlatypov@google.com>
-Content-Type: text/plain; charset="UTF-8"
+        Tue, 5 Apr 2022 06:27:40 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38787D5E82;
+        Tue,  5 Apr 2022 03:12:32 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C9BF361562;
+        Tue,  5 Apr 2022 10:12:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D7C98C385A1;
+        Tue,  5 Apr 2022 10:12:30 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649153551;
+        bh=sTL48zmqbZr44JUABz6vF+vf8dWkNx7tKk0S4/J51fY=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=EjZHmCgr2riogcAuKpPvAc7Ug8owit4kr1hyc+u7KHgnouNVSzvEUFFkYNayEKBxT
+         na0xl471xCttiGAMlz6L/64fKZsHrDKOYhkTAzjqjK2beTSaF2OeNXL/ZSGbVF4ncy
+         2Z0n8R9DLzzPPdDt9dwOWpd20kdAxziWl7Z9j5FI=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Robert Foss <robert.foss@linaro.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 262/599] drm/bridge: Add missing pm_runtime_disable() in __dw_mipi_dsi_probe
+Date:   Tue,  5 Apr 2022 09:29:16 +0200
+Message-Id: <20220405070306.634942843@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
+References: <20220405070258.802373272@linuxfoundation.org>
+User-Agent: quilt/0.66
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This is in line with Documentation/dev-tools/kunit/style.rst.
-Some of these tests predate that so they don't follow this convention.
+From: Miaoqian Lin <linmq006@gmail.com>
 
-With this and commit b0841b51cac9 ("kunit: arch/um/configs: Enable
-KUNIT_ALL_TESTS by default"), kunit.py will now run these tests by
-default. This hopefully makes it easier to run and maintain the tests.
-If any of these were to start failing, people would notice much quicker.
+[ Upstream commit 96211b7c56b109a52768e6cc5e23a1f79316eca0 ]
 
-Note: this commit doesn't update LINEAR_RANGES_TEST since that would
-select its dependency (LINEAR_RANGES). We don't want KUNIT_ALL_TESTS
-to enable anything other than test kconfigs.
+If the probe fails, we should use pm_runtime_disable() to balance
+pm_runtime_enable().
+Add missing pm_runtime_disable() for __dw_mipi_dsi_probe.
 
-Signed-off-by: Daniel Latypov <dlatypov@google.com>
+Fixes: 46fc51546d44 ("drm/bridge/synopsys: Add MIPI DSI host controller bridge")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Signed-off-by: Robert Foss <robert.foss@linaro.org>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220105104113.31415-1-linmq006@gmail.com
+Reviewed-by: Robert Foss <robert.foss@linaro.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- lib/Kconfig.debug | 15 ++++++++++-----
- 1 file changed, 10 insertions(+), 5 deletions(-)
+ drivers/gpu/drm/bridge/synopsys/dw-mipi-dsi.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/lib/Kconfig.debug b/lib/Kconfig.debug
-index 075cd25363ac..36865b37b33b 100644
---- a/lib/Kconfig.debug
-+++ b/lib/Kconfig.debug
-@@ -2140,10 +2140,11 @@ config TEST_DIV64
- 	  If unsure, say N.
- 
- config KPROBES_SANITY_TEST
--	tristate "Kprobes sanity tests"
-+	tristate "Kprobes sanity tests" if !KUNIT_ALL_TESTS
- 	depends on DEBUG_KERNEL
- 	depends on KPROBES
- 	depends on KUNIT
-+	default KUNIT_ALL_TESTS
- 	help
- 	  This option provides for testing basic kprobes functionality on
- 	  boot. Samples of kprobe and kretprobe are inserted and
-@@ -2417,8 +2418,9 @@ config TEST_SYSCTL
- 	  If unsure, say N.
- 
- config BITFIELD_KUNIT
--	tristate "KUnit test bitfield functions at runtime"
-+	tristate "KUnit test bitfield functions at runtime" if !KUNIT_ALL_TESTS
- 	depends on KUNIT
-+	default KUNIT_ALL_TESTS
- 	help
- 	  Enable this option to test the bitfield functions at boot.
- 
-@@ -2452,8 +2454,9 @@ config HASH_KUNIT_TEST
- 	  optimized versions. If unsure, say N.
- 
- config RESOURCE_KUNIT_TEST
--	tristate "KUnit test for resource API"
-+	tristate "KUnit test for resource API" if !KUNIT_ALL_TESTS
- 	depends on KUNIT
-+	default KUNIT_ALL_TESTS
- 	help
- 	  This builds the resource API unit test.
- 	  Tests the logic of API provided by resource.c and ioport.h.
-@@ -2506,8 +2509,9 @@ config LINEAR_RANGES_TEST
- 	  If unsure, say N.
- 
- config CMDLINE_KUNIT_TEST
--	tristate "KUnit test for cmdline API"
-+	tristate "KUnit test for cmdline API" if !KUNIT_ALL_TESTS
- 	depends on KUNIT
-+	default KUNIT_ALL_TESTS
- 	help
- 	  This builds the cmdline API unit test.
- 	  Tests the logic of API provided by cmdline.c.
-@@ -2517,8 +2521,9 @@ config CMDLINE_KUNIT_TEST
- 	  If unsure, say N.
- 
- config BITS_TEST
--	tristate "KUnit test for bits.h"
-+	tristate "KUnit test for bits.h" if !KUNIT_ALL_TESTS
- 	depends on KUNIT
-+	default KUNIT_ALL_TESTS
- 	help
- 	  This builds the bits unit test.
- 	  Tests the logic of macros defined in bits.h.
-
-base-commit: 3123109284176b1532874591f7c81f3837bbdc17
+diff --git a/drivers/gpu/drm/bridge/synopsys/dw-mipi-dsi.c b/drivers/gpu/drm/bridge/synopsys/dw-mipi-dsi.c
+index 6b268f9445b3..376fa6eb46f6 100644
+--- a/drivers/gpu/drm/bridge/synopsys/dw-mipi-dsi.c
++++ b/drivers/gpu/drm/bridge/synopsys/dw-mipi-dsi.c
+@@ -1172,6 +1172,7 @@ __dw_mipi_dsi_probe(struct platform_device *pdev,
+ 	ret = mipi_dsi_host_register(&dsi->dsi_host);
+ 	if (ret) {
+ 		dev_err(dev, "Failed to register MIPI host: %d\n", ret);
++		pm_runtime_disable(dev);
+ 		dw_mipi_dsi_debugfs_remove(dsi);
+ 		return ERR_PTR(ret);
+ 	}
 -- 
-2.35.1.1094.g7c7d902a7c-goog
+2.34.1
+
+
 
