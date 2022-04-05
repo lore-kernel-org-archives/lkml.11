@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 391F6C4321E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D569C43217
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:39:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385446AbiDEMdF (ORCPT
+        id S1385416AbiDEMdA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 08:33:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49446 "EHLO
+        Tue, 5 Apr 2022 08:33:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36258 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234944AbiDEJA6 (ORCPT
+        with ESMTP id S234876AbiDEJA4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:00:58 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87FBE27B32;
-        Tue,  5 Apr 2022 01:53:42 -0700 (PDT)
+        Tue, 5 Apr 2022 05:00:56 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8844227B2E;
+        Tue,  5 Apr 2022 01:53:41 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 21F9761511;
-        Tue,  5 Apr 2022 08:53:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 31ED5C385A0;
-        Tue,  5 Apr 2022 08:53:41 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 40982B81A0C;
+        Tue,  5 Apr 2022 08:53:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 83307C385A0;
+        Tue,  5 Apr 2022 08:53:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649148821;
-        bh=FEhFHiceQxymASY0Cnhc+plWks288D4lT8BKESj8hAc=;
+        s=korg; t=1649148818;
+        bh=JaKivd1E8T/qQbTOsMZOvw28xfh/ei1qq7W2qiEEdDc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BH9g66znNAfQkaVP8r6HIJSdr82HCQ0e8B21mpC384swSQy68bLMXJqBFztx1n4KZ
-         ZoVZjx10wzNerx8j2t0uD6DR6kvXp+u0iRKaz27wey4Xf+vKYijIQZM+RwOAkbwNVQ
-         pW4EuG5uF/savoQyXuhvaDDU7FEuCnV8oeGU3XEE=
+        b=A1ur3vvaHksw6/NP02t9ZqxrU/9fZOi42M8P9DPnkLuEuCPCwPNHgvl6CSj3+EosX
+         P4LTGtWP50+kZpriTvjHDeg+b+yiOKOGivua4opfzgG2X/QZZs011qq9XpXBMUVe0J
+         35DDWSQO/tV5Re62b1Bpct1a93hAnC9apmMFJ9jc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Biju Das <biju.das.jz@bp.renesas.com>,
-        Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Robert Foss <robert.foss@linaro.org>,
+        stable@vger.kernel.org, Andrii Nakryiko <andrii@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0493/1017] drm/bridge: dw-hdmi: use safe format when first in bridge chain
-Date:   Tue,  5 Apr 2022 09:23:26 +0200
-Message-Id: <20220405070408.933296758@linuxfoundation.org>
+Subject: [PATCH 5.16 0492/1017] libbpf: Fix compilation warning due to mismatched printf format
+Date:   Tue,  5 Apr 2022 09:23:25 +0200
+Message-Id: <20220405070408.903681151@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -52,55 +50,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Neil Armstrong <narmstrong@baylibre.com>
+From: Andrii Nakryiko <andrii@kernel.org>
 
-[ Upstream commit 1528038385c0a706aac9ac165eeb24044fef6825 ]
+[ Upstream commit dc37dc617fabfb1c3a16d49f5d8cc20e9e3608ca ]
 
-When the dw-hdmi bridge is in first place of the bridge chain, this
-means there is no way to select an input format of the dw-hdmi HW
-component.
+On ppc64le architecture __s64 is long int and requires %ld. Cast to
+ssize_t and use %zd to avoid architecture-specific specifiers.
 
-Since introduction of display-connector, negotiation was broken since
-the dw-hdmi negotiation code only worked when the dw-hdmi bridge was
-in last position of the bridge chain or behind another bridge also
-supporting input & output format negotiation.
-
-Commit 7cd70656d128 ("drm/bridge: display-connector: implement bus fmts callbacks")
-was introduced to make negotiation work again by making display-connector
-act as a pass-through concerning input & output format negotiation.
-
-But in the case where the dw-hdmi is single in the bridge chain, for
-example on Renesas SoCs, with the display-connector bridge the dw-hdmi
-is no more single, breaking output format.
-
-Reported-by: Biju Das <biju.das.jz@bp.renesas.com>
-Bisected-by: Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>
-Tested-by: Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>
-Fixes: 6c3c719936da ("drm/bridge: synopsys: dw-hdmi: add bus format negociation")
-Signed-off-by: Neil Armstrong <narmstrong@baylibre.com>
-[narmstrong: add proper fixes commit]
-Reviewed-by: Robert Foss <robert.foss@linaro.org>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220204143337.89221-1-narmstrong@baylibre.com
+Fixes: 4172843ed4a3 ("libbpf: Fix signedness bug in btf_dump_array_data()")
+Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
+Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+Link: https://lore.kernel.org/bpf/20220209063909.1268319-1-andrii@kernel.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/bridge/synopsys/dw-hdmi.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ tools/lib/bpf/btf_dump.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c b/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c
-index e1211a5b334b..25d58dcfc87e 100644
---- a/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c
-+++ b/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c
-@@ -2551,8 +2551,9 @@ static u32 *dw_hdmi_bridge_atomic_get_output_bus_fmts(struct drm_bridge *bridge,
- 	if (!output_fmts)
- 		return NULL;
- 
--	/* If dw-hdmi is the only bridge, avoid negociating with ourselves */
--	if (list_is_singular(&bridge->encoder->bridge_chain)) {
-+	/* If dw-hdmi is the first or only bridge, avoid negociating with ourselves */
-+	if (list_is_singular(&bridge->encoder->bridge_chain) ||
-+	    list_is_first(&bridge->chain_node, &bridge->encoder->bridge_chain)) {
- 		*num_output_fmts = 1;
- 		output_fmts[0] = MEDIA_BUS_FMT_FIXED;
+diff --git a/tools/lib/bpf/btf_dump.c b/tools/lib/bpf/btf_dump.c
+index 700dfd362c4a..f2ab392a0e34 100644
+--- a/tools/lib/bpf/btf_dump.c
++++ b/tools/lib/bpf/btf_dump.c
+@@ -1847,7 +1847,8 @@ static int btf_dump_array_data(struct btf_dump *d,
+ 	elem_type = skip_mods_and_typedefs(d->btf, elem_type_id, NULL);
+ 	elem_size = btf__resolve_size(d->btf, elem_type_id);
+ 	if (elem_size <= 0) {
+-		pr_warn("unexpected elem size %lld for array type [%u]\n", elem_size, id);
++		pr_warn("unexpected elem size %zd for array type [%u]\n",
++			(ssize_t)elem_size, id);
+ 		return -EINVAL;
+ 	}
  
 -- 
 2.34.1
