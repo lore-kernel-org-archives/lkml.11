@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A994C4167E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8164CC35273
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 09:32:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237950AbiDEJcJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 05:32:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34702 "EHLO
+        id S238357AbiDEJc0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 05:32:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34812 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239489AbiDEIUI (ORCPT
+        with ESMTP id S239504AbiDEIUI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Apr 2022 04:20:08 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26838BFC;
-        Tue,  5 Apr 2022 01:14:15 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65691B83;
+        Tue,  5 Apr 2022 01:14:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D7753B81B92;
-        Tue,  5 Apr 2022 08:14:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 23BD3C385A0;
-        Tue,  5 Apr 2022 08:14:11 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 167CDB81BAC;
+        Tue,  5 Apr 2022 08:14:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 66264C385A1;
+        Tue,  5 Apr 2022 08:14:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649146452;
-        bh=Wp/zeVAJhVdSUcSBZOhk7aFWy4PO9rrhNrBvaBiDV8I=;
+        s=korg; t=1649146485;
+        bh=WcL+NXvQBZHCnmbnNDwWuBj2td89mQiyOMS49zpQNb8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=AniO9Sa6sOhQJNmJ0cogAI/swZnIYqwvfoTgN+ZigGp+3e3ZZDerJRPGRTBXnhzay
-         Oq/DKLVKwIJ/g99VbB7agp6SDg5BH72pvX0QA+CF81DhfpsqhouXQKRegfR7IS6Ubf
-         Qf5ehRpQoavPOpxfz+yT8IDmIfUB2MSY1CXNIPc4=
+        b=TGfj6wFfs24JYaCzr9O8vUwdFNM3Cr+ynSwdLaVT3iQrv+hG6UcxSpMHXhPaRILj2
+         Xp1LmP9iz+DLIB9WuvXhlQJlHsZw8RiZrS9ntP0paJBlSukMLiW1hmrqVkRdxXURN3
+         cd7W/kb91YXAJ2z4sy4AFbqoOHvS/BCAIsmkkLas=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Chen-Yu Tsai <wenst@chromium.org>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
+        stable@vger.kernel.org, Gilles Buloz <gilles.buloz@kontron.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0770/1126] pinctrl: mediatek: paris: Fix PIN_CONFIG_BIAS_* readback
-Date:   Tue,  5 Apr 2022 09:25:17 +0200
-Message-Id: <20220405070430.182360058@linuxfoundation.org>
+Subject: [PATCH 5.17 0781/1126] serial: 8250: fix XOFF/XON sending when DMA is used
+Date:   Tue,  5 Apr 2022 09:25:28 +0200
+Message-Id: <20220405070430.500467964@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -51,58 +50,120 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chen-Yu Tsai <wenst@chromium.org>
+From: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
 
-[ Upstream commit 3e8c6bc608480010f360c4a59578d7841726137d ]
+[ Upstream commit f58c252e30cf74f68b0054293adc03b5923b9f0e ]
 
-When reading back pin bias settings, if the pin is not in the
-corresponding bias state, the function should return -EINVAL.
+When 8250 UART is using DMA, x_char (XON/XOFF) is never sent
+to the wire. After this change, x_char is injected correctly.
 
-Fix this in the mediatek-paris pinctrl library so that the read back
-state is not littered with bogus a "input bias disabled" combined with
-"pull up" or "pull down" states.
+Create uart_xchar_out() helper for sending the x_char out and
+accounting related to it. It seems that almost every driver
+does these same steps with x_char. Except for 8250, however,
+almost all currently lack .serial_out so they cannot immediately
+take advantage of this new helper.
 
-Fixes: 805250982bb5 ("pinctrl: mediatek: add pinctrl-paris that implements the vendor dt-bindings")
-Signed-off-by: Chen-Yu Tsai <wenst@chromium.org>
-Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-Link: https://lore.kernel.org/r/20220308100956.2750295-3-wenst@chromium.org
-Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+The downside of this patch is that it might reintroduce
+the problems some devices faced with mixed DMA/non-DMA transfer
+which caused revert f967fc8f165f (Revert "serial: 8250_dma:
+don't bother DMA with small transfers"). However, the impact
+should be limited to cases with XON/XOFF (that didn't work
+with DMA capable devices to begin with so this problem is not
+very likely to cause a major issue, if any at all).
+
+Fixes: 9ee4b83e51f74 ("serial: 8250: Add support for dmaengine")
+Reported-by: Gilles Buloz <gilles.buloz@kontron.com>
+Tested-by: Gilles Buloz <gilles.buloz@kontron.com>
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+Link: https://lore.kernel.org/r/20220314091432.4288-2-ilpo.jarvinen@linux.intel.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pinctrl/mediatek/pinctrl-paris.c | 16 ++++++----------
- 1 file changed, 6 insertions(+), 10 deletions(-)
+ drivers/tty/serial/8250/8250_dma.c  | 11 ++++++++++-
+ drivers/tty/serial/8250/8250_port.c |  4 +---
+ drivers/tty/serial/serial_core.c    | 14 ++++++++++++++
+ include/linux/serial_core.h         |  2 ++
+ 4 files changed, 27 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/pinctrl/mediatek/pinctrl-paris.c b/drivers/pinctrl/mediatek/pinctrl-paris.c
-index f9f9110f2107..7037560ecda9 100644
---- a/drivers/pinctrl/mediatek/pinctrl-paris.c
-+++ b/drivers/pinctrl/mediatek/pinctrl-paris.c
-@@ -96,20 +96,16 @@ static int mtk_pinconf_get(struct pinctrl_dev *pctldev,
- 			err = hw->soc->bias_get_combo(hw, desc, &pullup, &ret);
- 			if (err)
- 				goto out;
-+			if (ret == MTK_PUPD_SET_R1R0_00)
-+				ret = MTK_DISABLE;
- 			if (param == PIN_CONFIG_BIAS_DISABLE) {
--				if (ret == MTK_PUPD_SET_R1R0_00)
--					ret = MTK_DISABLE;
-+				if (ret != MTK_DISABLE)
-+					err = -EINVAL;
- 			} else if (param == PIN_CONFIG_BIAS_PULL_UP) {
--				/* When desire to get pull-up value, return
--				 *  error if current setting is pull-down
--				 */
--				if (!pullup)
-+				if (!pullup || ret == MTK_DISABLE)
- 					err = -EINVAL;
- 			} else if (param == PIN_CONFIG_BIAS_PULL_DOWN) {
--				/* When desire to get pull-down value, return
--				 *  error if current setting is pull-up
--				 */
--				if (pullup)
-+				if (pullup || ret == MTK_DISABLE)
- 					err = -EINVAL;
- 			}
- 		} else {
+diff --git a/drivers/tty/serial/8250/8250_dma.c b/drivers/tty/serial/8250/8250_dma.c
+index 890fa7ddaa7f..b3c3f7e5851a 100644
+--- a/drivers/tty/serial/8250/8250_dma.c
++++ b/drivers/tty/serial/8250/8250_dma.c
+@@ -64,10 +64,19 @@ int serial8250_tx_dma(struct uart_8250_port *p)
+ 	struct uart_8250_dma		*dma = p->dma;
+ 	struct circ_buf			*xmit = &p->port.state->xmit;
+ 	struct dma_async_tx_descriptor	*desc;
++	struct uart_port		*up = &p->port;
+ 	int ret;
+ 
+-	if (dma->tx_running)
++	if (dma->tx_running) {
++		if (up->x_char) {
++			dmaengine_pause(dma->txchan);
++			uart_xchar_out(up, UART_TX);
++			dmaengine_resume(dma->txchan);
++		}
+ 		return 0;
++	} else if (up->x_char) {
++		uart_xchar_out(up, UART_TX);
++	}
+ 
+ 	if (uart_tx_stopped(&p->port) || uart_circ_empty(xmit)) {
+ 		/* We have been called from __dma_tx_complete() */
+diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
+index fd0339d22491..9f116e75956e 100644
+--- a/drivers/tty/serial/8250/8250_port.c
++++ b/drivers/tty/serial/8250/8250_port.c
+@@ -1819,9 +1819,7 @@ void serial8250_tx_chars(struct uart_8250_port *up)
+ 	int count;
+ 
+ 	if (port->x_char) {
+-		serial_out(up, UART_TX, port->x_char);
+-		port->icount.tx++;
+-		port->x_char = 0;
++		uart_xchar_out(port, UART_TX);
+ 		return;
+ 	}
+ 	if (uart_tx_stopped(port)) {
+diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+index 0db90be4c3bc..f67540ae2a88 100644
+--- a/drivers/tty/serial/serial_core.c
++++ b/drivers/tty/serial/serial_core.c
+@@ -644,6 +644,20 @@ static void uart_flush_buffer(struct tty_struct *tty)
+ 	tty_port_tty_wakeup(&state->port);
+ }
+ 
++/*
++ * This function performs low-level write of high-priority XON/XOFF
++ * character and accounting for it.
++ *
++ * Requires uart_port to implement .serial_out().
++ */
++void uart_xchar_out(struct uart_port *uport, int offset)
++{
++	serial_port_out(uport, offset, uport->x_char);
++	uport->icount.tx++;
++	uport->x_char = 0;
++}
++EXPORT_SYMBOL_GPL(uart_xchar_out);
++
+ /*
+  * This function is used to send a high-priority XON/XOFF character to
+  * the device
+diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
+index c58cc142d23f..8c32935e1059 100644
+--- a/include/linux/serial_core.h
++++ b/include/linux/serial_core.h
+@@ -458,6 +458,8 @@ extern void uart_handle_cts_change(struct uart_port *uport,
+ extern void uart_insert_char(struct uart_port *port, unsigned int status,
+ 		 unsigned int overrun, unsigned int ch, unsigned int flag);
+ 
++void uart_xchar_out(struct uart_port *uport, int offset);
++
+ #ifdef CONFIG_MAGIC_SYSRQ_SERIAL
+ #define SYSRQ_TIMEOUT	(HZ * 5)
+ 
 -- 
 2.34.1
 
