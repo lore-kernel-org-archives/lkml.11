@@ -2,75 +2,178 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0EAC2C4332F
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 01:10:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EDCDAC433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 01:10:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1840811AbiDFBL6 (ORCPT
+        id S1840799AbiDFBLy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 21:11:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43206 "EHLO
+        Tue, 5 Apr 2022 21:11:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57424 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356944AbiDELPz (ORCPT
+        with ESMTP id S1349782AbiDEJv2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 07:15:55 -0400
-Received: from mail.skyhub.de (mail.skyhub.de [5.9.137.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D416C546AC;
-        Tue,  5 Apr 2022 03:37:05 -0700 (PDT)
-Received: from zn.tnic (p2e55dff8.dip0.t-ipconnect.de [46.85.223.248])
+        Tue, 5 Apr 2022 05:51:28 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D46F31C10C;
+        Tue,  5 Apr 2022 02:49:27 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 642EC1EC02B9;
-        Tue,  5 Apr 2022 12:37:00 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
-        t=1649155020;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=aAiETv6NNGhLTTzIDJkzKivJQy7gSmYaJopESRTcDRQ=;
-        b=F6XF/rJjfwXREbr0pfnpBYgpNjGCPYK6nNqwoTSXR6Gfdo/AZreDbP6b5t6kW4MpUzL89c
-        XCX8+pyP9quh9tkkJ0KxtKIpPJIolvLGZdQnpaGnI+4Ewz5fgr2HHJTH8/tVuS57trpB3v
-        JXBPpkUNIbGrrM98joAlAPTpsj4hG8Y=
-Date:   Tue, 5 Apr 2022 12:36:58 +0200
-From:   Borislav Petkov <bp@alien8.de>
-To:     Richard Biener <rguenther@suse.de>
-Cc:     linux-toolchains@vger.kernel.org, Michael Matz <matz@suse.de>,
-        lkml <linux-kernel@vger.kernel.org>
-Subject: Re: older gccs and case labels producing integer constants
-Message-ID: <YkwbygWj/C3XooMV@zn.tnic>
-References: <YkwQ6+tIH8GQpuct@zn.tnic>
- <7o5nn52-nqn1-oo13-s6o9-59r85r91o768@fhfr.qr>
- <onrq8p1-582o-6rs9-r682-rs9sqoq7sq6p@fhfr.qr>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6D80D61577;
+        Tue,  5 Apr 2022 09:49:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7E507C385A1;
+        Tue,  5 Apr 2022 09:49:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649152166;
+        bh=IECC3XuBdG5GLST7u+ger1qa2WxBbPkq2C29u83lBFo=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=Zomx+r0LSDkYIwqDfbHrKHmf1AdBtgbChdNdj10pg+sAdWohmqS7MC3lYNpDhpZiw
+         YvxXhT2zJOC/yjcZMEPlo26jotQUuMN5PjG9SCDXjOBsQqO7WJQsiCXPLhX6/rTsXm
+         qH5x4nbgNqtgYdPj6L4lLGc4JtidmkJ7fLzVj7dA=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Fedor Pchelkin <aissur0002@gmail.com>,
+        Alexey Khoroshilov <khoroshilov@ispras.ru>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Sasha Levin <sashal@kernel.org>,
+        Christian Brauner <brauner@kernel.org>
+Subject: [PATCH 5.15 679/913] fs: fd tables have to be multiples of BITS_PER_LONG
+Date:   Tue,  5 Apr 2022 09:29:01 +0200
+Message-Id: <20220405070400.189202123@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <onrq8p1-582o-6rs9-r682-rs9sqoq7sq6p@fhfr.qr>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 05, 2022 at 12:06:45PM +0200, Richard Biener wrote:
-> Wird auch mit gcc 11 rejected.  Kanns sein dass mit gcc 7 andere
-> compiler flags genommen werden?
+From: Linus Torvalds <torvalds@linux-foundation.org>
 
-Found it:
+[ Upstream commit 1c24a186398f59c80adb9a967486b65c1423a59d ]
 
-$ gcc -fsanitize=shift -c switch.c
-switch.c: In function ‘foo’:
-switch.c:10:7: error: case label does not reduce to an integer constant
-       case (((0xfc08) << 16) | (0x0101)):;
+This has always been the rule: fdtables have several bitmaps in them,
+and as a result they have to be sized properly for bitmaps.  We walk
+those bitmaps in chunks of 'unsigned long' in serveral cases, but even
+when we don't, we use the regular kernel bitops that are defined to work
+on arrays of 'unsigned long', not on some byte array.
 
-$ gcc --version
-gcc (SUSE Linux) 7.4.1 20190905 [gcc-7-branch revision 275407]
-Copyright (C) 2017 Free Software Foundation, Inc.
+Now, the distinction between arrays of bytes and 'unsigned long'
+normally only really ends up being noticeable on big-endian systems, but
+Fedor Pchelkin and Alexey Khoroshilov reported that copy_fd_bitmaps()
+could be called with an argument that wasn't even a multiple of
+BITS_PER_BYTE.  And then it fails to do the proper copy even on
+little-endian machines.
 
-Something not fully backported?
+The bug wasn't in copy_fd_bitmap(), but in sane_fdtable_size(), which
+didn't actually sanitize the fdtable size sufficiently, and never made
+sure it had the proper BITS_PER_LONG alignment.
 
-Thx.
+That's partly because the alignment historically came not from having to
+explicitly align things, but simply from previous fdtable sizes, and
+from count_open_files(), which counts the file descriptors by walking
+them one 'unsigned long' word at a time and thus naturally ends up doing
+sizing in the proper 'chunks of unsigned long'.
 
+But with the introduction of close_range(), we now have an external
+source of "this is how many files we want to have", and so
+sane_fdtable_size() needs to do a better job.
+
+This also adds that explicit alignment to alloc_fdtable(), although
+there it is mainly just for documentation at a source code level.  The
+arithmetic we do there to pick a reasonable fdtable size already aligns
+the result sufficiently.
+
+In fact,clang notices that the added ALIGN() in that function doesn't
+actually do anything, and does not generate any extra code for it.
+
+It turns out that gcc ends up confusing itself by combining a previous
+constant-sized shift operation with the variable-sized shift operations
+in roundup_pow_of_two().  And probably due to that doesn't notice that
+the ALIGN() is a no-op.  But that's a (tiny) gcc misfeature that doesn't
+matter.  Having the explicit alignment makes sense, and would actually
+matter on a 128-bit architecture if we ever go there.
+
+This also adds big comments above both functions about how fdtable sizes
+have to have that BITS_PER_LONG alignment.
+
+Fixes: 60997c3d45d9 ("close_range: add CLOSE_RANGE_UNSHARE")
+Reported-by: Fedor Pchelkin <aissur0002@gmail.com>
+Reported-by: Alexey Khoroshilov <khoroshilov@ispras.ru>
+Link: https://lore.kernel.org/all/20220326114009.1690-1-aissur0002@gmail.com/
+Tested-and-acked-by: Christian Brauner <brauner@kernel.org>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ fs/file.c | 30 ++++++++++++++++++++++++++++++
+ 1 file changed, 30 insertions(+)
+
+diff --git a/fs/file.c b/fs/file.c
+index 97d212a9b814..c01c29417ae6 100644
+--- a/fs/file.c
++++ b/fs/file.c
+@@ -87,6 +87,21 @@ static void copy_fdtable(struct fdtable *nfdt, struct fdtable *ofdt)
+ 	copy_fd_bitmaps(nfdt, ofdt, ofdt->max_fds);
+ }
+ 
++/*
++ * Note how the fdtable bitmap allocations very much have to be a multiple of
++ * BITS_PER_LONG. This is not only because we walk those things in chunks of
++ * 'unsigned long' in some places, but simply because that is how the Linux
++ * kernel bitmaps are defined to work: they are not "bits in an array of bytes",
++ * they are very much "bits in an array of unsigned long".
++ *
++ * The ALIGN(nr, BITS_PER_LONG) here is for clarity: since we just multiplied
++ * by that "1024/sizeof(ptr)" before, we already know there are sufficient
++ * clear low bits. Clang seems to realize that, gcc ends up being confused.
++ *
++ * On a 128-bit machine, the ALIGN() would actually matter. In the meantime,
++ * let's consider it documentation (and maybe a test-case for gcc to improve
++ * its code generation ;)
++ */
+ static struct fdtable * alloc_fdtable(unsigned int nr)
+ {
+ 	struct fdtable *fdt;
+@@ -102,6 +117,7 @@ static struct fdtable * alloc_fdtable(unsigned int nr)
+ 	nr /= (1024 / sizeof(struct file *));
+ 	nr = roundup_pow_of_two(nr + 1);
+ 	nr *= (1024 / sizeof(struct file *));
++	nr = ALIGN(nr, BITS_PER_LONG);
+ 	/*
+ 	 * Note that this can drive nr *below* what we had passed if sysctl_nr_open
+ 	 * had been set lower between the check in expand_files() and here.  Deal
+@@ -269,11 +285,25 @@ static unsigned int count_open_files(struct fdtable *fdt)
+ 	return i;
+ }
+ 
++/*
++ * Note that a sane fdtable size always has to be a multiple of
++ * BITS_PER_LONG, since we have bitmaps that are sized by this.
++ *
++ * 'max_fds' will normally already be properly aligned, but it
++ * turns out that in the close_range() -> __close_range() ->
++ * unshare_fd() -> dup_fd() -> sane_fdtable_size() we can end
++ * up having a 'max_fds' value that isn't already aligned.
++ *
++ * Rather than make close_range() have to worry about this,
++ * just make that BITS_PER_LONG alignment be part of a sane
++ * fdtable size. Becuase that's really what it is.
++ */
+ static unsigned int sane_fdtable_size(struct fdtable *fdt, unsigned int max_fds)
+ {
+ 	unsigned int count;
+ 
+ 	count = count_open_files(fdt);
++	max_fds = ALIGN(max_fds, BITS_PER_LONG);
+ 	if (max_fds < NR_OPEN_DEFAULT)
+ 		max_fds = NR_OPEN_DEFAULT;
+ 	return min(count, max_fds);
 -- 
-Regards/Gruss,
-    Boris.
+2.34.1
 
-https://people.kernel.org/tglx/notes-about-netiquette
+
+
