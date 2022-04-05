@@ -2,89 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F868C43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 80261C4167B
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:44:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1837128AbiDFAoz (ORCPT
+        id S1837113AbiDFAon (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 20:44:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53602 "EHLO
+        Tue, 5 Apr 2022 20:44:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56482 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1572944AbiDERWt (ORCPT
+        with ESMTP id S1349720AbiDEJvF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 13:22:49 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 716BA14012;
-        Tue,  5 Apr 2022 10:20:51 -0700 (PDT)
+        Tue, 5 Apr 2022 05:51:05 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65997DF99;
+        Tue,  5 Apr 2022 02:49:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 060AE618AC;
-        Tue,  5 Apr 2022 17:20:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 41A8EC385A0;
-        Tue,  5 Apr 2022 17:20:50 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649179250;
-        bh=YZsDubBk95nu3x04zmH9B6wkAN+uWc38CMrzjI/URwo=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=KLe5zgl1jn3/c4ZIruCMaO136A64eBcLm5MtWPZC5gKsaFML8XL5Qi/qHPHGunbPu
-         Cn8MAg+bYIIerAENAO5CthwJdbxgxY+JcPPv4dVyDz+8Gg7Lq8nJ8U2qhQJckYp5/I
-         8LVvPIeKrguyAUUzrF2cs0KvpoJRHxAnHmVLSP+dK4TTgnuRG+2y8vms+tDW2akJeY
-         MyB0qBwaj662d6Ir3juQcKyHhkbEKASlApUUa2Qp5cQfBpFjfZIBOpwotaaMeLoacP
-         F1Zyd4PQllzcMItH1uB2cRecYBbnUYYrNrqW9PY+Dw2KKmenqYfIQIBME36MLFZ1aq
-         5xVovTJYeXidQ==
-Date:   Tue, 5 Apr 2022 10:20:49 -0700
-From:   Saeed Mahameed <saeed@kernel.org>
-To:     Leon Romanovsky <leon@kernel.org>
-Cc:     Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
-        Jason Gunthorpe <jgg@nvidia.com>, linux-kernel@vger.kernel.org,
-        linux-rdma@vger.kernel.org, netdev@vger.kernel.org,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Tariq Toukan <tariqt@nvidia.com>
-Subject: Re: [PATCH mlx5-next 4/5] net/mlx5: Remove tls vs. ktls separation
- as it is the same
-Message-ID: <20220405172049.slomqla4pmnyczbj@sx1>
-References: <cover.1649073691.git.leonro@nvidia.com>
- <67e596599edcffb0de43f26551208dfd34ac777e.1649073691.git.leonro@nvidia.com>
- <20220405003322.afko7uo527w5j3zu@sx1>
- <YkvW9SNJeb5VPmeg@unreal>
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0B04FB818F3;
+        Tue,  5 Apr 2022 09:49:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5AA2CC385A2;
+        Tue,  5 Apr 2022 09:49:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649152144;
+        bh=BKFbN78+A/5yk54tSfiWqE/xHZibpiB0gV7vX3QvTg4=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=t8Y0B3IxZP2T8uho11gtfbrTbHEZJDOsfAt8QanHiZt4UGoDUhtaNIbL0ThmoL7ao
+         Dw6sTQY9OQkpVv6SSgkD5N3J9bJlGwGTyujXczEm0SFQ7BosfaD9WRSMSdQ06AhccW
+         6qJZqPGYqtds4BMPD187L7gZ75LrPx/eU+OxXBEo=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Duoming Zhou <duoming@zju.edu.cn>,
+        Lin Ma <linma@zju.edu.cn>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 672/913] net/x25: Fix null-ptr-deref caused by x25_disconnect
+Date:   Tue,  5 Apr 2022 09:28:54 +0200
+Message-Id: <20220405070359.979429682@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-In-Reply-To: <YkvW9SNJeb5VPmeg@unreal>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 05 Apr 08:43, Leon Romanovsky wrote:
->On Mon, Apr 04, 2022 at 05:33:22PM -0700, Saeed Mahameed wrote:
->> On 04 Apr 15:08, Leon Romanovsky wrote:
->> > From: Leon Romanovsky <leonro@nvidia.com>
->> >
->> > After removal FPGA TLS, we can remove tls->ktls indirection too,
->> > as it is the same thing.
+From: Duoming Zhou <duoming@zju.edu.cn>
 
-[...]
+[ Upstream commit 7781607938c8371d4c2b243527430241c62e39c2 ]
 
-> > rename drivers/net/ethernet/mellanox/mlx5/core/en_accel/{tls_stats.c => ktls_stats.c} (76%)
->>
->> Why not ktls_*.c => tls_*.c ?
->
->Mostly because other drivers use _ktls_ name for this type of functionality.
->Plus internally, Tariq suggested to squash everything into ktls.
->
->>
->> Since we now have one TLS implementation, it would've been easier to maybe
->> repurpose TLS to be KTLS only and avoid renaming every TLS to KTLS in all
->> functions and files.
->>
->> So just keep tls.c and all mlx5_tls_xyz functions and implement ktls
->> directly in them, the renaming will be done only on the ktls implementation
->> part of the code rather than in every caller.
->
->Should I do it or keep this patch as is?
->
+When the link layer is terminating, x25->neighbour will be set to NULL
+in x25_disconnect(). As a result, it could cause null-ptr-deref bugs in
+x25_sendmsg(),x25_recvmsg() and x25_connect(). One of the bugs is
+shown below.
 
-Keep it, i don't have any strong feeling about this,
-I just wanted to reduce the patch size.
+    (Thread 1)                 |  (Thread 2)
+x25_link_terminated()          | x25_recvmsg()
+ x25_kill_by_neigh()           |  ...
+  x25_disconnect()             |  lock_sock(sk)
+   ...                         |  ...
+   x25->neighbour = NULL //(1) |
+   ...                         |  x25->neighbour->extended //(2)
+
+The code sets NULL to x25->neighbour in position (1) and dereferences
+x25->neighbour in position (2), which could cause null-ptr-deref bug.
+
+This patch adds lock_sock() in x25_kill_by_neigh() in order to synchronize
+with x25_sendmsg(), x25_recvmsg() and x25_connect(). What`s more, the
+sock held by lock_sock() is not NULL, because it is extracted from x25_list
+and uses x25_list_lock to synchronize.
+
+Fixes: 4becb7ee5b3d ("net/x25: Fix x25_neigh refcnt leak when x25 disconnect")
+Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
+Reviewed-by: Lin Ma <linma@zju.edu.cn>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ net/x25/af_x25.c | 11 ++++++++---
+ 1 file changed, 8 insertions(+), 3 deletions(-)
+
+diff --git a/net/x25/af_x25.c b/net/x25/af_x25.c
+index 3583354a7d7f..3a171828638b 100644
+--- a/net/x25/af_x25.c
++++ b/net/x25/af_x25.c
+@@ -1765,10 +1765,15 @@ void x25_kill_by_neigh(struct x25_neigh *nb)
+ 
+ 	write_lock_bh(&x25_list_lock);
+ 
+-	sk_for_each(s, &x25_list)
+-		if (x25_sk(s)->neighbour == nb)
++	sk_for_each(s, &x25_list) {
++		if (x25_sk(s)->neighbour == nb) {
++			write_unlock_bh(&x25_list_lock);
++			lock_sock(s);
+ 			x25_disconnect(s, ENETUNREACH, 0, 0);
+-
++			release_sock(s);
++			write_lock_bh(&x25_list_lock);
++		}
++	}
+ 	write_unlock_bh(&x25_list_lock);
+ 
+ 	/* Remove any related forwards */
+-- 
+2.34.1
+
+
 
