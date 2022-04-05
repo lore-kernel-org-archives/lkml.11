@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6FE01C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 13:51:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 28D55C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 13:52:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237503AbiDENx1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 09:53:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46198 "EHLO
+        id S234205AbiDENx6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 09:53:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60098 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347702AbiDEJ2M (ORCPT
+        with ESMTP id S1345005AbiDEJWI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:28:12 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A526DFD40;
-        Tue,  5 Apr 2022 02:15:36 -0700 (PDT)
+        Tue, 5 Apr 2022 05:22:08 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E59F8266B;
+        Tue,  5 Apr 2022 02:08:58 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 77DE0B80DA1;
-        Tue,  5 Apr 2022 09:15:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C56C2C385A2;
-        Tue,  5 Apr 2022 09:15:32 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C719361577;
+        Tue,  5 Apr 2022 09:08:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D759CC385A2;
+        Tue,  5 Apr 2022 09:08:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649150133;
-        bh=8amx3lYhPdvxlPyXrtkPsQvIG3FbeBS5jWOreTSZbyk=;
+        s=korg; t=1649149738;
+        bh=PSAWW/Nw9gcKd2tq0UOU4St9E3PTIIk5kU+nkR20mk8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RTgSBdtYpj89IrdRZ/n2ME2CIp9/SKhJuk4G7toHEOxU9/cYS/JM073eG3ioNlVXn
-         caEEIhRItuxNEexzUGw6FqTyFqpijSYH8taimrOdSV/K/DJcZJD9hw9PZ+rPUS6Zw+
-         0jyrinP2cez3meRLjoeGuWjIZaHzNjc6weq4ekaU=
+        b=cwB1UwFdO2uXKMgun+88xp+r+A0gJy3B2GRI3nQYuRBz4xPt829sSgNdGRE9jDjVO
+         5InL9xjUj6/EdpxvDHCJ0Jae5xSj9glju7rGe9GY6mdIiiSoDiioGXS/RyHwZUULzb
+         lIJvSI5Ui5o1YRQ1Nkt+R6VjZHQm8NLLcih3H0yU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Derek Will <derekrobertwill@gmail.com>,
-        Oliver Hartkopp <socketcan@hartkopp.net>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
+        stable@vger.kernel.org, Josef Bacik <josef@toxicpanda.com>,
+        David Sterba <dsterba@suse.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0959/1017] can: isotp: restore accidentally removed MSG_PEEK feature
-Date:   Tue,  5 Apr 2022 09:31:12 +0200
-Message-Id: <20220405070422.674777185@linuxfoundation.org>
+Subject: [PATCH 5.16 0796/1017] btrfs: handle csum lookup errors properly on reads
+Date:   Tue,  5 Apr 2022 09:28:29 +0200
+Message-Id: <20220405070417.878940354@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -50,46 +49,112 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Oliver Hartkopp <socketcan@hartkopp.net>
+From: Josef Bacik <josef@toxicpanda.com>
 
-[ Upstream commit e382fea8ae54f5bb62869c6b69b33993d43adeca ]
+[ Upstream commit 1784b7d502a94b561eae58249adde5f72c26eb3c ]
 
-In commit 42bf50a1795a ("can: isotp: support MSG_TRUNC flag when
-reading from socket") a new check for recvmsg flags has been
-introduced that only checked for the flags that are handled in
-isotp_recvmsg() itself.
+Currently any error we get while trying to lookup csums during reads
+shows up as a missing csum, and then on the read completion side we
+print an error saying there was a csum mismatch and we increase the
+device corruption count.
 
-This accidentally removed the MSG_PEEK feature flag which is processed
-later in the call chain in __skb_try_recv_from_queue().
+However we could have gotten an EIO from the lookup.  We could also be
+inside of a memory constrained container and gotten a ENOMEM while
+trying to do the read.  In either case we don't want to make this look
+like a file system corruption problem, we want to make it look like the
+actual error it is.  Capture any negative value, convert it to the
+appropriate blk_status_t, free the csum array if we have one and bail.
 
-Add MSG_PEEK to the set of valid flags to restore the feature.
+Note: a possible improvement would be to make the relocation code look
+up the owning inode and see if it's marked as NODATASUM and set
+EXTENT_NODATASUM there, that way if there's corruption and there isn't a
+checksum when we want it we can fail here rather than later.
 
-Fixes: 42bf50a1795a ("can: isotp: support MSG_TRUNC flag when reading from socket")
-Link: https://github.com/linux-can/can-utils/issues/347#issuecomment-1079554254
-Link: https://lore.kernel.org/all/20220328113611.3691-1-socketcan@hartkopp.net
-Reported-by: Derek Will <derekrobertwill@gmail.com>
-Suggested-by: Derek Will <derekrobertwill@gmail.com>
-Tested-by: Derek Will <derekrobertwill@gmail.com>
-Signed-off-by: Oliver Hartkopp <socketcan@hartkopp.net>
-Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
+Signed-off-by: Josef Bacik <josef@toxicpanda.com>
+Signed-off-by: David Sterba <dsterba@suse.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/can/isotp.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ fs/btrfs/file-item.c | 36 ++++++++++++++++++++++--------------
+ 1 file changed, 22 insertions(+), 14 deletions(-)
 
-diff --git a/net/can/isotp.c b/net/can/isotp.c
-index ad61342d2e16..a95d171b3a64 100644
---- a/net/can/isotp.c
-+++ b/net/can/isotp.c
-@@ -1009,7 +1009,7 @@ static int isotp_recvmsg(struct socket *sock, struct msghdr *msg, size_t size,
- 	int noblock = flags & MSG_DONTWAIT;
- 	int ret = 0;
+diff --git a/fs/btrfs/file-item.c b/fs/btrfs/file-item.c
+index 91ae1caa1bdb..a68d9cab12ea 100644
+--- a/fs/btrfs/file-item.c
++++ b/fs/btrfs/file-item.c
+@@ -366,6 +366,7 @@ blk_status_t btrfs_lookup_bio_sums(struct inode *inode, struct bio *bio, u8 *dst
+ {
+ 	struct btrfs_fs_info *fs_info = btrfs_sb(inode->i_sb);
+ 	struct extent_io_tree *io_tree = &BTRFS_I(inode)->io_tree;
++	struct btrfs_bio *bbio = NULL;
+ 	struct btrfs_path *path;
+ 	const u32 sectorsize = fs_info->sectorsize;
+ 	const u32 csum_size = fs_info->csum_size;
+@@ -375,6 +376,7 @@ blk_status_t btrfs_lookup_bio_sums(struct inode *inode, struct bio *bio, u8 *dst
+ 	u8 *csum;
+ 	const unsigned int nblocks = orig_len >> fs_info->sectorsize_bits;
+ 	int count = 0;
++	blk_status_t ret = BLK_STS_OK;
  
--	if (flags & ~(MSG_DONTWAIT | MSG_TRUNC))
-+	if (flags & ~(MSG_DONTWAIT | MSG_TRUNC | MSG_PEEK))
- 		return -EINVAL;
+ 	if (!fs_info->csum_root || (BTRFS_I(inode)->flags & BTRFS_INODE_NODATASUM))
+ 		return BLK_STS_OK;
+@@ -397,7 +399,7 @@ blk_status_t btrfs_lookup_bio_sums(struct inode *inode, struct bio *bio, u8 *dst
+ 		return BLK_STS_RESOURCE;
  
- 	if (!so->bound)
+ 	if (!dst) {
+-		struct btrfs_bio *bbio = btrfs_bio(bio);
++		bbio = btrfs_bio(bio);
+ 
+ 		if (nblocks * csum_size > BTRFS_BIO_INLINE_CSUM_SIZE) {
+ 			bbio->csum = kmalloc_array(nblocks, csum_size, GFP_NOFS);
+@@ -453,21 +455,27 @@ blk_status_t btrfs_lookup_bio_sums(struct inode *inode, struct bio *bio, u8 *dst
+ 
+ 		count = search_csum_tree(fs_info, path, cur_disk_bytenr,
+ 					 search_len, csum_dst);
+-		if (count <= 0) {
+-			/*
+-			 * Either we hit a critical error or we didn't find
+-			 * the csum.
+-			 * Either way, we put zero into the csums dst, and skip
+-			 * to the next sector.
+-			 */
++		if (count < 0) {
++			ret = errno_to_blk_status(count);
++			if (bbio)
++				btrfs_bio_free_csum(bbio);
++			break;
++		}
++
++		/*
++		 * We didn't find a csum for this range.  We need to make sure
++		 * we complain loudly about this, because we are not NODATASUM.
++		 *
++		 * However for the DATA_RELOC inode we could potentially be
++		 * relocating data extents for a NODATASUM inode, so the inode
++		 * itself won't be marked with NODATASUM, but the extent we're
++		 * copying is in fact NODATASUM.  If we don't find a csum we
++		 * assume this is the case.
++		 */
++		if (count == 0) {
+ 			memset(csum_dst, 0, csum_size);
+ 			count = 1;
+ 
+-			/*
+-			 * For data reloc inode, we need to mark the range
+-			 * NODATASUM so that balance won't report false csum
+-			 * error.
+-			 */
+ 			if (BTRFS_I(inode)->root->root_key.objectid ==
+ 			    BTRFS_DATA_RELOC_TREE_OBJECTID) {
+ 				u64 file_offset;
+@@ -488,7 +496,7 @@ blk_status_t btrfs_lookup_bio_sums(struct inode *inode, struct bio *bio, u8 *dst
+ 	}
+ 
+ 	btrfs_free_path(path);
+-	return BLK_STS_OK;
++	return ret;
+ }
+ 
+ int btrfs_lookup_csums_range(struct btrfs_root *root, u64 start, u64 end,
 -- 
 2.34.1
 
