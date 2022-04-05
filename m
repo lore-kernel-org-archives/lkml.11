@@ -2,44 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A15B1C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 10:17:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9257BC43219
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 10:17:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353780AbiDEKJU (ORCPT
+        id S1353805AbiDEKJ3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 06:09:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45702 "EHLO
+        Tue, 5 Apr 2022 06:09:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44064 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241076AbiDEIcr (ORCPT
+        with ESMTP id S241074AbiDEIcr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Apr 2022 04:32:47 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2A2813E22;
-        Tue,  5 Apr 2022 01:26:50 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C66A1B91AC;
+        Tue,  5 Apr 2022 01:26:46 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 711EB6117D;
-        Tue,  5 Apr 2022 08:26:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7D210C385A2;
-        Tue,  5 Apr 2022 08:26:49 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 75986B81BAF;
+        Tue,  5 Apr 2022 08:26:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DD3AAC385A4;
+        Tue,  5 Apr 2022 08:26:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649147209;
-        bh=/jXyjXnKVL7ginhzj5vU2rBOllvhtBJIJKYKH7J0cos=;
+        s=korg; t=1649147204;
+        bh=WEzZA7KphCwxsPg16crtXDZyTJfB5qhlsaeZdSfVPQE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bibus54ySznIGmNwvAzsRlaCh20+opt0kUkIWWJqFkcL8MYickmIlGJtkMUCjQ8Fl
-         QNz1TWhU7TH8He6BsQgihZ7v65bdP62I642tVhdjimYt9WWS/py8sZHymLmyu8Np8l
-         gDudTTEadvtaKT+4RnwtIt+sxg1YC7UNlMZZsgmI=
+        b=cSo9kjb6VUAIxXVf3yMIApMo+bdaO+TYkxR8+XQI3Hs5B0+iykw8BZNorLpmLxGFk
+         qwPuFWdS+FdJ81oMjj7gNZpO3ZevoteJohtou6efzVmSHlaJx7HZ87JR8tf4fwVfUN
+         txDWvR7BqjW/YZYbN9pNxSfN7Ns+6JxcQQ6EIrxA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Chen-Yu Tsai <wenst@chromium.org>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Linus Walleij <linus.walleij@linaro.org>
-Subject: [PATCH 5.17 1040/1126] pinctrl: pinconf-generic: Print arguments for bias-pull-*
-Date:   Tue,  5 Apr 2022 09:29:47 +0200
-Message-Id: <20220405070438.001058820@linuxfoundation.org>
+        stable@vger.kernel.org, Herbert Xu <herbert@gondor.apana.org.au>
+Subject: [PATCH 5.17 1038/1126] crypto: arm/aes-neonbs-cbc - Select generic cbc and aes
+Date:   Tue,  5 Apr 2022 09:29:45 +0200
+Message-Id: <20220405070437.942973993@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -51,42 +48,31 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chen-Yu Tsai <wenst@chromium.org>
+From: Herbert Xu <herbert@gondor.apana.org.au>
 
-commit 188e5834b930acd03ad3cf7c5e7aa24db9665a29 upstream.
+commit c8bd296cca3434b13b28b074eaeb78a23284de77 upstream.
 
-The bias-pull-* properties, or PIN_CONFIG_BIAS_PULL_* pin config
-parameters, accept optional arguments in ohms denoting the strength of
-the pin bias.
+The algorithm __cbc-aes-neonbs requires a fallback so we need
+to select the config options for them or otherwise it will fail
+to register on boot-up.
 
-Print these values out in debugfs as well.
-
-Fixes: eec450713e5c ("pinctrl: pinconf-generic: Add flag to print arguments")
-Signed-off-by: Chen-Yu Tsai <wenst@chromium.org>
-Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-Tested-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-Link: https://lore.kernel.org/r/20220308100956.2750295-2-wenst@chromium.org
-Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+Fixes: 00b99ad2bac2 ("crypto: arm/aes-neonbs - Use generic cbc...")
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/pinctrl/pinconf-generic.c |    6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ arch/arm/crypto/Kconfig |    2 ++
+ 1 file changed, 2 insertions(+)
 
---- a/drivers/pinctrl/pinconf-generic.c
-+++ b/drivers/pinctrl/pinconf-generic.c
-@@ -30,10 +30,10 @@ static const struct pin_config_item conf
- 	PCONFDUMP(PIN_CONFIG_BIAS_BUS_HOLD, "input bias bus hold", NULL, false),
- 	PCONFDUMP(PIN_CONFIG_BIAS_DISABLE, "input bias disabled", NULL, false),
- 	PCONFDUMP(PIN_CONFIG_BIAS_HIGH_IMPEDANCE, "input bias high impedance", NULL, false),
--	PCONFDUMP(PIN_CONFIG_BIAS_PULL_DOWN, "input bias pull down", NULL, false),
-+	PCONFDUMP(PIN_CONFIG_BIAS_PULL_DOWN, "input bias pull down", "ohms", true),
- 	PCONFDUMP(PIN_CONFIG_BIAS_PULL_PIN_DEFAULT,
--				"input bias pull to pin specific state", NULL, false),
--	PCONFDUMP(PIN_CONFIG_BIAS_PULL_UP, "input bias pull up", NULL, false),
-+				"input bias pull to pin specific state", "ohms", true),
-+	PCONFDUMP(PIN_CONFIG_BIAS_PULL_UP, "input bias pull up", "ohms", true),
- 	PCONFDUMP(PIN_CONFIG_DRIVE_OPEN_DRAIN, "output drive open drain", NULL, false),
- 	PCONFDUMP(PIN_CONFIG_DRIVE_OPEN_SOURCE, "output drive open source", NULL, false),
- 	PCONFDUMP(PIN_CONFIG_DRIVE_PUSH_PULL, "output drive push pull", NULL, false),
+--- a/arch/arm/crypto/Kconfig
++++ b/arch/arm/crypto/Kconfig
+@@ -102,6 +102,8 @@ config CRYPTO_AES_ARM_BS
+ 	depends on KERNEL_MODE_NEON
+ 	select CRYPTO_SKCIPHER
+ 	select CRYPTO_LIB_AES
++	select CRYPTO_AES
++	select CRYPTO_CBC
+ 	select CRYPTO_SIMD
+ 	help
+ 	  Use a faster and more secure NEON based implementation of AES in CBC,
 
 
