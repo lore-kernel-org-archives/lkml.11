@@ -2,175 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 01802C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 22:31:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D948C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 22:31:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1450444AbiDEW1q (ORCPT
+        id S1450536AbiDEW2X (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 18:27:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39156 "EHLO
+        Tue, 5 Apr 2022 18:28:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38704 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1442422AbiDEPhk (ORCPT
+        with ESMTP id S1573605AbiDETXZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 11:37:40 -0400
-Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29EB2111DD8;
-        Tue,  5 Apr 2022 06:51:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1649166713; x=1680702713;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version;
-  bh=5+nWAPFQHv6Q16Bxq/GwQj6VzCNcFVPIYMa5uQiSOBU=;
-  b=ZNQLPuExRktDuO3QUPcaEEaJhceRk2h+SvKRHCwuU0S2g+0Yty7WBYBW
-   f78U9xlsFPUap+/29LTjspm8aSHEHFVlaRHUYlBh+Xhdt3PCFlgKDdMOO
-   9g6QYtkcVaXYQztJWcj8c3jGPRB5U4KCk8u0We7HLxvuiDpCporPcgpUi
-   Y=;
-Received: from unknown (HELO ironmsg03-sd.qualcomm.com) ([10.53.140.143])
-  by alexa-out-sd-02.qualcomm.com with ESMTP; 05 Apr 2022 06:51:52 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg03-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2022 06:51:37 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Tue, 5 Apr 2022 06:51:36 -0700
-Received: from c-skakit-linux.qualcomm.com (10.80.80.8) by
- nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Tue, 5 Apr 2022 06:51:32 -0700
-From:   Satya Priya <quic_c_skakit@quicinc.com>
-To:     Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>
-CC:     Lee Jones <lee.jones@linaro.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        <linux-arm-msm@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <swboyd@chromium.org>,
-        <quic_collinsd@quicinc.com>, <quic_subbaram@quicinc.com>,
-        <quic_jprakash@quicinc.com>,
-        Satya Priya <quic_c_skakit@quicinc.com>
-Subject: [PATCH V9 6/6] arm64: dts: qcom: sc7280: Add pm8008 support for sc7280-idp
-Date:   Tue, 5 Apr 2022 19:20:33 +0530
-Message-ID: <1649166633-25872-7-git-send-email-quic_c_skakit@quicinc.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1649166633-25872-1-git-send-email-quic_c_skakit@quicinc.com>
-References: <1649166633-25872-1-git-send-email-quic_c_skakit@quicinc.com>
+        Tue, 5 Apr 2022 15:23:25 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED25452E58;
+        Tue,  5 Apr 2022 12:21:25 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A0ED6B81F6B;
+        Tue,  5 Apr 2022 19:21:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A35DAC385A0;
+        Tue,  5 Apr 2022 19:21:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649186484;
+        bh=NzNofCR/iPD4n8NmCcwDkvJcDdRZrg0H4oSDZpMwm5g=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=I2PqqTco0eMmgV7MjGFlRaVDoaN5RCLPnK+jV42sF+/aQKvyPvPzv0AWOaarOYh5A
+         zrxsUfI1R79VQvVjmBronkc9hmuB/SaHF9DqGcWZxVEO4suT33IazwZlfEwegj7PzP
+         OBuasJ7pb+YWAi64TvsadzW4/bLHVHzv+wIJe+qPOytJRjQgtEUBgymDbnAeYWDMIV
+         M2ObCdNL9NWbYJFvDDPrUTuM/kwwS+4EEkYcCGLiPTPMDjfY9bWFm0D21GoKhhuXfS
+         9sa7DSt4wMMrh+U6D1MBu+Txl9CoPyvY2nfHKCIpYBbsJEd7tGPpScMUsm6NzeOG54
+         Se4mOcQXBNZig==
+From:   Jeff Layton <jlayton@kernel.org>
+To:     idryomov@gmail.com, xiubli@redhat.com
+Cc:     ceph-devel@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        linux-fscrypt@vger.kernel.org, linux-kernel@vger.kernel.org,
+        lhenriques@suse.de
+Subject: [PATCH v13 57/59] ceph: set i_blkbits to crypto block size for encrypted inodes
+Date:   Tue,  5 Apr 2022 15:20:28 -0400
+Message-Id: <20220405192030.178326-58-jlayton@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405192030.178326-1-jlayton@kernel.org>
+References: <20220405192030.178326-1-jlayton@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add pm8008 infra and regulators support for sc7280 idp.
+Some of the underlying infrastructure for fscrypt relies on i_blkbits
+being aligned to the crypto blocksize.
 
-Signed-off-by: Satya Priya <quic_c_skakit@quicinc.com>
+Signed-off-by: Jeff Layton <jlayton@kernel.org>
 ---
-Changes in V6:
- - No changes.
+ fs/ceph/inode.c | 16 +++++++++-------
+ 1 file changed, 9 insertions(+), 7 deletions(-)
 
-Changes in V7:
- - No Changes.
-
-Changes in V8:
- - Add an extra phandle "pm8008_bus" and then include pm8008 dtsi files inside it.
- - Remove output-high from pm8008_active node.
-
-Changes in V9:
- - Added interrupts properties.
-
- arch/arm64/boot/dts/qcom/sc7280-idp.dtsi | 68 ++++++++++++++++++++++++++++++++
- 1 file changed, 68 insertions(+)
-
-diff --git a/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi b/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
-index ecbf2b8..6f39c05 100644
---- a/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
-+++ b/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
-@@ -263,6 +263,65 @@
- 	};
- };
+diff --git a/fs/ceph/inode.c b/fs/ceph/inode.c
+index eb8f066975a8..45ca4e598ef0 100644
+--- a/fs/ceph/inode.c
++++ b/fs/ceph/inode.c
+@@ -976,13 +976,6 @@ int ceph_fill_inode(struct inode *inode, struct page *locked_page,
+ 	issued |= __ceph_caps_dirty(ci);
+ 	new_issued = ~issued & info_caps;
  
-+pm8008_bus: &i2c1 {
-+	status = "okay";
-+};
-+
-+#include "pm8008.dtsi"
-+
-+&pm8008 {
-+	interrupt-parent = <&tlmm>;
-+	interrupts = <24 IRQ_TYPE_EDGE_RISING>;
-+
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&pm8008_active>;
-+
-+	reset-gpios = <&pm8350c_gpios 4 GPIO_ACTIVE_HIGH>;
-+};
-+
-+&pm8008_regulators {
-+	vdd_l1_l2-supply = <&vreg_s8b_1p2>;
-+	vdd_l3_l4-supply = <&vreg_s1b_1p8>;
-+	vdd_l5-supply = <&vreg_bob>;
-+	vdd_l6-supply = <&vreg_bob>;
-+	vdd_l7-supply = <&vreg_bob>;
-+};
-+
-+&pm8008_l1 {
-+	regulator-min-microvolt = <950000>;
-+	regulator-max-microvolt = <1300000>;
-+};
-+
-+&pm8008_l2 {
-+	regulator-min-microvolt = <950000>;
-+	regulator-max-microvolt = <1250000>;
-+};
-+
-+&pm8008_l3 {
-+	regulator-min-microvolt = <1650000>;
-+	regulator-max-microvolt = <3000000>;
-+};
-+
-+&pm8008_l4 {
-+	regulator-min-microvolt = <1504000>;
-+	regulator-max-microvolt = <1600000>;
-+};
-+
-+&pm8008_l5 {
-+	regulator-min-microvolt = <2600000>;
-+	regulator-max-microvolt = <3000000>;
-+};
-+
-+&pm8008_l6 {
-+	regulator-min-microvolt = <2600000>;
-+	regulator-max-microvolt = <3000000>;
-+};
-+
-+&pm8008_l7 {
-+	regulator-min-microvolt = <3000000>;
-+	regulator-max-microvolt = <3544000>;
-+};
-+
- &qfprom {
- 	vcc-supply = <&vreg_l1c_1p8>;
- };
-@@ -375,6 +434,15 @@
- 	drive-strength = <2>;
- };
+-	/* directories have fl_stripe_unit set to zero */
+-	if (le32_to_cpu(info->layout.fl_stripe_unit))
+-		inode->i_blkbits =
+-			fls(le32_to_cpu(info->layout.fl_stripe_unit)) - 1;
+-	else
+-		inode->i_blkbits = CEPH_BLOCK_SHIFT;
+-
+ 	__ceph_update_quota(ci, iinfo->max_bytes, iinfo->max_files);
  
-+&pm8350c_gpios {
-+	pm8008_active: pm8008-active {
-+		pins = "gpio4";
-+		function = "normal";
-+		bias-disable;
-+		power-source = <0>;
-+	};
-+};
+ #ifdef CONFIG_FS_ENCRYPTION
+@@ -1008,6 +1001,15 @@ int ceph_fill_inode(struct inode *inode, struct page *locked_page,
+ 		ceph_decode_timespec64(&ci->i_snap_btime, &iinfo->snap_btime);
+ 	}
+ 
++	/* directories have fl_stripe_unit set to zero */
++	if (IS_ENCRYPTED(inode))
++		inode->i_blkbits = CEPH_FSCRYPT_BLOCK_SHIFT;
++	else if (le32_to_cpu(info->layout.fl_stripe_unit))
++		inode->i_blkbits =
++			fls(le32_to_cpu(info->layout.fl_stripe_unit)) - 1;
++	else
++		inode->i_blkbits = CEPH_BLOCK_SHIFT;
 +
- &qspi_cs0 {
- 	bias-disable;
- };
+ 	if ((new_version || (new_issued & CEPH_CAP_LINK_SHARED)) &&
+ 	    (issued & CEPH_CAP_LINK_EXCL) == 0)
+ 		set_nlink(inode, le32_to_cpu(info->nlink));
 -- 
-2.7.4
+2.35.1
 
