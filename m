@@ -2,47 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DBFA7C35273
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:01:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E1405C38A2B
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:01:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233583AbiDEIDG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 04:03:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56178 "EHLO
+        id S233843AbiDEH5q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 03:57:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53162 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232697AbiDEHvi (ORCPT
+        with ESMTP id S233679AbiDEHs3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 03:51:38 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A946A97298;
-        Tue,  5 Apr 2022 00:47:40 -0700 (PDT)
+        Tue, 5 Apr 2022 03:48:29 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10448C4;
+        Tue,  5 Apr 2022 00:46:32 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 52BA8B81B90;
-        Tue,  5 Apr 2022 07:47:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9D9D2C3410F;
-        Tue,  5 Apr 2022 07:47:37 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A15BA615E7;
+        Tue,  5 Apr 2022 07:46:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AFC30C340EE;
+        Tue,  5 Apr 2022 07:46:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649144858;
-        bh=c+SE1nfQd25OyP1t1PHgxyBCGD4MexGsb6rM39ymiUY=;
+        s=korg; t=1649144791;
+        bh=G6i5haVbj2OduWENChWdZ9mhaLevM6O81fzdyfMMJVU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=EV/uiXPLw1AqVV7aFVwChjQIyDVIdXOP4bGOZeMoLlVHTB3Iz7OFPAK84qmFUB3XY
-         iv4eb43ofuZT6x2Elc4ZE8BpCvQWcrs7B2YVGM/bRyxLGbP/TUDGKLBELdnpk6w2HU
-         pc4ZwaXaCGUvA8ntj3/A7djK3PCvvgh3znBcNMvM=
+        b=mcvWKfpZPf59e02kqc+iI6EAXc6EWQ4Y33MBujsPvb/fSBWi0Xiz2eQzbCRxsth9H
+         mmhoqvAQbFs9TJFFJK55yDV76pBO7sO2G+rmwr05/VBD9spKzsXSk+oWztXdLoYTIC
+         ogdYTTF8tjG+j2qEAhc6cxovtUAm0p2jN224M5Wc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Marc Zyngier <maz@kernel.org>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Rob Herring <robh@kernel.org>,
-        Toan Le <toan@os.amperecomputing.com>,
-        =?UTF-8?q?Krzysztof=20Wilczy=C5=84ski?= <kw@linux.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        =?UTF-8?q?St=C3=A9phane=20Graber?= <stgraber@ubuntu.com>,
-        dann frazier <dann.frazier@canonical.com>
-Subject: [PATCH 5.17 0197/1126] PCI: xgene: Revert "PCI: xgene: Fix IB window setup"
-Date:   Tue,  5 Apr 2022 09:15:44 +0200
-Message-Id: <20220405070413.389911677@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Stanimir Varbanov <stanimir.varbanov@linaro.org>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>
+Subject: [PATCH 5.17 0171/1126] media: venus: venc: Fix h264 8x8 transform control
+Date:   Tue,  5 Apr 2022 09:15:18 +0200
+Message-Id: <20220405070412.619728871@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -54,46 +49,66 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Marc Zyngier <maz@kernel.org>
+From: Stanimir Varbanov <stanimir.varbanov@linaro.org>
 
-commit 825da4e9cec68713fbb02dc6f71fe1bf65fe8050 upstream.
+commit 61b3317dd424a3488b6754d7ff8301944d9d17d7 upstream.
 
-Commit c7a75d07827a ("PCI: xgene: Fix IB window setup") tried to
-fix the damages that 6dce5aa59e0b ("PCI: xgene: Use inbound resources
-for setup") caused, but actually didn't improve anything for some
-plarforms (at least Mustang and m400 are still broken).
+During encoder driver open controls are initialized via a call
+to v4l2_ctrl_handler_setup which returns EINVAL error for
+V4L2_CID_MPEG_VIDEO_H264_8X8_TRANSFORM v4l2 control. The control
+default value is disabled and because of firmware limitations
+8x8 transform cannot be disabled for the supported HIGH and
+CONSTRAINED_HIGH profiles.
 
-Given that 6dce5aa59e0b has been reverted, revert this patch as well,
-restoring the PCIe support on XGene to its pre-5.5, working state.
+To fix the issue change the control default value to enabled
+(this is fine because the firmware enables 8x8 transform for
+high and constrained_high profiles by default). Also, correct
+the checking of profile ids in s_ctrl from hfi to v4l2 ids.
 
-Link: https://lore.kernel.org/r/YjN8pT5e6/8cRohQ@xps13.dannf
-Link: https://lore.kernel.org/r/20220321104843.949645-3-maz@kernel.org
-Fixes: c7a75d07827a ("PCI: xgene: Fix IB window setup")
-Signed-off-by: Marc Zyngier <maz@kernel.org>
-Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-Cc: stable@vger.kernel.org
-Cc: Rob Herring <robh@kernel.org>
-Cc: Toan Le <toan@os.amperecomputing.com>
-Cc: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-Cc: Krzysztof Wilczyński <kw@linux.com>
-Cc: Bjorn Helgaas <bhelgaas@google.com>
-Cc: Stéphane Graber <stgraber@ubuntu.com>
-Cc: dann frazier <dann.frazier@canonical.com>
+cc: stable@vger.kernel.org # 5.15+
+Fixes: bfee75f73c37 ("media: venus: venc: add support for V4L2_CID_MPEG_VIDEO_H264_8X8_TRANSFORM control")
+Signed-off-by: Stanimir Varbanov <stanimir.varbanov@linaro.org>
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/pci/controller/pci-xgene.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/media/platform/qcom/venus/venc.c       |    4 ++--
+ drivers/media/platform/qcom/venus/venc_ctrls.c |    6 +++---
+ 2 files changed, 5 insertions(+), 5 deletions(-)
 
---- a/drivers/pci/controller/pci-xgene.c
-+++ b/drivers/pci/controller/pci-xgene.c
-@@ -465,7 +465,7 @@ static int xgene_pcie_select_ib_reg(u8 *
- 		return 1;
- 	}
+--- a/drivers/media/platform/qcom/venus/venc.c
++++ b/drivers/media/platform/qcom/venus/venc.c
+@@ -662,8 +662,8 @@ static int venc_set_properties(struct ve
  
--	if ((size > SZ_1K) && (size < SZ_4G) && !(*ib_reg_mask & (1 << 0))) {
-+	if ((size > SZ_1K) && (size < SZ_1T) && !(*ib_reg_mask & (1 << 0))) {
- 		*ib_reg_mask |= (1 << 0);
- 		return 0;
- 	}
+ 		ptype = HFI_PROPERTY_PARAM_VENC_H264_TRANSFORM_8X8;
+ 		h264_transform.enable_type = 0;
+-		if (ctr->profile.h264 == HFI_H264_PROFILE_HIGH ||
+-		    ctr->profile.h264 == HFI_H264_PROFILE_CONSTRAINED_HIGH)
++		if (ctr->profile.h264 == V4L2_MPEG_VIDEO_H264_PROFILE_HIGH ||
++		    ctr->profile.h264 == V4L2_MPEG_VIDEO_H264_PROFILE_CONSTRAINED_HIGH)
+ 			h264_transform.enable_type = ctr->h264_8x8_transform;
+ 
+ 		ret = hfi_session_set_property(inst, ptype, &h264_transform);
+--- a/drivers/media/platform/qcom/venus/venc_ctrls.c
++++ b/drivers/media/platform/qcom/venus/venc_ctrls.c
+@@ -320,8 +320,8 @@ static int venc_op_s_ctrl(struct v4l2_ct
+ 		ctr->intra_refresh_period = ctrl->val;
+ 		break;
+ 	case V4L2_CID_MPEG_VIDEO_H264_8X8_TRANSFORM:
+-		if (ctr->profile.h264 != HFI_H264_PROFILE_HIGH &&
+-		    ctr->profile.h264 != HFI_H264_PROFILE_CONSTRAINED_HIGH)
++		if (ctr->profile.h264 != V4L2_MPEG_VIDEO_H264_PROFILE_HIGH &&
++		    ctr->profile.h264 != V4L2_MPEG_VIDEO_H264_PROFILE_CONSTRAINED_HIGH)
+ 			return -EINVAL;
+ 
+ 		/*
+@@ -457,7 +457,7 @@ int venc_ctrl_init(struct venus_inst *in
+ 			  V4L2_CID_MPEG_VIDEO_H264_I_FRAME_MIN_QP, 1, 51, 1, 1);
+ 
+ 	v4l2_ctrl_new_std(&inst->ctrl_handler, &venc_ctrl_ops,
+-			  V4L2_CID_MPEG_VIDEO_H264_8X8_TRANSFORM, 0, 1, 1, 0);
++			  V4L2_CID_MPEG_VIDEO_H264_8X8_TRANSFORM, 0, 1, 1, 1);
+ 
+ 	v4l2_ctrl_new_std(&inst->ctrl_handler, &venc_ctrl_ops,
+ 			  V4L2_CID_MPEG_VIDEO_H264_P_FRAME_MIN_QP, 1, 51, 1, 1);
 
 
