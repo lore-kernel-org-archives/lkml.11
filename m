@@ -2,105 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F422C4167B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7747AC4321E
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:28:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376569AbiDEUYI (ORCPT
+        id S1377791AbiDEUYM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 16:24:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43504 "EHLO
+        Tue, 5 Apr 2022 16:24:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38256 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354639AbiDEKO5 (ORCPT
+        with ESMTP id S1573598AbiDETXS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:14:57 -0400
+        Tue, 5 Apr 2022 15:23:18 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BDC196A42D;
-        Tue,  5 Apr 2022 03:01:58 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF0664F45F;
+        Tue,  5 Apr 2022 12:21:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 80295B818F6;
-        Tue,  5 Apr 2022 10:01:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BC1EAC385A1;
-        Tue,  5 Apr 2022 10:01:55 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649152916;
-        bh=GPaqH+1yLPZ4DKefbUNcGzaeDWSOf2VM3/SZ0PIjg+o=;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 666ADB81FAA;
+        Tue,  5 Apr 2022 19:21:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5EA4AC385A3;
+        Tue,  5 Apr 2022 19:21:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649186477;
+        bh=PJPyqDK6DNMW9F+5wYxGCw3ywIqwNAhCuh2XTGubQow=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=v0rjlYdR9iXt0zGFhuU9VCERsJmZP6Rjoat2inqOu3r9YjgfE5FNH16j0oaxRt4wM
-         6D4YGZNOCaNOu65uP0eBPaYCa45aqvlR7LX7hAU2intBmfSQ69swypVlaNYHZfbyPn
-         U0nJsvGicKSRJPhQSHHVA3zU5WieRdSAfCUZMEIo=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
-        kernel test robot <lkp@intel.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        "K. Y. Srinivasan" <kys@microsoft.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        Wei Liu <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>,
-        linux-hyperv@vger.kernel.org,
-        Michael Kelley <mikelley@microsoft.com>,
-        =?UTF-8?q?Petr=20=C5=A0tetiar?= <ynezz@true.cz>
-Subject: [PATCH 5.10 004/599] hv: utils: add PTP_1588_CLOCK to Kconfig to fix build
-Date:   Tue,  5 Apr 2022 09:24:58 +0200
-Message-Id: <20220405070258.943153862@linuxfoundation.org>
+        b=VHTfVfFNYI9LHTiG9Bs4cHcpNr/9s3fqIqPmOWNKMB1wC8auyB8ll+7SfvqJDzli0
+         p7l6gtLT6OhJIUYKuj4e7XSoW89v0ZaG99pNkDGtaDadVuh8y00onEOiEp4vMEAITt
+         8V5ko5nOrVYSOYoov7SNqVS+wbgtmhJc+ZCWcarhMC3wmHeFlWoAnjK3e5UJfCInxr
+         6VlQumLqW7w+HwyzsO1tOPPsCXvZArTVj9Vsi9eRrEq/OAy2W9CSl6RBTeh17jRHvm
+         K/QhiYNL3uFmt6BGHGtIjAQ3C8zCztTq+KBh1CjsEqVU7o6TqPUsNOwcEGtGZF1Oi6
+         c5bPPW9kHlBEw==
+From:   Jeff Layton <jlayton@kernel.org>
+To:     idryomov@gmail.com, xiubli@redhat.com
+Cc:     ceph-devel@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        linux-fscrypt@vger.kernel.org, linux-kernel@vger.kernel.org,
+        lhenriques@suse.de
+Subject: [PATCH v13 49/59] libceph: allow ceph_osdc_new_request to accept a multi-op read
+Date:   Tue,  5 Apr 2022 15:20:20 -0400
+Message-Id: <20220405192030.178326-50-jlayton@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
-User-Agent: quilt/0.66
+In-Reply-To: <20220405192030.178326-1-jlayton@kernel.org>
+References: <20220405192030.178326-1-jlayton@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Randy Dunlap <rdunlap@infradead.org>
+Currently we have some special-casing for multi-op writes, but in the
+case of a read, we can't really handle it. All of the current multi-op
+callers call it with CEPH_OSD_FLAG_WRITE set.
 
-commit 1dc2f2b81a6a9895da59f3915760f6c0c3074492 upstream.
+Have ceph_osdc_new_request check for CEPH_OSD_FLAG_READ and if it's set,
+allocate multiple reply ops instead of multiple request ops. If neither
+flag is set, return -EINVAL.
 
-The hyperv utilities use PTP clock interfaces and should depend a
-a kconfig symbol such that they will be built as a loadable module or
-builtin so that linker errors do not happen.
-
-Prevents these build errors:
-
-ld: drivers/hv/hv_util.o: in function `hv_timesync_deinit':
-hv_util.c:(.text+0x37d): undefined reference to `ptp_clock_unregister'
-ld: drivers/hv/hv_util.o: in function `hv_timesync_init':
-hv_util.c:(.text+0x738): undefined reference to `ptp_clock_register'
-
-Fixes: 3716a49a81ba ("hv_utils: implement Hyper-V PTP source")
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Reported-by: kernel test robot <lkp@intel.com>
-Cc: Arnd Bergmann <arnd@arndb.de>
-Cc: "K. Y. Srinivasan" <kys@microsoft.com>
-Cc: Haiyang Zhang <haiyangz@microsoft.com>
-Cc: Stephen Hemminger <sthemmin@microsoft.com>
-Cc: Wei Liu <wei.liu@kernel.org>
-Cc: Dexuan Cui <decui@microsoft.com>
-Cc: linux-hyperv@vger.kernel.org
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Reviewed-by: Michael Kelley <mikelley@microsoft.com>
-Link: https://lore.kernel.org/r/20211126023316.25184-1-rdunlap@infradead.org
-Signed-off-by: Wei Liu <wei.liu@kernel.org>
-Cc: Petr Štetiar <ynezz@true.cz>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Jeff Layton <jlayton@kernel.org>
 ---
- drivers/hv/Kconfig |    1 +
- 1 file changed, 1 insertion(+)
+ net/ceph/osd_client.c | 27 +++++++++++++++++++++------
+ 1 file changed, 21 insertions(+), 6 deletions(-)
 
---- a/drivers/hv/Kconfig
-+++ b/drivers/hv/Kconfig
-@@ -17,6 +17,7 @@ config HYPERV_TIMER
- config HYPERV_UTILS
- 	tristate "Microsoft Hyper-V Utilities driver"
- 	depends on HYPERV && CONNECTOR && NLS
-+	depends on PTP_1588_CLOCK_OPTIONAL
- 	help
- 	  Select this option to enable the Hyper-V Utilities.
+diff --git a/net/ceph/osd_client.c b/net/ceph/osd_client.c
+index febdd728b2fb..39d38b69a953 100644
+--- a/net/ceph/osd_client.c
++++ b/net/ceph/osd_client.c
+@@ -1130,15 +1130,30 @@ struct ceph_osd_request *ceph_osdc_new_request(struct ceph_osd_client *osdc,
+ 	if (flags & CEPH_OSD_FLAG_WRITE)
+ 		req->r_data_offset = off;
  
-
+-	if (num_ops > 1)
++	if (num_ops > 1) {
++		int num_req_ops, num_rep_ops;
++
+ 		/*
+-		 * This is a special case for ceph_writepages_start(), but it
+-		 * also covers ceph_uninline_data().  If more multi-op request
+-		 * use cases emerge, we will need a separate helper.
++		 * If this is a multi-op write request, assume that we'll need
++		 * request ops. If it's a multi-op read then assume we'll need
++		 * reply ops. Anything else and call it -EINVAL.
+ 		 */
+-		r = __ceph_osdc_alloc_messages(req, GFP_NOFS, num_ops, 0);
+-	else
++		if (flags & CEPH_OSD_FLAG_WRITE) {
++			num_req_ops = num_ops;
++			num_rep_ops = 0;
++		} else if (flags & CEPH_OSD_FLAG_READ) {
++			num_req_ops = 0;
++			num_rep_ops = num_ops;
++		} else {
++			r = -EINVAL;
++			goto fail;
++		}
++
++		r = __ceph_osdc_alloc_messages(req, GFP_NOFS, num_req_ops,
++					       num_rep_ops);
++	} else {
+ 		r = ceph_osdc_alloc_messages(req, GFP_NOFS);
++	}
+ 	if (r)
+ 		goto fail;
+ 
+-- 
+2.35.1
 
