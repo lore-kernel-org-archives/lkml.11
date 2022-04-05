@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F972C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 09:52:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A5EB6C4332F
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 09:52:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345766AbiDEJoD (ORCPT
+        id S1346021AbiDEJoV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 05:44:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46054 "EHLO
+        Tue, 5 Apr 2022 05:44:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34736 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239597AbiDEIUP (ORCPT
+        with ESMTP id S239573AbiDEIUO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:20:15 -0400
+        Tue, 5 Apr 2022 04:20:14 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14125186;
-        Tue,  5 Apr 2022 01:17:05 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32CB963EC;
+        Tue,  5 Apr 2022 01:16:46 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A1444609D0;
-        Tue,  5 Apr 2022 08:17:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AF41FC385A0;
-        Tue,  5 Apr 2022 08:17:03 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C64CA609D0;
+        Tue,  5 Apr 2022 08:16:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DB15BC385A0;
+        Tue,  5 Apr 2022 08:16:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649146624;
-        bh=IECC3XuBdG5GLST7u+ger1qa2WxBbPkq2C29u83lBFo=;
+        s=korg; t=1649146605;
+        bh=xc5tT771KBxay9UwO9nhcapUuxOWzNj8GgPN+OHumyg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Zng7dvsT3BbkKlLrOCUC5/a6clnWxbcYS6WoIR8rGdlxaLEil/0sufPwK9ynkxfOU
-         5PhRuXVrjmYotPp7Z/1wRb0yCVPd18eSXeUN90PnWhqKiXy6UVtoPvPEXDhPz9il8e
-         Xz6VwUy//c1rYdhxnJLPkzvzIO7AHbdvnz7cKosE=
+        b=WDM6NEXSVoHOrSBdJXOVp/WgZRvK38HxXDiDVZomqszqJpHnrysBQqmR3D5rY3fIi
+         l2ge+TKL6kmCpQmMhKRc82KprC3QguNWR8i/cppMVkHGojlwO5+C33G+iH2xVY55Y9
+         jVfielsX1eWyaucPeH3lK3ImqfDCnFd13B2mxcPQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Fedor Pchelkin <aissur0002@gmail.com>,
-        Alexey Khoroshilov <khoroshilov@ispras.ru>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Sasha Levin <sashal@kernel.org>,
-        Christian Brauner <brauner@kernel.org>
-Subject: [PATCH 5.17 0830/1126] fs: fd tables have to be multiples of BITS_PER_LONG
-Date:   Tue,  5 Apr 2022 09:26:17 +0200
-Message-Id: <20220405070431.922595376@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Daniel Thompson <daniel.thompson@linaro.org>,
+        Douglas Anderson <dianders@chromium.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 0797/1126] kdb: Fix the putarea helper function
+Date:   Tue,  5 Apr 2022 09:25:44 +0200
+Message-Id: <20220405070430.965951446@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -52,126 +51,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Linus Torvalds <torvalds@linux-foundation.org>
+From: Daniel Thompson <daniel.thompson@linaro.org>
 
-[ Upstream commit 1c24a186398f59c80adb9a967486b65c1423a59d ]
+[ Upstream commit c1cb81429df462eca1b6ba615cddd21dd3103c46 ]
 
-This has always been the rule: fdtables have several bitmaps in them,
-and as a result they have to be sized properly for bitmaps.  We walk
-those bitmaps in chunks of 'unsigned long' in serveral cases, but even
-when we don't, we use the regular kernel bitops that are defined to work
-on arrays of 'unsigned long', not on some byte array.
+Currently kdb_putarea_size() uses copy_from_kernel_nofault() to write *to*
+arbitrary kernel memory. This is obviously wrong and means the memory
+modify ('mm') command is a serious risk to debugger stability: if we poke
+to a bad address we'll double-fault and lose our debug session.
 
-Now, the distinction between arrays of bytes and 'unsigned long'
-normally only really ends up being noticeable on big-endian systems, but
-Fedor Pchelkin and Alexey Khoroshilov reported that copy_fd_bitmaps()
-could be called with an argument that wasn't even a multiple of
-BITS_PER_BYTE.  And then it fails to do the proper copy even on
-little-endian machines.
+Fix this the (very) obvious way.
 
-The bug wasn't in copy_fd_bitmap(), but in sane_fdtable_size(), which
-didn't actually sanitize the fdtable size sufficiently, and never made
-sure it had the proper BITS_PER_LONG alignment.
+Note that there are two Fixes: tags because the API was renamed and this
+patch will only trivially backport as far as the rename (and this is
+probably enough). Nevertheless Christoph's rename did not introduce this
+problem so I wanted to record that!
 
-That's partly because the alignment historically came not from having to
-explicitly align things, but simply from previous fdtable sizes, and
-from count_open_files(), which counts the file descriptors by walking
-them one 'unsigned long' word at a time and thus naturally ends up doing
-sizing in the proper 'chunks of unsigned long'.
-
-But with the introduction of close_range(), we now have an external
-source of "this is how many files we want to have", and so
-sane_fdtable_size() needs to do a better job.
-
-This also adds that explicit alignment to alloc_fdtable(), although
-there it is mainly just for documentation at a source code level.  The
-arithmetic we do there to pick a reasonable fdtable size already aligns
-the result sufficiently.
-
-In fact,clang notices that the added ALIGN() in that function doesn't
-actually do anything, and does not generate any extra code for it.
-
-It turns out that gcc ends up confusing itself by combining a previous
-constant-sized shift operation with the variable-sized shift operations
-in roundup_pow_of_two().  And probably due to that doesn't notice that
-the ALIGN() is a no-op.  But that's a (tiny) gcc misfeature that doesn't
-matter.  Having the explicit alignment makes sense, and would actually
-matter on a 128-bit architecture if we ever go there.
-
-This also adds big comments above both functions about how fdtable sizes
-have to have that BITS_PER_LONG alignment.
-
-Fixes: 60997c3d45d9 ("close_range: add CLOSE_RANGE_UNSHARE")
-Reported-by: Fedor Pchelkin <aissur0002@gmail.com>
-Reported-by: Alexey Khoroshilov <khoroshilov@ispras.ru>
-Link: https://lore.kernel.org/all/20220326114009.1690-1-aissur0002@gmail.com/
-Tested-and-acked-by: Christian Brauner <brauner@kernel.org>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Fixes: fe557319aa06 ("maccess: rename probe_kernel_{read,write} to copy_{from,to}_kernel_nofault")
+Fixes: 5d5314d6795f ("kdb: core for kgdb back end (1 of 2)")
+Signed-off-by: Daniel Thompson <daniel.thompson@linaro.org>
+Reviewed-by: Douglas Anderson <dianders@chromium.org>
+Link: https://lore.kernel.org/r/20220128144055.207267-1-daniel.thompson@linaro.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/file.c | 30 ++++++++++++++++++++++++++++++
- 1 file changed, 30 insertions(+)
+ kernel/debug/kdb/kdb_support.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/fs/file.c b/fs/file.c
-index 97d212a9b814..c01c29417ae6 100644
---- a/fs/file.c
-+++ b/fs/file.c
-@@ -87,6 +87,21 @@ static void copy_fdtable(struct fdtable *nfdt, struct fdtable *ofdt)
- 	copy_fd_bitmaps(nfdt, ofdt, ofdt->max_fds);
- }
- 
-+/*
-+ * Note how the fdtable bitmap allocations very much have to be a multiple of
-+ * BITS_PER_LONG. This is not only because we walk those things in chunks of
-+ * 'unsigned long' in some places, but simply because that is how the Linux
-+ * kernel bitmaps are defined to work: they are not "bits in an array of bytes",
-+ * they are very much "bits in an array of unsigned long".
-+ *
-+ * The ALIGN(nr, BITS_PER_LONG) here is for clarity: since we just multiplied
-+ * by that "1024/sizeof(ptr)" before, we already know there are sufficient
-+ * clear low bits. Clang seems to realize that, gcc ends up being confused.
-+ *
-+ * On a 128-bit machine, the ALIGN() would actually matter. In the meantime,
-+ * let's consider it documentation (and maybe a test-case for gcc to improve
-+ * its code generation ;)
-+ */
- static struct fdtable * alloc_fdtable(unsigned int nr)
+diff --git a/kernel/debug/kdb/kdb_support.c b/kernel/debug/kdb/kdb_support.c
+index df2bface866e..85cb51c4a17e 100644
+--- a/kernel/debug/kdb/kdb_support.c
++++ b/kernel/debug/kdb/kdb_support.c
+@@ -291,7 +291,7 @@ int kdb_getarea_size(void *res, unsigned long addr, size_t size)
+  */
+ int kdb_putarea_size(unsigned long addr, void *res, size_t size)
  {
- 	struct fdtable *fdt;
-@@ -102,6 +117,7 @@ static struct fdtable * alloc_fdtable(unsigned int nr)
- 	nr /= (1024 / sizeof(struct file *));
- 	nr = roundup_pow_of_two(nr + 1);
- 	nr *= (1024 / sizeof(struct file *));
-+	nr = ALIGN(nr, BITS_PER_LONG);
- 	/*
- 	 * Note that this can drive nr *below* what we had passed if sysctl_nr_open
- 	 * had been set lower between the check in expand_files() and here.  Deal
-@@ -269,11 +285,25 @@ static unsigned int count_open_files(struct fdtable *fdt)
- 	return i;
- }
- 
-+/*
-+ * Note that a sane fdtable size always has to be a multiple of
-+ * BITS_PER_LONG, since we have bitmaps that are sized by this.
-+ *
-+ * 'max_fds' will normally already be properly aligned, but it
-+ * turns out that in the close_range() -> __close_range() ->
-+ * unshare_fd() -> dup_fd() -> sane_fdtable_size() we can end
-+ * up having a 'max_fds' value that isn't already aligned.
-+ *
-+ * Rather than make close_range() have to worry about this,
-+ * just make that BITS_PER_LONG alignment be part of a sane
-+ * fdtable size. Becuase that's really what it is.
-+ */
- static unsigned int sane_fdtable_size(struct fdtable *fdt, unsigned int max_fds)
- {
- 	unsigned int count;
- 
- 	count = count_open_files(fdt);
-+	max_fds = ALIGN(max_fds, BITS_PER_LONG);
- 	if (max_fds < NR_OPEN_DEFAULT)
- 		max_fds = NR_OPEN_DEFAULT;
- 	return min(count, max_fds);
+-	int ret = copy_from_kernel_nofault((char *)addr, (char *)res, size);
++	int ret = copy_to_kernel_nofault((char *)addr, (char *)res, size);
+ 	if (ret) {
+ 		if (!KDB_STATE(SUPPRESS)) {
+ 			kdb_func_printf("Bad address 0x%lx\n", addr);
 -- 
 2.34.1
 
