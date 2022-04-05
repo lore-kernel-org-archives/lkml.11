@@ -2,92 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 00F39C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E4B2FC433EF
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:52:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1580090AbiDEXdw (ORCPT
+        id S1580075AbiDEXdu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 19:33:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49050 "EHLO
+        Tue, 5 Apr 2022 19:33:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43648 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1573253AbiDESem (ORCPT
+        with ESMTP id S1348819AbiDEJsj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 14:34:42 -0400
+        Tue, 5 Apr 2022 05:48:39 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 383DA13F6F;
-        Tue,  5 Apr 2022 11:32:44 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 695DAADD66;
+        Tue,  5 Apr 2022 02:36:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B8C68618CE;
-        Tue,  5 Apr 2022 18:32:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6932EC385A4;
-        Tue,  5 Apr 2022 18:32:42 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649183563;
-        bh=FL6Vjlysi/fOyZpJE2rSS+FIJYJRHCiZpiMOwwjfWKo=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=bS2Cf+uzFDViHR8cb3krNj3czacXlc7byzZjPKhNO5NUVAKnRvgyuk5+wApweFmIj
-         pHy5IVyT7lwNS5T3/VDkOQbRuhnkLZXJKkMRwlCInPB5cIUpwRfWYdpLbN8/5ASr52
-         +INauoBeJ79nfZrnfNaK40X81MG0NSkSETMesvwdTZBSsRyKq+BFlbZ2RMLOS5b888
-         T8a6J0cwq1pfzCcdDS4RYDxESzTzFTBOxcbNhsdnOkxnvo/3NucFHI/jiRnCVW6kEq
-         61BN8YYGxDLO7iVr0nuSdY+5+eqS01t9I9QhHjk5VA0mNdNqn1iWZJFGliGwcK8alJ
-         YHQX3NGhVT4og==
-Date:   Tue, 5 Apr 2022 21:32:39 +0300
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Saeed Mahameed <saeed@kernel.org>
-Cc:     Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
-        Jason Gunthorpe <jgg@nvidia.com>, linux-kernel@vger.kernel.org,
-        linux-rdma@vger.kernel.org, netdev@vger.kernel.org,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Tariq Toukan <tariqt@nvidia.com>
-Subject: Re: [PATCH mlx5-next 4/5] net/mlx5: Remove tls vs. ktls separation
- as it is the same
-Message-ID: <YkyLR+VBb81npXnC@unreal>
-References: <cover.1649073691.git.leonro@nvidia.com>
- <67e596599edcffb0de43f26551208dfd34ac777e.1649073691.git.leonro@nvidia.com>
- <20220405003322.afko7uo527w5j3zu@sx1>
- <YkvW9SNJeb5VPmeg@unreal>
- <20220405172049.slomqla4pmnyczbj@sx1>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 043C061675;
+        Tue,  5 Apr 2022 09:36:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0E146C385A0;
+        Tue,  5 Apr 2022 09:36:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649151374;
+        bh=cHh6Am89UvKmAAC6DhpJgKI9IPbPSd8DeXy2OH/l794=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=og2SSEgZXqrAJDWTGwOmos+tVuYTV4fOqA/Lek8t1d7jHdchr/ErrV5DNiX51UfwC
+         En3L0tqDabMuvzwyOJN5/s2Ybt+nkj/iLEQaz4eUUZvgZDYmv3yB1MLoSZlvJDqSvf
+         df4BmomxUFuLbRdhC8D4IVPAEo1oDot9ESK7/BOE=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Yiru Xu <xyru1999@gmail.com>,
+        Pavel Skripkin <paskripkin@gmail.com>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 392/913] Bluetooth: hci_serdev: call init_rwsem() before p->open()
+Date:   Tue,  5 Apr 2022 09:24:14 +0200
+Message-Id: <20220405070351.598011800@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220405172049.slomqla4pmnyczbj@sx1>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 05, 2022 at 10:20:49AM -0700, Saeed Mahameed wrote:
-> On 05 Apr 08:43, Leon Romanovsky wrote:
-> > On Mon, Apr 04, 2022 at 05:33:22PM -0700, Saeed Mahameed wrote:
-> > > On 04 Apr 15:08, Leon Romanovsky wrote:
-> > > > From: Leon Romanovsky <leonro@nvidia.com>
-> > > >
-> > > > After removal FPGA TLS, we can remove tls->ktls indirection too,
-> > > > as it is the same thing.
-> 
-> [...]
-> 
-> > > rename drivers/net/ethernet/mellanox/mlx5/core/en_accel/{tls_stats.c => ktls_stats.c} (76%)
-> > > 
-> > > Why not ktls_*.c => tls_*.c ?
-> > 
-> > Mostly because other drivers use _ktls_ name for this type of functionality.
-> > Plus internally, Tariq suggested to squash everything into ktls.
-> > 
-> > > 
-> > > Since we now have one TLS implementation, it would've been easier to maybe
-> > > repurpose TLS to be KTLS only and avoid renaming every TLS to KTLS in all
-> > > functions and files.
-> > > 
-> > > So just keep tls.c and all mlx5_tls_xyz functions and implement ktls
-> > > directly in them, the renaming will be done only on the ktls implementation
-> > > part of the code rather than in every caller.
-> > 
-> > Should I do it or keep this patch as is?
-> > 
-> 
-> Keep it, i don't have any strong feeling about this,
-> I just wanted to reduce the patch size.
+From: Pavel Skripkin <paskripkin@gmail.com>
 
-Thanks for the review.
+[ Upstream commit 9d7cbe2b9cf5f650067df4f402fdd799d4bbb4e1 ]
+
+kvartet reported, that hci_uart_tx_wakeup() uses uninitialized rwsem.
+The problem was in wrong place for percpu_init_rwsem() call.
+
+hci_uart_proto::open() may register a timer whose callback may call
+hci_uart_tx_wakeup(). There is a chance, that hci_uart_register_device()
+thread won't be fast enough to call percpu_init_rwsem().
+
+Fix it my moving percpu_init_rwsem() call before p->open().
+
+INFO: trying to register non-static key.
+The code is fine but needs lockdep annotation, or maybe
+you didn't initialize this object before use?
+turning off the locking correctness validator.
+CPU: 2 PID: 18524 Comm: syz-executor.5 Not tainted 5.16.0-rc6 #9
+...
+Call Trace:
+ <IRQ>
+ __dump_stack lib/dump_stack.c:88 [inline]
+ dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
+ assign_lock_key kernel/locking/lockdep.c:951 [inline]
+ register_lock_class+0x148d/0x1950 kernel/locking/lockdep.c:1263
+ __lock_acquire+0x106/0x57e0 kernel/locking/lockdep.c:4906
+ lock_acquire kernel/locking/lockdep.c:5637 [inline]
+ lock_acquire+0x1ab/0x520 kernel/locking/lockdep.c:5602
+ percpu_down_read_trylock include/linux/percpu-rwsem.h:92 [inline]
+ hci_uart_tx_wakeup+0x12e/0x490 drivers/bluetooth/hci_ldisc.c:124
+ h5_timed_event+0x32f/0x6a0 drivers/bluetooth/hci_h5.c:188
+ call_timer_fn+0x1a5/0x6b0 kernel/time/timer.c:1421
+
+Fixes: d73e17281665 ("Bluetooth: hci_serdev: Init hci_uart proto_lock to avoid oops")
+Reported-by: Yiru Xu <xyru1999@gmail.com>
+Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
+Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/bluetooth/hci_serdev.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/bluetooth/hci_serdev.c b/drivers/bluetooth/hci_serdev.c
+index 3b00d82d36cf..4cda890ce647 100644
+--- a/drivers/bluetooth/hci_serdev.c
++++ b/drivers/bluetooth/hci_serdev.c
+@@ -305,6 +305,8 @@ int hci_uart_register_device(struct hci_uart *hu,
+ 	if (err)
+ 		return err;
+ 
++	percpu_init_rwsem(&hu->proto_lock);
++
+ 	err = p->open(hu);
+ 	if (err)
+ 		goto err_open;
+@@ -327,7 +329,6 @@ int hci_uart_register_device(struct hci_uart *hu,
+ 
+ 	INIT_WORK(&hu->init_ready, hci_uart_init_work);
+ 	INIT_WORK(&hu->write_work, hci_uart_write_work);
+-	percpu_init_rwsem(&hu->proto_lock);
+ 
+ 	/* Only when vendor specific setup callback is provided, consider
+ 	 * the manufacturer information valid. This avoids filling in the
+-- 
+2.34.1
+
+
+
