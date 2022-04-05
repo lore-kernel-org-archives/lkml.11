@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4DD88C43217
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 09:52:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 19CA5C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 09:52:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243271AbiDEJjW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 05:39:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34732 "EHLO
+        id S243255AbiDEJjT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 05:39:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45478 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239362AbiDEIUA (ORCPT
+        with ESMTP id S239365AbiDEIUA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Apr 2022 04:20:00 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDF38BD8B6;
-        Tue,  5 Apr 2022 01:11:51 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 187AFBF509;
+        Tue,  5 Apr 2022 01:12:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7DDF260B0A;
-        Tue,  5 Apr 2022 08:11:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8C9D3C385A0;
-        Tue,  5 Apr 2022 08:11:50 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A98E060B0E;
+        Tue,  5 Apr 2022 08:11:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B23E6C385A0;
+        Tue,  5 Apr 2022 08:11:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649146310;
-        bh=3hsozzr1T/glv/IlwAWzFwVuny78w7Ejg7UJNtJSMtc=;
+        s=korg; t=1649146319;
+        bh=LlfPEpuO2RmOjuU3Q2iGNRyCQCE6XCPmkT3/gfEHe7M=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FGs/fdAAh2wnt7F8KsI5H/33xYAiDYIBSVosr2lWJLuEcLwNd7KIcGwZyFf/qnubN
-         iUDfNiGOEVOkmg9TbGd5lzOA8faUaUTMjkeIWBLd9pN7lGt6GDxKauEP7lD90xWMX9
-         E4p90HKScQlWE4xmtRcYC4VNcGMf9ba4h0yp0mMQ=
+        b=wnWyKLbTGyj3VeR3gNb8vTl9L9NcjnP/vFn2mvp4noALl/mbOGT5RIGkMwMoPTIst
+         N+aibvTr1asrnaqCUr7Auhmb9G4+wQXZqKxGtx2DUBbeaZv1fHPj2OJkEB/9IYeZlR
+         5bz1QgBHzv4gE6PX65aWfegOXMwEof18CJcUydAU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Vaishnavi Bhat <vaish123@in.ibm.com>,
-        Sukadev Bhattiprolu <sukadev@linux.ibm.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org, Robert Marko <robimarko@gmail.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0680/1126] ibmvnic: fix race between xmit and reset
-Date:   Tue,  5 Apr 2022 09:23:47 +0200
-Message-Id: <20220405070427.580416860@linuxfoundation.org>
+Subject: [PATCH 5.17 0722/1126] clk: qcom: ipq8074: fix PCI-E clock oops
+Date:   Tue,  5 Apr 2022 09:24:29 +0200
+Message-Id: <20220405070428.784853325@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -50,273 +49,161 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sukadev Bhattiprolu <sukadev@linux.ibm.com>
+From: Robert Marko <robimarko@gmail.com>
 
-[ Upstream commit 4219196d1f662cb10a462eb9e076633a3fc31a15 ]
+[ Upstream commit bf8f5182b8f59309809b41c1d1730ed9ca6134b1 ]
 
-There is a race between reset and the transmit paths that can lead to
-ibmvnic_xmit() accessing an scrq after it has been freed in the reset
-path. It can result in a crash like:
+Fix PCI-E clock related kernel oops that are caused by a missing clock
+parent.
 
-	Kernel attempted to read user page (0) - exploit attempt? (uid: 0)
-	BUG: Kernel NULL pointer dereference on read at 0x00000000
-	Faulting instruction address: 0xc0080000016189f8
-	Oops: Kernel access of bad area, sig: 11 [#1]
-	...
-	NIP [c0080000016189f8] ibmvnic_xmit+0x60/0xb60 [ibmvnic]
-	LR [c000000000c0046c] dev_hard_start_xmit+0x11c/0x280
-	Call Trace:
-	[c008000001618f08] ibmvnic_xmit+0x570/0xb60 [ibmvnic] (unreliable)
-	[c000000000c0046c] dev_hard_start_xmit+0x11c/0x280
-	[c000000000c9cfcc] sch_direct_xmit+0xec/0x330
-	[c000000000bfe640] __dev_xmit_skb+0x3a0/0x9d0
-	[c000000000c00ad4] __dev_queue_xmit+0x394/0x730
-	[c008000002db813c] __bond_start_xmit+0x254/0x450 [bonding]
-	[c008000002db8378] bond_start_xmit+0x40/0xc0 [bonding]
-	[c000000000c0046c] dev_hard_start_xmit+0x11c/0x280
-	[c000000000c00ca4] __dev_queue_xmit+0x564/0x730
-	[c000000000cf97e0] neigh_hh_output+0xd0/0x180
-	[c000000000cfa69c] ip_finish_output2+0x31c/0x5c0
-	[c000000000cfd244] __ip_queue_xmit+0x194/0x4f0
-	[c000000000d2a3c4] __tcp_transmit_skb+0x434/0x9b0
-	[c000000000d2d1e0] __tcp_retransmit_skb+0x1d0/0x6a0
-	[c000000000d2d984] tcp_retransmit_skb+0x34/0x130
-	[c000000000d310e8] tcp_retransmit_timer+0x388/0x6d0
-	[c000000000d315ec] tcp_write_timer_handler+0x1bc/0x330
-	[c000000000d317bc] tcp_write_timer+0x5c/0x200
-	[c000000000243270] call_timer_fn+0x50/0x1c0
-	[c000000000243704] __run_timers.part.0+0x324/0x460
-	[c000000000243894] run_timer_softirq+0x54/0xa0
-	[c000000000ea713c] __do_softirq+0x15c/0x3e0
-	[c000000000166258] __irq_exit_rcu+0x158/0x190
-	[c000000000166420] irq_exit+0x20/0x40
-	[c00000000002853c] timer_interrupt+0x14c/0x2b0
-	[c000000000009a00] decrementer_common_virt+0x210/0x220
-	--- interrupt: 900 at plpar_hcall_norets_notrace+0x18/0x2c
+pcie0_rchng_clk_src has num_parents set to 2 but only one parent is
+actually set via parent_hws, it should also have "XO" defined.
+This will cause the kernel to panic on a NULL pointer in
+clk_core_get_parent_by_index().
 
-The immediate cause of the crash is the access of tx_scrq in the following
-snippet during a reset, where the tx_scrq can be either NULL or an address
-that will soon be invalid:
+So, to fix this utilize clk_parent_data to provide gcc_xo_gpll0 parent
+data.
+Since there is already an existing static const char * const gcc_xo_gpll0[]
+used to provide the same parents via parent_names convert those users to
+clk_parent_data as well.
 
-	ibmvnic_xmit()
-	{
-		...
-		tx_scrq = adapter->tx_scrq[queue_num];
-		txq = netdev_get_tx_queue(netdev, queue_num);
-		ind_bufp = &tx_scrq->ind_buf;
+Without this earlycon is needed to even catch the OOPS as it will reset
+the board before serial is initialized with the following:
 
-		if (test_bit(0, &adapter->resetting)) {
-		...
-	}
+[    0.232279] Unable to handle kernel paging request at virtual address 0000a00000000000
+[    0.232322] Mem abort info:
+[    0.239094]   ESR = 0x96000004
+[    0.241778]   EC = 0x25: DABT (current EL), IL = 32 bits
+[    0.244908]   SET = 0, FnV = 0
+[    0.250377]   EA = 0, S1PTW = 0
+[    0.253236]   FSC = 0x04: level 0 translation fault
+[    0.256277] Data abort info:
+[    0.261141]   ISV = 0, ISS = 0x00000004
+[    0.264262]   CM = 0, WnR = 0
+[    0.267820] [0000a00000000000] address between user and kernel address ranges
+[    0.270954] Internal error: Oops: 96000004 [#1] SMP
+[    0.278067] Modules linked in:
+[    0.282751] CPU: 1 PID: 1 Comm: swapper/0 Not tainted 5.15.10 #0
+[    0.285882] Hardware name: Xiaomi AX3600 (DT)
+[    0.292043] pstate: 20400005 (nzCv daif +PAN -UAO -TCO -DIT -SSBS BTYPE=--)
+[    0.296299] pc : clk_core_get_parent_by_index+0x68/0xec
+[    0.303067] lr : __clk_register+0x1d8/0x820
+[    0.308273] sp : ffffffc01111b7d0
+[    0.312438] x29: ffffffc01111b7d0 x28: 0000000000000000 x27: 0000000000000040
+[    0.315919] x26: 0000000000000002 x25: 0000000000000000 x24: ffffff8000308800
+[    0.323037] x23: ffffff8000308850 x22: ffffff8000308880 x21: ffffff8000308828
+[    0.330155] x20: 0000000000000028 x19: ffffff8000309700 x18: 0000000000000020
+[    0.337272] x17: 000000005cc86990 x16: 0000000000000004 x15: ffffff80001d9d0a
+[    0.344391] x14: 0000000000000000 x13: 0000000000000000 x12: 0000000000000006
+[    0.351508] x11: 0000000000000003 x10: 0101010101010101 x9 : 0000000000000000
+[    0.358626] x8 : 7f7f7f7f7f7f7f7f x7 : 6468626f5e626266 x6 : 17000a3a403c1b06
+[    0.365744] x5 : 061b3c403a0a0017 x4 : 0000000000000000 x3 : 0000000000000001
+[    0.372863] x2 : 0000a00000000000 x1 : 0000000000000001 x0 : ffffff8000309700
+[    0.379982] Call trace:
+[    0.387091]  clk_core_get_parent_by_index+0x68/0xec
+[    0.389351]  __clk_register+0x1d8/0x820
+[    0.394210]  devm_clk_hw_register+0x5c/0xe0
+[    0.398030]  devm_clk_register_regmap+0x44/0x8c
+[    0.402198]  qcom_cc_really_probe+0x17c/0x1d0
+[    0.406711]  qcom_cc_probe+0x34/0x44
+[    0.411224]  gcc_ipq8074_probe+0x18/0x30
+[    0.414869]  platform_probe+0x68/0xe0
+[    0.418776]  really_probe.part.0+0x9c/0x30c
+[    0.422336]  __driver_probe_device+0x98/0x144
+[    0.426329]  driver_probe_device+0x44/0x11c
+[    0.430842]  __device_attach_driver+0xb4/0x120
+[    0.434836]  bus_for_each_drv+0x68/0xb0
+[    0.439349]  __device_attach+0xb0/0x170
+[    0.443081]  device_initial_probe+0x14/0x20
+[    0.446901]  bus_probe_device+0x9c/0xa4
+[    0.451067]  device_add+0x35c/0x834
+[    0.454886]  of_device_add+0x54/0x64
+[    0.458360]  of_platform_device_create_pdata+0xc0/0x100
+[    0.462181]  of_platform_bus_create+0x114/0x370
+[    0.467128]  of_platform_bus_create+0x15c/0x370
+[    0.471641]  of_platform_populate+0x50/0xcc
+[    0.476155]  of_platform_default_populate_init+0xa8/0xc8
+[    0.480324]  do_one_initcall+0x50/0x1b0
+[    0.485877]  kernel_init_freeable+0x234/0x29c
+[    0.489436]  kernel_init+0x24/0x120
+[    0.493948]  ret_from_fork+0x10/0x20
+[    0.497253] Code: d50323bf d65f03c0 f94002a2 b4000302 (f9400042)
+[    0.501079] ---[ end trace 4ca7e1129da2abce ]---
 
-But beyond that, the call to ibmvnic_xmit() itself is not safe during a
-reset and the reset path attempts to avoid this by stopping the queue in
-ibmvnic_cleanup(). However just after the queue was stopped, an in-flight
-ibmvnic_complete_tx() could have restarted the queue even as the reset is
-progressing.
-
-Since the queue was restarted we could get a call to ibmvnic_xmit() which
-can then access the bad tx_scrq (or other fields).
-
-We cannot however simply have ibmvnic_complete_tx() check the ->resetting
-bit and skip starting the queue. This can race at the "back-end" of a good
-reset which just restarted the queue but has not cleared the ->resetting
-bit yet. If we skip restarting the queue due to ->resetting being true,
-the queue would remain stopped indefinitely potentially leading to transmit
-timeouts.
-
-IOW ->resetting is too broad for this purpose. Instead use a new flag
-that indicates whether or not the queues are active. Only the open/
-reset paths control when the queues are active. ibmvnic_complete_tx()
-and others wake up the queue only if the queue is marked active.
-
-So we will have:
-	A. reset/open thread in ibmvnic_cleanup() and __ibmvnic_open()
-
-		->resetting = true
-		->tx_queues_active = false
-		disable tx queues
-		...
-		->tx_queues_active = true
-		start tx queues
-
-	B. Tx interrupt in ibmvnic_complete_tx():
-
-		if (->tx_queues_active)
-			netif_wake_subqueue();
-
-To ensure that ->tx_queues_active and state of the queues are consistent,
-we need a lock which:
-
-	- must also be taken in the interrupt path (ibmvnic_complete_tx())
-	- shared across the multiple queues in the adapter (so they don't
-	  become serialized)
-
-Use rcu_read_lock() and have the reset thread synchronize_rcu() after
-updating the ->tx_queues_active state.
-
-While here, consolidate a few boolean fields in ibmvnic_adapter for
-better alignment.
-
-Based on discussions with Brian King and Dany Madden.
-
-Fixes: 7ed5b31f4a66 ("net/ibmvnic: prevent more than one thread from running in reset")
-Reported-by: Vaishnavi Bhat <vaish123@in.ibm.com>
-Signed-off-by: Sukadev Bhattiprolu <sukadev@linux.ibm.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Fixes: f0cfcf1a ("clk: qcom: ipq8074: Add missing clocks for pcie")
+Signed-off-by: Robert Marko <robimarko@gmail.com>
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Link: https://lore.kernel.org/r/20211220114119.465247-1-robimarko@gmail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/ibm/ibmvnic.c | 63 ++++++++++++++++++++++++------
- drivers/net/ethernet/ibm/ibmvnic.h |  7 +++-
- 2 files changed, 55 insertions(+), 15 deletions(-)
+ drivers/clk/qcom/gcc-ipq8074.c | 19 +++++++++----------
+ 1 file changed, 9 insertions(+), 10 deletions(-)
 
-diff --git a/drivers/net/ethernet/ibm/ibmvnic.c b/drivers/net/ethernet/ibm/ibmvnic.c
-index b423e94956f1..b4804ce63151 100644
---- a/drivers/net/ethernet/ibm/ibmvnic.c
-+++ b/drivers/net/ethernet/ibm/ibmvnic.c
-@@ -1429,6 +1429,15 @@ static int __ibmvnic_open(struct net_device *netdev)
- 		return rc;
- 	}
+diff --git a/drivers/clk/qcom/gcc-ipq8074.c b/drivers/clk/qcom/gcc-ipq8074.c
+index 108fe27bee10..b09d99343e09 100644
+--- a/drivers/clk/qcom/gcc-ipq8074.c
++++ b/drivers/clk/qcom/gcc-ipq8074.c
+@@ -60,11 +60,6 @@ static const struct parent_map gcc_xo_gpll0_gpll0_out_main_div2_map[] = {
+ 	{ P_GPLL0_DIV2, 4 },
+ };
  
-+	adapter->tx_queues_active = true;
-+
-+	/* Since queues were stopped until now, there shouldn't be any
-+	 * one in ibmvnic_complete_tx() or ibmvnic_xmit() so maybe we
-+	 * don't need the synchronize_rcu()? Leaving it for consistency
-+	 * with setting ->tx_queues_active = false.
-+	 */
-+	synchronize_rcu();
-+
- 	netif_tx_start_all_queues(netdev);
- 
- 	if (prev_state == VNIC_CLOSED) {
-@@ -1603,6 +1612,14 @@ static void ibmvnic_cleanup(struct net_device *netdev)
- 	struct ibmvnic_adapter *adapter = netdev_priv(netdev);
- 
- 	/* ensure that transmissions are stopped if called by do_reset */
-+
-+	adapter->tx_queues_active = false;
-+
-+	/* Ensure complete_tx() and ibmvnic_xmit() see ->tx_queues_active
-+	 * update so they don't restart a queue after we stop it below.
-+	 */
-+	synchronize_rcu();
-+
- 	if (test_bit(0, &adapter->resetting))
- 		netif_tx_disable(netdev);
- 	else
-@@ -1842,14 +1859,21 @@ static void ibmvnic_tx_scrq_clean_buffer(struct ibmvnic_adapter *adapter,
- 		tx_buff->skb = NULL;
- 		adapter->netdev->stats.tx_dropped++;
- 	}
-+
- 	ind_bufp->index = 0;
-+
- 	if (atomic_sub_return(entries, &tx_scrq->used) <=
- 	    (adapter->req_tx_entries_per_subcrq / 2) &&
--	    __netif_subqueue_stopped(adapter->netdev, queue_num) &&
--	    !test_bit(0, &adapter->resetting)) {
--		netif_wake_subqueue(adapter->netdev, queue_num);
--		netdev_dbg(adapter->netdev, "Started queue %d\n",
--			   queue_num);
-+	    __netif_subqueue_stopped(adapter->netdev, queue_num)) {
-+		rcu_read_lock();
-+
-+		if (adapter->tx_queues_active) {
-+			netif_wake_subqueue(adapter->netdev, queue_num);
-+			netdev_dbg(adapter->netdev, "Started queue %d\n",
-+				   queue_num);
-+		}
-+
-+		rcu_read_unlock();
- 	}
- }
- 
-@@ -1904,11 +1928,12 @@ static netdev_tx_t ibmvnic_xmit(struct sk_buff *skb, struct net_device *netdev)
- 	int index = 0;
- 	u8 proto = 0;
- 
--	tx_scrq = adapter->tx_scrq[queue_num];
--	txq = netdev_get_tx_queue(netdev, queue_num);
--	ind_bufp = &tx_scrq->ind_buf;
+-static const char * const gcc_xo_gpll0[] = {
+-	"xo",
+-	"gpll0",
+-};
 -
--	if (test_bit(0, &adapter->resetting)) {
-+	/* If a reset is in progress, drop the packet since
-+	 * the scrqs may get torn down. Otherwise use the
-+	 * rcu to ensure reset waits for us to complete.
-+	 */
-+	rcu_read_lock();
-+	if (!adapter->tx_queues_active) {
- 		dev_kfree_skb_any(skb);
+ static const struct parent_map gcc_xo_gpll0_map[] = {
+ 	{ P_XO, 0 },
+ 	{ P_GPLL0, 1 },
+@@ -956,6 +951,11 @@ static struct clk_rcg2 blsp1_uart6_apps_clk_src = {
+ 	},
+ };
  
- 		tx_send_failed++;
-@@ -1917,6 +1942,10 @@ static netdev_tx_t ibmvnic_xmit(struct sk_buff *skb, struct net_device *netdev)
- 		goto out;
- 	}
- 
-+	tx_scrq = adapter->tx_scrq[queue_num];
-+	txq = netdev_get_tx_queue(netdev, queue_num);
-+	ind_bufp = &tx_scrq->ind_buf;
++static const struct clk_parent_data gcc_xo_gpll0[] = {
++	{ .fw_name = "xo" },
++	{ .hw = &gpll0.clkr.hw },
++};
 +
- 	if (ibmvnic_xmit_workarounds(skb, netdev)) {
- 		tx_dropped++;
- 		tx_send_failed++;
-@@ -1924,6 +1953,7 @@ static netdev_tx_t ibmvnic_xmit(struct sk_buff *skb, struct net_device *netdev)
- 		ibmvnic_tx_scrq_flush(adapter, tx_scrq);
- 		goto out;
- 	}
-+
- 	if (skb_is_gso(skb))
- 		tx_pool = &adapter->tso_pool[queue_num];
- 	else
-@@ -2078,6 +2108,7 @@ static netdev_tx_t ibmvnic_xmit(struct sk_buff *skb, struct net_device *netdev)
- 		netif_carrier_off(netdev);
- 	}
- out:
-+	rcu_read_unlock();
- 	netdev->stats.tx_dropped += tx_dropped;
- 	netdev->stats.tx_bytes += tx_bytes;
- 	netdev->stats.tx_packets += tx_packets;
-@@ -3732,9 +3763,15 @@ static int ibmvnic_complete_tx(struct ibmvnic_adapter *adapter,
- 		    (adapter->req_tx_entries_per_subcrq / 2) &&
- 		    __netif_subqueue_stopped(adapter->netdev,
- 					     scrq->pool_index)) {
--			netif_wake_subqueue(adapter->netdev, scrq->pool_index);
--			netdev_dbg(adapter->netdev, "Started queue %d\n",
--				   scrq->pool_index);
-+			rcu_read_lock();
-+			if (adapter->tx_queues_active) {
-+				netif_wake_subqueue(adapter->netdev,
-+						    scrq->pool_index);
-+				netdev_dbg(adapter->netdev,
-+					   "Started queue %d\n",
-+					   scrq->pool_index);
-+			}
-+			rcu_read_unlock();
- 		}
- 	}
- 
-diff --git a/drivers/net/ethernet/ibm/ibmvnic.h b/drivers/net/ethernet/ibm/ibmvnic.h
-index fa2d607a7b1b..8f5cefb932dd 100644
---- a/drivers/net/ethernet/ibm/ibmvnic.h
-+++ b/drivers/net/ethernet/ibm/ibmvnic.h
-@@ -1006,11 +1006,14 @@ struct ibmvnic_adapter {
- 	struct work_struct ibmvnic_reset;
- 	struct delayed_work ibmvnic_delayed_reset;
- 	unsigned long resetting;
--	bool napi_enabled, from_passive_init;
--	bool login_pending;
- 	/* last device reset time */
- 	unsigned long last_reset_time;
- 
-+	bool napi_enabled;
-+	bool from_passive_init;
-+	bool login_pending;
-+	/* protected by rcu */
-+	bool tx_queues_active;
- 	bool failover_pending;
- 	bool force_reset_recovery;
- 
+ static const struct freq_tbl ftbl_pcie_axi_clk_src[] = {
+ 	F(19200000, P_XO, 1, 0, 0),
+ 	F(200000000, P_GPLL0, 4, 0, 0),
+@@ -969,7 +969,7 @@ static struct clk_rcg2 pcie0_axi_clk_src = {
+ 	.parent_map = gcc_xo_gpll0_map,
+ 	.clkr.hw.init = &(struct clk_init_data){
+ 		.name = "pcie0_axi_clk_src",
+-		.parent_names = gcc_xo_gpll0,
++		.parent_data = gcc_xo_gpll0,
+ 		.num_parents = 2,
+ 		.ops = &clk_rcg2_ops,
+ 	},
+@@ -1016,7 +1016,7 @@ static struct clk_rcg2 pcie1_axi_clk_src = {
+ 	.parent_map = gcc_xo_gpll0_map,
+ 	.clkr.hw.init = &(struct clk_init_data){
+ 		.name = "pcie1_axi_clk_src",
+-		.parent_names = gcc_xo_gpll0,
++		.parent_data = gcc_xo_gpll0,
+ 		.num_parents = 2,
+ 		.ops = &clk_rcg2_ops,
+ 	},
+@@ -1330,7 +1330,7 @@ static struct clk_rcg2 nss_ce_clk_src = {
+ 	.parent_map = gcc_xo_gpll0_map,
+ 	.clkr.hw.init = &(struct clk_init_data){
+ 		.name = "nss_ce_clk_src",
+-		.parent_names = gcc_xo_gpll0,
++		.parent_data = gcc_xo_gpll0,
+ 		.num_parents = 2,
+ 		.ops = &clk_rcg2_ops,
+ 	},
+@@ -4329,8 +4329,7 @@ static struct clk_rcg2 pcie0_rchng_clk_src = {
+ 	.parent_map = gcc_xo_gpll0_map,
+ 	.clkr.hw.init = &(struct clk_init_data){
+ 		.name = "pcie0_rchng_clk_src",
+-		.parent_hws = (const struct clk_hw *[]) {
+-				&gpll0.clkr.hw },
++		.parent_data = gcc_xo_gpll0,
+ 		.num_parents = 2,
+ 		.ops = &clk_rcg2_ops,
+ 	},
 -- 
 2.34.1
 
