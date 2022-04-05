@@ -2,98 +2,143 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 48532C4321E
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:31:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D3BAC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:32:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234732AbiDEI0M (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 04:26:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57604 "EHLO
+        id S234843AbiDEI02 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 04:26:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53018 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235336AbiDEH7j (ORCPT
+        with ESMTP id S235352AbiDEH7j (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Apr 2022 03:59:39 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3840457B08;
-        Tue,  5 Apr 2022 00:54:12 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3C5E3B81BA7;
-        Tue,  5 Apr 2022 07:54:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9DB2EC340EE;
-        Tue,  5 Apr 2022 07:54:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649145250;
-        bh=F7Oer8AIMDb2O/FBCHAaJcCBaC52QQNAgWq9QZsk8f8=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LAsxmPMMbQSwhK23XPttUpo2epGUc5ql2FJhG8eoSsUa5P+Mg+bLv8IKA8a+wwSvH
-         8k7pP1GN0wMaZ2tuEQJmTqX9yaIOdcniHfFcqQ/a4GjG8Tpl/BkH6Y94hLkf5fQuRb
-         X/HRh8fxp5eutSaH/ET+0b+vJA2tcfOp840gN8IA=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ondrej Zary <linux@zary.sk>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0302/1126] media: bttv: fix WARNING regression on tunerless devices
-Date:   Tue,  5 Apr 2022 09:17:29 +0200
-Message-Id: <20220405070416.479001166@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
-References: <20220405070407.513532867@linuxfoundation.org>
-User-Agent: quilt/0.66
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Received: from mx.socionext.com (mx.socionext.com [202.248.49.38])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 30EF957B3A;
+        Tue,  5 Apr 2022 00:54:15 -0700 (PDT)
+Received: from unknown (HELO iyokan2-ex.css.socionext.com) ([172.31.9.54])
+  by mx.socionext.com with ESMTP; 05 Apr 2022 16:53:05 +0900
+Received: from mail.mfilter.local (m-filter-2 [10.213.24.62])
+        by iyokan2-ex.css.socionext.com (Postfix) with ESMTP id 822FE2058B50;
+        Tue,  5 Apr 2022 16:53:05 +0900 (JST)
+Received: from 172.31.9.51 (172.31.9.51) by m-FILTER with ESMTP; Tue, 5 Apr 2022 16:53:05 +0900
+Received: from plum.e01.socionext.com (unknown [10.212.243.119])
+        by kinkan2.css.socionext.com (Postfix) with ESMTP id 3D4F1B6389;
+        Tue,  5 Apr 2022 16:53:05 +0900 (JST)
+From:   Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>
+Cc:     Masami Hiramatsu <mhiramat@kernel.org>, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org,
+        Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
+Subject: [PATCH 1/2] dt-bindings: net: ave: Clean up clocks, resets, and their names using compatible string
+Date:   Tue,  5 Apr 2022 16:53:00 +0900
+Message-Id: <1649145181-30001-2-git-send-email-hayashi.kunihiko@socionext.com>
+X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1649145181-30001-1-git-send-email-hayashi.kunihiko@socionext.com>
+References: <1649145181-30001-1-git-send-email-hayashi.kunihiko@socionext.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ondrej Zary <linux@zary.sk>
+Instead of "oneOf:" choices, use "allOf:" and "if:" to define clocks,
+resets, and their names that can be taken by the compatible string.
 
-[ Upstream commit ef058cc8b7193d15a771272359c7454839ae74ee ]
+The order of clock-names and reset-names doesn't change here.
 
-Commit 2161536516ed ("media: media/pci: set device_caps in struct video_device")
-introduced a regression: V4L2_CAP_TUNER is always present in device_caps,
-even when the device has no tuner.
-
-This causes a warning:
-WARNING: CPU: 0 PID: 249 at drivers/media/v4l2-core/v4l2-ioctl.c:1102 v4l_querycap+0xa0/0xb0 [videodev]
-
-Fixes: 2161536516ed ("media: media/pci: set device_caps in struct video_device")
-Signed-off-by: Ondrej Zary <linux@zary.sk>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
 ---
- drivers/media/pci/bt8xx/bttv-driver.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ .../bindings/net/socionext,uniphier-ave4.yaml | 55 +++++++++++++------
+ 1 file changed, 38 insertions(+), 17 deletions(-)
 
-diff --git a/drivers/media/pci/bt8xx/bttv-driver.c b/drivers/media/pci/bt8xx/bttv-driver.c
-index 8cc9bec43688..5ca3d0cc653a 100644
---- a/drivers/media/pci/bt8xx/bttv-driver.c
-+++ b/drivers/media/pci/bt8xx/bttv-driver.c
-@@ -3890,7 +3890,7 @@ static int bttv_register_video(struct bttv *btv)
+diff --git a/Documentation/devicetree/bindings/net/socionext,uniphier-ave4.yaml b/Documentation/devicetree/bindings/net/socionext,uniphier-ave4.yaml
+index e602761f7b14..f257520b9a7e 100644
+--- a/Documentation/devicetree/bindings/net/socionext,uniphier-ave4.yaml
++++ b/Documentation/devicetree/bindings/net/socionext,uniphier-ave4.yaml
+@@ -13,9 +13,6 @@ description: |
+   This describes the devicetree bindings for AVE ethernet controller
+   implemented on Socionext UniPhier SoCs.
  
- 	/* video */
- 	vdev_init(btv, &btv->video_dev, &bttv_video_template, "video");
--	btv->video_dev.device_caps = V4L2_CAP_VIDEO_CAPTURE | V4L2_CAP_TUNER |
-+	btv->video_dev.device_caps = V4L2_CAP_VIDEO_CAPTURE |
- 				     V4L2_CAP_READWRITE | V4L2_CAP_STREAMING;
- 	if (btv->tuner_type != TUNER_ABSENT)
- 		btv->video_dev.device_caps |= V4L2_CAP_TUNER;
-@@ -3911,7 +3911,7 @@ static int bttv_register_video(struct bttv *btv)
- 	/* vbi */
- 	vdev_init(btv, &btv->vbi_dev, &bttv_video_template, "vbi");
- 	btv->vbi_dev.device_caps = V4L2_CAP_VBI_CAPTURE | V4L2_CAP_READWRITE |
--				   V4L2_CAP_STREAMING | V4L2_CAP_TUNER;
-+				   V4L2_CAP_STREAMING;
- 	if (btv->tuner_type != TUNER_ABSENT)
- 		btv->vbi_dev.device_caps |= V4L2_CAP_TUNER;
+-allOf:
+-  - $ref: ethernet-controller.yaml#
+-
+ properties:
+   compatible:
+     enum:
+@@ -44,25 +41,13 @@ properties:
+     minItems: 1
+     maxItems: 4
  
+-  clock-names:
+-    oneOf:
+-      - items:          # for Pro4
+-          - const: gio
+-          - const: ether
+-          - const: ether-gb
+-          - const: ether-phy
+-      - const: ether    # for others
++  clock-names: true
+ 
+   resets:
+     minItems: 1
+     maxItems: 2
+ 
+-  reset-names:
+-    oneOf:
+-      - items:          # for Pro4
+-          - const: gio
+-          - const: ether
+-      - const: ether    # for others
++  reset-names: true
+ 
+   socionext,syscon-phy-mode:
+     $ref: /schemas/types.yaml#/definitions/phandle-array
+@@ -78,6 +63,42 @@ properties:
+     $ref: mdio.yaml#
+     unevaluatedProperties: false
+ 
++allOf:
++  - $ref: ethernet-controller.yaml#
++  - if:
++      properties:
++        compatible:
++          contains:
++            const: socionext,uniphier-pro4-ave4
++    then:
++      properties:
++        clocks:
++          minItems: 4
++          maxItems: 4
++        clock-names:
++          items:
++            - const: gio
++            - const: ether
++            - const: ether-gb
++            - const: ether-phy
++        resets:
++          minItems: 2
++          maxItems: 2
++        reset-names:
++          items:
++            - const: gio
++            - const: ether
++    else:
++      properties:
++        clocks:
++          maxItems: 1
++        clock-names:
++          const: ether
++        resets:
++          maxItems: 1
++        reset-names:
++          const: ether
++
+ required:
+   - compatible
+   - reg
 -- 
-2.34.1
-
-
+2.25.1
 
