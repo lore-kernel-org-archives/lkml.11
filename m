@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2844DC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 14:44:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 14486C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 14:44:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1389484AbiDEOo6 (ORCPT
+        id S1389567AbiDEOpC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 10:44:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50320 "EHLO
+        Tue, 5 Apr 2022 10:45:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53874 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244363AbiDEJlP (ORCPT
+        with ESMTP id S231672AbiDEJlR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:41:15 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB6E79682D;
-        Tue,  5 Apr 2022 02:26:15 -0700 (PDT)
+        Tue, 5 Apr 2022 05:41:17 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ECBF4BB910;
+        Tue,  5 Apr 2022 02:26:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8701361659;
-        Tue,  5 Apr 2022 09:26:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8CE6BC385A2;
-        Tue,  5 Apr 2022 09:26:14 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 96361B81C9F;
+        Tue,  5 Apr 2022 09:26:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0ACD8C385A3;
+        Tue,  5 Apr 2022 09:26:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649150774;
-        bh=LhUdYwK+yijx9j6jaivm7tHTIZ57ZeqRqUb+Y3YUgMg=;
+        s=korg; t=1649150780;
+        bh=68aLZg2k8y7k/NuHYgwWso1X6n6Cr9BCaz8zPh9HeQ0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=zyNZM+597kgtBJgDXDmT+ZOmxysETN3Hp/6OtcVJydSgkOVxm1ctIpiq02kpFlR0F
-         ipwoyOhbiZ6mlb2EKUJSb4GxjXWRvinKDkwfNZntkZYfyZCO9y/mrNJ6b2VTPzVq4I
-         Keb70An6By722OnBrVxKLw7MIr/oMSAZMMhpvxcg=
+        b=IHYQjkGZ0w74Xnqvzel/JOXCb9a/Q9nWJmFBbqlBUrwfZwGLdzZNG9lr9bKNjiIwT
+         Ur+vX3tLaPsSdV7/fRlIYwGkJitrjq+VN/gWqufTBb8uol5evobWCs8yRa4EJ3jnSr
+         rp22oHDdBSNSgFigJtIdNerfwdNxdG2J17yjD5TY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Johannes Thumshirn <johannes.thumshirn@wdc.com>,
-        Naohiro Aota <naohiro.aota@wdc.com>,
-        David Sterba <dsterba@suse.com>
-Subject: [PATCH 5.15 169/913] btrfs: zoned: mark relocation as writing
-Date:   Tue,  5 Apr 2022 09:20:31 +0200
-Message-Id: <20220405070344.914093002@linuxfoundation.org>
+        =?UTF-8?q?=D0=9C=D0=B8=D1=85=D0=B0=D0=B8=D0=BB?= 
+        <vrserver1@gmail.com>, Sean Young <sean@mess.org>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>
+Subject: [PATCH 5.15 164/913] media: gpio-ir-tx: fix transmit with long spaces on Orange Pi PC
+Date:   Tue,  5 Apr 2022 09:20:26 +0200
+Message-Id: <20220405070344.761908684@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
 References: <20220405070339.801210740@linuxfoundation.org>
@@ -51,92 +51,76 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Naohiro Aota <naohiro.aota@wdc.com>
+From: Sean Young <sean@mess.org>
 
-commit ca5e4ea0beaec8bc674121838bf8614c089effb9 upstream.
+commit 5ad05ecad4326ddaa26a83ba2233a67be24c1aaa upstream.
 
-There is a hung_task issue with running generic/068 on an SMR
-device. The hang occurs while a process is trying to thaw the
-filesystem. The process is trying to take sb->s_umount to thaw the
-FS. The lock is held by fsstress, which calls btrfs_sync_fs() and is
-waiting for an ordered extent to finish. However, as the FS is frozen,
-the ordered extents never finish.
+Calling udelay for than 1000us does not always yield the correct
+results.
 
-Having an ordered extent while the FS is frozen is the root cause of
-the hang. The ordered extent is initiated from btrfs_relocate_chunk()
-which is called from btrfs_reclaim_bgs_work().
-
-This commit adds sb_*_write() around btrfs_relocate_chunk() call
-site. For the usual "btrfs balance" command, we already call it with
-mnt_want_file() in btrfs_ioctl_balance().
-
-Fixes: 18bb8bbf13c1 ("btrfs: zoned: automatically reclaim zones")
-CC: stable@vger.kernel.org # 5.13+
-Link: https://github.com/naota/linux/issues/56
-Reviewed-by: Johannes Thumshirn <johannes.thumshirn@wdc.com>
-Signed-off-by: Naohiro Aota <naohiro.aota@wdc.com>
-Reviewed-by: David Sterba <dsterba@suse.com>
-Signed-off-by: David Sterba <dsterba@suse.com>
+Cc: stable@vger.kernel.org
+Reported-by: Михаил <vrserver1@gmail.com>
+Signed-off-by: Sean Young <sean@mess.org>
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/btrfs/block-group.c |    8 +++++++-
- fs/btrfs/volumes.c     |    3 +++
- 2 files changed, 10 insertions(+), 1 deletion(-)
+ drivers/media/rc/gpio-ir-tx.c |   28 +++++++++++++++++++++-------
+ 1 file changed, 21 insertions(+), 7 deletions(-)
 
---- a/fs/btrfs/block-group.c
-+++ b/fs/btrfs/block-group.c
-@@ -1504,8 +1504,12 @@ void btrfs_reclaim_bgs_work(struct work_
- 	if (!test_bit(BTRFS_FS_OPEN, &fs_info->flags))
- 		return;
+--- a/drivers/media/rc/gpio-ir-tx.c
++++ b/drivers/media/rc/gpio-ir-tx.c
+@@ -48,11 +48,29 @@ static int gpio_ir_tx_set_carrier(struct
+ 	return 0;
+ }
  
--	if (!btrfs_exclop_start(fs_info, BTRFS_EXCLOP_BALANCE))
-+	sb_start_write(fs_info->sb);
++static void delay_until(ktime_t until)
++{
++	/*
++	 * delta should never exceed 0.5 seconds (IR_MAX_DURATION) and on
++	 * m68k ndelay(s64) does not compile; so use s32 rather than s64.
++	 */
++	s32 delta;
 +
-+	if (!btrfs_exclop_start(fs_info, BTRFS_EXCLOP_BALANCE)) {
-+		sb_end_write(fs_info->sb);
- 		return;
++	while (true) {
++		delta = ktime_us_delta(until, ktime_get());
++		if (delta <= 0)
++			return;
++
++		/* udelay more than 1ms may not work */
++		delta = min(delta, 1000);
++		udelay(delta);
 +	}
++}
++
+ static void gpio_ir_tx_unmodulated(struct gpio_ir *gpio_ir, uint *txbuf,
+ 				   uint count)
+ {
+ 	ktime_t edge;
+-	s32 delta;
+ 	int i;
  
- 	/*
- 	 * Long running balances can keep us blocked here for eternity, so
-@@ -1513,6 +1517,7 @@ void btrfs_reclaim_bgs_work(struct work_
- 	 */
- 	if (!mutex_trylock(&fs_info->reclaim_bgs_lock)) {
- 		btrfs_exclop_finish(fs_info);
-+		sb_end_write(fs_info->sb);
- 		return;
+ 	local_irq_disable();
+@@ -63,9 +81,7 @@ static void gpio_ir_tx_unmodulated(struc
+ 		gpiod_set_value(gpio_ir->gpio, !(i % 2));
+ 
+ 		edge = ktime_add_us(edge, txbuf[i]);
+-		delta = ktime_us_delta(edge, ktime_get());
+-		if (delta > 0)
+-			udelay(delta);
++		delay_until(edge);
  	}
  
-@@ -1581,6 +1586,7 @@ next:
- 	spin_unlock(&fs_info->unused_bgs_lock);
- 	mutex_unlock(&fs_info->reclaim_bgs_lock);
- 	btrfs_exclop_finish(fs_info);
-+	sb_end_write(fs_info->sb);
- }
- 
- void btrfs_reclaim_bgs(struct btrfs_fs_info *fs_info)
---- a/fs/btrfs/volumes.c
-+++ b/fs/btrfs/volumes.c
-@@ -8185,10 +8185,12 @@ static int relocating_repair_kthread(voi
- 	target = cache->start;
- 	btrfs_put_block_group(cache);
- 
-+	sb_start_write(fs_info->sb);
- 	if (!btrfs_exclop_start(fs_info, BTRFS_EXCLOP_BALANCE)) {
- 		btrfs_info(fs_info,
- 			   "zoned: skip relocating block group %llu to repair: EBUSY",
- 			   target);
-+		sb_end_write(fs_info->sb);
- 		return -EBUSY;
- 	}
- 
-@@ -8216,6 +8218,7 @@ out:
- 		btrfs_put_block_group(cache);
- 	mutex_unlock(&fs_info->reclaim_bgs_lock);
- 	btrfs_exclop_finish(fs_info);
-+	sb_end_write(fs_info->sb);
- 
- 	return ret;
- }
+ 	gpiod_set_value(gpio_ir->gpio, 0);
+@@ -97,9 +113,7 @@ static void gpio_ir_tx_modulated(struct
+ 		if (i % 2) {
+ 			// space
+ 			edge = ktime_add_us(edge, txbuf[i]);
+-			delta = ktime_us_delta(edge, ktime_get());
+-			if (delta > 0)
+-				udelay(delta);
++			delay_until(edge);
+ 		} else {
+ 			// pulse
+ 			ktime_t last = ktime_add_us(edge, txbuf[i]);
 
 
