@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 49DB0C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:53:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E568C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:53:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354564AbiDEMt5 (ORCPT
+        id S1355334AbiDEMuG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 08:49:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51544 "EHLO
+        Tue, 5 Apr 2022 08:50:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41798 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236571AbiDEJDJ (ORCPT
+        with ESMTP id S238748AbiDEJF3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:03:09 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACC2EDB8;
-        Tue,  5 Apr 2022 01:54:58 -0700 (PDT)
+        Tue, 5 Apr 2022 05:05:29 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 437233585C;
+        Tue,  5 Apr 2022 01:56:06 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 61FF3B81BC5;
-        Tue,  5 Apr 2022 08:54:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AA4A8C385A0;
-        Tue,  5 Apr 2022 08:54:55 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3521F61572;
+        Tue,  5 Apr 2022 08:56:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3DC2DC385A0;
+        Tue,  5 Apr 2022 08:56:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649148896;
-        bh=bpHXttM/e3cLQHkW0j8q0tlu0YafmBGpQxC5mr2uDeU=;
+        s=korg; t=1649148965;
+        bh=BHUXFYcaDqs+Ba3x1dSHj4ex9Ye4KOVccOyvCumynEg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=eALTfapS0My+F3nrgQoIkdPdBStizwFvZoYid1A1+BBtXaTrkaBSDkDGci6MmK9Tl
-         1DT5DRojzfzyNPFpA2hBeqdqrDPlU7liiv2+KvtKzVskPAJ7YjGsfnRDcViroWe9FI
-         qy0IH4p5e1wQ4kEOmqWQ6l4IeJtgYmjHpauqAGJk=
+        b=Pr/VUQuDL4/mPAlAXkT0H/fGG/ItiPpjl5JboUb4oPGjvUtM/+zAYd/+UFAa58u3i
+         Q2NYcOzwqMGp44vX+Agkt03Lh6Vdgi5p3/eBPWGHsvC+/WDFTESql4UHdm1Ei98OZj
+         vV9l2LCjYy8kBvIEJShQn/MsqVsfj+iRQ9mcX5go=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        Stephen Boyd <swboyd@chromium.org>,
-        Abhinav Kumar <quic_abhinavk@quicinc.com>,
+        =?UTF-8?q?Ma=C3=ADra=20Canal?= <maira.canal@usp.br>,
+        Alex Deucher <alexander.deucher@amd.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0521/1017] drm/msm/dpu: add DSPP blocks teardown
-Date:   Tue,  5 Apr 2022 09:23:54 +0200
-Message-Id: <20220405070409.760721701@linuxfoundation.org>
+Subject: [PATCH 5.16 0544/1017] drm/amd/display: Remove vupdate_int_entry definition
+Date:   Tue,  5 Apr 2022 09:24:17 +0200
+Message-Id: <20220405070410.434705041@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -52,43 +51,157 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+From: Maíra Canal <maira.canal@usp.br>
 
-[ Upstream commit d5c5e78f217172e87d8fb2c3418dd8b58b4adfcb ]
+[ Upstream commit 3679b8518cd213c25d555553ef212e233faf698c ]
 
-Add missing calls to dpu_hw_dspp_destroy() to free resources allocated
-for DSPP hardware blocks.
+Remove the vupdate_int_entry definition and utilization to avoid the
+following warning by Clang:
 
-Fixes: e47616df008b ("drm/msm/dpu: add support for color processing blocks in dpu driver")
-Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Reviewed-by: Stephen Boyd <swboyd@chromium.org>
-Reviewed-by: Abhinav Kumar <quic_abhinavk@quicinc.com>
-Link: https://lore.kernel.org/r/20220121210618.3482550-3-dmitry.baryshkov@linaro.org
-Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+drivers/gpu/drm/amd/amdgpu/../display/dc/irq/dcn21/irq_service_dcn21.c:410:2:
+warning: initializer overrides prior initialization of this subobject
+[-Winitializer-overrides]
+    vupdate_no_lock_int_entry(0),
+    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
+drivers/gpu/drm/amd/amdgpu/../display/dc/irq/dcn21/irq_service_dcn21.c:280:39:
+note: expanded from macro 'vupdate_no_lock_int_entry'
+    [DC_IRQ_SOURCE_VUPDATE1 + reg_num] = {\
+    ^~
+drivers/gpu/drm/amd/amdgpu/../display/dc/irq/dcn21/irq_service_dcn21.c:404:2:
+note: previous initialization is here
+    vupdate_int_entry(0),
+    ^~~~~~~~~~~~~~~~~~~~
+drivers/gpu/drm/amd/amdgpu/../display/dc/irq/dcn21/irq_service_dcn21.c:269:39:
+note: expanded from macro 'vupdate_int_entry'
+    [DC_IRQ_SOURCE_VUPDATE1 + reg_num] = {\
+    ^~
+drivers/gpu/drm/amd/amdgpu/../display/dc/irq/dcn21/irq_service_dcn21.c:411:2:
+warning: initializer overrides prior initialization of this subobject
+[-Winitializer-overrides]
+    vupdate_no_lock_int_entry(1),
+    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
+drivers/gpu/drm/amd/amdgpu/../display/dc/irq/dcn21/irq_service_dcn21.c:280:39:
+note: expanded from macro 'vupdate_no_lock_int_entry'
+    [DC_IRQ_SOURCE_VUPDATE1 + reg_num] = {\
+    ^~
+drivers/gpu/drm/amd/amdgpu/../display/dc/irq/dcn21/irq_service_dcn21.c:405:2:
+note: previous initialization is here
+    vupdate_int_entry(1),
+    ^~~~~~~~~~~~~~~~~~~~
+drivers/gpu/drm/amd/amdgpu/../display/dc/irq/dcn21/irq_service_dcn21.c:269:39:
+note: expanded from macro 'vupdate_int_entry'
+    [DC_IRQ_SOURCE_VUPDATE1 + reg_num] = {\
+    ^~
+drivers/gpu/drm/amd/amdgpu/../display/dc/irq/dcn21/irq_service_dcn21.c:412:2:
+warning: initializer overrides prior initialization of this subobject
+[-Winitializer-overrides]
+    vupdate_no_lock_int_entry(2),
+    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
+drivers/gpu/drm/amd/amdgpu/../display/dc/irq/dcn21/irq_service_dcn21.c:280:39:
+note: expanded from macro 'vupdate_no_lock_int_entry'
+    [DC_IRQ_SOURCE_VUPDATE1 + reg_num] = {\
+    ^~
+drivers/gpu/drm/amd/amdgpu/../display/dc/irq/dcn21/irq_service_dcn21.c:406:2:
+note: previous initialization is here
+    vupdate_int_entry(2),
+    ^~~~~~~~~~~~~~~~~~~~
+drivers/gpu/drm/amd/amdgpu/../display/dc/irq/dcn21/irq_service_dcn21.c:269:39:
+note: expanded from macro 'vupdate_int_entry'
+    [DC_IRQ_SOURCE_VUPDATE1 + reg_num] = {\
+    ^~
+drivers/gpu/drm/amd/amdgpu/../display/dc/irq/dcn21/irq_service_dcn21.c:413:2:
+warning: initializer overrides prior initialization of this subobject
+[-Winitializer-overrides]
+    vupdate_no_lock_int_entry(3),
+    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
+drivers/gpu/drm/amd/amdgpu/../display/dc/irq/dcn21/irq_service_dcn21.c:280:39:
+note: expanded from macro 'vupdate_no_lock_int_entry'
+    [DC_IRQ_SOURCE_VUPDATE1 + reg_num] = {\
+    ^~
+drivers/gpu/drm/amd/amdgpu/../display/dc/irq/dcn21/irq_service_dcn21.c:407:2:
+note: previous initialization is here
+    vupdate_int_entry(3),
+    ^~~~~~~~~~~~~~~~~~~~
+drivers/gpu/drm/amd/amdgpu/../display/dc/irq/dcn21/irq_service_dcn21.c:269:39:
+note: expanded from macro 'vupdate_int_entry'
+    [DC_IRQ_SOURCE_VUPDATE1 + reg_num] = {\
+    ^~
+drivers/gpu/drm/amd/amdgpu/../display/dc/irq/dcn21/irq_service_dcn21.c:414:2:
+warning: initializer overrides prior initialization of this subobject
+[-Winitializer-overrides]
+    vupdate_no_lock_int_entry(4),
+    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
+drivers/gpu/drm/amd/amdgpu/../display/dc/irq/dcn21/irq_service_dcn21.c:280:39:
+note: expanded from macro 'vupdate_no_lock_int_entry'
+    [DC_IRQ_SOURCE_VUPDATE1 + reg_num] = {\
+    ^~
+drivers/gpu/drm/amd/amdgpu/../display/dc/irq/dcn21/irq_service_dcn21.c:408:2:
+note: previous initialization is here
+    vupdate_int_entry(4),
+    ^~~~~~~~~~~~~~~~~~~~
+drivers/gpu/drm/amd/amdgpu/../display/dc/irq/dcn21/irq_service_dcn21.c:269:39:
+note: expanded from macro 'vupdate_int_entry'
+    [DC_IRQ_SOURCE_VUPDATE1 + reg_num] = {\
+    ^~
+drivers/gpu/drm/amd/amdgpu/../display/dc/irq/dcn21/irq_service_dcn21.c:415:2:
+warning: initializer overrides prior initialization of this subobject
+[-Winitializer-overrides]
+    vupdate_no_lock_int_entry(5),
+    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
+drivers/gpu/drm/amd/amdgpu/../display/dc/irq/dcn21/irq_service_dcn21.c:280:39:
+note: expanded from macro 'vupdate_no_lock_int_entry'
+    [DC_IRQ_SOURCE_VUPDATE1 + reg_num] = {\
+    ^~
+drivers/gpu/drm/amd/amdgpu/../display/dc/irq/dcn21/irq_service_dcn21.c:409:2:
+note: previous initialization is here
+    vupdate_int_entry(5),
+    ^~~~~~~~~~~~~~~~~~~~
+drivers/gpu/drm/amd/amdgpu/../display/dc/irq/dcn21/irq_service_dcn21.c:269:39:
+note: expanded from macro 'vupdate_int_entry'
+        [DC_IRQ_SOURCE_VUPDATE1 + reg_num] = {\
+        ^~
+6 warnings generated.
+
+Fixes: 688f97ed3f5e ("drm/amd/display: Add vupdate_no_lock interrupts for DCN2.1")
+Signed-off-by: Maíra Canal <maira.canal@usp.br>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/msm/disp/dpu1/dpu_rm.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
+ .../amd/display/dc/irq/dcn21/irq_service_dcn21.c   | 14 --------------
+ 1 file changed, 14 deletions(-)
 
-diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_rm.c b/drivers/gpu/drm/msm/disp/dpu1/dpu_rm.c
-index f9c83d6e427a..24fbaf562d41 100644
---- a/drivers/gpu/drm/msm/disp/dpu1/dpu_rm.c
-+++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_rm.c
-@@ -35,6 +35,14 @@ int dpu_rm_destroy(struct dpu_rm *rm)
- {
- 	int i;
+diff --git a/drivers/gpu/drm/amd/display/dc/irq/dcn21/irq_service_dcn21.c b/drivers/gpu/drm/amd/display/dc/irq/dcn21/irq_service_dcn21.c
+index ed54e1c819be..a728087b3f3d 100644
+--- a/drivers/gpu/drm/amd/display/dc/irq/dcn21/irq_service_dcn21.c
++++ b/drivers/gpu/drm/amd/display/dc/irq/dcn21/irq_service_dcn21.c
+@@ -266,14 +266,6 @@ static const struct irq_source_info_funcs vline0_irq_info_funcs = {
+ 		.funcs = &pflip_irq_info_funcs\
+ 	}
  
-+	for (i = 0; i < ARRAY_SIZE(rm->dspp_blks); i++) {
-+		struct dpu_hw_dspp *hw;
-+
-+		if (rm->dspp_blks[i]) {
-+			hw = to_dpu_hw_dspp(rm->dspp_blks[i]);
-+			dpu_hw_dspp_destroy(hw);
-+		}
-+	}
- 	for (i = 0; i < ARRAY_SIZE(rm->pingpong_blks); i++) {
- 		struct dpu_hw_pingpong *hw;
- 
+-#define vupdate_int_entry(reg_num)\
+-	[DC_IRQ_SOURCE_VUPDATE1 + reg_num] = {\
+-		IRQ_REG_ENTRY(OTG, reg_num,\
+-			OTG_GLOBAL_SYNC_STATUS, VUPDATE_INT_EN,\
+-			OTG_GLOBAL_SYNC_STATUS, VUPDATE_EVENT_CLEAR),\
+-		.funcs = &vblank_irq_info_funcs\
+-	}
+-
+ /* vupdate_no_lock_int_entry maps to DC_IRQ_SOURCE_VUPDATEx, to match semantic
+  * of DCE's DC_IRQ_SOURCE_VUPDATEx.
+  */
+@@ -402,12 +394,6 @@ irq_source_info_dcn21[DAL_IRQ_SOURCES_NUMBER] = {
+ 	dc_underflow_int_entry(6),
+ 	[DC_IRQ_SOURCE_DMCU_SCP] = dummy_irq_entry(),
+ 	[DC_IRQ_SOURCE_VBIOS_SW] = dummy_irq_entry(),
+-	vupdate_int_entry(0),
+-	vupdate_int_entry(1),
+-	vupdate_int_entry(2),
+-	vupdate_int_entry(3),
+-	vupdate_int_entry(4),
+-	vupdate_int_entry(5),
+ 	vupdate_no_lock_int_entry(0),
+ 	vupdate_no_lock_int_entry(1),
+ 	vupdate_no_lock_int_entry(2),
 -- 
 2.34.1
 
