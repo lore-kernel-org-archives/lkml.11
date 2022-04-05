@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 315B7C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 587ACC433FE
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:00:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232907AbiDEH4X (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 03:56:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47164 "EHLO
+        id S232954AbiDEH4d (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 03:56:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46910 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233565AbiDEHr6 (ORCPT
+        with ESMTP id S233604AbiDEHsJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 03:47:58 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19F1DBB;
-        Tue,  5 Apr 2022 00:45:45 -0700 (PDT)
+        Tue, 5 Apr 2022 03:48:09 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12EC6BB;
+        Tue,  5 Apr 2022 00:46:12 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id AA3BF616C4;
-        Tue,  5 Apr 2022 07:45:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B0DB4C340EE;
-        Tue,  5 Apr 2022 07:45:43 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9513E616C3;
+        Tue,  5 Apr 2022 07:46:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9FE6AC340EE;
+        Tue,  5 Apr 2022 07:46:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649144744;
-        bh=toUIKSG7Y9lYiTObnBI3exiCjRwsy9pdblqnPZcepWY=;
+        s=korg; t=1649144771;
+        bh=lyl/QYeOAOaVkyrba6LwCYjzbpaPtg3ddCAsSWp4+5E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DKhnuJezIRO73IKInc2pryqh6X5HVmW0G3yQMdIUXI8zY/G9iy9yAMdk5KYCJ90Y1
-         ZQyT7yjdpTk00lAPpaHgRBTenlqadgDyoiLChietgtUII1pBsoZCF9PV4NOvhxqz8H
-         4//ea2VPjvOsJPBUC7nfQoJbxtlee3CxpkQ3SVfM=
+        b=b8RavTK8u/uTq2akVAfBvp1Bnvyovuz0Q96DlE9m4EpWNHy6pwC7cUC84FxkB7nxY
+         VKSt8gAzYcaK55VKxT/hSPvB03PAAkdiDPsMn0qcq9gR4zDh8Evay5uRFOpyceH10l
+         izT/NWFlWNWnmtwVc98ItR+x3eFf63NCzmf7glUY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Jann Horn <jannh@google.com>, Kees Cook <keescook@chromium.org>
-Subject: [PATCH 5.17 0156/1126] pstore: Dont use semaphores in always-atomic-context code
-Date:   Tue,  5 Apr 2022 09:15:03 +0200
-Message-Id: <20220405070412.167026517@linuxfoundation.org>
+        stable@vger.kernel.org, Shawn Guo <shawn.guo@linaro.org>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
+Subject: [PATCH 5.17 0165/1126] PM: domains: Fix sleep-in-atomic bug caused by genpd_debug_remove()
+Date:   Tue,  5 Apr 2022 09:15:12 +0200
+Message-Id: <20220405070412.439906409@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -49,170 +49,74 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jann Horn <jannh@google.com>
+From: Shawn Guo <shawn.guo@linaro.org>
 
-commit 8126b1c73108bc691f5643df19071a59a69d0bc6 upstream.
+commit f6bfe8b5b2c2a5ac8bd2fc7bca3706e6c3fc26d8 upstream.
 
-pstore_dump() is *always* invoked in atomic context (nowadays in an RCU
-read-side critical section, before that under a spinlock).
-It doesn't make sense to try to use semaphores here.
+When a genpd with GENPD_FLAG_IRQ_SAFE gets removed, the following
+sleep-in-atomic bug will be seen, as genpd_debug_remove() will be called
+with a spinlock being held.
 
-This is mostly a revert of commit ea84b580b955 ("pstore: Convert buf_lock
-to semaphore"), except that two parts aren't restored back exactly as they
-were:
+[    0.029183] BUG: sleeping function called from invalid context at kernel/locking/rwsem.c:1460
+[    0.029204] in_atomic(): 1, irqs_disabled(): 128, non_block: 0, pid: 1, name: swapper/0
+[    0.029219] preempt_count: 1, expected: 0
+[    0.029230] CPU: 1 PID: 1 Comm: swapper/0 Not tainted 5.17.0-rc4+ #489
+[    0.029245] Hardware name: Thundercomm TurboX CM2290 (DT)
+[    0.029256] Call trace:
+[    0.029265]  dump_backtrace.part.0+0xbc/0xd0
+[    0.029285]  show_stack+0x3c/0xa0
+[    0.029298]  dump_stack_lvl+0x7c/0xa0
+[    0.029311]  dump_stack+0x18/0x34
+[    0.029323]  __might_resched+0x10c/0x13c
+[    0.029338]  __might_sleep+0x4c/0x80
+[    0.029351]  down_read+0x24/0xd0
+[    0.029363]  lookup_one_len_unlocked+0x9c/0xcc
+[    0.029379]  lookup_positive_unlocked+0x10/0x50
+[    0.029392]  debugfs_lookup+0x68/0xac
+[    0.029406]  genpd_remove.part.0+0x12c/0x1b4
+[    0.029419]  of_genpd_remove_last+0xa8/0xd4
+[    0.029434]  psci_cpuidle_domain_probe+0x174/0x53c
+[    0.029449]  platform_probe+0x68/0xe0
+[    0.029462]  really_probe+0x190/0x430
+[    0.029473]  __driver_probe_device+0x90/0x18c
+[    0.029485]  driver_probe_device+0x40/0xe0
+[    0.029497]  __driver_attach+0xf4/0x1d0
+[    0.029508]  bus_for_each_dev+0x70/0xd0
+[    0.029523]  driver_attach+0x24/0x30
+[    0.029534]  bus_add_driver+0x164/0x22c
+[    0.029545]  driver_register+0x78/0x130
+[    0.029556]  __platform_driver_register+0x28/0x34
+[    0.029569]  psci_idle_init_domains+0x1c/0x28
+[    0.029583]  do_one_initcall+0x50/0x1b0
+[    0.029595]  kernel_init_freeable+0x214/0x280
+[    0.029609]  kernel_init+0x2c/0x13c
+[    0.029622]  ret_from_fork+0x10/0x20
 
- - keep the lock initialization in pstore_register
- - in efi_pstore_write(), always set the "block" flag to false
- - omit "is_locked", that was unnecessary since
-   commit 959217c84c27 ("pstore: Actually give up during locking failure")
- - fix the bailout message
+It doesn't seem necessary to call genpd_debug_remove() with the lock, so
+move it out from locking to fix the problem.
 
-The actual problem that the buggy commit was trying to address may have
-been that the use of preemptible() in efi_pstore_write() was wrong - it
-only looks at preempt_count() and the state of IRQs, but __rcu_read_lock()
-doesn't touch either of those under CONFIG_PREEMPT_RCU.
-(Sidenote: CONFIG_PREEMPT_RCU means that the scheduler can preempt tasks in
-RCU read-side critical sections, but you're not allowed to actively
-block/reschedule.)
-
-Lockdep probably never caught the problem because it's very rare that you
-actually hit the contended case, so lockdep always just sees the
-down_trylock(), not the down_interruptible(), and so it can't tell that
-there's a problem.
-
-Fixes: ea84b580b955 ("pstore: Convert buf_lock to semaphore")
-Cc: stable@vger.kernel.org
-Acked-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Signed-off-by: Jann Horn <jannh@google.com>
-Signed-off-by: Kees Cook <keescook@chromium.org>
-Link: https://lore.kernel.org/r/20220314185953.2068993-1-jannh@google.com
+Fixes: 718072ceb211 ("PM: domains: create debugfs nodes when adding power domains")
+Signed-off-by: Shawn Guo <shawn.guo@linaro.org>
+Reviewed-by: Ulf Hansson <ulf.hansson@linaro.org>
+Cc: 5.11+ <stable@vger.kernel.org> # 5.11+
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/firmware/efi/efi-pstore.c |    2 +-
- fs/pstore/platform.c              |   38 ++++++++++++++++++--------------------
- include/linux/pstore.h            |    6 +++---
- 3 files changed, 22 insertions(+), 24 deletions(-)
+ drivers/base/power/domain.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/firmware/efi/efi-pstore.c
-+++ b/drivers/firmware/efi/efi-pstore.c
-@@ -266,7 +266,7 @@ static int efi_pstore_write(struct pstor
- 		efi_name[i] = name[i];
- 
- 	ret = efivar_entry_set_safe(efi_name, vendor, PSTORE_EFI_ATTRIBUTES,
--			      preemptible(), record->size, record->psi->buf);
-+			      false, record->size, record->psi->buf);
- 
- 	if (record->reason == KMSG_DUMP_OOPS && try_module_get(THIS_MODULE))
- 		if (!schedule_work(&efivar_work))
---- a/fs/pstore/platform.c
-+++ b/fs/pstore/platform.c
-@@ -143,21 +143,22 @@ static void pstore_timer_kick(void)
- 	mod_timer(&pstore_timer, jiffies + msecs_to_jiffies(pstore_update_ms));
- }
- 
--/*
-- * Should pstore_dump() wait for a concurrent pstore_dump()? If
-- * not, the current pstore_dump() will report a failure to dump
-- * and return.
-- */
--static bool pstore_cannot_wait(enum kmsg_dump_reason reason)
-+static bool pstore_cannot_block_path(enum kmsg_dump_reason reason)
- {
--	/* In NMI path, pstore shouldn't block regardless of reason. */
-+	/*
-+	 * In case of NMI path, pstore shouldn't be blocked
-+	 * regardless of reason.
-+	 */
- 	if (in_nmi())
- 		return true;
- 
- 	switch (reason) {
- 	/* In panic case, other cpus are stopped by smp_send_stop(). */
- 	case KMSG_DUMP_PANIC:
--	/* Emergency restart shouldn't be blocked. */
-+	/*
-+	 * Emergency restart shouldn't be blocked by spinning on
-+	 * pstore_info::buf_lock.
-+	 */
- 	case KMSG_DUMP_EMERG:
- 		return true;
- 	default:
-@@ -389,21 +390,19 @@ static void pstore_dump(struct kmsg_dump
- 	unsigned long	total = 0;
- 	const char	*why;
- 	unsigned int	part = 1;
-+	unsigned long	flags = 0;
- 	int		ret;
- 
- 	why = kmsg_dump_reason_str(reason);
- 
--	if (down_trylock(&psinfo->buf_lock)) {
--		/* Failed to acquire lock: give up if we cannot wait. */
--		if (pstore_cannot_wait(reason)) {
--			pr_err("dump skipped in %s path: may corrupt error record\n",
--				in_nmi() ? "NMI" : why);
--			return;
--		}
--		if (down_interruptible(&psinfo->buf_lock)) {
--			pr_err("could not grab semaphore?!\n");
-+	if (pstore_cannot_block_path(reason)) {
-+		if (!spin_trylock_irqsave(&psinfo->buf_lock, flags)) {
-+			pr_err("dump skipped in %s path because of concurrent dump\n",
-+					in_nmi() ? "NMI" : why);
- 			return;
- 		}
-+	} else {
-+		spin_lock_irqsave(&psinfo->buf_lock, flags);
+--- a/drivers/base/power/domain.c
++++ b/drivers/base/power/domain.c
+@@ -2058,9 +2058,9 @@ static int genpd_remove(struct generic_p
+ 		kfree(link);
  	}
  
- 	kmsg_dump_rewind(&iter);
-@@ -467,8 +466,7 @@ static void pstore_dump(struct kmsg_dump
- 		total += record.size;
- 		part++;
- 	}
--
--	up(&psinfo->buf_lock);
-+	spin_unlock_irqrestore(&psinfo->buf_lock, flags);
- }
- 
- static struct kmsg_dumper pstore_dumper = {
-@@ -594,7 +592,7 @@ int pstore_register(struct pstore_info *
- 		psi->write_user = pstore_write_user_compat;
- 	psinfo = psi;
- 	mutex_init(&psinfo->read_mutex);
--	sema_init(&psinfo->buf_lock, 1);
-+	spin_lock_init(&psinfo->buf_lock);
- 
- 	if (psi->flags & PSTORE_FLAGS_DMESG)
- 		allocate_buf_for_compression();
---- a/include/linux/pstore.h
-+++ b/include/linux/pstore.h
-@@ -14,7 +14,7 @@
- #include <linux/errno.h>
- #include <linux/kmsg_dump.h>
- #include <linux/mutex.h>
--#include <linux/semaphore.h>
-+#include <linux/spinlock.h>
- #include <linux/time.h>
- #include <linux/types.h>
- 
-@@ -87,7 +87,7 @@ struct pstore_record {
-  * @owner:	module which is responsible for this backend driver
-  * @name:	name of the backend driver
-  *
-- * @buf_lock:	semaphore to serialize access to @buf
-+ * @buf_lock:	spinlock to serialize access to @buf
-  * @buf:	preallocated crash dump buffer
-  * @bufsize:	size of @buf available for crash dump bytes (must match
-  *		smallest number of bytes available for writing to a
-@@ -178,7 +178,7 @@ struct pstore_info {
- 	struct module	*owner;
- 	const char	*name;
- 
--	struct semaphore buf_lock;
-+	spinlock_t	buf_lock;
- 	char		*buf;
- 	size_t		bufsize;
- 
+-	genpd_debug_remove(genpd);
+ 	list_del(&genpd->gpd_list_node);
+ 	genpd_unlock(genpd);
++	genpd_debug_remove(genpd);
+ 	cancel_work_sync(&genpd->power_off_work);
+ 	if (genpd_is_cpu_domain(genpd))
+ 		free_cpumask_var(genpd->cpus);
 
 
