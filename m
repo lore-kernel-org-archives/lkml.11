@@ -2,106 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 317DBC43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 46DFFC43217
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:22:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356927AbiDEUQX (ORCPT
+        id S1357452AbiDEUQ1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 16:16:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58388 "EHLO
+        Tue, 5 Apr 2022 16:16:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52002 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1573366AbiDES5N (ORCPT
+        with ESMTP id S1349433AbiDEJtw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 14:57:13 -0400
-Received: from mail.skyhub.de (mail.skyhub.de [5.9.137.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A90F7B8239;
-        Tue,  5 Apr 2022 11:55:12 -0700 (PDT)
-Received: from zn.tnic (p2e55dff8.dip0.t-ipconnect.de [46.85.223.248])
+        Tue, 5 Apr 2022 05:49:52 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9244E24BD1;
+        Tue,  5 Apr 2022 02:45:46 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 37C3B1EC0374;
-        Tue,  5 Apr 2022 20:55:07 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
-        t=1649184907;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
-        bh=v2FjWdRnczI9WKt4ClfJ913bandBLADmN4fX24w4Ui4=;
-        b=CW65VH61kzlILvC1aaS6x77amEDhT358yeIFIwhXHg0LUuLo1KxyindYNWNBcB1Epm/PUa
-        Jqj4LEo84G6aE0DNebEuwx7BIznR/jTVutvGPaZnMXa8z6VxzJHewH2E+sqx/sDun0fsBh
-        Oj7RQRh1ieLt6mNg0xVJpuSJWuKqmes=
-Date:   Tue, 5 Apr 2022 20:55:05 +0200
-From:   Borislav Petkov <bp@alien8.de>
-To:     Brijesh Singh <brijesh.singh@amd.com>,
-        Paolo Bonzini <pbonzini@redhat.com>
-Cc:     x86@kernel.org, linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
-        linux-efi@vger.kernel.org, platform-driver-x86@vger.kernel.org,
-        linux-coco@lists.linux.dev, linux-mm@kvack.org,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Joerg Roedel <jroedel@suse.de>,
-        Tom Lendacky <thomas.lendacky@amd.com>,
-        "H. Peter Anvin" <hpa@zytor.com>, Ard Biesheuvel <ardb@kernel.org>,
-        Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Jim Mattson <jmattson@google.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Sergio Lopez <slp@redhat.com>, Peter Gonda <pgonda@google.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
-        David Rientjes <rientjes@google.com>,
-        Dov Murik <dovmurik@linux.ibm.com>,
-        Tobin Feldman-Fitzthum <tobin@ibm.com>,
-        Michael Roth <michael.roth@amd.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
-        Andi Kleen <ak@linux.intel.com>,
-        "Dr . David Alan Gilbert" <dgilbert@redhat.com>,
-        brijesh.ksingh@gmail.com, tony.luck@intel.com, marcorr@google.com,
-        sathyanarayanan.kuppuswamy@linux.intel.com,
-        Venu Busireddy <venu.busireddy@oracle.com>
-Subject: Re: [PATCH v12 2.1/46] KVM: SVM: Create a separate mapping for the
- SEV-ES save area
-Message-ID: <YkyQib4Jda1epH3G@zn.tnic>
-References: <20220307213356.2797205-3-brijesh.singh@amd.com>
- <20220405182743.308853-1-brijesh.singh@amd.com>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2D7AA61675;
+        Tue,  5 Apr 2022 09:45:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 09DE1C385A2;
+        Tue,  5 Apr 2022 09:45:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649151945;
+        bh=zPCGveBQgJIlDVIMeFHkX0aMMcRrkc0ZJmZXhkmwY1w=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=Fmoh3PC9MkzVVgVISbnNSsyTDV8g6RlMqccTT0cT0nBLqfa0WK9fNdMMmLuCBQ+8M
+         pQ8YHjtZGJ3YRiiuYjYwxdlBeunIeRa6inmubpMZsULPGas/+PanBM+zHcBhSHTRjj
+         aGCDiDhowCQnT1yEaNYuqZeado5DEgPOiP7tXpJU=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Andrzej Hajda <andrzej.hajda@intel.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Laurent Pinchart <Laurent.pinchart@ideasonboard.com>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        Vinod Koul <vkoul@kernel.org>,
+        Heiko Stuebner <heiko@sntech.de>,
+        Maxime Ripard <mripard@kernel.org>,
+        =?UTF-8?q?Guido=20G=C3=BCnther?= <agx@sigxcpu.org>,
+        Liu Ying <victor.liu@nxp.com>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 598/913] phy: dphy: Correct lpx parameter and its derivatives(ta_{get,go,sure})
+Date:   Tue,  5 Apr 2022 09:27:40 +0200
+Message-Id: <20220405070357.767344907@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20220405182743.308853-1-brijesh.singh@amd.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 05, 2022 at 01:27:43PM -0500, Brijesh Singh wrote:
-> From: Tom Lendacky <thomas.lendacky@amd.com>
-> 
-> The save area for SEV-ES/SEV-SNP guests, as used by the hardware, is
-> different from the save area of a non SEV-ES/SEV-SNP guest.
-> 
-> This is the first step in defining the multiple save areas to keep them
-> separate and ensuring proper operation amongst the different types of
-> guests. Create an SEV-ES/SEV-SNP save area and adjust usage to the new
-> save area definition where needed.
-> 
-> Reviewed-by: Venu Busireddy <venu.busireddy@oracle.com>
-> Signed-off-by: Tom Lendacky <thomas.lendacky@amd.com>
-> Signed-off-by: Brijesh Singh <brijesh.singh@amd.com>
-> ---
-> 
-> Hi Paolo,
-> 
-> Now there is a conflict when applying this patch on 5.18-rc1. Please
-> use the updated patch when merging the first four patches from the
-> series.
+From: Liu Ying <victor.liu@nxp.com>
 
-Right, or if you'd prefer I carried them through the tip tree, lemme
-know.
+[ Upstream commit 3153fa38e38af566cf6454a03b1dbadaf6f323c0 ]
 
-Thx.
+According to the comment of the function phy_mipi_dphy_get_default_config(),
+it uses minimum D-PHY timings based on MIPI D-PHY specification.  They are
+derived from the valid ranges specified in Section 6.9, Table 14, Page 41
+of the D-PHY specification (v1.2).  The table 14 explicitly mentions that
+the minimum T-LPX parameter is 50 nanoseconds and the minimum TA-SURE
+parameter is T-LPX nanoseconds.  Likewise, the kernel doc of the 'lpx' and
+'ta_sure' members of struct phy_configure_opts_mipi_dphy mentions that
+the minimum values are 50000 picoseconds and @lpx picoseconds respectively.
+Also, the function phy_mipi_dphy_config_validate() checks if cfg->lpx is
+less than 50000 picoseconds and if cfg->ta_sure is less than cfg->lpx,
+which hints the same minimum values.
 
+Without this patch, the function phy_mipi_dphy_get_default_config()
+wrongly sets cfg->lpx to 60000 picoseconds and cfg->ta_sure to 2 * cfg->lpx.
+So, let's correct them to 50000 picoseconds and cfg->lpx respectively.
+
+Note that I've only tested the patch with RM67191 DSI panel on i.MX8mq EVK.
+Help is needed to test with other i.MX8mq, Meson and Rockchip platforms,
+as I don't have the hardwares.
+
+Fixes: dddc97e82303 ("phy: dphy: Add configuration helpers")
+Cc: Andrzej Hajda <andrzej.hajda@intel.com>
+Cc: Neil Armstrong <narmstrong@baylibre.com>
+Cc: Laurent Pinchart <Laurent.pinchart@ideasonboard.com>
+Cc: Kishon Vijay Abraham I <kishon@ti.com>
+Cc: Vinod Koul <vkoul@kernel.org>
+Cc: Heiko Stuebner <heiko@sntech.de>
+Cc: Maxime Ripard <mripard@kernel.org>
+Cc: Guido Günther <agx@sigxcpu.org>
+Signed-off-by: Liu Ying <victor.liu@nxp.com>
+Link: https://lore.kernel.org/r/20220216071257.1647703-1-victor.liu@nxp.com
+Signed-off-by: Vinod Koul <vkoul@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/phy/phy-core-mipi-dphy.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/phy/phy-core-mipi-dphy.c b/drivers/phy/phy-core-mipi-dphy.c
+index ccb4045685cd..929e86d6558e 100644
+--- a/drivers/phy/phy-core-mipi-dphy.c
++++ b/drivers/phy/phy-core-mipi-dphy.c
+@@ -64,10 +64,10 @@ int phy_mipi_dphy_get_default_config(unsigned long pixel_clock,
+ 	cfg->hs_trail = max(4 * 8 * ui, 60000 + 4 * 4 * ui);
+ 
+ 	cfg->init = 100;
+-	cfg->lpx = 60000;
++	cfg->lpx = 50000;
+ 	cfg->ta_get = 5 * cfg->lpx;
+ 	cfg->ta_go = 4 * cfg->lpx;
+-	cfg->ta_sure = 2 * cfg->lpx;
++	cfg->ta_sure = cfg->lpx;
+ 	cfg->wakeup = 1000;
+ 
+ 	cfg->hs_clk_rate = hs_clk_rate;
 -- 
-Regards/Gruss,
-    Boris.
+2.34.1
 
-https://people.kernel.org/tglx/notes-about-netiquette
+
+
