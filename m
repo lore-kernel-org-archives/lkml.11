@@ -2,46 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E0929C43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D202DC433F5
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:25:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1574822AbiDEXBR (ORCPT
+        id S1574795AbiDEXBM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 19:01:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39194 "EHLO
+        Tue, 5 Apr 2022 19:01:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55826 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349057AbiDEJtD (ORCPT
+        with ESMTP id S1345071AbiDEKki (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:49:03 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20050A94EC;
-        Tue,  5 Apr 2022 02:39:27 -0700 (PDT)
+        Tue, 5 Apr 2022 06:40:38 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5416E2DAA9;
+        Tue,  5 Apr 2022 03:25:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C721AB818F3;
-        Tue,  5 Apr 2022 09:39:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 12FF6C385A2;
-        Tue,  5 Apr 2022 09:39:23 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E4E9461425;
+        Tue,  5 Apr 2022 10:25:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C4C20C385A0;
+        Tue,  5 Apr 2022 10:25:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649151564;
-        bh=WuRlOwtrRvuEhnjGzamlA5fZhPSxTgvN2dXTvL/ROmk=;
+        s=korg; t=1649154347;
+        bh=g0TljGLO1IzFHta7Q9gIR9X96djpoWB7T6QSJAJD6jc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CIH4+l+QUQbQFXC8Ud9+pKBnKzIYvfPrEKuVxbd9cEsgrMHUghT6k0rZ15WCTvk+I
-         Yr2tph9yxgNBOI0gF7Nz+8HPonbFaBMaAjqnC4H/jFWPmIreN4PkqagREc64WHbCYK
-         xgrlMb33oQ4jB1opz7a+4wDuqx6BlXWeRBtJn61g=
+        b=alwI5WbJ7QDqBGpuLSvRbcViYqBgLaBPbf6dvr8sIkwJdAiUqxpgrAAHX8sOaBaOa
+         aWERUPWvA0hdJ4AJOVJgppypa1H1nOiJSRx+cOSOLPkbc7M/uzdtRSlU8pmk803ykx
+         lEaILzePDSVw/Mcu4RJKyAh7LZ9mpfuMJAfgf0vg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Takashi Iwai <tiwai@suse.de>,
-        Luca Coelho <luciano.coelho@intel.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 462/913] iwlwifi: mvm: Dont call iwl_mvm_sta_from_mac80211() with NULL sta
-Date:   Tue,  5 Apr 2022 09:25:24 +0200
-Message-Id: <20220405070353.697190655@linuxfoundation.org>
+        stable@vger.kernel.org, "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 5.10 547/599] wireguard: socket: ignore v6 endpoints when ipv6 is disabled
+Date:   Tue,  5 Apr 2022 09:34:01 +0200
+Message-Id: <20220405070315.119252507@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
+References: <20220405070258.802373272@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,52 +49,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Takashi Iwai <tiwai@suse.de>
+From: Jason A. Donenfeld <Jason@zx2c4.com>
 
-[ Upstream commit 30d17c12b0895e15ce22ebc1f52a4ff02df6dbc6 ]
+commit 77fc73ac89be96ec8f39e8efa53885caa7cb3645 upstream.
 
-The recent fix for NULL sta in iwl_mvm_get_tx_rate() still has a call
-of iwl_mvm_sta_from_mac80211() that may be called with NULL sta.
-Although this practically only points to the address and the actual
-access doesn't happen due to the conditional evaluation at a later
-point, it looks a bit flaky.
+The previous commit fixed a memory leak on the send path in the event
+that IPv6 is disabled at compile time, but how did a packet even arrive
+there to begin with? It turns out we have previously allowed IPv6
+endpoints even when IPv6 support is disabled at compile time. This is
+awkward and inconsistent. Instead, let's just ignore all things IPv6,
+the same way we do other malformed endpoints, in the case where IPv6 is
+disabled.
 
-This patch drops the temporary variable above and evaluates
-iwm_mvm_sta_from_mac80211() directly for avoiding confusions.
-
-Fixes: d599f714b73e ("iwlwifi: mvm: don't crash on invalid rate w/o STA")
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
-Link: https://lore.kernel.org/r/20220121114024.10454-1-tiwai@suse.de
-Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: e7096c131e51 ("net: WireGuard secure network tunnel")
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/wireless/intel/iwlwifi/mvm/tx.c | 5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
+ drivers/net/wireguard/socket.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/wireless/intel/iwlwifi/mvm/tx.c b/drivers/net/wireless/intel/iwlwifi/mvm/tx.c
-index 06fbd9ab37df..b5368cb57ca8 100644
---- a/drivers/net/wireless/intel/iwlwifi/mvm/tx.c
-+++ b/drivers/net/wireless/intel/iwlwifi/mvm/tx.c
-@@ -271,15 +271,14 @@ static u32 iwl_mvm_get_tx_rate(struct iwl_mvm *mvm,
- 
- 	/* info->control is only relevant for non HW rate control */
- 	if (!ieee80211_hw_check(mvm->hw, HAS_RATE_CONTROL)) {
--		struct iwl_mvm_sta *mvmsta = iwl_mvm_sta_from_mac80211(sta);
--
- 		/* HT rate doesn't make sense for a non data frame */
- 		WARN_ONCE(info->control.rates[0].flags & IEEE80211_TX_RC_MCS &&
- 			  !ieee80211_is_data(fc),
- 			  "Got a HT rate (flags:0x%x/mcs:%d/fc:0x%x/state:%d) for a non data frame\n",
- 			  info->control.rates[0].flags,
- 			  info->control.rates[0].idx,
--			  le16_to_cpu(fc), sta ? mvmsta->sta_state : -1);
-+			  le16_to_cpu(fc),
-+			  sta ? iwl_mvm_sta_from_mac80211(sta)->sta_state : -1);
- 
- 		rate_idx = info->control.rates[0].idx;
- 	}
--- 
-2.34.1
-
+--- a/drivers/net/wireguard/socket.c
++++ b/drivers/net/wireguard/socket.c
+@@ -242,7 +242,7 @@ int wg_socket_endpoint_from_skb(struct e
+ 		endpoint->addr4.sin_addr.s_addr = ip_hdr(skb)->saddr;
+ 		endpoint->src4.s_addr = ip_hdr(skb)->daddr;
+ 		endpoint->src_if4 = skb->skb_iif;
+-	} else if (skb->protocol == htons(ETH_P_IPV6)) {
++	} else if (IS_ENABLED(CONFIG_IPV6) && skb->protocol == htons(ETH_P_IPV6)) {
+ 		endpoint->addr6.sin6_family = AF_INET6;
+ 		endpoint->addr6.sin6_port = udp_hdr(skb)->source;
+ 		endpoint->addr6.sin6_addr = ipv6_hdr(skb)->saddr;
+@@ -285,7 +285,7 @@ void wg_socket_set_peer_endpoint(struct
+ 		peer->endpoint.addr4 = endpoint->addr4;
+ 		peer->endpoint.src4 = endpoint->src4;
+ 		peer->endpoint.src_if4 = endpoint->src_if4;
+-	} else if (endpoint->addr.sa_family == AF_INET6) {
++	} else if (IS_ENABLED(CONFIG_IPV6) && endpoint->addr.sa_family == AF_INET6) {
+ 		peer->endpoint.addr6 = endpoint->addr6;
+ 		peer->endpoint.src6 = endpoint->src6;
+ 	} else {
 
 
