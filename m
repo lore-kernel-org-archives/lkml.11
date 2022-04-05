@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AB62CC433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:17:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 85E29C35294
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:17:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1582948AbiDEXui (ORCPT
+        id S1583130AbiDEXvV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 19:50:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33776 "EHLO
+        Tue, 5 Apr 2022 19:51:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33808 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233852AbiDEKfq (ORCPT
+        with ESMTP id S242763AbiDEKfQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:35:46 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE6834AE3E;
-        Tue,  5 Apr 2022 03:21:42 -0700 (PDT)
+        Tue, 5 Apr 2022 06:35:16 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4B3427CDB;
+        Tue,  5 Apr 2022 03:20:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 89D18617CF;
-        Tue,  5 Apr 2022 10:21:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9764CC385A1;
-        Tue,  5 Apr 2022 10:21:41 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 647D961562;
+        Tue,  5 Apr 2022 10:20:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 75524C385A1;
+        Tue,  5 Apr 2022 10:19:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649154102;
-        bh=oPwSHQLp1ImXKiOXToZAfm2Dne+MpUgu6rZOvYgKQH8=;
+        s=korg; t=1649153999;
+        bh=hU7IAzgSohg8OgB98cEtIW0zSlPV5Cpe9Y4qKRpwVsw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pFw/bbf6iShjCmvLvZHoWIVfRS3mfz1zTM6JQWq226p/MSUzV7gFH87uRfEFHybti
-         KMg3nqgDw2Jj67139rAuF+A3bblrNa/zY/v7RPPR+Lw7j3KIlapvBmpaWeCnFnbxlE
-         4yIYkrn/mwDqGwOpaxR3GB25HknYdxACGBd30RAg=
+        b=aXE4ZYAYXimQ1AsXV6eHd0uH/MULTeo/nzlx6Gv10pfkDDj1KQIjLoSFTpVG++VUw
+         VSdepAWvpDB4qHCxhvMC87pzcUsi6aYhQomMQFXFfKkWPikxFVwgzF/hhhkVawHWRE
+         z22aFUw8Z/x3LlxpJ2HMra7hpMC2qJRhXwMTKF6Y=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        "Souptick Joarder (HPE)" <jrdr.linux@gmail.com>,
-        Marc Zyngier <maz@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 459/599] irqchip/nvic: Release nvic_base upon failure
-Date:   Tue,  5 Apr 2022 09:32:33 +0200
-Message-Id: <20220405070312.488457487@linuxfoundation.org>
+        stable@vger.kernel.org, Chen-Yu Tsai <wenst@chromium.org>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 422/599] pinctrl: mediatek: paris: Skip custom extra pin config dump for virtual GPIOs
+Date:   Tue,  5 Apr 2022 09:31:56 +0200
+Message-Id: <20220405070311.391652110@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
 References: <20220405070258.802373272@linuxfoundation.org>
@@ -51,48 +52,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Souptick Joarder (HPE) <jrdr.linux@gmail.com>
+From: Chen-Yu Tsai <wenst@chromium.org>
 
-[ Upstream commit e414c25e3399b2b3d7337dc47abccab5c71b7c8f ]
+[ Upstream commit 1763933d377ecb05454f8d20e3c8922480db2ac0 ]
 
-smatch warning was reported as below ->
+Virtual GPIOs do not have any hardware state associated with them. Any
+attempt to read back hardware state for these pins result in error
+codes.
 
-smatch warnings:
-drivers/irqchip/irq-nvic.c:131 nvic_of_init()
-warn: 'nvic_base' not released on lines: 97.
+Skip dumping extra pin config information for these virtual GPIOs.
 
-Release nvic_base upon failure.
-
-Reported-by: kernel test robot <lkp@intel.com>
-Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
-Signed-off-by: Souptick Joarder (HPE) <jrdr.linux@gmail.com>
-Signed-off-by: Marc Zyngier <maz@kernel.org>
-Link: https://lore.kernel.org/r/20220218163303.33344-1-jrdr.linux@gmail.com
+Fixes: 184d8e13f9b1 ("pinctrl: mediatek: Add support for pin configuration dump via debugfs.")
+Signed-off-by: Chen-Yu Tsai <wenst@chromium.org>
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+Link: https://lore.kernel.org/r/20220308100956.2750295-7-wenst@chromium.org
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/irqchip/irq-nvic.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/pinctrl/mediatek/pinctrl-paris.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/irqchip/irq-nvic.c b/drivers/irqchip/irq-nvic.c
-index 21cb31ff2bbf..e903c44edb64 100644
---- a/drivers/irqchip/irq-nvic.c
-+++ b/drivers/irqchip/irq-nvic.c
-@@ -94,6 +94,7 @@ static int __init nvic_of_init(struct device_node *node,
+diff --git a/drivers/pinctrl/mediatek/pinctrl-paris.c b/drivers/pinctrl/mediatek/pinctrl-paris.c
+index 2f3c65265e23..d0a4ebbe1e7e 100644
+--- a/drivers/pinctrl/mediatek/pinctrl-paris.c
++++ b/drivers/pinctrl/mediatek/pinctrl-paris.c
+@@ -580,6 +580,9 @@ ssize_t mtk_pctrl_show_one_pin(struct mtk_pinctrl *hw,
+ 	if (gpio >= hw->soc->npins)
+ 		return -EINVAL;
  
- 	if (!nvic_irq_domain) {
- 		pr_warn("Failed to allocate irq domain\n");
-+		iounmap(nvic_base);
- 		return -ENOMEM;
- 	}
- 
-@@ -103,6 +104,7 @@ static int __init nvic_of_init(struct device_node *node,
- 	if (ret) {
- 		pr_warn("Failed to allocate irq chips\n");
- 		irq_domain_remove(nvic_irq_domain);
-+		iounmap(nvic_base);
- 		return ret;
- 	}
- 
++	if (mtk_is_virt_gpio(hw, gpio))
++		return -EINVAL;
++
+ 	desc = (const struct mtk_pin_desc *)&hw->soc->pins[gpio];
+ 	pinmux = mtk_pctrl_get_pinmux(hw, gpio);
+ 	if (pinmux >= hw->soc->nfuncs)
 -- 
 2.34.1
 
