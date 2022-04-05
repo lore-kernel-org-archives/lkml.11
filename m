@@ -2,106 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 49A81C3527E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DF44BC35280
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 21:24:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355177AbiDEVY5 (ORCPT
+        id S1355405AbiDEVZF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 17:24:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39282 "EHLO
+        Tue, 5 Apr 2022 17:25:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43986 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382353AbiDEMO5 (ORCPT
+        with ESMTP id S1349474AbiDEJtz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 08:14:57 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69A5DA66F2;
-        Tue,  5 Apr 2022 04:25:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1649157925; x=1680693925;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=7o0sgXENCg/Y0DQNqjlqJ8tcLEzSZooqtxoe6odT57w=;
-  b=OlowTSPa/+lLozdO8uYyB/+3AFwapNAMGM8gfIHj9NPI5jOftu0LEdgW
-   ONRtAvSK552/0xS8q+6sSTQNQUO78Z5N4Y+fLo35P9QWW+SC/aZ0q09/7
-   A82hZp6BDsmkkXuJ7/eqxXQbZAfteRqhxokaytYrBXNhgDdvD70r1HzL4
-   U/gDt2sPdb/CplHhvQAfQnfiSB7WlgWDhLZHuhH/7JEzzYAqw5zAVbemE
-   F0ff5WxoX9hO/OwvfOsQh/z/wUN8Uei2U0+GZ/lNIpgUpoOBo8Dwb1qgK
-   vaFmIPsexTDa4ePSePRLzIHHLSJWQn14kR2gMxhYZh1YstTmQMnagUo36
-   A==;
-X-IronPort-AV: E=Sophos;i="5.90,236,1643698800"; 
-   d="scan'208";a="159346885"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 05 Apr 2022 04:25:22 -0700
-Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Tue, 5 Apr 2022 04:25:22 -0700
-Received: from localhost.localdomain (10.10.115.15) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Tue, 5 Apr 2022 04:25:20 -0700
-From:   Claudiu Beznea <claudiu.beznea@microchip.com>
-To:     <robh+dt@kernel.org>, <nicolas.ferre@microchip.com>,
-        <alexandre.belloni@bootlin.com>, <p.zabel@pengutronix.de>,
-        <sre@kernel.org>
-CC:     <linux-arm-kernel@lists.infradead.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-pm@vger.kernel.org>,
-        Claudiu Beznea <claudiu.beznea@microchip.com>
-Subject: [PATCH 0/8] power: reset: at91-reset: add support for sama7g5
-Date:   Tue, 5 Apr 2022 14:27:16 +0300
-Message-ID: <20220405112724.2760905-1-claudiu.beznea@microchip.com>
-X-Mailer: git-send-email 2.33.0
+        Tue, 5 Apr 2022 05:49:55 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EEE3A27CEF;
+        Tue,  5 Apr 2022 02:46:58 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9A195B818F3;
+        Tue,  5 Apr 2022 09:46:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 04B70C385A1;
+        Tue,  5 Apr 2022 09:46:55 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649152016;
+        bh=gNHrehMZgZje2ewnnw7KjUsMgqBeRD6jduXfTGBTdkQ=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=ji9w8NH86koKxRRmKPJLir9PAhyqJByrPAL9HomQ2X8BNlBuOnufxG6iiiiBsakcQ
+         D33zHaZkgH0ZRWMCyjGskIfHfR2aZOxRsEQqlm7M5//Vq7EJ+S3go4Gp4d+vB9Abjt
+         5+DyrPn6fDhepkuSCv5Q1nFzWkFlLBQO/2YFq/D0=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 617/913] remoteproc: qcom_q6v5_mss: Fix some leaks in q6v5_alloc_memory_region
+Date:   Tue,  5 Apr 2022 09:27:59 +0200
+Message-Id: <20220405070358.335445001@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+From: Miaoqian Lin <linmq006@gmail.com>
 
-The series adds reset controller support for SAMA7G5 SoCs. Compared with
-previous version the reset controller embedded on SAMA7G5 is able to
-reset individual on SoC devices (e.g. USB PHY controllers).
+[ Upstream commit 07a5dcc4bed9d7cae54adf5aa10ff9f037a3204b ]
 
-Among with this I took the change and converted reset controller
-bindings to YAML (patch 2/8) and adapt reset controller nodes in
-device tree files to comply with DT specifications (patch 1/8).
+The device_node pointer is returned by of_parse_phandle() or
+of_get_child_by_name() with refcount incremented.
+We should use of_node_put() on it when done.
 
-Thank you,
-Claudiu Beznea
+This function only call of_node_put(node) when of_address_to_resource
+succeeds, missing error cases.
 
-Claudiu Beznea (8):
-  ARM: dts: at91: use generic name for reset controller
-  dt-bindings: reset: convert Atmel/Microchip reset controller to YAML
-  dt-bindings: reset: atmel,at91sam9260-reset: add sama7g5 bindings
-  dt-bindings: reset: add sama7g5 definitions
-  power: reset: at91-reset: add at91_reset_data
-  power: reset: at91-reset: add reset_controller_dev support
-  power: reset: at91-reset: add support for SAMA7G5
-  ARM: dts: at91: sama7g5: add reset-controller node
+Fixes: 278d744c46fd ("remoteproc: qcom: Fix potential device node leaks")
+Fixes: 051fb70fd4ea ("remoteproc: qcom: Driver for the self-authenticating Hexagon v5")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Link: https://lore.kernel.org/r/20220308064522.13804-1-linmq006@gmail.com
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/remoteproc/qcom_q6v5_mss.c | 11 +++++++----
+ 1 file changed, 7 insertions(+), 4 deletions(-)
 
- .../devicetree/bindings/arm/atmel-sysregs.txt |  15 --
- .../reset/atmel,at91sam9260-reset.yaml        |  68 +++++++++
- arch/arm/boot/dts/at91sam9260.dtsi            |   2 +-
- arch/arm/boot/dts/at91sam9261.dtsi            |   2 +-
- arch/arm/boot/dts/at91sam9263.dtsi            |   2 +-
- arch/arm/boot/dts/at91sam9g45.dtsi            |   2 +-
- arch/arm/boot/dts/at91sam9n12.dtsi            |   2 +-
- arch/arm/boot/dts/at91sam9rl.dtsi             |   2 +-
- arch/arm/boot/dts/at91sam9x5.dtsi             |   2 +-
- arch/arm/boot/dts/sam9x60.dtsi                |   2 +-
- arch/arm/boot/dts/sama5d2.dtsi                |   2 +-
- arch/arm/boot/dts/sama5d3.dtsi                |   2 +-
- arch/arm/boot/dts/sama5d4.dtsi                |   2 +-
- arch/arm/boot/dts/sama7g5.dtsi                |   7 +
- drivers/power/reset/at91-reset.c              | 134 ++++++++++++++++--
- include/dt-bindings/reset/sama7g5-reset.h     |  10 ++
- 16 files changed, 217 insertions(+), 39 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/reset/atmel,at91sam9260-reset.yaml
- create mode 100644 include/dt-bindings/reset/sama7g5-reset.h
-
+diff --git a/drivers/remoteproc/qcom_q6v5_mss.c b/drivers/remoteproc/qcom_q6v5_mss.c
+index 423b31dfa574..ca1c7387776b 100644
+--- a/drivers/remoteproc/qcom_q6v5_mss.c
++++ b/drivers/remoteproc/qcom_q6v5_mss.c
+@@ -1624,18 +1624,20 @@ static int q6v5_alloc_memory_region(struct q6v5 *qproc)
+ 	 * reserved memory regions from device's memory-region property.
+ 	 */
+ 	child = of_get_child_by_name(qproc->dev->of_node, "mba");
+-	if (!child)
++	if (!child) {
+ 		node = of_parse_phandle(qproc->dev->of_node,
+ 					"memory-region", 0);
+-	else
++	} else {
+ 		node = of_parse_phandle(child, "memory-region", 0);
++		of_node_put(child);
++	}
+ 
+ 	ret = of_address_to_resource(node, 0, &r);
++	of_node_put(node);
+ 	if (ret) {
+ 		dev_err(qproc->dev, "unable to resolve mba region\n");
+ 		return ret;
+ 	}
+-	of_node_put(node);
+ 
+ 	qproc->mba_phys = r.start;
+ 	qproc->mba_size = resource_size(&r);
+@@ -1646,14 +1648,15 @@ static int q6v5_alloc_memory_region(struct q6v5 *qproc)
+ 	} else {
+ 		child = of_get_child_by_name(qproc->dev->of_node, "mpss");
+ 		node = of_parse_phandle(child, "memory-region", 0);
++		of_node_put(child);
+ 	}
+ 
+ 	ret = of_address_to_resource(node, 0, &r);
++	of_node_put(node);
+ 	if (ret) {
+ 		dev_err(qproc->dev, "unable to resolve mpss region\n");
+ 		return ret;
+ 	}
+-	of_node_put(node);
+ 
+ 	qproc->mpss_phys = qproc->mpss_reloc = r.start;
+ 	qproc->mpss_size = resource_size(&r);
 -- 
-2.32.0
+2.34.1
+
+
 
