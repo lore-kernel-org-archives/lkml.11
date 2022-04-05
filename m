@@ -2,79 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E3A4FC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:16:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C776C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:16:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1448116AbiDEUJs (ORCPT
+        id S1448257AbiDEUJv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 16:09:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48642 "EHLO
+        Tue, 5 Apr 2022 16:09:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56644 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1442575AbiDEPhw (ORCPT
+        with ESMTP id S1345283AbiDEKk6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 11:37:52 -0400
-Received: from mx0b-001ae601.pphosted.com (mx0b-001ae601.pphosted.com [67.231.152.168])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0113514D020;
-        Tue,  5 Apr 2022 06:52:16 -0700 (PDT)
-Received: from pps.filterd (m0077474.ppops.net [127.0.0.1])
-        by mx0b-001ae601.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 2356WHiA029192;
-        Tue, 5 Apr 2022 08:52:00 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cirrus.com; h=subject : from : to :
- cc : references : message-id : date : mime-version : in-reply-to :
- content-type : content-transfer-encoding; s=PODMain02222019;
- bh=qdlWSFWox8pqXhYTtt1fv3TfdyVH568avS9AMQTckt4=;
- b=PKbbBxLzsWnf3sZ3Gb91O1NnBu3X2FULdZyghJt+k/ySFZWpnEJbBhbq3OGlAckgvwzj
- GSY32edVAbCt+8WDbEuthhPwyhh2VLkwRz7eC7+wj9z0mXrj0Nqit67eYGvis5eK9qtD
- xmXrhvWrLiUnjygcvGcULUAX++Jv6U5i5hjIx3B6mUT4z9RzQao796w8nGlH0Wv+9A0e
- VQSVnANh6o6STWuVZEYWgUNYi8EWGYSyHqamITND2wrQENPTL3CWb9s2DlX6vkN92/An
- QcsFqq5zfOSs9WlKVqrekcZaRQ/0XCP28EhXuIcEADfYJanV/5toBpTefgsqZJjh+Wph EA== 
-Received: from ediex02.ad.cirrus.com ([84.19.233.68])
-        by mx0b-001ae601.pphosted.com (PPS) with ESMTPS id 3f6jwnujw8-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Tue, 05 Apr 2022 08:51:59 -0500
-Received: from EDIEX01.ad.cirrus.com (198.61.84.80) by EDIEX02.ad.cirrus.com
- (198.61.84.81) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Tue, 5 Apr
- 2022 14:51:49 +0100
-Received: from ediswmail.ad.cirrus.com (198.61.86.93) by EDIEX01.ad.cirrus.com
- (198.61.84.80) with Microsoft SMTP Server id 15.1.2375.24 via Frontend
- Transport; Tue, 5 Apr 2022 14:51:49 +0100
-Received: from [10.0.2.15] (AUSNPC0LSNW1.ad.cirrus.com [198.61.65.88])
-        by ediswmail.ad.cirrus.com (Postfix) with ESMTP id EFB40458;
-        Tue,  5 Apr 2022 13:51:48 +0000 (UTC)
-Subject: Re: [PATCH 5/5] ASoC: cs35l45: Add driver for Cirrus Logic CS35L45
- Smart Amp
-From:   Richard Fitzgerald <rf@opensource.cirrus.com>
-To:     <broonie@kernel.org>, <robh+dt@kernel.org>
-CC:     <devicetree@vger.kernel.org>, <alsa-devel@alsa-project.org>,
-        <linux-kernel@vger.kernel.org>, <patches@opensource.cirrus.com>
-References: <20220318162943.1578102-1-rf@opensource.cirrus.com>
- <20220318162943.1578102-6-rf@opensource.cirrus.com>
-Message-ID: <b9059240-fe6b-6549-d22d-de4bc2ab0c85@opensource.cirrus.com>
-Date:   Tue, 5 Apr 2022 14:51:48 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+        Tue, 5 Apr 2022 06:40:58 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0DA4DE7;
+        Tue,  5 Apr 2022 03:26:27 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8C340B81C98;
+        Tue,  5 Apr 2022 10:26:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E929EC385A0;
+        Tue,  5 Apr 2022 10:26:24 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649154385;
+        bh=ZGj5VBh1SRcWeMfkZp6KGVofnGbhrVjoB3rKBC78DsE=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=bfU79XyZ6qL99jGmhan0g5DE2crSrF2+Xe5lzyBRLqYRIEIiIMJqzIrihM8GfOhlz
+         l38G1VirhlsaB7netOch/h9LYSQj1/B9lqUmUlcUjXVb0SCin1rRt2NEU59m5DFPCF
+         Zus5z7Dit2911L/e+vzQzQRtUNXtGKjuGmFgPgjQ=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Herbert Xu <herbert@gondor.apana.org.au>
+Subject: [PATCH 5.10 558/599] crypto: arm/aes-neonbs-cbc - Select generic cbc and aes
+Date:   Tue,  5 Apr 2022 09:34:12 +0200
+Message-Id: <20220405070315.447180925@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
+References: <20220405070258.802373272@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-In-Reply-To: <20220318162943.1578102-6-rf@opensource.cirrus.com>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Proofpoint-ORIG-GUID: 1Q4LWg2XrZQXUi0dgcuoSCeoh3Ub3r62
-X-Proofpoint-GUID: 1Q4LWg2XrZQXUi0dgcuoSCeoh3Ub3r62
-X-Proofpoint-Spam-Reason: safe
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 18/03/2022 16:29, Richard Fitzgerald wrote:
+From: Herbert Xu <herbert@gondor.apana.org.au>
 
-> +static int cs35l45_i2c_probe(struct i2c_client *client,
-> +			     const struct i2c_device_id *id)
-> +{
+commit c8bd296cca3434b13b28b074eaeb78a23284de77 upstream.
 
-Use the new .probe_new callback
+The algorithm __cbc-aes-neonbs requires a fallback so we need
+to select the config options for them or otherwise it will fail
+to register on boot-up.
 
-> +static int cs35l45_spi_remove(struct spi_device *spi)
-> +{
+Fixes: 00b99ad2bac2 ("crypto: arm/aes-neonbs - Use generic cbc...")
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ arch/arm/crypto/Kconfig |    2 ++
+ 1 file changed, 2 insertions(+)
 
-This is now a void return
+--- a/arch/arm/crypto/Kconfig
++++ b/arch/arm/crypto/Kconfig
+@@ -83,6 +83,8 @@ config CRYPTO_AES_ARM_BS
+ 	depends on KERNEL_MODE_NEON
+ 	select CRYPTO_SKCIPHER
+ 	select CRYPTO_LIB_AES
++	select CRYPTO_AES
++	select CRYPTO_CBC
+ 	select CRYPTO_SIMD
+ 	help
+ 	  Use a faster and more secure NEON based implementation of AES in CBC,
+
+
