@@ -2,90 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C19E9C43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B2E91C4332F
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 15:21:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1389422AbiDEPVQ (ORCPT
+        id S1389168AbiDEPVI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 11:21:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39768 "EHLO
+        Tue, 5 Apr 2022 11:21:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59372 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347056AbiDEJpz (ORCPT
+        with ESMTP id S1347073AbiDEJp5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:45:55 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E12644E394;
-        Tue,  5 Apr 2022 02:32:17 -0700 (PDT)
+        Tue, 5 Apr 2022 05:45:57 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F33FADCE25;
+        Tue,  5 Apr 2022 02:32:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BE98561368;
+        by ams.source.kernel.org (Postfix) with ESMTPS id AA6F6B81CB5;
         Tue,  5 Apr 2022 09:32:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D5707C385A0;
-        Tue,  5 Apr 2022 09:32:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649151137;
-        bh=7PbildU4fVy2AP3yvxFY7nRP8gtRqmn3F61F8jyqIRQ=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CsaJw4ldPZuWRQi4QNBoaCf3lcEbcIEuseNaNhkhEkiyfn4T35cJr/KSgULkkn7AB
-         3dNTI2bFKPTsK6vKlt8tv0S1zZhqsuWtU1UDtSRBcsd7GRs+LyLgqRKeEqr/JhW+NT
-         2LGFV4HUqFe6bP74Pc/V+aANyfaGIMX+Htm+KbUw=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ard Biesheuvel <ardb@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        "Steven Rostedt (Google)" <rostedt@goodmis.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 307/913] ARM: ftrace: ensure that ADR takes the Thumb bit into account
-Date:   Tue,  5 Apr 2022 09:22:49 +0200
-Message-Id: <20220405070349.058006700@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
-User-Agent: quilt/0.66
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 117A1C385A9;
+        Tue,  5 Apr 2022 09:32:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649151136;
+        bh=Ep4IX5zQgCVW0s4Bsx2dOmJ9bxMmB3cMCg3WQ6oFitA=;
+        h=From:To:Cc:In-Reply-To:References:Subject:Date:From;
+        b=DKZLbHrqwXMwQzuR+wNT6n+G+9rXglYwug01mCcWWbXmoIQfO/Vpe70kT0YFazhyK
+         HpOqieISwH+oDXSYGB0qR6MK7w44XVnjMRZxG4zq+FfU+Kc11T9nMNyNbLuzdr+uoE
+         AzuomW8eVIVETeykPaZ/8CHMDyIjMSoNCbYs43EN+sL2GzIRO3QtfI2rF2Xf6RbCHJ
+         oJXDMRIWYXUgwy4POFFvax9loMOSMD3MAgqtqVW3lY5SWBMTsRKqoeTzqqlexxj65r
+         PZzqgRvA9WUKcV4lthROWr0zndnyyXA3K6MzFB4OmMuaT3M/kWHlWtZa6CvyTuJxi4
+         4IA3mMAdxEtnA==
+From:   Mark Brown <broonie@kernel.org>
+To:     robh+dt@kernel.org, johnson.wang@mediatek.com
+Cc:     linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, devicetree@vger.kernel.org,
+        Project_Global_Chrome_Upstream_Group@mediatek.com,
+        linux-kernel@vger.kernel.org
+In-Reply-To: <20220401080212.27383-1-johnson.wang@mediatek.com>
+References: <20220401080212.27383-1-johnson.wang@mediatek.com>
+Subject: Re: [RESEND v2 0/2] Add support for MediaTek PMIC MT6366
+Message-Id: <164915113479.276837.8566634203471784091.b4-ty@kernel.org>
+Date:   Tue, 05 Apr 2022 10:32:14 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ard Biesheuvel <ardb@kernel.org>
+On Fri, 1 Apr 2022 16:02:10 +0800, Johnson Wang wrote:
+> This patchset adds support for MediaTek PMIC MT6366.
+> MT6366 is the primary PMIC for MT8186 and probably other SOCs.
+> 
+> Resend v2:
+> - rebase on Linux 5.17
+> 
+> Changes in v2:
+> - rebase on Linux 5.17-rc8
+> - change subject line
+> 
+> [...]
 
-[ Upstream commit dd88b03ff0c84f4bcbe1419b93a4bed429fed3be ]
+Applied to
 
-Using ADR to take the address of 'ftrace_stub' via a local label
-produces an address that has the Thumb bit cleared, which means the
-subsequent comparison is guaranteed to fail. Instead, use the badr
-macro, which forces the Thumb bit to be set.
+   https://git.kernel.org/pub/scm/linux/kernel/git/broonie/regulator.git for-next
 
-Fixes: a3ba87a61499 ("ARM: 6316/1: ftrace: add Thumb-2 support")
-Signed-off-by: Ard Biesheuvel <ardb@kernel.org>
-Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
-Reviewed-by: Steven Rostedt (Google) <rostedt@goodmis.org>
-Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- arch/arm/kernel/entry-ftrace.S | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Thanks!
 
-diff --git a/arch/arm/kernel/entry-ftrace.S b/arch/arm/kernel/entry-ftrace.S
-index a74289ebc803..f4886fb6e9ba 100644
---- a/arch/arm/kernel/entry-ftrace.S
-+++ b/arch/arm/kernel/entry-ftrace.S
-@@ -40,7 +40,7 @@
- 	mcount_enter
- 	ldr	r0, =ftrace_trace_function
- 	ldr	r2, [r0]
--	adr	r0, .Lftrace_stub
-+	badr	r0, .Lftrace_stub
- 	cmp	r0, r2
- 	bne	1f
- 
--- 
-2.34.1
+[1/2] regulator: mt6366: Add support for MT6366 regulator
+      commit: d077002c9d07dc6f64d07a362202a1e1081b2f6c
+[2/2] dt-bindings: regulator: Add BUCK and LDO document for MT6358 and MT6366
+      (no commit info)
 
+All being well this means that it will be integrated into the linux-next
+tree (usually sometime in the next 24 hours) and sent to Linus during
+the next merge window (or sooner if it is a bug fix), however if
+problems are discovered then the patch may be dropped or reverted.
 
+You may get further e-mails resulting from automated or manual testing
+and review of the tree, please engage with people reporting problems and
+send followup patches addressing any issues that are reported if needed.
 
+If any updates are required or you are submitting further changes they
+should be sent as incremental updates against current git, existing
+patches will not be replaced.
+
+Please add any relevant lists and maintainers to the CCs when replying
+to this mail.
+
+Thanks,
+Mark
