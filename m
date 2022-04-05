@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 39977C3A59F
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:21:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5BBD5C352B6
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:20:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236670AbiDEIQz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 04:16:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55612 "EHLO
+        id S237094AbiDEIRl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 04:17:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44114 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235598AbiDEH7w (ORCPT
+        with ESMTP id S235658AbiDEH77 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 03:59:52 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 914331AD93;
-        Tue,  5 Apr 2022 00:55:52 -0700 (PDT)
+        Tue, 5 Apr 2022 03:59:59 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F0F3193C2;
+        Tue,  5 Apr 2022 00:57:11 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3B2E6B81B14;
-        Tue,  5 Apr 2022 07:55:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A1D08C340EE;
-        Tue,  5 Apr 2022 07:55:49 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AFE0C6167D;
+        Tue,  5 Apr 2022 07:57:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BDDC0C340EE;
+        Tue,  5 Apr 2022 07:57:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649145350;
-        bh=3739oQgdb/geZIZN2jKhqTo7WUCFX1HT8z90/QnwQvs=;
+        s=korg; t=1649145430;
+        bh=2lWJmGuyQdN4VsEYsnTq8dNPqie4I+PcjZElguCw8KU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=MpESuKtOdGdualCumZ/RwzMgltfVSyBs3k90nbVP15UJyWTHX1bnXtsWoro35e/6P
-         lvhdZecoZrsOMW8b3d2pDxMOq3dTdOaMk60O6zgx4JVcUMnOo3PwYoTDON2ZpwG6zu
-         5BQo2gyjMfD4qbL2EmMLUGsVMC3shik0bXaviImo=
+        b=1H2jd/Siyms/tETa1PNbAr0IWOKitQB2yUMgHiYpWNIe7u7zebDE+G9eRfNFzxvjN
+         I9osvzXbp2bwL11cmZ5N97M5LWyqqeIVfz6gVQ9XRcZ426K6ZIdPqnsglC7SEndO2u
+         TILxwN0RoEPxluxAAHOho+17KXt2vJboJcS1V0NQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, TOTE Robot <oslab@tsinghua.edu.cn>,
-        Jia-Ju Bai <baijiaju1990@gmail.com>,
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
         Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0372/1126] ASoC: rt5663: check the return value of devm_kzalloc() in rt5663_parse_dp()
-Date:   Tue,  5 Apr 2022 09:18:39 +0200
-Message-Id: <20220405070418.546182286@linuxfoundation.org>
+Subject: [PATCH 5.17 0402/1126] ASoC: rockchip: i2s: Fix missing clk_disable_unprepare() in rockchip_i2s_probe
+Date:   Tue,  5 Apr 2022 09:19:09 +0200
+Message-Id: <20220405070419.426486566@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -50,36 +49,64 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jia-Ju Bai <baijiaju1990@gmail.com>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit 4d06f92f38b799295ae22c98be7a20cac3e2a1a7 ]
+[ Upstream commit f725d20579807a68afbe5dba69e78b8fa05f5ef0 ]
 
-The function devm_kzalloc() in rt5663_parse_dp() can fail, so its return
-value should be checked.
+Fix the missing clk_disable_unprepare() before return
+from rockchip_i2s_probe() in the error handling case.
 
-Fixes: 457c25efc592 ("ASoC: rt5663: Add the function of impedance sensing")
-Reported-by: TOTE Robot <oslab@tsinghua.edu.cn>
-Signed-off-by: Jia-Ju Bai <baijiaju1990@gmail.com>
-Link: https://lore.kernel.org/r/20220225131030.27248-1-baijiaju1990@gmail.com
+Fixes: 01605ad12875 ("ASoC: rockchip-i2s: enable "hclk" for rockchip I2S controller")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Link: https://lore.kernel.org/r/20220307083553.26009-1-linmq006@gmail.com
 Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/codecs/rt5663.c | 2 ++
- 1 file changed, 2 insertions(+)
+ sound/soc/rockchip/rockchip_i2s.c | 15 ++++++++++-----
+ 1 file changed, 10 insertions(+), 5 deletions(-)
 
-diff --git a/sound/soc/codecs/rt5663.c b/sound/soc/codecs/rt5663.c
-index 2138f62e6af5..3a8fba101b20 100644
---- a/sound/soc/codecs/rt5663.c
-+++ b/sound/soc/codecs/rt5663.c
-@@ -3478,6 +3478,8 @@ static int rt5663_parse_dp(struct rt5663_priv *rt5663, struct device *dev)
- 		table_size = sizeof(struct impedance_mapping_table) *
- 			rt5663->pdata.impedance_sensing_num;
- 		rt5663->imp_table = devm_kzalloc(dev, table_size, GFP_KERNEL);
-+		if (!rt5663->imp_table)
-+			return -ENOMEM;
- 		ret = device_property_read_u32_array(dev,
- 			"realtek,impedance_sensing_table",
- 			(u32 *)rt5663->imp_table, table_size);
+diff --git a/sound/soc/rockchip/rockchip_i2s.c b/sound/soc/rockchip/rockchip_i2s.c
+index a6d7656c206e..4ce5d2579387 100644
+--- a/sound/soc/rockchip/rockchip_i2s.c
++++ b/sound/soc/rockchip/rockchip_i2s.c
+@@ -716,19 +716,23 @@ static int rockchip_i2s_probe(struct platform_device *pdev)
+ 	i2s->mclk = devm_clk_get(&pdev->dev, "i2s_clk");
+ 	if (IS_ERR(i2s->mclk)) {
+ 		dev_err(&pdev->dev, "Can't retrieve i2s master clock\n");
+-		return PTR_ERR(i2s->mclk);
++		ret = PTR_ERR(i2s->mclk);
++		goto err_clk;
+ 	}
+ 
+ 	regs = devm_platform_get_and_ioremap_resource(pdev, 0, &res);
+-	if (IS_ERR(regs))
+-		return PTR_ERR(regs);
++	if (IS_ERR(regs)) {
++		ret = PTR_ERR(regs);
++		goto err_clk;
++	}
+ 
+ 	i2s->regmap = devm_regmap_init_mmio(&pdev->dev, regs,
+ 					    &rockchip_i2s_regmap_config);
+ 	if (IS_ERR(i2s->regmap)) {
+ 		dev_err(&pdev->dev,
+ 			"Failed to initialise managed register map\n");
+-		return PTR_ERR(i2s->regmap);
++		ret = PTR_ERR(i2s->regmap);
++		goto err_clk;
+ 	}
+ 
+ 	i2s->bclk_ratio = 64;
+@@ -768,7 +772,8 @@ static int rockchip_i2s_probe(struct platform_device *pdev)
+ 		i2s_runtime_suspend(&pdev->dev);
+ err_pm_disable:
+ 	pm_runtime_disable(&pdev->dev);
+-
++err_clk:
++	clk_disable_unprepare(i2s->hclk);
+ 	return ret;
+ }
+ 
 -- 
 2.34.1
 
