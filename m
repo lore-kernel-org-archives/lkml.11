@@ -2,192 +2,148 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E345EC43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F3331C4321E
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:34:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1575735AbiDEXI6 (ORCPT
+        id S1575750AbiDEXJB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 19:08:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44176 "EHLO
+        Tue, 5 Apr 2022 19:09:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55472 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348546AbiDEJsA (ORCPT
+        with ESMTP id S1573267AbiDESjv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:48:00 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 210CC55BDA;
-        Tue,  5 Apr 2022 02:34:08 -0700 (PDT)
+        Tue, 5 Apr 2022 14:39:51 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0F1D167E3;
+        Tue,  5 Apr 2022 11:37:52 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 59152B81B75;
-        Tue,  5 Apr 2022 09:34:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BA648C385AA;
-        Tue,  5 Apr 2022 09:34:05 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649151246;
-        bh=guVlBzD+z8QYs49QmnLxHxL7TQNESW7NlPWrZw/7gKc=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=AHoNgilw539W5JUArm2I5cXiaI1QVt3KALMrVkSZyVBhDfMp4tVWwD3MbNK3F9our
-         PX6RioZcBq6/W0xMge5EiUTkI7aqudxbojKUsENbaNB1v1c3dq7/KNyaTVtxAo4NgW
-         DIhcaOCNNSCFb3VpEDFcFiEhRs5Mm7C1N5GJDop0=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Christoph Hellwig <hch@lst.de>,
-        Dinh Nguyen <dinguyen@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 329/913] uaccess: fix nios2 and microblaze get_user_8()
-Date:   Tue,  5 Apr 2022 09:23:11 +0200
-Message-Id: <20220405070349.712138376@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
-User-Agent: quilt/0.66
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6F453618D9;
+        Tue,  5 Apr 2022 18:37:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4DBF0C385A1;
+        Tue,  5 Apr 2022 18:37:51 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649183871;
+        bh=ecxdfLHsjhNU9D5i7w12o0NlOeCD+73hTDcvoCtkJ5s=;
+        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
+        b=I7hVimpq/KdIh6PL2TDi9XPQWvsln0l075vPn5GXZE+ZZjYEgqz0tQYBqn2YfpluS
+         C2YX/ZOD7g8+bjHhYbdb47ojZ7VEiVTwsNzXHCBGB4wFEbT2JOkbnjIelvq8lzw9kV
+         t7mrh0LpiUttzEYxlMAg4KAYAXLnmW7q+gqH+HOR/2JM9gAWZEKqxrX6Ye9RTAGk+o
+         Cljh7842uqol4AjzDw8uwHcr9Exm3IKv5GnKUYjAEn4CSD4oLE2+D26BxePu+gbiH3
+         W2Su7V7QxC21rFvm9BRcoafOeW51hwzcPI7eJfwnwtwAWKskLi9qwk638/LK/Uv62M
+         BIReAp2E5BMYw==
+Message-ID: <0f44fba956288bcad69e076f84118bc50f8e5d2f.camel@kernel.org>
+Subject: Re: [PATCH V3 14/30] x86/sgx: Support restricting of enclave page
+ permissions
+From:   Jarkko Sakkinen <jarkko@kernel.org>
+To:     Reinette Chatre <reinette.chatre@intel.com>,
+        dave.hansen@linux.intel.com, tglx@linutronix.de, bp@alien8.de,
+        luto@kernel.org, mingo@redhat.com, linux-sgx@vger.kernel.org,
+        x86@kernel.org
+Cc:     seanjc@google.com, kai.huang@intel.com, cathy.zhang@intel.com,
+        cedric.xing@intel.com, haitao.huang@intel.com,
+        mark.shanahan@intel.com, hpa@zytor.com,
+        linux-kernel@vger.kernel.org, nathaniel@profian.com
+Date:   Tue, 05 Apr 2022 21:39:01 +0300
+In-Reply-To: <59910ad4-a898-4eb2-5e2b-856c686b53fb@intel.com>
+References: <cover.1648847675.git.reinette.chatre@intel.com>
+         <8ed9ee98ca26c9eefde0fd49062bca6e7b9efe80.1648847675.git.reinette.chatre@intel.com>
+         <c9071aa19076c7c618294f0c9cb830a8be96ae09.camel@kernel.org>
+         <26ab773de8842d03b40caf8645ca86884b195901.camel@kernel.org>
+         <91a02d50b2cba34dfb058fd864ba20ef1e6a5554.camel@kernel.org>
+         <10303ca73ea02a300636580e87446766374f66cb.camel@kernel.org>
+         <6e0feeadc562b9e3f0a524040469d4f5c3484824.camel@kernel.org>
+         <ca08465b6fa8af4121592c6381023fda5e0ade70.camel@kernel.org>
+         <59910ad4-a898-4eb2-5e2b-856c686b53fb@intel.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.42.4 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Arnd Bergmann <arnd@arndb.de>
+On Tue, 2022-04-05 at 09:49 -0700, Reinette Chatre wrote:
+> Hi Jarkko,
+>=20
+> On 4/5/2022 7:52 AM, Jarkko Sakkinen wrote:
+> > n Tue, 2022-04-05 at 17:27 +0300, Jarkko Sakkinen wrote:
+> > > According to SDM having page type as regular is fine for EMODPR,
+> > > i.e. that's why I did not care about having it in SECINFO.
+> > >=20
+> > > Given that the opcode itself contains validation, I wonder
+> > > why this needs to be done:
+> > >=20
+> > > if (secinfo.flags & ~SGX_SECINFO_PERMISSION_MASK)
+> > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0return -EINVAL;
+> > >=20
+> > > if (memchr_inv(secinfo.reserved, 0, sizeof(secinfo.reserved)))
+> > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0return -EINVAL;
+> > >=20
+> > > perm =3D secinfo.flags & SGX_SECINFO_PERMISSION_MASK;
+> > >=20
+> > > I.e. why duplicate validation and why does it have different
+> > > invariant than the opcode?
+> >=20
+> > Right it is done to prevent exceptions and also pseudo-code
+> > has this validation:
+> >=20
+> > IF (EPCM(DS:RCX).PT is not PT_REG) THEN #PF(DS:RCX); FI;=20
+>=20
+> The current type of the page is validated - not the page type
+> provided in the parameters of the command.
+>=20
+> >=20
+> > This is clearly wrong:
+>=20
+> Could you please elaborate what is wrong? The hardware only checks
+> the permission bits and that is what is provided.
 
-[ Upstream commit a97b693c3712f040c5802f32b2d685352e08cefa ]
+I think it's for most a bit confusing that it takes a special Linux
+defined SECINFO instead of what you read from spec.=20
 
-These two architectures implement 8-byte get_user() through
-a memcpy() into a four-byte variable, which won't fit.
+>=20
+> >=20
+> > /*
+> > =C2=A0* Return valid permission fields from a secinfo structure provide=
+d by
+> > =C2=A0* user space. The secinfo structure is required to only have bits=
+ in
+> > =C2=A0* the permission fields set.
+> > =C2=A0*/
+> > static int sgx_perm_from_user_secinfo(void __user *_secinfo, u64 *secin=
+fo_perm)
+> >=20
+> > It means that the API requires a malformed data as input.
+>=20
+> It is not clear to me how this is malformed. The API requires that only
+> the permission bits are set in the secinfo, only the permission bits in s=
+ecinfo
+> is provided to the hardware, and the hardware only checks the permission =
+bits.
+>=20
+> >=20
+> > Maybe it would be better idea then to replace secinfo with just the
+> > permission field?
+>=20
+> That is what I implemented in V1 [1], but was asked to change to secinfo.=
+ I could
+> go back to that if you prefer.
 
-Use a temporary 64-bit variable instead here, and use a double
-cast the way that risc-v and openrisc do to avoid compile-time
-warnings.
+Yeah, if I was the one saying that, I was clearly wrong. But also
+perspective is now very different after using a lot of these
+features.
 
-Fixes: 6a090e97972d ("arch/microblaze: support get_user() of size 8 bytes")
-Fixes: 5ccc6af5e88e ("nios2: Memory management")
-Reviewed-by: Christoph Hellwig <hch@lst.de>
-Acked-by: Dinh Nguyen <dinguyen@kernel.org>
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- arch/microblaze/include/asm/uaccess.h | 18 +++++++++---------
- arch/nios2/include/asm/uaccess.h      | 26 ++++++++++++++++----------
- 2 files changed, 25 insertions(+), 19 deletions(-)
-
-diff --git a/arch/microblaze/include/asm/uaccess.h b/arch/microblaze/include/asm/uaccess.h
-index 5b6e0e7788f4..3fe96979d2c6 100644
---- a/arch/microblaze/include/asm/uaccess.h
-+++ b/arch/microblaze/include/asm/uaccess.h
-@@ -130,27 +130,27 @@ extern long __user_bad(void);
- 
- #define __get_user(x, ptr)						\
- ({									\
--	unsigned long __gu_val = 0;					\
- 	long __gu_err;							\
- 	switch (sizeof(*(ptr))) {					\
- 	case 1:								\
--		__get_user_asm("lbu", (ptr), __gu_val, __gu_err);	\
-+		__get_user_asm("lbu", (ptr), x, __gu_err);		\
- 		break;							\
- 	case 2:								\
--		__get_user_asm("lhu", (ptr), __gu_val, __gu_err);	\
-+		__get_user_asm("lhu", (ptr), x, __gu_err);		\
- 		break;							\
- 	case 4:								\
--		__get_user_asm("lw", (ptr), __gu_val, __gu_err);	\
-+		__get_user_asm("lw", (ptr), x, __gu_err);		\
- 		break;							\
--	case 8:								\
--		__gu_err = __copy_from_user(&__gu_val, ptr, 8);		\
--		if (__gu_err)						\
--			__gu_err = -EFAULT;				\
-+	case 8: {							\
-+		__u64 __x = 0;						\
-+		__gu_err = raw_copy_from_user(&__x, ptr, 8) ?		\
-+							-EFAULT : 0;	\
-+		(x) = (typeof(x))(typeof((x) - (x)))__x;		\
- 		break;							\
-+	}								\
- 	default:							\
- 		/* __gu_val = 0; __gu_err = -EINVAL;*/ __gu_err = __user_bad();\
- 	}								\
--	x = (__force __typeof__(*(ptr))) __gu_val;			\
- 	__gu_err;							\
- })
- 
-diff --git a/arch/nios2/include/asm/uaccess.h b/arch/nios2/include/asm/uaccess.h
-index ba9340e96fd4..ca9285a915ef 100644
---- a/arch/nios2/include/asm/uaccess.h
-+++ b/arch/nios2/include/asm/uaccess.h
-@@ -88,6 +88,7 @@ extern __must_check long strnlen_user(const char __user *s, long n);
- /* Optimized macros */
- #define __get_user_asm(val, insn, addr, err)				\
- {									\
-+	unsigned long __gu_val;						\
- 	__asm__ __volatile__(						\
- 	"       movi    %0, %3\n"					\
- 	"1:   " insn " %1, 0(%2)\n"					\
-@@ -96,14 +97,20 @@ extern __must_check long strnlen_user(const char __user *s, long n);
- 	"       .section __ex_table,\"a\"\n"				\
- 	"       .word 1b, 2b\n"						\
- 	"       .previous"						\
--	: "=&r" (err), "=r" (val)					\
-+	: "=&r" (err), "=r" (__gu_val)					\
- 	: "r" (addr), "i" (-EFAULT));					\
-+	val = (__force __typeof__(*(addr)))__gu_val;			\
- }
- 
--#define __get_user_unknown(val, size, ptr, err) do {			\
-+extern void __get_user_unknown(void);
-+
-+#define __get_user_8(val, ptr, err) do {				\
-+	u64 __val = 0;							\
- 	err = 0;							\
--	if (__copy_from_user(&(val), ptr, size)) {			\
-+	if (raw_copy_from_user(&(__val), ptr, sizeof(val))) {		\
- 		err = -EFAULT;						\
-+	} else {							\
-+		val = (typeof(val))(typeof((val) - (val)))__val;	\
- 	}								\
- 	} while (0)
- 
-@@ -119,8 +126,11 @@ do {									\
- 	case 4:								\
- 		__get_user_asm(val, "ldw", ptr, err);			\
- 		break;							\
-+	case 8:								\
-+		__get_user_8(val, ptr, err);				\
-+		break;							\
- 	default:							\
--		__get_user_unknown(val, size, ptr, err);		\
-+		__get_user_unknown();					\
- 		break;							\
- 	}								\
- } while (0)
-@@ -129,9 +139,7 @@ do {									\
- 	({								\
- 	long __gu_err = -EFAULT;					\
- 	const __typeof__(*(ptr)) __user *__gu_ptr = (ptr);		\
--	unsigned long __gu_val = 0;					\
--	__get_user_common(__gu_val, sizeof(*(ptr)), __gu_ptr, __gu_err);\
--	(x) = (__force __typeof__(x))__gu_val;				\
-+	__get_user_common(x, sizeof(*(ptr)), __gu_ptr, __gu_err);	\
- 	__gu_err;							\
- 	})
- 
-@@ -139,11 +147,9 @@ do {									\
- ({									\
- 	long __gu_err = -EFAULT;					\
- 	const __typeof__(*(ptr)) __user *__gu_ptr = (ptr);		\
--	unsigned long __gu_val = 0;					\
- 	if (access_ok( __gu_ptr, sizeof(*__gu_ptr)))	\
--		__get_user_common(__gu_val, sizeof(*__gu_ptr),		\
-+		__get_user_common(x, sizeof(*__gu_ptr),			\
- 			__gu_ptr, __gu_err);				\
--	(x) = (__force __typeof__(x))__gu_val;				\
- 	__gu_err;							\
- })
- 
--- 
-2.34.1
+Alternatively you could have a single "mod" ioctl given the disjoint
+nature how the parameters go to SECINFO.
 
 
+> Reinette
+>=20
+> [1] https://lore.kernel.org/linux-sgx/44fe170cfd855760857660b9f56cae8c474=
+7cc15.1638381245.git.reinette.chatre@intel.com/
 
+BR, Jarkko
