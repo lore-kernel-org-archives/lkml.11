@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E600C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 967DEC4167B
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 13:37:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1389882AbiDENe1 (ORCPT
+        id S1383149AbiDENe6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 09:34:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34010 "EHLO
+        Tue, 5 Apr 2022 09:34:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60038 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346901AbiDEJYr (ORCPT
+        with ESMTP id S1347010AbiDEJYy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:24:47 -0400
+        Tue, 5 Apr 2022 05:24:54 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5E179D067;
-        Tue,  5 Apr 2022 02:14:25 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7EAAA99683;
+        Tue,  5 Apr 2022 02:14:39 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D4571B80DA1;
-        Tue,  5 Apr 2022 09:14:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1377FC385A0;
-        Tue,  5 Apr 2022 09:14:00 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 12FEBB81B14;
+        Tue,  5 Apr 2022 09:14:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4DC51C385A3;
+        Tue,  5 Apr 2022 09:14:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649150041;
-        bh=rwN+Uw9DRFGE3r3d8XutSYXOFXNC3RR9BUH5opKorFo=;
+        s=korg; t=1649150077;
+        bh=f19IgujV/yw7D/q+fpx39ycuktKtJQPW23eKnN0ZCdQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=aIkuujX99CmN4J3QoO87I3WGKxGM8lgBmaULEgO1q954FY6LnizSCt442JAEcBLnp
-         cbrVy7kbkw8M6f41pU0mh/GHpUxAKJK/5tSC0DOph6Ht4i+mAvV9lUak/l5xACd3xV
-         S/lWZeNShqEIpTv97RB0GL4W16dpi86tC3QrblsU=
+        b=sfOfxY7FzTsAcgY8RFGsY91nmeOqI88viV74ne/fQ2bBBdszr34+6LG2RLnv0CzIk
+         sz/HVaROG0AaHoaRcNAoZzWB0yT1m/bxYl1bQThqK3Y24FuwHovuIBBAJz7XarZqKQ
+         pRU1aOpNu82SYjoHSQzTNTYxb+4ZZKSV98Gmd5Ew=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Guangbin Huang <huangguangbin2@huawei.com>,
-        Paolo Abeni <pabeni@redhat.com>
-Subject: [PATCH 5.16 0934/1017] net: hns3: fix software vlan talbe of vlan 0 inconsistent with hardware
-Date:   Tue,  5 Apr 2022 09:30:47 +0200
-Message-Id: <20220405070421.938599493@linuxfoundation.org>
+        stable@vger.kernel.org, PaX Team <pageexec@freemail.hu>,
+        "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 5.16 0919/1017] wireguard: queueing: use CFI-safe ptr_ring cleanup function
+Date:   Tue,  5 Apr 2022 09:30:32 +0200
+Message-Id: <20220405070421.498365446@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -49,38 +50,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Guangbin Huang <huangguangbin2@huawei.com>
+From: Jason A. Donenfeld <Jason@zx2c4.com>
 
-commit 7ed258f12ec5ce855f15cdfb5710361dc82fe899 upstream.
+commit ec59f128a9bd4255798abb1e06ac3b442f46ef68 upstream.
 
-When user delete vlan 0, as driver will not delete vlan 0 for hardware in
-function hclge_set_vlan_filter_hw(), so vlan 0 in software vlan talbe should
-not be deleted.
+We make too nuanced use of ptr_ring to entirely move to the skb_array
+wrappers, but we at least should avoid the naughty function pointer cast
+when cleaning up skbs. Otherwise RAP/CFI will honk at us. This patch
+uses the __skb_array_destroy_skb wrapper for the cleanup, rather than
+directly providing kfree_skb, which is what other drivers in the same
+situation do too.
 
-Fixes: fe4144d47eef ("net: hns3: sync VLAN filter entries when kill VLAN ID failed")
-Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+Reported-by: PaX Team <pageexec@freemail.hu>
+Fixes: 886fcee939ad ("wireguard: receive: use ring buffer for incoming handshakes")
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c |    6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/net/wireguard/queueing.c |    3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
---- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-@@ -10754,11 +10754,11 @@ int hclge_set_vlan_filter(struct hnae3_h
- 	}
+--- a/drivers/net/wireguard/queueing.c
++++ b/drivers/net/wireguard/queueing.c
+@@ -4,6 +4,7 @@
+  */
  
- 	if (!ret) {
--		if (is_kill)
--			hclge_rm_vport_vlan_table(vport, vlan_id, false);
--		else
-+		if (!is_kill)
- 			hclge_add_vport_vlan_table(vport, vlan_id,
- 						   writen_to_tbl);
-+		else if (is_kill && vlan_id != 0)
-+			hclge_rm_vport_vlan_table(vport, vlan_id, false);
- 	} else if (is_kill) {
- 		/* when remove hw vlan filter failed, record the vlan id,
- 		 * and try to remove it from hw later, to be consistence
+ #include "queueing.h"
++#include <linux/skb_array.h>
+ 
+ struct multicore_worker __percpu *
+ wg_packet_percpu_multicore_worker_alloc(work_func_t function, void *ptr)
+@@ -42,7 +43,7 @@ void wg_packet_queue_free(struct crypt_q
+ {
+ 	free_percpu(queue->worker);
+ 	WARN_ON(!purge && !__ptr_ring_empty(&queue->ring));
+-	ptr_ring_cleanup(&queue->ring, purge ? (void(*)(void*))kfree_skb : NULL);
++	ptr_ring_cleanup(&queue->ring, purge ? __skb_array_destroy_skb : NULL);
+ }
+ 
+ #define NEXT(skb) ((skb)->prev)
 
 
