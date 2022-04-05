@@ -2,126 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3796BC41535
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:16:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 543E8C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:16:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1446149AbiDEUIx (ORCPT
+        id S1446285AbiDEUIz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 16:08:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37168 "EHLO
+        Tue, 5 Apr 2022 16:08:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60836 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1457387AbiDEQDK (ORCPT
+        with ESMTP id S1573505AbiDETNT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 12:03:10 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EEF402AE1;
-        Tue,  5 Apr 2022 08:40:01 -0700 (PDT)
-Date:   Tue, 05 Apr 2022 15:39:59 -0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1649173200;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=CF1SEm6yplTkf5CDH5Ci9Fu4GP9Jj3yDWTJBOlnHqag=;
-        b=BPM3DQBiWEVv2TUQShQHWjiwkWHRKQ1/lphuNCOyBIqak1pVzTtyRvgv9OFn7SHid9UCBw
-        FN/VIr8UU/qS77RFf4VeOF9aS+1iX5qEY56yDErqo/KCX11QGyph+WUi3NFU5kxx3XN6uV
-        lEDxuT7d4P7VCdXSzKIsdQBF3xqVZLjVDhyb1BS/gn8Mbx2frg9K/UL+o1wN6xuYaELivn
-        wkBMMgHnpHERCKfWZjUbwGd834g+Ngltfzd2+inKl+jw4SYtnF0iR7QU4JansNIjsgHmPN
-        MkN5lMIc9YkQktjhBtRJzrL8TzMBGhiQNifBFfPYzjkH0KW/sGuPg81WlTJrXA==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1649173200;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=CF1SEm6yplTkf5CDH5Ci9Fu4GP9Jj3yDWTJBOlnHqag=;
-        b=Avy9u3VENAVlHZOVx8DcgMkKqaVf330spLReJWV9nTABk8d+MFmp1jhn4b4nNvkMi+DP6b
-        nHixnOssaaRXNdBA==
-From:   "irqchip-bot for Marc Zyngier" <tip-bot2@linutronix.de>
-Sender: tip-bot2@linutronix.de
-Reply-to: linux-kernel@vger.kernel.org
-To:     linux-kernel@vger.kernel.org
-Subject: [irqchip: irq/irqchip-fixes] irqchip/gic-v3: Fix GICR_CTLR.RWP polling
-Cc:     Marc Zyngier <maz@kernel.org>, stable@vger.kernel.org,
-        Andre Przywara <andre.przywara@arm.com>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        tglx@linutronix.de
-In-Reply-To: <20220315165034.794482-2-maz@kernel.org>
-References: <20220315165034.794482-2-maz@kernel.org>
+        Tue, 5 Apr 2022 15:13:19 -0400
+Received: from mail-oi1-x234.google.com (mail-oi1-x234.google.com [IPv6:2607:f8b0:4864:20::234])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D8D3E8860
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 12:11:20 -0700 (PDT)
+Received: by mail-oi1-x234.google.com with SMTP id r8so99957oib.5
+        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 12:11:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:in-reply-to:references:from:user-agent:date:message-id
+         :subject:to:cc;
+        bh=+sCFFwWhVh6IX8olIQEwfE/A9caFnSQEQiTDby/DQD0=;
+        b=htZpWkYwxplvXURN6IyOQGpIM7h5Xaj/QSzBur6jP2dUuzrHLspI/2pUZmT5jJA26H
+         p/MLtsHVJX059A4he5GjdU7AnIBH/Pd0MiOXNMrXW2bsC3jr4X325qgSdNfJIFuKm3ww
+         oFU8c/+S2YeMLeJkGp8/tNdI4mm3Jyzt9cj4E=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:in-reply-to:references:from
+         :user-agent:date:message-id:subject:to:cc;
+        bh=+sCFFwWhVh6IX8olIQEwfE/A9caFnSQEQiTDby/DQD0=;
+        b=gAC31GsWO34yIXzaovG/eTd2usxjWF+ILylLDVFYFdBWQM3tRrADjPr8iJ3YtfklPI
+         7mySKAB59HfWny0NcpJbp7vL+LZf0iErkAKfDBdKuNC8vy6bCMuA9lZQz9Slr5FjN0BP
+         nspDzRgSeW+Uw1H+Ow4sbhiQCPbIs1XcwXZHPwmYPN2IBpNcJkPDFTi7ZV4ytgTMV3jU
+         eoacMAoD7Vgqf2l1KngDMLJKEDZsSbOWmhADDG1HRMZJcEFh2332uIe2P5bGXjVNuC4V
+         FTSS1ozoG+JojdnABq42jygpcMnfFjlPKvR2SYxrnijVjxSJ66iyu9QojtmyMNoIhoQW
+         mgVA==
+X-Gm-Message-State: AOAM530GyK1+hqPtfQAut/wkxF6cBs8HUMqyef9lAVn0gCqI0TWMf8Mk
+        kTXcNYWdDrfWetkJXN+853o2oIcNQeD17QG8+lPMCg==
+X-Google-Smtp-Source: ABdhPJxaJqt3rZ7rG2CvTp/vFfikXLJk33kvQpji7R5HlYgG9oSpRARWmCg3M9/Tlt7qRxM2Iw5QQ2YqXcp5w3lOf1A=
+X-Received: by 2002:aca:a9c8:0:b0:2da:45b6:b796 with SMTP id
+ s191-20020acaa9c8000000b002da45b6b796mr1996111oie.193.1649185879962; Tue, 05
+ Apr 2022 12:11:19 -0700 (PDT)
+Received: from 753933720722 named unknown by gmailapi.google.com with
+ HTTPREST; Tue, 5 Apr 2022 14:11:19 -0500
 MIME-Version: 1.0
-Message-ID: <164917319947.389.16591150926204042875.tip-bot2@tip-bot2>
-Robot-ID: <tip-bot2@linutronix.de>
-Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+In-Reply-To: <1649166633-25872-6-git-send-email-quic_c_skakit@quicinc.com>
+References: <1649166633-25872-1-git-send-email-quic_c_skakit@quicinc.com> <1649166633-25872-6-git-send-email-quic_c_skakit@quicinc.com>
+From:   Stephen Boyd <swboyd@chromium.org>
+User-Agent: alot/0.10
+Date:   Tue, 5 Apr 2022 14:11:19 -0500
+Message-ID: <CAE-0n51rLRcWE+h3zaWNy-nJYK4tQoivjdbfgYrwTJbjYYxWFw@mail.gmail.com>
+Subject: Re: [PATCH V9 5/6] arm64: dts: qcom: pm8008: Add base dts file
+To:     Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Satya Priya <quic_c_skakit@quicinc.com>
+Cc:     Lee Jones <lee.jones@linaro.org>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>, linux-arm-msm@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        quic_collinsd@quicinc.com, quic_subbaram@quicinc.com,
+        quic_jprakash@quicinc.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The following commit has been merged into the irq/irqchip-fixes branch of irqchip:
+Quoting Satya Priya (2022-04-05 06:50:32)
+> diff --git a/arch/arm64/boot/dts/qcom/pm8008.dtsi b/arch/arm64/boot/dts/qcom/pm8008.dtsi
+> new file mode 100644
+> index 0000000..24bd832
+> --- /dev/null
+> +++ b/arch/arm64/boot/dts/qcom/pm8008.dtsi
+> @@ -0,0 +1,47 @@
+> +// SPDX-License-Identifier: BSD-3-Clause
+> +// Copyright (c) 2022, The Linux Foundation. All rights reserved.
+> +
+> +&pm8008_bus {
+> +       pm8008: pm8008@8 {
 
-Commit-ID:     0df6664531a12cdd8fc873f0cac0dcb40243d3e9
-Gitweb:        https://git.kernel.org/pub/scm/linux/kernel/git/maz/arm-platforms/0df6664531a12cdd8fc873f0cac0dcb40243d3e9
-Author:        Marc Zyngier <maz@kernel.org>
-AuthorDate:    Tue, 15 Mar 2022 16:50:32 
-Committer:     Marc Zyngier <maz@kernel.org>
-CommitterDate: Tue, 05 Apr 2022 16:33:13 +01:00
+pmic@8
 
-irqchip/gic-v3: Fix GICR_CTLR.RWP polling
+> +               compatible = "qcom,pm8008";
+> +               reg = <0x8>;
+> +               #address-cells = <1>;
+> +               #size-cells = <0>;
+> +               #interrupt-cells = <2>;
+> +       };
+> +
+> +       pm8008_regulators: pm8008@9 {
 
-It turns out that our polling of RWP is totally wrong when checking
-for it in the redistributors, as we test the *distributor* bit index,
-whereas it is a different bit number in the RDs... Oopsie boo.
+pmic@9
 
-This is embarassing. Not only because it is wrong, but also because
-it took *8 years* to notice the blunder...
-
-Just fix the damn thing.
-
-Fixes: 021f653791ad ("irqchip: gic-v3: Initial support for GICv3")
-Signed-off-by: Marc Zyngier <maz@kernel.org>
-Cc: stable@vger.kernel.org
-Reviewed-by: Andre Przywara <andre.przywara@arm.com>
-Reviewed-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-Link: https://lore.kernel.org/r/20220315165034.794482-2-maz@kernel.org
----
- drivers/irqchip/irq-gic-v3.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
-
-diff --git a/drivers/irqchip/irq-gic-v3.c b/drivers/irqchip/irq-gic-v3.c
-index 0efe1a9..9b63165 100644
---- a/drivers/irqchip/irq-gic-v3.c
-+++ b/drivers/irqchip/irq-gic-v3.c
-@@ -206,11 +206,11 @@ static inline void __iomem *gic_dist_base(struct irq_data *d)
- 	}
- }
- 
--static void gic_do_wait_for_rwp(void __iomem *base)
-+static void gic_do_wait_for_rwp(void __iomem *base, u32 bit)
- {
- 	u32 count = 1000000;	/* 1s! */
- 
--	while (readl_relaxed(base + GICD_CTLR) & GICD_CTLR_RWP) {
-+	while (readl_relaxed(base + GICD_CTLR) & bit) {
- 		count--;
- 		if (!count) {
- 			pr_err_ratelimited("RWP timeout, gone fishing\n");
-@@ -224,13 +224,13 @@ static void gic_do_wait_for_rwp(void __iomem *base)
- /* Wait for completion of a distributor change */
- static void gic_dist_wait_for_rwp(void)
- {
--	gic_do_wait_for_rwp(gic_data.dist_base);
-+	gic_do_wait_for_rwp(gic_data.dist_base, GICD_CTLR_RWP);
- }
- 
- /* Wait for completion of a redistributor change */
- static void gic_redist_wait_for_rwp(void)
- {
--	gic_do_wait_for_rwp(gic_data_rdist_rd_base());
-+	gic_do_wait_for_rwp(gic_data_rdist_rd_base(), GICR_CTLR_RWP);
- }
- 
- #ifdef CONFIG_ARM64
+> +               compatible = "qcom,pm8008-regulators";
+> +               reg = <0x9>;
+> +               #address-cells = <0>;
+> +               #size-cells = <0>;
+> +
