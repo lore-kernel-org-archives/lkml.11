@@ -2,121 +2,137 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F578C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7725DC4321E
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:57:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1838712AbiDFA4e (ORCPT
+        id S1838734AbiDFA4h (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 20:56:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35866 "EHLO
+        Tue, 5 Apr 2022 20:56:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57942 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1391272AbiDEPeO (ORCPT
+        with ESMTP id S1573269AbiDESlE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 11:34:14 -0400
-Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF2E150B38;
-        Tue,  5 Apr 2022 06:41:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1649166111; x=1680702111;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references;
-  bh=rwjRuGuepy//YjLHoAmcCpL2t0bvxioBp/CwXdYeLTU=;
-  b=mBzQSv43Hv7ma1PTer/LtXC0F8zl9+OfJAjEjq2Gg+nW/aHM7RRMil6d
-   cIDyr5N9/7m5/U60N4M6k9lQRHS/t6zgnuWlthHMhklcQy/p9yK0V90Lm
-   rnSrdVLMMeSQiNCE7OmdCMXFcaxWcumMHFpoyUoBeFMZTvTCnvHEdeK+t
-   Y=;
-Received: from ironmsg09-lv.qualcomm.com ([10.47.202.153])
-  by alexa-out.qualcomm.com with ESMTP; 05 Apr 2022 06:41:50 -0700
-X-QCInternal: smtphost
-Received: from ironmsg02-blr.qualcomm.com ([10.86.208.131])
-  by ironmsg09-lv.qualcomm.com with ESMTP/TLS/AES256-SHA; 05 Apr 2022 06:41:50 -0700
-X-QCInternal: smtphost
-Received: from vpolimer-linux.qualcomm.com ([10.204.67.235])
-  by ironmsg02-blr.qualcomm.com with ESMTP; 05 Apr 2022 19:11:34 +0530
-Received: by vpolimer-linux.qualcomm.com (Postfix, from userid 463814)
-        id A7C52521D; Tue,  5 Apr 2022 19:11:33 +0530 (IST)
-From:   Vinod Polimera <quic_vpolimer@quicinc.com>
-To:     dri-devel@lists.freedesktop.org, linux-arm-msm@vger.kernel.org,
-        freedreno@lists.freedesktop.org, devicetree@vger.kernel.org
-Cc:     Vinod Polimera <quic_vpolimer@quicinc.com>,
-        linux-kernel@vger.kernel.org, robdclark@gmail.com,
-        dmitry.baryshkov@linaro.org, dianders@chromium.org,
-        quic_kalyant@quicinc.com
-Subject: [PATCH v7 1/2] drm/msm/disp/dpu1: add inline function to validate format support
-Date:   Tue,  5 Apr 2022 19:11:30 +0530
-Message-Id: <1649166091-18032-2-git-send-email-quic_vpolimer@quicinc.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1649166091-18032-1-git-send-email-quic_vpolimer@quicinc.com>
-References: <1649166091-18032-1-git-send-email-quic_vpolimer@quicinc.com>
+        Tue, 5 Apr 2022 14:41:04 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9848B20BEF
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 11:39:05 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 34DC3618D9
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 18:39:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8BF6DC385A1;
+        Tue,  5 Apr 2022 18:39:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649183944;
+        bh=YINtmfTLrtIkESCqMaszau4vpZeKcCuTh9FLwNMrA9Q=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=N4ia9nAZLyBw36K8gMDvcjYTjFJeMJB8dxuZ+h2NiUNDSRvtJAtuJpEFt6FVMB0il
+         H3se+4jn2KzM6dycekuoXB2uV/pcCrsAeNESTlnrcvem82qc2o7TSLc/vOj/cjmdKb
+         ib/a/iruIVYL3qZ45UT8kp6GhlUjprNi7RG/07e6S4hlWc9fLMU3ucJ3LacWOGHP5c
+         sHFkc6j9oPSkcb2Z7ISJ237XBRv+X9myzzxuvhsHN8/d3HXpGGe+IVwcXb7KdHQt7S
+         p1Cxm/KVGXYsgjZ4R0y4ITMUYWr2lU+PGzsyd+U77uP1YpydUDkd+vnh/ORIlVJdVr
+         UlnHL9w1EoqHQ==
+Received: from sofa.misterjones.org ([185.219.108.64] helo=why.lan)
+        by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <maz@kernel.org>)
+        id 1nbo50-001tkq-F6; Tue, 05 Apr 2022 19:39:02 +0100
+From:   Marc Zyngier <maz@kernel.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Andre Przywara <andre.przywara@arm.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Eric Auger <eric.auger@redhat.com>
+Subject: [PATCH v2 2/3] irqchip/gic-v3: Detect LPI invalidation MMIO registers
+Date:   Tue,  5 Apr 2022 19:38:56 +0100
+Message-Id: <20220405183857.205960-3-maz@kernel.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220405183857.205960-1-maz@kernel.org>
+References: <20220405183857.205960-1-maz@kernel.org>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 185.219.108.64
+X-SA-Exim-Rcpt-To: linux-kernel@vger.kernel.org, lorenzo.pieralisi@arm.com, andre.przywara@arm.com, tglx@linutronix.de, eric.auger@redhat.com
+X-SA-Exim-Mail-From: maz@kernel.org
+X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Check if the dpu format is supported or not using dpu_find_format.
+Since GICv4.1, an implementation can offer the same MMIO-based
+implementation as DirectLPI, only with an ITS. Given that this
+can be hugely beneficial for workloads that are very LPI masking
+heavy (although these workloads are admitedly a bit odd).
 
-Co-developed-by: Kalyan Thota <quic_kalyant@quicinc.com>
-Signed-off-by: Kalyan Thota <quic_kalyant@quicinc.com>
-Signed-off-by: Vinod Polimera <quic_vpolimer@quicinc.com>
+Interestingly, this is independent of RVPEI, which only *implies*
+the functionnality.
+
+So let's detect whether the implementation has GICR_CTLR.IR set,
+and propagate this as DirectLPI to the ITS driver.
+
+While we're at it, repaint the GICv3 banner so that we advertise
+the various capabilities at boot time to be slightly less invasive.
+
+Signed-off-by: Marc Zyngier <maz@kernel.org>
 ---
- drivers/gpu/drm/msm/disp/dpu1/dpu_formats.h | 22 ++++++++++++++++++++++
- drivers/gpu/drm/msm/disp/dpu1/dpu_plane.c   | 10 +++-------
- 2 files changed, 25 insertions(+), 7 deletions(-)
+ drivers/irqchip/irq-gic-v3.c | 20 ++++++++++++++++----
+ 1 file changed, 16 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_formats.h b/drivers/gpu/drm/msm/disp/dpu1/dpu_formats.h
-index 418f5ae..84b8b32 100644
---- a/drivers/gpu/drm/msm/disp/dpu1/dpu_formats.h
-+++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_formats.h
-@@ -21,6 +21,28 @@ const struct dpu_format *dpu_get_dpu_format_ext(
- #define dpu_get_dpu_format(f) dpu_get_dpu_format_ext(f, 0)
+diff --git a/drivers/irqchip/irq-gic-v3.c b/drivers/irqchip/irq-gic-v3.c
+index 0efe1a9a9f3b..4d8517232f1e 100644
+--- a/drivers/irqchip/irq-gic-v3.c
++++ b/drivers/irqchip/irq-gic-v3.c
+@@ -919,6 +919,7 @@ static int __gic_update_rdist_properties(struct redist_region *region,
+ 					 void __iomem *ptr)
+ {
+ 	u64 typer = gic_read_typer(ptr + GICR_TYPER);
++	u32 ctlr = readl_relaxed(ptr + GICR_CTLR);
  
- /**
-+ * dpu_find_format - validate if the pixel format is supported
-+ * @format:		dpu format
-+ * @supported_formats:	supported formats by dpu HW
-+ * @num_formatss:	total number of formats
-+ *
-+ * Return: false if not valid format, true on success
-+ */
-+static inline bool dpu_find_format(u32 format, const u32 *supported_formats,
-+					size_t num_formats)
-+{
-+	int i;
-+
-+	for (i = 0; i < num_formats; i++) {
-+		/* check for valid formats supported */
-+		if (format == supported_formats[i])
-+			return true;
-+	}
-+
-+	return false;
-+}
-+
-+/**
-  * dpu_get_msm_format - get an dpu_format by its msm_format base
-  *                     callback function registers with the msm_kms layer
-  * @kms:             kms driver
-diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_plane.c b/drivers/gpu/drm/msm/disp/dpu1/dpu_plane.c
-index 6565682..3216cda 100644
---- a/drivers/gpu/drm/msm/disp/dpu1/dpu_plane.c
-+++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_plane.c
-@@ -1411,13 +1411,9 @@ static bool dpu_plane_format_mod_supported(struct drm_plane *plane,
- 	if (modifier == DRM_FORMAT_MOD_LINEAR)
- 		return true;
+ 	/* Boot-time cleanip */
+ 	if ((typer & GICR_TYPER_VLPIS) && (typer & GICR_TYPER_RVPEID)) {
+@@ -938,9 +939,18 @@ static int __gic_update_rdist_properties(struct redist_region *region,
  
--	if (modifier == DRM_FORMAT_MOD_QCOM_COMPRESSED) {
--		int i;
--		for (i = 0; i < ARRAY_SIZE(qcom_compressed_supported_formats); i++) {
--			if (format == qcom_compressed_supported_formats[i])
--				return true;
--		}
--	}
-+	if (modifier == DRM_FORMAT_MOD_QCOM_COMPRESSED)
-+		return dpu_find_format(format, qcom_compressed_supported_formats,
-+				ARRAY_SIZE(qcom_compressed_supported_formats));
+ 	gic_data.rdists.has_vlpis &= !!(typer & GICR_TYPER_VLPIS);
  
- 	return false;
- }
+-	/* RVPEID implies some form of DirectLPI, no matter what the doc says... :-/ */
++	/*
++	 * TYPER.RVPEID implies some form of DirectLPI, no matter what the
++	 * doc says... :-/ And CTLR.IR implies another subset of DirectLPI
++	 * that the ITS driver can make use of for LPIs (and not VLPIs).
++	 *
++	 * These are 3 different ways to express the same thing, depending
++	 * on the revision of the architecture and its relaxations over
++	 * time. Just group them under the 'direct_lpi' banner.
++	 */
+ 	gic_data.rdists.has_rvpeid &= !!(typer & GICR_TYPER_RVPEID);
+ 	gic_data.rdists.has_direct_lpi &= (!!(typer & GICR_TYPER_DirectLPIS) |
++					   !!(ctlr & GICR_CTLR_IR) |
+ 					   gic_data.rdists.has_rvpeid);
+ 	gic_data.rdists.has_vpend_valid_dirty &= !!(typer & GICR_TYPER_DIRTY);
+ 
+@@ -962,7 +972,11 @@ static void gic_update_rdist_properties(void)
+ 	gic_iterate_rdists(__gic_update_rdist_properties);
+ 	if (WARN_ON(gic_data.ppi_nr == UINT_MAX))
+ 		gic_data.ppi_nr = 0;
+-	pr_info("%d PPIs implemented\n", gic_data.ppi_nr);
++	pr_info("GICv3 features: %d PPIs%s%s\n",
++		gic_data.ppi_nr,
++		gic_data.has_rss ? ", RSS" : "",
++		gic_data.rdists.has_direct_lpi ? ", DirectLPI" : "");
++	
+ 	if (gic_data.rdists.has_vlpis)
+ 		pr_info("GICv4 features: %s%s%s\n",
+ 			gic_data.rdists.has_direct_lpi ? "DirectLPI " : "",
+@@ -1797,8 +1811,6 @@ static int __init gic_init_bases(void __iomem *dist_base,
+ 	irq_domain_update_bus_token(gic_data.domain, DOMAIN_BUS_WIRED);
+ 
+ 	gic_data.has_rss = !!(typer & GICD_TYPER_RSS);
+-	pr_info("Distributor has %sRange Selector support\n",
+-		gic_data.has_rss ? "" : "no ");
+ 
+ 	if (typer & GICD_TYPER_MBIS) {
+ 		err = mbi_init(handle, gic_data.domain);
 -- 
-2.7.4
+2.34.1
 
