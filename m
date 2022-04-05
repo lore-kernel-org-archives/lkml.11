@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6FF0FC35276
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E86FC35273
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 22:55:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1449486AbiDEWm6 (ORCPT
+        id S1347085AbiDEWmf (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 18:42:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47312 "EHLO
+        Tue, 5 Apr 2022 18:42:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39768 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349211AbiDEJt1 (ORCPT
+        with ESMTP id S1349420AbiDEJtu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:49:27 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D1C122B1F;
-        Tue,  5 Apr 2022 02:42:49 -0700 (PDT)
+        Tue, 5 Apr 2022 05:49:50 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F1581EAE0;
+        Tue,  5 Apr 2022 02:45:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id EE952CE1C6F;
-        Tue,  5 Apr 2022 09:42:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 11453C385A2;
-        Tue,  5 Apr 2022 09:42:45 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3CB6861368;
+        Tue,  5 Apr 2022 09:45:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 49882C385A2;
+        Tue,  5 Apr 2022 09:45:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649151766;
-        bh=OtMJiNTcTHUQcPH4dSGJwZZlh+3lpDszUo2IbFnk9JM=;
+        s=korg; t=1649151917;
+        bh=qSaTGiySKFFr1e9/bvAwdPYGh0SluH4gytxj95+oIgQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kUZqkYbugCwFPooCbkRwFGPm/qokvEgn2EGt4EPk6tRa8PJ7rkzJter5iIns9Rsdi
-         FZhYNfyXYTVW28nd4075CY0mMw21UJZmSmoD2xiX5HyN2J2w7PWvc8vYCDvkAlYqQ3
-         tNH/Q9Wj+7/hzfYL1ZBmvLw4duQV25Ou+C1nz8cU=
+        b=nSh0bQ6NThfBZKRfitK4wpGPJeRtfe4vkmjCaftcYM2y/KL7is/AoP2QhnEGgRb9R
+         EQBvE+yKi3yIu8A4nxeCnflA8kRcJX6N1wz0rh/QKAJPfMWQbCKUx36gmaEDefC9rl
+         NYpRca7tG7yIY32TGa+eZca0CKn9zpxzDac0+srk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Serge Semin <fancer.lancer@gmail.com>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 532/913] mips: cdmm: Fix refcount leak in mips_cdmm_phys_base
-Date:   Tue,  5 Apr 2022 09:26:34 +0200
-Message-Id: <20220405070355.796436628@linuxfoundation.org>
+        stable@vger.kernel.org, Dave Jiang <dave.jiang@intel.com>,
+        Vinod Koul <vkoul@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 589/913] dmaengine: idxd: check GENCAP config support for gencfg register
+Date:   Tue,  5 Apr 2022 09:27:31 +0200
+Message-Id: <20220405070357.499184808@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
 References: <20220405070339.801210740@linuxfoundation.org>
@@ -51,35 +49,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Dave Jiang <dave.jiang@intel.com>
 
-[ Upstream commit 4528668ca331f7ce5999b7746657b46db5b3b785 ]
+[ Upstream commit 79c4c3db7d86b9bec94562275efc82e58f3d0132 ]
 
-The of_find_compatible_node() function returns a node pointer with
-refcount incremented, We should use of_node_put() on it when done
-Add the missing of_node_put() to release the refcount.
+DSA spec 1.2 has moved the GENCFG register under the GENCAP configuration
+support with respect to writability. Add check in driver before writing to
+GENCFG register.
 
-Fixes: 2121aa3e2312 ("mips: cdmm: Add mti,mips-cdmm dtb node support")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Acked-by: Serge Semin <fancer.lancer@gmail.com>
-Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+Signed-off-by: Dave Jiang <dave.jiang@intel.com>
+Link: https://lore.kernel.org/r/163406171896.1303830.11217958011385656998.stgit@djiang5-desk3.ch.intel.com
+Signed-off-by: Vinod Koul <vkoul@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/bus/mips_cdmm.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/dma/idxd/device.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/bus/mips_cdmm.c b/drivers/bus/mips_cdmm.c
-index 626dedd110cb..fca0d0669aa9 100644
---- a/drivers/bus/mips_cdmm.c
-+++ b/drivers/bus/mips_cdmm.c
-@@ -351,6 +351,7 @@ phys_addr_t __weak mips_cdmm_phys_base(void)
- 	np = of_find_compatible_node(NULL, NULL, "mti,mips-cdmm");
- 	if (np) {
- 		err = of_address_to_resource(np, 0, &res);
-+		of_node_put(np);
- 		if (!err)
- 			return res.start;
- 	}
+diff --git a/drivers/dma/idxd/device.c b/drivers/dma/idxd/device.c
+index b468ca36d3a0..3cda1c5faf3c 100644
+--- a/drivers/dma/idxd/device.c
++++ b/drivers/dma/idxd/device.c
+@@ -801,7 +801,7 @@ static int idxd_groups_config_write(struct idxd_device *idxd)
+ 	struct device *dev = &idxd->pdev->dev;
+ 
+ 	/* Setup bandwidth token limit */
+-	if (idxd->token_limit) {
++	if (idxd->hw.gen_cap.config_en && idxd->token_limit) {
+ 		reg.bits = ioread32(idxd->reg_base + IDXD_GENCFG_OFFSET);
+ 		reg.token_limit = idxd->token_limit;
+ 		iowrite32(reg.bits, idxd->reg_base + IDXD_GENCFG_OFFSET);
 -- 
 2.34.1
 
