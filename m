@@ -2,42 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 59CDAC433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B87EC433FE
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 14:44:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1389071AbiDEOnJ (ORCPT
+        id S1389104AbiDEOnQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 10:43:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41936 "EHLO
+        Tue, 5 Apr 2022 10:43:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50100 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244212AbiDEJlK (ORCPT
+        with ESMTP id S244235AbiDEJlM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:41:10 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DCAABB086;
-        Tue,  5 Apr 2022 02:25:37 -0700 (PDT)
+        Tue, 5 Apr 2022 05:41:12 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB908BB08F;
+        Tue,  5 Apr 2022 02:25:50 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id AC3AD61368;
-        Tue,  5 Apr 2022 09:25:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BEB6BC385A2;
-        Tue,  5 Apr 2022 09:25:35 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 662DC61675;
+        Tue,  5 Apr 2022 09:25:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6FD09C385A3;
+        Tue,  5 Apr 2022 09:25:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649150736;
-        bh=FUcnqxzjXH5u3vbw4nDqrygn9TouK/7YERh2EEo0v3w=;
+        s=korg; t=1649150749;
+        bh=V+55jqt3IyHFsKthzO2N2W+UTW06gaSYVGI+xjHVEU4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TAlWLhf/lZgqzogPazChfTbzWMOomfJ0Q/pzeVYATyJjKGY107wUXXHCEDtIeeXCa
-         uiRCRTvmiyXPLEKi0dzzbaaFCjAcAGC+YUs4wHuegdk5P9MmUJkv/MsMa87ThimS8z
-         ZKRnnq+KBRfKexNtiVIVdcKsYR+SJen5gJidNad8=
+        b=n6I11yawdkRcod1/MPI0x2APthHuTg36HoA+rb+6YxZ9duFgBVpOAqi6RAB+zODlG
+         9Hgd+FiFLrbvkJjvgI+igNkVAN+sy74SFJGUDK24Xod9SZ0XR2n43Uouhbc26rrbhE
+         qCn4Kf2jIniELqBXk9E5cRJktMale26IcajkkznM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mingzhe Zou <mingzhe.zou@easystack.cn>,
-        Coly Li <colyli@suse.de>
-Subject: [PATCH 5.15 161/913] bcache: fixup multiple threads crash
-Date:   Tue,  5 Apr 2022 09:20:23 +0200
-Message-Id: <20220405070344.668773120@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Mario Limonciello <Mario.Limonciello@amd.com>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        Mario Limonciello <mario.limonciello@amd.com>,
+        Huang Rui <ray.huang@amd.com>,
+        Mika Westerberg <mika.westerberg@linux.intel.com>
+Subject: [PATCH 5.15 129/913] Revert "ACPI: Pass the same capabilities to the _OSC regardless of the query flag"
+Date:   Tue,  5 Apr 2022 09:19:51 +0200
+Message-Id: <20220405070343.697628082@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
 References: <20220405070339.801210740@linuxfoundation.org>
@@ -49,67 +53,72 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mingzhe Zou <mingzhe.zou@easystack.cn>
+From: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 
-commit 887554ab96588de2917b6c8c73e552da082e5368 upstream.
+commit 2ca8e6285250c07a2e5a22ecbfd59b5a4ef73484 upstream.
 
-When multiple threads to check btree nodes in parallel, the main
-thread wait for all threads to stop or CACHE_SET_IO_DISABLE flag:
+Revert commit 159d8c274fd9 ("ACPI: Pass the same capabilities to the
+_OSC regardless of the query flag") which caused legitimate usage
+scenarios (when the platform firmware does not want the OS to control
+certain platform features controlled by the system bus scope _OSC) to
+break and was misguided by some misleading language in the _OSC
+definition in the ACPI specification (in particular, Section 6.2.11.1.3
+"Sequence of _OSC Calls" that contradicts other perts of the _OSC
+definition).
 
-wait_event_interruptible(check_state->wait,
-                         atomic_read(&check_state->started) == 0 ||
-                         test_bit(CACHE_SET_IO_DISABLE, &c->flags));
-
-However, the bch_btree_node_read and bch_btree_node_read_done
-maybe call bch_cache_set_error, then the CACHE_SET_IO_DISABLE
-will be set. If the flag already set, the main thread return
-error. At the same time, maybe some threads still running and
-read NULL pointer, the kernel will crash.
-
-This patch change the event wait condition, the main thread must
-wait for all threads to stop.
-
-Fixes: 8e7102273f597 ("bcache: make bch_btree_check() to be multithreaded")
-Signed-off-by: Mingzhe Zou <mingzhe.zou@easystack.cn>
-Cc: stable@vger.kernel.org # v5.7+
-Signed-off-by: Coly Li <colyli@suse.de>
+Link: https://lore.kernel.org/linux-acpi/CAJZ5v0iStA0JmO0H3z+VgQsVuQONVjKPpw0F5HKfiq=Gb6B5yw@mail.gmail.com
+Reported-by: Mario Limonciello <Mario.Limonciello@amd.com>
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Tested-by: Mario Limonciello <mario.limonciello@amd.com>
+Acked-by: Huang Rui <ray.huang@amd.com>
+Reviewed-by: Mika Westerberg <mika.westerberg@linux.intel.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/md/bcache/btree.c     |    6 ++++--
- drivers/md/bcache/writeback.c |    6 ++++--
- 2 files changed, 8 insertions(+), 4 deletions(-)
+ drivers/acpi/bus.c |   27 +++++++++++++++++++--------
+ 1 file changed, 19 insertions(+), 8 deletions(-)
 
---- a/drivers/md/bcache/btree.c
-+++ b/drivers/md/bcache/btree.c
-@@ -2060,9 +2060,11 @@ int bch_btree_check(struct cache_set *c)
- 		}
- 	}
+--- a/drivers/acpi/bus.c
++++ b/drivers/acpi/bus.c
+@@ -332,21 +332,32 @@ static void acpi_bus_osc_negotiate_platf
+ 	if (ACPI_FAILURE(acpi_run_osc(handle, &context)))
+ 		return;
  
+-	kfree(context.ret.pointer);
++	capbuf_ret = context.ret.pointer;
++	if (context.ret.length <= OSC_SUPPORT_DWORD) {
++		kfree(context.ret.pointer);
++		return;
++	}
+ 
+-	/* Now run _OSC again with query flag clear */
 +	/*
-+	 * Must wait for all threads to stop.
++	 * Now run _OSC again with query flag clear and with the caps
++	 * supported by both the OS and the platform.
 +	 */
- 	wait_event_interruptible(check_state->wait,
--				 atomic_read(&check_state->started) == 0 ||
--				  test_bit(CACHE_SET_IO_DISABLE, &c->flags));
-+				 atomic_read(&check_state->started) == 0);
+ 	capbuf[OSC_QUERY_DWORD] = 0;
++	capbuf[OSC_SUPPORT_DWORD] = capbuf_ret[OSC_SUPPORT_DWORD];
++	kfree(context.ret.pointer);
  
- 	for (i = 0; i < check_state->total_threads; i++) {
- 		if (check_state->infos[i].result) {
---- a/drivers/md/bcache/writeback.c
-+++ b/drivers/md/bcache/writeback.c
-@@ -998,9 +998,11 @@ void bch_sectors_dirty_init(struct bcach
- 		}
- 	}
+ 	if (ACPI_FAILURE(acpi_run_osc(handle, &context)))
+ 		return;
  
-+	/*
-+	 * Must wait for all threads to stop.
-+	 */
- 	wait_event_interruptible(state->wait,
--		 atomic_read(&state->started) == 0 ||
--		 test_bit(CACHE_SET_IO_DISABLE, &c->flags));
-+		 atomic_read(&state->started) == 0);
+ 	capbuf_ret = context.ret.pointer;
+-	osc_sb_apei_support_acked =
+-		capbuf_ret[OSC_SUPPORT_DWORD] & OSC_SB_APEI_SUPPORT;
+-	osc_pc_lpi_support_confirmed =
+-		capbuf_ret[OSC_SUPPORT_DWORD] & OSC_SB_PCLPI_SUPPORT;
+-	osc_sb_native_usb4_support_confirmed =
+-		capbuf_ret[OSC_SUPPORT_DWORD] & OSC_SB_NATIVE_USB4_SUPPORT;
++	if (context.ret.length > OSC_SUPPORT_DWORD) {
++		osc_sb_apei_support_acked =
++			capbuf_ret[OSC_SUPPORT_DWORD] & OSC_SB_APEI_SUPPORT;
++		osc_pc_lpi_support_confirmed =
++			capbuf_ret[OSC_SUPPORT_DWORD] & OSC_SB_PCLPI_SUPPORT;
++		osc_sb_native_usb4_support_confirmed =
++			capbuf_ret[OSC_SUPPORT_DWORD] & OSC_SB_NATIVE_USB4_SUPPORT;
++	}
  
- out:
- 	kfree(state);
+ 	kfree(context.ret.pointer);
+ }
 
 
