@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 946C0C43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 645F3C3527E
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:57:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381274AbiDEMy3 (ORCPT
+        id S1358289AbiDEMvY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 08:54:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40108 "EHLO
+        Tue, 5 Apr 2022 08:51:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41800 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343893AbiDEJOv (ORCPT
+        with ESMTP id S244321AbiDEJJx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:14:51 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC7DA546BD;
-        Tue,  5 Apr 2022 02:01:17 -0700 (PDT)
+        Tue, 5 Apr 2022 05:09:53 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89A1211C37;
+        Tue,  5 Apr 2022 01:59:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7683EB818F3;
-        Tue,  5 Apr 2022 09:01:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DE6C2C385A1;
-        Tue,  5 Apr 2022 09:01:14 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A05BBB81A22;
+        Tue,  5 Apr 2022 08:59:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0AE4AC385A0;
+        Tue,  5 Apr 2022 08:59:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649149275;
-        bh=W7azgFtB3eoyPbKVCXYneVHCBwwIMZA4peV6ACtcEis=;
+        s=korg; t=1649149155;
+        bh=OcJLTMopdWusYu5YIymkCuBofzSZmG5/MLwLyg2R6U8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=oG1CeNHnLVcmuCoFRG8uAEpvcFGkmegC5AYOtDp30ogPRj+o6QLVTR6RpHTCzehcr
-         bt44RoC8SemlfQa2DHDvr8hCurgT6r4xbl0JEzQfF6R7xIBrTL2YK9SJVeyAr1KbnA
-         fENP1K0KgjRnnKhpxxdbncoz/qOHy6kNbXa/Kmos=
+        b=OK4zoRRCIPbYTfX6AcHUqi7eVMVtkAwt4gjcYDGgJbYiaLLDdxbCbFJz3m+iasx2V
+         Vn9dUrwKO3Hb5sHKYZim0FSWb8a31NAZFQvK6pVLV9NGW/sz1h3iYnw5RbqByr2Lfm
+         RyahA4oiWCexB7v1uBS3JYU7ewBP3Gh3aOelWJDM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hangyu Hua <hbh25y@gmail.com>,
+        stable@vger.kernel.org, Vaishnavi Bhat <vaish123@in.ibm.com>,
+        Sukadev Bhattiprolu <sukadev@linux.ibm.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0657/1017] staging: qlge: add unregister_netdev in qlge_probe
-Date:   Tue,  5 Apr 2022 09:26:10 +0200
-Message-Id: <20220405070413.785253661@linuxfoundation.org>
+Subject: [PATCH 5.16 0614/1017] ibmvnic: fix race between xmit and reset
+Date:   Tue,  5 Apr 2022 09:25:27 +0200
+Message-Id: <20220405070412.508548926@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -49,55 +51,273 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hangyu Hua <hbh25y@gmail.com>
+From: Sukadev Bhattiprolu <sukadev@linux.ibm.com>
 
-[ Upstream commit 4fcc0c275e3f59cd68f977c57953783f8014ed15 ]
+[ Upstream commit 4219196d1f662cb10a462eb9e076633a3fc31a15 ]
 
-unregister_netdev need to be called when register_netdev succeeds
-qlge_health_create_reporters fails.
+There is a race between reset and the transmit paths that can lead to
+ibmvnic_xmit() accessing an scrq after it has been freed in the reset
+path. It can result in a crash like:
 
-Fixes: d8827ae8e22b ("staging: qlge: deal with the case that devlink_health_reporter_create fails")
-Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
-Link: https://lore.kernel.org/r/20220221085552.93561-1-hbh25y@gmail.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+	Kernel attempted to read user page (0) - exploit attempt? (uid: 0)
+	BUG: Kernel NULL pointer dereference on read at 0x00000000
+	Faulting instruction address: 0xc0080000016189f8
+	Oops: Kernel access of bad area, sig: 11 [#1]
+	...
+	NIP [c0080000016189f8] ibmvnic_xmit+0x60/0xb60 [ibmvnic]
+	LR [c000000000c0046c] dev_hard_start_xmit+0x11c/0x280
+	Call Trace:
+	[c008000001618f08] ibmvnic_xmit+0x570/0xb60 [ibmvnic] (unreliable)
+	[c000000000c0046c] dev_hard_start_xmit+0x11c/0x280
+	[c000000000c9cfcc] sch_direct_xmit+0xec/0x330
+	[c000000000bfe640] __dev_xmit_skb+0x3a0/0x9d0
+	[c000000000c00ad4] __dev_queue_xmit+0x394/0x730
+	[c008000002db813c] __bond_start_xmit+0x254/0x450 [bonding]
+	[c008000002db8378] bond_start_xmit+0x40/0xc0 [bonding]
+	[c000000000c0046c] dev_hard_start_xmit+0x11c/0x280
+	[c000000000c00ca4] __dev_queue_xmit+0x564/0x730
+	[c000000000cf97e0] neigh_hh_output+0xd0/0x180
+	[c000000000cfa69c] ip_finish_output2+0x31c/0x5c0
+	[c000000000cfd244] __ip_queue_xmit+0x194/0x4f0
+	[c000000000d2a3c4] __tcp_transmit_skb+0x434/0x9b0
+	[c000000000d2d1e0] __tcp_retransmit_skb+0x1d0/0x6a0
+	[c000000000d2d984] tcp_retransmit_skb+0x34/0x130
+	[c000000000d310e8] tcp_retransmit_timer+0x388/0x6d0
+	[c000000000d315ec] tcp_write_timer_handler+0x1bc/0x330
+	[c000000000d317bc] tcp_write_timer+0x5c/0x200
+	[c000000000243270] call_timer_fn+0x50/0x1c0
+	[c000000000243704] __run_timers.part.0+0x324/0x460
+	[c000000000243894] run_timer_softirq+0x54/0xa0
+	[c000000000ea713c] __do_softirq+0x15c/0x3e0
+	[c000000000166258] __irq_exit_rcu+0x158/0x190
+	[c000000000166420] irq_exit+0x20/0x40
+	[c00000000002853c] timer_interrupt+0x14c/0x2b0
+	[c000000000009a00] decrementer_common_virt+0x210/0x220
+	--- interrupt: 900 at plpar_hcall_norets_notrace+0x18/0x2c
+
+The immediate cause of the crash is the access of tx_scrq in the following
+snippet during a reset, where the tx_scrq can be either NULL or an address
+that will soon be invalid:
+
+	ibmvnic_xmit()
+	{
+		...
+		tx_scrq = adapter->tx_scrq[queue_num];
+		txq = netdev_get_tx_queue(netdev, queue_num);
+		ind_bufp = &tx_scrq->ind_buf;
+
+		if (test_bit(0, &adapter->resetting)) {
+		...
+	}
+
+But beyond that, the call to ibmvnic_xmit() itself is not safe during a
+reset and the reset path attempts to avoid this by stopping the queue in
+ibmvnic_cleanup(). However just after the queue was stopped, an in-flight
+ibmvnic_complete_tx() could have restarted the queue even as the reset is
+progressing.
+
+Since the queue was restarted we could get a call to ibmvnic_xmit() which
+can then access the bad tx_scrq (or other fields).
+
+We cannot however simply have ibmvnic_complete_tx() check the ->resetting
+bit and skip starting the queue. This can race at the "back-end" of a good
+reset which just restarted the queue but has not cleared the ->resetting
+bit yet. If we skip restarting the queue due to ->resetting being true,
+the queue would remain stopped indefinitely potentially leading to transmit
+timeouts.
+
+IOW ->resetting is too broad for this purpose. Instead use a new flag
+that indicates whether or not the queues are active. Only the open/
+reset paths control when the queues are active. ibmvnic_complete_tx()
+and others wake up the queue only if the queue is marked active.
+
+So we will have:
+	A. reset/open thread in ibmvnic_cleanup() and __ibmvnic_open()
+
+		->resetting = true
+		->tx_queues_active = false
+		disable tx queues
+		...
+		->tx_queues_active = true
+		start tx queues
+
+	B. Tx interrupt in ibmvnic_complete_tx():
+
+		if (->tx_queues_active)
+			netif_wake_subqueue();
+
+To ensure that ->tx_queues_active and state of the queues are consistent,
+we need a lock which:
+
+	- must also be taken in the interrupt path (ibmvnic_complete_tx())
+	- shared across the multiple queues in the adapter (so they don't
+	  become serialized)
+
+Use rcu_read_lock() and have the reset thread synchronize_rcu() after
+updating the ->tx_queues_active state.
+
+While here, consolidate a few boolean fields in ibmvnic_adapter for
+better alignment.
+
+Based on discussions with Brian King and Dany Madden.
+
+Fixes: 7ed5b31f4a66 ("net/ibmvnic: prevent more than one thread from running in reset")
+Reported-by: Vaishnavi Bhat <vaish123@in.ibm.com>
+Signed-off-by: Sukadev Bhattiprolu <sukadev@linux.ibm.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/staging/qlge/qlge_main.c | 11 +++++++----
- 1 file changed, 7 insertions(+), 4 deletions(-)
+ drivers/net/ethernet/ibm/ibmvnic.c | 63 ++++++++++++++++++++++++------
+ drivers/net/ethernet/ibm/ibmvnic.h |  7 +++-
+ 2 files changed, 55 insertions(+), 15 deletions(-)
 
-diff --git a/drivers/staging/qlge/qlge_main.c b/drivers/staging/qlge/qlge_main.c
-index 9873bb2a9ee4..113a3efd12e9 100644
---- a/drivers/staging/qlge/qlge_main.c
-+++ b/drivers/staging/qlge/qlge_main.c
-@@ -4605,14 +4605,12 @@ static int qlge_probe(struct pci_dev *pdev,
- 	err = register_netdev(ndev);
- 	if (err) {
- 		dev_err(&pdev->dev, "net device registration failed.\n");
--		qlge_release_all(pdev);
--		pci_disable_device(pdev);
--		goto netdev_free;
-+		goto cleanup_pdev;
+diff --git a/drivers/net/ethernet/ibm/ibmvnic.c b/drivers/net/ethernet/ibm/ibmvnic.c
+index a8b65c072f64..82f47bf4d67c 100644
+--- a/drivers/net/ethernet/ibm/ibmvnic.c
++++ b/drivers/net/ethernet/ibm/ibmvnic.c
+@@ -1429,6 +1429,15 @@ static int __ibmvnic_open(struct net_device *netdev)
+ 		return rc;
  	}
  
- 	err = qlge_health_create_reporters(qdev);
- 	if (err)
--		goto netdev_free;
-+		goto unregister_netdev;
++	adapter->tx_queues_active = true;
++
++	/* Since queues were stopped until now, there shouldn't be any
++	 * one in ibmvnic_complete_tx() or ibmvnic_xmit() so maybe we
++	 * don't need the synchronize_rcu()? Leaving it for consistency
++	 * with setting ->tx_queues_active = false.
++	 */
++	synchronize_rcu();
++
+ 	netif_tx_start_all_queues(netdev);
  
- 	/* Start up the timer to trigger EEH if
- 	 * the bus goes dead
-@@ -4626,6 +4624,11 @@ static int qlge_probe(struct pci_dev *pdev,
- 	devlink_register(devlink);
- 	return 0;
+ 	if (prev_state == VNIC_CLOSED) {
+@@ -1603,6 +1612,14 @@ static void ibmvnic_cleanup(struct net_device *netdev)
+ 	struct ibmvnic_adapter *adapter = netdev_priv(netdev);
  
-+unregister_netdev:
-+	unregister_netdev(ndev);
-+cleanup_pdev:
-+	qlge_release_all(pdev);
-+	pci_disable_device(pdev);
- netdev_free:
- 	free_netdev(ndev);
- devlink_free:
+ 	/* ensure that transmissions are stopped if called by do_reset */
++
++	adapter->tx_queues_active = false;
++
++	/* Ensure complete_tx() and ibmvnic_xmit() see ->tx_queues_active
++	 * update so they don't restart a queue after we stop it below.
++	 */
++	synchronize_rcu();
++
+ 	if (test_bit(0, &adapter->resetting))
+ 		netif_tx_disable(netdev);
+ 	else
+@@ -1842,14 +1859,21 @@ static void ibmvnic_tx_scrq_clean_buffer(struct ibmvnic_adapter *adapter,
+ 		tx_buff->skb = NULL;
+ 		adapter->netdev->stats.tx_dropped++;
+ 	}
++
+ 	ind_bufp->index = 0;
++
+ 	if (atomic_sub_return(entries, &tx_scrq->used) <=
+ 	    (adapter->req_tx_entries_per_subcrq / 2) &&
+-	    __netif_subqueue_stopped(adapter->netdev, queue_num) &&
+-	    !test_bit(0, &adapter->resetting)) {
+-		netif_wake_subqueue(adapter->netdev, queue_num);
+-		netdev_dbg(adapter->netdev, "Started queue %d\n",
+-			   queue_num);
++	    __netif_subqueue_stopped(adapter->netdev, queue_num)) {
++		rcu_read_lock();
++
++		if (adapter->tx_queues_active) {
++			netif_wake_subqueue(adapter->netdev, queue_num);
++			netdev_dbg(adapter->netdev, "Started queue %d\n",
++				   queue_num);
++		}
++
++		rcu_read_unlock();
+ 	}
+ }
+ 
+@@ -1904,11 +1928,12 @@ static netdev_tx_t ibmvnic_xmit(struct sk_buff *skb, struct net_device *netdev)
+ 	int index = 0;
+ 	u8 proto = 0;
+ 
+-	tx_scrq = adapter->tx_scrq[queue_num];
+-	txq = netdev_get_tx_queue(netdev, queue_num);
+-	ind_bufp = &tx_scrq->ind_buf;
+-
+-	if (test_bit(0, &adapter->resetting)) {
++	/* If a reset is in progress, drop the packet since
++	 * the scrqs may get torn down. Otherwise use the
++	 * rcu to ensure reset waits for us to complete.
++	 */
++	rcu_read_lock();
++	if (!adapter->tx_queues_active) {
+ 		dev_kfree_skb_any(skb);
+ 
+ 		tx_send_failed++;
+@@ -1917,6 +1942,10 @@ static netdev_tx_t ibmvnic_xmit(struct sk_buff *skb, struct net_device *netdev)
+ 		goto out;
+ 	}
+ 
++	tx_scrq = adapter->tx_scrq[queue_num];
++	txq = netdev_get_tx_queue(netdev, queue_num);
++	ind_bufp = &tx_scrq->ind_buf;
++
+ 	if (ibmvnic_xmit_workarounds(skb, netdev)) {
+ 		tx_dropped++;
+ 		tx_send_failed++;
+@@ -1924,6 +1953,7 @@ static netdev_tx_t ibmvnic_xmit(struct sk_buff *skb, struct net_device *netdev)
+ 		ibmvnic_tx_scrq_flush(adapter, tx_scrq);
+ 		goto out;
+ 	}
++
+ 	if (skb_is_gso(skb))
+ 		tx_pool = &adapter->tso_pool[queue_num];
+ 	else
+@@ -2078,6 +2108,7 @@ static netdev_tx_t ibmvnic_xmit(struct sk_buff *skb, struct net_device *netdev)
+ 		netif_carrier_off(netdev);
+ 	}
+ out:
++	rcu_read_unlock();
+ 	netdev->stats.tx_dropped += tx_dropped;
+ 	netdev->stats.tx_bytes += tx_bytes;
+ 	netdev->stats.tx_packets += tx_packets;
+@@ -3728,9 +3759,15 @@ static int ibmvnic_complete_tx(struct ibmvnic_adapter *adapter,
+ 		    (adapter->req_tx_entries_per_subcrq / 2) &&
+ 		    __netif_subqueue_stopped(adapter->netdev,
+ 					     scrq->pool_index)) {
+-			netif_wake_subqueue(adapter->netdev, scrq->pool_index);
+-			netdev_dbg(adapter->netdev, "Started queue %d\n",
+-				   scrq->pool_index);
++			rcu_read_lock();
++			if (adapter->tx_queues_active) {
++				netif_wake_subqueue(adapter->netdev,
++						    scrq->pool_index);
++				netdev_dbg(adapter->netdev,
++					   "Started queue %d\n",
++					   scrq->pool_index);
++			}
++			rcu_read_unlock();
+ 		}
+ 	}
+ 
+diff --git a/drivers/net/ethernet/ibm/ibmvnic.h b/drivers/net/ethernet/ibm/ibmvnic.h
+index 549a9b7b1a70..1b2bdb85ad67 100644
+--- a/drivers/net/ethernet/ibm/ibmvnic.h
++++ b/drivers/net/ethernet/ibm/ibmvnic.h
+@@ -1009,11 +1009,14 @@ struct ibmvnic_adapter {
+ 	struct work_struct ibmvnic_reset;
+ 	struct delayed_work ibmvnic_delayed_reset;
+ 	unsigned long resetting;
+-	bool napi_enabled, from_passive_init;
+-	bool login_pending;
+ 	/* last device reset time */
+ 	unsigned long last_reset_time;
+ 
++	bool napi_enabled;
++	bool from_passive_init;
++	bool login_pending;
++	/* protected by rcu */
++	bool tx_queues_active;
+ 	bool failover_pending;
+ 	bool force_reset_recovery;
+ 
 -- 
 2.34.1
 
