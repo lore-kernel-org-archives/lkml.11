@@ -2,108 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D3F97C43219
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:23:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 652CAC3527E
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:23:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240585AbiDEUTB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 16:19:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53344 "EHLO
+        id S243002AbiDEUT6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 16:19:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37170 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1387456AbiDENPN (ORCPT
+        with ESMTP id S1457464AbiDEQDR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 09:15:13 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1BB3512BF9F;
-        Tue,  5 Apr 2022 05:20:04 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id D6BDBD6E;
-        Tue,  5 Apr 2022 05:20:03 -0700 (PDT)
-Received: from e121345-lin.cambridge.arm.com (e121345-lin.cambridge.arm.com [10.1.196.40])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 014163F5A1;
-        Tue,  5 Apr 2022 05:20:02 -0700 (PDT)
-From:   Robin Murphy <robin.murphy@arm.com>
-To:     benve@cisco.com, neescoba@cisco.com, jgg@ziepe.ca
-Cc:     linux-rdma@vger.kernel.org, iommu@lists.linux-foundation.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] RDMA/usnic: Stop using iommu_present()
-Date:   Tue,  5 Apr 2022 13:19:59 +0100
-Message-Id: <f707b4248e1d33b6d2c7f1d7c94febb802cf9890.1649161199.git.robin.murphy@arm.com>
-X-Mailer: git-send-email 2.28.0.dirty
+        Tue, 5 Apr 2022 12:03:17 -0400
+Received: from mail-oa1-f47.google.com (mail-oa1-f47.google.com [209.85.160.47])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6E3225B;
+        Tue,  5 Apr 2022 08:52:21 -0700 (PDT)
+Received: by mail-oa1-f47.google.com with SMTP id 586e51a60fabf-d39f741ba0so14787462fac.13;
+        Tue, 05 Apr 2022 08:52:21 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=73sr+mzCEmuVDVSdm+EpGuiiOfdHmYopaGe2xWN1rOQ=;
+        b=LOHBsIs1i8+vXoe7aUERRl8rO0v5Ha7HFlOiKBzy07QYiVC/Byherukzji78/HnEwM
+         siH0hRUUZ+7DxL0/OLHSoiyVGdZe5Y5TGO3Tp4Lfb+aCg+kLvJdZ2CgJ0lnLqDTgx2F8
+         JAVOpHbc5obkKFy8gqq6SNPe/ld1Qh5SLv0bsKg8BO20xiIh5F8nUAibDkDjQeVU3IsL
+         a8RRGZH0tdUXTR86SSW1DHSuGxhYMoCAPkQW0pGFEc/4VIsHaRspwyb+sPBCkWsPCCxb
+         mEdp2ThL+hQj98Mte2MtX4pY5nCiZNHoNGhiKRWx/9pJBZX3Xur2j1ODsH83yxdcJoPF
+         UBCg==
+X-Gm-Message-State: AOAM531Z+Ym25rp24zeeb9P5AQiTRTt3Ud+M2sXFxWFwQeYZgdVRUi4d
+        U/Ttriw3NYWHzQ4isTImuQ==
+X-Google-Smtp-Source: ABdhPJxNSzVmokJVTPd1XNB16cHa14S7IaMy1MJZPXDKNndI7oIgOU3kFQsdma7sT8pY4vAAcBr/KA==
+X-Received: by 2002:a05:6870:f149:b0:dd:f3b0:986d with SMTP id l9-20020a056870f14900b000ddf3b0986dmr1904739oac.148.1649173940623;
+        Tue, 05 Apr 2022 08:52:20 -0700 (PDT)
+Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id 2-20020a056870124200b000dd9ac0d61esm5524206oao.24.2022.04.05.08.52.18
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 05 Apr 2022 08:52:19 -0700 (PDT)
+Received: (nullmailer pid 3284623 invoked by uid 1000);
+        Tue, 05 Apr 2022 15:52:17 -0000
+Date:   Tue, 5 Apr 2022 10:52:17 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     Miquel Raynal <miquel.raynal@bootlin.com>
+Cc:     Chuanhong Guo <gch981213@gmail.com>, linux-spi@vger.kernel.org,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Wolfram Sang <wsa+renesas@sang-engineering.com>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Richard Weinberger <richard@nod.at>,
+        Pratyush Yadav <p.yadav@ti.com>,
+        linux-arm-kernel@lists.infradead.org,
+        Cai Huoqing <cai.huoqing@linux.dev>,
+        Roger Quadros <rogerq@kernel.org>,
+        Yu Kuai <yukuai3@huawei.com>,
+        linux-mediatek@lists.infradead.org,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        devicetree@vger.kernel.org, Mark Brown <broonie@kernel.org>,
+        linux-kernel@vger.kernel.org, Paul Cercueil <paul@crapouillou.net>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Colin Ian King <colin.king@intel.com>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        linux-mtd@lists.infradead.org
+Subject: Re: [PATCH v3 4/5] dt-bindings: spi: add binding doc for spi-mtk-snfi
+Message-ID: <YkxlsU+P33ip2oWH@robh.at.kernel.org>
+References: <20220404131818.1817794-1-gch981213@gmail.com>
+ <20220404131818.1817794-5-gch981213@gmail.com>
+ <1649088538.050456.1436949.nullmailer@robh.at.kernel.org>
+ <CAJsYDVLaXAoL=TcPun6rckcA_cdUS-zFy_7M6uCpfzX+jbQEag@mail.gmail.com>
+ <20220405092024.25d97c33@xps13>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220405092024.25d97c33@xps13>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Even if an IOMMU might be present for some PCI segment in the system,
-that doesn't necessarily mean it provides translation for the device(s)
-we care about. Replace iommu_present() with a more appropriate check at
-probe time, and garbage-collect the resulting empty init function.
+On Tue, Apr 05, 2022 at 09:20:24AM +0200, Miquel Raynal wrote:
+> Hello,
+> 
+> gch981213@gmail.com wrote on Tue, 5 Apr 2022 10:55:51 +0800:
+> 
+> > Hi Rob!
+> > 
+> > On Tue, Apr 5, 2022 at 12:09 AM Rob Herring <robh@kernel.org> wrote:
+> > > [...]
+> > > My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
+> > > on your patch (DT_CHECKER_FLAGS is new in v5.13):
+> > >
+> > > yamllint warnings/errors:
+> > >
+> > > dtschema/dtc warnings/errors:
+> > > /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/spi/mediatek,spi-mtk-snfi.example.dt.yaml: spi@1100d000: 'ecc-engine' is a required property
+> > >         From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/spi/mediatek,spi-mtk-snfi.yaml
+> > > Documentation/devicetree/bindings/spi/mediatek,spi-mtk-snfi.example.dt.yaml:0:0: /example-0/soc/spi@1100d000/flash@0: failed to match any schema with compatible: ['spi-nand']  
+> > 
+> > I ran the tests myself and it's only complaining about the ecc-engine name:
+> > 
+> > /home/user/src/kernels/linux/Documentation/devicetree/bindings/spi/mediatek,spi-mtk-snfi.example.dtb:
+> > spi@1100d000: 'ecc-engine' is a required property
+> > From schema: /home/user/src/kernels/linux/Documentation/devicetree/bindings/spi/mediatek,spi-mtk-snfi.yaml
+> > 
+> > It says nothing about the spi-nand part.
 
-Signed-off-by: Robin Murphy <robin.murphy@arm.com>
----
- drivers/infiniband/hw/usnic/usnic_ib_main.c | 11 +++++------
- drivers/infiniband/hw/usnic/usnic_uiom.c    | 10 ----------
- drivers/infiniband/hw/usnic/usnic_uiom.h    |  1 -
- 3 files changed, 5 insertions(+), 17 deletions(-)
+Did you use 'DT_CHECKER_FLAGS=-m' as it says above?
 
-diff --git a/drivers/infiniband/hw/usnic/usnic_ib_main.c b/drivers/infiniband/hw/usnic/usnic_ib_main.c
-index d346dd48e731..46653ad56f5a 100644
---- a/drivers/infiniband/hw/usnic/usnic_ib_main.c
-+++ b/drivers/infiniband/hw/usnic/usnic_ib_main.c
-@@ -534,6 +534,11 @@ static int usnic_ib_pci_probe(struct pci_dev *pdev,
- 	struct usnic_ib_vf *vf;
- 	enum usnic_vnic_res_type res_type;
- 
-+	if (!device_iommu_mapped(&pdev->dev)) {
-+		usnic_err("IOMMU required but not present or enabled.  USNIC QPs will not function w/o enabling IOMMU\n");
-+		return -EPERM;
-+	}
-+
- 	vf = kzalloc(sizeof(*vf), GFP_KERNEL);
- 	if (!vf)
- 		return -ENOMEM;
-@@ -642,12 +647,6 @@ static int __init usnic_ib_init(void)
- 
- 	printk_once(KERN_INFO "%s", usnic_version);
- 
--	err = usnic_uiom_init(DRV_NAME);
--	if (err) {
--		usnic_err("Unable to initialize umem with err %d\n", err);
--		return err;
--	}
--
- 	err = pci_register_driver(&usnic_ib_pci_driver);
- 	if (err) {
- 		usnic_err("Unable to register with PCI\n");
-diff --git a/drivers/infiniband/hw/usnic/usnic_uiom.c b/drivers/infiniband/hw/usnic/usnic_uiom.c
-index 760b254ba42d..8c48027614a1 100644
---- a/drivers/infiniband/hw/usnic/usnic_uiom.c
-+++ b/drivers/infiniband/hw/usnic/usnic_uiom.c
-@@ -556,13 +556,3 @@ void usnic_uiom_free_dev_list(struct device **devs)
- {
- 	kfree(devs);
- }
--
--int usnic_uiom_init(char *drv_name)
--{
--	if (!iommu_present(&pci_bus_type)) {
--		usnic_err("IOMMU required but not present or enabled.  USNIC QPs will not function w/o enabling IOMMU\n");
--		return -EPERM;
--	}
--
--	return 0;
--}
-diff --git a/drivers/infiniband/hw/usnic/usnic_uiom.h b/drivers/infiniband/hw/usnic/usnic_uiom.h
-index 7ec8991ace67..9407522179e9 100644
---- a/drivers/infiniband/hw/usnic/usnic_uiom.h
-+++ b/drivers/infiniband/hw/usnic/usnic_uiom.h
-@@ -91,5 +91,4 @@ struct usnic_uiom_reg *usnic_uiom_reg_get(struct usnic_uiom_pd *pd,
- 						unsigned long addr, size_t size,
- 						int access, int dmasync);
- void usnic_uiom_reg_release(struct usnic_uiom_reg *uiomr);
--int usnic_uiom_init(char *drv_name);
- #endif /* USNIC_UIOM_H_ */
--- 
-2.28.0.dirty
+> > I'd like to keep the flash@0 node in the example to demonstrate the
+> > nand-ecc-engine usage. What should I do?
+> 
+> You can try including spi-nand.yaml (like you do with
+> spi-controller.yaml). You should no longer need to define
+> nand-ecc-engine then as it is already described there?
 
+Including spi-nand.yaml is wrong. If that just landed, then this may 
+have run before the base moved to v5.18-rc1.
+
+Rob
