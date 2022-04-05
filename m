@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 963D2C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BD26AC35276
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:20:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235042AbiDEIOs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 04:14:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57598 "EHLO
+        id S235084AbiDEIO4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 04:14:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55580 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235332AbiDEH7j (ORCPT
+        with ESMTP id S235387AbiDEH7l (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 03:59:39 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F8C657165;
-        Tue,  5 Apr 2022 00:54:04 -0700 (PDT)
+        Tue, 5 Apr 2022 03:59:41 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D168580DF;
+        Tue,  5 Apr 2022 00:54:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3CFC5B81B18;
-        Tue,  5 Apr 2022 07:54:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 820EEC340EE;
-        Tue,  5 Apr 2022 07:54:01 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 93A86B81A32;
+        Tue,  5 Apr 2022 07:54:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0523FC340EE;
+        Tue,  5 Apr 2022 07:54:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649145241;
-        bh=EbOZ/oVGLOsnnwYomOpaf9hYYjlbnYBhs4SnLCj8OQc=;
+        s=korg; t=1649145255;
+        bh=0j7nHnS0t2sSr815chupnPL/fJYlIq6v+zh/udpGJTI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=AFc63gOa4PiorzYNA/0oVo2IxVoWDcKDHN7/x+VdEkfOUrGc0TA8jCGW/i04fW3Ys
-         a3yzDJB52IlhJH9P2VDK8FwxGIMZf7fgRSw+1LwUN0ahkdmjZLV8GMFqbNG3EGYq70
-         Z2vgpe17R1lPO0DmDsA8U0ub5eMpK2k34jcIKV5E=
+        b=kqU+IeTdwMOpuj8kTPvb1T2/xaLGuqwAMRXxySI9jxef3D7VX+n0OyqMFZP4RdGnN
+         ZshN8rydqQ7hxAqNjAWtz4Ciz7BoAv5+6QZfZTvqIhKUHP3d0zMRqo6df7Fm7zWJwV
+         R+/cJXgekiaG+MUuYztkmt2C07C4JnxPzgJqFdC0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, devicetree@vger.kernel.org,
-        Maulik Shah <quic_mkshah@quicinc.com>,
+        stable@vger.kernel.org, Kathiravan T <kathirav@codeaurora.org>,
+        Baruch Siach <baruch@tkos.co.il>,
         Bjorn Andersson <bjorn.andersson@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0335/1126] arm64: dts: qcom: sm8150: Correct TCS configuration for apps rsc
-Date:   Tue,  5 Apr 2022 09:18:02 +0200
-Message-Id: <20220405070417.449490661@linuxfoundation.org>
+Subject: [PATCH 5.17 0339/1126] arm64: dts: qcom: ipq6018: fix usb reference period
+Date:   Tue,  5 Apr 2022 09:18:06 +0200
+Message-Id: <20220405070417.565613241@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -50,39 +50,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Maulik Shah <quic_mkshah@quicinc.com>
+From: Baruch Siach <baruch@tkos.co.il>
 
-[ Upstream commit 17ac8af678b6da6a8f1df7da8ebf2c5198741827 ]
+[ Upstream commit d1c10ab1494f09eb12fa6e58fc78bb28d44922ae ]
 
-Correct the TCS config by updating the number of TCSes for each type.
+Reference clock period for rate of 24MHz is 41ns (0x29).
 
-Cc: devicetree@vger.kernel.org
-Fixes: d8cf9372b654 ("arm64: dts: qcom: sm8150: Add apps shared nodes")
-Signed-off-by: Maulik Shah <quic_mkshah@quicinc.com>
+Link: https://lore.kernel.org/r/1965fc315525b8ab26cf9f71f939c24d@codeaurora.org
+Link: https://lore.kernel.org/r/a1932eba-564c-fe32-f220-53aa75250105@seco.com
+Fixes: 20bb9e3dd2e4 ("arm64: dts: qcom: ipq6018: add usb3 DT description")
+Reported-by: Kathiravan T <kathirav@codeaurora.org>
+Signed-off-by: Baruch Siach <baruch@tkos.co.il>
 Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Link: https://lore.kernel.org/r/1641749107-31979-2-git-send-email-quic_mkshah@quicinc.com
+Link: https://lore.kernel.org/r/4f4df55cf44cd0fd7d773aca171d4f48662fb1a5.1642704221.git.baruch@tkos.co.il
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/boot/dts/qcom/sm8150.dtsi | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ arch/arm64/boot/dts/qcom/ipq6018.dtsi | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/arm64/boot/dts/qcom/sm8150.dtsi b/arch/arm64/boot/dts/qcom/sm8150.dtsi
-index 6012322a5984..78265646feff 100644
---- a/arch/arm64/boot/dts/qcom/sm8150.dtsi
-+++ b/arch/arm64/boot/dts/qcom/sm8150.dtsi
-@@ -3556,9 +3556,9 @@
- 			qcom,tcs-offset = <0xd00>;
- 			qcom,drv-id = <2>;
- 			qcom,tcs-config = <ACTIVE_TCS  2>,
--					  <SLEEP_TCS   1>,
--					  <WAKE_TCS    1>,
--					  <CONTROL_TCS 0>;
-+					  <SLEEP_TCS   3>,
-+					  <WAKE_TCS    3>,
-+					  <CONTROL_TCS 1>;
- 
- 			rpmhcc: clock-controller {
- 				compatible = "qcom,sm8150-rpmh-clk";
+diff --git a/arch/arm64/boot/dts/qcom/ipq6018.dtsi b/arch/arm64/boot/dts/qcom/ipq6018.dtsi
+index 66ec5615651d..5dea37651adf 100644
+--- a/arch/arm64/boot/dts/qcom/ipq6018.dtsi
++++ b/arch/arm64/boot/dts/qcom/ipq6018.dtsi
+@@ -748,7 +748,7 @@
+ 				snps,hird-threshold = /bits/ 8 <0x0>;
+ 				snps,dis_u2_susphy_quirk;
+ 				snps,dis_u3_susphy_quirk;
+-				snps,ref-clock-period-ns = <0x32>;
++				snps,ref-clock-period-ns = <0x29>;
+ 				dr_mode = "host";
+ 			};
+ 		};
 -- 
 2.34.1
 
