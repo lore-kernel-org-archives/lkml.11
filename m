@@ -2,92 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A7B00C43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 92817C4332F
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:28:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354594AbiDEUXS (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 16:23:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33786 "EHLO
+        id S231625AbiDEUaA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 16:30:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50916 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243469AbiDEKgr (ORCPT
+        with ESMTP id S1457952AbiDERB1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:36:47 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5800A546A7;
-        Tue,  5 Apr 2022 03:22:15 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id EAFD0B81C99;
-        Tue,  5 Apr 2022 10:22:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 371DFC385A0;
-        Tue,  5 Apr 2022 10:22:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649154132;
-        bh=gOYcQZhMbYIltHyjL+vacfpeKJfRnGNxkVJECrSSfcM=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vlKoE5UGjC5Ed9eliV9cerxrTxVfxrQna6FZk71dFUTk0Ui1HNSQwNDUoU27JjraJ
-         PtVCSDhwqLGrn6q8OPB2kqUZC+aUnY2MK8Rwxr1T2zJPO05a9KwS8NT54IxQhi0Bl6
-         beFJNSlYky7aqpJ5myx+kQ+ci7Q62BqQ/mGrqyAI=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zeal Robot <zealci@zte.com.cn>,
-        Minghao Chi <chi.minghao@zte.com.cn>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 469/599] spi: tegra20: Use of_device_get_match_data()
-Date:   Tue,  5 Apr 2022 09:32:43 +0200
-Message-Id: <20220405070312.783892607@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 5 Apr 2022 13:01:27 -0400
+Received: from 14.mo582.mail-out.ovh.net (14.mo582.mail-out.ovh.net [46.105.56.113])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6561E65838
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 09:59:28 -0700 (PDT)
+Received: from player771.ha.ovh.net (unknown [10.108.16.30])
+        by mo582.mail-out.ovh.net (Postfix) with ESMTP id BB1DE23A1E
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 16:59:26 +0000 (UTC)
+Received: from sk2.org (82-65-25-201.subs.proxad.net [82.65.25.201])
+        (Authenticated sender: steve@sk2.org)
+        by player771.ha.ovh.net (Postfix) with ESMTPSA id 575A6293E3695;
+        Tue,  5 Apr 2022 16:59:21 +0000 (UTC)
+Authentication-Results: garm.ovh; auth=pass (GARM-106R006b3e2e77b-2407-4228-94bb-9a20ade0f9bf,
+                    8AF55017BACD44284FC599BC4826E0280D36FCC4) smtp.auth=steve@sk2.org
+X-OVh-ClientIp: 82.65.25.201
+From:   Stephen Kitt <steve@sk2.org>
+To:     Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>
+Cc:     Wolfram Sang <wsa@kernel.org>, linux-kernel@vger.kernel.org,
+        Stephen Kitt <steve@sk2.org>
+Subject: [PATCH 02/14] ASoC: cx2072x: use simple i2c probe function
+Date:   Tue,  5 Apr 2022 18:58:24 +0200
+Message-Id: <20220405165836.2165310-3-steve@sk2.org>
+X-Mailer: git-send-email 2.27.0
+In-Reply-To: <20220405165836.2165310-1-steve@sk2.org>
+References: <20220405165836.2165310-1-steve@sk2.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+X-Ovh-Tracer-Id: 8461700752417785478
+X-VR-SPAMSTATE: OK
+X-VR-SPAMSCORE: -100
+X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvvddrudejgedguddtgecutefuodetggdotefrodftvfcurfhrohhfihhlvgemucfqggfjpdevjffgvefmvefgnecuuegrihhlohhuthemucehtddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjughrpefhvffufffkofgjfhgggfestdekredtredttdenucfhrhhomhepufhtvghphhgvnhcumfhithhtuceoshhtvghvvgesshhkvddrohhrgheqnecuggftrfgrthhtvghrnhepjeelledvfeeiiedutdefveekgeeuheekkedvffegvdehudegkefgjeejkefgueegnecukfhppedtrddtrddtrddtpdekvddrieehrddvhedrvddtudenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhhouggvpehsmhhtphhouhhtpdhhvghlohepphhlrgihvghrjeejuddrhhgrrdhovhhhrdhnvghtpdhinhgvtheptddrtddrtddrtddpmhgrihhlfhhrohhmpehsthgvvhgvsehskhdvrdhorhhgpdhnsggprhgtphhtthhopedupdhrtghpthhtoheplhhinhhugidqkhgvrhhnvghlsehvghgvrhdrkhgvrhhnvghlrdhorhhg
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Minghao Chi <chi.minghao@zte.com.cn>
+The i2c probe functions here don't use the id information provided in
+their second argument, so the single-parameter i2c probe function
+("probe_new") can be used instead.
 
-[ Upstream commit c9839acfcbe20ce43d363c2a9d0772472d9921c0 ]
+This avoids scanning the identifier tables during probes.
 
-Use of_device_get_match_data() to simplify the code.
-
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: Minghao Chi <chi.minghao@zte.com.cn>
-Link: https://lore.kernel.org/r/20220315023138.2118293-1-chi.minghao@zte.com.cn
-Signed-off-by: Mark Brown <broonie@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Stephen Kitt <steve@sk2.org>
 ---
- drivers/spi/spi-tegra20-slink.c | 8 +-------
- 1 file changed, 1 insertion(+), 7 deletions(-)
+ sound/soc/codecs/cx2072x.c | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/spi/spi-tegra20-slink.c b/drivers/spi/spi-tegra20-slink.c
-index 669fc4286231..9e2b812b9025 100644
---- a/drivers/spi/spi-tegra20-slink.c
-+++ b/drivers/spi/spi-tegra20-slink.c
-@@ -1006,14 +1006,8 @@ static int tegra_slink_probe(struct platform_device *pdev)
- 	struct resource		*r;
- 	int ret, spi_irq;
- 	const struct tegra_slink_chip_data *cdata = NULL;
--	const struct of_device_id *match;
+diff --git a/sound/soc/codecs/cx2072x.c b/sound/soc/codecs/cx2072x.c
+index 1f5c57fab1d8..0d3a00434c6d 100644
+--- a/sound/soc/codecs/cx2072x.c
++++ b/sound/soc/codecs/cx2072x.c
+@@ -1626,8 +1626,7 @@ static int __maybe_unused cx2072x_runtime_resume(struct device *dev)
+ 	return clk_prepare_enable(cx2072x->mclk);
+ }
  
--	match = of_match_device(tegra_slink_of_match, &pdev->dev);
--	if (!match) {
--		dev_err(&pdev->dev, "Error: No device match found\n");
--		return -ENODEV;
--	}
--	cdata = match->data;
-+	cdata = of_device_get_match_data(&pdev->dev);
- 
- 	master = spi_alloc_master(&pdev->dev, sizeof(*tspi));
- 	if (!master) {
+-static int cx2072x_i2c_probe(struct i2c_client *i2c,
+-			     const struct i2c_device_id *id)
++static int cx2072x_i2c_probe(struct i2c_client *i2c)
+ {
+ 	struct cx2072x_priv *cx2072x;
+ 	unsigned int ven_id, rev_id;
+@@ -1710,7 +1709,7 @@ static struct i2c_driver cx2072x_i2c_driver = {
+ 		.acpi_match_table = ACPI_PTR(cx2072x_acpi_match),
+ 		.pm = &cx2072x_runtime_pm,
+ 	},
+-	.probe = cx2072x_i2c_probe,
++	.probe_new = cx2072x_i2c_probe,
+ 	.remove = cx2072x_i2c_remove,
+ 	.id_table = cx2072x_i2c_id,
+ };
 -- 
-2.34.1
-
-
+2.27.0
 
