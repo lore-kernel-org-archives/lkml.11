@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E6C71C4167E
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 13:48:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1EBF0C46467
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 13:48:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1391151AbiDENrZ (ORCPT
+        id S1391181AbiDENrf (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 09:47:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38890 "EHLO
+        Tue, 5 Apr 2022 09:47:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37936 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347331AbiDEJZ3 (ORCPT
+        with ESMTP id S1347306AbiDEJZ1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:25:29 -0400
+        Tue, 5 Apr 2022 05:25:27 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5DD7DDD941;
-        Tue,  5 Apr 2022 02:15:10 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F404DCE13;
+        Tue,  5 Apr 2022 02:15:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6D38C615E5;
-        Tue,  5 Apr 2022 09:14:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7B262C385A0;
-        Tue,  5 Apr 2022 09:14:23 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A79DA61654;
+        Tue,  5 Apr 2022 09:14:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B087EC385A2;
+        Tue,  5 Apr 2022 09:14:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649150063;
-        bh=yqm4qNRot0W+kBh+mRQCRatH0OJBgYorbLjzeBfhe3Q=;
+        s=korg; t=1649150072;
+        bh=AxMd18gbofm6w4krU29ftLJswZhLQ32cx6ujG2KM8Xk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=x87SFKyKRhpGyNv8lsZ+id/nfoC00tWKDYwcB3LIz2RDtpBvYS9hxHkBnGKbZvMVn
-         dQUSwj7PJutpVLrqoUip/RBAzmPwhbGWCWLPi8FYHG6aYhVfFSE9qPNE+dsWINPRCE
-         01V+Jht7M4X7E4VME/grv/FIh3fGATPS+pzIDSwY=
+        b=Fw8oO0fsz2uQ1q/dBEMfdDK1q0MJ+2J1im659AG+RJm+wguNOJ9f7EN4md9l/4jSq
+         +CSSfd1koPMryixI8EC+CcHsFn1e/Bc2UxZVg3IsrVjnOCcfwo6Dy0McMARE/NFj2D
+         Al41tIWTOpgSKF9szOqPzTHV/uR1MGZTqowfCyyw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Wim Van Sebroeck <wim@linux-watchdog.org>
-Subject: [PATCH 5.16 0941/1017] watchdog: rti-wdt: Add missing pm_runtime_disable() in probe function
-Date:   Tue,  5 Apr 2022 09:30:54 +0200
-Message-Id: <20220405070422.147201922@linuxfoundation.org>
+        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
+        =?UTF-8?q?Jonathan=20Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Linus Walleij <linus.walleij@linaro.org>
+Subject: [PATCH 5.16 0944/1017] pinctrl: nuvoton: npcm7xx: Use %zu printk format for ARRAY_SIZE()
+Date:   Tue,  5 Apr 2022 09:30:57 +0200
+Message-Id: <20220405070422.235009253@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -50,33 +51,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Jonathan Neuschäfer <j.neuschaefer@gmx.net>
 
-commit d055ef3a2c6919cff504ae3b710c96318d545fd2 upstream.
+commit 9d0f18bca3b557ae5d2128661ac06d33b3f45c0a upstream.
 
-If the probe fails, we should use pm_runtime_disable() to balance
-pm_runtime_enable().
+When compile-testing on 64-bit architectures, GCC complains about the
+mismatch of types between the %d format specifier and value returned by
+ARRAY_LENGTH(). Use %zu, which is correct everywhere.
 
-Fixes: 2d63908bdbfb ("watchdog: Add K3 RTI watchdog support")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Reviewed-by: Guenter Roeck <linux@roeck-us.net>
-Link: https://lore.kernel.org/r/20220105092114.23932-1-linmq006@gmail.com
-Signed-off-by: Guenter Roeck <linux@roeck-us.net>
-Signed-off-by: Wim Van Sebroeck <wim@linux-watchdog.org>
+Reported-by: kernel test robot <lkp@intel.com>
+Fixes: 3b588e43ee5c7 ("pinctrl: nuvoton: add NPCM7xx pinctrl and GPIO driver")
+Signed-off-by: Jonathan Neuschäfer <j.neuschaefer@gmx.net>
+Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+Link: https://lore.kernel.org/r/20220205155332.1308899-2-j.neuschaefer@gmx.net
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/watchdog/rti_wdt.c |    1 +
- 1 file changed, 1 insertion(+)
+ drivers/pinctrl/nuvoton/pinctrl-npcm7xx.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/watchdog/rti_wdt.c
-+++ b/drivers/watchdog/rti_wdt.c
-@@ -228,6 +228,7 @@ static int rti_wdt_probe(struct platform
- 	ret = pm_runtime_get_sync(dev);
- 	if (ret) {
- 		pm_runtime_put_noidle(dev);
-+		pm_runtime_disable(&pdev->dev);
- 		return dev_err_probe(dev, ret, "runtime pm failed\n");
- 	}
+--- a/drivers/pinctrl/nuvoton/pinctrl-npcm7xx.c
++++ b/drivers/pinctrl/nuvoton/pinctrl-npcm7xx.c
+@@ -1560,7 +1560,7 @@ static int npcm7xx_get_groups_count(stru
+ {
+ 	struct npcm7xx_pinctrl *npcm = pinctrl_dev_get_drvdata(pctldev);
+ 
+-	dev_dbg(npcm->dev, "group size: %d\n", ARRAY_SIZE(npcm7xx_groups));
++	dev_dbg(npcm->dev, "group size: %zu\n", ARRAY_SIZE(npcm7xx_groups));
+ 	return ARRAY_SIZE(npcm7xx_groups);
+ }
  
 
 
