@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C559C43219
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 15:14:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A17CBC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 15:15:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244183AbiDEPJs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 11:09:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50284 "EHLO
+        id S244367AbiDEPKC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 11:10:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53096 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345561AbiDEJnh (ORCPT
+        with ESMTP id S1345315AbiDEJnV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:43:37 -0400
+        Tue, 5 Apr 2022 05:43:21 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 454CA24962;
-        Tue,  5 Apr 2022 02:29:04 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40995C1CAF;
+        Tue,  5 Apr 2022 02:28:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 70891616B8;
-        Tue,  5 Apr 2022 09:29:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7CA83C385A2;
-        Tue,  5 Apr 2022 09:29:03 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 20E56616B8;
+        Tue,  5 Apr 2022 09:28:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2E4FBC385A0;
+        Tue,  5 Apr 2022 09:28:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649150943;
-        bh=ogmSP0VJ8hVh33DvkTSFrGD/5ZvXDKOq3AzjEIV5wCo=;
+        s=korg; t=1649150927;
+        bh=cDOHcd6ONfY3Vz+ceAFwv+xN7bIZgszIs24tb7wI428=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mcnwMGHWAMoEj+s7Pqrusr9+fLCOMoQPjjRDfolcZakEwvmT05K/tc/sbmE7VzEfi
-         4hqfRYWbVeyYOaf4d8Jmh2z7j3KzjqBRcs8CBUh4rRzJSOtjbdlTd/u9GZGpv7RPjx
-         OByrQnJcfDwh4nH9PeNdl86/6BVpi3SKBjqtUiwg=
+        b=Oc3rKyknmdl27VBczQyUC9Kq+SydQb151jvTGLJduovMGMa1w70hABMUtUhaDK+dY
+         ZBEb48IQ1PCHtemAynn/uSWqXHbM0qcavJ+tvyBZSs+QjbrKWaJwt3dZHNERQVlIIJ
+         8nRwgQGjVNgxs6503++5kAPdgZExCJugQLaJfGlo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
-        Igor Zhbanov <i.zhbanov@omprussia.ru>,
-        "Huang, Ying" <ying.huang@intel.com>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        stable@vger.kernel.org,
+        Claudiu Beznea <claudiu.beznea@microchip.com>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 236/913] ACPI: APEI: fix return value of __setup handlers
-Date:   Tue,  5 Apr 2022 09:21:38 +0200
-Message-Id: <20220405070346.929390047@linuxfoundation.org>
+Subject: [PATCH 5.15 231/913] clocksource/drivers/timer-microchip-pit64b: Use notrace
+Date:   Tue,  5 Apr 2022 09:21:33 +0200
+Message-Id: <20220405070346.780433829@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
 References: <20220405070339.801210740@linuxfoundation.org>
@@ -51,84 +50,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Randy Dunlap <rdunlap@infradead.org>
+From: Claudiu Beznea <claudiu.beznea@microchip.com>
 
-[ Upstream commit f3303ff649dbf7dcdc6a6e1a922235b12b3028f4 ]
+[ Upstream commit ff10ee97cb203262e88d9c8bc87369cbd4004a0c ]
 
-__setup() handlers should return 1 to indicate that the boot option
-has been handled. Returning 0 causes a boot option to be listed in
-the Unknown kernel command line parameters and also added to init's
-arg list (if no '=' sign) or environment list (if of the form 'a=b').
+Use notrace for mchp_pit64b_sched_read_clk() to avoid recursive call of
+prepare_ftrace_return() when issuing:
+echo function_graph > /sys/kernel/debug/tracing/current_tracer
 
-Unknown kernel command line parameters "erst_disable
-  bert_disable hest_disable BOOT_IMAGE=/boot/bzImage-517rc6", will be
-  passed to user space.
-
- Run /sbin/init as init process
-   with arguments:
-     /sbin/init
-     erst_disable
-     bert_disable
-     hest_disable
-   with environment:
-     HOME=/
-     TERM=linux
-     BOOT_IMAGE=/boot/bzImage-517rc6
-
-Fixes: a3e2acc5e37b ("ACPI / APEI: Add Boot Error Record Table (BERT) support")
-Fixes: a08f82d08053 ("ACPI, APEI, Error Record Serialization Table (ERST) support")
-Fixes: 9dc966641677 ("ACPI, APEI, HEST table parsing")
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Reported-by: Igor Zhbanov <i.zhbanov@omprussia.ru>
-Link: lore.kernel.org/r/64644a2f-4a20-bab3-1e15-3b2cdd0defe3@omprussia.ru
-Reviewed-by: "Huang, Ying" <ying.huang@intel.com>
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Fixes: 625022a5f160 ("clocksource/drivers/timer-microchip-pit64b: Add Microchip PIT64B support")
+Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
+Link: https://lore.kernel.org/r/20220304133601.2404086-3-claudiu.beznea@microchip.com
+Signed-off-by: Daniel Lezcano <daniel.lezcano@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/acpi/apei/bert.c | 2 +-
- drivers/acpi/apei/erst.c | 2 +-
- drivers/acpi/apei/hest.c | 2 +-
- 3 files changed, 3 insertions(+), 3 deletions(-)
+ drivers/clocksource/timer-microchip-pit64b.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/acpi/apei/bert.c b/drivers/acpi/apei/bert.c
-index 19e50fcbf4d6..86211422f4ee 100644
---- a/drivers/acpi/apei/bert.c
-+++ b/drivers/acpi/apei/bert.c
-@@ -77,7 +77,7 @@ static int __init setup_bert_disable(char *str)
- {
- 	bert_disable = 1;
- 
--	return 0;
-+	return 1;
- }
- __setup("bert_disable", setup_bert_disable);
- 
-diff --git a/drivers/acpi/apei/erst.c b/drivers/acpi/apei/erst.c
-index 242f3c2d5533..698d67cee052 100644
---- a/drivers/acpi/apei/erst.c
-+++ b/drivers/acpi/apei/erst.c
-@@ -891,7 +891,7 @@ EXPORT_SYMBOL_GPL(erst_clear);
- static int __init setup_erst_disable(char *str)
- {
- 	erst_disable = 1;
--	return 0;
-+	return 1;
+diff --git a/drivers/clocksource/timer-microchip-pit64b.c b/drivers/clocksource/timer-microchip-pit64b.c
+index cfa4ec7ef396..790d2c9b42a7 100644
+--- a/drivers/clocksource/timer-microchip-pit64b.c
++++ b/drivers/clocksource/timer-microchip-pit64b.c
+@@ -165,7 +165,7 @@ static u64 mchp_pit64b_clksrc_read(struct clocksource *cs)
+ 	return mchp_pit64b_cnt_read(mchp_pit64b_cs_base);
  }
  
- __setup("erst_disable", setup_erst_disable);
-diff --git a/drivers/acpi/apei/hest.c b/drivers/acpi/apei/hest.c
-index 277f00b288d1..317bba602ad5 100644
---- a/drivers/acpi/apei/hest.c
-+++ b/drivers/acpi/apei/hest.c
-@@ -223,7 +223,7 @@ static int __init hest_ghes_dev_register(unsigned int ghes_count)
- static int __init setup_hest_disable(char *str)
+-static u64 mchp_pit64b_sched_read_clk(void)
++static u64 notrace mchp_pit64b_sched_read_clk(void)
  {
- 	hest_disable = HEST_DISABLED;
--	return 0;
-+	return 1;
+ 	return mchp_pit64b_cnt_read(mchp_pit64b_cs_base);
  }
- 
- __setup("hest_disable", setup_hest_disable);
 -- 
 2.34.1
 
