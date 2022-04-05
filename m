@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 88A0FC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 11:42:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CB25C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 11:42:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378522AbiDELeR (ORCPT
+        id S1378550AbiDELeX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 07:34:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46836 "EHLO
+        Tue, 5 Apr 2022 07:34:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51496 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244601AbiDEIw1 (ORCPT
+        with ESMTP id S244654AbiDEIwa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:52:27 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B36C61088;
-        Tue,  5 Apr 2022 01:41:26 -0700 (PDT)
+        Tue, 5 Apr 2022 04:52:30 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCD4BD64D2;
+        Tue,  5 Apr 2022 01:41:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 91DBC614E4;
-        Tue,  5 Apr 2022 08:41:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9C8F2C385A0;
-        Tue,  5 Apr 2022 08:41:25 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 21154B81BBF;
+        Tue,  5 Apr 2022 08:41:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6589FC385A1;
+        Tue,  5 Apr 2022 08:41:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649148086;
-        bh=9Y8hspwR757HQR50VmYUTmXqz6gF2M9OELzXprpEHMU=;
+        s=korg; t=1649148099;
+        bh=aR1A0SezXpkQGZdReRE0MJZ9Tozm4kPC8Waf9Ta+wng=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=loOaz+LqNDQZ77uhdaDrI6QHZJhk9o6YIvx0P1w1UseZD1+Ap0jaRv8W1h9gIpCMP
-         DaCd8xKOxYMIn++aYrwT18OADt52jeVfi+aWKkAEk3kJ4CCXaodmHI6sOBoBYADUKo
-         YH/U9NUCovzEuxyYnpPCtC+wBdh/IJ84eyk4plbk=
+        b=r9XwKHmlVcpbN0kJK2OS1GMPLbZOldeBs0E2ROYLcDvUkN7uY/jYg1VrqYN0FbFCP
+         aJnp6tzEYS2r0ZhkEfKx4cH/W243ZIrZnwdH1lgFfWWTxzG9jYokGOQrrH5I9n4+JP
+         BH9AJHaBqP7Ujy6Ktr6aaUXNoL8nncdhx13hdJgw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Christoph Hellwig <hch@lst.de>,
-        Keith Busch <kbusch@kernel.org>,
-        Chaitanya Kulkarni <kch@nvidia.com>,
+        stable@vger.kernel.org,
+        Claudiu Beznea <claudiu.beznea@microchip.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0230/1017] nvme: fix the check for duplicate unique identifiers
-Date:   Tue,  5 Apr 2022 09:19:03 +0200
-Message-Id: <20220405070401.081684539@linuxfoundation.org>
+Subject: [PATCH 5.16 0235/1017] hwrng: atmel - disable trng on failure path
+Date:   Tue,  5 Apr 2022 09:19:08 +0200
+Message-Id: <20220405070401.232855681@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -51,66 +51,31 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christoph Hellwig <hch@lst.de>
+From: Claudiu Beznea <claudiu.beznea@microchip.com>
 
-[ Upstream commit e2724cb9f0c406b8fb66efd3aa9e8b3edfd8d5c8 ]
+[ Upstream commit a223ea9f89ab960eb254ba78429efd42eaf845eb ]
 
-nvme_subsys_check_duplicate_ids should needs to return an error if any of
-the identifiers matches, not just if all of them match.  But it does not
-need to and should not look at the CSI value for this sanity check.
+Call atmel_trng_disable() on failure path of probe.
 
-Rewrite the logic to be separate from nvme_ns_ids_equal and optimize it
-by reducing duplicate checks for non-present identifiers.
-
-Fixes: ed754e5deeb1 ("nvme: track shared namespaces")
-Signed-off-by: Christoph Hellwig <hch@lst.de>
-Reviewed-by: Keith Busch <kbusch@kernel.org>
-Reviewed-by: Chaitanya Kulkarni <kch@nvidia.com>
+Fixes: a1fa98d8116f ("hwrng: atmel - disable TRNG during suspend")
+Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/nvme/host/core.c | 18 ++++++++++--------
- 1 file changed, 10 insertions(+), 8 deletions(-)
+ drivers/char/hw_random/atmel-rng.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/nvme/host/core.c b/drivers/nvme/host/core.c
-index 078ad43b94a1..1b39b50cb958 100644
---- a/drivers/nvme/host/core.c
-+++ b/drivers/nvme/host/core.c
-@@ -1685,13 +1685,6 @@ static void nvme_config_discard(struct gendisk *disk, struct nvme_ns *ns)
- 		blk_queue_max_write_zeroes_sectors(queue, UINT_MAX);
+diff --git a/drivers/char/hw_random/atmel-rng.c b/drivers/char/hw_random/atmel-rng.c
+index ecb71c4317a5..8cf0ef501341 100644
+--- a/drivers/char/hw_random/atmel-rng.c
++++ b/drivers/char/hw_random/atmel-rng.c
+@@ -114,6 +114,7 @@ static int atmel_trng_probe(struct platform_device *pdev)
+ 
+ err_register:
+ 	clk_disable_unprepare(trng->clk);
++	atmel_trng_disable(trng);
+ 	return ret;
  }
- 
--static bool nvme_ns_ids_valid(struct nvme_ns_ids *ids)
--{
--	return !uuid_is_null(&ids->uuid) ||
--		memchr_inv(ids->nguid, 0, sizeof(ids->nguid)) ||
--		memchr_inv(ids->eui64, 0, sizeof(ids->eui64));
--}
--
- static bool nvme_ns_ids_equal(struct nvme_ns_ids *a, struct nvme_ns_ids *b)
- {
- 	return uuid_equal(&a->uuid, &b->uuid) &&
-@@ -3608,12 +3601,21 @@ static struct nvme_ns_head *nvme_find_ns_head(struct nvme_subsystem *subsys,
- static int nvme_subsys_check_duplicate_ids(struct nvme_subsystem *subsys,
- 		struct nvme_ns_ids *ids)
- {
-+	bool has_uuid = !uuid_is_null(&ids->uuid);
-+	bool has_nguid = memchr_inv(ids->nguid, 0, sizeof(ids->nguid));
-+	bool has_eui64 = memchr_inv(ids->eui64, 0, sizeof(ids->eui64));
- 	struct nvme_ns_head *h;
- 
- 	lockdep_assert_held(&subsys->lock);
- 
- 	list_for_each_entry(h, &subsys->nsheads, entry) {
--		if (nvme_ns_ids_valid(ids) && nvme_ns_ids_equal(ids, &h->ids))
-+		if (has_uuid && uuid_equal(&ids->uuid, &h->ids.uuid))
-+			return -EINVAL;
-+		if (has_nguid &&
-+		    memcmp(&ids->nguid, &h->ids.nguid, sizeof(ids->nguid)) == 0)
-+			return -EINVAL;
-+		if (has_eui64 &&
-+		    memcmp(&ids->eui64, &h->ids.eui64, sizeof(ids->eui64)) == 0)
- 			return -EINVAL;
- 	}
  
 -- 
 2.34.1
