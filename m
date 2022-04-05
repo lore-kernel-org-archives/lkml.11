@@ -2,119 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A4B91C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:41:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B881C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:41:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1576689AbiDEXK4 (ORCPT
+        id S1576781AbiDEXLC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 19:10:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36768 "EHLO
+        Tue, 5 Apr 2022 19:11:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60370 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1455565AbiDEQAK (ORCPT
+        with ESMTP id S1443622AbiDEPkA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 12:00:10 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E921710E8
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 08:16:40 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id AF28D23A;
-        Tue,  5 Apr 2022 08:16:40 -0700 (PDT)
-Received: from [192.168.178.6] (unknown [172.31.20.19])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 87E7F3F73B;
-        Tue,  5 Apr 2022 08:16:39 -0700 (PDT)
-Message-ID: <81b5bab9-1347-a2cf-dcd3-2ec1e451cef3@arm.com>
-Date:   Tue, 5 Apr 2022 17:16:38 +0200
+        Tue, 5 Apr 2022 11:40:00 -0400
+Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4B8617DC89
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 06:57:19 -0700 (PDT)
+Received: by mail-ej1-x632.google.com with SMTP id dr20so26756927ejc.6
+        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 06:57:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=IVfxiW6zKe0dHxT2NnEjml4pjCNh93EsN7m5exyESZw=;
+        b=UXRyAeEeXf2x76rRsTVT85Yu3qMDdIO8T76/plyF2HR/xrK6SSH+NaRviJpVZh7Qwg
+         sDlhRAI83MwCI3gbOLnBxOCANE1IcKQwEfrAwCIyDHAAtFq710fD+ZRlVWZv/xEqZlP2
+         2xaaXUL1FQTdhZiuvu+h3FVmKJ21wi4tSIvUxoAwP1nhl6vffFEzbfhRI4nAsZi2EVnd
+         pMeyjuSEWFMQCRF/nJ7z/vfgUOwNgvH2iTxe8G1ZXH7d9W9pBEqLvYhucm/tg3XSPyUf
+         uvwFMkqw+KsPAZDRjdA3KHBjqlNYwp3fE3vsEHxRyU2l/m40UVa6h2Ljee9euWBm9D1t
+         GkIw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=IVfxiW6zKe0dHxT2NnEjml4pjCNh93EsN7m5exyESZw=;
+        b=GYGSLcFFf3l0Bhu/MIfCpubGV2FbAsUYcGDrIoxLZ2pgHRGublOjxreXKkQSAUcgUp
+         FH8pawcqf/p/p5BNCEHl2O86gY/Wzo/jJw31X8uuUHycmdzljitothwMx+8BtEMFnW1h
+         x91eFBaeNT9GbqeRqn03zr5LyRoT9l2d4oMr5TErSXgDDadpYZXHr3utfXJtR9sJ+8Br
+         l12hb/maJeSy1bftI/sZms+r2WNjr/QWK4AbxKxqkmCIC+ElkxEKD7RhbJGSNl9rF0kz
+         FgCy6x5baR1R9nA/S2LLjZwLx8DPizVP+7NazUNuK9Q0984kb27kSpPEGOrr+C2jplxi
+         auig==
+X-Gm-Message-State: AOAM531tOBssGJo4MJJCPnQTPVhDUwXG+SyaJr78iZH2Bxc7BdJ3cCB2
+        FnFS1dkODPO4zUQaMt034zc2aFqt4m1bFkqq
+X-Google-Smtp-Source: ABdhPJzrbED2j3hKopCA4gDE01wRh9WEQTM3OOohAmICtp6UQWRL7za5ii7DlT49Qvcs5o0Kwd6rww==
+X-Received: by 2002:a17:906:3ad3:b0:6cd:382b:86e5 with SMTP id z19-20020a1709063ad300b006cd382b86e5mr3579318ejd.145.1649167038173;
+        Tue, 05 Apr 2022 06:57:18 -0700 (PDT)
+Received: from [192.168.0.182] (xdsl-188-155-201-27.adslplus.ch. [188.155.201.27])
+        by smtp.gmail.com with ESMTPSA id v20-20020a056402349400b00419651e513asm6776474edc.45.2022.04.05.06.57.17
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 05 Apr 2022 06:57:17 -0700 (PDT)
+Message-ID: <e3247f0f-5d3d-d981-699e-7dcedb30f881@linaro.org>
+Date:   Tue, 5 Apr 2022 15:57:16 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: sched_core_balance() releasing interrupts with pi_lock held
+ Thunderbird/91.7.0
+Subject: Re: [PATCH 1/2] i2c: add binding to prevent device detection
 Content-Language: en-US
-To:     Peter Zijlstra <peterz@infradead.org>,
-        "T.J. Alumbaugh" <talumbau@chromium.org>
-Cc:     Steven Rostedt <rostedt@goodmis.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        joel@joelfernandes.org
-References: <20220308161455.036e9933@gandalf.local.home>
- <20220315174606.02959816@gandalf.local.home>
- <20220316202734.GJ8939@worktop.programming.kicks-ass.net>
- <20220316210341.GD14330@worktop.programming.kicks-ass.net>
- <20220321133037.7d0d0c7f@gandalf.local.home>
- <20220329172236.48683eb5@gandalf.local.home>
- <51b21470-cd72-7ae3-6f33-2dd2e1d6b716@chromium.org>
- <20220405074855.GA30877@worktop.programming.kicks-ass.net>
-From:   Dietmar Eggemann <dietmar.eggemann@arm.com>
-In-Reply-To: <20220405074855.GA30877@worktop.programming.kicks-ass.net>
+To:     Vincent Whitchurch <vincent.whitchurch@axis.com>, wsa@kernel.org
+Cc:     kernel@axis.com, linux-i2c@vger.kernel.org,
+        devicetree@vger.kernel.org, krzk+dt@kernel.org, robh+dt@kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220405121627.1560949-1-vincent.whitchurch@axis.com>
+ <20220405121627.1560949-2-vincent.whitchurch@axis.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220405121627.1560949-2-vincent.whitchurch@axis.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 05/04/2022 09:48, Peter Zijlstra wrote:
-> On Mon, Apr 04, 2022 at 04:17:54PM -0400, T.J. Alumbaugh wrote:
->>
->> On 3/29/22 17:22, Steven Rostedt wrote:
->>> On Mon, 21 Mar 2022 13:30:37 -0400
->>> Steven Rostedt <rostedt@goodmis.org> wrote:
->>>
->>>> On Wed, 16 Mar 2022 22:03:41 +0100
->>>> Peter Zijlstra <peterz@infradead.org> wrote:
->>>>
->>>>> Does something like the below (untested in the extreme) help?
->>>> Hi Peter,
->>>>
->>>> This has been tested extensively by the ChromeOS team and said that it does
->>>> appear to fix the problem.
->>>>
->>>> Could you get this into mainline, and tag it for stable so that it can be
->>>> backported to the appropriate stable releases?
->>>>
->>>> Thanks for the fix!
->>>>
->>> Hi Peter,
->>>
->>> I just don't want you to forget about this :-)
->>>
->>> -- Steve
->>>
->> Hi Peter,
->>
->> Just a note that if/when you send this out as a patch, feel free to add:
->>
->> Tested-by: T.J. Alumbaugh <talumbau@chromium.org>
+On 05/04/2022 14:16, Vincent Whitchurch wrote:
+> When drivers with ->detect callbacks are loaded, the I2C core does a
+> bunch of transactions to try to probe for these devices, regardless of
+> whether they are specified in the devicetree or not.  (This only happens
+> on I2C controllers whose drivers enable the I2C_CLASS* flags, but this
+> is the case for generic drivers like i2c-gpio.)
 > 
-> https://lkml.kernel.org/r/20220330160535.GN8939@worktop.programming.kicks-ass.net
 
-I still wonder if this issue happened on a system w/o:
+Thank you for your patch. There is something to discuss/improve.
 
-     565790d28b1e ("sched: Fix balance_callback()")
+> These kinds of transactions are unnecessary on systems where the
+> devicetree specifies all the devices on the I2C bus, so add a property
+> to allow them to be disabled.
+> 
+> Signed-off-by: Vincent Whitchurch <vincent.whitchurch@axis.com>
+> ---
+>  Documentation/devicetree/bindings/i2c/i2c.txt | 4 ++++
 
-Maybe chromeos-5.10 or earlier? In this case applying 565790d28b1e could
-fix it as well.
+Use the subject matching the subsystem (git log --oneline -- .......).
 
-The reason why I think the original issue happened on a system w/o
-565790d28b1e is the call-stack in:
+>  1 file changed, 4 insertions(+)
+> 
+> diff --git a/Documentation/devicetree/bindings/i2c/i2c.txt b/Documentation/devicetree/bindings/i2c/i2c.txt
+> index fc3dd7ec0445..5f7bdf4851e8 100644
+> --- a/Documentation/devicetree/bindings/i2c/i2c.txt
+> +++ b/Documentation/devicetree/bindings/i2c/i2c.txt
+> @@ -72,6 +72,10 @@ wants to support one of the below features, it should adapt these bindings.
+>  	this information to adapt power management to keep the arbitration awake
+>  	all the time, for example. Can not be combined with 'single-master'.
+>  
+> +- no-detect
+> +	states that the system should not attempt to automatically detect
+> +	devices which are not explicitly specified as child nodes.
 
-https://lkml.kernel.org/r/20220315174606.02959816@gandalf.local.home
+Focus on the hardware, not on system and behavior. The hardware property
+is that bus is completely described in Devicetree or detection does not
+work correctly. I guess the property name could stay like this, but the
+description could be rephrased.
 
-[56064.673346] Call Trace:
-[56064.676066]  dump_stack+0xb9/0x117
-[56064.679861]  ? print_usage_bug+0x2af/0x2c2
-[56064.684434]  mark_lock_irq+0x25e/0x27d
-[56064.688618]  mark_lock+0x11a/0x16c
-[56064.692412]  mark_held_locks+0x57/0x87
-[56064.696595]  ? _raw_spin_unlock_irq+0x2c/0x40
-[56064.701460]  lockdep_hardirqs_on+0xb1/0x19d
-[56064.706130]  _raw_spin_unlock_irq+0x2c/0x40
-[56064.710799]  sched_core_balance+0x8a/0x4af
-[56064.715369]  ? __balance_callback+0x1f/0x9a        <--- !!!
-[56064.720030]  __balance_callback+0x4f/0x9a
-[56064.724506]  rt_mutex_setprio+0x43a/0x48b
-[56064.728982]  task_blocks_on_rt_mutex+0x14d/0x1d5
-
-has __balance_callback().
-
-565790d28b1e changes __balance_callback() to __balance_callbacks()
-                                                               ^
+Best regards,
+Krzysztof
