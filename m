@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F796C4707E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A9EA2C4707F
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 01:33:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1842886AbiDFBfP (ORCPT
+        id S1842939AbiDFBf3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 21:35:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47444 "EHLO
+        Tue, 5 Apr 2022 21:35:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47462 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348870AbiDEJsm (ORCPT
+        with ESMTP id S1349434AbiDEJtw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:48:42 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D252AB8232;
-        Tue,  5 Apr 2022 02:36:45 -0700 (PDT)
+        Tue, 5 Apr 2022 05:49:52 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90C1325E97;
+        Tue,  5 Apr 2022 02:45:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6C0DD61368;
-        Tue,  5 Apr 2022 09:36:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7EBA1C385A2;
-        Tue,  5 Apr 2022 09:36:44 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4BF39B817D3;
+        Tue,  5 Apr 2022 09:45:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A5DC3C385A1;
+        Tue,  5 Apr 2022 09:45:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649151404;
-        bh=Lz+RnShiOWqhr9VZ2Hk0RmfdNwsgPLj1BY8SZvVpN7E=;
+        s=korg; t=1649151951;
+        bh=KoGQ+0vWP49KzgTOCU/ifdDn7F7KOjvEzSHR2vQTS+U=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SEY+2zDl0pLMAPjzjIR14nvtC18XzCuHAKzgfa+6NOrw43x126tbxp28cbqWIc5de
-         6+zHEQzN7v7tXanjN0e1tIQ2FrhpChRfRMuQ2PYSYuOmPnvNA9dsTbq4ZIeuAzFo8z
-         wqkMlsjZmPebQH08KAGnei//iuznHeQj5psqe8FU=
+        b=x1MuDJkYW2q1tpPdxP80e5zm+yMzAGsnLMqxHyCWRBgCiKeIxkabFV2mPxeSI4quT
+         wyM8AoZ3KnetI3YQJpsgyCjZYlg/Pr2Q5Sl1Eb+hI1QbSfqanODojO1aKcIYeXxyGy
+         x7tYMH7o5EM0htBmYQVbHoJP1LLj2L7/tV5UoNRM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tom Rix <trix@redhat.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
+        stable@vger.kernel.org, Qing Wang <wangqing@vivo.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 402/913] drm/amd/pm: return -ENOTSUPP if there is no get_dpm_ultimate_freq function
-Date:   Tue,  5 Apr 2022 09:24:24 +0200
-Message-Id: <20220405070351.897150038@linuxfoundation.org>
+Subject: [PATCH 5.15 600/913] serial: 8250_mid: Balance reference count for PCI DMA device
+Date:   Tue,  5 Apr 2022 09:27:42 +0200
+Message-Id: <20220405070357.827072214@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
 References: <20220405070339.801210740@linuxfoundation.org>
@@ -50,40 +50,91 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tom Rix <trix@redhat.com>
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 
-[ Upstream commit 430e6a0212b2a0eb1de5e9d47a016fa79edf3978 ]
+[ Upstream commit 67ec6dd0b257bd81b4e9fcac89b29da72f6265e5 ]
 
-clang static analysis reports this represenative problem
-amdgpu_smu.c:144:18: warning: The left operand of '*' is a garbage value
-        return clk_freq * 100;
-               ~~~~~~~~ ^
+The pci_get_slot() increases its reference count, the caller
+must decrement the reference count by calling pci_dev_put().
 
-If there is no get_dpm_ultimate_freq function,
-smu_get_dpm_freq_range returns success without setting the
-output min,max parameters.  So return an -ENOTSUPP error.
-
-Fixes: e5ef784b1e17 ("drm/amd/powerplay: revise calling chain on retrieving frequency range")
-Signed-off-by: Tom Rix <trix@redhat.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Fixes: 90b9aacf912a ("serial: 8250_pci: add Intel Tangier support")
+Fixes: f549e94effa1 ("serial: 8250_pci: add Intel Penwell ports")
+Reported-by: Qing Wang <wangqing@vivo.com>
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Depends-on: d9eda9bab237 ("serial: 8250_pci: Intel MID UART support to its own driver")
+Link: https://lore.kernel.org/r/20220215100920.41984-1-andriy.shevchenko@linux.intel.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/amd/pm/swsmu/amdgpu_smu.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/tty/serial/8250/8250_mid.c | 19 +++++++++++++++----
+ 1 file changed, 15 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/gpu/drm/amd/pm/swsmu/amdgpu_smu.c b/drivers/gpu/drm/amd/pm/swsmu/amdgpu_smu.c
-index 6dc83cfad9d8..8acdb244b99f 100644
---- a/drivers/gpu/drm/amd/pm/swsmu/amdgpu_smu.c
-+++ b/drivers/gpu/drm/amd/pm/swsmu/amdgpu_smu.c
-@@ -138,7 +138,7 @@ int smu_get_dpm_freq_range(struct smu_context *smu,
- 			   uint32_t *min,
- 			   uint32_t *max)
- {
--	int ret = 0;
-+	int ret = -ENOTSUPP;
+diff --git a/drivers/tty/serial/8250/8250_mid.c b/drivers/tty/serial/8250/8250_mid.c
+index efa0515139f8..e6c1791609dd 100644
+--- a/drivers/tty/serial/8250/8250_mid.c
++++ b/drivers/tty/serial/8250/8250_mid.c
+@@ -73,6 +73,11 @@ static int pnw_setup(struct mid8250 *mid, struct uart_port *p)
+ 	return 0;
+ }
  
- 	if (!min && !max)
- 		return -EINVAL;
++static void pnw_exit(struct mid8250 *mid)
++{
++	pci_dev_put(mid->dma_dev);
++}
++
+ static int tng_handle_irq(struct uart_port *p)
+ {
+ 	struct mid8250 *mid = p->private_data;
+@@ -124,6 +129,11 @@ static int tng_setup(struct mid8250 *mid, struct uart_port *p)
+ 	return 0;
+ }
+ 
++static void tng_exit(struct mid8250 *mid)
++{
++	pci_dev_put(mid->dma_dev);
++}
++
+ static int dnv_handle_irq(struct uart_port *p)
+ {
+ 	struct mid8250 *mid = p->private_data;
+@@ -330,9 +340,9 @@ static int mid8250_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+ 
+ 	pci_set_drvdata(pdev, mid);
+ 	return 0;
++
+ err:
+-	if (mid->board->exit)
+-		mid->board->exit(mid);
++	mid->board->exit(mid);
+ 	return ret;
+ }
+ 
+@@ -342,8 +352,7 @@ static void mid8250_remove(struct pci_dev *pdev)
+ 
+ 	serial8250_unregister_port(mid->line);
+ 
+-	if (mid->board->exit)
+-		mid->board->exit(mid);
++	mid->board->exit(mid);
+ }
+ 
+ static const struct mid8250_board pnw_board = {
+@@ -351,6 +360,7 @@ static const struct mid8250_board pnw_board = {
+ 	.freq = 50000000,
+ 	.base_baud = 115200,
+ 	.setup = pnw_setup,
++	.exit = pnw_exit,
+ };
+ 
+ static const struct mid8250_board tng_board = {
+@@ -358,6 +368,7 @@ static const struct mid8250_board tng_board = {
+ 	.freq = 38400000,
+ 	.base_baud = 1843200,
+ 	.setup = tng_setup,
++	.exit = tng_exit,
+ };
+ 
+ static const struct mid8250_board dnv_board = {
 -- 
 2.34.1
 
