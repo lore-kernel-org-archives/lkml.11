@@ -2,133 +2,206 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 47038C4167D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 38BEDC4167E
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:15:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1442419AbiDEUHU (ORCPT
+        id S1442103AbiDEUHR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 16:07:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51754 "EHLO
+        Tue, 5 Apr 2022 16:07:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45680 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350326AbiDEJ5V (ORCPT
+        with ESMTP id S1384414AbiDEM1b (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:57:21 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F7C1527D6;
-        Tue,  5 Apr 2022 02:51:05 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9039A616AE;
-        Tue,  5 Apr 2022 09:51:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 99626C385A3;
-        Tue,  5 Apr 2022 09:51:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649152264;
-        bh=EcoUAFUxsI6UQTwk1O+Jd/36NjRrs2ewxCB69VV04XI=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KYh4rS45iWTvGSH7ViVMGo8e765MJ3yxrQtrsyc7DULnzuE1y0EPUFeVxtXiZVEcQ
-         3Zx5RuVGqMFDMyE4EymLboQ5Qr4AY/plL6hYIrQPssyQ17OwCK7YCAorERVZMfq7sB
-         8VQrmAu/RLbWgKyJbytNwhj42qAZrLv3a6ItzijE=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        syzbot+d59332e2db681cf18f0318a06e994ebbb529a8db@syzkaller.appspotmail.com,
-        Lee Jones <lee.jones@linaro.org>, Theodore Tso <tytso@mit.edu>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 715/913] ext4: dont BUG if someone dirty pages without asking ext4 first
-Date:   Tue,  5 Apr 2022 09:29:37 +0200
-Message-Id: <20220405070401.266956806@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 5 Apr 2022 08:27:31 -0400
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5261E344F1
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 04:42:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649158928; x=1680694928;
+  h=date:from:to:cc:subject:message-id:mime-version:
+   content-transfer-encoding;
+  bh=spOVTBjTD6IjOwr93EwblCXM/4VjxZnqhXMg90AhUTg=;
+  b=UACx6q/bGUWbs0lD48QO7z80f3+az/c47GPWni/tnTO2lOu8i7sqCBjN
+   umWUcnqsVz/fbQyzGGed3YSWbkkVT/TupyKInEUrSaeHCk7/TMm0M0PIk
+   EgRuU+iOqeFBPtJHszPjYnzaX5D2lIoI2pCyJo2T5dTrhClFUN25dFIT7
+   q9CJAA5m7WD3H+s/96aCqwMSt0qr5ht0tYiqXohEmV/WmL6D2+I50Im9E
+   heyNVWF46ZbryvnpY+uGcAeiqGZPMJx2CNgPK2osuZ7Uu5817jVPxUtLN
+   A/b66e9C65BpNbIpP6RZs9K92FlXusNoP+ABFS8b+GV2NLOLrKILRUCXL
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10307"; a="323901880"
+X-IronPort-AV: E=Sophos;i="5.90,236,1643702400"; 
+   d="scan'208";a="323901880"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2022 04:42:07 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,236,1643702400"; 
+   d="scan'208";a="569847261"
+Received: from lkp-server02.sh.intel.com (HELO a44fdfb70b94) ([10.239.97.151])
+  by orsmga008.jf.intel.com with ESMTP; 05 Apr 2022 04:42:06 -0700
+Received: from kbuild by a44fdfb70b94 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nbhZW-00038d-2I;
+        Tue, 05 Apr 2022 11:42:06 +0000
+Date:   Tue, 05 Apr 2022 19:42:05 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     "Paul E. McKenney" <paulmck@kernel.org>
+Cc:     linux-kernel@vger.kernel.org
+Subject: [paulmck-rcu:rcu/next] BUILD SUCCESS
+ b77b2981bb22c4449a0a6e86eeb9fbab36a2beae
+Message-ID: <624c2b0d.MPU0WPJjZVrlWPga%lkp@intel.com>
+User-Agent: Heirloom mailx 12.5 6/20/10
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Theodore Ts'o <tytso@mit.edu>
+tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/paulmck/linux-rcu.git rcu/next
+branch HEAD: b77b2981bb22c4449a0a6e86eeb9fbab36a2beae  rcu-tasks: Handle sparse cpu_possible_mask
 
-[ Upstream commit cc5095747edfb054ca2068d01af20be3fcc3634f ]
+elapsed time: 929m
 
-[un]pin_user_pages_remote is dirtying pages without properly warning
-the file system in advance.  A related race was noted by Jan Kara in
-2018[1]; however, more recently instead of it being a very hard-to-hit
-race, it could be reliably triggered by process_vm_writev(2) which was
-discovered by Syzbot[2].
+configs tested: 127
+configs skipped: 3
 
-This is technically a bug in mm/gup.c, but arguably ext4 is fragile in
-that if some other kernel subsystem dirty pages without properly
-notifying the file system using page_mkwrite(), ext4 will BUG, while
-other file systems will not BUG (although data will still be lost).
+The following configs have been built successfully.
+More configs may be tested in the coming days.
 
-So instead of crashing with a BUG, issue a warning (since there may be
-potential data loss) and just mark the page as clean to avoid
-unprivileged denial of service attacks until the problem can be
-properly fixed.  More discussion and background can be found in the
-thread starting at [2].
+gcc tested configs:
+arm64                               defconfig
+arm64                            allyesconfig
+arm                              allmodconfig
+arm                                 defconfig
+arm                              allyesconfig
+i386                          randconfig-c001
+arm                         s3c6400_defconfig
+mips                         db1xxx_defconfig
+openrisc                 simple_smp_defconfig
+arm                         at91_dt_defconfig
+sh                           se7751_defconfig
+mips                        vocore2_defconfig
+arm                         lpc18xx_defconfig
+sh                           se7343_defconfig
+sh                         ap325rxa_defconfig
+arm                       imx_v6_v7_defconfig
+arc                        vdk_hs38_defconfig
+m68k                       m5475evb_defconfig
+arc                           tb10x_defconfig
+sh                          sdk7786_defconfig
+powerpc                        cell_defconfig
+powerpc                      chrp32_defconfig
+csky                             alldefconfig
+mips                    maltaup_xpa_defconfig
+arm                           stm32_defconfig
+powerpc                     pq2fads_defconfig
+powerpc                 mpc837x_mds_defconfig
+m68k                          multi_defconfig
+arm                             ezx_defconfig
+xtensa                       common_defconfig
+sh                        edosk7760_defconfig
+powerpc                     stx_gp3_defconfig
+powerpc                  iss476-smp_defconfig
+sh                           se7750_defconfig
+powerpc                      pcm030_defconfig
+sh                  sh7785lcr_32bit_defconfig
+xtensa                generic_kc705_defconfig
+m68k                       m5249evb_defconfig
+m68k                       m5275evb_defconfig
+sh                     sh7710voipgw_defconfig
+powerpc                      pasemi_defconfig
+sh                             sh03_defconfig
+ia64                          tiger_defconfig
+arm                       multi_v4t_defconfig
+mips                         cobalt_defconfig
+powerpc                      arches_defconfig
+i386                                defconfig
+sh                            migor_defconfig
+sh                 kfr2r09-romimage_defconfig
+x86_64                        randconfig-c001
+arm                  randconfig-c002-20220405
+ia64                             allmodconfig
+ia64                             allyesconfig
+ia64                                defconfig
+m68k                             allyesconfig
+m68k                             allmodconfig
+m68k                                defconfig
+nios2                               defconfig
+arc                              allyesconfig
+csky                                defconfig
+nios2                            allyesconfig
+alpha                               defconfig
+alpha                            allyesconfig
+h8300                            allyesconfig
+xtensa                           allyesconfig
+arc                                 defconfig
+sh                               allmodconfig
+s390                                defconfig
+s390                             allmodconfig
+parisc                              defconfig
+parisc                           allyesconfig
+s390                             allyesconfig
+parisc64                            defconfig
+sparc                               defconfig
+i386                             allyesconfig
+sparc                            allyesconfig
+i386                   debian-10.3-kselftests
+i386                              debian-10.3
+mips                             allyesconfig
+mips                             allmodconfig
+powerpc                          allyesconfig
+powerpc                           allnoconfig
+powerpc                          allmodconfig
+i386                          randconfig-a012
+i386                          randconfig-a014
+i386                          randconfig-a016
+riscv                    nommu_virt_defconfig
+riscv                          rv32_defconfig
+riscv                               defconfig
+riscv                    nommu_k210_defconfig
+riscv                             allnoconfig
+riscv                            allmodconfig
+riscv                            allyesconfig
+x86_64                    rhel-8.3-kselftests
+um                           x86_64_defconfig
+um                             i386_defconfig
+x86_64                          rhel-8.3-func
+x86_64                                  kexec
+x86_64                              defconfig
+x86_64                           allyesconfig
+x86_64                         rhel-8.3-kunit
+x86_64                               rhel-8.3
 
-[1] https://lore.kernel.org/linux-mm/20180103100430.GE4911@quack2.suse.cz
-[2] https://lore.kernel.org/r/Yg0m6IjcNmfaSokM@google.com
+clang tested configs:
+x86_64                        randconfig-c007
+i386                          randconfig-c001
+powerpc              randconfig-c003-20220405
+riscv                randconfig-c006-20220405
+mips                 randconfig-c004-20220405
+arm                  randconfig-c002-20220405
+arm                         lpc32xx_defconfig
+powerpc                     ksi8560_defconfig
+powerpc                   bluestone_defconfig
+arm                  colibri_pxa300_defconfig
+mips                     loongson1c_defconfig
+arm                        neponset_defconfig
+mips                         tb0219_defconfig
+arm                       spear13xx_defconfig
+arm                         socfpga_defconfig
+x86_64                        randconfig-a005
+x86_64                        randconfig-a003
+x86_64                        randconfig-a001
+i386                          randconfig-a002
+i386                          randconfig-a006
+i386                          randconfig-a004
+x86_64                        randconfig-a012
+x86_64                        randconfig-a014
+x86_64                        randconfig-a016
+hexagon              randconfig-r045-20220405
+riscv                randconfig-r042-20220405
+hexagon              randconfig-r041-20220405
 
-Reported-by: syzbot+d59332e2db681cf18f0318a06e994ebbb529a8db@syzkaller.appspotmail.com
-Reported-by: Lee Jones <lee.jones@linaro.org>
-Signed-off-by: Theodore Ts'o <tytso@mit.edu>
-Link: https://lore.kernel.org/r/YiDS9wVfq4mM2jGK@mit.edu
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- fs/ext4/inode.c | 25 +++++++++++++++++++++++++
- 1 file changed, 25 insertions(+)
-
-diff --git a/fs/ext4/inode.c b/fs/ext4/inode.c
-index 22a5140546fb..fff52292c01e 100644
---- a/fs/ext4/inode.c
-+++ b/fs/ext4/inode.c
-@@ -1992,6 +1992,15 @@ static int ext4_writepage(struct page *page,
- 	else
- 		len = PAGE_SIZE;
- 
-+	/* Should never happen but for bugs in other kernel subsystems */
-+	if (!page_has_buffers(page)) {
-+		ext4_warning_inode(inode,
-+		   "page %lu does not have buffers attached", page->index);
-+		ClearPageDirty(page);
-+		unlock_page(page);
-+		return 0;
-+	}
-+
- 	page_bufs = page_buffers(page);
- 	/*
- 	 * We cannot do block allocation or other extent handling in this
-@@ -2595,6 +2604,22 @@ static int mpage_prepare_extent_to_map(struct mpage_da_data *mpd)
- 			wait_on_page_writeback(page);
- 			BUG_ON(PageWriteback(page));
- 
-+			/*
-+			 * Should never happen but for buggy code in
-+			 * other subsystems that call
-+			 * set_page_dirty() without properly warning
-+			 * the file system first.  See [1] for more
-+			 * information.
-+			 *
-+			 * [1] https://lore.kernel.org/linux-mm/20180103100430.GE4911@quack2.suse.cz
-+			 */
-+			if (!page_has_buffers(page)) {
-+				ext4_warning_inode(mpd->inode, "page %lu does not have buffers attached", page->index);
-+				ClearPageDirty(page);
-+				unlock_page(page);
-+				continue;
-+			}
-+
- 			if (mpd->map.m_len == 0)
- 				mpd->first_page = page->index;
- 			mpd->next_page = page->index + 1;
 -- 
-2.34.1
-
-
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
