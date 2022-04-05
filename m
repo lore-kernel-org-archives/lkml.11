@@ -2,93 +2,204 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E938C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B3F43C433F5
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:56:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382651AbiDEUy7 (ORCPT
+        id S1382841AbiDEUzD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 16:54:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46304 "EHLO
+        Tue, 5 Apr 2022 16:55:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36428 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1573287AbiDESq5 (ORCPT
+        with ESMTP id S1573569AbiDETWw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 14:46:57 -0400
-Received: from mail-pf1-x42f.google.com (mail-pf1-x42f.google.com [IPv6:2607:f8b0:4864:20::42f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4201B8022B
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 11:44:59 -0700 (PDT)
-Received: by mail-pf1-x42f.google.com with SMTP id 7so247609pfu.13
-        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 11:44:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=BSTfu4XeI/ClhpJnOxug8bNrs6bcd1vbhIByuk9Td5A=;
-        b=FZ7CzdGv5IqR9igsKF5aVHLB8MfCD2UE6mGhWdabuDVB/PY75CERc0oW45pyoiFFsx
-         HLCOiljgUTbziKvTX7wZRoZqJ+RJ1Dea8AguoZhgeta2AWxRKKUV2iRUL0l0yDbf+TTN
-         ZiAbWnMeeHTkwk1JvBEs7xviif99t4lQdP3rhF94xjjOWUyQ5IYn9ZUuKyguEbSTvM9X
-         MpsV3tSkSRKbWT/1P6uf6AhXj04ePeO0yF7csRuDTu6ucoAxMuJ3t81XHgVFCM4FFTG+
-         SjX4Baa/CoEtOFP/F5srI+LydtG/vNCqkGlkcYX/sxjcplhmbQiJkxNjpWBgFSDO+Pmx
-         Gc4Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=BSTfu4XeI/ClhpJnOxug8bNrs6bcd1vbhIByuk9Td5A=;
-        b=whHcqJhYzh/PGJ3jvwRcYlG6XVAWMR0Fm9CuNCZNrNztPQhByxY0cKoFk3i9csQQ0Q
-         oUGBAtqnd7TUSUa7PKUxVBE/g1tZ79+wnInXlQhtW1pmtNikDLUE/Hly4SI6XUhbcMpl
-         qR+ZbstrWgRJSnHy9qdyYOwjAQs8wMoFJut0mfEYXznkwELZ6Hows319wyNXkmLm7SyF
-         dRX6c0vfFdIrVlVaRT6XXLJS009HJezaOJ6CkPdHMxu4JN3JdO/Jomx+dnVxmvELK/GV
-         i6kKQiLZFf/3Fm9VrElQUFXG8RqD4k5bU622RL8KSr6jyL1g8st1eyGqUSLB33i9+e7W
-         +nPA==
-X-Gm-Message-State: AOAM532T09FeichkUbq5IHgY5HHBEHBpmXp1CpRQL6/Yw01wysDe6sN6
-        ZYk47IGUXh51xsL3DSaMOPthjQ==
-X-Google-Smtp-Source: ABdhPJxqBsHYYYQ3r6tsKfeQNVI4VssdMtHw5QBcT84h3Z9HkLEDAYYEQ3XVRsYGURacbMDknChXvg==
-X-Received: by 2002:a65:57ca:0:b0:381:ea8d:4d1f with SMTP id q10-20020a6557ca000000b00381ea8d4d1fmr4102933pgr.143.1649184298506;
-        Tue, 05 Apr 2022 11:44:58 -0700 (PDT)
-Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
-        by smtp.gmail.com with ESMTPSA id j70-20020a638b49000000b003985b5ddaa1sm13887990pge.49.2022.04.05.11.44.57
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 05 Apr 2022 11:44:57 -0700 (PDT)
-Date:   Tue, 5 Apr 2022 18:44:54 +0000
-From:   Sean Christopherson <seanjc@google.com>
-To:     Yosry Ahmed <yosryahmed@google.com>
-Cc:     Huacai Chen <chenhuacai@kernel.org>,
-        Aleksandar Markovic <aleksandar.qemu.devel@gmail.com>,
-        Anup Patel <anup@brainfault.org>,
-        Atish Patra <atishp@atishpatra.org>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>, mizhang@google.com,
-        David Matlack <dmatlack@google.com>, kvm@vger.kernel.org,
-        kvm-riscv@lists.infradead.org, linux-mips@vger.kernel.org,
-        linux-mm@kvack.org, linux-kernel@vger.kernel.org,
-        Shakeel Butt <shakeelb@google.com>,
-        Andrew Morton <akpm@linux-foundation.org>
-Subject: Re: [PATCH v2 0/5] KVM: mm: count KVM page table pages in pagetable
- stats
-Message-ID: <YkyOJqTeGRUjtuX1@google.com>
-References: <20220404234154.1251388-1-yosryahmed@google.com>
+        Tue, 5 Apr 2022 15:22:52 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8616C46652;
+        Tue,  5 Apr 2022 12:20:53 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 22BA5617EE;
+        Tue,  5 Apr 2022 19:20:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DFF06C385A3;
+        Tue,  5 Apr 2022 19:20:51 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649186452;
+        bh=kyYkU/Dchft4ACwgY94oRFa28SIAQLGaoAiYc1wr4Js=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=iAOjDvpPE74286q/P5TJcdZcpkEp7FNy6KNHZRseCCJLqb1zTmDAIV+SZQm+hBWi4
+         Vb68EptgER1RBKv1zpSJD5VAtA5IdIu+Qcv0APwLOyszhQa8/Dsqe7w2boNUKpeLod
+         7cct4kv6h4EeH0dIkAtquhK1V2JYekqb4FFFhApgr/ZbyazLIR2OI1x9mVT5xdRsgq
+         XW1gFIf7PG6AZ2Oxeggv6B6LUtvlnE+SaqEXKekUjsYEpaYQqHW0YItW4gxwMz5eHp
+         sCvWhm17YWahQP9feMct/iu50nDt46RQ7YmTjhslNesBLlccl9IJUEfw1HlzYIAFUN
+         hsx7ahqBtkHBQ==
+From:   Jeff Layton <jlayton@kernel.org>
+To:     idryomov@gmail.com, xiubli@redhat.com
+Cc:     ceph-devel@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        linux-fscrypt@vger.kernel.org, linux-kernel@vger.kernel.org,
+        lhenriques@suse.de
+Subject: [PATCH v13 22/59] ceph: send altname in MClientRequest
+Date:   Tue,  5 Apr 2022 15:19:53 -0400
+Message-Id: <20220405192030.178326-23-jlayton@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405192030.178326-1-jlayton@kernel.org>
+References: <20220405192030.178326-1-jlayton@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220404234154.1251388-1-yosryahmed@google.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Apr 04, 2022, Yosry Ahmed wrote:
-> We keep track of several kernel memory stats (total kernel memory, page
-> tables, stack, vmalloc, etc) on multiple levels (global, per-node,
-> per-memcg, etc). These stats give insights to users to how much memory
-> is used by the kernel and for what purposes.
-> 
-> Currently, memory used by kvm for its page tables is not accounted in
-> the pagetable stats. This patch series accounts the memory pages used by
-> KVM for page tables in those stats.
+In the event that we have a filename longer than CEPH_NOHASH_NAME_MAX,
+we'll need to hash the tail of the filename. The client however will
+still need to know the full name of the file if it has a key.
 
-It's still not obvious to me that piggybacking NR_PAGETABLE is desirable, probably
-because I am quite clueless as to how these stats are used on the backend.  E.g.
-why not have a NR_SECONDARY_PAGETABLE entry to track pages used for secondary MMU
-page tables?
+To support this, the MClientRequest field has grown a new alternate_name
+field that we populate with the full (binary) crypttext of the filename.
+This is then transmitted to the clients in readdir or traces as part of
+the dentry lease.
+
+Add support for populating this field when the filenames are very long.
+
+Signed-off-by: Jeff Layton <jlayton@kernel.org>
+---
+ fs/ceph/mds_client.c | 75 +++++++++++++++++++++++++++++++++++++++++---
+ fs/ceph/mds_client.h |  3 ++
+ 2 files changed, 73 insertions(+), 5 deletions(-)
+
+diff --git a/fs/ceph/mds_client.c b/fs/ceph/mds_client.c
+index 13367a358a85..0be1668b2c32 100644
+--- a/fs/ceph/mds_client.c
++++ b/fs/ceph/mds_client.c
+@@ -972,6 +972,7 @@ void ceph_mdsc_release_request(struct kref *kref)
+ 	if (req->r_pagelist)
+ 		ceph_pagelist_release(req->r_pagelist);
+ 	kfree(req->r_fscrypt_auth);
++	kfree(req->r_altname);
+ 	put_request_session(req);
+ 	ceph_unreserve_caps(req->r_mdsc, &req->r_caps_reservation);
+ 	WARN_ON_ONCE(!list_empty(&req->r_wait));
+@@ -2386,6 +2387,63 @@ static inline  u64 __get_oldest_tid(struct ceph_mds_client *mdsc)
+ 	return mdsc->oldest_tid;
+ }
+ 
++#if IS_ENABLED(CONFIG_FS_ENCRYPTION)
++static u8 *get_fscrypt_altname(const struct ceph_mds_request *req, u32 *plen)
++{
++	struct inode *dir = req->r_parent;
++	struct dentry *dentry = req->r_dentry;
++	u8 *cryptbuf = NULL;
++	u32 len = 0;
++	int ret = 0;
++
++	/* only encode if we have parent and dentry */
++	if (!dir || !dentry)
++		goto success;
++
++	/* No-op unless this is encrypted */
++	if (!IS_ENCRYPTED(dir))
++		goto success;
++
++	ret = __fscrypt_prepare_readdir(dir);
++	if (ret)
++		return ERR_PTR(ret);
++
++	/* No key? Just ignore it. */
++	if (!fscrypt_has_encryption_key(dir))
++		goto success;
++
++	if (!fscrypt_fname_encrypted_size(dir, dentry->d_name.len, NAME_MAX, &len)) {
++		WARN_ON_ONCE(1);
++		return ERR_PTR(-ENAMETOOLONG);
++	}
++
++	/* No need to append altname if name is short enough */
++	if (len <= CEPH_NOHASH_NAME_MAX) {
++		len = 0;
++		goto success;
++	}
++
++	cryptbuf = kmalloc(len, GFP_KERNEL);
++	if (!cryptbuf)
++		return ERR_PTR(-ENOMEM);
++
++	ret = fscrypt_fname_encrypt(dir, &dentry->d_name, cryptbuf, len);
++	if (ret) {
++		kfree(cryptbuf);
++		return ERR_PTR(ret);
++	}
++success:
++	*plen = len;
++	return cryptbuf;
++}
++#else
++static u8 *get_fscrypt_altname(const struct ceph_mds_request *req, u32 *plen)
++{
++	*plen = 0;
++	return NULL;
++}
++#endif
++
+ /**
+  * ceph_mdsc_build_path - build a path string to a given dentry
+  * @dentry: dentry to which path should be built
+@@ -2606,14 +2664,15 @@ static void encode_mclientrequest_tail(void **p, const struct ceph_mds_request *
+ 	ceph_encode_timespec64(&ts, &req->r_stamp);
+ 	ceph_encode_copy(p, &ts, sizeof(ts));
+ 
+-	/* gid_list */
++	/* v4: gid_list */
+ 	ceph_encode_32(p, req->r_cred->group_info->ngroups);
+ 	for (i = 0; i < req->r_cred->group_info->ngroups; i++)
+ 		ceph_encode_64(p, from_kgid(&init_user_ns,
+ 					    req->r_cred->group_info->gid[i]));
+ 
+-	/* v5: altname (TODO: skip for now) */
+-	ceph_encode_32(p, 0);
++	/* v5: altname */
++	ceph_encode_32(p, req->r_altname_len);
++	ceph_encode_copy(p, req->r_altname, req->r_altname_len);
+ 
+ 	/* v6: fscrypt_auth and fscrypt_file */
+ 	if (req->r_fscrypt_auth) {
+@@ -2669,7 +2728,13 @@ static struct ceph_msg *create_request_message(struct ceph_mds_session *session,
+ 		goto out_free1;
+ 	}
+ 
+-	/* head */
++	req->r_altname = get_fscrypt_altname(req, &req->r_altname_len);
++	if (IS_ERR(req->r_altname)) {
++		msg = ERR_CAST(req->r_altname);
++		req->r_altname = NULL;
++		goto out_free2;
++	}
++
+ 	len = legacy ? sizeof(*head) : sizeof(struct ceph_mds_request_head);
+ 
+ 	/* filepaths */
+@@ -2695,7 +2760,7 @@ static struct ceph_msg *create_request_message(struct ceph_mds_session *session,
+ 	len += sizeof(u32) + (sizeof(u64) * req->r_cred->group_info->ngroups);
+ 
+ 	/* alternate name */
+-	len += sizeof(u32);	// TODO
++	len += sizeof(u32) + req->r_altname_len;
+ 
+ 	/* fscrypt_auth */
+ 	len += sizeof(u32); // fscrypt_auth
+diff --git a/fs/ceph/mds_client.h b/fs/ceph/mds_client.h
+index 2cc75f9ae7c7..cd719691a86d 100644
+--- a/fs/ceph/mds_client.h
++++ b/fs/ceph/mds_client.h
+@@ -290,6 +290,9 @@ struct ceph_mds_request {
+ 
+ 	struct ceph_fscrypt_auth *r_fscrypt_auth;
+ 
++	u8 *r_altname;		    /* fscrypt binary crypttext for long filenames */
++	u32 r_altname_len;	    /* length of r_altname */
++
+ 	int r_fmode;        /* file mode, if expecting cap */
+ 	int r_request_release_offset;
+ 	const struct cred *r_cred;
+-- 
+2.35.1
+
