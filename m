@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A0D11C3527E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F43CC433F5
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:00:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234083AbiDEH6A (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 03:58:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56884 "EHLO
+        id S234006AbiDEH54 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 03:57:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56490 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232589AbiDEHq7 (ORCPT
+        with ESMTP id S232256AbiDEHq1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 03:46:59 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7AA6A939D1;
-        Tue,  5 Apr 2022 00:42:35 -0700 (PDT)
+        Tue, 5 Apr 2022 03:46:27 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4CF899685;
+        Tue,  5 Apr 2022 00:41:55 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 08B4D616C1;
-        Tue,  5 Apr 2022 07:42:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1892FC340EE;
-        Tue,  5 Apr 2022 07:42:33 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1C486B81B14;
+        Tue,  5 Apr 2022 07:41:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 688F2C340EE;
+        Tue,  5 Apr 2022 07:41:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649144554;
-        bh=3+T0dHYlWnxkv9+tQQbQeXrBLw+wctKVVybJaCYl/y0=;
+        s=korg; t=1649144512;
+        bh=pol35tleRDTuGvRqTHMK7qDa4oCsmemWL50nN29IMSY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=czECsoJeBGES7EpEYMSk+qktWsOnKC4S6GXGizRbIsrU9VQ2Falnfqtziv5pMKX4A
-         /pMHCUhmB4XGaAGdx8yt9aSJdRNf3PEmNW1ZGgfdKcbQuOId+AxVZPl2t5AT/qzFVL
-         IFpn3MnSmn2AdcF49kvfELm8Qt058TEJTTa/ktsc=
+        b=zbz0xHQqnBh8A+nl4gL3jm2iV9c50KgQCaCva9/WkfjorALxIKW0UswSYNAg/JS3O
+         2rl/KsKdRB1oNPkVHQPjQzP7A5jAOXtTk7wiak8gmmHp6s0DEyZUuQ4jvj0D/acQav
+         UTzv3JnZ6ObOUn3Ru42FAZvlv4+iCqY+hoCs4N5Q=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Manish Chopra <manishc@marvell.com>,
-        Ariel Elior <aelior@marvell.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 5.17 0085/1126] qed: display VF trust config
-Date:   Tue,  5 Apr 2022 09:13:52 +0200
-Message-Id: <20220405070410.064382028@linuxfoundation.org>
+        stable@vger.kernel.org, Hangyu Hua <hbh25y@gmail.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>
+Subject: [PATCH 5.17 0072/1126] can: usb_8dev: usb_8dev_start_xmit(): fix double dev_kfree_skb() in error path
+Date:   Tue,  5 Apr 2022 09:13:39 +0200
+Message-Id: <20220405070409.683164747@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -49,32 +48,69 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Manish Chopra <manishc@marvell.com>
+From: Hangyu Hua <hbh25y@gmail.com>
 
-commit 4e6e6bec7440b9b76f312f28b1f4e944eebb3abc upstream.
+commit 3d3925ff6433f98992685a9679613a2cc97f3ce2 upstream.
 
-Driver does support SR-IOV VFs trust configuration but
-it does not display it when queried via ip link utility.
+There is no need to call dev_kfree_skb() when usb_submit_urb() fails
+because can_put_echo_skb() deletes original skb and
+can_free_echo_skb() deletes the cloned skb.
 
+Fixes: 0024d8ad1639 ("can: usb_8dev: Add support for USB2CAN interface from 8 devices")
+Link: https://lore.kernel.org/all/20220311080614.45229-1-hbh25y@gmail.com
 Cc: stable@vger.kernel.org
-Fixes: f990c82c385b ("qed*: Add support for ndo_set_vf_trust")
-Signed-off-by: Manish Chopra <manishc@marvell.com>
-Signed-off-by: Ariel Elior <aelior@marvell.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
+Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/qlogic/qed/qed_sriov.c |    1 +
- 1 file changed, 1 insertion(+)
+ drivers/net/can/usb/usb_8dev.c |   30 ++++++++++++++----------------
+ 1 file changed, 14 insertions(+), 16 deletions(-)
 
---- a/drivers/net/ethernet/qlogic/qed/qed_sriov.c
-+++ b/drivers/net/ethernet/qlogic/qed/qed_sriov.c
-@@ -4719,6 +4719,7 @@ static int qed_get_vf_config(struct qed_
- 	tx_rate = vf_info->tx_rate;
- 	ivi->max_tx_rate = tx_rate ? tx_rate : link.speed;
- 	ivi->min_tx_rate = qed_iov_get_vf_min_rate(hwfn, vf_id);
-+	ivi->trusted = vf_info->is_trusted_request;
+--- a/drivers/net/can/usb/usb_8dev.c
++++ b/drivers/net/can/usb/usb_8dev.c
+@@ -663,9 +663,20 @@ static netdev_tx_t usb_8dev_start_xmit(s
+ 	atomic_inc(&priv->active_tx_urbs);
  
- 	return 0;
- }
+ 	err = usb_submit_urb(urb, GFP_ATOMIC);
+-	if (unlikely(err))
+-		goto failed;
+-	else if (atomic_read(&priv->active_tx_urbs) >= MAX_TX_URBS)
++	if (unlikely(err)) {
++		can_free_echo_skb(netdev, context->echo_index, NULL);
++
++		usb_unanchor_urb(urb);
++		usb_free_coherent(priv->udev, size, buf, urb->transfer_dma);
++
++		atomic_dec(&priv->active_tx_urbs);
++
++		if (err == -ENODEV)
++			netif_device_detach(netdev);
++		else
++			netdev_warn(netdev, "failed tx_urb %d\n", err);
++		stats->tx_dropped++;
++	} else if (atomic_read(&priv->active_tx_urbs) >= MAX_TX_URBS)
+ 		/* Slow down tx path */
+ 		netif_stop_queue(netdev);
+ 
+@@ -684,19 +695,6 @@ nofreecontext:
+ 
+ 	return NETDEV_TX_BUSY;
+ 
+-failed:
+-	can_free_echo_skb(netdev, context->echo_index, NULL);
+-
+-	usb_unanchor_urb(urb);
+-	usb_free_coherent(priv->udev, size, buf, urb->transfer_dma);
+-
+-	atomic_dec(&priv->active_tx_urbs);
+-
+-	if (err == -ENODEV)
+-		netif_device_detach(netdev);
+-	else
+-		netdev_warn(netdev, "failed tx_urb %d\n", err);
+-
+ nomembuf:
+ 	usb_free_urb(urb);
+ 
 
 
