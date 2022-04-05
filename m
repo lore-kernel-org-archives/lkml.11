@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B6CF2C47080
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 10:08:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 74B53C4321E
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 10:08:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352482AbiDEKEi (ORCPT
+        id S1353060AbiDEKFe (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 06:04:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56482 "EHLO
+        Tue, 5 Apr 2022 06:05:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52872 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237344AbiDEIR4 (ORCPT
+        with ESMTP id S240169AbiDEIbq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:17:56 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB9AEB53C1;
-        Tue,  5 Apr 2022 01:06:05 -0700 (PDT)
+        Tue, 5 Apr 2022 04:31:46 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F634B869;
+        Tue,  5 Apr 2022 01:23:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C3E66617EF;
-        Tue,  5 Apr 2022 08:06:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A4DB0C385A0;
-        Tue,  5 Apr 2022 08:06:03 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 70F4CB81B13;
+        Tue,  5 Apr 2022 08:23:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D7B0FC385A0;
+        Tue,  5 Apr 2022 08:23:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649145964;
-        bh=0e3l9pPzVkeZhdzgF8J8i/OJrfVilyJRrXcXUlIX+qI=;
+        s=korg; t=1649147018;
+        bh=T3kgODDX5p1Yhno/gHslKFRgBU4Q7T8204hWf0ApzHI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hgTuIMyd0XREv43M0W93tpK/fMWNHI4SIojMKG5dx31xvV/D3HxFtae7/TI/W0Xwd
-         MOY1f05r8QAy0/tjbB69le7r30FbF5fOiMM3e680YRmLXXkA7W+Taa+tJukbTXzqcQ
-         ofmOKpbPNRsil1lWx89dgs3ixbBJmUTZJ9vPIg2Q=
+        b=hQgQHGpN9ywztDluNPDHEWHZFZnso54BiPo0hVPRyEWfjsM4VpstD1j5UJRd1+3II
+         XxDVCmQTJSOorZyFJIRKGD5iz/qoa5rLrBNK8K4M/1VToVhVGvlxVXTnCweDDeeoIV
+         6rxE278tyyLfBgUCCBnPtKFTPNPD2BEPnUJcPYtw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tong Zhang <ztong0001@gmail.com>,
-        Ira Weiny <ira.weiny@intel.com>,
-        Christoph Hellwig <hch@lst.de>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0555/1126] dax: make sure inodes are flushed before destroy cache
-Date:   Tue,  5 Apr 2022 09:21:42 +0200
-Message-Id: <20220405070423.923849328@linuxfoundation.org>
+        stable@vger.kernel.org, Abdul Haleem <abdhalee@linux.vnet.ibm.com>,
+        Himanshu Madhani <himanshu.madhani@oracle.com>,
+        Quinn Tran <qutran@marvell.com>,
+        Nilesh Javali <njavali@marvell.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>
+Subject: [PATCH 5.17 0973/1126] scsi: qla2xxx: Fix warning message due to adisc being flushed
+Date:   Tue,  5 Apr 2022 09:28:40 +0200
+Message-Id: <20220405070436.064129548@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -52,51 +52,84 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tong Zhang <ztong0001@gmail.com>
+From: Quinn Tran <qutran@marvell.com>
 
-[ Upstream commit a7e8de822e0b1979f08767c751f6c8a9c1d4ad86 ]
+commit 64f24af75b79cba3b86b0760e27e0fa904db570f upstream.
 
-A bug can be triggered by following command
+Fix warning message due to adisc being flushed.  Linux kernel triggered a
+warning message where a different error code type is not matching up with
+the expected type. Add additional translation of one error code type to
+another.
 
-$ modprobe nd_pmem && modprobe -r nd_pmem
+WARNING: CPU: 2 PID: 1131623 at drivers/scsi/qla2xxx/qla_init.c:498
+qla2x00_async_adisc_sp_done+0x294/0x2b0 [qla2xxx]
+CPU: 2 PID: 1131623 Comm: drmgr Not tainted 5.13.0-rc1-autotest #1
+..
+GPR28: c000000aaa9c8890 c0080000079ab678 c00000140a104800 c00000002bd19000
+NIP [c00800000790857c] qla2x00_async_adisc_sp_done+0x294/0x2b0 [qla2xxx]
+LR [c008000007908578] qla2x00_async_adisc_sp_done+0x290/0x2b0 [qla2xxx]
+Call Trace:
+[c00000001cdc3620] [c008000007908578] qla2x00_async_adisc_sp_done+0x290/0x2b0 [qla2xxx] (unreliable)
+[c00000001cdc3710] [c0080000078f3080] __qla2x00_abort_all_cmds+0x1b8/0x580 [qla2xxx]
+[c00000001cdc3840] [c0080000078f589c] qla2x00_abort_all_cmds+0x34/0xd0 [qla2xxx]
+[c00000001cdc3880] [c0080000079153d8] qla2x00_abort_isp_cleanup+0x3f0/0x570 [qla2xxx]
+[c00000001cdc3920] [c0080000078fb7e8] qla2x00_remove_one+0x3d0/0x480 [qla2xxx]
+[c00000001cdc39b0] [c00000000071c274] pci_device_remove+0x64/0x120
+[c00000001cdc39f0] [c0000000007fb818] device_release_driver_internal+0x168/0x2a0
+[c00000001cdc3a30] [c00000000070e304] pci_stop_bus_device+0xb4/0x100
+[c00000001cdc3a70] [c00000000070e4f0] pci_stop_and_remove_bus_device+0x20/0x40
+[c00000001cdc3aa0] [c000000000073940] pci_hp_remove_devices+0x90/0x130
+[c00000001cdc3b30] [c0080000070704d0] disable_slot+0x38/0x90 [rpaphp] [
+c00000001cdc3b60] [c00000000073eb4c] power_write_file+0xcc/0x180
+[c00000001cdc3be0] [c0000000007354bc] pci_slot_attr_store+0x3c/0x60
+[c00000001cdc3c00] [c00000000055f820] sysfs_kf_write+0x60/0x80 [c00000001cdc3c20]
+[c00000000055df10] kernfs_fop_write_iter+0x1a0/0x290
+[c00000001cdc3c70] [c000000000447c4c] new_sync_write+0x14c/0x1d0
+[c00000001cdc3d10] [c00000000044b134] vfs_write+0x224/0x330
+[c00000001cdc3d60] [c00000000044b3f4] ksys_write+0x74/0x130
+[c00000001cdc3db0] [c00000000002df70] system_call_exception+0x150/0x2d0
+[c00000001cdc3e10] [c00000000000d45c] system_call_common+0xec/0x278
 
-[   10.060014] BUG dax_cache (Not tainted): Objects remaining in dax_cache on __kmem_cache_shutdown()
-[   10.060938] Slab 0x0000000085b729ac objects=9 used=1 fp=0x000000004f5ae469 flags=0x200000000010200(slab|head|node)
-[   10.062433] Call Trace:
-[   10.062673]  dump_stack_lvl+0x34/0x44
-[   10.062865]  slab_err+0x90/0xd0
-[   10.063619]  __kmem_cache_shutdown+0x13b/0x2f0
-[   10.063848]  kmem_cache_destroy+0x4a/0x110
-[   10.064058]  __x64_sys_delete_module+0x265/0x300
-
-This is caused by dax_fs_exit() not flushing inodes before destroy cache.
-To fix this issue, call rcu_barrier() before destroy cache.
-
-Signed-off-by: Tong Zhang <ztong0001@gmail.com>
-Reviewed-by: Ira Weiny <ira.weiny@intel.com>
-Reviewed-by: Christoph Hellwig <hch@lst.de>
-Link: https://lore.kernel.org/r/20220212071111.148575-1-ztong0001@gmail.com
-Fixes: 7b6be8444e0f ("dax: refactor dax-fs into a generic provider of 'struct dax_device' instances")
-Signed-off-by: Dan Williams <dan.j.williams@intel.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Link: https://lore.kernel.org/r/20220110050218.3958-5-njavali@marvell.com
+Cc: stable@vger.kernel.org
+Reported-by: Abdul Haleem <abdhalee@linux.vnet.ibm.com>
+Reviewed-by: Himanshu Madhani <himanshu.madhani@oracle.com>
+Signed-off-by: Quinn Tran <qutran@marvell.com>
+Signed-off-by: Nilesh Javali <njavali@marvell.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/dax/super.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/scsi/qla2xxx/qla_init.c |    6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/drivers/dax/super.c b/drivers/dax/super.c
-index e3029389d809..6bd565fe2e63 100644
---- a/drivers/dax/super.c
-+++ b/drivers/dax/super.c
-@@ -476,6 +476,7 @@ static int dax_fs_init(void)
- static void dax_fs_exit(void)
- {
- 	kern_unmount(dax_mnt);
-+	rcu_barrier();
- 	kmem_cache_destroy(dax_cache);
- }
+--- a/drivers/scsi/qla2xxx/qla_init.c
++++ b/drivers/scsi/qla2xxx/qla_init.c
+@@ -295,6 +295,8 @@ static void qla2x00_async_login_sp_done(
+ 		ea.iop[0] = lio->u.logio.iop[0];
+ 		ea.iop[1] = lio->u.logio.iop[1];
+ 		ea.sp = sp;
++		if (res)
++			ea.data[0] = MBS_COMMAND_ERROR;
+ 		qla24xx_handle_plogi_done_event(vha, &ea);
+ 	}
  
--- 
-2.34.1
-
+@@ -557,6 +559,8 @@ static void qla2x00_async_adisc_sp_done(
+ 	ea.iop[1] = lio->u.logio.iop[1];
+ 	ea.fcport = sp->fcport;
+ 	ea.sp = sp;
++	if (res)
++		ea.data[0] = MBS_COMMAND_ERROR;
+ 
+ 	qla24xx_handle_adisc_event(vha, &ea);
+ 	/* ref: INIT */
+@@ -1237,6 +1241,8 @@ static void qla2x00_async_prli_sp_done(s
+ 		ea.sp = sp;
+ 		if (res == QLA_OS_TIMER_EXPIRED)
+ 			ea.data[0] = QLA_OS_TIMER_EXPIRED;
++		else if (res)
++			ea.data[0] = MBS_COMMAND_ERROR;
+ 
+ 		qla24xx_handle_prli_done_event(vha, &ea);
+ 	}
 
 
