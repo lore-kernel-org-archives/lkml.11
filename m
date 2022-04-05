@@ -2,53 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EE092C43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0BFC6C433F5
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:17:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1582828AbiDEXty (ORCPT
+        id S1582780AbiDEXtk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 19:49:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43216 "EHLO
+        Tue, 5 Apr 2022 19:49:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39094 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349217AbiDEJt1 (ORCPT
+        with ESMTP id S244638AbiDEKjC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:49:27 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39F3F22B25;
-        Tue,  5 Apr 2022 02:42:50 -0700 (PDT)
+        Tue, 5 Apr 2022 06:39:02 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F94A8D688;
+        Tue,  5 Apr 2022 03:24:03 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CABC461576;
-        Tue,  5 Apr 2022 09:42:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A4F7AC385A1;
-        Tue,  5 Apr 2022 09:42:48 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B2D1F617CC;
+        Tue,  5 Apr 2022 10:24:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BBB61C385A0;
+        Tue,  5 Apr 2022 10:24:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649151769;
-        bh=KYXEhnswZ9GlBv57VQWGUAbK4dX9BNkHI4d1xHGhTd8=;
+        s=korg; t=1649154242;
+        bh=+VcnWK6RdiXDGyC+txKRR/jNyYOqSekq6T4uv9dDmug=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ImnbTmCXeOxhwLxNkCaMsSmA8cXu5QZn2YV3gqXGT5+oP+R32y/Y98gkODHBAhfQc
-         mqmWCODsTcmcKoDJaMRXb9aHXV28GFq32oFdjXAgC2MsYdOS/BzRPAhs+dcBpEkzOZ
-         Ntv3JFv0UhLR1gFNwRzRqktuYyQGmpp01zN3gOSs=
+        b=ccV/n7odNQrPRnh9h/c4p71KfrMifVC3oL8/2GSiTLzsLipdA5kGpa8EGGKRWYX1R
+         kbXnVHtk0t5eD61lszw8nAKAATjxZk/GIsGTdZACnR9IM799hez+1IvUIck6RGaxjq
+         mqQaVd73mtzWlPW8jYQg99hN/Il8IDBAOM2Wltf8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        linux-mips@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Phil Sutter <n0-1@freewrt.org>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Ralf Baechle <ralf@linux-mips.org>,
-        Daniel Walter <dwalter@google.com>,
+        stable@vger.kernel.org, Ulf Hansson <ulf.hansson@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 533/913] MIPS: RB532: fix return value of __setup handler
-Date:   Tue,  5 Apr 2022 09:26:35 +0200
-Message-Id: <20220405070355.826391150@linuxfoundation.org>
+Subject: [PATCH 5.10 509/599] mmc: host: Return an error when ->enable_sdio_irq() ops is missing
+Date:   Tue,  5 Apr 2022 09:33:23 +0200
+Message-Id: <20220405070313.977342235@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
+References: <20220405070258.802373272@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -57,55 +49,58 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Randy Dunlap <rdunlap@infradead.org>
+From: Ulf Hansson <ulf.hansson@linaro.org>
 
-[ Upstream commit 8755d57ba1ff910666572fab9e32890e8cc6ed3b ]
+[ Upstream commit d6c9219ca1139b74541b2a98cee47a3426d754a9 ]
 
-__setup() handlers should return 1 to obsolete_checksetup() in
-init/main.c to indicate that the boot option has been handled.
-A return of 0 causes the boot option/value to be listed as an Unknown
-kernel parameter and added to init's (limited) argument or environment
-strings. Also, error return codes don't mean anything to
-obsolete_checksetup() -- only non-zero (usually 1) or zero.
-So return 1 from setup_kmac().
+Even if the current WARN() notifies the user that something is severely
+wrong, we can still end up in a PANIC() when trying to invoke the missing
+->enable_sdio_irq() ops. Therefore, let's also return an error code and
+prevent the host from being added.
 
-Fixes: 9e21c7e40b7e ("MIPS: RB532: Replace parse_mac_addr() with mac_pton().")
-Fixes: 73b4390fb234 ("[MIPS] Routerboard 532: Support for base system")
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-From: Igor Zhbanov <i.zhbanov@omprussia.ru>
-Link: lore.kernel.org/r/64644a2f-4a20-bab3-1e15-3b2cdd0defe3@omprussia.ru
-Cc: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
-Cc: linux-mips@vger.kernel.org
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: Phil Sutter <n0-1@freewrt.org>
-Cc: Florian Fainelli <f.fainelli@gmail.com>
-Cc: Ralf Baechle <ralf@linux-mips.org>
-Cc: Daniel Walter <dwalter@google.com>
-Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+While at it, move the code into a separate function to prepare for
+subsequent changes and for further host caps validations.
+
+Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
+Link: https://lore.kernel.org/r/20220303165142.129745-1-ulf.hansson@linaro.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/mips/rb532/devices.c | 6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
+ drivers/mmc/core/host.c | 15 +++++++++++++--
+ 1 file changed, 13 insertions(+), 2 deletions(-)
 
-diff --git a/arch/mips/rb532/devices.c b/arch/mips/rb532/devices.c
-index 04684990e28e..b7f6f782d9a1 100644
---- a/arch/mips/rb532/devices.c
-+++ b/arch/mips/rb532/devices.c
-@@ -301,11 +301,9 @@ static int __init plat_setup_devices(void)
- static int __init setup_kmac(char *s)
- {
- 	printk(KERN_INFO "korina mac = %s\n", s);
--	if (!mac_pton(s, korina_dev0_data.mac)) {
-+	if (!mac_pton(s, korina_dev0_data.mac))
- 		printk(KERN_ERR "Invalid mac\n");
--		return -EINVAL;
--	}
--	return 0;
-+	return 1;
- }
+diff --git a/drivers/mmc/core/host.c b/drivers/mmc/core/host.c
+index 864c8c205ff7..03e2f965a96a 100644
+--- a/drivers/mmc/core/host.c
++++ b/drivers/mmc/core/host.c
+@@ -513,6 +513,16 @@ struct mmc_host *mmc_alloc_host(int extra, struct device *dev)
  
- __setup("kmac=", setup_kmac);
+ EXPORT_SYMBOL(mmc_alloc_host);
+ 
++static int mmc_validate_host_caps(struct mmc_host *host)
++{
++	if (host->caps & MMC_CAP_SDIO_IRQ && !host->ops->enable_sdio_irq) {
++		dev_warn(host->parent, "missing ->enable_sdio_irq() ops\n");
++		return -EINVAL;
++	}
++
++	return 0;
++}
++
+ /**
+  *	mmc_add_host - initialise host hardware
+  *	@host: mmc host
+@@ -525,8 +535,9 @@ int mmc_add_host(struct mmc_host *host)
+ {
+ 	int err;
+ 
+-	WARN_ON((host->caps & MMC_CAP_SDIO_IRQ) &&
+-		!host->ops->enable_sdio_irq);
++	err = mmc_validate_host_caps(host);
++	if (err)
++		return err;
+ 
+ 	err = device_add(&host->class_dev);
+ 	if (err)
 -- 
 2.34.1
 
