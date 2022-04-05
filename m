@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 786C2C43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D059C4321E
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:51:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1838305AbiDFAvH (ORCPT
+        id S1838355AbiDFAvN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 20:51:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43550 "EHLO
+        Tue, 5 Apr 2022 20:51:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58698 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348585AbiDEJsf (ORCPT
+        with ESMTP id S1358067AbiDEK15 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:48:35 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CF486FF54;
-        Tue,  5 Apr 2022 02:35:14 -0700 (PDT)
+        Tue, 5 Apr 2022 06:27:57 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 704BD583BD;
+        Tue,  5 Apr 2022 03:14:30 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B3033B81C6F;
-        Tue,  5 Apr 2022 09:35:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 096BDC385A3;
-        Tue,  5 Apr 2022 09:35:10 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 32364B81BC5;
+        Tue,  5 Apr 2022 10:14:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9E822C385A1;
+        Tue,  5 Apr 2022 10:14:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649151311;
-        bh=9xEAKMpxGzf2culwYA+lPprUuDTBQpTKmsGMIu0d/v0=;
+        s=korg; t=1649153668;
+        bh=K3MNOoTQsy6x8DnN1TuwVMbArMhx3yyqyz7JNKrPkE4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=aSjG8vGqEa+Oth5WYJv7kNlBFgJOVW0k4Q472L3ZSpI4JlMh5wNYRPePxhKSVlNZZ
-         7cM8qrxlLXAXVR4OD8nns2AIu5BDgvbf7Cq4Sk0DA5jU7wKAf3kab31xdntk2DQFFV
-         KEV+brqEf12XvIBJDXM86BmSOmcVdauSv3b72gVg=
+        b=uXSLXmDNsO5Err6CFCbLNKQMca6zKThqJx1nuXEq4b8k4pdgnungQlg9LFoM9Zfl0
+         Hzd+Dzv/buzelKqNwZFGqldiX7hS0mlPOub1bgbeK4xvARyxk2KdvuHnDIa2zpwez/
+         OZ8mU0dos5bHlOlegmQf11sva/CTRjzLzIBzYZo4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
+        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
+        Luca Coelho <luciano.coelho@intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 367/913] mmc: davinci_mmc: Handle error for clk_enable
-Date:   Tue,  5 Apr 2022 09:23:49 +0200
-Message-Id: <20220405070350.847445805@linuxfoundation.org>
+Subject: [PATCH 5.10 304/599] iwlwifi: mvm: Fix an error code in iwl_mvm_up()
+Date:   Tue,  5 Apr 2022 09:29:58 +0200
+Message-Id: <20220405070307.880463597@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
+References: <20220405070258.802373272@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,41 +50,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+From: Dan Carpenter <dan.carpenter@oracle.com>
 
-[ Upstream commit 09e7af76db02c74f2a339b3cb2d95460fa2ddbe4 ]
+[ Upstream commit 583d18336abdfb1b355270289ff8f6a2608ba905 ]
 
-As the potential failure of the clk_enable(),
-it should be better to check it and return error
-if fails.
+Return -ENODEV instead of success on this error path.
 
-Fixes: bbce5802afc5 ("davinci: mmc: updates to suspend/resume implementation")
-Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Link: https://lore.kernel.org/r/20220308071415.1093393-1-jiasheng@iscas.ac.cn
-Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
+Fixes: dd36a507c806 ("iwlwifi: mvm: look for the first supported channel when add/remove phy ctxt")
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+Link: https://lore.kernel.org/r/20210816183930.GA2068@kili
+Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/mmc/host/davinci_mmc.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+ drivers/net/wireless/intel/iwlwifi/mvm/fw.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/mmc/host/davinci_mmc.c b/drivers/mmc/host/davinci_mmc.c
-index 2a757c88f9d2..80de660027d8 100644
---- a/drivers/mmc/host/davinci_mmc.c
-+++ b/drivers/mmc/host/davinci_mmc.c
-@@ -1375,8 +1375,12 @@ static int davinci_mmcsd_suspend(struct device *dev)
- static int davinci_mmcsd_resume(struct device *dev)
- {
- 	struct mmc_davinci_host *host = dev_get_drvdata(dev);
-+	int ret;
-+
-+	ret = clk_enable(host->clk);
-+	if (ret)
-+		return ret;
+diff --git a/drivers/net/wireless/intel/iwlwifi/mvm/fw.c b/drivers/net/wireless/intel/iwlwifi/mvm/fw.c
+index 6348dfa61724..54b28f0932e2 100644
+--- a/drivers/net/wireless/intel/iwlwifi/mvm/fw.c
++++ b/drivers/net/wireless/intel/iwlwifi/mvm/fw.c
+@@ -1495,8 +1495,10 @@ int iwl_mvm_up(struct iwl_mvm *mvm)
+ 	while (!sband && i < NUM_NL80211_BANDS)
+ 		sband = mvm->hw->wiphy->bands[i++];
  
--	clk_enable(host->clk);
- 	mmc_davinci_reset_ctrl(host, 0);
+-	if (WARN_ON_ONCE(!sband))
++	if (WARN_ON_ONCE(!sband)) {
++		ret = -ENODEV;
+ 		goto error;
++	}
  
- 	return 0;
+ 	chan = &sband->channels[0];
+ 
 -- 
 2.34.1
 
