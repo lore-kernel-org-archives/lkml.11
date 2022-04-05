@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1ECC1C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 14:02:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 660B2C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 14:02:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240333AbiDEN5b (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 09:57:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55406 "EHLO
+        id S240613AbiDEN5z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 09:57:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60614 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347740AbiDEJ2O (ORCPT
+        with ESMTP id S1344777AbiDEJVM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:28:14 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56938DFDC3;
-        Tue,  5 Apr 2022 02:15:42 -0700 (PDT)
+        Tue, 5 Apr 2022 05:21:12 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 295F2252A9;
+        Tue,  5 Apr 2022 02:08:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 30F00615E5;
-        Tue,  5 Apr 2022 09:15:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 43451C385A0;
-        Tue,  5 Apr 2022 09:15:27 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6AEFB61579;
+        Tue,  5 Apr 2022 09:08:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 74C21C385A1;
+        Tue,  5 Apr 2022 09:08:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649150127;
-        bh=fyksP8iHCy9RFz7uy483NgCx3ENE00nut1rH8XRHy80=;
+        s=korg; t=1649149721;
+        bh=/hJvC2gf0i2zGMllIvwBp0yhdrPxL94SQLzsN5wb/G8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=T8CDZTLMOll9vHT3rLL7FWvjpJVcH2y0XEpF4QKXOs6RZAkoG6GszVOGW121zH2Kb
-         69Fc4T1b/uK8BI5l2R+pje02BTWq+4OKPT2/b1UxGPLFr6aDOL1V+Xzh8knPJXB/kO
-         6N9Zf71CKiF/wini30aQlOQG4OrQ8viCZULdsmuY=
+        b=yYiV22V1i6Rews0XKd6TGlJiokS/30mOTWf5/SMgu0U+Lzu3+fByCE9nrcoYPsw1c
+         EaXlNm32EcXjJeTrA4d7BkMkURoVLkrGdJ+tjA9Nzde6H8Engkw7thqer8qJmYU5fR
+         xTDihaqNLQ0Gpb86r4UEeKyTFH/bCVC4fL2vN19g=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tom Rix <trix@redhat.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>
-Subject: [PATCH 5.16 0925/1017] can: mcp251xfd: mcp251xfd_register_get_dev_id(): fix return of error value
-Date:   Tue,  5 Apr 2022 09:30:38 +0200
-Message-Id: <20220405070421.674752162@linuxfoundation.org>
+        stable@vger.kernel.org, Evgeny Novikov <novikov@ispras.ru>,
+        Kirill Shilimanov <kirill.shilimanov@huawei.com>,
+        Helge Deller <deller@gmx.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 0817/1017] video: fbdev: w100fb: Reset global state
+Date:   Tue,  5 Apr 2022 09:28:50 +0200
+Message-Id: <20220405070418.500844763@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -48,40 +49,68 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tom Rix <trix@redhat.com>
+From: Evgeny Novikov <novikov@ispras.ru>
 
-commit fa7b514d2b2894e052b8e94c7a29feb98e90093f upstream.
+[ Upstream commit 8738ddcac644964ae128ccd3d80d48773c8d528e ]
 
-Clang static analysis reports this issue:
+w100fb_probe() did not reset the global state to its initial state. This
+can result in invocation of iounmap() even when there was not the
+appropriate successful call of ioremap(). For instance, this may be the
+case if first probe fails after two successful ioremap() while second
+probe fails when first ioremap() fails. The similar issue is with
+w100fb_remove(). The patch fixes both bugs.
 
-| mcp251xfd-core.c:1813:7: warning: The left operand
-|   of '&' is a garbage value
-|   FIELD_GET(MCP251XFD_REG_DEVID_ID_MASK, dev_id),
-|   ^                                      ~~~~~~
+Found by Linux Driver Verification project (linuxtesting.org).
 
-dev_id is set in a successful call to mcp251xfd_register_get_dev_id().
-Though the status of calls made by mcp251xfd_register_get_dev_id() are
-checked and handled, their status' are not returned. So return err.
-
-Fixes: 55e5b97f003e ("can: mcp25xxfd: add driver for Microchip MCP25xxFD SPI CAN")
-Link: https://lore.kernel.org/all/20220319153128.2164120-1-trix@redhat.com
-Signed-off-by: Tom Rix <trix@redhat.com>
-Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Evgeny Novikov <novikov@ispras.ru>
+Co-developed-by: Kirill Shilimanov <kirill.shilimanov@huawei.com>
+Signed-off-by: Kirill Shilimanov <kirill.shilimanov@huawei.com>
+Signed-off-by: Helge Deller <deller@gmx.de>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/can/spi/mcp251xfd/mcp251xfd-core.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/video/fbdev/w100fb.c | 15 ++++++++++++---
+ 1 file changed, 12 insertions(+), 3 deletions(-)
 
---- a/drivers/net/can/spi/mcp251xfd/mcp251xfd-core.c
-+++ b/drivers/net/can/spi/mcp251xfd/mcp251xfd-core.c
-@@ -2706,7 +2706,7 @@ mcp251xfd_register_get_dev_id(const stru
-  out_kfree_buf_rx:
- 	kfree(buf_rx);
+diff --git a/drivers/video/fbdev/w100fb.c b/drivers/video/fbdev/w100fb.c
+index d96ab28f8ce4..4e641a780726 100644
+--- a/drivers/video/fbdev/w100fb.c
++++ b/drivers/video/fbdev/w100fb.c
+@@ -770,12 +770,18 @@ static int w100fb_probe(struct platform_device *pdev)
+ 		fb_dealloc_cmap(&info->cmap);
+ 		kfree(info->pseudo_palette);
+ 	}
+-	if (remapped_fbuf != NULL)
++	if (remapped_fbuf != NULL) {
+ 		iounmap(remapped_fbuf);
+-	if (remapped_regs != NULL)
++		remapped_fbuf = NULL;
++	}
++	if (remapped_regs != NULL) {
+ 		iounmap(remapped_regs);
+-	if (remapped_base != NULL)
++		remapped_regs = NULL;
++	}
++	if (remapped_base != NULL) {
+ 		iounmap(remapped_base);
++		remapped_base = NULL;
++	}
+ 	if (info)
+ 		framebuffer_release(info);
+ 	return err;
+@@ -795,8 +801,11 @@ static int w100fb_remove(struct platform_device *pdev)
+ 	fb_dealloc_cmap(&info->cmap);
  
--	return 0;
-+	return err;
- }
+ 	iounmap(remapped_base);
++	remapped_base = NULL;
+ 	iounmap(remapped_regs);
++	remapped_regs = NULL;
+ 	iounmap(remapped_fbuf);
++	remapped_fbuf = NULL;
  
- #define MCP251XFD_QUIRK_ACTIVE(quirk) \
+ 	framebuffer_release(info);
+ 
+-- 
+2.34.1
+
 
 
