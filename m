@@ -2,56 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A4A0C43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 68E43C4167B
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 09:12:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244655AbiDEJKH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 05:10:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33066 "EHLO
+        id S240583AbiDEJGM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 05:06:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45384 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239526AbiDEIUM (ORCPT
+        with ESMTP id S238477AbiDEITI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:20:12 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4A96F24;
-        Tue,  5 Apr 2022 01:15:19 -0700 (PDT)
+        Tue, 5 Apr 2022 04:19:08 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9246DDF0B;
+        Tue,  5 Apr 2022 01:09:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 847A560B0E;
-        Tue,  5 Apr 2022 08:15:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6027CC385A1;
-        Tue,  5 Apr 2022 08:15:18 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id F2B0EB81A37;
+        Tue,  5 Apr 2022 08:08:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 52D37C385A2;
+        Tue,  5 Apr 2022 08:08:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649146518;
-        bh=uL5cgqrCoA+lOLd9fVJ0zymc0rSZyhphf4xwR6dSiaQ=;
+        s=korg; t=1649146137;
+        bh=Mrz80BjJ2Jh+RPjc7Mig+slCavA5b7jhX6T0oLaoi4A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FXz1KiKQoqkHzoC0TgttsXDoySMxTgs4V2p7WJG2NFBi1BI+yulFLbRJzcNR8Oz9G
-         R0MJZUi5phPgqhpGsXS+3EvOstrlEJlrTpZBW9o/6xyDn/tsNXib//HFgBAPlu4lf+
-         8o8a+ai3a9ihOayxFsLlEcc4vL6pBXSw82Zj+czI=
+        b=1mbU8ruuAhLaNIk1dBLpXVCzJC2rKkhV2tIfyf21nn/Z0p9RtmT9xm0Jj/BKR8+xn
+         7YCWP9RGQ18x+ZL+oWkwNP8T/lN43VDoNN4Dkoq/fAxVFhQXCOCSERnQ5CibfhAPG/
+         wtjj1dJyLRbV8vVzYnSzvuoG5v19QCXQuOxbECho=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kan Liang <kan.liang@linux.intel.com>,
-        Ian Rogers <irogers@google.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Andi Kleen <ak@linux.intel.com>,
-        Ingo Molnar <mingo@redhat.com>,
-        James Clark <james.clark@arm.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        John Garry <john.garry@huawei.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Stephane Eranian <eranian@google.com>,
-        Xing Zhengjun <zhengjun.xing@linux.intel.com>,
-        Arnaldo Carvalho de Melo <acme@redhat.com>,
+        stable@vger.kernel.org, Lee Jones <lee.jones@linaro.org>,
+        Matti Vaittinen <mazziesaccount@gmail.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>,
+        Sebastian Reichel <sebastian.reichel@collabora.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0792/1126] perf parse-events: Move slots only with topdown
-Date:   Tue,  5 Apr 2022 09:25:39 +0200
-Message-Id: <20220405070430.819563632@linuxfoundation.org>
+Subject: [PATCH 5.17 0656/1126] power: ab8500_chargalg: Use CLOCK_MONOTONIC
+Date:   Tue,  5 Apr 2022 09:23:23 +0200
+Message-Id: <20220405070426.885662479@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -63,97 +52,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ian Rogers <irogers@google.com>
+From: Linus Walleij <linus.walleij@linaro.org>
 
-[ Upstream commit bc355822f0d9623b632069105d425c822d124cc8 ]
+[ Upstream commit c22fca40522e2be8af168f3087d87d85e404ea72 ]
 
-If slots isn't with a topdown event then moving it is unnecessary. For
-example {instructions, slots} is re-ordered:
+The HRTimer in the AB8500 charging code is using CLOCK_REALTIME
+to set an alarm some hours forward in time +/- 5 min for a safety
+timer.
 
-  $ perf stat -e '{instructions,slots}' -a sleep 1
+I have observed that this will sometimes fire sporadically
+early when charging a battery with the result that
+charging stops.
 
-   Performance counter stats for 'system wide':
+As CLOCK_REALTIME can be subject to adjustments of time from
+sources such as NTP, this cannot be trusted and will likely
+for example fire events if the clock is set forward some hours
+by say NTP.
 
-         936,600,825      slots
-         144,440,968      instructions
+Use CLOCK_MONOTONIC as indicated in other instances and the
+problem goes away. Also initialize the timer to REL mode
+as this is what will be used later.
 
-         1.006061423 seconds time elapsed
-
-Which can break tools expecting the command line order to match the
-printed order. It is necessary to move the slots event first when it
-appears with topdown events. Add extra checking so that the slots event
-is only moved in the case of there being a topdown event like:
-
-  $ perf stat -e '{instructions,slots,topdown-fe-bound}' -a sleep 1
-
-   Performance counter stats for 'system wide':
-
-          2427568570      slots
-           300927614      instructions
-           551021649      topdown-fe-bound
-
-         1.001771803 seconds time elapsed
-
-Fixes: 94dbfd6781a0e87b ("perf parse-events: Architecture specific leader override")
-Reported-by: Kan Liang <kan.liang@linux.intel.com>
-Signed-off-by: Ian Rogers <irogers@google.com>
-Tested-by: Kan Liang <kan.liang@linux.intel.com>
-Cc: Alexander Shishkin <alexander.shishkin@linux.intel.com>
-Cc: Alexandre Torgue <alexandre.torgue@foss.st.com>
-Cc: Andi Kleen <ak@linux.intel.com>
-Cc: Ingo Molnar <mingo@redhat.com>
-Cc: James Clark <james.clark@arm.com>
-Cc: Jiri Olsa <jolsa@kernel.org>
-Cc: John Garry <john.garry@huawei.com>
-Cc: Mark Rutland <mark.rutland@arm.com>
-Cc: Maxime Coquelin <mcoquelin.stm32@gmail.com>
-Cc: Namhyung Kim <namhyung@kernel.org>
-Cc: Peter Zijlstra <peterz@infradead.org>
-Cc: Stephane Eranian <eranian@google.com>
-Cc: Xing Zhengjun <zhengjun.xing@linux.intel.com>
-Link: https://lore.kernel.org/r/20220321223344.1034479-1-irogers@google.com
-Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
+Fixes: 257107ae6b9b ("ab8500-chargalg: Use hrtimer")
+Cc: Lee Jones <lee.jones@linaro.org>
+Suggested-by: Matti Vaittinen <mazziesaccount@gmail.com>
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+Reviewed-by: Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>
+Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/perf/arch/x86/util/evlist.c | 18 ++++++++++++++----
- 1 file changed, 14 insertions(+), 4 deletions(-)
+ drivers/power/supply/ab8500_chargalg.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/tools/perf/arch/x86/util/evlist.c b/tools/perf/arch/x86/util/evlist.c
-index 8d9b55959256..cfc208d71f00 100644
---- a/tools/perf/arch/x86/util/evlist.c
-+++ b/tools/perf/arch/x86/util/evlist.c
-@@ -20,17 +20,27 @@ int arch_evlist__add_default_attrs(struct evlist *evlist)
+diff --git a/drivers/power/supply/ab8500_chargalg.c b/drivers/power/supply/ab8500_chargalg.c
+index bcf85ae6828e..da490e090ce4 100644
+--- a/drivers/power/supply/ab8500_chargalg.c
++++ b/drivers/power/supply/ab8500_chargalg.c
+@@ -2020,11 +2020,11 @@ static int ab8500_chargalg_probe(struct platform_device *pdev)
+ 	psy_cfg.drv_data = di;
  
- struct evsel *arch_evlist__leader(struct list_head *list)
- {
--	struct evsel *evsel, *first;
-+	struct evsel *evsel, *first, *slots = NULL;
-+	bool has_topdown = false;
+ 	/* Initilialize safety timer */
+-	hrtimer_init(&di->safety_timer, CLOCK_REALTIME, HRTIMER_MODE_ABS);
++	hrtimer_init(&di->safety_timer, CLOCK_MONOTONIC, HRTIMER_MODE_REL);
+ 	di->safety_timer.function = ab8500_chargalg_safety_timer_expired;
  
- 	first = list_first_entry(list, struct evsel, core.node);
+ 	/* Initilialize maintenance timer */
+-	hrtimer_init(&di->maintenance_timer, CLOCK_REALTIME, HRTIMER_MODE_ABS);
++	hrtimer_init(&di->maintenance_timer, CLOCK_MONOTONIC, HRTIMER_MODE_REL);
+ 	di->maintenance_timer.function =
+ 		ab8500_chargalg_maintenance_timer_expired;
  
- 	if (!pmu_have_event("cpu", "slots"))
- 		return first;
- 
-+	/* If there is a slots event and a topdown event then the slots event comes first. */
- 	__evlist__for_each_entry(list, evsel) {
--		if (evsel->pmu_name && !strcmp(evsel->pmu_name, "cpu") &&
--			evsel->name && strcasestr(evsel->name, "slots"))
--			return evsel;
-+		if (evsel->pmu_name && !strcmp(evsel->pmu_name, "cpu") && evsel->name) {
-+			if (strcasestr(evsel->name, "slots")) {
-+				slots = evsel;
-+				if (slots == first)
-+					return first;
-+			}
-+			if (!strncasecmp(evsel->name, "topdown", 7))
-+				has_topdown = true;
-+			if (slots && has_topdown)
-+				return slots;
-+		}
- 	}
- 	return first;
- }
 -- 
 2.34.1
 
