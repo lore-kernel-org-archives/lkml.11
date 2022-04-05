@@ -2,89 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2CC04C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CCF5C4332F
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:21:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1584083AbiDEX5x (ORCPT
+        id S1583800AbiDEX4q (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 19:57:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45640 "EHLO
+        Tue, 5 Apr 2022 19:56:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44248 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1384124AbiDEM1L (ORCPT
+        with ESMTP id S1348919AbiDEJsq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 08:27:11 -0400
-Received: from conuserg-12.nifty.com (conuserg-12.nifty.com [210.131.2.79])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F13415FFA;
-        Tue,  5 Apr 2022 04:35:18 -0700 (PDT)
-Received: from grover.. (133-32-177-133.west.xps.vectant.ne.jp [133.32.177.133]) (authenticated)
-        by conuserg-12.nifty.com with ESMTP id 235BYCGr000464;
-        Tue, 5 Apr 2022 20:34:15 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conuserg-12.nifty.com 235BYCGr000464
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1649158456;
-        bh=hFcfpaL7dMThduj0I/l+DG6RPreS0NdgRlLeoUw6KmA=;
+        Tue, 5 Apr 2022 05:48:46 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B3A7EE4EB;
+        Tue,  5 Apr 2022 02:37:29 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3BAA6B81C82;
+        Tue,  5 Apr 2022 09:37:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 91F5FC385A4;
+        Tue,  5 Apr 2022 09:37:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649151446;
+        bh=jMa5vKX+IK/TdveRuGnDnVQhQTMh4DJUkiqPggtNSi8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=oA86deSzKQp4qn7KpcbTtUbYzr1Y9SILHPrE2De6UK9BNz3l8Za8jx9N4LcglG1yz
-         QEtfmoGh03V1kunbAz4L5WlaQjRbKkKxiUTYLFvfWp1zbCuqbLISMt0UHgp+lGX7+w
-         80clyHOE7sEwqKu3+sKV9OeGUd+C3bK5eGaTSYDoIsFQgBHwqrQE92omNx0icEwxth
-         bDjTYb3gxIO0DQNQcYHPiMUEwtLiNn4BemeneIVy/GG+t8t0OP2+0OqCDVZf6Ju2LA
-         6ziVXE8NtAtSZVgFeY31cGb+lvYI4p5UNgUeEQTZlDKeWYyGx1j/kZHy1Xwq68OaQM
-         upnbnG4ShUyNg==
-X-Nifty-SrcIP: [133.32.177.133]
-From:   Masahiro Yamada <masahiroy@kernel.org>
-To:     linux-kbuild@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Michal Marek <michal.lkml@markovi.net>,
-        Nick Desaulniers <ndesaulniers@google.com>
-Subject: [PATCH v2 05/10] modpost: remove redundant initializes for static variables
-Date:   Tue,  5 Apr 2022 20:33:53 +0900
-Message-Id: <20220405113359.2880241-6-masahiroy@kernel.org>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220405113359.2880241-1-masahiroy@kernel.org>
-References: <20220405113359.2880241-1-masahiroy@kernel.org>
+        b=Oi4OYppbXDxcbTtDUSD4c37ZrrAk+ZIWX5a2BLmBevitYnv4mhaZSqv4FxtE6ZL6M
+         RaMjaKLi3UR9enPEpXlzOlZrivAkv7Py8fv/o9E7x9rdB2kFfCMf4HMjZLWa+WmrQH
+         u1+o/rHhMrGseuAX0xmwNIC9brukb0qYwAGV2a+c=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Jesper Dangaard Brouer <brouer@redhat.com>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        Alexander Lobakin <alexandr.lobakin@intel.com>,
+        Michal Swiatkowski <michal.swiatkowski@linux.intel.com>,
+        Kiran Bhandare <kiranx.bhandare@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 411/913] i40e: respect metadata on XSK Rx to skb
+Date:   Tue,  5 Apr 2022 09:24:33 +0200
+Message-Id: <20220405070352.165820389@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-These are initialized with zeros without explicit initializes.
+From: Alexander Lobakin <alexandr.lobakin@intel.com>
 
-Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+[ Upstream commit 6dba29537c0f639b482bd8f8bbd50ab4ae74b48d ]
+
+For now, if the XDP prog returns XDP_PASS on XSK, the metadata will
+be lost as it doesn't get copied to the skb.
+
+Copy it along with the frame headers. Account its size on skb
+allocation, and when copying just treat it as a part of the frame
+and do a pull after to "move" it to the "reserved" zone.
+
+net_prefetch() xdp->data_meta and align the copy size to speed-up
+memcpy() a little and better match i40e_construct_skb().
+
+Fixes: 0a714186d3c0 ("i40e: add AF_XDP zero-copy Rx support")
+Suggested-by: Jesper Dangaard Brouer <brouer@redhat.com>
+Suggested-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+Signed-off-by: Alexander Lobakin <alexandr.lobakin@intel.com>
+Reviewed-by: Michal Swiatkowski <michal.swiatkowski@linux.intel.com>
+Tested-by: Kiran Bhandare <kiranx.bhandare@intel.com>
+Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
+ drivers/net/ethernet/intel/i40e/i40e_xsk.c | 14 ++++++++++----
+ 1 file changed, 10 insertions(+), 4 deletions(-)
 
-Changes in v2:
-  - New
-
- scripts/mod/modpost.c | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
-
-diff --git a/scripts/mod/modpost.c b/scripts/mod/modpost.c
-index f9e54247ae1d..2a202764ff48 100644
---- a/scripts/mod/modpost.c
-+++ b/scripts/mod/modpost.c
-@@ -23,15 +23,15 @@
- #include "../../include/linux/license.h"
+diff --git a/drivers/net/ethernet/intel/i40e/i40e_xsk.c b/drivers/net/ethernet/intel/i40e/i40e_xsk.c
+index 48f5319a3d41..3f27a8ebe2ec 100644
+--- a/drivers/net/ethernet/intel/i40e/i40e_xsk.c
++++ b/drivers/net/ethernet/intel/i40e/i40e_xsk.c
+@@ -243,19 +243,25 @@ bool i40e_alloc_rx_buffers_zc(struct i40e_ring *rx_ring, u16 count)
+ static struct sk_buff *i40e_construct_skb_zc(struct i40e_ring *rx_ring,
+ 					     struct xdp_buff *xdp)
+ {
++	unsigned int totalsize = xdp->data_end - xdp->data_meta;
+ 	unsigned int metasize = xdp->data - xdp->data_meta;
+-	unsigned int datasize = xdp->data_end - xdp->data;
+ 	struct sk_buff *skb;
  
- /* Are we using CONFIG_MODVERSIONS? */
--static int modversions = 0;
-+static int modversions;
- /* Is CONFIG_MODULE_SRCVERSION_ALL set? */
--static int all_versions = 0;
-+static int all_versions;
- /* If we are modposting external module set to 1 */
--static int external_module = 0;
-+static int external_module;
- /* Only warn about unresolved symbols */
--static int warn_unresolved = 0;
-+static int warn_unresolved;
- /* How a symbol is exported */
--static int sec_mismatch_count = 0;
-+static int sec_mismatch_count;
- static int sec_mismatch_warn_only = true;
- /* ignore missing files */
- static int ignore_missing_files;
++	net_prefetch(xdp->data_meta);
++
+ 	/* allocate a skb to store the frags */
+-	skb = __napi_alloc_skb(&rx_ring->q_vector->napi, datasize,
++	skb = __napi_alloc_skb(&rx_ring->q_vector->napi, totalsize,
+ 			       GFP_ATOMIC | __GFP_NOWARN);
+ 	if (unlikely(!skb))
+ 		goto out;
+ 
+-	memcpy(__skb_put(skb, datasize), xdp->data, datasize);
+-	if (metasize)
++	memcpy(__skb_put(skb, totalsize), xdp->data_meta,
++	       ALIGN(totalsize, sizeof(long)));
++
++	if (metasize) {
+ 		skb_metadata_set(skb, metasize);
++		__skb_pull(skb, metasize);
++	}
+ 
+ out:
+ 	xsk_buff_free(xdp);
 -- 
-2.32.0
+2.34.1
+
+
 
