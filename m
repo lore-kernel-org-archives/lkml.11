@@ -2,46 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C85CC46467
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A72CC35276
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 01:33:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1842789AbiDFBeq (ORCPT
+        id S1842863AbiDFBfL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 21:34:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45298 "EHLO
+        Tue, 5 Apr 2022 21:35:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53688 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349194AbiDEJt0 (ORCPT
+        with ESMTP id S1358078AbiDEK16 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:49:26 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2853521E39;
-        Tue,  5 Apr 2022 02:42:30 -0700 (PDT)
+        Tue, 5 Apr 2022 06:27:58 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B701ED57;
+        Tue,  5 Apr 2022 03:14:52 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 074B5CE1C6F;
-        Tue,  5 Apr 2022 09:42:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1FE47C385A1;
-        Tue,  5 Apr 2022 09:42:26 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 67410B81BC5;
+        Tue,  5 Apr 2022 10:14:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B5BEDC385A2;
+        Tue,  5 Apr 2022 10:14:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649151747;
-        bh=vC3HpaQC66yZXonEgmL5Uq5YOTH5rq+MgVEPdR036Wo=;
+        s=korg; t=1649153690;
+        bh=UBmK10rXj2XHwAB4O1S/H943HEeDYiGEUvojg+iDfW8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qK1FZV5cf/lhr+U1lbjTqBgupu2epqisnZsifQ9rNEJHbJthbDi121r+qvLDvJ81f
-         QH1M4p6MatEDJ5Q427YtR8g11BpzomFWeowXg3KA6OEts+uZ40Cjo2uSEbkIXC37iY
-         j7PbG5dUxw/NlXzNqJ9E9w9Lx6B+WgWJc1zqsMXY=
+        b=fTp0YRh04ImH4gMrWnj4BFBuOtuTrIKzg8mro+jpHNIOYmootJKIXjCByfRFq+yNz
+         0ZpU2PcqmD87LvzmmdkYjQTqLbBQa5oXbeD/3Nvict2Osb/w5BerrhxYH4X5AvQbpj
+         noW+9NBlVP+H9zFULo2wAy6llqGIRarvtfvSaxnY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Felix Maurer <fmaurer@redhat.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
+        stable@vger.kernel.org, Fabiano Rosas <farosas@linux.ibm.com>,
+        Nicholas Piggin <npiggin@gmail.com>,
+        Michael Ellerman <mpe@ellerman.id.au>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 526/913] selftests/bpf: Make test_lwt_ip_encap more stable and faster
-Date:   Tue,  5 Apr 2022 09:26:28 +0200
-Message-Id: <20220405070355.618225207@linuxfoundation.org>
+Subject: [PATCH 5.10 285/599] KVM: PPC: Book3S HV: Check return value of kvmppc_radix_init
+Date:   Tue,  5 Apr 2022 09:29:39 +0200
+Message-Id: <20220405070307.315987169@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
+References: <20220405070258.802373272@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,73 +51,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Felix Maurer <fmaurer@redhat.com>
+From: Fabiano Rosas <farosas@linux.ibm.com>
 
-[ Upstream commit d23a8720327d33616f584d76c80824bfa4699be6 ]
+[ Upstream commit 69ab6ac380a00244575de02c406dcb9491bf3368 ]
 
-In test_lwt_ip_encap, the ingress IPv6 encap test failed from time to
-time. The failure occured when an IPv4 ping through the IPv6 GRE
-encapsulation did not receive a reply within the timeout. The IPv4 ping
-and the IPv6 ping in the test used different timeouts (1 sec for IPv4
-and 6 sec for IPv6), probably taking into account that IPv6 might need
-longer to successfully complete. However, when IPv4 pings (with the
-short timeout) are encapsulated into the IPv6 tunnel, the delays of IPv6
-apply.
+The return of the function is being shadowed by the call to
+kvmppc_uvmem_init.
 
-The actual reason for the long delays with IPv6 was that the IPv6
-neighbor discovery sometimes did not complete in time. This was caused
-by the outgoing interface only having a tentative link local address,
-i.e., not having completed DAD for that lladdr. The ND was successfully
-retried after 1 sec but that was too late for the ping timeout.
-
-The IPv6 addresses for the test were already added with nodad. However,
-for the lladdrs, DAD was still performed. We now disable DAD in the test
-netns completely and just assume that the two lladdrs on each veth pair
-do not collide. This removes all the delays for IPv6 traffic in the
-test.
-
-Without the delays, we can now also reduce the delay of the IPv6 ping to
-1 sec. This makes the whole test complete faster because we don't need
-to wait for the excessive timeout for each IPv6 ping that is supposed
-to fail.
-
-Fixes: 0fde56e4385b0 ("selftests: bpf: add test_lwt_ip_encap selftest")
-Signed-off-by: Felix Maurer <fmaurer@redhat.com>
-Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
-Link: https://lore.kernel.org/bpf/4987d549d48b4e316cd5b3936de69c8d4bc75a4f.1646305899.git.fmaurer@redhat.com
+Fixes: ca9f4942670c ("KVM: PPC: Book3S HV: Support for running secure guests")
+Signed-off-by: Fabiano Rosas <farosas@linux.ibm.com>
+Reviewed-by: Nicholas Piggin <npiggin@gmail.com>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/20220125155735.1018683-2-farosas@linux.ibm.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/testing/selftests/bpf/test_lwt_ip_encap.sh | 10 +++++++++-
- 1 file changed, 9 insertions(+), 1 deletion(-)
+ arch/powerpc/kvm/book3s_hv.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/tools/testing/selftests/bpf/test_lwt_ip_encap.sh b/tools/testing/selftests/bpf/test_lwt_ip_encap.sh
-index b497bb85b667..6c69c42b1d60 100755
---- a/tools/testing/selftests/bpf/test_lwt_ip_encap.sh
-+++ b/tools/testing/selftests/bpf/test_lwt_ip_encap.sh
-@@ -120,6 +120,14 @@ setup()
- 	ip netns exec ${NS2} sysctl -wq net.ipv4.conf.default.rp_filter=0
- 	ip netns exec ${NS3} sysctl -wq net.ipv4.conf.default.rp_filter=0
+diff --git a/arch/powerpc/kvm/book3s_hv.c b/arch/powerpc/kvm/book3s_hv.c
+index 527c205d5a5f..38b7a3491aac 100644
+--- a/arch/powerpc/kvm/book3s_hv.c
++++ b/arch/powerpc/kvm/book3s_hv.c
+@@ -5752,8 +5752,11 @@ static int kvmppc_book3s_init_hv(void)
+ 	if (r)
+ 		return r;
  
-+	# disable IPv6 DAD because it sometimes takes too long and fails tests
-+	ip netns exec ${NS1} sysctl -wq net.ipv6.conf.all.accept_dad=0
-+	ip netns exec ${NS2} sysctl -wq net.ipv6.conf.all.accept_dad=0
-+	ip netns exec ${NS3} sysctl -wq net.ipv6.conf.all.accept_dad=0
-+	ip netns exec ${NS1} sysctl -wq net.ipv6.conf.default.accept_dad=0
-+	ip netns exec ${NS2} sysctl -wq net.ipv6.conf.default.accept_dad=0
-+	ip netns exec ${NS3} sysctl -wq net.ipv6.conf.default.accept_dad=0
-+
- 	ip link add veth1 type veth peer name veth2
- 	ip link add veth3 type veth peer name veth4
- 	ip link add veth5 type veth peer name veth6
-@@ -289,7 +297,7 @@ test_ping()
- 		ip netns exec ${NS1} ping  -c 1 -W 1 -I veth1 ${IPv4_DST} 2>&1 > /dev/null
- 		RET=$?
- 	elif [ "${PROTO}" == "IPv6" ] ; then
--		ip netns exec ${NS1} ping6 -c 1 -W 6 -I veth1 ${IPv6_DST} 2>&1 > /dev/null
-+		ip netns exec ${NS1} ping6 -c 1 -W 1 -I veth1 ${IPv6_DST} 2>&1 > /dev/null
- 		RET=$?
- 	else
- 		echo "    test_ping: unknown PROTO: ${PROTO}"
+-	if (kvmppc_radix_possible())
++	if (kvmppc_radix_possible()) {
+ 		r = kvmppc_radix_init();
++		if (r)
++			return r;
++	}
+ 
+ 	/*
+ 	 * POWER9 chips before version 2.02 can't have some threads in
 -- 
 2.34.1
 
