@@ -2,113 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F1142C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DABF8C43217
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 22:56:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1457599AbiDEWrc (ORCPT
+        id S1456908AbiDEWqw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 18:47:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51344 "EHLO
+        Tue, 5 Apr 2022 18:46:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48930 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354909AbiDEKQe (ORCPT
+        with ESMTP id S1380217AbiDEMxl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:16:34 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00EF51A3AA;
-        Tue,  5 Apr 2022 03:03:51 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A04BFB81BC0;
-        Tue,  5 Apr 2022 10:03:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E6B14C385A1;
-        Tue,  5 Apr 2022 10:03:48 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649153029;
-        bh=l+NxciS2SavS2cTgrzI35NkhgFF0jOkZeeASdvT/Inc=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=l+DlTtWqsNyIlDQ9gHkjeg15cDTr0I/12xuFXQYlDE7vYx7pyCrUCYcUp3r10Ql4O
-         b0L+O+wh6vUYCdpS5p4XyWCunCvlGIOcp3HGM+AsNqYx8amrB20MqNQ2iQ1Ky2sku8
-         aVwJfD5rDeLqaUl+5JhlzFXunUlJMADrFVp4ZE1k=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Charan Teja Kalla <quic_charante@quicinc.com>,
-        David Rientjes <rientjes@google.com>,
-        Michal Hocko <mhocko@suse.com>,
-        Minchan Kim <minchan@kernel.org>,
-        Nadav Amit <nadav.amit@gmail.com>,
-        Stephen Rothwell <sfr@canb.auug.org.au>,
-        Suren Baghdasaryan <surenb@google.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [PATCH 5.10 074/599] mm: madvise: skip unmapped vma holes passed to process_madvise
-Date:   Tue,  5 Apr 2022 09:26:08 +0200
-Message-Id: <20220405070301.028073179@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 5 Apr 2022 08:53:41 -0400
+Received: from mx07-00178001.pphosted.com (mx08-00178001.pphosted.com [91.207.212.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84D3CE095;
+        Tue,  5 Apr 2022 04:53:38 -0700 (PDT)
+Received: from pps.filterd (m0046661.ppops.net [127.0.0.1])
+        by mx07-00178001.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 2358i9ao002139;
+        Tue, 5 Apr 2022 13:52:58 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-transfer-encoding :
+ content-type; s=selector1;
+ bh=ahMNFWxzpaVmVp3viku9IaBrdSUCBM3LW49uPEPbvxU=;
+ b=AOxt4YrYB/LoekLRTWYYtVuMG3+PLFJzeUn29lBTkGZa3ek7xYQZnOOGVb7exI9rDJGo
+ EmbWbNLQYZU05k5hGR9B9IGQlM9eJJSvNfOBVjVCwj+uCTubQb+U/fzk4qYEbVXJA4Xx
+ OTPm7FsfKjPSWMl5QdTxw+M1nWXQ6trXXL9g4AhGy0kUO1l8YgWsVXg6i4UlKXoeAOyh
+ 2d/dysRHJgXKEM7Vcxe8UUzu8iMDAkxaL3ZM5THKOp8zPn51c3CJ4GyTd1V8rgLB06a/
+ elErddY4//H/Nnoj0AWanhffmXC3EgtYuohqqXd9T+kHG5m2sgHsOt/lc+f+RieA4Kg9 Sw== 
+Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
+        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3f6dcgsr66-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 05 Apr 2022 13:52:58 +0200
+Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
+        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 09BEE10002A;
+        Tue,  5 Apr 2022 13:52:55 +0200 (CEST)
+Received: from Webmail-eu.st.com (sfhdag2node2.st.com [10.75.127.5])
+        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id EFBFF21A239;
+        Tue,  5 Apr 2022 13:52:54 +0200 (CEST)
+Received: from localhost (10.75.127.46) by SFHDAG2NODE2.st.com (10.75.127.5)
+ with Microsoft SMTP Server (TLS) id 15.0.1497.26; Tue, 5 Apr 2022 13:52:54
+ +0200
+From:   Arnaud Pouliquen <arnaud.pouliquen@foss.st.com>
+To:     Russell King <linux@armlinux.org.uk>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Manivannan Sadhasivam <mani@kernel.org>,
+        Douglas Anderson <dianders@chromium.org>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        <linux-arm-kernel@lists.infradead.org>
+CC:     <arnaud.pouliquen@foss.st.com>, <linux-kernel@vger.kernel.org>,
+        <linux-remoteproc@vger.kernel.org>
+Subject: [PATCH v2] arm: configs: Configs that had RPMSG_CHAR now get RPMSG_CTRL
+Date:   Tue, 5 Apr 2022 13:52:36 +0200
+Message-ID: <20220405115236.1019955-1-arnaud.pouliquen@foss.st.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.75.127.46]
+X-ClientProxiedBy: SFHDAG2NODE2.st.com (10.75.127.5) To SFHDAG2NODE2.st.com
+ (10.75.127.5)
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.850,Hydra:6.0.425,FMLib:17.11.64.514
+ definitions=2022-04-05_02,2022-04-05_01,2022-02-23_01
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Charan Teja Kalla <quic_charante@quicinc.com>
+In the commit 617d32938d1b ("rpmsg: Move the rpmsg control device
+from rpmsg_char to rpmsg_ctrl"), we split the rpmsg_char driver in two.
+By default give everyone who had the old driver enabled the rpmsg_ctrl
+driver too.
 
-commit 08095d6310a7ce43256b4251577bc66a25c6e1a6 upstream.
-
-The process_madvise() system call is expected to skip holes in vma passed
-through 'struct iovec' vector list.  But do_madvise, which
-process_madvise() calls for each vma, returns ENOMEM in case of unmapped
-holes, despite the VMA is processed.
-
-Thus process_madvise() should treat ENOMEM as expected and consider the
-VMA passed to as processed and continue processing other vma's in the
-vector list.  Returning -ENOMEM to user, despite the VMA is processed,
-will be unable to figure out where to start the next madvise.
-
-Link: https://lkml.kernel.org/r/4f091776142f2ebf7b94018146de72318474e686.1647008754.git.quic_charante@quicinc.com
-Fixes: ecb8ac8b1f14("mm/madvise: introduce process_madvise() syscall: an external memory hinting API")
-Signed-off-by: Charan Teja Kalla <quic_charante@quicinc.com>
-Cc: David Rientjes <rientjes@google.com>
-Cc: Michal Hocko <mhocko@suse.com>
-Cc: Minchan Kim <minchan@kernel.org>
-Cc: Nadav Amit <nadav.amit@gmail.com>
-Cc: Stephen Rothwell <sfr@canb.auug.org.au>
-Cc: Suren Baghdasaryan <surenb@google.com>
-Cc: Vlastimil Babka <vbabka@suse.cz>
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Arnaud Pouliquen <arnaud.pouliquen@foss.st.com>
 ---
- mm/madvise.c |    9 ++++++++-
- 1 file changed, 8 insertions(+), 1 deletion(-)
 
---- a/mm/madvise.c
-+++ b/mm/madvise.c
-@@ -1222,9 +1222,16 @@ SYSCALL_DEFINE5(process_madvise, int, pi
- 
- 	while (iov_iter_count(&iter)) {
- 		iovec = iov_iter_iovec(&iter);
-+		/*
-+		 * do_madvise returns ENOMEM if unmapped holes are present
-+		 * in the passed VMA. process_madvise() is expected to skip
-+		 * unmapped holes passed to it in the 'struct iovec' list
-+		 * and not fail because of them. Thus treat -ENOMEM return
-+		 * from do_madvise as valid and continue processing.
-+		 */
- 		ret = do_madvise(mm, (unsigned long)iovec.iov_base,
- 					iovec.iov_len, behavior);
--		if (ret < 0)
-+		if (ret < 0 && ret != -ENOMEM)
- 			break;
- 		iov_iter_advance(&iter, iovec.iov_len);
- 	}
+This patch is extracted from the series [1] that has been partially
+integrated in the Linux Kernel 5.18-rc1.
 
+Update vs previous version:
+- remove "Fixes:" tag in commit, requested by Mathieu Poirier in [2]
+
+[1]https://lore.kernel.org/lkml/15be2f08-ba03-2b80-6f53-2056359d5c41@gmail.com/T/
+[2]https://lore.kernel.org/linux-arm-kernel/CANLsYky1_b80qPbgOaLGVYD-GEr21V6C653iGEB7VCU=GbGvAQ@mail.gmail.com/T/
+---
+ arch/arm/configs/qcom_defconfig | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/arch/arm/configs/qcom_defconfig b/arch/arm/configs/qcom_defconfig
+index 9981566f2096..2e7e9a4f31f6 100644
+--- a/arch/arm/configs/qcom_defconfig
++++ b/arch/arm/configs/qcom_defconfig
+@@ -241,6 +241,7 @@ CONFIG_QCOM_Q6V5_PAS=y
+ CONFIG_QCOM_Q6V5_PIL=y
+ CONFIG_QCOM_WCNSS_PIL=y
+ CONFIG_RPMSG_CHAR=y
++CONFIG_RPMSG_CTRL=y
+ CONFIG_RPMSG_QCOM_GLINK_SMEM=y
+ CONFIG_RPMSG_QCOM_SMD=y
+ CONFIG_QCOM_COMMAND_DB=y
+-- 
+2.25.1
 
