@@ -2,94 +2,148 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F2364C43217
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:57:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C0E9C4332F
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 21:03:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233283AbiDEU6n (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 16:58:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43332 "EHLO
+        id S234440AbiDEU7X (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 16:59:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37250 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348752AbiDEJsb (ORCPT
+        with ESMTP id S1457334AbiDEQDG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:48:31 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B303E4833A;
-        Tue,  5 Apr 2022 02:34:50 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 639FEB81C82;
-        Tue,  5 Apr 2022 09:34:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AC275C385A2;
-        Tue,  5 Apr 2022 09:34:47 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649151288;
-        bh=3WCk8sBpIkZCS0IofelWfKv101rypvwobF2dXzA2GKA=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=zRkJjstNbmpfo5bDWwOhNP9GZ72Lv5XoNmCOtPf14SAV+YVkdN278q7pOhNAT9OX4
-         ND1m2u2TtXf80MRcv5zEo172YEAnYGFBxS92sZPEJt6cTLRHClb/TNyB1SMU49QDY6
-         8tYAAUxR9d4mIK1P03i4fhhg6mdI09kqhtJmniNo=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Chris Morgan <macromorgan@hotmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 360/913] ASoC: rk817: Fix missing clk_disable_unprepare() in rk817_platform_probe
-Date:   Tue,  5 Apr 2022 09:23:42 +0200
-Message-Id: <20220405070350.637046054@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 5 Apr 2022 12:03:06 -0400
+Received: from mail-io1-xd2c.google.com (mail-io1-xd2c.google.com [IPv6:2607:f8b0:4864:20::d2c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFE3F35ABD
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 08:38:18 -0700 (PDT)
+Received: by mail-io1-xd2c.google.com with SMTP id 125so15583885iov.10
+        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 08:38:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Oiy4ymydbM7WhtHftpHVioZDVdSgqELYIqmQkx6duOw=;
+        b=ihYjRwCIZTZwXJPzTOWwXK3ednGB5hCoNS1RNHgt1AdElXNvPJiQGMuSWIys6jLwHM
+         hJcEcd/i+mJbqgiTM/QqEMB3jro9dJ6W0v3I+Ty0YNprxSTmdDUpdDZeq3b6WUyBHDN5
+         a4qxa6AkA5XahcZHSQTXwD24ZAAeQfxg9DUEOkqZ7Y1wTQZYplqniPZvmjXU1AgRdpzo
+         BnAUl8ZsT1JkCpuftrQ/cfzcpCavx7DlzaraGcW3E7Dg3ojL/5b2oOkTNNfYYLeLaZQO
+         nhdojGE0QsWyA0cvn+icLNQTxGFI/wQode6hKOboLUuwaB5P5ZoMTYCIclNR9XEXFc8m
+         o1WQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Oiy4ymydbM7WhtHftpHVioZDVdSgqELYIqmQkx6duOw=;
+        b=PNRMA5LAoVga49WH5hPQfxTkyarVNY3sF0mL7JCk7Hm++Nf8HZ2VgDJmPGkb+9j5gr
+         g5vd6LRe1TiM53A/U+cpB31/DMNbpJgPAQ1ERPHaeviWyTQmy8BamV76WUpk0e+6ebCV
+         fk/FtZFQTNbiNGm4RZH0040NFYvjcE7SatIdNwey7NDRzNLB/zgNGQ7toFr+BntBZa5k
+         Ld45me4PH/ByrR2Qd6HYTCZ58shCf9UFrKB7pvQJVDO1i9Rg4Hs0uKAl9J5dp2q9yKCa
+         sffGMADZtvonddYKRQ+P2w8ZLGt/ecX+0bZemRNl2vyHnaHow/TEqjfjqgX4FD33lmeW
+         gZJQ==
+X-Gm-Message-State: AOAM533AVvl0zitb/WUKRWiMak6lXN+JzYah84NF0OY3NxP8TdkS8Ri8
+        KzaBYIxnDthL5k/XPliF3OeQIPP6NfgcBusCTys=
+X-Google-Smtp-Source: ABdhPJwX8TxPVTrXNP9ml2a4Ds0AfLhTgqMeoGckQ8JopyAaiiqQLa8ounWMHtg7A7wBY4P3eqcIN7bQAQFXYIm6uWA=
+X-Received: by 2002:a6b:116:0:b0:648:bd29:2f44 with SMTP id
+ 22-20020a6b0116000000b00648bd292f44mr2028950iob.56.1649173098285; Tue, 05 Apr
+ 2022 08:38:18 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <cover.1648049113.git.andreyknvl@google.com> <0bb72ea8fa88ef9ae3508c23d993952a0ae6f0f9.1648049113.git.andreyknvl@google.com>
+ <YkV1ORaR97g45Fag@FVFF77S0Q05N>
+In-Reply-To: <YkV1ORaR97g45Fag@FVFF77S0Q05N>
+From:   Andrey Konovalov <andreyknvl@gmail.com>
+Date:   Tue, 5 Apr 2022 17:38:07 +0200
+Message-ID: <CA+fCnZc0--X_bQDEr+3kgimFL3zGm-kBL-5Tx6KLYybUd3zEzA@mail.gmail.com>
+Subject: Re: [PATCH v2 3/4] arm64: implement stack_trace_save_shadow
+To:     Mark Rutland <mark.rutland@arm.com>
+Cc:     andrey.konovalov@linux.dev, Marco Elver <elver@google.com>,
+        Alexander Potapenko <glider@google.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        Andrey Ryabinin <ryabinin.a.a@gmail.com>,
+        kasan-dev <kasan-dev@googlegroups.com>,
+        Vincenzo Frascino <vincenzo.frascino@arm.com>,
+        Sami Tolvanen <samitolvanen@google.com>,
+        Peter Collingbourne <pcc@google.com>,
+        Evgenii Stepanov <eugenis@google.com>,
+        Florian Mayer <fmayer@google.com>,
+        Linux Memory Management List <linux-mm@kvack.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Andrey Konovalov <andreyknvl@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+On Thu, Mar 31, 2022 at 11:32 AM Mark Rutland <mark.rutland@arm.com> wrote:
+>
+> This doesn't do any of the trampoline repatinting (e.g. for kretprobes or
+> ftrace graph caller) that the regular unwinder does, so if either of those are
+> in use this is going to produce bogus results.
 
-[ Upstream commit a6b44a2518a08348bd0f0401e4d2b99233bbabc2 ]
+Responded on the cover letter wrt this.
 
-Fix the missing clk_disable_unprepare() before return
-from rk817_platform_probe() in the error handling case.
+> > +noinline notrace int arch_stack_walk_shadow(unsigned long *store,
+> > +                                         unsigned int size,
+> > +                                         unsigned int skipnr)
+> > +{
+> > +     unsigned long *scs_top, *scs_base, *scs_next;
+> > +     unsigned int len = 0, part;
+> > +
+> > +     preempt_disable();
+>
+> This doesn't look necessary; it's certinaly not needed for the regular unwinder.
+>
+> Critically, in the common case of unwinding just the task stack, we don't need
+> to look at any of the per-cpu stacks, and so there's no need to disable
+> preemption. See the stack nesting logic in the regular unwinder.
 
-Fixes: 0d6a04da9b25 ("ASoC: Add Rockchip rk817 audio CODEC support")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Tested-by: Chris Morgan <macromorgan@hotmail.com>
-Link: https://lore.kernel.org/r/20220307090146.4104-1-linmq006@gmail.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- sound/soc/codecs/rk817_codec.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+The common unwinder doesn't access per-cpu variables, so
+preempt_disable() is not required.
 
-diff --git a/sound/soc/codecs/rk817_codec.c b/sound/soc/codecs/rk817_codec.c
-index 03f24edfe4f6..8fffe378618d 100644
---- a/sound/soc/codecs/rk817_codec.c
-+++ b/sound/soc/codecs/rk817_codec.c
-@@ -508,12 +508,14 @@ static int rk817_platform_probe(struct platform_device *pdev)
- 	if (ret < 0) {
- 		dev_err(&pdev->dev, "%s() register codec error %d\n",
- 			__func__, ret);
--		goto err_;
-+		goto err_clk;
- 	}
- 
- 	return 0;
--err_:
- 
-+err_clk:
-+	clk_disable_unprepare(rk817_codec_data->mclk);
-+err_:
- 	return ret;
- }
- 
--- 
-2.34.1
+Although, in this case, the per-cpu variable is read-only, so
+preempt_disable() is probably also not required. Unless LOCKDEP or
+some other tools complain about this.
 
+> If we *do* need to unwind per-cpu stacks, we figure that out and verify our
+> countext *at* the transition point.
 
+I'm not sure I understand this statement. You mean we need to keep the
+currently relevant SCS stack base and update it in interrupt handlers?
+This will require modifying the entry code.
 
+> > +
+> > +     /* Get the SCS pointer. */
+> > +     asm volatile("mov %0, x18" : "=&r" (scs_top));
+>
+> Does the compiler guarantee where this happens relative to any prologue
+> manipulation of x18?
+>
+> This seems like something we should be using a compilar intrinsic for, or have
+> a wrapper that passes this in if necessary.
+
+This is a good point, I'll investigate this.
+
+> > +
+> > +     /* The top SCS slot is empty. */
+> > +     scs_top -= 1;
+> > +
+> > +     /* Handle SDEI and hardirq frames. */
+> > +     for (part = 0; part < ARRAY_SIZE(scs_parts); part++) {
+> > +             scs_next = *this_cpu_ptr(scs_parts[part].saved);
+> > +             if (scs_next) {
+> > +                     scs_base = *this_cpu_ptr(scs_parts[part].base);
+> > +                     if (walk_shadow_stack_part(scs_top, scs_base, store,
+> > +                                                size, &skipnr, &len))
+> > +                             goto out;
+> > +                     scs_top = scs_next;
+> > +             }
+> > +     }
+>
+> We have a number of portential stack nesting orders (and may need to introduce
+> more stacks in future), so I think we need to be more careful with this. The
+> regular unwinder handles that dynamically.
+
+I'll rewrite this part based on the other comments, so let's discuss it then.
+
+Thanks!
