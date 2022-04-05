@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C30FC433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B2C8C433EF
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 03:23:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2359864AbiDFDW6 (ORCPT
+        id S2359925AbiDFDXN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 23:22:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35324 "EHLO
+        Tue, 5 Apr 2022 23:23:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56712 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1847203AbiDFCQn (ORCPT
+        with ESMTP id S1847223AbiDFCQt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 22:16:43 -0400
+        Tue, 5 Apr 2022 22:16:49 -0400
 Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A95CF1B48D3
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 16:35:36 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B86F1B7553
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 16:35:40 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649201736; x=1680737736;
+  t=1649201740; x=1680737740;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=4LHsjXlztt/qRFD3I/NHvKb8wxEx5He5RP0YawqBBu0=;
-  b=OqTxAPjbw2x2WqX38WCcGglsJ/vZForj8LM2Sn2UpdCrvOqjbdDv+rhJ
-   XMr6iQlfKj/0GiAceFBe+lpnpg0oULqh6xoaQSHZz96VIf9ACl7yDtFrw
-   KNmvoDH+4t/SqbD1FejZLIwcx8osLuTEjBbKeb484rLsTRbepL3QBTxFG
-   OV4666q8WZYC+XK7WywvwwfhqOIfVwH6wapRGUd6nBLXNYlIwemAXLMvM
-   8hNG9TlWnb4DV7SG7dlNEddT425nkieWL45oTry98xpJ2jGxiOC+LDqxR
-   QAYIwtsTv3a8pJhRhliCcgWo/fZARQrB0UqFuU9H4c0FvoZCVql396PCL
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10308"; a="259721569"
+  bh=+iHwbUcUMwezIvQ6jBwvOkSCgSGXsZZzYZ+ChiocSJk=;
+  b=DgZHSkM72I4tnnxyMN0SWpznMaclGgzCzuKEeJ9642vNV5d8lMEvG7zE
+   Gp0aHIoW6Ek+0KA6HM6nOkxmug+FEBnI8XFv1+DKmgfJjoYVF6LzXgvU3
+   gn3/JhHAVudsGndeTjk6kP+UKfPf/CTQ/IlzQNDLktD2OSNoWqILU+yaz
+   YPBnT8trm0g+A8g9XsCuF6lgsD/e3PLf19PKZgl8k3Kmnve5FTyDrFaql
+   F1GDEacspg6yYyQaQA4uJgbBlo6DJT1LP226SUC3Jv2v4prasyeH8W6sb
+   DqLIQSgQriOttB44lrH4nN+VoSN1ThzhWbG2XO77j0El+hqk6ZF4isRqA
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10308"; a="259721576"
 X-IronPort-AV: E=Sophos;i="5.90,238,1643702400"; 
-   d="scan'208";a="259721569"
+   d="scan'208";a="259721576"
 Received: from orsmga007.jf.intel.com ([10.7.209.58])
   by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2022 16:34:56 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.90,238,1643702400"; 
-   d="scan'208";a="549273519"
+   d="scan'208";a="549273521"
 Received: from black.fi.intel.com ([10.237.72.28])
   by orsmga007.jf.intel.com with ESMTP; 05 Apr 2022 16:34:48 -0700
 Received: by black.fi.intel.com (Postfix, from userid 1000)
-        id 7A01AC32; Wed,  6 Apr 2022 02:29:46 +0300 (EEST)
+        id 95842CC3; Wed,  6 Apr 2022 02:29:46 +0300 (EEST)
 From:   "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
 To:     tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
         dave.hansen@intel.com, luto@kernel.org, peterz@infradead.org
@@ -52,10 +52,13 @@ Cc:     sathyanarayanan.kuppuswamy@linux.intel.com, aarcange@redhat.com,
         tony.luck@intel.com, vkuznets@redhat.com, wanpengli@tencent.com,
         thomas.lendacky@amd.com, brijesh.singh@amd.com, x86@kernel.org,
         linux-kernel@vger.kernel.org,
-        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>
-Subject: [PATCHv8 19/30] x86/tdx: Wire up KVM hypercalls
-Date:   Wed,  6 Apr 2022 02:29:28 +0300
-Message-Id: <20220405232939.73860-20-kirill.shutemov@linux.intel.com>
+        Sean Christopherson <sean.j.christopherson@intel.com>,
+        "Rafael J . Wysocki" <rafael.j.wysocki@intel.com>,
+        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>
+Subject: [PATCHv8 21/30] x86/acpi, x86/boot: Add multiprocessor wake-up support
+Date:   Wed,  6 Apr 2022 02:29:30 +0300
+Message-Id: <20220405232939.73860-22-kirill.shutemov@linux.intel.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405232939.73860-1-kirill.shutemov@linux.intel.com>
 References: <20220405232939.73860-1-kirill.shutemov@linux.intel.com>
@@ -67,143 +70,202 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
 
-KVM hypercalls use the VMCALL or VMMCALL instructions. Although the ABI
-is similar, those instructions no longer function for TDX guests.
+Secondary CPU startup is currently performed with something called
+the "INIT/SIPI protocol".  This protocol requires assistance from
+VMMs to boot guests.  As should be a familiar story by now, that
+support can not be provded to TDX guests because TDX VMMs are
+not trusted by guests.
 
-Make vendor-specific TDVMCALLs instead of VMCALL. This enables TDX
-guests to run with KVM acting as the hypervisor.
+To remedy this situation a new[1] "Multiprocessor Wakeup Structure"
+has been added to to an existing ACPI table (MADT).  This structure
+provides the physical address of a "mailbox".  A write to the mailbox
+then steers the secondary CPU to the boot code.
 
-Among other things, KVM hypercall is used to send IPIs.
+Add ACPI MADT wake structure parsing support and wake support.  Use
+this support to wake CPUs whenever it is present instead of INIT/SIPI.
 
-Since the KVM driver can be built as a kernel module, export
-tdx_kvm_hypercall() to make the symbols visible to kvm.ko.
+While this structure can theoretically be used on 32-bit kernels,
+there are no 32-bit TDX guest kernels.  It has not been tested and
+can not practically *be* tested on 32-bit.  Make it 64-bit only.
 
+1. Details about the new structure can be found in ACPI v6.4, in the
+   "Multiprocessor Wakeup Structure" section.
+
+Co-developed-by: Sean Christopherson <sean.j.christopherson@intel.com>
+Signed-off-by: Sean Christopherson <sean.j.christopherson@intel.com>
+Reviewed-by: Andi Kleen <ak@linux.intel.com>
+Reviewed-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 Signed-off-by: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
 Signed-off-by: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
-Reviewed-by: Thomas Gleixner <tglx@linutronix.de>
+Reviewed-by: Dave Hansen <dave.hansen@linux.intel.com>
 ---
- arch/x86/coco/tdx/tdx.c         | 17 +++++++++++++++++
- arch/x86/include/asm/kvm_para.h | 22 ++++++++++++++++++++++
- arch/x86/include/asm/tdx.h      | 11 +++++++++++
- 3 files changed, 50 insertions(+)
+ arch/x86/include/asm/apic.h |  5 ++
+ arch/x86/kernel/acpi/boot.c | 93 ++++++++++++++++++++++++++++++++++++-
+ arch/x86/kernel/apic/apic.c | 10 ++++
+ 3 files changed, 107 insertions(+), 1 deletion(-)
 
-diff --git a/arch/x86/coco/tdx/tdx.c b/arch/x86/coco/tdx/tdx.c
-index cc14b7c0c157..f50f530aff5f 100644
---- a/arch/x86/coco/tdx/tdx.c
-+++ b/arch/x86/coco/tdx/tdx.c
-@@ -64,6 +64,23 @@ static u64 hcall_func(u64 exit_reason)
- 	return exit_reason;
+diff --git a/arch/x86/include/asm/apic.h b/arch/x86/include/asm/apic.h
+index 35006e151774..bd8ae0a7010a 100644
+--- a/arch/x86/include/asm/apic.h
++++ b/arch/x86/include/asm/apic.h
+@@ -490,6 +490,11 @@ static inline unsigned int read_apic_id(void)
+ 	return apic->get_apic_id(reg);
  }
  
-+#ifdef CONFIG_KVM_GUEST
-+long tdx_kvm_hypercall(unsigned int nr, unsigned long p1, unsigned long p2,
-+		       unsigned long p3, unsigned long p4)
-+{
-+	struct tdx_hypercall_args args = {
-+		.r10 = nr,
-+		.r11 = p1,
-+		.r12 = p2,
-+		.r13 = p3,
-+		.r14 = p4,
-+	};
++#ifdef CONFIG_X86_64
++typedef int (*wakeup_cpu_handler)(int apicid, unsigned long start_eip);
++extern void acpi_wake_cpu_handler_update(wakeup_cpu_handler handler);
++#endif
 +
-+	return __tdx_hypercall(&args, 0);
+ extern int default_apic_id_valid(u32 apicid);
+ extern int default_acpi_madt_oem_check(char *, char *);
+ extern void default_setup_apic_routing(void);
+diff --git a/arch/x86/kernel/acpi/boot.c b/arch/x86/kernel/acpi/boot.c
+index 0d01e7f5078c..6d2c50819501 100644
+--- a/arch/x86/kernel/acpi/boot.c
++++ b/arch/x86/kernel/acpi/boot.c
+@@ -65,6 +65,13 @@ static u64 acpi_lapic_addr __initdata = APIC_DEFAULT_PHYS_BASE;
+ static bool acpi_support_online_capable;
+ #endif
+ 
++#ifdef CONFIG_X86_64
++/* Physical address of the Multiprocessor Wakeup Structure mailbox */
++static u64 acpi_mp_wake_mailbox_paddr;
++/* Virtual address of the Multiprocessor Wakeup Structure mailbox */
++static struct acpi_madt_multiproc_wakeup_mailbox *acpi_mp_wake_mailbox;
++#endif
++
+ #ifdef CONFIG_X86_IO_APIC
+ /*
+  * Locks related to IOAPIC hotplug
+@@ -336,7 +343,60 @@ acpi_parse_lapic_nmi(union acpi_subtable_headers * header, const unsigned long e
+ 	return 0;
+ }
+ 
+-#endif				/*CONFIG_X86_LOCAL_APIC */
++#ifdef CONFIG_X86_64
++static int acpi_wakeup_cpu(int apicid, unsigned long start_ip)
++{
++	/*
++	 * Remap mailbox memory only for the first call to acpi_wakeup_cpu().
++	 *
++	 * Wakeup of secondary CPUs is fully serialized in the core code.
++	 * No need to protect acpi_mp_wake_mailbox from concurrent accesses.
++	 */
++	if (!acpi_mp_wake_mailbox) {
++		acpi_mp_wake_mailbox = memremap(acpi_mp_wake_mailbox_paddr,
++						sizeof(*acpi_mp_wake_mailbox),
++						MEMREMAP_WB);
++	}
++
++	/*
++	 * Mailbox memory is shared between the firmware and OS. Firmware will
++	 * listen on mailbox command address, and once it receives the wakeup
++	 * command, the CPU associated with the given apicid will be booted.
++	 *
++	 * The value of 'apic_id' and 'wakeup_vector' must be visible to the
++	 * firmware before the wakeup command is visible.  smp_store_release()
++	 * ensures ordering and visibility.
++	 */
++	acpi_mp_wake_mailbox->apic_id	    = apicid;
++	acpi_mp_wake_mailbox->wakeup_vector = start_ip;
++	smp_store_release(&acpi_mp_wake_mailbox->command,
++			  ACPI_MP_WAKE_COMMAND_WAKEUP);
++
++	/*
++	 * Wait for the CPU to wake up.
++	 *
++	 * The CPU being woken up is essentially in a spin loop waiting to be
++	 * woken up. It should not take long for it wake up and acknowledge by
++	 * zeroing out ->command.
++	 *
++	 * ACPI specification doesn't provide any guidance on how long kernel
++	 * has to wait for a wake up acknowledgement. It also doesn't provide
++	 * a way to cancel a wake up request if it takes too long.
++	 *
++	 * In TDX environment, the VMM has control over how long it takes to
++	 * wake up secondary. It can postpone scheduling secondary vCPU
++	 * indefinitely. Giving up on wake up request and reporting error opens
++	 * possible attack vector for VMM: it can wake up a secondary CPU when
++	 * kernel doesn't expect it. Wait until positive result of the wake up
++	 * request.
++	 */
++	while (READ_ONCE(acpi_mp_wake_mailbox->command))
++		cpu_relax();
++
++	return 0;
 +}
-+EXPORT_SYMBOL_GPL(tdx_kvm_hypercall);
++#endif /* CONFIG_X86_64 */
++#endif /* CONFIG_X86_LOCAL_APIC */
+ 
+ #ifdef CONFIG_X86_IO_APIC
+ #define MP_ISA_BUS		0
+@@ -1083,6 +1143,29 @@ static int __init acpi_parse_madt_lapic_entries(void)
+ 	}
+ 	return 0;
+ }
++
++#ifdef CONFIG_X86_64
++static int __init acpi_parse_mp_wake(union acpi_subtable_headers *header,
++				     const unsigned long end)
++{
++	struct acpi_madt_multiproc_wakeup *mp_wake;
++
++	if (!IS_ENABLED(CONFIG_SMP))
++		return -ENODEV;
++
++	mp_wake = (struct acpi_madt_multiproc_wakeup *)header;
++	if (BAD_MADT_ENTRY(mp_wake, end))
++		return -EINVAL;
++
++	acpi_table_print_madt_entry(&header->common);
++
++	acpi_mp_wake_mailbox_paddr = mp_wake->base_address;
++
++	acpi_wake_cpu_handler_update(acpi_wakeup_cpu);
++
++	return 0;
++}
++#endif				/* CONFIG_X86_64 */
+ #endif				/* CONFIG_X86_LOCAL_APIC */
+ 
+ #ifdef	CONFIG_X86_IO_APIC
+@@ -1278,6 +1361,14 @@ static void __init acpi_process_madt(void)
+ 
+ 				smp_found_config = 1;
+ 			}
++
++#ifdef CONFIG_X86_64
++			/*
++			 * Parse MADT MP Wake entry.
++			 */
++			acpi_table_parse_madt(ACPI_MADT_TYPE_MULTIPROC_WAKEUP,
++					      acpi_parse_mp_wake, 1);
++#endif
+ 		}
+ 		if (error == -EINVAL) {
+ 			/*
+diff --git a/arch/x86/kernel/apic/apic.c b/arch/x86/kernel/apic/apic.c
+index b70344bf6600..3c8f2c797a98 100644
+--- a/arch/x86/kernel/apic/apic.c
++++ b/arch/x86/kernel/apic/apic.c
+@@ -2551,6 +2551,16 @@ u32 x86_msi_msg_get_destid(struct msi_msg *msg, bool extid)
+ }
+ EXPORT_SYMBOL_GPL(x86_msi_msg_get_destid);
+ 
++#ifdef CONFIG_X86_64
++void __init acpi_wake_cpu_handler_update(wakeup_cpu_handler handler)
++{
++	struct apic **drv;
++
++	for (drv = __apicdrivers; drv < __apicdrivers_end; drv++)
++		(*drv)->wakeup_secondary_cpu_64 = handler;
++}
 +#endif
 +
  /*
-  * Used for TDX guests to make calls directly to the TD module.  This
-  * should only be used for calls that have no legitimate reason to fail
-diff --git a/arch/x86/include/asm/kvm_para.h b/arch/x86/include/asm/kvm_para.h
-index 56935ebb1dfe..57bc74e112f2 100644
---- a/arch/x86/include/asm/kvm_para.h
-+++ b/arch/x86/include/asm/kvm_para.h
-@@ -7,6 +7,8 @@
- #include <linux/interrupt.h>
- #include <uapi/asm/kvm_para.h>
- 
-+#include <asm/tdx.h>
-+
- #ifdef CONFIG_KVM_GUEST
- bool kvm_check_and_clear_guest_paused(void);
- #else
-@@ -32,6 +34,10 @@ static inline bool kvm_check_and_clear_guest_paused(void)
- static inline long kvm_hypercall0(unsigned int nr)
- {
- 	long ret;
-+
-+	if (cpu_feature_enabled(X86_FEATURE_TDX_GUEST))
-+		return tdx_kvm_hypercall(nr, 0, 0, 0, 0);
-+
- 	asm volatile(KVM_HYPERCALL
- 		     : "=a"(ret)
- 		     : "a"(nr)
-@@ -42,6 +48,10 @@ static inline long kvm_hypercall0(unsigned int nr)
- static inline long kvm_hypercall1(unsigned int nr, unsigned long p1)
- {
- 	long ret;
-+
-+	if (cpu_feature_enabled(X86_FEATURE_TDX_GUEST))
-+		return tdx_kvm_hypercall(nr, p1, 0, 0, 0);
-+
- 	asm volatile(KVM_HYPERCALL
- 		     : "=a"(ret)
- 		     : "a"(nr), "b"(p1)
-@@ -53,6 +63,10 @@ static inline long kvm_hypercall2(unsigned int nr, unsigned long p1,
- 				  unsigned long p2)
- {
- 	long ret;
-+
-+	if (cpu_feature_enabled(X86_FEATURE_TDX_GUEST))
-+		return tdx_kvm_hypercall(nr, p1, p2, 0, 0);
-+
- 	asm volatile(KVM_HYPERCALL
- 		     : "=a"(ret)
- 		     : "a"(nr), "b"(p1), "c"(p2)
-@@ -64,6 +78,10 @@ static inline long kvm_hypercall3(unsigned int nr, unsigned long p1,
- 				  unsigned long p2, unsigned long p3)
- {
- 	long ret;
-+
-+	if (cpu_feature_enabled(X86_FEATURE_TDX_GUEST))
-+		return tdx_kvm_hypercall(nr, p1, p2, p3, 0);
-+
- 	asm volatile(KVM_HYPERCALL
- 		     : "=a"(ret)
- 		     : "a"(nr), "b"(p1), "c"(p2), "d"(p3)
-@@ -76,6 +94,10 @@ static inline long kvm_hypercall4(unsigned int nr, unsigned long p1,
- 				  unsigned long p4)
- {
- 	long ret;
-+
-+	if (cpu_feature_enabled(X86_FEATURE_TDX_GUEST))
-+		return tdx_kvm_hypercall(nr, p1, p2, p3, p4);
-+
- 	asm volatile(KVM_HYPERCALL
- 		     : "=a"(ret)
- 		     : "a"(nr), "b"(p1), "c"(p2), "d"(p3), "S"(p4)
-diff --git a/arch/x86/include/asm/tdx.h b/arch/x86/include/asm/tdx.h
-index 9ffd0d2e6e0f..020c81a7c729 100644
---- a/arch/x86/include/asm/tdx.h
-+++ b/arch/x86/include/asm/tdx.h
-@@ -76,5 +76,16 @@ static inline bool tdx_early_handle_ve(struct pt_regs *regs) { return false; }
- 
- #endif /* CONFIG_INTEL_TDX_GUEST */
- 
-+#if defined(CONFIG_KVM_GUEST) && defined(CONFIG_INTEL_TDX_GUEST)
-+long tdx_kvm_hypercall(unsigned int nr, unsigned long p1, unsigned long p2,
-+		       unsigned long p3, unsigned long p4);
-+#else
-+static inline long tdx_kvm_hypercall(unsigned int nr, unsigned long p1,
-+				     unsigned long p2, unsigned long p3,
-+				     unsigned long p4)
-+{
-+	return -ENODEV;
-+}
-+#endif /* CONFIG_INTEL_TDX_GUEST && CONFIG_KVM_GUEST */
- #endif /* !__ASSEMBLY__ */
- #endif /* _ASM_X86_TDX_H */
+  * Override the generic EOI implementation with an optimized version.
+  * Only called during early boot when only one CPU is active and with
 -- 
 2.35.1
 
