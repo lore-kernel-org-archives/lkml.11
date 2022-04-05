@@ -2,46 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2CCDDC43219
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 10:28:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 11B38C4321E
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 10:29:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355999AbiDEKWl (ORCPT
+        id S1356090AbiDEKWz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 06:22:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46070 "EHLO
+        Tue, 5 Apr 2022 06:22:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45532 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241258AbiDEIc6 (ORCPT
+        with ESMTP id S241250AbiDEIc5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:32:58 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4887F0E;
-        Tue,  5 Apr 2022 01:30:57 -0700 (PDT)
+        Tue, 5 Apr 2022 04:32:57 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A5E16162;
+        Tue,  5 Apr 2022 01:30:38 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4195C60FF5;
-        Tue,  5 Apr 2022 08:30:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 52D0FC385A2;
-        Tue,  5 Apr 2022 08:30:56 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 078B061001;
+        Tue,  5 Apr 2022 08:30:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 12B2AC385A2;
+        Tue,  5 Apr 2022 08:30:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649147456;
-        bh=wHYZx+aC3TOMhk8Yv90DSLdpEeTUOTnRrQR0mwZOoRo=;
+        s=korg; t=1649147437;
+        bh=d79YGbVhhSaexQP8boYB09EAB58ipowcODPlzMt1Gik=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mogbORoHNTgHxS9eLyuC01oI/UGy9jyGBW8/dAufpsMhxZ4/FweAZpDoxEdxMXRUQ
-         nmgUkRXZqs6Otn+EeznieWVV5HznbPkHYzNmWU4+Mub0ZC3Q54sTHtowsdbOhPv96D
-         Yot2txJTtQkbAvUQfnvZhc64zy+dIgYDNMo4/SVA=
+        b=jutyDZspVPRc2jOUwAGiRzHyTQDHxxY/DwRFEG+i/EH8GSJ3sG5zLfz6bsZBVMYRi
+         OfbSeEA0FTnCVj063MnxBXODK84L2YISqEXfHwRVzyyqF9ilQ9fiYebA5lcv1vKBiE
+         oD5jiwa9RHEzEtTxCZS7i2c5KVUQD9VkLGA1oLOY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Geert Uytterhoeven <geert@linux-m68k.org>,
-        Martin Kepplinger <martin.kepplinger@puri.sm>,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        Rob Herring <robh@kernel.org>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>
-Subject: [PATCH 5.17 1092/1126] media: dt-binding: media: hynix,hi846: use $defs/port-base port description
-Date:   Tue,  5 Apr 2022 09:30:39 +0200
-Message-Id: <20220405070439.498943456@linuxfoundation.org>
+        stable@vger.kernel.org, Jann Horn <jannh@google.com>,
+        Kees Cook <keescook@chromium.org>,
+        "Eric W. Biederman" <ebiederm@xmission.com>
+Subject: [PATCH 5.17 1123/1126] coredump: Snapshot the vmas in do_coredump
+Date:   Tue,  5 Apr 2022 09:31:10 +0200
+Message-Id: <20220405070440.388685694@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -53,42 +50,312 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Martin Kepplinger <martin.kepplinger@puri.sm>
+From: Eric W. Biederman <ebiederm@xmission.com>
 
-commit 6492eba4fafb5a9715ecf78b7155e88f8f88909a upstream.
+commit 95c5436a4883841588dae86fb0b9325f47ba5ad3 upstream.
 
-This fixes "make dt_binding_check":
+Move the call of dump_vma_snapshot and kvfree(vma_meta) out of the
+individual coredump routines into do_coredump itself.  This makes
+the code less error prone and easier to maintain.
 
-    Documentation/devicetree/bindings/media/i2c/hynix,hi846.example.dt.yaml:
-camera@20: port:endpoint: Unevaluated properties are not allowed
-('link-frequencies', 'data-lanes' were unexpected)
-    From schema: Documentation/devicetree/bindings/media/i2c/hynix,hi846.yaml
+Make the vma snapshot available to the coredump routines
+in struct coredump_params.  This makes it easier to
+change and update what is captures in the vma snapshot
+and will be needed for fixing fill_file_notes.
 
-[Sakari Ailus: Reword commit message]
-
-Fixes: f3ce7200ca18 ("media: dt-bindings: media: document SK Hynix Hi-846 MIPI CSI-2 8M pixel sensor")
-Reported-by: Geert Uytterhoeven <geert@linux-m68k.org>
-Signed-off-by: Martin Kepplinger <martin.kepplinger@puri.sm>
-Reviewed-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Reviewed-by: Rob Herring <robh@kernel.org>
-Signed-off-by: Sakari Ailus <sakari.ailus@linux.intel.com>
-Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+Reviewed-by: Jann Horn <jannh@google.com>
+Reviewed-by: Kees Cook <keescook@chromium.org>
+Signed-off-by: "Eric W. Biederman" <ebiederm@xmission.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- Documentation/devicetree/bindings/media/i2c/hynix,hi846.yaml |    3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ fs/binfmt_elf.c          |   20 +++++++-------------
+ fs/binfmt_elf_fdpic.c    |   18 ++++++------------
+ fs/coredump.c            |   41 +++++++++++++++++++++++------------------
+ include/linux/binfmts.h  |    3 +++
+ include/linux/coredump.h |    3 ---
+ 5 files changed, 39 insertions(+), 46 deletions(-)
 
---- a/Documentation/devicetree/bindings/media/i2c/hynix,hi846.yaml
-+++ b/Documentation/devicetree/bindings/media/i2c/hynix,hi846.yaml
-@@ -49,7 +49,8 @@ properties:
-     description: Definition of the regulator used for the VDDD power supply.
+--- a/fs/binfmt_elf.c
++++ b/fs/binfmt_elf.c
+@@ -2192,8 +2192,7 @@ static void fill_extnum_info(struct elfh
+ static int elf_core_dump(struct coredump_params *cprm)
+ {
+ 	int has_dumped = 0;
+-	int vma_count, segs, i;
+-	size_t vma_data_size;
++	int segs, i;
+ 	struct elfhdr elf;
+ 	loff_t offset = 0, dataoff;
+ 	struct elf_note_info info = { };
+@@ -2201,16 +2200,12 @@ static int elf_core_dump(struct coredump
+ 	struct elf_shdr *shdr4extnum = NULL;
+ 	Elf_Half e_phnum;
+ 	elf_addr_t e_shoff;
+-	struct core_vma_metadata *vma_meta;
+-
+-	if (dump_vma_snapshot(cprm, &vma_count, &vma_meta, &vma_data_size))
+-		return 0;
  
-   port:
--    $ref: /schemas/graph.yaml#/properties/port
-+    $ref: /schemas/graph.yaml#/$defs/port-base
-+    unevaluatedProperties: false
+ 	/*
+ 	 * The number of segs are recored into ELF header as 16bit value.
+ 	 * Please check DEFAULT_MAX_MAP_COUNT definition when you modify here.
+ 	 */
+-	segs = vma_count + elf_core_extra_phdrs();
++	segs = cprm->vma_count + elf_core_extra_phdrs();
  
-     properties:
-       endpoint:
+ 	/* for notes section */
+ 	segs++;
+@@ -2249,7 +2244,7 @@ static int elf_core_dump(struct coredump
+ 
+ 	dataoff = offset = roundup(offset, ELF_EXEC_PAGESIZE);
+ 
+-	offset += vma_data_size;
++	offset += cprm->vma_data_size;
+ 	offset += elf_core_extra_data_size();
+ 	e_shoff = offset;
+ 
+@@ -2269,8 +2264,8 @@ static int elf_core_dump(struct coredump
+ 		goto end_coredump;
+ 
+ 	/* Write program headers for segments dump */
+-	for (i = 0; i < vma_count; i++) {
+-		struct core_vma_metadata *meta = vma_meta + i;
++	for (i = 0; i < cprm->vma_count; i++) {
++		struct core_vma_metadata *meta = cprm->vma_meta + i;
+ 		struct elf_phdr phdr;
+ 
+ 		phdr.p_type = PT_LOAD;
+@@ -2307,8 +2302,8 @@ static int elf_core_dump(struct coredump
+ 	/* Align to page */
+ 	dump_skip_to(cprm, dataoff);
+ 
+-	for (i = 0; i < vma_count; i++) {
+-		struct core_vma_metadata *meta = vma_meta + i;
++	for (i = 0; i < cprm->vma_count; i++) {
++		struct core_vma_metadata *meta = cprm->vma_meta + i;
+ 
+ 		if (!dump_user_range(cprm, meta->start, meta->dump_size))
+ 			goto end_coredump;
+@@ -2325,7 +2320,6 @@ static int elf_core_dump(struct coredump
+ end_coredump:
+ 	free_note_info(&info);
+ 	kfree(shdr4extnum);
+-	kvfree(vma_meta);
+ 	kfree(phdr4note);
+ 	return has_dumped;
+ }
+--- a/fs/binfmt_elf_fdpic.c
++++ b/fs/binfmt_elf_fdpic.c
+@@ -1465,7 +1465,7 @@ static bool elf_fdpic_dump_segments(stru
+ static int elf_fdpic_core_dump(struct coredump_params *cprm)
+ {
+ 	int has_dumped = 0;
+-	int vma_count, segs;
++	int segs;
+ 	int i;
+ 	struct elfhdr *elf = NULL;
+ 	loff_t offset = 0, dataoff;
+@@ -1480,8 +1480,6 @@ static int elf_fdpic_core_dump(struct co
+ 	elf_addr_t e_shoff;
+ 	struct core_thread *ct;
+ 	struct elf_thread_status *tmp;
+-	struct core_vma_metadata *vma_meta = NULL;
+-	size_t vma_data_size;
+ 
+ 	/* alloc memory for large data structures: too large to be on stack */
+ 	elf = kmalloc(sizeof(*elf), GFP_KERNEL);
+@@ -1491,9 +1489,6 @@ static int elf_fdpic_core_dump(struct co
+ 	if (!psinfo)
+ 		goto end_coredump;
+ 
+-	if (dump_vma_snapshot(cprm, &vma_count, &vma_meta, &vma_data_size))
+-		goto end_coredump;
+-
+ 	for (ct = current->signal->core_state->dumper.next;
+ 					ct; ct = ct->next) {
+ 		tmp = elf_dump_thread_status(cprm->siginfo->si_signo,
+@@ -1513,7 +1508,7 @@ static int elf_fdpic_core_dump(struct co
+ 	tmp->next = thread_list;
+ 	thread_list = tmp;
+ 
+-	segs = vma_count + elf_core_extra_phdrs();
++	segs = cprm->vma_count + elf_core_extra_phdrs();
+ 
+ 	/* for notes section */
+ 	segs++;
+@@ -1558,7 +1553,7 @@ static int elf_fdpic_core_dump(struct co
+ 	/* Page-align dumped data */
+ 	dataoff = offset = roundup(offset, ELF_EXEC_PAGESIZE);
+ 
+-	offset += vma_data_size;
++	offset += cprm->vma_data_size;
+ 	offset += elf_core_extra_data_size();
+ 	e_shoff = offset;
+ 
+@@ -1578,8 +1573,8 @@ static int elf_fdpic_core_dump(struct co
+ 		goto end_coredump;
+ 
+ 	/* write program headers for segments dump */
+-	for (i = 0; i < vma_count; i++) {
+-		struct core_vma_metadata *meta = vma_meta + i;
++	for (i = 0; i < cprm->vma_count; i++) {
++		struct core_vma_metadata *meta = cprm->vma_meta + i;
+ 		struct elf_phdr phdr;
+ 		size_t sz;
+ 
+@@ -1628,7 +1623,7 @@ static int elf_fdpic_core_dump(struct co
+ 
+ 	dump_skip_to(cprm, dataoff);
+ 
+-	if (!elf_fdpic_dump_segments(cprm, vma_meta, vma_count))
++	if (!elf_fdpic_dump_segments(cprm, cprm->vma_meta, cprm->vma_count))
+ 		goto end_coredump;
+ 
+ 	if (!elf_core_write_extra_data(cprm))
+@@ -1652,7 +1647,6 @@ end_coredump:
+ 		thread_list = thread_list->next;
+ 		kfree(tmp);
+ 	}
+-	kvfree(vma_meta);
+ 	kfree(phdr4note);
+ 	kfree(elf);
+ 	kfree(psinfo);
+--- a/fs/coredump.c
++++ b/fs/coredump.c
+@@ -54,6 +54,8 @@
+ 
+ #include <trace/events/sched.h>
+ 
++static bool dump_vma_snapshot(struct coredump_params *cprm);
++
+ static int core_uses_pid;
+ static unsigned int core_pipe_limit;
+ static char core_pattern[CORENAME_MAX_SIZE] = "core";
+@@ -532,6 +534,7 @@ void do_coredump(const kernel_siginfo_t
+ 		 * by any locks.
+ 		 */
+ 		.mm_flags = mm->flags,
++		.vma_meta = NULL,
+ 	};
+ 
+ 	audit_core_dumps(siginfo->si_signo);
+@@ -746,6 +749,9 @@ void do_coredump(const kernel_siginfo_t
+ 			pr_info("Core dump to |%s disabled\n", cn.corename);
+ 			goto close_fail;
+ 		}
++		if (!dump_vma_snapshot(&cprm))
++			goto close_fail;
++
+ 		file_start_write(cprm.file);
+ 		core_dumped = binfmt->core_dump(&cprm);
+ 		/*
+@@ -759,6 +765,7 @@ void do_coredump(const kernel_siginfo_t
+ 			dump_emit(&cprm, "", 1);
+ 		}
+ 		file_end_write(cprm.file);
++		kvfree(cprm.vma_meta);
+ 	}
+ 	if (ispipe && core_pipe_limit)
+ 		wait_for_dump_helpers(cprm.file);
+@@ -1096,14 +1103,11 @@ static struct vm_area_struct *next_vma(s
+  * Under the mmap_lock, take a snapshot of relevant information about the task's
+  * VMAs.
+  */
+-int dump_vma_snapshot(struct coredump_params *cprm, int *vma_count,
+-		      struct core_vma_metadata **vma_meta,
+-		      size_t *vma_data_size_ptr)
++static bool dump_vma_snapshot(struct coredump_params *cprm)
+ {
+ 	struct vm_area_struct *vma, *gate_vma;
+ 	struct mm_struct *mm = current->mm;
+ 	int i;
+-	size_t vma_data_size = 0;
+ 
+ 	/*
+ 	 * Once the stack expansion code is fixed to not change VMA bounds
+@@ -1111,20 +1115,21 @@ int dump_vma_snapshot(struct coredump_pa
+ 	 * mmap_lock in read mode.
+ 	 */
+ 	if (mmap_write_lock_killable(mm))
+-		return -EINTR;
++		return false;
+ 
++	cprm->vma_data_size = 0;
+ 	gate_vma = get_gate_vma(mm);
+-	*vma_count = mm->map_count + (gate_vma ? 1 : 0);
++	cprm->vma_count = mm->map_count + (gate_vma ? 1 : 0);
+ 
+-	*vma_meta = kvmalloc_array(*vma_count, sizeof(**vma_meta), GFP_KERNEL);
+-	if (!*vma_meta) {
++	cprm->vma_meta = kvmalloc_array(cprm->vma_count, sizeof(*cprm->vma_meta), GFP_KERNEL);
++	if (!cprm->vma_meta) {
+ 		mmap_write_unlock(mm);
+-		return -ENOMEM;
++		return false;
+ 	}
+ 
+ 	for (i = 0, vma = first_vma(current, gate_vma); vma != NULL;
+ 			vma = next_vma(vma, gate_vma), i++) {
+-		struct core_vma_metadata *m = (*vma_meta) + i;
++		struct core_vma_metadata *m = cprm->vma_meta + i;
+ 
+ 		m->start = vma->vm_start;
+ 		m->end = vma->vm_end;
+@@ -1134,13 +1139,14 @@ int dump_vma_snapshot(struct coredump_pa
+ 
+ 	mmap_write_unlock(mm);
+ 
+-	if (WARN_ON(i != *vma_count)) {
+-		kvfree(*vma_meta);
+-		return -EFAULT;
++	if (WARN_ON(i != cprm->vma_count)) {
++		kvfree(cprm->vma_meta);
++		return false;
+ 	}
+ 
+-	for (i = 0; i < *vma_count; i++) {
+-		struct core_vma_metadata *m = (*vma_meta) + i;
++
++	for (i = 0; i < cprm->vma_count; i++) {
++		struct core_vma_metadata *m = cprm->vma_meta + i;
+ 
+ 		if (m->dump_size == DUMP_SIZE_MAYBE_ELFHDR_PLACEHOLDER) {
+ 			char elfmag[SELFMAG];
+@@ -1153,9 +1159,8 @@ int dump_vma_snapshot(struct coredump_pa
+ 			}
+ 		}
+ 
+-		vma_data_size += m->dump_size;
++		cprm->vma_data_size += m->dump_size;
+ 	}
+ 
+-	*vma_data_size_ptr = vma_data_size;
+-	return 0;
++	return true;
+ }
+--- a/include/linux/binfmts.h
++++ b/include/linux/binfmts.h
+@@ -87,6 +87,9 @@ struct coredump_params {
+ 	loff_t written;
+ 	loff_t pos;
+ 	loff_t to_skip;
++	int vma_count;
++	size_t vma_data_size;
++	struct core_vma_metadata *vma_meta;
+ };
+ 
+ /*
+--- a/include/linux/coredump.h
++++ b/include/linux/coredump.h
+@@ -25,9 +25,6 @@ extern int dump_emit(struct coredump_par
+ extern int dump_align(struct coredump_params *cprm, int align);
+ int dump_user_range(struct coredump_params *cprm, unsigned long start,
+ 		    unsigned long len);
+-int dump_vma_snapshot(struct coredump_params *cprm, int *vma_count,
+-		      struct core_vma_metadata **vma_meta,
+-		      size_t *vma_data_size_ptr);
+ extern void do_coredump(const kernel_siginfo_t *siginfo);
+ #else
+ static inline void do_coredump(const kernel_siginfo_t *siginfo) {}
 
 
