@@ -2,74 +2,185 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B909C4707A
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E4CFDC433FE
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 22:24:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1442025AbiDEWTG (ORCPT
+        id S1442458AbiDEWTU (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 18:19:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60370 "EHLO
+        Tue, 5 Apr 2022 18:19:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32898 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1445129AbiDEPmd (ORCPT
+        with ESMTP id S1573646AbiDET30 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 11:42:33 -0400
-Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41514190B79
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 07:07:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=Y/i7pByZo0Q5olsOgInKdWMXyGn8q2jQ0GfVe7p0oik=; b=ftiz1A9VHWBq7s/mE3EkDzqx7Y
-        9tSf0/IrvUc01zYMZckJXWm86IjPPXDwHdy/3bXBQdTEmJ8IU05MedVPXzc0ERiOX0VdxII5m/OW/
-        FM8ALFPZa+A+tG7yekcxkn+QgWc6+LotRYZHpK3Me0qFCGxSZRUczN592fmHOP4brIuaiS8PM9uJY
-        28BEwhzaS8D0DxIC6SRtfmBJKUbg6X8tV7Az6AD02Es7IJiui2qZ7FFmcY8xlth1oi9J8fpilYx24
-        B7Myvmx0B3qH6Pxrf8GhjWGdePadc4uPuO44eQ0DLqTLmSpq6U4qpuZFP5YiYPWkcg5vLhzyV2ei8
-        EwphxMNg==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
-        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nbjq5-001sDn-0Z; Tue, 05 Apr 2022 14:07:23 +0000
-Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits))
-        (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 7CD1630031E;
-        Tue,  5 Apr 2022 16:07:19 +0200 (CEST)
-Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
-        id 5B53F2DC79000; Tue,  5 Apr 2022 16:07:19 +0200 (CEST)
-Date:   Tue, 5 Apr 2022 16:07:19 +0200
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Wyes Karny <wyes.karny@amd.com>
-Cc:     linux-kernel@vger.kernel.org, Lewis.Carroll@amd.com,
-        Mario.Limonciello@amd.com, gautham.shenoy@amd.com,
-        Ananth.Narayan@amd.com, bharata@amd.com, len.brown@intel.com,
-        x86@kernel.org, tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
-        dave.hansen@linux.intel.com, hpa@zytor.com,
-        chang.seok.bae@intel.com, keescook@chromium.org, metze@samba.org,
-        zhengqi.arch@bytedance.com, mark.rutland@arm.com
-Subject: Re: [PATCH] x86: Prefer MWAIT over HALT on AMD processors
-Message-ID: <YkxNFyXqC12nXyfM@hirez.programming.kicks-ass.net>
-References: <20220405130021.557880-1-wyes.karny@amd.com>
+        Tue, 5 Apr 2022 15:29:26 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8EF8BBE9FD;
+        Tue,  5 Apr 2022 12:27:27 -0700 (PDT)
+Date:   Tue, 05 Apr 2022 19:27:24 -0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1649186846;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=Apj1WNSGkjJ8qBld0G1fRhqZVHswRua50ugsNNzGKZA=;
+        b=QPqFejLM6vWh5deYEFxaZoFIBFKWHoVyPGm85w6i7iuyvsSRDwtbqrivldew8s14epXpRO
+        AmIt6LPMpBS9YhYCnf12zzcRyvVubo0G1rfg52HgHjzQYeuHeLiKuop+5wETPAnq2nnnf1
+        d3YHJQSL5o71KwFZbuEuAqLABbsRE2WwHJobqN7o1dsgla+VQOaMJjJ51d39TCUBa5l2nE
+        O4SsX7eUofQEKU241+pTSWLG1bMCVdjkJu6jdzzfjTxOcmShZ8VBtMxM4U3oIXydtlG9Jq
+        E+6YhZdyANBwc2d9tbMygOvo29Qv40trnKzT+w8elvNr8lcuVzHqBccLp94nPA==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1649186846;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=Apj1WNSGkjJ8qBld0G1fRhqZVHswRua50ugsNNzGKZA=;
+        b=ClPuWOqOgjfUWaEacCw4zTvpCV5dZvv9YBZ3flIzRVJMPq4KC9Codtf7GaJI4RXocIs4D5
+        pNJWGQ/gyOq+IZCw==
+From:   "tip-bot2 for Muralidhara M K" <tip-bot2@linutronix.de>
+Sender: tip-bot2@linutronix.de
+Reply-to: linux-kernel@vger.kernel.org
+To:     linux-tip-commits@vger.kernel.org
+Subject: [tip: x86/misc] x86/amd_nb: Unexport amd_cache_northbridges()
+Cc:     Muralidhara M K <muralimk@amd.com>,
+        Naveen Krishna Chatradhi <nchatrad@amd.com>,
+        Borislav Petkov <bp@suse.de>, x86@kernel.org,
+        linux-kernel@vger.kernel.org
+In-Reply-To: <20220324122729.221765-1-nchatrad@amd.com>
+References: <20220324122729.221765-1-nchatrad@amd.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220405130021.557880-1-wyes.karny@amd.com>
+Message-ID: <164918684484.389.10138844403913568515.tip-bot2@tip-bot2>
+Robot-ID: <tip-bot2@linutronix.de>
+Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 05, 2022 at 06:30:21PM +0530, Wyes Karny wrote:
-> +static inline bool early_mwait_supported(const struct cpuinfo_x86 *c)
-> +{
-> +	if (c->x86_vendor == X86_VENDOR_INTEL)
-> +		return true;
-> +
-> +	if (c->x86_vendor == X86_VENDOR_AMD && cpu_has(c, X86_FEATURE_ZEN))
+The following commit has been merged into the x86/misc branch of tip:
 
-What about Hygon? For some reason you guys don't co-ordinate and we end
-up getting endless 'make-same' patches, sometimes separated by years :/
+Commit-ID:     e1907d37514b8564ba18b4a768a35beee71cb011
+Gitweb:        https://git.kernel.org/tip/e1907d37514b8564ba18b4a768a35beee71cb011
+Author:        Muralidhara M K <muralimk@amd.com>
+AuthorDate:    Thu, 24 Mar 2022 17:57:29 +05:30
+Committer:     Borislav Petkov <bp@suse.de>
+CommitterDate: Tue, 05 Apr 2022 19:22:27 +02:00
 
-> +		return true;
-> +
-> +	return false;
-> +}
+x86/amd_nb: Unexport amd_cache_northbridges()
+
+amd_cache_northbridges() is exported by amd_nb.c and is called by
+amd64-agp.c and amd64_edac.c modules at module_init() time so that NB
+descriptors are properly cached before those drivers can use them.
+
+However, the init_amd_nbs() initcall already does call
+amd_cache_northbridges() unconditionally and thus makes sure the NB
+descriptors are enumerated.
+
+That initcall is a fs_initcall type which is on the 5th group (starting
+from 0) of initcalls that gets run in increasing numerical order by the
+init code.
+
+The module_init() call is turned into an __initcall() in the MODULE=n
+case and those are device-level initcalls, i.e., group 6.
+
+Therefore, the northbridges caching is already finished by the time
+module initialization starts and thus the correct initialization order
+is retained.
+
+Unexport amd_cache_northbridges(), update dependent modules to
+call amd_nb_num() instead. While at it, simplify the checks in
+amd_cache_northbridges().
+
+  [ bp: Heavily massage and *actually* explain why the change is ok. ]
+
+Signed-off-by: Muralidhara M K <muralimk@amd.com>
+Signed-off-by: Naveen Krishna Chatradhi <nchatrad@amd.com>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Link: https://lore.kernel.org/r/20220324122729.221765-1-nchatrad@amd.com
+---
+ arch/x86/include/asm/amd_nb.h | 1 -
+ arch/x86/kernel/amd_nb.c      | 7 +++----
+ drivers/char/agp/amd64-agp.c  | 2 +-
+ drivers/edac/amd64_edac.c     | 2 +-
+ 4 files changed, 5 insertions(+), 7 deletions(-)
+
+diff --git a/arch/x86/include/asm/amd_nb.h b/arch/x86/include/asm/amd_nb.h
+index 00d1a40..ed0eaf6 100644
+--- a/arch/x86/include/asm/amd_nb.h
++++ b/arch/x86/include/asm/amd_nb.h
+@@ -16,7 +16,6 @@ extern const struct amd_nb_bus_dev_range amd_nb_bus_dev_ranges[];
+ 
+ extern bool early_is_amd_nb(u32 value);
+ extern struct resource *amd_get_mmconfig_range(struct resource *res);
+-extern int amd_cache_northbridges(void);
+ extern void amd_flush_garts(void);
+ extern int amd_numa_init(void);
+ extern int amd_get_subcaches(int);
+diff --git a/arch/x86/kernel/amd_nb.c b/arch/x86/kernel/amd_nb.c
+index 020c906..190e0f7 100644
+--- a/arch/x86/kernel/amd_nb.c
++++ b/arch/x86/kernel/amd_nb.c
+@@ -188,7 +188,7 @@ int amd_smn_write(u16 node, u32 address, u32 value)
+ EXPORT_SYMBOL_GPL(amd_smn_write);
+ 
+ 
+-int amd_cache_northbridges(void)
++static int amd_cache_northbridges(void)
+ {
+ 	const struct pci_device_id *misc_ids = amd_nb_misc_ids;
+ 	const struct pci_device_id *link_ids = amd_nb_link_ids;
+@@ -210,14 +210,14 @@ int amd_cache_northbridges(void)
+ 	}
+ 
+ 	misc = NULL;
+-	while ((misc = next_northbridge(misc, misc_ids)) != NULL)
++	while ((misc = next_northbridge(misc, misc_ids)))
+ 		misc_count++;
+ 
+ 	if (!misc_count)
+ 		return -ENODEV;
+ 
+ 	root = NULL;
+-	while ((root = next_northbridge(root, root_ids)) != NULL)
++	while ((root = next_northbridge(root, root_ids)))
+ 		root_count++;
+ 
+ 	if (root_count) {
+@@ -290,7 +290,6 @@ int amd_cache_northbridges(void)
+ 
+ 	return 0;
+ }
+-EXPORT_SYMBOL_GPL(amd_cache_northbridges);
+ 
+ /*
+  * Ignores subdevice/subvendor but as far as I can figure out
+diff --git a/drivers/char/agp/amd64-agp.c b/drivers/char/agp/amd64-agp.c
+index dc78a4f..84a4aa9 100644
+--- a/drivers/char/agp/amd64-agp.c
++++ b/drivers/char/agp/amd64-agp.c
+@@ -327,7 +327,7 @@ static int cache_nbs(struct pci_dev *pdev, u32 cap_ptr)
+ {
+ 	int i;
+ 
+-	if (amd_cache_northbridges() < 0)
++	if (!amd_nb_num())
+ 		return -ENODEV;
+ 
+ 	if (!amd_nb_has_feature(AMD_NB_GART))
+diff --git a/drivers/edac/amd64_edac.c b/drivers/edac/amd64_edac.c
+index 812baa4..2f854fe 100644
+--- a/drivers/edac/amd64_edac.c
++++ b/drivers/edac/amd64_edac.c
+@@ -4336,7 +4336,7 @@ static int __init amd64_edac_init(void)
+ 	if (!x86_match_cpu(amd64_cpuids))
+ 		return -ENODEV;
+ 
+-	if (amd_cache_northbridges() < 0)
++	if (!amd_nb_num())
+ 		return -ENODEV;
+ 
+ 	opstate_init();
