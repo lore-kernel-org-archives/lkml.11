@@ -2,47 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9ED83C3527D
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:22:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 35D27C43217
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:22:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1587753AbiDFAKQ (ORCPT
+        id S1588015AbiDFALD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 20:10:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39324 "EHLO
+        Tue, 5 Apr 2022 20:11:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43766 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349070AbiDEJtD (ORCPT
+        with ESMTP id S1354671AbiDEKPE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:49:03 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30215A94FA;
-        Tue,  5 Apr 2022 02:39:53 -0700 (PDT)
+        Tue, 5 Apr 2022 06:15:04 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0D756C483;
+        Tue,  5 Apr 2022 03:02:26 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2D61861368;
-        Tue,  5 Apr 2022 09:39:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 346C3C385A1;
-        Tue,  5 Apr 2022 09:39:52 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 62D81B81B7A;
+        Tue,  5 Apr 2022 10:02:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B4870C385A1;
+        Tue,  5 Apr 2022 10:02:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649151592;
-        bh=l4IdRfuBU/jifWwzrlZ9OiCywlkW9pdNNjQ52KqA8KE=;
+        s=korg; t=1649152944;
+        bh=xVHp64TaI74NLn8bKNh6ZVRi72OAW/a3LCS5t+EfIKg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SEhuthKpjkUyjE2dtxAMpBCtR73RxditLKivjSS6Evy7Hygo6NbP9AWHGk/+VVK9Y
-         UtHnT4X9GP8TnXzSrAOI3XT54MH6pp99F9+0/w/toLTlLwOInxRYddnJfZ5sIkzshY
-         R+anXigEVosAK/h1h4S8pkECSue5/zwpLeO61ot8=
+        b=ZpfMAjGqk+k+XG9lGd0/2UdwM54Rn8Hth8m2l6SpgaVA1Ly0G6Ky24xISPjQPKzmF
+         TdX+nEZXa47o5Eaf9WIgN/DrHlubFfgtppDeVcWjh5iUowxFRlYbZSDcv8SpB6d151
+         TuAU3Pvdfu5GOaVmSkbZXgxcNDImlj4KK/MMInvM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kuogee Hsieh <quic_khsieh@quicinc.com>,
-        Stephen Boyd <swboyd@chromium.org>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 471/913] drm/msm/dp: always add fail-safe mode into connector mode list
-Date:   Tue,  5 Apr 2022 09:25:33 +0200
-Message-Id: <20220405070353.973716824@linuxfoundation.org>
+        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
+        Chuck Lever <chuck.lever@oracle.com>
+Subject: [PATCH 5.10 046/599] NFSD: prevent underflow in nfssvc_decode_writeargs()
+Date:   Tue,  5 Apr 2022 09:25:40 +0200
+Message-Id: <20220405070300.199473865@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
+References: <20220405070258.802373272@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,47 +49,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kuogee Hsieh <quic_khsieh@quicinc.com>
+From: Dan Carpenter <dan.carpenter@oracle.com>
 
-[ Upstream commit d4aca422539c441a7f3fec749287b36de37d9b6b ]
+commit 184416d4b98509fb4c3d8fc3d6dc1437896cc159 upstream.
 
-Some of DP link compliant test expects to return fail-safe mode
-if prefer detailed timing mode can not be supported by mainlink's
-lane and rate after link training. Therefore add fail-safe mode
-into connector mode list as backup mode. This patch fixes test
-case 4.2.2.1.
+Smatch complains:
 
-Changes in v2:
--- add Fixes text string
+	fs/nfsd/nfsxdr.c:341 nfssvc_decode_writeargs()
+	warn: no lower bound on 'args->len'
 
-Fixes: 4b85d405cfe9 ( "drm/msm/dp: reduce link rate if failed at link training 1")
-Signed-off-by: Kuogee Hsieh <quic_khsieh@quicinc.com>
-Reviewed-by: Stephen Boyd <swboyd@chromium.org>
-Link: https://lore.kernel.org/r/1643066274-25814-1-git-send-email-quic_khsieh@quicinc.com
-Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Change the type to unsigned to prevent this issue.
+
+Cc: stable@vger.kernel.org
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+Signed-off-by: Chuck Lever <chuck.lever@oracle.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/msm/dp/dp_panel.c | 5 +++++
- 1 file changed, 5 insertions(+)
+ fs/nfsd/nfsproc.c |    2 +-
+ fs/nfsd/xdr.h     |    2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/gpu/drm/msm/dp/dp_panel.c b/drivers/gpu/drm/msm/dp/dp_panel.c
-index 2181b60e1d1d..5f23e6f09199 100644
---- a/drivers/gpu/drm/msm/dp/dp_panel.c
-+++ b/drivers/gpu/drm/msm/dp/dp_panel.c
-@@ -212,6 +212,11 @@ int dp_panel_read_sink_caps(struct dp_panel *dp_panel,
- 		if (drm_add_modes_noedid(connector, 640, 480))
- 			drm_set_preferred_mode(connector, 640, 480);
- 		mutex_unlock(&connector->dev->mode_config.mutex);
-+	} else {
-+		/* always add fail-safe mode as backup mode */
-+		mutex_lock(&connector->dev->mode_config.mutex);
-+		drm_add_modes_noedid(connector, 640, 480);
-+		mutex_unlock(&connector->dev->mode_config.mutex);
- 	}
+--- a/fs/nfsd/nfsproc.c
++++ b/fs/nfsd/nfsproc.c
+@@ -223,7 +223,7 @@ nfsd_proc_write(struct svc_rqst *rqstp)
+ 	unsigned long cnt = argp->len;
+ 	unsigned int nvecs;
  
- 	if (panel->aux_cfg_update_done) {
--- 
-2.34.1
-
+-	dprintk("nfsd: WRITE    %s %d bytes at %d\n",
++	dprintk("nfsd: WRITE    %s %u bytes at %d\n",
+ 		SVCFH_fmt(&argp->fh),
+ 		argp->len, argp->offset);
+ 
+--- a/fs/nfsd/xdr.h
++++ b/fs/nfsd/xdr.h
+@@ -33,7 +33,7 @@ struct nfsd_readargs {
+ struct nfsd_writeargs {
+ 	svc_fh			fh;
+ 	__u32			offset;
+-	int			len;
++	__u32			len;
+ 	struct kvec		first;
+ };
+ 
 
 
