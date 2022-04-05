@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 48C2CC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:01:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E8227C35280
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:01:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235965AbiDEIAx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 04:00:53 -0400
+        id S235856AbiDEIAg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 04:00:36 -0400
 Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54820 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232394AbiDEHuj (ORCPT
+        with ESMTP id S232165AbiDEHtD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 03:50:39 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38C5C939B6;
-        Tue,  5 Apr 2022 00:47:09 -0700 (PDT)
+        Tue, 5 Apr 2022 03:49:03 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 218B4BFE;
+        Tue,  5 Apr 2022 00:46:46 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 64204616D7;
-        Tue,  5 Apr 2022 07:47:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7412EC3410F;
-        Tue,  5 Apr 2022 07:47:07 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C0E73616DE;
+        Tue,  5 Apr 2022 07:46:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D403DC34110;
+        Tue,  5 Apr 2022 07:46:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649144827;
-        bh=4JilkGpXUFStr7DuFbAb05Cf5KlVYYVNVPbAujUtgkU=;
+        s=korg; t=1649144805;
+        bh=ghfsdy2FY18wxZNczTzKE0jexByHGmomgL6U6fHsJZc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1h1qLZdS8uttyK6PiR9wJpC1KWpTMucOg72iqvbbO+fciGvmsUKRnLr/bgWKtRj3f
-         rtWPtQ54M1aHW7W+misb6JPrR5hpT3YxP2BBfmVFYt8tnSJ8eaP7EFYnxGj5oIp5RQ
-         NKbXxhzQ7OEticl4d5AiQ8903i0dPRi1fI0BqMnQ=
+        b=sd2ywaUzezpew0oe0jTNQA36NjkyvJ9N5AO6LGrwo38xtdLKo3eG3K6PLZNpl2KYf
+         b67vRq3qeY/gdsMOjecqzp57K/t+NvnsCkc9i4J/OS6UJWCw2GHpYrSpX6qyPDV1fT
+         iDLYEhvoMYIeEtr8EABBtaqYl1Rqw5fycro8FhAw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tom Rix <trix@redhat.com>,
-        =?UTF-8?q?Micka=C3=ABl=20Sala=C3=BCn?= <mic@linux.microsoft.com>
-Subject: [PATCH 5.17 0137/1126] samples/landlock: Fix path_list memory leak
-Date:   Tue,  5 Apr 2022 09:14:44 +0200
-Message-Id: <20220405070411.599909869@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Johannes Thumshirn <johannes.thumshirn@wdc.com>,
+        Naohiro Aota <naohiro.aota@wdc.com>,
+        David Sterba <dsterba@suse.com>
+Subject: [PATCH 5.17 0176/1126] btrfs: zoned: mark relocation as writing
+Date:   Tue,  5 Apr 2022 09:15:23 +0200
+Message-Id: <20220405070412.768251580@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -48,35 +50,91 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tom Rix <trix@redhat.com>
+From: Naohiro Aota <naohiro.aota@wdc.com>
 
-commit 66b513b7c64a7290c1fbb88e657f7cece992e131 upstream.
+commit ca5e4ea0beaec8bc674121838bf8614c089effb9 upstream.
 
-Clang static analysis reports this error
+There is a hung_task issue with running generic/068 on an SMR
+device. The hang occurs while a process is trying to thaw the
+filesystem. The process is trying to take sb->s_umount to thaw the
+FS. The lock is held by fsstress, which calls btrfs_sync_fs() and is
+waiting for an ordered extent to finish. However, as the FS is frozen,
+the ordered extents never finish.
 
-sandboxer.c:134:8: warning: Potential leak of memory
-  pointed to by 'path_list'
-        ret = 0;
-              ^
-path_list is allocated in parse_path() but never freed.
+Having an ordered extent while the FS is frozen is the root cause of
+the hang. The ordered extent is initiated from btrfs_relocate_chunk()
+which is called from btrfs_reclaim_bgs_work().
 
-Signed-off-by: Tom Rix <trix@redhat.com>
-Link: https://lore.kernel.org/r/20210428213852.2874324-1-trix@redhat.com
-Cc: stable@vger.kernel.org
-Signed-off-by: Mickaël Salaün <mic@linux.microsoft.com>
+This commit adds sb_*_write() around btrfs_relocate_chunk() call
+site. For the usual "btrfs balance" command, we already call it with
+mnt_want_file() in btrfs_ioctl_balance().
+
+Fixes: 18bb8bbf13c1 ("btrfs: zoned: automatically reclaim zones")
+CC: stable@vger.kernel.org # 5.13+
+Link: https://github.com/naota/linux/issues/56
+Reviewed-by: Johannes Thumshirn <johannes.thumshirn@wdc.com>
+Signed-off-by: Naohiro Aota <naohiro.aota@wdc.com>
+Reviewed-by: David Sterba <dsterba@suse.com>
+Signed-off-by: David Sterba <dsterba@suse.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- samples/landlock/sandboxer.c |    1 +
- 1 file changed, 1 insertion(+)
+ fs/btrfs/block-group.c |    8 +++++++-
+ fs/btrfs/volumes.c     |    3 +++
+ 2 files changed, 10 insertions(+), 1 deletion(-)
 
---- a/samples/landlock/sandboxer.c
-+++ b/samples/landlock/sandboxer.c
-@@ -134,6 +134,7 @@ static int populate_ruleset(
- 	ret = 0;
+--- a/fs/btrfs/block-group.c
++++ b/fs/btrfs/block-group.c
+@@ -1522,8 +1522,12 @@ void btrfs_reclaim_bgs_work(struct work_
+ 	if (!test_bit(BTRFS_FS_OPEN, &fs_info->flags))
+ 		return;
  
- out_free_name:
-+	free(path_list);
- 	free(env_path_name);
+-	if (!btrfs_exclop_start(fs_info, BTRFS_EXCLOP_BALANCE))
++	sb_start_write(fs_info->sb);
++
++	if (!btrfs_exclop_start(fs_info, BTRFS_EXCLOP_BALANCE)) {
++		sb_end_write(fs_info->sb);
+ 		return;
++	}
+ 
+ 	/*
+ 	 * Long running balances can keep us blocked here for eternity, so
+@@ -1531,6 +1535,7 @@ void btrfs_reclaim_bgs_work(struct work_
+ 	 */
+ 	if (!mutex_trylock(&fs_info->reclaim_bgs_lock)) {
+ 		btrfs_exclop_finish(fs_info);
++		sb_end_write(fs_info->sb);
+ 		return;
+ 	}
+ 
+@@ -1605,6 +1610,7 @@ next:
+ 	spin_unlock(&fs_info->unused_bgs_lock);
+ 	mutex_unlock(&fs_info->reclaim_bgs_lock);
+ 	btrfs_exclop_finish(fs_info);
++	sb_end_write(fs_info->sb);
+ }
+ 
+ void btrfs_reclaim_bgs(struct btrfs_fs_info *fs_info)
+--- a/fs/btrfs/volumes.c
++++ b/fs/btrfs/volumes.c
+@@ -8299,10 +8299,12 @@ static int relocating_repair_kthread(voi
+ 	target = cache->start;
+ 	btrfs_put_block_group(cache);
+ 
++	sb_start_write(fs_info->sb);
+ 	if (!btrfs_exclop_start(fs_info, BTRFS_EXCLOP_BALANCE)) {
+ 		btrfs_info(fs_info,
+ 			   "zoned: skip relocating block group %llu to repair: EBUSY",
+ 			   target);
++		sb_end_write(fs_info->sb);
+ 		return -EBUSY;
+ 	}
+ 
+@@ -8330,6 +8332,7 @@ out:
+ 		btrfs_put_block_group(cache);
+ 	mutex_unlock(&fs_info->reclaim_bgs_lock);
+ 	btrfs_exclop_finish(fs_info);
++	sb_end_write(fs_info->sb);
+ 
  	return ret;
  }
 
