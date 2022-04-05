@@ -2,88 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6AB33C35273
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 21:10:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E22AC4167D
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 21:10:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351344AbiDEVKB (ORCPT
+        id S1350151AbiDEVJw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 17:10:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44552 "EHLO
+        Tue, 5 Apr 2022 17:09:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46728 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1573316AbiDESxn (ORCPT
+        with ESMTP id S1358097AbiDEK16 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 14:53:43 -0400
-Received: from mail-oa1-x35.google.com (mail-oa1-x35.google.com [IPv6:2001:4860:4864:20::35])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92A3AB1AA2
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 11:51:44 -0700 (PDT)
-Received: by mail-oa1-x35.google.com with SMTP id 586e51a60fabf-df22f50e0cso374710fac.3
-        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 11:51:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linuxfoundation.org; s=google;
-        h=to:cc:from:subject:message-id:date:user-agent:mime-version
-         :content-language:content-transfer-encoding;
-        bh=5LQhptvFdbZ0C3sjhDpLAbcs/GIdoE2HKrU0D1husVM=;
-        b=SBAWX77d+jdUm+o+vqnl+olI+0dd442QoBAJ8p4Yy5WxGYltH0vPA+D7F3oUMH6z9C
-         LcrfY5mR+FU0amxawwfOHcaz5MhQNV1SFInR7+ewsuX5B1R03RZwUJdM1DN42Qt+Qb3j
-         1hh8IYk1Ng97+7Kgee10OuNEK5If0o+wlozzM=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:to:cc:from:subject:message-id:date:user-agent
-         :mime-version:content-language:content-transfer-encoding;
-        bh=5LQhptvFdbZ0C3sjhDpLAbcs/GIdoE2HKrU0D1husVM=;
-        b=A5CI/dm1fSr9SSN1hXgBEvGaqKNz/v0thi4sSsjfWRoIbrXaMGITAT2eL1UxowtRtS
-         NkwkhwY/eAQYchhg5WER91VBlF6BEC420e2H+DTpokuUrfpiWDumE/o0icyigru2ZZQo
-         EzlH6JpgWdvO+u8kcVzAzllLU8kppKX8umhNmjI4g7P8uHO9JTW3S24QCFTCnJYsjvz5
-         d9zofvy/05qnfk+SB9FDZti3sOQ7I1RMkyb4KJQRXrnsRKjOPZwa8daORJ2JXTY59tmS
-         3mTUoxh9YDVsf8XnkWx3MPocKDEfaRlOZ2ufSQP4Lu5JjJSZ6r3PERlatAWymY0F9j1m
-         JKzA==
-X-Gm-Message-State: AOAM532akydxP5EvU615RnTHpm+yCFeiimGqzOglQJ5+0y4J5SpCTbwU
-        /85UiZit4zAh5uutwHxmrNhadeiMJNMJLA==
-X-Google-Smtp-Source: ABdhPJwi+u7HNJhVQTGZDxxKz5cHq6mQW2Zkj43J2nGB1hYNnpqiKg0YO6qpo1B7p+loLoDAaaM4RQ==
-X-Received: by 2002:a05:6870:c20b:b0:dd:9f25:b736 with SMTP id z11-20020a056870c20b00b000dd9f25b736mr2236137oae.201.1649184703898;
-        Tue, 05 Apr 2022 11:51:43 -0700 (PDT)
-Received: from [192.168.1.128] ([71.205.29.0])
-        by smtp.gmail.com with ESMTPSA id 190-20020a4a0dc7000000b003244ae0bbd5sm5264152oob.7.2022.04.05.11.51.42
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 05 Apr 2022 11:51:43 -0700 (PDT)
-To:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Cc:     tech-board-discuss@lists.linuxfoundation.org, conduct@kernel.org
-From:   Shuah Khan <skhan@linuxfoundation.org>
-Subject: Linux Kernel Code of Conduct Committee: March 31 2022
-Message-ID: <4401af50-083d-0239-6b7f-3454c8d69fec@linuxfoundation.org>
-Date:   Tue, 5 Apr 2022 12:51:42 -0600
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.8.1
+        Tue, 5 Apr 2022 06:27:58 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50DC72B198;
+        Tue,  5 Apr 2022 03:15:31 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 130C9B81C88;
+        Tue,  5 Apr 2022 10:15:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7F143C385A0;
+        Tue,  5 Apr 2022 10:15:28 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649153728;
+        bh=+fiwjdwdc0xeZY13tfgi2lJG8et6wcD0wv6mNjjcT8o=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=V0x/vl1Tw7Qxm8gHC4Ul24kXq5iAQOe5slmmhghPBGt4l8vpJaEnpyYTNF/E26AIZ
+         gwkCDwTOpPR8Fb2zPQi4NodJvwBEm7mn7EASp2I5rGB9wikifTY67rXZIHz/JRO9x/
+         HQfgM+dYDOrXoTmdJkFdxjItVy1B5YCLNJlPnGOk=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Lorenzo Bianconi <lorenzo@kernel.org>,
+        Felix Fietkau <nbd@nbd.name>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 288/599] mt76: mt7915: use proper aid value in mt7915_mcu_sta_basic_tlv
+Date:   Tue,  5 Apr 2022 09:29:42 +0200
+Message-Id: <20220405070307.404480951@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
+References: <20220405070258.802373272@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Linux Kernel Code of Conduct Committee: March 31, 2022
+From: Lorenzo Bianconi <lorenzo@kernel.org>
 
-In the period of October 1, 2021 through March 31, 2022, the Code of
-Conduct Committee received the following reports:
+[ Upstream commit abdb8bc94be4cf68aa71c9a8ee0bad9b3e6f52d3 ]
 
-Unacceptable behavior or comments in email: 2
+Similar to mt7915_mcu_wtbl_generic_tlv, rely on vif->bss_conf.aid for
+aid in sta mode and not on sta->aid.
 
-The result of the investigation:
-   - Education and coaching clarifying the Code of Conduct conduct
-     related to normal review process: 2
+Fixes: e57b7901469fc ("mt76: add mac80211 driver for MT7915 PCIe-based chipsets")
+Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+Signed-off-by: Felix Fietkau <nbd@nbd.name>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/net/wireless/mediatek/mt76/mt7915/mcu.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-We would like to thank the Linux kernel community members who have
-supported the adoption of the Code of Conduct and who continue to
-uphold the professional standards of our community. If you have
-questions about this report, please write to <conduct@kernel.org>.
+diff --git a/drivers/net/wireless/mediatek/mt76/mt7915/mcu.c b/drivers/net/wireless/mediatek/mt76/mt7915/mcu.c
+index 6e73964b8b0a..41054ee43dbf 100644
+--- a/drivers/net/wireless/mediatek/mt76/mt7915/mcu.c
++++ b/drivers/net/wireless/mediatek/mt76/mt7915/mcu.c
+@@ -1317,12 +1317,15 @@ mt7915_mcu_sta_basic_tlv(struct sk_buff *skb, struct ieee80211_vif *vif,
+ 	case NL80211_IFTYPE_MESH_POINT:
+ 	case NL80211_IFTYPE_AP:
+ 		basic->conn_type = cpu_to_le32(CONNECTION_INFRA_STA);
++		basic->aid = cpu_to_le16(sta->aid);
+ 		break;
+ 	case NL80211_IFTYPE_STATION:
+ 		basic->conn_type = cpu_to_le32(CONNECTION_INFRA_AP);
++		basic->aid = cpu_to_le16(vif->bss_conf.aid);
+ 		break;
+ 	case NL80211_IFTYPE_ADHOC:
+ 		basic->conn_type = cpu_to_le32(CONNECTION_IBSS_ADHOC);
++		basic->aid = cpu_to_le16(sta->aid);
+ 		break;
+ 	default:
+ 		WARN_ON(1);
+@@ -1330,7 +1333,6 @@ mt7915_mcu_sta_basic_tlv(struct sk_buff *skb, struct ieee80211_vif *vif,
+ 	}
+ 
+ 	memcpy(basic->peer_addr, sta->addr, ETH_ALEN);
+-	basic->aid = cpu_to_le16(sta->aid);
+ 	basic->qos = sta->wme;
+ }
+ 
+-- 
+2.34.1
 
-------------------------------------------------------------------
 
-This report and the past Code Of Conduct Committee reports
-can be found on the Code of Conduct website at
 
-https://www.kernel.org/code-of-conduct.html
-
-thanks,
--- Shuah (On behalf of the Code of Conduct Committee)
