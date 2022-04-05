@@ -2,51 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D819EC4321E
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 02:08:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5753FC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 02:08:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1846780AbiDFCIj (ORCPT
+        id S1846841AbiDFCIs (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 22:08:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39988 "EHLO
+        Tue, 5 Apr 2022 22:08:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42468 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349503AbiDEJt6 (ORCPT
+        with ESMTP id S1356146AbiDEKW7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:49:58 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F7DD196;
-        Tue,  5 Apr 2022 02:47:54 -0700 (PDT)
+        Tue, 5 Apr 2022 06:22:59 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48A2DB91B9;
+        Tue,  5 Apr 2022 03:06:55 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E0B5161576;
-        Tue,  5 Apr 2022 09:47:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BFB1BC385A2;
-        Tue,  5 Apr 2022 09:47:52 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id F0448B81C86;
+        Tue,  5 Apr 2022 10:06:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6598EC385A2;
+        Tue,  5 Apr 2022 10:06:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649152073;
-        bh=pLIQlGkUzPkW36H+QN7RfbIl6w439D/LXITrrVw3+x8=;
+        s=korg; t=1649153212;
+        bh=m9IdsWkhwEHDsIk1mPp3Sw2dqcl6n6tF8/nLt+2Yvdk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ielukMC3bJP7GOPhRKt7LYaxhOjeANxHC0rumQqKecjWwqckC2hS6p0mzx29H9v82
-         YxW7nr2ZsB+vknV2Cx83x60U3VTucyKM41LJe4Z90c5+ZfKF+2vhWxZ4b7KrgDQJTl
-         +cOesVJO5PvD+zlyqYN4YFD4gOKfdpWQJKAVhncI=
+        b=Nd6nxQv+19zHv8YcO1A4c6PQEcbdWePO8R6uH1ipLcyO37loPUHSQoP77H0OcESFl
+         INloMuJTPrx1iNgGlfbKel8Sh8uxHyQ+wN3NOgd6ppb/7/dzhBfDA4daYthg+MQtdc
+         j+3jOEKAlVTlV9VIIpNkUHXYsivCm4jMq7+81OYU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, kgdb-bugreport@lists.sourceforge.net,
-        Jason Wessel <jason.wessel@windriver.com>,
-        Daniel Thompson <daniel.thompson@linaro.org>,
-        Douglas Anderson <dianders@chromium.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Igor Zhbanov <i.zhbanov@omprussia.ru>,
-        Randy Dunlap <rdunlap@infradead.org>,
+        stable@vger.kernel.org, Gilad Ben-Yossef <gilad@benyossef.com>,
+        Corentin Labbe <clabbe.montjoie@gmail.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 645/913] kgdbts: fix return value of __setup handler
-Date:   Tue,  5 Apr 2022 09:28:27 +0200
-Message-Id: <20220405070359.173490547@linuxfoundation.org>
+Subject: [PATCH 5.10 142/599] crypto: ccree - dont attempt 0 len DMA mappings
+Date:   Tue,  5 Apr 2022 09:27:16 +0200
+Message-Id: <20220405070303.067867519@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
+References: <20220405070258.802373272@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -55,63 +51,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Randy Dunlap <rdunlap@infradead.org>
+From: Gilad Ben-Yossef <gilad@benyossef.com>
 
-[ Upstream commit 96c9e802c64014a7716865332d732cc9c7f24593 ]
+[ Upstream commit 1fb37b5692c915edcc2448a6b37255738c7c77e0 ]
 
-__setup() handlers should return 1 to indicate that the boot option
-has been handled. A return of 0 causes the boot option/value to be
-listed as an Unknown kernel parameter and added to init's (limited)
-environment strings. So return 1 from kgdbts_option_setup().
+Refuse to try mapping zero bytes as this may cause a fault
+on some configurations / platforms and it seems the prev.
+attempt is not enough and we need to be more explicit.
 
-Unknown kernel command line parameters "BOOT_IMAGE=/boot/bzImage-517rc7
-  kgdboc=kbd kgdbts=", will be passed to user space.
-
- Run /sbin/init as init process
-   with arguments:
-     /sbin/init
-   with environment:
-     HOME=/
-     TERM=linux
-     BOOT_IMAGE=/boot/bzImage-517rc7
-     kgdboc=kbd
-     kgdbts=
-
-Link: lore.kernel.org/r/64644a2f-4a20-bab3-1e15-3b2cdd0defe3@omprussia.ru
-Fixes: e8d31c204e36 ("kgdb: add kgdb internal test suite")
-Cc: kgdb-bugreport@lists.sourceforge.net
-Cc: Jason Wessel <jason.wessel@windriver.com>
-Cc: Daniel Thompson <daniel.thompson@linaro.org>
-Cc: Douglas Anderson <dianders@chromium.org>
-Cc: Arnd Bergmann <arnd@arndb.de>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Reported-by: Igor Zhbanov <i.zhbanov@omprussia.ru>
-Reviewed-by: Douglas Anderson <dianders@chromium.org>
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Link: https://lore.kernel.org/r/20220308033255.22118-1-rdunlap@infradead.org
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Gilad Ben-Yossef <gilad@benyossef.com>
+Reported-by: Corentin Labbe <clabbe.montjoie@gmail.com>
+Fixes: ce0fc6db38de ("crypto: ccree - protect against empty or NULL
+scatterlists")
+Tested-by: Corentin Labbe <clabbe.montjoie@gmail.com>
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/misc/kgdbts.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/crypto/ccree/cc_buffer_mgr.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-diff --git a/drivers/misc/kgdbts.c b/drivers/misc/kgdbts.c
-index 67c5b452dd35..88b91ad8e541 100644
---- a/drivers/misc/kgdbts.c
-+++ b/drivers/misc/kgdbts.c
-@@ -1070,10 +1070,10 @@ static int kgdbts_option_setup(char *opt)
+diff --git a/drivers/crypto/ccree/cc_buffer_mgr.c b/drivers/crypto/ccree/cc_buffer_mgr.c
+index a5e041d9d2cf..11e0278c8631 100644
+--- a/drivers/crypto/ccree/cc_buffer_mgr.c
++++ b/drivers/crypto/ccree/cc_buffer_mgr.c
+@@ -258,6 +258,13 @@ static int cc_map_sg(struct device *dev, struct scatterlist *sg,
  {
- 	if (strlen(opt) >= MAX_CONFIG_LEN) {
- 		printk(KERN_ERR "kgdbts: config string too long\n");
--		return -ENOSPC;
-+		return 1;
- 	}
- 	strcpy(config, opt);
--	return 0;
-+	return 1;
- }
+ 	int ret = 0;
  
- __setup("kgdbts=", kgdbts_option_setup);
++	if (!nbytes) {
++		*mapped_nents = 0;
++		*lbytes = 0;
++		*nents = 0;
++		return 0;
++	}
++
+ 	*nents = cc_get_sgl_nents(dev, sg, nbytes, lbytes);
+ 	if (*nents > max_sg_nents) {
+ 		*nents = 0;
 -- 
 2.34.1
 
