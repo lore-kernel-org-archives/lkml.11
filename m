@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7FBCEC35276
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:35:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1514FC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:35:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237036AbiDEI3A (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 04:29:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49384 "EHLO
+        id S237532AbiDEI30 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 04:29:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49918 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235931AbiDEIAq (ORCPT
+        with ESMTP id S235967AbiDEIAx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:00:46 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA6EB4838D;
-        Tue,  5 Apr 2022 00:58:48 -0700 (PDT)
+        Tue, 5 Apr 2022 04:00:53 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A55A49243;
+        Tue,  5 Apr 2022 00:58:55 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 933EBB81B14;
-        Tue,  5 Apr 2022 07:58:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E515AC340EE;
-        Tue,  5 Apr 2022 07:58:45 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3682C61545;
+        Tue,  5 Apr 2022 07:58:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3F0DFC3410F;
+        Tue,  5 Apr 2022 07:58:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649145526;
-        bh=zH4l9z6y8J1WX/sN6BszQgli3CXzxmepCxSY80aVahM=;
+        s=korg; t=1649145534;
+        bh=mMs8cEwxxXca6Fv/Ju+e15x+v/0X/GOCyC5VUwCK5YA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=IwlQ2XVG+HzSgpDeqvWcLd7moOYmBt8Fj3x4x1qq4JUcfvUeLWKlSO4TEjFwK4qZT
-         oMNMKvehXDE5h19SRUnXfNMiLxXWmlwmI/nRj5SkJLApx8ZLMqR5gxF6UUVV8QKb/M
-         NxARHcftEoIKC6VAnj3OanNU6sh01WdQLFO+QVqo=
+        b=pBWNBlqI+J/gtxITJDyCgpV2X/1dcjG/KwY8FoWsauC9cFk3cbDG/Uyr6qHOcBuca
+         p7z/r6ogqCtWlGmj4wpwUMRVYo2jMjDRw02j6jge2hrMmLh/OM/PtqTR4zrJZNLIB/
+         C6PjTWvIguou0tsmvjjwNgHxB0tEo8kDOVo12Seg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
-        Kalle Valo <quic_kvalo@quicinc.com>,
+        stable@vger.kernel.org,
+        =?UTF-8?q?Jos=C3=A9=20Exp=C3=B3sito?= <jose.exposito89@gmail.com>,
+        Daniel Vetter <daniel.vetter@ffwll.ch>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0438/1126] ath11k: fix error code in ath11k_qmi_assign_target_mem_chunk()
-Date:   Tue,  5 Apr 2022 09:19:45 +0200
-Message-Id: <20220405070420.480630328@linuxfoundation.org>
+Subject: [PATCH 5.17 0441/1126] drm/selftests/test-drm_dp_mst_helper: Fix memory leak in sideband_msg_req_encode_decode
+Date:   Tue,  5 Apr 2022 09:19:48 +0200
+Message-Id: <20220405070420.567913454@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -49,35 +50,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dan Carpenter <dan.carpenter@oracle.com>
+From: José Expósito <jose.exposito89@gmail.com>
 
-[ Upstream commit c9b41832dc080fa59bad597de94865b3ea2d5bab ]
+[ Upstream commit ba3a5ddcf1e5df31f2291006d5297ca62035584f ]
 
-The "ret" vairable is not set at this point.  It could be uninitialized
-or zero.  The correct thing to return is -ENODEV.
+Avoid leaking the "out" variable if it is not possible to allocate
+the "txmsg" variable.
 
-Fixes: 6ac04bdc5edb ("ath11k: Use reserved host DDR addresses from DT for PCI devices")
-Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
-Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
-Link: https://lore.kernel.org/r/20220111071445.GA11243@kili
+Fixes: 09234b88ef55 ("drm/selftests/test-drm_dp_mst_helper: Move 'sideband_msg_req_encode_decode' onto the heap")
+Addresses-Coverity-ID: 1475685 ("Resource leak")
+Signed-off-by: José Expósito <jose.exposito89@gmail.com>
+Signed-off-by: Daniel Vetter <daniel.vetter@ffwll.ch>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220108165812.46797-1-jose.exposito89@gmail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/ath/ath11k/qmi.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/gpu/drm/selftests/test-drm_dp_mst_helper.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/wireless/ath/ath11k/qmi.c b/drivers/net/wireless/ath/ath11k/qmi.c
-index 42c2ad3e3668..d0701e8eca9c 100644
---- a/drivers/net/wireless/ath/ath11k/qmi.c
-+++ b/drivers/net/wireless/ath/ath11k/qmi.c
-@@ -1932,7 +1932,7 @@ static int ath11k_qmi_assign_target_mem_chunk(struct ath11k_base *ab)
- 			if (!hremote_node) {
- 				ath11k_dbg(ab, ATH11K_DBG_QMI,
- 					   "qmi fail to get hremote_node\n");
--				return ret;
-+				return -ENODEV;
- 			}
+diff --git a/drivers/gpu/drm/selftests/test-drm_dp_mst_helper.c b/drivers/gpu/drm/selftests/test-drm_dp_mst_helper.c
+index 6b4759ed6bfd..c491429f1a02 100644
+--- a/drivers/gpu/drm/selftests/test-drm_dp_mst_helper.c
++++ b/drivers/gpu/drm/selftests/test-drm_dp_mst_helper.c
+@@ -131,8 +131,10 @@ sideband_msg_req_encode_decode(struct drm_dp_sideband_msg_req_body *in)
+ 		return false;
  
- 			ret = of_address_to_resource(hremote_node, 0, &res);
+ 	txmsg = kzalloc(sizeof(*txmsg), GFP_KERNEL);
+-	if (!txmsg)
++	if (!txmsg) {
++		kfree(out);
+ 		return false;
++	}
+ 
+ 	drm_dp_encode_sideband_req(in, txmsg);
+ 	ret = drm_dp_decode_sideband_req(txmsg, out);
 -- 
 2.34.1
 
