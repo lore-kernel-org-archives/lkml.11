@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4977AC4167E
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 11:47:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C730C4707E
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 11:47:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381606AbiDELqc (ORCPT
+        id S1381646AbiDELqs (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 07:46:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47606 "EHLO
+        Tue, 5 Apr 2022 07:46:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47636 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244866AbiDEIwo (ORCPT
+        with ESMTP id S244870AbiDEIwo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Apr 2022 04:52:44 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A318423BC3;
-        Tue,  5 Apr 2022 01:45:06 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6648423BDA;
+        Tue,  5 Apr 2022 01:45:09 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5883DB81B18;
-        Tue,  5 Apr 2022 08:45:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A1949C385A1;
-        Tue,  5 Apr 2022 08:45:03 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 12F7AB81A0C;
+        Tue,  5 Apr 2022 08:45:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5C5EBC385A3;
+        Tue,  5 Apr 2022 08:45:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649148304;
-        bh=qDb2yczGtwpz0AJpIT9C2+a0YZXdqcJhVPbGZVx1LD8=;
+        s=korg; t=1649148306;
+        bh=q+HweTIoMRUDs33SD84jX+bq8GXDyO/WMF9zN2kpg1M=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0fAJs5GGCUDMMgvSHp4L/s7LMBRzj12DWnUxHKkUHjVfsu7DFkIgZQGRQm5RhD1Gt
-         jRIdZ0tvmI/AHSOPUJrFq/4Z8qGFqlAZUtVTvJ3YD/XU7URXuEUR3utWX7ILwgMrsl
-         6ZxEv3ZoDnbSMYM0+Rlv0bjbkA8A7+rYVsB1Wq7k=
+        b=bw0JsjI2LsMp/KymM/LCYFG9E9hvEIA5WfkM2OwaxcGCN1vpSc5RxnDLtwfjQbTrE
+         FKDkl9OE0sbcYK4IyqBd74nIb4317YN6X09a9vpSqE1rGnfCV3x70PNSeupepaO8v3
+         uuwMYmdMWyG5pl8hvOMtyw622P7hXEPNfvZTQyNQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Bharata B Rao <bharata@amd.com>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Srikar Dronamraju <srikar@linux.vnet.ibm.com>,
-        Mel Gorman <mgorman@suse.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0260/1017] sched/debug: Remove mpol_get/put and task_lock/unlock from sched_show_numa
-Date:   Tue,  5 Apr 2022 09:19:33 +0200
-Message-Id: <20220405070401.981090173@linuxfoundation.org>
+        stable@vger.kernel.org, "Z. Liu" <liuzx@knownsec.com>,
+        Helge Deller <deller@gmx.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 0302/1017] video: fbdev: matroxfb: set maxvram of vbG200eW to the same as vbG200 to avoid black screen
+Date:   Tue,  5 Apr 2022 09:20:15 +0200
+Message-Id: <20220405070403.239992927@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -51,57 +49,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Bharata B Rao <bharata@amd.com>
+From: Z. Liu <liuzx@knownsec.com>
 
-[ Upstream commit 28c988c3ec29db74a1dda631b18785958d57df4f ]
+[ Upstream commit 62d89a7d49afe46e6b9bbe9e23b004ad848dbde4 ]
 
-The older format of /proc/pid/sched printed home node info which
-required the mempolicy and task lock around mpol_get(). However
-the format has changed since then and there is no need for
-sched_show_numa() any more to have mempolicy argument,
-asssociated mpol_get/put and task_lock/unlock. Remove them.
+Start from commit 11be60bd66d54 "matroxfb: add Matrox MGA-G200eW board
+support", when maxvram is 0x800000, monitor become black w/ error message
+said: "The current input timing is not supported by the monitor display.
+Please change your input timing to 1920x1080@60Hz ...".
 
-Fixes: 397f2378f1361 ("sched/numa: Fix numa balancing stats in /proc/pid/sched")
-Signed-off-by: Bharata B Rao <bharata@amd.com>
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Reviewed-by: Srikar Dronamraju <srikar@linux.vnet.ibm.com>
-Acked-by: Mel Gorman <mgorman@suse.de>
-Link: https://lore.kernel.org/r/20220118050515.2973-1-bharata@amd.com
+Fixes: 11be60bd66d5 ("matroxfb: add Matrox MGA-G200eW board support")
+Signed-off-by: Z. Liu <liuzx@knownsec.com>
+Signed-off-by: Helge Deller <deller@gmx.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- kernel/sched/debug.c | 10 ----------
- 1 file changed, 10 deletions(-)
+ drivers/video/fbdev/matrox/matroxfb_base.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/kernel/sched/debug.c b/kernel/sched/debug.c
-index 7dcbaa31c5d9..50e05c8d0d61 100644
---- a/kernel/sched/debug.c
-+++ b/kernel/sched/debug.c
-@@ -931,25 +931,15 @@ void print_numa_stats(struct seq_file *m, int node, unsigned long tsf,
- static void sched_show_numa(struct task_struct *p, struct seq_file *m)
- {
- #ifdef CONFIG_NUMA_BALANCING
--	struct mempolicy *pol;
--
- 	if (p->mm)
- 		P(mm->numa_scan_seq);
- 
--	task_lock(p);
--	pol = p->mempolicy;
--	if (pol && !(pol->flags & MPOL_F_MORON))
--		pol = NULL;
--	mpol_get(pol);
--	task_unlock(p);
--
- 	P(numa_pages_migrated);
- 	P(numa_preferred_nid);
- 	P(total_numa_faults);
- 	SEQ_printf(m, "current_node=%d, numa_group_id=%d\n",
- 			task_node(p), task_numa_group_id(p));
- 	show_numa_stats(p, m);
--	mpol_put(pol);
- #endif
- }
- 
+diff --git a/drivers/video/fbdev/matrox/matroxfb_base.c b/drivers/video/fbdev/matrox/matroxfb_base.c
+index 5c82611e93d9..236521b19daf 100644
+--- a/drivers/video/fbdev/matrox/matroxfb_base.c
++++ b/drivers/video/fbdev/matrox/matroxfb_base.c
+@@ -1377,7 +1377,7 @@ static struct video_board vbG200 = {
+ 	.lowlevel = &matrox_G100
+ };
+ static struct video_board vbG200eW = {
+-	.maxvram = 0x800000,
++	.maxvram = 0x100000,
+ 	.maxdisplayable = 0x800000,
+ 	.accelID = FB_ACCEL_MATROX_MGAG200,
+ 	.lowlevel = &matrox_G100
 -- 
 2.34.1
 
