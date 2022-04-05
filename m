@@ -2,41 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 360E6C47082
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:55:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DB938C35295
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:55:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240156AbiDEIps (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 04:45:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43262 "EHLO
+        id S239964AbiDEIp2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 04:45:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57590 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233286AbiDEIFo (ORCPT
+        with ESMTP id S232776AbiDEIDz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:05:44 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 957DF694B1;
-        Tue,  5 Apr 2022 01:01:34 -0700 (PDT)
+        Tue, 5 Apr 2022 04:03:55 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2692258E45;
+        Tue,  5 Apr 2022 01:00:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3BB06B81C13;
-        Tue,  5 Apr 2022 08:01:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8E3D7C385A5;
-        Tue,  5 Apr 2022 08:01:31 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AC5FCB81B16;
+        Tue,  5 Apr 2022 08:00:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1ACE0C340EE;
+        Tue,  5 Apr 2022 08:00:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649145692;
-        bh=T3WSM5QUC07i8cXsMeOyjOuKw7tjfGtr2MmAVWVK/LM=;
+        s=korg; t=1649145656;
+        bh=VrehRZAmVXMINhRoiBQPWreZ4Eg/84shPOerGTJyAR0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LYBKUGRX8gyVLWXnzU+1VjevIKxSFJHt7l8NhvvsNIPbWSLZ8tZuFFbgtMtUz3shg
-         dRdWLcWUB7EtGujW8PhLuYM+6gXw/YiJ0ll/rCrUQXQrcGMt4Wkb5YOCX2IBKKnolJ
-         4WKX2cYlpVX5owj/J+VmtMnA3MoOqDkaMy/anL18=
+        b=AoXcnOJWPgLjIebSSeY/15y8H/Sh7x528TUALd/ivkXReNJJb6R+iIkZvKyByZPRS
+         pTLdJzz/0EU4qDddJbqHPI4gENV+f1BP9zPY212IvFhAKnN22tcsi1CFyR4rqg2q9P
+         cHMoEzglBrMpfElWtW/T/2p2cSNwhoPOLD3NwTX8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Lorenzo Bianconi <lorenzo@kernel.org>,
-        Felix Fietkau <nbd@nbd.name>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0494/1126] mt76: mt7915: use proper aid value in mt7915_mcu_sta_basic_tlv
-Date:   Tue,  5 Apr 2022 09:20:41 +0200
-Message-Id: <20220405070422.127395114@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Alexander Lobakin <alexandr.lobakin@intel.com>,
+        Michal Swiatkowski <michal.swiatkowski@linux.intel.com>,
+        Nechama Kraus <nechamax.kraus@linux.intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 0483/1126] igc: dont reserve excessive XDP_PACKET_HEADROOM on XSK Rx to skb
+Date:   Tue,  5 Apr 2022 09:20:30 +0200
+Message-Id: <20220405070421.804378738@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -48,49 +52,64 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lorenzo Bianconi <lorenzo@kernel.org>
+From: Alexander Lobakin <alexandr.lobakin@intel.com>
 
-[ Upstream commit abdb8bc94be4cf68aa71c9a8ee0bad9b3e6f52d3 ]
+[ Upstream commit f9e61d365bafdee40fe2586fc6be490c3e824dad ]
 
-Similar to mt7915_mcu_wtbl_generic_tlv, rely on vif->bss_conf.aid for
-aid in sta mode and not on sta->aid.
+{__,}napi_alloc_skb() allocates and reserves additional NET_SKB_PAD
++ NET_IP_ALIGN for any skb.
+OTOH, igc_construct_skb_zc() currently allocates and reserves
+additional `xdp->data_meta - xdp->data_hard_start`, which is about
+XDP_PACKET_HEADROOM for XSK frames.
+There's no need for that at all as the frame is post-XDP and will
+go only to the networking stack core.
+Pass the size of the actual data only (+ meta) to
+__napi_alloc_skb() and don't reserve anything. This will give
+enough headroom for stack processing.
+Also, net_prefetch() xdp->data_meta and align the copy size to
+speed-up memcpy() a little and better match igc_construct_skb().
 
-Fixes: e57b7901469fc ("mt76: add mac80211 driver for MT7915 PCIe-based chipsets")
-Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
-Signed-off-by: Felix Fietkau <nbd@nbd.name>
+Fixes: fc9df2a0b520 ("igc: Enable RX via AF_XDP zero-copy")
+Signed-off-by: Alexander Lobakin <alexandr.lobakin@intel.com>
+Reviewed-by: Michal Swiatkowski <michal.swiatkowski@linux.intel.com>
+Tested-by: Nechama Kraus <nechamax.kraus@linux.intel.com>
+Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/mediatek/mt76/mt7915/mcu.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/intel/igc/igc_main.c | 13 +++++++------
+ 1 file changed, 7 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/net/wireless/mediatek/mt76/mt7915/mcu.c b/drivers/net/wireless/mediatek/mt76/mt7915/mcu.c
-index 38cc50603d20..b2b3b5068789 100644
---- a/drivers/net/wireless/mediatek/mt76/mt7915/mcu.c
-+++ b/drivers/net/wireless/mediatek/mt76/mt7915/mcu.c
-@@ -1322,12 +1322,15 @@ mt7915_mcu_sta_basic_tlv(struct sk_buff *skb, struct ieee80211_vif *vif,
- 	case NL80211_IFTYPE_MESH_POINT:
- 	case NL80211_IFTYPE_AP:
- 		basic->conn_type = cpu_to_le32(CONNECTION_INFRA_STA);
-+		basic->aid = cpu_to_le16(sta->aid);
- 		break;
- 	case NL80211_IFTYPE_STATION:
- 		basic->conn_type = cpu_to_le32(CONNECTION_INFRA_AP);
-+		basic->aid = cpu_to_le16(vif->bss_conf.aid);
- 		break;
- 	case NL80211_IFTYPE_ADHOC:
- 		basic->conn_type = cpu_to_le32(CONNECTION_IBSS_ADHOC);
-+		basic->aid = cpu_to_le16(sta->aid);
- 		break;
- 	default:
- 		WARN_ON(1);
-@@ -1335,7 +1338,6 @@ mt7915_mcu_sta_basic_tlv(struct sk_buff *skb, struct ieee80211_vif *vif,
- 	}
+diff --git a/drivers/net/ethernet/intel/igc/igc_main.c b/drivers/net/ethernet/intel/igc/igc_main.c
+index 2f17f36e94fd..629e4a644a9d 100644
+--- a/drivers/net/ethernet/intel/igc/igc_main.c
++++ b/drivers/net/ethernet/intel/igc/igc_main.c
+@@ -2446,19 +2446,20 @@ static int igc_clean_rx_irq(struct igc_q_vector *q_vector, const int budget)
+ static struct sk_buff *igc_construct_skb_zc(struct igc_ring *ring,
+ 					    struct xdp_buff *xdp)
+ {
++	unsigned int totalsize = xdp->data_end - xdp->data_meta;
+ 	unsigned int metasize = xdp->data - xdp->data_meta;
+-	unsigned int datasize = xdp->data_end - xdp->data;
+-	unsigned int totalsize = metasize + datasize;
+ 	struct sk_buff *skb;
  
- 	memcpy(basic->peer_addr, sta->addr, ETH_ALEN);
--	basic->aid = cpu_to_le16(sta->aid);
- 	basic->qos = sta->wme;
- }
+-	skb = __napi_alloc_skb(&ring->q_vector->napi,
+-			       xdp->data_end - xdp->data_hard_start,
++	net_prefetch(xdp->data_meta);
++
++	skb = __napi_alloc_skb(&ring->q_vector->napi, totalsize,
+ 			       GFP_ATOMIC | __GFP_NOWARN);
+ 	if (unlikely(!skb))
+ 		return NULL;
  
+-	skb_reserve(skb, xdp->data_meta - xdp->data_hard_start);
+-	memcpy(__skb_put(skb, totalsize), xdp->data_meta, totalsize);
++	memcpy(__skb_put(skb, totalsize), xdp->data_meta,
++	       ALIGN(totalsize, sizeof(long)));
++
+ 	if (metasize) {
+ 		skb_metadata_set(skb, metasize);
+ 		__skb_pull(skb, metasize);
 -- 
 2.34.1
 
