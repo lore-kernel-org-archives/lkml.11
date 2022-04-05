@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C4BBDC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:10:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 565E8C4167D
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:10:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233591AbiDET63 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 15:58:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52172 "EHLO
+        id S241362AbiDET7v (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 15:59:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33874 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354161AbiDEKMM (ORCPT
+        with ESMTP id S243776AbiDEKhl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:12:12 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7BFE517E9;
-        Tue,  5 Apr 2022 02:57:48 -0700 (PDT)
+        Tue, 5 Apr 2022 06:37:41 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2EFB55762;
+        Tue,  5 Apr 2022 03:22:58 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 871B4B81B18;
-        Tue,  5 Apr 2022 09:57:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CB7E5C385A2;
-        Tue,  5 Apr 2022 09:57:45 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7027CB81C8A;
+        Tue,  5 Apr 2022 10:22:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D6161C385A0;
+        Tue,  5 Apr 2022 10:22:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649152666;
-        bh=c0v1kwfw9nemCbOgxAxvygAY6BW/Q0cDvVzauxVeYLo=;
+        s=korg; t=1649154176;
+        bh=/hJvC2gf0i2zGMllIvwBp0yhdrPxL94SQLzsN5wb/G8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Qtyv4Hk4atwZjbT4DF3YjF8UBWA2Tty8ZsffXkCKCe7b+fRZa7cFcekx/YE4LOs23
-         8quM8zsSWPUmBP9nXo0ZjXx/GTBu3t4ifss4GMYPLbWpq1S8h0AAl9t9IvAlrawAu1
-         lfRKXV4DVkweBUGZfs4Y7RUhAo5BhWgblhRAMPrA=
+        b=wu67r7vTlQZ9ZakBGAB5g6b/AJK1d/87pIphFvjV23I9M9geKzOxLl2TOyx+GNi7p
+         q9ugbzY2ub5e9jxWSTcdz6Og/0edl/Fa3bBkofnlXQp3E8WnwI1Lj6w15XEPoi5ax+
+         zvom8HK82NB71c3VJHa1XGqzLFU/laiqy+UzOyyo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, kernel test robot <oliver.sang@intel.com>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
-        Huang Rui <ray.huang@amd.com>
-Subject: [PATCH 5.15 858/913] ACPI: CPPC: Avoid out of bounds access when parsing _CPC data
-Date:   Tue,  5 Apr 2022 09:32:00 +0200
-Message-Id: <20220405070405.545873390@linuxfoundation.org>
+        stable@vger.kernel.org, Evgeny Novikov <novikov@ispras.ru>,
+        Kirill Shilimanov <kirill.shilimanov@huawei.com>,
+        Helge Deller <deller@gmx.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 484/599] video: fbdev: w100fb: Reset global state
+Date:   Tue,  5 Apr 2022 09:32:58 +0200
+Message-Id: <20220405070313.232308607@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
+References: <20220405070258.802373272@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,37 +49,68 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+From: Evgeny Novikov <novikov@ispras.ru>
 
-commit 40d8abf364bcab23bc715a9221a3c8623956257b upstream.
+[ Upstream commit 8738ddcac644964ae128ccd3d80d48773c8d528e ]
 
-If the NumEntries field in the _CPC return package is less than 2, do
-not attempt to access the "Revision" element of that package, because
-it may not be present then.
+w100fb_probe() did not reset the global state to its initial state. This
+can result in invocation of iounmap() even when there was not the
+appropriate successful call of ioremap(). For instance, this may be the
+case if first probe fails after two successful ioremap() while second
+probe fails when first ioremap() fails. The similar issue is with
+w100fb_remove(). The patch fixes both bugs.
 
-Fixes: 337aadff8e45 ("ACPI: Introduce CPU performance controls using CPPC")
-BugLink: https://lore.kernel.org/lkml/20220322143534.GC32582@xsang-OptiPlex-9020/
-Reported-by: kernel test robot <oliver.sang@intel.com>
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
-Reviewed-by: Huang Rui <ray.huang@amd.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Found by Linux Driver Verification project (linuxtesting.org).
+
+Signed-off-by: Evgeny Novikov <novikov@ispras.ru>
+Co-developed-by: Kirill Shilimanov <kirill.shilimanov@huawei.com>
+Signed-off-by: Kirill Shilimanov <kirill.shilimanov@huawei.com>
+Signed-off-by: Helge Deller <deller@gmx.de>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/acpi/cppc_acpi.c |    5 +++++
- 1 file changed, 5 insertions(+)
+ drivers/video/fbdev/w100fb.c | 15 ++++++++++++---
+ 1 file changed, 12 insertions(+), 3 deletions(-)
 
---- a/drivers/acpi/cppc_acpi.c
-+++ b/drivers/acpi/cppc_acpi.c
-@@ -703,6 +703,11 @@ int acpi_cppc_processor_probe(struct acp
- 	cpc_obj = &out_obj->package.elements[0];
- 	if (cpc_obj->type == ACPI_TYPE_INTEGER)	{
- 		num_ent = cpc_obj->integer.value;
-+		if (num_ent <= 1) {
-+			pr_debug("Unexpected _CPC NumEntries value (%d) for CPU:%d\n",
-+				 num_ent, pr->id);
-+			goto out_free;
-+		}
- 	} else {
- 		pr_debug("Unexpected entry type(%d) for NumEntries\n",
- 				cpc_obj->type);
+diff --git a/drivers/video/fbdev/w100fb.c b/drivers/video/fbdev/w100fb.c
+index d96ab28f8ce4..4e641a780726 100644
+--- a/drivers/video/fbdev/w100fb.c
++++ b/drivers/video/fbdev/w100fb.c
+@@ -770,12 +770,18 @@ static int w100fb_probe(struct platform_device *pdev)
+ 		fb_dealloc_cmap(&info->cmap);
+ 		kfree(info->pseudo_palette);
+ 	}
+-	if (remapped_fbuf != NULL)
++	if (remapped_fbuf != NULL) {
+ 		iounmap(remapped_fbuf);
+-	if (remapped_regs != NULL)
++		remapped_fbuf = NULL;
++	}
++	if (remapped_regs != NULL) {
+ 		iounmap(remapped_regs);
+-	if (remapped_base != NULL)
++		remapped_regs = NULL;
++	}
++	if (remapped_base != NULL) {
+ 		iounmap(remapped_base);
++		remapped_base = NULL;
++	}
+ 	if (info)
+ 		framebuffer_release(info);
+ 	return err;
+@@ -795,8 +801,11 @@ static int w100fb_remove(struct platform_device *pdev)
+ 	fb_dealloc_cmap(&info->cmap);
+ 
+ 	iounmap(remapped_base);
++	remapped_base = NULL;
+ 	iounmap(remapped_regs);
++	remapped_regs = NULL;
+ 	iounmap(remapped_fbuf);
++	remapped_fbuf = NULL;
+ 
+ 	framebuffer_release(info);
+ 
+-- 
+2.34.1
+
 
 
