@@ -2,67 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 929E6C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 01:05:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D088C41535
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 01:06:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1839386AbiDFBBm (ORCPT
+        id S1839514AbiDFBEY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 21:01:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44384 "EHLO
+        Tue, 5 Apr 2022 21:04:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47412 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1387516AbiDENPQ (ORCPT
+        with ESMTP id S1349515AbiDEJuC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 09:15:16 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E27BAD557A;
-        Tue,  5 Apr 2022 05:20:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=/Jzy8onOXUPJU7Y+hs/6t3GRIWLkNmZwe+i4nNa4Yxc=; b=xTGGnE8UM+/e5BXzMVCICfkA3l
-        78wgvNqyPrLXzotrawBoBiAINgodkOn60B6J1YFAtkLIva9JxM5iWZyv6FvWxA6mlbYPUjCRcu8Bv
-        PGMzaaxFPXK4JIOVFeiKVmdwsVWZv52IUFxApOygAB2B0qeU3YjnxsFJIJs0llcFmuLo=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1nbiAO-00EFPI-74; Tue, 05 Apr 2022 14:20:12 +0200
-Date:   Tue, 5 Apr 2022 14:20:12 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Michael Walle <michael@walle.cc>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: Re: [PATCH net-next v3 2/3] dt-bindings: net: mscc-miim: add clock
- and clock-frequency
-Message-ID: <Ykwz/GKpsaug6RpD@lunn.ch>
-References: <20220405120951.4044875-1-michael@walle.cc>
- <20220405120951.4044875-3-michael@walle.cc>
+        Tue, 5 Apr 2022 05:50:02 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5FBF51E4;
+        Tue,  5 Apr 2022 02:48:04 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0A3B6B817D3;
+        Tue,  5 Apr 2022 09:48:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 71748C385A1;
+        Tue,  5 Apr 2022 09:48:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649152081;
+        bh=fc6qrim3UwwCoexjObybUivRCYC7le7SVED3R4kDhpI=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=Z4uzVuDnNbP9Bh98NTca+00dAM+XkdJgkpJ0VPkCoMYrupFqYFAKFi1kNkrdMzcxM
+         dLSrlAr4h47qv7iIUxnFaPoz22MBjFLdb6rKl1BR5TtwX8du2lyTiw51Za0Y/ddyPC
+         ldIoSkXHDG61BXbfwTzgFOSxCvLtT/rnqkAWmcPg=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Feng Tang <feng.tang@intel.com>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Igor Zhbanov <i.zhbanov@omprussia.ru>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 647/913] driver core: dd: fix return value of __setup handler
+Date:   Tue,  5 Apr 2022 09:28:29 +0200
+Message-Id: <20220405070359.233405152@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220405120951.4044875-3-michael@walle.cc>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 05, 2022 at 02:09:50PM +0200, Michael Walle wrote:
-> Add the (optional) clock input of the MDIO controller and indicate that
-> the common clock-frequency property is supported. The driver can use it
-> to set the desired MDIO bus frequency.
-> 
-> Signed-off-by: Michael Walle <michael@walle.cc>
-> Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+From: Randy Dunlap <rdunlap@infradead.org>
 
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+[ Upstream commit f2aad54703dbe630f9d8b235eb58e8c8cc78f37d ]
 
-    Andrew
+When "driver_async_probe=nulltty" is used on the kernel boot command line,
+it causes an Unknown parameter message and the string is added to init's
+environment strings, polluting them.
+
+  Unknown kernel command line parameters "BOOT_IMAGE=/boot/bzImage-517rc6
+  driver_async_probe=nulltty", will be passed to user space.
+
+ Run /sbin/init as init process
+   with arguments:
+     /sbin/init
+   with environment:
+     HOME=/
+     TERM=linux
+     BOOT_IMAGE=/boot/bzImage-517rc6
+     driver_async_probe=nulltty
+
+Change the return value of the __setup function to 1 to indicate
+that the __setup option has been handled.
+
+Link: lore.kernel.org/r/64644a2f-4a20-bab3-1e15-3b2cdd0defe3@omprussia.ru
+Fixes: 1ea61b68d0f8 ("async: Add cmdline option to specify drivers to be async probed")
+Cc: Feng Tang <feng.tang@intel.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: "Rafael J. Wysocki" <rafael@kernel.org>
+Reported-by: Igor Zhbanov <i.zhbanov@omprussia.ru>
+Reviewed-by: Feng Tang <feng.tang@intel.com>
+Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+Link: https://lore.kernel.org/r/20220301041829.15137-1-rdunlap@infradead.org
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/base/dd.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/base/dd.c b/drivers/base/dd.c
+index 6b6630693201..64ce42b6c6b6 100644
+--- a/drivers/base/dd.c
++++ b/drivers/base/dd.c
+@@ -809,7 +809,7 @@ static int __init save_async_options(char *buf)
+ 		pr_warn("Too long list of driver names for 'driver_async_probe'!\n");
+ 
+ 	strlcpy(async_probe_drv_names, buf, ASYNC_DRV_NAMES_MAX_LEN);
+-	return 0;
++	return 1;
+ }
+ __setup("driver_async_probe=", save_async_options);
+ 
+-- 
+2.34.1
+
+
 
