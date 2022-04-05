@@ -2,125 +2,154 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D65CC35280
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C2FF8C433EF
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:17:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1574452AbiDEW4L (ORCPT
+        id S1574598AbiDEW4i (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 18:56:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34020 "EHLO
+        Tue, 5 Apr 2022 18:56:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37166 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1384117AbiDEM1L (ORCPT
+        with ESMTP id S1457388AbiDEQDK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 08:27:11 -0400
-Received: from conuserg-12.nifty.com (conuserg-12.nifty.com [210.131.2.79])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB2E1574AB;
-        Tue,  5 Apr 2022 04:35:17 -0700 (PDT)
-Received: from grover.. (133-32-177-133.west.xps.vectant.ne.jp [133.32.177.133]) (authenticated)
-        by conuserg-12.nifty.com with ESMTP id 235BYCGs000464;
-        Tue, 5 Apr 2022 20:34:16 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conuserg-12.nifty.com 235BYCGs000464
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1649158456;
-        bh=jQYNKCFxuPQP3ZPrlr5taAXi8gXxcKaNemFjBDbWpQI=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KIbFiadPsQ0UMZCQcC/JAQ4dYrCBvGqON+8YV7gUab1+ukbGOIE3lm8KFYlA+dL6S
-         J5z3+ipr5aPapMUf6ro01z2XRhnGSYgMWgg9/PcbGJ4OGJUbcZeozObKqKS8V1Bgo+
-         n6q8yked1G7CVRG8o5QraRVE+WrNzXCTZ+7RvPaUM4eTNqKVsNY+6bbSuByPRIfuq4
-         8ksMsfKJTh3s6y/zWKTqUXTxKwCslsDVDa3bQ2s9KTqfmdpCh3wtWMKrCJaZ9ziPkn
-         GDx3mhB4z4FIDquk5BpblgbpDe3B3sAogF/KKfwtYVYYpY0VmOW3lXe0yT55uLgud5
-         JfUXVDEqeDvtQ==
-X-Nifty-SrcIP: [133.32.177.133]
-From:   Masahiro Yamada <masahiroy@kernel.org>
-To:     linux-kbuild@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Michal Marek <michal.lkml@markovi.net>,
-        Nick Desaulniers <ndesaulniers@google.com>
-Subject: [PATCH v2 06/10] modpost: remove annoying namespace_from_kstrtabns()
-Date:   Tue,  5 Apr 2022 20:33:54 +0900
-Message-Id: <20220405113359.2880241-7-masahiroy@kernel.org>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220405113359.2880241-1-masahiroy@kernel.org>
-References: <20220405113359.2880241-1-masahiroy@kernel.org>
+        Tue, 5 Apr 2022 12:03:10 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB70C5FCB
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 08:40:02 -0700 (PDT)
+Date:   Tue, 05 Apr 2022 15:40:00 -0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1649173201;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=8bcrTbBX37+kVlaJBgWsgjcoRyEtqjFzNj/tbPx0zYU=;
+        b=LcddRTzEt2hk++e3vqlqx9ayHVfzAFNYkZougtlZIGzKvxTkJi7Q9itEdGCxkLddkdexY1
+        S+RLplC6XuDJK5SfR7kDp0oVgGQML4ZPDen3ooqIrqnl01OdnQnhRjodDhT/BPuthNRToc
+        Y84jWTSzFRKghZcXN7389LsczoNNFkOBi5otO1haniu734wU1MNxQ4P0I0400YdjdYKkI6
+        zkoqgItv5Iyzf3n3BFiOu4PAnvfME4ZhxscphiQeGMNy2ipGHr8WEagXmZLEyd4u6EFMNk
+        jJclyHLxQTi+x3gdVvw7yOdMNWM+31uInkRruxt4QyJBMAo0l4AYpmF0gYS0GA==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1649173201;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=8bcrTbBX37+kVlaJBgWsgjcoRyEtqjFzNj/tbPx0zYU=;
+        b=vX+9+7BKkVw21k5REZ/ZSKU/iT0nz0rA6FTH5uwQNcnzu+n9LW71E4TH1p7BIvwLLHEwGt
+        MQub8RSMQqd89/CA==
+From:   "irqchip-bot for Marc Zyngier" <tip-bot2@linutronix.de>
+Sender: tip-bot2@linutronix.de
+Reply-to: linux-kernel@vger.kernel.org
+To:     linux-kernel@vger.kernel.org
+Subject: [irqchip: irq/irqchip-fixes] irqchip/gic-v4: Wait for
+ GICR_VPENDBASER.Dirty to clear before descheduling
+Cc:     Jingyi Wang <wangjingyi11@huawei.com>,
+        Nianyao Tang <tangnianyao@huawei.com>,
+        Marc Zyngier <maz@kernel.org>, tglx@linutronix.de
+In-Reply-To: <4aae10ba-b39a-5f84-754b-69c2eb0a2c03@huawei.com>
+References: <4aae10ba-b39a-5f84-754b-69c2eb0a2c03@huawei.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Message-ID: <164917320029.389.16907436280316992087.tip-bot2@tip-bot2>
+Robot-ID: <tip-bot2@linutronix.de>
+Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-There are two call sites for sym_update_namespace().
+The following commit has been merged into the irq/irqchip-fixes branch of irqchip:
 
-When the symbol has no namespace, s->namespace is set to NULL,
-but the conversion from "" to NULL is done in two different places.
+Commit-ID:     af27e41612ec7e5b4783f589b753a7c31a37aac8
+Gitweb:        https://git.kernel.org/pub/scm/linux/kernel/git/maz/arm-platforms/af27e41612ec7e5b4783f589b753a7c31a37aac8
+Author:        Marc Zyngier <maz@kernel.org>
+AuthorDate:    Thu, 17 Mar 2022 09:49:02 
+Committer:     Marc Zyngier <maz@kernel.org>
+CommitterDate: Tue, 05 Apr 2022 16:33:13 +01:00
 
-[1] read_symbols()
+irqchip/gic-v4: Wait for GICR_VPENDBASER.Dirty to clear before descheduling
 
-  This gets the namespace from __kstrtabns_<symbol>. If the symbol has
-  no namespace, sym_get_data(info, sym) returns the empty string "".
-  namespace_from_kstrtabns() converts it to NULL before it is passed to
-  sym_update_namespace().
+The way KVM drives GICv4.{0,1} is as follows:
+- vcpu_load() makes the VPE resident, instructing the RD to start
+  scanning for interrupts
+- just before entering the guest, we check that the RD has finished
+  scanning and that we can start running the vcpu
+- on preemption, we deschedule the VPE by making it invalid on
+  the RD
 
-[2] read_dump()
+However, we are preemptible between the first two steps. If it so
+happens *and* that the RD was still scanning, we nonetheless write
+to the GICR_VPENDBASER register while Dirty is set, and bad things
+happen (we're in UNPRED land).
 
-  This gets the namespace from the dump file, *.symvers. If the symbol
-  has no namespace, the 'namespace' is the empty string "", which is
-  directly passed into sym_update_namespace(). The conversion from
-  "" to NULL is done in sym_update_namespace().
+This affects both the 4.0 and 4.1 implementations.
 
-namespace_from_kstrtabns() exists only for creating this inconsistency.
+Make sure Dirty is cleared before performing the deschedule,
+meaning that its_clear_vpend_valid() becomes a sort of full VPE
+residency barrier.
 
-By removing it, sym_update_namespace() is consistently passed with ""
-when the symbol has no namespace.
-
-Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+Reported-by: Jingyi Wang <wangjingyi11@huawei.com>
+Tested-by: Nianyao Tang <tangnianyao@huawei.com>
+Signed-off-by: Marc Zyngier <maz@kernel.org>
+Fixes: 57e3cebd022f ("KVM: arm64: Delay the polling of the GICR_VPENDBASER.Dirty bit")
+Link: https://lore.kernel.org/r/4aae10ba-b39a-5f84-754b-69c2eb0a2c03@huawei.com
 ---
+ drivers/irqchip/irq-gic-v3-its.c | 28 +++++++++++++++++++---------
+ 1 file changed, 19 insertions(+), 9 deletions(-)
 
-Changes in v2:
-  - new
-
- scripts/mod/modpost.c | 14 ++------------
- 1 file changed, 2 insertions(+), 12 deletions(-)
-
-diff --git a/scripts/mod/modpost.c b/scripts/mod/modpost.c
-index 2a202764ff48..522d5249d196 100644
---- a/scripts/mod/modpost.c
-+++ b/scripts/mod/modpost.c
-@@ -369,13 +369,6 @@ static enum export export_from_secname(struct elf_info *elf, unsigned int sec)
- 		return export_unknown;
+diff --git a/drivers/irqchip/irq-gic-v3-its.c b/drivers/irqchip/irq-gic-v3-its.c
+index cd77297..a0fc764 100644
+--- a/drivers/irqchip/irq-gic-v3-its.c
++++ b/drivers/irqchip/irq-gic-v3-its.c
+@@ -3011,18 +3011,12 @@ static int __init allocate_lpi_tables(void)
+ 	return 0;
  }
  
--static const char *namespace_from_kstrtabns(const struct elf_info *info,
--					    const Elf_Sym *sym)
--{
--	const char *value = sym_get_data(info, sym);
--	return value[0] ? value : NULL;
--}
--
- static void sym_update_namespace(const char *symname, const char *namespace)
+-static u64 its_clear_vpend_valid(void __iomem *vlpi_base, u64 clr, u64 set)
++static u64 read_vpend_dirty_clear(void __iomem *vlpi_base)
  {
- 	struct symbol *s = find_symbol(symname);
-@@ -391,8 +384,7 @@ static void sym_update_namespace(const char *symname, const char *namespace)
- 	}
+ 	u32 count = 1000000;	/* 1s! */
+ 	bool clean;
+ 	u64 val;
  
- 	free(s->namespace);
--	s->namespace =
--		namespace && namespace[0] ? NOFAIL(strdup(namespace)) : NULL;
-+	s->namespace = namespace[0] ? NOFAIL(strdup(namespace)) : NULL;
- }
- 
- /**
-@@ -2049,9 +2041,7 @@ static void read_symbols(const char *modname)
- 		/* Apply symbol namespaces from __kstrtabns_<symbol> entries. */
- 		if (strstarts(symname, "__kstrtabns_"))
- 			sym_update_namespace(symname + strlen("__kstrtabns_"),
--					     namespace_from_kstrtabns(&info,
--								      sym));
+-	val = gicr_read_vpendbaser(vlpi_base + GICR_VPENDBASER);
+-	val &= ~GICR_VPENDBASER_Valid;
+-	val &= ~clr;
+-	val |= set;
+-	gicr_write_vpendbaser(val, vlpi_base + GICR_VPENDBASER);
 -
-+					     sym_get_data(&info, sym));
- 		if (strstarts(symname, "__crc_"))
- 			handle_modversion(mod, &info, sym,
- 					  symname + strlen("__crc_"));
--- 
-2.32.0
-
+ 	do {
+ 		val = gicr_read_vpendbaser(vlpi_base + GICR_VPENDBASER);
+ 		clean = !(val & GICR_VPENDBASER_Dirty);
+@@ -3033,10 +3027,26 @@ static u64 its_clear_vpend_valid(void __iomem *vlpi_base, u64 clr, u64 set)
+ 		}
+ 	} while (!clean && count);
+ 
+-	if (unlikely(val & GICR_VPENDBASER_Dirty)) {
++	if (unlikely(!clean))
+ 		pr_err_ratelimited("ITS virtual pending table not cleaning\n");
++
++	return val;
++}
++
++static u64 its_clear_vpend_valid(void __iomem *vlpi_base, u64 clr, u64 set)
++{
++	u64 val;
++
++	/* Make sure we wait until the RD is done with the initial scan */
++	val = read_vpend_dirty_clear(vlpi_base);
++	val &= ~GICR_VPENDBASER_Valid;
++	val &= ~clr;
++	val |= set;
++	gicr_write_vpendbaser(val, vlpi_base + GICR_VPENDBASER);
++
++	val = read_vpend_dirty_clear(vlpi_base);
++	if (unlikely(val & GICR_VPENDBASER_Dirty))
+ 		val |= GICR_VPENDBASER_PendingLast;
+-	}
+ 
+ 	return val;
+ }
