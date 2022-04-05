@@ -2,228 +2,278 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F0E5CC4321E
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 02:47:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 44EC7C41535
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 02:47:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1850121AbiDFCrn (ORCPT
+        id S1850219AbiDFCsJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 22:47:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46908 "EHLO
+        Tue, 5 Apr 2022 22:48:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57730 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1580004AbiDEXdb (ORCPT
+        with ESMTP id S1585447AbiDEX74 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 19:33:31 -0400
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 802C31107EC
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 14:54:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649195661; x=1680731661;
-  h=date:from:to:cc:subject:message-id:mime-version:
-   content-transfer-encoding;
-  bh=NGvTMnGPeUwzl4kl14u9lqcQdPSOq/O+lm8BndXEPHo=;
-  b=jL2JpdBm2j/4Zk0M6iT1tw1eHeZXLodKt1JBJNDpNIT2G9zARy8D+FPT
-   vOqADFEnLChzMpmm9htsp6603ksbn/0GFD06Q4Oj+3gg9uZ06ebzU3vyj
-   l7PSweUjkPeGc+rW/0/fV61kB9GQzWhszqPHmP5ZnIi7pQeQVZN+wkmt3
-   wvT5hGmMGuHa9tU6WzXZQ7/2kmH/oTnLfIEbMKBm0ig0SYBPsRryf+ajO
-   hrfrp1Sl9tsJuYiHGb/NXiIHbtrFdvNMjgwtkdpmKiMk+ig7A7CUJKWSO
-   1uwazPr1burQMFrGUta+hB2ZddgtndaCk6eJ+8cZ/Qg0PvGb5yTUHyWhj
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10308"; a="260568083"
-X-IronPort-AV: E=Sophos;i="5.90,238,1643702400"; 
-   d="scan'208";a="260568083"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2022 14:53:37 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,238,1643702400"; 
-   d="scan'208";a="523643363"
-Received: from lkp-server02.sh.intel.com (HELO a44fdfb70b94) ([10.239.97.151])
-  by orsmga002.jf.intel.com with ESMTP; 05 Apr 2022 14:53:35 -0700
-Received: from kbuild by a44fdfb70b94 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nbr7G-0003nT-WA;
-        Tue, 05 Apr 2022 21:53:34 +0000
-Date:   Wed, 06 Apr 2022 05:53:28 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     "x86-ml" <x86@kernel.org>
-Cc:     linux-kernel@vger.kernel.org
-Subject: [tip:perf/core] BUILD SUCCESS
- 7bebfe9dd802b80abff5a43e00ab68d98893a22c
-Message-ID: <624cba58.p3jGLmaBjrqd9HPc%lkp@intel.com>
-User-Agent: Heirloom mailx 12.5 6/20/10
+        Tue, 5 Apr 2022 19:59:56 -0400
+Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F4F7FF4
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 15:19:08 -0700 (PDT)
+Received: by mail-pj1-x102b.google.com with SMTP id a16-20020a17090a6d9000b001c7d6c1bb13so840247pjk.4
+        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 15:19:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=Mb3Hz6A+dQKIIp0hbQkZNPT8r/kfRWqo9hHnNe02tSc=;
+        b=DJKVcAlgYQLRGDnF4oZDPo6kaUyeBcvUbtM9DQf4086nr63s8CV9xaA1pFyPyVd6zv
+         KsxOq1fTBSBLVdVE0CbjXdyfvsPtrQSojZ3Ik5EtcFOlwIq5JQgHzxbHR555WL9crepH
+         S72rxBu3yQnfLA+Xf5i9Hnhm5xnrtmZcwryoQPDPjxI+PAJgd+UNYC/EvIZh82CdY+qq
+         8FH2u9NSIAcodKHw8ZNc9P4332gvKphUsRzJgm9IKnYZTyiQl4gK6EDr2RbIq/9XSL0j
+         0zvL2UaSPEYpXMRAltbASNWRMwres9qAkSc5MNKP6PB+1a+E4jJDsFpqG+tuLHf5+s+l
+         L2cQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=Mb3Hz6A+dQKIIp0hbQkZNPT8r/kfRWqo9hHnNe02tSc=;
+        b=ECisz1Es3GsCdqXinopLc0fA5sxZfPPvQD6ZpK5w6tkZ2liNQ2OwhVIHRwgyiCDvZ2
+         jc/4hwnLUldCbsSyQ3SxAFTnGJoUswURbK0LtWID92xi/kvUp071caMWe2P/eDKdNJjk
+         RcldkZHZNccxTN2hIFSi7RqZEd+ho6m4wLaxIxqtDb0Ze+eMD776WZxYRsmtO67qJCXK
+         YbruIqpy+KKFgi1aJRmHI90xebAz3AQAFeTH/+dYqGyA/o0WMAaIcBjbcty3IXxyckus
+         iq1JBZIKVJT5sNKW5dKFujypr737z+Jc++bYDiXQcEACrZAvYex9y/CwHUOBovlmfLQP
+         pVgQ==
+X-Gm-Message-State: AOAM5332FIcI6FMDzmnPBAhmmxtngh12B3sKH00FbXa8r57Uh9ovjADs
+        edMuBKTdJKojrbQ3SKrToPIsKw==
+X-Google-Smtp-Source: ABdhPJy+b1vR1UXlC3uR2Ml8TmaQn1bk7ySEIBS8UyT96phSNBkzKhPLn6QizSDq1o7c3oi0zmDf1A==
+X-Received: by 2002:a17:90a:280d:b0:1ca:b14e:35e4 with SMTP id e13-20020a17090a280d00b001cab14e35e4mr6485344pjd.158.1649197147763;
+        Tue, 05 Apr 2022 15:19:07 -0700 (PDT)
+Received: from google.com (254.80.82.34.bc.googleusercontent.com. [34.82.80.254])
+        by smtp.gmail.com with ESMTPSA id 207-20020a6217d8000000b004fdd5af8885sm16164740pfx.22.2022.04.05.15.19.06
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 05 Apr 2022 15:19:06 -0700 (PDT)
+Date:   Tue, 5 Apr 2022 22:19:03 +0000
+From:   David Matlack <dmatlack@google.com>
+To:     Ben Gardon <bgardon@google.com>
+Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Peter Xu <peterx@redhat.com>,
+        Sean Christopherson <seanjc@google.com>,
+        Jim Mattson <jmattson@google.com>,
+        David Dunn <daviddunn@google.com>,
+        Jing Zhang <jingzhangos@google.com>,
+        Junaid Shahid <junaids@google.com>
+Subject: Re: [PATCH v3 02/11] KVM: selftests: Dump VM stats in binary stats
+ test
+Message-ID: <YkzAV8FPdSjzDOd1@google.com>
+References: <20220330174621.1567317-1-bgardon@google.com>
+ <20220330174621.1567317-3-bgardon@google.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+In-Reply-To: <20220330174621.1567317-3-bgardon@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git perf/core
-branch HEAD: 7bebfe9dd802b80abff5a43e00ab68d98893a22c  perf/x86: Unify format of events sysfs show
+On Wed, Mar 30, 2022 at 10:46:12AM -0700, Ben Gardon wrote:
+> Add kvm_util library functions to read KVM stats through the binary
+> stats interface and then dump them to stdout when running the binary
+> stats test. Subsequent commits will extend the kvm_util code and use it
+> to make assertions in a test for NX hugepages.
+> 
+> CC: Jing Zhang <jingzhangos@google.com>
+> Signed-off-by: Ben Gardon <bgardon@google.com>
+> ---
+>  .../selftests/kvm/include/kvm_util_base.h     |   1 +
+>  .../selftests/kvm/kvm_binary_stats_test.c     |   3 +
+>  tools/testing/selftests/kvm/lib/kvm_util.c    | 143 ++++++++++++++++++
+>  3 files changed, 147 insertions(+)
+> 
+> diff --git a/tools/testing/selftests/kvm/include/kvm_util_base.h b/tools/testing/selftests/kvm/include/kvm_util_base.h
+> index 976aaaba8769..4783fd1cd4cf 100644
+> --- a/tools/testing/selftests/kvm/include/kvm_util_base.h
+> +++ b/tools/testing/selftests/kvm/include/kvm_util_base.h
+> @@ -401,6 +401,7 @@ void assert_on_unhandled_exception(struct kvm_vm *vm, uint32_t vcpuid);
+>  
+>  int vm_get_stats_fd(struct kvm_vm *vm);
+>  int vcpu_get_stats_fd(struct kvm_vm *vm, uint32_t vcpuid);
+> +void dump_vm_stats(struct kvm_vm *vm);
+>  
+>  uint32_t guest_get_vcpuid(void);
+>  
+> diff --git a/tools/testing/selftests/kvm/kvm_binary_stats_test.c b/tools/testing/selftests/kvm/kvm_binary_stats_test.c
+> index 17f65d514915..afc4701ce8dd 100644
+> --- a/tools/testing/selftests/kvm/kvm_binary_stats_test.c
+> +++ b/tools/testing/selftests/kvm/kvm_binary_stats_test.c
+> @@ -174,6 +174,9 @@ static void vm_stats_test(struct kvm_vm *vm)
+>  	stats_test(stats_fd);
+>  	close(stats_fd);
+>  	TEST_ASSERT(fcntl(stats_fd, F_GETFD) == -1, "Stats fd not freed");
+> +
+> +	/* Dump VM stats */
+> +	dump_vm_stats(vm);
+>  }
+>  
+>  static void vcpu_stats_test(struct kvm_vm *vm, int vcpu_id)
+> diff --git a/tools/testing/selftests/kvm/lib/kvm_util.c b/tools/testing/selftests/kvm/lib/kvm_util.c
+> index 11a692cf4570..f87df68b150d 100644
+> --- a/tools/testing/selftests/kvm/lib/kvm_util.c
+> +++ b/tools/testing/selftests/kvm/lib/kvm_util.c
+> @@ -2562,3 +2562,146 @@ int vcpu_get_stats_fd(struct kvm_vm *vm, uint32_t vcpuid)
+>  
+>  	return ioctl(vcpu->fd, KVM_GET_STATS_FD, NULL);
+>  }
+> +
+> +/* Caller is responsible for freeing the returned kvm_stats_header. */
+> +static struct kvm_stats_header *read_vm_stats_header(int stats_fd)
+> +{
+> +	struct kvm_stats_header *header;
+> +	ssize_t ret;
+> +
+> +	/* Read kvm stats header */
+> +	header = malloc(sizeof(*header));
+> +	TEST_ASSERT(header, "Allocate memory for stats header");
+> +
+> +	ret = read(stats_fd, header, sizeof(*header));
+> +	TEST_ASSERT(ret == sizeof(*header), "Read stats header");
+> +
+> +	return header;
+> +}
 
-elapsed time: 728m
+It seems like this helper could be used in kvm_binary_stats_test.c to
+eliminate duplicate code.
 
-configs tested: 148
-configs skipped: 4
+> +
+> +static void dump_header(int stats_fd, struct kvm_stats_header *header)
+> +{
+> +	ssize_t ret;
+> +	char *id;
+> +
+> +	printf("flags: %u\n", header->flags);
+> +	printf("name size: %u\n", header->name_size);
+> +	printf("num_desc: %u\n", header->num_desc);
+> +	printf("id_offset: %u\n", header->id_offset);
+> +	printf("desc_offset: %u\n", header->desc_offset);
+> +	printf("data_offset: %u\n", header->data_offset);
+> +
+> +	/* Read kvm stats id string */
+> +	id = malloc(header->name_size);
+> +	TEST_ASSERT(id, "Allocate memory for id string");
+> +	ret = pread(stats_fd, id, header->name_size, header->id_offset);
+> +	TEST_ASSERT(ret == header->name_size, "Read id string");
+> +
+> +	printf("id: %s\n", id);
+> +
+> +	free(id);
+> +}
+> +
+> +static ssize_t stats_desc_size(struct kvm_stats_header *header)
+> +{
+> +	return sizeof(struct kvm_stats_desc) + header->name_size;
+> +}
+> +
+> +/* Caller is responsible for freeing the returned kvm_stats_desc. */
+> +static struct kvm_stats_desc *read_vm_stats_desc(int stats_fd,
+> +						 struct kvm_stats_header *header)
+> +{
+> +	struct kvm_stats_desc *stats_desc;
+> +	size_t size_desc;
+> +	ssize_t ret;
+> +
+> +	size_desc = header->num_desc * stats_desc_size(header);
+> +
+> +	/* Allocate memory for stats descriptors */
+> +	stats_desc = malloc(size_desc);
+> +	TEST_ASSERT(stats_desc, "Allocate memory for stats descriptors");
+> +
+> +	/* Read kvm stats descriptors */
+> +	ret = pread(stats_fd, stats_desc, size_desc, header->desc_offset);
+> +	TEST_ASSERT(ret == size_desc, "Read KVM stats descriptors");
+> +
+> +	return stats_desc;
+> +}
 
-The following configs have been built successfully.
-More configs may be tested in the coming days.
+Same with this helper.
 
-gcc tested configs:
-arm64                               defconfig
-arm64                            allyesconfig
-arm                              allmodconfig
-arm                                 defconfig
-arm                              allyesconfig
-i386                          randconfig-c001
-arm                         s3c6400_defconfig
-mips                         db1xxx_defconfig
-openrisc                 simple_smp_defconfig
-arm                         at91_dt_defconfig
-m68k                        m5407c3_defconfig
-powerpc                     pq2fads_defconfig
-sparc64                          alldefconfig
-sparc                       sparc32_defconfig
-powerpc                  storcenter_defconfig
-arc                            hsdk_defconfig
-riscv                    nommu_k210_defconfig
-arm                      jornada720_defconfig
-arm                       imx_v6_v7_defconfig
-sh                     magicpanelr2_defconfig
-openrisc                  or1klitex_defconfig
-mips                        vocore2_defconfig
-mips                         cobalt_defconfig
-arc                      axs103_smp_defconfig
-ia64                            zx1_defconfig
-arm                         lpc18xx_defconfig
-sh                           se7343_defconfig
-sh                         ap325rxa_defconfig
-sh                           se7722_defconfig
-powerpc                      tqm8xx_defconfig
-powerpc                     tqm8548_defconfig
-sh                             sh03_defconfig
-powerpc                         wii_defconfig
-arm                             ezx_defconfig
-mips                  maltasmvp_eva_defconfig
-m68k                       m5249evb_defconfig
-ia64                        generic_defconfig
-arm                           viper_defconfig
-arm                           stm32_defconfig
-powerpc                 mpc837x_mds_defconfig
-powerpc                     tqm8541_defconfig
-xtensa                    smp_lx200_defconfig
-arm                          exynos_defconfig
-openrisc                            defconfig
-h8300                            allyesconfig
-powerpc                     stx_gp3_defconfig
-nios2                         10m50_defconfig
-arm                            hisi_defconfig
-arm                        keystone_defconfig
-powerpc                         ps3_defconfig
-arm                        realview_defconfig
-m68k                          multi_defconfig
-xtensa                       common_defconfig
-sh                        edosk7760_defconfig
-sparc                       sparc64_defconfig
-arm                          iop32x_defconfig
-riscv             nommu_k210_sdcard_defconfig
-s390                                defconfig
-ia64                          tiger_defconfig
-arm                       multi_v4t_defconfig
-powerpc                        warp_defconfig
-xtensa                          iss_defconfig
-arm                            qcom_defconfig
-m68k                        mvme147_defconfig
-ia64                             allyesconfig
-arm                             pxa_defconfig
-mips                  decstation_64_defconfig
-h8300                       h8s-sim_defconfig
-arm                           sama5_defconfig
-mips                           xway_defconfig
-x86_64                        randconfig-c001
-arm                  randconfig-c002-20220405
-ia64                             allmodconfig
-ia64                                defconfig
-m68k                             allyesconfig
-m68k                             allmodconfig
-m68k                                defconfig
-nios2                               defconfig
-arc                              allyesconfig
-csky                                defconfig
-nios2                            allyesconfig
-alpha                               defconfig
-alpha                            allyesconfig
-xtensa                           allyesconfig
-arc                                 defconfig
-sh                               allmodconfig
-s390                             allmodconfig
-parisc                              defconfig
-parisc64                            defconfig
-parisc                           allyesconfig
-s390                             allyesconfig
-sparc                               defconfig
-i386                             allyesconfig
-sparc                            allyesconfig
-i386                                defconfig
-i386                   debian-10.3-kselftests
-i386                              debian-10.3
-mips                             allyesconfig
-mips                             allmodconfig
-powerpc                          allyesconfig
-powerpc                           allnoconfig
-powerpc                          allmodconfig
-x86_64                        randconfig-a006
-x86_64                        randconfig-a004
-x86_64                        randconfig-a002
-i386                          randconfig-a012
-i386                          randconfig-a014
-i386                          randconfig-a016
-riscv                               defconfig
-riscv                    nommu_virt_defconfig
-riscv                          rv32_defconfig
-riscv                             allnoconfig
-riscv                            allmodconfig
-riscv                            allyesconfig
-x86_64                    rhel-8.3-kselftests
-um                           x86_64_defconfig
-um                             i386_defconfig
-x86_64                          rhel-8.3-func
-x86_64                                  kexec
-x86_64                              defconfig
-x86_64                           allyesconfig
-x86_64                         rhel-8.3-kunit
-x86_64                               rhel-8.3
+> +
+> +/* Caller is responsible for freeing the memory *data. */
+> +static int read_stat_data(int stats_fd, struct kvm_stats_header *header,
+> +			  struct kvm_stats_desc *desc, uint64_t **data)
+> +{
+> +	u64 *stats_data;
+> +	ssize_t ret;
+> +
+> +	stats_data = malloc(desc->size * sizeof(*stats_data));
+> +
+> +	ret = pread(stats_fd, stats_data, desc->size * sizeof(*stats_data),
+> +		    header->data_offset + desc->offset);
+> +
+> +	/* ret is in bytes. */
+> +	ret = ret / sizeof(*stats_data);
+> +
+> +	TEST_ASSERT(ret == desc->size,
+> +		    "Read data of KVM stats: %s", desc->name);
+> +
+> +	*data = stats_data;
+> +
+> +	return ret;
+> +}
 
-clang tested configs:
-x86_64                        randconfig-c007
-i386                          randconfig-c001
-powerpc              randconfig-c003-20220405
-riscv                randconfig-c006-20220405
-mips                 randconfig-c004-20220405
-arm                  randconfig-c002-20220405
-arm                          moxart_defconfig
-powerpc                        icon_defconfig
-powerpc                   bluestone_defconfig
-arm                      tct_hammer_defconfig
-powerpc                  mpc885_ads_defconfig
-arm                     am200epdkit_defconfig
-arm                       aspeed_g4_defconfig
-arm                            mmp2_defconfig
-arm                              alldefconfig
-riscv                    nommu_virt_defconfig
-x86_64                        randconfig-a005
-x86_64                        randconfig-a003
-x86_64                        randconfig-a001
-i386                          randconfig-a002
-i386                          randconfig-a006
-i386                          randconfig-a004
-x86_64                        randconfig-a012
-x86_64                        randconfig-a014
-x86_64                        randconfig-a016
-hexagon              randconfig-r045-20220405
-riscv                randconfig-r042-20220405
-hexagon              randconfig-r041-20220405
+Same with this helper.
 
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+> +
+> +static void dump_stat(int stats_fd, struct kvm_stats_header *header,
+> +		      struct kvm_stats_desc *desc)
+> +{
+> +	u64 *stats_data;
+> +	ssize_t ret;
+> +	int i;
+> +
+> +	printf("\tflags: %u\n", desc->flags);
+> +	printf("\texponent: %u\n", desc->exponent);
+> +	printf("\tsize: %u\n", desc->size);
+> +	printf("\toffset: %u\n", desc->offset);
+> +	printf("\tbucket_size: %u\n", desc->bucket_size);
+> +	printf("\tname: %s\n", (char *)&desc->name);
+> +
+> +	ret = read_stat_data(stats_fd, header, desc, &stats_data);
+> +
+> +	printf("\tdata: %lu", *stats_data);
+> +	for (i = 1; i < ret; i++)
+> +		printf(", %lu", *(stats_data + i));
+> +	printf("\n\n");
+> +
+> +	free(stats_data);
+> +}
+> +
+> +void dump_vm_stats(struct kvm_vm *vm)
+> +{
+> +	struct kvm_stats_desc *stats_desc;
+> +	struct kvm_stats_header *header;
+> +	struct kvm_stats_desc *desc;
+> +	size_t size_desc;
+> +	int stats_fd;
+> +	int i;
+> +
+> +	stats_fd = vm_get_stats_fd(vm);
+> +
+> +	header = read_vm_stats_header(stats_fd);
+> +	dump_header(stats_fd, header);
+> +
+> +	stats_desc = read_vm_stats_desc(stats_fd, header);
+> +
+> +	size_desc = stats_desc_size(header);
+> +
+> +	/* Read kvm stats data one by one */
+> +	for (i = 0; i < header->num_desc; ++i) {
+> +		desc = (void *)stats_desc + (i * size_desc);
+> +		dump_stat(stats_fd, header, desc);
+> +	}
+> +
+> +	free(stats_desc);
+> +	free(header);
+> +
+> +	close(stats_fd);
+> +}
+> +
+> -- 
+> 2.35.1.1021.g381101b075-goog
+> 
