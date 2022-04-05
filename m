@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A456C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:24:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 48532C4321E
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:31:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234580AbiDEIZw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 04:25:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47556 "EHLO
+        id S234732AbiDEI0M (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 04:26:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57604 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235765AbiDEIAT (ORCPT
+        with ESMTP id S235336AbiDEH7j (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:00:19 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 887CB36E3A;
-        Tue,  5 Apr 2022 00:58:21 -0700 (PDT)
+        Tue, 5 Apr 2022 03:59:39 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3840457B08;
+        Tue,  5 Apr 2022 00:54:12 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 37D01B81B14;
-        Tue,  5 Apr 2022 07:58:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 98389C340EE;
-        Tue,  5 Apr 2022 07:58:18 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3C5E3B81BA7;
+        Tue,  5 Apr 2022 07:54:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9DB2EC340EE;
+        Tue,  5 Apr 2022 07:54:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649145499;
-        bh=AzruJ7kNpSnT6sSFKy/mtIR2Ku9xH4nvBIs2Jd7NW+4=;
+        s=korg; t=1649145250;
+        bh=F7Oer8AIMDb2O/FBCHAaJcCBaC52QQNAgWq9QZsk8f8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mRqGWghIhfcKTIEC+jn3LbcNjheMJPe03C9vcLIwiY7ZSUsXl9bmjgUBvR8hcwPps
-         B0u5xVI5nyfnxIwKTmC8OIXKl/fUb1rD9GJKE0XpJOp1UKiLLUihCRDMHoORf4xyXK
-         g6Gsf3yiY3luMKUnGdC3mxchX9bM78DrC9YKJ9Hk=
+        b=LAsxmPMMbQSwhK23XPttUpo2epGUc5ql2FJhG8eoSsUa5P+Mg+bLv8IKA8a+wwSvH
+         8k7pP1GN0wMaZ2tuEQJmTqX9yaIOdcniHfFcqQ/a4GjG8Tpl/BkH6Y94hLkf5fQuRb
+         X/HRh8fxp5eutSaH/ET+0b+vJA2tcfOp840gN8IA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Rob Herring <robh@kernel.org>,
-        Heiko Stuebner <heiko@sntech.de>,
+        stable@vger.kernel.org, Ondrej Zary <linux@zary.sk>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0389/1126] arm64: dts: rockchip: Fix SDIO regulator supply properties on rk3399-firefly
-Date:   Tue,  5 Apr 2022 09:18:56 +0200
-Message-Id: <20220405070419.045203929@linuxfoundation.org>
+Subject: [PATCH 5.17 0302/1126] media: bttv: fix WARNING regression on tunerless devices
+Date:   Tue,  5 Apr 2022 09:17:29 +0200
+Message-Id: <20220405070416.479001166@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -49,37 +50,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Rob Herring <robh@kernel.org>
+From: Ondrej Zary <linux@zary.sk>
 
-[ Upstream commit 37cbd3c522869247ed4525b5042ff4c6a276c813 ]
+[ Upstream commit ef058cc8b7193d15a771272359c7454839ae74ee ]
 
-A label reference without brackets is a path string, not a phandle as
-intended. Add the missing brackets.
+Commit 2161536516ed ("media: media/pci: set device_caps in struct video_device")
+introduced a regression: V4L2_CAP_TUNER is always present in device_caps,
+even when the device has no tuner.
 
-Fixes: a5002c41c383 ("arm64: dts: rockchip: add WiFi module support for Firefly-RK3399")
-Signed-off-by: Rob Herring <robh@kernel.org>
-Link: https://lore.kernel.org/r/20220304202559.317749-1-robh@kernel.org
-Signed-off-by: Heiko Stuebner <heiko@sntech.de>
+This causes a warning:
+WARNING: CPU: 0 PID: 249 at drivers/media/v4l2-core/v4l2-ioctl.c:1102 v4l_querycap+0xa0/0xb0 [videodev]
+
+Fixes: 2161536516ed ("media: media/pci: set device_caps in struct video_device")
+Signed-off-by: Ondrej Zary <linux@zary.sk>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/boot/dts/rockchip/rk3399-firefly.dts | 4 ++--
+ drivers/media/pci/bt8xx/bttv-driver.c | 4 ++--
  1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/arch/arm64/boot/dts/rockchip/rk3399-firefly.dts b/arch/arm64/boot/dts/rockchip/rk3399-firefly.dts
-index c4dd2a6b4836..f81ce3240342 100644
---- a/arch/arm64/boot/dts/rockchip/rk3399-firefly.dts
-+++ b/arch/arm64/boot/dts/rockchip/rk3399-firefly.dts
-@@ -770,8 +770,8 @@
- 	sd-uhs-sdr104;
+diff --git a/drivers/media/pci/bt8xx/bttv-driver.c b/drivers/media/pci/bt8xx/bttv-driver.c
+index 8cc9bec43688..5ca3d0cc653a 100644
+--- a/drivers/media/pci/bt8xx/bttv-driver.c
++++ b/drivers/media/pci/bt8xx/bttv-driver.c
+@@ -3890,7 +3890,7 @@ static int bttv_register_video(struct bttv *btv)
  
- 	/* Power supply */
--	vqmmc-supply = &vcc1v8_s3;	/* IO line */
--	vmmc-supply = &vcc_sdio;	/* card's power */
-+	vqmmc-supply = <&vcc1v8_s3>;	/* IO line */
-+	vmmc-supply = <&vcc_sdio>;	/* card's power */
+ 	/* video */
+ 	vdev_init(btv, &btv->video_dev, &bttv_video_template, "video");
+-	btv->video_dev.device_caps = V4L2_CAP_VIDEO_CAPTURE | V4L2_CAP_TUNER |
++	btv->video_dev.device_caps = V4L2_CAP_VIDEO_CAPTURE |
+ 				     V4L2_CAP_READWRITE | V4L2_CAP_STREAMING;
+ 	if (btv->tuner_type != TUNER_ABSENT)
+ 		btv->video_dev.device_caps |= V4L2_CAP_TUNER;
+@@ -3911,7 +3911,7 @@ static int bttv_register_video(struct bttv *btv)
+ 	/* vbi */
+ 	vdev_init(btv, &btv->vbi_dev, &bttv_video_template, "vbi");
+ 	btv->vbi_dev.device_caps = V4L2_CAP_VBI_CAPTURE | V4L2_CAP_READWRITE |
+-				   V4L2_CAP_STREAMING | V4L2_CAP_TUNER;
++				   V4L2_CAP_STREAMING;
+ 	if (btv->tuner_type != TUNER_ABSENT)
+ 		btv->vbi_dev.device_caps |= V4L2_CAP_TUNER;
  
- 	#address-cells = <1>;
- 	#size-cells = <0>;
 -- 
 2.34.1
 
