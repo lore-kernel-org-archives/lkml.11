@@ -2,152 +2,151 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E73BEC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 22:55:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A8D65C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 22:55:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1455485AbiDEWkh (ORCPT
+        id S1455557AbiDEWkr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 18:40:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35822 "EHLO
+        Tue, 5 Apr 2022 18:40:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47660 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379712AbiDELl0 (ORCPT
+        with ESMTP id S1349379AbiDEJtq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 07:41:26 -0400
-Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2074.outbound.protection.outlook.com [40.107.243.74])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4223F1FA40;
-        Tue,  5 Apr 2022 04:01:33 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=OAFxa6tZNX0TH63u4xQIqcJ3+aVEUHnrfEQRwRMkOHqMIxNNq0qQanXrY3N5fmpwk+MEMnE4JEXjwR2TXgyLxPiqzGpDBgemwgaDgA3TsUlU+dMfLrdoWoc7USgxiZzP5w11V40b4M9Mm+8QYNZsfxX0BQwKQ/avTyT6eAU5h6lyCH758aBJY/bBMh3gB80hna7lCh4hhvm3DiH5g5xpgB+f7fL/fjp1XEBIYw2xWTjTi/9uKhOonwljGareINkL4rW3i6xTiY0PtBVI3DWYQCrwGEzdgUghYdywvzujXcHOb4RM/thb/t/Nk0uwhNH1kVDVyxy919QoPYcqysWdcg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=yJUpqvAAH4FLKxtgkjoMTc4/S2thdcEiyPyeSiO3TXA=;
- b=W6pxFD/WmCHOgTsIpG9qF5Brfe9OJw86pwt61bq3p95Gu61hOkFSiZL4VugGWTM865fcYletHhiP9SeKgahByFxo9gFWhNDSAh7POH4wHbBBUix3cT3sbXQR4CQW2Qwa4wYBb0HgUmacSMCyVnWSHytdU7n8TPyGIc2gjPngxx/gAVeJlULnPcg+Q+DEfOlFJd/HJ7Lfrd5tC1xcV9+kp3ZINX14rSDvP0ZoEjt4dhLscsul8w/6s70yxD8BEW9Si/WbwY8oIprPi2ehD68Csg4Dngit1BFwr4ETRkJ+/mTewo8ATps6PTQtkvIwyx1pPTx302TjQLmhF2tMZMRVjA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 149.199.62.198) smtp.rcpttodomain=gmail.com smtp.mailfrom=xilinx.com;
- dmarc=pass (p=none sp=none pct=100) action=none header.from=xilinx.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=xilinx.onmicrosoft.com; s=selector2-xilinx-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=yJUpqvAAH4FLKxtgkjoMTc4/S2thdcEiyPyeSiO3TXA=;
- b=cfLTl7iz/43HLak/5ul7o8j5QhXxlSQnytoFAHT8vC+t4jYAQDzNxS7NMiL0kksqO9ZbihatRwX1meOK7TKGJ+IO2nWsMjwirU/iouZeO+DjBuERL2T4TZJPuaWlDqJG+90k527En9ElhxNOqS+ofhUPgHvl7E+8TnMruK0SCw4=
-Received: from BN9PR03CA0602.namprd03.prod.outlook.com (2603:10b6:408:106::7)
- by BN6PR02MB2564.namprd02.prod.outlook.com (2603:10b6:404:56::15) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5123.31; Tue, 5 Apr
- 2022 11:01:29 +0000
-Received: from BN1NAM02FT029.eop-nam02.prod.protection.outlook.com
- (2603:10b6:408:106:cafe::89) by BN9PR03CA0602.outlook.office365.com
- (2603:10b6:408:106::7) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5123.31 via Frontend
- Transport; Tue, 5 Apr 2022 11:01:29 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 149.199.62.198)
- smtp.mailfrom=xilinx.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=xilinx.com;
-Received-SPF: Pass (protection.outlook.com: domain of xilinx.com designates
- 149.199.62.198 as permitted sender) receiver=protection.outlook.com;
- client-ip=149.199.62.198; helo=xsj-pvapexch01.xlnx.xilinx.com;
-Received: from xsj-pvapexch01.xlnx.xilinx.com (149.199.62.198) by
- BN1NAM02FT029.mail.protection.outlook.com (10.13.2.143) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.5123.19 via Frontend Transport; Tue, 5 Apr 2022 11:01:29 +0000
-Received: from xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) by
- xsj-pvapexch01.xlnx.xilinx.com (172.19.86.40) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.14; Tue, 5 Apr 2022 04:01:17 -0700
-Received: from smtp.xilinx.com (172.19.127.95) by
- xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) with Microsoft SMTP Server id
- 15.1.2176.14 via Frontend Transport; Tue, 5 Apr 2022 04:01:17 -0700
-Envelope-to: git@xilinx.com,
- saikrishna12468@gmail.com,
- broonie@kernel.org,
- robh+dt@kernel.org,
- p.yadav@ti.com,
- devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org,
- linux-spi@vger.kernel.org
-Received: from [172.23.64.7] (port=48930 helo=xhdvnc107.xilinx.com)
-        by smtp.xilinx.com with esmtp (Exim 4.90)
-        (envelope-from <lakshmi.sai.krishna.potthuri@xilinx.com>)
-        id 1nbgw1-000FmV-24; Tue, 05 Apr 2022 04:01:17 -0700
-Received: by xhdvnc107.xilinx.com (Postfix, from userid 14964)
-        id 31C8D60351; Tue,  5 Apr 2022 16:31:03 +0530 (IST)
-From:   Sai Krishna Potthuri <lakshmi.sai.krishna.potthuri@xilinx.com>
-To:     Mark Brown <broonie@kernel.org>, Rob Herring <robh+dt@kernel.org>,
-        Pratyush Yadav <p.yadav@ti.com>
-CC:     <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-spi@vger.kernel.org>,
-        Michal Simek <michal.simek@xilinx.com>, <git@xilinx.com>,
-        <saikrishna12468@gmail.com>, <sgoud@xilinx.com>,
-        "Sai Krishna Potthuri" <lakshmi.sai.krishna.potthuri@xilinx.com>
-Subject: [PATCH 1/2] dt-bindings: spi: cadence-quadspi: Add reset-gpios for Xilinx Versal OSPI
-Date:   Tue, 5 Apr 2022 16:30:36 +0530
-Message-ID: <1649156437-15609-2-git-send-email-lakshmi.sai.krishna.potthuri@xilinx.com>
-X-Mailer: git-send-email 2.1.1
-In-Reply-To: <1649156437-15609-1-git-send-email-lakshmi.sai.krishna.potthuri@xilinx.com>
-References: <1649156437-15609-1-git-send-email-lakshmi.sai.krishna.potthuri@xilinx.com>
+        Tue, 5 Apr 2022 05:49:46 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7371140D4;
+        Tue,  5 Apr 2022 02:44:44 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 4264BCE1C99;
+        Tue,  5 Apr 2022 09:44:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4D432C385A1;
+        Tue,  5 Apr 2022 09:44:41 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649151881;
+        bh=JrpgfPZriwtLYhO8teFG0FTJO+BmkrH9SYNl8YqsT4U=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=oiaYJcmgfMF+ziJ18lzDbIb0SCRTUA6yODhj4D+UZ4+tbFH+CmRDOvpPSio0cGIoT
+         YknfK6o2NsAWQVwH2gIX60vs7tTOA1RKt6vyUElcaKxKr3SRIdClwSNz7ahMkMpXEc
+         xP9kw6DORP+6St19KyzasbGvmKsIKd2PZttfx7Eg=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Leon Romanovsky <leonro@nvidia.com>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 538/913] Revert "RDMA/core: Fix ib_qp_usecnt_dec() called when error"
+Date:   Tue,  5 Apr 2022 09:26:40 +0200
+Message-Id: <20220405070355.975998475@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: bba34b55-1ff5-48ca-1c24-08da16f3a301
-X-MS-TrafficTypeDiagnostic: BN6PR02MB2564:EE_
-X-Microsoft-Antispam-PRVS: <BN6PR02MB256414E77DB1121F87A1C3F3BDE49@BN6PR02MB2564.namprd02.prod.outlook.com>
-X-Auto-Response-Suppress: DR, RN, NRN, OOF, AutoReply
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: znESvpMITG2iNzufL+lw11SpnGZ9wSi4CWm2atV1F+OodNwyMf3Fp4QAPw4ksfED7TSNp/6zTzNVqr+Bvq9Fcx2zjb3H7STUzpYczyFxig0PQ0ZISjkeln7/n0YaTE3iIg5WNp93HVsOp3QfbPs5LAdGyn6cIRjRlnGm22wTpexo7QD8fMiIGjjgFxFwy7EQk2Cko+6NWbnK7LP+GkjV4DtFZV5IVcE+ArXQHHFFK2wVFitm9UCQ/QZHtOdu8sHdPN0Scpy4pxBjizSFg+aYkw2PYo6Mh+szfO+kNHArXHPl/+2wArnfyVz5je9F6iky//qCaTryA5DjCmZAl3EeDDm1P962h7jIlB+ONGsVNy7gYwxAHU3VBd+6OZG6Ulwx6rVq5UReF7OSqK/g42n7muPFWpLlTzsN+5pvSsEqu0mVK2wG0fv9GxkbK5odLofi4JzCTpb80exZdj1GS3NSwQYVe9boJd1YHHwpjmrxPQoP++gTgOOnENQcE61QaJDE4nFB8qcMovp0ID2IBqb+e2dT/iQfeQZ51ggEkR3uL+6TNb7+E/z895cidcEO2Qlx/6x1B+Zetkm83/QE+06lD2rtlRIv7vDs1v/5AWkk3kfryJDGRdrfvQaE2s35TNq5F+JglWSK+UEalBUE6Hn4t7amtUBLE/hG+g2UXl3Fjxk3AEyRYlX0xKnIyQmBLzh/SRgXymJV5EafYkew/4Qj8g==
-X-Forefront-Antispam-Report: CIP:149.199.62.198;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:xsj-pvapexch01.xlnx.xilinx.com;PTR:unknown-62-198.xilinx.com;CAT:NONE;SFS:(13230001)(4636009)(36840700001)(40470700004)(46966006)(7636003)(508600001)(4326008)(70206006)(70586007)(356005)(8676002)(5660300002)(2906002)(47076005)(36860700001)(6666004)(8936002)(186003)(42186006)(6266002)(110136005)(82310400005)(2616005)(107886003)(54906003)(316002)(426003)(336012)(26005)(40460700003)(36756003)(4744005)(102446001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: xilinx.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Apr 2022 11:01:29.2719
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: bba34b55-1ff5-48ca-1c24-08da16f3a301
-X-MS-Exchange-CrossTenant-Id: 657af505-d5df-48d0-8300-c31994686c5c
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=657af505-d5df-48d0-8300-c31994686c5c;Ip=[149.199.62.198];Helo=[xsj-pvapexch01.xlnx.xilinx.com]
-X-MS-Exchange-CrossTenant-AuthSource: BN1NAM02FT029.eop-nam02.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN6PR02MB2564
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add reset-gpios property to the properties list and marked as required
-for Xilinx Versal OSPI compatible. This is used to perform the HW reset
-for OSPI flash device.
+From: Leon Romanovsky <leonro@nvidia.com>
 
-Signed-off-by: Sai Krishna Potthuri <lakshmi.sai.krishna.potthuri@xilinx.com>
+[ Upstream commit 7922d3de4d270a9aedb71212fc0d5ae697ced516 ]
+
+This reverts commit 7c4a539ec38f4ce400a0f3fcb5ff6c940fcd67bb. which causes
+to the following error in mlx4.
+
+  Destroy of kernel CQ shouldn't fail
+  WARNING: CPU: 4 PID: 18064 at include/rdma/ib_verbs.h:3936 mlx4_ib_dealloc_xrcd+0x12e/0x1b0 [mlx4_ib]
+  Modules linked in: bonding ib_ipoib ip_gre ipip tunnel4 geneve rdma_ucm nf_tables ib_umad mlx4_en mlx4_ib ib_uverbs mlx4_core ip6_gre gre ip6_tunnel tunnel6 iptable_raw openvswitch nsh rpcrdma ib_iser libiscsi scsi_transport_iscsi rdma_cm iw_cm ib_cm ib_core xt_conntrack xt_MASQUERADE nf_conntrack_netlink nfnetlink xt_addrtype iptable_nat nf_nat br_netfilter overlay fuse [last unloaded: mlx4_core]
+  CPU: 4 PID: 18064 Comm: ibv_xsrq_pingpo Not tainted 5.17.0-rc7_master_62c6ecb #1
+  Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS rel-1.13.0-0-gf21b5a4aeb02-prebuilt.qemu.org 04/01/2014
+  RIP: 0010:mlx4_ib_dealloc_xrcd+0x12e/0x1b0 [mlx4_ib]
+  Code: 1e 93 08 00 40 80 fd 01 0f 87 fa f1 04 00 83 e5 01 0f 85 2b ff ff ff 48 c7 c7 20 4f b6 a0 c6 05 fd 92 08 00 01 e8 47 c9 82 e2 <0f> 0b e9 11 ff ff ff 0f b6 2d eb 92 08 00 40 80 fd 01 0f 87 b1 f1
+  RSP: 0018:ffff8881a4957750 EFLAGS: 00010286
+  RAX: 0000000000000000 RBX: ffff8881ac4b6800 RCX: 0000000000000000
+  RDX: 0000000000000027 RSI: 0000000000000004 RDI: ffffed103492aedc
+  RBP: 0000000000000000 R08: 0000000000000001 R09: ffff8884d2e378eb
+  R10: ffffed109a5c6f1d R11: 0000000000000001 R12: ffff888132620000
+  R13: ffff8881a4957a90 R14: ffff8881aa2d4000 R15: ffff8881a4957ad0
+  FS:  00007f0401747740(0000) GS:ffff8884d2e00000(0000) knlGS:0000000000000000
+  CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+  CR2: 000055f8ae036118 CR3: 000000012fe94005 CR4: 0000000000370ea0
+  DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+  DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+  Call Trace:
+   <TASK>
+   ib_dealloc_xrcd_user+0xce/0x120 [ib_core]
+   ib_uverbs_dealloc_xrcd+0xad/0x210 [ib_uverbs]
+   uverbs_free_xrcd+0xe8/0x190 [ib_uverbs]
+   destroy_hw_idr_uobject+0x7a/0x130 [ib_uverbs]
+   uverbs_destroy_uobject+0x164/0x730 [ib_uverbs]
+   uobj_destroy+0x72/0xf0 [ib_uverbs]
+   ib_uverbs_cmd_verbs+0x19fb/0x3110 [ib_uverbs]
+   ib_uverbs_ioctl+0x169/0x260 [ib_uverbs]
+   __x64_sys_ioctl+0x856/0x1550
+   do_syscall_64+0x3d/0x90
+   entry_SYSCALL_64_after_hwframe+0x44/0xae
+
+Fixes: 7c4a539ec38f ("RDMA/core: Fix ib_qp_usecnt_dec() called when error")
+Link: https://lore.kernel.org/r/74c11029adaf449b3b9228a77cc82f39e9e892c8.1646851220.git.leonro@nvidia.com
+Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
+Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- Documentation/devicetree/bindings/spi/cdns,qspi-nor.yaml | 7 +++++++
- 1 file changed, 7 insertions(+)
+ drivers/infiniband/core/uverbs_cmd.c          | 1 +
+ drivers/infiniband/core/uverbs_std_types_qp.c | 1 +
+ drivers/infiniband/core/verbs.c               | 3 ++-
+ 3 files changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/Documentation/devicetree/bindings/spi/cdns,qspi-nor.yaml b/Documentation/devicetree/bindings/spi/cdns,qspi-nor.yaml
-index 0a537fa3a641..56001eaf6365 100644
---- a/Documentation/devicetree/bindings/spi/cdns,qspi-nor.yaml
-+++ b/Documentation/devicetree/bindings/spi/cdns,qspi-nor.yaml
-@@ -19,6 +19,7 @@ allOf:
-     then:
-       required:
-         - power-domains
-+        - reset-gpios
+diff --git a/drivers/infiniband/core/uverbs_cmd.c b/drivers/infiniband/core/uverbs_cmd.c
+index 5a99e31df5f5..d1345d76d9b1 100644
+--- a/drivers/infiniband/core/uverbs_cmd.c
++++ b/drivers/infiniband/core/uverbs_cmd.c
+@@ -1438,6 +1438,7 @@ static int create_qp(struct uverbs_attr_bundle *attrs,
+ 		ret = PTR_ERR(qp);
+ 		goto err_put;
+ 	}
++	ib_qp_usecnt_inc(qp);
  
- properties:
-   compatible:
-@@ -78,6 +79,12 @@ properties:
-   power-domains:
-     maxItems: 1
+ 	obj->uevent.uobject.object = qp;
+ 	obj->uevent.event_file = READ_ONCE(attrs->ufile->default_async_file);
+diff --git a/drivers/infiniband/core/uverbs_std_types_qp.c b/drivers/infiniband/core/uverbs_std_types_qp.c
+index 75353e09c6fe..dd1075466f61 100644
+--- a/drivers/infiniband/core/uverbs_std_types_qp.c
++++ b/drivers/infiniband/core/uverbs_std_types_qp.c
+@@ -254,6 +254,7 @@ static int UVERBS_HANDLER(UVERBS_METHOD_QP_CREATE)(
+ 		ret = PTR_ERR(qp);
+ 		goto err_put;
+ 	}
++	ib_qp_usecnt_inc(qp);
  
-+  reset-gpios:
-+    description:
-+      Contains a phandle and GPIO specifier for reset with the default active
-+      state.
-+    maxItems: 1
+ 	if (attr.qp_type == IB_QPT_XRC_TGT) {
+ 		obj->uxrcd = container_of(xrcd_uobj, struct ib_uxrcd_object,
+diff --git a/drivers/infiniband/core/verbs.c b/drivers/infiniband/core/verbs.c
+index b78cd65d20a6..59e20936b800 100644
+--- a/drivers/infiniband/core/verbs.c
++++ b/drivers/infiniband/core/verbs.c
+@@ -1253,7 +1253,6 @@ static struct ib_qp *create_qp(struct ib_device *dev, struct ib_pd *pd,
+ 	if (ret)
+ 		goto err_security;
+ 
+-	ib_qp_usecnt_inc(qp);
+ 	rdma_restrack_add(&qp->res);
+ 	return qp;
+ 
+@@ -1354,6 +1353,8 @@ struct ib_qp *ib_create_qp_kernel(struct ib_pd *pd,
+ 	if (IS_ERR(qp))
+ 		return qp;
+ 
++	ib_qp_usecnt_inc(qp);
 +
-   resets:
-     maxItems: 2
- 
+ 	if (qp_init_attr->cap.max_rdma_ctxs) {
+ 		ret = rdma_rw_init_mrs(qp, qp_init_attr);
+ 		if (ret)
 -- 
-2.17.1
+2.34.1
+
+
 
