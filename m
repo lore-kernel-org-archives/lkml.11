@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 70D04C4707F
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:03:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2920AC35296
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:03:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381228AbiDEMDL (ORCPT
+        id S1382183AbiDEMD1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 08:03:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41468 "EHLO
+        Tue, 5 Apr 2022 08:03:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41310 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243308AbiDEIuV (ORCPT
+        with ESMTP id S243274AbiDEIuT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:50:21 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F06BE097;
-        Tue,  5 Apr 2022 01:38:38 -0700 (PDT)
+        Tue, 5 Apr 2022 04:50:19 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A4C212A82;
+        Tue,  5 Apr 2022 01:38:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id F1B6B6152C;
-        Tue,  5 Apr 2022 08:38:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0AA6DC385A1;
-        Tue,  5 Apr 2022 08:38:08 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 85DE9614E5;
+        Tue,  5 Apr 2022 08:37:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 91DB0C385A0;
+        Tue,  5 Apr 2022 08:37:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649147889;
-        bh=2FjM/lj0fcJq0jHwEH+Am/vpGg0MEDZx4Nc772tYTu4=;
+        s=korg; t=1649147874;
+        bh=Cw2NlYAm/sub3uTEA3b2qIyrR3JDeMkKrC26amsoKtQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Lcvv2F42S2+azgDa0ub0hoiHjEraduQROI9mrjnUpYrgeovrdMZ7JUd5gp5+OhVo7
-         +KMvAqqZJh/Q6Zk2QldTS9RfteRnjTeZdHQP7jxU7LkH97BSHRKGoUf1bloUTpZNtR
-         X/wjxXhjDvW1IHyhJScViPo3l5pvMMZi1ZRkDP4A=
+        b=giPofauEkR82o5KTt4SaFEzge6imnZO4bbsJRwgNuNnOfsuPAoPigN23SwVcwxJcJ
+         Ujr857Hjh8ZE1fwiczus0IfLVq5IHLhKv3yq6cLMoSGEcV2cMejhFV6tK4AymRxugC
+         NWlinx1jQerjsqpYWcwCWlQzUkxyJF2Z0aTnvMJc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mikulas Patocka <mpatocka@redhat.com>,
-        Mike Snitzer <snitzer@redhat.com>
-Subject: [PATCH 5.16 0120/1017] dm: interlock pending dm_io and dm_wait_for_bios_completion
-Date:   Tue,  5 Apr 2022 09:17:13 +0200
-Message-Id: <20220405070357.759928595@linuxfoundation.org>
+        stable@vger.kernel.org, Zheyu Ma <zheyuma97@gmail.com>,
+        Helge Deller <deller@gmx.de>
+Subject: [PATCH 5.16 0151/1017] video: fbdev: sm712fb: Fix crash in smtcfb_read()
+Date:   Tue,  5 Apr 2022 09:17:44 +0200
+Message-Id: <20220405070358.691303918@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -49,139 +49,76 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mike Snitzer <snitzer@redhat.com>
+From: Helge Deller <deller@gmx.de>
 
-commit 9f6dc633761006f974701d4c88da71ab68670749 upstream.
+commit bd771cf5c4254511cc4abb88f3dab3bd58bdf8e8 upstream.
 
-Commit d208b89401e0 ("dm: fix mempool NULL pointer race when
-completing IO") didn't go far enough.
+Zheyu Ma reported this crash in the sm712fb driver when reading
+three bytes from the framebuffer:
 
-When bio_end_io_acct ends the count of in-flight I/Os may reach zero
-and the DM device may be suspended. There is a possibility that the
-suspend races with dm_stats_account_io.
+ BUG: unable to handle page fault for address: ffffc90001ffffff
+ RIP: 0010:smtcfb_read+0x230/0x3e0
+ Call Trace:
+  vfs_read+0x198/0xa00
+  ? do_sys_openat2+0x27d/0x350
+  ? __fget_light+0x54/0x340
+  ksys_read+0xce/0x190
+  do_syscall_64+0x43/0x90
 
-Fix this by adding percpu "pending_io" counters to track outstanding
-dm_io. Move kicking of suspend queue to dm_io_dec_pending(). Also,
-rename md_in_flight_bios() to dm_in_flight_bios() and update it to
-iterate all pending_io counters.
+Fix it by removing the open-coded endianess fixup-code and
+by moving the pointer post decrement out the fb_readl() function.
 
-Fixes: d208b89401e0 ("dm: fix mempool NULL pointer race when completing IO")
+Reported-by: Zheyu Ma <zheyuma97@gmail.com>
+Signed-off-by: Helge Deller <deller@gmx.de>
+Tested-by: Zheyu Ma <zheyuma97@gmail.com>
 Cc: stable@vger.kernel.org
-Co-developed-by: Mikulas Patocka <mpatocka@redhat.com>
-Signed-off-by: Mikulas Patocka <mpatocka@redhat.com>
-Signed-off-by: Mike Snitzer <snitzer@redhat.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/md/dm-core.h |    2 ++
- drivers/md/dm.c      |   35 +++++++++++++++++++++++------------
- 2 files changed, 25 insertions(+), 12 deletions(-)
+ drivers/video/fbdev/sm712fb.c |   25 +++++++------------------
+ 1 file changed, 7 insertions(+), 18 deletions(-)
 
---- a/drivers/md/dm-core.h
-+++ b/drivers/md/dm-core.h
-@@ -65,6 +65,8 @@ struct mapped_device {
- 	struct gendisk *disk;
- 	struct dax_device *dax_dev;
+--- a/drivers/video/fbdev/sm712fb.c
++++ b/drivers/video/fbdev/sm712fb.c
+@@ -1047,7 +1047,7 @@ static ssize_t smtcfb_read(struct fb_inf
+ 	if (count + p > total_size)
+ 		count = total_size - p;
  
-+	unsigned long __percpu *pending_io;
+-	buffer = kmalloc((count > PAGE_SIZE) ? PAGE_SIZE : count, GFP_KERNEL);
++	buffer = kmalloc(PAGE_SIZE, GFP_KERNEL);
+ 	if (!buffer)
+ 		return -ENOMEM;
+ 
+@@ -1059,25 +1059,14 @@ static ssize_t smtcfb_read(struct fb_inf
+ 	while (count) {
+ 		c = (count > PAGE_SIZE) ? PAGE_SIZE : count;
+ 		dst = buffer;
+-		for (i = c >> 2; i--;) {
+-			*dst = fb_readl(src++);
+-			*dst = big_swap(*dst);
++		for (i = (c + 3) >> 2; i--;) {
++			u32 val;
 +
- 	/*
- 	 * A list of ios that arrived while we were suspended.
- 	 */
---- a/drivers/md/dm.c
-+++ b/drivers/md/dm.c
-@@ -507,10 +507,6 @@ static void end_io_acct(struct mapped_de
- 		dm_stats_account_io(&md->stats, bio_data_dir(bio),
- 				    bio->bi_iter.bi_sector, bio_sectors(bio),
- 				    true, duration, stats_aux);
++			val = fb_readl(src);
++			*dst = big_swap(val);
++			src++;
+ 			dst++;
+ 		}
+-		if (c & 3) {
+-			u8 *dst8 = (u8 *)dst;
+-			u8 __iomem *src8 = (u8 __iomem *)src;
 -
--	/* nudge anyone waiting on suspend queue */
--	if (unlikely(wq_has_sleeper(&md->wait)))
--		wake_up(&md->wait);
- }
+-			for (i = c & 3; i--;) {
+-				if (i & 1) {
+-					*dst8++ = fb_readb(++src8);
+-				} else {
+-					*dst8++ = fb_readb(--src8);
+-					src8 += 2;
+-				}
+-			}
+-			src = (u32 __iomem *)src8;
+-		}
  
- static struct dm_io *alloc_io(struct mapped_device *md, struct bio *bio)
-@@ -531,6 +527,7 @@ static struct dm_io *alloc_io(struct map
- 	io->magic = DM_IO_MAGIC;
- 	io->status = 0;
- 	atomic_set(&io->io_count, 1);
-+	this_cpu_inc(*md->pending_io);
- 	io->orig_bio = bio;
- 	io->md = md;
- 	spin_lock_init(&io->endio_lock);
-@@ -828,6 +825,12 @@ void dm_io_dec_pending(struct dm_io *io,
- 		stats_aux = io->stats_aux;
- 		free_io(md, io);
- 		end_io_acct(md, bio, start_time, &stats_aux);
-+		smp_wmb();
-+		this_cpu_dec(*md->pending_io);
-+
-+		/* nudge anyone waiting on suspend queue */
-+		if (unlikely(wq_has_sleeper(&md->wait)))
-+			wake_up(&md->wait);
- 
- 		if (io_error == BLK_STS_DM_REQUEUE)
- 			return;
-@@ -1689,6 +1692,11 @@ static void cleanup_mapped_device(struct
- 		blk_cleanup_disk(md->disk);
- 	}
- 
-+	if (md->pending_io) {
-+		free_percpu(md->pending_io);
-+		md->pending_io = NULL;
-+	}
-+
- 	cleanup_srcu_struct(&md->io_barrier);
- 
- 	mutex_destroy(&md->suspend_lock);
-@@ -1786,6 +1794,10 @@ static struct mapped_device *alloc_dev(i
- 	if (!md->wq)
- 		goto bad;
- 
-+	md->pending_io = alloc_percpu(unsigned long);
-+	if (!md->pending_io)
-+		goto bad;
-+
- 	dm_stats_init(&md->stats);
- 
- 	/* Populate the mapping, nobody knows we exist yet */
-@@ -2193,16 +2205,13 @@ void dm_put(struct mapped_device *md)
- }
- EXPORT_SYMBOL_GPL(dm_put);
- 
--static bool md_in_flight_bios(struct mapped_device *md)
-+static bool dm_in_flight_bios(struct mapped_device *md)
- {
- 	int cpu;
--	struct block_device *part = dm_disk(md)->part0;
--	long sum = 0;
-+	unsigned long sum = 0;
- 
--	for_each_possible_cpu(cpu) {
--		sum += part_stat_local_read_cpu(part, in_flight[0], cpu);
--		sum += part_stat_local_read_cpu(part, in_flight[1], cpu);
--	}
-+	for_each_possible_cpu(cpu)
-+		sum += *per_cpu_ptr(md->pending_io, cpu);
- 
- 	return sum != 0;
- }
-@@ -2215,7 +2224,7 @@ static int dm_wait_for_bios_completion(s
- 	while (true) {
- 		prepare_to_wait(&md->wait, &wait, task_state);
- 
--		if (!md_in_flight_bios(md))
-+		if (!dm_in_flight_bios(md))
- 			break;
- 
- 		if (signal_pending_state(task_state, current)) {
-@@ -2227,6 +2236,8 @@ static int dm_wait_for_bios_completion(s
- 	}
- 	finish_wait(&md->wait, &wait);
- 
-+	smp_rmb();
-+
- 	return r;
- }
- 
+ 		if (copy_to_user(buf, buffer, c)) {
+ 			err = -EFAULT;
 
 
