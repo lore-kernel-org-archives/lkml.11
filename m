@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BC883C4167E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DC9AAC41535
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 13:23:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357691AbiDENIy (ORCPT
+        id S1356888AbiDENIU (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 09:08:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42832 "EHLO
+        Tue, 5 Apr 2022 09:08:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38248 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344125AbiDEJSS (ORCPT
+        with ESMTP id S1344060AbiDEJRW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:18:18 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13672381A6;
-        Tue,  5 Apr 2022 02:04:19 -0700 (PDT)
+        Tue, 5 Apr 2022 05:17:22 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2AD3B20192;
+        Tue,  5 Apr 2022 02:03:55 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C1F1EB81B75;
-        Tue,  5 Apr 2022 09:04:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 285BCC385A3;
-        Tue,  5 Apr 2022 09:04:15 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BAD72614E4;
+        Tue,  5 Apr 2022 09:03:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CFAE9C385A0;
+        Tue,  5 Apr 2022 09:03:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649149456;
-        bh=IyvszfkDkm6hI3tAPv+IVXNBSOMINnf8lFK83KPg6kA=;
+        s=korg; t=1649149434;
+        bh=4xVP+rc9dkDWqE/NBcuMen4mqzFB0WGjI6QqAFNahww=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tE++zjriN/TTcOsPEHA5nA2XaH2jQ+pzTOlBbO/MwRXo/RA/7j/KVq68CRsytyHPE
-         jhz05znvDiZhQp61EyZIA9MFgugEum6PZjstBTvKCkLPl/nJXs2bGAFIY7eQRiv5kA
-         qQDHyBITcWjiotgYc8RqxpMmTfrpzr+uUOhiFyX4=
+        b=T1Q9oDFXx7Q10TYYQF6HatDxsJ0aXwmFvwsEmFBTy33aPzXwH4OZmuWycxdhOK5pZ
+         sMsbTckQMX9ardQieD5gVq+0wuEe4fZ3RVfMDq/BG1U8lFse7XQHJbPYu3DOh0CNFX
+         SVFTBhMZZPN5HMq1hPHXiQCLrw3wQdMTwIbbE0B8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Petr Vorel <petr.vorel@gmail.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0722/1017] clk: qcom: gcc-msm8994: Fix gpll4 width
-Date:   Tue,  5 Apr 2022 09:27:15 +0200
-Message-Id: <20220405070415.698257143@linuxfoundation.org>
+        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Abel Vesa <abel.vesa@nxp.com>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 0675/1017] clk: imx: off by one in imx_lpcg_parse_clks_from_dt()
+Date:   Tue,  5 Apr 2022 09:26:28 +0200
+Message-Id: <20220405070414.315845337@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -52,41 +50,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Konrad Dybcio <konrad.dybcio@somainline.org>
+From: Dan Carpenter <dan.carpenter@oracle.com>
 
-[ Upstream commit 71021db1c532c2545ae53b9ee85b37b7154f51d4 ]
+[ Upstream commit 135efc3a76d127691afaf1864e4ab627bf09d53d ]
 
-The gpll4 postdiv is actually a div4, so make sure that Linux is aware of
-this.
+The > needs to be >= to prevent an off by one access.
 
-This fixes the following error messages:
-
- mmc1: Card appears overclocked; req 200000000 Hz, actual 343999999 Hz
- mmc1: Card appears overclocked; req 400000000 Hz, actual 687999999 Hz
-
-Fixes: aec89f78cf01 ("clk: qcom: Add support for msm8994 global clock controller")
-Signed-off-by: Konrad Dybcio <konrad.dybcio@somainline.org>
-Link: https://lore.kernel.org/r/20220319174940.341137-1-konrad.dybcio@somainline.org
-Tested-by: Petr Vorel <petr.vorel@gmail.com>
-Reviewed-by: Petr Vorel <petr.vorel@gmail.com>
-Signed-off-by: Stephen Boyd <sboyd@kernel.org>
+Fixes: d5f1e6a2bb61 ("clk: imx: imx8qxp-lpcg: add parsing clocks from device tree")
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+Reviewed-by: Abel Vesa <abel.vesa@nxp.com>
+Link: https://lore.kernel.org/r/20220228075014.GD13685@kili
+Signed-off-by: Abel Vesa <abel.vesa@nxp.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/clk/qcom/gcc-msm8994.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/clk/imx/clk-imx8qxp-lpcg.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/clk/qcom/gcc-msm8994.c b/drivers/clk/qcom/gcc-msm8994.c
-index 5df9f1ead48e..4a9eb845b050 100644
---- a/drivers/clk/qcom/gcc-msm8994.c
-+++ b/drivers/clk/qcom/gcc-msm8994.c
-@@ -76,6 +76,7 @@ static struct clk_alpha_pll gpll4_early = {
+diff --git a/drivers/clk/imx/clk-imx8qxp-lpcg.c b/drivers/clk/imx/clk-imx8qxp-lpcg.c
+index b23758083ce5..5e31a6a24b3a 100644
+--- a/drivers/clk/imx/clk-imx8qxp-lpcg.c
++++ b/drivers/clk/imx/clk-imx8qxp-lpcg.c
+@@ -248,7 +248,7 @@ static int imx_lpcg_parse_clks_from_dt(struct platform_device *pdev,
  
- static struct clk_alpha_pll_postdiv gpll4 = {
- 	.offset = 0x1dc0,
-+	.width = 4,
- 	.regs = clk_alpha_pll_regs[CLK_ALPHA_PLL_TYPE_DEFAULT],
- 	.clkr.hw.init = &(struct clk_init_data){
- 		.name = "gpll4",
+ 	for (i = 0; i < count; i++) {
+ 		idx = bit_offset[i] / 4;
+-		if (idx > IMX_LPCG_MAX_CLKS) {
++		if (idx >= IMX_LPCG_MAX_CLKS) {
+ 			dev_warn(&pdev->dev, "invalid bit offset of clock %d\n",
+ 				 i);
+ 			ret = -EINVAL;
 -- 
 2.34.1
 
