@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5DF5CC4167D
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:53:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4ED87C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:53:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347873AbiDEMsp (ORCPT
+        id S1349320AbiDEMs7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 08:48:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41492 "EHLO
+        Tue, 5 Apr 2022 08:48:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41500 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243689AbiDEJJM (ORCPT
+        with ESMTP id S243806AbiDEJJR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:09:12 -0400
+        Tue, 5 Apr 2022 05:09:17 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39496C8BCF;
-        Tue,  5 Apr 2022 01:58:24 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7BF8C7F;
+        Tue,  5 Apr 2022 01:58:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BEBCF61581;
-        Tue,  5 Apr 2022 08:58:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CAACBC385A5;
-        Tue,  5 Apr 2022 08:58:22 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6AC4361594;
+        Tue,  5 Apr 2022 08:58:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7B777C385A8;
+        Tue,  5 Apr 2022 08:58:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649149103;
-        bh=Ym6q4mp67Mt3k6FkfwYRtDjRCuFzUs6w4Q3vgHoo30U=;
+        s=korg; t=1649149119;
+        bh=vZCYosMR3xAeEcqaIxxhaQzuSAuF9vWSVdw/VukUcbY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dV3t/nMTwo5ZtLB3Rnr87f3gmFWGGzHfFbj0k6UUL/2KuGE1uOFp0jArhyLOYPKqh
-         p5Pat8i2NoMHkfU+WtqgFtf45qWOzMGhPsF3iExud3eVh/9p4SxbSfnDzP4n1NeiDN
-         1zrXQ2GAwxBMBUJ0VMySWU00stTvOerJU/+o/+B0=
+        b=Qgef9G6xTu7DjiJe3WKC7Tn9qII7H5VrISoBSLM/wJy3ny3LIfB3/AKxnI3X02Cz0
+         qtWP2yeI15DQqqpNFxmOjQ2yTrwpYVi4+wFLoE+sJXBHiaR7OtsZoiBT02x0M6qnq8
+         /RRAjIJ1fWIgVNpOUxrzPZP2rJ9/7aXDlZqFcvdI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mustafa Ismail <mustafa.ismail@intel.com>,
-        Shiraz Saleem <shiraz.saleem@intel.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
+        stable@vger.kernel.org, Wang Yufen <wangyufen@huawei.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        John Fastabend <john.fastabend@gmail.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0557/1017] RDMA/irdma: Fix Passthrough mode in VM
-Date:   Tue,  5 Apr 2022 09:24:30 +0200
-Message-Id: <20220405070410.815512177@linuxfoundation.org>
+Subject: [PATCH 5.16 0602/1017] bpf, sockmap: Fix double uncharge the mem of sk_msg
+Date:   Tue,  5 Apr 2022 09:25:15 +0200
+Message-Id: <20220405070412.147578366@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -51,79 +51,70 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mustafa Ismail <mustafa.ismail@intel.com>
+From: Wang Yufen <wangyufen@huawei.com>
 
-[ Upstream commit b200189626b5cefbaf8be9cadd7a28215e065bb9 ]
+[ Upstream commit 2486ab434b2c2a14e9237296db00b1e1b7ae3273 ]
 
-Using PCI_FUNC macro in a VM, when the device is in passthrough mode does
-not provide the real function instance. This means that currently, devices
-will not probe unless the instance in the VM matches the instance in the
-host.
+If tcp_bpf_sendmsg is running during a tear down operation, psock may be
+freed.
 
-Fix this by getting the pf_id from the LAN during the probe.
+tcp_bpf_sendmsg()
+ tcp_bpf_send_verdict()
+  sk_msg_return()
+  tcp_bpf_sendmsg_redir()
+   unlikely(!psock))
+     sk_msg_free()
 
-Fixes: 8498a30e1b94 ("RDMA/irdma: Register auxiliary driver and implement private channel OPs")
-Link: https://lore.kernel.org/r/20220225163211.127-3-shiraz.saleem@intel.com
-Signed-off-by: Mustafa Ismail <mustafa.ismail@intel.com>
-Signed-off-by: Shiraz Saleem <shiraz.saleem@intel.com>
-Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+The mem of msg has been uncharged in tcp_bpf_send_verdict() by
+sk_msg_return(), and would be uncharged by sk_msg_free() again. When psock
+is null, we can simply returning an error code, this would then trigger
+the sk_msg_free_nocharge in the error path of __SK_REDIRECT and would have
+the side effect of throwing an error up to user space. This would be a
+slight change in behavior from user side but would look the same as an
+error if the redirect on the socket threw an error.
+
+This issue can cause the following info:
+WARNING: CPU: 0 PID: 2136 at net/ipv4/af_inet.c:155 inet_sock_destruct+0x13c/0x260
+Call Trace:
+ <TASK>
+ __sk_destruct+0x24/0x1f0
+ sk_psock_destroy+0x19b/0x1c0
+ process_one_work+0x1b3/0x3c0
+ worker_thread+0x30/0x350
+ ? process_one_work+0x3c0/0x3c0
+ kthread+0xe6/0x110
+ ? kthread_complete_and_exit+0x20/0x20
+ ret_from_fork+0x22/0x30
+ </TASK>
+
+Fixes: 604326b41a6f ("bpf, sockmap: convert to generic sk_msg interface")
+Signed-off-by: Wang Yufen <wangyufen@huawei.com>
+Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+Acked-by: John Fastabend <john.fastabend@gmail.com>
+Link: https://lore.kernel.org/bpf/20220304081145.2037182-5-wangyufen@huawei.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/infiniband/hw/irdma/hw.c       | 2 +-
- drivers/infiniband/hw/irdma/i40iw_if.c | 1 +
- drivers/infiniband/hw/irdma/main.c     | 1 +
- drivers/infiniband/hw/irdma/main.h     | 1 +
- 4 files changed, 4 insertions(+), 1 deletion(-)
+ net/ipv4/tcp_bpf.c | 7 +++----
+ 1 file changed, 3 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/infiniband/hw/irdma/hw.c b/drivers/infiniband/hw/irdma/hw.c
-index b4c657f5f2f9..f99c40893ffa 100644
---- a/drivers/infiniband/hw/irdma/hw.c
-+++ b/drivers/infiniband/hw/irdma/hw.c
-@@ -1608,7 +1608,7 @@ static enum irdma_status_code irdma_initialize_dev(struct irdma_pci_f *rf)
- 	info.fpm_commit_buf = mem.va;
+diff --git a/net/ipv4/tcp_bpf.c b/net/ipv4/tcp_bpf.c
+index 304800c60427..1cdcb4df0eb7 100644
+--- a/net/ipv4/tcp_bpf.c
++++ b/net/ipv4/tcp_bpf.c
+@@ -138,10 +138,9 @@ int tcp_bpf_sendmsg_redir(struct sock *sk, struct sk_msg *msg,
+ 	struct sk_psock *psock = sk_psock_get(sk);
+ 	int ret;
  
- 	info.bar0 = rf->hw.hw_addr;
--	info.hmc_fn_id = PCI_FUNC(rf->pcidev->devfn);
-+	info.hmc_fn_id = rf->pf_id;
- 	info.hw = &rf->hw;
- 	status = irdma_sc_dev_init(rf->rdma_ver, &rf->sc_dev, &info);
- 	if (status)
-diff --git a/drivers/infiniband/hw/irdma/i40iw_if.c b/drivers/infiniband/hw/irdma/i40iw_if.c
-index d219f64b2c3d..a6f758b61b0c 100644
---- a/drivers/infiniband/hw/irdma/i40iw_if.c
-+++ b/drivers/infiniband/hw/irdma/i40iw_if.c
-@@ -77,6 +77,7 @@ static void i40iw_fill_device_info(struct irdma_device *iwdev, struct i40e_info
- 	rf->rdma_ver = IRDMA_GEN_1;
- 	rf->gen_ops.request_reset = i40iw_request_reset;
- 	rf->pcidev = cdev_info->pcidev;
-+	rf->pf_id = cdev_info->fid;
- 	rf->hw.hw_addr = cdev_info->hw_addr;
- 	rf->cdev = cdev_info;
- 	rf->msix_count = cdev_info->msix_count;
-diff --git a/drivers/infiniband/hw/irdma/main.c b/drivers/infiniband/hw/irdma/main.c
-index 51a41359e0b4..c556a36e7670 100644
---- a/drivers/infiniband/hw/irdma/main.c
-+++ b/drivers/infiniband/hw/irdma/main.c
-@@ -226,6 +226,7 @@ static void irdma_fill_device_info(struct irdma_device *iwdev, struct ice_pf *pf
- 	rf->hw.hw_addr = pf->hw.hw_addr;
- 	rf->pcidev = pf->pdev;
- 	rf->msix_count =  pf->num_rdma_msix;
-+	rf->pf_id = pf->hw.pf_id;
- 	rf->msix_entries = &pf->msix_entries[pf->rdma_base_vector];
- 	rf->default_vsi.vsi_idx = vsi->vsi_num;
- 	rf->protocol_used = IRDMA_ROCE_PROTOCOL_ONLY;
-diff --git a/drivers/infiniband/hw/irdma/main.h b/drivers/infiniband/hw/irdma/main.h
-index cb218cab79ac..fb7faa85e4c9 100644
---- a/drivers/infiniband/hw/irdma/main.h
-+++ b/drivers/infiniband/hw/irdma/main.h
-@@ -257,6 +257,7 @@ struct irdma_pci_f {
- 	u8 *mem_rsrc;
- 	u8 rdma_ver;
- 	u8 rst_to;
-+	u8 pf_id;
- 	enum irdma_protocol_used protocol_used;
- 	u32 sd_type;
- 	u32 msix_count;
+-	if (unlikely(!psock)) {
+-		sk_msg_free(sk, msg);
+-		return 0;
+-	}
++	if (unlikely(!psock))
++		return -EPIPE;
++
+ 	ret = ingress ? bpf_tcp_ingress(sk, psock, msg, bytes, flags) :
+ 			tcp_bpf_push_locked(sk, msg, bytes, flags, false);
+ 	sk_psock_put(sk, psock);
 -- 
 2.34.1
 
