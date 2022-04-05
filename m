@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C276C4167D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C566C4167B
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 01:06:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1839475AbiDFBDs (ORCPT
+        id S1839497AbiDFBEK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 21:03:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36678 "EHLO
+        Tue, 5 Apr 2022 21:04:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50650 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354815AbiDEKQF (ORCPT
+        with ESMTP id S241150AbiDEK2w (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:16:05 -0400
+        Tue, 5 Apr 2022 06:28:52 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2DD084A3EF;
-        Tue,  5 Apr 2022 03:02:57 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CAAE7DCA82;
+        Tue,  5 Apr 2022 03:18:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CBFFAB81B7A;
-        Tue,  5 Apr 2022 10:02:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 21C59C385A2;
-        Tue,  5 Apr 2022 10:02:53 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CB5C9B81C98;
+        Tue,  5 Apr 2022 10:18:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 21C10C385A0;
+        Tue,  5 Apr 2022 10:18:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649152974;
-        bh=gXLc8Nmru/OE480BeQnP0EBfJ2//XCu6TqSqJ64TlP0=;
+        s=korg; t=1649153885;
+        bh=wqbPfyi7RvYZHdPCYAxM7ej+NA3443hfkZmvaukFEtU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2RwB5jSvOXwXzDawimK4mPbEfTbW9VyQPQ9WmDkkuPFwkNOINCYkVLkQNNdwsh2VQ
-         xxNfZl2HGMLA8YfWCZ+iEwgb898ilZu2yZk+1oRyP50x/xMbCBgoQ8Q/4MdugeeeVq
-         pydvHxcZJhBYPQJMBw5YRbEi/aQCj2/gHNCHb5io=
+        b=INMEHX22umhbA4IiDs9tl7U+bkmRNRibZrGtizajnbarPxWqx7gmx6QsKp7AleWXj
+         RPXcATnRpU8KP/TPPbHH65+mqZS7LdrNr58da3XnQNx0ZkuIf0LHkHNNVluV9TxzkO
+         tvmJwHAUB/+SvpK8T0I4ViJLRSapLMa4GvvD1a20=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hulk Robot <hulkci@huawei.com>,
-        Baokun Li <libaokun1@huawei.com>,
-        Richard Weinberger <richard@nod.at>
-Subject: [PATCH 5.10 056/599] jffs2: fix use-after-free in jffs2_clear_xattr_subsystem
-Date:   Tue,  5 Apr 2022 09:25:50 +0200
-Message-Id: <20220405070300.494430291@linuxfoundation.org>
+        stable@vger.kernel.org, Luca Weiss <luca@z3ntu.xyz>,
+        Viresh Kumar <viresh.kumar@linaro.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 383/599] cpufreq: qcom-cpufreq-nvmem: fix reading of PVS Valid fuse
+Date:   Tue,  5 Apr 2022 09:31:17 +0200
+Message-Id: <20220405070310.227908021@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
 References: <20220405070258.802373272@linuxfoundation.org>
@@ -50,107 +50,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Baokun Li <libaokun1@huawei.com>
+From: Luca Weiss <luca@z3ntu.xyz>
 
-commit 4c7c44ee1650677fbe89d86edbad9497b7679b5c upstream.
+[ Upstream commit 4a8a77abf0e2b6468ba0281e33384cbec5fb476a ]
 
-When we mount a jffs2 image, assume that the first few blocks of
-the image are normal and contain at least one xattr-related inode,
-but the next block is abnormal. As a result, an error is returned
-in jffs2_scan_eraseblock(). jffs2_clear_xattr_subsystem() is then
-called in jffs2_build_filesystem() and then again in
-jffs2_do_fill_super().
+The fuse consists of 64 bits, with this statement we're supposed to get
+the upper 32 bits but it actually read out of bounds and got 0 instead
+of the desired value which lead to the "PVS bin not set." codepath being
+run resetting our pvs value.
 
-Finally we can observe the following report:
- ==================================================================
- BUG: KASAN: use-after-free in jffs2_clear_xattr_subsystem+0x95/0x6ac
- Read of size 8 at addr ffff8881243384e0 by task mount/719
-
- Call Trace:
-  dump_stack+0x115/0x16b
-  jffs2_clear_xattr_subsystem+0x95/0x6ac
-  jffs2_do_fill_super+0x84f/0xc30
-  jffs2_fill_super+0x2ea/0x4c0
-  mtd_get_sb+0x254/0x400
-  mtd_get_sb_by_nr+0x4f/0xd0
-  get_tree_mtd+0x498/0x840
-  jffs2_get_tree+0x25/0x30
-  vfs_get_tree+0x8d/0x2e0
-  path_mount+0x50f/0x1e50
-  do_mount+0x107/0x130
-  __se_sys_mount+0x1c5/0x2f0
-  __x64_sys_mount+0xc7/0x160
-  do_syscall_64+0x45/0x70
-  entry_SYSCALL_64_after_hwframe+0x44/0xa9
-
- Allocated by task 719:
-  kasan_save_stack+0x23/0x60
-  __kasan_kmalloc.constprop.0+0x10b/0x120
-  kasan_slab_alloc+0x12/0x20
-  kmem_cache_alloc+0x1c0/0x870
-  jffs2_alloc_xattr_ref+0x2f/0xa0
-  jffs2_scan_medium.cold+0x3713/0x4794
-  jffs2_do_mount_fs.cold+0xa7/0x2253
-  jffs2_do_fill_super+0x383/0xc30
-  jffs2_fill_super+0x2ea/0x4c0
- [...]
-
- Freed by task 719:
-  kmem_cache_free+0xcc/0x7b0
-  jffs2_free_xattr_ref+0x78/0x98
-  jffs2_clear_xattr_subsystem+0xa1/0x6ac
-  jffs2_do_mount_fs.cold+0x5e6/0x2253
-  jffs2_do_fill_super+0x383/0xc30
-  jffs2_fill_super+0x2ea/0x4c0
- [...]
-
- The buggy address belongs to the object at ffff8881243384b8
-  which belongs to the cache jffs2_xattr_ref of size 48
- The buggy address is located 40 bytes inside of
-  48-byte region [ffff8881243384b8, ffff8881243384e8)
- [...]
- ==================================================================
-
-The triggering of the BUG is shown in the following stack:
------------------------------------------------------------
-jffs2_fill_super
-  jffs2_do_fill_super
-    jffs2_do_mount_fs
-      jffs2_build_filesystem
-        jffs2_scan_medium
-          jffs2_scan_eraseblock        <--- ERROR
-        jffs2_clear_xattr_subsystem    <--- free
-    jffs2_clear_xattr_subsystem        <--- free again
------------------------------------------------------------
-
-An error is returned in jffs2_do_mount_fs(). If the error is returned
-by jffs2_sum_init(), the jffs2_clear_xattr_subsystem() does not need to
-be executed. If the error is returned by jffs2_build_filesystem(), the
-jffs2_clear_xattr_subsystem() also does not need to be executed again.
-So move jffs2_clear_xattr_subsystem() from 'out_inohash' to 'out_root'
-to fix this UAF problem.
-
-Fixes: aa98d7cf59b5 ("[JFFS2][XATTR] XATTR support on JFFS2 (version. 5)")
-Cc: stable@vger.kernel.org
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: Baokun Li <libaokun1@huawei.com>
-Signed-off-by: Richard Weinberger <richard@nod.at>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: a8811ec764f9 ("cpufreq: qcom: Add support for krait based socs")
+Signed-off-by: Luca Weiss <luca@z3ntu.xyz>
+Signed-off-by: Viresh Kumar <viresh.kumar@linaro.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/jffs2/fs.c |    2 +-
+ drivers/cpufreq/qcom-cpufreq-nvmem.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/fs/jffs2/fs.c
-+++ b/fs/jffs2/fs.c
-@@ -602,8 +602,8 @@ out_root:
- 	jffs2_free_ino_caches(c);
- 	jffs2_free_raw_node_refs(c);
- 	kvfree(c->blocks);
-- out_inohash:
- 	jffs2_clear_xattr_subsystem(c);
-+ out_inohash:
- 	kfree(c->inocache_list);
-  out_wbuf:
- 	jffs2_flash_cleanup(c);
+diff --git a/drivers/cpufreq/qcom-cpufreq-nvmem.c b/drivers/cpufreq/qcom-cpufreq-nvmem.c
+index fba9937a406b..7fdd30e92e42 100644
+--- a/drivers/cpufreq/qcom-cpufreq-nvmem.c
++++ b/drivers/cpufreq/qcom-cpufreq-nvmem.c
+@@ -130,7 +130,7 @@ static void get_krait_bin_format_b(struct device *cpu_dev,
+ 	}
+ 
+ 	/* Check PVS_BLOW_STATUS */
+-	pte_efuse = *(((u32 *)buf) + 4);
++	pte_efuse = *(((u32 *)buf) + 1);
+ 	pte_efuse &= BIT(21);
+ 	if (pte_efuse) {
+ 		dev_dbg(cpu_dev, "PVS bin: %d\n", *pvs);
+-- 
+2.34.1
+
 
 
