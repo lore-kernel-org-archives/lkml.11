@@ -2,109 +2,161 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D625C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B4BDC43219
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:50:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1838168AbiDFAu3 (ORCPT
+        id S1838203AbiDFAuj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 20:50:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47504 "EHLO
+        Tue, 5 Apr 2022 20:50:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41314 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349348AbiDEJtl (ORCPT
+        with ESMTP id S1573067AbiDERvM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:49:41 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C2A7645F;
-        Tue,  5 Apr 2022 02:44:20 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 14A396164D;
-        Tue,  5 Apr 2022 09:44:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1CE36C385A2;
-        Tue,  5 Apr 2022 09:44:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649151859;
-        bh=IUboqo4iJ3n7otCQXs7prFXc0z51J73FM0eOCExijfM=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=d3qnT3qQZCZishpst/TqlzrOvkXA63bi2d79PnAvM2qMQ3y10ImW+vuv8p2fGaDPi
-         YsNskDCSM0TfnN60aLv4ro3unhBSvWdAfGPFF2/++W7AvZTww+qtKvLon3yMRgW2hY
-         k0ICwtwhjxTLeNQ4Og2nhpUyl5q0rQRPgzpHVsCI=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mick Lorain <micklorain@protonmail.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 566/913] PCI: Avoid broken MSI on SB600 USB devices
-Date:   Tue,  5 Apr 2022 09:27:08 +0200
-Message-Id: <20220405070356.810084675@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 5 Apr 2022 13:51:12 -0400
+Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE451D9EB8
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 10:49:11 -0700 (PDT)
+Received: by mail-ed1-x530.google.com with SMTP id x20so7942422edi.12
+        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 10:49:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=RXCW1evSnb4oJ88sHTAFEYTq0HTuOW2ocRpwnA3InQ4=;
+        b=DFediYf4lKdcEGd6wHnf3P2A1rH9d97LcubT3QP6yRNY6vUA82uDkOevPceh0sN/Wl
+         AzNDVgFuK6V76WaqpSYAiG2hRF9Re4Ov3xlC/Ms7hpW9uCTQ7y898MEv8Ijbqhc6SxXo
+         QvfpY4jywVuV6j8Ii/P3vkQXreEU44Hlqin6E5RTxZAap0ziUpyUXuD83coag22gB7nJ
+         kP94eXAsBC1cr7hK8pVNGZaStSW21SliZd84A/wTh+8QK9KZdm23HHaRa8zC2IVlp4fq
+         sk905jrtMt/I2FOoTaeCu/ArrkOR8UVb6SsiWhRhquLKZ90pI6vt79FBY7MRBMWLMUZ2
+         L8SQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=RXCW1evSnb4oJ88sHTAFEYTq0HTuOW2ocRpwnA3InQ4=;
+        b=SsWYY3LHiAgB5n6iewp+EpnvTqRfWNMZ9c4ROH88N1VFQLWB3nF/hsCV6qAHH54j4+
+         QMW9MHMFW/cTyvHLvXy2BnLnl54Qvq6HM2WWeOUXAIlNxpaXlRQavgqmHf1dDj6KbUNB
+         DVA2qkD03a3JfCRFfeYdzc7A5UwhpXuY/myKHECW/BOY4/1EXVTkRPgMgjpvUFBz5kU6
+         elIaYCy4qtsNUVVFBHev2DalV0gHS9wE7/ZvywMeritvPTmyBnbqNCqGUNdT7XE67Zyv
+         Xf2Q+4TkitrJfGodRYNeExnTe/hN8G2+SYTqUE8ZCERkEGCZNEJS2M8KTZok3MPEBBHD
+         ONgg==
+X-Gm-Message-State: AOAM531YXDNjjh1vDbhFIU4zskYmyaiPmAZJxIgERF9kwKmokd/M4ksh
+        iBq1ClEsg1VR07Rf698wzt6QMmVgo3hUmlzZIY5+1w==
+X-Google-Smtp-Source: ABdhPJy3kLISS/qYYRzMDmjCuhPu7OU3AJeQfL+t2mEx7NkNwMYgXC85KD1rOoe+vR5iNyCwy95ZqCXnaDcme/ng0CI=
+X-Received: by 2002:aa7:d98f:0:b0:41c:bf0f:4c45 with SMTP id
+ u15-20020aa7d98f000000b0041cbf0f4c45mr4818393eds.379.1649180950052; Tue, 05
+ Apr 2022 10:49:10 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <20220328035951.1817417-1-tjmercier@google.com>
+ <20220328035951.1817417-6-tjmercier@google.com> <20220329152142.GA15794@blackbody.suse.cz>
+ <CABdmKX2874NdYCBzpKLnqWhZQDkC2wKz4ZL_aFNqrec6iAutpQ@mail.gmail.com> <20220405121245.GA30368@blackbody.suse.cz>
+In-Reply-To: <20220405121245.GA30368@blackbody.suse.cz>
+From:   "T.J. Mercier" <tjmercier@google.com>
+Date:   Tue, 5 Apr 2022 10:48:58 -0700
+Message-ID: <CABdmKX0aF5zXozbb7npcEq3PgaeDE=gaGLf+jYY4oRKW9N+46g@mail.gmail.com>
+Subject: Re: [RFC v4 5/8] dmabuf: Add gpu cgroup charge transfer function
+To:     =?UTF-8?Q?Michal_Koutn=C3=BD?= <mkoutny@suse.com>
+Cc:     David Airlie <airlied@linux.ie>, Daniel Vetter <daniel@ffwll.ch>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        =?UTF-8?B?QXJ2ZSBIasO4bm5ldsOlZw==?= <arve@android.com>,
+        Todd Kjos <tkjos@android.com>,
+        Martijn Coenen <maco@android.com>,
+        Joel Fernandes <joel@joelfernandes.org>,
+        Christian Brauner <brauner@kernel.org>,
+        Hridya Valsaraju <hridya@google.com>,
+        Suren Baghdasaryan <surenb@google.com>,
+        Sumit Semwal <sumit.semwal@linaro.org>,
+        =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>,
+        Benjamin Gaignard <benjamin.gaignard@linaro.org>,
+        Liam Mark <lmark@codeaurora.org>,
+        Laura Abbott <labbott@redhat.com>,
+        Brian Starkey <Brian.Starkey@arm.com>,
+        John Stultz <john.stultz@linaro.org>,
+        Tejun Heo <tj@kernel.org>, Zefan Li <lizefan.x@bytedance.com>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Kalesh Singh <kaleshsingh@google.com>, Kenny.Ho@amd.com,
+        Shuah Khan <skhan@linuxfoundation.org>,
+        dri-devel@lists.freedesktop.org, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-media@vger.kernel.org,
+        linaro-mm-sig@lists.linaro.org, cgroups@vger.kernel.org,
+        linux-kselftest@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Bjorn Helgaas <bhelgaas@google.com>
+On Tue, Apr 5, 2022 at 5:12 AM Michal Koutn=C3=BD <mkoutny@suse.com> wrote:
+>
+> On Fri, Apr 01, 2022 at 11:41:36AM -0700, "T.J. Mercier" <tjmercier@googl=
+e.com> wrote:
+> > This link doesn't work for me, but I think you're referring to the
+> > discussion about your "RAM_backed_buffers" comment from March 23rd.
+>
+> (Oops, it's a non-public message. But yes, you guessed it right ;-))
+>
+> > Anyway the test I did goes like this: enable memcg and gpu cgoups
+> > tracking and run a process that allocates 100MiB of dmabufs. Observe
+> > memcg and gpu accounting values before and after the allocation.
+>
+> Thanks for this measurement/dem/demoo.
+>
+> > Before
+> > # cat memory.current gpu.memory.current
+> > 14909440
+> > system 0
+> >
+> > <Test program does the allocation of 100MiB of dmabufs>
+> >
+> > After
+> > # cat memory.current gpu.memory.current
+> > 48025600
+> > system 104857600
+> >
+> > So the memcg value increases by about 30 MiB while the gpu values
+> > increases by 100 MiB.
+>
+> > This is with kmem enabled, and the /proc/maps
+> > file for this process indicates that the majority of that 30 MiB is
+> > kernel memory.
+>
+> > I think this result shows that neither the kernel nor process memory
+> > overlap with the gpu cgroup tracking of these allocations.
+>
+> It depends how the semantics of the 'system' entry is defined, no?
+> As I grasped from other thread, the 'total' is going to be removed, so
+> 'system' represents exclusively device memory?
+>
+That's right. The system charges (soon to be renamed "system-heap")
+result only from an allocator (in this case the system heap) deciding
+to call gpucg_try_charge for the buffer which is entirely device
+memory.
+>
+> > So despite the fact that these buffers are in main memory, they are
+> > allocated in a way that does not result in memcg attribution. (It
+> > looks to me like __GFP_ACCOUNT is not set for these.)
+>
+> (I thought you knew what dmabufs your program used :-p)
+>
+I'm coming up to speed on a lot of new-to-me code here. :)
+Just for completeness, these buffers were allocated with
+libdmabufheap's AllocSystem.
 
-[ Upstream commit 63cd736f449445edcd7f0bcc7d84453e9beec0aa ]
+> So, the goal is to do the tracking and migrations only via the gpu cg
+> layer, regardless how memcg charges it (or not).
+>
+> (I have no opinion on that, I'm just summing it so that we're on the
+> same page.)
+>
+Yes, this reflects my intention and current state of the code in this serie=
+s.
 
-Some ATI SB600 USB adapters advertise MSI, but if INTx is disabled by
-setting PCI_COMMAND_INTX_DISABLE, MSI doesn't work either.  The PCI/PCIe
-specs do not require software to set PCI_COMMAND_INTX_DISABLE when enabling
-MSI, but Linux has done that for many years.
+> Michal
 
-Mick reported that 306c54d0edb6 ("usb: hcd: Try MSI interrupts on PCI
-devices") broke these devices.  Prior to 306c54d0edb6, they used INTx.
-Starting with 306c54d0edb6, they use MSI, and and the fact that Linux sets
-PCI_COMMAND_INTX_DISABLE means both INTx and MSI are disabled on these
-devices.
-
-Avoid this SB600 defect by disabling MSI so we use INTx as before.
-
-Fixes: 306c54d0edb6 ("usb: hcd: Try MSI interrupts on PCI devices")
-Link: https://lore.kernel.org/r/20220321183446.1108325-1-helgaas@kernel.org
-Link: https://bugzilla.kernel.org/show_bug.cgi?id=215690
-Link: https://lore.kernel.org/all/PxIByDyBRcsbpcmVhGSNDFAoUcMmb78ctXCkw6fbpx25TGlCHvA6SJjjFkNr1FfQZMntYPTNyvEnblxzAZ8a6jP9ddLpKeCN6Chi_2FuexU=@protonmail.com/
-Link: https://lore.kernel.org/r/20220314101448.90074-1-andriy.shevchenko@linux.intel.com
-BugLink: https://lore.kernel.org/all/20200702143045.23429-1-andriy.shevchenko@linux.intel.com/
-Reported-by: Mick Lorain <micklorain@protonmail.com>
-Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/pci/quirks.c | 12 ++++++++++++
- 1 file changed, 12 insertions(+)
-
-diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
-index e7cd8b504535..4893b1e82403 100644
---- a/drivers/pci/quirks.c
-+++ b/drivers/pci/quirks.c
-@@ -1811,6 +1811,18 @@ static void quirk_alder_ioapic(struct pci_dev *pdev)
- DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL,	PCI_DEVICE_ID_INTEL_EESSC,	quirk_alder_ioapic);
- #endif
- 
-+static void quirk_no_msi(struct pci_dev *dev)
-+{
-+	pci_info(dev, "avoiding MSI to work around a hardware defect\n");
-+	dev->no_msi = 1;
-+}
-+DECLARE_PCI_FIXUP_FINAL(PCI_VENDOR_ID_ATI, 0x4386, quirk_no_msi);
-+DECLARE_PCI_FIXUP_FINAL(PCI_VENDOR_ID_ATI, 0x4387, quirk_no_msi);
-+DECLARE_PCI_FIXUP_FINAL(PCI_VENDOR_ID_ATI, 0x4388, quirk_no_msi);
-+DECLARE_PCI_FIXUP_FINAL(PCI_VENDOR_ID_ATI, 0x4389, quirk_no_msi);
-+DECLARE_PCI_FIXUP_FINAL(PCI_VENDOR_ID_ATI, 0x438a, quirk_no_msi);
-+DECLARE_PCI_FIXUP_FINAL(PCI_VENDOR_ID_ATI, 0x438b, quirk_no_msi);
-+
- static void quirk_pcie_mch(struct pci_dev *pdev)
- {
- 	pdev->no_msi = 1;
--- 
-2.34.1
-
-
-
+Thanks,
+T.J.
