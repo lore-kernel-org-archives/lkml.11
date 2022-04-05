@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CBB0AC46467
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 13:37:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CF49C3527A
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 13:37:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1390006AbiDENfw (ORCPT
+        id S1390119AbiDENg6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 09:35:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59714 "EHLO
+        Tue, 5 Apr 2022 09:36:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59666 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347079AbiDEJY6 (ORCPT
+        with ESMTP id S1347194AbiDEJZU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:24:58 -0400
+        Tue, 5 Apr 2022 05:25:20 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2293DA9950;
-        Tue,  5 Apr 2022 02:14:47 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15789DBD1B;
+        Tue,  5 Apr 2022 02:14:56 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 54314616B6;
-        Tue,  5 Apr 2022 09:14:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 585B0C385A2;
-        Tue,  5 Apr 2022 09:14:09 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C5DED61675;
+        Tue,  5 Apr 2022 09:14:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D09CEC385A0;
+        Tue,  5 Apr 2022 09:14:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649150049;
-        bh=YMuvDVCXN0t5GEpEso/ItGrfwaHKye26v8Bn/LLLC+k=;
+        s=korg; t=1649150094;
+        bh=I/i7T7HEoLFH2UMaMusK0AA1SCLAgIME1qWj9t4fiAA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PX5QXss/mHbeno/+vTMQG5ztL1bnXrH8iePLnIvIIxbskyxyPZdDv5n5FbK7HsbsA
-         LX+Wb/YynKkgzYErfUGAbUt/TJM/Ogp+/iC9gnQW3+pEftssTTOGhiLRcFunLL2xJb
-         vC4D+b0OUDaNukS53m1zcFbpiTpdJRcY6zhGdDIY=
+        b=2ZMEyi92zZUz+wvcOpTzFOs/iP1BwY5cYPU65x4dmGodwfLlv5DJTbCtxwbtyezOF
+         D9CeI5FJAubiZ7tkmvOhwQJruemfKa7yMcjlR6t7DsT8KtodkMJH7dgrigxLw3vYcs
+         ykk3Aa6pD1LRTMS/VKg1tDQgMQsMfQanL9O46Meg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Marc Dionne <marc.dionne@auristor.com>,
-        David Howells <dhowells@redhat.com>,
-        linux-afs@lists.infradead.org, Paolo Abeni <pabeni@redhat.com>
-Subject: [PATCH 5.16 0936/1017] rxrpc: Fix call timer start racing with call destruction
-Date:   Tue,  5 Apr 2022 09:30:49 +0200
-Message-Id: <20220405070421.997868876@linuxfoundation.org>
+        stable@vger.kernel.org, Marc Zyngier <maz@kernel.org>,
+        Stefano Garzarella <sgarzare@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>
+Subject: [PATCH 5.16 0951/1017] Revert "virtio_pci: harden MSI-X interrupts"
+Date:   Tue,  5 Apr 2022 09:31:04 +0200
+Message-Id: <20220405070422.440629901@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -50,200 +51,159 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: David Howells <dhowells@redhat.com>
+From: Jason Wang <jasowang@redhat.com>
 
-commit 4a7f62f91933c8ae5308f9127fd8ea48188b6bc3 upstream.
+commit eb4cecb453a19b34d5454b49532e09e9cb0c1529 upstream.
 
-The rxrpc_call struct has a timer used to handle various timed events
-relating to a call.  This timer can get started from the packet input
-routines that are run in softirq mode with just the RCU read lock held.
-Unfortunately, because only the RCU read lock is held - and neither ref or
-other lock is taken - the call can start getting destroyed at the same time
-a packet comes in addressed to that call.  This causes the timer - which
-was already stopped - to get restarted.  Later, the timer dispatch code may
-then oops if the timer got deallocated first.
+This reverts commit 9e35276a5344f74d4a3600fc4100b3dd251d5c56. Issue
+were reported for the drivers that are using affinity managed IRQ
+where manually toggling IRQ status is not expected. And we forget to
+enable the interrupts in the restore path as well.
 
-Fix this by trying to take a ref on the rxrpc_call struct and, if
-successful, passing that ref along to the timer.  If the timer was already
-running, the ref is discarded.
+In the future, we will rework on the interrupt hardening.
 
-The timer completion routine can then pass the ref along to the call's work
-item when it queues it.  If the timer or work item where already
-queued/running, the extra ref is discarded.
-
-Fixes: a158bdd3247b ("rxrpc: Fix call timeouts")
-Reported-by: Marc Dionne <marc.dionne@auristor.com>
-Signed-off-by: David Howells <dhowells@redhat.com>
-Reviewed-by: Marc Dionne <marc.dionne@auristor.com>
-Tested-by: Marc Dionne <marc.dionne@auristor.com>
-cc: linux-afs@lists.infradead.org
-Link: http://lists.infradead.org/pipermail/linux-afs/2022-March/005073.html
-Link: https://lore.kernel.org/r/164865115696.2943015.11097991776647323586.stgit@warthog.procyon.org.uk
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+Fixes: 9e35276a5344 ("virtio_pci: harden MSI-X interrupts")
+Reported-by: Marc Zyngier <maz@kernel.org>
+Reported-by: Stefano Garzarella <sgarzare@redhat.com>
+Signed-off-by: Jason Wang <jasowang@redhat.com>
+Link: https://lore.kernel.org/r/20220323031524.6555-2-jasowang@redhat.com
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- include/trace/events/rxrpc.h |    8 +++++++-
- net/rxrpc/ar-internal.h      |   15 +++++++--------
- net/rxrpc/call_event.c       |    2 +-
- net/rxrpc/call_object.c      |   40 +++++++++++++++++++++++++++++++++++-----
- 4 files changed, 50 insertions(+), 15 deletions(-)
+ drivers/virtio/virtio_pci_common.c |   27 ++++++---------------------
+ drivers/virtio/virtio_pci_common.h |    6 ++----
+ drivers/virtio/virtio_pci_legacy.c |    5 ++---
+ drivers/virtio/virtio_pci_modern.c |    6 ++----
+ 4 files changed, 12 insertions(+), 32 deletions(-)
 
---- a/include/trace/events/rxrpc.h
-+++ b/include/trace/events/rxrpc.h
-@@ -83,12 +83,15 @@ enum rxrpc_call_trace {
- 	rxrpc_call_error,
- 	rxrpc_call_got,
- 	rxrpc_call_got_kernel,
-+	rxrpc_call_got_timer,
- 	rxrpc_call_got_userid,
- 	rxrpc_call_new_client,
- 	rxrpc_call_new_service,
- 	rxrpc_call_put,
- 	rxrpc_call_put_kernel,
- 	rxrpc_call_put_noqueue,
-+	rxrpc_call_put_notimer,
-+	rxrpc_call_put_timer,
- 	rxrpc_call_put_userid,
- 	rxrpc_call_queued,
- 	rxrpc_call_queued_ref,
-@@ -278,12 +281,15 @@ enum rxrpc_tx_point {
- 	EM(rxrpc_call_error,			"*E*") \
- 	EM(rxrpc_call_got,			"GOT") \
- 	EM(rxrpc_call_got_kernel,		"Gke") \
-+	EM(rxrpc_call_got_timer,		"GTM") \
- 	EM(rxrpc_call_got_userid,		"Gus") \
- 	EM(rxrpc_call_new_client,		"NWc") \
- 	EM(rxrpc_call_new_service,		"NWs") \
- 	EM(rxrpc_call_put,			"PUT") \
- 	EM(rxrpc_call_put_kernel,		"Pke") \
--	EM(rxrpc_call_put_noqueue,		"PNQ") \
-+	EM(rxrpc_call_put_noqueue,		"PnQ") \
-+	EM(rxrpc_call_put_notimer,		"PnT") \
-+	EM(rxrpc_call_put_timer,		"PTM") \
- 	EM(rxrpc_call_put_userid,		"Pus") \
- 	EM(rxrpc_call_queued,			"QUE") \
- 	EM(rxrpc_call_queued_ref,		"QUR") \
---- a/net/rxrpc/ar-internal.h
-+++ b/net/rxrpc/ar-internal.h
-@@ -777,14 +777,12 @@ void rxrpc_propose_ACK(struct rxrpc_call
- 		       enum rxrpc_propose_ack_trace);
- void rxrpc_process_call(struct work_struct *);
+--- a/drivers/virtio/virtio_pci_common.c
++++ b/drivers/virtio/virtio_pci_common.c
+@@ -24,8 +24,8 @@ MODULE_PARM_DESC(force_legacy,
+ 		 "Force legacy mode for transitional virtio 1 devices");
+ #endif
  
--static inline void rxrpc_reduce_call_timer(struct rxrpc_call *call,
--					   unsigned long expire_at,
--					   unsigned long now,
--					   enum rxrpc_timer_trace why)
--{
--	trace_rxrpc_timer(call, why, now);
--	timer_reduce(&call->timer, expire_at);
+-/* disable irq handlers */
+-void vp_disable_cbs(struct virtio_device *vdev)
++/* wait for pending irq handlers */
++void vp_synchronize_vectors(struct virtio_device *vdev)
+ {
+ 	struct virtio_pci_device *vp_dev = to_vp_device(vdev);
+ 	int i;
+@@ -34,20 +34,7 @@ void vp_disable_cbs(struct virtio_device
+ 		synchronize_irq(vp_dev->pci_dev->irq);
+ 
+ 	for (i = 0; i < vp_dev->msix_vectors; ++i)
+-		disable_irq(pci_irq_vector(vp_dev->pci_dev, i));
 -}
-+void rxrpc_reduce_call_timer(struct rxrpc_call *call,
-+			     unsigned long expire_at,
-+			     unsigned long now,
-+			     enum rxrpc_timer_trace why);
-+
-+void rxrpc_delete_call_timer(struct rxrpc_call *call);
- 
- /*
-  * call_object.c
-@@ -808,6 +806,7 @@ void rxrpc_release_calls_on_socket(struc
- bool __rxrpc_queue_call(struct rxrpc_call *);
- bool rxrpc_queue_call(struct rxrpc_call *);
- void rxrpc_see_call(struct rxrpc_call *);
-+bool rxrpc_try_get_call(struct rxrpc_call *call, enum rxrpc_call_trace op);
- void rxrpc_get_call(struct rxrpc_call *, enum rxrpc_call_trace);
- void rxrpc_put_call(struct rxrpc_call *, enum rxrpc_call_trace);
- void rxrpc_cleanup_call(struct rxrpc_call *);
---- a/net/rxrpc/call_event.c
-+++ b/net/rxrpc/call_event.c
-@@ -310,7 +310,7 @@ recheck_state:
- 	}
- 
- 	if (call->state == RXRPC_CALL_COMPLETE) {
--		del_timer_sync(&call->timer);
-+		rxrpc_delete_call_timer(call);
- 		goto out_put;
- 	}
- 
---- a/net/rxrpc/call_object.c
-+++ b/net/rxrpc/call_object.c
-@@ -53,10 +53,30 @@ static void rxrpc_call_timer_expired(str
- 
- 	if (call->state < RXRPC_CALL_COMPLETE) {
- 		trace_rxrpc_timer(call, rxrpc_timer_expired, jiffies);
--		rxrpc_queue_call(call);
-+		__rxrpc_queue_call(call);
-+	} else {
-+		rxrpc_put_call(call, rxrpc_call_put);
-+	}
-+}
-+
-+void rxrpc_reduce_call_timer(struct rxrpc_call *call,
-+			     unsigned long expire_at,
-+			     unsigned long now,
-+			     enum rxrpc_timer_trace why)
-+{
-+	if (rxrpc_try_get_call(call, rxrpc_call_got_timer)) {
-+		trace_rxrpc_timer(call, why, now);
-+		if (timer_reduce(&call->timer, expire_at))
-+			rxrpc_put_call(call, rxrpc_call_put_notimer);
- 	}
+-
+-/* enable irq handlers */
+-void vp_enable_cbs(struct virtio_device *vdev)
+-{
+-	struct virtio_pci_device *vp_dev = to_vp_device(vdev);
+-	int i;
+-
+-	if (vp_dev->intx_enabled)
+-		return;
+-
+-	for (i = 0; i < vp_dev->msix_vectors; ++i)
+-		enable_irq(pci_irq_vector(vp_dev->pci_dev, i));
++		synchronize_irq(pci_irq_vector(vp_dev->pci_dev, i));
  }
  
-+void rxrpc_delete_call_timer(struct rxrpc_call *call)
-+{
-+	if (del_timer_sync(&call->timer))
-+		rxrpc_put_call(call, rxrpc_call_put_timer);
-+}
-+
- static struct lock_class_key rxrpc_call_user_mutex_lock_class_key;
- 
- /*
-@@ -463,6 +483,17 @@ void rxrpc_see_call(struct rxrpc_call *c
- 	}
+ /* the notify function used when creating a virt queue */
+@@ -154,8 +141,7 @@ static int vp_request_msix_vectors(struc
+ 	snprintf(vp_dev->msix_names[v], sizeof *vp_dev->msix_names,
+ 		 "%s-config", name);
+ 	err = request_irq(pci_irq_vector(vp_dev->pci_dev, v),
+-			  vp_config_changed, IRQF_NO_AUTOEN,
+-			  vp_dev->msix_names[v],
++			  vp_config_changed, 0, vp_dev->msix_names[v],
+ 			  vp_dev);
+ 	if (err)
+ 		goto error;
+@@ -174,8 +160,7 @@ static int vp_request_msix_vectors(struc
+ 		snprintf(vp_dev->msix_names[v], sizeof *vp_dev->msix_names,
+ 			 "%s-virtqueues", name);
+ 		err = request_irq(pci_irq_vector(vp_dev->pci_dev, v),
+-				  vp_vring_interrupt, IRQF_NO_AUTOEN,
+-				  vp_dev->msix_names[v],
++				  vp_vring_interrupt, 0, vp_dev->msix_names[v],
+ 				  vp_dev);
+ 		if (err)
+ 			goto error;
+@@ -352,7 +337,7 @@ static int vp_find_vqs_msix(struct virti
+ 			 "%s-%s",
+ 			 dev_name(&vp_dev->vdev.dev), names[i]);
+ 		err = request_irq(pci_irq_vector(vp_dev->pci_dev, msix_vec),
+-				  vring_interrupt, IRQF_NO_AUTOEN,
++				  vring_interrupt, 0,
+ 				  vp_dev->msix_names[msix_vec],
+ 				  vqs[i]);
+ 		if (err)
+--- a/drivers/virtio/virtio_pci_common.h
++++ b/drivers/virtio/virtio_pci_common.h
+@@ -101,10 +101,8 @@ static struct virtio_pci_device *to_vp_d
+ 	return container_of(vdev, struct virtio_pci_device, vdev);
  }
  
-+bool rxrpc_try_get_call(struct rxrpc_call *call, enum rxrpc_call_trace op)
-+{
-+	const void *here = __builtin_return_address(0);
-+	int n = atomic_fetch_add_unless(&call->usage, 1, 0);
-+
-+	if (n == 0)
-+		return false;
-+	trace_rxrpc_call(call->debug_id, op, n, here, NULL);
-+	return true;
-+}
-+
- /*
-  * Note the addition of a ref on a call.
-  */
-@@ -510,8 +541,7 @@ void rxrpc_release_call(struct rxrpc_soc
- 	spin_unlock_bh(&call->lock);
+-/* disable irq handlers */
+-void vp_disable_cbs(struct virtio_device *vdev);
+-/* enable irq handlers */
+-void vp_enable_cbs(struct virtio_device *vdev);
++/* wait for pending irq handlers */
++void vp_synchronize_vectors(struct virtio_device *vdev);
+ /* the notify function used when creating a virt queue */
+ bool vp_notify(struct virtqueue *vq);
+ /* the config->del_vqs() implementation */
+--- a/drivers/virtio/virtio_pci_legacy.c
++++ b/drivers/virtio/virtio_pci_legacy.c
+@@ -98,8 +98,8 @@ static void vp_reset(struct virtio_devic
+ 	/* Flush out the status write, and flush in device writes,
+ 	 * including MSi-X interrupts, if any. */
+ 	vp_legacy_get_status(&vp_dev->ldev);
+-	/* Disable VQ/configuration callbacks. */
+-	vp_disable_cbs(vdev);
++	/* Flush pending VQ/configuration callbacks. */
++	vp_synchronize_vectors(vdev);
+ }
  
- 	rxrpc_put_call_slot(call);
--
--	del_timer_sync(&call->timer);
-+	rxrpc_delete_call_timer(call);
+ static u16 vp_config_vector(struct virtio_pci_device *vp_dev, u16 vector)
+@@ -185,7 +185,6 @@ static void del_vq(struct virtio_pci_vq_
+ }
  
- 	/* Make sure we don't get any more notifications */
- 	write_lock_bh(&rx->recvmsg_lock);
-@@ -618,6 +648,8 @@ static void rxrpc_destroy_call(struct wo
- 	struct rxrpc_call *call = container_of(work, struct rxrpc_call, processor);
- 	struct rxrpc_net *rxnet = call->rxnet;
+ static const struct virtio_config_ops virtio_pci_config_ops = {
+-	.enable_cbs	= vp_enable_cbs,
+ 	.get		= vp_get,
+ 	.set		= vp_set,
+ 	.get_status	= vp_get_status,
+--- a/drivers/virtio/virtio_pci_modern.c
++++ b/drivers/virtio/virtio_pci_modern.c
+@@ -172,8 +172,8 @@ static void vp_reset(struct virtio_devic
+ 	 */
+ 	while (vp_modern_get_status(mdev))
+ 		msleep(1);
+-	/* Disable VQ/configuration callbacks. */
+-	vp_disable_cbs(vdev);
++	/* Flush pending VQ/configuration callbacks. */
++	vp_synchronize_vectors(vdev);
+ }
  
-+	rxrpc_delete_call_timer(call);
-+
- 	rxrpc_put_connection(call->conn);
- 	rxrpc_put_peer(call->peer);
- 	kfree(call->rxtx_buffer);
-@@ -652,8 +684,6 @@ void rxrpc_cleanup_call(struct rxrpc_cal
+ static u16 vp_config_vector(struct virtio_pci_device *vp_dev, u16 vector)
+@@ -380,7 +380,6 @@ static bool vp_get_shm_region(struct vir
+ }
  
- 	memset(&call->sock_node, 0xcd, sizeof(call->sock_node));
+ static const struct virtio_config_ops virtio_pci_config_nodev_ops = {
+-	.enable_cbs	= vp_enable_cbs,
+ 	.get		= NULL,
+ 	.set		= NULL,
+ 	.generation	= vp_generation,
+@@ -398,7 +397,6 @@ static const struct virtio_config_ops vi
+ };
  
--	del_timer_sync(&call->timer);
--
- 	ASSERTCMP(call->state, ==, RXRPC_CALL_COMPLETE);
- 	ASSERT(test_bit(RXRPC_CALL_RELEASED, &call->flags));
- 
+ static const struct virtio_config_ops virtio_pci_config_ops = {
+-	.enable_cbs	= vp_enable_cbs,
+ 	.get		= vp_get,
+ 	.set		= vp_set,
+ 	.generation	= vp_generation,
 
 
