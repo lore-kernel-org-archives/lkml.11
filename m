@@ -2,106 +2,133 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C864C3527D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E932C4707F
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 22:09:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1391526AbiDEWHA (ORCPT
+        id S1343542AbiDEWGc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 18:07:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37306 "EHLO
+        Tue, 5 Apr 2022 18:06:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43936 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1573582AbiDETXD (ORCPT
+        with ESMTP id S1443488AbiDEPjm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 15:23:03 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 667794A3E2;
-        Tue,  5 Apr 2022 12:21:05 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E8BDB616C5;
-        Tue,  5 Apr 2022 19:21:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A93FDC385A0;
-        Tue,  5 Apr 2022 19:21:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649186464;
-        bh=lVmRbo/Yqwtaeh9CAL98bk9QWDa/T4bzwxEXkoS7RR8=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=U3k5xKk6McwExr1pInRLBBwT0PSd1ja7gfw4fXGYf3G9rG8Ff0FQihQw5WlIJ6hdh
-         eilnR53Iy/8He6MnHF9HXc/rOlO3CTktZJ96PYQ6+HfKDGEjcv/AwAp0Yib1Wu3UZb
-         oBDt31SstSUj/fbCPYrGAI99ydS05zt19JY8y2t8WwmZ2l72D/zPU/XdeyrRLGEBK7
-         Scljqp3FqosbSdOpfTalLCkMJ6XebyLgJnzAExnhcaPg1E3ho/VALdQ0FwvMS7jIKX
-         Nv6N+eh8OIiISDWvPabMqwvqr3gE674oMCwPh5aQhtiZ/1NVxG/qiQGEYSTpw1ASOf
-         qA6lOUAaTe+IQ==
-From:   Jeff Layton <jlayton@kernel.org>
-To:     idryomov@gmail.com, xiubli@redhat.com
-Cc:     ceph-devel@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        linux-fscrypt@vger.kernel.org, linux-kernel@vger.kernel.org,
-        lhenriques@suse.de
-Subject: [PATCH v13 35/59] ceph: add a new ceph.fscrypt.auth vxattr
-Date:   Tue,  5 Apr 2022 15:20:06 -0400
-Message-Id: <20220405192030.178326-36-jlayton@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405192030.178326-1-jlayton@kernel.org>
-References: <20220405192030.178326-1-jlayton@kernel.org>
+        Tue, 5 Apr 2022 11:39:42 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 8F57814CD06
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 06:56:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1649166984;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=cfhShkJ9GGB5NMk/Kf+P1wbpLhxJJWK4mdwN+7tkv6Q=;
+        b=MhuXQfR9l26DRkaHKeIvxbMEoCJ0S16iWjCL/7+FQ5+bakMoUipP6CeI5NJDU15HvZ+c6U
+        tRV0hLuPwDme5fb1/yfiwDjHxjBeTgk477iAOG8mrm6uan88Wnl4rGrbyO2J/tvFB+mvsb
+        OhkdAq8VtS+t83J8bB9h/V7lXxWDoQ4=
+Received: from mail-ej1-f72.google.com (mail-ej1-f72.google.com
+ [209.85.218.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-518-kuWlvZZdPZ-geokm6EsfCw-1; Tue, 05 Apr 2022 09:56:23 -0400
+X-MC-Unique: kuWlvZZdPZ-geokm6EsfCw-1
+Received: by mail-ej1-f72.google.com with SMTP id 13-20020a170906328d00b006982d0888a4so6379885ejw.9
+        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 06:56:23 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=cfhShkJ9GGB5NMk/Kf+P1wbpLhxJJWK4mdwN+7tkv6Q=;
+        b=YK1YUSfzN+FmFQwAfmzPtRXQlohqSl+ao+ETXf4dwN6S56Sost4y5iZEALxKHvyaGN
+         UFij8+PrANl5mvupjKawOWouZN1FVNcb/DXmSXp6uL/uCM1ZDRAe+dCIX2/Fjpc6X+VU
+         02XJQSg5G4N9uLHYzYodlx57vffnd88jn8MPy0HAXOx/FLrkgEDG4peV+3wX8CxtvdUn
+         gQranxRn1VGpec6ezC9kMSKIlRm/RwbHA4jLFACQNGP7/f3PYpWO9jXGGRh1dx77HooQ
+         Gg43Rkse1s5aja6OchoFrli2UwUvUjxnES1xEaUY7iMuRkDF3clGg0pdIWxt2kCHzt1B
+         e2HQ==
+X-Gm-Message-State: AOAM530Jcmc1el1CbXDy64wxo3ZBZunGgLswPniQ1oatxOOPGcnK+4Av
+        w1BB+I4SsmPj+cjWcWgCLUDgY9adJlD+CafsMwmDrLEy/HEWXIpvmJv4X5SJn+pt8TwjU6u480e
+        N8qb5ZECS/6fx5Q/z7wfP+ngX
+X-Received: by 2002:a17:907:3f92:b0:6e7:2ad3:a92b with SMTP id hr18-20020a1709073f9200b006e72ad3a92bmr3830791ejc.239.1649166982509;
+        Tue, 05 Apr 2022 06:56:22 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJx69MGrYFiX2diEdHGCV1GaeBoAESL3VkLvFfkO+94ucsSVEn/t7bVB93+D7yDW19qjYnxehg==
+X-Received: by 2002:a17:907:3f92:b0:6e7:2ad3:a92b with SMTP id hr18-20020a1709073f9200b006e72ad3a92bmr3830772ejc.239.1649166982285;
+        Tue, 05 Apr 2022 06:56:22 -0700 (PDT)
+Received: from ?IPV6:2001:1c00:c1e:bf00:1db8:22d3:1bc9:8ca1? (2001-1c00-0c1e-bf00-1db8-22d3-1bc9-8ca1.cable.dynamic.v6.ziggo.nl. [2001:1c00:c1e:bf00:1db8:22d3:1bc9:8ca1])
+        by smtp.gmail.com with ESMTPSA id s4-20020a170906a18400b006db0a78bde8sm5576897ejy.87.2022.04.05.06.56.21
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 05 Apr 2022 06:56:21 -0700 (PDT)
+Message-ID: <6b61410d-ce1e-e84c-4a4e-aa3b22f3dc89@redhat.com>
+Date:   Tue, 5 Apr 2022 15:56:21 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH v2 0/2] Make headphone work on Huawei Matebook D15
+Content-Language: en-US
+To:     Mauro Carvalho Chehab <mchehab@kernel.org>
+Cc:     Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
+        =?UTF-8?Q?P=c3=a9ter_Ujfalusi?= <peter.ujfalusi@linux.intel.com>,
+        Bard Liao <yung-chuan.liao@linux.intel.com>,
+        Cezary Rojewski <cezary.rojewski@intel.com>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Jie Yang <yang.jie@linux.intel.com>,
+        Liam Girdwood <liam.r.girdwood@linux.intel.com>,
+        Mark Brown <broonie@kernel.org>, Takashi Iwai <tiwai@suse.com>,
+        alsa-devel@alsa-project.org, linux-kernel@vger.kernel.org
+References: <cover.1649147890.git.mchehab@kernel.org>
+ <168fe6c3-6a7d-4019-16e3-066caf394b8a@redhat.com>
+ <20220405154816.5cfdc49c@coco.lan>
+From:   Hans de Goede <hdegoede@redhat.com>
+In-Reply-To: <20220405154816.5cfdc49c@coco.lan>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Give the client a way to get at the xattr from userland, mostly for
-future debugging purposes.
+Hi,
 
-Signed-off-by: Jeff Layton <jlayton@kernel.org>
----
- fs/ceph/xattr.c | 26 ++++++++++++++++++++++++++
- 1 file changed, 26 insertions(+)
+On 4/5/22 15:48, Mauro Carvalho Chehab wrote:
+> Em Tue, 5 Apr 2022 11:00:44 +0200
+> Hans de Goede <hdegoede@redhat.com> escreveu:
+> 
+>> Hi,
+>>
+>> On 4/5/22 10:44, Mauro Carvalho Chehab wrote:
+>>> At Huawei Matebook D15 two different GPIOs are used to control the output:
+>>> 	- gpio0 controls the speaker output;
+>>> 	- gpio1 controls the headphone output.
+>>>
+>>> Changing both at the same time cause spurious events that are mis-interpreted
+>>> as input events, causing troubles on apps. So, a delay is needed before turning
+>>> on such gpios.
+>>>
+>>> With this patch, plugging a headphone causes a jack event to trigger the speaker
+>>> supply, powering down the speaker and powering up the headphone output.
+>>> Removing the headphone also triggers the power supply, powering up the speaker
+>>> and powering down the headphone.
+>>>
+>>> Mauro Carvalho Chehab (2):
+>>>   ASoC: Intel: sof_es8336: support a separate gpio to control headphone
+>>>   ASoC: Intel: sof_es8336: Huawei Matebook D15 uses a headphone gpio  
+>>
+>> There is something weird with the patches here, at least for me in Thunderbird
+>> both patches show up as nameless attachments to emails with empty bodies.
+> 
+> Weird... I tested here on Thunderbird (Fedora 35), reading it from the ML
+> and they opened ok here.
 
-diff --git a/fs/ceph/xattr.c b/fs/ceph/xattr.c
-index 58628cef4207..e080116608b2 100644
---- a/fs/ceph/xattr.c
-+++ b/fs/ceph/xattr.c
-@@ -352,6 +352,23 @@ static ssize_t ceph_vxattrcb_auth_mds(struct ceph_inode_info *ci,
- 	return ret;
- }
- 
-+#if IS_ENABLED(CONFIG_FS_ENCRYPTION)
-+static bool ceph_vxattrcb_fscrypt_auth_exists(struct ceph_inode_info *ci)
-+{
-+	return ci->fscrypt_auth_len;
-+}
-+
-+static ssize_t ceph_vxattrcb_fscrypt_auth(struct ceph_inode_info *ci, char *val, size_t size)
-+{
-+	if (size) {
-+		if (size < ci->fscrypt_auth_len)
-+			return -ERANGE;
-+		memcpy(val, ci->fscrypt_auth, ci->fscrypt_auth_len);
-+	}
-+	return ci->fscrypt_auth_len;
-+}
-+#endif /* CONFIG_FS_ENCRYPTION */
-+
- #define CEPH_XATTR_NAME(_type, _name)	XATTR_CEPH_PREFIX #_type "." #_name
- #define CEPH_XATTR_NAME2(_type, _name, _name2)	\
- 	XATTR_CEPH_PREFIX #_type "." #_name "." #_name2
-@@ -500,6 +517,15 @@ static struct ceph_vxattr ceph_common_vxattrs[] = {
- 		.exists_cb = NULL,
- 		.flags = VXATTR_FLAG_READONLY,
- 	},
-+#if IS_ENABLED(CONFIG_FS_ENCRYPTION)
-+	{
-+		.name = "ceph.fscrypt.auth",
-+		.name_size = sizeof("ceph.fscrypt.auth"),
-+		.getxattr_cb = ceph_vxattrcb_fscrypt_auth,
-+		.exists_cb = ceph_vxattrcb_fscrypt_auth_exists,
-+		.flags = VXATTR_FLAG_READONLY,
-+	},
-+#endif /* CONFIG_FS_ENCRYPTION */
- 	{ .name = NULL, 0 }	/* Required table terminator */
- };
- 
--- 
-2.35.1
+Yes I checked lore.kernel.org and they look fine there, so as you
+said: weird.
+
+> There *is* an issue on such patches though: they ended using my past
+> e-mail :-) 
+> 
+> I'll re-send those with your ack using the right SoB/From
+> mchehab@kernel.org.
+
+And in the resend they look fine in my Thunderbird too.
+
+Regards,
+
+Hans
 
