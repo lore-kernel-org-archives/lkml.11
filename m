@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B38BEC43217
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 09:13:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BA38EC43217
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 09:13:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343779AbiDEJMw (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 05:12:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34762 "EHLO
+        id S239543AbiDEJNE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 05:13:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34798 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239619AbiDEIUQ (ORCPT
+        with ESMTP id S239618AbiDEIUQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Apr 2022 04:20:16 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 399E61C9;
-        Tue,  5 Apr 2022 01:17:42 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76F4D1C6;
+        Tue,  5 Apr 2022 01:17:39 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E4BE0B81A37;
-        Tue,  5 Apr 2022 08:17:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 50820C385A0;
-        Tue,  5 Apr 2022 08:17:39 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 282E6B81B92;
+        Tue,  5 Apr 2022 08:17:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7AFC7C385A1;
+        Tue,  5 Apr 2022 08:17:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649146659;
-        bh=TAIHegqTVYUQT1dYTJ1rIsOiROabndahkgbT+ieyP/U=;
+        s=korg; t=1649146656;
+        bh=TRFzbUO7n22VZ945pdzrqwka/ULHwpD2i4aPT2EBJnU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=trfCNxebxu4h5BeVSn430F9N2T1/LiQoanTSQkBcUrOgiBs1q7wjPGzMsQE1Y7OOW
-         X3O8/veyMs3FkeCXDxSLVfOe/3JGi5P2XFvme0qXnR2/+ki2i2vUufDgVgjhcaDSpx
-         wKR2WHLfToySx9tPFGywaPMkXcfbLCNDGc/JRc2M=
+        b=xYcvcWCEByJwjjJQnlXe7zqYU1sxxTKL90/PRQr6mZjJIwV32faDi8j9oRwXgGEKi
+         uuGdjgYDq3KFKNDu4Js/rjtmymVr7dqIiAUa7iltlg7vpClMVH3HE9TkDYcT1P8RYF
+         VUXd2SRTzQQAhvJ/fvQLFmjB+GVjcodIN7sIOU94=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Stefano Garzarella <sgarzare@redhat.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
+        stable@vger.kernel.org, "Michael S. Tsirkin" <mst@redhat.com>,
         Stefan Hajnoczi <stefanha@redhat.com>,
+        Stefano Garzarella <sgarzare@redhat.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0803/1126] vsock/virtio: enable VQs early on probe
-Date:   Tue,  5 Apr 2022 09:25:50 +0200
-Message-Id: <20220405070431.139174374@linuxfoundation.org>
+Subject: [PATCH 5.17 0802/1126] vsock/virtio: read the negotiated features before using VQs
+Date:   Tue,  5 Apr 2022 09:25:49 +0200
+Message-Id: <20220405070431.110089321@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -54,39 +53,46 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Stefano Garzarella <sgarzare@redhat.com>
 
-[ Upstream commit 88704454ef8b00ea91537ae0d47d9348077e0e72 ]
+[ Upstream commit c1011c0b3a9c8d2065f425407475cbcc812540b7 ]
 
-virtio spec requires drivers to set DRIVER_OK before using VQs.
-This is set automatically after probe returns, but virtio-vsock
-driver uses VQs in the probe function to fill rx and event VQs
-with new buffers.
+Complete the driver configuration, reading the negotiated features,
+before using the VQs in the virtio_vsock_probe().
 
-Let's fix this, calling virtio_device_ready() before using VQs
-in the probe function.
-
-Fixes: 0ea9e1d3a9e3 ("VSOCK: Introduce virtio_transport.ko")
+Fixes: 53efbba12cc7 ("virtio/vsock: enable SEQPACKET for transport")
+Suggested-by: Michael S. Tsirkin <mst@redhat.com>
+Reviewed-by: Stefan Hajnoczi <stefanha@redhat.com>
 Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
 Acked-by: Michael S. Tsirkin <mst@redhat.com>
-Reviewed-by: Stefan Hajnoczi <stefanha@redhat.com>
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/vmw_vsock/virtio_transport.c | 2 ++
- 1 file changed, 2 insertions(+)
+ net/vmw_vsock/virtio_transport.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
 diff --git a/net/vmw_vsock/virtio_transport.c b/net/vmw_vsock/virtio_transport.c
-index 3954d3be9083..ba1c8cc0c467 100644
+index 3e5513934c9f..3954d3be9083 100644
 --- a/net/vmw_vsock/virtio_transport.c
 +++ b/net/vmw_vsock/virtio_transport.c
-@@ -627,6 +627,8 @@ static int virtio_vsock_probe(struct virtio_device *vdev)
+@@ -622,6 +622,9 @@ static int virtio_vsock_probe(struct virtio_device *vdev)
+ 	INIT_WORK(&vsock->event_work, virtio_transport_event_work);
+ 	INIT_WORK(&vsock->send_pkt_work, virtio_transport_send_pkt_work);
  
++	if (virtio_has_feature(vdev, VIRTIO_VSOCK_F_SEQPACKET))
++		vsock->seqpacket_allow = true;
++
  	vdev->priv = vsock;
  
-+	virtio_device_ready(vdev);
-+
  	mutex_lock(&vsock->tx_lock);
- 	vsock->tx_run = true;
- 	mutex_unlock(&vsock->tx_lock);
+@@ -638,9 +641,6 @@ static int virtio_vsock_probe(struct virtio_device *vdev)
+ 	vsock->event_run = true;
+ 	mutex_unlock(&vsock->event_lock);
+ 
+-	if (virtio_has_feature(vdev, VIRTIO_VSOCK_F_SEQPACKET))
+-		vsock->seqpacket_allow = true;
+-
+ 	rcu_assign_pointer(the_virtio_vsock, vsock);
+ 
+ 	mutex_unlock(&the_virtio_vsock_mutex);
 -- 
 2.34.1
 
