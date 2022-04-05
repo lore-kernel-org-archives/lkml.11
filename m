@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E431C46467
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E923C35274
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 14:40:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1388462AbiDEOkB (ORCPT
+        id S1388511AbiDEOkH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 10:40:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50284 "EHLO
+        Tue, 5 Apr 2022 10:40:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36680 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243493AbiDEJjz (ORCPT
+        with ESMTP id S243468AbiDEJjz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Apr 2022 05:39:55 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8926EA995C;
-        Tue,  5 Apr 2022 02:24:42 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E589A94FE;
+        Tue,  5 Apr 2022 02:24:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5A8E56165E;
-        Tue,  5 Apr 2022 09:24:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6DBC7C385A2;
-        Tue,  5 Apr 2022 09:24:41 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AF65861548;
+        Tue,  5 Apr 2022 09:24:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BC746C385A0;
+        Tue,  5 Apr 2022 09:24:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649150681;
-        bh=QpS2YYsTIegalzF1hZuokgHyHrXdq1B6iPfLMjJv+7g=;
+        s=korg; t=1649150679;
+        bh=Oz7kjiqQ9LAMJyU+ReyjeGZIzfRUeRrMLpi5UDQ8hN8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rjjQpEEB4HyK6WPSRh+L8Mh5TbT+BfyoM3JSnYOa88cbelJi3XkXBiCbsa9Z15srA
-         0K0WraLPiZNDSenHnU2bJNJhPx/Or2ghRIttGF351ONpRVPEnPdjMrhjR92gFBYW0m
-         22hbkGxU8hQHOmzvqUJgmE0i58bpNOoWPq/3tcGU=
+        b=uB7hjj4EBNbqzAMlGjvL3QXDvekmeSqoTXaQR25ACGjii7jzNl87ASQ9HKjJjGR0w
+         ACCTt08eZyGiPL0DiFDachgHnTUG5srRmEdAXZtPoC1RoRfa0qGzyyMmXBOdz0DbNt
+         yKZ1qcWHQXSNcZQhmw8TaGWee3g95sPV0jYp3gyg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Marc Zyngier <maz@kernel.org>,
-        Nishanth Menon <nm@ti.com>
-Subject: [PATCH 5.15 125/913] arm64: dts: ti: k3-j721e: Fix gic-v3 compatible regs
-Date:   Tue,  5 Apr 2022 09:19:47 +0200
-Message-Id: <20220405070343.575867351@linuxfoundation.org>
+        stable@vger.kernel.org, Thomas Zimmermann <tzimmermann@suse.de>,
+        Zack Rusin <zackr@vmware.com>,
+        Javier Martinez Canillas <javierm@redhat.com>,
+        Hans de Goede <hdegoede@redhat.com>
+Subject: [PATCH 5.15 142/913] fbdev: Hot-unplug firmware fb devices on forced removal
+Date:   Tue,  5 Apr 2022 09:20:04 +0200
+Message-Id: <20220405070344.089478544@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
 References: <20220405070339.801210740@linuxfoundation.org>
@@ -49,59 +51,119 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nishanth Menon <nm@ti.com>
+From: Thomas Zimmermann <tzimmermann@suse.de>
 
-commit a06ed27f3bc63ab9e10007dc0118d910908eb045 upstream.
+commit 27599aacbaefcbf2af7b06b0029459bbf682000d upstream.
 
-Though GIC ARE option is disabled for no GIC-v2 compatibility,
-Cortex-A72 is free to implement the CPU interface as long as it
-communicates with the GIC using the stream protocol. This requires
-that the SoC integration mark out the PERIPHBASE[1] as reserved area
-within the SoC. See longer discussion in [2] for further information.
+Hot-unplug all firmware-framebuffer devices as part of removing
+them via remove_conflicting_framebuffers() et al. Releases all
+memory regions to be acquired by native drivers.
 
-Update the GIC register map to indicate offsets from PERIPHBASE based
-on [3]. Without doing this, systems like kvm will not function with
-gic-v2 emulation.
+Firmware, such as EFI, install a framebuffer while posting the
+computer. After removing the firmware-framebuffer device from fbdev,
+a native driver takes over the hardware and the firmware framebuffer
+becomes invalid.
 
-[1] https://developer.arm.com/documentation/100095/0002/system-control/aarch64-register-descriptions/configuration-base-address-register--el1
-[2] https://lore.kernel.org/all/87k0e0tirw.wl-maz@kernel.org/
-[3] https://developer.arm.com/documentation/100095/0002/way1382452674438
+Firmware-framebuffer drivers, specifically simplefb, don't release
+their device from Linux' device hierarchy. It still owns the firmware
+framebuffer and blocks the native drivers from loading. This has been
+observed in the vmwgfx driver. [1]
 
-Cc: stable@vger.kernel.org # 5.10+
-Fixes: 2d87061e70de ("arm64: dts: ti: Add Support for J721E SoC")
-Reported-by: Marc Zyngier <maz@kernel.org>
-Signed-off-by: Nishanth Menon <nm@ti.com>
-Acked-by: Marc Zyngier <maz@kernel.org>
-Link: https://lore.kernel.org/r/20220215201008.15235-3-nm@ti.com
+Initiating a device removal (i.e., hot unplug) as part of
+remove_conflicting_framebuffers() removes the underlying device and
+returns the memory range to the system.
+
+[1] https://lore.kernel.org/dri-devel/20220117180359.18114-1-zack@kde.org/
+
+v2:
+	* rename variable 'dev' to 'device' (Javier)
+
+Signed-off-by: Thomas Zimmermann <tzimmermann@suse.de>
+Reported-by: Zack Rusin <zackr@vmware.com>
+Reviewed-by: Javier Martinez Canillas <javierm@redhat.com>
+Reviewed-by: Zack Rusin <zackr@vmware.com>
+Reviewed-by: Hans de Goede <hdegoede@redhat.com>
+CC: stable@vger.kernel.org # v5.11+
+Link: https://patchwork.freedesktop.org/patch/msgid/20220125091222.21457-2-tzimmermann@suse.de
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm64/boot/dts/ti/k3-j721e-main.dtsi |    5 ++++-
- arch/arm64/boot/dts/ti/k3-j721e.dtsi      |    1 +
- 2 files changed, 5 insertions(+), 1 deletion(-)
+ drivers/video/fbdev/core/fbmem.c |   29 ++++++++++++++++++++++++++---
+ include/linux/fb.h               |    1 +
+ 2 files changed, 27 insertions(+), 3 deletions(-)
 
---- a/arch/arm64/boot/dts/ti/k3-j721e-main.dtsi
-+++ b/arch/arm64/boot/dts/ti/k3-j721e-main.dtsi
-@@ -76,7 +76,10 @@
- 		#interrupt-cells = <3>;
- 		interrupt-controller;
- 		reg = <0x00 0x01800000 0x00 0x10000>,	/* GICD */
--		      <0x00 0x01900000 0x00 0x100000>;	/* GICR */
-+		      <0x00 0x01900000 0x00 0x100000>,	/* GICR */
-+		      <0x00 0x6f000000 0x00 0x2000>,	/* GICC */
-+		      <0x00 0x6f010000 0x00 0x1000>,	/* GICH */
-+		      <0x00 0x6f020000 0x00 0x2000>;	/* GICV */
+--- a/drivers/video/fbdev/core/fbmem.c
++++ b/drivers/video/fbdev/core/fbmem.c
+@@ -25,6 +25,7 @@
+ #include <linux/init.h>
+ #include <linux/linux_logo.h>
+ #include <linux/proc_fs.h>
++#include <linux/platform_device.h>
+ #include <linux/seq_file.h>
+ #include <linux/console.h>
+ #include <linux/kmod.h>
+@@ -1557,18 +1558,36 @@ static void do_remove_conflicting_frameb
+ 	/* check all firmware fbs and kick off if the base addr overlaps */
+ 	for_each_registered_fb(i) {
+ 		struct apertures_struct *gen_aper;
++		struct device *device;
  
- 		/* vcpumntirq: virtual CPU interface maintenance interrupt */
- 		interrupts = <GIC_PPI 9 IRQ_TYPE_LEVEL_HIGH>;
---- a/arch/arm64/boot/dts/ti/k3-j721e.dtsi
-+++ b/arch/arm64/boot/dts/ti/k3-j721e.dtsi
-@@ -136,6 +136,7 @@
- 			 <0x00 0x0e000000 0x00 0x0e000000 0x00 0x01800000>, /* PCIe Core*/
- 			 <0x00 0x10000000 0x00 0x10000000 0x00 0x10000000>, /* PCIe DAT */
- 			 <0x00 0x64800000 0x00 0x64800000 0x00 0x00800000>, /* C71 */
-+			 <0x00 0x6f000000 0x00 0x6f000000 0x00 0x00310000>, /* A72 PERIPHBASE */
- 			 <0x44 0x00000000 0x44 0x00000000 0x00 0x08000000>, /* PCIe2 DAT */
- 			 <0x44 0x10000000 0x44 0x10000000 0x00 0x08000000>, /* PCIe3 DAT */
- 			 <0x4d 0x80800000 0x4d 0x80800000 0x00 0x00800000>, /* C66_0 */
+ 		if (!(registered_fb[i]->flags & FBINFO_MISC_FIRMWARE))
+ 			continue;
+ 
+ 		gen_aper = registered_fb[i]->apertures;
++		device = registered_fb[i]->device;
+ 		if (fb_do_apertures_overlap(gen_aper, a) ||
+ 			(primary && gen_aper && gen_aper->count &&
+ 			 gen_aper->ranges[0].base == VGA_FB_PHYS)) {
+ 
+ 			printk(KERN_INFO "fb%d: switching to %s from %s\n",
+ 			       i, name, registered_fb[i]->fix.id);
+-			do_unregister_framebuffer(registered_fb[i]);
++
++			/*
++			 * If we kick-out a firmware driver, we also want to remove
++			 * the underlying platform device, such as simple-framebuffer,
++			 * VESA, EFI, etc. A native driver will then be able to
++			 * allocate the memory range.
++			 *
++			 * If it's not a platform device, at least print a warning. A
++			 * fix would add code to remove the device from the system.
++			 */
++			if (dev_is_platform(device)) {
++				registered_fb[i]->forced_out = true;
++				platform_device_unregister(to_platform_device(device));
++			} else {
++				pr_warn("fb%d: cannot remove device\n", i);
++				do_unregister_framebuffer(registered_fb[i]);
++			}
+ 		}
+ 	}
+ }
+@@ -1895,9 +1914,13 @@ EXPORT_SYMBOL(register_framebuffer);
+ void
+ unregister_framebuffer(struct fb_info *fb_info)
+ {
+-	mutex_lock(&registration_lock);
++	bool forced_out = fb_info->forced_out;
++
++	if (!forced_out)
++		mutex_lock(&registration_lock);
+ 	do_unregister_framebuffer(fb_info);
+-	mutex_unlock(&registration_lock);
++	if (!forced_out)
++		mutex_unlock(&registration_lock);
+ }
+ EXPORT_SYMBOL(unregister_framebuffer);
+ 
+--- a/include/linux/fb.h
++++ b/include/linux/fb.h
+@@ -502,6 +502,7 @@ struct fb_info {
+ 	} *apertures;
+ 
+ 	bool skip_vt_switch; /* no VT switch on suspend/resume required */
++	bool forced_out; /* set when being removed by another driver */
+ };
+ 
+ static inline struct apertures_struct *alloc_apertures(unsigned int max_num) {
 
 
