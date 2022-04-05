@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B08EC43217
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 22:55:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F1A9AC4167E
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 22:55:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1456587AbiDEWqY (ORCPT
+        id S1456654AbiDEWqc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 18:46:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44178 "EHLO
+        Tue, 5 Apr 2022 18:46:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55028 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349260AbiDEJtb (ORCPT
+        with ESMTP id S1349628AbiDEJul (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:49:31 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86A63AB;
-        Tue,  5 Apr 2022 02:43:27 -0700 (PDT)
+        Tue, 5 Apr 2022 05:50:41 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 727F7E62;
+        Tue,  5 Apr 2022 02:48:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2657F6164D;
-        Tue,  5 Apr 2022 09:43:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 32838C385A1;
-        Tue,  5 Apr 2022 09:43:26 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id B1DF6CE1C99;
+        Tue,  5 Apr 2022 09:48:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D346FC385A1;
+        Tue,  5 Apr 2022 09:48:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649151806;
-        bh=SFZhGojlTJsFtEcOoR6TsDZqCuHRKYKgaXsoBWxvPMc=;
+        s=korg; t=1649152120;
+        bh=zmoBrpkFlTZYhj/TROCAwUiDj37bQOV6cJLOHvjtEOA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=wsAaXplorpXAHaQGyH1G7Y0yl10x3YT6jInzObjwGDzf5w1hHxsrlGI6hC6UnzTFH
-         imryDRU1uXYiAiIeB9+GNNfJ+myvZwqxv4DxMnwdbRkxJuAzUjmZuxXnJHu3MpqzMS
-         aFdSz6jnsSDjhcZhGDtq5vf6LsYu4sQVGuCKMolA=
+        b=bNw1mUNj3tLPl+RRe4Dltbcq2XaK0W5ytia8txxtWgqOo4h530r98jK9TsnvlAp7K
+         L6Tzbtagx+/+q+dP/0ZJqPv8grouXCXfCdy32x96N88aLhS4GPSuotPtcLvF1K7cLI
+         UGZUktYXfvCZnW+IMqw8htepoxFzbEYprATXbfVo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        syzbot+2339c27f5c66c652843e@syzkaller.appspotmail.com,
-        Oliver Hartkopp <socketcan@hartkopp.net>,
-        Marc Kleine-Budde <mkl@pengutronix.de>
-Subject: [PATCH 5.15 549/913] can: isotp: sanitize CAN ID checks in isotp_bind()
-Date:   Tue,  5 Apr 2022 09:26:51 +0200
-Message-Id: <20220405070356.303888570@linuxfoundation.org>
+        stable@vger.kernel.org, Maxime Ripard <maxime@cerno.tech>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 623/913] clk: Fix clk_hw_get_clk() when dev is NULL
+Date:   Tue,  5 Apr 2022 09:28:05 +0200
+Message-Id: <20220405070358.514037298@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
 References: <20220405070339.801210740@linuxfoundation.org>
@@ -51,104 +50,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Oliver Hartkopp <socketcan@hartkopp.net>
+From: Maxime Ripard <maxime@cerno.tech>
 
-commit 3ea566422cbde9610c2734980d1286ab681bb40e upstream.
+[ Upstream commit 0c1b56df451716ba207bbf59f303473643eee4fd ]
 
-Syzbot created an environment that lead to a state machine status that
-can not be reached with a compliant CAN ID address configuration.
-The provided address information consisted of CAN ID 0x6000001 and 0xC28001
-which both boil down to 11 bit CAN IDs 0x001 in sending and receiving.
+Any registered clk_core structure can have a NULL pointer in its dev
+field. While never actually documented, this is evidenced by the wide
+usage of clk_register and clk_hw_register with a NULL device pointer,
+and the fact that the core of_clk_hw_register() function also passes a
+NULL device pointer.
 
-Sanitize the SFF/EFF CAN ID values before performing the address checks.
+A call to clk_hw_get_clk() on a clk_hw struct whose clk_core is in that
+case will result in a NULL pointer derefence when it calls dev_name() on
+that NULL device pointer.
 
-Fixes: e057dd3fc20f ("can: add ISO 15765-2:2016 transport protocol")
-Link: https://lore.kernel.org/all/20220316164258.54155-1-socketcan@hartkopp.net
-Reported-by: syzbot+2339c27f5c66c652843e@syzkaller.appspotmail.com
-Signed-off-by: Oliver Hartkopp <socketcan@hartkopp.net>
-Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Add a test for this case and use NULL as the dev_id if the device
+pointer is NULL.
+
+Fixes: 30d6f8c15d2c ("clk: add api to get clk consumer from clk_hw")
+Signed-off-by: Maxime Ripard <maxime@cerno.tech>
+Link: https://lore.kernel.org/r/20220225143534.405820-2-maxime@cerno.tech
+Signed-off-by: Stephen Boyd <sboyd@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/can/isotp.c |   38 ++++++++++++++++++++------------------
- 1 file changed, 20 insertions(+), 18 deletions(-)
+ drivers/clk/clk.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
---- a/net/can/isotp.c
-+++ b/net/can/isotp.c
-@@ -1104,6 +1104,7 @@ static int isotp_bind(struct socket *soc
- 	struct net *net = sock_net(sk);
- 	int ifindex;
- 	struct net_device *dev;
-+	canid_t tx_id, rx_id;
- 	int err = 0;
- 	int notify_enetdown = 0;
- 	int do_rx_reg = 1;
-@@ -1111,8 +1112,18 @@ static int isotp_bind(struct socket *soc
- 	if (len < ISOTP_MIN_NAMELEN)
- 		return -EINVAL;
+diff --git a/drivers/clk/clk.c b/drivers/clk/clk.c
+index ac11cefc3191..32fd2853e8b2 100644
+--- a/drivers/clk/clk.c
++++ b/drivers/clk/clk.c
+@@ -3730,8 +3730,9 @@ struct clk *clk_hw_create_clk(struct device *dev, struct clk_hw *hw,
+ struct clk *clk_hw_get_clk(struct clk_hw *hw, const char *con_id)
+ {
+ 	struct device *dev = hw->core->dev;
++	const char *name = dev ? dev_name(dev) : NULL;
  
--	if (addr->can_addr.tp.tx_id & (CAN_ERR_FLAG | CAN_RTR_FLAG))
--		return -EADDRNOTAVAIL;
-+	/* sanitize tx/rx CAN identifiers */
-+	tx_id = addr->can_addr.tp.tx_id;
-+	if (tx_id & CAN_EFF_FLAG)
-+		tx_id &= (CAN_EFF_FLAG | CAN_EFF_MASK);
-+	else
-+		tx_id &= CAN_SFF_MASK;
-+
-+	rx_id = addr->can_addr.tp.rx_id;
-+	if (rx_id & CAN_EFF_FLAG)
-+		rx_id &= (CAN_EFF_FLAG | CAN_EFF_MASK);
-+	else
-+		rx_id &= CAN_SFF_MASK;
+-	return clk_hw_create_clk(dev, hw, dev_name(dev), con_id);
++	return clk_hw_create_clk(dev, hw, name, con_id);
+ }
+ EXPORT_SYMBOL(clk_hw_get_clk);
  
- 	if (!addr->can_ifindex)
- 		return -ENODEV;
-@@ -1124,21 +1135,13 @@ static int isotp_bind(struct socket *soc
- 		do_rx_reg = 0;
- 
- 	/* do not validate rx address for functional addressing */
--	if (do_rx_reg) {
--		if (addr->can_addr.tp.rx_id == addr->can_addr.tp.tx_id) {
--			err = -EADDRNOTAVAIL;
--			goto out;
--		}
--
--		if (addr->can_addr.tp.rx_id & (CAN_ERR_FLAG | CAN_RTR_FLAG)) {
--			err = -EADDRNOTAVAIL;
--			goto out;
--		}
-+	if (do_rx_reg && rx_id == tx_id) {
-+		err = -EADDRNOTAVAIL;
-+		goto out;
- 	}
- 
- 	if (so->bound && addr->can_ifindex == so->ifindex &&
--	    addr->can_addr.tp.rx_id == so->rxid &&
--	    addr->can_addr.tp.tx_id == so->txid)
-+	    rx_id == so->rxid && tx_id == so->txid)
- 		goto out;
- 
- 	dev = dev_get_by_index(net, addr->can_ifindex);
-@@ -1162,8 +1165,7 @@ static int isotp_bind(struct socket *soc
- 	ifindex = dev->ifindex;
- 
- 	if (do_rx_reg)
--		can_rx_register(net, dev, addr->can_addr.tp.rx_id,
--				SINGLE_MASK(addr->can_addr.tp.rx_id),
-+		can_rx_register(net, dev, rx_id, SINGLE_MASK(rx_id),
- 				isotp_rcv, sk, "isotp", sk);
- 
- 	dev_put(dev);
-@@ -1183,8 +1185,8 @@ static int isotp_bind(struct socket *soc
- 
- 	/* switch to new settings */
- 	so->ifindex = ifindex;
--	so->rxid = addr->can_addr.tp.rx_id;
--	so->txid = addr->can_addr.tp.tx_id;
-+	so->rxid = rx_id;
-+	so->txid = tx_id;
- 	so->bound = 1;
- 
- out:
+-- 
+2.34.1
+
 
 
