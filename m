@@ -2,217 +2,263 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BB251C35276
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:10:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 059E5C3527D
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:10:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244676AbiDEUAc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 16:00:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60434 "EHLO
+        id S1344609AbiDEUA4 (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 16:00:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36706 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350029AbiDEJwW (ORCPT
+        with ESMTP id S1382327AbiDEORP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:52:22 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 397D3393CB;
-        Tue,  5 Apr 2022 02:50:24 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DFA0DB81B7A;
-        Tue,  5 Apr 2022 09:50:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2E315C385A1;
-        Tue,  5 Apr 2022 09:50:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649152221;
-        bh=jK4gwc8pp6SUbKLBDyjaf2de90fiMd/Y+u9tePDO4Us=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=op3ZNy/hxxulTBRW+pCCSRXrJwuRQLSFRwQT103EOAq+eJF7mCVCu2NrZDaiWp4Sp
-         Ud+2DLWMZUeXnAKCf8Slcg5LfZ8e6AzNxqWD2Uk0c44/okSHamL6b3UU7Rcj5fQSdJ
-         v8WRbZInpen25IlGwolY9UqI07zCOljphvpBjEiA=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jian Shen <shenjian15@huawei.com>,
-        Guangbin Huang <huangguangbin2@huawei.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 662/913] net: hns3: fix port base vlan add fail when concurrent with reset
-Date:   Tue,  5 Apr 2022 09:28:44 +0200
-Message-Id: <20220405070359.681457248@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 5 Apr 2022 10:17:15 -0400
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2045.outbound.protection.outlook.com [40.107.220.45])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 944FC160C3A;
+        Tue,  5 Apr 2022 06:01:44 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=h55KPj0vTAC0+uQSP4ltWzU5kq6GmPD6U3rPzmQntlBMXCpRuJmh4bPyxs2xdk245rGp0vZ8QcIASqJct0E39h3BCPqR0MiRfIExuIZ6m+tWQOZo6AeP6hLLC+WoxyS5XOrRWK96DG5GmYPs6Un2T6lL0Dvyh3n7XA3OQ5bXzzwVmSM8ShLgVh0SRB+NdNUG/f55kknsEoK/n/AmH/z2LXXDvYmvyEGKEtbx/LDwkb0weF2k3ex2RbiLtgLT6EZCogNSStg2bWCnbLizXCEDjcXeopOstik2EnY6O6hPICwADVT7HnnBBvMykZwqDzJLbDrwY5DnLgEWgMQQXBdxuw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=Qc4iAL8TXxvbp7/DyB/nsLSUrz912sWCvcI8+//F0VU=;
+ b=gQBGTKt+dlQlaafUzVSHVdonG0V68fRhYdg8bTa+xpMC83oOww7A3JqIsFA4tsMAAcx/i57+XSvwQyVIOdEseVJL5GRaPnHTT2LbBr6cG75lX74N8K98WOaavy4uBRf6bpRkUK/k2A4UT0Gj1qOkZA37+K2X/9uOrIA3fy5bryPuES3g/SHjkrIndNvM5+14OsaM83M93+uWWdaIIz5WrI/DFX/8uBjfjvfXwmaoaz0cSDCJC8ke624LItjit2lU8k+N65AMkaX5V9nNH4XFh8LXYidXxZ6UGANFRvBdqqFYa72mQ+MLpXfEvGCkf4GIqCaA+3bUjzuuUG8IJ7axOw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 12.22.5.235) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Qc4iAL8TXxvbp7/DyB/nsLSUrz912sWCvcI8+//F0VU=;
+ b=ZgZasr3W7WOjwcnpSRzxK4BDXnlIchOTDpbi60p/SLyMzP+fe/wjaX05LhVTzS73Mv6IQ3bmlCGmfdWUOXTHybnX+3sisCI/NPbOEAf3GSkBHIzMwUdlfGzK9Oyta87mWATW0oXi2aRFmq5sSP5m6ArqgK6MQqg9QeJDTF2V/e1wo7q+oESCFA7r4F9h3fEDh1nk0QWUM9QvCyjBn+QOsii8fiwrzVsArnJJotBDVZ2Ei01TtfZVnO76ZwqVP3I2zi+5mWDD9vmsJnFZ/jZPbL/BESI9lmLi6QyvpUOrOi/DDu2goMegbEg1FHbu8WuZwRASmI1XqXgVCVzhElkbNw==
+Received: from MW4PR03CA0095.namprd03.prod.outlook.com (2603:10b6:303:b7::10)
+ by DS7PR12MB5862.namprd12.prod.outlook.com (2603:10b6:8:79::7) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.5123.31; Tue, 5 Apr 2022 13:01:43 +0000
+Received: from CO1NAM11FT029.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:303:b7:cafe::62) by MW4PR03CA0095.outlook.office365.com
+ (2603:10b6:303:b7::10) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5123.31 via Frontend
+ Transport; Tue, 5 Apr 2022 13:01:43 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.235)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 12.22.5.235 as permitted sender) receiver=protection.outlook.com;
+ client-ip=12.22.5.235; helo=mail.nvidia.com;
+Received: from mail.nvidia.com (12.22.5.235) by
+ CO1NAM11FT029.mail.protection.outlook.com (10.13.174.214) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.20.5123.19 via Frontend Transport; Tue, 5 Apr 2022 13:01:42 +0000
+Received: from rnnvmail202.nvidia.com (10.129.68.7) by DRHQMAIL107.nvidia.com
+ (10.27.9.16) with Microsoft SMTP Server (TLS) id 15.0.1497.32; Tue, 5 Apr
+ 2022 13:01:42 +0000
+Received: from rnnvmail203.nvidia.com (10.129.68.9) by rnnvmail202.nvidia.com
+ (10.129.68.7) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Tue, 5 Apr 2022
+ 06:01:41 -0700
+Received: from sumitg-l4t.nvidia.com (10.127.8.10) by mail.nvidia.com
+ (10.129.68.9) with Microsoft SMTP Server id 15.2.986.22 via Frontend
+ Transport; Tue, 5 Apr 2022 06:01:38 -0700
+From:   Sumit Gupta <sumitg@nvidia.com>
+To:     <rafael@kernel.org>, <viresh.kumar@linaro.org>,
+        <robh+dt@kernel.org>, <krzk+dt@kernel.org>, <treding@nvidia.com>,
+        <jonathanh@nvidia.com>, <linux-pm@vger.kernel.org>,
+        <linux-tegra@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+CC:     <ksitaraman@nvidia.com>, <sanjayc@nvidia.com>, <bbasu@nvidia.com>,
+        <sumitg@nvidia.com>
+Subject: [Patch v4 3/4] cpufreq: tegra194: Add support for Tegra234
+Date:   Tue, 5 Apr 2022 18:31:18 +0530
+Message-ID: <20220405130119.4697-4-sumitg@nvidia.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20220405130119.4697-1-sumitg@nvidia.com>
+References: <20220405130119.4697-1-sumitg@nvidia.com>
+X-NVConfidentiality: public
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 06afbc8c-f5c3-4d6a-2f9b-08da17046eab
+X-MS-TrafficTypeDiagnostic: DS7PR12MB5862:EE_
+X-Microsoft-Antispam-PRVS: <DS7PR12MB5862DC6A85D714CE17D38082B9E49@DS7PR12MB5862.namprd12.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: x5yl9kNog7rKLeApaZenLoj4KsWfYkg0xctt22QsFw8obbr7t1s/V/HFkcgb+6lvkfS6wSFc3Mapn8IaMw42G+9H4PyxjI6dOhIgqdKf2KY3jj6eGdcpl0YfT0Bxch8q1qydYU8NqtmRrLAG7brgo88ukEg9WP5JbYgPO8pgqIVhzE5R6yqd9W+8hYsNxUU8NynZT16dqf4AdaLYwL154ac6kXU0oA/RRze/iOofzlBWBFpwT39YsNX4kOY+CBVVvLSuSZTlkDvFXNLAmo4uza3YfsAL0z01Hf/HtktTteQpKC1sbN6TbzRvgUo0H/6hNA9hIvmgsj0fIqRzsBdmiZV1UP/FPxXCsAMZ+W6NyJxWr3QM2/sjmeDKlY4whJGm8LMemZZ1BdY9FYronTLih1eZJCoYMjzjYNaGFQNi6pXPIFKibNgRrce8VYEJay/zKb3RCLWpilaL7RHF9PsXI9p+iL3idMFhyTikpFO17CLeicTfKzGa507YP7ctAzcyLuBaCJSQNwKWw1mCkD9WpTwU0e4ivkgpcVUHnuyV6hHVRY4gAv/DDZ+dqQnwB+llG3ccOHmap3uf3iJoNsrk5ZjQEiMdK1078hMGSc2nxrW55VUumrylX3k2IiuNxyr7FrTKCePA9gy39VzyFtVnAAkV1rIUWt874Umd6Tn9oIWx7GcpKCZB0bz8XVO9hCLybOwx0ZnZjLVRDNZjhyyTE9EXxT11jxSuITgQMleZRs4=
+X-Forefront-Antispam-Report: CIP:12.22.5.235;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230001)(4636009)(46966006)(36840700001)(40470700004)(36756003)(47076005)(426003)(336012)(82310400005)(70206006)(70586007)(36860700001)(110136005)(54906003)(8936002)(6666004)(83380400001)(26005)(186003)(4326008)(1076003)(2906002)(5660300002)(86362001)(81166007)(40460700003)(8676002)(316002)(2616005)(107886003)(921005)(508600001)(356005)(7696005)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Apr 2022 13:01:42.9273
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 06afbc8c-f5c3-4d6a-2f9b-08da17046eab
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.235];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT029.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS7PR12MB5862
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jian Shen <shenjian15@huawei.com>
+This patch adds driver support for Tegra234 cpufreq.
+Tegra234 has per core MMIO registers instead of system registers for
+cpu frequency requests and to read the counters for re-constructing
+the cpu frequency. Also, MPIDR affinity info in Tegra234 is different
+from Tegra194.
+Added ops hooks  and soc data for Tegra234. This will help to easily
+add variants of Tegra234 and future SoC's which use similar logic to
+{get|set} the cpu frequency.
 
-[ Upstream commit c0f46de30c965d4ba208b5bf1a6d3437a7556ee2 ]
-
-Currently, Port base vlan is initiated by PF and configured to its VFs,
-by using command "ip link set <pf name> vf <vf id> vlan <vlan id>".
-When a global reset was triggered, the hardware vlan table and the soft
-recorded vlan information will be cleared by PF, and restored them until
-VFs were ready. There is a short time window between the table had been
-cleared and before table restored. If configured a new port base vlan tag
-at this moment, driver will check the soft recorded vlan information,
-and find there hasn't the old tag in it, which causing a warning print.
-
-Due to the port base vlan is managed by PF, so the VFs's port base vlan
-restoring should be handled by PF when PF was ready.
-
-This patch fixes it.
-
-Fixes: 039ba863e8d7 ("net: hns3: optimize the filter table entries handling when resetting")
-Signed-off-by: Jian Shen <shenjian15@huawei.com>
-Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Sumit Gupta <sumitg@nvidia.com>
 ---
- .../hisilicon/hns3/hns3pf/hclge_main.c        | 62 +++++++++++++------
- .../hisilicon/hns3/hns3pf/hclge_main.h        |  3 +
- 2 files changed, 46 insertions(+), 19 deletions(-)
+ drivers/cpufreq/tegra194-cpufreq.c | 104 +++++++++++++++++++++++++++++
+ 1 file changed, 104 insertions(+)
 
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-index b78de80d6c05..4be90d0f2b91 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-@@ -1863,6 +1863,7 @@ static int hclge_alloc_vport(struct hclge_dev *hdev)
- 		vport->vf_info.link_state = IFLA_VF_LINK_STATE_AUTO;
- 		vport->mps = HCLGE_MAC_DEFAULT_FRAME;
- 		vport->port_base_vlan_cfg.state = HNAE3_PORT_BASE_VLAN_DISABLE;
-+		vport->port_base_vlan_cfg.tbl_sta = true;
- 		vport->rxvlan_cfg.rx_vlan_offload_en = true;
- 		vport->req_vlan_fltr_en = true;
- 		INIT_LIST_HEAD(&vport->vlan_list);
-@@ -10175,34 +10176,52 @@ void hclge_uninit_vport_vlan_table(struct hclge_dev *hdev)
- 	}
- }
+diff --git a/drivers/cpufreq/tegra194-cpufreq.c b/drivers/cpufreq/tegra194-cpufreq.c
+index 2d59b2bd0e1d..2a6a98764a8c 100644
+--- a/drivers/cpufreq/tegra194-cpufreq.c
++++ b/drivers/cpufreq/tegra194-cpufreq.c
+@@ -24,6 +24,17 @@
+ #define CPUFREQ_TBL_STEP_HZ     (50 * KHZ * KHZ)
+ #define MAX_CNT                 ~0U
  
--void hclge_restore_vport_vlan_table(struct hclge_vport *vport)
-+void hclge_restore_vport_port_base_vlan_config(struct hclge_dev *hdev)
- {
--	struct hclge_vport_vlan_cfg *vlan, *tmp;
--	struct hclge_dev *hdev = vport->back;
-+	struct hclge_vlan_info *vlan_info;
-+	struct hclge_vport *vport;
- 	u16 vlan_proto;
- 	u16 vlan_id;
- 	u16 state;
-+	int vf_id;
- 	int ret;
- 
--	vlan_proto = vport->port_base_vlan_cfg.vlan_info.vlan_proto;
--	vlan_id = vport->port_base_vlan_cfg.vlan_info.vlan_tag;
--	state = vport->port_base_vlan_cfg.state;
-+	/* PF should restore all vfs port base vlan */
-+	for (vf_id = 0; vf_id < hdev->num_alloc_vfs; vf_id++) {
-+		vport = &hdev->vport[vf_id + HCLGE_VF_VPORT_START_NUM];
-+		vlan_info = vport->port_base_vlan_cfg.tbl_sta ?
-+			    &vport->port_base_vlan_cfg.vlan_info :
-+			    &vport->port_base_vlan_cfg.old_vlan_info;
- 
--	if (state != HNAE3_PORT_BASE_VLAN_DISABLE) {
--		clear_bit(vport->vport_id, hdev->vlan_table[vlan_id]);
--		hclge_set_vlan_filter_hw(hdev, htons(vlan_proto),
--					 vport->vport_id, vlan_id,
--					 false);
--		return;
-+		vlan_id = vlan_info->vlan_tag;
-+		vlan_proto = vlan_info->vlan_proto;
-+		state = vport->port_base_vlan_cfg.state;
++#define NDIV_MASK              0x1FF
 +
-+		if (state != HNAE3_PORT_BASE_VLAN_DISABLE) {
-+			clear_bit(vport->vport_id, hdev->vlan_table[vlan_id]);
-+			ret = hclge_set_vlan_filter_hw(hdev, htons(vlan_proto),
-+						       vport->vport_id,
-+						       vlan_id, false);
-+			vport->port_base_vlan_cfg.tbl_sta = ret == 0;
-+		}
- 	}
-+}
- 
--	list_for_each_entry_safe(vlan, tmp, &vport->vlan_list, node) {
--		ret = hclge_set_vlan_filter_hw(hdev, htons(ETH_P_8021Q),
--					       vport->vport_id,
--					       vlan->vlan_id, false);
--		if (ret)
--			break;
--		vlan->hd_tbl_status = true;
-+void hclge_restore_vport_vlan_table(struct hclge_vport *vport)
-+{
-+	struct hclge_vport_vlan_cfg *vlan, *tmp;
-+	struct hclge_dev *hdev = vport->back;
-+	int ret;
++#define CORE_OFFSET(cpu)			(cpu * 8)
++#define CMU_CLKS_BASE				0x2000
++#define SCRATCH_FREQ_CORE_REG(data, cpu)	(data->regs + CMU_CLKS_BASE + CORE_OFFSET(cpu))
 +
-+	if (vport->port_base_vlan_cfg.state == HNAE3_PORT_BASE_VLAN_DISABLE) {
-+		list_for_each_entry_safe(vlan, tmp, &vport->vlan_list, node) {
-+			ret = hclge_set_vlan_filter_hw(hdev, htons(ETH_P_8021Q),
-+						       vport->vport_id,
-+						       vlan->vlan_id, false);
-+			if (ret)
-+				break;
-+			vlan->hd_tbl_status = true;
-+		}
- 	}
- }
- 
-@@ -10243,6 +10262,7 @@ static void hclge_restore_hw_table(struct hclge_dev *hdev)
- 	struct hnae3_handle *handle = &vport->nic;
- 
- 	hclge_restore_mac_table_common(vport);
-+	hclge_restore_vport_port_base_vlan_config(hdev);
- 	hclge_restore_vport_vlan_table(vport);
- 	set_bit(HCLGE_STATE_FD_USER_DEF_CHANGED, &hdev->state);
- 	hclge_restore_fd_entries(handle);
-@@ -10299,6 +10319,8 @@ static int hclge_update_vlan_filter_entries(struct hclge_vport *vport,
- 						 false);
- 	}
- 
-+	vport->port_base_vlan_cfg.tbl_sta = false;
++#define MMCRAB_CLUSTER_BASE(cl)			(0x30000 + (cl * 0x10000))
++#define CLUSTER_ACTMON_BASE(data, cl) \
++			(data->regs + (MMCRAB_CLUSTER_BASE(cl) + data->soc->actmon_cntr_base))
++#define CORE_ACTMON_CNTR_REG(data, cl, cpu)	(CLUSTER_ACTMON_BASE(data, cl) + CORE_OFFSET(cpu))
 +
- 	/* force add VLAN 0 */
- 	ret = hclge_set_vf_vlan_common(hdev, vport->vport_id, false, 0);
- 	if (ret)
-@@ -10385,7 +10407,9 @@ int hclge_update_port_base_vlan_cfg(struct hclge_vport *vport, u16 state,
- 	else
- 		nic->port_base_vlan_state = HNAE3_PORT_BASE_VLAN_ENABLE;
+ /* cpufreq transisition latency */
+ #define TEGRA_CPUFREQ_TRANSITION_LATENCY (300 * 1000) /* unit in nanoseconds */
  
-+	vport->port_base_vlan_cfg.old_vlan_info = *old_vlan_info;
- 	vport->port_base_vlan_cfg.vlan_info = *vlan_info;
-+	vport->port_base_vlan_cfg.tbl_sta = true;
- 	hclge_set_vport_vlan_fltr_change(vport);
- 
- 	return 0;
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h
-index 2fa6e14c96e5..ae8c26c194ec 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h
-@@ -1000,7 +1000,9 @@ struct hclge_vlan_info {
- 
- struct hclge_port_base_vlan_config {
- 	u16 state;
-+	bool tbl_sta;
- 	struct hclge_vlan_info vlan_info;
-+	struct hclge_vlan_info old_vlan_info;
+@@ -56,6 +67,7 @@ struct tegra_cpufreq_ops {
+ struct tegra_cpufreq_soc {
+ 	struct tegra_cpufreq_ops *ops;
+ 	int maxcpus_per_cluster;
++	phys_addr_t actmon_cntr_base;
  };
  
- struct hclge_vf_info {
-@@ -1124,6 +1126,7 @@ void hclge_rm_vport_all_mac_table(struct hclge_vport *vport, bool is_del_list,
- void hclge_rm_vport_all_vlan_table(struct hclge_vport *vport, bool is_del_list);
- void hclge_uninit_vport_vlan_table(struct hclge_dev *hdev);
- void hclge_restore_mac_table_common(struct hclge_vport *vport);
-+void hclge_restore_vport_port_base_vlan_config(struct hclge_dev *hdev);
- void hclge_restore_vport_vlan_table(struct hclge_vport *vport);
- int hclge_update_port_base_vlan_cfg(struct hclge_vport *vport, u16 state,
- 				    struct hclge_vlan_info *vlan_info);
+ struct tegra194_cpufreq_data {
+@@ -72,6 +84,90 @@ static void tegra_get_cpu_mpidr(void *mpidr)
+ 	*((u64 *)mpidr) = read_cpuid_mpidr() & MPIDR_HWID_BITMASK;
+ }
+ 
++static void tegra234_get_cpu_cluster_id(u32 cpu, u32 *cpuid, u32 *clusterid)
++{
++	u64 mpidr;
++
++	smp_call_function_single(cpu, tegra_get_cpu_mpidr, &mpidr, true);
++
++	if (cpuid)
++		*cpuid = MPIDR_AFFINITY_LEVEL(mpidr, 1);
++	if (clusterid)
++		*clusterid = MPIDR_AFFINITY_LEVEL(mpidr, 2);
++}
++
++static int tegra234_get_cpu_ndiv(u32 cpu, u32 cpuid, u32 clusterid, u64 *ndiv)
++{
++	struct tegra194_cpufreq_data *data = cpufreq_get_driver_data();
++	void __iomem *freq_core_reg;
++	u64 mpidr_id;
++
++	/* use physical id to get address of per core frequency register */
++	mpidr_id = (clusterid * data->soc->maxcpus_per_cluster) + cpuid;
++	freq_core_reg = SCRATCH_FREQ_CORE_REG(data, mpidr_id);
++
++	*ndiv = readl(freq_core_reg) & NDIV_MASK;
++
++	return 0;
++}
++
++static void tegra234_set_cpu_ndiv(struct cpufreq_policy *policy, u64 ndiv)
++{
++	struct tegra194_cpufreq_data *data = cpufreq_get_driver_data();
++	void __iomem *freq_core_reg;
++	u32 cpu, cpuid, clusterid;
++	u64 mpidr_id;
++
++	for_each_cpu_and(cpu, policy->cpus, cpu_online_mask) {
++		data->soc->ops->get_cpu_cluster_id(cpu, &cpuid, &clusterid);
++
++		/* use physical id to get address of per core frequency register */
++		mpidr_id = (clusterid * data->soc->maxcpus_per_cluster) + cpuid;
++		freq_core_reg = SCRATCH_FREQ_CORE_REG(data, mpidr_id);
++
++		writel(ndiv, freq_core_reg);
++	}
++}
++
++/*
++ * This register provides access to two counter values with a single
++ * 64-bit read. The counter values are used to determine the average
++ * actual frequency a core has run at over a period of time.
++ *     [63:32] PLLP counter: Counts at fixed frequency (408 MHz)
++ *     [31:0] Core clock counter: Counts on every core clock cycle
++ */
++static void tegra234_read_counters(struct tegra_cpu_ctr *c)
++{
++	struct tegra194_cpufreq_data *data = cpufreq_get_driver_data();
++	void __iomem *actmon_reg;
++	u32 cpuid, clusterid;
++	u64 val;
++
++	data->soc->ops->get_cpu_cluster_id(c->cpu, &cpuid, &clusterid);
++	actmon_reg = CORE_ACTMON_CNTR_REG(data, clusterid, cpuid);
++
++	val = readq(actmon_reg);
++	c->last_refclk_cnt = upper_32_bits(val);
++	c->last_coreclk_cnt = lower_32_bits(val);
++	udelay(US_DELAY);
++	val = readq(actmon_reg);
++	c->refclk_cnt = upper_32_bits(val);
++	c->coreclk_cnt = lower_32_bits(val);
++}
++
++static struct tegra_cpufreq_ops tegra234_cpufreq_ops = {
++	.read_counters = tegra234_read_counters,
++	.get_cpu_cluster_id = tegra234_get_cpu_cluster_id,
++	.get_cpu_ndiv = tegra234_get_cpu_ndiv,
++	.set_cpu_ndiv = tegra234_set_cpu_ndiv,
++};
++
++const struct tegra_cpufreq_soc tegra234_cpufreq_soc = {
++	.ops = &tegra234_cpufreq_ops,
++	.actmon_cntr_base = 0x9000,
++	.maxcpus_per_cluster = 4,
++};
++
+ static void tegra194_get_cpu_cluster_id(u32 cpu, u32 *cpuid, u32 *clusterid)
+ {
+ 	u64 mpidr;
+@@ -442,6 +538,13 @@ static int tegra194_cpufreq_probe(struct platform_device *pdev)
+ 	if (!data->tables)
+ 		return -ENOMEM;
+ 
++	if (soc->actmon_cntr_base) {
++		/* mmio registers are used for frequency request and re-construction */
++		data->regs = devm_platform_ioremap_resource(pdev, 0);
++		if (IS_ERR(data->regs))
++			return PTR_ERR(data->regs);
++	}
++
+ 	platform_set_drvdata(pdev, data);
+ 
+ 	bpmp = tegra_bpmp_get(&pdev->dev);
+@@ -486,6 +589,7 @@ static int tegra194_cpufreq_remove(struct platform_device *pdev)
+ 
+ static const struct of_device_id tegra194_cpufreq_of_match[] = {
+ 	{ .compatible = "nvidia,tegra194-ccplex", .data = &tegra194_cpufreq_soc },
++	{ .compatible = "nvidia,tegra234-ccplex-cluster", .data = &tegra234_cpufreq_soc },
+ 	{ /* sentinel */ }
+ };
+ 
 -- 
-2.34.1
-
-
+2.17.1
 
