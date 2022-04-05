@@ -2,43 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 64C26C4707A
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:26:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 596F2C352A1
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:26:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359271AbiDEMXi (ORCPT
+        id S1379016AbiDEMYE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 08:23:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51188 "EHLO
+        Tue, 5 Apr 2022 08:24:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52178 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245048AbiDEIxE (ORCPT
+        with ESMTP id S245046AbiDEIxD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:53:04 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1AAB0EB7;
-        Tue,  5 Apr 2022 01:50:36 -0700 (PDT)
+        Tue, 5 Apr 2022 04:53:03 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF2BDEA;
+        Tue,  5 Apr 2022 01:50:34 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id AD7A8614FD;
-        Tue,  5 Apr 2022 08:50:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B2CDBC385A0;
-        Tue,  5 Apr 2022 08:50:34 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A191FB81BBF;
+        Tue,  5 Apr 2022 08:50:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DD54CC385A1;
+        Tue,  5 Apr 2022 08:50:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649148635;
-        bh=MWm4SF4vTdAg8YYiuLtbAmzMG7TK3H/DsZTmry+1Ino=;
+        s=korg; t=1649148632;
+        bh=w1w5STSoU+1OvcgmNGv4Uzg0F4cQg98rLnw4UUo6UjQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tdGfUkZbAoFD19tb4uG5rskvkib+um/5np6zsoF1x3j940uvWTFxr2v4eMYukUYV+
-         QdD3X6ZBL13x/fm9PwIubMYgP44395RFcXmHU7ZNhwQv+YQKe3MvJrcbRe4Nv19OIm
-         xzHXb5NLWl5IsJJdF/LX/Pr5u7uVLg5xb88GUlEU=
+        b=AoQccAlLptqIpI6dpmb5ALB6QT7Z7ikY5QBbaK+gtQh+saDNifZylxAmJ+3LLHHw5
+         N2hccXu8P1WjorCkg4agsz9oUBqh4hNPzo+Cyyn8ta4Nbb7llaUn6wNtrzv2Mhcw2m
+         QO/VDQ905FzGlKOYs5ux8yApfY3NmGzb0SvTDEb4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Shannon Nelson <snelson@pensando.io>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org,
+        Ranjani Sridharan <ranjani.sridharan@linux.intel.com>,
+        =?UTF-8?q?P=C3=A9ter=20Ujfalusi?= <peter.ujfalusi@linux.intel.com>,
+        Kai Vehmanen <kai.vehmanen@linux.intel.com>,
+        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0424/1017] ionic: start watchdog after all is setup
-Date:   Tue,  5 Apr 2022 09:22:17 +0200
-Message-Id: <20220405070406.876141352@linuxfoundation.org>
+Subject: [PATCH 5.16 0388/1017] ASoC: SOF: Intel: enable DMI L1 for playback streams
+Date:   Tue,  5 Apr 2022 09:21:41 +0200
+Message-Id: <20220405070405.802480370@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -50,59 +54,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Shannon Nelson <snelson@pensando.io>
+From: Kai Vehmanen <kai.vehmanen@linux.intel.com>
 
-[ Upstream commit 9ad2939a1525962a79a2fd974ec7e3a71455b964 ]
+[ Upstream commit a174e72e2355b9025205b4b6727bf43047eac6c6 ]
 
-The watchdog expects the lif to fully exist when it goes off,
-so lets not start the watchdog until all is ready in case there
-is some quirky time dialation that makes probe take multiple
-seconds.
+Add back logic to mark all playback streams as L1 compatible.
 
-Fixes: 089406bc5ad6 ("ionic: add a watchdog timer to monitor heartbeat")
-Signed-off-by: Shannon Nelson <snelson@pensando.io>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Fixes: 246dd4287dfb ("ASoC: SOF: Intel: make DMI L1 selection more robust")
+Reviewed-by: Ranjani Sridharan <ranjani.sridharan@linux.intel.com>
+Reviewed-by: Péter Ujfalusi <peter.ujfalusi@linux.intel.com>
+Signed-off-by: Kai Vehmanen <kai.vehmanen@linux.intel.com>
+Signed-off-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+Link: https://lore.kernel.org/r/20220310171651.249385-2-pierre-louis.bossart@linux.intel.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/pensando/ionic/ionic_bus_pci.c | 4 +++-
- drivers/net/ethernet/pensando/ionic/ionic_dev.c     | 3 ---
- 2 files changed, 3 insertions(+), 4 deletions(-)
+ sound/soc/sof/intel/hda-pcm.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/net/ethernet/pensando/ionic/ionic_bus_pci.c b/drivers/net/ethernet/pensando/ionic/ionic_bus_pci.c
-index 7e296fa71b36..40fa5bce2ac2 100644
---- a/drivers/net/ethernet/pensando/ionic/ionic_bus_pci.c
-+++ b/drivers/net/ethernet/pensando/ionic/ionic_bus_pci.c
-@@ -331,6 +331,9 @@ static int ionic_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
- 		goto err_out_deregister_lifs;
- 	}
+diff --git a/sound/soc/sof/intel/hda-pcm.c b/sound/soc/sof/intel/hda-pcm.c
+index 41cb60955f5c..68834325d8fb 100644
+--- a/sound/soc/sof/intel/hda-pcm.c
++++ b/sound/soc/sof/intel/hda-pcm.c
+@@ -278,6 +278,7 @@ int hda_dsp_pcm_open(struct snd_sof_dev *sdev,
+ 		runtime->hw.info &= ~SNDRV_PCM_INFO_PAUSE;
  
-+	mod_timer(&ionic->watchdog_timer,
-+		  round_jiffies(jiffies + ionic->watchdog_period));
-+
- 	return 0;
- 
- err_out_deregister_lifs:
-@@ -348,7 +351,6 @@ static int ionic_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
- err_out_reset:
- 	ionic_reset(ionic);
- err_out_teardown:
--	del_timer_sync(&ionic->watchdog_timer);
- 	pci_clear_master(pdev);
- 	/* Don't fail the probe for these errors, keep
- 	 * the hw interface around for inspection
-diff --git a/drivers/net/ethernet/pensando/ionic/ionic_dev.c b/drivers/net/ethernet/pensando/ionic/ionic_dev.c
-index d57e80d44c9d..4044c630f8b4 100644
---- a/drivers/net/ethernet/pensando/ionic/ionic_dev.c
-+++ b/drivers/net/ethernet/pensando/ionic/ionic_dev.c
-@@ -122,9 +122,6 @@ int ionic_dev_setup(struct ionic *ionic)
- 	idev->fw_generation = IONIC_FW_STS_F_GENERATION &
- 			      ioread8(&idev->dev_info_regs->fw_status);
- 
--	mod_timer(&ionic->watchdog_timer,
--		  round_jiffies(jiffies + ionic->watchdog_period));
--
- 	idev->db_pages = bar->vaddr;
- 	idev->phy_db_pages = bar->bus_addr;
+ 	if (hda_always_enable_dmi_l1 ||
++	    direction == SNDRV_PCM_STREAM_PLAYBACK ||
+ 	    spcm->stream[substream->stream].d0i3_compatible)
+ 		flags |= SOF_HDA_STREAM_DMI_L1_COMPATIBLE;
  
 -- 
 2.34.1
