@@ -2,343 +2,227 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 86931C4332F
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 06:55:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B9F19C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 06:55:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230399AbiDEG5X (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 02:57:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42158 "EHLO
+        id S231248AbiDEG52 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 02:57:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42454 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229447AbiDEG5P (ORCPT
+        with ESMTP id S231207AbiDEG5T (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 02:57:15 -0400
-Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2356B24F
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 23:55:17 -0700 (PDT)
-Received: by mail-ej1-x631.google.com with SMTP id i27so17523280ejd.9
-        for <linux-kernel@vger.kernel.org>; Mon, 04 Apr 2022 23:55:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=V38z6KNkG0po4D2d3HPJjL+6I1e/SaURvPwZ2pkI1iw=;
-        b=tPtw9CQMpVJHh48w3R8UFCjRkqd9gPxoBFkIoBF4qaxba3O3PFDAAj7V8hcdVZ/rln
-         gk6IedKPIWb+ZCvDcS9mNNGmjWqOXGNtVo421kWWlyBxjXRMCgLdjAAQkHlZFoaIscSW
-         Tb91LtFcRGriSs8b0UBhv7XMvNSyztqRLTuvOWp/gZw0v1VdP9Ck8u+8Vs5+mwWfg1Ch
-         H30tcQZgvl4FLPFFR/jSToVc4jlELMj9OmESSV54J494BuUoNzmyG3kGPUM9WlE78lKI
-         QbMOC5gHzTfRGQYG++nEZ0feVqbP4Pjf6yudg9HlkXYKLUuhwsYpPgIpsNXj0XGE6sUH
-         Mlgw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=V38z6KNkG0po4D2d3HPJjL+6I1e/SaURvPwZ2pkI1iw=;
-        b=sn77ODgr/mdr6rXdVpKpS+zIBV+mU9TMaVYVpPHhb+oxqHNwp/wIF34mP8aW9DtLbO
-         bJ/PzzgLdoynTroErh/G8r49ruVSZeJxH2VicWzWamh1kBGB8AN7LqyJjjK3FSiww+Fp
-         9F4GhFk7nRphXXtw1hHzNHcgSwRruXqUcPjyp6tE9PY78lM8KTpAHnILNEM2gTvzp9wP
-         UGh/WlltV6r0zO1VCdKVt5qIc70e7/X5m7DzIBKQdUQ9rswOEoG7JDjbQuXYAop0PcRd
-         pPykapvnhg9Ie8j70VLEVeVjT+mHEodYO+av+sLzN76vD+493OmrWgAhf3L1jZ1GBvsU
-         S16g==
-X-Gm-Message-State: AOAM533X7lIjkU1mLYjeYPkj5UwJnne8+Y2wwBXHE3YiOPRjlRQ4UJ5A
-        rE4bSzeuSkzHmBLct0tDOoVm7g==
-X-Google-Smtp-Source: ABdhPJzC1j6ts7p8CPXN/UyNDuwiyF6wmEYJBVY9WiGN2C958BD7fCvkUbny2vlzFgjCmgclLgW4nw==
-X-Received: by 2002:a17:907:94cf:b0:6e4:a60b:bae5 with SMTP id dn15-20020a17090794cf00b006e4a60bbae5mr2033338ejc.476.1649141715632;
-        Mon, 04 Apr 2022 23:55:15 -0700 (PDT)
-Received: from localhost.localdomain (xdsl-188-155-201-27.adslplus.ch. [188.155.201.27])
-        by smtp.gmail.com with ESMTPSA id c11-20020a056402120b00b004196059efd1sm6453247edw.75.2022.04.04.23.55.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 04 Apr 2022 23:55:15 -0700 (PDT)
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-To:     Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+        Tue, 5 Apr 2022 02:57:19 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 400B224F;
+        Mon,  4 Apr 2022 23:55:20 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E72E9B81B9C;
+        Tue,  5 Apr 2022 06:55:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3E021C340F3;
+        Tue,  5 Apr 2022 06:55:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649141717;
+        bh=FvKjCQvRn9WJk9lz97bqRrxyEPDbvqfKkH1i0MUYhD4=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=AYhb5YWbqTBTudKCA8owHVmiNeLBfq7xVnn7un4ITdquvDw7rPW8XAnhih7whBIZL
+         dhbSbRuYOyEA8ZdtR6DbD+44rDrB7GjvmwHCNaBAv08sEweMKw7k3VH+C7NCSYtQrv
+         XZ00q2Tf53nX7q5pwmS5EfD2HvK+ZLCzCpxwW0lQCczm5xmwtIH8Pg427abYtnUuYN
+         RoF3HMHOyadWMsEoHPYoZsbNPsyNaZ+j8D3/WYrnqSxhgCMul3l935BbSSHCP091kP
+         NVFajX9o0iuNhfD/vzbldf13q2nMuraB9DJH7qihp6dWjix6DAcF/Bpl0xrhHPZt6Y
+         orr6NyZ0riwTg==
+Date:   Tue, 5 Apr 2022 09:56:28 +0300
+From:   Jarkko Sakkinen <jarkko@kernel.org>
+To:     Reinette Chatre <reinette.chatre@intel.com>
+Cc:     dave.hansen@linux.intel.com, tglx@linutronix.de, bp@alien8.de,
+        luto@kernel.org, mingo@redhat.com, linux-sgx@vger.kernel.org,
+        x86@kernel.org, seanjc@google.com, kai.huang@intel.com,
+        cathy.zhang@intel.com, cedric.xing@intel.com,
+        haitao.huang@intel.com, mark.shanahan@intel.com, hpa@zytor.com,
         linux-kernel@vger.kernel.org
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Rob Herring <robh@kernel.org>
-Subject: [PATCH v2] dt-bindings: soc: qcom,smsm: convert to dtschema
-Date:   Tue,  5 Apr 2022 08:55:12 +0200
-Message-Id: <20220405065512.26521-1-krzysztof.kozlowski@linaro.org>
-X-Mailer: git-send-email 2.32.0
+Subject: Re: [PATCH V3 06/30] x86/sgx: Export sgx_encl_ewb_cpumask()
+Message-ID: <YkvoHCPcym408pYM@kernel.org>
+References: <cover.1648847675.git.reinette.chatre@intel.com>
+ <ad3a21d0e332ac2cc465ef8c5de318962e2db6bc.1648847675.git.reinette.chatre@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ad3a21d0e332ac2cc465ef8c5de318962e2db6bc.1648847675.git.reinette.chatre@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Convert the Qualcomm Shared Memory State Machine to DT schema.
+On Mon, Apr 04, 2022 at 09:49:14AM -0700, Reinette Chatre wrote:
+> Using sgx_encl_ewb_cpumask() to learn which CPUs might have executed
+> an enclave is useful to ensure that TLBs are cleared when changes are
+> made to enclave pages.
+> 
+> sgx_encl_ewb_cpumask() is used within the reclaimer when an enclave
+> page is evicted. The upcoming SGX2 support enables changes to be
+> made to enclave pages and will require TLBs to not refer to the
+> changed pages and thus will be needing sgx_encl_ewb_cpumask().
+> 
+> Relocate sgx_encl_ewb_cpumask() to be with the rest of the enclave
+> code in encl.c now that it is no longer unique to the reclaimer.
+> 
+> Take care to ensure that any future usage maintains the
+> current context requirement that ETRACK has been called first.
+> Expand the existing comments to highlight this while moving them
+> to a more prominent location before the function.
+> 
+> No functional change.
+> 
+> Signed-off-by: Reinette Chatre <reinette.chatre@intel.com>
+> ---
+> No changes since V2
+> 
+> Changes since V1:
+> - New patch split from original "x86/sgx: Use more generic name for
+>   enclave cpumask function" (Jarkko).
+> - Change subject line (Jarkko).
+> - Fixup kernel-doc to use brackets in function name.
+> 
+>  arch/x86/kernel/cpu/sgx/encl.c | 67 ++++++++++++++++++++++++++++++++++
+>  arch/x86/kernel/cpu/sgx/encl.h |  1 +
+>  arch/x86/kernel/cpu/sgx/main.c | 29 ---------------
+>  3 files changed, 68 insertions(+), 29 deletions(-)
+> 
+> diff --git a/arch/x86/kernel/cpu/sgx/encl.c b/arch/x86/kernel/cpu/sgx/encl.c
+> index 05ae1168391c..c6525eba74e8 100644
+> --- a/arch/x86/kernel/cpu/sgx/encl.c
+> +++ b/arch/x86/kernel/cpu/sgx/encl.c
+> @@ -613,6 +613,73 @@ int sgx_encl_mm_add(struct sgx_encl *encl, struct mm_struct *mm)
+>  	return 0;
+>  }
+>  
+> +/**
+> + * sgx_encl_ewb_cpumask() - Query which CPUs might be accessing the enclave
+> + * @encl: the enclave
+> + *
+> + * Some SGX functions require that no cached linear-to-physical address
+> + * mappings are present before they can succeed. For example, ENCLS[EWB]
+> + * copies a page from the enclave page cache to regular main memory but
+> + * it fails if it cannot ensure that there are no cached
+> + * linear-to-physical address mappings referring to the page.
+> + *
+> + * SGX hardware flushes all cached linear-to-physical mappings on a CPU
+> + * when an enclave is exited via ENCLU[EEXIT] or an Asynchronous Enclave
+> + * Exit (AEX). Exiting an enclave will thus ensure cached linear-to-physical
+> + * address mappings are cleared but coordination with the tracking done within
+> + * the SGX hardware is needed to support the SGX functions that depend on this
+> + * cache clearing.
+> + *
+> + * When the ENCLS[ETRACK] function is issued on an enclave the hardware
+> + * tracks threads operating inside the enclave at that time. The SGX
+> + * hardware tracking require that all the identified threads must have
+> + * exited the enclave in order to flush the mappings before a function such
+> + * as ENCLS[EWB] will be permitted
+> + *
+> + * The following flow is used to support SGX functions that require that
+> + * no cached linear-to-physical address mappings are present:
+> + * 1) Execute ENCLS[ETRACK] to initiate hardware tracking.
+> + * 2) Use this function (sgx_encl_ewb_cpumask()) to query which CPUs might be
+> + *    accessing the enclave.
+> + * 3) Send IPI to identified CPUs, kicking them out of the enclave and
+> + *    thus flushing all locally cached linear-to-physical address mappings.
+> + * 4) Execute SGX function.
+> + *
+> + * Context: It is required to call this function after ENCLS[ETRACK].
+> + *          This will ensure that if any new mm appears (racing with
+> + *          sgx_encl_mm_add()) then the new mm will enter into the
+> + *          enclave with fresh linear-to-physical address mappings.
+> + *
+> + *          It is required that all IPIs are completed before a new
+> + *          ENCLS[ETRACK] is issued so be sure to protect steps 1 to 3
+> + *          of the above flow with the enclave's mutex.
+> + *
+> + * Return: cpumask of CPUs that might be accessing @encl
+> + */
+> +const cpumask_t *sgx_encl_ewb_cpumask(struct sgx_encl *encl)
+> +{
+> +	cpumask_t *cpumask = &encl->cpumask;
+> +	struct sgx_encl_mm *encl_mm;
+> +	int idx;
+> +
+> +	cpumask_clear(cpumask);
+> +
+> +	idx = srcu_read_lock(&encl->srcu);
+> +
+> +	list_for_each_entry_rcu(encl_mm, &encl->mm_list, list) {
+> +		if (!mmget_not_zero(encl_mm->mm))
+> +			continue;
+> +
+> +		cpumask_or(cpumask, cpumask, mm_cpumask(encl_mm->mm));
+> +
+> +		mmput_async(encl_mm->mm);
+> +	}
+> +
+> +	srcu_read_unlock(&encl->srcu, idx);
+> +
+> +	return cpumask;
+> +}
+> +
+>  static struct page *sgx_encl_get_backing_page(struct sgx_encl *encl,
+>  					      pgoff_t index)
+>  {
+> diff --git a/arch/x86/kernel/cpu/sgx/encl.h b/arch/x86/kernel/cpu/sgx/encl.h
+> index 6b34efba1602..d2acb4debde5 100644
+> --- a/arch/x86/kernel/cpu/sgx/encl.h
+> +++ b/arch/x86/kernel/cpu/sgx/encl.h
+> @@ -105,6 +105,7 @@ int sgx_encl_may_map(struct sgx_encl *encl, unsigned long start,
+>  
+>  void sgx_encl_release(struct kref *ref);
+>  int sgx_encl_mm_add(struct sgx_encl *encl, struct mm_struct *mm);
+> +const cpumask_t *sgx_encl_ewb_cpumask(struct sgx_encl *encl);
+>  int sgx_encl_get_backing(struct sgx_encl *encl, unsigned long page_index,
+>  			 struct sgx_backing *backing);
+>  void sgx_encl_put_backing(struct sgx_backing *backing, bool do_write);
+> diff --git a/arch/x86/kernel/cpu/sgx/main.c b/arch/x86/kernel/cpu/sgx/main.c
+> index 8e4bc6453d26..2de85f459492 100644
+> --- a/arch/x86/kernel/cpu/sgx/main.c
+> +++ b/arch/x86/kernel/cpu/sgx/main.c
+> @@ -203,35 +203,6 @@ static void sgx_ipi_cb(void *info)
+>  {
+>  }
+>  
+> -static const cpumask_t *sgx_encl_ewb_cpumask(struct sgx_encl *encl)
+> -{
+> -	cpumask_t *cpumask = &encl->cpumask;
+> -	struct sgx_encl_mm *encl_mm;
+> -	int idx;
+> -
+> -	/*
+> -	 * Can race with sgx_encl_mm_add(), but ETRACK has already been
+> -	 * executed, which means that the CPUs running in the new mm will enter
+> -	 * into the enclave with a fresh epoch.
+> -	 */
+> -	cpumask_clear(cpumask);
+> -
+> -	idx = srcu_read_lock(&encl->srcu);
+> -
+> -	list_for_each_entry_rcu(encl_mm, &encl->mm_list, list) {
+> -		if (!mmget_not_zero(encl_mm->mm))
+> -			continue;
+> -
+> -		cpumask_or(cpumask, cpumask, mm_cpumask(encl_mm->mm));
+> -
+> -		mmput_async(encl_mm->mm);
+> -	}
+> -
+> -	srcu_read_unlock(&encl->srcu, idx);
+> -
+> -	return cpumask;
+> -}
+> -
+>  /*
+>   * Swap page to the regular memory transformed to the blocked state by using
+>   * EBLOCK, which means that it can no longer be referenced (no new TLB entries).
+> -- 
+> 2.25.1
+> 
 
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Reviewed-by: Rob Herring <robh@kernel.org>
 
----
+Reviewed-by: Jarkko Sakkinen <jarkko@kernel.org>
 
-Changes since v1:
-1. Skip "^.*" from pattern.
-2. Fix subjectprefix.
-3. Add Rob's review.
----
- .../bindings/soc/qcom/qcom,smsm.txt           | 104 -------------
- .../bindings/soc/qcom/qcom,smsm.yaml          | 138 ++++++++++++++++++
- 2 files changed, 138 insertions(+), 104 deletions(-)
- delete mode 100644 Documentation/devicetree/bindings/soc/qcom/qcom,smsm.txt
- create mode 100644 Documentation/devicetree/bindings/soc/qcom/qcom,smsm.yaml
-
-diff --git a/Documentation/devicetree/bindings/soc/qcom/qcom,smsm.txt b/Documentation/devicetree/bindings/soc/qcom/qcom,smsm.txt
-deleted file mode 100644
-index 2993b5a97dd6..000000000000
---- a/Documentation/devicetree/bindings/soc/qcom/qcom,smsm.txt
-+++ /dev/null
-@@ -1,104 +0,0 @@
--Qualcomm Shared Memory State Machine
--
--The Shared Memory State Machine facilitates broadcasting of single bit state
--information between the processors in a Qualcomm SoC. Each processor is
--assigned 32 bits of state that can be modified. A processor can through a
--matrix of bitmaps signal subscription of notifications upon changes to a
--certain bit owned by a certain remote processor.
--
--- compatible:
--	Usage: required
--	Value type: <string>
--	Definition: must be one of:
--		    "qcom,smsm"
--
--- qcom,ipc-N:
--	Usage: required
--	Value type: <prop-encoded-array>
--	Definition: three entries specifying the outgoing ipc bit used for
--		    signaling the N:th remote processor
--		    - phandle to a syscon node representing the apcs registers
--		    - u32 representing offset to the register within the syscon
--		    - u32 representing the ipc bit within the register
--
--- qcom,local-host:
--	Usage: optional
--	Value type: <u32>
--	Definition: identifier of the local processor in the list of hosts, or
--		    in other words specifier of the column in the subscription
--		    matrix representing the local processor
--		    defaults to host 0
--
--- #address-cells:
--	Usage: required
--	Value type: <u32>
--	Definition: must be 1
--
--- #size-cells:
--	Usage: required
--	Value type: <u32>
--	Definition: must be 0
--
--= SUBNODES
--Each processor's state bits are described by a subnode of the smsm device node.
--Nodes can either be flagged as an interrupt-controller to denote a remote
--processor's state bits or the local processors bits.  The node names are not
--important.
--
--- reg:
--	Usage: required
--	Value type: <u32>
--	Definition: specifies the offset, in words, of the first bit for this
--		    entry
--
--- #qcom,smem-state-cells:
--	Usage: required for local entry
--	Value type: <u32>
--	Definition: must be 1 - denotes bit number
--
--- interrupt-controller:
--	Usage: required for remote entries
--	Value type: <empty>
--	Definition: marks the entry as a interrupt-controller and the state bits
--		    to belong to a remote processor
--
--- #interrupt-cells:
--	Usage: required for remote entries
--	Value type: <u32>
--	Definition: must be 2 - denotes bit number and IRQ flags
--
--- interrupts:
--	Usage: required for remote entries
--	Value type: <prop-encoded-array>
--	Definition: one entry specifying remote IRQ used by the remote processor
--		    to signal changes of its state bits
--
--
--= EXAMPLE
--The following example shows the SMEM setup for controlling properties of the
--wireless processor, defined from the 8974 apps processor's point-of-view. It
--encompasses one outbound entry and the outgoing interrupt for the wireless
--processor.
--
--smsm {
--	compatible = "qcom,smsm";
--
--	#address-cells = <1>;
--	#size-cells = <0>;
--
--	qcom,ipc-3 = <&apcs 8 19>;
--
--	apps_smsm: apps@0 {
--		reg = <0>;
--
--		#qcom,smem-state-cells = <1>;
--	};
--
--	wcnss_smsm: wcnss@7 {
--		reg = <7>;
--		interrupts = <0 144 1>;
--
--		interrupt-controller;
--		#interrupt-cells = <2>;
--	};
--};
-diff --git a/Documentation/devicetree/bindings/soc/qcom/qcom,smsm.yaml b/Documentation/devicetree/bindings/soc/qcom/qcom,smsm.yaml
-new file mode 100644
-index 000000000000..db67cf043256
---- /dev/null
-+++ b/Documentation/devicetree/bindings/soc/qcom/qcom,smsm.yaml
-@@ -0,0 +1,138 @@
-+# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/soc/qcom/qcom,smsm.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Qualcomm Shared Memory State Machine
-+
-+maintainers:
-+  - Andy Gross <agross@kernel.org>
-+  - Bjorn Andersson <bjorn.andersson@linaro.org>
-+  - Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-+
-+description:
-+  The Shared Memory State Machine facilitates broadcasting of single bit state
-+  information between the processors in a Qualcomm SoC. Each processor is
-+  assigned 32 bits of state that can be modified. A processor can through a
-+  matrix of bitmaps signal subscription of notifications upon changes to a
-+  certain bit owned by a certain remote processor.
-+
-+properties:
-+  compatible:
-+    const: qcom,smsm
-+
-+  '#address-cells':
-+    const: 1
-+
-+  qcom,local-host:
-+    $ref: /schemas/types.yaml#/definitions/uint32
-+    default: 0
-+    description:
-+      Identifier of the local processor in the list of hosts, or in other words
-+      specifier of the column in the subscription matrix representing the local
-+      processor.
-+
-+  '#size-cells':
-+    const: 0
-+
-+patternProperties:
-+  "^qcom,ipc-[1-4]$":
-+    $ref: /schemas/types.yaml#/definitions/phandle-array
-+    items:
-+      - items:
-+          - description: phandle to a syscon node representing the APCS registers
-+          - description: u32 representing offset to the register within the syscon
-+          - description: u32 representing the ipc bit within the register
-+    description:
-+      Three entries specifying the outgoing ipc bit used for signaling the N:th
-+      remote processor.
-+
-+  "@[0-9a-f]$":
-+    type: object
-+    description:
-+      Each processor's state bits are described by a subnode of the SMSM device
-+      node.  Nodes can either be flagged as an interrupt-controller to denote a
-+      remote processor's state bits or the local processors bits.  The node
-+      names are not important.
-+
-+    properties:
-+      reg:
-+        maxItems: 1
-+
-+      interrupt-controller:
-+        description:
-+          Marks the entry as a interrupt-controller and the state bits to
-+          belong to a remote processor.
-+
-+      '#interrupt-cells':
-+        const: 2
-+
-+      interrupts:
-+        maxItems: 1
-+        description:
-+          One entry specifying remote IRQ used by the remote processor to
-+          signal changes of its state bits.
-+
-+      '#qcom,smem-state-cells':
-+        $ref: /schemas/types.yaml#/definitions/uint32
-+        const: 1
-+        description:
-+          Required for local entry. Denotes bit number.
-+
-+    required:
-+      - reg
-+
-+    oneOf:
-+      - required:
-+          - '#qcom,smem-state-cells'
-+      - required:
-+          - interrupt-controller
-+          - '#interrupt-cells'
-+          - interrupts
-+
-+    additionalProperties: false
-+
-+required:
-+  - compatible
-+  - '#address-cells'
-+  - '#size-cells'
-+
-+anyOf:
-+  - required:
-+      - qcom,ipc-1
-+  - required:
-+      - qcom,ipc-2
-+  - required:
-+      - qcom,ipc-3
-+  - required:
-+      - qcom,ipc-4
-+
-+additionalProperties: false
-+
-+examples:
-+  # The following example shows the SMEM setup for controlling properties of
-+  # the wireless processor, defined from the 8974 apps processor's
-+  # point-of-view. It encompasses one outbound entry and the outgoing interrupt
-+  # for the wireless processor.
-+  - |
-+    #include <dt-bindings/interrupt-controller/arm-gic.h>
-+
-+    shared-memory {
-+        compatible = "qcom,smsm";
-+        #address-cells = <1>;
-+        #size-cells = <0>;
-+        qcom,ipc-3 = <&apcs 8 19>;
-+
-+        apps_smsm: apps@0 {
-+            reg = <0>;
-+            #qcom,smem-state-cells = <1>;
-+        };
-+
-+        wcnss_smsm: wcnss@7 {
-+            reg = <7>;
-+            interrupts = <GIC_SPI 144 IRQ_TYPE_EDGE_RISING>;
-+            interrupt-controller;
-+            #interrupt-cells = <2>;
-+        };
-+    };
--- 
-2.32.0
-
+BR, Jarkko
