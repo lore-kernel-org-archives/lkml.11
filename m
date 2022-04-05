@@ -2,56 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B915C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 04:36:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 65699C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 04:45:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230484AbiDEEiv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 00:38:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57472 "EHLO
+        id S230441AbiDEErS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 00:47:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58336 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229861AbiDEEiO (ORCPT
+        with ESMTP id S231281AbiDEErC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 00:38:14 -0400
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E79812AD9
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 21:34:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
-        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=M7NmYC/Iylm9myghHwqILim55SAUt9QrM+UZYk0eJlw=; b=PishwmSkba+6D+6k5V6o5GGkHq
-        YGEgWPT+5Ej32Ri0lLLNFizXF1ZK/uGD6uXpIGH5knUGR6/E2XVKTQgJmjbGvB75gYk3l/mSDACQr
-        fqQ3icDeZj4TQtnwYnAZM1oVSpHQWJcdEA5L1xFY2hDx2yX3CUaZljHlq3RVjjcK6Pcb0f5It8nfa
-        s0TgF3FCsXVwPEzOxcoJtKEf4slt7sBdHH9HSrAVcugsaKLcZB5CRWGfV9gjYzNLSqi7rHpaomcKO
-        hGg/SRwP0eWGc+RVy/ozq3kbCIqHfGrg5ZMIedLSLZzoc1P/R9odCNsx2KlEuMpk61VU50/hT3d+h
-        CcUrqfDQ==;
-Received: from hch by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nbatz-00H56R-Ij; Tue, 05 Apr 2022 04:34:47 +0000
-Date:   Mon, 4 Apr 2022 21:34:47 -0700
-From:   Christoph Hellwig <hch@infradead.org>
-To:     Mario Limonciello <mario.limonciello@amd.com>
-Cc:     Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-        Christoph Hellwig <hch@infradead.org>,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        Robin Murphy <robin.murphy@arm.com>,
-        "open list:IOMMU DRIVERS" <iommu@lists.linux-foundation.org>,
-        Suthikulpanit Suravee <Suravee.Suthikulpanit@amd.com>,
-        Hegde Vasant <Vasant.Hegde@amd.com>,
-        open list <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v2 2/2] dma-iommu: Check that swiotlb is active before
- trying to use it
-Message-ID: <YkvG57GhOygOs4iP@infradead.org>
-References: <20220404204723.9767-1-mario.limonciello@amd.com>
- <20220404204723.9767-3-mario.limonciello@amd.com>
+        Tue, 5 Apr 2022 00:47:02 -0400
+Received: from out203-205-221-235.mail.qq.com (out203-205-221-235.mail.qq.com [203.205.221.235])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37939BC8C
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 21:43:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foxmail.com;
+        s=s201512; t=1649133800;
+        bh=ZOWmbRSE1ugYDN4B9+8FobQREdvXAlF1kKgzI2u7cr0=;
+        h=From:To:Cc:Subject:Date;
+        b=ZbZyLf6a/g/c+/dbQggekZHwx50vB+fCtgVEcg0tBRKsuB8w5ADhLr22TalAcQFXX
+         dDX1LbLR4fUs2+LrgUBUv04ijUfMa7ZLrKXbpnUxjVmashhWW3bvgNq4LfBKTMbtNw
+         9QlEw7n2MxDwe2P/zd8ifRwd8S54HDzXt4lapJxc=
+Received: from localhost.localdomain ([218.197.153.188])
+        by newxmesmtplogicsvrsza9.qq.com (NewEsmtp) with SMTP
+        id AD187C0F; Tue, 05 Apr 2022 12:43:17 +0800
+X-QQ-mid: xmsmtpt1649133797tybode3xr
+Message-ID: <tencent_B8048C592777830380A23A7C4409F9DF1305@qq.com>
+X-QQ-XMAILINFO: Nci1v0XuD9lF/UxJPIUnSOW35WJxhNHJ9+ASszE4sLfv8CucVVmCZNiogRzfLA
+         FCueO2kxVwfgM/NnbjiZK+E+XJyJhRwuiBT8F7HDdKMjyH1CChIvlR3Axc1C++TAdWn+UWOmvfmv
+         uF94lvzfEtFV2S7zeuitxu28ku6Rhf/8skdeop9GbjdNtA7sVq9waWY1hedDYT6vinVAYaBc7Hns
+         2c2s3WvD2IPVB2J7qiF0HgGLj2nrIBqKGXlZUcXB+0pVBLoi1PWnrQj/bYQdEBQ0+IvgZqT/eFzx
+         hVuIGMhpi3r8Dj00Cccbdnc8xEqSNLbG0aYf0udQT4bS0kqVB1D7uR12PM/WeD4LeFzYwUIUzib2
+         Tes/qKEpqWiSFbtvV4VFXbK/RwdlCGsJ37J2tQ1PEKDK/WPOfpnLKKlUyBmFFH/8B9xwzy+0zJvw
+         DThKCloCsmnsTdDQGW1mvMhsVM0ITDHUgxlg170tsxA5uDrllGT9EvtZuL3N+FpwNEYTOacQiiIt
+         qear8mS+d6Q/F1TlpQ0D5ZgKgIi2zC+ZGT+chKu4HliSbEFDdP1fBBjI+f6iXgyCZljBzhSmjKH/
+         rRtchvP3GuTO7Mj2sWuxPWMSf79IjRGxWfloPEKsukVhfhnTi+NwdRExQ/XGsFE+E64wnPp+xQ/C
+         SNTRB7YGA8bxyoQknrdgj7WaY4Qp8WLdDuUXwsxUEzuUhtapC/8amBQLRVtxRAlpEHbq15ZqiM1f
+         vEi2c/qQmKPVG7r3r+worYmPOIBbZpdhK5lDk6Q6OcCKh5zjT4HDNmkQdLBmvWUgW5cT24aWrZDR
+         NE9VYuUcR5NE7S29TrUaz4TgTxe+xYejUQuiqixb2aEb3VjNAzW0WrqcomdjVahPMIw1U/3e33OB
+         gXjGbaibi/DfSQx6fyavUq1DanypyU8DEcmMAHMGxqc0wvClVp9m0/OZQqX5iQ4yccM97e2bWcDs
+         ipOKQzFdRCBjEYXM7avw==
+From:   xkernel.wang@foxmail.com
+To:     gregkh@linuxfoundation.org
+Cc:     Larry.Finger@lwfinger.net, florian.c.schilhabel@googlemail.com,
+        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
+        Xiaoke Wang <xkernel.wang@foxmail.com>
+Subject: [PATCH] staging: rtl8712: fix a potential memory leak in r871xu_drv_init()
+Date:   Tue,  5 Apr 2022 12:43:07 +0800
+X-OQ-MSGID: <20220405044307.11297-1-xkernel.wang@foxmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220404204723.9767-3-mario.limonciello@amd.com>
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Looks good:
+From: Xiaoke Wang <xkernel.wang@foxmail.com>
 
-Reviewed-by: Christoph Hellwig <hch@lst.de>
+In r871xu_drv_init(), if r8712_init_drv_sw() fails, then the memory
+allocated by r8712_alloc_io_queue() in r8712_usb_dvobj_init() is not
+properly released as there is no action will be performed by
+r8712_usb_dvobj_deinit().
+To properly release it, we should call r8712_free_io_queue() in
+r8712_usb_dvobj_deinit().
+
+Besides, in r871xu_dev_remove(), r8712_usb_dvobj_deinit() will be called
+by r871x_dev_unload() under condition `padapter->bup` and
+r8712_free_io_queue() is called by r8712_free_drv_sw().
+However, r8712_usb_dvobj_deinit() does not rely on `padapter->bup` and
+calling r8712_free_io_queue() in r8712_free_drv_sw() is negative for
+better understading the code.
+So I move r8712_usb_dvobj_deinit() into r871xu_dev_remove(), and remove
+r8712_free_io_queue() from r8712_free_drv_sw().
+
+Signed-off-by: Xiaoke Wang <xkernel.wang@foxmail.com>
+---
+ drivers/staging/rtl8712/os_intfs.c | 1 -
+ drivers/staging/rtl8712/usb_intf.c | 6 +++---
+ 2 files changed, 3 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/staging/rtl8712/os_intfs.c b/drivers/staging/rtl8712/os_intfs.c
+index 28b1684..220fed5 100644
+--- a/drivers/staging/rtl8712/os_intfs.c
++++ b/drivers/staging/rtl8712/os_intfs.c
+@@ -348,7 +348,6 @@ void r8712_free_drv_sw(struct _adapter *padapter)
+ 	r8712_free_evt_priv(&padapter->evtpriv);
+ 	r8712_DeInitSwLeds(padapter);
+ 	r8712_free_mlme_priv(&padapter->mlmepriv);
+-	r8712_free_io_queue(padapter);
+ 	_free_xmit_priv(&padapter->xmitpriv);
+ 	_r8712_free_sta_priv(&padapter->stapriv);
+ 	_r8712_free_recv_priv(&padapter->recvpriv);
+diff --git a/drivers/staging/rtl8712/usb_intf.c b/drivers/staging/rtl8712/usb_intf.c
+index 8df50e2..8cbd419 100644
+--- a/drivers/staging/rtl8712/usb_intf.c
++++ b/drivers/staging/rtl8712/usb_intf.c
+@@ -265,6 +265,7 @@ static uint r8712_usb_dvobj_init(struct _adapter *padapter)
+ 
+ static void r8712_usb_dvobj_deinit(struct _adapter *padapter)
+ {
++	r8712_free_io_queue(padapter);
+ }
+ 
+ void rtl871x_intf_stop(struct _adapter *padapter)
+@@ -302,9 +303,6 @@ void r871x_dev_unload(struct _adapter *padapter)
+ 			rtl8712_hal_deinit(padapter);
+ 		}
+ 
+-		/*s6.*/
+-		if (padapter->dvobj_deinit)
+-			padapter->dvobj_deinit(padapter);
+ 		padapter->bup = false;
+ 	}
+ }
+@@ -607,6 +605,8 @@ static void r871xu_dev_remove(struct usb_interface *pusb_intf)
+ 	/* Stop driver mlme relation timer */
+ 	r8712_stop_drv_timers(padapter);
+ 	r871x_dev_unload(padapter);
++	if (padapter->dvobj_deinit)
++		padapter->dvobj_deinit(padapter);
+ 	r8712_free_drv_sw(padapter);
+ 	free_netdev(pnetdev);
+ 
+-- 
