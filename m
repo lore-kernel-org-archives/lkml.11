@@ -2,48 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C706C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AAEF3C43217
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 01:48:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1843443AbiDFBk6 (ORCPT
+        id S1843562AbiDFBlQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 21:40:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52538 "EHLO
+        Tue, 5 Apr 2022 21:41:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50656 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349235AbiDEJt2 (ORCPT
+        with ESMTP id S1357502AbiDEK0a (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:49:28 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9AD31FA68;
-        Tue,  5 Apr 2022 02:42:21 -0700 (PDT)
+        Tue, 5 Apr 2022 06:26:30 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2C452DD4D;
+        Tue,  5 Apr 2022 03:10:20 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6EAA9B81C14;
-        Tue,  5 Apr 2022 09:42:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B66EEC385A2;
-        Tue,  5 Apr 2022 09:42:18 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DAC61617AE;
+        Tue,  5 Apr 2022 10:10:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EBA95C385A1;
+        Tue,  5 Apr 2022 10:10:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649151739;
-        bh=dDEgLEE+d+dNNd5zKLzfFJYE/4qo9BE4nxHk/OiZzKA=;
+        s=korg; t=1649153419;
+        bh=gqjWp8ZRyqz+aMmbrLmE97qAwqZMiw801VH806/InDE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jWcw+k9HsX5NlDbXQ0LBbVSm+1G/OePaROxN9msb21I52a0RN9ck+4HkezQOuDpYF
-         PQSk+X0M0YTMn8bmKqnseEiOnAc4YjYL6NRY+bknkrS7r4Pt3iEUuW2lqtV4OMFXXu
-         qqw8gRjhuB/ep5GBj3YlYj+bwO2ZzzQ6+B4Aw7AQ=
+        b=Bmh4rpN9ThXkqpiLooZe4PQgmlYGOUbKmxHfjMvIX0j8JduQDFsvUh/QRytjVONOP
+         QLnkWHCmHhdIBlZoVYAqqPDPfMZUo7s3d46Mx03Fhmo0zihkqBpJQl7BTlS+fNlDIn
+         VLblGVzf1anQW18vEpZJYj1cL7E6FmvzL8xHmjTY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Nageswara R Sastry <rnsastry@linux.ibm.com>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Nicholas Piggin <npiggin@gmail.com>,
+        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 523/913] powerpc/64s: Dont use DSISR for SLB faults
-Date:   Tue,  5 Apr 2022 09:26:25 +0200
-Message-Id: <20220405070355.529656117@linuxfoundation.org>
+Subject: [PATCH 5.10 217/599] media: usb: go7007: s2250-board: fix leak in probe()
+Date:   Tue,  5 Apr 2022 09:28:31 +0200
+Message-Id: <20220405070305.299963997@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
+References: <20220405070258.802373272@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -52,101 +50,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Michael Ellerman <mpe@ellerman.id.au>
+From: Dan Carpenter <dan.carpenter@oracle.com>
 
-[ Upstream commit d4679ac8ea2e5078704aa1c026db36580cc1bf9a ]
+[ Upstream commit 67e4550ecd6164bfbdff54c169e5bbf9ccfaf14d ]
 
-Since commit 46ddcb3950a2 ("powerpc/mm: Show if a bad page fault on data
-is read or write.") we use page_fault_is_write(regs->dsisr) in
-__bad_page_fault() to determine if the fault is for a read or write, and
-change the message printed accordingly.
+Call i2c_unregister_device(audio) on this error path.
 
-But SLB faults, aka Data Segment Interrupts, don't set DSISR (Data
-Storage Interrupt Status Register) to a useful value. All ISA versions
-from v2.03 through v3.1 specify that the Data Segment Interrupt sets
-DSISR "to an undefined value". As far as I can see there's no mention of
-SLB faults setting DSISR in any BookIV content either.
-
-This manifests as accesses that should be a read being incorrectly
-reported as writes, for example, using the xmon "dump" command:
-
-  0:mon> d 0x5deadbeef0000000
-  5deadbeef0000000
-  [359526.415354][    C6] BUG: Unable to handle kernel data access on write at 0x5deadbeef0000000
-  [359526.415611][    C6] Faulting instruction address: 0xc00000000010a300
-  cpu 0x6: Vector: 380 (Data SLB Access) at [c00000000ffbf400]
-      pc: c00000000010a300: mread+0x90/0x190
-
-If we disassemble the PC, we see a load instruction:
-
-  0:mon> di c00000000010a300
-  c00000000010a300 89490000      lbz     r10,0(r9)
-
-We can also see in exceptions-64s.S that the data_access_slb block
-doesn't set IDSISR=1, which means it doesn't load DSISR into pt_regs. So
-the value we're using to determine if the fault is a read/write is some
-stale value in pt_regs from a previous page fault.
-
-Rework the printing logic to separate the SLB fault case out, and only
-print read/write in the cases where we can determine it.
-
-The result looks like eg:
-
-  0:mon> d 0x5deadbeef0000000
-  5deadbeef0000000
-  [  721.779525][    C6] BUG: Unable to handle kernel data access at 0x5deadbeef0000000
-  [  721.779697][    C6] Faulting instruction address: 0xc00000000014cbe0
-  cpu 0x6: Vector: 380 (Data SLB Access) at [c00000000ffbf390]
-
-  0:mon> d 0
-  0000000000000000
-  [  742.793242][    C6] BUG: Kernel NULL pointer dereference at 0x00000000
-  [  742.793316][    C6] Faulting instruction address: 0xc00000000014cbe0
-  cpu 0x6: Vector: 380 (Data SLB Access) at [c00000000ffbf390]
-
-Fixes: 46ddcb3950a2 ("powerpc/mm: Show if a bad page fault on data is read or write.")
-Reported-by: Nageswara R Sastry <rnsastry@linux.ibm.com>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Reviewed-by: Nicholas Piggin <npiggin@gmail.com>
-Link: https://lore.kernel.org/r/20220222113449.319193-1-mpe@ellerman.id.au
+Fixes: d3b2ccd9e307 ("[media] s2250: convert to the control framework")
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/powerpc/mm/fault.c | 14 ++++++++++----
- 1 file changed, 10 insertions(+), 4 deletions(-)
+ drivers/media/usb/go7007/s2250-board.c | 10 ++++------
+ 1 file changed, 4 insertions(+), 6 deletions(-)
 
-diff --git a/arch/powerpc/mm/fault.c b/arch/powerpc/mm/fault.c
-index a8d0ce85d39a..4a15172dfef2 100644
---- a/arch/powerpc/mm/fault.c
-+++ b/arch/powerpc/mm/fault.c
-@@ -568,18 +568,24 @@ NOKPROBE_SYMBOL(hash__do_page_fault);
- static void __bad_page_fault(struct pt_regs *regs, int sig)
- {
- 	int is_write = page_fault_is_write(regs->dsisr);
-+	const char *msg;
+diff --git a/drivers/media/usb/go7007/s2250-board.c b/drivers/media/usb/go7007/s2250-board.c
+index b9e45124673b..2e5913bccb38 100644
+--- a/drivers/media/usb/go7007/s2250-board.c
++++ b/drivers/media/usb/go7007/s2250-board.c
+@@ -504,6 +504,7 @@ static int s2250_probe(struct i2c_client *client,
+ 	u8 *data;
+ 	struct go7007 *go = i2c_get_adapdata(adapter);
+ 	struct go7007_usb *usb = go->hpi_context;
++	int err = -EIO;
  
- 	/* kernel has accessed a bad area */
+ 	audio = i2c_new_dummy_device(adapter, TLV320_ADDRESS >> 1);
+ 	if (IS_ERR(audio))
+@@ -532,11 +533,8 @@ static int s2250_probe(struct i2c_client *client,
+ 		V4L2_CID_HUE, -512, 511, 1, 0);
+ 	sd->ctrl_handler = &state->hdl;
+ 	if (state->hdl.error) {
+-		int err = state->hdl.error;
+-
+-		v4l2_ctrl_handler_free(&state->hdl);
+-		kfree(state);
+-		return err;
++		err = state->hdl.error;
++		goto fail;
+ 	}
  
-+	if (regs->dar < PAGE_SIZE)
-+		msg = "Kernel NULL pointer dereference";
-+	else
-+		msg = "Unable to handle kernel data access";
-+
- 	switch (TRAP(regs)) {
- 	case INTERRUPT_DATA_STORAGE:
--	case INTERRUPT_DATA_SEGMENT:
- 	case INTERRUPT_H_DATA_STORAGE:
--		pr_alert("BUG: %s on %s at 0x%08lx\n",
--			 regs->dar < PAGE_SIZE ? "Kernel NULL pointer dereference" :
--			 "Unable to handle kernel data access",
-+		pr_alert("BUG: %s on %s at 0x%08lx\n", msg,
- 			 is_write ? "write" : "read", regs->dar);
- 		break;
-+	case INTERRUPT_DATA_SEGMENT:
-+		pr_alert("BUG: %s at 0x%08lx\n", msg, regs->dar);
-+		break;
- 	case INTERRUPT_INST_STORAGE:
- 	case INTERRUPT_INST_SEGMENT:
- 		pr_alert("BUG: Unable to handle kernel instruction fetch%s",
+ 	state->std = V4L2_STD_NTSC;
+@@ -600,7 +598,7 @@ static int s2250_probe(struct i2c_client *client,
+ 	i2c_unregister_device(audio);
+ 	v4l2_ctrl_handler_free(&state->hdl);
+ 	kfree(state);
+-	return -EIO;
++	return err;
+ }
+ 
+ static int s2250_remove(struct i2c_client *client)
 -- 
 2.34.1
 
