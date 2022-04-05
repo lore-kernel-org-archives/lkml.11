@@ -2,47 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D294C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 01:06:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DD6F4C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 01:10:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1839984AbiDFBGl (ORCPT
+        id S1840092AbiDFBHG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 21:06:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47556 "EHLO
+        Tue, 5 Apr 2022 21:07:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39852 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349069AbiDEJtD (ORCPT
+        with ESMTP id S244649AbiDEKjC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:49:03 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10345A94F7;
-        Tue,  5 Apr 2022 02:39:48 -0700 (PDT)
+        Tue, 5 Apr 2022 06:39:02 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 660CD9F6FC;
+        Tue,  5 Apr 2022 03:24:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A3A31615E5;
-        Tue,  5 Apr 2022 09:39:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B852EC385A2;
-        Tue,  5 Apr 2022 09:39:46 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3F98FB81C8B;
+        Tue,  5 Apr 2022 10:24:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7B7D6C385A1;
+        Tue,  5 Apr 2022 10:24:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649151587;
-        bh=D9X4N7CjniGGLjHiUlduDQRYx7n6Zjs8euUw2wDCyR0=;
+        s=korg; t=1649154244;
+        bh=+LlN6is2oOq9hSTl4jDvC8cIgW19PtekWjYIVYSEn/E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2Rm32ttEIbYYPiaEsX4YQUeoW0a8uBb9Y8YqSScfYGOedQEWc9VrCoBag+JU6gGsj
-         rKtIs03XexKrQ43z6eO2c58H+7YsEYJdsMzYDnHpk5EzjA6/DORu2xTbfBGKazj7Lz
-         f7ZdFTtaDj4ome4CYeIDrovGr49sN1n4pyutkjHo=
+        b=UwqdJtnnRreJgf6LTZGMoqYFsgjg7BHLtb1m+f2ccS79kD98Vxa+lF/NjQWOyYr5p
+         Jjc8idU1aHrEUPULcEFLBxov7XHMByRTq1lzouFM7Mf4DTjv98jr4M7LSvs0xQayHY
+         /UHvcpQKUkEBm/QTTlXo3kmRBbmqPMgV83aNo4Ng=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kuogee Hsieh <quic_khsieh@quicinc.com>,
-        Stephen Boyd <swboyd@chromium.org>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        stable@vger.kernel.org, Hans Verkuil <hverkuil@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 470/913] drm/msm/dp: stop link training after link training 2 failed
-Date:   Tue,  5 Apr 2022 09:25:32 +0200
-Message-Id: <20220405070353.943570972@linuxfoundation.org>
+Subject: [PATCH 5.10 510/599] media: atomisp: fix bad usage at error handling logic
+Date:   Tue,  5 Apr 2022 09:33:24 +0200
+Message-Id: <20220405070314.006545921@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
+References: <20220405070258.802373272@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,47 +50,93 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kuogee Hsieh <quic_khsieh@quicinc.com>
+From: Mauro Carvalho Chehab <mchehab@kernel.org>
 
-[ Upstream commit 9051d629dbf7a998a40f7eac65a9512b01bc3bb8 ]
+[ Upstream commit fc0b582c858ed73f94c8f3375c203ea46f1f7402 ]
 
-Each DP link training contains link training 1 followed by link
-training 2.  There is maximum of 5 retries of DP link training
-before declared link training failed. It is required to stop link
-training at end of link training 2 if it is failed so that next
-link training 1 can start freshly. This patch fixes link compliance
-test  case 4.3.1.13 (Source Device Link Training EQ Fallback Test).
+As warned by sparse:
+	atomisp: drivers/staging/media/atomisp/pci/atomisp_acc.c:508 atomisp_acc_load_extensions() warn: iterator used outside loop: 'acc_fw'
 
-Changes in v10:
---  group into one series
+The acc_fw interactor is used outside the loop, at the error handling
+logic. On most cases, this is actually safe there, but, if
+atomisp_css_set_acc_parameters() has an error, an attempt to use it
+will pick an invalid value for acc_fw.
 
-Changes in v11:
--- drop drm/msm/dp: dp_link_parse_sink_count() return immediately if aux read
-
-Fixes: 2e0adc765d88 ("drm/msm/dp: do not end dp link training until video is ready")
-Signed-off-by: Kuogee Hsieh <quic_khsieh@quicinc.com>
-Reviewed-by: Stephen Boyd <swboyd@chromium.org>
-Link: https://lore.kernel.org/r/1642531648-8448-5-git-send-email-quic_khsieh@quicinc.com
-Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Reported-by: Hans Verkuil <hverkuil@xs4all.nl>
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/msm/dp/dp_ctrl.c | 3 +++
- 1 file changed, 3 insertions(+)
+ .../staging/media/atomisp/pci/atomisp_acc.c   | 28 +++++++++++++------
+ 1 file changed, 19 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/gpu/drm/msm/dp/dp_ctrl.c b/drivers/gpu/drm/msm/dp/dp_ctrl.c
-index 62e75dc8afc6..4af281d97493 100644
---- a/drivers/gpu/drm/msm/dp/dp_ctrl.c
-+++ b/drivers/gpu/drm/msm/dp/dp_ctrl.c
-@@ -1744,6 +1744,9 @@ int dp_ctrl_on_link(struct dp_ctrl *dp_ctrl)
- 				/* end with failure */
- 				break; /* lane == 1 already */
- 			}
+diff --git a/drivers/staging/media/atomisp/pci/atomisp_acc.c b/drivers/staging/media/atomisp/pci/atomisp_acc.c
+index f638d0bd09fe..b1614cce2dfb 100644
+--- a/drivers/staging/media/atomisp/pci/atomisp_acc.c
++++ b/drivers/staging/media/atomisp/pci/atomisp_acc.c
+@@ -439,6 +439,18 @@ int atomisp_acc_s_mapped_arg(struct atomisp_sub_device *asd,
+ 	return 0;
+ }
+ 
++static void atomisp_acc_unload_some_extensions(struct atomisp_sub_device *asd,
++					      int i,
++					      struct atomisp_acc_fw *acc_fw)
++{
++	while (--i >= 0) {
++		if (acc_fw->flags & acc_flag_to_pipe[i].flag) {
++			atomisp_css_unload_acc_extension(asd, acc_fw->fw,
++							 acc_flag_to_pipe[i].pipe_id);
++		}
++	}
++}
 +
-+			/* stop link training before start re training  */
-+			dp_ctrl_clear_training_pattern(ctrl);
+ /*
+  * Appends the loaded acceleration binary extensions to the
+  * current ISP mode. Must be called just before sh_css_start().
+@@ -477,16 +489,20 @@ int atomisp_acc_load_extensions(struct atomisp_sub_device *asd)
+ 								     acc_fw->fw,
+ 								     acc_flag_to_pipe[i].pipe_id,
+ 								     acc_fw->type);
+-				if (ret)
++				if (ret) {
++					atomisp_acc_unload_some_extensions(asd, i, acc_fw);
+ 					goto error;
++				}
+ 
+ 				ext_loaded = true;
+ 			}
  		}
+ 
+ 		ret = atomisp_css_set_acc_parameters(acc_fw);
+-		if (ret < 0)
++		if (ret < 0) {
++			atomisp_acc_unload_some_extensions(asd, i, acc_fw);
+ 			goto error;
++		}
  	}
  
+ 	if (!ext_loaded)
+@@ -495,6 +511,7 @@ int atomisp_acc_load_extensions(struct atomisp_sub_device *asd)
+ 	ret = atomisp_css_update_stream(asd);
+ 	if (ret) {
+ 		dev_err(isp->dev, "%s: update stream failed.\n", __func__);
++		atomisp_acc_unload_extensions(asd);
+ 		goto error;
+ 	}
+ 
+@@ -502,13 +519,6 @@ int atomisp_acc_load_extensions(struct atomisp_sub_device *asd)
+ 	return 0;
+ 
+ error:
+-	while (--i >= 0) {
+-		if (acc_fw->flags & acc_flag_to_pipe[i].flag) {
+-			atomisp_css_unload_acc_extension(asd, acc_fw->fw,
+-							 acc_flag_to_pipe[i].pipe_id);
+-		}
+-	}
+-
+ 	list_for_each_entry_continue_reverse(acc_fw, &asd->acc.fw, list) {
+ 		if (acc_fw->type != ATOMISP_ACC_FW_LOAD_TYPE_OUTPUT &&
+ 		    acc_fw->type != ATOMISP_ACC_FW_LOAD_TYPE_VIEWFINDER)
 -- 
 2.34.1
 
