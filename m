@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A30A4C46467
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:34:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 85474C35280
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:34:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1575477AbiDEXHw (ORCPT
+        id S1575512AbiDEXIE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 19:07:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47304 "EHLO
+        Tue, 5 Apr 2022 19:08:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57682 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357983AbiDEK1i (ORCPT
+        with ESMTP id S1356125AbiDEKW7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:27:38 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B2A1D1130;
-        Tue,  5 Apr 2022 03:12:12 -0700 (PDT)
+        Tue, 5 Apr 2022 06:22:59 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42314B7169;
+        Tue,  5 Apr 2022 03:06:28 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 23C616172B;
-        Tue,  5 Apr 2022 10:12:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 31DE9C385A1;
-        Tue,  5 Apr 2022 10:12:11 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EEBAAB81C8B;
+        Tue,  5 Apr 2022 10:06:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 39579C385A1;
+        Tue,  5 Apr 2022 10:06:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649153531;
-        bh=IvyBkfbeIWILmVXwush284Vcs9+1LeJ2nOw1//Ki3mQ=;
+        s=korg; t=1649153185;
+        bh=EIqZGIC3MEY6zK++/3lavNvUv7djR+iZn/Z4aFTomR0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Lcn2YLn+3zCqu+IlJnUY2PNdfe6Rv6LpCWY1cNt3+8+FPlZ+yT17fg3CZhWlNkVZ3
-         QB79b+dWqgnq87IKZBqjxBJVJMkyL9Jva3kTIjEd/IPbmugGveJnr/3SoZ9TIC2OZe
-         KJsZg2ZMOoIROUrX/tNPVKbi5UWrQxOQQiANkN3g=
+        b=MlqGPqZrka7B7VyvIQ5jLmqWkaqX/E+H5xVYym/dRzmiAXcf4mD2m8QmZWowXXIVQ
+         XnV8UTdtzEgvf0TBmXSECnaGo031A9lhyEmlhaY1cmqiDdZTcvP+xqonWXWM/Qe2NY
+         UMCfaQFr8z/+2eCFGZm87R+gIq/qMtiz/Uv7pkVs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Codrin Ciubotariu <codrin.ciubotariu@microchip.com>,
-        Mark Brown <broonie@kernel.org>,
+        stable@vger.kernel.org, Corentin Labbe <clabbe.montjoie@gmail.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 256/599] ASoC: atmel: Fix error handling in sam9x5_wm8731_driver_probe
-Date:   Tue,  5 Apr 2022 09:29:10 +0200
-Message-Id: <20220405070306.457934499@linuxfoundation.org>
+Subject: [PATCH 5.10 133/599] crypto: authenc - Fix sleep in atomic context in decrypt_tail
+Date:   Tue,  5 Apr 2022 09:27:07 +0200
+Message-Id: <20220405070302.799140357@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
 References: <20220405070258.802373272@linuxfoundation.org>
@@ -51,69 +50,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Herbert Xu <herbert@gondor.apana.org.au>
 
-[ Upstream commit 740dc3e846537c3743da98bf106f376023fd085c ]
+[ Upstream commit 66eae850333d639fc278d6f915c6fc01499ea893 ]
 
-The device_node pointer is returned by of_parse_phandle()  with refcount
-incremented. We should use of_node_put() on it when done.
+The function crypto_authenc_decrypt_tail discards its flags
+argument and always relies on the flags from the original request
+when starting its sub-request.
 
-This function only calls of_node_put() in the regular path.
-And it will cause refcount leak in error path.
+This is clearly wrong as it may cause the SLEEPABLE flag to be
+set when it shouldn't.
 
-Fixes: fdbcb3cba54b ("ASoC: atmel: machine driver for at91sam9x5-wm8731 boards")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Reviewed-by: Codrin Ciubotariu <codrin.ciubotariu@microchip.com>
-Link: https://lore.kernel.org/r/20220316111530.4551-1-linmq006@gmail.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Fixes: 92d95ba91772 ("crypto: authenc - Convert to new AEAD interface")
+Reported-by: Corentin Labbe <clabbe.montjoie@gmail.com>
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+Tested-by: Corentin Labbe <clabbe.montjoie@gmail.com>
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/atmel/sam9x5_wm8731.c | 13 +++++++------
- 1 file changed, 7 insertions(+), 6 deletions(-)
+ crypto/authenc.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/sound/soc/atmel/sam9x5_wm8731.c b/sound/soc/atmel/sam9x5_wm8731.c
-index 7745250fd743..529604a06c53 100644
---- a/sound/soc/atmel/sam9x5_wm8731.c
-+++ b/sound/soc/atmel/sam9x5_wm8731.c
-@@ -142,7 +142,7 @@ static int sam9x5_wm8731_driver_probe(struct platform_device *pdev)
- 	if (!cpu_np) {
- 		dev_err(&pdev->dev, "atmel,ssc-controller node missing\n");
- 		ret = -EINVAL;
--		goto out;
-+		goto out_put_codec_np;
- 	}
- 	dai->cpus->of_node = cpu_np;
- 	dai->platforms->of_node = cpu_np;
-@@ -153,12 +153,9 @@ static int sam9x5_wm8731_driver_probe(struct platform_device *pdev)
- 	if (ret != 0) {
- 		dev_err(&pdev->dev, "Failed to set SSC %d for audio: %d\n",
- 			ret, priv->ssc_id);
--		goto out;
-+		goto out_put_cpu_np;
- 	}
+diff --git a/crypto/authenc.c b/crypto/authenc.c
+index 670bf1a01d00..17f674a7cdff 100644
+--- a/crypto/authenc.c
++++ b/crypto/authenc.c
+@@ -253,7 +253,7 @@ static int crypto_authenc_decrypt_tail(struct aead_request *req,
+ 		dst = scatterwalk_ffwd(areq_ctx->dst, req->dst, req->assoclen);
  
--	of_node_put(codec_np);
--	of_node_put(cpu_np);
--
- 	ret = devm_snd_soc_register_card(&pdev->dev, card);
- 	if (ret) {
- 		dev_err(&pdev->dev, "Platform device allocation failed\n");
-@@ -167,10 +164,14 @@ static int sam9x5_wm8731_driver_probe(struct platform_device *pdev)
- 
- 	dev_dbg(&pdev->dev, "%s ok\n", __func__);
- 
--	return ret;
-+	goto out_put_cpu_np;
- 
- out_put_audio:
- 	atmel_ssc_put_audio(priv->ssc_id);
-+out_put_cpu_np:
-+	of_node_put(cpu_np);
-+out_put_codec_np:
-+	of_node_put(codec_np);
- out:
- 	return ret;
- }
+ 	skcipher_request_set_tfm(skreq, ctx->enc);
+-	skcipher_request_set_callback(skreq, aead_request_flags(req),
++	skcipher_request_set_callback(skreq, flags,
+ 				      req->base.complete, req->base.data);
+ 	skcipher_request_set_crypt(skreq, src, dst,
+ 				   req->cryptlen - authsize, req->iv);
 -- 
 2.34.1
 
