@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DD215C47080
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 10:29:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 62A58C35296
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 10:29:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356200AbiDEKXX (ORCPT
+        id S1356243AbiDEKXc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 06:23:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32936 "EHLO
+        Tue, 5 Apr 2022 06:23:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58990 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241255AbiDEIc6 (ORCPT
+        with ESMTP id S241254AbiDEIc6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Apr 2022 04:32:58 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EE6662EE;
-        Tue,  5 Apr 2022 01:30:52 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00C7262C9;
+        Tue,  5 Apr 2022 01:30:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BFC46609D0;
-        Tue,  5 Apr 2022 08:30:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D0964C385A1;
-        Tue,  5 Apr 2022 08:30:50 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 920DF609D0;
+        Tue,  5 Apr 2022 08:30:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9E8E9C385A0;
+        Tue,  5 Apr 2022 08:30:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649147451;
-        bh=wYBk6rN2/OlxhSRKIP2CH/M6OSQISZIo3MuzDWbA440=;
+        s=korg; t=1649147443;
+        bh=LxOndK3xUi3E/pPKh0wsCPb8uywQyc6fS8zHAp77ieM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=IIC6x32EelyOLg1XtDruIvPiutXJohgBAvRwUXi+egKQT4KY0WZbHGJnbueqjH3kU
-         8kdjWN07Bz5o87zJHE132AV4pOvJPmTdAMsL/H7HJorEJcIGBtgoWYFxI97y/dI6gW
-         q+EXdtCPk0gzQILmLSUBumrCnwHAkMAbSk4z6264=
+        b=ub6lIl2mUNgwso+jb3Yrmw5+W5abeblR79Z7aDtHbkfwSRT1QkeplOYwgC/ey3I4t
+         DWo83AwBH3L4eVl5IUMgaV2OX2eetEiNaYUAoqk2ShQi3QUlhFcK876VFynduHaf7y
+         pgU1OjPxIyFqajufRDN+EYknC+JUZ/Ysf7H3TqVE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miquel Raynal <miquel.raynal@bootlin.com>,
-        Rob Herring <robh@kernel.org>
-Subject: [PATCH 5.17 1090/1126] dt-bindings: mtd: nand-controller: Fix a comment in the examples
-Date:   Tue,  5 Apr 2022 09:30:37 +0200
-Message-Id: <20220405070439.442224776@linuxfoundation.org>
+        stable@vger.kernel.org, Jann Horn <jannh@google.com>,
+        Kees Cook <keescook@chromium.org>,
+        "Eric W. Biederman" <ebiederm@xmission.com>
+Subject: [PATCH 5.17 1124/1126] coredump: Remove the WARN_ON in dump_vma_snapshot
+Date:   Tue,  5 Apr 2022 09:31:11 +0200
+Message-Id: <20220405070440.417712317@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -49,33 +50,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miquel Raynal <miquel.raynal@bootlin.com>
+From: Eric W. Biederman <ebiederm@xmission.com>
 
-commit 0e7f1b557974ce297e5e4c9d4245720fbb489886 upstream.
+commit 49c1866348f364478a0c4d3dd13fd08bb82d3a5b upstream.
 
-The controller properties should be in the controller 'parent' node,
-while properties in the children nodes are specific to the NAND
-*chip*. This error was already present during the yaml conversion.
+The condition is impossible and to the best of my knowledge has never
+triggered.
 
-Fixes: 2d472aba15ff ("mtd: nand: document the NAND controller/NAND chip DT representation")
-Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-Acked-by: Rob Herring <robh@kernel.org>
-Link: https://lore.kernel.org/linux-mtd/20211216111654.238086-3-miquel.raynal@bootlin.com
+We are in deep trouble if that conditions happens and we walk past
+the end of our allocated array.
+
+So delete the WARN_ON and the code that makes it look like the kernel
+can handle the case of walking past the end of it's vma_meta array.
+
+Reviewed-by: Jann Horn <jannh@google.com>
+Reviewed-by: Kees Cook <keescook@chromium.org>
+Signed-off-by: "Eric W. Biederman" <ebiederm@xmission.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- Documentation/devicetree/bindings/mtd/nand-controller.yaml |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ fs/coredump.c |    6 ------
+ 1 file changed, 6 deletions(-)
 
---- a/Documentation/devicetree/bindings/mtd/nand-controller.yaml
-+++ b/Documentation/devicetree/bindings/mtd/nand-controller.yaml
-@@ -184,7 +184,7 @@ examples:
-         nand-use-soft-ecc-engine;
-         nand-ecc-algo = "bch";
+--- a/fs/coredump.c
++++ b/fs/coredump.c
+@@ -1139,12 +1139,6 @@ static bool dump_vma_snapshot(struct cor
  
--        /* controller specific properties */
-+        /* NAND chip specific properties */
-       };
+ 	mmap_write_unlock(mm);
  
-       nand@1 {
+-	if (WARN_ON(i != cprm->vma_count)) {
+-		kvfree(cprm->vma_meta);
+-		return false;
+-	}
+-
+-
+ 	for (i = 0; i < cprm->vma_count; i++) {
+ 		struct core_vma_metadata *m = cprm->vma_meta + i;
+ 
 
 
