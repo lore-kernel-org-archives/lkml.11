@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A4228C4167B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B9BF7C4321E
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:00:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233030AbiDEH4p (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 03:56:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46910 "EHLO
+        id S233051AbiDEH4r (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 03:56:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47166 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233559AbiDEHr6 (ORCPT
+        with ESMTP id S233576AbiDEHsA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 03:47:58 -0400
+        Tue, 5 Apr 2022 03:48:00 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DAB893199;
-        Tue,  5 Apr 2022 00:45:38 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B1A026C;
+        Tue,  5 Apr 2022 00:46:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DF188B81BA4;
-        Tue,  5 Apr 2022 07:45:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2B71BC340EE;
-        Tue,  5 Apr 2022 07:45:35 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B83F8B81B9C;
+        Tue,  5 Apr 2022 07:45:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0F29EC340EE;
+        Tue,  5 Apr 2022 07:45:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649144735;
-        bh=kHivgI89ExcwhIzHs0s0eahszGcG5QZveN98bO2rNkA=;
+        s=korg; t=1649144757;
+        bh=C/750eIEw2xnKQ7Z3W6sdUklRUAe3atwbovg2TFjKWM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=i/K2zduL/thJV4TbSPu5yBufF7Vgj4PlpjSvStGOSKzeOfsJANnW0zayr4s6hVsH1
-         eaWgMtAkz2C30UacM2+3pgtl4+FopKEdhelDl5iZ+SXTJ+e42eCLHUq4AwLwVAf45l
-         sZD06eDv9S2vMQh6dPjD1ZVbBW5aBMvAbFfcijn8=
+        b=LNQpXYzuVRDemEUOQqomLbTiGsTbX6dia6nCxjbD9euckWwcredTRce5d8L8Gq1ww
+         yC+vqByKxqg13K9n3/smWQ2OhTLZW1mPhfqh+o5Huf+eEAqesBQVYoqOeu8gmE83+I
+         dBAwc3EDljW9dASPd6zOhZhNo5O88owMsvT/UZ5A=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Alim Akhtar <alim.akhtar@samsung.com>
-Subject: [PATCH 5.17 0153/1126] ARM: dts: exynos: add missing HDMI supplies on SMDK5420
-Date:   Tue,  5 Apr 2022 09:15:00 +0200
-Message-Id: <20220405070412.076436232@linuxfoundation.org>
+        stable@vger.kernel.org, Eric Biggers <ebiggers@google.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>
+Subject: [PATCH 5.17 0160/1126] crypto: rsa-pkcs1pad - only allow with rsa
+Date:   Tue,  5 Apr 2022 09:15:07 +0200
+Message-Id: <20220405070412.287396986@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -49,34 +48,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+From: Eric Biggers <ebiggers@google.com>
 
-commit 453a24ded415f7fce0499c6b0a2c7b28f84911f2 upstream.
+commit 9b30430ea356f237945e52f8a3a42158877bd5a9 upstream.
 
-Add required VDD supplies to HDMI block on SMDK5420.  Without them, the
-HDMI driver won't probe.  Because of lack of schematics, use same
-supplies as on Arndale Octa and Odroid XU3 boards (voltage matches).
+The pkcs1pad template can be instantiated with an arbitrary akcipher
+algorithm, which doesn't make sense; it is specifically an RSA padding
+scheme.  Make it check that the underlying algorithm really is RSA.
 
-Cc: <stable@vger.kernel.org> # v3.15+
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Reviewed-by: Alim Akhtar <alim.akhtar@samsung.com>
-Link: https://lore.kernel.org/r/20220208171823.226211-3-krzysztof.kozlowski@canonical.com
+Fixes: 3d5b1ecdea6f ("crypto: rsa - RSA padding algorithm")
+Cc: <stable@vger.kernel.org> # v4.5+
+Signed-off-by: Eric Biggers <ebiggers@google.com>
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm/boot/dts/exynos5420-smdk5420.dts |    3 +++
- 1 file changed, 3 insertions(+)
+ crypto/rsa-pkcs1pad.c |    5 +++++
+ 1 file changed, 5 insertions(+)
 
---- a/arch/arm/boot/dts/exynos5420-smdk5420.dts
-+++ b/arch/arm/boot/dts/exynos5420-smdk5420.dts
-@@ -124,6 +124,9 @@
- 	hpd-gpios = <&gpx3 7 GPIO_ACTIVE_HIGH>;
- 	pinctrl-names = "default";
- 	pinctrl-0 = <&hdmi_hpd_irq>;
-+	vdd-supply = <&ldo6_reg>;
-+	vdd_osc-supply = <&ldo7_reg>;
-+	vdd_pll-supply = <&ldo6_reg>;
- };
+--- a/crypto/rsa-pkcs1pad.c
++++ b/crypto/rsa-pkcs1pad.c
+@@ -621,6 +621,11 @@ static int pkcs1pad_create(struct crypto
  
- &hsi2c_4 {
+ 	rsa_alg = crypto_spawn_akcipher_alg(&ctx->spawn);
+ 
++	if (strcmp(rsa_alg->base.cra_name, "rsa") != 0) {
++		err = -EINVAL;
++		goto err_free_inst;
++	}
++
+ 	err = -ENAMETOOLONG;
+ 	hash_name = crypto_attr_alg_name(tb[2]);
+ 	if (IS_ERR(hash_name)) {
 
 
