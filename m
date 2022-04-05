@@ -2,47 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1846DC352A1
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 07EF3C47082
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 13:24:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1388293AbiDENVr (ORCPT
+        id S1388610AbiDENYM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 09:21:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42442 "EHLO
+        Tue, 5 Apr 2022 09:24:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44284 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344664AbiDEJVF (ORCPT
+        with ESMTP id S1345104AbiDEJWQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:21:05 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FE72FCF;
-        Tue,  5 Apr 2022 02:08:31 -0700 (PDT)
+        Tue, 5 Apr 2022 05:22:16 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B282193F1;
+        Tue,  5 Apr 2022 02:09:03 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BD5D5614E4;
-        Tue,  5 Apr 2022 09:08:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C78E9C385A1;
-        Tue,  5 Apr 2022 09:08:29 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 48E20B81BAE;
+        Tue,  5 Apr 2022 09:09:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 90899C385A2;
+        Tue,  5 Apr 2022 09:09:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649149710;
-        bh=or7vMsAJ5qPVBHGYQ8AZJOSb3BRjqMrEX/v6pBzhP1A=;
+        s=korg; t=1649149740;
+        bh=9kDFyJtz5aRFD1HOBnwM1kO3is+NlX0c7whwfOn5IIw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KbrfsLbR5Znl9UTg8JkO3oq5iSXkihtdzCZynPvi8+nzevmuYeaN/spNXkiDFlwY4
-         Rp2YYAB/V2AjDoaj+ydcIUB/lsGyBuwr/h9pd8ZGkJAV2jV60M8arzhtmiF2Y2tzWZ
-         e2fIbwjfdZGSv7YYgZjDziZdZCXsCYyq105fZha8=
+        b=Oq+5GHs67/ccz9GPY1/s/d9wchY22PE55zPtAnB91GG3K6WFB2tmHTZMNDq+ENrUV
+         U78l8o1AIhh5TqbjX7hrSnKmM704+Fm5IkUx7fEuKdldchFJcR7/usoQ4/+HQCNrTk
+         1YY8S32JZ3PZE8A10adRaDlOJD5yMgRzpkqKDUso=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Frank Wunderlich <frank-w@public-files.de>,
-        Yong Wu <yong.wu@mediatek.com>, Joerg Roedel <jroedel@suse.de>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        stable@vger.kernel.org, Hans de Goede <hdegoede@redhat.com>,
         Mauro Carvalho Chehab <mchehab@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0813/1017] media: iommu/mediatek-v1: Free the existed fwspec if the master dev already has
-Date:   Tue,  5 Apr 2022 09:28:46 +0200
-Message-Id: <20220405070418.380004927@linuxfoundation.org>
+Subject: [PATCH 5.16 0823/1017] media: atomisp_gmin_platform: Add DMI quirk to not turn AXP ELDO2 regulator off on some boards
+Date:   Tue,  5 Apr 2022 09:28:56 +0200
+Message-Id: <20220405070418.676820023@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -54,74 +50,65 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yong Wu <yong.wu@mediatek.com>
+From: Hans de Goede <hdegoede@redhat.com>
 
-[ Upstream commit 822a2ed8c606caf6a11b1a180b8e46292bd77d71 ]
+[ Upstream commit 2c39a01154ea57d596470afa1d278e3be3b37f6a ]
 
-When the iommu master device enters of_iommu_xlate, the ops may be
-NULL(iommu dev is defered), then it will initialize the fwspec here:
+The TrekStor SurfTab duo W1 10.1 has a hw bug where turning eldo2 back on
+after having turned it off causes the CPLM3218 ambient-light-sensor on
+the front camera sensor's I2C bus to crash, hanging the bus.
 
-[<c0c9c5bc>] (dev_iommu_fwspec_set) from [<c06bda80>]
-(iommu_fwspec_init+0xbc/0xd4)
-[<c06bd9c4>] (iommu_fwspec_init) from [<c06c0db4>]
-(of_iommu_xlate+0x7c/0x12c)
-[<c06c0d38>] (of_iommu_xlate) from [<c06c10e8>]
-(of_iommu_configure+0x144/0x1e8)
+Add a DMI quirk table for systems on which to leave eldo2 on.
 
-BUT the mtk_iommu_v1.c only supports arm32, the probing flow still is a bit
-weird. We always expect create the fwspec internally. otherwise it will
-enter here and return fail.
+Note an alternative fix is to turn off the CPLM3218 ambient-light-sensor
+as long as the camera sensor is being used, this is what Windows seems
+to do as a workaround (based on analyzing the DSDT). But that is not
+easy to do cleanly under Linux.
 
-static int mtk_iommu_create_mapping(struct device *dev,
-				    struct of_phandle_args *args)
-{
-        ...
-	if (!fwspec) {
-	        ....
-	} else if (dev_iommu_fwspec_get(dev)->ops != &mtk_iommu_ops) {
-                >>>>>>>>>>Enter here. return fail.<<<<<<<<<<<<
-		return -EINVAL;
-	}
-	...
-}
-
-Thus, Free the existed fwspec if the master device already has fwspec.
-
-This issue is reported at:
-https://lore.kernel.org/linux-mediatek/trinity-7d9ebdc9-4849-4d93-bfb5-429dcb4ee449-1626253158870@3c-app-gmx-bs01/
-
-Reported-by: Frank Wunderlich <frank-w@public-files.de>
-Tested-by: Frank Wunderlich <frank-w@public-files.de> # BPI-R2/MT7623
-Signed-off-by: Yong Wu <yong.wu@mediatek.com>
-Acked-by: Joerg Roedel <jroedel@suse.de>
-Acked-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Link: https://lore.kernel.org/linux-media/20220116215204.307649-10-hdegoede@redhat.com
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
 Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/iommu/mtk_iommu_v1.c | 9 +++++++++
- 1 file changed, 9 insertions(+)
+ .../media/atomisp/pci/atomisp_gmin_platform.c  | 18 ++++++++++++++++++
+ 1 file changed, 18 insertions(+)
 
-diff --git a/drivers/iommu/mtk_iommu_v1.c b/drivers/iommu/mtk_iommu_v1.c
-index be22fcf988ce..1467ba1e4417 100644
---- a/drivers/iommu/mtk_iommu_v1.c
-+++ b/drivers/iommu/mtk_iommu_v1.c
-@@ -425,6 +425,15 @@ static struct iommu_device *mtk_iommu_probe_device(struct device *dev)
- 	struct mtk_iommu_data *data;
- 	int err, idx = 0;
+diff --git a/drivers/staging/media/atomisp/pci/atomisp_gmin_platform.c b/drivers/staging/media/atomisp/pci/atomisp_gmin_platform.c
+index 62dc06e22476..cd0a771454da 100644
+--- a/drivers/staging/media/atomisp/pci/atomisp_gmin_platform.c
++++ b/drivers/staging/media/atomisp/pci/atomisp_gmin_platform.c
+@@ -729,6 +729,21 @@ static int axp_regulator_set(struct device *dev, struct gmin_subdev *gs,
+ 	return 0;
+ }
  
-+	/*
-+	 * In the deferred case, free the existed fwspec.
-+	 * Always initialize the fwspec internally.
-+	 */
-+	if (fwspec) {
-+		iommu_fwspec_free(dev);
-+		fwspec = dev_iommu_fwspec_get(dev);
-+	}
++/*
++ * Some boards contain a hw-bug where turning eldo2 back on after having turned
++ * it off causes the CPLM3218 ambient-light-sensor on the image-sensor's I2C bus
++ * to crash, hanging the bus. Do not turn eldo2 off on these systems.
++ */
++static const struct dmi_system_id axp_leave_eldo2_on_ids[] = {
++	{
++		.matches = {
++			DMI_MATCH(DMI_SYS_VENDOR, "TrekStor"),
++			DMI_MATCH(DMI_PRODUCT_NAME, "SurfTab duo W1 10.1 (VT4)"),
++		},
++	},
++	{ }
++};
 +
- 	while (!of_parse_phandle_with_args(dev->of_node, "iommus",
- 					   "#iommu-cells",
- 					   idx, &iommu_spec)) {
+ static int axp_v1p8_on(struct device *dev, struct gmin_subdev *gs)
+ {
+ 	int ret;
+@@ -763,6 +778,9 @@ static int axp_v1p8_off(struct device *dev, struct gmin_subdev *gs)
+ 	if (ret)
+ 		return ret;
+ 
++	if (dmi_check_system(axp_leave_eldo2_on_ids))
++		return 0;
++
+ 	ret = axp_regulator_set(dev, gs, gs->eldo2_sel_reg, gs->eldo2_1p8v,
+ 				ELDO_CTRL_REG, gs->eldo2_ctrl_shift, false);
+ 	return ret;
 -- 
 2.34.1
 
