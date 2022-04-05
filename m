@@ -2,47 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D042C47087
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:01:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 83D4DC35296
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:01:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236151AbiDEIBd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 04:01:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55676 "EHLO
+        id S236026AbiDEIBJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 04:01:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57246 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232967AbiDEHvu (ORCPT
+        with ESMTP id S231752AbiDEHvJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 03:51:50 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6591A996B0;
-        Tue,  5 Apr 2022 00:48:06 -0700 (PDT)
+        Tue, 5 Apr 2022 03:51:09 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30906939D4;
+        Tue,  5 Apr 2022 00:47:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 02583615E7;
-        Tue,  5 Apr 2022 07:48:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 050F0C340EE;
-        Tue,  5 Apr 2022 07:48:04 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 771DEB81B92;
+        Tue,  5 Apr 2022 07:47:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BE107C340EE;
+        Tue,  5 Apr 2022 07:47:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649144885;
-        bh=j/JaB5MizFWMRUT8kWIBGpddEPZCIEQnSkFMhIAYwV0=;
+        s=korg; t=1649144839;
+        bh=gXaSowdSzdHDz/SLK+lkSj4IXT9ETjfxO2NaDq+DOw8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WM+hHB2nA1db1q4cezaYh6zPJJg0aRwXNfDhGSJpGU6ZI6ZOT0sdb9kL/6eEKCzOb
-         h6zzgKxV/vlj1zH411OG4somLftEH4qMH0J2m32NAF05dVassqcge187xdP9u4nlB1
-         V6/SVI907o3oJwwH53A83ywuGTr/lGJMdBpcffEE=
+        b=w+rwCO6kI7vTEYkrRsQ2x3Ihft4IcgmXjbj3MOUXHea98dfXg7T6oXnaV2EwVPSkH
+         C80kfN+LBHMyP4mWxk7QKacPjL5RaS13aHnmLQ5GBaspgYc3zElF6dbTTs8paAd+vc
+         LZr2MfidIdPfkEOuEOiWHHnSiVXK7+ebIuB1J9b4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Giovanni Cabiddu <giovanni.cabiddu@intel.com>,
-        Siming Wan <siming.wan@intel.com>,
-        Xin Zeng <xin.zeng@intel.com>,
-        Wojciech Ziemba <wojciech.ziemba@intel.com>,
-        Marco Chiappero <marco.chiappero@intel.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0206/1126] crypto: qat - fix access to PFVF interrupt registers for GEN4
-Date:   Tue,  5 Apr 2022 09:15:53 +0200
-Message-Id: <20220405070413.655637827@linuxfoundation.org>
+        stable@vger.kernel.org, Linus Walleij <linus.walleij@linaro.org>,
+        Arend van Spriel <arend.vanspriel@broadcom.com>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Hector Martin <marcan@marcan.st>, Kalle Valo <kvalo@kernel.org>
+Subject: [PATCH 5.17 0190/1126] brcmfmac: pcie: Replace brcmf_pcie_copy_mem_todev with memcpy_toio
+Date:   Tue,  5 Apr 2022 09:15:37 +0200
+Message-Id: <20220405070413.183790598@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -54,118 +50,108 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Giovanni Cabiddu <giovanni.cabiddu@intel.com>
+From: Hector Martin <marcan@marcan.st>
 
-[ Upstream commit 642a7d49c249f04007e68c124a148847471dd476 ]
+commit 9466987f246758eb7e9071ae58005253f631271e upstream.
 
-The logic that detects, enables and disables pfvf interrupts was
-expecting a single CSR per VF. Instead, the source and mask register are
-two registers with a bit per VF.
-Due to this, the driver is reading and setting reserved CSRs and not
-masking the correct source of interrupts.
+The alignment check was wrong (e.g. & 4 instead of & 3), and the logic
+was also inefficient if the length was not a multiple of 4, since it
+would needlessly fall back to copying the entire buffer bytewise.
 
-Fix the access to the source and mask register for QAT GEN4 devices by
-removing the outer loop in adf_gen4_get_vf2pf_sources(),
-adf_gen4_enable_vf2pf_interrupts() and
-adf_gen4_disable_vf2pf_interrupts() and changing the helper macros
-ADF_4XXX_VM2PF_SOU and ADF_4XXX_VM2PF_MSK.
+We already have a perfectly good memcpy_toio function, so just call that
+instead of rolling our own copy logic here. brcmf_pcie_init_ringbuffers
+was already using it anyway.
 
-Fixes: a9dc0d966605 ("crypto: qat - add PFVF support to the GEN4 host driver")
-Signed-off-by: Giovanni Cabiddu <giovanni.cabiddu@intel.com>
-Co-developed-by: Siming Wan <siming.wan@intel.com>
-Signed-off-by: Siming Wan <siming.wan@intel.com>
-Reviewed-by: Xin Zeng <xin.zeng@intel.com>
-Reviewed-by: Wojciech Ziemba <wojciech.ziemba@intel.com>
-Reviewed-by: Marco Chiappero <marco.chiappero@intel.com>
-Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 9e37f045d5e7 ("brcmfmac: Adding PCIe bus layer support.")
+Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
+Reviewed-by: Arend van Spriel <arend.vanspriel@broadcom.com>
+Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc: stable@vger.kernel.org
+Signed-off-by: Hector Martin <marcan@marcan.st>
+Signed-off-by: Kalle Valo <kvalo@kernel.org>
+Link: https://lore.kernel.org/r/20220131160713.245637-6-marcan@marcan.st
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/crypto/qat/qat_common/adf_gen4_pfvf.c | 42 ++++---------------
- 1 file changed, 9 insertions(+), 33 deletions(-)
+ drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c |   48 +---------------
+ 1 file changed, 4 insertions(+), 44 deletions(-)
 
-diff --git a/drivers/crypto/qat/qat_common/adf_gen4_pfvf.c b/drivers/crypto/qat/qat_common/adf_gen4_pfvf.c
-index 8efbedf63bc8..3b3ea849c5e5 100644
---- a/drivers/crypto/qat/qat_common/adf_gen4_pfvf.c
-+++ b/drivers/crypto/qat/qat_common/adf_gen4_pfvf.c
-@@ -9,15 +9,12 @@
- #include "adf_pfvf_pf_proto.h"
- #include "adf_pfvf_utils.h"
+--- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c
++++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c
+@@ -12,6 +12,7 @@
+ #include <linux/interrupt.h>
+ #include <linux/bcma/bcma.h>
+ #include <linux/sched.h>
++#include <linux/io.h>
+ #include <asm/unaligned.h>
  
--#define ADF_4XXX_MAX_NUM_VFS		16
+ #include <soc.h>
+@@ -455,47 +456,6 @@ brcmf_pcie_write_ram32(struct brcmf_pcie
+ 
+ 
+ static void
+-brcmf_pcie_copy_mem_todev(struct brcmf_pciedev_info *devinfo, u32 mem_offset,
+-			  void *srcaddr, u32 len)
+-{
+-	void __iomem *address = devinfo->tcm + mem_offset;
+-	__le32 *src32;
+-	__le16 *src16;
+-	u8 *src8;
 -
- #define ADF_4XXX_PF2VM_OFFSET(i)	(0x40B010 + ((i) * 0x20))
- #define ADF_4XXX_VM2PF_OFFSET(i)	(0x40B014 + ((i) * 0x20))
- 
- /* VF2PF interrupt source registers */
--#define ADF_4XXX_VM2PF_SOU(i)		(0x41A180 + ((i) * 4))
--#define ADF_4XXX_VM2PF_MSK(i)		(0x41A1C0 + ((i) * 4))
--#define ADF_4XXX_VM2PF_INT_EN_MSK	BIT(0)
-+#define ADF_4XXX_VM2PF_SOU		0x41A180
-+#define ADF_4XXX_VM2PF_MSK		0x41A1C0
- 
- #define ADF_PFVF_GEN4_MSGTYPE_SHIFT	2
- #define ADF_PFVF_GEN4_MSGTYPE_MASK	0x3F
-@@ -41,51 +38,30 @@ static u32 adf_gen4_pf_get_vf2pf_offset(u32 i)
- 
- static u32 adf_gen4_get_vf2pf_sources(void __iomem *pmisc_addr)
- {
--	int i;
- 	u32 sou, mask;
--	int num_csrs = ADF_4XXX_MAX_NUM_VFS;
--	u32 vf_mask = 0;
- 
--	for (i = 0; i < num_csrs; i++) {
--		sou = ADF_CSR_RD(pmisc_addr, ADF_4XXX_VM2PF_SOU(i));
--		mask = ADF_CSR_RD(pmisc_addr, ADF_4XXX_VM2PF_MSK(i));
--		sou &= ~mask;
--		vf_mask |= sou << i;
+-	if (((ulong)address & 4) || ((ulong)srcaddr & 4) || (len & 4)) {
+-		if (((ulong)address & 2) || ((ulong)srcaddr & 2) || (len & 2)) {
+-			src8 = (u8 *)srcaddr;
+-			while (len) {
+-				iowrite8(*src8, address);
+-				address++;
+-				src8++;
+-				len--;
+-			}
+-		} else {
+-			len = len / 2;
+-			src16 = (__le16 *)srcaddr;
+-			while (len) {
+-				iowrite16(le16_to_cpu(*src16), address);
+-				address += 2;
+-				src16++;
+-				len--;
+-			}
+-		}
+-	} else {
+-		len = len / 4;
+-		src32 = (__le32 *)srcaddr;
+-		while (len) {
+-			iowrite32(le32_to_cpu(*src32), address);
+-			address += 4;
+-			src32++;
+-			len--;
+-		}
 -	}
-+	sou = ADF_CSR_RD(pmisc_addr, ADF_4XXX_VM2PF_SOU);
-+	mask = ADF_CSR_RD(pmisc_addr, ADF_4XXX_VM2PF_MSK);
- 
--	return vf_mask;
-+	return sou &= ~mask;
- }
- 
- static void adf_gen4_enable_vf2pf_interrupts(void __iomem *pmisc_addr,
- 					     u32 vf_mask)
- {
--	int num_csrs = ADF_4XXX_MAX_NUM_VFS;
--	unsigned long mask = vf_mask;
- 	unsigned int val;
--	int i;
+-}
 -
--	for_each_set_bit(i, &mask, num_csrs) {
--		unsigned int offset = ADF_4XXX_VM2PF_MSK(i);
- 
--		val = ADF_CSR_RD(pmisc_addr, offset) & ~ADF_4XXX_VM2PF_INT_EN_MSK;
--		ADF_CSR_WR(pmisc_addr, offset, val);
--	}
-+	val = ADF_CSR_RD(pmisc_addr, ADF_4XXX_VM2PF_MSK) & ~vf_mask;
-+	ADF_CSR_WR(pmisc_addr, ADF_4XXX_VM2PF_MSK, val);
- }
- 
- static void adf_gen4_disable_vf2pf_interrupts(void __iomem *pmisc_addr,
- 					      u32 vf_mask)
- {
--	int num_csrs = ADF_4XXX_MAX_NUM_VFS;
--	unsigned long mask = vf_mask;
- 	unsigned int val;
--	int i;
 -
--	for_each_set_bit(i, &mask, num_csrs) {
--		unsigned int offset = ADF_4XXX_VM2PF_MSK(i);
+-static void
+ brcmf_pcie_copy_dev_tomem(struct brcmf_pciedev_info *devinfo, u32 mem_offset,
+ 			  void *dstaddr, u32 len)
+ {
+@@ -1570,8 +1530,8 @@ static int brcmf_pcie_download_fw_nvram(
+ 		return err;
  
--		val = ADF_CSR_RD(pmisc_addr, offset) | ADF_4XXX_VM2PF_INT_EN_MSK;
--		ADF_CSR_WR(pmisc_addr, offset, val);
--	}
-+	val = ADF_CSR_RD(pmisc_addr, ADF_4XXX_VM2PF_MSK) | vf_mask;
-+	ADF_CSR_WR(pmisc_addr, ADF_4XXX_VM2PF_MSK, val);
- }
+ 	brcmf_dbg(PCIE, "Download FW %s\n", devinfo->fw_name);
+-	brcmf_pcie_copy_mem_todev(devinfo, devinfo->ci->rambase,
+-				  (void *)fw->data, fw->size);
++	memcpy_toio(devinfo->tcm + devinfo->ci->rambase,
++		    (void *)fw->data, fw->size);
  
- static int adf_gen4_pfvf_send(struct adf_accel_dev *accel_dev,
--- 
-2.34.1
-
+ 	resetintr = get_unaligned_le32(fw->data);
+ 	release_firmware(fw);
+@@ -1585,7 +1545,7 @@ static int brcmf_pcie_download_fw_nvram(
+ 		brcmf_dbg(PCIE, "Download NVRAM %s\n", devinfo->nvram_name);
+ 		address = devinfo->ci->rambase + devinfo->ci->ramsize -
+ 			  nvram_len;
+-		brcmf_pcie_copy_mem_todev(devinfo, address, nvram, nvram_len);
++		memcpy_toio(devinfo->tcm + address, nvram, nvram_len);
+ 		brcmf_fw_nvram_free(nvram);
+ 	} else {
+ 		brcmf_dbg(PCIE, "No matching NVRAM file found %s\n",
 
 
