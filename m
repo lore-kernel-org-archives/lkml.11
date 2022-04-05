@@ -2,130 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C1139C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F3CC2C433EF
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 01:54:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1844907AbiDFBxX (ORCPT
+        id S1844995AbiDFBxg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 21:53:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49454 "EHLO
+        Tue, 5 Apr 2022 21:53:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57360 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381369AbiDEMya (ORCPT
+        with ESMTP id S1349776AbiDEJvZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 08:54:30 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id DAB422A245
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 04:57:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1649159876;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=4tf5cml5DKG34+H+/7P2EmXNj5BSxC+Di2E2isNkLxI=;
-        b=FMaHchrKG6XpC7FD/TeQSV7BU/qJeC7Y46qGHuva84JnyPcWTLA46ejpvwFdR5Aa1ILMCW
-        DEu7Ct6bPBrZ5wmyaXdPotWzeG2d5xUQh3MyLmmg5CQXJ25jqdI5+wxlKHBxMHTr9SFJAR
-        G21QB3Ojg6Q8Jj3yCP/uWCbQ9Vm49KU=
-Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
- [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-551-Bcz6GHBcMueo2E7al-xubw-1; Tue, 05 Apr 2022 07:57:54 -0400
-X-MC-Unique: Bcz6GHBcMueo2E7al-xubw-1
-Received: by mail-wm1-f70.google.com with SMTP id c125-20020a1c3583000000b0038e3f6e871aso3915971wma.8
-        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 04:57:54 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=4tf5cml5DKG34+H+/7P2EmXNj5BSxC+Di2E2isNkLxI=;
-        b=E9VxXdTGcaU4kIu5Tf23AKuzS/1onCGwnUSbYOxzqdLC26HJaW6qGX6HPNQR5VUbQ9
-         wyJDMXGmeyj21gBIeo85q1yHkzU3KPGjAyWbCMwqqsMmKWBqRGyMgkSnfPSt1GJT4MFd
-         U7MMCeo1jrLjoTIltRPjHZ0sgoL86g1Vrdh4oGN7xPQbxBKT34f2598GbToN1UzlQz2N
-         C93aCHyaKe1iULi9T7pNkKwLEEYheiZktREwGsE9sMszBs8ynJGRys1Aud4S4GnToscT
-         +UiPaDBRkuLvzaPvanvjRjckdTPBjzOWCDLYLrYhhOmSugqHXb7r9OLb2kknfsiHr+CD
-         tm5g==
-X-Gm-Message-State: AOAM533PieHzHNHUxgLUo2tE2SnV4qsLFLusWSHxGgzAPc6KHRYnRkMw
-        iAakHHCoJe+uC/gW6QDWlCnHV6GXq4q3E/nOhxOOV9jtzmD2krwQRFlO3upzAhjdNRTj9sZDWic
-        Q4wdytACxOMdllAxjZvG4tXxQ
-X-Received: by 2002:adf:8050:0:b0:206:40a:a770 with SMTP id 74-20020adf8050000000b00206040aa770mr2535503wrk.380.1649159873350;
-        Tue, 05 Apr 2022 04:57:53 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzgqTZayIX4u/UnvkTDHW17PSUoPyzp3WUxX6v1B27xgUyGVSxDLohCf9WBiOzGI5DL0p4UMA==
-X-Received: by 2002:adf:8050:0:b0:206:40a:a770 with SMTP id 74-20020adf8050000000b00206040aa770mr2535488wrk.380.1649159873090;
-        Tue, 05 Apr 2022 04:57:53 -0700 (PDT)
-Received: from redhat.com ([2.52.17.211])
-        by smtp.gmail.com with ESMTPSA id f11-20020a7bcc0b000000b0037e0c362b6dsm1992438wmh.31.2022.04.05.04.57.51
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 05 Apr 2022 04:57:52 -0700 (PDT)
-Date:   Tue, 5 Apr 2022 07:57:49 -0400
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Masahiro Yamada <masahiroy@kernel.org>
-Cc:     Arnd Bergmann <arnd@arndb.de>, linux-kernel@vger.kernel.org,
-        linux-kbuild@vger.kernel.org, linux-arch@vger.kernel.org
-Subject: Re: [PATCH 8/8] virtio_ring.h: do not include <stdint.h> from
- exported header
-Message-ID: <20220405075738-mutt-send-email-mst@kernel.org>
-References: <20220404061948.2111820-1-masahiroy@kernel.org>
- <20220404061948.2111820-9-masahiroy@kernel.org>
+        Tue, 5 Apr 2022 05:51:25 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C11A91BEB9;
+        Tue,  5 Apr 2022 02:49:26 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 79D68B818F3;
+        Tue,  5 Apr 2022 09:49:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CA68AC385A2;
+        Tue,  5 Apr 2022 09:49:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649152164;
+        bh=gSKk94JlnT76nQt2YzGKXOMGeTex5ODG6i1MtGdF5n0=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=uH5vD717zGRgVIIDz6GnicteYUGQvBmQ2u73reNiD2FKhfeIJPMwIf6Y53n5rbnLt
+         4WqILGjUcClLVXfp6zyla1EaQSJFemgXlxDiOxdErdUBnHWd5ui4yHMwxx6ponSEMM
+         zfO48S5+nic/vqRAaJ9yl6Kg/I7eyebB48R14BCY=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Vladimir Oltean <olteanv@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Xiaomeng Tong <xiam0nd.tong@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 678/913] net: dsa: bcm_sf2_cfp: fix an incorrect NULL check on list iterator
+Date:   Tue,  5 Apr 2022 09:29:00 +0200
+Message-Id: <20220405070400.159309578@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220404061948.2111820-9-masahiroy@kernel.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Apr 04, 2022 at 03:19:48PM +0900, Masahiro Yamada wrote:
-> Arnd mentioned a limitation when including <stdint.h> from UAPI
-> headers. [1]
-> 
-> Besides, I'd like exported headers to be as compliant with the
-> traditional C as possible.
-> 
-> In fact, the UAPI headers are compile-tested with -std=c90 (see
-> usr/include/Makefile) even though the kernel itself is now built
-> with -std=gnu11.
-> 
-> Currently, include/uapi/linux/virtio_ring.h includes <stdint.h>
-> presumably because it uses uintptr_t.
-> 
-> Replace it with __kernel_uintptr_t, and stop including <stdint.h>.
-> 
-> [1]: https://lore.kernel.org/all/CAK8P3a0bz8XYJOsmND2=CT_oTDmGMJGaRo9+QMroEhpekSMEaQ@mail.gmail.com/
-> 
-> Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+From: Xiaomeng Tong <xiam0nd.tong@gmail.com>
 
-Acked-by: Michael S. Tsirkin <mst@redhat.com>
+[ Upstream commit 6da69b1da130e7d96766042750cd9f902e890eba ]
 
-> ---
-> 
->  include/uapi/linux/virtio_ring.h | 6 ++----
->  1 file changed, 2 insertions(+), 4 deletions(-)
-> 
-> diff --git a/include/uapi/linux/virtio_ring.h b/include/uapi/linux/virtio_ring.h
-> index 476d3e5c0fe7..6329e4ff35f4 100644
-> --- a/include/uapi/linux/virtio_ring.h
-> +++ b/include/uapi/linux/virtio_ring.h
-> @@ -31,9 +31,7 @@
->   * SUCH DAMAGE.
->   *
->   * Copyright Rusty Russell IBM Corporation 2007. */
-> -#ifndef __KERNEL__
-> -#include <stdint.h>
-> -#endif
-> +
->  #include <linux/types.h>
->  #include <linux/virtio_types.h>
->  
-> @@ -196,7 +194,7 @@ static inline void vring_init(struct vring *vr, unsigned int num, void *p,
->  	vr->num = num;
->  	vr->desc = p;
->  	vr->avail = (struct vring_avail *)((char *)p + num * sizeof(struct vring_desc));
-> -	vr->used = (void *)(((uintptr_t)&vr->avail->ring[num] + sizeof(__virtio16)
-> +	vr->used = (void *)(((__kernel_uintptr_t)&vr->avail->ring[num] + sizeof(__virtio16)
->  		+ align-1) & ~(align - 1));
->  }
->  
-> -- 
-> 2.32.0
-> 
-> 
+The bug is here:
+	return rule;
+
+The list iterator value 'rule' will *always* be set and non-NULL
+by list_for_each_entry(), so it is incorrect to assume that the
+iterator value will be NULL if the list is empty or no element
+is found.
+
+To fix the bug, return 'rule' when found, otherwise return NULL.
+
+Fixes: ae7a5aff783c7 ("net: dsa: bcm_sf2: Keep copy of inserted rules")
+Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+Signed-off-by: Xiaomeng Tong <xiam0nd.tong@gmail.com>
+Link: https://lore.kernel.org/r/20220328032431.22538-1-xiam0nd.tong@gmail.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/net/dsa/bcm_sf2_cfp.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/net/dsa/bcm_sf2_cfp.c b/drivers/net/dsa/bcm_sf2_cfp.c
+index a7e2fcf2df2c..edbe5e7f1cb6 100644
+--- a/drivers/net/dsa/bcm_sf2_cfp.c
++++ b/drivers/net/dsa/bcm_sf2_cfp.c
+@@ -567,14 +567,14 @@ static void bcm_sf2_cfp_slice_ipv6(struct bcm_sf2_priv *priv,
+ static struct cfp_rule *bcm_sf2_cfp_rule_find(struct bcm_sf2_priv *priv,
+ 					      int port, u32 location)
+ {
+-	struct cfp_rule *rule = NULL;
++	struct cfp_rule *rule;
+ 
+ 	list_for_each_entry(rule, &priv->cfp.rules_list, next) {
+ 		if (rule->port == port && rule->fs.location == location)
+-			break;
++			return rule;
+ 	}
+ 
+-	return rule;
++	return NULL;
+ }
+ 
+ static int bcm_sf2_cfp_rule_cmp(struct bcm_sf2_priv *priv, int port,
+-- 
+2.34.1
+
+
 
