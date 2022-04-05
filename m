@@ -2,44 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 099AEC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 09:53:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 161E8C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 09:53:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346909AbiDEJpm (ORCPT
+        id S1346805AbiDEJpe (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 05:45:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53260 "EHLO
+        Tue, 5 Apr 2022 05:45:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43644 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235568AbiDEIVa (ORCPT
+        with ESMTP id S238786AbiDEITY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:21:30 -0400
+        Tue, 5 Apr 2022 04:19:24 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB2FE2196;
-        Tue,  5 Apr 2022 01:19:17 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0350B7246C;
+        Tue,  5 Apr 2022 01:09:30 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2CB4360B12;
-        Tue,  5 Apr 2022 08:19:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 37F55C385A0;
-        Tue,  5 Apr 2022 08:19:16 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 948356062B;
+        Tue,  5 Apr 2022 08:09:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9F05CC385A1;
+        Tue,  5 Apr 2022 08:09:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649146756;
-        bh=fUO8fVrX1Jo52Tl8cdXg4tG8zouKK4Q2Jo6qUwezPwQ=;
+        s=korg; t=1649146169;
+        bh=dGJFby7CwqGK7QRBB72ycYFb+Cqu2SHdBW1KnfW31jI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=f0G9tQllYSKIWjzEA5PgcYmqBdMdRs+VYP1uBp8qXa7DW521PLreQgWe5OH6nxFfV
-         hyFiddRPlBwTFjkPdKKHh34paHpXcZKjSg4Gxspcl9kyfBov7k8ByOLN8n7/pzGhVV
-         b2zSsDX+z/2Hwb4eMnhzO75orSdkNP5oNqgp+mb4=
+        b=eGspAmtSlVo1grdb+3SeLIi2Zm8LcQBA4LYZiCUXkdVc7xW6o7iYi7PNmah3Q0LJ4
+         hcySzGSY4kIChbM5iJu6adsPu8ChlVj3Lu3VgmdGmxdY7oSNptzlS96GwMy7xSzK/m
+         BxD9MRGoU74QphGxEgIoToxXyisZ/ucgOtscRp78=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zhouyi Zhou <zhouzhouyi@gmail.com>,
-        "Paul E. McKenney" <paulmck@kernel.org>,
-        Frederic Weisbecker <frederic@kernel.org>,
+        stable@vger.kernel.org, Jimmy Kizito <Jimmy.Kizito@amd.com>,
+        Alan Liu <HaoPing.Liu@amd.com>,
+        Nicholas Kazlauskas <nicholas.kazlauskas@amd.com>,
+        Daniel Wheeler <daniel.wheeler@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0840/1126] rcu: Mark writes to the rcu_segcblist structures ->flags field
-Date:   Tue,  5 Apr 2022 09:26:27 +0200
-Message-Id: <20220405070432.210797778@linuxfoundation.org>
+Subject: [PATCH 5.17 0666/1126] drm/amd/display: Fix double free during GPU reset on DC streams
+Date:   Tue,  5 Apr 2022 09:23:33 +0200
+Message-Id: <20220405070427.176651643@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -51,45 +53,104 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Paul E. McKenney <paulmck@kernel.org>
+From: Nicholas Kazlauskas <nicholas.kazlauskas@amd.com>
 
-[ Upstream commit c09929031018913b5783872a8b8cdddef4a543c7 ]
+[ Upstream commit 32685b32d825ca08c5dec826477332df886c4743 ]
 
-KCSAN reports data races between the rcu_segcblist_clear_flags() and
-rcu_segcblist_set_flags() functions, though misreporting the latter
-as a call to rcu_segcblist_is_enabled() from call_rcu().  This commit
-converts the updates of this field to WRITE_ONCE(), relying on the
-resulting unmarked reads to continue to detect buggy concurrent writes
-to this field.
+[Why]
+The issue only occurs during the GPU reset code path.
 
-Reported-by: Zhouyi Zhou <zhouzhouyi@gmail.com>
-Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
-Cc: Frederic Weisbecker <frederic@kernel.org>
+We first backup the current state prior to commiting 0 streams
+internally from DM to DC. This state backup contains valid link
+encoder assignments.
+
+DC will clear the link encoder assignments as part of current state
+(but not the backup, since it was a copied before the commit) and
+free the extra stream reference it held.
+
+DC requires that the link encoder assignments remain cleared/invalid
+prior to commiting. Since the backup still has valid assignments we
+call the interface post reset to clear them. This routine also
+releases the extra reference that the link encoder interface held -
+resulting in a double free (and eventually a NULL pointer dereference).
+
+[How]
+We'll have to do a full DC commit anyway after GPU reset because
+the stream count previously went to 0.
+
+We don't need to retain the assignment that we had backed up, so
+just copy off of the now clean current state assignment after the
+reset has occcurred with the new link_enc_cfg_copy() interface.
+
+Fixes: 6d63fcc2a334 ("drm/amd/display: Reset link encoder assignments for GPU reset")
+
+Reviewed-by: Jimmy Kizito <Jimmy.Kizito@amd.com>
+Acked-by: Alan Liu <HaoPing.Liu@amd.com>
+Signed-off-by: Nicholas Kazlauskas <nicholas.kazlauskas@amd.com>
+Tested-by: Daniel Wheeler <daniel.wheeler@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- kernel/rcu/rcu_segcblist.h | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c     | 9 ++++++---
+ drivers/gpu/drm/amd/display/dc/core/dc_link_enc_cfg.c | 7 +++++++
+ drivers/gpu/drm/amd/display/dc/inc/link_enc_cfg.h     | 5 +++++
+ 3 files changed, 18 insertions(+), 3 deletions(-)
 
-diff --git a/kernel/rcu/rcu_segcblist.h b/kernel/rcu/rcu_segcblist.h
-index e373fbe44da5..431cee212467 100644
---- a/kernel/rcu/rcu_segcblist.h
-+++ b/kernel/rcu/rcu_segcblist.h
-@@ -56,13 +56,13 @@ static inline long rcu_segcblist_n_cbs(struct rcu_segcblist *rsclp)
- static inline void rcu_segcblist_set_flags(struct rcu_segcblist *rsclp,
- 					   int flags)
- {
--	rsclp->flags |= flags;
-+	WRITE_ONCE(rsclp->flags, rsclp->flags | flags);
+diff --git a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
+index eae9f9e26f0e..b28b5c490860 100644
+--- a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
++++ b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
+@@ -2613,10 +2613,13 @@ static int dm_resume(void *handle)
+ 		 * before the 0 streams commit.
+ 		 *
+ 		 * DC expects that link encoder assignments are *not* valid
+-		 * when committing a state, so as a workaround it needs to be
+-		 * cleared here.
++		 * when committing a state, so as a workaround we can copy
++		 * off of the current state.
++		 *
++		 * We lose the previous assignments, but we had already
++		 * commit 0 streams anyway.
+ 		 */
+-		link_enc_cfg_init(dm->dc, dc_state);
++		link_enc_cfg_copy(adev->dm.dc->current_state, dc_state);
+ 
+ 		if (dc_enable_dmub_notifications(adev->dm.dc))
+ 			amdgpu_dm_outbox_init(adev);
+diff --git a/drivers/gpu/drm/amd/display/dc/core/dc_link_enc_cfg.c b/drivers/gpu/drm/amd/display/dc/core/dc_link_enc_cfg.c
+index 00f72f66a7ef..72a3fded7142 100644
+--- a/drivers/gpu/drm/amd/display/dc/core/dc_link_enc_cfg.c
++++ b/drivers/gpu/drm/amd/display/dc/core/dc_link_enc_cfg.c
+@@ -272,6 +272,13 @@ void link_enc_cfg_init(
+ 	state->res_ctx.link_enc_cfg_ctx.mode = LINK_ENC_CFG_STEADY;
  }
  
- static inline void rcu_segcblist_clear_flags(struct rcu_segcblist *rsclp,
- 					     int flags)
- {
--	rsclp->flags &= ~flags;
-+	WRITE_ONCE(rsclp->flags, rsclp->flags & ~flags);
- }
++void link_enc_cfg_copy(const struct dc_state *src_ctx, struct dc_state *dst_ctx)
++{
++	memcpy(&dst_ctx->res_ctx.link_enc_cfg_ctx,
++	       &src_ctx->res_ctx.link_enc_cfg_ctx,
++	       sizeof(dst_ctx->res_ctx.link_enc_cfg_ctx));
++}
++
+ void link_enc_cfg_link_encs_assign(
+ 		struct dc *dc,
+ 		struct dc_state *state,
+diff --git a/drivers/gpu/drm/amd/display/dc/inc/link_enc_cfg.h b/drivers/gpu/drm/amd/display/dc/inc/link_enc_cfg.h
+index a4e43b4826e0..59ceb9ed385d 100644
+--- a/drivers/gpu/drm/amd/display/dc/inc/link_enc_cfg.h
++++ b/drivers/gpu/drm/amd/display/dc/inc/link_enc_cfg.h
+@@ -39,6 +39,11 @@ void link_enc_cfg_init(
+ 		const struct dc *dc,
+ 		struct dc_state *state);
  
- static inline bool rcu_segcblist_test_flags(struct rcu_segcblist *rsclp,
++/*
++ * Copies a link encoder assignment from another state.
++ */
++void link_enc_cfg_copy(const struct dc_state *src_ctx, struct dc_state *dst_ctx);
++
+ /*
+  * Algorithm for assigning available DIG link encoders to streams.
+  *
 -- 
 2.34.1
 
