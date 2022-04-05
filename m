@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E5DCBC4332F
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 15:20:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 10CCFC43219
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 15:20:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376436AbiDEPMp (ORCPT
+        id S1376747AbiDEPMw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 11:12:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48056 "EHLO
+        Tue, 5 Apr 2022 11:12:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53166 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345636AbiDEJnl (ORCPT
+        with ESMTP id S232773AbiDEJno (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:43:41 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A447C4E1B;
-        Tue,  5 Apr 2022 02:29:30 -0700 (PDT)
+        Tue, 5 Apr 2022 05:43:44 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0AE432ECD;
+        Tue,  5 Apr 2022 02:29:21 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 58455616D2;
-        Tue,  5 Apr 2022 09:29:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 68486C385A0;
-        Tue,  5 Apr 2022 09:29:22 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 10FD3B81C9D;
+        Tue,  5 Apr 2022 09:29:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 77F12C385A0;
+        Tue,  5 Apr 2022 09:29:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649150962;
-        bh=C89ZJw/w30s5nJwuI+SqP0Mv4XWo5ly++QaLGXUhdg4=;
+        s=korg; t=1649150951;
+        bh=sVR33FUtTlVIApPJsjKgr9pJZo5UOvcNrviZQ+t5OWs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BcgIdu5qUXNH+AsFdw/QlP31raoyyh/D9+bw6SGV9YiJdHBNPwu00jcbP1ySPHBzp
-         kGTDWiswpAYKZ343mdHXEx8Ahyc2gu/7VPZ5u0b9ahrf58B4xqSsPzJakf6mwQDhTn
-         QlxQhmATDEdL26v4d3IDCxcfie7T0PEWPDv1kPNQ=
+        b=1N+UWkOk1ppUFY5lcyUM8VdBWWgvfhfJ2oO/BtazG0roR9x9hzZVKBj/AW++oAopP
+         5ESy9dQ/LUpDa0wBKx6+tgmlenP+H896teoCUrBTY31kaEacwDPcwIGvqCWChnPHaq
+         a+phDdPfVyibBooDYVEpmpBTXn041vP2b2O07U+Y=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Joel Jaeschke <joel.jaeschke@gmail.com>,
-        Jens Axboe <axboe@kernel.dk>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 243/913] io_uring: terminate manual loop iterator loop correctly for non-vecs
-Date:   Tue,  5 Apr 2022 09:21:45 +0200
-Message-Id: <20220405070347.141374452@linuxfoundation.org>
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 239/913] hwrng: nomadik - Change clk_disable to clk_disable_unprepare
+Date:   Tue,  5 Apr 2022 09:21:41 +0200
+Message-Id: <20220405070347.019946178@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
 References: <20220405070339.801210740@linuxfoundation.org>
@@ -49,46 +51,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jens Axboe <axboe@kernel.dk>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit 5e929367468c8f97cd1ffb0417316cecfebef94b ]
+[ Upstream commit 7f0f1f3ef62ed7a40e30aff28115bd94c4211d1d ]
 
-The fix for not advancing the iterator if we're using fixed buffers is
-broken in that it can hit a condition where we don't terminate the loop.
-This results in io-wq looping forever, asking to read (or write) 0 bytes
-for every subsequent loop.
+The corresponding API for clk_prepare_enable is clk_disable_unprepare,
+other than clk_disable_unprepare.
 
-Reported-by: Joel Jaeschke <joel.jaeschke@gmail.com>
-Link: https://github.com/axboe/liburing/issues/549
-Fixes: 16c8d2df7ec0 ("io_uring: ensure symmetry in handling iter types in loop_rw_iter()")
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Fix this by changing clk_disable to clk_disable_unprepare.
+
+Fixes: beca35d05cc2 ("hwrng: nomadik - use clk_prepare_enable()")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/io_uring.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ drivers/char/hw_random/nomadik-rng.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/fs/io_uring.c b/fs/io_uring.c
-index 70e85f64dc38..ec0b50940405 100644
---- a/fs/io_uring.c
-+++ b/fs/io_uring.c
-@@ -3319,13 +3319,15 @@ static ssize_t loop_rw_iter(int rw, struct io_kiocb *req, struct iov_iter *iter)
- 				ret = nr;
- 			break;
- 		}
-+		ret += nr;
- 		if (!iov_iter_is_bvec(iter)) {
- 			iov_iter_advance(iter, nr);
- 		} else {
--			req->rw.len -= nr;
- 			req->rw.addr += nr;
-+			req->rw.len -= nr;
-+			if (!req->rw.len)
-+				break;
- 		}
--		ret += nr;
- 		if (nr != iovec.iov_len)
- 			break;
- 	}
+diff --git a/drivers/char/hw_random/nomadik-rng.c b/drivers/char/hw_random/nomadik-rng.c
+index 67947a19aa22..e8f9621e7954 100644
+--- a/drivers/char/hw_random/nomadik-rng.c
++++ b/drivers/char/hw_random/nomadik-rng.c
+@@ -65,14 +65,14 @@ static int nmk_rng_probe(struct amba_device *dev, const struct amba_id *id)
+ out_release:
+ 	amba_release_regions(dev);
+ out_clk:
+-	clk_disable(rng_clk);
++	clk_disable_unprepare(rng_clk);
+ 	return ret;
+ }
+ 
+ static void nmk_rng_remove(struct amba_device *dev)
+ {
+ 	amba_release_regions(dev);
+-	clk_disable(rng_clk);
++	clk_disable_unprepare(rng_clk);
+ }
+ 
+ static const struct amba_id nmk_rng_ids[] = {
 -- 
 2.34.1
 
