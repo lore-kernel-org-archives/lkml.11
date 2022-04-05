@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CC11C352A1
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F4053C4167B
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:17:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1583479AbiDEXwy (ORCPT
+        id S1583513AbiDEXxD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 19:52:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56010 "EHLO
+        Tue, 5 Apr 2022 19:53:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54572 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354177AbiDEKMP (ORCPT
+        with ESMTP id S1354018AbiDEKKs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:12:15 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB8C151324;
-        Tue,  5 Apr 2022 02:57:59 -0700 (PDT)
+        Tue, 5 Apr 2022 06:10:48 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F21E04F443;
+        Tue,  5 Apr 2022 02:56:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 87BF3B81B13;
-        Tue,  5 Apr 2022 09:57:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EFFD2C385A2;
-        Tue,  5 Apr 2022 09:57:56 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 49E49CE1C6C;
+        Tue,  5 Apr 2022 09:56:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 616F6C385A3;
+        Tue,  5 Apr 2022 09:56:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649152677;
-        bh=8amx3lYhPdvxlPyXrtkPsQvIG3FbeBS5jWOreTSZbyk=;
+        s=korg; t=1649152597;
+        bh=ddMf/Q2OYNRAJxNBRf3ZcvSR2v8ceJNOuWDRf7eIQjU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kDouF44Dn4fwux5mEgbqyu8HVO2u/f4LNR1hP7Ie0lCWW8Tp5cbuGCNtVhmRbBukN
-         hHqT5CcdmAKe20a5mp9ZGv7yezzoplHwT4+Se1Z+wu2vJsxMk+S360+Gvph2B9zXaF
-         mUWWoWSWw3DWTBT2WbqYzFrIczgc8otjZDaX43ao=
+        b=iTnc6SzYNdai+QAmdWC4u8lN2ex6qLtx++U/nZKkXgtor9+jWe2uTJDqlzO+x5FcL
+         GidiEL90btim7thYXKxTz6ZireQFK2MMMbYVJDk2ahbrEdeFKWwd0BpV9jYh3ScnHh
+         +39PB56n3pyBAEnu9yX3nxNfTQxROLCgDt11/GPo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Derek Will <derekrobertwill@gmail.com>,
-        Oliver Hartkopp <socketcan@hartkopp.net>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 862/913] can: isotp: restore accidentally removed MSG_PEEK feature
-Date:   Tue,  5 Apr 2022 09:32:04 +0200
-Message-Id: <20220405070405.664180617@linuxfoundation.org>
+        stable@vger.kernel.org, Hugh Dickins <hughd@google.com>,
+        "Matthew Wilcox (Oracle)" <willy@infradead.org>
+Subject: [PATCH 5.15 835/913] XArray: Update the LRU list in xas_split()
+Date:   Tue,  5 Apr 2022 09:31:37 +0200
+Message-Id: <20220405070404.859282803@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
 References: <20220405070339.801210740@linuxfoundation.org>
@@ -51,48 +49,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Oliver Hartkopp <socketcan@hartkopp.net>
+From: Matthew Wilcox (Oracle) <willy@infradead.org>
 
-[ Upstream commit e382fea8ae54f5bb62869c6b69b33993d43adeca ]
+commit 3ed4bb77156da0bc732847c8c9df92454c1fbeea upstream.
 
-In commit 42bf50a1795a ("can: isotp: support MSG_TRUNC flag when
-reading from socket") a new check for recvmsg flags has been
-introduced that only checked for the flags that are handled in
-isotp_recvmsg() itself.
+When splitting a value entry, we may need to add the new nodes to the LRU
+list and remove the parent node from the LRU list.  The WARN_ON checks
+in shadow_lru_isolate() catch this oversight.  This bug was latent
+until we stopped splitting folios in shrink_page_list() with commit
+820c4e2e6f51 ("mm/vmscan: Free non-shmem folios without splitting them").
+That allows the creation of large shadow entries, and subsequently when
+trying to page in a small page, we will split the large shadow entry
+in __filemap_add_folio().
 
-This accidentally removed the MSG_PEEK feature flag which is processed
-later in the call chain in __skb_try_recv_from_queue().
-
-Add MSG_PEEK to the set of valid flags to restore the feature.
-
-Fixes: 42bf50a1795a ("can: isotp: support MSG_TRUNC flag when reading from socket")
-Link: https://github.com/linux-can/can-utils/issues/347#issuecomment-1079554254
-Link: https://lore.kernel.org/all/20220328113611.3691-1-socketcan@hartkopp.net
-Reported-by: Derek Will <derekrobertwill@gmail.com>
-Suggested-by: Derek Will <derekrobertwill@gmail.com>
-Tested-by: Derek Will <derekrobertwill@gmail.com>
-Signed-off-by: Oliver Hartkopp <socketcan@hartkopp.net>
-Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 8fc75643c5e1 ("XArray: add xas_split")
+Reported-by: Hugh Dickins <hughd@google.com>
+Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/can/isotp.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ lib/xarray.c |    2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/net/can/isotp.c b/net/can/isotp.c
-index ad61342d2e16..a95d171b3a64 100644
---- a/net/can/isotp.c
-+++ b/net/can/isotp.c
-@@ -1009,7 +1009,7 @@ static int isotp_recvmsg(struct socket *sock, struct msghdr *msg, size_t size,
- 	int noblock = flags & MSG_DONTWAIT;
- 	int ret = 0;
+--- a/lib/xarray.c
++++ b/lib/xarray.c
+@@ -1081,6 +1081,7 @@ void xas_split(struct xa_state *xas, voi
+ 					xa_mk_node(child));
+ 			if (xa_is_value(curr))
+ 				values--;
++			xas_update(xas, child);
+ 		} else {
+ 			unsigned int canon = offset - xas->xa_sibs;
  
--	if (flags & ~(MSG_DONTWAIT | MSG_TRUNC))
-+	if (flags & ~(MSG_DONTWAIT | MSG_TRUNC | MSG_PEEK))
- 		return -EINVAL;
+@@ -1095,6 +1096,7 @@ void xas_split(struct xa_state *xas, voi
+ 	} while (offset-- > xas->xa_offset);
  
- 	if (!so->bound)
--- 
-2.34.1
-
+ 	node->nr_values += values;
++	xas_update(xas, node);
+ }
+ EXPORT_SYMBOL_GPL(xas_split);
+ #endif
 
 
