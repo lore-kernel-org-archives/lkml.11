@@ -2,205 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0163BC43217
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 21:37:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B3FBC4167E
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 21:37:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234196AbiDEVej (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 17:34:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58116 "EHLO
+        id S1380162AbiDEVgc (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 17:36:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60278 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1443194AbiDEPjI (ORCPT
+        with ESMTP id S1381985AbiDEORL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 11:39:08 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9655C147AC1;
-        Tue,  5 Apr 2022 06:55:04 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DF5D961940;
-        Tue,  5 Apr 2022 13:55:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AC2B2C385A0;
-        Tue,  5 Apr 2022 13:55:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649166903;
-        bh=/Tv8YiZnHlnoLZidVUOvPcgdyia12qeZDRAWgWjsabA=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DchhYHSfH6qoQ44wSEwHVGNqJJIP3TdU8AqevyeSN4qP9VkxUGC7lc0aU9dZZiTIf
-         SP4zBzjho3gQDm/u+S1yQABfIAa1LzvmDf3k0BriWZs/cuo6EofjYSh5ZdpT+NrNtn
-         LFa5HTbnucS4TCxr9ZlBW09fPU60o4fTi8n9scf6WqCJ6bRXzhcco89IPhkfCz1LJ6
-         j7dPo7h4BRKjei44XrsC2CpEBIN1SnVpnUVO3fz0vRkgjrL2h2E+WrR3A/YvO9y7D6
-         Bl+xWKwgQh4cjzhrkMwPGzScdzEn23jWAJTpjJiPfa1IWsozDffj86NKqYVCuYwu7r
-         NSUD6oJ/PWrzw==
-Received: from sofa.misterjones.org ([185.219.108.64] helo=why.lan)
-        by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <maz@kernel.org>)
-        id 1nbje9-001q4g-EZ; Tue, 05 Apr 2022 14:55:01 +0100
-From:   Marc Zyngier <maz@kernel.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Linus Walleij <linus.walleij@linaro.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Joey Gouly <joey.gouly@arm.com>,
-        Jonathan Hunter <jonathanh@nvidia.com>,
-        Hector Martin <marcan@marcan.st>,
-        Sven Peter <sven@svenpeter.dev>,
-        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Andy Gross <agross@kernel.org>,
-        Jeffrey Hugo <jeffrey.l.hugo@gmail.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Basavaraj Natikar <Basavaraj.Natikar@amd.com>,
-        Shyam Sundar S K <Shyam-sundar.S-k@amd.com>,
-        linux-gpio@vger.kernel.org, linux-tegra@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-arm-msm@vger.kernel.org, kernel-team@android.com
-Subject: [PATCH v2 07/10] pinctrl: msmgpio: Make the irqchip immutable
-Date:   Tue,  5 Apr 2022 14:54:41 +0100
-Message-Id: <20220405135444.199295-8-maz@kernel.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220405135444.199295-1-maz@kernel.org>
-References: <20220405135444.199295-1-maz@kernel.org>
+        Tue, 5 Apr 2022 10:17:11 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id AC3521606B0
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 06:01:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1649163681;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=c1Lv+i1PBgFa+gfs5DRpbJ6m0eCPENa4LFWCMUe7Pgk=;
+        b=fxvIN8WwOn87c6DahdYexpN8Ka3Hj0FlsXDrSfK/c34qYlYxSLBwFAeJrzZkQ5ZOaQIWWx
+        efZDThHgyY571qHgLXf9qGU6ouN14q+NUsaojS3s8/ul/M2xM9JkDKsHGqGjtgwc3PvvYp
+        qiD5ytBSPM2f6Bj5gXIKyefuwxdcfKs=
+Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
+ [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-556--VAqhSEkMXCvVMot_Lv7lQ-1; Tue, 05 Apr 2022 09:01:17 -0400
+X-MC-Unique: -VAqhSEkMXCvVMot_Lv7lQ-1
+Received: by mail-wm1-f70.google.com with SMTP id m3-20020a05600c3b0300b0038e74402cb6so1217631wms.8
+        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 06:01:12 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=c1Lv+i1PBgFa+gfs5DRpbJ6m0eCPENa4LFWCMUe7Pgk=;
+        b=V/fkrxMsh6dY8jrYWTQ4+TXSB2ZyzNAQIXjF6fA+U98gVYidO6oWtkGBb/wib5JrOj
+         NWgwt9o5zeWymbVvmbIRSvlhgRxDVmgrWSMEBYadoDssnkzEfQaB1AkQAYvVW5pg5TuJ
+         o9HRvU8dS9ctOmKKZ3YOg2mUGTTDUyY3wuw6NQs1CJqwMqY+7lNXJpNm9zDp4P0NKASN
+         ew71FO3Crqvnyq/pgcSZ3L/vjV743l61wjPi0BzQFa5OAAolfWESBoSCg9cWvQxuaVOq
+         jKls/Trmc2IhuFVJPomTG9Zbj+YJtL/qkJJPvRnxv5flD3oEP0AQXhBkXQ5GS/uJ6XBe
+         2lUA==
+X-Gm-Message-State: AOAM530zgmjsHxxgjsKlmZjgkNfr9fqweKxG5sP9WQDPGTrkneTYsDVa
+        Y/AJvroGZbBUk25PXKN+t+5bosy4KHo6Q+kzD952tjweRmzftlJ+FSSrTmk1iiZEyyLND45xMo0
+        t21YUDDhmerwIfEovcLHVzz3O
+X-Received: by 2002:adf:ba8f:0:b0:1e9:4afb:179b with SMTP id p15-20020adfba8f000000b001e94afb179bmr2726493wrg.57.1649163671583;
+        Tue, 05 Apr 2022 06:01:11 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJxNzI5PD1sS5Vh0+bMeeZnomXZHkWuWTcu1XLTQ/uRuaUVRxMlYuIfdB8IaN0F1ErzpxtndZQ==
+X-Received: by 2002:adf:ba8f:0:b0:1e9:4afb:179b with SMTP id p15-20020adfba8f000000b001e94afb179bmr2726472wrg.57.1649163671377;
+        Tue, 05 Apr 2022 06:01:11 -0700 (PDT)
+Received: from [10.32.181.87] (nat-pool-mxp-t.redhat.com. [149.6.153.186])
+        by smtp.googlemail.com with ESMTPSA id n2-20020adfb742000000b00205eda3b3c1sm12716780wre.34.2022.04.05.06.01.10
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 05 Apr 2022 06:01:10 -0700 (PDT)
+Message-ID: <6e370d39-fcb6-c158-e5fb-690cd3802150@redhat.com>
+Date:   Tue, 5 Apr 2022 15:01:09 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 185.219.108.64
-X-SA-Exim-Rcpt-To: linux-kernel@vger.kernel.org, linus.walleij@linaro.org, brgl@bgdev.pl, thierry.reding@gmail.com, joey.gouly@arm.com, jonathanh@nvidia.com, marcan@marcan.st, sven@svenpeter.dev, alyssa@rosenzweig.io, bjorn.andersson@linaro.org, agross@kernel.org, jeffrey.l.hugo@gmail.com, tglx@linutronix.de, Basavaraj.Natikar@amd.com, Shyam-sundar.S-k@amd.com, linux-gpio@vger.kernel.org, linux-tegra@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-arm-msm@vger.kernel.org, kernel-team@android.com
-X-SA-Exim-Mail-From: maz@kernel.org
-X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [RFC PATCH v5 027/104] KVM: TDX: initialize VM with TDX specific
+ parameters
+Content-Language: en-US
+To:     Kai Huang <kai.huang@intel.com>, isaku.yamahata@intel.com,
+        kvm@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     isaku.yamahata@gmail.com, Jim Mattson <jmattson@google.com>,
+        erdemaktas@google.com, Connor Kuehl <ckuehl@redhat.com>,
+        Sean Christopherson <seanjc@google.com>
+References: <cover.1646422845.git.isaku.yamahata@intel.com>
+ <c3b37cf5c83f92be0e153075d81a80729bf1031e.1646422845.git.isaku.yamahata@intel.com>
+ <509fb6fb5c581e6bf14149dff17d7426a6b061f2.camel@intel.com>
+From:   Paolo Bonzini <pbonzini@redhat.com>
+In-Reply-To: <509fb6fb5c581e6bf14149dff17d7426a6b061f2.camel@intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Prevent gpiolib from messing with the irqchip by advertising
-the irq_chip structure as immutable, making it const, and adding
-the various calls that gpiolib relies upon.
+On 3/31/22 06:55, Kai Huang wrote:
+>>   
+>> +struct kvm_tdx_init_vm {
+>> +	__u32 max_vcpus;
+>> +	__u32 tsc_khz;
+>> +	__u64 attributes;
+>> +	__u64 cpuid;
+> Is it better to append all CPUIDs directly into this structure, perhaps at end
+> of this structure, to make it more consistent with TD_PARAMS?
+> 
+> Also, I think somewhere in commit message or comments we should explain why
+> CPUIDs are passed here (why existing KVM_SET_CUPID2 is not sufficient).
+> 
 
-Signed-off-by: Marc Zyngier <maz@kernel.org>
----
- drivers/pinctrl/qcom/pinctrl-msm.c | 53 +++++++++++++++++++-----------
- 1 file changed, 33 insertions(+), 20 deletions(-)
+Indeed, it would be easier to use the existing cpuid data in struct 
+kvm_vcpu, because right now there is no way to ensure that they are 
+consistent.
 
-diff --git a/drivers/pinctrl/qcom/pinctrl-msm.c b/drivers/pinctrl/qcom/pinctrl-msm.c
-index 966ea6622ff3..a2abfe987ab1 100644
---- a/drivers/pinctrl/qcom/pinctrl-msm.c
-+++ b/drivers/pinctrl/qcom/pinctrl-msm.c
-@@ -42,7 +42,6 @@
-  * @chip:           gpiochip handle.
-  * @desc:           pin controller descriptor
-  * @restart_nb:     restart notifier block.
-- * @irq_chip:       irq chip information
-  * @irq:            parent irq for the TLMM irq_chip.
-  * @intr_target_use_scm: route irq to application cpu using scm calls
-  * @lock:           Spinlock to protect register resources as well
-@@ -63,7 +62,6 @@ struct msm_pinctrl {
- 	struct pinctrl_desc desc;
- 	struct notifier_block restart_nb;
- 
--	struct irq_chip irq_chip;
- 	int irq;
- 
- 	bool intr_target_use_scm;
-@@ -868,6 +866,8 @@ static void msm_gpio_irq_enable(struct irq_data *d)
- 	struct gpio_chip *gc = irq_data_get_irq_chip_data(d);
- 	struct msm_pinctrl *pctrl = gpiochip_get_data(gc);
- 
-+	gpiochip_enable_irq(gc, d->hwirq);
-+
- 	if (d->parent_data)
- 		irq_chip_enable_parent(d);
- 
-@@ -885,6 +885,8 @@ static void msm_gpio_irq_disable(struct irq_data *d)
- 
- 	if (!test_bit(d->hwirq, pctrl->skip_wake_irqs))
- 		msm_gpio_irq_mask(d);
-+
-+	gpiochip_disable_irq(gc, d->hwirq);
- }
- 
- /**
-@@ -958,6 +960,14 @@ static void msm_gpio_irq_ack(struct irq_data *d)
- 	raw_spin_unlock_irqrestore(&pctrl->lock, flags);
- }
- 
-+static void msm_gpio_irq_eoi(struct irq_data *d)
-+{
-+	d = d->parent_data;
-+
-+	if (d)
-+		d->chip->irq_eoi(d);
-+}
-+
- static bool msm_gpio_needs_dual_edge_parent_workaround(struct irq_data *d,
- 						       unsigned int type)
- {
-@@ -1255,6 +1265,26 @@ static bool msm_gpio_needs_valid_mask(struct msm_pinctrl *pctrl)
- 	return device_property_count_u16(pctrl->dev, "gpios") > 0;
- }
- 
-+static const struct irq_chip msm_gpio_irq_chip = {
-+	.name			= "msmgpio",
-+	.irq_enable		= msm_gpio_irq_enable,
-+	.irq_disable		= msm_gpio_irq_disable,
-+	.irq_mask		= msm_gpio_irq_mask,
-+	.irq_unmask		= msm_gpio_irq_unmask,
-+	.irq_ack		= msm_gpio_irq_ack,
-+	.irq_eoi		= msm_gpio_irq_eoi,
-+	.irq_set_type		= msm_gpio_irq_set_type,
-+	.irq_set_wake		= msm_gpio_irq_set_wake,
-+	.irq_request_resources	= msm_gpio_irq_reqres,
-+	.irq_release_resources	= msm_gpio_irq_relres,
-+	.irq_set_affinity	= msm_gpio_irq_set_affinity,
-+	.irq_set_vcpu_affinity	= msm_gpio_irq_set_vcpu_affinity,
-+	.flags			= (IRQCHIP_MASK_ON_SUSPEND |
-+				   IRQCHIP_SET_TYPE_MASKED |
-+				   IRQCHIP_ENABLE_WAKEUP_ON_SUSPEND |
-+				   IRQCHIP_IMMUTABLE),
-+};
-+
- static int msm_gpio_init(struct msm_pinctrl *pctrl)
- {
- 	struct gpio_chip *chip;
-@@ -1276,22 +1306,6 @@ static int msm_gpio_init(struct msm_pinctrl *pctrl)
- 	if (msm_gpio_needs_valid_mask(pctrl))
- 		chip->init_valid_mask = msm_gpio_init_valid_mask;
- 
--	pctrl->irq_chip.name = "msmgpio";
--	pctrl->irq_chip.irq_enable = msm_gpio_irq_enable;
--	pctrl->irq_chip.irq_disable = msm_gpio_irq_disable;
--	pctrl->irq_chip.irq_mask = msm_gpio_irq_mask;
--	pctrl->irq_chip.irq_unmask = msm_gpio_irq_unmask;
--	pctrl->irq_chip.irq_ack = msm_gpio_irq_ack;
--	pctrl->irq_chip.irq_set_type = msm_gpio_irq_set_type;
--	pctrl->irq_chip.irq_set_wake = msm_gpio_irq_set_wake;
--	pctrl->irq_chip.irq_request_resources = msm_gpio_irq_reqres;
--	pctrl->irq_chip.irq_release_resources = msm_gpio_irq_relres;
--	pctrl->irq_chip.irq_set_affinity = msm_gpio_irq_set_affinity;
--	pctrl->irq_chip.irq_set_vcpu_affinity = msm_gpio_irq_set_vcpu_affinity;
--	pctrl->irq_chip.flags = IRQCHIP_MASK_ON_SUSPEND |
--				IRQCHIP_SET_TYPE_MASKED |
--				IRQCHIP_ENABLE_WAKEUP_ON_SUSPEND;
--
- 	np = of_parse_phandle(pctrl->dev->of_node, "wakeup-parent", 0);
- 	if (np) {
- 		chip->irq.parent_domain = irq_find_matching_host(np,
-@@ -1300,7 +1314,6 @@ static int msm_gpio_init(struct msm_pinctrl *pctrl)
- 		if (!chip->irq.parent_domain)
- 			return -EPROBE_DEFER;
- 		chip->irq.child_to_parent_hwirq = msm_gpio_wakeirq;
--		pctrl->irq_chip.irq_eoi = irq_chip_eoi_parent;
- 		/*
- 		 * Let's skip handling the GPIOs, if the parent irqchip
- 		 * is handling the direct connect IRQ of the GPIO.
-@@ -1313,7 +1326,7 @@ static int msm_gpio_init(struct msm_pinctrl *pctrl)
- 	}
- 
- 	girq = &chip->irq;
--	girq->chip = &pctrl->irq_chip;
-+	gpio_irq_chip_set_chip(girq, &msm_gpio_irq_chip);
- 	girq->parent_handler = msm_gpio_irq_handler;
- 	girq->fwnode = pctrl->dev->fwnode;
- 	girq->num_parents = 1;
--- 
-2.34.1
+Why is KVM_SET_CPUID2 not enough?  Are there any modifications done by 
+KVM that affect the measurement?
+
+Thanks,
+
+Paolo
 
