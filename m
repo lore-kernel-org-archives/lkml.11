@@ -2,92 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 06586C35273
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:50:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A22BFC46467
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:50:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1837909AbiDFAtO (ORCPT
+        id S1837892AbiDFAtB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 20:49:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60424 "EHLO
+        Tue, 5 Apr 2022 20:49:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37674 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356554AbiDEKYA (ORCPT
+        with ESMTP id S1452191AbiDEPyf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:24:00 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC5CFBD8AA;
-        Tue,  5 Apr 2022 03:08:32 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        Tue, 5 Apr 2022 11:54:35 -0400
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E06971D3077;
+        Tue,  5 Apr 2022 07:50:30 -0700 (PDT)
+Received: from localhost (unknown [IPv6:2a02:3030:0:2f5a:2277:ba57:a2c0:2])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 658D6B81CB5;
-        Tue,  5 Apr 2022 10:08:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AE464C385A7;
-        Tue,  5 Apr 2022 10:08:29 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649153310;
-        bh=VQ5yBIa2FGaD+JwPV3eQXTVT9noiawHMQkRa0hXOq1A=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jZSThBpQzo1Tn/paB+F7LyTUtxhOfy6tS5vWcQDM3ZRaC3GLrdbXbjHuqCHigMlHW
-         pcZrLEQ2RNdZcr03dAXgkqRVaQjpxz36i/BnH5IttR8QnsgwGJzbE6rDBXUFgGQ7Vo
-         vvEMb9iTXCw26m7aXcvfGiPpsfV7z7+Poo+1vKwk=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Guillaume Ranquet <granquet@baylibre.com>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 160/599] clocksource/drivers/timer-of: Check return value of of_iomap in timer_of_base_init()
-Date:   Tue,  5 Apr 2022 09:27:34 +0200
-Message-Id: <20220405070303.603379474@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
-User-Agent: quilt/0.66
+        (Authenticated sender: sebastianfricke)
+        by bhuna.collabora.co.uk (Postfix) with ESMTPSA id 626051F44FBD;
+        Tue,  5 Apr 2022 15:50:24 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1649170224;
+        bh=aUWjMFcKdA/ahzvcq6qNxNOe4FMWkYYbLu73Qvpgl0w=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=U+MGghngzjg05eWaLvwMsCBeWsVxk8Z5QWXjbrXvZkApCZU55ktgvN58ekEgDUBOs
+         Svvlhaa+vCXBfzpmkKdhxGBfu1h4SGk1lCodM/zrTrEc+6XB+qoXaVYhVZtdCO0TA3
+         Wl2p4r5KItJwaiT5T0BJhAw+k0dhSg8L0dApr7cZ3F0QTF9L1SwP5oPIL6a8J6CL+B
+         iH4dF0/9fvlECQ5hGngEpr0F0xx20+9UKhPnpEx1SKR6AkOCU8elAiLKFOZNicD4Ip
+         sFw5fQWkq58nAABH2RyrooFIsZDZp3TiTlfPVdFbXHAoOpZXGF+BW8lbaMuWS/4bTW
+         kkkkxz3gKn6gQ==
+Date:   Tue, 5 Apr 2022 16:50:20 +0200
+From:   Sebastian Fricke <sebastian.fricke@collabora.com>
+To:     Steven Rostedt <rostedt@goodmis.org>
+Cc:     Mark Rutland <mark.rutland@arm.com>,
+        linux-trace-devel@vger.kernel.org,
+        LKML <linux-kernel@vger.kernel.org>,
+        linux-arm-kernel@lists.infradead.org,
+        Ard Biesheuvel <ard.biesheuvel@linaro.org>,
+        Amit Daniel Kachhap <amit.kachhap@arm.com>,
+        Torsten Duwe <duwe@suse.de>
+Subject: Re: Corrupted function tracer in 5.17.0-rc1
+Message-ID: <20220405145020.55nopur6ccjyndnr@basti-XPS-13-9310>
+References: <20220404125212.tuby556kara5t56c@basti-XPS-13-9310>
+ <20220404102607.5c9cb515@gandalf.local.home>
+ <YksG6LXUCwIZhK8k@FVFF77S0Q05N>
+ <20220404110633.1b246d55@gandalf.local.home>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Disposition: inline
+In-Reply-To: <20220404110633.1b246d55@gandalf.local.home>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Guillaume Ranquet <granquet@baylibre.com>
+Hey Steven & Mark,
 
-[ Upstream commit 4467b8bad2401794fb89a0268c8c8257180bf60f ]
+On 04.04.2022 11:06, Steven Rostedt wrote:
+>On Mon, 4 Apr 2022 15:55:36 +0100
+>Mark Rutland <mark.rutland@arm.com> wrote:
+>
+>> From the title, this is v5.17-rc1, which is known broken due to the mcount sort
+>> issue that was subsequently fixed in commit:
+>
+>Ah, yes. I was thinking of 5.18-rc1 (which has just been released)
+>
+>>
+>>   4ed308c445a1e3ab ("ftrace: Have architectures opt-in for mcount build time sorting")
+>>
+>> Is it possible to try with the final v5.17? Or at least try with that patch
+>> cherry-picked?
+>
+>Right, 5.17-rc1 is known broken. Please try the latest, 5.17 and let us
+>know if it is still an issue.
 
-of_base->base can either be iomapped using of_io_request_and_map() or
-of_iomap() depending whether or not an of_base->name has been set.
+Using 5.18-rc1 it works well, thanks for the quick help.
+>
+>Thanks,
+>
+>-- Steve
 
-Thus check of_base->base against NULL as of_iomap() does not return a
-PTR_ERR() in case of error.
-
-Fixes: 9aea417afa6b ("clocksource/drivers/timer-of: Don't request the resource by name")
-Signed-off-by: Guillaume Ranquet <granquet@baylibre.com>
-Link: https://lore.kernel.org/r/20220307172656.4836-1-granquet@baylibre.com
-Signed-off-by: Daniel Lezcano <daniel.lezcano@linaro.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/clocksource/timer-of.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/clocksource/timer-of.c b/drivers/clocksource/timer-of.c
-index 572da477c6d3..b965f20174e3 100644
---- a/drivers/clocksource/timer-of.c
-+++ b/drivers/clocksource/timer-of.c
-@@ -157,9 +157,9 @@ static __init int timer_of_base_init(struct device_node *np,
- 	of_base->base = of_base->name ?
- 		of_io_request_and_map(np, of_base->index, of_base->name) :
- 		of_iomap(np, of_base->index);
--	if (IS_ERR(of_base->base)) {
--		pr_err("Failed to iomap (%s)\n", of_base->name);
--		return PTR_ERR(of_base->base);
-+	if (IS_ERR_OR_NULL(of_base->base)) {
-+		pr_err("Failed to iomap (%s:%s)\n", np->name, of_base->name);
-+		return of_base->base ? PTR_ERR(of_base->base) : -ENOMEM;
- 	}
- 
- 	return 0;
--- 
-2.34.1
-
-
-
+Greetings,
+Sebastian
