@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BFFA1C35295
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 15:20:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AC9B1C4332F
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 15:20:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383039AbiDEPOi (ORCPT
+        id S1384972AbiDEPPJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 11:14:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60902 "EHLO
+        Tue, 5 Apr 2022 11:15:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53872 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346585AbiDEJpM (ORCPT
+        with ESMTP id S1346515AbiDEJpJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:45:12 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1077CDAFD8;
-        Tue,  5 Apr 2022 02:31:02 -0700 (PDT)
+        Tue, 5 Apr 2022 05:45:09 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5953DA6F4;
+        Tue,  5 Apr 2022 02:30:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 640DA6165C;
-        Tue,  5 Apr 2022 09:31:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6CB4CC385A2;
-        Tue,  5 Apr 2022 09:31:01 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4EA56B81CB4;
+        Tue,  5 Apr 2022 09:30:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9F2A3C385A0;
+        Tue,  5 Apr 2022 09:30:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649151061;
-        bh=IsYGMWcOLC2kDDO8OFJfhbKJ+skf8w8cVCluqFXU9Jw=;
+        s=korg; t=1649151051;
+        bh=Bs37qhupQrzrwShQLMKh2eR5EW+wmQdn3FX3+6XNFbM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BCa4LjXIhrR7Vc5D616cBa/5a1nuTo9LXGIdE/u7hiPIuR/0G5XTi2tb3ZB3nUNgm
-         Kszeg7VUoUnw4upXQQXafrN7068FUz/Wqoz4lLZ5eENxbNXbEnoLC93vQqf684fqsp
-         7wdCU/HnDQ+rN8Qt+Jn7xQ4F82W4qCMI3mkYT+KQ=
+        b=P8uxzZo0gUjnttNn0MGIILS+q3DS2ukkZrPK2UP+X1gALWztrwe7aGv65wq79Mg9f
+         Pxzs6UaKLsTaLlrVElNqpb0eOtyHN06cDrWphYYsfNinYlh9otS1YmgAIRUdPqzAlw
+         z4M2wRoTL/71lJvkIQo5fPEmbJmAFC/C9R1nOBfY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Robert Hancock <robert.hancock@calian.com>,
-        Mark Brown <broonie@kernel.org>,
+        stable@vger.kernel.org, Qais Yousef <qais.yousef@arm.com>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 279/913] ASoC: xilinx: xlnx_formatter_pcm: Handle sysclk setting
-Date:   Tue,  5 Apr 2022 09:22:21 +0200
-Message-Id: <20220405070348.220728833@linuxfoundation.org>
+Subject: [PATCH 5.15 249/913] sched/uclamp: Fix iowait boost escaping uclamp restriction
+Date:   Tue,  5 Apr 2022 09:21:51 +0200
+Message-Id: <20220405070347.320837737@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
 References: <20220405070339.801210740@linuxfoundation.org>
@@ -50,90 +51,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Robert Hancock <robert.hancock@calian.com>
+From: Qais Yousef <qais.yousef@arm.com>
 
-[ Upstream commit 1c5091fbe7e0d0804158200b7feac5123f7b4fbd ]
+[ Upstream commit d37aee9018e68b0d356195caefbb651910e0bbfa ]
 
-This driver did not set the MM2S Fs Multiplier Register to the proper
-value for playback streams. This needs to be set to the sample rate to
-MCLK multiplier, or random stream underflows can occur on the downstream
-I2S transmitter.
+iowait_boost signal is applied independently of util and doesn't take
+into account uclamp settings of the rq. An io heavy task that is capped
+by uclamp_max could still request higher frequency because
+sugov_iowait_apply() doesn't clamp the boost via uclamp_rq_util_with()
+like effective_cpu_util() does.
 
-Store the sysclk value provided via the set_sysclk callback and use that
-in conjunction with the sample rate in the hw_params callback to calculate
-the proper value to set for this register.
+Make sure that iowait_boost honours uclamp requests by calling
+uclamp_rq_util_with() when applying the boost.
 
-Fixes: 6f6c3c36f091 ("ASoC: xlnx: add pcm formatter platform driver")
-Signed-off-by: Robert Hancock <robert.hancock@calian.com>
-Link: https://lore.kernel.org/r/20220120195832.1742271-2-robert.hancock@calian.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Fixes: 982d9cdc22c9 ("sched/cpufreq, sched/uclamp: Add clamps for FAIR and RT tasks")
+Signed-off-by: Qais Yousef <qais.yousef@arm.com>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Acked-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Link: https://lore.kernel.org/r/20211216225320.2957053-3-qais.yousef@arm.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/xilinx/xlnx_formatter_pcm.c | 25 +++++++++++++++++++++++++
- 1 file changed, 25 insertions(+)
+ kernel/sched/cpufreq_schedutil.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/sound/soc/xilinx/xlnx_formatter_pcm.c b/sound/soc/xilinx/xlnx_formatter_pcm.c
-index ce19a6058b27..5c4158069a5a 100644
---- a/sound/soc/xilinx/xlnx_formatter_pcm.c
-+++ b/sound/soc/xilinx/xlnx_formatter_pcm.c
-@@ -84,6 +84,7 @@ struct xlnx_pcm_drv_data {
- 	struct snd_pcm_substream *play_stream;
- 	struct snd_pcm_substream *capture_stream;
- 	struct clk *axi_clk;
-+	unsigned int sysclk;
- };
- 
- /*
-@@ -314,6 +315,15 @@ static irqreturn_t xlnx_s2mm_irq_handler(int irq, void *arg)
- 	return IRQ_NONE;
+diff --git a/kernel/sched/cpufreq_schedutil.c b/kernel/sched/cpufreq_schedutil.c
+index e7af18857371..7f6bb37d3a2f 100644
+--- a/kernel/sched/cpufreq_schedutil.c
++++ b/kernel/sched/cpufreq_schedutil.c
+@@ -289,6 +289,7 @@ static void sugov_iowait_apply(struct sugov_cpu *sg_cpu, u64 time)
+ 	 * into the same scale so we can compare.
+ 	 */
+ 	boost = (sg_cpu->iowait_boost * sg_cpu->max) >> SCHED_CAPACITY_SHIFT;
++	boost = uclamp_rq_util_with(cpu_rq(sg_cpu->cpu), boost, NULL);
+ 	if (sg_cpu->util < boost)
+ 		sg_cpu->util = boost;
  }
- 
-+static int xlnx_formatter_set_sysclk(struct snd_soc_component *component,
-+				     int clk_id, int source, unsigned int freq, int dir)
-+{
-+	struct xlnx_pcm_drv_data *adata = dev_get_drvdata(component->dev);
-+
-+	adata->sysclk = freq;
-+	return 0;
-+}
-+
- static int xlnx_formatter_pcm_open(struct snd_soc_component *component,
- 				   struct snd_pcm_substream *substream)
- {
-@@ -450,11 +460,25 @@ static int xlnx_formatter_pcm_hw_params(struct snd_soc_component *component,
- 	u64 size;
- 	struct snd_pcm_runtime *runtime = substream->runtime;
- 	struct xlnx_pcm_stream_param *stream_data = runtime->private_data;
-+	struct xlnx_pcm_drv_data *adata = dev_get_drvdata(component->dev);
- 
- 	active_ch = params_channels(params);
- 	if (active_ch > stream_data->ch_limit)
- 		return -EINVAL;
- 
-+	if (substream->stream == SNDRV_PCM_STREAM_PLAYBACK &&
-+	    adata->sysclk) {
-+		unsigned int mclk_fs = adata->sysclk / params_rate(params);
-+
-+		if (adata->sysclk % params_rate(params) != 0) {
-+			dev_warn(component->dev, "sysclk %u not divisible by rate %u\n",
-+				 adata->sysclk, params_rate(params));
-+			return -EINVAL;
-+		}
-+
-+		writel(mclk_fs, stream_data->mmio + XLNX_AUD_FS_MULTIPLIER);
-+	}
-+
- 	if (substream->stream == SNDRV_PCM_STREAM_CAPTURE &&
- 	    stream_data->xfer_mode == AES_TO_PCM) {
- 		val = readl(stream_data->mmio + XLNX_AUD_STS);
-@@ -552,6 +576,7 @@ static int xlnx_formatter_pcm_new(struct snd_soc_component *component,
- 
- static const struct snd_soc_component_driver xlnx_asoc_component = {
- 	.name		= DRV_NAME,
-+	.set_sysclk	= xlnx_formatter_set_sysclk,
- 	.open		= xlnx_formatter_pcm_open,
- 	.close		= xlnx_formatter_pcm_close,
- 	.hw_params	= xlnx_formatter_pcm_hw_params,
 -- 
 2.34.1
 
