@@ -2,47 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F543C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:25:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BC7C9C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:25:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1575223AbiDEXDV (ORCPT
+        id S1575237AbiDEXDZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 19:03:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51882 "EHLO
+        Tue, 5 Apr 2022 19:03:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39548 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358269AbiDEK2L (ORCPT
+        with ESMTP id S1349415AbiDEJtt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:28:11 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA20D12624;
-        Tue,  5 Apr 2022 03:17:47 -0700 (PDT)
+        Tue, 5 Apr 2022 05:49:49 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88D631C920;
+        Tue,  5 Apr 2022 02:45:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 56F19617C2;
-        Tue,  5 Apr 2022 10:17:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5E748C385A2;
-        Tue,  5 Apr 2022 10:17:46 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4790DB817D3;
+        Tue,  5 Apr 2022 09:45:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 942C4C385A4;
+        Tue,  5 Apr 2022 09:45:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649153866;
-        bh=UI518gNvZYc7Bl5O77cnb5llWvp/Mku9p8fq+HkHNQs=;
+        s=korg; t=1649151912;
+        bh=07VNWO8H9YlwU0pqnXEKrNMaQkGMU5st7eEL9fMQ2pM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fg1BMkxtFtLXaC+vTReXOaWHvm2K36H5yET5T/eQ8xRy5Ymx8fSIKEwfzvs4uU0UB
-         LdlO8+aK/Wi39Wn93iIMg8i9f5N1s547OHwiLvRxYDOndvFlrJp7dMO4PsUcn3ypC+
-         AdTrZohoXL8GHljCWA96U6cyw7+4Os1FNPc9O2o0=
+        b=icC7z32n4BrQfpi11GhCW8qAl8W7maThS6N/XqW1X9JDJgt7QSkMAMXssg8MpHr+j
+         FdyhnALdUwW4sPzX0ovLXGy6I+/u/EhjtIOgv6VWZwQTKQjDLAOqA/9h/mUxv/vg/+
+         1F/XPXCyhLaxMOUTMORl5q+N8wuAWX5mUeseVuOo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ying Xue <ying.xue@windriver.com>,
-        Hoang Le <hoang.h.le@dektech.com.au>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 376/599] tipc: fix the timer expires after interval 100ms
-Date:   Tue,  5 Apr 2022 09:31:10 +0200
-Message-Id: <20220405070310.019726757@linuxfoundation.org>
+        stable@vger.kernel.org, Libin Yang <libin.yang@intel.com>,
+        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
+        Rander Wang <rander.wang@intel.com>,
+        Bard Liao <yung-chuan.liao@linux.intel.com>,
+        Vinod Koul <vkoul@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 587/913] soundwire: intel: fix wrong register name in intel_shim_wake
+Date:   Tue,  5 Apr 2022 09:27:29 +0200
+Message-Id: <20220405070357.439541450@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,43 +52,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hoang Le <hoang.h.le@dektech.com.au>
+From: Libin Yang <libin.yang@intel.com>
 
-[ Upstream commit 6a7d8cff4a3301087dd139293e9bddcf63827282 ]
+[ Upstream commit 3957db3ae3dae6f8b8168791f154567fe49e1fd7 ]
 
-In the timer callback function tipc_sk_timeout(), we're trying to
-reschedule another timeout to retransmit a setup request if destination
-link is congested. But we use the incorrect timeout value
-(msecs_to_jiffies(100)) instead of (jiffies + msecs_to_jiffies(100)),
-so that the timer expires immediately, it's irrelevant for original
-description.
+When clearing the sdw wakests status, we should use SDW_SHIM_WAKESTS.
 
-In this commit we correct the timeout value in sk_reset_timer()
-
-Fixes: 6787927475e5 ("tipc: buffer overflow handling in listener socket")
-Acked-by: Ying Xue <ying.xue@windriver.com>
-Signed-off-by: Hoang Le <hoang.h.le@dektech.com.au>
-Link: https://lore.kernel.org/r/20220321042229.314288-1-hoang.h.le@dektech.com.au
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+Fixes: 4a17c441c7cb ("soundwire: intel: revisit SHIM programming sequences.")
+Signed-off-by: Libin Yang <libin.yang@intel.com>
+Reviewed-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+Reviewed-by: Rander Wang <rander.wang@intel.com>
+Signed-off-by: Bard Liao <yung-chuan.liao@linux.intel.com>
+Link: https://lore.kernel.org/r/20220126011451.27853-1-yung-chuan.liao@linux.intel.com
+Signed-off-by: Vinod Koul <vkoul@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/tipc/socket.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/soundwire/intel.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/net/tipc/socket.c b/net/tipc/socket.c
-index 8d2c98531af4..42283dc6c5b7 100644
---- a/net/tipc/socket.c
-+++ b/net/tipc/socket.c
-@@ -2846,7 +2846,8 @@ static void tipc_sk_retry_connect(struct sock *sk, struct sk_buff_head *list)
+diff --git a/drivers/soundwire/intel.c b/drivers/soundwire/intel.c
+index 78037ffdb09b..f72d36654ac2 100644
+--- a/drivers/soundwire/intel.c
++++ b/drivers/soundwire/intel.c
+@@ -448,8 +448,8 @@ static void intel_shim_wake(struct sdw_intel *sdw, bool wake_enable)
  
- 	/* Try again later if dest link is congested */
- 	if (tsk->cong_link_cnt) {
--		sk_reset_timer(sk, &sk->sk_timer, msecs_to_jiffies(100));
-+		sk_reset_timer(sk, &sk->sk_timer,
-+			       jiffies + msecs_to_jiffies(100));
- 		return;
+ 		/* Clear wake status */
+ 		wake_sts = intel_readw(shim, SDW_SHIM_WAKESTS);
+-		wake_sts |= (SDW_SHIM_WAKEEN_ENABLE << link_id);
+-		intel_writew(shim, SDW_SHIM_WAKESTS_STATUS, wake_sts);
++		wake_sts |= (SDW_SHIM_WAKESTS_STATUS << link_id);
++		intel_writew(shim, SDW_SHIM_WAKESTS, wake_sts);
  	}
- 	/* Prepare SYN for retransmit */
+ 	mutex_unlock(sdw->link_res->shim_lock);
+ }
 -- 
 2.34.1
 
