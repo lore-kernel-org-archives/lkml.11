@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 02B8AC43217
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:37:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3BC43C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:37:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241951AbiDEIgL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 04:36:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48340 "EHLO
+        id S241979AbiDEIgP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 04:36:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52988 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234029AbiDEH55 (ORCPT
+        with ESMTP id S234414AbiDEH6O (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 03:57:57 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BA3E95A37;
-        Tue,  5 Apr 2022 00:51:48 -0700 (PDT)
+        Tue, 5 Apr 2022 03:58:14 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B79ABA2040;
+        Tue,  5 Apr 2022 00:52:27 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 49EEEB81BB2;
-        Tue,  5 Apr 2022 07:51:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A5B01C340EE;
-        Tue,  5 Apr 2022 07:51:44 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E166E615C3;
+        Tue,  5 Apr 2022 07:52:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EF5B1C340EE;
+        Tue,  5 Apr 2022 07:52:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649145105;
-        bh=/vR0csPgyK1a51us8gLjMxucFDCE+Ydgx3/OPfKJx48=;
+        s=korg; t=1649145146;
+        bh=xMuBtpSMi0tR4uqVjAuMkRQrPn1kVymN+i1l75YiSig=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DBUt5GWfyvUtASSIpANBiVj8LyVgsqDBzZSMHeHh+tt7VkLSSztx4A68sQibGncij
-         GgjKLPe8XWxDMNt+pZJdWbj7BTBrsTbg5HURrzhKuyLmITlDuHvvQY5aB2UKyXGzDp
-         Ti3u/W4smXP0u+yEqJPFUe5Uh6VxVdxfjzXm97XI=
+        b=fdDdDn3kVSeD6jlaqig18SbmfC1nIDTVpUiEnMRJgMwLIExh/1fDDlUK266dvusUT
+         4NwpUA1mxROFyG7+9IXtOos1TzNi/GXYXbTCYTkKqIkaqpXsQk1FN7Bf7He04rHCNB
+         nY0/KqW4YYzuUj+h5IdP7D4r9UZOMWfo0mCJ37Kk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Fengnan Chang <changfengnan@vivo.com>,
-        Chao Yu <chao@kernel.org>, Jaegeuk Kim <jaegeuk@kernel.org>,
+        stable@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
+        Igor Zhbanov <i.zhbanov@omprussia.ru>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0286/1126] f2fs: fix compressed file start atomic write may cause data corruption
-Date:   Tue,  5 Apr 2022 09:17:13 +0200
-Message-Id: <20220405070416.008596932@linuxfoundation.org>
+Subject: [PATCH 5.17 0263/1126] clocksource: acpi_pm: fix return value of __setup handler
+Date:   Tue,  5 Apr 2022 09:16:50 +0200
+Message-Id: <20220405070415.330085387@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -51,76 +50,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Fengnan Chang <changfengnan@vivo.com>
+From: Randy Dunlap <rdunlap@infradead.org>
 
-[ Upstream commit 9b56adcf525522e9ffa52471260298d91fc1d395 ]
+[ Upstream commit 6a861abceecb68497dd82a324fee45a5332dcece ]
 
-When compressed file has blocks, f2fs_ioc_start_atomic_write will succeed,
-but compressed flag will be remained in inode. If write partial compreseed
-cluster and commit atomic write will cause data corruption.
+__setup() handlers should return 1 to obsolete_checksetup() in
+init/main.c to indicate that the boot option has been handled.
+A return of 0 causes the boot option/value to be listed as an Unknown
+kernel parameter and added to init's (limited) environment strings.
 
-This is the reproduction process:
-Step 1:
-create a compressed file ,write 64K data , call fsync(), then the blocks
-are write as compressed cluster.
-Step2:
-iotcl(F2FS_IOC_START_ATOMIC_WRITE)  --- this should be fail, but not.
-write page 0 and page 3.
-iotcl(F2FS_IOC_COMMIT_ATOMIC_WRITE)  -- page 0 and 3 write as normal file,
-Step3:
-drop cache.
-read page 0-4   -- Since page 0 has a valid block address, read as
-non-compressed cluster, page 1 and 2 will be filled with compressed data
-or zero.
+The __setup() handler interface isn't meant to handle negative return
+values -- they are non-zero, so they mean "handled" (like a return
+value of 1 does), but that's just a quirk. So return 1 from
+parse_pmtmr(). Also print a warning message if kstrtouint() returns
+an error.
 
-The root cause is, after commit 7eab7a696827 ("f2fs: compress: remove
-unneeded read when rewrite whole cluster"), in step 2, f2fs_write_begin()
-only set target page dirty, and in f2fs_commit_inmem_pages(), we will write
-partial raw pages into compressed cluster, result in corrupting compressed
-cluster layout.
-
-Fixes: 4c8ff7095bef ("f2fs: support data compression")
-Fixes: 7eab7a696827 ("f2fs: compress: remove unneeded read when rewrite whole cluster")
-Reported-by: kernel test robot <lkp@intel.com>
-Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
-Signed-off-by: Fengnan Chang <changfengnan@vivo.com>
-Reviewed-by: Chao Yu <chao@kernel.org>
-Signed-off-by: Jaegeuk Kim <jaegeuk@kernel.org>
+Fixes: 6b148507d3d0 ("pmtmr: allow command line override of ioport")
+Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+Reported-by: Igor Zhbanov <i.zhbanov@omprussia.ru>
+Link: lore.kernel.org/r/64644a2f-4a20-bab3-1e15-3b2cdd0defe3@omprussia.ru
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/f2fs/data.c | 2 +-
- fs/f2fs/file.c | 5 ++++-
- 2 files changed, 5 insertions(+), 2 deletions(-)
+ drivers/clocksource/acpi_pm.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/fs/f2fs/data.c b/fs/f2fs/data.c
-index e1ef925be60c..bdfa8bed10b2 100644
---- a/fs/f2fs/data.c
-+++ b/fs/f2fs/data.c
-@@ -3357,7 +3357,7 @@ static int f2fs_write_begin(struct file *file, struct address_space *mapping,
+diff --git a/drivers/clocksource/acpi_pm.c b/drivers/clocksource/acpi_pm.c
+index eb596ff9e7bb..279ddff81ab4 100644
+--- a/drivers/clocksource/acpi_pm.c
++++ b/drivers/clocksource/acpi_pm.c
+@@ -229,8 +229,10 @@ static int __init parse_pmtmr(char *arg)
+ 	int ret;
  
- 		*fsdata = NULL;
- 
--		if (len == PAGE_SIZE)
-+		if (len == PAGE_SIZE && !(f2fs_is_atomic_file(inode)))
- 			goto repeat;
- 
- 		ret = f2fs_prepare_compress_overwrite(inode, pagep,
-diff --git a/fs/f2fs/file.c b/fs/f2fs/file.c
-index 3c98ef6af97d..b110c3a7db6a 100644
---- a/fs/f2fs/file.c
-+++ b/fs/f2fs/file.c
-@@ -2008,7 +2008,10 @@ static int f2fs_ioc_start_atomic_write(struct file *filp)
- 
- 	inode_lock(inode);
- 
--	f2fs_disable_compressed_file(inode);
-+	if (!f2fs_disable_compressed_file(inode)) {
-+		ret = -EINVAL;
-+		goto out;
+ 	ret = kstrtouint(arg, 16, &base);
+-	if (ret)
+-		return ret;
++	if (ret) {
++		pr_warn("PMTMR: invalid 'pmtmr=' value: '%s'\n", arg);
++		return 1;
 +	}
  
- 	if (f2fs_is_atomic_file(inode)) {
- 		if (is_inode_flag_set(inode, FI_ATOMIC_REVOKE_REQUEST))
+ 	pr_info("PMTMR IOPort override: 0x%04x -> 0x%04x\n", pmtmr_ioport,
+ 		base);
 -- 
 2.34.1
 
