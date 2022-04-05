@@ -2,42 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 962FDC4167D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AB4C5C4167B
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 22:55:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1455056AbiDEWkC (ORCPT
+        id S1455088AbiDEWkJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 18:40:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52168 "EHLO
+        Tue, 5 Apr 2022 18:40:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47412 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354200AbiDEKMP (ORCPT
+        with ESMTP id S1348968AbiDEJsu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:12:15 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0DFE54182;
-        Tue,  5 Apr 2022 02:58:35 -0700 (PDT)
+        Tue, 5 Apr 2022 05:48:50 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7D9DA27E1;
+        Tue,  5 Apr 2022 02:38:25 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 79944B817D3;
-        Tue,  5 Apr 2022 09:58:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E39A2C385A1;
-        Tue,  5 Apr 2022 09:58:32 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5335261576;
+        Tue,  5 Apr 2022 09:38:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5C3B2C385A3;
+        Tue,  5 Apr 2022 09:38:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649152713;
-        bh=+I1kIkWfWuQyDHUH07N7TM2+SinRMRMesn+il5ED1Oo=;
+        s=korg; t=1649151504;
+        bh=QgN7lXd/5D4nXDbVFwp/TInBYA77pHrREhhUm7GLROU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1O1tsJTAogyfBZ1rbX7Q9SBJU0k6b+2r4o4l1IqYK3bOGcThvxdyT4Xa0F9EuUbw7
-         P9wPha+fadGwaSqdF48/4rzEabQsRoOvMkXhP4lOTcQMqDKkVKBuaGiKFFvgtW3WHA
-         q5Ik+sZTOOqBHQheTyM8zJWjMGHlXQq4kdM4AdWE=
+        b=x5buKPgAt5L6YpFN6h/0l1m7pt3x9UOJ38bmxyPbYEtx0e692u738G81sUzqDrqSd
+         Gq/ed79QbFJ/ugMipTiCvSyHecP5yLrzfO3bGxPtosw6a1DiepQEpDdaU1lCcvxdpZ
+         QWbh1HOIVmxm6An09NNZCsmA6sIpQzx8o+7+Ynq8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.co.jp>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 5.15 877/913] af_unix: Support POLLPRI for OOB.
-Date:   Tue,  5 Apr 2022 09:32:19 +0200
-Message-Id: <20220405070406.111282097@linuxfoundation.org>
+        stable@vger.kernel.org, Lennert Buytenhek <buytenh@arista.com>,
+        Corinna Vinschen <vinschen@redhat.com>,
+        Vinicius Costa Gomes <vinicius.gomes@intel.com>,
+        Dvora Fuxbrumer <dvorax.fuxbrumer@linux.intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 439/913] igc: avoid kernel warning when changing RX ring parameters
+Date:   Tue,  5 Apr 2022 09:25:01 +0200
+Message-Id: <20220405070353.004872616@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
 References: <20220405070339.801210740@linuxfoundation.org>
@@ -49,55 +53,77 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kuniyuki Iwashima <kuniyu@amazon.co.jp>
+From: Corinna Vinschen <vinschen@redhat.com>
 
-commit d9a232d435dcc966738b0f414a86f7edf4f4c8c4 upstream.
+[ Upstream commit 453307b569a0d41bddd07f26bf41b784cd82a4c9 ]
 
-The commit 314001f0bf92 ("af_unix: Add OOB support") introduced OOB for
-AF_UNIX, but it lacks some changes for POLLPRI.  Let's add the missing
-piece.
+Calling ethtool changing the RX ring parameters like this:
 
-In the selftest, normal datagrams are sent followed by OOB data, so this
-commit replaces `POLLIN | POLLPRI` with just `POLLPRI` in the first test
-case.
+  $ ethtool -G eth0 rx 1024
 
-Fixes: 314001f0bf92 ("af_unix: Add OOB support")
-Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.co.jp>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+on igc triggers kernel warnings like this:
+
+[  225.198467] ------------[ cut here ]------------
+[  225.198473] Missing unregister, handled but fix driver
+[  225.198485] WARNING: CPU: 7 PID: 959 at net/core/xdp.c:168
+xdp_rxq_info_reg+0x79/0xd0
+[...]
+[  225.198601] Call Trace:
+[  225.198604]  <TASK>
+[  225.198609]  igc_setup_rx_resources+0x3f/0xe0 [igc]
+[  225.198617]  igc_ethtool_set_ringparam+0x30e/0x450 [igc]
+[  225.198626]  ethnl_set_rings+0x18a/0x250
+[  225.198631]  genl_family_rcv_msg_doit+0xca/0x110
+[  225.198637]  genl_rcv_msg+0xce/0x1c0
+[  225.198640]  ? rings_prepare_data+0x60/0x60
+[  225.198644]  ? genl_get_cmd+0xd0/0xd0
+[  225.198647]  netlink_rcv_skb+0x4e/0xf0
+[  225.198652]  genl_rcv+0x24/0x40
+[  225.198655]  netlink_unicast+0x20e/0x330
+[  225.198659]  netlink_sendmsg+0x23f/0x480
+[  225.198663]  sock_sendmsg+0x5b/0x60
+[  225.198667]  __sys_sendto+0xf0/0x160
+[  225.198671]  ? handle_mm_fault+0xb2/0x280
+[  225.198676]  ? do_user_addr_fault+0x1eb/0x690
+[  225.198680]  __x64_sys_sendto+0x20/0x30
+[  225.198683]  do_syscall_64+0x38/0x90
+[  225.198687]  entry_SYSCALL_64_after_hwframe+0x44/0xae
+[  225.198693] RIP: 0033:0x7f7ae38ac3aa
+
+igc_ethtool_set_ringparam() copies the igc_ring structure but neglects to
+reset the xdp_rxq_info member before calling igc_setup_rx_resources().
+This in turn calls xdp_rxq_info_reg() with an already registered xdp_rxq_info.
+
+Make sure to unregister the xdp_rxq_info structure first in
+igc_setup_rx_resources.
+
+Fixes: 73f1071c1d29 ("igc: Add support for XDP_TX action")
+Reported-by: Lennert Buytenhek <buytenh@arista.com>
+Signed-off-by: Corinna Vinschen <vinschen@redhat.com>
+Acked-by: Vinicius Costa Gomes <vinicius.gomes@intel.com>
+Tested-by: Dvora Fuxbrumer <dvorax.fuxbrumer@linux.intel.com>
+Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/unix/af_unix.c                                  |    4 ++++
- tools/testing/selftests/net/af_unix/test_unix_oob.c |    6 +++---
- 2 files changed, 7 insertions(+), 3 deletions(-)
+ drivers/net/ethernet/intel/igc/igc_main.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
---- a/net/unix/af_unix.c
-+++ b/net/unix/af_unix.c
-@@ -3049,6 +3049,10 @@ static __poll_t unix_poll(struct file *f
- 		mask |= EPOLLIN | EPOLLRDNORM;
- 	if (sk_is_readable(sk))
- 		mask |= EPOLLIN | EPOLLRDNORM;
-+#if IS_ENABLED(CONFIG_AF_UNIX_OOB)
-+	if (READ_ONCE(unix_sk(sk)->oob_skb))
-+		mask |= EPOLLPRI;
-+#endif
+diff --git a/drivers/net/ethernet/intel/igc/igc_main.c b/drivers/net/ethernet/intel/igc/igc_main.c
+index a514cfc6c8a0..f99819fc559d 100644
+--- a/drivers/net/ethernet/intel/igc/igc_main.c
++++ b/drivers/net/ethernet/intel/igc/igc_main.c
+@@ -504,6 +504,9 @@ int igc_setup_rx_resources(struct igc_ring *rx_ring)
+ 	u8 index = rx_ring->queue_index;
+ 	int size, desc_len, res;
  
- 	/* Connection-based need to check for termination and startup */
- 	if ((sk->sk_type == SOCK_STREAM || sk->sk_type == SOCK_SEQPACKET) &&
---- a/tools/testing/selftests/net/af_unix/test_unix_oob.c
-+++ b/tools/testing/selftests/net/af_unix/test_unix_oob.c
-@@ -218,10 +218,10 @@ main(int argc, char **argv)
- 
- 	/* Test 1:
- 	 * veriyf that SIGURG is
--	 * delivered and 63 bytes are
--	 * read and oob is '@'
-+	 * delivered, 63 bytes are
-+	 * read, oob is '@', and POLLPRI works.
- 	 */
--	wait_for_data(pfd, POLLIN | POLLPRI);
-+	wait_for_data(pfd, POLLPRI);
- 	read_oob(pfd, &oob);
- 	len = read_data(pfd, buf, 1024);
- 	if (!signal_recvd || len != 63 || oob != '@') {
++	/* XDP RX-queue info */
++	if (xdp_rxq_info_is_reg(&rx_ring->xdp_rxq))
++		xdp_rxq_info_unreg(&rx_ring->xdp_rxq);
+ 	res = xdp_rxq_info_reg(&rx_ring->xdp_rxq, ndev, index,
+ 			       rx_ring->q_vector->napi.napi_id);
+ 	if (res < 0) {
+-- 
+2.34.1
+
 
 
