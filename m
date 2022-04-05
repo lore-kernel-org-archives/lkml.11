@@ -2,43 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C68EC4707A
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9118EC4707E
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 14:06:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354475AbiDEOCL (ORCPT
+        id S1354986AbiDEOCZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 10:02:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44564 "EHLO
+        Tue, 5 Apr 2022 10:02:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44478 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235433AbiDEJaT (ORCPT
+        with ESMTP id S233741AbiDEJae (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:30:19 -0400
+        Tue, 5 Apr 2022 05:30:34 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 603F53120F;
-        Tue,  5 Apr 2022 02:17:10 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4E71E388F;
+        Tue,  5 Apr 2022 02:17:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E16BF615E4;
-        Tue,  5 Apr 2022 09:17:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ED31AC385A2;
-        Tue,  5 Apr 2022 09:17:08 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 45B2B615E5;
+        Tue,  5 Apr 2022 09:17:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 50E94C385A2;
+        Tue,  5 Apr 2022 09:17:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649150229;
-        bh=VyceP8V9963XvE21yMD5O+ylMNMf3kEiRPDdqj8YzSk=;
+        s=korg; t=1649150237;
+        bh=+meF9PkKtpTanUbYRtKk8E3df2KpV2NIkMy3Tats4EA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UAAE65FLRpEe6ZhCrj7FZwwB9kryEdwEs626OLbN+bUpTkXmSKex7CbbKW1GUd36N
-         GMuV2shT5qj3H2IrrBv3xFEAXVlTRyP7jd1hHnBq3gkeM1/Bh9619iVyFOENExCO/D
-         6TjvA4TiwVxVWOwbnnN9eIFmsmRWrT2Y7NwB3Ik8=
+        b=hOACTtOCuXWmV+9lgCkEjgULsO57D8N8qx6GeSi7pYsGnpxNmapBQnm4qcOz06BjV
+         s+K9mcr7/UBMML0zYxT1sw9900tu0NXvipiWeV2kfYMfCE5ncVTTFwECTEX26YwE2m
+         5QrNyGrBy1QKpmHf3LAn7YqttwkHqz9qXJyEeTJU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kuldeep Singh <singh.kuldeep87k@gmail.com>,
-        Viresh Kumar <viresh.kumar@linaro.org>,
-        Arnd Bergmann <arnd@arndb.de>
-Subject: [PATCH 5.16 0998/1017] ARM: dts: spear1340: Update serial node properties
-Date:   Tue,  5 Apr 2022 09:31:51 +0200
-Message-Id: <20220405070423.825252786@linuxfoundation.org>
+        stable@vger.kernel.org, Will Deacon <will@kernel.org>
+Subject: [PATCH 5.16 0965/1017] arm64: mm: Drop const from conditional arm64_dma_phys_limit definition
+Date:   Tue,  5 Apr 2022 09:31:18 +0200
+Message-Id: <20220405070422.850997943@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -50,37 +48,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kuldeep Singh <singh.kuldeep87k@gmail.com>
+From: Will Deacon <will@kernel.org>
 
-commit 583d6b0062640def86f3265aa1042ecb6672516e upstream.
+commit 770093459b9b333380aa71f2c31c60b14895c1df upstream.
 
-Reorder dma and dma-names property for serial node to make it compliant
-with bindings.
+Commit 031495635b46 ("arm64: Do not defer reserve_crashkernel() for
+platforms with no DMA memory zones") introduced different definitions
+for 'arm64_dma_phys_limit' depending on CONFIG_ZONE_DMA{,32} based on
+a late suggestion from Pasha. Sadly, this results in a build error when
+passing W=1:
 
-Fixes: 6e8887f60f60 ("ARM: SPEAr13xx: Pass generic DW DMAC platform data from DT")
-Signed-off-by: Kuldeep Singh <singh.kuldeep87k@gmail.com>
-Acked-by: Viresh Kumar <viresh.kumar@linaro.org>
-Link: https://lore.kernel.org/r/20220326042313.97862-3-singh.kuldeep87k@gmail.com'
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+  | arch/arm64/mm/init.c:90:19: error: conflicting type qualifiers for 'arm64_dma_phys_limit'
+
+Drop the 'const' for now and use '__ro_after_init' consistently.
+
+Link: https://lore.kernel.org/r/202203090241.aj7paWeX-lkp@intel.com
+Link: https://lore.kernel.org/r/CA+CK2bDbbx=8R=UthkMesWOST8eJMtOGJdfMRTFSwVmo0Vn0EA@mail.gmail.com
+Fixes: 031495635b46 ("arm64: Do not defer reserve_crashkernel() for platforms with no DMA memory zones")
+Signed-off-by: Will Deacon <will@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm/boot/dts/spear1340.dtsi |    6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ arch/arm64/mm/init.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/arch/arm/boot/dts/spear1340.dtsi
-+++ b/arch/arm/boot/dts/spear1340.dtsi
-@@ -134,9 +134,9 @@
- 				reg = <0xb4100000 0x1000>;
- 				interrupts = <0 105 0x4>;
- 				status = "disabled";
--				dmas = <&dwdma0 12 0 1>,
--					<&dwdma0 13 1 0>;
--				dma-names = "tx", "rx";
-+				dmas = <&dwdma0 13 0 1>,
-+					<&dwdma0 12 1 0>;
-+				dma-names = "rx", "tx";
- 			};
+--- a/arch/arm64/mm/init.c
++++ b/arch/arm64/mm/init.c
+@@ -87,7 +87,7 @@ EXPORT_SYMBOL(memstart_addr);
+ #if IS_ENABLED(CONFIG_ZONE_DMA) || IS_ENABLED(CONFIG_ZONE_DMA32)
+ phys_addr_t __ro_after_init arm64_dma_phys_limit;
+ #else
+-const phys_addr_t arm64_dma_phys_limit = PHYS_MASK + 1;
++phys_addr_t __ro_after_init arm64_dma_phys_limit = PHYS_MASK + 1;
+ #endif
  
- 			thermal@e07008c4 {
+ #ifdef CONFIG_KEXEC_CORE
 
 
