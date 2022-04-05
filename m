@@ -2,103 +2,183 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BF8F4C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AF448C433EF
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 02:32:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1849140AbiDFCdU (ORCPT
+        id S1849110AbiDFCdN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 22:33:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54496 "EHLO
+        Tue, 5 Apr 2022 22:33:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50918 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1447044AbiDEWWw (ORCPT
+        with ESMTP id S1444221AbiDEWVB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 18:22:52 -0400
-Received: from gateway30.websitewelcome.com (gateway30.websitewelcome.com [192.185.180.41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80552170097
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 14:16:23 -0700 (PDT)
-Received: from cm12.websitewelcome.com (cm12.websitewelcome.com [100.42.49.8])
-        by gateway30.websitewelcome.com (Postfix) with ESMTP id C8F3E5F99
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 16:15:52 -0500 (CDT)
-Received: from 162-215-252-75.unifiedlayer.com ([208.91.199.152])
-        by cmsmtp with SMTP
-        id bqWmndZUb9AGSbqWmnEeZE; Tue, 05 Apr 2022 16:15:52 -0500
-X-Authority-Reason: nr=8
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=roeck-us.net; s=default; h=In-Reply-To:Content-Type:MIME-Version:References
-        :Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding
-        :Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
-        List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=RpbIKh1r4/BW29+SALiRPg7XSNqIUw9inRFZ3VtgfiY=; b=rnlkEyAZ4vKF3WOJgUmnyodVrd
-        C9uslS+M0meUurmet+JAVGBKXdhvwkIsWqpuSeJ3EcCqFEYMEjuAqUGDZmtQnL3BCd9vAK27T05Oa
-        7tPV96MzU0+N8l6/JBVEpE2FB90fN6F/nYDinDJWCPLn6wR28z+e6Z0zxJrDOG2YR0wzLBYxMWkg0
-        dR9uykoHq/SLgOZElDtv6iSGL0s4P52SjaEyDGDYrvNa3y//i4/710EKGF3oVJKIuPV9+BEfzMLi2
-        zoDNoDnzROHbpBYgHf9NVeN34NkjbHdapgBTLoJPWoo/3DBJHTwTEStObnVxjVyZCG838QavMbBdM
-        zLCwH4jg==;
-Received: from 108-223-40-66.lightspeed.sntcca.sbcglobal.net ([108.223.40.66]:57868 helo=localhost)
-        by bh-25.webhostbox.net with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@roeck-us.net>)
-        id 1nbqWm-003GUy-8P; Tue, 05 Apr 2022 21:15:52 +0000
-Date:   Tue, 5 Apr 2022 14:15:51 -0700
-From:   Guenter Roeck <linux@roeck-us.net>
-To:     Sebastian Ene <sebastianene@google.com>
-Cc:     Wim Van Sebroeck <wim@linux-watchdog.org>,
-        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-watchdog@vger.kernel.org,
-        will@kernel.org, qperret@google.com, maz@kernel.org
-Subject: Re: [PATCH 2/2] watchdog: Add a mechanism to detect stalls on guest
- vCPUs
-Message-ID: <20220405211551.GB2121947@roeck-us.net>
-References: <20220405141954.1489782-1-sebastianene@google.com>
- <20220405141954.1489782-3-sebastianene@google.com>
+        Tue, 5 Apr 2022 18:21:01 -0400
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C66C89AE71;
+        Tue,  5 Apr 2022 13:45:09 -0700 (PDT)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: nicolas)
+        with ESMTPSA id 6DA311F44871
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1649191508;
+        bh=RVect5wnawuQWmXyzNYDAw2lNjPQxUXn0VLgDqyjlvI=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=D8r5g4fh0PKqWeTQYhm6WDFxxPXXEEVPlOcQ3DSJm7pvN3JL9i8oTw/NPWXj/nRd5
+         YWO3Th47EwJzElmgsYOoGCqsFtqThHlpOFd1WdLps3lDxmzh1bkHmjC1xj/x9YSOZO
+         GHlznuMdW1ROVg6uiLiRtqV4OU7Bz17k6ds2qCT+sNzXb+GGQ4nQoA03WI34P4kC2Y
+         i7f/MX0Fv/lLMLVsJGlB3l1ZNkKRoh1QkYycKaG9xi4Fp4eJ0ea6wOkCSGZQSlHbPm
+         macYKvHBpv02ArdI6dVl8ypu5YdYEDFCspot1KKJwHjEDo7zZzyhA+N11f/WtLxKC/
+         x/7ogl1um56rg==
+From:   Nicolas Dufresne <nicolas.dufresne@collabora.com>
+To:     Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     kernel@collabora.com, linux-kernel@vger.kernel.org,
+        Jonas Karlman <jonas@kwiboo.se>, linux-media@vger.kernel.org,
+        linux-rockchip@lists.infradead.org, linux-staging@lists.linux.dev
+Subject: [PATCH v3 16/24] media: rkvdec: h264: Validate and use pic width and height in mbs
+Date:   Tue,  5 Apr 2022 16:44:17 -0400
+Message-Id: <20220405204426.259074-17-nicolas.dufresne@collabora.com>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220405204426.259074-1-nicolas.dufresne@collabora.com>
+References: <20220405204426.259074-1-nicolas.dufresne@collabora.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220405141954.1489782-3-sebastianene@google.com>
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - bh-25.webhostbox.net
-X-AntiAbuse: Original Domain - vger.kernel.org
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - roeck-us.net
-X-BWhitelist: no
-X-Source-IP: 108.223.40.66
-X-Source-L: No
-X-Exim-ID: 1nbqWm-003GUy-8P
-X-Source: 
-X-Source-Args: 
-X-Source-Dir: 
-X-Source-Sender: 108-223-40-66.lightspeed.sntcca.sbcglobal.net (localhost) [108.223.40.66]:57868
-X-Source-Auth: guenter@roeck-us.net
-X-Email-Count: 6
-X-Source-Cap: cm9lY2s7YWN0aXZzdG07YmgtMjUud2ViaG9zdGJveC5uZXQ=
-X-Local-Domain: yes
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Sebastian,
+From: Jonas Karlman <jonas@kwiboo.se>
 
-On Tue, Apr 05, 2022 at 02:19:55PM +0000, Sebastian Ene wrote:
-> This patch adds support for a virtual watchdog which relies on the
-> per-cpu hrtimers to pet at regular intervals.
-> 
+The width and height in macroblocks is currently configured based on OUTPUT
+buffer resolution, this works for frame pictures but can cause issues for
+field pictures.
 
-The watchdog subsystem is not intended to detect soft and hard lockups.
-It is intended to detect userspace issues. A watchdog driver requires
-a userspace compinent which needs to ping the watchdog on a regular basis
-to prevent timeouts (and watchdog drivers are supposed to use the
-watchdog kernel API).
+When frame_mbs_only_flag is 0 the height in mbs should be height of
+the field instead of height of frame.
 
-What you have here is a CPU stall detection mechanism, similar to the
-existing soft/hard lockup detection mechanism. This code does not
-belong into the watchdog subsystem; it is similar to the existing
-hard/softlockup detection code (kernel/watchdog.c) and should reside
-at the same location.
+Validate pic_width_in_mbs_minus1 and pic_height_in_map_units_minus1
+against OUTPUT buffer resolution and use these values to configure HW.
+The validation is happening in both try_ctrt() and start() since it is
+otherwise possible to trick the driver during initialization by changing
+the OUTPUT format after having set a valid control.
 
-Having said that, I could imagine a watchdog driver to be used in VMs,
-but that would be similar to existing watchdog drivers. The easiest way
-to get there would probably be to just instantiate one of the watchdog
-devices already supported by qemu.
+Signed-off-by: Jonas Karlman <jonas@kwiboo.se>
+Signed-off-by: Nicolas Dufresne <nicolas.dufresne@collabora.com>
+---
+ drivers/staging/media/rkvdec/rkvdec-h264.c | 78 ++++++++++++++++------
+ 1 file changed, 59 insertions(+), 19 deletions(-)
 
-Guenter
+diff --git a/drivers/staging/media/rkvdec/rkvdec-h264.c b/drivers/staging/media/rkvdec/rkvdec-h264.c
+index 0dcbcb1bac80..f081b476340f 100644
+--- a/drivers/staging/media/rkvdec/rkvdec-h264.c
++++ b/drivers/staging/media/rkvdec/rkvdec-h264.c
+@@ -672,8 +672,16 @@ static void assemble_hw_pps(struct rkvdec_ctx *ctx,
+ 		  LOG2_MAX_PIC_ORDER_CNT_LSB_MINUS4);
+ 	WRITE_PPS(!!(sps->flags & V4L2_H264_SPS_FLAG_DELTA_PIC_ORDER_ALWAYS_ZERO),
+ 		  DELTA_PIC_ORDER_ALWAYS_ZERO_FLAG);
+-	WRITE_PPS(DIV_ROUND_UP(ctx->coded_fmt.fmt.pix_mp.width, 16), PIC_WIDTH_IN_MBS);
+-	WRITE_PPS(DIV_ROUND_UP(ctx->coded_fmt.fmt.pix_mp.height, 16), PIC_HEIGHT_IN_MBS);
++
++	/* Use the SPS values since they are already in macroblocks
++	 * dimensions, height can be field height (halved) if
++	 * V4L2_H264_SPS_FLAG_FRAME_MBS_ONLY is not set and also it allows
++	 * decoding smaller images into larger allocation which can be used
++	 * to implementing SVC spatial layer support.
++	 */
++	WRITE_PPS(sps->pic_width_in_mbs_minus1 + 1, PIC_WIDTH_IN_MBS);
++	WRITE_PPS(sps->pic_height_in_map_units_minus1 + 1, PIC_HEIGHT_IN_MBS);
++
+ 	WRITE_PPS(!!(sps->flags & V4L2_H264_SPS_FLAG_FRAME_MBS_ONLY),
+ 		  FRAME_MBS_ONLY_FLAG);
+ 	WRITE_PPS(!!(sps->flags & V4L2_H264_SPS_FLAG_MB_ADAPTIVE_FRAME_FIELD),
+@@ -1035,13 +1043,59 @@ static int rkvdec_h264_adjust_fmt(struct rkvdec_ctx *ctx,
+ 	return 0;
+ }
+ 
++static int rkvdec_h264_validate_sps(struct rkvdec_ctx *ctx,
++				    const struct v4l2_ctrl_h264_sps *sps)
++{
++	unsigned int width, height;
++	/*
++	 * TODO: The hardware supports 10-bit and 4:2:2 profiles,
++	 * but it's currently broken in the driver.
++	 * Reject them for now, until it's fixed.
++	 */
++	if (sps->chroma_format_idc > 1)
++		/* Only 4:0:0 and 4:2:0 are supported */
++		return -EINVAL;
++	if (sps->bit_depth_luma_minus8 != sps->bit_depth_chroma_minus8)
++		/* Luma and chroma bit depth mismatch */
++		return -EINVAL;
++	if (sps->bit_depth_luma_minus8 != 0)
++		/* Only 8-bit is supported */
++		return -EINVAL;
++
++	width = (sps->pic_width_in_mbs_minus1 + 1) * 16;
++	height = (sps->pic_height_in_map_units_minus1 + 1) * 16;
++
++	/* when frame_mbs_only_flag is not set, this is field height,
++	 * which is half the final height (see (7-18) in the
++	 * specification)
++	 */
++	if (!(sps->flags & V4L2_H264_SPS_FLAG_FRAME_MBS_ONLY))
++		height *= 2;
++
++	if (width > ctx->coded_fmt.fmt.pix_mp.width ||
++	    height > ctx->coded_fmt.fmt.pix_mp.height)
++		return -EINVAL;
++
++	return 0;
++}
++
+ static int rkvdec_h264_start(struct rkvdec_ctx *ctx)
+ {
+ 	struct rkvdec_dev *rkvdec = ctx->dev;
+ 	struct rkvdec_h264_priv_tbl *priv_tbl;
+ 	struct rkvdec_h264_ctx *h264_ctx;
++	struct v4l2_ctrl *ctrl;
+ 	int ret;
+ 
++	ctrl = v4l2_ctrl_find(&ctx->ctrl_hdl,
++			      V4L2_CID_STATELESS_H264_SPS);
++	if (!ctrl)
++		return -EINVAL;
++
++	ret = rkvdec_h264_validate_sps(ctx, ctrl->p_new.p_h264_sps);
++	if (ret)
++		return ret;
++
+ 	h264_ctx = kzalloc(sizeof(*h264_ctx), GFP_KERNEL);
+ 	if (!h264_ctx)
+ 		return -ENOMEM;
+@@ -1139,23 +1193,9 @@ static int rkvdec_h264_run(struct rkvdec_ctx *ctx)
+ 
+ static int rkvdec_h264_try_ctrl(struct rkvdec_ctx *ctx, struct v4l2_ctrl *ctrl)
+ {
+-	if (ctrl->id == V4L2_CID_STATELESS_H264_SPS) {
+-		const struct v4l2_ctrl_h264_sps *sps = ctrl->p_new.p_h264_sps;
+-		/*
+-		 * TODO: The hardware supports 10-bit and 4:2:2 profiles,
+-		 * but it's currently broken in the driver.
+-		 * Reject them for now, until it's fixed.
+-		 */
+-		if (sps->chroma_format_idc > 1)
+-			/* Only 4:0:0 and 4:2:0 are supported */
+-			return -EINVAL;
+-		if (sps->bit_depth_luma_minus8 != sps->bit_depth_chroma_minus8)
+-			/* Luma and chroma bit depth mismatch */
+-			return -EINVAL;
+-		if (sps->bit_depth_luma_minus8 != 0)
+-			/* Only 8-bit is supported */
+-			return -EINVAL;
+-	}
++	if (ctrl->id == V4L2_CID_STATELESS_H264_SPS)
++		return rkvdec_h264_validate_sps(ctx, ctrl->p_new.p_h264_sps);
++
+ 	return 0;
+ }
+ 
+-- 
+2.34.1
+
