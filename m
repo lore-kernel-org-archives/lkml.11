@@ -2,192 +2,167 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 35D27C43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 25C25C4321E
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 22:39:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1451320AbiDEW3l (ORCPT
+        id S1451145AbiDEW3g (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 18:29:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55074 "EHLO
+        Tue, 5 Apr 2022 18:29:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41588 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358085AbiDEK16 (ORCPT
+        with ESMTP id S1443103AbiDEPi5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:27:58 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9198633B2;
-        Tue,  5 Apr 2022 03:15:00 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 69843B81BC5;
-        Tue,  5 Apr 2022 10:14:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DEFC3C385A0;
-        Tue,  5 Apr 2022 10:14:57 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649153698;
-        bh=eCK67HPXcIMQShDnr3324Md+05yigSA/ah6lWVYVzso=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=v/oGp2556mesh594soj08fZsq2pjbu+P6hlkm2ezqaduOoVi7WVSpOuHFL6PuLrRD
-         0LBlKK8wdyMQAeqosPk4cbtROA++urJhFUph0DdPr9JW2Hp8PZZjys0tSlz5zRgrEd
-         xZb/Dx93psqauSycui7mJOmz3e2lDRlRX///4kAA=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jack Wang <jinpu.wang@ionos.com>,
-        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 314/599] scsi: pm8001: Fix le32 values handling in pm80xx_chip_ssp_io_req()
-Date:   Tue,  5 Apr 2022 09:30:08 +0200
-Message-Id: <20220405070308.176316690@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 5 Apr 2022 11:38:57 -0400
+Received: from mx0b-001ae601.pphosted.com (mx0a-001ae601.pphosted.com [67.231.149.25])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2333BBE31;
+        Tue,  5 Apr 2022 06:54:39 -0700 (PDT)
+Received: from pps.filterd (m0077473.ppops.net [127.0.0.1])
+        by mx0a-001ae601.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 235BpSUD025148;
+        Tue, 5 Apr 2022 08:54:26 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cirrus.com; h=from : to : cc :
+ subject : date : message-id : in-reply-to : references : mime-version :
+ content-transfer-encoding : content-type; s=PODMain02222019;
+ bh=4d6rWR2g05rrvgH9va5u4PzJbivisDzt5rjTsvYag0c=;
+ b=Mn5mZuyzXlj2NymzhbFhc00KtzTkkm0ahpwT0N4SH1DqKDIWibBjdTV/uheKL0Cb4wm8
+ Wit1TM1nUcKCt6yD+GDGhcazOLnLkP2TTmBNfgiaU5c2I4bzIC1Y/4sgROIwC3exvoNg
+ Uum8ftOB0iMBnl6OEMC/vR4G72GZg7krklc+jb77+6sVD09+GLimo9sPEZSBfPgmFLNu
+ j+o8Ol09ny6yfspIozkypXKsk0ykIalrYsvNlm0v1Z/6JH0gorbLx4lVGD5KnRFx+AgN
+ 1qavsb0GqFFcNLcUXuVxqNkM7ODnzJGEM5hM1E2eHMTqVloBmn6yNh9NMVcYcnmrUp+w PA== 
+Received: from ediex02.ad.cirrus.com ([84.19.233.68])
+        by mx0a-001ae601.pphosted.com (PPS) with ESMTPS id 3f6kw2brwt-2
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Tue, 05 Apr 2022 08:54:26 -0500
+Received: from EDIEX01.ad.cirrus.com (198.61.84.80) by EDIEX02.ad.cirrus.com
+ (198.61.84.81) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Tue, 5 Apr
+ 2022 14:54:23 +0100
+Received: from ediswmail.ad.cirrus.com (198.61.86.93) by EDIEX01.ad.cirrus.com
+ (198.61.84.80) with Microsoft SMTP Server id 15.1.2375.24 via Frontend
+ Transport; Tue, 5 Apr 2022 14:54:23 +0100
+Received: from AUSNPC0LSNW1-debian.cirrus.com (AUSNPC0LSNW1.ad.cirrus.com [198.61.65.88])
+        by ediswmail.ad.cirrus.com (Postfix) with ESMTP id 9711B475;
+        Tue,  5 Apr 2022 13:54:23 +0000 (UTC)
+From:   Richard Fitzgerald <rf@opensource.cirrus.com>
+To:     <broonie@kernel.org>
+CC:     <robh+dt@kernel.org>, <alsa-devel@alsa-project.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <patches@opensource.cirrus.com>,
+        Richard Fitzgerald <rf@opensource.cirrus.com>
+Subject: [PATCH v2 2/5] ASoC: soc-utils: Add helper to calculate BCLK from TDM info
+Date:   Tue, 5 Apr 2022 14:54:16 +0100
+Message-ID: <20220405135419.1230088-3-rf@opensource.cirrus.com>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220405135419.1230088-1-rf@opensource.cirrus.com>
+References: <20220405135419.1230088-1-rf@opensource.cirrus.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Proofpoint-ORIG-GUID: eT3ZaaXP_DxRzllQcsDM9-C86CHR2txL
+X-Proofpoint-GUID: eT3ZaaXP_DxRzllQcsDM9-C86CHR2txL
+X-Proofpoint-Spam-Reason: safe
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Damien Le Moal <damien.lemoal@opensource.wdc.com>
+Add a helper function snd_soc_tdm_params_to_bclk() to calculate
+the bclk from params info and the tdm sots configuration.
 
-[ Upstream commit 970404cc5744b1033b6ee601be4ef0e2d1fbcf72 ]
+When using a TDM frame of N slots of width W bits:
 
-Make sure that the __le32 fields of struct ssp_ini_io_start_req are
-manipulated after applying the correct endian conversion. That is, use
-cpu_to_le32() for assigning values and le32_to_cpu() for consulting a field
-value. In particular, make sure that the calculations for the 4G boundary
-check are done using CPU endianness and *not* little endian values. With
-these fixes, many sparse warnings are removed.
+   bclk = sample_rate * N * W
 
-While at it, add blank lines after variable declarations and in some other
-places to make this code more readable.
+As a convenience to simplify calling code, if the slot count or
+slot width are 0 a value will be obtained from the params. This
+allows calling code to use this one function to handle cases of
+TDM where only one parameter is fixed, or I2S where the slot width
+is fixed (for example to set a 32-bit slot for 24-bit samples).
 
-Link: https://lore.kernel.org/r/20220220031810.738362-11-damien.lemoal@opensource.wdc.com
-Fixes: 0ecdf00ba6e5 ("[SCSI] pm80xx: 4G boundary fix.")
-Reviewed-by: Jack Wang <jinpu.wang@ionos.com>
-Signed-off-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Also as a convenience the slot count can optionally be rounded up
+to a multiple. This is mainly useful for I2S systems, since I2S has
+two phases of LRCLK the number of slots is always a multiple of 2.
+
+Signed-off-by: Richard Fitzgerald <rf@opensource.cirrus.com>
 ---
- drivers/scsi/pm8001/pm80xx_hwi.c | 41 +++++++++++++++++++-------------
- 1 file changed, 25 insertions(+), 16 deletions(-)
+ include/sound/soc.h   |  2 ++
+ sound/soc/soc-utils.c | 45 +++++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 47 insertions(+)
 
-diff --git a/drivers/scsi/pm8001/pm80xx_hwi.c b/drivers/scsi/pm8001/pm80xx_hwi.c
-index ac6334f8d791..33b5172d55cf 100644
---- a/drivers/scsi/pm8001/pm80xx_hwi.c
-+++ b/drivers/scsi/pm8001/pm80xx_hwi.c
-@@ -4308,13 +4308,15 @@ static int pm80xx_chip_ssp_io_req(struct pm8001_hba_info *pm8001_ha,
- 	struct ssp_ini_io_start_req ssp_cmd;
- 	u32 tag = ccb->ccb_tag;
- 	int ret;
--	u64 phys_addr, start_addr, end_addr;
-+	u64 phys_addr, end_addr;
- 	u32 end_addr_high, end_addr_low;
- 	struct inbound_queue_table *circularQ;
- 	u32 q_index, cpu_id;
- 	u32 opc = OPC_INB_SSPINIIOSTART;
+diff --git a/include/sound/soc.h b/include/sound/soc.h
+index 55fb6a6d7d25..2d3261799d2c 100644
+--- a/include/sound/soc.h
++++ b/include/sound/soc.h
+@@ -487,6 +487,8 @@ int snd_soc_calc_frame_size(int sample_size, int channels, int tdm_slots);
+ int snd_soc_params_to_frame_size(struct snd_pcm_hw_params *params);
+ int snd_soc_calc_bclk(int fs, int sample_size, int channels, int tdm_slots);
+ int snd_soc_params_to_bclk(struct snd_pcm_hw_params *parms);
++int snd_soc_tdm_params_to_bclk(struct snd_pcm_hw_params *params,
++			       int tdm_width, int tdm_slots, int slot_multiple);
+ 
+ /* set runtime hw params */
+ int snd_soc_set_runtime_hwparams(struct snd_pcm_substream *substream,
+diff --git a/sound/soc/soc-utils.c b/sound/soc/soc-utils.c
+index a4efe7e52a8b..594cb311ff30 100644
+--- a/sound/soc/soc-utils.c
++++ b/sound/soc/soc-utils.c
+@@ -9,6 +9,7 @@
+ 
+ #include <linux/platform_device.h>
+ #include <linux/export.h>
++#include <linux/math.h>
+ #include <sound/core.h>
+ #include <sound/pcm.h>
+ #include <sound/pcm_params.h>
+@@ -52,6 +53,50 @@ int snd_soc_params_to_bclk(struct snd_pcm_hw_params *params)
+ }
+ EXPORT_SYMBOL_GPL(snd_soc_params_to_bclk);
+ 
++/**
++ * snd_soc_tdm_params_to_bclk - calculate bclk from params and tdm slot info.
++ *
++ * Calculate the bclk from the params sample rate and the tdm slot count and
++ * tdm slot width. Either or both of tdm_width and tdm_slots can be 0.
++ *
++ * If tdm_width == 0 and tdm_slots > 0:	the params_width will be used.
++ * If tdm_width > 0 and tdm_slots == 0:	the params_channels will be used
++ *					as the slot count.
++ * Both tdm_width and tdm_slots are 0:	this is equivalent to calling
++ *					snd_soc_params_to_bclk().
++ *
++ * If slot_multiple > 1 the slot count (or params_channels if tdm_slots == 0)
++ * will be rounded up to a multiple of this value. This is mainly useful for
++ * I2S mode, which has a left and right phase so the number of slots is always
++ * a multiple of 2.
++ *
++ * @params:        Pointer to struct_pcm_hw_params.
++ * @tdm_width:     Width in bits of the tdm slots.
++ * @tdm_slots:     Number of tdm slots per frame.
++ * @slot_multiple: If >1 roundup slot count to a multiple of this value.
++ *
++ * Return: bclk frequency in Hz, else a negative error code if params format
++ *	   is invalid.
++ */
++int snd_soc_tdm_params_to_bclk(struct snd_pcm_hw_params *params,
++			       int tdm_width, int tdm_slots, int slot_multiple)
++{
++	if (!tdm_slots)
++		tdm_slots = params_channels(params);
 +
- 	memset(&ssp_cmd, 0, sizeof(ssp_cmd));
- 	memcpy(ssp_cmd.ssp_iu.lun, task->ssp_task.LUN, 8);
++	if (slot_multiple > 1)
++		tdm_slots = roundup(tdm_slots, slot_multiple);
 +
- 	/* data address domain added for spcv; set to 0 by host,
- 	 * used internally by controller
- 	 * 0 for SAS 1.1 and SAS 2.0 compatible TLR
-@@ -4325,7 +4327,7 @@ static int pm80xx_chip_ssp_io_req(struct pm8001_hba_info *pm8001_ha,
- 	ssp_cmd.device_id = cpu_to_le32(pm8001_dev->device_id);
- 	ssp_cmd.tag = cpu_to_le32(tag);
- 	if (task->ssp_task.enable_first_burst)
--		ssp_cmd.ssp_iu.efb_prio_attr |= 0x80;
-+		ssp_cmd.ssp_iu.efb_prio_attr = 0x80;
- 	ssp_cmd.ssp_iu.efb_prio_attr |= (task->ssp_task.task_prio << 3);
- 	ssp_cmd.ssp_iu.efb_prio_attr |= (task->ssp_task.task_attr & 7);
- 	memcpy(ssp_cmd.ssp_iu.cdb, task->ssp_task.cmd->cmnd,
-@@ -4357,21 +4359,24 @@ static int pm80xx_chip_ssp_io_req(struct pm8001_hba_info *pm8001_ha,
- 			ssp_cmd.enc_esgl = cpu_to_le32(1<<31);
- 		} else if (task->num_scatter == 1) {
- 			u64 dma_addr = sg_dma_address(task->scatter);
++	if (!tdm_width) {
++		tdm_width = snd_pcm_format_width(params_format(params));
++		if (tdm_width < 0)
++			return tdm_width;
++	}
 +
- 			ssp_cmd.enc_addr_low =
- 				cpu_to_le32(lower_32_bits(dma_addr));
- 			ssp_cmd.enc_addr_high =
- 				cpu_to_le32(upper_32_bits(dma_addr));
- 			ssp_cmd.enc_len = cpu_to_le32(task->total_xfer_len);
- 			ssp_cmd.enc_esgl = 0;
++	return snd_soc_calc_bclk(params_rate(params), tdm_width, 1, tdm_slots);
++}
++EXPORT_SYMBOL_GPL(snd_soc_tdm_params_to_bclk);
 +
- 			/* Check 4G Boundary */
--			start_addr = cpu_to_le64(dma_addr);
--			end_addr = (start_addr + ssp_cmd.enc_len) - 1;
--			end_addr_low = cpu_to_le32(lower_32_bits(end_addr));
--			end_addr_high = cpu_to_le32(upper_32_bits(end_addr));
--			if (end_addr_high != ssp_cmd.enc_addr_high) {
-+			end_addr = dma_addr + le32_to_cpu(ssp_cmd.enc_len) - 1;
-+			end_addr_low = lower_32_bits(end_addr);
-+			end_addr_high = upper_32_bits(end_addr);
-+
-+			if (end_addr_high != le32_to_cpu(ssp_cmd.enc_addr_high)) {
- 				pm8001_dbg(pm8001_ha, FAIL,
- 					   "The sg list address start_addr=0x%016llx data_len=0x%x end_addr_high=0x%08x end_addr_low=0x%08x has crossed 4G boundary\n",
--					   start_addr, ssp_cmd.enc_len,
-+					   dma_addr,
-+					   le32_to_cpu(ssp_cmd.enc_len),
- 					   end_addr_high, end_addr_low);
- 				pm8001_chip_make_sg(task->scatter, 1,
- 					ccb->buf_prd);
-@@ -4380,7 +4385,7 @@ static int pm80xx_chip_ssp_io_req(struct pm8001_hba_info *pm8001_ha,
- 					cpu_to_le32(lower_32_bits(phys_addr));
- 				ssp_cmd.enc_addr_high =
- 					cpu_to_le32(upper_32_bits(phys_addr));
--				ssp_cmd.enc_esgl = cpu_to_le32(1<<31);
-+				ssp_cmd.enc_esgl = cpu_to_le32(1U<<31);
- 			}
- 		} else if (task->num_scatter == 0) {
- 			ssp_cmd.enc_addr_low = 0;
-@@ -4388,8 +4393,10 @@ static int pm80xx_chip_ssp_io_req(struct pm8001_hba_info *pm8001_ha,
- 			ssp_cmd.enc_len = cpu_to_le32(task->total_xfer_len);
- 			ssp_cmd.enc_esgl = 0;
- 		}
-+
- 		/* XTS mode. All other fields are 0 */
--		ssp_cmd.key_cmode = 0x6 << 4;
-+		ssp_cmd.key_cmode = cpu_to_le32(0x6 << 4);
-+
- 		/* set tweak values. Should be the start lba */
- 		ssp_cmd.twk_val0 = cpu_to_le32((task->ssp_task.cmd->cmnd[2] << 24) |
- 						(task->ssp_task.cmd->cmnd[3] << 16) |
-@@ -4411,20 +4418,22 @@ static int pm80xx_chip_ssp_io_req(struct pm8001_hba_info *pm8001_ha,
- 			ssp_cmd.esgl = cpu_to_le32(1<<31);
- 		} else if (task->num_scatter == 1) {
- 			u64 dma_addr = sg_dma_address(task->scatter);
-+
- 			ssp_cmd.addr_low = cpu_to_le32(lower_32_bits(dma_addr));
- 			ssp_cmd.addr_high =
- 				cpu_to_le32(upper_32_bits(dma_addr));
- 			ssp_cmd.len = cpu_to_le32(task->total_xfer_len);
- 			ssp_cmd.esgl = 0;
-+
- 			/* Check 4G Boundary */
--			start_addr = cpu_to_le64(dma_addr);
--			end_addr = (start_addr + ssp_cmd.len) - 1;
--			end_addr_low = cpu_to_le32(lower_32_bits(end_addr));
--			end_addr_high = cpu_to_le32(upper_32_bits(end_addr));
--			if (end_addr_high != ssp_cmd.addr_high) {
-+			end_addr = dma_addr + le32_to_cpu(ssp_cmd.len) - 1;
-+			end_addr_low = lower_32_bits(end_addr);
-+			end_addr_high = upper_32_bits(end_addr);
-+			if (end_addr_high != le32_to_cpu(ssp_cmd.addr_high)) {
- 				pm8001_dbg(pm8001_ha, FAIL,
- 					   "The sg list address start_addr=0x%016llx data_len=0x%x end_addr_high=0x%08x end_addr_low=0x%08x has crossed 4G boundary\n",
--					   start_addr, ssp_cmd.len,
-+					   dma_addr,
-+					   le32_to_cpu(ssp_cmd.len),
- 					   end_addr_high, end_addr_low);
- 				pm8001_chip_make_sg(task->scatter, 1,
- 					ccb->buf_prd);
+ static const struct snd_pcm_hardware dummy_dma_hardware = {
+ 	/* Random values to keep userspace happy when checking constraints */
+ 	.info			= SNDRV_PCM_INFO_INTERLEAVED |
 -- 
-2.34.1
-
-
+2.30.2
 
