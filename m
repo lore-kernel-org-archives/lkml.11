@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B550C4167D
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:57:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F1FAC352A7
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:56:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380882AbiDEMyR (ORCPT
+        id S1379580AbiDEMxK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 08:54:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58296 "EHLO
+        Tue, 5 Apr 2022 08:53:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49234 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343884AbiDEJOp (ORCPT
+        with ESMTP id S243418AbiDEJI4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:14:45 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57E05517CC;
-        Tue,  5 Apr 2022 02:01:12 -0700 (PDT)
+        Tue, 5 Apr 2022 05:08:56 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49DE69F6E5;
+        Tue,  5 Apr 2022 01:58:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0BB3EB81A12;
-        Tue,  5 Apr 2022 09:01:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2C699C385A3;
-        Tue,  5 Apr 2022 09:01:08 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7F78461574;
+        Tue,  5 Apr 2022 08:58:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 94805C385A0;
+        Tue,  5 Apr 2022 08:58:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649149269;
-        bh=dExiS92v/qYjImBWgWfdlXG7IooxBl9iDHDz+9FvNU4=;
+        s=korg; t=1649149083;
+        bh=nTo5q30PPqsFi2+GkQvzuK8vFIkgLEuVQEnryNps5rM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mbclaV6JbuJgVaeDXI5943iRwIcB37ZN4IXv2bMyz4UnFrh5xlJs+jh36ljVsvJ1u
-         aAga++WPfaIPAg7ON8BC1vjVFuZyW/xm8S+h2NPnUjGyryvdjDBd8yF6dfXtBc5Z+z
-         AkGQ96hvKByAnbIBYCixF/YzHgExV2QMb0rypa+s=
+        b=C/V/U6o5xam35r3g8pxq0dbkYh1i1iIT57o1bcc5jFha/ZJCDQwSMfwqZ7XToS+Bh
+         61e2Wj7KN6ZqVhC3MOHvp7jKMMJ1VLGnKvDKP6tal3nawtbDVIdFKTMOPDLBdp5qbA
+         ok+fAm1Oydt4bvYcflpnmGdRBOnPcrVigYokeb9M=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Binuraj Ravindran <binuraj.ravindran@intel.com>,
-        Dave Jiang <dave.jiang@intel.com>,
-        Vinod Koul <vkoul@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0655/1017] dmaengine: idxd: restore traffic class defaults after wq reset
-Date:   Tue,  5 Apr 2022 09:26:08 +0200
-Message-Id: <20220405070413.726260105@linuxfoundation.org>
+        stable@vger.kernel.org, Max Filippov <jcmvbkbc@gmail.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 0587/1017] xtensa: add missing XCHAL_HAVE_WINDOWED check
+Date:   Tue,  5 Apr 2022 09:25:00 +0200
+Message-Id: <20220405070411.703420324@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -51,44 +49,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dave Jiang <dave.jiang@intel.com>
+From: Max Filippov <jcmvbkbc@gmail.com>
 
-[ Upstream commit ea7c8f598c323f6ebaf9ddae01fb2a981fe8c56a ]
+[ Upstream commit 8c9ab55c0fbdc76cb876140c2dad75a610bb23ef ]
 
-When clearing the group configurations, the driver fails to restore the
-default setting for DSA 1.x based devices. Add defaults in
-idxd_groups_clear_state() for traffic class configuration.
+Add missing preprocessor conditions to secondary reset vector code.
 
-Fixes: ade8a86b512c ("dmaengine: idxd: Set defaults for GRPCFG traffic class")
-Reported-by: Binuraj Ravindran <binuraj.ravindran@intel.com>
-Signed-off-by: Dave Jiang <dave.jiang@intel.com>
-Link: https://lore.kernel.org/r/164304123369.824298.6952463420266592087.stgit@djiang5-desk3.ch.intel.com
-Signed-off-by: Vinod Koul <vkoul@kernel.org>
+Fixes: 09af39f649da ("xtensa: use register window specific opcodes only when present")
+Signed-off-by: Max Filippov <jcmvbkbc@gmail.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/dma/idxd/device.c | 9 +++++++--
- 1 file changed, 7 insertions(+), 2 deletions(-)
+ arch/xtensa/kernel/mxhead.S | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/dma/idxd/device.c b/drivers/dma/idxd/device.c
-index 83aa0c79f830..4bafc88f425f 100644
---- a/drivers/dma/idxd/device.c
-+++ b/drivers/dma/idxd/device.c
-@@ -691,8 +691,13 @@ static void idxd_groups_clear_state(struct idxd_device *idxd)
- 		group->use_rdbuf_limit = false;
- 		group->rdbufs_allowed = 0;
- 		group->rdbufs_reserved = 0;
--		group->tc_a = -1;
--		group->tc_b = -1;
-+		if (idxd->hw.version < DEVICE_VERSION_2 && !tc_override) {
-+			group->tc_a = 1;
-+			group->tc_b = 1;
-+		} else {
-+			group->tc_a = -1;
-+			group->tc_b = -1;
-+		}
- 	}
- }
+diff --git a/arch/xtensa/kernel/mxhead.S b/arch/xtensa/kernel/mxhead.S
+index 9f3843742726..b702c0908b1f 100644
+--- a/arch/xtensa/kernel/mxhead.S
++++ b/arch/xtensa/kernel/mxhead.S
+@@ -37,11 +37,13 @@ _SetupOCD:
+ 	 * xt-gdb to single step via DEBUG exceptions received directly
+ 	 * by ocd.
+ 	 */
++#if XCHAL_HAVE_WINDOWED
+ 	movi	a1, 1
+ 	movi	a0, 0
+ 	wsr	a1, windowstart
+ 	wsr	a0, windowbase
+ 	rsync
++#endif
  
+ 	movi	a1, LOCKLEVEL
+ 	wsr	a1, ps
 -- 
 2.34.1
 
