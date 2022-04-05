@@ -2,87 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C2EB1C43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E26CC433FE
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:21:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241781AbiDEXyV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 19:54:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58790 "EHLO
+        id S231829AbiDEXx4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 19:53:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33606 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358075AbiDEK16 (ORCPT
+        with ESMTP id S1455462AbiDEQAD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:27:58 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFC765BD0B;
-        Tue,  5 Apr 2022 03:14:39 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7BDB761777;
-        Tue,  5 Apr 2022 10:14:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8CED9C385A0;
-        Tue,  5 Apr 2022 10:14:38 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649153678;
-        bh=cWtq4auOZlOITYVP2DIRfgvbVHPEGTfB3+b87eCpKEs=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dt+8i47JCO0Td83EfHUhYvCXRw2iX2FG5r0K7eZNeeG4b691QftR3mAlz+w85Eo8J
-         mbsTYwRO6TxBqsyIJ5lVgIVskAcrYjt/XllWehN3iROt3HgvOel7Q0zPJlen+8Brdd
-         gcPSvP8YiSeGuCQE95ZpO6wYsRLbaaZUytc1g/bk=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
+        Tue, 5 Apr 2022 12:00:03 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03D3C57485;
+        Tue,  5 Apr 2022 08:15:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649171743; x=1680707743;
+  h=subject:to:cc:references:from:message-id:date:
+   mime-version:in-reply-to:content-transfer-encoding;
+  bh=3lIdhrvOWJSsLIjp6xNITFKNThnKqW6h1bviJyyMAjg=;
+  b=XMsqnVXGGgjbW6EuHpdbyhCpKFuITO/nxpf3iEkNb6e+6NDE80pQECpw
+   cZNO8EQGS6nPdT6oyYasZBtkuvRn2bYm/CaRVb0lHu2t/tM11hg5UoFSx
+   5UESQwr7rZnaXioNiarXLzKpcwkUINi569qkSGNha9xtXL7Ry2BSOt5Ps
+   qFVlu3cdSRQrUj5Q5iI6eGRmBm/OBbKQHAt4xRpTDGmq+aTx9NU+dBSm1
+   CLh722SWKlXDr2PK+YgW53l4ASy2tQ/vr5Y1pveszMYif/8jzHOQWxlJW
+   wRtjkHqA3FbWSTU9isMETkTGZawc1SYlVqGLVaUpTS7oGEwM5INF/n9N7
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10307"; a="260765093"
+X-IronPort-AV: E=Sophos;i="5.90,236,1643702400"; 
+   d="scan'208";a="260765093"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2022 08:13:41 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,236,1643702400"; 
+   d="scan'208";a="657974108"
+Received: from mattu-haswell.fi.intel.com (HELO [10.237.72.199]) ([10.237.72.199])
+  by orsmga004.jf.intel.com with ESMTP; 05 Apr 2022 08:13:39 -0700
+Subject: Re: [PATCH] xhci: stop polling roothubs after shutdown
+To:     Henry Lin <henryl@nvidia.com>,
+        Mathias Nyman <mathias.nyman@intel.com>
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Aashish Sharma <shraash@google.com>,
-        Mike Snitzer <snitzer@redhat.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 308/599] dm crypt: fix get_key_size compiler warning if !CONFIG_KEYS
-Date:   Tue,  5 Apr 2022 09:30:02 +0200
-Message-Id: <20220405070308.000086668@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
-User-Agent: quilt/0.66
+        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220401115916.104527-1-henryl@nvidia.com>
+From:   Mathias Nyman <mathias.nyman@linux.intel.com>
+Message-ID: <e4796a11-7571-b54e-cb82-87bb749709f1@linux.intel.com>
+Date:   Tue, 5 Apr 2022 18:15:31 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Firefox/78.0 Thunderbird/78.14.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220401115916.104527-1-henryl@nvidia.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Aashish Sharma <shraash@google.com>
+On 1.4.2022 14.59, Henry Lin wrote:
+> While rebooting, XHCI controller and its bus device will be shut down
+> in order by .shutdown callback. Stopping roothubs polling in
+> xhci_shutdown() can prevent XHCI driver from accessing port status
+> after its bus device shutdown.
+> 
+> Take PCIe XHCI controller as example, if XHCI driver doesn't stop roothubs
+> polling, XHCI driver may access PCIe BAR register for port status after
+> parent PCIe root port driver is shutdown and cause PCIe bus error.
+> 
+> Signed-off-by: Henry Lin <henryl@nvidia.com>
+> ---
+>  drivers/usb/host/xhci.c | 8 ++++++++
+>  1 file changed, 8 insertions(+)
+> 
+> diff --git a/drivers/usb/host/xhci.c b/drivers/usb/host/xhci.c
+> index 2d378543bc3a..e7ae6766220e 100644
+> --- a/drivers/usb/host/xhci.c
+> +++ b/drivers/usb/host/xhci.c
+> @@ -780,6 +780,14 @@ void xhci_shutdown(struct usb_hcd *hcd)
+>  	if (xhci->quirks & XHCI_SPURIOUS_REBOOT)
+>  		usb_disable_xhci_ports(to_pci_dev(hcd->self.sysdev));
+>  
+> +	/* Don't poll the roothubs after shutdown. */
+> +	xhci_dbg(xhci, "%s: stopping usb%d port polling.\n",
+> +			__func__, hcd->self.busnum);
+> +	clear_bit(HCD_FLAG_POLL_RH, &hcd->flags);
+> +	del_timer_sync(&hcd->rh_timer);
+> +	clear_bit(HCD_FLAG_POLL_RH, &xhci->shared_hcd->flags);
+> +	del_timer_sync(&xhci->shared_hcd->rh_timer);
+> +
+>  	spin_lock_irq(&xhci->lock);
+>  	xhci_halt(xhci);
+>  	/* Workaround for spurious wakeups at shutdown with HSW */
+> 
 
-[ Upstream commit 6fc51504388c1a1a53db8faafe9fff78fccc7c87 ]
+Thanks, adding to queue
 
-Explicitly convert unsigned int in the right of the conditional
-expression to int to match the left side operand and the return type,
-fixing the following compiler warning:
-
-drivers/md/dm-crypt.c:2593:43: warning: signed and unsigned
-type in conditional expression [-Wsign-compare]
-
-Fixes: c538f6ec9f56 ("dm crypt: add ability to use keys from the kernel key retention service")
-Signed-off-by: Aashish Sharma <shraash@google.com>
-Signed-off-by: Mike Snitzer <snitzer@redhat.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/md/dm-crypt.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/md/dm-crypt.c b/drivers/md/dm-crypt.c
-index 2aa4acd33af3..b9677f701b6a 100644
---- a/drivers/md/dm-crypt.c
-+++ b/drivers/md/dm-crypt.c
-@@ -2561,7 +2561,7 @@ static int crypt_set_keyring_key(struct crypt_config *cc, const char *key_string
- 
- static int get_key_size(char **key_string)
- {
--	return (*key_string[0] == ':') ? -EINVAL : strlen(*key_string) >> 1;
-+	return (*key_string[0] == ':') ? -EINVAL : (int)(strlen(*key_string) >> 1);
- }
- 
- #endif /* CONFIG_KEYS */
--- 
-2.34.1
-
-
-
+-Mathias
