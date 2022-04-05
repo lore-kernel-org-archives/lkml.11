@@ -2,46 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CD69C3527A
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:34:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 57DB5C352A7
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:34:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383272AbiDEMZS (ORCPT
+        id S1383317AbiDEMZa (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 08:25:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58138 "EHLO
+        Tue, 5 Apr 2022 08:25:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59240 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233752AbiDEIyC (ORCPT
+        with ESMTP id S245151AbiDEIyM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:54:02 -0400
+        Tue, 5 Apr 2022 04:54:12 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BACE1CFD;
-        Tue,  5 Apr 2022 01:51:24 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5C27DC7;
+        Tue,  5 Apr 2022 01:51:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D0489B81BC5;
-        Tue,  5 Apr 2022 08:51:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4107EC385A3;
-        Tue,  5 Apr 2022 08:51:21 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 86617B81BC5;
+        Tue,  5 Apr 2022 08:51:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EBA32C385A0;
+        Tue,  5 Apr 2022 08:51:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649148681;
-        bh=ybDnbmYcdgZS1Xtv3lvdZwsxzR4LKLwj0Av0c2WAeVA=;
+        s=korg; t=1649148698;
+        bh=I3uEnA03OADDN1LfFcs2Xj8Bm+YZGExuC8qCYOwy7vY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=imdszCubSuUloIfSUzBOKOSA04nfqB+PJEJ+Fa8xFhlwetzigQVP2QiVoIj1RD6FN
-         CGOfsfnH5I9nWFFW7aSQPFmzMPlwC/kNehDCgrhwR5UsXxLM1HXbf2iKqRZlP/wuJi
-         QrpEYfw5sfzKlTivYnGXEwSQAIxzN2IMTXe9KACg=
+        b=E+ambTHNp+2zziX1jcm43J+5VLTU5kLl1oeKa2c7F2KPAMJt2XxY0chYmr9FsyuT6
+         iMdVfICFLO556WcA46ZP1UOorozZx3xIe4Eo5AxXLBwQ4vlbnnk2tZYQUXL5yVAiJS
+         zpykGYOX/DQHu51yWcF2Tdi7NssYZtMf7Ha/cHA4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Alexander Lobakin <alexandr.lobakin@intel.com>,
-        Michal Swiatkowski <michal.swiatkowski@linux.intel.com>,
-        Sandeep Penigalapati <sandeep.penigalapati@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        stable@vger.kernel.org, Fabiano Rosas <farosas@linux.ibm.com>,
+        Nicholas Piggin <npiggin@gmail.com>,
+        Michael Ellerman <mpe@ellerman.id.au>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0444/1017] ixgbe: dont reserve excessive XDP_PACKET_HEADROOM on XSK Rx to skb
-Date:   Tue,  5 Apr 2022 09:22:37 +0200
-Message-Id: <20220405070407.476208102@linuxfoundation.org>
+Subject: [PATCH 5.16 0449/1017] KVM: PPC: Book3S HV: Check return value of kvmppc_radix_init
+Date:   Tue,  5 Apr 2022 09:22:42 +0200
+Message-Id: <20220405070407.626414774@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -53,50 +51,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alexander Lobakin <alexandr.lobakin@intel.com>
+From: Fabiano Rosas <farosas@linux.ibm.com>
 
-[ Upstream commit 8f405221a73a53234486c185d8ef647377a53cc6 ]
+[ Upstream commit 69ab6ac380a00244575de02c406dcb9491bf3368 ]
 
-{__,}napi_alloc_skb() allocates and reserves additional NET_SKB_PAD
-+ NET_IP_ALIGN for any skb.
-OTOH, ixgbe_construct_skb_zc() currently allocates and reserves
-additional `xdp->data - xdp->data_hard_start`, which is
-XDP_PACKET_HEADROOM for XSK frames.
-There's no need for that at all as the frame is post-XDP and will
-go only to the networking stack core.
-Pass the size of the actual data only to __napi_alloc_skb() and
-don't reserve anything. This will give enough headroom for stack
-processing.
+The return of the function is being shadowed by the call to
+kvmppc_uvmem_init.
 
-Fixes: d0bcacd0a130 ("ixgbe: add AF_XDP zero-copy Rx support")
-Signed-off-by: Alexander Lobakin <alexandr.lobakin@intel.com>
-Reviewed-by: Michal Swiatkowski <michal.swiatkowski@linux.intel.com>
-Tested-by: Sandeep Penigalapati <sandeep.penigalapati@intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+Fixes: ca9f4942670c ("KVM: PPC: Book3S HV: Support for running secure guests")
+Signed-off-by: Fabiano Rosas <farosas@linux.ibm.com>
+Reviewed-by: Nicholas Piggin <npiggin@gmail.com>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/20220125155735.1018683-2-farosas@linux.ibm.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+ arch/powerpc/kvm/book3s_hv.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c
-index ab96d7ce1aa0..920c556c75dd 100644
---- a/drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c
-+++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c
-@@ -214,13 +214,11 @@ static struct sk_buff *ixgbe_construct_skb_zc(struct ixgbe_ring *rx_ring,
- 	struct sk_buff *skb;
+diff --git a/arch/powerpc/kvm/book3s_hv.c b/arch/powerpc/kvm/book3s_hv.c
+index a2fd1db29f7e..7fa685711669 100644
+--- a/arch/powerpc/kvm/book3s_hv.c
++++ b/arch/powerpc/kvm/book3s_hv.c
+@@ -6101,8 +6101,11 @@ static int kvmppc_book3s_init_hv(void)
+ 	if (r)
+ 		return r;
  
- 	/* allocate a skb to store the frags */
--	skb = __napi_alloc_skb(&rx_ring->q_vector->napi,
--			       xdp->data_end - xdp->data_hard_start,
-+	skb = __napi_alloc_skb(&rx_ring->q_vector->napi, datasize,
- 			       GFP_ATOMIC | __GFP_NOWARN);
- 	if (unlikely(!skb))
- 		return NULL;
+-	if (kvmppc_radix_possible())
++	if (kvmppc_radix_possible()) {
+ 		r = kvmppc_radix_init();
++		if (r)
++			return r;
++	}
  
--	skb_reserve(skb, xdp->data - xdp->data_hard_start);
- 	memcpy(__skb_put(skb, datasize), xdp->data, datasize);
- 	if (metasize)
- 		skb_metadata_set(skb, metasize);
+ 	r = kvmppc_uvmem_init();
+ 	if (r < 0)
 -- 
 2.34.1
 
