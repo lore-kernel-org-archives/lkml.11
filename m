@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2218CC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:43:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3262BC43217
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:53:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242016AbiDEMpk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 08:45:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41940 "EHLO
+        id S242818AbiDEMq5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 08:46:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41930 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243168AbiDEJIs (ORCPT
+        with ESMTP id S243293AbiDEJIx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:08:48 -0400
+        Tue, 5 Apr 2022 05:08:53 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE1F29F38B;
-        Tue,  5 Apr 2022 01:57:44 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1D789F6F0;
+        Tue,  5 Apr 2022 01:57:55 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 93C69B81C6A;
-        Tue,  5 Apr 2022 08:57:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 053FEC385A6;
-        Tue,  5 Apr 2022 08:57:41 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6AE3DB818F3;
+        Tue,  5 Apr 2022 08:57:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BBFC2C385A3;
+        Tue,  5 Apr 2022 08:57:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649149062;
-        bh=1I9ntHJiM21S0qLJy1WF+V3MuZ6FluhhpC6uOraCkoc=;
+        s=korg; t=1649149073;
+        bh=vC3HpaQC66yZXonEgmL5Uq5YOTH5rq+MgVEPdR036Wo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZUdsfQGKqUQ1gykIK6+zuIJUp367FXbOkT1gMPr2FLuoQi1v4svl0RfL0bHyyfd7Z
-         FMx2Fop6+MmPBaYhPGc6u6VyirdwZb3ukIiJP5/0b1ep1kksqRHbfr2XWDhGZS18ic
-         l4TWjCvRc1oj7iBkLVbbzkrHjg2QkGTtjehcEruI=
+        b=No6g/l6jQSymK8ElkYpTZLWHUuCMxH/qPwH6xKTe0XNgs0lU29AQ0ff2eqtVcq6Q7
+         YwCgxDJeRn7phxEIeB8IRjhRdWzqU7yOhIjPOBFluCTv29vddKS3AfzGRUyBVQMITY
+         1WC5CPCS3jb73uWwV/FUnhzEHCg1VjmtCweVc4yA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jakob Koschel <jakobkoschel@gmail.com>,
-        Michael Ellerman <mpe@ellerman.id.au>,
+        stable@vger.kernel.org, Felix Maurer <fmaurer@redhat.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0579/1017] powerpc/sysdev: fix incorrect use to determine if list is empty
-Date:   Tue,  5 Apr 2022 09:24:52 +0200
-Message-Id: <20220405070411.466855616@linuxfoundation.org>
+Subject: [PATCH 5.16 0583/1017] selftests/bpf: Make test_lwt_ip_encap more stable and faster
+Date:   Tue,  5 Apr 2022 09:24:56 +0200
+Message-Id: <20220405070411.585091985@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -49,48 +49,73 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jakob Koschel <jakobkoschel@gmail.com>
+From: Felix Maurer <fmaurer@redhat.com>
 
-[ Upstream commit fa1321b11bd01752f5be2415e74a0e1a7c378262 ]
+[ Upstream commit d23a8720327d33616f584d76c80824bfa4699be6 ]
 
-'gtm' will *always* be set by list_for_each_entry().
-It is incorrect to assume that the iterator value will be NULL if the
-list is empty.
+In test_lwt_ip_encap, the ingress IPv6 encap test failed from time to
+time. The failure occured when an IPv4 ping through the IPv6 GRE
+encapsulation did not receive a reply within the timeout. The IPv4 ping
+and the IPv6 ping in the test used different timeouts (1 sec for IPv4
+and 6 sec for IPv6), probably taking into account that IPv6 might need
+longer to successfully complete. However, when IPv4 pings (with the
+short timeout) are encapsulated into the IPv6 tunnel, the delays of IPv6
+apply.
 
-Instead of checking the pointer it should be checked if
-the list is empty.
+The actual reason for the long delays with IPv6 was that the IPv6
+neighbor discovery sometimes did not complete in time. This was caused
+by the outgoing interface only having a tentative link local address,
+i.e., not having completed DAD for that lladdr. The ND was successfully
+retried after 1 sec but that was too late for the ping timeout.
 
-Fixes: 83ff9dcf375c ("powerpc/sysdev: implement FSL GTM support")
-Signed-off-by: Jakob Koschel <jakobkoschel@gmail.com>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20220228142434.576226-1-jakobkoschel@gmail.com
+The IPv6 addresses for the test were already added with nodad. However,
+for the lladdrs, DAD was still performed. We now disable DAD in the test
+netns completely and just assume that the two lladdrs on each veth pair
+do not collide. This removes all the delays for IPv6 traffic in the
+test.
+
+Without the delays, we can now also reduce the delay of the IPv6 ping to
+1 sec. This makes the whole test complete faster because we don't need
+to wait for the excessive timeout for each IPv6 ping that is supposed
+to fail.
+
+Fixes: 0fde56e4385b0 ("selftests: bpf: add test_lwt_ip_encap selftest")
+Signed-off-by: Felix Maurer <fmaurer@redhat.com>
+Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+Link: https://lore.kernel.org/bpf/4987d549d48b4e316cd5b3936de69c8d4bc75a4f.1646305899.git.fmaurer@redhat.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/powerpc/sysdev/fsl_gtm.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ tools/testing/selftests/bpf/test_lwt_ip_encap.sh | 10 +++++++++-
+ 1 file changed, 9 insertions(+), 1 deletion(-)
 
-diff --git a/arch/powerpc/sysdev/fsl_gtm.c b/arch/powerpc/sysdev/fsl_gtm.c
-index 8963eaffb1b7..39186ad6b3c3 100644
---- a/arch/powerpc/sysdev/fsl_gtm.c
-+++ b/arch/powerpc/sysdev/fsl_gtm.c
-@@ -86,7 +86,7 @@ static LIST_HEAD(gtms);
-  */
- struct gtm_timer *gtm_get_timer16(void)
- {
--	struct gtm *gtm = NULL;
-+	struct gtm *gtm;
- 	int i;
+diff --git a/tools/testing/selftests/bpf/test_lwt_ip_encap.sh b/tools/testing/selftests/bpf/test_lwt_ip_encap.sh
+index b497bb85b667..6c69c42b1d60 100755
+--- a/tools/testing/selftests/bpf/test_lwt_ip_encap.sh
++++ b/tools/testing/selftests/bpf/test_lwt_ip_encap.sh
+@@ -120,6 +120,14 @@ setup()
+ 	ip netns exec ${NS2} sysctl -wq net.ipv4.conf.default.rp_filter=0
+ 	ip netns exec ${NS3} sysctl -wq net.ipv4.conf.default.rp_filter=0
  
- 	list_for_each_entry(gtm, &gtms, list_node) {
-@@ -103,7 +103,7 @@ struct gtm_timer *gtm_get_timer16(void)
- 		spin_unlock_irq(&gtm->lock);
- 	}
- 
--	if (gtm)
-+	if (!list_empty(&gtms))
- 		return ERR_PTR(-EBUSY);
- 	return ERR_PTR(-ENODEV);
- }
++	# disable IPv6 DAD because it sometimes takes too long and fails tests
++	ip netns exec ${NS1} sysctl -wq net.ipv6.conf.all.accept_dad=0
++	ip netns exec ${NS2} sysctl -wq net.ipv6.conf.all.accept_dad=0
++	ip netns exec ${NS3} sysctl -wq net.ipv6.conf.all.accept_dad=0
++	ip netns exec ${NS1} sysctl -wq net.ipv6.conf.default.accept_dad=0
++	ip netns exec ${NS2} sysctl -wq net.ipv6.conf.default.accept_dad=0
++	ip netns exec ${NS3} sysctl -wq net.ipv6.conf.default.accept_dad=0
++
+ 	ip link add veth1 type veth peer name veth2
+ 	ip link add veth3 type veth peer name veth4
+ 	ip link add veth5 type veth peer name veth6
+@@ -289,7 +297,7 @@ test_ping()
+ 		ip netns exec ${NS1} ping  -c 1 -W 1 -I veth1 ${IPv4_DST} 2>&1 > /dev/null
+ 		RET=$?
+ 	elif [ "${PROTO}" == "IPv6" ] ; then
+-		ip netns exec ${NS1} ping6 -c 1 -W 6 -I veth1 ${IPv6_DST} 2>&1 > /dev/null
++		ip netns exec ${NS1} ping6 -c 1 -W 1 -I veth1 ${IPv6_DST} 2>&1 > /dev/null
+ 		RET=$?
+ 	else
+ 		echo "    test_ping: unknown PROTO: ${PROTO}"
 -- 
 2.34.1
 
