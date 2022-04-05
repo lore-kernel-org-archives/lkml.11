@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5ABAEC4167B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 147C1C4332F
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 09:12:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244250AbiDEJJu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 05:09:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46454 "EHLO
+        id S243917AbiDEJJj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 05:09:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46264 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239523AbiDEIUM (ORCPT
+        with ESMTP id S239499AbiDEIUI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:20:12 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68152EB9;
-        Tue,  5 Apr 2022 01:15:10 -0700 (PDT)
+        Tue, 5 Apr 2022 04:20:08 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9270B2A;
+        Tue,  5 Apr 2022 01:14:38 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 278DDB81B92;
-        Tue,  5 Apr 2022 08:15:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 67C3BC385A0;
-        Tue,  5 Apr 2022 08:15:07 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 65AE760AFB;
+        Tue,  5 Apr 2022 08:14:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 705FDC385A0;
+        Tue,  5 Apr 2022 08:14:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649146507;
-        bh=+ZIW8t4x0ThwpjfSahCA2lfR+DiLR6YdOj+9nIWr+Hs=;
+        s=korg; t=1649146477;
+        bh=MyfrGR6SN78HoHqE1W243AQAx11Y7mJpaWheVxSLE9g=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=01IrfS9HBh6obgO7d3C+95ltjPVtF/RZ36g2I8PMLAxCuCAn1n7mNecZHfokygMBE
-         HELzv9LWjEDnaE7NuwpG0ejNhwkVNq+Aaxp7/eTKs6obxPAGPQ6yVARHW+gwFg87eG
-         n6ujp7vEf3aRpiW0HHyICHdMNh1iSgfu3BSW2Wlc=
+        b=ae8keG81N9kj3ma+IWlHmhdaItk1Mh3yGe4k/8m8cm/TWXP3+2iXJ2UVp2pswdb/h
+         Y6mwfGUDunbosdSAW+LiD6CF1114lfN1xVOoisHD9qMnina0LGm73LBcZr4almzpds
+         TOcSDFcmrWzNG/Nnpgg4NiKXnjCUZ8kG0YwoI2K4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Pavel Skripkin <paskripkin@gmail.com>,
-        Dave Kleikamp <dave.kleikamp@oracle.com>,
-        Sasha Levin <sashal@kernel.org>,
-        syzbot+46f5c25af73eb8330eb6@syzkaller.appspotmail.com
-Subject: [PATCH 5.17 0788/1126] jfs: fix divide error in dbNextAG
-Date:   Tue,  5 Apr 2022 09:25:35 +0200
-Message-Id: <20220405070430.703717287@linuxfoundation.org>
+        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
+        Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 0778/1126] clk: visconti: prevent array overflow in visconti_clk_register_gates()
+Date:   Tue,  5 Apr 2022 09:25:25 +0200
+Message-Id: <20220405070430.413899080@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -50,54 +50,65 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pavel Skripkin <paskripkin@gmail.com>
+From: Dan Carpenter <dan.carpenter@oracle.com>
 
-[ Upstream commit 2cc7cc01c15f57d056318c33705647f87dcd4aab ]
+[ Upstream commit c5601e0720ce1a3ad895f94a5838530edde01ed3 ]
 
-Syzbot reported divide error in dbNextAG(). The problem was in missing
-validation check for malicious image.
+This code was using -1 to represent that there was no reset function.
+Unfortunately, the -1 was stored in u8 so the if (clks[i].rs_id >= 0)
+condition was always true.  This lead to an out of bounds access in
+visconti_clk_register_gates().
 
-Syzbot crafted an image with bmp->db_numag equal to 0. There wasn't any
-validation checks, but dbNextAG() blindly use bmp->db_numag in divide
-expression
-
-Fix it by validating bmp->db_numag in dbMount() and return an error if
-image is malicious
-
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-Reported-and-tested-by: syzbot+46f5c25af73eb8330eb6@syzkaller.appspotmail.com
-Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
-Signed-off-by: Dave Kleikamp <dave.kleikamp@oracle.com>
+Fixes: b4cbe606dc36 ("clk: visconti: Add support common clock driver and reset driver")
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+Link: https://lore.kernel.org/r/20220316083533.GA30941@kili
+Acked-by: Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>
+Signed-off-by: Stephen Boyd <sboyd@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/jfs/jfs_dmap.c | 7 +++++++
- 1 file changed, 7 insertions(+)
+ drivers/clk/visconti/clkc-tmpv770x.c | 2 +-
+ drivers/clk/visconti/clkc.c          | 2 +-
+ drivers/clk/visconti/clkc.h          | 3 +++
+ 3 files changed, 5 insertions(+), 2 deletions(-)
 
-diff --git a/fs/jfs/jfs_dmap.c b/fs/jfs/jfs_dmap.c
-index 91f4ec93dab1..d8502f4989d9 100644
---- a/fs/jfs/jfs_dmap.c
-+++ b/fs/jfs/jfs_dmap.c
-@@ -148,6 +148,7 @@ static const s8 budtab[256] = {
-  *	0	- success
-  *	-ENOMEM	- insufficient memory
-  *	-EIO	- i/o error
-+ *	-EINVAL - wrong bmap data
-  */
- int dbMount(struct inode *ipbmap)
- {
-@@ -179,6 +180,12 @@ int dbMount(struct inode *ipbmap)
- 	bmp->db_nfree = le64_to_cpu(dbmp_le->dn_nfree);
- 	bmp->db_l2nbperpage = le32_to_cpu(dbmp_le->dn_l2nbperpage);
- 	bmp->db_numag = le32_to_cpu(dbmp_le->dn_numag);
-+	if (!bmp->db_numag) {
-+		release_metapage(mp);
-+		kfree(bmp);
-+		return -EINVAL;
-+	}
+diff --git a/drivers/clk/visconti/clkc-tmpv770x.c b/drivers/clk/visconti/clkc-tmpv770x.c
+index c2b2f41a85a4..6c753b2cb558 100644
+--- a/drivers/clk/visconti/clkc-tmpv770x.c
++++ b/drivers/clk/visconti/clkc-tmpv770x.c
+@@ -176,7 +176,7 @@ static const struct visconti_clk_gate_table clk_gate_tables[] = {
+ 	{ TMPV770X_CLK_WRCK, "wrck",
+ 		clks_parent_data, ARRAY_SIZE(clks_parent_data),
+ 		0, 0x68, 0x168, 9, 32,
+-		-1, }, /* No reset */
++		NO_RESET, },
+ 	{ TMPV770X_CLK_PICKMON, "pickmon",
+ 		clks_parent_data, ARRAY_SIZE(clks_parent_data),
+ 		0, 0x10, 0x110, 8, 4,
+diff --git a/drivers/clk/visconti/clkc.c b/drivers/clk/visconti/clkc.c
+index 56a8a4ffebca..d0b193b5d0b3 100644
+--- a/drivers/clk/visconti/clkc.c
++++ b/drivers/clk/visconti/clkc.c
+@@ -147,7 +147,7 @@ int visconti_clk_register_gates(struct visconti_clk_provider *ctx,
+ 		if (!dev_name)
+ 			return -ENOMEM;
+ 
+-		if (clks[i].rs_id >= 0) {
++		if (clks[i].rs_id != NO_RESET) {
+ 			rson_offset = reset[clks[i].rs_id].rson_offset;
+ 			rsoff_offset = reset[clks[i].rs_id].rsoff_offset;
+ 			rs_idx = reset[clks[i].rs_id].rs_idx;
+diff --git a/drivers/clk/visconti/clkc.h b/drivers/clk/visconti/clkc.h
+index 09ed82ff64e4..8756a1ec42ef 100644
+--- a/drivers/clk/visconti/clkc.h
++++ b/drivers/clk/visconti/clkc.h
+@@ -73,4 +73,7 @@ int visconti_clk_register_gates(struct visconti_clk_provider *data,
+ 				 int num_gate,
+ 				 const struct visconti_reset_data *reset,
+ 				 spinlock_t *lock);
 +
- 	bmp->db_maxlevel = le32_to_cpu(dbmp_le->dn_maxlevel);
- 	bmp->db_maxag = le32_to_cpu(dbmp_le->dn_maxag);
- 	bmp->db_agpref = le32_to_cpu(dbmp_le->dn_agpref);
++#define NO_RESET 0xFF
++
+ #endif /* _VISCONTI_CLKC_H_ */
 -- 
 2.34.1
 
