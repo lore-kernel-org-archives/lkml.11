@@ -2,142 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F09DFC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:41:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7EDC9C35276
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:41:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348624AbiDEXOL (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 19:14:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38658 "EHLO
+        id S242074AbiDEXNp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 19:13:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40518 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1573602AbiDETXY (ORCPT
+        with ESMTP id S1573309AbiDESwp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 15:23:24 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17F2E52B16;
-        Tue,  5 Apr 2022 12:21:25 -0700 (PDT)
+        Tue, 5 Apr 2022 14:52:45 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60D74B1AA3
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 11:50:46 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B8121B81FA4;
-        Tue,  5 Apr 2022 19:21:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BAEA5C385A1;
-        Tue,  5 Apr 2022 19:21:22 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id F042B618DE
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 18:50:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4E675C385A0;
+        Tue,  5 Apr 2022 18:50:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649186483;
-        bh=heaEs/fAbEMBmP6Wk4yEQLXufpxlZz2bCArq5qEYbdg=;
+        s=k20201202; t=1649184645;
+        bh=9v4RqTFBMhIkEMkcdqjBprzzsU8Kal+EmgXjHs9Hfvg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TNvJEiPAWRH4l6rhv/NWdlIf2sqqMXOf2HdAwv7gGpL2AKEwMGhZ5wxe1P/9gkMw/
-         uXorRYG/Rpde59wq8ReMnH8EZRTxd+awAhqhS4BVuRVJHClZpeBA031+daEqKa5Eue
-         yAYiAw0gNNgSE2cZL3tgVeMKbV5SAPfMm3Zm9xQwLRgUX/yz+wlqlTr/8tX08QCZHh
-         3Aue8bC2obiyqHSAp3PfTPw/OJvlfDlGyPD61nQup9vQdVEB8Smi6fAHQ33V+egR4R
-         0kcAKIaoZJp1jFdHtI6E6Qu2mnZfOC49aXd/ZqYvo1jyNaanN+iOAJ1BZIqEQc6iXP
-         o3MttLytL+6Zg==
-From:   Jeff Layton <jlayton@kernel.org>
-To:     idryomov@gmail.com, xiubli@redhat.com
-Cc:     ceph-devel@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        linux-fscrypt@vger.kernel.org, linux-kernel@vger.kernel.org,
-        lhenriques@suse.de
-Subject: [PATCH v13 56/59] ceph: add fscrypt decryption support to ceph_netfs_issue_op
-Date:   Tue,  5 Apr 2022 15:20:27 -0400
-Message-Id: <20220405192030.178326-57-jlayton@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405192030.178326-1-jlayton@kernel.org>
-References: <20220405192030.178326-1-jlayton@kernel.org>
+        b=f8cbUPZf+01/VPHkKaT4bjtrcbCTPE/ZabeIa9eTs4fyYuli/cUP8iQoLAWxzxkNl
+         rHXogKRj2emil3DSJYuRhHhLeNBKsBHQHk4qhR/uuL2StPZsxFb5wWXMgk4U/DdlgR
+         dfY99/C99VG5URZEklSy5J9kJgJBRjq0ytC2SFGM559ZyEaq+MMEmFQWOK3C3ymhsn
+         fuiG9Y5L09kNj0ICIVf10hPLNcSIRqKp5pVxAvwvn0j3HRGolA3OgadYItGNfABf+O
+         MOShxM/ZaPCf1y81V96V9FZTiQJApA4VJ+I72ukQVcbl4rzRBOaLsIwfIeq6oy2P8s
+         erqd7vDKfYAfQ==
+Received: from sofa.misterjones.org ([185.219.108.64] helo=why.lan)
+        by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <maz@kernel.org>)
+        id 1nboGJ-001tpg-5z; Tue, 05 Apr 2022 19:50:43 +0100
+From:   Marc Zyngier <maz@kernel.org>
+To:     linux-kernel <linux-kernel@vger.kernel.org>
+Cc:     Thomas Gleixner <tglx@linutronix.de>,
+        John Garry <john.garry@huawei.com>,
+        Xiongfeng Wang <wangxiongfeng2@huawei.com>,
+        David Decotigny <ddecotig@google.com>
+Subject: [PATCH v3 1/3] genirq/msi: Shutdown managed interrupts with unsatifiable affinities
+Date:   Tue,  5 Apr 2022 19:50:38 +0100
+Message-Id: <20220405185040.206297-2-maz@kernel.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220405185040.206297-1-maz@kernel.org>
+References: <20220405185040.206297-1-maz@kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 185.219.108.64
+X-SA-Exim-Rcpt-To: linux-kernel@vger.kernel.org, tglx@linutronix.de, john.garry@huawei.com, wangxiongfeng2@huawei.com, ddecotig@google.com
+X-SA-Exim-Mail-From: maz@kernel.org
+X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Force the use of sparse reads when the inode is encrypted, and add the
-appropriate code to decrypt the extent map after receiving.
+When booting with maxcpus=<small number>, interrupt controllers
+such as the GICv3 ITS may not be able to satisfy the affinity of
+some managed interrupts, as some of the HW resources are simply
+not available.
 
-Signed-off-by: Jeff Layton <jlayton@kernel.org>
+The same thing happens when loading a driver using managed interrupts
+while CPUs are offline.
+
+In order to deal with this, do not try to activate such interrupt
+if there is no online CPU capable of handling it. Instead, place
+it in shutdown state. Once a capable CPU shows up, it will be
+activated.
+
+Reported-by: John Garry <john.garry@huawei.com>
+Tested-by: John Garry <john.garry@huawei.com>
+Reported-by: David Decotigny <ddecotig@google.com>
+Signed-off-by: Marc Zyngier <maz@kernel.org>
 ---
- fs/ceph/addr.c | 32 +++++++++++++++++++++++---------
- 1 file changed, 23 insertions(+), 9 deletions(-)
+ kernel/irq/msi.c | 15 +++++++++++++++
+ 1 file changed, 15 insertions(+)
 
-diff --git a/fs/ceph/addr.c b/fs/ceph/addr.c
-index 99021431a391..bcb74b1d46bb 100644
---- a/fs/ceph/addr.c
-+++ b/fs/ceph/addr.c
-@@ -18,6 +18,7 @@
- #include "mds_client.h"
- #include "cache.h"
- #include "metric.h"
-+#include "crypto.h"
- #include <linux/ceph/osd_client.h>
- #include <linux/ceph/striper.h>
- 
-@@ -216,7 +217,8 @@ static bool ceph_netfs_clamp_length(struct netfs_io_subrequest *subreq)
- 
- static void finish_netfs_read(struct ceph_osd_request *req)
- {
--	struct ceph_fs_client *fsc = ceph_inode_to_client(req->r_inode);
-+	struct inode *inode = req->r_inode;
-+	struct ceph_fs_client *fsc = ceph_inode_to_client(inode);
- 	struct ceph_osd_data *osd_data = osd_req_op_extent_osd_data(req, 0);
- 	struct netfs_io_subrequest *subreq = req->r_priv;
- 	struct ceph_osd_req_op *op = &req->r_ops[0];
-@@ -231,15 +233,24 @@ static void finish_netfs_read(struct ceph_osd_request *req)
- 	     subreq->len, i_size_read(req->r_inode));
- 
- 	/* no object means success but no data */
--	if (sparse && err >= 0)
--		err = ceph_sparse_ext_map_end(op);
--	else if (err == -ENOENT)
-+	if (err == -ENOENT)
- 		err = 0;
- 	else if (err == -EBLOCKLISTED)
- 		fsc->blocklisted = true;
- 
--	if (err >= 0 && err < subreq->len)
--		__set_bit(NETFS_SREQ_CLEAR_TAIL, &subreq->flags);
-+	if (err >= 0) {
-+		if (sparse && err > 0)
-+			err = ceph_sparse_ext_map_end(op);
-+		if (err < subreq->len)
-+			__set_bit(NETFS_SREQ_CLEAR_TAIL, &subreq->flags);
-+		if (IS_ENCRYPTED(inode) && err > 0) {
-+			err = ceph_fscrypt_decrypt_extents(inode, osd_data->pages,
-+					subreq->start, op->extent.sparse_ext,
-+					op->extent.sparse_ext_cnt);
-+			if (err > subreq->len)
-+				err = subreq->len;
-+		}
-+	}
- 
- 	netfs_subreq_terminated(subreq, err, true);
- 
-@@ -314,13 +325,16 @@ static void ceph_netfs_issue_read(struct netfs_io_subrequest *subreq)
- 	size_t page_off;
- 	int err = 0;
- 	u64 len = subreq->len;
--	bool sparse = ceph_test_mount_opt(fsc, SPARSEREAD);
-+	bool sparse = IS_ENCRYPTED(inode) || ceph_test_mount_opt(fsc, SPARSEREAD);
-+	u64 off = subreq->start;
- 
- 	if (ci->i_inline_version != CEPH_INLINE_NONE &&
- 	    ceph_netfs_issue_op_inline(subreq))
- 		return;
- 
--	req = ceph_osdc_new_request(&fsc->client->osdc, &ci->i_layout, vino, subreq->start, &len,
-+	ceph_fscrypt_adjust_off_and_len(inode, &off, &len);
+diff --git a/kernel/irq/msi.c b/kernel/irq/msi.c
+index 2bdfce5edafd..a9ee535293eb 100644
+--- a/kernel/irq/msi.c
++++ b/kernel/irq/msi.c
+@@ -818,6 +818,21 @@ static int msi_init_virq(struct irq_domain *domain, int virq, unsigned int vflag
+ 		irqd_clr_can_reserve(irqd);
+ 		if (vflags & VIRQ_NOMASK_QUIRK)
+ 			irqd_set_msi_nomask_quirk(irqd);
 +
-+	req = ceph_osdc_new_request(&fsc->client->osdc, &ci->i_layout, vino, off, &len,
- 			0, 1, sparse ? CEPH_OSD_OP_SPARSE_READ : CEPH_OSD_OP_READ,
- 			CEPH_OSD_FLAG_READ | fsc->client->osdc.client->options->read_from_replica,
- 			NULL, ci->i_truncate_seq, ci->i_truncate_size, false);
-@@ -339,7 +353,7 @@ static void ceph_netfs_issue_read(struct netfs_io_subrequest *subreq)
++		/*
++		 * If the interrupt is managed but no CPU is available to
++		 * service it, shut it down until better times. Note that
++		 * we only do this on the !RESERVE path as x86 (the only
++		 * architecture using this flag) deals with this in a
++		 * different way by using a catch-all vector.
++		 */
++		if ((vflags & VIRQ_ACTIVATE) &&
++		    irqd_affinity_is_managed(irqd) &&
++		    !cpumask_intersects(irq_data_get_affinity_mask(irqd),
++					cpu_online_mask)) {
++			    irqd_set_managed_shutdown(irqd);
++			    return 0;
++		    }
  	}
  
- 	dout("%s: pos=%llu orig_len=%zu len=%llu\n", __func__, subreq->start, subreq->len, len);
--	iov_iter_xarray(&iter, READ, &rreq->mapping->i_pages, subreq->start, len);
-+	iov_iter_xarray(&iter, READ, &rreq->mapping->i_pages, off, len);
- 	err = iov_iter_get_pages_alloc(&iter, &pages, len, &page_off);
- 	if (err < 0) {
- 		dout("%s: iov_ter_get_pages_alloc returned %d\n", __func__, err);
+ 	if (!(vflags & VIRQ_ACTIVATE))
 -- 
-2.35.1
+2.34.1
 
