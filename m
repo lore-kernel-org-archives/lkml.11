@@ -2,112 +2,142 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EF6ADC43219
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 01:53:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B2912C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 01:53:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1844703AbiDFBv2 (ORCPT
+        id S1844718AbiDFBvm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 21:51:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60308 "EHLO
+        Tue, 5 Apr 2022 21:51:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35090 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1443904AbiDEPk0 (ORCPT
+        with ESMTP id S1457653AbiDEQZ5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 11:40:26 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D4E2114DFCB
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 07:02:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1649167327;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=nJYEigw7gcZXWEyFZUr/9QDtSTka9JkbzhfWwkRGDd4=;
-        b=hOpDRQghpVeyVJnRZi6pPt5LDyWPt0GDS3xutIDt4N22Am4v5LGHULtyJg9ReKGcHhTXdj
-        BxDQbbS86WQ4lvpDhX1WLxIkAY3OPHTzhD8U/k9VYJGCEH1yiUzGOatmZ3rlP61n5zExsP
-        nh8zicYOWdZVJ7uynezC/dUP+Dui5Ak=
-Received: from mail-wr1-f71.google.com (mail-wr1-f71.google.com
- [209.85.221.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-636-LIj8ySS4M2OktSYiYq33WA-1; Tue, 05 Apr 2022 10:02:06 -0400
-X-MC-Unique: LIj8ySS4M2OktSYiYq33WA-1
-Received: by mail-wr1-f71.google.com with SMTP id r16-20020adfbb10000000b002060d469943so1482412wrg.4
-        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 07:02:05 -0700 (PDT)
+        Tue, 5 Apr 2022 12:25:57 -0400
+Received: from mail-wr1-x42e.google.com (mail-wr1-x42e.google.com [IPv6:2a00:1450:4864:20::42e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C401455BED
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 09:23:58 -0700 (PDT)
+Received: by mail-wr1-x42e.google.com with SMTP id w4so20082570wrg.12
+        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 09:23:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linexp-org.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:content-language:to:cc
+         :references:from:subject:in-reply-to:content-transfer-encoding;
+        bh=uNzlJACAD9QnQke3SSToK719ANjVE0c+mTYoEIGVJ3w=;
+        b=FtzoNX+p+eICP1GeL76Sx1j6Q69n269E+aeA6jJLGrFL6Z08neX/EzklEDytwMowAc
+         6IGi63GFlJoBulkw842hKVr8P7vnoUja0wsbRJnRSRW8nkZn3D+IVzPe71qJshXMmcc8
+         4mesEVSZi0NGqA5xf7DEAk6hClubcWMy4ASv1yCmg+LNN005peFxsWlr42CiRRQTId59
+         +1p3SB+o763lf1e7Dr5xKXiLXzDziRCVqPVQW96tyULq4Ea9jai2SoU9UzANj5Y8EeGE
+         Gl0pcpn88/DGzbQQhfzcbqDfw+/uLPCSzfofPTv/cvrXzIQr2mn6Tyo2j0rMGsQUZKr2
+         dLkA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
+        h=x-gm-message-state:message-id:date:mime-version:user-agent
+         :content-language:to:cc:references:from:subject:in-reply-to
          :content-transfer-encoding;
-        bh=nJYEigw7gcZXWEyFZUr/9QDtSTka9JkbzhfWwkRGDd4=;
-        b=gT3s0McmaL0z+p5Zy5dH2Xe+Oq4s+0dtgR6ouETVQuq9+A2sgAHF5kX33s7DfoQidV
-         M4wYc55s6jftP/XATnLw8RkYLR9ZbTU0xjpFYOElB0hjsRD8wkcSRk3PO4ZkVSO9oSNz
-         6YVNsDlj061E6uz29CW50jxOB2LIM/uHTdx7BFbEJz/rwRcz5icQ32p4RHJ0470VPhLZ
-         /gdyb84+3JFGvrlX6yc0TLPlA6fLbriTa4/l83UAs9nuwb6esmBf4cer/xjZY+i9eVmJ
-         fWlxSRfihMLlC7Lhpg6fE5V5yJdrwlZhbDLYIXPYM6zpcjmxWdpuKkron2JW3sdhAlrv
-         hXRw==
-X-Gm-Message-State: AOAM5335VkCTq3PI016qRohwVCiCAEJtB3+P35eTXx4Lh23KVnCzgikU
-        sN38WQ8KPoYZZ4/Omj9/ebhDqx8GEKa2OT7dIifVSA3z8dfHPOstWeuloJcTUt2uVfGkhziG4gx
-        +MDXfPP9W3G0Qf2yr1t55dAch
-X-Received: by 2002:a1c:f415:0:b0:37f:ab4d:1df2 with SMTP id z21-20020a1cf415000000b0037fab4d1df2mr3179624wma.75.1649167324789;
-        Tue, 05 Apr 2022 07:02:04 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwqPGd+rNCrPBb3Q21XRMUvq4vybPEOtd0ya7GXcUXL9gILlofg8Ok3vTZuptV9jgnNtmqezw==
-X-Received: by 2002:a1c:f415:0:b0:37f:ab4d:1df2 with SMTP id z21-20020a1cf415000000b0037fab4d1df2mr3179606wma.75.1649167324553;
-        Tue, 05 Apr 2022 07:02:04 -0700 (PDT)
-Received: from [10.32.181.87] (nat-pool-mxp-t.redhat.com. [149.6.153.186])
-        by smtp.googlemail.com with ESMTPSA id j2-20020a5d6182000000b00206134c3225sm5083632wru.67.2022.04.05.07.02.02
+        bh=uNzlJACAD9QnQke3SSToK719ANjVE0c+mTYoEIGVJ3w=;
+        b=dhKLhdTD4zJpa56wemhSP89/MnEb1z2rsMpmYOYD7WJe66zFf4+wZ/z30O7B9o1iR4
+         jGfViNH6yMOyLoyRuHF5wQXJdMFVGoszpT7HCXS9/4ykIfJZGEsNj2qTJrzlb1zG6ner
+         e3DB519hDz3y8yUGD4UUi5Ky4zgdPLGvRbYu4ek6zNBw1WFJLGSzz7Sb4DtKF+n7LIQy
+         6AkXQS9S5VYY6/B72+IIxHAVbo7yvSBKPqjFFlrHBcOchOyQA12VmhdQXURx/u0bwsw0
+         5htjgL6bkHxB4JZ4deoURbKBdF2QpNXjBbWKNzmiqIJ/Gvw2MbA7TYVvRJpQMb64HJG+
+         pdXQ==
+X-Gm-Message-State: AOAM533nnoQi8+1KMY8QVSsVk5Rq9R/G8WjMTXmUS8ZWuky8caFDiB9O
+        ZGVlB8WCCfWTX/KZyzO9c4aBDg==
+X-Google-Smtp-Source: ABdhPJzzhmRA9+E0CSpPhcpL5E+BndcfoJdIYKoIHzgSqgoo24dqN2UZdFW4TvGCbFvV+l0ZTLqSXg==
+X-Received: by 2002:a5d:508d:0:b0:203:dac9:d301 with SMTP id a13-20020a5d508d000000b00203dac9d301mr3300013wrt.441.1649175837381;
+        Tue, 05 Apr 2022 09:23:57 -0700 (PDT)
+Received: from ?IPV6:2a01:e34:ed2f:f020:104:1924:d86e:ac5f? ([2a01:e34:ed2f:f020:104:1924:d86e:ac5f])
+        by smtp.gmail.com with ESMTPSA id t9-20020a05600c198900b0038cb8b38f9fsm2780829wmq.21.2022.04.05.09.23.55
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 05 Apr 2022 07:02:03 -0700 (PDT)
-Message-ID: <240599a4-47f0-fe7e-1270-5ec7fbc0da0b@redhat.com>
-Date:   Tue, 5 Apr 2022 16:02:02 +0200
+        Tue, 05 Apr 2022 09:23:56 -0700 (PDT)
+Message-ID: <b4f8e639-bd39-cf08-8cad-b18aa926036f@linexp.org>
+Date:   Tue, 5 Apr 2022 18:23:54 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.7.0
-Subject: Re: [RFC PATCH v5 033/104] KVM: x86: Add infrastructure for stolen
- GPA bits
 Content-Language: en-US
-To:     Isaku Yamahata <isaku.yamahata@gmail.com>,
-        Kai Huang <kai.huang@intel.com>
-Cc:     isaku.yamahata@intel.com, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Jim Mattson <jmattson@google.com>,
-        erdemaktas@google.com, Connor Kuehl <ckuehl@redhat.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Chao Peng <chao.p.peng@linux.intel.com>
-References: <cover.1646422845.git.isaku.yamahata@intel.com>
- <a21c1f9065cf27db54820b2b504db4e507835584.1646422845.git.isaku.yamahata@intel.com>
- <2b8038c17b85658a054191b362840240bd66e46b.camel@intel.com>
- <20220401023426.GF2084469@ls.amr.corp.intel.com>
-From:   Paolo Bonzini <pbonzini@redhat.com>
-In-Reply-To: <20220401023426.GF2084469@ls.amr.corp.intel.com>
+To:     AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Eduardo Valentin <eduval@amazon.com>,
+        Alexandre Bailon <abailon@baylibre.com>
+Cc:     rafael@kernel.org, rui.zhang@intel.com, amitk@kernel.org,
+        linux-pm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        ben.tseng@mediatek.com, mka@chromium.org,
+        Marijn Suijten <marijn.suijten@somainline.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>
+References: <7hlex0s6ag.fsf@baylibre.com>
+ <b627639a-d050-66af-31d3-c6a6c04eb4e0@collabora.com>
+From:   Daniel Lezcano <daniel.lezcano@linexp.org>
+Subject: Re: [PATCH 0/2] thermal: Add support of multiple sensors
+In-Reply-To: <b627639a-d050-66af-31d3-c6a6c04eb4e0@collabora.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 4/1/22 04:34, Isaku Yamahata wrote:
-> Sure, this patch heavily changed from the original patch Now.  One suggestion
-> is that private/shared is characteristic to kvm page fault, not gpa/gfn.
-> It's TDX specific.
+
+Hi Angelo,
+
+
+On 05/04/2022 14:14, AngeloGioacchino Del Regno wrote:
+
+[ ... ]
+
+
+> Hello Eduardo, Kevin,
 > 
-> - Add a helper function to check if KVM MMU is TD or VM. Right now
->    kvm_gfn_stolen_mask() is used.  Probably kvm_mmu_has_private_bit().
->    (any better name?)
+> I would like to add that this series is not only benefitting MediaTek
+>  platforms, and not only Chromebooks. On some Qualcomm SoCs (from
+> SDM845 onwards, if I'm not wrong!), downstream, there is some "qti
+> virtual sensor" driver, which is addressing this kind of situation: 
+> on these platforms, averaging, min and max (and some interpolation
+> too, but that's another story, I guess) is happening and that's used
+> as some advanced way to ensure that both performance stays high and
+> that the device is safe to operate. On these platforms, this is done
+> by evaluating CPU, GPU, Hexagon DSPs, modem, wifi and (modem,wifi)PA
+> IPs and deciding on a thermal throttling strategy.
+> 
+> You understand that, while this is not "excessively" important for a
+>  Chromebook, which is a laptop, it may become even a safety concern
+> in devices of other form factor, like smartphones, where there is a
+> very strict thermal headroom (hence requiring a fine grained thermal
+> management).
+> 
+> Even though, on MediaTek, I guess that the primary usecase is 
+> Chromebooks and this kind of mechanism is required primarily for the
+> LVTS sensors that are used for SVS calculations (read: better power
+> efficiency), the Linux community is huge - and, with this kept in
+> mind, there will probably be someone that will like to upstream their
+> MTK smartphone for a reason or another (I think! This happened with
+> Qualcomm so I guess that it's going to happen with "any other
+> thing")... and that adds up to this problem being a safety concern to
+> fix.
+> 
+> Of course, I agree with you, Eduardo, about the needed cleanup but,
+> for all of the aforementioned reasons - mine and Kevin's, like him, I
+> would also beg, plead and grovel that you consider merging this
+> series as a first phase, and accept the cleanup and use-case
+> expansion as a second phase.
 
-I think use of kvm_gfn_stolen_mask() should be minimized anyway.  I 
-would rename it to to kvm_{gfn,gpa}_private_mask and not return bool.
+I'll take care of the cleanups and then respin Alex's series on top of 
+those.
 
-> - Let's keep address conversion functions: address => unalias/shared/private
+Thanks
 
-unalias is the same as private.  It doesn't seem to have a lot of uses. 
-  I would just inline "x & ~gfn_private_mask", or "x & 
-~kvm_gfn_private_mask(kvm)"; or the same with gpa of course.
+  -- Daniel
 
-The shared and private conversion functions should remain.
 
-> - Add struct kvm_page_fault.is_private
->    see how kvm_is_private_{gpa, gfn}() can be removed (or reduced).
+> P.S.: I'm adding Marijn and Konrad to the loop, as people interested
+> to the Qualcomm side of things, and mainly upstreaming smartphones.
+> 
+> Kind regards, Angelo
 
-Agreed.
 
-Paolo
+-- 
+<http://www.linaro.org/> Linaro.org │ Open source software for ARM SoCs
 
+Follow Linaro:  <http://www.facebook.com/pages/Linaro> Facebook |
+<http://twitter.com/#!/linaroorg> Twitter |
+<http://www.linaro.org/linaro-blog/> Blog
