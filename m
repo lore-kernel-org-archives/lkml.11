@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A4D75C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:53:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 42E9DC4332F
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:53:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238109AbiDEMqW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 08:46:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49234 "EHLO
+        id S243588AbiDEMrY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 08:47:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41992 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243275AbiDEJIw (ORCPT
+        with ESMTP id S243461AbiDEJI5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:08:52 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4B9F9F6E0;
-        Tue,  5 Apr 2022 01:57:53 -0700 (PDT)
+        Tue, 5 Apr 2022 05:08:57 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 679BEB53C7;
+        Tue,  5 Apr 2022 01:58:09 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 030D8CE1C6A;
-        Tue,  5 Apr 2022 08:57:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 17D58C385A0;
-        Tue,  5 Apr 2022 08:57:49 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 05250B80DA1;
+        Tue,  5 Apr 2022 08:58:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 46C6AC385B3;
+        Tue,  5 Apr 2022 08:58:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649149070;
-        bh=9+mIZFk4KMQEa6L1emFd16nfR80Y07GQTihFMe8LjcQ=;
+        s=korg; t=1649149086;
+        bh=j2lAbKArbsewxVfKvrfs2YygZwshOKUGRDy1GFvJgt8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DuRPKiXj9wx+fvta9mi0vMW34T5Utbl//vYxw2TN/lgyTYBHsie5vNpSorMWSmoJI
-         YFvXN2YLvermi5+mQN6QQNypsPbLxasvbeDtrvWnSpRyspLgkEk4cnOLWQn4tcymvz
-         6DFqIGJrK8lzTuLekPc5b77UDq1C9aR5fJAFvHNs=
+        b=IbSDg0LhPp1fKDcNDyerBmGB8xWSCrfRYaS4fwCcQJHEcoeic8LLcdhC9RLxx0nS1
+         9N2Xwo6MoCZb50Ds964cAh9OmRy3kzm9CPUblTkgt7PdAEt8P3WL9lFJCjKkNUxigd
+         92dBuuapeTGp9ozxM49MN+ZoImRMzAx1IKsBvt7I=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Cheng Li <lic121@chinatelecom.cn>,
-        Andrii Nakryiko <andrii@kernel.org>,
+        stable@vger.kernel.org, Nishanth Menon <nm@ti.com>,
+        Tomi Valkeinen <tomi.valkeinen@ideasonboard.com>,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0582/1017] libbpf: Unmap rings when umem deleted
-Date:   Tue,  5 Apr 2022 09:24:55 +0200
-Message-Id: <20220405070411.555633168@linuxfoundation.org>
+Subject: [PATCH 5.16 0552/1017] drm/bridge: cdns-dsi: Make sure to to create proper aliases for dt
+Date:   Tue,  5 Apr 2022 09:24:25 +0200
+Message-Id: <20220405070410.669620523@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -49,58 +50,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: lic121 <lic121@chinatelecom.cn>
+From: Nishanth Menon <nm@ti.com>
 
-[ Upstream commit 9c6e6a80ee741adf6cb3cfd8eef7d1554f91fceb ]
+[ Upstream commit ffb5c099aaa13ab7f73c29ea6ae26bce8d7575ae ]
 
-xsk_umem__create() does mmap for fill/comp rings, but xsk_umem__delete()
-doesn't do the unmap. This works fine for regular cases, because
-xsk_socket__delete() does unmap for the rings. But for the case that
-xsk_socket__create_shared() fails, umem rings are not unmapped.
+Add MODULE_DEVICE_TABLE to the device tree table to create required
+aliases needed for module to be loaded with device tree based platform.
 
-fill_save/comp_save are checked to determine if rings have already be
-unmapped by xsk. If fill_save and comp_save are NULL, it means that the
-rings have already been used by xsk. Then they are supposed to be
-unmapped by xsk_socket__delete(). Otherwise, xsk_umem__delete() does the
-unmap.
-
-Fixes: 2f6324a3937f ("libbpf: Support shared umems between queues and devices")
-Signed-off-by: Cheng Li <lic121@chinatelecom.cn>
-Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
-Link: https://lore.kernel.org/bpf/20220301132623.GA19995@vscode.7~
+Fixes: e19233955d9e ("drm/bridge: Add Cadence DSI driver")
+Signed-off-by: Nishanth Menon <nm@ti.com>
+Reviewed-by: Tomi Valkeinen <tomi.valkeinen@ideasonboard.com>
+Reviewed-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Signed-off-by: Tomi Valkeinen <tomi.valkeinen@ideasonboard.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20210921174059.17946-1-nm@ti.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/lib/bpf/xsk.c | 11 +++++++++++
- 1 file changed, 11 insertions(+)
+ drivers/gpu/drm/bridge/cdns-dsi.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/tools/lib/bpf/xsk.c b/tools/lib/bpf/xsk.c
-index 81f8fbc85e70..c43b4d94346d 100644
---- a/tools/lib/bpf/xsk.c
-+++ b/tools/lib/bpf/xsk.c
-@@ -1210,12 +1210,23 @@ int xsk_socket__create(struct xsk_socket **xsk_ptr, const char *ifname,
+diff --git a/drivers/gpu/drm/bridge/cdns-dsi.c b/drivers/gpu/drm/bridge/cdns-dsi.c
+index d8a15c459b42..829e1a144656 100644
+--- a/drivers/gpu/drm/bridge/cdns-dsi.c
++++ b/drivers/gpu/drm/bridge/cdns-dsi.c
+@@ -1284,6 +1284,7 @@ static const struct of_device_id cdns_dsi_of_match[] = {
+ 	{ .compatible = "cdns,dsi" },
+ 	{ },
+ };
++MODULE_DEVICE_TABLE(of, cdns_dsi_of_match);
  
- int xsk_umem__delete(struct xsk_umem *umem)
- {
-+	struct xdp_mmap_offsets off;
-+	int err;
-+
- 	if (!umem)
- 		return 0;
- 
- 	if (umem->refcount)
- 		return -EBUSY;
- 
-+	err = xsk_get_mmap_offsets(umem->fd, &off);
-+	if (!err && umem->fill_save && umem->comp_save) {
-+		munmap(umem->fill_save->ring - off.fr.desc,
-+		       off.fr.desc + umem->config.fill_size * sizeof(__u64));
-+		munmap(umem->comp_save->ring - off.cr.desc,
-+		       off.cr.desc + umem->config.comp_size * sizeof(__u64));
-+	}
-+
- 	close(umem->fd);
- 	free(umem);
- 
+ static struct platform_driver cdns_dsi_platform_driver = {
+ 	.probe  = cdns_dsi_drm_probe,
 -- 
 2.34.1
 
