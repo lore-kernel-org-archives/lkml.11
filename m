@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8DD78C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:07:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DE8A2C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:07:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233704AbiDEII4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 04:08:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55596 "EHLO
+        id S233709AbiDEIIv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 04:08:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56218 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232546AbiDEHxX (ORCPT
+        with ESMTP id S232585AbiDEHxZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 03:53:23 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A4541D338;
-        Tue,  5 Apr 2022 00:49:00 -0700 (PDT)
+        Tue, 5 Apr 2022 03:53:25 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07DF21DA51;
+        Tue,  5 Apr 2022 00:49:06 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CC26DB81B90;
-        Tue,  5 Apr 2022 07:48:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3B65FC340EE;
-        Tue,  5 Apr 2022 07:48:57 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 49DEF61728;
+        Tue,  5 Apr 2022 07:49:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 561E4C3410F;
+        Tue,  5 Apr 2022 07:49:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649144937;
-        bh=dXBza7TD+YoPMa9zfIkCunjP9xDZ6gtzlNfgpEIYRcc=;
+        s=korg; t=1649144945;
+        bh=L/pyenQmUdfAnp5wcjo1xjpMHrfCLmOU2nZBPABT8/0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fMGn25a9eZXF/mwHJa+uwZQL3I/BL5Cpt4TMjThR5FEYuAKovPzCl/r6wuH+Xaxax
-         eLoPMgj5TZn91NGZVzStAf80O0Ou2bUx6WAWko/byYCaj3zfph1346Ys5b7zfiljCn
-         qeTGh5m3MdelR9NBPJ78WjQGLGrUzmc7vbWb2N7U=
+        b=OKuG54wMAZ5GABS74pYpnqpoyB0XhshNVrVtLR8F5fKjHgvATNYAd9V8fBxKmn6rE
+         BRmCfV2zGba678M71VrKwDTqSQ4NTBhHg71o+2IPBLTuV2w59IG8UX48jek/QJOFZw
+         EDMSyGd7RUqmcaVc+wxGo/K9vkIy44ILWWN8AGEY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Corentin Labbe <clabbe@baylibre.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
+        stable@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
+        Igor Zhbanov <i.zhbanov@omprussia.ru>,
+        Mimi Zohar <zohar@linux.ibm.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0226/1126] crypto: rockchip - ECB does not need IV
-Date:   Tue,  5 Apr 2022 09:16:13 +0200
-Message-Id: <20220405070414.242876601@linuxfoundation.org>
+Subject: [PATCH 5.17 0229/1126] EVM: fix the evm= __setup handler return value
+Date:   Tue,  5 Apr 2022 09:16:16 +0200
+Message-Id: <20220405070414.330175146@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -49,34 +50,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Corentin Labbe <clabbe@baylibre.com>
+From: Randy Dunlap <rdunlap@infradead.org>
 
-[ Upstream commit 973d74e93820d99d8ea203882631c76edab699c9 ]
+[ Upstream commit f2544f5e6c691679d56bb38637d2f347075b36fa ]
 
-When loading rockchip crypto module, testmgr complains that ivsize of ecb-des3-ede-rk
-is not the same than generic implementation.
-In fact ECB does not use an IV.
+__setup() handlers should return 1 if the parameter is handled.
+Returning 0 causes the entire string to be added to init's
+environment strings (limited to 32 strings), unnecessarily polluting it.
 
-Fixes: ce0183cb6464b ("crypto: rockchip - switch to skcipher API")
-Signed-off-by: Corentin Labbe <clabbe@baylibre.com>
-Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+Using the documented string "evm=fix" causes an Unknown parameter message:
+  Unknown kernel command line parameters
+  "BOOT_IMAGE=/boot/bzImage-517rc5 evm=fix", will be passed to user space.
+
+and that string is added to init's environment string space:
+  Run /sbin/init as init process
+    with arguments:
+     /sbin/init
+    with environment:
+     HOME=/
+     TERM=linux
+     BOOT_IMAGE=/boot/bzImage-517rc5
+     evm=fix
+
+With this change, using "evm=fix" acts as expected and an invalid
+option ("evm=evm") causes a warning to be printed:
+  evm: invalid "evm" mode
+but init's environment is not polluted with this string, as expected.
+
+Fixes: 7102ebcd65c1 ("evm: permit only valid security.evm xattrs to be updated")
+Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+Reported-by: Igor Zhbanov <i.zhbanov@omprussia.ru>
+Link: lore.kernel.org/r/64644a2f-4a20-bab3-1e15-3b2cdd0defe3@omprussia.ru
+Signed-off-by: Mimi Zohar <zohar@linux.ibm.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/crypto/rockchip/rk3288_crypto_skcipher.c | 1 -
- 1 file changed, 1 deletion(-)
+ security/integrity/evm/evm_main.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/crypto/rockchip/rk3288_crypto_skcipher.c b/drivers/crypto/rockchip/rk3288_crypto_skcipher.c
-index 1cece1a7d3f0..5bbf0d2722e1 100644
---- a/drivers/crypto/rockchip/rk3288_crypto_skcipher.c
-+++ b/drivers/crypto/rockchip/rk3288_crypto_skcipher.c
-@@ -506,7 +506,6 @@ struct rk_crypto_tmp rk_ecb_des3_ede_alg = {
- 		.exit			= rk_ablk_exit_tfm,
- 		.min_keysize		= DES3_EDE_KEY_SIZE,
- 		.max_keysize		= DES3_EDE_KEY_SIZE,
--		.ivsize			= DES_BLOCK_SIZE,
- 		.setkey			= rk_tdes_setkey,
- 		.encrypt		= rk_des3_ede_ecb_encrypt,
- 		.decrypt		= rk_des3_ede_ecb_decrypt,
+diff --git a/security/integrity/evm/evm_main.c b/security/integrity/evm/evm_main.c
+index 08f907382c61..7d87772f0ce6 100644
+--- a/security/integrity/evm/evm_main.c
++++ b/security/integrity/evm/evm_main.c
+@@ -86,7 +86,7 @@ static int __init evm_set_fixmode(char *str)
+ 	else
+ 		pr_err("invalid \"%s\" mode", str);
+ 
+-	return 0;
++	return 1;
+ }
+ __setup("evm=", evm_set_fixmode);
+ 
 -- 
 2.34.1
 
