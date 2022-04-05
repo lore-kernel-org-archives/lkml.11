@@ -2,94 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C242C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C7BE5C433FE
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:35:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245440AbiDFAYA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 20:24:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35094 "EHLO
+        id S1455255AbiDFAZO (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 20:25:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40008 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351364AbiDEKCU (ORCPT
+        with ESMTP id S1446545AbiDEPos (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:02:20 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39F9F6CA7F;
-        Tue,  5 Apr 2022 02:51:36 -0700 (PDT)
+        Tue, 5 Apr 2022 11:44:48 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05B6A220E6;
+        Tue,  5 Apr 2022 07:17:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 92E1CCE1C71;
-        Tue,  5 Apr 2022 09:51:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A014AC385A2;
-        Tue,  5 Apr 2022 09:51:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649152293;
-        bh=a3X9AFzHlu8+WSu53lKw4fxPUWErvt/B1kO6xdYwI7g=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dbw5IzyAiowIFAzaQ+IZ0bpUNQDol2rOkkDjD2ijL8JvKWPmfLbcQQA1fSyy80OYo
-         b1epaYdB05/fyzLpYiaW46u9XIIjuFoO6j5ONHag8zsF+6omBc71P4P6NH/srcJ4bV
-         3YG9cvmfRfSswZ6Eqrfjrw8dB3tFDpdlWH3jOgtI=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        syzbot+3c765c5248797356edaa@syzkaller.appspotmail.com,
-        Dongliang Mu <mudongliangabcd@gmail.com>,
-        Anton Altaparmakov <anton@tuxera.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 724/913] ntfs: add sanity check on allocation size
-Date:   Tue,  5 Apr 2022 09:29:46 +0200
-Message-Id: <20220405070401.533638720@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
-User-Agent: quilt/0.66
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D3A6860B0E;
+        Tue,  5 Apr 2022 14:17:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B25BEC385A6;
+        Tue,  5 Apr 2022 14:17:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649168267;
+        bh=MGKEOKuzG/zvLfWYpwbNWne2VYHu0gGNwDsvDh8cPyw=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=jPqroh2EK0MDuPgb5WnacCf6ssZHd95lDMSvChNGm9ZJ2nxe9+1xVISwVR1W77n7L
+         cdrLs31WHH+F0ZSAp8+eDIIhyK1D+5oOwGGfYe5TuF4MbSv5lJZF2/1ezRv3TWRAal
+         Qi4GZhfZai8uFU71eo9PKZPO7K5gkNmv931k48ZSHn5zD6Wci2PXCZNL4EUGuiSVHw
+         Y+JugbJ6g7lkPZAVu+8LZDe50CFE/R/Cfk5jUFN0GT27J5J1pHGsm1ILDxjWhUk956
+         52g791GTXf7nJry3EMVA/2dO28tDf2u6kjCfWNsjhPvsg0XsRDquQFbXWpy3k46Iw6
+         NRVwdMSGty9/A==
+Date:   Tue, 5 Apr 2022 15:17:41 +0100
+From:   Mark Brown <broonie@kernel.org>
+To:     Satya Priya <quic_c_skakit@quicinc.com>
+Cc:     Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Lee Jones <lee.jones@linaro.org>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, swboyd@chromium.org,
+        quic_collinsd@quicinc.com, quic_subbaram@quicinc.com,
+        quic_jprakash@quicinc.com
+Subject: Re: [PATCH V9 4/6] regulator: Add a regulator driver for the PM8008
+ PMIC
+Message-ID: <YkxPhcgBU3/5zu/P@sirena.org.uk>
+References: <1649166633-25872-1-git-send-email-quic_c_skakit@quicinc.com>
+ <1649166633-25872-5-git-send-email-quic_c_skakit@quicinc.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="8dPCbrnld0sz6d93"
+Content-Disposition: inline
+In-Reply-To: <1649166633-25872-5-git-send-email-quic_c_skakit@quicinc.com>
+X-Cookie: diplomacy, n:
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dongliang Mu <mudongliangabcd@gmail.com>
 
-[ Upstream commit 714fbf2647b1a33d914edd695d4da92029c7e7c0 ]
+--8dPCbrnld0sz6d93
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-ntfs_read_inode_mount invokes ntfs_malloc_nofs with zero allocation
-size.  It triggers one BUG in the __ntfs_malloc function.
+On Tue, Apr 05, 2022 at 07:20:31PM +0530, Satya Priya wrote:
 
-Fix this by adding sanity check on ni->attr_list_size.
+> +#include <linux/regulator/driver.h>
+> +#include <linux/regulator/machine.h>
 
-Link: https://lkml.kernel.org/r/20220120094914.47736-1-dzm91@hust.edu.cn
-Reported-by: syzbot+3c765c5248797356edaa@syzkaller.appspotmail.com
-Signed-off-by: Dongliang Mu <mudongliangabcd@gmail.com>
-Acked-by: Anton Altaparmakov <anton@tuxera.com>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- fs/ntfs/inode.c | 4 ++++
- 1 file changed, 4 insertions(+)
+Why does the driver need machine.h?  That's usually a bug, though I
+didn't spot anywhere where it's used so it's probably just an extra
+header.
 
-diff --git a/fs/ntfs/inode.c b/fs/ntfs/inode.c
-index 4474adb393ca..517b71c73aa9 100644
---- a/fs/ntfs/inode.c
-+++ b/fs/ntfs/inode.c
-@@ -1881,6 +1881,10 @@ int ntfs_read_inode_mount(struct inode *vi)
- 		}
- 		/* Now allocate memory for the attribute list. */
- 		ni->attr_list_size = (u32)ntfs_attr_size(a);
-+		if (!ni->attr_list_size) {
-+			ntfs_error(sb, "Attr_list_size is zero");
-+			goto put_err_out;
-+		}
- 		ni->attr_list = ntfs_malloc_nofs(ni->attr_list_size);
- 		if (!ni->attr_list) {
- 			ntfs_error(sb, "Not enough memory to allocate buffer "
--- 
-2.34.1
+> +	.set_voltage_sel	= pm8008_regulator_set_voltage,
+> +	.get_voltage		= pm8008_regulator_get_voltage,
 
+You shouldn't mix and match the selector and non-selector operations,
+since the device just takes a voltage you may as well just use the
+non-selector version for both.
 
+Otherwise this all looks good, just those two minor points.
 
+--8dPCbrnld0sz6d93
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmJMT4QACgkQJNaLcl1U
+h9Bdqwf/cnfMmHDYBGxtxH531FkOi4AeNT824yzuUtVFoHINPdPqnSCCwvXipYpl
+L30uSZNKRSR2QOZ/M9jBxvKc5z+IsAYrkke05aYIWQM/oM/EdOFLvxNR/tVufCML
+wdZteUHPdYrx2NbuwHFEUvdFM/RoC3DKMvkn8FJgeSHi2831V6ubErKw7fp71AkV
+12zOtGw0i0fTApbzzhdOAXQPgWuPlnxuFCcr5dnWy0TcY0v8Gf1991tsyv9hSfVj
+mcHHSqNc3UjqDCNMdWRfOoJXjImyTfQ0oKi5abrw4F+A5FY3JpnOU07qJHm5QgKM
+8naBiSlmOAkzS3JIMaAPDvk9tcTYbQ==
+=hFPV
+-----END PGP SIGNATURE-----
+
+--8dPCbrnld0sz6d93--
