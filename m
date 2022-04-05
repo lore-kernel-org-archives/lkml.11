@@ -2,66 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0736BC35296
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:09:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DC066C47080
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:09:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1582100AbiDEXmB (ORCPT
+        id S1582069AbiDEXl4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 19:42:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53458 "EHLO
+        Tue, 5 Apr 2022 19:41:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34662 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1457541AbiDEQI0 (ORCPT
+        with ESMTP id S1344431AbiDEKjs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 12:08:26 -0400
-Received: from mail.skyhub.de (mail.skyhub.de [5.9.137.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C022825CD
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 09:06:27 -0700 (PDT)
-Received: from zn.tnic (p2e55dff8.dip0.t-ipconnect.de [46.85.223.248])
+        Tue, 5 Apr 2022 06:39:48 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51F54CF3;
+        Tue,  5 Apr 2022 03:25:11 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 752E21EC0502;
-        Tue,  5 Apr 2022 18:06:22 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
-        t=1649174782;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
-        bh=+l8x0npVHQPxXN8Jiw+gTLW632Eoh0dwy+8lcfQVWk8=;
-        b=gegC6rwLvXB2k5OYbibB7lCieya+klwRoI9ayiojrjzhL5+dgOrStUCrd9Zuge5TiWA+qx
-        hqxZKJiVM/6bxN5fLDL7xISUUDmvsibLMFEtFzQRUT65RwM/EvUdZwy97j0+8nhQmrqrwS
-        9mOhd7Kerbl6Tv7wZS6hITMkaS4j51Y=
-Date:   Tue, 5 Apr 2022 18:06:19 +0200
-From:   Borislav Petkov <bp@alien8.de>
-To:     Takashi Iwai <tiwai@suse.de>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Takashi Iwai <tiwai@suse.com>, alsa-devel@alsa-project.org
-Subject: Re: [PATCH 02/11] ALSA: usb-audio: Fix undefined behavior due to
- shift overflowing the constant
-Message-ID: <Ykxo+0p5IeeM7mge@zn.tnic>
-References: <20220405151517.29753-1-bp@alien8.de>
- <20220405151517.29753-3-bp@alien8.de>
- <s5hwng35yvz.wl-tiwai@suse.de>
+        by ams.source.kernel.org (Postfix) with ESMTPS id 006B9B81B18;
+        Tue,  5 Apr 2022 10:25:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6E807C385A2;
+        Tue,  5 Apr 2022 10:25:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649154308;
+        bh=NllYYjWNYzcx38lK6Tp0ggC0JWbVpRuJplNhOQvulmw=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=qriedECkcNP2FumVbkMUuP1eFoCR/R0AeCx9eqEXnAzqYNua7HpzRHEntVuGUx3Zb
+         D5nwhrFuiEXW/RLjKvZPOf3+zLb6DnE1FQRWCWG2kLxnBnIUxOc1/xnANTbiv2cc2U
+         URArfzocojx1HfNnrbFICDtEU+rmc3ifuiNx/jSA=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Zeal Robot <zealci@zte.com.cn>,
+        Yang Guang <yang.guang5@zte.com.cn>,
+        Helge Deller <deller@gmx.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 486/599] video: fbdev: omapfb: acx565akm: replace snprintf with sysfs_emit
+Date:   Tue,  5 Apr 2022 09:33:00 +0200
+Message-Id: <20220405070313.290455773@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
+References: <20220405070258.802373272@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <s5hwng35yvz.wl-tiwai@suse.de>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 05, 2022 at 05:32:48PM +0200, Takashi Iwai wrote:
-> > +#define USB_ID(vendor, product) ((((unsigned int)vendor) << 16) | (product))
-> 
-> Parentheses are needed around vendor (as usual for a macro).
-> Could you resubmit with it?
+From: Yang Guang <yang.guang5@zte.com.cn>
 
-Or you can fix it up while applying. :)
+[ Upstream commit 24565bc4115961db7ee64fcc7ad2a7437c0d0a49 ]
 
-Thx.
+coccinelle report:
+./drivers/video/fbdev/omap2/omapfb/displays/panel-sony-acx565akm.c:
+479:9-17: WARNING: use scnprintf or sprintf
 
+Use sysfs_emit instead of scnprintf or sprintf makes more sense.
+
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: Yang Guang <yang.guang5@zte.com.cn>
+Signed-off-by: Helge Deller <deller@gmx.de>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ .../video/fbdev/omap2/omapfb/displays/panel-sony-acx565akm.c    | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/video/fbdev/omap2/omapfb/displays/panel-sony-acx565akm.c b/drivers/video/fbdev/omap2/omapfb/displays/panel-sony-acx565akm.c
+index 1293515e4b16..0cbc5b9183f8 100644
+--- a/drivers/video/fbdev/omap2/omapfb/displays/panel-sony-acx565akm.c
++++ b/drivers/video/fbdev/omap2/omapfb/displays/panel-sony-acx565akm.c
+@@ -476,7 +476,7 @@ static ssize_t show_cabc_available_modes(struct device *dev,
+ 	int i;
+ 
+ 	if (!ddata->has_cabc)
+-		return snprintf(buf, PAGE_SIZE, "%s\n", cabc_modes[0]);
++		return sysfs_emit(buf, "%s\n", cabc_modes[0]);
+ 
+ 	for (i = 0, len = 0;
+ 	     len < PAGE_SIZE && i < ARRAY_SIZE(cabc_modes); i++)
 -- 
-Regards/Gruss,
-    Boris.
+2.34.1
 
-https://people.kernel.org/tglx/notes-about-netiquette
+
+
