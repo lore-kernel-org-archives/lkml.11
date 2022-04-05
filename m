@@ -2,48 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A193C4167B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D276BC3527A
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 02:39:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1445367AbiDFCfc (ORCPT
+        id S1448768AbiDFCgD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 22:35:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48272 "EHLO
+        Tue, 5 Apr 2022 22:36:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43736 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1444201AbiDEWVB (ORCPT
+        with ESMTP id S1444225AbiDEWVB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Apr 2022 18:21:01 -0400
 Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 196FA81653;
-        Tue,  5 Apr 2022 13:45:06 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C998B8E1BB;
+        Tue,  5 Apr 2022 13:45:11 -0700 (PDT)
 Received: from [127.0.0.1] (localhost [127.0.0.1])
         (Authenticated sender: nicolas)
-        with ESMTPSA id 7BD5E1F44865
+        with ESMTPSA id 47B301F448A1
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1649191505;
-        bh=FmxP3Of2pm4gkbqbbaer5qaBCfIvVbPhhE5DeBELz4c=;
+        s=mail; t=1649191510;
+        bh=t6w6zh2urP7UBHlWH5GWukchWArbLK9mbtqizbdraAY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LJhLobEreEIBQIAqgI5fPU5cdPQvn9SeAwIF1icf4FStyj8Ne3xA2JAXJT0xwDJnR
-         2Y/rTcEnJbFveYy6xO1foPNJuFpQTIFO9K2xV1cyU7SdWwKkOWFrCRP3QLNJM2x/b6
-         9HK+aKOnmHf9DkKK3+oYWX6pvu8TPtUYSXN9qgEbJAslJmy+R6c+g1OaRawJorYNW3
-         +y7yayfl/q7neKlj9LK1qtNvPlXHGlJ5GaPU5awD/XrKLk1T2G9EXBeYSuSWG7wJH1
-         kMKjOlbJGXbWBiu6kqp5s/S8u/l7iRuYeJ34A7JHoO73wC3OSq3RhGEKNEFHut2U0t
-         rIp57lJK9utDw==
+        b=TkK+aVQN462OFzg3kXJMyyDzO9T5YZP4amtnyD+IC682s9lJt9HfFWJIqL5686Ljz
+         /JF9E3x+CLnwgJ8byoIc1gLKjhAYVf5LLJvnskfXyFbE0nNpttYv4gxOg1s9CsRTNs
+         AwdTGwxXdcxGIx/YlfnIu7+3Za8p8RI0he0Yu3Pa62uJ73r6KAHWnd+2NyYoKq+xfR
+         vULVmlkefvGmBpcWiLzWObKsI1+YnxZxTF0muf+/GqNSWumbYdHjzwdySXF38cSXGe
+         eWSRYf7IRpZi0MWDeZfFszhSmt7gZWD2MD7j0ZuG/oZyTGQAwwt26oDn+Fis6PS2GV
+         ylea4nyVQ09Pw==
 From:   Nicolas Dufresne <nicolas.dufresne@collabora.com>
 To:     Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>,
         Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Boris Brezillon <boris.brezillon@collabora.com>
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc:     kernel@collabora.com, linux-kernel@vger.kernel.org,
         Jonas Karlman <jonas@kwiboo.se>,
         Ezequiel Garcia <ezequiel@collabora.com>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        Sebastian Fricke <sebastian.fricke@collabora.com>,
         linux-media@vger.kernel.org, linux-rockchip@lists.infradead.org,
         linux-staging@lists.linux.dev
-Subject: [PATCH v3 14/24] media: rkvdec: h264: Fix bit depth wrap in pps packet
-Date:   Tue,  5 Apr 2022 16:44:15 -0400
-Message-Id: <20220405204426.259074-15-nicolas.dufresne@collabora.com>
+Subject: [PATCH v3 17/24] media: rkvdec: h264: Fix reference frame_num wrap for second field
+Date:   Tue,  5 Apr 2022 16:44:18 -0400
+Message-Id: <20220405204426.259074-18-nicolas.dufresne@collabora.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220405204426.259074-1-nicolas.dufresne@collabora.com>
 References: <20220405204426.259074-1-nicolas.dufresne@collabora.com>
@@ -55,36 +53,36 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Jonas Karlman <jonas@kwiboo.se>
 
-The luma and chroma bit depth fields in the pps packet are 3 bits wide.
-8 is wrongly added to the bit depth values written to these 3 bit fields.
-Because only the 3 LSB are written, the hardware was configured
-correctly.
+When decoding the second field in a complementary field pair the second
+field is sharing the same frame_num with the first field.
 
-Correct this by not adding 8 to the luma and chroma bit depth value.
+Currently the frame_num for the first field is wrapped when it matches the
+field being decoded, this cause issues to decode the second field in a
+complementary field pair.
 
-Fixes: cd33c830448ba ("media: rkvdec: Add the rkvdec driver")
+Fix this by using inclusive comparison, less than or equal.
+
 Signed-off-by: Jonas Karlman <jonas@kwiboo.se>
 Signed-off-by: Nicolas Dufresne <nicolas.dufresne@collabora.com>
 Reviewed-by: Ezequiel Garcia <ezequiel@collabora.com>
+Reviewed-by: Sebastian Fricke <sebastian.fricke@collabora.com>
 ---
- drivers/staging/media/rkvdec/rkvdec-h264.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/staging/media/rkvdec/rkvdec-h264.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/drivers/staging/media/rkvdec/rkvdec-h264.c b/drivers/staging/media/rkvdec/rkvdec-h264.c
-index bcde37d72244..8d44a884a52e 100644
+index f081b476340f..60eaf06b6e25 100644
 --- a/drivers/staging/media/rkvdec/rkvdec-h264.c
 +++ b/drivers/staging/media/rkvdec/rkvdec-h264.c
-@@ -662,8 +662,8 @@ static void assemble_hw_pps(struct rkvdec_ctx *ctx,
- 	WRITE_PPS(0xff, PROFILE_IDC);
- 	WRITE_PPS(1, CONSTRAINT_SET3_FLAG);
- 	WRITE_PPS(sps->chroma_format_idc, CHROMA_FORMAT_IDC);
--	WRITE_PPS(sps->bit_depth_luma_minus8 + 8, BIT_DEPTH_LUMA);
--	WRITE_PPS(sps->bit_depth_chroma_minus8 + 8, BIT_DEPTH_CHROMA);
-+	WRITE_PPS(sps->bit_depth_luma_minus8, BIT_DEPTH_LUMA);
-+	WRITE_PPS(sps->bit_depth_chroma_minus8, BIT_DEPTH_CHROMA);
- 	WRITE_PPS(0, QPPRIME_Y_ZERO_TRANSFORM_BYPASS_FLAG);
- 	WRITE_PPS(sps->log2_max_frame_num_minus4, LOG2_MAX_FRAME_NUM_MINUS4);
- 	WRITE_PPS(sps->max_num_ref_frames, MAX_NUM_REF_FRAMES);
+@@ -781,7 +781,7 @@ static void assemble_hw_rps(struct rkvdec_ctx *ctx,
+ 			continue;
+ 
+ 		if (dpb[i].flags & V4L2_H264_DPB_ENTRY_FLAG_LONG_TERM ||
+-		    dpb[i].frame_num < dec_params->frame_num) {
++		    dpb[i].frame_num <= dec_params->frame_num) {
+ 			p[i] = dpb[i].frame_num;
+ 			continue;
+ 		}
 -- 
 2.34.1
 
