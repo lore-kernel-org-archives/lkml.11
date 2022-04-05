@@ -2,133 +2,192 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 22EB9C4332F
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:35:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E107BC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:35:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1835781AbiDFAdY (ORCPT
+        id S1835748AbiDFAdR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 20:33:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53524 "EHLO
+        Tue, 5 Apr 2022 20:33:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60212 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1457542AbiDEQIj (ORCPT
+        with ESMTP id S1446442AbiDEPoh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 12:08:39 -0400
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC7472608;
-        Tue,  5 Apr 2022 09:06:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649174800; x=1680710800;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=SXP53dhhunwY79FP5ds9zXn0k2FcV+iBvoVhtso/RR8=;
-  b=NNdmkPyB5ykAqXN5BpdFsW+OigaJ/3NnmvP46mO+8waYsAD35IATHtLu
-   ozEsS5PqmHnEfzWbD6IRl8EuesfDuR7O2gLzF/ZJil2vVg4A2xfz4Jq81
-   QKkEX6DlO/nu3i9oWDbf9BBGnXfqBmLIoiZqgJYUud5cUCv4lubppx9zE
-   iD14BsZgKs8IitIxNe4SY9tMuVKjmQmHE5m9kgnjJsb5c5zY4M7YC6SOz
-   mnbO1oZR9FkQVP2Jgbz4IHaNm/YGT030h2Xyx3/8/4wEw8hooOUGLI/x7
-   szJq48L1ies08/ryjRqeY3mxl1tsxCcFWKf1bvDhLMLxQ01Z8MGhQTBXD
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10308"; a="240723380"
-X-IronPort-AV: E=Sophos;i="5.90,236,1643702400"; 
-   d="scan'208";a="240723380"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2022 09:03:53 -0700
-X-IronPort-AV: E=Sophos;i="5.90,236,1643702400"; 
-   d="scan'208";a="657994658"
-Received: from smile.fi.intel.com ([10.237.72.59])
-  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2022 09:03:49 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1nbleJ-00DSQK-Aw;
-        Tue, 05 Apr 2022 19:03:19 +0300
-Date:   Tue, 5 Apr 2022 19:03:19 +0300
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Cc:     linux-serial@vger.kernel.org, Greg KH <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        linux-kernel@vger.kernel.org,
-        Gilles Buloz <gilles.buloz@kontron.com>,
-        Johan Hovold <johan@kernel.org>
-Subject: Re: [PATCH 1/2] tty: Add lookahead param to receive_buf
-Message-ID: <YkxoR+jA9tDJOqNU@smile.fi.intel.com>
-References: <20220405102437.4842-1-ilpo.jarvinen@linux.intel.com>
- <20220405102437.4842-2-ilpo.jarvinen@linux.intel.com>
+        Tue, 5 Apr 2022 11:44:37 -0400
+Received: from mail-yw1-f177.google.com (mail-yw1-f177.google.com [209.85.128.177])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E95E183BB;
+        Tue,  5 Apr 2022 07:16:08 -0700 (PDT)
+Received: by mail-yw1-f177.google.com with SMTP id 00721157ae682-2eba37104a2so8618977b3.0;
+        Tue, 05 Apr 2022 07:16:08 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=fkdGzGxa3fNmTPp0+kgh9EkuzHnHkxjgFCsDVXBvjaU=;
+        b=VQvCIpCRPIB98olLkOHtGVDwN3Q0xVE1o5YJSq5q57aCFyziY6pSZZGs7sanMd3ySc
+         DJxOSBFn8LMQVrawvCbybhkog82JodY2uM65c3vAVCXrZLH2rnTJ4zaDeSAfAESmQp9V
+         zZ3tJmpti7ujS/VD+pwd88IpOStYDccDcj6N3387AIetDbM2aWAagYqzP2HpjjjVHk1H
+         Nl6vdQ/FdWTQeSVlumGh/IiBqP5NU7oHVp5slIce1dca7pdUYwf8VNbR/LJ7fFe++zob
+         wjpUT8g04+or081xRU1kY4VJC3zYVfUbjMZsISUtw/LLM7ZxRcSqASWmyDEnzIX+ZvWk
+         k3Vw==
+X-Gm-Message-State: AOAM533EDtNTq2h3hnd6fj8MlvXhS2PdZGgE57DPukEuW8fq0qzm65cl
+        AnIET8/Eza8l1T9n0DmNpojOUFz4JwylqWvuTPmsQVMV
+X-Google-Smtp-Source: ABdhPJwYyG2qs2nkdY44U307850mhvob8xD23++y4sv/KhP60pQm3PWpGwJe2/kAl46cJzEZmP50eHk5LIecIkqNRWU=
+X-Received: by 2002:a81:1b97:0:b0:2db:640f:49d8 with SMTP id
+ b145-20020a811b97000000b002db640f49d8mr2768279ywb.326.1649168167397; Tue, 05
+ Apr 2022 07:16:07 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220405102437.4842-2-ilpo.jarvinen@linux.intel.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+References: <1649139253-26656-1-git-send-email-liuxp11@chinatelecom.cn>
+In-Reply-To: <1649139253-26656-1-git-send-email-liuxp11@chinatelecom.cn>
+From:   "Rafael J. Wysocki" <rafael@kernel.org>
+Date:   Tue, 5 Apr 2022 16:15:56 +0200
+Message-ID: <CAJZ5v0ikprR41nugj0-ekK3F4KkYtMBYjC+-h813wq2d9puMPA@mail.gmail.com>
+Subject: Re: [PATCH v2] ACPI: APEI: fix missing erst record id
+To:     Liu Xinpeng <liuxp11@chinatelecom.cn>,
+        Tony Luck <tony.luck@intel.com>,
+        James Morse <james.morse@arm.com>,
+        Borislav Petkov <bp@alien8.de>
+Cc:     Kees Cook <keescook@chromium.org>,
+        Anton Vorontsov <anton@enomsg.org>,
+        Colin Cross <ccross@android.com>,
+        Robert Moore <robert.moore@intel.com>,
+        Len Brown <lenb@kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 05, 2022 at 01:24:36PM +0300, Ilpo Järvinen wrote:
-> After lookahead for XON/XOFF characters is added by the next
-> patch, the receive side needs to ensure the flow-control
-> actions are not retaken later on when those same characters
-> get read by TTY.
-> 
-> Thus, pass lookahead count to receive_buf and skip
-> flow-control character actions if already taken for the
-> character in question. Lookahead count will become live after
-> the next patch.
+APEI reviewers, your input is needed here.
 
-...
-
-> -static void n_tty_receive_char_special(struct tty_struct *tty, unsigned char c)
-> +static void n_tty_receive_char_special(struct tty_struct *tty, unsigned char c,
-> +				       bool lookahead_done)
+On Tue, Apr 5, 2022 at 8:14 AM Liu Xinpeng <liuxp11@chinatelecom.cn> wrote:
+>
+> record_id is in the erst_record_id_cache but not in storage,so
+> erst_read will return -ENOENT, and then goto retry_next,
+> erst_get_record_id_next skip a record_id. This can result in
+> printing the records just in the cache.
+>
+> A reproducer of the problem(retry many times):
+>
+> [root@localhost erst-inject]# ./erst-inject -c 0xaaaaa00011
+> [root@localhost erst-inject]# ./erst-inject -p
+> rc: 273
+> rcd sig: CPER
+> rcd id: 0xaaaaa00012
+> rc: 273
+> rcd sig: CPER
+> rcd id: 0xaaaaa00013
+> rc: 273
+> rcd sig: CPER
+> rcd id: 0xaaaaa00014
+> [root@localhost erst-inject]# ./erst-inject -i 0xaaaaa000006
+> [root@localhost erst-inject]# ./erst-inject -i 0xaaaaa000007
+> [root@localhost erst-inject]# ./erst-inject -i 0xaaaaa000008
+> [root@localhost erst-inject]# ./erst-inject -p
+> rc: 273
+> rcd sig: CPER
+> rcd id: 0xaaaaa00012
+> rc: 273
+> rcd sig: CPER
+> rcd id: 0xaaaaa00013
+> rc: 273
+> rcd sig: CPER
+> rcd id: 0xaaaaa00014
+> [root@localhost erst-inject]# ./erst-inject -n
+> total error record count: 6
+>
+> Signed-off-by: Liu Xinpeng <liuxp11@chinatelecom.cn>
+> ---
+>  drivers/acpi/apei/erst-dbg.c |  4 +++-
+>  drivers/acpi/apei/erst.c     | 34 +++++++++++++++++++++++++++++++---
+>  include/acpi/apei.h          |  1 +
+>  3 files changed, 35 insertions(+), 4 deletions(-)
+>
+> diff --git a/drivers/acpi/apei/erst-dbg.c b/drivers/acpi/apei/erst-dbg.c
+> index c740f0faad39..5b8164280a17 100644
+> --- a/drivers/acpi/apei/erst-dbg.c
+> +++ b/drivers/acpi/apei/erst-dbg.c
+> @@ -113,8 +113,10 @@ static ssize_t erst_dbg_read(struct file *filp, char __user *ubuf,
+>  retry:
+>         rc = len = erst_read(id, erst_dbg_buf, erst_dbg_buf_len);
+>         /* The record may be cleared by others, try read next record */
+> -       if (rc == -ENOENT)
+> +       if (rc == -ENOENT) {
+> +               erst_clear_cache(id);
+>                 goto retry_next;
+> +       }
+>         if (rc < 0)
+>                 goto out;
+>         if (len > ERST_DBG_RECORD_LEN_MAX) {
+> diff --git a/drivers/acpi/apei/erst.c b/drivers/acpi/apei/erst.c
+> index 698d67cee052..07d69dc7fd62 100644
+> --- a/drivers/acpi/apei/erst.c
+> +++ b/drivers/acpi/apei/erst.c
+> @@ -856,6 +856,31 @@ ssize_t erst_read(u64 record_id, struct cper_record_header *record,
+>  }
+>  EXPORT_SYMBOL_GPL(erst_read);
+>
+> +int erst_clear_cache(u64 record_id)
+> +{
+> +       int rc, i;
+> +       u64 *entries;
+> +
+> +       if (erst_disable)
+> +               return -ENODEV;
+> +
+> +       rc = mutex_lock_interruptible(&erst_record_id_cache.lock);
+> +       if (rc)
+> +               return rc;
+> +
+> +       entries = erst_record_id_cache.entries;
+> +       for (i = 0; i < erst_record_id_cache.len; i++) {
+> +               if (entries[i] == record_id)
+> +                       entries[i] = APEI_ERST_INVALID_RECORD_ID;
+> +       }
+> +       __erst_record_id_cache_compact();
+> +
+> +       mutex_unlock(&erst_record_id_cache.lock);
+> +
+> +       return rc;
+> +}
+> +EXPORT_SYMBOL_GPL(erst_clear_cache);
+> +
+>  int erst_clear(u64 record_id)
 >  {
->  	struct n_tty_data *ldata = tty->disc_data;
->  
->  	if (I_IXON(tty)) {
->  		if (c == START_CHAR(tty)) {
-> -			start_tty(tty);
-> -			process_echoes(tty);
-> +			if (!lookahead_done) {
-> +				start_tty(tty);
-> +				process_echoes(tty);
-> +			}
->  			return;
->  		}
->  		if (c == STOP_CHAR(tty)) {
-> -			stop_tty(tty);
-> +			if (!lookahead_done)
-> +				stop_tty(tty);
->  			return;
->  		}
-
-Wouldn't be cleaner to inside out the conditionals?
-
->  	}
-
-	if (I_IXON(tty)) {
-		if (lookahead_done) {
-			// Can be joined, but I think this is better
-			if (c == START_CHAR(tty))
-				return;
-			if (c == STOP_CHAR(tty))
-				return;
-		} else {
-			if (c == START_CHAR(tty)) {
-				start_tty(tty);
-				process_echoes(tty);
-				return;
-			}
-			if (c == STOP_CHAR(tty)) {
-				stop_tty(tty);
-				return;
-			}
-		}
-	}
-
-In my opinion this will show exactly what's going on when we have
-lookahead_done and when not.
-
--- 
-With Best Regards,
-Andy Shevchenko
-
-
+>         int rc, i;
+> @@ -998,14 +1023,17 @@ static ssize_t erst_reader(struct pstore_record *record)
+>
+>         len = erst_read(record_id, &rcd->hdr, rcd_len);
+>         /* The record may be cleared by others, try read next record */
+> -       if (len == -ENOENT)
+> +       if (len == -ENOENT) {
+> +               erst_clear_cache(record_id);
+>                 goto skip;
+> -       else if (len < 0 || len < sizeof(*rcd)) {
+> +       } else if (len < 0 || len < sizeof(*rcd)) {
+>                 rc = -EIO;
+>                 goto out;
+>         }
+> -       if (!guid_equal(&rcd->hdr.creator_id, &CPER_CREATOR_PSTORE))
+> +       if (!guid_equal(&rcd->hdr.creator_id, &CPER_CREATOR_PSTORE)) {
+> +               erst_clear_cache(record_id);
+>                 goto skip;
+> +       }
+>
+>         record->buf = kmalloc(len, GFP_KERNEL);
+>         if (record->buf == NULL) {
+> diff --git a/include/acpi/apei.h b/include/acpi/apei.h
+> index afaca3a075e8..f8c11ff4115a 100644
+> --- a/include/acpi/apei.h
+> +++ b/include/acpi/apei.h
+> @@ -47,6 +47,7 @@ void erst_get_record_id_end(void);
+>  ssize_t erst_read(u64 record_id, struct cper_record_header *record,
+>                   size_t buflen);
+>  int erst_clear(u64 record_id);
+> +int erst_clear_cache(u64 record_id);
+>
+>  int arch_apei_enable_cmcff(struct acpi_hest_header *hest_hdr, void *data);
+>  void arch_apei_report_mem_error(int sev, struct cper_sec_mem_err *mem_err);
+> --
+> 2.23.0
+>
