@@ -2,101 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CD444C43219
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 22:04:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 00717C4321E
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 22:04:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1390263AbiDEWDd (ORCPT
+        id S1390310AbiDEWDh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 18:03:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59548 "EHLO
+        Tue, 5 Apr 2022 18:03:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43050 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1444192AbiDEPlA (ORCPT
+        with ESMTP id S1349342AbiDEJtl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 11:41:00 -0400
-Received: from conuserg-09.nifty.com (conuserg-09.nifty.com [210.131.2.76])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A78575FCB;
-        Tue,  5 Apr 2022 07:03:31 -0700 (PDT)
-Received: from grover.. (133-32-177-133.west.xps.vectant.ne.jp [133.32.177.133]) (authenticated)
-        by conuserg-09.nifty.com with ESMTP id 235E2k8M021295;
-        Tue, 5 Apr 2022 23:02:49 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conuserg-09.nifty.com 235E2k8M021295
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1649167369;
-        bh=yB8mBxh6zgfFkl1vR4ponG9HVyr7i/FNMeStWHFyu/w=;
+        Tue, 5 Apr 2022 05:49:41 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3AB1C6334;
+        Tue,  5 Apr 2022 02:44:12 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CBCE061675;
+        Tue,  5 Apr 2022 09:44:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D1E79C385A2;
+        Tue,  5 Apr 2022 09:44:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649151851;
+        bh=yZ+WimmexbVpDWgdZiQrjWS7LEoQpVE2+xeHGJ7M12k=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=l2bI6SwM4DXiakwdb8B0EEcAferf7Hwfqdh2AWV7Vu42eBtMBZsdK07j/XqSwrIbu
-         o/h4U5jifRvz3VrtDTKBHbqXO9asE+l1LlHn5b5vz5B8HeQLaJcRQWUhT0GPjyrwhl
-         qoduk9NgUbcUzRypZzOpcbh0xn4FOo9UdwNj9jCYLAkJhLwOznXdFoxDVxlLKaN5qX
-         NPOgULaYb/Ht3+n9/kfNKVdNTCpl2kpGdc5ENaiXaxi7610PZ0BKg/GRwLppzNv0EA
-         CX6A6RmTkNKvhHVIlecsLuJtXkpsYd4lFrgbS8qW1gTOVyl4yp2o0nZrGgtJTG3aYG
-         1Tn29v3k2xnww==
-X-Nifty-SrcIP: [133.32.177.133]
-From:   Masahiro Yamada <masahiroy@kernel.org>
-To:     linux-kbuild@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Michal Marek <michal.lkml@markovi.net>
-Subject: [PATCH v2 04/10] modpost: move export_from_secname() call to more relevant place
-Date:   Tue,  5 Apr 2022 23:02:23 +0900
-Message-Id: <20220405140229.2895394-5-masahiroy@kernel.org>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220405140229.2895394-1-masahiroy@kernel.org>
-References: <20220405140229.2895394-1-masahiroy@kernel.org>
+        b=b/56oO+u1GkTTDTNjzrBsFhyEqFuGsSy84UErdjGCERJiconwuSwp0yvjo9OgFBe4
+         VtBc9FCS2yHfAMJET5KhphkRCcNXmYKPW9Is9HkbNEqx8cFW2MAAPL+ZoaUkh3vO7B
+         o+08V4wFHWH5rrWbvfm8yX4j3vsnQvynAyZxUSks=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
+        Shiraz Saleem <shiraz.saleem@intel.com>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 537/913] RDMA/irdma: Prevent some integer underflows
+Date:   Tue,  5 Apr 2022 09:26:39 +0200
+Message-Id: <20220405070355.945964593@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The assigned 'export' is only used when
+From: Dan Carpenter <dan.carpenter@oracle.com>
 
-    if (strstarts(symname, "__ksymtab_"))
+[ Upstream commit 6f6dbb819dfc1a35bcb8b709b5c83a3ea8beff75 ]
 
-is met. The else-part of the assignment is the dead code.
+My static checker complains that:
 
-Move the export_from_secname() call to where it is used.
+    drivers/infiniband/hw/irdma/ctrl.c:3605 irdma_sc_ceq_init()
+    warn: can subtract underflow 'info->dev->hmc_fpm_misc.max_ceqs'?
 
-Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
-Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
+It appears that "info->dev->hmc_fpm_misc.max_ceqs" comes from the firmware
+in irdma_sc_parse_fpm_query_buf() so, yes, there is a chance that it could
+be zero.  Even if we trust the firmware, it's easy enough to change the
+condition just as a hardenning measure.
+
+Fixes: 3f49d6842569 ("RDMA/irdma: Implement HW Admin Queue OPs")
+Link: https://lore.kernel.org/r/20220307125928.GE16710@kili
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+Acked-by: Shiraz Saleem <shiraz.saleem@intel.com>
+Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
+ drivers/infiniband/hw/irdma/ctrl.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
-(no changes since v1)
-
- scripts/mod/modpost.c | 10 ++++------
- 1 file changed, 4 insertions(+), 6 deletions(-)
-
-diff --git a/scripts/mod/modpost.c b/scripts/mod/modpost.c
-index eebb32689816..f9e54247ae1d 100644
---- a/scripts/mod/modpost.c
-+++ b/scripts/mod/modpost.c
-@@ -684,14 +684,8 @@ static void handle_modversion(const struct module *mod,
- static void handle_symbol(struct module *mod, struct elf_info *info,
- 			  const Elf_Sym *sym, const char *symname)
- {
--	enum export export;
- 	const char *name;
+diff --git a/drivers/infiniband/hw/irdma/ctrl.c b/drivers/infiniband/hw/irdma/ctrl.c
+index f1e5515256e0..1ac7067e21be 100644
+--- a/drivers/infiniband/hw/irdma/ctrl.c
++++ b/drivers/infiniband/hw/irdma/ctrl.c
+@@ -431,7 +431,7 @@ enum irdma_status_code irdma_sc_qp_create(struct irdma_sc_qp *qp, struct irdma_c
  
--	if (strstarts(symname, "__ksymtab"))
--		export = export_from_secname(info, get_secindex(info, sym));
--	else
--		export = export_unknown;
--
- 	switch (sym->st_shndx) {
- 	case SHN_COMMON:
- 		if (strstarts(symname, "__gnu_lto_")) {
-@@ -726,7 +720,11 @@ static void handle_symbol(struct module *mod, struct elf_info *info,
- 	default:
- 		/* All exported symbols */
- 		if (strstarts(symname, "__ksymtab_")) {
-+			enum export export;
-+
- 			name = symname + strlen("__ksymtab_");
-+			export = export_from_secname(info,
-+						     get_secindex(info, sym));
- 			sym_add_exported(name, mod, export);
- 		}
- 		if (strcmp(symname, "init_module") == 0)
+ 	cqp = qp->dev->cqp;
+ 	if (qp->qp_uk.qp_id < cqp->dev->hw_attrs.min_hw_qp_id ||
+-	    qp->qp_uk.qp_id > (cqp->dev->hmc_info->hmc_obj[IRDMA_HMC_IW_QP].max_cnt - 1))
++	    qp->qp_uk.qp_id >= (cqp->dev->hmc_info->hmc_obj[IRDMA_HMC_IW_QP].max_cnt))
+ 		return IRDMA_ERR_INVALID_QP_ID;
+ 
+ 	wqe = irdma_sc_cqp_get_next_send_wqe(cqp, scratch);
+@@ -2551,10 +2551,10 @@ static enum irdma_status_code irdma_sc_cq_create(struct irdma_sc_cq *cq,
+ 	enum irdma_status_code ret_code = 0;
+ 
+ 	cqp = cq->dev->cqp;
+-	if (cq->cq_uk.cq_id > (cqp->dev->hmc_info->hmc_obj[IRDMA_HMC_IW_CQ].max_cnt - 1))
++	if (cq->cq_uk.cq_id >= (cqp->dev->hmc_info->hmc_obj[IRDMA_HMC_IW_CQ].max_cnt))
+ 		return IRDMA_ERR_INVALID_CQ_ID;
+ 
+-	if (cq->ceq_id > (cq->dev->hmc_fpm_misc.max_ceqs - 1))
++	if (cq->ceq_id >= (cq->dev->hmc_fpm_misc.max_ceqs))
+ 		return IRDMA_ERR_INVALID_CEQ_ID;
+ 
+ 	ceq = cq->dev->ceq[cq->ceq_id];
+@@ -3656,7 +3656,7 @@ enum irdma_status_code irdma_sc_ceq_init(struct irdma_sc_ceq *ceq,
+ 	    info->elem_cnt > info->dev->hw_attrs.max_hw_ceq_size)
+ 		return IRDMA_ERR_INVALID_SIZE;
+ 
+-	if (info->ceq_id > (info->dev->hmc_fpm_misc.max_ceqs - 1))
++	if (info->ceq_id >= (info->dev->hmc_fpm_misc.max_ceqs))
+ 		return IRDMA_ERR_INVALID_CEQ_ID;
+ 	pble_obj_cnt = info->dev->hmc_info->hmc_obj[IRDMA_HMC_IW_PBLE].cnt;
+ 
+@@ -4205,7 +4205,7 @@ enum irdma_status_code irdma_sc_ccq_init(struct irdma_sc_cq *cq,
+ 	    info->num_elem > info->dev->hw_attrs.uk_attrs.max_hw_cq_size)
+ 		return IRDMA_ERR_INVALID_SIZE;
+ 
+-	if (info->ceq_id > (info->dev->hmc_fpm_misc.max_ceqs - 1))
++	if (info->ceq_id >= (info->dev->hmc_fpm_misc.max_ceqs ))
+ 		return IRDMA_ERR_INVALID_CEQ_ID;
+ 
+ 	pble_obj_cnt = info->dev->hmc_info->hmc_obj[IRDMA_HMC_IW_PBLE].cnt;
 -- 
-2.32.0
+2.34.1
+
+
 
