@@ -2,45 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C226CC4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E762BC43217
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 19:53:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238210AbiDETza (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 15:55:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47988 "EHLO
+        id S1389829AbiDEP1b (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 11:27:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56990 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354640AbiDEKO5 (ORCPT
+        with ESMTP id S1347322AbiDEJqX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:14:57 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40F696B505;
-        Tue,  5 Apr 2022 03:02:04 -0700 (PDT)
+        Tue, 5 Apr 2022 05:46:23 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58C81DE938;
+        Tue,  5 Apr 2022 02:32:45 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id EC7EBB81C83;
-        Tue,  5 Apr 2022 10:02:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5C446C385A2;
-        Tue,  5 Apr 2022 10:02:01 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 804FA6165C;
+        Tue,  5 Apr 2022 09:32:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8490BC385A0;
+        Tue,  5 Apr 2022 09:32:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649152921;
-        bh=BQG/RH5+pJWh1aMXf0Q5+t1IqUoha19GhFHJmPF5m5c=;
+        s=korg; t=1649151164;
+        bh=lfMoL5Nyc8RJg1qdgYmPYov80y4msIbqIDeHePByH+4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1JLJe3+RUE2FJPH/iUuwLpqGvfei4lnsziKOhkEGNg3SkHV4a9ruxNTSLrkQEUCa1
-         pLH1UG3ChZvxsNOoENduJtx0g0h+ur8jtVsm2diwyUM8t7UGLvcidPbj5Tz0BLuNnc
-         VtGTZ0BwgolK2O1JcvyxzNdIgrtJYZ8dlG/qTDvk=
+        b=c6Ez65xHtIkl37RiB/jEfIOVwS7hZvoobcIjwogcSt0imNe2UOI3Wvu1DNrIQ6yd0
+         mOnbCfYHC7OQ7SLoG98DsVnyw9r4Mp4CrAZ9ZD+Gsbnx228MRFj2BELDAWg1JNyTzD
+         A8rovJcuESZXqSYddzqcpv6Y5hYeibiAVEehkVK4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Lucas Zampieri <lzampier@redhat.com>,
-        Nestor Lopez Casado <nlopezcasad@logitech.com>,
-        Jiri Kosina <jkosina@suse.cz>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 006/599] HID: logitech-dj: add new lightspeed receiver id
-Date:   Tue,  5 Apr 2022 09:25:00 +0200
-Message-Id: <20220405070259.002081260@linuxfoundation.org>
+        stable@vger.kernel.org, Hulk Robot <hulkci@huawei.com>,
+        Wang Hai <wanghai38@huawei.com>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Helge Deller <deller@gmx.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 290/913] video: fbdev: smscufx: Fix null-ptr-deref in ufx_usb_probe()
+Date:   Tue,  5 Apr 2022 09:22:32 +0200
+Message-Id: <20220405070348.550368416@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,41 +51,60 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lucas Zampieri <lzampier@redhat.com>
+From: Wang Hai <wanghai38@huawei.com>
 
-[ Upstream commit 25666e8ccd952627899b09b68f7c9b68cfeaf028 ]
+[ Upstream commit 1791f487f877a9e83d81c8677bd3e7b259e7cb27 ]
 
-As of logitech lightspeed receiver fw version 04.02.B0009,
-HIDPP_PARAM_DEVICE_INFO is being reported as 0x11.
+I got a null-ptr-deref report:
 
-With patch "HID: logitech-dj: add support for the new lightspeed receiver
-iteration", the mouse starts to error out with:
-  logitech-djreceiver: unusable device of type UNKNOWN (0x011) connected on
-  slot 1
-and becomes unusable.
+BUG: kernel NULL pointer dereference, address: 0000000000000000
+...
+RIP: 0010:fb_destroy_modelist+0x38/0x100
+...
+Call Trace:
+ ufx_usb_probe.cold+0x2b5/0xac1 [smscufx]
+ usb_probe_interface+0x1aa/0x3c0 [usbcore]
+ really_probe+0x167/0x460
+...
+ ret_from_fork+0x1f/0x30
 
-This has been noticed on a Logitech G Pro X Superlight fw MPM 25.01.B0018.
+If fb_alloc_cmap() fails in ufx_usb_probe(), fb_destroy_modelist() will
+be called to destroy modelist in the error handling path. But modelist
+has not been initialized yet, so it will result in null-ptr-deref.
 
-Signed-off-by: Lucas Zampieri <lzampier@redhat.com>
-Acked-by: Nestor Lopez Casado <nlopezcasad@logitech.com>
-Signed-off-by: Jiri Kosina <jkosina@suse.cz>
+Initialize modelist before calling fb_alloc_cmap() to fix this bug.
+
+Fixes: 3c8a63e22a08 ("Add support for SMSC UFX6000/7000 USB display adapters")
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Wang Hai <wanghai38@huawei.com>
+Acked-by: Thomas Zimmermann <tzimmermann@suse.de>
+Signed-off-by: Helge Deller <deller@gmx.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/hid/hid-logitech-dj.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/video/fbdev/smscufx.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/drivers/hid/hid-logitech-dj.c b/drivers/hid/hid-logitech-dj.c
-index a311b0a33eba..587259b3db97 100644
---- a/drivers/hid/hid-logitech-dj.c
-+++ b/drivers/hid/hid-logitech-dj.c
-@@ -1000,6 +1000,7 @@ static void logi_hidpp_recv_queue_notif(struct hid_device *hdev,
- 		workitem.reports_supported |= STD_KEYBOARD;
- 		break;
- 	case 0x0f:
-+	case 0x11:
- 		device_type = "eQUAD Lightspeed 1.2";
- 		logi_hidpp_dev_conn_notif_equad(hdev, hidpp_report, &workitem);
- 		workitem.reports_supported |= STD_KEYBOARD;
+diff --git a/drivers/video/fbdev/smscufx.c b/drivers/video/fbdev/smscufx.c
+index bfac3ee4a642..28768c272b73 100644
+--- a/drivers/video/fbdev/smscufx.c
++++ b/drivers/video/fbdev/smscufx.c
+@@ -1656,6 +1656,7 @@ static int ufx_usb_probe(struct usb_interface *interface,
+ 	info->par = dev;
+ 	info->pseudo_palette = dev->pseudo_palette;
+ 	info->fbops = &ufx_ops;
++	INIT_LIST_HEAD(&info->modelist);
+ 
+ 	retval = fb_alloc_cmap(&info->cmap, 256, 0);
+ 	if (retval < 0) {
+@@ -1666,8 +1667,6 @@ static int ufx_usb_probe(struct usb_interface *interface,
+ 	INIT_DELAYED_WORK(&dev->free_framebuffer_work,
+ 			  ufx_free_framebuffer_work);
+ 
+-	INIT_LIST_HEAD(&info->modelist);
+-
+ 	retval = ufx_reg_read(dev, 0x3000, &id_rev);
+ 	check_warn_goto_error(retval, "error %d reading 0x3000 register from device", retval);
+ 	dev_dbg(dev->gdev, "ID_REV register value 0x%08x", id_rev);
 -- 
 2.34.1
 
