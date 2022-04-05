@@ -2,85 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B887AC4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 99231C433FE
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:18:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1573453AbiDEW74 (ORCPT
+        id S1573222AbiDEW7e (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 18:59:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53874 "EHLO
+        Tue, 5 Apr 2022 18:59:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36910 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354247AbiDEKMi (ORCPT
+        with ESMTP id S1455692AbiDEQA1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:12:38 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD0875D5E5;
-        Tue,  5 Apr 2022 02:59:27 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 1C4A0CE1C9D;
-        Tue,  5 Apr 2022 09:59:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2F541C385A3;
-        Tue,  5 Apr 2022 09:59:24 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649152764;
-        bh=+meF9PkKtpTanUbYRtKk8E3df2KpV2NIkMy3Tats4EA=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GZnkvJe5at6W2eecfZfGUhu7xeiky2bwaVMsQctIeLzOEpb/LLI74QbJPtUYRJuVV
-         kxnxMDrk6i2YZGqWJfx5Khh7aivLtgFwNnXLHFxFhMN7iU40xU4nPE3vCK/n4g1S3e
-         +D5qGcYOazFPMrPYD2Hdk2mIPXbfP+o8PeUvHC94=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Will Deacon <will@kernel.org>
-Subject: [PATCH 5.15 867/913] arm64: mm: Drop const from conditional arm64_dma_phys_limit definition
-Date:   Tue,  5 Apr 2022 09:32:09 +0200
-Message-Id: <20220405070405.812254309@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 5 Apr 2022 12:00:27 -0400
+Received: from mail-lf1-x134.google.com (mail-lf1-x134.google.com [IPv6:2a00:1450:4864:20::134])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C11D0282
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 08:19:13 -0700 (PDT)
+Received: by mail-lf1-x134.google.com with SMTP id h7so23866089lfl.2
+        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 08:19:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=QNjrm+2U8Wp4qQE1rogdNw3rgJSNlOSLgoVBhegCMNs=;
+        b=Tqg2yrve07ADWEUbyvd1akmjxeOXld1+zmU3UV3F3XWGv5FUnPXiX9N+VO83Y4JEEd
+         MSnqMkjllKlq54jdxCTUsddUW2WhAIPVq2rFPlAyVzZ9GkIu7mkknpkuBo+/cHUY6jao
+         yr+/g5L22aSYGDbB4+wgFmKITWcu4VMLxwxjh5UbsBPt18CUlT6vaVOcJnK+AIFRDyN7
+         N9s9INLJ3OqDc4X7w3IMv+64eJsxE40BX4ZZh19IPIZJ4IkMDQ68DshnBf0pQXRjLlm+
+         986z+zcSdLK9PaBQoLTctUm7b/JffBHCpHC0VaT9Vbl/pzZWS1j9W+eGZLjsQnd4Lk7D
+         KSrg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=QNjrm+2U8Wp4qQE1rogdNw3rgJSNlOSLgoVBhegCMNs=;
+        b=VKiY9aw6H3CtrDd3FtqC+T/m5VLFslgV1hE6kUvdfF3ebNAJalA9VNS2KZq0u6pCQy
+         eooK9lJTMe9xVENQp1QUw0cp7I//UTRadp66Lq1mrfH6/YbqEKBdiw0hgADSAteZBPk+
+         Vf6Y26z4/qrSilPRbRpEw/WuxYooWh7HGND4w//m96jay2aVPduzImTQ9dh9+qVxYS5s
+         0V4x+9YIEVJJjSNxm6xuvsM3kXhwHCYWZquugAHM1xIAJsGy7hLBw8lrgkCxAQ3niw6U
+         ajPnSe6FVD0xuhIFmE8l05SslYF/1aQkS+kav5i4bPUxuLqSllYK20t0LrDTDg+WC5Hx
+         naoA==
+X-Gm-Message-State: AOAM533Tj6/811oRp/T487JK723fO1aOmwsAEApyEfCYg29G9Genq0os
+        1vbY/L5v75pVu7f+nE1zIIyyzUCoolj+txEkc9Q=
+X-Google-Smtp-Source: ABdhPJxJhOBNDoxuGxa3tHh6Dv34VZijI3nZI9DmqyOTZ9P9dzaQTLrSUZ6XpCmXw9eQQC3cNsaYahVZvvY1gdoam48=
+X-Received: by 2002:a05:6512:2627:b0:44a:2987:218b with SMTP id
+ bt39-20020a056512262700b0044a2987218bmr3077182lfb.563.1649171952064; Tue, 05
+ Apr 2022 08:19:12 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <20220405150912.GA625670@euclid> <YkxdasBGZ3m2Yu66@kroah.com>
+In-Reply-To: <YkxdasBGZ3m2Yu66@kroah.com>
+From:   Sevinj Aghayeva <sevinj.aghayeva@gmail.com>
+Date:   Tue, 5 Apr 2022 11:19:00 -0400
+Message-ID: <CAMWRUK7c-hqiz+KEFkqBuvu1syCwSnF4UZzbkPFw-VWABm9qOw@mail.gmail.com>
+Subject: Re: [PATCH v2] staging: rtl8723bs: fix indentation
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
+        outreachy linux kernel <outreachy@lists.linux.dev>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Will Deacon <will@kernel.org>
+On Tue, Apr 5, 2022 at 11:17 AM Greg Kroah-Hartman
+<gregkh@linuxfoundation.org> wrote:
+>
+> On Tue, Apr 05, 2022 at 11:09:12AM -0400, Sevinj Aghayeva wrote:
+> > Adhere to Linux kernel coding style.
+> >
+> > Reported by checkpatch:
+> >
+> > WARNING: suspect code indent for conditional statements
+>
+> You are also removing unneeded comments, right?  Please explain that as
+> the documentation link the bot pointed you to showed.
 
-commit 770093459b9b333380aa71f2c31c60b14895c1df upstream.
+I specified that under the --- line:
 
-Commit 031495635b46 ("arm64: Do not defer reserve_crashkernel() for
-platforms with no DMA memory zones") introduced different definitions
-for 'arm64_dma_phys_limit' depending on CONFIG_ZONE_DMA{,32} based on
-a late suggestion from Pasha. Sadly, this results in a build error when
-passing W=1:
+v1 -> v2: Remove the comments that became irrelevant with proper indentation.
 
-  | arch/arm64/mm/init.c:90:19: error: conflicting type qualifiers for 'arm64_dma_phys_limit'
-
-Drop the 'const' for now and use '__ro_after_init' consistently.
-
-Link: https://lore.kernel.org/r/202203090241.aj7paWeX-lkp@intel.com
-Link: https://lore.kernel.org/r/CA+CK2bDbbx=8R=UthkMesWOST8eJMtOGJdfMRTFSwVmo0Vn0EA@mail.gmail.com
-Fixes: 031495635b46 ("arm64: Do not defer reserve_crashkernel() for platforms with no DMA memory zones")
-Signed-off-by: Will Deacon <will@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- arch/arm64/mm/init.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
---- a/arch/arm64/mm/init.c
-+++ b/arch/arm64/mm/init.c
-@@ -87,7 +87,7 @@ EXPORT_SYMBOL(memstart_addr);
- #if IS_ENABLED(CONFIG_ZONE_DMA) || IS_ENABLED(CONFIG_ZONE_DMA32)
- phys_addr_t __ro_after_init arm64_dma_phys_limit;
- #else
--const phys_addr_t arm64_dma_phys_limit = PHYS_MASK + 1;
-+phys_addr_t __ro_after_init arm64_dma_phys_limit = PHYS_MASK + 1;
- #endif
- 
- #ifdef CONFIG_KEXEC_CORE
+>
+> thanks,
+>
+> greg k-h
 
 
+
+-- 
+
+Sevinj.Aghayeva
