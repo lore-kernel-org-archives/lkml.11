@@ -2,87 +2,62 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B64AFC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:36:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 23032C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:36:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241849AbiDEIfi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 04:35:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52988 "EHLO
+        id S241871AbiDEIfw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 04:35:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48372 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233120AbiDEH4z (ORCPT
+        with ESMTP id S233643AbiDEH5V (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 03:56:55 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0ED63F8A6;
-        Tue,  5 Apr 2022 00:50:46 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5ADDEB81B9C;
-        Tue,  5 Apr 2022 07:50:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AE9A5C34110;
-        Tue,  5 Apr 2022 07:50:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649145044;
-        bh=KMW3KVCvPXti6kTXH+XQzkBMTd9sHyzsbYOqLD1HiZk=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Wijk1YeT2NgjycOQZsmXJWC+GESpLPvIRU0gBihTFR+BwPVJV2AsW5cXUPu95sqhL
-         WK5KSUov2dC9I+zXbdYSoemA5NdyrxEvRMcB3rS9vJFsuVXmmfo5cubScB+HAlb9e4
-         lSsrEIZZV64Yx2hsP3nAUTn9FqPLZ4VQVEb02kcM=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Will Deacon <will@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0215/1126] perf: MARVELL_CN10K_TAD_PMU should depend on ARCH_THUNDER
-Date:   Tue,  5 Apr 2022 09:16:02 +0200
-Message-Id: <20220405070413.919904828@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
-References: <20220405070407.513532867@linuxfoundation.org>
-User-Agent: quilt/0.66
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+        Tue, 5 Apr 2022 03:57:21 -0400
+Received: from mx.socionext.com (mx.socionext.com [202.248.49.38])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B43B84EF43;
+        Tue,  5 Apr 2022 00:51:19 -0700 (PDT)
+Received: from unknown (HELO iyokan2-ex.css.socionext.com) ([172.31.9.54])
+  by mx.socionext.com with ESMTP; 05 Apr 2022 16:51:14 +0900
+Received: from mail.mfilter.local (m-filter-1 [10.213.24.61])
+        by iyokan2-ex.css.socionext.com (Postfix) with ESMTP id 99A982058B50;
+        Tue,  5 Apr 2022 16:51:14 +0900 (JST)
+Received: from 172.31.9.51 (172.31.9.51) by m-FILTER with ESMTP; Tue, 5 Apr 2022 16:51:14 +0900
+Received: from plum.e01.socionext.com (unknown [10.212.243.119])
+        by kinkan2.css.socionext.com (Postfix) with ESMTP id 25468B6395;
+        Tue,  5 Apr 2022 16:51:14 +0900 (JST)
+From:   Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
+To:     Jingoo Han <jingoohan1@gmail.com>,
+        Gustavo Pimentel <gustavo.pimentel@synopsys.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>
+Cc:     Masami Hiramatsu <mhiramat@kernel.org>, linux-pci@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org,
+        Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
+Subject: [PATCH 0/3] dt-bindings: PCI: uniphier: Fix endpoint descriptions
+Date:   Tue,  5 Apr 2022 16:50:59 +0900
+Message-Id: <1649145062-29833-1-git-send-email-hayashi.kunihiko@socionext.com>
+X-Mailer: git-send-email 2.7.4
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Geert Uytterhoeven <geert+renesas@glider.be>
+This series fixes dt-schema descriptions for PCI endpoint controller
+implemented in UniPhier SoCs.
 
-[ Upstream commit e564518b0727c8960942d8b1452703bbabf1a5ec ]
+Kunihiko Hayashi (3):
+  dt-bindings: PCI: designware-ep: Increase maxItems of reg and
+    reg-names
+  dt-bindings: PCI: uniphier-ep: Clean up reg, clocks, resets, and their
+    names using compatible string
+  ARM: dts: uniphier: Remove compatible "snps,dw-pcie-ep" from Pro5
+    pcie-ep node
 
-The Marvell CN10K Last-Level cache Tag-and-data Units (LLC-TAD)
-performance monitor is only present on Marvell CN10K SoCs.  Hence add a
-dependency on ARCH_THUNDER, to prevent asking the user about this driver
-when configuring a kernel without Cavium Thunder (incl. Marvell CN10K)
-SoC support.
+ .../bindings/pci/snps,dw-pcie-ep.yaml         |  4 +-
+ .../pci/socionext,uniphier-pcie-ep.yaml       | 84 ++++++++++++-------
+ arch/arm/boot/dts/uniphier-pro5.dtsi          |  3 +-
+ 3 files changed, 59 insertions(+), 32 deletions(-)
 
-Fixes: 036a7584bede ("drivers: perf: Add LLC-TAD perf counter support")
-Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
-Link: https://lore.kernel.org/r/b4662a2c767d04cca19417e0c845edea2da262ad.1641995941.git.geert+renesas@glider.be
-Signed-off-by: Will Deacon <will@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/perf/Kconfig | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/perf/Kconfig b/drivers/perf/Kconfig
-index e1a0c44bc686..7d6ffdf44a41 100644
---- a/drivers/perf/Kconfig
-+++ b/drivers/perf/Kconfig
-@@ -141,7 +141,7 @@ config ARM_DMC620_PMU
- 
- config MARVELL_CN10K_TAD_PMU
- 	tristate "Marvell CN10K LLC-TAD PMU"
--	depends on ARM64 || (COMPILE_TEST && 64BIT)
-+	depends on ARCH_THUNDER || (COMPILE_TEST && 64BIT)
- 	help
- 	  Provides support for Last-Level cache Tag-and-data Units (LLC-TAD)
- 	  performance monitors on CN10K family silicons.
 -- 
-2.34.1
-
-
+2.25.1
 
