@@ -2,49 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 757AFC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 11:16:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CA714C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 11:16:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352540AbiDELLf (ORCPT
+        id S1352605AbiDELL5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 07:11:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53002 "EHLO
+        Tue, 5 Apr 2022 07:11:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48158 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238478AbiDEIai (ORCPT
+        with ESMTP id S239020AbiDEIoa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:30:38 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1B01275D8;
-        Tue,  5 Apr 2022 01:22:19 -0700 (PDT)
+        Tue, 5 Apr 2022 04:44:30 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FDC6201A7;
+        Tue,  5 Apr 2022 01:36:01 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2FF236145F;
-        Tue,  5 Apr 2022 08:22:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3D00DC385A1;
-        Tue,  5 Apr 2022 08:22:18 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9DE22B81A32;
+        Tue,  5 Apr 2022 08:35:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 00FB6C385A2;
+        Tue,  5 Apr 2022 08:35:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649146938;
-        bh=udRcMs7kmOyAA+RyJhsEG9iF/vW5/VUQI/1wSi442CM=;
+        s=korg; t=1649147758;
+        bh=fHq6yezaEyDiwaMdcaDnIeQNeAFcl0kVKFCgE+Qc/VU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=uficF8lDyi8UTZQNjXVSO4DhPi6lckMn5rDvDb3rb0mlaqX/sRcB148CSXmq7Y4o1
-         2EX+Cj2gY+gCOAoZfrsi7LRrGs6l+uCAH1798DIkKD7I0E7L/zd6vjxTZjOIx6l9x/
-         tCH4P0CC2p92mLeP+Gmgi0h6Pa6ya6zkMggCBuwU=
+        b=fy3bGpCSwjxHbX9FwFlqyqXgdEGAaARkzXAzDKPCNG+vIV7dMQk8RjhgFrmZWuPlz
+         Oyh/c1+i1+IOxojFm6uHtc8WF2HwrDmH6VVFumsr8KtJxEQ/jOTW5jIwVKE91+3U4n
+         H0tLMQeFa9GhT8i9DOmpKcb2Cc6909lzMpZ1FpQ0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
-        Bard Liao <yung-chuan.liao@linux.intel.com>,
-        =?UTF-8?q?P=C3=A9ter=20Ujfalusi?= <peter.ujfalusi@linux.intel.com>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0943/1126] ASoC: Intel: sof_es8336: use NHLT information to set dmic and SSP
-Date:   Tue,  5 Apr 2022 09:28:10 +0200
-Message-Id: <20220405070435.188697055@linuxfoundation.org>
+        stable@vger.kernel.org, Ali Pouladi <quic_apouladi@quicinc.com>,
+        Elliot Berman <quic_eberman@quicinc.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>
+Subject: [PATCH 5.16 0109/1017] rtc: pl031: fix rtc features null pointer dereference
+Date:   Tue,  5 Apr 2022 09:17:02 +0200
+Message-Id: <20220405070357.432300746@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
-References: <20220405070407.513532867@linuxfoundation.org>
+In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
+References: <20220405070354.155796697@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -53,126 +50,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+From: Ali Pouladi <quic_apouladi@quicinc.com>
 
-[ Upstream commit 651c304df7f6e3fbb4779527efa3eb128ef91329 ]
+commit ea6af39f3da50c86367a71eb3cc674ade3ed244c upstream.
 
-Since we see a proliferation of devices with various configurations,
-we want to automatically set the DMIC and SSP information. This patch
-relies on the information extracted from NHLT and partially reverts
-existing DMI quirks added by commit a164137ce91a ("ASoC: Intel: add
-machine driver for SOF+ES8336")
+When there is no interrupt line, rtc alarm feature is disabled.
 
-Note that NHLT can report multiple SSPs, choosing from the
-ssp_link_mask in an MSB-first manner was found experimentally to work
-fine.
+The clearing of the alarm feature bit was being done prior to allocations
+of ldata->rtc device, resulting in a null pointer dereference.
 
-The only thing that cannot be detected is the GPIO type, and users may
-want to use the quirk override parameter if the 'wrong' solution is
-provided.
+Clear RTC_FEATURE_ALARM after the rtc device is allocated.
 
-Tested-by: Mauro Carvalho Chehab <mchehab@kernel.org>
-Signed-off-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
-Reviewed-by: Bard Liao <yung-chuan.liao@linux.intel.com>
-Reviewed-by: Péter Ujfalusi <peter.ujfalusi@linux.intel.com>
-Link: https://lore.kernel.org/r/20220308192610.392950-15-pierre-louis.bossart@linux.intel.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: d9b0dd54a194 ("rtc: pl031: use RTC_FEATURE_ALARM")
+Cc: stable@vger.kernel.org
+Signed-off-by: Ali Pouladi <quic_apouladi@quicinc.com>
+Signed-off-by: Elliot Berman <quic_eberman@quicinc.com>
+Signed-off-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
+Link: https://lore.kernel.org/r/20220225161924.274141-1-quic_eberman@quicinc.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/soc/intel/boards/sof_es8336.c | 56 +++++++++++++++++++++--------
- 1 file changed, 41 insertions(+), 15 deletions(-)
+ drivers/rtc/rtc-pl031.c |    6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/sound/soc/intel/boards/sof_es8336.c b/sound/soc/intel/boards/sof_es8336.c
-index 20d577eaab6d..46e453915f82 100644
---- a/sound/soc/intel/boards/sof_es8336.c
-+++ b/sound/soc/intel/boards/sof_es8336.c
-@@ -228,24 +228,25 @@ static int sof_es8336_quirk_cb(const struct dmi_system_id *id)
- 	return 1;
- }
- 
-+/*
-+ * this table should only be used to add GPIO or jack-detection quirks
-+ * that cannot be detected from ACPI tables. The SSP and DMIC
-+ * information are providing by the platform driver and are aligned
-+ * with the topology used.
-+ *
-+ * If the GPIO support is missing, the quirk parameter can be used to
-+ * enable speakers. In that case it's recommended to keep the SSP and DMIC
-+ * information consistent, overriding the SSP and DMIC can only be done
-+ * if the topology file is modified as well.
-+ */
- static const struct dmi_system_id sof_es8336_quirk_table[] = {
--	{
--		.callback = sof_es8336_quirk_cb,
--		.matches = {
--			DMI_MATCH(DMI_SYS_VENDOR, "CHUWI Innovation And Technology"),
--			DMI_MATCH(DMI_BOARD_NAME, "Hi10 X"),
--		},
--		.driver_data = (void *)SOF_ES8336_SSP_CODEC(2)
--	},
- 	{
- 		.callback = sof_es8336_quirk_cb,
- 		.matches = {
- 			DMI_MATCH(DMI_SYS_VENDOR, "IP3 tech"),
- 			DMI_MATCH(DMI_BOARD_NAME, "WN1"),
- 		},
--		.driver_data = (void *)(SOF_ES8336_SSP_CODEC(0) |
--					SOF_ES8336_TGL_GPIO_QUIRK |
--					SOF_ES8336_ENABLE_DMIC)
-+		.driver_data = (void *)(SOF_ES8336_TGL_GPIO_QUIRK)
- 	},
- 	{}
- };
-@@ -470,11 +471,33 @@ static int sof_es8336_probe(struct platform_device *pdev)
- 	card = &sof_es8336_card;
- 	card->dev = dev;
- 
--	if (!dmi_check_system(sof_es8336_quirk_table))
--		quirk = SOF_ES8336_SSP_CODEC(2);
-+	/* check GPIO DMI quirks */
-+	dmi_check_system(sof_es8336_quirk_table);
- 
--	if (quirk & SOF_ES8336_ENABLE_DMIC)
--		dmic_be_num = 2;
-+	if (!mach->mach_params.i2s_link_mask) {
-+		dev_warn(dev, "No I2S link information provided, using SSP0. This may need to be modified with the quirk module parameter\n");
-+	} else {
-+		/*
-+		 * Set configuration based on platform NHLT.
-+		 * In this machine driver, we can only support one SSP for the
-+		 * ES8336 link, the else-if below are intentional.
-+		 * In some cases multiple SSPs can be reported by NHLT, starting MSB-first
-+		 * seems to pick the right connection.
-+		 */
-+		unsigned long ssp = 0;
-+
-+		if (mach->mach_params.i2s_link_mask & BIT(2))
-+			ssp = SOF_ES8336_SSP_CODEC(2);
-+		else if (mach->mach_params.i2s_link_mask & BIT(1))
-+			ssp = SOF_ES8336_SSP_CODEC(1);
-+		else  if (mach->mach_params.i2s_link_mask & BIT(0))
-+			ssp = SOF_ES8336_SSP_CODEC(0);
-+
-+		quirk |= ssp;
-+	}
-+
-+	if (mach->mach_params.dmic_num)
-+		quirk |= SOF_ES8336_ENABLE_DMIC;
- 
- 	if (quirk_override != -1) {
- 		dev_info(dev, "Overriding quirk 0x%lx => 0x%x\n",
-@@ -483,6 +506,9 @@ static int sof_es8336_probe(struct platform_device *pdev)
+--- a/drivers/rtc/rtc-pl031.c
++++ b/drivers/rtc/rtc-pl031.c
+@@ -350,9 +350,6 @@ static int pl031_probe(struct amba_devic
+ 		}
  	}
- 	log_quirks(dev);
  
-+	if (quirk & SOF_ES8336_ENABLE_DMIC)
-+		dmic_be_num = 2;
+-	if (!adev->irq[0])
+-		clear_bit(RTC_FEATURE_ALARM, ldata->rtc->features);
+-
+ 	device_init_wakeup(&adev->dev, true);
+ 	ldata->rtc = devm_rtc_allocate_device(&adev->dev);
+ 	if (IS_ERR(ldata->rtc)) {
+@@ -360,6 +357,9 @@ static int pl031_probe(struct amba_devic
+ 		goto out;
+ 	}
+ 
++	if (!adev->irq[0])
++		clear_bit(RTC_FEATURE_ALARM, ldata->rtc->features);
 +
- 	sof_es8336_card.num_links += dmic_be_num + hdmi_num;
- 	dai_links = sof_card_dai_links_create(dev,
- 					      SOF_ES8336_SSP_CODEC(quirk),
--- 
-2.34.1
-
+ 	ldata->rtc->ops = ops;
+ 	ldata->rtc->range_min = vendor->range_min;
+ 	ldata->rtc->range_max = vendor->range_max;
 
 
