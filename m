@@ -2,113 +2,190 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B3D93C43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8DAE1C433FE
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 01:33:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1842601AbiDFBdm (ORCPT
+        id S1842568AbiDFBcx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 21:33:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37452 "EHLO
+        Tue, 5 Apr 2022 21:32:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47444 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242829AbiDEOwv (ORCPT
+        with ESMTP id S1349134AbiDEJtM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 10:52:51 -0400
-Received: from mail-wm1-x32d.google.com (mail-wm1-x32d.google.com [IPv6:2a00:1450:4864:20::32d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 587BDBF97B;
-        Tue,  5 Apr 2022 06:22:08 -0700 (PDT)
-Received: by mail-wm1-x32d.google.com with SMTP id n63-20020a1c2742000000b0038d0c31db6eso1643841wmn.1;
-        Tue, 05 Apr 2022 06:22:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=42pOK9ccsa2jjY6xkX2nlkLQuEWFF7Bk+1tRnHi96GI=;
-        b=elxm4jPIzGaUvukiv9OCU5WC3tOGLd7yKl16vtPMjYLE2D5vFxSu4UENBZY1jkWQd2
-         gOF0EXNlk1Fxq7wWKfP64LZ9Lg/+oqitp28xGmjju2Vkx+Knrdqcy4Vp8fVJHIwrWSUL
-         oou5HkSB9BYIJciPQ6RAN/m4mrcZ2Ef8Cd4iXB6ZbhUp2bCYp7NLp5TiPyJpX248EeJe
-         mGJbHmtfNDMd8HzPL6KNQX2D4U//E4h5ToOjWrCOYb9Ztt3fBVe0WLC6Vn2muqOlHZvQ
-         eXyrZ3aXEr1cM2rg9qsqcyT/cxSuFyF5tX4HiEM9gZC6YRsgcmCuVTyZFh+mPH4cQ9h2
-         rQWQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:message-id:date:mime-version:user-agent
-         :subject:content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=42pOK9ccsa2jjY6xkX2nlkLQuEWFF7Bk+1tRnHi96GI=;
-        b=za3KDLgHTvQ3fyG+npZJwlssjg/RPBLX6XsdepXB/fSXCBS8TRfRdawDstyomjnuav
-         NHIvEP2DT6H6cFqed9clyAKHrum+dNyHwS9qrsU+lnxugJwlv0eLN8/MHK3UiGUExy9K
-         9X54pe8ZYDpWGPitWQIKS+C/ziyIUH5wJ04hMiips8ReUMZFTEYAN3/OwqvJI3239aG+
-         56iWU2V2Fzd8EXxED0gyE6X8nJj5DZd3Y9tvBtZJ8ylM3Y0zlmaWqeUmOqFBv87Al6+d
-         o7quqwtwaU3ebvFGD4jANuSbC/r1pJ99KxLOFCXzZAuGByRvJhp/oKxc2y9prLRlGfrQ
-         mKlw==
-X-Gm-Message-State: AOAM533lRcqD7hJoHLLWLDxcXs7HP1JD0COEwoMhA3QGYlpLGPu3vWCM
-        kWj4ZH+bsd3IGKRQZ6v2vWdWZnZIVt0=
-X-Google-Smtp-Source: ABdhPJyTin3MLm6VWeXoWs2sztSrpiJP4TM84DHkMzMprxV9AoMxcZavqxVYsbM9sc2yNIC9cEX+RA==
-X-Received: by 2002:a05:600c:6026:b0:38e:746b:9414 with SMTP id az38-20020a05600c602600b0038e746b9414mr3202828wmb.141.1649164926604;
-        Tue, 05 Apr 2022 06:22:06 -0700 (PDT)
-Received: from [10.32.181.87] (nat-pool-mxp-t.redhat.com. [149.6.153.186])
-        by smtp.googlemail.com with ESMTPSA id t4-20020adfe104000000b00205b50f04f0sm11951822wrz.86.2022.04.05.06.22.05
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 05 Apr 2022 06:22:06 -0700 (PDT)
-Sender: Paolo Bonzini <paolo.bonzini@gmail.com>
-Message-ID: <aad44bd9-7f5b-58e6-523a-ce9df57bee30@redhat.com>
-Date:   Tue, 5 Apr 2022 15:22:05 +0200
+        Tue, 5 Apr 2022 05:49:12 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1FE46E5;
+        Tue,  5 Apr 2022 02:41:19 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 858ABCE1C90;
+        Tue,  5 Apr 2022 09:41:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A4613C385A3;
+        Tue,  5 Apr 2022 09:41:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649151676;
+        bh=b4+DDr7xLYLweNrVXvEBaAaf82ar7OL6+g5UC5/4V6s=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=KxIIzxJEHLDGnGmmelPdegoRiSSid6JpjlME8SFptNbrheR5Tf245qf/Pr7twHJJG
+         tY74lsH50TTqbXDOW6fX440JsFHD4i8gHIC7rM99qR/iVzfROg3nhCt1s+4W0xHhoF
+         e1M4HRFenU9VP72uSHIWFMRF+MWMpHSTM1udr4Nk=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Mustafa Ismail <mustafa.ismail@intel.com>,
+        Shiraz Saleem <shiraz.saleem@intel.com>,
+        Leon Romanovsky <leonro@nvidia.com>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 502/913] RDMA/irdma: Fix netdev notifications for vlans
+Date:   Tue,  5 Apr 2022 09:26:04 +0200
+Message-Id: <20220405070354.901891620@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [RFC PATCH v5 039/104] KVM: x86/mmu: Disallow fast page fault on
- private GPA
-Content-Language: en-US
-To:     isaku.yamahata@intel.com, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     isaku.yamahata@gmail.com, Jim Mattson <jmattson@google.com>,
-        erdemaktas@google.com, Connor Kuehl <ckuehl@redhat.com>,
-        Sean Christopherson <seanjc@google.com>
-References: <cover.1646422845.git.isaku.yamahata@intel.com>
- <56693f2e1e5bb1933288272255c662d6d04b94df.1646422845.git.isaku.yamahata@intel.com>
-From:   Paolo Bonzini <pbonzini@redhat.com>
-In-Reply-To: <56693f2e1e5bb1933288272255c662d6d04b94df.1646422845.git.isaku.yamahata@intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 3/4/22 20:48, isaku.yamahata@intel.com wrote:
-> From: Isaku Yamahata <isaku.yamahata@intel.com>
-> 
-> TDX requires TDX SEAMCALL to operate Secure EPT instead of direct memory
-> access and TDX SEAMCALL is heavy operation.  Fast page fault on private GPA
-> doesn't make sense.  Disallow fast page fault on private GPA.
-> 
-> Signed-off-by: Isaku Yamahata <isaku.yamahata@intel.com>
-> ---
->   arch/x86/kvm/mmu/mmu.c | 7 +++++++
->   1 file changed, 7 insertions(+)
-> 
-> diff --git a/arch/x86/kvm/mmu/mmu.c b/arch/x86/kvm/mmu/mmu.c
-> index e9212394a530..d8c1505155b0 100644
-> --- a/arch/x86/kvm/mmu/mmu.c
-> +++ b/arch/x86/kvm/mmu/mmu.c
-> @@ -3185,6 +3185,13 @@ static int fast_page_fault(struct kvm_vcpu *vcpu, struct kvm_page_fault *fault)
->   	u64 *sptep = NULL;
->   	uint retry_count = 0;
->   
-> +	/*
-> +	 * TDX private mapping doesn't support fast page fault because the EPT
-> +	 * entry needs TDX SEAMCALL. not direct memory access.
+From: Mustafa Ismail <mustafa.ismail@intel.com>
 
-"the EPT entry is read/written with TDX SEAMCALLs instead of direct 
-memory access".
+[ Upstream commit 6702bc14744847842a87fed21a795b6e8bab6965 ]
 
-Reviewed-by: Paolo Bonzini <pbonzini@redhat.com>
+Currently, events on vlan netdevs are being ignored. Fix this by finding
+the real netdev and processing the notifications for vlan netdevs.
 
-> +	 */
-> +	if (kvm_is_private_gpa(vcpu->kvm, fault->addr))
-> +		return ret;
-> +
->   	if (!page_fault_can_be_fast(fault))
->   		return ret;
->   
+Fixes: 915cc7ac0f8e ("RDMA/irdma: Add miscellaneous utility definitions")
+Link: https://lore.kernel.org/r/20220225163211.127-2-shiraz.saleem@intel.com
+Signed-off-by: Mustafa Ismail <mustafa.ismail@intel.com>
+Signed-off-by: Shiraz Saleem <shiraz.saleem@intel.com>
+Reviewed-by: Leon Romanovsky <leonro@nvidia.com>
+Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/infiniband/hw/irdma/utils.c | 48 ++++++++++++++++++-----------
+ 1 file changed, 30 insertions(+), 18 deletions(-)
+
+diff --git a/drivers/infiniband/hw/irdma/utils.c b/drivers/infiniband/hw/irdma/utils.c
+index feebfe6bf31a..fee179fd8c67 100644
+--- a/drivers/infiniband/hw/irdma/utils.c
++++ b/drivers/infiniband/hw/irdma/utils.c
+@@ -150,31 +150,35 @@ int irdma_inetaddr_event(struct notifier_block *notifier, unsigned long event,
+ 			 void *ptr)
+ {
+ 	struct in_ifaddr *ifa = ptr;
+-	struct net_device *netdev = ifa->ifa_dev->dev;
++	struct net_device *real_dev, *netdev = ifa->ifa_dev->dev;
+ 	struct irdma_device *iwdev;
+ 	struct ib_device *ibdev;
+ 	u32 local_ipaddr;
+ 
+-	ibdev = ib_device_get_by_netdev(netdev, RDMA_DRIVER_IRDMA);
++	real_dev = rdma_vlan_dev_real_dev(netdev);
++	if (!real_dev)
++		real_dev = netdev;
++
++	ibdev = ib_device_get_by_netdev(real_dev, RDMA_DRIVER_IRDMA);
+ 	if (!ibdev)
+ 		return NOTIFY_DONE;
+ 
+ 	iwdev = to_iwdev(ibdev);
+ 	local_ipaddr = ntohl(ifa->ifa_address);
+ 	ibdev_dbg(&iwdev->ibdev,
+-		  "DEV: netdev %p event %lu local_ip=%pI4 MAC=%pM\n", netdev,
+-		  event, &local_ipaddr, netdev->dev_addr);
++		  "DEV: netdev %p event %lu local_ip=%pI4 MAC=%pM\n", real_dev,
++		  event, &local_ipaddr, real_dev->dev_addr);
+ 	switch (event) {
+ 	case NETDEV_DOWN:
+-		irdma_manage_arp_cache(iwdev->rf, netdev->dev_addr,
++		irdma_manage_arp_cache(iwdev->rf, real_dev->dev_addr,
+ 				       &local_ipaddr, true, IRDMA_ARP_DELETE);
+-		irdma_if_notify(iwdev, netdev, &local_ipaddr, true, false);
++		irdma_if_notify(iwdev, real_dev, &local_ipaddr, true, false);
+ 		irdma_gid_change_event(&iwdev->ibdev);
+ 		break;
+ 	case NETDEV_UP:
+ 	case NETDEV_CHANGEADDR:
+-		irdma_add_arp(iwdev->rf, &local_ipaddr, true, netdev->dev_addr);
+-		irdma_if_notify(iwdev, netdev, &local_ipaddr, true, true);
++		irdma_add_arp(iwdev->rf, &local_ipaddr, true, real_dev->dev_addr);
++		irdma_if_notify(iwdev, real_dev, &local_ipaddr, true, true);
+ 		irdma_gid_change_event(&iwdev->ibdev);
+ 		break;
+ 	default:
+@@ -196,32 +200,36 @@ int irdma_inet6addr_event(struct notifier_block *notifier, unsigned long event,
+ 			  void *ptr)
+ {
+ 	struct inet6_ifaddr *ifa = ptr;
+-	struct net_device *netdev = ifa->idev->dev;
++	struct net_device *real_dev, *netdev = ifa->idev->dev;
+ 	struct irdma_device *iwdev;
+ 	struct ib_device *ibdev;
+ 	u32 local_ipaddr6[4];
+ 
+-	ibdev = ib_device_get_by_netdev(netdev, RDMA_DRIVER_IRDMA);
++	real_dev = rdma_vlan_dev_real_dev(netdev);
++	if (!real_dev)
++		real_dev = netdev;
++
++	ibdev = ib_device_get_by_netdev(real_dev, RDMA_DRIVER_IRDMA);
+ 	if (!ibdev)
+ 		return NOTIFY_DONE;
+ 
+ 	iwdev = to_iwdev(ibdev);
+ 	irdma_copy_ip_ntohl(local_ipaddr6, ifa->addr.in6_u.u6_addr32);
+ 	ibdev_dbg(&iwdev->ibdev,
+-		  "DEV: netdev %p event %lu local_ip=%pI6 MAC=%pM\n", netdev,
+-		  event, local_ipaddr6, netdev->dev_addr);
++		  "DEV: netdev %p event %lu local_ip=%pI6 MAC=%pM\n", real_dev,
++		  event, local_ipaddr6, real_dev->dev_addr);
+ 	switch (event) {
+ 	case NETDEV_DOWN:
+-		irdma_manage_arp_cache(iwdev->rf, netdev->dev_addr,
++		irdma_manage_arp_cache(iwdev->rf, real_dev->dev_addr,
+ 				       local_ipaddr6, false, IRDMA_ARP_DELETE);
+-		irdma_if_notify(iwdev, netdev, local_ipaddr6, false, false);
++		irdma_if_notify(iwdev, real_dev, local_ipaddr6, false, false);
+ 		irdma_gid_change_event(&iwdev->ibdev);
+ 		break;
+ 	case NETDEV_UP:
+ 	case NETDEV_CHANGEADDR:
+ 		irdma_add_arp(iwdev->rf, local_ipaddr6, false,
+-			      netdev->dev_addr);
+-		irdma_if_notify(iwdev, netdev, local_ipaddr6, false, true);
++			      real_dev->dev_addr);
++		irdma_if_notify(iwdev, real_dev, local_ipaddr6, false, true);
+ 		irdma_gid_change_event(&iwdev->ibdev);
+ 		break;
+ 	default:
+@@ -243,14 +251,18 @@ int irdma_net_event(struct notifier_block *notifier, unsigned long event,
+ 		    void *ptr)
+ {
+ 	struct neighbour *neigh = ptr;
++	struct net_device *real_dev, *netdev = (struct net_device *)neigh->dev;
+ 	struct irdma_device *iwdev;
+ 	struct ib_device *ibdev;
+ 	__be32 *p;
+ 	u32 local_ipaddr[4] = {};
+ 	bool ipv4 = true;
+ 
+-	ibdev = ib_device_get_by_netdev((struct net_device *)neigh->dev,
+-					RDMA_DRIVER_IRDMA);
++	real_dev = rdma_vlan_dev_real_dev(netdev);
++	if (!real_dev)
++		real_dev = netdev;
++
++	ibdev = ib_device_get_by_netdev(real_dev, RDMA_DRIVER_IRDMA);
+ 	if (!ibdev)
+ 		return NOTIFY_DONE;
+ 
+-- 
+2.34.1
+
+
 
