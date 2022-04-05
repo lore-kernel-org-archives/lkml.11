@@ -2,182 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BD600C3527B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A88DDC4707E
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 21:37:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380881AbiDEVha (ORCPT
+        id S1380708AbiDEVhV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 17:37:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43898 "EHLO
+        Tue, 5 Apr 2022 17:37:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39370 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348521AbiDEJrz (ORCPT
+        with ESMTP id S1348795AbiDEJsg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:47:55 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 989289FDD;
-        Tue,  5 Apr 2022 02:34:06 -0700 (PDT)
+        Tue, 5 Apr 2022 05:48:36 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8035D88B17;
+        Tue,  5 Apr 2022 02:35:38 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1CBBC616D9;
-        Tue,  5 Apr 2022 09:34:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8A706C385A2;
-        Tue,  5 Apr 2022 09:34:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649151245;
-        bh=qU7NQO8a/GNTqpF3kK+hxQlG2bDuw47+HzlGrFENsk0=;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2B3E8B81B93;
+        Tue,  5 Apr 2022 09:35:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7E4E6C385A0;
+        Tue,  5 Apr 2022 09:35:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649151335;
+        bh=zNbstIO7fTReljmVQ05A1unZPeHQpqkHrt0QzvkAAfA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=N77R/4na/+s2mEBMETZddTv/xM3MLgIvIy050lDk/AhaphAO0eWTunjvlgZm8fOC5
-         WebyxBQ0r8tyIFtxrMKghV1OhO94uWoZBfWAszOOMesbTJsGUYZk2N903xLDSL2F+G
-         d4OasRXoX+XHMKSEhhymIalNknUyVRlGzbeHsuF42qJk/BAwfOkzEqtujJHKSQAzFF
-         J71kaKMXg2UmOZ4Bw+dCL+31g+eun6BLFnKlFJ431SgXt10/xUNmUhCRwTArerMb42
-         cohDMpn2/Tq2lFdFpK0oNIu6gecLy7WrptY3JZ0C0btnVz3EtBtUK8BrJxAHddNF1w
-         stIFOb9r3nlFQ==
-From:   Masami Hiramatsu <mhiramat@kernel.org>
-To:     Alexei Starovoitov <ast@kernel.org>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Daniel Borkmann <daniel@iogearbox.net>,
-        Shubham Bansal <illusionist.neo@gmail.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>, bpf@vger.kernel.org,
-        kernel-team@fb.com, Jiri Olsa <jolsa@kernel.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        "Naveen N . Rao" <naveen.n.rao@linux.ibm.com>,
-        Anil S Keshavamurthy <anil.s.keshavamurthy@intel.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        linux-kernel@vger.kernel.org, Mark Rutland <mark.rutland@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Russell King <linux@armlinux.org.uk>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        linux-arm-kernel@lists.infradead.org
-Subject: [PATCH bpf 2/4] rethook,fprobe,kprobes: Check a failure in the rethook_hook()
-Date:   Tue,  5 Apr 2022 18:33:59 +0900
-Message-Id: <164915123885.982637.5653959785968470135.stgit@devnote2>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <164915121498.982637.12787715964983738566.stgit@devnote2>
-References: <164915121498.982637.12787715964983738566.stgit@devnote2>
-User-Agent: StGit/0.19
+        b=IPwnZiaYu3HTk5n1jz6RxY2XkkC4jdBx5Aqc4W+77SteTndKiO2TRSowkJTbb+VBx
+         h7Fr2skZOQvKAsKwH868NTlyZAIFTkzvPfarIO4R9kx8i5Qgc+jTwlk1N/7SlHoint
+         t1CoE6EVw9XGSa2QEVzrD0pYxvFsBg0vAWF9qRNM=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Robert Foss <robert.foss@linaro.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 379/913] drm/bridge: Add missing pm_runtime_disable() in __dw_mipi_dsi_probe
+Date:   Tue,  5 Apr 2022 09:24:01 +0200
+Message-Id: <20220405070351.209523550@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Since there are possible to fail to hook the function return (depends on
-archtecutre implememtation), rethook_hook() should return the error
-in that case and caller must check it.
+From: Miaoqian Lin <linmq006@gmail.com>
 
-Signed-off-by: Masami Hiramatsu <mhiramat@kernel.org>
+[ Upstream commit 96211b7c56b109a52768e6cc5e23a1f79316eca0 ]
+
+If the probe fails, we should use pm_runtime_disable() to balance
+pm_runtime_enable().
+Add missing pm_runtime_disable() for __dw_mipi_dsi_probe.
+
+Fixes: 46fc51546d44 ("drm/bridge/synopsys: Add MIPI DSI host controller bridge")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Signed-off-by: Robert Foss <robert.foss@linaro.org>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220105104113.31415-1-linmq006@gmail.com
+Reviewed-by: Robert Foss <robert.foss@linaro.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/kernel/rethook.c |    4 +++-
- include/linux/rethook.h   |    4 ++--
- kernel/kprobes.c          |    8 +++++---
- kernel/trace/fprobe.c     |    5 ++++-
- kernel/trace/rethook.c    |   12 ++++++++++--
- 5 files changed, 24 insertions(+), 9 deletions(-)
+ drivers/gpu/drm/bridge/synopsys/dw-mipi-dsi.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/arch/x86/kernel/rethook.c b/arch/x86/kernel/rethook.c
-index 8a1c0111ae79..c92b4875e3b9 100644
---- a/arch/x86/kernel/rethook.c
-+++ b/arch/x86/kernel/rethook.c
-@@ -114,7 +114,7 @@ void arch_rethook_fixup_return(struct pt_regs *regs,
- }
- NOKPROBE_SYMBOL(arch_rethook_fixup_return);
- 
--void arch_rethook_prepare(struct rethook_node *rh, struct pt_regs *regs, bool mcount)
-+int arch_rethook_prepare(struct rethook_node *rh, struct pt_regs *regs, bool mcount)
- {
- 	unsigned long *stack = (unsigned long *)regs->sp;
- 
-@@ -123,5 +123,7 @@ void arch_rethook_prepare(struct rethook_node *rh, struct pt_regs *regs, bool mc
- 
- 	/* Replace the return addr with trampoline addr */
- 	stack[0] = (unsigned long) arch_rethook_trampoline;
-+
-+	return 0;
- }
- NOKPROBE_SYMBOL(arch_rethook_prepare);
-diff --git a/include/linux/rethook.h b/include/linux/rethook.h
-index c8ac1e5afcd1..07b9c6663b8e 100644
---- a/include/linux/rethook.h
-+++ b/include/linux/rethook.h
-@@ -63,12 +63,12 @@ void rethook_free(struct rethook *rh);
- void rethook_add_node(struct rethook *rh, struct rethook_node *node);
- struct rethook_node *rethook_try_get(struct rethook *rh);
- void rethook_recycle(struct rethook_node *node);
--void rethook_hook(struct rethook_node *node, struct pt_regs *regs, bool mcount);
-+int rethook_hook(struct rethook_node *node, struct pt_regs *regs, bool mcount);
- unsigned long rethook_find_ret_addr(struct task_struct *tsk, unsigned long frame,
- 				    struct llist_node **cur);
- 
- /* Arch dependent code must implement arch_* and trampoline code */
--void arch_rethook_prepare(struct rethook_node *node, struct pt_regs *regs, bool mcount);
-+int arch_rethook_prepare(struct rethook_node *node, struct pt_regs *regs, bool mcount);
- void arch_rethook_trampoline(void);
- 
- /**
-diff --git a/kernel/kprobes.c b/kernel/kprobes.c
-index dbe57df2e199..7fd7f1195bde 100644
---- a/kernel/kprobes.c
-+++ b/kernel/kprobes.c
-@@ -2109,10 +2109,12 @@ static int pre_handler_kretprobe(struct kprobe *p, struct pt_regs *regs)
- 
- 	ri = container_of(rhn, struct kretprobe_instance, node);
- 
--	if (rp->entry_handler && rp->entry_handler(ri, regs))
-+	if (rp->entry_handler && rp->entry_handler(ri, regs)) {
- 		rethook_recycle(rhn);
--	else
--		rethook_hook(rhn, regs, kprobe_ftrace(p));
-+	} else if (rethook_hook(rhn, regs, kprobe_ftrace(p)) < 0) {
-+		rethook_recycle(rhn);
-+		rp->nmissed++;
-+	}
- 
- 	return 0;
- }
-diff --git a/kernel/trace/fprobe.c b/kernel/trace/fprobe.c
-index 89d9f994ebb0..d3b13294d545 100644
---- a/kernel/trace/fprobe.c
-+++ b/kernel/trace/fprobe.c
-@@ -48,7 +48,10 @@ static void fprobe_handler(unsigned long ip, unsigned long parent_ip,
- 		}
- 		fpr = container_of(rh, struct fprobe_rethook_node, node);
- 		fpr->entry_ip = ip;
--		rethook_hook(rh, ftrace_get_regs(fregs), true);
-+		if (rethook_hook(rh, ftrace_get_regs(fregs), true) < 0) {
-+			rethook_recycle(rh);
-+			fp->nmissed++;
-+		}
+diff --git a/drivers/gpu/drm/bridge/synopsys/dw-mipi-dsi.c b/drivers/gpu/drm/bridge/synopsys/dw-mipi-dsi.c
+index e44e18a0112a..56c3fd08c6a0 100644
+--- a/drivers/gpu/drm/bridge/synopsys/dw-mipi-dsi.c
++++ b/drivers/gpu/drm/bridge/synopsys/dw-mipi-dsi.c
+@@ -1199,6 +1199,7 @@ __dw_mipi_dsi_probe(struct platform_device *pdev,
+ 	ret = mipi_dsi_host_register(&dsi->dsi_host);
+ 	if (ret) {
+ 		dev_err(dev, "Failed to register MIPI host: %d\n", ret);
++		pm_runtime_disable(dev);
+ 		dw_mipi_dsi_debugfs_remove(dsi);
+ 		return ERR_PTR(ret);
  	}
- 
- out:
-diff --git a/kernel/trace/rethook.c b/kernel/trace/rethook.c
-index b56833700d23..e7db83438e45 100644
---- a/kernel/trace/rethook.c
-+++ b/kernel/trace/rethook.c
-@@ -174,11 +174,19 @@ NOKPROBE_SYMBOL(rethook_try_get);
-  * from ftrace (mcount) callback, @mcount must be set true. If this is called
-  * from the real function entry (e.g. kprobes) @mcount must be set false.
-  * This is because the way to hook the function return depends on the context.
-+ * This returns 0 if succeeded to hook the function return, or -errno if
-+ * failed.
-  */
--void rethook_hook(struct rethook_node *node, struct pt_regs *regs, bool mcount)
-+int rethook_hook(struct rethook_node *node, struct pt_regs *regs, bool mcount)
- {
--	arch_rethook_prepare(node, regs, mcount);
-+	int ret;
-+
-+	ret = arch_rethook_prepare(node, regs, mcount);
-+	if (ret < 0)
-+		return ret;
-+
- 	__llist_add(&node->llist, &current->rethooks);
-+	return 0;
- }
- NOKPROBE_SYMBOL(rethook_hook);
- 
+-- 
+2.34.1
+
+
 
