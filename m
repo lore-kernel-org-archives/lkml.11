@@ -2,46 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 55A7AC4707F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3697FC38A05
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:20:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238308AbiDEISs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 04:18:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55872 "EHLO
+        id S238188AbiDEISo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 04:18:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57600 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235708AbiDEIAF (ORCPT
+        with ESMTP id S235695AbiDEIAC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:00:05 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91D961B6;
-        Tue,  5 Apr 2022 00:58:07 -0700 (PDT)
+        Tue, 5 Apr 2022 04:00:02 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF87717E19;
+        Tue,  5 Apr 2022 00:58:04 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 45320B81B7F;
-        Tue,  5 Apr 2022 07:58:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A579CC340EE;
-        Tue,  5 Apr 2022 07:58:04 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AA89EB81B90;
+        Tue,  5 Apr 2022 07:58:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EDC39C340EE;
+        Tue,  5 Apr 2022 07:58:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649145485;
-        bh=gUqY2/CEJRoMrBNYFSwsJeqcvHhhqZyD6BvwF1bUZOk=;
+        s=korg; t=1649145482;
+        bh=LG0B36g9ZWWMdeW/WzkjNVZ5NcrqZuW9Ts6j3rxaxdc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KWJl+ROiZ5tp657nYhACUNbO/5fBS+B7A/Q+OFwuqUIfssMjv+aFyMIA1v/AnKNUa
-         BSAlVDCmziGEmnU0DA71yrVO/aUyo32hFb700IBStU1iv7efbha1wcMF3Tq4BO7SvY
-         woApmNO8F5D326xLJpy7SHQwlXDYLELuMMFSYFZE=
+        b=ZdWUPcB18RP6JVyk3FDu7Kwn+B0rdJan1xdTllOpCmeUz96PYGDVOuxf8LIlvhQyu
+         FHcSxLo1X6vz44X9hG73tRN4y3douuB79ADLyVgR/edP1nuLLtkS8fcWiO+odrkxXk
+         LJhsceuAgeC8xlVDQKANNcTLtJLcJAEDy/7Zo1nQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Jean-Michel Hautbois <jeanmichel.hautbois@ideasonboard.com>,
-        Daniel Scally <djrscally@gmail.com>,
-        Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>,
-        Paul Kocialkowski <paul.kocialkowski@bootlin.com>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0385/1126] media: i2c: Fix pixel array positions in ov8865
-Date:   Tue,  5 Apr 2022 09:18:52 +0200
-Message-Id: <20220405070418.927440614@linuxfoundation.org>
+        stable@vger.kernel.org, Andre Przywara <andre.przywara@arm.com>,
+        Arnd Bergmann <arnd@arndb.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 0420/1126] ARM: configs: multi_v5_defconfig: re-enable CONFIG_V4L_PLATFORM_DRIVERS
+Date:   Tue,  5 Apr 2022 09:19:27 +0200
+Message-Id: <20220405070419.953444863@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -53,41 +48,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Daniel Scally <djrscally@gmail.com>
+From: Andre Przywara <andre.przywara@arm.com>
 
-[ Upstream commit 3d1e4228c9dd5c945a5cb621749f358766ee5777 ]
+[ Upstream commit f5eb04d7a0e419d61f784de3ced708259ddb71d7 ]
 
-The ov8865's datasheet gives the pixel array as 3296x2528, and the
-active portion as the centre 3264x2448. This makes for a top offset
-of 40 and a left offset of 16, not 32 and 80.
+Commit 06b93644f4d1 ("media: Kconfig: add an option to filter in/out
+platform drivers") introduced CONFIG_MEDIA_PLATFORM_SUPPORT, to allow
+more fine grained control over the inclusion of certain Kconfig files.
+multi_v5_defconfig was selecting some drivers described in
+drivers/media/platform/Kconfig, which now wasn't included anymore.
 
-Fixes: acd25e220921 ("media: i2c: Add .get_selection() support to ov8865")
+Explicitly set the new symbol in multi_v5_defconfig to bring those
+drivers back.
+This enables some new V4L2 and VIDEOBUF2 features, but as modules only.
 
-Reported-by: Jean-Michel Hautbois <jeanmichel.hautbois@ideasonboard.com>
-Signed-off-by: Daniel Scally <djrscally@gmail.com>
-Reviewed-by: Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>
-Reviewed-by: Paul Kocialkowski <paul.kocialkowski@bootlin.com>
-Signed-off-by: Sakari Ailus <sakari.ailus@linux.intel.com>
+Fixes: 06b93644f4d1 ("media: Kconfig: add an option to filter in/out platform drivers")
+Signed-off-by: Andre Przywara <andre.przywara@arm.com>
+Link: https://lore.kernel.org/r/20220317183043.948432-3-andre.przywara@arm.com'
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/i2c/ov8865.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ arch/arm/configs/multi_v5_defconfig | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/media/i2c/ov8865.c b/drivers/media/i2c/ov8865.c
-index d9d016cfa9ac..e0dd0f4849a7 100644
---- a/drivers/media/i2c/ov8865.c
-+++ b/drivers/media/i2c/ov8865.c
-@@ -457,8 +457,8 @@
- 
- #define OV8865_NATIVE_WIDTH			3296
- #define OV8865_NATIVE_HEIGHT			2528
--#define OV8865_ACTIVE_START_TOP			32
--#define OV8865_ACTIVE_START_LEFT		80
-+#define OV8865_ACTIVE_START_LEFT		16
-+#define OV8865_ACTIVE_START_TOP			40
- #define OV8865_ACTIVE_WIDTH			3264
- #define OV8865_ACTIVE_HEIGHT			2448
- 
+diff --git a/arch/arm/configs/multi_v5_defconfig b/arch/arm/configs/multi_v5_defconfig
+index fe8d760256a4..dac1db2e181f 100644
+--- a/arch/arm/configs/multi_v5_defconfig
++++ b/arch/arm/configs/multi_v5_defconfig
+@@ -188,6 +188,7 @@ CONFIG_REGULATOR=y
+ CONFIG_REGULATOR_FIXED_VOLTAGE=y
+ CONFIG_MEDIA_SUPPORT=y
+ CONFIG_MEDIA_CAMERA_SUPPORT=y
++CONFIG_MEDIA_PLATFORM_SUPPORT=y
+ CONFIG_V4L_PLATFORM_DRIVERS=y
+ CONFIG_VIDEO_ASPEED=m
+ CONFIG_VIDEO_ATMEL_ISI=m
 -- 
 2.34.1
 
