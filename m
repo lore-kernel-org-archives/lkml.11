@@ -2,96 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7568FC4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AE488C35280
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:57:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359682AbiDEMwQ (ORCPT
+        id S1386520AbiDEMyo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 08:52:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41798 "EHLO
+        Tue, 5 Apr 2022 08:54:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40106 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244600AbiDEJKF (ORCPT
+        with ESMTP id S1343886AbiDEJOt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:10:05 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0113425E85;
-        Tue,  5 Apr 2022 01:59:27 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E84D8B81BAE;
-        Tue,  5 Apr 2022 08:59:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 48C13C385A1;
-        Tue,  5 Apr 2022 08:59:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649149163;
-        bh=o7xH8q1QcBDjg+NQiSO+r0qpDbFOAcGSWY82F81nOho=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=F8s+9XeK0DL+f+Ktuu8o6WvhyxLio8h5eHQRJNALe1hp4KK3CtWZnqOQg8MTHpMjY
-         bCYlJpt7wC6BSzrYd8PNLOdp9f7QBFnGsnk3bjmb7H2kfe5SJNeSaZhTjYECRbb30x
-         j+sIl0yjn/hG2QIoJIwBHNVTMpZQqo3r00kUTtfk=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        syzbot+b9bd12fbed3485a3e51f@syzkaller.appspotmail.com,
-        Pavel Skripkin <paskripkin@gmail.com>,
-        Marcel Holtmann <marcel@holtmann.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0617/1017] Bluetooth: hci_uart: add missing NULL check in h5_enqueue
-Date:   Tue,  5 Apr 2022 09:25:30 +0200
-Message-Id: <20220405070412.597331467@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
-References: <20220405070354.155796697@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 5 Apr 2022 05:14:49 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7EB5752E06;
+        Tue,  5 Apr 2022 02:01:14 -0700 (PDT)
+From:   Kurt Kanzenbach <kurt@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1649149273;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=Rh9iNBZn1TytrAMYCuDnnKJmAsEgHeZEynUJiMvsZOk=;
+        b=LqXhRsdwDnx50slIXYLrlXIl752amZvkIUa+s95z9opK0k7PBcMaDQEyDtbPGUTQc7zuKp
+        Oi1YamAS9fyv758WO/F8pHuu7KLe5taH9kVzXq8z9W/3ma+zIYv1V/wrsQgsyFuBFx8XRp
+        eDOKdiMFG9Mv0qenCxkSSN+y/739o2C39H5qdpKNEjQZdtILXtju9C0VZB7Hz2/w7ROoF/
+        0m8DkPKMK1mEs3BEfkqAdfdbhp7orXEO06I9hLjm7oe8FcxcSdH4rMffV2h/p9GjTfSo3K
+        JQ9wI2a6AWgnY7zANYUy1bCQepfqCFYazHgkAiUF6iLRg9rA7qQVdtxIlz8H7Q==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1649149273;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=Rh9iNBZn1TytrAMYCuDnnKJmAsEgHeZEynUJiMvsZOk=;
+        b=cjAF5UHNewgoGCOyWlqrCBrRJ8eRcQ9tFo8q1TaB6DLMNlhycV8uzT4L1UijpRYZBi4czh
+        SuAsh9qDhvhk8sAQ==
+To:     Michael Walle <michael@walle.cc>, Andrew Lunn <andrew@lunn.ch>
+Cc:     richardcochran@gmail.com, davem@davemloft.net,
+        grygorii.strashko@ti.com, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, linux@armlinux.org.uk,
+        mlichvar@redhat.com, netdev@vger.kernel.org,
+        qiangqing.zhang@nxp.com, vladimir.oltean@nxp.com
+Subject: Re: [PATCH RFC V1 net-next 3/4] net: Let the active time stamping
+ layer be selectable.
+In-Reply-To: <e5a6f6193b86388ed7a081939b8745be@walle.cc>
+References: <20220104014215.GA20062@hoboy.vegasvil.org>
+ <20220404150508.3945833-1-michael@walle.cc> <YksMvHgXZxA+YZci@lunn.ch>
+ <e5a6f6193b86388ed7a081939b8745be@walle.cc>
+Date:   Tue, 05 Apr 2022 11:01:11 +0200
+Message-ID: <877d83rjjc.fsf@kurt>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; boundary="=-=-=";
+        micalg=pgp-sha512; protocol="application/pgp-signature"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pavel Skripkin <paskripkin@gmail.com>
+--=-=-=
+Content-Type: text/plain
 
-[ Upstream commit 32cb08e958696908a9aad5e49a78d74f7e32fffb ]
+On Mon Apr 04 2022, Michael Walle wrote:
+> That would make sense. I guess what bothers me with the current
+> mechanism is that a feature addition to the PHY in the *future* (the
+> timestamping support) might break a board - or at least changes the
+> behavior by suddenly using PHY timestamping.
 
-Syzbot hit general protection fault in __pm_runtime_resume(). The problem
-was in missing NULL check.
+Currently PHY timestamping is hidden behind a configuration option
+(NETWORK_PHY_TIMESTAMPING). By disabling this option the default
+behavior should stay at MAC timestamping even if additional features
+are added on top of the PHY drivers at later stages. Or not?
 
-hu->serdev can be NULL and we should not blindly pass &serdev->dev
-somewhere, since it will cause GPF.
+Thanks,
+Kurt
 
-Reported-by: syzbot+b9bd12fbed3485a3e51f@syzkaller.appspotmail.com
-Fixes: d9dd833cf6d2 ("Bluetooth: hci_h5: Add runtime suspend")
-Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
-Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/bluetooth/hci_h5.c | 8 +++++---
- 1 file changed, 5 insertions(+), 3 deletions(-)
+--=-=-=
+Content-Type: application/pgp-signature; name="signature.asc"
 
-diff --git a/drivers/bluetooth/hci_h5.c b/drivers/bluetooth/hci_h5.c
-index 34286ffe0568..7ac6908a4dfb 100644
---- a/drivers/bluetooth/hci_h5.c
-+++ b/drivers/bluetooth/hci_h5.c
-@@ -629,9 +629,11 @@ static int h5_enqueue(struct hci_uart *hu, struct sk_buff *skb)
- 		break;
- 	}
- 
--	pm_runtime_get_sync(&hu->serdev->dev);
--	pm_runtime_mark_last_busy(&hu->serdev->dev);
--	pm_runtime_put_autosuspend(&hu->serdev->dev);
-+	if (hu->serdev) {
-+		pm_runtime_get_sync(&hu->serdev->dev);
-+		pm_runtime_mark_last_busy(&hu->serdev->dev);
-+		pm_runtime_put_autosuspend(&hu->serdev->dev);
-+	}
- 
- 	return 0;
- }
--- 
-2.34.1
+-----BEGIN PGP SIGNATURE-----
 
-
-
+iQJHBAEBCgAxFiEEvLm/ssjDfdPf21mSwZPR8qpGc4IFAmJMBVcTHGt1cnRAbGlu
+dXRyb25peC5kZQAKCRDBk9HyqkZzgsMiEACJ6hgiPJnF7jCixnXIaxDdO+mW5fZI
+JPBCVnKJsrETFpGY2/cSr0aFN2KeNvF9S15jw36a+Tabnv6wNnYWnhqOdsyGBtE4
+wQUfJrNCJ6BHx9qUmgY+WbLdUEvXMnEx+ko/co9FCFWijd94M4ctaEdBbxq3WfQS
+3fzMpHssQfITgfgeaf+j+k+zR2i7UotKvQ7nTTZDiBgbQ1xn+4cDbR7uZZNPIKqj
+IC+R8BcOJENXkm8HwB/JvcRhOynsPFCJjHoHqM8N4v2DXFRnV8pfzceyZO6Lr5XF
+BEpaWfAHjcmnbzhC91oASXE5usbEqpQE5tAYK43m872DaHh+s1p4d4b3IzZU5uwt
+rx8zheaRta4gqUdaJo5qQkvKdD2CAYyK9O3v0rQMJRrTCK3Z3sZM/IMWNsEOqdVP
+QP1GxPByDHwwOsTJB4/v4DanuF39hSrZ4Ym2mi/PX76LmMZoL10JDzaU0rdg56nf
+Vg0EkwnCDxYSZJpB3r+6zFMNKDQyA6uOJAeKpaEB4kpLUMjZsRfZOgP1FJW1Ndgc
+Cggk0EckGKx5+zjTcHnVpr7VEVrSfeBGFnujzUx3TlduYJ8XBxLv7saUUlpE0O1O
+TkXxhxodllu2X4eis/5mIctYGgWl2XL/KZUD3Uws9a0PLLVZwuTxsEcS6ov00eKM
+NfqGdBj8KceuNg==
+=dVoz
+-----END PGP SIGNATURE-----
+--=-=-=--
