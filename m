@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E1405C38A2B
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:01:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F062C38A2C
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:01:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233843AbiDEH5q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 03:57:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53162 "EHLO
+        id S235043AbiDEH7V (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 03:59:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48370 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233679AbiDEHs3 (ORCPT
+        with ESMTP id S233567AbiDEHr6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 03:48:29 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10448C4;
-        Tue,  5 Apr 2022 00:46:32 -0700 (PDT)
+        Tue, 5 Apr 2022 03:47:58 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 086F51D9;
+        Tue,  5 Apr 2022 00:45:52 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A15BA615E7;
-        Tue,  5 Apr 2022 07:46:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AFC30C340EE;
-        Tue,  5 Apr 2022 07:46:30 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id EE3C0CE1BEB;
+        Tue,  5 Apr 2022 07:45:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 13D77C340EE;
+        Tue,  5 Apr 2022 07:45:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649144791;
-        bh=G6i5haVbj2OduWENChWdZ9mhaLevM6O81fzdyfMMJVU=;
+        s=korg; t=1649144749;
+        bh=rMKBD1koYZ8J49XDOyG6OKlNOGIa8Bmni21RPT14hTI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mcvWKfpZPf59e02kqc+iI6EAXc6EWQ4Y33MBujsPvb/fSBWi0Xiz2eQzbCRxsth9H
-         mmhoqvAQbFs9TJFFJK55yDV76pBO7sO2G+rmwr05/VBD9spKzsXSk+oWztXdLoYTIC
-         ogdYTTF8tjG+j2qEAhc6cxovtUAm0p2jN224M5Wc=
+        b=r2HLIxESjk3vZR5bft4eTm9AZ88ACHu2LewaK7y/Q9SToFbOkSWGmG5z541SMsTL9
+         fghbGUWamYqYP/cqnzHi2qV8EFZXrdVG+IKQ12SBnAiFq76X8SIoomti0YF3SPtV7N
+         lq/V9f4jQbTaRGw4i0ch/BvGMxdGqc2m7TEsLe6I=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Stanimir Varbanov <stanimir.varbanov@linaro.org>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>
-Subject: [PATCH 5.17 0171/1126] media: venus: venc: Fix h264 8x8 transform control
-Date:   Tue,  5 Apr 2022 09:15:18 +0200
-Message-Id: <20220405070412.619728871@linuxfoundation.org>
+        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
+Subject: [PATCH 5.17 0157/1126] thermal: int340x: Increase bitmap size
+Date:   Tue,  5 Apr 2022 09:15:04 +0200
+Message-Id: <20220405070412.196481744@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -49,66 +49,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Stanimir Varbanov <stanimir.varbanov@linaro.org>
+From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
 
-commit 61b3317dd424a3488b6754d7ff8301944d9d17d7 upstream.
+commit 668f69a5f863b877bc3ae129efe9a80b6f055141 upstream.
 
-During encoder driver open controls are initialized via a call
-to v4l2_ctrl_handler_setup which returns EINVAL error for
-V4L2_CID_MPEG_VIDEO_H264_8X8_TRANSFORM v4l2 control. The control
-default value is disabled and because of firmware limitations
-8x8 transform cannot be disabled for the supported HIGH and
-CONSTRAINED_HIGH profiles.
+The number of policies are 10, so can't be supported by the bitmap size
+of u8.
 
-To fix the issue change the control default value to enabled
-(this is fine because the firmware enables 8x8 transform for
-high and constrained_high profiles by default). Also, correct
-the checking of profile ids in s_ctrl from hfi to v4l2 ids.
+Even though there are no platfoms with these many policies, but
+for correctness increase to u32.
 
-cc: stable@vger.kernel.org # 5.15+
-Fixes: bfee75f73c37 ("media: venus: venc: add support for V4L2_CID_MPEG_VIDEO_H264_8X8_TRANSFORM control")
-Signed-off-by: Stanimir Varbanov <stanimir.varbanov@linaro.org>
-Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Fixes: 16fc8eca1975 ("thermal/int340x_thermal: Add additional UUIDs")
+Cc: 5.1+ <stable@vger.kernel.org> # 5.1+
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/media/platform/qcom/venus/venc.c       |    4 ++--
- drivers/media/platform/qcom/venus/venc_ctrls.c |    6 +++---
- 2 files changed, 5 insertions(+), 5 deletions(-)
+ drivers/thermal/intel/int340x_thermal/int3400_thermal.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/media/platform/qcom/venus/venc.c
-+++ b/drivers/media/platform/qcom/venus/venc.c
-@@ -662,8 +662,8 @@ static int venc_set_properties(struct ve
- 
- 		ptype = HFI_PROPERTY_PARAM_VENC_H264_TRANSFORM_8X8;
- 		h264_transform.enable_type = 0;
--		if (ctr->profile.h264 == HFI_H264_PROFILE_HIGH ||
--		    ctr->profile.h264 == HFI_H264_PROFILE_CONSTRAINED_HIGH)
-+		if (ctr->profile.h264 == V4L2_MPEG_VIDEO_H264_PROFILE_HIGH ||
-+		    ctr->profile.h264 == V4L2_MPEG_VIDEO_H264_PROFILE_CONSTRAINED_HIGH)
- 			h264_transform.enable_type = ctr->h264_8x8_transform;
- 
- 		ret = hfi_session_set_property(inst, ptype, &h264_transform);
---- a/drivers/media/platform/qcom/venus/venc_ctrls.c
-+++ b/drivers/media/platform/qcom/venus/venc_ctrls.c
-@@ -320,8 +320,8 @@ static int venc_op_s_ctrl(struct v4l2_ct
- 		ctr->intra_refresh_period = ctrl->val;
- 		break;
- 	case V4L2_CID_MPEG_VIDEO_H264_8X8_TRANSFORM:
--		if (ctr->profile.h264 != HFI_H264_PROFILE_HIGH &&
--		    ctr->profile.h264 != HFI_H264_PROFILE_CONSTRAINED_HIGH)
-+		if (ctr->profile.h264 != V4L2_MPEG_VIDEO_H264_PROFILE_HIGH &&
-+		    ctr->profile.h264 != V4L2_MPEG_VIDEO_H264_PROFILE_CONSTRAINED_HIGH)
- 			return -EINVAL;
- 
- 		/*
-@@ -457,7 +457,7 @@ int venc_ctrl_init(struct venus_inst *in
- 			  V4L2_CID_MPEG_VIDEO_H264_I_FRAME_MIN_QP, 1, 51, 1, 1);
- 
- 	v4l2_ctrl_new_std(&inst->ctrl_handler, &venc_ctrl_ops,
--			  V4L2_CID_MPEG_VIDEO_H264_8X8_TRANSFORM, 0, 1, 1, 0);
-+			  V4L2_CID_MPEG_VIDEO_H264_8X8_TRANSFORM, 0, 1, 1, 1);
- 
- 	v4l2_ctrl_new_std(&inst->ctrl_handler, &venc_ctrl_ops,
- 			  V4L2_CID_MPEG_VIDEO_H264_P_FRAME_MIN_QP, 1, 51, 1, 1);
+--- a/drivers/thermal/intel/int340x_thermal/int3400_thermal.c
++++ b/drivers/thermal/intel/int340x_thermal/int3400_thermal.c
+@@ -53,7 +53,7 @@ struct int3400_thermal_priv {
+ 	struct art *arts;
+ 	int trt_count;
+ 	struct trt *trts;
+-	u8 uuid_bitmap;
++	u32 uuid_bitmap;
+ 	int rel_misc_dev_res;
+ 	int current_uuid_index;
+ 	char *data_vault;
 
 
