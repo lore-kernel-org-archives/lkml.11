@@ -2,107 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C5271C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 02:03:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 285A9C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 02:13:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229592AbiDECFe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 22:05:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47050 "EHLO
+        id S229612AbiDECPZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 4 Apr 2022 22:15:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41838 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229563AbiDECF0 (ORCPT
+        with ESMTP id S229569AbiDECPY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 22:05:26 -0400
-Received: from mail-oi1-x236.google.com (mail-oi1-x236.google.com [IPv6:2607:f8b0:4864:20::236])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70FA8135081;
-        Mon,  4 Apr 2022 18:22:13 -0700 (PDT)
-Received: by mail-oi1-x236.google.com with SMTP id t21so11901663oie.11;
-        Mon, 04 Apr 2022 18:22:13 -0700 (PDT)
+        Mon, 4 Apr 2022 22:15:24 -0400
+Received: from mail-pl1-x631.google.com (mail-pl1-x631.google.com [IPv6:2607:f8b0:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E96B117ABB2;
+        Mon,  4 Apr 2022 18:10:16 -0700 (PDT)
+Received: by mail-pl1-x631.google.com with SMTP id o20so3852261pla.13;
+        Mon, 04 Apr 2022 18:10:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=y7CfRmOu2mFNhlP27BBXPAgEnRTv2JAfJlw4FzS8AkI=;
-        b=Z/ADUipXSo6cCCoApgoWmuri8ib7Z2ZRmbnR54h8/VrIGaueK5QGu/WZtyWNFshPcu
-         iAUxF22NOgckmUzcLG64u90kuydHGTVHt9OYXf690baDj9sOYSCj/jaZkbYXeWXHpMmB
-         fAHEsMsaWg7XOguwyTv9/4z8MTuyMLKrHnwV08vQpUkIZUwgrbHKz3AVmSD3jtcNlM/x
-         0UinNkINbSntmhwlU0tlzyGj/QAvnPpxiM0jFhKpPSABVsY/8/XIx1H5kYyTNNFKFogR
-         jNANubjJDZQhCftsvAm3pWtbim5rG5UTWikV3yCU0eXPRTt1v5MNXIOEz9cyijS6kP55
-         XDvQ==
+        h=from:to:cc:subject:date:message-id;
+        bh=woWc2+lO22HzkiGe6tfKJYkKrmQ1CA7aDFe+SOO4MVo=;
+        b=kfJo4Xj4tsvv/raS2h6Me0pD+/r2cSvGc3gqTYzD3/0o2MAiYvQwl6ekwsFdIjmSE/
+         8e8EX3k9sUmWEP3lmVSt90/6vPD3SGyNwpLLgWJ81KPGtgjXiXA3Y2Opzk2N3uMrJe0k
+         0645Ol9XN1/Sa+kXLJJ/qiRJtTt41BJofHvOAA/fMU+Rb+VUeItqT0mS9IxOlsK6l5HU
+         Z3Hqy8RY1hBwBDPqUX8Oz8gao9TEWxVhfVSqci1C7q7JI7Ht7UQqVK+vHPnxiOoEbF/j
+         /u0wVzWgPfrsuc6ux9NXuku6WHeu/2TX+iONMFZpROfl7DspH33C/kGU28f4h9+Ybj5A
+         WyKA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=y7CfRmOu2mFNhlP27BBXPAgEnRTv2JAfJlw4FzS8AkI=;
-        b=LP6A0w0tgaMTEoQt/CdUYE9qBQGsBNo8Z8vLuS1o6ayplFYbJkgXfpjiEJBQxTFFi0
-         3mLGOevxCl0Boeg3O9XU3vXF7wA+GIxscRcvhwPdp82+jZz7tElpf/TfHhSrUHkXGAq6
-         WgGgq7VZny1ApersE8krX2x/FJIQ6kqDOyqAF5ffCi+SoLDRn/5m5xBynQ/a57xkMoVu
-         XC7o8KVTX7GKXtgLrKFGYbGEFokgX6zSo8puN0Hq6WAlQ4JrCgcDu633lI+DhJUspOL+
-         NJOEzWTt4a1L0JgLrD2uqSD7mYT0h7tDkV9Ibz0shwdKw6HfMgp9ZSyVxRH+giCXTYV2
-         CRfw==
-X-Gm-Message-State: AOAM530rmVfmY6W3K8TkJ6OG7BU288KIniTRaJ6ZMm4jBTWEnAsoS/fX
-        WUNj4NyB7KSdmCOF5NMT8j51dUJYBEwLoMu6qa2UkD5rZSc=
-X-Google-Smtp-Source: ABdhPJyefORiL8A7gzvpS7dFgoDZqSwDNKY91Ji/hlxmeFS27O7LqO1jBzOIggw1AkXZ8Y44Dm+GJ8fQng2R1BpN3QQ=
-X-Received: by 2002:a17:90a:5298:b0:1ca:7fb3:145 with SMTP id
- w24-20020a17090a529800b001ca7fb30145mr1036706pjh.200.1649119741666; Mon, 04
- Apr 2022 17:49:01 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220404200250.321455-1-shy828301@gmail.com> <YkuKbMbSecBVsa1k@casper.infradead.org>
-In-Reply-To: <YkuKbMbSecBVsa1k@casper.infradead.org>
-From:   Yang Shi <shy828301@gmail.com>
-Date:   Mon, 4 Apr 2022 17:48:49 -0700
-Message-ID: <CAHbLzkoWPN+ahrvu2JrvoDpf8J_QGR6Ug6BbPnC11C82Lb-NaA@mail.gmail.com>
-Subject: Re: [v3 PATCH 0/8] Make khugepaged collapse readonly FS THP more consistent
-To:     Matthew Wilcox <willy@infradead.org>
-Cc:     Vlastimil Babka <vbabka@suse.cz>,
-        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
-        Miaohe Lin <linmiaohe@huawei.com>,
-        Song Liu <songliubraving@fb.com>,
-        Rik van Riel <riel@surriel.com>, Zi Yan <ziy@nvidia.com>,
-        "Theodore Ts'o" <tytso@mit.edu>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linux MM <linux-mm@kvack.org>,
-        Linux FS-devel Mailing List <linux-fsdevel@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=woWc2+lO22HzkiGe6tfKJYkKrmQ1CA7aDFe+SOO4MVo=;
+        b=RM7g+sLwVy6aoF9jzLGG1dWsuMT2RzLkQdzaSAi0P/Ojqx9MwbOP0dSwLOJcYa04Dx
+         H7jtmFA4WbyKcY5D6aXFg+xZvwJh4lgwoZY3yl1LrqOTblt0kkQfoN9nC49TwsRcsHwO
+         BZEnnsJg+9KZYz5+R7OVjAY0k8i9t3dydh+LKVW3jvjlXzm4Sq8QRw61OsbgTHoHmy7h
+         fkgXxIKSugkZXjoKZSQGg54Yy363E1sl0r8INSIxvpdITd9Y5cNID/sIg03NDL5Yn39l
+         /QsRmE2ch5eUFrIVKgmsbK2XNlsGkxSqgrwROgeRc4U8en8UyxKBWmYbd4j+aQSMnzzN
+         aELQ==
+X-Gm-Message-State: AOAM531lG6YImeiPvuj19Ux4dSuWeQFR9EBbcyAPmkzkJKi2W+NcvIij
+        l/mP+rvrr0ms8MEDtjGmCC1rUxKq7V6LDA==
+X-Google-Smtp-Source: ABdhPJyU90xOzeJ4z46zscOLk3F/0p1/sSaacQYJrTAKfRMomoQ2uWRBEXJPTNNlbKSA0irPj0sSuw==
+X-Received: by 2002:a17:902:a581:b0:154:8c7d:736a with SMTP id az1-20020a170902a58100b001548c7d736amr835564plb.74.1649118196127;
+        Mon, 04 Apr 2022 17:23:16 -0700 (PDT)
+Received: from localhost ([183.156.181.188])
+        by smtp.gmail.com with ESMTPSA id j6-20020a63b606000000b003808b0ea96fsm11091422pgf.66.2022.04.04.17.23.14
+        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
+        Mon, 04 Apr 2022 17:23:15 -0700 (PDT)
+From:   Xiaomeng Tong <xiam0nd.tong@gmail.com>
+To:     aelior@marvell.com, manishc@marvell.com, davem@davemloft.net,
+        kuba@kernel.org, pabeni@redhat.com
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Xiaomeng Tong <xiam0nd.tong@gmail.com>
+Subject: [PATCH] qed: remove an unneed NULL check on list iterator
+Date:   Tue,  5 Apr 2022 08:22:56 +0800
+Message-Id: <20220405002256.22772-1-xiam0nd.tong@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Apr 4, 2022 at 5:16 PM Matthew Wilcox <willy@infradead.org> wrote:
->
-> On Mon, Apr 04, 2022 at 01:02:42PM -0700, Yang Shi wrote:
-> > The readonly FS THP relies on khugepaged to collapse THP for suitable
-> > vmas.  But it is kind of "random luck" for khugepaged to see the
-> > readonly FS vmas (see report: https://lore.kernel.org/linux-mm/00f195d4-d039-3cf2-d3a1-a2c88de397a0@suse.cz/) since currently the vmas are registered to khugepaged when:
->
-> I still don't see the point.  The effort should be put into
-> supporting large folios, not in making this hack work better.
+The define for_each_pci_dev(d) is:
+ while ((d = pci_get_device(PCI_ANY_ID, PCI_ANY_ID, d)) != NULL)
 
-The series makes sense even though the hack is replaced by large
-folios IMHO. The problem is the file VMAs may be not registered by
-khugepaged consistently for some THP modes, for example, always,
-regardless of whether it's readonly or the hack is gone or not. IIUC
-even though the hack is replaced by the large folios, we still have
-khugepaged to collapse pmd-mappable huge pages for both anonymous vmas
-and file vmas, right? Or are you thinking about killing khugepaged
-soon with supporting large folios?
+Thus, the list iterator 'd' is always non-NULL so it doesn't need to
+be checked. So just remove the unnecessary NULL check. Also remove the
+unnecessary initializer because the list iterator is always initialized.
 
-Anyway it may make things clearer if the cover letter is rephrased to:
+Signed-off-by: Xiaomeng Tong <xiam0nd.tong@gmail.com>
+---
+ drivers/net/ethernet/qlogic/qed/qed_nvmetcp_ip_services.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-When khugepaged collapses file THPs, its behavior is not consistent.
-It is kind of "random luck" for khugepaged to see the file vmas (see
-report: https://lore.kernel.org/linux-mm/00f195d4-d039-3cf2-d3a1-a2c88de397a0@suse.cz/)
-since currently the vmas are registered to khugepaged when:
-  - Anon huge pmd page fault
-  - VMA merge
-  - MADV_HUGEPAGE
-  - Shmem mmap
+diff --git a/drivers/net/ethernet/qlogic/qed/qed_nvmetcp_ip_services.c b/drivers/net/ethernet/qlogic/qed/qed_nvmetcp_ip_services.c
+index 96a2077fd315..37af8395f1bd 100644
+--- a/drivers/net/ethernet/qlogic/qed/qed_nvmetcp_ip_services.c
++++ b/drivers/net/ethernet/qlogic/qed/qed_nvmetcp_ip_services.c
+@@ -161,11 +161,11 @@ EXPORT_SYMBOL(qed_vlan_get_ndev);
+ 
+ struct pci_dev *qed_validate_ndev(struct net_device *ndev)
+ {
+-	struct pci_dev *pdev = NULL;
++	struct pci_dev *pdev;
+ 	struct net_device *upper;
+ 
+ 	for_each_pci_dev(pdev) {
+-		if (pdev && pdev->driver &&
++		if (pdev->driver &&
+ 		    !strcmp(pdev->driver->name, "qede")) {
+ 			upper = pci_get_drvdata(pdev);
+ 			if (upper->ifindex == ndev->ifindex)
+-- 
+2.17.1
 
-If the above conditions are not met, even though khugepaged is enabled
-it won't see any file vma at all.  MADV_HUGEPAGE could be specified
-explicitly to tell khugepaged to collapse this area, but when
-khugepaged mode is "always" it should scan suitable vmas as long as
-VM_NOHUGEPAGE is not set.
-
-So make sure file vmas are registered to khugepaged to make the
-behavior more consistent.
