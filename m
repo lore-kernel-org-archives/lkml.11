@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9169DC4321E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 71B85C43219
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 21:04:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349637AbiDEVEc (ORCPT
+        id S1349357AbiDEVE0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 17:04:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50658 "EHLO
+        Tue, 5 Apr 2022 17:04:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45472 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358022AbiDEK1v (ORCPT
+        with ESMTP id S1354467AbiDEKOT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:27:51 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11C8968334;
-        Tue,  5 Apr 2022 03:13:03 -0700 (PDT)
+        Tue, 5 Apr 2022 06:14:19 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C63C6A41D;
+        Tue,  5 Apr 2022 03:00:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A0DD06179E;
-        Tue,  5 Apr 2022 10:13:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A16BBC385A1;
-        Tue,  5 Apr 2022 10:13:01 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CC67E61673;
+        Tue,  5 Apr 2022 10:00:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DBC47C385A4;
+        Tue,  5 Apr 2022 10:00:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649153582;
-        bh=t9kcOGRydPGLOmrxkJKyhL9e/RChrQb3otSRVxw7mAQ=;
+        s=korg; t=1649152817;
+        bh=e/XM4T8kGA8YmUSl+7zxZN4nqVNClbVOAqagp52YUXA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rKjJcma5JRYjFDPNAy+FcxbzbJZm5tadfkmO3Rav6nVl088ek143srVp1fxBZfWGz
-         Qvq2VUX09vt7oxvumBqRrpRSk6g+XjoNgfoFPMIsGUannDGzec5ec29OQLZJbE1vww
-         lBDO1dXx/9oBANwO0WDs+2yZKd545mRfT4DZMPVQ=
+        b=Z0mHGU3/3lq+DAgz1/eWWkB3Bz2cqhFQXvzzlIzywvijRfQp6eos40bss/0j8sJ2t
+         FzBCfD3GxoZJLO4TBR9oFJViI/tvDYotX7jMn81tIDx0ioSLEVMcTaiiwBfIkAS4Mz
+         /zhvOkr9GhWXMHI4sU5yor/hsxvtRPYnMF7/awu0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Maxime Ripard <maxime@cerno.tech>,
-        =?UTF-8?q?Ville=20Syrj=C3=A4l=C3=A4?= 
-        <ville.syrjala@linux.intel.com>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 272/599] drm/edid: Dont clear formats if using deep color
-Date:   Tue,  5 Apr 2022 09:29:26 +0200
-Message-Id: <20220405070306.932383798@linuxfoundation.org>
+        stable@vger.kernel.org, Stephen Rothwell <sfr@canb.auug.org.au>,
+        Maxime Ripard <maxime@cerno.tech>,
+        Simon Ser <contact@emersion.fr>
+Subject: [PATCH 5.15 864/913] drm/connector: Fix typo in documentation
+Date:   Tue,  5 Apr 2022 09:32:06 +0200
+Message-Id: <20220405070405.722836555@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -52,66 +52,40 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Maxime Ripard <maxime@cerno.tech>
 
-[ Upstream commit 75478b3b393bcbdca4e6da76fe3a9f1a4133ec5d ]
+commit dca384a3bf5af1c781cfa6aec63904bdb5018c36 upstream.
 
-The current code, when parsing the EDID Deep Color depths, that the
-YUV422 cannot be used, referring to the HDMI 1.3 Specification.
+Commit 4adc33f36d80 ("drm/edid: Split deep color modes between RGB and
+YUV444") introduced two new variables in struct drm_display_info and
+their documentation, but the documentation part had a typo resulting in
+a doc build warning.
 
-This specification, in its section 6.2.4, indeed states:
-
-  For each supported Deep Color mode, RGB 4:4:4 shall be supported and
-  optionally YCBCR 4:4:4 may be supported.
-
-  YCBCR 4:2:2 is not permitted for any Deep Color mode.
-
-This indeed can be interpreted like the code does, but the HDMI 1.4
-specification further clarifies that statement in its section 6.2.4:
-
-  For each supported Deep Color mode, RGB 4:4:4 shall be supported and
-  optionally YCBCR 4:4:4 may be supported.
-
-  YCBCR 4:2:2 is also 36-bit mode but does not require the further use
-  of the Deep Color modes described in section 6.5.2 and 6.5.3.
-
-This means that, even though YUV422 can be used with 12 bit per color,
-it shouldn't be treated as a deep color mode.
-
-This is also broken with YUV444 if it's supported by the display, but
-DRM_EDID_HDMI_DC_Y444 isn't set. In such a case, the code will clear
-color_formats of the YUV444 support set previously in
-drm_parse_cea_ext(), but will not set it back.
-
-Since the formats supported are already setup properly in
-drm_parse_cea_ext(), let's just remove the code modifying the formats in
-drm_parse_hdmi_deep_color_info()
-
-Fixes: d0c94692e0a3 ("drm/edid: Parse and handle HDMI deep color modes.")
+Fixes: 4adc33f36d80 ("drm/edid: Split deep color modes between RGB and YUV444")
+Reported-by: Stephen Rothwell <sfr@canb.auug.org.au>
 Signed-off-by: Maxime Ripard <maxime@cerno.tech>
-Reviewed-by: Ville Syrjälä <ville.syrjala@linux.intel.com>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220120151625.594595-3-maxime@cerno.tech
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Reviewed-by: Simon Ser <contact@emersion.fr>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220202094340.875190-1-maxime@cerno.tech
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/drm_edid.c |    8 --------
- 1 file changed, 8 deletions(-)
+ include/drm/drm_connector.h |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/drivers/gpu/drm/drm_edid.c
-+++ b/drivers/gpu/drm/drm_edid.c
-@@ -4960,16 +4960,8 @@ static void drm_parse_hdmi_deep_color_in
- 		  connector->name, dc_bpc);
- 	info->bpc = dc_bpc;
+--- a/include/drm/drm_connector.h
++++ b/include/drm/drm_connector.h
+@@ -566,13 +566,13 @@ struct drm_display_info {
+ 	bool rgb_quant_range_selectable;
  
--	/*
--	 * Deep color support mandates RGB444 support for all video
--	 * modes and forbids YCRCB422 support for all video modes per
--	 * HDMI 1.3 spec.
--	 */
--	info->color_formats = DRM_COLOR_FORMAT_RGB444;
--
- 	/* YCRCB444 is optional according to spec. */
- 	if (hdmi[6] & DRM_EDID_HDMI_DC_Y444) {
--		info->color_formats |= DRM_COLOR_FORMAT_YCRCB444;
- 		DRM_DEBUG("%s: HDMI sink does YCRCB444 in deep color.\n",
- 			  connector->name);
- 	}
+ 	/**
+-	 * @edid_hdmi_dc_rgb444_modes: Mask of supported hdmi deep color modes
++	 * @edid_hdmi_rgb444_dc_modes: Mask of supported hdmi deep color modes
+ 	 * in RGB 4:4:4. Even more stuff redundant with @bus_formats.
+ 	 */
+ 	u8 edid_hdmi_rgb444_dc_modes;
+ 
+ 	/**
+-	 * @edid_hdmi_dc_ycbcr444_modes: Mask of supported hdmi deep color
++	 * @edid_hdmi_ycbcr444_dc_modes: Mask of supported hdmi deep color
+ 	 * modes in YCbCr 4:4:4. Even more stuff redundant with @bus_formats.
+ 	 */
+ 	u8 edid_hdmi_ycbcr444_dc_modes;
 
 
