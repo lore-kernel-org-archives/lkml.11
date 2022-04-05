@@ -2,60 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 88540C4321E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EA99CC4167E
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 21:27:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376590AbiDEVZr (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 17:25:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43752 "EHLO
+        id S233607AbiDEV0I (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 17:26:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59182 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1391535AbiDEPeu (ORCPT
+        with ESMTP id S1355908AbiDEKWN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 11:34:50 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E4525EDD5
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 06:42:07 -0700 (PDT)
+        Tue, 5 Apr 2022 06:22:13 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB15BA9957;
+        Tue,  5 Apr 2022 03:05:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 07321B81C87
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 13:42:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 62999C385A0;
-        Tue,  5 Apr 2022 13:42:04 +0000 (UTC)
-Date:   Tue, 5 Apr 2022 09:42:02 -0400
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     "Paul E. McKenney" <paulmck@kernel.org>
-Cc:     bigeasy@linutronix.de, linux-kernel@vger.kernel.org
-Subject: Re: Typical PREEMPT_RT .config?
-Message-ID: <20220405094202.0823ce48@gandalf.local.home>
-In-Reply-To: <20220405094048.30a75670@gandalf.local.home>
-References: <20220404231654.GA3445712@paulmck-ThinkPad-P17-Gen-1>
-        <20220405094048.30a75670@gandalf.local.home>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4AA4E61500;
+        Tue,  5 Apr 2022 10:05:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5781AC385A2;
+        Tue,  5 Apr 2022 10:05:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649153123;
+        bh=C/750eIEw2xnKQ7Z3W6sdUklRUAe3atwbovg2TFjKWM=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=I1gqnRvMswRkH8MRdOj8yW2FjDZHeIj2W5Oa9ORu+l0v7U06YDP3T0QqtDK6FFpVf
+         C+KUBjpzPafGcwNtQFb2Dcr9RwcQLT5rWIb6AT1N3XoOvfjXj9SVHs9cTQ5zKYOe0m
+         5pLBjTrRTho2C5nIAthUmUk1+q2QmE9mdWlqXQWE=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Eric Biggers <ebiggers@google.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>
+Subject: [PATCH 5.10 109/599] crypto: rsa-pkcs1pad - only allow with rsa
+Date:   Tue,  5 Apr 2022 09:26:43 +0200
+Message-Id: <20220405070302.078174380@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
+References: <20220405070258.802373272@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 5 Apr 2022 09:40:48 -0400
-Steven Rostedt <rostedt@goodmis.org> wrote:
+From: Eric Biggers <ebiggers@google.com>
 
-> On Mon, 4 Apr 2022 16:16:54 -0700
-> "Paul E. McKenney" <paulmck@kernel.org> wrote:
-> 
-> > OK, now that PREEMPT_RT is mostly into mainline, I should probably create
-> > an rcutorture scenario more closely reflecting it.  The closest at the
-> > moment is probably tools/testing/selftests/rcutorture/configs/rcu/TREE03,
-> > but I figured that before beating on it I should check to see if you
-> > already have a PREEMPT_RT rcutorture scenario file.  
-> 
-> I don't have one.
+commit 9b30430ea356f237945e52f8a3a42158877bd5a9 upstream.
 
-And now reading the subject line and not just the body, are you asking
-about what configs are normally added? I had several I used for testing,
-but will have to go back and look at them.
+The pkcs1pad template can be instantiated with an arbitrary akcipher
+algorithm, which doesn't make sense; it is specifically an RSA padding
+scheme.  Make it check that the underlying algorithm really is RSA.
 
--- Steve
+Fixes: 3d5b1ecdea6f ("crypto: rsa - RSA padding algorithm")
+Cc: <stable@vger.kernel.org> # v4.5+
+Signed-off-by: Eric Biggers <ebiggers@google.com>
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ crypto/rsa-pkcs1pad.c |    5 +++++
+ 1 file changed, 5 insertions(+)
+
+--- a/crypto/rsa-pkcs1pad.c
++++ b/crypto/rsa-pkcs1pad.c
+@@ -621,6 +621,11 @@ static int pkcs1pad_create(struct crypto
+ 
+ 	rsa_alg = crypto_spawn_akcipher_alg(&ctx->spawn);
+ 
++	if (strcmp(rsa_alg->base.cra_name, "rsa") != 0) {
++		err = -EINVAL;
++		goto err_free_inst;
++	}
++
+ 	err = -ENAMETOOLONG;
+ 	hash_name = crypto_attr_alg_name(tb[2]);
+ 	if (IS_ERR(hash_name)) {
+
+
