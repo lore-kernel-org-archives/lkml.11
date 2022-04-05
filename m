@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 83D4DC35296
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:01:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B7EC9C43217
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:01:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236026AbiDEIBJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 04:01:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57246 "EHLO
+        id S236381AbiDEICJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 04:02:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57280 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231752AbiDEHvJ (ORCPT
+        with ESMTP id S233099AbiDEHwH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 03:51:09 -0400
+        Tue, 5 Apr 2022 03:52:07 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30906939D4;
-        Tue,  5 Apr 2022 00:47:22 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCCF29A98B;
+        Tue,  5 Apr 2022 00:48:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 771DEB81B92;
-        Tue,  5 Apr 2022 07:47:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BE107C340EE;
-        Tue,  5 Apr 2022 07:47:18 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 73A3BB81B92;
+        Tue,  5 Apr 2022 07:48:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B78C6C3410F;
+        Tue,  5 Apr 2022 07:48:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649144839;
-        bh=gXaSowdSzdHDz/SLK+lkSj4IXT9ETjfxO2NaDq+DOw8=;
+        s=korg; t=1649144902;
+        bh=kvVb5KMqeYYz/mim831M5MVF9jQps5D6XBQgrGuV5vc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=w+rwCO6kI7vTEYkrRsQ2x3Ihft4IcgmXjbj3MOUXHea98dfXg7T6oXnaV2EwVPSkH
-         C80kfN+LBHMyP4mWxk7QKacPjL5RaS13aHnmLQ5GBaspgYc3zElF6dbTTs8paAd+vc
-         LZr2MfidIdPfkEOuEOiWHHnSiVXK7+ebIuB1J9b4=
+        b=bV3raXUrKWfeCTybmaDh2DXyRXjDM+kFhWPccssTra1bQDu5D9Y56yvt90fgB48QT
+         ppw07EqRF+3xZg8vrXAjDptE8q6h1Plh3DixpwmFmtmc41tSNPf0aVAvKouvHsLGdh
+         GZUZT3licEbP1OTZiLb6saWTAdQANVVv7QwcISDo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Linus Walleij <linus.walleij@linaro.org>,
-        Arend van Spriel <arend.vanspriel@broadcom.com>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Hector Martin <marcan@marcan.st>, Kalle Valo <kvalo@kernel.org>
-Subject: [PATCH 5.17 0190/1126] brcmfmac: pcie: Replace brcmf_pcie_copy_mem_todev with memcpy_toio
-Date:   Tue,  5 Apr 2022 09:15:37 +0200
-Message-Id: <20220405070413.183790598@linuxfoundation.org>
+        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 0211/1126] thermal: int340x: Check for NULL after calling kmemdup()
+Date:   Tue,  5 Apr 2022 09:15:58 +0200
+Message-Id: <20220405070413.802721009@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -50,108 +49,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hector Martin <marcan@marcan.st>
+From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
 
-commit 9466987f246758eb7e9071ae58005253f631271e upstream.
+[ Upstream commit 38b16d6cfe54c820848bcfc999bc5e8a7da1cefb ]
 
-The alignment check was wrong (e.g. & 4 instead of & 3), and the logic
-was also inefficient if the length was not a multiple of 4, since it
-would needlessly fall back to copying the entire buffer bytewise.
+As the potential failure of the allocation, kmemdup() may return NULL.
 
-We already have a perfectly good memcpy_toio function, so just call that
-instead of rolling our own copy logic here. brcmf_pcie_init_ringbuffers
-was already using it anyway.
+Then, 'bin_attr_data_vault.private' will be NULL, but
+'bin_attr_data_vault.size' is not 0, which is not consistent.
 
-Fixes: 9e37f045d5e7 ("brcmfmac: Adding PCIe bus layer support.")
-Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
-Reviewed-by: Arend van Spriel <arend.vanspriel@broadcom.com>
-Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc: stable@vger.kernel.org
-Signed-off-by: Hector Martin <marcan@marcan.st>
-Signed-off-by: Kalle Valo <kvalo@kernel.org>
-Link: https://lore.kernel.org/r/20220131160713.245637-6-marcan@marcan.st
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Therefore, it is better to check the return value of kmemdup() to
+avoid the confusion.
+
+Fixes: 0ba13c763aac ("thermal/int340x_thermal: Export GDDV")
+Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+[ rjw: Subject and changelog edits ]
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c |   48 +---------------
- 1 file changed, 4 insertions(+), 44 deletions(-)
+ drivers/thermal/intel/int340x_thermal/int3400_thermal.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
---- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c
-+++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c
-@@ -12,6 +12,7 @@
- #include <linux/interrupt.h>
- #include <linux/bcma/bcma.h>
- #include <linux/sched.h>
-+#include <linux/io.h>
- #include <asm/unaligned.h>
- 
- #include <soc.h>
-@@ -455,47 +456,6 @@ brcmf_pcie_write_ram32(struct brcmf_pcie
- 
- 
- static void
--brcmf_pcie_copy_mem_todev(struct brcmf_pciedev_info *devinfo, u32 mem_offset,
--			  void *srcaddr, u32 len)
--{
--	void __iomem *address = devinfo->tcm + mem_offset;
--	__le32 *src32;
--	__le16 *src16;
--	u8 *src8;
--
--	if (((ulong)address & 4) || ((ulong)srcaddr & 4) || (len & 4)) {
--		if (((ulong)address & 2) || ((ulong)srcaddr & 2) || (len & 2)) {
--			src8 = (u8 *)srcaddr;
--			while (len) {
--				iowrite8(*src8, address);
--				address++;
--				src8++;
--				len--;
--			}
--		} else {
--			len = len / 2;
--			src16 = (__le16 *)srcaddr;
--			while (len) {
--				iowrite16(le16_to_cpu(*src16), address);
--				address += 2;
--				src16++;
--				len--;
--			}
--		}
--	} else {
--		len = len / 4;
--		src32 = (__le32 *)srcaddr;
--		while (len) {
--			iowrite32(le32_to_cpu(*src32), address);
--			address += 4;
--			src32++;
--			len--;
--		}
--	}
--}
--
--
--static void
- brcmf_pcie_copy_dev_tomem(struct brcmf_pciedev_info *devinfo, u32 mem_offset,
- 			  void *dstaddr, u32 len)
- {
-@@ -1570,8 +1530,8 @@ static int brcmf_pcie_download_fw_nvram(
- 		return err;
- 
- 	brcmf_dbg(PCIE, "Download FW %s\n", devinfo->fw_name);
--	brcmf_pcie_copy_mem_todev(devinfo, devinfo->ci->rambase,
--				  (void *)fw->data, fw->size);
-+	memcpy_toio(devinfo->tcm + devinfo->ci->rambase,
-+		    (void *)fw->data, fw->size);
- 
- 	resetintr = get_unaligned_le32(fw->data);
- 	release_firmware(fw);
-@@ -1585,7 +1545,7 @@ static int brcmf_pcie_download_fw_nvram(
- 		brcmf_dbg(PCIE, "Download NVRAM %s\n", devinfo->nvram_name);
- 		address = devinfo->ci->rambase + devinfo->ci->ramsize -
- 			  nvram_len;
--		brcmf_pcie_copy_mem_todev(devinfo, address, nvram, nvram_len);
-+		memcpy_toio(devinfo->tcm + address, nvram, nvram_len);
- 		brcmf_fw_nvram_free(nvram);
- 	} else {
- 		brcmf_dbg(PCIE, "No matching NVRAM file found %s\n",
+diff --git a/drivers/thermal/intel/int340x_thermal/int3400_thermal.c b/drivers/thermal/intel/int340x_thermal/int3400_thermal.c
+index 3e253b767b49..a0b599100106 100644
+--- a/drivers/thermal/intel/int340x_thermal/int3400_thermal.c
++++ b/drivers/thermal/intel/int340x_thermal/int3400_thermal.c
+@@ -468,6 +468,11 @@ static void int3400_setup_gddv(struct int3400_thermal_priv *priv)
+ 	priv->data_vault = kmemdup(obj->package.elements[0].buffer.pointer,
+ 				   obj->package.elements[0].buffer.length,
+ 				   GFP_KERNEL);
++	if (!priv->data_vault) {
++		kfree(buffer.pointer);
++		return;
++	}
++
+ 	bin_attr_data_vault.private = priv->data_vault;
+ 	bin_attr_data_vault.size = obj->package.elements[0].buffer.length;
+ 	kfree(buffer.pointer);
+-- 
+2.34.1
+
 
 
