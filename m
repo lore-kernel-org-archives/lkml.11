@@ -2,128 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 696BAC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 04:46:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2553EC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 04:47:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229596AbiDEEsx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 00:48:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57946 "EHLO
+        id S229494AbiDEEtf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 00:49:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58130 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229462AbiDEEsD (ORCPT
+        with ESMTP id S229648AbiDEEtM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 00:48:03 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 48589694B8
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 21:44:40 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 48876D6E;
-        Mon,  4 Apr 2022 21:44:40 -0700 (PDT)
-Received: from [192.168.0.146] (unknown [172.31.20.19])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 5F9EE3F5A1;
-        Mon,  4 Apr 2022 21:44:34 -0700 (PDT)
-Message-ID: <d6e2581e-a8ac-4848-2c64-4a221bd03bca@arm.com>
-Date:   Tue, 5 Apr 2022 10:15:02 +0530
+        Tue, 5 Apr 2022 00:49:12 -0400
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72B0A4D24A;
+        Mon,  4 Apr 2022 21:45:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649133928; x=1680669928;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=0hqqbwNeu2yz8dmKtRKZAl3/4REEZAC489TeDYZhXgw=;
+  b=nbBLOTxnKUGPMM7csjHAvNDhsfCnj8U+2AW99Fg4bOywwYQSo38AkJBf
+   H0vBVn3sL1tZACk/Zbzpxl9Ip/L7gd0JOPlliv2bEowAOU2pT59HkE2LE
+   nCTdz+CQGDLVgPSH2ClRV5gDx6At8KfcZ8f6GxWb+z5oMlYMwyVFR2b5A
+   PwzHxHVdVI+AzqGH51au6hn923XfuBMF+dCthLZ0WcQAlvmwzuwgp7VbL
+   yNq7o+qx2kPXYbRpb8DEL4A4tuz/sn7w9y3JBxwReM02fUdd69WzoXKZg
+   OPVlfx+sL3jcZFSNBuLJF5GfpY2JwXtwOPSXmjWBLxyNjHDJNoiXDpBNC
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10307"; a="347103320"
+X-IronPort-AV: E=Sophos;i="5.90,235,1643702400"; 
+   d="scan'208";a="347103320"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Apr 2022 21:45:25 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,235,1643702400"; 
+   d="scan'208";a="505144246"
+Received: from yilunxu-optiplex-7050.sh.intel.com (HELO localhost) ([10.239.159.135])
+  by orsmga003.jf.intel.com with ESMTP; 04 Apr 2022 21:45:23 -0700
+Date:   Tue, 5 Apr 2022 12:38:04 +0800
+From:   Xu Yilun <yilun.xu@intel.com>
+To:     Nava kishore Manne <nava.manne@xilinx.com>
+Cc:     mdf@kernel.org, hao.wu@intel.com, trix@redhat.com,
+        michal.simek@xilinx.com, linux-fpga@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        git@xilinx.com
+Subject: Re: [PATCH v3 1/5] fpga: zynq: Fix incorrect variable type
+Message-ID: <20220405043804.GA248628@yilunxu-OptiPlex-7050>
+References: <20220403051641.3867610-1-nava.manne@xilinx.com>
+ <20220403051641.3867610-2-nava.manne@xilinx.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v4 2/2] arm64: mm: hugetlb: Enable
- HUGETLB_PAGE_FREE_VMEMMAP for arm64
-Content-Language: en-US
-To:     Muchun Song <songmuchun@bytedance.com>, will@kernel.org,
-        akpm@linux-foundation.org, david@redhat.com, bodeddub@amazon.com,
-        osalvador@suse.de, mike.kravetz@oracle.com, rientjes@google.com,
-        mark.rutland@arm.com, catalin.marinas@arm.com, james.morse@arm.com,
-        21cnbao@gmail.com
-Cc:     linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org, duanxiongchun@bytedance.com,
-        fam.zheng@bytedance.com, smuchun@gmail.com
-References: <20220331065640.5777-1-songmuchun@bytedance.com>
- <20220331065640.5777-2-songmuchun@bytedance.com>
-From:   Anshuman Khandual <anshuman.khandual@arm.com>
-In-Reply-To: <20220331065640.5777-2-songmuchun@bytedance.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220403051641.3867610-2-nava.manne@xilinx.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Sun, Apr 03, 2022 at 10:46:37AM +0530, Nava kishore Manne wrote:
+> zynq_fpga_has_sync () API is expecting "u8 *" but the
+> formal parameter that was passed is of type "const char *".
+> fixes this issue by changing the buf type to "const char *"
 
-
-On 3/31/22 12:26, Muchun Song wrote:
-> 1st concern:
-> '''
-> But what happens when a hot remove section's vmemmap area (which is
-> being teared down) is nearby another vmemmap area which is either created
-> or being destroyed for HugeTLB alloc/free purpose. As you mentioned
-> HugeTLB pages inside the hot remove section might be safe. But what about
-> other HugeTLB areas whose vmemmap area shares page table entries with
-> vmemmap entries for a section being hot removed ? Massive HugeTLB alloc
-> /use/free test cycle using memory just adjacent to a memory hotplug area,
-> which is always added and removed periodically, should be able to expose
-> this problem.
-> '''
-> 
-> Answer: At the time memory is removed, all HugeTLB pages either have been
-> migrated away or dissolved.  So there is no race between memory hot remove
-> and free_huge_page_vmemmap().  Therefore, HugeTLB pages inside the hot
-> remove section is safe.  Let's talk your question "what about other
-
-HugeTLB pages inside the memory range is safe but concern is about the
-vmemmap mapping for the HugeTLB which might share intermediate entries
-with vmemmap mapping for the memory range/section being removed.
-
-> HugeTLB areas whose vmemmap area shares page table entries with vmemmap
-> entries for a section being hot removed ?", the question is not
-
-Right.
-
-> established.  The minimal granularity size of hotplug memory 128MB (on
-> arm64, 4k base page), any HugeTLB smaller than 128MB is within a section,
-> then, there is no share PTE page tables between HugeTLB in this section
-
-128MB is the hot removable granularity but, its corresponding vmemmap
-range is smaller i.e (128MB/4K) * sizeof(struct page). Memory section
-getting hot removed (its vmemmap mapping being teared down) along with
-HugeTLB (on another section) vmemmap remap operation, could not collide
-while inside vmemmap mapping areas on init_mm ?
-
-> and ones in other sections and a HugeTLB page could not cross two
-> sections.  In this case, the section cannot be freed.  Any HugeTLB bigger
-
-Right, they dont cross into two different sections.
-
-> than 128MB (section size) whose vmemmap pages is an integer multiple of
-> 2MB (PMD-mapped).  As long as:
-> 
->   1) HugeTLBs are naturally aligned, power-of-two sizes
->   2) The HugeTLB size >= the section size
->   3) The HugeTLB size >= the vmemmap leaf mapping size
-> 
-> Then a HugeTLB will not share any leaf page table entries with *anything
-> else*, but will share intermediate entries.  In this case, at the time memory
-> is removed, all HugeTLB pages either have been migrated away or dissolved.
-> So there is also no race between memory hot remove and
-> free_huge_page_vmemmap().
-
-If they just share intermediate entries, free_empty_tables() will not free
-up page table pages, as there will be valid non-zero entries in them. But
-the problem here is not UAF, its accessing wrong entries and crashing while
-de-referncing the pointer. Hence I am wondering if no such scenario can be
-possible.
+  Fix
 
 > 
-> 2nd concern:
-> '''
-> differently, not sure if ptdump would require any synchronization.
+> This patch will also update zynq_fpga_has_sync () API description
+> to align with API functionality.
 > 
-> Dumping an wrong value is probably okay but crashing because a page table
-> entry is being freed after ptdump acquired the pointer is bad. On arm64,
-> ptdump() is protected against hotremove via [get|put]_online_mems().
-> '''
+> Signed-off-by: Nava kishore Manne <nava.manne@xilinx.com>
+> ---
+> Changes for v2:
+>                 -None.
+> Changes for v3:
+>                - Changed arg buf type to "const char *" as suggested by Tom.
 > 
-> Answer: The ptdump should be fine since vmemmap_remap_free() only exchanges
-> PTEs or splits the PMD entry (which means allocating a PTE page table).  Both
-> operations do not free any page tables (PTE), so ptdump cannot run into a
-> UAF on any page tables.  The worst case is just dumping an wrong value.
+>  drivers/fpga/zynq-fpga.c | 8 ++++----
+>  1 file changed, 4 insertions(+), 4 deletions(-)
+> 
+> diff --git a/drivers/fpga/zynq-fpga.c b/drivers/fpga/zynq-fpga.c
+> index 426aa34c6a0d..ada07eea64bc 100644
+> --- a/drivers/fpga/zynq-fpga.c
+> +++ b/drivers/fpga/zynq-fpga.c
+> @@ -235,11 +235,11 @@ static irqreturn_t zynq_fpga_isr(int irq, void *data)
+>  	return IRQ_HANDLED;
+>  }
+>  
+> -/* Sanity check the proposed bitstream. It must start with the sync word in
+> - * the correct byte order, and be dword aligned. The input is a Xilinx .bin
+> - * file with every 32 bit quantity swapped.
+> +/* Sanity check the proposed bitstream. The sync word must be found in the
+> + * correct byte order and it should be dword aligned. The input is a
+> + * Xilinx.bin file with every 32 bit quantity swapped.
 
-Okay, fair enough. ptdump() might be just okay.
+I didn't found these changes in v2, or in change logs. Please record it.
+
+Sorry, as a foreign English user, I didn't find the necessity of the change.
+The previous words are as clear as the current. Anyone could help?
+
+And they are not for variable type fix. Please make a separate patch if
+really needed.
+
+Thanks,
+Yilun
+
+>   */
+> -static bool zynq_fpga_has_sync(const u8 *buf, size_t count)
+> +static bool zynq_fpga_has_sync(const char *buf, size_t count)
+>  {
+>  	for (; count >= 4; buf += 4, count -= 4)
+>  		if (buf[0] == 0x66 && buf[1] == 0x55 && buf[2] == 0x99 &&
+> -- 
+> 2.25.1
