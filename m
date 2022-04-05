@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 79FE3C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:18:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 57B39C4332F
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:18:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382526AbiDEMPm (ORCPT
+        id S1382546AbiDEMPr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 08:15:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46806 "EHLO
+        Tue, 5 Apr 2022 08:15:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51052 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244894AbiDEIwp (ORCPT
+        with ESMTP id S244909AbiDEIwq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:52:45 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34734240B7;
-        Tue,  5 Apr 2022 01:45:46 -0700 (PDT)
+        Tue, 5 Apr 2022 04:52:46 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 075A7245B5;
+        Tue,  5 Apr 2022 01:46:03 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C5D8B614E5;
-        Tue,  5 Apr 2022 08:45:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C9E19C385A1;
-        Tue,  5 Apr 2022 08:45:44 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9025C6117A;
+        Tue,  5 Apr 2022 08:46:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 97875C385A0;
+        Tue,  5 Apr 2022 08:46:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649148345;
-        bh=arK/Jdx6Jya54jloe0rN7JBuzPaeDIP9HfZ2GK9PVNg=;
+        s=korg; t=1649148362;
+        bh=KPm1yhX8itA60T9NSlrJoLLEguqqJLGw5Tnm4qUUNxM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=sGxqkDitK8yGv+vvJyqL5GrcRJnNnORHRbAfv9wFNR9AevomRmVuYdZ7l6TZgOAEk
-         mQpbaFdUi5yk/4wlRWLGwf0TWnbTvGd5AlkF5l9On+c73XeTiXXS1lwX9Od5glqRlQ
-         PblPT7zGZgE3bxx5N7l0m4gvqM3nMc4iRoHEKrmo=
+        b=TlF0VHVvuUmjnccvzTfALALwU38JxkqpWcH2D1VUbabIS3vQ6gXruWbETfD/RG9lB
+         nfsNGBOel06HRuIn9OIjOFy7FZNazxjTsvZmmK9tne1e1lKBG+y2Pq/pAXZQv6vUjR
+         JiKd/Z9W9qmG5C/Z2yYRuHFPIMElQ5LpBZBLe+80=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Nishanth Menon <nm@ti.com>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0323/1017] firmware: ti_sci: Fix compilation failure when CONFIG_TI_SCI_PROTOCOL is not defined
-Date:   Tue,  5 Apr 2022 09:20:36 +0200
-Message-Id: <20220405070403.867331379@linuxfoundation.org>
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Petr Mladek <pmladek@suse.com>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 0329/1017] vsprintf: Fix potential unaligned access
+Date:   Tue,  5 Apr 2022 09:20:42 +0200
+Message-Id: <20220405070404.047600293@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -50,34 +51,73 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 
-[ Upstream commit 043cfff99a18933fda2fb2e163daee73cc07910b ]
+[ Upstream commit d75b26f880f60ead301e79ba0f4a635c5a60767f ]
 
-Remove an extra ";" which breaks compilation.
+The %p4cc specifier in some cases might get an unaligned pointer.
+Due to this we need to make copy to local variable once to avoid
+potential crashes on some architectures due to improper access.
 
-Fixes: 53bf2b0e4e4c ("firmware: ti_sci: Add support for getting resource with subtype")
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Signed-off-by: Nishanth Menon <nm@ti.com>
-Link: https://lore.kernel.org/r/e6c3cb793e1a6a2a0ae2528d5a5650dfe6a4b6ff.1640276505.git.christophe.jaillet@wanadoo.fr
+Fixes: af612e43de6d ("lib/vsprintf: Add support for printing V4L2 and DRM fourccs")
+Cc: Sakari Ailus <sakari.ailus@linux.intel.com>
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Reviewed-by: Petr Mladek <pmladek@suse.com>
+Signed-off-by: Petr Mladek <pmladek@suse.com>
+Link: https://lore.kernel.org/r/20220127181233.72910-1-andriy.shevchenko@linux.intel.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/linux/soc/ti/ti_sci_protocol.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ lib/vsprintf.c | 12 +++++++-----
+ 1 file changed, 7 insertions(+), 5 deletions(-)
 
-diff --git a/include/linux/soc/ti/ti_sci_protocol.h b/include/linux/soc/ti/ti_sci_protocol.h
-index 0aad7009b50e..bd0d11af76c5 100644
---- a/include/linux/soc/ti/ti_sci_protocol.h
-+++ b/include/linux/soc/ti/ti_sci_protocol.h
-@@ -645,7 +645,7 @@ devm_ti_sci_get_of_resource(const struct ti_sci_handle *handle,
+diff --git a/lib/vsprintf.c b/lib/vsprintf.c
+index 58d5e567f836..01e61c85f274 100644
+--- a/lib/vsprintf.c
++++ b/lib/vsprintf.c
+@@ -49,6 +49,7 @@
  
- static inline struct ti_sci_resource *
- devm_ti_sci_get_resource(const struct ti_sci_handle *handle, struct device *dev,
--			 u32 dev_id, u32 sub_type);
-+			 u32 dev_id, u32 sub_type)
- {
- 	return ERR_PTR(-EINVAL);
- }
+ #include <asm/page.h>		/* for PAGE_SIZE */
+ #include <asm/byteorder.h>	/* cpu_to_le16 */
++#include <asm/unaligned.h>
+ 
+ #include <linux/string_helpers.h>
+ #include "kstrtox.h"
+@@ -1771,7 +1772,7 @@ char *fourcc_string(char *buf, char *end, const u32 *fourcc,
+ 	char output[sizeof("0123 little-endian (0x01234567)")];
+ 	char *p = output;
+ 	unsigned int i;
+-	u32 val;
++	u32 orig, val;
+ 
+ 	if (fmt[1] != 'c' || fmt[2] != 'c')
+ 		return error_string(buf, end, "(%p4?)", spec);
+@@ -1779,21 +1780,22 @@ char *fourcc_string(char *buf, char *end, const u32 *fourcc,
+ 	if (check_pointer(&buf, end, fourcc, spec))
+ 		return buf;
+ 
+-	val = *fourcc & ~BIT(31);
++	orig = get_unaligned(fourcc);
++	val = orig & ~BIT(31);
+ 
+-	for (i = 0; i < sizeof(*fourcc); i++) {
++	for (i = 0; i < sizeof(u32); i++) {
+ 		unsigned char c = val >> (i * 8);
+ 
+ 		/* Print non-control ASCII characters as-is, dot otherwise */
+ 		*p++ = isascii(c) && isprint(c) ? c : '.';
+ 	}
+ 
+-	strcpy(p, *fourcc & BIT(31) ? " big-endian" : " little-endian");
++	strcpy(p, orig & BIT(31) ? " big-endian" : " little-endian");
+ 	p += strlen(p);
+ 
+ 	*p++ = ' ';
+ 	*p++ = '(';
+-	p = special_hex_number(p, output + sizeof(output) - 2, *fourcc, sizeof(u32));
++	p = special_hex_number(p, output + sizeof(output) - 2, orig, sizeof(u32));
+ 	*p++ = ')';
+ 	*p = '\0';
+ 
 -- 
 2.34.1
 
