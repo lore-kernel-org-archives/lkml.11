@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B0789C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 13:22:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C1A40C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 13:22:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1387471AbiDENPO (ORCPT
+        id S1388354AbiDENWC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 09:15:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51030 "EHLO
+        Tue, 5 Apr 2022 09:22:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34656 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344267AbiDEJTD (ORCPT
+        with ESMTP id S1344414AbiDEJTz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:19:03 -0400
+        Tue, 5 Apr 2022 05:19:55 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0A1E220DE;
-        Tue,  5 Apr 2022 02:06:34 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBBEF31D;
+        Tue,  5 Apr 2022 02:08:11 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7FFD461571;
-        Tue,  5 Apr 2022 09:06:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8C039C385A1;
-        Tue,  5 Apr 2022 09:06:33 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8345861572;
+        Tue,  5 Apr 2022 09:08:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 94089C385A1;
+        Tue,  5 Apr 2022 09:08:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649149593;
-        bh=hUw5GvYClpR87kollzuNvmjc3unATiZOHiuZijPqx/s=;
+        s=korg; t=1649149690;
+        bh=SCgcK3ystEM4p5FUpeXZzCOdyVTPsuyCpDS+LaZ2TR0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KaFJ2kWx1a7RhTHQy1JrDDFcTuIIzkbQlDmEjKCRvJAfaG4R4FBqWjtsAr5y67KKB
-         3Xp8mIkWfyapmUYMzg4k1/DsPS9roWt42ssgWcPyfWQ8GGr7md05RHE/Rlm5mBQiQ7
-         njr2dOFa5k0cmmNWu9dTmd8c0DiFCf5g/mjXmQr0=
+        b=Mvb2DAQAbAERBVf1+pXaKUJEPV6DSYom5Fj7iC2LggsGsGWR5PxR72L015T7fMeck
+         95W5SYFS+fX4/ErcIT4xA7IALMDtoTxJCzWhVJMaQNzTSegOmSuHxvlQZEj6rIYMfm
+         hoPzB6l1zJnH4+dvNgI7yS+3asJHylBquJrTnfeQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        "Souptick Joarder (HPE)" <jrdr.linux@gmail.com>,
-        Marc Zyngier <maz@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0771/1017] irqchip/nvic: Release nvic_base upon failure
-Date:   Tue,  5 Apr 2022 09:28:04 +0200
-Message-Id: <20220405070417.145962088@linuxfoundation.org>
+        stable@vger.kernel.org, Peiwei Hu <jlu.hpw@foxmail.com>,
+        Sean Young <sean@mess.org>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 0807/1017] media: ir_toy: free before error exiting
+Date:   Tue,  5 Apr 2022 09:28:40 +0200
+Message-Id: <20220405070418.203293205@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -51,48 +51,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Souptick Joarder (HPE) <jrdr.linux@gmail.com>
+From: Peiwei Hu <jlu.hpw@foxmail.com>
 
-[ Upstream commit e414c25e3399b2b3d7337dc47abccab5c71b7c8f ]
+[ Upstream commit 52cdb013036391d9d87aba5b4fc49cdfc6ea4b23 ]
 
-smatch warning was reported as below ->
+Fix leak in error path.
 
-smatch warnings:
-drivers/irqchip/irq-nvic.c:131 nvic_of_init()
-warn: 'nvic_base' not released on lines: 97.
-
-Release nvic_base upon failure.
-
-Reported-by: kernel test robot <lkp@intel.com>
-Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
-Signed-off-by: Souptick Joarder (HPE) <jrdr.linux@gmail.com>
-Signed-off-by: Marc Zyngier <maz@kernel.org>
-Link: https://lore.kernel.org/r/20220218163303.33344-1-jrdr.linux@gmail.com
+Signed-off-by: Peiwei Hu <jlu.hpw@foxmail.com>
+Signed-off-by: Sean Young <sean@mess.org>
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/irqchip/irq-nvic.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/media/rc/ir_toy.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/irqchip/irq-nvic.c b/drivers/irqchip/irq-nvic.c
-index ba4759b3e269..94230306e0ee 100644
---- a/drivers/irqchip/irq-nvic.c
-+++ b/drivers/irqchip/irq-nvic.c
-@@ -107,6 +107,7 @@ static int __init nvic_of_init(struct device_node *node,
- 
- 	if (!nvic_irq_domain) {
- 		pr_warn("Failed to allocate irq domain\n");
-+		iounmap(nvic_base);
- 		return -ENOMEM;
+diff --git a/drivers/media/rc/ir_toy.c b/drivers/media/rc/ir_toy.c
+index 7e98e7e3aace..196806709259 100644
+--- a/drivers/media/rc/ir_toy.c
++++ b/drivers/media/rc/ir_toy.c
+@@ -458,7 +458,7 @@ static int irtoy_probe(struct usb_interface *intf,
+ 	err = usb_submit_urb(irtoy->urb_in, GFP_KERNEL);
+ 	if (err != 0) {
+ 		dev_err(irtoy->dev, "fail to submit in urb: %d\n", err);
+-		return err;
++		goto free_rcdev;
  	}
  
-@@ -116,6 +117,7 @@ static int __init nvic_of_init(struct device_node *node,
- 	if (ret) {
- 		pr_warn("Failed to allocate irq chips\n");
- 		irq_domain_remove(nvic_irq_domain);
-+		iounmap(nvic_base);
- 		return ret;
- 	}
- 
+ 	err = irtoy_setup(irtoy);
 -- 
 2.34.1
 
