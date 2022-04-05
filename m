@@ -2,540 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6571FC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 02:45:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F247C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 02:46:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230195AbiDECq6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 22:46:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44778 "EHLO
+        id S230131AbiDECsU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 4 Apr 2022 22:48:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40496 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230507AbiDECq0 (ORCPT
+        with ESMTP id S230113AbiDECqH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 22:46:26 -0400
-Received: from mail-pl1-x632.google.com (mail-pl1-x632.google.com [IPv6:2607:f8b0:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 364431229A8;
-        Mon,  4 Apr 2022 19:32:50 -0700 (PDT)
-Received: by mail-pl1-x632.google.com with SMTP id y6so9741222plg.2;
-        Mon, 04 Apr 2022 19:32:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=vI1wpZOrZu49cdz2T/VmUys+7JrgZzqJM6m+nCLErpc=;
-        b=TZ2d0oG3XBk/UUfNXBjOZ7y1qMsM4Fa2EH1bIxiEXTqQgLd9YkmkSB6UJ7hwzhbATE
-         8uCzM9pum+4+GVwB+8f/iPmKApa6ke3q2bxSJJftCszHik5fx5rKL4qFKwoEeD4kFXEz
-         BFkHqzp7ajaLaO3DIcm15zXYAh+LKAzvfQZ/hql/VQA05/XkHflr6qUn+/W3mtJHXdcy
-         4mvrdEDpmqVzA+5pvbL+9kHBryZR3pzgAHfiMZhRcNYMpCIjWGV1N0A0GKZctcyHqnGi
-         kPr0fVmb0sQnd2UxxdBkonKiIZ0penexkFDiYwwEn9WqlykNGout6x3aq885umUd5nCN
-         wyAg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=vI1wpZOrZu49cdz2T/VmUys+7JrgZzqJM6m+nCLErpc=;
-        b=z+jZdEz+hjkYC4Q+JQzjIv5SSvyQGiDSdtEQLMeiSvxLQ4DC54o6G53eutQHNSwGrx
-         7MIYs43YsjHq9RdHZyvD9l9NYEKscMTqeCWMz2LkZWsEufUdOc+DEI5JM/6g3B19URLu
-         WbK8TqNMgDB4ZYKZZEmodOGTh+9KPV5o3tAOeOmhu6zwAcpgGh0JiqX51egp24LDL3Di
-         SbcmBRbSJOHgOsJ/T0DtzMZdI6KUAcYObu1mNoSMmOc8+3APHWelG7zRFrJjZnAiSRfl
-         WwxzrDSVHhRMPFEC7N7eQzbG4H9ZbLv8l/LeCptoAvuCC5yfupH1k+4HFwxyEFbFmEzD
-         EWSg==
-X-Gm-Message-State: AOAM53087PGr8bnW7agjEOl+TYEh+XxAXqI7BtsdfdFanW7o/G04oX6D
-        NxmGv9DMMoHdLgQ1A7OpWyNlKW8MNarsOA==
-X-Google-Smtp-Source: ABdhPJyCrPyiv/vX6oOk3TRa9n9KuP7AV7pOcmSRR1GDw53d+NiKNrrmL84SfE4wAKs9+kqQY+yV+g==
-X-Received: by 2002:a17:90a:1941:b0:1ca:a28b:6744 with SMTP id 1-20020a17090a194100b001caa28b6744mr1544320pjh.50.1649125969004;
-        Mon, 04 Apr 2022 19:32:49 -0700 (PDT)
-Received: from anyang ([106.250.177.234])
-        by smtp.gmail.com with ESMTPSA id k10-20020a056a00168a00b004f7e2a550ccsm13782641pfc.78.2022.04.04.19.32.46
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 04 Apr 2022 19:32:48 -0700 (PDT)
-Date:   Tue, 5 Apr 2022 11:32:44 +0900
-From:   Dongjin Kim <tobetter@gmail.com>
-To:     Krzysztof Kozlowski <krzk@kernel.org>
-Cc:     Heiko Stuebner <heiko@sntech.de>, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 2/2] arm64: dts: rockchip: Add Hardkernel ODROID-M1 board
-Message-ID: <YkuqTBAi8d48NAOR@anyang>
-References: <20220329094446.415219-1-tobetter@gmail.com>
- <20220329094446.415219-2-tobetter@gmail.com>
- <2a5f002f-8a61-e5b0-a574-ee99591c4c12@kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <2a5f002f-8a61-e5b0-a574-ee99591c4c12@kernel.org>
+        Mon, 4 Apr 2022 22:46:07 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C7303F7DC6
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 18:51:26 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8DF8260DF4
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 01:51:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B523FC2BBE4;
+        Tue,  5 Apr 2022 01:51:24 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linux-foundation.org;
+        s=korg; t=1649123485;
+        bh=FUZOU/Zn0+hZCBwK2e+4+p0g7CLULnGx2JfDvAvsADs=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=IpU2thuQeNKvYD6CYRgqr/cFuvGZb+Tpddf2ICMSZSIViQJXCFZVasjVw4SdeRjtt
+         31SDzw45/X1ijxvol2oA981Bgm0i6wvclpyzHJJG+j3PZOdD7plY8fD2ffvO/H2cjW
+         qXsjUWT/q4xsdAYI3mzSeGskOsTX8W8VwUnMLOgY=
+Date:   Mon, 4 Apr 2022 18:51:23 -0700
+From:   Andrew Morton <akpm@linux-foundation.org>
+To:     HORIGUCHI =?UTF-8?B?TkFPWUE=?= (=?UTF-8?B?5aCA5Y+j44CA55u05Lmf?=) 
+        <naoya.horiguchi@nec.com>
+Cc:     Naoya Horiguchi <naoya.horiguchi@linux.dev>,
+        "linux-mm@kvack.org" <linux-mm@kvack.org>,
+        Mike Kravetz <mike.kravetz@oracle.com>,
+        Miaohe Lin <linmiaohe@huawei.com>,
+        Yang Shi <shy828301@gmail.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v6] mm/hwpoison: fix race between hugetlb free/demotion
+ and memory_failure_hugetlb()
+Message-Id: <20220404185123.5be4389d99a0e4665a775da1@linux-foundation.org>
+In-Reply-To: <20220405014544.GA2583652@hori.linux.bs1.fc.nec.co.jp>
+References: <20220404092131.751733-1-naoya.horiguchi@linux.dev>
+        <20220404115333.8cf80b9d3a7a55993ed60c57@linux-foundation.org>
+        <20220405014544.GA2583652@hori.linux.bs1.fc.nec.co.jp>
+X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.33; x86_64-redhat-linux-gnu)
+Mime-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Mar 29, 2022 at 07:12:16PM +0200, Krzysztof Kozlowski wrote:
-> On 29/03/2022 11:44, Dongjin Kim wrote:
-> > This patch is to add a device tree for new board Hardkernel ODROID-M1
-> > based on Rockchip RK3568, includes basic peripherals -
-> > uart/eMMC/uSD/i2c and on-board ethernet.
-> 
-> I think the email got corrupted (incorrect To addresses).
-> 
-Thank you for reviewing and sorry for late reply.
+On Tue, 5 Apr 2022 01:45:45 +0000 HORIGUCHI NAOYA(堀口　直也) <naoya.horiguchi@nec.com> wrote:
+
+> On Mon, Apr 04, 2022 at 11:53:33AM -0700, Andrew Morton wrote:
+> > On Mon,  4 Apr 2022 18:21:31 +0900 Naoya Horiguchi <naoya.horiguchi@linux.dev> wrote:
 > > 
-> > Signed-off-by: Dongjin Kim <tobetter@gmail.com>
-> > ---
-> >  arch/arm64/boot/dts/rockchip/Makefile         |   1 +
-> >  .../boot/dts/rockchip/rk3568-odroid-m1.dts    | 406 ++++++++++++++++++
-> >  2 files changed, 407 insertions(+)
-> >  create mode 100644 arch/arm64/boot/dts/rockchip/rk3568-odroid-m1.dts
+> > > There is a race condition between memory_failure_hugetlb() and hugetlb
+> > > free/demotion, which causes setting PageHWPoison flag on the wrong page.
+> > > The one simple result is that wrong processes can be killed, but another
+> > > (more serious) one is that the actual error is left unhandled, so no one
+> > > prevents later access to it, and that might lead to more serious results
+> > > like consuming corrupted data.
 > > 
-> > diff --git a/arch/arm64/boot/dts/rockchip/Makefile b/arch/arm64/boot/dts/rockchip/Makefile
-> > index 4ae9f35434b8..81d160221227 100644
-> > --- a/arch/arm64/boot/dts/rockchip/Makefile
-> > +++ b/arch/arm64/boot/dts/rockchip/Makefile
-> > @@ -61,3 +61,4 @@ dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3566-pinenote-v1.2.dtb
-> >  dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3566-quartz64-a.dtb
-> >  dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3568-evb1-v10.dtb
-> >  dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3568-bpi-r2-pro.dtb
-> > +dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3568-odroid-m1.dtb
-> > diff --git a/arch/arm64/boot/dts/rockchip/rk3568-odroid-m1.dts b/arch/arm64/boot/dts/rockchip/rk3568-odroid-m1.dts
-> > new file mode 100644
-> > index 000000000000..d1a5d43127e9
-> > --- /dev/null
-> > +++ b/arch/arm64/boot/dts/rockchip/rk3568-odroid-m1.dts
-> > @@ -0,0 +1,406 @@
-> > +// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
-> > +/*
-> > + * Copyright (c) 2022 Hardkernel Co., Ltd.
-> > + *
-> > + */
-> > +
-> > +/dts-v1/;
-> > +#include <dt-bindings/gpio/gpio.h>
-> > +#include <dt-bindings/leds/common.h>
-> > +#include <dt-bindings/pinctrl/rockchip.h>
-> > +#include "rk3568.dtsi"
-> > +
-> > +/ {
-> > +	model = "Hardkernel ODROID-M1";
-> > +	compatible = "rockchip,rk3568-odroid-m1", "rockchip,rk3568";
-> > +
-> > +	aliases {
-> > +		ethernet0 = &gmac0;
-> > +		i2c0 = &i2c3;
-> > +		i2c3 = &i2c0;
-> > +		mmc0 = &sdhci;
-> > +		mmc1 = &sdmmc0;
-> > +		serial0 = &uart1;
-> > +		serial1 = &uart0;
-> > +	};
-> > +
-> > +	chosen: chosen {
+> > Should this fix be backported into stable kernels?
 > 
-> No need for label.
+> This is a bug fix, so eligible to send to stable. But I thought that this
+> patch is larger than 100 lines (and hard to separeter to finer patches),
+> which seems to violate the rule stated in
+> Documentation/process/stable-kernel-rules.rst.
 > 
-Ok. Will fix it.
-> > +		stdout-path = "serial2:1500000n8";
-> > +	};
-> > +
-> > +	dc_12v: dc-12v {
-> 
-> Generic node name, so "regulator" or "regulator-0"
-> 
-I've followed the node names as already merged device tree files
-for other boards and thought this would be acceptable. Same for other
-node names 'vcc3v3-sys' and node names with underscore below.
-> > +		compatible = "regulator-fixed";
-> > +		regulator-name = "dc_12v";
-> > +		regulator-always-on;
-> > +		regulator-boot-on;
-> > +		regulator-min-microvolt = <12000000>;
-> > +		regulator-max-microvolt = <12000000>;
-> > +	};
-> > +
-> > +	leds: leds {
-> 
-> Label seems unused.
-> 
-Ok, will fix it.
-> > +		compatible = "gpio-leds";
-> > +
-> > +		led_power: led-0 {
-> > +			gpios = <&gpio0 RK_PC6 GPIO_ACTIVE_LOW>;
-> > +			function = LED_FUNCTION_POWER;
-> > +			color = <LED_COLOR_ID_RED>;
-> > +			linux,default-trigger = "default-on";
-> > +			pinctrl-names = "default";
-> > +			pinctrl-0 = <&led_power_en>;
-> > +		};
-> > +		led_work: led-1 {
-> > +			gpios = <&gpio0 RK_PB7 GPIO_ACTIVE_HIGH>;
-> > +			function = LED_FUNCTION_HEARTBEAT;
-> > +			color = <LED_COLOR_ID_BLUE>;
-> > +			linux,default-trigger = "heartbeat";
-> > +			pinctrl-names = "default";
-> > +			pinctrl-0 = <&led_work_en>;
-> > +		};
-> > +	};
-> > +
-> > +	vcc3v3_sys: vcc3v3-sys {
-> 
-> Generic node name.
-> 
-> > +		compatible = "regulator-fixed";
-> > +		regulator-name = "vcc3v3_sys";
-> > +		regulator-always-on;
-> > +		regulator-boot-on;
-> > +		regulator-min-microvolt = <3300000>;
-> > +		regulator-max-microvolt = <3300000>;
-> > +		vin-supply = <&dc_12v>;
-> > +	};
-> > +};
-> > +
-> > +&cpu0 {
-> > +	cpu-supply = <&vdd_cpu>;
-> > +};
-> > +
-> > +&cpu1 {
-> > +	cpu-supply = <&vdd_cpu>;
-> > +};
-> > +
-> > +&cpu2 {
-> > +	cpu-supply = <&vdd_cpu>;
-> > +};
-> > +
-> > +&cpu3 {
-> > +	cpu-supply = <&vdd_cpu>;
-> > +};
-> > +
-> > +&gmac0 {
-> > +	assigned-clocks = <&cru SCLK_GMAC0_RX_TX>, <&cru SCLK_GMAC0>;
-> > +	assigned-clock-parents = <&cru SCLK_GMAC0_RGMII_SPEED>;
-> > +	assigned-clock-rates = <0>, <125000000>;
-> > +	clock_in_out = "output";
-> > +	phy-handle = <&rgmii_phy0>;
-> > +	phy-mode = "rgmii";
-> > +	pinctrl-names = "default";
-> > +	pinctrl-0 = <&gmac0_miim
-> > +		     &gmac0_tx_bus2
-> > +		     &gmac0_rx_bus2
-> > +		     &gmac0_rgmii_clk
-> > +		     &gmac0_rgmii_bus>;
-> > +	status = "okay";
-> > +
-> > +	tx_delay = <0x4f>;
-> > +	rx_delay = <0x2d>;
-> > +};
-> > +
-> > +&i2c0 {
-> > +	status = "okay";
-> > +
-> > +	vdd_cpu: regulator@1c {
-> > +		compatible = "tcs,z`";
-> > +		reg = <0x1c>;
-> > +		 fcs,suspend-voltage-selector = <1>;
-> 
-> Mixed up indentation.
-> 
-Sorry, my bad. Will fix it.
-> > +		 regulator-name = "vdd_cpu";
-> > +		 regulator-always-on;
-> > +		 regulator-boot-on;
-> > +		 regulator-min-microvolt = <800000>;
-> > +		 regulator-max-microvolt = <1150000>;
-> > +		 regulator-ramp-delay = <2300>;
-> > +		 vin-supply = <&vcc3v3_sys>;
-> > +
-> > +		 regulator-state-mem {
-> > +			 regulator-off-in-suspend;
-> > +		};
-> > +	};
-> > +
-> > +	rk809: pmic@20 {
-> > +		compatible = "rockchip,rk809";
-> > +		reg = <0x20>;
-> > +		interrupt-parent = <&gpio0>;
-> > +		interrupts = <RK_PA3 IRQ_TYPE_LEVEL_LOW>;
-> > +		#clock-cells = <1>;
-> > +		pinctrl-names = "default";
-> > +		pinctrl-0 = <&pmic_int>;
-> > +		rockchip,system-power-controller;
-> > +		vcc1-supply = <&vcc3v3_sys>;
-> > +		vcc2-supply = <&vcc3v3_sys>;
-> > +		vcc3-supply = <&vcc3v3_sys>;
-> > +		vcc4-supply = <&vcc3v3_sys>;
-> > +		vcc5-supply = <&vcc3v3_sys>;
-> > +		vcc6-supply = <&vcc3v3_sys>;
-> > +		vcc7-supply = <&vcc3v3_sys>;
-> > +		vcc8-supply = <&vcc3v3_sys>;
-> > +		vcc9-supply = <&vcc3v3_sys>;
-> > +		wakeup-source;
-> > +
-> > +		regulators {
-> > +			vdd_logic: DCDC_REG1 {
-> 
-> No underscores in node names, unless anything requires it.
-> 
-> > +				regulator-name = "vdd_logic";
-> > +				regulator-always-on;
-> > +				regulator-boot-on;
-> > +				regulator-init-microvolt = <900000>;
-> > +				regulator-initial-mode = <0x2>;
-> > +				regulator-min-microvolt = <500000>;
-> > +				regulator-max-microvolt = <1350000>;
-> > +				regulator-ramp-delay = <6001>;
-> > +
-> > +				regulator-state-mem {
-> > +					regulator-off-in-suspend;
-> > +				};
-> > +			};
-> > +
-> > +			vdd_gpu: DCDC_REG2 {
-> > +				regulator-name = "vdd_gpu";
-> > +				regulator-init-microvolt = <900000>;
-> > +				regulator-initial-mode = <0x2>;
-> > +				regulator-min-microvolt = <500000>;
-> > +				regulator-max-microvolt = <1350000>;
-> > +				regulator-ramp-delay = <6001>;
-> > +
-> > +				regulator-state-mem {
-> > +					regulator-off-in-suspend;
-> > +				};
-> > +			};
-> > +
-> > +			vcc_ddr: DCDC_REG3 {
-> > +				regulator-name = "vcc_ddr";
-> > +				regulator-always-on;
-> > +				regulator-boot-on;
-> > +				regulator-initial-mode = <0x2>;
-> > +
-> > +				regulator-state-mem {
-> > +					regulator-on-in-suspend;
-> > +				};
-> > +			};
-> > +
-> > +			vdd_npu: DCDC_REG4 {
-> > +				regulator-name = "vdd_npu";
-> > +				regulator-init-microvolt = <900000>;
-> > +				regulator-initial-mode = <0x2>;
-> > +				regulator-min-microvolt = <500000>;
-> > +				regulator-max-microvolt = <1350000>;
-> > +				regulator-ramp-delay = <6001>;
-> > +
-> > +				regulator-state-mem {
-> > +					regulator-off-in-suspend;
-> > +				};
-> > +			};
-> > +
-> > +			vcc_1v8: DCDC_REG5 {
-> > +				regulator-name = "vcc_1v8";
-> > +				regulator-always-on;
-> > +				regulator-boot-on;
-> > +				regulator-min-microvolt = <1800000>;
-> > +				regulator-max-microvolt = <1800000>;
-> > +
-> > +				regulator-state-mem {
-> > +					regulator-off-in-suspend;
-> > +				};
-> > +			};
-> > +
-> > +			vdda0v9_image: LDO_REG1 {
-> > +				regulator-name = "vdda0v9_image";
-> > +				regulator-min-microvolt = <900000>;
-> > +				regulator-max-microvolt = <900000>;
-> > +
-> > +				regulator-state-mem {
-> > +					regulator-off-in-suspend;
-> > +				};
-> > +			};
-> > +
-> > +			vdda_0v9: LDO_REG2 {
-> > +				regulator-name = "vdda_0v9";
-> > +				regulator-always-on;
-> > +				regulator-boot-on;
-> > +				regulator-min-microvolt = <900000>;
-> > +				regulator-max-microvolt = <900000>;
-> > +
-> > +				regulator-state-mem {
-> > +					regulator-off-in-suspend;
-> > +				};
-> > +			};
-> > +
-> > +			vdda0v9_pmu: LDO_REG3 {
-> > +				regulator-name = "vdda0v9_pmu";
-> > +				regulator-always-on;
-> > +				regulator-boot-on;
-> > +				regulator-min-microvolt = <900000>;
-> > +				regulator-max-microvolt = <900000>;
-> > +
-> > +				regulator-state-mem {
-> > +					regulator-on-in-suspend;
-> > +					regulator-suspend-microvolt = <900000>;
-> > +				};
-> > +			};
-> > +
-> > +			vccio_acodec: LDO_REG4 {
-> > +				regulator-name = "vccio_acodec";
-> > +				regulator-min-microvolt = <3300000>;
-> > +				regulator-max-microvolt = <3300000>;
-> > +
-> > +				regulator-state-mem {
-> > +					regulator-off-in-suspend;
-> > +				};
-> > +			};
-> > +
-> > +			vccio_sd: LDO_REG5 {
-> > +				regulator-name = "vccio_sd";
-> > +				regulator-min-microvolt = <1800000>;
-> > +				regulator-max-microvolt = <3300000>;
-> > +
-> > +				regulator-state-mem {
-> > +					regulator-off-in-suspend;
-> > +				};
-> > +			};
-> > +
-> > +			vcc3v3_pmu: LDO_REG6 {
-> > +				regulator-name = "vcc3v3_pmu";
-> > +				regulator-always-on;
-> > +				regulator-boot-on;
-> > +				regulator-min-microvolt = <3300000>;
-> > +				regulator-max-microvolt = <3300000>;
-> > +
-> > +				regulator-state-mem {
-> > +					regulator-on-in-suspend;
-> > +					regulator-suspend-microvolt = <3300000>;
-> > +				};
-> > +			};
-> > +
-> > +			vcca_1v8: LDO_REG7 {
-> > +				regulator-name = "vcca_1v8";
-> > +				regulator-always-on;
-> > +				regulator-boot-on;
-> > +				regulator-min-microvolt = <1800000>;
-> > +				regulator-max-microvolt = <1800000>;
-> > +
-> > +				regulator-state-mem {
-> > +					regulator-off-in-suspend;
-> > +				};
-> > +			};
-> > +
-> > +			vcca1v8_pmu: LDO_REG8 {
-> > +				regulator-name = "vcca1v8_pmu";
-> > +				regulator-always-on;
-> > +				regulator-boot-on;
-> > +				regulator-min-microvolt = <1800000>;
-> > +				regulator-max-microvolt = <1800000>;
-> > +
-> > +				regulator-state-mem {
-> > +					regulator-on-in-suspend;
-> > +					regulator-suspend-microvolt = <1800000>;
-> > +				};
-> > +			};
-> > +
-> > +			vcca1v8_image: LDO_REG9 {
-> > +				regulator-name = "vcca1v8_image";
-> > +				regulator-min-microvolt = <1800000>;
-> > +				regulator-max-microvolt = <1800000>;
-> > +
-> > +				regulator-state-mem {
-> > +					regulator-off-in-suspend;
-> > +				};
-> > +			};
-> > +
-> > +			vcc_3v3: SWITCH_REG1 {
-> > +				regulator-name = "vcc_3v3";
-> > +				regulator-always-on;
-> > +				regulator-boot-on;
-> > +
-> > +				regulator-state-mem {
-> > +					regulator-off-in-suspend;
-> > +				};
-> > +			};
-> > +
-> > +			vcc3v3_sd: SWITCH_REG2 {
-> > +				regulator-name = "vcc3v3_sd";
-> > +
-> > +				regulator-state-mem {
-> > +					regulator-off-in-suspend;
-> > +				};
-> > +			};
-> > +		};
-> > +	};
-> > +};
-> > +
-> > +&mdio0 {
-> > +	rgmii_phy0: ethernet-phy@0 {
-> > +		compatible = "ethernet-phy-ieee802.3-c22";
-> > +		reg = <0x0>;
-> > +		reset-assert-us = <20000>;
-> > +		reset-deassert-us = <100000>;
-> > +		reset-gpios = <&gpio3 RK_PB7 GPIO_ACTIVE_LOW>;
-> > +	};
-> > +};
-> > +
-> > +&pinctrl {
-> > +	leds {
-> > +		led_power_en: led_power_en {
-> 
-> No underscores in node names. Do bindings require specific naming? I
-> would expect "-grp" or "-pins" suffixes, if possible.
-> 
-> > +			rockchip,pins = <0 RK_PC6 RK_FUNC_GPIO &pcfg_pull_none>;
-> > +		};
-> > +		led_work_en: led_work_en {
-> > +			rockchip,pins = <0 RK_PB7 RK_FUNC_GPIO &pcfg_pull_none>;
-> > +		};
-> > +	};
-> > +
-> > +	pmic {
-> > +		pmic_int: pmic_int {
-> > +			rockchip,pins =
-> > +				<0 RK_PA3 RK_FUNC_GPIO &pcfg_pull_up>;
-> > +		};
-> > +	};
-> > +};
-> > +
-> > +&pmu_io_domains {
-> > +	pmuio1-supply = <&vcc3v3_pmu>;
-> > +	pmuio2-supply = <&vcc3v3_pmu>;
-> > +	vccio1-supply = <&vccio_acodec>;
-> > +	vccio2-supply = <&vcc_1v8>;
-> > +	vccio3-supply = <&vccio_sd>;
-> > +	vccio4-supply = <&vcc_1v8>;
-> > +	vccio5-supply = <&vcc_3v3>;
-> > +	vccio6-supply = <&vcc_3v3>;
-> > +	vccio7-supply = <&vcc_3v3>;
-> > +	status = "okay";
-> > +};
-> > +
-> > +&saradc {
-> > +	vref-supply = <&vcca_1v8>;
-> > +	status = "okay";
-> > +};
-> > +
-> > +&sdhci {
-> > +	bus-width = <8>;
-> > +	max-frequency = <200000000>;
-> > +	non-removable;
-> > +	pinctrl-names = "default";
-> > +	pinctrl-0 = <&emmc_bus8 &emmc_clk &emmc_cmd &emmc_datastrobe &emmc_rstnout>;
-> > +	status = "okay";
-> > +};
-> > +
-> > +&sdmmc0 {
-> > +	bus-width = <4>;
-> > +	cap-sd-highspeed;
-> > +	cd-gpios = <&gpio0 RK_PA4 GPIO_ACTIVE_LOW>;
-> > +	disable-wp;
-> > +	pinctrl-names = "default";
-> > +	pinctrl-0 = <&sdmmc0_bus4 &sdmmc0_clk &sdmmc0_cmd &sdmmc0_det>;
-> > +	sd-uhs-sdr104;
-> > +	vmmc-supply = <&vcc3v3_sd>;
-> > +	vqmmc-supply = <&vccio_sd>;
-> > +	status = "okay";
-> > +};
-> > +
-> > +&uart2 {
-> > +	status = "okay";
-> > +};
-> 
-> 
-> Best regards,
-> Krzysztof
-Thank you,
-Dongjin.
+> But actually this rule might not be strictly applied (some patches in
+> v5.16.y do have more than 100 lines diff...). So if we can ignore this rule
+> exceptionally, that's OK and I'll add CC to stable again.
+
+I never actually knew about that rule ;)
+
+Thanks, I added the cc:stable.
+
+> The target commit of Fixed: tag is 761ad8d7c7b5 ("mm: hwpoison: introduce
+> memory_failure_hugetlb()") which was introduced in 4.13, so most of active
+> stable trees are affected.
+
+Oh. That's good to know.  The original patch didn't have a Fixes: line.
+I added that as well.
+
