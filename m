@@ -2,46 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E7A27C4167B
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 21:37:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EF361C47080
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 21:37:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382805AbiDEVjD (ORCPT
+        id S1381524AbiDEViD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 17:39:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50352 "EHLO
+        Tue, 5 Apr 2022 17:38:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45146 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357345AbiDEK0M (ORCPT
+        with ESMTP id S1354452AbiDEKOQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:26:12 -0400
+        Tue, 5 Apr 2022 06:14:16 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9EB3E26113;
-        Tue,  5 Apr 2022 03:10:05 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38C2269CF7;
+        Tue,  5 Apr 2022 03:00:03 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2FA76B81C89;
-        Tue,  5 Apr 2022 10:10:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 73127C385A2;
-        Tue,  5 Apr 2022 10:10:02 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C76E6B81C8B;
+        Tue,  5 Apr 2022 10:00:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 16E9CC385A2;
+        Tue,  5 Apr 2022 09:59:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649153402;
-        bh=mZk2psXy97dchWY0tRiHFtmTMkelF8bEegKOKzPvBsY=;
+        s=korg; t=1649152800;
+        bh=/MJv/HabMeOOpo77f3rdPIfuw68ubruu6J3fo5Cw0l8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0wcpXL4vUz7yszUjzN/VMukwdAPm3rhAq34bQclMV7kLMhh+Q9k3fMZMsx2CM6/fw
-         iqmPEytGiVLNVvtx9T2siCYRCsP2lfzZBcmgMqSIJSNpe9Cs91phpUjLslKQqgrXf/
-         XLNBjRvOgdUbXmZxbNGzm3ZIRVM+MjEQW2X8E7Rc=
+        b=voA7g3ChMYy3zZ5auKW6pp10bxNptr7lt68VpgA/86hxiz0uZ7pyJY4fp/hDDOVdk
+         fV5cbJhwqi/Xu8fh9kAMtdnU9adh6cCPpP7ol3Zae1PnLDH77LrD9v5TN8UoMGBCny
+         jdnEgz+x4gbTn41WT+c3rc7m4+l9dsllzEnOMm2I=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Nishanth Menon <nm@ti.com>, Dave Gerlach <d-gerlach@ti.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 211/599] soc: ti: wkup_m3_ipc: Fix IRQ check in wkup_m3_ipc_probe
-Date:   Tue,  5 Apr 2022 09:28:25 +0200
-Message-Id: <20220405070305.120035002@linuxfoundation.org>
+        stable@vger.kernel.org, David Stevens <stevensd@chromium.org>,
+        Christoph Hellwig <hch@lst.de>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Joerg Roedel <jroedel@suse.de>,
+        Mario Limonciello <Mario.Limonciello@amd.com>
+Subject: [PATCH 5.15 905/913] iommu/dma: Skip extra sync during unmap w/swiotlb
+Date:   Tue,  5 Apr 2022 09:32:47 +0200
+Message-Id: <20220405070406.946278545@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,47 +52,65 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: David Stevens <stevensd@chromium.org>
 
-[ Upstream commit c3d66a164c726cc3b072232d3b6d87575d194084 ]
+commit ee9d4097cc145dcaebedf6b113d17c91c21333a0 upstream.
 
-platform_get_irq() returns negative error number instead 0 on failure.
-And the doc of platform_get_irq() provides a usage example:
+Calling the iommu_dma_sync_*_for_cpu functions during unmap can cause
+two copies out of the swiotlb buffer. Do the arch sync directly in
+__iommu_dma_unmap_swiotlb instead to avoid this. This makes the call to
+iommu_dma_sync_sg_for_cpu for untrusted devices in iommu_dma_unmap_sg no
+longer necessary, so move that invocation later in the function.
 
-    int irq = platform_get_irq(pdev, 0);
-    if (irq < 0)
-        return irq;
-
-Fix the check of return value to catch errors correctly.
-
-Fixes: cdd5de500b2c ("soc: ti: Add wkup_m3_ipc driver")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Signed-off-by: Nishanth Menon <nm@ti.com>
-Acked-by: Dave Gerlach <d-gerlach@ti.com>
-Link: https://lore.kernel.org/r/20220114062840.16620-1-linmq006@gmail.com
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: David Stevens <stevensd@chromium.org>
+Reviewed-by: Christoph Hellwig <hch@lst.de>
+Reviewed-by: Robin Murphy <robin.murphy@arm.com>
+Link: https://lore.kernel.org/r/20210929023300.335969-4-stevensd@google.com
+Signed-off-by: Joerg Roedel <jroedel@suse.de>
+Cc: Mario Limonciello <Mario.Limonciello@amd.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/soc/ti/wkup_m3_ipc.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/iommu/dma-iommu.c |   11 ++++++-----
+ 1 file changed, 6 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/soc/ti/wkup_m3_ipc.c b/drivers/soc/ti/wkup_m3_ipc.c
-index e9ece45d7a33..ef3f95fefab5 100644
---- a/drivers/soc/ti/wkup_m3_ipc.c
-+++ b/drivers/soc/ti/wkup_m3_ipc.c
-@@ -447,9 +447,9 @@ static int wkup_m3_ipc_probe(struct platform_device *pdev)
+--- a/drivers/iommu/dma-iommu.c
++++ b/drivers/iommu/dma-iommu.c
+@@ -521,6 +521,9 @@ static void __iommu_dma_unmap_swiotlb(st
+ 	if (WARN_ON(!phys))
+ 		return;
+ 
++	if (!(attrs & DMA_ATTR_SKIP_CPU_SYNC) && !dev_is_dma_coherent(dev))
++		arch_sync_dma_for_cpu(phys, size, dir);
++
+ 	__iommu_dma_unmap(dev, dma_addr, size);
+ 
+ 	if (unlikely(is_swiotlb_buffer(dev, phys)))
+@@ -871,8 +874,6 @@ static dma_addr_t iommu_dma_map_page(str
+ static void iommu_dma_unmap_page(struct device *dev, dma_addr_t dma_handle,
+ 		size_t size, enum dma_data_direction dir, unsigned long attrs)
+ {
+-	if (!(attrs & DMA_ATTR_SKIP_CPU_SYNC))
+-		iommu_dma_sync_single_for_cpu(dev, dma_handle, size, dir);
+ 	__iommu_dma_unmap_swiotlb(dev, dma_handle, size, dir, attrs);
+ }
+ 
+@@ -1089,14 +1090,14 @@ static void iommu_dma_unmap_sg(struct de
+ 	struct scatterlist *tmp;
+ 	int i;
+ 
+-	if (!(attrs & DMA_ATTR_SKIP_CPU_SYNC))
+-		iommu_dma_sync_sg_for_cpu(dev, sg, nents, dir);
+-
+ 	if (dev_is_untrusted(dev)) {
+ 		iommu_dma_unmap_sg_swiotlb(dev, sg, nents, dir, attrs);
+ 		return;
  	}
  
- 	irq = platform_get_irq(pdev, 0);
--	if (!irq) {
-+	if (irq < 0) {
- 		dev_err(&pdev->dev, "no irq resource\n");
--		return -ENXIO;
-+		return irq;
- 	}
- 
- 	ret = devm_request_irq(dev, irq, wkup_m3_txev_handler,
--- 
-2.34.1
-
++	if (!(attrs & DMA_ATTR_SKIP_CPU_SYNC))
++		iommu_dma_sync_sg_for_cpu(dev, sg, nents, dir);
++
+ 	/*
+ 	 * The scatterlist segments are mapped into a single
+ 	 * contiguous IOVA allocation, so this is incredibly easy.
 
 
