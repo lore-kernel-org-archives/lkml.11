@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9AC18C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 38BF7C38162
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:56:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380555AbiDEMx6 (ORCPT
+        id S1380282AbiDEMxo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 08:53:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51034 "EHLO
+        Tue, 5 Apr 2022 08:53:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58194 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343802AbiDEJOP (ORCPT
+        with ESMTP id S1343739AbiDEJMm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:14:15 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 825F13DA53;
-        Tue,  5 Apr 2022 02:00:41 -0700 (PDT)
+        Tue, 5 Apr 2022 05:12:42 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A322636693;
+        Tue,  5 Apr 2022 02:00:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 35393B81A12;
-        Tue,  5 Apr 2022 09:00:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7EF54C385A0;
-        Tue,  5 Apr 2022 09:00:38 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4EF00B818F3;
+        Tue,  5 Apr 2022 09:00:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BC148C385A0;
+        Tue,  5 Apr 2022 09:00:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649149238;
-        bh=5dFCK/bwE+X+xrItH9sMlwXXPJaUtIAhj7mXcM9iEas=;
+        s=korg; t=1649149222;
+        bh=2xrrqqAmurLYBbNH7gEODCEGzcqKSrwq1J93E5yRers=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1LLRPp4gfYMklETkqAg+h745PHFvPKw2uUS4oYv09soX9C6H8NgzmKrqT16Pog2kP
-         HXfH4ATRV/R+xJhq+luQFOANuZLkcfDjgZN6lq5FC9BZe57CKzu9PPcHEHYqjz2Lfi
-         1e6rw5Fp3MKnGHt24dbHj3PWx3V7qnQYDpgA7mQY=
+        b=hbquNh/X0cuSG1GuBo4SB0L8bCCt4IM1i6DWZLoi/13O6YxSW3IKcc0GigcvAO6np
+         OvjGEJbHR9uMtZx0IIZA2uTnzAO2Yuy4oJcyq9NnbNvuZZjIzI81XVExWGiw6htcpU
+         ec1LacT4TuNJgLm6gXjkerOkDG3AYLyNFgaCqqUo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
-        Joel Stanley <joel@jms.id.au>,
-        Eddie James <eajames@linux.ibm.com>,
+        stable@vger.kernel.org, Jan Sondhauss <jan.sondhauss@wago.com>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0645/1017] fsi: scom: Fix error handling
-Date:   Tue,  5 Apr 2022 09:25:58 +0200
-Message-Id: <20220405070413.429006117@linuxfoundation.org>
+Subject: [PATCH 5.16 0639/1017] drivers: ethernet: cpsw: fix panic when interrupt coaleceing is set via ethtool
+Date:   Tue,  5 Apr 2022 09:25:52 +0200
+Message-Id: <20220405070413.250573972@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -51,68 +51,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Joel Stanley <joel@jms.id.au>
+From: Sondhauß, Jan <Jan.Sondhauss@wago.com>
 
-[ Upstream commit d46fddd52d11eb6a3a7ed836f9f273e9cf8cd01c ]
+[ Upstream commit 2844e2434385819f674d1fb4130c308c50ba681e ]
 
-SCOM error handling is made complex by trying to pass around two bits of
-information: the function return code, and a status parameter that
-represents the CFAM error status register.
+cpsw_ethtool_begin directly returns the result of pm_runtime_get_sync
+when successful.
+pm_runtime_get_sync returns -error code on failure and 0 on successful
+resume but also 1 when the device is already active. So the common case
+for cpsw_ethtool_begin is to return 1. That leads to inconsistent calls
+to pm_runtime_put in the call-chain so that pm_runtime_put is called
+one too many times and as result leaving the cpsw dev behind suspended.
 
-The commit f72ddbe1d7b7 ("fsi: scom: Remove retries") removed the
-"hidden" retries in the SCOM driver, in preference of allowing the
-calling code (userspace or driver) to decide how to handle a failed
-SCOM. However it introduced a bug by attempting to be smart about the
-return codes that were "errors" and which were ok to fall through to the
-status register parsing.
+The suspended cpsw dev leads to an access violation later on by
+different parts of the cpsw driver.
 
-We get the following errors:
+Fix this by calling the return-friendly pm_runtime_resume_and_get
+function.
 
- - EINVAL or ENXIO, for indirect scoms where the value is invalid
- - EINVAL, where the size or address is incorrect
- - EIO or ETIMEOUT, where FSI write failed (aspeed master)
- - EAGAIN, where the master detected a crc error (GPIO master only)
- - EBUSY, where the bus is disabled (GPIO master in external mode)
-
-In all of these cases we should fail the SCOM read/write and return the
-error.
-
-Thanks to Dan Carpenter for the detailed bug report.
-
-Fixes: f72ddbe1d7b7 ("fsi: scom: Remove retries")
-Link: https://lists.ozlabs.org/pipermail/linux-fsi/2021-November/000235.html
-Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
-Signed-off-by: Joel Stanley <joel@jms.id.au>
-Reviewed-by: Eddie James <eajames@linux.ibm.com>
-Link: https://lore.kernel.org/r/20211207033811.518981-2-joel@jms.id.au
-Signed-off-by: Joel Stanley <joel@jms.id.au>
+Fixes: d43c65b05b84 ("ethtool: runtime-resume netdev parent in ethnl_ops_begin")
+Signed-off-by: Jan Sondhauss <jan.sondhauss@wago.com>
+Reviewed-by: Vignesh Raghavendra <vigneshr@ti.com>
+Link: https://lore.kernel.org/r/20220323084725.65864-1-jan.sondhauss@wago.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/fsi/fsi-scom.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/ti/cpsw_ethtool.c | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/fsi/fsi-scom.c b/drivers/fsi/fsi-scom.c
-index da1486bb6a14..3b427f7e9027 100644
---- a/drivers/fsi/fsi-scom.c
-+++ b/drivers/fsi/fsi-scom.c
-@@ -289,7 +289,7 @@ static int put_scom(struct scom_device *scom, uint64_t value,
- 	int rc;
+diff --git a/drivers/net/ethernet/ti/cpsw_ethtool.c b/drivers/net/ethernet/ti/cpsw_ethtool.c
+index 158c8d3793f4..b5bae6324970 100644
+--- a/drivers/net/ethernet/ti/cpsw_ethtool.c
++++ b/drivers/net/ethernet/ti/cpsw_ethtool.c
+@@ -364,11 +364,9 @@ int cpsw_ethtool_op_begin(struct net_device *ndev)
+ 	struct cpsw_common *cpsw = priv->cpsw;
+ 	int ret;
  
- 	rc = raw_put_scom(scom, value, addr, &status);
--	if (rc == -ENODEV)
-+	if (rc)
- 		return rc;
+-	ret = pm_runtime_get_sync(cpsw->dev);
+-	if (ret < 0) {
++	ret = pm_runtime_resume_and_get(cpsw->dev);
++	if (ret < 0)
+ 		cpsw_err(priv, drv, "ethtool begin failed %d\n", ret);
+-		pm_runtime_put_noidle(cpsw->dev);
+-	}
  
- 	rc = handle_fsi2pib_status(scom, status);
-@@ -308,7 +308,7 @@ static int get_scom(struct scom_device *scom, uint64_t *value,
- 	int rc;
- 
- 	rc = raw_get_scom(scom, value, addr, &status);
--	if (rc == -ENODEV)
-+	if (rc)
- 		return rc;
- 
- 	rc = handle_fsi2pib_status(scom, status);
+ 	return ret;
+ }
 -- 
 2.34.1
 
