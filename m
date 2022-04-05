@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D1D77C43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6649AC38A02
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:56:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380656AbiDEMyD (ORCPT
+        id S1380441AbiDEMxv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 08:54:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40628 "EHLO
+        Tue, 5 Apr 2022 08:53:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40622 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244102AbiDEJOP (ORCPT
+        with ESMTP id S238353AbiDEJOD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:14:15 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A69D73DDF6;
-        Tue,  5 Apr 2022 02:00:38 -0700 (PDT)
+        Tue, 5 Apr 2022 05:14:03 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8140537A1C;
+        Tue,  5 Apr 2022 02:00:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 52797B818F3;
-        Tue,  5 Apr 2022 09:00:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9D611C385A0;
-        Tue,  5 Apr 2022 09:00:35 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id E779CCE1BF8;
+        Tue,  5 Apr 2022 09:00:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1094CC385A0;
+        Tue,  5 Apr 2022 09:00:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649149236;
-        bh=ROnrbzz1l46AppRuRx0ztfxHB96FsZrQXsAc4TedgXk=;
+        s=korg; t=1649149230;
+        bh=9iLTGCOyPSjoqae/RYlb0kaRjeH/0XZPTX15kxKiI6I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Hu4hLyKGP5TGp0UbFMQf5fyb6XZA4huXEUSByB/m7A+67gG/S8uw6TXscTIXPZNMn
-         8WLyiOFgCWv6Oo0ralos1Kxt6rBirc4QiwjWWk9DhDncKFFDUdayLGCZrhHtsCOcap
-         qcPNiX5H8f7jm/tE/sMaLBO9nVhd0Ktj3iM5AEk8=
+        b=EPtlklsUw5LLjd4Omyd6TDxk9RkaMyTk2/HqGQAbZzV/esuGmBuVFj21fxFJKScQD
+         IPMJrfQA3NmraUh/4cwkA321xWMcbm11l5cuUH8BFs9ZQE7cNa4nmKtWFYil6pTY6d
+         /2aYf102BrVLRyQAsOzPGlMry2MwM02jr3MDBYM0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jiri Slaby <jslaby@suse.cz>,
+        stable@vger.kernel.org, Phillip Potter <phil@philpotter.co.uk>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0644/1017] mxser: fix xmit_buf leak in activate when LSR == 0xff
-Date:   Tue,  5 Apr 2022 09:25:57 +0200
-Message-Id: <20220405070413.399273841@linuxfoundation.org>
+Subject: [PATCH 5.16 0642/1017] staging: r8188eu: convert DBG_88E_LEVEL call in hal/rtl8188e_hal_init.c
+Date:   Tue,  5 Apr 2022 09:25:55 +0200
+Message-Id: <20220405070413.339750360@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -49,74 +49,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jiri Slaby <jslaby@suse.cz>
+From: Phillip Potter <phil@philpotter.co.uk>
 
-[ Upstream commit cd3a4907ee334b40d7aa880c7ab310b154fd5cd4 ]
+[ Upstream commit 5ec394d58bdba731c2a33645be7018e71f72f287 ]
 
-When LSR is 0xff in ->activate() (rather unlike), we return an error.
-Provided ->shutdown() is not called when ->activate() fails, nothing
-actually frees the buffer in this case.
+Convert DBG_88E_LEVEL macro call in hal/rtl8188e_hal_init.c to plain
+dev_dbg call, as although the information is potentially useful, we should
+be exposing it using standard kernel debugging functionality.
 
-Fix this by properly freeing the buffer in a designated label. We jump
-there also from the "!info->type" if now too.
-
-Fixes: 6769140d3047 ("tty: mxser: use the tty_port_open method")
-Signed-off-by: Jiri Slaby <jslaby@suse.cz>
-Link: https://lore.kernel.org/r/20220124071430.14907-6-jslaby@suse.cz
+Signed-off-by: Phillip Potter <phil@philpotter.co.uk>
+Link: https://lore.kernel.org/r/20211129002041.865-6-phil@philpotter.co.uk
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/mxser.c | 15 +++++++++++----
- 1 file changed, 11 insertions(+), 4 deletions(-)
+ drivers/staging/r8188eu/hal/rtl8188e_hal_init.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/tty/mxser.c b/drivers/tty/mxser.c
-index 39458b42df7b..88d2f16fbf89 100644
---- a/drivers/tty/mxser.c
-+++ b/drivers/tty/mxser.c
-@@ -719,6 +719,7 @@ static int mxser_activate(struct tty_port *port, struct tty_struct *tty)
- 	struct mxser_port *info = container_of(port, struct mxser_port, port);
- 	unsigned long page;
- 	unsigned long flags;
-+	int ret;
+diff --git a/drivers/staging/r8188eu/hal/rtl8188e_hal_init.c b/drivers/staging/r8188eu/hal/rtl8188e_hal_init.c
+index 8c00f2dd67da..92c3c39e098f 100644
+--- a/drivers/staging/r8188eu/hal/rtl8188e_hal_init.c
++++ b/drivers/staging/r8188eu/hal/rtl8188e_hal_init.c
+@@ -541,7 +541,7 @@ static int load_firmware(struct rt_firmware *pFirmware, struct device *device)
+ 	memcpy(pFirmware->szFwBuffer, fw->data, fw->size);
+ 	pFirmware->ulFwLength = fw->size;
+ 	release_firmware(fw);
+-	DBG_88E_LEVEL(_drv_info_, "+%s: !bUsedWoWLANFw, FmrmwareLen:%d+\n", __func__, pFirmware->ulFwLength);
++	dev_dbg(device, "!bUsedWoWLANFw, FmrmwareLen:%d+\n", pFirmware->ulFwLength);
  
- 	page = __get_free_page(GFP_KERNEL);
- 	if (!page)
-@@ -728,9 +729,9 @@ static int mxser_activate(struct tty_port *port, struct tty_struct *tty)
- 
- 	if (!info->type) {
- 		set_bit(TTY_IO_ERROR, &tty->flags);
--		free_page(page);
- 		spin_unlock_irqrestore(&info->slock, flags);
--		return 0;
-+		ret = 0;
-+		goto err_free_xmit;
- 	}
- 	info->port.xmit_buf = (unsigned char *) page;
- 
-@@ -750,8 +751,10 @@ static int mxser_activate(struct tty_port *port, struct tty_struct *tty)
- 		if (capable(CAP_SYS_ADMIN)) {
- 			set_bit(TTY_IO_ERROR, &tty->flags);
- 			return 0;
--		} else
--			return -ENODEV;
-+		}
-+
-+		ret = -ENODEV;
-+		goto err_free_xmit;
- 	}
- 
- 	/*
-@@ -796,6 +799,10 @@ static int mxser_activate(struct tty_port *port, struct tty_struct *tty)
- 	spin_unlock_irqrestore(&info->slock, flags);
- 
- 	return 0;
-+err_free_xmit:
-+	free_page(page);
-+	info->port.xmit_buf = NULL;
-+	return ret;
- }
- 
- /*
+ Exit:
+ 	return rtStatus;
 -- 
 2.34.1
 
