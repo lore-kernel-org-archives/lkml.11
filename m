@@ -2,46 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 046FBC433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 19416C43217
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:23:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245455AbiDEUVC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 16:21:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43648 "EHLO
+        id S1344354AbiDEUV3 (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 16:21:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44020 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349087AbiDEJtG (ORCPT
+        with ESMTP id S242858AbiDEKfU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:49:06 -0400
+        Tue, 5 Apr 2022 06:35:20 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D1BFA995A;
-        Tue,  5 Apr 2022 02:40:31 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BAE0522FE;
+        Tue,  5 Apr 2022 03:21:30 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4C749B81C14;
-        Tue,  5 Apr 2022 09:40:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9BF46C385A2;
-        Tue,  5 Apr 2022 09:40:28 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1E763B81BC5;
+        Tue,  5 Apr 2022 10:21:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 76C2AC385A1;
+        Tue,  5 Apr 2022 10:21:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649151629;
-        bh=VcKJ1b7hlR38oeDFWrv/Bduu0TTbaFFTrfTsQgagKYE=;
+        s=korg; t=1649154087;
+        bh=BTy9TywiGvUotK6vCdii4PBWtMVPJXZEG9sk7pODgt4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=zV4AgYfoSL1ppVq97sswIi6sFgXUBD3anT6iLXVyetmnddkFYm1EXiOL8TLzkYrOa
-         eV5517oCDIelfXxtmlAwnvWWMNFhIGvwN0WOf2Swa0NiA8+5KECcmLU9btPNKKG/o3
-         e/0sKu3aNhtSpyzf/cAHXVdQZvE0Z0t1wBps8xno=
+        b=JE2InTbk9dQek+ujtw/Y5zJD+HVtUtSITuZouUq1ooIvX1RIsvhlyYzTik/sCC7hp
+         oCQQbOx7gCDRwAbV+upRGFyhlmesqogF+xdQU0gTyUEegceTwQ6rP2Xzy6zU0NGrfX
+         A42S+KHk+n+gQUzE5JLzstgyfDB7oVlLs3JWtPPY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jack Wang <jinpu.wang@ionos.com>,
-        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 483/913] scsi: pm8001: Fix le32 values handling in pm80xx_set_sas_protocol_timer_config()
-Date:   Tue,  5 Apr 2022 09:25:45 +0200
-Message-Id: <20220405070354.333407463@linuxfoundation.org>
+        stable@vger.kernel.org, Fedor Pchelkin <aissur0002@gmail.com>,
+        Alexey Khoroshilov <khoroshilov@ispras.ru>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Sasha Levin <sashal@kernel.org>,
+        Christian Brauner <brauner@kernel.org>
+Subject: [PATCH 5.10 446/599] fs: fd tables have to be multiples of BITS_PER_LONG
+Date:   Tue,  5 Apr 2022 09:32:20 +0200
+Message-Id: <20220405070312.102291536@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
+References: <20220405070258.802373272@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,109 +52,126 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Damien Le Moal <damien.lemoal@opensource.wdc.com>
+From: Linus Torvalds <torvalds@linux-foundation.org>
 
-[ Upstream commit ca374f5d92b8ae778f6a37dd3e7ed809bbf7a953 ]
+[ Upstream commit 1c24a186398f59c80adb9a967486b65c1423a59d ]
 
-All fields of the SASProtocolTimerConfig structure have the __le32 type.
-As such, use cpu_to_le32() to initialize them. This change suppresses many
-sparse warnings:
+This has always been the rule: fdtables have several bitmaps in them,
+and as a result they have to be sized properly for bitmaps.  We walk
+those bitmaps in chunks of 'unsigned long' in serveral cases, but even
+when we don't, we use the regular kernel bitops that are defined to work
+on arrays of 'unsigned long', not on some byte array.
 
-warning: incorrect type in assignment (different base types)
-   expected restricted __le32 [addressable] [usertype] pageCode
-   got int
+Now, the distinction between arrays of bytes and 'unsigned long'
+normally only really ends up being noticeable on big-endian systems, but
+Fedor Pchelkin and Alexey Khoroshilov reported that copy_fd_bitmaps()
+could be called with an argument that wasn't even a multiple of
+BITS_PER_BYTE.  And then it fails to do the proper copy even on
+little-endian machines.
 
-Note that the check to limit the value of the STP_IDLE_TMO field is removed
-as this field is initialized using the fixed (and small) value defined by
-the STP_IDLE_TIME macro.
+The bug wasn't in copy_fd_bitmap(), but in sane_fdtable_size(), which
+didn't actually sanitize the fdtable size sufficiently, and never made
+sure it had the proper BITS_PER_LONG alignment.
 
-The pm8001_dbg() calls printing the values of the SASProtocolTimerConfig
-structure fileds are changed to use le32_to_cpu() to present the values in
-human readable form.
+That's partly because the alignment historically came not from having to
+explicitly align things, but simply from previous fdtable sizes, and
+from count_open_files(), which counts the file descriptors by walking
+them one 'unsigned long' word at a time and thus naturally ends up doing
+sizing in the proper 'chunks of unsigned long'.
 
-Link: https://lore.kernel.org/r/20220220031810.738362-9-damien.lemoal@opensource.wdc.com
-Fixes: a6cb3d012b98 ("[SCSI] pm80xx: thermal, sas controller config and error handling update")
-Reviewed-by: Jack Wang <jinpu.wang@ionos.com>
-Signed-off-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+But with the introduction of close_range(), we now have an external
+source of "this is how many files we want to have", and so
+sane_fdtable_size() needs to do a better job.
+
+This also adds that explicit alignment to alloc_fdtable(), although
+there it is mainly just for documentation at a source code level.  The
+arithmetic we do there to pick a reasonable fdtable size already aligns
+the result sufficiently.
+
+In fact,clang notices that the added ALIGN() in that function doesn't
+actually do anything, and does not generate any extra code for it.
+
+It turns out that gcc ends up confusing itself by combining a previous
+constant-sized shift operation with the variable-sized shift operations
+in roundup_pow_of_two().  And probably due to that doesn't notice that
+the ALIGN() is a no-op.  But that's a (tiny) gcc misfeature that doesn't
+matter.  Having the explicit alignment makes sense, and would actually
+matter on a 128-bit architecture if we ever go there.
+
+This also adds big comments above both functions about how fdtable sizes
+have to have that BITS_PER_LONG alignment.
+
+Fixes: 60997c3d45d9 ("close_range: add CLOSE_RANGE_UNSHARE")
+Reported-by: Fedor Pchelkin <aissur0002@gmail.com>
+Reported-by: Alexey Khoroshilov <khoroshilov@ispras.ru>
+Link: https://lore.kernel.org/all/20220326114009.1690-1-aissur0002@gmail.com/
+Tested-and-acked-by: Christian Brauner <brauner@kernel.org>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/pm8001/pm80xx_hwi.c | 52 +++++++++++++++-----------------
- 1 file changed, 25 insertions(+), 27 deletions(-)
+ fs/file.c | 30 ++++++++++++++++++++++++++++++
+ 1 file changed, 30 insertions(+)
 
-diff --git a/drivers/scsi/pm8001/pm80xx_hwi.c b/drivers/scsi/pm8001/pm80xx_hwi.c
-index ed6b5e7c2136..69789aa73fd1 100644
---- a/drivers/scsi/pm8001/pm80xx_hwi.c
-+++ b/drivers/scsi/pm8001/pm80xx_hwi.c
-@@ -1246,43 +1246,41 @@ pm80xx_set_sas_protocol_timer_config(struct pm8001_hba_info *pm8001_ha)
- 	circularQ = &pm8001_ha->inbnd_q_tbl[0];
- 	payload.tag = cpu_to_le32(tag);
+diff --git a/fs/file.c b/fs/file.c
+index 79a76d04c7c3..a47a1edb9404 100644
+--- a/fs/file.c
++++ b/fs/file.c
+@@ -85,6 +85,21 @@ static void copy_fdtable(struct fdtable *nfdt, struct fdtable *ofdt)
+ 	copy_fd_bitmaps(nfdt, ofdt, ofdt->max_fds);
+ }
  
--	SASConfigPage.pageCode        =  SAS_PROTOCOL_TIMER_CONFIG_PAGE;
--	SASConfigPage.MST_MSI         =  3 << 15;
--	SASConfigPage.STP_SSP_MCT_TMO =  (STP_MCT_TMO << 16) | SSP_MCT_TMO;
--	SASConfigPage.STP_FRM_TMO     = (SAS_MAX_OPEN_TIME << 24) |
--				(SMP_MAX_CONN_TIMER << 16) | STP_FRM_TIMER;
--	SASConfigPage.STP_IDLE_TMO    =  STP_IDLE_TIME;
--
--	if (SASConfigPage.STP_IDLE_TMO > 0x3FFFFFF)
--		SASConfigPage.STP_IDLE_TMO = 0x3FFFFFF;
--
--
--	SASConfigPage.OPNRJT_RTRY_INTVL =         (SAS_MFD << 16) |
--						SAS_OPNRJT_RTRY_INTVL;
--	SASConfigPage.Data_Cmd_OPNRJT_RTRY_TMO =  (SAS_DOPNRJT_RTRY_TMO << 16)
--						| SAS_COPNRJT_RTRY_TMO;
--	SASConfigPage.Data_Cmd_OPNRJT_RTRY_THR =  (SAS_DOPNRJT_RTRY_THR << 16)
--						| SAS_COPNRJT_RTRY_THR;
--	SASConfigPage.MAX_AIP =  SAS_MAX_AIP;
-+	SASConfigPage.pageCode = cpu_to_le32(SAS_PROTOCOL_TIMER_CONFIG_PAGE);
-+	SASConfigPage.MST_MSI = cpu_to_le32(3 << 15);
-+	SASConfigPage.STP_SSP_MCT_TMO =
-+		cpu_to_le32((STP_MCT_TMO << 16) | SSP_MCT_TMO);
-+	SASConfigPage.STP_FRM_TMO =
-+		cpu_to_le32((SAS_MAX_OPEN_TIME << 24) |
-+			    (SMP_MAX_CONN_TIMER << 16) | STP_FRM_TIMER);
-+	SASConfigPage.STP_IDLE_TMO = cpu_to_le32(STP_IDLE_TIME);
-+
-+	SASConfigPage.OPNRJT_RTRY_INTVL =
-+		cpu_to_le32((SAS_MFD << 16) | SAS_OPNRJT_RTRY_INTVL);
-+	SASConfigPage.Data_Cmd_OPNRJT_RTRY_TMO =
-+		cpu_to_le32((SAS_DOPNRJT_RTRY_TMO << 16) | SAS_COPNRJT_RTRY_TMO);
-+	SASConfigPage.Data_Cmd_OPNRJT_RTRY_THR =
-+		cpu_to_le32((SAS_DOPNRJT_RTRY_THR << 16) | SAS_COPNRJT_RTRY_THR);
-+	SASConfigPage.MAX_AIP = cpu_to_le32(SAS_MAX_AIP);
++/*
++ * Note how the fdtable bitmap allocations very much have to be a multiple of
++ * BITS_PER_LONG. This is not only because we walk those things in chunks of
++ * 'unsigned long' in some places, but simply because that is how the Linux
++ * kernel bitmaps are defined to work: they are not "bits in an array of bytes",
++ * they are very much "bits in an array of unsigned long".
++ *
++ * The ALIGN(nr, BITS_PER_LONG) here is for clarity: since we just multiplied
++ * by that "1024/sizeof(ptr)" before, we already know there are sufficient
++ * clear low bits. Clang seems to realize that, gcc ends up being confused.
++ *
++ * On a 128-bit machine, the ALIGN() would actually matter. In the meantime,
++ * let's consider it documentation (and maybe a test-case for gcc to improve
++ * its code generation ;)
++ */
+ static struct fdtable * alloc_fdtable(unsigned int nr)
+ {
+ 	struct fdtable *fdt;
+@@ -100,6 +115,7 @@ static struct fdtable * alloc_fdtable(unsigned int nr)
+ 	nr /= (1024 / sizeof(struct file *));
+ 	nr = roundup_pow_of_two(nr + 1);
+ 	nr *= (1024 / sizeof(struct file *));
++	nr = ALIGN(nr, BITS_PER_LONG);
+ 	/*
+ 	 * Note that this can drive nr *below* what we had passed if sysctl_nr_open
+ 	 * had been set lower between the check in expand_files() and here.  Deal
+@@ -267,11 +283,25 @@ static unsigned int count_open_files(struct fdtable *fdt)
+ 	return i;
+ }
  
- 	pm8001_dbg(pm8001_ha, INIT, "SASConfigPage.pageCode 0x%08x\n",
--		   SASConfigPage.pageCode);
-+		   le32_to_cpu(SASConfigPage.pageCode));
- 	pm8001_dbg(pm8001_ha, INIT, "SASConfigPage.MST_MSI  0x%08x\n",
--		   SASConfigPage.MST_MSI);
-+		   le32_to_cpu(SASConfigPage.MST_MSI));
- 	pm8001_dbg(pm8001_ha, INIT, "SASConfigPage.STP_SSP_MCT_TMO  0x%08x\n",
--		   SASConfigPage.STP_SSP_MCT_TMO);
-+		   le32_to_cpu(SASConfigPage.STP_SSP_MCT_TMO));
- 	pm8001_dbg(pm8001_ha, INIT, "SASConfigPage.STP_FRM_TMO  0x%08x\n",
--		   SASConfigPage.STP_FRM_TMO);
-+		   le32_to_cpu(SASConfigPage.STP_FRM_TMO));
- 	pm8001_dbg(pm8001_ha, INIT, "SASConfigPage.STP_IDLE_TMO  0x%08x\n",
--		   SASConfigPage.STP_IDLE_TMO);
-+		   le32_to_cpu(SASConfigPage.STP_IDLE_TMO));
- 	pm8001_dbg(pm8001_ha, INIT, "SASConfigPage.OPNRJT_RTRY_INTVL  0x%08x\n",
--		   SASConfigPage.OPNRJT_RTRY_INTVL);
-+		   le32_to_cpu(SASConfigPage.OPNRJT_RTRY_INTVL));
- 	pm8001_dbg(pm8001_ha, INIT, "SASConfigPage.Data_Cmd_OPNRJT_RTRY_TMO  0x%08x\n",
--		   SASConfigPage.Data_Cmd_OPNRJT_RTRY_TMO);
-+		   le32_to_cpu(SASConfigPage.Data_Cmd_OPNRJT_RTRY_TMO));
- 	pm8001_dbg(pm8001_ha, INIT, "SASConfigPage.Data_Cmd_OPNRJT_RTRY_THR  0x%08x\n",
--		   SASConfigPage.Data_Cmd_OPNRJT_RTRY_THR);
-+		   le32_to_cpu(SASConfigPage.Data_Cmd_OPNRJT_RTRY_THR));
- 	pm8001_dbg(pm8001_ha, INIT, "SASConfigPage.MAX_AIP  0x%08x\n",
--		   SASConfigPage.MAX_AIP);
-+		   le32_to_cpu(SASConfigPage.MAX_AIP));
++/*
++ * Note that a sane fdtable size always has to be a multiple of
++ * BITS_PER_LONG, since we have bitmaps that are sized by this.
++ *
++ * 'max_fds' will normally already be properly aligned, but it
++ * turns out that in the close_range() -> __close_range() ->
++ * unshare_fd() -> dup_fd() -> sane_fdtable_size() we can end
++ * up having a 'max_fds' value that isn't already aligned.
++ *
++ * Rather than make close_range() have to worry about this,
++ * just make that BITS_PER_LONG alignment be part of a sane
++ * fdtable size. Becuase that's really what it is.
++ */
+ static unsigned int sane_fdtable_size(struct fdtable *fdt, unsigned int max_fds)
+ {
+ 	unsigned int count;
  
- 	memcpy(&payload.cfg_pg, &SASConfigPage,
- 			 sizeof(SASProtocolTimerConfig_t));
+ 	count = count_open_files(fdt);
++	max_fds = ALIGN(max_fds, BITS_PER_LONG);
+ 	if (max_fds < NR_OPEN_DEFAULT)
+ 		max_fds = NR_OPEN_DEFAULT;
+ 	return min(count, max_fds);
 -- 
 2.34.1
 
