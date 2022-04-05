@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B284CC38162
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 10:17:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B79D8C38A06
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 10:17:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241092AbiDEKKI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 06:10:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45934 "EHLO
+        id S1353980AbiDEKKQ (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 06:10:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33836 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241118AbiDEIcv (ORCPT
+        with ESMTP id S241128AbiDEIcv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Apr 2022 04:32:51 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 773B515FC5;
-        Tue,  5 Apr 2022 01:28:05 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BBB8D15FC9;
+        Tue,  5 Apr 2022 01:28:06 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2B55EB81BB1;
-        Tue,  5 Apr 2022 08:28:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 85713C385A1;
-        Tue,  5 Apr 2022 08:28:02 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 52E936062B;
+        Tue,  5 Apr 2022 08:28:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 62D9BC385A2;
+        Tue,  5 Apr 2022 08:28:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649147282;
-        bh=n6zyPSIkFvCLdD5kBxfGwkFctlLJmjTygZHO/L9jPmc=;
+        s=korg; t=1649147285;
+        bh=234vjUTZtijWVtkoomSPxYcD2YhmlklL6TqSehEq8A4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VQZ1WBV8VT70h/RqjJAU/X+MYi8j0KE1AgtbQi0vHY+CegS0LzC6RZD0Gj7BCNRha
-         4TGYBybsn3kcOhHHrHgu+XF/KaxTS2BDc3D/hqwW/PGGYd7Y32VLuzHxBDxsysYBTz
-         2ople1gqFchIN8RApGg5D134HPbGyIqzyVn8iydg=
+        b=n37IzcvSuEnTgsOaxdjCX7JIM8FZBxP69VolXqABE20JenUo6wuSyrsHAthl7wDae
+         oqd3cfRmFFkBg/fHSnT4ZMf/yVRQUiodW81fGtdervqSHVET1oiUPkFhwadVZEhAg4
+         Cie7UVUfqmmW4jYiizwtYF0AwBIcTjhOvPeiY5KY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ewan Milne <emilne@redhat.com>,
-        Himanshu Madhani <himanshu.madhani@oracle.com>,
-        Saurav Kashyap <skashyap@marvell.com>,
-        Nilesh Javali <njavali@marvell.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>
-Subject: [PATCH 5.17 1068/1126] scsi: qla2xxx: Add qla2x00_async_done() for async routines
-Date:   Tue,  5 Apr 2022 09:30:15 +0200
-Message-Id: <20220405070438.805070642@linuxfoundation.org>
+        stable@vger.kernel.org, Sander Vanheule <sander@svanheule.net>,
+        =?UTF-8?q?Ar=C4=B1n=C3=A7=20=C3=9CNAL?= <arinc.unal@arinc9.com>
+Subject: [PATCH 5.17 1069/1126] staging: mt7621-dts: fix pinctrl-0 items to be size-1 items on ethernet
+Date:   Tue,  5 Apr 2022 09:30:16 +0200
+Message-Id: <20220405070438.833372822@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -51,60 +49,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Saurav Kashyap <skashyap@marvell.com>
+From: Arınç ÜNAL <arinc.unal@arinc9.com>
 
-commit 49b729f58e7a98a006a8a0c1dcca8a1a4f58d2a8 upstream.
+commit 25e4f5220efead592c83200241e098e757d37e1f upstream.
 
-This done routine will delete the timer and check for its return value and
-decrease the reference count accordingly. This prevents boot hangs reported
-after commit 31e6cdbe0eae ("scsi: qla2xxx: Implement ref count for SRB")
-was merged.
+Fix pinctrl-0 items under the ethernet node to be size-1 items.
+Current notation would be used on specifications with non-zero cells.
 
-Link: https://lore.kernel.org/r/20220208093946.4471-1-njavali@marvell.com
-Fixes: 31e6cdbe0eae ("scsi: qla2xxx: Implement ref count for SRB")
-Reported-by: Ewan Milne <emilne@redhat.com>
-Tested-by: Ewan D. Milne <emilne@redhat.com>
-Reviewed-by: Himanshu Madhani <himanshu.madhani@oracle.com>
-Signed-off-by: Saurav Kashyap <skashyap@marvell.com>
-Signed-off-by: Nilesh Javali <njavali@marvell.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Fixes: 0a93c0d75809 ("staging: mt7621-dts: fix pinctrl properties for ethernet")
+Reported-by: Sander Vanheule <sander@svanheule.net>
+Signed-off-by: Arınç ÜNAL <arinc.unal@arinc9.com>
+Link: https://lore.kernel.org/r/20220215081725.3463-1-arinc.unal@arinc9.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/scsi/qla2xxx/qla_iocb.c |   17 ++++++++++++++++-
- 1 file changed, 16 insertions(+), 1 deletion(-)
+ drivers/staging/mt7621-dts/mt7621.dtsi |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/scsi/qla2xxx/qla_iocb.c
-+++ b/drivers/scsi/qla2xxx/qla_iocb.c
-@@ -2560,6 +2560,20 @@ qla24xx_tm_iocb(srb_t *sp, struct tsk_mg
- 	}
- }
+--- a/drivers/staging/mt7621-dts/mt7621.dtsi
++++ b/drivers/staging/mt7621-dts/mt7621.dtsi
+@@ -326,7 +326,7 @@
+ 		mediatek,ethsys = <&sysc>;
  
-+static void
-+qla2x00_async_done(struct srb *sp, int res)
-+{
-+	if (del_timer(&sp->u.iocb_cmd.timer)) {
-+		/*
-+		 * Successfully cancelled the timeout handler
-+		 * ref: TMR
-+		 */
-+		if (kref_put(&sp->cmd_kref, qla2x00_sp_release))
-+			return;
-+	}
-+	sp->async_done(sp, res);
-+}
-+
- void
- qla2x00_sp_release(struct kref *kref)
- {
-@@ -2573,7 +2587,8 @@ qla2x00_init_async_sp(srb_t *sp, unsigne
- 		     void (*done)(struct srb *sp, int res))
- {
- 	timer_setup(&sp->u.iocb_cmd.timer, qla2x00_sp_timeout, 0);
--	sp->done = done;
-+	sp->done = qla2x00_async_done;
-+	sp->async_done = done;
- 	sp->free = qla2x00_sp_free;
- 	sp->u.iocb_cmd.timeout = qla2x00_async_iocb_timeout;
- 	sp->u.iocb_cmd.timer.expires = jiffies + tmo * HZ;
+ 		pinctrl-names = "default";
+-		pinctrl-0 = <&rgmii1_pins &rgmii2_pins &mdio_pins>;
++		pinctrl-0 = <&mdio_pins>, <&rgmii1_pins>, <&rgmii2_pins>;
+ 
+ 		gmac0: mac@0 {
+ 			compatible = "mediatek,eth-mac";
 
 
