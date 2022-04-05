@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A19AAC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 11:04:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 58416C4167E
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 11:04:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344094AbiDEK7p (ORCPT
+        id S1344945AbiDELAM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 06:59:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52206 "EHLO
+        Tue, 5 Apr 2022 07:00:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58468 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242271AbiDEIhS (ORCPT
+        with ESMTP id S233680AbiDEIiZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:37:18 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5F8D1C915;
-        Tue,  5 Apr 2022 01:32:35 -0700 (PDT)
+        Tue, 5 Apr 2022 04:38:25 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1212F1D302;
+        Tue,  5 Apr 2022 01:32:51 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7B085B81C69;
-        Tue,  5 Apr 2022 08:32:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DA976C385A0;
-        Tue,  5 Apr 2022 08:32:32 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9E85460FFC;
+        Tue,  5 Apr 2022 08:32:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B574EC385A1;
+        Tue,  5 Apr 2022 08:32:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649147553;
-        bh=03Ws9qQgvQwf9mtv7tPWt+LryrlarzUFcRPDufIyokE=;
+        s=korg; t=1649147570;
+        bh=z03uRE2H7zmi68R1Q0lvr3LCmd3ruYnHuWykD/0EvBo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kGX27FcRvhPjMCW0rtlLb1Mldk8bVzVRr7cU7WpsQAllQV7y030Vd12+pFFmBrTWr
-         nqST0stx204WeMAVPiTWo4ZZkP589dPYJM3kaJKJ5DI/rKmxDH6GddIy7CQqg8BMat
-         pqP6g6gxL8Pikb7LkeATYVqFik6Oz8K+YgV1gb4o=
+        b=eUmMJfftu2Rlj/XZGnPxG5bKRLie6E+zE8pWxwZveZ1vZPXs8DQrn6CLga/r3poq2
+         rxuJi1ooDFexSmGmQqknCvRk7Zh19BW67rhoufghGJa4wSMkYPuzJpslfW8Zi+V2P1
+         gy+H9ubON2XL1zBE1t5RbTXnPiQylWNHgvNah5co=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Alexander Usyskin <alexander.usyskin@intel.com>,
-        Tomas Winkler <tomas.winkler@intel.com>
-Subject: [PATCH 5.16 0038/1017] mei: me: disable driver on the ign firmware
-Date:   Tue,  5 Apr 2022 09:15:51 +0200
-Message-Id: <20220405070355.310457936@linuxfoundation.org>
+        stable@vger.kernel.org, James Clark <james.clark@arm.com>,
+        Mike Leach <mike.leach@linaro.org>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Suzuki K Poulose <suzuki.poulose@arm.com>
+Subject: [PATCH 5.16 0044/1017] coresight: Fix TRCCONFIGR.QE sysfs interface
+Date:   Tue,  5 Apr 2022 09:15:57 +0200
+Message-Id: <20220405070355.490649888@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -50,102 +51,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alexander Usyskin <alexander.usyskin@intel.com>
+From: James Clark <james.clark@arm.com>
 
-commit ccdf6f806fbf559f7c29ed9302a7c1b4da7fd37f upstream.
+commit ea75a342aed5ed72c87f38fbe0df2f5df7eae374 upstream.
 
-Add a quirk to disable MEI interface on Intel PCH Ignition (IGN)
-as the IGN firmware doesn't support the protocol.
+It's impossible to program a valid value for TRCCONFIGR.QE
+when TRCIDR0.QSUPP==0b10. In that case the following is true:
 
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Alexander Usyskin <alexander.usyskin@intel.com>
-Signed-off-by: Tomas Winkler <tomas.winkler@intel.com>
-Link: https://lore.kernel.org/r/20220215080438.264876-1-tomas.winkler@intel.com
+  Q element support is implemented, and only supports Q elements without
+  instruction counts. TRCCONFIGR.QE can only take the values 0b00 or 0b11.
+
+Currently the low bit of QSUPP is checked to see if the low bit of QE can
+be written to, but as you can see when QSUPP==0b10 the low bit is cleared
+making it impossible to ever write the only valid value of 0b11 to QE.
+0b10 would be written instead, which is a reserved QE value even for all
+values of QSUPP.
+
+The fix is to allow writing the low bit of QE for any non zero value of
+QSUPP.
+
+This change also ensures that the low bit is always set, even when the
+user attempts to only set the high bit.
+
+Signed-off-by: James Clark <james.clark@arm.com>
+Reviewed-by: Mike Leach <mike.leach@linaro.org>
+Fixes: d8c66962084f ("coresight-etm4x: Controls pertaining to the reset, mode, pe and events")
+Cc: stable@vger.kernel.org
+Link: https://lore.kernel.org/r/20220120113047.2839622-2-james.clark@arm.com
+Signed-off-by: Mathieu Poirier <mathieu.poirier@linaro.org>
+Signed-off-by: Suzuki K Poulose <suzuki.poulose@arm.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/misc/mei/hw-me-regs.h |    1 +
- drivers/misc/mei/hw-me.c      |   23 ++++++++++++-----------
- 2 files changed, 13 insertions(+), 11 deletions(-)
+ drivers/hwtracing/coresight/coresight-etm4x-sysfs.c |    8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
---- a/drivers/misc/mei/hw-me-regs.h
-+++ b/drivers/misc/mei/hw-me-regs.h
-@@ -120,6 +120,7 @@
- #define PCI_CFG_HFS_2         0x48
- #define PCI_CFG_HFS_3         0x60
- #  define PCI_CFG_HFS_3_FW_SKU_MSK   0x00000070
-+#  define PCI_CFG_HFS_3_FW_SKU_IGN   0x00000000
- #  define PCI_CFG_HFS_3_FW_SKU_SPS   0x00000060
- #define PCI_CFG_HFS_4         0x64
- #define PCI_CFG_HFS_5         0x68
---- a/drivers/misc/mei/hw-me.c
-+++ b/drivers/misc/mei/hw-me.c
-@@ -1405,16 +1405,16 @@ static bool mei_me_fw_type_sps_4(const s
- 	.quirk_probe = mei_me_fw_type_sps_4
- 
- /**
-- * mei_me_fw_type_sps() - check for sps sku
-+ * mei_me_fw_type_sps_ign() - check for sps or ign sku
-  *
-- * Read ME FW Status register to check for SPS Firmware.
-- * The SPS FW is only signaled in pci function 0
-+ * Read ME FW Status register to check for SPS or IGN Firmware.
-+ * The SPS/IGN FW is only signaled in pci function 0
-  *
-  * @pdev: pci device
-  *
-- * Return: true in case of SPS firmware
-+ * Return: true in case of SPS/IGN firmware
-  */
--static bool mei_me_fw_type_sps(const struct pci_dev *pdev)
-+static bool mei_me_fw_type_sps_ign(const struct pci_dev *pdev)
- {
- 	u32 reg;
- 	u32 fw_type;
-@@ -1427,14 +1427,15 @@ static bool mei_me_fw_type_sps(const str
- 
- 	dev_dbg(&pdev->dev, "fw type is %d\n", fw_type);
- 
--	return fw_type == PCI_CFG_HFS_3_FW_SKU_SPS;
-+	return fw_type == PCI_CFG_HFS_3_FW_SKU_IGN ||
-+	       fw_type == PCI_CFG_HFS_3_FW_SKU_SPS;
- }
- 
- #define MEI_CFG_KIND_ITOUCH                     \
- 	.kind = "itouch"
- 
--#define MEI_CFG_FW_SPS                          \
--	.quirk_probe = mei_me_fw_type_sps
-+#define MEI_CFG_FW_SPS_IGN                      \
-+	.quirk_probe = mei_me_fw_type_sps_ign
- 
- #define MEI_CFG_FW_VER_SUPP                     \
- 	.fw_ver_supported = 1
-@@ -1535,7 +1536,7 @@ static const struct mei_cfg mei_me_pch12
- 	MEI_CFG_PCH8_HFS,
- 	MEI_CFG_FW_VER_SUPP,
- 	MEI_CFG_DMA_128,
--	MEI_CFG_FW_SPS,
-+	MEI_CFG_FW_SPS_IGN,
- };
- 
- /* Cannon Lake itouch with quirk for SPS 5.0 and newer Firmware exclusion
-@@ -1545,7 +1546,7 @@ static const struct mei_cfg mei_me_pch12
- 	MEI_CFG_KIND_ITOUCH,
- 	MEI_CFG_PCH8_HFS,
- 	MEI_CFG_FW_VER_SUPP,
--	MEI_CFG_FW_SPS,
-+	MEI_CFG_FW_SPS_IGN,
- };
- 
- /* Tiger Lake and newer devices */
-@@ -1562,7 +1563,7 @@ static const struct mei_cfg mei_me_pch15
- 	MEI_CFG_FW_VER_SUPP,
- 	MEI_CFG_DMA_128,
- 	MEI_CFG_TRC,
--	MEI_CFG_FW_SPS,
-+	MEI_CFG_FW_SPS_IGN,
- };
- 
- /*
+--- a/drivers/hwtracing/coresight/coresight-etm4x-sysfs.c
++++ b/drivers/hwtracing/coresight/coresight-etm4x-sysfs.c
+@@ -367,8 +367,12 @@ static ssize_t mode_store(struct device
+ 	mode = ETM_MODE_QELEM(config->mode);
+ 	/* start by clearing QE bits */
+ 	config->cfg &= ~(BIT(13) | BIT(14));
+-	/* if supported, Q elements with instruction counts are enabled */
+-	if ((mode & BIT(0)) && (drvdata->q_support & BIT(0)))
++	/*
++	 * if supported, Q elements with instruction counts are enabled.
++	 * Always set the low bit for any requested mode. Valid combos are
++	 * 0b00, 0b01 and 0b11.
++	 */
++	if (mode && drvdata->q_support)
+ 		config->cfg |= BIT(13);
+ 	/*
+ 	 * if supported, Q elements with and without instruction
 
 
