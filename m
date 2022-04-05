@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9CA3FC433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CFC95C433F5
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:42:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386193AbiDEMkc (ORCPT
+        id S1386252AbiDEMks (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 08:40:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51014 "EHLO
+        Tue, 5 Apr 2022 08:40:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51016 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236425AbiDEJCz (ORCPT
+        with ESMTP id S236496AbiDEJDD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:02:55 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4BFFC11A06;
-        Tue,  5 Apr 2022 01:54:40 -0700 (PDT)
+        Tue, 5 Apr 2022 05:03:03 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A34E2D1CC;
+        Tue,  5 Apr 2022 01:54:46 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D835861562;
-        Tue,  5 Apr 2022 08:54:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E360EC385A1;
-        Tue,  5 Apr 2022 08:54:38 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AA5AA61476;
+        Tue,  5 Apr 2022 08:54:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B8DC4C385A0;
+        Tue,  5 Apr 2022 08:54:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649148879;
-        bh=7oMBxw5Ep26R/6R297Y09+0/4ozMGQM2xnuGuzQcQu8=;
+        s=korg; t=1649148885;
+        bh=U2ZJYOuEEz0m9/elS5Kj92JvO3TyzPU4Kk2kEKcCqqE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dk8Qr+Te81dPxZVCSbh8y/S3iONerNSiUrK8Y+YF39PEubH4FXFKBkhc6lc4RvAxs
-         4gSH3mRKPr3KpoNijyDXXfgxcOp/JXTM2poEn9wWBWNHUzwpV6rbkp9hEV0Vhk+Xcu
-         gigmfFkny5VTYuFNAW+Hee+nZVCZ6wlBPX5ziRWE=
+        b=wXTbrKAAfku7vvgMeHu1RTal5gY8bpw9Is9Vozaes80THRtZMhD1/KnbscJ6xToRl
+         mBw4NE+SRzhPd+8dkmezDqCUaEZm8s7ihpzLvCN67gCt0scPUPGaN9V3qTXeVYBMoL
+         Uw10qxlPY/HttRsPOFP4C2LeZTGfZdwHjG9+euB8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Wolfram Sang <wsa@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0476/1017] i2c: bcm2835: Use platform_get_irq() to get the interrupt
-Date:   Tue,  5 Apr 2022 09:23:09 +0200
-Message-Id: <20220405070408.427795995@linuxfoundation.org>
+        stable@vger.kernel.org, Luca Coelho <luciano.coelho@intel.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 0509/1017] iwlwifi: mvm: dont iterate unadded vifs when handling FW SMPS req
+Date:   Tue,  5 Apr 2022 09:23:42 +0200
+Message-Id: <20220405070409.409242075@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -51,56 +49,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+From: Luca Coelho <luciano.coelho@intel.com>
 
-[ Upstream commit c3b2f911ac11892b672df7829becf28d3a830073 ]
+[ Upstream commit 8a265d1a619c16400406c9d598411850ee104aed ]
 
-platform_get_resource(pdev, IORESOURCE_IRQ, ..) relies on static
-allocation of IRQ resources in DT core code, this causes an issue
-when using hierarchical interrupt domains using "interrupts" property
-in the node as this bypasses the hierarchical setup and messes up the
-irq chaining.
+We may not have all the interfaces added to the driver when we get the
+THERMAL_DUAL_CHAIN_REQUEST notification from the FW, so instead of
+iterating all vifs to update SMPS, iterate only the ones that are
+already assigned.  The interfaces that were not assigned yet, will be
+updated accordingly when we start using them.
 
-In preparation for removal of static setup of IRQ resource from DT core
-code use platform_get_irq().
-
-Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
-Signed-off-by: Wolfram Sang <wsa@kernel.org>
+Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
+Fixes: 2a7ce54ccc23 ("iwlwifi: mvm: honour firmware SMPS requests")
+Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
+Link: https://lore.kernel.org/r/iwlwifi.20220129105618.9416aade2ba0.I0b71142f89e3f158aa058a1dfb2517c8c1fa3726@changeid
+Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/i2c/busses/i2c-bcm2835.c | 11 ++++-------
- 1 file changed, 4 insertions(+), 7 deletions(-)
+ drivers/net/wireless/intel/iwlwifi/mvm/ops.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/i2c/busses/i2c-bcm2835.c b/drivers/i2c/busses/i2c-bcm2835.c
-index ad3b124a2e37..5149454eef4a 100644
---- a/drivers/i2c/busses/i2c-bcm2835.c
-+++ b/drivers/i2c/busses/i2c-bcm2835.c
-@@ -407,7 +407,7 @@ static const struct i2c_adapter_quirks bcm2835_i2c_quirks = {
- static int bcm2835_i2c_probe(struct platform_device *pdev)
- {
- 	struct bcm2835_i2c_dev *i2c_dev;
--	struct resource *mem, *irq;
-+	struct resource *mem;
- 	int ret;
- 	struct i2c_adapter *adap;
- 	struct clk *mclk;
-@@ -457,12 +457,9 @@ static int bcm2835_i2c_probe(struct platform_device *pdev)
- 		return ret;
- 	}
+diff --git a/drivers/net/wireless/intel/iwlwifi/mvm/ops.c b/drivers/net/wireless/intel/iwlwifi/mvm/ops.c
+index 364f6aefae81..5b7d89e33431 100644
+--- a/drivers/net/wireless/intel/iwlwifi/mvm/ops.c
++++ b/drivers/net/wireless/intel/iwlwifi/mvm/ops.c
+@@ -237,7 +237,8 @@ static void iwl_mvm_rx_thermal_dual_chain_req(struct iwl_mvm *mvm,
+ 	 */
+ 	mvm->fw_static_smps_request =
+ 		req->event == cpu_to_le32(THERMAL_DUAL_CHAIN_REQ_DISABLE);
+-	ieee80211_iterate_interfaces(mvm->hw, IEEE80211_IFACE_ITER_NORMAL,
++	ieee80211_iterate_interfaces(mvm->hw,
++				     IEEE80211_IFACE_SKIP_SDATA_NOT_IN_DRIVER,
+ 				     iwl_mvm_intf_dual_chain_req, NULL);
+ }
  
--	irq = platform_get_resource(pdev, IORESOURCE_IRQ, 0);
--	if (!irq) {
--		dev_err(&pdev->dev, "No IRQ resource\n");
--		return -ENODEV;
--	}
--	i2c_dev->irq = irq->start;
-+	i2c_dev->irq = platform_get_irq(pdev, 0);
-+	if (i2c_dev->irq < 0)
-+		return i2c_dev->irq;
- 
- 	ret = request_irq(i2c_dev->irq, bcm2835_i2c_isr, IRQF_SHARED,
- 			  dev_name(&pdev->dev), i2c_dev);
 -- 
 2.34.1
 
