@@ -2,83 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B7DA4C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 15:22:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C2E6CC4332F
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 15:22:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350951AbiDEPYV (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 11:24:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54030 "EHLO
+        id S234152AbiDEPYl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 11:24:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59288 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347159AbiDEJqD (ORCPT
+        with ESMTP id S1347210AbiDEJqI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:46:03 -0400
+        Tue, 5 Apr 2022 05:46:08 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEE30DCE2B;
-        Tue,  5 Apr 2022 02:32:33 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8AA8CDD97B;
+        Tue,  5 Apr 2022 02:32:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 98173615E5;
-        Tue,  5 Apr 2022 09:32:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 014EDC385AC;
-        Tue,  5 Apr 2022 09:32:30 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649151152;
-        bh=JncMrmfzGwPQjE8v5Pu7YmvmRGLYwvdId2BOQWsQm3g=;
-        h=From:To:Cc:In-Reply-To:References:Subject:Date:From;
-        b=Lwe2vorGKyGz1bl2S5iuUkKHrbRH7fJipkVD/5CprU9IVf1St+0vLejwdA5JNej4E
-         2TC2gE/DAVvJijHf6f7ncy2/3gEaLoHAFsKOEMM/kJcoGijA1Sth6yuHjqq91Rwqf+
-         a+I311V25B6/YKfySaEQMlVHnDJYeGHiwn/5zvQ29TLp13jMHvPBmA2SjSVWgIx/sC
-         R31xZuDvm8NqXlplbULmp0BI6pXvcUTJyGpEcw8HxQsPBbPfUps8N8ltJIm8vsLyjS
-         KmwSwVK3BXUHZAmyMVJVTBhvJy7fNRutKOlxp+JPb10YAYlr7ZgF/VB9Wbb5O0n5Vx
-         9J/T+CMQJqRNQ==
-From:   Mark Brown <broonie@kernel.org>
-To:     miquel.raynal@bootlin.com, christophe.jaillet@wanadoo.fr
-Cc:     linux-kernel@vger.kernel.org, linux-spi@vger.kernel.org,
-        kernel-janitors@vger.kernel.org
-In-Reply-To: <09c81f751241f6ec0bac7a48d4ec814a742e0d17.1648980664.git.christophe.jaillet@wanadoo.fr>
-References: <09c81f751241f6ec0bac7a48d4ec814a742e0d17.1648980664.git.christophe.jaillet@wanadoo.fr>
-Subject: Re: [PATCH] spi: mxic: Fix an error handling path in mxic_spi_probe()
-Message-Id: <164915115073.276894.2017003822406152149.b4-ty@kernel.org>
-Date:   Tue, 05 Apr 2022 10:32:30 +0100
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 27313615E5;
+        Tue,  5 Apr 2022 09:32:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 39962C385A2;
+        Tue,  5 Apr 2022 09:32:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649151156;
+        bh=TdNHD+ThQdFDNYzUnyywSIQFu/8Rmrh1akcMl4pdADg=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=mTqCmeGdGNXyAGp+MeGmYdeQuVVJUFjroorq57uFz8FF00U5mqasa+pzXq/YUlhRK
+         4tCJr+h989D6vfEOHP9BFXKb77T5S4v3SPjF+q0yi9LJzzJ7JbZZhi4ZHe17/cxAGV
+         5sxXMgghaZRZ4PFB+eVZVICX1MueVr1q74WukJ+w=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 314/913] media: usb: go7007: s2250-board: fix leak in probe()
+Date:   Tue,  5 Apr 2022 09:22:56 +0200
+Message-Id: <20220405070349.265093600@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, 3 Apr 2022 12:11:13 +0200, Christophe JAILLET wrote:
-> If spi_register_master() fails, we must undo a previous
-> mxic_spi_mem_ecc_probe() call, as already done in the remove function.
-> 
-> 
+From: Dan Carpenter <dan.carpenter@oracle.com>
 
-Applied to
+[ Upstream commit 67e4550ecd6164bfbdff54c169e5bbf9ccfaf14d ]
 
-   https://git.kernel.org/pub/scm/linux/kernel/git/broonie/spi.git for-next
+Call i2c_unregister_device(audio) on this error path.
 
-Thanks!
+Fixes: d3b2ccd9e307 ("[media] s2250: convert to the control framework")
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/media/usb/go7007/s2250-board.c | 10 ++++------
+ 1 file changed, 4 insertions(+), 6 deletions(-)
 
-[1/1] spi: mxic: Fix an error handling path in mxic_spi_probe()
-      commit: 35d516bdcd92fde46202d06b68df1166760208fd
+diff --git a/drivers/media/usb/go7007/s2250-board.c b/drivers/media/usb/go7007/s2250-board.c
+index c742cc88fac5..1fa6f10ee157 100644
+--- a/drivers/media/usb/go7007/s2250-board.c
++++ b/drivers/media/usb/go7007/s2250-board.c
+@@ -504,6 +504,7 @@ static int s2250_probe(struct i2c_client *client,
+ 	u8 *data;
+ 	struct go7007 *go = i2c_get_adapdata(adapter);
+ 	struct go7007_usb *usb = go->hpi_context;
++	int err = -EIO;
+ 
+ 	audio = i2c_new_dummy_device(adapter, TLV320_ADDRESS >> 1);
+ 	if (IS_ERR(audio))
+@@ -532,11 +533,8 @@ static int s2250_probe(struct i2c_client *client,
+ 		V4L2_CID_HUE, -512, 511, 1, 0);
+ 	sd->ctrl_handler = &state->hdl;
+ 	if (state->hdl.error) {
+-		int err = state->hdl.error;
+-
+-		v4l2_ctrl_handler_free(&state->hdl);
+-		kfree(state);
+-		return err;
++		err = state->hdl.error;
++		goto fail;
+ 	}
+ 
+ 	state->std = V4L2_STD_NTSC;
+@@ -600,7 +598,7 @@ static int s2250_probe(struct i2c_client *client,
+ 	i2c_unregister_device(audio);
+ 	v4l2_ctrl_handler_free(&state->hdl);
+ 	kfree(state);
+-	return -EIO;
++	return err;
+ }
+ 
+ static int s2250_remove(struct i2c_client *client)
+-- 
+2.34.1
 
-All being well this means that it will be integrated into the linux-next
-tree (usually sometime in the next 24 hours) and sent to Linus during
-the next merge window (or sooner if it is a bug fix), however if
-problems are discovered then the patch may be dropped or reverted.
 
-You may get further e-mails resulting from automated or manual testing
-and review of the tree, please engage with people reporting problems and
-send followup patches addressing any issues that are reported if needed.
 
-If any updates are required or you are submitting further changes they
-should be sent as incremental updates against current git, existing
-patches will not be replaced.
-
-Please add any relevant lists and maintainers to the CCs when replying
-to this mail.
-
-Thanks,
-Mark
