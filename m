@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C02EAC35273
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F1BCEC35276
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 07:50:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232569AbiDEHv3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 03:51:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47250 "EHLO
+        id S232845AbiDEHvo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 03:51:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34212 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232638AbiDEHrC (ORCPT
+        with ESMTP id S232786AbiDEHrJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 03:47:02 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 983EA95A22;
-        Tue,  5 Apr 2022 00:42:42 -0700 (PDT)
+        Tue, 5 Apr 2022 03:47:09 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3490D9AE76;
+        Tue,  5 Apr 2022 00:43:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 255DAB81B92;
-        Tue,  5 Apr 2022 07:42:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 822E1C340EE;
-        Tue,  5 Apr 2022 07:42:39 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 98643CE1BF4;
+        Tue,  5 Apr 2022 07:43:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A4CC1C340EE;
+        Tue,  5 Apr 2022 07:42:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649144559;
-        bh=8QYO2AMThjA538+hdzVx+um+o/IV7h3ewMsPaWlZaLg=;
+        s=korg; t=1649144579;
+        bh=YZdqkHxdou06xEwB5O8wkX6sBT8EGjd1hPU579OKop8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=U3Z1MteqegkARs7FQ+zpgxtqjPepUcBL2UvOTKvzRDSXhelJZnedp/b4InA2A94Mu
-         HFYy+2Rm2sRYcVNGYia5nYGtTPvAkC+zB5W0fE+qGkVQGoiEuiOYRuNMQKonCw9jpZ
-         k3Bb1g1PY/KS0Qw9FBDLyx7if1/OpE2poIByFbew=
+        b=BokD014bqa+V26aJcDVRXJAJYk9h3bkE+HUATc2WaCovBJ98dmk2P0llR/uHFmeL5
+         cP6o+5fJvN2woHTGcGQ+bdsS4J6OHPaYxf3k/6Es1vR4S6AHsv6s9/bsFrr3zD1dA9
+         m7rf6TiW3aT4M42AgTKWLJ5YyF7hCflc51BVOuIo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Niklas Cassel <niklas.cassel@wdc.com>,
-        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-        Palmer Dabbelt <palmer@rivosinc.com>
-Subject: [PATCH 5.17 0087/1126] riscv: dts: canaan: Fix SPI3 bus width
-Date:   Tue,  5 Apr 2022 09:13:54 +0200
-Message-Id: <20220405070410.122653850@linuxfoundation.org>
+        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
+        Chuck Lever <chuck.lever@oracle.com>
+Subject: [PATCH 5.17 0058/1126] NFSD: prevent integer overflow on 32 bit systems
+Date:   Tue,  5 Apr 2022 09:13:25 +0200
+Message-Id: <20220405070409.271394847@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -49,85 +48,31 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Niklas Cassel <niklas.cassel@wdc.com>
+From: Dan Carpenter <dan.carpenter@oracle.com>
 
-commit 6846d656106add3aeefcd6eda0dc885787deaa6e upstream.
+commit 23a9dbbe0faf124fc4c139615633b9d12a3a89ef upstream.
 
-According to the K210 Standalone SDK Programming guide:
-https://canaan-creative.com/wp-content/uploads/2020/03/kendryte_standalone_programming_guide_20190311144158_en.pdf
+On a 32 bit system, the "len * sizeof(*p)" operation can have an
+integer overflow.
 
-Section 15.4.3.3:
-SPI0 and SPI1 supports: standard, dual, quad and octal transfers.
-SPI3 supports: standard, dual and quad transfers (octal is not supported).
-
-In order to support quad transfers (Quad SPI), SPI3 must have four IO wires
-connected to the SPI flash.
-
-Update the device tree to specify the correct bus width.
-
-Tested on maix bit, maix dock and maixduino, which all have the same
-SPI flash (gd25lq128d) connected to SPI3. maix go is untested, but it
-would not make sense for this k210 board to be designed differently.
-
-Signed-off-by: Niklas Cassel <niklas.cassel@wdc.com>
-Reviewed-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
-Fixes: 8f5b0e79f3e5 ("riscv: Add SiPeed MAIXDUINO board device tree")
-Fixes: 8194f08bda18 ("riscv: Add SiPeed MAIX GO board device tree")
-Fixes: a40f920964c4 ("riscv: Add SiPeed MAIX DOCK board device tree")
-Fixes: 97c279bcf813 ("riscv: Add SiPeed MAIX BiT board device tree")
 Cc: stable@vger.kernel.org
-Signed-off-by: Palmer Dabbelt <palmer@rivosinc.com>
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+Signed-off-by: Chuck Lever <chuck.lever@oracle.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/riscv/boot/dts/canaan/sipeed_maix_bit.dts  |    2 ++
- arch/riscv/boot/dts/canaan/sipeed_maix_dock.dts |    2 ++
- arch/riscv/boot/dts/canaan/sipeed_maix_go.dts   |    2 ++
- arch/riscv/boot/dts/canaan/sipeed_maixduino.dts |    2 ++
- 4 files changed, 8 insertions(+)
+ include/linux/sunrpc/xdr.h |    2 ++
+ 1 file changed, 2 insertions(+)
 
---- a/arch/riscv/boot/dts/canaan/sipeed_maix_bit.dts
-+++ b/arch/riscv/boot/dts/canaan/sipeed_maix_bit.dts
-@@ -203,6 +203,8 @@
- 		compatible = "jedec,spi-nor";
- 		reg = <0>;
- 		spi-max-frequency = <50000000>;
-+		spi-tx-bus-width = <4>;
-+		spi-rx-bus-width = <4>;
- 		m25p,fast-read;
- 		broken-flash-reset;
- 	};
---- a/arch/riscv/boot/dts/canaan/sipeed_maix_dock.dts
-+++ b/arch/riscv/boot/dts/canaan/sipeed_maix_dock.dts
-@@ -205,6 +205,8 @@
- 		compatible = "jedec,spi-nor";
- 		reg = <0>;
- 		spi-max-frequency = <50000000>;
-+		spi-tx-bus-width = <4>;
-+		spi-rx-bus-width = <4>;
- 		m25p,fast-read;
- 		broken-flash-reset;
- 	};
---- a/arch/riscv/boot/dts/canaan/sipeed_maix_go.dts
-+++ b/arch/riscv/boot/dts/canaan/sipeed_maix_go.dts
-@@ -213,6 +213,8 @@
- 		compatible = "jedec,spi-nor";
- 		reg = <0>;
- 		spi-max-frequency = <50000000>;
-+		spi-tx-bus-width = <4>;
-+		spi-rx-bus-width = <4>;
- 		m25p,fast-read;
- 		broken-flash-reset;
- 	};
---- a/arch/riscv/boot/dts/canaan/sipeed_maixduino.dts
-+++ b/arch/riscv/boot/dts/canaan/sipeed_maixduino.dts
-@@ -178,6 +178,8 @@
- 		compatible = "jedec,spi-nor";
- 		reg = <0>;
- 		spi-max-frequency = <50000000>;
-+		spi-tx-bus-width = <4>;
-+		spi-rx-bus-width = <4>;
- 		m25p,fast-read;
- 		broken-flash-reset;
- 	};
+--- a/include/linux/sunrpc/xdr.h
++++ b/include/linux/sunrpc/xdr.h
+@@ -731,6 +731,8 @@ xdr_stream_decode_uint32_array(struct xd
+ 
+ 	if (unlikely(xdr_stream_decode_u32(xdr, &len) < 0))
+ 		return -EBADMSG;
++	if (len > SIZE_MAX / sizeof(*p))
++		return -EBADMSG;
+ 	p = xdr_inline_decode(xdr, len * sizeof(*p));
+ 	if (unlikely(!p))
+ 		return -EBADMSG;
 
 
