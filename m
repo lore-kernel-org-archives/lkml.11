@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EE78EC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 07:43:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C2E84C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 07:44:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231907AbiDEHpx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 03:45:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34264 "EHLO
+        id S231724AbiDEHqH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 03:46:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55376 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232077AbiDEHoZ (ORCPT
+        with ESMTP id S232135AbiDEHo0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 03:44:25 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25AE9972B8;
-        Tue,  5 Apr 2022 00:41:03 -0700 (PDT)
+        Tue, 5 Apr 2022 03:44:26 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2495972D2;
+        Tue,  5 Apr 2022 00:41:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 889C66150D;
-        Tue,  5 Apr 2022 07:41:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9669AC340EE;
-        Tue,  5 Apr 2022 07:41:01 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3613261607;
+        Tue,  5 Apr 2022 07:41:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 495F2C340EE;
+        Tue,  5 Apr 2022 07:41:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649144462;
-        bh=tv6arKi6rzEnPZRRIbINOvlsb8nTYzIr7Tyyr02e010=;
+        s=korg; t=1649144464;
+        bh=lerBgQkdf9cnh0z/qLfVS+BV9J0u5dRvXHPnTlbTwuA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pw0G5ZSx1k8gxj2BovGt/je5NLZE1KlcNSysJeZl59cGCAHgbiLhtUwyWK47zeDQQ
-         LhkBADeBUWuoVE9p4BiTjGK/gPfXiW2vxLrEBx6gGvkcheWdH7MDdup/elsyNhyLB8
-         df8gyfV3fTPCwE6GG3Mbz626Tt6bG53OMnpYmKTA=
+        b=y6fsfXcos0sSk0N+zPrqQUtR2txIP3yNmOvilow1JrVJX1tgi7PapcwZRY0BYc+zK
+         TepV0SUjMWD5TR/rB2vFwFAX4Ze1YMS/BQTAiOWxmhpJxGHjHb4NSlZ71fsBBHiKfl
+         cHLDEi+amewlBZaL6aljVkSYbicPCxznxd+ZIJdM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Henry Lin <henryl@nvidia.com>,
-        Mathias Nyman <mathias.nyman@linux.intel.com>
-Subject: [PATCH 5.17 0016/1126] xhci: fix runtime PM imbalance in USB2 resume
-Date:   Tue,  5 Apr 2022 09:12:43 +0200
-Message-Id: <20220405070408.018352716@linuxfoundation.org>
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Javier Martinez Canillas <javierm@redhat.com>,
+        Johan Hovold <johan@kernel.org>
+Subject: [PATCH 5.17 0052/1126] firmware: sysfb: fix platform-device leak in error path
+Date:   Tue,  5 Apr 2022 09:13:19 +0200
+Message-Id: <20220405070409.092886225@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -48,41 +49,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Henry Lin <henryl@nvidia.com>
+From: Johan Hovold <johan@kernel.org>
 
-commit 70c05e4cf63054cd755ca66c1819327b22cb085f upstream.
+commit 202c08914ba50dd324e42d5ad99535a89f242560 upstream.
 
-A race between system resume and device-initiated resume may result in
-runtime PM imbalance on USB2 root hub. If a device-initiated resume
-starts and system resume xhci_bus_resume() directs U0 before hub driver
-sees the resuming device in RESUME state, device-initiated resume will
-not be finished in xhci_handle_usb2_port_link_resume(). In this case,
-usb_hcd_end_port_resume() call is missing.
+Make sure to free the platform device also in the unlikely event that
+registration fails.
 
-This changes calls usb_hcd_end_port_resume() if resuming device reaches
-U0 to keep runtime PM balance.
-
-Fixes: a231ec41e6f6 ("xhci: refactor U0 link state handling in get_port_status")
-Cc: stable@vger.kernel.org
-Signed-off-by: Henry Lin <henryl@nvidia.com>
-Signed-off-by: Mathias Nyman <mathias.nyman@linux.intel.com>
-Link: https://lore.kernel.org/r/20220303110903.1662404-5-mathias.nyman@linux.intel.com
+Fixes: 0589e8889dce ("drivers/firmware: Add missing platform_device_put() in sysfb_create_simplefb")
+Fixes: 8633ef82f101 ("drivers/firmware: consolidate EFI framebuffer setup for all arches")
+Cc: stable@vger.kernel.org      # 5.14
+Cc: Miaoqian Lin <linmq006@gmail.com>
+Cc: Javier Martinez Canillas <javierm@redhat.com>
+Signed-off-by: Johan Hovold <johan@kernel.org>
+Link: https://lore.kernel.org/r/20220303180519.3117-1-johan@kernel.org
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/usb/host/xhci-hub.c |    3 +++
- 1 file changed, 3 insertions(+)
+ drivers/firmware/sysfb_simplefb.c |   23 ++++++++++++++---------
+ 1 file changed, 14 insertions(+), 9 deletions(-)
 
---- a/drivers/usb/host/xhci-hub.c
-+++ b/drivers/usb/host/xhci-hub.c
-@@ -1088,6 +1088,9 @@ static void xhci_get_usb2_port_status(st
- 		if (link_state == XDEV_U2)
- 			*status |= USB_PORT_STAT_L1;
- 		if (link_state == XDEV_U0) {
-+			if (bus_state->resume_done[portnum])
-+				usb_hcd_end_port_resume(&port->rhub->hcd->self,
-+							portnum);
- 			bus_state->resume_done[portnum] = 0;
- 			clear_bit(portnum, &bus_state->resuming_ports);
- 			if (bus_state->suspended_ports & (1 << portnum)) {
+--- a/drivers/firmware/sysfb_simplefb.c
++++ b/drivers/firmware/sysfb_simplefb.c
+@@ -113,16 +113,21 @@ __init int sysfb_create_simplefb(const s
+ 	sysfb_apply_efi_quirks(pd);
+ 
+ 	ret = platform_device_add_resources(pd, &res, 1);
+-	if (ret) {
+-		platform_device_put(pd);
+-		return ret;
+-	}
++	if (ret)
++		goto err_put_device;
+ 
+ 	ret = platform_device_add_data(pd, mode, sizeof(*mode));
+-	if (ret) {
+-		platform_device_put(pd);
+-		return ret;
+-	}
++	if (ret)
++		goto err_put_device;
+ 
+-	return platform_device_add(pd);
++	ret = platform_device_add(pd);
++	if (ret)
++		goto err_put_device;
++
++	return 0;
++
++err_put_device:
++	platform_device_put(pd);
++
++	return ret;
+ }
 
 
