@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D97CC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 14:56:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B911C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 14:56:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343569AbiDEOyk (ORCPT
+        id S1344147AbiDEOzE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 10:54:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41936 "EHLO
+        Tue, 5 Apr 2022 10:55:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50126 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244449AbiDEJlT (ORCPT
+        with ESMTP id S244762AbiDEJli (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:41:19 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8FA86BB91B;
-        Tue,  5 Apr 2022 02:26:28 -0700 (PDT)
+        Tue, 5 Apr 2022 05:41:38 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A0DEBC855;
+        Tue,  5 Apr 2022 02:27:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 38F14B81C9F;
-        Tue,  5 Apr 2022 09:26:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9C5A3C385A0;
-        Tue,  5 Apr 2022 09:26:25 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BB082B81C9D;
+        Tue,  5 Apr 2022 09:27:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0B8C3C385A7;
+        Tue,  5 Apr 2022 09:27:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649150786;
-        bh=dlYk8rC60OvZeHn5CTD5I6a5wqwswMluROqrjoBv3YU=;
+        s=korg; t=1649150833;
+        bh=o2hdrjC/PgYjbZe3JzicMJHQaxwlPlqG/ztutGUT8Go=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=l7Vhytfdge9AT8oQzkIJ+PVUL685R/BGANLNDFRZb6YhlC8jujxNzJWYoa8Mad2sW
-         mZbLnhALT90XXLeuxQoxDdnlKBgwQo6ebegVqlkG3REmvTqiVnf4AviA9OyWZsg4Ir
-         DeIYjhORh8JhULTxkGc335EHJOutbip7C4+IkXJs=
+        b=Zpr62VAnLdtjDft3TOditHKbPfVDVKl72rcYDDRzRvryzoYm+jrRB+Nql4pyq6Qz7
+         mn2/Bl73V+PXR0INexY+yPbFjTqyefb8iURQiYku0I7GG7THhxbXcZIcQaKXGtmRwH
+         Vs/RIfKwX3kyu+NZGpcdFcM7IRnTG3M0+UTu3+ww=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Linus Walleij <linus.walleij@linaro.org>,
-        Arend van Spriel <arend.vanspriel@broadcom.com>,
-        Hector Martin <marcan@marcan.st>, Kalle Valo <kvalo@kernel.org>
-Subject: [PATCH 5.15 181/913] brcmfmac: pcie: Declare missing firmware files in pcie.c
-Date:   Tue,  5 Apr 2022 09:20:43 +0200
-Message-Id: <20220405070345.280041237@linuxfoundation.org>
+        stable@vger.kernel.org, Tomas Paukrt <tomaspaukrt@email.cz>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 197/913] crypto: mxs-dcp - Fix scatterlist processing
+Date:   Tue,  5 Apr 2022 09:20:59 +0200
+Message-Id: <20220405070345.763513842@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
 References: <20220405070339.801210740@linuxfoundation.org>
@@ -50,51 +50,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hector Martin <marcan@marcan.st>
+From: Tomas Paukrt <tomaspaukrt@email.cz>
 
-commit 6d766d8cb505ec1fae63da8faef4fc5712c3d794 upstream.
+[ Upstream commit 28e9b6d8199a3f124682b143800c2dacdc3d70dd ]
 
-Move one of the declarations from sdio.c to pcie.c, since it makes no
-sense in the former (SDIO support is optional), and add missing ones.
+This patch fixes a bug in scatterlist processing that may cause incorrect AES block encryption/decryption.
 
-Fixes: 75729e110e68 ("brcmfmac: expose firmware config files through modinfo")
-Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
-Reviewed-by: Arend van Spriel <arend.vanspriel@broadcom.com>
-Cc: stable@vger.kernel.org
-Signed-off-by: Hector Martin <marcan@marcan.st>
-Signed-off-by: Kalle Valo <kvalo@kernel.org>
-Link: https://lore.kernel.org/r/20220131160713.245637-5-marcan@marcan.st
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 2e6d793e1bf0 ("crypto: mxs-dcp - Use sg_mapping_iter to copy data")
+Signed-off-by: Tomas Paukrt <tomaspaukrt@email.cz>
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c |    7 +++++++
- drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c |    1 -
- 2 files changed, 7 insertions(+), 1 deletion(-)
+ drivers/crypto/mxs-dcp.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c
-+++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c
-@@ -59,6 +59,13 @@ BRCMF_FW_DEF(4366B, "brcmfmac4366b-pcie"
- BRCMF_FW_DEF(4366C, "brcmfmac4366c-pcie");
- BRCMF_FW_DEF(4371, "brcmfmac4371-pcie");
+diff --git a/drivers/crypto/mxs-dcp.c b/drivers/crypto/mxs-dcp.c
+index d19e5ffb5104..d6f9e2fe863d 100644
+--- a/drivers/crypto/mxs-dcp.c
++++ b/drivers/crypto/mxs-dcp.c
+@@ -331,7 +331,7 @@ static int mxs_dcp_aes_block_crypt(struct crypto_async_request *arq)
+ 		memset(key + AES_KEYSIZE_128, 0, AES_KEYSIZE_128);
+ 	}
  
-+/* firmware config files */
-+MODULE_FIRMWARE(BRCMF_FW_DEFAULT_PATH "brcmfmac*-pcie.txt");
-+MODULE_FIRMWARE(BRCMF_FW_DEFAULT_PATH "brcmfmac*-pcie.*.txt");
-+
-+/* per-board firmware binaries */
-+MODULE_FIRMWARE(BRCMF_FW_DEFAULT_PATH "brcmfmac*-pcie.*.bin");
-+
- static const struct brcmf_firmware_mapping brcmf_pcie_fwnames[] = {
- 	BRCMF_FW_ENTRY(BRCM_CC_43602_CHIP_ID, 0xFFFFFFFF, 43602),
- 	BRCMF_FW_ENTRY(BRCM_CC_43465_CHIP_ID, 0xFFFFFFF0, 4366C),
---- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c
-+++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c
-@@ -629,7 +629,6 @@ BRCMF_FW_CLM_DEF(43752, "brcmfmac43752-s
- 
- /* firmware config files */
- MODULE_FIRMWARE(BRCMF_FW_DEFAULT_PATH "brcmfmac*-sdio.*.txt");
--MODULE_FIRMWARE(BRCMF_FW_DEFAULT_PATH "brcmfmac*-pcie.*.txt");
- 
- /* per-board firmware binaries */
- MODULE_FIRMWARE(BRCMF_FW_DEFAULT_PATH "brcmfmac*-sdio.*.bin");
+-	for_each_sg(req->src, src, sg_nents(src), i) {
++	for_each_sg(req->src, src, sg_nents(req->src), i) {
+ 		src_buf = sg_virt(src);
+ 		len = sg_dma_len(src);
+ 		tlen += len;
+-- 
+2.34.1
+
 
 
