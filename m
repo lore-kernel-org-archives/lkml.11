@@ -2,181 +2,70 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7132FC43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 57E97C433EF
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 02:02:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1846123AbiDFCCw (ORCPT
+        id S1846109AbiDFCCr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 22:02:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35048 "EHLO
+        Tue, 5 Apr 2022 22:02:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59408 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1573548AbiDETWc (ORCPT
+        with ESMTP id S1352567AbiDEOB4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 15:22:32 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6129038196;
-        Tue,  5 Apr 2022 12:20:33 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D3A6E60A5F;
-        Tue,  5 Apr 2022 19:20:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8DB7DC385A1;
-        Tue,  5 Apr 2022 19:20:31 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649186432;
-        bh=xEtHWYraQLVXM7siAXtFsrglffaWtvmMBMXrNh2FoQY=;
+        Tue, 5 Apr 2022 10:01:56 -0400
+X-Greylist: delayed 321 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 05 Apr 2022 05:57:29 PDT
+Received: from leifhenriksen.net (www.leifhenriksen.net [51.91.79.154])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD6A4154050
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 05:57:29 -0700 (PDT)
+Received: from YD-CND7506QL7.rd.francetelecom.fr (unknown [161.105.209.130])
+        by leifhenriksen.net (Postfix) with ESMTPSA id A1DAA13BD40;
+        Tue,  5 Apr 2022 12:52:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=leifhenriksen.net;
+        s=mail; t=1649163125;
+        bh=+YmyOSc/ChSmISgvPqD35a+/+LmKQGqLsBAqtL6Glmw=;
         h=From:To:Cc:Subject:Date:From;
-        b=rgKQEBjeDncRHFY/vDHbldz2KGt0rBlpyj6pNF2qiLHGZkPASBPeR8q2SFG8KAxBG
-         B7m77S876tMl0cUzTpwFPYVlLqgQuEoWNGigQKBcUDjmsh2oHg1uEVHblUlkcmRKm3
-         ujah+AhUIFTbL8CFp+XHP1dK9i3J183hWTKtO4SPvTTzbuOtv4Qk3WuMtdpcPIZwNt
-         fH+YDhmEdW7RYOoGERcnkAI90CrUD+kMOR3O9nZKI7sEWKxUnOIhTkbiySdg8fpD99
-         0rlnse6YvVVXl/MmM2EvivB20Lng/MycRrwtYFdweYMtarAV/r0DjkLOjFD4mQDVAo
-         xibfj61hOTn7A==
-From:   Jeff Layton <jlayton@kernel.org>
-To:     idryomov@gmail.com, xiubli@redhat.com
-Cc:     ceph-devel@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        linux-fscrypt@vger.kernel.org, linux-kernel@vger.kernel.org,
-        lhenriques@suse.de
-Subject: [PATCH v13 00/59] ceph+fscrypt: full support
-Date:   Tue,  5 Apr 2022 15:19:31 -0400
-Message-Id: <20220405192030.178326-1-jlayton@kernel.org>
-X-Mailer: git-send-email 2.35.1
+        b=LrYHS6C8XrbEH4Aeg2Ilt1iwvZt2gsGONZmzui/KDWXRH0vQM6u3xP5kLwRL0FO7T
+         gHeR/c6CV+VQsUE8fN7nHaZZpBa/7+RWR7uFrA8KwxPpQPVANdyK96/0DCV8STBoWd
+         kuHNJbW8cEedMYMDPWkV6MOcUmZ+pVHdmyoj0N0g8yAOkbAtvtmiplV/lItofkKaWI
+         DgRYogMmuEMrdweBIPTQwRv8dYfWmN+Azt/gNfM8R4kPpTaRtx7X4w6KT/+7pGoGtH
+         CbgB/9boyGAWCZ+hG2wA9lV1vNeEd8d1Jemd04MGb9nIhvDAfNXkkwy3zjfqH5P+v3
+         TaJceu3emwi9w==
+From:   Leif Henriksen <leif@leifhenriksen.net>
+To:     keescook@chromium.org
+Cc:     leif@leifhenriksen.net, Andy Lutomirski <luto@amacapital.net>,
+        Will Drewry <wad@chromium.org>, linux-kernel@vger.kernel.org
+Subject: [PATCH] kernel/seccomp.c : struct seccomp_filter comment reordering
+Date:   Tue,  5 Apr 2022 14:51:45 +0200
+Message-Id: <20220405125145.404131-1-leif@leifhenriksen.net>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Yet another ceph+fscrypt posting! This time, I've included the revised
-sparse read support patches as they have gotten some small revisions and
-the main impetus for them is fscrypt anyway.
+Swapped the @log and @cache field comment to
+match the same order as the struct declaration.
 
-The main changes since v12:
+Signed-off-by: Leif Henriksen <leif@leifhenriksen.net>
+---
+ kernel/seccomp.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-- rebased onto v5.18-rc1 and fixed up minor merge conflicts
-:w
-
-- some minor cleanups and simplifications to the sparse_read
-  infrastructure
-
-- dropped a patch from Luis that added a legacy v1 key prefix. He's
-  pursuing a more appropriate userland fix for xfstests instead
-
-- the patch to add has_stable_inodes operation to ceph has been dropped.
-  That operation is only applicable for special storage hardware, so it
-  has no purpose on ceph.
-
-- the patch to export new_inode_pseudo has been replaced with one that
-  changes the I_CREATING test in inode_insert5. This allows us to use
-  new_inode instead.
-
-For now, I've dropped these from the ceph-client/testing branch, but
-I'll plan to merge them again in a couple of weeks once we rebase
-ceph-client/master onto a v5.18-rc release (usually around -rc2 or
--rc3).
-
-Jeff Layton (49):
-  libceph: add spinlock around osd->o_requests
-  libceph: define struct ceph_sparse_extent and add some helpers
-  libceph: add sparse read support to msgr2 crc state machine
-  libceph: add sparse read support to OSD client
-  libceph: support sparse reads on msgr2 secure codepath
-  libceph: add sparse read support to msgr1
-  ceph: add new mount option to enable sparse reads
-  fs: change test in inode_insert5 for adding to the sb list
-  fscrypt: export fscrypt_base64url_encode and fscrypt_base64url_decode
-  fscrypt: export fscrypt_fname_encrypt and fscrypt_fname_encrypted_size
-  fscrypt: add fscrypt_context_for_new_inode
-  ceph: preallocate inode for ops that may create one
-  ceph: fscrypt_auth handling for ceph
-  ceph: ensure that we accept a new context from MDS for new inodes
-  ceph: add support for fscrypt_auth/fscrypt_file to cap messages
-  ceph: implement -o test_dummy_encryption mount option
-  ceph: decode alternate_name in lease info
-  ceph: add fscrypt ioctls
-  ceph: make ceph_msdc_build_path use ref-walk
-  ceph: add encrypted fname handling to ceph_mdsc_build_path
-  ceph: send altname in MClientRequest
-  ceph: encode encrypted name in dentry release
-  ceph: properly set DCACHE_NOKEY_NAME flag in lookup
-  ceph: set DCACHE_NOKEY_NAME in atomic open
-  ceph: make d_revalidate call fscrypt revalidator for encrypted
-    dentries
-  ceph: add helpers for converting names for userland presentation
-  ceph: add fscrypt support to ceph_fill_trace
-  ceph: create symlinks with encrypted and base64-encoded targets
-  ceph: make ceph_get_name decrypt filenames
-  ceph: add a new ceph.fscrypt.auth vxattr
-  ceph: add some fscrypt guardrails
-  libceph: add CEPH_OSD_OP_ASSERT_VER support
-  ceph: size handling for encrypted inodes in cap updates
-  ceph: fscrypt_file field handling in MClientRequest messages
-  ceph: get file size from fscrypt_file when present in inode traces
-  ceph: handle fscrypt fields in cap messages from MDS
-  ceph: update WARN_ON message to pr_warn
-  ceph: add infrastructure for file encryption and decryption
-  libceph: allow ceph_osdc_new_request to accept a multi-op read
-  ceph: disable fallocate for encrypted inodes
-  ceph: disable copy offload on encrypted inodes
-  ceph: don't use special DIO path for encrypted inodes
-  ceph: align data in pages in ceph_sync_write
-  ceph: add read/modify/write to ceph_sync_write
-  ceph: plumb in decryption during sync reads
-  ceph: add fscrypt decryption support to ceph_netfs_issue_op
-  ceph: set i_blkbits to crypto block size for encrypted inodes
-  ceph: add encryption support to writepage
-  ceph: fscrypt support for writepages
-
-Luis Henriques (1):
-  ceph: don't allow changing layout on encrypted files/directories
-
-Xiubo Li (9):
-  ceph: make the ioctl cmd more readable in debug log
-  ceph: fix base64 encoded name's length check in ceph_fname_to_usr()
-  ceph: pass the request to parse_reply_info_readdir()
-  ceph: add ceph_encode_encrypted_dname() helper
-  ceph: add support to readdir for encrypted filenames
-  ceph: add __ceph_get_caps helper support
-  ceph: add __ceph_sync_read helper support
-  ceph: add object version support for sync read
-  ceph: add truncate size handling support for fscrypt
-
- fs/ceph/Makefile                |   1 +
- fs/ceph/acl.c                   |   4 +-
- fs/ceph/addr.c                  | 136 ++++++--
- fs/ceph/caps.c                  | 219 ++++++++++--
- fs/ceph/crypto.c                | 442 ++++++++++++++++++++++++
- fs/ceph/crypto.h                | 256 ++++++++++++++
- fs/ceph/dir.c                   | 182 +++++++---
- fs/ceph/export.c                |  44 ++-
- fs/ceph/file.c                  | 579 +++++++++++++++++++++++++++-----
- fs/ceph/inode.c                 | 546 +++++++++++++++++++++++++++---
- fs/ceph/ioctl.c                 | 126 ++++++-
- fs/ceph/mds_client.c            | 465 +++++++++++++++++++++----
- fs/ceph/mds_client.h            |  24 +-
- fs/ceph/super.c                 | 107 +++++-
- fs/ceph/super.h                 |  43 ++-
- fs/ceph/xattr.c                 |  29 ++
- fs/crypto/fname.c               |  44 ++-
- fs/crypto/fscrypt_private.h     |   9 +-
- fs/crypto/hooks.c               |   6 +-
- fs/crypto/policy.c              |  35 +-
- fs/inode.c                      |  11 +-
- include/linux/ceph/ceph_fs.h    |  21 +-
- include/linux/ceph/messenger.h  |  32 ++
- include/linux/ceph/osd_client.h |  89 ++++-
- include/linux/ceph/rados.h      |   4 +
- include/linux/fscrypt.h         |  10 +
- net/ceph/messenger.c            |   1 +
- net/ceph/messenger_v1.c         |  98 +++++-
- net/ceph/messenger_v2.c         | 287 ++++++++++++++--
- net/ceph/osd_client.c           | 306 ++++++++++++++++-
- 30 files changed, 3753 insertions(+), 403 deletions(-)
- create mode 100644 fs/ceph/crypto.c
- create mode 100644 fs/ceph/crypto.h
-
+diff --git a/kernel/seccomp.c b/kernel/seccomp.c
+index b5ac87f6dbd4..ad0fed6bdf9b 100644
+--- a/kernel/seccomp.c
++++ b/kernel/seccomp.c
+@@ -198,8 +198,8 @@ static inline void seccomp_cache_prepare(struct seccomp_filter *sfilter)
+  *	   this filter after reaching 0. The @users count is always smaller
+  *	   or equal to @refs. Hence, reaching 0 for @users does not mean
+  *	   the filter can be freed.
+- * @cache: cache of arch/syscall mappings to actions
+  * @log: true if all actions except for SECCOMP_RET_ALLOW should be logged
++ * @cache: cache of arch/syscall mappings to actions
+  * @prev: points to a previously installed, or inherited, filter
+  * @prog: the BPF program to evaluate
+  * @notif: the struct that holds all notification related information
 -- 
-2.35.1
+2.25.1
 
