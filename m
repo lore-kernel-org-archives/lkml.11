@@ -2,47 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D78C0C38A06
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E8D97C4708C
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 14:06:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378136AbiDEOHl (ORCPT
+        id S1378694AbiDEOHr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 10:07:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55688 "EHLO
+        Tue, 5 Apr 2022 10:07:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41004 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236250AbiDEJbO (ORCPT
+        with ESMTP id S236373AbiDEJbT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:31:14 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 374B9C3C;
-        Tue,  5 Apr 2022 02:18:55 -0700 (PDT)
+        Tue, 5 Apr 2022 05:31:19 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0DA0BF7;
+        Tue,  5 Apr 2022 02:19:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C5A7A61654;
-        Tue,  5 Apr 2022 09:18:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CAFBDC385A3;
-        Tue,  5 Apr 2022 09:18:53 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 97E08B81C69;
+        Tue,  5 Apr 2022 09:19:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EAB9BC385A3;
+        Tue,  5 Apr 2022 09:19:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649150334;
-        bh=5z96HNtCSD9lIA7Pp9tRzOIjIWNw7nGrfQ84IMYPEZA=;
+        s=korg; t=1649150345;
+        bh=qYe/uBk0ndVaKY+4X1OhfMJEXd3Z6e/VbB81NnZOuOc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DRvvDLFl1DUBUp9QeB2J1s+4giLQygF+1dYd0UjVZkrV2GzGQ1q+pZ1dLyll31KhR
-         498I3wS4u3cfWg+y5rm0VrNDhycigmKwI6GWJrLzkQQqQot0smZ8qZv9wG3OruduKJ
-         wB907/TGar+XumwTL1tIDKqQZAALwfDMOULDwwFk=
+        b=IMH8nnoewWUeKqhhIUM5cCCDEe+2cNpdSZ577z/cC1CW8VTLPCw5ayed1CRFFlQ9F
+         GVkU7rGXB/3LgqeSfTlVDv2T5ZjKTaQhhwpIfw1NIoRlSq2LDnOw1GZH7LxlYulCnC
+         GvXpFs+hQDtBiVW1YY66hgYnffyDSL1AtOKI5w8Y=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
+        stable@vger.kernel.org, Yosry Ahmed <yosryahmed@google.com>,
+        Shuah Khan <shuah@kernel.org>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
         Linus Torvalds <torvalds@linux-foundation.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Biju Das <biju.das.jz@bp.renesas.com>,
-        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 020/913] spi: Fix erroneous sgs value with min_t()
-Date:   Tue,  5 Apr 2022 09:18:02 +0200
-Message-Id: <20220405070340.419902803@linuxfoundation.org>
+Subject: [PATCH 5.15 024/913] selftests: vm: fix clang build error multiple output files
+Date:   Tue,  5 Apr 2022 09:18:06 +0200
+Message-Id: <20220405070340.539745810@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
 References: <20220405070339.801210740@linuxfoundation.org>
@@ -54,57 +54,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Biju Das <biju.das.jz@bp.renesas.com>
+From: Yosry Ahmed <yosryahmed@google.com>
 
-[ Upstream commit ebc4cb43ea5ada3db46c80156fca58a54b9bbca8 ]
+[ Upstream commit 1c4debc443ef7037dcb7c4f08c33b9caebd21d2e ]
 
-While computing sgs in spi_map_buf(), the data type
-used in min_t() for max_seg_size is 'unsigned int' where
-as that of ctlr->max_dma_len is 'size_t'.
+When building the vm selftests using clang, some errors are seen due to
+having headers in the compilation command:
 
-min_t(unsigned int,x,y) gives wrong results if one of x/y is
-'size_t'
+  clang -Wall -I ../../../../usr/include  -no-pie    gup_test.c ../../../../mm/gup_test.h -lrt -lpthread -o .../tools/testing/selftests/vm/gup_test
+  clang: error: cannot specify -o when generating multiple output files
+  make[1]: *** [../lib.mk:146: .../tools/testing/selftests/vm/gup_test] Error 1
 
-Consider the below examples on a 64-bit machine (ie size_t is
-64-bits, and unsigned int is 32-bit).
-    case 1) min_t(unsigned int, 5, 0x100000001);
-    case 2) min_t(size_t, 5, 0x100000001);
+Rework to add the header files to LOCAL_HDRS before including ../lib.mk,
+since the dependency is evaluated in '$(OUTPUT)/%:%.c $(LOCAL_HDRS)' in
+file lib.mk.
 
-Case 1 returns '1', where as case 2 returns '5'. As you can see
-the result from case 1 is wrong.
-
-This patch fixes the above issue by using the data type of the
-parameters that are used in min_t with maximum data length.
-
-Fixes: commit 1a4e53d2fc4f68aa ("spi: Fix invalid sgs value")
-Reported-by: Linus Torvalds <torvalds@linux-foundation.org>
-Suggested-by: Geert Uytterhoeven <geert+renesas@glider.be>
-Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
-Reviewed-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-Link: https://lore.kernel.org/r/20220316175317.465-1-biju.das.jz@bp.renesas.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Link: https://lkml.kernel.org/r/20220304000645.1888133-1-yosryahmed@google.com
+Signed-off-by: Yosry Ahmed <yosryahmed@google.com>
+Cc: Shuah Khan <shuah@kernel.org>
+Cc: Nathan Chancellor <nathan@kernel.org>
+Cc: Nick Desaulniers <ndesaulniers@google.com>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/spi/spi.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ tools/testing/selftests/vm/Makefile | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/spi/spi.c b/drivers/spi/spi.c
-index c7c8d13b2f83..cb7eb1e2e0e9 100644
---- a/drivers/spi/spi.c
-+++ b/drivers/spi/spi.c
-@@ -942,10 +942,10 @@ int spi_map_buf(struct spi_controller *ctlr, struct device *dev,
- 	int i, ret;
+diff --git a/tools/testing/selftests/vm/Makefile b/tools/testing/selftests/vm/Makefile
+index d9605bd10f2d..acf5eaeef9ff 100644
+--- a/tools/testing/selftests/vm/Makefile
++++ b/tools/testing/selftests/vm/Makefile
+@@ -1,6 +1,8 @@
+ # SPDX-License-Identifier: GPL-2.0
+ # Makefile for vm selftests
  
- 	if (vmalloced_buf || kmap_buf) {
--		desc_len = min_t(unsigned int, max_seg_size, PAGE_SIZE);
-+		desc_len = min_t(unsigned long, max_seg_size, PAGE_SIZE);
- 		sgs = DIV_ROUND_UP(len + offset_in_page(buf), desc_len);
- 	} else if (virt_addr_valid(buf)) {
--		desc_len = min_t(unsigned int, max_seg_size, ctlr->max_dma_len);
-+		desc_len = min_t(size_t, max_seg_size, ctlr->max_dma_len);
- 		sgs = DIV_ROUND_UP(len, desc_len);
- 	} else {
- 		return -EINVAL;
++LOCAL_HDRS += $(selfdir)/vm/local_config.h $(top_srcdir)/mm/gup_test.h
++
+ include local_config.mk
+ 
+ uname_M := $(shell uname -m 2>/dev/null || echo not)
+@@ -139,10 +141,6 @@ endif
+ 
+ $(OUTPUT)/mlock-random-test $(OUTPUT)/memfd_secret: LDLIBS += -lcap
+ 
+-$(OUTPUT)/gup_test: ../../../../mm/gup_test.h
+-
+-$(OUTPUT)/hmm-tests: local_config.h
+-
+ # HMM_EXTRA_LIBS may get set in local_config.mk, or it may be left empty.
+ $(OUTPUT)/hmm-tests: LDLIBS += $(HMM_EXTRA_LIBS)
+ 
 -- 
 2.34.1
 
