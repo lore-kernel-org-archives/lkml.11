@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 78D95C3A59D
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:36:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 297AAC4708E
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:36:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241561AbiDEIeM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 04:34:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54136 "EHLO
+        id S234235AbiDEIdw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 04:33:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53734 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236387AbiDEICK (ORCPT
+        with ESMTP id S236330AbiDEICD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:02:10 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94B7F4B852;
-        Tue,  5 Apr 2022 01:00:11 -0700 (PDT)
+        Tue, 5 Apr 2022 04:02:03 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA8DE49FB3;
+        Tue,  5 Apr 2022 01:00:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 313D4B81B14;
-        Tue,  5 Apr 2022 08:00:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7B57AC340EE;
-        Tue,  5 Apr 2022 08:00:08 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 76066B81B16;
+        Tue,  5 Apr 2022 08:00:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D6284C340EE;
+        Tue,  5 Apr 2022 08:00:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649145608;
-        bh=O0U3WEChpLfH8FzqsUX1BA3WYald5yMIMISKQkOwYFw=;
+        s=korg; t=1649145603;
+        bh=zNbstIO7fTReljmVQ05A1unZPeHQpqkHrt0QzvkAAfA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=wYOjsazcvL3Yq7kp6MbsJIoy27Z18CZsctY/4ufN4kZB5NqgaKs1HDdwxKIZhg5Pl
-         o7ylnJpmsW3cjBwOxqPXn6sH1EjafSCzTFzoYlUd1zaZRr2Dym1WrXPMk/JrvhaoM/
-         YUH/2CeM9c/M56pIMmCmbqTbFtvoYPKqxYHQDTOM=
+        b=12WtbljeNdb4uRS9U1cFjunzmCpAXBKc6gyAsQ8HPPUAnTYdyYmc548dbpAzCV1zW
+         mJFS+jlg/Q8ZsrHwOmx0ecj/+htiGU+iZjS2rmNHmL5u0b3+8oXFO0bLT0bY2Rvpxs
+         KdGRAWPTpNylaU9JetuHlme0vGT/dRg7IwiC4kFc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Luiz Augusto von Dentz <luiz.von.dentz@intel.com>,
-        Marcel Holtmann <marcel@holtmann.org>,
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Robert Foss <robert.foss@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0463/1126] Bluetooth: hci_event: Fix HCI_EV_VENDOR max_len
-Date:   Tue,  5 Apr 2022 09:20:10 +0200
-Message-Id: <20220405070421.216240743@linuxfoundation.org>
+Subject: [PATCH 5.17 0426/1126] drm/bridge: Add missing pm_runtime_disable() in __dw_mipi_dsi_probe
+Date:   Tue,  5 Apr 2022 09:19:33 +0200
+Message-Id: <20220405070420.129574971@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -50,49 +49,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit 314d8cd2787418c5ac6b02035c344644f47b292b ]
+[ Upstream commit 96211b7c56b109a52768e6cc5e23a1f79316eca0 ]
 
-HCI_EV_VENDOR is in fact variable length since it acts as metaevent
-where a vendor can implement their own event sets.
+If the probe fails, we should use pm_runtime_disable() to balance
+pm_runtime_enable().
+Add missing pm_runtime_disable() for __dw_mipi_dsi_probe.
 
-In addition to it this makes use of bt_dev_warn_ratelimited to supress
-the amount of logging in case the event has more data than expected.
-
-Fixes: 3e54c5890c87 ("Bluetooth: hci_event: Use of a function table to handle HCI event")
-Signed-off-by: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
-Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
+Fixes: 46fc51546d44 ("drm/bridge/synopsys: Add MIPI DSI host controller bridge")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Signed-off-by: Robert Foss <robert.foss@linaro.org>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220105104113.31415-1-linmq006@gmail.com
+Reviewed-by: Robert Foss <robert.foss@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/bluetooth/hci_event.c | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+ drivers/gpu/drm/bridge/synopsys/dw-mipi-dsi.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/net/bluetooth/hci_event.c b/net/bluetooth/hci_event.c
-index 05997dff5666..a105b7317560 100644
---- a/net/bluetooth/hci_event.c
-+++ b/net/bluetooth/hci_event.c
-@@ -6798,7 +6798,7 @@ static const struct hci_ev {
- 	HCI_EV(HCI_EV_NUM_COMP_BLOCKS, hci_num_comp_blocks_evt,
- 	       sizeof(struct hci_ev_num_comp_blocks)),
- 	/* [0xff = HCI_EV_VENDOR] */
--	HCI_EV(HCI_EV_VENDOR, msft_vendor_evt, 0),
-+	HCI_EV_VL(HCI_EV_VENDOR, msft_vendor_evt, 0, HCI_MAX_EVENT_SIZE),
- };
- 
- static void hci_event_func(struct hci_dev *hdev, u8 event, struct sk_buff *skb,
-@@ -6823,8 +6823,9 @@ static void hci_event_func(struct hci_dev *hdev, u8 event, struct sk_buff *skb,
- 	 * decide if that is acceptable.
- 	 */
- 	if (skb->len > ev->max_len)
--		bt_dev_warn(hdev, "unexpected event 0x%2.2x length: %u > %u",
--			    event, skb->len, ev->max_len);
-+		bt_dev_warn_ratelimited(hdev,
-+					"unexpected event 0x%2.2x length: %u > %u",
-+					event, skb->len, ev->max_len);
- 
- 	data = hci_ev_skb_pull(hdev, skb, event, ev->min_len);
- 	if (!data)
+diff --git a/drivers/gpu/drm/bridge/synopsys/dw-mipi-dsi.c b/drivers/gpu/drm/bridge/synopsys/dw-mipi-dsi.c
+index e44e18a0112a..56c3fd08c6a0 100644
+--- a/drivers/gpu/drm/bridge/synopsys/dw-mipi-dsi.c
++++ b/drivers/gpu/drm/bridge/synopsys/dw-mipi-dsi.c
+@@ -1199,6 +1199,7 @@ __dw_mipi_dsi_probe(struct platform_device *pdev,
+ 	ret = mipi_dsi_host_register(&dsi->dsi_host);
+ 	if (ret) {
+ 		dev_err(dev, "Failed to register MIPI host: %d\n", ret);
++		pm_runtime_disable(dev);
+ 		dw_mipi_dsi_debugfs_remove(dsi);
+ 		return ERR_PTR(ret);
+ 	}
 -- 
 2.34.1
 
