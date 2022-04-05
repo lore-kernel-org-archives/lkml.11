@@ -2,100 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 87024C35294
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C6EDCC4707E
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:09:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232083AbiDEXnm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 19:43:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60236 "EHLO
+        id S1357061AbiDEXod (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 19:44:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34730 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1445342AbiDEPmv (ORCPT
+        with ESMTP id S1350191AbiDEKvR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 11:42:51 -0400
-Received: from ssl.serverraum.org (ssl.serverraum.org [176.9.125.105])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 705A717E05;
-        Tue,  5 Apr 2022 07:08:33 -0700 (PDT)
-Received: from ssl.serverraum.org (web.serverraum.org [172.16.0.2])
+        Tue, 5 Apr 2022 06:51:17 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03ECEA7769;
+        Tue,  5 Apr 2022 03:27:55 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id E473822247;
-        Tue,  5 Apr 2022 16:08:30 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1649167711;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=+6+1BpQJhWpIwzeox1bohwEoCNti4GjMewSwLvafwXw=;
-        b=FjoEbM8+1cMTX7ixD4Mw3f9fWtrhCqWB0k1AAf2hdMX7f6oCWMT1wXPAY4BKHa7SJ2Uefh
-        nRiJDlkMvxeECN0Hz+B+LZR9gyrz/dw/HfgISScMlZbgJrgFBhpSvJfVcPMr+lyrzY+sRR
-        5CsvQ+iUunnCwjuq9CnFA29BcFB2G4c=
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9410D617AF;
+        Tue,  5 Apr 2022 10:27:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A448EC385A2;
+        Tue,  5 Apr 2022 10:27:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649154474;
+        bh=1Y2tJszXJ8mM7Vg/4Mf9uvXQFr8vz3unAZ/gygB5MPE=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=Gqx0JSdny9mO2g7V4HVrWrHJo7ReZUd7hWwyFDh0Lk6x4EKRSeE88M94MoyUL7DPt
+         pELzZGKMxKkc2CO309ZOFceF+nWgtMUmewJ8iJgiJcelzYp6atS5Z9b+/YYUDySMeS
+         /Gx4fati+ZR9hBXve4dDsFaIGqM/YHURfk9eSgeY=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        Martin Varghese <martin.varghese@nokia.com>,
+        Paolo Abeni <pabeni@redhat.com>
+Subject: [PATCH 5.10 591/599] openvswitch: Fixed nd target mask field in the flow dump.
+Date:   Tue,  5 Apr 2022 09:34:45 +0200
+Message-Id: <20220405070316.428687798@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
+References: <20220405070258.802373272@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8;
- format=flowed
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Date:   Tue, 05 Apr 2022 16:08:30 +0200
-From:   Michael Walle <michael@walle.cc>
-To:     Codrin.Ciubotariu@microchip.com
-Cc:     Nicolas.Ferre@microchip.com, alexandre.belloni@bootlin.com,
-        Claudiu.Beznea@microchip.com, sumit.semwal@linaro.org,
-        christian.koenig@amd.com, linux-i2c@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-media@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        linaro-mm-sig@lists.linaro.org, stable@vger.kernel.org
-Subject: Re: [PATCH] i2c: at91: use dma safe buffers
-In-Reply-To: <74494dda-e0cd-aa73-7e58-e4359c1ba292@microchip.com>
-References: <20220303161724.3324948-1-michael@walle.cc>
- <46e1be55-9377-75b7-634d-9eadbebc98d7@microchip.com>
- <bc32f1107786ebcbfb4952e1a6142304@walle.cc>
- <360914ee-594c-86bc-2436-aa863a67953a@microchip.com>
- <27f124c9adaf8a4fbdfb7a38456c4a2e@walle.cc>
- <74494dda-e0cd-aa73-7e58-e4359c1ba292@microchip.com>
-User-Agent: Roundcube Webmail/1.4.13
-Message-ID: <9e715ed06a28165446e29483cca7e3d0@walle.cc>
-X-Sender: michael@walle.cc
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Am 2022-04-05 15:58, schrieb Codrin.Ciubotariu@microchip.com:
-> On 05.04.2022 14:09, Michael Walle wrote:
->> Am 2022-04-05 12:02, schrieb Codrin.Ciubotariu@microchip.com:
->>> On 05.04.2022 12:38, Michael Walle wrote:
->>>> Am 2022-04-05 11:23, schrieb Codrin.Ciubotariu@microchip.com:
->>>>>> +       if (dev->use_dma) {
->>>>>> +               dma_buf = i2c_get_dma_safe_msg_buf(m_start, 1);
->>>>> 
->>>>> If you want, you could just dev->buf = i2c_get_dma_safe...
->>>> 
->>>> But where is the error handling in that case? dev->buf will
->>>> be NULL, which is eventually passed to dma_map_single().
->>>> 
->>>> Also, I need the dma_buf for the i2c_put_dma_safe_msg_buf()
->>>> call anyway, because dev->buf will be modified during
->>>> processing.
->>> 
->>> You still:
->>>       if (!dev->buf) {
->>>               ret = -ENOMEM;
->>>               goto out;
->>>       }
->>> 
->>> So, at91_do_twi_transfer()/dma_map_single() will not be called.
->> 
->> Ahh, I misunderstood you. Yes, but as I said, I need the dma_buf
->> temporary variable anyway, because dev->buf is modified, eg. see
->> at91_twi_read_data_dma_callback().
-> at91_twi_read_data_dma_callback() is called as callback if
-> dma_async_issue_pending(dma->chan_rx) is called.
-> dma_async_issue_pending(dma->chan_rx) is called on
-> at91_twi_read_data_dma(), which is called in at91_do_twi_transfer(),
-> which we decided above to skip in case of error.
+From: Martin Varghese <martin.varghese@nokia.com>
 
-It is not about errors, you need the exact same pointer you
-got from i2c_get_dma_safe_msg_buf() to be passed to
-i2c_put_dma_safe_msg_buf(). And because (in some cases, it
-isn't really obvious) the dev->buf will be advanced a few
-bytes, I cannot pass dev->buf to i2c_put_dma_safe_msg_buf().
+commit f19c44452b58a84d95e209b847f5495d91c9983a upstream.
 
--michael
+IPv6 nd target mask was not getting populated in flow dump.
+
+In the function __ovs_nla_put_key the icmp code mask field was checked
+instead of icmp code key field to classify the flow as neighbour discovery.
+
+ufid:bdfbe3e5-60c2-43b0-a5ff-dfcac1c37328, recirc_id(0),dp_hash(0/0),
+skb_priority(0/0),in_port(ovs-nm1),skb_mark(0/0),ct_state(0/0),
+ct_zone(0/0),ct_mark(0/0),ct_label(0/0),
+eth(src=00:00:00:00:00:00/00:00:00:00:00:00,
+dst=00:00:00:00:00:00/00:00:00:00:00:00),
+eth_type(0x86dd),
+ipv6(src=::/::,dst=::/::,label=0/0,proto=58,tclass=0/0,hlimit=0/0,frag=no),
+icmpv6(type=135,code=0),
+nd(target=2001::2/::,
+sll=00:00:00:00:00:00/00:00:00:00:00:00,
+tll=00:00:00:00:00:00/00:00:00:00:00:00),
+packets:10, bytes:860, used:0.504s, dp:ovs, actions:ovs-nm2
+
+Fixes: e64457191a25 (openvswitch: Restructure datapath.c and flow.c)
+Signed-off-by: Martin Varghese <martin.varghese@nokia.com>
+Link: https://lore.kernel.org/r/20220328054148.3057-1-martinvarghesenokia@gmail.com
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ net/openvswitch/flow_netlink.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+--- a/net/openvswitch/flow_netlink.c
++++ b/net/openvswitch/flow_netlink.c
+@@ -2201,8 +2201,8 @@ static int __ovs_nla_put_key(const struc
+ 			icmpv6_key->icmpv6_type = ntohs(output->tp.src);
+ 			icmpv6_key->icmpv6_code = ntohs(output->tp.dst);
+ 
+-			if (icmpv6_key->icmpv6_type == NDISC_NEIGHBOUR_SOLICITATION ||
+-			    icmpv6_key->icmpv6_type == NDISC_NEIGHBOUR_ADVERTISEMENT) {
++			if (swkey->tp.src == htons(NDISC_NEIGHBOUR_SOLICITATION) ||
++			    swkey->tp.src == htons(NDISC_NEIGHBOUR_ADVERTISEMENT)) {
+ 				struct ovs_key_nd *nd_key;
+ 
+ 				nla = nla_reserve(skb, OVS_KEY_ATTR_ND, sizeof(*nd_key));
+
+
