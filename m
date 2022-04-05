@@ -2,63 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 96A37C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A5679C4332F
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 22:47:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1454281AbiDEWiU convert rfc822-to-8bit (ORCPT
+        id S1454309AbiDEWiY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 18:38:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56140 "EHLO
+        Tue, 5 Apr 2022 18:38:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52346 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1455081AbiDEP7g (ORCPT
+        with ESMTP id S1353971AbiDEKKO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 11:59:36 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6EBB1EA281
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 08:09:43 -0700 (PDT)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <p.zabel@pengutronix.de>)
-        id 1nbkoF-0007Sl-Ih; Tue, 05 Apr 2022 17:09:31 +0200
-Received: from [2a0a:edc0:0:900:1d::4e] (helo=lupine)
-        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
-        (envelope-from <p.zabel@pengutronix.de>)
-        id 1nbkoG-001FZ2-2D; Tue, 05 Apr 2022 17:09:30 +0200
-Received: from pza by lupine with local (Exim 4.94.2)
-        (envelope-from <p.zabel@pengutronix.de>)
-        id 1nbkoE-0007ua-0i; Tue, 05 Apr 2022 17:09:30 +0200
-Message-ID: <ac31aebdd194fc559c43b08419a649ca32167e6d.camel@pengutronix.de>
-Subject: Re: [PATCH 4/8] dt-bindings: reset: add sama7g5 definitions
-From:   Philipp Zabel <p.zabel@pengutronix.de>
-To:     Claudiu Beznea <claudiu.beznea@microchip.com>, robh+dt@kernel.org,
-        nicolas.ferre@microchip.com, alexandre.belloni@bootlin.com,
-        sre@kernel.org
-Cc:     linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org
-Date:   Tue, 05 Apr 2022 17:09:29 +0200
-In-Reply-To: <20220405112724.2760905-5-claudiu.beznea@microchip.com>
-References: <20220405112724.2760905-1-claudiu.beznea@microchip.com>
-         <20220405112724.2760905-5-claudiu.beznea@microchip.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8BIT
-User-Agent: Evolution 3.38.3-1 
+        Tue, 5 Apr 2022 06:10:14 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9BE9C55A9;
+        Tue,  5 Apr 2022 02:56:12 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 46008CE1BE5;
+        Tue,  5 Apr 2022 09:56:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 57333C385A1;
+        Tue,  5 Apr 2022 09:56:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649152569;
+        bh=dXFWPeFlgT6CyzZ310/ga2U0bPPCNAqe3eAdLbGPkzc=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=CFpGryrPA620biTZOsTOvrlcYLWCgGnZfTZ/ABmpxpKbOMaJ/WbXLQLoKaNLq0CIR
+         7vr9YgfwYw6SbDlt8kez+PRfupyIAhmL9XCdOSLNdHRHckf6P+7AR9FSVCo+0+mrSu
+         ZwYlnsTBcEdIUbRFquMhfvl+zKjX8iYEoBAofmTY=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Zhihao Cheng <chengzhihao1@huawei.com>,
+        Richard Weinberger <richard@nod.at>
+Subject: [PATCH 5.15 822/913] ubifs: setflags: Make dirtied_ino_d 8 bytes aligned
+Date:   Tue,  5 Apr 2022 09:31:24 +0200
+Message-Id: <20220405070404.470296107@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: p.zabel@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Di, 2022-04-05 at 14:27 +0300, Claudiu Beznea wrote:
-> Add reset bindings for SAMA7G5. At the moment only USB PHYs are
-> included.
+From: Zhihao Cheng <chengzhihao1@huawei.com>
 
-What do you mean by "at the moment only USB PHYs are included"? Are
-those the only reset controls on sama7g5 and later hardware might have
-more?
+commit 1b83ec057db16b4d0697dc21ef7a9743b6041f72 upstream.
 
-regards
-Philipp
+Make 'ui->data_len' aligned with 8 bytes before it is assigned to
+dirtied_ino_d. Since 8871d84c8f8b0c6b("ubifs: convert to fileattr")
+applied, 'setflags()' only affects regular files and directories, only
+xattr inode, symlink inode and special inode(pipe/char_dev/block_dev)
+have none- zero 'ui->data_len' field, so assertion
+'!(req->dirtied_ino_d & 7)' cannot fail in ubifs_budget_space().
+To avoid assertion fails in future evolution(eg. setflags can operate
+special inodes), it's better to make dirtied_ino_d 8 bytes aligned,
+after all aligned size is still zero for regular files.
+
+Fixes: 1e51764a3c2ac05a ("UBIFS: add new flash file system")
+Signed-off-by: Zhihao Cheng <chengzhihao1@huawei.com>
+Signed-off-by: Richard Weinberger <richard@nod.at>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ fs/ubifs/ioctl.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+--- a/fs/ubifs/ioctl.c
++++ b/fs/ubifs/ioctl.c
+@@ -108,7 +108,7 @@ static int setflags(struct inode *inode,
+ 	struct ubifs_inode *ui = ubifs_inode(inode);
+ 	struct ubifs_info *c = inode->i_sb->s_fs_info;
+ 	struct ubifs_budget_req req = { .dirtied_ino = 1,
+-					.dirtied_ino_d = ui->data_len };
++			.dirtied_ino_d = ALIGN(ui->data_len, 8) };
+ 
+ 	err = ubifs_budget_space(c, &req);
+ 	if (err)
+
+
