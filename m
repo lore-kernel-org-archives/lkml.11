@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D94F2C43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C2D12C433FE
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:35:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384700AbiDEM1y (ORCPT
+        id S1384555AbiDEM1q (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 08:27:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58504 "EHLO
+        Tue, 5 Apr 2022 08:27:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59164 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245309AbiDEIyw (ORCPT
+        with ESMTP id S245194AbiDEIyN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:54:52 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 981B611C06;
-        Tue,  5 Apr 2022 01:52:14 -0700 (PDT)
+        Tue, 5 Apr 2022 04:54:13 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6256DD9F;
+        Tue,  5 Apr 2022 01:51:58 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 04E2CB81B92;
-        Tue,  5 Apr 2022 08:52:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 479E3C385A0;
-        Tue,  5 Apr 2022 08:52:11 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 10ED86117A;
+        Tue,  5 Apr 2022 08:51:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 22E5FC385A3;
+        Tue,  5 Apr 2022 08:51:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649148731;
-        bh=qC1ooVuHBiI+yeqhchXfLHOeM0o/PVJKF8Q1mWFZNUc=;
+        s=korg; t=1649148717;
+        bh=Wps1JC5B9YkugJ8jm4NkjIUH9/IHZqEekVA56y5eWzY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=AV/87CieYww/Sc2HaGSs1sh7w0kBPL/LmFvvsQXLCSBZwMuSGFEhfszWi1gtdWxPu
-         8c2jxx0mKliA+4TC8kgIfB/ETh/Ef+j5OSGjDnWGvSJSmlOGDYa2aEbtxLKoR7Sxdh
-         qZwlaQz4/thihL/q7M4H5TmfCx+Co0cZxEmpUEv8=
+        b=Z3EbqTdGDKNNEMIqUWPcNWuAcshyecqeQsrtq7GPYbGLx5j4PqGkYNO/qAGwq21+w
+         zF0mDM0aAr+zFcP4sr0sTE73RBAdl6uvKib51YC/eZRVNS82zIyPEtk9pBJKttG8kd
+         2s34bWKvL+DjW02ktJuPyYWhfm5dA9pgOJ9WhB04=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Peter Chiu <chui-hao.chiu@mediatek.com>,
-        Felix Fietkau <nbd@nbd.name>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0460/1017] mt76: mt7921: fix ht mcs in mt7921_mac_add_txs_skb()
-Date:   Tue,  5 Apr 2022 09:22:53 +0200
-Message-Id: <20220405070407.953186407@linuxfoundation.org>
+        stable@vger.kernel.org, Zhou Qingyang <zhou1615@umn.edu>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 0429/1017] drm/amd/display: Fix a NULL pointer dereference in amdgpu_dm_connector_add_common_modes()
+Date:   Tue,  5 Apr 2022 09:22:22 +0200
+Message-Id: <20220405070407.028698284@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -49,33 +50,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Peter Chiu <chui-hao.chiu@mediatek.com>
+From: Zhou Qingyang <zhou1615@umn.edu>
 
-[ Upstream commit b1fe07ed21024f64719315ba0f3a5676d8b36db6 ]
+[ Upstream commit 588a70177df3b1777484267584ef38ab2ca899a2 ]
 
-The mcs value of HT mode reported by mt7921_mac_add_txs_skb()
-has already been converted to the expected format.
+In amdgpu_dm_connector_add_common_modes(), amdgpu_dm_create_common_mode()
+is assigned to mode and is passed to drm_mode_probed_add() directly after
+that. drm_mode_probed_add() passes &mode->head to list_add_tail(), and
+there is a dereference of it in list_add_tail() without recoveries, which
+could lead to NULL pointer dereference on failure of
+amdgpu_dm_create_common_mode().
 
-Fixes: 970ab80ef9f63 ("mt76: mt7921: report tx rate directly from tx status")
-Signed-off-by: Peter Chiu <chui-hao.chiu@mediatek.com>
-Signed-off-by: Felix Fietkau <nbd@nbd.name>
+Fix this by adding a NULL check of mode.
+
+This bug was found by a static analyzer.
+
+Builds with 'make allyesconfig' show no new warnings,
+and our static analyzer no longer warns about this code.
+
+Fixes: e7b07ceef2a6 ("drm/amd/display: Merge amdgpu_dm_types and amdgpu_dm")
+Signed-off-by: Zhou Qingyang <zhou1615@umn.edu>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/mediatek/mt76/mt7921/mac.c | 1 -
- 1 file changed, 1 deletion(-)
+ drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/net/wireless/mediatek/mt76/mt7921/mac.c b/drivers/net/wireless/mediatek/mt76/mt7921/mac.c
-index 1fea9266d4b8..ea5ae0fc8f54 100644
---- a/drivers/net/wireless/mediatek/mt76/mt7921/mac.c
-+++ b/drivers/net/wireless/mediatek/mt76/mt7921/mac.c
-@@ -1014,7 +1014,6 @@ mt7921_mac_add_txs_skb(struct mt7921_dev *dev, struct mt76_wcid *wcid, int pid,
- 		break;
- 	case MT_PHY_TYPE_HT:
- 	case MT_PHY_TYPE_HT_GF:
--		rate.mcs += (rate.nss - 1) * 8;
- 		if (rate.mcs > 31)
- 			goto out;
- 
+diff --git a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
+index 7a5bb5a3456a..0ec8051cdfb4 100644
+--- a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
++++ b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
+@@ -8030,6 +8030,9 @@ static void amdgpu_dm_connector_add_common_modes(struct drm_encoder *encoder,
+ 		mode = amdgpu_dm_create_common_mode(encoder,
+ 				common_modes[i].name, common_modes[i].w,
+ 				common_modes[i].h);
++		if (!mode)
++			continue;
++
+ 		drm_mode_probed_add(connector, mode);
+ 		amdgpu_dm_connector->num_modes++;
+ 	}
 -- 
 2.34.1
 
