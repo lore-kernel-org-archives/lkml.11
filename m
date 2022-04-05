@@ -2,123 +2,159 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F31E3C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 02:54:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F06EBC433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 02:54:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1836202AbiDFCzf (ORCPT
+        id S1850710AbiDFC4C (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 22:55:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57842 "EHLO
+        Tue, 5 Apr 2022 22:56:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57834 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1840879AbiDFBNg (ORCPT
+        with ESMTP id S1841064AbiDFBPD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 21:13:36 -0400
-Received: from mail-io1-xd29.google.com (mail-io1-xd29.google.com [IPv6:2607:f8b0:4864:20::d29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7235E238D3E
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 16:06:15 -0700 (PDT)
-Received: by mail-io1-xd29.google.com with SMTP id z7so1045890iom.1
-        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 16:06:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linuxfoundation.org; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=P36/6Cm2aQZzffVwQ5KNbgPy5Yv4/2dGZXsphP7/mZ4=;
-        b=hmS7OssYUcHwhlhF0lDCYYCxSJRS79RnmddgJ/ElRdFdz9WdSe/MgDkE8ayOScIgyk
-         PM0CzPfRZseVJj4VgtyTiD9iXKXwUMrFCgVshefzF0uRG2mIY2DWPQnX0qPT9Z2ft6SQ
-         KiHy57MfYcSLe0rPB60or0hcg6EdlCJ97Mdic=
+        Tue, 5 Apr 2022 21:15:03 -0400
+Received: from mail-io1-f70.google.com (mail-io1-f70.google.com [209.85.166.70])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DD32F29
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 16:08:19 -0700 (PDT)
+Received: by mail-io1-f70.google.com with SMTP id a9-20020a5d89c9000000b0064cb68a9ba6so489823iot.11
+        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 16:08:19 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=P36/6Cm2aQZzffVwQ5KNbgPy5Yv4/2dGZXsphP7/mZ4=;
-        b=l/rApDy483k+hIzn3zk5D5/vE+YyFT87heuVqxYRVwO4Tghd8S3+cg/dFHABl0vh6n
-         EduG8ygcDOlGANFBRnFEt0HfhKcXQtOYEJ+RurOYgTbwsHS7lF86yZwUtbK71Y1ysuNP
-         iiC+M/JMSoAdIFg/kGQ0QY9/tK58NOr8oIc71/INOrTYzYSN7a5lE7+Jkqz2KiwEF/u+
-         XlhnWA4F+ris4ckwk4JkEHX8M9saC9zoHomqc69EeE4lw8GynjhdtEeMUjlfKeExgOTZ
-         cBxMDQPLQB1I3gJ6YyrRbHSYt37O3KQ3r3q0jAdHVvv4Ui7WxCKb4dEYkw+PIkyXUkR1
-         Tvzw==
-X-Gm-Message-State: AOAM531cMzjdniNWtVI/mHiFVGxsMxr4A/DHAe3akfcDXmkNNsGHDipl
-        4WMYirXf87GboGI9Qr/rT3qRkA==
-X-Google-Smtp-Source: ABdhPJxNUfELhkIpw4ON8hQdXt0ICPym3zJ9+ujU70u7aRXxj9OaDhXrYcPQ2dNPWcNnecH3RP3Rng==
-X-Received: by 2002:a05:6602:2d49:b0:645:dcf0:3151 with SMTP id d9-20020a0566022d4900b00645dcf03151mr2776873iow.61.1649199974622;
-        Tue, 05 Apr 2022 16:06:14 -0700 (PDT)
-Received: from [192.168.1.128] ([71.205.29.0])
-        by smtp.gmail.com with ESMTPSA id k3-20020a0566022a4300b0064ca623b65esm9968404iov.4.2022.04.05.16.06.13
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 05 Apr 2022 16:06:14 -0700 (PDT)
-Subject: Re: [PATCH 5.15 000/913] 5.15.33-rc1 review
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org
-Cc:     stable@vger.kernel.org, torvalds@linux-foundation.org,
-        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
-        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
-        jonathanh@nvidia.com, f.fainelli@gmail.com,
-        sudipm.mukherjee@gmail.com, slade@sladewatkins.com,
-        Shuah Khan <skhan@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
-From:   Shuah Khan <skhan@linuxfoundation.org>
-Message-ID: <4273d632-9686-3809-2ef0-e87bb431f798@linuxfoundation.org>
-Date:   Tue, 5 Apr 2022 17:06:13 -0600
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.8.1
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=A+mWdme+YYmhASEFhasCrli2+Kgbv+ASyCSwll2CXxM=;
+        b=41tHi5LfRNmTPh+4odBPyKgR5J2lVBWFH1PVA+qyW00ppmASgLv5Wi6bxKtdf7IQad
+         EBJl1LXKfccYz+drGAGDCAIyhLagSny3Sb8ZvcjEMc/TV2s97H1ylA1o4+7O4dwoKVFD
+         7NqPxC4P14GMQYCgirlITmfJRZvumVx4KTA+5AG7chmLddlmY1P5Th6/wuk1rSCJzuTz
+         PwuM/11HPglL6hOCEGkQ46ARc8zVteeh9+17PoTTRHVTAZ6/uLe44ZPDZiwqyQ8txOqI
+         mX5JsRA20rRGVLmwJSbKRJoo4H3UM0aJ344BarrPgSjDn/0fHo/jngiHC9nRx+JhwPTL
+         5Dnw==
+X-Gm-Message-State: AOAM531wpFGpS/5YRzQPdogBhAegwV8IT53hi+9T96YpXznXDNYp1ZYU
+        bhc+B735d+aedEY8L5NmYAHX34VGWbG1lse06r5/ZkHbqnQ7
+X-Google-Smtp-Source: ABdhPJyQfcW7dv/4UxyJRY3K9j+CZkqD2d1U1thU2nJ0YZIB6bnq1bpvwBGkxCCxpwBqHumD71RRS4jq3qiIYbhEOzNtRCyLlzof
 MIME-Version: 1.0
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+X-Received: by 2002:a05:6602:29ca:b0:649:558a:f003 with SMTP id
+ z10-20020a05660229ca00b00649558af003mr2863525ioq.160.1649200098763; Tue, 05
+ Apr 2022 16:08:18 -0700 (PDT)
+Date:   Tue, 05 Apr 2022 16:08:18 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <0000000000000cede205dbf052bc@google.com>
+Subject: [syzbot] general protection fault in simple_recursive_removal (2)
+From:   syzbot <syzbot+17404da5afdf21e8d612@syzkaller.appspotmail.com>
+To:     linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com, viro@zeniv.linux.org.uk
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 4/5/22 1:17 AM, Greg Kroah-Hartman wrote:
-> This is the start of the stable review cycle for the 5.15.33 release.
-> There are 913 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
-> 
-> Responses should be made by Thu, 07 Apr 2022 07:01:33 +0000.
-> Anything received after that time might be too late.
-> 
-> The whole patch series can be found in one patch at:
-> 	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.15.33-rc1.gz
-> or in the git tree and branch at:
-> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.15.y
-> and the diffstat can be found below.
-> 
-> thanks,
-> 
-> greg k-h
-> 
+Hello,
 
-Build failed on my system. The following is the problem commit. There
-are no changes to the config between 5.15.32 and this build.
+syzbot found the following issue on:
 
-Ranjani Sridharan <ranjani.sridharan@linux.intel.com>
-     ASoC: SOF: Intel: hda: Remove link assignment limitation
+HEAD commit:    ce4c854ee868 Merge tag 'for-5.18-rc1-tag' of git://git.ker..
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=15339f9b700000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=595bcd2109a73f9c
+dashboard link: https://syzkaller.appspot.com/bug?extid=17404da5afdf21e8d612
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=16e820b0f00000
 
-   CC [M]  sound/soc/sof/intel/hda-dai.o
-sound/soc/sof/intel/hda-dai.c: In function ‘hda_link_stream_assign’:
-sound/soc/sof/intel/hda-dai.c:86:24: error: implicit declaration of function ‘get_chip_info’; did you mean ‘get_group_info’? [-Werror=implicit-function-declaration]
-    86 |                 chip = get_chip_info(sdev->pdata);
-       |                        ^~~~~~~~~~~~~
-       |                        get_group_info
-sound/soc/sof/intel/hda-dai.c:86:22: error: assignment to ‘const struct sof_intel_dsp_desc *’ from ‘int’ makes pointer from integer without a cast [-Werror=int-conversion]
-    86 |                 chip = get_chip_info(sdev->pdata);
-       |                      ^
-sound/soc/sof/intel/hda-dai.c:94:35: error: ‘const struct sof_intel_dsp_desc’ has no member named ‘quirks’
-    94 |                         if (!(chip->quirks & SOF_INTEL_PROCEN_FMT_QUIRK)) {
-       |                                   ^~
-sound/soc/sof/intel/hda-dai.c:94:46: error: ‘SOF_INTEL_PROCEN_FMT_QUIRK’ undeclared (first use in this function)
-    94 |                         if (!(chip->quirks & SOF_INTEL_PROCEN_FMT_QUIRK)) {
-       |                                              ^~~~~~~~~~~~~~~~~~~~~~~~~~
-sound/soc/sof/intel/hda-dai.c:94:46: note: each undeclared identifier is reported only once for each function it appears in
-cc1: all warnings being treated as errors
-make[4]: *** [scripts/Makefile.build:287: sound/soc/sof/intel/hda-dai.o] Error 1
-make[3]: *** [scripts/Makefile.build:549: sound/soc/sof/intel] Error 2
-make[2]: *** [scripts/Makefile.build:549: sound/soc/sof] Error 2
-make[1]: *** [scripts/Makefile.build:549: sound/soc] Error 2
-make: *** [Makefile:1846: sound] Error 2
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+17404da5afdf21e8d612@syzkaller.appspotmail.com
 
-thanks,
--- Shuah
+sd 1:0:0:1: [sdb] Test Unit Ready failed: Result: hostbyte=DID_NO_CONNECT driverbyte=DRIVER_OK
+general protection fault, probably for non-canonical address 0xdffffc000000002a: 0000 [#1] PREEMPT SMP KASAN
+KASAN: null-ptr-deref in range [0x0000000000000150-0x0000000000000157]
+CPU: 1 PID: 3660 Comm: udevd Not tainted 5.18.0-rc1-syzkaller-00009-gce4c854ee868 #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+RIP: 0010:__lock_acquire+0xd85/0x56c0 kernel/locking/lockdep.c:4899
+Code: 1a 0e 41 be 01 00 00 00 0f 86 c8 00 00 00 89 05 21 8d 1a 0e e9 bd 00 00 00 48 b8 00 00 00 00 00 fc ff df 48 89 da 48 c1 ea 03 <80> 3c 02 00 0f 85 15 31 00 00 48 81 3b 20 d4 22 8f 0f 84 4f f3 ff
+RSP: 0018:ffffc90003e7f9f0 EFLAGS: 00010012
+RAX: dffffc0000000000 RBX: 0000000000000150 RCX: 0000000000000000
+RDX: 000000000000002a RSI: 0000000000000000 RDI: 0000000000000150
+RBP: 0000000000000000 R08: 0000000000000001 R09: 0000000000000001
+R10: 0000000000000000 R11: 0000000000000001 R12: 0000000000000000
+R13: ffff88801b90d700 R14: 0000000000000000 R15: 0000000000000000
+FS:  00007f9eb648e840(0000) GS:ffff8880b9d00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007ffdb4657128 CR3: 0000000075f97000 CR4: 0000000000350ee0
+Call Trace:
+ <TASK>
+ lock_acquire kernel/locking/lockdep.c:5641 [inline]
+ lock_acquire+0x1ab/0x510 kernel/locking/lockdep.c:5606
+ down_write+0x90/0x150 kernel/locking/rwsem.c:1514
+ inode_lock include/linux/fs.h:748 [inline]
+ simple_recursive_removal+0x171/0x830 fs/libfs.c:276
+ debugfs_remove fs/debugfs/inode.c:742 [inline]
+ debugfs_remove+0x59/0x80 fs/debugfs/inode.c:736
+ blk_mq_debugfs_unregister_queue_rqos+0x34/0x70 block/blk-mq-debugfs.c:840
+ rq_qos_exit+0x1e/0xf0 block/blk-rq-qos.c:297
+ disk_release_mq block/genhd.c:1142 [inline]
+ disk_release+0x191/0x420 block/genhd.c:1168
+ device_release+0x9f/0x240 drivers/base/core.c:2229
+ kobject_cleanup lib/kobject.c:705 [inline]
+ kobject_release lib/kobject.c:736 [inline]
+ kref_put include/linux/kref.h:65 [inline]
+ kobject_put+0x1c8/0x540 lib/kobject.c:753
+ put_device+0x1b/0x30 drivers/base/core.c:3512
+ blkdev_close+0x64/0x80 block/fops.c:512
+ __fput+0x277/0x9d0 fs/file_table.c:317
+ task_work_run+0xdd/0x1a0 kernel/task_work.c:164
+ resume_user_mode_work include/linux/resume_user_mode.h:49 [inline]
+ exit_to_user_mode_loop kernel/entry/common.c:169 [inline]
+ exit_to_user_mode_prepare+0x23c/0x250 kernel/entry/common.c:201
+ __syscall_exit_to_user_mode_work kernel/entry/common.c:283 [inline]
+ syscall_exit_to_user_mode+0x19/0x60 kernel/entry/common.c:294
+ do_syscall_64+0x42/0x80 arch/x86/entry/common.c:86
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+RIP: 0033:0x7f9eb65a9fc3
+Code: 48 ff ff ff b8 ff ff ff ff e9 3e ff ff ff 66 0f 1f 84 00 00 00 00 00 64 8b 04 25 18 00 00 00 85 c0 75 14 b8 03 00 00 00 0f 05 <48> 3d 00 f0 ff ff 77 45 c3 0f 1f 40 00 48 83 ec 18 89 7c 24 0c e8
+RSP: 002b:00007ffdb465f5d8 EFLAGS: 00000246 ORIG_RAX: 0000000000000003
+RAX: 0000000000000000 RBX: 00007f9eb648e6a8 RCX: 00007f9eb65a9fc3
+RDX: 000000000000001c RSI: 00007ffdb465edd8 RDI: 0000000000000008
+RBP: 000055bf88f240c0 R08: 0000000000000007 R09: 000055bf88f36110
+R10: 00007f9eb6638fc0 R11: 0000000000000246 R12: 0000000000000002
+R13: 000055bf88f34760 R14: 0000000000000008 R15: 000055bf88efe910
+ </TASK>
+Modules linked in:
+---[ end trace 0000000000000000 ]---
+RIP: 0010:__lock_acquire+0xd85/0x56c0 kernel/locking/lockdep.c:4899
+Code: 1a 0e 41 be 01 00 00 00 0f 86 c8 00 00 00 89 05 21 8d 1a 0e e9 bd 00 00 00 48 b8 00 00 00 00 00 fc ff df 48 89 da 48 c1 ea 03 <80> 3c 02 00 0f 85 15 31 00 00 48 81 3b 20 d4 22 8f 0f 84 4f f3 ff
+RSP: 0018:ffffc90003e7f9f0 EFLAGS: 00010012
+RAX: dffffc0000000000 RBX: 0000000000000150 RCX: 0000000000000000
+RDX: 000000000000002a RSI: 0000000000000000 RDI: 0000000000000150
+RBP: 0000000000000000 R08: 0000000000000001 R09: 0000000000000001
+R10: 0000000000000000 R11: 0000000000000001 R12: 0000000000000000
+R13: ffff88801b90d700 R14: 0000000000000000 R15: 0000000000000000
+FS:  00007f9eb648e840(0000) GS:ffff8880b9d00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007ffdb4657128 CR3: 0000000075f97000 CR4: 0000000000350ee0
+----------------
+Code disassembly (best guess):
+   0:	1a 0e                	sbb    (%rsi),%cl
+   2:	41 be 01 00 00 00    	mov    $0x1,%r14d
+   8:	0f 86 c8 00 00 00    	jbe    0xd6
+   e:	89 05 21 8d 1a 0e    	mov    %eax,0xe1a8d21(%rip)        # 0xe1a8d35
+  14:	e9 bd 00 00 00       	jmpq   0xd6
+  19:	48 b8 00 00 00 00 00 	movabs $0xdffffc0000000000,%rax
+  20:	fc ff df
+  23:	48 89 da             	mov    %rbx,%rdx
+  26:	48 c1 ea 03          	shr    $0x3,%rdx
+* 2a:	80 3c 02 00          	cmpb   $0x0,(%rdx,%rax,1) <-- trapping instruction
+  2e:	0f 85 15 31 00 00    	jne    0x3149
+  34:	48 81 3b 20 d4 22 8f 	cmpq   $0xffffffff8f22d420,(%rbx)
+  3b:	0f                   	.byte 0xf
+  3c:	84 4f f3             	test   %cl,-0xd(%rdi)
+  3f:	ff                   	.byte 0xff
+
+
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+syzbot can test patches for this issue, for details see:
+https://goo.gl/tpsmEJ#testing-patches
