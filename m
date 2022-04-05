@@ -2,359 +2,232 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CCFBFC433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BD3E6C43217
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:42:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1447042AbiDEXWp (ORCPT
+        id S1445325AbiDEXWV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 19:22:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60148 "EHLO
+        Tue, 5 Apr 2022 19:22:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34156 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1443723AbiDEPkN (ORCPT
+        with ESMTP id S1357364AbiDELQV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 11:40:13 -0400
-Received: from mail-pl1-x636.google.com (mail-pl1-x636.google.com [IPv6:2607:f8b0:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68EC618501D
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 06:58:29 -0700 (PDT)
-Received: by mail-pl1-x636.google.com with SMTP id m16so263361plx.3
-        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 06:58:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=8DwqVDSvJSfwZ0Ggknwzk5Wv74L0EXv0rJyFzegKHjo=;
-        b=ca9JoHCMjMrC4rMH/Xq4vuiynj/Kmo1KadytiPfKQfvgXuwSeL3aQbg7eRt6sf9JWP
-         sLyqrHcS+/JdnViHaFhNY/N83DY6gvnitF3QuTzhs9oXn6nNe1/di4fALnHAdqMoPRtK
-         ovNcM1SN2CfCCYrZ3PTanIvcchJco6mc/YPjJEt8LgbackiUfvZ+ZXZ/IrWrpz9y5zkO
-         rSsrbaWFoJOAcjfBFEP8tzzRkjrQ7tLj02Ouuzr2LMwTBSspGPXwDmIRilFuHW9lONXA
-         Syq3fDeqgHv+FNktD1XivZiEb1C3ZTKbwDMoxIdQAHVUtJJbB1dK/eLg5R/QTD+yQtpx
-         fEIA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=8DwqVDSvJSfwZ0Ggknwzk5Wv74L0EXv0rJyFzegKHjo=;
-        b=ovtjTDo4d+Jpf1hh/4dksOQYwuV0XcStIbaBlwA7aQkMo3mlx583W7JRad3/8cg8zd
-         0DyWUHQcwYbURcmkCBT0UJnPOUaeOAaCm/UmStTHJ4dReDTEb/c90joU43MoUoL/LelO
-         mqtHzqQEbPsduUn5kMdXC0u8k9pi/UBQUyuiSI01awrWai5mrrZEVTmraEE2V8CTOUpb
-         1Q4Z2hA7FPmOTyFQV0FQCNOH8aZtvnVNXcaK+CvELUxSuF+QznIpY5WowM18W6D5WN3l
-         pZE9/3ybbMy09+1MgpHnD9D0Z07cusk/7mPZqi4WKzuoGtUlOFmNbeuwWyYS9x042G+i
-         8z6w==
-X-Gm-Message-State: AOAM5330aB68zKVWc1IndyZBjd02Q5Fedh3ThgdiYEhRMS7Ci47LkIzg
-        q1XWYF9/XcD7xzpixhNVFE0CWmHvZTGF
-X-Google-Smtp-Source: ABdhPJxknuQ+oQddPVamGJA1F0s1vpORFHDm8eHGbP0m+FWlNDjKb1nl2ZuNJEGmcxlEckD2u2THFg==
-X-Received: by 2002:a17:902:f64e:b0:14d:20db:8478 with SMTP id m14-20020a170902f64e00b0014d20db8478mr3768320plg.158.1649167108806;
-        Tue, 05 Apr 2022 06:58:28 -0700 (PDT)
-Received: from localhost.localdomain ([59.92.98.98])
-        by smtp.gmail.com with ESMTPSA id u14-20020a056a00124e00b004fab8f3245fsm16785402pfi.149.2022.04.05.06.58.23
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 05 Apr 2022 06:58:28 -0700 (PDT)
-From:   Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-To:     gregkh@linuxfoundation.org
-Cc:     linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        elder@linaro.org, mhi@lists.linux.dev, quic_hemantk@quicinc.com,
-        quic_bbhatt@quicinc.com, quic_jhugo@quicinc.com,
-        bjorn.andersson@linaro.org, dmitry.baryshkov@linaro.org,
-        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-Subject: [PATCH 05/18] bus: mhi: ep: Add support for ring management
-Date:   Tue,  5 Apr 2022 19:27:41 +0530
-Message-Id: <20220405135754.6622-6-manivannan.sadhasivam@linaro.org>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220405135754.6622-1-manivannan.sadhasivam@linaro.org>
-References: <20220405135754.6622-1-manivannan.sadhasivam@linaro.org>
+        Tue, 5 Apr 2022 07:16:21 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E8417DF56;
+        Tue,  5 Apr 2022 03:41:10 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id B36D91474;
+        Tue,  5 Apr 2022 03:41:10 -0700 (PDT)
+Received: from e121345-lin.cambridge.arm.com (e121345-lin.cambridge.arm.com [10.1.196.40])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 4CDD73F5A1;
+        Tue,  5 Apr 2022 03:41:09 -0700 (PDT)
+From:   Robin Murphy <robin.murphy@arm.com>
+To:     joro@8bytes.org, baolu.lu@linux.intel.com,
+        andreas.noever@gmail.com, michael.jamet@intel.com,
+        mika.westerberg@linux.intel.com, YehezkelShB@gmail.com
+Cc:     iommu@lists.linux-foundation.org, linux-usb@vger.kernel.org,
+        linux-kernel@vger.kernel.org, mario.limonciello@amd.com, hch@lst.de
+Subject: [PATCH v3 1/4] iommu: Introduce device_iommu_capable()
+Date:   Tue,  5 Apr 2022 11:41:01 +0100
+Message-Id: <37ec2f9f67098d0caf60dcec558fbe1756ea2621.1649089693.git.robin.murphy@arm.com>
+X-Mailer: git-send-email 2.28.0.dirty
+In-Reply-To: <cover.1649089693.git.robin.murphy@arm.com>
+References: <cover.1649089693.git.robin.murphy@arm.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add support for managing the MHI ring. The MHI ring is a circular queue
-of data structures used to pass the information between host and the
-endpoint.
+iommu_capable() only really works for systems where all IOMMU instances
+are completely homogeneous, and all devices are IOMMU-mapped. Implement
+the new variant which can give an accurate answer for whichever device
+the caller is actually interested in.
 
-MHI support 3 types of rings:
-
-1. Transfer ring
-2. Event ring
-3. Command ring
-
-All rings reside inside the host memory and the MHI EP device maps it to
-the device memory using blocks like PCIe iATU. The mapping is handled in
-the MHI EP controller driver itself.
-
-Reviewed-by: Alex Elder <elder@linaro.org>
-Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+Signed-off-by: Robin Murphy <robin.murphy@arm.com>
 ---
- drivers/bus/mhi/ep/Makefile   |   2 +-
- drivers/bus/mhi/ep/internal.h |  18 +++
- drivers/bus/mhi/ep/ring.c     | 207 ++++++++++++++++++++++++++++++++++
- 3 files changed, 226 insertions(+), 1 deletion(-)
- create mode 100644 drivers/bus/mhi/ep/ring.c
 
-diff --git a/drivers/bus/mhi/ep/Makefile b/drivers/bus/mhi/ep/Makefile
-index a1555ae287ad..7ba0e04801eb 100644
---- a/drivers/bus/mhi/ep/Makefile
-+++ b/drivers/bus/mhi/ep/Makefile
-@@ -1,2 +1,2 @@
- obj-$(CONFIG_MHI_BUS_EP) += mhi_ep.o
--mhi_ep-y := main.o mmio.o
-+mhi_ep-y := main.o mmio.o ring.o
-diff --git a/drivers/bus/mhi/ep/internal.h b/drivers/bus/mhi/ep/internal.h
-index 475425a30d85..d16b87061ac6 100644
---- a/drivers/bus/mhi/ep/internal.h
-+++ b/drivers/bus/mhi/ep/internal.h
-@@ -116,6 +116,11 @@ union mhi_ep_ring_ctx {
- 	struct mhi_generic_ctx generic;
+v3: New patch; now that the dev_iommu_ops() work has landed we can go
+    straight to a proper implementation. Also s/dev/device/ to match
+    the precedent of device_iommu_mapped() for the public API.
+
+ drivers/iommu/amd/iommu.c                   |  2 +-
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c |  2 +-
+ drivers/iommu/arm/arm-smmu/arm-smmu.c       |  2 +-
+ drivers/iommu/arm/arm-smmu/qcom_iommu.c     |  2 +-
+ drivers/iommu/fsl_pamu_domain.c             |  2 +-
+ drivers/iommu/intel/iommu.c                 |  2 +-
+ drivers/iommu/iommu.c                       | 25 ++++++++++++++++++++-
+ drivers/iommu/s390-iommu.c                  |  2 +-
+ include/linux/iommu.h                       |  8 ++++++-
+ 9 files changed, 38 insertions(+), 9 deletions(-)
+
+diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
+index 1160a13c80ab..e412a50dce59 100644
+--- a/drivers/iommu/amd/iommu.c
++++ b/drivers/iommu/amd/iommu.c
+@@ -2132,7 +2132,7 @@ static phys_addr_t amd_iommu_iova_to_phys(struct iommu_domain *dom,
+ 	return ops->iova_to_phys(ops, iova);
+ }
+ 
+-static bool amd_iommu_capable(enum iommu_cap cap)
++static bool amd_iommu_capable(struct device *dev, enum iommu_cap cap)
+ {
+ 	switch (cap) {
+ 	case IOMMU_CAP_CACHE_COHERENCY:
+diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+index 73b7b1b17b77..b221525c31b9 100644
+--- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
++++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+@@ -1981,7 +1981,7 @@ static const struct iommu_flush_ops arm_smmu_flush_ops = {
  };
  
-+struct mhi_ep_ring_item {
-+	struct list_head node;
-+	struct mhi_ep_ring *ring;
-+};
-+
- struct mhi_ep_ring {
- 	struct mhi_ep_cntrl *mhi_cntrl;
- 	union mhi_ep_ring_ctx *ring_ctx;
-@@ -128,6 +133,9 @@ struct mhi_ep_ring {
- 	u32 db_offset_h;
- 	u32 db_offset_l;
- 	u32 ch_id;
-+	u32 er_index;
-+	u32 irq_vector;
-+	bool started;
- };
+ /* IOMMU API */
+-static bool arm_smmu_capable(enum iommu_cap cap)
++static bool arm_smmu_capable(struct device *dev, enum iommu_cap cap)
+ {
+ 	switch (cap) {
+ 	case IOMMU_CAP_CACHE_COHERENCY:
+diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.c b/drivers/iommu/arm/arm-smmu/arm-smmu.c
+index f0bec4a35df5..34cab56b9c6d 100644
+--- a/drivers/iommu/arm/arm-smmu/arm-smmu.c
++++ b/drivers/iommu/arm/arm-smmu/arm-smmu.c
+@@ -1313,7 +1313,7 @@ static phys_addr_t arm_smmu_iova_to_phys(struct iommu_domain *domain,
+ 	return ops->iova_to_phys(ops, iova);
+ }
  
- struct mhi_ep_cmd {
-@@ -153,6 +161,16 @@ struct mhi_ep_chan {
- 	bool skip_td;
- };
+-static bool arm_smmu_capable(enum iommu_cap cap)
++static bool arm_smmu_capable(struct device *dev, enum iommu_cap cap)
+ {
+ 	switch (cap) {
+ 	case IOMMU_CAP_CACHE_COHERENCY:
+diff --git a/drivers/iommu/arm/arm-smmu/qcom_iommu.c b/drivers/iommu/arm/arm-smmu/qcom_iommu.c
+index 80af00f468b4..028649203d33 100644
+--- a/drivers/iommu/arm/arm-smmu/qcom_iommu.c
++++ b/drivers/iommu/arm/arm-smmu/qcom_iommu.c
+@@ -493,7 +493,7 @@ static phys_addr_t qcom_iommu_iova_to_phys(struct iommu_domain *domain,
+ 	return ret;
+ }
  
-+/* MHI Ring related functions */
-+void mhi_ep_ring_init(struct mhi_ep_ring *ring, enum mhi_ep_ring_type type, u32 id);
-+void mhi_ep_ring_reset(struct mhi_ep_cntrl *mhi_cntrl, struct mhi_ep_ring *ring);
-+int mhi_ep_ring_start(struct mhi_ep_cntrl *mhi_cntrl, struct mhi_ep_ring *ring,
-+		      union mhi_ep_ring_ctx *ctx);
-+size_t mhi_ep_ring_addr2offset(struct mhi_ep_ring *ring, u64 ptr);
-+int mhi_ep_ring_add_element(struct mhi_ep_ring *ring, struct mhi_ring_element *element);
-+void mhi_ep_ring_inc_index(struct mhi_ep_ring *ring);
-+int mhi_ep_update_wr_offset(struct mhi_ep_ring *ring);
-+
- /* MMIO related functions */
- u32 mhi_ep_mmio_read(struct mhi_ep_cntrl *mhi_cntrl, u32 offset);
- void mhi_ep_mmio_write(struct mhi_ep_cntrl *mhi_cntrl, u32 offset, u32 val);
-diff --git a/drivers/bus/mhi/ep/ring.c b/drivers/bus/mhi/ep/ring.c
-new file mode 100644
-index 000000000000..115518ec76a4
---- /dev/null
-+++ b/drivers/bus/mhi/ep/ring.c
-@@ -0,0 +1,207 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * Copyright (C) 2022 Linaro Ltd.
-+ * Author: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+-static bool qcom_iommu_capable(enum iommu_cap cap)
++static bool qcom_iommu_capable(struct device *dev, enum iommu_cap cap)
+ {
+ 	switch (cap) {
+ 	case IOMMU_CAP_CACHE_COHERENCY:
+diff --git a/drivers/iommu/fsl_pamu_domain.c b/drivers/iommu/fsl_pamu_domain.c
+index 7274f86b2bc4..ddf5ab28615c 100644
+--- a/drivers/iommu/fsl_pamu_domain.c
++++ b/drivers/iommu/fsl_pamu_domain.c
+@@ -177,7 +177,7 @@ static phys_addr_t fsl_pamu_iova_to_phys(struct iommu_domain *domain,
+ 	return iova;
+ }
+ 
+-static bool fsl_pamu_capable(enum iommu_cap cap)
++static bool fsl_pamu_capable(struct device *dev, enum iommu_cap cap)
+ {
+ 	return cap == IOMMU_CAP_CACHE_COHERENCY;
+ }
+diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+index 21111491ddfd..255304eb3b1f 100644
+--- a/drivers/iommu/intel/iommu.c
++++ b/drivers/iommu/intel/iommu.c
+@@ -4544,7 +4544,7 @@ static phys_addr_t intel_iommu_iova_to_phys(struct iommu_domain *domain,
+ 	return phys;
+ }
+ 
+-static bool intel_iommu_capable(enum iommu_cap cap)
++static bool intel_iommu_capable(struct device *dev, enum iommu_cap cap)
+ {
+ 	if (cap == IOMMU_CAP_CACHE_COHERENCY)
+ 		return domain_update_iommu_snooping(NULL);
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index efad7c1675e0..469574e84e6a 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -1889,12 +1889,35 @@ static int iommu_bus_init(struct bus_type *bus)
+ 	return err;
+ }
+ 
++/**
++ * device_iommu_capable() - check for a general IOMMU capability
++ * @dev: device to which the capability would be relevant, if available
++ * @cap: IOMMU capability
++ *
++ * Return: true if an IOMMU is present and supports the given capability
++ * for the given device, otherwise false.
 + */
-+
-+#include <linux/mhi_ep.h>
-+#include "internal.h"
-+
-+size_t mhi_ep_ring_addr2offset(struct mhi_ep_ring *ring, u64 ptr)
++bool device_iommu_capable(struct device *dev, enum iommu_cap cap)
 +{
-+	return (ptr - ring->rbase) / sizeof(struct mhi_ring_element);
++	const struct iommu_ops *ops;
++
++	if (!dev->iommu || !dev->iommu->iommu_dev)
++		return false;
++
++	ops = dev_iommu_ops(dev);
++	if (!ops->capable)
++		return false;
++
++	return ops->capable(dev, cap);
++}
++EXPORT_SYMBOL_GPL(device_iommu_capable);
++
+ bool iommu_capable(struct bus_type *bus, enum iommu_cap cap)
+ {
+ 	if (!bus->iommu_ops || !bus->iommu_ops->capable)
+ 		return false;
+ 
+-	return bus->iommu_ops->capable(cap);
++	return bus->iommu_ops->capable(NULL, cap);
+ }
+ EXPORT_SYMBOL_GPL(iommu_capable);
+ 
+diff --git a/drivers/iommu/s390-iommu.c b/drivers/iommu/s390-iommu.c
+index 5f5f4bd91e6f..ea4ba9de04af 100644
+--- a/drivers/iommu/s390-iommu.c
++++ b/drivers/iommu/s390-iommu.c
+@@ -39,7 +39,7 @@ static struct s390_domain *to_s390_domain(struct iommu_domain *dom)
+ 	return container_of(dom, struct s390_domain, domain);
+ }
+ 
+-static bool s390_iommu_capable(enum iommu_cap cap)
++static bool s390_iommu_capable(struct device *dev, enum iommu_cap cap)
+ {
+ 	switch (cap) {
+ 	case IOMMU_CAP_CACHE_COHERENCY:
+diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+index 4a25f8241207..1fa927e6f1c6 100644
+--- a/include/linux/iommu.h
++++ b/include/linux/iommu.h
+@@ -219,7 +219,7 @@ struct iommu_iotlb_gather {
+  * @owner: Driver module providing these ops
+  */
+ struct iommu_ops {
+-	bool (*capable)(enum iommu_cap);
++	bool (*capable)(struct device *dev, enum iommu_cap);
+ 
+ 	/* Domain allocation and freeing by the iommu driver */
+ 	struct iommu_domain *(*domain_alloc)(unsigned iommu_domain_type);
+@@ -415,6 +415,7 @@ static inline const struct iommu_ops *dev_iommu_ops(struct device *dev)
+ #define IOMMU_GROUP_NOTIFY_UNBOUND_DRIVER	6 /* Post Driver unbind */
+ 
+ extern int bus_iommu_probe(struct bus_type *bus);
++extern bool device_iommu_capable(struct device *dev, enum iommu_cap cap);
+ extern bool iommu_capable(struct bus_type *bus, enum iommu_cap cap);
+ extern struct iommu_domain *iommu_domain_alloc(struct device *dev);
+ extern struct iommu_group *iommu_group_get_by_id(int id);
+@@ -682,6 +683,11 @@ struct iommu_device {};
+ struct iommu_fault_param {};
+ struct iommu_iotlb_gather {};
+ 
++static inline bool device_iommu_capable(struct device *dev, enum iommu_cap cap)
++{
++	return false;
 +}
 +
-+static u32 mhi_ep_ring_num_elems(struct mhi_ep_ring *ring)
-+{
-+	__le64 rlen;
-+
-+	memcpy_fromio(&rlen, (void __iomem *) &ring->ring_ctx->generic.rlen, sizeof(u64));
-+
-+	return le64_to_cpu(rlen) / sizeof(struct mhi_ring_element);
-+}
-+
-+void mhi_ep_ring_inc_index(struct mhi_ep_ring *ring)
-+{
-+	ring->rd_offset = (ring->rd_offset + 1) % ring->ring_size;
-+}
-+
-+static int __mhi_ep_cache_ring(struct mhi_ep_ring *ring, size_t end)
-+{
-+	struct mhi_ep_cntrl *mhi_cntrl = ring->mhi_cntrl;
-+	struct device *dev = &mhi_cntrl->mhi_dev->dev;
-+	size_t start, copy_size;
-+	int ret;
-+
-+	/* Don't proceed in the case of event ring. This happens during mhi_ep_ring_start(). */
-+	if (ring->type == RING_TYPE_ER)
-+		return 0;
-+
-+	/* No need to cache the ring if write pointer is unmodified */
-+	if (ring->wr_offset == end)
-+		return 0;
-+
-+	start = ring->wr_offset;
-+	if (start < end) {
-+		copy_size = (end - start) * sizeof(struct mhi_ring_element);
-+		ret = mhi_cntrl->read_from_host(mhi_cntrl, ring->rbase +
-+						(start * sizeof(struct mhi_ring_element)),
-+						&ring->ring_cache[start], copy_size);
-+		if (ret < 0)
-+			return ret;
-+	} else {
-+		copy_size = (ring->ring_size - start) * sizeof(struct mhi_ring_element);
-+		ret = mhi_cntrl->read_from_host(mhi_cntrl, ring->rbase +
-+						(start * sizeof(struct mhi_ring_element)),
-+						&ring->ring_cache[start], copy_size);
-+		if (ret < 0)
-+			return ret;
-+
-+		if (end) {
-+			ret = mhi_cntrl->read_from_host(mhi_cntrl, ring->rbase,
-+							&ring->ring_cache[0],
-+							end * sizeof(struct mhi_ring_element));
-+			if (ret < 0)
-+				return ret;
-+		}
-+	}
-+
-+	dev_dbg(dev, "Cached ring: start %zu end %zu size %zu\n", start, end, copy_size);
-+
-+	return 0;
-+}
-+
-+static int mhi_ep_cache_ring(struct mhi_ep_ring *ring, u64 wr_ptr)
-+{
-+	size_t wr_offset;
-+	int ret;
-+
-+	wr_offset = mhi_ep_ring_addr2offset(ring, wr_ptr);
-+
-+	/* Cache the host ring till write offset */
-+	ret = __mhi_ep_cache_ring(ring, wr_offset);
-+	if (ret)
-+		return ret;
-+
-+	ring->wr_offset = wr_offset;
-+
-+	return 0;
-+}
-+
-+int mhi_ep_update_wr_offset(struct mhi_ep_ring *ring)
-+{
-+	u64 wr_ptr;
-+
-+	wr_ptr = mhi_ep_mmio_get_db(ring);
-+
-+	return mhi_ep_cache_ring(ring, wr_ptr);
-+}
-+
-+/* TODO: Support for adding multiple ring elements to the ring */
-+int mhi_ep_ring_add_element(struct mhi_ep_ring *ring, struct mhi_ring_element *el)
-+{
-+	struct mhi_ep_cntrl *mhi_cntrl = ring->mhi_cntrl;
-+	struct device *dev = &mhi_cntrl->mhi_dev->dev;
-+	size_t old_offset = 0;
-+	u32 num_free_elem;
-+	__le64 rp;
-+	int ret;
-+
-+	ret = mhi_ep_update_wr_offset(ring);
-+	if (ret) {
-+		dev_err(dev, "Error updating write pointer\n");
-+		return ret;
-+	}
-+
-+	if (ring->rd_offset < ring->wr_offset)
-+		num_free_elem = (ring->wr_offset - ring->rd_offset) - 1;
-+	else
-+		num_free_elem = ((ring->ring_size - ring->rd_offset) + ring->wr_offset) - 1;
-+
-+	/* Check if there is space in ring for adding at least an element */
-+	if (!num_free_elem) {
-+		dev_err(dev, "No space left in the ring\n");
-+		return -ENOSPC;
-+	}
-+
-+	old_offset = ring->rd_offset;
-+	mhi_ep_ring_inc_index(ring);
-+
-+	dev_dbg(dev, "Adding an element to ring at offset (%zu)\n", ring->rd_offset);
-+
-+	/* Update rp in ring context */
-+	rp = cpu_to_le64(ring->rd_offset * sizeof(*el) + ring->rbase);
-+	memcpy_toio((void __iomem *) &ring->ring_ctx->generic.rp, &rp, sizeof(u64));
-+
-+	ret = mhi_cntrl->write_to_host(mhi_cntrl, el, ring->rbase + (old_offset * sizeof(*el)),
-+				       sizeof(*el));
-+	if (ret < 0)
-+		return ret;
-+
-+	return 0;
-+}
-+
-+void mhi_ep_ring_init(struct mhi_ep_ring *ring, enum mhi_ep_ring_type type, u32 id)
-+{
-+	ring->type = type;
-+	if (ring->type == RING_TYPE_CMD) {
-+		ring->db_offset_h = EP_CRDB_HIGHER;
-+		ring->db_offset_l = EP_CRDB_LOWER;
-+	} else if (ring->type == RING_TYPE_CH) {
-+		ring->db_offset_h = CHDB_HIGHER_n(id);
-+		ring->db_offset_l = CHDB_LOWER_n(id);
-+		ring->ch_id = id;
-+	} else {
-+		ring->db_offset_h = ERDB_HIGHER_n(id);
-+		ring->db_offset_l = ERDB_LOWER_n(id);
-+	}
-+}
-+
-+int mhi_ep_ring_start(struct mhi_ep_cntrl *mhi_cntrl, struct mhi_ep_ring *ring,
-+			union mhi_ep_ring_ctx *ctx)
-+{
-+	struct device *dev = &mhi_cntrl->mhi_dev->dev;
-+	__le64 val;
-+	int ret;
-+
-+	ring->mhi_cntrl = mhi_cntrl;
-+	ring->ring_ctx = ctx;
-+	ring->ring_size = mhi_ep_ring_num_elems(ring);
-+	memcpy_fromio(&val, (void __iomem *) &ring->ring_ctx->generic.rbase, sizeof(u64));
-+	ring->rbase = le64_to_cpu(val);
-+
-+	if (ring->type == RING_TYPE_CH)
-+		ring->er_index = le32_to_cpu(ring->ring_ctx->ch.erindex);
-+
-+	if (ring->type == RING_TYPE_ER)
-+		ring->irq_vector = le32_to_cpu(ring->ring_ctx->ev.msivec);
-+
-+	/* During ring init, both rp and wp are equal */
-+	memcpy_fromio(&val, (void __iomem *) &ring->ring_ctx->generic.rp, sizeof(u64));
-+	ring->rd_offset = mhi_ep_ring_addr2offset(ring, le64_to_cpu(val));
-+	ring->wr_offset = mhi_ep_ring_addr2offset(ring, le64_to_cpu(val));
-+
-+	/* Allocate ring cache memory for holding the copy of host ring */
-+	ring->ring_cache = kcalloc(ring->ring_size, sizeof(struct mhi_ring_element), GFP_KERNEL);
-+	if (!ring->ring_cache)
-+		return -ENOMEM;
-+
-+	memcpy_fromio(&val, (void __iomem *) &ring->ring_ctx->generic.wp, sizeof(u64));
-+	ret = mhi_ep_cache_ring(ring, le64_to_cpu(val));
-+	if (ret) {
-+		dev_err(dev, "Failed to cache ring\n");
-+		kfree(ring->ring_cache);
-+		return ret;
-+	}
-+
-+	ring->started = true;
-+
-+	return 0;
-+}
-+
-+void mhi_ep_ring_reset(struct mhi_ep_cntrl *mhi_cntrl, struct mhi_ep_ring *ring)
-+{
-+	ring->started = false;
-+	kfree(ring->ring_cache);
-+	ring->ring_cache = NULL;
-+}
+ static inline bool iommu_capable(struct bus_type *bus, enum iommu_cap cap)
+ {
+ 	return false;
 -- 
-2.25.1
+2.28.0.dirty
 
