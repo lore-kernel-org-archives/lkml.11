@@ -2,42 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E647C3527D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AE3A6C35294
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 11:25:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376759AbiDELXO (ORCPT
+        id S1376815AbiDELXx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 07:23:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41470 "EHLO
+        Tue, 5 Apr 2022 07:23:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39668 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242156AbiDEIsj (ORCPT
+        with ESMTP id S241716AbiDEIsd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:48:39 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2A3D3585B;
-        Tue,  5 Apr 2022 01:37:05 -0700 (PDT)
+        Tue, 5 Apr 2022 04:48:33 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 545922C109;
+        Tue,  5 Apr 2022 01:36:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 31300B81C6D;
-        Tue,  5 Apr 2022 08:37:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7E598C385A0;
-        Tue,  5 Apr 2022 08:36:59 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CE2CAB81C82;
+        Tue,  5 Apr 2022 08:36:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 17A5FC385A0;
+        Tue,  5 Apr 2022 08:36:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649147819;
-        bh=XPHPGC5YYOy1vJKP5EqL9jMeFRnu6hZM2dMkdRnj090=;
+        s=korg; t=1649147811;
+        bh=48eWMo9siKzKdycm50TCprOZYHmZ5EEOZViOHbQBvzc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ap+pOpJBNd4CGykoI5eT2ooCIC3nY1XjXObgWr9TDno9yQnJ+WIauYZ45HurJ6yA5
-         1w1ysWjiJZxfhyCuM5yxTthofK1ThT9nKdpS6buKXJDgoHPn3RYmxMUCXqookouV7S
-         DGw6W6WDrwOnzAzo3aGV8dF6nxWLjM3BzEzqvVx8=
+        b=ZEM3ogDhIaaqKD6aBQzU9EIMkRJePLop12h8irCc9qOTCixYPBsyf0PynxZtyjFdy
+         tfJ1hJqLHTMiMGfpkMnv7Xv91ZhG6qzMaJKyElc3waQp++1KUW14Fa40LhdrYDYvIu
+         lAPveluvCy6OSqNrsba2D+m/hQiK5qKr1ZaYdtwI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Marc Zyngier <maz@kernel.org>,
-        Nishanth Menon <nm@ti.com>
-Subject: [PATCH 5.16 0133/1017] arm64: dts: ti: k3-am64: Fix gic-v3 compatible regs
-Date:   Tue,  5 Apr 2022 09:17:26 +0200
-Message-Id: <20220405070358.150349312@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Charan Teja Kalla <quic_charante@quicinc.com>,
+        David Rientjes <rientjes@google.com>,
+        Michal Hocko <mhocko@suse.com>,
+        Minchan Kim <minchan@kernel.org>,
+        Nadav Amit <nadav.amit@gmail.com>,
+        Stephen Rothwell <sfr@canb.auug.org.au>,
+        Suren Baghdasaryan <surenb@google.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Subject: [PATCH 5.16 0113/1017] mm: madvise: skip unmapped vma holes passed to process_madvise
+Date:   Tue,  5 Apr 2022 09:17:06 +0200
+Message-Id: <20220405070357.550637052@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -49,59 +58,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nishanth Menon <nm@ti.com>
+From: Charan Teja Kalla <quic_charante@quicinc.com>
 
-commit de60edf1be3d42d4a1b303b41c7c53b2f865726e upstream.
+commit 08095d6310a7ce43256b4251577bc66a25c6e1a6 upstream.
 
-Though GIC ARE option is disabled for no GIC-v2 compatibility,
-Cortex-A53 is free to implement the CPU interface as long as it
-communicates with the GIC using the stream protocol. This requires
-that the SoC integration mark out the PERIPHBASE[1] as reserved area
-within the SoC. See longer discussion in [2] for further information.
+The process_madvise() system call is expected to skip holes in vma passed
+through 'struct iovec' vector list.  But do_madvise, which
+process_madvise() calls for each vma, returns ENOMEM in case of unmapped
+holes, despite the VMA is processed.
 
-Update the GIC register map to indicate offsets from PERIPHBASE based
-on [3]. Without doing this, systems like kvm will not function with
-gic-v2 emulation.
+Thus process_madvise() should treat ENOMEM as expected and consider the
+VMA passed to as processed and continue processing other vma's in the
+vector list.  Returning -ENOMEM to user, despite the VMA is processed,
+will be unable to figure out where to start the next madvise.
 
-[1] https://developer.arm.com/documentation/ddi0500/e/system-control/aarch64-register-descriptions/configuration-base-address-register--el1
-[2] https://lore.kernel.org/all/87k0e0tirw.wl-maz@kernel.org/
-[3] https://developer.arm.com/documentation/ddi0500/e/generic-interrupt-controller-cpu-interface/gic-programmers-model/memory-map
-
-Cc: stable@vger.kernel.org
-Fixes: 8abae9389bdb ("arm64: dts: ti: Add support for AM642 SoC")
-Reported-by: Marc Zyngier <maz@kernel.org>
-Signed-off-by: Nishanth Menon <nm@ti.com>
-Acked-by: Marc Zyngier <maz@kernel.org>
-Link: https://lore.kernel.org/r/20220215201008.15235-5-nm@ti.com
+Link: https://lkml.kernel.org/r/4f091776142f2ebf7b94018146de72318474e686.1647008754.git.quic_charante@quicinc.com
+Fixes: ecb8ac8b1f14("mm/madvise: introduce process_madvise() syscall: an external memory hinting API")
+Signed-off-by: Charan Teja Kalla <quic_charante@quicinc.com>
+Cc: David Rientjes <rientjes@google.com>
+Cc: Michal Hocko <mhocko@suse.com>
+Cc: Minchan Kim <minchan@kernel.org>
+Cc: Nadav Amit <nadav.amit@gmail.com>
+Cc: Stephen Rothwell <sfr@canb.auug.org.au>
+Cc: Suren Baghdasaryan <surenb@google.com>
+Cc: Vlastimil Babka <vbabka@suse.cz>
+Cc: <stable@vger.kernel.org>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm64/boot/dts/ti/k3-am64-main.dtsi |    5 ++++-
- arch/arm64/boot/dts/ti/k3-am64.dtsi      |    1 +
- 2 files changed, 5 insertions(+), 1 deletion(-)
+ mm/madvise.c |    9 ++++++++-
+ 1 file changed, 8 insertions(+), 1 deletion(-)
 
---- a/arch/arm64/boot/dts/ti/k3-am64-main.dtsi
-+++ b/arch/arm64/boot/dts/ti/k3-am64-main.dtsi
-@@ -59,7 +59,10 @@
- 		#interrupt-cells = <3>;
- 		interrupt-controller;
- 		reg = <0x00 0x01800000 0x00 0x10000>,	/* GICD */
--		      <0x00 0x01840000 0x00 0xC0000>;	/* GICR */
-+		      <0x00 0x01840000 0x00 0xC0000>,	/* GICR */
-+		      <0x01 0x00000000 0x00 0x2000>,	/* GICC */
-+		      <0x01 0x00010000 0x00 0x1000>,	/* GICH */
-+		      <0x01 0x00020000 0x00 0x2000>;	/* GICV */
- 		/*
- 		 * vcpumntirq:
- 		 * virtual CPU interface maintenance interrupt
---- a/arch/arm64/boot/dts/ti/k3-am64.dtsi
-+++ b/arch/arm64/boot/dts/ti/k3-am64.dtsi
-@@ -87,6 +87,7 @@
- 			 <0x00 0x68000000 0x00 0x68000000 0x00 0x08000000>, /* PCIe DAT0 */
- 			 <0x00 0x70000000 0x00 0x70000000 0x00 0x00200000>, /* OC SRAM */
- 			 <0x00 0x78000000 0x00 0x78000000 0x00 0x00800000>, /* Main R5FSS */
-+			 <0x01 0x00000000 0x01 0x00000000 0x00 0x00310000>, /* A53 PERIPHBASE */
- 			 <0x06 0x00000000 0x06 0x00000000 0x01 0x00000000>, /* PCIe DAT1 */
- 			 <0x05 0x00000000 0x05 0x00000000 0x01 0x00000000>, /* FSS0 DAT3 */
+--- a/mm/madvise.c
++++ b/mm/madvise.c
+@@ -1280,9 +1280,16 @@ SYSCALL_DEFINE5(process_madvise, int, pi
  
+ 	while (iov_iter_count(&iter)) {
+ 		iovec = iov_iter_iovec(&iter);
++		/*
++		 * do_madvise returns ENOMEM if unmapped holes are present
++		 * in the passed VMA. process_madvise() is expected to skip
++		 * unmapped holes passed to it in the 'struct iovec' list
++		 * and not fail because of them. Thus treat -ENOMEM return
++		 * from do_madvise as valid and continue processing.
++		 */
+ 		ret = do_madvise(mm, (unsigned long)iovec.iov_base,
+ 					iovec.iov_len, behavior);
+-		if (ret < 0)
++		if (ret < 0 && ret != -ENOMEM)
+ 			break;
+ 		iov_iter_advance(&iter, iovec.iov_len);
+ 	}
 
 
