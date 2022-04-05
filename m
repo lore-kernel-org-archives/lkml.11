@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DFB89C4321E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CA136C4332F
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 13:24:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244833AbiDENEs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 09:04:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60606 "EHLO
+        id S1351900AbiDENGu (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 09:06:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38302 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242542AbiDEJQR (ORCPT
+        with ESMTP id S1343988AbiDEJQo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:16:17 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C081D3AD1;
-        Tue,  5 Apr 2022 02:01:57 -0700 (PDT)
+        Tue, 5 Apr 2022 05:16:44 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E7ADBF40;
+        Tue,  5 Apr 2022 02:02:38 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 385BC61562;
-        Tue,  5 Apr 2022 09:01:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4CB0AC385A3;
-        Tue,  5 Apr 2022 09:01:56 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BE604614E4;
+        Tue,  5 Apr 2022 09:02:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D2E73C385A0;
+        Tue,  5 Apr 2022 09:02:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649149316;
-        bh=Uqapr5P17Sv4fI+1b5OJTs44048ts5T1CAzqAFqOcrs=;
+        s=korg; t=1649149357;
+        bh=fb9efia5mVrZlJD4idK/NLmTQmEyTQOi7uyPx6MOOJs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=E3Fux2HqfNTi39CbYItzUSBjg40lrUTKEHn+AD6X3OYRMVo2kTF602uF85iyomPXH
-         2CIwf8xXNIr43zvNkmMH8qiCkAo8/SexSlKJDy4epHAbYTl+DfJGaDCehbiWioZFyq
-         Fl7Q+N5/wghT+6qL2vk44aiN+jzunGFhTi/cRD/g=
+        b=DLM7qxPA5Yxk6Sg9yNZ6wSQIAYE4CIfB271mJGmfBVdX4HE46G9fCF5zpKFKG02DG
+         2fAsCxs4c6q4o9fP4P5fi8gbmVpU0SlQKJ/OnETIMMAXgXfmmSamDYkVE9RDW/Mc9N
+         4E1da/NZa4ZgkqGkfBJk5XKg88bPyiDV6fr/baTI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Jakub Kicinski <kuba@kernel.org>,
+        stable@vger.kernel.org,
+        =?UTF-8?q?Jonathan=20Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>,
+        Stephen Boyd <sboyd@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0634/1017] net: dsa: fix panic on shutdown if multi-chip tree failed to probe
-Date:   Tue,  5 Apr 2022 09:25:47 +0200
-Message-Id: <20220405070413.103148911@linuxfoundation.org>
+Subject: [PATCH 5.16 0686/1017] clk: hisilicon: Terminate clk_div_table with sentinel element
+Date:   Tue,  5 Apr 2022 09:26:39 +0200
+Message-Id: <20220405070414.639927189@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -49,62 +51,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vladimir Oltean <vladimir.oltean@nxp.com>
+From: Jonathan Neuschäfer <j.neuschaefer@gmx.net>
 
-[ Upstream commit 8fd36358ce82382519b50b05f437493e1e00c4a9 ]
+[ Upstream commit 113b261bdf2b4fd34e7769a147a7acd0a4d9137f ]
 
-DSA probing is atypical because a tree of devices must probe all at
-once, so out of N switches which call dsa_tree_setup_routing_table()
-during probe, for (N - 1) of them, "complete" will return false and they
-will exit probing early. The Nth switch will set up the whole tree on
-their behalf.
+In order that the end of a clk_div_table can be detected, it must be
+terminated with a sentinel element (.div = 0).
 
-The implication is that for (N - 1) switches, the driver binds to the
-device successfully, without doing anything. When the driver is bound,
-the ->shutdown() method may run. But if the Nth switch has failed to
-initialize the tree, there is nothing to do for the (N - 1) driver
-instances, since the slave devices have not been created, etc. Moreover,
-dsa_switch_shutdown() expects that the calling @ds has been in fact
-initialized, so it jumps at dereferencing the various data structures,
-which is incorrect.
-
-Avoid the ensuing NULL pointer dereferences by simply checking whether
-the Nth switch has previously set "ds->setup = true" for the switch
-which is currently shutting down. The entire setup is serialized under
-dsa2_mutex which we already hold.
-
-Fixes: 0650bf52b31f ("net: dsa: be compatible with masters which unregister on shutdown")
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-Link: https://lore.kernel.org/r/20220318195443.275026-1-vladimir.oltean@nxp.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Fixes: 6c81966107dc0 ("clk: hisilicon: Add clock driver for hi3559A SoC")
+Signed-off-by: Jonathan Neuschäfer <j.neuschaefer@gmx.net>
+Link: https://lore.kernel.org/r/20220218000922.134857-4-j.neuschaefer@gmx.net
+Signed-off-by: Stephen Boyd <sboyd@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/dsa/dsa2.c | 5 +++++
- 1 file changed, 5 insertions(+)
+ drivers/clk/hisilicon/clk-hi3559a.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/net/dsa/dsa2.c b/net/dsa/dsa2.c
-index e64ef196a984..ff29a5a3e4c1 100644
---- a/net/dsa/dsa2.c
-+++ b/net/dsa/dsa2.c
-@@ -1613,6 +1613,10 @@ void dsa_switch_shutdown(struct dsa_switch *ds)
- 	struct dsa_port *dp;
+diff --git a/drivers/clk/hisilicon/clk-hi3559a.c b/drivers/clk/hisilicon/clk-hi3559a.c
+index 56012a3d0219..9ea1a80acbe8 100644
+--- a/drivers/clk/hisilicon/clk-hi3559a.c
++++ b/drivers/clk/hisilicon/clk-hi3559a.c
+@@ -611,8 +611,8 @@ static struct hisi_mux_clock hi3559av100_shub_mux_clks[] = {
  
- 	mutex_lock(&dsa2_mutex);
-+
-+	if (!ds->setup)
-+		goto out;
-+
- 	rtnl_lock();
  
- 	dsa_switch_for_each_user_port(dp, ds) {
-@@ -1629,6 +1633,7 @@ void dsa_switch_shutdown(struct dsa_switch *ds)
- 		dp->master->dsa_ptr = NULL;
+ /* shub div clk */
+-static struct clk_div_table shub_spi_clk_table[] = {{0, 8}, {1, 4}, {2, 2}};
+-static struct clk_div_table shub_uart_div_clk_table[] = {{1, 8}, {2, 4}};
++static struct clk_div_table shub_spi_clk_table[] = {{0, 8}, {1, 4}, {2, 2}, {/*sentinel*/}};
++static struct clk_div_table shub_uart_div_clk_table[] = {{1, 8}, {2, 4}, {/*sentinel*/}};
  
- 	rtnl_unlock();
-+out:
- 	mutex_unlock(&dsa2_mutex);
- }
- EXPORT_SYMBOL_GPL(dsa_switch_shutdown);
+ static struct hisi_divider_clock hi3559av100_shub_div_clks[] = {
+ 	{ HI3559AV100_SHUB_SPI_SOURCE_CLK, "clk_spi_clk", "shub_clk", 0, 0x20, 24, 2,
 -- 
 2.34.1
 
