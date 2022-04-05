@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E767EC41535
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:36:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 969D5C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:36:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241398AbiDEIda (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 04:33:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53128 "EHLO
+        id S236814AbiDEI2j (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 04:28:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48868 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236264AbiDEIBw (ORCPT
+        with ESMTP id S235898AbiDEIAl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:01:52 -0400
+        Tue, 5 Apr 2022 04:00:41 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3311549FB3;
-        Tue,  5 Apr 2022 00:59:54 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A9844925A;
+        Tue,  5 Apr 2022 00:58:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D3C41B81B16;
-        Tue,  5 Apr 2022 07:59:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 26811C340EE;
-        Tue,  5 Apr 2022 07:59:50 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 275A9B81B16;
+        Tue,  5 Apr 2022 07:58:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 875D9C340EE;
+        Tue,  5 Apr 2022 07:58:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649145591;
-        bh=bSHnxBfTeFa9LiNJveLBByEKIzdv4qri4DryIuhPjVw=;
+        s=korg; t=1649145520;
+        bh=jIcYDRqhOPQaS8NDwpkH/FdRN7CSfJSZNAAJHcEtsOQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NVwvpLzME9eVCmY/PuDVxg1jcOv5gwJDJvlT7ouLfvQNPPVpYkf+w6xeZu0laXWYZ
-         X4qE1feUBwX9/9bXH9ypwCzQ+HJzXt1GyBwbW9O/cGujuOhia8woBVX8si+P28TmOT
-         7V5foR8DeHvR8QzZraV/1ahwLbpoL1nSm+DXPANI=
+        b=ZS+y9HuSIZHfmHOszCzQbKTIiw/tc5UeqV9jeP33KwdFg3YQvgAPjtTisnJxXdy9Z
+         fjne4SQvswtmZlFgXUoDvJdnd/Xgg9/Lb7vdwpc37++0IR87DWNv390nxZp2BvGJIn
+         KgXZb4YTd2hJJrpBk5G3/lGd4s8aoEq5OdfjlokY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Brett Creeley <brett@pensando.io>,
-        Shannon Nelson <snelson@pensando.io>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org, Yafang Shao <laoar.shao@gmail.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0458/1126] ionic: Dont send reset commands if FW isnt running
-Date:   Tue,  5 Apr 2022 09:20:05 +0200
-Message-Id: <20220405070421.068992989@linuxfoundation.org>
+Subject: [PATCH 5.17 0436/1126] libbpf: Fix possible NULL pointer dereference when destroying skeleton
+Date:   Tue,  5 Apr 2022 09:19:43 +0200
+Message-Id: <20220405070420.421839289@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -50,129 +49,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Brett Creeley <brett@pensando.io>
+From: Yafang Shao <laoar.shao@gmail.com>
 
-[ Upstream commit b8fd0271dad00b953caaabe73474788d3d19e252 ]
+[ Upstream commit a32ea51a3f17ce6524c9fc19d311e708331c8b5f ]
 
-It's possible the FW is already shutting down while the driver is being
-removed and/or when the driver is going through reset. This can cause
-unexpected/unnecessary errors to be printed:
+When I checked the code in skeleton header file generated with my own
+bpf prog, I found there may be possible NULL pointer dereference when
+destroying skeleton. Then I checked the in-tree bpf progs, finding that is
+a common issue. Let's take the generated samples/bpf/xdp_redirect_cpu.skel.h
+for example. Below is the generated code in
+xdp_redirect_cpu__create_skeleton():
 
-eth0: DEV_CMD IONIC_CMD_PORT_RESET (12) error, IONIC_RC_ERROR (29) failed
-eth1: DEV_CMD IONIC_CMD_RESET (3) error, IONIC_RC_ERROR (29) failed
+	xdp_redirect_cpu__create_skeleton
+		struct bpf_object_skeleton *s;
+		s = (struct bpf_object_skeleton *)calloc(1, sizeof(*s));
+		if (!s)
+			goto error;
+		...
+	error:
+		bpf_object__destroy_skeleton(s);
+		return  -ENOMEM;
 
-Fix this by checking the FW status register before issuing the reset
-commands.
+After goto error, the NULL 's' will be deferenced in
+bpf_object__destroy_skeleton().
 
-Also, since err may not be assigned in ionic_port_reset(), assign it a
-default value of 0, and remove an unnecessary log message.
+We can simply fix this issue by just adding a NULL check in
+bpf_object__destroy_skeleton().
 
-Fixes: fbfb8031533c ("ionic: Add hardware init and device commands")
-Signed-off-by: Brett Creeley <brett@pensando.io>
-Signed-off-by: Shannon Nelson <snelson@pensando.io>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Fixes: d66562fba1ce ("libbpf: Add BPF object skeleton support")
+Signed-off-by: Yafang Shao <laoar.shao@gmail.com>
+Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
+Link: https://lore.kernel.org/bpf/20220108134739.32541-1-laoar.shao@gmail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../net/ethernet/pensando/ionic/ionic_dev.c    | 17 ++++++++++++-----
- .../net/ethernet/pensando/ionic/ionic_dev.h    |  1 +
- .../net/ethernet/pensando/ionic/ionic_main.c   | 18 ++++++++++--------
- 3 files changed, 23 insertions(+), 13 deletions(-)
+ tools/lib/bpf/libbpf.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/net/ethernet/pensando/ionic/ionic_dev.c b/drivers/net/ethernet/pensando/ionic/ionic_dev.c
-index 4044c630f8b4..2c7ce820a1fa 100644
---- a/drivers/net/ethernet/pensando/ionic/ionic_dev.c
-+++ b/drivers/net/ethernet/pensando/ionic/ionic_dev.c
-@@ -129,6 +129,16 @@ int ionic_dev_setup(struct ionic *ionic)
- }
+diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
+index 7f10dd501a52..fdb3536afa7d 100644
+--- a/tools/lib/bpf/libbpf.c
++++ b/tools/lib/bpf/libbpf.c
+@@ -11795,6 +11795,9 @@ void bpf_object__detach_skeleton(struct bpf_object_skeleton *s)
  
- /* Devcmd Interface */
-+bool ionic_is_fw_running(struct ionic_dev *idev)
-+{
-+	u8 fw_status = ioread8(&idev->dev_info_regs->fw_status);
-+
-+	/* firmware is useful only if the running bit is set and
-+	 * fw_status != 0xff (bad PCI read)
-+	 */
-+	return (fw_status != 0xff) && (fw_status & IONIC_FW_STS_F_RUNNING);
-+}
-+
- int ionic_heartbeat_check(struct ionic *ionic)
+ void bpf_object__destroy_skeleton(struct bpf_object_skeleton *s)
  {
- 	struct ionic_dev *idev = &ionic->idev;
-@@ -152,13 +162,10 @@ int ionic_heartbeat_check(struct ionic *ionic)
- 		goto do_check_time;
- 	}
- 
--	/* firmware is useful only if the running bit is set and
--	 * fw_status != 0xff (bad PCI read)
--	 * If fw_status is not ready don't bother with the generation.
--	 */
- 	fw_status = ioread8(&idev->dev_info_regs->fw_status);
- 
--	if (fw_status == 0xff || !(fw_status & IONIC_FW_STS_F_RUNNING)) {
-+	/* If fw_status is not ready don't bother with the generation */
-+	if (!ionic_is_fw_running(idev)) {
- 		fw_status_ready = false;
- 	} else {
- 		fw_generation = fw_status & IONIC_FW_STS_F_GENERATION;
-diff --git a/drivers/net/ethernet/pensando/ionic/ionic_dev.h b/drivers/net/ethernet/pensando/ionic/ionic_dev.h
-index e5acf3bd62b2..73b950ac1272 100644
---- a/drivers/net/ethernet/pensando/ionic/ionic_dev.h
-+++ b/drivers/net/ethernet/pensando/ionic/ionic_dev.h
-@@ -353,5 +353,6 @@ void ionic_q_rewind(struct ionic_queue *q, struct ionic_desc_info *start);
- void ionic_q_service(struct ionic_queue *q, struct ionic_cq_info *cq_info,
- 		     unsigned int stop_index);
- int ionic_heartbeat_check(struct ionic *ionic);
-+bool ionic_is_fw_running(struct ionic_dev *idev);
- 
- #endif /* _IONIC_DEV_H_ */
-diff --git a/drivers/net/ethernet/pensando/ionic/ionic_main.c b/drivers/net/ethernet/pensando/ionic/ionic_main.c
-index a89ad768e4a0..a548f2a01806 100644
---- a/drivers/net/ethernet/pensando/ionic/ionic_main.c
-+++ b/drivers/net/ethernet/pensando/ionic/ionic_main.c
-@@ -540,6 +540,9 @@ int ionic_reset(struct ionic *ionic)
- 	struct ionic_dev *idev = &ionic->idev;
- 	int err;
- 
-+	if (!ionic_is_fw_running(idev))
-+		return 0;
++	if (!s)
++		return;
 +
- 	mutex_lock(&ionic->dev_cmd_lock);
- 	ionic_dev_cmd_reset(idev);
- 	err = ionic_dev_cmd_wait(ionic, DEVCMD_TIMEOUT);
-@@ -612,15 +615,17 @@ int ionic_port_init(struct ionic *ionic)
- int ionic_port_reset(struct ionic *ionic)
- {
- 	struct ionic_dev *idev = &ionic->idev;
--	int err;
-+	int err = 0;
- 
- 	if (!idev->port_info)
- 		return 0;
- 
--	mutex_lock(&ionic->dev_cmd_lock);
--	ionic_dev_cmd_port_reset(idev);
--	err = ionic_dev_cmd_wait(ionic, DEVCMD_TIMEOUT);
--	mutex_unlock(&ionic->dev_cmd_lock);
-+	if (ionic_is_fw_running(idev)) {
-+		mutex_lock(&ionic->dev_cmd_lock);
-+		ionic_dev_cmd_port_reset(idev);
-+		err = ionic_dev_cmd_wait(ionic, DEVCMD_TIMEOUT);
-+		mutex_unlock(&ionic->dev_cmd_lock);
-+	}
- 
- 	dma_free_coherent(ionic->dev, idev->port_info_sz,
- 			  idev->port_info, idev->port_info_pa);
-@@ -628,9 +633,6 @@ int ionic_port_reset(struct ionic *ionic)
- 	idev->port_info = NULL;
- 	idev->port_info_pa = 0;
- 
--	if (err)
--		dev_err(ionic->dev, "Failed to reset port\n");
--
- 	return err;
- }
- 
+ 	if (s->progs)
+ 		bpf_object__detach_skeleton(s);
+ 	if (s->obj)
 -- 
 2.34.1
 
