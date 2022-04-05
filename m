@@ -2,103 +2,161 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D92EC4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C6BD7C433EF
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:51:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1580025AbiDEXdh (ORCPT
+        id S1580056AbiDEXdq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 19:33:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37026 "EHLO
+        Tue, 5 Apr 2022 19:33:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60846 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349000AbiDEJsy (ORCPT
+        with ESMTP id S1389909AbiDENe3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:48:54 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 964B4DF39;
-        Tue,  5 Apr 2022 02:39:00 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D875AB81B14;
-        Tue,  5 Apr 2022 09:38:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3264BC385A4;
-        Tue,  5 Apr 2022 09:38:57 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649151537;
-        bh=hmvmRAYy5CtEgcjuSbZG6PGypBuHsaexWH+raY5jLm8=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=O6dehrR5N8XZHyHm+i44LjgA36FRCO3N5tGJ3aSMK0gS9OssshLHRwQabun5l9/Sz
-         EWoWMWcp+e+RDrkhf8663V36CG6L2UMfrPmHEx95uuPujUCkOWKXuXATagTXQVS2B2
-         VsjeIqgxbPEhHZ7aYOntNm639xPwSTqECJa5vb1c=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Alexander Lobakin <alexandr.lobakin@intel.com>,
-        Michal Swiatkowski <michal.swiatkowski@linux.intel.com>,
-        Sandeep Penigalapati <sandeep.penigalapati@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 414/913] ixgbe: dont reserve excessive XDP_PACKET_HEADROOM on XSK Rx to skb
-Date:   Tue,  5 Apr 2022 09:24:36 +0200
-Message-Id: <20220405070352.256852576@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 5 Apr 2022 09:34:29 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6C004104A62
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 05:41:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1649162462;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=iAgWhjRrYpIhx8E90XItBzeThRQ5JiMqIe491O7AfVA=;
+        b=RTeLStRBMRUHBXaEEe097sk40fKR4/XvMpIEEkQ+QtAK8kgxIpMpqIbidq0wUfxiavOOO0
+        fcqLNwzDngWtu6c/BXvrsM2wEUe7pcyzmwLwdS+d87lGCxPxYVd0D1Yy56qXfr9j7b0/xE
+        +9lVVGycUiwHQ7JMN05Kyvs8a+bnp5k=
+Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
+ [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-310-nS_WsDmoMyK4lTSKq77RYQ-1; Tue, 05 Apr 2022 08:41:01 -0400
+X-MC-Unique: nS_WsDmoMyK4lTSKq77RYQ-1
+Received: by mail-wm1-f72.google.com with SMTP id 189-20020a1c02c6000000b0038e6c4c6472so1291426wmc.1
+        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 05:41:01 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=iAgWhjRrYpIhx8E90XItBzeThRQ5JiMqIe491O7AfVA=;
+        b=GDS7yCw5RWTFvOy5d8HN9xBH44/XaJ3xTbB0OPM/kFqs7LmdKlpoVWFQ96qLpbDCrL
+         I1P6TMJGCVOD5D/LGhGR46KfY37X22FaW6MO8z3Tux5QY/Pb/5QbXuqjaaLWtgDQdPbU
+         NkLPGWnxChWLz7C042oP6hbdSMWBVT71jqeH3uNsqQvETT/lQ86/NMpAr/hAKpDqlYSZ
+         lJp21xvmzGkXzo4wSy8HqW7whlhcJiJktTqFputb2iFaHTyZ/PeEVXUS+zFRTKfGKRuv
+         tJsFe+pKGrPueUY1/T4e0LMBGKDlMIbCNs/7VZIcOjY1n0adj2mVRWAKiNTYLw9O3Kda
+         RU6A==
+X-Gm-Message-State: AOAM532P3HL+r9DTE3KSMPThMHJVv3/GDpjoqLIgfZD+XW83QYaWjtIx
+        PdQISAFaynN0iHoYKS8l/wWlpldOZH7Th4QJfGUQ//6PbBUEQ85dqskCAUsHJv4TICe5HbBUDon
+        vdC0oYl3+QbCkxSu/Y/5hzRZ1
+X-Received: by 2002:a05:600c:3ca7:b0:38e:50d2:27fe with SMTP id bg39-20020a05600c3ca700b0038e50d227femr2975268wmb.159.1649162460264;
+        Tue, 05 Apr 2022 05:41:00 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJw7XSgpiU5Q0NcEbeo/UDtUNiygqgEZ3cIbl0PjhHRkwLB8zLMXnA0rseu9YHs+ssjUiCngZQ==
+X-Received: by 2002:a05:600c:3ca7:b0:38e:50d2:27fe with SMTP id bg39-20020a05600c3ca700b0038e50d227femr2975243wmb.159.1649162460003;
+        Tue, 05 Apr 2022 05:41:00 -0700 (PDT)
+Received: from [10.32.181.87] (nat-pool-mxp-t.redhat.com. [149.6.153.186])
+        by smtp.googlemail.com with ESMTPSA id p18-20020a1c5452000000b0038e70261309sm2147830wmi.1.2022.04.05.05.40.58
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 05 Apr 2022 05:40:59 -0700 (PDT)
+Message-ID: <9a319273-b2ed-2eb7-a00d-3c46588e45d8@redhat.com>
+Date:   Tue, 5 Apr 2022 14:40:58 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [RFC PATCH v5 021/104] KVM: x86: Introduce hooks to free VM
+ callback prezap and vm_free
+Content-Language: en-US
+To:     isaku.yamahata@intel.com, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     isaku.yamahata@gmail.com, Jim Mattson <jmattson@google.com>,
+        erdemaktas@google.com, Connor Kuehl <ckuehl@redhat.com>,
+        Sean Christopherson <seanjc@google.com>
+References: <cover.1646422845.git.isaku.yamahata@intel.com>
+ <af18a5c763a78af2b7de6e6e0841d9e61a571dc4.1646422845.git.isaku.yamahata@intel.com>
+From:   Paolo Bonzini <pbonzini@redhat.com>
+In-Reply-To: <af18a5c763a78af2b7de6e6e0841d9e61a571dc4.1646422845.git.isaku.yamahata@intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alexander Lobakin <alexandr.lobakin@intel.com>
+On 3/4/22 20:48, isaku.yamahata@intel.com wrote:
+> From: Kai Huang <kai.huang@intel.com>
+> 
+> Before tearing down private page tables, TDX requires some resources of the
+> guest TD to be destroyed (i.e. keyID must have been reclaimed, etc).  Add
+> prezap callback before tearing down private page tables for it.
+> 
+> TDX needs to free some resources after other resources (i.e. vcpu related
+> resources).  Add vm_free callback at the end of kvm_arch_destroy_vm().
+> 
+> Signed-off-by: Kai Huang <kai.huang@intel.com>
+> Signed-off-by: Isaku Yamahata <isaku.yamahata@intel.com>
+> ---
+>   arch/x86/include/asm/kvm-x86-ops.h | 2 ++
+>   arch/x86/include/asm/kvm_host.h    | 2 ++
+>   arch/x86/kvm/x86.c                 | 8 ++++++++
+>   3 files changed, 12 insertions(+)
+> 
+> diff --git a/arch/x86/include/asm/kvm-x86-ops.h b/arch/x86/include/asm/kvm-x86-ops.h
+> index 8125d43d3566..ef48dcc98cfc 100644
+> --- a/arch/x86/include/asm/kvm-x86-ops.h
+> +++ b/arch/x86/include/asm/kvm-x86-ops.h
+> @@ -20,7 +20,9 @@ KVM_X86_OP(has_emulated_msr)
+>   KVM_X86_OP(vcpu_after_set_cpuid)
+>   KVM_X86_OP(is_vm_type_supported)
+>   KVM_X86_OP(vm_init)
+> +KVM_X86_OP_NULL(mmu_prezap)
+>   KVM_X86_OP_NULL(vm_destroy)
+> +KVM_X86_OP_NULL(vm_free)
+>   KVM_X86_OP(vcpu_create)
+>   KVM_X86_OP(vcpu_free)
+>   KVM_X86_OP(vcpu_reset)
+> diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm_host.h
+> index 8de357a9ad30..5ff7a0fba311 100644
+> --- a/arch/x86/include/asm/kvm_host.h
+> +++ b/arch/x86/include/asm/kvm_host.h
+> @@ -1326,7 +1326,9 @@ struct kvm_x86_ops {
+>   	bool (*is_vm_type_supported)(unsigned long vm_type);
+>   	unsigned int vm_size;
+>   	int (*vm_init)(struct kvm *kvm);
+> +	void (*mmu_prezap)(struct kvm *kvm);
+>   	void (*vm_destroy)(struct kvm *kvm);
+> +	void (*vm_free)(struct kvm *kvm);
+>   
+>   	/* Create, but do not attach this VCPU */
+>   	int (*vcpu_create)(struct kvm_vcpu *vcpu);
+> diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
+> index f6438750d190..a48f5c69fadb 100644
+> --- a/arch/x86/kvm/x86.c
+> +++ b/arch/x86/kvm/x86.c
+> @@ -11779,6 +11779,7 @@ void kvm_arch_destroy_vm(struct kvm *kvm)
+>   	kvm_page_track_cleanup(kvm);
+>   	kvm_xen_destroy_vm(kvm);
+>   	kvm_hv_destroy_vm(kvm);
+> +	static_call_cond(kvm_x86_vm_free)(kvm);
+>   }
+>   
+>   static void memslot_rmap_free(struct kvm_memory_slot *slot)
+> @@ -12036,6 +12037,13 @@ void kvm_arch_commit_memory_region(struct kvm *kvm,
+>   
+>   void kvm_arch_flush_shadow_all(struct kvm *kvm)
+>   {
+> +	/*
+> +	 * kvm_mmu_zap_all() zaps both private and shared page tables.  Before
+> +	 * tearing down private page tables, TDX requires some TD resources to
+> +	 * be destroyed (i.e. keyID must have been reclaimed, etc).  Invoke
+> +	 * kvm_x86_mmu_prezap() for this.
+> +	 */
+> +	static_call_cond(kvm_x86_mmu_prezap)(kvm);
+>   	kvm_mmu_zap_all(kvm);
 
-[ Upstream commit 8f405221a73a53234486c185d8ef647377a53cc6 ]
+Please rename the hook to (*flush_shadow_all_private).
 
-{__,}napi_alloc_skb() allocates and reserves additional NET_SKB_PAD
-+ NET_IP_ALIGN for any skb.
-OTOH, ixgbe_construct_skb_zc() currently allocates and reserves
-additional `xdp->data - xdp->data_hard_start`, which is
-XDP_PACKET_HEADROOM for XSK frames.
-There's no need for that at all as the frame is post-XDP and will
-go only to the networking stack core.
-Pass the size of the actual data only to __napi_alloc_skb() and
-don't reserve anything. This will give enough headroom for stack
-processing.
+Otherwise ok,
 
-Fixes: d0bcacd0a130 ("ixgbe: add AF_XDP zero-copy Rx support")
-Signed-off-by: Alexander Lobakin <alexandr.lobakin@intel.com>
-Reviewed-by: Michal Swiatkowski <michal.swiatkowski@linux.intel.com>
-Tested-by: Sandeep Penigalapati <sandeep.penigalapati@intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+Paolo
 
-diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c
-index 7c17932a5e4e..36f43dc3a55e 100644
---- a/drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c
-+++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c
-@@ -208,13 +208,11 @@ static struct sk_buff *ixgbe_construct_skb_zc(struct ixgbe_ring *rx_ring,
- 	struct sk_buff *skb;
- 
- 	/* allocate a skb to store the frags */
--	skb = __napi_alloc_skb(&rx_ring->q_vector->napi,
--			       xdp->data_end - xdp->data_hard_start,
-+	skb = __napi_alloc_skb(&rx_ring->q_vector->napi, datasize,
- 			       GFP_ATOMIC | __GFP_NOWARN);
- 	if (unlikely(!skb))
- 		return NULL;
- 
--	skb_reserve(skb, xdp->data - xdp->data_hard_start);
- 	memcpy(__skb_put(skb, datasize), xdp->data, datasize);
- 	if (metasize)
- 		skb_metadata_set(skb, metasize);
--- 
-2.34.1
-
-
+>   }
+>   
 
