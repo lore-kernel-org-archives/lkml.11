@@ -2,127 +2,79 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 825EBC4321E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 66CEFC433FE
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 09:52:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344810AbiDEJmq (ORCPT
+        id S1344771AbiDEJmo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 05:42:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34720 "EHLO
+        Tue, 5 Apr 2022 05:42:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44332 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239318AbiDEIT6 (ORCPT
+        with ESMTP id S239257AbiDEIT4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:19:58 -0400
+        Tue, 5 Apr 2022 04:19:56 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF5C382D07;
-        Tue,  5 Apr 2022 01:11:04 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2ADF27E0A9;
+        Tue,  5 Apr 2022 01:10:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5E4F5609AD;
-        Tue,  5 Apr 2022 08:11:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 697ABC385A1;
-        Tue,  5 Apr 2022 08:11:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649146263;
-        bh=VS76bT+X+G8by7uHjwM4STzGKCQS21k7e4HRKUp3dr8=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ee6hG/ajFHaHSC/YrHMMLb9V/0LddQkCAPP/7cLoWThs/7CuF3qQnefFLawkV3cqD
-         xE7Z64fveRva845Y9D/0Xjg4hI3o1okrJpGVd+fXB3Ah88aeKBScn1dvu6sdt3Ir49
-         CM1wzXtH7A81EvXRUgmUI42W1/TtZXEdNJO0gxtk=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Lorenzo Bianconi <lorenzo@kernel.org>,
-        Felix Fietkau <nbd@nbd.name>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0674/1126] mt76: mt7921: fix mt7921_queues_acq implementation
-Date:   Tue,  5 Apr 2022 09:23:41 +0200
-Message-Id: <20220405070427.408600610@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
-References: <20220405070407.513532867@linuxfoundation.org>
-User-Agent: quilt/0.66
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9516C60B0E;
+        Tue,  5 Apr 2022 08:10:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CC4FEC385A4;
+        Tue,  5 Apr 2022 08:10:39 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649146242;
+        bh=yiUb0KeDIElbsWH/tWSC27FCtW1g3j0B1+uvrjcMk30=;
+        h=Subject:From:In-Reply-To:References:To:Cc:Date:From;
+        b=PZodR0flrzbsq2oxkUiMgDvB7X2Elj5eNDBNIJZYSeibE9SQv6EZwbMGUNvIdfWQp
+         tpWaIYsoOOdrFrg9SICP2LeeFpBryS4jQX219mjUt5KHjgKoX2oWwqm8LcfCwJsFK1
+         qelcqd7V/+W+pYJ4i3MkuqMCh3PfFnrJaeMshf/4xSM7fcxHcv5qUoqcy8emqr1k33
+         B5pEfaORqVyi0IwN7hesLxg7AkNyUyY/rEPUfRa/yw2aaBj/z5hQ5iBN8fLg+a8vz5
+         rvekW1PWphkFy52GuzH69jcaHfVAXXXanfNn8lg4iW9/vstteRQFxrNZdH1V7UhmvD
+         WsrXlZCQ2W7Sg==
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
+Subject: Re: [PATCH v2] carl9170: tx: fix an incorrect use of list iterator
+From:   Kalle Valo <kvalo@kernel.org>
+In-Reply-To: <20220328122820.1004-1-xiam0nd.tong@gmail.com>
+References: <20220328122820.1004-1-xiam0nd.tong@gmail.com>
+To:     Xiaomeng Tong <xiam0nd.tong@gmail.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        linville@tuxdriver.com, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Xiaomeng Tong <xiam0nd.tong@gmail.com>, stable@vger.kernel.org
+User-Agent: pwcli/0.1.0-git (https://github.com/kvalo/pwcli/) Python/3.7.3
+Message-ID: <164914623778.12306.14074908465775082444.kvalo@kernel.org>
+Date:   Tue,  5 Apr 2022 08:10:39 +0000 (UTC)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lorenzo Bianconi <lorenzo@kernel.org>
+Xiaomeng Tong <xiam0nd.tong@gmail.com> wrote:
 
-[ Upstream commit 849ee6ac9dd3efd0a57cbc98b9a9d6ae87374aff ]
+> If the previous list_for_each_entry_continue_rcu() don't exit early
+> (no goto hit inside the loop), the iterator 'cvif' after the loop
+> will be a bogus pointer to an invalid structure object containing
+> the HEAD (&ar->vif_list). As a result, the use of 'cvif' after that
+> will lead to a invalid memory access (i.e., 'cvif->id': the invalid
+> pointer dereference when return back to/after the callsite in the
+> carl9170_update_beacon()).
+> 
+> The original intention should have been to return the valid 'cvif'
+> when found in list, NULL otherwise. So just return NULL when no
+> entry found, to fix this bug.
+> 
+> Cc: stable@vger.kernel.org
+> Fixes: 1f1d9654e183c ("carl9170: refactor carl9170_update_beacon")
+> Signed-off-by: Xiaomeng Tong <xiam0nd.tong@gmail.com>
+> Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
 
-Fix mt7921_queues_acq implementation according to the vendor sdk.
+Christian, is this ok to take?
 
-Fixes: 474a9f21e2e20 ("mt76: mt7921: add debugfs support")
-Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
-Signed-off-by: Felix Fietkau <nbd@nbd.name>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/net/wireless/mediatek/mt76/mt7921/debugfs.c | 13 ++++++-------
- drivers/net/wireless/mediatek/mt76/mt7921/regs.h    | 11 +++++------
- 2 files changed, 11 insertions(+), 13 deletions(-)
-
-diff --git a/drivers/net/wireless/mediatek/mt76/mt7921/debugfs.c b/drivers/net/wireless/mediatek/mt76/mt7921/debugfs.c
-index 45a393070e46..196b50e616fe 100644
---- a/drivers/net/wireless/mediatek/mt76/mt7921/debugfs.c
-+++ b/drivers/net/wireless/mediatek/mt76/mt7921/debugfs.c
-@@ -129,23 +129,22 @@ mt7921_queues_acq(struct seq_file *s, void *data)
- 
- 	mt7921_mutex_acquire(dev);
- 
--	for (i = 0; i < 16; i++) {
--		int j, acs = i / 4, index = i % 4;
-+	for (i = 0; i < 4; i++) {
- 		u32 ctrl, val, qlen = 0;
-+		int j;
- 
--		val = mt76_rr(dev, MT_PLE_AC_QEMPTY(acs, index));
--		ctrl = BIT(31) | BIT(15) | (acs << 8);
-+		val = mt76_rr(dev, MT_PLE_AC_QEMPTY(i));
-+		ctrl = BIT(31) | BIT(11) | (i << 24);
- 
- 		for (j = 0; j < 32; j++) {
- 			if (val & BIT(j))
- 				continue;
- 
--			mt76_wr(dev, MT_PLE_FL_Q0_CTRL,
--				ctrl | (j + (index << 5)));
-+			mt76_wr(dev, MT_PLE_FL_Q0_CTRL, ctrl | j);
- 			qlen += mt76_get_field(dev, MT_PLE_FL_Q3_CTRL,
- 					       GENMASK(11, 0));
- 		}
--		seq_printf(s, "AC%d%d: queued=%d\n", acs, index, qlen);
-+		seq_printf(s, "AC%d: queued=%d\n", i, qlen);
- 	}
- 
- 	mt7921_mutex_release(dev);
-diff --git a/drivers/net/wireless/mediatek/mt76/mt7921/regs.h b/drivers/net/wireless/mediatek/mt76/mt7921/regs.h
-index cbd38122c510..c8c92faa4624 100644
---- a/drivers/net/wireless/mediatek/mt76/mt7921/regs.h
-+++ b/drivers/net/wireless/mediatek/mt76/mt7921/regs.h
-@@ -17,13 +17,12 @@
- #define MT_PLE_BASE			0x820c0000
- #define MT_PLE(ofs)			(MT_PLE_BASE + (ofs))
- 
--#define MT_PLE_FL_Q0_CTRL		MT_PLE(0x1b0)
--#define MT_PLE_FL_Q1_CTRL		MT_PLE(0x1b4)
--#define MT_PLE_FL_Q2_CTRL		MT_PLE(0x1b8)
--#define MT_PLE_FL_Q3_CTRL		MT_PLE(0x1bc)
-+#define MT_PLE_FL_Q0_CTRL		MT_PLE(0x3e0)
-+#define MT_PLE_FL_Q1_CTRL		MT_PLE(0x3e4)
-+#define MT_PLE_FL_Q2_CTRL		MT_PLE(0x3e8)
-+#define MT_PLE_FL_Q3_CTRL		MT_PLE(0x3ec)
- 
--#define MT_PLE_AC_QEMPTY(ac, n)		MT_PLE(0x300 + 0x10 * (ac) + \
--					       ((n) << 2))
-+#define MT_PLE_AC_QEMPTY(_n)		MT_PLE(0x500 + 0x40 * (_n))
- #define MT_PLE_AMSDU_PACK_MSDU_CNT(n)	MT_PLE(0x10e0 + ((n) << 2))
- 
- #define MT_MDP_BASE			0x820cd000
 -- 
-2.34.1
+https://patchwork.kernel.org/project/linux-wireless/patch/20220328122820.1004-1-xiam0nd.tong@gmail.com/
 
-
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
 
