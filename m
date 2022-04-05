@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1582BC4321E
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:37:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 273FCC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:37:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234221AbiDEIi5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 04:38:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55610 "EHLO
+        id S233506AbiDEIjf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 04:39:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48686 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235389AbiDEH7l (ORCPT
+        with ESMTP id S235869AbiDEIAi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 03:59:41 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 877D658823;
-        Tue,  5 Apr 2022 00:54:22 -0700 (PDT)
+        Tue, 5 Apr 2022 04:00:38 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 126021D30C;
+        Tue,  5 Apr 2022 00:58:39 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 05C87B81BB2;
-        Tue,  5 Apr 2022 07:54:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F0639C340EE;
-        Tue,  5 Apr 2022 07:54:18 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A37B361725;
+        Tue,  5 Apr 2022 07:58:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AAC2DC340EE;
+        Tue,  5 Apr 2022 07:58:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649145259;
-        bh=4El5mLzPV5FIUFM4OPSsk5ycPZQtCJ+BCLlcToLdjSI=;
+        s=korg; t=1649145518;
+        bh=BvfGzAXs88dXIv9pP3NYsralgV6h3fa+RJSEwj3vr1A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GOhFIfeHntqkRCPmSTHZje2GZzQsoxDjAk6RbbGWbHosdKG/a2TDXWfH+Cb1IJFdG
-         U0zNZLMUSmtp84YxvAj1AD4dfhvL1BTRUus6o0A/fIGy/G6idByzARgvFFyDauelLg
-         +C7i5bqh+sxc+AF92x0Lfr2SmdznkCdAKGIG+fgM=
+        b=kCVjUzIzGjSBSm2rfM3PjNaT2uRanN1CFHgLCMv4nzLBX83Ik3MtTAz0I9EIwk6DS
+         QgVBA7l7xiSDkjznDe7lLqLgXasGaXZgxjSkhTgCYGFpuanmSQLmuFfEyjztfAgdT3
+         t0Y/RjtstS7dAOUkqFy5YJoJlNesDruc83tqjdM4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Eugen Hristev <eugen.hristev@microchip.com>,
-        Jacopo Mondi <jacopo@jmondi.org>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        =?UTF-8?q?Mauricio=20V=C3=A1squez?= <mauricio@kinvolk.io>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Quentin Monnet <quentin@isovalent.com>,
+        Song Liu <songliubraving@fb.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0303/1126] media: atmel: atmel-sama7g5-isc: fix ispck leftover
-Date:   Tue,  5 Apr 2022 09:17:30 +0200
-Message-Id: <20220405070416.508429324@linuxfoundation.org>
+Subject: [PATCH 5.17 0435/1126] bpftool: Fix error check when calling hashmap__new()
+Date:   Tue,  5 Apr 2022 09:19:42 +0200
+Message-Id: <20220405070420.392850195@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -52,54 +52,116 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eugen Hristev <eugen.hristev@microchip.com>
+From: Mauricio Vásquez <mauricio@kinvolk.io>
 
-[ Upstream commit 1b52ce99e9f2dcda868a1a7026bfb58d04bd6bc8 ]
+[ Upstream commit 622a5b582cc27d3deedc38fcef68da2972e8e58d ]
 
-The ispck is not used for sama7g5 variant of the ISC.
-Calls to ispck have to be removed also from module insert/removal.
+hashmap__new() encodes errors with ERR_PTR(), hence it's not valid to
+check the returned pointer against NULL and IS_ERR() has to be used
+instead.
 
-Fixes: d7f26849ed7c ("media: atmel: fix the ispck initialization")
-Signed-off-by: Eugen Hristev <eugen.hristev@microchip.com>
-Reviewed-by: Jacopo Mondi <jacopo@jmondi.org>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+libbpf_get_error() can't be used in this case as hashmap__new() is not
+part of the public libbpf API and it'll continue using ERR_PTR() after
+libbpf 1.0.
+
+Fixes: 8f184732b60b ("bpftool: Switch to libbpf's hashmap for pinned paths of BPF objects")
+Fixes: 2828d0d75b73 ("bpftool: Switch to libbpf's hashmap for programs/maps in BTF listing")
+Fixes: d6699f8e0f83 ("bpftool: Switch to libbpf's hashmap for PIDs/names references")
+Signed-off-by: Mauricio Vásquez <mauricio@kinvolk.io>
+Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
+Reviewed-by: Quentin Monnet <quentin@isovalent.com>
+Acked-by: Song Liu <songliubraving@fb.com>
+Link: https://lore.kernel.org/bpf/20220107152620.192327-2-mauricio@kinvolk.io
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/platform/atmel/atmel-sama7g5-isc.c | 6 ------
- 1 file changed, 6 deletions(-)
+ tools/bpf/bpftool/btf.c  | 2 +-
+ tools/bpf/bpftool/link.c | 3 ++-
+ tools/bpf/bpftool/map.c  | 2 +-
+ tools/bpf/bpftool/pids.c | 3 ++-
+ tools/bpf/bpftool/prog.c | 2 +-
+ 5 files changed, 7 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/media/platform/atmel/atmel-sama7g5-isc.c b/drivers/media/platform/atmel/atmel-sama7g5-isc.c
-index 5d1c76f680f3..2b1082295c13 100644
---- a/drivers/media/platform/atmel/atmel-sama7g5-isc.c
-+++ b/drivers/media/platform/atmel/atmel-sama7g5-isc.c
-@@ -556,7 +556,6 @@ static int microchip_xisc_remove(struct platform_device *pdev)
+diff --git a/tools/bpf/bpftool/btf.c b/tools/bpf/bpftool/btf.c
+index 59833125ac0a..a2c665beda87 100644
+--- a/tools/bpf/bpftool/btf.c
++++ b/tools/bpf/bpftool/btf.c
+@@ -902,7 +902,7 @@ static int do_show(int argc, char **argv)
+ 				      equal_fn_for_key_as_id, NULL);
+ 	btf_map_table = hashmap__new(hash_fn_for_key_as_id,
+ 				     equal_fn_for_key_as_id, NULL);
+-	if (!btf_prog_table || !btf_map_table) {
++	if (IS_ERR(btf_prog_table) || IS_ERR(btf_map_table)) {
+ 		hashmap__free(btf_prog_table);
+ 		hashmap__free(btf_map_table);
+ 		if (fd >= 0)
+diff --git a/tools/bpf/bpftool/link.c b/tools/bpf/bpftool/link.c
+index 2c258db0d352..97dec81950e5 100644
+--- a/tools/bpf/bpftool/link.c
++++ b/tools/bpf/bpftool/link.c
+@@ -2,6 +2,7 @@
+ /* Copyright (C) 2020 Facebook */
  
- 	v4l2_device_unregister(&isc->v4l2_dev);
+ #include <errno.h>
++#include <linux/err.h>
+ #include <net/if.h>
+ #include <stdio.h>
+ #include <unistd.h>
+@@ -306,7 +307,7 @@ static int do_show(int argc, char **argv)
+ 	if (show_pinned) {
+ 		link_table = hashmap__new(hash_fn_for_key_as_id,
+ 					  equal_fn_for_key_as_id, NULL);
+-		if (!link_table) {
++		if (IS_ERR(link_table)) {
+ 			p_err("failed to create hashmap for pinned paths");
+ 			return -1;
+ 		}
+diff --git a/tools/bpf/bpftool/map.c b/tools/bpf/bpftool/map.c
+index cc530a229812..c66a3c979b7a 100644
+--- a/tools/bpf/bpftool/map.c
++++ b/tools/bpf/bpftool/map.c
+@@ -699,7 +699,7 @@ static int do_show(int argc, char **argv)
+ 	if (show_pinned) {
+ 		map_table = hashmap__new(hash_fn_for_key_as_id,
+ 					 equal_fn_for_key_as_id, NULL);
+-		if (!map_table) {
++		if (IS_ERR(map_table)) {
+ 			p_err("failed to create hashmap for pinned paths");
+ 			return -1;
+ 		}
+diff --git a/tools/bpf/bpftool/pids.c b/tools/bpf/bpftool/pids.c
+index 56b598eee043..7c384d10e95f 100644
+--- a/tools/bpf/bpftool/pids.c
++++ b/tools/bpf/bpftool/pids.c
+@@ -1,6 +1,7 @@
+ // SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+ /* Copyright (C) 2020 Facebook */
+ #include <errno.h>
++#include <linux/err.h>
+ #include <stdbool.h>
+ #include <stdio.h>
+ #include <stdlib.h>
+@@ -101,7 +102,7 @@ int build_obj_refs_table(struct hashmap **map, enum bpf_obj_type type)
+ 	libbpf_print_fn_t default_print;
  
--	clk_disable_unprepare(isc->ispck);
- 	clk_disable_unprepare(isc->hclock);
- 
- 	isc_clk_cleanup(isc);
-@@ -568,7 +567,6 @@ static int __maybe_unused xisc_runtime_suspend(struct device *dev)
- {
- 	struct isc_device *isc = dev_get_drvdata(dev);
- 
--	clk_disable_unprepare(isc->ispck);
- 	clk_disable_unprepare(isc->hclock);
- 
- 	return 0;
-@@ -583,10 +581,6 @@ static int __maybe_unused xisc_runtime_resume(struct device *dev)
- 	if (ret)
- 		return ret;
- 
--	ret = clk_prepare_enable(isc->ispck);
--	if (ret)
--		clk_disable_unprepare(isc->hclock);
--
- 	return ret;
- }
- 
+ 	*map = hashmap__new(hash_fn_for_key_as_id, equal_fn_for_key_as_id, NULL);
+-	if (!*map) {
++	if (IS_ERR(*map)) {
+ 		p_err("failed to create hashmap for PID references");
+ 		return -1;
+ 	}
+diff --git a/tools/bpf/bpftool/prog.c b/tools/bpf/bpftool/prog.c
+index 2a21d50516bc..33ca834d5f51 100644
+--- a/tools/bpf/bpftool/prog.c
++++ b/tools/bpf/bpftool/prog.c
+@@ -641,7 +641,7 @@ static int do_show(int argc, char **argv)
+ 	if (show_pinned) {
+ 		prog_table = hashmap__new(hash_fn_for_key_as_id,
+ 					  equal_fn_for_key_as_id, NULL);
+-		if (!prog_table) {
++		if (IS_ERR(prog_table)) {
+ 			p_err("failed to create hashmap for pinned paths");
+ 			return -1;
+ 		}
 -- 
 2.34.1
 
