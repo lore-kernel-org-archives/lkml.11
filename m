@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 25FF3C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 81B75C4321E
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:17:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1574110AbiDEWyb (ORCPT
+        id S1574179AbiDEWyz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 18:54:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39108 "EHLO
+        Tue, 5 Apr 2022 18:54:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51600 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348791AbiDEJsg (ORCPT
+        with ESMTP id S1353922AbiDEKJs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:48:36 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 321E882D19;
-        Tue,  5 Apr 2022 02:35:33 -0700 (PDT)
+        Tue, 5 Apr 2022 06:09:48 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 693BBC337B;
+        Tue,  5 Apr 2022 02:55:45 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BEC0AB81C6F;
-        Tue,  5 Apr 2022 09:35:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 28A58C385A2;
-        Tue,  5 Apr 2022 09:35:29 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id D7798CE1BE5;
+        Tue,  5 Apr 2022 09:55:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ED766C385A2;
+        Tue,  5 Apr 2022 09:55:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649151330;
-        bh=RuudkV80NbnUWQJ3ZBBUJ5p0VXcyoR2tIBAnss2jxn8=;
+        s=korg; t=1649152542;
+        bh=uXiXwt0Ehuv2SehoZcTyEG2r8lb4yLQg/hmZf2p4mKg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mUnsIqKsYugCaWtwh9itMfHsRI9xNqT0Fk/ITIPs4booj/R6eVQg0u1GC7TOHBRwl
-         c5qoAGCbm5bJxxLKCAj99it+z4Q83xj86UZlaxnO07Ra7M+T3fVQ4dNP/g9Isr9ULF
-         yx3HEAVSEmBRNd9DwXMHbjfo5grTWiVKV07OzJQQ=
+        b=M3u7FiQi2JEjD5XbWSuk+sa9XXqdf6o1V7PIzUNZeWciD0xJYvjecH+92NYAFg7K7
+         jHvE3S+ERsfftUgNlvO0hF4RdxFF3h8l2DJemql9cYAHToXam6WPhcubg9KwWkc1DX
+         2c16NIBRnyiM7AbjKE0eRZdCXryAm1mVCGPV10W4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 369/913] ASoC: msm8916-wcd-analog: Fix error handling in pm8916_wcd_analog_spmi_probe
-Date:   Tue,  5 Apr 2022 09:23:51 +0200
-Message-Id: <20220405070350.907531198@linuxfoundation.org>
+        stable@vger.kernel.org, Ben Gardon <bgardon@google.com>,
+        David Matlack <dmatlack@google.com>,
+        Paolo Bonzini <pbonzini@redhat.com>
+Subject: [PATCH 5.15 813/913] KVM: Prevent module exit until all VMs are freed
+Date:   Tue,  5 Apr 2022 09:31:15 +0200
+Message-Id: <20220405070404.201723088@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
 References: <20220405070339.801210740@linuxfoundation.org>
@@ -50,79 +50,75 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: David Matlack <dmatlack@google.com>
 
-[ Upstream commit 9ebd62d60edcd4d9c75485e5ccd0b79581ad3c49 ]
+commit 5f6de5cbebee925a612856fce6f9182bb3eee0db upstream.
 
-In the error handling path, the clk_prepare_enable() function
-call should be balanced by a corresponding 'clk_disable_unprepare()'
-call , as already done in the remove function.
+Tie the lifetime the KVM module to the lifetime of each VM via
+kvm.users_count. This way anything that grabs a reference to the VM via
+kvm_get_kvm() cannot accidentally outlive the KVM module.
 
-Fixes: de66b3455023 ("ASoC: codecs: msm8916-wcd-analog: add MBHC support")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Link: https://lore.kernel.org/r/20220316041924.17560-1-linmq006@gmail.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Prior to this commit, the lifetime of the KVM module was tied to the
+lifetime of /dev/kvm file descriptors, VM file descriptors, and vCPU
+file descriptors by their respective file_operations "owner" field.
+This approach is insufficient because references grabbed via
+kvm_get_kvm() do not prevent closing any of the aforementioned file
+descriptors.
+
+This fixes a long standing theoretical bug in KVM that at least affects
+async page faults. kvm_setup_async_pf() grabs a reference via
+kvm_get_kvm(), and drops it in an asynchronous work callback. Nothing
+prevents the VM file descriptor from being closed and the KVM module
+from being unloaded before this callback runs.
+
+Fixes: af585b921e5d ("KVM: Halt vcpu if page it tries to access is swapped out")
+Fixes: 3d3aab1b973b ("KVM: set owner of cpu and vm file operations")
+Cc: stable@vger.kernel.org
+Suggested-by: Ben Gardon <bgardon@google.com>
+[ Based on a patch from Ben implemented for Google's kernel. ]
+Signed-off-by: David Matlack <dmatlack@google.com>
+Message-Id: <20220303183328.1499189-2-dmatlack@google.com>
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/soc/codecs/msm8916-wcd-analog.c | 22 ++++++++++++++++------
- 1 file changed, 16 insertions(+), 6 deletions(-)
+ virt/kvm/kvm_main.c |   13 +++++++++++++
+ 1 file changed, 13 insertions(+)
 
-diff --git a/sound/soc/codecs/msm8916-wcd-analog.c b/sound/soc/codecs/msm8916-wcd-analog.c
-index 3ddd822240e3..971b8360b5b1 100644
---- a/sound/soc/codecs/msm8916-wcd-analog.c
-+++ b/sound/soc/codecs/msm8916-wcd-analog.c
-@@ -1221,8 +1221,10 @@ static int pm8916_wcd_analog_spmi_probe(struct platform_device *pdev)
- 	}
+--- a/virt/kvm/kvm_main.c
++++ b/virt/kvm/kvm_main.c
+@@ -117,6 +117,8 @@ EXPORT_SYMBOL_GPL(kvm_debugfs_dir);
  
- 	irq = platform_get_irq_byname(pdev, "mbhc_switch_int");
--	if (irq < 0)
--		return irq;
-+	if (irq < 0) {
-+		ret = irq;
-+		goto err_disable_clk;
-+	}
+ static const struct file_operations stat_fops_per_vm;
  
- 	ret = devm_request_threaded_irq(dev, irq, NULL,
- 			       pm8916_mbhc_switch_irq_handler,
-@@ -1234,8 +1236,10 @@ static int pm8916_wcd_analog_spmi_probe(struct platform_device *pdev)
- 
- 	if (priv->mbhc_btn_enabled) {
- 		irq = platform_get_irq_byname(pdev, "mbhc_but_press_det");
--		if (irq < 0)
--			return irq;
-+		if (irq < 0) {
-+			ret = irq;
-+			goto err_disable_clk;
-+		}
- 
- 		ret = devm_request_threaded_irq(dev, irq, NULL,
- 				       mbhc_btn_press_irq_handler,
-@@ -1246,8 +1250,10 @@ static int pm8916_wcd_analog_spmi_probe(struct platform_device *pdev)
- 			dev_err(dev, "cannot request mbhc button press irq\n");
- 
- 		irq = platform_get_irq_byname(pdev, "mbhc_but_rel_det");
--		if (irq < 0)
--			return irq;
-+		if (irq < 0) {
-+			ret = irq;
-+			goto err_disable_clk;
-+		}
- 
- 		ret = devm_request_threaded_irq(dev, irq, NULL,
- 				       mbhc_btn_release_irq_handler,
-@@ -1264,6 +1270,10 @@ static int pm8916_wcd_analog_spmi_probe(struct platform_device *pdev)
- 	return devm_snd_soc_register_component(dev, &pm8916_wcd_analog,
- 				      pm8916_wcd_analog_dai,
- 				      ARRAY_SIZE(pm8916_wcd_analog_dai));
++static struct file_operations kvm_chardev_ops;
 +
-+err_disable_clk:
-+	clk_disable_unprepare(priv->mclk);
-+	return ret;
+ static long kvm_vcpu_ioctl(struct file *file, unsigned int ioctl,
+ 			   unsigned long arg);
+ #ifdef CONFIG_KVM_COMPAT
+@@ -1099,6 +1101,16 @@ static struct kvm *kvm_create_vm(unsigne
+ 	preempt_notifier_inc();
+ 	kvm_init_pm_notifier(kvm);
+ 
++	/*
++	 * When the fd passed to this ioctl() is opened it pins the module,
++	 * but try_module_get() also prevents getting a reference if the module
++	 * is in MODULE_STATE_GOING (e.g. if someone ran "rmmod --wait").
++	 */
++	if (!try_module_get(kvm_chardev_ops.owner)) {
++		r = -ENODEV;
++		goto out_err;
++	}
++
+ 	return kvm;
+ 
+ out_err:
+@@ -1188,6 +1200,7 @@ static void kvm_destroy_vm(struct kvm *k
+ 	preempt_notifier_dec();
+ 	hardware_disable_all();
+ 	mmdrop(mm);
++	module_put(kvm_chardev_ops.owner);
  }
  
- static int pm8916_wcd_analog_spmi_remove(struct platform_device *pdev)
--- 
-2.34.1
-
+ void kvm_get_kvm(struct kvm *kvm)
 
 
