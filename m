@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F112C35294
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D8FE2C35296
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 14:03:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244627AbiDEN7u (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 09:59:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59028 "EHLO
+        id S245062AbiDEOAR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 10:00:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44522 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348019AbiDEJ3E (ORCPT
+        with ESMTP id S237348AbiDEJ3P (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:29:04 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B508E0991;
-        Tue,  5 Apr 2022 02:16:12 -0700 (PDT)
+        Tue, 5 Apr 2022 05:29:15 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4731DC29;
+        Tue,  5 Apr 2022 02:16:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 72536B818F3;
-        Tue,  5 Apr 2022 09:16:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BF1A3C385A2;
-        Tue,  5 Apr 2022 09:16:09 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C547E61576;
+        Tue,  5 Apr 2022 09:16:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D1F7CC385A2;
+        Tue,  5 Apr 2022 09:16:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649150170;
-        bh=89+pR9PH12ki5m/MYnRkohyxE/wShs8jdpgwEW/JbyQ=;
+        s=korg; t=1649150201;
+        bh=Fm93SfOtVMca980+6uyVenif6pThe6aO6Z2kp7al95w=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Ge4VldXZcq9MKvTh7LDhxINkuEONsuIRqUu9IREeehi/wKGOQ/chn/vTPLxKE43Cp
-         XdsLJ+tk2m8L+/JNmCLbrl1HksmVwtSiVOHAYdHwbXbeTSH4k5wIziLjy9V9LFxfu+
-         /o6pGXCCafqdqL/T2o0MmsDoGbydsSIGv3qTik6Q=
+        b=QtDolMDuOi5ZC2qlPz/hZ/f5FiDFRC0pLyqgwMMZTTR4F7YdmFh/ZLtODWE1ZWv0w
+         5gWYdcm2NCLD4KmQ48X4xIPvFcBxUHGaQiip+J+JC0ohw/fIZrPrjvWMkD78fAFTQR
+         rIVltZvjUZnprdKYpSjLHYXvD/SgJ/ThbRpVXj6c=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zhang Wensheng <zhangwensheng5@huawei.com>,
-        Josef Bacik <josef@toxicpanda.com>,
-        Jens Axboe <axboe@kernel.dk>
-Subject: [PATCH 5.16 0979/1017] nbd: fix possible overflow on first_minor in nbd_dev_add()
-Date:   Tue,  5 Apr 2022 09:31:32 +0200
-Message-Id: <20220405070423.263803833@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Horatiu Vultur <horatiu.vultur@microchip.com>,
+        Linus Walleij <linus.walleij@linaro.org>
+Subject: [PATCH 5.16 0989/1017] dt-bindings: pinctrl: pinctrl-microchip-sgpio: Fix example
+Date:   Tue,  5 Apr 2022 09:31:42 +0200
+Message-Id: <20220405070423.558959987@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -49,67 +49,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zhang Wensheng <zhangwensheng5@huawei.com>
+From: Horatiu Vultur <horatiu.vultur@microchip.com>
 
-commit 6d35d04a9e18990040e87d2bbf72689252669d54 upstream.
+commit a6ff90f3fbd4d902aad8777f0329cef3a2768bde upstream.
 
-When 'index' is a big numbers, it may become negative which forced
-to 'int'. then 'index << part_shift' might overflow to a positive
-value that is not greater than '0xfffff', then sysfs might complains
-about duplicate creation. Because of this, move the 'index' judgment
-to the front will fix it and be better.
+The blamed commit adds support for irq, but the reqisters for irq are
+outside of the memory size. They are at address 0x108. Therefore update
+the memory size to cover all the registers used by the device.
 
-Fixes: b0d9111a2d53 ("nbd: use an idr to keep track of nbd devices")
-Fixes: 940c264984fd ("nbd: fix possible overflow for 'first_minor' in nbd_dev_add()")
-Signed-off-by: Zhang Wensheng <zhangwensheng5@huawei.com>
-Reviewed-by: Josef Bacik <josef@toxicpanda.com>
-Link: https://lore.kernel.org/r/20220310093224.4002895-1-zhangwensheng5@huawei.com
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Fixes: 01a9350bdd49fb ("dt-bindings: pinctrl: pinctrl-microchip-sgpio: Add irq support")
+Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
+Link: https://lore.kernel.org/r/20220204153535.465827-2-horatiu.vultur@microchip.com
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/block/nbd.c |   24 ++++++++++++------------
- 1 file changed, 12 insertions(+), 12 deletions(-)
+ Documentation/devicetree/bindings/pinctrl/microchip,sparx5-sgpio.yaml |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/block/nbd.c
-+++ b/drivers/block/nbd.c
-@@ -1800,17 +1800,6 @@ static struct nbd_device *nbd_dev_add(in
- 	refcount_set(&nbd->refs, 0);
- 	INIT_LIST_HEAD(&nbd->list);
- 	disk->major = NBD_MAJOR;
--
--	/* Too big first_minor can cause duplicate creation of
--	 * sysfs files/links, since index << part_shift might overflow, or
--	 * MKDEV() expect that the max bits of first_minor is 20.
--	 */
--	disk->first_minor = index << part_shift;
--	if (disk->first_minor < index || disk->first_minor > MINORMASK) {
--		err = -EINVAL;
--		goto out_free_work;
--	}
--
- 	disk->minors = 1 << part_shift;
- 	disk->fops = &nbd_fops;
- 	disk->private_data = nbd;
-@@ -1915,8 +1904,19 @@ static int nbd_genl_connect(struct sk_bu
- 	if (!netlink_capable(skb, CAP_SYS_ADMIN))
- 		return -EPERM;
- 
--	if (info->attrs[NBD_ATTR_INDEX])
-+	if (info->attrs[NBD_ATTR_INDEX]) {
- 		index = nla_get_u32(info->attrs[NBD_ATTR_INDEX]);
-+
-+		/*
-+		 * Too big first_minor can cause duplicate creation of
-+		 * sysfs files/links, since index << part_shift might overflow, or
-+		 * MKDEV() expect that the max bits of first_minor is 20.
-+		 */
-+		if (index < 0 || index > MINORMASK >> part_shift) {
-+			printk(KERN_ERR "nbd: illegal input index %d\n", index);
-+			return -EINVAL;
-+		}
-+	}
- 	if (!info->attrs[NBD_ATTR_SOCKETS]) {
- 		printk(KERN_ERR "nbd: must specify at least one socket\n");
- 		return -EINVAL;
+--- a/Documentation/devicetree/bindings/pinctrl/microchip,sparx5-sgpio.yaml
++++ b/Documentation/devicetree/bindings/pinctrl/microchip,sparx5-sgpio.yaml
+@@ -145,7 +145,7 @@ examples:
+       clocks = <&sys_clk>;
+       pinctrl-0 = <&sgpio2_pins>;
+       pinctrl-names = "default";
+-      reg = <0x1101059c 0x100>;
++      reg = <0x1101059c 0x118>;
+       microchip,sgpio-port-ranges = <0 0>, <16 18>, <28 31>;
+       bus-frequency = <25000000>;
+       sgpio_in2: gpio@0 {
 
 
