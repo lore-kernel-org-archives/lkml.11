@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A493C4332F
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 21:50:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D6303C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 21:50:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384835AbiDEVsY (ORCPT
+        id S1385021AbiDEVsy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 17:48:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50640 "EHLO
+        Tue, 5 Apr 2022 17:48:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57288 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358014AbiDEK1q (ORCPT
+        with ESMTP id S237533AbiDEKdk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:27:46 -0400
+        Tue, 5 Apr 2022 06:33:40 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46C16DB494;
-        Tue,  5 Apr 2022 03:12:57 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75603DEBAD;
+        Tue,  5 Apr 2022 03:19:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C131661777;
-        Tue,  5 Apr 2022 10:12:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CD32BC385A1;
-        Tue,  5 Apr 2022 10:12:55 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BBB8B617CE;
+        Tue,  5 Apr 2022 10:19:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C4BF0C385A0;
+        Tue,  5 Apr 2022 10:19:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649153576;
-        bh=kTf509aGxUC2L+Qqne7LOHBXyNCvMcSwY5mKQwAKabs=;
+        s=korg; t=1649153949;
+        bh=lCSdk4p+UKFX1K5vODvPBm8UQRNJlya47e8kZdEbe0w=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qwxx4oXhRKh20XTY4FE6wn/vOz2z7B4e2hoL1nYK7TzBJySgFnjOrRODrGZTw+7nO
-         P2Sr428VhV+GXqW1WaLge5Weaa61h4GV7QzC+KrNLCzS3snjV3+xtmEZ3sSyN+SnTl
-         XorQY1IdWvf+4PrTybuqSNeBd71YBKMn4eW88bs0=
+        b=vtxrCCm8ckFevYnCzlxz5LQ5p/cTk3c8qsPDXaW4r1uUP4bmvf3wW2HUKTKkNTItx
+         scXwrzH+WXVwDuU1vpiUtVFQWap36bHuETYMngjffARxtl+oqFcWPO/tojQjqnTBys
+         Vut9+Wq+mHfnle7VsXtryx0wRb9k74FPa1Yp9obw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jakob Koschel <jakobkoschel@gmail.com>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        stable@vger.kernel.org, Petr Machata <petrm@nvidia.com>,
+        Ido Schimmel <idosch@nvidia.com>,
+        Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 244/599] media: saa7134: fix incorrect use to determine if list is empty
-Date:   Tue,  5 Apr 2022 09:28:58 +0200
-Message-Id: <20220405070306.102272087@linuxfoundation.org>
+Subject: [PATCH 5.10 368/599] af_netlink: Fix shift out of bounds in group mask calculation
+Date:   Tue,  5 Apr 2022 09:31:02 +0200
+Message-Id: <20220405070309.781411076@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
 References: <20220405070258.802373272@linuxfoundation.org>
@@ -50,47 +51,60 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jakob Koschel <jakobkoschel@gmail.com>
+From: Petr Machata <petrm@nvidia.com>
 
-[ Upstream commit 9f1f4b642451d35667a4dc6a9c0a89d954b530a3 ]
+[ Upstream commit 0caf6d9922192dd1afa8dc2131abfb4df1443b9f ]
 
-'dev' will *always* be set by list_for_each_entry().
-It is incorrect to assume that the iterator value will be NULL if the
-list is empty.
+When a netlink message is received, netlink_recvmsg() fills in the address
+of the sender. One of the fields is the 32-bit bitfield nl_groups, which
+carries the multicast group on which the message was received. The least
+significant bit corresponds to group 1, and therefore the highest group
+that the field can represent is 32. Above that, the UB sanitizer flags the
+out-of-bounds shift attempts.
 
-Instead of checking the pointer it should be checked if
-the list is empty.
+Which bits end up being set in such case is implementation defined, but
+it's either going to be a wrong non-zero value, or zero, which is at least
+not misleading. Make the latter choice deterministic by always setting to 0
+for higher-numbered multicast groups.
 
-Fixes: 79dd0c69f05f ("V4L: 925: saa7134 alsa is now a standalone module")
-Signed-off-by: Jakob Koschel <jakobkoschel@gmail.com>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+To get information about membership in groups >= 32, userspace is expected
+to use nl_pktinfo control messages[0], which are enabled by NETLINK_PKTINFO
+socket option.
+[0] https://lwn.net/Articles/147608/
+
+The way to trigger this issue is e.g. through monitoring the BRVLAN group:
+
+	# bridge monitor vlan &
+	# ip link add name br type bridge
+
+Which produces the following citation:
+
+	UBSAN: shift-out-of-bounds in net/netlink/af_netlink.c:162:19
+	shift exponent 32 is too large for 32-bit type 'int'
+
+Fixes: f7fa9b10edbb ("[NETLINK]: Support dynamic number of multicast groups per netlink family")
+Signed-off-by: Petr Machata <petrm@nvidia.com>
+Reviewed-by: Ido Schimmel <idosch@nvidia.com>
+Link: https://lore.kernel.org/r/2bef6aabf201d1fc16cca139a744700cff9dcb04.1647527635.git.petrm@nvidia.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/pci/saa7134/saa7134-alsa.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ net/netlink/af_netlink.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/media/pci/saa7134/saa7134-alsa.c b/drivers/media/pci/saa7134/saa7134-alsa.c
-index fb24d2ed3621..d3cde05a6eba 100644
---- a/drivers/media/pci/saa7134/saa7134-alsa.c
-+++ b/drivers/media/pci/saa7134/saa7134-alsa.c
-@@ -1214,7 +1214,7 @@ static int alsa_device_exit(struct saa7134_dev *dev)
+diff --git a/net/netlink/af_netlink.c b/net/netlink/af_netlink.c
+index e55af5c078ac..f37916156ca5 100644
+--- a/net/netlink/af_netlink.c
++++ b/net/netlink/af_netlink.c
+@@ -149,6 +149,8 @@ static const struct rhashtable_params netlink_rhashtable_params;
  
- static int saa7134_alsa_init(void)
+ static inline u32 netlink_group_mask(u32 group)
  {
--	struct saa7134_dev *dev = NULL;
-+	struct saa7134_dev *dev;
++	if (group > 32)
++		return 0;
+ 	return group ? 1 << (group - 1) : 0;
+ }
  
- 	saa7134_dmasound_init = alsa_device_init;
- 	saa7134_dmasound_exit = alsa_device_exit;
-@@ -1229,7 +1229,7 @@ static int saa7134_alsa_init(void)
- 			alsa_device_init(dev);
- 	}
- 
--	if (dev == NULL)
-+	if (list_empty(&saa7134_devlist))
- 		pr_info("saa7134 ALSA: no saa7134 cards found\n");
- 
- 	return 0;
 -- 
 2.34.1
 
