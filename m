@@ -2,37 +2,37 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AFFB2C4708B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8289BC43219
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 14:06:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377523AbiDEOHY (ORCPT
+        id S1350648AbiDEOGy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 10:07:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55704 "EHLO
+        Tue, 5 Apr 2022 10:06:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40696 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236255AbiDEJbO (ORCPT
+        with ESMTP id S236229AbiDEJbN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:31:14 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75B084992D;
-        Tue,  5 Apr 2022 02:18:58 -0700 (PDT)
+        Tue, 5 Apr 2022 05:31:13 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D562FE20;
+        Tue,  5 Apr 2022 02:18:46 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 90CF3CE1B55;
-        Tue,  5 Apr 2022 09:18:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 16137C385A2;
-        Tue,  5 Apr 2022 09:18:49 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 624B3B81B7F;
+        Tue,  5 Apr 2022 09:18:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 35910C385A9;
+        Tue,  5 Apr 2022 09:18:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649150335;
-        bh=cobwypes8x1Y1nEK97L8+w7M2tP4Y3ZkJhAVWGRhnmc=;
+        s=k20201202; t=1649150324;
+        bh=5kt1dppe+8wUuxiuygv88y2CPW/Cqw3zsgWm2dxOFr4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fasO7u3ltU88/oq+SUA59QkdlG1fpUJ9k6ySxEZiwMwgSRzQWLG1ld2GQtNSZxD3A
-         AOMy9RhcyRAk14Z1wOIkOgHA+V28MDhhpsBqJpurlpetiRW/EaJeHLeaQfsuDE9IRa
-         4xWsJ0QNvoOzfXOIJX42Uu6k1XT4ZOqaC9ZzBDcv2RGK+dH/o0gZPfj9DZ2DdPVGOd
-         9ewToWkhL2TQz84+23flv5wO4dbY0u/AS49JKM5pabpF3QmPtwyR/ppRdJSE/c/S6R
-         ppRMmbqA7Oed2fAiGWJAYAZUQHx+Q+0Y6KpWC7QwAYjbgDLar7cJlnjhRTzZX7Gw5i
-         0OPR/SA0rKdrQ==
+        b=Z80kkFcSxfV5dtas7PwORryjeVdA+Jn2fzj1FMwcyzGU0LQeP00S+GmO0hkSres/e
+         hqX3L/oYwdHULZseN7cqSsFWDLDNo6rN1CbucAcIhhIJ3p0RGk1HNu2AYn9k+jMifE
+         GaVGy2BRncSyuAAZOPVuw/GpI9+88rTG9R5m5Xk1LLBI5/lMEK6zAQ3vkrZTJetOFM
+         i0OnZbmry5qdHPi6LlOjBCT+2dEgcKp8TF9CtwNdjjszOn/aZ8XPzviVGfiQbFWMFk
+         MME8se15teRx7qaOgm7fEXkyR0Kgtdg3w216bXsdd1YLsYw41TX/sNHJAsDBxRrGXl
+         Llk5pWF+qKbkg==
 From:   Arnd Bergmann <arnd@kernel.org>
 Cc:     Arnd Bergmann <arnd@arndb.de>,
         Russell King <linux@armlinux.org.uk>,
@@ -57,9 +57,9 @@ Cc:     Arnd Bergmann <arnd@arndb.de>,
         Geert Uytterhoeven <geert+renesas@glider.be>,
         linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
         linux-samsung-soc@vger.kernel.org, patches@opensource.cirrus.com
-Subject: [PATCH 09/12] ARM: s3c: enable s3c24xx multiplatform support
-Date:   Tue,  5 Apr 2022 11:17:47 +0200
-Message-Id: <20220405091750.3076973-10-arnd@kernel.org>
+Subject: [PATCH 07/12] ARM: s3c24xx: remove support for ISA drivers on BAST PC/104
+Date:   Tue,  5 Apr 2022 11:17:45 +0200
+Message-Id: <20220405091750.3076973-8-arnd@kernel.org>
 X-Mailer: git-send-email 2.29.2
 In-Reply-To: <20220405091750.3076973-1-arnd@kernel.org>
 References: <20220405091750.3076973-1-arnd@kernel.org>
@@ -72,128 +72,366 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Arnd Bergmann <arnd@arndb.de>
 
-With the custom ISA I/O and the missing sparse-irq support
-out of the way, s3c24xx can now be built into the same
-kernel as all other ARM9 based platforms.
+BAST is the one machine that theoretically supports unmodified ISA
+drivers for hardware on its PC/104 connector, using a custom version of
+the inb()/outb() and inw()/outw() macros.
+
+This is incompatible with the generic version used in asm/io.h, and
+can't easily be used in a multiplatform kernel.
+
+Removing the special case for 16-bit I/O port access on BAST gets us
+closer to multiplatform, at the expense of any PC/104 users with 16-bit
+cards having to either use an older kernel or modify their ISA drivers
+to manually ioremap() the area and use readw()/write() in place of
+inw()/outw(). Either way is probably ok, given that all of s3c24xx is
+already on the way out next year, and many traditional ISA drivers are
+already gone.
+
+Machines other than BAST already have no support for ISA drivers, though a
+couple of them do map one of the external chip-selects into the ISA port
+range, using the same address for 8-bit and 16-bit I/O. It is unlikely
+that anything actually uses this mapping, but it's also easy to keep
+this working by mapping it to the normal platform-independent PCI I/O
+base that is otherwise unused on s3c24xx.
+
+The mach/map-base.h file is no longer referenced in global headers and
+can be moved into the platform directory.
 
 Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 ---
- arch/arm/Kconfig                  | 18 ------------------
- arch/arm/mach-s3c/Kconfig.s3c24xx | 23 ++++++++++++++++++++++-
- 2 files changed, 22 insertions(+), 19 deletions(-)
+ arch/arm/Kconfig                              |  1 -
+ arch/arm/mach-s3c/Kconfig.s3c24xx             |  1 -
+ arch/arm/mach-s3c/cpu.c                       |  2 +-
+ arch/arm/mach-s3c/include/mach/io-s3c24xx.h   | 50 -------------------
+ arch/arm/mach-s3c/include/mach/io.h           |  8 ---
+ arch/arm/mach-s3c/irq-pm-s3c24xx.c            |  2 +-
+ arch/arm/mach-s3c/mach-anubis.c               |  5 --
+ arch/arm/mach-s3c/mach-bast.c                 |  5 --
+ arch/arm/mach-s3c/mach-osiris.c               |  5 --
+ arch/arm/mach-s3c/mach-rx3715.c               |  6 ---
+ arch/arm/mach-s3c/mach-smdk2416.c             | 10 ----
+ arch/arm/mach-s3c/mach-smdk2440.c             | 10 ----
+ arch/arm/mach-s3c/mach-smdk2443.c             | 10 ----
+ arch/arm/mach-s3c/mach-vr1000.c               |  5 --
+ .../mach-s3c/{include/mach => }/map-base.h    |  6 +++
+ arch/arm/mach-s3c/map-s3c24xx.h               |  2 +-
+ arch/arm/mach-s3c/map-s3c64xx.h               |  2 +-
+ 17 files changed, 10 insertions(+), 120 deletions(-)
+ delete mode 100644 arch/arm/mach-s3c/include/mach/io-s3c24xx.h
+ delete mode 100644 arch/arm/mach-s3c/include/mach/io.h
+ rename arch/arm/mach-s3c/{include/mach => }/map-base.h (87%)
 
 diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
-index c06e008c90ab..68b0a857f9e5 100644
+index faf696173af7..2242d2ae8854 100644
 --- a/arch/arm/Kconfig
 +++ b/arch/arm/Kconfig
-@@ -438,24 +438,6 @@ config ARCH_SA1100
- 	help
- 	  Support for StrongARM 11x0 based boards.
- 
--config ARCH_S3C24XX
--	bool "Samsung S3C24XX SoCs"
--	select ATAGS
--	select CLKSRC_SAMSUNG_PWM
--	select GPIO_SAMSUNG
--	select GPIOLIB
--	select IRQ_DOMAIN
--	select S3C2410_WATCHDOG
--	select SAMSUNG_ATAGS
--	select SPARSE_IRQ
--	select USE_OF
--	select WATCHDOG
--	help
--	  Samsung S3C2410, S3C2412, S3C2413, S3C2416, S3C2440, S3C2442, S3C2443
--	  and S3C2450 SoCs based systems, such as the Simtec Electronics BAST
--	  (<http://www.simtec.co.uk/products/EB110ITX/>), the IPAQ 1940 or the
--	  Samsung SMDK2410 development board (and derivatives).
--
- config ARCH_OMAP1
- 	bool "TI OMAP1"
- 	select ARCH_OMAP
+@@ -444,7 +444,6 @@ config ARCH_S3C24XX
+ 	select CLKSRC_SAMSUNG_PWM
+ 	select GPIO_SAMSUNG
+ 	select GPIOLIB
+-	select NEED_MACH_IO_H
+ 	select S3C2410_WATCHDOG
+ 	select SAMSUNG_ATAGS
+ 	select USE_OF
 diff --git a/arch/arm/mach-s3c/Kconfig.s3c24xx b/arch/arm/mach-s3c/Kconfig.s3c24xx
-index d47df6427e89..e388e265ba83 100644
+index 000e3e234f71..d47df6427e89 100644
 --- a/arch/arm/mach-s3c/Kconfig.s3c24xx
 +++ b/arch/arm/mach-s3c/Kconfig.s3c24xx
-@@ -5,6 +5,22 @@
- #
- # Copyright 2007 Simtec Electronics
+@@ -181,7 +181,6 @@ config MACH_AML_M5900
  
-+menuconfig ARCH_S3C24XX
-+	bool "Samsung S3C24XX SoCs"
-+	depends on ARCH_MULTI_V4T || ARCH_MULTI_V5
-+	select ATAGS
-+	select CLKSRC_SAMSUNG_PWM
-+	select GPIO_SAMSUNG
-+	select GPIOLIB
-+	select S3C2410_WATCHDOG
-+	select SAMSUNG_ATAGS
-+	select WATCHDOG
-+	help
-+	  Samsung S3C2410, S3C2412, S3C2413, S3C2416, S3C2440, S3C2442, S3C2443
-+	  and S3C2450 SoCs based systems, such as the Simtec Electronics BAST
-+	  (<http://www.simtec.co.uk/products/EB110ITX/>), the IPAQ 1940 or the
-+	  Samsung SMDK2410 development board (and derivatives).
+ config ARCH_BAST
+ 	bool "Simtec Electronics BAST (EB2410ITX)"
+-	select ISA
+ 	select MACH_BAST_IDE
+ 	select S3C2410_COMMON_DCLK
+ 	select S3C2410_IOTIMING if ARM_S3C2410_CPUFREQ
+diff --git a/arch/arm/mach-s3c/cpu.c b/arch/arm/mach-s3c/cpu.c
+index 6e9772555f0d..05a6b4be1768 100644
+--- a/arch/arm/mach-s3c/cpu.c
++++ b/arch/arm/mach-s3c/cpu.c
+@@ -10,7 +10,7 @@
+ #include <linux/init.h>
+ #include <linux/io.h>
+ 
+-#include <mach/map-base.h>
++#include "map-base.h"
+ #include "cpu.h"
+ 
+ unsigned long samsung_cpu_id;
+diff --git a/arch/arm/mach-s3c/include/mach/io-s3c24xx.h b/arch/arm/mach-s3c/include/mach/io-s3c24xx.h
+deleted file mode 100644
+index 738b775d3336..000000000000
+--- a/arch/arm/mach-s3c/include/mach/io-s3c24xx.h
++++ /dev/null
+@@ -1,50 +0,0 @@
+-/* SPDX-License-Identifier: GPL-2.0 */
+-/*
+- * arch/arm/mach-s3c2410/include/mach/io.h
+- *  from arch/arm/mach-rpc/include/mach/io.h
+- *
+- * Copyright (C) 1997 Russell King
+- *	     (C) 2003 Simtec Electronics
+-*/
+-
+-#ifndef __ASM_ARM_ARCH_IO_S3C24XX_H
+-#define __ASM_ARM_ARCH_IO_S3C24XX_H
+-
+-#include <mach/map-base.h>
+-
+-/*
+- * ISA style IO, for each machine to sort out mappings for,
+- * if it implements it. We reserve two 16M regions for ISA,
+- * so the PC/104 can use separate addresses for 8-bit and
+- * 16-bit port I/O.
+- */
+-#define PCIO_BASE		S3C_ADDR(0x02000000)
+-#define IO_SPACE_LIMIT		0x00ffffff
+-#define S3C24XX_VA_ISA_WORD	(PCIO_BASE)
+-#define S3C24XX_VA_ISA_BYTE	(PCIO_BASE + 0x01000000)
+-
+-#ifdef CONFIG_ISA
+-
+-#define inb(p)		readb(S3C24XX_VA_ISA_BYTE + (p))
+-#define inw(p)		readw(S3C24XX_VA_ISA_WORD + (p))
+-#define inl(p)		readl(S3C24XX_VA_ISA_WORD + (p))
+-
+-#define outb(v,p)	writeb((v), S3C24XX_VA_ISA_BYTE + (p))
+-#define outw(v,p)	writew((v), S3C24XX_VA_ISA_WORD + (p))
+-#define outl(v,p)	writel((v), S3C24XX_VA_ISA_WORD + (p))
+-
+-#define insb(p,d,l)	readsb(S3C24XX_VA_ISA_BYTE + (p),d,l)
+-#define insw(p,d,l)	readsw(S3C24XX_VA_ISA_WORD + (p),d,l)
+-#define insl(p,d,l)	readsl(S3C24XX_VA_ISA_WORD + (p),d,l)
+-
+-#define outsb(p,d,l)	writesb(S3C24XX_VA_ISA_BYTE + (p),d,l)
+-#define outsw(p,d,l)	writesw(S3C24XX_VA_ISA_WORD + (p),d,l)
+-#define outsl(p,d,l)	writesl(S3C24XX_VA_ISA_WORD + (p),d,l)
+-
+-#else
+-
+-#define __io(x) (PCIO_BASE + (x))
+-
+-#endif
+-
+-#endif
+diff --git a/arch/arm/mach-s3c/include/mach/io.h b/arch/arm/mach-s3c/include/mach/io.h
+deleted file mode 100644
+index 30a0135708dc..000000000000
+--- a/arch/arm/mach-s3c/include/mach/io.h
++++ /dev/null
+@@ -1,8 +0,0 @@
+-/* SPDX-License-Identifier: GPL-2.0 */
+-/*
+- * Copyright (c) 2020 Krzysztof Kozlowski <krzk@kernel.org>
+- */
+-
+-#ifdef CONFIG_ARCH_S3C24XX
+-#include "io-s3c24xx.h"
+-#endif
+diff --git a/arch/arm/mach-s3c/irq-pm-s3c24xx.c b/arch/arm/mach-s3c/irq-pm-s3c24xx.c
+index 4d5e28312d91..55f41135ad70 100644
+--- a/arch/arm/mach-s3c/irq-pm-s3c24xx.c
++++ b/arch/arm/mach-s3c/irq-pm-s3c24xx.c
+@@ -15,7 +15,7 @@
+ 
+ #include "cpu.h"
+ #include "pm.h"
+-#include <mach/map-base.h>
++#include "map-base.h"
+ #include "map-s3c.h"
+ 
+ #include "regs-irq.h"
+diff --git a/arch/arm/mach-s3c/mach-anubis.c b/arch/arm/mach-s3c/mach-anubis.c
+index 04147cc0adcc..60df40052209 100644
+--- a/arch/arm/mach-s3c/mach-anubis.c
++++ b/arch/arm/mach-s3c/mach-anubis.c
+@@ -57,11 +57,6 @@ static struct map_desc anubis_iodesc[] __initdata = {
+ 	.pfn		= __phys_to_pfn(0x0),
+ 	.length		= SZ_4M,
+ 	.type		= MT_DEVICE,
+-  }, {
+-	.virtual	= (u32)S3C24XX_VA_ISA_WORD,
+-	.pfn		= __phys_to_pfn(0x0),
+-	.length 	= SZ_4M,
+-	.type		= MT_DEVICE,
+   },
+ 
+   /* we could possibly compress the next set down into a set of smaller tables
+diff --git a/arch/arm/mach-s3c/mach-bast.c b/arch/arm/mach-s3c/mach-bast.c
+index 27e8d5950228..5ac24e406157 100644
+--- a/arch/arm/mach-s3c/mach-bast.c
++++ b/arch/arm/mach-s3c/mach-bast.c
+@@ -75,11 +75,6 @@ static struct map_desc bast_iodesc[] __initdata = {
+ 	  .pfn		= PA_CS2(BAST_PA_ISAIO),
+ 	  .length	= SZ_16M,
+ 	  .type		= MT_DEVICE,
+-  }, {
+-	  .virtual	= (u32)S3C24XX_VA_ISA_WORD,
+-	  .pfn		= PA_CS3(BAST_PA_ISAIO),
+-	  .length	= SZ_16M,
+-	  .type		= MT_DEVICE,
+   },
+   /* bast CPLD control registers, and external interrupt controls */
+   {
+diff --git a/arch/arm/mach-s3c/mach-osiris.c b/arch/arm/mach-s3c/mach-osiris.c
+index 3aefb9d22340..8387773f4fd4 100644
+--- a/arch/arm/mach-s3c/mach-osiris.c
++++ b/arch/arm/mach-s3c/mach-osiris.c
+@@ -58,11 +58,6 @@ static struct map_desc osiris_iodesc[] __initdata = {
+ 	  .pfn		= __phys_to_pfn(S3C2410_CS5),
+ 	  .length	= SZ_16M,
+ 	  .type		= MT_DEVICE,
+-  }, {
+-	  .virtual	= (u32)S3C24XX_VA_ISA_WORD,
+-	  .pfn		= __phys_to_pfn(S3C2410_CS5),
+-	  .length	= SZ_16M,
+-	  .type		= MT_DEVICE,
+   },
+ 
+   /* CPLD control registers */
+diff --git a/arch/arm/mach-s3c/mach-rx3715.c b/arch/arm/mach-s3c/mach-rx3715.c
+index 9fd2d9dc3689..586cb0fdfce0 100644
+--- a/arch/arm/mach-s3c/mach-rx3715.c
++++ b/arch/arm/mach-s3c/mach-rx3715.c
+@@ -48,13 +48,7 @@
+ 
+ static struct map_desc rx3715_iodesc[] __initdata = {
+ 	/* dump ISA space somewhere unused */
+-
+ 	{
+-		.virtual	= (u32)S3C24XX_VA_ISA_WORD,
+-		.pfn		= __phys_to_pfn(S3C2410_CS3),
+-		.length		= SZ_1M,
+-		.type		= MT_DEVICE,
+-	}, {
+ 		.virtual	= (u32)S3C24XX_VA_ISA_BYTE,
+ 		.pfn		= __phys_to_pfn(S3C2410_CS3),
+ 		.length		= SZ_1M,
+diff --git a/arch/arm/mach-s3c/mach-smdk2416.c b/arch/arm/mach-s3c/mach-smdk2416.c
+index 4d883a792cc6..38b4a7cd4178 100644
+--- a/arch/arm/mach-s3c/mach-smdk2416.c
++++ b/arch/arm/mach-s3c/mach-smdk2416.c
+@@ -53,16 +53,6 @@ static struct map_desc smdk2416_iodesc[] __initdata = {
+ 	/* ISA IO Space map (memory space selected by A24) */
+ 
+ 	{
+-		.virtual	= (u32)S3C24XX_VA_ISA_WORD,
+-		.pfn		= __phys_to_pfn(S3C2410_CS2),
+-		.length		= 0x10000,
+-		.type		= MT_DEVICE,
+-	}, {
+-		.virtual	= (u32)S3C24XX_VA_ISA_WORD + 0x10000,
+-		.pfn		= __phys_to_pfn(S3C2410_CS2 + (1<<24)),
+-		.length		= SZ_4M,
+-		.type		= MT_DEVICE,
+-	}, {
+ 		.virtual	= (u32)S3C24XX_VA_ISA_BYTE,
+ 		.pfn		= __phys_to_pfn(S3C2410_CS2),
+ 		.length		= 0x10000,
+diff --git a/arch/arm/mach-s3c/mach-smdk2440.c b/arch/arm/mach-s3c/mach-smdk2440.c
+index 7f6fe0db04f3..392554b1eba2 100644
+--- a/arch/arm/mach-s3c/mach-smdk2440.c
++++ b/arch/arm/mach-s3c/mach-smdk2440.c
+@@ -43,16 +43,6 @@ static struct map_desc smdk2440_iodesc[] __initdata = {
+ 	/* ISA IO Space map (memory space selected by A24) */
+ 
+ 	{
+-		.virtual	= (u32)S3C24XX_VA_ISA_WORD,
+-		.pfn		= __phys_to_pfn(S3C2410_CS2),
+-		.length		= 0x10000,
+-		.type		= MT_DEVICE,
+-	}, {
+-		.virtual	= (u32)S3C24XX_VA_ISA_WORD + 0x10000,
+-		.pfn		= __phys_to_pfn(S3C2410_CS2 + (1<<24)),
+-		.length		= SZ_4M,
+-		.type		= MT_DEVICE,
+-	}, {
+ 		.virtual	= (u32)S3C24XX_VA_ISA_BYTE,
+ 		.pfn		= __phys_to_pfn(S3C2410_CS2),
+ 		.length		= 0x10000,
+diff --git a/arch/arm/mach-s3c/mach-smdk2443.c b/arch/arm/mach-s3c/mach-smdk2443.c
+index fc54c91ade56..4c541a03e49e 100644
+--- a/arch/arm/mach-s3c/mach-smdk2443.c
++++ b/arch/arm/mach-s3c/mach-smdk2443.c
+@@ -40,16 +40,6 @@ static struct map_desc smdk2443_iodesc[] __initdata = {
+ 	/* ISA IO Space map (memory space selected by A24) */
+ 
+ 	{
+-		.virtual	= (u32)S3C24XX_VA_ISA_WORD,
+-		.pfn		= __phys_to_pfn(S3C2410_CS2),
+-		.length		= 0x10000,
+-		.type		= MT_DEVICE,
+-	}, {
+-		.virtual	= (u32)S3C24XX_VA_ISA_WORD + 0x10000,
+-		.pfn		= __phys_to_pfn(S3C2410_CS2 + (1<<24)),
+-		.length		= SZ_4M,
+-		.type		= MT_DEVICE,
+-	}, {
+ 		.virtual	= (u32)S3C24XX_VA_ISA_BYTE,
+ 		.pfn		= __phys_to_pfn(S3C2410_CS2),
+ 		.length		= 0x10000,
+diff --git a/arch/arm/mach-s3c/mach-vr1000.c b/arch/arm/mach-s3c/mach-vr1000.c
+index 5c3d07cf2e79..3aa8c707f8a2 100644
+--- a/arch/arm/mach-s3c/mach-vr1000.c
++++ b/arch/arm/mach-s3c/mach-vr1000.c
+@@ -67,11 +67,6 @@ static struct map_desc vr1000_iodesc[] __initdata = {
+ 	  .pfn		= PA_CS2(BAST_PA_ISAIO),
+ 	  .length	= SZ_16M,
+ 	  .type		= MT_DEVICE,
+-  }, {
+-	  .virtual	= (u32)S3C24XX_VA_ISA_WORD,
+-	  .pfn		= PA_CS3(BAST_PA_ISAIO),
+-	  .length	= SZ_16M,
+-	  .type		= MT_DEVICE,
+   },
+ 
+   /*  CPLD control registers, and external interrupt controls */
+diff --git a/arch/arm/mach-s3c/include/mach/map-base.h b/arch/arm/mach-s3c/map-base.h
+similarity index 87%
+rename from arch/arm/mach-s3c/include/mach/map-base.h
+rename to arch/arm/mach-s3c/map-base.h
+index 34b39ded0e2e..463a995b399b 100644
+--- a/arch/arm/mach-s3c/include/mach/map-base.h
++++ b/arch/arm/mach-s3c/map-base.h
+@@ -33,6 +33,12 @@
+ #define S3C_VA_WATCHDOG	S3C_ADDR(0x00400000)	/* watchdog */
+ #define S3C_VA_UART	S3C_ADDR(0x01000000)	/* UART */
+ 
++/* ISA device mapping for BAST to use with inb()/outb() on 8-bit I/O.
++ * 16-bit I/O on BAST now requires driver modifications to manually
++ * ioremap CS3.
++ */
++#define S3C24XX_VA_ISA_BYTE	PCI_IOBASE
 +
- if ARCH_S3C24XX
+ /* This is used for the CPU specific mappings that may be needed, so that
+  * they do not need to directly used S3C_ADDR() and thus make it easier to
+  * modify the space for mapping.
+diff --git a/arch/arm/mach-s3c/map-s3c24xx.h b/arch/arm/mach-s3c/map-s3c24xx.h
+index b5dba78a9dd7..f8d075b11d6f 100644
+--- a/arch/arm/mach-s3c/map-s3c24xx.h
++++ b/arch/arm/mach-s3c/map-s3c24xx.h
+@@ -9,7 +9,7 @@
+ #ifndef __ASM_ARCH_MAP_H
+ #define __ASM_ARCH_MAP_H
  
- config PLAT_S3C24XX
-@@ -12,7 +28,6 @@ config PLAT_S3C24XX
- 	select GPIOLIB
- 	select NO_IOPORT_MAP
- 	select S3C_DEV_NAND
--	select IRQ_DOMAIN
- 	select COMMON_CLK
- 	help
- 	  Base platform code for any Samsung S3C24XX device
-@@ -25,6 +40,7 @@ comment "S3C24XX SoCs"
+-#include <mach/map-base.h>
++#include "map-base.h"
+ #include "map-s3c.h"
  
- config CPU_S3C2410
- 	bool "Samsung S3C2410"
-+	depends on ARCH_MULTI_V4T
- 	default y
- 	select CPU_ARM920T
- 	select S3C2410_COMMON_CLK
-@@ -36,6 +52,7 @@ config CPU_S3C2410
+ /*
+diff --git a/arch/arm/mach-s3c/map-s3c64xx.h b/arch/arm/mach-s3c/map-s3c64xx.h
+index d7740d2a77c4..9de1c58bcb06 100644
+--- a/arch/arm/mach-s3c/map-s3c64xx.h
++++ b/arch/arm/mach-s3c/map-s3c64xx.h
+@@ -11,7 +11,7 @@
+ #ifndef __ASM_ARCH_MAP_H
+ #define __ASM_ARCH_MAP_H __FILE__
  
- config CPU_S3C2412
- 	bool "Samsung S3C2412"
-+	depends on ARCH_MULTI_V5
- 	select CPU_ARM926T
- 	select S3C2412_COMMON_CLK
- 	select S3C2412_PM if PM_SLEEP
-@@ -44,6 +61,7 @@ config CPU_S3C2412
+-#include <mach/map-base.h>
++#include "map-base.h"
+ #include "map-s3c.h"
  
- config CPU_S3C2416
- 	bool "Samsung S3C2416/S3C2450"
-+	depends on ARCH_MULTI_V5
- 	select CPU_ARM926T
- 	select S3C2416_PM if PM_SLEEP
- 	select S3C2443_COMMON_CLK
-@@ -52,6 +70,7 @@ config CPU_S3C2416
- 
- config CPU_S3C2440
- 	bool "Samsung S3C2440"
-+	depends on ARCH_MULTI_V4T
- 	select CPU_ARM920T
- 	select S3C2410_COMMON_CLK
- 	select S3C2410_PM if PM_SLEEP
-@@ -60,6 +79,7 @@ config CPU_S3C2440
- 
- config CPU_S3C2442
- 	bool "Samsung S3C2442"
-+	depends on ARCH_MULTI_V4T
- 	select CPU_ARM920T
- 	select S3C2410_COMMON_CLK
- 	select S3C2410_PM if PM_SLEEP
-@@ -72,6 +92,7 @@ config CPU_S3C244X
- 
- config CPU_S3C2443
- 	bool "Samsung S3C2443"
-+	depends on ARCH_MULTI_V4T
- 	select CPU_ARM920T
- 	select S3C2443_COMMON_CLK
- 	help
+ /*
 -- 
 2.29.2
 
