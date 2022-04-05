@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 787E5C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CE441C43217
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:42:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1578045AbiDEXSL (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 19:18:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55804 "EHLO
+        id S243054AbiDEXVH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 19:21:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36682 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345054AbiDEKki (ORCPT
+        with ESMTP id S1354228AbiDEKMT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:40:38 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE0B72D1DC;
-        Tue,  5 Apr 2022 03:25:41 -0700 (PDT)
+        Tue, 5 Apr 2022 06:12:19 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13D4C5C855;
+        Tue,  5 Apr 2022 02:59:20 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 5C37ACE0B18;
-        Tue,  5 Apr 2022 10:25:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 763AFC385A1;
-        Tue,  5 Apr 2022 10:25:38 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A3FB6616DC;
+        Tue,  5 Apr 2022 09:59:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AC3F0C385A1;
+        Tue,  5 Apr 2022 09:59:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649154338;
-        bh=f19IgujV/yw7D/q+fpx39ycuktKtJQPW23eKnN0ZCdQ=;
+        s=korg; t=1649152759;
+        bh=/yt+JKhK1iOBl6Kc9z8/VMaIFaoyhQMuQvEUN61MtuY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BqvKWSt+K/z4IrOS3uJQ7X6mDBMGj9Fg5ouyHnhqyW5/7aoNLkm3UlPv/avAiPmFq
-         qDojLH2fWqNEp0RezxqxoeWEbFhER8Lbo8v3yb6wzCT4VWHRhU9EL51xRXkZVfp+yq
-         EJRZjsv94VW724qXC5UBUHEj7Wscm07vSLUJAToE=
+        b=jF8upd03V8jXjIqfUla7O/rWBmib81jZtL7oLHTmMyFdNR7L1e/inM6cNFrk1jRyk
+         sf6qXW/pJMXtuB8VOLcLeuvornOgsl/7BYIhkaqCi2lJeG1yaASn3qVrYeEa6TDsAJ
+         aiaE8svDF90k9jU/oblocnAnCD+kZe/vIeK2Rl7A=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, PaX Team <pageexec@freemail.hu>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.10 545/599] wireguard: queueing: use CFI-safe ptr_ring cleanup function
-Date:   Tue,  5 Apr 2022 09:33:59 +0200
-Message-Id: <20220405070315.060365757@linuxfoundation.org>
+        stable@vger.kernel.org, Leilk Liu <leilk.liu@mediatek.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Mark Brown <broonie@kernel.org>
+Subject: [PATCH 5.15 892/913] spi: mediatek: support tick_delay without enhance_timing
+Date:   Tue,  5 Apr 2022 09:32:34 +0200
+Message-Id: <20220405070406.559580966@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,44 +50,54 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jason A. Donenfeld <Jason@zx2c4.com>
+From: Leilk Liu <leilk.liu@mediatek.com>
 
-commit ec59f128a9bd4255798abb1e06ac3b442f46ef68 upstream.
+commit 03b1be379dcee2e9c866c2a455a1a4a9581b3efd upstream.
 
-We make too nuanced use of ptr_ring to entirely move to the skb_array
-wrappers, but we at least should avoid the naughty function pointer cast
-when cleaning up skbs. Otherwise RAP/CFI will honk at us. This patch
-uses the __skb_array_destroy_skb wrapper for the cleanup, rather than
-directly providing kfree_skb, which is what other drivers in the same
-situation do too.
+this patch support tick_delay bit[31:30] without enhance_timing feature.
 
-Reported-by: PaX Team <pageexec@freemail.hu>
-Fixes: 886fcee939ad ("wireguard: receive: use ring buffer for incoming handshakes")
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Fixes: f84d866ab43f("spi: mediatek: add tick_delay support")
+Signed-off-by: Leilk Liu <leilk.liu@mediatek.com>
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+Link: https://lore.kernel.org/r/20220315032411.2826-2-leilk.liu@mediatek.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/wireguard/queueing.c |    3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/spi/spi-mt65xx.c |   15 ++++++++++++---
+ 1 file changed, 12 insertions(+), 3 deletions(-)
 
---- a/drivers/net/wireguard/queueing.c
-+++ b/drivers/net/wireguard/queueing.c
-@@ -4,6 +4,7 @@
-  */
+--- a/drivers/spi/spi-mt65xx.c
++++ b/drivers/spi/spi-mt65xx.c
+@@ -43,8 +43,11 @@
+ #define SPI_CFG1_PACKET_LOOP_OFFSET       8
+ #define SPI_CFG1_PACKET_LENGTH_OFFSET     16
+ #define SPI_CFG1_GET_TICK_DLY_OFFSET      29
++#define SPI_CFG1_GET_TICK_DLY_OFFSET_V1   30
  
- #include "queueing.h"
-+#include <linux/skb_array.h>
+ #define SPI_CFG1_GET_TICK_DLY_MASK        0xe0000000
++#define SPI_CFG1_GET_TICK_DLY_MASK_V1     0xc0000000
++
+ #define SPI_CFG1_CS_IDLE_MASK             0xff
+ #define SPI_CFG1_PACKET_LOOP_MASK         0xff00
+ #define SPI_CFG1_PACKET_LENGTH_MASK       0x3ff0000
+@@ -346,9 +349,15 @@ static int mtk_spi_prepare_message(struc
  
- struct multicore_worker __percpu *
- wg_packet_percpu_multicore_worker_alloc(work_func_t function, void *ptr)
-@@ -42,7 +43,7 @@ void wg_packet_queue_free(struct crypt_q
- {
- 	free_percpu(queue->worker);
- 	WARN_ON(!purge && !__ptr_ring_empty(&queue->ring));
--	ptr_ring_cleanup(&queue->ring, purge ? (void(*)(void*))kfree_skb : NULL);
-+	ptr_ring_cleanup(&queue->ring, purge ? __skb_array_destroy_skb : NULL);
- }
+ 	/* tick delay */
+ 	reg_val = readl(mdata->base + SPI_CFG1_REG);
+-	reg_val &= ~SPI_CFG1_GET_TICK_DLY_MASK;
+-	reg_val |= ((chip_config->tick_delay & 0x7)
+-		<< SPI_CFG1_GET_TICK_DLY_OFFSET);
++	if (mdata->dev_comp->enhance_timing) {
++		reg_val &= ~SPI_CFG1_GET_TICK_DLY_MASK;
++		reg_val |= ((chip_config->tick_delay & 0x7)
++			    << SPI_CFG1_GET_TICK_DLY_OFFSET);
++	} else {
++		reg_val &= ~SPI_CFG1_GET_TICK_DLY_MASK_V1;
++		reg_val |= ((chip_config->tick_delay & 0x3)
++			    << SPI_CFG1_GET_TICK_DLY_OFFSET_V1);
++	}
+ 	writel(reg_val, mdata->base + SPI_CFG1_REG);
  
- #define NEXT(skb) ((skb)->prev)
+ 	/* set hw cs timing */
 
 
