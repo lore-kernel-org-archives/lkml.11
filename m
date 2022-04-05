@@ -2,87 +2,60 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D059C4321E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D030C4332F
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:51:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1838355AbiDFAvN (ORCPT
+        id S1838268AbiDFAu7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 20:51:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58698 "EHLO
+        Tue, 5 Apr 2022 20:50:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48770 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358067AbiDEK15 (ORCPT
+        with ESMTP id S1449096AbiDEPtW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:27:57 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 704BD583BD;
-        Tue,  5 Apr 2022 03:14:30 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 32364B81BC5;
-        Tue,  5 Apr 2022 10:14:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9E822C385A1;
-        Tue,  5 Apr 2022 10:14:27 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649153668;
-        bh=K3MNOoTQsy6x8DnN1TuwVMbArMhx3yyqyz7JNKrPkE4=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=uXSLXmDNsO5Err6CFCbLNKQMca6zKThqJx1nuXEq4b8k4pdgnungQlg9LFoM9Zfl0
-         Hzd+Dzv/buzelKqNwZFGqldiX7hS0mlPOub1bgbeK4xvARyxk2KdvuHnDIa2zpwez/
-         OZ8mU0dos5bHlOlegmQf11sva/CTRjzLzIBzYZo4=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
-        Luca Coelho <luciano.coelho@intel.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 304/599] iwlwifi: mvm: Fix an error code in iwl_mvm_up()
-Date:   Tue,  5 Apr 2022 09:29:58 +0200
-Message-Id: <20220405070307.880463597@linuxfoundation.org>
+        Tue, 5 Apr 2022 11:49:22 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5D3CF1AC43F
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 07:32:57 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 2948A1474;
+        Tue,  5 Apr 2022 07:32:57 -0700 (PDT)
+Received: from usa.arm.com (e103737-lin.cambridge.arm.com [10.1.197.49])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 744A93F5A1;
+        Tue,  5 Apr 2022 07:32:56 -0700 (PDT)
+From:   Sudeep Holla <sudeep.holla@arm.com>
+To:     linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Cristian Marussi <cristian.marussi@arm.com>
+Cc:     Sudeep Holla <sudeep.holla@arm.com>
+Subject: Re: [PATCH] firmware: arm_scmi: Remove clear channel call on the TX channel
+Date:   Tue,  5 Apr 2022 15:32:54 +0100
+Message-Id: <164916896263.1245964.13994276768127037329.b4-ty@arm.com>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
-User-Agent: quilt/0.66
+In-Reply-To: <20220224152404.12877-1-cristian.marussi@arm.com>
+References: <20220224152404.12877-1-cristian.marussi@arm.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dan Carpenter <dan.carpenter@oracle.com>
+On Thu, 24 Feb 2022 15:24:04 +0000, Cristian Marussi wrote:
+> On SCMI transports whose channels are based on a shared resource the TX
+> channel area has to be acquired by the agent before placing the desired
+> command into the channel and it will be then relinquished by the platform
+> once the related reply has been made available into the channel.
+> On an RX channel the logic is reversed with the platform acquiring the
+> channel area and the agent reliquishing it once done by calling the
+> scmi_clear_channel() helper.
+> 
+> [...]
 
-[ Upstream commit 583d18336abdfb1b355270289ff8f6a2608ba905 ]
+Applied to sudeep.holla/linux (fixes/scmi), thanks!
 
-Return -ENODEV instead of success on this error path.
+[1/1] firmware: arm_scmi: Remove clear channel call on the TX channel
+      https://git.kernel.org/sudeep.holla/c/98f0d68f94
 
-Fixes: dd36a507c806 ("iwlwifi: mvm: look for the first supported channel when add/remove phy ctxt")
-Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
-Link: https://lore.kernel.org/r/20210816183930.GA2068@kili
-Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/net/wireless/intel/iwlwifi/mvm/fw.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/net/wireless/intel/iwlwifi/mvm/fw.c b/drivers/net/wireless/intel/iwlwifi/mvm/fw.c
-index 6348dfa61724..54b28f0932e2 100644
---- a/drivers/net/wireless/intel/iwlwifi/mvm/fw.c
-+++ b/drivers/net/wireless/intel/iwlwifi/mvm/fw.c
-@@ -1495,8 +1495,10 @@ int iwl_mvm_up(struct iwl_mvm *mvm)
- 	while (!sband && i < NUM_NL80211_BANDS)
- 		sband = mvm->hw->wiphy->bands[i++];
- 
--	if (WARN_ON_ONCE(!sband))
-+	if (WARN_ON_ONCE(!sband)) {
-+		ret = -ENODEV;
- 		goto error;
-+	}
- 
- 	chan = &sband->channels[0];
- 
--- 
-2.34.1
-
-
+--
+Regards,
+Sudeep
 
