@@ -2,152 +2,170 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D53CAC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 03:04:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 02969C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 03:04:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1451508AbiDFDFm (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 23:05:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49782 "EHLO
+        id S233946AbiDFDGL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 23:06:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51480 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1845804AbiDFCBU (ORCPT
+        with ESMTP id S1846075AbiDFCCl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 22:01:20 -0400
-Received: from mail-io1-xd2d.google.com (mail-io1-xd2d.google.com [IPv6:2607:f8b0:4864:20::d2d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BEF724B0B1;
-        Tue,  5 Apr 2022 16:28:49 -0700 (PDT)
-Received: by mail-io1-xd2d.google.com with SMTP id e22so1024084ioe.11;
-        Tue, 05 Apr 2022 16:28:48 -0700 (PDT)
+        Tue, 5 Apr 2022 22:02:41 -0400
+Received: from mail-pf1-x430.google.com (mail-pf1-x430.google.com [IPv6:2607:f8b0:4864:20::430])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE30EB82CD
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 16:31:25 -0700 (PDT)
+Received: by mail-pf1-x430.google.com with SMTP id y10so883207pfa.7
+        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 16:31:25 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=PUMn2pJdmTqU9T1LboNHqySso6NmNTYjmvIQ/4E+6jg=;
-        b=gNe8qsL51ziO0gB71BLSIYx0dhQmBI6zDUfVHVMAec4jf0pQWeA1zZ2h4sxZU8GVXA
-         gwUULa+cnWQ/VxFgfOj97piyqAh4IFJLybVUZPOCK9XmdbSbzVB2zd3tGNBgypwj1rPh
-         9muXPJS+9ogRaxX9AaruMwEI28RqkVAL4VCFJBahhFKgRrqycnSZO67AiPJq57+Jg0hN
-         rkbNi5jOgama1LtciEKjBZY0SR+ZZVR6qdmiR80UIKktan1Dvey1RiQ+ZlK3Zw+5Migj
-         3daCkrMJ2AETNxGIOuJDRDH2L7/CvWH+q99dqTdC3xZ0VlLhj0MZAV5UWFtqFqID5Lo2
-         fHvA==
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=6JOmtv6Rm4jDh0GV7OKzMV/6Ac5cnRIZHSOY48wGL+U=;
+        b=IR7NpSrOcaWXxtSNibofCxKTyR+Y1ehaqpsHYBWsLG588QCVk7fyXTNrhtWv6FZeN2
+         4HDgQFkk5m4kzQLr6UWhK0RjQoq+ntg9xHh9c17ebLkzzEG6C1PW/dgwNs+PxqotwjNj
+         sTBMKqfrkpgzOefDX4j9aEhyESmeM0tv64aQXFVSLdQd04zlAbQ/OnewgnvGt5izAhek
+         xwpsUnP7pRDkR2YZJuD5/oG7B9GuG9RD5K+bM7Ra/2kc/2hFSgL0d6EYVroT8YhB0RbO
+         RNKIUB9VO74CVWys7kx8e5eu77BmMlRwoOaesF9yaVKJyhGwgagVzn3SjGmPi8cgQk2c
+         Im8A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=PUMn2pJdmTqU9T1LboNHqySso6NmNTYjmvIQ/4E+6jg=;
-        b=rN3eEdp/SYNWmwvXGfgmKmKZsRrv4BzKOFEm4SxYML0J3qPzFiMoipP6baKEfG1JbN
-         upXHLesc1oJ8+1XZwwRz2gT5tos+y48BVwhvoQDkPSLOws9RJ9bpnjvQJ+xmVALREHxy
-         pxhix35DWiagjAu6foNxRXriCmMitlmBJ1NkdgYx6SjOY8YiCfRV5QfSPasqypMOLdU9
-         7nIaWhU3sxAhUVE6EdLjsJw24eTUq7ZNBfkoDYoUbqmvF2N9TuyS8MVvQtYYA2wX0+/6
-         ehZXep5Eq2U721KJ/pgYk25qEtR71tl8QnJGStJcXMQ44GnCCWtBdj6qmd2N/rCCbnvI
-         Btsg==
-X-Gm-Message-State: AOAM532HDWpEaATrBYEa+fP5TB21WjqzzdlZpzjVssOyoiV4qUE6oJ/j
-        l3D439WzCFShQE4z7G2dTon4vGVGKfpmxD2dakw=
-X-Google-Smtp-Source: ABdhPJyKqUsGJx3oQJikLMMo7nQ3XQuZBU6aXhgu0HkBIbtVmBQTJNGbQwnmNfviladdps3TCxWYY7vRUoJCBgdNSMY=
-X-Received: by 2002:a6b:8bd7:0:b0:646:2804:5c73 with SMTP id
- n206-20020a6b8bd7000000b0064628045c73mr2711308iod.112.1649201328273; Tue, 05
- Apr 2022 16:28:48 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=6JOmtv6Rm4jDh0GV7OKzMV/6Ac5cnRIZHSOY48wGL+U=;
+        b=S1AvJgAdYk4fQUqsQVA7dCMQgumKsxH9n9299uhL6ILnTh+PJY8srq5bxNzIlpTPUa
+         pp0P1NVd2/R4H3N9pbfDd/dDd8ZXldUwgg03Ax3MHkcNJyMh2c4VUrO5DDW5S5+cB8VZ
+         awhn/EPRZe4sAZr/gtUP7RabVdVWBiXZx+bs920SbIHorP1HUbzLpug8xLaD93xyxVkp
+         vHyhNZT3cez59CYYJsJPU8P/16BTLIvbOkCkGh+p5HRO8wEGxKgT7cT6IWlajwFFo7As
+         XbM1OsyxnnGebByH9WT5blnzNNf3bH8vPyjsd+LatsZZRDeZYTVLj5Vi1bu1Me6yf7L9
+         1KYA==
+X-Gm-Message-State: AOAM530LS5ebtAlZzi2fe8Zw9Kf8w0uhyEN9UkefddVsJKDYGATYmQep
+        Fc0WJbSbWqNF0ffu/ppWcY/IVQ==
+X-Google-Smtp-Source: ABdhPJxsLjjK4uqFcbL1535kTJ41gTxis92axMmsCdKtnF2Ol53TKxBl5mCocSqV/2Ap1aWie/DWRg==
+X-Received: by 2002:a63:6645:0:b0:382:65eb:1215 with SMTP id a66-20020a636645000000b0038265eb1215mr4767387pgc.337.1649201484673;
+        Tue, 05 Apr 2022 16:31:24 -0700 (PDT)
+Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
+        by smtp.gmail.com with ESMTPSA id v22-20020a056a00149600b004fb34a7b500sm17228303pfu.203.2022.04.05.16.31.23
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 05 Apr 2022 16:31:23 -0700 (PDT)
+Date:   Tue, 5 Apr 2022 23:31:20 +0000
+From:   Sean Christopherson <seanjc@google.com>
+To:     Chenyi Qiang <chenyi.qiang@intel.com>
+Cc:     Paolo Bonzini <pbonzini@redhat.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Xiaoyao Li <xiaoyao.li@intel.com>, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v5 1/3] KVM: X86: Save&restore the triple fault request
+Message-ID: <YkzRSHHDMaVBQrxd@google.com>
+References: <20220318074955.22428-1-chenyi.qiang@intel.com>
+ <20220318074955.22428-2-chenyi.qiang@intel.com>
 MIME-Version: 1.0
-References: <CAEf4BzZrc=wr4FLkWkOSEeprzybA8JTipsnr_U1kYA0785WkTw@mail.gmail.com>
- <20220405062403.22591-1-ytcoode@gmail.com>
-In-Reply-To: <20220405062403.22591-1-ytcoode@gmail.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Tue, 5 Apr 2022 16:28:37 -0700
-Message-ID: <CAEf4BzbSbMMoZM-3fkhZnbxk0bu5ySDO782WGbgcKUzs-u6N_Q@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v2] selftests/bpf: Fix issues in parse_num_list()
-To:     Yuntao Wang <ytcoode@gmail.com>
-Cc:     Andrii Nakryiko <andrii@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>, bpf <bpf@vger.kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        john fastabend <john.fastabend@gmail.com>,
-        Martin Lau <kafai@fb.com>, KP Singh <kpsingh@kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220318074955.22428-2-chenyi.qiang@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Apr 4, 2022 at 11:24 PM Yuntao Wang <ytcoode@gmail.com> wrote:
->
-> There are some issues in parse_num_list():
->
-> First, the end variable is assigned twice when parsing_end is true, it is
-> unnecessary.
->
-> Second, the function does not check that parsing_end is false after parsing
-> argument. Thus, if the final part of the argument is something like '4-',
-> parse_num_list() will discard it instead of returning -EINVAL.
->
-> Clean up parse_num_list() and fix these issues.
->
-> Before:
->
->  $ ./test_progs -n 2,4-
->  #2 atomic_bounds:OK
->  Summary: 1/0 PASSED, 0 SKIPPED, 0 FAILED
->
-> After:
->
->  $ ./test_progs -n 2,4-
->  Failed to parse test numbers.
->
-> Signed-off-by: Yuntao Wang <ytcoode@gmail.com>
+On Fri, Mar 18, 2022, Chenyi Qiang wrote:
+> For the triple fault sythesized by KVM, e.g. the RSM path or
+> nested_vmx_abort(), if KVM exits to userspace before the request is
+> serviced, userspace could migrate the VM and lose the triple fault.
+> Fix this issue by adding a new event KVM_VCPUEVENT_TRIPLE_FAULT in
+> get/set_vcpu_events() to track the triple fault request.
+> 
+> Signed-off-by: Chenyi Qiang <chenyi.qiang@intel.com>
 > ---
-> v1 -> v2: add more details to commit message
->
->  tools/testing/selftests/bpf/testing_helpers.c | 18 +++++++++---------
->  1 file changed, 9 insertions(+), 9 deletions(-)
->
-> diff --git a/tools/testing/selftests/bpf/testing_helpers.c b/tools/testing/selftests/bpf/testing_helpers.c
-> index 795b6798ccee..82f0e2d99c23 100644
-> --- a/tools/testing/selftests/bpf/testing_helpers.c
-> +++ b/tools/testing/selftests/bpf/testing_helpers.c
-> @@ -20,16 +20,16 @@ int parse_num_list(const char *s, bool **num_set, int *num_set_len)
->                 if (errno)
->                         return -errno;
->
-> -               if (parsing_end)
-> -                       end = num;
-> -               else
-> +               if (!parsing_end) {
->                         start = num;
-> +                       if (*next == '-') {
-> +                               s = next + 1;
-> +                               parsing_end = true;
-> +                               continue;
-> +                       }
-> +               }
->
-> -               if (!parsing_end && *next == '-') {
-> -                       s = next + 1;
-> -                       parsing_end = true;
-> -                       continue;
-> -               } else if (*next == ',') {
+>  Documentation/virt/kvm/api.rst  | 6 ++++++
+>  arch/x86/include/uapi/asm/kvm.h | 1 +
+>  arch/x86/kvm/x86.c              | 9 ++++++++-
+>  3 files changed, 15 insertions(+), 1 deletion(-)
+> 
+> diff --git a/Documentation/virt/kvm/api.rst b/Documentation/virt/kvm/api.rst
+> index 691ff84444bd..9682b0a438bd 100644
+> --- a/Documentation/virt/kvm/api.rst
+> +++ b/Documentation/virt/kvm/api.rst
+> @@ -1146,6 +1146,9 @@ The following bits are defined in the flags field:
+>    fields contain a valid state. This bit will be set whenever
+>    KVM_CAP_EXCEPTION_PAYLOAD is enabled.
+>  
+> +- KVM_VCPUEVENT_TRIPLE_FAULT may be set to signal that there's a
+> +  triple fault request waiting to be serviced.
 
-I think the new structure of the code is actually harder to follow and
-there is no need to change this code in the first place just to
-optimize away parsing_end assignmet.
+Please avoid "request" in the docs, as before, that's a KVM implemenation detail.
+For this one, maybe "there's a pending triple fault event"?
 
-> +               if (*next == ',') {
->                         parsing_end = false;
->                         s = next + 1;
->                         end = num;
-> @@ -60,7 +60,7 @@ int parse_num_list(const char *s, bool **num_set, int *num_set_len)
->                         set[i] = true;
->         }
->
-> -       if (!set)
-> +       if (!set || parsing_end)
->                 return -EINVAL;
->
+> +
+>  ARM/ARM64:
+>  ^^^^^^^^^^
+>  
+> @@ -1241,6 +1244,9 @@ can be set in the flags field to signal that the
+>  exception_has_payload, exception_payload, and exception.pending fields
+>  contain a valid state and shall be written into the VCPU.
+>  
+> +KVM_VCPUEVENT_TRIPLE_FAULT can be set in flags field to signal that a
+> +triple fault request should be made.
 
-this is a real fix, please submit just and drop the first part of the patch
 
->         *num_set = set;
-> --
-> 2.35.1
->
+And here, "to signal that KVM should synthesize a triple fault for the guest"?
+
+> +
+>  ARM/ARM64:
+>  ^^^^^^^^^^
+>  
+> diff --git a/arch/x86/include/uapi/asm/kvm.h b/arch/x86/include/uapi/asm/kvm.h
+> index bf6e96011dfe..d8ef0d993e86 100644
+> --- a/arch/x86/include/uapi/asm/kvm.h
+> +++ b/arch/x86/include/uapi/asm/kvm.h
+> @@ -325,6 +325,7 @@ struct kvm_reinject_control {
+>  #define KVM_VCPUEVENT_VALID_SHADOW	0x00000004
+>  #define KVM_VCPUEVENT_VALID_SMM		0x00000008
+>  #define KVM_VCPUEVENT_VALID_PAYLOAD	0x00000010
+> +#define KVM_VCPUEVENT_TRIPLE_FAULT	0x00000020
+>  
+>  /* Interrupt shadow states */
+>  #define KVM_X86_SHADOW_INT_MOV_SS	0x01
+> diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
+> index 4fa4d8269e5b..fee402a700df 100644
+> --- a/arch/x86/kvm/x86.c
+> +++ b/arch/x86/kvm/x86.c
+> @@ -4891,6 +4891,9 @@ static void kvm_vcpu_ioctl_x86_get_vcpu_events(struct kvm_vcpu *vcpu,
+>  	if (vcpu->kvm->arch.exception_payload_enabled)
+>  		events->flags |= KVM_VCPUEVENT_VALID_PAYLOAD;
+>  
+> +	if (kvm_check_request(KVM_REQ_TRIPLE_FAULT, vcpu))
+> +		events->flags |= KVM_VCPUEVENT_TRIPLE_FAULT;
+> +
+>  	memset(&events->reserved, 0, sizeof(events->reserved));
+>  }
+>  
+> @@ -4903,7 +4906,8 @@ static int kvm_vcpu_ioctl_x86_set_vcpu_events(struct kvm_vcpu *vcpu,
+>  			      | KVM_VCPUEVENT_VALID_SIPI_VECTOR
+>  			      | KVM_VCPUEVENT_VALID_SHADOW
+>  			      | KVM_VCPUEVENT_VALID_SMM
+> -			      | KVM_VCPUEVENT_VALID_PAYLOAD))
+> +			      | KVM_VCPUEVENT_VALID_PAYLOAD
+> +			      | KVM_VCPUEVENT_TRIPLE_FAULT))
+>  		return -EINVAL;
+>  
+>  	if (events->flags & KVM_VCPUEVENT_VALID_PAYLOAD) {
+> @@ -4976,6 +4980,9 @@ static int kvm_vcpu_ioctl_x86_set_vcpu_events(struct kvm_vcpu *vcpu,
+>  		}
+>  	}
+>  
+> +	if (events->flags & KVM_VCPUEVENT_TRIPLE_FAULT)
+> +		kvm_make_request(KVM_REQ_TRIPLE_FAULT, vcpu);
+> +
+>  	kvm_make_request(KVM_REQ_EVENT, vcpu);
+
+Looks correct, but this really needs a selftest, at least for the SET path since
+the intent is to use that for the NOTIFY handling.  Doesn't need to be super fancy,
+e.g. do port I/O from L2, inject a triple fault, and verify L1 sees the appropriate
+exit.
+
+Aha!  And for the GET path, abuse KVM_X86_SET_MCE with CR4.MCE=0 to coerce KVM into
+making a KVM_REQ_TRIPLE_FAULT, that way there's no need to try and hit a timing
+window to intercept the request.
