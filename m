@@ -2,118 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C4857C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 01:06:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 69940C4321E
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 01:06:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1839929AbiDFBGY (ORCPT
+        id S1840014AbiDFBGv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 21:06:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45206 "EHLO
+        Tue, 5 Apr 2022 21:06:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37222 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354781AbiDEKPs (ORCPT
+        with ESMTP id S1457212AbiDEQC4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:15:48 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5BFC6C92C;
-        Tue,  5 Apr 2022 03:02:48 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 62725B81B7A;
-        Tue,  5 Apr 2022 10:02:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CF214C385A1;
-        Tue,  5 Apr 2022 10:02:45 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649152966;
-        bh=ZwI7hRZEPXkT1sDAUPYVc50SVib38PFUExf4pza0hMA=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=q49mN/8Wjh3e4UvAfmrlxtnsXUqmfaptrs1zl3/QDePftqEIMGxhf4KxxnaXKTVJ7
-         8ZwzJoUNOZUOgr/1gX+s6LkfoRi8wVarLqcez9d4jyh3HPiEUShX2H8TAXOlzPgrN0
-         XswQMm3SuZ0BSnohCWPw9XiEJDeEvBFbNboLzxPY=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Liam Beguin <liambeguin@gmail.com>,
-        Peter Rosin <peda@axentia.se>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Stable@vger.kernel.org,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: [PATCH 5.10 036/599] iio: inkern: make a best effort on offset calculation
-Date:   Tue,  5 Apr 2022 09:25:30 +0200
-Message-Id: <20220405070259.898102419@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 5 Apr 2022 12:02:56 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1959113DDB;
+        Tue,  5 Apr 2022 08:33:26 -0700 (PDT)
+From:   Thomas Gleixner <tglx@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1649172804;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to; bh=8ASus4u1QA/a9x22WdWo4eEieH828jzjqRFL7kX886U=;
+        b=1P3Kii0NW65OFDEM/zPZ5aPmRWKA0lKLtlpv2OCU6WknI8uc7bvQaWizdVpiSwIlp5I32r
+        /S7nbNZDO8gm2tVDicfBIv2L+hLSB35PWCHXkMyXOzPEhjUOlqVbpOwQYiG3+yhAJ+VsGZ
+        Sjq3/GuPGCwsqZmODE/UT8So2DtVpnRjFv4y9/dtRUNKq087t5REIGgi3GMDEoCwBkMWzb
+        2qjjyhVmL5t5VVfzA33TAqfJaJFjKlpoYecWrKchSmmLbnXnFJ9fWlT6Qfdmqkp71nwqrz
+        iAgyx3L/UDvIWbteLNhcpipHk6yhMMsLX4gYb1EXVOhwPvsdf+LLRVUXh5QvTg==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1649172804;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to; bh=8ASus4u1QA/a9x22WdWo4eEieH828jzjqRFL7kX886U=;
+        b=GRILXDRwQcq59ReN7aYNgY2qJGEheQZksZtafXl6IP3Hki4hdyF6kWoy8OF/g4UwqTNUjI
+        I+WX2ZcMbdpg3SBg==
+To:     Artem Savkov <asavkov@redhat.com>,
+        Anna-Maria Behnsen <anna-maria@linutronix.de>
+Cc:     netdev@vger.kernel.org, Josh Poimboeuf <jpoimboe@redhat.com>,
+        davem@davemloft.net, yoshfuji@linux-ipv6.org, dsahern@kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 1/2] timer: add a function to adjust timeouts to be
+ upper bound
+In-Reply-To: <YkfzZWs+Nj3hCvnE@sparkplug.usersys.redhat.com>
+Date:   Tue, 05 Apr 2022 17:33:23 +0200
+Message-ID: <871qyb35q4.ffs@tglx>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Liam Beguin <liambeguin@gmail.com>
+On Sat, Apr 02 2022 at 08:55, Artem Savkov wrote:
+> On Wed, Mar 30, 2022 at 03:40:55PM +0200, Anna-Maria Behnsen wrote:
+>> When calculating the level/index with a relative timeout, there is no
+>> guarantee that the result is the same when actual enqueueing the timer with
+>> expiry = jiffies + timeout .
+>
+> Yes, you are correct. This especially is a problem for timeouts placed
+> just before LVL_START(x), which is a good chunk of cases. I don't
+> think it is possible to get to timer_base clock without meddling with
+> the hot-path.
 
-commit ca85123354e1a65a22170286387b4791997fe864 upstream.
+Especially not when the timer might end up being migrated to a different
+base, which would in the worst case require to do the calculation twice
+if the base clocks differ.
 
-iio_convert_raw_to_processed_unlocked() assumes the offset is an
-integer. Make a best effort to get a valid offset value for fractional
-cases without breaking implicit truncations.
+The problem especially with network timers is that in the traffic case
+the timers are often rearmed at high frequency. See the optimizations in
+mod_timer() which try to avoid dequeue/enqueue sequences.
 
-Fixes: 48e44ce0f881 ("iio:inkern: Add function to read the processed value")
-Signed-off-by: Liam Beguin <liambeguin@gmail.com>
-Reviewed-by: Peter Rosin <peda@axentia.se>
-Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
-Link: https://lore.kernel.org/r/20220108205319.2046348-4-liambeguin@gmail.com
-Cc: <Stable@vger.kernel.org>
-Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- drivers/iio/inkern.c |   32 +++++++++++++++++++++++++++-----
- 1 file changed, 27 insertions(+), 5 deletions(-)
+One of the main reasons for giving up on accuracy for the timer wheel
+back then was to avoid two issues for networking:
 
---- a/drivers/iio/inkern.c
-+++ b/drivers/iio/inkern.c
-@@ -561,13 +561,35 @@ EXPORT_SYMBOL_GPL(iio_read_channel_avera
- static int iio_convert_raw_to_processed_unlocked(struct iio_channel *chan,
- 	int raw, int *processed, unsigned int scale)
- {
--	int scale_type, scale_val, scale_val2, offset;
-+	int scale_type, scale_val, scale_val2;
-+	int offset_type, offset_val, offset_val2;
- 	s64 raw64 = raw;
--	int ret;
- 
--	ret = iio_channel_read(chan, &offset, NULL, IIO_CHAN_INFO_OFFSET);
--	if (ret >= 0)
--		raw64 += offset;
-+	offset_type = iio_channel_read(chan, &offset_val, &offset_val2,
-+				       IIO_CHAN_INFO_OFFSET);
-+	if (offset_type >= 0) {
-+		switch (offset_type) {
-+		case IIO_VAL_INT:
-+			break;
-+		case IIO_VAL_INT_PLUS_MICRO:
-+		case IIO_VAL_INT_PLUS_NANO:
-+			/*
-+			 * Both IIO_VAL_INT_PLUS_MICRO and IIO_VAL_INT_PLUS_NANO
-+			 * implicitely truncate the offset to it's integer form.
-+			 */
-+			break;
-+		case IIO_VAL_FRACTIONAL:
-+			offset_val /= offset_val2;
-+			break;
-+		case IIO_VAL_FRACTIONAL_LOG2:
-+			offset_val >>= offset_val2;
-+			break;
-+		default:
-+			return -EINVAL;
-+		}
-+
-+		raw64 += offset_val;
-+	}
- 
- 	scale_type = iio_channel_read(chan, &scale_val, &scale_val2,
- 					IIO_CHAN_INFO_SCALE);
+    - Full rearming of a timer which ended up in the same expiry bucket
+      due to software batching (incomplete, but with the same goal and
+      the same 12.5% error margin).
 
+    - Cascading bursts.
 
+      We gathered statistics from various workloads which showed that
+      99+% of all timers were canceled or rearmed before expiry, but
+      under certain load scenarios a large portion of those timers where
+      cascaded into a lower wheel level with smaller granularity before
+      cancelation or rearming.
+
+      As the wheel level granularity was strictly exponential the event
+      of cascading a large amount (hint: thousands) of timers in one go
+      was not uncommon. Cascading happened with interrupts disabled and
+      it touched a usualy cold cache line per cascaded timer...
+
+> Is it possible to determine the upper limit of error margin here? My
+> assumption is it shouldn't be very big, so maybe it would be enough to
+> account for this when adjusting timeout at the edge of a level.
+> I know this doesn't sound good but I am running out of ideas here.
+
+Let's just take a step back.
+
+So we know, that the maximal error margin in the wheel is 12.5%, right?
+That means, if you take your relative timeout and subtract 12.5% then
+you are in the right ballpark and the earliest expiry will not be before
+that point obviously, but it's also guaranteed not to expire later than
+the original timeout. Obviously this will converge towards the early
+expiry the longer the timeouts are, but it's bound.
+
+Also due to the properties of the wheel, the lag of base::clk will
+obviously only affect those levels where lag >= LVL_GRAN(level).
+
+That's not perfect, but perfect is the enemy of good.
+
+Thanks,
+
+        tglx
