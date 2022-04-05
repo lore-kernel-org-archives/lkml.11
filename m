@@ -2,33 +2,33 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 01B9DC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 07:41:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C7F13C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 07:42:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231974AbiDEHnz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 03:43:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55726 "EHLO
+        id S232063AbiDEHoR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 03:44:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56304 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231903AbiDEHmM (ORCPT
+        with ESMTP id S232011AbiDEHnM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 03:42:12 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C995F91549;
-        Tue,  5 Apr 2022 00:40:09 -0700 (PDT)
+        Tue, 5 Apr 2022 03:43:12 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23FB692D00;
+        Tue,  5 Apr 2022 00:40:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 18FB8CE1BF5;
-        Tue,  5 Apr 2022 07:40:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2E3C2C340EE;
-        Tue,  5 Apr 2022 07:40:06 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 52B3CB81B14;
+        Tue,  5 Apr 2022 07:40:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AA1D2C340EE;
+        Tue,  5 Apr 2022 07:40:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649144406;
-        bh=aEb6bFctWPFgGqy+PW+9mHUKyTN0aHivpB5iy1Ji954=;
+        s=korg; t=1649144415;
+        bh=mB0Uw+Ta0RUr462A5YasP0HwGJ6z9Pkl/WLXCJgaSdg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DMIewlRHCkbioRXs6SCiK6CvR3gCELRCb0o3Jmkf2TGd+1exGfPZValPVWk9KAvsp
-         En4g13NTWbzJyeC+XysegQp0m/mZb+4JPwgbLbx7bg7CLw90cD19EfY+ySCY6VOxUl
-         16LKJDLyrf3K2U0j0SE+B98yZOAdSWIuNChEcdNw=
+        b=gA8KlK++HnuNEfj726T6I7qvdOEmfxnwMeOo+ZET42nMkx99FOOpV9136b+UPWpvr
+         LE/jnaWB/oZrMiiFrwSI2Rs1+1+eFaz/QwARpH50Ldx2WxbX8toUCtzgWmDsNRtMUd
+         TzcdyTfxMUStqROUbBkG8M64pxFViZ+aJOoJGxdc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -37,9 +37,9 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Andy Shevchenko <andy.shevchenko@gmail.com>,
         Stable@vger.kernel.org,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: [PATCH 5.17 0033/1126] iio: afe: rescale: use s64 for temporary scale calculations
-Date:   Tue,  5 Apr 2022 09:13:00 +0200
-Message-Id: <20220405070408.526923660@linuxfoundation.org>
+Subject: [PATCH 5.17 0036/1126] iio: inkern: apply consumer scale on IIO_VAL_INT cases
+Date:   Tue,  5 Apr 2022 09:13:03 +0200
+Message-Id: <20220405070408.616252185@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -53,48 +53,40 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Liam Beguin <liambeguin@gmail.com>
 
-commit 51593106b608ae4247cc8da928813347da16d025 upstream.
+commit 1bca97ff95c732a516ebb68da72814194980e0a5 upstream.
 
-All four scaling coefficients can take signed values.
-Make tmp a signed 64-bit integer and switch to div_s64() to preserve
-signs during 64-bit divisions.
+When a consumer calls iio_read_channel_processed() and the channel has
+an integer scale, the scale channel scale is applied and the processed
+value is returned as expected.
 
-Fixes: 8b74816b5a9a ("iio: afe: rescale: new driver")
+On the other hand, if the consumer calls iio_convert_raw_to_processed()
+the scaling factor requested by the consumer is not applied.
+
+This for example causes the consumer to process mV when expecting uV.
+Make sure to always apply the scaling factor requested by the consumer.
+
+Fixes: 48e44ce0f881 ("iio:inkern: Add function to read the processed value")
 Signed-off-by: Liam Beguin <liambeguin@gmail.com>
 Reviewed-by: Peter Rosin <peda@axentia.se>
 Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
-Link: https://lore.kernel.org/r/20220108205319.2046348-5-liambeguin@gmail.com
+Link: https://lore.kernel.org/r/20220108205319.2046348-2-liambeguin@gmail.com
 Cc: <Stable@vger.kernel.org>
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/iio/afe/iio-rescale.c |    8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ drivers/iio/inkern.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/iio/afe/iio-rescale.c
-+++ b/drivers/iio/afe/iio-rescale.c
-@@ -39,7 +39,7 @@ static int rescale_read_raw(struct iio_d
- 			    int *val, int *val2, long mask)
- {
- 	struct rescale *rescale = iio_priv(indio_dev);
--	unsigned long long tmp;
-+	s64 tmp;
- 	int ret;
+--- a/drivers/iio/inkern.c
++++ b/drivers/iio/inkern.c
+@@ -616,7 +616,7 @@ static int iio_convert_raw_to_processed_
  
- 	switch (mask) {
-@@ -77,10 +77,10 @@ static int rescale_read_raw(struct iio_d
- 			*val2 = rescale->denominator;
- 			return IIO_VAL_FRACTIONAL;
- 		case IIO_VAL_FRACTIONAL_LOG2:
--			tmp = *val * 1000000000LL;
--			do_div(tmp, rescale->denominator);
-+			tmp = (s64)*val * 1000000000LL;
-+			tmp = div_s64(tmp, rescale->denominator);
- 			tmp *= rescale->numerator;
--			do_div(tmp, 1000000000LL);
-+			tmp = div_s64(tmp, 1000000000LL);
- 			*val = tmp;
- 			return ret;
- 		default:
+ 	switch (scale_type) {
+ 	case IIO_VAL_INT:
+-		*processed = raw64 * scale_val;
++		*processed = raw64 * scale_val * scale;
+ 		break;
+ 	case IIO_VAL_INT_PLUS_MICRO:
+ 		if (scale_val2 < 0)
 
 
