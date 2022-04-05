@@ -2,231 +2,686 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9BAB9C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2DB20C35276
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 21:10:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355097AbiDEVKp (ORCPT
+        id S1353211AbiDEVK0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 17:10:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33748 "EHLO
+        Tue, 5 Apr 2022 17:10:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36046 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350086AbiDEJwp (ORCPT
+        with ESMTP id S1573562AbiDETWr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:52:45 -0400
+        Tue, 5 Apr 2022 15:22:47 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C850D47AC2;
-        Tue,  5 Apr 2022 02:50:46 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16B9641F8E;
+        Tue,  5 Apr 2022 12:20:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7DE38B81B76;
-        Tue,  5 Apr 2022 09:50:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C5645C385A1;
-        Tue,  5 Apr 2022 09:50:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649152244;
-        bh=F81kisKEqi/pBnYxv7fdozfHy3YTomyXenOPF/ZqZeM=;
+        by ams.source.kernel.org (Postfix) with ESMTPS id A12BDB81FA8;
+        Tue,  5 Apr 2022 19:20:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B8913C385A5;
+        Tue,  5 Apr 2022 19:20:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649186444;
+        bh=Xo1CqM/m1X0Vn5f0F5v27LeQtnut8KTTWWfaOHTaWOM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RZAsU+GP0R0WkDvWRVXaEMhC25rkWn84UZv6xnoabPQAO3OvmbxabVsuAISEQmc64
-         BFRwA6EfhvNGfRo8cMfXEFoOGdHwE+p6t5iWISm5VEidDax99Gn8Mr0Xs6tR1qJ2ZQ
-         SryFbqpt+tg2qNLaKx4tqaCHADCCnkqHTfAr0nns=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hulk Robot <hulkci@huawei.com>,
-        Zhang Wensheng <zhangwensheng5@huawei.com>,
-        Jens Axboe <axboe@kernel.dk>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 700/913] bfq: fix use-after-free in bfq_dispatch_request
-Date:   Tue,  5 Apr 2022 09:29:22 +0200
-Message-Id: <20220405070400.817224534@linuxfoundation.org>
+        b=t3VpB5aNzT1CC7ZDu0JZEN4+bIZMNItmwgKVe8wE+K7cAdlna1208D8npqq7dPRjG
+         DGOMrJT93IUEi3ntzN09ioD+Hk0bY/1Xk6xpEkuhk6+z7po2Td1uynTEE0H59v6nvN
+         ukQKLoErAW/rVG1pwtZJZVf4uI+inu0k2JBuMsOQsiQmIXIAYlQoBeXphsx8JKD7Rg
+         OT7RZZkVIulM5lbIiM5n+LXzCEsxD0/rNhVPNo7gCGPVu/llGgPg+VmfOnKofdUc+2
+         c6p4zeFyydyZHiVaiNpdiCFTzB3gQiWbZTaVNiIC2wnTHyD56d10zMH5Yi99Wxzwy3
+         s5DvMBGZb21Xw==
+From:   Jeff Layton <jlayton@kernel.org>
+To:     idryomov@gmail.com, xiubli@redhat.com
+Cc:     ceph-devel@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        linux-fscrypt@vger.kernel.org, linux-kernel@vger.kernel.org,
+        lhenriques@suse.de
+Subject: [PATCH v13 13/59] ceph: fscrypt_auth handling for ceph
+Date:   Tue,  5 Apr 2022 15:19:44 -0400
+Message-Id: <20220405192030.178326-14-jlayton@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
-User-Agent: quilt/0.66
+In-Reply-To: <20220405192030.178326-1-jlayton@kernel.org>
+References: <20220405192030.178326-1-jlayton@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zhang Wensheng <zhangwensheng5@huawei.com>
+Most fscrypt-enabled filesystems store the crypto context in an xattr,
+but that's problematic for ceph as xatts are governed by the XATTR cap,
+but we really want the crypto context as part of the AUTH cap.
 
-[ Upstream commit ab552fcb17cc9e4afe0e4ac4df95fc7b30e8490a ]
+Because of this, the MDS has added two new inode metadata fields:
+fscrypt_auth and fscrypt_file. The former is used to hold the crypto
+context, and the latter is used to track the real file size.
 
-KASAN reports a use-after-free report when doing normal scsi-mq test
+Parse new fscrypt_auth and fscrypt_file fields in inode traces. For now,
+we don't use fscrypt_file, but fscrypt_auth is used to hold the fscrypt
+context.
 
-[69832.239032] ==================================================================
-[69832.241810] BUG: KASAN: use-after-free in bfq_dispatch_request+0x1045/0x44b0
-[69832.243267] Read of size 8 at addr ffff88802622ba88 by task kworker/3:1H/155
-[69832.244656]
-[69832.245007] CPU: 3 PID: 155 Comm: kworker/3:1H Not tainted 5.10.0-10295-g576c6382529e #8
-[69832.246626] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS rel-1.14.0-0-g155821a1990b-prebuilt.qemu.org 04/01/2014
-[69832.249069] Workqueue: kblockd blk_mq_run_work_fn
-[69832.250022] Call Trace:
-[69832.250541]  dump_stack+0x9b/0xce
-[69832.251232]  ? bfq_dispatch_request+0x1045/0x44b0
-[69832.252243]  print_address_description.constprop.6+0x3e/0x60
-[69832.253381]  ? __cpuidle_text_end+0x5/0x5
-[69832.254211]  ? vprintk_func+0x6b/0x120
-[69832.254994]  ? bfq_dispatch_request+0x1045/0x44b0
-[69832.255952]  ? bfq_dispatch_request+0x1045/0x44b0
-[69832.256914]  kasan_report.cold.9+0x22/0x3a
-[69832.257753]  ? bfq_dispatch_request+0x1045/0x44b0
-[69832.258755]  check_memory_region+0x1c1/0x1e0
-[69832.260248]  bfq_dispatch_request+0x1045/0x44b0
-[69832.261181]  ? bfq_bfqq_expire+0x2440/0x2440
-[69832.262032]  ? blk_mq_delay_run_hw_queues+0xf9/0x170
-[69832.263022]  __blk_mq_do_dispatch_sched+0x52f/0x830
-[69832.264011]  ? blk_mq_sched_request_inserted+0x100/0x100
-[69832.265101]  __blk_mq_sched_dispatch_requests+0x398/0x4f0
-[69832.266206]  ? blk_mq_do_dispatch_ctx+0x570/0x570
-[69832.267147]  ? __switch_to+0x5f4/0xee0
-[69832.267898]  blk_mq_sched_dispatch_requests+0xdf/0x140
-[69832.268946]  __blk_mq_run_hw_queue+0xc0/0x270
-[69832.269840]  blk_mq_run_work_fn+0x51/0x60
-[69832.278170]  process_one_work+0x6d4/0xfe0
-[69832.278984]  worker_thread+0x91/0xc80
-[69832.279726]  ? __kthread_parkme+0xb0/0x110
-[69832.280554]  ? process_one_work+0xfe0/0xfe0
-[69832.281414]  kthread+0x32d/0x3f0
-[69832.282082]  ? kthread_park+0x170/0x170
-[69832.282849]  ret_from_fork+0x1f/0x30
-[69832.283573]
-[69832.283886] Allocated by task 7725:
-[69832.284599]  kasan_save_stack+0x19/0x40
-[69832.285385]  __kasan_kmalloc.constprop.2+0xc1/0xd0
-[69832.286350]  kmem_cache_alloc_node+0x13f/0x460
-[69832.287237]  bfq_get_queue+0x3d4/0x1140
-[69832.287993]  bfq_get_bfqq_handle_split+0x103/0x510
-[69832.289015]  bfq_init_rq+0x337/0x2d50
-[69832.289749]  bfq_insert_requests+0x304/0x4e10
-[69832.290634]  blk_mq_sched_insert_requests+0x13e/0x390
-[69832.291629]  blk_mq_flush_plug_list+0x4b4/0x760
-[69832.292538]  blk_flush_plug_list+0x2c5/0x480
-[69832.293392]  io_schedule_prepare+0xb2/0xd0
-[69832.294209]  io_schedule_timeout+0x13/0x80
-[69832.295014]  wait_for_common_io.constprop.1+0x13c/0x270
-[69832.296137]  submit_bio_wait+0x103/0x1a0
-[69832.296932]  blkdev_issue_discard+0xe6/0x160
-[69832.297794]  blk_ioctl_discard+0x219/0x290
-[69832.298614]  blkdev_common_ioctl+0x50a/0x1750
-[69832.304715]  blkdev_ioctl+0x470/0x600
-[69832.305474]  block_ioctl+0xde/0x120
-[69832.306232]  vfs_ioctl+0x6c/0xc0
-[69832.306877]  __se_sys_ioctl+0x90/0xa0
-[69832.307629]  do_syscall_64+0x2d/0x40
-[69832.308362]  entry_SYSCALL_64_after_hwframe+0x44/0xa9
-[69832.309382]
-[69832.309701] Freed by task 155:
-[69832.310328]  kasan_save_stack+0x19/0x40
-[69832.311121]  kasan_set_track+0x1c/0x30
-[69832.311868]  kasan_set_free_info+0x1b/0x30
-[69832.312699]  __kasan_slab_free+0x111/0x160
-[69832.313524]  kmem_cache_free+0x94/0x460
-[69832.314367]  bfq_put_queue+0x582/0x940
-[69832.315112]  __bfq_bfqd_reset_in_service+0x166/0x1d0
-[69832.317275]  bfq_bfqq_expire+0xb27/0x2440
-[69832.318084]  bfq_dispatch_request+0x697/0x44b0
-[69832.318991]  __blk_mq_do_dispatch_sched+0x52f/0x830
-[69832.319984]  __blk_mq_sched_dispatch_requests+0x398/0x4f0
-[69832.321087]  blk_mq_sched_dispatch_requests+0xdf/0x140
-[69832.322225]  __blk_mq_run_hw_queue+0xc0/0x270
-[69832.323114]  blk_mq_run_work_fn+0x51/0x60
-[69832.323942]  process_one_work+0x6d4/0xfe0
-[69832.324772]  worker_thread+0x91/0xc80
-[69832.325518]  kthread+0x32d/0x3f0
-[69832.326205]  ret_from_fork+0x1f/0x30
-[69832.326932]
-[69832.338297] The buggy address belongs to the object at ffff88802622b968
-[69832.338297]  which belongs to the cache bfq_queue of size 512
-[69832.340766] The buggy address is located 288 bytes inside of
-[69832.340766]  512-byte region [ffff88802622b968, ffff88802622bb68)
-[69832.343091] The buggy address belongs to the page:
-[69832.344097] page:ffffea0000988a00 refcount:1 mapcount:0 mapping:0000000000000000 index:0xffff88802622a528 pfn:0x26228
-[69832.346214] head:ffffea0000988a00 order:2 compound_mapcount:0 compound_pincount:0
-[69832.347719] flags: 0x1fffff80010200(slab|head)
-[69832.348625] raw: 001fffff80010200 ffffea0000dbac08 ffff888017a57650 ffff8880179fe840
-[69832.354972] raw: ffff88802622a528 0000000000120008 00000001ffffffff 0000000000000000
-[69832.356547] page dumped because: kasan: bad access detected
-[69832.357652]
-[69832.357970] Memory state around the buggy address:
-[69832.358926]  ffff88802622b980: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-[69832.360358]  ffff88802622ba00: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-[69832.361810] >ffff88802622ba80: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-[69832.363273]                       ^
-[69832.363975]  ffff88802622bb00: fb fb fb fb fb fb fb fb fb fb fb fb fb fc fc fc
-[69832.375960]  ffff88802622bb80: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
-[69832.377405] ==================================================================
+Allow the client to use a setattr request for setting the fscrypt_auth
+field. Since this is not a standard setattr request from the VFS, we add
+a new field to __ceph_setattr that carries ceph-specific inode attrs.
 
-In bfq_dispatch_requestfunction, it may have function call:
+Have the set_context op do a setattr that sets the fscrypt_auth value,
+and get_context just return the contents of that field (since it should
+always be available).
 
-bfq_dispatch_request
-	__bfq_dispatch_request
-		bfq_select_queue
-			bfq_bfqq_expire
-				__bfq_bfqd_reset_in_service
-					bfq_put_queue
-						kmem_cache_free
-In this function call, in_serv_queue has beed expired and meet the
-conditions to free. In the function bfq_dispatch_request, the address
-of in_serv_queue pointing to has been released. For getting the value
-of idle_timer_disabled, it will get flags value from the address which
-in_serv_queue pointing to, then the problem of use-after-free happens;
-
-Fix the problem by check in_serv_queue == bfqd->in_service_queue, to
-get the value of idle_timer_disabled if in_serve_queue is equel to
-bfqd->in_service_queue. If the space of in_serv_queue pointing has
-been released, this judge will aviod use-after-free problem.
-And if in_serv_queue may be expired or finished, the idle_timer_disabled
-will be false which would not give effects to bfq_update_dispatch_stats.
-
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: Zhang Wensheng <zhangwensheng5@huawei.com>
-Link: https://lore.kernel.org/r/20220303070334.3020168-1-zhangwensheng5@huawei.com
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Jeff Layton <jlayton@kernel.org>
 ---
- block/bfq-iosched.c | 15 ++++++++-------
- 1 file changed, 8 insertions(+), 7 deletions(-)
+ fs/ceph/Makefile             |   1 +
+ fs/ceph/acl.c                |   4 +-
+ fs/ceph/crypto.c             |  76 ++++++++++++++++++++++++
+ fs/ceph/crypto.h             |  36 ++++++++++++
+ fs/ceph/inode.c              |  62 ++++++++++++++++++-
+ fs/ceph/mds_client.c         | 111 ++++++++++++++++++++++++++++++++---
+ fs/ceph/mds_client.h         |   7 +++
+ fs/ceph/super.c              |   3 +
+ fs/ceph/super.h              |  14 ++++-
+ include/linux/ceph/ceph_fs.h |  21 ++++---
+ 10 files changed, 313 insertions(+), 22 deletions(-)
+ create mode 100644 fs/ceph/crypto.c
+ create mode 100644 fs/ceph/crypto.h
 
-diff --git a/block/bfq-iosched.c b/block/bfq-iosched.c
-index e66970bf27db..9843085cc2c3 100644
---- a/block/bfq-iosched.c
-+++ b/block/bfq-iosched.c
-@@ -5061,7 +5061,7 @@ static struct request *bfq_dispatch_request(struct blk_mq_hw_ctx *hctx)
- 	struct bfq_data *bfqd = hctx->queue->elevator->elevator_data;
- 	struct request *rq;
- 	struct bfq_queue *in_serv_queue;
--	bool waiting_rq, idle_timer_disabled;
-+	bool waiting_rq, idle_timer_disabled = false;
+diff --git a/fs/ceph/Makefile b/fs/ceph/Makefile
+index 50c635dc7f71..1f77ca04c426 100644
+--- a/fs/ceph/Makefile
++++ b/fs/ceph/Makefile
+@@ -12,3 +12,4 @@ ceph-y := super.o inode.o dir.o file.o locks.o addr.o ioctl.o \
  
- 	spin_lock_irq(&bfqd->lock);
+ ceph-$(CONFIG_CEPH_FSCACHE) += cache.o
+ ceph-$(CONFIG_CEPH_FS_POSIX_ACL) += acl.o
++ceph-$(CONFIG_FS_ENCRYPTION) += crypto.o
+diff --git a/fs/ceph/acl.c b/fs/ceph/acl.c
+index f4fc8e0b847c..427724c36316 100644
+--- a/fs/ceph/acl.c
++++ b/fs/ceph/acl.c
+@@ -139,7 +139,7 @@ int ceph_set_acl(struct user_namespace *mnt_userns, struct inode *inode,
+ 		newattrs.ia_ctime = current_time(inode);
+ 		newattrs.ia_mode = new_mode;
+ 		newattrs.ia_valid = ATTR_MODE | ATTR_CTIME;
+-		ret = __ceph_setattr(inode, &newattrs);
++		ret = __ceph_setattr(inode, &newattrs, NULL);
+ 		if (ret)
+ 			goto out_free;
+ 	}
+@@ -150,7 +150,7 @@ int ceph_set_acl(struct user_namespace *mnt_userns, struct inode *inode,
+ 			newattrs.ia_ctime = old_ctime;
+ 			newattrs.ia_mode = old_mode;
+ 			newattrs.ia_valid = ATTR_MODE | ATTR_CTIME;
+-			__ceph_setattr(inode, &newattrs);
++			__ceph_setattr(inode, &newattrs, NULL);
+ 		}
+ 		goto out_free;
+ 	}
+diff --git a/fs/ceph/crypto.c b/fs/ceph/crypto.c
+new file mode 100644
+index 000000000000..a513ff373b13
+--- /dev/null
++++ b/fs/ceph/crypto.c
+@@ -0,0 +1,76 @@
++// SPDX-License-Identifier: GPL-2.0
++#include <linux/ceph/ceph_debug.h>
++#include <linux/xattr.h>
++#include <linux/fscrypt.h>
++
++#include "super.h"
++#include "crypto.h"
++
++static int ceph_crypt_get_context(struct inode *inode, void *ctx, size_t len)
++{
++	struct ceph_inode_info *ci = ceph_inode(inode);
++	struct ceph_fscrypt_auth *cfa = (struct ceph_fscrypt_auth *)ci->fscrypt_auth;
++	u32 ctxlen;
++
++	/* Non existent or too short? */
++	if (!cfa || (ci->fscrypt_auth_len < (offsetof(struct ceph_fscrypt_auth, cfa_blob) + 1)))
++		return -ENOBUFS;
++
++	/* Some format we don't recognize? */
++	if (le32_to_cpu(cfa->cfa_version) != CEPH_FSCRYPT_AUTH_VERSION)
++		return -ENOBUFS;
++
++	ctxlen = le32_to_cpu(cfa->cfa_blob_len);
++	if (len < ctxlen)
++		return -ERANGE;
++
++	memcpy(ctx, cfa->cfa_blob, ctxlen);
++	return ctxlen;
++}
++
++static int ceph_crypt_set_context(struct inode *inode, const void *ctx, size_t len, void *fs_data)
++{
++	int ret;
++	struct iattr attr = { };
++	struct ceph_iattr cia = { };
++	struct ceph_fscrypt_auth *cfa;
++
++	WARN_ON_ONCE(fs_data);
++
++	if (len > FSCRYPT_SET_CONTEXT_MAX_SIZE)
++		return -EINVAL;
++
++	cfa = kzalloc(sizeof(*cfa), GFP_KERNEL);
++	if (!cfa)
++		return -ENOMEM;
++
++	cfa->cfa_version = cpu_to_le32(CEPH_FSCRYPT_AUTH_VERSION);
++	cfa->cfa_blob_len = cpu_to_le32(len);
++	memcpy(cfa->cfa_blob, ctx, len);
++
++	cia.fscrypt_auth = cfa;
++
++	ret = __ceph_setattr(inode, &attr, &cia);
++	if (ret == 0)
++		inode_set_flags(inode, S_ENCRYPTED, S_ENCRYPTED);
++	kfree(cia.fscrypt_auth);
++	return ret;
++}
++
++static bool ceph_crypt_empty_dir(struct inode *inode)
++{
++	struct ceph_inode_info *ci = ceph_inode(inode);
++
++	return ci->i_rsubdirs + ci->i_rfiles == 1;
++}
++
++static struct fscrypt_operations ceph_fscrypt_ops = {
++	.get_context		= ceph_crypt_get_context,
++	.set_context		= ceph_crypt_set_context,
++	.empty_dir		= ceph_crypt_empty_dir,
++};
++
++void ceph_fscrypt_set_ops(struct super_block *sb)
++{
++	fscrypt_set_ops(sb, &ceph_fscrypt_ops);
++}
+diff --git a/fs/ceph/crypto.h b/fs/ceph/crypto.h
+new file mode 100644
+index 000000000000..6dca674f79b8
+--- /dev/null
++++ b/fs/ceph/crypto.h
+@@ -0,0 +1,36 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++/*
++ * Ceph fscrypt functionality
++ */
++
++#ifndef _CEPH_CRYPTO_H
++#define _CEPH_CRYPTO_H
++
++#include <linux/fscrypt.h>
++
++struct ceph_fscrypt_auth {
++	__le32	cfa_version;
++	__le32	cfa_blob_len;
++	u8	cfa_blob[FSCRYPT_SET_CONTEXT_MAX_SIZE];
++} __packed;
++
++#define CEPH_FSCRYPT_AUTH_VERSION	1
++static inline u32 ceph_fscrypt_auth_len(struct ceph_fscrypt_auth *fa)
++{
++	u32 ctxsize = le32_to_cpu(fa->cfa_blob_len);
++
++	return offsetof(struct ceph_fscrypt_auth, cfa_blob) + ctxsize;
++}
++
++#ifdef CONFIG_FS_ENCRYPTION
++void ceph_fscrypt_set_ops(struct super_block *sb);
++
++#else /* CONFIG_FS_ENCRYPTION */
++
++static inline void ceph_fscrypt_set_ops(struct super_block *sb)
++{
++}
++
++#endif /* CONFIG_FS_ENCRYPTION */
++
++#endif
+diff --git a/fs/ceph/inode.c b/fs/ceph/inode.c
+index 6aba0391070d..2d9bade892cc 100644
+--- a/fs/ceph/inode.c
++++ b/fs/ceph/inode.c
+@@ -14,10 +14,12 @@
+ #include <linux/random.h>
+ #include <linux/sort.h>
+ #include <linux/iversion.h>
++#include <linux/fscrypt.h>
  
-@@ -5069,14 +5069,15 @@ static struct request *bfq_dispatch_request(struct blk_mq_hw_ctx *hctx)
- 	waiting_rq = in_serv_queue && bfq_bfqq_wait_request(in_serv_queue);
+ #include "super.h"
+ #include "mds_client.h"
+ #include "cache.h"
++#include "crypto.h"
+ #include <linux/ceph/decode.h>
  
- 	rq = __bfq_dispatch_request(hctx);
--
--	idle_timer_disabled =
--		waiting_rq && !bfq_bfqq_wait_request(in_serv_queue);
-+	if (in_serv_queue == bfqd->in_service_queue) {
-+		idle_timer_disabled =
-+			waiting_rq && !bfq_bfqq_wait_request(in_serv_queue);
-+	}
- 
- 	spin_unlock_irq(&bfqd->lock);
--
--	bfq_update_dispatch_stats(hctx->queue, rq, in_serv_queue,
--				  idle_timer_disabled);
-+	bfq_update_dispatch_stats(hctx->queue, rq,
-+			idle_timer_disabled ? in_serv_queue : NULL,
-+				idle_timer_disabled);
- 
- 	return rq;
+ /*
+@@ -616,6 +618,10 @@ struct inode *ceph_alloc_inode(struct super_block *sb)
+ 	INIT_WORK(&ci->i_work, ceph_inode_work);
+ 	ci->i_work_mask = 0;
+ 	memset(&ci->i_btime, '\0', sizeof(ci->i_btime));
++#ifdef CONFIG_FS_ENCRYPTION
++	ci->fscrypt_auth = NULL;
++	ci->fscrypt_auth_len = 0;
++#endif
+ 	return &ci->vfs_inode;
  }
+ 
+@@ -624,6 +630,9 @@ void ceph_free_inode(struct inode *inode)
+ 	struct ceph_inode_info *ci = ceph_inode(inode);
+ 
+ 	kfree(ci->i_symlink);
++#ifdef CONFIG_FS_ENCRYPTION
++	kfree(ci->fscrypt_auth);
++#endif
+ 	kmem_cache_free(ceph_inode_cachep, ci);
+ }
+ 
+@@ -644,6 +653,7 @@ void ceph_evict_inode(struct inode *inode)
+ 	clear_inode(inode);
+ 
+ 	ceph_fscache_unregister_inode_cookie(ci);
++	fscrypt_put_encryption_info(inode);
+ 
+ 	__ceph_remove_caps(ci);
+ 
+@@ -1023,6 +1033,16 @@ int ceph_fill_inode(struct inode *inode, struct page *locked_page,
+ 		xattr_blob = NULL;
+ 	}
+ 
++#ifdef CONFIG_FS_ENCRYPTION
++	if (iinfo->fscrypt_auth_len && !ci->fscrypt_auth) {
++		ci->fscrypt_auth_len = iinfo->fscrypt_auth_len;
++		ci->fscrypt_auth = iinfo->fscrypt_auth;
++		iinfo->fscrypt_auth = NULL;
++		iinfo->fscrypt_auth_len = 0;
++		inode_set_flags(inode, S_ENCRYPTED, S_ENCRYPTED);
++	}
++#endif
++
+ 	/* finally update i_version */
+ 	if (le64_to_cpu(info->version) > ci->i_version)
+ 		ci->i_version = le64_to_cpu(info->version);
+@@ -2079,7 +2099,7 @@ static const struct inode_operations ceph_symlink_iops = {
+ 	.listxattr = ceph_listxattr,
+ };
+ 
+-int __ceph_setattr(struct inode *inode, struct iattr *attr)
++int __ceph_setattr(struct inode *inode, struct iattr *attr, struct ceph_iattr *cia)
+ {
+ 	struct ceph_inode_info *ci = ceph_inode(inode);
+ 	unsigned int ia_valid = attr->ia_valid;
+@@ -2119,6 +2139,43 @@ int __ceph_setattr(struct inode *inode, struct iattr *attr)
+ 	}
+ 
+ 	dout("setattr %p issued %s\n", inode, ceph_cap_string(issued));
++#if IS_ENABLED(CONFIG_FS_ENCRYPTION)
++	if (cia && cia->fscrypt_auth) {
++		u32 len = ceph_fscrypt_auth_len(cia->fscrypt_auth);
++
++		if (len > sizeof(*cia->fscrypt_auth)) {
++			err = -EINVAL;
++			spin_unlock(&ci->i_ceph_lock);
++			goto out;
++		}
++
++		dout("setattr %llx:%llx fscrypt_auth len %u to %u)\n",
++			ceph_vinop(inode), ci->fscrypt_auth_len, len);
++
++		/* It should never be re-set once set */
++		WARN_ON_ONCE(ci->fscrypt_auth);
++
++		if (issued & CEPH_CAP_AUTH_EXCL) {
++			dirtied |= CEPH_CAP_AUTH_EXCL;
++			kfree(ci->fscrypt_auth);
++			ci->fscrypt_auth = (u8 *)cia->fscrypt_auth;
++			ci->fscrypt_auth_len = len;
++		} else if ((issued & CEPH_CAP_AUTH_SHARED) == 0 ||
++			   ci->fscrypt_auth_len != len ||
++			   memcmp(ci->fscrypt_auth, cia->fscrypt_auth, len)) {
++			req->r_fscrypt_auth = cia->fscrypt_auth;
++			mask |= CEPH_SETATTR_FSCRYPT_AUTH;
++			release |= CEPH_CAP_AUTH_SHARED;
++		}
++		cia->fscrypt_auth = NULL;
++	}
++#else
++	if (cia && cia->fscrypt_auth) {
++		err = -EINVAL;
++		spin_unlock(&ci->i_ceph_lock);
++		goto out;
++	}
++#endif /* CONFIG_FS_ENCRYPTION */
+ 
+ 	if (ia_valid & ATTR_UID) {
+ 		dout("setattr %p uid %d -> %d\n", inode,
+@@ -2281,6 +2338,7 @@ int __ceph_setattr(struct inode *inode, struct iattr *attr)
+ 		req->r_stamp = attr->ia_ctime;
+ 		err = ceph_mdsc_do_request(mdsc, NULL, req);
+ 	}
++out:
+ 	dout("setattr %p result=%d (%s locally, %d remote)\n", inode, err,
+ 	     ceph_cap_string(dirtied), mask);
+ 
+@@ -2321,7 +2379,7 @@ int ceph_setattr(struct user_namespace *mnt_userns, struct dentry *dentry,
+ 	    ceph_quota_is_max_bytes_exceeded(inode, attr->ia_size))
+ 		return -EDQUOT;
+ 
+-	err = __ceph_setattr(inode, attr);
++	err = __ceph_setattr(inode, attr, NULL);
+ 
+ 	if (err >= 0 && (attr->ia_valid & ATTR_MODE))
+ 		err = posix_acl_chmod(&init_user_ns, inode, attr->ia_mode);
+diff --git a/fs/ceph/mds_client.c b/fs/ceph/mds_client.c
+index 7aa253be7edc..dcb800675dec 100644
+--- a/fs/ceph/mds_client.c
++++ b/fs/ceph/mds_client.c
+@@ -15,6 +15,7 @@
+ 
+ #include "super.h"
+ #include "mds_client.h"
++#include "crypto.h"
+ 
+ #include <linux/ceph/ceph_features.h>
+ #include <linux/ceph/messenger.h>
+@@ -184,8 +185,52 @@ static int parse_reply_info_in(void **p, void *end,
+ 			info->rsnaps = 0;
+ 		}
+ 
++		if (struct_v >= 5) {
++			u32 alen;
++
++			ceph_decode_32_safe(p, end, alen, bad);
++
++			while (alen--) {
++				u32 len;
++
++				/* key */
++				ceph_decode_32_safe(p, end, len, bad);
++				ceph_decode_skip_n(p, end, len, bad);
++				/* value */
++				ceph_decode_32_safe(p, end, len, bad);
++				ceph_decode_skip_n(p, end, len, bad);
++			}
++		}
++
++		/* fscrypt flag -- ignore */
++		if (struct_v >= 6)
++			ceph_decode_skip_8(p, end, bad);
++
++		info->fscrypt_auth = NULL;
++		info->fscrypt_auth_len = 0;
++		info->fscrypt_file = NULL;
++		info->fscrypt_file_len = 0;
++		if (struct_v >= 7) {
++			ceph_decode_32_safe(p, end, info->fscrypt_auth_len, bad);
++			if (info->fscrypt_auth_len) {
++				info->fscrypt_auth = kmalloc(info->fscrypt_auth_len, GFP_KERNEL);
++				if (!info->fscrypt_auth)
++					return -ENOMEM;
++				ceph_decode_copy_safe(p, end, info->fscrypt_auth,
++						      info->fscrypt_auth_len, bad);
++			}
++			ceph_decode_32_safe(p, end, info->fscrypt_file_len, bad);
++			if (info->fscrypt_file_len) {
++				info->fscrypt_file = kmalloc(info->fscrypt_file_len, GFP_KERNEL);
++				if (!info->fscrypt_file)
++					return -ENOMEM;
++				ceph_decode_copy_safe(p, end, info->fscrypt_file,
++						      info->fscrypt_file_len, bad);
++			}
++		}
+ 		*p = end;
+ 	} else {
++		/* legacy (unversioned) struct */
+ 		if (features & CEPH_FEATURE_MDS_INLINE_DATA) {
+ 			ceph_decode_64_safe(p, end, info->inline_version, bad);
+ 			ceph_decode_32_safe(p, end, info->inline_len, bad);
+@@ -650,8 +695,21 @@ static int parse_reply_info(struct ceph_mds_session *s, struct ceph_msg *msg,
+ 
+ static void destroy_reply_info(struct ceph_mds_reply_info_parsed *info)
+ {
++	int i;
++
++	kfree(info->diri.fscrypt_auth);
++	kfree(info->diri.fscrypt_file);
++	kfree(info->targeti.fscrypt_auth);
++	kfree(info->targeti.fscrypt_file);
+ 	if (!info->dir_entries)
+ 		return;
++
++	for (i = 0; i < info->dir_nr; i++) {
++		struct ceph_mds_reply_dir_entry *rde = info->dir_entries + i;
++
++		kfree(rde->inode.fscrypt_auth);
++		kfree(rde->inode.fscrypt_file);
++	}
+ 	free_pages((unsigned long)info->dir_entries, get_order(info->dir_buf_size));
+ }
+ 
+@@ -889,6 +947,7 @@ void ceph_mdsc_release_request(struct kref *kref)
+ 	put_cred(req->r_cred);
+ 	if (req->r_pagelist)
+ 		ceph_pagelist_release(req->r_pagelist);
++	kfree(req->r_fscrypt_auth);
+ 	put_request_session(req);
+ 	ceph_unreserve_caps(req->r_mdsc, &req->r_caps_reservation);
+ 	WARN_ON_ONCE(!list_empty(&req->r_wait));
+@@ -2469,8 +2528,7 @@ static int set_request_path_attr(struct inode *rinode, struct dentry *rdentry,
+ 	return r;
+ }
+ 
+-static void encode_timestamp_and_gids(void **p,
+-				      const struct ceph_mds_request *req)
++static void encode_mclientrequest_tail(void **p, const struct ceph_mds_request *req)
+ {
+ 	struct ceph_timespec ts;
+ 	int i;
+@@ -2483,6 +2541,20 @@ static void encode_timestamp_and_gids(void **p,
+ 	for (i = 0; i < req->r_cred->group_info->ngroups; i++)
+ 		ceph_encode_64(p, from_kgid(&init_user_ns,
+ 					    req->r_cred->group_info->gid[i]));
++
++	/* v5: altname (TODO: skip for now) */
++	ceph_encode_32(p, 0);
++
++	/* v6: fscrypt_auth and fscrypt_file */
++	if (req->r_fscrypt_auth) {
++		u32 authlen = ceph_fscrypt_auth_len(req->r_fscrypt_auth);
++
++		ceph_encode_32(p, authlen);
++		ceph_encode_copy(p, req->r_fscrypt_auth, authlen);
++	} else {
++		ceph_encode_32(p, 0);
++	}
++	ceph_encode_32(p, 0); // fscrypt_file for now
+ }
+ 
+ /*
+@@ -2527,12 +2599,14 @@ static struct ceph_msg *create_request_message(struct ceph_mds_session *session,
+ 		goto out_free1;
+ 	}
+ 
++	/* head */
+ 	len = legacy ? sizeof(*head) : sizeof(struct ceph_mds_request_head);
+-	len += pathlen1 + pathlen2 + 2*(1 + sizeof(u32) + sizeof(u64)) +
+-		sizeof(struct ceph_timespec);
+-	len += sizeof(u32) + (sizeof(u64) * req->r_cred->group_info->ngroups);
+ 
+-	/* calculate (max) length for cap releases */
++	/* filepaths */
++	len += 2 * (1 + sizeof(u32) + sizeof(u64));
++	len += pathlen1 + pathlen2;
++
++	/* cap releases */
+ 	len += sizeof(struct ceph_mds_request_release) *
+ 		(!!req->r_inode_drop + !!req->r_dentry_drop +
+ 		 !!req->r_old_inode_drop + !!req->r_old_dentry_drop);
+@@ -2542,6 +2616,25 @@ static struct ceph_msg *create_request_message(struct ceph_mds_session *session,
+ 	if (req->r_old_dentry_drop)
+ 		len += pathlen2;
+ 
++	/* MClientRequest tail */
++
++	/* req->r_stamp */
++	len += sizeof(struct ceph_timespec);
++
++	/* gid list */
++	len += sizeof(u32) + (sizeof(u64) * req->r_cred->group_info->ngroups);
++
++	/* alternate name */
++	len += sizeof(u32);	// TODO
++
++	/* fscrypt_auth */
++	len += sizeof(u32); // fscrypt_auth
++	if (req->r_fscrypt_auth)
++		len += ceph_fscrypt_auth_len(req->r_fscrypt_auth);
++
++	/* fscrypt_file */
++	len += sizeof(u32);
++
+ 	msg = ceph_msg_new2(CEPH_MSG_CLIENT_REQUEST, len, 1, GFP_NOFS, false);
+ 	if (!msg) {
+ 		msg = ERR_PTR(-ENOMEM);
+@@ -2561,7 +2654,7 @@ static struct ceph_msg *create_request_message(struct ceph_mds_session *session,
+ 	} else {
+ 		struct ceph_mds_request_head *new_head = msg->front.iov_base;
+ 
+-		msg->hdr.version = cpu_to_le16(4);
++		msg->hdr.version = cpu_to_le16(6);
+ 		new_head->version = cpu_to_le16(CEPH_MDS_REQUEST_HEAD_VERSION);
+ 		head = (struct ceph_mds_request_head_old *)&new_head->oldest_client_tid;
+ 		p = msg->front.iov_base + sizeof(*new_head);
+@@ -2612,7 +2705,7 @@ static struct ceph_msg *create_request_message(struct ceph_mds_session *session,
+ 
+ 	head->num_releases = cpu_to_le16(releases);
+ 
+-	encode_timestamp_and_gids(&p, req);
++	encode_mclientrequest_tail(&p, req);
+ 
+ 	if (WARN_ON_ONCE(p > end)) {
+ 		ceph_msg_put(msg);
+@@ -2742,7 +2835,7 @@ static int __prepare_send_request(struct ceph_mds_session *session,
+ 		rhead->num_releases = 0;
+ 
+ 		p = msg->front.iov_base + req->r_request_release_offset;
+-		encode_timestamp_and_gids(&p, req);
++		encode_mclientrequest_tail(&p, req);
+ 
+ 		msg->front.iov_len = p - msg->front.iov_base;
+ 		msg->hdr.front_len = cpu_to_le32(msg->front.iov_len);
+diff --git a/fs/ceph/mds_client.h b/fs/ceph/mds_client.h
+index 2e945979a2e0..aab3ab284fce 100644
+--- a/fs/ceph/mds_client.h
++++ b/fs/ceph/mds_client.h
+@@ -88,6 +88,10 @@ struct ceph_mds_reply_info_in {
+ 	s32 dir_pin;
+ 	struct ceph_timespec btime;
+ 	struct ceph_timespec snap_btime;
++	u8 *fscrypt_auth;
++	u8 *fscrypt_file;
++	u32 fscrypt_auth_len;
++	u32 fscrypt_file_len;
+ 	u64 rsnaps;
+ 	u64 change_attr;
+ };
+@@ -280,6 +284,9 @@ struct ceph_mds_request {
+ 	struct mutex r_fill_mutex;
+ 
+ 	union ceph_mds_request_args r_args;
++
++	struct ceph_fscrypt_auth *r_fscrypt_auth;
++
+ 	int r_fmode;        /* file mode, if expecting cap */
+ 	int r_request_release_offset;
+ 	const struct cred *r_cred;
+diff --git a/fs/ceph/super.c b/fs/ceph/super.c
+index 26d924dda721..1f52fc5b89bd 100644
+--- a/fs/ceph/super.c
++++ b/fs/ceph/super.c
+@@ -20,6 +20,7 @@
+ #include "super.h"
+ #include "mds_client.h"
+ #include "cache.h"
++#include "crypto.h"
+ 
+ #include <linux/ceph/ceph_features.h>
+ #include <linux/ceph/decode.h>
+@@ -1129,6 +1130,8 @@ static int ceph_set_super(struct super_block *s, struct fs_context *fc)
+ 	s->s_time_min = 0;
+ 	s->s_time_max = U32_MAX;
+ 
++	ceph_fscrypt_set_ops(s);
++
+ 	ret = set_anon_super_fc(s, fc);
+ 	if (ret != 0)
+ 		fsc->sb = NULL;
+diff --git a/fs/ceph/super.h b/fs/ceph/super.h
+index 9eaaab34baae..a4dc7b81a6a4 100644
+--- a/fs/ceph/super.h
++++ b/fs/ceph/super.h
+@@ -434,6 +434,13 @@ struct ceph_inode_info {
+ 
+ 	struct work_struct i_work;
+ 	unsigned long  i_work_mask;
++
++#ifdef CONFIG_FS_ENCRYPTION
++	u32 fscrypt_auth_len;
++	u32 fscrypt_file_len;
++	u8 *fscrypt_auth;
++	u8 *fscrypt_file;
++#endif
+ };
+ 
+ static inline struct ceph_inode_info *
+@@ -1038,7 +1045,12 @@ static inline int ceph_do_getattr(struct inode *inode, int mask, bool force)
+ }
+ extern int ceph_permission(struct user_namespace *mnt_userns,
+ 			   struct inode *inode, int mask);
+-extern int __ceph_setattr(struct inode *inode, struct iattr *attr);
++
++struct ceph_iattr {
++	struct ceph_fscrypt_auth	*fscrypt_auth;
++};
++
++extern int __ceph_setattr(struct inode *inode, struct iattr *attr, struct ceph_iattr *cia);
+ extern int ceph_setattr(struct user_namespace *mnt_userns,
+ 			struct dentry *dentry, struct iattr *attr);
+ extern int ceph_getattr(struct user_namespace *mnt_userns,
+diff --git a/include/linux/ceph/ceph_fs.h b/include/linux/ceph/ceph_fs.h
+index 86bf82dbd8b8..2810b214fa3f 100644
+--- a/include/linux/ceph/ceph_fs.h
++++ b/include/linux/ceph/ceph_fs.h
+@@ -359,14 +359,19 @@ enum {
+ 
+ extern const char *ceph_mds_op_name(int op);
+ 
+-
+-#define CEPH_SETATTR_MODE   1
+-#define CEPH_SETATTR_UID    2
+-#define CEPH_SETATTR_GID    4
+-#define CEPH_SETATTR_MTIME  8
+-#define CEPH_SETATTR_ATIME 16
+-#define CEPH_SETATTR_SIZE  32
+-#define CEPH_SETATTR_CTIME 64
++#define CEPH_SETATTR_MODE              (1 << 0)
++#define CEPH_SETATTR_UID               (1 << 1)
++#define CEPH_SETATTR_GID               (1 << 2)
++#define CEPH_SETATTR_MTIME             (1 << 3)
++#define CEPH_SETATTR_ATIME             (1 << 4)
++#define CEPH_SETATTR_SIZE              (1 << 5)
++#define CEPH_SETATTR_CTIME             (1 << 6)
++#define CEPH_SETATTR_MTIME_NOW         (1 << 7)
++#define CEPH_SETATTR_ATIME_NOW         (1 << 8)
++#define CEPH_SETATTR_BTIME             (1 << 9)
++#define CEPH_SETATTR_KILL_SGUID        (1 << 10)
++#define CEPH_SETATTR_FSCRYPT_AUTH      (1 << 11)
++#define CEPH_SETATTR_FSCRYPT_FILE      (1 << 12)
+ 
+ /*
+  * Ceph setxattr request flags.
 -- 
-2.34.1
-
-
+2.35.1
 
