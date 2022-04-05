@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F31EAC4167B
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:35:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 140C1C4167E
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:36:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238015AbiDEIaG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 04:30:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53020 "EHLO
+        id S238098AbiDEIaQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 04:30:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50136 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234556AbiDEH6j (ORCPT
+        with ESMTP id S236003AbiDEIBB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 03:58:39 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BBC3A66F0;
-        Tue,  5 Apr 2022 00:52:46 -0700 (PDT)
+        Tue, 5 Apr 2022 04:01:01 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCE0B49FB3;
+        Tue,  5 Apr 2022 00:59:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3A1F5615C3;
-        Tue,  5 Apr 2022 07:52:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4F33DC340EE;
-        Tue,  5 Apr 2022 07:52:45 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 95A98B81B18;
+        Tue,  5 Apr 2022 07:59:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E3008C340EE;
+        Tue,  5 Apr 2022 07:58:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649145165;
-        bh=lkpnbO/D9/xw1e2mWn+XSr5+CgrYmEMa9rXAlTMZFc8=;
+        s=korg; t=1649145540;
+        bh=DqpbXeSy2wz6V4vXfGJ2xZky/5rTxcMKW6nSQNRNDwA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=oEW6y47tG85GHK5EEZkz42JWsc2aGSMqp9NrGpUbMtQO4nRqtKYox0L36EzN0RS4T
-         u+YpIKllwY/SXCVc2WmDvejoQ9jV+HkB5pKMZkntiydyb5WMWrV7sxM+ola68IY3yi
-         fpGEDdcVUbfjHigbmcMNvNUOvvQVeEgPbkoxjUs4=
+        b=RrJyibYJ2JlzQr9GmK110m3SkwHDdWVl93a1Y/UN5RnQ23mcZFWvWlIYeKlCy6213
+         lStInfXjL0Id7bY0RvN4yfqCz/ecE8/haVbd/DDbGThKP8FplOa/xMX4ycOeFvX4+4
+         zqyrZWBjihqphgnqfBBnS2Nxmbrjchn6a1H5rpyo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        stable@vger.kernel.org, Stephen Rothwell <sfr@canb.auug.org.au>,
+        Jani Nikula <jani.nikula@intel.com>,
+        Daniel Vetter <daniel.vetter@ffwll.ch>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0309/1126] media: coda: Fix missing put_device() call in coda_get_vdoa_data
-Date:   Tue,  5 Apr 2022 09:17:36 +0200
-Message-Id: <20220405070416.684184954@linuxfoundation.org>
+Subject: [PATCH 5.17 0442/1126] drm/locking: fix drm_modeset_acquire_ctx kernel-doc
+Date:   Tue,  5 Apr 2022 09:19:49 +0200
+Message-Id: <20220405070420.597737979@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -50,35 +50,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Jani Nikula <jani.nikula@intel.com>
 
-[ Upstream commit ca85d271531a1e1c86f24b892f57b7d0a3ddb5a6 ]
+[ Upstream commit 6f043b5969a4d6d385ca429388ded37e30e0d179 ]
 
-The reference taken by 'of_find_device_by_node()' must be released when
-not needed anymore.
-Add the corresponding 'put_device()' in the error handling path.
+The stack_depot member was added without kernel-doc, leading to below
+warning. Fix it.
 
-Fixes: e7f3c5481035 ("[media] coda: use VDOA for un-tiling custom macroblock format")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+./include/drm/drm_modeset_lock.h:74: warning: Function parameter or
+member 'stack_depot' not described in 'drm_modeset_acquire_ctx'
+
+Reported-by: Stephen Rothwell <sfr@canb.auug.org.au>
+Fixes: cd06ab2fd48f ("drm/locking: add backtrace for locking contended locks without backoff")
+Signed-off-by: Jani Nikula <jani.nikula@intel.com>
+Reviewed-by: Daniel Vetter <daniel.vetter@ffwll.ch>
+Tested-by: Stephen Rothwell <sfr@canb.auug.org.au>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220120094856.3004147-1-jani.nikula@intel.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/platform/coda/coda-common.c | 1 +
+ include/drm/drm_modeset_lock.h | 1 +
  1 file changed, 1 insertion(+)
 
-diff --git a/drivers/media/platform/coda/coda-common.c b/drivers/media/platform/coda/coda-common.c
-index 3cd47ba26357..a57822b05070 100644
---- a/drivers/media/platform/coda/coda-common.c
-+++ b/drivers/media/platform/coda/coda-common.c
-@@ -409,6 +409,7 @@ static struct vdoa_data *coda_get_vdoa_data(void)
- 	if (!vdoa_data)
- 		vdoa_data = ERR_PTR(-EPROBE_DEFER);
- 
-+	put_device(&vdoa_pdev->dev);
- out:
- 	of_node_put(vdoa_node);
- 
+diff --git a/include/drm/drm_modeset_lock.h b/include/drm/drm_modeset_lock.h
+index b84693fbd2b5..ec4f543c3d95 100644
+--- a/include/drm/drm_modeset_lock.h
++++ b/include/drm/drm_modeset_lock.h
+@@ -34,6 +34,7 @@ struct drm_modeset_lock;
+  * struct drm_modeset_acquire_ctx - locking context (see ww_acquire_ctx)
+  * @ww_ctx: base acquire ctx
+  * @contended: used internally for -EDEADLK handling
++ * @stack_depot: used internally for contention debugging
+  * @locked: list of held locks
+  * @trylock_only: trylock mode used in atomic contexts/panic notifiers
+  * @interruptible: whether interruptible locking should be used.
 -- 
 2.34.1
 
