@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B80D8C43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C6AC9C4321E
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 14:44:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1389192AbiDEOnz (ORCPT
+        id S1389280AbiDEOoO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 10:43:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47490 "EHLO
+        Tue, 5 Apr 2022 10:44:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36284 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244222AbiDEJlK (ORCPT
+        with ESMTP id S244217AbiDEJlK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Apr 2022 05:41:10 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43005BB08B;
-        Tue,  5 Apr 2022 02:25:45 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 585FABABBF;
+        Tue,  5 Apr 2022 02:25:34 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D24CD6165C;
-        Tue,  5 Apr 2022 09:25:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E43CCC385A2;
-        Tue,  5 Apr 2022 09:25:43 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E7EAB614F9;
+        Tue,  5 Apr 2022 09:25:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F2A8DC385A2;
+        Tue,  5 Apr 2022 09:25:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649150744;
-        bh=CRkojIeG8hfsFSBTHg4oYYawOOdZgescy1u4wNygcPs=;
+        s=korg; t=1649150733;
+        bh=+3MwjoxU6y9Rz147dPjjPlPFEMsY7UQgaL93494ZQ1o=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZFYRkzt3EKn2b5kC4UZmdNi8fHMtPNTTF9o9vfvwlpnMzKQyzpTUczV4F3q3OFnD8
-         P3DSx8VK5npKnu8nE4CiU8zM7urQHJ3tfNS3enP7RfXfa8tfJxKtKv3tE9sstAYDp5
-         6pp8iDkIpGOvxxh4oOSNzcMFS8s5OReBsX/GFXu4=
+        b=IIXIWI9DACj5S9BKMbhGExJZ2KR+MRJz1DosANVPVdwhk3Y89bEi6bH81h4p+rPiZ
+         yTnwlq28Ga0dgzbX7tx1gq72WW8+XfBhI4ZGXvK6neUuw/1kU0GaOaEYY01zwWIs+L
+         wga/tPcaL7+ycGfZiGSyd+uLL+L8jZgJvuDiysg0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jan-Benedict Glaw <jbglaw@lug-owl.de>,
-        Sudip Mukherjee <sudipm.mukherjee@gmail.com>,
-        "Maciej W. Rozycki" <macro@orcam.me.uk>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>
-Subject: [PATCH 5.15 163/913] DEC: Limit PMAX memory probing to R3k systems
-Date:   Tue,  5 Apr 2022 09:20:25 +0200
-Message-Id: <20220405070344.731019792@linuxfoundation.org>
+        stable@vger.kernel.org, Tadeusz Struk <tadeusz.struk@linaro.org>,
+        Eric Biggers <ebiggers@google.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>
+Subject: [PATCH 5.15 160/913] crypto: rsa-pkcs1pad - fix buffer overread in pkcs1pad_verify_complete()
+Date:   Tue,  5 Apr 2022 09:20:22 +0200
+Message-Id: <20220405070344.638617599@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
 References: <20220405070339.801210740@linuxfoundation.org>
@@ -51,70 +50,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Maciej W. Rozycki <macro@orcam.me.uk>
+From: Eric Biggers <ebiggers@google.com>
 
-commit 244eae91a94c6dab82b3232967d10eeb9dfa21c6 upstream.
+commit a24611ea356c7f3f0ec926da11b9482ac1f414fd upstream.
 
-Recent tightening of the opcode table in binutils so as to consistently
-disallow the assembly or disassembly of CP0 instructions not supported
-by the processor architecture chosen has caused a regression like below:
+Before checking whether the expected digest_info is present, we need to
+check that there are enough bytes remaining.
 
-arch/mips/dec/prom/locore.S: Assembler messages:
-arch/mips/dec/prom/locore.S:29: Error: opcode not supported on this processor: r4600 (mips3) `rfe'
-
-in a piece of code used to probe for memory with PMAX DECstation models,
-which have non-REX firmware.  Those computers always have an R2000 CPU
-and consequently the exception handler used in memory probing uses the
-RFE instruction, which those processors use.
-
-While adding 64-bit support this code was correctly excluded for 64-bit
-configurations, however it should have also been excluded for irrelevant
-32-bit configurations.  Do this now then, and only enable PMAX memory
-probing for R3k systems.
-
-Reported-by: Jan-Benedict Glaw <jbglaw@lug-owl.de>
-Reported-by: Sudip Mukherjee <sudipm.mukherjee@gmail.com>
-Signed-off-by: Maciej W. Rozycki <macro@orcam.me.uk>
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-Cc: stable@vger.kernel.org # v2.6.12+
-Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+Fixes: a49de377e051 ("crypto: Add hash param to pkcs1pad")
+Cc: <stable@vger.kernel.org> # v4.6+
+Cc: Tadeusz Struk <tadeusz.struk@linaro.org>
+Signed-off-by: Eric Biggers <ebiggers@google.com>
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/mips/dec/prom/Makefile      |    2 +-
- arch/mips/include/asm/dec/prom.h |   15 +++++----------
- 2 files changed, 6 insertions(+), 11 deletions(-)
+ crypto/rsa-pkcs1pad.c |    2 ++
+ 1 file changed, 2 insertions(+)
 
---- a/arch/mips/dec/prom/Makefile
-+++ b/arch/mips/dec/prom/Makefile
-@@ -6,4 +6,4 @@
+--- a/crypto/rsa-pkcs1pad.c
++++ b/crypto/rsa-pkcs1pad.c
+@@ -476,6 +476,8 @@ static int pkcs1pad_verify_complete(stru
+ 	pos++;
  
- lib-y			+= init.o memory.o cmdline.o identify.o console.o
- 
--lib-$(CONFIG_32BIT)	+= locore.o
-+lib-$(CONFIG_CPU_R3000)	+= locore.o
---- a/arch/mips/include/asm/dec/prom.h
-+++ b/arch/mips/include/asm/dec/prom.h
-@@ -43,16 +43,11 @@
-  */
- #define REX_PROM_MAGIC		0x30464354
- 
--#ifdef CONFIG_64BIT
--
--#define prom_is_rex(magic)	1	/* KN04 and KN05 are REX PROMs.  */
--
--#else /* !CONFIG_64BIT */
--
--#define prom_is_rex(magic)	((magic) == REX_PROM_MAGIC)
--
--#endif /* !CONFIG_64BIT */
--
-+/* KN04 and KN05 are REX PROMs, so only do the check for R3k systems.  */
-+static inline bool prom_is_rex(u32 magic)
-+{
-+	return !IS_ENABLED(CONFIG_CPU_R3000) || magic == REX_PROM_MAGIC;
-+}
- 
- /*
-  * 3MIN/MAXINE PROM entry points for DS5000/1xx's, DS5000/xx's and
+ 	if (digest_info) {
++		if (digest_info->size > dst_len - pos)
++			goto done;
+ 		if (crypto_memneq(out_buf + pos, digest_info->data,
+ 				  digest_info->size))
+ 			goto done;
 
 
