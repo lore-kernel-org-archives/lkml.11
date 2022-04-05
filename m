@@ -2,114 +2,277 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 13043C4167B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 212D3C41535
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:23:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352526AbiDEUXF (ORCPT
+        id S1353525AbiDEUXN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 16:23:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56940 "EHLO
+        Tue, 5 Apr 2022 16:23:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56046 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349759AbiDEJvQ (ORCPT
+        with ESMTP id S1453037AbiDEPzy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:51:16 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87FFB15839;
-        Tue,  5 Apr 2022 02:49:18 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 40E87B81B76;
-        Tue,  5 Apr 2022 09:49:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8202EC385A1;
-        Tue,  5 Apr 2022 09:49:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649152155;
-        bh=vp5P+tlZ9AwejLKFANiTgrszGOHonIstSV2V0M0I7Kk=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Eqmsmv9rQ7Ku/lVhsj7QaqRTBn+ZGdcCDOn0WL+CGsrmINWh7yu/QPjm4ZsniFawc
-         vnnFaD+w7n3vYmRX4Vo6XHneIcueeQbEBvyZPX/UgnxY3kRYpAXFdQw6F3SFCPeQFu
-         w1V2hKrdjpfxQW0sRAjNc2YaZYOyb15SB0MmZyEU=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Florian Westphal <fw@strlen.de>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 676/913] net/sched: act_ct: fix ref leak when switching zones
-Date:   Tue,  5 Apr 2022 09:28:58 +0200
-Message-Id: <20220405070400.099531752@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 5 Apr 2022 11:55:54 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D48D4137B24
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 07:59:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1649170743;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=m2sfKB74gTolYuaOLfzO0CaB/byjGpQyOkAPbwbPHJY=;
+        b=MkDOyllG16SfP+JMgX/qQZIjvZEAQkhaCIYH+UNacySdrEMA0Ny/LtkmJo6m8X2dsueIpS
+        Jrsp8xdVqUNFWUTogm/OUqGuubq/gvKtY3bE7NjARsL/eiH3xiQJZdHxCDjUd9ZxGva4EN
+        RCU20tWWLlk+6gmBemGWvGLdW57Pq7M=
+Received: from mail-qt1-f199.google.com (mail-qt1-f199.google.com
+ [209.85.160.199]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-453-IXsRU-a-Oe6oYKphwg06mQ-1; Tue, 05 Apr 2022 10:58:59 -0400
+X-MC-Unique: IXsRU-a-Oe6oYKphwg06mQ-1
+Received: by mail-qt1-f199.google.com with SMTP id b10-20020ac801ca000000b002e1cfb25db9so9179273qtg.1
+        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 07:58:59 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=m2sfKB74gTolYuaOLfzO0CaB/byjGpQyOkAPbwbPHJY=;
+        b=gZ56U5k0lcOdY3cVNHbpbZduml6oLQcoCm/adcvnb+ZUuubxeosFYBpFT8JLCwHUqG
+         1+yukutFUtVIsshRTMW7jFqYrhgfSNiuun0PBemq6NLN2TkMjUeQSiaDz9IG0Dbuz2nV
+         t67PQ5lT1zEmtGQtEDeDCnncTpV870iSXm7iZWiJ3uuEccF4IrU968vdX3UDAAkgHiwg
+         zJQGOyL3q57ar/Djm74A2667eJkcdH0Gx+2POOABzRUjfAwQ1pPsJ/gBOFy5+IBWqQjm
+         dwljn38bvA/ZhU05Qv8/QDwi7oRCszhOCeJWn/9xqxWZ+UyfJLq/hWz1KSketFDewyI0
+         wn7g==
+X-Gm-Message-State: AOAM532K51NQe8g4yTxHjQtMJrUIrGvGTkSYQQqnIF/we6InkqNzSiqH
+        h8+wpnihsNqwu0FXVtPH98rEsDPj9v52m3Xtspq6g9w/oIc3IR2AgeFuJT6RtDJ3LWx8g0GJuQi
+        bZFzX4QP+1S0qY8ztJj+EMcWy
+X-Received: by 2002:a05:620a:210f:b0:67b:119d:f32d with SMTP id l15-20020a05620a210f00b0067b119df32dmr2596727qkl.316.1649170739274;
+        Tue, 05 Apr 2022 07:58:59 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJyxrv+hAz704UHG1GvBC1bddnp2MT4csXtUyD6rb0x6BFrLO5qGXa/QxqcDJp3NxZ4dggSgJw==
+X-Received: by 2002:a05:620a:210f:b0:67b:119d:f32d with SMTP id l15-20020a05620a210f00b0067b119df32dmr2596698qkl.316.1649170738832;
+        Tue, 05 Apr 2022 07:58:58 -0700 (PDT)
+Received: from [10.32.181.87] (nat-pool-mxp-t.redhat.com. [149.6.153.186])
+        by smtp.googlemail.com with ESMTPSA id c27-20020a05620a165b00b0067d32238bc8sm8030769qko.125.2022.04.05.07.58.57
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 05 Apr 2022 07:58:58 -0700 (PDT)
+Message-ID: <fbd5271c-5d6d-ded6-63dc-6ee3a7ccd305@redhat.com>
+Date:   Tue, 5 Apr 2022 16:58:56 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [RFC PATCH v5 047/104] KVM: x86/mmu: add a private pointer to
+ struct kvm_mmu_page
+Content-Language: en-US
+To:     isaku.yamahata@intel.com, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     isaku.yamahata@gmail.com, Jim Mattson <jmattson@google.com>,
+        erdemaktas@google.com, Connor Kuehl <ckuehl@redhat.com>,
+        Sean Christopherson <seanjc@google.com>
+References: <cover.1646422845.git.isaku.yamahata@intel.com>
+ <499d1fd01b0d1d9a8b46a55bb863afd0c76f1111.1646422845.git.isaku.yamahata@intel.com>
+From:   Paolo Bonzini <pbonzini@redhat.com>
+In-Reply-To: <499d1fd01b0d1d9a8b46a55bb863afd0c76f1111.1646422845.git.isaku.yamahata@intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+On 3/4/22 20:49, isaku.yamahata@intel.com wrote:
+> From: Isaku Yamahata <isaku.yamahata@intel.com>
+> 
+> Add a private pointer to kvm_mmu_page for private EPT.
+> 
+> To resolve KVM page fault on private GPA, it will allocate additional page
+> for Secure EPT in addition to private EPT.  Add memory allocator for it and
+> topup its memory allocator before resolving KVM page fault similar to
+> shared EPT page.  Allocation of those memory will be done for TDP MMU by
+> alloc_tdp_mmu_page().  Freeing those memory will be done for TDP MMU on
+> behalf of kvm_tdp_mmu_zap_all() called by kvm_mmu_zap_all().  Private EPT
+> page needs to carry one more page used for Secure EPT in addition to the
+> private EPT page.  Add private pointer to struct kvm_mmu_page for that
+> purpose and Add helper functions to allocate/free a page for Secure EPT.
+> Also add helper functions to check if a given kvm_mmu_page is private.
+> 
+> Signed-off-by: Isaku Yamahata <isaku.yamahata@intel.com>
+> ---
+>   arch/x86/include/asm/kvm_host.h |  1 +
+>   arch/x86/kvm/mmu/mmu.c          |  9 ++++
+>   arch/x86/kvm/mmu/mmu_internal.h | 84 +++++++++++++++++++++++++++++++++
+>   arch/x86/kvm/mmu/tdp_mmu.c      |  3 ++
+>   4 files changed, 97 insertions(+)
+> 
+> diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm_host.h
+> index fcab2337819c..0c8cc7d73371 100644
+> --- a/arch/x86/include/asm/kvm_host.h
+> +++ b/arch/x86/include/asm/kvm_host.h
+> @@ -689,6 +689,7 @@ struct kvm_vcpu_arch {
+>   	struct kvm_mmu_memory_cache mmu_shadow_page_cache;
+>   	struct kvm_mmu_memory_cache mmu_gfn_array_cache;
+>   	struct kvm_mmu_memory_cache mmu_page_header_cache;
+> +	struct kvm_mmu_memory_cache mmu_private_sp_cache;
+>   
+>   	/*
+>   	 * QEMU userspace and the guest each have their own FPU state.
+> diff --git a/arch/x86/kvm/mmu/mmu.c b/arch/x86/kvm/mmu/mmu.c
+> index 6e9847b1124b..8def8b97978f 100644
+> --- a/arch/x86/kvm/mmu/mmu.c
+> +++ b/arch/x86/kvm/mmu/mmu.c
+> @@ -758,6 +758,13 @@ static int mmu_topup_shadow_page_cache(struct kvm_vcpu *vcpu)
+>   	struct kvm_mmu_memory_cache *mc = &vcpu->arch.mmu_shadow_page_cache;
+>   	int start, end, i, r;
+>   
+> +	if (kvm_gfn_stolen_mask(vcpu->kvm)) {
+> +		r = kvm_mmu_topup_memory_cache(&vcpu->arch.mmu_private_sp_cache,
+> +					       PT64_ROOT_MAX_LEVEL);
+> +		if (r)
+> +			return r;
+> +	}
+> +
+>   	if (shadow_init_value)
+>   		start = kvm_mmu_memory_cache_nr_free_objects(mc);
+>   
+> @@ -799,6 +806,7 @@ static void mmu_free_memory_caches(struct kvm_vcpu *vcpu)
+>   {
+>   	kvm_mmu_free_memory_cache(&vcpu->arch.mmu_pte_list_desc_cache);
+>   	kvm_mmu_free_memory_cache(&vcpu->arch.mmu_shadow_page_cache);
+> +	kvm_mmu_free_memory_cache(&vcpu->arch.mmu_private_sp_cache);
+>   	kvm_mmu_free_memory_cache(&vcpu->arch.mmu_gfn_array_cache);
+>   	kvm_mmu_free_memory_cache(&vcpu->arch.mmu_page_header_cache);
+>   }
+> @@ -1791,6 +1799,7 @@ static struct kvm_mmu_page *kvm_mmu_alloc_page(struct kvm_vcpu *vcpu, int direct
+>   	if (!direct)
+>   		sp->gfns = kvm_mmu_memory_cache_alloc(&vcpu->arch.mmu_gfn_array_cache);
+>   	set_page_private(virt_to_page(sp->spt), (unsigned long)sp);
+> +	kvm_mmu_init_private_sp(sp);
+>   
+>   	/*
+>   	 * active_mmu_pages must be a FIFO list, as kvm_zap_obsolete_pages()
+> diff --git a/arch/x86/kvm/mmu/mmu_internal.h b/arch/x86/kvm/mmu/mmu_internal.h
+> index da6166b5c377..80f7a74a71dc 100644
+> --- a/arch/x86/kvm/mmu/mmu_internal.h
+> +++ b/arch/x86/kvm/mmu/mmu_internal.h
+> @@ -53,6 +53,10 @@ struct kvm_mmu_page {
+>   	u64 *spt;
+>   	/* hold the gfn of each spte inside spt */
+>   	gfn_t *gfns;
+> +#ifdef CONFIG_KVM_MMU_PRIVATE
+> +	/* associated private shadow page, e.g. SEPT page */
+> +	void *private_sp;
+> +#endif
+>   	/* Currently serving as active root */
+>   	union {
+>   		int root_count;
+> @@ -104,6 +108,86 @@ static inline int kvm_mmu_page_as_id(struct kvm_mmu_page *sp)
+>   	return kvm_mmu_role_as_id(sp->role);
+>   }
+>   
+> +/*
+> + * TDX vcpu allocates page for root Secure EPT page and assigns to CPU secure
+> + * EPT pointer.  KVM doesn't need to allocate and link to the secure EPT.
+> + * Dummy value to make is_pivate_sp() return true.
+> + */
+> +#define KVM_MMU_PRIVATE_SP_ROOT	((void *)1)
+> +
+> +#ifdef CONFIG_KVM_MMU_PRIVATE
+> +static inline bool is_private_sp(struct kvm_mmu_page *sp)
+> +{
+> +	return !!sp->private_sp;
+> +}
+> +
+> +static inline bool is_private_spte(u64 *sptep)
+> +{
+> +	return is_private_sp(sptep_to_sp(sptep));
+> +}
+> +
+> +static inline void *kvm_mmu_private_sp(struct kvm_mmu_page *sp)
+> +{
+> +	return sp->private_sp;
+> +}
+> +
+> +static inline void kvm_mmu_init_private_sp(struct kvm_mmu_page *sp)
+> +{
+> +	sp->private_sp = NULL;
+> +}
+> +
+> +/* Valid sp->role.level is required. */
+> +static inline void kvm_mmu_alloc_private_sp(struct kvm_vcpu *vcpu,
+> +					struct kvm_mmu_page *sp)
+> +{
+> +	if (vcpu->arch.mmu->shadow_root_level == sp->role.level)
+> +		sp->private_sp = KVM_MMU_PRIVATE_SP_ROOT;
+> +	else
+> +		sp->private_sp =
+> +			kvm_mmu_memory_cache_alloc(
+> +				&vcpu->arch.mmu_private_sp_cache);
+> +	/*
+> +	 * Because mmu_private_sp_cache is topped up before staring kvm page
+> +	 * fault resolving, the allocation above shouldn't fail.
+> +	 */
+> +	WARN_ON_ONCE(!sp->private_sp);
+> +}
+> +
+> +static inline void kvm_mmu_free_private_sp(struct kvm_mmu_page *sp)
+> +{
+> +	if (sp->private_sp != KVM_MMU_PRIVATE_SP_ROOT)
+> +		free_page((unsigned long)sp->private_sp);
+> +}
+> +#else
+> +static inline bool is_private_sp(struct kvm_mmu_page *sp)
+> +{
+> +	return false;
+> +}
+> +
+> +static inline bool is_private_spte(u64 *sptep)
+> +{
+> +	return false;
+> +}
+> +
+> +static inline void *kvm_mmu_private_sp(struct kvm_mmu_page *sp)
+> +{
+> +	return NULL;
+> +}
+> +
+> +static inline void kvm_mmu_init_private_sp(struct kvm_mmu_page *sp)
+> +{
+> +}
+> +
+> +static inline void kvm_mmu_alloc_private_sp(struct kvm_vcpu *vcpu,
+> +					struct kvm_mmu_page *sp)
+> +{
+> +}
+> +
+> +static inline void kvm_mmu_free_private_sp(struct kvm_mmu_page *sp)
+> +{
+> +}
+> +#endif
+> +
+>   static inline bool kvm_mmu_page_ad_need_write_protect(struct kvm_mmu_page *sp)
+>   {
+>   	/*
+> diff --git a/arch/x86/kvm/mmu/tdp_mmu.c b/arch/x86/kvm/mmu/tdp_mmu.c
+> index 8db262440d5c..a68f3a22836b 100644
+> --- a/arch/x86/kvm/mmu/tdp_mmu.c
+> +++ b/arch/x86/kvm/mmu/tdp_mmu.c
+> @@ -59,6 +59,8 @@ static bool zap_gfn_range(struct kvm *kvm, struct kvm_mmu_page *root,
+>   
+>   static void tdp_mmu_free_sp(struct kvm_mmu_page *sp)
+>   {
+> +	if (is_private_sp(sp))
+> +		kvm_mmu_free_private_sp(sp);
+>   	free_page((unsigned long)sp->spt);
+>   	kmem_cache_free(mmu_page_header_cache, sp);
+>   }
+> @@ -184,6 +186,7 @@ static struct kvm_mmu_page *alloc_tdp_mmu_page(struct kvm_vcpu *vcpu, gfn_t gfn,
+>   	sp->role.word = page_role_for_level(vcpu, level).word;
+>   	sp->gfn = gfn;
+>   	sp->tdp_mmu_page = true;
+> +	kvm_mmu_init_private_sp(sp);
+>   
+>   	trace_kvm_mmu_get_page(sp, true);
+>   
 
-[ Upstream commit bcb74e132a76ce0502bb33d5b65533a4ed72d159 ]
-
-When switching zones or network namespaces without doing a ct clear in
-between, it is now leaking a reference to the old ct entry. That's
-because tcf_ct_skb_nfct_cached() returns false and
-tcf_ct_flow_table_lookup() may simply overwrite it.
-
-The fix is to, as the ct entry is not reusable, free it already at
-tcf_ct_skb_nfct_cached().
-
-Reported-by: Florian Westphal <fw@strlen.de>
-Fixes: 2f131de361f6 ("net/sched: act_ct: Fix flow table lookup after ct clear or switching zones")
-Signed-off-by: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- net/sched/act_ct.c | 15 +++++++++------
- 1 file changed, 9 insertions(+), 6 deletions(-)
-
-diff --git a/net/sched/act_ct.c b/net/sched/act_ct.c
-index 240b3c5d2eb1..553bf41671a6 100644
---- a/net/sched/act_ct.c
-+++ b/net/sched/act_ct.c
-@@ -583,22 +583,25 @@ static bool tcf_ct_skb_nfct_cached(struct net *net, struct sk_buff *skb,
- 	if (!ct)
- 		return false;
- 	if (!net_eq(net, read_pnet(&ct->ct_net)))
--		return false;
-+		goto drop_ct;
- 	if (nf_ct_zone(ct)->id != zone_id)
--		return false;
-+		goto drop_ct;
- 
- 	/* Force conntrack entry direction. */
- 	if (force && CTINFO2DIR(ctinfo) != IP_CT_DIR_ORIGINAL) {
- 		if (nf_ct_is_confirmed(ct))
- 			nf_ct_kill(ct);
- 
--		nf_ct_put(ct);
--		nf_ct_set(skb, NULL, IP_CT_UNTRACKED);
--
--		return false;
-+		goto drop_ct;
- 	}
- 
- 	return true;
-+
-+drop_ct:
-+	nf_ct_put(ct);
-+	nf_ct_set(skb, NULL, IP_CT_UNTRACKED);
-+
-+	return false;
- }
- 
- /* Trim the skb to the length specified by the IP/IPv6 header,
--- 
-2.34.1
-
-
+Reviewed-by: Paolo Bonzini <pbonzini@redhat.com>
 
