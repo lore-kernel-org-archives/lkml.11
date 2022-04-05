@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 21BBAC4167D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 54FCFC35273
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 11:17:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353299AbiDELOK (ORCPT
+        id S1353560AbiDELOT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 07:14:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52676 "EHLO
+        Tue, 5 Apr 2022 07:14:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51096 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238178AbiDEIaX (ORCPT
+        with ESMTP id S238151AbiDEIaX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Apr 2022 04:30:23 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C6542181A;
-        Tue,  5 Apr 2022 01:21:46 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 760D820BFF;
+        Tue,  5 Apr 2022 01:21:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A697E60B0F;
-        Tue,  5 Apr 2022 08:21:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B6A27C385A1;
-        Tue,  5 Apr 2022 08:21:44 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C6ACFB81BBD;
+        Tue,  5 Apr 2022 08:21:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3A031C385A1;
+        Tue,  5 Apr 2022 08:21:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649146905;
-        bh=zUUeeZnaMW+gV0tRTgNtHUinIBWwkI9x7zikir/8Uio=;
+        s=korg; t=1649146899;
+        bh=v1luuvpj5UTKQupxrRu/rhsBPsNSE/Jx1YwX0tOiZ3g=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fjmztc2NEI/7qvA9RGljW8J21G1NBURgLB2NEb1Vr5+ZgUKZXPMNJJ1K/lHcDTQ93
-         XoCnCrZhS2XlaekxN61ZGlkqTvGrlUmCD3vQW+mKuaf2VTvaG7XADQkjD2RJNkfZ4m
-         EufYQ0jn4CaqcWTEYZ+/IlcQ7urz9bSGcL1cilfM=
+        b=x0RP+5Sr62lOXOHNaoKIFxsUt0N3g8TEtopT0huffGxXIi4e/TGmpu6oob5cO5V8T
+         ZQHIjtTrIJYwWCyL0OkIMRrtWQ28aKcpHolO71ahPVCxWGWfx18eSWcNF5cNKy0MuT
+         y9mSal1Gokh4v5qXXS5ZQg6dSfzSAGGSO6LqsjsU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Paul Kocialkowski <paul.kocialkowski@bootlin.com>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
+        Vijendar Mukunda <Vijendar.Mukunda@amd.com>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0932/1126] media: i2c: ov5648: Fix lockdep error
-Date:   Tue,  5 Apr 2022 09:27:59 +0200
-Message-Id: <20220405070434.871967245@linuxfoundation.org>
+Subject: [PATCH 5.17 0930/1126] ASoC: amd: vangogh: fix uninitialized symbol warning in machine driver
+Date:   Tue,  5 Apr 2022 09:27:57 +0200
+Message-Id: <20220405070434.814379523@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -52,51 +51,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hans de Goede <hdegoede@redhat.com>
+From: Vijendar Mukunda <Vijendar.Mukunda@amd.com>
 
-[ Upstream commit d4cb5d3c4cee28aa89b02bc33d930a6cf75e7f79 ]
+[ Upstream commit 6f989800639a7a29ab9a02e165b04dc144dd4f2b ]
 
-ov5648_state_init() calls ov5648_state_mipi_configure() which uses
-__v4l2_ctrl_s_ctrl[_int64](). This means that sensor->mutex (which
-is also sensor->ctrls.handler.lock) must be locked before calling
-ov5648_state_init().
+Fixed below smatch static checker warning.
+sound/soc/amd/vangogh/acp5x-mach.c:190 acp5x_cs35l41_hw_params()
+error: uninitialized symbol 'ret'.
 
-ov5648_state_mipi_configure() is also used in other places where
-the lock is already held so it cannot be changed itself.
-
-Note this is based on an identical (tested) fix for the ov8865 driver,
-this has only been compile-tested.
-
-Cc: Paul Kocialkowski <paul.kocialkowski@bootlin.com>
-Reviewed-by: Paul Kocialkowski <paul.kocialkowski@bootlin.com>
-Signed-off-by: Hans de Goede <hdegoede@redhat.com>
-Signed-off-by: Sakari Ailus <sakari.ailus@linux.intel.com>
+Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
+Signed-off-by: Vijendar Mukunda <Vijendar.Mukunda@amd.com>
+Link: https://lore.kernel.org/r/20220225193054.24916-4-Vijendar.Mukunda@amd.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/i2c/ov5648.c | 10 ++++++++--
- 1 file changed, 8 insertions(+), 2 deletions(-)
+ sound/soc/amd/vangogh/acp5x-mach.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/media/i2c/ov5648.c b/drivers/media/i2c/ov5648.c
-index 78040f0ac02f..ef8b52dc9401 100644
---- a/drivers/media/i2c/ov5648.c
-+++ b/drivers/media/i2c/ov5648.c
-@@ -1778,8 +1778,14 @@ static int ov5648_state_configure(struct ov5648_sensor *sensor,
+diff --git a/sound/soc/amd/vangogh/acp5x-mach.c b/sound/soc/amd/vangogh/acp5x-mach.c
+index 14cf325e4b23..5d7a17755fa7 100644
+--- a/sound/soc/amd/vangogh/acp5x-mach.c
++++ b/sound/soc/amd/vangogh/acp5x-mach.c
+@@ -165,6 +165,7 @@ static int acp5x_cs35l41_hw_params(struct snd_pcm_substream *substream,
+ 	unsigned int num_codecs = rtd->num_codecs;
+ 	unsigned int bclk_val;
  
- static int ov5648_state_init(struct ov5648_sensor *sensor)
- {
--	return ov5648_state_configure(sensor, &ov5648_modes[0],
--				      ov5648_mbus_codes[0]);
-+	int ret;
-+
-+	mutex_lock(&sensor->mutex);
-+	ret = ov5648_state_configure(sensor, &ov5648_modes[0],
-+				     ov5648_mbus_codes[0]);
-+	mutex_unlock(&sensor->mutex);
-+
-+	return ret;
- }
- 
- /* Sensor Base */
++	ret = 0;
+ 	for (i = 0; i < num_codecs; i++) {
+ 		codec_dai = asoc_rtd_to_codec(rtd, i);
+ 		if ((strcmp(codec_dai->name, "spi-VLV1776:00") == 0) ||
 -- 
 2.34.1
 
