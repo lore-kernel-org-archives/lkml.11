@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 84F76C4167D
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:25:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A0226C43219
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:26:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347478AbiDEW5P (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 18:57:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42054 "EHLO
+        id S229627AbiDEXEE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 19:04:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47350 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354020AbiDEKKs (ORCPT
+        with ESMTP id S1349504AbiDEJt6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:10:48 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60788C6242;
-        Tue,  5 Apr 2022 02:56:41 -0700 (PDT)
+        Tue, 5 Apr 2022 05:49:58 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0259912C;
+        Tue,  5 Apr 2022 02:47:46 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EE76F6157A;
-        Tue,  5 Apr 2022 09:56:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0CC82C385A3;
-        Tue,  5 Apr 2022 09:56:39 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 962C3614FB;
+        Tue,  5 Apr 2022 09:47:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AA53CC385A3;
+        Tue,  5 Apr 2022 09:47:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649152600;
-        bh=ordbT1ol/NytMCy2eDm57yDhNZz58uR1lbLYcHMG7BA=;
+        s=korg; t=1649152065;
+        bh=iTU7SDP1j/w4Be7bi7gr4SnG9JXIZd0OgNp+qcOlCRw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=X3mSb92wBALZ8mhI7WdNxgFLCsMVMOvVP4P9jk2HvNtjU+opCIcRW6qDQBhX8qCz9
-         BZc//NH1pfoNa1cAbI0MtVTLyviqpghN6iel/K68gf5734NpZg9BGCb5/bz7eHgcxn
-         aklI1NGSg+ES2rbIM0BPDSgj4R/JnZEnCpKqKDY4=
+        b=10Ug2+WhzjfVu5HgeqvyFUmTpmAc7prGWnvue2OAGcaxCZMlIUmW9wRA8bz1wJBi/
+         j6w3X1rUdNc/szb4iAYsrgpVVZh94cNv/30D02HL+axORnZBbwHovZH2trBLz1qs55
+         gX+zxRoUYB2OhdbVkc+z+sPbNKZ5HCh7QjpoSkyQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Masahiro Yamada <masahiroy@kernel.org>,
-        Mark Brown <broonie@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>
-Subject: [PATCH 5.15 836/913] modpost: restore the warning message for missing symbol versions
-Date:   Tue,  5 Apr 2022 09:31:38 +0200
-Message-Id: <20220405070404.888997988@linuxfoundation.org>
+        stable@vger.kernel.org, Gilles Buloz <gilles.buloz@kontron.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 642/913] serial: 8250: fix XOFF/XON sending when DMA is used
+Date:   Tue,  5 Apr 2022 09:28:24 +0200
+Message-Id: <20220405070359.084156483@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
 References: <20220405070339.801210740@linuxfoundation.org>
@@ -50,39 +50,122 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Masahiro Yamada <masahiroy@kernel.org>
+From: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
 
-commit bf5c0c2231bcab677e5cdfb7f73e6c79f6d8c2d4 upstream.
+[ Upstream commit f58c252e30cf74f68b0054293adc03b5923b9f0e ]
 
-This log message was accidentally chopped off.
+When 8250 UART is using DMA, x_char (XON/XOFF) is never sent
+to the wire. After this change, x_char is injected correctly.
 
-I was wondering why this happened, but checking the ML log, Mark
-precisely followed my suggestion [1].
+Create uart_xchar_out() helper for sending the x_char out and
+accounting related to it. It seems that almost every driver
+does these same steps with x_char. Except for 8250, however,
+almost all currently lack .serial_out so they cannot immediately
+take advantage of this new helper.
 
-I just used "..." because I was too lazy to type the sentence fully.
-Sorry for the confusion.
+The downside of this patch is that it might reintroduce
+the problems some devices faced with mixed DMA/non-DMA transfer
+which caused revert f967fc8f165f (Revert "serial: 8250_dma:
+don't bother DMA with small transfers"). However, the impact
+should be limited to cases with XON/XOFF (that didn't work
+with DMA capable devices to begin with so this problem is not
+very likely to cause a major issue, if any at all).
 
-[1]: https://lore.kernel.org/all/CAK7LNAR6bXXk9-ZzZYpTqzFqdYbQsZHmiWspu27rtsFxvfRuVA@mail.gmail.com/
-
-Fixes: 4a6795933a89 ("kbuild: modpost: Explicitly warn about unprototyped symbols")
-Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
-Acked-by: Mark Brown <broonie@kernel.org>
-Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
+Fixes: 9ee4b83e51f74 ("serial: 8250: Add support for dmaengine")
+Reported-by: Gilles Buloz <gilles.buloz@kontron.com>
+Tested-by: Gilles Buloz <gilles.buloz@kontron.com>
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+Link: https://lore.kernel.org/r/20220314091432.4288-2-ilpo.jarvinen@linux.intel.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- scripts/mod/modpost.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/tty/serial/8250/8250_dma.c  | 11 ++++++++++-
+ drivers/tty/serial/8250/8250_port.c |  4 +---
+ drivers/tty/serial/serial_core.c    | 14 ++++++++++++++
+ include/linux/serial_core.h         |  2 ++
+ 4 files changed, 27 insertions(+), 4 deletions(-)
 
---- a/scripts/mod/modpost.c
-+++ b/scripts/mod/modpost.c
-@@ -669,7 +669,7 @@ static void handle_modversion(const stru
- 	unsigned int crc;
+diff --git a/drivers/tty/serial/8250/8250_dma.c b/drivers/tty/serial/8250/8250_dma.c
+index 890fa7ddaa7f..b3c3f7e5851a 100644
+--- a/drivers/tty/serial/8250/8250_dma.c
++++ b/drivers/tty/serial/8250/8250_dma.c
+@@ -64,10 +64,19 @@ int serial8250_tx_dma(struct uart_8250_port *p)
+ 	struct uart_8250_dma		*dma = p->dma;
+ 	struct circ_buf			*xmit = &p->port.state->xmit;
+ 	struct dma_async_tx_descriptor	*desc;
++	struct uart_port		*up = &p->port;
+ 	int ret;
  
- 	if (sym->st_shndx == SHN_UNDEF) {
--		warn("EXPORT symbol \"%s\" [%s%s] version ...\n"
-+		warn("EXPORT symbol \"%s\" [%s%s] version generation failed, symbol will not be versioned.\n"
- 		     "Is \"%s\" prototyped in <asm/asm-prototypes.h>?\n",
- 		     symname, mod->name, mod->is_vmlinux ? "" : ".ko",
- 		     symname);
+-	if (dma->tx_running)
++	if (dma->tx_running) {
++		if (up->x_char) {
++			dmaengine_pause(dma->txchan);
++			uart_xchar_out(up, UART_TX);
++			dmaengine_resume(dma->txchan);
++		}
+ 		return 0;
++	} else if (up->x_char) {
++		uart_xchar_out(up, UART_TX);
++	}
+ 
+ 	if (uart_tx_stopped(&p->port) || uart_circ_empty(xmit)) {
+ 		/* We have been called from __dma_tx_complete() */
+diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
+index 868ccb3e16cf..723ec0806799 100644
+--- a/drivers/tty/serial/8250/8250_port.c
++++ b/drivers/tty/serial/8250/8250_port.c
+@@ -1819,9 +1819,7 @@ void serial8250_tx_chars(struct uart_8250_port *up)
+ 	int count;
+ 
+ 	if (port->x_char) {
+-		serial_out(up, UART_TX, port->x_char);
+-		port->icount.tx++;
+-		port->x_char = 0;
++		uart_xchar_out(port, UART_TX);
+ 		return;
+ 	}
+ 	if (uart_tx_stopped(port)) {
+diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+index dc6129ddef85..eb15423f935a 100644
+--- a/drivers/tty/serial/serial_core.c
++++ b/drivers/tty/serial/serial_core.c
+@@ -652,6 +652,20 @@ static void uart_flush_buffer(struct tty_struct *tty)
+ 	tty_port_tty_wakeup(&state->port);
+ }
+ 
++/*
++ * This function performs low-level write of high-priority XON/XOFF
++ * character and accounting for it.
++ *
++ * Requires uart_port to implement .serial_out().
++ */
++void uart_xchar_out(struct uart_port *uport, int offset)
++{
++	serial_port_out(uport, offset, uport->x_char);
++	uport->icount.tx++;
++	uport->x_char = 0;
++}
++EXPORT_SYMBOL_GPL(uart_xchar_out);
++
+ /*
+  * This function is used to send a high-priority XON/XOFF character to
+  * the device
+diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
+index c58cc142d23f..8c32935e1059 100644
+--- a/include/linux/serial_core.h
++++ b/include/linux/serial_core.h
+@@ -458,6 +458,8 @@ extern void uart_handle_cts_change(struct uart_port *uport,
+ extern void uart_insert_char(struct uart_port *port, unsigned int status,
+ 		 unsigned int overrun, unsigned int ch, unsigned int flag);
+ 
++void uart_xchar_out(struct uart_port *uport, int offset);
++
+ #ifdef CONFIG_MAGIC_SYSRQ_SERIAL
+ #define SYSRQ_TIMEOUT	(HZ * 5)
+ 
+-- 
+2.34.1
+
 
 
