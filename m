@@ -2,42 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1738BC433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 25CC5C4332F
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 02:08:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1846500AbiDFCE1 (ORCPT
+        id S1846576AbiDFCEp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 22:04:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52170 "EHLO
+        Tue, 5 Apr 2022 22:04:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42228 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351738AbiDEKKO (ORCPT
+        with ESMTP id S1353548AbiDEKIM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:10:14 -0400
+        Tue, 5 Apr 2022 06:08:12 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 684B7C4E33;
-        Tue,  5 Apr 2022 02:55:54 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2025C1C92;
+        Tue,  5 Apr 2022 02:55:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D1F24616D7;
-        Tue,  5 Apr 2022 09:55:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DF99FC385A2;
-        Tue,  5 Apr 2022 09:55:52 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7CE3661500;
+        Tue,  5 Apr 2022 09:55:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 90456C385A2;
+        Tue,  5 Apr 2022 09:55:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649152553;
-        bh=nI7dbDDhx02UpWsfJfAL/zctEyT8a5ocPR6yVKs23Fo=;
+        s=korg; t=1649152514;
+        bh=WOTxXQzAn+H/xWxyf4seipZltQdXkhVEK3b7in5mAPY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kGYk5uz2k4kLMSdPoAAzGvVYXmfv7B1ft2s1ks1iFr5xWy3GZPb2eohpbQak6x6MZ
-         UIYZZTQrOQu9lXWxtozQvY2xQjV3UrIuFqCQGyUX8iJGkskGAwkn+17VRBIQaX5UTh
-         7igNCg7WHmuCRWc6Y1kzoZWOG5zK53sYa6IARYDY=
+        b=tJ7nRUde9wm+Z1edLwnlG13/LgoLhGRN0c1H9ltgCyRMFibgVE8pn1/if7lkXNOzY
+         y9w+I8BzqPd7lkxijDX+Uoib4Rl5/S+oqSizNwAAbD2qorxg2Ti138gut6aU5NWeLp
+         QCUHW8xgTpWqzoakHNOsqr9RG2oTaAunPvT1chGo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zhihao Cheng <chengzhihao1@huawei.com>,
-        Richard Weinberger <richard@nod.at>
-Subject: [PATCH 5.15 817/913] ubifs: Fix deadlock in concurrent rename whiteout and inode writeback
-Date:   Tue,  5 Apr 2022 09:31:19 +0200
-Message-Id: <20220405070404.320584400@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Himanshu Madhani <himanshu.madhani@oracle.com>,
+        Arun Easi <aeasi@marvell.com>,
+        Nilesh Javali <njavali@marvell.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>
+Subject: [PATCH 5.15 804/913] scsi: qla2xxx: Fix missed DMA unmap for NVMe ls requests
+Date:   Tue,  5 Apr 2022 09:31:06 +0200
+Message-Id: <20220405070403.932194400@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
 References: <20220405070339.801210740@linuxfoundation.org>
@@ -49,115 +52,71 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zhihao Cheng <chengzhihao1@huawei.com>
+From: Arun Easi <aeasi@marvell.com>
 
-commit afd427048047e8efdedab30e8888044e2be5aa9c upstream.
+commit c85ab7d9e27a80e48d5b7d7fb2fe2b0fdb2de523 upstream.
 
-Following hung tasks:
-[   77.028764] task:kworker/u8:4    state:D stack:    0 pid:  132
-[   77.028820] Call Trace:
-[   77.029027]  schedule+0x8c/0x1b0
-[   77.029067]  mutex_lock+0x50/0x60
-[   77.029074]  ubifs_write_inode+0x68/0x1f0 [ubifs]
-[   77.029117]  __writeback_single_inode+0x43c/0x570
-[   77.029128]  writeback_sb_inodes+0x259/0x740
-[   77.029148]  wb_writeback+0x107/0x4d0
-[   77.029163]  wb_workfn+0x162/0x7b0
+At NVMe ELS request time, request structure is DMA mapped and never
+unmapped. Fix this by calling the unmap on ELS completion.
 
-[   92.390442] task:aa              state:D stack:    0 pid: 1506
-[   92.390448] Call Trace:
-[   92.390458]  schedule+0x8c/0x1b0
-[   92.390461]  wb_wait_for_completion+0x82/0xd0
-[   92.390469]  __writeback_inodes_sb_nr+0xb2/0x110
-[   92.390472]  writeback_inodes_sb_nr+0x14/0x20
-[   92.390476]  ubifs_budget_space+0x705/0xdd0 [ubifs]
-[   92.390503]  do_rename.cold+0x7f/0x187 [ubifs]
-[   92.390549]  ubifs_rename+0x8b/0x180 [ubifs]
-[   92.390571]  vfs_rename+0xdb2/0x1170
-[   92.390580]  do_renameat2+0x554/0x770
-
-, are caused by concurrent rename whiteout and inode writeback processes:
-	rename_whiteout(Thread 1)	        wb_workfn(Thread2)
-ubifs_rename
-  do_rename
-    lock_4_inodes (Hold ui_mutex)
-    ubifs_budget_space
-      make_free_space
-        shrink_liability
-	  __writeback_inodes_sb_nr
-	    bdi_split_work_to_wbs (Queue new wb work)
-					      wb_do_writeback(wb work)
-						__writeback_single_inode
-					          ubifs_write_inode
-					            LOCK(ui_mutex)
-							   ↑
-	      wb_wait_for_completion (Wait wb work) <-- deadlock!
-
-Reproducer (Detail program in [Link]):
-  1. SYS_renameat2("/mp/dir/file", "/mp/dir/whiteout", RENAME_WHITEOUT)
-  2. Consume out of space before kernel(mdelay) doing budget for whiteout
-
-Fix it by doing whiteout space budget before locking ubifs inodes.
-BTW, it also fixes wrong goto tag 'out_release' in whiteout budget
-error handling path(It should at least recover dir i_size and unlock
-4 ubifs inodes).
-
-Fixes: 9e0a1fff8db56ea ("ubifs: Implement RENAME_WHITEOUT")
-Link: https://bugzilla.kernel.org/show_bug.cgi?id=214733
-Signed-off-by: Zhihao Cheng <chengzhihao1@huawei.com>
-Signed-off-by: Richard Weinberger <richard@nod.at>
+Link: https://lore.kernel.org/r/20220310092604.22950-5-njavali@marvell.com
+Fixes: e84067d74301 ("scsi: qla2xxx: Add FC-NVMe F/W initialization and transport registration")
+Cc: stable@vger.kernel.org
+Reviewed-by: Himanshu Madhani <himanshu.madhani@oracle.com>
+Signed-off-by: Arun Easi <aeasi@marvell.com>
+Signed-off-by: Nilesh Javali <njavali@marvell.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/ubifs/dir.c |   25 +++++++++++++++----------
- 1 file changed, 15 insertions(+), 10 deletions(-)
+ drivers/scsi/qla2xxx/qla_nvme.c |   17 +++++++++++++++++
+ 1 file changed, 17 insertions(+)
 
---- a/fs/ubifs/dir.c
-+++ b/fs/ubifs/dir.c
-@@ -1324,6 +1324,7 @@ static int do_rename(struct inode *old_d
+--- a/drivers/scsi/qla2xxx/qla_nvme.c
++++ b/drivers/scsi/qla2xxx/qla_nvme.c
+@@ -170,6 +170,18 @@ out:
+ 	qla2xxx_rel_qpair_sp(sp->qpair, sp);
+ }
  
- 	if (flags & RENAME_WHITEOUT) {
- 		union ubifs_dev_desc *dev = NULL;
-+		struct ubifs_budget_req wht_req;
- 
- 		dev = kmalloc(sizeof(union ubifs_dev_desc), GFP_NOFS);
- 		if (!dev) {
-@@ -1345,6 +1346,20 @@ static int do_rename(struct inode *old_d
- 		whiteout_ui->data = dev;
- 		whiteout_ui->data_len = ubifs_encode_dev(dev, MKDEV(0, 0));
- 		ubifs_assert(c, !whiteout_ui->dirty);
++static void qla_nvme_ls_unmap(struct srb *sp, struct nvmefc_ls_req *fd)
++{
++	if (sp->flags & SRB_DMA_VALID) {
++		struct srb_iocb *nvme = &sp->u.iocb_cmd;
++		struct qla_hw_data *ha = sp->fcport->vha->hw;
 +
-+		memset(&wht_req, 0, sizeof(struct ubifs_budget_req));
-+		wht_req.dirtied_ino = 1;
-+		wht_req.dirtied_ino_d = ALIGN(whiteout_ui->data_len, 8);
-+		/*
-+		 * To avoid deadlock between space budget (holds ui_mutex and
-+		 * waits wb work) and writeback work(waits ui_mutex), do space
-+		 * budget before ubifs inodes locked.
-+		 */
-+		err = ubifs_budget_space(c, &wht_req);
-+		if (err) {
-+			iput(whiteout);
-+			goto out_release;
-+		}
++		dma_unmap_single(&ha->pdev->dev, nvme->u.nvme.cmd_dma,
++				 fd->rqstlen, DMA_TO_DEVICE);
++		sp->flags &= ~SRB_DMA_VALID;
++	}
++}
++
+ static void qla_nvme_release_ls_cmd_kref(struct kref *kref)
+ {
+ 	struct srb *sp = container_of(kref, struct srb, cmd_kref);
+@@ -186,6 +198,8 @@ static void qla_nvme_release_ls_cmd_kref
+ 	spin_unlock_irqrestore(&priv->cmd_lock, flags);
+ 
+ 	fd = priv->fd;
++
++	qla_nvme_ls_unmap(sp, fd);
+ 	fd->done(fd, priv->comp_status);
+ out:
+ 	qla2x00_rel_sp(sp);
+@@ -356,6 +370,8 @@ static int qla_nvme_ls_req(struct nvme_f
+ 	dma_sync_single_for_device(&ha->pdev->dev, nvme->u.nvme.cmd_dma,
+ 	    fd->rqstlen, DMA_TO_DEVICE);
+ 
++	sp->flags |= SRB_DMA_VALID;
++
+ 	rval = qla2x00_start_sp(sp);
+ 	if (rval != QLA_SUCCESS) {
+ 		ql_log(ql_log_warn, vha, 0x700e,
+@@ -363,6 +379,7 @@ static int qla_nvme_ls_req(struct nvme_f
+ 		wake_up(&sp->nvme_ls_waitq);
+ 		sp->priv = NULL;
+ 		priv->sp = NULL;
++		qla_nvme_ls_unmap(sp, fd);
+ 		qla2x00_rel_sp(sp);
+ 		return rval;
  	}
- 
- 	lock_4_inodes(old_dir, new_dir, new_inode, whiteout);
-@@ -1419,16 +1434,6 @@ static int do_rename(struct inode *old_d
- 	}
- 
- 	if (whiteout) {
--		struct ubifs_budget_req wht_req = { .dirtied_ino = 1,
--				.dirtied_ino_d = \
--				ALIGN(ubifs_inode(whiteout)->data_len, 8) };
--
--		err = ubifs_budget_space(c, &wht_req);
--		if (err) {
--			iput(whiteout);
--			goto out_release;
--		}
--
- 		inc_nlink(whiteout);
- 		mark_inode_dirty(whiteout);
- 
 
 
