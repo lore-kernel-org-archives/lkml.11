@@ -2,130 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EF804C35276
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:09:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 576FCC35280
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:09:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1581732AbiDEXkm (ORCPT
+        id S1582242AbiDEXm0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 19:40:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50084 "EHLO
+        Tue, 5 Apr 2022 19:42:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49216 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354831AbiDEKQJ (ORCPT
+        with ESMTP id S1572911AbiDERTe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:16:09 -0400
+        Tue, 5 Apr 2022 13:19:34 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A87786C963;
-        Tue,  5 Apr 2022 03:03:10 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B581C25DA;
+        Tue,  5 Apr 2022 10:17:35 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 584ABB81B7A;
-        Tue,  5 Apr 2022 10:03:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A65A5C385A1;
-        Tue,  5 Apr 2022 10:03:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649152988;
-        bh=2CdFsRshQUUazXkyVRroFf6QvWwmVI388VjSkd2qLE0=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xtJdh4bxL2BXgFaESnVYXjjuWVMbQY6fn0RbRpxpkU2wXWViLq89zaDFY7T8h3Rak
-         VnsKrLTZPHISvexUNW2M9sWNGT9HDeKvJkHd/07SbrLhCngKIIFBIM4RonuG0s84mE
-         rOJwu8vQyjq49Rzr6Jb5yxSI3FNPJ5nS1KNnznTk=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hugh Dickins <hughd@google.com>,
-        Oleg Nesterov <oleg@redhat.com>,
-        "Liam R. Howlett" <Liam.Howlett@oracle.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [PATCH 5.10 061/599] mempolicy: mbind_range() set_policy() after vma_merge()
-Date:   Tue,  5 Apr 2022 09:25:55 +0200
-Message-Id: <20220405070300.644104488@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
-User-Agent: quilt/0.66
+        by ams.source.kernel.org (Postfix) with ESMTPS id 58F7CB81EB9;
+        Tue,  5 Apr 2022 17:17:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 145E0C385A5;
+        Tue,  5 Apr 2022 17:17:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649179053;
+        bh=3hpZgI8DwU3o+PMi946nSnlTTAPscob69R04+gbt/ns=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=SVJ5vJ+m8lV9VPlHGpavrEtDnV/jLFdGsRXcA9iQliJZKo+Sw+4zlkdeEvisoeMQP
+         k8tU/+T7sIX7AroAjZfOaZKYotzjz76OYUGapslQO4TuMoKx6l48aSqhjez3H/qU6U
+         6Ue7pQycxI91rbxJMNMtBp6meWF6AFz5qo0unI7R2t4sC/+nZY7RMngIGM1jDM3QQA
+         OMxHJ+pK8FZYgstG8roHzofPs7E3xPbbazGbjnrbUqfsQzTWjP8CkPbefd/8fUOGHS
+         Rnndrd1OSlBdlroBLieW4wYLOvV7tSBLgV7YFvGogt2rAaegHmNzMkJrFDq7rxDlS/
+         rKoHkjZHOs6Mg==
+Received: by mail-oa1-f48.google.com with SMTP id 586e51a60fabf-df02f7e2c9so46978fac.10;
+        Tue, 05 Apr 2022 10:17:32 -0700 (PDT)
+X-Gm-Message-State: AOAM531lTOGWWWuRW3kbk+jlZySTwfTDXIvoebFbRnPImOvFMNx8XlWg
+        zOFmyPjmc7Zzu18AjSXI+vkwsFEJspOWi9JzHdI=
+X-Google-Smtp-Source: ABdhPJyzdUYMadNIRVj0N1dlLqM/HehduXFfWLLFplIs0ccxxr8Svh/SwwhsVa1WusBPNBbCvFanc9MDCwW5huONrGc=
+X-Received: by 2002:a05:6870:eaa5:b0:da:b3f:2b45 with SMTP id
+ s37-20020a056870eaa500b000da0b3f2b45mr2133837oap.228.1649179052186; Tue, 05
+ Apr 2022 10:17:32 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <20220405070339.801210740@linuxfoundation.org> <20220405070402.195698649@linuxfoundation.org>
+ <CAMj1kXFL4abn9xg1ZrNpFg54Pmw1Kw8OPbDpMevSjQDNg0r5Pg@mail.gmail.com> <YkxzuSjVpIyjzdsZ@kroah.com>
+In-Reply-To: <YkxzuSjVpIyjzdsZ@kroah.com>
+From:   Ard Biesheuvel <ardb@kernel.org>
+Date:   Tue, 5 Apr 2022 19:17:21 +0200
+X-Gmail-Original-Message-ID: <CAMj1kXEiOkmMWGr2TT=SdTqPVZotqwAho=rWLuF9=xiGSgGB0w@mail.gmail.com>
+Message-ID: <CAMj1kXEiOkmMWGr2TT=SdTqPVZotqwAho=rWLuF9=xiGSgGB0w@mail.gmail.com>
+Subject: Re: [PATCH 5.15 746/913] ARM: ftrace: avoid redundant loads or
+ clobbering IP
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "# 3.4.x" <stable@vger.kernel.org>,
+        "Steven Rostedt (Google)" <rostedt@goodmis.org>,
+        Sasha Levin <sashal@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hugh Dickins <hughd@google.com>
+On Tue, 5 Apr 2022 at 18:52, Greg Kroah-Hartman
+<gregkh@linuxfoundation.org> wrote:
+>
+> On Tue, Apr 05, 2022 at 12:01:19PM +0200, Ard Biesheuvel wrote:
+> > On Tue, 5 Apr 2022 at 11:54, Greg Kroah-Hartman
+> > <gregkh@linuxfoundation.org> wrote:
+> > >
+> > > From: Ard Biesheuvel <ardb@kernel.org>
+> > >
+> > > [ Upstream commit d11967870815b5ab89843980e35aab616c97c463 ]
+> > >
+> > > Tweak the ftrace return paths to avoid redundant loads of SP, as well as
+> > > unnecessary clobbering of IP.
+> > >
+> > > This also fixes the inconsistency of using MOV to perform a function
+> > > return, which is sub-optimal on recent micro-architectures but more
+> > > importantly, does not perform an interworking return, unlike compiler
+> > > generated function returns in Thumb2 builds.
+> > >
+> > > Let's fix this by popping PC from the stack like most ordinary code
+> > > does.
+> > >
+> > > Signed-off-by: Ard Biesheuvel <ardb@kernel.org>
+> > > Reviewed-by: Steven Rostedt (Google) <rostedt@goodmis.org>
+> > > Signed-off-by: Sasha Levin <sashal@kernel.org>
+> >
+> > Please drop all the 32-bit ARM patches authored by me from the stable
+> > queues except the ones that have fixes tags. These are highly likely
+> > to cause an explosion of regressions, and they should have never been
+> > selected, as I don't remember anyone proposing these for stable.
+>
+> From what I can tell, that is only this commit.  I'll go drop it from
+> all trees, thanks.
+>
 
-commit 4e0906008cdb56381638aa17d9c32734eae6d37a upstream.
-
-v2.6.34 commit 9d8cebd4bcd7 ("mm: fix mbind vma merge problem") introduced
-vma_merge() to mbind_range(); but unlike madvise, mlock and mprotect, it
-put a "continue" to next vma where its precedents go to update flags on
-current vma before advancing: that left vma with the wrong setting in the
-infamous vma_merge() case 8.
-
-v3.10 commit 1444f92c8498 ("mm: merging memory blocks resets mempolicy")
-tried to fix that in vma_adjust(), without fully understanding the issue.
-
-v3.11 commit 3964acd0dbec ("mm: mempolicy: fix mbind_range() &&
-vma_adjust() interaction") reverted that, and went about the fix in the
-right way, but chose to optimize out an unnecessary mpol_dup() with a
-prior mpol_equal() test.  But on tmpfs, that also pessimized out the vital
-call to its ->set_policy(), leaving the new mbind unenforced.
-
-The user visible effect was that the pages got allocated on the local
-node (happened to be 0), after the mbind() caller had specifically
-asked for them to be allocated on node 1.  There was not any page
-migration involved in the case reported: the pages simply got allocated
-on the wrong node.
-
-Just delete that optimization now (though it could be made conditional on
-vma not having a set_policy).  Also remove the "next" variable: it turned
-out to be blameless, but also pointless.
-
-Link: https://lkml.kernel.org/r/319e4db9-64ae-4bca-92f0-ade85d342ff@google.com
-Fixes: 3964acd0dbec ("mm: mempolicy: fix mbind_range() && vma_adjust() interaction")
-Signed-off-by: Hugh Dickins <hughd@google.com>
-Acked-by: Oleg Nesterov <oleg@redhat.com>
-Reviewed-by: Liam R. Howlett <Liam.Howlett@oracle.com>
-Cc: Vlastimil Babka <vbabka@suse.cz>
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- mm/mempolicy.c |    8 +-------
- 1 file changed, 1 insertion(+), 7 deletions(-)
-
---- a/mm/mempolicy.c
-+++ b/mm/mempolicy.c
-@@ -802,7 +802,6 @@ static int vma_replace_policy(struct vm_
- static int mbind_range(struct mm_struct *mm, unsigned long start,
- 		       unsigned long end, struct mempolicy *new_pol)
- {
--	struct vm_area_struct *next;
- 	struct vm_area_struct *prev;
- 	struct vm_area_struct *vma;
- 	int err = 0;
-@@ -817,8 +816,7 @@ static int mbind_range(struct mm_struct
- 	if (start > vma->vm_start)
- 		prev = vma;
- 
--	for (; vma && vma->vm_start < end; prev = vma, vma = next) {
--		next = vma->vm_next;
-+	for (; vma && vma->vm_start < end; prev = vma, vma = vma->vm_next) {
- 		vmstart = max(start, vma->vm_start);
- 		vmend   = min(end, vma->vm_end);
- 
-@@ -832,10 +830,6 @@ static int mbind_range(struct mm_struct
- 				 new_pol, vma->vm_userfaultfd_ctx);
- 		if (prev) {
- 			vma = prev;
--			next = vma->vm_next;
--			if (mpol_equal(vma_policy(vma), new_pol))
--				continue;
--			/* vma_merge() joined vma && vma->next, case 8 */
- 			goto replace;
- 		}
- 		if (vma->vm_start != vmstart) {
-
-
+Ah ok, that's not so bad then. But still better to avoid it.
