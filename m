@@ -2,109 +2,66 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AC739C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:25:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 220ECC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:25:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1575072AbiDEXCg (ORCPT
+        id S1575114AbiDEXCq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 19:02:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40972 "EHLO
+        Tue, 5 Apr 2022 19:02:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60156 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1456966AbiDEQCf (ORCPT
+        with ESMTP id S1392156AbiDEPfr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 12:02:35 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3C61AFDE02
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 08:25:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1649172339;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=8TksMvZLxU5D3wLYdweZNWRXI8BerHHYyfmDHfh4uH8=;
-        b=LJDi9TzNFgedT6ApbPSnY7PYlk32uSzfYfe2NW9ZNs/flh0dzFpJ3YUln0lI1LG3Hhec8k
-        f8/8J9QFD7VyIyg5nur5YjIp7PHuqjdkoPKkt/q2/h11m1syTdOSZ+G17ErqdsSq7WmwCV
-        WUxyk6ZUeNXL8URaWUOncK5lmWu+kMI=
-Received: from mail-qv1-f72.google.com (mail-qv1-f72.google.com
- [209.85.219.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-189-JGcf45s0O-qKYD98qyRAfw-1; Tue, 05 Apr 2022 11:25:38 -0400
-X-MC-Unique: JGcf45s0O-qKYD98qyRAfw-1
-Received: by mail-qv1-f72.google.com with SMTP id j15-20020a05621419cf00b00443ce184f48so7517892qvc.20
-        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 08:25:38 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=8TksMvZLxU5D3wLYdweZNWRXI8BerHHYyfmDHfh4uH8=;
-        b=y2RQwK5h5CC7bVWkTUkUWWJDRs2SoDNHyT1Dmrt7mzwFFt1ofr7hAHpxJ1rB+BUI2G
-         wtwPbLOQA/bpD0zgpa3J2Dc8Fi+Y+4caqNLUEfduv2sy3jEJ4MHFP1rp85B6bz9DJNM6
-         r4h+IJnYOmjjHkU7AX5yLYwyNAQXn1e608VmtK75hdrrUWZ3116NrqAXxh5a32XnPfom
-         M7S0dMjetoly2c3GDhDT+d6VXRi+1JnoqNAM7iFawB0NgsT/624LN2dFTfvnDSdkz5KZ
-         MlxaSQomk5lv8QDmGRgjOCs5aO34RGW1BfQgWKjlg7FooCwA1WV710djIiQ95b+yr6o2
-         NnTw==
-X-Gm-Message-State: AOAM533EdM6b7Wz6XuaFZOctJIfrg9VFRW/9VudoN0ThXVfWwQN0rplM
-        aliwiTuUizHUhasF28oMsitGnuE5WE1dv4I+GCa/BfydXrV6tKt/6Hz/Zjw2RblaX3HzCHK+7V1
-        sl/opS9u5LUmENpxw9vYLUXRZ
-X-Received: by 2002:a05:620a:1a26:b0:680:ae30:4f3 with SMTP id bk38-20020a05620a1a2600b00680ae3004f3mr2659093qkb.372.1649172338118;
-        Tue, 05 Apr 2022 08:25:38 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJyk1CXI1DZ2crMHFuoHw3aJEAaOcePFY/oBq7yxA8t3U2kwtMvwTZgOQ0iyPnS08ku/SZl0Dw==
-X-Received: by 2002:a05:620a:1a26:b0:680:ae30:4f3 with SMTP id bk38-20020a05620a1a2600b00680ae3004f3mr2659069qkb.372.1649172337808;
-        Tue, 05 Apr 2022 08:25:37 -0700 (PDT)
-Received: from [10.32.181.87] (nat-pool-mxp-t.redhat.com. [149.6.153.186])
-        by smtp.googlemail.com with ESMTPSA id 188-20020a3709c5000000b0067b147584c2sm8150698qkj.102.2022.04.05.08.25.36
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 05 Apr 2022 08:25:37 -0700 (PDT)
-Message-ID: <84d56339-4a8a-6ddb-17cb-12074588ba9c@redhat.com>
-Date:   Tue, 5 Apr 2022 17:25:34 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [RFC PATCH v5 042/104] KVM: x86/mmu: Track shadow MMIO value/mask
- on a per-VM basis
-Content-Language: en-US
-To:     isaku.yamahata@intel.com, kvm@vger.kernel.org,
+        Tue, 5 Apr 2022 11:35:47 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 121594833A
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 06:46:56 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BA5CBB81BA9
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 13:46:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2EDF1C385A0;
+        Tue,  5 Apr 2022 13:46:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649166413;
+        bh=pAirV066m2Mk+Gq9JHNPQKz4ZdQFBmx7aDmrA3JqHZs=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=Kldms96GddMs7OjzLMMO6ih82ytSwJcXHcStrjbrMsbg8HssmGCTXFRBWa4cgC6+L
+         Tg1OxlJBlSK+FkbKC5Jq5GQBlGRVGA07ftRe+osjG6RILregfrNyTQ0tLhKhfRiJdQ
+         i9XFvXJQGTCC7KSdxso/OGukUuDtHscXAhEADDUI=
+Date:   Tue, 5 Apr 2022 15:46:51 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Alaa Mohamed <eng.alaamohamedsoliman.am@gmail.com>
+Cc:     outreachy@lists.linux.dev, Larry.Finger@lwfinger.net,
+        phil@philpotter.co.uk, linux-staging@lists.linux.dev,
         linux-kernel@vger.kernel.org
-Cc:     isaku.yamahata@gmail.com, Jim Mattson <jmattson@google.com>,
-        erdemaktas@google.com, Connor Kuehl <ckuehl@redhat.com>,
-        Sean Christopherson <seanjc@google.com>
-References: <cover.1646422845.git.isaku.yamahata@intel.com>
- <b494b94bf2d6a5d841cb76e63e255d4cff906d83.1646422845.git.isaku.yamahata@intel.com>
-From:   Paolo Bonzini <pbonzini@redhat.com>
-In-Reply-To: <b494b94bf2d6a5d841cb76e63e255d4cff906d83.1646422845.git.isaku.yamahata@intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Subject: Re: [PATCH 1/2] staging: r8188eu: add space around arithmatic sign
+Message-ID: <YkxIS2H0XX6LzDzu@kroah.com>
+References: <860d8e222e2b695ce5cb4f48aa46a7f66e05d8e4.1649082939.git.eng.alaamohamedsoliman.am@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <860d8e222e2b695ce5cb4f48aa46a7f66e05d8e4.1649082939.git.eng.alaamohamedsoliman.am@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 3/4/22 20:48, isaku.yamahata@intel.com wrote:
-> +	if (enable_ept) {
-> +		const u64 init_value = enable_tdx ? VMX_EPT_SUPPRESS_VE_BIT : 0ull;
->   		kvm_mmu_set_ept_masks(enable_ept_ad_bits,
-> -				      cpu_has_vmx_ept_execute_only());
-> +				      cpu_has_vmx_ept_execute_only(), init_value);
-> +		kvm_mmu_set_spte_init_value(init_value);
-> +	}
+On Mon, Apr 04, 2022 at 04:39:16PM +0200, Alaa Mohamed wrote:
+> Reported by checkpatch:
+> 
+> CHECK: spaces preferred around that '+' , '-' and '*'
+> 
+> Signed-off-by: Alaa Mohamed <eng.alaamohamedsoliman.am@gmail.com>
+> ---
+>  drivers/staging/r8188eu/core/rtw_br_ext.c | 58 +++++++++++------------
+>  1 file changed, 29 insertions(+), 29 deletions(-)
 
-I think kvm-intel.ko should use VMX_EPT_SUPPRESS_VE_BIT unconditionally 
-as the init value.  The bit is ignored anyway if the "EPT-violation #VE" 
-execution control is 0.  Otherwise looks good, but I have a couple more 
-crazy ideas:
+This patch does not apply to my tree and branch.  Please rebase and
+resend it against the staging-next branch of staging.git.
 
-1) there could even be a test mode where KVM enables the execution 
-control, traps #VE in the exception bitmap, and shouts loudly if it gets 
-a #VE.  That might avoid hard-to-find bugs due to forgetting about 
-VMX_EPT_SUPPRESS_VE_BIT.
+Patch 2/2 did apply.
 
-2) or even, perhaps the init_value for the TDP MMU could set bit 63 
-_unconditionally_, because KVM always sets the NX bit on AMD hardware. 
-That would remove the whole infrastructure to keep shadow_init_value, 
-because it would be constant 0 in mmu.c and constant BIT(63) in tdp_mmu.c.
+thanks,
 
-Sean, what do you think?
-
-Paolo
-
+greg k-h
