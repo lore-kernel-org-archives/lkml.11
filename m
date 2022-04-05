@@ -2,46 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B37EAC43219
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 10:30:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B525C43217
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 10:30:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356506AbiDEKX5 (ORCPT
+        id S1356562AbiDEKYK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 06:23:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45932 "EHLO
+        Tue, 5 Apr 2022 06:24:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48850 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241229AbiDEIc4 (ORCPT
+        with ESMTP id S241290AbiDEIdL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:32:56 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE3FFBD8;
-        Tue,  5 Apr 2022 01:29:56 -0700 (PDT)
+        Tue, 5 Apr 2022 04:33:11 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31069C4;
+        Tue,  5 Apr 2022 01:31:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7A90E60FF5;
-        Tue,  5 Apr 2022 08:29:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8B168C385A2;
-        Tue,  5 Apr 2022 08:29:55 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B318CB81C13;
+        Tue,  5 Apr 2022 08:31:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2342CC385A0;
+        Tue,  5 Apr 2022 08:31:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649147395;
-        bh=t5Kjxi8BKChE7cLLOSmUC5fA8BDDzn2f270Eb+wM/pU=;
+        s=korg; t=1649147470;
+        bh=8/YNMu7+LX6RHTLGnnonVq5mzG5eSceZVaeyn/2kX5Q=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=h8yQSIKTicHvInzqS9a1EH+dnG53eKDhAQ3HTxTIJ4dUf2txE1PKc7UILY4TbMkNG
-         +EVG7NR4m7MuUIkk1i1BLitmxVz80rNIscRCxUWHnJjPe6FYEXUOuamLOYrgED7BaU
-         Mn0/FzhJUKoutxVRRM5reiOKBGOQhbomIiog6SgM=
+        b=NEKEYyENUwUNHvub+wWekDVAUWzh+hGRvecg0uOWKHuDMuAfam+p+iUnS5DLuzGxv
+         FAReWQn4rSrI4dbEyx3yDnEhMJoi4mEFkhM8QqeG/tJsVrkWDYVpiBrwCrbXyZdSju
+         P34HVUweHGcBKTSgaisB6gfPb9pnfSYJBYFcPS7k=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kuldeep Singh <singh.kuldeep87k@gmail.com>,
-        Viresh Kumar <viresh.kumar@linaro.org>,
-        Arnd Bergmann <arnd@arndb.de>
-Subject: [PATCH 5.17 1109/1126] ARM: dts: spear13xx: Update SPI dma properties
-Date:   Tue,  5 Apr 2022 09:30:56 +0200
-Message-Id: <20220405070439.987966369@linuxfoundation.org>
+        stable@vger.kernel.org, Daniel Palmer <daniel@0x0f.com>,
+        Arnd Bergmann <arnd@arndb.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 0010/1017] ARM: mstar: Select HAVE_ARM_ARCH_TIMER
+Date:   Tue,  5 Apr 2022 09:15:23 +0200
+Message-Id: <20220405070354.477448879@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
-References: <20220405070407.513532867@linuxfoundation.org>
+In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
+References: <20220405070354.155796697@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,37 +49,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kuldeep Singh <singh.kuldeep87k@gmail.com>
+From: Daniel Palmer <daniel@0x0f.com>
 
-commit 31d3687d6017c7ce6061695361598d9cda70807a upstream.
+[ Upstream commit ea49432d184a6a09f84461604b7711a4e9f5ec9c ]
 
-Reorder dmas and dma-names property for spi controller node to make it
-compliant with bindings.
+The mstar SoCs have an arch timer but HAVE_ARM_ARCH_TIMER wasn't
+selected. If MSC313E_TIMER isn't selected then the kernel gets
+stuck at boot because there are no timers available.
 
-Fixes: 6e8887f60f60 ("ARM: SPEAr13xx: Pass generic DW DMAC platform data from DT")
-Signed-off-by: Kuldeep Singh <singh.kuldeep87k@gmail.com>
-Acked-by: Viresh Kumar <viresh.kumar@linaro.org>
-Link: https://lore.kernel.org/r/20220326042313.97862-2-singh.kuldeep87k@gmail.com'
+Signed-off-by: Daniel Palmer <daniel@0x0f.com>
+Link: https://lore.kernel.org/r/20220301104349.3040422-1-daniel@0x0f.com'
 Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/boot/dts/spear13xx.dtsi |    6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ arch/arm/mach-mstar/Kconfig | 1 +
+ 1 file changed, 1 insertion(+)
 
---- a/arch/arm/boot/dts/spear13xx.dtsi
-+++ b/arch/arm/boot/dts/spear13xx.dtsi
-@@ -284,9 +284,9 @@
- 				#size-cells = <0>;
- 				interrupts = <0 31 0x4>;
- 				status = "disabled";
--				dmas = <&dwdma0 4 0 0>,
--					<&dwdma0 5 0 0>;
--				dma-names = "tx", "rx";
-+				dmas = <&dwdma0 5 0 0>,
-+					<&dwdma0 4 0 0>;
-+				dma-names = "rx", "tx";
- 			};
- 
- 			rtc@e0580000 {
+diff --git a/arch/arm/mach-mstar/Kconfig b/arch/arm/mach-mstar/Kconfig
+index cd300eeedc20..0bf4d312bcfd 100644
+--- a/arch/arm/mach-mstar/Kconfig
++++ b/arch/arm/mach-mstar/Kconfig
+@@ -3,6 +3,7 @@ menuconfig ARCH_MSTARV7
+ 	depends on ARCH_MULTI_V7
+ 	select ARM_GIC
+ 	select ARM_HEAVY_MB
++	select HAVE_ARM_ARCH_TIMER
+ 	select MST_IRQ
+ 	select MSTAR_MSC313_MPLL
+ 	help
+-- 
+2.34.1
+
 
 
