@@ -2,95 +2,163 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C736FC43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B1A47C4332F
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:42:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1578574AbiDEXYH (ORCPT
+        id S1578558AbiDEXYA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 19:24:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39510 "EHLO
+        Tue, 5 Apr 2022 19:24:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47756 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348903AbiDEJsp (ORCPT
+        with ESMTP id S1443187AbiDEPjI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:48:45 -0400
+        Tue, 5 Apr 2022 11:39:08 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0C96A2056;
-        Tue,  5 Apr 2022 02:37:11 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B21B14753F;
+        Tue,  5 Apr 2022 06:55:04 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 40408615E5;
-        Tue,  5 Apr 2022 09:37:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4FFF2C385A3;
-        Tue,  5 Apr 2022 09:37:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649151430;
-        bh=nfzYUEHmVjBI8/t16EA5oHKdr/xnKdTbSxXCL6KLiZk=;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9A75261939;
+        Tue,  5 Apr 2022 13:55:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 651D4C385A1;
+        Tue,  5 Apr 2022 13:55:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649166903;
+        bh=m+etiDUzlrD/ZjwQQ1/4Tq58JAfeCm/GvOnttdLupCY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=y2iBKoys3mD+DywKm/l7/QM6wv5Ea60nbTqmFNkSs36+06nt5XoJAzyNfIxkTmTkz
-         7txXhRBYt3sRKnQVKkA/dbn3rC4SIH2tml7TyuTo3HwsEzwxBdMwCO3z6MI0LyBTdW
-         f2V22Mo/lccz7ZR2sxhbKo8pfvxQWlfV4Wu7lVoI=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+        b=ehAYsnaS4ot2a/yM8CADZcHdFj5Xx6gcFtqlMuXCtiYkdVkHnRvMIr8WDkDtDxhoA
+         N326Rpr3WuiOV+YOAi0TIClg1oCQTrQwGRZu5uAzna5D98cVs3j/4IQPFxtUDG7yNI
+         M4m4AsnPhoMOwcEkHdY7I1bGWpm+daJRNzAodYpPH1WFRowy5BRjUIpZ+z7CDWr8Qe
+         VMXz9bVYjUxUEgOeP5Xq3tRr30KtfPdxCxHZuo0bnDs3y2aXbNez/PDnEHa5xjm7mx
+         4a+JXuSRTHv4KwhESYU9geN2E0gQH1p/ZGFbbRUiMU1e5ugk8As7hslYWn+j+dfuXX
+         FXShywqNKartQ==
+Received: from sofa.misterjones.org ([185.219.108.64] helo=why.lan)
+        by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <maz@kernel.org>)
+        id 1nbje9-001q4g-5n; Tue, 05 Apr 2022 14:55:01 +0100
+From:   Marc Zyngier <maz@kernel.org>
 To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Andre Przywara <andre.przywara@arm.com>,
-        Arnd Bergmann <arnd@arndb.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 373/913] ARM: configs: multi_v5_defconfig: re-enable DRM_PANEL and FB_xxx
-Date:   Tue,  5 Apr 2022 09:23:55 +0200
-Message-Id: <20220405070351.027713984@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
-User-Agent: quilt/0.66
+Cc:     Linus Walleij <linus.walleij@linaro.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Joey Gouly <joey.gouly@arm.com>,
+        Jonathan Hunter <jonathanh@nvidia.com>,
+        Hector Martin <marcan@marcan.st>,
+        Sven Peter <sven@svenpeter.dev>,
+        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Andy Gross <agross@kernel.org>,
+        Jeffrey Hugo <jeffrey.l.hugo@gmail.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Basavaraj Natikar <Basavaraj.Natikar@amd.com>,
+        Shyam Sundar S K <Shyam-sundar.S-k@amd.com>,
+        linux-gpio@vger.kernel.org, linux-tegra@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-arm-msm@vger.kernel.org, kernel-team@android.com
+Subject: [PATCH v2 06/10] pinctrl: apple-gpio: Make the irqchip immutable
+Date:   Tue,  5 Apr 2022 14:54:40 +0100
+Message-Id: <20220405135444.199295-7-maz@kernel.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220405135444.199295-1-maz@kernel.org>
+References: <20220405135444.199295-1-maz@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 185.219.108.64
+X-SA-Exim-Rcpt-To: linux-kernel@vger.kernel.org, linus.walleij@linaro.org, brgl@bgdev.pl, thierry.reding@gmail.com, joey.gouly@arm.com, jonathanh@nvidia.com, marcan@marcan.st, sven@svenpeter.dev, alyssa@rosenzweig.io, bjorn.andersson@linaro.org, agross@kernel.org, jeffrey.l.hugo@gmail.com, tglx@linutronix.de, Basavaraj.Natikar@amd.com, Shyam-sundar.S-k@amd.com, linux-gpio@vger.kernel.org, linux-tegra@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-arm-msm@vger.kernel.org, kernel-team@android.com
+X-SA-Exim-Mail-From: maz@kernel.org
+X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Andre Przywara <andre.przywara@arm.com>
+Prevent gpiolib from messing with the irqchip by advertising
+the irq_chip structure as immutable, making it const, and adding
+the various calls that gpiolib relies upon.
 
-[ Upstream commit 9c44d0805f949c56121b4ae6949fb064537bf198 ]
-
-Commit 91185d55b32e ("drm: Remove DRM_KMS_FB_HELPER Kconfig option")
-led to de-selection of CONFIG_FB, which was a prerequisite for
-BACKLIGHT_CLASS_DEVICE, which CONFIG_DRM_PANEL_SIMPLE depended on.
-Explicitly set CONFIG_FB, to bring DRM_PANEL_SIMPLE, DRM_PANEL_EDP,
-FB_IMX and FB_ATMEL back into the generated .config.
-This also adds some new FB related features like fonts and the
-framebuffer console.
-
-See also commit 8c1768967e27 ("ARM: config: mutli v7: Reenable FB
-dependency"), which solved the same problem for multi_v7_defconfig.
-
-This relies on [1], to fix a broken Kconfig dependency.
-
-[1] https://lore.kernel.org/dri-devel/20220315084559.23510-1-tzimmermann@suse.de/raw
-
-Fixes: 91185d55b32e ("drm: Remove DRM_KMS_FB_HELPER Kconfig option")
-Signed-off-by: Andre Przywara <andre.przywara@arm.com>
-Link: https://lore.kernel.org/r/20220317183043.948432-4-andre.przywara@arm.com'
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Marc Zyngier <maz@kernel.org>
 ---
- arch/arm/configs/multi_v5_defconfig | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/pinctrl/pinctrl-apple-gpio.c | 29 +++++++++++++++-------------
+ 1 file changed, 16 insertions(+), 13 deletions(-)
 
-diff --git a/arch/arm/configs/multi_v5_defconfig b/arch/arm/configs/multi_v5_defconfig
-index 6f789e8483c9..e883cb6dc645 100644
---- a/arch/arm/configs/multi_v5_defconfig
-+++ b/arch/arm/configs/multi_v5_defconfig
-@@ -196,6 +196,7 @@ CONFIG_DRM=y
- CONFIG_DRM_ATMEL_HLCDC=m
- CONFIG_DRM_PANEL_SIMPLE=y
- CONFIG_DRM_ASPEED_GFX=m
-+CONFIG_FB=y
- CONFIG_FB_IMX=y
- CONFIG_FB_ATMEL=y
- CONFIG_BACKLIGHT_ATMEL_LCDC=y
+diff --git a/drivers/pinctrl/pinctrl-apple-gpio.c b/drivers/pinctrl/pinctrl-apple-gpio.c
+index 72f4dd2466e1..5e610849dfc3 100644
+--- a/drivers/pinctrl/pinctrl-apple-gpio.c
++++ b/drivers/pinctrl/pinctrl-apple-gpio.c
+@@ -36,7 +36,6 @@ struct apple_gpio_pinctrl {
+ 
+ 	struct pinctrl_desc pinctrl_desc;
+ 	struct gpio_chip gpio_chip;
+-	struct irq_chip irq_chip;
+ 	u8 irqgrps[];
+ };
+ 
+@@ -275,17 +274,21 @@ static unsigned int apple_gpio_irq_type(unsigned int type)
+ 
+ static void apple_gpio_irq_mask(struct irq_data *data)
+ {
+-	struct apple_gpio_pinctrl *pctl = gpiochip_get_data(irq_data_get_irq_chip_data(data));
++	struct gpio_chip *gc = irq_data_get_irq_chip_data(data);
++	struct apple_gpio_pinctrl *pctl = gpiochip_get_data(gc);
+ 
+ 	apple_gpio_set_reg(pctl, data->hwirq, REG_GPIOx_MODE,
+ 	                   FIELD_PREP(REG_GPIOx_MODE, REG_GPIOx_IN_IRQ_OFF));
++	gpiochip_disable_irq(gc, data->hwirq);
+ }
+ 
+ static void apple_gpio_irq_unmask(struct irq_data *data)
+ {
+-	struct apple_gpio_pinctrl *pctl = gpiochip_get_data(irq_data_get_irq_chip_data(data));
++	struct gpio_chip *gc = irq_data_get_irq_chip_data(data);
++	struct apple_gpio_pinctrl *pctl = gpiochip_get_data(gc);
+ 	unsigned int irqtype = apple_gpio_irq_type(irqd_get_trigger_type(data));
+ 
++	gpiochip_enable_irq(gc, data->hwirq);
+ 	apple_gpio_set_reg(pctl, data->hwirq, REG_GPIOx_MODE,
+ 	                   FIELD_PREP(REG_GPIOx_MODE, irqtype));
+ }
+@@ -343,13 +346,15 @@ static void apple_gpio_irq_handler(struct irq_desc *desc)
+ 	chained_irq_exit(chip, desc);
+ }
+ 
+-static struct irq_chip apple_gpio_irqchip = {
+-	.name		= "Apple-GPIO",
+-	.irq_startup	= apple_gpio_irq_startup,
+-	.irq_ack	= apple_gpio_irq_ack,
+-	.irq_mask	= apple_gpio_irq_mask,
+-	.irq_unmask	= apple_gpio_irq_unmask,
+-	.irq_set_type	= apple_gpio_irq_set_type,
++static const struct irq_chip apple_gpio_irqchip = {
++	.name			= "Apple-GPIO",
++	.irq_startup		= apple_gpio_irq_startup,
++	.irq_ack		= apple_gpio_irq_ack,
++	.irq_mask		= apple_gpio_irq_mask,
++	.irq_unmask		= apple_gpio_irq_unmask,
++	.irq_set_type		= apple_gpio_irq_set_type,
++	.flags			= IRQCHIP_IMMUTABLE,
++	GPIOCHIP_IRQ_RESOURCE_HELPERS,
+ };
+ 
+ /* Probe & register */
+@@ -360,8 +365,6 @@ static int apple_gpio_register(struct apple_gpio_pinctrl *pctl)
+ 	void **irq_data = NULL;
+ 	int ret;
+ 
+-	pctl->irq_chip = apple_gpio_irqchip;
+-
+ 	pctl->gpio_chip.label = dev_name(pctl->dev);
+ 	pctl->gpio_chip.request = gpiochip_generic_request;
+ 	pctl->gpio_chip.free = gpiochip_generic_free;
+@@ -377,7 +380,7 @@ static int apple_gpio_register(struct apple_gpio_pinctrl *pctl)
+ 	if (girq->num_parents) {
+ 		int i;
+ 
+-		girq->chip = &pctl->irq_chip;
++		gpio_irq_chip_set_chip(girq, &apple_gpio_irqchip);
+ 		girq->parent_handler = apple_gpio_irq_handler;
+ 
+ 		girq->parents = kmalloc_array(girq->num_parents,
 -- 
 2.34.1
-
-
 
