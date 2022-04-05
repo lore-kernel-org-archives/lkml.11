@@ -2,43 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AF97EC47085
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:01:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C4D1C388F3
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:01:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236062AbiDEIBO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 04:01:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57162 "EHLO
+        id S236261AbiDEIBv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 04:01:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57248 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232653AbiDEHvh (ORCPT
+        with ESMTP id S232682AbiDEHvi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 03:51:37 -0400
+        Tue, 5 Apr 2022 03:51:38 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0121B972D2;
-        Tue,  5 Apr 2022 00:47:32 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02CFB972C7;
+        Tue,  5 Apr 2022 00:47:38 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5BE19B81B16;
-        Tue,  5 Apr 2022 07:47:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AF8D5C340EE;
-        Tue,  5 Apr 2022 07:47:29 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A4496B81B98;
+        Tue,  5 Apr 2022 07:47:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F39D0C36AE5;
+        Tue,  5 Apr 2022 07:47:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649144850;
-        bh=hN/rGyzhfDpcvGlyX2idBWqqBph1Ocw036xlbGQBJeY=;
+        s=korg; t=1649144855;
+        bh=V0AMbed3y2aTkDzH3QoR1TLnabPaMgt3c7GcI48nFnI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=co6FGGny31rStHov04SobgCirSuozAVpDduwgfoVsvD1zfdiZxiO8nTxDGzot+Ft8
-         nDAangUs+qU1RgiMimCm710h2eTn9qh8YBnwzXVy7FPE/rzg/W4GN6AKLnfy2g4/JD
-         JRu/37CdqSPHSEp+iqIU191ds/bgVlQuxEkUqmHk=
+        b=QS83CQK8OPZQ+aw1Jfd5jOEaTiG5J/CwiajGeHslv0qUnY4acEUEMyY6A0VLmDBTu
+         xaXHDaYxzWt1DvzpWDKH0oxku7SjJ0BZZz39+1rkTKbF2e2hOmbbU9D8n4VzWzZsIS
+         /OZZrDT4CJlTMXzmgdrkUGziLytH3LMxvS35DvOQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Fabio Estevam <festevam@gmail.com>,
+        stable@vger.kernel.org, Marc Zyngier <maz@kernel.org>,
         Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
         Rob Herring <robh@kernel.org>,
-        Richard Zhu <hongxing.zhu@nxp.com>
-Subject: [PATCH 5.17 0194/1126] PCI: imx6: Allow to probe when dw_pcie_wait_for_link() fails
-Date:   Tue,  5 Apr 2022 09:15:41 +0200
-Message-Id: <20220405070413.301698431@linuxfoundation.org>
+        Toan Le <toan@os.amperecomputing.com>,
+        =?UTF-8?q?Krzysztof=20Wilczy=C5=84ski?= <kw@linux.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        =?UTF-8?q?St=C3=A9phane=20Graber?= <stgraber@ubuntu.com>,
+        dann frazier <dann.frazier@canonical.com>
+Subject: [PATCH 5.17 0196/1126] PCI: xgene: Revert "PCI: xgene: Use inbound resources for setup"
+Date:   Tue,  5 Apr 2022 09:15:43 +0200
+Message-Id: <20220405070413.360448939@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -50,80 +54,105 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Fabio Estevam <festevam@gmail.com>
+From: Marc Zyngier <maz@kernel.org>
 
-commit f81f095e87715e198471f4653952fe5e3f824874 upstream.
+commit 1874b6d7ab1bdc900e8398026350313ac29caddb upstream.
 
-The intention of commit 886a9c134755 ("PCI: dwc: Move link handling into
-common code") was to standardize the behavior of link down as explained
-in its commit log:
+Commit 6dce5aa59e0b ("PCI: xgene: Use inbound resources for setup")
+killed PCIe on my XGene-1 box (a Mustang board). The machine itself
+is still alive, but half of its storage (over NVMe) is gone, and the
+NVMe driver just times out.
 
-"The behavior for a link down was inconsistent as some drivers would fail
-probe in that case while others succeed. Let's standardize this to
-succeed as there are usecases where devices (and the link) appear later
-even without hotplug. For example, a reconfigured FPGA device."
+Note that this machine boots with a device tree provided by the
+UEFI firmware (2016 vintage), which could well be non conformant
+with the spec, hence the breakage.
 
-The pci-imx6 still fails to probe when the link is not present, which
-causes the following warning:
+With the patch reverted, the box boots 5.17-rc8 with flying colors.
 
-imx6q-pcie 8ffc000.pcie: Phy link never came up
-imx6q-pcie: probe of 8ffc000.pcie failed with error -110
-------------[ cut here ]------------
-WARNING: CPU: 0 PID: 30 at drivers/regulator/core.c:2257 _regulator_put.part.0+0x1b8/0x1dc
-Modules linked in:
-CPU: 0 PID: 30 Comm: kworker/u2:2 Not tainted 5.15.0-next-20211103 #1
-Hardware name: Freescale i.MX6 SoloX (Device Tree)
-Workqueue: events_unbound async_run_entry_fn
-[<c0111730>] (unwind_backtrace) from [<c010bb74>] (show_stack+0x10/0x14)
-[<c010bb74>] (show_stack) from [<c0f90290>] (dump_stack_lvl+0x58/0x70)
-[<c0f90290>] (dump_stack_lvl) from [<c012631c>] (__warn+0xd4/0x154)
-[<c012631c>] (__warn) from [<c0f87b00>] (warn_slowpath_fmt+0x74/0xa8)
-[<c0f87b00>] (warn_slowpath_fmt) from [<c076b4bc>] (_regulator_put.part.0+0x1b8/0x1dc)
-[<c076b4bc>] (_regulator_put.part.0) from [<c076b574>] (regulator_put+0x2c/0x3c)
-[<c076b574>] (regulator_put) from [<c08c3740>] (release_nodes+0x50/0x178)
-
-Fix this problem by ignoring the dw_pcie_wait_for_link() error like
-it is done on the other dwc drivers.
-
-Tested on imx6sx-sdb and imx6q-sabresd boards.
-
-Link: https://lore.kernel.org/r/20220106103645.2790803-1-festevam@gmail.com
-Fixes: 886a9c134755 ("PCI: dwc: Move link handling into common code")
-Signed-off-by: Fabio Estevam <festevam@gmail.com>
+Link: https://lore.kernel.org/all/Yf2wTLjmcRj+AbDv@xps13.dannf
+Link: https://lore.kernel.org/r/20220321104843.949645-2-maz@kernel.org
+Fixes: 6dce5aa59e0b ("PCI: xgene: Use inbound resources for setup")
+Signed-off-by: Marc Zyngier <maz@kernel.org>
 Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-Reviewed-by: Rob Herring <robh@kernel.org>
-Reviewed-by: Richard Zhu <hongxing.zhu@nxp.com>
-Cc: <stable@vger.kernel.org>
+Cc: stable@vger.kernel.org
+Cc: Rob Herring <robh@kernel.org>
+Cc: Toan Le <toan@os.amperecomputing.com>
+Cc: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+Cc: Krzysztof Wilczyński <kw@linux.com>
+Cc: Bjorn Helgaas <bhelgaas@google.com>
+Cc: Stéphane Graber <stgraber@ubuntu.com>
+Cc: dann frazier <dann.frazier@canonical.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/pci/controller/dwc/pci-imx6.c |   10 ++--------
- 1 file changed, 2 insertions(+), 8 deletions(-)
+ drivers/pci/controller/pci-xgene.c |   33 ++++++++++++++++++++++-----------
+ 1 file changed, 22 insertions(+), 11 deletions(-)
 
---- a/drivers/pci/controller/dwc/pci-imx6.c
-+++ b/drivers/pci/controller/dwc/pci-imx6.c
-@@ -809,9 +809,7 @@ static int imx6_pcie_start_link(struct d
- 	/* Start LTSSM. */
- 	imx6_pcie_ltssm_enable(dev);
+--- a/drivers/pci/controller/pci-xgene.c
++++ b/drivers/pci/controller/pci-xgene.c
+@@ -479,28 +479,27 @@ static int xgene_pcie_select_ib_reg(u8 *
+ }
  
--	ret = dw_pcie_wait_for_link(pci);
--	if (ret)
--		goto err_reset_phy;
-+	dw_pcie_wait_for_link(pci);
+ static void xgene_pcie_setup_ib_reg(struct xgene_pcie *port,
+-				    struct resource_entry *entry,
+-				    u8 *ib_reg_mask)
++				    struct of_pci_range *range, u8 *ib_reg_mask)
+ {
+ 	void __iomem *cfg_base = port->cfg_base;
+ 	struct device *dev = port->dev;
+ 	void __iomem *bar_addr;
+ 	u32 pim_reg;
+-	u64 cpu_addr = entry->res->start;
+-	u64 pci_addr = cpu_addr - entry->offset;
+-	u64 size = resource_size(entry->res);
++	u64 cpu_addr = range->cpu_addr;
++	u64 pci_addr = range->pci_addr;
++	u64 size = range->size;
+ 	u64 mask = ~(size - 1) | EN_REG;
+ 	u32 flags = PCI_BASE_ADDRESS_MEM_TYPE_64;
+ 	u32 bar_low;
+ 	int region;
  
- 	if (pci->link_gen == 2) {
- 		/* Allow Gen2 mode after the link is up. */
-@@ -847,11 +845,7 @@ static int imx6_pcie_start_link(struct d
- 		}
- 
- 		/* Make sure link training is finished as well! */
--		ret = dw_pcie_wait_for_link(pci);
--		if (ret) {
--			dev_err(dev, "Failed to bring link up!\n");
--			goto err_reset_phy;
--		}
-+		dw_pcie_wait_for_link(pci);
- 	} else {
- 		dev_info(dev, "Link: Gen2 disabled\n");
+-	region = xgene_pcie_select_ib_reg(ib_reg_mask, size);
++	region = xgene_pcie_select_ib_reg(ib_reg_mask, range->size);
+ 	if (region < 0) {
+ 		dev_warn(dev, "invalid pcie dma-range config\n");
+ 		return;
  	}
+ 
+-	if (entry->res->flags & IORESOURCE_PREFETCH)
++	if (range->flags & IORESOURCE_PREFETCH)
+ 		flags |= PCI_BASE_ADDRESS_MEM_PREFETCH;
+ 
+ 	bar_low = pcie_bar_low_val((u32)cpu_addr, flags);
+@@ -531,13 +530,25 @@ static void xgene_pcie_setup_ib_reg(stru
+ 
+ static int xgene_pcie_parse_map_dma_ranges(struct xgene_pcie *port)
+ {
+-	struct pci_host_bridge *bridge = pci_host_bridge_from_priv(port);
+-	struct resource_entry *entry;
++	struct device_node *np = port->node;
++	struct of_pci_range range;
++	struct of_pci_range_parser parser;
++	struct device *dev = port->dev;
+ 	u8 ib_reg_mask = 0;
+ 
+-	resource_list_for_each_entry(entry, &bridge->dma_ranges)
+-		xgene_pcie_setup_ib_reg(port, entry, &ib_reg_mask);
++	if (of_pci_dma_range_parser_init(&parser, np)) {
++		dev_err(dev, "missing dma-ranges property\n");
++		return -EINVAL;
++	}
+ 
++	/* Get the dma-ranges from DT */
++	for_each_of_pci_range(&parser, &range) {
++		u64 end = range.cpu_addr + range.size - 1;
++
++		dev_dbg(dev, "0x%08x 0x%016llx..0x%016llx -> 0x%016llx\n",
++			range.flags, range.cpu_addr, end, range.pci_addr);
++		xgene_pcie_setup_ib_reg(port, &range, &ib_reg_mask);
++	}
+ 	return 0;
+ }
+ 
 
 
