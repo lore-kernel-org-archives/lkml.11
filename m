@@ -2,96 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DF613C4332F
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:17:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 22400C43217
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:17:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1582745AbiDEXtc (ORCPT
+        id S1582796AbiDEXtp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 19:49:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42286 "EHLO
+        Tue, 5 Apr 2022 19:49:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57972 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356111AbiDEKW5 (ORCPT
+        with ESMTP id S1573271AbiDESlF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:22:57 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27A81B6D0C;
-        Tue,  5 Apr 2022 03:06:17 -0700 (PDT)
+        Tue, 5 Apr 2022 14:41:05 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D77622124B
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 11:39:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DDBD4B81C83;
-        Tue,  5 Apr 2022 10:06:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 49B46C385A2;
-        Tue,  5 Apr 2022 10:06:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649153174;
-        bh=viDQ5oPXUO4Bg2RdHflKhjqajjnXbG/LyDSk6gx4X20=;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 443B1616C5
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 18:39:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9A454C385A3;
+        Tue,  5 Apr 2022 18:39:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649183944;
+        bh=v+twvuAPSyK4b9502wrkUr1BlR4MnKo9qztL8KChOdc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DTeR510pL7pqgmVHNC2PJahYoYIPUOEE6r8rxd7CZmfdQANJGDJIMI+UOHUsCiZ1Z
-         trIy+GW/LqkZlCtAclyIEaOD8OYVOcwBgktgYRJWfGOnabnMzUrCUKVw7qoz7H9ovQ
-         Z+a000mIOnMI0QTvht2WjqVf0z+gg28n6tED4j3s=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+        b=Pv/LoVtXOikiDXbs7bvRbuyDMtSYWg3kDLXSm5gSlnXCaEDv8ryyXjbIGSmiISwCQ
+         wyDN7BH5runsczVlOX1mNta4Ix1KXHlnwYSTfbvSChDhmoCtqbWI/rC6JkcF30GxzB
+         vewmoNYu8MPfREU7T8OFmhmpXRBDRyzYocN5V8D0CJ7EkS6/VrD9gcxqhEMK6tUJIb
+         pbT8gvjm3hS2sDVrm6MG4Mpgryubw25r2KH9VquuPGTDM1WP1paP5DiukvMJskpGxR
+         UenfyqZD+PyIRpqNBCM5nGzl9UfCzmD/yVMXA1/82JZhkTft9bMEj95fk+ZrP/tm3w
+         hsY3Qx5PU4bXg==
+Received: from sofa.misterjones.org ([185.219.108.64] helo=why.lan)
+        by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <maz@kernel.org>)
+        id 1nbo50-001tkq-8e; Tue, 05 Apr 2022 19:39:02 +0100
+From:   Marc Zyngier <maz@kernel.org>
 To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Christian=20G=C3=B6ttsche?= <cgzones@googlemail.com>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Paul Moore <paul@paul-moore.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 129/599] selinux: check return value of sel_make_avc_files
-Date:   Tue,  5 Apr 2022 09:27:03 +0200
-Message-Id: <20220405070302.680256821@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
-User-Agent: quilt/0.66
+Cc:     Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Andre Przywara <andre.przywara@arm.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Eric Auger <eric.auger@redhat.com>
+Subject: [PATCH v2 1/3] irqchip/gic-v3: Exposes bit values for GICR_CTLR.{IR,CES}
+Date:   Tue,  5 Apr 2022 19:38:55 +0100
+Message-Id: <20220405183857.205960-2-maz@kernel.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220405183857.205960-1-maz@kernel.org>
+References: <20220405183857.205960-1-maz@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 185.219.108.64
+X-SA-Exim-Rcpt-To: linux-kernel@vger.kernel.org, lorenzo.pieralisi@arm.com, andre.przywara@arm.com, tglx@linutronix.de, eric.auger@redhat.com
+X-SA-Exim-Mail-From: maz@kernel.org
+X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christian Göttsche <cgzones@googlemail.com>
+As we're about to expose GICR_CTLR.{IR,CES} to guests, populate
+the include file with the architectural values.
 
-[ Upstream commit bcb62828e3e8c813b6613db6eb7fd9657db248fc ]
-
-sel_make_avc_files() might fail and return a negative errno value on
-memory allocation failures. Re-add the check of the return value,
-dropped in 66f8e2f03c02 ("selinux: sidtab reverse lookup hash table").
-
-Reported by clang-analyzer:
-
-    security/selinux/selinuxfs.c:2129:2: warning: Value stored to
-      'ret' is never read [deadcode.DeadStores]
-            ret = sel_make_avc_files(dentry);
-            ^     ~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-Fixes: 66f8e2f03c02 ("selinux: sidtab reverse lookup hash table")
-Signed-off-by: Christian Göttsche <cgzones@googlemail.com>
-Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
-[PM: description line wrapping, added proper commit ref]
-Signed-off-by: Paul Moore <paul@paul-moore.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Marc Zyngier <maz@kernel.org>
 ---
- security/selinux/selinuxfs.c | 2 ++
+ include/linux/irqchip/arm-gic-v3.h | 2 ++
  1 file changed, 2 insertions(+)
 
-diff --git a/security/selinux/selinuxfs.c b/security/selinux/selinuxfs.c
-index 2b745ae8cb98..d893c2280f59 100644
---- a/security/selinux/selinuxfs.c
-+++ b/security/selinux/selinuxfs.c
-@@ -2124,6 +2124,8 @@ static int sel_fill_super(struct super_block *sb, struct fs_context *fc)
- 	}
+diff --git a/include/linux/irqchip/arm-gic-v3.h b/include/linux/irqchip/arm-gic-v3.h
+index 12d91f0dedf9..728691365464 100644
+--- a/include/linux/irqchip/arm-gic-v3.h
++++ b/include/linux/irqchip/arm-gic-v3.h
+@@ -127,6 +127,8 @@
+ #define GICR_PIDR2			GICD_PIDR2
  
- 	ret = sel_make_avc_files(dentry);
-+	if (ret)
-+		goto err;
+ #define GICR_CTLR_ENABLE_LPIS		(1UL << 0)
++#define GICR_CTLR_CES			(1UL << 1)
++#define GICR_CTLR_IR			(1UL << 2)
+ #define GICR_CTLR_RWP			(1UL << 3)
  
- 	dentry = sel_make_dir(sb->s_root, "ss", &fsi->last_ino);
- 	if (IS_ERR(dentry)) {
+ #define GICR_TYPER_CPU_NUMBER(r)	(((r) >> 8) & 0xffff)
 -- 
 2.34.1
-
-
 
