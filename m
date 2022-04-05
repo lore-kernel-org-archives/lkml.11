@@ -2,107 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F810C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 58904C433EF
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 22:47:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1454410AbiDEWif (ORCPT
+        id S1454483AbiDEWip (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 18:38:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47428 "EHLO
+        Tue, 5 Apr 2022 18:38:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33106 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348966AbiDEJsu (ORCPT
+        with ESMTP id S1573369AbiDES6x (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:48:50 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2FE2A66C4;
-        Tue,  5 Apr 2022 02:38:14 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6EDA46165C;
-        Tue,  5 Apr 2022 09:38:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 80610C385A2;
-        Tue,  5 Apr 2022 09:38:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649151493;
-        bh=7oMBxw5Ep26R/6R297Y09+0/4ozMGQM2xnuGuzQcQu8=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=MFsJqQrqWgi6AZNdGNIQlFt/iykla6gkbx8LGHzaQeEdHUAJJSkq/wFEnZQvS23iX
-         B8F7dTNQWD73v8VLvnlECKsrD9G99jtrID8LgHSPAGOPZtXcG7dpPTlwZr070dlZEO
-         eTTTz813Hy/xAgh0kcxf3rDcRIj4xwHD7NTr1HPU=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Wolfram Sang <wsa@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 435/913] i2c: bcm2835: Use platform_get_irq() to get the interrupt
-Date:   Tue,  5 Apr 2022 09:24:57 +0200
-Message-Id: <20220405070352.885170055@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 5 Apr 2022 14:58:53 -0400
+Received: from mail-lf1-x12e.google.com (mail-lf1-x12e.google.com [IPv6:2a00:1450:4864:20::12e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD660CD33C
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 11:56:53 -0700 (PDT)
+Received: by mail-lf1-x12e.google.com with SMTP id h7so112961lfl.2
+        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 11:56:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linux-foundation.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=zSvDe2wXRWjVXLEeBb9YX8FvDd3b9Nj5l9utIPFSSwc=;
+        b=IhyRdaotisLwt7fVHkbbAVd8yCn1BLRomcM+qu6u/xZ9Xx0SPc1HY9AXMeDo4HAAai
+         FhFmInf2Zf/ZWw3z04p7+qcFnWcYMtYX98wJI4MgIr1B6eHBp3DkPGzyfpnXPEHlSbO3
+         x5sj/rqZaZEOH2Zel5umautUuhgGoXRKYUfPk=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=zSvDe2wXRWjVXLEeBb9YX8FvDd3b9Nj5l9utIPFSSwc=;
+        b=19JhqveAA+PO287RXJrdoXndtn4UxWSQ49BLEvAtIWivJ230E8k85ymqv7qG29T+PE
+         SEHOsXgKJ9wgwpTssSMbHKYQEY19uZHNiQAk6+I56/yKAo7sqrKnu9zrRTV+wqNr5oS1
+         eaOwBHaCF2e52bpif9FDemm2ByxOIdx6io/wIuEMFDgFcEIoXJUDyNEePXiRr5rxIipO
+         Qzfmz2N+FELbo/Jr2hDdKbIzX+oDhQgj/fg9v31TIcIR+1YFhgCHd1B08SZJ7/AkiN9n
+         QhMzSBnPzsoxgZx0xIWTdcI8pIqMysRFaqrYjjGfhx9X+1HrajFs8Y4hNMG6YWJMYS7k
+         KcYw==
+X-Gm-Message-State: AOAM532/73tcdpJyTKoYj0KsaoqC7C0o1Wjvr5D0L9PYpED7cKPigpkT
+        ZYweCkSeBP1Ddeks2tg53eyL/9zPb0PwRHLUDhE=
+X-Google-Smtp-Source: ABdhPJwHxj0nFdVITrQ4mjL3IAFrwhHosH1Q6suBxGZinYVRDh3n4Z6i9BV7x27C7zLNlvEeDrXJMA==
+X-Received: by 2002:a19:e209:0:b0:44a:51af:b3fd with SMTP id z9-20020a19e209000000b0044a51afb3fdmr3500589lfg.560.1649185011863;
+        Tue, 05 Apr 2022 11:56:51 -0700 (PDT)
+Received: from mail-lj1-f173.google.com (mail-lj1-f173.google.com. [209.85.208.173])
+        by smtp.gmail.com with ESMTPSA id m28-20020a05651202fc00b0044a315f262esm1583847lfq.166.2022.04.05.11.56.50
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 05 Apr 2022 11:56:50 -0700 (PDT)
+Received: by mail-lj1-f173.google.com with SMTP id by7so306201ljb.0
+        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 11:56:50 -0700 (PDT)
+X-Received: by 2002:a2e:8e23:0:b0:24b:14f6:d71d with SMTP id
+ r3-20020a2e8e23000000b0024b14f6d71dmr3094398ljk.443.1649185009914; Tue, 05
+ Apr 2022 11:56:49 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <20220405140906.222350-1-Jason@zx2c4.com> <CAHk-=wjFSsa7ZTFOiDCpZbwQsCKdAo3KFetSpGCjusqjjcb2XA@mail.gmail.com>
+ <CAHmME9pPG2cgyfi6gV4NONXEc86Kw8_ejpOQUqcoaf3Mq1=Cfw@mail.gmail.com>
+In-Reply-To: <CAHmME9pPG2cgyfi6gV4NONXEc86Kw8_ejpOQUqcoaf3Mq1=Cfw@mail.gmail.com>
+From:   Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Tue, 5 Apr 2022 11:56:33 -0700
+X-Gmail-Original-Message-ID: <CAHk-=wib4v7epabkEZmk5ZsJhHBX5UiVCwT9BWyeWrOwMrKkrA@mail.gmail.com>
+Message-ID: <CAHk-=wib4v7epabkEZmk5ZsJhHBX5UiVCwT9BWyeWrOwMrKkrA@mail.gmail.com>
+Subject: Re: [PATCH] random: opportunistically initialize on /dev/urandom reads
+To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
+        "Theodore Ts'o" <tytso@mit.edu>,
+        Dominik Brodowski <linux@dominikbrodowski.net>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+On Tue, Apr 5, 2022 at 11:31 AM Jason A. Donenfeld <Jason@zx2c4.com> wrote:
+>
+> It sounds like your suggestion would be to make that:
+>
+>   while (!crng_ready()) {
+>     int ret;
+>
+>     try_to_generate_entropy();
+>     if (nodelay && !crng_ready()) {
+>       warn(...);
+>       return -EBUSY;
+>     }
+>     ret = wait_event_interruptible_timeout(crng_init_wait, crng_ready(), HZ);
+>     if (ret)
+>       return ret > 0 ? 0 : ret;
+>   }
 
-[ Upstream commit c3b2f911ac11892b672df7829becf28d3a830073 ]
+Yes. Except I'd almost warn for the "ret < 0" case too, since almost
+nobody seems to check it.
 
-platform_get_resource(pdev, IORESOURCE_IRQ, ..) relies on static
-allocation of IRQ resources in DT core code, this causes an issue
-when using hierarchical interrupt domains using "interrupts" property
-in the node as this bypasses the hierarchical setup and messes up the
-irq chaining.
+But hey, maybe callers that are interrupted by a signal check for that
+separately. I guess it's _possible_.
 
-In preparation for removal of static setup of IRQ resource from DT core
-code use platform_get_irq().
-
-Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
-Signed-off-by: Wolfram Sang <wsa@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/i2c/busses/i2c-bcm2835.c | 11 ++++-------
- 1 file changed, 4 insertions(+), 7 deletions(-)
-
-diff --git a/drivers/i2c/busses/i2c-bcm2835.c b/drivers/i2c/busses/i2c-bcm2835.c
-index ad3b124a2e37..5149454eef4a 100644
---- a/drivers/i2c/busses/i2c-bcm2835.c
-+++ b/drivers/i2c/busses/i2c-bcm2835.c
-@@ -407,7 +407,7 @@ static const struct i2c_adapter_quirks bcm2835_i2c_quirks = {
- static int bcm2835_i2c_probe(struct platform_device *pdev)
- {
- 	struct bcm2835_i2c_dev *i2c_dev;
--	struct resource *mem, *irq;
-+	struct resource *mem;
- 	int ret;
- 	struct i2c_adapter *adap;
- 	struct clk *mclk;
-@@ -457,12 +457,9 @@ static int bcm2835_i2c_probe(struct platform_device *pdev)
- 		return ret;
- 	}
- 
--	irq = platform_get_resource(pdev, IORESOURCE_IRQ, 0);
--	if (!irq) {
--		dev_err(&pdev->dev, "No IRQ resource\n");
--		return -ENODEV;
--	}
--	i2c_dev->irq = irq->start;
-+	i2c_dev->irq = platform_get_irq(pdev, 0);
-+	if (i2c_dev->irq < 0)
-+		return i2c_dev->irq;
- 
- 	ret = request_irq(i2c_dev->irq, bcm2835_i2c_isr, IRQF_SHARED,
- 			  dev_name(&pdev->dev), i2c_dev);
--- 
-2.34.1
-
-
-
+             Linus
