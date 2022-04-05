@@ -2,274 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E21B9C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 02:24:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CFCAC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 02:34:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229771AbiDEC0y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 22:26:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43104 "EHLO
+        id S229709AbiDECgH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 4 Apr 2022 22:36:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37408 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229693AbiDEC0t (ORCPT
+        with ESMTP id S229722AbiDECgD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 22:26:49 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDF3119EC6C;
-        Mon,  4 Apr 2022 18:21:57 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 0DACBCE1B6A;
-        Tue,  5 Apr 2022 00:11:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 410E3C2BBE4;
-        Tue,  5 Apr 2022 00:11:00 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linux-foundation.org;
-        s=korg; t=1649117460;
-        bh=DHiPZaDwe+oVVKHgNILgr/HliqIK5s3t6QSGEV7Tdp4=;
-        h=Date:To:From:Subject:From;
-        b=SGVglnOIGf6R+OQ9CnIvYNsKwXaTnxV/twiYR3gN98bxlObXgBMQjU7uSDSMVvbpU
-         YnjP2r04YE+tLc2FuQA8ptFAqA7HLgBUN+z9SXOE9KFP4lTxS8jygoYebQ4LLy7Qy0
-         B2uo5SBep06fUAG2pbnJ7aq+gSxDUOfCiEryxqOU=
-Date:   Mon, 04 Apr 2022 17:10:59 -0700
-To:     broonie@kernel.org, mhocko@suse.cz, sfr@canb.auug.org.au,
-        linux-next@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        linux-mm@kvack.org, linux-kernel@vger.kernel.org,
-        mm-commits@vger.kernel.org, akpm@linux-foundation.org
-From:   Andrew Morton <akpm@linux-foundation.org>
-Subject: mmotm 2022-04-04-17-10 uploaded
-Message-Id: <20220405001100.410E3C2BBE4@smtp.kernel.org>
+        Mon, 4 Apr 2022 22:36:03 -0400
+Received: from mail-il1-f177.google.com (mail-il1-f177.google.com [209.85.166.177])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0AC5837EA8A
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 18:32:55 -0700 (PDT)
+Received: by mail-il1-f177.google.com with SMTP id t4so1369393ilo.12
+        for <linux-kernel@vger.kernel.org>; Mon, 04 Apr 2022 18:32:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=6PtMEKVO1ZTFuSFcYXJpT4vLhMltZRK/gjze2byJKtk=;
+        b=pFv7ELs8zrkZDSymxJdDv/zST5AddOFXmbFr8D0+MbU3cDEVc3VIRB+T9GWWCL1Ile
+         WChZyFauA4Iftw4l1+TJIWIYd3oOBbJpNKf0MRs+USl+xkORVlUcHo2YzOR2pDGE/yhl
+         MtlemEC8QOOtiPBKqGcHCAvuR70cLdeycojY8vi6jF0tCbS2cCYFXblUL3tl3Txj5JiD
+         1jIR8LsJsXU4O2IpoESxiUBRyn25/EJMYU+MBtgpaHFfrPeiVHFdUL4Rx2QF4rt/Cjpo
+         hEjE7ovBrCAnwxpsGkL0Jwt8obWNNwP2/n+7R+3BCNAY8IjG5JP6twWQSKkoIz8UB5Vx
+         bGbw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=6PtMEKVO1ZTFuSFcYXJpT4vLhMltZRK/gjze2byJKtk=;
+        b=H6oRt1HKDDoDu9mmue3xyMlIzaV5lyWnYJpaWjF9iRsbzWFrJKuMUIkIVNl/0pSea4
+         A/WD9l5O6ANR92SWM5E8vrdWEeYFsvVuJLl97TVId59v2BxSLAiUDvwBKyxAPQdP7WxK
+         29ht993sBK1aPEHvXLiiHz1Otl4CVD0DQZmC6VW0PhGs7SoYAIa0/PtPwkc2XyxhmYyL
+         wKYawmpgZCRr25IYgnduNr0J3IvNe5/r4qa3MywPvdD4r5TVGTXGNCiNGG4KvhgerKMn
+         XHD8HisO1DdKuPlOWFgqkhGpETMlQ3lBBdV98SmvYHANpEGkiqmpyX5I4F40KZtdnRDS
+         OPzw==
+X-Gm-Message-State: AOAM531FpCyQBN98/RfMH4L2ywwNHy35I4MdwPZ3Pkd56cFSl30KEtPm
+        f5ZehKUE/9CNwngTtH7SV3BWQs4lKe4=
+X-Google-Smtp-Source: ABdhPJw2u8NRgw7YHmXpVoHIbjVp1kih9R/FZ/ein9KsFEfzjKx2z+Y9vra62lRJ2s+WHuPXesfZKA==
+X-Received: by 2002:a63:ae03:0:b0:386:2b5d:dd7d with SMTP id q3-20020a63ae03000000b003862b5ddd7dmr618573pgf.332.1649118122702;
+        Mon, 04 Apr 2022 17:22:02 -0700 (PDT)
+Received: from [192.168.86.235] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
+        by smtp.gmail.com with ESMTPSA id w79-20020a627b52000000b004fd8d1e5489sm12935541pfc.87.2022.04.04.17.22.01
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 04 Apr 2022 17:22:02 -0700 (PDT)
+Message-ID: <97d1cc84-890c-3fcf-2efc-645633cd36b2@gmail.com>
+Date:   Mon, 4 Apr 2022 17:22:00 -0700
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH] Bluetooth: hci_qca: Use del_timer_sync() before freeing
+Content-Language: en-US
+To:     Steven Rostedt <rostedt@goodmis.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Cc:     Marcel Holtmann <marcel@holtmann.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        Ben Young Tae Kim <ytkim@qca.qualcomm.com>,
+        Thomas Gleixner <tglx@linutronix.de>
+References: <20220404182236.1caa174e@rorschach.local.home>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+In-Reply-To: <20220404182236.1caa174e@rorschach.local.home>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The mm-of-the-moment snapshot 2022-04-04-17-10 has been uploaded to
 
-   https://www.ozlabs.org/~akpm/mmotm/
-
-mmotm-readme.txt says
-
-README for mm-of-the-moment:
-
-https://www.ozlabs.org/~akpm/mmotm/
-
-This is a snapshot of my -mm patch queue.  Uploaded at random hopefully
-more than once a week.
-
-You will need quilt to apply these patches to the latest Linus release (5.x
-or 5.x-rcY).  The series file is in broken-out.tar.gz and is duplicated in
-https://ozlabs.org/~akpm/mmotm/series
-
-The file broken-out.tar.gz contains two datestamp files: .DATE and
-.DATE-yyyy-mm-dd-hh-mm-ss.  Both contain the string yyyy-mm-dd-hh-mm-ss,
-followed by the base kernel version against which this patch series is to
-be applied.
-
-This tree is partially included in linux-next.  To see which patches are
-included in linux-next, consult the `series' file.  Only the patches
-within the #NEXT_PATCHES_START/#NEXT_PATCHES_END markers are included in
-linux-next.
-
-
-A full copy of the full kernel tree with the linux-next and mmotm patches
-already applied is available through git within an hour of the mmotm
-release.  Individual mmotm releases are tagged.  The master branch always
-points to the latest release, so it's constantly rebasing.
-
-	https://github.com/hnaz/linux-mm
-
-The directory https://www.ozlabs.org/~akpm/mmots/ (mm-of-the-second)
-contains daily snapshots of the -mm tree.  It is updated more frequently
-than mmotm, and is untested.
-
-A git copy of this tree is also available at
-
-	https://github.com/hnaz/linux-mm
+On 4/4/22 15:22, Steven Rostedt wrote:
+> [ Resending due to cut and paste failure of email address ]
+>
+> From: Steven Rostedt (Google) <rostedt@goodmis.org>
+>
+> While looking at a crash report on a timer list being corrupted, which
+> usually happens when a timer is freed while still active. This is
+> commonly triggered by code calling del_timer() instead of
+> del_timer_sync() just before freeing.
+>
+> One possible culprit is the hci_qca driver, which does exactly that.
+>
+> Cc: stable@vger.kernel.org
+> Fixes: 0ff252c1976da ("Bluetooth: hciuart: Add support QCA chipset for
+> UART") Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
+> ---
+> diff --git a/drivers/bluetooth/hci_qca.c b/drivers/bluetooth/hci_qca.c
+> index f6e91fb432a3..73a8c72b5aae 100644
+> --- a/drivers/bluetooth/hci_qca.c
+> +++ b/drivers/bluetooth/hci_qca.c
+> @@ -696,8 +696,8 @@ static int qca_close(struct hci_uart *hu)
+>   	skb_queue_purge(&qca->tx_wait_q);
+>   	skb_queue_purge(&qca->txq);
+>   	skb_queue_purge(&qca->rx_memdump_q);
+> -	del_timer(&qca->tx_idle_timer);
+> -	del_timer(&qca->wake_retrans_timer);
+> +	del_timer_sync(&qca->tx_idle_timer);
+> +	del_timer_sync(&qca->wake_retrans_timer);
 
 
+It seems the wake_retrans_timer could be re-armed from a work queue.
 
-This mmotm tree contains the following patches against 5.18-rc1:
-(patches marked "*" will be included in linux-next)
+So perhaps we need to make sure qca->workqueue is destroyed
 
-* mm-migrate-use-thp_order-instead-of-hpage_pmd_order-for-new-page-allocation.patch
-* highmem-fix-checks-in-__kmap_local_sched_inout.patch
-* lz4-fix-lz4_decompress_safe_partial-read-out-of-bound.patch
-* mm-secretmem-fix-panic-when-growing-a-memfd_secret.patch
-* mm-secretmem-fix-panic-when-growing-a-memfd_secret-fix.patch
-* mailmap-update-vasily-averins-email-address.patch
-* memcg-sync-flush-only-if-periodic-flush-is-delayed.patch
-* mm-list_lruc-revert-mm-list_lru-optimize-memcg_reparent_list_lru_node.patch
-* mm-sparsemem-fix-mem_section-will-never-be-null-gcc-12-warning.patch
-* mm-avoid-pointless-invalidate_range_start-end-on-mremapold_size=0.patch
-* mm-mempolicy-fix-mpol_new-leak-in-shared_policy_replace.patch
-* mm-munlock-remove-fields-to-fix-htmldocs-warnings.patch
-* mm-hwpoison-fix-race-between-hugetlb-free-demotion-and-memory_failure_hugetlb.patch
-* irq_work-use-kasan_record_aux_stack_noalloc-record-callstack.patch
-* userfaultfd-mark-uffd_wp-regardless-of-vm_write-flag.patch
-* mm-fix-unexpected-zeroed-page-mapping-with-zram-swap.patch
-* mm-compaction-fix-compiler-warning-when-config_compaction=n.patch
-* hugetlb-do-not-demote-poisoned-hugetlb-pages.patch
-* proc-kpageflags-prevent-an-integer-overflow-in-stable_page_flags.patch
-* proc-kpageflags-do-not-use-uninitialized-struct-pages.patch
-* procfs-prevent-unpriveleged-processes-accessing-fdinfo-dir.patch
-  mm.patch
-* tools-vm-page_owner_sortc-use-fprintf-to-send-error-messages-to-stderr.patch
-* tools-vm-page_owner_sortc-support-for-multi-value-selection-in-single-argument.patch
-* tools-vm-page_owner_sortc-support-sorting-blocks-by-multiple-keys.patch
-* mm-rmap-fix-missing-swap_free-in-try_to_unmap-after-arch_unmap_one-failed.patch
-* mm-hugetlb-take-src_mm-write_protect_seq-in-copy_hugetlb_page_range.patch
-* mm-memory-slightly-simplify-copy_present_pte.patch
-* mm-rmap-split-page_dup_rmap-into-page_dup_file_rmap-and-page_try_dup_anon_rmap.patch
-* mm-rmap-convert-rmap-flags-to-a-proper-distinct-rmap_t-type.patch
-* mm-rmap-remove-do_page_add_anon_rmap.patch
-* mm-rmap-pass-rmap-flags-to-hugepage_add_anon_rmap.patch
-* mm-rmap-drop-compound-parameter-from-page_add_new_anon_rmap.patch
-* mm-rmap-use-page_move_anon_rmap-when-reusing-a-mapped-pageanon-page-exclusively.patch
-* mm-huge_memory-remove-outdated-vm_warn_on_once_page-from-unmap_page.patch
-* mm-page-flags-reuse-pg_mappedtodisk-as-pg_anon_exclusive-for-pageanon-pages.patch
-* mm-remember-exclusively-mapped-anonymous-pages-with-pg_anon_exclusive.patch
-* mm-gup-disallow-follow_pagefoll_pin.patch
-* mm-support-gup-triggered-unsharing-of-anonymous-pages.patch
-* mm-gup-trigger-fault_flag_unshare-when-r-o-pinning-a-possibly-shared-anonymous-page.patch
-* mm-gup-sanity-check-with-config_debug_vm-that-anonymous-pages-are-exclusive-when-unpinning.patch
-* mm-swap-remember-pg_anon_exclusive-via-a-swp-pte-bit.patch
-* mm-debug_vm_pgtable-add-tests-for-__have_arch_pte_swp_exclusive.patch
-* x86-pgtable-support-__have_arch_pte_swp_exclusive.patch
-* arm64-pgtable-support-__have_arch_pte_swp_exclusive.patch
-* s390-pgtable-cleanup-description-of-swp-pte-layout.patch
-* s390-pgtable-support-__have_arch_pte_swp_exclusive.patch
-* powerpc-pgtable-remove-_page_bit_swap_type-for-book3s.patch
-* powerpc-pgtable-support-__have_arch_pte_swp_exclusive-for-book3s.patch
-* mm-create-new-mm-swaph-header-file.patch
-* mm-create-new-mm-swaph-header-file-fix.patch
-* mm-drop-swap_dirty_folio.patch
-* mm-move-responsibility-for-setting-swp_fs_ops-to-swap_activate.patch
-* mm-reclaim-mustnt-enter-fs-for-swp_fs_ops-swap-space.patch
-* mm-introduce-swap_rw-and-use-it-for-reads-from-swp_fs_ops-swap-space.patch
-* mm-perform-async-writes-to-swp_fs_ops-swap-space-using-swap_rw.patch
-* doc-update-documentation-for-swap_activate-and-swap_rw.patch
-* mm-submit-multipage-reads-for-swp_fs_ops-swap-space.patch
-* mm-submit-multipage-write-for-swp_fs_ops-swap-space.patch
-* vfs-add-fmode_can_odirect-file-flag.patch
-* mm-shmem-make-shmem_init-return-void.patch
-* mm-shmem-make-shmem_init-return-void-fix.patch
-* mm-memcg-remove-unneeded-nr_scanned.patch
-* mm-memcg-mz-already-removed-from-rb_tree-if-not-null.patch
-* mm-memcg-set-memcg-after-css-verified-and-got-reference.patch
-* mm-memcg-set-pos-explicitly-for-reclaim-and-reclaim.patch
-* mm-memcg-move-generation-assignment-and-comparison-together.patch
-* mm-memcg-non-hierarchical-mode-is-deprecated.patch
-* mm-use-mmap_assert_write_locked-instead-of-open-coding-it.patch
-* mm-mmu_gather-limit-free-batch-count-and-add-schedule-point-in-tlb_batch_pages_flush.patch
-* mm-debug_vm_pgtable-drop-protection_map-usage.patch
-* mm-mmap-clarify-protection_map-indices.patch
-* mm-modify-the-method-to-search-addr-in-unmapped_area_topdown.patch
-* mm-mmapc-use-helper-mlock_future_check.patch
-* mm-mprotect-use-mmu_gather.patch
-* mm-mprotect-do-not-flush-when-not-required-architecturally.patch
-* mm-avoid-unnecessary-flush-on-change_huge_pmd.patch
-* mm-mremap-use-helper-mlock_future_check.patch
-* mm-mremap-avoid-unneeded-do_munmap-call.patch
-* mm-vmalloc-fix-a-comment.patch
-* documentation-sysctl-document-page_lock_unfairness.patch
-* mm-page_alloc-simplify-update-of-pgdat-in-wake_all_kswapds.patch
-* mm-page_alloc-add-same-penalty-is-enough-to-get-round-robin-order.patch
-* mm-discard-__gfp_atomic.patch
-* mm-page_alloc-simplify-pageblock-migratetype-check-in-__free_one_page.patch
-* mm-wrap-__find_buddy_pfn-with-a-necessary-buddy-page-validation.patch
-* mm-remove-unnecessary-void-conversions.patch
-* mm-khugepaged-sched-to-numa-node-when-collapse-huge-page.patch
-* hugetlb-remove-use-of-list-iterator-variable-after-loop.patch
-* mm-hugetlb_vmemmap-introduce-arch_want_hugetlb_page_free_vmemmap.patch
-* arm64-mm-hugetlb-enable-hugetlb_page_free_vmemmap-for-arm64.patch
-* mm-hugetlb_vmemmap-cleanup-hugetlb_vmemmap-related-functions.patch
-* mm-hugetlb_vmemmap-cleanup-hugetlb_free_vmemmap_enabled.patch
-* mm-hugetlb_vmemmap-cleanup-config_hugetlb_page_free_vmemmap.patch
-* sched-coredumph-clarify-the-use-of-mmf_vm_hugepage.patch
-* mm-khugepaged-remove-redundant-check-for-vm_no_khugepaged.patch
-* mm-khugepaged-skip-dax-vma.patch
-* mm-thp-only-regular-file-could-be-thp-eligible.patch
-* mm-khugepaged-make-khugepaged_enter-void-function.patch
-* mm-khugepaged-move-some-khugepaged_-functions-to-khugepagedc.patch
-* mm-khugepaged-introduce-khugepaged_enter_vma-helper.patch
-* mm-mmap-register-suitable-readonly-file-vmas-for-khugepaged.patch
-* mm-vmscan-reclaim-only-affects-managed_zones.patch
-* mm-vmscan-make-sure-wakeup_kswapd-with-managed-zone.patch
-* mm-vmscan-make-sure-wakeup_kswapd-with-managed-zone-v2.patch
-* mm-vmscan-sc-reclaim_idx-must-be-a-valid-zone-index.patch
-* mm-z3fold-declare-z3fold_mount-with-__init.patch
-* mm-z3fold-remove-obsolete-comment-in-z3fold_alloc.patch
-* mm-z3fold-minor-clean-up-for-z3fold_free.patch
-* mm-z3fold-remove-unneeded-page_mapcount_reset-and-clearpageprivate.patch
-* mm-z3fold-remove-confusing-local-variable-l-reassignment.patch
-* mm-z3fold-move-decrement-of-pool-pages_nr-into-__release_z3fold_page.patch
-* mm-z3fold-remove-redundant-list_del_init-of-zhdr-buddy-in-z3fold_free.patch
-* mm-z3fold-remove-unneeded-page_headless-check-in-free_handle.patch
-* mm-compaction-use-helper-isolation_suitable.patch
-* drivers-base-nodec-fix-compaction-sysfs-file-leak.patch
-* mm-add-selftests-for-migration-entries.patch
-* mm-migration-remove-unneeded-local-variable-mapping_locked.patch
-* mm-migration-remove-unneeded-out-label.patch
-* mm-migration-remove-unneeded-local-variable-page_lru.patch
-* mm-migration-fix-the-confusing-pagetranshuge-check.patch
-* mm-migration-use-helper-function-vma_lookup-in-add_page_for_migration.patch
-* mm-migration-use-helper-macro-min-in-do_pages_stat.patch
-* mm-migration-avoid-unneeded-nodemask_t-initialization.patch
-* mm-migration-remove-some-duplicated-codes-in-migrate_pages.patch
-* mm-migration-fix-potential-page-refcounts-leak-in-migrate_pages.patch
-* mm-migration-fix-potential-invalid-node-access-for-reclaim-based-migration.patch
-* mm-migration-fix-possible-do_pages_stat_array-racing-with-memory-offline.patch
-* ksm-count-ksm-merging-pages-for-each-process.patch
-* ksm-count-ksm-merging-pages-for-each-process-fix.patch
-* mm-vmstat-add-events-for-ksm-cow.patch
-* mm-untangle-config-dependencies-for-demote-on-reclaim.patch
-* mm-page_alloc-do-not-calculate-nodes-total-pages-and-memmap-pages-when-empty.patch
-* mm-memory_hotplug-reset-nodes-state-when-empty-during-offline.patch
-* mm-memory_hotplug-refactor-hotadd_init_pgdat-and-try_online_node.patch
-* mm-memory_hotplug-refactor-hotadd_init_pgdat-and-try_online_node-checkpatch-fixes.patch
-* mm-rmap-fix-cache-flush-on-thp-pages.patch
-* dax-fix-cache-flush-on-pmd-mapped-pages.patch
-* mm-rmap-introduce-pfn_mkclean_range-to-cleans-ptes.patch
-* mm-pvmw-add-support-for-walking-devmap-pages.patch
-* dax-fix-missing-writeprotect-the-pte-entry.patch
-* mm-simplify-follow_invalidate_pte.patch
-* zram-add-a-huge_idle-writeback-mode.patch
-* damon-vaddr-test-tweak-code-to-make-the-logic-clearer.patch
-* info-task-hung-in-generic_file_write_iter.patch
-* info-task-hung-in-generic_file_write-fix.patch
-* kernel-hung_taskc-monitor-killed-tasks.patch
-* ia64-fix-typos-in-comments.patch
-* ia64-ptrace-fix-typos-in-comments.patch
-* ia64-replace-comments-with-c99-initializers.patch
-* ocfs2-replace-usage-of-found-with-dedicated-list-iterator-variable.patch
-* ocfs2-remove-usage-of-list-iterator-variable-after-the-loop-body.patch
-* ocfs2-reflink-deadlock-when-clone-file-to-the-same-directory-simultaneously.patch
-* ocfs2-clear-links-count-in-ocfs2_mknod-if-an-error-occurs.patch
-* ocfs2-fix-ocfs2-corrupt-when-iputting-an-inode.patch
-* proc-fix-dentry-inode-overinstantiating-under-proc-pid-net.patch
-* proc-fix-dentry-inode-overinstantiating-under-proc-pid-net-checkpatch-fixes.patch
-* fs-proc-kcorec-remove-check-of-list-iterator-against-head-past-the-loop-body.patch
-* fs-proc-kcorec-remove-check-of-list-iterator-against-head-past-the-loop-body-fix.patch
-* proc-sysctl-make-protected_-world-readable.patch
-* kernel-pid_namespace-use-null-instead-of-using-plain-integer-as-pointer.patch
-* get_maintainer-honor-mailmap-for-in-file-emails.patch
-* lib-test_meminit-optimize-do_kmem_cache_rcu_persistent-test.patch
-* lib-kconfigdebug-remove-more-config__value-indirections.patch
-* lib-test_stringc-add-strspn-and-strcspn-tests.patch
-* lib-stringc-simplify-strspn.patch
-* pipe-make-poll_usage-boolean-and-annotate-its-access.patch
-* list-fix-a-data-race-around-ep-rdllist.patch
-* init-mainc-silence-some-wunused-parameter-warnings.patch
-* fatfs-remove-redundant-judgment.patch
-* add-fat-messages-to-printk-index.patch
-* add-fat-messages-to-printk-index-checkpatch-fixes.patch
-* fat-add-ratelimit-to-fat_ent_bread.patch
-* kexec-remove-redundant-assignments.patch
-* rapidio-remove-unnecessary-use-of-list-iterator.patch
-* taskstats-version-12-with-thread-group-and-exe-info.patch
-* taskstats-version-12-with-thread-group-and-exe-info-fix.patch
-* fs-sysv-check-sbi-s_firstdatazone-in-complete_read_super.patch
-* ipc-mqueue-use-get_tree_nodev-in-mqueue_get_tree.patch
-  linux-next.patch
-  linux-next-rejects.patch
-* mm-oom_killc-fix-vm_oom_kill_table-ifdeffery.patch
-* selftests-vm-add-test-for-soft-dirty-pte-bit.patch
-* kselftest-vm-override-targets-from-arguments.patch
+before these del_timer_sync() calls ?
+
+>   	destroy_workqueue(qca->workqueue);
+
+
+ie move this destroy_workqueue() up ?
+
+
+>   	qca->hu = NULL;
+>   
