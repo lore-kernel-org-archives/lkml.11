@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A161C352B6
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 10:08:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D9C7EC43217
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 10:08:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350943AbiDEKA3 (ORCPT
+        id S1350899AbiDEKAS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 06:00:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56808 "EHLO
+        Tue, 5 Apr 2022 06:00:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56844 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240070AbiDEIWf (ORCPT
+        with ESMTP id S240089AbiDEIWg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:22:35 -0400
+        Tue, 5 Apr 2022 04:22:36 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFBD5DEC2;
-        Tue,  5 Apr 2022 01:19:43 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CB5EE0B0;
+        Tue,  5 Apr 2022 01:19:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id AFB7EB81B92;
-        Tue,  5 Apr 2022 08:19:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 17FC2C385A1;
-        Tue,  5 Apr 2022 08:19:40 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1398BB81BAF;
+        Tue,  5 Apr 2022 08:19:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 76F69C385A0;
+        Tue,  5 Apr 2022 08:19:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649146781;
-        bh=YtG+6EI3+FgkaM6u4nXFTkoCNBD5iXHVpVD+KDag51A=;
+        s=korg; t=1649146786;
+        bh=aduOYBaXcm3bJGU5ljNOOCD1XxWS7V29veFoK8jq2cw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=zP91NtjvYnsyZjgOjno+6xe0nAT/S3kJqAS4m+GWoyFbeXq/9jTqBf3vcoQ4RgfHf
-         +EBlOkLvxV+3cgFVHwCVSlIBM7Lhz17F0OA6Qf+xsOCz/eUhr6KbTq/xKuff/0m/H0
-         qGeNssODTuaet0Mv3+i1a7Tazvni0YoyJYKRjZ/w=
+        b=o3WZd/NIbtllwUoDfMLxvBzILy0zsxVIdE2TpTCxDtUSnZNwWvoeZAKnNzUShp7BS
+         j6oEbRLDciEhSnQ40ZnPhSo5vup63O9fwcb0Fb0xyvwLjusnW3+ysBBouleAc+hcl4
+         aXVjZC9yMbmrHxC+Oq2k2G4BtKi9+hSPmPhvBJ60=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Rohith Surabattula <rohiths@microsoft.com>,
-        "Paulo Alcantara (SUSE)" <pc@cjr.nz>,
-        Steve French <stfrench@microsoft.com>,
+        stable@vger.kernel.org, Corentin Labbe <clabbe@baylibre.com>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0887/1126] Adjust cifssb maximum read size
-Date:   Tue,  5 Apr 2022 09:27:14 +0200
-Message-Id: <20220405070433.564945778@linuxfoundation.org>
+Subject: [PATCH 5.17 0889/1126] media: staging: media: zoran: move videodev alloc
+Date:   Tue,  5 Apr 2022 09:27:16 +0200
+Message-Id: <20220405070433.622139953@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -51,69 +51,183 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Rohith Surabattula <rohiths@microsoft.com>
+From: Corentin Labbe <clabbe@baylibre.com>
 
-[ Upstream commit 06a466565d54a1a42168f9033a062a3f5c40e73b ]
+[ Upstream commit 82e3a496eb56da0b9f29fdc5b63cedb3289e91de ]
 
-When session gets reconnected during mount then read size in super block fs context
-gets set to zero and after negotiate, rsize is not modified which results in
-incorrect read with requested bytes as zero. Fixes intermittent failure
-of xfstest generic/240
+Move some code out of zr36057_init() and create new functions for handling
+zr->video_dev. This permit to ease code reading and fix a zr->video_dev
+memory leak.
 
-Note that stable requires a different version of this patch which will be
-sent to the stable mailing list.
-
-Signed-off-by: Rohith Surabattula <rohiths@microsoft.com>
-Acked-by: Paulo Alcantara (SUSE) <pc@cjr.nz>
-Signed-off-by: Steve French <stfrench@microsoft.com>
+Signed-off-by: Corentin Labbe <clabbe@baylibre.com>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/cifs/cifsfs.c |  3 +++
- fs/cifs/file.c   | 10 ++++++++++
- 2 files changed, 13 insertions(+)
+ drivers/staging/media/zoran/zoran.h        |  2 +-
+ drivers/staging/media/zoran/zoran_card.c   | 80 ++++++++++++++--------
+ drivers/staging/media/zoran/zoran_driver.c |  5 +-
+ 3 files changed, 54 insertions(+), 33 deletions(-)
 
-diff --git a/fs/cifs/cifsfs.c b/fs/cifs/cifsfs.c
-index 4691b2706ddf..6e5246122ee2 100644
---- a/fs/cifs/cifsfs.c
-+++ b/fs/cifs/cifsfs.c
-@@ -210,6 +210,9 @@ cifs_read_super(struct super_block *sb)
- 	if (rc)
- 		goto out_no_root;
- 	/* tune readahead according to rsize if readahead size not set on mount */
-+	if (cifs_sb->ctx->rsize == 0)
-+		cifs_sb->ctx->rsize =
-+			tcon->ses->server->ops->negotiate_rsize(tcon, cifs_sb->ctx);
- 	if (cifs_sb->ctx->rasize)
- 		sb->s_bdi->ra_pages = cifs_sb->ctx->rasize / PAGE_SIZE;
- 	else
-diff --git a/fs/cifs/file.c b/fs/cifs/file.c
-index e7af802dcfa6..a2723f7cb5e9 100644
---- a/fs/cifs/file.c
-+++ b/fs/cifs/file.c
-@@ -3740,6 +3740,11 @@ cifs_send_async_read(loff_t offset, size_t len, struct cifsFileInfo *open_file,
- 				break;
- 		}
+diff --git a/drivers/staging/media/zoran/zoran.h b/drivers/staging/media/zoran/zoran.h
+index b1ad2a2b914c..50d5a7acfab6 100644
+--- a/drivers/staging/media/zoran/zoran.h
++++ b/drivers/staging/media/zoran/zoran.h
+@@ -313,6 +313,6 @@ static inline struct zoran *to_zoran(struct v4l2_device *v4l2_dev)
  
-+		if (cifs_sb->ctx->rsize == 0)
-+			cifs_sb->ctx->rsize =
-+				server->ops->negotiate_rsize(tlink_tcon(open_file->tlink),
-+							     cifs_sb->ctx);
-+
- 		rc = server->ops->wait_mtu_credits(server, cifs_sb->ctx->rsize,
- 						   &rsize, credits);
- 		if (rc)
-@@ -4474,6 +4479,11 @@ static void cifs_readahead(struct readahead_control *ractl)
- 			}
- 		}
+ #endif
  
-+		if (cifs_sb->ctx->rsize == 0)
-+			cifs_sb->ctx->rsize =
-+				server->ops->negotiate_rsize(tlink_tcon(open_file->tlink),
-+							     cifs_sb->ctx);
+-int zoran_queue_init(struct zoran *zr, struct vb2_queue *vq);
++int zoran_queue_init(struct zoran *zr, struct vb2_queue *vq, int dir);
+ void zoran_queue_exit(struct zoran *zr);
+ int zr_set_buf(struct zoran *zr);
+diff --git a/drivers/staging/media/zoran/zoran_card.c b/drivers/staging/media/zoran/zoran_card.c
+index c578ef3c32f5..a83314b16548 100644
+--- a/drivers/staging/media/zoran/zoran_card.c
++++ b/drivers/staging/media/zoran/zoran_card.c
+@@ -803,6 +803,52 @@ int zoran_check_jpg_settings(struct zoran *zr,
+ 	return 0;
+ }
+ 
++static int zoran_init_video_device(struct zoran *zr, struct video_device *video_dev, int dir)
++{
++	int err;
 +
- 		rc = server->ops->wait_mtu_credits(server, cifs_sb->ctx->rsize,
- 						   &rsize, credits);
- 		if (rc)
++	/* Now add the template and register the device unit. */
++	*video_dev = zoran_template;
++	video_dev->v4l2_dev = &zr->v4l2_dev;
++	video_dev->lock = &zr->lock;
++	video_dev->device_caps = V4L2_CAP_STREAMING | dir;
++
++	strscpy(video_dev->name, ZR_DEVNAME(zr), sizeof(video_dev->name));
++	/*
++	 * It's not a mem2mem device, but you can both capture and output from one and the same
++	 * device. This should really be split up into two device nodes, but that's a job for
++	 * another day.
++	 */
++	video_dev->vfl_dir = VFL_DIR_M2M;
++	zoran_queue_init(zr, &zr->vq, V4L2_BUF_TYPE_VIDEO_CAPTURE);
++
++	err = video_register_device(video_dev, VFL_TYPE_VIDEO, video_nr[zr->id]);
++	if (err < 0)
++		return err;
++	video_set_drvdata(video_dev, zr);
++	return 0;
++}
++
++static void zoran_exit_video_devices(struct zoran *zr)
++{
++	video_unregister_device(zr->video_dev);
++	kfree(zr->video_dev);
++}
++
++static int zoran_init_video_devices(struct zoran *zr)
++{
++	int err;
++
++	zr->video_dev = video_device_alloc();
++	if (!zr->video_dev)
++		return -ENOMEM;
++
++	err = zoran_init_video_device(zr, zr->video_dev, V4L2_CAP_VIDEO_CAPTURE);
++	if (err)
++		kfree(zr->video_dev);
++	return err;
++}
++
+ void zoran_open_init_params(struct zoran *zr)
+ {
+ 	int i;
+@@ -874,17 +920,11 @@ static int zr36057_init(struct zoran *zr)
+ 	zoran_open_init_params(zr);
+ 
+ 	/* allocate memory *before* doing anything to the hardware in case allocation fails */
+-	zr->video_dev = video_device_alloc();
+-	if (!zr->video_dev) {
+-		err = -ENOMEM;
+-		goto exit;
+-	}
+ 	zr->stat_com = dma_alloc_coherent(&zr->pci_dev->dev,
+ 					  BUZ_NUM_STAT_COM * sizeof(u32),
+ 					  &zr->p_sc, GFP_KERNEL);
+ 	if (!zr->stat_com) {
+-		err = -ENOMEM;
+-		goto exit_video;
++		return -ENOMEM;
+ 	}
+ 	for (j = 0; j < BUZ_NUM_STAT_COM; j++)
+ 		zr->stat_com[j] = cpu_to_le32(1); /* mark as unavailable to zr36057 */
+@@ -897,26 +937,9 @@ static int zr36057_init(struct zoran *zr)
+ 		goto exit_statcom;
+ 	}
+ 
+-	/* Now add the template and register the device unit. */
+-	*zr->video_dev = zoran_template;
+-	zr->video_dev->v4l2_dev = &zr->v4l2_dev;
+-	zr->video_dev->lock = &zr->lock;
+-	zr->video_dev->device_caps = V4L2_CAP_STREAMING | V4L2_CAP_VIDEO_CAPTURE;
+-
+-	strscpy(zr->video_dev->name, ZR_DEVNAME(zr), sizeof(zr->video_dev->name));
+-	/*
+-	 * It's not a mem2mem device, but you can both capture and output from one and the same
+-	 * device. This should really be split up into two device nodes, but that's a job for
+-	 * another day.
+-	 */
+-	zr->video_dev->vfl_dir = VFL_DIR_M2M;
+-
+-	zoran_queue_init(zr, &zr->vq);
+-
+-	err = video_register_device(zr->video_dev, VFL_TYPE_VIDEO, video_nr[zr->id]);
+-	if (err < 0)
++	err = zoran_init_video_devices(zr);
++	if (err)
+ 		goto exit_statcomb;
+-	video_set_drvdata(zr->video_dev, zr);
+ 
+ 	zoran_init_hardware(zr);
+ 	if (!pass_through) {
+@@ -931,9 +954,6 @@ static int zr36057_init(struct zoran *zr)
+ 	dma_free_coherent(&zr->pci_dev->dev, BUZ_NUM_STAT_COM * sizeof(u32) * 2, zr->stat_comb, zr->p_scb);
+ exit_statcom:
+ 	dma_free_coherent(&zr->pci_dev->dev, BUZ_NUM_STAT_COM * sizeof(u32), zr->stat_com, zr->p_sc);
+-exit_video:
+-	kfree(zr->video_dev);
+-exit:
+ 	return err;
+ }
+ 
+@@ -965,7 +985,7 @@ static void zoran_remove(struct pci_dev *pdev)
+ 	dma_free_coherent(&zr->pci_dev->dev, BUZ_NUM_STAT_COM * sizeof(u32) * 2, zr->stat_comb, zr->p_scb);
+ 	pci_release_regions(pdev);
+ 	pci_disable_device(zr->pci_dev);
+-	video_unregister_device(zr->video_dev);
++	zoran_exit_video_devices(zr);
+ exit_free:
+ 	v4l2_ctrl_handler_free(&zr->hdl);
+ 	v4l2_device_unregister(&zr->v4l2_dev);
+diff --git a/drivers/staging/media/zoran/zoran_driver.c b/drivers/staging/media/zoran/zoran_driver.c
+index 46382e43f1bf..551db338c7f7 100644
+--- a/drivers/staging/media/zoran/zoran_driver.c
++++ b/drivers/staging/media/zoran/zoran_driver.c
+@@ -1008,7 +1008,7 @@ static const struct vb2_ops zr_video_qops = {
+ 	.wait_finish            = vb2_ops_wait_finish,
+ };
+ 
+-int zoran_queue_init(struct zoran *zr, struct vb2_queue *vq)
++int zoran_queue_init(struct zoran *zr, struct vb2_queue *vq, int dir)
+ {
+ 	int err;
+ 
+@@ -1016,7 +1016,8 @@ int zoran_queue_init(struct zoran *zr, struct vb2_queue *vq)
+ 	INIT_LIST_HEAD(&zr->queued_bufs);
+ 
+ 	vq->dev = &zr->pci_dev->dev;
+-	vq->type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
++	vq->type = dir;
++
+ 	vq->io_modes = VB2_USERPTR | VB2_DMABUF | VB2_MMAP | VB2_READ | VB2_WRITE;
+ 	vq->drv_priv = zr;
+ 	vq->buf_struct_size = sizeof(struct zr_buffer);
 -- 
 2.34.1
 
