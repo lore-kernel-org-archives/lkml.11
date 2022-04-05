@@ -2,123 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 63C0EC35276
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 74436C35273
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 01:30:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1842532AbiDFBbv (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 21:31:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57544 "EHLO
+        id S236673AbiDFBb6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 21:31:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33260 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382121AbiDEMAo (ORCPT
+        with ESMTP id S1350071AbiDEJwk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 08:00:44 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F9073527C;
-        Tue,  5 Apr 2022 04:20:02 -0700 (PDT)
-From:   Kurt Kanzenbach <kurt@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1649157600;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=w4wC13cgxgcXdHBjki817aUc/ec42N1KzUxtBLjVtcc=;
-        b=BXekPsXOfwzgvSZEi1DNEsjRtwJF0K2+Ym69LE7AzzCOz6c6EDroh6V53dcfxypNprCC0d
-        YBFF2R/ezJFkE9rB7iVyyKZ8SYyHRVBqmuM5QklN/QI7wl4PEJJ0Cb9XyqvB1Dv4oy24or
-        MzIIX/3GpyT+caqjrEh4pIYQWLIdEH8/kE4bTIivLQA8XNtANVDV2Bq8gdcYuwS4pQT/Gi
-        D/GGmH3tGhmJFJ0Zv9eWT831GVM2ieebbNU7RUrjUORtauVt9kvbkal3GukcA204CeGChT
-        rP3fKPX713//p6S0+RTeyWBc5mcKaKQ0eWX6VcH5A+mylWf25pYwVJyDki7arg==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1649157600;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=w4wC13cgxgcXdHBjki817aUc/ec42N1KzUxtBLjVtcc=;
-        b=oFyO70rtb6aZDlRGxSJ/Boi/0eCighJ6RPnZX8oziT2T0rpTuut40ZLJItQ2sbiszjbdVZ
-        5vTHHVc+8eFc27Dg==
-To:     Michael Walle <michael@walle.cc>
-Cc:     Andrew Lunn <andrew@lunn.ch>, richardcochran@gmail.com,
-        davem@davemloft.net, grygorii.strashko@ti.com, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, linux@armlinux.org.uk,
-        mlichvar@redhat.com, netdev@vger.kernel.org,
-        qiangqing.zhang@nxp.com, vladimir.oltean@nxp.com
-Subject: Re: [PATCH RFC V1 net-next 3/4] net: Let the active time stamping
- layer be selectable.
-In-Reply-To: <ad4a8d3efbeaacf241a19bfbca5976f9@walle.cc>
-References: <20220104014215.GA20062@hoboy.vegasvil.org>
- <20220404150508.3945833-1-michael@walle.cc> <YksMvHgXZxA+YZci@lunn.ch>
- <e5a6f6193b86388ed7a081939b8745be@walle.cc> <877d83rjjc.fsf@kurt>
- <ad4a8d3efbeaacf241a19bfbca5976f9@walle.cc>
-Date:   Tue, 05 Apr 2022 13:19:58 +0200
-Message-ID: <87wng3pyjl.fsf@kurt>
+        Tue, 5 Apr 2022 05:52:40 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8ED5148893;
+        Tue,  5 Apr 2022 02:50:42 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 180B7615E3;
+        Tue,  5 Apr 2022 09:50:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 28E26C385A1;
+        Tue,  5 Apr 2022 09:50:40 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649152241;
+        bh=pONLUX1/XreyVe65IKeyG1wQLSMZqhZ3jM/+bDVog24=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=DzusMr6dAkVj+bAMRNOIm13oh6H3/1pmIxhMS/IMKeUfzuDY8wPRsImVr6WW8lERd
+         VLrtjmtCWfpZbAbW7ocAEVGGzqNVRw5GUuaToUyg3Bz5bks1LhT5C9AgKk461hwAqU
+         kTg0KBEGPs8ywN+V3AZ/3WQPF/8Y2rgOc/nCGbJ8=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        Dmitry Osipenko <dmitry.osipenko@collabora.com>,
+        Maxime Ripard <maxime@cerno.tech>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 658/913] clk: Initialize orphan req_rate
+Date:   Tue,  5 Apr 2022 09:28:40 +0200
+Message-Id: <20220405070359.561641377@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="=-=-=";
-        micalg=pgp-sha512; protocol="application/pgp-signature"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
---=-=-=
-Content-Type: text/plain
-Content-Transfer-Encoding: quoted-printable
+From: Maxime Ripard <maxime@cerno.tech>
 
-On Tue Apr 05 2022, Michael Walle wrote:
-> Am 2022-04-05 11:01, schrieb Kurt Kanzenbach:
->> On Mon Apr 04 2022, Michael Walle wrote:
->>> That would make sense. I guess what bothers me with the current
->>> mechanism is that a feature addition to the PHY in the *future* (the
->>> timestamping support) might break a board - or at least changes the
->>> behavior by suddenly using PHY timestamping.
->>=20
->> Currently PHY timestamping is hidden behind a configuration option
->> (NETWORK_PHY_TIMESTAMPING). By disabling this option the default
->> behavior should stay at MAC timestamping even if additional features
->> are added on top of the PHY drivers at later stages. Or not?
->
-> That is correct. But a Kconfig option has several drawbacks:
-> (1) Doesn't work with boards where I might want PHY timestamping
->      on *some* ports, thus I need to enable it and then stumple
->      across the same problem.
-> (2) Doesn't work with generic distro support, which is what is
->      ARM pushing right now with their SystemReady stuff (among other
->      things also for embeddem system). Despite that, I have two boards
->      which are already ready for booting debian out of the box for
->      example. While I might convince Debian to enable that option
->      (as I see it, that option is there to disable the additional
->      overhead) it certainly won't be on a per board basis.
->      Actually for keeping the MAC timestamping as is, you'd need to
->      convince a distribution to never enable the PHY timestamping
->      kconfig option.
->
-> So yes, I agree it will work when you have control over your
-> kconfig options, after all (1) might be more academic. But I'm
-> really concerned about (2).
+[ Upstream commit 5f7e2af00807f2117650e711a58b7f0e986ce1df ]
 
-Yes, the limitations described above are exactly one of the reasons to
-make the timestamping layer configurable at run time as done by these
-patches.
+When registering a clock that doesn't have a recalc_rate implementation,
+and doesn't have its parent registered yet, we initialize the clk_core
+rate and 'req_rate' fields to 0.
 
-Thanks,
-Kurt
+The rate field is later updated when the parent is registered in
+clk_core_reparent_orphans_nolock() using __clk_recalc_rates(), but the
+'req_rate' field is never updated.
 
---=-=-=
-Content-Type: application/pgp-signature; name="signature.asc"
+This leads to an issue in clk_set_rate_range() and clk_put(), since
+those functions will call clk_set_rate() with the content of 'req_rate'
+to provide drivers with the opportunity to change the rate based on the
+new boundaries. In this case, we would call clk_set_rate() with a rate
+of 0, effectively enforcing the minimum allowed for this clock whenever
+we would call one of those two functions, even though the actual rate
+might be within range.
 
------BEGIN PGP SIGNATURE-----
+Let's fix this by setting 'req_rate' in
+clk_core_reparent_orphans_nolock() with the rate field content just
+updated by the call to __clk_recalc_rates().
 
-iQJHBAEBCgAxFiEEvLm/ssjDfdPf21mSwZPR8qpGc4IFAmJMJd4THGt1cnRAbGlu
-dXRyb25peC5kZQAKCRDBk9HyqkZzgtOtD/9duBdOcHsfImUfY/KkCXEDs8Floeju
-+xKhay38ecgGiVhCd3dVKjfmcN7mHjQ5bTDVQdNaVk/pAhWSiT0YLzKlaJ0aqWqy
-XAcO67YWR2tv4WS9oXKCZjKhpbcFyX5FWo54U0TDcuyNwU/37lxN68tJnYISbjK8
-Fgj0UG0YIG3xEU25hETK2ECwaczPbPfONiil96tN6G1GIfy7zWFmGCTGx3h7qc1X
-JSJ5wtbprxvOdzvgV+SI3B3lgJbaG4l0sbrQsl0VZcueBAdtec8nKQg5ktnGRAiG
-JV84i4bwpf9D/6xRNNky8G3VLLCm1m5DPr08JZqkow7ikZxum9VhNF3IdnwiyCnN
-5wvw5yoDo9mNw4OS8zD7l5iDHPQZT7lLyXU25JERuPj/jRnR0NPpcC9BUbon97ED
-ESA/usK4aWFOCvapU9MJvgARbr+OkwzjhUJfK51HpbvG72FCELlMzGVKbaLtP3Ut
-GtoEl7WfWzeEKsv/Y8kazK2RNfTF/ew0z9aLfjJg5qvZPb3ZVBe+mXj/vn9R0zO6
-N5VQY1XtIlruFC6nPfG29+r8QptX1ovC5C8x/p/BejQ+vf3YnTMNDT80DL+agjp5
-zzDvvRuoIOqeyrEf+/I2F/WivLiyNOkheTZYM70MmIGu9f0ITa02d6ooLzkLFwle
-RQ2ARFGqWSJ7VA==
-=+pav
------END PGP SIGNATURE-----
---=-=-=--
+Fixes: 1c8e600440c7 ("clk: Add rate constraints to clocks")
+Reported-by: Dmitry Osipenko <dmitry.osipenko@collabora.com>
+Tested-by: Dmitry Osipenko <dmitry.osipenko@collabora.com> # T30 Nexus7
+Signed-off-by: Maxime Ripard <maxime@cerno.tech>
+Link: https://lore.kernel.org/r/20220325161144.1901695-2-maxime@cerno.tech
+[sboyd@kernel.org: Reword comment]
+Signed-off-by: Stephen Boyd <sboyd@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/clk/clk.c | 13 +++++++++++++
+ 1 file changed, 13 insertions(+)
+
+diff --git a/drivers/clk/clk.c b/drivers/clk/clk.c
+index 32fd2853e8b2..5cef73a85901 100644
+--- a/drivers/clk/clk.c
++++ b/drivers/clk/clk.c
+@@ -3410,6 +3410,19 @@ static void clk_core_reparent_orphans_nolock(void)
+ 			__clk_set_parent_after(orphan, parent, NULL);
+ 			__clk_recalc_accuracies(orphan);
+ 			__clk_recalc_rates(orphan, 0);
++
++			/*
++			 * __clk_init_parent() will set the initial req_rate to
++			 * 0 if the clock doesn't have clk_ops::recalc_rate and
++			 * is an orphan when it's registered.
++			 *
++			 * 'req_rate' is used by clk_set_rate_range() and
++			 * clk_put() to trigger a clk_set_rate() call whenever
++			 * the boundaries are modified. Let's make sure
++			 * 'req_rate' is set to something non-zero so that
++			 * clk_set_rate_range() doesn't drop the frequency.
++			 */
++			orphan->req_rate = orphan->rate;
+ 		}
+ 	}
+ }
+-- 
+2.34.1
+
+
+
