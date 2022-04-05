@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A725CC35273
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CDDC8C4707A
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 09:52:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346524AbiDEJpK (ORCPT
+        id S1346639AbiDEJpT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 05:45:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43644 "EHLO
+        Tue, 5 Apr 2022 05:45:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37238 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239018AbiDEITo (ORCPT
+        with ESMTP id S238917AbiDEITa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:19:44 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 615AC75E50;
-        Tue,  5 Apr 2022 01:10:00 -0700 (PDT)
+        Tue, 5 Apr 2022 04:19:30 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 021BE75215;
+        Tue,  5 Apr 2022 01:09:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B8319608C0;
-        Tue,  5 Apr 2022 08:09:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BFCAFC385A0;
-        Tue,  5 Apr 2022 08:09:58 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4DD68608C0;
+        Tue,  5 Apr 2022 08:09:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5A775C385A0;
+        Tue,  5 Apr 2022 08:09:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649146199;
-        bh=jRuCT5omAFi2LWBQ7waYygaem40XsMiPNfLmN5riCA0=;
+        s=korg; t=1649146182;
+        bh=Vge0+JI6dnmSDzj8z8QK4MArKmPEiy+UaJEPPJBued8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vb1jWRP9Ar6kqxoryY+2nWAEUM6fGzLroa4Wt6/8/ubmQUagK41K7Z2pXtC55F4hC
-         bCJe++p8tdJWhtqxAg4tf6BTN/s7qWAPA+DnelQNpjqrQEAQEj0irt9ofqNNa2YFBP
-         di0Q8x0SDD7mlPoQC/iw84+lvmTDWvSc+ALdh5pc=
+        b=xhxXitVc3fj3BFoF0HMuruMBC2xemtRhUsUSm3nVB16CsnvQNaaILn6AuaB3zDgpR
+         LZUzOjAxPAPZrzLjcUku5KzWbGU3ERyoKZPKjhO+6W7DzFm3z9EDg+Dq3fyPLg84xw
+         49Hbu1hCDmMrSFpcs8Qtg1euQaoGQIOGfJf8xRW0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tom Rix <trix@redhat.com>,
-        Luiz Augusto von Dentz <luiz.von.dentz@intel.com>,
+        stable@vger.kernel.org, Nicholas Piggin <npiggin@gmail.com>,
+        Michael Ellerman <mpe@ellerman.id.au>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0629/1126] Bluetooth: hci_sync: fix undefined return of hci_disconnect_all_sync()
-Date:   Tue,  5 Apr 2022 09:22:56 +0200
-Message-Id: <20220405070426.099142773@linuxfoundation.org>
+Subject: [PATCH 5.17 0670/1126] powerpc/time: Fix KVM host re-arming a timer beyond decrementer range
+Date:   Tue,  5 Apr 2022 09:23:37 +0200
+Message-Id: <20220405070427.293514868@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -50,41 +50,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tom Rix <trix@redhat.com>
+From: Nicholas Piggin <npiggin@gmail.com>
 
-[ Upstream commit 8cd3c55c629efd91e5f2b3e89d850575c5b90d47 ]
+[ Upstream commit cf74ff52e352112be78c4c4c3637a37ec36a6608 ]
 
-clang static analysis reports this problem
-hci_sync.c:4428:2: warning: Undefined or garbage value
-  returned to caller
-        return err;
-        ^~~~~~~~~~
+If the next host timer is beyond decrementer range, timer_rearm_host_dec
+will leave decrementer not programmed. This will not cause a problem for
+the host it will just set the decrementer correctly when the decrementer
+interrupt hits, it seems safer not to leave the next host decrementer
+interrupt timing able to be influenced by a guest.
 
-If there are no connections this function is a noop but
-err is never set and a false error could be reported.
-Return 0 as other hci_* functions do.
+This code is only used in the P9 KVM paths so it's unlikely to be hit
+practically unless large decrementer is force disabled in the host.
 
-Fixes: 182ee45da083 ("Bluetooth: hci_sync: Rework hci_suspend_notifier")
-Signed-off-by: Tom Rix <trix@redhat.com>
-Signed-off-by: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
+Fixes: 25aa145856cd ("powerpc/time: add API for KVM to re-arm the host timer/decrementer")
+Signed-off-by: Nicholas Piggin <npiggin@gmail.com>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/20220124143930.3923442-2-npiggin@gmail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/bluetooth/hci_sync.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/powerpc/kernel/time.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/net/bluetooth/hci_sync.c b/net/bluetooth/hci_sync.c
-index 5e93f37c2e04..405d48c3e63e 100644
---- a/net/bluetooth/hci_sync.c
-+++ b/net/bluetooth/hci_sync.c
-@@ -4432,7 +4432,7 @@ static int hci_disconnect_all_sync(struct hci_dev *hdev, u8 reason)
- 			return err;
+diff --git a/arch/powerpc/kernel/time.c b/arch/powerpc/kernel/time.c
+index cd0b8b71ecdd..384f58a3f373 100644
+--- a/arch/powerpc/kernel/time.c
++++ b/arch/powerpc/kernel/time.c
+@@ -582,8 +582,9 @@ void timer_rearm_host_dec(u64 now)
+ 		local_paca->irq_happened |= PACA_IRQ_DEC;
+ 	} else {
+ 		now = *next_tb - now;
+-		if (now <= decrementer_max)
+-			set_dec_or_work(now);
++		if (now > decrementer_max)
++			now = decrementer_max;
++		set_dec_or_work(now);
  	}
- 
--	return err;
-+	return 0;
  }
- 
- /* This function perform power off HCI command sequence as follows:
+ EXPORT_SYMBOL_GPL(timer_rearm_host_dec);
 -- 
 2.34.1
 
