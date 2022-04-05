@@ -2,90 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4CAA8C35276
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6BA5EC4332F
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 21:32:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378698AbiDEVcI (ORCPT
+        id S1378792AbiDEVcY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 17:32:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44246 "EHLO
+        Tue, 5 Apr 2022 17:32:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50324 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348906AbiDEJsp (ORCPT
+        with ESMTP id S1573408AbiDETIz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:48:45 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19087EBBB7;
-        Tue,  5 Apr 2022 02:37:04 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BF34EB81C82;
-        Tue,  5 Apr 2022 09:37:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1F40CC385A0;
-        Tue,  5 Apr 2022 09:37:00 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649151421;
-        bh=SUQcxggnvdIxuE/Vnof1h5MewUW5YpX3BEbM0/MZgS0=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=T18RQiPNeGe8j+LCACFO1ry1ty8CGcAlGBXIdrtVuPa5cezFETKJAWV7+EwqBJ2mC
-         hXuiJEywZtxmntY6cx27Kauc0NokH76Yix/CJL2FeDpeMPfXQjdDfb+xknDBiXoei+
-         GMuhEhmMzlOSAowZVDj2O2jo0k6egXvJNsbnEuaY=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Andre Przywara <andre.przywara@arm.com>,
-        Arnd Bergmann <arnd@arndb.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 372/913] ARM: configs: multi_v5_defconfig: re-enable CONFIG_V4L_PLATFORM_DRIVERS
-Date:   Tue,  5 Apr 2022 09:23:54 +0200
-Message-Id: <20220405070350.997778872@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 5 Apr 2022 15:08:55 -0400
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BF18DFFAA
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 12:06:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:Content-Type:
+        In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender
+        :Reply-To:Content-ID:Content-Description;
+        bh=t/jIi5NMSsGNuqWW3SuqC3XVvuEfpO7XbqF5AkaA5/U=; b=LPMKtFqBIJkiHt5K/vxQqvOLCu
+        mTtahlGt/q4Xpf4OXU3LL8wuiNduEjzWzNq55unSnMzDk7CYvfowt/vKjj6bjlwQgADze5JQ9Psjo
+        zoI+TVMYGfEfL4P70Pe2PFL/JxdwFD2I4WP+DyRear6bSQKw2eCB5CfybzmgtTuN/LMtSQTqF2OfR
+        ZPzyowE2VLduY70zxf3YLEz4HZ23/teHo3NsyN9eJJ7+txeZLiIBHgyiORbDW7nI1nMeYFRmNjw9f
+        Q6GuLgBNJCpOjbQZRtb3BmZB9wR7iHknQ9vB8LaKHfyWS17w82ksHoUVL6oTdaV3zrqFlq0Ltqr83
+        sN+Qa8aQ==;
+Received: from [2601:1c0:6280:3f0::aa0b]
+        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nboVq-006ykA-C2; Tue, 05 Apr 2022 19:06:46 +0000
+Message-ID: <7d16caee-e605-d80b-6638-3ada4dbc4f67@infradead.org>
+Date:   Tue, 5 Apr 2022 12:06:40 -0700
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH] drm/format_helper: fix a kernel-doc typo
+Content-Language: en-US
+To:     Simon Ser <contact@emersion.fr>
+Cc:     Javier Martinez Canillas <javierm@redhat.com>,
+        linux-kernel@vger.kernel.org,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        David Airlie <airlied@linux.ie>,
+        dri-devel@lists.freedesktop.org
+References: <20220403232902.1753-1-rdunlap@infradead.org>
+ <ttcrpLw9HkdhAH5SkXylXDBi9SBf7LWgOeW09ZvTF4U4_zKJAOXBQZlFxfw6NKY0Hip6dXBFape6zkX09cstuOno72c-c00wmZ_VbNDg6xs=@emersion.fr>
+ <b20bbd22-895c-9e74-e579-d2f3561a2fe1@infradead.org>
+ <BzpH4s8ZYn84kTlJQ3BHVMQzZlESb2Fk6v-uO5KBaaeBNMvRvC98lpuBLUNLE3a5bdoYTb5JRvo6EU__5AGJ79LUirSppO39I1t1xlwx-fI=@emersion.fr>
+ <fda186f7-2cf4-a69a-d68e-58073d35cbea@redhat.com>
+ <c544d79e-90ec-7bbe-77ad-de96a700d711@infradead.org>
+ <qjTlHAInyuxpFWsTWPGXoVeByVdVe-NF-kg-FUeLWQbKy9SovMzCcK-eDsijpDt1roaSubDr-8kBGKQSt_7CXFa4-BxQ6SrGSNeoZrdiq-s=@emersion.fr>
+ <c336dd9d-dae2-f654-4849-669c9b9b568f@infradead.org>
+ <zO0fTUWc0nKMy-cwUaONpM1AHlfPoNe77IooCuHLEYiowkM165XiiuM2JGASUQrOFcvNMVSGUwETeF7JAIf40r84dwNvh_Gl1MF_ZXYOHWE=@emersion.fr>
+From:   Randy Dunlap <rdunlap@infradead.org>
+In-Reply-To: <zO0fTUWc0nKMy-cwUaONpM1AHlfPoNe77IooCuHLEYiowkM165XiiuM2JGASUQrOFcvNMVSGUwETeF7JAIf40r84dwNvh_Gl1MF_ZXYOHWE=@emersion.fr>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Andre Przywara <andre.przywara@arm.com>
 
-[ Upstream commit f5eb04d7a0e419d61f784de3ced708259ddb71d7 ]
 
-Commit 06b93644f4d1 ("media: Kconfig: add an option to filter in/out
-platform drivers") introduced CONFIG_MEDIA_PLATFORM_SUPPORT, to allow
-more fine grained control over the inclusion of certain Kconfig files.
-multi_v5_defconfig was selecting some drivers described in
-drivers/media/platform/Kconfig, which now wasn't included anymore.
+On 4/5/22 11:47, Simon Ser wrote:
+> On Tuesday, April 5th, 2022 at 19:58, Randy Dunlap <rdunlap@infradead.org> wrote:
+> 
+>> On 4/5/22 08:05, Simon Ser wrote:
+>>
+>>> On Tuesday, April 5th, 2022 at 16:39, Randy Dunlap rdunlap@infradead.org wrote:
+>>>
+>>>> On 4/4/22 23:26, Javier Martinez Canillas wrote:
+>>>>
+>>>>> On 4/5/22 08:12, Simon Ser wrote:
+>>>>>
+>>>>>> On Monday, April 4th, 2022 at 23:35, Randy Dunlap rdunlap@infradead.org wrote:
+>>>>>>
+>>>>>>> On 4/4/22 09:04, Simon Ser wrote:
+>>>>>>>
+>>>>>>>> Both doc patches pushed, thanks. I had to manually edit them because they
+>>>>>>>> wouldn't apply cleanly. Next time, please use git-send-email (see
+>>>>>>>> https://git-send-email.io/ for setup instructions).
+>>>>>>>
+>>>>>>> That's odd. I did use 'git send-email' and I don't usually have any
+>>>>>>> problems (AFAIK). I'll check those setup instructions.
+>>>>>>
+>>>>>> Hm, maybe the issue isn't git-send-email, but the way the patch was
+>>>>>> generated? I had to manually edit these lines for the first patch to work:
+>>>>>>
+>>>>>> --- linux-next-20211217.orig/include/drm/drm_file.h
+>>>>>> +++ linux-next-20211217/include/drm/drm_file.h
+>>>>>>
+>>>>>> I changed these to:
+>>>>>>
+>>>>>> --- a/include/drm/drm_file.h
+>>>>>> +++ b/include/drm/drm_file.h
+>>
+>>
+>> quilt (which I am using) can generate a/ b/ patches instead of linux.orig/ and
+>> linux/ patches.
+>>
+>>>>>> This wasn't enough for the second patch, I had to re-do the changes by hand
+>>>>>> from scratch.
+>>
+>>
+>> I would like more information about this one if it's not too much trouble
+>> for you.
+> 
+> IIRC it was the usual git-am error "fatal: sha1 information is lacking
+> or useless". Maybe you wrote the patch for an old tree and drm-misc-next
+> contained changes near the lines you changed? Maybe providing base-commit
+> information in the patch would've helped? I'm not sure.
 
-Explicitly set the new symbol in multi_v5_defconfig to bring those
-drivers back.
-This enables some new V4L2 and VIDEOBUF2 features, but as modules only.
+OK, thanks Simon.
 
-Fixes: 06b93644f4d1 ("media: Kconfig: add an option to filter in/out platform drivers")
-Signed-off-by: Andre Przywara <andre.przywara@arm.com>
-Link: https://lore.kernel.org/r/20220317183043.948432-3-andre.przywara@arm.com'
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- arch/arm/configs/multi_v5_defconfig | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/arch/arm/configs/multi_v5_defconfig b/arch/arm/configs/multi_v5_defconfig
-index 80a3ae02d759..6f789e8483c9 100644
---- a/arch/arm/configs/multi_v5_defconfig
-+++ b/arch/arm/configs/multi_v5_defconfig
-@@ -188,6 +188,7 @@ CONFIG_REGULATOR=y
- CONFIG_REGULATOR_FIXED_VOLTAGE=y
- CONFIG_MEDIA_SUPPORT=y
- CONFIG_MEDIA_CAMERA_SUPPORT=y
-+CONFIG_MEDIA_PLATFORM_SUPPORT=y
- CONFIG_V4L_PLATFORM_DRIVERS=y
- CONFIG_VIDEO_ASPEED=m
- CONFIG_VIDEO_ATMEL_ISI=m
 -- 
-2.34.1
-
-
-
+~Randy
