@@ -2,46 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 406C7C41535
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:55:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 78092C38A06
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:55:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238571AbiDEIoT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 04:44:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57588 "EHLO
+        id S238764AbiDEIoX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 04:44:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57606 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232147AbiDEIDt (ORCPT
+        with ESMTP id S231472AbiDEIEx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:03:49 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9F425DA0B;
-        Tue,  5 Apr 2022 01:00:54 -0700 (PDT)
+        Tue, 5 Apr 2022 04:04:53 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3259C580E3;
+        Tue,  5 Apr 2022 01:01:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 447CF61668;
-        Tue,  5 Apr 2022 08:00:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 59468C340EE;
-        Tue,  5 Apr 2022 08:00:53 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B83F0B81B90;
+        Tue,  5 Apr 2022 08:01:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2F04AC340EE;
+        Tue,  5 Apr 2022 08:01:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649145653;
-        bh=FCzUSqyFkrXkHcD2H6cFA6cmPBvi2HRH2NQg9q9wzpY=;
+        s=korg; t=1649145664;
+        bh=euC74YSgkjH93ejw4+Sy74SSOcMPi82yUM3OuuXFuSc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=s2Dd6Ulr4URy512IEv9ChXRaYCvVe7gnjRcgcofOPCREXuR6wk7cQZAq0VlTXHsDK
-         HSKCVhfyeQHPgjSWqCXNQ3MtQgVt32mkq8Qu9I+3skUQlJqJ6+Pz7D6x2ixa2q0f6q
-         PL1K5vZS0TShuaNwu5SFGgTSPWLi7qkO+Jg0ZMns=
+        b=GzEtCfbiAXLIN1Y+AHXjcC74Eh3WE6AKtHkGWsLN9PDsUVR7t/354VEox1Y1q+pvT
+         AADnmx3C7nvOx5C1zzztTiw0U1pWNjQ1tRh6hsVaCnryrP4Cr6CEO+XnX3jhvo2JUL
+         e3Svnbcb11l07AKo2F7MpJDc7V6zbYBXDeIVbibM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jesper Dangaard Brouer <brouer@redhat.com>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        stable@vger.kernel.org,
         Alexander Lobakin <alexandr.lobakin@intel.com>,
         Michal Swiatkowski <michal.swiatkowski@linux.intel.com>,
-        Kiran Bhandare <kiranx.bhandare@intel.com>,
+        Sandeep Penigalapati <sandeep.penigalapati@intel.com>,
         Tony Nguyen <anthony.l.nguyen@intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0482/1126] ice: respect metadata on XSK Rx to skb
-Date:   Tue,  5 Apr 2022 09:20:29 +0200
-Message-Id: <20220405070421.775189056@linuxfoundation.org>
+Subject: [PATCH 5.17 0485/1126] ixgbe: dont reserve excessive XDP_PACKET_HEADROOM on XSK Rx to skb
+Date:   Tue,  5 Apr 2022 09:20:32 +0200
+Message-Id: <20220405070421.862769351@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -55,63 +54,48 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Alexander Lobakin <alexandr.lobakin@intel.com>
 
-[ Upstream commit 45a34ca68070e34e09d5bf4309f7f1f286a27fc7 ]
+[ Upstream commit 8f405221a73a53234486c185d8ef647377a53cc6 ]
 
-For now, if the XDP prog returns XDP_PASS on XSK, the metadata will
-be lost as it doesn't get copied to the skb.
+{__,}napi_alloc_skb() allocates and reserves additional NET_SKB_PAD
++ NET_IP_ALIGN for any skb.
+OTOH, ixgbe_construct_skb_zc() currently allocates and reserves
+additional `xdp->data - xdp->data_hard_start`, which is
+XDP_PACKET_HEADROOM for XSK frames.
+There's no need for that at all as the frame is post-XDP and will
+go only to the networking stack core.
+Pass the size of the actual data only to __napi_alloc_skb() and
+don't reserve anything. This will give enough headroom for stack
+processing.
 
-Copy it along with the frame headers. Account its size on skb
-allocation, and when copying just treat it as a part of the frame
-and do a pull after to "move" it to the "reserved" zone.
-
-net_prefetch() xdp->data_meta and align the copy size to speed-up
-memcpy() a little and better match ice_construct_skb().
-
-Fixes: 2d4238f55697 ("ice: Add support for AF_XDP")
-Suggested-by: Jesper Dangaard Brouer <brouer@redhat.com>
-Suggested-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+Fixes: d0bcacd0a130 ("ixgbe: add AF_XDP zero-copy Rx support")
 Signed-off-by: Alexander Lobakin <alexandr.lobakin@intel.com>
 Reviewed-by: Michal Swiatkowski <michal.swiatkowski@linux.intel.com>
-Tested-by: Kiran Bhandare <kiranx.bhandare@intel.com>
+Tested-by: Sandeep Penigalapati <sandeep.penigalapati@intel.com>
 Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/intel/ice/ice_xsk.c | 14 ++++++++++----
- 1 file changed, 10 insertions(+), 4 deletions(-)
+ drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/ice/ice_xsk.c b/drivers/net/ethernet/intel/ice/ice_xsk.c
-index 8fd8052edf09..feb874bde171 100644
---- a/drivers/net/ethernet/intel/ice/ice_xsk.c
-+++ b/drivers/net/ethernet/intel/ice/ice_xsk.c
-@@ -428,18 +428,24 @@ static void ice_bump_ntc(struct ice_rx_ring *rx_ring)
- static struct sk_buff *
- ice_construct_skb_zc(struct ice_rx_ring *rx_ring, struct xdp_buff *xdp)
- {
-+	unsigned int totalsize = xdp->data_end - xdp->data_meta;
- 	unsigned int metasize = xdp->data - xdp->data_meta;
--	unsigned int datasize = xdp->data_end - xdp->data;
+diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c
+index 422ea6aa5831..eec42c907d57 100644
+--- a/drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c
++++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c
+@@ -214,13 +214,11 @@ static struct sk_buff *ixgbe_construct_skb_zc(struct ixgbe_ring *rx_ring,
  	struct sk_buff *skb;
  
--	skb = __napi_alloc_skb(&rx_ring->q_vector->napi, datasize,
-+	net_prefetch(xdp->data_meta);
-+
-+	skb = __napi_alloc_skb(&rx_ring->q_vector->napi, totalsize,
+ 	/* allocate a skb to store the frags */
+-	skb = __napi_alloc_skb(&rx_ring->q_vector->napi,
+-			       xdp->data_end - xdp->data_hard_start,
++	skb = __napi_alloc_skb(&rx_ring->q_vector->napi, datasize,
  			       GFP_ATOMIC | __GFP_NOWARN);
  	if (unlikely(!skb))
  		return NULL;
  
--	memcpy(__skb_put(skb, datasize), xdp->data, datasize);
--	if (metasize)
-+	memcpy(__skb_put(skb, totalsize), xdp->data_meta,
-+	       ALIGN(totalsize, sizeof(long)));
-+
-+	if (metasize) {
+-	skb_reserve(skb, xdp->data - xdp->data_hard_start);
+ 	memcpy(__skb_put(skb, datasize), xdp->data, datasize);
+ 	if (metasize)
  		skb_metadata_set(skb, metasize);
-+		__skb_pull(skb, metasize);
-+	}
- 
- 	xsk_buff_free(xdp);
- 	return skb;
 -- 
 2.34.1
 
