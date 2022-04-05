@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 82307C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D712EC43219
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 10:26:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354144AbiDEKME (ORCPT
+        id S1354211AbiDEKMT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 06:12:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60900 "EHLO
+        Tue, 5 Apr 2022 06:12:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46068 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241143AbiDEIcw (ORCPT
+        with ESMTP id S241156AbiDEIcw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Apr 2022 04:32:52 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59B2B113A;
-        Tue,  5 Apr 2022 01:28:38 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71A5A165AA;
+        Tue,  5 Apr 2022 01:28:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 084B2B81BB1;
-        Tue,  5 Apr 2022 08:28:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 56D60C385A2;
-        Tue,  5 Apr 2022 08:28:35 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 36038B81BB1;
+        Tue,  5 Apr 2022 08:28:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9DE06C385A2;
+        Tue,  5 Apr 2022 08:28:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649147315;
-        bh=C0Y5IDIvTy6lLUK/ZrhvHh8jc1K51gY84hH552O6mLc=;
+        s=korg; t=1649147335;
+        bh=twSJ8PlR0JGEelnAB3cj1wJuxmgWcmI8h77gKBe/66Q=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Fm3V1K4ZcgHs5ZTPdYI19NfqciOJeTqlAwjctCv3JzaM9wG4jARCfsZgJ25ZiXqZ0
-         MwahzDCAlTf6HajrAg3+GO3oW4Eo050Ej0DKN/1049+0J7SHNgMgxilQb/0HO8zYIi
-         d2MnRGzmO2sqr/zDbPtTAb+LWlYiziOWI/N727h8=
+        b=Yj+djiEbkNmLqjSbqLyLoh5aNvEqm6KWioqbSphEaBKsf5QCI5foh5wAjUWsPSJj4
+         HVQpg91eIUkPVhYet6ytvlW9KUfCqpCXofx5Mzwmbc7WyWzvhbOhCj2tdHh9iQ4M5i
+         BTxq+NDD8Xa0yjBamw3oqJz7Xh9dDqSGwrrWEndk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
-        Igor Zhbanov <i.zhbanov@omprussia.ru>,
-        Hugh Dickins <hughd@google.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [PATCH 5.17 1079/1126] mm/mmap: return 1 from stack_guard_gap __setup() handler
-Date:   Tue,  5 Apr 2022 09:30:26 +0200
-Message-Id: <20220405070439.124132324@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Jan Kara <jack@suse.cz>, Jens Axboe <axboe@kernel.dk>
+Subject: [PATCH 5.17 1049/1126] block: Fix the maximum minor value is blk_alloc_ext_minor()
+Date:   Tue,  5 Apr 2022 09:29:56 +0200
+Message-Id: <20220405070438.261802306@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -52,61 +50,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Randy Dunlap <rdunlap@infradead.org>
+From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 
-commit e6d094936988910ce6e8197570f2753898830081 upstream.
+commit d1868328dec5ae2cf210111025fcbc71f78dd5ca upstream.
 
-__setup() handlers should return 1 if the command line option is handled
-and 0 if not (or maybe never return 0; it just pollutes init's
-environment).  This prevents:
+ida_alloc_range(..., min, max, ...) returns values from min to max,
+inclusive.
 
-  Unknown kernel command line parameters \
-  "BOOT_IMAGE=/boot/bzImage-517rc5 stack_guard_gap=100", will be \
-  passed to user space.
+So, NR_EXT_DEVT is a valid idx returned by blk_alloc_ext_minor().
 
-  Run /sbin/init as init process
-   with arguments:
-     /sbin/init
-   with environment:
-     HOME=/
-     TERM=linux
-     BOOT_IMAGE=/boot/bzImage-517rc5
-     stack_guard_gap=100
+This is an issue because in device_add_disk(), this value is used in:
+   ddev->devt = MKDEV(disk->major, disk->first_minor);
+and NR_EXT_DEVT is '(1 << MINORBITS)'.
 
-Return 1 to indicate that the boot option has been handled.
+So, should 'disk->first_minor' be NR_EXT_DEVT, it would overflow.
 
-Note that there is no warning message if someone enters:
-	stack_guard_gap=anything_invalid
-and 'val' and stack_guard_gap are both set to 0 due to the use of
-simple_strtoul(). This could be improved by using kstrtoxxx() and
-checking for an error.
-
-It appears that having stack_guard_gap == 0 is valid (if unexpected) since
-using "stack_guard_gap=0" on the kernel command line does that.
-
-Link: https://lkml.kernel.org/r/20220222005817.11087-1-rdunlap@infradead.org
-Link: lore.kernel.org/r/64644a2f-4a20-bab3-1e15-3b2cdd0defe3@omprussia.ru
-Fixes: 1be7107fbe18e ("mm: larger stack guard gap, between vmas")
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Reported-by: Igor Zhbanov <i.zhbanov@omprussia.ru>
-Cc: Hugh Dickins <hughd@google.com>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Fixes: 22ae8ce8b892 ("block: simplify bdev/disk lookup in blkdev_get")
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Reviewed-by: Jan Kara <jack@suse.cz>
+Link: https://lore.kernel.org/r/cc17199798312406b90834e433d2cefe8266823d.1648306232.git.christophe.jaillet@wanadoo.fr
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- mm/mmap.c |    2 +-
+ block/genhd.c |    2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/mm/mmap.c
-+++ b/mm/mmap.c
-@@ -2557,7 +2557,7 @@ static int __init cmdline_parse_stack_gu
- 	if (!*endptr)
- 		stack_guard_gap = val << PAGE_SHIFT;
+--- a/block/genhd.c
++++ b/block/genhd.c
+@@ -330,7 +330,7 @@ int blk_alloc_ext_minor(void)
+ {
+ 	int idx;
  
--	return 0;
-+	return 1;
- }
- __setup("stack_guard_gap=", cmdline_parse_stack_guard_gap);
- 
+-	idx = ida_alloc_range(&ext_devt_ida, 0, NR_EXT_DEVT, GFP_KERNEL);
++	idx = ida_alloc_range(&ext_devt_ida, 0, NR_EXT_DEVT - 1, GFP_KERNEL);
+ 	if (idx == -ENOSPC)
+ 		return -EBUSY;
+ 	return idx;
 
 
