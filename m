@@ -2,44 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 43CCDC43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A0425C4167B
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 11:21:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356345AbiDELPX (ORCPT
+        id S1353272AbiDELOH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 07:15:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57524 "EHLO
+        Tue, 5 Apr 2022 07:14:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52916 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237141AbiDEIRo (ORCPT
+        with ESMTP id S238187AbiDEIaX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:17:44 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B68FB0D08;
-        Tue,  5 Apr 2022 01:05:26 -0700 (PDT)
+        Tue, 5 Apr 2022 04:30:23 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 212CC21E2C;
+        Tue,  5 Apr 2022 01:21:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E544C61725;
-        Tue,  5 Apr 2022 08:05:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F4214C385A1;
-        Tue,  5 Apr 2022 08:05:24 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 814BD60FF7;
+        Tue,  5 Apr 2022 08:21:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8AE7AC385A0;
+        Tue,  5 Apr 2022 08:21:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649145925;
-        bh=JHETf6kArsf/97BPwP8PKkdh+DPkqOvTkbRkJV+dBFc=;
+        s=korg; t=1649146907;
+        bh=Cah0xlxi9vX/JXqn6RvksIYmQRGk5+CJsMN43zZ9Jn4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qDX9oglZ6e+1IdTn0mEIkRyYuoQeWfvydebxKqdqIGvTj3UlyIAruwM4EF3BM8DSd
-         kb4h9As0tFfTS6HQdpkhRP7ANWgWh0SdeyMEB0aQfjQsnJrj2VwU9lxC+hMeGbRB0E
-         OpJ157Sj1WP0gLN0t40PJf4B3NF3MhEFgpuIHTTE=
+        b=wsW5nLKCwmGvXFQiEV7cjgg0mBPoqOmuQyRDjDZSdaH5gMN1/QjV2kO31m8AMc1qR
+         Czp9Z3Wi+L3XtKfBUxDATokzth+9xShnYhZat0GjTnxzPewuJ70mUs7zYnemL4PaXF
+         HqnQjrz73EZYzNEYnHnJBeeXZ0wzAao6KcIZXaVA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Nemanja Rakovic <nemanja.rakovic@syrmia.com>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        =?UTF-8?q?Maximilian=20B=C3=B6hm?= <maximilian.boehm@elbmurf.de>,
+        Pavel Skripkin <paskripkin@gmail.com>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0578/1126] mips: Enable KCSAN
-Date:   Tue,  5 Apr 2022 09:22:05 +0200
-Message-Id: <20220405070424.598071434@linuxfoundation.org>
+Subject: [PATCH 5.17 0933/1126] media: Revert "media: em28xx: add missing em28xx_close_extension"
+Date:   Tue,  5 Apr 2022 09:28:00 +0200
+Message-Id: <20220405070434.900578812@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -51,60 +53,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nemanja Rakovic <nemanja.rakovic@syrmia.com>
+From: Pavel Skripkin <paskripkin@gmail.com>
 
-[ Upstream commit e0a8b93efa2382d370be44bf289157de7e5dacb4 ]
+[ Upstream commit fde18c3bac3f964d8333ae53b304d8fee430502b ]
 
-This patch enables KCSAN for the 64-bit version. Updated rules
-for the incompatible compilation units (vdso, boot/compressed).
+This reverts commit 2c98b8a3458df03abdc6945bbef67ef91d181938.
 
-Signed-off-by: Nemanja Rakovic <nemanja.rakovic@syrmia.com>
-Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+Reverted patch causes problems with Hauppauge WinTV dualHD as Maximilian
+reported [1]. Since quick solution didn't come up let's just revert it
+to make this device work with upstream kernels.
+
+Link: https://lore.kernel.org/all/6a72a37b-e972-187d-0322-16336e12bdc5@elbmurf.de/ [1]
+
+Reported-by: Maximilian Böhm <maximilian.boehm@elbmurf.de>
+Tested-by: Maximilian Böhm <maximilian.boehm@elbmurf.de>
+Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/mips/Kconfig                  | 1 +
- arch/mips/boot/compressed/Makefile | 1 +
- arch/mips/vdso/Makefile            | 3 +++
- 3 files changed, 5 insertions(+)
+ drivers/media/usb/em28xx/em28xx-cards.c | 5 +----
+ 1 file changed, 1 insertion(+), 4 deletions(-)
 
-diff --git a/arch/mips/Kconfig b/arch/mips/Kconfig
-index 058446f01487..651d4fe355da 100644
---- a/arch/mips/Kconfig
-+++ b/arch/mips/Kconfig
-@@ -101,6 +101,7 @@ config MIPS
- 	select TRACE_IRQFLAGS_SUPPORT
- 	select VIRT_TO_BUS
- 	select ARCH_HAS_ELFCORE_COMPAT
-+	select HAVE_ARCH_KCSAN if 64BIT
+diff --git a/drivers/media/usb/em28xx/em28xx-cards.c b/drivers/media/usb/em28xx/em28xx-cards.c
+index f3b56c065ee1..ae25d2cbfdfe 100644
+--- a/drivers/media/usb/em28xx/em28xx-cards.c
++++ b/drivers/media/usb/em28xx/em28xx-cards.c
+@@ -4150,11 +4150,8 @@ static void em28xx_usb_disconnect(struct usb_interface *intf)
  
- config MIPS_FIXUP_BIGPHYS_ADDR
- 	bool
-diff --git a/arch/mips/boot/compressed/Makefile b/arch/mips/boot/compressed/Makefile
-index 5a15d51e8884..a35f78212ea9 100644
---- a/arch/mips/boot/compressed/Makefile
-+++ b/arch/mips/boot/compressed/Makefile
-@@ -38,6 +38,7 @@ KBUILD_AFLAGS := $(KBUILD_AFLAGS) -D__ASSEMBLY__ \
- KCOV_INSTRUMENT		:= n
- GCOV_PROFILE := n
- UBSAN_SANITIZE := n
-+KASAN_SANITIZE			:= n
+ 	em28xx_close_extension(dev);
  
- # decompressor objects (linked with vmlinuz)
- vmlinuzobjs-y := $(obj)/head.o $(obj)/decompress.o $(obj)/string.o $(obj)/bswapsi.o
-diff --git a/arch/mips/vdso/Makefile b/arch/mips/vdso/Makefile
-index d65f55f67e19..f72658b3a53f 100644
---- a/arch/mips/vdso/Makefile
-+++ b/arch/mips/vdso/Makefile
-@@ -1,6 +1,9 @@
- # SPDX-License-Identifier: GPL-2.0
- # Objects to go into the VDSO.
+-	if (dev->dev_next) {
+-		em28xx_close_extension(dev->dev_next);
++	if (dev->dev_next)
+ 		em28xx_release_resources(dev->dev_next);
+-	}
+-
+ 	em28xx_release_resources(dev);
  
-+# Sanitizer runtimes are unavailable and cannot be linked here.
-+ KCSAN_SANITIZE			:= n
-+
- # Absolute relocation type $(ARCH_REL_TYPE_ABS) needs to be defined before
- # the inclusion of generic Makefile.
- ARCH_REL_TYPE_ABS := R_MIPS_JUMP_SLOT|R_MIPS_GLOB_DAT
+ 	if (dev->dev_next) {
 -- 
 2.34.1
 
