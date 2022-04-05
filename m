@@ -2,47 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C72E7C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E5F6CC433F5
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:26:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1588560AbiDFAQd (ORCPT
+        id S1588631AbiDFAQm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 20:16:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47428 "EHLO
+        Tue, 5 Apr 2022 20:16:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50618 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349146AbiDEJtO (ORCPT
+        with ESMTP id S1358006AbiDEK1m (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:49:14 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D64B7B6C;
-        Tue,  5 Apr 2022 02:41:29 -0700 (PDT)
+        Tue, 5 Apr 2022 06:27:42 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A188D76D6;
+        Tue,  5 Apr 2022 03:12:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 87163B818F3;
-        Tue,  5 Apr 2022 09:41:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D65B6C385A4;
-        Tue,  5 Apr 2022 09:41:26 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 367BC6179E;
+        Tue,  5 Apr 2022 10:12:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 45707C385A1;
+        Tue,  5 Apr 2022 10:12:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649151687;
-        bh=JvznGMqy9yBRzBasrr1B9K2SVFNqRhWE7YuqdTM5RvI=;
+        s=korg; t=1649153559;
+        bh=m0gxXestR9TuCF6pwebEyOfHf08GivCI31KBId5HBac=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UBpweW7t5J2e18vnwyERhoKFIYhH+OtP16gYb219zbyV5xzb3c+5IHoV7rISxcfJM
-         jwq62zqMefA0gv3+b1iRWfrMUmIfj0KBalx3aaJBbCGsMyFv4jTZ6tLrz7ehZjYXGx
-         gWjVBa/qCsSdFbTzX4J+69CLCdFjNk/W/ZdJQbOs=
+        b=MTOgMYGlg4YHnT7qcNHz1wuSi6Lft4yrQHOEtZZxsPGgLauptd4mjPbnutwEIz1RA
+         ZIU4Din+7r+kr8bjG548O7F1KgVUuVMhNYFM6GISmxcgWL/9frYB2KIvW7HkZ2eheJ
+         hUVVLmm13JI9/5K+51s6PQhG+6rnMen/jIGbv63Q=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Xu Kuohai <xukuohai@huawei.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Song Liu <songliubraving@fb.com>,
+        stable@vger.kernel.org, Wen Gong <quic_wgong@quicinc.com>,
+        Kalle Valo <quic_kvalo@quicinc.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 506/913] libbpf: Skip forward declaration when counting duplicated type names
-Date:   Tue,  5 Apr 2022 09:26:08 +0200
-Message-Id: <20220405070355.024455714@linuxfoundation.org>
+Subject: [PATCH 5.10 265/599] ath10k: fix memory overwrite of the WoWLAN wakeup packet pattern
+Date:   Tue,  5 Apr 2022 09:29:19 +0200
+Message-Id: <20220405070306.724494034@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
+References: <20220405070258.802373272@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,52 +50,54 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xu Kuohai <xukuohai@huawei.com>
+From: Wen Gong <quic_wgong@quicinc.com>
 
-[ Upstream commit 4226961b0019b2e1612029e8950a9e911affc995 ]
+[ Upstream commit e3fb3d4418fce5484dfe7995fcd94c18b10a431a ]
 
-Currently if a declaration appears in the BTF before the definition, the
-definition is dumped as a conflicting name, e.g.:
+In function ath10k_wow_convert_8023_to_80211(), it will do memcpy for
+the new->pattern, and currently the new->pattern and new->mask is same
+with the old, then the memcpy of new->pattern will also overwrite the
+old->pattern, because the header format of new->pattern is 802.11,
+its length is larger than the old->pattern which is 802.3. Then the
+operation of "Copy frame body" will copy a mistake value because the
+body memory has been overwrite when memcpy the new->pattern.
 
-    $ bpftool btf dump file vmlinux format raw | grep "'unix_sock'"
-    [81287] FWD 'unix_sock' fwd_kind=struct
-    [89336] STRUCT 'unix_sock' size=1024 vlen=14
+Assign another empty value to new_pattern to avoid the overwrite issue.
 
-    $ bpftool btf dump file vmlinux format c | grep "struct unix_sock"
-    struct unix_sock;
-    struct unix_sock___2 {	<--- conflict, the "___2" is unexpected
-		    struct unix_sock___2 *unix_sk;
+Tested-on: QCA6174 hw3.2 SDIO WLAN.RMH.4.4.1-00049
 
-This causes a compilation error if the dump output is used as a header file.
-
-Fix it by skipping declaration when counting duplicated type names.
-
-Fixes: 351131b51c7a ("libbpf: add btf_dump API for BTF-to-C conversion")
-Signed-off-by: Xu Kuohai <xukuohai@huawei.com>
-Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
-Acked-by: Song Liu <songliubraving@fb.com>
-Link: https://lore.kernel.org/bpf/20220301053250.1464204-2-xukuohai@huawei.com
+Fixes: fa3440fa2fa1 ("ath10k: convert wow pattern from 802.3 to 802.11")
+Signed-off-by: Wen Gong <quic_wgong@quicinc.com>
+Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
+Link: https://lore.kernel.org/r/20211222031347.25463-1-quic_wgong@quicinc.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/lib/bpf/btf_dump.c | 5 +++++
- 1 file changed, 5 insertions(+)
+ drivers/net/wireless/ath/ath10k/wow.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
 
-diff --git a/tools/lib/bpf/btf_dump.c b/tools/lib/bpf/btf_dump.c
-index 463447a071d6..841cc68e3f42 100644
---- a/tools/lib/bpf/btf_dump.c
-+++ b/tools/lib/bpf/btf_dump.c
-@@ -1481,6 +1481,11 @@ static const char *btf_dump_resolve_name(struct btf_dump *d, __u32 id,
- 	if (s->name_resolved)
- 		return *cached_name ? *cached_name : orig_name;
+diff --git a/drivers/net/wireless/ath/ath10k/wow.c b/drivers/net/wireless/ath/ath10k/wow.c
+index 7d65c115669f..20b9aa8ddf7d 100644
+--- a/drivers/net/wireless/ath/ath10k/wow.c
++++ b/drivers/net/wireless/ath/ath10k/wow.c
+@@ -337,14 +337,15 @@ static int ath10k_vif_wow_set_wakeups(struct ath10k_vif *arvif,
+ 			if (patterns[i].mask[j / 8] & BIT(j % 8))
+ 				bitmask[j] = 0xff;
+ 		old_pattern.mask = bitmask;
+-		new_pattern = old_pattern;
  
-+	if (btf_is_fwd(t) || (btf_is_enum(t) && btf_vlen(t) == 0)) {
-+		s->name_resolved = 1;
-+		return orig_name;
-+	}
-+
- 	dup_cnt = btf_dump_name_dups(d, name_map, orig_name);
- 	if (dup_cnt > 1) {
- 		const size_t max_len = 256;
+ 		if (ar->wmi.rx_decap_mode == ATH10K_HW_TXRX_NATIVE_WIFI) {
+-			if (patterns[i].pkt_offset < ETH_HLEN)
++			if (patterns[i].pkt_offset < ETH_HLEN) {
+ 				ath10k_wow_convert_8023_to_80211(&new_pattern,
+ 								 &old_pattern);
+-			else
++			} else {
++				new_pattern = old_pattern;
+ 				new_pattern.pkt_offset += WOW_HDR_LEN - ETH_HLEN;
++			}
+ 		}
+ 
+ 		if (WARN_ON(new_pattern.pattern_len > WOW_MAX_PATTERN_SIZE))
 -- 
 2.34.1
 
