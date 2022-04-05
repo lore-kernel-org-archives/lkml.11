@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C2BD6C35295
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 14:03:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 33BABC4167B
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 14:03:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244951AbiDEOAK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 10:00:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44536 "EHLO
+        id S1344660AbiDEOAq (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 10:00:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55692 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238275AbiDEJ3Q (ORCPT
+        with ESMTP id S238271AbiDEJ3O (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:29:16 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E57C260FC;
-        Tue,  5 Apr 2022 02:16:50 -0700 (PDT)
+        Tue, 5 Apr 2022 05:29:14 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A662E124F;
+        Tue,  5 Apr 2022 02:16:35 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1D95F615E5;
-        Tue,  5 Apr 2022 09:16:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2F3EDC385A2;
-        Tue,  5 Apr 2022 09:16:49 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 23569B80DA1;
+        Tue,  5 Apr 2022 09:16:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 84D4CC385A3;
+        Tue,  5 Apr 2022 09:16:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649150209;
-        bh=edHvhWt4iLm2OPP6xPUH7et3os8yqttfATwOvklfX6k=;
+        s=korg; t=1649150192;
+        bh=OetyBOk4mrcK+T3SRboB5bEBJ2oi11RtEDB8Da2zZ5g=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lxDTdFadVwA/OG4xt5xOmSgAeh+5AmIsavmFkSdHVZOmHbrJAxhisZkHsEe07em1r
-         YVjwFuUqZCvZNgr0HB6ZVfAyDmjhAs/5+NL5/F5o8IvX1tQVGdajm2ZzdN/tfBrEMA
-         QdAt/35Z09id9jl20QD+yuxx92bSkoQ0IHAxVpsw=
+        b=LJ9mrAwjm0bxOJ2n5rYPJ6ZN2Dkpz7M7OwNTOzlpruytZYMg817M/fHIsH64jBtP8
+         NgJoiZj6Rt3c+k1vHj9UiCXV9GvjdkG90oyzcMO0+6XWDb3PUMPgGHk+7kFrcVvN/n
+         lXgoJWXsZHxWhxq1UNicGJ9MXeb+uOKrMZQ9nfh4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Amadeusz=20S=C5=82awi=C5=84ski?= 
-        <amadeuszx.slawinski@linux.intel.com>,
-        Cezary Rojewski <cezary.rojewski@intel.com>,
-        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
-        Mark Brown <broonie@kernel.org>
-Subject: [PATCH 5.16 0992/1017] ASoC: topology: Allow TLV control to be either read or write
-Date:   Tue,  5 Apr 2022 09:31:45 +0200
-Message-Id: <20220405070423.647026987@linuxfoundation.org>
+        stable@vger.kernel.org, Yong Wu <yong.wu@mediatek.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Subject: [PATCH 5.16 0987/1017] dt-bindings: memory: mtk-smi: No need mediatek,larb-id for mt8167
+Date:   Tue,  5 Apr 2022 09:31:40 +0200
+Message-Id: <20220405070423.500167678@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -52,40 +51,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Amadeusz Sławiński <amadeuszx.slawinski@linux.intel.com>
+From: Yong Wu <yong.wu@mediatek.com>
 
-commit feb00b736af64875560f371fe7f58b0b7f239046 upstream.
+commit ddc3a324889686ec9b358de20fdeec0d2668c7a8 upstream.
 
-There is no reason to force readwrite access on TLV controls. It can be
-either read, write or both. This is further evidenced in code where it
-performs following checks:
-                if ((k->access & SNDRV_CTL_ELEM_ACCESS_TLV_READ) && !sbe->get)
-                        return -EINVAL;
-                if ((k->access & SNDRV_CTL_ELEM_ACCESS_TLV_WRITE) && !sbe->put)
-                        return -EINVAL;
+Mute the warning from "make dtbs_check":
 
-Fixes: 1a3232d2f61d ("ASoC: topology: Add support for TLV bytes controls")
-Signed-off-by: Amadeusz Sławiński <amadeuszx.slawinski@linux.intel.com>
-Reviewed-by: Cezary Rojewski <cezary.rojewski@intel.com>
-Reviewed-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
-Link: https://lore.kernel.org/r/20220112170030.569712-3-amadeuszx.slawinski@linux.intel.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+larb@14016000: 'mediatek,larb-id' is a required property
+	arch/arm64/boot/dts/mediatek/mt8167-pumpkin.dt.yaml
+larb@15001000: 'mediatek,larb-id' is a required property
+	arch/arm64/boot/dts/mediatek/mt8167-pumpkin.dt.yaml
+larb@16010000: 'mediatek,larb-id' is a required property
+	arch/arm64/boot/dts/mediatek/mt8167-pumpkin.dt.yaml
+
+As the description of mediatek,larb-id, the property is only
+required when the larbid is not consecutive from its IOMMU point of view.
+
+Also, from the description of mediatek,larbs in
+Documentation/devicetree/bindings/iommu/mediatek,iommu.yaml, all the larbs
+must sort by the larb index.
+
+In mt8167, there is only one IOMMU HW and three larbs. The drivers already
+know its larb index from the mediatek,larbs property of IOMMU, thus no
+need this property.
+
+Fixes: 27bb0e42855a ("dt-bindings: memory: mediatek: Convert SMI to DT schema")
+Signed-off-by: Yong Wu <yong.wu@mediatek.com>
+Acked-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+Link: https://lore.kernel.org/r/20220113111057.29918-3-yong.wu@mediatek.com
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/soc/soc-topology.c |    3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ Documentation/devicetree/bindings/memory-controllers/mediatek,smi-larb.yaml |    1 -
+ 1 file changed, 1 deletion(-)
 
---- a/sound/soc/soc-topology.c
-+++ b/sound/soc/soc-topology.c
-@@ -512,7 +512,8 @@ static int soc_tplg_kcontrol_bind_io(str
+--- a/Documentation/devicetree/bindings/memory-controllers/mediatek,smi-larb.yaml
++++ b/Documentation/devicetree/bindings/memory-controllers/mediatek,smi-larb.yaml
+@@ -106,7 +106,6 @@ allOf:
+               - mediatek,mt2701-smi-larb
+               - mediatek,mt2712-smi-larb
+               - mediatek,mt6779-smi-larb
+-              - mediatek,mt8167-smi-larb
+               - mediatek,mt8192-smi-larb
+               - mediatek,mt8195-smi-larb
  
- 	if (le32_to_cpu(hdr->ops.info) == SND_SOC_TPLG_CTL_BYTES
- 		&& k->iface & SNDRV_CTL_ELEM_IFACE_MIXER
--		&& k->access & SNDRV_CTL_ELEM_ACCESS_TLV_READWRITE
-+		&& (k->access & SNDRV_CTL_ELEM_ACCESS_TLV_READ
-+		    || k->access & SNDRV_CTL_ELEM_ACCESS_TLV_WRITE)
- 		&& k->access & SNDRV_CTL_ELEM_ACCESS_TLV_CALLBACK) {
- 		struct soc_bytes_ext *sbe;
- 		struct snd_soc_tplg_bytes_control *be;
 
 
