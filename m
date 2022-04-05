@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9FD81C4332F
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:11:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B33EC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:11:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352387AbiDEMIg (ORCPT
+        id S1353188AbiDEMIu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 08:08:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46610 "EHLO
+        Tue, 5 Apr 2022 08:08:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46800 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244466AbiDEIwI (ORCPT
+        with ESMTP id S244197AbiDEIvt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:52:08 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10BB8D64C2;
-        Tue,  5 Apr 2022 01:41:07 -0700 (PDT)
+        Tue, 5 Apr 2022 04:51:49 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DF2ED3AE2;
+        Tue,  5 Apr 2022 01:40:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 18838B81B92;
-        Tue,  5 Apr 2022 08:40:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 843D7C385A0;
-        Tue,  5 Apr 2022 08:40:49 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8083861003;
+        Tue,  5 Apr 2022 08:39:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9028CC385A0;
+        Tue,  5 Apr 2022 08:39:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649148049;
-        bh=nK806L/HXQjI0JbXIYqotYrEiT9JChqTmGRmHJKNS4I=;
+        s=korg; t=1649147985;
+        bh=Zx4lWtvKcRuOo75kaWAnuXqPkXeLmjn2MI0+fP+jJTQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jKdu1ir8SB/e0ciR+/XAH/4DD8U+kMiG3SOA6nj+dGD/EuWtUtCn3AY0fW99y+21/
-         qqk6IDiuuqgEVLvsPg+dEFE7Bo3bAW9p6fNjcmILOZGDwEVwXGsPsQ4Is8ROBAPUjr
-         qu3NnEFvJt4nKPvrKIktYHO0YY/wGL9QoDU1cZwk=
+        b=0yJsQWc3PYmxcQs91Vudk9kiKJ8rkSC5xIQ8xLwWSj66RvwydOECdXIPa7xTyrgO3
+         C8bmHCBsbWUaqPaBgKzrlpzXtDZPwNU353YOZHkeqzcnIJPTf7DZLlgCPp7aJpU/8l
+         jmUAfhGEnQZ1LTnPl0Bset8EibSuKbOii9MgE7rw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jianyong Wu <jianyong.wu@arm.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0215/1017] arm64/mm: avoid fixmap race condition when create pud mapping
-Date:   Tue,  5 Apr 2022 09:18:48 +0200
-Message-Id: <20220405070400.633299036@linuxfoundation.org>
+        stable@vger.kernel.org, Linus Walleij <linus.walleij@linaro.org>,
+        Arend van Spriel <arend.vanspriel@broadcom.com>,
+        Hector Martin <marcan@marcan.st>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Kalle Valo <kvalo@kernel.org>
+Subject: [PATCH 5.16 0194/1017] brcmfmac: pcie: Fix crashes due to early IRQs
+Date:   Tue,  5 Apr 2022 09:18:27 +0200
+Message-Id: <20220405070400.003319251@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -50,75 +52,66 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jianyong Wu <jianyong.wu@arm.com>
+From: Hector Martin <marcan@marcan.st>
 
-[ Upstream commit ee017ee353506fcec58e481673e4331ff198a80e ]
+commit b50255c83b914defd61a57fbc81d452334b63f4c upstream.
 
-The 'fixmap' is a global resource and is used recursively by
-create pud mapping(), leading to a potential race condition in the
-presence of a concurrent call to alloc_init_pud():
+The driver was enabling IRQs before the message processing was
+initialized. This could cause IRQs to come in too early and crash the
+driver. Instead, move the IRQ enable and hostready to a bus preinit
+function, at which point everything is properly initialized.
 
-kernel_init thread                          virtio-mem workqueue thread
-==================                          ===========================
-
-  alloc_init_pud(...)                       alloc_init_pud(...)
-  pudp = pud_set_fixmap_offset(...)         pudp = pud_set_fixmap_offset(...)
-  READ_ONCE(*pudp)
-  pud_clear_fixmap(...)
-                                            READ_ONCE(*pudp) // CRASH!
-
-As kernel may sleep during creating pud mapping, introduce a mutex lock to
-serialise use of the fixmap entries by alloc_init_pud(). However, there is
-no need for locking in early boot stage and it doesn't work well with
-KASLR enabled when early boot. So, enable lock when system_state doesn't
-equal to "SYSTEM_BOOTING".
-
-Signed-off-by: Jianyong Wu <jianyong.wu@arm.com>
-Reviewed-by: Catalin Marinas <catalin.marinas@arm.com>
-Fixes: f4710445458c ("arm64: mm: use fixmap when creating page tables")
-Link: https://lore.kernel.org/r/20220201114400.56885-1-jianyong.wu@arm.com
-Signed-off-by: Will Deacon <will@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 9e37f045d5e7 ("brcmfmac: Adding PCIe bus layer support.")
+Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
+Reviewed-by: Arend van Spriel <arend.vanspriel@broadcom.com>
+Cc: stable@vger.kernel.org
+Signed-off-by: Hector Martin <marcan@marcan.st>
+Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+Signed-off-by: Kalle Valo <kvalo@kernel.org>
+Link: https://lore.kernel.org/r/20220131160713.245637-7-marcan@marcan.st
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm64/mm/mmu.c | 9 +++++++++
- 1 file changed, 9 insertions(+)
+ drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c |   16 +++++++++++++---
+ 1 file changed, 13 insertions(+), 3 deletions(-)
 
-diff --git a/arch/arm64/mm/mmu.c b/arch/arm64/mm/mmu.c
-index 044d2021c20c..37b8230cda6a 100644
---- a/arch/arm64/mm/mmu.c
-+++ b/arch/arm64/mm/mmu.c
-@@ -63,6 +63,7 @@ static pmd_t bm_pmd[PTRS_PER_PMD] __page_aligned_bss __maybe_unused;
- static pud_t bm_pud[PTRS_PER_PUD] __page_aligned_bss __maybe_unused;
- 
- static DEFINE_SPINLOCK(swapper_pgdir_lock);
-+static DEFINE_MUTEX(fixmap_lock);
- 
- void set_swapper_pgd(pgd_t *pgdp, pgd_t pgd)
+--- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c
++++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c
+@@ -1315,6 +1315,18 @@ static void brcmf_pcie_down(struct devic
  {
-@@ -329,6 +330,12 @@ static void alloc_init_pud(pgd_t *pgdp, unsigned long addr, unsigned long end,
- 	}
- 	BUG_ON(p4d_bad(p4d));
- 
-+	/*
-+	 * No need for locking during early boot. And it doesn't work as
-+	 * expected with KASLR enabled.
-+	 */
-+	if (system_state != SYSTEM_BOOTING)
-+		mutex_lock(&fixmap_lock);
- 	pudp = pud_set_fixmap_offset(p4dp, addr);
- 	do {
- 		pud_t old_pud = READ_ONCE(*pudp);
-@@ -359,6 +366,8 @@ static void alloc_init_pud(pgd_t *pgdp, unsigned long addr, unsigned long end,
- 	} while (pudp++, addr = next, addr != end);
- 
- 	pud_clear_fixmap();
-+	if (system_state != SYSTEM_BOOTING)
-+		mutex_unlock(&fixmap_lock);
  }
  
- static void __create_pgd_mapping(pgd_t *pgdir, phys_addr_t phys,
--- 
-2.34.1
-
++static int brcmf_pcie_preinit(struct device *dev)
++{
++	struct brcmf_bus *bus_if = dev_get_drvdata(dev);
++	struct brcmf_pciedev *buspub = bus_if->bus_priv.pcie;
++
++	brcmf_dbg(PCIE, "Enter\n");
++
++	brcmf_pcie_intr_enable(buspub->devinfo);
++	brcmf_pcie_hostready(buspub->devinfo);
++
++	return 0;
++}
+ 
+ static int brcmf_pcie_tx(struct device *dev, struct sk_buff *skb)
+ {
+@@ -1423,6 +1435,7 @@ static int brcmf_pcie_reset(struct devic
+ }
+ 
+ static const struct brcmf_bus_ops brcmf_pcie_bus_ops = {
++	.preinit = brcmf_pcie_preinit,
+ 	.txdata = brcmf_pcie_tx,
+ 	.stop = brcmf_pcie_down,
+ 	.txctl = brcmf_pcie_tx_ctlpkt,
+@@ -1795,9 +1808,6 @@ static void brcmf_pcie_setup(struct devi
+ 
+ 	init_waitqueue_head(&devinfo->mbdata_resp_wait);
+ 
+-	brcmf_pcie_intr_enable(devinfo);
+-	brcmf_pcie_hostready(devinfo);
+-
+ 	ret = brcmf_attach(&devinfo->pdev->dev);
+ 	if (ret)
+ 		goto fail;
 
 
