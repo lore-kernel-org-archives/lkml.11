@@ -2,42 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3972EC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 14:21:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 805F5C4167B
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 14:21:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382895AbiDEORZ (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 10:17:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47472 "EHLO
+        id S236210AbiDEOT5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 10:19:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53904 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239482AbiDEJdj (ORCPT
+        with ESMTP id S240011AbiDEJeA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:33:39 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DC1A267D;
-        Tue,  5 Apr 2022 02:22:11 -0700 (PDT)
+        Tue, 5 Apr 2022 05:34:00 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61A2B7DE3B;
+        Tue,  5 Apr 2022 02:23:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id F1B1DB81C69;
-        Tue,  5 Apr 2022 09:22:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5A6B3C385A0;
-        Tue,  5 Apr 2022 09:22:08 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id D4153CE1C77;
+        Tue,  5 Apr 2022 09:23:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E3A82C385A0;
+        Tue,  5 Apr 2022 09:23:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649150528;
-        bh=Hxo4l3G3ezXXxyeir2RGiMkhpL4xQTk/wS0+4Y5M1K8=;
+        s=korg; t=1649150591;
+        bh=odjEBd93PReyGhAg8bd0F+x9rMuWnwtR8XTzfDHioAk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vc285Kt1soatuUK1epdTtCN85gfsltYDXXHr69RyQsd2W0/5Gs6YrAbsC4aOK/TKb
-         70K06N8B135S8OgfUOioANLY8GHTS4+L9oCbVjSAlX7qIHBxGgLFVdTr6zhbfUM+4V
-         kl+TG6blrkthjyfqF7lMltI45zJZJTQgdHswFWzE=
+        b=1tZC9tiMHsC+jWyDqiShOMOQh466NuVXEjJGMgSK3nTWX9BGQOANEn4DPSShiyNwP
+         ++GvryP/hore94ozqvgE5LYCPnjYFlMF8jWmwZSbjmv5mcevAhOhVvoRnp553ORJzV
+         I3j1hrE8/1ylSP3UdZF+/sTb/hmQNdz1fsC/EmkU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
-        Johan Hovold <johan@kernel.org>
-Subject: [PATCH 5.15 049/913] greybus: svc: fix an error handling bug in gb_svc_hello()
-Date:   Tue,  5 Apr 2022 09:18:31 +0200
-Message-Id: <20220405070341.288486547@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Charan Teja Kalla <quic_charante@quicinc.com>,
+        Michal Hocko <mhocko@suse.com>,
+        Suren Baghdasaryan <surenb@google.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        David Rientjes <rientjes@google.com>,
+        Nadav Amit <nadav.amit@gmail.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Subject: [PATCH 5.15 109/913] Revert "mm: madvise: skip unmapped vma holes passed to process_madvise"
+Date:   Tue,  5 Apr 2022 09:19:31 +0200
+Message-Id: <20220405070343.094253192@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
 References: <20220405070339.801210740@linuxfoundation.org>
@@ -49,41 +55,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dan Carpenter <dan.carpenter@oracle.com>
+From: Charan Teja Kalla <quic_charante@quicinc.com>
 
-commit 5f8583a3b7552092582a92e7bbd2153319929ad7 upstream.
+commit e6b0a7b357659c332231621e4315658d062c23ee upstream.
 
-Cleanup if gb_svc_queue_deferred_request() fails.
+This reverts commit 08095d6310a7 ("mm: madvise: skip unmapped vma holes
+passed to process_madvise") as process_madvise() fails to return the
+exact processed bytes in other cases too.
 
-Link: https://lore.kernel.org/r/20220202072016.GA6748@kili
-Fixes: ee2f2074fdb2 ("greybus: svc: reconfig APBridgeA-Switch link to handle required load")
-Cc: stable@vger.kernel.org      # 4.9
-[johan: fix commit summary prefix and rename label ]
-Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
-Signed-off-by: Johan Hovold <johan@kernel.org>
-Link: https://lore.kernel.org/r/20220202113347.1288-2-johan@kernel.org
+As an example: if process_madvise() hits mlocked pages after processing
+some initial bytes passed in [start, end), it just returns EINVAL
+although some bytes are processed.  Thus making an exception only for
+ENOMEM is partially fixing the problem of returning the proper advised
+bytes.
+
+Thus revert this patch and return proper bytes advised.
+
+Link: https://lkml.kernel.org/r/e73da1304a88b6a8a11907045117cccf4c2b8374.1648046642.git.quic_charante@quicinc.com
+Fixes: 08095d6310a7ce ("mm: madvise: skip unmapped vma holes passed to process_madvise")
+Signed-off-by: Charan Teja Kalla <quic_charante@quicinc.com>
+Acked-by: Michal Hocko <mhocko@suse.com>
+Cc: Suren Baghdasaryan <surenb@google.com>
+Cc: Vlastimil Babka <vbabka@suse.cz>
+Cc: David Rientjes <rientjes@google.com>
+Cc: Nadav Amit <nadav.amit@gmail.com>
+Cc: <stable@vger.kernel.org>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/greybus/svc.c |    8 +++++++-
- 1 file changed, 7 insertions(+), 1 deletion(-)
+ mm/madvise.c |    9 +--------
+ 1 file changed, 1 insertion(+), 8 deletions(-)
 
---- a/drivers/greybus/svc.c
-+++ b/drivers/greybus/svc.c
-@@ -866,8 +866,14 @@ static int gb_svc_hello(struct gb_operat
+--- a/mm/madvise.c
++++ b/mm/madvise.c
+@@ -1287,16 +1287,9 @@ SYSCALL_DEFINE5(process_madvise, int, pi
  
- 	gb_svc_debugfs_init(svc);
- 
--	return gb_svc_queue_deferred_request(op);
-+	ret = gb_svc_queue_deferred_request(op);
-+	if (ret)
-+		goto err_remove_debugfs;
- 
-+	return 0;
-+
-+err_remove_debugfs:
-+	gb_svc_debugfs_exit(svc);
- err_unregister_device:
- 	gb_svc_watchdog_destroy(svc);
- 	device_del(&svc->dev);
+ 	while (iov_iter_count(&iter)) {
+ 		iovec = iov_iter_iovec(&iter);
+-		/*
+-		 * do_madvise returns ENOMEM if unmapped holes are present
+-		 * in the passed VMA. process_madvise() is expected to skip
+-		 * unmapped holes passed to it in the 'struct iovec' list
+-		 * and not fail because of them. Thus treat -ENOMEM return
+-		 * from do_madvise as valid and continue processing.
+-		 */
+ 		ret = do_madvise(mm, (unsigned long)iovec.iov_base,
+ 					iovec.iov_len, behavior);
+-		if (ret < 0 && ret != -ENOMEM)
++		if (ret < 0)
+ 			break;
+ 		iov_iter_advance(&iter, iovec.iov_len);
+ 	}
 
 
