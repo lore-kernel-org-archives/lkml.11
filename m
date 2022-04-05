@@ -2,142 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B6595C4321E
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:11:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F43DC43219
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:12:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1573891AbiDEWxo (ORCPT
+        id S1573941AbiDEWxt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 18:53:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59944 "EHLO
+        Tue, 5 Apr 2022 18:53:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48542 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349963AbiDEJwM (ORCPT
+        with ESMTP id S1443182AbiDEPjI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:52:12 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 679B93466F;
-        Tue,  5 Apr 2022 02:50:13 -0700 (PDT)
+        Tue, 5 Apr 2022 11:39:08 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DE6D147518;
+        Tue,  5 Apr 2022 06:55:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1D0AFB81B7A;
-        Tue,  5 Apr 2022 09:50:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 61627C385A1;
-        Tue,  5 Apr 2022 09:50:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649152210;
-        bh=2lkpK1T+wf6Ao5AxessnGv/w2OS1dIUjk/FEv6B0iUY=;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 50E3E6190C;
+        Tue,  5 Apr 2022 13:55:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ACDFCC385A7;
+        Tue,  5 Apr 2022 13:55:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649166901;
+        bh=WJDtWZlx8PhCLSQbiQxyxwVjD8Kor4/GI5UPPJoh1tc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=aysHmXTUnDJf0Vm4ia3nAgfm0Dmlfpmu0PGrzLdEv+S9QvzTKsWYodZilhdZQX3FT
-         v1khR+eqMGEwGyUaRDl+LBr0iisScTti39J6x7oUHcn6kCnLYbqnqN0s1jq5dH5P7v
-         FBA90MQZE0onOISAmT3UZCu62kpZDjZ7OXwYSByw=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+        b=P7sO+dfP4ImhYMQerSrgVvrKvDHH0K1NUbkRU3Tead6/Q57oB2bNx0OvgVFPFQqr7
+         IuL0Q7hWkOQpY8BWqat0kIhKOCCniqIIWIDl//iqs/khijBRdC9mYmS07SRfiv/Lyb
+         pIAH3gtNl99wtf5VHao4vwWH5ZhKa8/A5N3kQxsFsjH9XDXGYJdUbq0hunie9Qjb77
+         EUx264vcf4L+HHqBd1R/+tBOA3J0n7qMytgfPvgIMt3TLVd+WYhly/NW2yBoaBSIk0
+         eOgGVmAYN8kE8jP4EsimmLZtoeanauBM98gWg1EZdqS3cU4o6BNCiapbB5ciCUHdp4
+         CL6RZBd/HFADQ==
+Received: from sofa.misterjones.org ([185.219.108.64] helo=why.lan)
+        by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <maz@kernel.org>)
+        id 1nbje7-001q4g-Oi; Tue, 05 Apr 2022 14:54:59 +0100
+From:   Marc Zyngier <maz@kernel.org>
 To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Richard Haines <richard_c_haines@btinternet.com>,
-        Paul Moore <paul@paul-moore.com>,
-        Sasha Levin <sashal@kernel.org>,
-        Demi Marie Obenour <demiobenour@gmail.com>
-Subject: [PATCH 5.15 694/913] selinux: allow FIOCLEX and FIONCLEX with policy capability
-Date:   Tue,  5 Apr 2022 09:29:16 +0200
-Message-Id: <20220405070400.637793824@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
-User-Agent: quilt/0.66
+Cc:     Linus Walleij <linus.walleij@linaro.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Joey Gouly <joey.gouly@arm.com>,
+        Jonathan Hunter <jonathanh@nvidia.com>,
+        Hector Martin <marcan@marcan.st>,
+        Sven Peter <sven@svenpeter.dev>,
+        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Andy Gross <agross@kernel.org>,
+        Jeffrey Hugo <jeffrey.l.hugo@gmail.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Basavaraj Natikar <Basavaraj.Natikar@amd.com>,
+        Shyam Sundar S K <Shyam-sundar.S-k@amd.com>,
+        linux-gpio@vger.kernel.org, linux-tegra@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-arm-msm@vger.kernel.org, kernel-team@android.com
+Subject: [PATCH v2 02/10] gpio: Expose the gpiochip_irq_re[ql]res helpers
+Date:   Tue,  5 Apr 2022 14:54:36 +0100
+Message-Id: <20220405135444.199295-3-maz@kernel.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220405135444.199295-1-maz@kernel.org>
+References: <20220405135444.199295-1-maz@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 185.219.108.64
+X-SA-Exim-Rcpt-To: linux-kernel@vger.kernel.org, linus.walleij@linaro.org, brgl@bgdev.pl, thierry.reding@gmail.com, joey.gouly@arm.com, jonathanh@nvidia.com, marcan@marcan.st, sven@svenpeter.dev, alyssa@rosenzweig.io, bjorn.andersson@linaro.org, agross@kernel.org, jeffrey.l.hugo@gmail.com, tglx@linutronix.de, Basavaraj.Natikar@amd.com, Shyam-sundar.S-k@amd.com, linux-gpio@vger.kernel.org, linux-tegra@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-arm-msm@vger.kernel.org, kernel-team@android.com
+X-SA-Exim-Mail-From: maz@kernel.org
+X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Richard Haines <richard_c_haines@btinternet.com>
+The GPIO subsystem has a couple of internal helpers to manage
+resources on behalf of the irqchip. Expose them so that GPIO
+drivers can use them directly.
 
-[ Upstream commit 65881e1db4e948614d9eb195b8e1197339822949 ]
-
-These ioctls are equivalent to fcntl(fd, F_SETFD, flags), which SELinux
-always allows too.  Furthermore, a failed FIOCLEX could result in a file
-descriptor being leaked to a process that should not have access to it.
-
-As this patch removes access controls, a policy capability needs to be
-enabled in policy to always allow these ioctls.
-
-Based-on-patch-by: Demi Marie Obenour <demiobenour@gmail.com>
-Signed-off-by: Richard Haines <richard_c_haines@btinternet.com>
-[PM: subject line tweak]
-Signed-off-by: Paul Moore <paul@paul-moore.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Marc Zyngier <maz@kernel.org>
 ---
- security/selinux/hooks.c                   | 6 ++++++
- security/selinux/include/policycap.h       | 1 +
- security/selinux/include/policycap_names.h | 3 ++-
- security/selinux/include/security.h        | 7 +++++++
- 4 files changed, 16 insertions(+), 1 deletion(-)
+ drivers/gpio/gpiolib.c      | 6 ++++--
+ include/linux/gpio/driver.h | 4 ++++
+ 2 files changed, 8 insertions(+), 2 deletions(-)
 
-diff --git a/security/selinux/hooks.c b/security/selinux/hooks.c
-index 9a89e456d378..9ce029b2f226 100644
---- a/security/selinux/hooks.c
-+++ b/security/selinux/hooks.c
-@@ -3795,6 +3795,12 @@ static int selinux_file_ioctl(struct file *file, unsigned int cmd,
- 					    CAP_OPT_NONE, true);
- 		break;
- 
-+	case FIOCLEX:
-+	case FIONCLEX:
-+		if (!selinux_policycap_ioctl_skip_cloexec())
-+			error = ioctl_has_perm(cred, file, FILE__IOCTL, (u16) cmd);
-+		break;
-+
- 	/* default case assumes that the command will go
- 	 * to the file's ioctl() function.
- 	 */
-diff --git a/security/selinux/include/policycap.h b/security/selinux/include/policycap.h
-index 2ec038efbb03..a9e572ca4fd9 100644
---- a/security/selinux/include/policycap.h
-+++ b/security/selinux/include/policycap.h
-@@ -11,6 +11,7 @@ enum {
- 	POLICYDB_CAPABILITY_CGROUPSECLABEL,
- 	POLICYDB_CAPABILITY_NNP_NOSUID_TRANSITION,
- 	POLICYDB_CAPABILITY_GENFS_SECLABEL_SYMLINKS,
-+	POLICYDB_CAPABILITY_IOCTL_SKIP_CLOEXEC,
- 	__POLICYDB_CAPABILITY_MAX
- };
- #define POLICYDB_CAPABILITY_MAX (__POLICYDB_CAPABILITY_MAX - 1)
-diff --git a/security/selinux/include/policycap_names.h b/security/selinux/include/policycap_names.h
-index b89289f092c9..ebd64afe1def 100644
---- a/security/selinux/include/policycap_names.h
-+++ b/security/selinux/include/policycap_names.h
-@@ -12,7 +12,8 @@ const char *selinux_policycap_names[__POLICYDB_CAPABILITY_MAX] = {
- 	"always_check_network",
- 	"cgroup_seclabel",
- 	"nnp_nosuid_transition",
--	"genfs_seclabel_symlinks"
-+	"genfs_seclabel_symlinks",
-+	"ioctl_skip_cloexec"
- };
- 
- #endif /* _SELINUX_POLICYCAP_NAMES_H_ */
-diff --git a/security/selinux/include/security.h b/security/selinux/include/security.h
-index ac0ece01305a..c0d966020ebd 100644
---- a/security/selinux/include/security.h
-+++ b/security/selinux/include/security.h
-@@ -219,6 +219,13 @@ static inline bool selinux_policycap_genfs_seclabel_symlinks(void)
- 	return READ_ONCE(state->policycap[POLICYDB_CAPABILITY_GENFS_SECLABEL_SYMLINKS]);
+diff --git a/drivers/gpio/gpiolib.c b/drivers/gpio/gpiolib.c
+index 48191e62a3cc..36e436a66e09 100644
+--- a/drivers/gpio/gpiolib.c
++++ b/drivers/gpio/gpiolib.c
+@@ -1423,19 +1423,21 @@ static int gpiochip_to_irq(struct gpio_chip *gc, unsigned int offset)
+ 	return irq_create_mapping(domain, offset);
  }
  
-+static inline bool selinux_policycap_ioctl_skip_cloexec(void)
-+{
-+	struct selinux_state *state = &selinux_state;
-+
-+	return READ_ONCE(state->policycap[POLICYDB_CAPABILITY_IOCTL_SKIP_CLOEXEC]);
-+}
-+
- struct selinux_policy_convert_data;
+-static int gpiochip_irq_reqres(struct irq_data *d)
++int gpiochip_irq_reqres(struct irq_data *d)
+ {
+ 	struct gpio_chip *gc = irq_data_get_irq_chip_data(d);
  
- struct selinux_load_state {
+ 	return gpiochip_reqres_irq(gc, d->hwirq);
+ }
++EXPORT_SYMBOL(gpiochip_irq_reqres);
+ 
+-static void gpiochip_irq_relres(struct irq_data *d)
++void gpiochip_irq_relres(struct irq_data *d)
+ {
+ 	struct gpio_chip *gc = irq_data_get_irq_chip_data(d);
+ 
+ 	gpiochip_relres_irq(gc, d->hwirq);
+ }
++EXPORT_SYMBOL(gpiochip_irq_relres);
+ 
+ static void gpiochip_irq_mask(struct irq_data *d)
+ {
+diff --git a/include/linux/gpio/driver.h b/include/linux/gpio/driver.h
+index 98c93510640e..066bcfdf878d 100644
+--- a/include/linux/gpio/driver.h
++++ b/include/linux/gpio/driver.h
+@@ -579,6 +579,10 @@ void gpiochip_relres_irq(struct gpio_chip *gc, unsigned int offset);
+ void gpiochip_disable_irq(struct gpio_chip *gc, unsigned int offset);
+ void gpiochip_enable_irq(struct gpio_chip *gc, unsigned int offset);
+ 
++/* irq_data versions of the above */
++int gpiochip_irq_reqres(struct irq_data *data);
++void gpiochip_irq_relres(struct irq_data *data);
++
+ /* Line status inquiry for drivers */
+ bool gpiochip_line_is_open_drain(struct gpio_chip *gc, unsigned int offset);
+ bool gpiochip_line_is_open_source(struct gpio_chip *gc, unsigned int offset);
 -- 
 2.34.1
-
-
 
