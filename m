@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B679C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 21:15:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9BFDEC3527B
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 21:14:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231463AbiDEVGE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 17:06:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33776 "EHLO
+        id S235852AbiDEVLr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 17:11:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43986 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243876AbiDEKhs (ORCPT
+        with ESMTP id S232972AbiDEJsi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:37:48 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70A0872453;
-        Tue,  5 Apr 2022 03:23:24 -0700 (PDT)
+        Tue, 5 Apr 2022 05:48:38 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8AFEB9285C;
+        Tue,  5 Apr 2022 02:35:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0E2D9616D7;
-        Tue,  5 Apr 2022 10:23:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 237C7C385A0;
-        Tue,  5 Apr 2022 10:23:22 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 47C35B81B75;
+        Tue,  5 Apr 2022 09:35:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 99996C385A2;
+        Tue,  5 Apr 2022 09:35:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649154203;
-        bh=2l3NMKJwTl8iPLfY5ms0FYzbxI/GUgoliNVkJUrhCcs=;
+        s=korg; t=1649151355;
+        bh=GltpdBVeULqUGpBO1nAxh639HFSQaoT6tOmZcNXQin4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FsFcYQaDkqf4W63cFtnw0FOFnlimc1A+HoJlRO1sNx7WMS8ho21TyGP7/OqHZX25n
-         7QKTUFLc+lgLPxHcu4B8MkmiWxYti7+u08XoC5GuVzrsFxjm3Au19vCspY5pg6G1t2
-         uS8Irztvo4gR39y/z5A0llZQz4ZS4JNLTK+RL1zQ=
+        b=aMi1m1bFpYsX3FR/wzkQdbKww6JeAYOoo6oi87k4NkgXLt/blrVPPLF86leV5MRQC
+         w9LYo3bxBiFVbNDKBgPPFdl9wWmD5CNpFzID6uRYegFIfzvt7++0AVM2k5CkeJsHWH
+         Y0tPnSSrOOFUTCDGYvX7e8tyYCoaBTMUEvMM8PME=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zeal Robot <zealci@zte.com.cn>,
-        Jing Yao <yao.jing2@zte.com.cn>, Helge Deller <deller@gmx.de>,
+        stable@vger.kernel.org, Wei Fu <fuweid89@gmail.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 496/599] video: fbdev: omapfb: panel-tpo-td043mtea1: Use sysfs_emit() instead of snprintf()
-Date:   Tue,  5 Apr 2022 09:33:10 +0200
-Message-Id: <20220405070313.589083943@linuxfoundation.org>
+Subject: [PATCH 5.15 386/913] bpftool: Only set obj->skeleton on complete success
+Date:   Tue,  5 Apr 2022 09:24:08 +0200
+Message-Id: <20220405070351.417249214@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,42 +49,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jing Yao <yao.jing2@zte.com.cn>
+From: Wei Fu <fuweid89@gmail.com>
 
-[ Upstream commit c07a039cbb96748f54c02995bae8131cc9a73b0a ]
+[ Upstream commit 0991f6a38f576aa9a5e34713e23c998a3310d4d0 ]
 
-Use sysfs_emit instead of scnprintf, snprintf or sprintf.
+After `bpftool gen skeleton`, the ${bpf_app}.skel.h will provide that
+${bpf_app_name}__open helper to load bpf. If there is some error
+like ENOMEM, the ${bpf_app_name}__open will rollback(free) the allocated
+object, including `bpf_object_skeleton`.
 
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: Jing Yao <yao.jing2@zte.com.cn>
-Signed-off-by: Helge Deller <deller@gmx.de>
+Since the ${bpf_app_name}__create_skeleton set the obj->skeleton first
+and not rollback it when error, it will cause double-free in
+${bpf_app_name}__destory at ${bpf_app_name}__open. Therefore, we should
+set the obj->skeleton before return 0;
+
+Fixes: 5dc7a8b21144 ("bpftool, selftests/bpf: Embed object file inside skeleton")
+Signed-off-by: Wei Fu <fuweid89@gmail.com>
+Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
+Link: https://lore.kernel.org/bpf/20220108084008.1053111-1-fuweid89@gmail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../video/fbdev/omap2/omapfb/displays/panel-tpo-td043mtea1.c  | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ tools/bpf/bpftool/gen.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/video/fbdev/omap2/omapfb/displays/panel-tpo-td043mtea1.c b/drivers/video/fbdev/omap2/omapfb/displays/panel-tpo-td043mtea1.c
-index bb85b21f0724..9f6ef9e04d9c 100644
---- a/drivers/video/fbdev/omap2/omapfb/displays/panel-tpo-td043mtea1.c
-+++ b/drivers/video/fbdev/omap2/omapfb/displays/panel-tpo-td043mtea1.c
-@@ -169,7 +169,7 @@ static ssize_t tpo_td043_vmirror_show(struct device *dev,
- {
- 	struct panel_drv_data *ddata = dev_get_drvdata(dev);
- 
--	return snprintf(buf, PAGE_SIZE, "%d\n", ddata->vmirror);
-+	return sysfs_emit(buf, "%d\n", ddata->vmirror);
- }
- 
- static ssize_t tpo_td043_vmirror_store(struct device *dev,
-@@ -199,7 +199,7 @@ static ssize_t tpo_td043_mode_show(struct device *dev,
- {
- 	struct panel_drv_data *ddata = dev_get_drvdata(dev);
- 
--	return snprintf(buf, PAGE_SIZE, "%d\n", ddata->mode);
-+	return sysfs_emit(buf, "%d\n", ddata->mode);
- }
- 
- static ssize_t tpo_td043_mode_store(struct device *dev,
+diff --git a/tools/bpf/bpftool/gen.c b/tools/bpf/bpftool/gen.c
+index d40d92bbf0e4..07fa502a4ac1 100644
+--- a/tools/bpf/bpftool/gen.c
++++ b/tools/bpf/bpftool/gen.c
+@@ -870,7 +870,6 @@ static int do_skeleton(int argc, char **argv)
+ 			s = (struct bpf_object_skeleton *)calloc(1, sizeof(*s));\n\
+ 			if (!s)						    \n\
+ 				goto err;				    \n\
+-			obj->skeleton = s;				    \n\
+ 									    \n\
+ 			s->sz = sizeof(*s);				    \n\
+ 			s->name = \"%1$s\";				    \n\
+@@ -955,6 +954,7 @@ static int do_skeleton(int argc, char **argv)
+ 		\n\
+ 		\";							    \n\
+ 									    \n\
++			obj->skeleton = s;				    \n\
+ 			return 0;					    \n\
+ 		err:							    \n\
+ 			bpf_object__destroy_skeleton(s);		    \n\
 -- 
 2.34.1
 
