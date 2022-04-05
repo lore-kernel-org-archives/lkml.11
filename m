@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B963C35280
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AC850C4707F
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:19:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242370AbiDEMSd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 08:18:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46806 "EHLO
+        id S1350008AbiDEMTn (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 08:19:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46798 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244996AbiDEIxA (ORCPT
+        with ESMTP id S244990AbiDEIxA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Apr 2022 04:53:00 -0400
 Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27E35DFA5;
-        Tue,  5 Apr 2022 01:48:55 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D15E132;
+        Tue,  5 Apr 2022 01:48:44 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 9954FCE1C6B;
-        Tue,  5 Apr 2022 08:48:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AACB1C385A1;
-        Tue,  5 Apr 2022 08:48:51 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 7FC3DCE1B55;
+        Tue,  5 Apr 2022 08:48:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8EDCDC385A0;
+        Tue,  5 Apr 2022 08:48:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649148532;
-        bh=BhygN3uj+mbd1jYYLWBIeNcIvrKJUr9Ky4rdk79bHNg=;
+        s=korg; t=1649148521;
+        bh=3WCk8sBpIkZCS0IofelWfKv101rypvwobF2dXzA2GKA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=zZ2cVmCLgArI3dFoulTVwmX5qGeZ9ioPglyowsFB3tgs1yrd76+sbtKool3aMKfH+
-         kNkoQ1favbZ75a8uKOPkfRl3m/VJDLHIFvsG7fVPWZ1A6dKPyfzWd04KDuJF696vJL
-         AaE8jnZvTcJtZIBkb6fonCbW2FO1SGRrHf/AJypY=
+        b=r1nPA8E5pvIZOVPYOn75JNMosINPYpxyyeSb32/MX1HD4qR+8mTZUfk/Fyqhgdyz2
+         EwGQ1SiG74vJ5IodUhaJKbwLsk81f96ZW7MdqTV11jCo1EH+aAOq9eNLDTX26LL7WQ
+         HZ7vmBxfU9TKv5TgmFWpG1WkZZ4EQc9k9lVTKHCE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, TOTE Robot <oslab@tsinghua.edu.cn>,
-        Jia-Ju Bai <baijiaju1990@gmail.com>,
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Chris Morgan <macromorgan@hotmail.com>,
         Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0351/1017] ASoC: acp: check the return value of devm_kzalloc() in acp_legacy_dai_links_create()
-Date:   Tue,  5 Apr 2022 09:21:04 +0200
-Message-Id: <20220405070404.701631180@linuxfoundation.org>
+Subject: [PATCH 5.16 0383/1017] ASoC: rk817: Fix missing clk_disable_unprepare() in rk817_platform_probe
+Date:   Tue,  5 Apr 2022 09:21:36 +0200
+Message-Id: <20220405070405.655068781@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -50,36 +51,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jia-Ju Bai <baijiaju1990@gmail.com>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit 431f9a77a4a62694ce90742d1f4c5abe1b8b6612 ]
+[ Upstream commit a6b44a2518a08348bd0f0401e4d2b99233bbabc2 ]
 
-The function devm_kzalloc() in acp_legacy_dai_links_create() can fail,
-so its return value should be checked.
+Fix the missing clk_disable_unprepare() before return
+from rk817_platform_probe() in the error handling case.
 
-Fixes: d4c750f2c7d4 ("ASoC: amd: acp: Add generic machine driver support for ACP cards")
-Reported-by: TOTE Robot <oslab@tsinghua.edu.cn>
-Signed-off-by: Jia-Ju Bai <baijiaju1990@gmail.com>
-Link: https://lore.kernel.org/r/20220225131645.27556-1-baijiaju1990@gmail.com
+Fixes: 0d6a04da9b25 ("ASoC: Add Rockchip rk817 audio CODEC support")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Tested-by: Chris Morgan <macromorgan@hotmail.com>
+Link: https://lore.kernel.org/r/20220307090146.4104-1-linmq006@gmail.com
 Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/amd/acp/acp-mach-common.c | 2 ++
- 1 file changed, 2 insertions(+)
+ sound/soc/codecs/rk817_codec.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/sound/soc/amd/acp/acp-mach-common.c b/sound/soc/amd/acp/acp-mach-common.c
-index 7785f12aa006..55ad3c70f0ef 100644
---- a/sound/soc/amd/acp/acp-mach-common.c
-+++ b/sound/soc/amd/acp/acp-mach-common.c
-@@ -531,6 +531,8 @@ int acp_legacy_dai_links_create(struct snd_soc_card *card)
- 		num_links++;
+diff --git a/sound/soc/codecs/rk817_codec.c b/sound/soc/codecs/rk817_codec.c
+index 03f24edfe4f6..8fffe378618d 100644
+--- a/sound/soc/codecs/rk817_codec.c
++++ b/sound/soc/codecs/rk817_codec.c
+@@ -508,12 +508,14 @@ static int rk817_platform_probe(struct platform_device *pdev)
+ 	if (ret < 0) {
+ 		dev_err(&pdev->dev, "%s() register codec error %d\n",
+ 			__func__, ret);
+-		goto err_;
++		goto err_clk;
+ 	}
  
- 	links = devm_kzalloc(dev, sizeof(struct snd_soc_dai_link) * num_links, GFP_KERNEL);
-+	if (!links)
-+		return -ENOMEM;
+ 	return 0;
+-err_:
  
- 	if (drv_data->hs_cpu_id == I2S_SP) {
- 		links[i].name = "acp-headset-codec";
++err_clk:
++	clk_disable_unprepare(rk817_codec_data->mclk);
++err_:
+ 	return ret;
+ }
+ 
 -- 
 2.34.1
 
