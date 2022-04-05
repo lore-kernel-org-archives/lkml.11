@@ -2,133 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 928C6C35294
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D65CC35280
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:17:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1574517AbiDEW40 (ORCPT
+        id S1574452AbiDEW4L (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 18:56:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48780 "EHLO
+        Tue, 5 Apr 2022 18:56:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34020 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358070AbiDEK15 (ORCPT
+        with ESMTP id S1384117AbiDEM1L (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:27:57 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4201559A79;
-        Tue,  5 Apr 2022 03:14:33 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D32EBB81B7A;
-        Tue,  5 Apr 2022 10:14:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4CDAAC385A1;
-        Tue,  5 Apr 2022 10:14:30 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649153670;
-        bh=ThlCVsXJkFp+URlGyDlaTdGefmxQN9AWHQIK7TJ1LVE=;
+        Tue, 5 Apr 2022 08:27:11 -0400
+Received: from conuserg-12.nifty.com (conuserg-12.nifty.com [210.131.2.79])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB2E1574AB;
+        Tue,  5 Apr 2022 04:35:17 -0700 (PDT)
+Received: from grover.. (133-32-177-133.west.xps.vectant.ne.jp [133.32.177.133]) (authenticated)
+        by conuserg-12.nifty.com with ESMTP id 235BYCGs000464;
+        Tue, 5 Apr 2022 20:34:16 +0900
+DKIM-Filter: OpenDKIM Filter v2.10.3 conuserg-12.nifty.com 235BYCGs000464
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
+        s=dec2015msa; t=1649158456;
+        bh=jQYNKCFxuPQP3ZPrlr5taAXi8gXxcKaNemFjBDbWpQI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Jzva5FovJpMqoQLIUbrxoBpPlWsGgoSGfVPLs2NgNAkKAAWuukFW5mgQDVcc4+gzX
-         OhycbQPqY6yT54LJNMF3qlZBnyoXUwq7eey4ZPFegcSTwR/THXDAVGWlAeqw50HYar
-         hzxt+W+ejYRbJ/M+ckiFNl9ABDwxDZPyvkForSXw=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Stephen Boyd <swboyd@chromium.org>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        Sasha Levin <sashal@kernel.org>,
-        Kuogee Hsieh <quic_khsieh@quicinc.com>
-Subject: [PATCH 5.10 305/599] drm/msm/dp: populate connector of struct dp_panel
-Date:   Tue,  5 Apr 2022 09:29:59 +0200
-Message-Id: <20220405070307.909912772@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
-User-Agent: quilt/0.66
+        b=KIbFiadPsQ0UMZCQcC/JAQ4dYrCBvGqON+8YV7gUab1+ukbGOIE3lm8KFYlA+dL6S
+         J5z3+ipr5aPapMUf6ro01z2XRhnGSYgMWgg9/PcbGJ4OGJUbcZeozObKqKS8V1Bgo+
+         n6q8yked1G7CVRG8o5QraRVE+WrNzXCTZ+7RvPaUM4eTNqKVsNY+6bbSuByPRIfuq4
+         8ksMsfKJTh3s6y/zWKTqUXTxKwCslsDVDa3bQ2s9KTqfmdpCh3wtWMKrCJaZ9ziPkn
+         GDx3mhB4z4FIDquk5BpblgbpDe3B3sAogF/KKfwtYVYYpY0VmOW3lXe0yT55uLgud5
+         JfUXVDEqeDvtQ==
+X-Nifty-SrcIP: [133.32.177.133]
+From:   Masahiro Yamada <masahiroy@kernel.org>
+To:     linux-kbuild@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Michal Marek <michal.lkml@markovi.net>,
+        Nick Desaulniers <ndesaulniers@google.com>
+Subject: [PATCH v2 06/10] modpost: remove annoying namespace_from_kstrtabns()
+Date:   Tue,  5 Apr 2022 20:33:54 +0900
+Message-Id: <20220405113359.2880241-7-masahiroy@kernel.org>
+X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20220405113359.2880241-1-masahiroy@kernel.org>
+References: <20220405113359.2880241-1-masahiroy@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kuogee Hsieh <quic_khsieh@quicinc.com>
+There are two call sites for sym_update_namespace().
 
-[ Upstream commit 5e602f5156910c7b19661699896cb6e3fb94fab9 ]
+When the symbol has no namespace, s->namespace is set to NULL,
+but the conversion from "" to NULL is done in two different places.
 
-DP CTS test case 4.2.2.6 has valid edid with bad checksum on purpose
-and expect DP source return correct checksum. During drm edid read,
-correct edid checksum is calculated and stored at
-connector::real_edid_checksum.
+[1] read_symbols()
 
-The problem is struct dp_panel::connector never be assigned, instead the
-connector is stored in struct msm_dp::connector. When we run compliance
-testing test case 4.2.2.6 dp_panel_handle_sink_request() won't have a valid
-edid set in struct dp_panel::edid so we'll try to use the connectors
-real_edid_checksum and hit a NULL pointer dereference error because the
-connector pointer is never assigned.
+  This gets the namespace from __kstrtabns_<symbol>. If the symbol has
+  no namespace, sym_get_data(info, sym) returns the empty string "".
+  namespace_from_kstrtabns() converts it to NULL before it is passed to
+  sym_update_namespace().
 
-Changes in V2:
--- populate panel connector at msm_dp_modeset_init() instead of at dp_panel_read_sink_caps()
+[2] read_dump()
 
-Changes in V3:
--- remove unhelpful kernel crash trace commit text
--- remove renaming dp_display parameter to dp
+  This gets the namespace from the dump file, *.symvers. If the symbol
+  has no namespace, the 'namespace' is the empty string "", which is
+  directly passed into sym_update_namespace(). The conversion from
+  "" to NULL is done in sym_update_namespace().
 
-Changes in V4:
--- add more details to commit text
+namespace_from_kstrtabns() exists only for creating this inconsistency.
 
-Changes in v10:
---  group into one series
+By removing it, sym_update_namespace() is consistently passed with ""
+when the symbol has no namespace.
 
-Changes in v11:
--- drop drm/msm/dp: dp_link_parse_sink_count() return immediately if aux read
-
-Fixes: 7948fe12d47 ("drm/msm/dp: return correct edid checksum after corrupted edid checksum read")
-Signee-off-by: Kuogee Hsieh <quic_khsieh@quicinc.com>
-
-Reviewed-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Reviewed-by: Stephen Boyd <swboyd@chromium.org>
-Link: https://lore.kernel.org/r/1642531648-8448-3-git-send-email-quic_khsieh@quicinc.com
-Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
 ---
- drivers/gpu/drm/msm/dp/dp_display.c | 5 +++++
- 1 file changed, 5 insertions(+)
 
-diff --git a/drivers/gpu/drm/msm/dp/dp_display.c b/drivers/gpu/drm/msm/dp/dp_display.c
-index 66f2ea3d42fc..6cd6934c8c9f 100644
---- a/drivers/gpu/drm/msm/dp/dp_display.c
-+++ b/drivers/gpu/drm/msm/dp/dp_display.c
-@@ -1336,6 +1336,7 @@ int msm_dp_modeset_init(struct msm_dp *dp_display, struct drm_device *dev,
- 			struct drm_encoder *encoder)
+Changes in v2:
+  - new
+
+ scripts/mod/modpost.c | 14 ++------------
+ 1 file changed, 2 insertions(+), 12 deletions(-)
+
+diff --git a/scripts/mod/modpost.c b/scripts/mod/modpost.c
+index 2a202764ff48..522d5249d196 100644
+--- a/scripts/mod/modpost.c
++++ b/scripts/mod/modpost.c
+@@ -369,13 +369,6 @@ static enum export export_from_secname(struct elf_info *elf, unsigned int sec)
+ 		return export_unknown;
+ }
+ 
+-static const char *namespace_from_kstrtabns(const struct elf_info *info,
+-					    const Elf_Sym *sym)
+-{
+-	const char *value = sym_get_data(info, sym);
+-	return value[0] ? value : NULL;
+-}
+-
+ static void sym_update_namespace(const char *symname, const char *namespace)
  {
- 	struct msm_drm_private *priv;
-+	struct dp_display_private *dp_priv;
- 	int ret;
- 
- 	if (WARN_ON(!encoder) || WARN_ON(!dp_display) || WARN_ON(!dev))
-@@ -1344,6 +1345,8 @@ int msm_dp_modeset_init(struct msm_dp *dp_display, struct drm_device *dev,
- 	priv = dev->dev_private;
- 	dp_display->drm_dev = dev;
- 
-+	dp_priv = container_of(dp_display, struct dp_display_private, dp_display);
-+
- 	ret = dp_display_request_irq(dp_display);
- 	if (ret) {
- 		DRM_ERROR("request_irq failed, ret=%d\n", ret);
-@@ -1361,6 +1364,8 @@ int msm_dp_modeset_init(struct msm_dp *dp_display, struct drm_device *dev,
- 		return ret;
+ 	struct symbol *s = find_symbol(symname);
+@@ -391,8 +384,7 @@ static void sym_update_namespace(const char *symname, const char *namespace)
  	}
  
-+	dp_priv->panel->connector = dp_display->connector;
-+
- 	priv->connectors[priv->num_connectors++] = dp_display->connector;
- 	return 0;
+ 	free(s->namespace);
+-	s->namespace =
+-		namespace && namespace[0] ? NOFAIL(strdup(namespace)) : NULL;
++	s->namespace = namespace[0] ? NOFAIL(strdup(namespace)) : NULL;
  }
+ 
+ /**
+@@ -2049,9 +2041,7 @@ static void read_symbols(const char *modname)
+ 		/* Apply symbol namespaces from __kstrtabns_<symbol> entries. */
+ 		if (strstarts(symname, "__kstrtabns_"))
+ 			sym_update_namespace(symname + strlen("__kstrtabns_"),
+-					     namespace_from_kstrtabns(&info,
+-								      sym));
+-
++					     sym_get_data(&info, sym));
+ 		if (strstarts(symname, "__crc_"))
+ 			handle_modversion(mod, &info, sym,
+ 					  symname + strlen("__crc_"));
 -- 
-2.34.1
-
-
+2.32.0
 
