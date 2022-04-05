@@ -2,48 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D1B08C35296
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B4022C47084
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:17:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1574613AbiDEW4n (ORCPT
+        id S1574553AbiDEW4c (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 18:56:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39304 "EHLO
+        Tue, 5 Apr 2022 18:56:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47412 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240067AbiDEKwk (ORCPT
+        with ESMTP id S1348495AbiDEJrv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:52:40 -0400
+        Tue, 5 Apr 2022 05:47:51 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8EEFA94DA;
-        Tue,  5 Apr 2022 03:28:11 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F8702192;
+        Tue,  5 Apr 2022 02:34:04 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 57B706181D;
-        Tue,  5 Apr 2022 10:28:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5B31FC385A6;
-        Tue,  5 Apr 2022 10:28:10 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D314D616D1;
+        Tue,  5 Apr 2022 09:34:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C0F89C385A3;
+        Tue,  5 Apr 2022 09:34:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649154490;
-        bh=cCG4DXsmOt2RjegLmBychxHXXVtElDKPMsn2x6Ymw+M=;
+        s=korg; t=1649151243;
+        bh=g/yUqTevTV8GciHyd7YeKtTHAieQUSEzbtaW7BPaBVs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kVOMOsfeVIisInkqW2ceLoPlxI+H3OmsTPcMStcOmFRphrxPs6N7ckrqoFQHbI5ax
-         pH5Kd4xVGc5bKCRuNT+7efH99G7QVmz9KhO1hjk2y6pBRzNgsz0epTnJRmTm6l5tf+
-         4jSr9iZ6s/1YpE1Gn/4Lr8kaIYU6AILCZB0oVQY4=
+        b=WIky5rH09kW9WaRUayObFmHUlesS4DFLu97ryPPnJvWpGJ+raXX9uFhyeoXi2prWX
+         k4kTTsgMJc5trNz3ZFTEMwctK3B7unBtsT9wueJ3BeKA2ro+k0vzNEOuL4dVmD5otL
+         CmHsL72yU3ckjPN/FeLIm3Tji85Y+Pw9ItgUNc4s=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Alyssa Ross <hi@alyssa.is>,
-        Tzung-Bi Shih <tzungbi@google.com>,
-        Prashant Malani <pmalani@chromium.org>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Benson Leung <bleung@chromium.org>
-Subject: [PATCH 5.10 570/599] platform/chrome: cros_ec_typec: Check for EC device
-Date:   Tue,  5 Apr 2022 09:34:24 +0200
-Message-Id: <20220405070315.805023283@linuxfoundation.org>
+        stable@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
+        kernel test robot <lkp@intel.com>,
+        Angelo Dureghello <angelo@sysam.it>,
+        Greg Ungerer <gerg@kernel.org>,
+        Greg Ungerer <gerg@linux-m68k.org>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        linux-m68k@lists.linux-m68k.org, uclinux-dev@uclinux.org,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 346/913] m68k: coldfire/device.c: only build for MCF_EDMA when h/w macros are defined
+Date:   Tue,  5 Apr 2022 09:23:28 +0200
+Message-Id: <20220405070350.216701790@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -52,48 +55,83 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Prashant Malani <pmalani@chromium.org>
+From: Randy Dunlap <rdunlap@infradead.org>
 
-commit ffebd90532728086007038986900426544e3df4e upstream.
+[ Upstream commit e6e1e7b19fa132d23d09c465942aab4c110d3da9 ]
 
-The Type C ACPI device on older Chromebooks is not generated correctly
-(since their EC firmware doesn't support the new commands required). In
-such cases, the crafted ACPI device doesn't have an EC parent, and it is
-therefore not useful (it shouldn't be generated in the first place since
-the EC firmware doesn't support any of the Type C commands).
+When CONFIG_MCF_EDMA is set (due to COMPILE_TEST, not due to
+CONFIG_M5441x), coldfire/device.c has compile errors due to
+missing MCFEDMA_* symbols. In the .config file that was provided,
+CONFIG_M5206=y, not CONFIG_M5441x, so <asm/m5441xsim.h> is not
+included in coldfire/device.c.
 
-To handle devices which use these older firmware revisions, check for
-the parent EC device handle, and fail the probe if it's not found.
+Only build the MCF_EDMA code in coldfire/device.c if the MCFEDMA_*
+hardware macros are defined.
 
-Fixes: fdc6b21e2444 ("platform/chrome: Add Type C connector class driver")
-Reported-by: Alyssa Ross <hi@alyssa.is>
-Reviewed-by: Tzung-Bi Shih <tzungbi@google.com>
-Signed-off-by: Prashant Malani <pmalani@chromium.org>
-Acked-by: Heikki Krogerus <heikki.krogerus@linux.intel.com>
-Reviewed-by: Alyssa Ross <hi@alyssa.is>
-Tested-by: Alyssa Ross <hi@alyssa.is>
-Link: https://lore.kernel.org/r/20220126190219.3095419-1-pmalani@chromium.org
-Signed-off-by: Benson Leung <bleung@chromium.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes these build errors:
+
+../arch/m68k/coldfire/device.c:512:35: error: 'MCFEDMA_BASE' undeclared here (not in a function); did you mean 'MCFDMA_BASE1'?
+  512 |                 .start          = MCFEDMA_BASE,
+../arch/m68k/coldfire/device.c:513:50: error: 'MCFEDMA_SIZE' undeclared here (not in a function)
+  513 |                 .end            = MCFEDMA_BASE + MCFEDMA_SIZE - 1,
+../arch/m68k/coldfire/device.c:517:35: error: 'MCFEDMA_IRQ_INTR0' undeclared here (not in a function)
+  517 |                 .start          = MCFEDMA_IRQ_INTR0,
+../arch/m68k/coldfire/device.c:523:35: error: 'MCFEDMA_IRQ_INTR16' undeclared here (not in a function)
+  523 |                 .start          = MCFEDMA_IRQ_INTR16,
+../arch/m68k/coldfire/device.c:529:35: error: 'MCFEDMA_IRQ_INTR56' undeclared here (not in a function)
+  529 |                 .start          = MCFEDMA_IRQ_INTR56,
+../arch/m68k/coldfire/device.c:535:35: error: 'MCFEDMA_IRQ_ERR' undeclared here (not in a function)
+  535 |                 .start          = MCFEDMA_IRQ_ERR,
+
+Fixes: d7e9d01ac292 ("m68k: add ColdFire mcf5441x eDMA platform support")
+Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+Reported-by: kernel test robot <lkp@intel.com>
+Link: lore.kernel.org/r/202203030252.P752DK46-lkp@intel.com
+Cc: Angelo Dureghello <angelo@sysam.it>
+Cc: Greg Ungerer <gerg@kernel.org>
+Cc: Greg Ungerer <gerg@linux-m68k.org>
+Cc: Geert Uytterhoeven <geert@linux-m68k.org>
+Cc: linux-m68k@lists.linux-m68k.org
+Cc: uclinux-dev@uclinux.org
+Signed-off-by: Greg Ungerer <gerg@linux-m68k.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/platform/chrome/cros_ec_typec.c |    6 ++++++
- 1 file changed, 6 insertions(+)
+ arch/m68k/coldfire/device.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
---- a/drivers/platform/chrome/cros_ec_typec.c
-+++ b/drivers/platform/chrome/cros_ec_typec.c
-@@ -712,7 +712,13 @@ static int cros_typec_probe(struct platf
- 		return -ENOMEM;
+diff --git a/arch/m68k/coldfire/device.c b/arch/m68k/coldfire/device.c
+index 0386252e9d04..4218750414bb 100644
+--- a/arch/m68k/coldfire/device.c
++++ b/arch/m68k/coldfire/device.c
+@@ -480,7 +480,7 @@ static struct platform_device mcf_i2c5 = {
+ #endif /* MCFI2C_BASE5 */
+ #endif /* IS_ENABLED(CONFIG_I2C_IMX) */
  
- 	typec->dev = dev;
-+
- 	typec->ec = dev_get_drvdata(pdev->dev.parent);
-+	if (!typec->ec) {
-+		dev_err(dev, "couldn't find parent EC device\n");
-+		return -ENODEV;
-+	}
-+
- 	platform_set_drvdata(pdev, typec);
+-#if IS_ENABLED(CONFIG_MCF_EDMA)
++#ifdef MCFEDMA_BASE
  
- 	ret = cros_typec_get_cmd_version(typec);
+ static const struct dma_slave_map mcf_edma_map[] = {
+ 	{ "dreq0", "rx-tx", MCF_EDMA_FILTER_PARAM(0) },
+@@ -552,7 +552,7 @@ static struct platform_device mcf_edma = {
+ 		.platform_data = &mcf_edma_data,
+ 	}
+ };
+-#endif /* IS_ENABLED(CONFIG_MCF_EDMA) */
++#endif /* MCFEDMA_BASE */
+ 
+ #ifdef MCFSDHC_BASE
+ static struct mcf_esdhc_platform_data mcf_esdhc_data = {
+@@ -651,7 +651,7 @@ static struct platform_device *mcf_devices[] __initdata = {
+ 	&mcf_i2c5,
+ #endif
+ #endif
+-#if IS_ENABLED(CONFIG_MCF_EDMA)
++#ifdef MCFEDMA_BASE
+ 	&mcf_edma,
+ #endif
+ #ifdef MCFSDHC_BASE
+-- 
+2.34.1
+
 
 
