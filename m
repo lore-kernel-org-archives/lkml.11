@@ -2,123 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 93664C41535
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B5F38C46467
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 22:39:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1453227AbiDEWcq (ORCPT
+        id S1453420AbiDEWdB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 18:32:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53526 "EHLO
+        Tue, 5 Apr 2022 18:33:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60844 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355365AbiDEKTd (ORCPT
+        with ESMTP id S1388711AbiDENc5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:19:33 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A700327FEC;
-        Tue,  5 Apr 2022 03:04:49 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 38758B81BC0;
-        Tue,  5 Apr 2022 10:04:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8CEDFC385A2;
-        Tue,  5 Apr 2022 10:04:46 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649153086;
-        bh=Cw2NlYAm/sub3uTEA3b2qIyrR3JDeMkKrC26amsoKtQ=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=oHAJy/+PL51AzoM/nN/TOBZmwl/pMjG3u2J+3waXchDLT4BF3+Xkz/WUVQCjvJBad
-         /uLI/rAHmHXnoYQAzr0HqhdXf6s4kt4800yKn+4529B/4tEaq5RupOeEanG4VroTQ4
-         48mr4uFudAR+p/Jo8BT5Z4O4xtAz9IsNhLXR3uRo=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zheyu Ma <zheyuma97@gmail.com>,
-        Helge Deller <deller@gmx.de>
-Subject: [PATCH 5.10 097/599] video: fbdev: sm712fb: Fix crash in smtcfb_read()
-Date:   Tue,  5 Apr 2022 09:26:31 +0200
-Message-Id: <20220405070301.717839647@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 5 Apr 2022 09:32:57 -0400
+Received: from lelv0143.ext.ti.com (lelv0143.ext.ti.com [198.47.23.248])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED00F5DE7F
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 05:34:26 -0700 (PDT)
+Received: from fllv0034.itg.ti.com ([10.64.40.246])
+        by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id 235CYH0u099060;
+        Tue, 5 Apr 2022 07:34:17 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1649162057;
+        bh=JBTQpzbP72ROzzwlT8NhQDrUfP1RBqzG2+BjUn/g6Do=;
+        h=Date:From:To:CC:Subject:References:In-Reply-To;
+        b=KwgVbuVcWyxfIZ+4pGRHsr8xUf+IpgKaPnSsiVFSF2Rncegc7Lxe8dL78ITJoErA7
+         yIKAbFPV/RUnVYDDL9qqphedyyE22iICSA/rvG3UgKx6eh8bBk8mHWA7KliU/KYXph
+         HnjANKc6RS1fbzaZQM3uhDqrA8vvjxUBRKy3cT2Y=
+Received: from DFLE105.ent.ti.com (dfle105.ent.ti.com [10.64.6.26])
+        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 235CYHx1105259
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Tue, 5 Apr 2022 07:34:17 -0500
+Received: from DFLE107.ent.ti.com (10.64.6.28) by DFLE105.ent.ti.com
+ (10.64.6.26) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Tue, 5
+ Apr 2022 07:34:17 -0500
+Received: from fllv0040.itg.ti.com (10.64.41.20) by DFLE107.ent.ti.com
+ (10.64.6.28) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
+ Frontend Transport; Tue, 5 Apr 2022 07:34:17 -0500
+Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
+        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id 235CYHbc106836;
+        Tue, 5 Apr 2022 07:34:17 -0500
+Date:   Tue, 5 Apr 2022 07:34:17 -0500
+From:   Nishanth Menon <nm@ti.com>
+To:     Julia Lawall <julia.lawall@inria.fr>
+CC:     Nicolas Palix <nicolas.palix@imag.fr>,
+        <linux-kernel@vger.kernel.org>, <cocci@inria.fr>,
+        Kirill Smelkov <kirr@nexedi.com>
+Subject: Re: [PATCH] coccinelle: api/stream_open: Introduce metavariables for
+ checks
+Message-ID: <20220405123417.n6mdou64qidgsfo5@doing>
+References: <20220404215926.14811-1-nm@ti.com>
+ <alpine.DEB.2.22.394.2204050816560.2185@hadrien>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <alpine.DEB.2.22.394.2204050816560.2185@hadrien>
+User-Agent: NeoMutt/20171215
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Helge Deller <deller@gmx.de>
+On 08:17-20220405, Julia Lawall wrote:
+> 
+> 
+> On Mon, 4 Apr 2022, Nishanth Menon wrote:
+> 
+> > Coccinelle spatch version 1.1.1 reports the following:
+> > warning: line 134: should no_llseek be a metavariable?
+> > warning: line 141: should noop_llseek be a metavariable?
+> > warning: line 223: should nonseekable_open be a metavariable?
+> > warning: line 290: should nonseekable_open be a metavariable?
+> > warning: line 338: should nonseekable_open be a metavariable?
+> >
+> > So, introduce the metavariable similar to other check instances.
+> 
+> This changes the semantic from matching the specific thing to anything.
+> So are you sure that it is what is wanted?  If it should always be the
+> specific thing, then you can get rid of the warning using eg symbol
+> no_llseek.
 
-commit bd771cf5c4254511cc4abb88f3dab3bd58bdf8e8 upstream.
+Aaah thank you. Will post a v2 with s/identifier/symbol. I still need to
+grok the nuance between the two in [1]. Thanks for clarifying.
 
-Zheyu Ma reported this crash in the sm712fb driver when reading
-three bytes from the framebuffer:
+[...]
 
- BUG: unable to handle page fault for address: ffffc90001ffffff
- RIP: 0010:smtcfb_read+0x230/0x3e0
- Call Trace:
-  vfs_read+0x198/0xa00
-  ? do_sys_openat2+0x27d/0x350
-  ? __fget_light+0x54/0x340
-  ksys_read+0xce/0x190
-  do_syscall_64+0x43/0x90
-
-Fix it by removing the open-coded endianess fixup-code and
-by moving the pointer post decrement out the fb_readl() function.
-
-Reported-by: Zheyu Ma <zheyuma97@gmail.com>
-Signed-off-by: Helge Deller <deller@gmx.de>
-Tested-by: Zheyu Ma <zheyuma97@gmail.com>
-Cc: stable@vger.kernel.org
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- drivers/video/fbdev/sm712fb.c |   25 +++++++------------------
- 1 file changed, 7 insertions(+), 18 deletions(-)
-
---- a/drivers/video/fbdev/sm712fb.c
-+++ b/drivers/video/fbdev/sm712fb.c
-@@ -1047,7 +1047,7 @@ static ssize_t smtcfb_read(struct fb_inf
- 	if (count + p > total_size)
- 		count = total_size - p;
- 
--	buffer = kmalloc((count > PAGE_SIZE) ? PAGE_SIZE : count, GFP_KERNEL);
-+	buffer = kmalloc(PAGE_SIZE, GFP_KERNEL);
- 	if (!buffer)
- 		return -ENOMEM;
- 
-@@ -1059,25 +1059,14 @@ static ssize_t smtcfb_read(struct fb_inf
- 	while (count) {
- 		c = (count > PAGE_SIZE) ? PAGE_SIZE : count;
- 		dst = buffer;
--		for (i = c >> 2; i--;) {
--			*dst = fb_readl(src++);
--			*dst = big_swap(*dst);
-+		for (i = (c + 3) >> 2; i--;) {
-+			u32 val;
-+
-+			val = fb_readl(src);
-+			*dst = big_swap(val);
-+			src++;
- 			dst++;
- 		}
--		if (c & 3) {
--			u8 *dst8 = (u8 *)dst;
--			u8 __iomem *src8 = (u8 __iomem *)src;
--
--			for (i = c & 3; i--;) {
--				if (i & 1) {
--					*dst8++ = fb_readb(++src8);
--				} else {
--					*dst8++ = fb_readb(--src8);
--					src8 += 2;
--				}
--			}
--			src = (u32 __iomem *)src8;
--		}
- 
- 		if (copy_to_user(buf, buffer, c)) {
- 			err = -EFAULT;
-
-
+[1] https://coccinelle.gitlabpages.inria.fr/website/docs/main_grammar.html
+-- 
+Regards,
+Nishanth Menon
+Key (0xDDB5849D1736249D) / Fingerprint: F8A2 8693 54EB 8232 17A3  1A34 DDB5 849D 1736 249D
