@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 61FAAC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:23:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A456C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:24:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234486AbiDEIZ2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 04:25:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42896 "EHLO
+        id S234580AbiDEIZw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 04:25:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47556 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235357AbiDEH7k (ORCPT
+        with ESMTP id S235765AbiDEIAT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 03:59:40 -0400
+        Tue, 5 Apr 2022 04:00:19 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71D5F57B3B;
-        Tue,  5 Apr 2022 00:54:15 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 887CB36E3A;
+        Tue,  5 Apr 2022 00:58:21 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0876FB81B9C;
-        Tue,  5 Apr 2022 07:54:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4A7CAC340EE;
-        Tue,  5 Apr 2022 07:54:12 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 37D01B81B14;
+        Tue,  5 Apr 2022 07:58:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 98389C340EE;
+        Tue,  5 Apr 2022 07:58:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649145252;
-        bh=YS6YXJtkkJlRPJMsD2DAR/8ig+TUFhHwPdrDujFulyU=;
+        s=korg; t=1649145499;
+        bh=AzruJ7kNpSnT6sSFKy/mtIR2Ku9xH4nvBIs2Jd7NW+4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ALrm2gLlo5JtXr9PjasXgO2FIpBCgndVgiHXqC/RkmcrKxY2Vu6b5Ly/xpMx+zjXM
-         26qdmhD73mKchmabwRHm0bDQrQG48svEv88umNoAr3P+WdD6IGfUJUQEckQXghjpEy
-         SVPI9u9y7/k8HF2iXBSZFzuZ3jWSFtT/bgNBVC1k=
+        b=mRqGWghIhfcKTIEC+jn3LbcNjheMJPe03C9vcLIwiY7ZSUsXl9bmjgUBvR8hcwPps
+         B0u5xVI5nyfnxIwKTmC8OIXKl/fUb1rD9GJKE0XpJOp1UKiLLUihCRDMHoORf4xyXK
+         g6Gsf3yiY3luMKUnGdC3mxchX9bM78DrC9YKJ9Hk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Petr Vorel <petr.vorel@gmail.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        stable@vger.kernel.org, Rob Herring <robh@kernel.org>,
+        Heiko Stuebner <heiko@sntech.de>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0338/1126] arm64: dts: qcom: msm8994: Provide missing "xo_board" and "sleep_clk" to GCC
-Date:   Tue,  5 Apr 2022 09:18:05 +0200
-Message-Id: <20220405070417.536640808@linuxfoundation.org>
+Subject: [PATCH 5.17 0389/1126] arm64: dts: rockchip: Fix SDIO regulator supply properties on rk3399-firefly
+Date:   Tue,  5 Apr 2022 09:18:56 +0200
+Message-Id: <20220405070419.045203929@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -49,43 +49,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Petr Vorel <petr.vorel@gmail.com>
+From: Rob Herring <robh@kernel.org>
 
-[ Upstream commit 4dd1ad6192748523878463a285346db408b34a02 ]
+[ Upstream commit 37cbd3c522869247ed4525b5042ff4c6a276c813 ]
 
-This is needed due changes in commit 0519d1d0bf33 ("clk: qcom:
-gcc-msm8994: Modernize the driver"), which removed struct
-clk_fixed_factor. Preparation for next commit for enabling SD/eMMC.
-Inspired by 2c2f64ae36d9.
+A label reference without brackets is a path string, not a phandle as
+intended. Add the missing brackets.
 
-This is required for both msm8994-huawei-angler (sdhc1 will be enabled
-in next commit) and msm8992-lg-bullhead (where actually fixes sdhc1
-- tested on bullhead rev 1.01).
-
-Fixes: 0519d1d0bf33 ("clk: qcom: gcc-msm8994: Modernize the driver")
-
-Signed-off-by: Petr Vorel <petr.vorel@gmail.com>
-Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Link: https://lore.kernel.org/r/20220113233358.17972-4-petr.vorel@gmail.com
+Fixes: a5002c41c383 ("arm64: dts: rockchip: add WiFi module support for Firefly-RK3399")
+Signed-off-by: Rob Herring <robh@kernel.org>
+Link: https://lore.kernel.org/r/20220304202559.317749-1-robh@kernel.org
+Signed-off-by: Heiko Stuebner <heiko@sntech.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/boot/dts/qcom/msm8994.dtsi | 3 +++
- 1 file changed, 3 insertions(+)
+ arch/arm64/boot/dts/rockchip/rk3399-firefly.dts | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/arch/arm64/boot/dts/qcom/msm8994.dtsi b/arch/arm64/boot/dts/qcom/msm8994.dtsi
-index 5a9a5ed0565f..215f56daa26c 100644
---- a/arch/arm64/boot/dts/qcom/msm8994.dtsi
-+++ b/arch/arm64/boot/dts/qcom/msm8994.dtsi
-@@ -713,6 +713,9 @@
- 			#reset-cells = <1>;
- 			#power-domain-cells = <1>;
- 			reg = <0xfc400000 0x2000>;
-+
-+			clock-names = "xo", "sleep_clk";
-+			clocks = <&xo_board>, <&sleep_clk>;
- 		};
+diff --git a/arch/arm64/boot/dts/rockchip/rk3399-firefly.dts b/arch/arm64/boot/dts/rockchip/rk3399-firefly.dts
+index c4dd2a6b4836..f81ce3240342 100644
+--- a/arch/arm64/boot/dts/rockchip/rk3399-firefly.dts
++++ b/arch/arm64/boot/dts/rockchip/rk3399-firefly.dts
+@@ -770,8 +770,8 @@
+ 	sd-uhs-sdr104;
  
- 		rpm_msg_ram: sram@fc428000 {
+ 	/* Power supply */
+-	vqmmc-supply = &vcc1v8_s3;	/* IO line */
+-	vmmc-supply = &vcc_sdio;	/* card's power */
++	vqmmc-supply = <&vcc1v8_s3>;	/* IO line */
++	vmmc-supply = <&vcc_sdio>;	/* card's power */
+ 
+ 	#address-cells = <1>;
+ 	#size-cells = <0>;
 -- 
 2.34.1
 
