@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 990D6C4707A
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4BE86C46467
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 11:21:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356422AbiDELP0 (ORCPT
+        id S1355335AbiDELOm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 07:15:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56482 "EHLO
+        Tue, 5 Apr 2022 07:14:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33760 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237106AbiDEIRm (ORCPT
+        with ESMTP id S237812AbiDEI3r (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:17:42 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91BA2AFB0C;
-        Tue,  5 Apr 2022 01:05:13 -0700 (PDT)
+        Tue, 5 Apr 2022 04:29:47 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2F1B1C10C;
+        Tue,  5 Apr 2022 01:21:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4B76EB81BBF;
-        Tue,  5 Apr 2022 08:05:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AA778C385A7;
-        Tue,  5 Apr 2022 08:05:10 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2D2F161001;
+        Tue,  5 Apr 2022 08:21:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3AB05C385A1;
+        Tue,  5 Apr 2022 08:21:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649145911;
-        bh=bb88SYtp3zyNlkq/15otdBnpkl/912WXpaRl/MiFuJA=;
+        s=korg; t=1649146882;
+        bh=rFOg9al4mEyIRqPvlPsicSLMLCrx/7ve6uqJM49XIXA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hGdvHT46JLLUxztU26V0IrQ2MZ6Y/LY8MB5IMZexXzNrVUzkDn6og2P9SvVyIaMmV
-         /yRUrtEZukVFogxq53mS1xREkk0QK8lxjKxyC6NK080u+YIMkitOg3gbnIXJ4wCqZN
-         nuziostoou2DjGSXMZy0isCiqJ46GtkDQHHRVZh4=
+        b=fC9q7qJzR32PjsCD5UQ3uDo306wd1xUmv/MdfK7BCSDdLjS1fgbqa/6HrB95qjpiF
+         LEvKwxBBLRkfQXBZrxXu6aPtACKpBH+uUKfcGgpQ7XLnuXjp5+kYbjYHxCDouhbMEh
+         bUjrWE4Cn8tDCxK0fvJq/GTDryPM9Gz2MjjxT85A=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Abhinav Kumar <quic_abhinavk@quicinc.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Stephen Boyd <swboyd@chromium.org>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        stable@vger.kernel.org, Boris Burkov <boris@bur.io>,
+        Josef Bacik <josef@toxicpanda.com>,
+        David Sterba <dsterba@suse.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0574/1126] drm/msm/dpu: remove msm_dp cached in dpu_encoder_virt
-Date:   Tue,  5 Apr 2022 09:22:01 +0200
-Message-Id: <20220405070424.481080231@linuxfoundation.org>
+Subject: [PATCH 5.17 0884/1126] btrfs: do not clean up repair bio if submit fails
+Date:   Tue,  5 Apr 2022 09:27:11 +0200
+Message-Id: <20220405070433.478747551@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -52,55 +51,59 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+From: Josef Bacik <josef@toxicpanda.com>
 
-[ Upstream commit b78f30a5c8a396ca31a905982c8cd955cd35807e ]
+[ Upstream commit 8cbc3001a3264d998d6b6db3e23f935c158abd4d ]
 
-Stop caching msm_dp instance in dpu_encoder_virt since it's not used
-now.
+The submit helper will always run bio_endio() on the bio if it fails to
+submit, so cleaning up the bio just leads to a variety of use-after-free
+and NULL pointer dereference bugs because we race with the endio
+function that is cleaning up the bio.  Instead just return BLK_STS_OK as
+the repair function has to continue to process the rest of the pages,
+and the endio for the repair bio will do the appropriate cleanup for the
+page that it was given.
 
-Fixes: 8a3b4c17f863 ("drm/msm/dp: employ bridge mechanism for display enable and disable")
-Reviewed-by: Abhinav Kumar <quic_abhinavk@quicinc.com>
-Reviewed-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Reviewed-by: Stephen Boyd <swboyd@chromium.org>
-Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Link: https://lore.kernel.org/r/20220217035358.465904-4-dmitry.baryshkov@linaro.org
-Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Reviewed-by: Boris Burkov <boris@bur.io>
+Signed-off-by: Josef Bacik <josef@toxicpanda.com>
+Signed-off-by: David Sterba <dsterba@suse.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c | 5 -----
- 1 file changed, 5 deletions(-)
+ fs/btrfs/extent_io.c | 15 +++++++--------
+ 1 file changed, 7 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c b/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c
-index 02d0fae1c6dc..16ae0cccbbb1 100644
---- a/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c
-+++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c
-@@ -168,7 +168,6 @@ enum dpu_enc_rc_states {
-  * @vsync_event_work:		worker to handle vsync event for autorefresh
-  * @topology:                   topology of the display
-  * @idle_timeout:		idle timeout duration in milliseconds
-- * @dp:				msm_dp pointer, for DP encoders
-  */
- struct dpu_encoder_virt {
- 	struct drm_encoder base;
-@@ -207,8 +206,6 @@ struct dpu_encoder_virt {
- 	struct msm_display_topology topology;
+diff --git a/fs/btrfs/extent_io.c b/fs/btrfs/extent_io.c
+index f767c1164742..99028984340a 100644
+--- a/fs/btrfs/extent_io.c
++++ b/fs/btrfs/extent_io.c
+@@ -2639,7 +2639,6 @@ int btrfs_repair_one_sector(struct inode *inode,
+ 	const int icsum = bio_offset >> fs_info->sectorsize_bits;
+ 	struct bio *repair_bio;
+ 	struct btrfs_bio *repair_bbio;
+-	blk_status_t status;
  
- 	u32 idle_timeout;
--
--	struct msm_dp *dp;
- };
+ 	btrfs_debug(fs_info,
+ 		   "repair read error: read error at %llu", start);
+@@ -2678,13 +2677,13 @@ int btrfs_repair_one_sector(struct inode *inode,
+ 		    "repair read error: submitting new read to mirror %d",
+ 		    failrec->this_mirror);
  
- #define to_dpu_encoder_virt(x) container_of(x, struct dpu_encoder_virt, base)
-@@ -2128,8 +2125,6 @@ int dpu_encoder_setup(struct drm_device *dev, struct drm_encoder *enc,
- 		timer_setup(&dpu_enc->vsync_event_timer,
- 				dpu_encoder_vsync_event_handler,
- 				0);
--	else if (disp_info->intf_type == DRM_MODE_ENCODER_TMDS)
--		dpu_enc->dp = priv->dp[disp_info->h_tile_instance[0]];
+-	status = submit_bio_hook(inode, repair_bio, failrec->this_mirror,
+-				 failrec->bio_flags);
+-	if (status) {
+-		free_io_failure(failure_tree, tree, failrec);
+-		bio_put(repair_bio);
+-	}
+-	return blk_status_to_errno(status);
++	/*
++	 * At this point we have a bio, so any errors from submit_bio_hook()
++	 * will be handled by the endio on the repair_bio, so we can't return an
++	 * error here.
++	 */
++	submit_bio_hook(inode, repair_bio, failrec->this_mirror, failrec->bio_flags);
++	return BLK_STS_OK;
+ }
  
- 	INIT_DELAYED_WORK(&dpu_enc->delayed_off_work,
- 			dpu_encoder_off_work);
+ static void end_page_read(struct page *page, bool uptodate, u64 start, u32 len)
 -- 
 2.34.1
 
