@@ -2,204 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 62F43C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E6DBC433F5
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:35:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1574360AbiDFAZv (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 20:25:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40472 "EHLO
+        id S235774AbiDFA2x (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 20:28:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49774 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376645AbiDENMk (ORCPT
+        with ESMTP id S1358064AbiDEK15 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 09:12:40 -0400
-Received: from pegase2.c-s.fr (pegase2.c-s.fr [93.17.235.10])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20EAD11863E
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 05:12:35 -0700 (PDT)
-Received: from localhost (mailhub3.si.c-s.fr [172.26.127.67])
-        by localhost (Postfix) with ESMTP id 4KXmjd2ZWCz9sTF;
-        Tue,  5 Apr 2022 14:12:21 +0200 (CEST)
-X-Virus-Scanned: amavisd-new at c-s.fr
-Received: from pegase2.c-s.fr ([172.26.127.65])
-        by localhost (pegase2.c-s.fr [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id cOQUgrdfibbH; Tue,  5 Apr 2022 14:12:21 +0200 (CEST)
-Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
-        by pegase2.c-s.fr (Postfix) with ESMTP id 4KXmjY2lllz9sTH;
-        Tue,  5 Apr 2022 14:12:17 +0200 (CEST)
-Received: from localhost (localhost [127.0.0.1])
-        by messagerie.si.c-s.fr (Postfix) with ESMTP id 407EC8B77C;
-        Tue,  5 Apr 2022 14:12:17 +0200 (CEST)
-X-Virus-Scanned: amavisd-new at c-s.fr
-Received: from messagerie.si.c-s.fr ([127.0.0.1])
-        by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
-        with ESMTP id IRPPyoPUMpO4; Tue,  5 Apr 2022 14:12:17 +0200 (CEST)
-Received: from PO20335.IDSI0.si.c-s.fr (unknown [172.25.230.108])
-        by messagerie.si.c-s.fr (Postfix) with ESMTP id 0DE5D8B775;
-        Tue,  5 Apr 2022 14:12:17 +0200 (CEST)
-Received: from PO20335.IDSI0.si.c-s.fr (localhost [127.0.0.1])
-        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.16.1) with ESMTPS id 235CCCYY352500
-        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
-        Tue, 5 Apr 2022 14:12:12 +0200
-Received: (from chleroy@localhost)
-        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.17.1/Submit) id 235CCCkf352499;
-        Tue, 5 Apr 2022 14:12:12 +0200
-X-Authentication-Warning: PO20335.IDSI0.si.c-s.fr: chleroy set sender to christophe.leroy@csgroup.eu using -f
-From:   Christophe Leroy <christophe.leroy@csgroup.eu>
-To:     Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>,
-        Michael Ellerman <mpe@ellerman.id.au>
-Cc:     Christophe Leroy <christophe.leroy@csgroup.eu>,
-        linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org
-Subject: [PATCH 5/5] powerpc/8xx: Use kmalloced data structure instead of global static
-Date:   Tue,  5 Apr 2022 14:12:04 +0200
-Message-Id: <7d817f13ebd5193d69bbc807bbdd96f82a6c573b.1649160685.git.christophe.leroy@csgroup.eu>
+        Tue, 5 Apr 2022 06:27:57 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80B842D1C2;
+        Tue,  5 Apr 2022 03:14:14 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BB204B81C8A;
+        Tue,  5 Apr 2022 10:14:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1B7D4C385A0;
+        Tue,  5 Apr 2022 10:14:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649153651;
+        bh=V7nv+sBTTQFZrPFOnXBbBdjlf3WP3Xfv9MFVK1hPUwM=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=u0Q87ekpetbXfVCrXyi1vkt/tfJPATHsmFiGj37sWz2Dj2FwB/FnEvG+TCmJqGxBY
+         PBQ2nZ4/xKcm7zsHP9FMlLOEjQcp0mL50Nyde4WcsSNEk/ETuAXCzQsrggtSmKcMd9
+         Qph8LKXS1pbtggfEIQCfQb9XXLahAHI7Ci/55jzM=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Yiqing Yao <yiqing.yao@amd.com>,
+        Monk Liu <Monk.liu@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 299/599] drm/amd/pm: enable pm sysfs write for one VF mode
+Date:   Tue,  5 Apr 2022 09:29:53 +0200
+Message-Id: <20220405070307.731614410@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <d3a7dc832d905bed14b35d83410cdb69a7ba20e8.1649160685.git.christophe.leroy@csgroup.eu>
-References: <d3a7dc832d905bed14b35d83410cdb69a7ba20e8.1649160685.git.christophe.leroy@csgroup.eu>
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
+References: <20220405070258.802373272@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1649160722; l=4190; s=20211009; h=from:subject:message-id; bh=gbAm6QkVkPnZ9c9BYkFQVy/zbFCRmgtesziyGYwG0T8=; b=sC88JwMbSD2y3MTXTtvcYLZH1ivBlRHsgEDs1A9GRe3yzPn2N0xe98p/x2axMcppcSjeAYCHzQwI 9B/U68sPB4HeAy+ZmL/Ufmq5quYGzphhFoF8/FhZqtnQXl5Bes51
-X-Developer-Key: i=christophe.leroy@csgroup.eu; a=ed25519; pk=HIzTzUj91asvincQGOFx6+ZF5AoUuP9GdOtQChs7Mm0=
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Use a kmalloced data structure to store interrupt controller internal
-data instead of static global variables.
+From: Yiqing Yao <yiqing.yao@amd.com>
 
-Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
+[ Upstream commit e610941c45bad75aa839af015c27d236ab6749e5 ]
+
+[why]
+pm sysfs should be writable in one VF mode as is in passthrough
+
+[how]
+do not remove write access on pm sysfs if device is in one VF mode
+
+Fixes: 11c9cc95f818 ("amdgpu/pm: Make sysfs pm attributes as read-only for VFs")
+Signed-off-by: Yiqing Yao <yiqing.yao@amd.com>
+Reviewed-by: Monk Liu <Monk.liu@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/powerpc/platforms/8xx/cpm1-ic.c | 48 +++++++++++++++++-----------
- 1 file changed, 30 insertions(+), 18 deletions(-)
+ drivers/gpu/drm/amd/pm/amdgpu_pm.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/arch/powerpc/platforms/8xx/cpm1-ic.c b/arch/powerpc/platforms/8xx/cpm1-ic.c
-index 6f9765597a6d..a18fc7c99f83 100644
---- a/arch/powerpc/platforms/8xx/cpm1-ic.c
-+++ b/arch/powerpc/platforms/8xx/cpm1-ic.c
-@@ -10,29 +10,33 @@
- #include <linux/platform_device.h>
- #include <asm/cpm1.h>
+diff --git a/drivers/gpu/drm/amd/pm/amdgpu_pm.c b/drivers/gpu/drm/amd/pm/amdgpu_pm.c
+index 49109614510b..5abb68017f6e 100644
+--- a/drivers/gpu/drm/amd/pm/amdgpu_pm.c
++++ b/drivers/gpu/drm/amd/pm/amdgpu_pm.c
+@@ -2098,8 +2098,8 @@ static int default_attr_update(struct amdgpu_device *adev, struct amdgpu_device_
+ 		}
+ 	}
  
--static cpic8xx_t __iomem *cpic_reg;
--
--static struct irq_domain *cpm_pic_host;
-+struct cpm_pic_data {
-+	cpic8xx_t __iomem *reg;
-+	struct irq_domain *host;
-+};
- 
- static void cpm_mask_irq(struct irq_data *d)
- {
-+	struct cpm_pic_data *data = irq_data_get_irq_chip_data(d);
- 	unsigned int cpm_vec = (unsigned int)irqd_to_hwirq(d);
- 
--	clrbits32(&cpic_reg->cpic_cimr, (1 << cpm_vec));
-+	clrbits32(&data->reg->cpic_cimr, (1 << cpm_vec));
- }
- 
- static void cpm_unmask_irq(struct irq_data *d)
- {
-+	struct cpm_pic_data *data = irq_data_get_irq_chip_data(d);
- 	unsigned int cpm_vec = (unsigned int)irqd_to_hwirq(d);
- 
--	setbits32(&cpic_reg->cpic_cimr, (1 << cpm_vec));
-+	setbits32(&data->reg->cpic_cimr, (1 << cpm_vec));
- }
- 
- static void cpm_end_irq(struct irq_data *d)
- {
-+	struct cpm_pic_data *data = irq_data_get_irq_chip_data(d);
- 	unsigned int cpm_vec = (unsigned int)irqd_to_hwirq(d);
- 
--	out_be32(&cpic_reg->cpic_cisr, (1 << cpm_vec));
-+	out_be32(&data->reg->cpic_cisr, (1 << cpm_vec));
- }
- 
- static struct irq_chip cpm_pic = {
-@@ -42,29 +46,31 @@ static struct irq_chip cpm_pic = {
- 	.irq_eoi = cpm_end_irq,
- };
- 
--static int cpm_get_irq(void)
-+static int cpm_get_irq(struct irq_desc *desc)
- {
-+	struct cpm_pic_data *data = irq_desc_get_handler_data(desc);
- 	int cpm_vec;
- 
- 	/*
- 	 * Get the vector by setting the ACK bit and then reading
- 	 * the register.
- 	 */
--	out_be16(&cpic_reg->cpic_civr, 1);
--	cpm_vec = in_be16(&cpic_reg->cpic_civr);
-+	out_be16(&data->reg->cpic_civr, 1);
-+	cpm_vec = in_be16(&data->reg->cpic_civr);
- 	cpm_vec >>= 11;
- 
--	return irq_linear_revmap(cpm_pic_host, cpm_vec);
-+	return irq_linear_revmap(data->host, cpm_vec);
- }
- 
- static void cpm_cascade(struct irq_desc *desc)
- {
--	generic_handle_irq(cpm_get_irq());
-+	generic_handle_irq(cpm_get_irq(desc));
- }
- 
- static int cpm_pic_host_map(struct irq_domain *h, unsigned int virq,
- 			    irq_hw_number_t hw)
- {
-+	irq_set_chip_data(virq, h->host_data);
- 	irq_set_status_flags(virq, IRQ_LEVEL);
- 	irq_set_chip_and_handler(virq, &cpm_pic, handle_fasteoi_irq);
- 	return 0;
-@@ -79,13 +85,18 @@ static int cpm_pic_probe(struct platform_device *pdev)
- 	struct device *dev = &pdev->dev;
- 	struct resource *res;
- 	int irq;
-+	struct cpm_pic_data *data;
- 
- 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
- 	if (!res)
- 		return -ENODEV;
- 
--	cpic_reg = devm_ioremap(dev, res->start, resource_size(res));
--	if (!cpic_reg)
-+	data = devm_kzalloc(dev, sizeof(*data), GFP_KERNEL);
-+	if (!data)
-+		return -ENOMEM;
-+
-+	data->reg = devm_ioremap(dev, res->start, resource_size(res));
-+	if (!data->reg)
- 		return -ENODEV;
- 
- 	irq = platform_get_irq(pdev, 0);
-@@ -93,19 +104,20 @@ static int cpm_pic_probe(struct platform_device *pdev)
- 		return irq;
- 
- 	/* Initialize the CPM interrupt controller. */
--	out_be32(&cpic_reg->cpic_cicr,
-+	out_be32(&data->reg->cpic_cicr,
- 		 (CICR_SCD_SCC4 | CICR_SCC_SCC3 | CICR_SCB_SCC2 | CICR_SCA_SCC1) |
- 		 ((virq_to_hw(irq) / 2) << 13) | CICR_HP_MASK);
- 
--	out_be32(&cpic_reg->cpic_cimr, 0);
-+	out_be32(&data->reg->cpic_cimr, 0);
- 
--	cpm_pic_host = irq_domain_add_linear(dev->of_node, 64, &cpm_pic_host_ops, NULL);
--	if (!cpm_pic_host)
-+	data->host = irq_domain_add_linear(dev->of_node, 64, &cpm_pic_host_ops, data);
-+	if (!data->host)
- 		return -ENODEV;
- 
-+	irq_set_handler_data(irq, data);
- 	irq_set_chained_handler(irq, cpm_cascade);
- 
--	setbits32(&cpic_reg->cpic_cicr, CICR_IEN);
-+	setbits32(&data->reg->cpic_cicr, CICR_IEN);
- 
- 	return 0;
- }
+-	/* setting should not be allowed from VF */
+-	if (amdgpu_sriov_vf(adev)) {
++	/* setting should not be allowed from VF if not in one VF mode */
++	if (amdgpu_sriov_vf(adev) && !amdgpu_sriov_is_pp_one_vf(adev)) {
+ 		dev_attr->attr.mode &= ~S_IWUGO;
+ 		dev_attr->store = NULL;
+ 	}
 -- 
-2.35.1
+2.34.1
+
+
 
