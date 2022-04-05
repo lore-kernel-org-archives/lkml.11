@@ -2,46 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7393AC38A02
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 86017C43217
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:19:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234608AbiDEINk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 04:13:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53078 "EHLO
+        id S234640AbiDEINq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 04:13:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55916 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234333AbiDEH6J (ORCPT
+        with ESMTP id S234509AbiDEH6h (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 03:58:09 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41AA9201B7;
-        Tue,  5 Apr 2022 00:52:17 -0700 (PDT)
+        Tue, 5 Apr 2022 03:58:37 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AACB5A5E9E;
+        Tue,  5 Apr 2022 00:52:38 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C9582B81B14;
-        Tue,  5 Apr 2022 07:52:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3B670C3410F;
-        Tue,  5 Apr 2022 07:52:15 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 205136172C;
+        Tue,  5 Apr 2022 07:52:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2764DC340EE;
+        Tue,  5 Apr 2022 07:52:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649145135;
-        bh=nUrFnpNBTQPeoA1S4Z8fEq7MonzPwWeR1TjzHFryJVg=;
+        s=korg; t=1649145157;
+        bh=QdZzKpYR0Ak0Jkw0efMXTY/uKg67msQsuJfRVbPyVW4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dNAcIK1/gEb/S5IEmcs4sBFbhgSfvUy5TcwnEVINjOLYKoIj9tuK4KfnaJ8F2shQZ
-         pXnB3CwNqDiE/vL7smCo+sMG1dj28Ce6HSOxj1KiUutgI/IGOHXwr9OQPe7zObiC3D
-         0Nu3NMI/WszDQwYE6DGv5kcHUQsIc4Z5r6JqFWZs=
+        b=0mHJb9yTjgJAwsn3tBEhqlW3XmUNawgFh4/4ygZZxACXXRYYpZUroHG/5z/jzkNtE
+         KJ/r3dwzoyQGBh5FLzvs+Mev3PgA5PbxKBO9l5ONQEvY9eg9ROoU3fYfg4Biz0JlRg
+         lOGVywluG2PmwiDOXXg3EKkh6Zk4cl3Yd2JzHIps=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jonathan Marek <jonathan@marek.ca>,
-        Robert Foss <robert.foss@linaro.org>,
-        Julian Grahsl <jgrahsl@snap.com>,
-        Bryan ODonoghue <bryan.odonoghue@linaro.org>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        stable@vger.kernel.org,
+        =?UTF-8?q?D=C4=81vis=20Mos=C4=81ns?= <davispuh@gmail.com>,
+        John Allen <john.allen@amd.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0296/1126] media: camss: vfe-170: fix "VFE halt timeout" error
-Date:   Tue,  5 Apr 2022 09:17:23 +0200
-Message-Id: <20220405070416.303234726@linuxfoundation.org>
+Subject: [PATCH 5.17 0257/1126] crypto: ccp - ccp_dmaengine_unregister release dma channels
+Date:   Tue,  5 Apr 2022 09:16:44 +0200
+Message-Id: <20220405070415.154399786@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -53,50 +51,64 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jonathan Marek <jonathan@marek.ca>
+From: Dāvis Mosāns <davispuh@gmail.com>
 
-[ Upstream commit 1ce8c48b06f249a9739e36c5d56883f6f49ce047 ]
+[ Upstream commit 54cce8ecb9254f971b40a72911c6da403720a2d2 ]
 
-This function waits for halt_complete but doesn't do anything to cause
-it to complete, and always hits the "VFE halt timeout" error. Just delete
-this code for now.
+ccp_dmaengine_register adds dma_chan->device_node to dma_dev->channels list
+but ccp_dmaengine_unregister didn't remove them.
+That can cause crashes in various dmaengine methods that tries to use dma_dev->channels
 
-Fixes: 7319cdf189bb ("media: camss: Add support for VFE hardware version Titan 170")
-Signed-off-by: Jonathan Marek <jonathan@marek.ca>
-Reviewed-by: Robert Foss <robert.foss@linaro.org>
-Tested-by: Julian Grahsl <jgrahsl@snap.com>
-Tested-by: Bryan O'Donoghue <bryan.odonoghue@linaro.org>
-Signed-off-by: Bryan O'Donoghue <bryan.odonoghue@linaro.org>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+Fixes: 58ea8abf4904 ("crypto: ccp - Register the CCP as a DMA...")
+Signed-off-by: Dāvis Mosāns <davispuh@gmail.com>
+Acked-by: John Allen <john.allen@amd.com>
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/platform/qcom/camss/camss-vfe-170.c | 12 +-----------
- 1 file changed, 1 insertion(+), 11 deletions(-)
+ drivers/crypto/ccp/ccp-dmaengine.c | 16 ++++++++++++++++
+ 1 file changed, 16 insertions(+)
 
-diff --git a/drivers/media/platform/qcom/camss/camss-vfe-170.c b/drivers/media/platform/qcom/camss/camss-vfe-170.c
-index f524af712a84..600150cfc4f7 100644
---- a/drivers/media/platform/qcom/camss/camss-vfe-170.c
-+++ b/drivers/media/platform/qcom/camss/camss-vfe-170.c
-@@ -395,17 +395,7 @@ static irqreturn_t vfe_isr(int irq, void *dev)
-  */
- static int vfe_halt(struct vfe_device *vfe)
- {
--	unsigned long time;
--
--	reinit_completion(&vfe->halt_complete);
--
--	time = wait_for_completion_timeout(&vfe->halt_complete,
--					   msecs_to_jiffies(VFE_HALT_TIMEOUT_MS));
--	if (!time) {
--		dev_err(vfe->camss->dev, "VFE halt timeout\n");
--		return -EIO;
--	}
--
-+	/* rely on vfe_disable_output() to stop the VFE */
+diff --git a/drivers/crypto/ccp/ccp-dmaengine.c b/drivers/crypto/ccp/ccp-dmaengine.c
+index d718db224be4..7d4b4ad1db1f 100644
+--- a/drivers/crypto/ccp/ccp-dmaengine.c
++++ b/drivers/crypto/ccp/ccp-dmaengine.c
+@@ -632,6 +632,20 @@ static int ccp_terminate_all(struct dma_chan *dma_chan)
  	return 0;
  }
  
++static void ccp_dma_release(struct ccp_device *ccp)
++{
++	struct ccp_dma_chan *chan;
++	struct dma_chan *dma_chan;
++	unsigned int i;
++
++	for (i = 0; i < ccp->cmd_q_count; i++) {
++		chan = ccp->ccp_dma_chan + i;
++		dma_chan = &chan->dma_chan;
++		tasklet_kill(&chan->cleanup_tasklet);
++		list_del_rcu(&dma_chan->device_node);
++	}
++}
++
+ int ccp_dmaengine_register(struct ccp_device *ccp)
+ {
+ 	struct ccp_dma_chan *chan;
+@@ -736,6 +750,7 @@ int ccp_dmaengine_register(struct ccp_device *ccp)
+ 	return 0;
+ 
+ err_reg:
++	ccp_dma_release(ccp);
+ 	kmem_cache_destroy(ccp->dma_desc_cache);
+ 
+ err_cache:
+@@ -752,6 +767,7 @@ void ccp_dmaengine_unregister(struct ccp_device *ccp)
+ 		return;
+ 
+ 	dma_async_device_unregister(dma_dev);
++	ccp_dma_release(ccp);
+ 
+ 	kmem_cache_destroy(ccp->dma_desc_cache);
+ 	kmem_cache_destroy(ccp->dma_cmd_cache);
 -- 
 2.34.1
 
