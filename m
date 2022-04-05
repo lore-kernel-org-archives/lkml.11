@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0BFA3C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 07:49:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DAADCC43217
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 07:50:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232463AbiDEHu7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 03:50:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55446 "EHLO
+        id S232501AbiDEHvJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 03:51:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57404 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232535AbiDEHqi (ORCPT
+        with ESMTP id S232568AbiDEHqu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 03:46:38 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 209D7939D4;
-        Tue,  5 Apr 2022 00:42:30 -0700 (PDT)
+        Tue, 5 Apr 2022 03:46:50 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A99D7939E9;
+        Tue,  5 Apr 2022 00:42:34 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 937CA6164B;
-        Tue,  5 Apr 2022 07:42:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A432EC340EE;
-        Tue,  5 Apr 2022 07:42:28 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 17995B81B7F;
+        Tue,  5 Apr 2022 07:42:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 577E7C340EE;
+        Tue,  5 Apr 2022 07:42:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649144549;
-        bh=HKZ2APyN8Q6yQ6rOSEX8CU6i+12Lcl92XlYYntOj588=;
+        s=korg; t=1649144551;
+        bh=hzFTItGk6MhMLG5gB5eFJka/S3aQMbJUpwbjLiXXVC0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XsAessEbUfbA1oxvuhvQX7IJOjATEFG+UxYXUmsc33YPvtwwi4fDHxJGXIaNqtQNE
-         SIsFitIGFwG4Pa9dO6h8TwxZLY1HXpB4n2Tgtf3l68wqH3rTmcuIbnVzYQFOHOnkBA
-         zGY5w/bvkv4iurMy1QdqWs7uQ5ku+49ntmeNh7iY=
+        b=1F9Ou+ui2ZHL1dstKvyB6MCwpc0+N8V4AWsZ6g29mbR87hrie1O7Sxgy+uW55H9h8
+         8prRma3YiTPFAC3fru+ZzP1OsQ75y3uAAG8KtrKm2T9cFAOKmt1tQhA3d0LCpR8FVJ
+         X8ycGH9x52yD2vKhZKLCig77LS3HHhNVp6kJVC60=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
-        Chuck Lever <chuck.lever@oracle.com>
-Subject: [PATCH 5.17 0057/1126] NFSD: prevent underflow in nfssvc_decode_writeargs()
-Date:   Tue,  5 Apr 2022 09:13:24 +0200
-Message-Id: <20220405070409.241605622@linuxfoundation.org>
+        stable@vger.kernel.org, John Garry <john.garry@huawei.com>,
+        Jack Wang <jinpu.wang@ionos.com>,
+        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>
+Subject: [PATCH 5.17 0084/1126] scsi: libsas: Fix sas_ata_qc_issue() handling of NCQ NON DATA commands
+Date:   Tue,  5 Apr 2022 09:13:51 +0200
+Message-Id: <20220405070410.035257186@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -48,47 +50,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dan Carpenter <dan.carpenter@oracle.com>
+From: Damien Le Moal <damien.lemoal@opensource.wdc.com>
 
-commit 184416d4b98509fb4c3d8fc3d6dc1437896cc159 upstream.
+commit 8454563e4c2aafbfb81a383ab423ea8b9b430a25 upstream.
 
-Smatch complains:
+To detect for the DMA_NONE (no data transfer) DMA direction,
+sas_ata_qc_issue() tests if the command protocol is ATA_PROT_NODATA.  This
+test does not include the ATA_CMD_NCQ_NON_DATA command as this command
+protocol is defined as ATA_PROT_NCQ_NODATA (equal to ATA_PROT_FLAG_NCQ) and
+not as ATA_PROT_NODATA.
 
-	fs/nfsd/nfsxdr.c:341 nfssvc_decode_writeargs()
-	warn: no lower bound on 'args->len'
+To include both NCQ and non-NCQ commands when testing for the DMA_NONE DMA
+direction, use "!ata_is_data()".
 
-Change the type to unsigned to prevent this issue.
-
+Link: https://lore.kernel.org/r/20220220031810.738362-2-damien.lemoal@opensource.wdc.com
+Fixes: 176ddd89171d ("scsi: libsas: Reset num_scatter if libata marks qc as NODATA")
 Cc: stable@vger.kernel.org
-Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
-Signed-off-by: Chuck Lever <chuck.lever@oracle.com>
+Reviewed-by: John Garry <john.garry@huawei.com>
+Reviewed-by: Jack Wang <jinpu.wang@ionos.com>
+Signed-off-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/nfsd/nfsproc.c |    2 +-
- fs/nfsd/xdr.h     |    2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+ drivers/scsi/libsas/sas_ata.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/fs/nfsd/nfsproc.c
-+++ b/fs/nfsd/nfsproc.c
-@@ -230,7 +230,7 @@ nfsd_proc_write(struct svc_rqst *rqstp)
- 	unsigned long cnt = argp->len;
- 	unsigned int nvecs;
- 
--	dprintk("nfsd: WRITE    %s %d bytes at %d\n",
-+	dprintk("nfsd: WRITE    %s %u bytes at %d\n",
- 		SVCFH_fmt(&argp->fh),
- 		argp->len, argp->offset);
- 
---- a/fs/nfsd/xdr.h
-+++ b/fs/nfsd/xdr.h
-@@ -32,7 +32,7 @@ struct nfsd_readargs {
- struct nfsd_writeargs {
- 	svc_fh			fh;
- 	__u32			offset;
--	int			len;
-+	__u32			len;
- 	struct xdr_buf		payload;
- };
- 
+--- a/drivers/scsi/libsas/sas_ata.c
++++ b/drivers/scsi/libsas/sas_ata.c
+@@ -197,7 +197,7 @@ static unsigned int sas_ata_qc_issue(str
+ 		task->total_xfer_len = qc->nbytes;
+ 		task->num_scatter = qc->n_elem;
+ 		task->data_dir = qc->dma_dir;
+-	} else if (qc->tf.protocol == ATA_PROT_NODATA) {
++	} else if (!ata_is_data(qc->tf.protocol)) {
+ 		task->data_dir = DMA_NONE;
+ 	} else {
+ 		for_each_sg(qc->sg, sg, qc->n_elem, si)
 
 
