@@ -2,341 +2,203 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 61766C46467
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B4780C4707E
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:22:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1587674AbiDFAKE (ORCPT
+        id S1587768AbiDFAKU (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 20:10:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60304 "EHLO
+        Tue, 5 Apr 2022 20:10:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48558 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1443760AbiDEPkQ (ORCPT
+        with ESMTP id S1348936AbiDEJst (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 11:40:16 -0400
-Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 836E3496B3
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 06:59:12 -0700 (PDT)
-Received: by mail-pj1-x102a.google.com with SMTP id s14-20020a17090a880e00b001caaf6d3dd1so2602854pjn.3
-        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 06:59:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=Ny+phYwNiJnvXwk2X19s7jEmqFEJxYeMxhclYgpS61Y=;
-        b=X9D62q+dqROeyzyL44KzLP+BCYSx7UAbu0SA27pEi7tpX1mpP6ccfVar6CW/EPfF7b
-         tgLsFGPX21UCDEjbkYRp1iI+zzzpk42KTTLxwYrwK7g7OcB3y3Fp84BpDKp2OmHiO8UM
-         Ss1WYdUkX8HMUS7L2dvIQyqj1YmmEcIZJJpnaz6+VBjM1vllfdNcy+jU5KN8oDZQXN1B
-         3c1uV2e5RN6PfDaxWX/gD4Yt1V0QkOQK6sZYIi2L4OMwQqLhuJKNF3gv1KABi+CPneda
-         rmE1mQyppXHwH/7cFZ/ZHP4TAbGUkXbrmIZcdIqznp4sbBuwwKpthWDKgG3Rqp3PuNw3
-         oOww==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=Ny+phYwNiJnvXwk2X19s7jEmqFEJxYeMxhclYgpS61Y=;
-        b=AY5ah44o2n35aJqza1EAmgAzNOfhjyL3TT2H0MudTaOpRBZv5gn0B3qpwIVtIm7lq+
-         n3IcuFl2iznDh0GqUoRU4NaFUxP6NY7yWCy4bbNoCH4bzBurym/VZhLCLjPeZgwRRVPB
-         yWEI7zxKeyrLs5T0Axfm8MtZS1w9SdI/48gBK88d1c29v22ydk2RTV1rgFio+uw8dwHA
-         cT5/KX7kxsAYQEF6N4s7TByNlQo98YYmHI+kKRRgiwRbdojW9A/NiBRdxpfTFOa1Mcfu
-         iCc+85nylQFzGdJRfSV1lk1JPW2i/fvkb837eQwMe94SYbarfdN0LlAE7GdHnufafuXX
-         HQHQ==
-X-Gm-Message-State: AOAM5318fHuNx5Uye5VIoRX9f+Ms0MOOySkv5LBLuFD1o+XQT58vzawd
-        n/JmJhgOnv9r80U4irZG+JjM
-X-Google-Smtp-Source: ABdhPJz7can+mMiblhffpSiE6moyXGZCiLIUTTR9o3lxFg3iZ12j40Jmt062mJVc8U5RXU/scsqpFg==
-X-Received: by 2002:a17:902:d888:b0:151:6fe8:6e68 with SMTP id b8-20020a170902d88800b001516fe86e68mr3637795plz.158.1649167151976;
-        Tue, 05 Apr 2022 06:59:11 -0700 (PDT)
-Received: from localhost.localdomain ([59.92.98.98])
-        by smtp.gmail.com with ESMTPSA id u14-20020a056a00124e00b004fab8f3245fsm16785402pfi.149.2022.04.05.06.59.07
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 05 Apr 2022 06:59:11 -0700 (PDT)
-From:   Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-To:     gregkh@linuxfoundation.org
-Cc:     linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        elder@linaro.org, mhi@lists.linux.dev, quic_hemantk@quicinc.com,
-        quic_bbhatt@quicinc.com, quic_jhugo@quicinc.com,
-        bjorn.andersson@linaro.org, dmitry.baryshkov@linaro.org,
-        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-Subject: [PATCH 13/18] bus: mhi: ep: Add support for processing command rings
-Date:   Tue,  5 Apr 2022 19:27:49 +0530
-Message-Id: <20220405135754.6622-14-manivannan.sadhasivam@linaro.org>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220405135754.6622-1-manivannan.sadhasivam@linaro.org>
-References: <20220405135754.6622-1-manivannan.sadhasivam@linaro.org>
+        Tue, 5 Apr 2022 05:48:49 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70BEFA27D3;
+        Tue,  5 Apr 2022 02:38:05 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0B8B4B818F3;
+        Tue,  5 Apr 2022 09:38:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7002DC385A0;
+        Tue,  5 Apr 2022 09:38:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649151482;
+        bh=OKfJzWTQmHLjMXWrifHpPa9eLq/SqrNqn+2tLoJncbQ=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=DTYTxaUHmIYhAdg8/OaSPoujXW/s7aCedkJAZnXcUVEJFh/UC/gCLQz6Ylf/Ew6fd
+         NUQRspuiQk9JF/8+M4SyvghJKOZvoXj20lH28qirb9+Cjwh9/sJ/oNgH1X+/6trkey
+         VtyGuY9O8A+FHEsWhNQKxeo40nRDOm2z26B5pQhM=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Johannes Berg <johannes.berg@intel.com>,
+        Luca Coelho <luciano.coelho@intel.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 431/913] mac80211: limit bandwidth in HE capabilities
+Date:   Tue,  5 Apr 2022 09:24:53 +0200
+Message-Id: <20220405070352.764932079@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add support for processing the command rings. Command ring is used by the
-host to issue channel specific commands to the ep device. Following
-commands are supported:
+From: Johannes Berg <johannes.berg@intel.com>
 
-1. Start channel
-2. Stop channel
-3. Reset channel
+[ Upstream commit 1f2c104448477512fcf7296df54bfbc3a6f9a765 ]
 
-Once the device receives the command doorbell interrupt from host, it
-executes the command and generates a command completion event to the
-host in the primary event ring.
+If we're limiting bandwidth for some reason such as regulatory
+restrictions, then advertise that limitation just like we do
+for VHT today, so the AP is aware we cannot use the higher BW
+it might be using.
 
-Reviewed-by: Alex Elder <elder@linaro.org>
-Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+Fixes: 41cbb0f5a295 ("mac80211: add support for HE")
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
+Link: https://lore.kernel.org/r/iwlwifi.20220202104617.70c8e3e7ee76.If317630de69ff1146bec7d47f5b83038695eb71d@changeid
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/bus/mhi/ep/main.c | 190 +++++++++++++++++++++++++++++++++++++-
- include/linux/mhi_ep.h    |   2 +
- 2 files changed, 191 insertions(+), 1 deletion(-)
+ net/mac80211/ieee80211_i.h |  2 +-
+ net/mac80211/mesh.c        |  2 +-
+ net/mac80211/mlme.c        | 11 ++++++++---
+ net/mac80211/util.c        | 27 ++++++++++++++++++++++-----
+ 4 files changed, 32 insertions(+), 10 deletions(-)
 
-diff --git a/drivers/bus/mhi/ep/main.c b/drivers/bus/mhi/ep/main.c
-index 706473ea4918..32ac567e0f67 100644
---- a/drivers/bus/mhi/ep/main.c
-+++ b/drivers/bus/mhi/ep/main.c
-@@ -22,6 +22,7 @@
+diff --git a/net/mac80211/ieee80211_i.h b/net/mac80211/ieee80211_i.h
+index 6a88195e5abe..d30bd21697a3 100644
+--- a/net/mac80211/ieee80211_i.h
++++ b/net/mac80211/ieee80211_i.h
+@@ -2379,7 +2379,7 @@ u8 *ieee80211_ie_build_vht_cap(u8 *pos, struct ieee80211_sta_vht_cap *vht_cap,
+ u8 *ieee80211_ie_build_vht_oper(u8 *pos, struct ieee80211_sta_vht_cap *vht_cap,
+ 				const struct cfg80211_chan_def *chandef);
+ u8 ieee80211_ie_len_he_cap(struct ieee80211_sub_if_data *sdata, u8 iftype);
+-u8 *ieee80211_ie_build_he_cap(u8 *pos,
++u8 *ieee80211_ie_build_he_cap(u32 disable_flags, u8 *pos,
+ 			      const struct ieee80211_sta_he_cap *he_cap,
+ 			      u8 *end);
+ void ieee80211_ie_build_he_6ghz_cap(struct ieee80211_sub_if_data *sdata,
+diff --git a/net/mac80211/mesh.c b/net/mac80211/mesh.c
+index 5dcfd53a4ab6..42bd81a30310 100644
+--- a/net/mac80211/mesh.c
++++ b/net/mac80211/mesh.c
+@@ -580,7 +580,7 @@ int mesh_add_he_cap_ie(struct ieee80211_sub_if_data *sdata,
+ 		return -ENOMEM;
  
- static DEFINE_IDA(mhi_ep_cntrl_ida);
+ 	pos = skb_put(skb, ie_len);
+-	ieee80211_ie_build_he_cap(pos, he_cap, pos + ie_len);
++	ieee80211_ie_build_he_cap(0, pos, he_cap, pos + ie_len);
  
-+static int mhi_ep_create_device(struct mhi_ep_cntrl *mhi_cntrl, u32 ch_id);
- static int mhi_ep_destroy_device(struct device *dev, void *data);
- 
- static int mhi_ep_send_event(struct mhi_ep_cntrl *mhi_cntrl, u32 ring_idx,
-@@ -111,6 +112,156 @@ static int mhi_ep_send_cmd_comp_event(struct mhi_ep_cntrl *mhi_cntrl, enum mhi_e
- 	return mhi_ep_send_event(mhi_cntrl, 0, &event, 0);
- }
- 
-+static int mhi_ep_process_cmd_ring(struct mhi_ep_ring *ring, struct mhi_ring_element *el)
-+{
-+	struct mhi_ep_cntrl *mhi_cntrl = ring->mhi_cntrl;
-+	struct device *dev = &mhi_cntrl->mhi_dev->dev;
-+	struct mhi_result result = {};
-+	struct mhi_ep_chan *mhi_chan;
-+	struct mhi_ep_ring *ch_ring;
-+	u32 tmp, ch_id;
-+	int ret;
-+
-+	ch_id = MHI_TRE_GET_CMD_CHID(el);
-+	mhi_chan = &mhi_cntrl->mhi_chan[ch_id];
-+	ch_ring = &mhi_cntrl->mhi_chan[ch_id].ring;
-+
-+	switch (MHI_TRE_GET_CMD_TYPE(el)) {
-+	case MHI_PKT_TYPE_START_CHAN_CMD:
-+		dev_dbg(dev, "Received START command for channel (%u)\n", ch_id);
-+
-+		mutex_lock(&mhi_chan->lock);
-+		/* Initialize and configure the corresponding channel ring */
-+		if (!ch_ring->started) {
-+			ret = mhi_ep_ring_start(mhi_cntrl, ch_ring,
-+				(union mhi_ep_ring_ctx *)&mhi_cntrl->ch_ctx_cache[ch_id]);
-+			if (ret) {
-+				dev_err(dev, "Failed to start ring for channel (%u)\n", ch_id);
-+				ret = mhi_ep_send_cmd_comp_event(mhi_cntrl,
-+							MHI_EV_CC_UNDEFINED_ERR);
-+				if (ret)
-+					dev_err(dev, "Error sending completion event: %d\n", ret);
-+
-+				goto err_unlock;
-+			}
-+		}
-+
-+		/* Set channel state to RUNNING */
-+		mhi_chan->state = MHI_CH_STATE_RUNNING;
-+		tmp = le32_to_cpu(mhi_cntrl->ch_ctx_cache[ch_id].chcfg);
-+		tmp &= ~CHAN_CTX_CHSTATE_MASK;
-+		tmp |= FIELD_PREP(CHAN_CTX_CHSTATE_MASK, MHI_CH_STATE_RUNNING);
-+		mhi_cntrl->ch_ctx_cache[ch_id].chcfg = cpu_to_le32(tmp);
-+
-+		ret = mhi_ep_send_cmd_comp_event(mhi_cntrl, MHI_EV_CC_SUCCESS);
-+		if (ret) {
-+			dev_err(dev, "Error sending command completion event (%u)\n",
-+				MHI_EV_CC_SUCCESS);
-+			goto err_unlock;
-+		}
-+
-+		mutex_unlock(&mhi_chan->lock);
-+
-+		/*
-+		 * Create MHI device only during UL channel start. Since the MHI
-+		 * channels operate in a pair, we'll associate both UL and DL
-+		 * channels to the same device.
-+		 *
-+		 * We also need to check for mhi_dev != NULL because, the host
-+		 * will issue START_CHAN command during resume and we don't
-+		 * destroy the device during suspend.
-+		 */
-+		if (!(ch_id % 2) && !mhi_chan->mhi_dev) {
-+			ret = mhi_ep_create_device(mhi_cntrl, ch_id);
-+			if (ret) {
-+				dev_err(dev, "Error creating device for channel (%u)\n", ch_id);
-+				mhi_ep_handle_syserr(mhi_cntrl);
-+				return ret;
-+			}
-+		}
-+
-+		/* Finally, enable DB for the channel */
-+		mhi_ep_mmio_enable_chdb(mhi_cntrl, ch_id);
-+
-+		break;
-+	case MHI_PKT_TYPE_STOP_CHAN_CMD:
-+		dev_dbg(dev, "Received STOP command for channel (%u)\n", ch_id);
-+		if (!ch_ring->started) {
-+			dev_err(dev, "Channel (%u) not opened\n", ch_id);
-+			return -ENODEV;
-+		}
-+
-+		mutex_lock(&mhi_chan->lock);
-+		/* Disable DB for the channel */
-+		mhi_ep_mmio_disable_chdb(mhi_cntrl, ch_id);
-+
-+		/* Send channel disconnect status to client drivers */
-+		result.transaction_status = -ENOTCONN;
-+		result.bytes_xferd = 0;
-+		mhi_chan->xfer_cb(mhi_chan->mhi_dev, &result);
-+
-+		/* Set channel state to STOP */
-+		mhi_chan->state = MHI_CH_STATE_STOP;
-+		tmp = le32_to_cpu(mhi_cntrl->ch_ctx_cache[ch_id].chcfg);
-+		tmp &= ~CHAN_CTX_CHSTATE_MASK;
-+		tmp |= FIELD_PREP(CHAN_CTX_CHSTATE_MASK, MHI_CH_STATE_STOP);
-+		mhi_cntrl->ch_ctx_cache[ch_id].chcfg = cpu_to_le32(tmp);
-+
-+		ret = mhi_ep_send_cmd_comp_event(mhi_cntrl, MHI_EV_CC_SUCCESS);
-+		if (ret) {
-+			dev_err(dev, "Error sending command completion event (%u)\n",
-+				MHI_EV_CC_SUCCESS);
-+			goto err_unlock;
-+		}
-+
-+		mutex_unlock(&mhi_chan->lock);
-+		break;
-+	case MHI_PKT_TYPE_RESET_CHAN_CMD:
-+		dev_dbg(dev, "Received STOP command for channel (%u)\n", ch_id);
-+		if (!ch_ring->started) {
-+			dev_err(dev, "Channel (%u) not opened\n", ch_id);
-+			return -ENODEV;
-+		}
-+
-+		mutex_lock(&mhi_chan->lock);
-+		/* Stop and reset the transfer ring */
-+		mhi_ep_ring_reset(mhi_cntrl, ch_ring);
-+
-+		/* Send channel disconnect status to client driver */
-+		result.transaction_status = -ENOTCONN;
-+		result.bytes_xferd = 0;
-+		mhi_chan->xfer_cb(mhi_chan->mhi_dev, &result);
-+
-+		/* Set channel state to DISABLED */
-+		mhi_chan->state = MHI_CH_STATE_DISABLED;
-+		tmp = le32_to_cpu(mhi_cntrl->ch_ctx_cache[ch_id].chcfg);
-+		tmp &= ~CHAN_CTX_CHSTATE_MASK;
-+		tmp |= FIELD_PREP(CHAN_CTX_CHSTATE_MASK, MHI_CH_STATE_DISABLED);
-+		mhi_cntrl->ch_ctx_cache[ch_id].chcfg = cpu_to_le32(tmp);
-+
-+		ret = mhi_ep_send_cmd_comp_event(mhi_cntrl, MHI_EV_CC_SUCCESS);
-+		if (ret) {
-+			dev_err(dev, "Error sending command completion event (%u)\n",
-+				MHI_EV_CC_SUCCESS);
-+			goto err_unlock;
-+		}
-+
-+		mutex_unlock(&mhi_chan->lock);
-+		break;
-+	default:
-+		dev_err(dev, "Invalid command received: %lu for channel (%u)\n",
-+			MHI_TRE_GET_CMD_TYPE(el), ch_id);
-+		return -EINVAL;
-+	}
-+
-+	return 0;
-+
-+err_unlock:
-+	mutex_unlock(&mhi_chan->lock);
-+
-+	return ret;
-+}
-+
- static int mhi_ep_cache_host_cfg(struct mhi_ep_cntrl *mhi_cntrl)
- {
- 	size_t cmd_ctx_host_size, ch_ctx_host_size, ev_ctx_host_size;
-@@ -259,6 +410,40 @@ static int mhi_ep_enable(struct mhi_ep_cntrl *mhi_cntrl)
  	return 0;
  }
- 
-+static void mhi_ep_cmd_ring_worker(struct work_struct *work)
-+{
-+	struct mhi_ep_cntrl *mhi_cntrl = container_of(work, struct mhi_ep_cntrl, cmd_ring_work);
-+	struct mhi_ep_ring *ring = &mhi_cntrl->mhi_cmd->ring;
-+	struct device *dev = &mhi_cntrl->mhi_dev->dev;
-+	struct mhi_ring_element *el;
-+	int ret;
-+
-+	/* Update the write offset for the ring */
-+	ret = mhi_ep_update_wr_offset(ring);
-+	if (ret) {
-+		dev_err(dev, "Error updating write offset for ring\n");
-+		return;
-+	}
-+
-+	/* Sanity check to make sure there are elements in the ring */
-+	if (ring->rd_offset == ring->wr_offset)
-+		return;
-+
-+	/*
-+	 * Process command ring element till write offset. In case of an error, just try to
-+	 * process next element.
-+	 */
-+	while (ring->rd_offset != ring->wr_offset) {
-+		el = &ring->ring_cache[ring->rd_offset];
-+
-+		ret = mhi_ep_process_cmd_ring(ring, el);
-+		if (ret)
-+			dev_err(dev, "Error processing cmd ring element: %zu\n", ring->rd_offset);
-+
-+		mhi_ep_ring_inc_index(ring);
-+	}
-+}
-+
- static void mhi_ep_state_worker(struct work_struct *work)
+diff --git a/net/mac80211/mlme.c b/net/mac80211/mlme.c
+index 8d9fe2765836..c8332452c118 100644
+--- a/net/mac80211/mlme.c
++++ b/net/mac80211/mlme.c
+@@ -630,7 +630,7 @@ static void ieee80211_add_he_ie(struct ieee80211_sub_if_data *sdata,
+ 				struct sk_buff *skb,
+ 				struct ieee80211_supported_band *sband)
  {
- 	struct mhi_ep_cntrl *mhi_cntrl = container_of(work, struct mhi_ep_cntrl, state_work);
-@@ -402,8 +587,10 @@ static irqreturn_t mhi_ep_irq(int irq, void *data)
+-	u8 *pos;
++	u8 *pos, *pre_he_pos;
+ 	const struct ieee80211_sta_he_cap *he_cap = NULL;
+ 	struct ieee80211_chanctx_conf *chanctx_conf;
+ 	u8 he_cap_size;
+@@ -647,16 +647,21 @@ static void ieee80211_add_he_ie(struct ieee80211_sub_if_data *sdata,
+ 
+ 	he_cap = ieee80211_get_he_iftype_cap(sband,
+ 					     ieee80211_vif_type_p2p(&sdata->vif));
+-	if (!he_cap || !reg_cap)
++	if (!he_cap || !chanctx_conf || !reg_cap)
+ 		return;
+ 
++	/* get a max size estimate */
+ 	he_cap_size =
+ 		2 + 1 + sizeof(he_cap->he_cap_elem) +
+ 		ieee80211_he_mcs_nss_size(&he_cap->he_cap_elem) +
+ 		ieee80211_he_ppe_size(he_cap->ppe_thres[0],
+ 				      he_cap->he_cap_elem.phy_cap_info);
+ 	pos = skb_put(skb, he_cap_size);
+-	ieee80211_ie_build_he_cap(pos, he_cap, pos + he_cap_size);
++	pre_he_pos = pos;
++	pos = ieee80211_ie_build_he_cap(sdata->u.mgd.flags,
++					pos, he_cap, pos + he_cap_size);
++	/* trim excess if any */
++	skb_trim(skb, skb->len - (pre_he_pos + he_cap_size - pos));
+ 
+ 	ieee80211_ie_build_he_6ghz_cap(sdata, skb);
+ }
+diff --git a/net/mac80211/util.c b/net/mac80211/util.c
+index 2fe71ed9137b..be1911d8089f 100644
+--- a/net/mac80211/util.c
++++ b/net/mac80211/util.c
+@@ -1959,7 +1959,7 @@ static int ieee80211_build_preq_ies_band(struct ieee80211_sub_if_data *sdata,
+ 	if (he_cap &&
+ 	    cfg80211_any_usable_channels(local->hw.wiphy, BIT(sband->band),
+ 					 IEEE80211_CHAN_NO_HE)) {
+-		pos = ieee80211_ie_build_he_cap(pos, he_cap, end);
++		pos = ieee80211_ie_build_he_cap(0, pos, he_cap, end);
+ 		if (!pos)
+ 			goto out_err;
  	}
+@@ -2903,10 +2903,11 @@ u8 ieee80211_ie_len_he_cap(struct ieee80211_sub_if_data *sdata, u8 iftype)
+ 				     he_cap->he_cap_elem.phy_cap_info);
+ }
  
- 	/* Check for command doorbell interrupt */
--	if (FIELD_GET(MHI_CTRL_INT_STATUS_CRDB_MSK, int_value))
-+	if (FIELD_GET(MHI_CTRL_INT_STATUS_CRDB_MSK, int_value)) {
- 		dev_dbg(dev, "Processing command doorbell interrupt\n");
-+		queue_work(mhi_cntrl->wq, &mhi_cntrl->cmd_ring_work);
-+	}
+-u8 *ieee80211_ie_build_he_cap(u8 *pos,
++u8 *ieee80211_ie_build_he_cap(u32 disable_flags, u8 *pos,
+ 			      const struct ieee80211_sta_he_cap *he_cap,
+ 			      u8 *end)
+ {
++	struct ieee80211_he_cap_elem elem;
+ 	u8 n;
+ 	u8 ie_len;
+ 	u8 *orig_pos = pos;
+@@ -2919,7 +2920,23 @@ u8 *ieee80211_ie_build_he_cap(u8 *pos,
+ 	if (!he_cap)
+ 		return orig_pos;
  
- 	/* Check for channel interrupts */
- 	mhi_ep_check_channel_interrupt(mhi_cntrl);
-@@ -811,6 +998,7 @@ int mhi_ep_register_controller(struct mhi_ep_cntrl *mhi_cntrl,
+-	n = ieee80211_he_mcs_nss_size(&he_cap->he_cap_elem);
++	/* modify on stack first to calculate 'n' and 'ie_len' correctly */
++	elem = he_cap->he_cap_elem;
++
++	if (disable_flags & IEEE80211_STA_DISABLE_40MHZ)
++		elem.phy_cap_info[0] &=
++			~(IEEE80211_HE_PHY_CAP0_CHANNEL_WIDTH_SET_40MHZ_80MHZ_IN_5G |
++			  IEEE80211_HE_PHY_CAP0_CHANNEL_WIDTH_SET_40MHZ_IN_2G);
++
++	if (disable_flags & IEEE80211_STA_DISABLE_160MHZ)
++		elem.phy_cap_info[0] &=
++			~IEEE80211_HE_PHY_CAP0_CHANNEL_WIDTH_SET_160MHZ_IN_5G;
++
++	if (disable_flags & IEEE80211_STA_DISABLE_80P80MHZ)
++		elem.phy_cap_info[0] &=
++			~IEEE80211_HE_PHY_CAP0_CHANNEL_WIDTH_SET_80PLUS80_MHZ_IN_5G;
++
++	n = ieee80211_he_mcs_nss_size(&elem);
+ 	ie_len = 2 + 1 +
+ 		 sizeof(he_cap->he_cap_elem) + n +
+ 		 ieee80211_he_ppe_size(he_cap->ppe_thres[0],
+@@ -2933,8 +2950,8 @@ u8 *ieee80211_ie_build_he_cap(u8 *pos,
+ 	*pos++ = WLAN_EID_EXT_HE_CAPABILITY;
  
- 	INIT_WORK(&mhi_cntrl->state_work, mhi_ep_state_worker);
- 	INIT_WORK(&mhi_cntrl->reset_work, mhi_ep_reset_worker);
-+	INIT_WORK(&mhi_cntrl->cmd_ring_work, mhi_ep_cmd_ring_worker);
+ 	/* Fixed data */
+-	memcpy(pos, &he_cap->he_cap_elem, sizeof(he_cap->he_cap_elem));
+-	pos += sizeof(he_cap->he_cap_elem);
++	memcpy(pos, &elem, sizeof(elem));
++	pos += sizeof(elem);
  
- 	mhi_cntrl->wq = alloc_workqueue("mhi_ep_wq", 0, 0);
- 	if (!mhi_cntrl->wq) {
-diff --git a/include/linux/mhi_ep.h b/include/linux/mhi_ep.h
-index 2f31a54c205f..8c6406d9c51f 100644
---- a/include/linux/mhi_ep.h
-+++ b/include/linux/mhi_ep.h
-@@ -77,6 +77,7 @@ struct mhi_ep_db_info {
-  * @wq: Dedicated workqueue for handling rings and state changes
-  * @state_work: State transition worker
-  * @reset_work: Worker for MHI Endpoint reset
-+ * @cmd_ring_work: Worker for processing command rings
-  * @raise_irq: CB function for raising IRQ to the host
-  * @alloc_map: CB function for allocating memory in endpoint for storing host context and mapping it
-  * @unmap_free: CB function to unmap and free the allocated memory in endpoint for storing host context
-@@ -124,6 +125,7 @@ struct mhi_ep_cntrl {
- 	struct workqueue_struct *wq;
- 	struct work_struct state_work;
- 	struct work_struct reset_work;
-+	struct work_struct cmd_ring_work;
- 
- 	void (*raise_irq)(struct mhi_ep_cntrl *mhi_cntrl, u32 vector);
- 	int (*alloc_map)(struct mhi_ep_cntrl *mhi_cntrl, u64 pci_addr, phys_addr_t *phys_ptr,
+ 	memcpy(pos, &he_cap->he_mcs_nss_supp, n);
+ 	pos += n;
 -- 
-2.25.1
+2.34.1
+
+
 
