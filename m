@@ -2,110 +2,220 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8961EC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:11:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3439CC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:11:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1573805AbiDEWxR (ORCPT
+        id S1573830AbiDEWx0 convert rfc822-to-8bit (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 18:53:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58920 "EHLO
+        Tue, 5 Apr 2022 18:53:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47620 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358093AbiDEK16 (ORCPT
+        with ESMTP id S1457864AbiDEQxP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:27:58 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29E6966637;
-        Tue,  5 Apr 2022 03:15:09 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E04B1B81C88;
-        Tue,  5 Apr 2022 10:15:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3C403C385A1;
-        Tue,  5 Apr 2022 10:15:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649153706;
-        bh=V6mRjgw4eCttZbMrLpti/zonBqSKnTpnRtsdslAQDiM=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=uRLngL+OM1ZXrHzqC2LsheU4B2x5zYX25KjuV5o0ed1mjN8kwafQKzaYkVUaS1i14
-         crlseu3xYL3OH5ABxCQyozdyGMBxk0zT4rtEtuiOaK/lqVL6uhXuq7Mk8D8MUkI6DZ
-         03HXKSZDWmCdZcU5bAYX7Rd+o3OqenQJ91bzHPaU=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jack Wang <jinpu.wang@ionos.com>,
-        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 317/599] scsi: pm8001: Fix NCQ NON DATA command completion handling
-Date:   Tue,  5 Apr 2022 09:30:11 +0200
-Message-Id: <20220405070308.266014081@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 5 Apr 2022 12:53:15 -0400
+Received: from mail-ej1-f41.google.com (mail-ej1-f41.google.com [209.85.218.41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9FF0326E6
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 09:51:14 -0700 (PDT)
+Received: by mail-ej1-f41.google.com with SMTP id k23so24503510ejd.3
+        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 09:51:14 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=IPrQE+Xi3gKFHtaa4iFeqv2z1Mz1gUVNTO0GQNazrug=;
+        b=7MoYEpMW8uhJs4XPW8BacZ5qjLb2PeXqwyzQ0K3deVvGUJEcx+gyEl6KT5NNldM298
+         WI9R+z+/YYaUaZxtQt8mFU7HaLSeuHRITaQf8YTo3aaLr40XD+Mn9pADeQ14P5u+kwJF
+         Yy4m7yc/cMkEQSUjlSI5CBjGe8JxV831889R/fBUSeW6cwMU3/8InfiCqB6uHI7T6/r+
+         F6MG3uoycmXMYCEZkwcBv4ZuMBhcuBcNYWf9P8lk2D8ehuv5ay2j7Lk+gMTlBhmgURD3
+         gNDTK/LqJcn1vWjLCwjBUVhvIiSEBakVfMtIF08t730Uhf1mR6kpRO3SiiEhtB8hjSUq
+         WNXg==
+X-Gm-Message-State: AOAM532fh6n9/ywHyFcpbw1R9iDjDs0EcWFSzrKbcqqHhagB3biMqrn9
+        0zo9C5JTfk2KMwKinYcIIqR2FGs2z1vxElhR/asz8g==
+X-Google-Smtp-Source: ABdhPJyZW/jtaBf+smr/b2HpqbwulVx0oqg/WWEhSXUKh3LtpTZgEBwALPc6rzivGSbB+HNhFhDLiW9iIutaI4bUvA0=
+X-Received: by 2002:a17:907:1b20:b0:6da:649b:d99e with SMTP id
+ mp32-20020a1709071b2000b006da649bd99emr4506275ejc.712.1649177473217; Tue, 05
+ Apr 2022 09:51:13 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <20220405070407.513532867@linuxfoundation.org> <20220405070435.188697055@linuxfoundation.org>
+In-Reply-To: <20220405070435.188697055@linuxfoundation.org>
+From:   Justin Forbes <jforbes@fedoraproject.org>
+Date:   Tue, 5 Apr 2022 11:51:02 -0500
+Message-ID: <CAFxkdAov41sA0V7D82BVophn8Nn6RPyLwPz-VmW5mLOXg1NYEw@mail.gmail.com>
+Subject: Re: [PATCH 5.17 0943/1126] ASoC: Intel: sof_es8336: use NHLT
+ information to set dmic and SSP
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        Stable <stable@vger.kernel.org>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
+        Bard Liao <yung-chuan.liao@linux.intel.com>,
+        =?UTF-8?Q?P=C3=A9ter_Ujfalusi?= <peter.ujfalusi@linux.intel.com>,
+        Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Damien Le Moal <damien.lemoal@opensource.wdc.com>
+On Tue, Apr 5, 2022 at 4:14 AM Greg Kroah-Hartman
+<gregkh@linuxfoundation.org> wrote:
+>
+> From: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+>
+> [ Upstream commit 651c304df7f6e3fbb4779527efa3eb128ef91329 ]
+>
+> Since we see a proliferation of devices with various configurations,
+> we want to automatically set the DMIC and SSP information. This patch
+> relies on the information extracted from NHLT and partially reverts
+> existing DMI quirks added by commit a164137ce91a ("ASoC: Intel: add
+> machine driver for SOF+ES8336")
+>
+> Note that NHLT can report multiple SSPs, choosing from the
+> ssp_link_mask in an MSB-first manner was found experimentally to work
+> fine.
+>
+> The only thing that cannot be detected is the GPIO type, and users may
+> want to use the quirk override parameter if the 'wrong' solution is
+> provided.
+>
+> Tested-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+> Signed-off-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+> Reviewed-by: Bard Liao <yung-chuan.liao@linux.intel.com>
+> Reviewed-by: Péter Ujfalusi <peter.ujfalusi@linux.intel.com>
+> Link: https://lore.kernel.org/r/20220308192610.392950-15-pierre-louis.bossart@linux.intel.com
+> Signed-off-by: Mark Brown <broonie@kernel.org>
+> Signed-off-by: Sasha Levin <sashal@kernel.org>
 
-[ Upstream commit 1d6736c3e162061dc811c76e605f35ef3234bffa ]
+It seems this patch is missing a dependent patch in the backport,
+specifically commit
+679aa83a0fb70dcbf9e97cbdfd573e6fc8bf9b1a ASoC: soc-acpi: add
+information on I2S/TDM link mask
 
-NCQ NON DATA is an NCQ command with the DMA_NONE DMA direction and so a
-register-device-to-host-FIS response is expected for it.
+sound/soc/intel/boards/sof_es8336.c: In function 'sof_es8336_probe':
+sound/soc/intel/boards/sof_es8336.c:482:32: error: 'struct
+snd_soc_acpi_mach_params' has no member named 'i2s_link_mask'; did you
+mean 'link_mask'?
+  482 |         if (!mach->mach_params.i2s_link_mask) {
+      |                                ^~~~~~~~~~~~~
+      |                                link_mask
+sound/soc/intel/boards/sof_es8336.c:494:39: error: 'struct
+snd_soc_acpi_mach_params' has no member named 'i2s_link_mask'; did you
+mean 'link_mask'?
+  494 |                 if (mach->mach_params.i2s_link_mask & BIT(2))
+      |                                       ^~~~~~~~~~~~~
+      |                                       link_mask
+sound/soc/intel/boards/sof_es8336.c:496:44: error: 'struct
+snd_soc_acpi_mach_params' has no member named 'i2s_link_mask'; did you
+mean 'link_mask'?
+  496 |                 else if (mach->mach_params.i2s_link_mask & BIT(1))
+      |                                            ^~~~~~~~~~~~~
+      |                                            link_mask
+sound/soc/intel/boards/sof_es8336.c:498:45: error: 'struct
+snd_soc_acpi_mach_params' has no member named 'i2s_link_mask'; did you
+mean 'link_mask'?
+  498 |                 else  if (mach->mach_params.i2s_link_mask & BIT(0))
+      |                                             ^~~~~~~~~~~~~
+      |                                             link_mask
+make[4]: *** [scripts/Makefile.build:288:
+sound/soc/intel/boards/sof_es8336.o] Error 1
 
-However, for an IO_SUCCESS case, mpi_sata_completion() expects a
-set-device-bits-FIS for any ata task with an use_ncq field true, which
-includes NCQ NON DATA commands.
+Justin
 
-Fix this to correctly treat NCQ NON DATA commands as non-data by also
-testing for the DMA_NONE DMA direction.
-
-Link: https://lore.kernel.org/r/20220220031810.738362-16-damien.lemoal@opensource.wdc.com
-Fixes: dbf9bfe61571 ("[SCSI] pm8001: add SAS/SATA HBA driver")
-Reviewed-by: Jack Wang <jinpu.wang@ionos.com>
-Signed-off-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/scsi/pm8001/pm8001_hwi.c | 3 ++-
- drivers/scsi/pm8001/pm80xx_hwi.c | 3 ++-
- 2 files changed, 4 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/scsi/pm8001/pm8001_hwi.c b/drivers/scsi/pm8001/pm8001_hwi.c
-index 7b5ab0ff9bbd..a9f317a4be70 100644
---- a/drivers/scsi/pm8001/pm8001_hwi.c
-+++ b/drivers/scsi/pm8001/pm8001_hwi.c
-@@ -2365,7 +2365,8 @@ mpi_sata_completion(struct pm8001_hba_info *pm8001_ha, void *piomb)
- 				len = sizeof(struct pio_setup_fis);
- 				pm8001_dbg(pm8001_ha, IO,
- 					   "PIO read len = %d\n", len);
--			} else if (t->ata_task.use_ncq) {
-+			} else if (t->ata_task.use_ncq &&
-+				   t->data_dir != DMA_NONE) {
- 				len = sizeof(struct set_dev_bits_fis);
- 				pm8001_dbg(pm8001_ha, IO, "FPDMA len = %d\n",
- 					   len);
-diff --git a/drivers/scsi/pm8001/pm80xx_hwi.c b/drivers/scsi/pm8001/pm80xx_hwi.c
-index 7c02db9ba7f8..4427b4c232da 100644
---- a/drivers/scsi/pm8001/pm80xx_hwi.c
-+++ b/drivers/scsi/pm8001/pm80xx_hwi.c
-@@ -2465,7 +2465,8 @@ mpi_sata_completion(struct pm8001_hba_info *pm8001_ha, void *piomb)
- 				len = sizeof(struct pio_setup_fis);
- 				pm8001_dbg(pm8001_ha, IO,
- 					   "PIO read len = %d\n", len);
--			} else if (t->ata_task.use_ncq) {
-+			} else if (t->ata_task.use_ncq &&
-+				   t->data_dir != DMA_NONE) {
- 				len = sizeof(struct set_dev_bits_fis);
- 				pm8001_dbg(pm8001_ha, IO, "FPDMA len = %d\n",
- 					   len);
--- 
-2.34.1
-
-
-
+>  sound/soc/intel/boards/sof_es8336.c | 56 +++++++++++++++++++++--------
+>  1 file changed, 41 insertions(+), 15 deletions(-)
+>
+> diff --git a/sound/soc/intel/boards/sof_es8336.c b/sound/soc/intel/boards/sof_es8336.c
+> index 20d577eaab6d..46e453915f82 100644
+> --- a/sound/soc/intel/boards/sof_es8336.c
+> +++ b/sound/soc/intel/boards/sof_es8336.c
+> @@ -228,24 +228,25 @@ static int sof_es8336_quirk_cb(const struct dmi_system_id *id)
+>         return 1;
+>  }
+>
+> +/*
+> + * this table should only be used to add GPIO or jack-detection quirks
+> + * that cannot be detected from ACPI tables. The SSP and DMIC
+> + * information are providing by the platform driver and are aligned
+> + * with the topology used.
+> + *
+> + * If the GPIO support is missing, the quirk parameter can be used to
+> + * enable speakers. In that case it's recommended to keep the SSP and DMIC
+> + * information consistent, overriding the SSP and DMIC can only be done
+> + * if the topology file is modified as well.
+> + */
+>  static const struct dmi_system_id sof_es8336_quirk_table[] = {
+> -       {
+> -               .callback = sof_es8336_quirk_cb,
+> -               .matches = {
+> -                       DMI_MATCH(DMI_SYS_VENDOR, "CHUWI Innovation And Technology"),
+> -                       DMI_MATCH(DMI_BOARD_NAME, "Hi10 X"),
+> -               },
+> -               .driver_data = (void *)SOF_ES8336_SSP_CODEC(2)
+> -       },
+>         {
+>                 .callback = sof_es8336_quirk_cb,
+>                 .matches = {
+>                         DMI_MATCH(DMI_SYS_VENDOR, "IP3 tech"),
+>                         DMI_MATCH(DMI_BOARD_NAME, "WN1"),
+>                 },
+> -               .driver_data = (void *)(SOF_ES8336_SSP_CODEC(0) |
+> -                                       SOF_ES8336_TGL_GPIO_QUIRK |
+> -                                       SOF_ES8336_ENABLE_DMIC)
+> +               .driver_data = (void *)(SOF_ES8336_TGL_GPIO_QUIRK)
+>         },
+>         {}
+>  };
+> @@ -470,11 +471,33 @@ static int sof_es8336_probe(struct platform_device *pdev)
+>         card = &sof_es8336_card;
+>         card->dev = dev;
+>
+> -       if (!dmi_check_system(sof_es8336_quirk_table))
+> -               quirk = SOF_ES8336_SSP_CODEC(2);
+> +       /* check GPIO DMI quirks */
+> +       dmi_check_system(sof_es8336_quirk_table);
+>
+> -       if (quirk & SOF_ES8336_ENABLE_DMIC)
+> -               dmic_be_num = 2;
+> +       if (!mach->mach_params.i2s_link_mask) {
+> +               dev_warn(dev, "No I2S link information provided, using SSP0. This may need to be modified with the quirk module parameter\n");
+> +       } else {
+> +               /*
+> +                * Set configuration based on platform NHLT.
+> +                * In this machine driver, we can only support one SSP for the
+> +                * ES8336 link, the else-if below are intentional.
+> +                * In some cases multiple SSPs can be reported by NHLT, starting MSB-first
+> +                * seems to pick the right connection.
+> +                */
+> +               unsigned long ssp = 0;
+> +
+> +               if (mach->mach_params.i2s_link_mask & BIT(2))
+> +                       ssp = SOF_ES8336_SSP_CODEC(2);
+> +               else if (mach->mach_params.i2s_link_mask & BIT(1))
+> +                       ssp = SOF_ES8336_SSP_CODEC(1);
+> +               else  if (mach->mach_params.i2s_link_mask & BIT(0))
+> +                       ssp = SOF_ES8336_SSP_CODEC(0);
+> +
+> +               quirk |= ssp;
+> +       }
+> +
+> +       if (mach->mach_params.dmic_num)
+> +               quirk |= SOF_ES8336_ENABLE_DMIC;
+>
+>         if (quirk_override != -1) {
+>                 dev_info(dev, "Overriding quirk 0x%lx => 0x%x\n",
+> @@ -483,6 +506,9 @@ static int sof_es8336_probe(struct platform_device *pdev)
+>         }
+>         log_quirks(dev);
+>
+> +       if (quirk & SOF_ES8336_ENABLE_DMIC)
+> +               dmic_be_num = 2;
+> +
+>         sof_es8336_card.num_links += dmic_be_num + hdmi_num;
+>         dai_links = sof_card_dai_links_create(dev,
+>                                               SOF_ES8336_SSP_CODEC(quirk),
+> --
+> 2.34.1
+>
+>
+>
