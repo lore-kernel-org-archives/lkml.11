@@ -2,46 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 910A5C43219
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 11:08:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 256CFC4167E
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 11:09:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240974AbiDELK1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 07:10:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53004 "EHLO
+        id S1352475AbiDELKs (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 07:10:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45582 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238607AbiDEIao (ORCPT
+        with ESMTP id S238554AbiDEIoP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:30:44 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A70422AC73;
-        Tue,  5 Apr 2022 01:22:30 -0700 (PDT)
+        Tue, 5 Apr 2022 04:44:15 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 422BA1EEF7;
+        Tue,  5 Apr 2022 01:35:58 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 232BD6144D;
-        Tue,  5 Apr 2022 08:22:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2DDB2C385A5;
-        Tue,  5 Apr 2022 08:22:29 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BE8AFB81C69;
+        Tue,  5 Apr 2022 08:35:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EE745C385A4;
+        Tue,  5 Apr 2022 08:35:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649146949;
-        bh=CdMizYcg0vqRMBZy3nZIQsY6pEwDwVuUydNu+uhIk38=;
+        s=korg; t=1649147755;
+        bh=k04tRHaCCcaSw16B5b4zqxD/SIoqsMzrPWW5b4SpaUY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SzHksLl+OVhgh24cIoUm6ikRxy8HAZq4e4CUTI3mhvOPyt+oLMWIG6KBBdybPVoEm
-         1B9hZgMm+OZ88UintzNYodF3UMvrb9t5p4P6kF+c/+92uB49L4epWPCuGeeH7c6UHH
-         T4goHWGu4K+QiZRbHScR/vgcc+d8gvu28nuBtZsM=
+        b=OGfH+9jzC5HqMF5zcAi7Ggqn0CPkaNBR2Uj1Hh9GblLN76StgJCyJTL9uH9qJm8OC
+         +hE9A2gw7DeGko5Xpni2NW6XpAu9yePF7TXGQR/euTcR4Q1MnXYvOu+t6L4PttGos+
+         oZ/CVY4jGlUyPwGCaMSOgZ624ZoS34h9GGeFR2j0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Tzung-Bi Shih <tzungbi@kernel.org>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0947/1126] ASoC: mediatek: Fix error handling in mt8183_da7219_max98357_dev_probe
-Date:   Tue,  5 Apr 2022 09:28:14 +0200
-Message-Id: <20220405070435.303337904@linuxfoundation.org>
+        stable@vger.kernel.org, Alistair Delva <adelva@google.com>,
+        Rishabh Bhatnagar <rishabhb@codeaurora.org>,
+        Ohad Ben-Cohen <ohad@wizery.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Sibi Sankar <sibis@codeaurora.org>,
+        linux-remoteproc@vger.kernel.org, kernel-team@android.com
+Subject: [PATCH 5.16 0073/1017] remoteproc: Fix count check in rproc_coredump_write()
+Date:   Tue,  5 Apr 2022 09:16:26 +0200
+Message-Id: <20220405070356.357754401@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
-References: <20220405070407.513532867@linuxfoundation.org>
+In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
+References: <20220405070354.155796697@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,84 +54,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Alistair Delva <adelva@google.com>
 
-[ Upstream commit 28a265a1ee11febeec5ea73a804f30dcec3181ca ]
+commit f89672cc3681952f2d06314981a6b45f8b0045d1 upstream.
 
-The device_node pointer is returned by of_parse_phandle()  with refcount
-incremented. We should use of_node_put() on it when done.
+Check count for 0, to avoid a potential underflow. Make the check the
+same as the one in rproc_recovery_write().
 
-This function only calls of_node_put() in the regular path.
-And it will cause refcount leak in error paths.
-Fix this by calling of_node_put() in error handling too.
-
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Reviewed-by: Tzung-Bi Shih <tzungbi@kernel.org>
-Link: https://lore.kernel.org/r/20220316014059.19292-1-linmq006@gmail.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 3afdc59e4390 ("remoteproc: Add coredump debugfs entry")
+Signed-off-by: Alistair Delva <adelva@google.com>
+Cc: Rishabh Bhatnagar <rishabhb@codeaurora.org>
+Cc: stable@vger.kernel.org
+Cc: Ohad Ben-Cohen <ohad@wizery.com>
+Cc: Bjorn Andersson <bjorn.andersson@linaro.org>
+Cc: Mathieu Poirier <mathieu.poirier@linaro.org>
+Cc: Sibi Sankar <sibis@codeaurora.org>
+Cc: linux-remoteproc@vger.kernel.org
+Cc: kernel-team@android.com
+Reviewed-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Link: https://lore.kernel.org/r/20220119232139.1125908-1-adelva@google.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- .../mediatek/mt8183/mt8183-da7219-max98357.c  | 23 +++++++++++++------
- 1 file changed, 16 insertions(+), 7 deletions(-)
+ drivers/remoteproc/remoteproc_debugfs.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/sound/soc/mediatek/mt8183/mt8183-da7219-max98357.c b/sound/soc/mediatek/mt8183/mt8183-da7219-max98357.c
-index 718505c75418..f090dee0c7a4 100644
---- a/sound/soc/mediatek/mt8183/mt8183-da7219-max98357.c
-+++ b/sound/soc/mediatek/mt8183/mt8183-da7219-max98357.c
-@@ -695,8 +695,11 @@ static int mt8183_da7219_max98357_dev_probe(struct platform_device *pdev)
- 	}
+--- a/drivers/remoteproc/remoteproc_debugfs.c
++++ b/drivers/remoteproc/remoteproc_debugfs.c
+@@ -76,7 +76,7 @@ static ssize_t rproc_coredump_write(stru
+ 	int ret, err = 0;
+ 	char buf[20];
  
- 	card = (struct snd_soc_card *)of_device_get_match_data(&pdev->dev);
--	if (!card)
--		return -EINVAL;
-+	if (!card) {
-+		ret = -EINVAL;
-+		goto put_platform_node;
-+	}
-+
- 	card->dev = &pdev->dev;
+-	if (count > sizeof(buf))
++	if (count < 1 || count > sizeof(buf))
+ 		return -EINVAL;
  
- 	hdmi_codec = of_parse_phandle(pdev->dev.of_node,
-@@ -761,12 +764,15 @@ static int mt8183_da7219_max98357_dev_probe(struct platform_device *pdev)
- 	if (!mt8183_da7219_max98357_headset_dev.dlc.of_node) {
- 		dev_err(&pdev->dev,
- 			"Property 'mediatek,headset-codec' missing/invalid\n");
--		return -EINVAL;
-+		ret = -EINVAL;
-+		goto put_hdmi_codec;
- 	}
- 
- 	priv = devm_kzalloc(&pdev->dev, sizeof(*priv), GFP_KERNEL);
--	if (!priv)
--		return -ENOMEM;
-+	if (!priv) {
-+		ret = -ENOMEM;
-+		goto put_hdmi_codec;
-+	}
- 
- 	snd_soc_card_set_drvdata(card, priv);
- 
-@@ -775,13 +781,16 @@ static int mt8183_da7219_max98357_dev_probe(struct platform_device *pdev)
- 		ret = PTR_ERR(pinctrl);
- 		dev_err(&pdev->dev, "%s failed to select default state %d\n",
- 			__func__, ret);
--		return ret;
-+		goto put_hdmi_codec;
- 	}
- 
- 	ret = devm_snd_soc_register_card(&pdev->dev, card);
- 
--	of_node_put(platform_node);
-+
-+put_hdmi_codec:
- 	of_node_put(hdmi_codec);
-+put_platform_node:
-+	of_node_put(platform_node);
- 	return ret;
- }
- 
--- 
-2.34.1
-
+ 	ret = copy_from_user(buf, user_buf, count);
 
 
