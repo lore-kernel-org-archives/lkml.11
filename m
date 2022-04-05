@@ -2,84 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 92817C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C7378C4321E
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:28:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231625AbiDEUaA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 16:30:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50916 "EHLO
+        id S233905AbiDEUaM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 16:30:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44848 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1457952AbiDERB1 (ORCPT
+        with ESMTP id S1357362AbiDELQV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 13:01:27 -0400
-Received: from 14.mo582.mail-out.ovh.net (14.mo582.mail-out.ovh.net [46.105.56.113])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6561E65838
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 09:59:28 -0700 (PDT)
-Received: from player771.ha.ovh.net (unknown [10.108.16.30])
-        by mo582.mail-out.ovh.net (Postfix) with ESMTP id BB1DE23A1E
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 16:59:26 +0000 (UTC)
-Received: from sk2.org (82-65-25-201.subs.proxad.net [82.65.25.201])
-        (Authenticated sender: steve@sk2.org)
-        by player771.ha.ovh.net (Postfix) with ESMTPSA id 575A6293E3695;
-        Tue,  5 Apr 2022 16:59:21 +0000 (UTC)
-Authentication-Results: garm.ovh; auth=pass (GARM-106R006b3e2e77b-2407-4228-94bb-9a20ade0f9bf,
-                    8AF55017BACD44284FC599BC4826E0280D36FCC4) smtp.auth=steve@sk2.org
-X-OVh-ClientIp: 82.65.25.201
-From:   Stephen Kitt <steve@sk2.org>
-To:     Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>
-Cc:     Wolfram Sang <wsa@kernel.org>, linux-kernel@vger.kernel.org,
-        Stephen Kitt <steve@sk2.org>
-Subject: [PATCH 02/14] ASoC: cx2072x: use simple i2c probe function
-Date:   Tue,  5 Apr 2022 18:58:24 +0200
-Message-Id: <20220405165836.2165310-3-steve@sk2.org>
-X-Mailer: git-send-email 2.27.0
-In-Reply-To: <20220405165836.2165310-1-steve@sk2.org>
-References: <20220405165836.2165310-1-steve@sk2.org>
+        Tue, 5 Apr 2022 07:16:21 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 31ACF2D1E7;
+        Tue,  5 Apr 2022 03:41:14 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id F1976D6E;
+        Tue,  5 Apr 2022 03:41:13 -0700 (PDT)
+Received: from e121345-lin.cambridge.arm.com (e121345-lin.cambridge.arm.com [10.1.196.40])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 8A8D83F5A1;
+        Tue,  5 Apr 2022 03:41:12 -0700 (PDT)
+From:   Robin Murphy <robin.murphy@arm.com>
+To:     joro@8bytes.org, baolu.lu@linux.intel.com,
+        andreas.noever@gmail.com, michael.jamet@intel.com,
+        mika.westerberg@linux.intel.com, YehezkelShB@gmail.com
+Cc:     iommu@lists.linux-foundation.org, linux-usb@vger.kernel.org,
+        linux-kernel@vger.kernel.org, mario.limonciello@amd.com, hch@lst.de
+Subject: [PATCH v3 2/4] iommu: Add capability for pre-boot DMA protection
+Date:   Tue,  5 Apr 2022 11:41:02 +0100
+Message-Id: <2b5dc62a6325075cb5bd1ceec31ebad1833acf83.1649089693.git.robin.murphy@arm.com>
+X-Mailer: git-send-email 2.28.0.dirty
+In-Reply-To: <cover.1649089693.git.robin.murphy@arm.com>
+References: <cover.1649089693.git.robin.murphy@arm.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Ovh-Tracer-Id: 8461700752417785478
-X-VR-SPAMSTATE: OK
-X-VR-SPAMSCORE: -100
-X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvvddrudejgedguddtgecutefuodetggdotefrodftvfcurfhrohhfihhlvgemucfqggfjpdevjffgvefmvefgnecuuegrihhlohhuthemucehtddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjughrpefhvffufffkofgjfhgggfestdekredtredttdenucfhrhhomhepufhtvghphhgvnhcumfhithhtuceoshhtvghvvgesshhkvddrohhrgheqnecuggftrfgrthhtvghrnhepjeelledvfeeiiedutdefveekgeeuheekkedvffegvdehudegkefgjeejkefgueegnecukfhppedtrddtrddtrddtpdekvddrieehrddvhedrvddtudenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhhouggvpehsmhhtphhouhhtpdhhvghlohepphhlrgihvghrjeejuddrhhgrrdhovhhhrdhnvghtpdhinhgvtheptddrtddrtddrtddpmhgrihhlfhhrohhmpehsthgvvhgvsehskhdvrdhorhhgpdhnsggprhgtphhtthhopedupdhrtghpthhtoheplhhinhhugidqkhgvrhhnvghlsehvghgvrhdrkhgvrhhnvghlrdhorhhg
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The i2c probe functions here don't use the id information provided in
-their second argument, so the single-parameter i2c probe function
-("probe_new") can be used instead.
+VT-d's dmar_platform_optin() actually represents a combination of
+properties fairly well standardised by Microsoft as "Pre-boot DMA
+Protection" and "Kernel DMA Protection"[1]. As such, we can provide
+interested consumers with an abstracted capability rather than
+driver-specific interfaces that won't scale. We name it for the former
+aspect since that's what external callers are most likely to be
+interested in; the latter is for the IOMMU layer to handle itself.
 
-This avoids scanning the identifier tables during probes.
+[1] https://docs.microsoft.com/en-us/windows-hardware/design/device-experiences/oem-kernel-dma-protection
 
-Signed-off-by: Stephen Kitt <steve@sk2.org>
+Suggested-by: Christoph Hellwig <hch@lst.de>
+Reviewed-by: Christoph Hellwig <hch@lst.de>
+Signed-off-by: Robin Murphy <robin.murphy@arm.com>
 ---
- sound/soc/codecs/cx2072x.c | 5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
+ drivers/iommu/intel/iommu.c | 2 ++
+ include/linux/iommu.h       | 2 ++
+ 2 files changed, 4 insertions(+)
 
-diff --git a/sound/soc/codecs/cx2072x.c b/sound/soc/codecs/cx2072x.c
-index 1f5c57fab1d8..0d3a00434c6d 100644
---- a/sound/soc/codecs/cx2072x.c
-+++ b/sound/soc/codecs/cx2072x.c
-@@ -1626,8 +1626,7 @@ static int __maybe_unused cx2072x_runtime_resume(struct device *dev)
- 	return clk_prepare_enable(cx2072x->mclk);
- }
+diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+index 255304eb3b1f..49d552a96098 100644
+--- a/drivers/iommu/intel/iommu.c
++++ b/drivers/iommu/intel/iommu.c
+@@ -4550,6 +4550,8 @@ static bool intel_iommu_capable(struct device *dev, enum iommu_cap cap)
+ 		return domain_update_iommu_snooping(NULL);
+ 	if (cap == IOMMU_CAP_INTR_REMAP)
+ 		return irq_remapping_enabled == 1;
++	if (cap == IOMMU_CAP_PRE_BOOT_PROTECTION)
++		return dmar_platform_optin();
  
--static int cx2072x_i2c_probe(struct i2c_client *i2c,
--			     const struct i2c_device_id *id)
-+static int cx2072x_i2c_probe(struct i2c_client *i2c)
- {
- 	struct cx2072x_priv *cx2072x;
- 	unsigned int ven_id, rev_id;
-@@ -1710,7 +1709,7 @@ static struct i2c_driver cx2072x_i2c_driver = {
- 		.acpi_match_table = ACPI_PTR(cx2072x_acpi_match),
- 		.pm = &cx2072x_runtime_pm,
- 	},
--	.probe = cx2072x_i2c_probe,
-+	.probe_new = cx2072x_i2c_probe,
- 	.remove = cx2072x_i2c_remove,
- 	.id_table = cx2072x_i2c_id,
+ 	return false;
+ }
+diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+index 1fa927e6f1c6..64c02f472f7b 100644
+--- a/include/linux/iommu.h
++++ b/include/linux/iommu.h
+@@ -107,6 +107,8 @@ enum iommu_cap {
+ 					   transactions */
+ 	IOMMU_CAP_INTR_REMAP,		/* IOMMU supports interrupt isolation */
+ 	IOMMU_CAP_NOEXEC,		/* IOMMU_NOEXEC flag */
++	IOMMU_CAP_PRE_BOOT_PROTECTION,	/* Firmware says it used the IOMMU for
++					   DMA protection and we should too */
  };
+ 
+ /* These are the possible reserved region types */
 -- 
-2.27.0
+2.28.0.dirty
 
