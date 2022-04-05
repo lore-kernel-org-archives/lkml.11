@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 648C6C47081
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 10:27:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E2EEC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 10:28:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355593AbiDEKUq (ORCPT
+        id S1355624AbiDEKVD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 06:20:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45556 "EHLO
+        Tue, 5 Apr 2022 06:21:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60898 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241244AbiDEIc5 (ORCPT
+        with ESMTP id S241226AbiDEIc4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:32:57 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F70F1014;
-        Tue,  5 Apr 2022 01:30:15 -0700 (PDT)
+        Tue, 5 Apr 2022 04:32:56 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D709BC7;
+        Tue,  5 Apr 2022 01:29:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 159C4B81BC5;
-        Tue,  5 Apr 2022 08:30:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5AB45C385A1;
-        Tue,  5 Apr 2022 08:30:12 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C22FE6062B;
+        Tue,  5 Apr 2022 08:29:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CF5BBC385A1;
+        Tue,  5 Apr 2022 08:29:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649147412;
-        bh=Fk7dGV1XNcf85J/QIpn+aGzWIVRLnxGOtlxA3lFhd0I=;
+        s=korg; t=1649147393;
+        bh=VyceP8V9963XvE21yMD5O+ylMNMf3kEiRPDdqj8YzSk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CmP01pywYClc6jB0WS+OTcLhdcHByT/p99gwnUZWFz7vMngCr2pQN1sI3/WzL8TA3
-         GFPBQb6NHsGrArAsFBSLb5VCLLgFDQaA6aYoZbHSceSyGelyk6Fwv1pmM5MwquvddV
-         Ha2mpZcPxJmwK3T8nE7BUkyIM2RdHmI7NiqudWTM=
+        b=hCr8R3iBS5WWWZIqLdXL3MSc0AX8WE2tVoUyJCt1+QSgT2E9k53SarOZDT8VG/Khp
+         IqWdsESkgz6tFisPpYRHg740sniXG+nAA393Tt0NPBuaAF6GMFQzdTHumKcQRIUq5z
+         pbNiw37JE+vK2s3pjy0DN+qEBV95Dwz+ybX/lw/I=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        Alexei Starovoitov <ast@kernel.org>
-Subject: [PATCH 5.17 1114/1126] xsk: Do not write NULL in SW ring at allocation failure
-Date:   Tue,  5 Apr 2022 09:31:01 +0200
-Message-Id: <20220405070440.130828569@linuxfoundation.org>
+        stable@vger.kernel.org, Kuldeep Singh <singh.kuldeep87k@gmail.com>,
+        Viresh Kumar <viresh.kumar@linaro.org>,
+        Arnd Bergmann <arnd@arndb.de>
+Subject: [PATCH 5.17 1108/1126] ARM: dts: spear1340: Update serial node properties
+Date:   Tue,  5 Apr 2022 09:30:55 +0200
+Message-Id: <20220405070439.960359233@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -50,50 +50,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Magnus Karlsson <magnus.karlsson@intel.com>
+From: Kuldeep Singh <singh.kuldeep87k@gmail.com>
 
-commit a95a4d9b39b0324402569ed7395aae59b8fd2b11 upstream.
+commit 583d6b0062640def86f3265aa1042ecb6672516e upstream.
 
-For the case when xp_alloc_batch() is used but the batched allocation
-cannot be used, there is a slow path that uses the non-batched
-xp_alloc(). When it fails to allocate an entry, it returns NULL. The
-current code wrote this NULL into the entry of the provided results
-array (pointer to the driver SW ring usually) and returned. This might
-not be what the driver expects and to make things simpler, just write
-successfully allocated xdp_buffs into the SW ring,. The driver might
-have information in there that is still important after an allocation
-failure.
+Reorder dma and dma-names property for serial node to make it compliant
+with bindings.
 
-Note that at this point in time, there are no drivers using
-xp_alloc_batch() that could trigger this slow path. But one might get
-added.
-
-Fixes: 47e4075df300 ("xsk: Batched buffer allocation for the pool")
-Signed-off-by: Magnus Karlsson <magnus.karlsson@intel.com>
-Signed-off-by: Alexei Starovoitov <ast@kernel.org>
-Link: https://lore.kernel.org/bpf/20220328142123.170157-2-maciej.fijalkowski@intel.com
+Fixes: 6e8887f60f60 ("ARM: SPEAr13xx: Pass generic DW DMAC platform data from DT")
+Signed-off-by: Kuldeep Singh <singh.kuldeep87k@gmail.com>
+Acked-by: Viresh Kumar <viresh.kumar@linaro.org>
+Link: https://lore.kernel.org/r/20220326042313.97862-3-singh.kuldeep87k@gmail.com'
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/xdp/xsk_buff_pool.c |    8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+ arch/arm/boot/dts/spear1340.dtsi |    6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
---- a/net/xdp/xsk_buff_pool.c
-+++ b/net/xdp/xsk_buff_pool.c
-@@ -584,9 +584,13 @@ u32 xp_alloc_batch(struct xsk_buff_pool
- 	u32 nb_entries1 = 0, nb_entries2;
+--- a/arch/arm/boot/dts/spear1340.dtsi
++++ b/arch/arm/boot/dts/spear1340.dtsi
+@@ -134,9 +134,9 @@
+ 				reg = <0xb4100000 0x1000>;
+ 				interrupts = <0 105 0x4>;
+ 				status = "disabled";
+-				dmas = <&dwdma0 12 0 1>,
+-					<&dwdma0 13 1 0>;
+-				dma-names = "tx", "rx";
++				dmas = <&dwdma0 13 0 1>,
++					<&dwdma0 12 1 0>;
++				dma-names = "rx", "tx";
+ 			};
  
- 	if (unlikely(pool->dma_need_sync)) {
-+		struct xdp_buff *buff;
-+
- 		/* Slow path */
--		*xdp = xp_alloc(pool);
--		return !!*xdp;
-+		buff = xp_alloc(pool);
-+		if (buff)
-+			*xdp = buff;
-+		return !!buff;
- 	}
- 
- 	if (unlikely(pool->free_list_cnt)) {
+ 			thermal@e07008c4 {
 
 
