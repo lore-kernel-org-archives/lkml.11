@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 94578C35295
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7DCF3C35296
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 13:32:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345967AbiDEN15 (ORCPT
+        id S1344515AbiDEN1h (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 09:27:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38248 "EHLO
+        Tue, 5 Apr 2022 09:27:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51842 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345141AbiDEJWS (ORCPT
+        with ESMTP id S1345221AbiDEJWW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:22:18 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C58B1AD93;
-        Tue,  5 Apr 2022 02:09:19 -0700 (PDT)
+        Tue, 5 Apr 2022 05:22:22 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC90233E32;
+        Tue,  5 Apr 2022 02:09:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1FABB615E4;
-        Tue,  5 Apr 2022 09:09:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2A864C385A0;
-        Tue,  5 Apr 2022 09:09:16 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 11B0A61577;
+        Tue,  5 Apr 2022 09:09:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 20C0BC385A4;
+        Tue,  5 Apr 2022 09:09:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649149757;
-        bh=+wq173W039LLwt49okhsC1cU/Yg0EMixvemiQqA7vmw=;
+        s=korg; t=1649149782;
+        bh=llqJgTYACegqB44NcpbRqBW8VJNdaMoizTw2wttvUcg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZQ5MAMhD0G8jKoctsm7fVQLBvSgwRsK/uRIsVykm9E16rsAkOvLcUNzo28gU2+KUb
-         tFPYbpQkSRs1iz0ySr9oV9+21q9YCVuewSKmtXbL549zZDTQbjAuxWlVmEdrHe+dA8
-         3YcWaNAc0QLt660CwXr/MIMO8bbfhTBFAeV8U2iU=
+        b=SjumYZUDiKEnN2aFFLtqNcxptVvJtCQ/61SW9SQ1BA+EFS4AguGpoFZuiklcNIMyr
+         Ny/yEZDWlPYXRFBrughVPWlL+f+uM+XNCwb6lLmB8sJ4zUpjYOJLaEnsdlIwpbiTDy
+         8evww/aA+GAg6vUivF3BAkuLav6yzmBb7MkQmxOY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zeal Robot <zealci@zte.com.cn>,
-        Jing Yao <yao.jing2@zte.com.cn>, Helge Deller <deller@gmx.de>,
+        stable@vger.kernel.org, Rohith Surabattula <rohiths@microsoft.com>,
+        "Paulo Alcantara (SUSE)" <pc@cjr.nz>,
+        Steve French <stfrench@microsoft.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0829/1017] video: fbdev: omapfb: panel-dsi-cm: Use sysfs_emit() instead of snprintf()
-Date:   Tue,  5 Apr 2022 09:29:02 +0200
-Message-Id: <20220405070418.852461854@linuxfoundation.org>
+Subject: [PATCH 5.16 0801/1017] Adjust cifssb maximum read size
+Date:   Tue,  5 Apr 2022 09:28:34 +0200
+Message-Id: <20220405070418.026433495@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -50,60 +51,69 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jing Yao <yao.jing2@zte.com.cn>
+From: Rohith Surabattula <rohiths@microsoft.com>
 
-[ Upstream commit f63658a59c3d439c8ad7b290f8ec270980e0f384 ]
+[ Upstream commit 06a466565d54a1a42168f9033a062a3f5c40e73b ]
 
-Use sysfs_emit instead of scnprintf, snprintf or sprintf.
+When session gets reconnected during mount then read size in super block fs context
+gets set to zero and after negotiate, rsize is not modified which results in
+incorrect read with requested bytes as zero. Fixes intermittent failure
+of xfstest generic/240
 
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: Jing Yao <yao.jing2@zte.com.cn>
-Signed-off-by: Helge Deller <deller@gmx.de>
+Note that stable requires a different version of this patch which will be
+sent to the stable mailing list.
+
+Signed-off-by: Rohith Surabattula <rohiths@microsoft.com>
+Acked-by: Paulo Alcantara (SUSE) <pc@cjr.nz>
+Signed-off-by: Steve French <stfrench@microsoft.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/video/fbdev/omap2/omapfb/displays/panel-dsi-cm.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ fs/cifs/cifsfs.c |  3 +++
+ fs/cifs/file.c   | 10 ++++++++++
+ 2 files changed, 13 insertions(+)
 
-diff --git a/drivers/video/fbdev/omap2/omapfb/displays/panel-dsi-cm.c b/drivers/video/fbdev/omap2/omapfb/displays/panel-dsi-cm.c
-index 4b0793abdd84..a2c7c5cb1523 100644
---- a/drivers/video/fbdev/omap2/omapfb/displays/panel-dsi-cm.c
-+++ b/drivers/video/fbdev/omap2/omapfb/displays/panel-dsi-cm.c
-@@ -409,7 +409,7 @@ static ssize_t dsicm_num_errors_show(struct device *dev,
- 	if (r)
- 		return r;
+diff --git a/fs/cifs/cifsfs.c b/fs/cifs/cifsfs.c
+index 9dd5f89557b7..02b762b7e3fd 100644
+--- a/fs/cifs/cifsfs.c
++++ b/fs/cifs/cifsfs.c
+@@ -209,6 +209,9 @@ cifs_read_super(struct super_block *sb)
+ 	if (rc)
+ 		goto out_no_root;
+ 	/* tune readahead according to rsize if readahead size not set on mount */
++	if (cifs_sb->ctx->rsize == 0)
++		cifs_sb->ctx->rsize =
++			tcon->ses->server->ops->negotiate_rsize(tcon, cifs_sb->ctx);
+ 	if (cifs_sb->ctx->rasize)
+ 		sb->s_bdi->ra_pages = cifs_sb->ctx->rasize / PAGE_SIZE;
+ 	else
+diff --git a/fs/cifs/file.c b/fs/cifs/file.c
+index 9fee3af83a73..abadc2f86dea 100644
+--- a/fs/cifs/file.c
++++ b/fs/cifs/file.c
+@@ -3734,6 +3734,11 @@ cifs_send_async_read(loff_t offset, size_t len, struct cifsFileInfo *open_file,
+ 				break;
+ 		}
  
--	return snprintf(buf, PAGE_SIZE, "%d\n", errors);
-+	return sysfs_emit(buf, "%d\n", errors);
- }
++		if (cifs_sb->ctx->rsize == 0)
++			cifs_sb->ctx->rsize =
++				server->ops->negotiate_rsize(tlink_tcon(open_file->tlink),
++							     cifs_sb->ctx);
++
+ 		rc = server->ops->wait_mtu_credits(server, cifs_sb->ctx->rsize,
+ 						   &rsize, credits);
+ 		if (rc)
+@@ -4512,6 +4517,11 @@ static int cifs_readpages(struct file *file, struct address_space *mapping,
+ 				break;
+ 		}
  
- static ssize_t dsicm_hw_revision_show(struct device *dev,
-@@ -439,7 +439,7 @@ static ssize_t dsicm_hw_revision_show(struct device *dev,
- 	if (r)
- 		return r;
- 
--	return snprintf(buf, PAGE_SIZE, "%02x.%02x.%02x\n", id1, id2, id3);
-+	return sysfs_emit(buf, "%02x.%02x.%02x\n", id1, id2, id3);
- }
- 
- static ssize_t dsicm_store_ulps(struct device *dev,
-@@ -487,7 +487,7 @@ static ssize_t dsicm_show_ulps(struct device *dev,
- 	t = ddata->ulps_enabled;
- 	mutex_unlock(&ddata->lock);
- 
--	return snprintf(buf, PAGE_SIZE, "%u\n", t);
-+	return sysfs_emit(buf, "%u\n", t);
- }
- 
- static ssize_t dsicm_store_ulps_timeout(struct device *dev,
-@@ -532,7 +532,7 @@ static ssize_t dsicm_show_ulps_timeout(struct device *dev,
- 	t = ddata->ulps_timeout;
- 	mutex_unlock(&ddata->lock);
- 
--	return snprintf(buf, PAGE_SIZE, "%u\n", t);
-+	return sysfs_emit(buf, "%u\n", t);
- }
- 
- static DEVICE_ATTR(num_dsi_errors, S_IRUGO, dsicm_num_errors_show, NULL);
++		if (cifs_sb->ctx->rsize == 0)
++			cifs_sb->ctx->rsize =
++				server->ops->negotiate_rsize(tlink_tcon(open_file->tlink),
++							     cifs_sb->ctx);
++
+ 		rc = server->ops->wait_mtu_credits(server, cifs_sb->ctx->rsize,
+ 						   &rsize, credits);
+ 		if (rc)
 -- 
 2.34.1
 
