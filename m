@@ -2,218 +2,247 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 16CF5C352A1
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:35:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C12E0C43217
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:35:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386145AbiDFAU6 (ORCPT
+        id S1584209AbiDFAWj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 20:20:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36504 "EHLO
+        Tue, 5 Apr 2022 20:22:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46066 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1572964AbiDERbd (ORCPT
+        with ESMTP id S1457862AbiDEQwx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 13:31:33 -0400
-Received: from mail-oa1-x34.google.com (mail-oa1-x34.google.com [IPv6:2001:4860:4864:20::34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26DDD23156
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 10:29:34 -0700 (PDT)
-Received: by mail-oa1-x34.google.com with SMTP id 586e51a60fabf-de3ca1efbaso90989fac.9
-        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 10:29:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ffwll.ch; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=hTmLNze/fum3lYDHZs7Sj1aLnDxMurPjlCcI6KAPtQw=;
-        b=LbJpKtmNLFfmBBa8hI73mA0q3CBsHxWD5rGAH/a5zDNcSjWuPrutm69VA3/geneB9G
-         pP2pvW/JddNsdNKYKSfjHiWncHsb3XxG9GZThdgfhubL/HZ4IB51n2b1YDm90xWG0GfZ
-         Nqp2GVyKJQMxrGftECRmUpJYaBDF8o2XFRYtg=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=hTmLNze/fum3lYDHZs7Sj1aLnDxMurPjlCcI6KAPtQw=;
-        b=jriFtN5MsbJWk0bwhmTphT4X7jwe+6i1Lre3/XHM76OS8uEc1PHm34uSQw2J5JL8OM
-         vqebTZuYALCF9mmldkb1oTXn+27Jjh7GWXOBoonwxU4InVT6YxwgxmkXIUyTtgk42sV4
-         o+fDMtXbdFJR5LNCJqzoJ8G0TGgxdJeDU6Mv1g3MwBVPjlD/gYn6Umt5CeKuFhI8Gpp5
-         QPoGDNjcAluEzpb/vTKQV7LHXwljsOhx6HTJ+rZBQnTcBWkkEuCYWDCBAAYhfgPlZnmG
-         cEUGruA/FZj9W6V7kU/PUF6gAjNjomAiJBAwdTN/QUX0TKSjQc617bw2L8dX1zVIjBLq
-         JI6Q==
-X-Gm-Message-State: AOAM530G0YTofAdpgySmQlYXnUvRa+KU4dK9rr5caO2HAc7/+3HMaW5w
-        DIXE6TdPQ5TrQU5KH6fAv0x18iiiueF7DBAqGRlUYJH1b5UKmQ==
-X-Google-Smtp-Source: ABdhPJz2hTIFazRR9MY8eLnHVlZ8caoGqxdFkjJVbRqRI2qhGE2WqsCDNkD6KwqVkoKmjggVmMcy5elsAsbz0Y7u4AU=
-X-Received: by 2002:a05:6870:ec9e:b0:dd:e1fd:d76c with SMTP id
- eo30-20020a056870ec9e00b000dde1fdd76cmr2156223oab.7.1649179773446; Tue, 05
- Apr 2022 10:29:33 -0700 (PDT)
+        Tue, 5 Apr 2022 12:52:53 -0400
+Received: from cloudserver094114.home.pl (cloudserver094114.home.pl [79.96.170.134])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3BE5326E6;
+        Tue,  5 Apr 2022 09:50:52 -0700 (PDT)
+Received: from localhost (127.0.0.1) (HELO v370.home.net.pl)
+ by /usr/run/smtp (/usr/run/postfix/private/idea_relay_lmtp) via UNIX with SMTP (IdeaSmtpServer 5.0.0)
+ id b583b31e156ca061; Tue, 5 Apr 2022 18:50:50 +0200
+Received: from kreacher.localnet (unknown [213.134.181.136])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by v370.home.net.pl (Postfix) with ESMTPSA id 81B8F66BCB7;
+        Tue,  5 Apr 2022 18:50:49 +0200 (CEST)
+From:   "Rafael J. Wysocki" <rjw@rjwysocki.net>
+To:     Abhishek Sahu <abhsahu@nvidia.com>
+Cc:     Bjorn Helgaas <helgaas@kernel.org>,
+        Bjorn Helgaas <bhelgaas@google.com>, linux-pci@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Linux PM <linux-pm@vger.kernel.org>,
+        Mika Westerberg <mika.westerberg@linux.intel.com>
+Subject: Re: [PATCH] PCI: Fix the ACPI power state during runtime resume
+Date:   Tue, 05 Apr 2022 18:50:48 +0200
+Message-ID: <2632919.mvXUDI8C0e@kreacher>
+In-Reply-To: <469a9db5-9868-cb17-dd5c-96ef29193fda@nvidia.com>
+References: <20220204233219.GA228585@bhelgaas> <8f89131c-41a2-02e4-1427-8a5b1704e0ea@nvidia.com> <469a9db5-9868-cb17-dd5c-96ef29193fda@nvidia.com>
 MIME-Version: 1.0
-References: <4ae20b63-f452-fdb4-ced6-d4968a8d69f0@redhat.com>
- <Ykv/k/WoVemoCJJA@phenom.ffwll.local> <YkwAhSt9HlbxcuZo@phenom.ffwll.local>
- <408ffe9b-f09f-dc7e-7f5e-a93b311a06fa@redhat.com> <CAKMK7uHf6H8mhSm6eDHUruWK5Xc2cSPkJUX6v-jpeQfjS19dKw@mail.gmail.com>
- <e124af06-4f24-277a-543a-82b383f48cea@redhat.com> <CAKMK7uH4GgDQJZguT-k0QmgEAHYHuDEbBtjYje51_Rtqzud0yw@mail.gmail.com>
- <CAMuHMdWr0L0r+MVU-=+_yeHKwK8BjF7_EJQxiJT5jMqS9FJUeQ@mail.gmail.com>
- <YkxFHUdm/YeiVY+D@kroah.com> <Ykxqi82sOEd2Zg1K@phenom.ffwll.local> <YkxyBt8Zee8qrEbT@kroah.com>
-In-Reply-To: <YkxyBt8Zee8qrEbT@kroah.com>
-From:   Daniel Vetter <daniel@ffwll.ch>
-Date:   Tue, 5 Apr 2022 19:29:22 +0200
-Message-ID: <CAKMK7uEWMDZoB_OLLu7desVVPXEAgDiCEjVDJ3FrSeSTBoYtGQ@mail.gmail.com>
-Subject: Re: [PATCH v2 18/19] Revert "fbdev: Prevent probing generic drivers
- if a FB is already registered"
-To:     Greg KH <gregkh@linuxfoundation.org>
-Cc:     Geert Uytterhoeven <geert@linux-m68k.org>,
-        Javier Martinez Canillas <javierm@redhat.com>,
-        DRI Development <dri-devel@lists.freedesktop.org>,
-        Intel Graphics Development <intel-gfx@lists.freedesktop.org>,
-        Linux Fbdev development list <linux-fbdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Zack Rusin <zackr@vmware.com>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Ilya Trukhanov <lahvuun@gmail.com>,
-        Daniel Vetter <daniel.vetter@intel.com>,
-        Peter Jones <pjones@redhat.com>
+Content-Transfer-Encoding: 7Bit
 Content-Type: text/plain; charset="UTF-8"
+X-CLIENT-IP: 213.134.181.136
+X-CLIENT-HOSTNAME: 213.134.181.136
+X-VADE-SPAMSTATE: clean
+X-VADE-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvvddrudejgedguddtudcutefuodetggdotefrodftvfcurfhrohhfihhlvgemucfjqffogffrnfdpggftiffpkfenuceurghilhhouhhtmecuudehtdenucesvcftvggtihhpihgvnhhtshculddquddttddmnecujfgurhephffvufffkfgjfhgggfgtsehtufertddttdejnecuhfhrohhmpedftfgrfhgrvghlucflrdcuhgihshhotghkihdfuceorhhjfiesrhhjfiihshhotghkihdrnhgvtheqnecuggftrfgrthhtvghrnhepteeggfelteegudehueegieekveduleeuledvueefjeefffegfeejudfgteefhefhnecuffhomhgrihhnpehkvghrnhgvlhdrohhrghenucfkphepvddufedrudefgedrudekuddrudefieenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepihhnvghtpedvudefrddufeegrddukedurddufeeipdhhvghlohepkhhrvggrtghhvghrrdhlohgtrghlnhgvthdpmhgrihhlfhhrohhmpedftfgrfhgrvghlucflrdcuhgihshhotghkihdfuceorhhjfiesrhhjfiihshhotghkihdrnhgvtheqpdhnsggprhgtphhtthhopeejpdhrtghpthhtoheprggshhhsrghhuhesnhhvihguihgrrdgtohhmpdhrtghpthhtohephhgvlhhgrggrsheskhgvrhhnvghlrdhorhhgpdhrtghpthhtohepsghhvghlghgrrghssehgohhoghhlvgdrtghomhdprhgtphhtthhopehlihhnuhigqdhptghisehvghgvrhdrkhgvrhhnvghlrdhorhhgpdhrtghp
+ thhtoheplhhinhhugidqkhgvrhhnvghlsehvghgvrhdrkhgvrhhnvghlrdhorhhgpdhrtghpthhtoheplhhinhhugidqphhmsehvghgvrhdrkhgvrhhnvghlrdhorhhgpdhrtghpthhtohepmhhikhgrrdifvghsthgvrhgsvghrgheslhhinhhugidrihhnthgvlhdrtghomh
+X-DCC--Metrics: v370.home.net.pl 1024; Body=7 Fuz1=7 Fuz2=7
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 5 Apr 2022 at 18:45, Greg KH <gregkh@linuxfoundation.org> wrote:
->
-> On Tue, Apr 05, 2022 at 06:12:59PM +0200, Daniel Vetter wrote:
-> > On Tue, Apr 05, 2022 at 03:33:17PM +0200, Greg KH wrote:
-> > > On Tue, Apr 05, 2022 at 03:24:40PM +0200, Geert Uytterhoeven wrote:
-> > > > Hi Daniel,
-> > > >
-> > > > On Tue, Apr 5, 2022 at 1:48 PM Daniel Vetter <daniel@ffwll.ch> wrote:
-> > > > > On Tue, 5 Apr 2022 at 11:52, Javier Martinez Canillas
-> > > > > <javierm@redhat.com> wrote:
-> > > > > > On 4/5/22 11:24, Daniel Vetter wrote:
-> > > > > > > On Tue, 5 Apr 2022 at 11:19, Javier Martinez Canillas
-> > > > > > >> This is how I think that work, please let me know if you see something
-> > > > > > >> wrong in my logic:
-> > > > > > >>
-> > > > > > >> 1) A PCI device of OF device is registered for the GPU, this attempt to
-> > > > > > >>    match a registered driver but no driver was registered that match yet.
-> > > > > > >>
-> > > > > > >> 2) The efifb driver is built-in, will be initialized according to the link
-> > > > > > >>    order of the objects under drivers/video and the fbdev driver is registered.
-> > > > > > >>
-> > > > > > >>    There is no platform device or PCI/OF device registered that matches.
-> > > > > > >>
-> > > > > > >> 3) The DRM driver is built-in, will be initialized according to the link
-> > > > > > >>    order of the objects under drivers/gpu and the DRM driver is registered.
-> > > > > > >>
-> > > > > > >>    This matches the device registered in (1) and the DRM driver probes.
-> > > > > > >>
-> > > > > > >> 4) The DRM driver .probe kicks out any conflicting DRM drivers and pdev
-> > > > > > >>    before registering the DRM device.
-> > > > > > >>
-> > > > > > >>    There are no conflicting drivers or platform device at this point.
-> > > > > > >>
-> > > > > > >> 5) Latter at some point the drivers/firmware/sysfb.c init function is
-> > > > > > >>    executed, and this registers a platform device for the generic fb.
-> > > > > > >>
-> > > > > > >>    This device matches the efifb driver registered in (2) and the fbdev
-> > > > > > >>    driver probes.
-> > > > > > >>
-> > > > > > >>    Since that happens *after* the DRM driver already matched, probed
-> > > > > > >>    and registered the DRM device, that is a bug and what the reverted
-> > > > > > >>    patch worked around.
-> > > > > > >>
-> > > > > > >> So we need to prevent (5) if (1) and (3) already happened. Having a flag
-> > > > > > >> set in the fbdev core somewhere when remove_conflicting_framebuffers()
-> > > > > > >> is called could be a solution indeed.
-> > > > > > >>
-> > > > > > >> That is, the fbdev core needs to know that a DRM driver already probed
-> > > > > > >> and make register_framebuffer() fail if info->flag & FBINFO_MISC_FIRMWARE
-> > > > > > >>
-> > > > > > >> I can attempt to write a patch for that.
-> > > > > > >
-> > > > > > > Ah yeah that could be an issue. I think the right fix is to replace
-> > > > > > > the platform dev unregister with a sysfb_unregister() function in
-> > > > > > > sysfb.c, which is synced with a common lock with the sysfb_init
-> > > > > > > function and a small boolean. I think I can type that up quickly for
-> > > > > > > v3.
-> > > > > >
-> > > > > > It's more complicated than that since sysfb is just *one* of the several
-> > > > > > places where platform devices can be registered for video devices.
-> > > > > >
-> > > > > > For instance, the vga16fb driver registers its own platform device in
-> > > > > > its module_init() function so that can also happen after the conflicting
-> > > > > > framebuffers (and associated devices) were removed by a DRM driver probe.
-> > > > > >
-> > > > > > I tried to minimize the issue for that particular driver with commit:
-> > > > > >
-> > > > > > https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=0499f419b76f
-> > > > > >
-> > > > > > But the point stands, it all boils down to the fact that you have two
-> > > > > > different subsystems registering video drivers and they don't know all
-> > > > > > about each other to take a proper decision.
-> > > > > >
-> > > > > > Right now the drm_aperture_remove_conflicting_framebuffers() call signals
-> > > > > > in one direction from DRM to fbdev but there isn't a communication in the
-> > > > > > other direction, from fbdev to DRM.
-> > > > > >
-> > > > > > I believe the correct fix would be for the fbdev core to keep a list of
-> > > > > > the apertures struct that are passed to remove_conflicting_framebuffers(),
-> > > > > > that way it will know what apertures are not available anymore and prevent
-> > > > > > to register any fbdev framebuffer that conflicts with one already present.
-> > > > >
-> > > > > Hm that still feels like reinventing a driver model, badly.
-> > > > >
-> > > > > I think there's two cleaner solutions:
-> > > > > - move all the firmware driver platform_dev into sysfb.c, and then
-> > > > > just bind the special cases against that (e.g. offb, vga16fb and all
-> > > > > these). Then we'd have one sysfb_try_unregister(struct device *dev)
-> > > > > interface that fbmem.c uses.
-> > > > > - let fbmem.c call into each of these firmware device providers, which
-> > > > > means some loops most likely (like we can't call into vga16fb), so
-> > > > > probably need to move that into fbmem.c and it all gets a bit messy.
-> > > > >
-> > > > > > Let me know if you think that makes sense and I can attempt to write a fix.
-> > > > >
-> > > > > I still think unregistering the platform_dev properly makes the most
-> > > >
-> > > > That doesn't sound very driver-model-aware to me. The device is what
-> > > > the driver binds to; it does not cease to exist.
-> > >
-> > > I agree, that sounds odd.
-> > >
-> > > The device should always stick around (as the bus creates it), it's up
-> > > to the driver to bind to the device as needed.
-> >
-> > The device actually disappears when the real driver takes over.
-> >
-> > The firmware fb is a special thing which only really exists as long as the
-> > firmware is in charge of the display hardware. As soon as a real driver
-> > takes over, it stops being a thing.
-> >
-> > And since a driver without a device is a bit a funny thing, we have been
-> > pushing towards a model where the firmware code sets up a platform_device
-> > for this fw interface, and the fw driver (efifb, simplefb and others like
-> > that) bind against it. And then we started to throw out that
-> > platform_device (which unbinds the fw driver and prevents it from ever
-> > rebinding), except in the wrong layer so there's a few races.
-> >
-> > Should we throw out all that code and replace it with something else? What
-> > would that be like?
->
-> Ah, no, sorry, I didn't know that at all.
->
-> That sounds semi-sane, just fix the races by moving the layer elsewhere?
+On Tuesday, April 5, 2022 6:36:34 PM CEST Abhishek Sahu wrote:
+> On 2/8/2022 4:00 PM, Abhishek Sahu wrote:
+> > On 2/8/2022 12:28 AM, Rafael J. Wysocki wrote:
+> >> On Saturday, February 5, 2022 12:32:19 AM CET Bjorn Helgaas wrote:
+> >>> [+cc Rafael, hoping for your review :)
+> >>
+> >> +Mika
+> >>
+> >>> Wonder if we should add something like this to MAINTAINERS so you get
+> >>> cc'd on power-related things:
+> >>>
+> >>> diff --git a/MAINTAINERS b/MAINTAINERS
+> >>> index ea3e6c914384..3d9a211cad5d 100644
+> >>> --- a/MAINTAINERS
+> >>> +++ b/MAINTAINERS
+> >>> @@ -15422,6 +15422,7 @@ F:    include/linux/pm.h
+> >>>  F:   include/linux/pm_*
+> >>>  F:   include/linux/powercap.h
+> >>>  F:   kernel/configs/nopm.config
+> >>> +K:   pci_[a-z_]*power[a-z_]*\(
+> >>
+> >> It seems so, but generally PM patches should be CCed to linux-pm anyway.
+> >>
+> >>>
+> >>>  DYNAMIC THERMAL POWER MANAGEMENT (DTPM)
+> >>>  M:   Daniel Lezcano <daniel.lezcano@kernel.org>
+> >>> ]
+> >>>
+> >>> On Mon, Jan 24, 2022 at 05:51:07PM +0530, Abhishek Sahu wrote:
+> >>>> Consider the following sequence during PCI device runtime
+> >>>> suspend/resume:
+> >>>>
+> >>>> 1. PCI device goes into runtime suspended state. The PCI state
+> >>>>    will be changed to PCI_D0 and then pci_platform_power_transition()
+> >>>>    will be called which changes the ACPI state to ACPI_STATE_D3_HOT.
+> >>
+> >> You mean PCI_D3hot I suppose?
+> >>
+> > 
+> >  Yes. It should be PCI_D3hot here. 
+> > 
+> >>>> 2. Parent bridge goes into runtime suspended state. If parent
+> >>>>    bridge supports D3cold, then it will change the power state of all its
+> >>>>    children to D3cold state and the power will be removed.
+> >>>>
+> >>>> 3. During wake-up time, the bridge will be runtime resumed first
+> >>>>    and pci_power_up() will be called for the bridge. Now, the power
+> >>>>    supply will be resumed.
+> >>>>
+> >>>> 4. pci_resume_bus() will be called which will internally invoke
+> >>>>    pci_restore_standard_config(). pci_update_current_state()
+> >>>>    will read PCI_PM_CTRL register and the current_state will be
+> >>>>    updated to D0.
+> >>>>
+> >>>> In the above process, at step 4, the ACPI device state will still be
+> >>>> ACPI_STATE_D3_HOT since pci_platform_power_transition() is not being
+> >>>> invoked.
+> >>
+> >> I'm not quite following.
+> >>
+> >> I'm assuming that this description applies to the endpoint device that was
+> >> previously put into D3_hot.
+> >>
+> > 
+> >  Yes. This is applicable for endpoint devices which was previously put
+> >  into D3hot.
+> > 
+> >> Since its current state is D3_hot, it is not D0 (in particular) and the
+> >> pci_set_power_state() in pci_restore_standard_config() should put int into
+> >> D0 proper, including the platform firmware part.
+> >>
+> > 
+> >  The pci_restore_standard_config() for endpoint devices are being called
+> >  internally during wake-up of upstream bridge. 
+> > 
+> >  pci_power_up(struct pci_dev *dev)
+> >  {
+> >       ...
+> >       if (dev->runtime_d3cold) {
+> >         /*
+> >          * When powering on a bridge from D3cold, the whole hierarchy
+> >          * may be powered on into D0uninitialized state, resume them to
+> >          * give them a chance to suspend again
+> >          */
+> >         pci_resume_bus(dev->subordinate);
+> >     }
+> >     ...
+> >  }
+> > 
+> >  For the upstream bridge, the above code will trigger the wake-up of
+> >  endpoint devices and then following code will be executed for the
+> >  endpoint devices:
+> > 
+> >  pci_update_current_state(struct pci_dev *dev, pci_power_t state)
+> >  {
+> >     if (platform_pci_get_power_state(dev) == PCI_D3cold ||
+> >         !pci_device_is_present(dev)) {
+> >         dev->current_state = PCI_D3cold;
+> >     } else if (dev->pm_cap) {
+> >         u16 pmcsr;
+> > 
+> >         pci_read_config_word(dev, dev->pm_cap + PCI_PM_CTRL, &pmcsr);
+> >         dev->current_state = (pmcsr & PCI_PM_CTRL_STATE_MASK);
+> >     } else {
+> >         dev->current_state = state;
+> >     }
+> >  }
+> > 
+> >  In the above code, the current_state will be set to D0 for the
+> >  endpoint devices since it will go into second block where
+> >  it will read the PM_CTRL register.
+> >  
+> >>>> We need call the pci_platform_power_transition() with state
+> >>>> D0 to change the ACPI state to ACPI_STATE_D0.
+> >>>>
+> >>>> This patch calls pci_power_up() if current power state is D0 inside
+> >>>> pci_restore_standard_config(). This pci_power_up() will change the
+> >>>> ACPI state to ACPI_STATE_D0.
+> >>>>
+> >>>> Following are the steps to confirm:
+> >>>>
+> >>>> Enable the debug prints in acpi_pci_set_power_state()
+> >>>>
+> >>>> 0000:01:00.0 is PCI device and 0000:00:01.0 is parent bridge device
+> >>>>
+> >>>> Before:
+> >>>>
+> >>>> 0000:01:00.0: power state changed by ACPI to D3hot
+> >>>> 0000:00:01.0: power state changed by ACPI to D3cold
+> >>>> 0000:00:01.0: power state changed by ACPI to D0
+> >>>>
+> >>>> After:
+> >>>>
+> >>>> 0000:01:00.0: power state changed by ACPI to D3hot
+> >>>> 0000:00:01.0: power state changed by ACPI to D3cold
+> >>>> 0000:00:01.0: power state changed by ACPI to D0
+> >>>> 0000:01:00.0: power state changed by ACPI to D0
+> >>>>
+> >>>> So with this patch, the PCI device ACPI state is also being
+> >>>> changed to D0.
+> >>>>
+> >>>> Signed-off-by: Abhishek Sahu <abhsahu@nvidia.com>
+> >>>> ---
+> >>>>  drivers/pci/pci-driver.c | 14 +++++++++++---
+> >>>>  1 file changed, 11 insertions(+), 3 deletions(-)
+> >>>>
+> >>>> diff --git a/drivers/pci/pci-driver.c b/drivers/pci/pci-driver.c
+> >>>> index 588588cfda48..64e0cca12f16 100644
+> >>>> --- a/drivers/pci/pci-driver.c
+> >>>> +++ b/drivers/pci/pci-driver.c
+> >>>> @@ -521,14 +521,22 @@ static void pci_device_shutdown(struct device *dev)
+> >>>>   */
+> >>>>  static int pci_restore_standard_config(struct pci_dev *pci_dev)
+> >>>>  {
+> >>>> +   int error = 0;
+> >>>>     pci_update_current_state(pci_dev, PCI_UNKNOWN);
+> >>>>
+> >>>>     if (pci_dev->current_state != PCI_D0) {
+> >>>> -           int error = pci_set_power_state(pci_dev, PCI_D0);
+> >>>> -           if (error)
+> >>>> -                   return error;
+> >>>> +           error = pci_set_power_state(pci_dev, PCI_D0);
+> >>>> +   } else {
+> >>>> +           /*
+> >>>> +            * The platform power state can still be non-D0, so this is
+> >>>> +            * required to change the platform power state to D0.
+> >>>> +            */
+> >>
+> >> This really isn't expected to happen.
+> >>
+> >> If the device's power state has been changed to D3hot by ACPI, it is not in D0.
+> >>
+> >> It looks like the state tracking is not working here.
+> >>
+> > 
+> >  The state setting to D0 is happening due to the current logic present in
+> >  pci_update_current_state(). If we can fix the logic in
+> >  pci_update_current_state() to detect this condition and return state D3hot,
+> >  then it should also fix the issue. 
+> > 
+> >  Thanks,
+> >  Abhishek
+> > 
+> 
+>  Hi Rafael/Mika,
+> 
+>  Could you please help regarding the correct way to fix this issue.
+>  I can update the patch accordingly.
 
-Yeah essentially move it all into drivers/firmware/sysfb.c, for all
-drivers, both the registering and the nuking, and warp that into a
-local mutex. Currently parts is in there, parts is in fbmem.c, parts
-in some of the drivers like vga16fb, and some drivers (iirc only offb)
-still don't even have any platform_dev underneath their driver. So
-ideally the drivers would all just have their platform_driver probe
-functions, and that's it. It does mean though that some of that stuff
-needs to be moved to sysfb.c or into the relevant fw code that sets
-stuff up.
+I think you can try one of the patches posted recently:
 
-It'll take some, so really just a direction check before we move
-further. You should get cc'ed on the patches (like with the sysfb
-stuff) anyway. Sounds roughly right?
--Daniel
--- 
-Daniel Vetter
-Software Engineer, Intel Corporation
-http://blog.ffwll.ch
+https://patchwork.kernel.org/project/linux-pm/patch/3623886.MHq7AAxBmi@kreacher/
+
+Thanks!
+
+
+
