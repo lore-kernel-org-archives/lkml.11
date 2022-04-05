@@ -2,296 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BEFBAC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 02:51:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7841FC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 02:51:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230108AbiDECxV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 22:53:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44652 "EHLO
+        id S229941AbiDECx1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 4 Apr 2022 22:53:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51562 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230360AbiDECvA (ORCPT
+        with ESMTP id S230232AbiDECxF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 22:51:00 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 828E32DE859
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 18:57:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649123866; x=1680659866;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=FOADr1ud3k4/nTNBXrw6Raun3jnoK5uDvcCwnJ1QY6k=;
-  b=iHFtTimFrfnPanCq+x+v/lNlso84GQ66tan9Mqe26z4+ypQGTl4hLxcf
-   OPPE2e5RofnAlJo+VD5zoTGlEjpu4ZlmcQBWca5tU42HjxAQaU5hE82lr
-   Tk4vsx94pPNZzsP658Y1ehnVPbiMfl3C/NHEye53uj3sPZ9ulEvocSU9j
-   MpY5vWrJF1rsefmTXVPrXNKM/QeKPTcRSD/YCe+GMDqnyY2WEd1jkosaX
-   VEznnamaQBl59W6lQyK1skHPL6pMyIdtVypgAJVs7c9bfMo5iJMlnnSyI
-   6kii6k8na+0+avY7uivMgravWU8n07iWh3rXc2o3xZReQK5rZjr6sw/SR
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10307"; a="260623155"
-X-IronPort-AV: E=Sophos;i="5.90,235,1643702400"; 
-   d="scan'208";a="260623155"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Apr 2022 17:08:06 -0700
-X-IronPort-AV: E=Sophos;i="5.90,235,1643702400"; 
-   d="scan'208";a="587749317"
-Received: from alison-desk.jf.intel.com (HELO alison-desk) ([10.54.74.41])
-  by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Apr 2022 17:08:06 -0700
-Date:   Mon, 4 Apr 2022 17:10:19 -0700
-From:   Alison Schofield <alison.schofield@intel.com>
-To:     Alaa Mohamed <eng.alaamohamedsoliman.am@gmail.com>
-Cc:     "outreachy@lists.linux.dev" <outreachy@lists.linux.dev>,
-        "Larry.Finger@lwfinger.net" <Larry.Finger@lwfinger.net>,
-        "phil@philpotter.co.uk" <phil@philpotter.co.uk>,
-        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
-        "linux-staging@lists.linux.dev" <linux-staging@lists.linux.dev>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 1/2] staging: r8188eu: add space around arithmatic sign
-Message-ID: <20220405001019.GA1200980@alison-desk>
-References: <860d8e222e2b695ce5cb4f48aa46a7f66e05d8e4.1649082939.git.eng.alaamohamedsoliman.am@gmail.com>
+        Mon, 4 Apr 2022 22:53:05 -0400
+Received: from mail-pg1-x533.google.com (mail-pg1-x533.google.com [IPv6:2607:f8b0:4864:20::533])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5FA331A29F
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 19:01:06 -0700 (PDT)
+Received: by mail-pg1-x533.google.com with SMTP id t13so9796497pgn.8
+        for <linux-kernel@vger.kernel.org>; Mon, 04 Apr 2022 19:01:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=XCPmRc0IVgYgnGswAlG4yXz+KuFMoJ3P6+aO8i17Nyw=;
+        b=JegdvKFJkQly7ZyOveDWGt3k2Kyk57pEOEbrjKjqlmrb8+N+YI46tYuhBKqNuRYMro
+         9/zY4m8gN/H7O3MEMJvKvagY3bW6+TAP61AK+EbqU+iunqW56CxOIdlXHYEePfaLXvHo
+         fAmn8QSljckU4vKvpTPybkSn8jmlyKRYfzgTo3NOlY86VWS27hx7ohejcDgv28D1xnVr
+         QJS6lZE4K8+HG3gDQYEGqHFnqwP1EDMJkpvm9ZHYEDMeeJbT45cpU72jDzpeqMHW8PzC
+         9KoInl5KIBPSzgpVM0H3ep5cUrlvGTHSxLDMjqzVi/UH4VxEDup/tGbViIWle/Lr4I0L
+         t3xQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=XCPmRc0IVgYgnGswAlG4yXz+KuFMoJ3P6+aO8i17Nyw=;
+        b=gp6zM+yOHAdL/Ogm05curz2IRkzjNCP/p9hOhuXfGmRhEE5tuKJ5MEdgTpQGi7eCxY
+         Ye+leXRgmK/9l0GZnG9G4K8NMq5XI883x+VBMRfjZkmPipU97/TSBvREgU8Rq18pxmbZ
+         Rq+28wDfISVS7xaQ3bABmxXmM5Lcr5qh9IHHMEQWO7+il41LX0dHyLT1KKW0EaNfYrub
+         wOvbrAKD0zv3s3KiBkOODKV0SRHwE8IAYG6cunCv0jTgDeKaN63j/VtJy2pRioPJ7rFR
+         Qyczu7aG9jk9/72l1sR2nvwjSpV0GIhV6dijdGoR1qnPuKm9KxYzf7xFUKEJ9xRrQHn3
+         za8w==
+X-Gm-Message-State: AOAM531DZ916yep6jGlAibn/yfvuNP35JCQ5bt9qg7JV1xkTNnZuVvaS
+        MHGYFyW3YWZ88S/NPAUy//c=
+X-Google-Smtp-Source: ABdhPJx8ODqukr4ThTQP2Zolc7rN01PScQwudBUJ4+CZTh017i28ntS57/D4l+okojym+X/7MmPsCg==
+X-Received: by 2002:a63:b24b:0:b0:398:9894:b8be with SMTP id t11-20020a63b24b000000b003989894b8bemr947415pgo.108.1649124066161;
+        Mon, 04 Apr 2022 19:01:06 -0700 (PDT)
+Received: from hyeyoo ([114.29.24.243])
+        by smtp.gmail.com with ESMTPSA id q27-20020aa7961b000000b004fdf7a4d49esm6458763pfg.170.2022.04.04.19.01.01
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 04 Apr 2022 19:01:05 -0700 (PDT)
+Date:   Tue, 5 Apr 2022 11:00:58 +0900
+From:   Hyeonggon Yoo <42.hyeyoo@gmail.com>
+To:     Marco Elver <elver@google.com>
+Cc:     Vlastimil Babka <vbabka@suse.cz>,
+        kernel test robot <oliver.sang@intel.com>,
+        Oliver Glitta <glittao@gmail.com>, lkp@lists.01.org,
+        lkp@intel.com, LKML <linux-kernel@vger.kernel.org>,
+        Imran Khan <imran.f.khan@oracle.com>,
+        Andrey Konovalov <andreyknvl@google.com>,
+        Zhen Lei <thunder.leizhen@huawei.com>,
+        Zqiang <qiang.zhang@windriver.com>, linux-mm@kvack.org
+Subject: Re: [mm/slub] 555b8c8cb3:
+ WARNING:at_lib/stackdepot.c:#stack_depot_fetch
+Message-ID: <Ykui2prpzkMvaWBa@hyeyoo>
+References: <20220323090520.GG16885@xsang-OptiPlex-9020>
+ <20220324095218.GA2108184@odroid>
+ <YkcfNjZJSXNsAlLt@hyeyoo>
+ <YkpgjgM/aSXd29uj@hyeyoo>
+ <Ykqn2z9UVfxFwiU+@elver.google.com>
+ <8368021e-86c3-a93f-b29d-efed02135c41@suse.cz>
+ <CANpmjNMupGGbTDD-ZEY=acTbqguvWgLzb1ZVRbG9TyuF50Ch+Q@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <860d8e222e2b695ce5cb4f48aa46a7f66e05d8e4.1649082939.git.eng.alaamohamedsoliman.am@gmail.com>
+In-Reply-To: <CANpmjNMupGGbTDD-ZEY=acTbqguvWgLzb1ZVRbG9TyuF50Ch+Q@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Apr 04, 2022 at 07:39:16AM -0700, Alaa Mohamed wrote:
-> Reported by checkpatch:
+On Mon, Apr 04, 2022 at 05:18:16PM +0200, Marco Elver wrote:
+> On Mon, 4 Apr 2022 at 16:20, Vlastimil Babka <vbabka@suse.cz> wrote:
+> >
+> > On 4/4/22 10:10, Marco Elver wrote:
+> > > On Mon, Apr 04, 2022 at 12:05PM +0900, Hyeonggon Yoo wrote:
+> > > (Maybe CONFIG_KCSAN_STRICT=y is going to yield something? I still doubt
+> > > it thought, this bug is related to corrupted stackdepot handle
+> > > somewhere...)
+> > >
+> > >> I noticed that it is not reproduced when KASAN=y and KFENCE=n (reproduced 0 of 181).
+> > >> and it was reproduced 56 of 196 when KASAN=n and KFENCE=y
+> > >>
+> > >> maybe this issue is related to kfence?
+> >
+> > Hmm kfence seems to be a good lead. If I understand kfence_guarded_alloc()
+> > correctly, it tries to set up something that really looks like a normal slab
+> > page? Especially the part with comment /* Set required slab fields. */
+> > But it doesn't seem to cover the debugging parts that SLUB sets up with
+> > alloc_debug_processing(). This includes alloc stack saving, thus, after
+> > commit 555b8c8cb3, a stackdepot handle setting. It probably normally doesn't
+> > matter as is_kfence_address() redirects processing of kfence-allocated
+> > objects so we don't hit any slub code that expects the debugging parts to be
+> > properly initialized.
+> >
+> > But here we are in mem_dump_obj() -> kmem_dump_obj() -> kmem_obj_info().
+> > Because kmem_valid_obj() returned true, fooled by folio_test_slab()
+> > returning true because of the /* Set required slab fields. */ code.
+> > Yet the illusion is not perfect and we read garbage instead of a valid
+> > stackdepot handle.
+> >
+> > IMHO we should e.g. add the appropriate is_kfence_address() test into
+> > kmem_valid_obj(), to exclude kfence-allocated objects? Sounds much simpler
+> > than trying to extend the illusion further to make kmem_dump_obj() work?
+> > Instead kfence could add its own specific handler to mem_dump_obj() to print
+> > its debugging data?
 > 
-> CHECK: spaces preferred around that '+' , '-' and '*'
-> 
-> Signed-off-by: Alaa Mohamed <eng.alaamohamedsoliman.am@gmail.com>
+> I think this explanation makes sense!  Indeed, KFENCE already records
+> allocation stacks internally anyway, so it should be straightforward
+> to convince it to just print that.
+>
 
-Hi Alaa,
+Thank you both! Yeah the explanation makes sense... thats why KASAN/KCSAN couldn't yield anything -- it was not overwritten.
 
-I see you already picked up an ACK on this!
+I'm writing a fix and will test if the bug disappears.
+This may take few days.
 
-I'm going to comment on the format since I'm aware this is your
-first patchset! The grouping is good - 2 cleanups in same file.
-Please search in the tutorial for further info on how to present these
-as a patchset. You can also peruse the outreachy list for formats of
-patchsets as well. I'd expect to see a cover letter.
+Thanks!
+Hyeonggon
 
-The other thing I noticed was this: 
->> [PATCH 1/2] staging: r8188eu: add space around arithmatic sign
->> [PATCH 2/2] staging: r8188eu: Add line after declarations
-to which I was going to say - 'Well which is the actual preference
-for this file or driver: 'add' or 'Add', ie. uppercase or lowercase?  
-
-Looking at the history, it's mixed. So, I guess I'll just suggest
-you don't mix it within a patchset.  If a maintainer cares, and try
-to set a pattern for the file or driver..
-
-spelling fixup please:
-s/arithmatic/arithmetic
-
-and perhpas this would be clearer:
-s/sign/operator   (They are arithmetic operators, not signs.)
-
-Alison
-
-> ---
->  drivers/staging/r8188eu/core/rtw_br_ext.c | 58 +++++++++++------------
->  1 file changed, 29 insertions(+), 29 deletions(-)
-> 
-> diff --git a/drivers/staging/r8188eu/core/rtw_br_ext.c b/drivers/staging/r8188eu/core/rtw_br_ext.c
-> index d68611ef22f8..7c664f80fa99 100644
-> --- a/drivers/staging/r8188eu/core/rtw_br_ext.c
-> +++ b/drivers/staging/r8188eu/core/rtw_br_ext.c
-> @@ -87,19 +87,19 @@ static int skb_pull_and_merge(struct sk_buff *skb, unsigned char *src, int len)
->  	int tail_len;
->  	unsigned long end, tail;
->  
-> -	if ((src+len) > skb_tail_pointer(skb) || skb->len < len)
-> +	if ((src + len) > skb_tail_pointer(skb) || skb->len < len)
->  		return -1;
->  
->  	tail = (unsigned long)skb_tail_pointer(skb);
-> -	end = (unsigned long)src+len;
-> +	end = (unsigned long)src + len;
->  	if (tail < end)
->  		return -1;
->  
-> -	tail_len = (int)(tail-end);
-> +	tail_len = (int)(tail - end);
->  	if (tail_len > 0)
-> -		memmove(src, src+len, tail_len);
-> +		memmove(src, src + len, tail_len);
->  
-> -	skb_trim(skb, skb->len-len);
-> +	skb_trim(skb, skb->len - len);
->  	return 0;
->  }
->  
-> @@ -117,7 +117,7 @@ static void __nat25_generate_ipv4_network_addr(unsigned char *networkAddr,
->  	memset(networkAddr, 0, MAX_NETWORK_ADDR_LEN);
->  
->  	networkAddr[0] = NAT25_IPV4;
-> -	memcpy(networkAddr+7, (unsigned char *)ipAddr, 4);
-> +	memcpy(networkAddr + 7, (unsigned char *)ipAddr, 4);
->  }
->  
->  static void __nat25_generate_pppoe_network_addr(unsigned char *networkAddr,
-> @@ -126,8 +126,8 @@ static void __nat25_generate_pppoe_network_addr(unsigned char *networkAddr,
->  	memset(networkAddr, 0, MAX_NETWORK_ADDR_LEN);
->  
->  	networkAddr[0] = NAT25_PPPOE;
-> -	memcpy(networkAddr+1, (unsigned char *)sid, 2);
-> -	memcpy(networkAddr+3, (unsigned char *)ac_mac, 6);
-> +	memcpy(networkAddr + 1, (unsigned char *)sid, 2);
-> +	memcpy(networkAddr + 3, (unsigned char *)ac_mac, 6);
->  }
->  
->  static  void __nat25_generate_ipv6_network_addr(unsigned char *networkAddr,
-> @@ -136,17 +136,17 @@ static  void __nat25_generate_ipv6_network_addr(unsigned char *networkAddr,
->  	memset(networkAddr, 0, MAX_NETWORK_ADDR_LEN);
->  
->  	networkAddr[0] = NAT25_IPV6;
-> -	memcpy(networkAddr+1, (unsigned char *)ipAddr, 16);
-> +	memcpy(networkAddr + 1, (unsigned char *)ipAddr, 16);
->  }
->  
->  static unsigned char *scan_tlv(unsigned char *data, int len, unsigned char tag, unsigned char len8b)
->  {
->  	while (len > 0) {
-> -		if (*data == tag && *(data+1) == len8b && len >= len8b*8)
-> -			return data+2;
-> +		if (*data == tag && *(data + 1) == len8b && len >= len8b * 8)
-> +			return data + 2;
->  
-> -		len -= (*(data+1))*8;
-> -		data += (*(data+1))*8;
-> +		len -= (*(data + 1)) * 8;
-> +		data += (*(data + 1)) * 8;
->  	}
->  	return NULL;
->  }
-> @@ -158,7 +158,7 @@ static int update_nd_link_layer_addr(unsigned char *data, int len, unsigned char
->  
->  	if (icmphdr->icmp6_type == NDISC_ROUTER_SOLICITATION) {
->  		if (len >= 8) {
-> -			mac = scan_tlv(&data[8], len-8, 1, 1);
-> +			mac = scan_tlv(&data[8], len - 8, 1, 1);
->  			if (mac) {
->  				memcpy(mac, replace_mac, 6);
->  				return 1;
-> @@ -166,7 +166,7 @@ static int update_nd_link_layer_addr(unsigned char *data, int len, unsigned char
->  		}
->  	} else if (icmphdr->icmp6_type == NDISC_ROUTER_ADVERTISEMENT) {
->  		if (len >= 16) {
-> -			mac = scan_tlv(&data[16], len-16, 1, 1);
-> +			mac = scan_tlv(&data[16], len - 16, 1, 1);
->  			if (mac) {
->  				memcpy(mac, replace_mac, 6);
->  				return 1;
-> @@ -174,7 +174,7 @@ static int update_nd_link_layer_addr(unsigned char *data, int len, unsigned char
->  		}
->  	} else if (icmphdr->icmp6_type == NDISC_NEIGHBOUR_SOLICITATION) {
->  		if (len >= 24) {
-> -			mac = scan_tlv(&data[24], len-24, 1, 1);
-> +			mac = scan_tlv(&data[24], len - 24, 1, 1);
->  			if (mac) {
->  				memcpy(mac, replace_mac, 6);
->  				return 1;
-> @@ -182,7 +182,7 @@ static int update_nd_link_layer_addr(unsigned char *data, int len, unsigned char
->  		}
->  	} else if (icmphdr->icmp6_type == NDISC_NEIGHBOUR_ADVERTISEMENT) {
->  		if (len >= 24) {
-> -			mac = scan_tlv(&data[24], len-24, 2, 1);
-> +			mac = scan_tlv(&data[24], len - 24, 2, 1);
->  			if (mac) {
->  				memcpy(mac, replace_mac, 6);
->  				return 1;
-> @@ -190,7 +190,7 @@ static int update_nd_link_layer_addr(unsigned char *data, int len, unsigned char
->  		}
->  	} else if (icmphdr->icmp6_type == NDISC_REDIRECT) {
->  		if (len >= 40) {
-> -			mac = scan_tlv(&data[40], len-40, 2, 1);
-> +			mac = scan_tlv(&data[40], len - 40, 2, 1);
->  			if (mac) {
->  				memcpy(mac, replace_mac, 6);
->  				return 1;
-> @@ -396,7 +396,7 @@ int nat25_db_handle(struct adapter *priv, struct sk_buff *skb, int method)
->  			tmp = be32_to_cpu(iph->saddr);
->  			__nat25_generate_ipv4_network_addr(networkAddr, &tmp);
->  			/* record source IP address and , source mac address into db */
-> -			__nat25_db_network_insert(priv, skb->data+ETH_ALEN, networkAddr);
-> +			__nat25_db_network_insert(priv, skb->data + ETH_ALEN, networkAddr);
->  			return 0;
->  		default:
->  			return -1;
-> @@ -421,7 +421,7 @@ int nat25_db_handle(struct adapter *priv, struct sk_buff *skb, int method)
->  			arp_ptr += arp->ar_hln;
->  			sender = (unsigned int *)arp_ptr;
->  			__nat25_generate_ipv4_network_addr(networkAddr, sender);
-> -			__nat25_db_network_insert(priv, skb->data+ETH_ALEN, networkAddr);
-> +			__nat25_db_network_insert(priv, skb->data + ETH_ALEN, networkAddr);
->  			return 0;
->  		default:
->  			return -1;
-> @@ -458,22 +458,22 @@ int nat25_db_handle(struct adapter *priv, struct sk_buff *skb, int method)
->  							    sizeof(tag_buf))
->  								return -1;
->  
-> -							memcpy(tag->tag_data+MAGIC_CODE_LEN+RTL_RELAY_TAG_LEN,
-> +							memcpy(tag->tag_data + MAGIC_CODE_LEN + RTL_RELAY_TAG_LEN,
->  								pOldTag->tag_data, old_tag_len);
->  
-> -							if (skb_pull_and_merge(skb, (unsigned char *)pOldTag, TAG_HDR_LEN+old_tag_len) < 0)
-> +							if (skb_pull_and_merge(skb, (unsigned char *)pOldTag, TAG_HDR_LEN + old_tag_len) < 0)
->  								return -1;
->  
-> -							ph->length = htons(ntohs(ph->length)-TAG_HDR_LEN-old_tag_len);
-> +							ph->length = htons(ntohs(ph->length) - TAG_HDR_LEN - old_tag_len);
->  						}
->  
->  						tag->tag_type = PTT_RELAY_SID;
-> -						tag->tag_len = htons(MAGIC_CODE_LEN+RTL_RELAY_TAG_LEN+old_tag_len);
-> +						tag->tag_len = htons(MAGIC_CODE_LEN + RTL_RELAY_TAG_LEN + old_tag_len);
->  
->  						/*  insert the magic_code+client mac in relay tag */
->  						pMagic = (unsigned short *)tag->tag_data;
->  						*pMagic = htons(MAGIC_CODE);
-> -						memcpy(tag->tag_data+MAGIC_CODE_LEN, skb->data+ETH_ALEN, ETH_ALEN);
-> +						memcpy(tag->tag_data + MAGIC_CODE_LEN, skb->data + ETH_ALEN, ETH_ALEN);
->  
->  						/* Add relay tag */
->  						if (__nat25_add_pppoe_tag(skb, tag) < 0)
-> @@ -486,7 +486,7 @@ int nat25_db_handle(struct adapter *priv, struct sk_buff *skb, int method)
->  							return -2;
->  
->  						if (priv->pppoe_connection_in_progress == 0)
-> -							memcpy(priv->pppoe_addr, skb->data+ETH_ALEN, ETH_ALEN);
-> +							memcpy(priv->pppoe_addr, skb->data + ETH_ALEN, ETH_ALEN);
->  
->  						priv->pppoe_connection_in_progress = WAIT_TIME_PPPOE;
->  					}
-> @@ -496,11 +496,11 @@ int nat25_db_handle(struct adapter *priv, struct sk_buff *skb, int method)
->  			} else {	/*  session phase */
->  				__nat25_generate_pppoe_network_addr(networkAddr, skb->data, &ph->sid);
->  
-> -				__nat25_db_network_insert(priv, skb->data+ETH_ALEN, networkAddr);
-> +				__nat25_db_network_insert(priv, skb->data + ETH_ALEN, networkAddr);
->  
->  				if (!priv->ethBrExtInfo.addPPPoETag &&
->  				    priv->pppoe_connection_in_progress &&
-> -				    !memcmp(skb->data+ETH_ALEN, priv->pppoe_addr, ETH_ALEN))
-> +				    !memcmp(skb->data + ETH_ALEN, priv->pppoe_addr, ETH_ALEN))
->  					priv->pppoe_connection_in_progress = 0;
->  			}
->  			return 0;
-> @@ -548,7 +548,7 @@ int nat25_db_handle(struct adapter *priv, struct sk_buff *skb, int method)
->  		case NAT25_INSERT:
->  			if (memcmp(&iph->saddr, "\x0\x0\x0\x0\x0\x0\x0\x0\x0\x0\x0\x0\x0\x0\x0\x0", 16)) {
->  				__nat25_generate_ipv6_network_addr(networkAddr, (unsigned int *)&iph->saddr);
-> -				__nat25_db_network_insert(priv, skb->data+ETH_ALEN, networkAddr);
-> +				__nat25_db_network_insert(priv, skb->data + ETH_ALEN, networkAddr);
->  
->  				if (iph->nexthdr == IPPROTO_ICMPV6 &&
->  						skb->len > (ETH_HLEN +  sizeof(*iph) + 4)) {
-> -- 
-> 2.35.1
-> 
-> 
+> Thanks,
+> -- Marco
