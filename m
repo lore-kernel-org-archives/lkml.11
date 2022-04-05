@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E291C4332F
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:06:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 11C5BC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:06:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233537AbiDEIII (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 04:08:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48340 "EHLO
+        id S233550AbiDEIIL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 04:08:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57152 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232633AbiDEHyF (ORCPT
+        with ESMTP id S232688AbiDEHyH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 03:54:05 -0400
+        Tue, 5 Apr 2022 03:54:07 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7174420194;
-        Tue,  5 Apr 2022 00:49:28 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E61B127CF8;
+        Tue,  5 Apr 2022 00:49:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0C4C261728;
-        Tue,  5 Apr 2022 07:49:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 16347C340EE;
-        Tue,  5 Apr 2022 07:49:26 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 823CD615C3;
+        Tue,  5 Apr 2022 07:49:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 94FD5C340EE;
+        Tue,  5 Apr 2022 07:49:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649144967;
-        bh=0eJfn+mBWTyJXyaGvJe1WPQ5pmAwt0vF7tx5hFcldGQ=;
+        s=korg; t=1649144988;
+        bh=oRLN2IlqOxkWoTJkzS7xdz28eTe0nNxu9oZttJFSR0E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jNsfb+V3kU/yehEXqqQqB4Io/5YE6qelNT/5fsQLTHqPR9CAbVOv+4sxinyDk/v9B
-         u9NiwFBenzwopycEA0N6z7ka+m/nNy9ueDNU5kfXMjkMKoiWa6HIALrNITro8lLEjE
-         pTdBV3b3N3dqSQDoR2Jx2NZyPMsE3/n7Wou9faj4=
+        b=ogbwTK3E30c88yvUXsord9S0iZKpS4oAdeDRPSWXaLKI3gHa7JMp1GIiUpo7zWS8B
+         QkRdKSH1AlWyTJG1Xir2yNPYyOtRbZNNlaIVGKSepsSm4iqY2YLaKP2dMiumbzKfWW
+         BzFu0zb1sQKaLS35AgMqma9AxVSDs28yYu/ZUeRs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Christoph Hellwig <hch@lst.de>,
-        Keith Busch <kbusch@kernel.org>,
-        Chaitanya Kulkarni <kch@nvidia.com>,
+        stable@vger.kernel.org, Corentin Labbe <clabbe@baylibre.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0236/1126] nvme: fix the check for duplicate unique identifiers
-Date:   Tue,  5 Apr 2022 09:16:23 +0200
-Message-Id: <20220405070414.535110856@linuxfoundation.org>
+Subject: [PATCH 5.17 0244/1126] crypto: amlogic - call finalize with bh disabled
+Date:   Tue,  5 Apr 2022 09:16:31 +0200
+Message-Id: <20220405070414.769617463@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -50,67 +49,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christoph Hellwig <hch@lst.de>
+From: Corentin Labbe <clabbe@baylibre.com>
 
-[ Upstream commit e2724cb9f0c406b8fb66efd3aa9e8b3edfd8d5c8 ]
+[ Upstream commit dba633342994ce47d347bcf5522ba28301247b79 ]
 
-nvme_subsys_check_duplicate_ids should needs to return an error if any of
-the identifiers matches, not just if all of them match.  But it does not
-need to and should not look at the CSI value for this sanity check.
+Doing ipsec produces a spinlock recursion warning.
+This is due to not disabling BH during crypto completion function.
 
-Rewrite the logic to be separate from nvme_ns_ids_equal and optimize it
-by reducing duplicate checks for non-present identifiers.
-
-Fixes: ed754e5deeb1 ("nvme: track shared namespaces")
-Signed-off-by: Christoph Hellwig <hch@lst.de>
-Reviewed-by: Keith Busch <kbusch@kernel.org>
-Reviewed-by: Chaitanya Kulkarni <kch@nvidia.com>
+Fixes: 48fe583fe541 ("crypto: amlogic - Add crypto accelerator for amlogic GXL")
+Signed-off-by: Corentin Labbe <clabbe@baylibre.com>
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/nvme/host/core.c | 18 ++++++++++--------
- 1 file changed, 10 insertions(+), 8 deletions(-)
+ drivers/crypto/amlogic/amlogic-gxl-cipher.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/nvme/host/core.c b/drivers/nvme/host/core.c
-index f921c917f4b0..7cf81bb5d211 100644
---- a/drivers/nvme/host/core.c
-+++ b/drivers/nvme/host/core.c
-@@ -1683,13 +1683,6 @@ static void nvme_config_discard(struct gendisk *disk, struct nvme_ns *ns)
- 		blk_queue_max_write_zeroes_sectors(queue, UINT_MAX);
+diff --git a/drivers/crypto/amlogic/amlogic-gxl-cipher.c b/drivers/crypto/amlogic/amlogic-gxl-cipher.c
+index c6865cbd334b..e79514fce731 100644
+--- a/drivers/crypto/amlogic/amlogic-gxl-cipher.c
++++ b/drivers/crypto/amlogic/amlogic-gxl-cipher.c
+@@ -265,7 +265,9 @@ static int meson_handle_cipher_request(struct crypto_engine *engine,
+ 	struct skcipher_request *breq = container_of(areq, struct skcipher_request, base);
+ 
+ 	err = meson_cipher(breq);
++	local_bh_disable();
+ 	crypto_finalize_skcipher_request(engine, breq, err);
++	local_bh_enable();
+ 
+ 	return 0;
  }
- 
--static bool nvme_ns_ids_valid(struct nvme_ns_ids *ids)
--{
--	return !uuid_is_null(&ids->uuid) ||
--		memchr_inv(ids->nguid, 0, sizeof(ids->nguid)) ||
--		memchr_inv(ids->eui64, 0, sizeof(ids->eui64));
--}
--
- static bool nvme_ns_ids_equal(struct nvme_ns_ids *a, struct nvme_ns_ids *b)
- {
- 	return uuid_equal(&a->uuid, &b->uuid) &&
-@@ -3601,12 +3594,21 @@ static struct nvme_ns_head *nvme_find_ns_head(struct nvme_subsystem *subsys,
- static int nvme_subsys_check_duplicate_ids(struct nvme_subsystem *subsys,
- 		struct nvme_ns_ids *ids)
- {
-+	bool has_uuid = !uuid_is_null(&ids->uuid);
-+	bool has_nguid = memchr_inv(ids->nguid, 0, sizeof(ids->nguid));
-+	bool has_eui64 = memchr_inv(ids->eui64, 0, sizeof(ids->eui64));
- 	struct nvme_ns_head *h;
- 
- 	lockdep_assert_held(&subsys->lock);
- 
- 	list_for_each_entry(h, &subsys->nsheads, entry) {
--		if (nvme_ns_ids_valid(ids) && nvme_ns_ids_equal(ids, &h->ids))
-+		if (has_uuid && uuid_equal(&ids->uuid, &h->ids.uuid))
-+			return -EINVAL;
-+		if (has_nguid &&
-+		    memcmp(&ids->nguid, &h->ids.nguid, sizeof(ids->nguid)) == 0)
-+			return -EINVAL;
-+		if (has_eui64 &&
-+		    memcmp(&ids->eui64, &h->ids.eui64, sizeof(ids->eui64)) == 0)
- 			return -EINVAL;
- 	}
- 
 -- 
 2.34.1
 
