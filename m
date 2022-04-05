@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 77554C3527E
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 10:04:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 46C10C352A1
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 10:04:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350383AbiDEJ5x (ORCPT
+        id S1350417AbiDEJ6H (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 05:57:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45236 "EHLO
+        Tue, 5 Apr 2022 05:58:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37238 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238619AbiDEITO (ORCPT
+        with ESMTP id S238508AbiDEITJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:19:14 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3E6B10FDD;
-        Tue,  5 Apr 2022 01:09:11 -0700 (PDT)
+        Tue, 5 Apr 2022 04:19:09 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 376ADE033;
+        Tue,  5 Apr 2022 01:09:03 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7C893B81B18;
-        Tue,  5 Apr 2022 08:09:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C5801C385A1;
-        Tue,  5 Apr 2022 08:09:08 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B8810B81A32;
+        Tue,  5 Apr 2022 08:09:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1FD3EC385A9;
+        Tue,  5 Apr 2022 08:08:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649146149;
-        bh=HNGI4In+9emjSe41kyPORwvUlyYnDXuBY4KQw+sNLoI=;
+        s=korg; t=1649146140;
+        bh=RqH+qzWa/r4CLdWRtLFgQGlxDOZvKu8+nk+j1Be6Jgg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=i0fjCUAQciEQmHRjGlTyChHrqvQWS+7GpM/uJmq363cigXrRyMYaDMNRLiw0AY4Mx
-         PvxZKOpCzPn1cTdC83Y+H5Aat5aEcinT4UzSeED4tOd86lw78YbbxwY5uPEAFY8TZc
-         6dy5nLdilkY5kOlf5LJszKQUdjXtMuiJMOxi5KhI=
+        b=JlWLmpsIX1NJol2QA1l6my4+PxxqLmPGqZCbtumDBJ/NW8qMliDVhevLzSaxXfoCx
+         ka1wgGZWYuyGemxUGIju/RxVeToksfL6USld31pFI5L8E3lEtOhaoljyRPBYdHNRZ5
+         bpj6NoPf12lb7klxEAz4tG0QwgypNQqv6G9NlzFE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yongzhi Liu <lyz_cs@pku.edu.cn>,
+        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
+        Shiraz Saleem <shiraz.saleem@intel.com>,
         Jason Gunthorpe <jgg@nvidia.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0659/1126] RDMA/mlx5: Fix memory leak in error flow for subscribe event routine
-Date:   Tue,  5 Apr 2022 09:23:26 +0200
-Message-Id: <20220405070426.972565560@linuxfoundation.org>
+Subject: [PATCH 5.17 0657/1126] RDMA/irdma: Prevent some integer underflows
+Date:   Tue,  5 Apr 2022 09:23:24 +0200
+Message-Id: <20220405070426.914833420@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -50,38 +51,74 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yongzhi Liu <lyz_cs@pku.edu.cn>
+From: Dan Carpenter <dan.carpenter@oracle.com>
 
-[ Upstream commit 087f9c3f2309ed183f7e4b85ae57121d8663224d ]
+[ Upstream commit 6f6dbb819dfc1a35bcb8b709b5c83a3ea8beff75 ]
 
-In case the second xa_insert() fails, the obj_event is not released.  Fix
-the error unwind flow to free that memory to avoid a memory leak.
+My static checker complains that:
 
-Fixes: 759738537142 ("IB/mlx5: Enable subscription for device events over DEVX")
-Link: https://lore.kernel.org/r/1647018361-18266-1-git-send-email-lyz_cs@pku.edu.cn
-Signed-off-by: Yongzhi Liu <lyz_cs@pku.edu.cn>
+    drivers/infiniband/hw/irdma/ctrl.c:3605 irdma_sc_ceq_init()
+    warn: can subtract underflow 'info->dev->hmc_fpm_misc.max_ceqs'?
+
+It appears that "info->dev->hmc_fpm_misc.max_ceqs" comes from the firmware
+in irdma_sc_parse_fpm_query_buf() so, yes, there is a chance that it could
+be zero.  Even if we trust the firmware, it's easy enough to change the
+condition just as a hardenning measure.
+
+Fixes: 3f49d6842569 ("RDMA/irdma: Implement HW Admin Queue OPs")
+Link: https://lore.kernel.org/r/20220307125928.GE16710@kili
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+Acked-by: Shiraz Saleem <shiraz.saleem@intel.com>
 Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/infiniband/hw/mlx5/devx.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/infiniband/hw/irdma/ctrl.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/infiniband/hw/mlx5/devx.c b/drivers/infiniband/hw/mlx5/devx.c
-index 08b7f6bc56c3..15c0884d1f49 100644
---- a/drivers/infiniband/hw/mlx5/devx.c
-+++ b/drivers/infiniband/hw/mlx5/devx.c
-@@ -1886,8 +1886,10 @@ subscribe_event_xa_alloc(struct mlx5_devx_event_table *devx_event_table,
- 				key_level2,
- 				obj_event,
- 				GFP_KERNEL);
--		if (err)
-+		if (err) {
-+			kfree(obj_event);
- 			return err;
-+		}
- 		INIT_LIST_HEAD(&obj_event->obj_sub_list);
- 	}
+diff --git a/drivers/infiniband/hw/irdma/ctrl.c b/drivers/infiniband/hw/irdma/ctrl.c
+index 3141a9c85de5..e7554b6043e4 100644
+--- a/drivers/infiniband/hw/irdma/ctrl.c
++++ b/drivers/infiniband/hw/irdma/ctrl.c
+@@ -433,7 +433,7 @@ enum irdma_status_code irdma_sc_qp_create(struct irdma_sc_qp *qp, struct irdma_c
  
+ 	cqp = qp->dev->cqp;
+ 	if (qp->qp_uk.qp_id < cqp->dev->hw_attrs.min_hw_qp_id ||
+-	    qp->qp_uk.qp_id > (cqp->dev->hmc_info->hmc_obj[IRDMA_HMC_IW_QP].max_cnt - 1))
++	    qp->qp_uk.qp_id >= (cqp->dev->hmc_info->hmc_obj[IRDMA_HMC_IW_QP].max_cnt))
+ 		return IRDMA_ERR_INVALID_QP_ID;
+ 
+ 	wqe = irdma_sc_cqp_get_next_send_wqe(cqp, scratch);
+@@ -2512,10 +2512,10 @@ static enum irdma_status_code irdma_sc_cq_create(struct irdma_sc_cq *cq,
+ 	enum irdma_status_code ret_code = 0;
+ 
+ 	cqp = cq->dev->cqp;
+-	if (cq->cq_uk.cq_id > (cqp->dev->hmc_info->hmc_obj[IRDMA_HMC_IW_CQ].max_cnt - 1))
++	if (cq->cq_uk.cq_id >= (cqp->dev->hmc_info->hmc_obj[IRDMA_HMC_IW_CQ].max_cnt))
+ 		return IRDMA_ERR_INVALID_CQ_ID;
+ 
+-	if (cq->ceq_id > (cq->dev->hmc_fpm_misc.max_ceqs - 1))
++	if (cq->ceq_id >= (cq->dev->hmc_fpm_misc.max_ceqs))
+ 		return IRDMA_ERR_INVALID_CEQ_ID;
+ 
+ 	ceq = cq->dev->ceq[cq->ceq_id];
+@@ -3617,7 +3617,7 @@ enum irdma_status_code irdma_sc_ceq_init(struct irdma_sc_ceq *ceq,
+ 	    info->elem_cnt > info->dev->hw_attrs.max_hw_ceq_size)
+ 		return IRDMA_ERR_INVALID_SIZE;
+ 
+-	if (info->ceq_id > (info->dev->hmc_fpm_misc.max_ceqs - 1))
++	if (info->ceq_id >= (info->dev->hmc_fpm_misc.max_ceqs))
+ 		return IRDMA_ERR_INVALID_CEQ_ID;
+ 	pble_obj_cnt = info->dev->hmc_info->hmc_obj[IRDMA_HMC_IW_PBLE].cnt;
+ 
+@@ -4166,7 +4166,7 @@ enum irdma_status_code irdma_sc_ccq_init(struct irdma_sc_cq *cq,
+ 	    info->num_elem > info->dev->hw_attrs.uk_attrs.max_hw_cq_size)
+ 		return IRDMA_ERR_INVALID_SIZE;
+ 
+-	if (info->ceq_id > (info->dev->hmc_fpm_misc.max_ceqs - 1))
++	if (info->ceq_id >= (info->dev->hmc_fpm_misc.max_ceqs ))
+ 		return IRDMA_ERR_INVALID_CEQ_ID;
+ 
+ 	pble_obj_cnt = info->dev->hmc_info->hmc_obj[IRDMA_HMC_IW_PBLE].cnt;
 -- 
 2.34.1
 
