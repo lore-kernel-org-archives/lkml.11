@@ -2,63 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4CC36C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 70D97C4332F
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 22:55:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1457483AbiDEWr0 (ORCPT
+        id S1457804AbiDEWrn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 18:47:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55482 "EHLO
+        Tue, 5 Apr 2022 18:47:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35092 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1383154AbiDEMY5 (ORCPT
+        with ESMTP id S1353386AbiDEKGE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 08:24:57 -0400
-Received: from angie.orcam.me.uk (angie.orcam.me.uk [IPv6:2001:4190:8020::34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 63D48DA08A;
-        Tue,  5 Apr 2022 04:31:59 -0700 (PDT)
-Received: by angie.orcam.me.uk (Postfix, from userid 500)
-        id 751C49200BB; Tue,  5 Apr 2022 13:31:58 +0200 (CEST)
-Received: from localhost (localhost [127.0.0.1])
-        by angie.orcam.me.uk (Postfix) with ESMTP id 7075E9200B4;
-        Tue,  5 Apr 2022 12:31:58 +0100 (BST)
-Date:   Tue, 5 Apr 2022 12:31:58 +0100 (BST)
-From:   "Maciej W. Rozycki" <macro@orcam.me.uk>
-To:     Thomas Bogendoerfer <tsbogend@alpha.franken.de>
-cc:     Andrew Powers-Holmes <aholmes@omnom.net>,
-        yaliang.wang@windriver.com, rppt@kernel.org, huangpei@loongson.cn,
-        Andrew Morton <akpm@linux-foundation.org>, kumba@gentoo.org,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        anshuman.khandual@arm.com, penberg@kernel.org,
-        linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Greg KH <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH] MIPS: pgalloc: fix memory leak caused by pgd_free()
-In-Reply-To: <20220405104506.GA17085@alpha.franken.de>
-Message-ID: <alpine.DEB.2.21.2204051224560.47162@angie.orcam.me.uk>
-References: <20220310113116.2068859-1-yaliang.wang@windriver.com> <alpine.DEB.2.21.2204021446370.47162@angie.orcam.me.uk> <9cc88b1c-8a8c-95ea-2cf7-31be3b771495@omnom.net> <alpine.DEB.2.21.2204031122020.47162@angie.orcam.me.uk> <b273a9b7-82f7-5883-14d2-973dd005b005@omnom.net>
- <alpine.DEB.2.21.2204051027490.47162@angie.orcam.me.uk> <20220405104506.GA17085@alpha.franken.de>
-User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
+        Tue, 5 Apr 2022 06:06:04 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD6A9BF941;
+        Tue,  5 Apr 2022 02:54:53 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 56EA661676;
+        Tue,  5 Apr 2022 09:54:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 67AFEC385A1;
+        Tue,  5 Apr 2022 09:54:52 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649152492;
+        bh=Hbt95SH/5danOUkYPJ2tMkvAvH7esF7UJsI40QKGT9U=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=RpBURdvRebkxxRDlLKVRQDONPY7K7VGa4/RT1bUqfqfjISMSeRalxKQ9fffbVNLBK
+         vh0A/GL4e+4D9FwU3uj8+1GLGPt2pmHZk2W5mMp29l/4Qs1C+yptfIGu3w84UlkvF3
+         duqwZKTFsV2dB5X1FzhPyW0zv3OLD/2RHMdtUK3c=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        Himanshu Madhani <himanshu.madhani@oracle.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Joe Carnuccio <joe.carnuccio@cavium.com>,
+        Nilesh Javali <njavali@marvell.com>
+Subject: [PATCH 5.15 797/913] scsi: qla2xxx: Fix T10 PI tag escape and IP guard options for 28XX adapters
+Date:   Tue,  5 Apr 2022 09:30:59 +0200
+Message-Id: <20220405070403.722507008@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 5 Apr 2022, Thomas Bogendoerfer wrote:
+From: Joe Carnuccio <joe.carnuccio@cavium.com>
 
-> >  NB I think it has to be backported to all the stable branches made since 
-> > the original breakage; i.e. v5.9+ (I haven't kept track of what they are).
-> 
-> the fix has a Fixes tag so it will usually ported to stable/longterm kernels.
-> I already saw it in Greg's patch bombs.
+commit 4c103a802c69fca63976af6b372ccba39ed74370 upstream.
 
- Hmm, not all fixes qualify for or indeed are worth backporting and I'd 
-expect those that have no stable annotation to remain on trunk only.  I 
-have been following this principle with my submissions anyway.
+28XX adapters are capable of detecting both T10 PI tag escape values as
+well as IP guard. This was missed due to the adapter type missed in the
+corresponding macros. Fix this by adding support for 28xx in those macros.
 
- Indeed I can see a backport to 5.17 has literally just been posted in 
-this humongous patch set, but in this case I suspect Greg has just picked 
-this up by hand (thanks, Greg!) having seen this discussion (though how he 
-manages to escape alive through the flood of messages has been astonishing 
-me).
+Link: https://lore.kernel.org/r/20220110050218.3958-14-njavali@marvell.com
+Cc: stable@vger.kernel.org
+Reviewed-by: Himanshu Madhani <himanshu.madhani@oracle.com>
+Tested-by: Martin K. Petersen <martin.petersen@oracle.com>
+Signed-off-by: Joe Carnuccio <joe.carnuccio@cavium.com>
+Signed-off-by: Nilesh Javali <njavali@marvell.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ drivers/scsi/qla2xxx/qla_def.h |    6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-  Maciej
+--- a/drivers/scsi/qla2xxx/qla_def.h
++++ b/drivers/scsi/qla2xxx/qla_def.h
+@@ -4270,8 +4270,10 @@ struct qla_hw_data {
+ #define QLA_ABTS_WAIT_ENABLED(_sp) \
+ 	(QLA_NVME_IOS(_sp) && QLA_ABTS_FW_ENABLED(_sp->fcport->vha->hw))
+ 
+-#define IS_PI_UNINIT_CAPABLE(ha)	(IS_QLA83XX(ha) || IS_QLA27XX(ha))
+-#define IS_PI_IPGUARD_CAPABLE(ha)	(IS_QLA83XX(ha) || IS_QLA27XX(ha))
++#define IS_PI_UNINIT_CAPABLE(ha)	(IS_QLA83XX(ha) || IS_QLA27XX(ha) || \
++					 IS_QLA28XX(ha))
++#define IS_PI_IPGUARD_CAPABLE(ha)	(IS_QLA83XX(ha) || IS_QLA27XX(ha) || \
++					 IS_QLA28XX(ha))
+ #define IS_PI_DIFB_DIX0_CAPABLE(ha)	(0)
+ #define IS_PI_SPLIT_DET_CAPABLE_HBA(ha)	(IS_QLA83XX(ha) || IS_QLA27XX(ha) || \
+ 					IS_QLA28XX(ha))
+
+
