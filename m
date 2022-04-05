@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ACAABC4332F
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 13:32:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B6467C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 13:33:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383435AbiDENah (ORCPT
+        id S1383462AbiDENam (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 09:30:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41972 "EHLO
+        Tue, 5 Apr 2022 09:30:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43064 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345348AbiDEJW3 (ORCPT
+        with ESMTP id S1345369AbiDEJWa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:22:29 -0400
+        Tue, 5 Apr 2022 05:22:30 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 911DE47063;
-        Tue,  5 Apr 2022 02:10:41 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0710E47AFE;
+        Tue,  5 Apr 2022 02:10:51 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2F92761527;
-        Tue,  5 Apr 2022 09:10:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 41C4BC385A0;
-        Tue,  5 Apr 2022 09:10:40 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6982B614FC;
+        Tue,  5 Apr 2022 09:10:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 70701C385A0;
+        Tue,  5 Apr 2022 09:10:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649149840;
-        bh=x3IlawOepDT46tssbhfPkDBLLjvobJXk+L4ZOx5NkTY=;
+        s=korg; t=1649149849;
+        bh=/p/QGkqFrVHeKYeBLGiVWuOarMb63B3rSefqJ+v6prw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=w4C525z86TFkd3q0GPYKPNRozLmOX6TZWVOGI5tC3Al6pE5wsQsLMblPIA2GG5o7b
-         2GdK4Crtw3KPEL1t7WzifFnHlTDwtXzWNn6FnUl/oNmRCMI0E05y37EYMtIfNsupYu
-         jqsbpR/im2+Jav4HGxfcP5QjY6/tW6qSARRcT2E8=
+        b=VTEUyZpWVqUVh3SKnxuGZcUCXANT/LAreRybYOpbXCEYWGD2v62Q/fQlYNxKOmGbX
+         EkBGgs5NAruoDrnloQHkklTR2MN2x8WR2m5FgSYw71DIe7WkKLOqG/ac1w+TOOr3My
+         6oWpnV+8OfRDOCLF3HM5Eb2wowtnd89+TufIpVdE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ben Gardon <bgardon@google.com>,
-        Sean Christopherson <seanjc@google.com>,
+        stable@vger.kernel.org, Vitaly Kuznetsov <vkuznets@redhat.com>,
         Paolo Bonzini <pbonzini@redhat.com>
-Subject: [PATCH 5.16 0860/1017] KVM: x86/mmu: Zap _all_ roots when unmapping gfn range in TDP MMU
-Date:   Tue,  5 Apr 2022 09:29:33 +0200
-Message-Id: <20220405070419.762058246@linuxfoundation.org>
+Subject: [PATCH 5.16 0863/1017] KVM: x86: hyper-v: Drop redundant ex parameter from kvm_hv_flush_tlb()
+Date:   Tue,  5 Apr 2022 09:29:36 +0200
+Message-Id: <20220405070419.850999746@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -50,146 +49,80 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sean Christopherson <seanjc@google.com>
+From: Vitaly Kuznetsov <vkuznets@redhat.com>
 
-commit d62007edf01f5c11f75d0f4b1e538fc52a5b1982 upstream.
+commit 82c1ead0d678af31e5d883656c12096a0004178b upstream.
 
-Zap both valid and invalid roots when zapping/unmapping a gfn range, as
-KVM must ensure it holds no references to the freed page after returning
-from the unmap operation.  Most notably, the TDP MMU doesn't zap invalid
-roots in mmu_notifier callbacks.  This leads to use-after-free and other
-issues if the mmu_notifier runs to completion while an invalid root
-zapper yields as KVM fails to honor the requirement that there must be
-_no_ references to the page after the mmu_notifier returns.
+'struct kvm_hv_hcall' has all the required information already,
+there's no need to pass 'ex' additionally.
 
-The bug is most easily reproduced by hacking KVM to cause a collision
-between set_nx_huge_pages() and kvm_mmu_notifier_release(), but the bug
-exists between kvm_mmu_notifier_invalidate_range_start() and memslot
-updates as well.  Invalidating a root ensures pages aren't accessible by
-the guest, and KVM won't read or write page data itself, but KVM will
-trigger e.g. kvm_set_pfn_dirty() when zapping SPTEs, and thus completing
-a zap of an invalid root _after_ the mmu_notifier returns is fatal.
+No functional change intended.
 
-  WARNING: CPU: 24 PID: 1496 at arch/x86/kvm/../../../virt/kvm/kvm_main.c:173 [kvm]
-  RIP: 0010:kvm_is_zone_device_pfn+0x96/0xa0 [kvm]
-  Call Trace:
-   <TASK>
-   kvm_set_pfn_dirty+0xa8/0xe0 [kvm]
-   __handle_changed_spte+0x2ab/0x5e0 [kvm]
-   __handle_changed_spte+0x2ab/0x5e0 [kvm]
-   __handle_changed_spte+0x2ab/0x5e0 [kvm]
-   zap_gfn_range+0x1f3/0x310 [kvm]
-   kvm_tdp_mmu_zap_invalidated_roots+0x50/0x90 [kvm]
-   kvm_mmu_zap_all_fast+0x177/0x1a0 [kvm]
-   set_nx_huge_pages+0xb4/0x190 [kvm]
-   param_attr_store+0x70/0x100
-   module_attr_store+0x19/0x30
-   kernfs_fop_write_iter+0x119/0x1b0
-   new_sync_write+0x11c/0x1b0
-   vfs_write+0x1cc/0x270
-   ksys_write+0x5f/0xe0
-   do_syscall_64+0x38/0xc0
-   entry_SYSCALL_64_after_hwframe+0x44/0xae
-   </TASK>
-
-Fixes: b7cccd397f31 ("KVM: x86/mmu: Fast invalidation for TDP MMU")
-Cc: stable@vger.kernel.org
-Cc: Ben Gardon <bgardon@google.com>
-Signed-off-by: Sean Christopherson <seanjc@google.com>
-Message-Id: <20211215011557.399940-4-seanjc@google.com>
+Cc: stable@vger.kernel.org # 5.14.x
+Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
+Message-Id: <20220222154642.684285-3-vkuznets@redhat.com>
 Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/kvm/mmu/tdp_mmu.c |   39 ++++++++++++++++++++++++---------------
- 1 file changed, 24 insertions(+), 15 deletions(-)
+ arch/x86/kvm/hyperv.c |   23 ++++++-----------------
+ 1 file changed, 6 insertions(+), 17 deletions(-)
 
---- a/arch/x86/kvm/mmu/tdp_mmu.c
-+++ b/arch/x86/kvm/mmu/tdp_mmu.c
-@@ -99,15 +99,18 @@ void kvm_tdp_mmu_put_root(struct kvm *kv
- }
+--- a/arch/x86/kvm/hyperv.c
++++ b/arch/x86/kvm/hyperv.c
+@@ -1749,7 +1749,7 @@ struct kvm_hv_hcall {
+ 	sse128_t xmm[HV_HYPERCALL_MAX_XMM_REGISTERS];
+ };
  
- /*
-- * Finds the next valid root after root (or the first valid root if root
-- * is NULL), takes a reference on it, and returns that next root. If root
-- * is not NULL, this thread should have already taken a reference on it, and
-- * that reference will be dropped. If no valid root is found, this
-- * function will return NULL.
-+ * Returns the next root after @prev_root (or the first root if @prev_root is
-+ * NULL).  A reference to the returned root is acquired, and the reference to
-+ * @prev_root is released (the caller obviously must hold a reference to
-+ * @prev_root if it's non-NULL).
-+ *
-+ * If @only_valid is true, invalid roots are skipped.
-+ *
-+ * Returns NULL if the end of tdp_mmu_roots was reached.
-  */
- static struct kvm_mmu_page *tdp_mmu_next_root(struct kvm *kvm,
- 					      struct kvm_mmu_page *prev_root,
--					      bool shared)
-+					      bool shared, bool only_valid)
+-static u64 kvm_hv_flush_tlb(struct kvm_vcpu *vcpu, struct kvm_hv_hcall *hc, bool ex)
++static u64 kvm_hv_flush_tlb(struct kvm_vcpu *vcpu, struct kvm_hv_hcall *hc)
  {
- 	struct kvm_mmu_page *next_root;
+ 	int i;
+ 	gpa_t gpa;
+@@ -1764,7 +1764,8 @@ static u64 kvm_hv_flush_tlb(struct kvm_v
+ 	int sparse_banks_len;
+ 	bool all_cpus;
  
-@@ -122,7 +125,7 @@ static struct kvm_mmu_page *tdp_mmu_next
- 						   typeof(*next_root), link);
- 
- 	while (next_root) {
--		if (!next_root->role.invalid &&
-+		if ((!only_valid || !next_root->role.invalid) &&
- 		    kvm_tdp_mmu_get_root(kvm, next_root))
+-	if (!ex) {
++	if (hc->code == HVCALL_FLUSH_VIRTUAL_ADDRESS_LIST ||
++	    hc->code == HVCALL_FLUSH_VIRTUAL_ADDRESS_SPACE) {
+ 		if (hc->fast) {
+ 			flush.address_space = hc->ingpa;
+ 			flush.flags = hc->outgpa;
+@@ -2246,32 +2247,20 @@ int kvm_hv_hypercall(struct kvm_vcpu *vc
+ 				kvm_hv_hypercall_complete_userspace;
+ 		return 0;
+ 	case HVCALL_FLUSH_VIRTUAL_ADDRESS_LIST:
+-		if (unlikely(!hc.rep_cnt || hc.rep_idx)) {
+-			ret = HV_STATUS_INVALID_HYPERCALL_INPUT;
+-			break;
+-		}
+-		ret = kvm_hv_flush_tlb(vcpu, &hc, false);
+-		break;
+-	case HVCALL_FLUSH_VIRTUAL_ADDRESS_SPACE:
+-		if (unlikely(hc.rep)) {
+-			ret = HV_STATUS_INVALID_HYPERCALL_INPUT;
+-			break;
+-		}
+-		ret = kvm_hv_flush_tlb(vcpu, &hc, false);
+-		break;
+ 	case HVCALL_FLUSH_VIRTUAL_ADDRESS_LIST_EX:
+ 		if (unlikely(!hc.rep_cnt || hc.rep_idx)) {
+ 			ret = HV_STATUS_INVALID_HYPERCALL_INPUT;
  			break;
- 
-@@ -148,13 +151,19 @@ static struct kvm_mmu_page *tdp_mmu_next
-  * mode. In the unlikely event that this thread must free a root, the lock
-  * will be temporarily dropped and reacquired in write mode.
-  */
--#define for_each_tdp_mmu_root_yield_safe(_kvm, _root, _as_id, _shared)	\
--	for (_root = tdp_mmu_next_root(_kvm, NULL, _shared);		\
--	     _root;							\
--	     _root = tdp_mmu_next_root(_kvm, _root, _shared))		\
--		if (kvm_mmu_page_as_id(_root) != _as_id) {		\
-+#define __for_each_tdp_mmu_root_yield_safe(_kvm, _root, _as_id, _shared, _only_valid)\
-+	for (_root = tdp_mmu_next_root(_kvm, NULL, _shared, _only_valid);	\
-+	     _root;								\
-+	     _root = tdp_mmu_next_root(_kvm, _root, _shared, _only_valid))	\
-+		if (kvm_mmu_page_as_id(_root) != _as_id) {			\
- 		} else
- 
-+#define for_each_valid_tdp_mmu_root_yield_safe(_kvm, _root, _as_id, _shared)	\
-+	__for_each_tdp_mmu_root_yield_safe(_kvm, _root, _as_id, _shared, true)
-+
-+#define for_each_tdp_mmu_root_yield_safe(_kvm, _root, _as_id, _shared)		\
-+	__for_each_tdp_mmu_root_yield_safe(_kvm, _root, _as_id, _shared, false)
-+
- #define for_each_tdp_mmu_root(_kvm, _root, _as_id)				\
- 	list_for_each_entry_rcu(_root, &_kvm->arch.tdp_mmu_roots, link,		\
- 				lockdep_is_held_type(&kvm->mmu_lock, 0) ||	\
-@@ -1224,7 +1233,7 @@ bool kvm_tdp_mmu_wrprot_slot(struct kvm
- 
- 	lockdep_assert_held_read(&kvm->mmu_lock);
- 
--	for_each_tdp_mmu_root_yield_safe(kvm, root, slot->as_id, true)
-+	for_each_valid_tdp_mmu_root_yield_safe(kvm, root, slot->as_id, true)
- 		spte_set |= wrprot_gfn_range(kvm, root, slot->base_gfn,
- 			     slot->base_gfn + slot->npages, min_level);
- 
-@@ -1294,7 +1303,7 @@ bool kvm_tdp_mmu_clear_dirty_slot(struct
- 
- 	lockdep_assert_held_read(&kvm->mmu_lock);
- 
--	for_each_tdp_mmu_root_yield_safe(kvm, root, slot->as_id, true)
-+	for_each_valid_tdp_mmu_root_yield_safe(kvm, root, slot->as_id, true)
- 		spte_set |= clear_dirty_gfn_range(kvm, root, slot->base_gfn,
- 				slot->base_gfn + slot->npages);
- 
-@@ -1419,7 +1428,7 @@ void kvm_tdp_mmu_zap_collapsible_sptes(s
- 
- 	lockdep_assert_held_read(&kvm->mmu_lock);
- 
--	for_each_tdp_mmu_root_yield_safe(kvm, root, slot->as_id, true)
-+	for_each_valid_tdp_mmu_root_yield_safe(kvm, root, slot->as_id, true)
- 		zap_collapsible_spte_range(kvm, root, slot);
- }
- 
+ 		}
+-		ret = kvm_hv_flush_tlb(vcpu, &hc, true);
++		ret = kvm_hv_flush_tlb(vcpu, &hc);
+ 		break;
++	case HVCALL_FLUSH_VIRTUAL_ADDRESS_SPACE:
+ 	case HVCALL_FLUSH_VIRTUAL_ADDRESS_SPACE_EX:
+ 		if (unlikely(hc.rep)) {
+ 			ret = HV_STATUS_INVALID_HYPERCALL_INPUT;
+ 			break;
+ 		}
+-		ret = kvm_hv_flush_tlb(vcpu, &hc, true);
++		ret = kvm_hv_flush_tlb(vcpu, &hc);
+ 		break;
+ 	case HVCALL_SEND_IPI:
+ 		if (unlikely(hc.rep)) {
 
 
