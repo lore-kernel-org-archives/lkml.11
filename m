@@ -2,127 +2,175 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9235FC4167E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A78A5C4167D
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:35:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1589187AbiDFATA (ORCPT
+        id S1589202AbiDFATD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 20:19:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35094 "EHLO
+        Tue, 5 Apr 2022 20:19:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36682 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1573549AbiDETWd (ORCPT
+        with ESMTP id S1386145AbiDEOTO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 15:22:33 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B03638DB9;
-        Tue,  5 Apr 2022 12:20:34 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B0E03616C5;
-        Tue,  5 Apr 2022 19:20:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7792EC385A3;
-        Tue,  5 Apr 2022 19:20:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649186433;
-        bh=KPIMaUrv3ahVDlTZhvKlbu0p7ZyDL3VrkfH0rCRjpXk=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ifF09hyIaGUTiC7bnjvc9J8UYXHxi2eZKOPa+cWWIGInOKj6kdGzAV65rtAvzN8G7
-         /ZT1UExzLMCQJikWl4O9Ga3D5x39CE9fnFPXBEoHk+6lK4/bCaCNVRvDO1cls43kOZ
-         OvmShbiUM7hNU2Op2QytzzWoVfj1b63pE2G81W0KKovHXp4emOXc2EC+EJK+fVMaQj
-         EZ/YVtZUVtEYO74b0R89kL4XmHjsUS8PFnqDJn4AOsEAbLrTeO9GeVmfrukjlIFQNU
-         7NGbldoE85LoiViOuZ8SEjExCaSw4HaQ0FUa5SWtd4Kt47R7g4PhPflpGGN5wKEpq0
-         DfLefq6jHJTFQ==
-From:   Jeff Layton <jlayton@kernel.org>
-To:     idryomov@gmail.com, xiubli@redhat.com
-Cc:     ceph-devel@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        linux-fscrypt@vger.kernel.org, linux-kernel@vger.kernel.org,
-        lhenriques@suse.de
-Subject: [PATCH v13 01/59] libceph: add spinlock around osd->o_requests
-Date:   Tue,  5 Apr 2022 15:19:32 -0400
-Message-Id: <20220405192030.178326-2-jlayton@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405192030.178326-1-jlayton@kernel.org>
-References: <20220405192030.178326-1-jlayton@kernel.org>
+        Tue, 5 Apr 2022 10:19:14 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4BD882BD5
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 06:08:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1649164115;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=8SLg2V/rMLaWaYTpjzTRS0k/QFp5WFOGLvjyUFHrKJY=;
+        b=Vyje00f4vebmWZc9RYkLZ3OC01/OSe0zL9Z8mZP2cIxa+p4AvHykIPwBN0CUjsbgxerMUi
+        QGlLFiYo4sWaZ4/YXDenGJc6ay18Ywq4qtX0u5vf/JYQX8lQOag1d0LKgzRv5M9IQYINRn
+        dDCCGi8+OSzkauBGEOhAj4nfsP89ZFE=
+Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
+ [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-650-lQQ0h4bkOma_4doqQbtq9Q-1; Tue, 05 Apr 2022 09:08:34 -0400
+X-MC-Unique: lQQ0h4bkOma_4doqQbtq9Q-1
+Received: by mail-wm1-f72.google.com with SMTP id h18-20020a05600c351200b0038e82e6321bso178099wmq.5
+        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 06:08:34 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=8SLg2V/rMLaWaYTpjzTRS0k/QFp5WFOGLvjyUFHrKJY=;
+        b=do49fFQ97AwtdAp8OSDlkZ3InwknJuwsjtwwB/xsQQDPequ84j72D4MUPweO+26nCu
+         AmfGx5L6BMPvvzfmC/CZrxJwB2t7+pX4FpAkxmm7/hq0n9Y3Z4ZXszf+sRBDmJYUnRYp
+         kK9z8M7n12b2t44yQysYbVAdpoCqejY86lpYUNzyWGq40jLL/pWJmsEQ7oDV8cToZUqK
+         REHvguiF487E9P68afgMbuRHBqCAfuFwkRbKkQKfRCOo6bG+1uxAkb6vePJ6CHAIr8ic
+         ti+vKePgQz05/WuvhuFeG7WVOZlcmHBmi91T96CkRCsxflI4ZQI2a1BGeIx0/36o93Wo
+         238Q==
+X-Gm-Message-State: AOAM532ZqCE2Esa6vrE8qD43tT4qAqkusVNukX5+rIIxSJ7q0HNZfTCR
+        OgMiTcL3VUk5fmE0ADtk/SNqHF3pbOszuG3eMpnzz4T87WJwTX7UCPX9k0PBwE1W/aIdEWJFhfE
+        oZPFv4iNMo2+TedM+3OG2hOkD
+X-Received: by 2002:a7b:cd03:0:b0:37b:fc83:a4e2 with SMTP id f3-20020a7bcd03000000b0037bfc83a4e2mr3047620wmj.193.1649164112937;
+        Tue, 05 Apr 2022 06:08:32 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJxw4wTRpI39IlAgBO5ZQoXo4KftgHSb5XxaFNxwDYQkGsSuCa17GkEpnsUsvkMa8CN+RPq1fQ==
+X-Received: by 2002:a7b:cd03:0:b0:37b:fc83:a4e2 with SMTP id f3-20020a7bcd03000000b0037bfc83a4e2mr3047597wmj.193.1649164112715;
+        Tue, 05 Apr 2022 06:08:32 -0700 (PDT)
+Received: from [10.32.181.87] (nat-pool-mxp-t.redhat.com. [149.6.153.186])
+        by smtp.googlemail.com with ESMTPSA id m127-20020a1ca385000000b0038e6e7ac0b5sm2141613wme.38.2022.04.05.06.08.30
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 05 Apr 2022 06:08:31 -0700 (PDT)
+Message-ID: <5fbf4af9-9e6c-3fc7-c021-869e93662845@redhat.com>
+Date:   Tue, 5 Apr 2022 15:08:30 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [RFC PATCH v5 023/104] x86/cpu: Add helper functions to
+ allocate/free MKTME keyid
+Content-Language: en-US
+To:     isaku.yamahata@intel.com, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     isaku.yamahata@gmail.com, Jim Mattson <jmattson@google.com>,
+        erdemaktas@google.com, Connor Kuehl <ckuehl@redhat.com>,
+        Sean Christopherson <seanjc@google.com>
+References: <cover.1646422845.git.isaku.yamahata@intel.com>
+ <a1d1e4f26c6ef44a557e873be2818e6a03e12038.1646422845.git.isaku.yamahata@intel.com>
+From:   Paolo Bonzini <pbonzini@redhat.com>
+In-Reply-To: <a1d1e4f26c6ef44a557e873be2818e6a03e12038.1646422845.git.isaku.yamahata@intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In a later patch, we're going to need to search for a request in
-the rbtree, but taking the o_mutex is inconvenient as we already
-hold the con mutex at the point where we need it.
+On 3/4/22 20:48, isaku.yamahata@intel.com wrote:
+> From: Isaku Yamahata <isaku.yamahata@intel.com>
+> 
+> MKTME keyid is assigned to guest TD.  The memory controller encrypts guest
+> TD memory with key id.  Add helper functions to allocate/free MKTME keyid
+> so that TDX KVM assign keyid.
+> 
+> Also export MKTME global keyid that is used to encrypt TDX module and its
+> memory.
+> 
+> Signed-off-by: Isaku Yamahata <isaku.yamahata@intel.com>
+> ---
+>   arch/x86/include/asm/tdx.h |  6 ++++++
+>   arch/x86/virt/vmx/tdx.c    | 33 ++++++++++++++++++++++++++++++++-
+>   2 files changed, 38 insertions(+), 1 deletion(-)
+> 
+> diff --git a/arch/x86/include/asm/tdx.h b/arch/x86/include/asm/tdx.h
+> index 9a8dc6afcb63..73bb472bd515 100644
+> --- a/arch/x86/include/asm/tdx.h
+> +++ b/arch/x86/include/asm/tdx.h
+> @@ -139,6 +139,9 @@ int tdx_detect(void);
+>   int tdx_init(void);
+>   bool platform_has_tdx(void);
+>   const struct tdsysinfo_struct *tdx_get_sysinfo(void);
+> +u32 tdx_get_global_keyid(void);
+> +int tdx_keyid_alloc(void);
+> +void tdx_keyid_free(int keyid);
+>   #else
+>   static inline void tdx_detect_cpu(struct cpuinfo_x86 *c) { }
+>   static inline int tdx_detect(void) { return -ENODEV; }
+> @@ -146,6 +149,9 @@ static inline int tdx_init(void) { return -ENODEV; }
+>   static inline bool platform_has_tdx(void) { return false; }
+>   struct tdsysinfo_struct;
+>   static inline const struct tdsysinfo_struct *tdx_get_sysinfo(void) { return NULL; }
+> +static inline u32 tdx_get_global_keyid(void) { return 0; };
+> +static inline int tdx_keyid_alloc(void) { return -EOPNOTSUPP; }
+> +static inline void tdx_keyid_free(int keyid) { }
+>   #endif /* CONFIG_INTEL_TDX_HOST */
+>   
+>   #endif /* !__ASSEMBLY__ */
+> diff --git a/arch/x86/virt/vmx/tdx.c b/arch/x86/virt/vmx/tdx.c
+> index e45f188479cb..d714106321d4 100644
+> --- a/arch/x86/virt/vmx/tdx.c
+> +++ b/arch/x86/virt/vmx/tdx.c
+> @@ -113,7 +113,13 @@ static int tdx_cmr_num;
+>   static struct tdsysinfo_struct tdx_sysinfo;
+>   
+>   /* TDX global KeyID to protect TDX metadata */
+> -static u32 tdx_global_keyid;
+> +static u32 __read_mostly tdx_global_keyid;
+> +
+> +u32 tdx_get_global_keyid(void)
+> +{
+> +	return tdx_global_keyid;
+> +}
+> +EXPORT_SYMBOL_GPL(tdx_get_global_keyid);
+>   
+>   static bool enable_tdx_host;
+>   
+> @@ -189,6 +195,31 @@ static void detect_seam(struct cpuinfo_x86 *c)
+>   		detect_seam_ap(c);
+>   }
+>   
+> +/* TDX KeyID pool */
+> +static DEFINE_IDA(tdx_keyid_pool);
+> +
+> +int tdx_keyid_alloc(void)
+> +{
+> +	if (WARN_ON_ONCE(!tdx_keyid_start || !tdx_keyid_num))
+> +		return -EINVAL;
+> +
+> +	/* The first keyID is reserved for the global key. */
+> +	return ida_alloc_range(&tdx_keyid_pool, tdx_keyid_start + 1,
+> +			       tdx_keyid_start + tdx_keyid_num - 1,
+> +			       GFP_KERNEL);
+> +}
+> +EXPORT_SYMBOL_GPL(tdx_keyid_alloc);
+> +
+> +void tdx_keyid_free(int keyid)
+> +{
+> +	/* keyid = 0 is reserved. */
+> +	if (!keyid || keyid <= 0)
+> +		return;
+> +
+> +	ida_free(&tdx_keyid_pool, keyid);
+> +}
+> +EXPORT_SYMBOL_GPL(tdx_keyid_free);
+> +
+>   static void detect_tdx_keyids_bsp(struct cpuinfo_x86 *c)
+>   {
+>   	u64 keyid_part;
 
-Add a new spinlock that we take when inserting and erasing entries from
-the o_requests tree. Search of the rbtree can be done with either the
-mutex or the spinlock, but insertion and removal requires both.
-
-Reviewed-by: Xiubo Li <xiubli@redhat.com>
-Signed-off-by: Jeff Layton <jlayton@kernel.org>
----
- include/linux/ceph/osd_client.h | 8 +++++++-
- net/ceph/osd_client.c           | 5 +++++
- 2 files changed, 12 insertions(+), 1 deletion(-)
-
-diff --git a/include/linux/ceph/osd_client.h b/include/linux/ceph/osd_client.h
-index 3431011f364d..3122c1a3205f 100644
---- a/include/linux/ceph/osd_client.h
-+++ b/include/linux/ceph/osd_client.h
-@@ -29,7 +29,12 @@ typedef void (*ceph_osdc_callback_t)(struct ceph_osd_request *);
- 
- #define CEPH_HOMELESS_OSD	-1
- 
--/* a given osd we're communicating with */
-+/*
-+ * A given osd we're communicating with.
-+ *
-+ * Note that the o_requests tree can be searched while holding the "lock" mutex
-+ * or the "o_requests_lock" spinlock. Insertion or removal requires both!
-+ */
- struct ceph_osd {
- 	refcount_t o_ref;
- 	struct ceph_osd_client *o_osdc;
-@@ -37,6 +42,7 @@ struct ceph_osd {
- 	int o_incarnation;
- 	struct rb_node o_node;
- 	struct ceph_connection o_con;
-+	spinlock_t o_requests_lock;
- 	struct rb_root o_requests;
- 	struct rb_root o_linger_requests;
- 	struct rb_root o_backoff_mappings;
-diff --git a/net/ceph/osd_client.c b/net/ceph/osd_client.c
-index 83eb97c94e83..17c792b32343 100644
---- a/net/ceph/osd_client.c
-+++ b/net/ceph/osd_client.c
-@@ -1198,6 +1198,7 @@ static void osd_init(struct ceph_osd *osd)
- {
- 	refcount_set(&osd->o_ref, 1);
- 	RB_CLEAR_NODE(&osd->o_node);
-+	spin_lock_init(&osd->o_requests_lock);
- 	osd->o_requests = RB_ROOT;
- 	osd->o_linger_requests = RB_ROOT;
- 	osd->o_backoff_mappings = RB_ROOT;
-@@ -1427,7 +1428,9 @@ static void link_request(struct ceph_osd *osd, struct ceph_osd_request *req)
- 		atomic_inc(&osd->o_osdc->num_homeless);
- 
- 	get_osd(osd);
-+	spin_lock(&osd->o_requests_lock);
- 	insert_request(&osd->o_requests, req);
-+	spin_unlock(&osd->o_requests_lock);
- 	req->r_osd = osd;
- }
- 
-@@ -1439,7 +1442,9 @@ static void unlink_request(struct ceph_osd *osd, struct ceph_osd_request *req)
- 	     req, req->r_tid);
- 
- 	req->r_osd = NULL;
-+	spin_lock(&osd->o_requests_lock);
- 	erase_request(&osd->o_requests, req);
-+	spin_unlock(&osd->o_requests_lock);
- 	put_osd(osd);
- 
- 	if (!osd_homeless(osd))
--- 
-2.35.1
+Reviewed-by: Paolo Bonzini <pbonzini@redhat.com>
 
