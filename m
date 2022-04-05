@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D5967C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BF135C4332F
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:02:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380319AbiDEL6Y (ORCPT
+        id S1380225AbiDEL6S (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 07:58:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47530 "EHLO
+        Tue, 5 Apr 2022 07:58:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51012 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245018AbiDEIxB (ORCPT
+        with ESMTP id S245022AbiDEIxC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:53:01 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F1F2CDF;
-        Tue,  5 Apr 2022 01:49:31 -0700 (PDT)
+        Tue, 5 Apr 2022 04:53:02 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4658DAE;
+        Tue,  5 Apr 2022 01:49:41 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3E8FD60FFB;
-        Tue,  5 Apr 2022 08:49:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 535D7C385A0;
-        Tue,  5 Apr 2022 08:49:30 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 34B95CE1B55;
+        Tue,  5 Apr 2022 08:49:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4F8EBC385A1;
+        Tue,  5 Apr 2022 08:49:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649148570;
-        bh=Liju10TvGCS1yQDNFGGcvBTeSq06ruBprmwSCYMZRYQ=;
+        s=korg; t=1649148578;
+        bh=ILWExaWFs9IY44mWLEJ+w6njJpf64YYLdcomOi8/aGM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Vvo/h3MPq33t4ZN875IksOgkIwK2DE5PKw8DDqxfvS7szd9SmTur82N2ObwbXRIcl
-         WSDD/7RPFCndQaPDo7CQaTwcuNlwxd0+u1ddOh+s7OSAsnnimoruv2LECxBjq5NlYe
-         H4VhtfNzh+szGZ+EP+Nz7i0vXmOJUoC798SxbnUE=
+        b=fZoXTa3xhYPZQsxG0oACWf8Zv4oCt0CqWnR86uaQX0XlnbRX56KNILGFHa1FuWpYm
+         5Ue1suqM5FPuoKTK7TnW2ORvl9wr4lThB6Dw+fRQ1tbfPNU0vhNA0rWtI7glNuyTvB
+         rwU1FysBTLWDz+XEsU6d55KRpSDodq+RiYmTgQk8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Shengjiu Wang <shengjiu.wang@nxp.com>,
-        Fabio Estevam <festevam@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
+        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
+        Melissa Wen <mwen@igalia.com>,
+        Melissa Wen <melissa.srw@gmail.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0386/1017] ASoC: fsl_spdif: Disable TX clock when stop
-Date:   Tue,  5 Apr 2022 09:21:39 +0200
-Message-Id: <20220405070405.743458114@linuxfoundation.org>
+Subject: [PATCH 5.16 0406/1017] drm/v3d/v3d_drv: Check for error num after setting mask
+Date:   Tue,  5 Apr 2022 09:21:59 +0200
+Message-Id: <20220405070406.340107174@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -51,39 +51,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Shengjiu Wang <shengjiu.wang@nxp.com>
+From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
 
-[ Upstream commit 6ddf611219ba8f7c8fa0d26b39710a641e7d37a5 ]
+[ Upstream commit 4a39156166b90465da0f9a33b3442d63b5651bec ]
 
-The TX clock source may be changed in next case, need to
-disable it when stop, otherwise the TX may not work after
-changing the clock source, error log is:
+Because of the possible failure of the dma_supported(), the
+dma_set_mask_and_coherent() may return error num.
+Therefore, it should be better to check it and return the error if
+fails.
+Also, we can create a variable for the mask to solve the
+alignment issue.
 
-aplay: pcm_write:2058: write error: Input/output error
-
-Fixes: a2388a498ad2 ("ASoC: fsl: Add S/PDIF CPU DAI driver")
-Signed-off-by: Shengjiu Wang <shengjiu.wang@nxp.com>
-Reviewed-by: Fabio Estevam <festevam@gmail.com>
-Link: https://lore.kernel.org/r/1646879863-27711-1-git-send-email-shengjiu.wang@nxp.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Fixes: 334dd38a3878 ("drm/v3d: Set dma_mask as well as coherent_dma_mask")
+Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Reviewed-by: Melissa Wen <mwen@igalia.com>
+Signed-off-by: Melissa Wen <melissa.srw@gmail.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220110013807.4105270-1-jiasheng@iscas.ac.cn
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/fsl/fsl_spdif.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/gpu/drm/v3d/v3d_drv.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
-diff --git a/sound/soc/fsl/fsl_spdif.c b/sound/soc/fsl/fsl_spdif.c
-index d178b479c8bd..06d4a014f296 100644
---- a/sound/soc/fsl/fsl_spdif.c
-+++ b/sound/soc/fsl/fsl_spdif.c
-@@ -610,6 +610,8 @@ static void fsl_spdif_shutdown(struct snd_pcm_substream *substream,
- 		mask = SCR_TXFIFO_AUTOSYNC_MASK | SCR_TXFIFO_CTRL_MASK |
- 			SCR_TXSEL_MASK | SCR_USRC_SEL_MASK |
- 			SCR_TXFIFO_FSEL_MASK;
-+		/* Disable TX clock */
-+		regmap_update_bits(regmap, REG_SPDIF_STC, STC_TXCLK_ALL_EN_MASK, 0);
- 	} else {
- 		scr = SCR_RXFIFO_OFF | SCR_RXFIFO_CTL_ZERO;
- 		mask = SCR_RXFIFO_FSEL_MASK | SCR_RXFIFO_AUTOSYNC_MASK|
+diff --git a/drivers/gpu/drm/v3d/v3d_drv.c b/drivers/gpu/drm/v3d/v3d_drv.c
+index bd46396a1ae0..1afcd54fbbd5 100644
+--- a/drivers/gpu/drm/v3d/v3d_drv.c
++++ b/drivers/gpu/drm/v3d/v3d_drv.c
+@@ -219,6 +219,7 @@ static int v3d_platform_drm_probe(struct platform_device *pdev)
+ 	int ret;
+ 	u32 mmu_debug;
+ 	u32 ident1;
++	u64 mask;
+ 
+ 	v3d = devm_drm_dev_alloc(dev, &v3d_drm_driver, struct v3d_dev, drm);
+ 	if (IS_ERR(v3d))
+@@ -237,8 +238,11 @@ static int v3d_platform_drm_probe(struct platform_device *pdev)
+ 		return ret;
+ 
+ 	mmu_debug = V3D_READ(V3D_MMU_DEBUG_INFO);
+-	dma_set_mask_and_coherent(dev,
+-		DMA_BIT_MASK(30 + V3D_GET_FIELD(mmu_debug, V3D_MMU_PA_WIDTH)));
++	mask = DMA_BIT_MASK(30 + V3D_GET_FIELD(mmu_debug, V3D_MMU_PA_WIDTH));
++	ret = dma_set_mask_and_coherent(dev, mask);
++	if (ret)
++		return ret;
++
+ 	v3d->va_width = 30 + V3D_GET_FIELD(mmu_debug, V3D_MMU_VA_WIDTH);
+ 
+ 	ident1 = V3D_READ(V3D_HUB_IDENT1);
 -- 
 2.34.1
 
