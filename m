@@ -2,218 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 737E5C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A1706C433F5
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 02:08:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1846404AbiDFCEE (ORCPT
+        id S1846468AbiDFCER (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 22:04:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35496 "EHLO
+        Tue, 5 Apr 2022 22:04:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33786 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1573554AbiDETWj (ORCPT
+        with ESMTP id S1354572AbiDEKOj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 15:22:39 -0400
+        Tue, 5 Apr 2022 06:14:39 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 632473E0DB;
-        Tue,  5 Apr 2022 12:20:40 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44ECC48E65;
+        Tue,  5 Apr 2022 03:01:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0AB56B81F6B;
-        Tue,  5 Apr 2022 19:20:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0503FC385A1;
-        Tue,  5 Apr 2022 19:20:36 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649186437;
-        bh=gFp0s2+yOcXsxdx+8FwxESNn106vn66cOvnAIMvKYsk=;
+        by ams.source.kernel.org (Postfix) with ESMTPS id DD408B81C83;
+        Tue,  5 Apr 2022 10:01:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4B4B1C385A1;
+        Tue,  5 Apr 2022 10:01:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649152880;
+        bh=VwFEHE+CO5lRFmJFYl4MnPfpyZ8Welh346AwcCF/UoQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VsI1yGO5xbYAMRP+i5E4Cubrv3Faw4rfQwY+423rZ6IyILXWi/UVtF9IXBaZ74/cY
-         YZEUqMyQk4EMV9V3S3jSi2IAM7DqaPSbNcDfW0Ejr/z/0dJdfQAQ0ixi+kvNt514kE
-         bgAahZ/++1hP+6TyivNQ8X4bEpOxYz4r8ptcfSeE+kHI56pwrnkiLWYe1MXkJcO6Xu
-         VSlJPqyYzNm+VMd+4EQX7NUfEiruPnZ+46ahMdmpGqjGjqmaCijz55i2ea1VlGKnjF
-         jyTCJPP6/RZac+VTbaqI8Kv149wFgV6jpJ8trlqdSOYGunrAt5aD4ANDjKiu8jyDVw
-         Q3NtEK2o+UCZg==
-From:   Jeff Layton <jlayton@kernel.org>
-To:     idryomov@gmail.com, xiubli@redhat.com
-Cc:     ceph-devel@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        linux-fscrypt@vger.kernel.org, linux-kernel@vger.kernel.org,
-        lhenriques@suse.de
-Subject: [PATCH v13 06/59] libceph: add sparse read support to msgr1
-Date:   Tue,  5 Apr 2022 15:19:37 -0400
-Message-Id: <20220405192030.178326-7-jlayton@kernel.org>
+        b=flmTRyDC0QWzr7pRoMQ67lyKpYC3ZqOqKVDjk6+1UG3lZYiOld+myEh8GPRSyPYee
+         NkcrNyHN3bbKjWZFfg1KvfYXx3diFaFmYkhgdAh5ReyyFcy8vgP6OUYevN/JxiWM5V
+         7Frd7kMqvtL0Cj5su9v+4DSXW0370WMl/kbGNUOg=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Yunfei Wang <yf.wang@mediatek.com>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Miles Chen <miles.chen@mediatek.com>,
+        Joerg Roedel <jroedel@suse.de>
+Subject: [PATCH 5.10 022/599] iommu/iova: Improve 32-bit free space estimate
+Date:   Tue,  5 Apr 2022 09:25:16 +0200
+Message-Id: <20220405070259.477224916@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405192030.178326-1-jlayton@kernel.org>
-References: <20220405192030.178326-1-jlayton@kernel.org>
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
+References: <20220405070258.802373272@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add 2 new fields to ceph_connection_v1_info to track the necessary info
-in sparse reads. Skip initializing the cursor for a sparse read.
+From: Robin Murphy <robin.murphy@arm.com>
 
-Break out read_partial_message_section into a wrapper around a new
-read_partial_message_chunk function that doesn't zero out the crc first.
+commit 5b61343b50590fb04a3f6be2cdc4868091757262 upstream.
 
-Add new helper functions to drive receiving into the destinations
-provided by the sparse_read state machine.
+For various reasons based on the allocator behaviour and typical
+use-cases at the time, when the max32_alloc_size optimisation was
+introduced it seemed reasonable to couple the reset of the tracked
+size to the update of cached32_node upon freeing a relevant IOVA.
+However, since subsequent optimisations focused on helping genuine
+32-bit devices make best use of even more limited address spaces, it
+is now a lot more likely for cached32_node to be anywhere in a "full"
+32-bit address space, and as such more likely for space to become
+available from IOVAs below that node being freed.
 
-Signed-off-by: Jeff Layton <jlayton@kernel.org>
+At this point, the short-cut in __cached_rbnode_delete_update() really
+doesn't hold up any more, and we need to fix the logic to reliably
+provide the expected behaviour. We still want cached32_node to only move
+upwards, but we should reset the allocation size if *any* 32-bit space
+has become available.
+
+Reported-by: Yunfei Wang <yf.wang@mediatek.com>
+Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+Reviewed-by: Miles Chen <miles.chen@mediatek.com>
+Link: https://lore.kernel.org/r/033815732d83ca73b13c11485ac39336f15c3b40.1646318408.git.robin.murphy@arm.com
+Signed-off-by: Joerg Roedel <jroedel@suse.de>
+Cc: Miles Chen <miles.chen@mediatek.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- include/linux/ceph/messenger.h |  4 ++
- net/ceph/messenger_v1.c        | 98 +++++++++++++++++++++++++++++++---
- 2 files changed, 94 insertions(+), 8 deletions(-)
+ drivers/iommu/iova.c |    5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/include/linux/ceph/messenger.h b/include/linux/ceph/messenger.h
-index 7f09a4213834..f4adbfee56d5 100644
---- a/include/linux/ceph/messenger.h
-+++ b/include/linux/ceph/messenger.h
-@@ -337,6 +337,10 @@ struct ceph_connection_v1_info {
+--- a/drivers/iommu/iova.c
++++ b/drivers/iommu/iova.c
+@@ -138,10 +138,11 @@ __cached_rbnode_delete_update(struct iov
+ 	cached_iova = rb_entry(iovad->cached32_node, struct iova, node);
+ 	if (free == cached_iova ||
+ 	    (free->pfn_hi < iovad->dma_32bit_pfn &&
+-	     free->pfn_lo >= cached_iova->pfn_lo)) {
++	     free->pfn_lo >= cached_iova->pfn_lo))
+ 		iovad->cached32_node = rb_next(&free->node);
++
++	if (free->pfn_lo < iovad->dma_32bit_pfn)
+ 		iovad->max32_alloc_size = iovad->dma_32bit_pfn;
+-	}
  
- 	int in_base_pos;     /* bytes read */
- 
-+	/* sparse reads */
-+	struct kvec in_sr_kvec; /* current location to receive into */
-+	u64 in_sr_len;		/* amount of data in this extent */
-+
- 	/* message in temps */
- 	u8 in_tag;           /* protocol control byte */
- 	struct ceph_msg_header in_hdr;
-diff --git a/net/ceph/messenger_v1.c b/net/ceph/messenger_v1.c
-index 6b014eca3a13..bf385e458a01 100644
---- a/net/ceph/messenger_v1.c
-+++ b/net/ceph/messenger_v1.c
-@@ -160,9 +160,9 @@ static size_t sizeof_footer(struct ceph_connection *con)
- 
- static void prepare_message_data(struct ceph_msg *msg, u32 data_len)
- {
--	/* Initialize data cursor */
--
--	ceph_msg_data_cursor_init(&msg->cursor, msg, data_len);
-+	/* Initialize data cursor if it's not a sparse read */
-+	if (!msg->sparse_read)
-+		ceph_msg_data_cursor_init(&msg->cursor, msg, data_len);
- }
- 
- /*
-@@ -967,9 +967,9 @@ static void process_ack(struct ceph_connection *con)
- 	prepare_read_tag(con);
- }
- 
--static int read_partial_message_section(struct ceph_connection *con,
--					struct kvec *section,
--					unsigned int sec_len, u32 *crc)
-+static int read_partial_message_chunk(struct ceph_connection *con,
-+				      struct kvec *section,
-+				      unsigned int sec_len, u32 *crc)
- {
- 	int ret, left;
- 
-@@ -985,11 +985,91 @@ static int read_partial_message_section(struct ceph_connection *con,
- 		section->iov_len += ret;
- 	}
- 	if (section->iov_len == sec_len)
--		*crc = crc32c(0, section->iov_base, section->iov_len);
-+		*crc = crc32c(*crc, section->iov_base, section->iov_len);
- 
- 	return 1;
- }
- 
-+static inline int read_partial_message_section(struct ceph_connection *con,
-+					       struct kvec *section,
-+					       unsigned int sec_len, u32 *crc)
-+{
-+	*crc = 0;
-+	return read_partial_message_chunk(con, section, sec_len, crc);
-+}
-+
-+static int read_sparse_msg_extent(struct ceph_connection *con, u32 *crc)
-+{
-+	struct ceph_msg_data_cursor *cursor = &con->in_msg->cursor;
-+	bool do_bounce = ceph_test_opt(from_msgr(con->msgr), RXBOUNCE);
-+
-+	if (do_bounce && unlikely(!con->bounce_page)) {
-+		con->bounce_page = alloc_page(GFP_NOIO);
-+		if (!con->bounce_page) {
-+			pr_err("failed to allocate bounce page\n");
-+			return -ENOMEM;
-+		}
-+	}
-+
-+	while (cursor->sr_resid > 0) {
-+		struct page *page, *rpage;
-+		size_t off, len;
-+		int ret;
-+
-+		page = ceph_msg_data_next(cursor, &off, &len, NULL);
-+		rpage = do_bounce ? con->bounce_page : page;
-+
-+		/* clamp to what remains in extent */
-+		len = min_t(int, len, cursor->sr_resid);
-+		ret = ceph_tcp_recvpage(con->sock, rpage, (int)off, len);
-+		if (ret <= 0)
-+			return ret;
-+		*crc = ceph_crc32c_page(*crc, rpage, off, ret);
-+		ceph_msg_data_advance(cursor, (size_t)ret);
-+		cursor->sr_resid -= ret;
-+		if (do_bounce)
-+			memcpy_page(page, off, rpage, off, ret);
-+	}
-+	return 1;
-+}
-+
-+static int read_sparse_msg_data(struct ceph_connection *con)
-+{
-+	struct ceph_msg_data_cursor *cursor = &con->in_msg->cursor;
-+	bool do_datacrc = !ceph_test_opt(from_msgr(con->msgr), NOCRC);
-+	u32 crc = 0;
-+	int ret = 1;
-+
-+	if (do_datacrc)
-+		crc = con->in_data_crc;
-+
-+	do {
-+		if (con->v1.in_sr_kvec.iov_base)
-+			ret = read_partial_message_chunk(con,
-+							 &con->v1.in_sr_kvec,
-+							 con->v1.in_sr_len,
-+							 &crc);
-+		else if (cursor->sr_resid > 0)
-+			ret = read_sparse_msg_extent(con, &crc);
-+
-+		if (ret <= 0) {
-+			if (do_datacrc)
-+				con->in_data_crc = crc;
-+			return ret;
-+		}
-+
-+		memset(&con->v1.in_sr_kvec, 0, sizeof(con->v1.in_sr_kvec));
-+		ret = con->ops->sparse_read(con, cursor,
-+				(char **)&con->v1.in_sr_kvec.iov_base);
-+		con->v1.in_sr_len = ret;
-+	} while (ret > 0);
-+
-+	if (do_datacrc)
-+		con->in_data_crc = crc;
-+
-+	return ret < 0 ? ret : 1;	/* must return > 0 to indicate success */
-+}
-+
- static int read_partial_msg_data(struct ceph_connection *con)
- {
- 	struct ceph_msg_data_cursor *cursor = &con->in_msg->cursor;
-@@ -1180,7 +1260,9 @@ static int read_partial_message(struct ceph_connection *con)
- 		if (!m->num_data_items)
- 			return -EIO;
- 
--		if (ceph_test_opt(from_msgr(con->msgr), RXBOUNCE))
-+		if (m->sparse_read)
-+			ret = read_sparse_msg_data(con);
-+		else if (ceph_test_opt(from_msgr(con->msgr), RXBOUNCE))
- 			ret = read_partial_msg_data_bounce(con);
- 		else
- 			ret = read_partial_msg_data(con);
--- 
-2.35.1
+ 	cached_iova = rb_entry(iovad->cached_node, struct iova, node);
+ 	if (free->pfn_lo >= cached_iova->pfn_lo)
+
 
