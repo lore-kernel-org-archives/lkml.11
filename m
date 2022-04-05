@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 71E04C352A8
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CA9C6C352B6
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 15:20:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384743AbiDEPPC (ORCPT
+        id S1385642AbiDEPPO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 11:15:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39896 "EHLO
+        Tue, 5 Apr 2022 11:15:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60854 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346662AbiDEJpU (ORCPT
+        with ESMTP id S1346689AbiDEJpV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:45:20 -0400
+        Tue, 5 Apr 2022 05:45:21 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DBFAEDAFFF;
-        Tue,  5 Apr 2022 02:31:16 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2443B2B26A;
+        Tue,  5 Apr 2022 02:31:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 52872616C1;
-        Tue,  5 Apr 2022 09:31:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5F2F6C385A3;
-        Tue,  5 Apr 2022 09:31:15 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AABD3616D0;
+        Tue,  5 Apr 2022 09:31:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B526AC385A6;
+        Tue,  5 Apr 2022 09:31:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649151075;
-        bh=leSf3GxWHfIMm9Uxk5RMI2sOS+9VSqtrVZCVADOtH/U=;
+        s=korg; t=1649151081;
+        bh=lsQCMO2UAmOUxU32IZI7RqfmRogOdDAJkU+iTVAqMEs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=MHgcoBaJ2PAwvhe8GKl4E5pB4MvQnw8Zk+o86EYG6YxFUlYYCRQW1+jpw40cJo1tr
-         EGDulSD7OxPK/yOgV9bb9nD1cdhVT3JI0rYwlXpjDiaUYQUVywMLydi66v9AHWrYES
-         wzkY1ydiHZRvsJDtnU75+XJ9hXVe3nwQdFzOT8A4=
+        b=AYrEvcXdb31UH39ZTuwyquUpTv4ymnTPJ82GoZbLGEzvtXWRgfWb4g0h0sRxOc+U2
+         eJYhUfUnP0+jUd0NgR2FqciqUgR2l+7b9w7ayNNcm3dVpdEGoFkoCuq7qilJLSrBAe
+         u9/BcyfWdmKEbYtu1QfDT/3RfBmD5QRYSlcxK5YI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Janusz Krzysztofik <jmkrzyszt@gmail.com>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        stable@vger.kernel.org,
+        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 284/913] media: ov6650: Fix set format try processing path
-Date:   Tue,  5 Apr 2022 09:22:26 +0200
-Message-Id: <20220405070348.371072949@linuxfoundation.org>
+Subject: [PATCH 5.15 250/913] rseq: Remove broken uapi field layout on 32-bit little endian
+Date:   Tue,  5 Apr 2022 09:21:52 +0200
+Message-Id: <20220405070347.351013947@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
 References: <20220405070339.801210740@linuxfoundation.org>
@@ -51,232 +51,93 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Janusz Krzysztofik <jmkrzyszt@gmail.com>
+From: Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
 
-[ Upstream commit 1f6f1e959a85ee999fbc86f4b094827f63194c7f ]
+[ Upstream commit bfdf4e6208051ed7165b2e92035b4bf11f43eb63 ]
 
-According to subdevice interface specification found in V4L2 API
-documentation, set format pad operations should not affect image
-geometry set in preceding image processing steps. Unfortunately, that
-requirement is not respected by the driver implementation of set format
-as it was not the case when that code was still implementing a pair of
-now obsolete .s_mbus_fmt() / .try_mbus_fmt() video operations before
-they have been merged and reused as an implementation of .set_fmt() pad
-operation by commit 717fd5b4907a ("[media] v4l2: replace try_mbus_fmt
-by set_fmt").
+The rseq rseq_cs.ptr.{ptr32,padding} uapi endianness handling is
+entirely wrong on 32-bit little endian: a preprocessor logic mistake
+wrongly uses the big endian field layout on 32-bit little endian
+architectures.
 
-In case of set format active processing path the issue can be fixed
-easily by excluding a call to set active selection from that path. That
-will effectively limit frame size processing to optimal frame scaling
-against active crop rectangle without touching it.  Users can just call
-set active selection themselves to obtain desired frame size.  However,
-set format try processing path needs more work.
+Fortunately, those ptr32 accessors were never used within the kernel,
+and only meant as a convenience for user-space.
 
-First of all, the driver should be extended with set try selection
-support.  Lack of it constraints video device drivers to not use
-subdevice cropping at all while processing user requested active frame
-size, otherwise their set try format results might differ from active.
+Remove those and replace the whole rseq_cs union by a __u64 type, as
+this is the only thing really needed to express the ABI. Document how
+32-bit architectures are meant to interact with this field.
 
-Next, set format try processing path should use pad config crop
-rectangle as a reference, not the active one as it does now.  That
-issue can be resolved easily as soon as set try selection support is
-added to the driver so pad config crop rectangle can be maintained by
-users via selection API.
-
-Last, set format try processing path should give the same results as
-active in respect to active vs. pad config crop rectangle geometry.
-Both rectangles should be either not touched by set format (that's what
-we are going to achieve) or modified the same way, otherwise users
-won't be able to obtain equal results from both paths while iterating
-through set format and set selection operations in order to obtain
-desired frame size.
-
-We can't begin with modifying set format pad operation as not to touch
-crop rectangle since that depends on availability of set try selection
-for symmetry.  Neither can we begin with adding set try selection since
-that in turn depends on equal handling of active and pad config crop
-rectangles by set format.  We can either implement all required
-modifications in a single patch, or begin with fixing current set
-format try processing path to appropriately handle pad config crop
-rectangle.  This patch implements the latter approach as believed to
-be more readable.
-
-Move crop rectangle adjustments code from a helper (the former
-implementation of .s_fmt(), now called from set format active
-processing path) to the body of set format pad operation function
-where it can be also used for processing try requests for symmetry with
-active ones.  As the helper no longer processes frame geometry, only
-frame format and half scaling, simplify its API accordingly and update
-its users.
-
-Moreover, extract code that applies crop rectangle hardware limits
-(now a part of .set_selection() operation which is called from set
-format active processing path) to a new helper and call that helper
-from set format try processing path as well for symmetry with active.
-
-[Sakari Ailus: Rebase on subdev state patches]
-
-Fixes: 717fd5b4907a ("[media] v4l2: replace try_mbus_fmt by set_fmt")
-Signed-off-by: Janusz Krzysztofik <jmkrzyszt@gmail.com>
-Signed-off-by: Sakari Ailus <sakari.ailus@linux.intel.com>
-Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+Fixes: ec9c82e03a74 ("rseq: uapi: Declare rseq_cs field as union, update includes")
+Signed-off-by: Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Link: https://lkml.kernel.org/r/20220127152720.25898-1-mathieu.desnoyers@efficios.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/i2c/ov6650.c | 83 ++++++++++++++++++++++----------------
- 1 file changed, 48 insertions(+), 35 deletions(-)
+ include/uapi/linux/rseq.h | 20 ++++----------------
+ kernel/rseq.c             |  8 ++++----
+ 2 files changed, 8 insertions(+), 20 deletions(-)
 
-diff --git a/drivers/media/i2c/ov6650.c b/drivers/media/i2c/ov6650.c
-index f67412150b16..8b7540e80685 100644
---- a/drivers/media/i2c/ov6650.c
-+++ b/drivers/media/i2c/ov6650.c
-@@ -491,6 +491,17 @@ static int ov6650_get_selection(struct v4l2_subdev *sd,
- 	}
- }
+diff --git a/include/uapi/linux/rseq.h b/include/uapi/linux/rseq.h
+index 9a402fdb60e9..77ee207623a9 100644
+--- a/include/uapi/linux/rseq.h
++++ b/include/uapi/linux/rseq.h
+@@ -105,23 +105,11 @@ struct rseq {
+ 	 * Read and set by the kernel. Set by user-space with single-copy
+ 	 * atomicity semantics. This field should only be updated by the
+ 	 * thread which registered this data structure. Aligned on 64-bit.
++	 *
++	 * 32-bit architectures should update the low order bits of the
++	 * rseq_cs field, leaving the high order bits initialized to 0.
+ 	 */
+-	union {
+-		__u64 ptr64;
+-#ifdef __LP64__
+-		__u64 ptr;
+-#else
+-		struct {
+-#if (defined(__BYTE_ORDER) && (__BYTE_ORDER == __BIG_ENDIAN)) || defined(__BIG_ENDIAN)
+-			__u32 padding;		/* Initialized to zero. */
+-			__u32 ptr32;
+-#else /* LITTLE */
+-			__u32 ptr32;
+-			__u32 padding;		/* Initialized to zero. */
+-#endif /* ENDIAN */
+-		} ptr;
+-#endif
+-	} rseq_cs;
++	__u64 rseq_cs;
  
-+static void ov6650_bind_align_crop_rectangle(struct v4l2_rect *rect)
-+{
-+	v4l_bound_align_image(&rect->width, 2, W_CIF, 1,
-+			      &rect->height, 2, H_CIF, 1, 0);
-+	v4l_bound_align_image(&rect->left, DEF_HSTRT << 1,
-+			      (DEF_HSTRT << 1) + W_CIF - (__s32)rect->width, 1,
-+			      &rect->top, DEF_VSTRT << 1,
-+			      (DEF_VSTRT << 1) + H_CIF - (__s32)rect->height,
-+			      1, 0);
-+}
-+
- static int ov6650_set_selection(struct v4l2_subdev *sd,
- 		struct v4l2_subdev_state *sd_state,
- 		struct v4l2_subdev_selection *sel)
-@@ -503,13 +514,7 @@ static int ov6650_set_selection(struct v4l2_subdev *sd,
- 	    sel->target != V4L2_SEL_TGT_CROP)
- 		return -EINVAL;
- 
--	v4l_bound_align_image(&sel->r.width, 2, W_CIF, 1,
--			      &sel->r.height, 2, H_CIF, 1, 0);
--	v4l_bound_align_image(&sel->r.left, DEF_HSTRT << 1,
--			      (DEF_HSTRT << 1) + W_CIF - (__s32)sel->r.width, 1,
--			      &sel->r.top, DEF_VSTRT << 1,
--			      (DEF_VSTRT << 1) + H_CIF - (__s32)sel->r.height,
--			      1, 0);
-+	ov6650_bind_align_crop_rectangle(&sel->r);
- 
- 	ret = ov6650_reg_write(client, REG_HSTRT, sel->r.left >> 1);
- 	if (!ret) {
-@@ -570,22 +575,10 @@ static bool is_unscaled_ok(int width, int height, struct v4l2_rect *rect)
- #define to_clkrc(div)	((div) - 1)
- 
- /* set the format we will capture in */
--static int ov6650_s_fmt(struct v4l2_subdev *sd, struct v4l2_mbus_framefmt *mf)
-+static int ov6650_s_fmt(struct v4l2_subdev *sd, u32 code, bool half_scale)
- {
- 	struct i2c_client *client = v4l2_get_subdevdata(sd);
- 	struct ov6650 *priv = to_ov6650(client);
--	bool half_scale = !is_unscaled_ok(mf->width, mf->height, &priv->rect);
--	struct v4l2_subdev_selection sel = {
--		.which = V4L2_SUBDEV_FORMAT_ACTIVE,
--		.target = V4L2_SEL_TGT_CROP,
--		.r.left = priv->rect.left + (priv->rect.width >> 1) -
--			(mf->width >> (1 - half_scale)),
--		.r.top = priv->rect.top + (priv->rect.height >> 1) -
--			(mf->height >> (1 - half_scale)),
--		.r.width = mf->width << half_scale,
--		.r.height = mf->height << half_scale,
--	};
--	u32 code = mf->code;
- 	u8 coma_set = 0, coma_mask = 0, coml_set, coml_mask;
+ 	/*
+ 	 * Restartable sequences flags field.
+diff --git a/kernel/rseq.c b/kernel/rseq.c
+index 6d45ac3dae7f..97ac20b4f738 100644
+--- a/kernel/rseq.c
++++ b/kernel/rseq.c
+@@ -128,10 +128,10 @@ static int rseq_get_rseq_cs(struct task_struct *t, struct rseq_cs *rseq_cs)
  	int ret;
  
-@@ -653,9 +646,7 @@ static int ov6650_s_fmt(struct v4l2_subdev *sd, struct v4l2_mbus_framefmt *mf)
- 		coma_mask |= COMA_QCIF;
- 	}
- 
--	ret = ov6650_set_selection(sd, NULL, &sel);
--	if (!ret)
--		ret = ov6650_reg_rmw(client, REG_COMA, coma_set, coma_mask);
-+	ret = ov6650_reg_rmw(client, REG_COMA, coma_set, coma_mask);
- 	if (!ret) {
- 		priv->half_scale = half_scale;
- 
-@@ -674,14 +665,16 @@ static int ov6650_set_fmt(struct v4l2_subdev *sd,
- 	struct v4l2_mbus_framefmt *mf = &format->format;
- 	struct i2c_client *client = v4l2_get_subdevdata(sd);
- 	struct ov6650 *priv = to_ov6650(client);
-+	struct v4l2_subdev_selection sel = {
-+		.which = V4L2_SUBDEV_FORMAT_ACTIVE,
-+		.target = V4L2_SEL_TGT_CROP,
-+	};
-+	struct v4l2_rect *crop = &sel.r;
-+	bool half_scale;
- 
- 	if (format->pad)
- 		return -EINVAL;
- 
--	if (is_unscaled_ok(mf->width, mf->height, &priv->rect))
--		v4l_bound_align_image(&mf->width, 2, W_CIF, 1,
--				&mf->height, 2, H_CIF, 1, 0);
--
- 	switch (mf->code) {
- 	case MEDIA_BUS_FMT_Y10_1X10:
- 		mf->code = MEDIA_BUS_FMT_Y8_1X8;
-@@ -699,10 +692,24 @@ static int ov6650_set_fmt(struct v4l2_subdev *sd,
- 		break;
- 	}
- 
-+	*crop = priv->rect;
-+	half_scale = !is_unscaled_ok(mf->width, mf->height, crop);
-+
-+	/* adjust new crop rectangle position against its current center */
-+	crop->left += (crop->width - (mf->width << half_scale)) / 2;
-+	crop->top += (crop->height - (mf->height << half_scale)) / 2;
-+	/* adjust new crop rectangle size */
-+	crop->width = mf->width << half_scale;
-+	crop->height = mf->height << half_scale;
-+
- 	if (format->which == V4L2_SUBDEV_FORMAT_TRY) {
--		/* store media bus format code and frame size in pad config */
--		sd_state->pads->try_fmt.width = mf->width;
--		sd_state->pads->try_fmt.height = mf->height;
-+		/* store new crop rectangle, hadware bound, in pad config */
-+		ov6650_bind_align_crop_rectangle(crop);
-+		sd_state->pads->try_crop = *crop;
-+
-+		/* store new mbus frame format code and size in pad config */
-+		sd_state->pads->try_fmt.width = crop->width >> half_scale;
-+		sd_state->pads->try_fmt.height = crop->height >> half_scale;
- 		sd_state->pads->try_fmt.code = mf->code;
- 
- 		/* return default mbus frame format updated with pad config */
-@@ -712,9 +719,16 @@ static int ov6650_set_fmt(struct v4l2_subdev *sd,
- 		mf->code = sd_state->pads->try_fmt.code;
- 
- 	} else {
--		/* apply new media bus format code and frame size */
--		int ret = ov6650_s_fmt(sd, mf);
-+		int ret;
- 
-+		/* apply new crop rectangle */
-+		ret = ov6650_set_selection(sd, NULL, &sel);
-+		if (ret)
-+			return ret;
-+
-+		/* apply new media bus frame format and scaling if changed */
-+		if (mf->code != priv->code || half_scale != priv->half_scale)
-+			ret = ov6650_s_fmt(sd, mf->code, half_scale);
- 		if (ret)
- 			return ret;
- 
-@@ -890,9 +904,8 @@ static int ov6650_video_probe(struct v4l2_subdev *sd)
- 	if (!ret)
- 		ret = ov6650_prog_dflt(client, xclk->clkrc);
- 	if (!ret) {
--		struct v4l2_mbus_framefmt mf = ov6650_def_fmt;
--
--		ret = ov6650_s_fmt(sd, &mf);
-+		/* driver default frame format, no scaling */
-+		ret = ov6650_s_fmt(sd, ov6650_def_fmt.code, false);
- 	}
- 	if (!ret)
- 		ret = v4l2_ctrl_handler_setup(&priv->hdl);
+ #ifdef CONFIG_64BIT
+-	if (get_user(ptr, &t->rseq->rseq_cs.ptr64))
++	if (get_user(ptr, &t->rseq->rseq_cs))
+ 		return -EFAULT;
+ #else
+-	if (copy_from_user(&ptr, &t->rseq->rseq_cs.ptr64, sizeof(ptr)))
++	if (copy_from_user(&ptr, &t->rseq->rseq_cs, sizeof(ptr)))
+ 		return -EFAULT;
+ #endif
+ 	if (!ptr) {
+@@ -217,9 +217,9 @@ static int clear_rseq_cs(struct task_struct *t)
+ 	 * Set rseq_cs to NULL.
+ 	 */
+ #ifdef CONFIG_64BIT
+-	return put_user(0UL, &t->rseq->rseq_cs.ptr64);
++	return put_user(0UL, &t->rseq->rseq_cs);
+ #else
+-	if (clear_user(&t->rseq->rseq_cs.ptr64, sizeof(t->rseq->rseq_cs.ptr64)))
++	if (clear_user(&t->rseq->rseq_cs, sizeof(t->rseq->rseq_cs)))
+ 		return -EFAULT;
+ 	return 0;
+ #endif
 -- 
 2.34.1
 
