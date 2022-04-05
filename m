@@ -2,47 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CB4EAC433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 211BBC4332F
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:53:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353142AbiDEMtn (ORCPT
+        id S1352471AbiDEMti (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 08:49:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41926 "EHLO
+        Tue, 5 Apr 2022 08:49:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41938 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244191AbiDEJJs (ORCPT
+        with ESMTP id S244195AbiDEJJs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Apr 2022 05:09:48 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BBCB33E;
-        Tue,  5 Apr 2022 01:58:57 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9016DBC30;
+        Tue,  5 Apr 2022 01:58:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B4D5061003;
-        Tue,  5 Apr 2022 08:58:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BE8FCC385A1;
-        Tue,  5 Apr 2022 08:58:55 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 681166157A;
+        Tue,  5 Apr 2022 08:58:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 79331C385A1;
+        Tue,  5 Apr 2022 08:58:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649149136;
-        bh=DGLMwc0aKxz+FQqD2YEpG77UF0UGtPZkVPr4ju27lBU=;
+        s=korg; t=1649149138;
+        bh=OtMJiNTcTHUQcPH4dSGJwZZlh+3lpDszUo2IbFnk9JM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KykZsF+XePv5y6f7PS6tSylgzGK6pofc2clvbG4oxGLtMMlm0redtFrJWRiDw7Qdo
-         GRoL7SkQ1qzXdCp1Tcn0tbdCDMXrwJS/Z/FckRVUM1dxMsFGopyrwZQDmCgDZy67hC
-         waL/XEkdiq2ttVmzD2dwmYiy56DksPopJL+0URYU=
+        b=YxRKd2PS2xWWv7grxLBhK80POBaMUP4x7fowwxDB1TVu3eG1XlQ8sL/gObrIwGNr+
+         e6/bIbT2Lk3uwJUHVVVeIh3XsRAxVxoPkrjrLsTp5OF8p/UovsmkwA6vFlPnVdhsue
+         5SNFClV59HPl5nnkmjXIgh4VauD5lkIY7RTTvWcc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Khaled Almahallawy <khaled.almahallawy@intel.com>,
-        Charlton Lin <charlton.lin@intel.com>,
-        =?UTF-8?q?Jouni=20H=C3=B6gander?= <jouni.hogander@intel.com>,
-        =?UTF-8?q?Jos=C3=A9=20Roberto=20de=20Souza?= <jose.souza@intel.com>,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Serge Semin <fancer.lancer@gmail.com>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0608/1017] drm/i915/display: Do not re-enable PSR after it was marked as not reliable
-Date:   Tue,  5 Apr 2022 09:25:21 +0200
-Message-Id: <20220405070412.327169580@linuxfoundation.org>
+Subject: [PATCH 5.16 0591/1017] mips: cdmm: Fix refcount leak in mips_cdmm_phys_base
+Date:   Tue,  5 Apr 2022 09:25:04 +0200
+Message-Id: <20220405070411.821863650@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -54,57 +51,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: José Roberto de Souza <jose.souza@intel.com>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit 278da06c03655c2bb9bc36ebdf45b90a079b3bfd ]
+[ Upstream commit 4528668ca331f7ce5999b7746657b46db5b3b785 ]
 
-If a error happens and sink_not_reliable is set, PSR should be disabled
-for good but that is not happening.
-It would be disabled by the function handling the PSR error but then
-on the next fastset it would be enabled again in
-_intel_psr_post_plane_update().
-It would only be disabled for good in the next modeset where has_psr
-will be set false.
+The of_find_compatible_node() function returns a node pointer with
+refcount incremented, We should use of_node_put() on it when done
+Add the missing of_node_put() to release the refcount.
 
-v2:
-- release psr lock before continue
-
-Fixes: 9ce5884e5139 ("drm/i915/display: Only keep PSR enabled if there is active planes")
-Reported-by: Khaled Almahallawy <khaled.almahallawy@intel.com>
-Reported-by: Charlton Lin <charlton.lin@intel.com>
-Cc: Jouni Högander <jouni.hogander@intel.com>
-Signed-off-by: José Roberto de Souza <jose.souza@intel.com>
-Reviewed-by: Jouni Högander <jouni.hogander@intel.com>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220311185149.110527-2-jose.souza@intel.com
-(cherry picked from commit 15f26bdc81f7f03561aaea5a10d87bd6638e1459)
-Signed-off-by: Joonas Lahtinen <joonas.lahtinen@linux.intel.com>
+Fixes: 2121aa3e2312 ("mips: cdmm: Add mti,mips-cdmm dtb node support")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Acked-by: Serge Semin <fancer.lancer@gmail.com>
+Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/i915/display/intel_psr.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/bus/mips_cdmm.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/gpu/drm/i915/display/intel_psr.c b/drivers/gpu/drm/i915/display/intel_psr.c
-index 3ba8b717e176..f7ade9c06386 100644
---- a/drivers/gpu/drm/i915/display/intel_psr.c
-+++ b/drivers/gpu/drm/i915/display/intel_psr.c
-@@ -1793,6 +1793,9 @@ static void _intel_psr_post_plane_update(const struct intel_atomic_state *state,
- 
- 		mutex_lock(&psr->lock);
- 
-+		if (psr->sink_not_reliable)
-+			goto exit;
-+
- 		drm_WARN_ON(&dev_priv->drm, psr->enabled && !crtc_state->active_planes);
- 
- 		/* Only enable if there is active planes */
-@@ -1803,6 +1806,7 @@ static void _intel_psr_post_plane_update(const struct intel_atomic_state *state,
- 		if (crtc_state->crc_enabled && psr->enabled)
- 			psr_force_hw_tracking_exit(intel_dp);
- 
-+exit:
- 		mutex_unlock(&psr->lock);
+diff --git a/drivers/bus/mips_cdmm.c b/drivers/bus/mips_cdmm.c
+index 626dedd110cb..fca0d0669aa9 100644
+--- a/drivers/bus/mips_cdmm.c
++++ b/drivers/bus/mips_cdmm.c
+@@ -351,6 +351,7 @@ phys_addr_t __weak mips_cdmm_phys_base(void)
+ 	np = of_find_compatible_node(NULL, NULL, "mti,mips-cdmm");
+ 	if (np) {
+ 		err = of_address_to_resource(np, 0, &res);
++		of_node_put(np);
+ 		if (!err)
+ 			return res.start;
  	}
- }
 -- 
 2.34.1
 
