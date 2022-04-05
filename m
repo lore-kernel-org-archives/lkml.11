@@ -2,45 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2DB4DC47089
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0DC5DC4167B
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:36:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240984AbiDEIcl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 04:32:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51988 "EHLO
+        id S240906AbiDEIci (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 04:32:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51482 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236150AbiDEIBd (ORCPT
+        with ESMTP id S236113AbiDEIB1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:01:33 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F8F849FB3;
-        Tue,  5 Apr 2022 00:59:36 -0700 (PDT)
+        Tue, 5 Apr 2022 04:01:27 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B44C449FB3;
+        Tue,  5 Apr 2022 00:59:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C0F5B61545;
-        Tue,  5 Apr 2022 07:59:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D221EC340EE;
-        Tue,  5 Apr 2022 07:59:34 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 61CB0B81B14;
+        Tue,  5 Apr 2022 07:59:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C767DC340EE;
+        Tue,  5 Apr 2022 07:59:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649145575;
-        bh=dpxQb06q3QaPRJ9CW8Bmd7R3c+IlJz/PAeUWp3f24M0=;
+        s=korg; t=1649145567;
+        bh=k/Nu6HhUs1n1eK9fQ7ZoaxUfQreYqehxzCU7JsCIUBU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GxVvQckEX3/JhPxkJRRZe+28M6sQ4N0iJ2LygwilqLhznWVMQm9oQlZoCEsXlAGrh
-         SVzA4f4DzVuJwB5fYw/M9G3ic7ljFan3JQ2V+wyvx993crzlRzBTtEPuA2gl6qOgmr
-         RB8Djm/gIAA9tMXtQr/9hSViSjrPh+RKoH82KWYA=
+        b=vmxYCJbAMT19yLHVlhapoVd59spJo/7ke5E8/L18yryWaq9eynTpJq+cj+/CRoZMI
+         PtRF2g8+25nSCOJN/w1S2H7yfnO55Ax91gjF519sRxk76G0zGnu184FOgKCA8RUXd4
+         sl8dAg8vGvzW/s8LWB4Mp5l5cYxJfec2JZEKJJ5c=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Michael Trimarchi <michael@amarulasolutions.com>,
-        Dario Binacchi <dario.binacchi@amarulasolutions.com>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
+        stable@vger.kernel.org, Sean Wang <sean.wang@mediatek.com>,
+        Marcel Holtmann <marcel@holtmann.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0452/1126] mtd: rawnand: gpmi: fix controller timings setting
-Date:   Tue,  5 Apr 2022 09:19:59 +0200
-Message-Id: <20220405070420.891314785@linuxfoundation.org>
+Subject: [PATCH 5.17 0450/1126] Bluetooth: btmtksdio: mask out interrupt status
+Date:   Tue,  5 Apr 2022 09:19:57 +0200
+Message-Id: <20220405070420.833130061@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -52,57 +49,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dario Binacchi <dario.binacchi@amarulasolutions.com>
+From: Sean Wang <sean.wang@mediatek.com>
 
-[ Upstream commit 2970bf5a32f079e1e9197411db4fe9faccb1503a ]
+[ Upstream commit db3f1f9b5d88d8d7f9eaa486f71784dd319285ff ]
 
-Set the controller registers according to the real clock rate. The
-controller registers configuration (setup, hold, timeout, ... cycles)
-depends on the clock rate of the GPMI. Using the real rate instead of
-the ideal one, avoids that this inaccuracy (required_rate - real_rate)
-affects the registers setting.
+Currently, there is a loop in btmtksdio_txrx_work() which iteratively
+executes until the variable int_status is zero.
 
-This patch has been tested on two custom boards with i.MX28 and i.MX6
-SOCs:
-- i.MX28:
-  required rate 100MHz, real rate 99.3MHz
-- i.MX6
-  required rate 100MHz, real rate 99MHz
+But the variable int_status should be masked out with the actual interrupt
+sources (MTK_REG_CHISR bit 0-15) before we check the loop condition.
+Otherwise, RX_PKT_LEN (MTK_REG_CHISR bit 16-31) which is read-only and
+unclearable would cause the loop to get stuck on some chipsets like
+MT7663s.
 
-Fixes: b1206122069a ("mtd: rawnand: gpmi: use core timings instead of an empirical derivation")
-Co-developed-by: Michael Trimarchi <michael@amarulasolutions.com>
-Signed-off-by: Michael Trimarchi <michael@amarulasolutions.com>
-Signed-off-by: Dario Binacchi <dario.binacchi@amarulasolutions.com>
-Tested-by: Sascha Hauer <s.hauer@pengutronix.de>
-Reviewed-by: Sascha Hauer <s.hauer@pengutronix.de>
-Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-Link: https://lore.kernel.org/linux-mtd/20220118095434.35081-3-dario.binacchi@amarulasolutions.com
+Fixes: 26270bc189ea ("Bluetooth: btmtksdio: move interrupt service to work")
+Signed-off-by: Sean Wang <sean.wang@mediatek.com>
+Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/mtd/nand/raw/gpmi-nand/gpmi-nand.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/bluetooth/btmtksdio.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/mtd/nand/raw/gpmi-nand/gpmi-nand.c b/drivers/mtd/nand/raw/gpmi-nand/gpmi-nand.c
-index ded4df473928..e50db25e5ddc 100644
---- a/drivers/mtd/nand/raw/gpmi-nand/gpmi-nand.c
-+++ b/drivers/mtd/nand/raw/gpmi-nand/gpmi-nand.c
-@@ -648,6 +648,7 @@ static void gpmi_nfc_compute_timings(struct gpmi_nand_data *this,
- 				     const struct nand_sdr_timings *sdr)
- {
- 	struct gpmi_nfc_hardware_timing *hw = &this->hw;
-+	struct resources *r = &this->resources;
- 	unsigned int dll_threshold_ps = this->devdata->max_chain_delay;
- 	unsigned int period_ps, reference_period_ps;
- 	unsigned int data_setup_cycles, data_hold_cycles, addr_setup_cycles;
-@@ -671,6 +672,8 @@ static void gpmi_nfc_compute_timings(struct gpmi_nand_data *this,
- 		wrn_dly_sel = BV_GPMI_CTRL1_WRN_DLY_SEL_NO_DELAY;
- 	}
+diff --git a/drivers/bluetooth/btmtksdio.c b/drivers/bluetooth/btmtksdio.c
+index 72e00264d9f1..86a52eb77e01 100644
+--- a/drivers/bluetooth/btmtksdio.c
++++ b/drivers/bluetooth/btmtksdio.c
+@@ -92,6 +92,7 @@ MODULE_DEVICE_TABLE(sdio, btmtksdio_table);
+ #define TX_EMPTY		BIT(2)
+ #define TX_FIFO_OVERFLOW	BIT(8)
+ #define FW_MAILBOX_INT		BIT(15)
++#define INT_MASK		GENMASK(15, 0)
+ #define RX_PKT_LEN		GENMASK(31, 16)
  
-+	hw->clk_rate = clk_round_rate(r->clock[0], hw->clk_rate);
-+
- 	/* SDR core timings are given in picoseconds */
- 	period_ps = div_u64((u64)NSEC_PER_SEC * 1000, hw->clk_rate);
+ #define MTK_REG_CSICR		0xc0
+@@ -565,6 +566,7 @@ static void btmtksdio_txrx_work(struct work_struct *work)
+ 		 * FIFO.
+ 		 */
+ 		sdio_writel(bdev->func, int_status, MTK_REG_CHISR, NULL);
++		int_status &= INT_MASK;
  
+ 		if ((int_status & FW_MAILBOX_INT) &&
+ 		    bdev->data->chipid == 0x7921) {
 -- 
 2.34.1
 
