@@ -2,183 +2,173 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BEF71C43217
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 21:24:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 24465C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 21:24:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345626AbiDEVWF (ORCPT
+        id S1346491AbiDEVW0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 17:22:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43022 "EHLO
+        Tue, 5 Apr 2022 17:22:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43814 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354841AbiDENH2 (ORCPT
+        with ESMTP id S1442176AbiDEPhF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 09:07:28 -0400
-Received: from ssl.serverraum.org (ssl.serverraum.org [176.9.125.105])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67DA724F14;
-        Tue,  5 Apr 2022 05:09:59 -0700 (PDT)
-Received: from mwalle01.kontron.local. (unknown [213.135.10.150])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id ADE092224D;
-        Tue,  5 Apr 2022 14:09:57 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1649160597;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=7WaKtmsAct4eFrA+KGGxilxHVP2Bwhzu8dzCAWhFx8o=;
-        b=oYg7yuaMfIQM3IfqfMlSOS+FFRinbYbWLjZ2z7mOaGm5ij6LMGR5XRgD/0FcrunnyZil/+
-        hjc/DVsyPEGkck2J2e1qhmXosWa43vLuvFJLU+R07V1WCoM0g/3pQCgK+anUImsp3yY1KM
-        nlimXoK2aKyugaERn+/nRB9Tf9iP2Mw=
-From:   Michael Walle <michael@walle.cc>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>
-Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Michael Walle <michael@walle.cc>
-Subject: [PATCH net-next v3 3/3] net: phy: mscc-miim: add support to set MDIO bus frequency
-Date:   Tue,  5 Apr 2022 14:09:51 +0200
-Message-Id: <20220405120951.4044875-4-michael@walle.cc>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220405120951.4044875-1-michael@walle.cc>
-References: <20220405120951.4044875-1-michael@walle.cc>
+        Tue, 5 Apr 2022 11:37:05 -0400
+Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E510FED9EE;
+        Tue,  5 Apr 2022 06:51:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1649166679; x=1680702679;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version;
+  bh=pgj7ZOhRJ/NrgOQpzcRmQAbblsKAlRLHGZGqyonC/0Y=;
+  b=I/j8bbueLFse1K0gOKhPBU60uytgih4dbMJOg8jyrv4zwkhm4t7yFEvw
+   0mzsJUm0ivYcuXmQtRO+i20zXkEnHDtAHCd0Le7CaQsi+53c9wOpH6NfT
+   0NVjhxbbLYpaCTuZsDJ5cy63i7s49NPNh31GbI9HBV0IwdRwmybN1OpU5
+   8=;
+Received: from unknown (HELO ironmsg03-sd.qualcomm.com) ([10.53.140.143])
+  by alexa-out-sd-02.qualcomm.com with ESMTP; 05 Apr 2022 06:51:19 -0700
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg03-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2022 06:51:19 -0700
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Tue, 5 Apr 2022 06:51:19 -0700
+Received: from c-skakit-linux.qualcomm.com (10.80.80.8) by
+ nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Tue, 5 Apr 2022 06:51:14 -0700
+From:   Satya Priya <quic_c_skakit@quicinc.com>
+To:     Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>
+CC:     Lee Jones <lee.jones@linaro.org>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
+        <linux-arm-msm@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <swboyd@chromium.org>,
+        <quic_collinsd@quicinc.com>, <quic_subbaram@quicinc.com>,
+        <quic_jprakash@quicinc.com>,
+        Satya Priya <quic_c_skakit@quicinc.com>
+Subject: [PATCH V9 2/6] dt-bindings: mfd: pm8008: Add pm8008 regulator bindings
+Date:   Tue, 5 Apr 2022 19:20:29 +0530
+Message-ID: <1649166633-25872-3-git-send-email-quic_c_skakit@quicinc.com>
+X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1649166633-25872-1-git-send-email-quic_c_skakit@quicinc.com>
+References: <1649166633-25872-1-git-send-email-quic_c_skakit@quicinc.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Until now, the MDIO bus will have the hardware default bus frequency.
-Read the desired frequency of the bus from the device tree and configure
-it.
+Add bindings for pm8008 regulators device.
 
-Signed-off-by: Michael Walle <michael@walle.cc>
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Signed-off-by: Satya Priya <quic_c_skakit@quicinc.com>
 ---
- drivers/net/mdio/mdio-mscc-miim.c | 58 +++++++++++++++++++++++++++++--
- 1 file changed, 56 insertions(+), 2 deletions(-)
+Changes in V8:
+ - This is split from pm8008.yaml binding.
 
-diff --git a/drivers/net/mdio/mdio-mscc-miim.c b/drivers/net/mdio/mdio-mscc-miim.c
-index c9efcfa2a1ce..7fd979f68dc0 100644
---- a/drivers/net/mdio/mdio-mscc-miim.c
-+++ b/drivers/net/mdio/mdio-mscc-miim.c
-@@ -7,6 +7,7 @@
-  */
- 
- #include <linux/bitops.h>
-+#include <linux/clk.h>
- #include <linux/io.h>
- #include <linux/iopoll.h>
- #include <linux/kernel.h>
-@@ -30,6 +31,8 @@
- #define		MSCC_MIIM_CMD_VLD		BIT(31)
- #define MSCC_MIIM_REG_DATA		0xC
- #define		MSCC_MIIM_DATA_ERROR		(BIT(16) | BIT(17))
-+#define MSCC_MIIM_REG_CFG		0x10
-+#define		MSCC_MIIM_CFG_PRESCALE_MASK	GENMASK(7, 0)
- 
- #define MSCC_PHY_REG_PHY_CFG	0x0
- #define		PHY_CFG_PHY_ENA		(BIT(0) | BIT(1) | BIT(2) | BIT(3))
-@@ -50,6 +53,8 @@ struct mscc_miim_dev {
- 	int mii_status_offset;
- 	struct regmap *phy_regs;
- 	const struct mscc_miim_info *info;
-+	struct clk *clk;
-+	u32 bus_freq;
- };
- 
- /* When high resolution timers aren't built-in: we can't use usleep_range() as
-@@ -242,9 +247,32 @@ int mscc_miim_setup(struct device *dev, struct mii_bus **pbus, const char *name,
- }
- EXPORT_SYMBOL(mscc_miim_setup);
- 
-+static int mscc_miim_clk_set(struct mii_bus *bus)
-+{
-+	struct mscc_miim_dev *miim = bus->priv;
-+	unsigned long rate;
-+	u32 div;
+Changes in V9:
+ - Remove description for reg and drop unused phandle from example.
+
+ .../bindings/mfd/qcom,pm8008-regulators.yaml       | 84 ++++++++++++++++++++++
+ 1 file changed, 84 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/mfd/qcom,pm8008-regulators.yaml
+
+diff --git a/Documentation/devicetree/bindings/mfd/qcom,pm8008-regulators.yaml b/Documentation/devicetree/bindings/mfd/qcom,pm8008-regulators.yaml
+new file mode 100644
+index 0000000..9a82a8b
+--- /dev/null
++++ b/Documentation/devicetree/bindings/mfd/qcom,pm8008-regulators.yaml
+@@ -0,0 +1,84 @@
++# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/mfd/qcom,pm8008-regulators.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
 +
-+	/* Keep the current settings */
-+	if (!miim->bus_freq)
-+		return 0;
++title: Qualcomm Technologies, Inc. PM8008 Regulator bindings
 +
-+	rate = clk_get_rate(miim->clk);
++maintainers:
++  - Satya Priya <quic_c_skakit@quicinc.com>
 +
-+	div = DIV_ROUND_UP(rate, 2 * miim->bus_freq) - 1;
-+	if (div == 0 || div & ~MSCC_MIIM_CFG_PRESCALE_MASK) {
-+		dev_err(&bus->dev, "Incorrect MDIO clock frequency\n");
-+		return -EINVAL;
-+	}
++description: |
++  Qualcomm Technologies, Inc. PM8008 is an I2C controlled PMIC
++  containing 7 LDO regulators. This binding specifies the PM8008
++  regulator peripherals of PM8008 device.
 +
-+	return regmap_update_bits(miim->regs, MSCC_MIIM_REG_CFG,
-+				  MSCC_MIIM_CFG_PRESCALE_MASK, div);
-+}
++properties:
++  compatible:
++    const: qcom,pm8008-regulators
 +
- static int mscc_miim_probe(struct platform_device *pdev)
- {
- 	struct regmap *mii_regmap, *phy_regmap = NULL;
-+	struct device_node *np = pdev->dev.of_node;
- 	void __iomem *regs, *phy_regs;
- 	struct mscc_miim_dev *miim;
- 	struct resource *res;
-@@ -295,21 +323,47 @@ static int mscc_miim_probe(struct platform_device *pdev)
- 	if (!miim->info)
- 		return -EINVAL;
- 
--	ret = of_mdiobus_register(bus, pdev->dev.of_node);
-+	miim->clk = devm_clk_get_optional(&pdev->dev, NULL);
-+	if (IS_ERR(miim->clk))
-+		return PTR_ERR(miim->clk);
++  reg:
++    maxItems: 1
 +
-+	of_property_read_u32(np, "clock-frequency", &miim->bus_freq);
++  "#address-cells":
++    const: 0
 +
-+	if (miim->bus_freq && !miim->clk) {
-+		dev_err(&pdev->dev,
-+			"cannot use clock-frequency without a clock\n");
-+		return -EINVAL;
-+	}
++  "#size-cells":
++    const: 0
 +
-+	ret = clk_prepare_enable(miim->clk);
-+	if (ret)
-+		return ret;
++  vdd_l1_l2-supply:
++    description: Input supply phandle of ldo1 and ldo2 regulators.
 +
-+	ret = mscc_miim_clk_set(bus);
-+	if (ret)
-+		goto out_disable_clk;
++  vdd_l3_l4-supply:
++    description: Input supply phandle of ldo3 and ldo4 regulators.
 +
-+	ret = of_mdiobus_register(bus, np);
- 	if (ret < 0) {
- 		dev_err(&pdev->dev, "Cannot register MDIO bus (%d)\n", ret);
--		return ret;
-+		goto out_disable_clk;
- 	}
- 
- 	platform_set_drvdata(pdev, bus);
- 
- 	return 0;
++  vdd_l5-supply:
++    description: Input supply phandle of ldo5 regulator.
 +
-+out_disable_clk:
-+	clk_disable_unprepare(miim->clk);
-+	return ret;
- }
- 
- static int mscc_miim_remove(struct platform_device *pdev)
- {
- 	struct mii_bus *bus = platform_get_drvdata(pdev);
-+	struct mscc_miim_dev *miim = bus->priv;
- 
-+	clk_disable_unprepare(miim->clk);
- 	mdiobus_unregister(bus);
- 
- 	return 0;
++  vdd_l6-supply:
++    description: Input supply phandle of ldo6 regulator.
++
++  vdd_l7-supply:
++    description: Input supply phandle of ldo7 regulator.
++
++patternProperties:
++  "^ldo[1-7]$":
++    type: object
++    $ref: "../regulator/regulator.yaml#"
++    description: PM8008 regulator peripherals of PM8008 regulator device
++
++required:
++  - compatible
++  - "#address-cells"
++  - "#size-cells"
++
++additionalProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/mfd/qcom-pm8008.h>
++    #include <dt-bindings/interrupt-controller/irq.h>
++    i2c {
++      #address-cells = <1>;
++      #size-cells = <0>;
++      pmic@9 {
++        compatible = "qcom,pm8008-regulators";
++        reg = <0x9>;
++        #address-cells = <0>;
++        #size-cells = <0>;
++
++        vdd_l1_l2-supply = <&vreg_s8b_1p2>;
++        vdd_l3_l4-supply = <&vreg_s1b_1p8>;
++        vdd_l5-supply = <&vreg_bob>;
++        vdd_l6-supply = <&vreg_bob>;
++        vdd_l7-supply = <&vreg_bob>;
++
++        pm8008_l1: ldo1 {
++          regulator-name = "pm8008_l1";
++          regulator-min-microvolt = <950000>;
++          regulator-max-microvolt = <1300000>;
++        };
++      };
++    };
++...
 -- 
-2.30.2
+2.7.4
 
