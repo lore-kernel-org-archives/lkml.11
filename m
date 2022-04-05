@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1BCFDC433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2EEA2C433EF
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 01:48:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234838AbiDFBnW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 21:43:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57676 "EHLO
+        id S1349506AbiDFBne (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 21:43:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50352 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356141AbiDEKW7 (ORCPT
+        with ESMTP id S1357988AbiDEK1j (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:22:59 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85F2AB91B0;
-        Tue,  5 Apr 2022 03:06:52 -0700 (PDT)
+        Tue, 5 Apr 2022 06:27:39 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2991D3704;
+        Tue,  5 Apr 2022 03:12:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 296B0B81BC0;
-        Tue,  5 Apr 2022 10:06:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 97DA0C385A2;
-        Tue,  5 Apr 2022 10:06:49 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 79EE2B81C8B;
+        Tue,  5 Apr 2022 10:12:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CC8CFC385A0;
+        Tue,  5 Apr 2022 10:12:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649153210;
-        bh=l8H9mNVX3/c3Zvv4QunPOJ64g8VnA9sVr/ivBIz7tgA=;
+        s=korg; t=1649153534;
+        bh=RuudkV80NbnUWQJ3ZBBUJ5p0VXcyoR2tIBAnss2jxn8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BioVvXU6zzXmAE7uRF6V5B7Vsq8GSp5vvsNYsYhfGCsyeWW+a3kVxeLa0wypahbbz
-         kmwXy8mXwex2BZRZ8ApJ8wu+2JvhGzKbWvGSNEcsuXqaLurR34w2ovFGO5H0/Jt7P/
-         1/HiMiqZYN2XsFU4U4iofwnVEVuB4xEAJ6KbeVow=
+        b=nk9vUFWs4Lqm1JQ6RpA7oBuuDlz3NgkxI3tArGwRthsfFDqQpdh0NCiQMsCt7j/sB
+         86d6irJDnfDY6b8D2sFGR8/91+nN7z0ScET2RxDP5xw+ukbw8xocFjPkPZ8aSAi3lI
+         VzUOOhMWNKgHjNPtOaCojf1OkduoPyfjW90awZVg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
-        Igor Zhbanov <i.zhbanov@omprussia.ru>,
-        Mimi Zohar <zohar@linux.ibm.com>,
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 141/599] EVM: fix the evm= __setup handler return value
-Date:   Tue,  5 Apr 2022 09:27:15 +0200
-Message-Id: <20220405070303.038894331@linuxfoundation.org>
+Subject: [PATCH 5.10 257/599] ASoC: msm8916-wcd-analog: Fix error handling in pm8916_wcd_analog_spmi_probe
+Date:   Tue,  5 Apr 2022 09:29:11 +0200
+Message-Id: <20220405070306.486840619@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
 References: <20220405070258.802373272@linuxfoundation.org>
@@ -50,56 +50,77 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Randy Dunlap <rdunlap@infradead.org>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit f2544f5e6c691679d56bb38637d2f347075b36fa ]
+[ Upstream commit 9ebd62d60edcd4d9c75485e5ccd0b79581ad3c49 ]
 
-__setup() handlers should return 1 if the parameter is handled.
-Returning 0 causes the entire string to be added to init's
-environment strings (limited to 32 strings), unnecessarily polluting it.
+In the error handling path, the clk_prepare_enable() function
+call should be balanced by a corresponding 'clk_disable_unprepare()'
+call , as already done in the remove function.
 
-Using the documented string "evm=fix" causes an Unknown parameter message:
-  Unknown kernel command line parameters
-  "BOOT_IMAGE=/boot/bzImage-517rc5 evm=fix", will be passed to user space.
-
-and that string is added to init's environment string space:
-  Run /sbin/init as init process
-    with arguments:
-     /sbin/init
-    with environment:
-     HOME=/
-     TERM=linux
-     BOOT_IMAGE=/boot/bzImage-517rc5
-     evm=fix
-
-With this change, using "evm=fix" acts as expected and an invalid
-option ("evm=evm") causes a warning to be printed:
-  evm: invalid "evm" mode
-but init's environment is not polluted with this string, as expected.
-
-Fixes: 7102ebcd65c1 ("evm: permit only valid security.evm xattrs to be updated")
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Reported-by: Igor Zhbanov <i.zhbanov@omprussia.ru>
-Link: lore.kernel.org/r/64644a2f-4a20-bab3-1e15-3b2cdd0defe3@omprussia.ru
-Signed-off-by: Mimi Zohar <zohar@linux.ibm.com>
+Fixes: de66b3455023 ("ASoC: codecs: msm8916-wcd-analog: add MBHC support")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Link: https://lore.kernel.org/r/20220316041924.17560-1-linmq006@gmail.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- security/integrity/evm/evm_main.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ sound/soc/codecs/msm8916-wcd-analog.c | 22 ++++++++++++++++------
+ 1 file changed, 16 insertions(+), 6 deletions(-)
 
-diff --git a/security/integrity/evm/evm_main.c b/security/integrity/evm/evm_main.c
-index b929c683aba1..0033364ac404 100644
---- a/security/integrity/evm/evm_main.c
-+++ b/security/integrity/evm/evm_main.c
-@@ -62,7 +62,7 @@ static int __init evm_set_fixmode(char *str)
- 	else
- 		pr_err("invalid \"%s\" mode", str);
+diff --git a/sound/soc/codecs/msm8916-wcd-analog.c b/sound/soc/codecs/msm8916-wcd-analog.c
+index 3ddd822240e3..971b8360b5b1 100644
+--- a/sound/soc/codecs/msm8916-wcd-analog.c
++++ b/sound/soc/codecs/msm8916-wcd-analog.c
+@@ -1221,8 +1221,10 @@ static int pm8916_wcd_analog_spmi_probe(struct platform_device *pdev)
+ 	}
  
--	return 0;
-+	return 1;
+ 	irq = platform_get_irq_byname(pdev, "mbhc_switch_int");
+-	if (irq < 0)
+-		return irq;
++	if (irq < 0) {
++		ret = irq;
++		goto err_disable_clk;
++	}
+ 
+ 	ret = devm_request_threaded_irq(dev, irq, NULL,
+ 			       pm8916_mbhc_switch_irq_handler,
+@@ -1234,8 +1236,10 @@ static int pm8916_wcd_analog_spmi_probe(struct platform_device *pdev)
+ 
+ 	if (priv->mbhc_btn_enabled) {
+ 		irq = platform_get_irq_byname(pdev, "mbhc_but_press_det");
+-		if (irq < 0)
+-			return irq;
++		if (irq < 0) {
++			ret = irq;
++			goto err_disable_clk;
++		}
+ 
+ 		ret = devm_request_threaded_irq(dev, irq, NULL,
+ 				       mbhc_btn_press_irq_handler,
+@@ -1246,8 +1250,10 @@ static int pm8916_wcd_analog_spmi_probe(struct platform_device *pdev)
+ 			dev_err(dev, "cannot request mbhc button press irq\n");
+ 
+ 		irq = platform_get_irq_byname(pdev, "mbhc_but_rel_det");
+-		if (irq < 0)
+-			return irq;
++		if (irq < 0) {
++			ret = irq;
++			goto err_disable_clk;
++		}
+ 
+ 		ret = devm_request_threaded_irq(dev, irq, NULL,
+ 				       mbhc_btn_release_irq_handler,
+@@ -1264,6 +1270,10 @@ static int pm8916_wcd_analog_spmi_probe(struct platform_device *pdev)
+ 	return devm_snd_soc_register_component(dev, &pm8916_wcd_analog,
+ 				      pm8916_wcd_analog_dai,
+ 				      ARRAY_SIZE(pm8916_wcd_analog_dai));
++
++err_disable_clk:
++	clk_disable_unprepare(priv->mclk);
++	return ret;
  }
- __setup("evm=", evm_set_fixmode);
  
+ static int pm8916_wcd_analog_spmi_remove(struct platform_device *pdev)
 -- 
 2.34.1
 
