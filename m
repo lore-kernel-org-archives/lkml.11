@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E560C4321E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F063C4167D
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:57:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349962AbiDEM5F (ORCPT
+        id S1353186AbiDEM5X (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 08:57:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40624 "EHLO
+        Tue, 5 Apr 2022 08:57:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41798 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343908AbiDEJP2 (ORCPT
+        with ESMTP id S243086AbiDEJIp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:15:28 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51E40972EC;
-        Tue,  5 Apr 2022 02:01:32 -0700 (PDT)
+        Tue, 5 Apr 2022 05:08:45 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82ED092D0D;
+        Tue,  5 Apr 2022 01:57:39 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id B7104CE1C6A;
-        Tue,  5 Apr 2022 09:01:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D308FC385A1;
-        Tue,  5 Apr 2022 09:01:28 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2C791B80DA1;
+        Tue,  5 Apr 2022 08:57:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7BC56C385A0;
+        Tue,  5 Apr 2022 08:57:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649149289;
-        bh=FXIASGTXlwyPFhZKczifYvKVHhbnTeDqSdZKl1fpCmc=;
+        s=korg; t=1649149056;
+        bh=EKAYW56pgoj/fMmDPk6hd7qfExudZsuNd4gA0XItQsg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VZjf5NHAM09fk5dIFv4z3KXWQUfH7AQVbr/SIVaTYj5Bnqvj61zdaY7X/ytbnT8ir
-         EI+9dpSLKFbuI5MgIfy5A1oMM3PVtvytFQcMKmND8wcXHiF6z5eFGG9AURAk7Mjpii
-         eQ5s460lbOxXGKrvXDlSRsZVjT7nAH0b5iEDLTXs=
+        b=thJH/nrB7wgeiXLgUiCGzfyED0cNDGJLlFjoX6S6Lk9F/tRscTJyyZ07ioxlqjHET
+         9SGQ61KSEjtFwBvzgY3nJy2bh+LqN31KGat2dd1ta/I2xi5Se0Mbs2ONngNpHtlzR4
+         juBVpArxyNaMjP8woMUgl30BfjZsh1bv4AOhP+cM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
+        stable@vger.kernel.org, Yihang Li <liyihang6@hisilicon.com>,
+        Xiang Chen <chenxiang66@hisilicon.com>,
+        John Garry <john.garry@huawei.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0661/1017] pinctrl: renesas: checker: Fix miscalculation of number of states
-Date:   Tue,  5 Apr 2022 09:26:14 +0200
-Message-Id: <20220405070413.903578909@linuxfoundation.org>
+Subject: [PATCH 5.16 0551/1017] scsi: hisi_sas: Change permission of parameter prot_mask
+Date:   Tue,  5 Apr 2022 09:24:24 +0200
+Message-Id: <20220405070410.640136355@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -50,49 +52,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Geert Uytterhoeven <geert+renesas@glider.be>
+From: Xiang Chen <chenxiang66@hisilicon.com>
 
-[ Upstream commit de9b861018d46af27a5edff8b6baef35c0c0ad4f ]
+[ Upstream commit c4e070457a93705e56ed06b3910d9e5fe56d3be3 ]
 
-The checker failed to validate all enum IDs in the description of a
-register with fixed-width register fields, due to a miscalculation of
-the number of described states: each register field of n bits can have
-"1 << n" possible states, not "1".
+Currently the permission of parameter prot_mask is 0x0, which means that
+the member does not appear in sysfs. Change it as other module parameters
+to 0444 for world-readable.
 
-Increase SH_PFC_MAX_ENUMS accordingly, now more enum IDs are checked
-(SH-Mobile AG5 has more than 4000 enum IDs defined).
+[mkp: s/v3/v2/]
 
-Fixes: 12d057bad683b1c6 ("pinctrl: sh-pfc: checker: Add check for enum ID conflicts")
-Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
-Link: https://lore.kernel.org/r/6d8a6a05564f38f9d20464c1c17f96e52740cf6a.1645460429.git.geert+renesas@glider.be
+Link: https://lore.kernel.org/r/1645703489-87194-2-git-send-email-john.garry@huawei.com
+Fixes: d6a9000b81be ("scsi: hisi_sas: Add support for DIF feature for v2 hw")
+Reported-by: Yihang Li <liyihang6@hisilicon.com>
+Signed-off-by: Xiang Chen <chenxiang66@hisilicon.com>
+Signed-off-by: John Garry <john.garry@huawei.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pinctrl/renesas/core.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ drivers/scsi/hisi_sas/hisi_sas_v3_hw.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/pinctrl/renesas/core.c b/drivers/pinctrl/renesas/core.c
-index 0d4ea2e22a53..12d41ac017b5 100644
---- a/drivers/pinctrl/renesas/core.c
-+++ b/drivers/pinctrl/renesas/core.c
-@@ -741,7 +741,7 @@ static int sh_pfc_suspend_init(struct sh_pfc *pfc) { return 0; }
+diff --git a/drivers/scsi/hisi_sas/hisi_sas_v3_hw.c b/drivers/scsi/hisi_sas/hisi_sas_v3_hw.c
+index 11a44d9dd9b2..b3bdbea3c955 100644
+--- a/drivers/scsi/hisi_sas/hisi_sas_v3_hw.c
++++ b/drivers/scsi/hisi_sas/hisi_sas_v3_hw.c
+@@ -530,7 +530,7 @@ MODULE_PARM_DESC(intr_conv, "interrupt converge enable (0-1)");
  
- #ifdef DEBUG
- #define SH_PFC_MAX_REGS		300
--#define SH_PFC_MAX_ENUMS	3000
-+#define SH_PFC_MAX_ENUMS	5000
+ /* permit overriding the host protection capabilities mask (EEDP/T10 PI) */
+ static int prot_mask;
+-module_param(prot_mask, int, 0);
++module_param(prot_mask, int, 0444);
+ MODULE_PARM_DESC(prot_mask, " host protection capabilities mask, def=0x0 ");
  
- static unsigned int sh_pfc_errors __initdata;
- static unsigned int sh_pfc_warnings __initdata;
-@@ -865,7 +865,8 @@ static void __init sh_pfc_check_cfg_reg(const char *drvname,
- 			 GENMASK(cfg_reg->reg_width - 1, 0));
- 
- 	if (cfg_reg->field_width) {
--		n = cfg_reg->reg_width / cfg_reg->field_width;
-+		fw = cfg_reg->field_width;
-+		n = (cfg_reg->reg_width / fw) << fw;
- 		/* Skip field checks (done at build time) */
- 		goto check_enum_ids;
- 	}
+ static void debugfs_work_handler_v3_hw(struct work_struct *work);
 -- 
 2.34.1
 
