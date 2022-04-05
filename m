@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A5074C35274
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D506DC3527A
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:02:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357710AbiDEL4O (ORCPT
+        id S1358238AbiDEL40 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 07:56:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46838 "EHLO
+        Tue, 5 Apr 2022 07:56:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46812 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244955AbiDEIwu (ORCPT
+        with ESMTP id S244932AbiDEIws (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:52:50 -0400
+        Tue, 5 Apr 2022 04:52:48 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8FCB21C100;
-        Tue,  5 Apr 2022 01:47:49 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A44B324974;
+        Tue,  5 Apr 2022 01:46:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2BBAE60FFB;
-        Tue,  5 Apr 2022 08:47:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 35AC2C385A0;
-        Tue,  5 Apr 2022 08:47:48 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 40B9A614FD;
+        Tue,  5 Apr 2022 08:46:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5145FC385A0;
+        Tue,  5 Apr 2022 08:46:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649148468;
-        bh=AzruJ7kNpSnT6sSFKy/mtIR2Ku9xH4nvBIs2Jd7NW+4=;
+        s=korg; t=1649148413;
+        bh=gzrI5m1mpGo1ZohUL07d1Mg3ie4Wh1dm3KyQxDJYnbE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=b6VROCLfOhPDoNwKSktXrktRK3HEvvEhT6wMzgp+yy0ONNEEWqRe08UrURjQCTBRc
-         6KeiOeMJ4y1OZrumxqbFvmcf3mg0MZPc7ZQ0ltIG74FwPYBOlvmXWzLAO4+zSoJIyX
-         83szSyACn7k7nY/FpZNNgktA9MlbdNxn+Bh7MuDw=
+        b=xVxeAaneyb2hMwOvzZ4XDRRcjbcqkEEhhUDcCRzhtahSgFaS73C5omONBxxB15s7v
+         TNQrLvFU9CH6c+tPla9PlZvjrOsGVZ1YkaLuBjJ28XxOV/XHRlCENS1yvtimO0Uha7
+         xmz0u7JaRJB8HjiOtmIdPdMWGFFHsmJtTLp2bsAY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Rob Herring <robh@kernel.org>,
-        Heiko Stuebner <heiko@sntech.de>,
+        stable@vger.kernel.org, Douglas Anderson <dianders@chromium.org>,
+        Stephen Boyd <swboyd@chromium.org>,
+        Matthias Kaehlcke <mka@chromium.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0366/1017] arm64: dts: rockchip: Fix SDIO regulator supply properties on rk3399-firefly
-Date:   Tue,  5 Apr 2022 09:21:19 +0200
-Message-Id: <20220405070405.149503382@linuxfoundation.org>
+Subject: [PATCH 5.16 0309/1017] arm64: dts: qcom: sc7280: Fix gmu unit address
+Date:   Tue,  5 Apr 2022 09:20:22 +0200
+Message-Id: <20220405070403.448629479@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -50,37 +52,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Rob Herring <robh@kernel.org>
+From: Douglas Anderson <dianders@chromium.org>
 
-[ Upstream commit 37cbd3c522869247ed4525b5042ff4c6a276c813 ]
+[ Upstream commit 142a4d995c6adb6bf5b22166f51b525e83c96661 ]
 
-A label reference without brackets is a path string, not a phandle as
-intended. Add the missing brackets.
+When processing sc7280 device trees, I can see:
 
-Fixes: a5002c41c383 ("arm64: dts: rockchip: add WiFi module support for Firefly-RK3399")
-Signed-off-by: Rob Herring <robh@kernel.org>
-Link: https://lore.kernel.org/r/20220304202559.317749-1-robh@kernel.org
-Signed-off-by: Heiko Stuebner <heiko@sntech.de>
+  Warning (simple_bus_reg): /soc@0/gmu@3d69000:
+    simple-bus unit address format error, expected "3d6a000"
+
+There's a clear typo in the node name. Fix it.
+
+Fixes: 96c471970b7b ("arm64: dts: qcom: sc7280: Add gpu support")
+Signed-off-by: Douglas Anderson <dianders@chromium.org>
+Reviewed-by: Stephen Boyd <swboyd@chromium.org>
+Reviewed-by: Matthias Kaehlcke <mka@chromium.org>
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Link: https://lore.kernel.org/r/20220125144316.v2.1.I19f60014e9be4b9dda4d66b5d56ef3d9600b6e10@changeid
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/boot/dts/rockchip/rk3399-firefly.dts | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ arch/arm64/boot/dts/qcom/sc7280.dtsi | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/arm64/boot/dts/rockchip/rk3399-firefly.dts b/arch/arm64/boot/dts/rockchip/rk3399-firefly.dts
-index c4dd2a6b4836..f81ce3240342 100644
---- a/arch/arm64/boot/dts/rockchip/rk3399-firefly.dts
-+++ b/arch/arm64/boot/dts/rockchip/rk3399-firefly.dts
-@@ -770,8 +770,8 @@
- 	sd-uhs-sdr104;
+diff --git a/arch/arm64/boot/dts/qcom/sc7280.dtsi b/arch/arm64/boot/dts/qcom/sc7280.dtsi
+index 6e27a1beaa33..68a5740bc360 100644
+--- a/arch/arm64/boot/dts/qcom/sc7280.dtsi
++++ b/arch/arm64/boot/dts/qcom/sc7280.dtsi
+@@ -1785,7 +1785,7 @@
+ 			};
+ 		};
  
- 	/* Power supply */
--	vqmmc-supply = &vcc1v8_s3;	/* IO line */
--	vmmc-supply = &vcc_sdio;	/* card's power */
-+	vqmmc-supply = <&vcc1v8_s3>;	/* IO line */
-+	vmmc-supply = <&vcc_sdio>;	/* card's power */
- 
- 	#address-cells = <1>;
- 	#size-cells = <0>;
+-		gmu: gmu@3d69000 {
++		gmu: gmu@3d6a000 {
+ 			compatible="qcom,adreno-gmu-635.0", "qcom,adreno-gmu";
+ 			reg = <0 0x03d6a000 0 0x34000>,
+ 				<0 0x3de0000 0 0x10000>,
 -- 
 2.34.1
 
