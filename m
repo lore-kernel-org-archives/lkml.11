@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6026FC4167B
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 11:46:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B4857C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 11:46:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379095AbiDELkS (ORCPT
+        id S1379120AbiDELkX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 07:40:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46156 "EHLO
+        Tue, 5 Apr 2022 07:40:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52236 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244746AbiDEIwh (ORCPT
+        with ESMTP id S244748AbiDEIwh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Apr 2022 04:52:37 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 364D01B7BC;
-        Tue,  5 Apr 2022 01:43:15 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D81331CB00;
+        Tue,  5 Apr 2022 01:43:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C60EB6117A;
-        Tue,  5 Apr 2022 08:43:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D62ABC385A1;
-        Tue,  5 Apr 2022 08:43:13 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 73DBB60FFC;
+        Tue,  5 Apr 2022 08:43:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 86F95C385A0;
+        Tue,  5 Apr 2022 08:43:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649148194;
-        bh=x/iBYWInLobn28lNjZmZFsQd2KGji85H6KDLvTBbWjQ=;
+        s=korg; t=1649148196;
+        bh=3jM5yqIOb3WL2Na1v0+VlkoKC6eouOTM4+v6Y/kg5DA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xFa1fPbiISUkmBCpXvr6yW1qM4X2GMUq2JheEM9B1uX+Jk3k2mSKblFOBX0I3M9XA
-         VAytYp3W4N9Ei2LkQEtYeHqLnyMkKFoWd60f7V7dKlOM0mKqB008qpO+xSDAO8cDC5
-         PTCQ9GJVZhePwQ5r3KVvx4RenxZLU+571kAvEB28=
+        b=jc2UUl+Q46Ve6cDFX+sC2EQ0YczdR32CLvokZHfddlbuzmw0bYtW2atZ6M84ypUmx
+         AKLLFDcFxcFJbd+lkCDziLHE7QHcpaVO91E430Y/24uR6EmkebQ7I05/UXIQpyrGhz
+         8bsJ2aazC37xOzzi1l7+J9ezw9u0NWwqb+DO7NwU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Qais Yousef <qais.yousef@arm.com>,
+        stable@vger.kernel.org, John Keeping <john@metanate.com>,
+        Valentin Schneider <valentin.schneider@arm.com>,
         "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        Dietmar Eggemann <dietmar.eggemann@arm.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0261/1017] sched/core: Export pelt_thermal_tp
-Date:   Tue,  5 Apr 2022 09:19:34 +0200
-Message-Id: <20220405070402.010416882@linuxfoundation.org>
+Subject: [PATCH 5.16 0270/1017] sched/rt: Plug rt_mutex_setprio() vs push_rt_task() race
+Date:   Tue,  5 Apr 2022 09:19:43 +0200
+Message-Id: <20220405070402.279932841@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -50,34 +52,148 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Qais Yousef <qais.yousef@arm.com>
+From: Valentin Schneider <valentin.schneider@arm.com>
 
-[ Upstream commit 77cf151b7bbdfa3577b3c3f3a5e267a6c60a263b ]
+[ Upstream commit 49bef33e4b87b743495627a529029156c6e09530 ]
 
-We can't use this tracepoint in modules without having the symbol
-exported first, fix that.
+John reported that push_rt_task() can end up invoking
+find_lowest_rq(rq->curr) when curr is not an RT task (in this case a CFS
+one), which causes mayhem down convert_prio().
 
-Fixes: 765047932f15 ("sched/pelt: Add support to track thermal pressure")
-Signed-off-by: Qais Yousef <qais.yousef@arm.com>
+This can happen when current gets demoted to e.g. CFS when releasing an
+rt_mutex, and the local CPU gets hit with an rto_push_work irqwork before
+getting the chance to reschedule. Exactly who triggers this work isn't
+entirely clear to me - switched_from_rt() only invokes rt_queue_pull_task()
+if there are no RT tasks on the local RQ, which means the local CPU can't
+be in the rto_mask.
+
+My current suspected sequence is something along the lines of the below,
+with the demoted task being current.
+
+  mark_wakeup_next_waiter()
+    rt_mutex_adjust_prio()
+      rt_mutex_setprio() // deboost originally-CFS task
+	check_class_changed()
+	  switched_from_rt() // Only rt_queue_pull_task() if !rq->rt.rt_nr_running
+	  switched_to_fair() // Sets need_resched
+      __balance_callbacks() // if pull_rt_task(), tell_cpu_to_push() can't select local CPU per the above
+      raw_spin_rq_unlock(rq)
+
+       // need_resched is set, so task_woken_rt() can't
+       // invoke push_rt_tasks(). Best I can come up with is
+       // local CPU has rt_nr_migratory >= 2 after the demotion, so stays
+       // in the rto_mask, and then:
+
+       <some other CPU running rto_push_irq_work_func() queues rto_push_work on this CPU>
+	 push_rt_task()
+	   // breakage follows here as rq->curr is CFS
+
+Move an existing check to check rq->curr vs the next pushable task's
+priority before getting anywhere near find_lowest_rq(). While at it, add an
+explicit sched_class of rq->curr check prior to invoking
+find_lowest_rq(rq->curr). Align the DL logic to also reschedule regardless
+of next_task's migratability.
+
+Fixes: a7c81556ec4d ("sched: Fix migrate_disable() vs rt/dl balancing")
+Reported-by: John Keeping <john@metanate.com>
+Signed-off-by: Valentin Schneider <valentin.schneider@arm.com>
 Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Link: https://lkml.kernel.org/r/20211028115005.873539-1-qais.yousef@arm.com
+Reviewed-by: Dietmar Eggemann <dietmar.eggemann@arm.com>
+Tested-by: John Keeping <john@metanate.com>
+Link: https://lore.kernel.org/r/20220127154059.974729-1-valentin.schneider@arm.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- kernel/sched/core.c | 1 +
- 1 file changed, 1 insertion(+)
+ kernel/sched/deadline.c | 12 ++++++------
+ kernel/sched/rt.c       | 32 ++++++++++++++++++++++----------
+ 2 files changed, 28 insertions(+), 16 deletions(-)
 
-diff --git a/kernel/sched/core.c b/kernel/sched/core.c
-index 65082cab2906..0e4b8214af31 100644
---- a/kernel/sched/core.c
-+++ b/kernel/sched/core.c
-@@ -36,6 +36,7 @@ EXPORT_TRACEPOINT_SYMBOL_GPL(pelt_rt_tp);
- EXPORT_TRACEPOINT_SYMBOL_GPL(pelt_dl_tp);
- EXPORT_TRACEPOINT_SYMBOL_GPL(pelt_irq_tp);
- EXPORT_TRACEPOINT_SYMBOL_GPL(pelt_se_tp);
-+EXPORT_TRACEPOINT_SYMBOL_GPL(pelt_thermal_tp);
- EXPORT_TRACEPOINT_SYMBOL_GPL(sched_cpu_capacity_tp);
- EXPORT_TRACEPOINT_SYMBOL_GPL(sched_overutilized_tp);
- EXPORT_TRACEPOINT_SYMBOL_GPL(sched_util_est_cfs_tp);
+diff --git a/kernel/sched/deadline.c b/kernel/sched/deadline.c
+index d2c072b0ef01..62f0cf842277 100644
+--- a/kernel/sched/deadline.c
++++ b/kernel/sched/deadline.c
+@@ -2240,12 +2240,6 @@ static int push_dl_task(struct rq *rq)
+ 		return 0;
+ 
+ retry:
+-	if (is_migration_disabled(next_task))
+-		return 0;
+-
+-	if (WARN_ON(next_task == rq->curr))
+-		return 0;
+-
+ 	/*
+ 	 * If next_task preempts rq->curr, and rq->curr
+ 	 * can move away, it makes sense to just reschedule
+@@ -2258,6 +2252,12 @@ static int push_dl_task(struct rq *rq)
+ 		return 0;
+ 	}
+ 
++	if (is_migration_disabled(next_task))
++		return 0;
++
++	if (WARN_ON(next_task == rq->curr))
++		return 0;
++
+ 	/* We might release rq lock */
+ 	get_task_struct(next_task);
+ 
+diff --git a/kernel/sched/rt.c b/kernel/sched/rt.c
+index 7b4f4fbbb404..14f273c29518 100644
+--- a/kernel/sched/rt.c
++++ b/kernel/sched/rt.c
+@@ -2026,6 +2026,16 @@ static int push_rt_task(struct rq *rq, bool pull)
+ 		return 0;
+ 
+ retry:
++	/*
++	 * It's possible that the next_task slipped in of
++	 * higher priority than current. If that's the case
++	 * just reschedule current.
++	 */
++	if (unlikely(next_task->prio < rq->curr->prio)) {
++		resched_curr(rq);
++		return 0;
++	}
++
+ 	if (is_migration_disabled(next_task)) {
+ 		struct task_struct *push_task = NULL;
+ 		int cpu;
+@@ -2033,6 +2043,18 @@ static int push_rt_task(struct rq *rq, bool pull)
+ 		if (!pull || rq->push_busy)
+ 			return 0;
+ 
++		/*
++		 * Invoking find_lowest_rq() on anything but an RT task doesn't
++		 * make sense. Per the above priority check, curr has to
++		 * be of higher priority than next_task, so no need to
++		 * reschedule when bailing out.
++		 *
++		 * Note that the stoppers are masqueraded as SCHED_FIFO
++		 * (cf. sched_set_stop_task()), so we can't rely on rt_task().
++		 */
++		if (rq->curr->sched_class != &rt_sched_class)
++			return 0;
++
+ 		cpu = find_lowest_rq(rq->curr);
+ 		if (cpu == -1 || cpu == rq->cpu)
+ 			return 0;
+@@ -2057,16 +2079,6 @@ static int push_rt_task(struct rq *rq, bool pull)
+ 	if (WARN_ON(next_task == rq->curr))
+ 		return 0;
+ 
+-	/*
+-	 * It's possible that the next_task slipped in of
+-	 * higher priority than current. If that's the case
+-	 * just reschedule current.
+-	 */
+-	if (unlikely(next_task->prio < rq->curr->prio)) {
+-		resched_curr(rq);
+-		return 0;
+-	}
+-
+ 	/* We might release rq lock */
+ 	get_task_struct(next_task);
+ 
 -- 
 2.34.1
 
