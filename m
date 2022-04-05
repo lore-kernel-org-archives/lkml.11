@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E465C4167B
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 01:10:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DF789C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 01:10:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1840723AbiDFBLm (ORCPT
+        id S1840783AbiDFBLw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 21:11:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56632 "EHLO
+        Tue, 5 Apr 2022 21:11:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44106 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236515AbiDEKdY (ORCPT
+        with ESMTP id S1358764AbiDELR0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:33:24 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA52EDEBAA;
-        Tue,  5 Apr 2022 03:19:05 -0700 (PDT)
+        Tue, 5 Apr 2022 07:17:26 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2DD602ED56;
+        Tue,  5 Apr 2022 03:20:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9378DB81C98;
-        Tue,  5 Apr 2022 10:19:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D9118C385A2;
-        Tue,  5 Apr 2022 10:19:02 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 9F1C1CE1CA2;
+        Tue,  5 Apr 2022 10:20:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B5829C385A1;
+        Tue,  5 Apr 2022 10:20:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649153943;
-        bh=3U84Y6ErdSAebcdArryxPmDUd40rXwenPtklL9WgMI4=;
+        s=korg; t=1649154016;
+        bh=2gQjB33XM7C25Q4/qKWtlPGZmLvN9J7n1DMtrmV3+84=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Fc5G3hyvWqiqbDJ6Tvblb63Vyzci7vz7iWqRenzpjW6cggPKVvP08qVOjIBKM8DeE
-         iPDTnV91cqbRPLtb5N8FvS1BhRPWo8I9J3p+S2LwTJxjCW3A/iTnhBZGgx35Y06nPc
-         /AM69zLhjL9rWws+aJO4bhJZH0Z4Ctk2rriZ16C8=
+        b=VqAcSEtmcF3T62/paCdCDZ92yHv6mbHCswr2nh+K/hFJPL2bVgrzr6HhHD6UMoT2s
+         JmwwFGAl5CqXjS/aeIo9V02rLGjBj15kXB1IKFlkhKqb7zg4AerEkzsZ6q2cIWjmyo
+         UmYcBVeUkZK+UJY+aQQ7PXWJ34dJCsO8QLyShHUg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Taniya Das <tdas@codeaurora.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        stable@vger.kernel.org, Gilles Buloz <gilles.buloz@kontron.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 402/599] clk: qcom: clk-rcg2: Update logic to calculate D value for RCG
-Date:   Tue,  5 Apr 2022 09:31:36 +0200
-Message-Id: <20220405070310.794436943@linuxfoundation.org>
+Subject: [PATCH 5.10 427/599] serial: 8250: fix XOFF/XON sending when DMA is used
+Date:   Tue,  5 Apr 2022 09:32:01 +0200
+Message-Id: <20220405070311.540287191@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
 References: <20220405070258.802373272@linuxfoundation.org>
@@ -50,58 +51,120 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Taniya Das <tdas@codeaurora.org>
+From: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
 
-[ Upstream commit 58922910add18583d5273c2edcdb9fd7bf4eca02 ]
+[ Upstream commit f58c252e30cf74f68b0054293adc03b5923b9f0e ]
 
-The display pixel clock has a requirement on certain newer platforms to
-support M/N as (2/3) and the final D value calculated results in
-underflow errors.
-As the current implementation does not check for D value is within
-the accepted range for a given M & N value. Update the logic to
-calculate the final D value based on the range.
+When 8250 UART is using DMA, x_char (XON/XOFF) is never sent
+to the wire. After this change, x_char is injected correctly.
 
-Fixes: 99cbd064b059f ("clk: qcom: Support display RCG clocks")
-Signed-off-by: Taniya Das <tdas@codeaurora.org>
-Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Link: https://lore.kernel.org/r/20220227175536.3131-1-tdas@codeaurora.org
+Create uart_xchar_out() helper for sending the x_char out and
+accounting related to it. It seems that almost every driver
+does these same steps with x_char. Except for 8250, however,
+almost all currently lack .serial_out so they cannot immediately
+take advantage of this new helper.
+
+The downside of this patch is that it might reintroduce
+the problems some devices faced with mixed DMA/non-DMA transfer
+which caused revert f967fc8f165f (Revert "serial: 8250_dma:
+don't bother DMA with small transfers"). However, the impact
+should be limited to cases with XON/XOFF (that didn't work
+with DMA capable devices to begin with so this problem is not
+very likely to cause a major issue, if any at all).
+
+Fixes: 9ee4b83e51f74 ("serial: 8250: Add support for dmaengine")
+Reported-by: Gilles Buloz <gilles.buloz@kontron.com>
+Tested-by: Gilles Buloz <gilles.buloz@kontron.com>
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+Link: https://lore.kernel.org/r/20220314091432.4288-2-ilpo.jarvinen@linux.intel.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/clk/qcom/clk-rcg2.c | 13 +++++++++++--
- 1 file changed, 11 insertions(+), 2 deletions(-)
+ drivers/tty/serial/8250/8250_dma.c  | 11 ++++++++++-
+ drivers/tty/serial/8250/8250_port.c |  4 +---
+ drivers/tty/serial/serial_core.c    | 14 ++++++++++++++
+ include/linux/serial_core.h         |  2 ++
+ 4 files changed, 27 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/clk/qcom/clk-rcg2.c b/drivers/clk/qcom/clk-rcg2.c
-index 59a5a0f261f3..ec2746fd00da 100644
---- a/drivers/clk/qcom/clk-rcg2.c
-+++ b/drivers/clk/qcom/clk-rcg2.c
-@@ -264,7 +264,7 @@ static int clk_rcg2_determine_floor_rate(struct clk_hw *hw,
+diff --git a/drivers/tty/serial/8250/8250_dma.c b/drivers/tty/serial/8250/8250_dma.c
+index 890fa7ddaa7f..b3c3f7e5851a 100644
+--- a/drivers/tty/serial/8250/8250_dma.c
++++ b/drivers/tty/serial/8250/8250_dma.c
+@@ -64,10 +64,19 @@ int serial8250_tx_dma(struct uart_8250_port *p)
+ 	struct uart_8250_dma		*dma = p->dma;
+ 	struct circ_buf			*xmit = &p->port.state->xmit;
+ 	struct dma_async_tx_descriptor	*desc;
++	struct uart_port		*up = &p->port;
+ 	int ret;
  
- static int __clk_rcg2_configure(struct clk_rcg2 *rcg, const struct freq_tbl *f)
- {
--	u32 cfg, mask;
-+	u32 cfg, mask, d_val, not2d_val, n_minus_m;
- 	struct clk_hw *hw = &rcg->clkr.hw;
- 	int ret, index = qcom_find_src_index(hw, rcg->parent_map, f->src);
+-	if (dma->tx_running)
++	if (dma->tx_running) {
++		if (up->x_char) {
++			dmaengine_pause(dma->txchan);
++			uart_xchar_out(up, UART_TX);
++			dmaengine_resume(dma->txchan);
++		}
+ 		return 0;
++	} else if (up->x_char) {
++		uart_xchar_out(up, UART_TX);
++	}
  
-@@ -283,8 +283,17 @@ static int __clk_rcg2_configure(struct clk_rcg2 *rcg, const struct freq_tbl *f)
- 		if (ret)
- 			return ret;
+ 	if (uart_tx_stopped(&p->port) || uart_circ_empty(xmit)) {
+ 		/* We have been called from __dma_tx_complete() */
+diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
+index 1733f03a7da7..3055353514e1 100644
+--- a/drivers/tty/serial/8250/8250_port.c
++++ b/drivers/tty/serial/8250/8250_port.c
+@@ -1817,9 +1817,7 @@ void serial8250_tx_chars(struct uart_8250_port *up)
+ 	int count;
  
-+		/* Calculate 2d value */
-+		d_val = f->n;
-+
-+		n_minus_m = f->n - f->m;
-+		n_minus_m *= 2;
-+
-+		d_val = clamp_t(u32, d_val, f->m, n_minus_m);
-+		not2d_val = ~d_val & mask;
-+
- 		ret = regmap_update_bits(rcg->clkr.regmap,
--				RCG_D_OFFSET(rcg), mask, ~f->n);
-+				RCG_D_OFFSET(rcg), mask, not2d_val);
- 		if (ret)
- 			return ret;
+ 	if (port->x_char) {
+-		serial_out(up, UART_TX, port->x_char);
+-		port->icount.tx++;
+-		port->x_char = 0;
++		uart_xchar_out(port, UART_TX);
+ 		return;
  	}
+ 	if (uart_tx_stopped(port)) {
+diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+index be0d9922e320..19f0c5db11e3 100644
+--- a/drivers/tty/serial/serial_core.c
++++ b/drivers/tty/serial/serial_core.c
+@@ -676,6 +676,20 @@ static void uart_flush_buffer(struct tty_struct *tty)
+ 	tty_port_tty_wakeup(&state->port);
+ }
+ 
++/*
++ * This function performs low-level write of high-priority XON/XOFF
++ * character and accounting for it.
++ *
++ * Requires uart_port to implement .serial_out().
++ */
++void uart_xchar_out(struct uart_port *uport, int offset)
++{
++	serial_port_out(uport, offset, uport->x_char);
++	uport->icount.tx++;
++	uport->x_char = 0;
++}
++EXPORT_SYMBOL_GPL(uart_xchar_out);
++
+ /*
+  * This function is used to send a high-priority XON/XOFF character to
+  * the device
+diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
+index ff63c2963359..35b26743dbb2 100644
+--- a/include/linux/serial_core.h
++++ b/include/linux/serial_core.h
+@@ -463,6 +463,8 @@ extern void uart_handle_cts_change(struct uart_port *uport,
+ extern void uart_insert_char(struct uart_port *port, unsigned int status,
+ 		 unsigned int overrun, unsigned int ch, unsigned int flag);
+ 
++void uart_xchar_out(struct uart_port *uport, int offset);
++
+ #ifdef CONFIG_MAGIC_SYSRQ_SERIAL
+ #define SYSRQ_TIMEOUT	(HZ * 5)
+ 
 -- 
 2.34.1
 
