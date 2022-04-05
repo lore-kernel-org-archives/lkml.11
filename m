@@ -2,41 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CB15DC47081
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:56:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 290A1C4167B
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:56:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245480AbiDEI4E (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 04:56:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57588 "EHLO
+        id S245514AbiDEI4J (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 04:56:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57716 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233231AbiDEIGp (ORCPT
+        with ESMTP id S233883AbiDEIKf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:06:45 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C91569CC5;
-        Tue,  5 Apr 2022 01:01:52 -0700 (PDT)
+        Tue, 5 Apr 2022 04:10:35 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 323836D4DD;
+        Tue,  5 Apr 2022 01:02:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BF933B81B14;
-        Tue,  5 Apr 2022 08:01:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1F5E7C385A1;
-        Tue,  5 Apr 2022 08:01:48 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BC4BF617B4;
+        Tue,  5 Apr 2022 08:02:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C3132C385A0;
+        Tue,  5 Apr 2022 08:02:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649145709;
-        bh=3B7rci6vm+gxEqP43CLYfU7pk9MUF4tG0H80bTJNQXE=;
+        s=korg; t=1649145767;
+        bh=y8xx7mcIFCMP4NH0mfaRbybxjb4RywbvD6xPkY8QbH8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LZNFzNg9z8Tqahft92VsTcbfqy348121AtWQQm+vyfum1YDaz30NynnETvAm3p1p2
-         Oxtljf3OyEYpRbhZ19vGW/B41kKVxzJlDE4PqryWiL5i4DncyJEdpjF01cniDhlwOG
-         xht4EX6tXzISb3DDXYlP1jpAXe7YF//fMxPihXag=
+        b=mJT3h0JMuY3VWeT2QEhpZ6fgJe3qG4pKsC45nL9ERKuOXPxw2gC0jWw8JQxiSjvnw
+         w7oIJcRAIC5+T3kbdGu+YAz7UfKZIfVstpZ4sXpOZqtdW/y9DqDrxoY3O67C7Wmoiw
+         6Q58yBdokqyXzX0FwPfFRZ3+R65srhKWjX7duEz4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Peter Chiu <chui-hao.chiu@mediatek.com>,
-        Felix Fietkau <nbd@nbd.name>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0500/1126] mt76: mt7915: fix ht mcs in mt7915_mac_add_txs_skb()
-Date:   Tue,  5 Apr 2022 09:20:47 +0200
-Message-Id: <20220405070422.303076267@linuxfoundation.org>
+        stable@vger.kernel.org, Corinna Vinschen <vinschen@redhat.com>,
+        Vinicius Costa Gomes <vinicius.gomes@intel.com>,
+        Sandeep Penigalapati <sandeep.penigalapati@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 0523/1126] igb: refactor XDP registration
+Date:   Tue,  5 Apr 2022 09:21:10 +0200
+Message-Id: <20220405070422.980609310@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -48,33 +51,83 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Peter Chiu <chui-hao.chiu@mediatek.com>
+From: Corinna Vinschen <vinschen@redhat.com>
 
-[ Upstream commit d8e4e8d148fb68858d6a997d88a87a2c615629ce ]
+[ Upstream commit e62ad74aa534404b3ee7e250b114a3536ac56987 ]
 
-The mcs value of HT mode reported by mt7915_mac_add_txs_skb()
-has already been converted to the expected format.
+On changing the RX ring parameters igb uses a hack to avoid a warning
+when calling xdp_rxq_info_reg via igb_setup_rx_resources.  It just
+clears the struct xdp_rxq_info content.
 
-Fixes: 9908d98ae72cd ("mt76: mt7915: report tx rate directly from tx status")
-Signed-off-by: Peter Chiu <chui-hao.chiu@mediatek.com>
-Signed-off-by: Felix Fietkau <nbd@nbd.name>
+Instead, change this to unregister if we're already registered.  Align
+code to the igc code.
+
+Fixes: 9cbc948b5a20c ("igb: add XDP support")
+Signed-off-by: Corinna Vinschen <vinschen@redhat.com>
+Acked-by: Vinicius Costa Gomes <vinicius.gomes@intel.com>
+Tested-by: Sandeep Penigalapati <sandeep.penigalapati@intel.com>
+Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/mediatek/mt76/mt7915/mac.c | 1 -
- 1 file changed, 1 deletion(-)
+ drivers/net/ethernet/intel/igb/igb_ethtool.c |  4 ----
+ drivers/net/ethernet/intel/igb/igb_main.c    | 19 +++++++++++++------
+ 2 files changed, 13 insertions(+), 10 deletions(-)
 
-diff --git a/drivers/net/wireless/mediatek/mt76/mt7915/mac.c b/drivers/net/wireless/mediatek/mt76/mt7915/mac.c
-index 48f115502282..d18a2e93cff5 100644
---- a/drivers/net/wireless/mediatek/mt76/mt7915/mac.c
-+++ b/drivers/net/wireless/mediatek/mt76/mt7915/mac.c
-@@ -1512,7 +1512,6 @@ mt7915_mac_add_txs_skb(struct mt7915_dev *dev, struct mt76_wcid *wcid, int pid,
- 		break;
- 	case MT_PHY_TYPE_HT:
- 	case MT_PHY_TYPE_HT_GF:
--		rate.mcs += (rate.nss - 1) * 8;
- 		if (rate.mcs > 31)
- 			goto out;
+diff --git a/drivers/net/ethernet/intel/igb/igb_ethtool.c b/drivers/net/ethernet/intel/igb/igb_ethtool.c
+index 51a2dcaf553d..2a5782063f4c 100644
+--- a/drivers/net/ethernet/intel/igb/igb_ethtool.c
++++ b/drivers/net/ethernet/intel/igb/igb_ethtool.c
+@@ -965,10 +965,6 @@ static int igb_set_ringparam(struct net_device *netdev,
+ 			memcpy(&temp_ring[i], adapter->rx_ring[i],
+ 			       sizeof(struct igb_ring));
  
+-			/* Clear copied XDP RX-queue info */
+-			memset(&temp_ring[i].xdp_rxq, 0,
+-			       sizeof(temp_ring[i].xdp_rxq));
+-
+ 			temp_ring[i].count = new_rx_count;
+ 			err = igb_setup_rx_resources(&temp_ring[i]);
+ 			if (err) {
+diff --git a/drivers/net/ethernet/intel/igb/igb_main.c b/drivers/net/ethernet/intel/igb/igb_main.c
+index 38ba92022cd4..c1e4ad65b02d 100644
+--- a/drivers/net/ethernet/intel/igb/igb_main.c
++++ b/drivers/net/ethernet/intel/igb/igb_main.c
+@@ -4352,7 +4352,18 @@ int igb_setup_rx_resources(struct igb_ring *rx_ring)
+ {
+ 	struct igb_adapter *adapter = netdev_priv(rx_ring->netdev);
+ 	struct device *dev = rx_ring->dev;
+-	int size;
++	int size, res;
++
++	/* XDP RX-queue info */
++	if (xdp_rxq_info_is_reg(&rx_ring->xdp_rxq))
++		xdp_rxq_info_unreg(&rx_ring->xdp_rxq);
++	res = xdp_rxq_info_reg(&rx_ring->xdp_rxq, rx_ring->netdev,
++			       rx_ring->queue_index, 0);
++	if (res < 0) {
++		dev_err(dev, "Failed to register xdp_rxq index %u\n",
++			rx_ring->queue_index);
++		return res;
++	}
+ 
+ 	size = sizeof(struct igb_rx_buffer) * rx_ring->count;
+ 
+@@ -4375,14 +4386,10 @@ int igb_setup_rx_resources(struct igb_ring *rx_ring)
+ 
+ 	rx_ring->xdp_prog = adapter->xdp_prog;
+ 
+-	/* XDP RX-queue info */
+-	if (xdp_rxq_info_reg(&rx_ring->xdp_rxq, rx_ring->netdev,
+-			     rx_ring->queue_index, 0) < 0)
+-		goto err;
+-
+ 	return 0;
+ 
+ err:
++	xdp_rxq_info_unreg(&rx_ring->xdp_rxq);
+ 	vfree(rx_ring->rx_buffer_info);
+ 	rx_ring->rx_buffer_info = NULL;
+ 	dev_err(dev, "Unable to allocate memory for the Rx descriptor ring\n");
 -- 
 2.34.1
 
