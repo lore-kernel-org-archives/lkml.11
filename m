@@ -2,189 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C9ABCC43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E938C4332F
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:56:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382938AbiDEUzK (ORCPT
+        id S1382651AbiDEUy7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 16:55:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36170 "EHLO
+        Tue, 5 Apr 2022 16:54:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46304 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1392147AbiDEPfq (ORCPT
+        with ESMTP id S1573287AbiDESq5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 11:35:46 -0400
-Received: from perceval.ideasonboard.com (perceval.ideasonboard.com [IPv6:2001:4b98:dc2:55:216:3eff:fef7:d647])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CAF9F710DB;
-        Tue,  5 Apr 2022 06:46:39 -0700 (PDT)
-Received: from pendragon.ideasonboard.com (117.145-247-81.adsl-dyn.isp.belgacom.be [81.247.145.117])
-        by perceval.ideasonboard.com (Postfix) with ESMTPSA id A8D535D;
-        Tue,  5 Apr 2022 15:46:37 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=ideasonboard.com;
-        s=mail; t=1649166397;
-        bh=NozpGi0NsTMG/sB7xLGYVBuLZzmbJ7B3Gwh+tj4+cQI=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=G8zkeM3lID2r8WMzYcbEXGAKX30vNSczc4ScWlOdPdazVH/RfNFQL0KJdhysWOadF
-         UCQQNWpNkGeaaTSgDAiZVcb+ZdCBuPEJQszJlD+quolRO/UOwM3K1+BDhoqKaHBHyj
-         YDypJs7DW5COOEgATFL/Z3vHTMi97p9eqOQGL8UM=
-Date:   Tue, 5 Apr 2022 16:46:34 +0300
-From:   Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-To:     Patrick Rudolph <patrick.rudolph@9elements.com>
-Cc:     Peter Rosin <peda@axentia.se>, Rob Herring <robh+dt@kernel.org>,
-        linux-i2c@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [v7 1/3] dt-bindings: i2c: Add Maxim MAX735x/MAX736x variants
-Message-ID: <YkxIOgTl876orHbf@pendragon.ideasonboard.com>
-References: <20220405120552.433415-1-patrick.rudolph@9elements.com>
- <20220405120552.433415-2-patrick.rudolph@9elements.com>
+        Tue, 5 Apr 2022 14:46:57 -0400
+Received: from mail-pf1-x42f.google.com (mail-pf1-x42f.google.com [IPv6:2607:f8b0:4864:20::42f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4201B8022B
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 11:44:59 -0700 (PDT)
+Received: by mail-pf1-x42f.google.com with SMTP id 7so247609pfu.13
+        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 11:44:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=BSTfu4XeI/ClhpJnOxug8bNrs6bcd1vbhIByuk9Td5A=;
+        b=FZ7CzdGv5IqR9igsKF5aVHLB8MfCD2UE6mGhWdabuDVB/PY75CERc0oW45pyoiFFsx
+         HLCOiljgUTbziKvTX7wZRoZqJ+RJ1Dea8AguoZhgeta2AWxRKKUV2iRUL0l0yDbf+TTN
+         ZiAbWnMeeHTkwk1JvBEs7xviif99t4lQdP3rhF94xjjOWUyQ5IYn9ZUuKyguEbSTvM9X
+         MpsV3tSkSRKbWT/1P6uf6AhXj04ePeO0yF7csRuDTu6ucoAxMuJ3t81XHgVFCM4FFTG+
+         SjX4Baa/CoEtOFP/F5srI+LydtG/vNCqkGlkcYX/sxjcplhmbQiJkxNjpWBgFSDO+Pmx
+         Gc4Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=BSTfu4XeI/ClhpJnOxug8bNrs6bcd1vbhIByuk9Td5A=;
+        b=whHcqJhYzh/PGJ3jvwRcYlG6XVAWMR0Fm9CuNCZNrNztPQhByxY0cKoFk3i9csQQ0Q
+         oUGBAtqnd7TUSUa7PKUxVBE/g1tZ79+wnInXlQhtW1pmtNikDLUE/Hly4SI6XUhbcMpl
+         qR+ZbstrWgRJSnHy9qdyYOwjAQs8wMoFJut0mfEYXznkwELZ6Hows319wyNXkmLm7SyF
+         dRX6c0vfFdIrVlVaRT6XXLJS009HJezaOJ6CkPdHMxu4JN3JdO/Jomx+dnVxmvELK/GV
+         i6kKQiLZFf/3Fm9VrElQUFXG8RqD4k5bU622RL8KSr6jyL1g8st1eyGqUSLB33i9+e7W
+         +nPA==
+X-Gm-Message-State: AOAM532T09FeichkUbq5IHgY5HHBEHBpmXp1CpRQL6/Yw01wysDe6sN6
+        ZYk47IGUXh51xsL3DSaMOPthjQ==
+X-Google-Smtp-Source: ABdhPJxqBsHYYYQ3r6tsKfeQNVI4VssdMtHw5QBcT84h3Z9HkLEDAYYEQ3XVRsYGURacbMDknChXvg==
+X-Received: by 2002:a65:57ca:0:b0:381:ea8d:4d1f with SMTP id q10-20020a6557ca000000b00381ea8d4d1fmr4102933pgr.143.1649184298506;
+        Tue, 05 Apr 2022 11:44:58 -0700 (PDT)
+Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
+        by smtp.gmail.com with ESMTPSA id j70-20020a638b49000000b003985b5ddaa1sm13887990pge.49.2022.04.05.11.44.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 05 Apr 2022 11:44:57 -0700 (PDT)
+Date:   Tue, 5 Apr 2022 18:44:54 +0000
+From:   Sean Christopherson <seanjc@google.com>
+To:     Yosry Ahmed <yosryahmed@google.com>
+Cc:     Huacai Chen <chenhuacai@kernel.org>,
+        Aleksandar Markovic <aleksandar.qemu.devel@gmail.com>,
+        Anup Patel <anup@brainfault.org>,
+        Atish Patra <atishp@atishpatra.org>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>, mizhang@google.com,
+        David Matlack <dmatlack@google.com>, kvm@vger.kernel.org,
+        kvm-riscv@lists.infradead.org, linux-mips@vger.kernel.org,
+        linux-mm@kvack.org, linux-kernel@vger.kernel.org,
+        Shakeel Butt <shakeelb@google.com>,
+        Andrew Morton <akpm@linux-foundation.org>
+Subject: Re: [PATCH v2 0/5] KVM: mm: count KVM page table pages in pagetable
+ stats
+Message-ID: <YkyOJqTeGRUjtuX1@google.com>
+References: <20220404234154.1251388-1-yosryahmed@google.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220405120552.433415-2-patrick.rudolph@9elements.com>
+In-Reply-To: <20220404234154.1251388-1-yosryahmed@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Patrick,
-
-Thank you for the patch.
-
-On Tue, Apr 05, 2022 at 02:05:49PM +0200, Patrick Rudolph wrote:
-> Update the pca954x bindings to add support for the Maxim MAX735x/MAX736x
-> chips. The functionality will be provided by the exisintg pca954x driver.
+On Mon, Apr 04, 2022, Yosry Ahmed wrote:
+> We keep track of several kernel memory stats (total kernel memory, page
+> tables, stack, vmalloc, etc) on multiple levels (global, per-node,
+> per-memcg, etc). These stats give insights to users to how much memory
+> is used by the kernel and for what purposes.
 > 
-> While on it make the interrupts support conditionally as not all of the
-> existing chips have interrupts.
-> 
-> For chips that are powered off by default add an optional regulator
-> called vdd-supply.
-> 
-> Signed-off-by: Patrick Rudolph <patrick.rudolph@9elements.com>
-> ---
->  .../bindings/i2c/i2c-mux-pca954x.yaml         | 44 ++++++++++++++-----
->  1 file changed, 34 insertions(+), 10 deletions(-)
-> 
-> diff --git a/Documentation/devicetree/bindings/i2c/i2c-mux-pca954x.yaml b/Documentation/devicetree/bindings/i2c/i2c-mux-pca954x.yaml
-> index 9f1726d0356b..132c3e54e7ab 100644
-> --- a/Documentation/devicetree/bindings/i2c/i2c-mux-pca954x.yaml
-> +++ b/Documentation/devicetree/bindings/i2c/i2c-mux-pca954x.yaml
-> @@ -4,21 +4,48 @@
->  $id: http://devicetree.org/schemas/i2c/i2c-mux-pca954x.yaml#
->  $schema: http://devicetree.org/meta-schemas/core.yaml#
->  
-> -title: NXP PCA954x I2C bus switch
-> +title: NXP PCA954x I2C and compatible bus switches
->  
->  maintainers:
->    - Laurent Pinchart <laurent.pinchart@ideasonboard.com>
->  
->  description:
-> -  The binding supports NXP PCA954x and PCA984x I2C mux/switch devices.
-> +  The binding supports NXP PCA954x and PCA984x I2C mux/switch devices,
-> +  and the Maxim MAX735x and MAX736x I2C mux/switch devices.
->  
->  allOf:
->    - $ref: /schemas/i2c/i2c-mux.yaml#
-> +  - if:
-> +      properties:
-> +        compatible:
-> +          contains:
-> +            enum:
-> +              - maxim,max7367
-> +              - maxim,max7369
-> +              - nxp,pca9542
-> +              - nxp,pca9543
-> +              - nxp,pca9544
-> +              - nxp,pca9545
-> +    then:
-> +      properties:
-> +        interrupts:
-> +          maxItems: 1
-> +
-> +        "#interrupt-cells":
-> +          const: 2
-> +
-> +        interrupt-controller: true
+> Currently, memory used by kvm for its page tables is not accounted in
+> the pagetable stats. This patch series accounts the memory pages used by
+> KVM for page tables in those stats.
 
-It feels a bit out of place to have those properties listed before the
-main "properties" property, but we can only have a sincel allOf. I
-wonder if the i2c-mux schema could be selected automatically based on
-node name, but that's out of scope for this patch.
-
-I thought it was more customary to define properties in the main
-"properties" property, and then have
-
-if:
-  not:
-    properties:
-      compatible:
-        contains:
-          enum:
-            - maxim,max7367
-            - maxim,max7369
-            - nxp,pca9542
-            - nxp,pca9543
-            - nxp,pca9544
-            - nxp,pca9545
-  then:
-    properties:
-      interrupts: false
-      "#interrupt-cells": false
-      interrupt-controller: false
-
-I don't mind much either way though, but if one option is preferred over
-the other, we may want to be consistent.
-
-Reviewed-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-
->  properties:
->    compatible:
->      oneOf:
->        - enum:
-> +          - maxim,max7356
-> +          - maxim,max7357
-> +          - maxim,max7358
-> +          - maxim,max7367
-> +          - maxim,max7368
-> +          - maxim,max7369
->            - nxp,pca9540
->            - nxp,pca9542
->            - nxp,pca9543
-> @@ -38,14 +65,6 @@ properties:
->    reg:
->      maxItems: 1
->  
-> -  interrupts:
-> -    maxItems: 1
-> -
-> -  "#interrupt-cells":
-> -    const: 2
-> -
-> -  interrupt-controller: true
-> -
->    reset-gpios:
->      maxItems: 1
->  
-> @@ -59,6 +78,9 @@ properties:
->      description: if present, overrides i2c-mux-idle-disconnect
->      $ref: /schemas/mux/mux-controller.yaml#/properties/idle-state
->  
-> +  vdd-supply:
-> +    description: A voltage regulator supplying power to the chip.
-> +
->  required:
->    - compatible
->    - reg
-> @@ -79,6 +101,8 @@ examples:
->              #size-cells = <0>;
->              reg = <0x74>;
->  
-> +            vdd-supply = <&p3v3>;
-> +
->              interrupt-parent = <&ipic>;
->              interrupts = <17 IRQ_TYPE_LEVEL_LOW>;
->              interrupt-controller;
-
--- 
-Regards,
-
-Laurent Pinchart
+It's still not obvious to me that piggybacking NR_PAGETABLE is desirable, probably
+because I am quite clueless as to how these stats are used on the backend.  E.g.
+why not have a NR_SECONDARY_PAGETABLE entry to track pages used for secondary MMU
+page tables?
