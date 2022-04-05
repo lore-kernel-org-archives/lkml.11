@@ -2,348 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F219EC433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:57:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BE899C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:57:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1443210AbiDFAxf (ORCPT
+        id S1445044AbiDFAx6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 20:53:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44164 "EHLO
+        Tue, 5 Apr 2022 20:53:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50646 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1572898AbiDERQV (ORCPT
+        with ESMTP id S1356769AbiDEKYz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 13:16:21 -0400
-Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B40725C2
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 10:14:23 -0700 (PDT)
-Received: by mail-pj1-x1034.google.com with SMTP id a16-20020a17090a6d9000b001c7d6c1bb13so45829pjk.4
-        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 10:14:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=0s66Tr5Fxz2b83SYU1mHaVJqlskQtPLz5vVq+NK22v0=;
-        b=k997fVYIhUwrf3n7zR/PwUUEFagjhi1fLWsA3VodXXYnlAEu1dk8ROS3lIp6Q6HXTe
-         mMbAKhE/sebpwCH8zuiwKNX6NfYo48PWIgZbg4chdCoxSN3Erg5VyxQUVCRRXNhU8/5F
-         iEULqe4Xv8ZJEFyZ9KqeBh8CVw4GRN6c+3HIs=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=0s66Tr5Fxz2b83SYU1mHaVJqlskQtPLz5vVq+NK22v0=;
-        b=AS4OThH6SJn7owdccB6Uk/wl2OdQY/j8OKYGjigok/w5DC+Abfufkw5SoHXjf35QDJ
-         dq9+KIYsQz9/w1P1T0C92vqyZS5wP9MFA8yAhHqWpTazVzzo0mEouv932MVtSKLAWQh3
-         0AoaZMLNezt1acZ9XXR4jpFzj0Qjm3hmeCiZz7AfwTjgHqCVOWoTSRLinA0E3VPXkj9H
-         S6NlS8948PhMShVC31PXc/thzt4QRkQ/05AiUg8MBG/BA7dBMu0vXk0XVEqt74VvjOe1
-         eRtOlYQ8Z+49wxfsokQs3VO0VcyZRqi5x02lxQOVleD983yOLoFr76e8U+CmVAL/mfaP
-         IWdg==
-X-Gm-Message-State: AOAM532JSZ8CKuH5Nnf+aUO7kVQRiW+RgxRcc/VQ92qkyzcXZIbVXwcI
-        lvlWJR+M5pSa8MdKxUFpSPa1xg==
-X-Google-Smtp-Source: ABdhPJwj4vid1vbB9Yl2j9x5FaTZNaJiwiQ9QqyLaZybPMRgTyUPrEjgwkXJTHjdx8XUqV+zFKBXvQ==
-X-Received: by 2002:a17:903:22cf:b0:154:837c:597 with SMTP id y15-20020a17090322cf00b00154837c0597mr4389570plg.135.1649178862778;
-        Tue, 05 Apr 2022 10:14:22 -0700 (PDT)
-Received: from localhost ([2620:15c:202:201:6b63:d403:e31b:da39])
-        by smtp.gmail.com with UTF8SMTPSA id k62-20020a17090a4cc400b001c7ea7f487asm3094710pjh.39.2022.04.05.10.14.21
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 05 Apr 2022 10:14:22 -0700 (PDT)
-Date:   Tue, 5 Apr 2022 10:14:20 -0700
-From:   Matthias Kaehlcke <mka@chromium.org>
-To:     Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
-Cc:     agross@kernel.org, bjorn.andersson@linaro.org, robh+dt@kernel.org,
-        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, quic_rohitkr@quicinc.com,
-        srinivas.kandagatla@linaro.org, dianders@chromium.org,
-        swboyd@chromium.org, judyhsiao@chromium.org,
-        Venkata Prasad Potturu <quic_potturu@quicinc.com>
-Subject: Re: [PATCH v6 2/2] arm64: dts: qcom: sc7280: add lpass lpi pin
- controller node
-Message-ID: <Ykx47AlGYa8s5FTa@google.com>
-References: <1649157167-29106-1-git-send-email-quic_srivasam@quicinc.com>
- <1649157167-29106-3-git-send-email-quic_srivasam@quicinc.com>
+        Tue, 5 Apr 2022 06:24:55 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6858DBF53B;
+        Tue,  5 Apr 2022 03:08:59 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8B3F76179D;
+        Tue,  5 Apr 2022 10:08:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A12E4C385A0;
+        Tue,  5 Apr 2022 10:08:57 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649153338;
+        bh=xakmxZtCSnxgVfsDrqj19Nm5hkpjREj2jKL0vzK4tiU=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=Hkt64Huk4Ixs6G5K2WsQjI6gyPvqmvwXOVqCUx2AnewCiMDNILBKaR/2I1Q09KHIz
+         sdM2Ct60hkcgH1xT+O+EU/0wMWG73J34/HifddCt6pNRXgfhVCDLBAjYPJn1ofE3h+
+         S4Srh7+wEGqCDiPlzJDN8qZ9JZgdAYXX9NPcy6Q4=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
+        Corentin Labbe <clabbe@baylibre.com>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 187/599] media: staging: media: zoran: fix usage of vb2_dma_contig_set_max_seg_size
+Date:   Tue,  5 Apr 2022 09:28:01 +0200
+Message-Id: <20220405070304.406826520@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
+References: <20220405070258.802373272@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <1649157167-29106-3-git-send-email-quic_srivasam@quicinc.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 05, 2022 at 04:42:47PM +0530, Srinivasa Rao Mandadapu wrote:
-> Add LPASS LPI pinctrl node required for Audio functionality on sc7280
-> based platforms.
-> 
-> Signed-off-by: Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
-> Co-developed-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
-> Signed-off-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
-> ---
->  arch/arm64/boot/dts/qcom/sc7280-idp.dtsi |  98 ++++++++++++++++++++++++++++
->  arch/arm64/boot/dts/qcom/sc7280.dtsi     | 107 +++++++++++++++++++++++++++++++
->  2 files changed, 205 insertions(+)
-> 
-> diff --git a/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi b/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
-> index 2afbbe3..f912a89 100644
-> --- a/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
-> +++ b/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
-> @@ -238,6 +238,104 @@
->  	modem-init;
->  };
->  
-> +&lpass_tlmm {
-> +	dmic01_active: dmic01-active {
-> +		clk {
-> +			drive-strength = <8>;
-> +		};
-> +
-> +		data {
-> +			drive-strength = <8>;
+From: Corentin Labbe <clabbe@baylibre.com>
 
-The DMIC data pins are input pins, right? Why does an input pin need a drive
-strength? Same for other input pins.
+[ Upstream commit 241f5b67fb48def58643f279dfb8468bdd54b443 ]
 
-> +		};
-> +	};
+vb2_dma_contig_set_max_seg_size need to have a size in parameter and not
+a DMA_BIT_MASK().
+While fixing this issue, also fix error handling of all DMA size
+setting.
 
-There's no need to reference 'lpass_tlmm' nor to repeat $label: $node.
-Instead just use phandles:
+Reported-by: kernel test robot <lkp@intel.com>
+Fixes: d4ae3689226e5 ("media: zoran: device support only 32bit DMA address")
+Signed-off-by: Corentin Labbe <clabbe@baylibre.com>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/staging/media/zoran/zoran_card.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-&dmic01_active {
-	clk {
-		drive-strength = <8>;
-	};
+diff --git a/drivers/staging/media/zoran/zoran_card.c b/drivers/staging/media/zoran/zoran_card.c
+index dfc60e2e9dd7..721f1decb0a7 100644
+--- a/drivers/staging/media/zoran/zoran_card.c
++++ b/drivers/staging/media/zoran/zoran_card.c
+@@ -1068,8 +1068,10 @@ static int zoran_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 
+ 	err = dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(32));
+ 	if (err)
+-		return -ENODEV;
+-	vb2_dma_contig_set_max_seg_size(&pdev->dev, DMA_BIT_MASK(32));
++		return err;
++	err = vb2_dma_contig_set_max_seg_size(&pdev->dev, U32_MAX);
++	if (err)
++		return err;
+ 
+ 	nr = zoran_num++;
+ 	if (nr >= BUZ_MAX) {
+-- 
+2.34.1
 
-	data {
-		drive-strength = <8>;
-	};
-};
 
-Rather than replicating the node hierarchy you could also just give each pin a
-label, and then:
 
-&dmic01_clk_active {
-	drive-strength = <8>;
-};
-
-&dmic01_data_active {
-	drive-strength = <8>;
-};
-
-I don't have a strong preference, but wonder if the grouping adds any value.
-
-> +
-> +	dmic01_sleep: dmic01-sleep {
-> +		clk {
-> +			drive-strength = <2>;
-> +			bias-disable;
-> +		};
-> +
-> +		data {
-> +			drive-strength = <2>;
-> +			pull-down;
-> +		};
-> +	};
-> +
-> +	dmic23_active: dmic02-active {
-> +		clk {
-> +			drive-strength = <8>;
-> +		};
-> +
-> +		data {
-> +			drive-strength = <8>;
-> +		};
-> +	};
-> +
-> +	dmic23_sleep: dmic02-sleep {
-> +		clk {
-> +			drive-strength = <2>;
-> +			bias-disable;
-> +		};
-> +
-> +		data {
-> +			drive-strength = <2>;
-> +			pull-down;
-> +		};
-> +	};
-> +
-> +	rx_swr_active: rx-swr-active {
-> +		clk {
-> +			drive-strength = <2>;
-> +			slew-rate = <1>;
-> +			bias-disable;
-> +		};
-> +
-> +		data {
-> +			drive-strength = <2>;
-> +			slew-rate = <1>;
-> +			bias-bus-hold;
-> +		};
-> +	};
-> +
-> +	rx_swr_sleep: rx-swr-sleep {
-> +		clk {
-> +			drive-strength = <2>;
-> +			bias-pull-down;
-> +		};
-> +
-> +		data {
-> +			drive-strength = <2>;
-> +			bias-pull-down;
-> +		};
-> +	};
-> +
-> +	tx_swr_active: tx-swr-active {
-> +		clk {
-> +			drive-strength = <2>;
-> +			slew-rate = <1>;
-> +			bias-disable;
-> +		};
-> +
-> +		data {
-> +			drive-strength = <2>;
-> +			slew-rate = <1>;
-> +			bias-bus-hold;
-> +		};
-> +	};
-> +
-> +	tx_swr_sleep: tx-swr-sleep {
-> +		clk {
-> +			drive-strength = <2>;
-> +			bias-pull-down;
-> +		};
-> +
-> +		data {
-> +			drive-strength = <2>;
-> +			bias-bus-hold;
-> +		};
-> +	};
-> +};
-> +
->  &pcie1 {
->  	status = "okay";
->  	perst-gpio = <&tlmm 2 GPIO_ACTIVE_LOW>;
-> diff --git a/arch/arm64/boot/dts/qcom/sc7280.dtsi b/arch/arm64/boot/dts/qcom/sc7280.dtsi
-> index 8d8cec5..db74fc3 100644
-> --- a/arch/arm64/boot/dts/qcom/sc7280.dtsi
-> +++ b/arch/arm64/boot/dts/qcom/sc7280.dtsi
-> @@ -1987,6 +1987,113 @@
->  			qcom,bcm-voters = <&apps_bcm_voter>;
->  		};
->  
-> +		lpass_tlmm: pinctrl@33c0000 {
-> +			compatible = "qcom,sc7280-lpass-lpi-pinctrl";
-> +			reg = <0 0x33c0000 0x0 0x20000>,
-> +				<0 0x3550000 0x0 0x10000>;
-
-Pad addresses to 8 digits.
-
-> +			gpio-controller;
-> +			#gpio-cells = <2>;
-> +			gpio-ranges = <&lpass_tlmm 0 0 15>;
-> +
-> +			#clock-cells = <1>;
-> +
-> +			dmic01_active: dmic01-active {
-> +				clk {
-> +					pins = "gpio6";
-> +					function = "dmic1_clk";
-> +				};
-> +
-> +				data {
-> +					pins = "gpio7";
-> +					function = "dmic1_data";
-> +				};
-> +			};
-> +
-> +			dmic01_sleep: dmic01-sleep {
-> +				clk {
-> +					pins = "gpio6";
-> +					function = "dmic1_clk";
-> +				};
-> +
-> +				data {
-> +					pins = "gpio7";
-> +					function = "dmic1_data";
-> +				};
-> +			};
-> +
-> +			dmic23_active: dmic02-active {
-
-is it intentional that the node name is 'dmic02*', but the label 'dmic23*'?
-
-> +				clk {
-> +					pins = "gpio8";
-> +					function = "dmic2_clk";
-> +				};
-> +
-> +				data {
-> +					pins = "gpio9";
-> +					function = "dmic2_data";
-> +				};
-> +			};
-> +
-> +			dmic23_sleep: dmic02-sleep {
-
-ditto
-
-> +				clk {
-> +					pins = "gpio8";
-> +					function = "dmic2_clk";
-> +				};
-> +
-> +				data {
-> +					pins = "gpio9";
-> +					function = "dmic2_data";
-> +				};
-> +			};
-> +
-> +			rx_swr_active: rx-swr-active {
-> +				clk {
-> +					pins = "gpio3";
-> +					function = "swr_rx_clk";
-> +				};
-> +
-> +				data {
-> +					pins = "gpio4", "gpio5";
-> +					function = "swr_rx_data";
-> +				};
-> +			};
-> +
-> +			rx_swr_sleep: rx-swr-sleep {
-> +				clk {
-> +					pins = "gpio3";
-> +					function = "swr_rx_clk";
-> +				};
-> +
-> +				data {
-> +					pins = "gpio4", "gpio5";
-> +					function = "swr_rx_data";
-> +				};
-> +			};
-> +
-> +			tx_swr_active: tx-swr-active {
-> +				clk {
-> +					pins = "gpio0";
-> +					function = "swr_tx_clk";
-> +				};
-> +
-> +				data {
-> +					pins = "gpio1", "gpio2", "gpio14";
-> +					function = "swr_tx_data";
-> +				};
-> +			};
-> +
-> +			tx_swr_sleep: tx-swr-sleep {
-> +				clk {
-> +					pins = "gpio0";
-> +					function = "swr_tx_clk";
-> +				};
-> +
-> +				data {
-> +					pins = "gpio1", "gpio2", "gpio14";
-> +					function = "swr_tx_data";
-> +				};
-> +			};
-> +		};
-> +
->  		gpu: gpu@3d00000 {
->  			compatible = "qcom,adreno-635.0", "qcom,adreno";
->  			reg = <0 0x03d00000 0 0x40000>,
