@@ -2,96 +2,213 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 37AB2C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 663C5C433F5
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:16:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1449563AbiDEUK0 (ORCPT
+        id S1450577AbiDEUKl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 16:10:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52748 "EHLO
+        Tue, 5 Apr 2022 16:10:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33866 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1573173AbiDESHA (ORCPT
+        with ESMTP id S245744AbiDEKjg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 14:07:00 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BA441F623;
-        Tue,  5 Apr 2022 11:05:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:Content-Type:
-        In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender
-        :Reply-To:Content-ID:Content-Description;
-        bh=eK1W6c3cykjE0LliXQwdPpUl4xUEcuaJtmGpAa5ka20=; b=DroHWKqca4Vq4W7PTsU+k7+YsQ
-        +ZiV7XCDx/UOgPCSCA/Ay36KKPaIMOYZZ8GAlXpb8MzCWbQJADXlw26mZaUMWjK16b+PGHCu6OaLr
-        eKp+zBAZikv9jQCkqK4pZeHIPZTe+JjQDxH1SlB/Wxy4nBz+4ihiONMQulZmxiP3SyLRj6QbLBBHw
-        AEdn36e/hEY5DtsEzGeDqE4HAvDSxRI648dXsVbOfih/gyQnaesDl4t9ttLkT53HDVWHDAs7yD0Jv
-        Dl9TvfKQRib/BrEqja3eRnL6whXR/NN5sSHrnpXf3++dEWxEJ73jYMypwMazlVSe4lL/zm0rcubkM
-        OJy6QZwQ==;
-Received: from [2601:1c0:6280:3f0::aa0b]
-        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nbnXz-006wEx-Ex; Tue, 05 Apr 2022 18:04:55 +0000
-Message-ID: <ac023638-5ce4-1c0b-29e5-e30fc3038e72@infradead.org>
-Date:   Tue, 5 Apr 2022 11:04:51 -0700
+        Tue, 5 Apr 2022 06:39:36 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95370A5EA9;
+        Tue,  5 Apr 2022 03:24:25 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 31C066141B;
+        Tue,  5 Apr 2022 10:24:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 428FEC385A0;
+        Tue,  5 Apr 2022 10:24:24 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649154264;
+        bh=7uyU7E8nxC0nXViS7KVUZ+a1glED64j3pQUfJQJfqB4=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=HrbfMGZUKNoy0wX6J+3cZ4PHfy+oXBoWzPE/loGIMjJBJhonqJCV7MFoxbAeOMKti
+         MQK/w7eNK4mplM56VFusWBpL+acRZRpMgUbHIdOqyeWH0h5Wq5o5q7TTpkECT3KIRl
+         WYFO3HULeC0FdiKvTlGDzCErWG5HZGzTtgxzA48I=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>,
+        Anders Roxell <anders.roxell@linaro.org>,
+        Segher Boessenkool <segher@kernel.crashing.org>,
+        Michael Ellerman <mpe@ellerman.id.au>
+Subject: [PATCH 5.10 516/599] powerpc: Fix build errors with newer binutils
+Date:   Tue,  5 Apr 2022 09:33:30 +0200
+Message-Id: <20220405070314.194613614@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
+References: <20220405070258.802373272@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH net] net: micrel: Fix KS8851 Kconfig
-Content-Language: en-US
-To:     Horatiu Vultur <horatiu.vultur@microchip.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        Divya.Koppera@microchip.com, kernel test robot <lkp@intel.com>
-References: <20220405065936.4105272-1-horatiu.vultur@microchip.com>
-From:   Randy Dunlap <rdunlap@infradead.org>
-In-Reply-To: <20220405065936.4105272-1-horatiu.vultur@microchip.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+From: Anders Roxell <anders.roxell@linaro.org>
+
+commit 8667d0d64dd1f84fd41b5897fd87fa9113ae05e3 upstream.
+
+Building tinyconfig with gcc (Debian 11.2.0-16) and assembler (Debian
+2.37.90.20220207) the following build error shows up:
+
+  {standard input}: Assembler messages:
+  {standard input}:1190: Error: unrecognized opcode: `stbcix'
+  {standard input}:1433: Error: unrecognized opcode: `lwzcix'
+  {standard input}:1453: Error: unrecognized opcode: `stbcix'
+  {standard input}:1460: Error: unrecognized opcode: `stwcix'
+  {standard input}:1596: Error: unrecognized opcode: `stbcix'
+  ...
+
+Rework to add assembler directives [1] around the instruction. Going
+through them one by one shows that the changes should be safe.  Like
+__get_user_atomic_128_aligned() is only called in p9_hmi_special_emu(),
+which according to the name is specific to power9.  And __raw_rm_read*()
+are only called in things that are powernv or book3s_hv specific.
+
+[1] https://sourceware.org/binutils/docs/as/PowerPC_002dPseudo.html#PowerPC_002dPseudo
+
+Cc: stable@vger.kernel.org
+Co-developed-by: Arnd Bergmann <arnd@arndb.de>
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+Signed-off-by: Anders Roxell <anders.roxell@linaro.org>
+Reviewed-by: Segher Boessenkool <segher@kernel.crashing.org>
+[mpe: Make commit subject more descriptive]
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/20220224162215.3406642-2-anders.roxell@linaro.org
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ arch/powerpc/include/asm/io.h        |   40 ++++++++++++++++++++++++++++-------
+ arch/powerpc/include/asm/uaccess.h   |    3 ++
+ arch/powerpc/platforms/powernv/rng.c |    6 ++++-
+ 3 files changed, 40 insertions(+), 9 deletions(-)
+
+--- a/arch/powerpc/include/asm/io.h
++++ b/arch/powerpc/include/asm/io.h
+@@ -344,25 +344,37 @@ static inline void __raw_writeq_be(unsig
+  */
+ static inline void __raw_rm_writeb(u8 val, volatile void __iomem *paddr)
+ {
+-	__asm__ __volatile__("stbcix %0,0,%1"
++	__asm__ __volatile__(".machine push;   \
++			      .machine power6; \
++			      stbcix %0,0,%1;  \
++			      .machine pop;"
+ 		: : "r" (val), "r" (paddr) : "memory");
+ }
+ 
+ static inline void __raw_rm_writew(u16 val, volatile void __iomem *paddr)
+ {
+-	__asm__ __volatile__("sthcix %0,0,%1"
++	__asm__ __volatile__(".machine push;   \
++			      .machine power6; \
++			      sthcix %0,0,%1;  \
++			      .machine pop;"
+ 		: : "r" (val), "r" (paddr) : "memory");
+ }
+ 
+ static inline void __raw_rm_writel(u32 val, volatile void __iomem *paddr)
+ {
+-	__asm__ __volatile__("stwcix %0,0,%1"
++	__asm__ __volatile__(".machine push;   \
++			      .machine power6; \
++			      stwcix %0,0,%1;  \
++			      .machine pop;"
+ 		: : "r" (val), "r" (paddr) : "memory");
+ }
+ 
+ static inline void __raw_rm_writeq(u64 val, volatile void __iomem *paddr)
+ {
+-	__asm__ __volatile__("stdcix %0,0,%1"
++	__asm__ __volatile__(".machine push;   \
++			      .machine power6; \
++			      stdcix %0,0,%1;  \
++			      .machine pop;"
+ 		: : "r" (val), "r" (paddr) : "memory");
+ }
+ 
+@@ -374,7 +386,10 @@ static inline void __raw_rm_writeq_be(u6
+ static inline u8 __raw_rm_readb(volatile void __iomem *paddr)
+ {
+ 	u8 ret;
+-	__asm__ __volatile__("lbzcix %0,0, %1"
++	__asm__ __volatile__(".machine push;   \
++			      .machine power6; \
++			      lbzcix %0,0, %1; \
++			      .machine pop;"
+ 			     : "=r" (ret) : "r" (paddr) : "memory");
+ 	return ret;
+ }
+@@ -382,7 +397,10 @@ static inline u8 __raw_rm_readb(volatile
+ static inline u16 __raw_rm_readw(volatile void __iomem *paddr)
+ {
+ 	u16 ret;
+-	__asm__ __volatile__("lhzcix %0,0, %1"
++	__asm__ __volatile__(".machine push;   \
++			      .machine power6; \
++			      lhzcix %0,0, %1; \
++			      .machine pop;"
+ 			     : "=r" (ret) : "r" (paddr) : "memory");
+ 	return ret;
+ }
+@@ -390,7 +408,10 @@ static inline u16 __raw_rm_readw(volatil
+ static inline u32 __raw_rm_readl(volatile void __iomem *paddr)
+ {
+ 	u32 ret;
+-	__asm__ __volatile__("lwzcix %0,0, %1"
++	__asm__ __volatile__(".machine push;   \
++			      .machine power6; \
++			      lwzcix %0,0, %1; \
++			      .machine pop;"
+ 			     : "=r" (ret) : "r" (paddr) : "memory");
+ 	return ret;
+ }
+@@ -398,7 +419,10 @@ static inline u32 __raw_rm_readl(volatil
+ static inline u64 __raw_rm_readq(volatile void __iomem *paddr)
+ {
+ 	u64 ret;
+-	__asm__ __volatile__("ldcix %0,0, %1"
++	__asm__ __volatile__(".machine push;   \
++			      .machine power6; \
++			      ldcix %0,0, %1;  \
++			      .machine pop;"
+ 			     : "=r" (ret) : "r" (paddr) : "memory");
+ 	return ret;
+ }
+--- a/arch/powerpc/include/asm/uaccess.h
++++ b/arch/powerpc/include/asm/uaccess.h
+@@ -229,8 +229,11 @@ extern long __get_user_bad(void);
+  */
+ #define __get_user_atomic_128_aligned(kaddr, uaddr, err)		\
+ 	__asm__ __volatile__(				\
++		".machine push\n"			\
++		".machine altivec\n"			\
+ 		"1:	lvx  0,0,%1	# get user\n"	\
+ 		" 	stvx 0,0,%2	# put kernel\n"	\
++		".machine pop\n"			\
+ 		"2:\n"					\
+ 		".section .fixup,\"ax\"\n"		\
+ 		"3:	li %0,%3\n"			\
+--- a/arch/powerpc/platforms/powernv/rng.c
++++ b/arch/powerpc/platforms/powernv/rng.c
+@@ -43,7 +43,11 @@ static unsigned long rng_whiten(struct p
+ 	unsigned long parity;
+ 
+ 	/* Calculate the parity of the value */
+-	asm ("popcntd %0,%1" : "=r" (parity) : "r" (val));
++	asm (".machine push;   \
++	      .machine power7; \
++	      popcntd %0,%1;   \
++	      .machine pop;"
++	     : "=r" (parity) : "r" (val));
+ 
+ 	/* xor our value with the previous mask */
+ 	val ^= rng->mask;
 
 
-On 4/4/22 23:59, Horatiu Vultur wrote:
-> KS8851 selects MICREL_PHY, which depends on PTP_1588_CLOCK_OPTIONAL, so
-> make KS8851 also depend on PTP_1588_CLOCK_OPTIONAL.
-> 
-> Fixes kconfig warning and build errors:
-> 
-> WARNING: unmet direct dependencies detected for MICREL_PHY
->   Depends on [m]: NETDEVICES [=y] && PHYLIB [=y] && PTP_1588_CLOCK_OPTIONAL [=m]
->     Selected by [y]:
->       - KS8851 [=y] && NETDEVICES [=y] && ETHERNET [=y] && NET_VENDOR_MICREL [=y] && SPI [=y]
-> 
-> ld.lld: error: undefined symbol: ptp_clock_register referenced by micrel.c
-> net/phy/micrel.o:(lan8814_probe) in archive drivers/built-in.a
-> ld.lld: error: undefined symbol: ptp_clock_index referenced by micrel.c
-> net/phy/micrel.o:(lan8814_ts_info) in archive drivers/built-in.a
-> 
-> Reported-by: kernel test robot <lkp@intel.com>
-> Fixes: ece19502834d ("net: phy: micrel: 1588 support for LAN8814 phy")
-> Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
-
-Tested-by: Randy Dunlap <rdunlap@infradead.org>
-Acked-by: Randy Dunlap <rdunlap@infradead.org>
-
-Thanks.
-
-> ---
->  drivers/net/ethernet/micrel/Kconfig | 1 +
->  1 file changed, 1 insertion(+)
-> 
-> diff --git a/drivers/net/ethernet/micrel/Kconfig b/drivers/net/ethernet/micrel/Kconfig
-> index 1b632cdd7630..830363bafcce 100644
-> --- a/drivers/net/ethernet/micrel/Kconfig
-> +++ b/drivers/net/ethernet/micrel/Kconfig
-> @@ -28,6 +28,7 @@ config KS8842
->  config KS8851
->  	tristate "Micrel KS8851 SPI"
->  	depends on SPI
-> +	depends on PTP_1588_CLOCK_OPTIONAL
->  	select MII
->  	select CRC32
->  	select EEPROM_93CX6
-
--- 
-~Randy
