@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F98BC433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 26CB4C4167D
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 13:51:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1389753AbiDENwx (ORCPT
+        id S1441829AbiDENw6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 09:52:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44522 "EHLO
+        Tue, 5 Apr 2022 09:52:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60036 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347516AbiDEJ1K (ORCPT
+        with ESMTP id S1347348AbiDEJ0M (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:27:10 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 272B2DF49A;
-        Tue,  5 Apr 2022 02:15:32 -0700 (PDT)
+        Tue, 5 Apr 2022 05:26:12 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0563DE93A;
+        Tue,  5 Apr 2022 02:15:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A2034B81B62;
-        Tue,  5 Apr 2022 09:15:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EADF6C385A0;
-        Tue,  5 Apr 2022 09:15:29 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 794426164E;
+        Tue,  5 Apr 2022 09:15:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 83CA3C385A0;
+        Tue,  5 Apr 2022 09:15:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649150130;
-        bh=jl6Snp2v0QTf7bMzCJgP0Dv9BzB/beZVOt0Nxq39c78=;
+        s=korg; t=1649150121;
+        bh=ILBucAii6L59KbluEJs9UfkSEPcuI0aO3O8zzJAmlug=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=sQbpsBnZ8BhjwAkaFseItpMRg1DuoLfArKtt4YhEkoyQl7QGU0NTyzSkipvGyPezq
-         KT0Cn1NLjRjQ8OptCr4RlaszAlywdMEKVwkMp9cSuyl3LcUsFEEeK4K/gY65nwMsJw
-         7J7HHIwx2CSeBl/g0oX+NKlGyK2/SxSoDsoLGw44=
+        b=vap5HGclvTVNBJ4j3sLXsnnrwQ5498yRBhg1x6+fVqJ8loxHRh9syOvFxbxqvMTn5
+         JGXt8+SrW5VM6xZYsR6iw2WSbr3lFkjDRDLYf8CszFQmwBAVk/lLaeZ8D9guBWri3y
+         i70wukyzrKhW7pLpoqncdhCgArj2z5K5zKADTFps=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zhihao Cheng <chengzhihao1@huawei.com>,
-        Baokun Li <libaokun1@huawei.com>,
-        Richard Weinberger <richard@nod.at>
-Subject: [PATCH 5.16 0916/1017] ubifs: rename_whiteout: correct old_dir size computing
-Date:   Tue,  5 Apr 2022 09:30:29 +0200
-Message-Id: <20220405070421.410357296@linuxfoundation.org>
+        stable@vger.kernel.org, Hangyu Hua <hbh25y@gmail.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>
+Subject: [PATCH 5.16 0923/1017] can: mcba_usb: mcba_usb_start_xmit(): fix double dev_kfree_skb in error path
+Date:   Tue,  5 Apr 2022 09:30:36 +0200
+Message-Id: <20220405070421.615707346@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -50,35 +49,32 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Baokun Li <libaokun1@huawei.com>
+From: Hangyu Hua <hbh25y@gmail.com>
 
-commit 705757274599e2e064dd3054aabc74e8af31a095 upstream.
+commit 04c9b00ba83594a29813d6b1fb8fdc93a3915174 upstream.
 
-When renaming the whiteout file, the old whiteout file is not deleted.
-Therefore, we add the old dentry size to the old dir like XFS.
-Otherwise, an error may be reported due to `fscki->calc_sz != fscki->size`
-in check_indes.
+There is no need to call dev_kfree_skb() when usb_submit_urb() fails
+because can_put_echo_skb() deletes original skb and
+can_free_echo_skb() deletes the cloned skb.
 
-Fixes: 9e0a1fff8db56ea ("ubifs: Implement RENAME_WHITEOUT")
-Reported-by: Zhihao Cheng <chengzhihao1@huawei.com>
-Signed-off-by: Baokun Li <libaokun1@huawei.com>
-Signed-off-by: Richard Weinberger <richard@nod.at>
+Fixes: 51f3baad7de9 ("can: mcba_usb: Add support for Microchip CAN BUS Analyzer")
+Link: https://lore.kernel.org/all/20220311080208.45047-1-hbh25y@gmail.com
+Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
+Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/ubifs/dir.c |    3 +++
- 1 file changed, 3 insertions(+)
+ drivers/net/can/usb/mcba_usb.c |    1 -
+ 1 file changed, 1 deletion(-)
 
---- a/fs/ubifs/dir.c
-+++ b/fs/ubifs/dir.c
-@@ -1402,6 +1402,9 @@ static int do_rename(struct inode *old_d
- 			iput(whiteout);
- 			goto out_release;
- 		}
-+
-+		/* Add the old_dentry size to the old_dir size. */
-+		old_sz -= CALC_DENT_SIZE(fname_len(&old_nm));
- 	}
+--- a/drivers/net/can/usb/mcba_usb.c
++++ b/drivers/net/can/usb/mcba_usb.c
+@@ -368,7 +368,6 @@ static netdev_tx_t mcba_usb_start_xmit(s
+ xmit_failed:
+ 	can_free_echo_skb(priv->netdev, ctx->ndx, NULL);
+ 	mcba_usb_free_ctx(ctx);
+-	dev_kfree_skb(skb);
+ 	stats->tx_dropped++;
  
- 	lock_4_inodes(old_dir, new_dir, new_inode, whiteout);
+ 	return NETDEV_TX_OK;
 
 
