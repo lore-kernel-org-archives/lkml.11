@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A7049C4167B
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 09:12:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5849FC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 09:12:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237264AbiDEJKS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 05:10:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43544 "EHLO
+        id S238264AbiDEJKc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 05:10:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34692 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239510AbiDEIUK (ORCPT
+        with ESMTP id S239528AbiDEIUM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:20:10 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06EAFE15;
-        Tue,  5 Apr 2022 01:14:51 -0700 (PDT)
+        Tue, 5 Apr 2022 04:20:12 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BC22F57;
+        Tue,  5 Apr 2022 01:15:26 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BAADDB81B92;
-        Tue,  5 Apr 2022 08:14:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 12A55C385A0;
-        Tue,  5 Apr 2022 08:14:47 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3122B609AD;
+        Tue,  5 Apr 2022 08:15:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3E91DC385A0;
+        Tue,  5 Apr 2022 08:15:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649146488;
-        bh=AvslXiiGZCRFOeGrGZqo2rx705V5+cRos00EJU0PUxc=;
+        s=korg; t=1649146525;
+        bh=t/QupVy0dbCFdJvA+PQ1ww6kp1XlV5Q+WcimY+Qw8n8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FuavL58HPWG1nmrR0PvoVv1ull4J88129JM3bp8ED1h9h5HxMuBWb1S2ieTH8FtuW
-         m1SfpURopSgTNRwEO5OXBupYK7udJe2JERGL08ROIXiJNpk67NxQWz5/4TeDMMSMZ6
-         VQwtCrj7zG2KtKBDUuTPWVoeZSKIGWRg+m6wJ2yY=
+        b=cG9WBbErYHWJTrefnVSnmKt/LXN9gAU/krRTUPaMrS8TlG1/8fY/Wrw31vINOr6Rj
+         Mcq8eYmyHx+860ZUnaWicTKuj4fJ/SyR0IQzNObUwGNTe+/FXpoAh6JR3Apu+ARIvt
+         iAP8hcEXUb0QdA3cGMJwBIwhBPHPIw4RdC+EFVTk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yonghua Huang <yonghua.huang@intel.com>,
-        Fei Li <fei1.li@intel.com>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0782/1126] virt: acrn: obtain pa from VMA with PFNMAP flag
-Date:   Tue,  5 Apr 2022 09:25:29 +0200
-Message-Id: <20220405070430.530214321@linuxfoundation.org>
+        stable@vger.kernel.org, Phil Sutter <phil@nwl.cc>,
+        Florian Westphal <fw@strlen.de>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 0793/1126] netfilter: egress: Report interface as outgoing
+Date:   Tue,  5 Apr 2022 09:25:40 +0200
+Message-Id: <20220405070430.848547955@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -48,66 +49,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yonghua Huang <yonghua.huang@intel.com>
+From: Phil Sutter <phil@nwl.cc>
 
-[ Upstream commit 8a6e85f75a83d16a71077e41f2720c691f432002 ]
+[ Upstream commit d645552e9bd96671079b27015294ec7f9748fa2b ]
 
- acrn_vm_ram_map can't pin the user pages with VM_PFNMAP flag
- by calling get_user_pages_fast(), the PA(physical pages)
- may be mapped by kernel driver and set PFNMAP flag.
+Otherwise packets in egress chains seem like they are being received by
+the interface, not sent out via it.
 
- This patch fixes logic to setup EPT mapping for PFN mapped RAM region
- by checking the memory attribute before adding EPT mapping for them.
-
-Fixes: 88f537d5e8dd ("virt: acrn: Introduce EPT mapping management")
-Signed-off-by: Yonghua Huang <yonghua.huang@intel.com>
-Signed-off-by: Fei Li <fei1.li@intel.com>
-Link: https://lore.kernel.org/r/20220228022212.419406-1-yonghua.huang@intel.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 42df6e1d221dd ("netfilter: Introduce egress hook")
+Signed-off-by: Phil Sutter <phil@nwl.cc>
+Signed-off-by: Florian Westphal <fw@strlen.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/virt/acrn/mm.c | 24 ++++++++++++++++++++++++
- 1 file changed, 24 insertions(+)
+ include/linux/netfilter_netdev.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/virt/acrn/mm.c b/drivers/virt/acrn/mm.c
-index c4f2e15c8a2b..3b1b1e7a844b 100644
---- a/drivers/virt/acrn/mm.c
-+++ b/drivers/virt/acrn/mm.c
-@@ -162,10 +162,34 @@ int acrn_vm_ram_map(struct acrn_vm *vm, struct acrn_vm_memmap *memmap)
- 	void *remap_vaddr;
- 	int ret, pinned;
- 	u64 user_vm_pa;
-+	unsigned long pfn;
-+	struct vm_area_struct *vma;
+diff --git a/include/linux/netfilter_netdev.h b/include/linux/netfilter_netdev.h
+index e6487a691136..8676316547cc 100644
+--- a/include/linux/netfilter_netdev.h
++++ b/include/linux/netfilter_netdev.h
+@@ -99,7 +99,7 @@ static inline struct sk_buff *nf_hook_egress(struct sk_buff *skb, int *rc,
+ 		return skb;
  
- 	if (!vm || !memmap)
- 		return -EINVAL;
+ 	nf_hook_state_init(&state, NF_NETDEV_EGRESS,
+-			   NFPROTO_NETDEV, dev, NULL, NULL,
++			   NFPROTO_NETDEV, NULL, dev, NULL,
+ 			   dev_net(dev), NULL);
  
-+	mmap_read_lock(current->mm);
-+	vma = vma_lookup(current->mm, memmap->vma_base);
-+	if (vma && ((vma->vm_flags & VM_PFNMAP) != 0)) {
-+		if ((memmap->vma_base + memmap->len) > vma->vm_end) {
-+			mmap_read_unlock(current->mm);
-+			return -EINVAL;
-+		}
-+
-+		ret = follow_pfn(vma, memmap->vma_base, &pfn);
-+		mmap_read_unlock(current->mm);
-+		if (ret < 0) {
-+			dev_dbg(acrn_dev.this_device,
-+				"Failed to lookup PFN at VMA:%pK.\n", (void *)memmap->vma_base);
-+			return ret;
-+		}
-+
-+		return acrn_mm_region_add(vm, memmap->user_vm_pa,
-+			 PFN_PHYS(pfn), memmap->len,
-+			 ACRN_MEM_TYPE_WB, memmap->attr);
-+	}
-+	mmap_read_unlock(current->mm);
-+
- 	/* Get the page number of the map region */
- 	nr_pages = memmap->len >> PAGE_SHIFT;
- 	pages = vzalloc(nr_pages * sizeof(struct page *));
+ 	/* nf assumes rcu_read_lock, not just read_lock_bh */
 -- 
 2.34.1
 
