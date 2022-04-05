@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DC066C47080
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:09:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 16F6AC352A1
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:09:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1582069AbiDEXl4 (ORCPT
+        id S1582117AbiDEXmH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 19:41:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34662 "EHLO
+        Tue, 5 Apr 2022 19:42:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42558 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344431AbiDEKjs (ORCPT
+        with ESMTP id S1357572AbiDEK0f (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:39:48 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51F54CF3;
-        Tue,  5 Apr 2022 03:25:11 -0700 (PDT)
+        Tue, 5 Apr 2022 06:26:35 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41FF62F3AF;
+        Tue,  5 Apr 2022 03:10:25 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 006B9B81B18;
-        Tue,  5 Apr 2022 10:25:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6E807C385A2;
-        Tue,  5 Apr 2022 10:25:08 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 553DD6167E;
+        Tue,  5 Apr 2022 10:10:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 65E31C385A1;
+        Tue,  5 Apr 2022 10:10:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649154308;
-        bh=NllYYjWNYzcx38lK6Tp0ggC0JWbVpRuJplNhOQvulmw=;
+        s=korg; t=1649153424;
+        bh=SiWQfNK6upuvyL25sOXXFwldcQxeRu/FiH4eEINwg/w=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qriedECkcNP2FumVbkMUuP1eFoCR/R0AeCx9eqEXnAzqYNua7HpzRHEntVuGUx3Zb
-         D5nwhrFuiEXW/RLjKvZPOf3+zLb6DnE1FQRWCWG2kLxnBnIUxOc1/xnANTbiv2cc2U
-         URArfzocojx1HfNnrbFICDtEU+rmc3ifuiNx/jSA=
+        b=A9+nO8iOzsEPWUZridGm0DtRtMzORTJiZyuaNiANNaZ24GHuLRHIsHVyNKAArpQJq
+         uYVMkrmI7bZh8ValI2vKIBlyuyrMtqLxM9WgcDdfX2San9cb6O0gldIIeEQfhNDn4e
+         xShCopPlfv/g3ovu1qr1NVfEvA/1pFDupX9XJaGQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zeal Robot <zealci@zte.com.cn>,
-        Yang Guang <yang.guang5@zte.com.cn>,
+        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
         Helge Deller <deller@gmx.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 486/599] video: fbdev: omapfb: acx565akm: replace snprintf with sysfs_emit
-Date:   Tue,  5 Apr 2022 09:33:00 +0200
-Message-Id: <20220405070313.290455773@linuxfoundation.org>
+Subject: [PATCH 5.10 201/599] video: fbdev: atmel_lcdfb: fix an error code in atmel_lcdfb_probe()
+Date:   Tue,  5 Apr 2022 09:28:15 +0200
+Message-Id: <20220405070304.822523677@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
 References: <20220405070258.802373272@linuxfoundation.org>
@@ -50,37 +50,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yang Guang <yang.guang5@zte.com.cn>
+From: Dan Carpenter <dan.carpenter@oracle.com>
 
-[ Upstream commit 24565bc4115961db7ee64fcc7ad2a7437c0d0a49 ]
+[ Upstream commit fee5c1e4b789e41719af9fee0e2dd397cd31988f ]
 
-coccinelle report:
-./drivers/video/fbdev/omap2/omapfb/displays/panel-sony-acx565akm.c:
-479:9-17: WARNING: use scnprintf or sprintf
+If "sinfo->config" is not found, then return -ENODEV.  Don't
+return success.
 
-Use sysfs_emit instead of scnprintf or sprintf makes more sense.
-
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: Yang Guang <yang.guang5@zte.com.cn>
+Fixes: b985172b328a ("video: atmel_lcdfb: add device tree suport")
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+Acked-by: Nicolas Ferre <nicolas.ferre@microchip.com>
 Signed-off-by: Helge Deller <deller@gmx.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../video/fbdev/omap2/omapfb/displays/panel-sony-acx565akm.c    | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/video/fbdev/atmel_lcdfb.c | 11 ++++++-----
+ 1 file changed, 6 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/video/fbdev/omap2/omapfb/displays/panel-sony-acx565akm.c b/drivers/video/fbdev/omap2/omapfb/displays/panel-sony-acx565akm.c
-index 1293515e4b16..0cbc5b9183f8 100644
---- a/drivers/video/fbdev/omap2/omapfb/displays/panel-sony-acx565akm.c
-+++ b/drivers/video/fbdev/omap2/omapfb/displays/panel-sony-acx565akm.c
-@@ -476,7 +476,7 @@ static ssize_t show_cabc_available_modes(struct device *dev,
- 	int i;
+diff --git a/drivers/video/fbdev/atmel_lcdfb.c b/drivers/video/fbdev/atmel_lcdfb.c
+index 355b6120dc4f..1fc8de4ecbeb 100644
+--- a/drivers/video/fbdev/atmel_lcdfb.c
++++ b/drivers/video/fbdev/atmel_lcdfb.c
+@@ -1062,15 +1062,16 @@ static int __init atmel_lcdfb_probe(struct platform_device *pdev)
  
- 	if (!ddata->has_cabc)
--		return snprintf(buf, PAGE_SIZE, "%s\n", cabc_modes[0]);
-+		return sysfs_emit(buf, "%s\n", cabc_modes[0]);
+ 	INIT_LIST_HEAD(&info->modelist);
  
- 	for (i = 0, len = 0;
- 	     len < PAGE_SIZE && i < ARRAY_SIZE(cabc_modes); i++)
+-	if (pdev->dev.of_node) {
+-		ret = atmel_lcdfb_of_init(sinfo);
+-		if (ret)
+-			goto free_info;
+-	} else {
++	if (!pdev->dev.of_node) {
+ 		dev_err(dev, "cannot get default configuration\n");
+ 		goto free_info;
+ 	}
+ 
++	ret = atmel_lcdfb_of_init(sinfo);
++	if (ret)
++		goto free_info;
++
++	ret = -ENODEV;
+ 	if (!sinfo->config)
+ 		goto free_info;
+ 
 -- 
 2.34.1
 
