@@ -2,45 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 88D2AC433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DD2F7C4321E
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:56:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382422AbiDEUyy (ORCPT
+        id S1383568AbiDEUzP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 16:54:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58536 "EHLO
+        Tue, 5 Apr 2022 16:55:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43736 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347981AbiDEKpe (ORCPT
+        with ESMTP id S1354645AbiDEKO5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:45:34 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C767C344F4;
-        Tue,  5 Apr 2022 03:26:52 -0700 (PDT)
+        Tue, 5 Apr 2022 06:14:57 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31CF16C1D5;
+        Tue,  5 Apr 2022 03:02:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7B7A2B81C99;
-        Tue,  5 Apr 2022 10:26:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C0DC0C385A1;
-        Tue,  5 Apr 2022 10:26:49 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C00856172B;
+        Tue,  5 Apr 2022 10:02:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C81E7C385A2;
+        Tue,  5 Apr 2022 10:02:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649154410;
-        bh=LuZ72yR3zA8xYuhPdNlrC+HdmP3HwSUgVvw+BOohrac=;
+        s=korg; t=1649152927;
+        bh=WShbQXSabFJ84DUQ7BZubSHOJSxU09EfsVqM5MsbdRg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QQxF43XpD3if1GQccsYlxpqhYcqyJt4SDUMwEyCcT88aO9hzDU0cTprBPZKBhbq+O
-         fGctYjf+4414BWX14yiqeFdx2/qa85CxbmFY5H/W87lRUB8FjjgMydwuZ+EgKDU3Iz
-         og8h2hIPL6t4B9labvi0VccW/UIlEP6AsexQl7Dg=
+        b=NZQ+XQCemkKza0SQY7bZmfbeOpCdsgMW3TTzPRqeMjdvz7wveWD/PnLIumE+Nx39Z
+         ZpQ5SPZ5tTyWN1eUo/sNGEdy8FkR7IpV8GD8xZ9bTmwtnObzXWU5T06dYHwrdR5DPH
+         hzjXV5H7s9MkO8d1/C6Hq+7PTrEdttOMC+A/4uUA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Marc Zyngier <maz@kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Vladimir Murzin <vladimir.murzin@arm.com>
-Subject: [PATCH 5.10 566/599] ARM: iop32x: offset IRQ numbers by 1
-Date:   Tue,  5 Apr 2022 09:34:20 +0200
-Message-Id: <20220405070315.684775495@linuxfoundation.org>
+        stable@vger.kernel.org, Daniel Palmer <daniel@0x0f.com>,
+        Arnd Bergmann <arnd@arndb.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 008/599] ARM: mstar: Select HAVE_ARM_ARCH_TIMER
+Date:   Tue,  5 Apr 2022 09:25:02 +0200
+Message-Id: <20220405070259.061969249@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
 References: <20220405070258.802373272@linuxfoundation.org>
@@ -52,152 +49,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Arnd Bergmann <arnd@arndb.de>
+From: Daniel Palmer <daniel@0x0f.com>
 
-commit 9d67412f24cc3a2c05f35f7c856addb07a2960ce upstream.
+[ Upstream commit ea49432d184a6a09f84461604b7711a4e9f5ec9c ]
 
-iop32x is one of the last platforms to use IRQ 0, and this has apparently
-stopped working in a 2014 cleanup without anyone noticing. This interrupt
-is used for the DMA engine, so most likely this has not actually worked
-in the past 7 years, but it's also not essential for using this board.
+The mstar SoCs have an arch timer but HAVE_ARM_ARCH_TIMER wasn't
+selected. If MSC313E_TIMER isn't selected then the kernel gets
+stuck at boot because there are no timers available.
 
-I'm splitting out this change from my GENERIC_IRQ_MULTI_HANDLER
-conversion so it can be backported if anyone cares.
-
-Fixes: a71b092a9c68 ("ARM: Convert handle_IRQ to use __handle_domain_irq")
+Signed-off-by: Daniel Palmer <daniel@0x0f.com>
+Link: https://lore.kernel.org/r/20220301104349.3040422-1-daniel@0x0f.com'
 Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-[ardb: take +1 offset into account in mask/unmask and init as well]
-Signed-off-by: Ard Biesheuvel <ardb@kernel.org>
-Tested-by: Marc Zyngier <maz@kernel.org>
-Tested-by: Vladimir Murzin <vladimir.murzin@arm.com> # ARMv7M
-Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/mach-iop32x/include/mach/entry-macro.S |    2 
- arch/arm/mach-iop32x/include/mach/irqs.h        |    2 
- arch/arm/mach-iop32x/irq.c                      |    6 +-
- arch/arm/mach-iop32x/irqs.h                     |   60 ++++++++++++------------
- 4 files changed, 37 insertions(+), 33 deletions(-)
+ arch/arm/mach-mstar/Kconfig | 1 +
+ 1 file changed, 1 insertion(+)
 
---- a/arch/arm/mach-iop32x/include/mach/entry-macro.S
-+++ b/arch/arm/mach-iop32x/include/mach/entry-macro.S
-@@ -20,7 +20,7 @@
- 	mrc     p6, 0, \irqstat, c8, c0, 0	@ Read IINTSRC
- 	cmp     \irqstat, #0
- 	clzne   \irqnr, \irqstat
--	rsbne   \irqnr, \irqnr, #31
-+	rsbne   \irqnr, \irqnr, #32
- 	.endm
- 
- 	.macro arch_ret_to_user, tmp1, tmp2
---- a/arch/arm/mach-iop32x/include/mach/irqs.h
-+++ b/arch/arm/mach-iop32x/include/mach/irqs.h
-@@ -9,6 +9,6 @@
- #ifndef __IRQS_H
- #define __IRQS_H
- 
--#define NR_IRQS			32
-+#define NR_IRQS			33
- 
- #endif
---- a/arch/arm/mach-iop32x/irq.c
-+++ b/arch/arm/mach-iop32x/irq.c
-@@ -32,14 +32,14 @@ static void intstr_write(u32 val)
- static void
- iop32x_irq_mask(struct irq_data *d)
- {
--	iop32x_mask &= ~(1 << d->irq);
-+	iop32x_mask &= ~(1 << (d->irq - 1));
- 	intctl_write(iop32x_mask);
- }
- 
- static void
- iop32x_irq_unmask(struct irq_data *d)
- {
--	iop32x_mask |= 1 << d->irq;
-+	iop32x_mask |= 1 << (d->irq - 1);
- 	intctl_write(iop32x_mask);
- }
- 
-@@ -65,7 +65,7 @@ void __init iop32x_init_irq(void)
- 	    machine_is_em7210())
- 		*IOP3XX_PCIIRSR = 0x0f;
- 
--	for (i = 0; i < NR_IRQS; i++) {
-+	for (i = 1; i < NR_IRQS; i++) {
- 		irq_set_chip_and_handler(i, &ext_chip, handle_level_irq);
- 		irq_clear_status_flags(i, IRQ_NOREQUEST | IRQ_NOPROBE);
- 	}
---- a/arch/arm/mach-iop32x/irqs.h
-+++ b/arch/arm/mach-iop32x/irqs.h
-@@ -7,36 +7,40 @@
- #ifndef __IOP32X_IRQS_H
- #define __IOP32X_IRQS_H
- 
-+/* Interrupts in Linux start at 1, hardware starts at 0 */
-+
-+#define IOP_IRQ(x) ((x) + 1)
-+
- /*
-  * IOP80321 chipset interrupts
-  */
--#define IRQ_IOP32X_DMA0_EOT	0
--#define IRQ_IOP32X_DMA0_EOC	1
--#define IRQ_IOP32X_DMA1_EOT	2
--#define IRQ_IOP32X_DMA1_EOC	3
--#define IRQ_IOP32X_AA_EOT	6
--#define IRQ_IOP32X_AA_EOC	7
--#define IRQ_IOP32X_CORE_PMON	8
--#define IRQ_IOP32X_TIMER0	9
--#define IRQ_IOP32X_TIMER1	10
--#define IRQ_IOP32X_I2C_0	11
--#define IRQ_IOP32X_I2C_1	12
--#define IRQ_IOP32X_MESSAGING	13
--#define IRQ_IOP32X_ATU_BIST	14
--#define IRQ_IOP32X_PERFMON	15
--#define IRQ_IOP32X_CORE_PMU	16
--#define IRQ_IOP32X_BIU_ERR	17
--#define IRQ_IOP32X_ATU_ERR	18
--#define IRQ_IOP32X_MCU_ERR	19
--#define IRQ_IOP32X_DMA0_ERR	20
--#define IRQ_IOP32X_DMA1_ERR	21
--#define IRQ_IOP32X_AA_ERR	23
--#define IRQ_IOP32X_MSG_ERR	24
--#define IRQ_IOP32X_SSP		25
--#define IRQ_IOP32X_XINT0	27
--#define IRQ_IOP32X_XINT1	28
--#define IRQ_IOP32X_XINT2	29
--#define IRQ_IOP32X_XINT3	30
--#define IRQ_IOP32X_HPI		31
-+#define IRQ_IOP32X_DMA0_EOT	IOP_IRQ(0)
-+#define IRQ_IOP32X_DMA0_EOC	IOP_IRQ(1)
-+#define IRQ_IOP32X_DMA1_EOT	IOP_IRQ(2)
-+#define IRQ_IOP32X_DMA1_EOC	IOP_IRQ(3)
-+#define IRQ_IOP32X_AA_EOT	IOP_IRQ(6)
-+#define IRQ_IOP32X_AA_EOC	IOP_IRQ(7)
-+#define IRQ_IOP32X_CORE_PMON	IOP_IRQ(8)
-+#define IRQ_IOP32X_TIMER0	IOP_IRQ(9)
-+#define IRQ_IOP32X_TIMER1	IOP_IRQ(10)
-+#define IRQ_IOP32X_I2C_0	IOP_IRQ(11)
-+#define IRQ_IOP32X_I2C_1	IOP_IRQ(12)
-+#define IRQ_IOP32X_MESSAGING	IOP_IRQ(13)
-+#define IRQ_IOP32X_ATU_BIST	IOP_IRQ(14)
-+#define IRQ_IOP32X_PERFMON	IOP_IRQ(15)
-+#define IRQ_IOP32X_CORE_PMU	IOP_IRQ(16)
-+#define IRQ_IOP32X_BIU_ERR	IOP_IRQ(17)
-+#define IRQ_IOP32X_ATU_ERR	IOP_IRQ(18)
-+#define IRQ_IOP32X_MCU_ERR	IOP_IRQ(19)
-+#define IRQ_IOP32X_DMA0_ERR	IOP_IRQ(20)
-+#define IRQ_IOP32X_DMA1_ERR	IOP_IRQ(21)
-+#define IRQ_IOP32X_AA_ERR	IOP_IRQ(23)
-+#define IRQ_IOP32X_MSG_ERR	IOP_IRQ(24)
-+#define IRQ_IOP32X_SSP		IOP_IRQ(25)
-+#define IRQ_IOP32X_XINT0	IOP_IRQ(27)
-+#define IRQ_IOP32X_XINT1	IOP_IRQ(28)
-+#define IRQ_IOP32X_XINT2	IOP_IRQ(29)
-+#define IRQ_IOP32X_XINT3	IOP_IRQ(30)
-+#define IRQ_IOP32X_HPI		IOP_IRQ(31)
- 
- #endif
+diff --git a/arch/arm/mach-mstar/Kconfig b/arch/arm/mach-mstar/Kconfig
+index 576d1ab293c8..30560fdf87ed 100644
+--- a/arch/arm/mach-mstar/Kconfig
++++ b/arch/arm/mach-mstar/Kconfig
+@@ -3,6 +3,7 @@ menuconfig ARCH_MSTARV7
+ 	depends on ARCH_MULTI_V7
+ 	select ARM_GIC
+ 	select ARM_HEAVY_MB
++	select HAVE_ARM_ARCH_TIMER
+ 	select MST_IRQ
+ 	help
+ 	  Support for newer MStar/Sigmastar SoC families that are
+-- 
+2.34.1
+
 
 
