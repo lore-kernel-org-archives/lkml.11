@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0803FC4167D
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 13:23:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ACA31C4167B
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 13:23:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357580AbiDENIt (ORCPT
+        id S1381055AbiDENOc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 09:08:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60614 "EHLO
+        Tue, 5 Apr 2022 09:14:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45120 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344107AbiDEJSN (ORCPT
+        with ESMTP id S1344219AbiDEJSs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:18:13 -0400
+        Tue, 5 Apr 2022 05:18:48 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43E2433EB2;
-        Tue,  5 Apr 2022 02:04:06 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A0D349683;
+        Tue,  5 Apr 2022 02:05:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D39E661573;
-        Tue,  5 Apr 2022 09:04:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E9989C385A1;
-        Tue,  5 Apr 2022 09:04:04 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0017161564;
+        Tue,  5 Apr 2022 09:05:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 099D7C385A0;
+        Tue,  5 Apr 2022 09:05:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649149445;
-        bh=Zn6H0fiRR7Pz3PyeF3Xc4WniB/RzWJxtbHai6a0pBdg=;
+        s=korg; t=1649149541;
+        bh=+HmpgAwitYAtX3vItdMTFYGz4EiR3MK7TjuXfzAqvNc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LG0OfRS4NFNRLFdZLzZDxj5Oee7D0pN2lxH1Xsiw+ktNJEGWaBJK/e4tBv1VhWkSd
-         TU8xUR+06sncm8ZLGMFtddSrikePU8GLJaghNJfmOBpB6tb8IEWgT6++g57HiKVu70
-         pSuDNMJknXliywS37tr98h1Ap282KmY7UvJHJzwM=
+        b=0yhMO/z87z2wOuAzM4GVYh5juh+h1TNvqIGfx7SSM4gUpiAPgJqzhHdfGzvTQJV1A
+         dhq/LkbAkyI4dJa80xvAdp6mjdfKhPWPRNuE3Yh3vfN7/haMvBfPAxh3ayriyr9NsR
+         BttgPdH0fa94zxLk42Ing/kahpY138Q020jOgefM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jie Hai <haijie1@huawei.com>,
-        Zhou Wang <wangzhou1@hisilicon.com>,
-        Vinod Koul <vkoul@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0679/1017] dmaengine: hisi_dma: fix MSI allocate fail when reload hisi_dma
-Date:   Tue,  5 Apr 2022 09:26:32 +0200
-Message-Id: <20220405070414.433500823@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Enrico Scholz <enrico.scholz@sigma-chemnitz.de>,
+        Trond Myklebust <trond.myklebust@hammerspace.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 0715/1017] SUNRPC: Dont call connect() more than once on a TCP socket
+Date:   Tue,  5 Apr 2022 09:27:08 +0200
+Message-Id: <20220405070415.493509770@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -50,51 +51,83 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jie Hai <haijie1@huawei.com>
+From: Trond Myklebust <trond.myklebust@hammerspace.com>
 
-[ Upstream commit b95044b38425f563404234d96bbb20cc6360c7e1 ]
+[ Upstream commit 89f42494f92f448747bd8a7ab1ae8b5d5520577d ]
 
-Remove the loaded hisi_dma driver and reload it, the driver fails
-to work properly. The following error is reported in the kernel log:
+Avoid socket state races due to repeated calls to ->connect() using the
+same socket. If connect() returns 0 due to the connection having
+completed, but we are in fact in a closing state, then we may leave the
+XPRT_CONNECTING flag set on the transport.
 
-[ 1475.597609] hisi_dma 0000:7b:00.0: Failed to allocate MSI vectors!
-[ 1475.604915] hisi_dma: probe of 0000:7b:00.0 failed with error -28
-
-As noted in "The MSI Driver Guide HOWTO"[1], the number of MSI
-interrupt must be a power of two. The Kunpeng DMA driver allocates 30
-MSI interrupts. As a result, no space left on device is reported
-when the driver is reloaded and allocates interrupt vectors from the
-interrupt domain.
-
-This patch changes the number of interrupt vectors allocated by
-hisi_dma driver to 32 to avoid this problem.
-
-[1] https://www.kernel.org/doc/html/latest/PCI/msi-howto.html
-
-Fixes: e9f08b65250d ("dmaengine: hisilicon: Add Kunpeng DMA engine support")
-
-Signed-off-by: Jie Hai <haijie1@huawei.com>
-Acked-by: Zhou Wang <wangzhou1@hisilicon.com>
-Link: https://lore.kernel.org/r/20220216072101.34473-1-haijie1@huawei.com
-Signed-off-by: Vinod Koul <vkoul@kernel.org>
+Reported-by: Enrico Scholz <enrico.scholz@sigma-chemnitz.de>
+Fixes: 3be232f11a3c ("SUNRPC: Prevent immediate close+reconnect")
+Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/dma/hisi_dma.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ include/linux/sunrpc/xprtsock.h |  1 +
+ net/sunrpc/xprtsock.c           | 22 ++++++++++++----------
+ 2 files changed, 13 insertions(+), 10 deletions(-)
 
-diff --git a/drivers/dma/hisi_dma.c b/drivers/dma/hisi_dma.c
-index 97c87a7cba87..43817ced3a3e 100644
---- a/drivers/dma/hisi_dma.c
-+++ b/drivers/dma/hisi_dma.c
-@@ -30,7 +30,7 @@
- #define HISI_DMA_MODE			0x217c
- #define HISI_DMA_OFFSET			0x100
+diff --git a/include/linux/sunrpc/xprtsock.h b/include/linux/sunrpc/xprtsock.h
+index 3c1423ee74b4..fed813ffe7db 100644
+--- a/include/linux/sunrpc/xprtsock.h
++++ b/include/linux/sunrpc/xprtsock.h
+@@ -88,5 +88,6 @@ struct sock_xprt {
+ #define XPRT_SOCK_WAKE_WRITE	(5)
+ #define XPRT_SOCK_WAKE_PENDING	(6)
+ #define XPRT_SOCK_WAKE_DISCONNECT	(7)
++#define XPRT_SOCK_CONNECT_SENT	(8)
  
--#define HISI_DMA_MSI_NUM		30
-+#define HISI_DMA_MSI_NUM		32
- #define HISI_DMA_CHAN_NUM		30
- #define HISI_DMA_Q_DEPTH_VAL		1024
+ #endif /* _LINUX_SUNRPC_XPRTSOCK_H */
+diff --git a/net/sunrpc/xprtsock.c b/net/sunrpc/xprtsock.c
+index 821eeea1c83b..37d961c1a5c9 100644
+--- a/net/sunrpc/xprtsock.c
++++ b/net/sunrpc/xprtsock.c
+@@ -2257,10 +2257,15 @@ static void xs_tcp_setup_socket(struct work_struct *work)
  
+ 	if (atomic_read(&xprt->swapper))
+ 		current->flags |= PF_MEMALLOC;
+-	if (!sock) {
+-		sock = xs_create_sock(xprt, transport,
+-				xs_addr(xprt)->sa_family, SOCK_STREAM,
+-				IPPROTO_TCP, true);
++
++	if (xprt_connected(xprt))
++		goto out;
++	if (test_and_clear_bit(XPRT_SOCK_CONNECT_SENT,
++			       &transport->sock_state) ||
++	    !sock) {
++		xs_reset_transport(transport);
++		sock = xs_create_sock(xprt, transport, xs_addr(xprt)->sa_family,
++				      SOCK_STREAM, IPPROTO_TCP, true);
+ 		if (IS_ERR(sock)) {
+ 			xprt_wake_pending_tasks(xprt, PTR_ERR(sock));
+ 			goto out;
+@@ -2284,6 +2289,7 @@ static void xs_tcp_setup_socket(struct work_struct *work)
+ 		fallthrough;
+ 	case -EINPROGRESS:
+ 		/* SYN_SENT! */
++		set_bit(XPRT_SOCK_CONNECT_SENT, &transport->sock_state);
+ 		if (xprt->reestablish_timeout < XS_TCP_INIT_REEST_TO)
+ 			xprt->reestablish_timeout = XS_TCP_INIT_REEST_TO;
+ 		fallthrough;
+@@ -2345,13 +2351,9 @@ static void xs_connect(struct rpc_xprt *xprt, struct rpc_task *task)
+ 
+ 	WARN_ON_ONCE(!xprt_lock_connect(xprt, task, transport));
+ 
+-	if (transport->sock != NULL && !xprt_connecting(xprt)) {
++	if (transport->sock != NULL) {
+ 		dprintk("RPC:       xs_connect delayed xprt %p for %lu "
+-				"seconds\n",
+-				xprt, xprt->reestablish_timeout / HZ);
+-
+-		/* Start by resetting any existing state */
+-		xs_reset_transport(transport);
++			"seconds\n", xprt, xprt->reestablish_timeout / HZ);
+ 
+ 		delay = xprt_reconnect_delay(xprt);
+ 		xprt_reconnect_backoff(xprt, XS_TCP_INIT_REEST_TO);
 -- 
 2.34.1
 
