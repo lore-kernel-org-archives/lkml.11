@@ -2,89 +2,201 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 94357C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:40:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4792DC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:40:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379898AbiDEUkk (ORCPT
+        id S1380974AbiDEUlI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 16:40:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54816 "EHLO
+        Tue, 5 Apr 2022 16:41:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45648 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354039AbiDEKLD (ORCPT
+        with ESMTP id S1355881AbiDELz1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:11:03 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5D294EA1A;
-        Tue,  5 Apr 2022 02:56:51 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 35FB9CE1BE5;
-        Tue,  5 Apr 2022 09:56:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 566ABC385A1;
-        Tue,  5 Apr 2022 09:56:48 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649152608;
-        bh=PbV5wxgMko22JDT+Md8rh80dJkT2IJIkzQU8ns9NEAY=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=b+nlfqOURw07MsspDdouYQgF1x1jZSlcHvNSJIK1Mxcx7V6A8VZCQH+ch7uAxNQ3i
-         7elKeL4ksaW/OF2ZBxLg20RsbKx5w5/AEGrwlyyelBN2P7m7Jbm1G0jJn+ECyDVqWS
-         zcSO7xj7vtRkcbGHZXZ7iEIYBlidg+lGLs6tbwSY=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Andrew Price <anprice@redhat.com>,
-        Andreas Gruenbacher <agruenba@redhat.com>
-Subject: [PATCH 5.15 839/913] gfs2: Make sure FITRIM minlen is rounded up to fs block size
-Date:   Tue,  5 Apr 2022 09:31:41 +0200
-Message-Id: <20220405070404.979661211@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 5 Apr 2022 07:55:27 -0400
+Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59CABE08A;
+        Tue,  5 Apr 2022 04:14:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1649157265; x=1680693265;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version;
+  bh=vbrpyNUOeVKo9n9VcNXQY9SyN/h9/k3hyA5CjPbxRTQ=;
+  b=iPjIgMI8aIC8QoRhDQPkesD5K3RpKzlgrY8Ft/Z6a+8ltXE6Onvxgpld
+   4ibFeUa5w9u2+ADNdSl6yIW3AL7LbQwr9w6COBA2HcV6zBxXE3ZCv3LiT
+   117HzTO03Zd8r5wIJskJKUZPNbVYcu+T1ggjB16G4PtMGZfd6A/ZZGSi7
+   E=;
+Received: from unknown (HELO ironmsg05-sd.qualcomm.com) ([10.53.140.145])
+  by alexa-out-sd-02.qualcomm.com with ESMTP; 05 Apr 2022 04:14:25 -0700
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg05-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2022 04:14:09 -0700
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Tue, 5 Apr 2022 04:14:09 -0700
+Received: from hu-srivasam-hyd.qualcomm.com (10.80.80.8) by
+ nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Tue, 5 Apr 2022 04:14:04 -0700
+From:   Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
+To:     <agross@kernel.org>, <bjorn.andersson@linaro.org>,
+        <robh+dt@kernel.org>, <linux-arm-msm@vger.kernel.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <quic_rohitkr@quicinc.com>, <srinivas.kandagatla@linaro.org>,
+        <dianders@chromium.org>, <swboyd@chromium.org>,
+        <judyhsiao@chromium.org>
+CC:     Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>,
+        "Venkata Prasad Potturu" <quic_potturu@quicinc.com>
+Subject: [PATCH v6 3/3] arm64: dts: qcom: sc7280: Add dt nodes for sound card
+Date:   Tue, 5 Apr 2022 16:43:40 +0530
+Message-ID: <1649157220-29304-4-git-send-email-quic_srivasam@quicinc.com>
+X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1649157220-29304-1-git-send-email-quic_srivasam@quicinc.com>
+References: <1649157220-29304-1-git-send-email-quic_srivasam@quicinc.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Andrew Price <anprice@redhat.com>
+Add dt nodes for sound card support, which is using WCD938x headset
+playback, capture, I2S speaker playback and DMICs via VA macro.
 
-commit 27ca8273fda398638ca994a207323a85b6d81190 upstream.
-
-Per fstrim(8) we must round up the minlen argument to the fs block size.
-The current calculation doesn't take into account devices that have a
-discard granularity and requested minlen less than 1 fs block, so the
-value can get shifted away to zero in the translation to fs blocks.
-
-The zero minlen passed to gfs2_rgrp_send_discards() then allows
-sb_issue_discard() to be called with nr_sects == 0 which returns -EINVAL
-and results in gfs2_rgrp_send_discards() returning -EIO.
-
-Make sure minlen is never < 1 fs block by taking the max of the
-requested minlen and the fs block size before comparing to the device's
-discard granularity and shifting to fs blocks.
-
-Fixes: 076f0faa764ab ("GFS2: Fix FITRIM argument handling")
-Signed-off-by: Andrew Price <anprice@redhat.com>
-Signed-off-by: Andreas Gruenbacher <agruenba@redhat.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
+Co-developed-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
+Signed-off-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
 ---
- fs/gfs2/rgrp.c |    3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ arch/arm64/boot/dts/qcom/sc7280-crd.dts  |  8 +++
+ arch/arm64/boot/dts/qcom/sc7280-idp.dtsi | 93 ++++++++++++++++++++++++++++++++
+ 2 files changed, 101 insertions(+)
 
---- a/fs/gfs2/rgrp.c
-+++ b/fs/gfs2/rgrp.c
-@@ -1428,7 +1428,8 @@ int gfs2_fitrim(struct file *filp, void
+diff --git a/arch/arm64/boot/dts/qcom/sc7280-crd.dts b/arch/arm64/boot/dts/qcom/sc7280-crd.dts
+index 224a82d..b1b968a 100644
+--- a/arch/arm64/boot/dts/qcom/sc7280-crd.dts
++++ b/arch/arm64/boot/dts/qcom/sc7280-crd.dts
+@@ -90,6 +90,14 @@ ap_ts_pen_1v8: &i2c13 {
+ 	us-euro-gpios = <&tlmm 81 GPIO_ACTIVE_HIGH>;
+ };
  
- 	start = r.start >> bs_shift;
- 	end = start + (r.len >> bs_shift);
--	minlen = max_t(u64, r.minlen,
-+	minlen = max_t(u64, r.minlen, sdp->sd_sb.sb_bsize);
-+	minlen = max_t(u64, minlen,
- 		       q->limits.discard_granularity) >> bs_shift;
++&sound {
++	audio-routing =
++		"VA DMIC0", "MIC BIAS1",
++		"VA DMIC1", "MIC BIAS1",
++		"VA DMIC2", "MIC BIAS3",
++		"VA DMIC3", "MIC BIAS3";
++};
++
+ &tlmm {
+ 	tp_int_odl: tp-int-odl {
+ 		pins = "gpio7";
+diff --git a/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi b/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
+index e3d8cbf..45e1d82 100644
+--- a/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
++++ b/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
+@@ -84,6 +84,99 @@
+ 		pinctrl-names = "default";
+ 		pinctrl-0 = <&nvme_pwren>;
+ 	};
++
++	sound: sound {
++		compatible = "google,sc7280-herobrine";
++		model = "sc7280-wcd938x-max98360a-1mic";
++
++		audio-routing =
++				"IN1_HPHL", "HPHL_OUT",
++				"IN2_HPHR", "HPHR_OUT",
++				"AMIC1", "MIC BIAS1",
++				"AMIC2", "MIC BIAS2",
++				"VA DMIC0", "MIC BIAS3",
++				"VA DMIC1", "MIC BIAS3",
++				"VA DMIC2", "MIC BIAS1",
++				"VA DMIC3", "MIC BIAS1",
++				"TX SWR_ADC0", "ADC1_OUTPUT",
++				"TX SWR_ADC1", "ADC2_OUTPUT",
++				"TX SWR_ADC2", "ADC3_OUTPUT",
++				"TX SWR_DMIC0", "DMIC1_OUTPUT",
++				"TX SWR_DMIC1", "DMIC2_OUTPUT",
++				"TX SWR_DMIC2", "DMIC3_OUTPUT",
++				"TX SWR_DMIC3", "DMIC4_OUTPUT",
++				"TX SWR_DMIC4", "DMIC5_OUTPUT",
++				"TX SWR_DMIC5", "DMIC6_OUTPUT",
++				"TX SWR_DMIC6", "DMIC7_OUTPUT",
++				"TX SWR_DMIC7", "DMIC8_OUTPUT";
++
++		qcom,msm-mbhc-hphl-swh = <1>;
++		qcom,msm-mbhc-gnd-swh = <1>;
++
++		#address-cells = <1>;
++		#size-cells = <0>;
++		#sound-dai-cells = <0>;
++
++		dai-link@1 {
++			link-name = "Secondary MI2S Playback";
++			reg = <MI2S_SECONDARY>;
++			cpu {
++				sound-dai = <&lpass_cpu MI2S_SECONDARY>;
++			};
++
++			codec {
++				sound-dai = <&max98360a>;
++			};
++		};
++
++		dai-link@5 {
++			link-name = "DP Playback";
++			reg = <LPASS_DP_RX>;
++			cpu {
++				sound-dai = <&lpass_cpu LPASS_DP_RX>;
++			};
++
++			codec {
++				sound-dai = <&mdss_dp>;
++			};
++		};
++
++		dai-link@6 {
++			link-name = "WCD Playback";
++			reg = <LPASS_CDC_DMA_RX0>;
++			cpu {
++				sound-dai = <&lpass_cpu LPASS_CDC_DMA_RX0>;
++			};
++
++			codec {
++				sound-dai = <&wcd938x 0>, <&swr0 0>, <&rxmacro 0>;
++			};
++		};
++
++		dai-link@19 {
++			link-name = "WCD Capture";
++			reg = <LPASS_CDC_DMA_TX3>;
++			cpu {
++				sound-dai = <&lpass_cpu LPASS_CDC_DMA_TX3>;
++			};
++
++			codec {
++				sound-dai = <&wcd938x 1>, <&swr1 0>, <&txmacro 0>;
++			};
++		};
++
++		dai-link@25 {
++			link-name = "DMIC Capture";
++			reg = <LPASS_CDC_DMA_VA_TX0>;
++			cpu {
++				sound-dai = <&lpass_cpu LPASS_CDC_DMA_VA_TX0>;
++			};
++
++			codec {
++				sound-dai = <&vamacro 0>;
++			};
++		};
++	};
+ };
  
- 	if (end <= start || minlen > sdp->sd_max_rg_data)
-
+ &apps_rsc {
+-- 
+2.7.4
 
