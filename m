@@ -2,189 +2,239 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3509FC433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5AD62C4332F
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:52:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1579748AbiDEXco (ORCPT
+        id S1580580AbiDEXeg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 19:32:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50172 "EHLO
+        Tue, 5 Apr 2022 19:34:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51458 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351007AbiDEKAv (ORCPT
+        with ESMTP id S241488AbiDEMp0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:00:51 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DBDC6B51E;
-        Tue,  5 Apr 2022 02:51:24 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D723F61673;
-        Tue,  5 Apr 2022 09:51:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E2797C385A3;
-        Tue,  5 Apr 2022 09:51:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649152283;
-        bh=Ho/BjnVNGfweAgBtMiS7dBtzUEAbt0AM1Wjb60i/UUs=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mCIKgTDNw+1jfcsujP7ADwosykErR2SJTsBZX21fv47T/IfSDfMyLWbs8b/97gDpd
-         tZYJoDBWw8qL91Wuhe8j5qsJ8dshPjmzDVWq0bqBW14KXTlMiGE49h21GSlqyMwcYs
-         Pvr+7OkyClyz3+NvV31a4DQ1viuZuEMsNGdhCPd8=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Chao Yu <chao@kernel.org>,
-        Jaegeuk Kim <jaegeuk@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 721/913] f2fs: use spin_lock to avoid hang
-Date:   Tue,  5 Apr 2022 09:29:43 +0200
-Message-Id: <20220405070401.444903220@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 5 Apr 2022 08:45:26 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D4E52611E
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 04:48:45 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id 1079C1F745;
+        Tue,  5 Apr 2022 11:48:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1649159324; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:  content-transfer-encoding:content-transfer-encoding;
+        bh=FG5W+X6iauWFlicsUD/KFyqhn8yb4pSpN2a+NvHudUE=;
+        b=U+sas9du3g1kGret/F44LxtQJ9gs5N95bX2kvPi+VTiTK5WxnIBohb43yoKrqojPmNWGy1
+        fuSEsvxN3kVlKJssR0JWHyLEUdciVUpPSmWHH0P0v5nkYidRj50rvmG79EsdXgCXjJv+0F
+        5muU73su1r/MZR1LNkD2GBsQqPSnDUA=
+Received: from alley.suse.cz (unknown [10.100.224.162])
+        by relay2.suse.de (Postfix) with ESMTP id 74F23A3BA6;
+        Tue,  5 Apr 2022 11:48:43 +0000 (UTC)
+From:   Petr Mladek <pmladek@suse.com>
+To:     Chris Down <chris@chrisdown.name>
+Cc:     John Ogness <john.ogness@linutronix.de>,
+        Sergey Senozhatsky <senozhatsky@chromium.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Dave Chinner <david@fromorbit.com>,
+        "Darrick J . Wong" <djwong@kernel.org>,
+        linux-kernel@vger.kernel.org, Petr Mladek <pmladek@suse.com>
+Subject: [PATCH] printk/index: Printk index feature documentation
+Date:   Tue,  5 Apr 2022 13:48:29 +0200
+Message-Id: <20220405114829.31837-1-pmladek@suse.com>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jaegeuk Kim <jaegeuk@kernel.org>
+Document the printk index feature. The primary motivation is to
+explain that it is not creating KABI from particular printk() calls.
 
-[ Upstream commit 98237fcda4a24e67b0a4498c17d5aa4ad4537bc7 ]
-
-[14696.634553] task:cat             state:D stack:    0 pid:1613738 ppid:1613735 flags:0x00000004
-[14696.638285] Call Trace:
-[14696.639038]  <TASK>
-[14696.640032]  __schedule+0x302/0x930
-[14696.640969]  schedule+0x58/0xd0
-[14696.641799]  schedule_preempt_disabled+0x18/0x30
-[14696.642890]  __mutex_lock.constprop.0+0x2fb/0x4f0
-[14696.644035]  ? mod_objcg_state+0x10c/0x310
-[14696.645040]  ? obj_cgroup_charge+0xe1/0x170
-[14696.646067]  __mutex_lock_slowpath+0x13/0x20
-[14696.647126]  mutex_lock+0x34/0x40
-[14696.648070]  stat_show+0x25/0x17c0 [f2fs]
-[14696.649218]  seq_read_iter+0x120/0x4b0
-[14696.650289]  ? aa_file_perm+0x12a/0x500
-[14696.651357]  ? lru_cache_add+0x1c/0x20
-[14696.652470]  seq_read+0xfd/0x140
-[14696.653445]  full_proxy_read+0x5c/0x80
-[14696.654535]  vfs_read+0xa0/0x1a0
-[14696.655497]  ksys_read+0x67/0xe0
-[14696.656502]  __x64_sys_read+0x1a/0x20
-[14696.657580]  do_syscall_64+0x3b/0xc0
-[14696.658671]  entry_SYSCALL_64_after_hwframe+0x44/0xae
-[14696.660068] RIP: 0033:0x7efe39df1cb2
-[14696.661133] RSP: 002b:00007ffc8badd948 EFLAGS: 00000246 ORIG_RAX: 0000000000000000
-[14696.662958] RAX: ffffffffffffffda RBX: 0000000000020000 RCX: 00007efe39df1cb2
-[14696.664757] RDX: 0000000000020000 RSI: 00007efe399df000 RDI: 0000000000000003
-[14696.666542] RBP: 00007efe399df000 R08: 00007efe399de010 R09: 00007efe399de010
-[14696.668363] R10: 0000000000000022 R11: 0000000000000246 R12: 0000000000000000
-[14696.670155] R13: 0000000000000003 R14: 0000000000020000 R15: 0000000000020000
-[14696.671965]  </TASK>
-[14696.672826] task:umount          state:D stack:    0 pid:1614985 ppid:1614984 flags:0x00004000
-[14696.674930] Call Trace:
-[14696.675903]  <TASK>
-[14696.676780]  __schedule+0x302/0x930
-[14696.677927]  schedule+0x58/0xd0
-[14696.679019]  schedule_preempt_disabled+0x18/0x30
-[14696.680412]  __mutex_lock.constprop.0+0x2fb/0x4f0
-[14696.681783]  ? destroy_inode+0x65/0x80
-[14696.683006]  __mutex_lock_slowpath+0x13/0x20
-[14696.684305]  mutex_lock+0x34/0x40
-[14696.685442]  f2fs_destroy_stats+0x1e/0x60 [f2fs]
-[14696.686803]  f2fs_put_super+0x158/0x390 [f2fs]
-[14696.688238]  generic_shutdown_super+0x7a/0x120
-[14696.689621]  kill_block_super+0x27/0x50
-[14696.690894]  kill_f2fs_super+0x7f/0x100 [f2fs]
-[14696.692311]  deactivate_locked_super+0x35/0xa0
-[14696.693698]  deactivate_super+0x40/0x50
-[14696.694985]  cleanup_mnt+0x139/0x190
-[14696.696209]  __cleanup_mnt+0x12/0x20
-[14696.697390]  task_work_run+0x64/0xa0
-[14696.698587]  exit_to_user_mode_prepare+0x1b7/0x1c0
-[14696.700053]  syscall_exit_to_user_mode+0x27/0x50
-[14696.701418]  do_syscall_64+0x48/0xc0
-[14696.702630]  entry_SYSCALL_64_after_hwframe+0x44/0xae
-
-Reviewed-by: Chao Yu <chao@kernel.org>
-Signed-off-by: Jaegeuk Kim <jaegeuk@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Petr Mladek <pmladek@suse.com>
+Acked-by: Sergey Senozhatsky <senozhatsky@chromium.org>
 ---
- fs/f2fs/debug.c | 17 ++++++++++-------
- 1 file changed, 10 insertions(+), 7 deletions(-)
+Changes against RFC[*]:
 
-diff --git a/fs/f2fs/debug.c b/fs/f2fs/debug.c
-index 07ad0d81f0c5..b449c7a372a4 100644
---- a/fs/f2fs/debug.c
-+++ b/fs/f2fs/debug.c
-@@ -21,7 +21,7 @@
- #include "gc.h"
+  + Updated text by feedback from Darrick.
+  + Updated index.rst and MAINTAINERS.
+  + Tested build of the html documentation.
+
+Did not add Sergey's ack because there were some changes.
+
+[*] https://lore.kernel.org/r/20220330145955.GB4384@pathway.suse.cz
+
+ Documentation/core-api/index.rst        |   1 +
+ Documentation/core-api/printk-index.rst | 136 ++++++++++++++++++++++++
+ MAINTAINERS                             |   1 +
+ 3 files changed, 138 insertions(+)
+ create mode 100644 Documentation/core-api/printk-index.rst
+
+diff --git a/Documentation/core-api/index.rst b/Documentation/core-api/index.rst
+index 972d46a5ddf6..8a3fce1fe582 100644
+--- a/Documentation/core-api/index.rst
++++ b/Documentation/core-api/index.rst
+@@ -20,6 +20,7 @@ it.
+    workqueue
+    printk-basics
+    printk-formats
++   printk-index
+    symbol-namespaces
  
- static LIST_HEAD(f2fs_stat_list);
--static DEFINE_MUTEX(f2fs_stat_mutex);
-+static DEFINE_RAW_SPINLOCK(f2fs_stat_lock);
- #ifdef CONFIG_DEBUG_FS
- static struct dentry *f2fs_debugfs_root;
- #endif
-@@ -345,8 +345,9 @@ static int stat_show(struct seq_file *s, void *v)
- {
- 	struct f2fs_stat_info *si;
- 	int i = 0, j = 0;
-+	unsigned long flags;
+ Data structures and low-level utilities
+diff --git a/Documentation/core-api/printk-index.rst b/Documentation/core-api/printk-index.rst
+new file mode 100644
+index 000000000000..0de380b4a67c
+--- /dev/null
++++ b/Documentation/core-api/printk-index.rst
+@@ -0,0 +1,136 @@
++.. SPDX-License-Identifier: GPL-2.0
++
++============
++Printk Index
++============
++
++There are many ways how to monitor the state of the system. One important
++source of information is the system log. It provides a lot of information,
++including more or less important warnings and error messages.
++
++There are monitoring tools that filter and take action based on messages
++logged.
++
++The kernel messages are evolving together with the code. As a result,
++particular kernel messages are not KABI and never will be!
++
++It is a huge challenge for maintaining the system log monitors. It requires
++knowing what messages were updated in a particular kernel version and why.
++Finding these changes in the sources would require non-trivial parsers.
++Also it would require matching the sources with the binary kernel which
++is not always trivial. Various changes might be backported. Various kernel
++versions might be used on different monitored systems.
++
++This is where the printk index feature might become useful. It provides
++a dump of printk formats used all over the source code used for the kernel
++and modules on the running system. It is accessible at runtime via debugfs.
++
++The printk index helps to find changes in the message formats. Also it helps
++to track the strings back to the kernel sources and the related commit.
++
++
++User Interface
++==============
++
++The index of printk formats are split in into separate files. The files are
++named according to the binaries where the printk formats are built-in. There
++is always "vmlinux" and optionally also modules, for example::
++
++   /sys/kernel/debug/printk/index/vmlinux
++   /sys/kernel/debug/printk/index/ext4
++   /sys/kernel/debug/printk/index/scsi_mod
++
++Note that only loaded modules are shown. Also printk formats from a module
++might appear in "vmlinux" when the module is built-in.
++
++The content is inspired by the dynamic debug interface and looks like::
++
++   $> head -1 /sys/kernel/debug/printk/index/vmlinux; shuf -n 5 vmlinux
++   # <level[,flags]> filename:line function "format"
++   <5> block/blk-settings.c:661 disk_stack_limits "%s: Warning: Device %s is misaligned\n"
++   <4> kernel/trace/trace.c:8296 trace_create_file "Could not create tracefs '%s' entry\n"
++   <6> arch/x86/kernel/hpet.c:144 _hpet_print_config "hpet: %s(%d):\n"
++   <6> init/do_mounts.c:605 prepare_namespace "Waiting for root device %s...\n"
++   <6> drivers/acpi/osl.c:1410 acpi_no_auto_serialize_setup "ACPI: auto-serialization disabled\n"
++
++, where the meaning is::
++
++   - level: log level
++   - flags: optional flags: currently only 'c' for KERN_CONT
++   - filename:line: source filename and line number of the related
++	printk() call. Note that there are many wrappers, for example,
++	pr_warn(), pr_warn_once(), dev_warn().
++   - function: function name where the printk() call is used.
++   - format: format string
++
++The extra information makes it a bit harder to find differences
++between various kernels. Especially the line number might change
++very often. On the other hand, it helps a lot to confirm that
++it is the same string or find the commit that is responsible
++for eventual changes.
++
++
++printk() Is Not a Stable KABI
++=============================
++
++Several developers are afraid that exporting all these implementation
++details into the user space will transform particular printk() calls
++into KABI.
++
++But it is exactly the opposite. printk() calls must _not_ be KABI.
++And the printk index helps user space tools to deal with this.
++
++
++Subsystem specific printk wrappers
++==================================
++
++The printk index is generated using extra metadata that are stored in
++a dedicated .elf section ".printk_index". It is achieved using macro
++wrappers doing __printk_index_emit() together with the real printk()
++call. The same technique is used also for the metadata used by
++the dynamic debug feature.
++
++The metadata are stored for a particular message only when it is printed
++using these special wrappers. It is implemented for the commonly
++used printk() calls, including, for example, pr_warn(), or pr_once().
++
++Additional changes are necessary for various subsystem specific wrappers
++that call the original printk() via a common helper function. These needs
++their own wrappers adding __printk_index_emit().
++
++Only few subsystem specific wrappers have been updated so far,
++for example, dev_printk(). As a result, the printk formats from
++some subsystes can be missing in the printk index.
++
++
++Subsystem specific prefix
++=========================
++
++The macro pr_fmt() macro allows to define a prefix that is printed
++before the string generated by the related printk() calls.
++
++Subsystem specific wrappers usually add even more complicated
++prefixes.
++
++These prefixes can be stored into the printk index metadata
++by an optional parameter of __printk_index_emit(). The debugfs
++interface might then show the printk formats including these prefixes.
++For example, drivers/acpi/osl.c contains::
++
++  #define pr_fmt(fmt) "ACPI: OSL: " fmt
++
++  static int __init acpi_no_auto_serialize_setup(char *str)
++  {
++	acpi_gbl_auto_serialize_methods = FALSE;
++	pr_info("Auto-serialization disabled\n");
++
++	return 1;
++  }
++
++This results in the following printk index entry::
++
++  <6> drivers/acpi/osl.c:1410 acpi_no_auto_serialize_setup "ACPI: auto-serialization disabled\n"
++
++It helps matching messages from the real log with printk index.
++Then the source file name, line number, and function name can
++be used to match the string with the source code.
+diff --git a/MAINTAINERS b/MAINTAINERS
+index fd768d43e048..ad8625130ea9 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -15855,6 +15855,7 @@ F:	kernel/printk/
+ PRINTK INDEXING
+ R:	Chris Down <chris@chrisdown.name>
+ S:	Maintained
++F:	Documentation/core-api/printk-index.rst
+ F:	kernel/printk/index.c
  
--	mutex_lock(&f2fs_stat_mutex);
-+	raw_spin_lock_irqsave(&f2fs_stat_lock, flags);
- 	list_for_each_entry(si, &f2fs_stat_list, stat_list) {
- 		update_general_status(si->sbi);
- 
-@@ -574,7 +575,7 @@ static int stat_show(struct seq_file *s, void *v)
- 		seq_printf(s, "  - paged : %llu KB\n",
- 				si->page_mem >> 10);
- 	}
--	mutex_unlock(&f2fs_stat_mutex);
-+	raw_spin_unlock_irqrestore(&f2fs_stat_lock, flags);
- 	return 0;
- }
- 
-@@ -585,6 +586,7 @@ int f2fs_build_stats(struct f2fs_sb_info *sbi)
- {
- 	struct f2fs_super_block *raw_super = F2FS_RAW_SUPER(sbi);
- 	struct f2fs_stat_info *si;
-+	unsigned long flags;
- 	int i;
- 
- 	si = f2fs_kzalloc(sbi, sizeof(struct f2fs_stat_info), GFP_KERNEL);
-@@ -620,9 +622,9 @@ int f2fs_build_stats(struct f2fs_sb_info *sbi)
- 	atomic_set(&sbi->max_aw_cnt, 0);
- 	atomic_set(&sbi->max_vw_cnt, 0);
- 
--	mutex_lock(&f2fs_stat_mutex);
-+	raw_spin_lock_irqsave(&f2fs_stat_lock, flags);
- 	list_add_tail(&si->stat_list, &f2fs_stat_list);
--	mutex_unlock(&f2fs_stat_mutex);
-+	raw_spin_unlock_irqrestore(&f2fs_stat_lock, flags);
- 
- 	return 0;
- }
-@@ -630,10 +632,11 @@ int f2fs_build_stats(struct f2fs_sb_info *sbi)
- void f2fs_destroy_stats(struct f2fs_sb_info *sbi)
- {
- 	struct f2fs_stat_info *si = F2FS_STAT(sbi);
-+	unsigned long flags;
- 
--	mutex_lock(&f2fs_stat_mutex);
-+	raw_spin_lock_irqsave(&f2fs_stat_lock, flags);
- 	list_del(&si->stat_list);
--	mutex_unlock(&f2fs_stat_mutex);
-+	raw_spin_unlock_irqrestore(&f2fs_stat_lock, flags);
- 
- 	kfree(si);
- }
+ PROC FILESYSTEM
 -- 
-2.34.1
-
-
+2.26.2
 
