@@ -2,102 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 93B02C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 07:02:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A949C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 07:03:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231347AbiDEHEt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 03:04:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41996 "EHLO
+        id S231352AbiDEHFd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 03:05:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45666 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230116AbiDEHEf (ORCPT
+        with ESMTP id S229761AbiDEHF1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 03:04:35 -0400
-Received: from mail-pg1-x52f.google.com (mail-pg1-x52f.google.com [IPv6:2607:f8b0:4864:20::52f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E62DF11C12
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 00:02:37 -0700 (PDT)
-Received: by mail-pg1-x52f.google.com with SMTP id k14so10352749pga.0
-        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 00:02:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=8VhMjpVUBYebqxLy6TEA2cjKY1vC5urgh/5emBRUq/I=;
-        b=MtJSlVzlZz6r6m7J5b/Veav5FPkaS7thzHc24KO8NiZM8O76BxaYUPJZ/urIie3rhV
-         /jZEg9PkFCcgo/8RdzQVUu6q+6OrtuehmsIOxt6f9LxBcB4mm/SOlrNWaj1gaKQzfK+V
-         lbgCFFgNcLh85uRnC9bBUnbhRbwO6QeuFFgdo/jVqS1LIJtC2qjSU4ocAJE39PIcJkXz
-         JZ09ns+XAumqI4NSxJJjf6GqYoFrqBTOEqChrO0b+gdhyulqXSSVD46q1RpfFxXQZu10
-         EQgYhngD2GaNZ80dATlh8VdUV7R0eUSg6C2PyNC32rTPVUe8BWZHsDUh2BTlpdF085cV
-         zABQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=8VhMjpVUBYebqxLy6TEA2cjKY1vC5urgh/5emBRUq/I=;
-        b=iu3bgcFDNwkKK7I+qes3YDGlReAGZa1aJtneRPbILnYCAeuij506PheFLmeZ7cPd9A
-         VMNxDb2GW9Cj8aqPYaRng44NmC06mx1ccPdbqxiiu7wh1aHSShFjn/LU2u0yyUU4JWqO
-         1wnJLMddlSZtKJJ8CA45BCsvALF3yt2atzmuGyMOsQNyIclhcpK+k6VESR1Wg5znolMo
-         56odzUU8F+FEKwDsCaFpLIuL1RZWB5nfUZxzvOZL0CmmfYNgMrjhyUtJ3bYasxeW2mDz
-         eu5dMGOQcO5jPncXjKEwbl1+snlY84eyyV0LfBsIS8TJXjqahO8DANO65LOAWVNUzikh
-         QJbg==
-X-Gm-Message-State: AOAM532izLhiiMSAnW7t+NMKInUuVWH4o09KU/Jm8uQ5VePS0CBpqFUl
-        pCIsfUpO/tgGJAP4d9CPqJ3d7JdR83+67WJuXc9OhA==
-X-Google-Smtp-Source: ABdhPJy9on+cF7e/53OZP0n/2+KbeNKqBwK2+/2sT0br9zmBQO702zJBrvFsswapjsWl2BKh1iSUzATaDk3po+/aHts=
-X-Received: by 2002:a63:541f:0:b0:399:3007:e7a2 with SMTP id
- i31-20020a63541f000000b003993007e7a2mr1710334pgb.568.1649142157075; Tue, 05
- Apr 2022 00:02:37 -0700 (PDT)
+        Tue, 5 Apr 2022 03:05:27 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CB2011A3C;
+        Tue,  5 Apr 2022 00:03:28 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id A1817CE1BE9;
+        Tue,  5 Apr 2022 07:03:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 946A0C340F3;
+        Tue,  5 Apr 2022 07:03:24 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649142205;
+        bh=BxQ+fzJKngiRHE9r2lus0aRxgxUHFJ1D2qvDYFkjl8Q=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=RZMNJJ8FKR6UcMY/PkXH45FJSz4VtbQxSUpqT+4Bg5tQZmdgzMuevBlcP6gF2Qkjl
+         dC+TJc9IoSTS4tHv0FBTS7nkNLk34/tvTZwQZErOQIcZYy0P0JRvl5oHlsRlYc4Xe/
+         2bwjSpOvWjsIzC6S+ZteDEvrKc7WbZNIskG/CuyUjrhQB4MZBfdBs1TWxxIu35EYkD
+         VtctgXwDWstGhNq9DjZlO8ESHlbUskqDiHoXl+NFWlLBEx8UISdxdUooVukVFVEL9L
+         9H6SYfJaMdbkgw1aHicK4u92JyPep5uOpE6bShEQj3OSw83LSuSZpk3cX5l0X7pY+U
+         BrD5nUMgnDtJg==
+Date:   Tue, 5 Apr 2022 10:04:36 +0300
+From:   Jarkko Sakkinen <jarkko@kernel.org>
+To:     Reinette Chatre <reinette.chatre@intel.com>
+Cc:     dave.hansen@linux.intel.com, tglx@linutronix.de, bp@alien8.de,
+        luto@kernel.org, mingo@redhat.com, linux-sgx@vger.kernel.org,
+        x86@kernel.org, seanjc@google.com, kai.huang@intel.com,
+        cathy.zhang@intel.com, cedric.xing@intel.com,
+        haitao.huang@intel.com, mark.shanahan@intel.com, hpa@zytor.com,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH V3 12/30] x86/sgx: Export sgx_encl_{grow,shrink}()
+Message-ID: <YkvqBJ/5pfTRBvr4@kernel.org>
+References: <cover.1648847675.git.reinette.chatre@intel.com>
+ <97f03b1ad11ff70839bdf239609a62957c804523.1648847675.git.reinette.chatre@intel.com>
 MIME-Version: 1.0
-References: <20220316135047.188122-1-dzm91@hust.edu.cn> <CAHUa44FiumE97drc11vBdr46Zh2uWysk--bn2AZnaw==5bTphA@mail.gmail.com>
- <CAD-N9QU=_M2_=GsQii8R85o46PnsxcLqJGFKA0UANbRWAFnjHQ@mail.gmail.com> <CAD-N9QWB9HGY=DU1gazbt3e8p4GdG-=CJtD26M59AgAhbagusA@mail.gmail.com>
-In-Reply-To: <CAD-N9QWB9HGY=DU1gazbt3e8p4GdG-=CJtD26M59AgAhbagusA@mail.gmail.com>
-From:   Jens Wiklander <jens.wiklander@linaro.org>
-Date:   Tue, 5 Apr 2022 09:02:26 +0200
-Message-ID: <CAHUa44F3ic_Fu-pLsZ2sZeC69TSLwKZjegdkCB-xpm=Zm6J4PA@mail.gmail.com>
-Subject: Re: [PATCH] tee: optee: add missing mutext_destroy in optee_ffa_probe
-To:     Dongliang Mu <mudongliangabcd@gmail.com>
-Cc:     Dongliang Mu <dzm91@hust.edu.cn>,
-        Sumit Garg <sumit.garg@linaro.org>,
-        op-tee@lists.trustedfirmware.org,
-        linux-kernel <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <97f03b1ad11ff70839bdf239609a62957c804523.1648847675.git.reinette.chatre@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Apr 1, 2022 at 4:00 AM Dongliang Mu <mudongliangabcd@gmail.com> wrote:
->
-> On Thu, Mar 24, 2022 at 5:33 PM Dongliang Mu <mudongliangabcd@gmail.com> wrote:
-> >
-> > On Thu, Mar 24, 2022 at 4:29 PM Jens Wiklander
-> > <jens.wiklander@linaro.org> wrote:
-> > >
-> > > On Wed, Mar 16, 2022 at 2:51 PM Dongliang Mu <dzm91@hust.edu.cn> wrote:
-> > > >
-> > > > From: Dongliang Mu <mudongliangabcd@gmail.com>
-> > > >
-> > > > The error handling code of optee_ffa_probe misses the mutex_destroy of
-> > > > ffa.mutex when mutext_init succeeds.
-> > > >
-> > > > Fix this by adding mutex_destory of ffa.mutex at the error handling part
-> > > >
-> > > > Fixes: aceeafefff73 ("optee: use driver internal tee_context for some rpc")
-> > >
-> > > I believe this should be
-> > > Fixes: 4615e5a34b95 ("optee: add FF-A support")
-> > > don't you agree?
-> >
-> > Hi Jen,
-> >
-> > This commit 4615e5a34b95 is more suitable since mutex_init is introduced here.
-> >
-> > Why did I label the commit aceeafefff73?
-> >
-> > Because this commit tried to fix the issue, but only added one
-> > mutex_destroy for &optee->call_queue.mutex, misses &optee->ffa.mutex.
-> >
->
-> ping?
+On Mon, Apr 04, 2022 at 09:49:20AM -0700, Reinette Chatre wrote:
+> In order to use sgx_encl_{grow,shrink}() in the page augmentation code
+> located in encl.c, export these functions.
+> 
+> Suggested-by: Jarkko Sakkinen <jarkko@kernel.org>
+> Signed-off-by: Reinette Chatre <reinette.chatre@intel.com>
+> ---
+> Changes since V2:
+> - New patch.
+> 
+>  arch/x86/kernel/cpu/sgx/encl.h  | 2 ++
+>  arch/x86/kernel/cpu/sgx/ioctl.c | 4 ++--
+>  2 files changed, 4 insertions(+), 2 deletions(-)
+> 
+> diff --git a/arch/x86/kernel/cpu/sgx/encl.h b/arch/x86/kernel/cpu/sgx/encl.h
+> index 07abfc70c8e3..9d673d9531f0 100644
+> --- a/arch/x86/kernel/cpu/sgx/encl.h
+> +++ b/arch/x86/kernel/cpu/sgx/encl.h
+> @@ -120,5 +120,7 @@ bool sgx_va_page_full(struct sgx_va_page *va_page);
+>  void sgx_encl_free_epc_page(struct sgx_epc_page *page);
+>  struct sgx_encl_page *sgx_encl_load_page(struct sgx_encl *encl,
+>  					 unsigned long addr);
+> +struct sgx_va_page *sgx_encl_grow(struct sgx_encl *encl);
+> +void sgx_encl_shrink(struct sgx_encl *encl, struct sgx_va_page *va_page);
+>  
+>  #endif /* _X86_ENCL_H */
+> diff --git a/arch/x86/kernel/cpu/sgx/ioctl.c b/arch/x86/kernel/cpu/sgx/ioctl.c
+> index 0c211af8e948..746acddbb774 100644
+> --- a/arch/x86/kernel/cpu/sgx/ioctl.c
+> +++ b/arch/x86/kernel/cpu/sgx/ioctl.c
+> @@ -17,7 +17,7 @@
+>  #include "encl.h"
+>  #include "encls.h"
+>  
+> -static struct sgx_va_page *sgx_encl_grow(struct sgx_encl *encl)
+> +struct sgx_va_page *sgx_encl_grow(struct sgx_encl *encl)
+>  {
+>  	struct sgx_va_page *va_page = NULL;
+>  	void *err;
+> @@ -43,7 +43,7 @@ static struct sgx_va_page *sgx_encl_grow(struct sgx_encl *encl)
+>  	return va_page;
+>  }
+>  
+> -static void sgx_encl_shrink(struct sgx_encl *encl, struct sgx_va_page *va_page)
+> +void sgx_encl_shrink(struct sgx_encl *encl, struct sgx_va_page *va_page)
+>  {
+>  	encl->page_cnt--;
+>  
+> -- 
+> 2.25.1
+> 
 
-I'm picking up this.
+Reviewed-by: Jarkko Sakkinen <jarkko@kernel.org>
 
-Thanks,
-Jens
+BR, Jarkko
