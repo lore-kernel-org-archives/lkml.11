@@ -2,190 +2,176 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8DAE1C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E11BC4332F
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 01:33:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1842568AbiDFBcx (ORCPT
+        id S1842552AbiDFBcq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 21:32:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47444 "EHLO
+        Tue, 5 Apr 2022 21:32:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54700 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349134AbiDEJtM (ORCPT
+        with ESMTP id S1457568AbiDEQKv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:49:12 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1FE46E5;
-        Tue,  5 Apr 2022 02:41:19 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Tue, 5 Apr 2022 12:10:51 -0400
+Received: from ssl.serverraum.org (ssl.serverraum.org [IPv6:2a01:4f8:151:8464::1:2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84F1D265E;
+        Tue,  5 Apr 2022 09:08:52 -0700 (PDT)
+Received: from mwalle01.kontron.local. (unknown [213.135.10.150])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 858ABCE1C90;
-        Tue,  5 Apr 2022 09:41:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A4613C385A3;
-        Tue,  5 Apr 2022 09:41:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649151676;
-        bh=b4+DDr7xLYLweNrVXvEBaAaf82ar7OL6+g5UC5/4V6s=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KxIIzxJEHLDGnGmmelPdegoRiSSid6JpjlME8SFptNbrheR5Tf245qf/Pr7twHJJG
-         tY74lsH50TTqbXDOW6fX440JsFHD4i8gHIC7rM99qR/iVzfROg3nhCt1s+4W0xHhoF
-         e1M4HRFenU9VP72uSHIWFMRF+MWMpHSTM1udr4Nk=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mustafa Ismail <mustafa.ismail@intel.com>,
-        Shiraz Saleem <shiraz.saleem@intel.com>,
-        Leon Romanovsky <leonro@nvidia.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 502/913] RDMA/irdma: Fix netdev notifications for vlans
-Date:   Tue,  5 Apr 2022 09:26:04 +0200
-Message-Id: <20220405070354.901891620@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
-User-Agent: quilt/0.66
+        by ssl.serverraum.org (Postfix) with ESMTPSA id A99672225B;
+        Tue,  5 Apr 2022 18:08:50 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
+        t=1649174930;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=0zWa7FnAehsT5VQr7sLCyyvpTKbFiugxFLtDfUCAJuI=;
+        b=XunTJuQUxA29p74sdfOJKB1N2HvxSmZ0uPGck97xXobh1uOy3pi/IYKdu9N/gVf3ARji9B
+        KsoYqS9YUv6tJqzpmpWWKIersCDxmIp+yuWq3lXHL8/bfeKbRKJ4cyUaUsklfF/rtYFdrC
+        LEMI86uujTakJSp3WTJiDx4Y+cJaze4=
+From:   Michael Walle <michael@walle.cc>
+To:     Kavyasree Kotagiri <kavyasree.kotagiri@microchip.com>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>
+Cc:     Arnd Bergmann <arnd@arndb.de>, Olof Johansson <olof@lixom.net>,
+        soc@kernel.org, linux-arm-kernel@lists.infradead.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>,
+        Tudor.Ambarus@microchip.com, Michael Walle <michael@walle.cc>
+Subject: [PATCH v3 6/7] ARM: dts: lan966x: add flexcom I2C nodes
+Date:   Tue,  5 Apr 2022 18:08:36 +0200
+Message-Id: <20220405160837.4093563-7-michael@walle.cc>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220405160837.4093563-1-michael@walle.cc>
+References: <20220405160837.4093563-1-michael@walle.cc>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mustafa Ismail <mustafa.ismail@intel.com>
+Add all I2C nodes of the flexcom IP blocks. The driver supports
+FIFO, DMA or both combined. But the latter isn't working correctly.
+Thus, skip the fifo-size property for now. DMA is doing single byte
+reads in this case.
 
-[ Upstream commit 6702bc14744847842a87fed21a795b6e8bab6965 ]
+Keep the nodes disabled by default.
 
-Currently, events on vlan netdevs are being ignored. Fix this by finding
-the real netdev and processing the notifications for vlan netdevs.
-
-Fixes: 915cc7ac0f8e ("RDMA/irdma: Add miscellaneous utility definitions")
-Link: https://lore.kernel.org/r/20220225163211.127-2-shiraz.saleem@intel.com
-Signed-off-by: Mustafa Ismail <mustafa.ismail@intel.com>
-Signed-off-by: Shiraz Saleem <shiraz.saleem@intel.com>
-Reviewed-by: Leon Romanovsky <leonro@nvidia.com>
-Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Michael Walle <michael@walle.cc>
+Reviewed-by: Claudiu Beznea <claudiu.beznea@microchip.com>
 ---
- drivers/infiniband/hw/irdma/utils.c | 48 ++++++++++++++++++-----------
- 1 file changed, 30 insertions(+), 18 deletions(-)
+ arch/arm/boot/dts/lan966x.dtsi | 65 ++++++++++++++++++++++++++++++++++
+ 1 file changed, 65 insertions(+)
 
-diff --git a/drivers/infiniband/hw/irdma/utils.c b/drivers/infiniband/hw/irdma/utils.c
-index feebfe6bf31a..fee179fd8c67 100644
---- a/drivers/infiniband/hw/irdma/utils.c
-+++ b/drivers/infiniband/hw/irdma/utils.c
-@@ -150,31 +150,35 @@ int irdma_inetaddr_event(struct notifier_block *notifier, unsigned long event,
- 			 void *ptr)
- {
- 	struct in_ifaddr *ifa = ptr;
--	struct net_device *netdev = ifa->ifa_dev->dev;
-+	struct net_device *real_dev, *netdev = ifa->ifa_dev->dev;
- 	struct irdma_device *iwdev;
- 	struct ib_device *ibdev;
- 	u32 local_ipaddr;
- 
--	ibdev = ib_device_get_by_netdev(netdev, RDMA_DRIVER_IRDMA);
-+	real_dev = rdma_vlan_dev_real_dev(netdev);
-+	if (!real_dev)
-+		real_dev = netdev;
+diff --git a/arch/arm/boot/dts/lan966x.dtsi b/arch/arm/boot/dts/lan966x.dtsi
+index a37f2e58a1c2..342c8cee2b9a 100644
+--- a/arch/arm/boot/dts/lan966x.dtsi
++++ b/arch/arm/boot/dts/lan966x.dtsi
+@@ -120,6 +120,19 @@ spi0: spi@400 {
+ 				#size-cells = <0>;
+ 				status = "disabled";
+ 			};
 +
-+	ibdev = ib_device_get_by_netdev(real_dev, RDMA_DRIVER_IRDMA);
- 	if (!ibdev)
- 		return NOTIFY_DONE;
++			i2c0: i2c@600 {
++				compatible = "microchip,sam9x60-i2c";
++				reg = <0x600 0x200>;
++				interrupts = <GIC_SPI 48 IRQ_TYPE_LEVEL_HIGH>;
++				dmas = <&dma0 AT91_XDMAC_DT_PERID(3)>,
++				       <&dma0 AT91_XDMAC_DT_PERID(2)>;
++				dma-names = "tx", "rx";
++				clocks = <&nic_clk>;
++				#address-cells = <1>;
++				#size-cells = <0>;
++				status = "disabled";
++			};
+ 		};
  
- 	iwdev = to_iwdev(ibdev);
- 	local_ipaddr = ntohl(ifa->ifa_address);
- 	ibdev_dbg(&iwdev->ibdev,
--		  "DEV: netdev %p event %lu local_ip=%pI4 MAC=%pM\n", netdev,
--		  event, &local_ipaddr, netdev->dev_addr);
-+		  "DEV: netdev %p event %lu local_ip=%pI4 MAC=%pM\n", real_dev,
-+		  event, &local_ipaddr, real_dev->dev_addr);
- 	switch (event) {
- 	case NETDEV_DOWN:
--		irdma_manage_arp_cache(iwdev->rf, netdev->dev_addr,
-+		irdma_manage_arp_cache(iwdev->rf, real_dev->dev_addr,
- 				       &local_ipaddr, true, IRDMA_ARP_DELETE);
--		irdma_if_notify(iwdev, netdev, &local_ipaddr, true, false);
-+		irdma_if_notify(iwdev, real_dev, &local_ipaddr, true, false);
- 		irdma_gid_change_event(&iwdev->ibdev);
- 		break;
- 	case NETDEV_UP:
- 	case NETDEV_CHANGEADDR:
--		irdma_add_arp(iwdev->rf, &local_ipaddr, true, netdev->dev_addr);
--		irdma_if_notify(iwdev, netdev, &local_ipaddr, true, true);
-+		irdma_add_arp(iwdev->rf, &local_ipaddr, true, real_dev->dev_addr);
-+		irdma_if_notify(iwdev, real_dev, &local_ipaddr, true, true);
- 		irdma_gid_change_event(&iwdev->ibdev);
- 		break;
- 	default:
-@@ -196,32 +200,36 @@ int irdma_inet6addr_event(struct notifier_block *notifier, unsigned long event,
- 			  void *ptr)
- {
- 	struct inet6_ifaddr *ifa = ptr;
--	struct net_device *netdev = ifa->idev->dev;
-+	struct net_device *real_dev, *netdev = ifa->idev->dev;
- 	struct irdma_device *iwdev;
- 	struct ib_device *ibdev;
- 	u32 local_ipaddr6[4];
- 
--	ibdev = ib_device_get_by_netdev(netdev, RDMA_DRIVER_IRDMA);
-+	real_dev = rdma_vlan_dev_real_dev(netdev);
-+	if (!real_dev)
-+		real_dev = netdev;
+ 		flx1: flexcom@e0044000 {
+@@ -158,6 +171,19 @@ spi1: spi@400 {
+ 				#size-cells = <0>;
+ 				status = "disabled";
+ 			};
 +
-+	ibdev = ib_device_get_by_netdev(real_dev, RDMA_DRIVER_IRDMA);
- 	if (!ibdev)
- 		return NOTIFY_DONE;
++			i2c1: i2c@600 {
++				compatible = "microchip,sam9x60-i2c";
++				reg = <0x600 0x200>;
++				interrupts = <GIC_SPI 49 IRQ_TYPE_LEVEL_HIGH>;
++				dmas = <&dma0 AT91_XDMAC_DT_PERID(5)>,
++				       <&dma0 AT91_XDMAC_DT_PERID(4)>;
++				dma-names = "tx", "rx";
++				clocks = <&nic_clk>;
++				#address-cells = <1>;
++				#size-cells = <0>;
++				status = "disabled";
++			};
+ 		};
  
- 	iwdev = to_iwdev(ibdev);
- 	irdma_copy_ip_ntohl(local_ipaddr6, ifa->addr.in6_u.u6_addr32);
- 	ibdev_dbg(&iwdev->ibdev,
--		  "DEV: netdev %p event %lu local_ip=%pI6 MAC=%pM\n", netdev,
--		  event, local_ipaddr6, netdev->dev_addr);
-+		  "DEV: netdev %p event %lu local_ip=%pI6 MAC=%pM\n", real_dev,
-+		  event, local_ipaddr6, real_dev->dev_addr);
- 	switch (event) {
- 	case NETDEV_DOWN:
--		irdma_manage_arp_cache(iwdev->rf, netdev->dev_addr,
-+		irdma_manage_arp_cache(iwdev->rf, real_dev->dev_addr,
- 				       local_ipaddr6, false, IRDMA_ARP_DELETE);
--		irdma_if_notify(iwdev, netdev, local_ipaddr6, false, false);
-+		irdma_if_notify(iwdev, real_dev, local_ipaddr6, false, false);
- 		irdma_gid_change_event(&iwdev->ibdev);
- 		break;
- 	case NETDEV_UP:
- 	case NETDEV_CHANGEADDR:
- 		irdma_add_arp(iwdev->rf, local_ipaddr6, false,
--			      netdev->dev_addr);
--		irdma_if_notify(iwdev, netdev, local_ipaddr6, false, true);
-+			      real_dev->dev_addr);
-+		irdma_if_notify(iwdev, real_dev, local_ipaddr6, false, true);
- 		irdma_gid_change_event(&iwdev->ibdev);
- 		break;
- 	default:
-@@ -243,14 +251,18 @@ int irdma_net_event(struct notifier_block *notifier, unsigned long event,
- 		    void *ptr)
- {
- 	struct neighbour *neigh = ptr;
-+	struct net_device *real_dev, *netdev = (struct net_device *)neigh->dev;
- 	struct irdma_device *iwdev;
- 	struct ib_device *ibdev;
- 	__be32 *p;
- 	u32 local_ipaddr[4] = {};
- 	bool ipv4 = true;
- 
--	ibdev = ib_device_get_by_netdev((struct net_device *)neigh->dev,
--					RDMA_DRIVER_IRDMA);
-+	real_dev = rdma_vlan_dev_real_dev(netdev);
-+	if (!real_dev)
-+		real_dev = netdev;
+ 		trng: rng@e0048000 {
+@@ -213,6 +239,19 @@ spi2: spi@400 {
+ 				#size-cells = <0>;
+ 				status = "disabled";
+ 			};
 +
-+	ibdev = ib_device_get_by_netdev(real_dev, RDMA_DRIVER_IRDMA);
- 	if (!ibdev)
- 		return NOTIFY_DONE;
++			i2c2: i2c@600 {
++				compatible = "microchip,sam9x60-i2c";
++				reg = <0x600 0x200>;
++				interrupts = <GIC_SPI 50 IRQ_TYPE_LEVEL_HIGH>;
++				dmas = <&dma0 AT91_XDMAC_DT_PERID(7)>,
++				       <&dma0 AT91_XDMAC_DT_PERID(6)>;
++				dma-names = "tx", "rx";
++				clocks = <&nic_clk>;
++				#address-cells = <1>;
++				#size-cells = <0>;
++				status = "disabled";
++			};
+ 		};
  
+ 		flx3: flexcom@e0064000 {
+@@ -251,6 +290,19 @@ spi3: spi@400 {
+ 				#size-cells = <0>;
+ 				status = "disabled";
+ 			};
++
++			i2c3: i2c@600 {
++				compatible = "microchip,sam9x60-i2c";
++				reg = <0x600 0x200>;
++				interrupts = <GIC_SPI 51 IRQ_TYPE_LEVEL_HIGH>;
++				dmas = <&dma0 AT91_XDMAC_DT_PERID(9)>,
++				       <&dma0 AT91_XDMAC_DT_PERID(8)>;
++				dma-names = "tx", "rx";
++				clocks = <&nic_clk>;
++				#address-cells = <1>;
++				#size-cells = <0>;
++				status = "disabled";
++			};
+ 		};
+ 
+ 		dma0: dma-controller@e0068000 {
+@@ -308,6 +360,19 @@ spi4: spi@400 {
+ 				#size-cells = <0>;
+ 				status = "disabled";
+ 			};
++
++			i2c4: i2c@600 {
++				compatible = "microchip,sam9x60-i2c";
++				reg = <0x600 0x200>;
++				interrupts = <GIC_SPI 52 IRQ_TYPE_LEVEL_HIGH>;
++				dmas = <&dma0 AT91_XDMAC_DT_PERID(11)>,
++				       <&dma0 AT91_XDMAC_DT_PERID(10)>;
++				dma-names = "tx", "rx";
++				clocks = <&nic_clk>;
++				#address-cells = <1>;
++				#size-cells = <0>;
++				status = "disabled";
++			};
+ 		};
+ 
+ 		timer0: timer@e008c000 {
 -- 
-2.34.1
-
-
+2.30.2
 
