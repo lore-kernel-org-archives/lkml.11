@@ -2,95 +2,68 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F81AC4167D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ADECAC4167B
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 02:32:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1849256AbiDFCeR (ORCPT
+        id S1849270AbiDFCeV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 22:34:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44012 "EHLO
+        Tue, 5 Apr 2022 22:34:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58296 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1449299AbiDEWYk (ORCPT
+        with ESMTP id S1449532AbiDEWYn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 18:24:40 -0400
-Received: from mail-yw1-x1130.google.com (mail-yw1-x1130.google.com [IPv6:2607:f8b0:4864:20::1130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4CC486E1F
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 14:21:20 -0700 (PDT)
-Received: by mail-yw1-x1130.google.com with SMTP id 00721157ae682-2e5e9025c20so5913347b3.7
-        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 14:21:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=05ESTLKuRKureM3diZOwIcKgKT6b+0avzQkzpMlIWl0=;
-        b=F4+e721tNcbr4VyIH/v5IIZ9tP+O6JaNPcwsW2WnYFsjKwz+f51Jekl18A+rixt41J
-         JOzuclwfSn8f5JdJQKTfJQNWNBFIdf0s995f8zlspLYdTtyXifztXr3SnJ52b5VLUVyc
-         F47A1nlECQW6jmuo8criSUTu4sFzdp6DBZ36wOGQjOX3qBgox8zG3vFmBkWaEq7xRL/J
-         8AssrUOlC7k5WTeV0oelsqfOT2PekmM12laoDKCx+Sik6VVl9ObsaNZITN/dIW6WZc35
-         F3UUxaRXpwVu/a0lL7rew3B56UOopKkIXrdSFC/sHS6huWzOU7/u57GZ9ZN9n8CPrK6Y
-         fAhQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=05ESTLKuRKureM3diZOwIcKgKT6b+0avzQkzpMlIWl0=;
-        b=zeUSW4UbyXSgpM9K6Chp73xABSlOZbs4iN0FcmkuXdghjiapTOYv7l4XClTYSZ/Wk1
-         iZewwfP/WJPiU5zdce62xq4h5u9BysPJm3hJbUUeFXgGpcTpQoTb/ZoKWnBsb+XjEWLh
-         d6ojoPUU4g9g/pTWtpO5ETN0AMuo+62+OsVqTChh7f8cI+zUtevysrysgsf2KuXRTOTC
-         NDjU0JjnCbvp4psQzfkfTwHK93CKVNkvvcnBV5FADEwEQR5CE4j9inCqCKCNzZirXN3N
-         tzBZjg+ijpoUzlRQLH36DEm6MZRWd3If9e5v9sZiyum1n2wYP/dKWgZjUCnMWR+lrzkv
-         hqUg==
-X-Gm-Message-State: AOAM533QrXhRocinLl8cGybSa6itV1KEoZKzwLs+GEV6GMwZRHMof6W4
-        ILWol9KjhvqKFXTDwx1h/VjmhjW8t58hH9sC2q8qBQ==
-X-Google-Smtp-Source: ABdhPJwEINNWKQDaea3+TJzBVTdGEUBx+YlA8z0uH9ht1nC2kDVLVG1VUZvrKbQB9SHESxmVI/MOBKOBSGZVxnZp0I0=
-X-Received: by 2002:a81:d542:0:b0:2e5:c060:a0ac with SMTP id
- l2-20020a81d542000000b002e5c060a0acmr4410118ywj.118.1649193679956; Tue, 05
- Apr 2022 14:21:19 -0700 (PDT)
+        Tue, 5 Apr 2022 18:24:43 -0400
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F68917584C
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 14:22:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=Vfnds4uZwOUw8zPinp55S3drsKWUUrjkD5pxZmDfQ3o=; b=UE9salMD8CEHOMHRKgSqk1ysa4
+        +Zb8ubeM4QI2ErLIm70Y4BRN2nXRdyL+r/3EWfgaNkAjGzYvbec7vhKYE2uod+I9xbucnfeb4m0HU
+        lRTNfmvRPN5IzMdnPags8ZPe7zz/KKEQ+N6TLon1FgZEO2tYuIWqSDIC5BYVl90nu3zUQpvI+dMFS
+        HGCtYR/g0Y1c+8XmM8EkbAinT1rcrVVrPO2x2jy7n07PnzjcJ/cinP7k0C8R9w6f7Nczk1v9TsVcL
+        KEy3AsIypYKS8H0evy+GXwixPEX+lSfwm/hlmJlrY4fj6qjfgGeiqSVjg3zxtDgtvKZwsaSFrTk6l
+        +V2RFV7A==;
+Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nbqcb-0074AY-PZ; Tue, 05 Apr 2022 21:21:53 +0000
+Date:   Tue, 5 Apr 2022 22:21:53 +0100
+From:   Matthew Wilcox <willy@infradead.org>
+To:     Yang Shi <shy828301@gmail.com>
+Cc:     Roman Gushchin <roman.gushchin@linux.dev>,
+        Dave Chinner <david@fromorbit.com>,
+        Hillf Danton <hdanton@sina.com>, MM <linux-mm@kvack.org>,
+        Mel Gorman <mgorman@techsingularity.net>,
+        Stephen Brennan <stephen.s.brennan@oracle.com>,
+        Yu Zhao <yuzhao@google.com>,
+        David Hildenbrand <david@redhat.com>,
+        LKML <linux-kernel@vger.kernel.org>
+Subject: Re: [RFC] mm/vmscan: add periodic slab shrinker
+Message-ID: <Ykyy8RfJgWDOGylv@casper.infradead.org>
+References: <20220402072103.5140-1-hdanton@sina.com>
+ <20220403005618.5263-1-hdanton@sina.com>
+ <20220404010948.GV1609613@dread.disaster.area>
+ <YktCKVbChtC+YjOk@carbon.dhcp.thefacebook.com>
+ <20220405051710.GW1609613@dread.disaster.area>
+ <Ykxv1j9dxlz1BS5N@carbon.dhcp.thefacebook.com>
+ <CAHbLzko=bjLhhJXjcs0Uh-g3x9vV1gQZjEU2JqxVehqSb1UGkQ@mail.gmail.com>
 MIME-Version: 1.0
-References: <20220329132732.628474-1-paul.kocialkowski@bootlin.com>
-In-Reply-To: <20220329132732.628474-1-paul.kocialkowski@bootlin.com>
-From:   Linus Walleij <linus.walleij@linaro.org>
-Date:   Tue, 5 Apr 2022 23:21:08 +0200
-Message-ID: <CACRpkdbcoRBS=mDqMfseKDWQLZu-ohtXf1jo0nL_S+AagewRBA@mail.gmail.com>
-Subject: Re: [PATCH v3] drm: of: Properly try all possible cases for
- bridge/panel detection
-To:     Paul Kocialkowski <paul.kocialkowski@bootlin.com>
-Cc:     dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Jagan Teki <jagan@amarulasolutions.com>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAHbLzko=bjLhhJXjcs0Uh-g3x9vV1gQZjEU2JqxVehqSb1UGkQ@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Mar 29, 2022 at 3:27 PM Paul Kocialkowski
-<paul.kocialkowski@bootlin.com> wrote:
+On Tue, Apr 05, 2022 at 01:58:59PM -0700, Yang Shi wrote:
+> Yeah, I agree it actually doesn't make too much sense to return the
+> number of reclaimed objects. Other part of vmscan returns the number
+> of base pages, the sizes of slab objects are varied, it may be much
+> smaller than a page, for example, dentry may be 192 bytes.
 
-> While bridge/panel detection was initially relying on the usual
-> port/ports-based of graph detection, it was recently changed to
-> perform the lookup on any child node that is not port/ports
-> instead when such a node is available, with no fallback on the
-> usual way.
->
-> This results in breaking detection when a child node is present
-> but does not contain any panel or bridge node, even when the
-> usual port/ports-based of graph is there.
->
-> In order to support both situations properly, this commit reworks
-> the logic to try both options and not just one of the two: it will
-> only return -EPROBE_DEFER when both have failed.
->
-> Signed-off-by: Paul Kocialkowski <paul.kocialkowski@bootlin.com>
-> Fixes: 80253168dbfd ("drm: of: Lookup if child node has panel or bridge")
-
-This patch fixes the problems I have on the Ux500 MCDE with DPI
-panels such as Janice, so:
-Tested-by: Linus Walleij <linus.walleij@linaro.org>
-
-Yours,
-Linus Walleij
+From the point of view of vmscan, it only cares about the number of pages
+freed because it's trying to free pages.  But from the point of view of
+trying to keep the number of non-useful objects in check, the number of
+objects freed is more important, and it doesn't matter whether we ended
+up freeing any pages because we made memory available for this slab cache.
