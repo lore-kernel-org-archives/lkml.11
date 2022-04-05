@@ -2,89 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C68CFC433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DD8E0C433FE
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:51:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1579681AbiDEXcd (ORCPT
+        id S1579717AbiDEXck (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 19:32:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51742 "EHLO
+        Tue, 5 Apr 2022 19:32:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40972 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354133AbiDEKLz (ORCPT
+        with ESMTP id S242634AbiDEN6t (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:11:55 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54A7B515A0;
-        Tue,  5 Apr 2022 02:57:40 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Tue, 5 Apr 2022 09:58:49 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 929B414FBB6
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 05:57:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1649163422;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=MieTPQFs8VOXyiBgZhn9rhV52nQUcA3L833nsfzanM8=;
+        b=KEw28suMJ2GfuTfTThG/vrfhgsT0fmEWPDfdZADCl2Mx5puB3+oJpz3CSlYAjdk76MgoQX
+        ux60uBPa1DD1U8DAbx6kalPUR6Z6HMJ2kEZnZBOkjUPwkSbFVvXQi3WJSzfpOrjyvtbQTf
+        ZDgntC6G0jlJMA695p8o3unMIwK6PPI=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-553-nOsaf9cQOtq3c5ulp4vhag-1; Tue, 05 Apr 2022 08:56:59 -0400
+X-MC-Unique: nOsaf9cQOtq3c5ulp4vhag-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.rdu2.redhat.com [10.11.54.1])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id F36C5B81B18;
-        Tue,  5 Apr 2022 09:57:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6486DC385A2;
-        Tue,  5 Apr 2022 09:57:37 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649152657;
-        bh=tXLn2Z8e9sy8z9V6Vfuhkmvfcrf3Ifsy8FTxXsDbQn8=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=p/HKWdwuMJfk0YS6WGsO8SzCibrU4+7kXmqZV9TFLVdSLyVj5fin4D4K6kX7UGnHk
-         /Cpv/EvFzX8EGpn8hZRblr3ZBXnMqOISnxtygeRiOtE2ZevCcSJSgGSbZ0aOxfKv/8
-         qkYVb4eehYketqVYSbzT3zXKeBNbcPeqp23QEJ7I=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Jan Kara <jack@suse.cz>, Jens Axboe <axboe@kernel.dk>
-Subject: [PATCH 5.15 855/913] block: Fix the maximum minor value is blk_alloc_ext_minor()
-Date:   Tue,  5 Apr 2022 09:31:57 +0200
-Message-Id: <20220405070405.457347488@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
-User-Agent: quilt/0.66
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id BE8FF3C1EA4D;
+        Tue,  5 Apr 2022 12:56:58 +0000 (UTC)
+Received: from RHTPC1VM0NT (unknown [10.22.17.196])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 6F5DB40CF8E5;
+        Tue,  5 Apr 2022 12:56:58 +0000 (UTC)
+From:   Aaron Conole <aconole@redhat.com>
+To:     Ilya Maximets <i.maximets@ovn.org>
+Cc:     netdev@vger.kernel.org, dev@openvswitch.org,
+        linux-kernel@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: Re: [ovs-dev] [PATCH net] net: openvswitch: fix leak of nested actions
+References: <20220404154345.2980792-1-i.maximets@ovn.org>
+Date:   Tue, 05 Apr 2022 08:56:52 -0400
+In-Reply-To: <20220404154345.2980792-1-i.maximets@ovn.org> (Ilya Maximets's
+        message of "Mon, 4 Apr 2022 17:43:45 +0200")
+Message-ID: <f7t4k371yej.fsf@redhat.com>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.2 (gnu/linux)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+X-Scanned-By: MIMEDefang 2.84 on 10.11.54.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Ilya Maximets <i.maximets@ovn.org> writes:
 
-commit d1868328dec5ae2cf210111025fcbc71f78dd5ca upstream.
+> While parsing user-provided actions, openvswitch module may dynamically
+> allocate memory and store pointers in the internal copy of the actions.
+> So this memory has to be freed while destroying the actions.
+>
+> Currently there are only two such actions: ct() and set().  However,
+> there are many actions that can hold nested lists of actions and
+> ovs_nla_free_flow_actions() just jumps over them leaking the memory.
+>
+> For example, removal of the flow with the following actions will lead
+> to a leak of the memory allocated by nf_ct_tmpl_alloc():
+>
+>   actions:clone(ct(commit),0)
+>
+> Non-freed set() action may also leak the 'dst' structure for the
+> tunnel info including device references.
+>
+> Under certain conditions with a high rate of flow rotation that may
+> cause significant memory leak problem (2MB per second in reporter's
+> case).  The problem is also hard to mitigate, because the user doesn't
+> have direct control over the datapath flows generated by OVS.
+>
+> Fix that by iterating over all the nested actions and freeing
+> everything that needs to be freed recursively.
+>
+> New build time assertion should protect us from this problem if new
+> actions will be added in the future.
+>
+> Unfortunately, openvswitch module doesn't use NLA_F_NESTED, so all
+> attributes has to be explicitly checked.  sample() and clone() actions
+> are mixing extra attributes into the user-provided action list.  That
+> prevents some code generalization too.
+>
+> Fixes: 34ae932a4036 ("openvswitch: Make tunnel set action attach a metada=
+ta dst")
+> Link: https://mail.openvswitch.org/pipermail/ovs-dev/2022-March/392922.ht=
+ml
+> Reported-by: St=C3=A9phane Graber <stgraber@ubuntu.com>
+> Signed-off-by: Ilya Maximets <i.maximets@ovn.org>
+> ---
 
-ida_alloc_range(..., min, max, ...) returns values from min to max,
-inclusive.
-
-So, NR_EXT_DEVT is a valid idx returned by blk_alloc_ext_minor().
-
-This is an issue because in device_add_disk(), this value is used in:
-   ddev->devt = MKDEV(disk->major, disk->first_minor);
-and NR_EXT_DEVT is '(1 << MINORBITS)'.
-
-So, should 'disk->first_minor' be NR_EXT_DEVT, it would overflow.
-
-Fixes: 22ae8ce8b892 ("block: simplify bdev/disk lookup in blkdev_get")
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Reviewed-by: Jan Kara <jack@suse.cz>
-Link: https://lore.kernel.org/r/cc17199798312406b90834e433d2cefe8266823d.1648306232.git.christophe.jaillet@wanadoo.fr
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- block/genhd.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
---- a/block/genhd.c
-+++ b/block/genhd.c
-@@ -324,7 +324,7 @@ int blk_alloc_ext_minor(void)
- {
- 	int idx;
- 
--	idx = ida_alloc_range(&ext_devt_ida, 0, NR_EXT_DEVT, GFP_KERNEL);
-+	idx = ida_alloc_range(&ext_devt_ida, 0, NR_EXT_DEVT - 1, GFP_KERNEL);
- 	if (idx == -ENOSPC)
- 		return -EBUSY;
- 	return idx;
-
+Acked-by: Aaron Conole <aconole@redhat.com>
 
