@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F3CF2C35274
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 14:56:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D3CB7C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 14:56:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346559AbiDEOz2 (ORCPT
+        id S1347567AbiDEOzg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 10:55:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50228 "EHLO
+        Tue, 5 Apr 2022 10:55:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41746 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343839AbiDEJlx (ORCPT
+        with ESMTP id S1344131AbiDEJmA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:41:53 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68F64BD7D6;
-        Tue,  5 Apr 2022 02:27:25 -0700 (PDT)
+        Tue, 5 Apr 2022 05:42:00 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69218BD886;
+        Tue,  5 Apr 2022 02:27:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 04A136165C;
-        Tue,  5 Apr 2022 09:27:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 15047C385A0;
-        Tue,  5 Apr 2022 09:27:23 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id F1F9E61659;
+        Tue,  5 Apr 2022 09:27:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1050FC385A2;
+        Tue,  5 Apr 2022 09:27:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649150844;
-        bh=2eXIeeRexCOuSEo8b3vylFyzhx8jNayZAmwbHZPfjpM=;
+        s=korg; t=1649150855;
+        bh=ZFT8Mc3bL9hDAzC31BSMLz9UOKn7pel1DMWpUYQe7kA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0FjeUtzBgOr/HSd925N9YUSOj0B1CGfZiX/je+a5WzP7qEal76PDc+WW3ZK6O8GvM
-         ah6SkqtDoxvGMgdNEDz2NJrJTTuuA6jJKgXvZ04T2s3unbL49M3KMO9GOXukb2jk/D
-         fdY4C92NbXmNR1g5Bvdd2k58XqVph7yLy3/Wl83M=
+        b=FI1eDD4NOPByExCp8MWxgPlpGcE7SOzf0hPRhal3fgyCkktz52eHZQxzRwMHjc8PP
+         UDEyk1kBLkY1WFO16HDc5uPANtpzlMn74USxor7C3ttQnQxUBUr/UdXIBsrDoColWM
+         JNO/+XmzUl13xWr8YEefMxwTNrQWZZ+O1YKcC+Uw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Max Filippov <jcmvbkbc@gmail.com>
-Subject: [PATCH 5.15 174/913] xtensa: fix xtensa_wsr always writing 0
-Date:   Tue,  5 Apr 2022 09:20:36 +0200
-Message-Id: <20220405070345.068131993@linuxfoundation.org>
+        stable@vger.kernel.org, Jianyong Wu <jianyong.wu@arm.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 204/913] arm64/mm: avoid fixmap race condition when create pud mapping
+Date:   Tue,  5 Apr 2022 09:21:06 +0200
+Message-Id: <20220405070345.974323986@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
 References: <20220405070339.801210740@linuxfoundation.org>
@@ -48,38 +50,75 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Max Filippov <jcmvbkbc@gmail.com>
+From: Jianyong Wu <jianyong.wu@arm.com>
 
-commit a3d0245c58f962ee99d4440ea0eaf45fb7f5a5cc upstream.
+[ Upstream commit ee017ee353506fcec58e481673e4331ff198a80e ]
 
-The commit cad6fade6e78 ("xtensa: clean up WSR*/RSR*/get_sr/set_sr")
-replaced 'WSR' macro in the function xtensa_wsr with 'xtensa_set_sr',
-but variable 'v' in the xtensa_set_sr body shadowed the argument 'v'
-passed to it, resulting in wrong value written to debug registers.
+The 'fixmap' is a global resource and is used recursively by
+create pud mapping(), leading to a potential race condition in the
+presence of a concurrent call to alloc_init_pud():
 
-Fix that by removing intermediate variable from the xtensa_set_sr
-macro body.
+kernel_init thread                          virtio-mem workqueue thread
+==================                          ===========================
 
-Cc: stable@vger.kernel.org
-Fixes: cad6fade6e78 ("xtensa: clean up WSR*/RSR*/get_sr/set_sr")
-Signed-off-by: Max Filippov <jcmvbkbc@gmail.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+  alloc_init_pud(...)                       alloc_init_pud(...)
+  pudp = pud_set_fixmap_offset(...)         pudp = pud_set_fixmap_offset(...)
+  READ_ONCE(*pudp)
+  pud_clear_fixmap(...)
+                                            READ_ONCE(*pudp) // CRASH!
+
+As kernel may sleep during creating pud mapping, introduce a mutex lock to
+serialise use of the fixmap entries by alloc_init_pud(). However, there is
+no need for locking in early boot stage and it doesn't work well with
+KASLR enabled when early boot. So, enable lock when system_state doesn't
+equal to "SYSTEM_BOOTING".
+
+Signed-off-by: Jianyong Wu <jianyong.wu@arm.com>
+Reviewed-by: Catalin Marinas <catalin.marinas@arm.com>
+Fixes: f4710445458c ("arm64: mm: use fixmap when creating page tables")
+Link: https://lore.kernel.org/r/20220201114400.56885-1-jianyong.wu@arm.com
+Signed-off-by: Will Deacon <will@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/xtensa/include/asm/processor.h |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ arch/arm64/mm/mmu.c | 9 +++++++++
+ 1 file changed, 9 insertions(+)
 
---- a/arch/xtensa/include/asm/processor.h
-+++ b/arch/xtensa/include/asm/processor.h
-@@ -226,8 +226,8 @@ extern unsigned long get_wchan(struct ta
+diff --git a/arch/arm64/mm/mmu.c b/arch/arm64/mm/mmu.c
+index 9d0380631690..03aa6bee7dae 100644
+--- a/arch/arm64/mm/mmu.c
++++ b/arch/arm64/mm/mmu.c
+@@ -63,6 +63,7 @@ static pmd_t bm_pmd[PTRS_PER_PMD] __page_aligned_bss __maybe_unused;
+ static pud_t bm_pud[PTRS_PER_PUD] __page_aligned_bss __maybe_unused;
  
- #define xtensa_set_sr(x, sr) \
- 	({ \
--	 unsigned int v = (unsigned int)(x); \
--	 __asm__ __volatile__ ("wsr %0, "__stringify(sr) :: "a"(v)); \
-+	 __asm__ __volatile__ ("wsr %0, "__stringify(sr) :: \
-+			       "a"((unsigned int)(x))); \
- 	 })
+ static DEFINE_SPINLOCK(swapper_pgdir_lock);
++static DEFINE_MUTEX(fixmap_lock);
  
- #define xtensa_get_sr(sr) \
+ void set_swapper_pgd(pgd_t *pgdp, pgd_t pgd)
+ {
+@@ -328,6 +329,12 @@ static void alloc_init_pud(pgd_t *pgdp, unsigned long addr, unsigned long end,
+ 	}
+ 	BUG_ON(p4d_bad(p4d));
+ 
++	/*
++	 * No need for locking during early boot. And it doesn't work as
++	 * expected with KASLR enabled.
++	 */
++	if (system_state != SYSTEM_BOOTING)
++		mutex_lock(&fixmap_lock);
+ 	pudp = pud_set_fixmap_offset(p4dp, addr);
+ 	do {
+ 		pud_t old_pud = READ_ONCE(*pudp);
+@@ -358,6 +365,8 @@ static void alloc_init_pud(pgd_t *pgdp, unsigned long addr, unsigned long end,
+ 	} while (pudp++, addr = next, addr != end);
+ 
+ 	pud_clear_fixmap();
++	if (system_state != SYSTEM_BOOTING)
++		mutex_unlock(&fixmap_lock);
+ }
+ 
+ static void __create_pgd_mapping(pgd_t *pgdir, phys_addr_t phys,
+-- 
+2.34.1
+
 
 
