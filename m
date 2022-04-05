@@ -2,114 +2,164 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 51D34C4167E
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:15:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 55D85C43217
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:15:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383265AbiDEUFA (ORCPT
+        id S1383757AbiDEUFG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 16:05:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53780 "EHLO
+        Tue, 5 Apr 2022 16:05:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44580 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1457546AbiDEQJq (ORCPT
+        with ESMTP id S241825AbiDEKcm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 12:09:46 -0400
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A85A25CD;
-        Tue,  5 Apr 2022 09:07:46 -0700 (PDT)
-Received: from [IPV6:2a01:e0a:120:3210:cf29:3f0:be4d:7211] (unknown [IPv6:2a01:e0a:120:3210:cf29:3f0:be4d:7211])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        Tue, 5 Apr 2022 06:32:42 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15077DE905;
+        Tue,  5 Apr 2022 03:18:41 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        (Authenticated sender: benjamin.gaignard)
-        by bhuna.collabora.co.uk (Postfix) with ESMTPSA id 511F61F43BDC;
-        Tue,  5 Apr 2022 17:07:44 +0100 (BST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1649174864;
-        bh=Y7AMfmbF+pTW6heGBBOtMSPe72VwTuirLOp6bmUM2l8=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=YdiGwf54xZ2SQaL3Kg7d0z6H9yFy3jkfu5wqfmvXDG3Yoo43FV4nvSf8M7bozm3vQ
-         VVZW2A3dSj2jG45xLSvt3K2OZwoa/XmIf31XNDejfWFZ4JEAtRNyxWjl7M38ydvyLK
-         B/ELY4LHhInWRfNGtOqjHaytIuFg5ccxSSMzxTDcelnc1USAD0Ay5gysapFchtZ19D
-         tGy4YnI0AxLEchVvhSDflRaVbn8ISxd+soOSaX/Bu+cTN4ObX5nvsybHapgxlzoCdJ
-         vr+c8fj31gKs28+vpiZDH/FzwrxgFzYoJ41xyTDKpuPMLsqRupBjcVQjMZTf6IQroH
-         vvGU7AI/NHllA==
-Message-ID: <b6987a9a-56af-f63f-b60a-37df141d6e89@collabora.com>
-Date:   Tue, 5 Apr 2022 18:07:41 +0200
+        by ams.source.kernel.org (Postfix) with ESMTPS id C17A7B81C9B;
+        Tue,  5 Apr 2022 10:18:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1990CC385A0;
+        Tue,  5 Apr 2022 10:18:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649153918;
+        bh=sjwe6HTk+VrskoTOBUJ0owPBc/lWtZnBAMxd+IY/hNY=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=Pd1K2PC9d9lQv119CSeIEQGQX6xUfiv4WLNMiYvVsRt5FA4TpllsD17aJg+gXVJPC
+         njui2zKmKfYJKpJxTdT2bWbo+CIgiClXJ02URShWt9WMWkmvsEuivJXhMJ//2q6v7F
+         RzreOoIFEtTnRlMOa4C9zzVBkqr/PFjzQA5fqrAQ=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Guillaume Nault <gnault@redhat.com>,
+        David Ahern <dsahern@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 367/599] ipv4: Fix route lookups when handling ICMP redirects and PMTU updates
+Date:   Tue,  5 Apr 2022 09:31:01 +0200
+Message-Id: <20220405070309.752208890@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
+References: <20220405070258.802373272@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [RFC PATCH 0/8] media: hantro: Add 10-bit support
-Content-Language: en-US
-To:     Jernej Skrabec <jernej.skrabec@gmail.com>,
-        ezequiel@vanguardiasur.com.ar, p.zabel@pengutronix.de
-Cc:     mchehab@kernel.org, nicolas@ndufresne.ca, hverkuil-cisco@xs4all.nl,
-        gregkh@linuxfoundation.org, wens@csie.org, samuel@sholland.org,
-        linux-media@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-rockchip@lists.infradead.org, linux-staging@lists.linux.dev,
-        linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev
-References: <20220227144926.3006585-1-jernej.skrabec@gmail.com>
-From:   Benjamin Gaignard <benjamin.gaignard@collabora.com>
-In-Reply-To: <20220227144926.3006585-1-jernej.skrabec@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+From: Guillaume Nault <gnault@redhat.com>
 
-Le 27/02/2022 à 15:49, Jernej Skrabec a écrit :
-> First two patches add 10-bit formats to UAPI, third extends filtering
-> mechanism, fourth fixes incorrect assumption, fifth moves register
-> configuration code to proper place, sixth and seventh enable 10-bit
-> VP9 decoding on Allwinner H6 and last increases core frequency on
-> Allwinner H6.
->
-> I'm sending this as RFC to get some comments:
-> 1. format definitions - are fourcc's ok? are comments/descriptions ok?
-> 2. is extended filtering mechanism ok?
->
-> I would also like if these patches are tested on some more HW.
-> Additionally, can someone test tiled P010?
->
-> Please take a look.
+[ Upstream commit 544b4dd568e3b09c1ab38a759d3187e7abda11a0 ]
 
-Hi Jernej,
+The PMTU update and ICMP redirect helper functions initialise their fl4
+variable with either __build_flow_key() or build_sk_flow_key(). These
+initialisation functions always set ->flowi4_scope with
+RT_SCOPE_UNIVERSE and might set the ECN bits of ->flowi4_tos. This is
+not a problem when the route lookup is later done via
+ip_route_output_key_hash(), which properly clears the ECN bits from
+->flowi4_tos and initialises ->flowi4_scope based on the RTO_ONLINK
+flag. However, some helpers call fib_lookup() directly, without
+sanitising the tos and scope fields, so the route lookup can fail and,
+as a result, the ICMP redirect or PMTU update aren't taken into
+account.
 
-I have create a branch to test this series with VP9 and HEVC:
-https://gitlab.collabora.com/benjamin.gaignard/for-upstream/-/tree/10bit_imx8m
-Feel free to pick what I may need in it.
+Fix this by extracting the ->flowi4_tos and ->flowi4_scope sanitisation
+code into ip_rt_fix_tos(), then use this function in handlers that call
+fib_lookup() directly.
 
-That doesn't improve fluster scores, I think more dev are still needed in GST
-before getting something fully functional.
-Anyway I able to select P010 pixel format if the input is a 10bit bitstream.
+Note 1: We can't sanitise ->flowi4_tos and ->flowi4_scope in a central
+place (like __build_flow_key() or flowi4_init_output()), because
+ip_route_output_key_hash() expects non-sanitised values. When called
+with sanitised values, it can erroneously overwrite RT_SCOPE_LINK with
+RT_SCOPE_UNIVERSE in ->flowi4_scope. Therefore we have to be careful to
+sanitise the values only for those paths that don't call
+ip_route_output_key_hash().
 
-Regards,
-Benjamin
+Note 2: The problem is mostly about sanitising ->flowi4_tos. Having
+->flowi4_scope initialised with RT_SCOPE_UNIVERSE instead of
+RT_SCOPE_LINK probably wasn't really a problem: sockets with the
+SOCK_LOCALROUTE flag set (those that'd result in RTO_ONLINK being set)
+normally shouldn't receive ICMP redirects or PMTU updates.
 
->
-> Best regards,
-> Jernej
->
-> Ezequiel Garcia (1):
->    media: Add P010 tiled format
->
-> Jernej Skrabec (7):
->    media: Add P010 format
->    media: hantro: Support format filtering by depth
->    media: hantro: postproc: Fix buffer size calculation
->    media: hantro: postproc: Fix legacy regs configuration
->    media: hantro: Store VP9 bit depth in context
->    media: hantro: sunxi: Enable 10-bit decoding
->    media: hantro: sunxi: Increase frequency
->
->   drivers/media/v4l2-core/v4l2-common.c         |  3 ++
->   drivers/media/v4l2-core/v4l2-ioctl.c          |  2 +
->   drivers/staging/media/hantro/hantro.h         |  4 ++
->   drivers/staging/media/hantro/hantro_drv.c     | 23 +++++++++
->   .../staging/media/hantro/hantro_g2_vp9_dec.c  |  8 ---
->   .../staging/media/hantro/hantro_postproc.c    | 34 ++++++++++---
->   drivers/staging/media/hantro/hantro_v4l2.c    | 50 +++++++++++++++++--
->   drivers/staging/media/hantro/hantro_v4l2.h    |  3 ++
->   drivers/staging/media/hantro/sunxi_vpu_hw.c   | 13 ++++-
->   include/uapi/linux/videodev2.h                |  2 +
->   10 files changed, 122 insertions(+), 20 deletions(-)
->
+Fixes: 4895c771c7f0 ("ipv4: Add FIB nexthop exceptions.")
+Signed-off-by: Guillaume Nault <gnault@redhat.com>
+Reviewed-by: David Ahern <dsahern@kernel.org>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ net/ipv4/route.c | 18 ++++++++++++++----
+ 1 file changed, 14 insertions(+), 4 deletions(-)
+
+diff --git a/net/ipv4/route.c b/net/ipv4/route.c
+index ce787c386793..c72d0de8bf71 100644
+--- a/net/ipv4/route.c
++++ b/net/ipv4/route.c
+@@ -529,6 +529,15 @@ void __ip_select_ident(struct net *net, struct iphdr *iph, int segs)
+ }
+ EXPORT_SYMBOL(__ip_select_ident);
+ 
++static void ip_rt_fix_tos(struct flowi4 *fl4)
++{
++	__u8 tos = RT_FL_TOS(fl4);
++
++	fl4->flowi4_tos = tos & IPTOS_RT_MASK;
++	fl4->flowi4_scope = tos & RTO_ONLINK ?
++			    RT_SCOPE_LINK : RT_SCOPE_UNIVERSE;
++}
++
+ static void __build_flow_key(const struct net *net, struct flowi4 *fl4,
+ 			     const struct sock *sk,
+ 			     const struct iphdr *iph,
+@@ -853,6 +862,7 @@ static void ip_do_redirect(struct dst_entry *dst, struct sock *sk, struct sk_buf
+ 	rt = (struct rtable *) dst;
+ 
+ 	__build_flow_key(net, &fl4, sk, iph, oif, tos, prot, mark, 0);
++	ip_rt_fix_tos(&fl4);
+ 	__ip_do_redirect(rt, skb, &fl4, true);
+ }
+ 
+@@ -1077,6 +1087,7 @@ static void ip_rt_update_pmtu(struct dst_entry *dst, struct sock *sk,
+ 	struct flowi4 fl4;
+ 
+ 	ip_rt_build_flow_key(&fl4, sk, skb);
++	ip_rt_fix_tos(&fl4);
+ 
+ 	/* Don't make lookup fail for bridged encapsulations */
+ 	if (skb && netif_is_any_bridge_port(skb->dev))
+@@ -1151,6 +1162,8 @@ void ipv4_sk_update_pmtu(struct sk_buff *skb, struct sock *sk, u32 mtu)
+ 			goto out;
+ 
+ 		new = true;
++	} else {
++		ip_rt_fix_tos(&fl4);
+ 	}
+ 
+ 	__ip_rt_update_pmtu((struct rtable *)xfrm_dst_path(&rt->dst), &fl4, mtu);
+@@ -2524,7 +2537,6 @@ static struct rtable *__mkroute_output(const struct fib_result *res,
+ struct rtable *ip_route_output_key_hash(struct net *net, struct flowi4 *fl4,
+ 					const struct sk_buff *skb)
+ {
+-	__u8 tos = RT_FL_TOS(fl4);
+ 	struct fib_result res = {
+ 		.type		= RTN_UNSPEC,
+ 		.fi		= NULL,
+@@ -2534,9 +2546,7 @@ struct rtable *ip_route_output_key_hash(struct net *net, struct flowi4 *fl4,
+ 	struct rtable *rth;
+ 
+ 	fl4->flowi4_iif = LOOPBACK_IFINDEX;
+-	fl4->flowi4_tos = tos & IPTOS_RT_MASK;
+-	fl4->flowi4_scope = ((tos & RTO_ONLINK) ?
+-			 RT_SCOPE_LINK : RT_SCOPE_UNIVERSE);
++	ip_rt_fix_tos(fl4);
+ 
+ 	rcu_read_lock();
+ 	rth = ip_route_output_key_hash_rcu(net, fl4, &res, skb);
+-- 
+2.34.1
+
+
+
