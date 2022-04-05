@@ -2,173 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 24465C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 61B37C4321E
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 21:24:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346491AbiDEVW0 (ORCPT
+        id S1346887AbiDEVWm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 17:22:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43814 "EHLO
+        Tue, 5 Apr 2022 17:22:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53862 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1442176AbiDEPhF (ORCPT
+        with ESMTP id S1457547AbiDEQKH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 11:37:05 -0400
-Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E510FED9EE;
-        Tue,  5 Apr 2022 06:51:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1649166679; x=1680702679;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version;
-  bh=pgj7ZOhRJ/NrgOQpzcRmQAbblsKAlRLHGZGqyonC/0Y=;
-  b=I/j8bbueLFse1K0gOKhPBU60uytgih4dbMJOg8jyrv4zwkhm4t7yFEvw
-   0mzsJUm0ivYcuXmQtRO+i20zXkEnHDtAHCd0Le7CaQsi+53c9wOpH6NfT
-   0NVjhxbbLYpaCTuZsDJ5cy63i7s49NPNh31GbI9HBV0IwdRwmybN1OpU5
-   8=;
-Received: from unknown (HELO ironmsg03-sd.qualcomm.com) ([10.53.140.143])
-  by alexa-out-sd-02.qualcomm.com with ESMTP; 05 Apr 2022 06:51:19 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg03-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2022 06:51:19 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Tue, 5 Apr 2022 06:51:19 -0700
-Received: from c-skakit-linux.qualcomm.com (10.80.80.8) by
- nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Tue, 5 Apr 2022 06:51:14 -0700
-From:   Satya Priya <quic_c_skakit@quicinc.com>
-To:     Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>
-CC:     Lee Jones <lee.jones@linaro.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        <linux-arm-msm@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <swboyd@chromium.org>,
-        <quic_collinsd@quicinc.com>, <quic_subbaram@quicinc.com>,
-        <quic_jprakash@quicinc.com>,
-        Satya Priya <quic_c_skakit@quicinc.com>
-Subject: [PATCH V9 2/6] dt-bindings: mfd: pm8008: Add pm8008 regulator bindings
-Date:   Tue, 5 Apr 2022 19:20:29 +0530
-Message-ID: <1649166633-25872-3-git-send-email-quic_c_skakit@quicinc.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1649166633-25872-1-git-send-email-quic_c_skakit@quicinc.com>
-References: <1649166633-25872-1-git-send-email-quic_c_skakit@quicinc.com>
+        Tue, 5 Apr 2022 12:10:07 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9F6025CD;
+        Tue,  5 Apr 2022 09:08:04 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4A1B0B81B13;
+        Tue,  5 Apr 2022 16:08:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9524EC385A0;
+        Tue,  5 Apr 2022 16:08:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649174881;
+        bh=AoQfSTw72a5g3VVtNzddJxgTV8CHG8MijsAxNddLzcM=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:From;
+        b=Rvy2MyaS/ZPWOuRNjBC+N85V1Wd9YOS+7DkIESmc76SW7ds7bScLypq4XmbROFeFV
+         Vt0Kf7sBAH7ncizQ+q+wMrJEE4IGtZpMl7cDoStPiigR+qwKiRs9D9wJ0u9tAF0zRd
+         S755OJbnfXqP2UCubJlvAGKCKmCCiJ+DVrhFHejYnVl0Ej+uaVfUwZ/L8XhgycgKyO
+         EpRB5HzyFqO6SDVDvDleSt6EOGt24w908Wkh2kBH6OfgZyCIhRvd04A/iwEH4LxVNn
+         8Nkbz4cLxpKqOdQKnCN0tiRQHnwBgmsByBnIolMol/U5hXodx06K2wGpP8CiZ2fQbd
+         rzXojXTMhQ/Tw==
+Date:   Tue, 5 Apr 2022 11:08:00 -0500
+From:   Bjorn Helgaas <helgaas@kernel.org>
+To:     Prasad Malisetty <quic_pmaliset@quicinc.com>
+Cc:     agross@kernel.org, bjorn.andersson@linaro.org,
+        lorenzo.pieralisi@arm.com, robh@kernel.org, kw@linux.com,
+        bhelgaas@google.com, linux-pci@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        rajatja@google.com, refactormyself@gmail.com,
+        quic_vbadigan@quicinc.com, quic_ramkri@quicinc.com,
+        manivannan.sadhasivam@linaro.org, swboyd@chromium.org
+Subject: Re: [PATCH v2] [RFC PATCH] PCI: Update LTR threshold based on LTRME
+ bit
+Message-ID: <20220405160800.GA69953@bhelgaas>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1646679549-12494-1-git-send-email-quic_pmaliset@quicinc.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add bindings for pm8008 regulators device.
+On Tue, Mar 08, 2022 at 12:29:09AM +0530, Prasad Malisetty wrote:
+> Update LTR threshold scale and value based on LTRME (Latency
+> Tolenrance Reporting Mechanism) from device capabilities.
 
-Signed-off-by: Satya Priya <quic_c_skakit@quicinc.com>
----
-Changes in V8:
- - This is split from pm8008.yaml binding.
+s/Tolenrance/Tolerance/
 
-Changes in V9:
- - Remove description for reg and drop unused phandle from example.
+I'm not familiar with "LTRME" and it doesn't appear in the PCI spec.
+Please use the PCIe terminology whenever possible.
 
- .../bindings/mfd/qcom,pm8008-regulators.yaml       | 84 ++++++++++++++++++++++
- 1 file changed, 84 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/mfd/qcom,pm8008-regulators.yaml
+> In ASPM driver, LTR threshold scale and value is updating
+> based on tcommon_mode and t_poweron values. In kioxia NVMe,
+> L1.2 is failing due to LTR threshold scale and value is
+> greater values than max snoop/non snoop value.
+> 
+> In general, updated LTR threshold scale and value should be
+> less than max snoop/non snoop value to enter the device
+> into L1.2 state.
 
-diff --git a/Documentation/devicetree/bindings/mfd/qcom,pm8008-regulators.yaml b/Documentation/devicetree/bindings/mfd/qcom,pm8008-regulators.yaml
-new file mode 100644
-index 0000000..9a82a8b
---- /dev/null
-+++ b/Documentation/devicetree/bindings/mfd/qcom,pm8008-regulators.yaml
-@@ -0,0 +1,84 @@
-+# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/mfd/qcom,pm8008-regulators.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Qualcomm Technologies, Inc. PM8008 Regulator bindings
-+
-+maintainers:
-+  - Satya Priya <quic_c_skakit@quicinc.com>
-+
-+description: |
-+  Qualcomm Technologies, Inc. PM8008 is an I2C controlled PMIC
-+  containing 7 LDO regulators. This binding specifies the PM8008
-+  regulator peripherals of PM8008 device.
-+
-+properties:
-+  compatible:
-+    const: qcom,pm8008-regulators
-+
-+  reg:
-+    maxItems: 1
-+
-+  "#address-cells":
-+    const: 0
-+
-+  "#size-cells":
-+    const: 0
-+
-+  vdd_l1_l2-supply:
-+    description: Input supply phandle of ldo1 and ldo2 regulators.
-+
-+  vdd_l3_l4-supply:
-+    description: Input supply phandle of ldo3 and ldo4 regulators.
-+
-+  vdd_l5-supply:
-+    description: Input supply phandle of ldo5 regulator.
-+
-+  vdd_l6-supply:
-+    description: Input supply phandle of ldo6 regulator.
-+
-+  vdd_l7-supply:
-+    description: Input supply phandle of ldo7 regulator.
-+
-+patternProperties:
-+  "^ldo[1-7]$":
-+    type: object
-+    $ref: "../regulator/regulator.yaml#"
-+    description: PM8008 regulator peripherals of PM8008 regulator device
-+
-+required:
-+  - compatible
-+  - "#address-cells"
-+  - "#size-cells"
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    #include <dt-bindings/mfd/qcom-pm8008.h>
-+    #include <dt-bindings/interrupt-controller/irq.h>
-+    i2c {
-+      #address-cells = <1>;
-+      #size-cells = <0>;
-+      pmic@9 {
-+        compatible = "qcom,pm8008-regulators";
-+        reg = <0x9>;
-+        #address-cells = <0>;
-+        #size-cells = <0>;
-+
-+        vdd_l1_l2-supply = <&vreg_s8b_1p2>;
-+        vdd_l3_l4-supply = <&vreg_s1b_1p8>;
-+        vdd_l5-supply = <&vreg_bob>;
-+        vdd_l6-supply = <&vreg_bob>;
-+        vdd_l7-supply = <&vreg_bob>;
-+
-+        pm8008_l1: ldo1 {
-+          regulator-name = "pm8008_l1";
-+          regulator-min-microvolt = <950000>;
-+          regulator-max-microvolt = <1300000>;
-+        };
-+      };
-+    };
-+...
--- 
-2.7.4
+This affects all PCIe devices, so please include the PCIe spec
+citation that leads to this change.
 
+Please wrap the commit log to fill 75 columns.
+
+Thanks a lot for looking at this!  L1.2 and LTR is real problem area,
+and it would be great if we could get it all sorted out.
+
+> Signed-off-by: Prasad Malisetty <quic_pmaliset@quicinc.com>
+> 
+> ---
+> Changes since v1:
+> 	- Added missing variable declaration in v1 patch.
+> ---
+>  drivers/pci/pcie/aspm.c | 12 +++++++++---
+>  1 file changed, 9 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/pci/pcie/aspm.c b/drivers/pci/pcie/aspm.c
+> index a96b742..a67746c 100644
+> --- a/drivers/pci/pcie/aspm.c
+> +++ b/drivers/pci/pcie/aspm.c
+> @@ -463,6 +463,7 @@ static void aspm_calc_l1ss_info(struct pcie_link_state *link,
+>  	u32 val1, val2, scale1, scale2;
+>  	u32 t_common_mode, t_power_on, l1_2_threshold, scale, value;
+>  	u32 ctl1 = 0, ctl2 = 0;
+> +	u32 cap;
+>  	u32 pctl1, pctl2, cctl1, cctl2;
+>  	u32 pl1_2_enables, cl1_2_enables;
+>  
+> @@ -499,9 +500,14 @@ static void aspm_calc_l1ss_info(struct pcie_link_state *link,
+>  	 * Table 5-11.  T(POWER_OFF) is at most 2us and T(L1.2) is at
+>  	 * least 4us.
+>  	 */
+> -	l1_2_threshold = 2 + 4 + t_common_mode + t_power_on;
+> -	encode_l12_threshold(l1_2_threshold, &scale, &value);
+> -	ctl1 |= t_common_mode << 8 | scale << 29 | value << 16;
+> +	pcie_capability_read_dword(child, PCI_EXP_DEVCAP2, &cap);
+> +	if (!(cap & PCI_EXP_DEVCAP2_LTR)) {
+> +		l1_2_threshold = 2 + 4 + t_common_mode + t_power_on;
+> +		encode_l12_threshold(l1_2_threshold, &scale, &value);
+> +		ctl1 |= scale << 29 | value << 16;
+> +	}
+> +
+> +	ctl1 |= t_common_mode;
+>  
+>  	/* Some broken devices only support dword access to L1 SS */
+>  	pci_read_config_dword(parent, parent->l1ss + PCI_L1SS_CTL1, &pctl1);
+> -- 
+> QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member 
+> of Code Aurora Forum, hosted by The Linux Foundation
+> 
