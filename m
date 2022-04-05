@@ -2,85 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 48B96C43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 28752C43219
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:26:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1588318AbiDFAPX (ORCPT
+        id S1588301AbiDFAPP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 20:15:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59550 "EHLO
+        Tue, 5 Apr 2022 20:15:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35306 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1445553AbiDEPnN (ORCPT
+        with ESMTP id S1354147AbiDEKMG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 11:43:13 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB2EBDCE24
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 07:09:20 -0700 (PDT)
+        Tue, 5 Apr 2022 06:12:06 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62C48515B0;
+        Tue,  5 Apr 2022 02:57:41 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4EB09B81DFA
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 14:09:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 96C8CC385A9;
-        Tue,  5 Apr 2022 14:09:14 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id F15506167E;
+        Tue,  5 Apr 2022 09:57:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0E36AC385A1;
+        Tue,  5 Apr 2022 09:57:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649167754;
-        bh=Wcg3ZHMdsCB1wYGU2/I4aiT0HZnWfz1uNuRzGLaMoxw=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=nkZlKhsCTiQ5hiJ8/WlYtPAIIuU2uYjk/UDJhMugG2KAsSYMPU21MYPAqXYBLLcDM
-         YW2lzXc2oMbNzFJfxZsk/byWUQrgHDAmtxUnpWVDy3NaltKniRopGYfhy2m2pe3xIm
-         1HVxT/9DX6a36erzCur5luxmyDq/ffGLzWwb/g6w=
-Date:   Tue, 5 Apr 2022 16:09:12 +0200
+        s=korg; t=1649152660;
+        bh=deA0NlTTkvXJXQU/XLDMnmMvOVgcFRhTb4ldcInvRok=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=vq3gI2XEmJVjfdHJpZOBIvkmlUoAJai3YE31/igwT2bqTaW7cPCmwDu1K1RUk1Doe
+         w+SpNOdLxAMmpaQnPZXuzs6f+lmAgQ+kD+SF7HcGclrFwNmbo2YcU0isk9tDcOBhqx
+         hoRDiyfQQfbjBPBsOTxnqe7PnwMf4k/ckUDycfpA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Philipp Hortmann <philipp.g.hortmann@gmail.com>
-Cc:     Forest Bond <forest@alittletooquiet.net>,
-        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 3/6] staging: vt6655: Rename macro arguments with
- CamelCase
-Message-ID: <YkxNiGT+kzYnbU69@kroah.com>
-References: <cover.1649103348.git.philipp.g.hortmann@gmail.com>
- <70cce6671976e454830c12d6d7977a5fe816a287.1649103348.git.philipp.g.hortmann@gmail.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Pavel Begunkov <asml.silence@gmail.com>,
+        Jens Axboe <axboe@kernel.dk>
+Subject: [PATCH 5.15 856/913] io_uring: fix memory leak of uid in files registration
+Date:   Tue,  5 Apr 2022 09:31:58 +0200
+Message-Id: <20220405070405.487304291@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <70cce6671976e454830c12d6d7977a5fe816a287.1649103348.git.philipp.g.hortmann@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Apr 04, 2022 at 10:48:47PM +0200, Philipp Hortmann wrote:
-> Rename macro arguments with CamelCase in upc.h as
-> they are not accepted by checkpatch.pl
-> Removed datatype in macro arguments.
-> 
-> Since there are more than one checkpatch issue per line,
-> more steps are rquired to fix.
-> 
-> Signed-off-by: Philipp Hortmann <philipp.g.hortmann@gmail.com>
-> ---
-> V1 -> V2: This patch was 4/7 and is now 3/6
-> ---
->  drivers/staging/vt6655/upc.h | 36 ++++++++++++++++++------------------
->  1 file changed, 18 insertions(+), 18 deletions(-)
-> 
-> diff --git a/drivers/staging/vt6655/upc.h b/drivers/staging/vt6655/upc.h
-> index b374db5fca81..f080a25e6cdf 100644
-> --- a/drivers/staging/vt6655/upc.h
-> +++ b/drivers/staging/vt6655/upc.h
-> @@ -20,34 +20,34 @@
->  
->  /* For memory mapped IO */
->  
-> -#define VNSvInPortB(dwIOAddress, pbyData) \
-> -	(*(pbyData) = ioread8(dwIOAddress))
-> +#define VNSvInPortB(io_address, data) \
-> +	(*(data) = ioread8(io_address))
+From: Pavel Begunkov <asml.silence@gmail.com>
 
-These should all just go away, don't spend time cleaning them up.
+commit c86d18f4aa93e0e66cda0e55827cd03eea6bc5f8 upstream.
 
-Replace the callers with the ioread* calls instead.  Should be one patch
-per macro to remove.
+When there are no files for __io_sqe_files_scm() to process in the
+range, it'll free everything and return. However, it forgets to put uid.
 
-thanks,
+Fixes: 08a451739a9b5 ("io_uring: allow sparse fixed file sets")
+Signed-off-by: Pavel Begunkov <asml.silence@gmail.com>
+Link: https://lore.kernel.org/r/accee442376f33ce8aaebb099d04967533efde92.1648226048.git.asml.silence@gmail.com
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ fs/io_uring.c |    1 +
+ 1 file changed, 1 insertion(+)
 
-greg k-h
+--- a/fs/io_uring.c
++++ b/fs/io_uring.c
+@@ -8130,6 +8130,7 @@ static int __io_sqe_files_scm(struct io_
+ 			fput(fpl->fp[i]);
+ 	} else {
+ 		kfree_skb(skb);
++		free_uid(fpl->user);
+ 		kfree(fpl);
+ 	}
+ 
+
+
