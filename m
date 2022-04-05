@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C3ADC433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 81508C433FE
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:15:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1391475AbiDEUGh (ORCPT
+        id S1391637AbiDEUGj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 16:06:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44796 "EHLO
+        Tue, 5 Apr 2022 16:06:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59254 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349228AbiDEKub (ORCPT
+        with ESMTP id S239467AbiDEKfX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:50:31 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5AC29E9F6;
-        Tue,  5 Apr 2022 03:27:43 -0700 (PDT)
+        Tue, 5 Apr 2022 06:35:23 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5103B4D24A;
+        Tue,  5 Apr 2022 03:20:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 466E46141D;
-        Tue,  5 Apr 2022 10:27:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4E368C385A6;
-        Tue,  5 Apr 2022 10:27:42 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 01CF7B81C8A;
+        Tue,  5 Apr 2022 10:20:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 57115C385A1;
+        Tue,  5 Apr 2022 10:20:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649154462;
-        bh=lQRtMgDTrcSWyqXbZhsMoWU1a+zIBYvvylab8ih+iEw=;
+        s=korg; t=1649154051;
+        bh=xmpYNe7lP0sm/crrazOov450MjnZ3vDtEETdr1+zEH8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=07oYFlwcRp3hqPgD3yfDcAG60IN5z327dFE/2lOEOvbwvsgGKbd07D1THcCocyTZz
-         GD0qSQvlBFxKM+rNNJCuJWR6B8NXrx+bBlVdSrZAv7wk8R/rihpC7/AbPVVJSx3foJ
-         hZmjpHWQof2hYY7XHHM1byCn8e0u80rt2kQzKRbY=
+        b=TbwJtdubnwIUzkrPJtA1jE2jDyhdFM4J0XDY7f0axQ4kSBR9o35aA/1OlA2889eM0
+         +/k3q5/e65EkSsvSEQnZHQJVO+yIrV9otjs+oaqZBEGSaWs1FVWN+WhWvt/kJZ7YGT
+         KE5bOC48iAuTZXan7SGI48A88VvmXOFMQXm9lzCI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kuldeep Singh <singh.kuldeep87k@gmail.com>,
-        Viresh Kumar <viresh.kumar@linaro.org>,
-        Arnd Bergmann <arnd@arndb.de>
-Subject: [PATCH 5.10 587/599] ARM: dts: spear1340: Update serial node properties
-Date:   Tue,  5 Apr 2022 09:34:41 +0200
-Message-Id: <20220405070316.309838749@linuxfoundation.org>
+        stable@vger.kernel.org, Jian Shen <shenjian15@huawei.com>,
+        Guangbin Huang <huangguangbin2@huawei.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 439/599] net: hns3: fix bug when PF set the duplicate MAC address for VFs
+Date:   Tue,  5 Apr 2022 09:32:13 +0200
+Message-Id: <20220405070311.896333933@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
 References: <20220405070258.802373272@linuxfoundation.org>
@@ -50,37 +51,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kuldeep Singh <singh.kuldeep87k@gmail.com>
+From: Jian Shen <shenjian15@huawei.com>
 
-commit 583d6b0062640def86f3265aa1042ecb6672516e upstream.
+[ Upstream commit ccb18f05535c96d26e2d559d402acb87700fc5a7 ]
 
-Reorder dma and dma-names property for serial node to make it compliant
-with bindings.
+If the MAC address A is configured to vport A and then vport B. The MAC
+address of vport A in the hardware becomes invalid. If the address of
+vport A is changed to MAC address B, the driver needs to delete the MAC
+address A of vport A. Due to the MAC address A of vport A has become
+invalid in the hardware entry, so "-ENOENT" is returned. In this case, the
+"used_umv_size" value recorded in driver is not updated. As a result, the
+MAC entry status of the software is inconsistent with that of the hardware.
 
-Fixes: 6e8887f60f60 ("ARM: SPEAr13xx: Pass generic DW DMAC platform data from DT")
-Signed-off-by: Kuldeep Singh <singh.kuldeep87k@gmail.com>
-Acked-by: Viresh Kumar <viresh.kumar@linaro.org>
-Link: https://lore.kernel.org/r/20220326042313.97862-3-singh.kuldeep87k@gmail.com'
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Therefore, the driver updates the umv size even if the MAC entry cannot be
+found. Ensure that the software and hardware status is consistent.
+
+Fixes: ee4bcd3b7ae4 ("net: hns3: refactor the MAC address configure")
+Signed-off-by: Jian Shen <shenjian15@huawei.com>
+Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/boot/dts/spear1340.dtsi |    6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
 
---- a/arch/arm/boot/dts/spear1340.dtsi
-+++ b/arch/arm/boot/dts/spear1340.dtsi
-@@ -136,9 +136,9 @@
- 				reg = <0xb4100000 0x1000>;
- 				interrupts = <0 105 0x4>;
- 				status = "disabled";
--				dmas = <&dwdma0 12 0 1>,
--					<&dwdma0 13 1 0>;
--				dma-names = "tx", "rx";
-+				dmas = <&dwdma0 13 0 1>,
-+					<&dwdma0 12 1 0>;
-+				dma-names = "rx", "tx";
- 			};
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
+index 7b94764b4f5d..49129e8002fc 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
+@@ -7616,12 +7616,11 @@ int hclge_rm_uc_addr_common(struct hclge_vport *vport,
+ 	hnae3_set_bit(req.entry_type, HCLGE_MAC_VLAN_BIT0_EN_B, 0);
+ 	hclge_prepare_mac_addr(&req, addr, false);
+ 	ret = hclge_remove_mac_vlan_tbl(vport, &req);
+-	if (!ret) {
++	if (!ret || ret == -ENOENT) {
+ 		mutex_lock(&hdev->vport_lock);
+ 		hclge_update_umv_space(vport, true);
+ 		mutex_unlock(&hdev->vport_lock);
+-	} else if (ret == -ENOENT) {
+-		ret = 0;
++		return 0;
+ 	}
  
- 			thermal@e07008c4 {
+ 	return ret;
+-- 
+2.34.1
+
 
 
