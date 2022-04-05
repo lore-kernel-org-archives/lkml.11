@@ -2,120 +2,139 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C6F14C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 04:06:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F324C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 04:10:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230351AbiDEEIr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 00:08:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52654 "EHLO
+        id S231200AbiDEELN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 00:11:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39614 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230287AbiDEEIf (ORCPT
+        with ESMTP id S230421AbiDEEK4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 00:08:35 -0400
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA0051DA;
-        Mon,  4 Apr 2022 21:06:35 -0700 (PDT)
-X-UUID: 270c0d8d6eea477fa457c65fac8df177-20220405
-X-UUID: 270c0d8d6eea477fa457c65fac8df177-20220405
-Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw01.mediatek.com
-        (envelope-from <jiaxin.yu@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 2092507740; Tue, 05 Apr 2022 12:06:31 +0800
-Received: from mtkexhb02.mediatek.inc (172.21.101.103) by
- mtkmbs07n1.mediatek.inc (172.21.101.16) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Tue, 5 Apr 2022 12:06:30 +0800
-Received: from mtkcas11.mediatek.inc (172.21.101.40) by mtkexhb02.mediatek.inc
- (172.21.101.103) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Tue, 5 Apr
- 2022 12:06:30 +0800
-Received: from mhfsdcap04 (10.17.3.154) by mtkcas11.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Tue, 5 Apr 2022 12:06:29 +0800
-Message-ID: <6a29c32f42c25ec6e19de0db999ac7ca25869c36.camel@mediatek.com>
-Subject: Re: [v3 15/19] ASoC: mediatek: mt8186: add machine driver with
- mt6366, da7219 and max98357
-From:   Jiaxin Yu <jiaxin.yu@mediatek.com>
-To:     AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>, <broonie@kernel.org>,
-        <robh+dt@kernel.org>
-CC:     <aaronyu@google.com>, <matthias.bgg@gmail.com>,
-        <trevor.wu@mediatek.com>, <tzungbi@google.com>,
-        <julianbraha@gmail.com>, <alsa-devel@alsa-project.org>,
-        <devicetree@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>,
-        <Project_Global_Chrome_Upstream_Group@mediatek.com>
-Date:   Tue, 5 Apr 2022 12:06:29 +0800
-In-Reply-To: <d13b7bb3-989c-55eb-c7b9-41836ccb95a9@collabora.com>
-References: <20220313151023.21229-1-jiaxin.yu@mediatek.com>
-         <20220313151023.21229-16-jiaxin.yu@mediatek.com>
-         <d13b7bb3-989c-55eb-c7b9-41836ccb95a9@collabora.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+        Tue, 5 Apr 2022 00:10:56 -0400
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B06325FF1
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 21:08:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649131725; x=1680667725;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=zy4hoaYdClT/GTDOV0288HGQLnqQ9tl6vaEkZT0kWr4=;
+  b=PvHJ4XxUAJ0DZQNsvhlfE6FQc1Cbi5kqwS6IiUsKnRPYc0tGKA6V9aSD
+   UxP8+EP8VlvBsepBOhRk4ZX7n9X/OSWgOn2TMCFicpqwJzVf6i1JjHt5x
+   dvXLtbFoA3wC5VB0/UmGSa3NLWLymcUjeYFi8t5SpXYPAhTF0+KE/CE6z
+   9uyQFwCNcW0uXrxwxsXzb17+Q3jk8SYccJyjqIaBG8yoBm19fzswD/WXb
+   zwtiKzNbw/GxxTXXnqD9gm3uAJjt2e2lPCiFVlGpra/wTRqUy96gWEVlD
+   cyh3mjn67l3u3Y7/Cv+eX66FDTyVWqUMxv1oPm1x10VxMV11nYOpMxdlV
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10307"; a="260357865"
+X-IronPort-AV: E=Sophos;i="5.90,235,1643702400"; 
+   d="scan'208";a="260357865"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Apr 2022 21:08:45 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,235,1643702400"; 
+   d="scan'208";a="523839920"
+Received: from lkp-server02.sh.intel.com (HELO a44fdfb70b94) ([10.239.97.151])
+  by orsmga006.jf.intel.com with ESMTP; 04 Apr 2022 21:08:43 -0700
+Received: from kbuild by a44fdfb70b94 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nbaUl-0002c5-3l;
+        Tue, 05 Apr 2022 04:08:43 +0000
+Date:   Tue, 5 Apr 2022 12:07:52 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     David Howells <dhowells@redhat.com>
+Cc:     kbuild-all@lists.01.org,
+        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
+        linux-kernel@vger.kernel.org
+Subject: [ammarfaizi2-block:dhowells/linux-fs/netfs-maple 8/40]
+ fs/netfs/internal.h:164:36: warning: format '%lx' expects argument of type
+ 'long unsigned int', but argument 4 has type 'size_t' {aka 'unsigned int'}
+Message-ID: <202204051231.5tNC2hZE-lkp@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-MTK:  N
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 2022-03-14 at 11:44 +0100, AngeloGioacchino Del Regno wrote:
-> Il 13/03/22 16:10, Jiaxin Yu ha scritto:
-> > Add support for mt8186 board with mt6366, da7219 and max98357.
-> > 
-> > Signed-off-by: Jiaxin Yu <jiaxin.yu@mediatek.com>
-> > ---
-> >   .../mt8186/mt8186-mt6366-da7219-max98357.c    | 924
-> > ++++++++++++++++++
-> >   1 file changed, 924 insertions(+)
-> >   create mode 100644 sound/soc/mediatek/mt8186/mt8186-mt6366-
-> > da7219-max98357.c
-> > 
-> 
-> Hello Jiaxin,
-> 
-> I see some duplication between this one and the mt6366-rt1019-
-> rt5682s....
-> ....for this reason, I would propose to split out the MT6366 bits
-> into a
-> common file, something like mt8186-mt6366-common.c, as to reduce the
-> duplication.
-> 
+tree:   https://github.com/ammarfaizi2/linux-block dhowells/linux-fs/netfs-maple
+head:   674eea41fc70a740ff83ec590f9833f805852464
+commit: cae8dd85733f703374474ed433b8263263d4fa7f [8/40] netfs: Provide invalidatepage and releasepage calls
+config: parisc-randconfig-r003-20220405 (https://download.01.org/0day-ci/archive/20220405/202204051231.5tNC2hZE-lkp@intel.com/config)
+compiler: hppa-linux-gcc (GCC) 11.2.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/ammarfaizi2/linux-block/commit/cae8dd85733f703374474ed433b8263263d4fa7f
+        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
+        git fetch --no-tags ammarfaizi2-block dhowells/linux-fs/netfs-maple
+        git checkout cae8dd85733f703374474ed433b8263263d4fa7f
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=parisc SHELL=/bin/bash fs/
 
-Hello Angelo,
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-I'm sorry to reply so later about this comment. I've been thinking
-about the repetition of these two machine driver recently. The biggest
-difference between them are the .init .ops and .be_hw_params_fixup
-callback functions of BE's dai_link. So I want break them down into
-rt1019-rt5682s.c and da7219-max98357.c, the rest becomes mt8186-
-mt6366.c.
+All warnings (new ones prefixed by >>):
 
-SND_SOC_MT8186_MT6366 ==> mt8186-mt6366.c
-SND_SOC_RT1019_RT5682S ==> rt1019-rt5682s.c
-SND_SOC_DA7219_MAX98357 ==> da7219-max98357.c
+   In file included from include/linux/kernel.h:29,
+                    from arch/parisc/include/asm/bug.h:5,
+                    from include/linux/bug.h:5,
+                    from include/linux/thread_info.h:13,
+                    from include/asm-generic/preempt.h:5,
+                    from ./arch/parisc/include/generated/asm/preempt.h:1,
+                    from include/linux/preempt.h:78,
+                    from include/linux/spinlock.h:55,
+                    from include/linux/swap.h:5,
+                    from fs/netfs/misc.c:8:
+   fs/netfs/misc.c: In function 'netfs_invalidate_folio':
+>> fs/netfs/internal.h:164:36: warning: format '%lx' expects argument of type 'long unsigned int', but argument 4 has type 'size_t' {aka 'unsigned int'} [-Wformat=]
+     164 | #define _enter(FMT, ...) no_printk("==> %s("FMT")", __func__, ##__VA_ARGS__)
+         |                                    ^~~~~~~~~
+   include/linux/printk.h:418:25: note: in definition of macro 'printk_index_wrap'
+     418 |                 _p_func(_fmt, ##__VA_ARGS__);                           \
+         |                         ^~~~
+   include/linux/printk.h:132:17: note: in expansion of macro 'printk'
+     132 |                 printk(fmt, ##__VA_ARGS__);             \
+         |                 ^~~~~~
+   fs/netfs/internal.h:164:26: note: in expansion of macro 'no_printk'
+     164 | #define _enter(FMT, ...) no_printk("==> %s("FMT")", __func__, ##__VA_ARGS__)
+         |                          ^~~~~~~~~
+   fs/netfs/misc.c:18:9: note: in expansion of macro '_enter'
+      18 |         _enter("{%lx},%lx,%lx", folio_index(folio), offset, length);
+         |         ^~~~~~
+   fs/netfs/internal.h:164:36: warning: format '%lx' expects argument of type 'long unsigned int', but argument 5 has type 'size_t' {aka 'unsigned int'} [-Wformat=]
+     164 | #define _enter(FMT, ...) no_printk("==> %s("FMT")", __func__, ##__VA_ARGS__)
+         |                                    ^~~~~~~~~
+   include/linux/printk.h:418:25: note: in definition of macro 'printk_index_wrap'
+     418 |                 _p_func(_fmt, ##__VA_ARGS__);                           \
+         |                         ^~~~
+   include/linux/printk.h:132:17: note: in expansion of macro 'printk'
+     132 |                 printk(fmt, ##__VA_ARGS__);             \
+         |                 ^~~~~~
+   fs/netfs/internal.h:164:26: note: in expansion of macro 'no_printk'
+     164 | #define _enter(FMT, ...) no_printk("==> %s("FMT")", __func__, ##__VA_ARGS__)
+         |                          ^~~~~~~~~
+   fs/netfs/misc.c:18:9: note: in expansion of macro '_enter'
+      18 |         _enter("{%lx},%lx,%lx", folio_index(folio), offset, length);
+         |         ^~~~~~
 
-Or put these three files in the same mt8186-mt6366.c, then distinguish
-by different compatible string.
 
-If it is expected to see MT8186 machines with DA7219 or MAX98357,
-> then it'd be a
-> good idea to also do something about preventively commonizing these
-> ones, like
-> it is being done in ... MT8192, if I remember correctly.
-> 
-> Regards,
-> Angelo
+vim +164 fs/netfs/internal.h
 
-Yes, I will change this part that being done in MT8192 to simplify the
-code. But the part of mt8192 is being reviewed. I'm not sure if you
-have any comments about this series.
+3d3c95046742e4 David Howells 2020-05-13  162  
+3d3c95046742e4 David Howells 2020-05-13  163  #else
+3d3c95046742e4 David Howells 2020-05-13 @164  #define _enter(FMT, ...) no_printk("==> %s("FMT")", __func__, ##__VA_ARGS__)
 
-Link: 
-https://lore.kernel.org/linux-arm-kernel/20220402051754.17513-1-jiaxin.yu@mediatek.com/T/
+:::::: The code at line 164 was first introduced by commit
+:::::: 3d3c95046742e4eebaa4b891b0b01cbbed94ebbd netfs: Provide readahead and readpage netfs helpers
 
-Jiaxin.Yu
-Thanks.
+:::::: TO: David Howells <dhowells@redhat.com>
+:::::: CC: David Howells <dhowells@redhat.com>
 
-
-
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
