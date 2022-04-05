@@ -2,208 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 497D2C4332F
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:52:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AAE9CC433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:00:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1581520AbiDEXjq (ORCPT
+        id S1581578AbiDEXj7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 19:39:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44732 "EHLO
+        Tue, 5 Apr 2022 19:39:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39076 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1457916AbiDEQ7s (ORCPT
+        with ESMTP id S1381309AbiDEMy3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 12:59:48 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02BDA5D1A3
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 09:57:47 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 929BD615AF
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 16:57:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E4B99C385A1;
-        Tue,  5 Apr 2022 16:57:45 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649177866;
-        bh=TKj/Gdf3upOujc9HOwY9/yVgEBOdEJpY7NOsYt4MUt0=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=sLjhPxKBSrpwXS5A8EWIIkEak001fUnpZol7Yuk6pHxjC+lRXq/aT1HSu+2Di5ICa
-         OQ+7e+yMEXVdVtBMaHZfWOxrefF1fJ/Q+4DWRfT10DZdwQeb0lGxfvH8U9BuHT0b0K
-         R92RQ//OsY4L5MM1nv4aeIxBerZ0OKBGmbk69yHjbfZAVFDxWR+BKIIPWFPnmUPCG6
-         kDqNmZhTdlsAbqwQ9y2CQVTBbCfYA/JGuI+/083okepz6UcZCkySf36XBlxlOedyzy
-         tatiOSITnJV4Q/h1mBT8oJmONJgctog+CC1z4a9m5uuK6YTBG6yc4owenwoh91Mu0P
-         8GrQzujSWGXsg==
-Received: from mchehab by mail.kernel.org with local (Exim 4.94.2)
-        (envelope-from <mchehab@kernel.org>)
-        id 1nbmUx-002uYS-EY; Tue, 05 Apr 2022 18:57:43 +0200
-From:   Mauro Carvalho Chehab <mchehab@kernel.org>
-To:     alsa-devel@alsa-project.org
-Cc:     Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
-        "Hans de Goede" <hdegoede@redhat.com>,
-        =?UTF-8?q?P=C3=A9ter=20Ujfalusi?= <peter.ujfalusi@linux.intel.com>,
-        Bard Liao <yung-chuan.liao@linux.intel.com>,
-        Cezary Rojewski <cezary.rojewski@intel.com>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Jie Yang <yang.jie@linux.intel.com>,
-        Liam Girdwood <liam.r.girdwood@linux.intel.com>,
-        Mark Brown <broonie@kernel.org>, Takashi Iwai <tiwai@suse.com>,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v3 2/3] ASoC: Intel: sof_es8336: support a separate gpio to control headphone
-Date:   Tue,  5 Apr 2022 18:57:33 +0200
-Message-Id: <535454c0c598a8454487fe29b164527370e2db81.1649177516.git.mchehab@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <cover.1649177516.git.mchehab@kernel.org>
-References: <cover.1649177516.git.mchehab@kernel.org>
+        Tue, 5 Apr 2022 08:54:29 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 8F5202314E
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 04:55:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1649159730;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=28KE+M63X+ahVj/a4F3r0KzFPc/lbb3JFcGix4GxqtQ=;
+        b=VO7oSQn5me1rxoKu39wEwt0q1IwLRhtDlRrSIjv014AXitvh+0OfOniiLFSv2I+nsQP+IJ
+        LA3pw+lTybH4BtOJy21IbBlW9sUZ6eVDjQX2tnA8tQmg7IqYpSZLH+zFbuanjfVqZIevL+
+        CHPrUq6zGv2GhoxUjPJ8fKIZWSJY/vo=
+Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
+ [209.85.221.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-364-0ljUOSMzMnit-GpbjHpPoQ-1; Tue, 05 Apr 2022 07:55:29 -0400
+X-MC-Unique: 0ljUOSMzMnit-GpbjHpPoQ-1
+Received: by mail-wr1-f70.google.com with SMTP id r16-20020adfbb10000000b002060d469943so1398482wrg.4
+        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 04:55:29 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=28KE+M63X+ahVj/a4F3r0KzFPc/lbb3JFcGix4GxqtQ=;
+        b=Wo0KS2xNIGh8RMNaFI5WX6AaHEV4usioCg90AKcme7FgBZ2SLIzH0CecCuWHbnpeMW
+         XjLDM9Dvzoj8FdOPomRQ1cB6SS+Kc+gRCEbMSIXZ6W/Tht0SQP/nuD8i0o+Mo9yvJPUe
+         8ryFHsRhHL5jjNE0VgmYx/uulTBs0R2VM+8RJuKtx4pWMC2TYxYblOydqvAntGIKeV+Q
+         J1RdY3CIGgGwnf/F8DhcWIwr2wHMVdFyb0IV8iMB5a9OlG5IosXDoofhGticA9uR5ul2
+         vqbx1Pt2gN71xudRDBAcMQkzqZq3WfqwuauWRh7RT3x1/o0Oe/v5zFHYiYi5CJaib+dT
+         8cqw==
+X-Gm-Message-State: AOAM532M9u+/wp5LgjWDl7+YCuyOqmVLFCBvKLU9mLJKrB5EcnASSX5I
+        H+SLjD0H8gzM13BV7FLeuV7AsXRcFfBMmSs94VM5I0iWG4iUPrYZZXkhkw850PdaLWNdSRwcl1w
+        pFUDlrJ1Lw98khxcxnJBjS0Za
+X-Received: by 2002:a5d:50d2:0:b0:206:b6f:f7db with SMTP id f18-20020a5d50d2000000b002060b6ff7dbmr2452906wrt.248.1649159728269;
+        Tue, 05 Apr 2022 04:55:28 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJy1Tka5E6L9URIsWeBley60SCe/IUE6j/uwyJ5KZatVAUY55Lp2TF7WwIu2UssrhlRPLr4P1Q==
+X-Received: by 2002:a5d:50d2:0:b0:206:b6f:f7db with SMTP id f18-20020a5d50d2000000b002060b6ff7dbmr2452885wrt.248.1649159727975;
+        Tue, 05 Apr 2022 04:55:27 -0700 (PDT)
+Received: from redhat.com ([2.52.17.211])
+        by smtp.gmail.com with ESMTPSA id o17-20020a05600c4fd100b0038cd5074c83sm2159309wmq.34.2022.04.05.04.55.25
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 05 Apr 2022 04:55:27 -0700 (PDT)
+Date:   Tue, 5 Apr 2022 07:55:22 -0400
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Christoph Hellwig <hch@infradead.org>
+Cc:     Arnd Bergmann <arnd@arndb.de>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
+        linux-arch <linux-arch@vger.kernel.org>,
+        Jason Wang <jasowang@redhat.com>,
+        virtualization list <virtualization@lists.linux-foundation.org>
+Subject: Re: [PATCH 8/8] virtio_ring.h: do not include <stdint.h> from
+ exported header
+Message-ID: <20220405074223-mutt-send-email-mst@kernel.org>
+References: <20220404061948.2111820-1-masahiroy@kernel.org>
+ <20220404061948.2111820-9-masahiroy@kernel.org>
+ <Ykqh3mEy5uY8spe8@infradead.org>
+ <CAK8P3a07ZdqA0UBC_qkqzMsZWLUK=Rti3AkFe2VVEWLivuZAqA@mail.gmail.com>
+ <YkvVOLj/Rv4yPf5K@infradead.org>
+ <CAK8P3a0FjfSyUtv9a9dM7ixsK2oY9VF7WZPvDctn2JRi7A0YyQ@mail.gmail.com>
+ <YkvpT3PFcbgcMCWy@infradead.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YkvpT3PFcbgcMCWy@infradead.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Some devices may use both gpio0 and gpio1 to independently switch
-the speaker and the headphone.
+On Tue, Apr 05, 2022 at 12:01:35AM -0700, Christoph Hellwig wrote:
+> On Tue, Apr 05, 2022 at 08:29:36AM +0200, Arnd Bergmann wrote:
+> > I think the users all have their own copies, at least the ones I could
+> > find on codesearch.debian.org. However, there are 27 virtio_*.h
+> > files in include/uapi/linux that probably should stay together for
+> > the purpose of defining the virtio protocol, and some others might
+> > be uapi relevant.
+> > 
+> > I see that at least include/uapi/linux/vhost.h has ioctl() definitions
+> > in it, and includes the virtio_ring.h header indirectly.
+> 
+> Uhh.  We had a somilar mess (but at a smaller scale) in nvme, where
+> the uapi nvme.h contained both the UAPI and the protocol definition.
+> We took a hard break to only have a nvme_ioctl.h in the uapi header
+> and linux/nvme.h for the protocol.  This did break a bit of userspace
+> compilation (but not running obviously) at the time, but really made
+> the headers much easier to main.  Some userspace keeps on copying
+> nvme.h with the protocol definitions.
 
-Add support for that.
+So far we are quite happy with the status quo, I don't see any issues
+maintaining the headers. And yes, through vhost and vringh they are part
+of UAPI.
 
-Acked-by: Hans de Goede <hdegoede@redhat.com>
-Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
----
+Yes users have their own copies but they synch with the kernel.
 
-See [PATCH v3 0/3] at: https://lore.kernel.org/all/cover.1649177516.git.mchehab@kernel.org/
+That's generally. Specifically the vring_init thing is a legacy thingy
+used by kvmtool and maybe others, and it inits the ring in the way that
+vring/virtio expect.  Has been there since day 1 and we are careful not
+to add more stuff like that, so I don't see a lot of gain from incurring
+this pain for users.
 
- sound/soc/intel/boards/sof_es8336.c | 59 ++++++++++++++++++++++++-----
- 1 file changed, 49 insertions(+), 10 deletions(-)
-
-diff --git a/sound/soc/intel/boards/sof_es8336.c b/sound/soc/intel/boards/sof_es8336.c
-index e4829a376b79..d15a58666cc6 100644
---- a/sound/soc/intel/boards/sof_es8336.c
-+++ b/sound/soc/intel/boards/sof_es8336.c
-@@ -30,6 +30,7 @@
- #define SOF_ES8336_SPEAKERS_EN_GPIO1_QUIRK	BIT(4)
- #define SOF_ES8336_ENABLE_DMIC			BIT(5)
- #define SOF_ES8336_JD_INVERTED			BIT(6)
-+#define SOF_ES8336_HEADPHONE_GPIO		BIT(7)
- 
- static unsigned long quirk;
- 
-@@ -39,7 +40,7 @@ MODULE_PARM_DESC(quirk, "Board-specific quirk override");
- 
- struct sof_es8336_private {
- 	struct device *codec_dev;
--	struct gpio_desc *gpio_speakers;
-+	struct gpio_desc *gpio_speakers, *gpio_headphone;
- 	struct snd_soc_jack jack;
- 	struct list_head hdmi_pcm_list;
- 	bool speaker_en;
-@@ -51,15 +52,27 @@ struct sof_hdmi_pcm {
- 	int device;
- };
- 
--static const struct acpi_gpio_params speakers_enable_gpio0 = { 0, 0, true };
-+static const struct acpi_gpio_params enable_gpio0 = { 0, 0, true };
-+static const struct acpi_gpio_params enable_gpio1 = { 1, 0, true };
-+
- static const struct acpi_gpio_mapping acpi_speakers_enable_gpio0[] = {
--	{ "speakers-enable-gpios", &speakers_enable_gpio0, 1 },
-+	{ "speakers-enable-gpios", &enable_gpio0, 1 },
- 	{ }
- };
- 
--static const struct acpi_gpio_params speakers_enable_gpio1 = { 1, 0, true };
- static const struct acpi_gpio_mapping acpi_speakers_enable_gpio1[] = {
--	{ "speakers-enable-gpios", &speakers_enable_gpio1, 1 },
-+	{ "speakers-enable-gpios", &enable_gpio1, 1 },
-+};
-+
-+static const struct acpi_gpio_mapping acpi_enable_both_gpios[] = {
-+	{ "speakers-enable-gpios", &enable_gpio0, 1 },
-+	{ "headphone-enable-gpios", &enable_gpio1, 1 },
-+	{ }
-+};
-+
-+static const struct acpi_gpio_mapping acpi_enable_both_gpios_rev_order[] = {
-+	{ "speakers-enable-gpios", &enable_gpio1, 1 },
-+	{ "headphone-enable-gpios", &enable_gpio0, 1 },
- 	{ }
- };
- 
-@@ -73,6 +86,8 @@ static void log_quirks(struct device *dev)
- 		dev_info(dev, "quirk DMIC enabled\n");
- 	if (quirk & SOF_ES8336_SPEAKERS_EN_GPIO1_QUIRK)
- 		dev_info(dev, "Speakers GPIO1 quirk enabled\n");
-+	if (quirk & SOF_ES8336_HEADPHONE_GPIO)
-+		dev_info(dev, "quirk headphone GPIO enabled\n");
- 	if (quirk & SOF_ES8336_JD_INVERTED)
- 		dev_info(dev, "quirk JD inverted enabled\n");
- }
-@@ -83,13 +98,24 @@ static int sof_es8316_speaker_power_event(struct snd_soc_dapm_widget *w,
- 	struct snd_soc_card *card = w->dapm->card;
- 	struct sof_es8336_private *priv = snd_soc_card_get_drvdata(card);
- 
-+	if (priv->speaker_en == !SND_SOC_DAPM_EVENT_ON(event))
-+		return 0;
-+
-+	priv->speaker_en = !SND_SOC_DAPM_EVENT_ON(event);
-+
- 	if (SND_SOC_DAPM_EVENT_ON(event))
--		priv->speaker_en = false;
--	else
--		priv->speaker_en = true;
-+		msleep(70);
- 
- 	gpiod_set_value_cansleep(priv->gpio_speakers, priv->speaker_en);
- 
-+	if (!(quirk & SOF_ES8336_HEADPHONE_GPIO))
-+		return 0;
-+
-+	if (SND_SOC_DAPM_EVENT_ON(event))
-+		msleep(70);
-+
-+	gpiod_set_value_cansleep(priv->gpio_headphone, priv->speaker_en);
-+
- 	return 0;
- }
- 
-@@ -114,7 +140,7 @@ static const struct snd_soc_dapm_route sof_es8316_audio_map[] = {
- 
- 	/*
- 	 * There is no separate speaker output instead the speakers are muxed to
--	 * the HP outputs. The mux is controlled by the "Speaker Power" supply.
-+	 * the HP outputs. The mux is controlled Speaker and/or headphone switch.
- 	 */
- 	{"Speaker", NULL, "HPOL"},
- 	{"Speaker", NULL, "HPOR"},
-@@ -233,8 +259,14 @@ static int sof_es8336_quirk_cb(const struct dmi_system_id *id)
- {
- 	quirk = (unsigned long)id->driver_data;
- 
--	if (quirk & SOF_ES8336_SPEAKERS_EN_GPIO1_QUIRK)
-+	if (quirk & SOF_ES8336_HEADPHONE_GPIO) {
-+		if (quirk & SOF_ES8336_SPEAKERS_EN_GPIO1_QUIRK)
-+			gpio_mapping = acpi_enable_both_gpios;
-+		else
-+			gpio_mapping = acpi_enable_both_gpios_rev_order;
-+	} else if (quirk & SOF_ES8336_SPEAKERS_EN_GPIO1_QUIRK) {
- 		gpio_mapping = acpi_speakers_enable_gpio1;
-+	}
- 
- 	return 1;
- }
-@@ -592,6 +624,13 @@ static int sof_es8336_probe(struct platform_device *pdev)
- 		goto err_put_codec;
- 	}
- 
-+	priv->gpio_headphone = gpiod_get_optional(codec_dev, "headphone-enable", GPIOD_OUT_LOW);
-+	if (IS_ERR(priv->gpio_headphone)) {
-+		ret = dev_err_probe(dev, PTR_ERR(priv->gpio_headphone),
-+				    "could not get headphone-enable GPIO\n");
-+		goto err_put_codec;
-+	}
-+
- 	INIT_LIST_HEAD(&priv->hdmi_pcm_list);
- 
- 	snd_soc_card_set_drvdata(card, priv);
 -- 
-2.35.1
+MST
 
