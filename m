@@ -2,145 +2,177 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A0637C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D22A3C4332F
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:34:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1575645AbiDEXIh (ORCPT
+        id S1575722AbiDEXIw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 19:08:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57580 "EHLO
+        Tue, 5 Apr 2022 19:08:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54448 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350084AbiDEPLq (ORCPT
+        with ESMTP id S1457980AbiDERCr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 11:11:46 -0400
-Received: from mail-yb1-f180.google.com (mail-yb1-f180.google.com [209.85.219.180])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E17B107A93;
-        Tue,  5 Apr 2022 06:25:30 -0700 (PDT)
-Received: by mail-yb1-f180.google.com with SMTP id w134so15468852ybe.10;
-        Tue, 05 Apr 2022 06:25:30 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=E5Al4J7VCG/P8LTv1wy0Uzk4KB0CIZvLVMNw+72bmlY=;
-        b=pi+F9TIqKCEsUNjCb9dXoXQQNWKsRRxNdv5tIwo+338XztSKFJIYmHZkceBh6r31HM
-         zOTEafVXA117xUkDIWXQSCqSwY7HnBzPCE7H7i85C/kKEg+7wdLDKD+j9xsWQF98VQrl
-         5Kjz/7MYovpuUNj8n9fKK9hYnLmdWvAoDaDhCquMQvMxs13dSczKF+xMgB739HndQrSS
-         Rp/JRdwBjIGx6li46fitUbQLTiDJJbqjnIXi4rtPfui9XBxI2FZBy2MpNhHlQkWzydG4
-         qBUwmqE/gZejHwC62QLm5ZSfAa8sCHXWIfpuGriNwHcsb6EFjqr9zJy5unCcyAqHpyjW
-         vTog==
-X-Gm-Message-State: AOAM5334oGiOzG8pbMFgDpKN4hv9B9HGkKRbYFupf1gXc4FXR09Cc7DL
-        VxPINjrv6k3JFzyzhFHueIjR5jZUD+v7hpIxDsk=
-X-Google-Smtp-Source: ABdhPJzvtUL+VkrikhhCBPKyLKqDEV2E5D8I7wR0e3nEvz40gGldfHk2pv2u3E/1r3WC/KqC7zaSc0uRoPXPW/UhUpc=
-X-Received: by 2002:a05:6902:1544:b0:63d:d3a7:8cc4 with SMTP id
- r4-20020a056902154400b0063dd3a78cc4mr2582151ybu.622.1649165129602; Tue, 05
- Apr 2022 06:25:29 -0700 (PDT)
+        Tue, 5 Apr 2022 13:02:47 -0400
+Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2050.outbound.protection.outlook.com [40.107.237.50])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9356B2E9C6
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 10:00:48 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=KqQZ6NCU5VOhj72Qsfr+htZee5eDN3kSAY8PIJoflHkBhFssomsMxb3fXSQHCJTVB56bVEc0EwLg+AftRlF95Z5IhiBF0u5xuGqPBd7eTdc3iSAQf2yJho8F2/a5Tij5rOHDkRmsd3T5T3RgkhFTsoga31jLra//O94cwaG10yjN59lgJNiTXP8LcmzLeCe39qvBFeoduMLfGlEnBzbk50AjQqx8Q8qXPG6pNqiWtFgwVQKuviBI2CJoojAxk68zxQz1sARLzJzEdVfOJ83C71wHsEtA5x0Uuss2y8FjvdI4DqEP3b6n1NqntqpYCFaU2tyKYhp8iYqDhKGRu7Ktsg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=bRhaSgwQxursOeBtc3su16M0VCK+blA/0dBA1VenjL8=;
+ b=V94L0D4RsMp4DGMAth0C/3OjCezFcBImYG6+dSM6PBCujw3/qQM2E8D/woeNeDB26/ViGCjJBL+VLv03oTE9OdeXlU5WCLVOK4Dt6ogI5Sh7NVz53HyK91/NOTzmiSzJz1NmNSxQvifo9/el6eQSSikV4EfCNSj8nOwarjkC6DiS0cts4OwYWQAz4Oi5MXab4yBC2WRZB3nx9HSwtdzolmsSVmsJBLsvRvs+ZoqHFzmTrJG5HUNgwtrFU6XTn7XL0yvsGZP31ssbzI0SDL63/emhtZBCAlOiiTSu+KC3VRro7/MvpyHll6+cpqRWiaQ8iUOCLKaDbsJeGz08fy5JqA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=bRhaSgwQxursOeBtc3su16M0VCK+blA/0dBA1VenjL8=;
+ b=oPylPikBGsqm+wt/eQTRAOu6YJ15mQIpOwnN+Dzegpdxliu5gIql5CZLmQ22j6V/yPRCKYZQa5gCxi10qXlQHujPtdWSfAI+2yFASOJu0JgOECn8M9IPqihZyCYCcG3IDbKNLkCP6medFmlp6DMMORbMGeBHdiub4yAhxwOnXW0=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=amd.com;
+Received: from BN9PR12MB5115.namprd12.prod.outlook.com (2603:10b6:408:118::14)
+ by CO6PR12MB5474.namprd12.prod.outlook.com (2603:10b6:303:139::9) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5123.31; Tue, 5 Apr
+ 2022 17:00:45 +0000
+Received: from BN9PR12MB5115.namprd12.prod.outlook.com
+ ([fe80::4839:9431:1040:5cd5]) by BN9PR12MB5115.namprd12.prod.outlook.com
+ ([fe80::4839:9431:1040:5cd5%3]) with mapi id 15.20.5123.031; Tue, 5 Apr 2022
+ 17:00:44 +0000
+Message-ID: <c55e9866-83f6-a3a0-2ad3-40090e978b40@amd.com>
+Date:   Tue, 5 Apr 2022 13:00:42 -0400
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH] drm/amdkfd: Fix potential NULL pointer dereference
+Content-Language: en-US
+To:     Grigory Vasilyev <h0tc0d3@gmail.com>,
+        Rodrigo Siqueira <Rodrigo.Siqueira@amd.com>,
+        Melissa Wen <mwen@igalia.com>
+Cc:     "Pan, Xinhui" <Xinhui.Pan@amd.com>, linux-kernel@vger.kernel.org,
+        amd-gfx@lists.freedesktop.org, David Airlie <airlied@linux.ie>,
+        dri-devel@lists.freedesktop.org,
+        Alex Deucher <alexander.deucher@amd.com>,
+        =?UTF-8?Q?Christian_K=c3=b6nig?= <christian.koenig@amd.com>
+References: <20220404222132.12740-1-h0tc0d3@gmail.com>
+From:   Felix Kuehling <felix.kuehling@amd.com>
+In-Reply-To: <20220404222132.12740-1-h0tc0d3@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: YT1PR01CA0115.CANPRD01.PROD.OUTLOOK.COM
+ (2603:10b6:b01:2c::24) To BN9PR12MB5115.namprd12.prod.outlook.com
+ (2603:10b6:408:118::14)
 MIME-Version: 1.0
-References: <20220325184609.4059963-1-rajatja@google.com>
-In-Reply-To: <20220325184609.4059963-1-rajatja@google.com>
-From:   "Rafael J. Wysocki" <rafael@kernel.org>
-Date:   Tue, 5 Apr 2022 15:25:17 +0200
-Message-ID: <CAJZ5v0jQW3NcbtBWxUW8RQ-eCB3M6wdqztDmPr4q5+=FYmfJHw@mail.gmail.com>
-Subject: Re: [PATCH v5 1/2] PCI: ACPI: Support Microsoft's "DmaProperty"
-To:     Rajat Jain <rajatja@google.com>
-Cc:     "Rafael J. Wysocki" <rafael@kernel.org>,
-        Len Brown <lenb@kernel.org>,
-        Linux PCI <linux-pci@vger.kernel.org>,
-        Mika Westerberg <mika.westerberg@linux.intel.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Bjorn Helgaas <helgaas@kernel.org>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Rajat Jain <rajatxjain@gmail.com>,
-        Dmitry Torokhov <dtor@google.com>,
-        Jesse Barnes <jsbarnes@google.com>,
-        Jean-Philippe Brucker <jean-philippe@linaro.org>,
-        Pavel Machek <pavel@denx.de>,
-        "Oliver O'Halloran" <oohall@gmail.com>,
-        Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-        David Woodhouse <dwmw2@infradead.org>,
-        Lu Baolu <baolu.lu@linux.intel.com>,
-        "open list:AMD IOMMU (AMD-VI)" <iommu@lists.linux-foundation.org>
-Content-Type: text/plain; charset="UTF-8"
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: e58d55df-24a7-477a-d4f9-08da1725d2dc
+X-MS-TrafficTypeDiagnostic: CO6PR12MB5474:EE_
+X-Microsoft-Antispam-PRVS: <CO6PR12MB54749A4C4B9C51296BBEEA2E92E49@CO6PR12MB5474.namprd12.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: cvOjWkzxtFGgp1x+8pubBFHIzA7ofEHVS6FnkBS5br2GBpR1CdQi3oKLl+K8m631CvPMdBSfKbDPzM4NRgmFjSkGF1rLegK3V8fIwbphjhu5AH7lm8EGPaQZMaek6lwvzr0BmSpWS/m7eWbc/gWPguAWCdm7hgy4T0YwLo2DLoeA+KyEnns1GsFtm63wTxLQg1icg7wQj4+t/8I0iFH26vyaq+KLDEppBouEeSCYbmZJJNwah2MnaQnk3Jb8TfHis8zSxp0VHGUVHSa1Lql9Qe5MuZQEau9tdWiFI0qi05WT1NmAw2f2KrwC+mFzNlkQLFcsngsFKd8xEt/3ZbR+iSqLdRE3kjT1NGlbhB57d7lq9CQ9OGIzheQP/zy/ltV2f+wYuQqWAxVrqkdGocFyZ0LpubgG2DFSk5/RRvsgqLNtvkLtCYBu2NSEYhJ8CoSkvO5RPwMZn40TyUtrSAoeRz2CRrOTGYg7y9Q1o3ByMA8rAS99hg9KUqrEzsLwa7IJWXetB2fLdiYJcE2YBRoHxSgSQ5X9NJ0CbFuAhm8491aCiFQpy2QDSU4J8C+T2gc9FR1ibu/xxkNJB5kMeHafADtmSUX2b1b5W65biLem8fL4KcsrIYFvu63ZmaUe5VwOzGp33AUM0kfEJSef82JLZ/D4ooWZAKUl5Aherdiax1grCtGwGTgfhGR6VD1WxL2st5QKc0VZXoaxym9y04IaQPaSwOoCAxRXD5PH4zsofiY=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN9PR12MB5115.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(8676002)(36756003)(26005)(2616005)(4326008)(66946007)(186003)(6512007)(38100700002)(66476007)(31686004)(66556008)(83380400001)(6506007)(8936002)(110136005)(31696002)(508600001)(5660300002)(44832011)(2906002)(54906003)(6486002)(316002)(86362001)(43740500002)(45980500001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?RUIyRXB5dzNTK2loOHA5ZEJoVWNYQi8xQ0YrZ0Jwc0hDZG03U3llSERTVnp4?=
+ =?utf-8?B?Y1ZzUmhHVENUcHJsdEovaWZIL3paTDhCdEZwa0dQTXl2YWVQd3c3UE5iQnNk?=
+ =?utf-8?B?Zm42bUVvd3lieERxdW5yU00zVUNydXJDd0xSV0dKWVVrNTNtbk9PZFM5cXhX?=
+ =?utf-8?B?anEyOFhxcS9NQzI3NFlNK2lQeGRFektQdFNPWGJqZW1yNUxqVDZTOHpodW4w?=
+ =?utf-8?B?cHhDRi9HQjkyT1lHR0ZNSkZNSU5ZT3pTSUc4RkpWSGQzVlRoY0pCODkxaDV0?=
+ =?utf-8?B?YWdVeGZ4ZG1DdnIrekdDbWlaWFE4OER3RDhlNmg2RlJHc2VXMVBpZzNUdTQw?=
+ =?utf-8?B?RVByR0NLdjZFSDlXdno1aEgwYUJmZzk5aWNkZEp0M2hHTmZhNU1WYXhacHJn?=
+ =?utf-8?B?blgzRjg4UExReWlveUo0THdqeVZVRnYwUkJ1OU9QU0VpVVZ1SHFlUmVHOFhL?=
+ =?utf-8?B?Tm0vdUtWSnk0MGNCRGp3RnorVGtsdnJ6WmhoaS9UNmRCUi9lZ0JjeHZhbU1v?=
+ =?utf-8?B?NVJ5bWZUWTJkelg2ZEFCc3k2UEgxaWhhRlFwWE1tMCt1ZSs2MmVTT2FNZ25t?=
+ =?utf-8?B?d0N6OVMyZHJLSFBlOHZBZEJrWTlrZlBQMmd2dzA3MXJ0aVhwbFBvNWNhVmUy?=
+ =?utf-8?B?T1N6eEhQM0FVcWtKdmk4ek0xN21UcEROSWRiR1I0d21uZ2x5YUZvc2Q5dmVp?=
+ =?utf-8?B?cm0vVHhaMUcwVGZRM3JlVDZUaGN3RWRYRFJZK0p4ZkQ0WmtOa0FHQWxybVlT?=
+ =?utf-8?B?OXJpS1o2T1NJYkh5dHBPZjM0UUU2R3libStUbDBicGpJc08rc1hWaUc0Yk01?=
+ =?utf-8?B?ZXdhSThYZGl3SjVXdk9URHd3Z2JTNDBidVZDQ1hjajJaM0MyMkpGcHZERXlO?=
+ =?utf-8?B?b24zampsa1pTNm1iV3J5dmVjLzJTeG9YOW9XUVpuZ2pibGRuSllDVDNoU2J2?=
+ =?utf-8?B?SXFtQUhwb0l4SnJsNGhTUVNRYVVneEhibEZ2UHBYb0lRTVN3Ni9pb1BiT2ZI?=
+ =?utf-8?B?M2dSMkFJU3l6Z2JpUmltcFQyNm53QVk4bkVhTVg0RjhxSkJweXozU2c5dkEv?=
+ =?utf-8?B?Skp2OFExUldLcXkrN1FwTUIvbGJYalR6Vko3VnljSVJuY2FtV3AxR1lLSWVK?=
+ =?utf-8?B?UnZhOVNJK2VVaHphMVlJS3JLMGF1ZURhR1Q4M0lvYW0vbVo3Uk9rMlJoR1VI?=
+ =?utf-8?B?Q0tmWlk5dytjMnJwa0xIOHFMbVd5L1FORTRlblQ1bEJBOHBNR0Q2N01uVkps?=
+ =?utf-8?B?YTFRVjE0VTk2U0pLZHJmZWp6UHRPbXcwUG5HalQvdi9iZUFZa1VqYXpzWjI2?=
+ =?utf-8?B?TFhETGlNbDRmbW84YmNnUHBQY2w5TDcrTFQxcUk4dldXRDhLUVVYRW9haDBq?=
+ =?utf-8?B?Vi9SNmNLeXA2bjgyNmwvUUQ0U0ZaUjBCRFNHNnE4bzlOeWRaejUrblEzUmRl?=
+ =?utf-8?B?anpMTzN1alltOVNXNUZOM0Q4TGhDYS9DVUZuYS9QbTc4ODFFQXpOekFRemhD?=
+ =?utf-8?B?T1dWRmlvK0JqVmxNTDBhbENqR2pzY0I3a3VXT2orKzVqY2o0Wk9TODJyeE5P?=
+ =?utf-8?B?YjZvVzJCdlZveVMvYTZZS2p0V1IxY1Zja29Dbit4MEs4dUV4bHErMi94WndJ?=
+ =?utf-8?B?NVIvNEhjd1RueTFMVElxUVN0WE9xNktsMHZFZXhRZUhZcnpmMHVBS2FYSXBi?=
+ =?utf-8?B?MHp1VWg5eTkrbUhwRTRLUDJoVkx0K3RONTdDT1FFUFIwbjZpS0V4NkYyUnpy?=
+ =?utf-8?B?M1Q0K3FINzgvN3BsNmplYjVlayszYzRGMzJYZ1Fjc3d2RVNxN3RaQkdzZlFY?=
+ =?utf-8?B?czZuWmdCMnNBS0JycVNLMFVoL1hGa3VFdUtJUFJLNTZjUEJvNFFGNGtscXRE?=
+ =?utf-8?B?NC9YMWljVUJUTmJqVjdQbUd6enlaeUlhU2dudXRIRThGTkJoYWI0UjZIcWdN?=
+ =?utf-8?B?RmN1YW8ycFRUUGtwYm9SNnZ5UTlBQ21ObkJ4eFQxV20vV2lTVWdELzdHcUQ4?=
+ =?utf-8?B?eHhKcVBtekpkTWJKemNqRmRNRzEzVWVvS3JuSWIxRGFTczQzWkxxa09YREpa?=
+ =?utf-8?B?MXpwQ1YwTDBqcTZEb3o4c1NXMDdSNWl6NXVCNmxKVlJaTlVVektlT2xYL3E5?=
+ =?utf-8?B?eFI0NGZobUlPUVJUcXdzdmdMODJ3Vjlqc3NvNGdYWGxFNTR2ZmwvMFdiZzdJ?=
+ =?utf-8?B?VU55dGFkWVRVeXVWQ3pEUUovTlduSTRrSDR4UDdDcy9XMjFzQ0huTy9GazEz?=
+ =?utf-8?B?WGZGQnRIUFR4akRJQWJnWHl3amFQV2FJUyttV0phY0dONEhycUtvVVY5RFhU?=
+ =?utf-8?B?UDlzanVycTJQME52OVV2SitPbU9MUmRqYlFlRFVNeFhyMDlGZ0JtZz09?=
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: e58d55df-24a7-477a-d4f9-08da1725d2dc
+X-MS-Exchange-CrossTenant-AuthSource: BN9PR12MB5115.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Apr 2022 17:00:44.7606
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 9cSFjzYDu1rICe6cV4W256XyAHzXOktmnWKAirf4l0dzwAiJWbGaYYlUv9qi/nmE/ATXqmjPL9hz+Ne+iu1ONg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CO6PR12MB5474
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Mar 25, 2022 at 7:46 PM Rajat Jain <rajatja@google.com> wrote:
+Am 2022-04-04 um 18:21 schrieb Grigory Vasilyev:
+> In the amdgpu_amdkfd_get_xgmi_bandwidth_mbytes function,
+> the peer_adev pointer can be NULL and is passed to amdgpu_xgmi_get_num_links.
 >
-> The "DmaProperty" is supported and documented by Microsoft here:
-> https://docs.microsoft.com/en-us/windows-hardware/drivers/pci/dsd-for-pcie-root-ports
-> They use this property for DMA protection:
-> https://docs.microsoft.com/en-us/windows/security/information-protection/kernel-dma-protection-for-thunderbolt
->
-> Support the "DmaProperty" with the same semantics. This is useful for
-> internal PCI devices that do not hang off a PCIe rootport, but offer
-> an attack surface for DMA attacks (e.g. internal network devices).
->
-> Signed-off-by: Rajat Jain <rajatja@google.com>
-> Reviewed-by: Mika Westerberg <mika.westerberg@linux.intel.com>
+> In amdgpu_xgmi_get_num_links, peer_adev pointer is dereferenced
+> without any checks: peer_adev->gmc.xgmi.node_id .
 
-Acked-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+What's worse, peer_adev is uninitialized with an undefined value if src 
+is NULL. So that code was definitely bogus.
 
+However, I think your patch will result in incorrect results. Currently 
+amdgpu_amdkfd_get_xgmi_bandwidth is always called with is_min=true if 
+src==NULL, and with is_min=false if src!=NULL. The intention is, that we 
+assume a single XGMI link in the case that src==NULL. That means the 
+is_min parameter is redundant. What we should do instead is, assume that 
+num_links==1 if src==NULL, and drop the is_min parameter.
+
+That would keep things working the way they do now, and prevent 
+potential problems in the future.
+
+Regards,
+   Felix
+
+
+>
+> Signed-off-by: Grigory Vasilyev <h0tc0d3@gmail.com>
 > ---
-> v5: * Reorder the patches in the series
-> v4: * Add the GUID.
->     * Update the comment and commitlog.
-> v3: * Use Microsoft's documented property "DmaProperty"
->     * Resctrict to ACPI only
+>   drivers/gpu/drm/amd/amdgpu/amdgpu_amdkfd.c | 5 ++---
+>   1 file changed, 2 insertions(+), 3 deletions(-)
 >
->  drivers/acpi/property.c |  3 +++
->  drivers/pci/pci-acpi.c  | 16 ++++++++++++++++
->  2 files changed, 19 insertions(+)
->
-> diff --git a/drivers/acpi/property.c b/drivers/acpi/property.c
-> index d0986bda2964..20603cacc28d 100644
-> --- a/drivers/acpi/property.c
-> +++ b/drivers/acpi/property.c
-> @@ -48,6 +48,9 @@ static const guid_t prp_guids[] = {
->         /* Storage device needs D3 GUID: 5025030f-842f-4ab4-a561-99a5189762d0 */
->         GUID_INIT(0x5025030f, 0x842f, 0x4ab4,
->                   0xa5, 0x61, 0x99, 0xa5, 0x18, 0x97, 0x62, 0xd0),
-> +       /* DmaProperty for PCI devices GUID: 70d24161-6dd5-4c9e-8070-705531292865 */
-> +       GUID_INIT(0x70d24161, 0x6dd5, 0x4c9e,
-> +                 0x80, 0x70, 0x70, 0x55, 0x31, 0x29, 0x28, 0x65),
->  };
->
->  /* ACPI _DSD data subnodes GUID: dbb8e3e6-5886-4ba6-8795-1319f52a966b */
-> diff --git a/drivers/pci/pci-acpi.c b/drivers/pci/pci-acpi.c
-> index 1f15ab7eabf8..378e05096c52 100644
-> --- a/drivers/pci/pci-acpi.c
-> +++ b/drivers/pci/pci-acpi.c
-> @@ -1350,12 +1350,28 @@ static void pci_acpi_set_external_facing(struct pci_dev *dev)
->                 dev->external_facing = 1;
->  }
->
-> +static void pci_acpi_check_for_dma_protection(struct pci_dev *dev)
-> +{
-> +       u8 val;
-> +
-> +       /*
-> +        * Property also used by Microsoft Windows for same purpose,
-> +        * (to implement DMA protection from a device, using the IOMMU).
-> +        */
-> +       if (device_property_read_u8(&dev->dev, "DmaProperty", &val))
-> +               return;
-> +
-> +       if (val)
-> +               dev->untrusted = 1;
-> +}
-> +
->  void pci_acpi_setup(struct device *dev, struct acpi_device *adev)
->  {
->         struct pci_dev *pci_dev = to_pci_dev(dev);
->
->         pci_acpi_optimize_delay(pci_dev, adev->handle);
->         pci_acpi_set_external_facing(pci_dev);
-> +       pci_acpi_check_for_dma_protection(pci_dev);
->         pci_acpi_add_edr_notifier(pci_dev);
->
->         pci_acpi_add_pm_notifier(adev, pci_dev);
-> --
-> 2.35.1.1021.g381101b075-goog
->
+> diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_amdkfd.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_amdkfd.c
+> index be1a55f8b8c5..1a1006b18016 100644
+> --- a/drivers/gpu/drm/amd/amdgpu/amdgpu_amdkfd.c
+> +++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_amdkfd.c
+> @@ -541,11 +541,10 @@ int amdgpu_amdkfd_get_xgmi_bandwidth_mbytes(struct amdgpu_device *dst,
+>   	struct amdgpu_device *adev = dst, *peer_adev;
+>   	int num_links;
+>   
+> -	if (adev->asic_type != CHIP_ALDEBARAN)
+> +	if (!src || adev->asic_type != CHIP_ALDEBARAN)
+>   		return 0;
+>   
+> -	if (src)
+> -		peer_adev = src;
+> +	peer_adev = src;
+>   
+>   	/* num links returns 0 for indirect peers since indirect route is unknown. */
+>   	num_links = is_min ? 1 : amdgpu_xgmi_get_num_links(adev, peer_adev);
