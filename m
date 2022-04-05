@@ -2,108 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A671BC4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 918E4C433FE
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 22:10:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1442328AbiDEWKz (ORCPT
+        id S1442273AbiDEWKv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 18:10:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54258 "EHLO
+        Tue, 5 Apr 2022 18:10:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39282 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1447766AbiDEPrE (ORCPT
+        with ESMTP id S238789AbiDEKyg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 11:47:04 -0400
-Received: from mail-oa1-x2c.google.com (mail-oa1-x2c.google.com [IPv6:2001:4860:4864:20::2c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A555B19B055
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 07:23:28 -0700 (PDT)
-Received: by mail-oa1-x2c.google.com with SMTP id 586e51a60fabf-d6e29fb3d7so14535156fac.7
-        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 07:23:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=3viWxA/JBHdP0TQbOykdsaxa+Gs7txej/lLx0GIvIYg=;
-        b=G9QnFQmPtVjj4tVobX1LMic5zPY274r2vdLPAoUHBKEo99rnSV8OgrXJiFUo/7/jTF
-         HjRanar2kAcinOYdoYvDGcnYJCuDuEuq0Zai+Uq0v6oNYRccBrMVRMdFmiEV85NERQ9C
-         7vO48nBrMzEKZEJVJ8XZajlPZLIjcsxvASt5VlRRUCL1kA3K18vbkH8swg9+yzJ9rGMP
-         bFCRoCQAY3/a8STCLM+PzA5oegHvKvG3gC1g6iDc6bi30ZQD9wkIiGfKM1QRvaqcYdSM
-         rfBcCGGpw/3xxa0Vz8+ryEQQNncgOdCH6noH47HWTgOvqSb3hQ57Qsfk/RiWmJ24PVYC
-         lHBw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=3viWxA/JBHdP0TQbOykdsaxa+Gs7txej/lLx0GIvIYg=;
-        b=UDOcIiQbJFjhxhSOJOdCVhaWfKNelknqWYv6XJXJuLSwfwv4+sxC8IiZKa5ocqwNkj
-         Cbc5qEVctWLTmNdJ8sRZx+VqJTJjNbXX+z4rq20HsXLKKsyNwhEFxfjr9VRCK+caZEra
-         R4/p/leNNovSugcYx0bdQew8NJk1odFXXMBRlealMInwS76P9SE3uS4J+Rf7AUzZeUZh
-         nrQghU4NM8SdsuzET8IcjcYogXzUcdeh9F9yjxn3wncxPj+QSjr3vodunKzeLI0ukiN1
-         HaWKYxelnNmNVcAdK98ZTcFwdjdeJMxKntstHMvBMrcRondOpTZiMlTWBuRtNUlXq8/z
-         WodA==
-X-Gm-Message-State: AOAM5335LsoGUEmFXKbaENAKfUn4R0eS9X/3/WvLz/TM53A7vt8tdzoI
-        L1tg6c4NVnrPN0VL6K2Byb+tJyH/QdkZ8cVrGf1o2fT5
-X-Google-Smtp-Source: ABdhPJwwvFJ/nErrBLzLGpycHCVzIhCmGoPUp6o1bgcidxfVOxHS2sTwvSWskrCQURlhd5hQ2zrWnsbBLhhhsqySV8U=
-X-Received: by 2002:a05:6870:311d:b0:de:9b6c:362b with SMTP id
- v29-20020a056870311d00b000de9b6c362bmr1567641oaa.200.1649168608008; Tue, 05
- Apr 2022 07:23:28 -0700 (PDT)
+        Tue, 5 Apr 2022 06:54:36 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94CCFABF6F;
+        Tue,  5 Apr 2022 03:28:24 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4654FB81C9B;
+        Tue,  5 Apr 2022 10:28:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8DA52C385A2;
+        Tue,  5 Apr 2022 10:28:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649154501;
+        bh=QY2EuOoLgTBXeW3ZsKJqoSutHxty6jHKXa2LviOib3I=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=wQy5Q9lTsmoQWxfkk406Hmbf25tS9pLiUZtSqwre/Ujr9l1+XDNaYf+dsGsC0yz3/
+         tHTZmTpwq6M2t0vKIc3E8JEfLsmQ8dtY9Cgcds/Pvs2ItoBl8uO9BYP0R9PJFVF4X3
+         siW2gMVCQDykSpFqbkWsjnufCrqmmI1ZCaKgXP3s=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Derek Will <derekrobertwill@gmail.com>,
+        Oliver Hartkopp <socketcan@hartkopp.net>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 571/599] can: isotp: restore accidentally removed MSG_PEEK feature
+Date:   Tue,  5 Apr 2022 09:34:25 +0200
+Message-Id: <20220405070315.834665766@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
+References: <20220405070258.802373272@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-References: <20220403132322.51c90903@darkstar.example.org> <CADnq5_M+M_iykM0Ag6RF+kxzgpEopUBtp82h7tRM3G+B3AWZ2w@mail.gmail.com>
- <20220404213940.09a56d15@darkstar.example.org>
-In-Reply-To: <20220404213940.09a56d15@darkstar.example.org>
-From:   Alex Deucher <alexdeucher@gmail.com>
-Date:   Tue, 5 Apr 2022 10:23:16 -0400
-Message-ID: <CADnq5_PhaFbVCb=-AUCx4L-sCyPCPOsY3tNpiAg=gfCN7hFcJA@mail.gmail.com>
-Subject: Re: AMDGPU: regression on 5.17.1
-To:     Michele Ballabio <ballabio.m@gmail.com>
-Cc:     LKML <linux-kernel@vger.kernel.org>, regressions@lists.linux.dev,
-        Maling list - DRI developers 
-        <dri-devel@lists.freedesktop.org>,
-        amd-gfx list <amd-gfx@lists.freedesktop.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Apr 4, 2022 at 3:39 PM Michele Ballabio <ballabio.m@gmail.com> wrote:
->
-> On Mon, 4 Apr 2022 13:03:41 -0400
-> Alex Deucher <alexdeucher@gmail.com> wrote:
->
-> > On Sun, Apr 3, 2022 at 10:19 AM Michele Ballabio
-> > <ballabio.m@gmail.com> wrote:
-> > >
-> > > Hi,
-> > >         I've hit a regression on 5.17.1 (haven't tested 5.17.0, but
-> > > 5.16-stable didn't have this problem).
-> > >
-> > > The machine is a Ryzen 5 1600 with AMD graphics (RX 560).
-> > >
-> > > The regression I hit seems to trigger when the machine is left
-> > > idle at boot (I don't boot straight to X, I boot to a tty, login
-> > > and then start X). The machine after a while blanks the screen.
-> > > Usually, the screen unblanks as the keyboard is hit or the mouse
-> > > moves, but with kernel 5.17.1 the screen does not wake up. The
-> > > machine seems to run mostly fine: I can login from ssh, but I
-> > > cannot reboot or halt it: a sysrq sequence is needed for that. Note
-> > > that if the screen goes blank under X, it wakes up fine.
-> > >
-> > > Below a dmesg and two traces from syslog (they're quite similar).
-> >
-> > Can you bisect?  Does setting amdgpu.runpm=0 help?
->
-> I can try to bisect, should I narrow the search to drivers/gpu/drm/ ?
+From: Oliver Hartkopp <socketcan@hartkopp.net>
 
-I would just do a full bisect if possible in case the change happens
-to be outside of drm.
+[ Upstream commit e382fea8ae54f5bb62869c6b69b33993d43adeca ]
 
->
-> Setting amdgpu.runpm=0 works, the display now unblanks without problems.
+In commit 42bf50a1795a ("can: isotp: support MSG_TRUNC flag when
+reading from socket") a new check for recvmsg flags has been
+introduced that only checked for the flags that are handled in
+isotp_recvmsg() itself.
 
-Thanks,
+This accidentally removed the MSG_PEEK feature flag which is processed
+later in the call chain in __skb_try_recv_from_queue().
 
-Alex
+Add MSG_PEEK to the set of valid flags to restore the feature.
+
+Fixes: 42bf50a1795a ("can: isotp: support MSG_TRUNC flag when reading from socket")
+Link: https://github.com/linux-can/can-utils/issues/347#issuecomment-1079554254
+Link: https://lore.kernel.org/all/20220328113611.3691-1-socketcan@hartkopp.net
+Reported-by: Derek Will <derekrobertwill@gmail.com>
+Suggested-by: Derek Will <derekrobertwill@gmail.com>
+Tested-by: Derek Will <derekrobertwill@gmail.com>
+Signed-off-by: Oliver Hartkopp <socketcan@hartkopp.net>
+Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ net/can/isotp.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/net/can/isotp.c b/net/can/isotp.c
+index 671c3673b7ea..63e6e8923200 100644
+--- a/net/can/isotp.c
++++ b/net/can/isotp.c
+@@ -1007,7 +1007,7 @@ static int isotp_recvmsg(struct socket *sock, struct msghdr *msg, size_t size,
+ 	int noblock = flags & MSG_DONTWAIT;
+ 	int ret = 0;
+ 
+-	if (flags & ~(MSG_DONTWAIT | MSG_TRUNC))
++	if (flags & ~(MSG_DONTWAIT | MSG_TRUNC | MSG_PEEK))
+ 		return -EINVAL;
+ 
+ 	if (!so->bound)
+-- 
+2.34.1
 
 
->
-> Thanks,
->     Michele Ballabio
+
