@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 61C13C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A38B4C43217
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:42:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386355AbiDEMlQ (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 08:41:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41474 "EHLO
+        id S237090AbiDEMlm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 08:41:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41918 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239354AbiDEJFi (ORCPT
+        with ESMTP id S240218AbiDEJF7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:05:38 -0400
+        Tue, 5 Apr 2022 05:05:59 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5DED3FBF6;
-        Tue,  5 Apr 2022 01:56:16 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6E6D45AD6;
+        Tue,  5 Apr 2022 01:56:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 29E39B81C6A;
-        Tue,  5 Apr 2022 08:56:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 67CBBC385A3;
-        Tue,  5 Apr 2022 08:56:13 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 88992B81C6C;
+        Tue,  5 Apr 2022 08:56:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DA28EC385A0;
+        Tue,  5 Apr 2022 08:56:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649148973;
-        bh=ikaKZbvRWV/crQmsUAovjojXBg7T3u4AmjkH0nSGrtY=;
+        s=korg; t=1649148979;
+        bh=NAF+/mvkE5mniULEoXlQw3jnfQqX1ycYWJpfYP5xMoQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Bb+wcrmso4Qrzy82cCiFMlBi2DiR9/NhHLu+Cv/IMs4k//9WTFc5lVr1rKcOIOhJu
-         cmF/GUi5AvquRWv24DREqWjLtZFge4QNDqQIPGR+Gx8oY80CVhrGSw95P5Q4XDkGMc
-         KBrFLQ5RWA6DvjVJR/28yBj+mzlaxEcwqbykztSo=
+        b=K081Hw8ihQUepbykygd7C4TbiMlRM3KbU5lWkSqG2mYC08R1KkW3zvxvu4rAc1UtI
+         jcxnpv6RmO812xKzNXov68n1nGErabhtK7kv7emh1DJXDlyAsYAmdx46WWvFfboA9z
+         9zG7qYHEHR6kEI6pkCNAfDcD1hjNw2fM6LhRYOJw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ryder Lee <ryder.lee@mediatek.com>,
-        MeiChia Chiu <meichia.chiu@mediatek.com>,
-        Felix Fietkau <nbd@nbd.name>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0547/1017] mt76: mt7915: fix the muru tlv issue
-Date:   Tue,  5 Apr 2022 09:24:20 +0200
-Message-Id: <20220405070410.522934486@linuxfoundation.org>
+        stable@vger.kernel.org, Colin Ian King <colin.king@canonical.com>,
+        Luca Coelho <luciano.coelho@intel.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 0513/1017] iwlwifi: Fix -EIO error code that is never returned
+Date:   Tue,  5 Apr 2022 09:23:46 +0200
+Message-Id: <20220405070409.526088086@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -50,66 +49,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: MeiChia Chiu <meichia.chiu@mediatek.com>
+From: Colin Ian King <colin.king@canonical.com>
 
-[ Upstream commit d98a72725bc96c98f68eac12e5a91ec349322c88 ]
+[ Upstream commit c305c94bdc18e45b5ad1db54da4269f8cbfdff6b ]
 
-The muru enable/disable are only set after the first station connection.
-Without this patch, the firmware couldn't enable muru
-if the first connected station is non-HE type.
+Currently the error -EIO is being assinged to variable ret when
+the READY_BIT is not set but the function iwlagn_mac_start returns
+0 rather than ret. Fix this by returning ret instead of 0.
 
-Fixes: 16bff457dd33a ("mt76: mt7915: rework mt7915_mcu_sta_muru_tlv()")
-Reviewed-by: Ryder Lee <ryder.lee@mediatek.com>
-Signed-off-by: MeiChia Chiu <meichia.chiu@mediatek.com>
-Signed-off-by: Felix Fietkau <nbd@nbd.name>
+Addresses-Coverity: ("Unused value")
+Fixes: 7335613ae27a ("iwlwifi: move all mac80211 related functions to one place")
+Signed-off-by: Colin Ian King <colin.king@canonical.com>
+Link: https://lore.kernel.org/r/20210907104658.14706-1-colin.king@canonical.com
+Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/mediatek/mt76/mt7915/mcu.c | 12 +++++-------
- 1 file changed, 5 insertions(+), 7 deletions(-)
+ drivers/net/wireless/intel/iwlwifi/dvm/mac80211.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/wireless/mediatek/mt76/mt7915/mcu.c b/drivers/net/wireless/mediatek/mt76/mt7915/mcu.c
-index 21fbe7a6141f..5ea82f05fd91 100644
---- a/drivers/net/wireless/mediatek/mt76/mt7915/mcu.c
-+++ b/drivers/net/wireless/mediatek/mt76/mt7915/mcu.c
-@@ -1515,9 +1515,6 @@ mt7915_mcu_sta_muru_tlv(struct sk_buff *skb, struct ieee80211_sta *sta,
- 	    vif->type != NL80211_IFTYPE_AP)
- 		return;
+diff --git a/drivers/net/wireless/intel/iwlwifi/dvm/mac80211.c b/drivers/net/wireless/intel/iwlwifi/dvm/mac80211.c
+index 754876cd27ce..e8bd4f0e3d2d 100644
+--- a/drivers/net/wireless/intel/iwlwifi/dvm/mac80211.c
++++ b/drivers/net/wireless/intel/iwlwifi/dvm/mac80211.c
+@@ -299,7 +299,7 @@ static int iwlagn_mac_start(struct ieee80211_hw *hw)
  
--	if (!sta->vht_cap.vht_supported)
--		return;
--
- 	tlv = mt7915_mcu_add_tlv(skb, STA_REC_MURU, sizeof(*muru));
+ 	priv->is_open = 1;
+ 	IWL_DEBUG_MAC80211(priv, "leave\n");
+-	return 0;
++	return ret;
+ }
  
- 	muru = (struct sta_rec_muru *)tlv;
-@@ -1525,9 +1522,12 @@ mt7915_mcu_sta_muru_tlv(struct sk_buff *skb, struct ieee80211_sta *sta,
- 	muru->cfg.mimo_dl_en = mvif->cap.he_mu_ebfer ||
- 			       mvif->cap.vht_mu_ebfer ||
- 			       mvif->cap.vht_mu_ebfee;
-+	muru->cfg.mimo_ul_en = true;
-+	muru->cfg.ofdma_dl_en = true;
- 
--	muru->mimo_dl.vht_mu_bfee =
--		!!(sta->vht_cap.cap & IEEE80211_VHT_CAP_MU_BEAMFORMEE_CAPABLE);
-+	if (sta->vht_cap.vht_supported)
-+		muru->mimo_dl.vht_mu_bfee =
-+			!!(sta->vht_cap.cap & IEEE80211_VHT_CAP_MU_BEAMFORMEE_CAPABLE);
- 
- 	if (!sta->he_cap.has_he)
- 		return;
-@@ -1535,13 +1535,11 @@ mt7915_mcu_sta_muru_tlv(struct sk_buff *skb, struct ieee80211_sta *sta,
- 	muru->mimo_dl.partial_bw_dl_mimo =
- 		HE_PHY(CAP6_PARTIAL_BANDWIDTH_DL_MUMIMO, elem->phy_cap_info[6]);
- 
--	muru->cfg.mimo_ul_en = true;
- 	muru->mimo_ul.full_ul_mimo =
- 		HE_PHY(CAP2_UL_MU_FULL_MU_MIMO, elem->phy_cap_info[2]);
- 	muru->mimo_ul.partial_ul_mimo =
- 		HE_PHY(CAP2_UL_MU_PARTIAL_MU_MIMO, elem->phy_cap_info[2]);
- 
--	muru->cfg.ofdma_dl_en = true;
- 	muru->ofdma_dl.punc_pream_rx =
- 		HE_PHY(CAP1_PREAMBLE_PUNC_RX_MASK, elem->phy_cap_info[1]);
- 	muru->ofdma_dl.he_20m_in_40m_2g =
+ static void iwlagn_mac_stop(struct ieee80211_hw *hw)
 -- 
 2.34.1
 
