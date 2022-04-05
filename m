@@ -2,98 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A7E23C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BAEB4C4167B
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 21:04:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349875AbiDEVEg (ORCPT
+        id S1350060AbiDEVEj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 17:04:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39244 "EHLO
+        Tue, 5 Apr 2022 17:04:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41588 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352525AbiDEKEl (ORCPT
+        with ESMTP id S1392285AbiDEPgB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:04:41 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB7B4BB083;
-        Tue,  5 Apr 2022 02:53:22 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8B317B81B13;
-        Tue,  5 Apr 2022 09:53:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ECB4FC385A2;
-        Tue,  5 Apr 2022 09:53:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649152400;
-        bh=fYxqgkCp60B50lWuU8l5QxRpvkKdNlJ9yR0c897f6Jw=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=T/3Un8Qis2Si3FaPWuUdTm1G7gVBoiwrF3nOEPuPcBY2kwLLZ2P6orZd8kSJ11y5W
-         Lnl56q0DXBhlPynSMDHPR5w1yiKuDt134r6A4WGKrwtxMcXPek3Zy+qXE7NbeQ+u53
-         BYaQdQq7Ms3MN75WH8xJBaYLaknGvNBKoVTtghfw=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Maximilian=20B=C3=B6hm?= <maximilian.boehm@elbmurf.de>,
-        Pavel Skripkin <paskripkin@gmail.com>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 763/913] media: Revert "media: em28xx: add missing em28xx_close_extension"
-Date:   Tue,  5 Apr 2022 09:30:25 +0200
-Message-Id: <20220405070402.703015610@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 5 Apr 2022 11:36:01 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C2E3913D0A
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 06:48:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1649166515;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=ZveUJKzsoCzkXjLEmVVwtjwhVIlnnTQ1b+zTECXTF/U=;
+        b=G5kJ65kb7zw/NQQb13mDyCYU13+pExTyZZtoy9vkmSP5K8L/OTjkZ4erldv4N41khJHuNF
+        TSZAPy1u+MdvM7PSuXJYLJWo9Yj5/XK5lY86PYVDk9E3okiCUmfr7Gf2ePb228/9poxHBU
+        AgbVPNQHKqZtTx2/gdH9LZiKLFR7pfM=
+Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
+ [209.85.221.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-1-_WSV99ANOFOfiwbtjLtvrw-1; Tue, 05 Apr 2022 09:48:33 -0400
+X-MC-Unique: _WSV99ANOFOfiwbtjLtvrw-1
+Received: by mail-wr1-f70.google.com with SMTP id x17-20020adfbb51000000b002060ff71a3bso1360320wrg.22
+        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 06:48:33 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=ZveUJKzsoCzkXjLEmVVwtjwhVIlnnTQ1b+zTECXTF/U=;
+        b=XIXhNHanNx5LbGnB+W3HckA4/SI5gmfHyiM8eCIFqwGqCBikjOVPqLGtqY6AaFsaNu
+         lSKrklKTK9CAARLaQ8nkHuchoE5z4SMDrEhIxOAoLcPQcVBtFK1HnKPJfBj5Wf1CGjE8
+         UZcWda0BXl9WAP8k55bItMBiXzc1zxwcJuVmVPn62WyLJeF1V3H24JSWBVVpMkPFCHlT
+         84jzpxmln3dWbFcZ9rSfqqtXG9dzfh+jAaMm6Ge0FNWSJ+3NhgwCvblNyRrxvqfBNWLb
+         WuhI1UIakNgSomA5c1RshzUKzqnEjq9GK50g2zTbOsPjxY/q6InLQF4ublJwBrqwilgQ
+         g14Q==
+X-Gm-Message-State: AOAM530iaLoirSoNi7cUGNsdtDj8Hh5my0P9DgI9CbbJMX+oYzjJ9Av4
+        +OiYtueTnzuOjxWbnVsrhpohF0D6C7cpVFFUyLQ1Eue6VOj24TQ99RBHiOPmwyVadlaZ6kzcsMz
+        qle1oFU5pEsbZvmcglhCTKhfR
+X-Received: by 2002:a7b:cd13:0:b0:38c:9a08:5c62 with SMTP id f19-20020a7bcd13000000b0038c9a085c62mr3234416wmj.154.1649166512157;
+        Tue, 05 Apr 2022 06:48:32 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwgxLrzuXmRgcHGSm9NougyOgwDnbf47hIlS2lc6czMniBzy/El5Zf8y2oTdwEa1oPyH4skoA==
+X-Received: by 2002:a7b:cd13:0:b0:38c:9a08:5c62 with SMTP id f19-20020a7bcd13000000b0038c9a085c62mr3234400wmj.154.1649166511973;
+        Tue, 05 Apr 2022 06:48:31 -0700 (PDT)
+Received: from [10.32.181.87] (nat-pool-mxp-t.redhat.com. [149.6.153.186])
+        by smtp.googlemail.com with ESMTPSA id o19-20020a05600c511300b0038d0d8f67e5sm2275912wms.16.2022.04.05.06.48.30
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 05 Apr 2022 06:48:30 -0700 (PDT)
+Message-ID: <5093bff2-bc85-57b9-5f8b-ecb81417409e@redhat.com>
+Date:   Tue, 5 Apr 2022 15:48:29 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [RFC PATCH v5 032/104] KVM: x86/mmu: introduce config for PRIVATE
+ KVM MMU
+Content-Language: en-US
+To:     Kai Huang <kai.huang@intel.com>,
+        Isaku Yamahata <isaku.yamahata@gmail.com>
+Cc:     isaku.yamahata@intel.com, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Jim Mattson <jmattson@google.com>,
+        erdemaktas@google.com, Connor Kuehl <ckuehl@redhat.com>,
+        Sean Christopherson <seanjc@google.com>
+References: <cover.1646422845.git.isaku.yamahata@intel.com>
+ <770235e7fed04229b81c334e2477374374cea901.1646422845.git.isaku.yamahata@intel.com>
+ <55fa888b31bae80bf72cbdbdf6f27401ea4ccc5c.camel@intel.com>
+ <20220401015130.GE2084469@ls.amr.corp.intel.com>
+ <9e01bc014df60e215ba17432c06b6854f6dae3f8.camel@intel.com>
+From:   Paolo Bonzini <pbonzini@redhat.com>
+In-Reply-To: <9e01bc014df60e215ba17432c06b6854f6dae3f8.camel@intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pavel Skripkin <paskripkin@gmail.com>
+On 4/1/22 04:13, Kai Huang wrote:
+>> I don't want to use CONFIG_INTEL_TDX_HOST in KVM MMU code.  I think the change
+>> to KVM MMU should be a sort of independent from TDX.  But it seems failed based
+>> on your feedback.
+> 
+> Why do you need to use any config?  As I said majority of your changes to MMU
+> are not under any config.  But I'll leave this to maintainer/reviewers.
 
-[ Upstream commit fde18c3bac3f964d8333ae53b304d8fee430502b ]
+There are few uses, but the effect should be pretty large, because the 
+config symbol replaces variable accesses with constants:
 
-This reverts commit 2c98b8a3458df03abdc6945bbef67ef91d181938.
++static inline gfn_t kvm_gfn_stolen_mask(struct kvm *kvm)
++{
++#ifdef CONFIG_KVM_MMU_PRIVATE
++	return kvm->arch.gfn_shared_mask;
++#else
++	return 0;
++#endif
++}
 
-Reverted patch causes problems with Hauppauge WinTV dualHD as Maximilian
-reported [1]. Since quick solution didn't come up let's just revert it
-to make this device work with upstream kernels.
+Please keep it.
 
-Link: https://lore.kernel.org/all/6a72a37b-e972-187d-0322-16336e12bdc5@elbmurf.de/ [1]
-
-Reported-by: Maximilian Böhm <maximilian.boehm@elbmurf.de>
-Tested-by: Maximilian Böhm <maximilian.boehm@elbmurf.de>
-Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/media/usb/em28xx/em28xx-cards.c | 5 +----
- 1 file changed, 1 insertion(+), 4 deletions(-)
-
-diff --git a/drivers/media/usb/em28xx/em28xx-cards.c b/drivers/media/usb/em28xx/em28xx-cards.c
-index c415b1d195c4..92d867fc519c 100644
---- a/drivers/media/usb/em28xx/em28xx-cards.c
-+++ b/drivers/media/usb/em28xx/em28xx-cards.c
-@@ -4145,11 +4145,8 @@ static void em28xx_usb_disconnect(struct usb_interface *intf)
- 
- 	em28xx_close_extension(dev);
- 
--	if (dev->dev_next) {
--		em28xx_close_extension(dev->dev_next);
-+	if (dev->dev_next)
- 		em28xx_release_resources(dev->dev_next);
--	}
--
- 	em28xx_release_resources(dev);
- 
- 	if (dev->dev_next) {
--- 
-2.34.1
-
-
+Paolo
 
