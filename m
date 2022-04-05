@@ -2,259 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 62E9AC4332F
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 01:48:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1BCFDC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 01:48:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1843998AbiDFBmu (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 21:42:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42194 "EHLO
+        id S234838AbiDFBnW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 21:43:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57676 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1572890AbiDERPr (ORCPT
+        with ESMTP id S1356141AbiDEKW7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 13:15:47 -0400
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DEC5DB3;
-        Tue,  5 Apr 2022 10:13:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649178827; x=1680714827;
-  h=message-id:date:subject:to:cc:references:from:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=BABB2nwEfHikOLg3qLX9D0mY5/UGb1ZziOk8Z3YBFV8=;
-  b=n9S4eRNw5X8Z1MuY51lOaNKM8kyPe9E6PVsTIsQSuL8mPBWPJyT/KkJg
-   agiFJXsfo84+YszAanWFa+wpebHGk6mNkF9GQIgc+miDsXbLSLs41nWrO
-   ISAb68M3ZkJ+ohTfmyAvK/bQdn/LfcBPxrp2MvEuVs9NOoH2WbmiExZ/Y
-   z5GCW5NE54jLOy6xh2p4wQzqx6vWWFEumFL0rak+eRiBbBgX82/gJ9xU2
-   A6mB1uLltmkEwp3hY0wyCfBxQgMbdSfu6NbOAapwdlEyLbF+nroRoxmeo
-   /31QFL3wdbkQ3xerwlJ/fodOm/kYzFpiDlmmXXYt5mR0GkTpbriGpgz3j
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10308"; a="240744152"
-X-IronPort-AV: E=Sophos;i="5.90,236,1643702400"; 
-   d="scan'208";a="240744152"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2022 10:13:47 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,236,1643702400"; 
-   d="scan'208";a="641693084"
-Received: from fmsmsx606.amr.corp.intel.com ([10.18.126.86])
-  by FMSMGA003.fm.intel.com with ESMTP; 05 Apr 2022 10:13:46 -0700
-Received: from fmsmsx608.amr.corp.intel.com (10.18.126.88) by
- fmsmsx606.amr.corp.intel.com (10.18.126.86) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.27; Tue, 5 Apr 2022 10:13:46 -0700
-Received: from fmsmsx601.amr.corp.intel.com (10.18.126.81) by
- fmsmsx608.amr.corp.intel.com (10.18.126.88) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.27; Tue, 5 Apr 2022 10:13:46 -0700
-Received: from fmsedg601.ED.cps.intel.com (10.1.192.135) by
- fmsmsx601.amr.corp.intel.com (10.18.126.81) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.27 via Frontend Transport; Tue, 5 Apr 2022 10:13:46 -0700
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com (104.47.56.171)
- by edgegateway.intel.com (192.55.55.70) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2308.27; Tue, 5 Apr 2022 10:13:45 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=DvSFWFhUAaxPEOm8OXyRmCN6Qo/7/pxoVJV6r15uHavpkfMuIZO+Wk+eJgfvmRUdM8lpJIcVp6PwqYb9nt7Xgr3h6MkSaRQNe6ZI6OMSAppgzwNLzF1vUOYjvEVYOfEsoohi67F8DmSsLwGdBeNg8JmKpO7vCeTqYrd/TJmV94Pg2ci67l0uXNTZS4ut7eXDcv2yvuow6PvxKI190WbhYqK52Q3MHLp5pTNBe6Xs7B7DQsifArbprKPkHolfeUuDBK865k7TCFoxPcP+/PEoV0QBFJjJDKDnFWXsXij6Is4KG9evUZTcoxRbsNrMKHezTJrkpQ7b4Q6oO9xrd1fyCA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=rsmVYPpbLg0AyipjGNo80AZpuke8olblRlAWoz94HiA=;
- b=gFEdo1MmBON0pDkYmzri+XxFcCp+wVPeJ9s8hyjecKuMcLwsZ2d4OePJXikutu6i7SvBu8qnKmKnNmT4cHjT2S0m4y7xCtPArvsX7FmXK+Ou7nANdyxmiagWr0LvFJawWH4uKdirit/y4CZ9t1EOxxFCqQAkUnEYwN4UUsVCqCnHwzICiayRc+NoK+hAWJ1rFOSbWuelzW6h4zHopR1b41NsjiW0hxlzWPd7twYcXX4Mwgo5/dALNADH9CPFyh8FsQ6hMhET7xISBAGKAhP2/dzSMT8nn1O1d3Xpv/fyi6eQ7jdTdPOFCpY+WXq9Qt51+UpK6CXSDOulehl0AvemRw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-Received: from BN0PR11MB5744.namprd11.prod.outlook.com (2603:10b6:408:166::16)
- by BN6PR1101MB2289.namprd11.prod.outlook.com (2603:10b6:405:54::18) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5123.31; Tue, 5 Apr
- 2022 17:13:40 +0000
-Received: from BN0PR11MB5744.namprd11.prod.outlook.com
- ([fe80::918d:6022:8ee6:3e36]) by BN0PR11MB5744.namprd11.prod.outlook.com
- ([fe80::918d:6022:8ee6:3e36%2]) with mapi id 15.20.5123.031; Tue, 5 Apr 2022
- 17:13:40 +0000
-Message-ID: <e118f4c6-7216-15f3-2bda-3a5851b0bcb1@intel.com>
-Date:   Tue, 5 Apr 2022 10:13:35 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Firefox/91.0 Thunderbird/91.7.0
-Subject: Re: [PATCH V3 19/30] x86/sgx: Free up EPC pages directly to support
- large page ranges
-Content-Language: en-US
-To:     Jarkko Sakkinen <jarkko@kernel.org>
-CC:     <dave.hansen@linux.intel.com>, <tglx@linutronix.de>,
-        <bp@alien8.de>, <luto@kernel.org>, <mingo@redhat.com>,
-        <linux-sgx@vger.kernel.org>, <x86@kernel.org>, <seanjc@google.com>,
-        <kai.huang@intel.com>, <cathy.zhang@intel.com>,
-        <cedric.xing@intel.com>, <haitao.huang@intel.com>,
-        <mark.shanahan@intel.com>, <hpa@zytor.com>,
-        <linux-kernel@vger.kernel.org>
-References: <cover.1648847675.git.reinette.chatre@intel.com>
- <b3a17e1ce7bcd14db3c28903e8a97f094998ae74.1648847675.git.reinette.chatre@intel.com>
- <Ykvrk4hYvBEnNOOl@kernel.org>
-From:   Reinette Chatre <reinette.chatre@intel.com>
-In-Reply-To: <Ykvrk4hYvBEnNOOl@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: MW4P220CA0025.NAMP220.PROD.OUTLOOK.COM
- (2603:10b6:303:115::30) To BN0PR11MB5744.namprd11.prod.outlook.com
- (2603:10b6:408:166::16)
+        Tue, 5 Apr 2022 06:22:59 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85F2AB91B0;
+        Tue,  5 Apr 2022 03:06:52 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 296B0B81BC0;
+        Tue,  5 Apr 2022 10:06:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 97DA0C385A2;
+        Tue,  5 Apr 2022 10:06:49 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649153210;
+        bh=l8H9mNVX3/c3Zvv4QunPOJ64g8VnA9sVr/ivBIz7tgA=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=BioVvXU6zzXmAE7uRF6V5B7Vsq8GSp5vvsNYsYhfGCsyeWW+a3kVxeLa0wypahbbz
+         kmwXy8mXwex2BZRZ8ApJ8wu+2JvhGzKbWvGSNEcsuXqaLurR34w2ovFGO5H0/Jt7P/
+         1/HiMiqZYN2XsFU4U4iofwnVEVuB4xEAJ6KbeVow=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
+        Igor Zhbanov <i.zhbanov@omprussia.ru>,
+        Mimi Zohar <zohar@linux.ibm.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 141/599] EVM: fix the evm= __setup handler return value
+Date:   Tue,  5 Apr 2022 09:27:15 +0200
+Message-Id: <20220405070303.038894331@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
+References: <20220405070258.802373272@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 7a1ded85-a87f-46ea-c0be-08da1727a10c
-X-MS-TrafficTypeDiagnostic: BN6PR1101MB2289:EE_
-X-LD-Processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
-X-Microsoft-Antispam-PRVS: <BN6PR1101MB228958F918778DC28B310480F8E49@BN6PR1101MB2289.namprd11.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: julCTSKJ7MMsMmnZJMqr7pzgEZZe/FKRQ/5/mph9Gap9HlP9NW6+b1/o5kqicOf/x6tZhn3V+MCS+SbwpzB6qYAANKTbJ9HChqQ9M9Qulpxk3ksQVsNDube1y2E4vpju1Vea/8+JdL9xAGMcbaHVZ34m/SvhHsx1fPUSIXa+rsKA9I0Nc+CtPCzioqXiANv3RZ5Oa0CcQRiJntWN55oGbfdbz93R/rcYFbGAQOZZUacFVPD7/9ybXsyZUEkJfbsnaR04StqozaEp0zJ0cTbPKB8nr+tvcXjy/VnzgmVO1uvjN3K/IQ7zT5Hwe4PHIiw5NgfOmEycPMfyqNeLwbDginhxkKHw8WgEstlnK6VZuIhGdaDaBJhYritXg3j5Q/iHa3tk8kO06kxvND/E4I3AmG9L4P2jJVHlM8Mj/sLY6a1me0AwpA3ZDf5SNyss0GDyz/qPD4uh4DzjtQ8kmqlU1DQveF1leCB2a7F0ug2n0c/hc+3h8weFAB8kPiehooYrh8teuf8iHkiigUtmE6UKdnoxDVmcSn57DRv44XqeDpEQblICqUt3T0Dj90LunaRJFTpn9deTXKW+jZkTzL6qF+egvwOPe5oWjLi1LIyuspicFjag9ljzUOE3SphaFbB1bU5wedZ5P5cJAjMMTK/b/7bUkL9G88AD0mqFrVCFRyJ67RmlReonDUbyJQ5tvDzZ8E+G8Ifi9RCSYiSM2d8Zh8W3E5vSoMlKvNZOIrDXi7dUf23YLkhc+egmNYkWJyLs
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN0PR11MB5744.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(8676002)(38100700002)(44832011)(66946007)(66556008)(8936002)(4326008)(2906002)(86362001)(66476007)(7416002)(5660300002)(82960400001)(6666004)(31696002)(83380400001)(508600001)(2616005)(26005)(36756003)(186003)(316002)(6916009)(6506007)(6486002)(6512007)(53546011)(31686004)(43740500002)(45980500001);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?VEpjblNoYU9Ta1NEcVZvQW5heFZqQUtncE5HZmNFV0FWWkEyUFdLOU04NnJa?=
- =?utf-8?B?MFJGek1scGhEV1gzNWMvUkFWYi9uMHFpSmJaaW0wbk1RWlcxQk9LbnNqaUd5?=
- =?utf-8?B?cTJFWW1pd21Tb3RwUWc1ZU92VkhlQmp3dERzK0lvUXpERnl0a0pkZFRPR0lW?=
- =?utf-8?B?UGNoQmx5ZHE3WDN6NGI1UnA5MnB4L3Jmc2FjUnMwUlhTanRMTXdzOVIrTHRW?=
- =?utf-8?B?SVBuekppNXNXV1hWU0haZjlLdVBqTkQxd3lBWUxrVlAxZkJUTHArMTJSZzVi?=
- =?utf-8?B?S1hHZXNOQkZ0REtpR3ZHZWdvR3lQRVR6d0lnaVdsQUZVMkFGbG1US01YTTJV?=
- =?utf-8?B?RzFWSXVSMDg3MWU1SGpUSlZ1UEl0YkFVVUZOQWEvSDJUWjRoTHNKb3F3SW5F?=
- =?utf-8?B?WkM3VHBnNXo2c3U5Zkh3YlJMbWVpNkdrd2JuV251WitTYWhlT3BoTG5tQmZW?=
- =?utf-8?B?OG54TWMzMG11Wk5lOFR2bVAzRGJGYTRNWXlHT2JhV2lpT0g5K2RNTGRkWlc3?=
- =?utf-8?B?UW4xMndvRlgxREU4ZmdmalhmeVdVeDdpc3RRbUlIVXlIY29Oejh5UFZDanc0?=
- =?utf-8?B?S2pocGlxRlFwcTVFWDFHU2I4bG82bDA0cmpWakRlYUluTDNBZVhhZndHZzUx?=
- =?utf-8?B?WWxQMTZXMnEyOWtqWVV0ZEFDNmNBNld0dlFaQ1dPN0tXK2NKaWVwT2tnREtK?=
- =?utf-8?B?cWpsdTNWTjNMUGZYV2pNL29ZOUpFbVdQZUFZbG9FSnpuQ0Ftam1mN2M3THA4?=
- =?utf-8?B?Q3d6TWxRczJjYkNEazU5My94a1dmaU1IQ2hMVVd4ektWbnZjUXU4dkcrbkRr?=
- =?utf-8?B?WEIvU1dTdW5oYndqRnNRa2ZUUzMvSUJLV0pLSzNXNDBYTWo3VlpmQ2dEMlU1?=
- =?utf-8?B?Ti9pN00wMEl6UnVndmVZdGF2d0pFSERDVlN5SEZQeDRySkFXN1djZHZMOVpC?=
- =?utf-8?B?Q1BtNklyN25IOFpWdWxJL2tKNENocjNSNkhBdTR2aDgxRmNwMG15MUN3Q3p5?=
- =?utf-8?B?UnQvOHFFVXVKemRIMzhrM2llYlJBdDNMbE9lUDVTSkQ0MEZNNC9lSVlzVytT?=
- =?utf-8?B?YzMxbENxTGNTMVpKdXBWYktpM0xwSjlQanA4TDdSck5TdkRyTUtyUnErN2tk?=
- =?utf-8?B?WGJJUGJudzF2WFNKM1VTNVF0cDhTQ2U1eFNpREFZeEtqbElLM295NUJNa2ZS?=
- =?utf-8?B?MW5uMHpzVjNDd1FZalNVQWtEYk9tNUYvTG9hNVV1MUZacVo1Ums0SjJDdkIr?=
- =?utf-8?B?ckx6eEFySjEwNVBKNHFmd0lJMFpYQnlFRGVVVldpcnd4UkVocWNrbXFaZFlp?=
- =?utf-8?B?dmNnNVBjRnp5ODRGVlBDL2lsL3FwS1YxVjFWdzlXTGFyZU1FZ3JOZ0lQNnZD?=
- =?utf-8?B?aHRhTkFzcTZUaXFCVXhHZWE4SUsxL0U5ZFpMSEpJUnJYZnQrc1RUNktKak8v?=
- =?utf-8?B?Z1F0K2QvS2p1Wm0vVkpJVEpldlNLZmJ0Z2pIY0Y1cWxyL0lnd2kvMks1YnA2?=
- =?utf-8?B?RGJ3d2RLOW53emRJckpRaVI3YkJ1aHJicExvc0tnTWJIRm1ubUk0SGtrRFhq?=
- =?utf-8?B?RDNFcldReDAwODFXU3ZjeEpLcVNNQW5PRHBGd2ZKZHA0MEI1M1JWdkEzNzh6?=
- =?utf-8?B?d2F6Y3N5dHJKaGRyb3NTWTVrK3ExQUtxUGRML3NvR3h2S3ZLcmJLd0ZiSWpL?=
- =?utf-8?B?MWlrL0NmRlRQMnBXTjZKeVZyZXlIWkI4UUpabHJ4ODVKUTUzekd6SDZDaXpr?=
- =?utf-8?B?S2dhbjk3RWNmVHplWmt0VE5zYnlWRkdSTTB5aVZYU0syYWdjODRzQUx1ZXVE?=
- =?utf-8?B?aWpDUWhTbVQxbDlGN1FVTlVRWWpBQThkbWxpU3ZaUFZRMlZmeXFLU2lkUThR?=
- =?utf-8?B?YVQ2VXlLa2RlYUh0MzBCSmpabjJRM2NxK2dJNHZGMWVCWkRGc0hZczFZVG1X?=
- =?utf-8?B?MmZUT01iR0lwTys4akI4Z1g3QXpHb0lLUHFmQTR0ZjNQbk9ZMDR3RXpXZ1c4?=
- =?utf-8?B?a3Q2dXNRVVFMeTlxVHZVK3BrNDRHWHVvRGQ4U1F1eWVnc2hFVGNEWC9RdjNw?=
- =?utf-8?B?RmV0ZWZjWUQzelR0R2FqU09zU1V3NXlZK245VmtqNkJHWFNGSnhCamNpVm9U?=
- =?utf-8?B?Vmd1QUZjamJFZHZGM0hpVHNTSFM3UnlienJvblVnRWp6V3g5c3VicTFaY3JE?=
- =?utf-8?B?dzJJOU1pSkVBMFhPTTZqMzV6QVZGQzBSSmZNQWxzemkwRkk2T3A1YTYrMjV5?=
- =?utf-8?B?aGNLSjdJNzFiSWJTU3hhUnp0TUY1Q05hZnR6VlA1aUJiRFBMOXI4SEpac05C?=
- =?utf-8?B?cmhjdU1sWHZOS3lSWm4wbGU2UTJ0UUVGVTc1dGdlS3JHcmtxUGw5RHJhUUcy?=
- =?utf-8?Q?oHrwFUt1xOSF7gOY=3D?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: 7a1ded85-a87f-46ea-c0be-08da1727a10c
-X-MS-Exchange-CrossTenant-AuthSource: BN0PR11MB5744.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Apr 2022 17:13:40.2445
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: XSyP1QXEtoDvfU4vOQeQGioHb4JMWUYZ5u0ob79ycHQNEpkR9WZqDkEf03QwXt6vSD3wOy0ioEHx99lYsxPfZOHnzXRggeUCTC2NVCeSDmY=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN6PR1101MB2289
-X-OriginatorOrg: intel.com
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Jarkko,
+From: Randy Dunlap <rdunlap@infradead.org>
 
-On 4/5/2022 12:11 AM, Jarkko Sakkinen wrote:
-> On Mon, Apr 04, 2022 at 09:49:27AM -0700, Reinette Chatre wrote:
->> The page reclaimer ensures availability of EPC pages across all
->> enclaves. In support of this it runs independently from the
->> individual enclaves in order to take locks from the different
->> enclaves as it writes pages to swap.
->>
->> When needing to load a page from swap an EPC page needs to be
->> available for its contents to be loaded into. Loading an existing
->> enclave page from swap does not reclaim EPC pages directly if
->> none are available, instead the reclaimer is woken when the
->> available EPC pages are found to be below a watermark.
->>
->> When iterating over a large number of pages in an oversubscribed
->> environment there is a race between the reclaimer woken up and
->> EPC pages reclaimed fast enough for the page operations to proceed.
->>
->> Ensure there are EPC pages available before attempting to load
->> a page that may potentially be pulled from swap into an available
->> EPC page.
->>
->> Signed-off-by: Reinette Chatre <reinette.chatre@intel.com>
->> ---
->> No changes since V2
->>
->> Changes since v1:
->> - Reword commit message.
->>
->>  arch/x86/kernel/cpu/sgx/ioctl.c | 6 ++++++
->>  arch/x86/kernel/cpu/sgx/main.c  | 6 ++++++
->>  arch/x86/kernel/cpu/sgx/sgx.h   | 1 +
->>  3 files changed, 13 insertions(+)
->>
->> diff --git a/arch/x86/kernel/cpu/sgx/ioctl.c b/arch/x86/kernel/cpu/sgx/ioctl.c
->> index 515e1961cc02..f88bc1236276 100644
->> --- a/arch/x86/kernel/cpu/sgx/ioctl.c
->> +++ b/arch/x86/kernel/cpu/sgx/ioctl.c
->> @@ -777,6 +777,8 @@ sgx_enclave_restrict_permissions(struct sgx_encl *encl,
->>  	for (c = 0 ; c < modp->length; c += PAGE_SIZE) {
->>  		addr = encl->base + modp->offset + c;
->>  
->> +		sgx_direct_reclaim();
->> +
->>  		mutex_lock(&encl->lock);
->>  
->>  		entry = sgx_encl_load_page(encl, addr);
->> @@ -934,6 +936,8 @@ static long sgx_enclave_modify_type(struct sgx_encl *encl,
->>  	for (c = 0 ; c < modt->length; c += PAGE_SIZE) {
->>  		addr = encl->base + modt->offset + c;
->>  
->> +		sgx_direct_reclaim();
->> +
->>  		mutex_lock(&encl->lock);
->>  
->>  		entry = sgx_encl_load_page(encl, addr);
->> @@ -1129,6 +1133,8 @@ static long sgx_encl_remove_pages(struct sgx_encl *encl,
->>  	for (c = 0 ; c < params->length; c += PAGE_SIZE) {
->>  		addr = encl->base + params->offset + c;
->>  
->> +		sgx_direct_reclaim();
->> +
->>  		mutex_lock(&encl->lock);
->>  
->>  		entry = sgx_encl_load_page(encl, addr);
->> diff --git a/arch/x86/kernel/cpu/sgx/main.c b/arch/x86/kernel/cpu/sgx/main.c
->> index 6e2cb7564080..545da16bb3ea 100644
->> --- a/arch/x86/kernel/cpu/sgx/main.c
->> +++ b/arch/x86/kernel/cpu/sgx/main.c
->> @@ -370,6 +370,12 @@ static bool sgx_should_reclaim(unsigned long watermark)
->>  	       !list_empty(&sgx_active_page_list);
->>  }
->>  
->> +void sgx_direct_reclaim(void)
->> +{
->> +	if (sgx_should_reclaim(SGX_NR_LOW_PAGES))
->> +		sgx_reclaim_pages();
->> +}
-> 
-> Please, instead open code this to both locations - not enough redundancy
-> to be worth of new function. Causes only unnecessary cross-referencing
-> when maintaining. Otherwise, I agree with the idea.
-> 
+[ Upstream commit f2544f5e6c691679d56bb38637d2f347075b36fa ]
 
-hmmm, that means the heart of the reclaimer (sgx_reclaim_pages()) would be
-made available for direct use from everywhere in the driver. I will look into this.
+__setup() handlers should return 1 if the parameter is handled.
+Returning 0 causes the entire string to be added to init's
+environment strings (limited to 32 strings), unnecessarily polluting it.
 
-Reinette
+Using the documented string "evm=fix" causes an Unknown parameter message:
+  Unknown kernel command line parameters
+  "BOOT_IMAGE=/boot/bzImage-517rc5 evm=fix", will be passed to user space.
+
+and that string is added to init's environment string space:
+  Run /sbin/init as init process
+    with arguments:
+     /sbin/init
+    with environment:
+     HOME=/
+     TERM=linux
+     BOOT_IMAGE=/boot/bzImage-517rc5
+     evm=fix
+
+With this change, using "evm=fix" acts as expected and an invalid
+option ("evm=evm") causes a warning to be printed:
+  evm: invalid "evm" mode
+but init's environment is not polluted with this string, as expected.
+
+Fixes: 7102ebcd65c1 ("evm: permit only valid security.evm xattrs to be updated")
+Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+Reported-by: Igor Zhbanov <i.zhbanov@omprussia.ru>
+Link: lore.kernel.org/r/64644a2f-4a20-bab3-1e15-3b2cdd0defe3@omprussia.ru
+Signed-off-by: Mimi Zohar <zohar@linux.ibm.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ security/integrity/evm/evm_main.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/security/integrity/evm/evm_main.c b/security/integrity/evm/evm_main.c
+index b929c683aba1..0033364ac404 100644
+--- a/security/integrity/evm/evm_main.c
++++ b/security/integrity/evm/evm_main.c
+@@ -62,7 +62,7 @@ static int __init evm_set_fixmode(char *str)
+ 	else
+ 		pr_err("invalid \"%s\" mode", str);
+ 
+-	return 0;
++	return 1;
+ }
+ __setup("evm=", evm_set_fixmode);
+ 
+-- 
+2.34.1
+
+
 
