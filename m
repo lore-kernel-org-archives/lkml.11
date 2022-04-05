@@ -2,87 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EA3DEC35294
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3EF5AC3527A
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 14:40:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1388788AbiDEOlJ (ORCPT
+        id S1388584AbiDEOkQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 10:41:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35188 "EHLO
+        Tue, 5 Apr 2022 10:40:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50092 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233133AbiDEJka (ORCPT
+        with ESMTP id S243622AbiDEJkN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:40:30 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B7A3B91A6
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 02:25:03 -0700 (PDT)
+        Tue, 5 Apr 2022 05:40:13 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3769BAC900;
+        Tue,  5 Apr 2022 02:24:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 37BD76164E
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 09:25:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7CDBAC385A4;
-        Tue,  5 Apr 2022 09:25:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649150702;
-        bh=kogP6nO7wU0ilpGa8JtIr5fN9KE3TnBqzaKz14TEHYA=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=ijeYoLORnSLf/AoiqG4azMEprQrMRfuFMpyxCeV8qw1UTVmW8dOxNKVseYbED+vAe
-         231KKUQL50gbav6+5GJbGHqonejP5dzlB6OZkwJV2KTcH9z9OQUX8HkylsCFhrb6pP
-         nn4c81PFSrWCxQpyGOu4i3SolWFCSmu3aL9SF7rVQInCux5C3pvUgmyS4upGC3vc60
-         EEWxKVFp3wo+T3WYgIHw+Mrpoz8EF209VEKQaowwNeLawEXOJ/wDHI52uUkASeHP4N
-         vPrXct/qNzUUqv5GpDnlZIdqn7o8IGOr6y5NcRR5CPn/5fBMFZwDp2DQt35NPLaMeb
-         AEL2hHqkxmE+g==
-Date:   Tue, 5 Apr 2022 10:24:57 +0100
-From:   Will Deacon <will@kernel.org>
-To:     Liam Howlett <liam.howlett@oracle.com>
-Cc:     "maple-tree@lists.infradead.org" <maple-tree@lists.infradead.org>,
-        "linux-mm@kvack.org" <linux-mm@kvack.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>
-Subject: Re: [PATCH v7 11/70] arch/arm64: Remove the merge workaround for
- VMA_ITERATOR
-Message-ID: <20220405092456.GA24387@willie-the-truck>
-References: <20220404143501.2016403-1-Liam.Howlett@oracle.com>
- <20220404143501.2016403-12-Liam.Howlett@oracle.com>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 94C5A61659;
+        Tue,  5 Apr 2022 09:24:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A5D89C385A2;
+        Tue,  5 Apr 2022 09:24:46 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649150687;
+        bh=T2hstRTN2DoQMvevAT+LYxm/af106Jsj9SpEV7aDvFA=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=SkQJ+u0G0K52H9yar62RE+4Su6im/xbPE0wWg3biitqwKwBIDJ78Ue0J+fHXg7rLd
+         NwPSNePJB6fvh+8JJw2xtGJ+pbFU5J/iQbrDTvxhGj+7gVYce9n18WWDe7qHDPspiP
+         2n3/K3QOnJq5KhH/GV6eBtKxpawqKQqcDFsSy01k=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Geert Uytterhoeven <geert@linux-m68k.org>,
+        Michael Schmitz <schmitzmic@gmail.com>,
+        Helge Deller <deller@gmx.de>
+Subject: [PATCH 5.15 144/913] video: fbdev: atari: Atari 2 bpp (STe) palette bugfix
+Date:   Tue,  5 Apr 2022 09:20:06 +0200
+Message-Id: <20220405070344.150928974@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220404143501.2016403-12-Liam.Howlett@oracle.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Liam,
+From: Michael Schmitz <schmitzmic@gmail.com>
 
-On Mon, Apr 04, 2022 at 02:35:36PM +0000, Liam Howlett wrote:
-> Now that the vma iterator is in the kernel, remove the workaround.
-> 
-> Signed-off-by: Liam R. Howlett <Liam.Howlett@oracle.com>
-> ---
->  arch/arm64/kernel/elfcore.c | 7 -------
->  1 file changed, 7 deletions(-)
-> 
-> diff --git a/arch/arm64/kernel/elfcore.c b/arch/arm64/kernel/elfcore.c
-> index 3ed39c61a510..930a0bc4cac4 100644
-> --- a/arch/arm64/kernel/elfcore.c
-> +++ b/arch/arm64/kernel/elfcore.c
-> @@ -8,13 +8,6 @@
->  #include <asm/cpufeature.h>
->  #include <asm/mte.h>
->  
-> -#ifndef VMA_ITERATOR
-> -#define VMA_ITERATOR(name, mm, addr)	\
-> -	struct mm_struct *name = mm
-> -#define for_each_vma(vmi, vma)		\
-> -	for (vma = vmi->mmap; vma; vma = vma->vm_next)
-> -#endif
+commit c8be5edbd36ceed2ff3d6b8f8e40643c3f396ea3 upstream.
 
-I already have this revert queued up as an arm64 fix:
+The code to set the shifter STe palette registers has a long
+standing operator precedence bug, manifesting as colors set
+on a 2 bits per pixel frame buffer coming up with a distinctive
+blue tint.
 
-https://git.kernel.org/pub/scm/linux/kernel/git/arm64/linux.git/commit/?h=for-next/fixes&id=a0ab7e5bc9651d65637f50ee9c09e083919677ed
+Add parentheses around the calculation of the per-color palette
+data before shifting those into their respective bit field position.
 
-Should land for -rc2.
+This bug goes back a long way (2.4 days at the very least) so there
+won't be a Fixes: tag.
 
-Will
+Tested on ARAnyM as well on Falcon030 hardware.
+
+Cc: stable@vger.kernel.org
+Reported-by: Geert Uytterhoeven <geert@linux-m68k.org>
+Link: https://lore.kernel.org/all/CAMuHMdU3ievhXxKR_xi_v3aumnYW7UNUO6qMdhgfyWTyVSsCkQ@mail.gmail.com
+Tested-by: Michael Schmitz <schmitzmic@gmail.com>
+Tested-by: Geert Uytterhoeven <geert@linux-m68k.org>
+Signed-off-by: Michael Schmitz <schmitzmic@gmail.com>
+Signed-off-by: Helge Deller <deller@gmx.de>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ drivers/video/fbdev/atafb.c |   12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
+
+--- a/drivers/video/fbdev/atafb.c
++++ b/drivers/video/fbdev/atafb.c
+@@ -1683,9 +1683,9 @@ static int falcon_setcolreg(unsigned int
+ 			   ((blue & 0xfc00) >> 8));
+ 	if (regno < 16) {
+ 		shifter_tt.color_reg[regno] =
+-			(((red & 0xe000) >> 13) | ((red & 0x1000) >> 12) << 8) |
+-			(((green & 0xe000) >> 13) | ((green & 0x1000) >> 12) << 4) |
+-			((blue & 0xe000) >> 13) | ((blue & 0x1000) >> 12);
++			((((red & 0xe000) >> 13)   | ((red & 0x1000) >> 12)) << 8)   |
++			((((green & 0xe000) >> 13) | ((green & 0x1000) >> 12)) << 4) |
++			   ((blue & 0xe000) >> 13) | ((blue & 0x1000) >> 12);
+ 		((u32 *)info->pseudo_palette)[regno] = ((red & 0xf800) |
+ 						       ((green & 0xfc00) >> 5) |
+ 						       ((blue & 0xf800) >> 11));
+@@ -1971,9 +1971,9 @@ static int stste_setcolreg(unsigned int
+ 	green >>= 12;
+ 	if (ATARIHW_PRESENT(EXTD_SHIFTER))
+ 		shifter_tt.color_reg[regno] =
+-			(((red & 0xe) >> 1) | ((red & 1) << 3) << 8) |
+-			(((green & 0xe) >> 1) | ((green & 1) << 3) << 4) |
+-			((blue & 0xe) >> 1) | ((blue & 1) << 3);
++			((((red & 0xe)   >> 1) | ((red & 1)   << 3)) << 8) |
++			((((green & 0xe) >> 1) | ((green & 1) << 3)) << 4) |
++			  ((blue & 0xe)  >> 1) | ((blue & 1)  << 3);
+ 	else
+ 		shifter_tt.color_reg[regno] =
+ 			((red & 0xe) << 7) |
+
+
