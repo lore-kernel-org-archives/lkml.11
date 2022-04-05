@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C7007C43217
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:53:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F445C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:53:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353434AbiDEMtp (ORCPT
+        id S1353767AbiDEMtw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 08:49:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41928 "EHLO
+        Tue, 5 Apr 2022 08:49:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41902 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244259AbiDEJJv (ORCPT
+        with ESMTP id S244530AbiDEJKD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:09:51 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE5A7205EC;
-        Tue,  5 Apr 2022 01:59:13 -0700 (PDT)
+        Tue, 5 Apr 2022 05:10:03 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7923125EBB;
+        Tue,  5 Apr 2022 01:59:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7FCF16159F;
-        Tue,  5 Apr 2022 08:59:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8DC53C385A3;
-        Tue,  5 Apr 2022 08:59:09 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B26E3B81A22;
+        Tue,  5 Apr 2022 08:59:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 28815C385A0;
+        Tue,  5 Apr 2022 08:59:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649149149;
-        bh=68tEdpLmNp8IW56JqoG0OPYoak/d+7TDd4489L5IY4I=;
+        s=korg; t=1649149182;
+        bh=da01Yu1VRcc/0ZM/zmhrzof8NG1WHBs1WVz1sV/nRo4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dS//EjcIwWb2cdYLKF7AzuuMboCnqtQALcuCzcGQ8VrSc0EZHOV7RIu8svBrD9U2M
-         LFKBOeU2bGbX+Tx0JUI9vOpFxmlRX3lt0pKTG8WV2jXaQibJxU8FhILIiD/C6KYuT7
-         Zf+KSWA9+FBbTqke0l7B+LsivkOjWR/yfvedxWOs=
+        b=meRpfhKkskr0noF+WQ6ltGty2TRg/ZvmUkvPs5urNMIA8jOxu26RRrGy84l2Tnuj0
+         Gk1w0D+57pgfgVBNk4cSBo9yCC87zeh4WaN/eQXimrD+tx7472vK8YQ5MuRY1KEaKe
+         PxSPiV5SXuYerCriJU3n9Ww3idJ8EZFmSGWLd63o=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Derek Will <derekrobertwill@gmail.com>,
-        Oliver Hartkopp <socketcan@hartkopp.net>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
+        stable@vger.kernel.org, Petr Machata <petrm@nvidia.com>,
+        Ido Schimmel <idosch@nvidia.com>,
+        Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0612/1017] can: isotp: support MSG_TRUNC flag when reading from socket
-Date:   Tue,  5 Apr 2022 09:25:25 +0200
-Message-Id: <20220405070412.448960205@linuxfoundation.org>
+Subject: [PATCH 5.16 0623/1017] af_netlink: Fix shift out of bounds in group mask calculation
+Date:   Tue,  5 Apr 2022 09:25:36 +0200
+Message-Id: <20220405070412.775282745@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -51,84 +51,60 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Oliver Hartkopp <socketcan@hartkopp.net>
+From: Petr Machata <petrm@nvidia.com>
 
-[ Upstream commit 42bf50a1795a1854d48717b7361dbdbce496b16b ]
+[ Upstream commit 0caf6d9922192dd1afa8dc2131abfb4df1443b9f ]
 
-When providing the MSG_TRUNC flag via recvmsg() syscall the return value
-provides the real length of the packet or datagram, even when it was longer
-than the passed buffer.
+When a netlink message is received, netlink_recvmsg() fills in the address
+of the sender. One of the fields is the 32-bit bitfield nl_groups, which
+carries the multicast group on which the message was received. The least
+significant bit corresponds to group 1, and therefore the highest group
+that the field can represent is 32. Above that, the UB sanitizer flags the
+out-of-bounds shift attempts.
 
-Fixes: e057dd3fc20f ("can: add ISO 15765-2:2016 transport protocol")
-Link: https://github.com/linux-can/can-utils/issues/347#issuecomment-1065932671
-Link: https://lore.kernel.org/all/20220316164258.54155-3-socketcan@hartkopp.net
-Suggested-by: Derek Will <derekrobertwill@gmail.com>
-Signed-off-by: Oliver Hartkopp <socketcan@hartkopp.net>
-Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
+Which bits end up being set in such case is implementation defined, but
+it's either going to be a wrong non-zero value, or zero, which is at least
+not misleading. Make the latter choice deterministic by always setting to 0
+for higher-numbered multicast groups.
+
+To get information about membership in groups >= 32, userspace is expected
+to use nl_pktinfo control messages[0], which are enabled by NETLINK_PKTINFO
+socket option.
+[0] https://lwn.net/Articles/147608/
+
+The way to trigger this issue is e.g. through monitoring the BRVLAN group:
+
+	# bridge monitor vlan &
+	# ip link add name br type bridge
+
+Which produces the following citation:
+
+	UBSAN: shift-out-of-bounds in net/netlink/af_netlink.c:162:19
+	shift exponent 32 is too large for 32-bit type 'int'
+
+Fixes: f7fa9b10edbb ("[NETLINK]: Support dynamic number of multicast groups per netlink family")
+Signed-off-by: Petr Machata <petrm@nvidia.com>
+Reviewed-by: Ido Schimmel <idosch@nvidia.com>
+Link: https://lore.kernel.org/r/2bef6aabf201d1fc16cca139a744700cff9dcb04.1647527635.git.petrm@nvidia.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/can/isotp.c | 27 +++++++++++++++------------
- 1 file changed, 15 insertions(+), 12 deletions(-)
+ net/netlink/af_netlink.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/net/can/isotp.c b/net/can/isotp.c
-index 8966f06e0660..ad61342d2e16 100644
---- a/net/can/isotp.c
-+++ b/net/can/isotp.c
-@@ -1006,29 +1006,28 @@ static int isotp_recvmsg(struct socket *sock, struct msghdr *msg, size_t size,
- 	struct sock *sk = sock->sk;
- 	struct sk_buff *skb;
- 	struct isotp_sock *so = isotp_sk(sk);
--	int err = 0;
--	int noblock;
-+	int noblock = flags & MSG_DONTWAIT;
-+	int ret = 0;
+diff --git a/net/netlink/af_netlink.c b/net/netlink/af_netlink.c
+index 9eba2e648385..6fbc3ea735e5 100644
+--- a/net/netlink/af_netlink.c
++++ b/net/netlink/af_netlink.c
+@@ -157,6 +157,8 @@ EXPORT_SYMBOL(do_trace_netlink_extack);
  
--	noblock = flags & MSG_DONTWAIT;
--	flags &= ~MSG_DONTWAIT;
-+	if (flags & ~(MSG_DONTWAIT | MSG_TRUNC))
-+		return -EINVAL;
- 
- 	if (!so->bound)
- 		return -EADDRNOTAVAIL;
- 
--	skb = skb_recv_datagram(sk, flags, noblock, &err);
-+	flags &= ~MSG_DONTWAIT;
-+	skb = skb_recv_datagram(sk, flags, noblock, &ret);
- 	if (!skb)
--		return err;
-+		return ret;
- 
- 	if (size < skb->len)
- 		msg->msg_flags |= MSG_TRUNC;
- 	else
- 		size = skb->len;
- 
--	err = memcpy_to_msg(msg, skb->data, size);
--	if (err < 0) {
--		skb_free_datagram(sk, skb);
--		return err;
--	}
-+	ret = memcpy_to_msg(msg, skb->data, size);
-+	if (ret < 0)
-+		goto out_err;
- 
- 	sock_recv_timestamp(msg, sk, skb);
- 
-@@ -1038,9 +1037,13 @@ static int isotp_recvmsg(struct socket *sock, struct msghdr *msg, size_t size,
- 		memcpy(msg->msg_name, skb->cb, msg->msg_namelen);
- 	}
- 
-+	/* set length of return value */
-+	ret = (flags & MSG_TRUNC) ? skb->len : size;
-+
-+out_err:
- 	skb_free_datagram(sk, skb);
- 
--	return size;
-+	return ret;
+ static inline u32 netlink_group_mask(u32 group)
+ {
++	if (group > 32)
++		return 0;
+ 	return group ? 1 << (group - 1) : 0;
  }
  
- static int isotp_release(struct socket *sock)
 -- 
 2.34.1
 
