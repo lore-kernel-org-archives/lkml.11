@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C33CEC4167B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D284AC4321E
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 03:31:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2360255AbiDFD2Q (ORCPT
+        id S2360276AbiDFD3B (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 23:28:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47702 "EHLO
+        Tue, 5 Apr 2022 23:29:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47724 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1850050AbiDFCrJ (ORCPT
+        with ESMTP id S1850049AbiDFCrJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Apr 2022 22:47:09 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DDE11E1108;
-        Tue,  5 Apr 2022 16:48:48 -0700 (PDT)
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1978B1E1112;
+        Tue,  5 Apr 2022 16:48:43 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649202529; x=1680738529;
+  t=1649202523; x=1680738523;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=VLMK2XfZRxwY2DfHGkqNEfElATjStd6aGMpGXYl7+N4=;
-  b=jUO74UV+P/iG+GwF6MqRyU3PosyxEuFDG/uafHeLcN+1wkIMEc6YBliz
-   mEILPvGTp3PyhH2aNezuc/wYh4TyiGUKkj92pFMt2C0HBuTkQwvixeSJ8
-   fYCQ/Dlodb0NmCBpeq//l7BkOK2jnhypnSele2wdgD4Nl047BEWue47PU
-   AaBQy5krD/HTrnL0myTnSmHdZumYUTfraT6y3IBWdebrcToDJOrLwCQ9d
-   BWevNx2IiTfEiKL3s1Ls6GEF6cj2iTVKjHrXzhVMNSLYNsh3aQcnwel0c
-   pQdqNiDn7TkkVO5JB8r9Yrr2kApqrT3eXokLsQUGPCvRSqnPRyBKqepLb
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10308"; a="248417452"
+  bh=vDtT5eCuwypFPjQBE9Qdn6flkyTeEBWCMmVpOI5Jnq4=;
+  b=m1ioYfqC/0NhJbHqlCEEZ2b2jptaATEYJu/asjb/Ypjo+zBeye/LUtsE
+   reIWK13X+PJp9/AaMvtO88/2b2pEIXgCSe6HjbukoLIAUTmzqfFdyp5Yq
+   G8rmi9SU8z42f0j1e7jUJHyFpzgzzlj1JbPwHinyIBcm+jZumnMVOIvTQ
+   /oTrzrDXYoBX3AvABZLc1Zhyioaa/vP15ONHkUH+PHNXcHqq6jaZAA0oU
+   k3kQDBVHpm3TINCba/CqWpMdkm5rLwcHhlXCcEeSJayM1E1ldxFLfe8Ys
+   k63oaM7D3hJeX8v3VKHFSnMNKOJFb/pLqbQ9PQIghaRl18XTos7LvG39V
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10308"; a="243035271"
 X-IronPort-AV: E=Sophos;i="5.90,238,1643702400"; 
-   d="scan'208";a="248417452"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2022 16:48:48 -0700
+   d="scan'208";a="243035271"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2022 16:48:41 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.90,238,1643702400"; 
-   d="scan'208";a="549279513"
+   d="scan'208";a="608658173"
 Received: from black.fi.intel.com ([10.237.72.28])
-  by orsmga007.jf.intel.com with ESMTP; 05 Apr 2022 16:48:41 -0700
+  by fmsmga008.fm.intel.com with ESMTP; 05 Apr 2022 16:48:35 -0700
 Received: by black.fi.intel.com (Postfix, from userid 1000)
-        id DC54261B; Wed,  6 Apr 2022 02:43:47 +0300 (EEST)
+        id B42034B3; Wed,  6 Apr 2022 02:43:47 +0300 (EEST)
 From:   "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
 To:     Borislav Petkov <bp@alien8.de>, Andy Lutomirski <luto@kernel.org>,
         Sean Christopherson <seanjc@google.com>,
@@ -66,9 +66,9 @@ Cc:     Andi Kleen <ak@linux.intel.com>,
         linux-mm@kvack.org, linux-coco@lists.linux.dev,
         linux-efi@vger.kernel.org, linux-kernel@vger.kernel.org,
         "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
-Subject: [PATCHv4 7/8] x86/tdx: Unaccepted memory support
-Date:   Wed,  6 Apr 2022 02:43:42 +0300
-Message-Id: <20220405234343.74045-8-kirill.shutemov@linux.intel.com>
+Subject: [PATCHv4 4/8] x86/boot/compressed: Handle unaccepted memory
+Date:   Wed,  6 Apr 2022 02:43:39 +0300
+Message-Id: <20220405234343.74045-5-kirill.shutemov@linux.intel.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405234343.74045-1-kirill.shutemov@linux.intel.com>
 References: <20220405234343.74045-1-kirill.shutemov@linux.intel.com>
@@ -78,272 +78,194 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-All preparations are complete. Hookup TDX-specific code to accept memory.
+Firmware is responsible for accepting memory where compressed kernel
+image and initrd land. But kernel has to accept memory for decompression
+buffer: accept memory just before decompression starts.
 
-There are two tdx_accept_memory() implementations: one in main kernel
-and one in the decompresser.
-
-The implementation in core kernel uses tdx_enc_status_changed().
-The helper is not available in the decompresser, self-contained
-implementation added there instead.
+KASLR is allowed to use unaccepted memory for the output buffer.
 
 Signed-off-by: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
 ---
- arch/x86/Kconfig                             |  1 +
- arch/x86/boot/compressed/tdx.c               | 41 ++++++++++++++++++++
- arch/x86/boot/compressed/unaccepted_memory.c | 23 ++++++++++-
- arch/x86/coco/tdx/tdx.c                      | 29 +++++++++-----
- arch/x86/include/asm/shared/tdx.h            | 20 ++++++++++
- arch/x86/include/asm/tdx.h                   | 19 ---------
- arch/x86/mm/unaccepted_memory.c              |  6 ++-
- 7 files changed, 109 insertions(+), 30 deletions(-)
+ arch/x86/boot/compressed/bitmap.c            | 62 ++++++++++++++++++++
+ arch/x86/boot/compressed/kaslr.c             | 14 ++++-
+ arch/x86/boot/compressed/misc.c              | 11 ++++
+ arch/x86/boot/compressed/unaccepted_memory.c | 14 +++++
+ arch/x86/include/asm/unaccepted_memory.h     |  2 +
+ 5 files changed, 101 insertions(+), 2 deletions(-)
 
-diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
-index 7021ec725dd3..e4c31dbea6d7 100644
---- a/arch/x86/Kconfig
-+++ b/arch/x86/Kconfig
-@@ -885,6 +885,7 @@ config INTEL_TDX_GUEST
- 	select ARCH_HAS_CC_PLATFORM
- 	select X86_MEM_ENCRYPT
- 	select X86_MCE
-+	select UNACCEPTED_MEMORY
- 	help
- 	  Support running as a guest under Intel TDX.  Without this support,
- 	  the guest kernel can not boot or run under TDX.
-diff --git a/arch/x86/boot/compressed/tdx.c b/arch/x86/boot/compressed/tdx.c
-index 918a7606f53c..a0bd1426d235 100644
---- a/arch/x86/boot/compressed/tdx.c
-+++ b/arch/x86/boot/compressed/tdx.c
-@@ -9,6 +9,7 @@
- #include <uapi/asm/vmx.h>
+diff --git a/arch/x86/boot/compressed/bitmap.c b/arch/x86/boot/compressed/bitmap.c
+index bf58b259380a..ba2de61c0823 100644
+--- a/arch/x86/boot/compressed/bitmap.c
++++ b/arch/x86/boot/compressed/bitmap.c
+@@ -2,6 +2,48 @@
+ /* Taken from lib/string.c */
  
- #include <asm/shared/tdx.h>
-+#include <asm/page_types.h>
+ #include <linux/bitmap.h>
++#include <linux/math.h>
++#include <linux/minmax.h>
++
++unsigned long _find_next_bit(const unsigned long *addr1,
++		const unsigned long *addr2, unsigned long nbits,
++		unsigned long start, unsigned long invert, unsigned long le)
++{
++	unsigned long tmp, mask;
++
++	if (unlikely(start >= nbits))
++		return nbits;
++
++	tmp = addr1[start / BITS_PER_LONG];
++	if (addr2)
++		tmp &= addr2[start / BITS_PER_LONG];
++	tmp ^= invert;
++
++	/* Handle 1st word. */
++	mask = BITMAP_FIRST_WORD_MASK(start);
++	if (le)
++		mask = swab(mask);
++
++	tmp &= mask;
++
++	start = round_down(start, BITS_PER_LONG);
++
++	while (!tmp) {
++		start += BITS_PER_LONG;
++		if (start >= nbits)
++			return nbits;
++
++		tmp = addr1[start / BITS_PER_LONG];
++		if (addr2)
++			tmp &= addr2[start / BITS_PER_LONG];
++		tmp ^= invert;
++	}
++
++	if (le)
++		tmp = swab(tmp);
++
++	return min(start + __ffs(tmp), nbits);
++}
  
- /* Called from __tdx_hypercall() for unrecoverable failure */
- void __tdx_hypercall_failed(void)
-@@ -75,3 +76,43 @@ void early_tdx_detect(void)
- 	pio_ops.f_outb = tdx_outb;
- 	pio_ops.f_outw = tdx_outw;
+ void __bitmap_set(unsigned long *map, unsigned int start, int len)
+ {
+@@ -22,3 +64,23 @@ void __bitmap_set(unsigned long *map, unsigned int start, int len)
+ 		*p |= mask_to_set;
+ 	}
  }
 +
-+#define TDACCEPTPAGE		6
-+#define TDVMCALL_MAP_GPA	0x10001
-+
-+/*
-+ * Wrapper for standard use of __tdx_hypercall with no output aside from
-+ * return code.
-+ */
-+static inline u64 _tdx_hypercall(u64 fn, u64 r12, u64 r13, u64 r14, u64 r15)
++void __bitmap_clear(unsigned long *map, unsigned int start, int len)
 +{
-+	struct tdx_hypercall_args args = {
-+		.r10 = TDX_HYPERCALL_STANDARD,
-+		.r11 = fn,
-+		.r12 = r12,
-+		.r13 = r13,
-+		.r14 = r14,
-+		.r15 = r15,
-+	};
++	unsigned long *p = map + BIT_WORD(start);
++	const unsigned int size = start + len;
++	int bits_to_clear = BITS_PER_LONG - (start % BITS_PER_LONG);
++	unsigned long mask_to_clear = BITMAP_FIRST_WORD_MASK(start);
 +
-+	return __tdx_hypercall(&args, 0);
-+}
-+
-+void tdx_accept_memory(phys_addr_t start, phys_addr_t end)
-+{
-+	int i;
-+
-+	if (_tdx_hypercall(TDVMCALL_MAP_GPA, start, end - start, 0, 0))
-+		error("Cannot accept memory: MapGPA failed\n");
-+
-+	/*
-+	 * For shared->private conversion, accept the page using TDACCEPTPAGE
-+	 * TDX module call.
-+	 */
-+	for (i = 0; i < (end - start) / PAGE_SIZE; i++) {
-+		if (__tdx_module_call(TDACCEPTPAGE, start + i * PAGE_SIZE,
-+				      0, 0, 0, NULL)) {
-+			error("Cannot accept memory: page accept failed\n");
-+		}
++	while (len - bits_to_clear >= 0) {
++		*p &= ~mask_to_clear;
++		len -= bits_to_clear;
++		bits_to_clear = BITS_PER_LONG;
++		mask_to_clear = ~0UL;
++		p++;
++	}
++	if (len) {
++		mask_to_clear &= BITMAP_LAST_WORD_MASK(size);
++		*p &= ~mask_to_clear;
 +	}
 +}
+diff --git a/arch/x86/boot/compressed/kaslr.c b/arch/x86/boot/compressed/kaslr.c
+index 411b268bc0a2..59db90626042 100644
+--- a/arch/x86/boot/compressed/kaslr.c
++++ b/arch/x86/boot/compressed/kaslr.c
+@@ -725,10 +725,20 @@ process_efi_entries(unsigned long minimum, unsigned long image_size)
+ 		 * but in practice there's firmware where using that memory leads
+ 		 * to crashes.
+ 		 *
+-		 * Only EFI_CONVENTIONAL_MEMORY is guaranteed to be free.
++		 * Only EFI_CONVENTIONAL_MEMORY and EFI_UNACCEPTED_MEMORY (if
++		 * supported) are guaranteed to be free.
+ 		 */
+-		if (md->type != EFI_CONVENTIONAL_MEMORY)
++
++		switch (md->type) {
++		case EFI_CONVENTIONAL_MEMORY:
++			break;
++		case EFI_UNACCEPTED_MEMORY:
++			if (IS_ENABLED(CONFIG_UNACCEPTED_MEMORY))
++				break;
+ 			continue;
++		default:
++			continue;
++		}
+ 
+ 		if (efi_soft_reserve_enabled() &&
+ 		    (md->attribute & EFI_MEMORY_SP))
+diff --git a/arch/x86/boot/compressed/misc.c b/arch/x86/boot/compressed/misc.c
+index fa8969fad011..c1d9d71a6615 100644
+--- a/arch/x86/boot/compressed/misc.c
++++ b/arch/x86/boot/compressed/misc.c
+@@ -18,6 +18,7 @@
+ #include "../string.h"
+ #include "../voffset.h"
+ #include <asm/bootparam_utils.h>
++#include <asm/unaccepted_memory.h>
+ 
+ /*
+  * WARNING!!
+@@ -43,6 +44,9 @@
+ void *memmove(void *dest, const void *src, size_t n);
+ #endif
+ 
++#undef __pa
++#define __pa(x)	((unsigned long)(x))
++
+ /*
+  * This is set up by the setup-routine at boot-time
+  */
+@@ -451,6 +455,13 @@ asmlinkage __visible void *extract_kernel(void *rmode, memptr heap,
+ #endif
+ 
+ 	debug_putstr("\nDecompressing Linux... ");
++
++	if (IS_ENABLED(CONFIG_UNACCEPTED_MEMORY) &&
++	    boot_params->unaccepted_memory) {
++		debug_putstr("Accepting memory... ");
++		accept_memory(__pa(output), __pa(output) + needed_size);
++	}
++
+ 	__decompress(input_data, input_len, NULL, NULL, output, output_len,
+ 			NULL, error);
+ 	parse_elf(output);
 diff --git a/arch/x86/boot/compressed/unaccepted_memory.c b/arch/x86/boot/compressed/unaccepted_memory.c
-index 3ebab63789bb..662ec32e3c42 100644
+index d363acf59c08..3ebab63789bb 100644
 --- a/arch/x86/boot/compressed/unaccepted_memory.c
 +++ b/arch/x86/boot/compressed/unaccepted_memory.c
-@@ -1,12 +1,33 @@
- // SPDX-License-Identifier: GPL-2.0-only
- 
-+#include <asm/shared/tdx.h>
- #include "error.h"
- #include "misc.h"
-+#include "tdx.h"
+@@ -51,3 +51,17 @@ void mark_unaccepted(struct boot_params *params, u64 start, u64 end)
+ 	bitmap_set((unsigned long *)params->unaccepted_memory,
+ 		   start / PMD_SIZE, (end - start) / PMD_SIZE);
+ }
 +
-+static bool is_tdx_guest(void)
++void accept_memory(phys_addr_t start, phys_addr_t end)
 +{
-+	static bool once;
-+	static bool is_tdx;
++	unsigned long *unaccepted_memory;
++	unsigned int rs, re;
 +
-+	if (!once) {
-+		u32 eax, sig[3];
-+
-+		cpuid_count(TDX_CPUID_LEAF_ID, 0, &eax,
-+			    &sig[0], &sig[2],  &sig[1]);
-+		is_tdx = !memcmp(TDX_IDENT, sig, sizeof(sig));
++	unaccepted_memory = (unsigned long *)boot_params->unaccepted_memory;
++	rs = start / PMD_SIZE;
++	for_each_set_bitrange_from(rs, re, unaccepted_memory,
++				   DIV_ROUND_UP(end, PMD_SIZE)) {
++		__accept_memory(rs * PMD_SIZE, re * PMD_SIZE);
++		bitmap_clear(unaccepted_memory, rs, re - rs);
 +	}
-+
-+	return is_tdx;
 +}
+diff --git a/arch/x86/include/asm/unaccepted_memory.h b/arch/x86/include/asm/unaccepted_memory.h
+index cbc24040b853..f1f835d3cd78 100644
+--- a/arch/x86/include/asm/unaccepted_memory.h
++++ b/arch/x86/include/asm/unaccepted_memory.h
+@@ -9,4 +9,6 @@ struct boot_params;
  
- static inline void __accept_memory(phys_addr_t start, phys_addr_t end)
- {
- 	/* Platform-specific memory-acceptance call goes here */
--	error("Cannot accept memory");
-+	if (is_tdx_guest())
-+		tdx_accept_memory(start, end);
-+	else
-+		error("Cannot accept memory");
- }
+ void mark_unaccepted(struct boot_params *params, u64 start, u64 num);
  
- void mark_unaccepted(struct boot_params *params, u64 start, u64 end)
-diff --git a/arch/x86/coco/tdx/tdx.c b/arch/x86/coco/tdx/tdx.c
-index 03deb4d6920d..0fcb54e07797 100644
---- a/arch/x86/coco/tdx/tdx.c
-+++ b/arch/x86/coco/tdx/tdx.c
-@@ -606,16 +606,8 @@ static bool try_accept_one(phys_addr_t *start, unsigned long len,
- 	return true;
- }
- 
--/*
-- * Inform the VMM of the guest's intent for this physical page: shared with
-- * the VMM or private to the guest.  The VMM is expected to change its mapping
-- * of the page in response.
-- */
--static bool tdx_enc_status_changed(unsigned long vaddr, int numpages, bool enc)
-+static bool __tdx_enc_status_changed(phys_addr_t start, phys_addr_t end, bool enc)
- {
--	phys_addr_t start = __pa(vaddr);
--	phys_addr_t end   = __pa(vaddr + numpages * PAGE_SIZE);
--
- 	if (!enc) {
- 		/* Set the shared (decrypted) bits: */
- 		start |= cc_mkdec(0);
-@@ -660,6 +652,25 @@ static bool tdx_enc_status_changed(unsigned long vaddr, int numpages, bool enc)
- 	return true;
- }
- 
-+void tdx_accept_memory(phys_addr_t start, phys_addr_t end)
-+{
-+	if (!__tdx_enc_status_changed(start, end, true))
-+		panic("Accepting memory failed\n");
-+}
++void accept_memory(phys_addr_t start, phys_addr_t end);
 +
-+/*
-+ * Inform the VMM of the guest's intent for this physical page: shared with
-+ * the VMM or private to the guest.  The VMM is expected to change its mapping
-+ * of the page in response.
-+ */
-+static bool tdx_enc_status_changed(unsigned long vaddr, int numpages, bool enc)
-+{
-+	phys_addr_t start = __pa(vaddr);
-+	phys_addr_t end = __pa(vaddr + numpages * PAGE_SIZE);
-+
-+	return __tdx_enc_status_changed(start, end, enc);
-+}
-+
- void __init tdx_early_init(void)
- {
- 	u64 cc_mask;
-diff --git a/arch/x86/include/asm/shared/tdx.h b/arch/x86/include/asm/shared/tdx.h
-index e53f26228fbb..4eca6492b108 100644
---- a/arch/x86/include/asm/shared/tdx.h
-+++ b/arch/x86/include/asm/shared/tdx.h
-@@ -36,5 +36,25 @@ u64 __tdx_hypercall(struct tdx_hypercall_args *args, unsigned long flags);
- /* Called from __tdx_hypercall() for unrecoverable failure */
- void __tdx_hypercall_failed(void);
- 
-+/*
-+ * Used in __tdx_module_call() to gather the output registers' values of the
-+ * TDCALL instruction when requesting services from the TDX module. This is a
-+ * software only structure and not part of the TDX module/VMM ABI
-+ */
-+struct tdx_module_output {
-+	u64 rcx;
-+	u64 rdx;
-+	u64 r8;
-+	u64 r9;
-+	u64 r10;
-+	u64 r11;
-+};
-+
-+/* Used to communicate with the TDX module */
-+u64 __tdx_module_call(u64 fn, u64 rcx, u64 rdx, u64 r8, u64 r9,
-+		      struct tdx_module_output *out);
-+
-+void tdx_accept_memory(phys_addr_t start, phys_addr_t end);
-+
- #endif /* !__ASSEMBLY__ */
- #endif /* _ASM_X86_SHARED_TDX_H */
-diff --git a/arch/x86/include/asm/tdx.h b/arch/x86/include/asm/tdx.h
-index 020c81a7c729..d9106d3e89f8 100644
---- a/arch/x86/include/asm/tdx.h
-+++ b/arch/x86/include/asm/tdx.h
-@@ -20,21 +20,6 @@
- 
- #ifndef __ASSEMBLY__
- 
--/*
-- * Used to gather the output registers values of the TDCALL and SEAMCALL
-- * instructions when requesting services from the TDX module.
-- *
-- * This is a software only structure and not part of the TDX module/VMM ABI.
-- */
--struct tdx_module_output {
--	u64 rcx;
--	u64 rdx;
--	u64 r8;
--	u64 r9;
--	u64 r10;
--	u64 r11;
--};
--
- /*
-  * Used by the #VE exception handler to gather the #VE exception
-  * info from the TDX module. This is a software only structure
-@@ -55,10 +40,6 @@ struct ve_info {
- 
- void __init tdx_early_init(void);
- 
--/* Used to communicate with the TDX module */
--u64 __tdx_module_call(u64 fn, u64 rcx, u64 rdx, u64 r8, u64 r9,
--		      struct tdx_module_output *out);
--
- void tdx_get_ve_info(struct ve_info *ve);
- 
- bool tdx_handle_virt_exception(struct pt_regs *regs, struct ve_info *ve);
-diff --git a/arch/x86/mm/unaccepted_memory.c b/arch/x86/mm/unaccepted_memory.c
-index 3588a7cb954c..2f1c3c0375cd 100644
---- a/arch/x86/mm/unaccepted_memory.c
-+++ b/arch/x86/mm/unaccepted_memory.c
-@@ -6,6 +6,7 @@
- 
- #include <asm/io.h>
- #include <asm/setup.h>
-+#include <asm/shared/tdx.h>
- #include <asm/unaccepted_memory.h>
- 
- static DEFINE_SPINLOCK(unaccepted_memory_lock);
-@@ -26,7 +27,10 @@ void accept_memory(phys_addr_t start, phys_addr_t end)
- 	for_each_set_bitrange_from(rs, re, unaccepted_memory,
- 				   DIV_ROUND_UP(end, PMD_SIZE)) {
- 		/* Platform-specific memory-acceptance call goes here */
--		panic("Cannot accept memory");
-+		if (cpu_feature_enabled(X86_FEATURE_TDX_GUEST))
-+			tdx_accept_memory(rs * PMD_SIZE, re * PMD_SIZE);
-+		else
-+			panic("Cannot accept memory");
- 		bitmap_clear(unaccepted_memory, rs, re - rs);
- 	}
- 	spin_unlock_irqrestore(&unaccepted_memory_lock, flags);
+ #endif
 -- 
 2.35.1
 
