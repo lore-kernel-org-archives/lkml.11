@@ -2,40 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8FFC4C4332F
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:03:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D3A1C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:03:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232936AbiDEIE7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 04:04:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56182 "EHLO
+        id S233112AbiDEIFM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 04:05:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55638 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232424AbiDEHuz (ORCPT
+        with ESMTP id S232382AbiDEHxW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 03:50:55 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1DCB939DB;
-        Tue,  5 Apr 2022 00:47:11 -0700 (PDT)
+        Tue, 5 Apr 2022 03:53:22 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 767DFC36;
+        Tue,  5 Apr 2022 00:48:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 35A4E616BF;
-        Tue,  5 Apr 2022 07:47:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 429C1C340EE;
-        Tue,  5 Apr 2022 07:47:10 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 76C07B81B18;
+        Tue,  5 Apr 2022 07:48:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D9585C340EE;
+        Tue,  5 Apr 2022 07:48:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649144830;
-        bh=jdhV1ARZqjVBNBTFdsNBzGc69eetyP1wwgKMcVbjsh8=;
+        s=korg; t=1649144932;
+        bh=eHC9hM/jmV7ih56Vke9QDbcNIvYXsGeLVS2lbiILUgg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lt0aslHgdDAz1QO2VcPeH12djGowNJiFlWZTJwvjnNSJMb8JqZAyqHzxQQMv2/YOl
-         TrbxK1RBGuVRV8WhRn7Ir6eHO3c5hlnF2HzKLJylPjBEpC4hAfPzs2KiY/McOUu2rS
-         e4kHbAhhpu5gOPYzPkvNGchus+WPQ7/plRWVrWWc=
+        b=zG7S4YKBUxgc6sp0XIx7MwIcNtVtbiZg5XTMJIrOn4Z7GljaqR1Xfv+jKXmLS4hir
+         Or7DLWgC7NBa9/s+LT6vOJp4icSvBOc1OSH1mQY8uTj6DICCKDkkK5U0n7mVHR8W+1
+         kNpn2V3WeT5QggQBT/gsY0FYV/F3rT25lcYKHfh0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Max Filippov <jcmvbkbc@gmail.com>
-Subject: [PATCH 5.17 0179/1126] xtensa: define update_mmu_tlb function
-Date:   Tue,  5 Apr 2022 09:15:26 +0200
-Message-Id: <20220405070412.859138892@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Reinette Chatre <reinette.chatre@intel.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Shuah Khan <skhan@linuxfoundation.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 0216/1126] selftests/sgx: Fix NULL-pointer-dereference upon early test failure
+Date:   Tue,  5 Apr 2022 09:16:03 +0200
+Message-Id: <20220405070413.949749123@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -47,56 +51,71 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Max Filippov <jcmvbkbc@gmail.com>
+From: Reinette Chatre <reinette.chatre@intel.com>
 
-commit 1c4664faa38923330d478f046dc743a00c1e2dec upstream.
+[ Upstream commit 2d03861e0d1d1ee81efc59338101cdd86a7474f6 ]
 
-Before the commit f9ce0be71d1f ("mm: Cleanup faultaround and finish_fault()
-codepaths") there was a call to update_mmu_cache in alloc_set_pte that
-used to invalidate TLB entry caching invalid PTE that caused a page
-fault. That commit removed that call so now invalid TLB entry survives
-causing repetitive page faults on the CPU that took the initial fault
-until that TLB entry is occasionally evicted. This issue is spotted by
-the xtensa TLB sanity checker.
+== Background ==
 
-Fix this issue by defining update_mmu_tlb function that flushes TLB entry
-for the faulting address.
+The SGX selftests track parts of the enclave binaries in an array:
+encl->segment_tbl[]. That array is dynamically allocated early
+(but not first) in the test's lifetime. The array is referenced
+at the end of the test in encl_delete().
 
-Cc: stable@vger.kernel.org # 5.12+
-Signed-off-by: Max Filippov <jcmvbkbc@gmail.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+== Problem ==
+
+encl->segment_tbl[] can be NULL if the test fails before its
+allocation. That leads to a NULL-pointer-dereference in encl_delete().
+This is triggered during early failures of the selftest like if the
+enclave binary ("test_encl.elf") is deleted.
+
+== Solution ==
+
+Ensure encl->segment_tbl[] is valid before attempting to access
+its members. The offset with which it is accessed, encl->nr_segments,
+is initialized before encl->segment_tbl[] and thus considered valid
+to use after the encl->segment_tbl[] check succeeds.
+
+Fixes: 3200505d4de6 ("selftests/sgx: Create a heap for the test enclave")
+Signed-off-by: Reinette Chatre <reinette.chatre@intel.com>
+Signed-off-by: Dave Hansen <dave.hansen@linux.intel.com>
+Acked-by: Shuah Khan <skhan@linuxfoundation.org>
+Link: https://lkml.kernel.org/r/90a31dfd640ea756fa324712e7cbab4a90fa7518.1644355600.git.reinette.chatre@intel.com
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/xtensa/include/asm/pgtable.h |    4 ++++
- arch/xtensa/mm/tlb.c              |    6 ++++++
- 2 files changed, 10 insertions(+)
+ tools/testing/selftests/sgx/load.c | 9 +++++----
+ 1 file changed, 5 insertions(+), 4 deletions(-)
 
---- a/arch/xtensa/include/asm/pgtable.h
-+++ b/arch/xtensa/include/asm/pgtable.h
-@@ -411,6 +411,10 @@ extern  void update_mmu_cache(struct vm_
+diff --git a/tools/testing/selftests/sgx/load.c b/tools/testing/selftests/sgx/load.c
+index 9d4322c946e2..006b464c8fc9 100644
+--- a/tools/testing/selftests/sgx/load.c
++++ b/tools/testing/selftests/sgx/load.c
+@@ -21,7 +21,7 @@
  
- typedef pte_t *pte_addr_t;
+ void encl_delete(struct encl *encl)
+ {
+-	struct encl_segment *heap_seg = &encl->segment_tbl[encl->nr_segments - 1];
++	struct encl_segment *heap_seg;
  
-+void update_mmu_tlb(struct vm_area_struct *vma,
-+		    unsigned long address, pte_t *ptep);
-+#define __HAVE_ARCH_UPDATE_MMU_TLB
-+
- #endif /* !defined (__ASSEMBLY__) */
+ 	if (encl->encl_base)
+ 		munmap((void *)encl->encl_base, encl->encl_size);
+@@ -32,10 +32,11 @@ void encl_delete(struct encl *encl)
+ 	if (encl->fd)
+ 		close(encl->fd);
  
- #define __HAVE_ARCH_PTEP_TEST_AND_CLEAR_YOUNG
---- a/arch/xtensa/mm/tlb.c
-+++ b/arch/xtensa/mm/tlb.c
-@@ -162,6 +162,12 @@ void local_flush_tlb_kernel_range(unsign
- 	}
+-	munmap(heap_seg->src, heap_seg->size);
+-
+-	if (encl->segment_tbl)
++	if (encl->segment_tbl) {
++		heap_seg = &encl->segment_tbl[encl->nr_segments - 1];
++		munmap(heap_seg->src, heap_seg->size);
+ 		free(encl->segment_tbl);
++	}
+ 
+ 	memset(encl, 0, sizeof(*encl));
  }
- 
-+void update_mmu_tlb(struct vm_area_struct *vma,
-+		    unsigned long address, pte_t *ptep)
-+{
-+	local_flush_tlb_page(vma, address);
-+}
-+
- #ifdef CONFIG_DEBUG_TLB_SANITY
- 
- static unsigned get_pte_for_vaddr(unsigned vaddr)
+-- 
+2.34.1
+
 
 
