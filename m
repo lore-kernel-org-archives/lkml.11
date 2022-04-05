@@ -2,144 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9317EC35294
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 750CAC35280
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:42:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1579298AbiDEX0z (ORCPT
+        id S1579223AbiDEX0k (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 19:26:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38926 "EHLO
+        Tue, 5 Apr 2022 19:26:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53166 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356500AbiDEKX5 (ORCPT
+        with ESMTP id S1346802AbiDEOGR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:23:57 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ECB2DBBE18;
-        Tue,  5 Apr 2022 03:08:25 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Tue, 5 Apr 2022 10:06:17 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1717E1563E9
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 05:58:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1649163490;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=EJskeIBbl6yrirNy4s27VAVAl66Ihk5kHs4/ZyWSw3U=;
+        b=B9q2naRjRtsWLSgnFlTf73zuXJOoN7L3IBfjE5ZiVxYw5dmj7r7hxoH5FqLWq87EK71+I+
+        7zX/DFUrljqQQdgUo6iUZNWnGc03hcevycJ8E3BDxkqGqC8EwiSJpq8MHdFglizh4LBsxh
+        HcSgijYSVJgz8olQVpy/8YG83IdsgTU=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-173-rZe767cMN8euYMtdoUbPwA-1; Tue, 05 Apr 2022 08:58:06 -0400
+X-MC-Unique: rZe767cMN8euYMtdoUbPwA-1
+Received: from smtp.corp.redhat.com (int-mx09.intmail.prod.int.rdu2.redhat.com [10.11.54.9])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 04DFA6167E;
-        Tue,  5 Apr 2022 10:08:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 188C2C385A1;
-        Tue,  5 Apr 2022 10:08:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649153304;
-        bh=ZZFJ3N/7ABkWzB2CNvgPVXmykXAcG3EzZixoiC8QAyQ=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jnW61ahd4TDrpDf4yZsPGDyxQgnYa0j/9Rc2MlGQV96zdHWpdPL9r3Lsv0Dphwv7q
-         kyebCsp2vaKpEbF1mw1atuZKl3j6BWKWn2Gf0r7EDThWRnXHW1+WO/hLoDyWxNTega
-         IdnEs8p1mSl6OmWOSqf889fULU8nxJEJO61iCTq8=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 176/599] rseq: Remove broken uapi field layout on 32-bit little endian
-Date:   Tue,  5 Apr 2022 09:27:50 +0200
-Message-Id: <20220405070304.080018580@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
-User-Agent: quilt/0.66
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 2A52D805F65;
+        Tue,  5 Apr 2022 12:58:06 +0000 (UTC)
+Received: from RHTPC1VM0NT (unknown [10.22.17.196])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id D25B34029DE;
+        Tue,  5 Apr 2022 12:58:05 +0000 (UTC)
+From:   Aaron Conole <aconole@redhat.com>
+To:     Ilya Maximets <i.maximets@ovn.org>
+Cc:     netdev@vger.kernel.org, dev@openvswitch.org,
+        linux-kernel@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: Re: [ovs-dev] [PATCH net] net: openvswitch: don't send internal
+ clone attribute to the userspace.
+References: <20220404104150.2865736-1-i.maximets@ovn.org>
+Date:   Tue, 05 Apr 2022 08:58:05 -0400
+In-Reply-To: <20220404104150.2865736-1-i.maximets@ovn.org> (Ilya Maximets's
+        message of "Mon, 4 Apr 2022 12:41:50 +0200")
+Message-ID: <f7tzgkzznz6.fsf@redhat.com>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.2 (gnu/linux)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.9
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
+Ilya Maximets <i.maximets@ovn.org> writes:
 
-[ Upstream commit bfdf4e6208051ed7165b2e92035b4bf11f43eb63 ]
+> 'OVS_CLONE_ATTR_EXEC' is an internal attribute that is used for
+> performance optimization inside the kernel.  It's added by the kernel
+> while parsing user-provided actions and should not be sent during the
+> flow dump as it's not part of the uAPI.
+>
+> The issue doesn't cause any significant problems to the ovs-vswitchd
+> process, because reported actions are not really used in the
+> application lifecycle and only supposed to be shown to a human via
+> ovs-dpctl flow dump.  However, the action list is still incorrect
+> and causes the following error if the user wants to look at the
+> datapath flows:
+>
+>   # ovs-dpctl add-dp system@ovs-system
+>   # ovs-dpctl add-flow "<flow match>" "clone(ct(commit),0)"
+>   # ovs-dpctl dump-flows
+>   <flow match>, packets:0, bytes:0, used:never,
+>     actions:clone(bad length 4, expected -1 for: action0(01 00 00 00),
+>                   ct(commit),0)
+>
+> With the fix:
+>
+>   # ovs-dpctl dump-flows
+>   <flow match>, packets:0, bytes:0, used:never,
+>     actions:clone(ct(commit),0)
+>
+> Additionally fixed an incorrect attribute name in the comment.
+>
+> Fixes: b233504033db ("openvswitch: kernel datapath clone action")
+> Signed-off-by: Ilya Maximets <i.maximets@ovn.org>
+> ---
 
-The rseq rseq_cs.ptr.{ptr32,padding} uapi endianness handling is
-entirely wrong on 32-bit little endian: a preprocessor logic mistake
-wrongly uses the big endian field layout on 32-bit little endian
-architectures.
-
-Fortunately, those ptr32 accessors were never used within the kernel,
-and only meant as a convenience for user-space.
-
-Remove those and replace the whole rseq_cs union by a __u64 type, as
-this is the only thing really needed to express the ABI. Document how
-32-bit architectures are meant to interact with this field.
-
-Fixes: ec9c82e03a74 ("rseq: uapi: Declare rseq_cs field as union, update includes")
-Signed-off-by: Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Link: https://lkml.kernel.org/r/20220127152720.25898-1-mathieu.desnoyers@efficios.com
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- include/uapi/linux/rseq.h | 20 ++++----------------
- kernel/rseq.c             |  8 ++++----
- 2 files changed, 8 insertions(+), 20 deletions(-)
-
-diff --git a/include/uapi/linux/rseq.h b/include/uapi/linux/rseq.h
-index 9a402fdb60e9..77ee207623a9 100644
---- a/include/uapi/linux/rseq.h
-+++ b/include/uapi/linux/rseq.h
-@@ -105,23 +105,11 @@ struct rseq {
- 	 * Read and set by the kernel. Set by user-space with single-copy
- 	 * atomicity semantics. This field should only be updated by the
- 	 * thread which registered this data structure. Aligned on 64-bit.
-+	 *
-+	 * 32-bit architectures should update the low order bits of the
-+	 * rseq_cs field, leaving the high order bits initialized to 0.
- 	 */
--	union {
--		__u64 ptr64;
--#ifdef __LP64__
--		__u64 ptr;
--#else
--		struct {
--#if (defined(__BYTE_ORDER) && (__BYTE_ORDER == __BIG_ENDIAN)) || defined(__BIG_ENDIAN)
--			__u32 padding;		/* Initialized to zero. */
--			__u32 ptr32;
--#else /* LITTLE */
--			__u32 ptr32;
--			__u32 padding;		/* Initialized to zero. */
--#endif /* ENDIAN */
--		} ptr;
--#endif
--	} rseq_cs;
-+	__u64 rseq_cs;
- 
- 	/*
- 	 * Restartable sequences flags field.
-diff --git a/kernel/rseq.c b/kernel/rseq.c
-index 1b4547e0d841..6ca29dddceab 100644
---- a/kernel/rseq.c
-+++ b/kernel/rseq.c
-@@ -121,10 +121,10 @@ static int rseq_get_rseq_cs(struct task_struct *t, struct rseq_cs *rseq_cs)
- 	int ret;
- 
- #ifdef CONFIG_64BIT
--	if (get_user(ptr, &t->rseq->rseq_cs.ptr64))
-+	if (get_user(ptr, &t->rseq->rseq_cs))
- 		return -EFAULT;
- #else
--	if (copy_from_user(&ptr, &t->rseq->rseq_cs.ptr64, sizeof(ptr)))
-+	if (copy_from_user(&ptr, &t->rseq->rseq_cs, sizeof(ptr)))
- 		return -EFAULT;
- #endif
- 	if (!ptr) {
-@@ -210,9 +210,9 @@ static int clear_rseq_cs(struct task_struct *t)
- 	 * Set rseq_cs to NULL.
- 	 */
- #ifdef CONFIG_64BIT
--	return put_user(0UL, &t->rseq->rseq_cs.ptr64);
-+	return put_user(0UL, &t->rseq->rseq_cs);
- #else
--	if (clear_user(&t->rseq->rseq_cs.ptr64, sizeof(t->rseq->rseq_cs.ptr64)))
-+	if (clear_user(&t->rseq->rseq_cs, sizeof(t->rseq->rseq_cs)))
- 		return -EFAULT;
- 	return 0;
- #endif
--- 
-2.34.1
-
-
+Acked-by: Aaron Conole <aconole@redhat.com>
 
