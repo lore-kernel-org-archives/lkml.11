@@ -2,99 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 25148C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:21:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8EFA6C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:21:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1583528AbiDEXxH (ORCPT
+        id S1583547AbiDEXxK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 19:53:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45552 "EHLO
+        Tue, 5 Apr 2022 19:53:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44840 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1392301AbiDENtq (ORCPT
+        with ESMTP id S1457758AbiDEQlL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 09:49:46 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 21E4811177E
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 05:52:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1649163155;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=iuSjdFs27sBmSFtBNQcfSgEVjf1hmX+hk7DMTekqxb8=;
-        b=VlzU6C+sB/1eKhzYAZPNvLMGjwj29JMdvQQHeE56JAN1pidwUAfGSaRAGfjrJjc1N9WH5j
-        E7mDuktAkpddDoqOZV/ddLA69sSwqYumIvCQpqCuBaaJPoLW6XO+sfwgubzCMEzbgdfGvu
-        jvV9I7+5UID5dfHNYcwiHDNUl9oJf6E=
-Received: from mail-qt1-f198.google.com (mail-qt1-f198.google.com
- [209.85.160.198]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-568-bql5SGCHNWGPqIoQMvOeyg-1; Tue, 05 Apr 2022 08:52:34 -0400
-X-MC-Unique: bql5SGCHNWGPqIoQMvOeyg-1
-Received: by mail-qt1-f198.google.com with SMTP id y23-20020ac85257000000b002e06697f2ebso8745350qtn.16
-        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 05:52:34 -0700 (PDT)
+        Tue, 5 Apr 2022 12:41:11 -0400
+Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F221E43AD6;
+        Tue,  5 Apr 2022 09:39:12 -0700 (PDT)
+Received: by mail-pj1-x102b.google.com with SMTP id u14so15895pjj.0;
+        Tue, 05 Apr 2022 09:39:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=h0Ezkowr2vA+TSkiAQHrFqf3CTenq1qGRwHjwra0sLA=;
+        b=N4YLCezFpaFlp26K2sW2ESPajZSoXYWOnj+h1n8qRp3nR6g6MBUfk1pfub5qP8x+lK
+         rd2p9fxCOawPf2OKJjyz1ET2rwsJmp6GkRVkU6VUmrw6DjqTTNZH4BK3IY/Xs67uAAS/
+         Gx6QlAomXXDTJFKvsk53YrF6klSeprkImsmgPaiXY0iH6tBgVgoK17p9g/2XR7hG2wdm
+         5zr5q91q4xpKpSid2G5/RCt2mKwS0C9LbpovyzkPC7omWhzHMFEyk2cgy1jBj05JPMor
+         yb8AGuP29MFNS5ZE9nTuPfRd+wzl/VXQvszFIfAN4tFXA3sIwqfgASaGq77CGR6tzV+D
+         10gA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=iuSjdFs27sBmSFtBNQcfSgEVjf1hmX+hk7DMTekqxb8=;
-        b=6zbILJob9N2U4HP/cqV2lPTiyVnbOcWVluy7Hjx12bSQO4qFat0JubxI5egQBK2coB
-         HiUQZTLfyk2Be3DGjF1ur5t6lnLRwjYqGbwQWXX3+STgqgxB5x2doRosALJdvnLWODzO
-         ApvlLLrW/ybXYdaINcMiAjarxFf+mJVz/uuMZWCsE7KjepuJ3NO1c3R8iOfrClD9bQwX
-         ZEueOsaR77S4y9SW2/AODp2aBLlNHcxeklUNUY8yU9BgnNlKlgSTiWmTb8LbtNBrP/Yz
-         xDoOFKNmJ+a4mT4IZrH/0NizHKD0UM0HDoaDYwBpnDnKrOWyizlQG14caqzCTwWXP72Y
-         ELeQ==
-X-Gm-Message-State: AOAM5306v8KpXirMyM/wGcT2I2+yy3XHK1U+TqkvIZiHn6zOkIwDn871
-        FJE7kvWfq9rj38FaJfaqTBV8aupXbN91Jw4ts3qx7+NAKEdqnaeloSRE493BSt1Yadv08tjKURt
-        7EUZaFobyLgPKQbS8vKHP9kLJ
-X-Received: by 2002:ad4:5aa3:0:b0:443:9ba7:3f27 with SMTP id u3-20020ad45aa3000000b004439ba73f27mr2768353qvg.63.1649163153774;
-        Tue, 05 Apr 2022 05:52:33 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJw+DHckKgCo4PomCz5tT74b9OII0g4hXHShOTcpaeQjClTAlXuwMZZykBkAFfOfWWQXnZb1aQ==
-X-Received: by 2002:ad4:5aa3:0:b0:443:9ba7:3f27 with SMTP id u3-20020ad45aa3000000b004439ba73f27mr2768343qvg.63.1649163153551;
-        Tue, 05 Apr 2022 05:52:33 -0700 (PDT)
-Received: from [10.32.181.87] (nat-pool-mxp-t.redhat.com. [149.6.153.186])
-        by smtp.googlemail.com with ESMTPSA id 21-20020ac85715000000b002e1ce9605ffsm11295736qtw.65.2022.04.05.05.52.31
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 05 Apr 2022 05:52:33 -0700 (PDT)
-Message-ID: <586be87a-4f81-ea43-2078-a6004b4aba08@redhat.com>
-Date:   Tue, 5 Apr 2022 14:52:30 +0200
+        bh=h0Ezkowr2vA+TSkiAQHrFqf3CTenq1qGRwHjwra0sLA=;
+        b=lHb+ZHljAjuOCyKniELAiAm+cPIK8v0bVne4XzyBZQxjtSinoesnOi/tut9KtiYBXW
+         DDQINbhYMgZED2rQ5VJrY7wTiDy7l5WTbrsK6ZrODFgK9q4QqWH431qxPL0sGPJrdBP4
+         wlRZFUP3T+KLT+wihA2wETuH4NG0NnBLfsTxTb30ddFckxp1v1ZI2ev5Ty/fBpEC7iEM
+         RBSvKykhlR4nKCuRL/ZSQaEh6prPrfKN9pfi/Z8k6iQpjp7fRRixxF0vpP4GUt4iVczl
+         NqYuHWHHsII5sdHjfL1SxkGPQ9DarEj37rppqSwq10SyG42vMc6a7NxaLqmU+7NJgibq
+         lq9A==
+X-Gm-Message-State: AOAM530R37wQ54MjJxNyyb54Zu/StMOveLmSZE/dwI9rbR8Rns29vDTs
+        qaTBCGFVMlHThEHzU+CoIdc=
+X-Google-Smtp-Source: ABdhPJxnTEGJd3Tj4Dvmdh+v7GzN2T87vgpt31Bse4ScpzbbZRyF/5EVLbAhrn40PriKpj4xSVy/4g==
+X-Received: by 2002:a17:902:728f:b0:156:24d3:ae1a with SMTP id d15-20020a170902728f00b0015624d3ae1amr4336617pll.9.1649176752483;
+        Tue, 05 Apr 2022 09:39:12 -0700 (PDT)
+Received: from localhost.localdomain ([223.212.58.71])
+        by smtp.gmail.com with ESMTPSA id s3-20020a056a00194300b004f6664d26eesm17079538pfk.88.2022.04.05.09.39.07
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 05 Apr 2022 09:39:11 -0700 (PDT)
+From:   Yuntao Wang <ytcoode@gmail.com>
+To:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>
+Cc:     Martin KaFai Lau <kafai@fb.com>, Song Liu <songliubraving@fb.com>,
+        Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, Shuah Khan <shuah@kernel.org>,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        Yuntao Wang <ytcoode@gmail.com>
+Subject: [PATCH bpf-next] selftests/bpf: Remove redundant checks in get_stack_print_output()
+Date:   Wed,  6 Apr 2022 00:37:28 +0800
+Message-Id: <20220405163728.56471-1-ytcoode@gmail.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [RFC PATCH v5 026/104] KVM: TDX: x86: Add vm ioctl to get TDX
- systemwide parameters
-Content-Language: en-US
-To:     isaku.yamahata@intel.com, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     isaku.yamahata@gmail.com, Jim Mattson <jmattson@google.com>,
-        erdemaktas@google.com, Connor Kuehl <ckuehl@redhat.com>,
-        Sean Christopherson <seanjc@google.com>
-References: <cover.1646422845.git.isaku.yamahata@intel.com>
- <5ff08ce32be458581afe59caa05d813d0e4a1ef0.1646422845.git.isaku.yamahata@intel.com>
-From:   Paolo Bonzini <pbonzini@redhat.com>
-In-Reply-To: <5ff08ce32be458581afe59caa05d813d0e4a1ef0.1646422845.git.isaku.yamahata@intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 3/4/22 20:48, isaku.yamahata@intel.com wrote:
-> Implement a VM-scoped subcomment to get system-wide parameters.  Although
-> this is system-wide parameters not per-VM, this subcomand is VM-scoped
-> because
-> - Device model needs TDX system-wide parameters after creating KVM VM.
-> - This subcommands requires to initialize TDX module.  For lazy
->    initialization of the TDX module, vm-scope ioctl is better.
+The checks preceding CHECK macro are redundant, remove them.
 
-Since there was agreement to install the TDX module on load, please 
-place this ioctl on the /dev/kvm file descriptor.
+Signed-off-by: Yuntao Wang <ytcoode@gmail.com>
+---
+ tools/testing/selftests/bpf/prog_tests/get_stack_raw_tp.c | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
 
-At least for SEV, there were cases where the system-wide parameters are 
-needed outside KVM, so it's better to avoid requiring a VM file descriptor.
-
-Thanks,
-
-Paolo
+diff --git a/tools/testing/selftests/bpf/prog_tests/get_stack_raw_tp.c b/tools/testing/selftests/bpf/prog_tests/get_stack_raw_tp.c
+index 16048978a1ef..5f2ab720dabd 100644
+--- a/tools/testing/selftests/bpf/prog_tests/get_stack_raw_tp.c
++++ b/tools/testing/selftests/bpf/prog_tests/get_stack_raw_tp.c
+@@ -76,10 +76,8 @@ static void get_stack_print_output(void *ctx, int cpu, void *data, __u32 size)
+ 			good_user_stack = true;
+ 	}
+ 
+-	if (!good_kern_stack)
+-	    CHECK(!good_kern_stack, "kern_stack", "corrupted kernel stack\n");
+-	if (!good_user_stack)
+-	    CHECK(!good_user_stack, "user_stack", "corrupted user stack\n");
++	CHECK(!good_kern_stack, "kern_stack", "corrupted kernel stack\n");
++	CHECK(!good_user_stack, "user_stack", "corrupted user stack\n");
+ }
+ 
+ void test_get_stack_raw_tp(void)
+-- 
+2.35.1
 
