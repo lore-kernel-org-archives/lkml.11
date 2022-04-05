@@ -2,153 +2,63 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F209C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C9E05C43219
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 02:23:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1443972AbiDFCVN (ORCPT
+        id S1848396AbiDFCVr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 22:21:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60244 "EHLO
+        Tue, 5 Apr 2022 22:21:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43948 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345558AbiDEUV4 (ORCPT
+        with ESMTP id S240694AbiDEUpv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 16:21:56 -0400
-Received: from finn.localdomain (finn.gateworks.com [108.161.129.64])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC1F64DF72;
-        Tue,  5 Apr 2022 13:04:18 -0700 (PDT)
-Received: from 068-189-091-139.biz.spectrum.com ([68.189.91.139] helo=tharvey.pdc.gateworks.com)
-        by finn.localdomain with esmtp (Exim 4.93)
-        (envelope-from <tharvey@gateworks.com>)
-        id 1nbpPN-00CFJx-G5; Tue, 05 Apr 2022 20:04:09 +0000
-From:   Tim Harvey <tharvey@gateworks.com>
-To:     Rob Herring <robh+dt@kernel.org>, Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org
-Cc:     Tim Harvey <tharvey@gateworks.com>
-Subject: [PATCH] imx8mm-venice-gw7901: move UART gpio config into hog group
-Date:   Tue,  5 Apr 2022 13:04:07 -0700
-Message-Id: <20220405200407.18698-1-tharvey@gateworks.com>
-X-Mailer: git-send-email 2.17.1
+        Tue, 5 Apr 2022 16:45:51 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F7F4D9E96;
+        Tue,  5 Apr 2022 13:22:18 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AD8E06199D;
+        Tue,  5 Apr 2022 20:22:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CA9CFC385A1;
+        Tue,  5 Apr 2022 20:22:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649190137;
+        bh=iNf3u//RenbgIFD6vj3Jlm5LNBRvGuu8NWlmRuWq0qE=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=SkmD42vtbSHd30A4rLpk505UkLToZ1JOL27KNWGrdX3+Th2p3HigyrKagdqOzC+j/
+         IprKIn2kyiw1FDtrDhsCCMnUC072toB7ipOp5UdMH7HA0qh/iCaRh/Dn72HoiThjbb
+         BVF6MqSZDf+9Nk8jmNqzqkjHIgIeeUpUAQ7/sblYQsQz7qTqiijihx/OtHYHlaPPXl
+         /F8a1K5lpHdDKEkSL58JBHgHSIabYsUVpwf/hmN2DlknMQ0IHwFH+iLaileIPcA9Iz
+         463uGYiXGFjA+yevyWV/QDfXd/kE6L4W6JLVZjNeY2o5lhu3VOmfCyo9iTPUzCuBxa
+         z637LY13YaW4w==
+Date:   Tue, 5 Apr 2022 13:22:15 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Christophe Leroy <christophe.leroy@csgroup.eu>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH net-next] sungem: Prepare cleanup of powerpc's
+ asm/prom.h
+Message-ID: <20220405132215.75f0d5ec@kernel.org>
+In-Reply-To: <fa778bf9c0a23df8a9e6fe2e2b20d936bd0a89af.1648833433.git.christophe.leroy@csgroup.eu>
+References: <fa778bf9c0a23df8a9e6fe2e2b20d936bd0a89af.1648833433.git.christophe.leroy@csgroup.eu>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Move UART related GPIO into hog group so that they still are pinmuxed
-even if the uart driver is not probed.
+On Sat,  2 Apr 2022 12:17:13 +0200 Christophe Leroy wrote:
+> powerpc's asm/prom.h brings some headers that it doesn't
+> need itself.
+> 
+> In order to clean it up, first add missing headers in
+> users of asm/prom.h
 
-Signed-off-by: Tim Harvey <tharvey@gateworks.com>
----
- .../dts/freescale/imx8mm-venice-gw7901.dts    | 44 +++++++------------
- 1 file changed, 15 insertions(+), 29 deletions(-)
+Could you resend the net-next patches you had?
 
-diff --git a/arch/arm64/boot/dts/freescale/imx8mm-venice-gw7901.dts b/arch/arm64/boot/dts/freescale/imx8mm-venice-gw7901.dts
-index 7e7231046215..ee78c189c556 100644
---- a/arch/arm64/boot/dts/freescale/imx8mm-venice-gw7901.dts
-+++ b/arch/arm64/boot/dts/freescale/imx8mm-venice-gw7901.dts
-@@ -710,7 +710,7 @@
- 
- &uart1 {
- 	pinctrl-names = "default";
--	pinctrl-0 = <&pinctrl_uart1>, <&pinctrl_uart1_gpio>;
-+	pinctrl-0 = <&pinctrl_uart1>;
- 	rts-gpios = <&gpio1 10 GPIO_ACTIVE_LOW>;
- 	cts-gpios = <&gpio1 12 GPIO_ACTIVE_LOW>;
- 	dtr-gpios = <&gpio1 14 GPIO_ACTIVE_LOW>;
-@@ -728,7 +728,7 @@
- 
- &uart3 {
- 	pinctrl-names = "default";
--	pinctrl-0 = <&pinctrl_uart3>, <&pinctrl_uart3_gpio>;
-+	pinctrl-0 = <&pinctrl_uart3>;
- 	cts-gpios = <&gpio4 10 GPIO_ACTIVE_LOW>;
- 	rts-gpios = <&gpio4 9 GPIO_ACTIVE_LOW>;
- 	status = "okay";
-@@ -736,7 +736,7 @@
- 
- &uart4 {
- 	pinctrl-names = "default";
--	pinctrl-0 = <&pinctrl_uart4>, <&pinctrl_uart4_gpio>;
-+	pinctrl-0 = <&pinctrl_uart4>;
- 	cts-gpios = <&gpio5 11 GPIO_ACTIVE_LOW>;
- 	rts-gpios = <&gpio5 12 GPIO_ACTIVE_LOW>;
- 	status = "okay";
-@@ -807,6 +807,18 @@
- 			MX8MM_IOMUXC_SAI3_RXD_GPIO4_IO30	0x40000041 /* SIM2DET# */
- 			MX8MM_IOMUXC_SAI3_RXC_GPIO4_IO29	0x40000041 /* SIM1DET# */
- 			MX8MM_IOMUXC_SPDIF_EXT_CLK_GPIO5_IO5	0x40000041 /* SIM2SEL */
-+			MX8MM_IOMUXC_SAI3_TXFS_GPIO4_IO31	0x40000041 /* WDIS# */
-+			MX8MM_IOMUXC_GPIO1_IO00_GPIO1_IO0	0x40000041 /* UART1_RS422# */
-+			MX8MM_IOMUXC_GPIO1_IO03_GPIO1_IO3	0x40000041 /* UART1_RS485# */
-+			MX8MM_IOMUXC_GPIO1_IO05_GPIO1_IO5	0x40000041 /* UART1_RS232# */
-+			MX8MM_IOMUXC_SAI1_RXD4_GPIO4_IO6	0x40000110 /* UART3_RS232# */
-+			MX8MM_IOMUXC_SAI1_RXD5_GPIO4_IO7	0x40000110 /* UART3_RS422# */
-+			MX8MM_IOMUXC_SAI1_RXD6_GPIO4_IO8	0x40000110 /* UART3_RS485# */
-+
-+			MX8MM_IOMUXC_ECSPI2_SCLK_GPIO5_IO10	0x40000041 /* UART4_RS232# */
-+			MX8MM_IOMUXC_ECSPI2_SS0_GPIO5_IO13	0x40000041 /* UART4_RS422# */
-+			MX8MM_IOMUXC_SAI2_MCLK_GPIO4_IO27	0x40000041 /* UART4_RS485# */
-+
- 		>;
- 	};
- 
-@@ -874,7 +886,6 @@
- 
- 	pinctrl_pcie0: pciegrp {
- 		fsl,pins = <
--			MX8MM_IOMUXC_SAI3_TXFS_GPIO4_IO31	0x40000041 /* WDIS# */
- 			MX8MM_IOMUXC_SAI3_MCLK_GPIO5_IO2	0x41
- 		>;
- 	};
-@@ -932,14 +943,6 @@
- 		>;
- 	};
- 
--	pinctrl_uart1_gpio: uart1gpiogrp {
--		fsl,pins = <
--			MX8MM_IOMUXC_GPIO1_IO00_GPIO1_IO0	0x40000041 /* RS422# */
--			MX8MM_IOMUXC_GPIO1_IO03_GPIO1_IO3	0x40000041 /* RS485# */
--			MX8MM_IOMUXC_GPIO1_IO05_GPIO1_IO5	0x40000041 /* RS232# */
--		>;
--	};
--
- 	pinctrl_uart2: uart2grp {
- 		fsl,pins = <
- 			MX8MM_IOMUXC_UART2_RXD_UART2_DCE_RX	0x140
-@@ -956,14 +959,6 @@
- 		>;
- 	};
- 
--	pinctrl_uart3_gpio: uart3gpiogrp {
--		fsl,pins = <
--			MX8MM_IOMUXC_SAI1_RXD4_GPIO4_IO6	0x40000110 /* RS232# */
--			MX8MM_IOMUXC_SAI1_RXD5_GPIO4_IO7	0x40000110 /* RS422# */
--			MX8MM_IOMUXC_SAI1_RXD6_GPIO4_IO8	0x40000110 /* RS485# */
--		>;
--	};
--
- 	pinctrl_uart4: uart4grp {
- 		fsl,pins = <
- 			MX8MM_IOMUXC_UART4_RXD_UART4_DCE_RX	0x140
-@@ -973,15 +968,6 @@
- 		>;
- 	};
- 
--	pinctrl_uart4_gpio: uart4gpiogrp {
--		fsl,pins = <
--
--			MX8MM_IOMUXC_ECSPI2_SCLK_GPIO5_IO10	0x40000041 /* RS232# */
--			MX8MM_IOMUXC_ECSPI2_SS0_GPIO5_IO13	0x40000041 /* RS422# */
--			MX8MM_IOMUXC_SAI2_MCLK_GPIO4_IO27	0x40000041 /* RS485# */
--		>;
--	};
--
- 	pinctrl_usdhc1: usdhc1grp {
- 		fsl,pins = <
- 			MX8MM_IOMUXC_SD1_CLK_USDHC1_CLK		0x190
--- 
-2.17.1
-
+They got dropped from patchwork due to net-next being closed during 
+the merge window.
