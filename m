@@ -2,133 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D9051C4167E
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:44:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 05733C35273
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:44:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1837220AbiDFApR (ORCPT
+        id S1837317AbiDFApa (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 20:45:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44228 "EHLO
+        Tue, 5 Apr 2022 20:45:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44280 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1573228AbiDES2U (ORCPT
+        with ESMTP id S1349031AbiDEJs7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 14:28:20 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E489725C2
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 11:26:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:Content-Type:
-        In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender
-        :Reply-To:Content-ID:Content-Description;
-        bh=C5VgPld09iYiqC751h87aH+aMCuoBzx6fK1WSSESdHU=; b=SwViTp0djw63Y6CABGQ1kgy1MK
-        Sg10F6y4NOV61Rir++P/63S/FDRiwka1up4YV6y051CJP7shE80m6qmKXXDsczK1vX8f2WKP/NjCZ
-        Cj66jHxR6zi9Xx8507YAx1+F5xPyMjjvkV4J0t4jYmx3bfR2Nz3lFYHw3dSljv0jje09m/E2KkB4w
-        KHtNtxVR8Q9eDKh1MccF4Ajd8SFB4xWUzBDuxTtApOaQSxvv9qe81W32p0JJbHPTK2GYyA8NRnJr8
-        X91FZOL/Wbc8LXLnP4xXbiBpQszZNSdqgvbDwdqVx1MrEZxRwek7RYcv2W7/G6w8x/Z0oc3fG4TXA
-        T0Spj4cQ==;
-Received: from [2601:1c0:6280:3f0::aa0b]
-        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nbnsY-006x9i-PI; Tue, 05 Apr 2022 18:26:11 +0000
-Message-ID: <019baa48-a594-ba00-67a9-b0eb62b32ac0@infradead.org>
-Date:   Tue, 5 Apr 2022 11:26:05 -0700
+        Tue, 5 Apr 2022 05:48:59 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4295A8EEE;
+        Tue,  5 Apr 2022 02:39:14 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3BF7361673;
+        Tue,  5 Apr 2022 09:39:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4C5C8C385A3;
+        Tue,  5 Apr 2022 09:39:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649151553;
+        bh=I3uEnA03OADDN1LfFcs2Xj8Bm+YZGExuC8qCYOwy7vY=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=GJIS7LwlnlUouYgmGdmsmg4g/8nlZyZfoMsSZFOuY3aT1bMoQuRQ6ZPymFQ32l0i3
+         xvXk2PB7e0DpGjm8g1IsGgWZdbz+hvGDPsB3XYc1N9YABaCe4Jf5FTaFO18ur1s+b2
+         FO/VWLPAGpkO+cCb/OdIOoo/0oFmk3FHLsEsGOGc=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Fabiano Rosas <farosas@linux.ibm.com>,
+        Nicholas Piggin <npiggin@gmail.com>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 419/913] KVM: PPC: Book3S HV: Check return value of kvmppc_radix_init
+Date:   Tue,  5 Apr 2022 09:24:41 +0200
+Message-Id: <20220405070352.406396830@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: drivers/cpuidle/cpuidle-riscv-sbi.c:79:16: error: variable has
- incomplete type 'struct sbiret'
-Content-Language: en-US
-To:     kernel test robot <lkp@intel.com>, Anup Patel <anup.patel@wdc.com>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org, Palmer Dabbelt <palmer@rivosinc.com>
-References: <202204051441.dQ4w35Ga-lkp@intel.com>
-From:   Randy Dunlap <rdunlap@infradead.org>
-In-Reply-To: <202204051441.dQ4w35Ga-lkp@intel.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+From: Fabiano Rosas <farosas@linux.ibm.com>
 
-On 4/4/22 23:11, kernel test robot wrote:
-> Hi Anup,
-> 
-> First bad commit (maybe != root cause):
-> 
-> tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-> head:   3123109284176b1532874591f7c81f3837bbdc17
-> commit: c5179ef1ca0c39dab6955be6b0e3c034cc4164c8 RISC-V: Enable RISC-V SBI CPU Idle driver for QEMU virt machine
-> date:   4 weeks ago
-> config: riscv-randconfig-r022-20220405 (https://download.01.org/0day-ci/archive/20220405/202204051441.dQ4w35Ga-lkp@intel.com/config)
-> compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project c4a1b07d0979e7ff20d7d541af666d822d66b566)
-> reproduce (this is a W=1 build):
->         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
->         chmod +x ~/bin/make.cross
->         # install riscv cross compiling tool for clang build
->         # apt-get install binutils-riscv64-linux-gnu
->         # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=c5179ef1ca0c39dab6955be6b0e3c034cc4164c8
->         git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
->         git fetch --no-tags linus master
->         git checkout c5179ef1ca0c39dab6955be6b0e3c034cc4164c8
->         # save the config file to linux build tree
->         mkdir build_dir
->         COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=riscv SHELL=/bin/bash drivers/
-> 
-> If you fix the issue, kindly add following tag as appropriate
-> Reported-by: kernel test robot <lkp@intel.com>
-> 
-> All errors (new ones prefixed by >>):
-> 
+[ Upstream commit 69ab6ac380a00244575de02c406dcb9491bf3368 ]
 
-[delete many build warnings and errors]
+The return of the function is being shadowed by the call to
+kvmppc_uvmem_init.
 
->    3 warnings and 17 errors generated.
-> 
-> Kconfig warnings: (for reference only)
->    WARNING: unmet direct dependencies detected for RISCV_SBI_CPUIDLE
->    Depends on CPU_IDLE && RISCV && RISCV_SBI
->    Selected by
->    - SOC_VIRT && CPU_IDLE
-
-This Kconfig warning is the root of the problem. All of the build errors
-and warnings can be fixed by something like so. Is it OK?
-
+Fixes: ca9f4942670c ("KVM: PPC: Book3S HV: Support for running secure guests")
+Signed-off-by: Fabiano Rosas <farosas@linux.ibm.com>
+Reviewed-by: Nicholas Piggin <npiggin@gmail.com>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/20220125155735.1018683-2-farosas@linux.ibm.com
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/riscv/Kconfig.socs |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/powerpc/kvm/book3s_hv.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
---- linux-next-20220404.orig/arch/riscv/Kconfig.socs
-+++ linux-next-20220404/arch/riscv/Kconfig.socs
-@@ -38,7 +38,7 @@ config SOC_VIRT
- 	select SIFIVE_PLIC
- 	select PM_GENERIC_DOMAINS if PM
- 	select PM_GENERIC_DOMAINS_OF if PM && OF
--	select RISCV_SBI_CPUIDLE if CPU_IDLE
-+	select RISCV_SBI_CPUIDLE if CPU_IDLE && RISCV_SBI
- 	help
- 	  This enables support for QEMU Virt Machine.
+diff --git a/arch/powerpc/kvm/book3s_hv.c b/arch/powerpc/kvm/book3s_hv.c
+index a2fd1db29f7e..7fa685711669 100644
+--- a/arch/powerpc/kvm/book3s_hv.c
++++ b/arch/powerpc/kvm/book3s_hv.c
+@@ -6101,8 +6101,11 @@ static int kvmppc_book3s_init_hv(void)
+ 	if (r)
+ 		return r;
  
-[snip]
-
-Also, to the @bot:
-
-Why does the reported Kconfig warning look like it was generated
-by some older kconfig software?  Current Kconfig reports more info:
-
-WARNING: unmet direct dependencies detected for RISCV_SBI_CPUIDLE
-  Depends on [n]: CPU_IDLE [=y] && RISCV [=y] && RISCV_SBI [=n]
-  Selected by [y]:
-  - SOC_VIRT [=y] && CPU_IDLE [=y]
-
-Thanks.
-> 
-> :::::: The code at line 79 was first introduced by commit
-> :::::: 6abf32f1d9c5009dcccded2c1e7ca899a4ab587b cpuidle: Add RISC-V SBI CPU idle driver
-> 
-> :::::: TO: Anup Patel <anup.patel@wdc.com>
-> :::::: CC: Palmer Dabbelt <palmer@rivosinc.com>
-> 
-
+-	if (kvmppc_radix_possible())
++	if (kvmppc_radix_possible()) {
+ 		r = kvmppc_radix_init();
++		if (r)
++			return r;
++	}
+ 
+ 	r = kvmppc_uvmem_init();
+ 	if (r < 0)
 -- 
-~Randy
+2.34.1
+
+
+
