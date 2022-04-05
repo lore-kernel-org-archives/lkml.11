@@ -2,79 +2,171 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 22DD8C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CA011C433F5
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:09:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1581899AbiDEXlW (ORCPT
+        id S1581945AbiDEXla (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 19:41:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48496 "EHLO
+        Tue, 5 Apr 2022 19:41:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54290 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240727AbiDEKsa (ORCPT
+        with ESMTP id S1354551AbiDENH2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:48:30 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F37E6C967;
-        Tue,  5 Apr 2022 03:27:29 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Tue, 5 Apr 2022 09:07:28 -0400
+Received: from ssl.serverraum.org (ssl.serverraum.org [176.9.125.105])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B858022B20;
+        Tue,  5 Apr 2022 05:09:58 -0700 (PDT)
+Received: from mwalle01.kontron.local. (unknown [213.135.10.150])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 698A46141D;
-        Tue,  5 Apr 2022 10:27:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 775EEC385A0;
-        Tue,  5 Apr 2022 10:27:28 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649154448;
-        bh=NGe4wJ6a80HgAxi6thOg3oSFdrSvbA3MJtl/IUrCBpY=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FXjmh+Q8jV4aNlzwK86v81rKpZ/vKCoc7S8yiYsnqWTwLmI7B5h1/VwudhEwkSx7A
-         PnWlyLvu2E/VLYiaKiv34Gi1fx4mc3sGouBr/WgE6R3LvhYSra4kxKAI4cD2s2KuNd
-         YkSFb8Zg6wOx1ivbniLCEVbf6u0N2mhxji9jbfo0=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miquel Raynal <miquel.raynal@bootlin.com>,
-        Rob Herring <robh@kernel.org>
-Subject: [PATCH 5.10 583/599] dt-bindings: mtd: nand-controller: Fix a comment in the examples
-Date:   Tue,  5 Apr 2022 09:34:37 +0200
-Message-Id: <20220405070316.191834070@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
-User-Agent: quilt/0.66
+        by ssl.serverraum.org (Postfix) with ESMTPSA id E0ED922248;
+        Tue,  5 Apr 2022 14:09:55 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
+        t=1649160596;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=fCggV6bqzjUPTh2UWexsbRy4IO96rl40cUnwkAVnT5I=;
+        b=o9rAEG5dNTu/qS3ZOBvruaB/fIHLjhKxrVXoek8KJ1TykK8P3RzBI/WsitXw4LUyQ9LLKm
+        D7g1rsSD0/r5bZvfsajnZKBHMqBqTsSP2/LDVzqpwLnnPaiymXtkDn49hzSwbFOfjQFH5T
+        xKp26b33xygscWr1W+LI+oxzn5Ko+54=
+From:   Michael Walle <michael@walle.cc>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>
+Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Michael Walle <michael@walle.cc>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Subject: [PATCH net-next v3 1/3] dt-bindings: net: convert mscc-miim to YAML format
+Date:   Tue,  5 Apr 2022 14:09:49 +0200
+Message-Id: <20220405120951.4044875-2-michael@walle.cc>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220405120951.4044875-1-michael@walle.cc>
+References: <20220405120951.4044875-1-michael@walle.cc>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miquel Raynal <miquel.raynal@bootlin.com>
+Convert the mscc-miim device tree binding to the new YAML format.
 
-commit 0e7f1b557974ce297e5e4c9d4245720fbb489886 upstream.
+The original binding don't mention if the interrupt property is optional
+or not. But on the SparX-5 SoC, for example, the interrupt property isn't
+used, thus in the new binding that property is optional. FWIW the driver
+doesn't use interrupts at all.
 
-The controller properties should be in the controller 'parent' node,
-while properties in the children nodes are specific to the NAND
-*chip*. This error was already present during the yaml conversion.
-
-Fixes: 2d472aba15ff ("mtd: nand: document the NAND controller/NAND chip DT representation")
-Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-Acked-by: Rob Herring <robh@kernel.org>
-Link: https://lore.kernel.org/linux-mtd/20211216111654.238086-3-miquel.raynal@bootlin.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Michael Walle <michael@walle.cc>
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 ---
- Documentation/devicetree/bindings/mtd/nand-controller.yaml |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ .../devicetree/bindings/net/mscc,miim.yaml    | 56 +++++++++++++++++++
+ .../devicetree/bindings/net/mscc-miim.txt     | 26 ---------
+ 2 files changed, 56 insertions(+), 26 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/net/mscc,miim.yaml
+ delete mode 100644 Documentation/devicetree/bindings/net/mscc-miim.txt
 
---- a/Documentation/devicetree/bindings/mtd/nand-controller.yaml
-+++ b/Documentation/devicetree/bindings/mtd/nand-controller.yaml
-@@ -174,6 +174,6 @@ examples:
-         nand-ecc-mode = "soft";
-         nand-ecc-algo = "bch";
- 
--        /* controller specific properties */
-+        /* NAND chip specific properties */
-       };
-     };
-
+diff --git a/Documentation/devicetree/bindings/net/mscc,miim.yaml b/Documentation/devicetree/bindings/net/mscc,miim.yaml
+new file mode 100644
+index 000000000000..cdc39aa20683
+--- /dev/null
++++ b/Documentation/devicetree/bindings/net/mscc,miim.yaml
+@@ -0,0 +1,56 @@
++# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/net/mscc,miim.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Microsemi MII Management Controller (MIIM)
++
++maintainers:
++  - Alexandre Belloni <alexandre.belloni@bootlin.com>
++
++allOf:
++  - $ref: "mdio.yaml#"
++
++properties:
++  compatible:
++    enum:
++      - mscc,ocelot-miim
++      - microchip,lan966x-miim
++
++  "#address-cells":
++    const: 1
++
++  "#size-cells":
++    const: 0
++
++  reg:
++    items:
++      - description: base address
++      - description: associated reset register for internal PHYs
++    minItems: 1
++
++  interrupts:
++    maxItems: 1
++
++required:
++  - compatible
++  - reg
++  - "#address-cells"
++  - "#size-cells"
++
++unevaluatedProperties: false
++
++examples:
++  - |
++    mdio@107009c {
++      compatible = "mscc,ocelot-miim";
++      reg = <0x107009c 0x36>, <0x10700f0 0x8>;
++      interrupts = <14>;
++      #address-cells = <1>;
++      #size-cells = <0>;
++
++      phy0: ethernet-phy@0 {
++        reg = <0>;
++      };
++    };
+diff --git a/Documentation/devicetree/bindings/net/mscc-miim.txt b/Documentation/devicetree/bindings/net/mscc-miim.txt
+deleted file mode 100644
+index 70e0cb1ee485..000000000000
+--- a/Documentation/devicetree/bindings/net/mscc-miim.txt
++++ /dev/null
+@@ -1,26 +0,0 @@
+-Microsemi MII Management Controller (MIIM) / MDIO
+-=================================================
+-
+-Properties:
+-- compatible: must be "mscc,ocelot-miim" or "microchip,lan966x-miim"
+-- reg: The base address of the MDIO bus controller register bank. Optionally, a
+-  second register bank can be defined if there is an associated reset register
+-  for internal PHYs
+-- #address-cells: Must be <1>.
+-- #size-cells: Must be <0>.  MDIO addresses have no size component.
+-- interrupts: interrupt specifier (refer to the interrupt binding)
+-
+-Typically an MDIO bus might have several children.
+-
+-Example:
+-	mdio@107009c {
+-		#address-cells = <1>;
+-		#size-cells = <0>;
+-		compatible = "mscc,ocelot-miim";
+-		reg = <0x107009c 0x36>, <0x10700f0 0x8>;
+-		interrupts = <14>;
+-
+-		phy0: ethernet-phy@0 {
+-			reg = <0>;
+-		};
+-	};
+-- 
+2.30.2
 
