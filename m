@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F43CC433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D99C3C4707E
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:00:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234006AbiDEH54 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 03:57:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56490 "EHLO
+        id S234243AbiDEH6F (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 03:58:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47536 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232256AbiDEHq1 (ORCPT
+        with ESMTP id S232726AbiDEHrG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 03:46:27 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4CF899685;
-        Tue,  5 Apr 2022 00:41:55 -0700 (PDT)
+        Tue, 5 Apr 2022 03:47:06 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFC6B9AE42;
+        Tue,  5 Apr 2022 00:42:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1C486B81B14;
-        Tue,  5 Apr 2022 07:41:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 688F2C340EE;
-        Tue,  5 Apr 2022 07:41:52 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2FF99616D9;
+        Tue,  5 Apr 2022 07:42:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 43660C340EE;
+        Tue,  5 Apr 2022 07:42:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649144512;
-        bh=pol35tleRDTuGvRqTHMK7qDa4oCsmemWL50nN29IMSY=;
+        s=korg; t=1649144573;
+        bh=tWANHQHbcE1gOVX+QGv3inRTJJbYxPoiShgmtCsrN2k=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=zbz0xHQqnBh8A+nl4gL3jm2iV9c50KgQCaCva9/WkfjorALxIKW0UswSYNAg/JS3O
-         2rl/KsKdRB1oNPkVHQPjQzP7A5jAOXtTk7wiak8gmmHp6s0DEyZUuQ4jvj0D/acQav
-         UTzv3JnZ6ObOUn3Ru42FAZvlv4+iCqY+hoCs4N5Q=
+        b=kNu6dePrrUzsfg8wbgtw6nc9P+Wab3aBGWVOPi3qMxAw10HL21sB//fUhDGbpGN7u
+         XJqZcA1glA2LhoGBd8mFu0tWStQht6Wn0uVRC3zlDbSZraoaeiF3yK2CnJ9b1UMVwU
+         UI1+8OIeUJllwU+lykkvsClOmKRbU1nCnFNAPdAE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hangyu Hua <hbh25y@gmail.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>
-Subject: [PATCH 5.17 0072/1126] can: usb_8dev: usb_8dev_start_xmit(): fix double dev_kfree_skb() in error path
-Date:   Tue,  5 Apr 2022 09:13:39 +0200
-Message-Id: <20220405070409.683164747@linuxfoundation.org>
+        stable@vger.kernel.org, "Paulo Alcantara (SUSE)" <pc@cjr.nz>,
+        Steve French <stfrench@microsoft.com>
+Subject: [PATCH 5.17 0092/1126] cifs: do not skip link targets when an I/O fails
+Date:   Tue,  5 Apr 2022 09:13:59 +0200
+Message-Id: <20220405070410.268808231@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -48,69 +48,63 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hangyu Hua <hbh25y@gmail.com>
+From: Paulo Alcantara <pc@cjr.nz>
 
-commit 3d3925ff6433f98992685a9679613a2cc97f3ce2 upstream.
+commit 5d7e282541fc91b831a5c4477c5d72881c623df9 upstream.
 
-There is no need to call dev_kfree_skb() when usb_submit_urb() fails
-because can_put_echo_skb() deletes original skb and
-can_free_echo_skb() deletes the cloned skb.
+When I/O fails in one of the currently connected DFS targets, retry it
+from other targets as specified in MS-DFSC "3.1.5.2 I/O Operation to
++Target Fails with an Error Other Than STATUS_PATH_NOT_COVERED."
 
-Fixes: 0024d8ad1639 ("can: usb_8dev: Add support for USB2CAN interface from 8 devices")
-Link: https://lore.kernel.org/all/20220311080614.45229-1-hbh25y@gmail.com
+Signed-off-by: Paulo Alcantara (SUSE) <pc@cjr.nz>
 Cc: stable@vger.kernel.org
-Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
-Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
+Signed-off-by: Steve French <stfrench@microsoft.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/can/usb/usb_8dev.c |   30 ++++++++++++++----------------
- 1 file changed, 14 insertions(+), 16 deletions(-)
+ fs/cifs/connect.c |   14 +++++++++++---
+ 1 file changed, 11 insertions(+), 3 deletions(-)
 
---- a/drivers/net/can/usb/usb_8dev.c
-+++ b/drivers/net/can/usb/usb_8dev.c
-@@ -663,9 +663,20 @@ static netdev_tx_t usb_8dev_start_xmit(s
- 	atomic_inc(&priv->active_tx_urbs);
+--- a/fs/cifs/connect.c
++++ b/fs/cifs/connect.c
+@@ -3473,6 +3473,9 @@ static int connect_dfs_target(struct mou
+ 	struct cifs_sb_info *cifs_sb = mnt_ctx->cifs_sb;
+ 	char *oldmnt = cifs_sb->ctx->mount_options;
  
- 	err = usb_submit_urb(urb, GFP_ATOMIC);
--	if (unlikely(err))
--		goto failed;
--	else if (atomic_read(&priv->active_tx_urbs) >= MAX_TX_URBS)
-+	if (unlikely(err)) {
-+		can_free_echo_skb(netdev, context->echo_index, NULL);
++	cifs_dbg(FYI, "%s: full_path=%s ref_path=%s target=%s\n", __func__, full_path, ref_path,
++		 dfs_cache_get_tgt_name(tit));
 +
-+		usb_unanchor_urb(urb);
-+		usb_free_coherent(priv->udev, size, buf, urb->transfer_dma);
-+
-+		atomic_dec(&priv->active_tx_urbs);
-+
-+		if (err == -ENODEV)
-+			netif_device_detach(netdev);
-+		else
-+			netdev_warn(netdev, "failed tx_urb %d\n", err);
-+		stats->tx_dropped++;
-+	} else if (atomic_read(&priv->active_tx_urbs) >= MAX_TX_URBS)
- 		/* Slow down tx path */
- 		netif_stop_queue(netdev);
+ 	rc = dfs_cache_get_tgt_referral(ref_path, tit, &ref);
+ 	if (rc)
+ 		goto out;
+@@ -3571,13 +3574,18 @@ static int __follow_dfs_link(struct moun
+ 	if (rc)
+ 		goto out;
  
-@@ -684,19 +695,6 @@ nofreecontext:
+-	/* Try all dfs link targets */
++	/* Try all dfs link targets.  If an I/O fails from currently connected DFS target with an
++	 * error other than STATUS_PATH_NOT_COVERED (-EREMOTE), then retry it from other targets as
++	 * specified in MS-DFSC "3.1.5.2 I/O Operation to Target Fails with an Error Other Than
++	 * STATUS_PATH_NOT_COVERED."
++	 */
+ 	for (rc = -ENOENT, tit = dfs_cache_get_tgt_iterator(&tl);
+ 	     tit; tit = dfs_cache_get_next_tgt(&tl, tit)) {
+ 		rc = connect_dfs_target(mnt_ctx, full_path, mnt_ctx->leaf_fullpath + 1, tit);
+ 		if (!rc) {
+ 			rc = is_path_remote(mnt_ctx);
+-			break;
++			if (!rc || rc == -EREMOTE)
++				break;
+ 		}
+ 	}
  
- 	return NETDEV_TX_BUSY;
+@@ -3651,7 +3659,7 @@ int cifs_mount(struct cifs_sb_info *cifs
+ 		goto error;
  
--failed:
--	can_free_echo_skb(netdev, context->echo_index, NULL);
--
--	usb_unanchor_urb(urb);
--	usb_free_coherent(priv->udev, size, buf, urb->transfer_dma);
--
--	atomic_dec(&priv->active_tx_urbs);
--
--	if (err == -ENODEV)
--		netif_device_detach(netdev);
--	else
--		netdev_warn(netdev, "failed tx_urb %d\n", err);
--
- nomembuf:
- 	usb_free_urb(urb);
- 
+ 	rc = is_path_remote(&mnt_ctx);
+-	if (rc == -EREMOTE)
++	if (rc)
+ 		rc = follow_dfs_link(&mnt_ctx);
+ 	if (rc)
+ 		goto error;
 
 
