@@ -2,157 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B2B2C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 39C8EC433FE
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 14:44:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1389389AbiDEOon (ORCPT
+        id S1389417AbiDEOoy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 10:44:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38324 "EHLO
+        Tue, 5 Apr 2022 10:44:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50288 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244310AbiDEJlO (ORCPT
+        with ESMTP id S244306AbiDEJlO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Apr 2022 05:41:14 -0400
-Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74B5ABB0B0;
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 754EFBB0B2;
         Tue,  5 Apr 2022 02:26:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1649150767; x=1680686767;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=jOEbnMPtQMwuK425EZS6fVgSTtL1flC7VoLKMawu8iI=;
-  b=blcqS08JedfX1/cs/h38KZsSCEJwx6AUQ7J35VKlTTA4D3hbbTEj0dVc
-   7sxw04nofV+yjamjSk/BT2fzRA1Z/yEkumEjZWJLhhyPXyRlFYui4+DKx
-   KEMZwW28TplR9bY0bhjxgNA6tw3AUBx65p4ai/t6NmKJ39qlkAgzDbwgW
-   I=;
-Received: from unknown (HELO ironmsg02-sd.qualcomm.com) ([10.53.140.142])
-  by alexa-out-sd-02.qualcomm.com with ESMTP; 05 Apr 2022 02:26:06 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg02-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2022 02:26:06 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Tue, 5 Apr 2022 02:26:05 -0700
-Received: from hu-pkondeti-hyd.qualcomm.com (10.80.80.8) by
- nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Tue, 5 Apr 2022 02:26:01 -0700
-Date:   Tue, 5 Apr 2022 14:55:57 +0530
-From:   Pavan Kondeti <quic_pkondeti@quicinc.com>
-To:     Pavan Kondeti <quic_pkondeti@quicinc.com>
-CC:     Sandeep Maheswaram <quic_c_sanm@quicinc.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Felipe Balbi <balbi@kernel.org>,
-        Stephen Boyd <swboyd@chromium.org>,
-        Doug Anderson <dianders@chromium.org>,
-        "Matthias Kaehlcke" <mka@chromium.org>,
-        Mathias Nyman <mathias.nyman@intel.com>,
-        <linux-arm-msm@vger.kernel.org>, <linux-usb@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <quic_ppratap@quicinc.com>,
-        <quic_kriskura@quicinc.com>
-Subject: Re: [PATCH v11 2/5] usb: dwc3: core: Host wake up support from
- system suspend
-Message-ID: <20220405092557.GA15621@hu-pkondeti-hyd.qualcomm.com>
-References: <1647932876-23249-1-git-send-email-quic_c_sanm@quicinc.com>
- <1647932876-23249-3-git-send-email-quic_c_sanm@quicinc.com>
- <20220322083221.GJ23316@hu-pkondeti-hyd.qualcomm.com>
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 047E66164E;
+        Tue,  5 Apr 2022 09:26:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 19280C385A2;
+        Tue,  5 Apr 2022 09:26:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649150766;
+        bh=nwj9I4hz2LjdI9ekt63/VjDkSUZQm1L///5e87gCFWg=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=HqdJhCdgf8oROgseBk7QGjgMaxGfblohV8kckRfMxiMhT/HpdP9N8ZcHK9U6EzZno
+         B0HDtQ/jExfAkVVbdNKNZ6+2pN0GF36PygrhNC7kJVnatUciEQPJWP6G759e3GgPxr
+         hsvZPnIjz3BiqPN0pyJOdYwkEilesYa5LPudWmts=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        Stanimir Varbanov <stanimir.varbanov@linaro.org>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>
+Subject: [PATCH 5.15 166/913] media: venus: venc: Fix h264 8x8 transform control
+Date:   Tue,  5 Apr 2022 09:20:28 +0200
+Message-Id: <20220405070344.823339864@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20220322083221.GJ23316@hu-pkondeti-hyd.qualcomm.com>
-User-Agent: Mutt/1.5.24 (2015-08-30)
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Sandeep,
+From: Stanimir Varbanov <stanimir.varbanov@linaro.org>
 
-On Tue, Mar 22, 2022 at 02:02:21PM +0530, Pavan Kondeti wrote:
-> Hi Sandeep,
-> 
-> On Tue, Mar 22, 2022 at 12:37:53PM +0530, Sandeep Maheswaram wrote:
-> > During suspend read the status of all port and make sure the PHYs
-> > are in the correct mode based on current speed.
-> > Phy interrupt masks are set based on this mode. Keep track of the mode
-> > of the HS PHY to be able to configure wakeup properly.
-> > 
-> > Also check during suspend if any wakeup capable devices are
-> > connected to the controller (directly or through hubs), if there
-> > are none set a flag to indicate that the PHY is powered
-> > down during suspend.
-> > 
-> > Signed-off-by: Sandeep Maheswaram <quic_c_sanm@quicinc.com>
-> > ---
-> >  drivers/usb/dwc3/core.c | 54 ++++++++++++++++++++++++++++++++++++++++---------
-> >  1 file changed, 45 insertions(+), 9 deletions(-)
-> > 
-> > diff --git a/drivers/usb/dwc3/core.c b/drivers/usb/dwc3/core.c
-> > index 1170b80..232a734 100644
-> > --- a/drivers/usb/dwc3/core.c
-> > +++ b/drivers/usb/dwc3/core.c
-> > @@ -32,12 +32,14 @@
-> >  #include <linux/usb/gadget.h>
-> >  #include <linux/usb/of.h>
-> >  #include <linux/usb/otg.h>
-> > +#include <linux/usb/hcd.h>
-> >  
-> >  #include "core.h"
-> >  #include "gadget.h"
-> >  #include "io.h"
-> >  
-> >  #include "debug.h"
-> > +#include "../host/xhci.h"
-> >  
-> >  #define DWC3_DEFAULT_AUTOSUSPEND_DELAY	5000 /* ms */
-> >  
-> > @@ -1861,10 +1863,36 @@ static int dwc3_core_init_for_resume(struct dwc3 *dwc)
-> >  	return ret;
-> >  }
-> >  
-> > +static void dwc3_set_phy_speed_mode(struct dwc3 *dwc)
-> > +{
-> > +
-> > +	int i, num_ports;
-> > +	u32 reg;
-> > +	struct usb_hcd	*hcd = platform_get_drvdata(dwc->xhci);
-> > +	struct xhci_hcd	*xhci_hcd = hcd_to_xhci(hcd);
-> > +
-> > +	dwc->hs_phy_mode = 0;
-> > +
-> > +	reg = readl(&xhci_hcd->cap_regs->hcs_params1);
-> > +
-> > +	num_ports = HCS_MAX_PORTS(reg);
-> > +	for (i = 0; i < num_ports; i++) {
-> > +		reg = readl(&xhci_hcd->op_regs->port_status_base + i * 0x04);
-> > +		if (reg & PORT_PE) {
-> > +			if (DEV_HIGHSPEED(reg) || DEV_FULLSPEED(reg))
-> > +				dwc->hs_phy_mode |= PHY_MODE_USB_HOST_HS;
-> > +			else if (DEV_LOWSPEED(reg))
-> > +				dwc->hs_phy_mode |= PHY_MODE_USB_HOST_LS;
-> > +		}
-> > +	}
-> > +	phy_set_mode(dwc->usb2_generic_phy, dwc->hs_phy_mode);
-> > +}
-> 
-> Are these flags cleared somewhere? Also qcom-snps-hs phy driver checks
-> for (hsphy->mode == PHY_MODE_USB_HOST) condition in qcom_snps_hsphy_suspend
-> to enable auto-resume. PHY_MODE_USB_HOST_HS/PHY_MODE_USB_HOST_LS flags
-> are different from PHY_MODE_USB_HOST. Currently this flag is set from
-> __dwc3_set_mode() when entering host mode. Can you clarify your intention
-> in calling phy_set_mode() here.
+commit 61b3317dd424a3488b6754d7ff8301944d9d17d7 upstream.
 
-I think re-purposing phy_set_mode() to override PHY_MODE_USB_HOST with
-PHY_MODE_USB_HOST_HS/PHY_MODE_USB_HOST_LS might break other drivers. All
-most all the phy drivers are checking against PHY_MODE_USB_HOST.
+During encoder driver open controls are initialized via a call
+to v4l2_ctrl_handler_setup which returns EINVAL error for
+V4L2_CID_MPEG_VIDEO_H264_8X8_TRANSFORM v4l2 control. The control
+default value is disabled and because of firmware limitations
+8x8 transform cannot be disabled for the supported HIGH and
+CONSTRAINED_HIGH profiles.
 
-Why do we need to set phy_set_mode() here? The next patch in this series
-only uses dwc->hs_phy_mode. can we drop phy_set_mode() call here?
+To fix the issue change the control default value to enabled
+(this is fine because the firmware enables 8x8 transform for
+high and constrained_high profiles by default). Also, correct
+the checking of profile ids in s_ctrl from hfi to v4l2 ids.
 
-Thanks,
-Pavan
+cc: stable@vger.kernel.org # 5.15+
+Fixes: bfee75f73c37 ("media: venus: venc: add support for V4L2_CID_MPEG_VIDEO_H264_8X8_TRANSFORM control")
+Signed-off-by: Stanimir Varbanov <stanimir.varbanov@linaro.org>
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ drivers/media/platform/qcom/venus/venc.c       |    4 ++--
+ drivers/media/platform/qcom/venus/venc_ctrls.c |    6 +++---
+ 2 files changed, 5 insertions(+), 5 deletions(-)
+
+--- a/drivers/media/platform/qcom/venus/venc.c
++++ b/drivers/media/platform/qcom/venus/venc.c
+@@ -604,8 +604,8 @@ static int venc_set_properties(struct ve
+ 
+ 		ptype = HFI_PROPERTY_PARAM_VENC_H264_TRANSFORM_8X8;
+ 		h264_transform.enable_type = 0;
+-		if (ctr->profile.h264 == HFI_H264_PROFILE_HIGH ||
+-		    ctr->profile.h264 == HFI_H264_PROFILE_CONSTRAINED_HIGH)
++		if (ctr->profile.h264 == V4L2_MPEG_VIDEO_H264_PROFILE_HIGH ||
++		    ctr->profile.h264 == V4L2_MPEG_VIDEO_H264_PROFILE_CONSTRAINED_HIGH)
+ 			h264_transform.enable_type = ctr->h264_8x8_transform;
+ 
+ 		ret = hfi_session_set_property(inst, ptype, &h264_transform);
+--- a/drivers/media/platform/qcom/venus/venc_ctrls.c
++++ b/drivers/media/platform/qcom/venus/venc_ctrls.c
+@@ -320,8 +320,8 @@ static int venc_op_s_ctrl(struct v4l2_ct
+ 		ctr->intra_refresh_period = ctrl->val;
+ 		break;
+ 	case V4L2_CID_MPEG_VIDEO_H264_8X8_TRANSFORM:
+-		if (ctr->profile.h264 != HFI_H264_PROFILE_HIGH &&
+-		    ctr->profile.h264 != HFI_H264_PROFILE_CONSTRAINED_HIGH)
++		if (ctr->profile.h264 != V4L2_MPEG_VIDEO_H264_PROFILE_HIGH &&
++		    ctr->profile.h264 != V4L2_MPEG_VIDEO_H264_PROFILE_CONSTRAINED_HIGH)
+ 			return -EINVAL;
+ 
+ 		/*
+@@ -457,7 +457,7 @@ int venc_ctrl_init(struct venus_inst *in
+ 			  V4L2_CID_MPEG_VIDEO_H264_I_FRAME_MIN_QP, 1, 51, 1, 1);
+ 
+ 	v4l2_ctrl_new_std(&inst->ctrl_handler, &venc_ctrl_ops,
+-			  V4L2_CID_MPEG_VIDEO_H264_8X8_TRANSFORM, 0, 1, 1, 0);
++			  V4L2_CID_MPEG_VIDEO_H264_8X8_TRANSFORM, 0, 1, 1, 1);
+ 
+ 	v4l2_ctrl_new_std(&inst->ctrl_handler, &venc_ctrl_ops,
+ 			  V4L2_CID_MPEG_VIDEO_H264_P_FRAME_MIN_QP, 1, 51, 1, 1);
+
+
