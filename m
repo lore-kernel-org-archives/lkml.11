@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 00F11C43217
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:04:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 45DE5C4332F
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:04:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233171AbiDEIGA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 04:06:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54540 "EHLO
+        id S233328AbiDEIGL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 04:06:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47904 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232465AbiDEHxW (ORCPT
+        with ESMTP id S231875AbiDEHyB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 03:53:22 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 976E01DA44;
-        Tue,  5 Apr 2022 00:48:57 -0700 (PDT)
+        Tue, 5 Apr 2022 03:54:01 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D959B1EEE9;
+        Tue,  5 Apr 2022 00:49:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2DC22B81B98;
-        Tue,  5 Apr 2022 07:48:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8B344C340EE;
-        Tue,  5 Apr 2022 07:48:54 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 67807B81B90;
+        Tue,  5 Apr 2022 07:49:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BF336C36AE2;
+        Tue,  5 Apr 2022 07:49:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649144934;
-        bh=YieYlB7YlBu+iFUivAZxGhvRELcFenEmof40d3ij6O8=;
+        s=korg; t=1649144951;
+        bh=/zcQWl4cnL+I3ZfuME7Mb0EVNvIwIq8FHZw1BCbA7oU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dOKa6TIDm70CrGyfkixVe8GQVjt3D5LT4YcA+75CB2ZrKujLJE1fofM4ljYb8ILTu
-         E2FfTbCiRl8hjQDcM7K5bC7VyY2OeDHTjMlHNvEqnrw1v/TJuXX1qrdy1tRsQmv6El
-         fkdRQ+fccHAKEUyn4hvn+J/eEDVGXaF6cQooFHAw=
+        b=BD6ZMGVlEWSlQyd1lrUTLJmvUURtVtO8bgcZxYpOcJQ6nxzMK6TPetQyfwpezS/eQ
+         kyp39hpKyvLLFP/tg3ZOLwtC3o8O9LAcqBUkZIcbxXqaupihABVHL9G8PmJBgT6F08
+         M846zX3v8qRWbTioQxRjMJah5ZHICE2Xbeo3vrqA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, "kernelci.org bot" <bot@kernelci.org>,
-        Muhammad Usama Anjum <usama.anjum@collabora.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
+        stable@vger.kernel.org, Kai Ye <yekai13@huawei.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0225/1126] selftests/sgx: Treat CC as one argument
-Date:   Tue,  5 Apr 2022 09:16:12 +0200
-Message-Id: <20220405070414.213103155@linuxfoundation.org>
+Subject: [PATCH 5.17 0231/1126] crypto: hisilicon/sec - fix the aead software fallback for engine
+Date:   Tue,  5 Apr 2022 09:16:18 +0200
+Message-Id: <20220405070414.388627376@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -50,37 +49,65 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Muhammad Usama Anjum <usama.anjum@collabora.com>
+From: Kai Ye <yekai13@huawei.com>
 
-[ Upstream commit 6170abb21e2380477080b25145da9747ad467d3d ]
+[ Upstream commit 0a2a464f863187f97e96ebc6384c052cafd4a54c ]
 
-CC can have multiple sub-strings like "ccache gcc". For check_cc.sh,
-CC needs to be treated like one argument. Put double quotes around it to
-make CC one string and hence one argument.
+Due to the subreq pointer misuse the private context memory. The aead
+soft crypto occasionally casues the OS panic as setting the 64K page.
+Here is fix it.
 
-Fixes: 2adcba79e69d ("selftests/x86: Add a selftest for SGX")
-Reported-by: "kernelci.org bot" <bot@kernelci.org>
-Signed-off-by: Muhammad Usama Anjum <usama.anjum@collabora.com>
-Signed-off-by: Dave Hansen <dave.hansen@linux.intel.com>
-Link: https://lkml.kernel.org/r/20220214184109.3739179-3-usama.anjum@collabora.com
+Fixes: 6c46a3297bea ("crypto: hisilicon/sec - add fallback tfm...")
+Signed-off-by: Kai Ye <yekai13@huawei.com>
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/testing/selftests/sgx/Makefile | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/crypto/hisilicon/sec2/sec_crypto.c | 16 +++++++++++++---
+ 1 file changed, 13 insertions(+), 3 deletions(-)
 
-diff --git a/tools/testing/selftests/sgx/Makefile b/tools/testing/selftests/sgx/Makefile
-index 2956584e1e37..75af864e07b6 100644
---- a/tools/testing/selftests/sgx/Makefile
-+++ b/tools/testing/selftests/sgx/Makefile
-@@ -4,7 +4,7 @@ include ../lib.mk
+diff --git a/drivers/crypto/hisilicon/sec2/sec_crypto.c b/drivers/crypto/hisilicon/sec2/sec_crypto.c
+index 6a45bd23b363..090920ed50c8 100644
+--- a/drivers/crypto/hisilicon/sec2/sec_crypto.c
++++ b/drivers/crypto/hisilicon/sec2/sec_crypto.c
+@@ -2284,9 +2284,10 @@ static int sec_aead_soft_crypto(struct sec_ctx *ctx,
+ 				struct aead_request *aead_req,
+ 				bool encrypt)
+ {
+-	struct aead_request *subreq = aead_request_ctx(aead_req);
+ 	struct sec_auth_ctx *a_ctx = &ctx->a_ctx;
+ 	struct device *dev = ctx->dev;
++	struct aead_request *subreq;
++	int ret;
  
- .PHONY: all clean
+ 	/* Kunpeng920 aead mode not support input 0 size */
+ 	if (!a_ctx->fallback_aead_tfm) {
+@@ -2294,6 +2295,10 @@ static int sec_aead_soft_crypto(struct sec_ctx *ctx,
+ 		return -EINVAL;
+ 	}
  
--CAN_BUILD_X86_64 := $(shell ../x86/check_cc.sh $(CC) \
-+CAN_BUILD_X86_64 := $(shell ../x86/check_cc.sh "$(CC)" \
- 			    ../x86/trivial_64bit_program.c)
++	subreq = aead_request_alloc(a_ctx->fallback_aead_tfm, GFP_KERNEL);
++	if (!subreq)
++		return -ENOMEM;
++
+ 	aead_request_set_tfm(subreq, a_ctx->fallback_aead_tfm);
+ 	aead_request_set_callback(subreq, aead_req->base.flags,
+ 				  aead_req->base.complete, aead_req->base.data);
+@@ -2301,8 +2306,13 @@ static int sec_aead_soft_crypto(struct sec_ctx *ctx,
+ 			       aead_req->cryptlen, aead_req->iv);
+ 	aead_request_set_ad(subreq, aead_req->assoclen);
  
- ifndef OBJCOPY
+-	return encrypt ? crypto_aead_encrypt(subreq) :
+-		   crypto_aead_decrypt(subreq);
++	if (encrypt)
++		ret = crypto_aead_encrypt(subreq);
++	else
++		ret = crypto_aead_decrypt(subreq);
++	aead_request_free(subreq);
++
++	return ret;
+ }
+ 
+ static int sec_aead_crypto(struct aead_request *a_req, bool encrypt)
 -- 
 2.34.1
 
