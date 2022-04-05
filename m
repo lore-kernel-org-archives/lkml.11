@@ -2,46 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 62A58C35296
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 10:29:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7244CC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 10:30:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356243AbiDEKXc (ORCPT
+        id S1356416AbiDEKXx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 06:23:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58990 "EHLO
+        Tue, 5 Apr 2022 06:23:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48926 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241254AbiDEIc6 (ORCPT
+        with ESMTP id S241297AbiDEIdM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:32:58 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00C7262C9;
-        Tue,  5 Apr 2022 01:30:43 -0700 (PDT)
+        Tue, 5 Apr 2022 04:33:12 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 456F1E7;
+        Tue,  5 Apr 2022 01:31:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 920DF609D0;
-        Tue,  5 Apr 2022 08:30:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9E8E9C385A0;
-        Tue,  5 Apr 2022 08:30:42 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D765961001;
+        Tue,  5 Apr 2022 08:31:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E2D7DC385A0;
+        Tue,  5 Apr 2022 08:31:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649147443;
-        bh=LxOndK3xUi3E/pPKh0wsCPb8uywQyc6fS8zHAp77ieM=;
+        s=korg; t=1649147473;
+        bh=9wWJhCGjvW+gmTlJp+TCJdNc4BV7i04JGaPkDNZvWZE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ub6lIl2mUNgwso+jb3Yrmw5+W5abeblR79Z7aDtHbkfwSRT1QkeplOYwgC/ey3I4t
-         DWo83AwBH3L4eVl5IUMgaV2OX2eetEiNaYUAoqk2ShQi3QUlhFcK876VFynduHaf7y
-         pgU1OjPxIyFqajufRDN+EYknC+JUZ/Ysf7H3TqVE=
+        b=lZZIE4OvhHAkP8CKVU2/qAkav+FtthyZzAm/XSviy4QiCjAcNXFtuH2DJr13IoVUA
+         ewYqKTabKUNMUGPxGwywuSj3B/JW0ASDmSz0Mdb2Ms7nCRoJW3dSajbGiZNS1tFAAu
+         4mhrGVeYSV6ZorTFKdGxMFJzMg6MnTiTTsfZe6rw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jann Horn <jannh@google.com>,
-        Kees Cook <keescook@chromium.org>,
-        "Eric W. Biederman" <ebiederm@xmission.com>
-Subject: [PATCH 5.17 1124/1126] coredump: Remove the WARN_ON in dump_vma_snapshot
-Date:   Tue,  5 Apr 2022 09:31:11 +0200
-Message-Id: <20220405070440.417712317@linuxfoundation.org>
+        stable@vger.kernel.org, "Michael S. Tsirkin" <mst@redhat.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 0011/1017] virtio_console: break out of buf poll on remove
+Date:   Tue,  5 Apr 2022 09:15:24 +0200
+Message-Id: <20220405070354.506955546@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
-References: <20220405070407.513532867@linuxfoundation.org>
+In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
+References: <20220405070354.155796697@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,41 +49,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric W. Biederman <ebiederm@xmission.com>
+From: Michael S. Tsirkin <mst@redhat.com>
 
-commit 49c1866348f364478a0c4d3dd13fd08bb82d3a5b upstream.
+[ Upstream commit 0e7174b9d5877130fec41fb4a16e0c2ee4958d44 ]
 
-The condition is impossible and to the best of my knowledge has never
-triggered.
+A common pattern for device reset is currently:
+vdev->config->reset(vdev);
+.. cleanup ..
 
-We are in deep trouble if that conditions happens and we walk past
-the end of our allocated array.
+reset prevents new interrupts from arriving and waits for interrupt
+handlers to finish.
 
-So delete the WARN_ON and the code that makes it look like the kernel
-can handle the case of walking past the end of it's vma_meta array.
+However if - as is common - the handler queues a work request which is
+flushed during the cleanup stage, we have code adding buffers / trying
+to get buffers while device is reset. Not good.
 
-Reviewed-by: Jann Horn <jannh@google.com>
-Reviewed-by: Kees Cook <keescook@chromium.org>
-Signed-off-by: "Eric W. Biederman" <ebiederm@xmission.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+This was reproduced by running
+	modprobe virtio_console
+	modprobe -r virtio_console
+in a loop.
+
+Fix this up by calling virtio_break_device + flush before reset.
+
+Bugzilla: https://bugzilla.redhat.com/show_bug.cgi?id=1786239
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/coredump.c |    6 ------
- 1 file changed, 6 deletions(-)
+ drivers/char/virtio_console.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
---- a/fs/coredump.c
-+++ b/fs/coredump.c
-@@ -1139,12 +1139,6 @@ static bool dump_vma_snapshot(struct cor
+diff --git a/drivers/char/virtio_console.c b/drivers/char/virtio_console.c
+index 660c5c388c29..f864b17be7e3 100644
+--- a/drivers/char/virtio_console.c
++++ b/drivers/char/virtio_console.c
+@@ -1957,6 +1957,13 @@ static void virtcons_remove(struct virtio_device *vdev)
+ 	list_del(&portdev->list);
+ 	spin_unlock_irq(&pdrvdata_lock);
  
- 	mmap_write_unlock(mm);
- 
--	if (WARN_ON(i != cprm->vma_count)) {
--		kvfree(cprm->vma_meta);
--		return false;
--	}
--
--
- 	for (i = 0; i < cprm->vma_count; i++) {
- 		struct core_vma_metadata *m = cprm->vma_meta + i;
- 
++	/* Device is going away, exit any polling for buffers */
++	virtio_break_device(vdev);
++	if (use_multiport(portdev))
++		flush_work(&portdev->control_work);
++	else
++		flush_work(&portdev->config_work);
++
+ 	/* Disable interrupts for vqs */
+ 	vdev->config->reset(vdev);
+ 	/* Finish up work that's lined up */
+-- 
+2.34.1
+
 
 
