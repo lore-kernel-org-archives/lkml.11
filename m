@@ -2,159 +2,339 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C136DC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 05:01:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A4C7C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 05:02:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229745AbiDEFC7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 01:02:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37304 "EHLO
+        id S229666AbiDEFEM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 01:04:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47554 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229693AbiDEFCg (ORCPT
+        with ESMTP id S229617AbiDEFD4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 01:02:36 -0400
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 570C315705
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 21:59:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649134788; x=1680670788;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=8+0bRNnHeq3JDydnNumtljIA9OYcrLxonDmjdgyGOGs=;
-  b=LbmO75CEf+N8C/6srA58L9UqfANXRVJrt1o3csLxdi4YI6YjD9jDApte
-   3G0M//B0EYEoPbebIUM88ldDnnttsikLvsEOfjYkoLolxn5W01fRfyeqf
-   z9BCbqz6v9lh2D1fHJT1yqz4qS12+tAb33SVf80FtVwRJJWqM6SiFKHbZ
-   sIB9nbjaOyY5ukjzP9mGw+SE7ZL23KVMmtkuta2S83nzTC2xEboEp+GnC
-   r3/dmmyi57IzQjsOHCMQmuq0nkkgB3jHWofbXjWI7pLTX6Oozlg64p3+x
-   LDM/wyUZON0Lmm2xzkBwr4KDdcXKmgGfR+zVUS2cZlFp6Cy8tha0QvNcA
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10307"; a="240601559"
-X-IronPort-AV: E=Sophos;i="5.90,235,1643702400"; 
-   d="scan'208";a="240601559"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Apr 2022 21:59:46 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,235,1643702400"; 
-   d="scan'208";a="523848679"
-Received: from lkp-server02.sh.intel.com (HELO a44fdfb70b94) ([10.239.97.151])
-  by orsmga006.jf.intel.com with ESMTP; 04 Apr 2022 21:59:44 -0700
-Received: from kbuild by a44fdfb70b94 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nbbI8-0002e9-8Q;
-        Tue, 05 Apr 2022 04:59:44 +0000
-Date:   Tue, 5 Apr 2022 12:58:43 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Kefeng Wang <wangkefeng.wang@huawei.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Catalin Marinas <catalin.marinas@arm.com>
-Subject: drivers/message/fusion/mptctl.c:1492:9: warning: 'strncpy' output
- may be truncated copying 31 bytes from a string of length 31
-Message-ID: <202204051248.mIuzvPFX-lkp@intel.com>
+        Tue, 5 Apr 2022 01:03:56 -0400
+Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F568114E;
+        Mon,  4 Apr 2022 22:01:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1649134881; x=1680670881;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=ifEf31liwJF8Zk4jYo7UU+c21Lmu4DqdQijKygniokA=;
+  b=F4DfvXFCDVgRUNS7fpUzwa/qXZSNoGZfqMNTo9jzJEUYRQcpfTPOiL/s
+   tSjB2UdOiZCfWU7AL1RF8P08TASgoG58bF5x0/oE0Fw9jET7uPItayLyf
+   Xkyvr55q0NSSP1lZHrhOfQ8AkJPh0iJ+gce/NwhsucAFfTvcVM+VEILuv
+   c=;
+Received: from unknown (HELO ironmsg05-sd.qualcomm.com) ([10.53.140.145])
+  by alexa-out-sd-02.qualcomm.com with ESMTP; 04 Apr 2022 22:01:21 -0700
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg05-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Apr 2022 22:01:05 -0700
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Mon, 4 Apr 2022 22:01:05 -0700
+Received: from [10.216.10.223] (10.80.80.8) by nalasex01a.na.qualcomm.com
+ (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Mon, 4 Apr 2022
+ 22:01:01 -0700
+Message-ID: <897dd23a-b747-ac7a-29f8-23d313c77d63@quicinc.com>
+Date:   Tue, 5 Apr 2022 10:30:58 +0530
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.1
+Subject: Re: [PATCH v5 1/3] arm64: dts: qcom: sc7280: Add nodes for va tx and
+ rx macros and external codecs
+Content-Language: en-US
+To:     Stephen Boyd <swboyd@chromium.org>, <agross@kernel.org>,
+        <bjorn.andersson@linaro.org>, <devicetree@vger.kernel.org>,
+        <dianders@chromium.org>, <judyhsiao@chromium.org>,
+        <linux-arm-msm@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <robh+dt@kernel.org>, <srinivas.kandagatla@linaro.org>
+CC:     Venkata Prasad Potturu <quic_potturu@quicinc.com>
+References: <1647865696-19192-1-git-send-email-quic_srivasam@quicinc.com>
+ <1647865696-19192-2-git-send-email-quic_srivasam@quicinc.com>
+ <CAE-0n52E+_BUr33=DCt_rBi-KtdtG01PeRFJ-G98ME4Ka-6q8A@mail.gmail.com>
+From:   Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
+Organization: Qualcomm
+In-Reply-To: <CAE-0n52E+_BUr33=DCt_rBi-KtdtG01PeRFJ-G98ME4Ka-6q8A@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   3123109284176b1532874591f7c81f3837bbdc17
-commit: dd03762ab608e058c8f390ad9cf667e490089796 arm64: Enable KCSAN
-date:   4 months ago
-config: arm64-randconfig-r002-20220405 (https://download.01.org/0day-ci/archive/20220405/202204051248.mIuzvPFX-lkp@intel.com/config)
-compiler: aarch64-linux-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=dd03762ab608e058c8f390ad9cf667e490089796
-        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-        git fetch --no-tags linus master
-        git checkout dd03762ab608e058c8f390ad9cf667e490089796
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=arm64 SHELL=/bin/bash drivers/message/fusion/
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All warnings (new ones prefixed by >>):
-
-   drivers/message/fusion/mptctl.c: In function 'mptctl_do_mpt_command':
-   drivers/message/fusion/mptctl.c:1823:27: warning: variable 'config_frame' set but not used [-Wunused-but-set-variable]
-    1823 |                 Config_t *config_frame;
-         |                           ^~~~~~~~~~~~
-   drivers/message/fusion/mptctl.c:2003:34: warning: variable 'pScsiTm' set but not used [-Wunused-but-set-variable]
-    2003 |                 SCSITaskMgmt_t  *pScsiTm;
-         |                                  ^~~~~~~
-   drivers/message/fusion/mptctl.c: In function 'mptctl_hp_hostinfo':
-   drivers/message/fusion/mptctl.c:2329:33: warning: variable 'retval' set but not used [-Wunused-but-set-variable]
-    2329 |         int                     retval;
-         |                                 ^~~~~~
-   drivers/message/fusion/mptctl.c: In function 'mptctl_readtest':
->> drivers/message/fusion/mptctl.c:1492:9: warning: 'strncpy' output may be truncated copying 31 bytes from a string of length 31 [-Wstringop-truncation]
-    1492 |         strncpy (karg.name, ioc->name, MPT_MAX_NAME);
-         |         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-vim +/strncpy +1492 drivers/message/fusion/mptctl.c
-
-^1da177e4c3f41 Linus Torvalds  2005-04-16  1459  
-^1da177e4c3f41 Linus Torvalds  2005-04-16  1460  /*=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=*/
-^1da177e4c3f41 Linus Torvalds  2005-04-16  1461  /* MPT IOCTL Test function.
-^1da177e4c3f41 Linus Torvalds  2005-04-16  1462   *
-^1da177e4c3f41 Linus Torvalds  2005-04-16  1463   * Outputs:	None.
-^1da177e4c3f41 Linus Torvalds  2005-04-16  1464   * Return:	0 if successful
-^1da177e4c3f41 Linus Torvalds  2005-04-16  1465   *		-EFAULT if data unavailable
-^1da177e4c3f41 Linus Torvalds  2005-04-16  1466   *		-ENODEV  if no such device/adapter
-^1da177e4c3f41 Linus Torvalds  2005-04-16  1467   */
-^1da177e4c3f41 Linus Torvalds  2005-04-16  1468  static int
-28d76df18f0ad5 Dan Carpenter   2020-01-14  1469  mptctl_readtest (MPT_ADAPTER *ioc, unsigned long arg)
-^1da177e4c3f41 Linus Torvalds  2005-04-16  1470  {
-^1da177e4c3f41 Linus Torvalds  2005-04-16  1471  	struct mpt_ioctl_test __user *uarg = (void __user *) arg;
-^1da177e4c3f41 Linus Torvalds  2005-04-16  1472  	struct mpt_ioctl_test	 karg;
-^1da177e4c3f41 Linus Torvalds  2005-04-16  1473  
-^1da177e4c3f41 Linus Torvalds  2005-04-16  1474  	if (copy_from_user(&karg, uarg, sizeof(struct mpt_ioctl_test))) {
-29dd3609f2fc70 Eric Moore      2007-09-14  1475  		printk(KERN_ERR MYNAM "%s@%d::mptctl_readtest - "
-^1da177e4c3f41 Linus Torvalds  2005-04-16  1476  			"Unable to read in mpt_ioctl_test struct @ %p\n",
-^1da177e4c3f41 Linus Torvalds  2005-04-16  1477  				__FILE__, __LINE__, uarg);
-^1da177e4c3f41 Linus Torvalds  2005-04-16  1478  		return -EFAULT;
-^1da177e4c3f41 Linus Torvalds  2005-04-16  1479  	}
-^1da177e4c3f41 Linus Torvalds  2005-04-16  1480  
-09120a8cd38dbd Prakash, Sathya 2007-07-24  1481  	dctlprintk(ioc, printk(MYIOC_s_DEBUG_FMT "mptctl_readtest called.\n",
-09120a8cd38dbd Prakash, Sathya 2007-07-24  1482  	    ioc->name));
-^1da177e4c3f41 Linus Torvalds  2005-04-16  1483  	/* Fill in the data and return the structure to the calling
-^1da177e4c3f41 Linus Torvalds  2005-04-16  1484  	 * program
-^1da177e4c3f41 Linus Torvalds  2005-04-16  1485  	 */
-^1da177e4c3f41 Linus Torvalds  2005-04-16  1486  
-^1da177e4c3f41 Linus Torvalds  2005-04-16  1487  #ifdef MFCNT
-^1da177e4c3f41 Linus Torvalds  2005-04-16  1488  	karg.chip_type = ioc->mfcnt;
-^1da177e4c3f41 Linus Torvalds  2005-04-16  1489  #else
-^1da177e4c3f41 Linus Torvalds  2005-04-16  1490  	karg.chip_type = ioc->pcidev->device;
-^1da177e4c3f41 Linus Torvalds  2005-04-16  1491  #endif
-^1da177e4c3f41 Linus Torvalds  2005-04-16 @1492  	strncpy (karg.name, ioc->name, MPT_MAX_NAME);
-^1da177e4c3f41 Linus Torvalds  2005-04-16  1493  	karg.name[MPT_MAX_NAME-1]='\0';
-^1da177e4c3f41 Linus Torvalds  2005-04-16  1494  	strncpy (karg.product, ioc->prod_name, MPT_PRODUCT_LENGTH);
-^1da177e4c3f41 Linus Torvalds  2005-04-16  1495  	karg.product[MPT_PRODUCT_LENGTH-1]='\0';
-^1da177e4c3f41 Linus Torvalds  2005-04-16  1496  
-^1da177e4c3f41 Linus Torvalds  2005-04-16  1497  	/* Copy the data from kernel memory to user memory
-^1da177e4c3f41 Linus Torvalds  2005-04-16  1498  	 */
-^1da177e4c3f41 Linus Torvalds  2005-04-16  1499  	if (copy_to_user((char __user *)arg, &karg, sizeof(struct mpt_ioctl_test))) {
-29dd3609f2fc70 Eric Moore      2007-09-14  1500  		printk(MYIOC_s_ERR_FMT "%s@%d::mptctl_readtest - "
-^1da177e4c3f41 Linus Torvalds  2005-04-16  1501  			"Unable to write out mpt_ioctl_test struct @ %p\n",
-29dd3609f2fc70 Eric Moore      2007-09-14  1502  			ioc->name, __FILE__, __LINE__, uarg);
-^1da177e4c3f41 Linus Torvalds  2005-04-16  1503  		return -EFAULT;
-^1da177e4c3f41 Linus Torvalds  2005-04-16  1504  	}
-^1da177e4c3f41 Linus Torvalds  2005-04-16  1505  
-^1da177e4c3f41 Linus Torvalds  2005-04-16  1506  	return 0;
-^1da177e4c3f41 Linus Torvalds  2005-04-16  1507  }
-^1da177e4c3f41 Linus Torvalds  2005-04-16  1508  
-
-:::::: The code at line 1492 was first introduced by commit
-:::::: 1da177e4c3f41524e886b7f1b8a0c1fc7321cac2 Linux-2.6.12-rc2
-
-:::::: TO: Linus Torvalds <torvalds@ppc970.osdl.org>
-:::::: CC: Linus Torvalds <torvalds@ppc970.osdl.org>
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+On 3/22/2022 1:35 AM, Stephen Boyd wrote:
+Thanks for your time Stephen!!!
+> Quoting Srinivasa Rao Mandadapu (2022-03-21 05:28:14)
+>> diff --git a/arch/arm64/boot/dts/qcom/sc7280-crd.dts b/arch/arm64/boot/dts/qcom/sc7280-crd.dts
+>> index e2efbdd..224a82d 100644
+>> --- a/arch/arm64/boot/dts/qcom/sc7280-crd.dts
+>> +++ b/arch/arm64/boot/dts/qcom/sc7280-crd.dts
+>> @@ -84,6 +84,12 @@ ap_ts_pen_1v8: &i2c13 {
+>>          pins = "gpio51";
+>>   };
+>>
+>> +&wcd938x {
+>> +       pinctrl-names = "default";
+>> +       pinctrl-0 = <&us_euro_select>;
+>> +       us-euro-gpios = <&tlmm 81 GPIO_ACTIVE_HIGH>;
+>> +};
+>> +
+>>   &tlmm {
+>>          tp_int_odl: tp-int-odl {
+>>                  pins = "gpio7";
+>> diff --git a/arch/arm64/boot/dts/qcom/sc7280-herobrine.dtsi b/arch/arm64/boot/dts/qcom/sc7280-herobrine.dtsi
+>> index de646d9..c6a04c3 100644
+>> --- a/arch/arm64/boot/dts/qcom/sc7280-herobrine.dtsi
+>> +++ b/arch/arm64/boot/dts/qcom/sc7280-herobrine.dtsi
+>> @@ -20,6 +20,14 @@
+>>   #include "sc7280-chrome-common.dtsi"
+>>
+>>   / {
+>> +       max98360a: audio-codec-0 {
+>> +               compatible = "maxim,max98360a";
+>> +               pinctrl-names = "default";
+>> +               pinctrl-0 = <&amp_en>;
+>> +               sdmode-gpios = <&tlmm 63 GPIO_ACTIVE_HIGH>;
+>> +               #sound-dai-cells = <0>;
+>> +       };
+>> +
+>>          chosen {
+>>                  stdout-path = "serial0:115200n8";
+>>          };
+>> diff --git a/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi b/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
+>> index 4a7b18a..5f75c9a 100644
+>> --- a/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
+>> +++ b/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
+>> @@ -20,6 +20,41 @@
+>>                  serial1 = &uart7;
+>>          };
+>>
+>> +       max98360a: audio-codec-0 {
+>> +               compatible = "maxim,max98360a";
+>> +               pinctrl-names = "default";
+>> +               pinctrl-0 = <&amp_en>;
+>> +               sdmode-gpios = <&tlmm 63 GPIO_ACTIVE_HIGH>;
+>> +               #sound-dai-cells = <0>;
+>> +       };
+>> +
+>> +       wcd938x: audio-codec-1 {
+>> +               compatible = "qcom,wcd9380-codec";
+>> +               #sound-dai-cells = <1>;
+>> +
+>> +               pinctrl-names = "default";
+>> +               pinctrl-0 = <&wcd938x_reset_active>, <&wcd938x_reset_sleep>;
+>> +               reset-gpios = <&tlmm 83 GPIO_ACTIVE_HIGH>;
+>> +
+>> +               qcom,rx-device = <&wcd_rx>;
+>> +               qcom,tx-device = <&wcd_tx>;
+>> +
+>> +               vdd-rxtx-supply = <&vreg_l18b_1p8>;
+>> +               vdd-io-supply = <&vreg_l18b_1p8>;
+>> +               vdd-buck-supply = <&vreg_l17b_1p8>;
+>> +               vdd-mic-bias-supply = <&vreg_bob>;
+>> +
+>> +               qcom,micbias1-microvolt = <1800000>;
+>> +               qcom,micbias2-microvolt = <1800000>;
+>> +               qcom,micbias3-microvolt = <1800000>;
+>> +               qcom,micbias4-microvolt = <1800000>;
+>> +
+>> +               qcom,mbhc-buttons-vthreshold-microvolt = <75000 150000 237000 500000 500000
+>> +                                                         500000 500000 500000>;
+>> +               qcom,mbhc-headset-vthreshold-microvolt = <1700000>;
+>> +               qcom,mbhc-headphone-vthreshold-microvolt = <50000>;
+>> +       };
+>> +
+>>          gpio-keys {
+>>                  compatible = "gpio-keys";
+>>                  label = "gpio-keys";
+>> @@ -476,6 +511,143 @@
+>>          drive-strength = <6>;
+>>   };
+>>
+>> +&soc {
+> Why is the soc node being modified in the board file? I expect these
+> nodes to always be present in the SoC (sc7280) so they should be largely
+> defined in the sc7280.dtsi file, except for any voltage supplies that
+> are described in the board file because the board design dictates what
+> power supplies are connected to the SoC pads.
+Okay. will place accordingly.
+>
+>> +       rxmacro: codec@3200000 {
+>> +               compatible = "qcom,sc7280-lpass-rx-macro";
+>> +               reg = <0 0x03200000 0 0x1000>;
+>> +
+>> +               pinctrl-names = "default";
+>> +               pinctrl-0 = <&rx_swr_active>;
+>> +
+>> +               clocks = <&lpass_aon LPASS_AON_CC_TX_MCLK_CLK>,
+>> +                        <&lpass_aon LPASS_AON_CC_TX_MCLK_2X_CLK>,
+>> +                        <&vamacro>;
+>> +               clock-names = "mclk", "npl", "fsgen";
+>> +
+>> +               power-domains = <&lpass_hm LPASS_CORE_CC_LPASS_CORE_HM_GDSC>,
+>> +                               <&lpass_aon LPASS_AON_CC_LPASS_AUDIO_HM_GDSC>;
+>> +               power-domain-names ="macro", "dcodec";
+>> +
+>> +               #clock-cells = <0>;
+>> +               #sound-dai-cells = <1>;
+>> +       };
+> This whole node can be moved to sc7280.dtsi and then we can have a
+> simple
+>
+> 	&rxmacro {
+> 		status = "okay";
+> 	};
+>
+> here.
+Okay.
+>
+>> +
+>> +       txmacro: codec@3220000 {
+>> +               compatible = "qcom,sc7280-lpass-tx-macro";
+>> +               reg = <0 0x03220000 0 0x1000>;
+>> +
+>> +               pinctrl-names = "default";
+>> +               pinctrl-0 = <&tx_swr_active>;
+>> +
+>> +               clocks = <&lpass_aon LPASS_AON_CC_TX_MCLK_CLK>,
+>> +                        <&lpass_aon LPASS_AON_CC_TX_MCLK_2X_CLK>,
+>> +                        <&vamacro>;
+>> +               clock-names = "mclk", "npl", "fsgen";
+>> +
+>> +               power-domains = <&lpass_hm LPASS_CORE_CC_LPASS_CORE_HM_GDSC>,
+>> +                               <&lpass_aon LPASS_AON_CC_LPASS_AUDIO_HM_GDSC>;
+>> +               power-domain-names ="macro", "dcodec";
+>> +
+>> +               #clock-cells = <0>;
+>> +               #sound-dai-cells = <1>;
+> Same, but txmacro.
+Okay.
+>
+>> +       };
+>> +
+>> +       vamacro: codec@3370000 {
+>> +               compatible = "qcom,sc7280-lpass-va-macro";
+>> +               reg = <0 0x03370000 0 0x1000>;
+>> +
+>> +               pinctrl-0 = <&dmic01_active>;
+>> +               pinctrl-names = "default";
+>> +
+>> +               clocks = <&lpass_aon LPASS_AON_CC_TX_MCLK_CLK>;
+>> +               clock-names = "mclk";
+>> +
+>> +               power-domains = <&lpass_hm LPASS_CORE_CC_LPASS_CORE_HM_GDSC>,
+>> +                               <&lpass_aon LPASS_AON_CC_LPASS_AUDIO_HM_GDSC>;
+>> +               power-domain-names ="macro", "dcodec";
+>> +
+>> +               vdd-micb-supply = <&vreg_bob>;
+>> +
+>> +               #clock-cells = <0>;
+>> +               #sound-dai-cells = <1>;
+> This one can move as well, except for vdd-micb-supply which needs to
+> stay here.
+>
+> 	&vamacro {
+> 		status = "okay";
+> 		vdd-micb-supply = <&vreg_bob>;
+> 	};
+Okay.
+>> +       };
+>> +
+>> +       swr0: soundwire@3210000 {
+>> +               compatible = "qcom,soundwire-v1.6.0";
+>> +               reg = <0 0x03210000 0 0x2000>;
+> This node should largely go into the sc7280.dtsi file.
+Okay.
+>
+>> +
+>> +               interrupts = <GIC_SPI 155 IRQ_TYPE_LEVEL_HIGH>;
+>> +               clocks = <&rxmacro>;
+>> +               clock-names = "iface";
+>> +
+>> +               qcom,din-ports = <0>;
+>> +               qcom,dout-ports = <5>;
+>> +
+>> +               resets = <&lpass_audiocc LPASS_AUDIO_SWR_RX_CGCR>;
+>> +               reset-names = "swr_audio_cgcr";
+>> +
+>> +               qcom,ports-word-length =        /bits/ 8 <0x01 0x07 0x04 0xff 0xff>;
+>> +               qcom,ports-sinterval-low =      /bits/ 8 <0x03 0x3f 0x1f 0x03 0x03>;
+>> +               qcom,ports-offset1 =            /bits/ 8 <0x00 0x00 0x0b 0x01 0x01>;
+>> +               qcom,ports-offset2 =            /bits/ 8 <0x00 0x00 0x0b 0x00 0x00>;
+>> +               qcom,ports-lane-control =       /bits/ 8 <0x01 0x00 0x00 0x00 0x00>;
+>> +               qcom,ports-block-pack-mode =    /bits/ 8 <0xff 0x00 0x01 0xff 0xff>;
+>> +               qcom,ports-hstart =             /bits/ 8 <0xff 0x03 0xff 0xff 0xff>;
+>> +               qcom,ports-hstop =              /bits/ 8 <0xff 0x06 0xff 0xff 0xff>;
+>> +               qcom,ports-block-group-count =  /bits/ 8 <0xff 0xff 0xff 0xff 0x00>;
+> Are these properties board specific? The sm8250.dtsi file has them so I
+> guess not.
+Yes. They are not board specific.  will move accordingly.
+>
+>> +
+>> +               #sound-dai-cells = <1>;
+>> +               #address-cells = <2>;
+>> +               #size-cells = <0>;
+>> +
+>> +               wcd_rx: codec@0,4 {
+>> +                       compatible = "sdw20217010d00";
+> Is this some component on the board? If so then it should stay here in
+> this file.
+Yes. it's WCD codec component on board.
+>
+>> +                       reg = <0 4>;
+>> +                       #sound-dai-cells = <1>;
+>> +                       qcom,rx-port-mapping = <1 2 3 4 5>;
+>> +               };
+>> +       };
+>> +
+>> +       swr1: soundwire@3230000 {
+>> +               compatible = "qcom,soundwire-v1.6.0";
+>> +               reg = <0 0x03230000 0 0x2000>;
+>> +
+>> +               interrupts-extended = <&intc GIC_SPI 496 IRQ_TYPE_LEVEL_HIGH>,
+>> +                                     <&pdc 130 IRQ_TYPE_LEVEL_HIGH>;
+>> +               interrupt-names = "swr_master_irq", "swr_wake_irq";
+>> +               clocks = <&txmacro>;
+>> +               clock-names = "iface";
+>> +
+>> +               qcom,din-ports = <3>;
+>> +               qcom,dout-ports = <0>;
+>> +
+>> +               resets = <&lpass_audiocc LPASS_AUDIO_SWR_TX_CGCR>;
+>> +               reset-names = "swr_audio_cgcr";
+>> +
+>> +               qcom,ports-sinterval-low =      /bits/ 8 <0x01 0x03 0x03>;
+>> +               qcom,ports-offset1 =            /bits/ 8 <0x01 0x00 0x02>;
+>> +               qcom,ports-offset2 =            /bits/ 8 <0x00 0x00 0x00>;
+>> +               qcom,ports-hstart =             /bits/ 8 <0xff 0xff 0xff>;
+>> +               qcom,ports-hstop =              /bits/ 8 <0xff 0xff 0xff>;
+>> +               qcom,ports-word-length =        /bits/ 8 <0xff 0x0 0xff>;
+>> +               qcom,ports-block-pack-mode =    /bits/ 8 <0xff 0xff 0xff>;
+>> +               qcom,ports-block-group-count =  /bits/ 8 <0xff 0xff 0xff>;
+>> +               qcom,ports-lane-control =       /bits/ 8 <0x00 0x01 0x00>;
+>> +               qcom,port-offset = <1>;
+>> +
+>> +               #sound-dai-cells = <1>;
+>> +               #address-cells = <2>;
+>> +               #size-cells = <0>;
+>> +
+>> +               wcd_tx: codec@0,3 {
+>> +                       compatible = "sdw20217010d00";
+>> +                       reg = <0 3>;
+>> +                       #sound-dai-cells = <1>;
+>> +                       qcom,tx-port-mapping = <1 2 3 4>;
+>> +               };
+> Same question about being a board component. Probably yes?
+Yes.
+>
+>> +       };
+>> +};
+>> +
+>>   &tlmm {
+>>          amp_en: amp-en {
