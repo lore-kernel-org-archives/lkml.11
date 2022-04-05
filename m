@@ -2,141 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B599C4332F
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 01:26:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 37B8AC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 01:26:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1841694AbiDFBZQ (ORCPT
+        id S1841708AbiDFBZW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 21:25:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44278 "EHLO
+        Tue, 5 Apr 2022 21:25:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53188 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349273AbiDEJtd (ORCPT
+        with ESMTP id S1453872AbiDEP51 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:49:33 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B1BA26FA;
-        Tue,  5 Apr 2022 02:43:36 -0700 (PDT)
+        Tue, 5 Apr 2022 11:57:27 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFD63141D9D
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 08:02:25 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9C97C615E5;
-        Tue,  5 Apr 2022 09:43:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AD491C385A2;
-        Tue,  5 Apr 2022 09:43:34 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 47A26B81E56
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 15:02:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8C21EC385A1;
+        Tue,  5 Apr 2022 15:02:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649151815;
-        bh=hcHNfnlR3uq16SdqCxgn15X9mJ344yk9MYVAcYO4ANQ=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PPpgchgOtd9Zdn2YxDCmNOpXFYp9bVxvstpWgt5VEO3pfv2ROiBb9r+j1KMUJSybQ
-         AMBecLsl4XwKmtXsD+v/t1+0VUvzspJSTsgxpQNBZSZG4+qSiHXrmVopCiYx4dC9FX
-         iHfvmrMH1/YHPoQkYodCmvKtDI3DnTjVUPUC2DFA=
+        s=korg; t=1649170943;
+        bh=Ra/03EFX5mzh6Q7bAuF5V7b3yZhKCzD8UNsg2MKHH24=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=rIgEKXlspNbXek7p1WoN/d+mkKu3Nfa8cBFmmXaa3zM1MOzJHAaNrX2XOMt6AL4Se
+         aKsuIqXU0jX9K9qb8rMRxLGXiIEhBcE7+x4B2gNTygCfF7EV5iBQztirOljQWwzHdg
+         I+prIHrsuwc9fuHnZIEAV15TtdOGCgpdTXTrk9oY=
+Date:   Tue, 5 Apr 2022 17:02:20 +0200
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jianlin Shi <jishi@redhat.com>,
-        Hangbin Liu <liuhangbin@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 552/913] bareudp: use ipv6_mod_enabled to check if IPv6 enabled
-Date:   Tue,  5 Apr 2022 09:26:54 +0200
-Message-Id: <20220405070356.393753958@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
-User-Agent: quilt/0.66
+To:     Sevinj Aghayeva <sevinj.aghayeva@gmail.com>
+Cc:     linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
+        outreachy@lists.linux.dev
+Subject: Re: [PATCH] staging: rtl8723bs: fix indentation
+Message-ID: <YkxZ/NMSNPQ59tRc@kroah.com>
+References: <20220405145424.GA623343@euclid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220405145424.GA623343@euclid>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hangbin Liu <liuhangbin@gmail.com>
+On Tue, Apr 05, 2022 at 10:54:24AM -0400, Sevinj Aghayeva wrote:
+> Adhere to Linux kernel coding style.
+> 
+> Reported by checkpatch:
+> 
+> WARNING: suspect code indent for conditional statements
+> 
+> Signed-off-by: Sevinj Aghayeva <sevinj.aghayeva@gmail.com>
+> ---
+>  drivers/staging/rtl8723bs/core/rtw_mlme_ext.c | 14 +++-----------
+>  1 file changed, 3 insertions(+), 11 deletions(-)
+> 
+> diff --git a/drivers/staging/rtl8723bs/core/rtw_mlme_ext.c b/drivers/staging/rtl8723bs/core/rtw_mlme_ext.c
+> index 04e29e228c1e..1bdbd0971f73 100644
+> --- a/drivers/staging/rtl8723bs/core/rtw_mlme_ext.c
+> +++ b/drivers/staging/rtl8723bs/core/rtw_mlme_ext.c
+> @@ -5143,17 +5143,9 @@ void link_timer_hdl(struct timer_list *t)
+>  	} else if (pmlmeinfo->state & WIFI_FW_AUTH_STATE) {
+>  		/* re-auth timer */
+>  		if (++pmlmeinfo->reauth_count > REAUTH_LIMIT) {
+> -			/* if (pmlmeinfo->auth_algo != dot11AuthAlgrthm_Auto) */
+> -			/*  */
+> -				pmlmeinfo->state = 0;
+> -				report_join_res(padapter, -1);
+> -				return;
+> -			/*  */
+> -			/* else */
+> -			/*  */
+> -			/* 	pmlmeinfo->auth_algo = dot11AuthAlgrthm_Shared; */
+> -			/* 	pmlmeinfo->reauth_count = 0; */
+> -			/*  */
+> +			pmlmeinfo->state = 0;
+> +			report_join_res(padapter, -1);
+> +			return;
+>  		}
+>  
+>  		pmlmeinfo->auth_seq = 1;
+> -- 
+> 2.25.1
+> 
+> 
 
-[ Upstream commit e077ed58c243afc197bc2a2ba0e1ff61135e4ec2 ]
+Hi,
 
-bareudp_create_sock() use AF_INET6 by default if IPv6 CONFIG enabled.
-But if user start kernel with ipv6.disable=1, the bareudp sock will
-created failed, which cause the interface open failed even with ethertype
-ip. e.g.
+This is the friendly patch-bot of Greg Kroah-Hartman.  You have sent him
+a patch that has triggered this response.  He used to manually respond
+to these common problems, but in order to save his sanity (he kept
+writing the same thing over and over, yet to different people), I was
+created.  Hopefully you will not take offence and will fix the problem
+in your patch and resubmit it so that it can be accepted into the Linux
+kernel tree.
 
- # ip link add bareudp1 type bareudp dstport 2 ethertype ip
- # ip link set bareudp1 up
- RTNETLINK answers: Address family not supported by protocol
+You are receiving this message because of the following common error(s)
+as indicated below:
 
-Fix it by using ipv6_mod_enabled() to check if IPv6 enabled. There is
-no need to check IS_ENABLED(CONFIG_IPV6) as ipv6_mod_enabled() will
-return false when CONFIG_IPV6 no enabled in include/linux/ipv6.h.
+- You did not specify a description of why the patch is needed, or
+  possibly, any description at all, in the email body.  Please read the
+  section entitled "The canonical patch format" in the kernel file,
+  Documentation/SubmittingPatches for what is needed in order to
+  properly describe the change.
 
-Reported-by: Jianlin Shi <jishi@redhat.com>
-Fixes: 571912c69f0e ("net: UDP tunnel encapsulation module for tunnelling different protocols like MPLS, IP, NSH etc.")
-Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
-Link: https://lore.kernel.org/r/20220315062618.156230-1-liuhangbin@gmail.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/net/bareudp.c | 19 ++++++++++---------
- 1 file changed, 10 insertions(+), 9 deletions(-)
+- You did not write a descriptive Subject: for the patch, allowing Greg,
+  and everyone else, to know what this patch is all about.  Please read
+  the section entitled "The canonical patch format" in the kernel file,
+  Documentation/SubmittingPatches for what a proper Subject: line should
+  look like.
 
-diff --git a/drivers/net/bareudp.c b/drivers/net/bareudp.c
-index 54e321a695ce..98c915943f32 100644
---- a/drivers/net/bareudp.c
-+++ b/drivers/net/bareudp.c
-@@ -141,14 +141,14 @@ static int bareudp_udp_encap_recv(struct sock *sk, struct sk_buff *skb)
- 	skb_reset_network_header(skb);
- 	skb_reset_mac_header(skb);
- 
--	if (!IS_ENABLED(CONFIG_IPV6) || family == AF_INET)
-+	if (!ipv6_mod_enabled() || family == AF_INET)
- 		err = IP_ECN_decapsulate(oiph, skb);
- 	else
- 		err = IP6_ECN_decapsulate(oiph, skb);
- 
- 	if (unlikely(err)) {
- 		if (log_ecn_error) {
--			if  (!IS_ENABLED(CONFIG_IPV6) || family == AF_INET)
-+			if  (!ipv6_mod_enabled() || family == AF_INET)
- 				net_info_ratelimited("non-ECT from %pI4 "
- 						     "with TOS=%#x\n",
- 						     &((struct iphdr *)oiph)->saddr,
-@@ -214,11 +214,12 @@ static struct socket *bareudp_create_sock(struct net *net, __be16 port)
- 	int err;
- 
- 	memset(&udp_conf, 0, sizeof(udp_conf));
--#if IS_ENABLED(CONFIG_IPV6)
--	udp_conf.family = AF_INET6;
--#else
--	udp_conf.family = AF_INET;
--#endif
-+
-+	if (ipv6_mod_enabled())
-+		udp_conf.family = AF_INET6;
-+	else
-+		udp_conf.family = AF_INET;
-+
- 	udp_conf.local_udp_port = port;
- 	/* Open UDP socket */
- 	err = udp_sock_create(net, &udp_conf, &sock);
-@@ -441,7 +442,7 @@ static netdev_tx_t bareudp_xmit(struct sk_buff *skb, struct net_device *dev)
- 	}
- 
- 	rcu_read_lock();
--	if (IS_ENABLED(CONFIG_IPV6) && info->mode & IP_TUNNEL_INFO_IPV6)
-+	if (ipv6_mod_enabled() && info->mode & IP_TUNNEL_INFO_IPV6)
- 		err = bareudp6_xmit_skb(skb, dev, bareudp, info);
- 	else
- 		err = bareudp_xmit_skb(skb, dev, bareudp, info);
-@@ -471,7 +472,7 @@ static int bareudp_fill_metadata_dst(struct net_device *dev,
- 
- 	use_cache = ip_tunnel_dst_cache_usable(skb, info);
- 
--	if (!IS_ENABLED(CONFIG_IPV6) || ip_tunnel_info_af(info) == AF_INET) {
-+	if (!ipv6_mod_enabled() || ip_tunnel_info_af(info) == AF_INET) {
- 		struct rtable *rt;
- 		__be32 saddr;
- 
--- 
-2.34.1
+- This looks like a new version of a previously submitted patch, but you
+  did not list below the --- line any changes from the previous version.
+  Please read the section entitled "The canonical patch format" in the
+  kernel file, Documentation/SubmittingPatches for what needs to be done
+  here to properly describe this.
 
+If you wish to discuss this problem further, or you have questions about
+how to resolve this issue, please feel free to respond to this email and
+Greg will reply once he has dug out from the pending patches received
+from other developers.
 
+thanks,
 
+greg k-h's patch email bot
