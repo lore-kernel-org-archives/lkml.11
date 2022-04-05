@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D4386C4707F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BE8EFC35294
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:02:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359776AbiDEL5M (ORCPT
+        id S1359650AbiDEL5H (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 07:57:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50874 "EHLO
+        Tue, 5 Apr 2022 07:57:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47862 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244998AbiDEIxA (ORCPT
+        with ESMTP id S244801AbiDEIwk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:53:00 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4839BE3F;
-        Tue,  5 Apr 2022 01:49:00 -0700 (PDT)
+        Tue, 5 Apr 2022 04:52:40 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2BD0205F8;
+        Tue,  5 Apr 2022 01:44:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 0D140CE1C2B;
-        Tue,  5 Apr 2022 08:48:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 246FEC385A1;
-        Tue,  5 Apr 2022 08:48:56 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A917C6117A;
+        Tue,  5 Apr 2022 08:44:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B25CEC385A1;
+        Tue,  5 Apr 2022 08:44:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649148537;
-        bh=dUPMWY3No3ZtlmW5feTBsUwdpyUR2ssd5bqEdS1TjXY=;
+        s=korg; t=1649148249;
+        bh=ILHz7ulA5x04gj7iYCp96oECxga7eMHwl9e/gQq2a24=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fl0dC/Iy96KmL0TKHoU1eg7Io/rjcAIzPrzy529NxlewwRXP02E9z065klMH6XceV
-         1uQ3D5Acq+tXL6X5zhVsxHgkrrVeW3P5B8BuWLwvoPCbH8YmQp5kfgKTzL8iegs30v
-         H7+Zgo3rPMdevAdzwe2bPckaWtkFOKrC8Lnvvd9U=
+        b=Emu/y7jztKbCbwRn7WRf4rDGxnTJ5EM1hH00PLFHdxXnVdfFfHo4b6U3IOjNun/HM
+         R/so+sba3O46S1+Q4iSV30vlEj+LHc5HHToRP42rRWrTjTOI+KHhWOGkoCUyxK5RCH
+         ueDAq5KUoR1vE3RDcy4nhCuAk0QNSa4FnqOOtHiY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
-        Mark Brown <broonie@kernel.org>,
+        stable@vger.kernel.org, Ondrej Zary <linux@zary.sk>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0343/1017] ASoC: codecs: wcd934x: fix kcontrol max values
-Date:   Tue,  5 Apr 2022 09:20:56 +0200
-Message-Id: <20220405070404.464710729@linuxfoundation.org>
+Subject: [PATCH 5.16 0288/1017] media: bttv: fix WARNING regression on tunerless devices
+Date:   Tue,  5 Apr 2022 09:20:01 +0200
+Message-Id: <20220405070402.820680932@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -51,46 +51,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+From: Ondrej Zary <linux@zary.sk>
 
-[ Upstream commit 61163c3e7480106804269182e24db05244866493 ]
+[ Upstream commit ef058cc8b7193d15a771272359c7454839ae74ee ]
 
-set "HPH Type" Kcontrol max value of WCD_MBHC_HPH_STEREO instead of UINT_MAX.
-set "HPHL/R Impedance" Kcontrols max value to INT_MAX instead of UINT_MAX as
-max field is integer type.
+Commit 2161536516ed ("media: media/pci: set device_caps in struct video_device")
+introduced a regression: V4L2_CAP_TUNER is always present in device_caps,
+even when the device has no tuner.
 
-Without this patch amixer for these controls will show -1 as max value to userspace.
+This causes a warning:
+WARNING: CPU: 0 PID: 249 at drivers/media/v4l2-core/v4l2-ioctl.c:1102 v4l_querycap+0xa0/0xb0 [videodev]
 
-Fixes: 9fb9b1690f0b ("ASoC: codecs: wcd934x: add mbhc support")
-Signed-off-by: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
-Link: https://lore.kernel.org/r/20220222183212.11580-9-srinivas.kandagatla@linaro.org
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Fixes: 2161536516ed ("media: media/pci: set device_caps in struct video_device")
+Signed-off-by: Ondrej Zary <linux@zary.sk>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/codecs/wcd934x.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/media/pci/bt8xx/bttv-driver.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/sound/soc/codecs/wcd934x.c b/sound/soc/codecs/wcd934x.c
-index e63c6b723d76..68c9d694d379 100644
---- a/sound/soc/codecs/wcd934x.c
-+++ b/sound/soc/codecs/wcd934x.c
-@@ -3023,14 +3023,14 @@ static int wcd934x_hph_impedance_get(struct snd_kcontrol *kcontrol,
- 	return 0;
- }
- static const struct snd_kcontrol_new hph_type_detect_controls[] = {
--	SOC_SINGLE_EXT("HPH Type", 0, 0, UINT_MAX, 0,
-+	SOC_SINGLE_EXT("HPH Type", 0, 0, WCD_MBHC_HPH_STEREO, 0,
- 		       wcd934x_get_hph_type, NULL),
- };
+diff --git a/drivers/media/pci/bt8xx/bttv-driver.c b/drivers/media/pci/bt8xx/bttv-driver.c
+index 0e9df8b35ac6..661ebfa7bf3f 100644
+--- a/drivers/media/pci/bt8xx/bttv-driver.c
++++ b/drivers/media/pci/bt8xx/bttv-driver.c
+@@ -3890,7 +3890,7 @@ static int bttv_register_video(struct bttv *btv)
  
- static const struct snd_kcontrol_new impedance_detect_controls[] = {
--	SOC_SINGLE_EXT("HPHL Impedance", 0, 0, UINT_MAX, 0,
-+	SOC_SINGLE_EXT("HPHL Impedance", 0, 0, INT_MAX, 0,
- 		       wcd934x_hph_impedance_get, NULL),
--	SOC_SINGLE_EXT("HPHR Impedance", 0, 1, UINT_MAX, 0,
-+	SOC_SINGLE_EXT("HPHR Impedance", 0, 1, INT_MAX, 0,
- 		       wcd934x_hph_impedance_get, NULL),
- };
+ 	/* video */
+ 	vdev_init(btv, &btv->video_dev, &bttv_video_template, "video");
+-	btv->video_dev.device_caps = V4L2_CAP_VIDEO_CAPTURE | V4L2_CAP_TUNER |
++	btv->video_dev.device_caps = V4L2_CAP_VIDEO_CAPTURE |
+ 				     V4L2_CAP_READWRITE | V4L2_CAP_STREAMING;
+ 	if (btv->tuner_type != TUNER_ABSENT)
+ 		btv->video_dev.device_caps |= V4L2_CAP_TUNER;
+@@ -3911,7 +3911,7 @@ static int bttv_register_video(struct bttv *btv)
+ 	/* vbi */
+ 	vdev_init(btv, &btv->vbi_dev, &bttv_video_template, "vbi");
+ 	btv->vbi_dev.device_caps = V4L2_CAP_VBI_CAPTURE | V4L2_CAP_READWRITE |
+-				   V4L2_CAP_STREAMING | V4L2_CAP_TUNER;
++				   V4L2_CAP_STREAMING;
+ 	if (btv->tuner_type != TUNER_ABSENT)
+ 		btv->vbi_dev.device_caps |= V4L2_CAP_TUNER;
  
 -- 
 2.34.1
