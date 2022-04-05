@@ -2,46 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 93D34C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BBB87C4332F
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 11:32:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377056AbiDELZ0 (ORCPT
+        id S1377091AbiDELZe (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 07:25:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46132 "EHLO
+        Tue, 5 Apr 2022 07:25:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46598 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242781AbiDEItc (ORCPT
+        with ESMTP id S242936AbiDEItm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:49:32 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17EBD7460C;
-        Tue,  5 Apr 2022 01:37:43 -0700 (PDT)
+        Tue, 5 Apr 2022 04:49:42 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2B238BE34;
+        Tue,  5 Apr 2022 01:37:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 29F2DB81C6A;
-        Tue,  5 Apr 2022 08:37:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 67FF6C385A1;
-        Tue,  5 Apr 2022 08:37:24 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5EF18B81C69;
+        Tue,  5 Apr 2022 08:37:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B0509C385A0;
+        Tue,  5 Apr 2022 08:37:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649147844;
-        bh=lzO+z6AoVIcvFgn8IXdAdIOaIsz6Yqp+xI/H9kDkdZA=;
+        s=korg; t=1649147861;
+        bh=1SEV+0+k6YRHwzV5O41lcxbDLNWYL1ygIQhLSS3pFZs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mVNuNQ2fRbeELBkZihTOHX8dpiMVLe/MMcxf8fcqlEnpzta9bgHt7Xy5TB9KsRmri
-         s0eZGlQlrlAywiKW/Z2yQmPyp1SzPIKHd3PzpMwHmQa6ShFJyt1VfWsxsIieLGfZJ6
-         Lt9DNaWvJkWdIE8MXoFxVREiikZiXUM6xuLZy4hE=
+        b=09wyhEl0iSf0FCU/javc3ZryaEjQPcALPoHbo6ewIj6Us78RcfrO1ksoIZVFfXpt1
+         5iRSr2xtk9xdd1IZz92dbe3yGfOd3/zzEUb9v9FGZy5ktIWA1FD1qrOpkAJXUkZBs+
+         89P2NslL+E8saS+rfDC0Ioklp9KE1lqSpkX9OoJU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, stable@kernel.org,
-        Geetika Moolchandani <Geetika.Moolchandani1@ibm.com>,
-        Nageswara R Sastry <rnsastry@linux.ibm.com>,
-        Ritesh Harjani <riteshh@linux.ibm.com>,
-        Ojaswin Mujoo <ojaswin@linux.ibm.com>,
-        Theodore Tso <tytso@mit.edu>
-Subject: [PATCH 5.16 0141/1017] ext4: make mb_optimize_scan performance mount option work with extents
-Date:   Tue,  5 Apr 2022 09:17:34 +0200
-Message-Id: <20220405070358.388849007@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Shinichiro Kawasaki <shinichiro.kawasaki@wdc.com>,
+        Jens Axboe <axboe@kernel.dk>
+Subject: [PATCH 5.16 0147/1017] block: limit request dispatch loop duration
+Date:   Tue,  5 Apr 2022 09:17:40 +0200
+Message-Id: <20220405070358.569266137@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -53,121 +50,85 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ojaswin Mujoo <ojaswin@linux.ibm.com>
+From: Shin'ichiro Kawasaki <shinichiro.kawasaki@wdc.com>
 
-commit 077d0c2c78df6f7260cdd015a991327efa44d8ad upstream.
+commit 572299f03afd676dd4e20669cdaf5ed0fe1379d4 upstream.
 
-Currently mb_optimize_scan scan feature which improves filesystem
-performance heavily (when FS is fragmented), seems to be not working
-with files with extents (ext4 by default has files with extents).
+When IO requests are made continuously and the target block device
+handles requests faster than request arrival, the request dispatch loop
+keeps on repeating to dispatch the arriving requests very long time,
+more than a minute. Since the loop runs as a workqueue worker task, the
+very long loop duration triggers workqueue watchdog timeout and BUG [1].
 
-This patch fixes that and makes mb_optimize_scan feature work
-for files with extents.
+To avoid the very long loop duration, break the loop periodically. When
+opportunity to dispatch requests still exists, check need_resched(). If
+need_resched() returns true, the dispatch loop already consumed its time
+slice, then reschedule the dispatch work and break the loop. With heavy
+IO load, need_resched() does not return true for 20~30 seconds. To cover
+such case, check time spent in the dispatch loop with jiffies. If more
+than 1 second is spent, reschedule the dispatch work and break the loop.
 
-Below are some performance numbers obtained when allocating a 10M and 100M
-file with and w/o this patch on a filesytem with no 1M contiguous block.
+[1]
 
-<perf numbers>
-===============
-Workload: dd if=/dev/urandom of=test conv=fsync bs=1M count=10/100
+[  609.691437] BUG: workqueue lockup - pool cpus=10 node=1 flags=0x0 nice=-20 stuck for 35s!
+[  609.701820] Showing busy workqueues and worker pools:
+[  609.707915] workqueue events: flags=0x0
+[  609.712615]   pwq 0: cpus=0 node=0 flags=0x0 nice=0 active=1/256 refcnt=2
+[  609.712626]     pending: drm_fb_helper_damage_work [drm_kms_helper]
+[  609.712687] workqueue events_freezable: flags=0x4
+[  609.732943]   pwq 0: cpus=0 node=0 flags=0x0 nice=0 active=1/256 refcnt=2
+[  609.732952]     pending: pci_pme_list_scan
+[  609.732968] workqueue events_power_efficient: flags=0x80
+[  609.751947]   pwq 0: cpus=0 node=0 flags=0x0 nice=0 active=1/256 refcnt=2
+[  609.751955]     pending: neigh_managed_work
+[  609.752018] workqueue kblockd: flags=0x18
+[  609.769480]   pwq 21: cpus=10 node=1 flags=0x0 nice=-20 active=3/256 refcnt=4
+[  609.769488]     in-flight: 1020:blk_mq_run_work_fn
+[  609.769498]     pending: blk_mq_timeout_work, blk_mq_run_work_fn
+[  609.769744] pool 21: cpus=10 node=1 flags=0x0 nice=-20 hung=35s workers=2 idle: 67
+[  639.899730] BUG: workqueue lockup - pool cpus=10 node=1 flags=0x0 nice=-20 stuck for 66s!
+[  639.909513] Showing busy workqueues and worker pools:
+[  639.915404] workqueue events: flags=0x0
+[  639.920197]   pwq 0: cpus=0 node=0 flags=0x0 nice=0 active=1/256 refcnt=2
+[  639.920215]     pending: drm_fb_helper_damage_work [drm_kms_helper]
+[  639.920365] workqueue kblockd: flags=0x18
+[  639.939932]   pwq 21: cpus=10 node=1 flags=0x0 nice=-20 active=3/256 refcnt=4
+[  639.939942]     in-flight: 1020:blk_mq_run_work_fn
+[  639.939955]     pending: blk_mq_timeout_work, blk_mq_run_work_fn
+[  639.940212] pool 21: cpus=10 node=1 flags=0x0 nice=-20 hung=66s workers=2 idle: 67
 
-Time taken
-=====================================================
-no.     Size   without-patch     with-patch    Diff(%)
-1       10M      0m8.401s         0m5.623s     33.06%
-2       100M     1m40.465s        1m14.737s    25.6%
-
-<debug stats>
-=============
-w/o patch:
-  mballoc:
-    reqs: 17056
-    success: 11407
-    groups_scanned: 13643
-    cr0_stats:
-            hits: 37
-            groups_considered: 9472
-            useless_loops: 36
-            bad_suggestions: 0
-    cr1_stats:
-            hits: 11418
-            groups_considered: 908560
-            useless_loops: 1894
-            bad_suggestions: 0
-    cr2_stats:
-            hits: 1873
-            groups_considered: 6913
-            useless_loops: 21
-    cr3_stats:
-            hits: 21
-            groups_considered: 5040
-            useless_loops: 21
-    extents_scanned: 417364
-            goal_hits: 3707
-            2^n_hits: 37
-            breaks: 1873
-            lost: 0
-    buddies_generated: 239/240
-    buddies_time_used: 651080
-    preallocated: 705
-    discarded: 478
-
-with patch:
-  mballoc:
-    reqs: 12768
-    success: 11305
-    groups_scanned: 12768
-    cr0_stats:
-            hits: 1
-            groups_considered: 18
-            useless_loops: 0
-            bad_suggestions: 0
-    cr1_stats:
-            hits: 5829
-            groups_considered: 50626
-            useless_loops: 0
-            bad_suggestions: 0
-    cr2_stats:
-            hits: 6938
-            groups_considered: 580363
-            useless_loops: 0
-    cr3_stats:
-            hits: 0
-            groups_considered: 0
-            useless_loops: 0
-    extents_scanned: 309059
-            goal_hits: 0
-            2^n_hits: 1
-            breaks: 1463
-            lost: 0
-    buddies_generated: 239/240
-    buddies_time_used: 791392
-    preallocated: 673
-    discarded: 446
-
-Fixes: 196e402 (ext4: improve cr 0 / cr 1 group scanning)
-Cc: stable@kernel.org
-Reported-by: Geetika Moolchandani <Geetika.Moolchandani1@ibm.com>
-Reported-by: Nageswara R Sastry <rnsastry@linux.ibm.com>
-Suggested-by: Ritesh Harjani <riteshh@linux.ibm.com>
-Signed-off-by: Ojaswin Mujoo <ojaswin@linux.ibm.com>
-Link: https://lore.kernel.org/r/fc9a48f7f8dcfc83891a8b21f6dd8cdf056ed810.1646732698.git.ojaswin@linux.ibm.com
-Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+Fixes: 6e6fcbc27e778 ("blk-mq: support batching dispatch in case of io")
+Signed-off-by: Shin'ichiro Kawasaki <shinichiro.kawasaki@wdc.com>
+Cc: stable@vger.kernel.org # v5.10+
+Link: https://lore.kernel.org/linux-block/20220310091649.zypaem5lkyfadymg@shindev/
+Link: https://lore.kernel.org/r/20220318022641.133484-1-shinichiro.kawasaki@wdc.com
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/ext4/mballoc.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ block/blk-mq-sched.c |    9 ++++++++-
+ 1 file changed, 8 insertions(+), 1 deletion(-)
 
---- a/fs/ext4/mballoc.c
-+++ b/fs/ext4/mballoc.c
-@@ -1000,7 +1000,7 @@ static inline int should_optimize_scan(s
- 		return 0;
- 	if (ac->ac_criteria >= 2)
- 		return 0;
--	if (ext4_test_inode_flag(ac->ac_inode, EXT4_INODE_EXTENTS))
-+	if (!ext4_test_inode_flag(ac->ac_inode, EXT4_INODE_EXTENTS))
- 		return 0;
- 	return 1;
+--- a/block/blk-mq-sched.c
++++ b/block/blk-mq-sched.c
+@@ -206,11 +206,18 @@ static int __blk_mq_do_dispatch_sched(st
+ 
+ static int blk_mq_do_dispatch_sched(struct blk_mq_hw_ctx *hctx)
+ {
++	unsigned long end = jiffies + HZ;
+ 	int ret;
+ 
+ 	do {
+ 		ret = __blk_mq_do_dispatch_sched(hctx);
+-	} while (ret == 1);
++		if (ret != 1)
++			break;
++		if (need_resched() || time_is_before_jiffies(end)) {
++			blk_mq_delay_run_hw_queue(hctx, 0);
++			break;
++		}
++	} while (1);
+ 
+ 	return ret;
  }
 
 
