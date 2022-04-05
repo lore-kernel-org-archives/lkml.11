@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F1A8CC47084
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:36:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 25484C47087
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:36:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241455AbiDEIdk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 04:33:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53524 "EHLO
+        id S240366AbiDEIbz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 04:31:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50900 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236305AbiDEICB (ORCPT
+        with ESMTP id S236084AbiDEIBR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:02:01 -0400
+        Tue, 5 Apr 2022 04:01:17 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 007DF49FB3;
-        Tue,  5 Apr 2022 01:00:02 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5225A49FB3;
+        Tue,  5 Apr 2022 00:59:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A6E44B81B16;
-        Tue,  5 Apr 2022 08:00:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0C252C340EE;
-        Tue,  5 Apr 2022 07:59:59 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id F2842B81B7F;
+        Tue,  5 Apr 2022 07:59:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 623D5C340EE;
+        Tue,  5 Apr 2022 07:59:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649145600;
-        bh=HikB6oo11ig/HGvG2zs9U0P7DdkEpyLT2pAiS7VnFAs=;
+        s=korg; t=1649145556;
+        bh=V6Suz//XJZMYQ70bJZmNicQGPlgpqpYOtVsGgnsQ4/Q=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=oIy1bTWWLi4NKbbNjZIZUtNAy0tT9je4qsUAEaCBNBKDXoRwFf/fpbeF232JA+er2
-         7koDUeBMwG4ksTBzU6xnhjg5DHMskvhWGEmhWIQMQUtIiiFban2BtIsEQEFRD9dwBL
-         HO0m2ie1do3U76bjuBfcqe72qNRet+199XzVj6c8=
+        b=0FNYJcsX6MWgJ8US4ofHT04ZKPp/BE31QyIOVcAKG31c2sGV8i3EPSzBX7r1T9iGC
+         LcvmrqbBAKOGImSypIeChhRtAENH7wYWBMaDaL/IiXLB/Lo+2oTz6CpRb9y8e1M58X
+         XHMgnwunb2hiygg4HCikAMR5yMb0dXyKu28YXhs8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tobias Waldekranz <tobias@waldekranz.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org, Sean Wang <sean.wang@mediatek.com>,
+        Mark Chen <mark-yw.chen@mediatek.com>,
+        Marcel Holtmann <marcel@holtmann.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0461/1126] net: dsa: Move VLAN filtering syncing out of dsa_switch_bridge_leave
-Date:   Tue,  5 Apr 2022 09:20:08 +0200
-Message-Id: <20220405070421.157405865@linuxfoundation.org>
+Subject: [PATCH 5.17 0448/1126] Bluetooth: btmtksdio: refactor btmtksdio_runtime_[suspend|resume]()
+Date:   Tue,  5 Apr 2022 09:19:55 +0200
+Message-Id: <20220405070420.774164414@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -50,84 +50,193 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tobias Waldekranz <tobias@waldekranz.com>
+From: Mark Chen <mark-yw.chen@mediatek.com>
 
-[ Upstream commit 381a730182f1d174e1950cd4e63e885b1c302051 ]
+[ Upstream commit c7e301d7c85544607ccc52ca5f26d20c59485342 ]
 
-Most of dsa_switch_bridge_leave was, in fact, dealing with the syncing
-of VLAN filtering for switches on which that is a global
-setting. Separate the two phases to prepare for the cross-chip related
-bugfix in the following commit.
+Refactor btmtksdio_runtime_[suspend|resume]() to create the common
+funcitons btmtksdio_[fw|drv]_pmctrl() shared with btmtksdio_[open|close]()
+to avoid the redundant code as well.
 
-Signed-off-by: Tobias Waldekranz <tobias@waldekranz.com>
-Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+This is also a prerequisite patch for the incoming patches.
+
+Co-developed-by: Sean Wang <sean.wang@mediatek.com>
+Signed-off-by: Sean Wang <sean.wang@mediatek.com>
+Signed-off-by: Mark Chen <mark-yw.chen@mediatek.com>
+Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/dsa/switch.c | 38 +++++++++++++++++++++++++-------------
- 1 file changed, 25 insertions(+), 13 deletions(-)
+ drivers/bluetooth/btmtksdio.c | 94 ++++++++++++++++++++---------------
+ 1 file changed, 53 insertions(+), 41 deletions(-)
 
-diff --git a/net/dsa/switch.c b/net/dsa/switch.c
-index e3c7d2627a61..9f9b70d6070a 100644
---- a/net/dsa/switch.c
-+++ b/net/dsa/switch.c
-@@ -113,26 +113,15 @@ static int dsa_switch_bridge_join(struct dsa_switch *ds,
- 	return dsa_tag_8021q_bridge_join(ds, info);
+diff --git a/drivers/bluetooth/btmtksdio.c b/drivers/bluetooth/btmtksdio.c
+index c05578b52d33..cf757574fb63 100644
+--- a/drivers/bluetooth/btmtksdio.c
++++ b/drivers/bluetooth/btmtksdio.c
+@@ -282,6 +282,54 @@ static u32 btmtksdio_drv_own_query(struct btmtksdio_dev *bdev)
+ 	return sdio_readl(bdev->func, MTK_REG_CHLPCR, NULL);
  }
  
--static int dsa_switch_bridge_leave(struct dsa_switch *ds,
--				   struct dsa_notifier_bridge_info *info)
-+static int dsa_switch_sync_vlan_filtering(struct dsa_switch *ds,
-+					  struct dsa_notifier_bridge_info *info)
- {
--	struct dsa_switch_tree *dst = ds->dst;
- 	struct netlink_ext_ack extack = {0};
- 	bool change_vlan_filtering = false;
- 	bool vlan_filtering;
- 	struct dsa_port *dp;
- 	int err;
- 
--	if (dst->index == info->tree_index && ds->index == info->sw_index &&
--	    ds->ops->port_bridge_leave)
--		ds->ops->port_bridge_leave(ds, info->port, info->bridge);
--
--	if ((dst->index != info->tree_index || ds->index != info->sw_index) &&
--	    ds->ops->crosschip_bridge_leave)
--		ds->ops->crosschip_bridge_leave(ds, info->tree_index,
--						info->sw_index, info->port,
--						info->bridge);
--
- 	if (ds->needs_standalone_vlan_filtering &&
- 	    !br_vlan_enabled(info->bridge.dev)) {
- 		change_vlan_filtering = true;
-@@ -172,6 +161,29 @@ static int dsa_switch_bridge_leave(struct dsa_switch *ds,
- 			return err;
- 	}
- 
-+	return 0;
-+}
-+
-+static int dsa_switch_bridge_leave(struct dsa_switch *ds,
-+				   struct dsa_notifier_bridge_info *info)
++static int btmtksdio_fw_pmctrl(struct btmtksdio_dev *bdev)
 +{
-+	struct dsa_switch_tree *dst = ds->dst;
++	u32 status;
 +	int err;
 +
-+	if (dst->index == info->tree_index && ds->index == info->sw_index &&
-+	    ds->ops->port_bridge_leave)
-+		ds->ops->port_bridge_leave(ds, info->port, info->bridge);
++	sdio_claim_host(bdev->func);
 +
-+	if ((dst->index != info->tree_index || ds->index != info->sw_index) &&
-+	    ds->ops->crosschip_bridge_leave)
-+		ds->ops->crosschip_bridge_leave(ds, info->tree_index,
-+						info->sw_index, info->port,
-+						info->bridge);
++	/* Return ownership to the device */
++	sdio_writel(bdev->func, C_FW_OWN_REQ_SET, MTK_REG_CHLPCR, &err);
++	if (err < 0)
++		goto out;
 +
-+	err = dsa_switch_sync_vlan_filtering(ds, info);
-+	if (err)
-+		return err;
++	err = readx_poll_timeout(btmtksdio_drv_own_query, bdev, status,
++				 !(status & C_COM_DRV_OWN), 2000, 1000000);
 +
- 	return dsa_tag_8021q_bridge_leave(ds, info);
++out:
++	sdio_release_host(bdev->func);
++
++	if (err < 0)
++		bt_dev_err(bdev->hdev, "Cannot return ownership to device");
++
++	return err;
++}
++
++static int btmtksdio_drv_pmctrl(struct btmtksdio_dev *bdev)
++{
++	u32 status;
++	int err;
++
++	sdio_claim_host(bdev->func);
++
++	/* Get ownership from the device */
++	sdio_writel(bdev->func, C_FW_OWN_REQ_CLR, MTK_REG_CHLPCR, &err);
++	if (err < 0)
++		goto out;
++
++	err = readx_poll_timeout(btmtksdio_drv_own_query, bdev, status,
++				 status & C_COM_DRV_OWN, 2000, 1000000);
++
++out:
++	sdio_release_host(bdev->func);
++
++	if (err < 0)
++		bt_dev_err(bdev->hdev, "Cannot get ownership from device");
++
++	return err;
++}
++
+ static int btmtksdio_recv_event(struct hci_dev *hdev, struct sk_buff *skb)
+ {
+ 	struct btmtksdio_dev *bdev = hci_get_drvdata(hdev);
+@@ -541,7 +589,7 @@ static void btmtksdio_interrupt(struct sdio_func *func)
+ static int btmtksdio_open(struct hci_dev *hdev)
+ {
+ 	struct btmtksdio_dev *bdev = hci_get_drvdata(hdev);
+-	u32 status, val;
++	u32 val;
+ 	int err;
+ 
+ 	sdio_claim_host(bdev->func);
+@@ -552,18 +600,10 @@ static int btmtksdio_open(struct hci_dev *hdev)
+ 
+ 	set_bit(BTMTKSDIO_FUNC_ENABLED, &bdev->tx_state);
+ 
+-	/* Get ownership from the device */
+-	sdio_writel(bdev->func, C_FW_OWN_REQ_CLR, MTK_REG_CHLPCR, &err);
++	err = btmtksdio_drv_pmctrl(bdev);
+ 	if (err < 0)
+ 		goto err_disable_func;
+ 
+-	err = readx_poll_timeout(btmtksdio_drv_own_query, bdev, status,
+-				 status & C_COM_DRV_OWN, 2000, 1000000);
+-	if (err < 0) {
+-		bt_dev_err(bdev->hdev, "Cannot get ownership from device");
+-		goto err_disable_func;
+-	}
+-
+ 	/* Disable interrupt & mask out all interrupt sources */
+ 	sdio_writel(bdev->func, C_INT_EN_CLR, MTK_REG_CHLPCR, &err);
+ 	if (err < 0)
+@@ -633,8 +673,6 @@ static int btmtksdio_open(struct hci_dev *hdev)
+ static int btmtksdio_close(struct hci_dev *hdev)
+ {
+ 	struct btmtksdio_dev *bdev = hci_get_drvdata(hdev);
+-	u32 status;
+-	int err;
+ 
+ 	sdio_claim_host(bdev->func);
+ 
+@@ -645,13 +683,7 @@ static int btmtksdio_close(struct hci_dev *hdev)
+ 
+ 	cancel_work_sync(&bdev->txrx_work);
+ 
+-	/* Return ownership to the device */
+-	sdio_writel(bdev->func, C_FW_OWN_REQ_SET, MTK_REG_CHLPCR, NULL);
+-
+-	err = readx_poll_timeout(btmtksdio_drv_own_query, bdev, status,
+-				 !(status & C_COM_DRV_OWN), 2000, 1000000);
+-	if (err < 0)
+-		bt_dev_err(bdev->hdev, "Cannot return ownership to device");
++	btmtksdio_fw_pmctrl(bdev);
+ 
+ 	clear_bit(BTMTKSDIO_FUNC_ENABLED, &bdev->tx_state);
+ 	sdio_disable_func(bdev->func);
+@@ -1077,7 +1109,6 @@ static int btmtksdio_runtime_suspend(struct device *dev)
+ {
+ 	struct sdio_func *func = dev_to_sdio_func(dev);
+ 	struct btmtksdio_dev *bdev;
+-	u32 status;
+ 	int err;
+ 
+ 	bdev = sdio_get_drvdata(func);
+@@ -1089,19 +1120,10 @@ static int btmtksdio_runtime_suspend(struct device *dev)
+ 
+ 	sdio_set_host_pm_flags(func, MMC_PM_KEEP_POWER);
+ 
+-	sdio_claim_host(bdev->func);
+-
+-	sdio_writel(bdev->func, C_FW_OWN_REQ_SET, MTK_REG_CHLPCR, &err);
+-	if (err < 0)
+-		goto out;
++	err = btmtksdio_fw_pmctrl(bdev);
+ 
+-	err = readx_poll_timeout(btmtksdio_drv_own_query, bdev, status,
+-				 !(status & C_COM_DRV_OWN), 2000, 1000000);
+-out:
+ 	bt_dev_info(bdev->hdev, "status (%d) return ownership to device", err);
+ 
+-	sdio_release_host(bdev->func);
+-
+ 	return err;
+ }
+ 
+@@ -1109,7 +1131,6 @@ static int btmtksdio_runtime_resume(struct device *dev)
+ {
+ 	struct sdio_func *func = dev_to_sdio_func(dev);
+ 	struct btmtksdio_dev *bdev;
+-	u32 status;
+ 	int err;
+ 
+ 	bdev = sdio_get_drvdata(func);
+@@ -1119,19 +1140,10 @@ static int btmtksdio_runtime_resume(struct device *dev)
+ 	if (!test_bit(BTMTKSDIO_FUNC_ENABLED, &bdev->tx_state))
+ 		return 0;
+ 
+-	sdio_claim_host(bdev->func);
+-
+-	sdio_writel(bdev->func, C_FW_OWN_REQ_CLR, MTK_REG_CHLPCR, &err);
+-	if (err < 0)
+-		goto out;
++	err = btmtksdio_drv_pmctrl(bdev);
+ 
+-	err = readx_poll_timeout(btmtksdio_drv_own_query, bdev, status,
+-				 status & C_COM_DRV_OWN, 2000, 1000000);
+-out:
+ 	bt_dev_info(bdev->hdev, "status (%d) get ownership from device", err);
+ 
+-	sdio_release_host(bdev->func);
+-
+ 	return err;
  }
  
 -- 
