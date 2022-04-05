@@ -2,126 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ACE2BC43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BC685C4167D
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:42:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1578747AbiDEXYu (ORCPT
+        id S1578762AbiDEXYy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 19:24:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48010 "EHLO
+        Tue, 5 Apr 2022 19:24:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41838 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1573403AbiDETHd (ORCPT
+        with ESMTP id S1457096AbiDEQCo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 15:07:33 -0400
-Received: from mail.toke.dk (mail.toke.dk [IPv6:2a0c:4d80:42:2001::664])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63A7BDFD76;
-        Tue,  5 Apr 2022 12:05:33 -0700 (PDT)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@toke.dk>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=toke.dk; s=20161023;
-        t=1649185531; bh=SAA9dfx55MysOmiQzcHDMnPsN4/x681hTalOLovhpPE=;
-        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
-        b=SBHOSgcXwcMafMQKThYaJOM7QfgUspeVO8YsgV+jXTp14qIw7kLMTjpP/4HI0J1XC
-         uH6ZeKg5K2t8Hn4E/zDhjQa01z01Cxs7lBNar6GXKpAHN/V0TNRvoIqCH7gvVLGDA7
-         g1K6/cIXTPUb4jkXy9TONf0QPYnMRjWNwI0LPb7paU3M97Dkv90mS6kKzhIASYuokC
-         tMJ94WaRh08SGM7JE+rgNNDwL2exRtl/f6uGuCej3eX3u/oReRMeuOFItgCL3Tx5XI
-         c1OACToIa5uv2vxHIK3XaSPc+VR3d9f8fql3DbAniQH31fOFjazzsLw7jjds3a+dP8
-         wgD6ZMPyI00UA==
-To:     Peter Seiderer <ps.report@gmx.net>
-Cc:     linux-wireless@vger.kernel.org, Kalle Valo <kvalo@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v1 1/2] ath9k: fix ath_get_rate_txpower() to respect the
- rate list end tag
-In-Reply-To: <20220404225212.2876091a@gmx.net>
-References: <20220402153014.31332-1-ps.report@gmx.net>
- <87ilroemo4.fsf@toke.dk> <20220404225212.2876091a@gmx.net>
-Date:   Tue, 05 Apr 2022 21:05:31 +0200
-X-Clacks-Overhead: GNU Terry Pratchett
-Message-ID: <87v8vncpvo.fsf@toke.dk>
+        Tue, 5 Apr 2022 12:02:44 -0400
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F5A1F1AC9
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 08:28:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649172497; x=1680708497;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=TpDgxiyjCBQHjpm+3j7YA+Szlh4kAXMuzZRE+lz2Y/k=;
+  b=gSLsK0e8woyJWJ7Tnmeojzs1kA1y6S4VkKFPjzvQOXl4ahvh0VEL90eW
+   4ITq3UcfsDr3UVbuQjoIP5+N7x6KeCSrzSxUVxDwoCTifcckFIalXIHMC
+   CcrWStZ7swNsmTSW2gqaH7PO4KASCv1rZLqY/DFDqyO+6JfxqUCd1+tBG
+   xQM6xGX8949ctmRPHMrF8a+ofcoZ6QeaKfSZvnWOJJzJo/kUziMpfZPml
+   wkQ/alKqqBd21m0TNF53SbnhEVfFFwf0qhAqPE9JrZe0ZuG1OsKkrWPFT
+   NanEFBv1EJR0BiNv5qbqijGlh/39IP+EaEMPOSu44aMmtcfiXVTKPA8zZ
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10308"; a="258362208"
+X-IronPort-AV: E=Sophos;i="5.90,236,1643702400"; 
+   d="scan'208";a="258362208"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2022 08:28:16 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,236,1643702400"; 
+   d="scan'208";a="549098652"
+Received: from lkp-server02.sh.intel.com (HELO a44fdfb70b94) ([10.239.97.151])
+  by orsmga007.jf.intel.com with ESMTP; 05 Apr 2022 08:28:15 -0700
+Received: from kbuild by a44fdfb70b94 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nbl6M-0003Tr-CB;
+        Tue, 05 Apr 2022 15:28:14 +0000
+Date:   Tue, 5 Apr 2022 23:28:10 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     David Howells <dhowells@redhat.com>
+Cc:     kbuild-all@lists.01.org,
+        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
+        linux-kernel@vger.kernel.org
+Subject: [ammarfaizi2-block:dhowells/linux-fs/netfs-maple 24/40]
+ include/linux/fscache.h:540: undefined reference to
+ `__fscache_begin_write_operation'
+Message-ID: <202204052321.Q7Js0HBV-lkp@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Peter Seiderer <ps.report@gmx.net> writes:
+tree:   https://github.com/ammarfaizi2/linux-block dhowells/linux-fs/netfs-maple
+head:   674eea41fc70a740ff83ec590f9833f805852464
+commit: d77af6a0e73b5e3c4bae01c64df536f2662e2dab [24/40] netfs: Dispatch write requests to process a writeback slice
+config: x86_64-rhel-8.3-func (https://download.01.org/0day-ci/archive/20220405/202204052321.Q7Js0HBV-lkp@intel.com/config)
+compiler: gcc-11 (Debian 11.2.0-19) 11.2.0
+reproduce (this is a W=1 build):
+        # https://github.com/ammarfaizi2/linux-block/commit/d77af6a0e73b5e3c4bae01c64df536f2662e2dab
+        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
+        git fetch --no-tags ammarfaizi2-block dhowells/linux-fs/netfs-maple
+        git checkout d77af6a0e73b5e3c4bae01c64df536f2662e2dab
+        # save the config file to linux build tree
+        mkdir build_dir
+        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash
 
-> Hello Toke,
->
-> On Mon, 04 Apr 2022 20:19:39 +0200, Toke H=C3=B8iland-J=C3=B8rgensen <tok=
-e@toke.dk> wrote:
->
->> Peter Seiderer <ps.report@gmx.net> writes:
->>=20
->> > Stop reading (and copying) from ieee80211_tx_rate to ath_tx_info.rates
->> > after list end tag (count =3D=3D 0, idx < 0), prevents copying of garb=
-age
->> > to card registers.=20=20
->>=20
->> In the normal case I don't think this patch does anything, since any
->> invalid rate entries will already be skipped (just one at a time instead
->> of all at once). So this comment is a bit misleading.
->
-> Save some (minimal) compute time? Found it something misleading while
-> debugging to see random values written out to the card and found this
-> comment in net/mac80211/rate.c:
->
->  648                 /*
->  649                  * make sure there's no valid rate following
->  650                  * an invalid one, just in case drivers don't
->  651                  * take the API seriously to stop at -1.
->  652                  */
->
-> and multiple places doing the same check (count =3D=3D 0, idx < 0) for va=
-lidation
-> e.g.:
->
->  723                 if (i < ARRAY_SIZE(info->control.rates) &&
->  724                     info->control.rates[i].idx >=3D 0 &&
->  725                     info->control.rates[i].count) {
->
-> or=20
->
->  742                 if (rates[i].idx < 0 || !rates[i].count)
->  743                         break;
->
->>=20
->> Also, Minstrel could in principle produce a rate sequence where the
->> indexes are all positive, but there's one in the middle with a count of
->> 0, couldn't it? With this patch, the last entries of such a sequence
->> would now be skipped...
->
-> According to net/mac80211/rc80211_minstrel_ht.c:
->
-> 1128 static bool
-> 1129 minstrel_ht_txstat_valid(struct minstrel_priv *mp, struct minstrel_h=
-t_sta *     mi,
-> 1130                          struct ieee80211_tx_rate *rate)
-> 1131 {
-> 1132         int i;
-> 1133=20
-> 1134         if (rate->idx < 0)
-> 1135                 return false;
-> 1136=20
-> 1137         if (!rate->count)
-> 1138                 return false;
-> 1139=20
->
-> minstrel although evaluates a rate count of zero as invalid...
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-So my concern was mostly that the documentation (in mac80211.h) says
-that an idx of -1 indicates the end, but says nothing about the count.
-Which implies that in principle you could have a rate table of { idx,
-count } like { 1, 1 }, { 2, 0 }, { 3, 1 } which would mean all three
-rates was valid but the second one would just be "skipped" due to a
-count of zero.
+All errors (new ones prefixed by >>):
 
-But it seems that the code populating the rate table that you linked
-above (lines 742/743) actually do abort on either condition, so I guess
-it's safe to do so in the driver as well...
+   ld: fs/netfs/output.o: in function `fscache_begin_write_operation':
+>> include/linux/fscache.h:540: undefined reference to `__fscache_begin_write_operation'
 
--Toke
+
+vim +540 include/linux/fscache.h
+
+9af1c6c3089b29 David Howells 2021-10-20  516  
+16f2f4e679cfda David Howells 2021-08-27  517  /**
+16f2f4e679cfda David Howells 2021-08-27  518   * fscache_begin_write_operation - Begin a write operation for the netfs lib
+16f2f4e679cfda David Howells 2021-08-27  519   * @cres: The cache resources for the write being performed
+16f2f4e679cfda David Howells 2021-08-27  520   * @cookie: The cookie representing the cache object
+16f2f4e679cfda David Howells 2021-08-27  521   *
+16f2f4e679cfda David Howells 2021-08-27  522   * Begin a write operation on behalf of the netfs helper library.  @cres
+16f2f4e679cfda David Howells 2021-08-27  523   * indicates the cache resources to which the operation state should be
+16f2f4e679cfda David Howells 2021-08-27  524   * attached; @cookie indicates the cache object that will be accessed.
+16f2f4e679cfda David Howells 2021-08-27  525   *
+16f2f4e679cfda David Howells 2021-08-27  526   * @cres->inval_counter is set from @cookie->inval_counter for comparison at
+16f2f4e679cfda David Howells 2021-08-27  527   * the end of the operation.  This allows invalidation during the operation to
+16f2f4e679cfda David Howells 2021-08-27  528   * be detected by the caller.
+16f2f4e679cfda David Howells 2021-08-27  529   *
+16f2f4e679cfda David Howells 2021-08-27  530   * Returns:
+16f2f4e679cfda David Howells 2021-08-27  531   * * 0		- Success
+16f2f4e679cfda David Howells 2021-08-27  532   * * -ENOBUFS	- No caching available
+16f2f4e679cfda David Howells 2021-08-27  533   * * Other error code from the cache, such as -ENOMEM.
+16f2f4e679cfda David Howells 2021-08-27  534   */
+16f2f4e679cfda David Howells 2021-08-27  535  static inline
+16f2f4e679cfda David Howells 2021-08-27  536  int fscache_begin_write_operation(struct netfs_cache_resources *cres,
+16f2f4e679cfda David Howells 2021-08-27  537  				  struct fscache_cookie *cookie)
+16f2f4e679cfda David Howells 2021-08-27  538  {
+16f2f4e679cfda David Howells 2021-08-27  539  	if (fscache_cookie_enabled(cookie))
+16f2f4e679cfda David Howells 2021-08-27 @540  		return __fscache_begin_write_operation(cres, cookie);
+16f2f4e679cfda David Howells 2021-08-27  541  	return -ENOBUFS;
+16f2f4e679cfda David Howells 2021-08-27  542  }
+16f2f4e679cfda David Howells 2021-08-27  543  
+
+:::::: The code at line 540 was first introduced by commit
+:::::: 16f2f4e679cfdaa9552574484f104014908a76c6 nfs: Implement cache I/O by accessing the cache directly
+
+:::::: TO: David Howells <dhowells@redhat.com>
+:::::: CC: David Howells <dhowells@redhat.com>
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
