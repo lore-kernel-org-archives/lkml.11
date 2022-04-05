@@ -2,50 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E4264C43219
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:23:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 13043C4167B
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:23:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350551AbiDEUWw (ORCPT
+        id S1352526AbiDEUXF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 16:22:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43786 "EHLO
+        Tue, 5 Apr 2022 16:23:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56940 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354759AbiDEKPe (ORCPT
+        with ESMTP id S1349759AbiDEJvQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:15:34 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F389E49256;
-        Tue,  5 Apr 2022 03:02:38 -0700 (PDT)
+        Tue, 5 Apr 2022 05:51:16 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87FFB15839;
+        Tue,  5 Apr 2022 02:49:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8FB4F6172B;
-        Tue,  5 Apr 2022 10:02:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6B434C385A1;
-        Tue,  5 Apr 2022 10:02:37 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 40E87B81B76;
+        Tue,  5 Apr 2022 09:49:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8202EC385A1;
+        Tue,  5 Apr 2022 09:49:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649152958;
-        bh=k04tRHaCCcaSw16B5b4zqxD/SIoqsMzrPWW5b4SpaUY=;
+        s=korg; t=1649152155;
+        bh=vp5P+tlZ9AwejLKFANiTgrszGOHonIstSV2V0M0I7Kk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=uBTJMYh1kpH9daBvUzCX2ZnVWkt5yq09suIO2yPIesh2sIX+o25O2vl7bbH7pawb4
-         mXLMzzGqhbDq7sgdEfS2LhzRFhHVXATieIv2hXbpGc5KjnezZiKY1A9BebQkw+gIdh
-         iCS3Oe/kZy6MczG3qzcsQXxv9A0Q116hhxc6KD9E=
+        b=Eqmsmv9rQ7Ku/lVhsj7QaqRTBn+ZGdcCDOn0WL+CGsrmINWh7yu/QPjm4ZsniFawc
+         vnnFaD+w7n3vYmRX4Vo6XHneIcueeQbEBvyZPX/UgnxY3kRYpAXFdQw6F3SFCPeQFu
+         w1V2hKrdjpfxQW0sRAjNc2YaZYOyb15SB0MmZyEU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Alistair Delva <adelva@google.com>,
-        Rishabh Bhatnagar <rishabhb@codeaurora.org>,
-        Ohad Ben-Cohen <ohad@wizery.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        Sibi Sankar <sibis@codeaurora.org>,
-        linux-remoteproc@vger.kernel.org, kernel-team@android.com
-Subject: [PATCH 5.10 051/599] remoteproc: Fix count check in rproc_coredump_write()
-Date:   Tue,  5 Apr 2022 09:25:45 +0200
-Message-Id: <20220405070300.346945793@linuxfoundation.org>
+        stable@vger.kernel.org, Florian Westphal <fw@strlen.de>,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 676/913] net/sched: act_ct: fix ref leak when switching zones
+Date:   Tue,  5 Apr 2022 09:28:58 +0200
+Message-Id: <20220405070400.099531752@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -54,41 +51,65 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alistair Delva <adelva@google.com>
+From: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
 
-commit f89672cc3681952f2d06314981a6b45f8b0045d1 upstream.
+[ Upstream commit bcb74e132a76ce0502bb33d5b65533a4ed72d159 ]
 
-Check count for 0, to avoid a potential underflow. Make the check the
-same as the one in rproc_recovery_write().
+When switching zones or network namespaces without doing a ct clear in
+between, it is now leaking a reference to the old ct entry. That's
+because tcf_ct_skb_nfct_cached() returns false and
+tcf_ct_flow_table_lookup() may simply overwrite it.
 
-Fixes: 3afdc59e4390 ("remoteproc: Add coredump debugfs entry")
-Signed-off-by: Alistair Delva <adelva@google.com>
-Cc: Rishabh Bhatnagar <rishabhb@codeaurora.org>
-Cc: stable@vger.kernel.org
-Cc: Ohad Ben-Cohen <ohad@wizery.com>
-Cc: Bjorn Andersson <bjorn.andersson@linaro.org>
-Cc: Mathieu Poirier <mathieu.poirier@linaro.org>
-Cc: Sibi Sankar <sibis@codeaurora.org>
-Cc: linux-remoteproc@vger.kernel.org
-Cc: kernel-team@android.com
-Reviewed-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Link: https://lore.kernel.org/r/20220119232139.1125908-1-adelva@google.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+The fix is to, as the ct entry is not reusable, free it already at
+tcf_ct_skb_nfct_cached().
+
+Reported-by: Florian Westphal <fw@strlen.de>
+Fixes: 2f131de361f6 ("net/sched: act_ct: Fix flow table lookup after ct clear or switching zones")
+Signed-off-by: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/remoteproc/remoteproc_debugfs.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/sched/act_ct.c | 15 +++++++++------
+ 1 file changed, 9 insertions(+), 6 deletions(-)
 
---- a/drivers/remoteproc/remoteproc_debugfs.c
-+++ b/drivers/remoteproc/remoteproc_debugfs.c
-@@ -76,7 +76,7 @@ static ssize_t rproc_coredump_write(stru
- 	int ret, err = 0;
- 	char buf[20];
+diff --git a/net/sched/act_ct.c b/net/sched/act_ct.c
+index 240b3c5d2eb1..553bf41671a6 100644
+--- a/net/sched/act_ct.c
++++ b/net/sched/act_ct.c
+@@ -583,22 +583,25 @@ static bool tcf_ct_skb_nfct_cached(struct net *net, struct sk_buff *skb,
+ 	if (!ct)
+ 		return false;
+ 	if (!net_eq(net, read_pnet(&ct->ct_net)))
+-		return false;
++		goto drop_ct;
+ 	if (nf_ct_zone(ct)->id != zone_id)
+-		return false;
++		goto drop_ct;
  
--	if (count > sizeof(buf))
-+	if (count < 1 || count > sizeof(buf))
- 		return -EINVAL;
+ 	/* Force conntrack entry direction. */
+ 	if (force && CTINFO2DIR(ctinfo) != IP_CT_DIR_ORIGINAL) {
+ 		if (nf_ct_is_confirmed(ct))
+ 			nf_ct_kill(ct);
  
- 	ret = copy_from_user(buf, user_buf, count);
+-		nf_ct_put(ct);
+-		nf_ct_set(skb, NULL, IP_CT_UNTRACKED);
+-
+-		return false;
++		goto drop_ct;
+ 	}
+ 
+ 	return true;
++
++drop_ct:
++	nf_ct_put(ct);
++	nf_ct_set(skb, NULL, IP_CT_UNTRACKED);
++
++	return false;
+ }
+ 
+ /* Trim the skb to the length specified by the IP/IPv6 header,
+-- 
+2.34.1
+
 
 
