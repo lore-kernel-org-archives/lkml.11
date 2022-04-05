@@ -2,98 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 55A59C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A036C433FE
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:03:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382023AbiDEMA2 (ORCPT
+        id S1382074AbiDEMAh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 08:00:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34690 "EHLO
+        Tue, 5 Apr 2022 08:00:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34818 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236953AbiDEIRK (ORCPT
+        with ESMTP id S236458AbiDEIQq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:17:10 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 233C5AFAEB;
-        Tue,  5 Apr 2022 01:04:56 -0700 (PDT)
+        Tue, 5 Apr 2022 04:16:46 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 275B970CD3;
+        Tue,  5 Apr 2022 01:04:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B6363B81BB6;
-        Tue,  5 Apr 2022 08:04:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0F13FC385A1;
-        Tue,  5 Apr 2022 08:04:53 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649145894;
-        bh=Fo2VUN7idF8pzKr+Cx20drHaaXF7A7bvOqOOrv8RvPE=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=sXpK6TYNwwxubvMs235Jcp5gcYFdyf1vtatE0nE4jCTPgN/RMGaIeurCCsGpB/p5R
-         hoeE/7Y58ictZY+d8c7CKmrPyZw8Y/9T+7otw17Mu3Umeo7FLCvlfIrCaxw4ZKzVyh
-         NAc5NlcNbiyNi7yZA40aJ2LzaUgOdviSi0RNyqn8=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kuogee Hsieh <quic_khsieh@quicinc.com>,
-        Stephen Boyd <swboyd@chromium.org>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0568/1126] drm/msm/dp: stop link training after link training 2 failed
-Date:   Tue,  5 Apr 2022 09:21:55 +0200
-Message-Id: <20220405070424.306388258@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
-References: <20220405070407.513532867@linuxfoundation.org>
-User-Agent: quilt/0.66
+        by ams.source.kernel.org (Postfix) with ESMTPS id AA3C7B81B90;
+        Tue,  5 Apr 2022 08:04:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D5DE3C385A9;
+        Tue,  5 Apr 2022 08:04:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649145849;
+        bh=qsQljiMucqRqUd4z9Wprhd8esh75p1YRIbEPGlFNo3E=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=tH4wksIOmH925t36apUo4rEAwz/Kw5BXVljl8CZcdvTQHmZK4pXSqxJn7aWRy3ago
+         hgb6L0aVPRUdzTeVnwPDSqXF8v4Ubbrgal+OGCCSJxuagKU2zxkmJFYmlJsGl3o3ZE
+         UNptV5Gw5TUTftVFX/KUs+BSuNKTtjtqtU2qAdKkJmgyO6ahfnMam4xHfBdL7NpMeC
+         LExnO4naFkC6fFTHBM0Dy4BzfLHTcOsbseIVpL9Txm/xlJuCwn8k5I12MAR2Dmx6ta
+         Ror/O5sMJS+FqWH03vZnwylCiXanCpmD8zS0XSZgb11WfLJ2ZRiT9An6qPiV6+M7IP
+         XcPuBvxBNZhPg==
+Date:   Tue, 5 Apr 2022 09:04:04 +0100
+From:   Mark Brown <broonie@kernel.org>
+To:     Peter Collingbourne <pcc@google.com>
+Cc:     Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Jonathan Corbet <corbet@lwn.net>,
+        linux-arm-kernel@lists.infradead.org, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] arm64: document the boot requirements for MTE
+Message-ID: <Ykv39KMpKXb2Mr6p@sirena.org.uk>
+References: <20220404211858.968452-1-pcc@google.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="U4yPShB2sk24Ez1L"
+Content-Disposition: inline
+In-Reply-To: <20220404211858.968452-1-pcc@google.com>
+X-Cookie: diplomacy, n:
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kuogee Hsieh <quic_khsieh@quicinc.com>
 
-[ Upstream commit 9051d629dbf7a998a40f7eac65a9512b01bc3bb8 ]
+--U4yPShB2sk24Ez1L
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-Each DP link training contains link training 1 followed by link
-training 2.  There is maximum of 5 retries of DP link training
-before declared link training failed. It is required to stop link
-training at end of link training 2 if it is failed so that next
-link training 1 can start freshly. This patch fixes link compliance
-test  case 4.3.1.13 (Source Device Link Training EQ Fallback Test).
+On Mon, Apr 04, 2022 at 02:18:58PM -0700, Peter Collingbourne wrote:
 
-Changes in v10:
---  group into one series
+> +  For CPUs with the Memory Tagging Extension feature:
+> +
+> +  - If EL3 is present:
+> +
+> +    - SCR_EL3.ATA (bit 26) must be initialised to 0b1.
+> +
+> +  - If the kernel is entered at EL1 and EL2 is present:
+> +
+> +    - HCR_EL2.ATA (bit 56) must be initialised to 0b1.
 
-Changes in v11:
--- drop drm/msm/dp: dp_link_parse_sink_count() return immediately if aux read
+Very nitpicky but this is only required for FEAT_MTE2 and above, plain
+FEAT_MTE doesn't have these traps.  I don't know that this is a thing
+that anyone's actually implemented and from v8.7 on it's not permitted
+but the above isn't strictly true if someone did for some reason have
+the most basic version.
 
-Fixes: 2e0adc765d88 ("drm/msm/dp: do not end dp link training until video is ready")
-Signed-off-by: Kuogee Hsieh <quic_khsieh@quicinc.com>
-Reviewed-by: Stephen Boyd <swboyd@chromium.org>
-Link: https://lore.kernel.org/r/1642531648-8448-5-git-send-email-quic_khsieh@quicinc.com
-Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/gpu/drm/msm/dp/dp_ctrl.c | 3 +++
- 1 file changed, 3 insertions(+)
+Otherwise
 
-diff --git a/drivers/gpu/drm/msm/dp/dp_ctrl.c b/drivers/gpu/drm/msm/dp/dp_ctrl.c
-index 9c80b493f974..8d1ea694d06c 100644
---- a/drivers/gpu/drm/msm/dp/dp_ctrl.c
-+++ b/drivers/gpu/drm/msm/dp/dp_ctrl.c
-@@ -1748,6 +1748,9 @@ int dp_ctrl_on_link(struct dp_ctrl *dp_ctrl)
- 				/* end with failure */
- 				break; /* lane == 1 already */
- 			}
-+
-+			/* stop link training before start re training  */
-+			dp_ctrl_clear_training_pattern(ctrl);
- 		}
- 	}
- 
--- 
-2.34.1
+Reviewed-by: Mark Brown <broonie@kernel.org>
 
+--U4yPShB2sk24Ez1L
+Content-Type: application/pgp-signature; name="signature.asc"
 
+-----BEGIN PGP SIGNATURE-----
 
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmJL9/AACgkQJNaLcl1U
+h9Advgf+IuZZugXrsq2QTXupthCBNsC0BjU8HXkBBUqx6xRi96h59EIv/TR0K9Tv
+o/Ku1OZjykNhby0S0ts/PhxEWP79+z4mpA+kN13hYiTUp9HytXg4hppOtikWnNE5
+qVieJHkjEL5QLmqaxEOd3zf9MPotutz9n+AXI4UC+Av6p3cYamCKwpalZKcenm66
+1k6/2iJooTZa+U2jEcZE18tokuwbTMC3lkqjyKoNAEXmSq3DkOHbaxblDFm9eXgf
+UeYeYH8GPAU5EO7WASyDs5zYVMouxfO9yFpafW0JoK7HuI/AqlFycD98lwbHvufv
+6rlXx8H0HRoghHMSO92joqBVQymltA==
+=78rB
+-----END PGP SIGNATURE-----
+
+--U4yPShB2sk24Ez1L--
