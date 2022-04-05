@@ -2,92 +2,72 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DEC94C43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0043DC43217
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:40:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1836612AbiDFAgt (ORCPT
+        id S1836648AbiDFAg7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 20:36:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35096 "EHLO
+        Tue, 5 Apr 2022 20:36:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60338 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351643AbiDEKDF (ORCPT
+        with ESMTP id S1391218AbiDEPeJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:03:05 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24EC3716E3;
-        Tue,  5 Apr 2022 02:52:00 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 32304B81B14;
-        Tue,  5 Apr 2022 09:51:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 97C49C385A2;
-        Tue,  5 Apr 2022 09:51:57 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649152318;
-        bh=vJB3hI7pFHLZ4ItKPzu559ozRQX/5iq+YVkCRMlueys=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=G2P9AXtzEiagN9VH1MmtNouE66a4Y8HcO1TfQyjI6merjCFb+gcfDP3tMwa0O88Yo
-         ZveGM1AQV7gLHo0G0fmD1CTLwRheeHzWOK4AixFqA5EeqiBl5efkMFFS2iyLdXGnJR
-         oh2KFxqp3T2UbDMA4mcb9if7oaen2ysrxzs8uUDc=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Mirela Rabulea <mirela.rabulea@oss.nxp.com>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 732/913] media: imx-jpeg: Prevent decoding NV12M jpegs into single-planar buffers
-Date:   Tue,  5 Apr 2022 09:29:54 +0200
-Message-Id: <20220405070401.773042917@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 5 Apr 2022 11:34:09 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2BEE44C42B;
+        Tue,  5 Apr 2022 06:41:01 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id E79A2D6E;
+        Tue,  5 Apr 2022 06:41:00 -0700 (PDT)
+Received: from e121345-lin.cambridge.arm.com (e121345-lin.cambridge.arm.com [10.1.196.40])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id CF2833F5A1;
+        Tue,  5 Apr 2022 06:40:59 -0700 (PDT)
+From:   Robin Murphy <robin.murphy@arm.com>
+To:     ecree.xilinx@gmail.com, habetsm.xilinx@gmail.com,
+        davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com
+Cc:     netdev@vger.kernel.org, iommu@lists.linux-foundation.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH net-next] sfc: Stop using iommu_present()
+Date:   Tue,  5 Apr 2022 14:40:55 +0100
+Message-Id: <7350f957944ecfce6cce90f422e3992a1f428775.1649166055.git.robin.murphy@arm.com>
+X-Mailer: git-send-email 2.28.0.dirty
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mirela Rabulea <mirela.rabulea@oss.nxp.com>
+Even if an IOMMU might be present for some PCI segment in the system,
+that doesn't necessarily mean it provides translation for the device
+we care about. It appears that what we care about here is specifically
+whether DMA mapping ops involve any IOMMU overhead or not, so check for
+translation actually being active for our device.
 
-[ Upstream commit 417591a766b3c040c346044541ff949c0b2bb7b2 ]
-
-If the application queues an NV12M jpeg as output buffer, but then
-queues a single planar capture buffer, the kernel will crash with
-"Unable to handle kernel NULL pointer dereference" in mxc_jpeg_addrs,
-prevent this by finishing the job with error.
-
-Signed-off-by: Mirela Rabulea <mirela.rabulea@oss.nxp.com>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Robin Murphy <robin.murphy@arm.com>
 ---
- drivers/media/platform/imx-jpeg/mxc-jpeg.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+ drivers/net/ethernet/sfc/falcon/rx.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/media/platform/imx-jpeg/mxc-jpeg.c b/drivers/media/platform/imx-jpeg/mxc-jpeg.c
-index fc905ea78b17..637d73f5f4a2 100644
---- a/drivers/media/platform/imx-jpeg/mxc-jpeg.c
-+++ b/drivers/media/platform/imx-jpeg/mxc-jpeg.c
-@@ -925,6 +925,12 @@ static void mxc_jpeg_device_run(void *priv)
- 	v4l2_m2m_buf_copy_metadata(src_buf, dst_buf, true);
+diff --git a/drivers/net/ethernet/sfc/falcon/rx.c b/drivers/net/ethernet/sfc/falcon/rx.c
+index 0c6cc2191369..6bbdb5d2eebf 100644
+--- a/drivers/net/ethernet/sfc/falcon/rx.c
++++ b/drivers/net/ethernet/sfc/falcon/rx.c
+@@ -718,12 +718,14 @@ static void ef4_init_rx_recycle_ring(struct ef4_nic *efx,
+ 				     struct ef4_rx_queue *rx_queue)
+ {
+ 	unsigned int bufs_in_recycle_ring, page_ring_size;
++	struct iommu_domain __maybe_unused *domain;
  
- 	jpeg_src_buf = vb2_to_mxc_buf(&src_buf->vb2_buf);
-+	if (q_data_cap->fmt->colplanes != dst_buf->vb2_buf.num_planes) {
-+		dev_err(dev, "Capture format %s has %d planes, but capture buffer has %d planes\n",
-+			q_data_cap->fmt->name, q_data_cap->fmt->colplanes,
-+			dst_buf->vb2_buf.num_planes);
-+		jpeg_src_buf->jpeg_parse_error = true;
-+	}
- 	if (jpeg_src_buf->jpeg_parse_error) {
- 		jpeg->slot_data[ctx->slot].used = false;
- 		v4l2_m2m_src_buf_remove(ctx->fh.m2m_ctx);
+ 	/* Set the RX recycle ring size */
+ #ifdef CONFIG_PPC64
+ 	bufs_in_recycle_ring = EF4_RECYCLE_RING_SIZE_IOMMU;
+ #else
+-	if (iommu_present(&pci_bus_type))
++	domain = iommu_get_domain_for_dev(&efx->pci_dev->dev);
++	if (domain && domain->type != IOMMU_DOMAIN_IDENTITY)
+ 		bufs_in_recycle_ring = EF4_RECYCLE_RING_SIZE_IOMMU;
+ 	else
+ 		bufs_in_recycle_ring = EF4_RECYCLE_RING_SIZE_NOIOMMU;
 -- 
-2.34.1
-
-
+2.28.0.dirty
 
