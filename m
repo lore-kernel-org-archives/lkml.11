@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 22704C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 22:39:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 03630C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 22:39:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1452388AbiDEWbp (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 18:31:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43736 "EHLO
+        id S230192AbiDEWdt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 18:33:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55378 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354907AbiDEKQe (ORCPT
+        with ESMTP id S241193AbiDEKfO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:16:34 -0400
+        Tue, 5 Apr 2022 06:35:14 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09E44101E;
-        Tue,  5 Apr 2022 03:03:45 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0AA042ED52;
+        Tue,  5 Apr 2022 03:20:09 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9A1A461673;
-        Tue,  5 Apr 2022 10:03:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A9B21C385A1;
-        Tue,  5 Apr 2022 10:03:43 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9B30D61562;
+        Tue,  5 Apr 2022 10:20:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AB404C385A1;
+        Tue,  5 Apr 2022 10:20:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649153024;
-        bh=6+YGF0hCD/pWlHdjsLpdbUkPVcBYuxgy1fm5r8lcUk8=;
+        s=korg; t=1649154008;
+        bh=WuiZDXzW10IXMqLSxUvHD09+kba4VO2cYPxqhgPX/4g=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Rr+kRtr31DbQlaSc+qWdhyDzF3nl5AB7updI3yzHAwTNv0vZsTQqr/R1aSvc3fotg
-         pHQZno/oWqkF1C8N92HrTOZ1eqSng7/IHnc2sXdga7acNjoVYT6zZ7JeD3KFrY94KD
-         ZpsZDW8zc3zZhpSY8LVXlDtXDD/3c1wANNtCDJsg=
+        b=dChtciv9G3UCw8JRgCP1QxaPT8636jireI3n8Yt7R3AHhPUd5VqtA5QGgt5bUDUje
+         1pOewl5MiPxvvoOCQ8Xp/MeaOawhuMFOwouwl8ASb8TlVlhrnj6OTyi30XzphZgb5v
+         45+pshG7oAXG6r/tK3oNQVDmuE0Y5FBy5lvoKoD4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Kai-Heng Feng <kai.heng.feng@canonical.com>,
-        Takashi Iwai <tiwai@suse.de>
-Subject: [PATCH 5.10 073/599] ALSA: hda/realtek: Fix audio regression on Mi Notebook Pro 2020
-Date:   Tue,  5 Apr 2022 09:26:07 +0200
-Message-Id: <20220405070300.998662975@linuxfoundation.org>
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 407/599] remoteproc: qcom_q6v5_mss: Fix some leaks in q6v5_alloc_memory_region
+Date:   Tue,  5 Apr 2022 09:31:41 +0200
+Message-Id: <20220405070310.943153483@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
 References: <20220405070258.802373272@linuxfoundation.org>
@@ -51,45 +49,74 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kai-Heng Feng <kai.heng.feng@canonical.com>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-commit f30741cded62f87bb4b1cc58bc627f076abcaba8 upstream.
+[ Upstream commit 07a5dcc4bed9d7cae54adf5aa10ff9f037a3204b ]
 
-Commit 5aec98913095 ("ALSA: hda/realtek - ALC236 headset MIC recording
-issue") is to solve recording issue met on AL236, by matching codec
-variant ALC269_TYPE_ALC257 and ALC269_TYPE_ALC256.
+The device_node pointer is returned by of_parse_phandle() or
+of_get_child_by_name() with refcount incremented.
+We should use of_node_put() on it when done.
 
-This match can be too broad and Mi Notebook Pro 2020 is broken by the
-patch.
+This function only call of_node_put(node) when of_address_to_resource
+succeeds, missing error cases.
 
-Instead, use codec ID to be narrow down the scope, in order to make
-ALC256 unaffected.
-
-Bugzilla: https://bugzilla.kernel.org/show_bug.cgi?id=215484
-Fixes: 5aec98913095 ("ALSA: hda/realtek - ALC236 headset MIC recording issue")
-Reported-by: kernel test robot <lkp@intel.com>
-Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
-Link: https://lore.kernel.org/r/20220330061335.1015533-1-kai.heng.feng@canonical.com
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 278d744c46fd ("remoteproc: qcom: Fix potential device node leaks")
+Fixes: 051fb70fd4ea ("remoteproc: qcom: Driver for the self-authenticating Hexagon v5")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Link: https://lore.kernel.org/r/20220308064522.13804-1-linmq006@gmail.com
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/pci/hda/patch_realtek.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/remoteproc/qcom_q6v5_mss.c | 11 +++++++----
+ 1 file changed, 7 insertions(+), 4 deletions(-)
 
---- a/sound/pci/hda/patch_realtek.c
-+++ b/sound/pci/hda/patch_realtek.c
-@@ -3615,8 +3615,8 @@ static void alc256_shutup(struct hda_cod
- 	/* If disable 3k pulldown control for alc257, the Mic detection will not work correctly
- 	 * when booting with headset plugged. So skip setting it for the codec alc257
+diff --git a/drivers/remoteproc/qcom_q6v5_mss.c b/drivers/remoteproc/qcom_q6v5_mss.c
+index ebc3e755bcbc..1b3aa84e36e7 100644
+--- a/drivers/remoteproc/qcom_q6v5_mss.c
++++ b/drivers/remoteproc/qcom_q6v5_mss.c
+@@ -1594,18 +1594,20 @@ static int q6v5_alloc_memory_region(struct q6v5 *qproc)
+ 	 * reserved memory regions from device's memory-region property.
  	 */
--	if (spec->codec_variant != ALC269_TYPE_ALC257 &&
--	    spec->codec_variant != ALC269_TYPE_ALC256)
-+	if (codec->core.vendor_id != 0x10ec0236 &&
-+	    codec->core.vendor_id != 0x10ec0257)
- 		alc_update_coef_idx(codec, 0x46, 0, 3 << 12);
+ 	child = of_get_child_by_name(qproc->dev->of_node, "mba");
+-	if (!child)
++	if (!child) {
+ 		node = of_parse_phandle(qproc->dev->of_node,
+ 					"memory-region", 0);
+-	else
++	} else {
+ 		node = of_parse_phandle(child, "memory-region", 0);
++		of_node_put(child);
++	}
  
- 	if (!spec->no_shutup_pins)
+ 	ret = of_address_to_resource(node, 0, &r);
++	of_node_put(node);
+ 	if (ret) {
+ 		dev_err(qproc->dev, "unable to resolve mba region\n");
+ 		return ret;
+ 	}
+-	of_node_put(node);
+ 
+ 	qproc->mba_phys = r.start;
+ 	qproc->mba_size = resource_size(&r);
+@@ -1622,14 +1624,15 @@ static int q6v5_alloc_memory_region(struct q6v5 *qproc)
+ 	} else {
+ 		child = of_get_child_by_name(qproc->dev->of_node, "mpss");
+ 		node = of_parse_phandle(child, "memory-region", 0);
++		of_node_put(child);
+ 	}
+ 
+ 	ret = of_address_to_resource(node, 0, &r);
++	of_node_put(node);
+ 	if (ret) {
+ 		dev_err(qproc->dev, "unable to resolve mpss region\n");
+ 		return ret;
+ 	}
+-	of_node_put(node);
+ 
+ 	qproc->mpss_phys = qproc->mpss_reloc = r.start;
+ 	qproc->mpss_size = resource_size(&r);
+-- 
+2.34.1
+
 
 
