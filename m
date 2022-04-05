@@ -2,119 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 56BC1C3527D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 67868C4707F
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:56:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379299AbiDEUxx (ORCPT
+        id S1379872AbiDEUyP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 16:53:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59748 "EHLO
+        Tue, 5 Apr 2022 16:54:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39730 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1573657AbiDETha (ORCPT
+        with ESMTP id S230042AbiDEJsy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 15:37:30 -0400
-Received: from finn.localdomain (finn.gateworks.com [108.161.129.64])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42DF6245BD;
-        Tue,  5 Apr 2022 12:35:29 -0700 (PDT)
-Received: from 068-189-091-139.biz.spectrum.com ([68.189.91.139] helo=tharvey.pdc.gateworks.com)
-        by finn.localdomain with esmtp (Exim 4.93)
-        (envelope-from <tharvey@gateworks.com>)
-        id 1nboxN-00CFHs-0R; Tue, 05 Apr 2022 19:35:13 +0000
-From:   Tim Harvey <tharvey@gateworks.com>
-To:     Rob Herring <robh+dt@kernel.org>, Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org
-Cc:     Tim Harvey <tharvey@gateworks.com>, stable@vger.kernel.org
-Subject: [PATCH v2] ARM: dts: imx8mm-venice-gw{71xx,72xx,73xx}: fix OTG controller OC mode
-Date:   Tue,  5 Apr 2022 12:35:09 -0700
-Message-Id: <20220405193509.8231-1-tharvey@gateworks.com>
-X-Mailer: git-send-email 2.17.1
+        Tue, 5 Apr 2022 05:48:54 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96335DF35;
+        Tue,  5 Apr 2022 02:38:57 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3E093B818F3;
+        Tue,  5 Apr 2022 09:38:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 82CC5C385A2;
+        Tue,  5 Apr 2022 09:38:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649151534;
+        bh=FEhFHiceQxymASY0Cnhc+plWks288D4lT8BKESj8hAc=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=PTmxC0P8LrGBEpQvyTQ6xgNIiMY8N8we4Sahk7urP1E1dA7A5iM6leXUge7Jn8VC+
+         uMBkneddj2u4GiWixjSVTXk6rLbVZ3g7SDbCj4uF79QkdPLF+xnQKESgckZFyLPiW4
+         5SNmgeGW55TCMWmW9sJquUNovCvEE4DL/qj6RKj4=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Biju Das <biju.das.jz@bp.renesas.com>,
+        Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Robert Foss <robert.foss@linaro.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 449/913] drm/bridge: dw-hdmi: use safe format when first in bridge chain
+Date:   Tue,  5 Apr 2022 09:25:11 +0200
+Message-Id: <20220405070353.306917779@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
+User-Agent: quilt/0.66
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The GW71xx, GW72xx and GW73xx boards have USB1 routed to a USB OTG
-connectors and USB2 routed to a USB hub.
+From: Neil Armstrong <narmstrong@baylibre.com>
 
-The OTG connector has a over-currently protection with an active-low
-pin and the USB1 to HUB connection has no over-current protection (as
-the HUB itself implements this for its downstream ports).
+[ Upstream commit 1528038385c0a706aac9ac165eeb24044fef6825 ]
 
-Add proper dt nodes to specify the over-current pin polarity for USB1
-and disable over-current protection for USB2.
+When the dw-hdmi bridge is in first place of the bridge chain, this
+means there is no way to select an input format of the dw-hdmi HW
+component.
 
-Fixes: 6f30b27c5ef5 ("arm64: dts: imx8mm: Add Gateworks i.MX 8M Mini Development Kits")
-Cc: stable@vger.kernel.org
-Signed-off-by: Tim Harvey <tharvey@gateworks.com>
+Since introduction of display-connector, negotiation was broken since
+the dw-hdmi negotiation code only worked when the dw-hdmi bridge was
+in last position of the bridge chain or behind another bridge also
+supporting input & output format negotiation.
+
+Commit 7cd70656d128 ("drm/bridge: display-connector: implement bus fmts callbacks")
+was introduced to make negotiation work again by making display-connector
+act as a pass-through concerning input & output format negotiation.
+
+But in the case where the dw-hdmi is single in the bridge chain, for
+example on Renesas SoCs, with the display-connector bridge the dw-hdmi
+is no more single, breaking output format.
+
+Reported-by: Biju Das <biju.das.jz@bp.renesas.com>
+Bisected-by: Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>
+Tested-by: Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>
+Fixes: 6c3c719936da ("drm/bridge: synopsys: dw-hdmi: add bus format negociation")
+Signed-off-by: Neil Armstrong <narmstrong@baylibre.com>
+[narmstrong: add proper fixes commit]
+Reviewed-by: Robert Foss <robert.foss@linaro.org>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220204143337.89221-1-narmstrong@baylibre.com
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
-v2: add gw71xx as well
----
- arch/arm64/boot/dts/freescale/imx8mm-venice-gw71xx.dtsi | 2 ++
- arch/arm64/boot/dts/freescale/imx8mm-venice-gw72xx.dtsi | 2 ++
- arch/arm64/boot/dts/freescale/imx8mm-venice-gw73xx.dtsi | 2 ++
- 3 files changed, 6 insertions(+)
+ drivers/gpu/drm/bridge/synopsys/dw-hdmi.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/arch/arm64/boot/dts/freescale/imx8mm-venice-gw71xx.dtsi b/arch/arm64/boot/dts/freescale/imx8mm-venice-gw71xx.dtsi
-index 73addc0b8e57..6671b99177e5 100644
---- a/arch/arm64/boot/dts/freescale/imx8mm-venice-gw71xx.dtsi
-+++ b/arch/arm64/boot/dts/freescale/imx8mm-venice-gw71xx.dtsi
-@@ -146,12 +146,14 @@
+diff --git a/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c b/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c
+index e1211a5b334b..25d58dcfc87e 100644
+--- a/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c
++++ b/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c
+@@ -2551,8 +2551,9 @@ static u32 *dw_hdmi_bridge_atomic_get_output_bus_fmts(struct drm_bridge *bridge,
+ 	if (!output_fmts)
+ 		return NULL;
  
- &usbotg1 {
- 	dr_mode = "otg";
-+	over-current-active-low;
- 	vbus-supply = <&reg_usb_otg1_vbus>;
- 	status = "okay";
- };
+-	/* If dw-hdmi is the only bridge, avoid negociating with ourselves */
+-	if (list_is_singular(&bridge->encoder->bridge_chain)) {
++	/* If dw-hdmi is the first or only bridge, avoid negociating with ourselves */
++	if (list_is_singular(&bridge->encoder->bridge_chain) ||
++	    list_is_first(&bridge->chain_node, &bridge->encoder->bridge_chain)) {
+ 		*num_output_fmts = 1;
+ 		output_fmts[0] = MEDIA_BUS_FMT_FIXED;
  
- &usbotg2 {
- 	dr_mode = "host";
-+	disable-over-current;
- 	status = "okay";
- };
- 
-diff --git a/arch/arm64/boot/dts/freescale/imx8mm-venice-gw72xx.dtsi b/arch/arm64/boot/dts/freescale/imx8mm-venice-gw72xx.dtsi
-index 1e7badb2a82e..b6b3578a0f89 100644
---- a/arch/arm64/boot/dts/freescale/imx8mm-venice-gw72xx.dtsi
-+++ b/arch/arm64/boot/dts/freescale/imx8mm-venice-gw72xx.dtsi
-@@ -211,12 +211,14 @@
- 
- &usbotg1 {
- 	dr_mode = "otg";
-+	over-current-active-low;
- 	vbus-supply = <&reg_usb_otg1_vbus>;
- 	status = "okay";
- };
- 
- &usbotg2 {
- 	dr_mode = "host";
-+	disable-over-current;
- 	vbus-supply = <&reg_usb_otg2_vbus>;
- 	status = "okay";
- };
-diff --git a/arch/arm64/boot/dts/freescale/imx8mm-venice-gw73xx.dtsi b/arch/arm64/boot/dts/freescale/imx8mm-venice-gw73xx.dtsi
-index 7a5d45e80982..89fc2c595056 100644
---- a/arch/arm64/boot/dts/freescale/imx8mm-venice-gw73xx.dtsi
-+++ b/arch/arm64/boot/dts/freescale/imx8mm-venice-gw73xx.dtsi
-@@ -239,12 +239,14 @@
- 
- &usbotg1 {
- 	dr_mode = "otg";
-+	over-current-active-low;
- 	vbus-supply = <&reg_usb_otg1_vbus>;
- 	status = "okay";
- };
- 
- &usbotg2 {
- 	dr_mode = "host";
-+	disable-over-current;
- 	vbus-supply = <&reg_usb_otg2_vbus>;
- 	status = "okay";
- };
 -- 
-2.17.1
+2.34.1
+
+
 
