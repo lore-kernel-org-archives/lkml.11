@@ -2,87 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 258E7C4167D
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 21:15:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A2338C4332F
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 21:15:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241861AbiDEVM2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 17:12:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32860 "EHLO
+        id S243811AbiDEVMu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 17:12:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36580 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358262AbiDEK2L (ORCPT
+        with ESMTP id S1457623AbiDEQSq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:28:11 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5419DFA0;
-        Tue,  5 Apr 2022 03:17:40 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A160AB81C8A;
-        Tue,  5 Apr 2022 10:17:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EC0D5C385A1;
-        Tue,  5 Apr 2022 10:17:37 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649153858;
-        bh=Pe5172lF1JtWSUI2NbHjGbtJdpNz2Bfb9/CBvizVf9c=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0Tjgxv/fo5uZ9xjNQJJSUORUMK3T2CBcIINSvYT3F7qsIf6NpaX3jmK9htj8HAKpr
-         BIEil1uQ3nFJlVY6iOYn38OKSfR0aYrIFZgGPPk03ld4OTbEI32zZn91k4K5QcPnQW
-         CEWbV6QeA4AJHePT52KMFw9L13vhGZvACznu9Q5U=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Niels Dossche <dossche.niels@gmail.com>,
-        Marcel Holtmann <marcel@holtmann.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 365/599] Bluetooth: call hci_le_conn_failed with hdev lock in hci_le_conn_failed
-Date:   Tue,  5 Apr 2022 09:30:59 +0200
-Message-Id: <20220405070309.692779975@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 5 Apr 2022 12:18:46 -0400
+Received: from mail-qt1-x832.google.com (mail-qt1-x832.google.com [IPv6:2607:f8b0:4864:20::832])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F391193D3
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 09:16:48 -0700 (PDT)
+Received: by mail-qt1-x832.google.com with SMTP id t2so11861975qtw.9
+        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 09:16:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:subject:message-id:mime-version:content-disposition;
+        bh=FLSzkzyFKsMmWfcxhBs2Il7HtUd5I2QlvTXEeLFEpwI=;
+        b=j9daqXZVYch5PcpAusIBWMCwCZEA3KuTMvcnCJaxNxRmfjMoMsoNrNQZfOxu51vnLp
+         LmXUEEnUs+fN2pcJOcHqj0RSl/YrbpWNq3Px1arRKi/1PJQbDH2s3Zd43OqHi9aeMIfk
+         49FXG0jcUhMbkUAIagFnqSO4ZO3YIxij/23L6s/bAwH51pqO+L6He0sK6ZO4U+2CClJ+
+         7E6rGSmG1Yoe2MrDplF1/IPg+TYoCjqIojEo91MdsP5NE4CrS5qXvWW4+N6kJfjFJn74
+         wC3XiQTmBoDQlzC36uwwR0TRsFAJqVgRZM0PV/SOvxlvVsGmwtZcWZgyLSmPnAxmBv72
+         mgzg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:subject:message-id:mime-version
+         :content-disposition;
+        bh=FLSzkzyFKsMmWfcxhBs2Il7HtUd5I2QlvTXEeLFEpwI=;
+        b=fbymIrYMWN+eyp41Ffw2nunwjaAfcSNkUh6O2TJjKnGADFoBsNM0iMHOOS1nkq/ARx
+         S1Fs96fmFRWUPsvJRYNTuCp6NWGPt+QlSio0vvaR0mTl3s9gvDJa2lTnfz4LkPYU69/f
+         VT6TbWidZ3oL3h6ytl3j6+BU08HmNUYvZ/erW6StksTGENv+e7SZ2LEl9YqBAXR1SbuS
+         njNOUyFqS4FG1hTVVtfJ8dcBXrg6dXAUgrFOmSM/5zzmXbZv+0gdb+vMQeswIucaWv17
+         0psqdSJNB56NZtt8U7sXKLOcEvEg2qlNtNGKrXaerKFYj15wL73zS90AW63W11Q0jxV4
+         d9uA==
+X-Gm-Message-State: AOAM531sS38aYLkcCbB0I1omzVi6wT2GwwKn5kFTxAMc9wfDIst8873S
+        0ZzLPD/bTOjqnRJqhuPWUeMuuNaC5dtaww==
+X-Google-Smtp-Source: ABdhPJyfBydtZeKLeim9Up5yEFW9t0urIMuUeqTm5Q4+BL7NMsNpsqz5Yyt2XPRxiO0/MgGVyqlYIw==
+X-Received: by 2002:ac8:7dca:0:b0:2e1:db1b:7ba1 with SMTP id c10-20020ac87dca000000b002e1db1b7ba1mr3631493qte.614.1649175407387;
+        Tue, 05 Apr 2022 09:16:47 -0700 (PDT)
+Received: from euclid ([71.58.109.160])
+        by smtp.gmail.com with ESMTPSA id h8-20020ac87d48000000b002e1c6faae9csm11228777qtb.28.2022.04.05.09.16.45
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 05 Apr 2022 09:16:46 -0700 (PDT)
+Date:   Tue, 5 Apr 2022 12:16:43 -0400
+From:   Sevinj Aghayeva <sevinj.aghayeva@gmail.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
+        outreachy@lists.linux.dev
+Subject: [PATCH v3] staging: rtl8723bs: fix indentation
+Message-ID: <20220405161643.GA630826@euclid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Niels Dossche <dossche.niels@gmail.com>
+Adhere to Linux kernel coding indentation style. Also remove the comments that
+became irrelevant after fixing indentation.
 
-[ Upstream commit 9fa6b4cda3b414e990f008f45f9bcecbcb54d4d1 ]
+Reported by checkpatch:
 
-hci_le_conn_failed function's documentation says that the caller must
-hold hdev->lock. The only callsite that does not hold that lock is
-hci_le_conn_failed. The other 3 callsites hold the hdev->lock very
-locally. The solution is to hold the lock during the call to
-hci_le_conn_failed.
+WARNING: suspect code indent for conditional statements
 
-Fixes: 3c857757ef6e ("Bluetooth: Add directed advertising support through connect()")
-Signed-off-by: Niels Dossche <dossche.niels@gmail.com>
-Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Sevinj Aghayeva <sevinj.aghayeva@gmail.com>
 ---
- net/bluetooth/hci_conn.c | 2 ++
- 1 file changed, 2 insertions(+)
 
-diff --git a/net/bluetooth/hci_conn.c b/net/bluetooth/hci_conn.c
-index 1c5a0a60292d..ecd2ffcf2ba2 100644
---- a/net/bluetooth/hci_conn.c
-+++ b/net/bluetooth/hci_conn.c
-@@ -508,7 +508,9 @@ static void le_conn_timeout(struct work_struct *work)
- 	if (conn->role == HCI_ROLE_SLAVE) {
- 		/* Disable LE Advertising */
- 		le_disable_advertising(hdev);
-+		hci_dev_lock(hdev);
- 		hci_le_conn_failed(conn, HCI_ERROR_ADVERTISING_TIMEOUT);
-+		hci_dev_unlock(hdev);
- 		return;
- 	}
+v1 -> v2: Remove the comments that became irrelevant with proper indentation.
+
+v2 -> v3: Update the changelog text to say everything the commit is doing.
+
+ drivers/staging/rtl8723bs/core/rtw_mlme_ext.c | 14 +++-----------
+ 1 file changed, 3 insertions(+), 11 deletions(-)
+
+diff --git a/drivers/staging/rtl8723bs/core/rtw_mlme_ext.c b/drivers/staging/rtl8723bs/core/rtw_mlme_ext.c
+index 04e29e228c1e..1bdbd0971f73 100644
+--- a/drivers/staging/rtl8723bs/core/rtw_mlme_ext.c
++++ b/drivers/staging/rtl8723bs/core/rtw_mlme_ext.c
+@@ -5143,17 +5143,9 @@ void link_timer_hdl(struct timer_list *t)
+ 	} else if (pmlmeinfo->state & WIFI_FW_AUTH_STATE) {
+ 		/* re-auth timer */
+ 		if (++pmlmeinfo->reauth_count > REAUTH_LIMIT) {
+-			/* if (pmlmeinfo->auth_algo != dot11AuthAlgrthm_Auto) */
+-			/*  */
+-				pmlmeinfo->state = 0;
+-				report_join_res(padapter, -1);
+-				return;
+-			/*  */
+-			/* else */
+-			/*  */
+-			/* 	pmlmeinfo->auth_algo = dot11AuthAlgrthm_Shared; */
+-			/* 	pmlmeinfo->reauth_count = 0; */
+-			/*  */
++			pmlmeinfo->state = 0;
++			report_join_res(padapter, -1);
++			return;
+ 		}
  
+ 		pmlmeinfo->auth_seq = 1;
 -- 
-2.34.1
-
-
+2.25.1
 
