@@ -2,120 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 48F22C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E25BC433FE
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 01:30:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1447142AbiDFB3A (ORCPT
+        id S1453823AbiDFB3T (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 21:29:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39896 "EHLO
+        Tue, 5 Apr 2022 21:29:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52630 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349008AbiDEJsz (ORCPT
+        with ESMTP id S1443721AbiDEPkM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:48:55 -0400
+        Tue, 5 Apr 2022 11:40:12 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2D3DDF5A;
-        Tue,  5 Apr 2022 02:39:03 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D99018500E
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 06:58:27 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6DF87615E5;
-        Tue,  5 Apr 2022 09:39:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 807C4C385A1;
-        Tue,  5 Apr 2022 09:39:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649151542;
-        bh=Ti/hMQRoUjDzZyl/JprxiwoA8pb7BvXKCaYpu3E0oKw=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Og2x+pC6YH5NmOBgFzZpQMdWa3I6EH8U2KZzkZ33pBLq/nTcmZHiGoRWgyDHG1Fkd
-         xl8msuiLtRZ6DPMyM+owxRwqBp6snndBRKPjE1Z3SQJGXo+mZk/MP8kUs7HIqnqnB2
-         pgPr5sad/kzm3+DkuMw93AIDF0sWqgKp+1FBfrWA=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jesper Dangaard Brouer <brouer@redhat.com>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        Alexander Lobakin <alexandr.lobakin@intel.com>,
-        Michal Swiatkowski <michal.swiatkowski@linux.intel.com>,
-        Sandeep Penigalapati <sandeep.penigalapati@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 415/913] ixgbe: respect metadata on XSK Rx to skb
-Date:   Tue,  5 Apr 2022 09:24:37 +0200
-Message-Id: <20220405070352.287506962@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
-User-Agent: quilt/0.66
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A5C4661926
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 13:58:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2A697C385A7;
+        Tue,  5 Apr 2022 13:58:24 +0000 (UTC)
+From:   Catalin Marinas <catalin.marinas@arm.com>
+To:     Will Deacon <will@kernel.org>, Marc Zyngier <maz@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     linux-mm@kvack.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH 09/10] mm/slab: Simplify create_kmalloc_cache() args and make it static
+Date:   Tue,  5 Apr 2022 14:57:57 +0100
+Message-Id: <20220405135758.774016-10-catalin.marinas@arm.com>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220405135758.774016-1-catalin.marinas@arm.com>
+References: <20220405135758.774016-1-catalin.marinas@arm.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alexander Lobakin <alexandr.lobakin@intel.com>
+create_kmalloc_cache() is now only called from new_kmalloc_cache() in
+the same file, so make it static. In addition, the useroffset argument
+is always 0 while usersize is the same as size. Remove them.
 
-[ Upstream commit f322a620be69e95594eda89502b478aa7dbf6ec2 ]
-
-For now, if the XDP prog returns XDP_PASS on XSK, the metadata
-will be lost as it doesn't get copied to the skb.
-
-Copy it along with the frame headers. Account its size on skb
-allocation, and when copying just treat it as a part of the frame
-and do a pull after to "move" it to the "reserved" zone.
-
-net_prefetch() xdp->data_meta and align the copy size to speed-up
-memcpy() a little and better match ixgbe_construct_skb().
-
-Fixes: d0bcacd0a130 ("ixgbe: add AF_XDP zero-copy Rx support")
-Suggested-by: Jesper Dangaard Brouer <brouer@redhat.com>
-Suggested-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-Signed-off-by: Alexander Lobakin <alexandr.lobakin@intel.com>
-Reviewed-by: Michal Swiatkowski <michal.swiatkowski@linux.intel.com>
-Tested-by: Sandeep Penigalapati <sandeep.penigalapati@intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Catalin Marinas <catalin.marinas@arm.com>
+Cc: Andrew Morton <akpm@linux-foundation.org>
 ---
- drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c | 14 ++++++++++----
- 1 file changed, 10 insertions(+), 4 deletions(-)
+ mm/slab.h        | 3 ---
+ mm/slab_common.c | 9 ++++-----
+ 2 files changed, 4 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c
-index 36f43dc3a55e..b399b9c14717 100644
---- a/drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c
-+++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c
-@@ -203,19 +203,25 @@ bool ixgbe_alloc_rx_buffers_zc(struct ixgbe_ring *rx_ring, u16 count)
- static struct sk_buff *ixgbe_construct_skb_zc(struct ixgbe_ring *rx_ring,
- 					      const struct xdp_buff *xdp)
- {
-+	unsigned int totalsize = xdp->data_end - xdp->data_meta;
- 	unsigned int metasize = xdp->data - xdp->data_meta;
--	unsigned int datasize = xdp->data_end - xdp->data;
- 	struct sk_buff *skb;
+diff --git a/mm/slab.h b/mm/slab.h
+index e9238406602a..d334b5e6d7aa 100644
+--- a/mm/slab.h
++++ b/mm/slab.h
+@@ -280,9 +280,6 @@ gfp_t kmalloc_fix_flags(gfp_t flags);
+ /* Functions provided by the slab allocators */
+ int __kmem_cache_create(struct kmem_cache *, slab_flags_t flags);
  
-+	net_prefetch(xdp->data_meta);
-+
- 	/* allocate a skb to store the frags */
--	skb = __napi_alloc_skb(&rx_ring->q_vector->napi, datasize,
-+	skb = __napi_alloc_skb(&rx_ring->q_vector->napi, totalsize,
- 			       GFP_ATOMIC | __GFP_NOWARN);
- 	if (unlikely(!skb))
- 		return NULL;
- 
--	memcpy(__skb_put(skb, datasize), xdp->data, datasize);
--	if (metasize)
-+	memcpy(__skb_put(skb, totalsize), xdp->data_meta,
-+	       ALIGN(totalsize, sizeof(long)));
-+
-+	if (metasize) {
- 		skb_metadata_set(skb, metasize);
-+		__skb_pull(skb, metasize);
-+	}
- 
- 	return skb;
+-struct kmem_cache *create_kmalloc_cache(const char *name, unsigned int size,
+-			slab_flags_t flags, unsigned int useroffset,
+-			unsigned int usersize);
+ void __init new_kmalloc_cache(int idx, enum kmalloc_cache_type type,
+ 			      slab_flags_t flags);
+ extern void create_boot_cache(struct kmem_cache *, const char *name,
+diff --git a/mm/slab_common.c b/mm/slab_common.c
+index 594d8a8a68d0..3a9f7a1e6490 100644
+--- a/mm/slab_common.c
++++ b/mm/slab_common.c
+@@ -655,16 +655,15 @@ void __init create_boot_cache(struct kmem_cache *s, const char *name,
+ 	s->refcount = -1;	/* Exempt from merging for now */
  }
--- 
-2.34.1
-
-
-
+ 
+-struct kmem_cache *__init create_kmalloc_cache(const char *name,
+-		unsigned int size, slab_flags_t flags,
+-		unsigned int useroffset, unsigned int usersize)
++static struct kmem_cache *__init create_kmalloc_cache(const char *name,
++		unsigned int size, slab_flags_t flags)
+ {
+ 	struct kmem_cache *s = kmem_cache_zalloc(kmem_cache, GFP_NOWAIT);
+ 
+ 	if (!s)
+ 		panic("Out of memory when creating slab %s\n", name);
+ 
+-	create_boot_cache(s, name, size, flags, useroffset, usersize);
++	create_boot_cache(s, name, size, flags, 0, size);
+ 	kasan_cache_create_kmalloc(s);
+ 	list_add(&s->list, &slab_caches);
+ 	s->refcount = 1;
+@@ -868,7 +867,7 @@ new_kmalloc_cache(int idx, enum kmalloc_cache_type type, slab_flags_t flags)
+ 	if (!kmalloc_caches[type][aligned_idx])
+ 		kmalloc_caches[type][aligned_idx] = create_kmalloc_cache(
+ 					kmalloc_info[aligned_idx].name[type],
+-					aligned_size, flags, 0, aligned_size);
++					aligned_size, flags);
+ 	if (idx != aligned_idx)
+ 		kmalloc_caches[type][idx] = kmalloc_caches[type][aligned_idx];
+ 
