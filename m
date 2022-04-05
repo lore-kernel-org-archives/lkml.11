@@ -2,86 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E4A5C35295
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D1B08C35296
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:17:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1574482AbiDEW4U (ORCPT
+        id S1574613AbiDEW4n (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 18:56:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36062 "EHLO
+        Tue, 5 Apr 2022 18:56:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39304 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1444551AbiDEPlj (ORCPT
+        with ESMTP id S240067AbiDEKwk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 11:41:39 -0400
-Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03466F8EE5;
-        Tue,  5 Apr 2022 07:05:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=jJ72nyQjgyMortAHdvw06/vFEylkSYuiFVuOxXrhPF4=; b=SwqA6RhnQVGyo1EdkB/Yf6mm02
-        Dl5JtcMTBnIo1saXpfrgbyE/JGZcRsHcp3NLkoWMe5//d3yTDV4wxHJK11pA2rmaZH3TltzAh7fBb
-        XY5ctXudO1Aje6BGJCcBm0qhxr3+SocKS+h5rCtfnw9q15J3zakCAN4hvr/ZpcGT4+AjO9QioIGNn
-        bpzyDFsBioroiBC3Em3r/UCGE5vRMoyK7fZe1MLCHbskQpxFP76afxNXjSE7JhFtksghvu4si2d1s
-        2how848sOs3fzXvTv6gxg+WmiLi8GH1y62pqjHtm/M3icwJ0jG8PmR6ZytAPKMB37cSF4HklVQ14q
-        zM5YH+Mw==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
-        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nbjoD-001sCl-Ae; Tue, 05 Apr 2022 14:05:26 +0000
-Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits))
-        (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id BD2953001EA;
-        Tue,  5 Apr 2022 16:05:22 +0200 (CEST)
-Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
-        id 9951B2DC78FE1; Tue,  5 Apr 2022 16:05:22 +0200 (CEST)
-Date:   Tue, 5 Apr 2022 16:05:22 +0200
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Mark Rutland <mark.rutland@arm.com>
-Cc:     linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-arch@vger.kernel.org, gcc@gcc.gnu.org,
-        catalin.marinas@arm.com, will@kernel.org, marcan@marcan.st,
-        maz@kernel.org, szabolcs.nagy@arm.com, f.fainelli@gmail.com,
-        opendmb@gmail.com, Andrew Pinski <pinskia@gmail.com>,
-        Ard Biesheuvel <ardb@kernel.org>, x86@kernel.org,
-        andrew.cooper3@citrix.com, Jeremy Linton <jeremy.linton@arm.com>
-Subject: Re: GCC 12 miscompilation of volatile asm (was: Re: [PATCH]
- arm64/io: Remind compiler that there is a memory side effect)
-Message-ID: <YkxMov3qpHxFa/n3@hirez.programming.kicks-ass.net>
-References: <20220401164406.61583-1-jeremy.linton@arm.com>
- <Ykc0xrLv391/jdJj@FVFF77S0Q05N>
- <Ykw7UnlTnx63z/Ca@FVFF77S0Q05N>
+        Tue, 5 Apr 2022 06:52:40 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8EEFA94DA;
+        Tue,  5 Apr 2022 03:28:11 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 57B706181D;
+        Tue,  5 Apr 2022 10:28:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5B31FC385A6;
+        Tue,  5 Apr 2022 10:28:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649154490;
+        bh=cCG4DXsmOt2RjegLmBychxHXXVtElDKPMsn2x6Ymw+M=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=kVOMOsfeVIisInkqW2ceLoPlxI+H3OmsTPcMStcOmFRphrxPs6N7ckrqoFQHbI5ax
+         pH5Kd4xVGc5bKCRuNT+7efH99G7QVmz9KhO1hjk2y6pBRzNgsz0epTnJRmTm6l5tf+
+         4jSr9iZ6s/1YpE1Gn/4Lr8kaIYU6AILCZB0oVQY4=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Alyssa Ross <hi@alyssa.is>,
+        Tzung-Bi Shih <tzungbi@google.com>,
+        Prashant Malani <pmalani@chromium.org>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Benson Leung <bleung@chromium.org>
+Subject: [PATCH 5.10 570/599] platform/chrome: cros_ec_typec: Check for EC device
+Date:   Tue,  5 Apr 2022 09:34:24 +0200
+Message-Id: <20220405070315.805023283@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
+References: <20220405070258.802373272@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Ykw7UnlTnx63z/Ca@FVFF77S0Q05N>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 05, 2022 at 01:51:30PM +0100, Mark Rutland wrote:
-> Hi all,
-> 
-> [adding kernel folk who work on asm stuff]
-> 
-> As a heads-up, GCC 12 (not yet released) appears to erroneously optimize away
-> calls to functions with volatile asm. Szabolcs has raised an issue on the GCC
-> bugzilla:  
-> 
->   https://gcc.gnu.org/bugzilla/show_bug.cgi?id=105160
-> 
-> ... which is a P1 release blocker, and is currently being investigated.
-> 
-> Jemery originally reported this as an issue with {readl,writel}_relaxed(), but
-> the underlying problem doesn't have anything to do with those specifically.
-> 
-> I'm dumping a bunch of info here largely for posterity / archival, and to find
-> out who (from the kernel side) is willing and able to test proposed compiler
-> fixes, once those are available.
-> 
-> I'm happy to do so for aarch64; Peter, I assume you'd be happy to look at the
-> x86 side?
+From: Prashant Malani <pmalani@chromium.org>
 
-Sure..
+commit ffebd90532728086007038986900426544e3df4e upstream.
+
+The Type C ACPI device on older Chromebooks is not generated correctly
+(since their EC firmware doesn't support the new commands required). In
+such cases, the crafted ACPI device doesn't have an EC parent, and it is
+therefore not useful (it shouldn't be generated in the first place since
+the EC firmware doesn't support any of the Type C commands).
+
+To handle devices which use these older firmware revisions, check for
+the parent EC device handle, and fail the probe if it's not found.
+
+Fixes: fdc6b21e2444 ("platform/chrome: Add Type C connector class driver")
+Reported-by: Alyssa Ross <hi@alyssa.is>
+Reviewed-by: Tzung-Bi Shih <tzungbi@google.com>
+Signed-off-by: Prashant Malani <pmalani@chromium.org>
+Acked-by: Heikki Krogerus <heikki.krogerus@linux.intel.com>
+Reviewed-by: Alyssa Ross <hi@alyssa.is>
+Tested-by: Alyssa Ross <hi@alyssa.is>
+Link: https://lore.kernel.org/r/20220126190219.3095419-1-pmalani@chromium.org
+Signed-off-by: Benson Leung <bleung@chromium.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ drivers/platform/chrome/cros_ec_typec.c |    6 ++++++
+ 1 file changed, 6 insertions(+)
+
+--- a/drivers/platform/chrome/cros_ec_typec.c
++++ b/drivers/platform/chrome/cros_ec_typec.c
+@@ -712,7 +712,13 @@ static int cros_typec_probe(struct platf
+ 		return -ENOMEM;
+ 
+ 	typec->dev = dev;
++
+ 	typec->ec = dev_get_drvdata(pdev->dev.parent);
++	if (!typec->ec) {
++		dev_err(dev, "couldn't find parent EC device\n");
++		return -ENODEV;
++	}
++
+ 	platform_set_drvdata(pdev, typec);
+ 
+ 	ret = cros_typec_get_cmd_version(typec);
+
+
