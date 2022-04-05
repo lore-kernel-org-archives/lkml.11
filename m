@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C234C4332F
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 22:55:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 27E6EC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 22:56:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234029AbiDEWsu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 18:48:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43210 "EHLO
+        id S242883AbiDEWtL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 18:49:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50762 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354635AbiDEKO5 (ORCPT
+        with ESMTP id S1358024AbiDEK1w (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:14:57 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7688D6BDF0;
-        Tue,  5 Apr 2022 03:01:46 -0700 (PDT)
+        Tue, 5 Apr 2022 06:27:52 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F2D8689A2;
+        Tue,  5 Apr 2022 03:13:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D73C161676;
-        Tue,  5 Apr 2022 10:01:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DF1ACC385A1;
-        Tue,  5 Apr 2022 10:01:44 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id F0223B81C88;
+        Tue,  5 Apr 2022 10:13:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6AD05C385A1;
+        Tue,  5 Apr 2022 10:13:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649152905;
-        bh=JAcNIEr1LPWrk+L53Ncmi4AbV1sJxXCTFWiNjxRRQuQ=;
+        s=korg; t=1649153584;
+        bh=ZIOmT5Slk2G++mQSpDt+ZoovSPZ+Y40/5YBoKMtkjkM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=n+ojJfXFdUCTdDxZvbdF7I19pyg5jjBXWcaP7k9NGb3CQyd7borAGd3Ad4Z1pderO
-         rwKZzhc/r3y5vUAtjkYEtsWms/yjBqA9aJmy/FnBSkZrl0r7uep0ZFKLsl5n8IKPo8
-         lv/AymuHaDZYWaTjjo9o28XWGV6CKGZz5Bcc6zyA=
+        b=HbNbov6nPpmtVU4GakahqqLNM2fa3+AOqQ6icYx7FBl9RMQYm9YIrKaEmoU9gwiwB
+         Aw7a98Qw+Y3WY+L87a0+0xdhkEm8HuP24f5+oQ5+s7HqQA1I4lIqcL6hHKhh6c1kkm
+         0iFFQbAjgQnqx0FaN6QgkgjhqHnDX/gnu/Cjm5I0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Alexander Usyskin <alexander.usyskin@intel.com>,
-        Tomas Winkler <tomas.winkler@intel.com>
-Subject: [PATCH 5.10 030/599] mei: me: add Alder Lake N device id.
-Date:   Tue,  5 Apr 2022 09:25:24 +0200
-Message-Id: <20220405070259.718547283@linuxfoundation.org>
+        stable@vger.kernel.org, Shannon Nelson <snelson@pensando.io>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 273/599] ionic: fix type complaint in ionic_dev_cmd_clean()
+Date:   Tue,  5 Apr 2022 09:29:27 +0200
+Message-Id: <20220405070306.962301309@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
 References: <20220405070258.802373272@linuxfoundation.org>
@@ -49,41 +49,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alexander Usyskin <alexander.usyskin@intel.com>
+From: Shannon Nelson <snelson@pensando.io>
 
-commit 7bbbd0845818cffa9fa8ccfe52fa1cad58e7e4f2 upstream.
+[ Upstream commit bc0bf9de6f48268f4ee59e57fb42ac751be3ecda ]
 
-Add Alder Lake N device ID.
+Sparse seems to have gotten a little more picky lately and
+we need to revisit this bit of code to make sparse happy.
 
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Alexander Usyskin <alexander.usyskin@intel.com>
-Signed-off-by: Tomas Winkler <tomas.winkler@intel.com>
-Link: https://lore.kernel.org/r/20220301071115.96145-1-tomas.winkler@intel.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+warning: incorrect type in initializer (different address spaces)
+   expected union ionic_dev_cmd_regs *regs
+   got union ionic_dev_cmd_regs [noderef] __iomem *dev_cmd_regs
+warning: incorrect type in argument 2 (different address spaces)
+   expected void [noderef] __iomem *
+   got unsigned int *
+warning: incorrect type in argument 1 (different address spaces)
+   expected void volatile [noderef] __iomem *
+   got union ionic_dev_cmd *
+
+Fixes: d701ec326a31 ("ionic: clean up sparse complaints")
+Signed-off-by: Shannon Nelson <snelson@pensando.io>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/misc/mei/hw-me-regs.h |    1 +
- drivers/misc/mei/pci-me.c     |    1 +
- 2 files changed, 2 insertions(+)
+ drivers/net/ethernet/pensando/ionic/ionic_main.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
---- a/drivers/misc/mei/hw-me-regs.h
-+++ b/drivers/misc/mei/hw-me-regs.h
-@@ -107,6 +107,7 @@
- #define MEI_DEV_ID_ADP_S      0x7AE8  /* Alder Lake Point S */
- #define MEI_DEV_ID_ADP_LP     0x7A60  /* Alder Lake Point LP */
- #define MEI_DEV_ID_ADP_P      0x51E0  /* Alder Lake Point P */
-+#define MEI_DEV_ID_ADP_N      0x54E0  /* Alder Lake Point N */
+diff --git a/drivers/net/ethernet/pensando/ionic/ionic_main.c b/drivers/net/ethernet/pensando/ionic/ionic_main.c
+index d355676f6c16..e14869a2e24a 100644
+--- a/drivers/net/ethernet/pensando/ionic/ionic_main.c
++++ b/drivers/net/ethernet/pensando/ionic/ionic_main.c
+@@ -311,10 +311,10 @@ int ionic_adminq_post_wait(struct ionic_lif *lif, struct ionic_admin_ctx *ctx)
  
- /*
-  * MEI HW Section
---- a/drivers/misc/mei/pci-me.c
-+++ b/drivers/misc/mei/pci-me.c
-@@ -113,6 +113,7 @@ static const struct pci_device_id mei_me
- 	{MEI_PCI_DEVICE(MEI_DEV_ID_ADP_S, MEI_ME_PCH15_CFG)},
- 	{MEI_PCI_DEVICE(MEI_DEV_ID_ADP_LP, MEI_ME_PCH15_CFG)},
- 	{MEI_PCI_DEVICE(MEI_DEV_ID_ADP_P, MEI_ME_PCH15_CFG)},
-+	{MEI_PCI_DEVICE(MEI_DEV_ID_ADP_N, MEI_ME_PCH15_CFG)},
+ static void ionic_dev_cmd_clean(struct ionic *ionic)
+ {
+-	union __iomem ionic_dev_cmd_regs *regs = ionic->idev.dev_cmd_regs;
++	struct ionic_dev *idev = &ionic->idev;
  
- 	/* required last entry */
- 	{0, }
+-	iowrite32(0, &regs->doorbell);
+-	memset_io(&regs->cmd, 0, sizeof(regs->cmd));
++	iowrite32(0, &idev->dev_cmd_regs->doorbell);
++	memset_io(&idev->dev_cmd_regs->cmd, 0, sizeof(idev->dev_cmd_regs->cmd));
+ }
+ 
+ int ionic_dev_cmd_wait(struct ionic *ionic, unsigned long max_seconds)
+-- 
+2.34.1
+
 
 
