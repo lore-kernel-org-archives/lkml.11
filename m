@@ -2,77 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A384FC4167D
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:02:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A81AC35273
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:02:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381739AbiDEL71 (ORCPT
+        id S1381821AbiDEL7r (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 07:59:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46858 "EHLO
+        Tue, 5 Apr 2022 07:59:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52236 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245068AbiDEIxF (ORCPT
+        with ESMTP id S245053AbiDEIxE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:53:05 -0400
-Received: from mail.skyhub.de (mail.skyhub.de [IPv6:2a01:4f8:190:11c2::b:1457])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8B75103E;
-        Tue,  5 Apr 2022 01:51:01 -0700 (PDT)
-Received: from zn.tnic (p2e55dff8.dip0.t-ipconnect.de [46.85.223.248])
+        Tue, 5 Apr 2022 04:53:04 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C41C2F31;
+        Tue,  5 Apr 2022 01:50:46 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id A27331EC03D2;
-        Tue,  5 Apr 2022 10:50:55 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
-        t=1649148655;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
-        bh=0ktS2SIjmKrtK22LLClo6EqQScwdtGgTFjzqLBa5r/k=;
-        b=lmleDHRM0KvhUep7AsjnLgP+qh35HqZQnDNl1VigAi/Fmg+AJ7FGFoXdm30SWJE0b59YjQ
-        slYIKd0SpjaYbnip4EKof+r/bjKVht4u7aLKkDriIVAc7a6tcLCfN55oanq5KiHaFWW/HX
-        70nm8ixMWRIn7qbJuViWP4LM64za0O4=
-Date:   Tue, 5 Apr 2022 10:50:53 +0200
-From:   Borislav Petkov <bp@alien8.de>
-To:     Mike Travis <mike.travis@hpe.com>
-Cc:     Ingo Molnar <mingo@redhat.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Steve Wahl <steve.wahl@hpe.com>, x86@kernel.org,
-        Andy Shevchenko <andy@infradead.org>,
-        Darren Hart <dvhart@infradead.org>,
-        Dimitri Sivanich <dimitri.sivanich@hpe.com>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Russ Anderson <russ.anderson@hpe.com>,
-        linux-kernel@vger.kernel.org, platform-driver-x86@vger.kernel.org
-Subject: Re: [PATCH v3 0/3] x86/platform/uv: UV Kernel support for UV5
-Message-ID: <YkwC7TCRMM0ejFvh@zn.tnic>
-References: <20220318224304.174967-1-mike.travis@hpe.com>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6032E614FD;
+        Tue,  5 Apr 2022 08:50:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6E5DAC385A0;
+        Tue,  5 Apr 2022 08:50:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649148645;
+        bh=fbO91BbokbTqUbxHoT9/rDXyCsrDKZAvpmM09YNzOdE=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=TtUxvJ+6DSn1xmnE4B5l0gYNqzcK+FoiXCYjuMCqXTPNQw8MvsSQihVVcoKRQPJ6A
+         gHQ6HJr6D1caJdb5hqDakF9lgUhe8A337bXSW7L72Yv7HKFdLZVvQ5k/idlbCnGy4g
+         Sp7WDzayBJEnnBEMQRi9Nf6tfF2B1s6qMvhDcP38=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Zhang Qilong <zhangqilong3@huawei.com>,
+        Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 0391/1017] ASoC: rockchip: Fix PM usage reference of rockchip_i2s_tdm_resume
+Date:   Tue,  5 Apr 2022 09:21:44 +0200
+Message-Id: <20220405070405.892080422@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
+References: <20220405070354.155796697@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20220318224304.174967-1-mike.travis@hpe.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Mar 18, 2022 at 05:43:01PM -0500, Mike Travis wrote:
-> Mike Travis (3):
->   x86/platform/uv: Update NMI Handler for UV5
->   x86/platform/uv: Update TSC sync state for UV5
->   x86/platform/uv: Log gap hole end size
-> 
->  arch/x86/kernel/apic/x2apic_uv_x.c | 20 +++++++++++++++-----
->  arch/x86/platform/uv/uv_nmi.c      | 21 +++++++++++----------
->  2 files changed, 26 insertions(+), 15 deletions(-)
+From: zhangqilong <zhangqilong3@huawei.com>
 
-All three zapped from tip until
+[ Upstream commit cc5d8ac95663a5813c696008bc524b794d471215 ]
 
-  https://lore.kernel.org/r/87zgl02w6v.ffs@tglx
+pm_runtime_get_sync will increment pm usage counter
+even it failed. Forgetting to putting operation will
+result in reference leak here. We fix it by replacing
+it with pm_runtime_resume_and_get to keep usage counter
+balanced.
 
-is resolved.
+Fixes:081068fd64140 ("ASoC: rockchip: add support for i2s-tdm controller")
 
-Thx.
+Signed-off-by: Zhang Qilong <zhangqilong3@huawei.com>
+Link: https://lore.kernel.org/r/20220315025415.2593762-1-zhangqilong3@huawei.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ sound/soc/rockchip/rockchip_i2s_tdm.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
+diff --git a/sound/soc/rockchip/rockchip_i2s_tdm.c b/sound/soc/rockchip/rockchip_i2s_tdm.c
+index 5f9cb5c4c7f0..d3b710406941 100644
+--- a/sound/soc/rockchip/rockchip_i2s_tdm.c
++++ b/sound/soc/rockchip/rockchip_i2s_tdm.c
+@@ -1738,7 +1738,7 @@ static int __maybe_unused rockchip_i2s_tdm_resume(struct device *dev)
+ 	struct rk_i2s_tdm_dev *i2s_tdm = dev_get_drvdata(dev);
+ 	int ret;
+ 
+-	ret = pm_runtime_get_sync(dev);
++	ret = pm_runtime_resume_and_get(dev);
+ 	if (ret < 0)
+ 		return ret;
+ 	ret = regcache_sync(i2s_tdm->regmap);
 -- 
-Regards/Gruss,
-    Boris.
+2.34.1
 
-https://people.kernel.org/tglx/notes-about-netiquette
+
+
