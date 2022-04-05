@@ -2,140 +2,145 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 91216C4167E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7BFAFC41535
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 21:10:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352064AbiDEVKK (ORCPT
+        id S1351737AbiDEVKE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 17:10:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43216 "EHLO
+        Tue, 5 Apr 2022 17:10:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33540 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349426AbiDEJtu (ORCPT
+        with ESMTP id S1457604AbiDEQPl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:49:50 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DF4D22284;
-        Tue,  5 Apr 2022 02:45:30 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9C61D61576;
-        Tue,  5 Apr 2022 09:45:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A8135C385A3;
-        Tue,  5 Apr 2022 09:45:28 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649151929;
-        bh=V/Q7HNgsqsem44bPKXcSU/aQJQJuM9QmL0binbVJQA8=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JDI1sfhujywQCoKb9rvVQzKdlxjjS9ilALYpBiKIWl6nW6EwD6cu9dV+NXNdkDbQO
-         WX+470hdemlbhz9pBpre+m99anpYXV7KwNJvkgLwPkhp4ARymjwjsZgE//K6pBPsyJ
-         3dNRuFLfY3Vgp2zzRF3DlGWc4mVh/zE5pXLdx++8=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Konstantin Aladyshev <aladyshev22@gmail.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Zev Weiss <zev@bewilderbeest.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 593/913] serial: 8250_aspeed_vuart: add PORT_ASPEED_VUART port type
-Date:   Tue,  5 Apr 2022 09:27:35 +0200
-Message-Id: <20220405070357.617553343@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 5 Apr 2022 12:15:41 -0400
+Received: from smtp-8fab.mail.infomaniak.ch (smtp-8fab.mail.infomaniak.ch [83.166.143.171])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CFBA01835D
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 09:13:42 -0700 (PDT)
+Received: from smtp-2-0001.mail.infomaniak.ch (unknown [10.5.36.108])
+        by smtp-2-3000.mail.infomaniak.ch (Postfix) with ESMTPS id 4KXt4523HhzMqCNN;
+        Tue,  5 Apr 2022 18:13:41 +0200 (CEST)
+Received: from ns3096276.ip-94-23-54.eu (unknown [23.97.221.149])
+        by smtp-2-0001.mail.infomaniak.ch (Postfix) with ESMTPA id 4KXt440gnCzljsTK;
+        Tue,  5 Apr 2022 18:13:39 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=digikod.net;
+        s=20191114; t=1649175221;
+        bh=HbIIPB+F63MI4bn+Xkm4MHoAj4TOesDIJhPoMCrZYT8=;
+        h=Date:To:Cc:References:From:Subject:In-Reply-To:From;
+        b=qzdG0k4T0pCT9Y5O0SKeHR1gCabKPNMXBr9/oJo7CpCICY/1j/xC2dh+CGhYEieKE
+         I5WUzniErLzcmVzJF5p85bToyKl7r8vfpngkouqMWfClJtdtLDQWHn6WY8FtRicLWN
+         7Iz+X5pHaKySgtyIp9gsBPVns7tV6n6l4sge18jg=
+Message-ID: <f93438e8-f568-a70d-2e03-4aa147932e00@digikod.net>
+Date:   Tue, 5 Apr 2022 18:14:05 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+User-Agent: 
+Content-Language: en-US
+To:     Theodore Ts'o <tytso@mit.edu>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Kees Cook <keescook@chromium.org>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Christian Heimes <christian@python.org>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        James Morris <jmorris@namei.org>,
+        Luis Chamberlain <mcgrof@kernel.org>,
+        Mimi Zohar <zohar@linux.ibm.com>,
+        Muhammad Usama Anjum <usama.anjum@collabora.com>,
+        Paul Moore <paul@paul-moore.com>,
+        =?UTF-8?Q?Philippe_Tr=c3=a9buchet?= 
+        <philippe.trebuchet@ssi.gouv.fr>,
+        Shuah Khan <skhan@linuxfoundation.org>,
+        Steve Dower <steve.dower@python.org>,
+        Thibaut Sautereau <thibaut.sautereau@ssi.gouv.fr>,
+        Vincent Strubel <vincent.strubel@ssi.gouv.fr>,
+        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
+        linux-integrity <linux-integrity@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        LSM List <linux-security-module@vger.kernel.org>,
+        Christian Brauner <brauner@kernel.org>
+References: <20220321161557.495388-1-mic@digikod.net>
+ <202204041130.F649632@keescook>
+ <CAHk-=wgoC76v-4s0xVr1Xvnx-8xZ8M+LWgyq5qGLA5UBimEXtQ@mail.gmail.com>
+ <816667d8-2a6c-6334-94a4-6127699d4144@digikod.net> <YkxYHqLqTEKFrCeg@mit.edu>
+From:   =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mic@digikod.net>
+Subject: Re: [GIT PULL] Add trusted_for(2) (was O_MAYEXEC)
+In-Reply-To: <YkxYHqLqTEKFrCeg@mit.edu>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zev Weiss <zev@bewilderbeest.net>
 
-[ Upstream commit a603ca60cebff8589882427a67f870ed946b3fc8 ]
+On 05/04/2022 16:54, Theodore Ts'o wrote:
+> On Mon, Apr 04, 2022 at 10:30:13PM +0200, Mickaël Salaün wrote:
+>>> If you add a new X_OK variant to access(), maybe that could fly.
+>>
+>> As answered in private, that was the approach I took for one of the early
+>> versions but a dedicated syscall was requested by Al Viro:
+>> https://lore.kernel.org/r/2ed377c4-3500-3ddc-7181-a5bc114ddf94@digikod.net
+>> The main reason behind this request was that it doesn't have the exact same
+>> semantic as faccessat(2). The changes for this syscall are documented here:
+>> https://lore.kernel.org/all/20220104155024.48023-3-mic@digikod.net/
+>> The whole history is linked in the cover letter:
+>> https://lore.kernel.org/all/2ed377c4-3500-3ddc-7181-a5bc114ddf94@digikod.net/
+> 
+> As a suggestion, something that can be helpful for something which has
+> been as heavily bike-sheded as this concept might be to write a
+> "legislative history", or perhaps, a "bike shed history".
+> 
+> And not just with links to mailing list discussions, but a short
+> summary of why, for example, we moved from the open flag O_MAYEXEC to
+> the faccessat(2) approach.  I looked, but I couldn't find the
+> reasoning while diving into the mail archives.  And there was some
+> kind of request for some new functionality for IMA and other LSM's
+> that I couldn't follow that is why the new AT_INTERETED flag, but at
+> this point my time quantuum for mailing list archeology most
+> definitely expired.  :-)
+> 
+> It might be that when all of this is laid out, we can either revisit
+> prior design decisions as "that bike-shed request to support this
+> corner case was unreasonable", or "oh, OK, this is why we need as
+> fully general a solution as this".
+> 
+> Also, some of examples of potential future use cases such as "magic
+> links" that were linked in the cover letter, it's not clear to me
+> actually make sense in the context of a "trusted for" system call
+> (although might make more sense in the context of an open flag).  So
+> revisiting some of those other cases to see whether they actually
+> *could* be implemented as new "TRUSTED_FOR" flags might be
+> instructive.
+> 
+> Personally, I'm a bit skeptical about the prospct of additional use
+> cases, since trusted_for(2) is essentially a mother_should_I(2)
 
-Commit 54da3e381c2b ("serial: 8250_aspeed_vuart: use UPF_IOREMAP to
-set up register mapping") fixed a bug that had, as a side-effect,
-prevented the 8250_aspeed_vuart driver from enabling the VUART's
-FIFOs.  However, fixing that (and hence enabling the FIFOs) has in
-turn revealed what appears to be a hardware bug in the ASPEED VUART in
-which the host-side THRE bit doesn't get if the BMC-side receive FIFO
-trigger level is set to anything but one byte.  This causes problems
-for polled-mode writes from the host -- for example, Linux kernel
-console writes proceed at a glacial pace (less than 100 bytes per
-second) because the write path waits for a 10ms timeout to expire
-after every character instead of being able to continue on to the next
-character upon seeing THRE asserted.  (GRUB behaves similarly.)
-
-As a workaround, introduce a new port type for the ASPEED VUART that's
-identical to PORT_16550A as it had previously been using, but with
-UART_FCR_R_TRIG_00 instead to set the receive FIFO trigger level to
-one byte, which (experimentally) seems to avoid the problematic THRE
-behavior.
-
-Fixes: 54da3e381c2b ("serial: 8250_aspeed_vuart: use UPF_IOREMAP to set up register mapping")
-Tested-by: Konstantin Aladyshev <aladyshev22@gmail.com>
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Signed-off-by: Zev Weiss <zev@bewilderbeest.net>
-Link: https://lore.kernel.org/r/20220211004203.14915-1-zev@bewilderbeest.net
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/tty/serial/8250/8250_aspeed_vuart.c | 2 +-
- drivers/tty/serial/8250/8250_port.c         | 8 ++++++++
- include/uapi/linux/serial_core.h            | 3 +++
- 3 files changed, 12 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/tty/serial/8250/8250_aspeed_vuart.c b/drivers/tty/serial/8250/8250_aspeed_vuart.c
-index 2350fb3bb5e4..c2cecc6f47db 100644
---- a/drivers/tty/serial/8250/8250_aspeed_vuart.c
-+++ b/drivers/tty/serial/8250/8250_aspeed_vuart.c
-@@ -487,7 +487,7 @@ static int aspeed_vuart_probe(struct platform_device *pdev)
- 	port.port.irq = irq_of_parse_and_map(np, 0);
- 	port.port.handle_irq = aspeed_vuart_handle_irq;
- 	port.port.iotype = UPIO_MEM;
--	port.port.type = PORT_16550A;
-+	port.port.type = PORT_ASPEED_VUART;
- 	port.port.uartclk = clk;
- 	port.port.flags = UPF_SHARE_IRQ | UPF_BOOT_AUTOCONF | UPF_IOREMAP
- 		| UPF_FIXED_PORT | UPF_FIXED_TYPE | UPF_NO_THRE_TEST;
-diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
-index ec88b706e882..b470bc747b99 100644
---- a/drivers/tty/serial/8250/8250_port.c
-+++ b/drivers/tty/serial/8250/8250_port.c
-@@ -307,6 +307,14 @@ static const struct serial8250_config uart_config[] = {
- 		.rxtrig_bytes	= {1, 32, 64, 112},
- 		.flags		= UART_CAP_FIFO | UART_CAP_SLEEP,
- 	},
-+	[PORT_ASPEED_VUART] = {
-+		.name		= "ASPEED VUART",
-+		.fifo_size	= 16,
-+		.tx_loadsz	= 16,
-+		.fcr		= UART_FCR_ENABLE_FIFO | UART_FCR_R_TRIG_00,
-+		.rxtrig_bytes	= {1, 4, 8, 14},
-+		.flags		= UART_CAP_FIFO,
-+	},
- };
- 
- /* Uart divisor latch read */
-diff --git a/include/uapi/linux/serial_core.h b/include/uapi/linux/serial_core.h
-index c4042dcfdc0c..8885e69178bd 100644
---- a/include/uapi/linux/serial_core.h
-+++ b/include/uapi/linux/serial_core.h
-@@ -68,6 +68,9 @@
- /* NVIDIA Tegra Combined UART */
- #define PORT_TEGRA_TCU	41
- 
-+/* ASPEED AST2x00 virtual UART */
-+#define PORT_ASPEED_VUART	42
-+
- /* Intel EG20 */
- #define PORT_PCH_8LINE	44
- #define PORT_PCH_2LINE	45
--- 
-2.34.1
+That would be an interesting syscall name. ;)
 
 
+> request where userspace is asking the kernel whether they should go
+> ahead and do some particular policy thing.  And it's not clear to me
+> how many of these policy questions exist where (a) the kernel is in
+> the past position to answer that question, and (b) there isn't some
+> additional information that the kernel doesn't have that might be
+> needed to answer that question.
 
+Script execution is definitely the main use case and the semantic is 
+already known by the kernel.
+
+
+> 
+> For example, "Mother should I use that private key file" might require
+> information about whether the SRE is currently on pager duty or not,
+> at least for some policies, and the kernel isn't going to have that
+> information.
+> 
+> Other examples of TRUSTED_FOR flags that really make sense and would
+> be useful might help alleviate my skepticsm.  And the "bike shed
+> history" would help with my question about why some folks didn't like
+> the original O_MAYEXEC flag?
+
+Thanks, I'll do some that.
+
+> 
+> Cheers,
+> 
+> 					- Ted
