@@ -2,47 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F0708C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:40:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F83AC4167D
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:40:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1451872AbiDFAiZ (ORCPT
+        id S1836631AbiDFAgx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 20:38:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55806 "EHLO
+        Tue, 5 Apr 2022 20:36:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35110 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345918AbiDEKma (ORCPT
+        with ESMTP id S1353117AbiDEKFn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:42:30 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 498FC167C8;
-        Tue,  5 Apr 2022 03:26:40 -0700 (PDT)
+        Tue, 5 Apr 2022 06:05:43 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97D02BD8A4;
+        Tue,  5 Apr 2022 02:54:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7E1AF6142E;
-        Tue,  5 Apr 2022 10:26:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8B4C7C385A0;
-        Tue,  5 Apr 2022 10:26:38 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EFDCE6157A;
+        Tue,  5 Apr 2022 09:54:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 092FCC385A2;
+        Tue,  5 Apr 2022 09:54:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649154398;
-        bh=AxMd18gbofm6w4krU29ftLJswZhLQ32cx6ujG2KM8Xk=;
+        s=korg; t=1649152456;
+        bh=QCpKzlNwlObKkxLGcinrVRS09WvbB5PF54HVVjtAuto=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=oWBZCOUGLABiGG6fVOc72obbwuAhpMUVO9pzE5p5AMIWmSOUAoYd9kdOUX4YDi8Bu
-         ge6rq0cE+jL6eQjR27GGPnVVhByK+ESXQ8PryS1XyHXEwlfW/STx1XwIv/B2UA2m1w
-         YYu0EPTM83Y5tW+XxbSmLLz3bip4yv14SQvYoHHc=
+        b=2u5bGMMvk+K2n8oTjHUTFdtWuPWcXnDtV3/g8RGm9F8/aky9sJ4sXJbtzlPtauvt9
+         MGPbEWRDJom6v6PlmesLFUlAkxRQTJvx46vXhQ2BX/zYkyVIzHpjEXWbpDXYMzXpRo
+         nEzNNF/8LJaet3y0LAG9WBseSAvbxT+eTsHkixro=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
-        =?UTF-8?q?Jonathan=20Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Linus Walleij <linus.walleij@linaro.org>
-Subject: [PATCH 5.10 563/599] pinctrl: nuvoton: npcm7xx: Use %zu printk format for ARRAY_SIZE()
-Date:   Tue,  5 Apr 2022 09:34:17 +0200
-Message-Id: <20220405070315.595178682@linuxfoundation.org>
+        stable@vger.kernel.org, Maxime Bizon <mbizon@freebox.fr>,
+        Christophe Leroy <christophe.leroy@csgroup.eu>,
+        Russell Currey <ruscur@russell.cc>,
+        Michael Ellerman <mpe@ellerman.id.au>
+Subject: [PATCH 5.15 781/913] powerpc: Add set_memory_{p/np}() and remove set_memory_attr()
+Date:   Tue,  5 Apr 2022 09:30:43 +0200
+Message-Id: <20220405070403.245800723@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,35 +51,178 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jonathan Neuschäfer <j.neuschaefer@gmx.net>
+From: Christophe Leroy <christophe.leroy@csgroup.eu>
 
-commit 9d0f18bca3b557ae5d2128661ac06d33b3f45c0a upstream.
+commit f222ab83df92acf72691a2021e1f0d99880dcdf1 upstream.
 
-When compile-testing on 64-bit architectures, GCC complains about the
-mismatch of types between the %d format specifier and value returned by
-ARRAY_LENGTH(). Use %zu, which is correct everywhere.
+set_memory_attr() was implemented by commit 4d1755b6a762 ("powerpc/mm:
+implement set_memory_attr()") because the set_memory_xx() couldn't
+be used at that time to modify memory "on the fly" as explained it
+the commit.
 
-Reported-by: kernel test robot <lkp@intel.com>
-Fixes: 3b588e43ee5c7 ("pinctrl: nuvoton: add NPCM7xx pinctrl and GPIO driver")
-Signed-off-by: Jonathan Neuschäfer <j.neuschaefer@gmx.net>
-Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
-Link: https://lore.kernel.org/r/20220205155332.1308899-2-j.neuschaefer@gmx.net
-Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+But set_memory_attr() uses set_pte_at() which leads to warnings when
+CONFIG_DEBUG_VM is selected, because set_pte_at() is unexpected for
+updating existing page table entries.
+
+The check could be bypassed by using __set_pte_at() instead,
+as it was the case before commit c988cfd38e48 ("powerpc/32:
+use set_memory_attr()") but since commit 9f7853d7609d ("powerpc/mm:
+Fix set_memory_*() against concurrent accesses") it is now possible
+to use set_memory_xx() functions to update page table entries
+"on the fly" because the update is now atomic.
+
+For DEBUG_PAGEALLOC we need to clear and set back _PAGE_PRESENT.
+Add set_memory_np() and set_memory_p() for that.
+
+Replace all uses of set_memory_attr() by the relevant set_memory_xx()
+and remove set_memory_attr().
+
+Fixes: c988cfd38e48 ("powerpc/32: use set_memory_attr()")
+Cc: stable@vger.kernel.org
+Reported-by: Maxime Bizon <mbizon@freebox.fr>
+Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
+Tested-by: Maxime Bizon <mbizon@freebox.fr>
+Reviewed-by: Russell Currey <ruscur@russell.cc>
+Depends-on: 9f7853d7609d ("powerpc/mm: Fix set_memory_*() against concurrent accesses")
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/cda2b44b55c96f9ac69fa92e68c01084ec9495c5.1640344012.git.christophe.leroy@csgroup.eu
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/pinctrl/nuvoton/pinctrl-npcm7xx.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/powerpc/include/asm/set_memory.h |   12 +++++++++-
+ arch/powerpc/mm/pageattr.c            |   39 +++++-----------------------------
+ arch/powerpc/mm/pgtable_32.c          |   24 +++++++++-----------
+ 3 files changed, 28 insertions(+), 47 deletions(-)
 
---- a/drivers/pinctrl/nuvoton/pinctrl-npcm7xx.c
-+++ b/drivers/pinctrl/nuvoton/pinctrl-npcm7xx.c
-@@ -1560,7 +1560,7 @@ static int npcm7xx_get_groups_count(stru
- {
- 	struct npcm7xx_pinctrl *npcm = pinctrl_dev_get_drvdata(pctldev);
+--- a/arch/powerpc/include/asm/set_memory.h
++++ b/arch/powerpc/include/asm/set_memory.h
+@@ -6,6 +6,8 @@
+ #define SET_MEMORY_RW	1
+ #define SET_MEMORY_NX	2
+ #define SET_MEMORY_X	3
++#define SET_MEMORY_NP	4	/* Set memory non present */
++#define SET_MEMORY_P	5	/* Set memory present */
  
--	dev_dbg(npcm->dev, "group size: %d\n", ARRAY_SIZE(npcm7xx_groups));
-+	dev_dbg(npcm->dev, "group size: %zu\n", ARRAY_SIZE(npcm7xx_groups));
- 	return ARRAY_SIZE(npcm7xx_groups);
+ int change_memory_attr(unsigned long addr, int numpages, long action);
+ 
+@@ -29,6 +31,14 @@ static inline int set_memory_x(unsigned
+ 	return change_memory_attr(addr, numpages, SET_MEMORY_X);
  }
  
+-int set_memory_attr(unsigned long addr, int numpages, pgprot_t prot);
++static inline int set_memory_np(unsigned long addr, int numpages)
++{
++	return change_memory_attr(addr, numpages, SET_MEMORY_NP);
++}
++
++static inline int set_memory_p(unsigned long addr, int numpages)
++{
++	return change_memory_attr(addr, numpages, SET_MEMORY_P);
++}
+ 
+ #endif
+--- a/arch/powerpc/mm/pageattr.c
++++ b/arch/powerpc/mm/pageattr.c
+@@ -48,6 +48,12 @@ static int change_page_attr(pte_t *ptep,
+ 	case SET_MEMORY_X:
+ 		pte = pte_mkexec(pte);
+ 		break;
++	case SET_MEMORY_NP:
++		pte_update(&init_mm, addr, ptep, _PAGE_PRESENT, 0, 0);
++		break;
++	case SET_MEMORY_P:
++		pte_update(&init_mm, addr, ptep, 0, _PAGE_PRESENT, 0);
++		break;
+ 	default:
+ 		WARN_ON_ONCE(1);
+ 		break;
+@@ -96,36 +102,3 @@ int change_memory_attr(unsigned long add
+ 	return apply_to_existing_page_range(&init_mm, start, size,
+ 					    change_page_attr, (void *)action);
+ }
+-
+-/*
+- * Set the attributes of a page:
+- *
+- * This function is used by PPC32 at the end of init to set final kernel memory
+- * protection. It includes changing the maping of the page it is executing from
+- * and data pages it is using.
+- */
+-static int set_page_attr(pte_t *ptep, unsigned long addr, void *data)
+-{
+-	pgprot_t prot = __pgprot((unsigned long)data);
+-
+-	spin_lock(&init_mm.page_table_lock);
+-
+-	set_pte_at(&init_mm, addr, ptep, pte_modify(*ptep, prot));
+-	flush_tlb_kernel_range(addr, addr + PAGE_SIZE);
+-
+-	spin_unlock(&init_mm.page_table_lock);
+-
+-	return 0;
+-}
+-
+-int set_memory_attr(unsigned long addr, int numpages, pgprot_t prot)
+-{
+-	unsigned long start = ALIGN_DOWN(addr, PAGE_SIZE);
+-	unsigned long sz = numpages * PAGE_SIZE;
+-
+-	if (numpages <= 0)
+-		return 0;
+-
+-	return apply_to_existing_page_range(&init_mm, start, sz, set_page_attr,
+-					    (void *)pgprot_val(prot));
+-}
+--- a/arch/powerpc/mm/pgtable_32.c
++++ b/arch/powerpc/mm/pgtable_32.c
+@@ -138,10 +138,12 @@ void mark_initmem_nx(void)
+ 	unsigned long numpages = PFN_UP((unsigned long)_einittext) -
+ 				 PFN_DOWN((unsigned long)_sinittext);
+ 
+-	if (v_block_mapped((unsigned long)_sinittext))
++	if (v_block_mapped((unsigned long)_sinittext)) {
+ 		mmu_mark_initmem_nx();
+-	else
+-		set_memory_attr((unsigned long)_sinittext, numpages, PAGE_KERNEL);
++	} else {
++		set_memory_nx((unsigned long)_sinittext, numpages);
++		set_memory_rw((unsigned long)_sinittext, numpages);
++	}
+ }
+ 
+ #ifdef CONFIG_STRICT_KERNEL_RWX
+@@ -155,18 +157,14 @@ void mark_rodata_ro(void)
+ 		return;
+ 	}
+ 
+-	numpages = PFN_UP((unsigned long)_etext) -
+-		   PFN_DOWN((unsigned long)_stext);
+-
+-	set_memory_attr((unsigned long)_stext, numpages, PAGE_KERNEL_ROX);
+ 	/*
+-	 * mark .rodata as read only. Use __init_begin rather than __end_rodata
+-	 * to cover NOTES and EXCEPTION_TABLE.
++	 * mark .text and .rodata as read only. Use __init_begin rather than
++	 * __end_rodata to cover NOTES and EXCEPTION_TABLE.
+ 	 */
+ 	numpages = PFN_UP((unsigned long)__init_begin) -
+-		   PFN_DOWN((unsigned long)__start_rodata);
++		   PFN_DOWN((unsigned long)_stext);
+ 
+-	set_memory_attr((unsigned long)__start_rodata, numpages, PAGE_KERNEL_RO);
++	set_memory_ro((unsigned long)_stext, numpages);
+ 
+ 	// mark_initmem_nx() should have already run by now
+ 	ptdump_check_wx();
+@@ -182,8 +180,8 @@ void __kernel_map_pages(struct page *pag
+ 		return;
+ 
+ 	if (enable)
+-		set_memory_attr(addr, numpages, PAGE_KERNEL);
++		set_memory_p(addr, numpages);
+ 	else
+-		set_memory_attr(addr, numpages, __pgprot(0));
++		set_memory_np(addr, numpages);
+ }
+ #endif /* CONFIG_DEBUG_PAGEALLOC */
 
 
