@@ -2,134 +2,209 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B0A5AC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 22:23:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6375DC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 22:23:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349800AbiDEWP1 (ORCPT
+        id S1377222AbiDEWPx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 18:15:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56134 "EHLO
+        Tue, 5 Apr 2022 18:15:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35780 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353989AbiDEKKR (ORCPT
+        with ESMTP id S1573558AbiDETWn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:10:17 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08650C55B1;
-        Tue,  5 Apr 2022 02:56:22 -0700 (PDT)
+        Tue, 5 Apr 2022 15:22:43 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A87644091B;
+        Tue,  5 Apr 2022 12:20:44 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8AB81616D7;
-        Tue,  5 Apr 2022 09:56:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 94D7FC385A2;
-        Tue,  5 Apr 2022 09:56:20 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649152581;
-        bh=5tdNro4II/wrfglmzV0p3T7ojcbQueE/a/9FwOwLUUE=;
+        by sin.source.kernel.org (Postfix) with ESMTPS id 123EACE1FB7;
+        Tue,  5 Apr 2022 19:20:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C385AC385A5;
+        Tue,  5 Apr 2022 19:20:40 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649186441;
+        bh=VavI1xtUqjkJNyDAit+vwUdU1iO1gYw4vnwxHnE4eZo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1Lau261GiuWD7K5xoqM0m19VeqIhFmVEU2SjL9llPMZYErrS+Btjikzb52QwgQszG
-         vCxqTXVkjJqwI/SxEiRudqrqwygIVKV4NaTHKIMh3Fdqvp/NIWbDPDdIjx/n515QHd
-         NfAowGxFkmlTVbckiKVRSX3BPGRM2PoC5UQ1syp0=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Abdul Haleem <abdhalee@linux.vnet.ibm.com>,
-        Himanshu Madhani <himanshu.madhani@oracle.com>,
-        Quinn Tran <qutran@marvell.com>,
-        Nilesh Javali <njavali@marvell.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>
-Subject: [PATCH 5.15 790/913] scsi: qla2xxx: Fix warning message due to adisc being flushed
-Date:   Tue,  5 Apr 2022 09:30:52 +0200
-Message-Id: <20220405070403.514693618@linuxfoundation.org>
+        b=F02a4y98R/WYeJZOnGcn1AJn7z5GbL1pSyDrlpN2Ut7UTvTP0SiWeqP97gKYizkFq
+         +qUwBrNobxeg/XX4c8ccrrXr2R+3AtwFDmKZfNgW8xAktn9HPGBtfOwx4nhKWcTtFx
+         +nx/1zZ5gpudtUCWEKpdARBi8ASsoQjDbak0arHoYHDKd2jjOL/cz1luz6vyCYq9cr
+         e1cox2Nl1Sd8IkjulzRYRwTO8yrbk3mM5X0402aJklwBuuiHb1yQ0eOmB+zkp93tiD
+         A30F01ofcAiJsTRGONWR/e1G6zNqWGmlzILQsqcXyVDBi6hqRke6+P5lah8DON0iVK
+         hXHYHmGRMSUfA==
+From:   Jeff Layton <jlayton@kernel.org>
+To:     idryomov@gmail.com, xiubli@redhat.com
+Cc:     ceph-devel@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        linux-fscrypt@vger.kernel.org, linux-kernel@vger.kernel.org,
+        lhenriques@suse.de, Eric Biggers <ebiggers@google.com>
+Subject: [PATCH v13 10/59] fscrypt: export fscrypt_fname_encrypt and fscrypt_fname_encrypted_size
+Date:   Tue,  5 Apr 2022 15:19:41 -0400
+Message-Id: <20220405192030.178326-11-jlayton@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
-User-Agent: quilt/0.66
+In-Reply-To: <20220405192030.178326-1-jlayton@kernel.org>
+References: <20220405192030.178326-1-jlayton@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Quinn Tran <qutran@marvell.com>
+For ceph, we want to use our own scheme for handling filenames that are
+are longer than NAME_MAX after encryption and Base64 encoding. This
+allows us to have a consistent view of the encrypted filenames for
+clients that don't support fscrypt and clients that do but that don't
+have the key.
 
-commit 64f24af75b79cba3b86b0760e27e0fa904db570f upstream.
+Currently, fs/crypto only supports encrypting filenames using
+fscrypt_setup_filename, but that also handles encoding nokey names. Ceph
+can't use that because it handles nokey names in a different way.
 
-Fix warning message due to adisc being flushed.  Linux kernel triggered a
-warning message where a different error code type is not matching up with
-the expected type. Add additional translation of one error code type to
-another.
+Export fscrypt_fname_encrypt. Rename fscrypt_fname_encrypted_size to
+__fscrypt_fname_encrypted_size and add a new wrapper called
+fscrypt_fname_encrypted_size that takes an inode argument rather than a
+pointer to a fscrypt_policy union.
 
-WARNING: CPU: 2 PID: 1131623 at drivers/scsi/qla2xxx/qla_init.c:498
-qla2x00_async_adisc_sp_done+0x294/0x2b0 [qla2xxx]
-CPU: 2 PID: 1131623 Comm: drmgr Not tainted 5.13.0-rc1-autotest #1
-..
-GPR28: c000000aaa9c8890 c0080000079ab678 c00000140a104800 c00000002bd19000
-NIP [c00800000790857c] qla2x00_async_adisc_sp_done+0x294/0x2b0 [qla2xxx]
-LR [c008000007908578] qla2x00_async_adisc_sp_done+0x290/0x2b0 [qla2xxx]
-Call Trace:
-[c00000001cdc3620] [c008000007908578] qla2x00_async_adisc_sp_done+0x290/0x2b0 [qla2xxx] (unreliable)
-[c00000001cdc3710] [c0080000078f3080] __qla2x00_abort_all_cmds+0x1b8/0x580 [qla2xxx]
-[c00000001cdc3840] [c0080000078f589c] qla2x00_abort_all_cmds+0x34/0xd0 [qla2xxx]
-[c00000001cdc3880] [c0080000079153d8] qla2x00_abort_isp_cleanup+0x3f0/0x570 [qla2xxx]
-[c00000001cdc3920] [c0080000078fb7e8] qla2x00_remove_one+0x3d0/0x480 [qla2xxx]
-[c00000001cdc39b0] [c00000000071c274] pci_device_remove+0x64/0x120
-[c00000001cdc39f0] [c0000000007fb818] device_release_driver_internal+0x168/0x2a0
-[c00000001cdc3a30] [c00000000070e304] pci_stop_bus_device+0xb4/0x100
-[c00000001cdc3a70] [c00000000070e4f0] pci_stop_and_remove_bus_device+0x20/0x40
-[c00000001cdc3aa0] [c000000000073940] pci_hp_remove_devices+0x90/0x130
-[c00000001cdc3b30] [c0080000070704d0] disable_slot+0x38/0x90 [rpaphp] [
-c00000001cdc3b60] [c00000000073eb4c] power_write_file+0xcc/0x180
-[c00000001cdc3be0] [c0000000007354bc] pci_slot_attr_store+0x3c/0x60
-[c00000001cdc3c00] [c00000000055f820] sysfs_kf_write+0x60/0x80 [c00000001cdc3c20]
-[c00000000055df10] kernfs_fop_write_iter+0x1a0/0x290
-[c00000001cdc3c70] [c000000000447c4c] new_sync_write+0x14c/0x1d0
-[c00000001cdc3d10] [c00000000044b134] vfs_write+0x224/0x330
-[c00000001cdc3d60] [c00000000044b3f4] ksys_write+0x74/0x130
-[c00000001cdc3db0] [c00000000002df70] system_call_exception+0x150/0x2d0
-[c00000001cdc3e10] [c00000000000d45c] system_call_common+0xec/0x278
-
-Link: https://lore.kernel.org/r/20220110050218.3958-5-njavali@marvell.com
-Cc: stable@vger.kernel.org
-Reported-by: Abdul Haleem <abdhalee@linux.vnet.ibm.com>
-Reviewed-by: Himanshu Madhani <himanshu.madhani@oracle.com>
-Signed-off-by: Quinn Tran <qutran@marvell.com>
-Signed-off-by: Nilesh Javali <njavali@marvell.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Acked-by: Eric Biggers <ebiggers@google.com>
+Signed-off-by: Jeff Layton <jlayton@kernel.org>
 ---
- drivers/scsi/qla2xxx/qla_init.c |    6 ++++++
- 1 file changed, 6 insertions(+)
+ fs/crypto/fname.c           | 36 ++++++++++++++++++++++++++++++------
+ fs/crypto/fscrypt_private.h |  9 +++------
+ fs/crypto/hooks.c           |  6 +++---
+ include/linux/fscrypt.h     |  4 ++++
+ 4 files changed, 40 insertions(+), 15 deletions(-)
 
---- a/drivers/scsi/qla2xxx/qla_init.c
-+++ b/drivers/scsi/qla2xxx/qla_init.c
-@@ -295,6 +295,8 @@ static void qla2x00_async_login_sp_done(
- 		ea.iop[0] = lio->u.logio.iop[0];
- 		ea.iop[1] = lio->u.logio.iop[1];
- 		ea.sp = sp;
-+		if (res)
-+			ea.data[0] = MBS_COMMAND_ERROR;
- 		qla24xx_handle_plogi_done_event(vha, &ea);
- 	}
+diff --git a/fs/crypto/fname.c b/fs/crypto/fname.c
+index 1e4233c95005..77d38188a168 100644
+--- a/fs/crypto/fname.c
++++ b/fs/crypto/fname.c
+@@ -79,7 +79,8 @@ static inline bool fscrypt_is_dot_dotdot(const struct qstr *str)
+ /**
+  * fscrypt_fname_encrypt() - encrypt a filename
+  * @inode: inode of the parent directory (for regular filenames)
+- *	   or of the symlink (for symlink targets)
++ *	   or of the symlink (for symlink targets). Key must already be
++ *	   set up.
+  * @iname: the filename to encrypt
+  * @out: (output) the encrypted filename
+  * @olen: size of the encrypted filename.  It must be at least @iname->len.
+@@ -130,6 +131,7 @@ int fscrypt_fname_encrypt(const struct inode *inode, const struct qstr *iname,
  
-@@ -558,6 +560,8 @@ static void qla2x00_async_adisc_sp_done(
- 	ea.iop[1] = lio->u.logio.iop[1];
- 	ea.fcport = sp->fcport;
- 	ea.sp = sp;
-+	if (res)
-+		ea.data[0] = MBS_COMMAND_ERROR;
+ 	return 0;
+ }
++EXPORT_SYMBOL_GPL(fscrypt_fname_encrypt);
  
- 	qla24xx_handle_adisc_event(vha, &ea);
- 	/* ref: INIT */
-@@ -1238,6 +1242,8 @@ static void qla2x00_async_prli_sp_done(s
- 		ea.sp = sp;
- 		if (res == QLA_OS_TIMER_EXPIRED)
- 			ea.data[0] = QLA_OS_TIMER_EXPIRED;
-+		else if (res)
-+			ea.data[0] = MBS_COMMAND_ERROR;
+ /**
+  * fname_decrypt() - decrypt a filename
+@@ -257,9 +259,9 @@ int fscrypt_base64url_decode(const char *src, int srclen, u8 *dst)
+ }
+ EXPORT_SYMBOL_GPL(fscrypt_base64url_decode);
  
- 		qla24xx_handle_prli_done_event(vha, &ea);
- 	}
-
+-bool fscrypt_fname_encrypted_size(const union fscrypt_policy *policy,
+-				  u32 orig_len, u32 max_len,
+-				  u32 *encrypted_len_ret)
++bool __fscrypt_fname_encrypted_size(const union fscrypt_policy *policy,
++				    u32 orig_len, u32 max_len,
++				    u32 *encrypted_len_ret)
+ {
+ 	int padding = 4 << (fscrypt_policy_flags(policy) &
+ 			    FSCRYPT_POLICY_FLAGS_PAD_MASK);
+@@ -273,6 +275,29 @@ bool fscrypt_fname_encrypted_size(const union fscrypt_policy *policy,
+ 	return true;
+ }
+ 
++/**
++ * fscrypt_fname_encrypted_size() - calculate length of encrypted filename
++ * @inode:		parent inode of dentry name being encrypted. Key must
++ *			already be set up.
++ * @orig_len:		length of the original filename
++ * @max_len:		maximum length to return
++ * @encrypted_len_ret:	where calculated length should be returned (on success)
++ *
++ * Filenames that are shorter than the maximum length may have their lengths
++ * increased slightly by encryption, due to padding that is applied.
++ *
++ * Return: false if the orig_len is greater than max_len. Otherwise, true and
++ *	   fill out encrypted_len_ret with the length (up to max_len).
++ */
++bool fscrypt_fname_encrypted_size(const struct inode *inode, u32 orig_len,
++				  u32 max_len, u32 *encrypted_len_ret)
++{
++	return __fscrypt_fname_encrypted_size(&inode->i_crypt_info->ci_policy,
++					      orig_len, max_len,
++					      encrypted_len_ret);
++}
++EXPORT_SYMBOL_GPL(fscrypt_fname_encrypted_size);
++
+ /**
+  * fscrypt_fname_alloc_buffer() - allocate a buffer for presented filenames
+  * @max_encrypted_len: maximum length of encrypted filenames the buffer will be
+@@ -428,8 +453,7 @@ int fscrypt_setup_filename(struct inode *dir, const struct qstr *iname,
+ 		return ret;
+ 
+ 	if (fscrypt_has_encryption_key(dir)) {
+-		if (!fscrypt_fname_encrypted_size(&dir->i_crypt_info->ci_policy,
+-						  iname->len, NAME_MAX,
++		if (!fscrypt_fname_encrypted_size(dir, iname->len, NAME_MAX,
+ 						  &fname->crypto_buf.len))
+ 			return -ENAMETOOLONG;
+ 		fname->crypto_buf.name = kmalloc(fname->crypto_buf.len,
+diff --git a/fs/crypto/fscrypt_private.h b/fs/crypto/fscrypt_private.h
+index 5b0a9e6478b5..f3e6e566daff 100644
+--- a/fs/crypto/fscrypt_private.h
++++ b/fs/crypto/fscrypt_private.h
+@@ -297,14 +297,11 @@ void fscrypt_generate_iv(union fscrypt_iv *iv, u64 lblk_num,
+ 			 const struct fscrypt_info *ci);
+ 
+ /* fname.c */
+-int fscrypt_fname_encrypt(const struct inode *inode, const struct qstr *iname,
+-			  u8 *out, unsigned int olen);
+-bool fscrypt_fname_encrypted_size(const union fscrypt_policy *policy,
+-				  u32 orig_len, u32 max_len,
+-				  u32 *encrypted_len_ret);
++bool __fscrypt_fname_encrypted_size(const union fscrypt_policy *policy,
++				    u32 orig_len, u32 max_len,
++				    u32 *encrypted_len_ret);
+ 
+ /* hkdf.c */
+-
+ struct fscrypt_hkdf {
+ 	struct crypto_shash *hmac_tfm;
+ };
+diff --git a/fs/crypto/hooks.c b/fs/crypto/hooks.c
+index af74599ae1cf..7c01025879b3 100644
+--- a/fs/crypto/hooks.c
++++ b/fs/crypto/hooks.c
+@@ -228,9 +228,9 @@ int fscrypt_prepare_symlink(struct inode *dir, const char *target,
+ 	 * counting it (even though it is meaningless for ciphertext) is simpler
+ 	 * for now since filesystems will assume it is there and subtract it.
+ 	 */
+-	if (!fscrypt_fname_encrypted_size(policy, len,
+-					  max_len - sizeof(struct fscrypt_symlink_data),
+-					  &disk_link->len))
++	if (!__fscrypt_fname_encrypted_size(policy, len,
++					    max_len - sizeof(struct fscrypt_symlink_data),
++					    &disk_link->len))
+ 		return -ENAMETOOLONG;
+ 	disk_link->len += sizeof(struct fscrypt_symlink_data);
+ 
+diff --git a/include/linux/fscrypt.h b/include/linux/fscrypt.h
+index 629ccd09e095..84b363665162 100644
+--- a/include/linux/fscrypt.h
++++ b/include/linux/fscrypt.h
+@@ -308,8 +308,12 @@ void fscrypt_free_inode(struct inode *inode);
+ int fscrypt_drop_inode(struct inode *inode);
+ 
+ /* fname.c */
++int fscrypt_fname_encrypt(const struct inode *inode, const struct qstr *iname,
++			  u8 *out, unsigned int olen);
+ int fscrypt_base64url_encode(const u8 *src, int len, char *dst);
+ int fscrypt_base64url_decode(const char *src, int len, u8 *dst);
++bool fscrypt_fname_encrypted_size(const struct inode *inode, u32 orig_len,
++				  u32 max_len, u32 *encrypted_len_ret);
+ int fscrypt_setup_filename(struct inode *inode, const struct qstr *iname,
+ 			   int lookup, struct fscrypt_name *fname);
+ 
+-- 
+2.35.1
 
