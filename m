@@ -2,191 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EB39AC35276
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:42:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 31AB5C3527D
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:42:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1579096AbiDEX0G (ORCPT
+        id S1579154AbiDEX0T (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 19:26:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43040 "EHLO
+        Tue, 5 Apr 2022 19:26:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53316 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349424AbiDEJtu (ORCPT
+        with ESMTP id S1386637AbiDEMzA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:49:50 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13D4321252;
-        Tue,  5 Apr 2022 02:45:27 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A22C861673;
-        Tue,  5 Apr 2022 09:45:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B2BBEC385A2;
-        Tue,  5 Apr 2022 09:45:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649151926;
-        bh=3AAfmV1E7ZyolsYIXp/JwPHq9XUWn1MBMJ+mufJjPQw=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lFVUGV96q5KX3+4hHvBNPGPJ4nZZ5XLDLvcY9ZnyRRzFm2ePkjTosuo1zDTQRkxaP
-         5Ja7ETxlx9y32zzQM5wrWaniUGvaTh4Zqe7kVSvWyP4Z2vpg2+NnLErZukPG8dxNMc
-         xRApdaKOKuPKs4u1pqzTsgpP9FUObJE/vtkJA+kk=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hans de Goede <hdegoede@redhat.com>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 592/913] iio: mma8452: Fix probe failing when an i2c_device_id is used
-Date:   Tue,  5 Apr 2022 09:27:34 +0200
-Message-Id: <20220405070357.588190614@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 5 Apr 2022 08:55:00 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 24D2035269
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 04:59:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1649159947;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=caJ3Mn8x8sphClTxTGmFig0egR97QkRAGfFS5UfDfJg=;
+        b=iMJFKuyd/NBBDuasFz+Q19WyHs8C7u61QUqviYeugCG9DDi3fB/04ubzBzwagCheInmqgz
+        KC7volVEs2MjcggioH5JIo+jxd/6fC6eyjduVUE5JlPSJsHMmZNa55Icckq9Wsau+oMOzu
+        eNwUgue0KuQf8euHSXsu3d+va/5refk=
+Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com
+ [209.85.221.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-192-C5yzQZkLNIu-BwW0aaP_fg-1; Tue, 05 Apr 2022 07:59:06 -0400
+X-MC-Unique: C5yzQZkLNIu-BwW0aaP_fg-1
+Received: by mail-wr1-f72.google.com with SMTP id j18-20020adfa552000000b002060a011303so1553466wrb.14
+        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 04:59:05 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=caJ3Mn8x8sphClTxTGmFig0egR97QkRAGfFS5UfDfJg=;
+        b=PjBJCyRdByM26EfNLiTMQugjSpdTBAQBYBaPMwQ9urJ3b2OydWF14FMV6n6naGQSia
+         5FOE9VFwhUKksKeB8oACI7cpgzEevl5FZyiQHzsyBKnueVOnVwkHcC//tqnxHTftR6YQ
+         CbeH2LE6PGqUJ1Zm82mhIi3EXROwegWYOk6txkj/rlP3gjgXwZbCj9hJE50ORofeNp2+
+         G5Rd/HmxLDQPhmWF2AJLHCcbQ/MKWQnO48aRgg4iB7Gbh8s5KBN03ojNhe+rss8o8L42
+         /lC1RXx9stmNS6RNPY67Ao34KaDcageypnAIrgAghpBbW0gGgtaYvm9VAH/0PA/IoPiO
+         6KeQ==
+X-Gm-Message-State: AOAM533uZjaNKgQ81gu7I10VqaTSMqckTc8NAe6o03Hw4PE4KvmkA+vG
+        SmX2VnO8wA6Lz1ir++QTrpvsrk1T4oYCoiYEt5ga00ATaZoJMWTodXy7kXSW/JwZuxtIpbYgjdc
+        WcpxhVIxCPx0VyzGGls/H4p1p
+X-Received: by 2002:a1c:f705:0:b0:37d:f2e5:d8ec with SMTP id v5-20020a1cf705000000b0037df2e5d8ecmr2850173wmh.21.1649159944331;
+        Tue, 05 Apr 2022 04:59:04 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwgAb5I4ZF3qI+9Z9tb/LO2zK3svds/SwszckCB8AT7KGF6vHKrXQi2sIZ1Gsir9F/APs8Zzw==
+X-Received: by 2002:a1c:f705:0:b0:37d:f2e5:d8ec with SMTP id v5-20020a1cf705000000b0037df2e5d8ecmr2850160wmh.21.1649159944150;
+        Tue, 05 Apr 2022 04:59:04 -0700 (PDT)
+Received: from redhat.com ([2.52.17.211])
+        by smtp.gmail.com with ESMTPSA id w7-20020a1cf607000000b00389a5390180sm1949693wmc.25.2022.04.05.04.59.02
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 05 Apr 2022 04:59:03 -0700 (PDT)
+Date:   Tue, 5 Apr 2022 07:59:00 -0400
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Christoph Hellwig <hch@infradead.org>
+Cc:     Masahiro Yamada <masahiroy@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>, linux-kernel@vger.kernel.org,
+        linux-kbuild@vger.kernel.org, linux-arch@vger.kernel.org
+Subject: Re: [PATCH 8/8] virtio_ring.h: do not include <stdint.h> from
+ exported header
+Message-ID: <20220405075756-mutt-send-email-mst@kernel.org>
+References: <20220404061948.2111820-1-masahiroy@kernel.org>
+ <20220404061948.2111820-9-masahiroy@kernel.org>
+ <Ykqh3mEy5uY8spe8@infradead.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Ykqh3mEy5uY8spe8@infradead.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hans de Goede <hdegoede@redhat.com>
+On Mon, Apr 04, 2022 at 12:44:30AM -0700, Christoph Hellwig wrote:
+> On Mon, Apr 04, 2022 at 03:19:48PM +0900, Masahiro Yamada wrote:
+> >  	vr->num = num;
+> >  	vr->desc = p;
+> >  	vr->avail = (struct vring_avail *)((char *)p + num * sizeof(struct vring_desc));
+> > -	vr->used = (void *)(((uintptr_t)&vr->avail->ring[num] + sizeof(__virtio16)
+> > +	vr->used = (void *)(((__kernel_uintptr_t)&vr->avail->ring[num] + sizeof(__virtio16)
+> >  		+ align-1) & ~(align - 1));
+> 
+> This really does not look like it should be in a uapi header to start
+> with.
 
-[ Upstream commit a47ac019e7e8129b93a0b991e04b2a59872e053d ]
+It's a way to document a complex structure layout of virtio 0.9. It's
+ugly but it's been like this for years. For virtio 1.0 we moved away
+from this but a bunch of tools keep using legacy.
 
-The mma8452_driver declares both of_match_table and i2c_driver.id_table
-match-tables, but its probe() function only checked for of matches.
-
-Add support for i2c_device_id matches. This fixes the driver not loading
-on some x86 tablets (e.g. the Nextbook Ares 8) where the i2c_client is
-instantiated by platform code using an i2c_device_id.
-
-Drop of_match_ptr() protection to avoid unused warning.
-
-Fixes: c3cdd6e48e35 ("iio: mma8452: refactor for seperating chip specific data")
-Signed-off-by: Hans de Goede <hdegoede@redhat.com>
-Link: https://lore.kernel.org/r/20220208124336.511884-1-hdegoede@redhat.com
-Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/iio/accel/mma8452.c | 29 ++++++++++++++++++-----------
- 1 file changed, 18 insertions(+), 11 deletions(-)
-
-diff --git a/drivers/iio/accel/mma8452.c b/drivers/iio/accel/mma8452.c
-index 09c7f10fefb6..21a99467f364 100644
---- a/drivers/iio/accel/mma8452.c
-+++ b/drivers/iio/accel/mma8452.c
-@@ -176,6 +176,7 @@ static const struct mma8452_event_regs trans_ev_regs = {
-  * @enabled_events:		event flags enabled and handled by this driver
-  */
- struct mma_chip_info {
-+	const char *name;
- 	u8 chip_id;
- 	const struct iio_chan_spec *channels;
- 	int num_channels;
-@@ -1301,6 +1302,7 @@ enum {
- 
- static const struct mma_chip_info mma_chip_info_table[] = {
- 	[mma8451] = {
-+		.name = "mma8451",
- 		.chip_id = MMA8451_DEVICE_ID,
- 		.channels = mma8451_channels,
- 		.num_channels = ARRAY_SIZE(mma8451_channels),
-@@ -1325,6 +1327,7 @@ static const struct mma_chip_info mma_chip_info_table[] = {
- 					MMA8452_INT_FF_MT,
- 	},
- 	[mma8452] = {
-+		.name = "mma8452",
- 		.chip_id = MMA8452_DEVICE_ID,
- 		.channels = mma8452_channels,
- 		.num_channels = ARRAY_SIZE(mma8452_channels),
-@@ -1341,6 +1344,7 @@ static const struct mma_chip_info mma_chip_info_table[] = {
- 					MMA8452_INT_FF_MT,
- 	},
- 	[mma8453] = {
-+		.name = "mma8453",
- 		.chip_id = MMA8453_DEVICE_ID,
- 		.channels = mma8453_channels,
- 		.num_channels = ARRAY_SIZE(mma8453_channels),
-@@ -1357,6 +1361,7 @@ static const struct mma_chip_info mma_chip_info_table[] = {
- 					MMA8452_INT_FF_MT,
- 	},
- 	[mma8652] = {
-+		.name = "mma8652",
- 		.chip_id = MMA8652_DEVICE_ID,
- 		.channels = mma8652_channels,
- 		.num_channels = ARRAY_SIZE(mma8652_channels),
-@@ -1366,6 +1371,7 @@ static const struct mma_chip_info mma_chip_info_table[] = {
- 		.enabled_events = MMA8452_INT_FF_MT,
- 	},
- 	[mma8653] = {
-+		.name = "mma8653",
- 		.chip_id = MMA8653_DEVICE_ID,
- 		.channels = mma8653_channels,
- 		.num_channels = ARRAY_SIZE(mma8653_channels),
-@@ -1380,6 +1386,7 @@ static const struct mma_chip_info mma_chip_info_table[] = {
- 		.enabled_events = MMA8452_INT_FF_MT,
- 	},
- 	[fxls8471] = {
-+		.name = "fxls8471",
- 		.chip_id = FXLS8471_DEVICE_ID,
- 		.channels = mma8451_channels,
- 		.num_channels = ARRAY_SIZE(mma8451_channels),
-@@ -1522,13 +1529,6 @@ static int mma8452_probe(struct i2c_client *client,
- 	struct mma8452_data *data;
- 	struct iio_dev *indio_dev;
- 	int ret;
--	const struct of_device_id *match;
--
--	match = of_match_device(mma8452_dt_ids, &client->dev);
--	if (!match) {
--		dev_err(&client->dev, "unknown device model\n");
--		return -ENODEV;
--	}
- 
- 	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
- 	if (!indio_dev)
-@@ -1537,7 +1537,14 @@ static int mma8452_probe(struct i2c_client *client,
- 	data = iio_priv(indio_dev);
- 	data->client = client;
- 	mutex_init(&data->lock);
--	data->chip_info = match->data;
-+
-+	data->chip_info = device_get_match_data(&client->dev);
-+	if (!data->chip_info && id) {
-+		data->chip_info = &mma_chip_info_table[id->driver_data];
-+	} else {
-+		dev_err(&client->dev, "unknown device model\n");
-+		return -ENODEV;
-+	}
- 
- 	data->vdd_reg = devm_regulator_get(&client->dev, "vdd");
- 	if (IS_ERR(data->vdd_reg))
-@@ -1581,11 +1588,11 @@ static int mma8452_probe(struct i2c_client *client,
- 	}
- 
- 	dev_info(&client->dev, "registering %s accelerometer; ID 0x%x\n",
--		 match->compatible, data->chip_info->chip_id);
-+		 data->chip_info->name, data->chip_info->chip_id);
- 
- 	i2c_set_clientdata(client, indio_dev);
- 	indio_dev->info = &mma8452_info;
--	indio_dev->name = id->name;
-+	indio_dev->name = data->chip_info->name;
- 	indio_dev->modes = INDIO_DIRECT_MODE;
- 	indio_dev->channels = data->chip_info->channels;
- 	indio_dev->num_channels = data->chip_info->num_channels;
-@@ -1810,7 +1817,7 @@ MODULE_DEVICE_TABLE(i2c, mma8452_id);
- static struct i2c_driver mma8452_driver = {
- 	.driver = {
- 		.name	= "mma8452",
--		.of_match_table = of_match_ptr(mma8452_dt_ids),
-+		.of_match_table = mma8452_dt_ids,
- 		.pm	= &mma8452_pm_ops,
- 	},
- 	.probe = mma8452_probe,
 -- 
-2.34.1
-
-
+MST
 
