@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 32A89C43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5BDFDC4167B
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 15:15:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344254AbiDEPKx (ORCPT
+        id S1345707AbiDEPLM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 11:10:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59290 "EHLO
+        Tue, 5 Apr 2022 11:11:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60902 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345760AbiDEJoD (ORCPT
+        with ESMTP id S1345831AbiDEJoH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:44:03 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2840C55A0;
-        Tue,  5 Apr 2022 02:29:38 -0700 (PDT)
+        Tue, 5 Apr 2022 05:44:07 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BED0C6240;
+        Tue,  5 Apr 2022 02:29:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 02C38616D6;
-        Tue,  5 Apr 2022 09:29:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 12EDFC385A0;
-        Tue,  5 Apr 2022 09:29:27 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B1837B81C6E;
+        Tue,  5 Apr 2022 09:29:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 25A1BC385A0;
+        Tue,  5 Apr 2022 09:29:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649150968;
-        bh=M67CU+T4xOG6XH0wlo3yuSohmbR82pONZTeDDfPjaTs=;
+        s=korg; t=1649150976;
+        bh=/zcQWl4cnL+I3ZfuME7Mb0EVNvIwIq8FHZw1BCbA7oU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PtbYBiv0paTZSK5d7BW/JrsxpZ5N3ulBDeNOTSW8g1XjR6rQgcHY0RsU6GCo8cmPJ
-         qbdrXHKboKrzmTpjBhmTcLKjQzSdt76ggSOf0XNIiKu8TU8W7y2+ty2OPb4jooGb99
-         YVbOmsqVsdqEzsQdp4WlVgnGBVDNLnIlUAy47E+E=
+        b=whnfyWxg4s/P8XJm+zHVlfMMZM4XpYhsQ/9kvbnCz1ugcv11FvtYN0a7GZWghI9hx
+         bInvGFHBZrXpwmL8ranXruOPOztDFvvlfPsWNj3jJaHS6mRdtxa9l7ap0hh9bJu5Vp
+         BNh6oBTxOqCInMutN8ozKTUQE9LzKfzrGF+eKvYo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, David Howells <dhowells@redhat.com>,
-        Sasha Levin <sashal@kernel.org>,
-        syzbot+6e2de48f06cdb2884bfc@syzkaller.appspotmail.com
-Subject: [PATCH 5.15 245/913] watch_queue: Actually free the watch
-Date:   Tue,  5 Apr 2022 09:21:47 +0200
-Message-Id: <20220405070347.201194687@linuxfoundation.org>
+        stable@vger.kernel.org, Kai Ye <yekai13@huawei.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 212/913] crypto: hisilicon/sec - fix the aead software fallback for engine
+Date:   Tue,  5 Apr 2022 09:21:14 +0200
+Message-Id: <20220405070346.212901803@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
 References: <20220405070339.801210740@linuxfoundation.org>
@@ -50,52 +50,65 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: David Howells <dhowells@redhat.com>
+From: Kai Ye <yekai13@huawei.com>
 
-[ Upstream commit 3d8dcf278b1ee1eff1e90be848fa2237db4c07a7 ]
+[ Upstream commit 0a2a464f863187f97e96ebc6384c052cafd4a54c ]
 
-free_watch() does everything barring actually freeing the watch object.  Fix
-this by adding the missing kfree.
+Due to the subreq pointer misuse the private context memory. The aead
+soft crypto occasionally casues the OS panic as setting the 64K page.
+Here is fix it.
 
-kmemleak produces a report something like the following.  Note that as an
-address can be seen in the first word, the watch would appear to have gone
-through call_rcu().
-
-BUG: memory leak
-unreferenced object 0xffff88810ce4a200 (size 96):
-  comm "syz-executor352", pid 3605, jiffies 4294947473 (age 13.720s)
-  hex dump (first 32 bytes):
-    e0 82 48 0d 81 88 ff ff 00 00 00 00 00 00 00 00  ..H.............
-    80 a2 e4 0c 81 88 ff ff 00 00 00 00 00 00 00 00  ................
-  backtrace:
-    [<ffffffff8214e6cc>] kmalloc include/linux/slab.h:581 [inline]
-    [<ffffffff8214e6cc>] kzalloc include/linux/slab.h:714 [inline]
-    [<ffffffff8214e6cc>] keyctl_watch_key+0xec/0x2e0 security/keys/keyctl.c:1800
-    [<ffffffff8214ec84>] __do_sys_keyctl+0x3c4/0x490 security/keys/keyctl.c:2016
-    [<ffffffff84493a25>] do_syscall_x64 arch/x86/entry/common.c:50 [inline]
-    [<ffffffff84493a25>] do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
-    [<ffffffff84600068>] entry_SYSCALL_64_after_hwframe+0x44/0xae
-
-Fixes: c73be61cede5 ("pipe: Add general notification queue support")
-Reported-and-tested-by: syzbot+6e2de48f06cdb2884bfc@syzkaller.appspotmail.com
-Signed-off-by: David Howells <dhowells@redhat.com>
+Fixes: 6c46a3297bea ("crypto: hisilicon/sec - add fallback tfm...")
+Signed-off-by: Kai Ye <yekai13@huawei.com>
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- kernel/watch_queue.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/crypto/hisilicon/sec2/sec_crypto.c | 16 +++++++++++++---
+ 1 file changed, 13 insertions(+), 3 deletions(-)
 
-diff --git a/kernel/watch_queue.c b/kernel/watch_queue.c
-index 12348b41d7ad..38a135d68c05 100644
---- a/kernel/watch_queue.c
-+++ b/kernel/watch_queue.c
-@@ -398,6 +398,7 @@ static void free_watch(struct rcu_head *rcu)
- 	put_watch_queue(rcu_access_pointer(watch->queue));
- 	atomic_dec(&watch->cred->user->nr_watches);
- 	put_cred(watch->cred);
-+	kfree(watch);
+diff --git a/drivers/crypto/hisilicon/sec2/sec_crypto.c b/drivers/crypto/hisilicon/sec2/sec_crypto.c
+index 6a45bd23b363..090920ed50c8 100644
+--- a/drivers/crypto/hisilicon/sec2/sec_crypto.c
++++ b/drivers/crypto/hisilicon/sec2/sec_crypto.c
+@@ -2284,9 +2284,10 @@ static int sec_aead_soft_crypto(struct sec_ctx *ctx,
+ 				struct aead_request *aead_req,
+ 				bool encrypt)
+ {
+-	struct aead_request *subreq = aead_request_ctx(aead_req);
+ 	struct sec_auth_ctx *a_ctx = &ctx->a_ctx;
+ 	struct device *dev = ctx->dev;
++	struct aead_request *subreq;
++	int ret;
+ 
+ 	/* Kunpeng920 aead mode not support input 0 size */
+ 	if (!a_ctx->fallback_aead_tfm) {
+@@ -2294,6 +2295,10 @@ static int sec_aead_soft_crypto(struct sec_ctx *ctx,
+ 		return -EINVAL;
+ 	}
+ 
++	subreq = aead_request_alloc(a_ctx->fallback_aead_tfm, GFP_KERNEL);
++	if (!subreq)
++		return -ENOMEM;
++
+ 	aead_request_set_tfm(subreq, a_ctx->fallback_aead_tfm);
+ 	aead_request_set_callback(subreq, aead_req->base.flags,
+ 				  aead_req->base.complete, aead_req->base.data);
+@@ -2301,8 +2306,13 @@ static int sec_aead_soft_crypto(struct sec_ctx *ctx,
+ 			       aead_req->cryptlen, aead_req->iv);
+ 	aead_request_set_ad(subreq, aead_req->assoclen);
+ 
+-	return encrypt ? crypto_aead_encrypt(subreq) :
+-		   crypto_aead_decrypt(subreq);
++	if (encrypt)
++		ret = crypto_aead_encrypt(subreq);
++	else
++		ret = crypto_aead_decrypt(subreq);
++	aead_request_free(subreq);
++
++	return ret;
  }
  
- static void __put_watch(struct kref *kref)
+ static int sec_aead_crypto(struct aead_request *a_req, bool encrypt)
 -- 
 2.34.1
 
