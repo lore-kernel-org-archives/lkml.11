@@ -2,118 +2,166 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B742EC35280
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 93B37C3527E
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:41:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1576635AbiDEXKx (ORCPT
+        id S1576591AbiDEXKv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 19:10:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49348 "EHLO
+        Tue, 5 Apr 2022 19:10:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39858 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1572913AbiDERTv (ORCPT
+        with ESMTP id S1349392AbiDEJtr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 13:19:51 -0400
-Received: from mail-pf1-x430.google.com (mail-pf1-x430.google.com [IPv6:2607:f8b0:4864:20::430])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B162852E2A
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 10:17:52 -0700 (PDT)
-Received: by mail-pf1-x430.google.com with SMTP id b13so109401pfv.0
-        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 10:17:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=oLYBS6qSnQJDgHjg4Cj/j2Qud2mtZddgHInB5HJPeJI=;
-        b=LjoNMKdoa2fQAXS+kSSP5+w5CB9a38NU+nsairp0fAYRVkSuE5pCKkLbh+w3mkv3kU
-         f/D/yVZPMsLyjmGoclxJf72/hNgGVWsb+AUghM2UbT1G6fLt9RZxs02Aq+RzxkpND3Ls
-         31KigSq940fcdUut6dq4VTF2P2un1IquDcydA=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=oLYBS6qSnQJDgHjg4Cj/j2Qud2mtZddgHInB5HJPeJI=;
-        b=dnQYxpKYERPDIyRPoGRCskmT/b1XCLTce/jdwBr7S4Dieyxi7xMDz0PGyP7049pE4s
-         5C6Jt4n8NPCRUXLfBlDYK4e0JbzDndW+PP8xZZ/N4baldUH5OYjUA70r5uEm6dkzR7N8
-         Hz6jlbf7CMMc2GTA1JcRsTCLzFrdi2LRuWNSgsWNQAupYA0rxxvv7Db+dclfiZg9EJF6
-         liurCRERIPYk+Aq9Qr9Z5a4oQ3leJtH0byMwaQfO996sKKiiMlUoc3lh7pG1gbavkrG1
-         frstsKIy1t+ZwHsI1NiYFVD7WibRBlvGVq9t72OnpGw4PRGxVfc29F/iqzXZSxKZPzPG
-         ZkQw==
-X-Gm-Message-State: AOAM531ylQMsvQCIEphkVXdsuBib1xrVDul5fRaaBy8X+g3kwjCPuqGN
-        h0x2ZcvHxyz7eQ3EIljS9Mm2qA==
-X-Google-Smtp-Source: ABdhPJwlJsEZo/PkPNT8otsdduOSiGXLIcEUWsi8iE+msHB+Nh3AdQJ6kUVN7PByXt5yxtNPk/JT0Q==
-X-Received: by 2002:a62:e213:0:b0:4fa:6b13:3a9a with SMTP id a19-20020a62e213000000b004fa6b133a9amr4665590pfi.18.1649179071654;
-        Tue, 05 Apr 2022 10:17:51 -0700 (PDT)
-Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id p10-20020a637f4a000000b00373a2760775sm13654616pgn.2.2022.04.05.10.17.51
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 05 Apr 2022 10:17:51 -0700 (PDT)
-Date:   Tue, 5 Apr 2022 10:17:50 -0700
-From:   Kees Cook <keescook@chromium.org>
-To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
-Cc:     linux-hardening@vger.kernel.org, linux-kernel@vger.kernel.org,
-        stable@vger.kernel.org, PaX Team <pageexec@freemail.hu>
-Subject: Re: [PATCH v2] gcc-plugins: latent_entropy: use /dev/urandom
-Message-ID: <202204051016.4E9DD89@keescook>
-References: <CAHmME9otYi4pCzZwSGnK40dp1QMRVPxp+DBysVuLXUKkXinAxg@mail.gmail.com>
- <20220403204036.1269562-1-Jason@zx2c4.com>
- <202204041144.96FC64A8@keescook>
- <Ykt1cj0wPKEsHL2q@zx2c4.com>
- <202204041953.D7E0BA15@keescook>
- <CAHmME9rC-pmi3K=w06-bOsHP5=tPv9CS51hr69P1C5tmvHf_mA@mail.gmail.com>
+        Tue, 5 Apr 2022 05:49:47 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A908B15A38;
+        Tue,  5 Apr 2022 02:44:50 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 462BE6164D;
+        Tue,  5 Apr 2022 09:44:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 57A56C385A2;
+        Tue,  5 Apr 2022 09:44:49 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649151889;
+        bh=/QAlbnO1eNnDrzOkcmzLTG7zRvW4gaOjytGF8jHWc7s=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=e3Ur3uDdjlOuyAs0X5oEXcoKhRs6rtdPaiEPeeZ5X8cVz+aDlcby8mKXR56V6QTQH
+         xgPrGr23N1VPNM54Ut8gUi/aCHd5xOnnmIs3wdUlM3gHmxe5wQ9pHFIsAfEeE5BaLz
+         FwwO4vOEclhLEAGinD3ugvfOeeWkrUEv5C2zCLOs=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Wang Yufen <wangyufen@huawei.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 540/913] bpf, sockmap: Fix memleak in sk_psock_queue_msg
+Date:   Tue,  5 Apr 2022 09:26:42 +0200
+Message-Id: <20220405070356.035060358@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAHmME9rC-pmi3K=w06-bOsHP5=tPv9CS51hr69P1C5tmvHf_mA@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 05, 2022 at 02:38:58PM +0200, Jason A. Donenfeld wrote:
-> Hi Kees,
-> 
-> On 4/5/22, Kees Cook <keescook@chromium.org> wrote:
-> > On Tue, Apr 05, 2022 at 12:47:14AM +0200, Jason A. Donenfeld wrote:
-> >> On Mon, Apr 4, 2022 at 8:49 PM Kees Cook <keescook@chromium.org> wrote:
-> >> > This mixes two changes: the pRNG change and the "use urandom if
-> >> > non-deterministic" change. I think these should be split, so the pRNG
-> >> > change can be explicitly justified.
-> >>
-> >> Alright, I'll split those. Or, more probably, just drop the xorshift
-> >> thing. There's not actually a strong reason for preferring xorshift. I
-> >> did it because it produces more uniformity and is faster to compute and
-> >> all that. But none of that stuff actually matters here. It was just a
-> >> sort of "well I'm at it..." thing.
-> >
-> > Well, it's nice to have and you already wrote it, so seems a waste to
-> > just drop it. :)
-> >
-> >> > >  static struct plugin_info latent_entropy_plugin_info = {
-> >> > > -     .version        = "201606141920vanilla",
-> >> > > +     .version        = "202203311920vanilla",
-> >> >
-> >> > This doesn't really need to be versioned. We can change this to just
-> >> > "vanilla", IMO.
-> >>
-> >> Okay. I suppose you want it to be in a different patch too, right? In
-> >> which case I'll leave it out and maybe get to it later. (I suppose one
-> >> probably needs to double check whether it's used for anything
-> >> interesting like dwarf debug info or whatever, where maybe it's
-> >> helpful?)
-> >
-> > Hm, I don't think it shows up anywhere, but you can just drop the hunk
-> > that touch it. I can remove them all with a separate patch later.
-> >
-> 
-> Okay. That's what I did here
-> https://lore.kernel.org/lkml/20220404230709.124508-1-Jason@zx2c4.com/
-> so awaiting your merge. (I still find all aspects of v2 more
-> preferable for a variety of weak reasons in case you'd like to merge
-> that instead, but v3 is available now.)
+From: Wang Yufen <wangyufen@huawei.com>
 
-v3 uses a different check for the -f option, though? Isn't that
-preferred over the v2 method?
+[ Upstream commit 938d3480b92fa5e454b7734294f12a7b75126f09 ]
 
-Also, I did some quick benchmarking, and any difference in runtime is
-completely lost in the noise, so that's good.
+If tcp_bpf_sendmsg is running during a tear down operation we may enqueue
+data on the ingress msg queue while tear down is trying to free it.
 
+ sk1 (redirect sk2)                         sk2
+ -------------------                      ---------------
+tcp_bpf_sendmsg()
+ tcp_bpf_send_verdict()
+  tcp_bpf_sendmsg_redir()
+   bpf_tcp_ingress()
+                                          sock_map_close()
+                                           lock_sock()
+    lock_sock() ... blocking
+                                           sk_psock_stop
+                                            sk_psock_clear_state(psock, SK_PSOCK_TX_ENABLED);
+                                           release_sock(sk);
+    lock_sock()
+    sk_mem_charge()
+    get_page()
+    sk_psock_queue_msg()
+     sk_psock_test_state(psock, SK_PSOCK_TX_ENABLED);
+      drop_sk_msg()
+    release_sock()
+
+While drop_sk_msg(), the msg has charged memory form sk by sk_mem_charge
+and has sg pages need to put. To fix we use sk_msg_free() and then kfee()
+msg.
+
+This issue can cause the following info:
+WARNING: CPU: 0 PID: 9202 at net/core/stream.c:205 sk_stream_kill_queues+0xc8/0xe0
+Call Trace:
+ <IRQ>
+ inet_csk_destroy_sock+0x55/0x110
+ tcp_rcv_state_process+0xe5f/0xe90
+ ? sk_filter_trim_cap+0x10d/0x230
+ ? tcp_v4_do_rcv+0x161/0x250
+ tcp_v4_do_rcv+0x161/0x250
+ tcp_v4_rcv+0xc3a/0xce0
+ ip_protocol_deliver_rcu+0x3d/0x230
+ ip_local_deliver_finish+0x54/0x60
+ ip_local_deliver+0xfd/0x110
+ ? ip_protocol_deliver_rcu+0x230/0x230
+ ip_rcv+0xd6/0x100
+ ? ip_local_deliver+0x110/0x110
+ __netif_receive_skb_one_core+0x85/0xa0
+ process_backlog+0xa4/0x160
+ __napi_poll+0x29/0x1b0
+ net_rx_action+0x287/0x300
+ __do_softirq+0xff/0x2fc
+ do_softirq+0x79/0x90
+ </IRQ>
+
+WARNING: CPU: 0 PID: 531 at net/ipv4/af_inet.c:154 inet_sock_destruct+0x175/0x1b0
+Call Trace:
+ <TASK>
+ __sk_destruct+0x24/0x1f0
+ sk_psock_destroy+0x19b/0x1c0
+ process_one_work+0x1b3/0x3c0
+ ? process_one_work+0x3c0/0x3c0
+ worker_thread+0x30/0x350
+ ? process_one_work+0x3c0/0x3c0
+ kthread+0xe6/0x110
+ ? kthread_complete_and_exit+0x20/0x20
+ ret_from_fork+0x22/0x30
+ </TASK>
+
+Fixes: 9635720b7c88 ("bpf, sockmap: Fix memleak on ingress msg enqueue")
+Signed-off-by: Wang Yufen <wangyufen@huawei.com>
+Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+Acked-by: John Fastabend <john.fastabend@gmail.com>
+Link: https://lore.kernel.org/bpf/20220304081145.2037182-2-wangyufen@huawei.com
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ include/linux/skmsg.h | 13 ++++---------
+ 1 file changed, 4 insertions(+), 9 deletions(-)
+
+diff --git a/include/linux/skmsg.h b/include/linux/skmsg.h
+index b4256847c707..73bedd128d52 100644
+--- a/include/linux/skmsg.h
++++ b/include/linux/skmsg.h
+@@ -310,21 +310,16 @@ static inline void sock_drop(struct sock *sk, struct sk_buff *skb)
+ 	kfree_skb(skb);
+ }
+ 
+-static inline void drop_sk_msg(struct sk_psock *psock, struct sk_msg *msg)
+-{
+-	if (msg->skb)
+-		sock_drop(psock->sk, msg->skb);
+-	kfree(msg);
+-}
+-
+ static inline void sk_psock_queue_msg(struct sk_psock *psock,
+ 				      struct sk_msg *msg)
+ {
+ 	spin_lock_bh(&psock->ingress_lock);
+ 	if (sk_psock_test_state(psock, SK_PSOCK_TX_ENABLED))
+ 		list_add_tail(&msg->list, &psock->ingress_msg);
+-	else
+-		drop_sk_msg(psock, msg);
++	else {
++		sk_msg_free(psock->sk, msg);
++		kfree(msg);
++	}
+ 	spin_unlock_bh(&psock->ingress_lock);
+ }
+ 
 -- 
-Kees Cook
+2.34.1
+
+
+
