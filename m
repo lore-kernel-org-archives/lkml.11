@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 89393C35273
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9DF41C4707A
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:39:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385178AbiDEMbm (ORCPT
+        id S1385196AbiDEMbr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 08:31:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59264 "EHLO
+        Tue, 5 Apr 2022 08:31:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35398 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343532AbiDEI45 (ORCPT
+        with ESMTP id S1343607AbiDEI5L (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:56:57 -0400
+        Tue, 5 Apr 2022 04:57:11 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD2591CFFA;
-        Tue,  5 Apr 2022 01:52:57 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23F4922B17;
+        Tue,  5 Apr 2022 01:53:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2480961003;
-        Tue,  5 Apr 2022 08:52:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2D608C385A0;
-        Tue,  5 Apr 2022 08:52:56 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7DA4E61003;
+        Tue,  5 Apr 2022 08:53:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 931B2C385A1;
+        Tue,  5 Apr 2022 08:53:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649148776;
-        bh=iYsyppak5X0PQkSwIxgTeVWMzlqbLKhGuR4Pvhdsn3k=;
+        s=korg; t=1649148781;
+        bh=6OQ4XBU3Rd0gro+F3jMJqSQaH/YDj8FH7PqpZ7aqIyk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tgzD7JVq2gk/+9zQ7Qiyj4f2C1pMC0gA6yZj5owfRXgwPWfrlfOwbutVBsdA9IB8d
-         GEDHKZfLoZnV+j7Kp4XIkNTJ2zIArGLhQJXpO9VMKoWZPz4pwMbvuN95cHKRV4GTAn
-         R84RZDVORPvfdoRL5cOUwoC3AwmVTqDeN7H2kY5w=
+        b=gxXdR4EmHcBwgGmV1x9EKM1xwOpXFfs/Sn7ASmECx+ScWSLBvoY3DYrXOybTRtcE3
+         FcEBsvVgeAIFHoFbjpgM01DkHuRTKxFi3+JaPeAxjJt9BLV+sL7ydo6q1OiACJPuC/
+         Bc82qtHsWmusbK7FkHwrUcjB3UPgf734hDMubzn4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mark Brown <broonie@kernel.org>,
-        Michael Walle <michael@walle.cc>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
+        stable@vger.kernel.org, Andrii Nakryiko <andrii@kernel.org>,
+        Kenta Tada <Kenta.Tada@sony.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0478/1017] mtd: mchp23k256: Add SPI ID table
-Date:   Tue,  5 Apr 2022 09:23:11 +0200
-Message-Id: <20220405070408.487381655@linuxfoundation.org>
+Subject: [PATCH 5.16 0480/1017] selftests/bpf: Extract syscall wrapper
+Date:   Tue,  5 Apr 2022 09:23:13 +0200
+Message-Id: <20220405070408.546956755@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -51,58 +50,75 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mark Brown <broonie@kernel.org>
+From: Kenta Tada <Kenta.Tada@sony.com>
 
-[ Upstream commit bc7ee2e34b219da6813c17a1680dd20766648883 ]
+[ Upstream commit 78a2054156dd6265619b230cc5372b74f9ba5233 ]
 
-Currently autoloading for SPI devices does not use the DT ID table, it uses
-SPI modalises. Supporting OF modalises is going to be difficult if not
-impractical, an attempt was made but has been reverted, so ensure that
-module autoloading works for this driver by adding an id_table listing the
-SPI IDs for everything.
+Extract the helper to set up SYS_PREFIX for fentry and kprobe selftests
+that use __x86_sys_* attach functions.
 
-Fixes: 96c8395e2166 ("spi: Revert modalias changes")
-Signed-off-by: Mark Brown <broonie@kernel.org>
-Reviewed-by: Michael Walle <michael@walle.cc>
-Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-Link: https://lore.kernel.org/linux-mtd/20220202143404.16070-3-broonie@kernel.org
+Suggested-by: Andrii Nakryiko <andrii@kernel.org>
+Signed-off-by: Kenta Tada <Kenta.Tada@sony.com>
+Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
+Link: https://lore.kernel.org/bpf/20220124141622.4378-2-Kenta.Tada@sony.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/mtd/devices/mchp23k256.c | 14 ++++++++++++++
- 1 file changed, 14 insertions(+)
+ tools/testing/selftests/bpf/progs/bpf_misc.h  | 19 +++++++++++++++++++
+ .../selftests/bpf/progs/test_probe_user.c     | 15 +--------------
+ 2 files changed, 20 insertions(+), 14 deletions(-)
+ create mode 100644 tools/testing/selftests/bpf/progs/bpf_misc.h
 
-diff --git a/drivers/mtd/devices/mchp23k256.c b/drivers/mtd/devices/mchp23k256.c
-index 77c872fd3d83..7d188cdff6a2 100644
---- a/drivers/mtd/devices/mchp23k256.c
-+++ b/drivers/mtd/devices/mchp23k256.c
-@@ -229,6 +229,19 @@ static const struct of_device_id mchp23k256_of_table[] = {
- };
- MODULE_DEVICE_TABLE(of, mchp23k256_of_table);
- 
-+static const struct spi_device_id mchp23k256_spi_ids[] = {
-+	{
-+		.name = "mchp23k256",
-+		.driver_data = (kernel_ulong_t)&mchp23k256_caps,
-+	},
-+	{
-+		.name = "mchp23lcv1024",
-+		.driver_data = (kernel_ulong_t)&mchp23lcv1024_caps,
-+	},
-+	{}
-+};
-+MODULE_DEVICE_TABLE(spi, mchp23k256_spi_ids);
+diff --git a/tools/testing/selftests/bpf/progs/bpf_misc.h b/tools/testing/selftests/bpf/progs/bpf_misc.h
+new file mode 100644
+index 000000000000..0b78bc9b1b4c
+--- /dev/null
++++ b/tools/testing/selftests/bpf/progs/bpf_misc.h
+@@ -0,0 +1,19 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++#ifndef __BPF_MISC_H__
++#define __BPF_MISC_H__
 +
- static struct spi_driver mchp23k256_driver = {
- 	.driver = {
- 		.name	= "mchp23k256",
-@@ -236,6 +249,7 @@ static struct spi_driver mchp23k256_driver = {
- 	},
- 	.probe		= mchp23k256_probe,
- 	.remove		= mchp23k256_remove,
-+	.id_table	= mchp23k256_spi_ids,
- };
++#if defined(__TARGET_ARCH_x86)
++#define SYSCALL_WRAPPER 1
++#define SYS_PREFIX "__x64_"
++#elif defined(__TARGET_ARCH_s390)
++#define SYSCALL_WRAPPER 1
++#define SYS_PREFIX "__s390x_"
++#elif defined(__TARGET_ARCH_arm64)
++#define SYSCALL_WRAPPER 1
++#define SYS_PREFIX "__arm64_"
++#else
++#define SYSCALL_WRAPPER 0
++#define SYS_PREFIX ""
++#endif
++
++#endif
+diff --git a/tools/testing/selftests/bpf/progs/test_probe_user.c b/tools/testing/selftests/bpf/progs/test_probe_user.c
+index 8812a90da4eb..702578a5e496 100644
+--- a/tools/testing/selftests/bpf/progs/test_probe_user.c
++++ b/tools/testing/selftests/bpf/progs/test_probe_user.c
+@@ -7,20 +7,7 @@
  
- module_spi_driver(mchp23k256_driver);
+ #include <bpf/bpf_helpers.h>
+ #include <bpf/bpf_tracing.h>
+-
+-#if defined(__TARGET_ARCH_x86)
+-#define SYSCALL_WRAPPER 1
+-#define SYS_PREFIX "__x64_"
+-#elif defined(__TARGET_ARCH_s390)
+-#define SYSCALL_WRAPPER 1
+-#define SYS_PREFIX "__s390x_"
+-#elif defined(__TARGET_ARCH_arm64)
+-#define SYSCALL_WRAPPER 1
+-#define SYS_PREFIX "__arm64_"
+-#else
+-#define SYSCALL_WRAPPER 0
+-#define SYS_PREFIX ""
+-#endif
++#include "bpf_misc.h"
+ 
+ static struct sockaddr_in old;
+ 
 -- 
 2.34.1
 
