@@ -2,305 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6EBD8C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:16:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 79FE3C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:18:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382504AbiDEMPh (ORCPT
+        id S1382526AbiDEMPm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 08:15:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51010 "EHLO
+        Tue, 5 Apr 2022 08:15:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46806 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244903AbiDEIwq (ORCPT
+        with ESMTP id S244894AbiDEIwp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:52:46 -0400
-Received: from mail-ej1-x641.google.com (mail-ej1-x641.google.com [IPv6:2a00:1450:4864:20::641])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CFA8F2458C
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 01:45:56 -0700 (PDT)
-Received: by mail-ej1-x641.google.com with SMTP id k23so21738070ejd.3
-        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 01:45:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ffwll.ch; s=google;
-        h=date:from:to:cc:subject:message-id:mail-followup-to:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=kLwOSJh4JkUAu8bAVMQPem4swoCfWHajhhsSaSbd3wA=;
-        b=bMbT3uGp3dFxXv5749rP/YEH0fwf2ipBnL4qQcoZffJmqP63odGiG48c6lrEQDoOuE
-         2Io2E+FIcefJqaP5UzCFcWumnT1yERlYhCUDpyrunp/zi7DwDGmp9jA4EjrBmXZPUbxe
-         m4RBFNb29e21bIjfvB3+04nX0j65o9B8vbaPY=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id
-         :mail-followup-to:references:mime-version:content-disposition
-         :content-transfer-encoding:in-reply-to;
-        bh=kLwOSJh4JkUAu8bAVMQPem4swoCfWHajhhsSaSbd3wA=;
-        b=jrJ4CRoGI/THTp1O8nP+KhfA/x0Rq4eGzJ8+2w93iKRLFo1RdGt80MRBKGCKN+XCuB
-         QuAdTKtFLT6GcFEK2/1nS8W71I30QuDj8dLcSLMPC0NzzWV1nM95iJHyXI7dr8NYNnVf
-         OsHPq55PugaGHbiCGWsFGcgd6jo9cUbKYjw4R01i/uWMpMdIZ4xBXRyBDXStSPF8OfqW
-         IBw2dS3yzybVZhAb+Gbd2HJqSy67DdtColzZ4puVnBbvGYvM7hYe1Xj9pqGImTbYMC7U
-         j7mSsnmXoziwWYQtxM4ISB+PhQsdHbNvh223gfIQPiVkAruNgrYGGD6H/EG8vTheYjJF
-         Fm0g==
-X-Gm-Message-State: AOAM5318AcDWbFwD0FjZd8goDH66jKg2MTOTG7HoQMZXE9qkDxr60ApL
-        TUe5Kxn8+oXAGD9FqSjkJrbrqQ==
-X-Google-Smtp-Source: ABdhPJylM+dFHXlrCCet5bi78ssTO3yLx8DQZUwNTohynsB3hLO/O0NXGESroauDwjtoDMbXczTEkA==
-X-Received: by 2002:a17:906:300f:b0:6e0:b38d:777d with SMTP id 15-20020a170906300f00b006e0b38d777dmr2418845ejz.189.1649148355361;
-        Tue, 05 Apr 2022 01:45:55 -0700 (PDT)
-Received: from phenom.ffwll.local ([2a02:168:57f4:0:efd0:b9e5:5ae6:c2fa])
-        by smtp.gmail.com with ESMTPSA id a22-20020a50ff16000000b00410d029ea5csm6312065edu.96.2022.04.05.01.45.54
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 05 Apr 2022 01:45:54 -0700 (PDT)
-Date:   Tue, 5 Apr 2022 10:45:53 +0200
-From:   Daniel Vetter <daniel@ffwll.ch>
-To:     Thomas Zimmermann <tzimmermann@suse.de>
-Cc:     Daniel Vetter <daniel.vetter@ffwll.ch>,
-        DRI Development <dri-devel@lists.freedesktop.org>,
-        linux-fbdev@vger.kernel.org, Du Cheng <ducheng2@gmail.com>,
-        Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>,
-        Intel Graphics Development <intel-gfx@lists.freedesktop.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Claudio Suarez <cssk@net-c.es>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Daniel Vetter <daniel.vetter@intel.com>,
-        Sam Ravnborg <sam@ravnborg.org>
-Subject: Re: [PATCH v2 09/19] fbcon: Extract fbcon_open/release helpers
-Message-ID: <YkwBwW6E9gbL2Sut@phenom.ffwll.local>
-Mail-Followup-To: Thomas Zimmermann <tzimmermann@suse.de>,
-        DRI Development <dri-devel@lists.freedesktop.org>,
-        linux-fbdev@vger.kernel.org, Du Cheng <ducheng2@gmail.com>,
-        Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>,
-        Intel Graphics Development <intel-gfx@lists.freedesktop.org>,
-        LKML <linux-kernel@vger.kernel.org>, Claudio Suarez <cssk@net-c.es>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Daniel Vetter <daniel.vetter@intel.com>,
-        Sam Ravnborg <sam@ravnborg.org>
-References: <20220208210824.2238981-1-daniel.vetter@ffwll.ch>
- <20220208210824.2238981-10-daniel.vetter@ffwll.ch>
- <0879a2ff-37df-a9ae-0ce1-2bfcb2d1b322@suse.de>
+        Tue, 5 Apr 2022 04:52:45 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34734240B7;
+        Tue,  5 Apr 2022 01:45:46 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C5D8B614E5;
+        Tue,  5 Apr 2022 08:45:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C9E19C385A1;
+        Tue,  5 Apr 2022 08:45:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649148345;
+        bh=arK/Jdx6Jya54jloe0rN7JBuzPaeDIP9HfZ2GK9PVNg=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=sGxqkDitK8yGv+vvJyqL5GrcRJnNnORHRbAfv9wFNR9AevomRmVuYdZ7l6TZgOAEk
+         mQpbaFdUi5yk/4wlRWLGwf0TWnbTvGd5AlkF5l9On+c73XeTiXXS1lwX9Od5glqRlQ
+         PblPT7zGZgE3bxx5N7l0m4gvqM3nMc4iRoHEKrmo=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Nishanth Menon <nm@ti.com>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 0323/1017] firmware: ti_sci: Fix compilation failure when CONFIG_TI_SCI_PROTOCOL is not defined
+Date:   Tue,  5 Apr 2022 09:20:36 +0200
+Message-Id: <20220405070403.867331379@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
+References: <20220405070354.155796697@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <0879a2ff-37df-a9ae-0ce1-2bfcb2d1b322@suse.de>
-X-Operating-System: Linux phenom 5.10.0-8-amd64 
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Feb 10, 2022 at 12:46:32PM +0100, Thomas Zimmermann wrote:
-> Hi
-> 
-> Am 08.02.22 um 22:08 schrieb Daniel Vetter:
-> > There's two minor behaviour changes in here:
-> > - in error paths we now consistently call fb_ops->fb_release
-> > - fb_release really can't fail (fbmem.c ignores it too) and there's no
-> >    reasonable cleanup we can do anyway.
-> > 
-> > Note that everything in fbcon.c is protected by the big console_lock()
-> > lock (especially all the global variables), so the minor changes in
-> > ordering of setup/cleanup do not matter.
-> > 
-> > v2: Explain a bit better why this is all correct (Sam)
-> > 
-> > Acked-by: Sam Ravnborg <sam@ravnborg.org>
-> > Signed-off-by: Daniel Vetter <daniel.vetter@intel.com>
-> > Cc: Daniel Vetter <daniel@ffwll.ch>
-> > Cc: Claudio Suarez <cssk@net-c.es>
-> > Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> > Cc: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
-> > Cc: Du Cheng <ducheng2@gmail.com>
-> > ---
-> >   drivers/video/fbdev/core/fbcon.c | 107 +++++++++++++++----------------
-> >   1 file changed, 53 insertions(+), 54 deletions(-)
-> > 
-> > diff --git a/drivers/video/fbdev/core/fbcon.c b/drivers/video/fbdev/core/fbcon.c
-> > index 058e885d24f6..3e1a3e7bf527 100644
-> > --- a/drivers/video/fbdev/core/fbcon.c
-> > +++ b/drivers/video/fbdev/core/fbcon.c
-> > @@ -682,19 +682,37 @@ static int fbcon_invalid_charcount(struct fb_info *info, unsigned charcount)
-> >   #endif /* CONFIG_MISC_TILEBLITTING */
-> > +static int fbcon_open(struct fb_info *info)
-> > +{
-> > +	if (!try_module_get(info->fbops->owner))
-> > +		return -ENODEV;
-> > +
-> > +	if (info->fbops->fb_open &&
-> > +	    info->fbops->fb_open(info, 0)) {
-> > +		module_put(info->fbops->owner);
-> > +		return -ENODEV;
-> > +	}
-> > +
-> > +	return 0;
-> > +}
-> > +
-> > +static void fbcon_release(struct fb_info *info)
-> > +{
-> > +	if (info->fbops->fb_release)
-> > +		info->fbops->fb_release(info, 0);
-> > +
-> > +	module_put(info->fbops->owner);
-> > +}
-> >   static int con2fb_acquire_newinfo(struct vc_data *vc, struct fb_info *info,
-> >   				  int unit, int oldidx)
-> >   {
-> >   	struct fbcon_ops *ops = NULL;
-> > -	int err = 0;
-> > -
-> > -	if (!try_module_get(info->fbops->owner))
-> > -		err = -ENODEV;
-> > +	int err;
-> > -	if (!err && info->fbops->fb_open &&
-> > -	    info->fbops->fb_open(info, 0))
-> > -		err = -ENODEV;
-> > +	err = fbcon_open(info);
-> > +	if (err)
-> > +		return err;
-> >   	if (!err) {
-> >   		ops = kzalloc(sizeof(struct fbcon_ops), GFP_KERNEL);
-> > @@ -715,7 +733,7 @@ static int con2fb_acquire_newinfo(struct vc_data *vc, struct fb_info *info,
-> >   	if (err) {
-> >   		con2fb_map[unit] = oldidx;
-> > -		module_put(info->fbops->owner);
-> > +		fbcon_release(info);
-> >   	}
-> >   	return err;
-> > @@ -726,45 +744,34 @@ static int con2fb_release_oldinfo(struct vc_data *vc, struct fb_info *oldinfo,
-> >   				  int oldidx, int found)
-> >   {
-> >   	struct fbcon_ops *ops = oldinfo->fbcon_par;
-> > -	int err = 0, ret;
-> > +	int ret;
-> > -	if (oldinfo->fbops->fb_release &&
-> > -	    oldinfo->fbops->fb_release(oldinfo, 0)) {
-> > -		con2fb_map[unit] = oldidx;
-> 
-> We don't need oldidx any longer?
-> 
-> There's some logic wrt to the parameter 'found' here and in set_con2fb_map()
-> that appears to be relevant.
+From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 
-Yeah further patches clean this up more. Or did you see a potential bug
-here? I did ditch the fb_release error handling, simply because there's
-not really much we can do anyway, it shouldn't ever fail (that's a driver
-bug) and it was convoluting the code for no gain. But I might have missed
-something in this cargo-cult.
--Daniel
+[ Upstream commit 043cfff99a18933fda2fb2e163daee73cc07910b ]
 
-> 
-> Best regards
-> Thomas
-> 
-> 
-> > -		if (!found && newinfo->fbops->fb_release)
-> > -			newinfo->fbops->fb_release(newinfo, 0);
-> > -		if (!found)
-> > -			module_put(newinfo->fbops->owner);
-> > -		err = -ENODEV;
-> > -	}
-> > +	fbcon_release(oldinfo);
-> > -	if (!err) {
-> > -		fbcon_del_cursor_work(oldinfo);
-> > -		kfree(ops->cursor_state.mask);
-> > -		kfree(ops->cursor_data);
-> > -		kfree(ops->cursor_src);
-> > -		kfree(ops->fontbuffer);
-> > -		kfree(oldinfo->fbcon_par);
-> > -		oldinfo->fbcon_par = NULL;
-> > -		module_put(oldinfo->fbops->owner);
-> > -		/*
-> > -		  If oldinfo and newinfo are driving the same hardware,
-> > -		  the fb_release() method of oldinfo may attempt to
-> > -		  restore the hardware state.  This will leave the
-> > -		  newinfo in an undefined state. Thus, a call to
-> > -		  fb_set_par() may be needed for the newinfo.
-> > -		*/
-> > -		if (newinfo && newinfo->fbops->fb_set_par) {
-> > -			ret = newinfo->fbops->fb_set_par(newinfo);
-> > +	fbcon_del_cursor_work(oldinfo);
-> > +	kfree(ops->cursor_state.mask);
-> > +	kfree(ops->cursor_data);
-> > +	kfree(ops->cursor_src);
-> > +	kfree(ops->fontbuffer);
-> > +	kfree(oldinfo->fbcon_par);
-> > +	oldinfo->fbcon_par = NULL;
-> > +	/*
-> > +	  If oldinfo and newinfo are driving the same hardware,
-> > +	  the fb_release() method of oldinfo may attempt to
-> > +	  restore the hardware state.  This will leave the
-> > +	  newinfo in an undefined state. Thus, a call to
-> > +	  fb_set_par() may be needed for the newinfo.
-> > +	*/
-> > +	if (newinfo && newinfo->fbops->fb_set_par) {
-> > +		ret = newinfo->fbops->fb_set_par(newinfo);
-> > -			if (ret)
-> > -				printk(KERN_ERR "con2fb_release_oldinfo: "
-> > -					"detected unhandled fb_set_par error, "
-> > -					"error code %d\n", ret);
-> > -		}
-> > +		if (ret)
-> > +			printk(KERN_ERR "con2fb_release_oldinfo: "
-> > +				"detected unhandled fb_set_par error, "
-> > +				"error code %d\n", ret);
-> >   	}
-> > -	return err;
-> > +	return 0;
-> >   }
-> >   static void con2fb_init_display(struct vc_data *vc, struct fb_info *info,
-> > @@ -919,7 +926,6 @@ static const char *fbcon_startup(void)
-> >   	struct fbcon_display *p = &fb_display[fg_console];
-> >   	struct vc_data *vc = vc_cons[fg_console].d;
-> >   	const struct font_desc *font = NULL;
-> > -	struct module *owner;
-> >   	struct fb_info *info = NULL;
-> >   	struct fbcon_ops *ops;
-> >   	int rows, cols;
-> > @@ -938,17 +944,12 @@ static const char *fbcon_startup(void)
-> >   	if (!info)
-> >   		return NULL;
-> >   	
-> > -	owner = info->fbops->owner;
-> > -	if (!try_module_get(owner))
-> > +	if (fbcon_open(info))
-> >   		return NULL;
-> > -	if (info->fbops->fb_open && info->fbops->fb_open(info, 0)) {
-> > -		module_put(owner);
-> > -		return NULL;
-> > -	}
-> >   	ops = kzalloc(sizeof(struct fbcon_ops), GFP_KERNEL);
-> >   	if (!ops) {
-> > -		module_put(owner);
-> > +		fbcon_release(info);
-> >   		return NULL;
-> >   	}
-> > @@ -3314,10 +3315,6 @@ static void fbcon_exit(void)
-> >   		}
-> >   		if (mapped) {
-> > -			if (info->fbops->fb_release)
-> > -				info->fbops->fb_release(info, 0);
-> > -			module_put(info->fbops->owner);
-> > -
-> >   			if (info->fbcon_par) {
-> >   				struct fbcon_ops *ops = info->fbcon_par;
-> > @@ -3327,6 +3324,8 @@ static void fbcon_exit(void)
-> >   				kfree(info->fbcon_par);
-> >   				info->fbcon_par = NULL;
-> >   			}
-> > +
-> > +			fbcon_release(info);
-> >   		}
-> >   	}
-> >   }
-> 
-> -- 
-> Thomas Zimmermann
-> Graphics Driver Developer
-> SUSE Software Solutions Germany GmbH
-> Maxfeldstr. 5, 90409 Nürnberg, Germany
-> (HRB 36809, AG Nürnberg)
-> Geschäftsführer: Ivo Totev
+Remove an extra ";" which breaks compilation.
 
+Fixes: 53bf2b0e4e4c ("firmware: ti_sci: Add support for getting resource with subtype")
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Signed-off-by: Nishanth Menon <nm@ti.com>
+Link: https://lore.kernel.org/r/e6c3cb793e1a6a2a0ae2528d5a5650dfe6a4b6ff.1640276505.git.christophe.jaillet@wanadoo.fr
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ include/linux/soc/ti/ti_sci_protocol.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-
-
+diff --git a/include/linux/soc/ti/ti_sci_protocol.h b/include/linux/soc/ti/ti_sci_protocol.h
+index 0aad7009b50e..bd0d11af76c5 100644
+--- a/include/linux/soc/ti/ti_sci_protocol.h
++++ b/include/linux/soc/ti/ti_sci_protocol.h
+@@ -645,7 +645,7 @@ devm_ti_sci_get_of_resource(const struct ti_sci_handle *handle,
+ 
+ static inline struct ti_sci_resource *
+ devm_ti_sci_get_resource(const struct ti_sci_handle *handle, struct device *dev,
+-			 u32 dev_id, u32 sub_type);
++			 u32 dev_id, u32 sub_type)
+ {
+ 	return ERR_PTR(-EINVAL);
+ }
 -- 
-Daniel Vetter
-Software Engineer, Intel Corporation
-http://blog.ffwll.ch
+2.34.1
+
+
+
