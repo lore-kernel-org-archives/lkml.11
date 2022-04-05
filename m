@@ -2,222 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C6EC4C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 21:50:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0FDD9C4321E
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 21:50:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384983AbiDEVsu (ORCPT
+        id S1385148AbiDEVtL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 17:48:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45636 "EHLO
+        Tue, 5 Apr 2022 17:49:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53950 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355853AbiDELz0 (ORCPT
+        with ESMTP id S1352119AbiDEMI2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 07:55:26 -0400
-Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 914A7BF4C;
-        Tue,  5 Apr 2022 04:13:23 -0700 (PDT)
+        Tue, 5 Apr 2022 08:08:28 -0400
+Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3AE7284EE0
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 04:21:43 -0700 (PDT)
+Received: by mail-ej1-x62e.google.com with SMTP id i27so18890903ejd.9
+        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 04:21:43 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1649157203; x=1680693203;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version;
-  bh=2ycaIj5IxG/RksZqMGqbZm+02qMbVViUT0wyO9DwMe4=;
-  b=YMZc2pKgWT58kbxPwEqV3CURgBKT0HvzluLxsNsSX83mKNyefP6UaVfA
-   j1Wru3wCiTcNSpv5jB3lW2al55GPWLbildF79CodME88fZSKTpQF6q+AV
-   T9x0fX8nVad16FdDBm+e0zcy9SYwQeuK7xSpaP5kklzJqc5yRLMWqVS1I
-   E=;
-Received: from unknown (HELO ironmsg-SD-alpha.qualcomm.com) ([10.53.140.30])
-  by alexa-out-sd-02.qualcomm.com with ESMTP; 05 Apr 2022 04:13:23 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg-SD-alpha.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2022 04:13:09 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Tue, 5 Apr 2022 04:13:09 -0700
-Received: from hu-srivasam-hyd.qualcomm.com (10.80.80.8) by
- nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Tue, 5 Apr 2022 04:13:04 -0700
-From:   Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
-To:     <agross@kernel.org>, <bjorn.andersson@linaro.org>,
-        <robh+dt@kernel.org>, <linux-arm-msm@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <quic_rohitkr@quicinc.com>, <srinivas.kandagatla@linaro.org>,
-        <dianders@chromium.org>, <swboyd@chromium.org>,
-        <judyhsiao@chromium.org>
-CC:     Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>,
-        "Venkata Prasad Potturu" <quic_potturu@quicinc.com>
-Subject: [PATCH v6 1/2] arm64: dts: qcom: sc7280: Add pinmux for I2S speaker and Headset
-Date:   Tue, 5 Apr 2022 16:42:46 +0530
-Message-ID: <1649157167-29106-2-git-send-email-quic_srivasam@quicinc.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1649157167-29106-1-git-send-email-quic_srivasam@quicinc.com>
-References: <1649157167-29106-1-git-send-email-quic_srivasam@quicinc.com>
+        d=raspberrypi.com; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=8HBpgOGIWG9ETgsG7Wst3wSQlsF6QqlUH/m56PYbcF4=;
+        b=r+WQ67jWrMQNbPPlSV6FaBSfL3cneBxyAUt8105r5J1wNlYb7d2d4cmBZogrNadtBD
+         4wbXAeKy3Fu17tpfyBJprZ5HroGpb+HIUitxYNkt//jw3+QfW0dkNKorw/46F+jpI6fB
+         ax8MJ3H3ufgSqV5PqItN5Skfbn/UhW0h9QMww4RXGg8rut3iqu7ZV0eBGk2oLAQOLXPA
+         ahCOX/6pCMCF3W7Y8HbW8F11M4gLfIPaNB/LFi9mnznGKmrPHOsi5JPuzyyjElkWielN
+         utf8nZEecvkvtE6HZ0eXr/nxd+eezu9DXFbd3u5FJhLEXmLGuBVeBwbz/gc4tlioJPO+
+         pQfg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=8HBpgOGIWG9ETgsG7Wst3wSQlsF6QqlUH/m56PYbcF4=;
+        b=i1De71E/mGZBTEQ50JUhZ2+nOSku1yyJLrzcnvgXzhv6X5jinhdaXB7ThcxYDmT28Z
+         Xi81Tw9Xmi+8nTGynwM0dHOF13eR9kpiV+zDZ6JvgZxcFzZYgra152vp0wXEZgcwVE5l
+         NZV6erABP3t02NiOaPPGbdk1CjARvmbqOO2RvSur6oPc2meAkKHoQp+pXagkYQefvmJ6
+         /au/Y4Kyu465LTPbdLatWAVFLfZQMKPz/9hE9Q018ICtxEC54L/UJWv5j0HcusgQ/RHM
+         N3hv5RDnbqBb7QG0NS/HIsAnZF3J7SUdpNWVAPr/6VQcO98p7c7z9gw0J0TlLo6qW1Kl
+         CTcA==
+X-Gm-Message-State: AOAM532EC0lT0EEoT4LPpKi3P0+0BGolgjQFtOjSR6lUszcgiyDE+Yzg
+        eqWUttM6/0zstfI+8zLn2u9iEQptcnDrv5tinjG2glDfSAo2DQ==
+X-Google-Smtp-Source: ABdhPJyN6ppDedI3VMUC8U84lVxFeRBGhb1ZgnbQuS7fhmJY9CvlWntbMJkTzXTB78FnsDDUaV+P9/XPaAAp+5Wojlk=
+X-Received: by 2002:a17:907:1b1f:b0:6e4:b202:db68 with SMTP id
+ mp31-20020a1709071b1f00b006e4b202db68mr3138316ejc.294.1649157702311; Tue, 05
+ Apr 2022 04:21:42 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+References: <20220405082503.61041-1-iivanov@suse.de> <20220405082503.61041-3-iivanov@suse.de>
+In-Reply-To: <20220405082503.61041-3-iivanov@suse.de>
+From:   Dave Stevenson <dave.stevenson@raspberrypi.com>
+Date:   Tue, 5 Apr 2022 12:21:25 +0100
+Message-ID: <CAPY8ntArikrec3DOv_yB9kdhZex97B2aY5bfK7ye_fkjjRSgxQ@mail.gmail.com>
+Subject: Re: [PATCH v2 2/2] clk: bcm: rpi: Handle pixel clock in firmware
+To:     "Ivan T. Ivanov" <iivanov@suse.de>
+Cc:     Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Maxime Ripard <maxime@cerno.tech>, linux-clk@vger.kernel.org,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add AMP enable node and pinmux for primary and secondary I2S
-for SC7280 based platforms.
+On Tue, 5 Apr 2022 at 09:25, Ivan T. Ivanov <iivanov@suse.de> wrote:
+>
+> The clk-bcm2835 handling of the pixel clock does not function
+> correctly when the HDMI power domain is disabled.
+>
+> The firmware supports it correctly, so add it to the
+> firmware clock driver.
+>
+> Cc: Dave Stevenson <dave.stevenson@raspberrypi.com>
+> Signed-off-by: Ivan T. Ivanov <iivanov@suse.de>
 
-Signed-off-by: Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
-Co-developed-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
-Signed-off-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
----
- arch/arm64/boot/dts/qcom/sc7280-herobrine.dtsi | 34 +++++++++++++++++++++
- arch/arm64/boot/dts/qcom/sc7280-idp.dtsi       | 20 +++++++++++++
- arch/arm64/boot/dts/qcom/sc7280.dtsi           | 41 ++++++++++++++++++++++++++
- 3 files changed, 95 insertions(+)
+Acked-by: Dave Stevenson <dave.stevenson@raspberrypi.com>
 
-diff --git a/arch/arm64/boot/dts/qcom/sc7280-herobrine.dtsi b/arch/arm64/boot/dts/qcom/sc7280-herobrine.dtsi
-index dc17f20..de646d9 100644
---- a/arch/arm64/boot/dts/qcom/sc7280-herobrine.dtsi
-+++ b/arch/arm64/boot/dts/qcom/sc7280-herobrine.dtsi
-@@ -530,6 +530,26 @@ ap_ec_spi: &spi10 {
- 	drive-strength = <2>;
- };
- 
-+&pri_mi2s_data0 {
-+	drive-strength = <6>;
-+};
-+
-+&pri_mi2s_data1 {
-+	drive-strength = <6>;
-+};
-+
-+&pri_mi2s_mclk {
-+	drive-strength = <6>;
-+};
-+
-+&pri_mi2s_sclk {
-+	drive-strength = <6>;
-+};
-+
-+&pri_mi2s_ws {
-+	drive-strength = <6>;
-+};
-+
- &qspi_cs0 {
- 	bias-disable;
- 	drive-strength = <8>;
-@@ -610,6 +630,20 @@ ap_ec_spi: &spi10 {
- 	drive-strength = <10>;
- };
- 
-+&sec_mi2s_data0 {
-+	drive-strength = <6>;
-+	bias-disable;
-+};
-+
-+&sec_mi2s_sclk {
-+	drive-strength = <6>;
-+	bias-disable;
-+};
-+
-+&sec_mi2s_ws {
-+	drive-strength = <6>;
-+};
-+
- /* PINCTRL - board-specific pinctrl */
- 
- &pm7325_gpios {
-diff --git a/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi b/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
-index ecbf2b8..2afbbe3 100644
---- a/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
-+++ b/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
-@@ -462,7 +462,27 @@
- 	drive-strength = <10>;
- };
- 
-+&sec_mi2s_data0 {
-+	drive-strength = <6>;
-+	bias-disable;
-+};
-+
-+&sec_mi2s_sclk {
-+	drive-strength = <6>;
-+	bias-disable;
-+};
-+
-+&sec_mi2s_ws {
-+	drive-strength = <6>;
-+};
-+
- &tlmm {
-+	amp_en: amp-en {
-+		pins = "gpio63";
-+		bias-pull-down;
-+		drive-strength = <2>;
-+	};
-+
- 	bt_en: bt-en {
- 		pins = "gpio85";
- 		function = "gpio";
-diff --git a/arch/arm64/boot/dts/qcom/sc7280.dtsi b/arch/arm64/boot/dts/qcom/sc7280.dtsi
-index f0b64be..8d8cec5 100644
---- a/arch/arm64/boot/dts/qcom/sc7280.dtsi
-+++ b/arch/arm64/boot/dts/qcom/sc7280.dtsi
-@@ -3527,6 +3527,31 @@
- 				function = "pcie1_clkreqn";
- 			};
- 
-+			pri_mi2s_data0: pri-mi2s-data0 {
-+				pins = "gpio98";
-+				function = "mi2s0_data0";
-+			};
-+
-+			pri_mi2s_data1: pri-mi2s-data1 {
-+				pins = "gpio99";
-+				function = "mi2s0_data1";
-+			};
-+
-+			pri_mi2s_mclk: pri-mi2s-mclk {
-+				pins = "gpio96";
-+				function = "pri_mi2s";
-+			};
-+
-+			pri_mi2s_sclk: pri-mi2s-sclk {
-+				pins = "gpio97";
-+				function = "mi2s0_sck";
-+			};
-+
-+			pri_mi2s_ws: pri-mi2s-ws {
-+				pins = "gpio100";
-+				function = "mi2s0_ws";
-+			};
-+
- 			qspi_clk: qspi-clk {
- 				pins = "gpio14";
- 				function = "qspi_clk";
-@@ -4261,6 +4286,22 @@
- 				drive-strength = <2>;
- 				bias-bus-hold;
- 			};
-+
-+			sec_mi2s_data0: sec-mi2s-data0 {
-+				pins = "gpio107";
-+				function = "mi2s1_data0";
-+			};
-+
-+			sec_mi2s_sclk: sec-mi2s-sclk {
-+				pins = "gpio106";
-+				function = "mi2s1_sck";
-+			};
-+
-+			sec_mi2s_ws: sec-mi2s-ws {
-+				pins = "gpio108";
-+				function = "mi2s1_ws";
-+			};
-+
- 		};
- 
- 		imem@146a5000 {
--- 
-2.7.4
-
+> ---
+>  drivers/clk/bcm/clk-raspberrypi.c | 3 +++
+>  1 file changed, 3 insertions(+)
+>
+> diff --git a/drivers/clk/bcm/clk-raspberrypi.c b/drivers/clk/bcm/clk-raspberrypi.c
+> index 2e2491d85835..530820d13104 100644
+> --- a/drivers/clk/bcm/clk-raspberrypi.c
+> +++ b/drivers/clk/bcm/clk-raspberrypi.c
+> @@ -129,6 +129,9 @@ raspberrypi_clk_variants[RPI_FIRMWARE_NUM_CLK_ID] = {
+>         [RPI_FIRMWARE_V3D_CLK_ID] = {
+>                 .export = true,
+>         },
+> +       [RPI_FIRMWARE_PIXEL_CLK_ID] = {
+> +               .export = true,
+> +       },
+>         [RPI_FIRMWARE_HEVC_CLK_ID] = {
+>                 .export = true,
+>         },
+> --
+> 2.26.2
+>
