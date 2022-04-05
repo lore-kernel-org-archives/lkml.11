@@ -2,173 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CED1BC47080
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 15:20:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 70543C43219
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 15:20:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383641AbiDEPOp (ORCPT
+        id S1386224AbiDEPPz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 11:14:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53166 "EHLO
+        Tue, 5 Apr 2022 11:15:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53164 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346579AbiDEJpM (ORCPT
+        with ESMTP id S1346705AbiDEJpV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:45:12 -0400
+        Tue, 5 Apr 2022 05:45:21 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2DE06DAFC3;
-        Tue,  5 Apr 2022 02:30:59 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7938E4B42E;
+        Tue,  5 Apr 2022 02:31:26 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D1CCAB81CB3;
-        Tue,  5 Apr 2022 09:30:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 287A1C385A2;
-        Tue,  5 Apr 2022 09:30:55 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649151056;
-        bh=gG8eDeiLHdbGmjfnhHzEjTSMOBgG5ThmJ0w75W4cvCA=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=j7tNo2LUrWD0zijxmysuIQVMcowz6s0XfVxDBsb7F3VEyg8Cuz16cB27aNWXOZTPE
-         c6nJfkAUYYrnQzuygxMEUchyGisn+rNvjm0XGpH32Oa+wPLgvkM1nPzkFmnDtNFGvD
-         nFlNYzK9WKKa9m9IPLGhPNYbZ8RcXXiukuo/9nbc=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Pavel Machek <pavel@denx.de>,
-        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        Biju Das <biju.das.jz@bp.renesas.com>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 277/913] ASoC: sh: rz-ssi: Drop calling rz_ssi_pio_recv() recursively
-Date:   Tue,  5 Apr 2022 09:22:19 +0200
-Message-Id: <20220405070348.161042666@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
-User-Agent: quilt/0.66
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3BE15B81B14;
+        Tue,  5 Apr 2022 09:31:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 984E1C385A4;
+        Tue,  5 Apr 2022 09:31:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649151084;
+        bh=Fzz3ascwScSN8mlgX8AOFuaHlsRdXJCzGKE041uMtYo=;
+        h=From:To:Cc:In-Reply-To:References:Subject:Date:From;
+        b=sO1+eaDGwua4hTwxsxWvwQ4f9PWir/mw48Nu5p/k7OyC6gmrvDP7lBnwF26eLUenH
+         jfTfrQ5J/fLHjSaBEVrKDonwR9/M/NQDyihJIxaYf90frnR2KGF3kh0133LJxoKxnl
+         rkwuSapewEPukF55NcBd7yNegPZdodUzzybuLVpAD0V5IuQymM1e+BJ96bj77VvxKv
+         MAfbAedBidV7QuIggcgG8TEo/2CdqSZ97cn8CmHYJw8hjsSUZ7wCHemNSspUcV6YVa
+         y3/dtTe3HYOc7GvBbNT/Cj1OItEF9L5+q8xwf+DBvWaCqb37ZPyPxkTt6RLOqdQ+I/
+         0/aG2LQwVKxJQ==
+From:   Mark Brown <broonie@kernel.org>
+To:     tiwai@suse.com, xiam0nd.tong@gmail.com, perex@perex.cz,
+        lgirdwood@gmail.com
+Cc:     stable@vger.kernel.org, alsa-devel@alsa-project.org,
+        linux-kernel@vger.kernel.org
+In-Reply-To: <20220329012134.9375-1-xiam0nd.tong@gmail.com>
+References: <20220329012134.9375-1-xiam0nd.tong@gmail.com>
+Subject: Re: [PATCH v2] soc: soc-dapm: fix two incorrect uses of list iterator
+Message-Id: <164915108235.276574.3850661736822524747.b4-ty@kernel.org>
+Date:   Tue, 05 Apr 2022 10:31:22 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+On Tue, 29 Mar 2022 09:21:34 +0800, Xiaomeng Tong wrote:
+> These two bug are here:
+> 	list_for_each_entry_safe_continue(w, n, list,
+> 					power_list);
+> 	list_for_each_entry_safe_continue(w, n, list,
+> 					power_list);
+> 
+> After the list_for_each_entry_safe_continue() exits, the list iterator
+> will always be a bogus pointer which point to an invalid struct objdect
+> containing HEAD member. The funciton poniter 'w->event' will be a
+> invalid value which can lead to a control-flow hijack if the 'w' can be
+> controlled.
+> 
+> [...]
 
-[ Upstream commit 6570f991582e32b7992601d0497c61962a2c5dcc ]
+Applied to
 
-Instead of recursively calling rz_ssi_pio_recv() use a while loop
-to read the samples from RX fifo.
+   https://git.kernel.org/pub/scm/linux/kernel/git/broonie/sound.git for-next
 
-This also fixes an issue where the return value of rz_ssi_pio_recv()
-was ignored when called recursively.
+Thanks!
 
-Fixes: 03e786bd4341 ("ASoC: sh: Add RZ/G2L SSIF-2 driver")
-Reported-by: Pavel Machek <pavel@denx.de>
-Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-Reviewed-by: Biju Das <biju.das.jz@bp.renesas.com>
-Link: https://lore.kernel.org/r/20220110094711.8574-2-prabhakar.mahadev-lad.rj@bp.renesas.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- sound/soc/sh/rz-ssi.c | 68 ++++++++++++++++++++++---------------------
- 1 file changed, 35 insertions(+), 33 deletions(-)
+[1/1] soc: soc-dapm: fix two incorrect uses of list iterator
+      commit: f730a46b931d894816af34a0ff8e4ad51565b39f
 
-diff --git a/sound/soc/sh/rz-ssi.c b/sound/soc/sh/rz-ssi.c
-index fa0cc08f70ec..37466f65c2b0 100644
---- a/sound/soc/sh/rz-ssi.c
-+++ b/sound/soc/sh/rz-ssi.c
-@@ -411,54 +411,56 @@ static int rz_ssi_pio_recv(struct rz_ssi_priv *ssi, struct rz_ssi_stream *strm)
- {
- 	struct snd_pcm_substream *substream = strm->substream;
- 	struct snd_pcm_runtime *runtime;
-+	bool done = false;
- 	u16 *buf;
- 	int fifo_samples;
- 	int frames_left;
--	int samples = 0;
-+	int samples;
- 	int i;
- 
- 	if (!rz_ssi_stream_is_valid(ssi, strm))
- 		return -EINVAL;
- 
- 	runtime = substream->runtime;
--	/* frames left in this period */
--	frames_left = runtime->period_size - (strm->buffer_pos %
--					      runtime->period_size);
--	if (frames_left == 0)
--		frames_left = runtime->period_size;
- 
--	/* Samples in RX FIFO */
--	fifo_samples = (rz_ssi_reg_readl(ssi, SSIFSR) >>
--			SSIFSR_RDC_SHIFT) & SSIFSR_RDC_MASK;
--
--	/* Only read full frames at a time */
--	while (frames_left && (fifo_samples >= runtime->channels)) {
--		samples += runtime->channels;
--		fifo_samples -= runtime->channels;
--		frames_left--;
--	}
-+	while (!done) {
-+		/* frames left in this period */
-+		frames_left = runtime->period_size -
-+			      (strm->buffer_pos % runtime->period_size);
-+		if (!frames_left)
-+			frames_left = runtime->period_size;
-+
-+		/* Samples in RX FIFO */
-+		fifo_samples = (rz_ssi_reg_readl(ssi, SSIFSR) >>
-+				SSIFSR_RDC_SHIFT) & SSIFSR_RDC_MASK;
-+
-+		/* Only read full frames at a time */
-+		samples = 0;
-+		while (frames_left && (fifo_samples >= runtime->channels)) {
-+			samples += runtime->channels;
-+			fifo_samples -= runtime->channels;
-+			frames_left--;
-+		}
- 
--	/* not enough samples yet */
--	if (samples == 0)
--		return 0;
-+		/* not enough samples yet */
-+		if (!samples)
-+			break;
- 
--	/* calculate new buffer index */
--	buf = (u16 *)(runtime->dma_area);
--	buf += strm->buffer_pos * runtime->channels;
-+		/* calculate new buffer index */
-+		buf = (u16 *)(runtime->dma_area);
-+		buf += strm->buffer_pos * runtime->channels;
- 
--	/* Note, only supports 16-bit samples */
--	for (i = 0; i < samples; i++)
--		*buf++ = (u16)(rz_ssi_reg_readl(ssi, SSIFRDR) >> 16);
-+		/* Note, only supports 16-bit samples */
-+		for (i = 0; i < samples; i++)
-+			*buf++ = (u16)(rz_ssi_reg_readl(ssi, SSIFRDR) >> 16);
- 
--	rz_ssi_reg_mask_setl(ssi, SSIFSR, SSIFSR_RDF, 0);
--	rz_ssi_pointer_update(strm, samples / runtime->channels);
-+		rz_ssi_reg_mask_setl(ssi, SSIFSR, SSIFSR_RDF, 0);
-+		rz_ssi_pointer_update(strm, samples / runtime->channels);
- 
--	/*
--	 * If we finished this period, but there are more samples in
--	 * the RX FIFO, call this function again
--	 */
--	if (frames_left == 0 && fifo_samples >= runtime->channels)
--		rz_ssi_pio_recv(ssi, strm);
-+		/* check if there are no more samples in the RX FIFO */
-+		if (!(!frames_left && fifo_samples >= runtime->channels))
-+			done = true;
-+	}
- 
- 	return 0;
- }
--- 
-2.34.1
+All being well this means that it will be integrated into the linux-next
+tree (usually sometime in the next 24 hours) and sent to Linus during
+the next merge window (or sooner if it is a bug fix), however if
+problems are discovered then the patch may be dropped or reverted.
 
+You may get further e-mails resulting from automated or manual testing
+and review of the tree, please engage with people reporting problems and
+send followup patches addressing any issues that are reported if needed.
 
+If any updates are required or you are submitting further changes they
+should be sent as incremental updates against current git, existing
+patches will not be replaced.
 
+Please add any relevant lists and maintainers to the CCs when replying
+to this mail.
+
+Thanks,
+Mark
