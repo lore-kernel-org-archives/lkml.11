@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7577DC43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F32F5C4167D
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:04:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382278AbiDEMEF (ORCPT
+        id S1382303AbiDEMEM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 08:04:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49752 "EHLO
+        Tue, 5 Apr 2022 08:04:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47778 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243992AbiDEIvY (ORCPT
+        with ESMTP id S244084AbiDEIvi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:51:24 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04D02D0AB0;
-        Tue,  5 Apr 2022 01:40:10 -0700 (PDT)
+        Tue, 5 Apr 2022 04:51:38 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E29FD3714;
+        Tue,  5 Apr 2022 01:40:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 61907B81BC5;
-        Tue,  5 Apr 2022 08:40:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B5987C385A1;
-        Tue,  5 Apr 2022 08:40:07 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B17DB614F9;
+        Tue,  5 Apr 2022 08:40:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C093DC385A0;
+        Tue,  5 Apr 2022 08:40:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649148008;
-        bh=vCNxLByh22qWpvDtzrk7nKcRMnmgzftlBFDb7fx5dWY=;
+        s=korg; t=1649148022;
+        bh=4indgIxOVeCiK3xftlvX5TxwsieTy/0NnuibO7kTWwg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lYb6K33RswvVn53LeUwYhFtzD//6sKBbO6aIcd18xNj05qjssnm73x8zZcXEpV9O0
-         1uNqukii7QFqzs1UV18EC2iOV8H2KuKK0DzSHxEyklOf9Lzgoajy/LRfSdY5Xz2Tik
-         66UsiiwpPj0D4aTNrfoY3F2INt9C8VX/izAvwKtU=
+        b=bqy9O7F93/8gMCa4ESIptYeLlauw671wqwOR2CuIbZv+/ztHeALKKacMKQE17SO5h
+         ceDFzZqXpHmjJEZ2FghjamdF20+5J1kQURyoDszhovhRpxpzj9F+i8a6SOty9mPD47
+         9H9463TXWIy0FzJ7xqqSvY6Rr0mB/XkI/64cZ/RA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Max Filippov <jcmvbkbc@gmail.com>
-Subject: [PATCH 5.16 0184/1017] xtensa: fix stop_machine_cpuslocked call in patch_text
-Date:   Tue,  5 Apr 2022 09:18:17 +0200
-Message-Id: <20220405070359.702346386@linuxfoundation.org>
+        stable@vger.kernel.org, Corentin Labbe <clabbe@baylibre.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 0206/1017] crypto: sun8i-ss - really disable hash on A80
+Date:   Tue,  5 Apr 2022 09:18:39 +0200
+Message-Id: <20220405070400.365649141@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -48,34 +50,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Max Filippov <jcmvbkbc@gmail.com>
+From: Corentin Labbe <clabbe@baylibre.com>
 
-commit f406f2d03e07afc199dd8cf501f361dde6be8a69 upstream.
+[ Upstream commit 881fc7fba6c3e7d77d608b9a50b01a89d5e0c61b ]
 
-patch_text must invoke patch_text_stop_machine on all online CPUs, but
-it calls stop_machine_cpuslocked with NULL cpumask. As a result only one
-CPU runs patch_text_stop_machine potentially leaving stale icache
-entries on other CPUs. Fix that by calling stop_machine_cpuslocked with
-cpu_online_mask as the last argument.
+When adding hashes support to sun8i-ss, I have added them only on A83T.
+But I forgot that 0 is a valid algorithm ID, so hashes are enabled on A80 but
+with an incorrect ID.
+Anyway, even with correct IDs, hashes do not work on A80 and I cannot
+find why.
+So let's disable all of them on A80.
 
-Cc: stable@vger.kernel.org
-Fixes: 64711f9a47d4 ("xtensa: implement jump_label support")
-Signed-off-by: Max Filippov <jcmvbkbc@gmail.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: d9b45418a917 ("crypto: sun8i-ss - support hash algorithms")
+Signed-off-by: Corentin Labbe <clabbe@baylibre.com>
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/xtensa/kernel/jump_label.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/crypto/allwinner/sun8i-ss/sun8i-ss-core.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
---- a/arch/xtensa/kernel/jump_label.c
-+++ b/arch/xtensa/kernel/jump_label.c
-@@ -61,7 +61,7 @@ static void patch_text(unsigned long add
- 			.data = data,
- 		};
- 		stop_machine_cpuslocked(patch_text_stop_machine,
--					&patch, NULL);
-+					&patch, cpu_online_mask);
- 	} else {
- 		unsigned long flags;
- 
+diff --git a/drivers/crypto/allwinner/sun8i-ss/sun8i-ss-core.c b/drivers/crypto/allwinner/sun8i-ss/sun8i-ss-core.c
+index 80e89066dbd1..319fe3279a71 100644
+--- a/drivers/crypto/allwinner/sun8i-ss/sun8i-ss-core.c
++++ b/drivers/crypto/allwinner/sun8i-ss/sun8i-ss-core.c
+@@ -30,6 +30,8 @@
+ static const struct ss_variant ss_a80_variant = {
+ 	.alg_cipher = { SS_ALG_AES, SS_ALG_DES, SS_ALG_3DES,
+ 	},
++	.alg_hash = { SS_ID_NOTSUPP, SS_ID_NOTSUPP, SS_ID_NOTSUPP, SS_ID_NOTSUPP,
++	},
+ 	.op_mode = { SS_OP_ECB, SS_OP_CBC,
+ 	},
+ 	.ss_clks = {
+-- 
+2.34.1
+
 
 
