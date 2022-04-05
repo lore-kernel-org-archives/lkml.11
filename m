@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 33A5EC35276
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 06586C35273
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:50:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1837956AbiDFAt0 (ORCPT
+        id S1837909AbiDFAtO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 20:49:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50492 "EHLO
+        Tue, 5 Apr 2022 20:49:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60424 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358094AbiDEK16 (ORCPT
+        with ESMTP id S1356554AbiDEKYA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:27:58 -0400
+        Tue, 5 Apr 2022 06:24:00 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4719A65D16;
-        Tue,  5 Apr 2022 03:15:06 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC5CFBD8AA;
+        Tue,  5 Apr 2022 03:08:32 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 02AD5B81BC5;
-        Tue,  5 Apr 2022 10:15:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6B19EC385A0;
-        Tue,  5 Apr 2022 10:15:03 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 658D6B81CB5;
+        Tue,  5 Apr 2022 10:08:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AE464C385A7;
+        Tue,  5 Apr 2022 10:08:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649153703;
-        bh=KnJdLy0rfC+5TQliByoOokCxSz+HhubnSG7GlFBhA5E=;
+        s=korg; t=1649153310;
+        bh=VQ5yBIa2FGaD+JwPV3eQXTVT9noiawHMQkRa0hXOq1A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=U0XGPKNa3QqMQq+BjqnQgprpmRmR/IFtH7Cp3CaZn8RVhP+ASeCJmGLrQ7fL3lNJ5
-         HfYEhfMfa9mdWliK2Nf4D4hCgc/wfsZugSeFWDcv8LSZXlA25/GkGbJxxjysUOMe7f
-         bMHy6TLcty8YcFGG+G5h8RVyEC3mxTW6KxDZg8T0=
+        b=jZSThBpQzo1Tn/paB+F7LyTUtxhOfy6tS5vWcQDM3ZRaC3GLrdbXbjHuqCHigMlHW
+         pcZrLEQ2RNdZcr03dAXgkqRVaQjpxz36i/BnH5IttR8QnsgwGJzbE6rDBXUFgGQ7Vo
+         vvEMb9iTXCw26m7aXcvfGiPpsfV7z7+Poo+1vKwk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jack Wang <jinpu.wang@ionos.com>,
-        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        stable@vger.kernel.org, Guillaume Ranquet <granquet@baylibre.com>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 316/599] scsi: pm8001: Fix NCQ NON DATA command task initialization
-Date:   Tue,  5 Apr 2022 09:30:10 +0200
-Message-Id: <20220405070308.236102330@linuxfoundation.org>
+Subject: [PATCH 5.10 160/599] clocksource/drivers/timer-of: Check return value of of_iomap in timer_of_base_init()
+Date:   Tue,  5 Apr 2022 09:27:34 +0200
+Message-Id: <20220405070303.603379474@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
 References: <20220405070258.802373272@linuxfoundation.org>
@@ -51,99 +50,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Damien Le Moal <damien.lemoal@opensource.wdc.com>
+From: Guillaume Ranquet <granquet@baylibre.com>
 
-[ Upstream commit aa028141ab0bc62c44a84d42f09db35d82df82a2 ]
+[ Upstream commit 4467b8bad2401794fb89a0268c8c8257180bf60f ]
 
-In the pm8001_chip_sata_req() and pm80xx_chip_sata_req() functions, all
-tasks with a DMA direction of DMA_NONE (no data transfer) are initialized
-using the ATAP value 0x04. However, NCQ NON DATA commands, while being
-DMA_NONE commands are NCQ commands and need to be initialized using the
-value 0x07 for ATAP, similarly to other NCQ commands.
+of_base->base can either be iomapped using of_io_request_and_map() or
+of_iomap() depending whether or not an of_base->name has been set.
 
-Make sure that NCQ NON DATA command tasks are initialized similarly to
-other NCQ commands by also testing the task "use_ncq" field in addition to
-the DMA direction. While at it, reorganize the code into a chain of if -
-else if - else to avoid useless affectations and debug messages.
+Thus check of_base->base against NULL as of_iomap() does not return a
+PTR_ERR() in case of error.
 
-Link: https://lore.kernel.org/r/20220220031810.738362-15-damien.lemoal@opensource.wdc.com
-Fixes: dbf9bfe61571 ("[SCSI] pm8001: add SAS/SATA HBA driver")
-Reviewed-by: Jack Wang <jinpu.wang@ionos.com>
-Signed-off-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Fixes: 9aea417afa6b ("clocksource/drivers/timer-of: Don't request the resource by name")
+Signed-off-by: Guillaume Ranquet <granquet@baylibre.com>
+Link: https://lore.kernel.org/r/20220307172656.4836-1-granquet@baylibre.com
+Signed-off-by: Daniel Lezcano <daniel.lezcano@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/pm8001/pm8001_hwi.c | 14 +++++++-------
- drivers/scsi/pm8001/pm80xx_hwi.c | 13 ++++++-------
- 2 files changed, 13 insertions(+), 14 deletions(-)
+ drivers/clocksource/timer-of.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/scsi/pm8001/pm8001_hwi.c b/drivers/scsi/pm8001/pm8001_hwi.c
-index 0e6a0b50bfb9..7b5ab0ff9bbd 100644
---- a/drivers/scsi/pm8001/pm8001_hwi.c
-+++ b/drivers/scsi/pm8001/pm8001_hwi.c
-@@ -4220,22 +4220,22 @@ static int pm8001_chip_sata_req(struct pm8001_hba_info *pm8001_ha,
- 	u32  opc = OPC_INB_SATA_HOST_OPSTART;
- 	memset(&sata_cmd, 0, sizeof(sata_cmd));
- 	circularQ = &pm8001_ha->inbnd_q_tbl[0];
--	if (task->data_dir == DMA_NONE) {
-+
-+	if (task->data_dir == DMA_NONE && !task->ata_task.use_ncq) {
- 		ATAP = 0x04;  /* no data*/
- 		pm8001_dbg(pm8001_ha, IO, "no data\n");
- 	} else if (likely(!task->ata_task.device_control_reg_update)) {
--		if (task->ata_task.dma_xfer) {
-+		if (task->ata_task.use_ncq &&
-+		    dev->sata_dev.class != ATA_DEV_ATAPI) {
-+			ATAP = 0x07; /* FPDMA */
-+			pm8001_dbg(pm8001_ha, IO, "FPDMA\n");
-+		} else if (task->ata_task.dma_xfer) {
- 			ATAP = 0x06; /* DMA */
- 			pm8001_dbg(pm8001_ha, IO, "DMA\n");
- 		} else {
- 			ATAP = 0x05; /* PIO*/
- 			pm8001_dbg(pm8001_ha, IO, "PIO\n");
- 		}
--		if (task->ata_task.use_ncq &&
--			dev->sata_dev.class != ATA_DEV_ATAPI) {
--			ATAP = 0x07; /* FPDMA */
--			pm8001_dbg(pm8001_ha, IO, "FPDMA\n");
--		}
+diff --git a/drivers/clocksource/timer-of.c b/drivers/clocksource/timer-of.c
+index 572da477c6d3..b965f20174e3 100644
+--- a/drivers/clocksource/timer-of.c
++++ b/drivers/clocksource/timer-of.c
+@@ -157,9 +157,9 @@ static __init int timer_of_base_init(struct device_node *np,
+ 	of_base->base = of_base->name ?
+ 		of_io_request_and_map(np, of_base->index, of_base->name) :
+ 		of_iomap(np, of_base->index);
+-	if (IS_ERR(of_base->base)) {
+-		pr_err("Failed to iomap (%s)\n", of_base->name);
+-		return PTR_ERR(of_base->base);
++	if (IS_ERR_OR_NULL(of_base->base)) {
++		pr_err("Failed to iomap (%s:%s)\n", np->name, of_base->name);
++		return of_base->base ? PTR_ERR(of_base->base) : -ENOMEM;
  	}
- 	if (task->ata_task.use_ncq && pm8001_get_ncq_tag(task, &hdr_tag)) {
- 		task->ata_task.fis.sector_count |= (u8) (hdr_tag << 3);
-diff --git a/drivers/scsi/pm8001/pm80xx_hwi.c b/drivers/scsi/pm8001/pm80xx_hwi.c
-index d620bb747a5b..7c02db9ba7f8 100644
---- a/drivers/scsi/pm8001/pm80xx_hwi.c
-+++ b/drivers/scsi/pm8001/pm80xx_hwi.c
-@@ -4479,22 +4479,21 @@ static int pm80xx_chip_sata_req(struct pm8001_hba_info *pm8001_ha,
- 	q_index = (u32) (cpu_id) % (pm8001_ha->max_q_num);
- 	circularQ = &pm8001_ha->inbnd_q_tbl[q_index];
  
--	if (task->data_dir == DMA_NONE) {
-+	if (task->data_dir == DMA_NONE && !task->ata_task.use_ncq) {
- 		ATAP = 0x04; /* no data*/
- 		pm8001_dbg(pm8001_ha, IO, "no data\n");
- 	} else if (likely(!task->ata_task.device_control_reg_update)) {
--		if (task->ata_task.dma_xfer) {
-+		if (task->ata_task.use_ncq &&
-+		    dev->sata_dev.class != ATA_DEV_ATAPI) {
-+			ATAP = 0x07; /* FPDMA */
-+			pm8001_dbg(pm8001_ha, IO, "FPDMA\n");
-+		} else if (task->ata_task.dma_xfer) {
- 			ATAP = 0x06; /* DMA */
- 			pm8001_dbg(pm8001_ha, IO, "DMA\n");
- 		} else {
- 			ATAP = 0x05; /* PIO*/
- 			pm8001_dbg(pm8001_ha, IO, "PIO\n");
- 		}
--		if (task->ata_task.use_ncq &&
--		    dev->sata_dev.class != ATA_DEV_ATAPI) {
--			ATAP = 0x07; /* FPDMA */
--			pm8001_dbg(pm8001_ha, IO, "FPDMA\n");
--		}
- 	}
- 	if (task->ata_task.use_ncq && pm8001_get_ncq_tag(task, &hdr_tag)) {
- 		task->ata_task.fis.sector_count |= (u8) (hdr_tag << 3);
+ 	return 0;
 -- 
 2.34.1
 
