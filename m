@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 67868C4707F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 77723C3527E
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:56:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379872AbiDEUyP (ORCPT
+        id S1381778AbiDEUyu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 16:54:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39730 "EHLO
+        Tue, 5 Apr 2022 16:54:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40386 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230042AbiDEJsy (ORCPT
+        with ESMTP id S1351992AbiDEKDq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:48:54 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96335DF35;
-        Tue,  5 Apr 2022 02:38:57 -0700 (PDT)
+        Tue, 5 Apr 2022 06:03:46 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1EC4BA94C8;
+        Tue,  5 Apr 2022 02:52:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3E093B818F3;
-        Tue,  5 Apr 2022 09:38:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 82CC5C385A2;
-        Tue,  5 Apr 2022 09:38:54 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 710866172B;
+        Tue,  5 Apr 2022 09:52:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 89E80C385A1;
+        Tue,  5 Apr 2022 09:52:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649151534;
-        bh=FEhFHiceQxymASY0Cnhc+plWks288D4lT8BKESj8hAc=;
+        s=korg; t=1649152361;
+        bh=giM/BAivgxJrob6NYPSr1zOqqdEG4sFSemV5nmzN4OM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PTmxC0P8LrGBEpQvyTQ6xgNIiMY8N8we4Sahk7urP1E1dA7A5iM6leXUge7Jn8VC+
-         uMBkneddj2u4GiWixjSVTXk6rLbVZ3g7SDbCj4uF79QkdPLF+xnQKESgckZFyLPiW4
-         5SNmgeGW55TCMWmW9sJquUNovCvEE4DL/qj6RKj4=
+        b=Ugos0qr2iTnzj/qd9h9zPASUaxk3JRlOo3KsndAT8vChmj2+yXcMYXbJ1a9PHPCKS
+         HUeBTHvcm9BDihPaLyC4o4KF/UMUNQ9HKufI7P+R3aW6q7rdHzs061NKLvJE2Xg2XX
+         WaUB93zqE5EjrsP79TsfLIcg7+hs0ABKqYyY7jME=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Biju Das <biju.das.jz@bp.renesas.com>,
-        Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Robert Foss <robert.foss@linaro.org>,
+        stable@vger.kernel.org, Zeal Robot <zealci@zte.com.cn>,
+        Jing Yao <yao.jing2@zte.com.cn>, Helge Deller <deller@gmx.de>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 449/913] drm/bridge: dw-hdmi: use safe format when first in bridge chain
-Date:   Tue,  5 Apr 2022 09:25:11 +0200
-Message-Id: <20220405070353.306917779@linuxfoundation.org>
+Subject: [PATCH 5.15 750/913] video: fbdev: omapfb: panel-tpo-td043mtea1: Use sysfs_emit() instead of snprintf()
+Date:   Tue,  5 Apr 2022 09:30:12 +0200
+Message-Id: <20220405070402.314465011@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
 References: <20220405070339.801210740@linuxfoundation.org>
@@ -52,56 +50,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Neil Armstrong <narmstrong@baylibre.com>
+From: Jing Yao <yao.jing2@zte.com.cn>
 
-[ Upstream commit 1528038385c0a706aac9ac165eeb24044fef6825 ]
+[ Upstream commit c07a039cbb96748f54c02995bae8131cc9a73b0a ]
 
-When the dw-hdmi bridge is in first place of the bridge chain, this
-means there is no way to select an input format of the dw-hdmi HW
-component.
+Use sysfs_emit instead of scnprintf, snprintf or sprintf.
 
-Since introduction of display-connector, negotiation was broken since
-the dw-hdmi negotiation code only worked when the dw-hdmi bridge was
-in last position of the bridge chain or behind another bridge also
-supporting input & output format negotiation.
-
-Commit 7cd70656d128 ("drm/bridge: display-connector: implement bus fmts callbacks")
-was introduced to make negotiation work again by making display-connector
-act as a pass-through concerning input & output format negotiation.
-
-But in the case where the dw-hdmi is single in the bridge chain, for
-example on Renesas SoCs, with the display-connector bridge the dw-hdmi
-is no more single, breaking output format.
-
-Reported-by: Biju Das <biju.das.jz@bp.renesas.com>
-Bisected-by: Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>
-Tested-by: Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>
-Fixes: 6c3c719936da ("drm/bridge: synopsys: dw-hdmi: add bus format negociation")
-Signed-off-by: Neil Armstrong <narmstrong@baylibre.com>
-[narmstrong: add proper fixes commit]
-Reviewed-by: Robert Foss <robert.foss@linaro.org>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220204143337.89221-1-narmstrong@baylibre.com
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: Jing Yao <yao.jing2@zte.com.cn>
+Signed-off-by: Helge Deller <deller@gmx.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/bridge/synopsys/dw-hdmi.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ .../video/fbdev/omap2/omapfb/displays/panel-tpo-td043mtea1.c  | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c b/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c
-index e1211a5b334b..25d58dcfc87e 100644
---- a/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c
-+++ b/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c
-@@ -2551,8 +2551,9 @@ static u32 *dw_hdmi_bridge_atomic_get_output_bus_fmts(struct drm_bridge *bridge,
- 	if (!output_fmts)
- 		return NULL;
+diff --git a/drivers/video/fbdev/omap2/omapfb/displays/panel-tpo-td043mtea1.c b/drivers/video/fbdev/omap2/omapfb/displays/panel-tpo-td043mtea1.c
+index afac1d9445aa..57b7d1f49096 100644
+--- a/drivers/video/fbdev/omap2/omapfb/displays/panel-tpo-td043mtea1.c
++++ b/drivers/video/fbdev/omap2/omapfb/displays/panel-tpo-td043mtea1.c
+@@ -169,7 +169,7 @@ static ssize_t tpo_td043_vmirror_show(struct device *dev,
+ {
+ 	struct panel_drv_data *ddata = dev_get_drvdata(dev);
  
--	/* If dw-hdmi is the only bridge, avoid negociating with ourselves */
--	if (list_is_singular(&bridge->encoder->bridge_chain)) {
-+	/* If dw-hdmi is the first or only bridge, avoid negociating with ourselves */
-+	if (list_is_singular(&bridge->encoder->bridge_chain) ||
-+	    list_is_first(&bridge->chain_node, &bridge->encoder->bridge_chain)) {
- 		*num_output_fmts = 1;
- 		output_fmts[0] = MEDIA_BUS_FMT_FIXED;
+-	return snprintf(buf, PAGE_SIZE, "%d\n", ddata->vmirror);
++	return sysfs_emit(buf, "%d\n", ddata->vmirror);
+ }
  
+ static ssize_t tpo_td043_vmirror_store(struct device *dev,
+@@ -199,7 +199,7 @@ static ssize_t tpo_td043_mode_show(struct device *dev,
+ {
+ 	struct panel_drv_data *ddata = dev_get_drvdata(dev);
+ 
+-	return snprintf(buf, PAGE_SIZE, "%d\n", ddata->mode);
++	return sysfs_emit(buf, "%d\n", ddata->mode);
+ }
+ 
+ static ssize_t tpo_td043_mode_store(struct device *dev,
 -- 
 2.34.1
 
