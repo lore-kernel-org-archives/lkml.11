@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1370BC4332F
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 09:11:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E420C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 09:12:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238625AbiDEJFR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 05:05:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57576 "EHLO
+        id S238722AbiDEJF1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 05:05:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57716 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238206AbiDEISo (ORCPT
+        with ESMTP id S238243AbiDEISp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:18:44 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE136BA302;
-        Tue,  5 Apr 2022 01:08:20 -0700 (PDT)
+        Tue, 5 Apr 2022 04:18:45 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81FB56CA47;
+        Tue,  5 Apr 2022 01:08:25 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4D5A8B81BAF;
-        Tue,  5 Apr 2022 08:08:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8B8E1C385A1;
-        Tue,  5 Apr 2022 08:08:18 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1843B6093C;
+        Tue,  5 Apr 2022 08:08:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 23C7DC385A1;
+        Tue,  5 Apr 2022 08:08:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649146099;
-        bh=jf3wxT0LmWyKJPeckFVUUYw7JTNoIn0ajtG1nyGrJAo=;
+        s=korg; t=1649146104;
+        bh=qQkG5DprhOohE/vv7FqAicjZ5OSnoUow72LwglFkNNY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0iChdktK4htOD3DysItCdFMRjNX8jGAbYiwNUztOxX4583HCU7QCLidx9DNk0ZJvl
-         qfNKBcKSo7Orirl5nG+zdggdmtMo9GGtNC5Kk6iIcJRVZ1evwPEQYGhxUMVeQPE2SP
-         tmmExVOj8cTTiZ+10I1G3gVtAqpDUrEqEFLV/tPE=
+        b=xqFLixksktuc+R80cdQs1n/ENnoCmI7KQerykseszFZfqJk4VudPKJf7VTnHllT3L
+         9vH80z4s/GMQjWl/mXjp2sgvlAt/tfNLU2sBanglwc2Z3PC6USapjzNXpN3gn6qWE1
+         zk3lHt64ykSYO/1ANt3rJb4M9piQ8Z7d7GlYoiaU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Cheng Li <lic121@chinatelecom.cn>,
-        Andrii Nakryiko <andrii@kernel.org>,
+        stable@vger.kernel.org, TOTE Robot <oslab@tsinghua.edu.cn>,
+        Jia-Ju Bai <baijiaju1990@gmail.com>,
+        Hans de Goede <hdegoede@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0643/1126] libbpf: Unmap rings when umem deleted
-Date:   Tue,  5 Apr 2022 09:23:10 +0200
-Message-Id: <20220405070426.506318858@linuxfoundation.org>
+Subject: [PATCH 5.17 0645/1126] platform/x86: huawei-wmi: check the return value of device_create_file()
+Date:   Tue,  5 Apr 2022 09:23:12 +0200
+Message-Id: <20220405070426.563813000@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -49,58 +50,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: lic121 <lic121@chinatelecom.cn>
+From: Jia-Ju Bai <baijiaju1990@gmail.com>
 
-[ Upstream commit 9c6e6a80ee741adf6cb3cfd8eef7d1554f91fceb ]
+[ Upstream commit c91a5b1c221a58d008485cf7d02ccce73108b119 ]
 
-xsk_umem__create() does mmap for fill/comp rings, but xsk_umem__delete()
-doesn't do the unmap. This works fine for regular cases, because
-xsk_socket__delete() does unmap for the rings. But for the case that
-xsk_socket__create_shared() fails, umem rings are not unmapped.
+The function device_create_file() in huawei_wmi_battery_add() can fail,
+so its return value should be checked.
 
-fill_save/comp_save are checked to determine if rings have already be
-unmapped by xsk. If fill_save and comp_save are NULL, it means that the
-rings have already been used by xsk. Then they are supposed to be
-unmapped by xsk_socket__delete(). Otherwise, xsk_umem__delete() does the
-unmap.
-
-Fixes: 2f6324a3937f ("libbpf: Support shared umems between queues and devices")
-Signed-off-by: Cheng Li <lic121@chinatelecom.cn>
-Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
-Link: https://lore.kernel.org/bpf/20220301132623.GA19995@vscode.7~
+Fixes: 355a070b09ab ("platform/x86: huawei-wmi: Add battery charging thresholds")
+Reported-by: TOTE Robot <oslab@tsinghua.edu.cn>
+Signed-off-by: Jia-Ju Bai <baijiaju1990@gmail.com>
+Link: https://lore.kernel.org/r/20220303022421.313-1-baijiaju1990@gmail.com
+Reviewed-by: Hans de Goede <hdegoede@redhat.com>
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/lib/bpf/xsk.c | 11 +++++++++++
- 1 file changed, 11 insertions(+)
+ drivers/platform/x86/huawei-wmi.c | 13 ++++++++++---
+ 1 file changed, 10 insertions(+), 3 deletions(-)
 
-diff --git a/tools/lib/bpf/xsk.c b/tools/lib/bpf/xsk.c
-index edafe56664f3..32a2f5749c71 100644
---- a/tools/lib/bpf/xsk.c
-+++ b/tools/lib/bpf/xsk.c
-@@ -1193,12 +1193,23 @@ int xsk_socket__create(struct xsk_socket **xsk_ptr, const char *ifname,
+diff --git a/drivers/platform/x86/huawei-wmi.c b/drivers/platform/x86/huawei-wmi.c
+index a2d846c4a7ee..eac3e6b4ea11 100644
+--- a/drivers/platform/x86/huawei-wmi.c
++++ b/drivers/platform/x86/huawei-wmi.c
+@@ -470,10 +470,17 @@ static DEVICE_ATTR_RW(charge_control_thresholds);
  
- int xsk_umem__delete(struct xsk_umem *umem)
+ static int huawei_wmi_battery_add(struct power_supply *battery)
  {
-+	struct xdp_mmap_offsets off;
-+	int err;
+-	device_create_file(&battery->dev, &dev_attr_charge_control_start_threshold);
+-	device_create_file(&battery->dev, &dev_attr_charge_control_end_threshold);
++	int err = 0;
+ 
+-	return 0;
++	err = device_create_file(&battery->dev, &dev_attr_charge_control_start_threshold);
++	if (err)
++		return err;
 +
- 	if (!umem)
- 		return 0;
- 
- 	if (umem->refcount)
- 		return -EBUSY;
- 
-+	err = xsk_get_mmap_offsets(umem->fd, &off);
-+	if (!err && umem->fill_save && umem->comp_save) {
-+		munmap(umem->fill_save->ring - off.fr.desc,
-+		       off.fr.desc + umem->config.fill_size * sizeof(__u64));
-+		munmap(umem->comp_save->ring - off.cr.desc,
-+		       off.cr.desc + umem->config.comp_size * sizeof(__u64));
-+	}
++	err = device_create_file(&battery->dev, &dev_attr_charge_control_end_threshold);
++	if (err)
++		device_remove_file(&battery->dev, &dev_attr_charge_control_start_threshold);
 +
- 	close(umem->fd);
- 	free(umem);
++	return err;
+ }
  
+ static int huawei_wmi_battery_remove(struct power_supply *battery)
 -- 
 2.34.1
 
