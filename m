@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E79BC4167E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F45AC41535
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 15:20:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346496AbiDEPRy (ORCPT
+        id S1346086AbiDEPRe (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 11:17:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39738 "EHLO
+        Tue, 5 Apr 2022 11:17:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39654 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346770AbiDEJp2 (ORCPT
+        with ESMTP id S1346751AbiDEJp0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:45:28 -0400
+        Tue, 5 Apr 2022 05:45:26 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73B82C63;
-        Tue,  5 Apr 2022 02:31:44 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C3612E5;
+        Tue,  5 Apr 2022 02:31:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 726226165C;
-        Tue,  5 Apr 2022 09:31:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 81CF0C385A2;
-        Tue,  5 Apr 2022 09:31:43 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B79DB616AE;
+        Tue,  5 Apr 2022 09:31:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BEC14C385A3;
+        Tue,  5 Apr 2022 09:31:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649151103;
-        bh=q+HweTIoMRUDs33SD84jX+bq8GXDyO/WMF9zN2kpg1M=;
+        s=korg; t=1649151101;
+        bh=QYguS+nE1eNYTHgWBsS5fkmDRLmWgsDDo6BAuEUE19I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gNrincy9k4gNxb96av4V6Jjcw+gmMAfS7JwgKJdPz/brkEGQNYlrSXWUVegTKkwqJ
-         VwQPm1AflMrgcrwavOTm8NdycLf6HspadO+sPsRkewBhShNSiMI5ZLrbGdY7zBtvT4
-         hvbzyXCPh2cxopgjTx964fjAKTz/50/L9gHK2huI=
+        b=I+CH+hRLd4GwVwoUd5/L02zd+rfyZPxhmoiQOL3Kgon6AT4fUTaYpEgbgt+QB9Goq
+         ByyTy+k2tR2TngTg+Ml44C/PXaKiUfGkCwkw6Ye0+OkQmhOCN+uRQryW6l9hVeWKSx
+         QLJkESn9NhmfdIyOXqV3siQ+VHrggQCil363aCyc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, "Z. Liu" <liuzx@knownsec.com>,
-        Helge Deller <deller@gmx.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 288/913] video: fbdev: matroxfb: set maxvram of vbG200eW to the same as vbG200 to avoid black screen
-Date:   Tue,  5 Apr 2022 09:22:30 +0200
-Message-Id: <20220405070348.490797319@linuxfoundation.org>
+        stable@vger.kernel.org, Zhipeng Tan <tanzhipeng@hust.edu.cn>,
+        Jicheng Shao <shaojicheng@hust.edu.cn>,
+        Chao Yu <chao@kernel.org>, Jaegeuk Kim <jaegeuk@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 246/913] f2fs: fix to enable ATGC correctly via gc_idle sysfs interface
+Date:   Tue,  5 Apr 2022 09:21:48 +0200
+Message-Id: <20220405070347.230603233@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
 References: <20220405070339.801210740@linuxfoundation.org>
@@ -49,36 +51,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Z. Liu <liuzx@knownsec.com>
+From: Chao Yu <chao@kernel.org>
 
-[ Upstream commit 62d89a7d49afe46e6b9bbe9e23b004ad848dbde4 ]
+[ Upstream commit 7d19e3dab0002e527052b0aaf986e8c32e5537bf ]
 
-Start from commit 11be60bd66d54 "matroxfb: add Matrox MGA-G200eW board
-support", when maxvram is 0x800000, monitor become black w/ error message
-said: "The current input timing is not supported by the monitor display.
-Please change your input timing to 1920x1080@60Hz ...".
+It needs to assign sbi->gc_mode with GC_IDLE_AT rather than GC_AT when
+user tries to enable ATGC via gc_idle sysfs interface, fix it.
 
-Fixes: 11be60bd66d5 ("matroxfb: add Matrox MGA-G200eW board support")
-Signed-off-by: Z. Liu <liuzx@knownsec.com>
-Signed-off-by: Helge Deller <deller@gmx.de>
+Fixes: 093749e296e2 ("f2fs: support age threshold based garbage collection")
+Cc: Zhipeng Tan <tanzhipeng@hust.edu.cn>
+Signed-off-by: Jicheng Shao <shaojicheng@hust.edu.cn>
+Signed-off-by: Chao Yu <chao@kernel.org>
+Signed-off-by: Jaegeuk Kim <jaegeuk@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/video/fbdev/matrox/matroxfb_base.c | 2 +-
+ fs/f2fs/sysfs.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/video/fbdev/matrox/matroxfb_base.c b/drivers/video/fbdev/matrox/matroxfb_base.c
-index 5c82611e93d9..236521b19daf 100644
---- a/drivers/video/fbdev/matrox/matroxfb_base.c
-+++ b/drivers/video/fbdev/matrox/matroxfb_base.c
-@@ -1377,7 +1377,7 @@ static struct video_board vbG200 = {
- 	.lowlevel = &matrox_G100
- };
- static struct video_board vbG200eW = {
--	.maxvram = 0x800000,
-+	.maxvram = 0x100000,
- 	.maxdisplayable = 0x800000,
- 	.accelID = FB_ACCEL_MATROX_MGAG200,
- 	.lowlevel = &matrox_G100
+diff --git a/fs/f2fs/sysfs.c b/fs/f2fs/sysfs.c
+index abc4344fba39..8b36e61fe7ed 100644
+--- a/fs/f2fs/sysfs.c
++++ b/fs/f2fs/sysfs.c
+@@ -473,7 +473,7 @@ static ssize_t __sbi_store(struct f2fs_attr *a,
+ 		} else if (t == GC_IDLE_AT) {
+ 			if (!sbi->am.atgc_enabled)
+ 				return -EINVAL;
+-			sbi->gc_mode = GC_AT;
++			sbi->gc_mode = GC_IDLE_AT;
+ 		} else {
+ 			sbi->gc_mode = GC_NORMAL;
+ 		}
 -- 
 2.34.1
 
