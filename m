@@ -2,43 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ABEF6C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 14:44:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 68C50C4167B
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 14:45:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236496AbiDEOq3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 10:46:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50092 "EHLO
+        id S237033AbiDEOqq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 10:46:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36682 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244460AbiDEJlV (ORCPT
+        with ESMTP id S244523AbiDEJl1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:41:21 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBB99BB91C;
-        Tue,  5 Apr 2022 02:26:29 -0700 (PDT)
+        Tue, 5 Apr 2022 05:41:27 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13283BB934;
+        Tue,  5 Apr 2022 02:26:38 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 67AAA61659;
-        Tue,  5 Apr 2022 09:26:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 71FC1C385A0;
-        Tue,  5 Apr 2022 09:26:28 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A2F306144D;
+        Tue,  5 Apr 2022 09:26:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 853D5C385A2;
+        Tue,  5 Apr 2022 09:26:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649150788;
-        bh=gXaSowdSzdHDz/SLK+lkSj4IXT9ETjfxO2NaDq+DOw8=;
+        s=korg; t=1649150797;
+        bh=DHI4jWw9/CbcRHomOyx8TvzxhYy3YNyYTwrJjF17aIU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XPZZS1AqU6v0RgWrOtdOaztcctdnYcU82+Z5v1oQjrV+KseB9A61zkxmNMS9CMhMd
-         ZOu4jcylg1rAdFQz7BxmVhiUUm4C3lkLhViVF4kfobHs9aX+f7J/do9rt1H6ZNqLA9
-         ZRVxSF9D1bKT5cNF+UrQRx2gZzDmwR+pX8DRHBF0=
+        b=ZuOc0hFdTmx5MlfBLyXHX/etwYU9BDnbTmbdOwk1m5AXd5oSbh5zu0KAst7myphyF
+         o0E/crm3uNU0vQGKsCJfDX6jO6XufAfYq1xwprg6REkMFjTlAZsM3UsNvX1CYAX/yf
+         H+KgRjTpNU/YLsfFTVajmDNCLmVskStoyHmthQIs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Linus Walleij <linus.walleij@linaro.org>,
-        Arend van Spriel <arend.vanspriel@broadcom.com>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Hector Martin <marcan@marcan.st>, Kalle Valo <kvalo@kernel.org>
-Subject: [PATCH 5.15 182/913] brcmfmac: pcie: Replace brcmf_pcie_copy_mem_todev with memcpy_toio
-Date:   Tue,  5 Apr 2022 09:20:44 +0200
-Message-Id: <20220405070345.310353456@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Mastan Katragadda <mastanx.katragadda@intel.com>,
+        Adam Zabrocki <adamza@microsoft.com>,
+        Jackson Cody <cody.jackson@intel.com>,
+        Chris Wilson <chris@chris-wilson.co.uk>,
+        Jon Bloomfield <jon.bloomfield@intel.com>,
+        Sudeep Dutt <sudeep.dutt@intel.com>,
+        Matthew Auld <matthew.auld@intel.com>,
+        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>
+Subject: [PATCH 5.15 185/913] drm/i915/gem: add missing boundary check in vm_access
+Date:   Tue,  5 Apr 2022 09:20:47 +0200
+Message-Id: <20220405070345.401007855@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
 References: <20220405070339.801210740@linuxfoundation.org>
@@ -50,108 +55,82 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hector Martin <marcan@marcan.st>
+From: Mastan Katragadda <mastanx.katragadda@intel.com>
 
-commit 9466987f246758eb7e9071ae58005253f631271e upstream.
+commit 3886a86e7e6cc6ce2ce93c440fecd8f42aed0ce7 upstream.
 
-The alignment check was wrong (e.g. & 4 instead of & 3), and the logic
-was also inefficient if the length was not a multiple of 4, since it
-would needlessly fall back to copying the entire buffer bytewise.
+A missing bounds check in vm_access() can lead to an out-of-bounds read
+or write in the adjacent memory area, since the len attribute is not
+validated before the memcpy later in the function, potentially hitting:
 
-We already have a perfectly good memcpy_toio function, so just call that
-instead of rolling our own copy logic here. brcmf_pcie_init_ringbuffers
-was already using it anyway.
+[  183.637831] BUG: unable to handle page fault for address: ffffc90000c86000
+[  183.637934] #PF: supervisor read access in kernel mode
+[  183.637997] #PF: error_code(0x0000) - not-present page
+[  183.638059] PGD 100000067 P4D 100000067 PUD 100258067 PMD 106341067 PTE 0
+[  183.638144] Oops: 0000 [#2] PREEMPT SMP NOPTI
+[  183.638201] CPU: 3 PID: 1790 Comm: poc Tainted: G      D           5.17.0-rc6-ci-drm-11296+ #1
+[  183.638298] Hardware name: Intel Corporation CoffeeLake Client Platform/CoffeeLake H DDR4 RVP, BIOS CNLSFWR1.R00.X208.B00.1905301319 05/30/2019
+[  183.638430] RIP: 0010:memcpy_erms+0x6/0x10
+[  183.640213] RSP: 0018:ffffc90001763d48 EFLAGS: 00010246
+[  183.641117] RAX: ffff888109c14000 RBX: ffff888111bece40 RCX: 0000000000000ffc
+[  183.642029] RDX: 0000000000001000 RSI: ffffc90000c86000 RDI: ffff888109c14004
+[  183.642946] RBP: 0000000000000ffc R08: 800000000000016b R09: 0000000000000000
+[  183.643848] R10: ffffc90000c85000 R11: 0000000000000048 R12: 0000000000001000
+[  183.644742] R13: ffff888111bed190 R14: ffff888109c14000 R15: 0000000000001000
+[  183.645653] FS:  00007fe5ef807540(0000) GS:ffff88845b380000(0000) knlGS:0000000000000000
+[  183.646570] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[  183.647481] CR2: ffffc90000c86000 CR3: 000000010ff02006 CR4: 00000000003706e0
+[  183.648384] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+[  183.649271] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+[  183.650142] Call Trace:
+[  183.650988]  <TASK>
+[  183.651793]  vm_access+0x1f0/0x2a0 [i915]
+[  183.652726]  __access_remote_vm+0x224/0x380
+[  183.653561]  mem_rw.isra.0+0xf9/0x190
+[  183.654402]  vfs_read+0x9d/0x1b0
+[  183.655238]  ksys_read+0x63/0xe0
+[  183.656065]  do_syscall_64+0x38/0xc0
+[  183.656882]  entry_SYSCALL_64_after_hwframe+0x44/0xae
+[  183.657663] RIP: 0033:0x7fe5ef725142
+[  183.659351] RSP: 002b:00007ffe1e81c7e8 EFLAGS: 00000246 ORIG_RAX: 0000000000000000
+[  183.660227] RAX: ffffffffffffffda RBX: 0000557055dfb780 RCX: 00007fe5ef725142
+[  183.661104] RDX: 0000000000001000 RSI: 00007ffe1e81d880 RDI: 0000000000000005
+[  183.661972] RBP: 00007ffe1e81e890 R08: 0000000000000030 R09: 0000000000000046
+[  183.662832] R10: 0000557055dfc2e0 R11: 0000000000000246 R12: 0000557055dfb1c0
+[  183.663691] R13: 00007ffe1e81e980 R14: 0000000000000000 R15: 0000000000000000
 
-Fixes: 9e37f045d5e7 ("brcmfmac: Adding PCIe bus layer support.")
-Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
-Reviewed-by: Arend van Spriel <arend.vanspriel@broadcom.com>
-Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc: stable@vger.kernel.org
-Signed-off-by: Hector Martin <marcan@marcan.st>
-Signed-off-by: Kalle Valo <kvalo@kernel.org>
-Link: https://lore.kernel.org/r/20220131160713.245637-6-marcan@marcan.st
+Changes since v1:
+     - Updated if condition with range_overflows_t [Chris Wilson]
+
+Fixes: 9f909e215fea ("drm/i915: Implement vm_ops->access for gdb access into mmaps")
+Signed-off-by: Mastan Katragadda <mastanx.katragadda@intel.com>
+Suggested-by: Adam Zabrocki <adamza@microsoft.com>
+Reported-by: Jackson Cody <cody.jackson@intel.com>
+Cc: Chris Wilson <chris@chris-wilson.co.uk>
+Cc: Jon Bloomfield <jon.bloomfield@intel.com>
+Cc: Sudeep Dutt <sudeep.dutt@intel.com>
+Cc: <stable@vger.kernel.org> # v5.8+
+Reviewed-by: Matthew Auld <matthew.auld@intel.com>
+[mauld: tidy up the commit message and add Cc: stable]
+Signed-off-by: Matthew Auld <matthew.auld@intel.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220303060428.1668844-1-mastanx.katragadda@intel.com
+(cherry picked from commit 661412e301e2ca86799aa4f400d1cf0bd38c57c6)
+Signed-off-by: Joonas Lahtinen <joonas.lahtinen@linux.intel.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c |   48 +---------------
- 1 file changed, 4 insertions(+), 44 deletions(-)
+ drivers/gpu/drm/i915/gem/i915_gem_mman.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c
-+++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c
-@@ -12,6 +12,7 @@
- #include <linux/interrupt.h>
- #include <linux/bcma/bcma.h>
- #include <linux/sched.h>
-+#include <linux/io.h>
- #include <asm/unaligned.h>
+--- a/drivers/gpu/drm/i915/gem/i915_gem_mman.c
++++ b/drivers/gpu/drm/i915/gem/i915_gem_mman.c
+@@ -438,7 +438,7 @@ vm_access(struct vm_area_struct *area, u
+ 		return -EACCES;
  
- #include <soc.h>
-@@ -455,47 +456,6 @@ brcmf_pcie_write_ram32(struct brcmf_pcie
+ 	addr -= area->vm_start;
+-	if (addr >= obj->base.size)
++	if (range_overflows_t(u64, addr, len, obj->base.size))
+ 		return -EINVAL;
  
- 
- static void
--brcmf_pcie_copy_mem_todev(struct brcmf_pciedev_info *devinfo, u32 mem_offset,
--			  void *srcaddr, u32 len)
--{
--	void __iomem *address = devinfo->tcm + mem_offset;
--	__le32 *src32;
--	__le16 *src16;
--	u8 *src8;
--
--	if (((ulong)address & 4) || ((ulong)srcaddr & 4) || (len & 4)) {
--		if (((ulong)address & 2) || ((ulong)srcaddr & 2) || (len & 2)) {
--			src8 = (u8 *)srcaddr;
--			while (len) {
--				iowrite8(*src8, address);
--				address++;
--				src8++;
--				len--;
--			}
--		} else {
--			len = len / 2;
--			src16 = (__le16 *)srcaddr;
--			while (len) {
--				iowrite16(le16_to_cpu(*src16), address);
--				address += 2;
--				src16++;
--				len--;
--			}
--		}
--	} else {
--		len = len / 4;
--		src32 = (__le32 *)srcaddr;
--		while (len) {
--			iowrite32(le32_to_cpu(*src32), address);
--			address += 4;
--			src32++;
--			len--;
--		}
--	}
--}
--
--
--static void
- brcmf_pcie_copy_dev_tomem(struct brcmf_pciedev_info *devinfo, u32 mem_offset,
- 			  void *dstaddr, u32 len)
- {
-@@ -1570,8 +1530,8 @@ static int brcmf_pcie_download_fw_nvram(
- 		return err;
- 
- 	brcmf_dbg(PCIE, "Download FW %s\n", devinfo->fw_name);
--	brcmf_pcie_copy_mem_todev(devinfo, devinfo->ci->rambase,
--				  (void *)fw->data, fw->size);
-+	memcpy_toio(devinfo->tcm + devinfo->ci->rambase,
-+		    (void *)fw->data, fw->size);
- 
- 	resetintr = get_unaligned_le32(fw->data);
- 	release_firmware(fw);
-@@ -1585,7 +1545,7 @@ static int brcmf_pcie_download_fw_nvram(
- 		brcmf_dbg(PCIE, "Download NVRAM %s\n", devinfo->nvram_name);
- 		address = devinfo->ci->rambase + devinfo->ci->ramsize -
- 			  nvram_len;
--		brcmf_pcie_copy_mem_todev(devinfo, address, nvram, nvram_len);
-+		memcpy_toio(devinfo->tcm + address, nvram, nvram_len);
- 		brcmf_fw_nvram_free(nvram);
- 	} else {
- 		brcmf_dbg(PCIE, "No matching NVRAM file found %s\n",
+ 	i915_gem_ww_ctx_init(&ww, true);
 
 
