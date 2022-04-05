@@ -2,45 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 447C0C4167E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A7DF2C35274
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 13:37:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1389502AbiDENd4 (ORCPT
+        id S1389824AbiDENeU (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 09:33:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37836 "EHLO
+        Tue, 5 Apr 2022 09:34:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59666 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346435AbiDEJXt (ORCPT
+        with ESMTP id S1346785AbiDEJYm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:23:49 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A51A26CB;
-        Tue,  5 Apr 2022 02:13:29 -0700 (PDT)
+        Tue, 5 Apr 2022 05:24:42 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73E6C939C9;
+        Tue,  5 Apr 2022 02:14:04 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 54D266165C;
-        Tue,  5 Apr 2022 09:13:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 628A4C385A2;
-        Tue,  5 Apr 2022 09:13:28 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A0B4FB81C6A;
+        Tue,  5 Apr 2022 09:13:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EED13C385A0;
+        Tue,  5 Apr 2022 09:13:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649150008;
-        bh=ZLTP0CsQzKamaFohUBCVD0Y/Pr2t2IZyPkvu0eeCTco=;
+        s=korg; t=1649150033;
+        bh=Sa1kMv1sdCnfZFoBz5fJjwVY0FENvkmbuFF3lGAys4I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=S6cXKlwfAdRQP2Vb2NSmvqmCpzZVe/uCcNg8dn/r/RCT6Fv3KQE29GpEbiZj0j/kI
-         BqidZbXboRdTztFM1wbmbyRQDN2O//Tx53IOJ7pfcfbeikUs+PUSsph7SSQPMT41lO
-         ANZpdITxQmEptXgMZBs/O+56obowqam79+wHLo7k=
+        b=rR2vOWusEU25Dawl6iF844zOiJr37U8Ic8m9IB+JscoSKqxkdh+LKa5vbUl7G3/gj
+         8j75GjOPBFzPT7b/SzSV99SC5f1iRC7ier/U0oXc7bhAWcy9fM7JthqLn61XtP9BDE
+         UrmPZ5kFJL6+oC5EelRz8eVAekh3K7/3Q5WxtKYQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Himanshu Madhani <himanshu.madhani@oracle.com>,
-        Arun Easi <aeasi@marvell.com>,
-        Nilesh Javali <njavali@marvell.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>
-Subject: [PATCH 5.16 0883/1017] scsi: qla2xxx: Fix device reconnect in loop topology
-Date:   Tue,  5 Apr 2022 09:29:56 +0200
-Message-Id: <20220405070420.442997105@linuxfoundation.org>
+        stable@vger.kernel.org, Andreas Gruenbacher <agruenba@redhat.com>
+Subject: [PATCH 5.16 0931/1017] gfs2: Fix gfs2_file_buffered_write endless loop workaround
+Date:   Tue,  5 Apr 2022 09:30:44 +0200
+Message-Id: <20220405070421.850675722@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -52,78 +48,29 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Arun Easi <aeasi@marvell.com>
+From: Andreas Gruenbacher <agruenba@redhat.com>
 
-commit 8ad4be3d15cf144b5834bdb00d5bbe4050938dc7 upstream.
+commit 46f3e0421ccb5474b5c006b0089b9dfd42534bb6 upstream.
 
-A device logout in loop topology initiates a device connection teardown
-which loses the FW device handle. In loop topo, the device handle is not
-regrabbed leading to device login failures and eventually to loss of the
-device. Fix this by taking the main login path that does it.
+Since commit 554c577cee95b, gfs2_file_buffered_write() can accidentally
+return a truncated iov_iter, which might confuse callers.  Fix that.
 
-Link: https://lore.kernel.org/r/20220110050218.3958-11-njavali@marvell.com
-Cc: stable@vger.kernel.org
-Reviewed-by: Himanshu Madhani <himanshu.madhani@oracle.com>
-Signed-off-by: Arun Easi <aeasi@marvell.com>
-Signed-off-by: Nilesh Javali <njavali@marvell.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Fixes: 554c577cee95b ("gfs2: Prevent endless loops in gfs2_file_buffered_write")
+Signed-off-by: Andreas Gruenbacher <agruenba@redhat.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/scsi/qla2xxx/qla_init.c |   15 +++++++++++++++
- drivers/scsi/qla2xxx/qla_os.c   |    5 +++++
- 2 files changed, 20 insertions(+)
+ fs/gfs2/file.c |    1 +
+ 1 file changed, 1 insertion(+)
 
---- a/drivers/scsi/qla2xxx/qla_init.c
-+++ b/drivers/scsi/qla2xxx/qla_init.c
-@@ -974,6 +974,9 @@ static void qla24xx_handle_gnl_done_even
- 				set_bit(RELOGIN_NEEDED, &vha->dpc_flags);
- 			}
- 			break;
-+		case ISP_CFG_NL:
-+			qla24xx_fcport_handle_login(vha, fcport);
-+			break;
- 		default:
- 			break;
- 		}
-@@ -1563,6 +1566,11 @@ static void qla_chk_n2n_b4_login(struct
- 	u8 login = 0;
- 	int rc;
+--- a/fs/gfs2/file.c
++++ b/fs/gfs2/file.c
+@@ -1083,6 +1083,7 @@ out_uninit:
+ 	gfs2_holder_uninit(gh);
+ 	if (statfs_gh)
+ 		kfree(statfs_gh);
++	from->count = orig_count - read;
+ 	return read ? read : ret;
+ }
  
-+	ql_dbg(ql_dbg_disc, vha, 0x307b,
-+	    "%s %8phC DS %d LS %d lid %d retries=%d\n",
-+	    __func__, fcport->port_name, fcport->disc_state,
-+	    fcport->fw_login_state, fcport->loop_id, fcport->login_retry);
-+
- 	if (qla_tgt_mode_enabled(vha))
- 		return;
- 
-@@ -5604,6 +5612,13 @@ qla2x00_configure_local_loop(scsi_qla_ho
- 			memcpy(fcport->node_name, new_fcport->node_name,
- 			    WWN_SIZE);
- 			fcport->scan_state = QLA_FCPORT_FOUND;
-+			if (fcport->login_retry == 0) {
-+				fcport->login_retry = vha->hw->login_retry_count;
-+				ql_dbg(ql_dbg_disc, vha, 0x2135,
-+				    "Port login retry %8phN, lid 0x%04x retry cnt=%d.\n",
-+				    fcport->port_name, fcport->loop_id,
-+				    fcport->login_retry);
-+			}
- 			found++;
- 			break;
- 		}
---- a/drivers/scsi/qla2xxx/qla_os.c
-+++ b/drivers/scsi/qla2xxx/qla_os.c
-@@ -5533,6 +5533,11 @@ void qla2x00_relogin(struct scsi_qla_hos
- 					ea.fcport = fcport;
- 					qla24xx_handle_relogin_event(vha, &ea);
- 				} else if (vha->hw->current_topology ==
-+					 ISP_CFG_NL &&
-+					IS_QLA2XXX_MIDTYPE(vha->hw)) {
-+					(void)qla24xx_fcport_handle_login(vha,
-+									fcport);
-+				} else if (vha->hw->current_topology ==
- 				    ISP_CFG_NL) {
- 					fcport->login_retry--;
- 					status =
 
 
