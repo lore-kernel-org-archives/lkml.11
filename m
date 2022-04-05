@@ -2,134 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C0033C43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A2AA9C4332F
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 01:30:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1842262AbiDFBaP (ORCPT
+        id S1842219AbiDFBaL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 21:30:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52218 "EHLO
+        Tue, 5 Apr 2022 21:30:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39314 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344110AbiDEOF5 (ORCPT
+        with ESMTP id S1349158AbiDEJtQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 10:05:57 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C26B01557F6
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 05:58:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1649163490;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=I7YDzc0txooe4wDXjoZKV+HdiLgjGSAsT9wsXDKfsIc=;
-        b=FKCw3Ti/+ORFFLtV7Tm8IUe5bp3acUYA1EXqpzxN3iRUr53lZTW/6WUTmkReqBvcof880l
-        nYAr6po6kjbbJIFH3pac94g2YH0Q+dT9tK3B74QVliuIBALsLjKVdm3lDeGfC42FV4qV/Q
-        zBfERp1jE8MyihcLzcpl4gote1tUzrU=
-Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
- [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-669-k7qXx2a9MtyUJ_rIkDzG8A-1; Tue, 05 Apr 2022 08:58:08 -0400
-X-MC-Unique: k7qXx2a9MtyUJ_rIkDzG8A-1
-Received: by mail-wm1-f69.google.com with SMTP id z16-20020a05600c0a1000b0038bebbd8548so1314277wmp.3
-        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 05:58:08 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=I7YDzc0txooe4wDXjoZKV+HdiLgjGSAsT9wsXDKfsIc=;
-        b=318g+CFF7i7tEZz7irbT+DZNn5/+iizwTgX4341R9NtSmpeH/t+krxiQVbnnEuHaMe
-         noKjObDx39YQz9p1u+2JBUAoOnu+wFvAl74g4PqnBScRQgaEz53tUh/E1fiqqurnuUvX
-         ckblhylWH2yXpy/H0s5E1KLY55nMBMTV2mohNgb+Xn7Wxs6J0BBIEzD7+8ekuZ+FQ2iK
-         WWAoY2H0GuzMHUOuEt1f6FJDUBsHEFOIGj5syMBMNsDu0MIDS+pGHOVvtE7a9EH81Bie
-         fqDNkOT5IE2mCh62Xp+ZBeMQJGRthvdosWVle/wecjru/30SJ+deVWMsnjqPnynB+vEM
-         a/mg==
-X-Gm-Message-State: AOAM530ABlKDzgnDtApKar6tZUOxd63qQQ++rbXg/PG7rMX+jTEQLY21
-        1QNj17Ijk/x2wGK2TfCw0QmY+CfwuejPPra9S+nklD9NuzWgghY86Cu4TBtnPVGjVOZomOAgruy
-        AuczdcuQrOvwBKoIfEAgSX2Ws
-X-Received: by 2002:a7b:c347:0:b0:37e:68e6:d85c with SMTP id l7-20020a7bc347000000b0037e68e6d85cmr3142058wmj.176.1649163487130;
-        Tue, 05 Apr 2022 05:58:07 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJyOngzMtEU2KPnwylW2akB8kPVoiTa6yBmTv34dc8nvDFuKKvuEx56M9l/8R39QBk1A2dB1TQ==
-X-Received: by 2002:a7b:c347:0:b0:37e:68e6:d85c with SMTP id l7-20020a7bc347000000b0037e68e6d85cmr3142030wmj.176.1649163486869;
-        Tue, 05 Apr 2022 05:58:06 -0700 (PDT)
-Received: from [10.32.181.87] (nat-pool-mxp-t.redhat.com. [149.6.153.186])
-        by smtp.googlemail.com with ESMTPSA id r4-20020a05600c35c400b0038cbd8c41e9sm2096679wmq.12.2022.04.05.05.58.05
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 05 Apr 2022 05:58:05 -0700 (PDT)
-Message-ID: <e392b53a-fbaa-4724-07f4-171424144f70@redhat.com>
-Date:   Tue, 5 Apr 2022 14:58:04 +0200
+        Tue, 5 Apr 2022 05:49:16 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3EA55FC4;
+        Tue,  5 Apr 2022 02:41:48 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 863C2B81B14;
+        Tue,  5 Apr 2022 09:41:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E89FDC385A1;
+        Tue,  5 Apr 2022 09:41:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649151706;
+        bh=rSDVb1Qw/QoGBKaqxoDM92isw7IMSbftWVufuClGpmA=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=uwVpl+yS5cK/dkpcvM4iuRp5o/lu9k4jqe0hNkH0Zi5e/l/AUhhohAf1NmqCKsCaT
+         2n5TweWJ0rkncsPDgbDRXW7JkZGtUhZwuqPhPW5uVQMCmoXjkx+2GmfYtKmTtmMcT6
+         BRL4bwuU3cNIfbQ7S0ILomjTMOikZOaB5TxLMjh8=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Robert Hancock <robert.hancock@calian.com>,
+        Michal Simek <michal.simek@xilinx.com>,
+        Wolfram Sang <wsa@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 512/913] i2c: xiic: Make bus names unique
+Date:   Tue,  5 Apr 2022 09:26:14 +0200
+Message-Id: <20220405070355.201408006@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [RFC PATCH v5 027/104] KVM: TDX: initialize VM with TDX specific
- parameters
-Content-Language: en-US
-To:     isaku.yamahata@intel.com, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     isaku.yamahata@gmail.com, Jim Mattson <jmattson@google.com>,
-        erdemaktas@google.com, Connor Kuehl <ckuehl@redhat.com>,
-        Sean Christopherson <seanjc@google.com>
-References: <cover.1646422845.git.isaku.yamahata@intel.com>
- <c3b37cf5c83f92be0e153075d81a80729bf1031e.1646422845.git.isaku.yamahata@intel.com>
-From:   Paolo Bonzini <pbonzini@redhat.com>
-In-Reply-To: <c3b37cf5c83f92be0e153075d81a80729bf1031e.1646422845.git.isaku.yamahata@intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 3/4/22 20:48, isaku.yamahata@intel.com wrote:
-> +	td_params->attributes = init_vm->attributes;
-> +	if (td_params->attributes & TDX_TD_ATTRIBUTE_PERFMON) {
-> +		pr_warn("TD doesn't support perfmon. KVM needs to save/restore "
-> +			"host perf registers properly.\n");
-> +		return -EOPNOTSUPP;
-> +	}
+From: Robert Hancock <robert.hancock@calian.com>
 
-Why does KVM have to hardcode this (and LBR/AMX below)?  Is the level of 
-hardware support available from tdx_caps, for example through the CPUID 
-configs (0xA for this one, 0xD for LBR and AMX)?
+[ Upstream commit 1d366c2f9df8279df2adbb60471f86fc40a1c39e ]
 
-> +	/* PT can be exposed to TD guest regardless of KVM's XSS support */
-> +	guest_supported_xss &= (supported_xss | XFEATURE_MASK_PT);
-> +	td_params->xfam = guest_supported_xcr0 | guest_supported_xss;
-> +	if (td_params->xfam & TDX_TD_XFAM_LBR) {
-> +		pr_warn("TD doesn't support LBR. KVM needs to save/restore "
-> +			"IA32_LBR_DEPTH properly.\n");
-> +		return -EOPNOTSUPP;
-> +	}
-> +
-> +	if (td_params->xfam & TDX_TD_XFAM_AMX) {
-> +		pr_warn("TD doesn't support AMX. KVM needs to save/restore "
-> +			"IA32_XFD, IA32_XFD_ERR properly.\n");
-> +		return -EOPNOTSUPP;
-> +	}
+This driver is for an FPGA logic core, so there can be arbitrarily many
+instances of the bus on a given system. Previously all of the I2C bus
+names were "xiic-i2c" which caused issues with lm_sensors when trying to
+map human-readable names to sensor inputs because it could not properly
+distinguish the busses, for example. Append the platform device name to
+the I2C bus name so it is unique between different instances.
 
-> 
-> +	if (init_vm->tsc_khz)
-> +		guest_tsc_khz = init_vm->tsc_khz;
-> +	else
-> +		guest_tsc_khz = max_tsc_khz;
+Fixes: e1d5b6598cdc ("i2c: Add support for Xilinx XPS IIC Bus Interface")
+Signed-off-by: Robert Hancock <robert.hancock@calian.com>
+Tested-by: Michal Simek <michal.simek@xilinx.com>
+Signed-off-by: Wolfram Sang <wsa@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/i2c/busses/i2c-xiic.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-You can just use kvm->arch.default_tsc_khz in the latest kvm/queue.
-
-> +#define BUILD_BUG_ON_MEMCPY(dst, src)				\
-> +	do {							\
-> +		BUILD_BUG_ON(sizeof(dst) != sizeof(src));	\
-> +		memcpy((dst), (src), sizeof(dst));		\
-> +	} while (0)
-> +
-> +	BUILD_BUG_ON_MEMCPY(td_params->mrconfigid, init_vm->mrconfigid);
-> +	BUILD_BUG_ON_MEMCPY(td_params->mrowner, init_vm->mrowner);
-> +	BUILD_BUG_ON_MEMCPY(td_params->mrownerconfig, init_vm->mrownerconfig);
-> +
+diff --git a/drivers/i2c/busses/i2c-xiic.c b/drivers/i2c/busses/i2c-xiic.c
+index bb93db98404e..612343771ce2 100644
+--- a/drivers/i2c/busses/i2c-xiic.c
++++ b/drivers/i2c/busses/i2c-xiic.c
+@@ -756,7 +756,6 @@ static const struct i2c_adapter_quirks xiic_quirks = {
+ 
+ static const struct i2c_adapter xiic_adapter = {
+ 	.owner = THIS_MODULE,
+-	.name = DRIVER_NAME,
+ 	.class = I2C_CLASS_DEPRECATED,
+ 	.algo = &xiic_algorithm,
+ 	.quirks = &xiic_quirks,
+@@ -793,6 +792,8 @@ static int xiic_i2c_probe(struct platform_device *pdev)
+ 	i2c_set_adapdata(&i2c->adap, i2c);
+ 	i2c->adap.dev.parent = &pdev->dev;
+ 	i2c->adap.dev.of_node = pdev->dev.of_node;
++	snprintf(i2c->adap.name, sizeof(i2c->adap.name),
++		 DRIVER_NAME " %s", pdev->name);
+ 
+ 	mutex_init(&i2c->lock);
+ 	init_waitqueue_head(&i2c->wait);
+-- 
+2.34.1
 
 
-Please rename to MEMCPY_SAME_SIZE.
-
-Thanks,
-
-Paolo
 
