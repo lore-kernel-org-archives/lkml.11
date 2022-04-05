@@ -2,92 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C1198C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 02:46:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0CA2AC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 02:46:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229922AbiDECst (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 22:48:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48128 "EHLO
+        id S229955AbiDECsw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 4 Apr 2022 22:48:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48464 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230186AbiDECsj (ORCPT
+        with ESMTP id S229830AbiDECse (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 22:48:39 -0400
-Received: from out203-205-221-192.mail.qq.com (out203-205-221-192.mail.qq.com [203.205.221.192])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9615239971C
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 19:29:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foxmail.com;
-        s=s201512; t=1649125766;
-        bh=/3yGeZ7g3ndrgq7ezahWJRS7qUXCaNhhVgCTWOxAzag=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References;
-        b=hiVX729ojZibzmsVbnRRNjdi7b2WXsBa62yHRFBLvIhxBXuPK2HdBXQQgzH0UL8Na
-         SyWutGcrOT6sb7xMQf0+eRRZ4m/UvcuK9iJ7iHax3QUhsY5qEUOCinmbkPk+brMfl0
-         QdoWEi3pK1qmIlV3So3F+zWUOgFnaw/exPqQmNl4=
-Received: from localhost.localdomain ([218.197.153.188])
-        by newxmesmtplogicsvrszb6.qq.com (NewEsmtp) with SMTP
-        id 757B7698; Tue, 05 Apr 2022 10:29:23 +0800
-X-QQ-mid: xmsmtpt1649125763tz7r97vbw
-Message-ID: <tencent_5ACC8CB9131CFA14F7E1514A54FFF520D308@qq.com>
-X-QQ-XMAILINFO: MDPfhejMR4aIUaXnh8SbAwTwpPAr4zJrY0xemmO5ZgY90J4sb4/U2jqT05KAWV
-         G6glXny0sgROGUGBbVUdn27Tw38QXvlDOp8Enm68/axsxQZr/FME463zEIa5Iwg9G5suiHWWQMcP
-         xmmfOhvTfIsgQEMcvk9sQiHAXFTJUroanhaEvI952KT/88nwrNRlqA00pLLpDm1KNQcI6nCk9RF5
-         Yxq94CJ+ei5ptPAGV+7IbZupHsmzu3NB8o9w0tGfP8wxTeBs/zXpcanGCxnlXbc1BVvSqvuVFPJY
-         a0ytrkhcyijw/c6X5KlKpEpmsTemHPWDTqrjGsdYSHk2ZGX6F4JXGkmVKUDoKXKQadVLb4KuuxzB
-         N6ZlGjYX21OwOEGVyyz2DmHlqbSXfRnDYJVVWSe7lkWDYINxh6+OgnYsmZlx3XiLrYgyEkmk1yc2
-         pJzmQ8YhY9lUu6W036SNV6xzQC8mdCdKyi+CRNMTMZSGjqjWphewxu/vIHGuV4WmgLAf60Nye3tI
-         1jhbV87Lk1WNRcbnnuI1wE2X1DbDHeY5ZjnkOOw96/LvosN2nwzsnxfQrvQRtxxunvJGZG4hBrob
-         FZLpnvdgMlBAf0HiFNTj9Ub8EEW+66W233i5kncz5Hkth0MtYlW/hGAo9tvg9rDhfWrFMlBfxMGE
-         fTsIStPUYSARxoRWWjvIz8UrdaEG2J7SA61uuGNPkqzIwm6Oo1ZU5gjqrudsQ54MKKYXboaE76+g
-         Tv7ozgj6ytxDEH8XrpFD9ThvjXmL8lnzy/pGIlpc+zy+y47svDM3WACdZ9k/2f+FOsdqUFeR85rm
-         IJa3f6+mp8RdmS0mHa0RdrxrxJq+QsfRjHFLFanFjjwKx30S+f3Rd1PVPs5WcG6vwK+ksxCMm8rQ
-         VBJsFo23ODnJeVgV5n3OQsQEKZKitEilprmeR500tASyf/eYzxVjHpSAkLuUySBjVbIpzCzg9lBE
-         NvwiYLy2tCGddBTFHygO08AyqRfxUYU+1jXRY4BbnBbiWg8J3ERw==
-From:   xkernel.wang@foxmail.com
-To:     gregkh@linuxfoundation.org
-Cc:     Larry.Finger@lwfinger.net, florian.c.schilhabel@googlemail.com,
-        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
-        Xiaoke Wang <xkernel.wang@foxmail.com>
-Subject: [PATCH v2 3/3] staging: rtl8712: add two validation check in r8712_init_drv_sw()
-Date:   Tue,  5 Apr 2022 10:28:54 +0800
-X-OQ-MSGID: <20220405022854.10991-1-xkernel.wang@foxmail.com>
-In-Reply-To: <tencent_FCEE3D8703C56F78B552FEFF070817736606@qq.com>
-References: <tencent_FCEE3D8703C56F78B552FEFF070817736606@qq.com>
+        Mon, 4 Apr 2022 22:48:34 -0400
+Received: from conssluserg-03.nifty.com (conssluserg-03.nifty.com [210.131.2.82])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0C3117538D
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 18:55:00 -0700 (PDT)
+Received: from mail-pl1-f173.google.com (mail-pl1-f173.google.com [209.85.214.173]) (authenticated)
+        by conssluserg-03.nifty.com with ESMTP id 2351slYC031730
+        for <linux-kernel@vger.kernel.org>; Tue, 5 Apr 2022 10:54:47 +0900
+DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-03.nifty.com 2351slYC031730
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
+        s=dec2015msa; t=1649123688;
+        bh=BZqpMP9OnBPMQP9yZDJGu4UQXOLFYVeLZWykIihy5vA=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=tqPhO1GoXh/5l3l1nAUpOPChsl1wbUg7BcpV6r8auyYo6+cOYiF/VR/93WDH4+q7Y
+         UXsZmO1TjJlkTd4lBOWyoKNADo2iW13Uu2+v4rtXAiH5G5gMA3lajHVWjXqntRDMYW
+         ama+GlGyd6Zt37dzjtx2D/LvJ9y71soDBsyufJ/3MvM3ivfNpSh3SOkhW+MswrM49D
+         08XzlcNiUq+3VHrMVVPRIgoGoAKM8iOAYlDDEEGKg6aHr029STL2f9+0F15f+mA41h
+         tzmDD2fU9ra+7CnOJ6VEna64j5A1lMqYmK9LA3REMxc2TrIsjbGa5dk1rXhc0TLjUn
+         Q201B+eLHwWQg==
+X-Nifty-SrcIP: [209.85.214.173]
+Received: by mail-pl1-f173.google.com with SMTP id j8so9641342pll.11
+        for <linux-kernel@vger.kernel.org>; Mon, 04 Apr 2022 18:54:47 -0700 (PDT)
+X-Gm-Message-State: AOAM530bp7NRgphVLjxoerVjfnO2feQ+bPWP9sUnxAFi/HhTZdstJrg6
+        vKRw7JT5kMyvoxerxtD9EXMdkgVl6bxooLSB8TM=
+X-Google-Smtp-Source: ABdhPJw7i4Bl3cgYF5GL7LELB6T+8VsdQz64gO8ln8C2/GXWuSdkIhmdrdyO8iwVIkhqwS4NRc5zIdd6xtrCmN59Xz8=
+X-Received: by 2002:a17:902:b183:b0:14f:c266:20d5 with SMTP id
+ s3-20020a170902b18300b0014fc26620d5mr1147223plr.136.1649123686883; Mon, 04
+ Apr 2022 18:54:46 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220330183409.2025109-1-ndesaulniers@google.com>
+In-Reply-To: <20220330183409.2025109-1-ndesaulniers@google.com>
+From:   Masahiro Yamada <masahiroy@kernel.org>
+Date:   Tue, 5 Apr 2022 10:53:57 +0900
+X-Gmail-Original-Message-ID: <CAK7LNAQvbFMnhrokkbQZjmCYTmj-v4pR60-5dYpezBNDm6imug@mail.gmail.com>
+Message-ID: <CAK7LNAQvbFMnhrokkbQZjmCYTmj-v4pR60-5dYpezBNDm6imug@mail.gmail.com>
+Subject: Re: [PATCH] kbuild: uapi: use -fsyntax-only rather than -S
+To:     Nick Desaulniers <ndesaulniers@google.com>
+Cc:     Arnd Bergmann <arnd@arndb.de>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Dmitry V. Levin" <ldv@altlinux.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xiaoke Wang <xkernel.wang@foxmail.com>
+On Thu, Mar 31, 2022 at 3:34 AM Nick Desaulniers
+<ndesaulniers@google.com> wrote:
+>
+> The UAPI header tests are checking that the generated headers do not
+> have syntax errors. There's no need to run the rest of the compilation
+> pipeline after semantic analysis has run. Replace -S -o /dev/null with
+> -fsyntax-only.
+>
 
-_r8712_init_xmit_priv() or _r8712_init_recv_priv() returns -ENOMEM
-when some allocations inside it failed.
-So it is better to check the return status of them.
+Applied to linux-kbuild.
+Thanks.
 
-Signed-off-by: Xiaoke Wang <xkernel.wang@foxmail.com>
----
-ChangeLog:
-v1->v2 adjust the sequence of patches in this series and add error
-handlers in the first patch.
- drivers/staging/rtl8712/os_intfs.c | 8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/staging/rtl8712/os_intfs.c b/drivers/staging/rtl8712/os_intfs.c
-index 1f7ccec..0dbf8c2 100644
---- a/drivers/staging/rtl8712/os_intfs.c
-+++ b/drivers/staging/rtl8712/os_intfs.c
-@@ -308,8 +308,12 @@ int r8712_init_drv_sw(struct _adapter *padapter)
- 	ret = r8712_init_mlme_priv(padapter);
- 	if (ret)
- 		goto free_evt_priv;
--	_r8712_init_xmit_priv(&padapter->xmitpriv, padapter);
--	_r8712_init_recv_priv(&padapter->recvpriv, padapter);
-+	ret = _r8712_init_xmit_priv(&padapter->xmitpriv, padapter);
-+	if (ret)
-+		goto free_mlme_priv;
-+	ret = _r8712_init_recv_priv(&padapter->recvpriv, padapter);
-+	if (ret)
-+		goto free_xmit_priv;
- 	memset((unsigned char *)&padapter->securitypriv, 0,
- 	       sizeof(struct security_priv));
- 	timer_setup(&padapter->securitypriv.tkip_timer,
+> Signed-off-by: Nick Desaulniers <ndesaulniers@google.com>
+> ---
+>  usr/include/Makefile | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/usr/include/Makefile b/usr/include/Makefile
+> index 7b283d43f00d..bf193e205dbe 100644
+> --- a/usr/include/Makefile
+> +++ b/usr/include/Makefile
+> @@ -89,7 +89,7 @@ extra-y := $(patsubst $(obj)/%.h,%.hdrtest, $(shell find $(obj) -name '*.h' 2>/d
+>  # Include the header twice to detect missing include guard.
+>  quiet_cmd_hdrtest = HDRTEST $<
+>        cmd_hdrtest = \
+> -               $(CC) $(c_flags) -S -o /dev/null -x c /dev/null \
+> +               $(CC) $(c_flags) -fsyntax-only -x c /dev/null \
+>                         $(if $(filter-out $(no-header-test), $*.h), -include $< -include $<); \
+>                 $(PERL) $(srctree)/$(src)/headers_check.pl $(obj) $(SRCARCH) $<; \
+>                 touch $@
+>
+> base-commit: 74164d284b2909de0ba13518cc063e9ea9334749
+> --
+> 2.35.1.1021.g381101b075-goog
+>
+
+
 -- 
+Best Regards
+Masahiro Yamada
