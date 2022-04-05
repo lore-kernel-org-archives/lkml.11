@@ -2,98 +2,140 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BF7F4C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 11:24:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9129BC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 11:24:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376426AbiDELV6 (ORCPT
+        id S1376453AbiDELWG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 07:21:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41472 "EHLO
+        Tue, 5 Apr 2022 07:22:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37482 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241526AbiDEIs3 (ORCPT
+        with ESMTP id S241638AbiDEIsb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:48:29 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28A4929C9D;
-        Tue,  5 Apr 2022 01:36:43 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5484B61515;
-        Tue,  5 Apr 2022 08:36:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 65BEFC385A0;
-        Tue,  5 Apr 2022 08:36:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649147800;
-        bh=YhiSsJ3TnEyST2jyx9qSBcFa+5qpcWGpbNlsUtKc+X0=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=R4yqA9CpyAwHLTrjq5C1PfgS8lzrdOhUOfmSmCGUDDt63wz31d0YS0xJv1ZbEUf8h
-         +/qLAaDLnqmNSnI6FM6Zs6hj1D47jwrNoBX8uCE1VshpY9GD4pmfu9n62I43YBoF8S
-         eiuYavGx7sSS/2ediLV0LKUrwOrGwSvKhQKCbfds=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, David Engraf <david.engraf@sysgo.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>, Mark Brown <broonie@kernel.org>
-Subject: [PATCH 5.16 0127/1017] arm64: signal: nofpsimd: Do not allocate fp/simd context when not available
-Date:   Tue,  5 Apr 2022 09:17:20 +0200
-Message-Id: <20220405070357.969110479@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
-References: <20220405070354.155796697@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 5 Apr 2022 04:48:31 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3ADC32AC4D;
+        Tue,  5 Apr 2022 01:36:49 -0700 (PDT)
+Date:   Tue, 05 Apr 2022 08:36:36 -0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1649147797;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=8DjoZ6iN+ZHvNby1ojx7qIUJF9VuqAzgvC7aEtWptK4=;
+        b=nWX+Fw92tPFnB5ReiW0R7KpfMkn9hfnhW3gE2Eyr6VY/COi6Rzdd1VNXUHK1yhIYl6JAqA
+        JHV8NimnNqGqSfHT+XweLmzyvMF4H/N7GqqYFZVU7wscGeQWYe7RoS6tMsg8T+6AgMeEzm
+        tBi3bwT/tPGrJm3u9vDTnEZPWx11m4F+8EQ89dQETdxpQl2NBqjMA+u3gOLrH4qlS13IyC
+        f4uGrgnbDe6X7sPlKkeWJTk56bu6apksBo5wuCkVy2qtG2Z/tUzQlDxm0wFikKtW9Eq9dx
+        0OhPWWTx124FyARkInwXHPCFDK2LZaV3Hmura6/VsO8N4EK+gMK4XQm+nfAPmw==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1649147797;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=8DjoZ6iN+ZHvNby1ojx7qIUJF9VuqAzgvC7aEtWptK4=;
+        b=LDsrdYBUzLZfj+9NJG4ovVgApTs3mUl6y9+m/98DeeldyKksNjI2BNj+taTrSFMinwjkPs
+        eidQzmW+JkYcqCAw==
+From:   "tip-bot2 for Yang Jihong" <tip-bot2@linutronix.de>
+Sender: tip-bot2@linutronix.de
+Reply-to: linux-kernel@vger.kernel.org
+To:     linux-tip-commits@vger.kernel.org
+Subject: [tip: perf/core] perf/x86: Unify format of events sysfs show
+Cc:     Yang Jihong <yangjihong1@huawei.com>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>, x86@kernel.org,
+        linux-kernel@vger.kernel.org
+In-Reply-To: <20220324031957.135595-1-yangjihong1@huawei.com>
+References: <20220324031957.135595-1-yangjihong1@huawei.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Message-ID: <164914779656.389.16359217733489178236.tip-bot2@tip-bot2>
+Robot-ID: <tip-bot2@linutronix.de>
+Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: David Engraf <david.engraf@sysgo.com>
+The following commit has been merged into the perf/core branch of tip:
 
-commit 0a32c88ddb9af30e8a16d41d7b9b824c27d29459 upstream.
+Commit-ID:     7bebfe9dd802b80abff5a43e00ab68d98893a22c
+Gitweb:        https://git.kernel.org/tip/7bebfe9dd802b80abff5a43e00ab68d98893a22c
+Author:        Yang Jihong <yangjihong1@huawei.com>
+AuthorDate:    Thu, 24 Mar 2022 11:19:57 +08:00
+Committer:     Peter Zijlstra <peterz@infradead.org>
+CommitterDate: Tue, 05 Apr 2022 10:24:39 +02:00
 
-Commit 6d502b6ba1b2 ("arm64: signal: nofpsimd: Handle fp/simd context for
-signal frames") introduced saving the fp/simd context for signal handling
-only when support is available. But setup_sigframe_layout() always
-reserves memory for fp/simd context. The additional memory is not touched
-because preserve_fpsimd_context() is not called and thus the magic is
-invalid.
+perf/x86: Unify format of events sysfs show
 
-This may lead to an error when parse_user_sigframe() checks the fp/simd
-area and does not find a valid magic number.
+Sysfs show formats of files in /sys/devices/cpu/events/ are not unified,
+some end with "\n", and some do not. Modify sysfs show format of events
+defined by EVENT_ATTR_STR to end with "\n".
 
-Signed-off-by: David Engraf <david.engraf@sysgo.com>
-Reviwed-by: Mark Brown <broonie@kernel.org>
-Fixes: 6d502b6ba1b267b3 ("arm64: signal: nofpsimd: Handle fp/simd context for signal frames")
-Cc: <stable@vger.kernel.org> # 5.6.x
-Reviewed-by: Catalin Marinas <catalin.marinas@arm.com>
-Link: https://lore.kernel.org/r/20220225104008.820289-1-david.engraf@sysgo.com
-Signed-off-by: Will Deacon <will@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Before:
+  $ ls /sys/devices/cpu/events/* | xargs -i sh -c 'echo -n "{}: "; cat -A {}; echo'
+  branch-instructions: event=0xc4$
+
+  branch-misses: event=0xc5$
+
+  bus-cycles: event=0x3c,umask=0x01$
+
+  cache-misses: event=0x2e,umask=0x41$
+
+  cache-references: event=0x2e,umask=0x4f$
+
+  cpu-cycles: event=0x3c$
+
+  instructions: event=0xc0$
+
+  ref-cycles: event=0x00,umask=0x03$
+
+  slots: event=0x00,umask=0x4
+  topdown-bad-spec: event=0x00,umask=0x81
+  topdown-be-bound: event=0x00,umask=0x83
+  topdown-fe-bound: event=0x00,umask=0x82
+  topdown-retiring: event=0x00,umask=0x80
+
+After:
+  $ ls /sys/devices/cpu/events/* | xargs -i sh -c 'echo -n "{}: "; cat -A {}; echo'
+  /sys/devices/cpu/events/branch-instructions: event=0xc4$
+
+  /sys/devices/cpu/events/branch-misses: event=0xc5$
+
+  /sys/devices/cpu/events/bus-cycles: event=0x3c,umask=0x01$
+
+  /sys/devices/cpu/events/cache-misses: event=0x2e,umask=0x41$
+
+  /sys/devices/cpu/events/cache-references: event=0x2e,umask=0x4f$
+
+  /sys/devices/cpu/events/cpu-cycles: event=0x3c$
+
+  /sys/devices/cpu/events/instructions: event=0xc0$
+
+  /sys/devices/cpu/events/ref-cycles: event=0x00,umask=0x03$
+
+  /sys/devices/cpu/events/slots: event=0x00,umask=0x4$
+
+Signed-off-by: Yang Jihong <yangjihong1@huawei.com>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Link: https://lkml.kernel.org/r/20220324031957.135595-1-yangjihong1@huawei.com
 ---
- arch/arm64/kernel/signal.c |   10 ++++++----
- 1 file changed, 6 insertions(+), 4 deletions(-)
+ arch/x86/events/core.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/arch/arm64/kernel/signal.c
-+++ b/arch/arm64/kernel/signal.c
-@@ -577,10 +577,12 @@ static int setup_sigframe_layout(struct
- {
- 	int err;
+diff --git a/arch/x86/events/core.c b/arch/x86/events/core.c
+index 54f992e..b08052b 100644
+--- a/arch/x86/events/core.c
++++ b/arch/x86/events/core.c
+@@ -1852,7 +1852,7 @@ ssize_t events_sysfs_show(struct device *dev, struct device_attribute *attr, cha
  
--	err = sigframe_alloc(user, &user->fpsimd_offset,
--			     sizeof(struct fpsimd_context));
--	if (err)
--		return err;
-+	if (system_supports_fpsimd()) {
-+		err = sigframe_alloc(user, &user->fpsimd_offset,
-+				     sizeof(struct fpsimd_context));
-+		if (err)
-+			return err;
-+	}
+ 	/* string trumps id */
+ 	if (pmu_attr->event_str)
+-		return sprintf(page, "%s", pmu_attr->event_str);
++		return sprintf(page, "%s\n", pmu_attr->event_str);
  
- 	/* fault information, if valid */
- 	if (add_all || current->thread.fault_code) {
-
-
+ 	return x86_pmu.events_sysfs_show(page, config);
+ }
