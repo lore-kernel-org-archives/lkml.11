@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 30770C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 95DE7C4167B
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 10:09:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353618AbiDEKIf (ORCPT
+        id S1353639AbiDEKIn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 06:08:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33774 "EHLO
+        Tue, 5 Apr 2022 06:08:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60898 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241001AbiDEIcn (ORCPT
+        with ESMTP id S241006AbiDEIcn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Apr 2022 04:32:43 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72978ADD5B;
-        Tue,  5 Apr 2022 01:25:49 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82927AFAE2;
+        Tue,  5 Apr 2022 01:25:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1905DB81BC0;
-        Tue,  5 Apr 2022 08:25:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5FB55C385A2;
-        Tue,  5 Apr 2022 08:25:46 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D870560FF7;
+        Tue,  5 Apr 2022 08:25:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EFC68C385A1;
+        Tue,  5 Apr 2022 08:25:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649147146;
-        bh=a6oPxCJzwFg+auaLybS3Cz5xCfoOmB6qPAWpGmmbt78=;
+        s=korg; t=1649147152;
+        bh=tKl8Rar6xGkNX+SNXpGptpyUaVGPaBj0bQ16qgQWdwk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=N91c7Y01IR6qkEH8JTZ947WX6iFcibstd+3E8wtrKu+kQlm6N21+UGFXIilNkjKRP
-         nLfXwQfcdEyeTL4cfC7iyVWLYFeuJ/MHKk5txlM1y8G1SkK5LF3/yawzCZyuGYFMnN
-         1oujSNWzwUk4t31bm9mg1tldin1TKIMj+JfCmapQ=
+        b=ORavolQsCDkkbMNOMxauUiG24WSoBinzUqnlBSYymlXvQe8t7TghPBF/UGzKxHmxc
+         YcSXNAaz6RB1lGhlhWudrC3fteXtpyqULzkgIbdos+UGsqw1HdXmqzTaHSOU9jooj8
+         ypnGIOHfpJg5eHHZAvjVn7GAEJWV2cQSi5Y6ie7k=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        syzbot+0d2b0bf32ca5cfd09f2e@syzkaller.appspotmail.com,
-        "Matthew Wilcox (Oracle)" <willy@infradead.org>
-Subject: [PATCH 5.17 1019/1126] XArray: Fix xas_create_range() when multi-order entry present
-Date:   Tue,  5 Apr 2022 09:29:26 +0200
-Message-Id: <20220405070437.395747905@linuxfoundation.org>
+        stable@vger.kernel.org, David Woodhouse <dwmw2@infradead.org>,
+        Paolo Bonzini <pbonzini@redhat.com>
+Subject: [PATCH 5.17 1003/1126] KVM: avoid double put_page with gfn-to-pfn cache
+Date:   Tue,  5 Apr 2022 09:29:10 +0200
+Message-Id: <20220405070436.931601245@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -50,85 +49,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Matthew Wilcox (Oracle) <willy@infradead.org>
+From: David Woodhouse <dwmw@amazon.co.uk>
 
-commit 3e3c658055c002900982513e289398a1aad4a488 upstream.
+commit 79593c086eb95eb2886f36ee6f78a1d6845e1bdf upstream.
 
-If there is already an entry present that is of order >= XA_CHUNK_SHIFT
-when we call xas_create_range(), xas_create_range() will misinterpret
-that entry as a node and dereference xa_node->parent, generally leading
-to a crash that looks something like this:
+If the cache's user host virtual address becomes invalid, there
+is still a path from kvm_gfn_to_pfn_cache_refresh() where __release_gpc()
+could release the pfn but the gpc->pfn field has not been overwritten
+with an error value.  If this happens, kvm_gfn_to_pfn_cache_unmap will
+call put_page again on the same page.
 
-general protection fault, probably for non-canonical address 0xdffffc0000000001:
-0000 [#1] PREEMPT SMP KASAN
-KASAN: null-ptr-deref in range [0x0000000000000008-0x000000000000000f]
-CPU: 0 PID: 32 Comm: khugepaged Not tainted 5.17.0-rc8-syzkaller-00003-g56e337f2cf13 #0
-RIP: 0010:xa_parent_locked include/linux/xarray.h:1207 [inline]
-RIP: 0010:xas_create_range+0x2d9/0x6e0 lib/xarray.c:725
-
-It's deterministically reproducable once you know what the problem is,
-but producing it in a live kernel requires khugepaged to hit a race.
-While the problem has been present since xas_create_range() was
-introduced, I'm not aware of a way to hit it before the page cache was
-converted to use multi-index entries.
-
-Fixes: 6b24ca4a1a8d ("mm: Use multi-index entries in the page cache")
-Reported-by: syzbot+0d2b0bf32ca5cfd09f2e@syzkaller.appspotmail.com
-Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
+Cc: stable@vger.kernel.org
+Fixes: 982ed0de4753 ("KVM: Reinstate gfn_to_pfn_cache with invalidation support")
+Signed-off-by: David Woodhouse <dwmw2@infradead.org>
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- lib/test_xarray.c |   22 ++++++++++++++++++++++
- lib/xarray.c      |    2 ++
- 2 files changed, 24 insertions(+)
+ virt/kvm/pfncache.c |    1 +
+ 1 file changed, 1 insertion(+)
 
---- a/lib/test_xarray.c
-+++ b/lib/test_xarray.c
-@@ -1463,6 +1463,25 @@ unlock:
- 	XA_BUG_ON(xa, !xa_empty(xa));
- }
+--- a/virt/kvm/pfncache.c
++++ b/virt/kvm/pfncache.c
+@@ -191,6 +191,7 @@ int kvm_gfn_to_pfn_cache_refresh(struct
+ 		gpc->uhva = gfn_to_hva_memslot(gpc->memslot, gfn);
  
-+static noinline void check_create_range_5(struct xarray *xa,
-+		unsigned long index, unsigned int order)
-+{
-+	XA_STATE_ORDER(xas, xa, index, order);
-+	unsigned int i;
-+
-+	xa_store_order(xa, index, order, xa_mk_index(index), GFP_KERNEL);
-+
-+	for (i = 0; i < order + 10; i++) {
-+		do {
-+			xas_lock(&xas);
-+			xas_create_range(&xas);
-+			xas_unlock(&xas);
-+		} while (xas_nomem(&xas, GFP_KERNEL));
-+	}
-+
-+	xa_destroy(xa);
-+}
-+
- static noinline void check_create_range(struct xarray *xa)
- {
- 	unsigned int order;
-@@ -1490,6 +1509,9 @@ static noinline void check_create_range(
- 		check_create_range_4(xa, (3U << order) + 1, order);
- 		check_create_range_4(xa, (3U << order) - 1, order);
- 		check_create_range_4(xa, (1U << 24) + 1, order);
-+
-+		check_create_range_5(xa, 0, order);
-+		check_create_range_5(xa, (1U << order), order);
- 	}
- 
- 	check_create_range_3();
---- a/lib/xarray.c
-+++ b/lib/xarray.c
-@@ -722,6 +722,8 @@ void xas_create_range(struct xa_state *x
- 
- 		for (;;) {
- 			struct xa_node *node = xas->xa_node;
-+			if (node->shift >= shift)
-+				break;
- 			xas->xa_node = xa_parent_locked(xas->xa, node);
- 			xas->xa_offset = node->offset - 1;
- 			if (node->offset != 0)
+ 		if (kvm_is_error_hva(gpc->uhva)) {
++			gpc->pfn = KVM_PFN_ERR_FAULT;
+ 			ret = -EFAULT;
+ 			goto out;
+ 		}
 
 
