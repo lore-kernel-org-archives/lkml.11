@@ -2,113 +2,63 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5BF40C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4CC36C433F5
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 22:55:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1457658AbiDEWrg (ORCPT
+        id S1457483AbiDEWr0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 18:47:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50058 "EHLO
+        Tue, 5 Apr 2022 18:47:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55482 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1392396AbiDENuA (ORCPT
+        with ESMTP id S1383154AbiDEMY5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 09:50:00 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 647D4111DE0;
-        Tue,  5 Apr 2022 05:53:19 -0700 (PDT)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id 20B38210EA;
-        Tue,  5 Apr 2022 12:53:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-        t=1649163198; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=c+8JIbtU2VTfD3OB4UfbP2nnduY9ZA25ajUu+eR70tM=;
-        b=YTWrWfAcdU5QcjE6lulkWjCsTBTep/SuRYlr+tHQARg72bM+fmj48GXRX8RqPqQ0AH2Ex5
-        YAVK2HABdDNMB+iIz4izzLpDczxEpm3We98tOjDMbZwhfiXXoEIvUcL6VkdRWk/5/QXhmT
-        KHItmkSzhkX5DcAO1h6pPVfm3Cuy+rk=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-        s=susede2_ed25519; t=1649163198;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=c+8JIbtU2VTfD3OB4UfbP2nnduY9ZA25ajUu+eR70tM=;
-        b=6Wc5+MK80zA6TtAq26/8yfzUsCj8Zxzq51GCFD0OgFwuVLDgZ9mtvKIQ14eXRgnnG8FQu1
-        vxC3AaEdNQe276Dw==
-Received: from murzim.suse.de (murzim.suse.de [10.160.4.192])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 17D7FA3BB0;
-        Tue,  5 Apr 2022 12:53:18 +0000 (UTC)
-Date:   Tue, 5 Apr 2022 14:53:18 +0200 (CEST)
-From:   Richard Biener <rguenther@suse.de>
-To:     Michael Matz <matz@suse.de>
-cc:     Peter Zijlstra <peterz@infradead.org>,
-        Borislav Petkov <bp@alien8.de>,
-        linux-toolchains@vger.kernel.org,
-        lkml <linux-kernel@vger.kernel.org>
-Subject: Re: older gccs and case labels producing integer constants
-In-Reply-To: <alpine.LSU.2.20.2204051232101.963@wotan.suse.de>
-Message-ID: <79p0n5po-1377-4q33-3599-6129o38p96p@fhfr.qr>
-References: <YkwQ6+tIH8GQpuct@zn.tnic> <Ykw0wzdab0ICUFvy@hirez.programming.kicks-ass.net> <alpine.LSU.2.20.2204051232101.963@wotan.suse.de>
+        Tue, 5 Apr 2022 08:24:57 -0400
+Received: from angie.orcam.me.uk (angie.orcam.me.uk [IPv6:2001:4190:8020::34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 63D48DA08A;
+        Tue,  5 Apr 2022 04:31:59 -0700 (PDT)
+Received: by angie.orcam.me.uk (Postfix, from userid 500)
+        id 751C49200BB; Tue,  5 Apr 2022 13:31:58 +0200 (CEST)
+Received: from localhost (localhost [127.0.0.1])
+        by angie.orcam.me.uk (Postfix) with ESMTP id 7075E9200B4;
+        Tue,  5 Apr 2022 12:31:58 +0100 (BST)
+Date:   Tue, 5 Apr 2022 12:31:58 +0100 (BST)
+From:   "Maciej W. Rozycki" <macro@orcam.me.uk>
+To:     Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+cc:     Andrew Powers-Holmes <aholmes@omnom.net>,
+        yaliang.wang@windriver.com, rppt@kernel.org, huangpei@loongson.cn,
+        Andrew Morton <akpm@linux-foundation.org>, kumba@gentoo.org,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        anshuman.khandual@arm.com, penberg@kernel.org,
+        linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Greg KH <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH] MIPS: pgalloc: fix memory leak caused by pgd_free()
+In-Reply-To: <20220405104506.GA17085@alpha.franken.de>
+Message-ID: <alpine.DEB.2.21.2204051224560.47162@angie.orcam.me.uk>
+References: <20220310113116.2068859-1-yaliang.wang@windriver.com> <alpine.DEB.2.21.2204021446370.47162@angie.orcam.me.uk> <9cc88b1c-8a8c-95ea-2cf7-31be3b771495@omnom.net> <alpine.DEB.2.21.2204031122020.47162@angie.orcam.me.uk> <b273a9b7-82f7-5883-14d2-973dd005b005@omnom.net>
+ <alpine.DEB.2.21.2204051027490.47162@angie.orcam.me.uk> <20220405104506.GA17085@alpha.franken.de>
+User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="-1609908220-1478233879-1649163198=:27745"
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
+On Tue, 5 Apr 2022, Thomas Bogendoerfer wrote:
 
----1609908220-1478233879-1649163198=:27745
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8BIT
-
-On Tue, 5 Apr 2022, Michael Matz wrote:
-
-> Hey,
+> >  NB I think it has to be backported to all the stable branches made since 
+> > the original breakage; i.e. v5.9+ (I haven't kept track of what they are).
 > 
-> On Tue, 5 Apr 2022, Peter Zijlstra wrote:
-> 
-> > > sound/usb/midi.c: In function ‘snd_usbmidi_out_endpoint_create’:
-> > > sound/usb/midi.c:1389:2: error: case label does not reduce to an integer constant
-> > >   case (((0xfc08) << 16) | (0x0101)):
-> > >   ^~~~
-> > 
-> > IIRC GCC-8 fixed a bunch of -wrapv issues. Could be this is one of them 
-> > I suppose.
-> 
-> Or better said, later GCCs returned back to the old behaviour of rejecting 
-> this only with -pedantic even in the presence of -fsanitize.
+> the fix has a Fixes tag so it will usually ported to stable/longterm kernels.
+> I already saw it in Greg's patch bombs.
 
-Only that it doesn't:
+ Hmm, not all fixes qualify for or indeed are worth backporting and I'd 
+expect those that have no stable annotation to remain on trunk only.  I 
+have been following this principle with my submissions anyway.
 
-#define USB_ID(v,p) (((v)<<16)|(p))
-void foo (unsigned int *i)
-{
-  switch (*i)
-    {
-      case USB_ID(0xfc08, 0x0101):;
-    }
-}
+ Indeed I can see a backport to 5.17 has literally just been posted in 
+this humongous patch set, but in this case I suspect Greg has just picked 
+this up by hand (thanks, Greg!) having seen this discussion (though how he 
+manages to escape alive through the flood of messages has been astonishing 
+me).
 
-> gcc-11 -S t.c -std=c99 -fsanitize=shift
-t.c: In function 'foo':
-t.c:6:7: error: case label does not reduce to an integer constant
-    6 |       case USB_ID(0xfc08, 0x0101):;
-      |       ^~~~
-
-for some reason it might fail to sanitize the case label for the
-full testcase but clearly it doesn't so on purpose.
-
-> But 
-> pedantically speaking (ahem!) it really isn't conforming c99 (which the 
-> compilation flags claim) , and in this case it seems easy enough to make 
-> the construct actually be conforming in the kernel sources, so that should 
-> perhaps be done?
-
-Indeed.  Simply cast vendor/product to (unsigned) in the USB_ID
-macro to avoid arithmetic shifts.
-
-Richard.
----1609908220-1478233879-1649163198=:27745--
+  Maciej
