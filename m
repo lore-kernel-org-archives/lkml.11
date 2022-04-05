@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 548B3C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 03:23:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 36317C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 03:23:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2359830AbiDFDWR (ORCPT
+        id S2359846AbiDFDWm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 23:22:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55278 "EHLO
+        Tue, 5 Apr 2022 23:22:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35328 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1847174AbiDFCQe (ORCPT
+        with ESMTP id S1847206AbiDFCQn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 22:16:34 -0400
+        Tue, 5 Apr 2022 22:16:43 -0400
 Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 926361B48D1
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 16:35:31 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5CBD1B48CA
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 16:35:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649201734; x=1680737734;
+  t=1649201736; x=1680737736;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=GHYrYBXq4mhEggBJYnudRifuMOiXqJTa+EAqZsyg7d0=;
-  b=GnDB4XGuSDpmJozGXXPsbnihod8lgl4iueVHRYq5C+45qTxTYo6vHCS7
-   KqtZxZDPy3/1P8RW0bXo+kTflJDzL7lEALPegtKH5jbquyvPvIZKxV4hR
-   h6ULIvtThu5jRsBENynFfoQoi73kACQ9KvBPozsU/IkyvMHKShJ4op7LP
-   vVyGAuT+hy/eeWuk0erpNdPrttSyV7Ve41Aj8/JlZju8hXyq0KZyS4kFz
-   8s7UQ1duQkG6SLvVu/8StuKEWVDqZOlKo4uwA7R6n/sZ0O7pkb81szQgS
-   2hIbeixmFS19XE3TjTx49TQq7neJI1MKlvyfUy42rm/TueK2b8J9WQiaj
+  bh=iMjmhXF7TyNrDRjX7+po9TXOKE+naiNFeJL93VUoeXw=;
+  b=eGkssFXWuURIqRfdIbkt348bjXMM4VfOG98D+UfM12MXCvGRAfvSuhp+
+   bGsWzQ3QlYdpR01MQ670r+N7IhKqdcs7a/e2bsjPGN4Rix6oUEDgj5BYY
+   kYvyImSuNNUgW4WEVDR9r8fAqXu2N8w4ZdQpIjeWgiyGy3U+bpymCH0SX
+   eJ6uw1DWKlbxCiddUBw21M/WcsBbIv+zhcpuj14cMOrsMONXdwD6i0YwI
+   sSLOJxUzoJ4gVpLd8l3+1b6X0qqROzmVvgZmGK70sKxdcYcRcQjJnorP+
+   S2CZNOmhX4qQIlWfyf8wsdeofr3g4VQ4XPL11oC3T9UiC+zwai6CUe5Na
    A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10308"; a="259721501"
+X-IronPort-AV: E=McAfee;i="6200,9189,10308"; a="259721580"
 X-IronPort-AV: E=Sophos;i="5.90,238,1643702400"; 
-   d="scan'208";a="259721501"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2022 16:34:49 -0700
+   d="scan'208";a="259721580"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2022 16:34:56 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.90,238,1643702400"; 
-   d="scan'208";a="556719067"
+   d="scan'208";a="549273523"
 Received: from black.fi.intel.com ([10.237.72.28])
-  by fmsmga007.fm.intel.com with ESMTP; 05 Apr 2022 16:34:42 -0700
+  by orsmga007.jf.intel.com with ESMTP; 05 Apr 2022 16:34:49 -0700
 Received: by black.fi.intel.com (Postfix, from userid 1000)
-        id 296EC8FD; Wed,  6 Apr 2022 02:29:46 +0300 (EEST)
+        id E046E105F; Wed,  6 Apr 2022 02:29:46 +0300 (EEST)
 From:   "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
 To:     tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
         dave.hansen@intel.com, luto@kernel.org, peterz@infradead.org
@@ -54,9 +54,9 @@ Cc:     sathyanarayanan.kuppuswamy@linux.intel.com, aarcange@redhat.com,
         linux-kernel@vger.kernel.org,
         "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
         Dave Hansen <dave.hansen@linux.intel.com>
-Subject: [PATCHv8 13/30] x86: Adjust types used in port I/O helpers
-Date:   Wed,  6 Apr 2022 02:29:22 +0300
-Message-Id: <20220405232939.73860-14-kirill.shutemov@linux.intel.com>
+Subject: [PATCHv8 27/30] x86/mm: Make DMA memory shared for TD guest
+Date:   Wed,  6 Apr 2022 02:29:36 +0300
+Message-Id: <20220405232939.73860-28-kirill.shutemov@linux.intel.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405232939.73860-1-kirill.shutemov@linux.intel.com>
 References: <20220405232939.73860-1-kirill.shutemov@linux.intel.com>
@@ -66,95 +66,113 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Change port I/O helpers to use u8/u16/u32 instead of unsigned
-char/short/int for values. Use u16 instead of int for port number.
+Intel TDX doesn't allow VMM to directly access guest private memory.
+Any memory that is required for communication with the VMM must be
+shared explicitly. The same rule applies for any DMA to and from the
+TDX guest. All DMA pages have to be marked as shared pages. A generic way
+to achieve this without any changes to device drivers is to use the
+SWIOTLB framework.
 
-It aligns the helpers with implementation in boot stub in preparation
-for consolidation.
+The previous patch ("Add support for TDX shared memory") gave TDX guests
+the _ability_ to make some pages shared, but did not make any pages
+shared. This actually marks SWIOTLB buffers *as* shared.
 
+Start returning true for cc_platform_has(CC_ATTR_GUEST_MEM_ENCRYPT) in
+TDX guests.  This has several implications:
+
+ - Allows the existing mem_encrypt_init() to be used for TDX which
+   sets SWIOTLB buffers shared (aka. "decrypted").
+ - Ensures that all DMA is routed via the SWIOTLB mechanism (see
+   pci_swiotlb_detect())
+
+Stop selecting DYNAMIC_PHYSICAL_MASK directly. It will get set
+indirectly by selecting X86_MEM_ENCRYPT.
+
+mem_encrypt_init() is currently under an AMD-specific #ifdef. Move it to
+a generic area of the header.
+
+Co-developed-by: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
+Signed-off-by: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
+Reviewed-by: Andi Kleen <ak@linux.intel.com>
+Reviewed-by: Tony Luck <tony.luck@intel.com>
 Signed-off-by: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
 Reviewed-by: Dave Hansen <dave.hansen@linux.intel.com>
-Reviewed-by: Thomas Gleixner <tglx@linutronix.de>
 ---
- arch/x86/include/asm/io.h | 26 +++++++++++++-------------
- 1 file changed, 13 insertions(+), 13 deletions(-)
+ arch/x86/Kconfig                   | 2 +-
+ arch/x86/coco/core.c               | 1 +
+ arch/x86/include/asm/mem_encrypt.h | 6 +++---
+ arch/x86/mm/mem_encrypt.c          | 9 ++++++++-
+ 4 files changed, 13 insertions(+), 5 deletions(-)
 
-diff --git a/arch/x86/include/asm/io.h b/arch/x86/include/asm/io.h
-index f6d91ecb8026..638c1a2a82e0 100644
---- a/arch/x86/include/asm/io.h
-+++ b/arch/x86/include/asm/io.h
-@@ -258,37 +258,37 @@ static inline void slow_down_io(void)
- #endif
+diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
+index a18185525708..7021ec725dd3 100644
+--- a/arch/x86/Kconfig
++++ b/arch/x86/Kconfig
+@@ -883,7 +883,7 @@ config INTEL_TDX_GUEST
+ 	depends on X86_64 && CPU_SUP_INTEL
+ 	depends on X86_X2APIC
+ 	select ARCH_HAS_CC_PLATFORM
+-	select DYNAMIC_PHYSICAL_MASK
++	select X86_MEM_ENCRYPT
+ 	select X86_MCE
+ 	help
+ 	  Support running as a guest under Intel TDX.  Without this support,
+diff --git a/arch/x86/coco/core.c b/arch/x86/coco/core.c
+index 9f74125c582d..4320fadae716 100644
+--- a/arch/x86/coco/core.c
++++ b/arch/x86/coco/core.c
+@@ -22,6 +22,7 @@ static bool intel_cc_platform_has(enum cc_attr attr)
+ 	case CC_ATTR_GUEST_UNROLL_STRING_IO:
+ 	case CC_ATTR_HOTPLUG_DISABLED:
+ 	case CC_ATTR_GUEST_MEM_ENCRYPT:
++	case CC_ATTR_MEM_ENCRYPT:
+ 		return true;
+ 	default:
+ 		return false;
+diff --git a/arch/x86/include/asm/mem_encrypt.h b/arch/x86/include/asm/mem_encrypt.h
+index e2c6f433ed10..88ceaf3648b3 100644
+--- a/arch/x86/include/asm/mem_encrypt.h
++++ b/arch/x86/include/asm/mem_encrypt.h
+@@ -49,9 +49,6 @@ void __init early_set_mem_enc_dec_hypercall(unsigned long vaddr, int npages,
  
- #define BUILDIO(bwl, bw, type)						\
--static inline void out##bwl(unsigned type value, int port)		\
-+static inline void out##bwl(type value, u16 port)			\
- {									\
- 	asm volatile("out" #bwl " %" #bw "0, %w1"			\
- 		     : : "a"(value), "Nd"(port));			\
- }									\
- 									\
--static inline unsigned type in##bwl(int port)				\
-+static inline type in##bwl(u16 port)					\
- {									\
--	unsigned type value;						\
-+	type value;							\
- 	asm volatile("in" #bwl " %w1, %" #bw "0"			\
- 		     : "=a"(value) : "Nd"(port));			\
- 	return value;							\
- }									\
- 									\
--static inline void out##bwl##_p(unsigned type value, int port)		\
-+static inline void out##bwl##_p(type value, u16 port)			\
- {									\
- 	out##bwl(value, port);						\
- 	slow_down_io();							\
- }									\
- 									\
--static inline unsigned type in##bwl##_p(int port)			\
-+static inline type in##bwl##_p(u16 port)				\
- {									\
--	unsigned type value = in##bwl(port);				\
-+	type value = in##bwl(port);					\
- 	slow_down_io();							\
- 	return value;							\
- }									\
- 									\
--static inline void outs##bwl(int port, const void *addr, unsigned long count) \
-+static inline void outs##bwl(u16 port, const void *addr, unsigned long count) \
- {									\
- 	if (cc_platform_has(CC_ATTR_GUEST_UNROLL_STRING_IO)) {		\
--		unsigned type *value = (unsigned type *)addr;		\
-+		type *value = (type *)addr;				\
- 		while (count) {						\
- 			out##bwl(*value, port);				\
- 			value++;					\
-@@ -301,10 +301,10 @@ static inline void outs##bwl(int port, const void *addr, unsigned long count) \
- 	}								\
- }									\
- 									\
--static inline void ins##bwl(int port, void *addr, unsigned long count)	\
-+static inline void ins##bwl(u16 port, void *addr, unsigned long count)	\
- {									\
- 	if (cc_platform_has(CC_ATTR_GUEST_UNROLL_STRING_IO)) {		\
--		unsigned type *value = (unsigned type *)addr;		\
-+		type *value = (type *)addr;				\
- 		while (count) {						\
- 			*value = in##bwl(port);				\
- 			value++;					\
-@@ -317,9 +317,9 @@ static inline void ins##bwl(int port, void *addr, unsigned long count)	\
- 	}								\
- }
+ void __init mem_encrypt_free_decrypted_mem(void);
  
--BUILDIO(b, b, char)
--BUILDIO(w, w, short)
--BUILDIO(l, , int)
-+BUILDIO(b, b, u8)
-+BUILDIO(w, w, u16)
-+BUILDIO(l,  , u32)
+-/* Architecture __weak replacement functions */
+-void __init mem_encrypt_init(void);
+-
+ void __init sev_es_init_vc_handling(void);
  
- #define inb inb
- #define inw inw
+ #define __bss_decrypted __section(".bss..decrypted")
+@@ -89,6 +86,9 @@ static inline void mem_encrypt_free_decrypted_mem(void) { }
+ 
+ #endif	/* CONFIG_AMD_MEM_ENCRYPT */
+ 
++/* Architecture __weak replacement functions */
++void __init mem_encrypt_init(void);
++
+ /*
+  * The __sme_pa() and __sme_pa_nodebug() macros are meant for use when
+  * writing to or comparing values from the cr3 register.  Having the
+diff --git a/arch/x86/mm/mem_encrypt.c b/arch/x86/mm/mem_encrypt.c
+index 50d209939c66..10ee40b5204b 100644
+--- a/arch/x86/mm/mem_encrypt.c
++++ b/arch/x86/mm/mem_encrypt.c
+@@ -42,7 +42,14 @@ bool force_dma_unencrypted(struct device *dev)
+ 
+ static void print_mem_encrypt_feature_info(void)
+ {
+-	pr_info("AMD Memory Encryption Features active:");
++	pr_info("Memory Encryption Features active:");
++
++	if (cpu_feature_enabled(X86_FEATURE_TDX_GUEST)) {
++		pr_cont(" Intel TDX\n");
++		return;
++	}
++
++	pr_cont("AMD ");
+ 
+ 	/* Secure Memory Encryption */
+ 	if (cc_platform_has(CC_ATTR_HOST_MEM_ENCRYPT)) {
 -- 
 2.35.1
 
