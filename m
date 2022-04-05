@@ -2,101 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E6EDC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 21:54:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C101C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 21:57:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1388710AbiDEVzh (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 17:55:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58664 "EHLO
+        id S229786AbiDEVzv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 17:55:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43024 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355851AbiDELz0 (ORCPT
+        with ESMTP id S1354719AbiDENH2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 07:55:26 -0400
-Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83452BE3A;
-        Tue,  5 Apr 2022 04:13:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1649157200; x=1680693200;
-  h=from:to:cc:subject:date:message-id:mime-version;
-  bh=UfvDUirZ31incoBK4XWnFyO5O6xgVwlxm+ujZ3qu9As=;
-  b=gDeN79jgujjNHn7X0jXIDyHalPQuhO+SV93Yb+tGVPfW2dHW55/YwIIR
-   HvdHd8fSc8alhc6s+TvYu7lFwHLjhJE6Szp0J2THCgNRVFCf2YVC/SUJA
-   RTLKR+NvNSIXE3bjPJ8oDqRO6qX1loER/GaPap2YzdyqcVPX3gqxO1kiO
-   E=;
-Received: from unknown (HELO ironmsg02-sd.qualcomm.com) ([10.53.140.142])
-  by alexa-out-sd-02.qualcomm.com with ESMTP; 05 Apr 2022 04:13:20 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg02-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2022 04:13:04 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Tue, 5 Apr 2022 04:13:04 -0700
-Received: from hu-srivasam-hyd.qualcomm.com (10.80.80.8) by
- nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Tue, 5 Apr 2022 04:13:00 -0700
-From:   Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
-To:     <agross@kernel.org>, <bjorn.andersson@linaro.org>,
-        <robh+dt@kernel.org>, <linux-arm-msm@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <quic_rohitkr@quicinc.com>, <srinivas.kandagatla@linaro.org>,
-        <dianders@chromium.org>, <swboyd@chromium.org>,
-        <judyhsiao@chromium.org>
-CC:     Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
-Subject: [PATCH v6 0/2] Add lpass pin control support for audio on sc7280 based targets
-Date:   Tue, 5 Apr 2022 16:42:45 +0530
-Message-ID: <1649157167-29106-1-git-send-email-quic_srivasam@quicinc.com>
-X-Mailer: git-send-email 2.7.4
+        Tue, 5 Apr 2022 09:07:28 -0400
+Received: from ssl.serverraum.org (ssl.serverraum.org [176.9.125.105])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B53523168;
+        Tue,  5 Apr 2022 05:09:59 -0700 (PDT)
+Received: from mwalle01.kontron.local. (unknown [213.135.10.150])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by ssl.serverraum.org (Postfix) with ESMTPSA id 6862122249;
+        Tue,  5 Apr 2022 14:09:57 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
+        t=1649160597;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=p7la0KOeEOAysVBijkaFTCkW3yqx5mQnMD3fZ7uHfuI=;
+        b=Xm1ftZagfg7DLK0rvHGkDSHaDN+b4oWWx/v6NA93MNQVtCI99qnP+321I8bYQVe9h5qJG2
+        Lv8i+AxwwSew01k/OSou8MVw41i+jDofX1P/ZjGF7EaWNTBVB8uyl9KswtPYS1E6w4SAJY
+        66EvyEMJX/5aVVGmyqYX9jj13NDquV8=
+From:   Michael Walle <michael@walle.cc>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>
+Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Michael Walle <michael@walle.cc>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Subject: [PATCH net-next v3 2/3] dt-bindings: net: mscc-miim: add clock and clock-frequency
+Date:   Tue,  5 Apr 2022 14:09:50 +0200
+Message-Id: <20220405120951.4044875-3-michael@walle.cc>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220405120951.4044875-1-michael@walle.cc>
+References: <20220405120951.4044875-1-michael@walle.cc>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patch set is to add lpass pin control support for Audio over I2S,
-wcd codec and digital mics.
-This patch set depends on:
-	-- Lpass-lpi pinctrl patches [https://patchwork.kernel.org/project/alsa-devel/list/?series=623951&archive=both&state=*]
+Add the (optional) clock input of the MDIO controller and indicate that
+the common clock-frequency property is supported. The driver can use it
+to set the desired MDIO bus frequency.
 
-Changes Since V5:
-    -- Remove redundant function property in amp_en node.
-    -- Move board specific properties of lpass pin control node to board specific file.
-    -- Remove redundant properties in pin control nodes.
-    -- Move wcd938x codec reset and CTIA/OMTP pin control patches to other series.
-Changes Since V4:
-    -- Add primary and secondary I2S pinmux nodes for herobrine specific targets.
-Changes Since V3:
-    -- Add pinctrl nodes for wcd codec reset and CTIA/OMTP headset selection.
-Changes Since V2:
-    -- Move lpass pin control node to main dtsi file.
-    -- Sort nodes alphabetically.
-    -- Remove redundant wcd reset gpio nodes.
-    -- Remove redundant input-enable field in dmic pin control nodes.
-    -- Update amp_en node. 
-    -- Fix typo errors.
-    -- Modify node names.
-    -- Create patches on latest kernel.    
-Changes Since V1:
-    -- Merge pinmux and pinconf properties in amp_en and wcd pin reset node.
-    -- Split common i2s pin control nodes to functionality specific nodes.
-    -- Move board specific properties to board specific dtsi file.
-    -- Update dmic pin control node name.
+Signed-off-by: Michael Walle <michael@walle.cc>
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+---
+ Documentation/devicetree/bindings/net/mscc,miim.yaml | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-Srinivasa Rao Mandadapu (2):
-  arm64: dts: qcom: sc7280: Add pinmux for I2S speaker and Headset
-  arm64: dts: qcom: sc7280: add lpass lpi pin controller node
-
- arch/arm64/boot/dts/qcom/sc7280-herobrine.dtsi |  34 ++++++
- arch/arm64/boot/dts/qcom/sc7280-idp.dtsi       | 118 ++++++++++++++++++++
- arch/arm64/boot/dts/qcom/sc7280.dtsi           | 148 +++++++++++++++++++++++++
- 3 files changed, 300 insertions(+)
-
+diff --git a/Documentation/devicetree/bindings/net/mscc,miim.yaml b/Documentation/devicetree/bindings/net/mscc,miim.yaml
+index cdc39aa20683..2c451cfa4e0b 100644
+--- a/Documentation/devicetree/bindings/net/mscc,miim.yaml
++++ b/Documentation/devicetree/bindings/net/mscc,miim.yaml
+@@ -33,6 +33,11 @@ properties:
+   interrupts:
+     maxItems: 1
+ 
++  clocks:
++    maxItems: 1
++
++  clock-frequency: true
++
+ required:
+   - compatible
+   - reg
 -- 
-2.7.4
+2.30.2
 
