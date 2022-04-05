@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 92A4AC433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A8F34C433EF
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:42:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355107AbiDEXVd (ORCPT
+        id S1442964AbiDEXV6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 19:21:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36676 "EHLO
+        Tue, 5 Apr 2022 19:21:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52134 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354472AbiDEKOU (ORCPT
+        with ESMTP id S1357567AbiDEK0f (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:14:20 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C7A76A424;
-        Tue,  5 Apr 2022 03:00:33 -0700 (PDT)
+        Tue, 5 Apr 2022 06:26:35 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6410CF3;
+        Tue,  5 Apr 2022 03:10:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2BA2AB818F6;
-        Tue,  5 Apr 2022 10:00:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 79F98C385A1;
-        Tue,  5 Apr 2022 10:00:30 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5E638B81C89;
+        Tue,  5 Apr 2022 10:10:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A12FBC385A0;
+        Tue,  5 Apr 2022 10:10:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649152830;
-        bh=57Bn+WXxIZqFBjJU2aM3gx6DzG/2oNf6AgrznRSIjW4=;
+        s=korg; t=1649153422;
+        bh=fYNDHQIB3VWV6wB44zPrEUAyOUFk0YFODxvUTevPJjg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=MujUOygyI9DRrC1kdu3uuqhOxW4n788DYrjJjEOzuwTmgispIoHBhQXivbwKqg6QV
-         NUtLJiQ+vrGcnsDs23+kcK4QYvl2HIWub2CaHMg0K2HLMgovBZti6P1rdHLx0o6TNX
-         0GunaTadQqaWYgWj375Tush3k1LeiIphYwz2r7O4=
+        b=Ox+tkfBe/b2k3SjHskBUgxwjCKUURwB9vkYCHyWkwOJt59DWSozWTB55Vqbmbf4eI
+         LspqUnsLVjPSc+wZfY5B3Xz6BVEwl951hXOB5xqOpCUB7XXoltwA1aX5WFnf2MSVGF
+         yLDSOlVS6kcthi9gubestgUQt+JPw3+nSwc9E8K8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jann Horn <jannh@google.com>,
-        Kees Cook <keescook@chromium.org>,
-        "Eric W. Biederman" <ebiederm@xmission.com>
-Subject: [PATCH 5.15 911/913] coredump: Remove the WARN_ON in dump_vma_snapshot
-Date:   Tue,  5 Apr 2022 09:32:53 +0200
-Message-Id: <20220405070407.126814127@linuxfoundation.org>
+        stable@vger.kernel.org, Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 218/599] media: cedrus: H265: Fix neighbour info buffer size
+Date:   Tue,  5 Apr 2022 09:28:32 +0200
+Message-Id: <20220405070305.330830619@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
+References: <20220405070258.802373272@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,41 +50,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric W. Biederman <ebiederm@xmission.com>
+From: Jernej Skrabec <jernej.skrabec@gmail.com>
 
-commit 49c1866348f364478a0c4d3dd13fd08bb82d3a5b upstream.
+[ Upstream commit ee8b887329c78971967506f3ac79b9302c9f83c1 ]
 
-The condition is impossible and to the best of my knowledge has never
-triggered.
+Neighbour info buffer size needs to be 794 kiB in H6. This is actually
+already indirectly mentioned in the comment, but smaller size is used
+nevertheless.
 
-We are in deep trouble if that conditions happens and we walk past
-the end of our allocated array.
+Increase buffer size to cover H6 needs. Since increase is not that big
+in absolute numbers, it doesn't make sense to complicate logic for older
+generations.
 
-So delete the WARN_ON and the code that makes it look like the kernel
-can handle the case of walking past the end of it's vma_meta array.
+Bug was discovered using iommu, which reported access error when trying
+to play H265 video.
 
-Reviewed-by: Jann Horn <jannh@google.com>
-Reviewed-by: Kees Cook <keescook@chromium.org>
-Signed-off-by: "Eric W. Biederman" <ebiederm@xmission.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 86caab29da78 ("media: cedrus: Add HEVC/H.265 decoding support")
+Signed-off-by: Jernej Skrabec <jernej.skrabec@gmail.com>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/coredump.c |    6 ------
- 1 file changed, 6 deletions(-)
+ drivers/staging/media/sunxi/cedrus/cedrus_h265.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/fs/coredump.c
-+++ b/fs/coredump.c
-@@ -1151,12 +1151,6 @@ static bool dump_vma_snapshot(struct cor
+diff --git a/drivers/staging/media/sunxi/cedrus/cedrus_h265.c b/drivers/staging/media/sunxi/cedrus/cedrus_h265.c
+index 10744fab7cea..368439cf5e17 100644
+--- a/drivers/staging/media/sunxi/cedrus/cedrus_h265.c
++++ b/drivers/staging/media/sunxi/cedrus/cedrus_h265.c
+@@ -23,7 +23,7 @@
+  * Subsequent BSP implementations seem to double the neighbor info buffer size
+  * for the H6 SoC, which may be related to 10 bit H265 support.
+  */
+-#define CEDRUS_H265_NEIGHBOR_INFO_BUF_SIZE	(397 * SZ_1K)
++#define CEDRUS_H265_NEIGHBOR_INFO_BUF_SIZE	(794 * SZ_1K)
+ #define CEDRUS_H265_ENTRY_POINTS_BUF_SIZE	(4 * SZ_1K)
+ #define CEDRUS_H265_MV_COL_BUF_UNIT_CTB_SIZE	160
  
- 	mmap_write_unlock(mm);
- 
--	if (WARN_ON(i != cprm->vma_count)) {
--		kvfree(cprm->vma_meta);
--		return false;
--	}
--
--
- 	for (i = 0; i < cprm->vma_count; i++) {
- 		struct core_vma_metadata *m = cprm->vma_meta + i;
- 
+-- 
+2.34.1
+
 
 
