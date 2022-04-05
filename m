@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 69F6EC4167B
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 10:08:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 393C0C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 10:08:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234225AbiDEKGZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 06:06:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45998 "EHLO
+        id S237344AbiDEKGx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 06:06:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45826 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240836AbiDEIcf (ORCPT
+        with ESMTP id S240983AbiDEIcl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:32:35 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DE6789332;
-        Tue,  5 Apr 2022 01:25:06 -0700 (PDT)
+        Tue, 5 Apr 2022 04:32:41 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1106A94EC;
+        Tue,  5 Apr 2022 01:25:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 719E560FFC;
-        Tue,  5 Apr 2022 08:25:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7741BC385A1;
-        Tue,  5 Apr 2022 08:25:04 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6C871B81BC0;
+        Tue,  5 Apr 2022 08:25:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D2D85C385A1;
+        Tue,  5 Apr 2022 08:25:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649147104;
-        bh=9FEs9vOrkJJDlurXarSttw8Ls20U/XrgNh9nEfnRwf0=;
+        s=korg; t=1649147138;
+        bh=f19IgujV/yw7D/q+fpx39ycuktKtJQPW23eKnN0ZCdQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0U/WivuRd0c3y6ctwC54j00BdJHz73+kgN0tVtEhHoY4G5DCzU6K0HJR5RaGW7Y03
-         L0w+JrVg88ntvNsCCLqFEv1vhG07GKwpuQ0nOfl3a+lS8ue7sbFhlBDO1nwGip0QAi
-         dMpiI8lETVeQnRrF8DLGUgxj6rYAzFqn0Y3tpPvY=
+        b=cgTZpkWWtOLOllwlGPa8SLbkS4MnogXI6nVAB4goYsRyr0lDhgOyzFYP6T2XWqLoG
+         EyoavpdQnFFDozoDpjW/1CpUm2kDoNEgPW+hd1zOXVTkj5k2U1jEg2Er1oq1Fa/xyp
+         dsoMB8VQFDhMxpTFzf+TXvN9NKNMDREs5sdtM4YE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>,
-        Anders Roxell <anders.roxell@linaro.org>,
-        Segher Boessenkool <segher@kernel.crashing.org>,
-        Michael Ellerman <mpe@ellerman.id.au>
-Subject: [PATCH 5.17 0965/1126] powerpc: Fix build errors with newer binutils
-Date:   Tue,  5 Apr 2022 09:28:32 +0200
-Message-Id: <20220405070435.832266457@linuxfoundation.org>
+        stable@vger.kernel.org, PaX Team <pageexec@freemail.hu>,
+        "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 5.17 1016/1126] wireguard: queueing: use CFI-safe ptr_ring cleanup function
+Date:   Tue,  5 Apr 2022 09:29:23 +0200
+Message-Id: <20220405070437.308712694@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -50,164 +49,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Anders Roxell <anders.roxell@linaro.org>
+From: Jason A. Donenfeld <Jason@zx2c4.com>
 
-commit 8667d0d64dd1f84fd41b5897fd87fa9113ae05e3 upstream.
+commit ec59f128a9bd4255798abb1e06ac3b442f46ef68 upstream.
 
-Building tinyconfig with gcc (Debian 11.2.0-16) and assembler (Debian
-2.37.90.20220207) the following build error shows up:
+We make too nuanced use of ptr_ring to entirely move to the skb_array
+wrappers, but we at least should avoid the naughty function pointer cast
+when cleaning up skbs. Otherwise RAP/CFI will honk at us. This patch
+uses the __skb_array_destroy_skb wrapper for the cleanup, rather than
+directly providing kfree_skb, which is what other drivers in the same
+situation do too.
 
-  {standard input}: Assembler messages:
-  {standard input}:1190: Error: unrecognized opcode: `stbcix'
-  {standard input}:1433: Error: unrecognized opcode: `lwzcix'
-  {standard input}:1453: Error: unrecognized opcode: `stbcix'
-  {standard input}:1460: Error: unrecognized opcode: `stwcix'
-  {standard input}:1596: Error: unrecognized opcode: `stbcix'
-  ...
-
-Rework to add assembler directives [1] around the instruction. Going
-through them one by one shows that the changes should be safe.  Like
-__get_user_atomic_128_aligned() is only called in p9_hmi_special_emu(),
-which according to the name is specific to power9.  And __raw_rm_read*()
-are only called in things that are powernv or book3s_hv specific.
-
-[1] https://sourceware.org/binutils/docs/as/PowerPC_002dPseudo.html#PowerPC_002dPseudo
-
-Cc: stable@vger.kernel.org
-Co-developed-by: Arnd Bergmann <arnd@arndb.de>
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-Signed-off-by: Anders Roxell <anders.roxell@linaro.org>
-Reviewed-by: Segher Boessenkool <segher@kernel.crashing.org>
-[mpe: Make commit subject more descriptive]
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20220224162215.3406642-2-anders.roxell@linaro.org
+Reported-by: PaX Team <pageexec@freemail.hu>
+Fixes: 886fcee939ad ("wireguard: receive: use ring buffer for incoming handshakes")
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/powerpc/include/asm/io.h        |   40 ++++++++++++++++++++++++++++-------
- arch/powerpc/include/asm/uaccess.h   |    3 ++
- arch/powerpc/platforms/powernv/rng.c |    6 ++++-
- 3 files changed, 40 insertions(+), 9 deletions(-)
+ drivers/net/wireguard/queueing.c |    3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
---- a/arch/powerpc/include/asm/io.h
-+++ b/arch/powerpc/include/asm/io.h
-@@ -359,25 +359,37 @@ static inline void __raw_writeq_be(unsig
+--- a/drivers/net/wireguard/queueing.c
++++ b/drivers/net/wireguard/queueing.c
+@@ -4,6 +4,7 @@
   */
- static inline void __raw_rm_writeb(u8 val, volatile void __iomem *paddr)
+ 
+ #include "queueing.h"
++#include <linux/skb_array.h>
+ 
+ struct multicore_worker __percpu *
+ wg_packet_percpu_multicore_worker_alloc(work_func_t function, void *ptr)
+@@ -42,7 +43,7 @@ void wg_packet_queue_free(struct crypt_q
  {
--	__asm__ __volatile__("stbcix %0,0,%1"
-+	__asm__ __volatile__(".machine push;   \
-+			      .machine power6; \
-+			      stbcix %0,0,%1;  \
-+			      .machine pop;"
- 		: : "r" (val), "r" (paddr) : "memory");
+ 	free_percpu(queue->worker);
+ 	WARN_ON(!purge && !__ptr_ring_empty(&queue->ring));
+-	ptr_ring_cleanup(&queue->ring, purge ? (void(*)(void*))kfree_skb : NULL);
++	ptr_ring_cleanup(&queue->ring, purge ? __skb_array_destroy_skb : NULL);
  }
  
- static inline void __raw_rm_writew(u16 val, volatile void __iomem *paddr)
- {
--	__asm__ __volatile__("sthcix %0,0,%1"
-+	__asm__ __volatile__(".machine push;   \
-+			      .machine power6; \
-+			      sthcix %0,0,%1;  \
-+			      .machine pop;"
- 		: : "r" (val), "r" (paddr) : "memory");
- }
- 
- static inline void __raw_rm_writel(u32 val, volatile void __iomem *paddr)
- {
--	__asm__ __volatile__("stwcix %0,0,%1"
-+	__asm__ __volatile__(".machine push;   \
-+			      .machine power6; \
-+			      stwcix %0,0,%1;  \
-+			      .machine pop;"
- 		: : "r" (val), "r" (paddr) : "memory");
- }
- 
- static inline void __raw_rm_writeq(u64 val, volatile void __iomem *paddr)
- {
--	__asm__ __volatile__("stdcix %0,0,%1"
-+	__asm__ __volatile__(".machine push;   \
-+			      .machine power6; \
-+			      stdcix %0,0,%1;  \
-+			      .machine pop;"
- 		: : "r" (val), "r" (paddr) : "memory");
- }
- 
-@@ -389,7 +401,10 @@ static inline void __raw_rm_writeq_be(u6
- static inline u8 __raw_rm_readb(volatile void __iomem *paddr)
- {
- 	u8 ret;
--	__asm__ __volatile__("lbzcix %0,0, %1"
-+	__asm__ __volatile__(".machine push;   \
-+			      .machine power6; \
-+			      lbzcix %0,0, %1; \
-+			      .machine pop;"
- 			     : "=r" (ret) : "r" (paddr) : "memory");
- 	return ret;
- }
-@@ -397,7 +412,10 @@ static inline u8 __raw_rm_readb(volatile
- static inline u16 __raw_rm_readw(volatile void __iomem *paddr)
- {
- 	u16 ret;
--	__asm__ __volatile__("lhzcix %0,0, %1"
-+	__asm__ __volatile__(".machine push;   \
-+			      .machine power6; \
-+			      lhzcix %0,0, %1; \
-+			      .machine pop;"
- 			     : "=r" (ret) : "r" (paddr) : "memory");
- 	return ret;
- }
-@@ -405,7 +423,10 @@ static inline u16 __raw_rm_readw(volatil
- static inline u32 __raw_rm_readl(volatile void __iomem *paddr)
- {
- 	u32 ret;
--	__asm__ __volatile__("lwzcix %0,0, %1"
-+	__asm__ __volatile__(".machine push;   \
-+			      .machine power6; \
-+			      lwzcix %0,0, %1; \
-+			      .machine pop;"
- 			     : "=r" (ret) : "r" (paddr) : "memory");
- 	return ret;
- }
-@@ -413,7 +434,10 @@ static inline u32 __raw_rm_readl(volatil
- static inline u64 __raw_rm_readq(volatile void __iomem *paddr)
- {
- 	u64 ret;
--	__asm__ __volatile__("ldcix %0,0, %1"
-+	__asm__ __volatile__(".machine push;   \
-+			      .machine power6; \
-+			      ldcix %0,0, %1;  \
-+			      .machine pop;"
- 			     : "=r" (ret) : "r" (paddr) : "memory");
- 	return ret;
- }
---- a/arch/powerpc/include/asm/uaccess.h
-+++ b/arch/powerpc/include/asm/uaccess.h
-@@ -125,8 +125,11 @@ do {								\
-  */
- #define __get_user_atomic_128_aligned(kaddr, uaddr, err)		\
- 	__asm__ __volatile__(				\
-+		".machine push\n"			\
-+		".machine altivec\n"			\
- 		"1:	lvx  0,0,%1	# get user\n"	\
- 		" 	stvx 0,0,%2	# put kernel\n"	\
-+		".machine pop\n"			\
- 		"2:\n"					\
- 		".section .fixup,\"ax\"\n"		\
- 		"3:	li %0,%3\n"			\
---- a/arch/powerpc/platforms/powernv/rng.c
-+++ b/arch/powerpc/platforms/powernv/rng.c
-@@ -43,7 +43,11 @@ static unsigned long rng_whiten(struct p
- 	unsigned long parity;
- 
- 	/* Calculate the parity of the value */
--	asm ("popcntd %0,%1" : "=r" (parity) : "r" (val));
-+	asm (".machine push;   \
-+	      .machine power7; \
-+	      popcntd %0,%1;   \
-+	      .machine pop;"
-+	     : "=r" (parity) : "r" (val));
- 
- 	/* xor our value with the previous mask */
- 	val ^= rng->mask;
+ #define NEXT(skb) ((skb)->prev)
 
 
