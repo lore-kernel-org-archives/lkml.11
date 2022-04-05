@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 00CB0C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 02:08:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1738BC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 02:08:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1846484AbiDFCEU (ORCPT
+        id S1846500AbiDFCE1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 22:04:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48206 "EHLO
+        Tue, 5 Apr 2022 22:04:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52170 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348807AbiDEJsh (ORCPT
+        with ESMTP id S1351738AbiDEKKO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:48:37 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35C729024F;
-        Tue,  5 Apr 2022 02:35:52 -0700 (PDT)
+        Tue, 5 Apr 2022 06:10:14 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 684B7C4E33;
+        Tue,  5 Apr 2022 02:55:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D9360B81C8B;
-        Tue,  5 Apr 2022 09:35:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 29E2BC385A2;
-        Tue,  5 Apr 2022 09:35:48 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D1F24616D7;
+        Tue,  5 Apr 2022 09:55:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DF99FC385A2;
+        Tue,  5 Apr 2022 09:55:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649151349;
-        bh=+vB/c5TYSJXJNmD9pjNpxLmLtUsmHAcZ/hjWBUHuL58=;
+        s=korg; t=1649152553;
+        bh=nI7dbDDhx02UpWsfJfAL/zctEyT8a5ocPR6yVKs23Fo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NyBmURC0NBKIYO678poXmdxgFmYCysBq9pzY/sS19WxfI9gbrcxNuVjdmn0oMEfMw
-         BKZ/AZNuac4CB8i0ZjtsLHhg+S5eSSq0Ke/EZ3duyzEa1syK3MtOy57bwFwq07AMaV
-         FExo+LVGG9FAoEOp9rdQADwyQJCcJ4zZGKdjGHWQ=
+        b=kGYk5uz2k4kLMSdPoAAzGvVYXmfv7B1ft2s1ks1iFr5xWy3GZPb2eohpbQak6x6MZ
+         UIYZZTQrOQu9lXWxtozQvY2xQjV3UrIuFqCQGyUX8iJGkskGAwkn+17VRBIQaX5UTh
+         7igNCg7WHmuCRWc6Y1kzoZWOG5zK53sYa6IARYDY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
-        Steven Price <steven.price@arm.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 384/913] drm/panfrost: Check for error num after setting mask
-Date:   Tue,  5 Apr 2022 09:24:06 +0200
-Message-Id: <20220405070351.357429769@linuxfoundation.org>
+        stable@vger.kernel.org, Zhihao Cheng <chengzhihao1@huawei.com>,
+        Richard Weinberger <richard@nod.at>
+Subject: [PATCH 5.15 817/913] ubifs: Fix deadlock in concurrent rename whiteout and inode writeback
+Date:   Tue,  5 Apr 2022 09:31:19 +0200
+Message-Id: <20220405070404.320584400@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
 References: <20220405070339.801210740@linuxfoundation.org>
@@ -50,45 +49,115 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+From: Zhihao Cheng <chengzhihao1@huawei.com>
 
-[ Upstream commit 44ab30b056149bd59dd7989a593dd25ead6007fd ]
+commit afd427048047e8efdedab30e8888044e2be5aa9c upstream.
 
-Because of the possible failure of the dma_supported(), the
-dma_set_mask_and_coherent() may return error num.
-Therefore, it should be better to check it and return the error if
-fails.
+Following hung tasks:
+[   77.028764] task:kworker/u8:4    state:D stack:    0 pid:  132
+[   77.028820] Call Trace:
+[   77.029027]  schedule+0x8c/0x1b0
+[   77.029067]  mutex_lock+0x50/0x60
+[   77.029074]  ubifs_write_inode+0x68/0x1f0 [ubifs]
+[   77.029117]  __writeback_single_inode+0x43c/0x570
+[   77.029128]  writeback_sb_inodes+0x259/0x740
+[   77.029148]  wb_writeback+0x107/0x4d0
+[   77.029163]  wb_workfn+0x162/0x7b0
 
-Fixes: f3ba91228e8e ("drm/panfrost: Add initial panfrost driver")
-Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
-[Steve: fix Fixes: line]
-Reviewed-by: Steven Price <steven.price@arm.com>
-Signed-off-by: Steven Price <steven.price@arm.com>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220106030326.2620942-1-jiasheng@iscas.ac.cn
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+[   92.390442] task:aa              state:D stack:    0 pid: 1506
+[   92.390448] Call Trace:
+[   92.390458]  schedule+0x8c/0x1b0
+[   92.390461]  wb_wait_for_completion+0x82/0xd0
+[   92.390469]  __writeback_inodes_sb_nr+0xb2/0x110
+[   92.390472]  writeback_inodes_sb_nr+0x14/0x20
+[   92.390476]  ubifs_budget_space+0x705/0xdd0 [ubifs]
+[   92.390503]  do_rename.cold+0x7f/0x187 [ubifs]
+[   92.390549]  ubifs_rename+0x8b/0x180 [ubifs]
+[   92.390571]  vfs_rename+0xdb2/0x1170
+[   92.390580]  do_renameat2+0x554/0x770
+
+, are caused by concurrent rename whiteout and inode writeback processes:
+	rename_whiteout(Thread 1)	        wb_workfn(Thread2)
+ubifs_rename
+  do_rename
+    lock_4_inodes (Hold ui_mutex)
+    ubifs_budget_space
+      make_free_space
+        shrink_liability
+	  __writeback_inodes_sb_nr
+	    bdi_split_work_to_wbs (Queue new wb work)
+					      wb_do_writeback(wb work)
+						__writeback_single_inode
+					          ubifs_write_inode
+					            LOCK(ui_mutex)
+							   ↑
+	      wb_wait_for_completion (Wait wb work) <-- deadlock!
+
+Reproducer (Detail program in [Link]):
+  1. SYS_renameat2("/mp/dir/file", "/mp/dir/whiteout", RENAME_WHITEOUT)
+  2. Consume out of space before kernel(mdelay) doing budget for whiteout
+
+Fix it by doing whiteout space budget before locking ubifs inodes.
+BTW, it also fixes wrong goto tag 'out_release' in whiteout budget
+error handling path(It should at least recover dir i_size and unlock
+4 ubifs inodes).
+
+Fixes: 9e0a1fff8db56ea ("ubifs: Implement RENAME_WHITEOUT")
+Link: https://bugzilla.kernel.org/show_bug.cgi?id=214733
+Signed-off-by: Zhihao Cheng <chengzhihao1@huawei.com>
+Signed-off-by: Richard Weinberger <richard@nod.at>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/panfrost/panfrost_gpu.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ fs/ubifs/dir.c |   25 +++++++++++++++----------
+ 1 file changed, 15 insertions(+), 10 deletions(-)
 
-diff --git a/drivers/gpu/drm/panfrost/panfrost_gpu.c b/drivers/gpu/drm/panfrost/panfrost_gpu.c
-index bbe628b306ee..f8355de6e335 100644
---- a/drivers/gpu/drm/panfrost/panfrost_gpu.c
-+++ b/drivers/gpu/drm/panfrost/panfrost_gpu.c
-@@ -360,8 +360,11 @@ int panfrost_gpu_init(struct panfrost_device *pfdev)
+--- a/fs/ubifs/dir.c
++++ b/fs/ubifs/dir.c
+@@ -1324,6 +1324,7 @@ static int do_rename(struct inode *old_d
  
- 	panfrost_gpu_init_features(pfdev);
+ 	if (flags & RENAME_WHITEOUT) {
+ 		union ubifs_dev_desc *dev = NULL;
++		struct ubifs_budget_req wht_req;
  
--	dma_set_mask_and_coherent(pfdev->dev,
-+	err = dma_set_mask_and_coherent(pfdev->dev,
- 		DMA_BIT_MASK(FIELD_GET(0xff00, pfdev->features.mmu_features)));
-+	if (err)
-+		return err;
+ 		dev = kmalloc(sizeof(union ubifs_dev_desc), GFP_NOFS);
+ 		if (!dev) {
+@@ -1345,6 +1346,20 @@ static int do_rename(struct inode *old_d
+ 		whiteout_ui->data = dev;
+ 		whiteout_ui->data_len = ubifs_encode_dev(dev, MKDEV(0, 0));
+ 		ubifs_assert(c, !whiteout_ui->dirty);
 +
- 	dma_set_max_seg_size(pfdev->dev, UINT_MAX);
++		memset(&wht_req, 0, sizeof(struct ubifs_budget_req));
++		wht_req.dirtied_ino = 1;
++		wht_req.dirtied_ino_d = ALIGN(whiteout_ui->data_len, 8);
++		/*
++		 * To avoid deadlock between space budget (holds ui_mutex and
++		 * waits wb work) and writeback work(waits ui_mutex), do space
++		 * budget before ubifs inodes locked.
++		 */
++		err = ubifs_budget_space(c, &wht_req);
++		if (err) {
++			iput(whiteout);
++			goto out_release;
++		}
+ 	}
  
- 	irq = platform_get_irq_byname(to_platform_device(pfdev->dev), "gpu");
--- 
-2.34.1
-
+ 	lock_4_inodes(old_dir, new_dir, new_inode, whiteout);
+@@ -1419,16 +1434,6 @@ static int do_rename(struct inode *old_d
+ 	}
+ 
+ 	if (whiteout) {
+-		struct ubifs_budget_req wht_req = { .dirtied_ino = 1,
+-				.dirtied_ino_d = \
+-				ALIGN(ubifs_inode(whiteout)->data_len, 8) };
+-
+-		err = ubifs_budget_space(c, &wht_req);
+-		if (err) {
+-			iput(whiteout);
+-			goto out_release;
+-		}
+-
+ 		inc_nlink(whiteout);
+ 		mark_inode_dirty(whiteout);
+ 
 
 
