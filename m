@@ -2,50 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BCC13C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CBCB5C4332F
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 22:56:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1456082AbiDEWpP (ORCPT
+        id S1456764AbiDEWqm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 18:45:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46880 "EHLO
+        Tue, 5 Apr 2022 18:46:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43846 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354562AbiDEKOj (ORCPT
+        with ESMTP id S1349219AbiDEJt1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:14:39 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A27176B51E;
-        Tue,  5 Apr 2022 03:01:04 -0700 (PDT)
+        Tue, 5 Apr 2022 05:49:27 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6C8222B32;
+        Tue,  5 Apr 2022 02:42:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3FFCD6172B;
-        Tue,  5 Apr 2022 10:01:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 50B48C385A1;
-        Tue,  5 Apr 2022 10:01:03 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 67A89B81B14;
+        Tue,  5 Apr 2022 09:42:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AD5B1C385A2;
+        Tue,  5 Apr 2022 09:42:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649152863;
-        bh=4RJxg9sFpf0XnO3T0Y7aRhplR65wf1OiryRNWgxLIpg=;
+        s=korg; t=1649151772;
+        bh=vKovIcCBUGCFdRn+0oQW/himbqi/UkvNL17+CQQ38oY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=B7gEK5UKBcfXoYhJULITgftjJOHct5/sg1a67uC3FwgIzgzVhc0ha93JnkM+cunqQ
-         YujLMOYVTvJ8BtV2ul9g+kP37ublEk6iFcGjZWMMaC4jW2XuN6l48/EO/2nhnL/j92
-         MKUo2IUz3DxcM66SpVuWz5xMnW6HRD3nRahM9Qo8=
+        b=2WfVaEP71rr821eA4yp5VzdfeT639VJLYZ/f9gYRJAn8ZBjoTWpn5VUsY6z96/xZ4
+         g9BLhFu1j0nS3AdvgJP8c+rpkIiOzAuWj56qi47NeGBADHl9mOOytpqFgk01WWCHuV
+         Vpa2GxQqM9RSbBwoxbM5QfTftqb+/5V2+hzycFq0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Biju Das <biju.das.jz@bp.renesas.com>,
-        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        Mark Brown <broonie@kernel.org>,
+        stable@vger.kernel.org, Yihang Li <liyihang6@hisilicon.com>,
+        Xiang Chen <chenxiang66@hisilicon.com>,
+        John Garry <john.garry@huawei.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 017/599] spi: Fix erroneous sgs value with min_t()
-Date:   Tue,  5 Apr 2022 09:25:11 +0200
-Message-Id: <20220405070259.329330392@linuxfoundation.org>
+Subject: [PATCH 5.15 497/913] scsi: hisi_sas: Change permission of parameter prot_mask
+Date:   Tue,  5 Apr 2022 09:25:59 +0200
+Message-Id: <20220405070354.752269504@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -54,57 +52,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Biju Das <biju.das.jz@bp.renesas.com>
+From: Xiang Chen <chenxiang66@hisilicon.com>
 
-[ Upstream commit ebc4cb43ea5ada3db46c80156fca58a54b9bbca8 ]
+[ Upstream commit c4e070457a93705e56ed06b3910d9e5fe56d3be3 ]
 
-While computing sgs in spi_map_buf(), the data type
-used in min_t() for max_seg_size is 'unsigned int' where
-as that of ctlr->max_dma_len is 'size_t'.
+Currently the permission of parameter prot_mask is 0x0, which means that
+the member does not appear in sysfs. Change it as other module parameters
+to 0444 for world-readable.
 
-min_t(unsigned int,x,y) gives wrong results if one of x/y is
-'size_t'
+[mkp: s/v3/v2/]
 
-Consider the below examples on a 64-bit machine (ie size_t is
-64-bits, and unsigned int is 32-bit).
-    case 1) min_t(unsigned int, 5, 0x100000001);
-    case 2) min_t(size_t, 5, 0x100000001);
-
-Case 1 returns '1', where as case 2 returns '5'. As you can see
-the result from case 1 is wrong.
-
-This patch fixes the above issue by using the data type of the
-parameters that are used in min_t with maximum data length.
-
-Fixes: commit 1a4e53d2fc4f68aa ("spi: Fix invalid sgs value")
-Reported-by: Linus Torvalds <torvalds@linux-foundation.org>
-Suggested-by: Geert Uytterhoeven <geert+renesas@glider.be>
-Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
-Reviewed-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-Link: https://lore.kernel.org/r/20220316175317.465-1-biju.das.jz@bp.renesas.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Link: https://lore.kernel.org/r/1645703489-87194-2-git-send-email-john.garry@huawei.com
+Fixes: d6a9000b81be ("scsi: hisi_sas: Add support for DIF feature for v2 hw")
+Reported-by: Yihang Li <liyihang6@hisilicon.com>
+Signed-off-by: Xiang Chen <chenxiang66@hisilicon.com>
+Signed-off-by: John Garry <john.garry@huawei.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/spi/spi.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/scsi/hisi_sas/hisi_sas_v3_hw.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/spi/spi.c b/drivers/spi/spi.c
-index 2396565fc91b..6ea7b286c80c 100644
---- a/drivers/spi/spi.c
-+++ b/drivers/spi/spi.c
-@@ -881,10 +881,10 @@ int spi_map_buf(struct spi_controller *ctlr, struct device *dev,
- 	int i, ret;
+diff --git a/drivers/scsi/hisi_sas/hisi_sas_v3_hw.c b/drivers/scsi/hisi_sas/hisi_sas_v3_hw.c
+index 3ab669dc806f..1942970f9eb7 100644
+--- a/drivers/scsi/hisi_sas/hisi_sas_v3_hw.c
++++ b/drivers/scsi/hisi_sas/hisi_sas_v3_hw.c
+@@ -527,7 +527,7 @@ MODULE_PARM_DESC(intr_conv, "interrupt converge enable (0-1)");
  
- 	if (vmalloced_buf || kmap_buf) {
--		desc_len = min_t(unsigned int, max_seg_size, PAGE_SIZE);
-+		desc_len = min_t(unsigned long, max_seg_size, PAGE_SIZE);
- 		sgs = DIV_ROUND_UP(len + offset_in_page(buf), desc_len);
- 	} else if (virt_addr_valid(buf)) {
--		desc_len = min_t(unsigned int, max_seg_size, ctlr->max_dma_len);
-+		desc_len = min_t(size_t, max_seg_size, ctlr->max_dma_len);
- 		sgs = DIV_ROUND_UP(len, desc_len);
- 	} else {
- 		return -EINVAL;
+ /* permit overriding the host protection capabilities mask (EEDP/T10 PI) */
+ static int prot_mask;
+-module_param(prot_mask, int, 0);
++module_param(prot_mask, int, 0444);
+ MODULE_PARM_DESC(prot_mask, " host protection capabilities mask, def=0x0 ");
+ 
+ static void debugfs_work_handler_v3_hw(struct work_struct *work);
 -- 
 2.34.1
 
