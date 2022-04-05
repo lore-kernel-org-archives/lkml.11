@@ -2,47 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CF646C35280
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 11:46:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BAD99C352A7
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 11:46:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379405AbiDELkt (ORCPT
+        id S1379460AbiDELlL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 07:40:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50830 "EHLO
+        Tue, 5 Apr 2022 07:41:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46810 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244777AbiDEIwi (ORCPT
+        with ESMTP id S244802AbiDEIwk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:52:38 -0400
+        Tue, 5 Apr 2022 04:52:40 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE54313F4D;
-        Tue,  5 Apr 2022 01:43:49 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7F3622290;
+        Tue,  5 Apr 2022 01:44:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 912CBB81BC5;
-        Tue,  5 Apr 2022 08:43:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E4310C385A0;
-        Tue,  5 Apr 2022 08:43:46 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 16889B81B18;
+        Tue,  5 Apr 2022 08:39:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 69536C385A1;
+        Tue,  5 Apr 2022 08:39:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649148227;
-        bh=IQlQgUCjG42fAEaq4U78Y6LFtmOpKk1GRDjB9tZcYGc=;
+        s=korg; t=1649147949;
+        bh=msW2dI8/ew3KzPd9Z6LM66OajboeTObfOIEWdOuNFlM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OZG1DBc5ndCjFKCNQ+n53JA6xRLFV7IjwjQEE4SRzusZ2dh09J6hIAITPJkZ+Dllb
-         XjseApgKDyQcKWPaHTdVJiP+h9JOembwqTByvTf8fMA2Gjm66KIwy8AbfCJuBfKyii
-         mUYk0VZ/tXZVi0nSK+54LdYWZzHj0swF3hf/p26k=
+        b=p/hAun63090bidYjLshQxyoCJaxxqiT3loTakpZnUdSvJtC84MEvg9u2zv8ABhWLe
+         kErTn6dJCniSFfEuXOonrPwjzF2VBRhEYQxRHzF8ysPau8HuW1698yw0NLJrPb2AeO
+         787MWoJdRIeJ8aFfhxdCys6uBtITYeLSNva98cN0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jonathan Marek <jonathan@marek.ca>,
-        Robert Foss <robert.foss@linaro.org>,
-        Julian Grahsl <jgrahsl@snap.com>,
-        Bryan ODonoghue <bryan.odonoghue@linaro.org>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0280/1017] media: camss: csid-170: dont enable unused irqs
-Date:   Tue,  5 Apr 2022 09:19:53 +0200
-Message-Id: <20220405070402.579620291@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Johannes Thumshirn <johannes.thumshirn@wdc.com>,
+        Naohiro Aota <naohiro.aota@wdc.com>,
+        David Sterba <dsterba@suse.com>
+Subject: [PATCH 5.16 0180/1017] btrfs: zoned: mark relocation as writing
+Date:   Tue,  5 Apr 2022 09:18:13 +0200
+Message-Id: <20220405070359.579413543@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -54,47 +51,92 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jonathan Marek <jonathan@marek.ca>
+From: Naohiro Aota <naohiro.aota@wdc.com>
 
-[ Upstream commit a6da362491e409de0978d733441e59db6584d69f ]
+commit ca5e4ea0beaec8bc674121838bf8614c089effb9 upstream.
 
-csid_isr() only checks for the reset irq, so enabling any other irqs
-doesn't make sense. The "RDI irq" comment is also wrong, the register
-should be CSID_CSI2_RDIN_IRQ_MASK. Without this fix there may be an
-excessive amount of irqs.
+There is a hung_task issue with running generic/068 on an SMR
+device. The hang occurs while a process is trying to thaw the
+filesystem. The process is trying to take sb->s_umount to thaw the
+FS. The lock is held by fsstress, which calls btrfs_sync_fs() and is
+waiting for an ordered extent to finish. However, as the FS is frozen,
+the ordered extents never finish.
 
-Fixes: eebe6d00e9bf ("media: camss: Add support for CSID hardware version Titan 170")
-Signed-off-by: Jonathan Marek <jonathan@marek.ca>
-Reviewed-by: Robert Foss <robert.foss@linaro.org>
-Tested-by: Julian Grahsl <jgrahsl@snap.com>
-Tested-by: Bryan O'Donoghue <bryan.odonoghue@linaro.org>
-Signed-off-by: Bryan O'Donoghue <bryan.odonoghue@linaro.org>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Having an ordered extent while the FS is frozen is the root cause of
+the hang. The ordered extent is initiated from btrfs_relocate_chunk()
+which is called from btrfs_reclaim_bgs_work().
+
+This commit adds sb_*_write() around btrfs_relocate_chunk() call
+site. For the usual "btrfs balance" command, we already call it with
+mnt_want_file() in btrfs_ioctl_balance().
+
+Fixes: 18bb8bbf13c1 ("btrfs: zoned: automatically reclaim zones")
+CC: stable@vger.kernel.org # 5.13+
+Link: https://github.com/naota/linux/issues/56
+Reviewed-by: Johannes Thumshirn <johannes.thumshirn@wdc.com>
+Signed-off-by: Naohiro Aota <naohiro.aota@wdc.com>
+Reviewed-by: David Sterba <dsterba@suse.com>
+Signed-off-by: David Sterba <dsterba@suse.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/media/platform/qcom/camss/camss-csid-170.c | 6 ------
- 1 file changed, 6 deletions(-)
+ fs/btrfs/block-group.c |    8 +++++++-
+ fs/btrfs/volumes.c     |    3 +++
+ 2 files changed, 10 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/media/platform/qcom/camss/camss-csid-170.c b/drivers/media/platform/qcom/camss/camss-csid-170.c
-index aa65043c3303..a006c8dbceb1 100644
---- a/drivers/media/platform/qcom/camss/camss-csid-170.c
-+++ b/drivers/media/platform/qcom/camss/camss-csid-170.c
-@@ -444,12 +444,6 @@ static void csid_configure_stream(struct csid_device *csid, u8 enable)
- 	val |= 1 << CSI2_RX_CFG1_MISR_EN;
- 	writel_relaxed(val, csid->base + CSID_CSI2_RX_CFG1); // csi2_vc_mode_shift_val ?
+--- a/fs/btrfs/block-group.c
++++ b/fs/btrfs/block-group.c
+@@ -1521,8 +1521,12 @@ void btrfs_reclaim_bgs_work(struct work_
+ 	if (!test_bit(BTRFS_FS_OPEN, &fs_info->flags))
+ 		return;
  
--	/* error irqs start at BIT(11) */
--	writel_relaxed(~0u, csid->base + CSID_CSI2_RX_IRQ_MASK);
--
--	/* RDI irq */
--	writel_relaxed(~0u, csid->base + CSID_TOP_IRQ_MASK);
--
- 	val = 1 << RDI_CTRL_HALT_CMD;
- 	writel_relaxed(val, csid->base + CSID_RDI_CTRL(0));
+-	if (!btrfs_exclop_start(fs_info, BTRFS_EXCLOP_BALANCE))
++	sb_start_write(fs_info->sb);
++
++	if (!btrfs_exclop_start(fs_info, BTRFS_EXCLOP_BALANCE)) {
++		sb_end_write(fs_info->sb);
+ 		return;
++	}
+ 
+ 	/*
+ 	 * Long running balances can keep us blocked here for eternity, so
+@@ -1530,6 +1534,7 @@ void btrfs_reclaim_bgs_work(struct work_
+ 	 */
+ 	if (!mutex_trylock(&fs_info->reclaim_bgs_lock)) {
+ 		btrfs_exclop_finish(fs_info);
++		sb_end_write(fs_info->sb);
+ 		return;
+ 	}
+ 
+@@ -1604,6 +1609,7 @@ next:
+ 	spin_unlock(&fs_info->unused_bgs_lock);
+ 	mutex_unlock(&fs_info->reclaim_bgs_lock);
+ 	btrfs_exclop_finish(fs_info);
++	sb_end_write(fs_info->sb);
  }
--- 
-2.34.1
-
+ 
+ void btrfs_reclaim_bgs(struct btrfs_fs_info *fs_info)
+--- a/fs/btrfs/volumes.c
++++ b/fs/btrfs/volumes.c
+@@ -8263,10 +8263,12 @@ static int relocating_repair_kthread(voi
+ 	target = cache->start;
+ 	btrfs_put_block_group(cache);
+ 
++	sb_start_write(fs_info->sb);
+ 	if (!btrfs_exclop_start(fs_info, BTRFS_EXCLOP_BALANCE)) {
+ 		btrfs_info(fs_info,
+ 			   "zoned: skip relocating block group %llu to repair: EBUSY",
+ 			   target);
++		sb_end_write(fs_info->sb);
+ 		return -EBUSY;
+ 	}
+ 
+@@ -8294,6 +8296,7 @@ out:
+ 		btrfs_put_block_group(cache);
+ 	mutex_unlock(&fs_info->reclaim_bgs_lock);
+ 	btrfs_exclop_finish(fs_info);
++	sb_end_write(fs_info->sb);
+ 
+ 	return ret;
+ }
 
 
