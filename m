@@ -2,155 +2,144 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D37CC433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B0A0C433F5
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:16:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1445689AbiDEUIl (ORCPT
+        id S1449860AbiDEUK2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 16:08:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56134 "EHLO
+        Tue, 5 Apr 2022 16:10:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50206 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354477AbiDEKOU (ORCPT
+        with ESMTP id S1573406AbiDETIX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:14:20 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49AC36A426;
-        Tue,  5 Apr 2022 03:00:36 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id F0EE6B81B96;
-        Tue,  5 Apr 2022 10:00:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 43392C385A2;
-        Tue,  5 Apr 2022 10:00:33 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649152833;
-        bh=kembSRW7NQwV00BZOi0C5N16H7Aj9inc7Or9Ws7k17U=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lGLfAY8q+zjBYMNK+P8OpZLgIRRjyIF2V3Ts2MV9RjF5vUNFqAjo/CdMd3mz9OCdU
-         e1WMgVYqvq60Pe/s+CCMv/pwNgiNW7TNNl0nLqozuCytu9awQZ8tjpP5aszWtR4Jty
-         wwybYYhjYAnz3PDuqYf7M+phsQNE3JiRM6P2NCZ0=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jann Horn <jannh@google.com>,
-        Kees Cook <keescook@chromium.org>,
-        "Eric W. Biederman" <ebiederm@xmission.com>
-Subject: [PATCH 5.15 912/913] coredump/elf: Pass coredump_params into fill_note_info
-Date:   Tue,  5 Apr 2022 09:32:54 +0200
-Message-Id: <20220405070407.156589363@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
-User-Agent: quilt/0.66
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+        Tue, 5 Apr 2022 15:08:23 -0400
+Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55953DFFAD
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 12:06:24 -0700 (PDT)
+Received: by mail-yb1-xb49.google.com with SMTP id z15-20020a25bb0f000000b00613388c7d99so45728ybg.8
+        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 12:06:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=tybtDUXPQXhYvxy9gX9DtZoGahyOTlz+nyL3O6sS+eo=;
+        b=h55LQ5UM26LmuR62itH0V3ChlAvpYZ42TMOG+f3rw/mp6yjZnbWVTBqCVC/cYwSpbJ
+         0slhnsMw8p5HDGyheffeBMt9zi/aVwh5t8Gf7LrBGxT0cPJmANCdN7zFwWMilsAMUZa6
+         TzzBiH0fBhF0mSBYx1fyC0NSJlwUVBxpPtE5Ca/Mxtbz6VpeTZv/xwCB7nrQJzv/SJAT
+         ZJuw8JE3e9gE0Z2uRNM9YJ9BYy0WKQ+QJ2f04nE2hqdD8T4vfJg8iP4/CSwBE6xw9t9C
+         DVfEUEfehQdRIJRmTihSNwrCHnUIVOonp5jTmy6cY1aNVMPQQzOdZfVnn0fiJC3lJrLi
+         VunA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=tybtDUXPQXhYvxy9gX9DtZoGahyOTlz+nyL3O6sS+eo=;
+        b=B9v/AbOZ6bBCSedl75wk14Z4ZefoONJjccbEvtZI88io21DQ3tdVXCazRwI+GNMPlM
+         Za9dnEQdULWgiI3BwLtVk9WU4Xw2DAw+q6RCONPBqJHTWWZlNn5Y+n+fvqGXECoWx9q/
+         HEPp5+yBS86F218Fb/3w+xh+vpB1j6ASOjaF5ThCOFjFIcDED7kEMJHEIgxTj7KgEi5b
+         7XBiQKyk8pDN97gq5qErKE+hSGRD6p8FHsBrr1O2+lgNHagUethT/pnf9TGp8X4oZgM8
+         +ZGFi/lWEIPtBegTy1odcpaz2Ql39gnj1DTrfUZo+ybdBBiid9yh31qhRJYWsrlWBe1B
+         Mi/A==
+X-Gm-Message-State: AOAM533VYURPAieatAY/SkfU+S6Mgwdq1PFx2Mc0B9Sya0T9Q0dIPtkh
+        OudltzpGDYrBtttzJMvF3J0+PEm708sxZQ==
+X-Google-Smtp-Source: ABdhPJyS4HtUjq4SgKDYWs2pqZ3jGC7+tr0ONFznLmh0DXJtM1MTD9FYY9//H3zpss6UMjYo3owbHd6QA24s0Q==
+X-Received: from dlatypov.svl.corp.google.com ([2620:15c:2cd:202:83dd:c30c:6cd0:4323])
+ (user=dlatypov job=sendgmr) by 2002:a25:5d0d:0:b0:633:25c8:380 with SMTP id
+ r13-20020a255d0d000000b0063325c80380mr3608330ybb.167.1649185583488; Tue, 05
+ Apr 2022 12:06:23 -0700 (PDT)
+Date:   Tue,  5 Apr 2022 12:06:19 -0700
+Message-Id: <20220405190619.540177-1-dlatypov@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.35.1.1094.g7c7d902a7c-goog
+Subject: [PATCH] lib/Kconfig.debug: change KUnit tests to default to KUNIT_ALL_TESTS
+From:   Daniel Latypov <dlatypov@google.com>
+To:     brendanhiggins@google.com, davidgow@google.com
+Cc:     linux-kernel@vger.kernel.org, kunit-dev@googlegroups.com,
+        linux-kselftest@vger.kernel.org, skhan@linuxfoundation.org,
+        Daniel Latypov <dlatypov@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric W. Biederman <ebiederm@xmission.com>
+This is in line with Documentation/dev-tools/kunit/style.rst.
+Some of these tests predate that so they don't follow this convention.
 
-commit 9ec7d3230717b4fe9b6c7afeb4811909c23fa1d7 upstream.
+With this and commit b0841b51cac9 ("kunit: arch/um/configs: Enable
+KUNIT_ALL_TESTS by default"), kunit.py will now run these tests by
+default. This hopefully makes it easier to run and maintain the tests.
+If any of these were to start failing, people would notice much quicker.
 
-Instead of individually passing cprm->siginfo and cprm->regs
-into fill_note_info pass all of struct coredump_params.
+Note: this commit doesn't update LINEAR_RANGES_TEST since that would
+select its dependency (LINEAR_RANGES). We don't want KUNIT_ALL_TESTS
+to enable anything other than test kconfigs.
 
-This is preparation to allow fill_files_note to use the existing
-vma snapshot.
-
-Reviewed-by: Jann Horn <jannh@google.com>
-Reviewed-by: Kees Cook <keescook@chromium.org>
-Signed-off-by: "Eric W. Biederman" <ebiederm@xmission.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Daniel Latypov <dlatypov@google.com>
 ---
- fs/binfmt_elf.c |   22 +++++++++++-----------
- 1 file changed, 11 insertions(+), 11 deletions(-)
+ lib/Kconfig.debug | 15 ++++++++++-----
+ 1 file changed, 10 insertions(+), 5 deletions(-)
 
---- a/fs/binfmt_elf.c
-+++ b/fs/binfmt_elf.c
-@@ -1799,7 +1799,7 @@ static int fill_thread_core_info(struct
+diff --git a/lib/Kconfig.debug b/lib/Kconfig.debug
+index 075cd25363ac..36865b37b33b 100644
+--- a/lib/Kconfig.debug
++++ b/lib/Kconfig.debug
+@@ -2140,10 +2140,11 @@ config TEST_DIV64
+ 	  If unsure, say N.
  
- static int fill_note_info(struct elfhdr *elf, int phdrs,
- 			  struct elf_note_info *info,
--			  const kernel_siginfo_t *siginfo, struct pt_regs *regs)
-+			  struct coredump_params *cprm)
- {
- 	struct task_struct *dump_task = current;
- 	const struct user_regset_view *view = task_user_regset_view(dump_task);
-@@ -1871,7 +1871,7 @@ static int fill_note_info(struct elfhdr
- 	 * Now fill in each thread's information.
- 	 */
- 	for (t = info->thread; t != NULL; t = t->next)
--		if (!fill_thread_core_info(t, view, siginfo->si_signo, &info->size))
-+		if (!fill_thread_core_info(t, view, cprm->siginfo->si_signo, &info->size))
- 			return 0;
+ config KPROBES_SANITY_TEST
+-	tristate "Kprobes sanity tests"
++	tristate "Kprobes sanity tests" if !KUNIT_ALL_TESTS
+ 	depends on DEBUG_KERNEL
+ 	depends on KPROBES
+ 	depends on KUNIT
++	default KUNIT_ALL_TESTS
+ 	help
+ 	  This option provides for testing basic kprobes functionality on
+ 	  boot. Samples of kprobe and kretprobe are inserted and
+@@ -2417,8 +2418,9 @@ config TEST_SYSCTL
+ 	  If unsure, say N.
  
- 	/*
-@@ -1880,7 +1880,7 @@ static int fill_note_info(struct elfhdr
- 	fill_psinfo(psinfo, dump_task->group_leader, dump_task->mm);
- 	info->size += notesize(&info->psinfo);
+ config BITFIELD_KUNIT
+-	tristate "KUnit test bitfield functions at runtime"
++	tristate "KUnit test bitfield functions at runtime" if !KUNIT_ALL_TESTS
+ 	depends on KUNIT
++	default KUNIT_ALL_TESTS
+ 	help
+ 	  Enable this option to test the bitfield functions at boot.
  
--	fill_siginfo_note(&info->signote, &info->csigdata, siginfo);
-+	fill_siginfo_note(&info->signote, &info->csigdata, cprm->siginfo);
- 	info->size += notesize(&info->signote);
+@@ -2452,8 +2454,9 @@ config HASH_KUNIT_TEST
+ 	  optimized versions. If unsure, say N.
  
- 	fill_auxv_note(&info->auxv, current->mm);
-@@ -2028,7 +2028,7 @@ static int elf_note_info_init(struct elf
+ config RESOURCE_KUNIT_TEST
+-	tristate "KUnit test for resource API"
++	tristate "KUnit test for resource API" if !KUNIT_ALL_TESTS
+ 	depends on KUNIT
++	default KUNIT_ALL_TESTS
+ 	help
+ 	  This builds the resource API unit test.
+ 	  Tests the logic of API provided by resource.c and ioport.h.
+@@ -2506,8 +2509,9 @@ config LINEAR_RANGES_TEST
+ 	  If unsure, say N.
  
- static int fill_note_info(struct elfhdr *elf, int phdrs,
- 			  struct elf_note_info *info,
--			  const kernel_siginfo_t *siginfo, struct pt_regs *regs)
-+			  struct coredump_params *cprm)
- {
- 	struct core_thread *ct;
- 	struct elf_thread_status *ets;
-@@ -2049,13 +2049,13 @@ static int fill_note_info(struct elfhdr
- 	list_for_each_entry(ets, &info->thread_list, list) {
- 		int sz;
+ config CMDLINE_KUNIT_TEST
+-	tristate "KUnit test for cmdline API"
++	tristate "KUnit test for cmdline API" if !KUNIT_ALL_TESTS
+ 	depends on KUNIT
++	default KUNIT_ALL_TESTS
+ 	help
+ 	  This builds the cmdline API unit test.
+ 	  Tests the logic of API provided by cmdline.c.
+@@ -2517,8 +2521,9 @@ config CMDLINE_KUNIT_TEST
+ 	  If unsure, say N.
  
--		sz = elf_dump_thread_status(siginfo->si_signo, ets);
-+		sz = elf_dump_thread_status(cprm->siginfo->si_signo, ets);
- 		info->thread_status_size += sz;
- 	}
- 	/* now collect the dump for the current */
- 	memset(info->prstatus, 0, sizeof(*info->prstatus));
--	fill_prstatus(&info->prstatus->common, current, siginfo->si_signo);
--	elf_core_copy_regs(&info->prstatus->pr_reg, regs);
-+	fill_prstatus(&info->prstatus->common, current, cprm->siginfo->si_signo);
-+	elf_core_copy_regs(&info->prstatus->pr_reg, cprm->regs);
- 
- 	/* Set up header */
- 	fill_elf_header(elf, phdrs, ELF_ARCH, ELF_CORE_EFLAGS);
-@@ -2071,7 +2071,7 @@ static int fill_note_info(struct elfhdr
- 	fill_note(info->notes + 1, "CORE", NT_PRPSINFO,
- 		  sizeof(*info->psinfo), info->psinfo);
- 
--	fill_siginfo_note(info->notes + 2, &info->csigdata, siginfo);
-+	fill_siginfo_note(info->notes + 2, &info->csigdata, cprm->siginfo);
- 	fill_auxv_note(info->notes + 3, current->mm);
- 	info->numnote = 4;
- 
-@@ -2081,8 +2081,8 @@ static int fill_note_info(struct elfhdr
- 	}
- 
- 	/* Try to dump the FPU. */
--	info->prstatus->pr_fpvalid = elf_core_copy_task_fpregs(current, regs,
--							       info->fpu);
-+	info->prstatus->pr_fpvalid =
-+		elf_core_copy_task_fpregs(current, cprm->regs, info->fpu);
- 	if (info->prstatus->pr_fpvalid)
- 		fill_note(info->notes + info->numnote++,
- 			  "CORE", NT_PRFPREG, sizeof(*info->fpu), info->fpu);
-@@ -2195,7 +2195,7 @@ static int elf_core_dump(struct coredump
- 	 * Collect all the non-memory information about the process for the
- 	 * notes.  This also sets up the file header.
- 	 */
--	if (!fill_note_info(&elf, e_phnum, &info, cprm->siginfo, cprm->regs))
-+	if (!fill_note_info(&elf, e_phnum, &info, cprm))
- 		goto end_coredump;
- 
- 	has_dumped = 1;
+ config BITS_TEST
+-	tristate "KUnit test for bits.h"
++	tristate "KUnit test for bits.h" if !KUNIT_ALL_TESTS
+ 	depends on KUNIT
++	default KUNIT_ALL_TESTS
+ 	help
+ 	  This builds the bits unit test.
+ 	  Tests the logic of macros defined in bits.h.
 
+base-commit: 3123109284176b1532874591f7c81f3837bbdc17
+-- 
+2.35.1.1094.g7c7d902a7c-goog
 
