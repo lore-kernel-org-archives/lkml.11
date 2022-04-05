@@ -2,85 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 76276C35280
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ECA26C35296
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 13:24:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359089AbiDENKG (ORCPT
+        id S1379879AbiDENNy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 09:10:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44262 "EHLO
+        Tue, 5 Apr 2022 09:13:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45588 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344188AbiDEJSg (ORCPT
+        with ESMTP id S1344231AbiDEJSw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:18:36 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 51D3663BF7
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 02:05:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1649149500;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=rIfAwkshslHsyBEcRq37RepeRC/o2pa9Iv1u9kDoOp8=;
-        b=WbC+BfJlhN3t2C6UH1yh7lSm5ezh5EKlFb0BaqHkPDWuVCuObFOYYfxGvja+dATx9Zyboh
-        h0OKb6A6GsN+0ONWNfd8yozij3IXZom83pY7cI6qJldzGZ2QC6X2zsE5iy5EOvDejL7504
-        TuKn9iFGGNCOncUlGeNK4rKLCVat3d4=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-317-TgqGk4AON6G7A7V85iHh5w-1; Tue, 05 Apr 2022 05:04:57 -0400
-X-MC-Unique: TgqGk4AON6G7A7V85iHh5w-1
-Received: from smtp.corp.redhat.com (int-mx10.intmail.prod.int.rdu2.redhat.com [10.11.54.10])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        Tue, 5 Apr 2022 05:18:52 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 598B645AF5;
+        Tue,  5 Apr 2022 02:05:58 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 8D79B3801ECB;
-        Tue,  5 Apr 2022 09:04:56 +0000 (UTC)
-Received: from localhost (ovpn-12-104.pek2.redhat.com [10.72.12.104])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 6DE8041617C;
-        Tue,  5 Apr 2022 09:04:55 +0000 (UTC)
-Date:   Tue, 5 Apr 2022 17:04:51 +0800
-From:   Baoquan He <bhe@redhat.com>
-To:     Andrew Morton <akpm@linux-foundation.org>
-Cc:     willy@infradead.org, linux-kernel@vger.kernel.org,
-        kexec@lists.infradead.org, yangtiezhu@loongson.cn,
-        amit.kachhap@arm.com, hch@lst.de, linux-fsdevel@vger.kernel.org,
-        viro@zeniv.linux.org.uk
-Subject: Re: [PATCH v5 0/3] Convert vmcore to use an iov_iter
-Message-ID: <YkwGM9yVb1lZ2HL7@MiWiFi-R3L-srv>
-References: <20220402043008.458679-1-bhe@redhat.com>
- <20220404143443.2258fc7e97b45172f7608a77@linux-foundation.org>
+        by sin.source.kernel.org (Postfix) with ESMTPS id BA403CE1C6E;
+        Tue,  5 Apr 2022 09:05:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D0F13C385A0;
+        Tue,  5 Apr 2022 09:05:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649149555;
+        bh=xc5tT771KBxay9UwO9nhcapUuxOWzNj8GgPN+OHumyg=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=zjbjj3GPFuJsyrwlTpYSJB3do3GQAOXGGmce6PIMuZq4WCOVrKSMGD11bHl8FSkYS
+         C4bphL5o12JrgOrGDxVOWMVMyjfKbZbWAT0fEaO8w9Ga9haQI38eBw9nKjYcG7Lffw
+         8+BVxfNzZ9QNCC1c6oSFgABBKLneZiud5rIPu2Tk=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        Daniel Thompson <daniel.thompson@linaro.org>,
+        Douglas Anderson <dianders@chromium.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 0720/1017] kdb: Fix the putarea helper function
+Date:   Tue,  5 Apr 2022 09:27:13 +0200
+Message-Id: <20220405070415.638771221@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
+References: <20220405070354.155796697@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220404143443.2258fc7e97b45172f7608a77@linux-foundation.org>
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.10
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 04/04/22 at 02:34pm, Andrew Morton wrote:
-> > On Sat,  2 Apr 2022 12:30:05 +0800 Baoquan He <bhe@redhat.com> wrote:
-> 
-> You were on the patch delivery path, so these patches should have had
-> your signoff.  Documentation/process/submitting-patches.rst explains.
+From: Daniel Thompson <daniel.thompson@linaro.org>
 
-OK, will update and repost after our IT replying and fixing the mail issue.
+[ Upstream commit c1cb81429df462eca1b6ba615cddd21dd3103c46 ]
 
-> 
-> > Copy the description of v3 cover letter from Willy:
-> > ===
-> > For some reason several people have been sending bad patches to fix
-> > compiler warnings in vmcore recently.  Here's how it should be done.
-> > Compile-tested only on x86.  As noted in the first patch, s390 should
-> > take this conversion a bit further, but I'm not inclined to do that
-> > work myself.
-> 
-> We should tell the S390 maintainers this!
-> 
-> Can you please fix the signoff issue, add the S390 team to Cc and resend?
+Currently kdb_putarea_size() uses copy_from_kernel_nofault() to write *to*
+arbitrary kernel memory. This is obviously wrong and means the memory
+modify ('mm') command is a serious risk to debugger stability: if we poke
+to a bad address we'll double-fault and lose our debug session.
 
-S390 maintainer has already known this. Heiko replied to v1 saying he
-will take care of the s390 part, please see his comment from below link.
-I will add Heiko in CC when resend.
-https://lore.kernel.org/all/YbsGxJRo1153aykr@osiris/T/#u
+Fix this the (very) obvious way.
+
+Note that there are two Fixes: tags because the API was renamed and this
+patch will only trivially backport as far as the rename (and this is
+probably enough). Nevertheless Christoph's rename did not introduce this
+problem so I wanted to record that!
+
+Fixes: fe557319aa06 ("maccess: rename probe_kernel_{read,write} to copy_{from,to}_kernel_nofault")
+Fixes: 5d5314d6795f ("kdb: core for kgdb back end (1 of 2)")
+Signed-off-by: Daniel Thompson <daniel.thompson@linaro.org>
+Reviewed-by: Douglas Anderson <dianders@chromium.org>
+Link: https://lore.kernel.org/r/20220128144055.207267-1-daniel.thompson@linaro.org
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ kernel/debug/kdb/kdb_support.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/kernel/debug/kdb/kdb_support.c b/kernel/debug/kdb/kdb_support.c
+index df2bface866e..85cb51c4a17e 100644
+--- a/kernel/debug/kdb/kdb_support.c
++++ b/kernel/debug/kdb/kdb_support.c
+@@ -291,7 +291,7 @@ int kdb_getarea_size(void *res, unsigned long addr, size_t size)
+  */
+ int kdb_putarea_size(unsigned long addr, void *res, size_t size)
+ {
+-	int ret = copy_from_kernel_nofault((char *)addr, (char *)res, size);
++	int ret = copy_to_kernel_nofault((char *)addr, (char *)res, size);
+ 	if (ret) {
+ 		if (!KDB_STATE(SUPPRESS)) {
+ 			kdb_func_printf("Bad address 0x%lx\n", addr);
+-- 
+2.34.1
+
+
 
