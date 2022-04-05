@@ -2,46 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B435C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 22:39:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EF7D5C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 22:39:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1452468AbiDEWb5 (ORCPT
+        id S1452437AbiDEWbw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 18:31:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39130 "EHLO
+        Tue, 5 Apr 2022 18:31:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42280 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349448AbiDEJtx (ORCPT
+        with ESMTP id S1357188AbiDEKZs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:49:53 -0400
+        Tue, 5 Apr 2022 06:25:48 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82A4427B10;
-        Tue,  5 Apr 2022 02:46:12 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 632574F45E;
+        Tue,  5 Apr 2022 03:09:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3C6B3B81B14;
-        Tue,  5 Apr 2022 09:46:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A4B7CC385A2;
-        Tue,  5 Apr 2022 09:46:09 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 20D5BB81C99;
+        Tue,  5 Apr 2022 10:09:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 85D44C385A1;
+        Tue,  5 Apr 2022 10:09:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649151970;
-        bh=nFAlM8SC4bGfTFPK+QEVwKUwAblEGofTTZTQdXpBBfo=;
+        s=korg; t=1649153380;
+        bh=iaSwEjjuWRcxTwl+l28MhCYSoH0dBAcZnjsk1fku08Y=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kviBrTfCTgmLbk9rbpCK1iRl/F5z+ueQ8A6NlN9K09WCv3JGEAvjZLa3XEMNqURcG
-         0PPV6IDiIVYVQtDZRJt0Cj8x1WuVDcVjRbT3PetgQn9cZDjivoho/mxGJ5YFjpJgmn
-         PPxq0Ja4xnL/aEpq6Dy75+ekKU1MZ3hjZIwgaqZc=
+        b=ZVBURlHeIyV5shavaDYoH90+Gc5qdLdunkopQ9EpRQBnyQLFPH8nj6BZxCFTnVNGg
+         xzKq/LJDp3Xvc8NsHbtDdT7W2xKQ8K82rLVxI9uXjGfBb4WIqQWE8iXWJrpH/oKTxd
+         fGY5BU0FyYhX449mF0duj+eYqXYRWOrw5Pm0X8uE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Trond Myklebust <trond.myklebust@hammerspace.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 606/913] NFS: Return valid errors from nfs2/3_decode_dirent()
-Date:   Tue,  5 Apr 2022 09:27:48 +0200
-Message-Id: <20220405070358.006637322@linuxfoundation.org>
+        stable@vger.kernel.org, Eric Auger <eric.auger@redhat.com>,
+        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>, Sasha Levin <sashal@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>
+Subject: [PATCH 5.10 164/599] vfio: platform: simplify device removal
+Date:   Tue,  5 Apr 2022 09:27:38 +0200
+Message-Id: <20220405070303.721581867@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
+References: <20220405070258.802373272@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,104 +51,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Trond Myklebust <trond.myklebust@hammerspace.com>
+From: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 
-[ Upstream commit 64cfca85bacde54caa64e0ab855c48734894fa37 ]
+[ Upstream commit 5b495ac8fe03b9e0d2e775f9064c3e2a340ff440 ]
 
-Valid return values for decode_dirent() callback functions are:
- 0: Success
- -EBADCOOKIE: End of directory
- -EAGAIN: End of xdr_stream
+vfio_platform_remove_common() cannot return non-NULL in
+vfio_amba_remove() as the latter is only called if vfio_amba_probe()
+returned success.
 
-All errors need to map into one of those three values.
-
-Fixes: 573c4e1ef53a ("NFS: Simplify ->decode_dirent() calling sequence")
-Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
+Diagnosed-by: Arnd Bergmann <arnd@arndb.de>
+Acked-by: Eric Auger <eric.auger@redhat.com>
+Link: https://lore.kernel.org/r/20210126165835.687514-4-u.kleine-koenig@pengutronix.de
+Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/nfs/nfs2xdr.c |  2 +-
- fs/nfs/nfs3xdr.c | 21 ++++++---------------
- 2 files changed, 7 insertions(+), 16 deletions(-)
+ drivers/vfio/platform/vfio_amba.c | 14 +++++---------
+ 1 file changed, 5 insertions(+), 9 deletions(-)
 
-diff --git a/fs/nfs/nfs2xdr.c b/fs/nfs/nfs2xdr.c
-index 7fba7711e6b3..3d5ba43f44bb 100644
---- a/fs/nfs/nfs2xdr.c
-+++ b/fs/nfs/nfs2xdr.c
-@@ -949,7 +949,7 @@ int nfs2_decode_dirent(struct xdr_stream *xdr, struct nfs_entry *entry,
+diff --git a/drivers/vfio/platform/vfio_amba.c b/drivers/vfio/platform/vfio_amba.c
+index 9636a2afaecd..7b3ebf1558e1 100644
+--- a/drivers/vfio/platform/vfio_amba.c
++++ b/drivers/vfio/platform/vfio_amba.c
+@@ -73,16 +73,12 @@ static int vfio_amba_probe(struct amba_device *adev, const struct amba_id *id)
  
- 	error = decode_filename_inline(xdr, &entry->name, &entry->len);
- 	if (unlikely(error))
--		return error;
-+		return -EAGAIN;
- 
- 	/*
- 	 * The type (size and byte order) of nfscookie isn't defined in
-diff --git a/fs/nfs/nfs3xdr.c b/fs/nfs/nfs3xdr.c
-index 54a1d21cbcc6..7ab60ad98776 100644
---- a/fs/nfs/nfs3xdr.c
-+++ b/fs/nfs/nfs3xdr.c
-@@ -1967,7 +1967,6 @@ int nfs3_decode_dirent(struct xdr_stream *xdr, struct nfs_entry *entry,
- 		       bool plus)
+ static int vfio_amba_remove(struct amba_device *adev)
  {
- 	struct user_namespace *userns = rpc_userns(entry->server->client);
--	struct nfs_entry old = *entry;
- 	__be32 *p;
- 	int error;
- 	u64 new_cookie;
-@@ -1987,15 +1986,15 @@ int nfs3_decode_dirent(struct xdr_stream *xdr, struct nfs_entry *entry,
- 
- 	error = decode_fileid3(xdr, &entry->ino);
- 	if (unlikely(error))
--		return error;
-+		return -EAGAIN;
- 
- 	error = decode_inline_filename3(xdr, &entry->name, &entry->len);
- 	if (unlikely(error))
--		return error;
-+		return -EAGAIN;
- 
- 	error = decode_cookie3(xdr, &new_cookie);
- 	if (unlikely(error))
--		return error;
-+		return -EAGAIN;
- 
- 	entry->d_type = DT_UNKNOWN;
- 
-@@ -2003,7 +2002,7 @@ int nfs3_decode_dirent(struct xdr_stream *xdr, struct nfs_entry *entry,
- 		entry->fattr->valid = 0;
- 		error = decode_post_op_attr(xdr, entry->fattr, userns);
- 		if (unlikely(error))
--			return error;
-+			return -EAGAIN;
- 		if (entry->fattr->valid & NFS_ATTR_FATTR_V3)
- 			entry->d_type = nfs_umode_to_dtype(entry->fattr->mode);
- 
-@@ -2018,11 +2017,8 @@ int nfs3_decode_dirent(struct xdr_stream *xdr, struct nfs_entry *entry,
- 			return -EAGAIN;
- 		if (*p != xdr_zero) {
- 			error = decode_nfs_fh3(xdr, entry->fh);
--			if (unlikely(error)) {
--				if (error == -E2BIG)
--					goto out_truncated;
--				return error;
--			}
-+			if (unlikely(error))
-+				return -EAGAIN;
- 		} else
- 			zero_nfs_fh3(entry->fh);
- 	}
-@@ -2031,11 +2027,6 @@ int nfs3_decode_dirent(struct xdr_stream *xdr, struct nfs_entry *entry,
- 	entry->cookie = new_cookie;
- 
- 	return 0;
+-	struct vfio_platform_device *vdev;
 -
--out_truncated:
--	dprintk("NFS: directory entry contains invalid file handle\n");
--	*entry = old;
--	return -EAGAIN;
+-	vdev = vfio_platform_remove_common(&adev->dev);
+-	if (vdev) {
+-		kfree(vdev->name);
+-		kfree(vdev);
+-		return 0;
+-	}
++	struct vfio_platform_device *vdev =
++		vfio_platform_remove_common(&adev->dev);
+ 
+-	return -EINVAL;
++	kfree(vdev->name);
++	kfree(vdev);
++	return 0;
  }
  
- /*
+ static const struct amba_id pl330_ids[] = {
 -- 
 2.34.1
 
