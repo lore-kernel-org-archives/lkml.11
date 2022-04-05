@@ -2,59 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C6655C35273
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:42:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 55BFBC47080
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:42:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1579060AbiDEXZ7 (ORCPT
+        id S1579191AbiDEX0b (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 19:25:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51988 "EHLO
+        Tue, 5 Apr 2022 19:26:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48494 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1573656AbiDETfG (ORCPT
+        with ESMTP id S1354937AbiDEKQg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 15:35:06 -0400
-Received: from mail-4323.proton.ch (mail-4323.proton.ch [185.70.43.23])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3171245BD
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 12:33:06 -0700 (PDT)
-Date:   Tue, 05 Apr 2022 19:32:58 +0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=emersion.fr;
-        s=protonmail2; t=1649187184;
-        bh=rizVX8SaxkopwG+PgRvZo+RGKMBEJnMwXHtVKUz8fmo=;
-        h=Date:To:From:Cc:Reply-To:Subject:Message-ID:In-Reply-To:
-         References:From:To:Cc:Date:Subject:Reply-To:Feedback-ID:
-         Message-ID;
-        b=wmTleW8zMQpVAVbXE3xUka7RwlsA2DK0Pab6drVgGGVbpHvLfSEvG1ruDB+ninz60
-         MwmwlqMTwKrZlJuU1rJFSJv9ojTprWUmeRJ1Ukh7roYxn6CR5riVoqGj76tApG4y1U
-         IEaYk6QJFNCtlO4SeoNBA2H+HSibOEyd62Ur/C5VEI94bLsGeYhYHkXwRdia/1/jkg
-         Wbm5Ns3QcOgKwMdn5HoPlqtA0te0CEnmUk7dqa1W6IjhFuFr8nqbzgnD0z9lnY7U8q
-         VTHNe3cyczDk3H8KFVaCZngeq+bnRvCk1tkeIlZcjjoNZwVnwMuk7oMbTQhtwtt6KV
-         PrHwo1QiFHsYw==
-To:     Melissa Wen <mwen@igalia.com>
-From:   Simon Ser <contact@emersion.fr>
-Cc:     Harry Wentland <harry.wentland@amd.com>,
-        Nicholas Kazlauskas <nicholas.kazlauskas@amd.com>,
-        Agustin Gutierrez <agustin.gutierrez@amd.com>,
-        Zhan Liu <Zhan.Liu@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Rodrigo Siqueira <Rodrigo.Siqueira@amd.com>,
-        markyacoub@google.com, sunpeng.li@amd.com,
-        christian.koenig@amd.com, Xinhui.Pan@amd.com, airlied@linux.ie,
-        daniel@ffwll.ch, amd-gfx@lists.freedesktop.org,
-        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org
-Reply-To: Simon Ser <contact@emersion.fr>
-Subject: Re: [PATCH v2] drm/amd/display: don't ignore alpha property on pre-multiplied mode
-Message-ID: <oPxlwpfhK4TKsOfqVS-hfX4WN9CvusPH8C6rRq_NKYMh_YocjF9eBY13cALFQiqfCH_OgjIcXFkrjPU_bndAItgl31kjkkjmZlIN5vy7lxU=@emersion.fr>
-In-Reply-To: <20220329201835.2393141-1-mwen@igalia.com>
-References: <20220329201835.2393141-1-mwen@igalia.com>
+        Tue, 5 Apr 2022 06:16:36 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 754562AE08;
+        Tue,  5 Apr 2022 03:04:15 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 00BC9616E7;
+        Tue,  5 Apr 2022 10:04:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0DF34C385A2;
+        Tue,  5 Apr 2022 10:04:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649153054;
+        bh=o7AP/mczemchuXo0tATB5IVkecPPmtTYKUbdBPS5QO4=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=DP0NTeNARDozpWrldnVP9csvk90NvE1LPRqJUrJy7AizZ8SZBksYyAJMzGNUXQi64
+         IWNhm+L/c6ceIei6hRstRpjeZOSXxpmBR75Ln2AVJSrEtTMzgM3xL7Magk7DhpGTU9
+         AtD5pkrpWj3QzAju8+86SCC0BBjOzAtW4iPEAe98=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Marc Zyngier <maz@kernel.org>,
+        Nishanth Menon <nm@ti.com>
+Subject: [PATCH 5.10 086/599] arm64: dts: ti: k3-j721e: Fix gic-v3 compatible regs
+Date:   Tue,  5 Apr 2022 09:26:20 +0200
+Message-Id: <20220405070301.388085537@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
+References: <20220405070258.802373272@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-I've tested this patch and it fixes my bug [1]. Thanks!
+From: Nishanth Menon <nm@ti.com>
 
-Tested-by: Simon Ser <contact@emersion.fr>
+commit a06ed27f3bc63ab9e10007dc0118d910908eb045 upstream.
 
-[1]: https://gitlab.freedesktop.org/drm/amd/-/issues/1734
+Though GIC ARE option is disabled for no GIC-v2 compatibility,
+Cortex-A72 is free to implement the CPU interface as long as it
+communicates with the GIC using the stream protocol. This requires
+that the SoC integration mark out the PERIPHBASE[1] as reserved area
+within the SoC. See longer discussion in [2] for further information.
+
+Update the GIC register map to indicate offsets from PERIPHBASE based
+on [3]. Without doing this, systems like kvm will not function with
+gic-v2 emulation.
+
+[1] https://developer.arm.com/documentation/100095/0002/system-control/aarch64-register-descriptions/configuration-base-address-register--el1
+[2] https://lore.kernel.org/all/87k0e0tirw.wl-maz@kernel.org/
+[3] https://developer.arm.com/documentation/100095/0002/way1382452674438
+
+Cc: stable@vger.kernel.org # 5.10+
+Fixes: 2d87061e70de ("arm64: dts: ti: Add Support for J721E SoC")
+Reported-by: Marc Zyngier <maz@kernel.org>
+Signed-off-by: Nishanth Menon <nm@ti.com>
+Acked-by: Marc Zyngier <maz@kernel.org>
+Link: https://lore.kernel.org/r/20220215201008.15235-3-nm@ti.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ arch/arm64/boot/dts/ti/k3-j721e-main.dtsi |    5 ++++-
+ arch/arm64/boot/dts/ti/k3-j721e.dtsi      |    1 +
+ 2 files changed, 5 insertions(+), 1 deletion(-)
+
+--- a/arch/arm64/boot/dts/ti/k3-j721e-main.dtsi
++++ b/arch/arm64/boot/dts/ti/k3-j721e-main.dtsi
+@@ -108,7 +108,10 @@
+ 		#interrupt-cells = <3>;
+ 		interrupt-controller;
+ 		reg = <0x00 0x01800000 0x00 0x10000>,	/* GICD */
+-		      <0x00 0x01900000 0x00 0x100000>;	/* GICR */
++		      <0x00 0x01900000 0x00 0x100000>,	/* GICR */
++		      <0x00 0x6f000000 0x00 0x2000>,	/* GICC */
++		      <0x00 0x6f010000 0x00 0x1000>,	/* GICH */
++		      <0x00 0x6f020000 0x00 0x2000>;	/* GICV */
+ 
+ 		/* vcpumntirq: virtual CPU interface maintenance interrupt */
+ 		interrupts = <GIC_PPI 9 IRQ_TYPE_LEVEL_HIGH>;
+--- a/arch/arm64/boot/dts/ti/k3-j721e.dtsi
++++ b/arch/arm64/boot/dts/ti/k3-j721e.dtsi
+@@ -136,6 +136,7 @@
+ 			 <0x00 0x0e000000 0x00 0x0e000000 0x00 0x01800000>, /* PCIe Core*/
+ 			 <0x00 0x10000000 0x00 0x10000000 0x00 0x10000000>, /* PCIe DAT */
+ 			 <0x00 0x64800000 0x00 0x64800000 0x00 0x00800000>, /* C71 */
++			 <0x00 0x6f000000 0x00 0x6f000000 0x00 0x00310000>, /* A72 PERIPHBASE */
+ 			 <0x44 0x00000000 0x44 0x00000000 0x00 0x08000000>, /* PCIe2 DAT */
+ 			 <0x44 0x10000000 0x44 0x10000000 0x00 0x08000000>, /* PCIe3 DAT */
+ 			 <0x4d 0x80800000 0x4d 0x80800000 0x00 0x00800000>, /* C66_0 */
+
+
