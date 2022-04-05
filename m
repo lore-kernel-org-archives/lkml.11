@@ -2,95 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B58DC433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B00D0C4321E
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:48:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241382AbiDEUp4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 16:45:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35252 "EHLO
+        id S242275AbiDEUq2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 16:46:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53684 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1457619AbiDEQSM (ORCPT
+        with ESMTP id S1358090AbiDEK16 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 12:18:12 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B3C5B193D3
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 09:16:13 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 2B5B41424;
-        Tue,  5 Apr 2022 09:16:13 -0700 (PDT)
-Received: from FVFF77S0Q05N (unknown [10.57.8.234])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 85FD93F73B;
-        Tue,  5 Apr 2022 09:16:11 -0700 (PDT)
-Date:   Tue, 5 Apr 2022 17:16:02 +0100
-From:   Mark Rutland <mark.rutland@arm.com>
-To:     Sami Tolvanen <samitolvanen@google.com>
-Cc:     Kees Cook <keescook@chromium.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Will Deacon <will@kernel.org>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        llvm@lists.linux.dev
-Subject: Re: [PATCH 2/3] linux/compiler-clang.h: define function_nocfi
-Message-ID: <YkxrQl4zDe6YSoNO@FVFF77S0Q05N>
-References: <20220401201916.1487500-1-samitolvanen@google.com>
- <20220401201916.1487500-3-samitolvanen@google.com>
+        Tue, 5 Apr 2022 06:27:58 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C31CA66FB6;
+        Tue,  5 Apr 2022 03:15:18 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5CE036179E;
+        Tue,  5 Apr 2022 10:15:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6F78FC385A0;
+        Tue,  5 Apr 2022 10:15:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649153717;
+        bh=7Vx2WvST/3UetrRUM4JsvOUg6Uksvk+kePktchHbQIc=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=hvFgmS9Q/wbc/nEA0ZbcDBMTCuLpm6SJa92St1uyQMj/jpOxmJ7SYuRoWsqQZPZeb
+         BS/UvrIMlQ9kKeyRLxVNie7MccJDHr+DJ+VemAPZXCC+W+V73foGePp4RU6+fn8sNA
+         hS1HjLfHi3KCOUlKXh047NmgL25OAutkae55PQfM=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
+        Igor Zhbanov <i.zhbanov@omprussia.ru>,
+        James Morris <jmorris@namei.org>,
+        Kentaro Takeda <takedakn@nttdata.co.jp>,
+        tomoyo-dev-en@lists.osdn.me, "Serge E. Hallyn" <serge@hallyn.com>,
+        Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 321/599] TOMOYO: fix __setup handlers return values
+Date:   Tue,  5 Apr 2022 09:30:15 +0200
+Message-Id: <20220405070308.385669891@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
+References: <20220405070258.802373272@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220401201916.1487500-3-samitolvanen@google.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Apr 01, 2022 at 01:19:15PM -0700, Sami Tolvanen wrote:
-> Use __builtin_function_start() to implement the function_nocfi() macro
-> when CONFIG_CFI_CLANG is selected.
-> 
-> Signed-off-by: Sami Tolvanen <samitolvanen@google.com>
-> ---
->  include/linux/compiler-clang.h | 10 ++++++++++
->  1 file changed, 10 insertions(+)
-> 
-> diff --git a/include/linux/compiler-clang.h b/include/linux/compiler-clang.h
-> index babb1347148c..c84fec767445 100644
-> --- a/include/linux/compiler-clang.h
-> +++ b/include/linux/compiler-clang.h
-> @@ -69,6 +69,16 @@
->  #define __nocfi		__attribute__((__no_sanitize__("cfi")))
->  #define __cficanonical	__attribute__((__cfi_canonical_jump_table__))
->  
-> +#if defined(CONFIG_CFI_CLANG)
-> +/*
-> + * With CONFIG_CFI_CLANG, the compiler replaces function address
-> + * references with the address of the function's CFI jump table
-> + * entry. The function_nocfi macro always returns the address of the
-> + * actual function instead.
-> + */
-> +#define function_nocfi(x)	__builtin_function_start(x)
-> +#endif
+From: Randy Dunlap <rdunlap@infradead.org>
 
-As a heads-up, with patches 1 and 2 applied (but not patch 3), we have two
-definitions of function_nocfi(), which casues the compiler to scream for every
-object:
+[ Upstream commit 39844b7e3084baecef52d1498b5fa81afa2cefa9 ]
 
-| In file included from <built-in>:3:
-| In file included from ././include/linux/compiler_types.h:107:
-| ./arch/arm64/include/asm/compiler.h:33:9: warning: 'function_nocfi' macro redefined [-Wmacro-redefined]
-| #define function_nocfi(x) ({                                            \
-|         ^
-| ./include/linux/compiler-clang.h:79:9: note: previous definition is here
-| #define function_nocfi(x)       __builtin_function_start(x)
-|         ^
-| 1 warning generated.
+__setup() handlers should return 1 if the parameter is handled.
+Returning 0 causes the entire string to be added to init's
+environment strings (limited to 32 strings), unnecessarily polluting it.
 
-... which would be painful for bisection.
+Using the documented strings "TOMOYO_loader=string1" and
+"TOMOYO_trigger=string2" causes an Unknown parameter message:
+  Unknown kernel command line parameters
+    "BOOT_IMAGE=/boot/bzImage-517rc5 TOMOYO_loader=string1 \
+     TOMOYO_trigger=string2", will be passed to user space.
 
-I suspect It's probably worth folding patches 2 and 3 together to avoid that?
+and these strings are added to init's environment string space:
+  Run /sbin/init as init process
+    with arguments:
+     /sbin/init
+    with environment:
+     HOME=/
+     TERM=linux
+     BOOT_IMAGE=/boot/bzImage-517rc5
+     TOMOYO_loader=string1
+     TOMOYO_trigger=string2
 
-Arguably we could fold the entire series together into one commit at that
-point.
+With this change, these __setup handlers act as expected,
+and init's environment is not polluted with these strings.
 
-Thanks,
-Mark.
+Fixes: 0e4ae0e0dec63 ("TOMOYO: Make several options configurable.")
+Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+Reported-by: Igor Zhbanov <i.zhbanov@omprussia.ru>
+Link: https://lore.kernel.org/r/64644a2f-4a20-bab3-1e15-3b2cdd0defe3@omprussia.ru
+Cc: James Morris <jmorris@namei.org>
+Cc: Kentaro Takeda <takedakn@nttdata.co.jp>
+Cc: tomoyo-dev-en@lists.osdn.me
+Cc: "Serge E. Hallyn" <serge@hallyn.com>
+Signed-off-by: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ security/tomoyo/load_policy.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/security/tomoyo/load_policy.c b/security/tomoyo/load_policy.c
+index 3445ae6fd479..363b65be87ab 100644
+--- a/security/tomoyo/load_policy.c
++++ b/security/tomoyo/load_policy.c
+@@ -24,7 +24,7 @@ static const char *tomoyo_loader;
+ static int __init tomoyo_loader_setup(char *str)
+ {
+ 	tomoyo_loader = str;
+-	return 0;
++	return 1;
+ }
+ 
+ __setup("TOMOYO_loader=", tomoyo_loader_setup);
+@@ -64,7 +64,7 @@ static const char *tomoyo_trigger;
+ static int __init tomoyo_trigger_setup(char *str)
+ {
+ 	tomoyo_trigger = str;
+-	return 0;
++	return 1;
+ }
+ 
+ __setup("TOMOYO_trigger=", tomoyo_trigger_setup);
+-- 
+2.34.1
+
+
+
