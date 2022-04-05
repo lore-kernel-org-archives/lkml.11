@@ -2,86 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 01D08C46467
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:41:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D38BC3527D
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:41:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1576030AbiDEXKF (ORCPT
+        id S1576356AbiDEXKe (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 19:10:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52080 "EHLO
+        Tue, 5 Apr 2022 19:10:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43976 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1458143AbiDERKR (ORCPT
+        with ESMTP id S1348102AbiDEKpr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 13:10:17 -0400
-X-Greylist: delayed 520 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 05 Apr 2022 10:08:15 PDT
-Received: from 10.mo576.mail-out.ovh.net (10.mo576.mail-out.ovh.net [46.105.73.241])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4BD926C1DA
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 10:08:13 -0700 (PDT)
-Received: from player771.ha.ovh.net (unknown [10.111.172.191])
-        by mo576.mail-out.ovh.net (Postfix) with ESMTP id A322523CC8
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 17:00:25 +0000 (UTC)
-Received: from sk2.org (82-65-25-201.subs.proxad.net [82.65.25.201])
-        (Authenticated sender: steve@sk2.org)
-        by player771.ha.ovh.net (Postfix) with ESMTPSA id 3AE23293E39B6;
-        Tue,  5 Apr 2022 17:00:20 +0000 (UTC)
-Authentication-Results: garm.ovh; auth=pass (GARM-106R006bbcc4550-8b60-44cb-b1ac-2dcbc4224a37,
-                    8AF55017BACD44284FC599BC4826E0280D36FCC4) smtp.auth=steve@sk2.org
-X-OVh-ClientIp: 82.65.25.201
-From:   Stephen Kitt <steve@sk2.org>
-To:     Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>
-Cc:     Wolfram Sang <wsa@kernel.org>, linux-kernel@vger.kernel.org,
-        Stephen Kitt <steve@sk2.org>
-Subject: [PATCH 13/14] ASoC: ts3a227e: use simple i2c probe function
-Date:   Tue,  5 Apr 2022 18:58:35 +0200
-Message-Id: <20220405165836.2165310-14-steve@sk2.org>
-X-Mailer: git-send-email 2.27.0
-In-Reply-To: <20220405165836.2165310-1-steve@sk2.org>
-References: <20220405165836.2165310-1-steve@sk2.org>
+        Tue, 5 Apr 2022 06:45:47 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0BA134673;
+        Tue,  5 Apr 2022 03:26:53 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6FFA261743;
+        Tue,  5 Apr 2022 10:26:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7F309C385A0;
+        Tue,  5 Apr 2022 10:26:52 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649154412;
+        bh=4Om7rs0x2EQFU2v84dM08SeVJ3v5+NTV2V76upqeUas=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=ARzr2iJjqVofm3J+vi6rewBNa3RmwssvzkGE1QeaZYXD5tFVLqtdmpSS03yZt6rPG
+         a20HKQkrWf9EABpE3wA4TiZR759j4+Djz6s7NArn9ddx5BCoNC3qvGSPyYdnTZbgag
+         FQ2eEpN25iLVEk4XASWmTzpAAh/yECzelLwJiOuM=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        Himanshu Madhani <himanshu.madhani@oracle.com>,
+        Manish Rangankar <mrangankar@marvell.com>,
+        Nilesh Javali <njavali@marvell.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>
+Subject: [PATCH 5.10 531/599] scsi: qla2xxx: Use correct feature type field during RFF_ID processing
+Date:   Tue,  5 Apr 2022 09:33:45 +0200
+Message-Id: <20220405070314.642305752@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
+References: <20220405070258.802373272@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-Ovh-Tracer-Id: 8478307775260690054
-X-VR-SPAMSTATE: OK
-X-VR-SPAMSCORE: -100
-X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvvddrudejgedguddtgecutefuodetggdotefrodftvfcurfhrohhfihhlvgemucfqggfjpdevjffgvefmvefgnecuuegrihhlohhuthemucehtddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjughrpefhvffufffkofgjfhgggfestdekredtredttdenucfhrhhomhepufhtvghphhgvnhcumfhithhtuceoshhtvghvvgesshhkvddrohhrgheqnecuggftrfgrthhtvghrnhepjeelledvfeeiiedutdefveekgeeuheekkedvffegvdehudegkefgjeejkefgueegnecukfhppedtrddtrddtrddtpdekvddrieehrddvhedrvddtudenucevlhhushhtvghrufhiiigvpeejnecurfgrrhgrmhepmhhouggvpehsmhhtphhouhhtpdhhvghlohepphhlrgihvghrjeejuddrhhgrrdhovhhhrdhnvghtpdhinhgvtheptddrtddrtddrtddpmhgrihhlfhhrohhmpehsthgvvhgvsehskhdvrdhorhhgpdhnsggprhgtphhtthhopedupdhrtghpthhtoheplhhinhhugidqkhgvrhhnvghlsehvghgvrhdrkhgvrhhnvghlrdhorhhg
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The i2c probe functions here don't use the id information provided in
-their second argument, so the single-parameter i2c probe function
-("probe_new") can be used instead.
+From: Manish Rangankar <mrangankar@marvell.com>
 
-This avoids scanning the identifier tables during probes.
+commit a7e05f7a1bcbe4ee055479242de46c5c16ab03b1 upstream.
 
-Signed-off-by: Stephen Kitt <steve@sk2.org>
+During SNS Register FC-4 Features (RFF_ID) the initiator driver was sending
+incorrect type field for NVMe supported device. Use correct feature type
+field.
+
+Link: https://lore.kernel.org/r/20220310092604.22950-12-njavali@marvell.com
+Fixes: e374f9f59281 ("scsi: qla2xxx: Migrate switch registration commands away from mailbox interface")
+Cc: stable@vger.kernel.org
+Reviewed-by: Himanshu Madhani <himanshu.madhani@oracle.com>
+Signed-off-by: Manish Rangankar <mrangankar@marvell.com>
+Signed-off-by: Nilesh Javali <njavali@marvell.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/soc/codecs/ts3a227e.c | 5 ++---
+ drivers/scsi/qla2xxx/qla_gs.c |    5 ++---
  1 file changed, 2 insertions(+), 3 deletions(-)
 
-diff --git a/sound/soc/codecs/ts3a227e.c b/sound/soc/codecs/ts3a227e.c
-index 962f5d48378a..d8ab0810fceb 100644
---- a/sound/soc/codecs/ts3a227e.c
-+++ b/sound/soc/codecs/ts3a227e.c
-@@ -282,8 +282,7 @@ static int ts3a227e_parse_device_property(struct ts3a227e *ts3a227e,
- 	return 0;
+--- a/drivers/scsi/qla2xxx/qla_gs.c
++++ b/drivers/scsi/qla2xxx/qla_gs.c
+@@ -676,8 +676,7 @@ qla2x00_rff_id(scsi_qla_host_t *vha, u8
+ 		return (QLA_SUCCESS);
+ 	}
+ 
+-	return qla_async_rffid(vha, &vha->d_id, qlt_rff_id(vha),
+-	    FC4_TYPE_FCP_SCSI);
++	return qla_async_rffid(vha, &vha->d_id, qlt_rff_id(vha), type);
  }
  
--static int ts3a227e_i2c_probe(struct i2c_client *i2c,
--			      const struct i2c_device_id *id)
-+static int ts3a227e_i2c_probe(struct i2c_client *i2c)
- {
- 	struct ts3a227e *ts3a227e;
- 	struct device *dev = &i2c->dev;
-@@ -389,7 +388,7 @@ static struct i2c_driver ts3a227e_driver = {
- 		.of_match_table = of_match_ptr(ts3a227e_of_match),
- 		.acpi_match_table = ACPI_PTR(ts3a227e_acpi_match),
- 	},
--	.probe = ts3a227e_i2c_probe,
-+	.probe_new = ts3a227e_i2c_probe,
- 	.id_table = ts3a227e_i2c_ids,
- };
- module_i2c_driver(ts3a227e_driver);
--- 
-2.27.0
+ static int qla_async_rffid(scsi_qla_host_t *vha, port_id_t *d_id,
+@@ -727,7 +726,7 @@ static int qla_async_rffid(scsi_qla_host
+ 	/* Prepare CT arguments -- port_id, FC-4 feature, FC-4 type */
+ 	ct_req->req.rff_id.port_id = port_id_to_be_id(*d_id);
+ 	ct_req->req.rff_id.fc4_feature = fc4feature;
+-	ct_req->req.rff_id.fc4_type = fc4type;		/* SCSI - FCP */
++	ct_req->req.rff_id.fc4_type = fc4type;		/* SCSI-FCP or FC-NVMe */
+ 
+ 	sp->u.iocb_cmd.u.ctarg.req_size = RFF_ID_REQ_SIZE;
+ 	sp->u.iocb_cmd.u.ctarg.rsp_size = RFF_ID_RSP_SIZE;
+
 
