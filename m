@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 07EC6C4707F
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 21:24:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EBC8AC3527B
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 21:24:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354464AbiDEVYn (ORCPT
+        id S1353854AbiDEVYh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 17:24:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58506 "EHLO
+        Tue, 5 Apr 2022 17:24:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50648 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352028AbiDEKDt (ORCPT
+        with ESMTP id S1356667AbiDEKYq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:03:49 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC375A9950;
-        Tue,  5 Apr 2022 02:52:45 -0700 (PDT)
+        Tue, 5 Apr 2022 06:24:46 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D14C7BF011;
+        Tue,  5 Apr 2022 03:08:46 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2CC4F6174D;
-        Tue,  5 Apr 2022 09:52:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4090AC385A4;
-        Tue,  5 Apr 2022 09:52:44 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 768ACB81C89;
+        Tue,  5 Apr 2022 10:08:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B2E85C385A1;
+        Tue,  5 Apr 2022 10:08:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649152364;
-        bh=hP7Ta8lHWxh6NeT9h5JeWb6KQ3S+wTrRwcg0WqNvRtc=;
+        s=korg; t=1649153324;
+        bh=oWjfkRKzdp9mkQs+OY5JSRZxx+ONjc0DhU87xVvfLdg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DOX81iOK46H6JIOeETbK7Y0LXvcCpBsq/MOJcI4yZJfFh1giBk0lD4TzLTQEPPsQw
-         c3GCsrxH8IVZzK7tIRGHPx6cCq6BaW9+DJlYK8HHX/4ZT2rv7XBMINCCYVdjKq3QNE
-         y/V/2AP0f21I+G6d2lVWvYFaCUePtvqbSBtMNa8E=
+        b=18qnlSS1hUD+jek0NA/auAu9cm1DjKV71LXCLSQ85Q40XVcIQDEZzaPnEeCSE4LW+
+         m9JziCcCgxeZ3utFtI0pi2+sJL2mLQk6sF4tbjHf/n6aBWF0Ch/Gtpc+y8Ka78UHzZ
+         lEhF9ljR2D9rGv02c2Ca/iyk3StTGJsMHCSIJRXA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zeal Robot <zealci@zte.com.cn>,
-        Jing Yao <yao.jing2@zte.com.cn>, Helge Deller <deller@gmx.de>,
+        stable@vger.kernel.org, Filipe Manana <fdmanana@suse.com>,
+        David Sterba <dsterba@suse.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 751/913] video: fbdev: udlfb: replace snprintf in show functions with sysfs_emit
-Date:   Tue,  5 Apr 2022 09:30:13 +0200
-Message-Id: <20220405070402.344618103@linuxfoundation.org>
+Subject: [PATCH 5.10 182/599] btrfs: fix unexpected error path when reflinking an inline extent
+Date:   Tue,  5 Apr 2022 09:27:56 +0200
+Message-Id: <20220405070304.257272051@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
+References: <20220405070258.802373272@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,60 +50,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jing Yao <yao.jing2@zte.com.cn>
+From: Filipe Manana <fdmanana@suse.com>
 
-[ Upstream commit 81a998288956d09d7a7a2303d47e4d60ad55c401 ]
+[ Upstream commit 1f4613cdbe7739ce291554b316bff8e551383389 ]
 
-Use sysfs_emit instead of scnprintf, snprintf or sprintf.
+When reflinking an inline extent, we assert that its file offset is 0 and
+that its uncompressed length is not greater than the sector size. We then
+return an error if one of those conditions is not satisfied. However we
+use a return statement, which results in returning from btrfs_clone()
+without freeing the path and buffer that were allocated before, as well as
+not clearing the flag BTRFS_INODE_NO_DELALLOC_FLUSH for the destination
+inode.
 
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: Jing Yao <yao.jing2@zte.com.cn>
-Signed-off-by: Helge Deller <deller@gmx.de>
+Fix that by jumping to the 'out' label instead, and also add a WARN_ON()
+for each condition so that in case assertions are disabled, we get to
+known which of the unexpected conditions triggered the error.
+
+Fixes: a61e1e0df9f321 ("Btrfs: simplify inline extent handling when doing reflinks")
+Signed-off-by: Filipe Manana <fdmanana@suse.com>
+Signed-off-by: David Sterba <dsterba@suse.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/video/fbdev/udlfb.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ fs/btrfs/reflink.c | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/video/fbdev/udlfb.c b/drivers/video/fbdev/udlfb.c
-index b9cdd02c1000..90f48b71fd8f 100644
---- a/drivers/video/fbdev/udlfb.c
-+++ b/drivers/video/fbdev/udlfb.c
-@@ -1426,7 +1426,7 @@ static ssize_t metrics_bytes_rendered_show(struct device *fbdev,
- 				   struct device_attribute *a, char *buf) {
- 	struct fb_info *fb_info = dev_get_drvdata(fbdev);
- 	struct dlfb_data *dlfb = fb_info->par;
--	return snprintf(buf, PAGE_SIZE, "%u\n",
-+	return sysfs_emit(buf, "%u\n",
- 			atomic_read(&dlfb->bytes_rendered));
- }
+diff --git a/fs/btrfs/reflink.c b/fs/btrfs/reflink.c
+index 3a3102bc15a0..4b3ae0faf548 100644
+--- a/fs/btrfs/reflink.c
++++ b/fs/btrfs/reflink.c
+@@ -503,8 +503,11 @@ static int btrfs_clone(struct inode *src, struct inode *inode,
+ 			 */
+ 			ASSERT(key.offset == 0);
+ 			ASSERT(datal <= fs_info->sectorsize);
+-			if (key.offset != 0 || datal > fs_info->sectorsize)
+-				return -EUCLEAN;
++			if (WARN_ON(key.offset != 0) ||
++			    WARN_ON(datal > fs_info->sectorsize)) {
++				ret = -EUCLEAN;
++				goto out;
++			}
  
-@@ -1434,7 +1434,7 @@ static ssize_t metrics_bytes_identical_show(struct device *fbdev,
- 				   struct device_attribute *a, char *buf) {
- 	struct fb_info *fb_info = dev_get_drvdata(fbdev);
- 	struct dlfb_data *dlfb = fb_info->par;
--	return snprintf(buf, PAGE_SIZE, "%u\n",
-+	return sysfs_emit(buf, "%u\n",
- 			atomic_read(&dlfb->bytes_identical));
- }
- 
-@@ -1442,7 +1442,7 @@ static ssize_t metrics_bytes_sent_show(struct device *fbdev,
- 				   struct device_attribute *a, char *buf) {
- 	struct fb_info *fb_info = dev_get_drvdata(fbdev);
- 	struct dlfb_data *dlfb = fb_info->par;
--	return snprintf(buf, PAGE_SIZE, "%u\n",
-+	return sysfs_emit(buf, "%u\n",
- 			atomic_read(&dlfb->bytes_sent));
- }
- 
-@@ -1450,7 +1450,7 @@ static ssize_t metrics_cpu_kcycles_used_show(struct device *fbdev,
- 				   struct device_attribute *a, char *buf) {
- 	struct fb_info *fb_info = dev_get_drvdata(fbdev);
- 	struct dlfb_data *dlfb = fb_info->par;
--	return snprintf(buf, PAGE_SIZE, "%u\n",
-+	return sysfs_emit(buf, "%u\n",
- 			atomic_read(&dlfb->cpu_kcycles_used));
- }
- 
+ 			ret = clone_copy_inline_extent(inode, path, &new_key,
+ 						       drop_start, datal, size,
 -- 
 2.34.1
 
