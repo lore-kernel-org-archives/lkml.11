@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D5C7AC352A1
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 10:08:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C8B09C352A8
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 10:08:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352650AbiDEKEv (ORCPT
+        id S1351745AbiDEKDO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 06:04:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51880 "EHLO
+        Tue, 5 Apr 2022 06:03:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57524 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238294AbiDEIa1 (ORCPT
+        with ESMTP id S237558AbiDEISH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:30:27 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 059D5255A3;
-        Tue,  5 Apr 2022 01:22:05 -0700 (PDT)
+        Tue, 5 Apr 2022 04:18:07 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7E366AA7A;
+        Tue,  5 Apr 2022 01:06:56 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3AD3760B5E;
-        Tue,  5 Apr 2022 08:22:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 49174C385A0;
-        Tue,  5 Apr 2022 08:22:04 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 744D6B81B18;
+        Tue,  5 Apr 2022 08:06:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DA87FC385A2;
+        Tue,  5 Apr 2022 08:06:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649146924;
-        bh=14VW2dm/D52DxBIO4T4GRlDqW5MH7hZuDbtQnnwcWvc=;
+        s=korg; t=1649146014;
+        bh=8FHDcVL8IMA2bK9hMJqhL66NDK8EE4aALxP274Dn2fI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=V7NJfpZoHxVu+jMICV5SdnccgaUJSOHKFCdb+U5mkMwqOtTfoDCC7yzkWPc8yRLPI
-         C4xPgiVlVUJQFk0C/Ll0VP/GcQhvlPNLMNNMYPc8rAFATyYrrJoCGxl861ckhUHGJe
-         /mbJcJE72mYD1SJgLdynN2sm/BOJQlExDY0NCNMg=
+        b=vxRJHtPFf43ks8unxqb4fydjAM6+u4y88/bbD5J4HfbpsCmZBI7euQfHVVLLEsv0C
+         sWJJYX6IyUln0qeRB5nIbsQnxZ+xQzDStJxLiBdWiWepUwm/veZxtDHMnjN2BmT4vw
+         y71xIbaidSKyiJPcnJn/OcymdcWYxnHYzSu83y1w=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ming Qian <ming.qian@nxp.com>,
-        Mirela Rabulea <mirela.rabulea@nxp.com>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0921/1126] media: imx-jpeg: fix a bug of accessing array out of bounds
-Date:   Tue,  5 Apr 2022 09:27:48 +0200
-Message-Id: <20220405070434.553612448@linuxfoundation.org>
+        stable@vger.kernel.org, Daniel Borkmann <daniel@iogearbox.net>,
+        Hou Tao <houtao1@huawei.com>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 0611/1126] bpf, arm64: Feed byte-offset into bpf line info
+Date:   Tue,  5 Apr 2022 09:22:38 +0200
+Message-Id: <20220405070425.568594185@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -51,39 +49,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ming Qian <ming.qian@nxp.com>
+From: Hou Tao <houtao1@huawei.com>
 
-[ Upstream commit 97558d170a1236280407e8d29a7d095d2c2ed554 ]
+[ Upstream commit dda7596c109fc382876118627e29db7607cde35d ]
 
-When error occurs in parsing jpeg, the slot isn't acquired yet, it may
-be the default value MXC_MAX_SLOTS.
-If the driver access the slot using the incorrect slot number, it will
-access array out of bounds.
-The result is the driver will change num_domains, which follows
-slot_data in struct mxc_jpeg_dev.
-Then the driver won't detach the pm domain at rmmod, which will lead to
-kernel panic when trying to insmod again.
+insn_to_jit_off passed to bpf_prog_fill_jited_linfo() is calculated in
+instruction granularity instead of bytes granularity, but BPF line info
+requires byte offset.
 
-Signed-off-by: Ming Qian <ming.qian@nxp.com>
-Reviewed-by: Mirela Rabulea <mirela.rabulea@nxp.com>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+bpf_prog_fill_jited_linfo() will be the last user of ctx.offset before
+it is freed, so convert the offset into byte-offset before calling into
+bpf_prog_fill_jited_linfo() in order to fix the line info dump on arm64.
+
+Fixes: 37ab566c178d ("bpf: arm64: Enable arm64 jit to provide bpf_line_info")
+Suggested-by: Daniel Borkmann <daniel@iogearbox.net>
+Signed-off-by: Hou Tao <houtao1@huawei.com>
+Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+Link: https://lore.kernel.org/bpf/20220226121906.5709-3-houtao1@huawei.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/platform/imx-jpeg/mxc-jpeg.c | 1 -
- 1 file changed, 1 deletion(-)
+ arch/arm64/net/bpf_jit_comp.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-diff --git a/drivers/media/platform/imx-jpeg/mxc-jpeg.c b/drivers/media/platform/imx-jpeg/mxc-jpeg.c
-index b249c1bbfac8..83a2b4d13bad 100644
---- a/drivers/media/platform/imx-jpeg/mxc-jpeg.c
-+++ b/drivers/media/platform/imx-jpeg/mxc-jpeg.c
-@@ -954,7 +954,6 @@ static void mxc_jpeg_device_run(void *priv)
- 		jpeg_src_buf->jpeg_parse_error = true;
- 	}
- 	if (jpeg_src_buf->jpeg_parse_error) {
--		jpeg->slot_data[ctx->slot].used = false;
- 		v4l2_m2m_src_buf_remove(ctx->fh.m2m_ctx);
- 		v4l2_m2m_dst_buf_remove(ctx->fh.m2m_ctx);
- 		v4l2_m2m_buf_done(src_buf, VB2_BUF_STATE_ERROR);
+diff --git a/arch/arm64/net/bpf_jit_comp.c b/arch/arm64/net/bpf_jit_comp.c
+index 6a83f3070985..cbc41e261f1e 100644
+--- a/arch/arm64/net/bpf_jit_comp.c
++++ b/arch/arm64/net/bpf_jit_comp.c
+@@ -1133,6 +1133,11 @@ struct bpf_prog *bpf_int_jit_compile(struct bpf_prog *prog)
+ 	prog->jited_len = prog_size;
+ 
+ 	if (!prog->is_func || extra_pass) {
++		int i;
++
++		/* offset[prog->len] is the size of program */
++		for (i = 0; i <= prog->len; i++)
++			ctx.offset[i] *= AARCH64_INSN_SIZE;
+ 		bpf_prog_fill_jited_linfo(prog, ctx.offset + 1);
+ out_off:
+ 		kfree(ctx.offset);
 -- 
 2.34.1
 
