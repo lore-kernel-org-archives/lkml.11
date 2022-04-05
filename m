@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E978C43219
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 10:08:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D32F0C3A59F
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 10:08:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353024AbiDEKF1 (ORCPT
+        id S1352129AbiDEKD4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 06:05:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34436 "EHLO
+        Tue, 5 Apr 2022 06:03:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39568 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239488AbiDEIbV (ORCPT
+        with ESMTP id S237505AbiDEISE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:31:21 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 511BF69CD1;
-        Tue,  5 Apr 2022 01:23:34 -0700 (PDT)
+        Tue, 5 Apr 2022 04:18:04 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7180F69CC6;
+        Tue,  5 Apr 2022 01:06:28 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 52E2FB81BC3;
-        Tue,  5 Apr 2022 08:23:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 98EBEC385A0;
-        Tue,  5 Apr 2022 08:23:26 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BD260B81A32;
+        Tue,  5 Apr 2022 08:06:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 36E8EC385A1;
+        Tue,  5 Apr 2022 08:06:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649147007;
-        bh=Isa5lLGUypQQZmnkX08Z4fxZNNXOrlB9B2FkkAfrJds=;
+        s=korg; t=1649145986;
+        bh=aIhk6PWvgA5r+4ayB0G884nngyqJ9qOnaKV994l4LlA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=MC/J1vMoKqcepF/fz97+nq2fmfuHkSlG5J7vDBCA3FjG4zBOrk7W7j0v8K+XZpM9L
-         srPjDON5t+SD27Zri5JyUOcOldm8/aaN5117ftb7M6qth8c9uSLeWP4+dRCw9l6Ne5
-         oklQjunnh98F9bVWkrMDQFc6waWE5svmCgWZpdV0=
+        b=Epdz4/K808yleSRRmHh0H8yXKBERlJ+s6H/MLn3rIKCk6/SmX4rvVxdPeXRv8+WsS
+         bvJ448VnjNRKC3B3oIZ3/TMYsle5DGPr49+wWHo0+lzZD6By0phkFEmb/PVPOcfkJf
+         qfFIagehlOF6LlVgEjEzte+FWiqPNpglKt9Rz4ls=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Nicholas Piggin <npiggin@gmail.com>,
-        Michael Neuling <mikey@neuling.org>,
-        Michael Ellerman <mpe@ellerman.id.au>
-Subject: [PATCH 5.17 0961/1126] powerpc/tm: Fix more userspace r13 corruption
-Date:   Tue,  5 Apr 2022 09:28:28 +0200
-Message-Id: <20220405070435.713928313@linuxfoundation.org>
+        stable@vger.kernel.org, Sujuan Chen <sujuan.chen@mediatek.com>,
+        Ryder Lee <ryder.lee@mediatek.com>,
+        Bo Jiao <Bo.Jiao@mediatek.com>, Felix Fietkau <nbd@nbd.name>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 0602/1126] mt76: mt7915: enlarge wcid size to 544
+Date:   Tue,  5 Apr 2022 09:22:29 +0200
+Message-Id: <20220405070425.304342695@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -50,114 +51,94 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nicholas Piggin <npiggin@gmail.com>
+From: Bo Jiao <Bo.Jiao@mediatek.com>
 
-commit 9d71165d3934e607070c4e48458c0cf161b1baea upstream.
+[ Upstream commit b37d0c9735bc1976f85636e06e07f1a7547d969d ]
 
-Commit cf13435b730a ("powerpc/tm: Fix userspace r13 corruption") fixes a
-problem in treclaim where a SLB miss can occur on the
-thread_struct->ckpt_regs while SCRATCH0 is live with the saved user r13
-value, clobbering it with the kernel r13 and ultimately resulting in
-kernel r13 being stored in ckpt_regs.
+The mt7916 can support up to 544 wcid entries.
+This is an intermediate patch to add mt7916 support.
 
-There is an equivalent problem in trechkpt where the user r13 value is
-loaded into r13 from chkpt_regs to be recheckpointed, but a SLB miss
-could occur on ckpt_regs accesses after that, which will result in r13
-being clobbered with a kernel value and that will get recheckpointed and
-then restored to user registers.
-
-The same memory page is accessed right before this critical window where
-a SLB miss could cause corruption, so hitting the bug requires the SLB
-entry be removed within a small window of instructions, which is
-possible if a SLB related MCE hits there. PAPR also permits the
-hypervisor to discard this SLB entry (because slb_shadow->persistent is
-only set to SLB_NUM_BOLTED) although it's not known whether any
-implementations would do this (KVM does not). So this is an extremely
-unlikely bug, only found by inspection.
-
-Fix this by also storing user r13 in a temporary location on the kernel
-stack and don't change the r13 register from kernel r13 until the RI=0
-critical section that does not fault.
-
-The SCRATCH0 change is not strictly part of the fix, it's only used in
-the RI=0 section so it does not have the same problem as the previous
-SCRATCH0 bug.
-
-Fixes: 98ae22e15b43 ("powerpc: Add helper functions for transactional memory context switching")
-Cc: stable@vger.kernel.org # v3.9+
-Signed-off-by: Nicholas Piggin <npiggin@gmail.com>
-Acked-by: Michael Neuling <mikey@neuling.org>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20220311024733.48926-1-npiggin@gmail.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Co-developed-by: Sujuan Chen <sujuan.chen@mediatek.com>
+Signed-off-by: Sujuan Chen <sujuan.chen@mediatek.com>
+Co-developed-by: Ryder Lee <ryder.lee@mediatek.com>
+Signed-off-by: Ryder Lee <ryder.lee@mediatek.com>
+Signed-off-by: Bo Jiao <Bo.Jiao@mediatek.com>
+Signed-off-by: Felix Fietkau <nbd@nbd.name>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/powerpc/kernel/tm.S |   25 ++++++++++++++++---------
- 1 file changed, 16 insertions(+), 9 deletions(-)
+ drivers/net/wireless/mediatek/mt76/mt76.h          | 2 +-
+ drivers/net/wireless/mediatek/mt76/mt7915/init.c   | 2 +-
+ drivers/net/wireless/mediatek/mt76/mt7915/mac.c    | 2 +-
+ drivers/net/wireless/mediatek/mt76/mt7915/mt7915.h | 8 +++++++-
+ 4 files changed, 10 insertions(+), 4 deletions(-)
 
---- a/arch/powerpc/kernel/tm.S
-+++ b/arch/powerpc/kernel/tm.S
-@@ -443,7 +443,8 @@ restore_gprs:
+diff --git a/drivers/net/wireless/mediatek/mt76/mt76.h b/drivers/net/wireless/mediatek/mt76/mt76.h
+index 404c3d1a70d6..1f6f7a44d3f0 100644
+--- a/drivers/net/wireless/mediatek/mt76/mt76.h
++++ b/drivers/net/wireless/mediatek/mt76/mt76.h
+@@ -224,7 +224,7 @@ enum mt76_wcid_flags {
+ 	MT_WCID_FLAG_HDR_TRANS,
+ };
  
- 	REST_GPR(0, r7)				/* GPR0 */
- 	REST_GPRS(2, 4, r7)			/* GPR2-4 */
--	REST_GPRS(8, 31, r7)			/* GPR8-31 */
-+	REST_GPRS(8, 12, r7)			/* GPR8-12 */
-+	REST_GPRS(14, 31, r7)			/* GPR14-31 */
+-#define MT76_N_WCIDS 288
++#define MT76_N_WCIDS 544
  
- 	/* Load up PPR and DSCR here so we don't run with user values for long */
- 	mtspr	SPRN_DSCR, r5
-@@ -479,18 +480,24 @@ restore_gprs:
- 	REST_GPR(6, r7)
+ /* stored in ieee80211_tx_info::hw_queue */
+ #define MT_TX_HW_QUEUE_EXT_PHY		BIT(3)
+diff --git a/drivers/net/wireless/mediatek/mt76/mt7915/init.c b/drivers/net/wireless/mediatek/mt76/mt7915/init.c
+index d054cdecd5f7..29517ca08de0 100644
+--- a/drivers/net/wireless/mediatek/mt76/mt7915/init.c
++++ b/drivers/net/wireless/mediatek/mt76/mt7915/init.c
+@@ -399,7 +399,7 @@ static void mt7915_mac_init(struct mt7915_dev *dev)
+ 	/* enable hardware de-agg */
+ 	mt76_set(dev, MT_MDP_DCR0, MT_MDP_DCR0_DAMSDU_EN);
  
- 	/*
--	 * Store r1 and r5 on the stack so that we can access them after we
--	 * clear MSR RI.
-+	 * Store user r1 and r5 and r13 on the stack (in the unused save
-+	 * areas / compiler reserved areas), so that we can access them after
-+	 * we clear MSR RI.
- 	 */
+-	for (i = 0; i < MT7915_WTBL_SIZE; i++)
++	for (i = 0; i < mt7915_wtbl_size(dev); i++)
+ 		mt7915_mac_wtbl_update(dev, i,
+ 				       MT_WTBL_UPDATE_ADM_COUNT_CLEAR);
+ 	for (i = 0; i < 2; i++)
+diff --git a/drivers/net/wireless/mediatek/mt76/mt7915/mac.c b/drivers/net/wireless/mediatek/mt76/mt7915/mac.c
+index 12567b653607..db267642924d 100644
+--- a/drivers/net/wireless/mediatek/mt76/mt7915/mac.c
++++ b/drivers/net/wireless/mediatek/mt76/mt7915/mac.c
+@@ -1598,7 +1598,7 @@ static void mt7915_mac_add_txs(struct mt7915_dev *dev, void *data)
+ 	if (pid < MT_PACKET_ID_FIRST)
+ 		return;
  
- 	REST_GPR(5, r7)
- 	std	r5, -8(r1)
--	ld	r5, GPR1(r7)
-+	ld	r5, GPR13(r7)
- 	std	r5, -16(r1)
-+	ld	r5, GPR1(r7)
-+	std	r5, -24(r1)
+-	if (wcidx >= MT7915_WTBL_SIZE)
++	if (wcidx >= mt7915_wtbl_size(dev))
+ 		return;
  
- 	REST_GPR(7, r7)
+ 	rcu_read_lock();
+diff --git a/drivers/net/wireless/mediatek/mt76/mt7915/mt7915.h b/drivers/net/wireless/mediatek/mt76/mt7915/mt7915.h
+index 42d887383e8d..12ca54566461 100644
+--- a/drivers/net/wireless/mediatek/mt76/mt7915/mt7915.h
++++ b/drivers/net/wireless/mediatek/mt76/mt7915/mt7915.h
+@@ -12,7 +12,8 @@
+ #define MT7915_MAX_INTERFACES		19
+ #define MT7915_MAX_WMM_SETS		4
+ #define MT7915_WTBL_SIZE		288
+-#define MT7915_WTBL_RESERVED		(MT7915_WTBL_SIZE - 1)
++#define MT7916_WTBL_SIZE		544
++#define MT7915_WTBL_RESERVED		(mt7915_wtbl_size(dev) - 1)
+ #define MT7915_WTBL_STA			(MT7915_WTBL_RESERVED - \
+ 					 MT7915_MAX_INTERFACES)
  
--	/* Clear MSR RI since we are about to use SCRATCH0. EE is already off */
-+	/* Stash the stack pointer away for use after recheckpoint */
-+	std	r1, PACAR1(r13)
+@@ -449,6 +450,11 @@ static inline bool is_mt7915(struct mt76_dev *dev)
+ 	return mt76_chip(dev) == 0x7915;
+ }
+ 
++static inline u16 mt7915_wtbl_size(struct mt7915_dev *dev)
++{
++	return is_mt7915(&dev->mt76) ? MT7915_WTBL_SIZE : MT7916_WTBL_SIZE;
++}
 +
-+	/* Clear MSR RI since we are about to clobber r13. EE is already off */
- 	li	r5, 0
- 	mtmsrd	r5, 1
+ void mt7915_dual_hif_set_irq_mask(struct mt7915_dev *dev, bool write_reg,
+ 				  u32 clear, u32 set);
  
-@@ -501,9 +508,9 @@ restore_gprs:
- 	 * until we turn MSR RI back on.
- 	 */
- 
--	SET_SCRATCH0(r1)
- 	ld	r5, -8(r1)
--	ld	r1, -16(r1)
-+	ld	r13, -16(r1)
-+	ld	r1, -24(r1)
- 
- 	/* Commit register state as checkpointed state: */
- 	TRECHKPT
-@@ -519,9 +526,9 @@ restore_gprs:
- 	 */
- 
- 	GET_PACA(r13)
--	GET_SCRATCH0(r1)
-+	ld	r1, PACAR1(r13)
- 
--	/* R1 is restored, so we are recoverable again.  EE is still off */
-+	/* R13, R1 is restored, so we are recoverable again.  EE is still off */
- 	li	r4, MSR_RI
- 	mtmsrd	r4, 1
- 
+-- 
+2.34.1
+
 
 
