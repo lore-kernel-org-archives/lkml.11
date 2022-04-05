@@ -2,113 +2,214 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AE3A6C35294
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C20BEC35295
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 11:25:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376815AbiDELXx (ORCPT
+        id S1376834AbiDELYH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 07:23:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39668 "EHLO
+        Tue, 5 Apr 2022 07:24:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38470 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241716AbiDEIsd (ORCPT
+        with ESMTP id S241701AbiDEIsc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:48:33 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 545922C109;
-        Tue,  5 Apr 2022 01:36:54 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CE2CAB81C82;
-        Tue,  5 Apr 2022 08:36:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 17A5FC385A0;
-        Tue,  5 Apr 2022 08:36:51 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649147811;
-        bh=48eWMo9siKzKdycm50TCprOZYHmZ5EEOZViOHbQBvzc=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZEM3ogDhIaaqKD6aBQzU9EIMkRJePLop12h8irCc9qOTCixYPBsyf0PynxZtyjFdy
-         tfJ1hJqLHTMiMGfpkMnv7Xv91ZhG6qzMaJKyElc3waQp++1KUW14Fa40LhdrYDYvIu
-         lAPveluvCy6OSqNrsba2D+m/hQiK5qKr1ZaYdtwI=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Charan Teja Kalla <quic_charante@quicinc.com>,
-        David Rientjes <rientjes@google.com>,
-        Michal Hocko <mhocko@suse.com>,
-        Minchan Kim <minchan@kernel.org>,
-        Nadav Amit <nadav.amit@gmail.com>,
-        Stephen Rothwell <sfr@canb.auug.org.au>,
-        Suren Baghdasaryan <surenb@google.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [PATCH 5.16 0113/1017] mm: madvise: skip unmapped vma holes passed to process_madvise
-Date:   Tue,  5 Apr 2022 09:17:06 +0200
-Message-Id: <20220405070357.550637052@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
-References: <20220405070354.155796697@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 5 Apr 2022 04:48:32 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31D462AE09;
+        Tue,  5 Apr 2022 01:36:49 -0700 (PDT)
+Date:   Tue, 05 Apr 2022 08:36:37 -0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1649147798;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=A5geXpxjvPe814KNLb/sN9jiLCNyqM2BsadEeVroj2c=;
+        b=AQp4XHXLkBNLpKVS2ZkZTHBog9mm3OeJ0AO86QbOyKQNV11W+dRc+g9OYEQ+KcuRfSlXHI
+        0jn1nM/WdcC1/N8feEklIvZcgRsNMMSkAGndJXTzHL/3AGXJrT6TVByFGWavXfCF5uiuek
+        7RyEjVa+6kZ9/whJANOJnapATRVi4QC7T0Vt2fjKkk7YJWGudqnCKQM113rJ/UZj3DSN/9
+        bRpJJMHspABgfWTj7MjPS0tIdfUPc0JuvgUNpVwrJepVsy5koyWWtoD/1TUXGgTSk27CZb
+        WOdQ9xfyy98cge2vSigWWof3B32WbGPzQWyVekzIIWiVJdHnFY9v4/r9FdumaA==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1649147798;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=A5geXpxjvPe814KNLb/sN9jiLCNyqM2BsadEeVroj2c=;
+        b=waW1gpvuNo7jZSe8lciWI4fELkaGayOA1mcmRu06XoXFoI1N07xPFGv3P7/wim9I+s5W0D
+        OdTxsFmmUWkqdjDw==
+From:   "tip-bot2 for Stephane Eranian" <tip-bot2@linutronix.de>
+Sender: tip-bot2@linutronix.de
+Reply-to: linux-kernel@vger.kernel.org
+To:     linux-tip-commits@vger.kernel.org
+Subject: [tip: perf/core] perf/x86/amd: Add idle hooks for branch sampling
+Cc:     Stephane Eranian <eranian@google.com>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>, x86@kernel.org,
+        linux-kernel@vger.kernel.org
+In-Reply-To: <20220322221517.2510440-10-eranian@google.com>
+References: <20220322221517.2510440-10-eranian@google.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Message-ID: <164914779753.389.8152356106310343006.tip-bot2@tip-bot2>
+Robot-ID: <tip-bot2@linutronix.de>
+Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Charan Teja Kalla <quic_charante@quicinc.com>
+The following commit has been merged into the perf/core branch of tip:
 
-commit 08095d6310a7ce43256b4251577bc66a25c6e1a6 upstream.
+Commit-ID:     d5616bac7adadbf42a3b63b8717e75eb82a2cc2c
+Gitweb:        https://git.kernel.org/tip/d5616bac7adadbf42a3b63b8717e75eb82a2cc2c
+Author:        Stephane Eranian <eranian@google.com>
+AuthorDate:    Tue, 22 Mar 2022 15:15:13 -07:00
+Committer:     Peter Zijlstra <peterz@infradead.org>
+CommitterDate: Tue, 05 Apr 2022 10:24:38 +02:00
 
-The process_madvise() system call is expected to skip holes in vma passed
-through 'struct iovec' vector list.  But do_madvise, which
-process_madvise() calls for each vma, returns ENOMEM in case of unmapped
-holes, despite the VMA is processed.
+perf/x86/amd: Add idle hooks for branch sampling
 
-Thus process_madvise() should treat ENOMEM as expected and consider the
-VMA passed to as processed and continue processing other vma's in the
-vector list.  Returning -ENOMEM to user, despite the VMA is processed,
-will be unable to figure out where to start the next madvise.
+On AMD Fam19h Zen3, the branch sampling (BRS) feature must be disabled before
+entering low power and re-enabled (if was active) when returning from low
+power. Otherwise, the NMI interrupt may be held up for too long and cause
+problems. Stopping BRS will cause the NMI to be delivered if it was held up.
 
-Link: https://lkml.kernel.org/r/4f091776142f2ebf7b94018146de72318474e686.1647008754.git.quic_charante@quicinc.com
-Fixes: ecb8ac8b1f14("mm/madvise: introduce process_madvise() syscall: an external memory hinting API")
-Signed-off-by: Charan Teja Kalla <quic_charante@quicinc.com>
-Cc: David Rientjes <rientjes@google.com>
-Cc: Michal Hocko <mhocko@suse.com>
-Cc: Minchan Kim <minchan@kernel.org>
-Cc: Nadav Amit <nadav.amit@gmail.com>
-Cc: Stephen Rothwell <sfr@canb.auug.org.au>
-Cc: Suren Baghdasaryan <surenb@google.com>
-Cc: Vlastimil Babka <vbabka@suse.cz>
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Define a perf_amd_brs_lopwr_cb() callback to stop/restart BRS.  The callback
+is protected by a jump label which is enabled only when AMD BRS is detected.
+In all other cases, the callback is never called.
+
+Signed-off-by: Stephane Eranian <eranian@google.com>
+[peterz: static_call() and build fixes]
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Link: https://lore.kernel.org/r/20220322221517.2510440-10-eranian@google.com
 ---
- mm/madvise.c |    9 ++++++++-
- 1 file changed, 8 insertions(+), 1 deletion(-)
+ arch/x86/events/amd/brs.c         | 33 ++++++++++++++++++++++++++++++-
+ arch/x86/events/amd/core.c        |  4 ++++-
+ arch/x86/events/perf_event.h      |  1 +-
+ arch/x86/include/asm/perf_event.h | 23 +++++++++++++++++++++-
+ 4 files changed, 61 insertions(+)
 
---- a/mm/madvise.c
-+++ b/mm/madvise.c
-@@ -1280,9 +1280,16 @@ SYSCALL_DEFINE5(process_madvise, int, pi
+diff --git a/arch/x86/events/amd/brs.c b/arch/x86/events/amd/brs.c
+index 40461c3..895c821 100644
+--- a/arch/x86/events/amd/brs.c
++++ b/arch/x86/events/amd/brs.c
+@@ -7,6 +7,7 @@
+  * Contributed by Stephane Eranian <eranian@google.com>
+  */
+ #include <linux/kernel.h>
++#include <linux/jump_label.h>
+ #include <asm/msr.h>
+ #include <asm/cpufeature.h>
  
- 	while (iov_iter_count(&iter)) {
- 		iovec = iov_iter_iovec(&iter);
-+		/*
-+		 * do_madvise returns ENOMEM if unmapped holes are present
-+		 * in the passed VMA. process_madvise() is expected to skip
-+		 * unmapped holes passed to it in the 'struct iovec' list
-+		 * and not fail because of them. Thus treat -ENOMEM return
-+		 * from do_madvise as valid and continue processing.
-+		 */
- 		ret = do_madvise(mm, (unsigned long)iovec.iov_base,
- 					iovec.iov_len, behavior);
--		if (ret < 0)
-+		if (ret < 0 && ret != -ENOMEM)
- 			break;
- 		iov_iter_advance(&iter, iovec.iov_len);
+@@ -329,3 +330,35 @@ void amd_pmu_brs_sched_task(struct perf_event_context *ctx, bool sched_in)
+ 	if (sched_in)
+ 		amd_brs_poison_buffer();
+ }
++
++/*
++ * called from ACPI processor_idle.c or acpi_pad.c
++ * with interrupts disabled
++ */
++void perf_amd_brs_lopwr_cb(bool lopwr_in)
++{
++	struct cpu_hw_events *cpuc = this_cpu_ptr(&cpu_hw_events);
++	union amd_debug_extn_cfg cfg;
++
++	/*
++	 * on mwait in, we may end up in non C0 state.
++	 * we must disable branch sampling to avoid holding the NMI
++	 * for too long. We disable it in hardware but we
++	 * keep the state in cpuc, so we can re-enable.
++	 *
++	 * The hardware will deliver the NMI if needed when brsmen cleared
++	 */
++	if (cpuc->brs_active) {
++		cfg.val = get_debug_extn_cfg();
++		cfg.brsmen = !lopwr_in;
++		set_debug_extn_cfg(cfg.val);
++	}
++}
++
++DEFINE_STATIC_CALL_NULL(perf_lopwr_cb, perf_amd_brs_lopwr_cb);
++EXPORT_STATIC_CALL_TRAMP_GPL(perf_lopwr_cb);
++
++void __init amd_brs_lopwr_init(void)
++{
++	static_call_update(perf_lopwr_cb, perf_amd_brs_lopwr_cb);
++}
+diff --git a/arch/x86/events/amd/core.c b/arch/x86/events/amd/core.c
+index f7bce83..8e1e818 100644
+--- a/arch/x86/events/amd/core.c
++++ b/arch/x86/events/amd/core.c
+@@ -1,5 +1,6 @@
+ // SPDX-License-Identifier: GPL-2.0-only
+ #include <linux/perf_event.h>
++#include <linux/jump_label.h>
+ #include <linux/export.h>
+ #include <linux/types.h>
+ #include <linux/init.h>
+@@ -1225,6 +1226,9 @@ static int __init amd_core_pmu_init(void)
+ 		/*
+ 		 * put_event_constraints callback same as Fam17h, set above
+ 		 */
++
++		/* branch sampling must be stopped when entering low power */
++		amd_brs_lopwr_init();
  	}
-
-
+ 
+ 	x86_pmu.attr_update = amd_attr_update;
+diff --git a/arch/x86/events/perf_event.h b/arch/x86/events/perf_event.h
+index ef27aee..3b03245 100644
+--- a/arch/x86/events/perf_event.h
++++ b/arch/x86/events/perf_event.h
+@@ -1226,6 +1226,7 @@ void amd_brs_enable(void);
+ void amd_brs_enable_all(void);
+ void amd_brs_disable_all(void);
+ void amd_brs_drain(void);
++void amd_brs_lopwr_init(void);
+ void amd_brs_disable_all(void);
+ int amd_brs_setup_filter(struct perf_event *event);
+ void amd_brs_reset(void);
+diff --git a/arch/x86/include/asm/perf_event.h b/arch/x86/include/asm/perf_event.h
+index 58d9e4b..8199fc5 100644
+--- a/arch/x86/include/asm/perf_event.h
++++ b/arch/x86/include/asm/perf_event.h
+@@ -2,6 +2,8 @@
+ #ifndef _ASM_X86_PERF_EVENT_H
+ #define _ASM_X86_PERF_EVENT_H
+ 
++#include <linux/static_call.h>
++
+ /*
+  * Performance event hw details:
+  */
+@@ -513,6 +515,27 @@ static inline void intel_pt_handle_vmx(int on)
+ #if defined(CONFIG_PERF_EVENTS) && defined(CONFIG_CPU_SUP_AMD)
+  extern void amd_pmu_enable_virt(void);
+  extern void amd_pmu_disable_virt(void);
++
++#if defined(CONFIG_PERF_EVENTS_AMD_BRS)
++
++#define PERF_NEEDS_LOPWR_CB 1
++
++/*
++ * architectural low power callback impacts
++ * drivers/acpi/processor_idle.c
++ * drivers/acpi/acpi_pad.c
++ */
++extern void perf_amd_brs_lopwr_cb(bool lopwr_in);
++
++DECLARE_STATIC_CALL(perf_lopwr_cb, perf_amd_brs_lopwr_cb);
++
++static inline void perf_lopwr_cb(bool lopwr_in)
++{
++	static_call_mod(perf_lopwr_cb)(lopwr_in);
++}
++
++#endif /* PERF_NEEDS_LOPWR_CB */
++
+ #else
+  static inline void amd_pmu_enable_virt(void) { }
+  static inline void amd_pmu_disable_virt(void) { }
