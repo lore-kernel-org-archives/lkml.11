@@ -2,135 +2,142 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D14BC43217
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:11:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B6595C4321E
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:11:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1573865AbiDEWxf (ORCPT
+        id S1573891AbiDEWxo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 18:53:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51998 "EHLO
+        Tue, 5 Apr 2022 18:53:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59944 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1458142AbiDERKP (ORCPT
+        with ESMTP id S1349963AbiDEJwM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 13:10:15 -0400
-Received: from smtp-relay-internal-1.canonical.com (smtp-relay-internal-1.canonical.com [185.125.188.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96BB853E0D
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 10:08:10 -0700 (PDT)
-Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com [209.85.221.70])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        Tue, 5 Apr 2022 05:52:12 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 679B93466F;
+        Tue,  5 Apr 2022 02:50:13 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id 3F46B3F7F8
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 17:08:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1649178489;
-        bh=5ihDC8svoYNzIK8hMFPyp1shfnbI2+1sTt6+M9occ8s=;
-        h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-         To:Cc:Content-Type;
-        b=IUkkLfimBJWf98kUMI2g9SirAuVXQOUPA3bh6YbbqNWxS3lgf7t/5zA6RflitTCXs
-         41HLAJtp1A9U4o7JeMLl9l2TJ6P1vjIfMA8NxvppLlEwoz6u633oTtGVUXNp95nemM
-         IEzCMIzuFKWRs4Q7DgtXA6JvSSBR7RjD8VHQ0nECVlSAtxWxBGxvhBCIvyeGR4La0o
-         ATEwFzYYfPz3ue8rsJfddPbmFOXnsfnKgnuJopniPUIws7tCE0S/2DmJy4EsXEbRD8
-         TI78+BnSjHtKOS9CoceoCh+S7CB2IrkUW4/VVyR0PUDHf3A+xNNhvZORbXJZiuJXe8
-         ZAea2dKoz/1vQ==
-Received: by mail-wr1-f70.google.com with SMTP id e4-20020adfa444000000b002060b7347f8so1774897wra.6
-        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 10:08:09 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=5ihDC8svoYNzIK8hMFPyp1shfnbI2+1sTt6+M9occ8s=;
-        b=LzdtEnWw6B+LkEinl205j07VAqNbZL90SRMcQM1AaXTamf1AFYNypaR/5CeipNh/rc
-         YJcefi0t2ffxYloQADmqz6DNf6pj36ckRQrKZWcVdt/zUaT2f5cmekpFO3WeIZtjJ3me
-         DTPUcBlkZOHE1YwZoAIaWyQ3HPFPoF1ODiRBbC5GOD8pzZoEo6yH2HOxfGoNGIdLwhqW
-         nKMIQ6Dk03e+acqWqAtRWWYq29ErtjfribZf8XvZ8mGcIa/wxySuqqC70oqejZO2K3Hv
-         t1uW9RPwEPfE4ox6Chbo0K0C8aruZCBnul9PV3ZP/wQULMcfrGOgI1AYGzUnC/063xx+
-         P5ow==
-X-Gm-Message-State: AOAM532NSTiQ3WOfAGk/r19Gm/ZWqa3bz3YkqsWDBm8wvpmXmDo6rPFG
-        I2XrhxURBdxND1yJjoqsbuvWlwsON230+r36pGoOVKBQO/1tqVTs8XNNPM4AolZTUamSyf+ALMk
-        qWRnr7959fzwG916mteYssIEDgHrj+WoDLiTPgOx6t073izQKfAexhInkog==
-X-Received: by 2002:a05:6000:1203:b0:206:1837:b5a8 with SMTP id e3-20020a056000120300b002061837b5a8mr3473856wrx.232.1649178486071;
-        Tue, 05 Apr 2022 10:08:06 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJziuMa66ZbQ9P/QeRUcn9JlFEqtsJOCFfYeHJTQhJe868mBJWdgkEPXXRcbxUGQEfP9hhmpi0r6jO87fnMEX18=
-X-Received: by 2002:a05:6000:1203:b0:206:1837:b5a8 with SMTP id
- e3-20020a056000120300b002061837b5a8mr3473845wrx.232.1649178485847; Tue, 05
- Apr 2022 10:08:05 -0700 (PDT)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1D0AFB81B7A;
+        Tue,  5 Apr 2022 09:50:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 61627C385A1;
+        Tue,  5 Apr 2022 09:50:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649152210;
+        bh=2lkpK1T+wf6Ao5AxessnGv/w2OS1dIUjk/FEv6B0iUY=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=aysHmXTUnDJf0Vm4ia3nAgfm0Dmlfpmu0PGrzLdEv+S9QvzTKsWYodZilhdZQX3FT
+         v1khR+eqMGEwGyUaRDl+LBr0iisScTti39J6x7oUHcn6kCnLYbqnqN0s1jq5dH5P7v
+         FBA90MQZE0onOISAmT3UZCu62kpZDjZ7OXwYSByw=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        Richard Haines <richard_c_haines@btinternet.com>,
+        Paul Moore <paul@paul-moore.com>,
+        Sasha Levin <sashal@kernel.org>,
+        Demi Marie Obenour <demiobenour@gmail.com>
+Subject: [PATCH 5.15 694/913] selinux: allow FIOCLEX and FIONCLEX with policy capability
+Date:   Tue,  5 Apr 2022 09:29:16 +0200
+Message-Id: <20220405070400.637793824@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-References: <20220405070354.155796697@linuxfoundation.org> <20220405070400.156176848@linuxfoundation.org>
- <YkxjbVp3W2LeVIeL@xps13.dannf> <Ykx1o2PbNzGlp1ds@kroah.com>
-In-Reply-To: <Ykx1o2PbNzGlp1ds@kroah.com>
-From:   dann frazier <dann.frazier@canonical.com>
-Date:   Tue, 5 Apr 2022 11:07:53 -0600
-Message-ID: <CALdTtnv2w5d0N4ez7JTsxaWMa6v2c5j9-guVjkUq33=UDNFMGA@mail.gmail.com>
-Subject: Re: [PATCH 5.16 0199/1017] PCI: xgene: Revert "PCI: xgene: Fix IB
- window setup"
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        Marc Zyngier <maz@kernel.org>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Rob Herring <robh@kernel.org>,
-        Toan Le <toan@os.amperecomputing.com>,
-        =?UTF-8?Q?Krzysztof_Wilczy=C5=84ski?= <kw@linux.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        =?UTF-8?Q?St=C3=A9phane_Graber?= <stgraber@ubuntu.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 5, 2022 at 11:00 AM Greg Kroah-Hartman
-<gregkh@linuxfoundation.org> wrote:
->
-> On Tue, Apr 05, 2022 at 09:42:37AM -0600, dann frazier wrote:
-> > On Tue, Apr 05, 2022 at 09:18:32AM +0200, Greg Kroah-Hartman wrote:
-> > > From: Marc Zyngier <maz@kernel.org>
-> > >
-> > > commit 825da4e9cec68713fbb02dc6f71fe1bf65fe8050 upstream.
-> > >
-> > > Commit c7a75d07827a ("PCI: xgene: Fix IB window setup") tried to
-> > > fix the damages that 6dce5aa59e0b ("PCI: xgene: Use inbound resources
-> > > for setup") caused, but actually didn't improve anything for some
-> > > plarforms (at least Mustang and m400 are still broken).
-> > >
-> > > Given that 6dce5aa59e0b has been reverted, revert this patch as well,
-> > > restoring the PCIe support on XGene to its pre-5.5, working state.
-> > >
-> > > Link: https://lore.kernel.org/r/YjN8pT5e6/8cRohQ@xps13.dannf
-> > > Link: https://lore.kernel.org/r/20220321104843.949645-3-maz@kernel.or=
-g
-> > > Fixes: c7a75d07827a ("PCI: xgene: Fix IB window setup")
-> > > Signed-off-by: Marc Zyngier <maz@kernel.org>
-> > > Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-> > > Cc: stable@vger.kernel.org
-> > > Cc: Rob Herring <robh@kernel.org>
-> > > Cc: Toan Le <toan@os.amperecomputing.com>
-> > > Cc: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-> > > Cc: Krzysztof Wilczy=C5=84ski <kw@linux.com>
-> > > Cc: Bjorn Helgaas <bhelgaas@google.com>
-> > > Cc: St=C3=A9phane Graber <stgraber@ubuntu.com>
-> > > Cc: dann frazier <dann.frazier@canonical.com>
-> > > Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> > > ---
-> > >  drivers/pci/controller/pci-xgene.c |    2 +-
-> > >  1 file changed, 1 insertion(+), 1 deletion(-)
-> >
-> > Hi Greg,
-> >
-> >   I don't think it makes sense to apply this to 5.10.y, 5.15.y &
-> > 5.16.y w/o also applying a backport of 1874b6d7ab1, because without
-> > that we will regress support for St=C3=A9phane's X-Gene2-based systems.=
- The
-> > backport of 1874b6d7ab1 was rejected for these trees because it doesn't
-> > apply cleanly, but I've just submitted new versions that do.
->
-> Where were those patches sent to?  I don't seem to see them on the
-> stable list, did I miss them?
+From: Richard Haines <richard_c_haines@btinternet.com>
 
-These are the message IDs:
-<20220405142505.1268999-1-dann.frazier@canonical.com>
-<20220405153419.1330755-1-dann.frazier@canonical.com>
+[ Upstream commit 65881e1db4e948614d9eb195b8e1197339822949 ]
 
-I've just bounced them directly to you as well. Thanks Greg!
+These ioctls are equivalent to fcntl(fd, F_SETFD, flags), which SELinux
+always allows too.  Furthermore, a failed FIOCLEX could result in a file
+descriptor being leaked to a process that should not have access to it.
 
- -dann
+As this patch removes access controls, a policy capability needs to be
+enabled in policy to always allow these ioctls.
+
+Based-on-patch-by: Demi Marie Obenour <demiobenour@gmail.com>
+Signed-off-by: Richard Haines <richard_c_haines@btinternet.com>
+[PM: subject line tweak]
+Signed-off-by: Paul Moore <paul@paul-moore.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ security/selinux/hooks.c                   | 6 ++++++
+ security/selinux/include/policycap.h       | 1 +
+ security/selinux/include/policycap_names.h | 3 ++-
+ security/selinux/include/security.h        | 7 +++++++
+ 4 files changed, 16 insertions(+), 1 deletion(-)
+
+diff --git a/security/selinux/hooks.c b/security/selinux/hooks.c
+index 9a89e456d378..9ce029b2f226 100644
+--- a/security/selinux/hooks.c
++++ b/security/selinux/hooks.c
+@@ -3795,6 +3795,12 @@ static int selinux_file_ioctl(struct file *file, unsigned int cmd,
+ 					    CAP_OPT_NONE, true);
+ 		break;
+ 
++	case FIOCLEX:
++	case FIONCLEX:
++		if (!selinux_policycap_ioctl_skip_cloexec())
++			error = ioctl_has_perm(cred, file, FILE__IOCTL, (u16) cmd);
++		break;
++
+ 	/* default case assumes that the command will go
+ 	 * to the file's ioctl() function.
+ 	 */
+diff --git a/security/selinux/include/policycap.h b/security/selinux/include/policycap.h
+index 2ec038efbb03..a9e572ca4fd9 100644
+--- a/security/selinux/include/policycap.h
++++ b/security/selinux/include/policycap.h
+@@ -11,6 +11,7 @@ enum {
+ 	POLICYDB_CAPABILITY_CGROUPSECLABEL,
+ 	POLICYDB_CAPABILITY_NNP_NOSUID_TRANSITION,
+ 	POLICYDB_CAPABILITY_GENFS_SECLABEL_SYMLINKS,
++	POLICYDB_CAPABILITY_IOCTL_SKIP_CLOEXEC,
+ 	__POLICYDB_CAPABILITY_MAX
+ };
+ #define POLICYDB_CAPABILITY_MAX (__POLICYDB_CAPABILITY_MAX - 1)
+diff --git a/security/selinux/include/policycap_names.h b/security/selinux/include/policycap_names.h
+index b89289f092c9..ebd64afe1def 100644
+--- a/security/selinux/include/policycap_names.h
++++ b/security/selinux/include/policycap_names.h
+@@ -12,7 +12,8 @@ const char *selinux_policycap_names[__POLICYDB_CAPABILITY_MAX] = {
+ 	"always_check_network",
+ 	"cgroup_seclabel",
+ 	"nnp_nosuid_transition",
+-	"genfs_seclabel_symlinks"
++	"genfs_seclabel_symlinks",
++	"ioctl_skip_cloexec"
+ };
+ 
+ #endif /* _SELINUX_POLICYCAP_NAMES_H_ */
+diff --git a/security/selinux/include/security.h b/security/selinux/include/security.h
+index ac0ece01305a..c0d966020ebd 100644
+--- a/security/selinux/include/security.h
++++ b/security/selinux/include/security.h
+@@ -219,6 +219,13 @@ static inline bool selinux_policycap_genfs_seclabel_symlinks(void)
+ 	return READ_ONCE(state->policycap[POLICYDB_CAPABILITY_GENFS_SECLABEL_SYMLINKS]);
+ }
+ 
++static inline bool selinux_policycap_ioctl_skip_cloexec(void)
++{
++	struct selinux_state *state = &selinux_state;
++
++	return READ_ONCE(state->policycap[POLICYDB_CAPABILITY_IOCTL_SKIP_CLOEXEC]);
++}
++
+ struct selinux_policy_convert_data;
+ 
+ struct selinux_load_state {
+-- 
+2.34.1
+
+
+
