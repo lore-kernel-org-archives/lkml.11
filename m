@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 798E0C43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A464C4321E
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:01:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234721AbiDEH6r (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 03:58:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47748 "EHLO
+        id S234631AbiDEH6n (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 03:58:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47086 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233541AbiDEHr4 (ORCPT
+        with ESMTP id S233544AbiDEHr4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Apr 2022 03:47:56 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8B5A9231A;
-        Tue,  5 Apr 2022 00:45:11 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE24F9233D;
+        Tue,  5 Apr 2022 00:45:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 88702616C6;
-        Tue,  5 Apr 2022 07:45:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 93D50C340EE;
-        Tue,  5 Apr 2022 07:45:10 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 40AE9616BF;
+        Tue,  5 Apr 2022 07:45:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 48EAFC340EE;
+        Tue,  5 Apr 2022 07:45:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649144711;
-        bh=/WCYyhiwKb7MyTHWUY4idC3q5eGds2twTG7P8apsP4g=;
+        s=korg; t=1649144716;
+        bh=S9aXtfEKDGdBQZkVkd+a1yTaeGJtvtEgjUrZ0wayzj4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=licuQt5hKLt/R4S1V0MWDyWQJVjdI6xCKbSqlorNWYfgzISl+muA4oDXd4QywtE2K
-         ikmYY0RdhfevNzYyOohAgix8n18mOYZbjdNmp+BFQcFtYXhKVgzsmypl4ExyTh03Nn
-         F2QKXXaGRrzCDvXVGSslpIiJ4fkD76rYWSzy50xg=
+        b=zECrY2ubk9bbWD8Xelbj5t1VFMrP8BHD3mPnKv+fxCVbTfzAQdeFh5xMex2muf66+
+         G89v0ISDKlHgXBe5j6cBI9GWttYqO7juHxP6Ei0C626v4LGSutqJ82iZXwHeWzQLCf
+         T1EATTi1DFHdGNdzv6x+r7XIlPA3oFqv21s9MZXI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Javier Martinez Canillas <javierm@redhat.com>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Thomas Zimmermann <tzimmermann@suse.de>
-Subject: [PATCH 5.17 0104/1126] drm/simpledrm: Add "panel orientation" property on non-upright mounted LCD panels
-Date:   Tue,  5 Apr 2022 09:14:11 +0200
-Message-Id: <20220405070410.621692235@linuxfoundation.org>
+        stable@vger.kernel.org, linux-security-module@vger.kernel.org,
+        Christian Brauner <christian.brauner@ubuntu.com>,
+        =?UTF-8?q?Micka=C3=ABl=20Sala=C3=BCn?= <mic@linux.microsoft.com>
+Subject: [PATCH 5.17 0138/1126] landlock: Use square brackets around "landlock-ruleset"
+Date:   Tue,  5 Apr 2022 09:14:45 +0200
+Message-Id: <20220405070411.629673184@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -50,42 +49,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hans de Goede <hdegoede@redhat.com>
+From: Christian Brauner <christian.brauner@ubuntu.com>
 
-commit 94fa115f7b28a3f02611499175e134f0a823b686 upstream.
+commit aea0b9f2486da8497f35c7114b764bf55e17c7ea upstream.
 
-Some devices use e.g. a portrait panel in a standard laptop casing made
-for landscape panels. efifb calls drm_get_panel_orientation_quirk() and
-sets fb_info.fbcon_rotate_hint to make fbcon rotate the console so that
-it shows up-right instead of on its side.
+Make the name of the anon inode fd "[landlock-ruleset]" instead of
+"landlock-ruleset". This is minor but most anon inode fds already
+carry square brackets around their name:
 
-When switching to simpledrm the fbcon renders on its side. Call the
-drm_connector_set_panel_orientation_with_quirk() helper to add
-a "panel orientation" property on devices listed in the quirk table,
-to make the fbcon (and aware userspace apps) rotate the image to
-display properly.
+    [eventfd]
+    [eventpoll]
+    [fanotify]
+    [fscontext]
+    [io_uring]
+    [pidfd]
+    [signalfd]
+    [timerfd]
+    [userfaultfd]
 
-Cc: Javier Martinez Canillas <javierm@redhat.com>
-Signed-off-by: Hans de Goede <hdegoede@redhat.com>
-Reviewed-by: Javier Martinez Canillas <javierm@redhat.com>
-Acked-by: Thomas Zimmermann <tzimmermann@suse.de>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220221220045.11958-1-hdegoede@redhat.com
+For the sake of consistency lets do the same for the landlock-ruleset anon
+inode fd that comes with landlock. We did the same in
+1cdc415f1083 ("uapi, fsopen: use square brackets around "fscontext" [ver #2]")
+for the new mount api.
+
+Cc: linux-security-module@vger.kernel.org
+Signed-off-by: Christian Brauner <christian.brauner@ubuntu.com>
+Link: https://lore.kernel.org/r/20211011133704.1704369-1-brauner@kernel.org
+Cc: stable@vger.kernel.org
+Signed-off-by: Mickaël Salaün <mic@linux.microsoft.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/tiny/simpledrm.c |    3 +++
- 1 file changed, 3 insertions(+)
+ security/landlock/syscalls.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/gpu/drm/tiny/simpledrm.c
-+++ b/drivers/gpu/drm/tiny/simpledrm.c
-@@ -798,6 +798,9 @@ static int simpledrm_device_init_modeset
- 	if (ret)
- 		return ret;
- 	drm_connector_helper_add(connector, &simpledrm_connector_helper_funcs);
-+	drm_connector_set_panel_orientation_with_quirk(connector,
-+						       DRM_MODE_PANEL_ORIENTATION_UNKNOWN,
-+						       mode->hdisplay, mode->vdisplay);
+--- a/security/landlock/syscalls.c
++++ b/security/landlock/syscalls.c
+@@ -192,7 +192,7 @@ SYSCALL_DEFINE3(landlock_create_ruleset,
+ 		return PTR_ERR(ruleset);
  
- 	formats = simpledrm_device_formats(sdev, &nformats);
- 
+ 	/* Creates anonymous FD referring to the ruleset. */
+-	ruleset_fd = anon_inode_getfd("landlock-ruleset", &ruleset_fops,
++	ruleset_fd = anon_inode_getfd("[landlock-ruleset]", &ruleset_fops,
+ 			ruleset, O_RDWR | O_CLOEXEC);
+ 	if (ruleset_fd < 0)
+ 		landlock_put_ruleset(ruleset);
 
 
