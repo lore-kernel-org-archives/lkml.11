@@ -2,53 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B18E9C3527D
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 10:50:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 36F35C47081
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 10:50:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345115AbiDEKko (ORCPT
+        id S1348223AbiDEKqI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 06:40:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56394 "EHLO
+        Tue, 5 Apr 2022 06:46:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53274 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237511AbiDEISE (ORCPT
+        with ESMTP id S241517AbiDEIeF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:18:04 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CEE1D6A021;
-        Tue,  5 Apr 2022 01:06:34 -0700 (PDT)
+        Tue, 5 Apr 2022 04:34:05 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B5F565BD;
+        Tue,  5 Apr 2022 01:32:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 85F9DB81B92;
-        Tue,  5 Apr 2022 08:06:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BBFFEC385A2;
-        Tue,  5 Apr 2022 08:06:31 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0871DB81BB1;
+        Tue,  5 Apr 2022 08:32:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 50963C385A5;
+        Tue,  5 Apr 2022 08:32:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649145992;
-        bh=weF/+fdsg4H1uMnMRru4rmj6Vwi3n8PJR9iKpewABAA=;
+        s=korg; t=1649147522;
+        bh=IUm2yfGBO7rEUNDX0xPbof/nJHCqzO3rRyRuqsdo2uU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JNLVnZ2PsQNXsbZz9qt8XLbDMXijzgKvBtJ7/7dUVeyQOcKjWSB9twr++pdn6Wqzl
-         ZUyzSAK5K9uQkST5ZDa3yHAYrTLXA85yi+MOYNYiKOL7wAmTwnfX5xqE7of+Wat8NM
-         gL18VbRq3I7dRUbcRQfL0JXJxpqoOJjd89f+ocvY=
+        b=Wtx2UWn6ws7dlqhVxNerauz2IgCbBmmbHBJy29LLCPqlY9BsD2WayUmE6jNKCqdNm
+         FlEalhetKMD4nOE0RuPoZ6OH4t4dB5p6MosW2UtgYMW51ofRvCDUgJDLMOEYeDmgW3
+         fND8Z0lMWRr8ZY13ombdgZ6IJZYlx1eMz/DZvp/o=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Daniel Vetter <daniel@ffwll.ch>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        David Airlie <airlied@linux.ie>,
-        dri-devel@lists.freedesktop.org, Kees Cook <keescook@chromium.org>,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        Jani Nikula <jani.nikula@intel.com>,
-        Thierry Reding <treding@nvidia.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0604/1126] drm/dp: Fix OOB read when handling Post Cursor2 register
-Date:   Tue,  5 Apr 2022 09:22:31 +0200
-Message-Id: <20220405070425.363510901@linuxfoundation.org>
+        stable@vger.kernel.org, Evan Quan <evan.quan@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Mario Limonciello <mario.limonciello@amd.com>
+Subject: [PATCH 5.16 0026/1017] drm/amdgpu: move PX checking into amdgpu_device_ip_early_init
+Date:   Tue,  5 Apr 2022 09:15:39 +0200
+Message-Id: <20220405070354.953822658@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
-References: <20220405070407.513532867@linuxfoundation.org>
+In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
+References: <20220405070354.155796697@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -57,109 +50,81 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kees Cook <keescook@chromium.org>
+From: Alex Deucher <alexander.deucher@amd.com>
 
-[ Upstream commit a2151490cc6c57b368d7974ffd447a8b36ade639 ]
+commit 901e2be20dc55079997ea1885ea77fc72e6826e7 upstream.
 
-The link_status array was not large enough to read the Adjust Request
-Post Cursor2 register, so remove the common helper function to avoid
-an OOB read, found with a -Warray-bounds build:
+We need to set the APU flag from IP discovery before
+we evaluate this code.
 
-drivers/gpu/drm/drm_dp_helper.c: In function 'drm_dp_get_adjust_request_post_cursor':
-drivers/gpu/drm/drm_dp_helper.c:59:27: error: array subscript 10 is outside array bounds of 'const u8[6]' {aka 'const unsigned char[6]'} [-Werror=array-bounds]
-   59 |         return link_status[r - DP_LANE0_1_STATUS];
-      |                ~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~
-drivers/gpu/drm/drm_dp_helper.c:147:51: note: while referencing 'link_status'
-  147 | u8 drm_dp_get_adjust_request_post_cursor(const u8 link_status[DP_LINK_STATUS_SIZE],
-      |                                          ~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-Replace the only user of the helper with an open-coded fetch and decode,
-similar to drivers/gpu/drm/amd/display/dc/core/dc_link_dp.c.
-
-Cc: Daniel Vetter <daniel@ffwll.ch>
-Cc: Maarten Lankhorst <maarten.lankhorst@linux.intel.com>
-Cc: Maxime Ripard <mripard@kernel.org>
-Cc: Thomas Zimmermann <tzimmermann@suse.de>
-Cc: David Airlie <airlied@linux.ie>
-Cc: dri-devel@lists.freedesktop.org
-Fixes: 79465e0ffeb9 ("drm/dp: Add helper to get post-cursor adjustments")
-Signed-off-by: Kees Cook <keescook@chromium.org>
-Reviewed-by: Gustavo A. R. Silva <gustavoars@kernel.org>
-Reviewed-by: Jani Nikula <jani.nikula@intel.com>
-Link: https://lore.kernel.org/r/20220105173507.2420910-1-keescook@chromium.org
-Signed-off-by: Thierry Reding <treding@nvidia.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Acked-by: Evan Quan <evan.quan@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Signed-off-by: Mario Limonciello <mario.limonciello@amd.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/drm_dp_helper.c | 10 ----------
- drivers/gpu/drm/tegra/dp.c      | 11 ++++++++++-
- include/drm/drm_dp_helper.h     |  2 --
- 3 files changed, 10 insertions(+), 13 deletions(-)
+ drivers/gpu/drm/amd/amdgpu/amdgpu_device.c |   13 +++++++++++++
+ drivers/gpu/drm/amd/amdgpu/amdgpu_kms.c    |   11 -----------
+ 2 files changed, 13 insertions(+), 11 deletions(-)
 
-diff --git a/drivers/gpu/drm/drm_dp_helper.c b/drivers/gpu/drm/drm_dp_helper.c
-index 23f9073bc473..c9528aa62c9c 100644
---- a/drivers/gpu/drm/drm_dp_helper.c
-+++ b/drivers/gpu/drm/drm_dp_helper.c
-@@ -144,16 +144,6 @@ u8 drm_dp_get_adjust_tx_ffe_preset(const u8 link_status[DP_LINK_STATUS_SIZE],
- }
- EXPORT_SYMBOL(drm_dp_get_adjust_tx_ffe_preset);
+--- a/drivers/gpu/drm/amd/amdgpu/amdgpu_device.c
++++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_device.c
+@@ -30,6 +30,7 @@
+ #include <linux/module.h>
+ #include <linux/console.h>
+ #include <linux/slab.h>
++#include <linux/pci.h>
  
--u8 drm_dp_get_adjust_request_post_cursor(const u8 link_status[DP_LINK_STATUS_SIZE],
--					 unsigned int lane)
--{
--	unsigned int offset = DP_ADJUST_REQUEST_POST_CURSOR2;
--	u8 value = dp_link_status(link_status, offset);
--
--	return (value >> (lane << 1)) & 0x3;
--}
--EXPORT_SYMBOL(drm_dp_get_adjust_request_post_cursor);
--
- static int __8b10b_clock_recovery_delay_us(const struct drm_dp_aux *aux, u8 rd_interval)
+ #include <drm/drm_atomic_helper.h>
+ #include <drm/drm_probe_helper.h>
+@@ -2070,6 +2071,8 @@ out:
+  */
+ static int amdgpu_device_ip_early_init(struct amdgpu_device *adev)
  {
- 	if (rd_interval > 4)
-diff --git a/drivers/gpu/drm/tegra/dp.c b/drivers/gpu/drm/tegra/dp.c
-index 70dfb7d1dec5..f5535eb04c6b 100644
---- a/drivers/gpu/drm/tegra/dp.c
-+++ b/drivers/gpu/drm/tegra/dp.c
-@@ -549,6 +549,15 @@ static void drm_dp_link_get_adjustments(struct drm_dp_link *link,
- {
- 	struct drm_dp_link_train_set *adjust = &link->train.adjust;
- 	unsigned int i;
-+	u8 post_cursor;
-+	int err;
-+
-+	err = drm_dp_dpcd_read(link->aux, DP_ADJUST_REQUEST_POST_CURSOR2,
-+			       &post_cursor, sizeof(post_cursor));
-+	if (err < 0) {
-+		DRM_ERROR("failed to read post_cursor2: %d\n", err);
-+		post_cursor = 0;
-+	}
++	struct drm_device *dev = adev_to_drm(adev);
++	struct pci_dev *parent;
+ 	int i, r;
  
- 	for (i = 0; i < link->lanes; i++) {
- 		adjust->voltage_swing[i] =
-@@ -560,7 +569,7 @@ static void drm_dp_link_get_adjustments(struct drm_dp_link *link,
- 				DP_TRAIN_PRE_EMPHASIS_SHIFT;
- 
- 		adjust->post_cursor[i] =
--			drm_dp_get_adjust_request_post_cursor(status, i);
-+			(post_cursor >> (i << 1)) & 0x3;
+ 	amdgpu_device_enable_virtual_display(adev);
+@@ -2134,6 +2137,16 @@ static int amdgpu_device_ip_early_init(s
+ 		break;
  	}
- }
  
-diff --git a/include/drm/drm_dp_helper.h b/include/drm/drm_dp_helper.h
-index 30359e434c3f..28378db676c8 100644
---- a/include/drm/drm_dp_helper.h
-+++ b/include/drm/drm_dp_helper.h
-@@ -1528,8 +1528,6 @@ u8 drm_dp_get_adjust_request_pre_emphasis(const u8 link_status[DP_LINK_STATUS_SI
- 					  int lane);
- u8 drm_dp_get_adjust_tx_ffe_preset(const u8 link_status[DP_LINK_STATUS_SIZE],
- 				   int lane);
--u8 drm_dp_get_adjust_request_post_cursor(const u8 link_status[DP_LINK_STATUS_SIZE],
--					 unsigned int lane);
++	if (amdgpu_has_atpx() &&
++	    (amdgpu_is_atpx_hybrid() ||
++	     amdgpu_has_atpx_dgpu_power_cntl()) &&
++	    ((adev->flags & AMD_IS_APU) == 0) &&
++	    !pci_is_thunderbolt_attached(to_pci_dev(dev->dev)))
++		adev->flags |= AMD_IS_PX;
++
++	parent = pci_upstream_bridge(adev->pdev);
++	adev->has_pr3 = parent ? pci_pr3_present(parent) : false;
++
+ 	amdgpu_amdkfd_device_probe(adev);
  
- #define DP_BRANCH_OUI_HEADER_SIZE	0xc
- #define DP_RECEIVER_CAP_SIZE		0xf
--- 
-2.34.1
-
+ 	adev->pm.pp_feature = amdgpu_pp_feature_mask;
+--- a/drivers/gpu/drm/amd/amdgpu/amdgpu_kms.c
++++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_kms.c
+@@ -152,21 +152,10 @@ static void amdgpu_get_audio_func(struct
+ int amdgpu_driver_load_kms(struct amdgpu_device *adev, unsigned long flags)
+ {
+ 	struct drm_device *dev;
+-	struct pci_dev *parent;
+ 	int r, acpi_status;
+ 
+ 	dev = adev_to_drm(adev);
+ 
+-	if (amdgpu_has_atpx() &&
+-	    (amdgpu_is_atpx_hybrid() ||
+-	     amdgpu_has_atpx_dgpu_power_cntl()) &&
+-	    ((flags & AMD_IS_APU) == 0) &&
+-	    !pci_is_thunderbolt_attached(to_pci_dev(dev->dev)))
+-		flags |= AMD_IS_PX;
+-
+-	parent = pci_upstream_bridge(adev->pdev);
+-	adev->has_pr3 = parent ? pci_pr3_present(parent) : false;
+-
+ 	/* amdgpu_device_init should report only fatal error
+ 	 * like memory allocation failure or iomapping failure,
+ 	 * or memory manager initialization failure, it must
 
 
