@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 99F10C352A7
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:01:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 264BDC352B6
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:01:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236047AbiDEIBM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 04:01:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57248 "EHLO
+        id S236134AbiDEIBa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 04:01:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55674 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232505AbiDEHvK (ORCPT
+        with ESMTP id S232911AbiDEHvr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 03:51:10 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9481B931A4;
-        Tue,  5 Apr 2022 00:47:22 -0700 (PDT)
+        Tue, 5 Apr 2022 03:51:47 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA683986C6;
+        Tue,  5 Apr 2022 00:47:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7138A616BF;
-        Tue,  5 Apr 2022 07:47:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 83ECEC3410F;
-        Tue,  5 Apr 2022 07:47:21 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5322BB81B18;
+        Tue,  5 Apr 2022 07:47:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B0D12C340EE;
+        Tue,  5 Apr 2022 07:47:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649144841;
-        bh=Zx4lWtvKcRuOo75kaWAnuXqPkXeLmjn2MI0+fP+jJTQ=;
+        s=korg; t=1649144877;
+        bh=xd16qT32WppJot+7Ia2t6I4wkr34eWUzdX4MXxOiUus=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=N9wF6nvl0QaUnNBOBeNaB4kR4gQ7ZskXi0DXD3l93j3pJFlrVqn/QYVZqPaVdK0Sk
-         z9NgIOUcpBVllsjAuG/M/TgN8+LWPfrcymXAwX+csnI/B5Na6TtduXqwRc0zAy3dPj
-         GnjEZqrMxuVfby1rHwrGODR4QrEFXvDN6kO/woKs=
+        b=RT3ZUh3v2blXoiJI4xwX275/wk0hj9TPn6v4oWZ9JGUj5SsmJ6EUjNsPp433M9znU
+         uI0AGQM5dITaX7UvI9W0qabG9Q3TCNoKqwIvNCb4Pn3kHM3QabSoT2wXf/i0/c8auj
+         mLSKP7APigCLnZ0xpN81Tysxe7g3vSS1fy3D4WlM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Linus Walleij <linus.walleij@linaro.org>,
-        Arend van Spriel <arend.vanspriel@broadcom.com>,
-        Hector Martin <marcan@marcan.st>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Kalle Valo <kvalo@kernel.org>
-Subject: [PATCH 5.17 0191/1126] brcmfmac: pcie: Fix crashes due to early IRQs
-Date:   Tue,  5 Apr 2022 09:15:38 +0200
-Message-Id: <20220405070413.212788470@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 0203/1126] hwrng: cavium - HW_RANDOM_CAVIUM should depend on ARCH_THUNDER
+Date:   Tue,  5 Apr 2022 09:15:50 +0200
+Message-Id: <20220405070413.567882815@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -51,66 +50,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hector Martin <marcan@marcan.st>
+From: Geert Uytterhoeven <geert+renesas@glider.be>
 
-commit b50255c83b914defd61a57fbc81d452334b63f4c upstream.
+[ Upstream commit ab7d88549e2f7ae116afd303f32e1950cb790a1d ]
 
-The driver was enabling IRQs before the message processing was
-initialized. This could cause IRQs to come in too early and crash the
-driver. Instead, move the IRQ enable and hostready to a bus preinit
-function, at which point everything is properly initialized.
+The Cavium ThunderX Random Number Generator is only present on Cavium
+ThunderX SoCs, and not available as an independent PCIe endpoint.  Hence
+add a dependency on ARCH_THUNDER, to prevent asking the user about this
+driver when configuring a kernel without Cavium Thunder SoC  support.
 
-Fixes: 9e37f045d5e7 ("brcmfmac: Adding PCIe bus layer support.")
-Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
-Reviewed-by: Arend van Spriel <arend.vanspriel@broadcom.com>
-Cc: stable@vger.kernel.org
-Signed-off-by: Hector Martin <marcan@marcan.st>
-Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
-Signed-off-by: Kalle Valo <kvalo@kernel.org>
-Link: https://lore.kernel.org/r/20220131160713.245637-7-marcan@marcan.st
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: cc2f1908c6b8f625 ("hwrng: cavium - Add Cavium HWRNG driver for ThunderX SoC.")
+Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c |   16 +++++++++++++---
- 1 file changed, 13 insertions(+), 3 deletions(-)
+ drivers/char/hw_random/Kconfig | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c
-+++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c
-@@ -1315,6 +1315,18 @@ static void brcmf_pcie_down(struct devic
- {
- }
+diff --git a/drivers/char/hw_random/Kconfig b/drivers/char/hw_random/Kconfig
+index 9704963f9d50..a087156a5818 100644
+--- a/drivers/char/hw_random/Kconfig
++++ b/drivers/char/hw_random/Kconfig
+@@ -401,7 +401,7 @@ config HW_RANDOM_MESON
  
-+static int brcmf_pcie_preinit(struct device *dev)
-+{
-+	struct brcmf_bus *bus_if = dev_get_drvdata(dev);
-+	struct brcmf_pciedev *buspub = bus_if->bus_priv.pcie;
-+
-+	brcmf_dbg(PCIE, "Enter\n");
-+
-+	brcmf_pcie_intr_enable(buspub->devinfo);
-+	brcmf_pcie_hostready(buspub->devinfo);
-+
-+	return 0;
-+}
- 
- static int brcmf_pcie_tx(struct device *dev, struct sk_buff *skb)
- {
-@@ -1423,6 +1435,7 @@ static int brcmf_pcie_reset(struct devic
- }
- 
- static const struct brcmf_bus_ops brcmf_pcie_bus_ops = {
-+	.preinit = brcmf_pcie_preinit,
- 	.txdata = brcmf_pcie_tx,
- 	.stop = brcmf_pcie_down,
- 	.txctl = brcmf_pcie_tx_ctlpkt,
-@@ -1795,9 +1808,6 @@ static void brcmf_pcie_setup(struct devi
- 
- 	init_waitqueue_head(&devinfo->mbdata_resp_wait);
- 
--	brcmf_pcie_intr_enable(devinfo);
--	brcmf_pcie_hostready(devinfo);
--
- 	ret = brcmf_attach(&devinfo->pdev->dev);
- 	if (ret)
- 		goto fail;
+ config HW_RANDOM_CAVIUM
+ 	tristate "Cavium ThunderX Random Number Generator support"
+-	depends on HW_RANDOM && PCI && ARM64
++	depends on HW_RANDOM && PCI && ARCH_THUNDER
+ 	default HW_RANDOM
+ 	help
+ 	  This driver provides kernel-side support for the Random Number
+-- 
+2.34.1
+
 
 
