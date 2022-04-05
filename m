@@ -2,114 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 277E3C43219
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:26:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0AF88C43219
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:34:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1454771AbiDEXHB (ORCPT
+        id S1573023AbiDEXHW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 19:07:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43868 "EHLO
+        Tue, 5 Apr 2022 19:07:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47660 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1443184AbiDEPjI (ORCPT
+        with ESMTP id S1349085AbiDEJtG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 11:39:08 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9EA1614751F;
-        Tue,  5 Apr 2022 06:55:03 -0700 (PDT)
+        Tue, 5 Apr 2022 05:49:06 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3ACCEA9957;
+        Tue,  5 Apr 2022 02:40:26 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 179A16187A;
-        Tue,  5 Apr 2022 13:55:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7A647C385A1;
-        Tue,  5 Apr 2022 13:55:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649166902;
-        bh=734Ww1lhb6yXzwvS5Q/fYydkFrT3wJNGgskJNRm7z/U=;
+        by ams.source.kernel.org (Postfix) with ESMTPS id D76BDB81C14;
+        Tue,  5 Apr 2022 09:40:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2B2D8C385A1;
+        Tue,  5 Apr 2022 09:40:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649151623;
+        bh=2qwiJmnx37qZrjF2BfWvJ3zWu1bYMpI5eeMXH9PglFE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=aggaKz7TshzGrHY8ajlnsspAZDhiSDUvH7+gKKiUYvIOYkIaeNqG5TWmNDCrmPo+c
-         hg6cr1Tx3xRi1MhdEcYDeuFz2bHIBkCikwFOyX1ucVnWbxvOxfxE4R4FO18pr+XGT2
-         h2lDvAJiEfu9KBhaC7tIijqW8PIoeTy/NR8SGX8+iIiZcMRsT76V28Qqof0FXt6U8J
-         Z2V3spmmImApENwehbpzWFiwZ7LhBKRicrHsuJBgYbU0ZyYlQsGoSC3jYVBTPljLtS
-         8QHTqfOAkXsxbaK5wRj0Ikd7VdPZ969UcGsvNmCMpOR/xhxQZW5yo7bCXfCUGdWacS
-         RIhZ8XlF5puzg==
-Received: from sofa.misterjones.org ([185.219.108.64] helo=why.lan)
-        by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <maz@kernel.org>)
-        id 1nbje8-001q4g-2E; Tue, 05 Apr 2022 14:55:00 +0100
-From:   Marc Zyngier <maz@kernel.org>
+        b=guChPGv7uZDwiRO4mLYOMoD5SxkMSB5mA7BERtaSTwhDWR3+REVMX3ODZ8T5QtZNa
+         YhprtWj9mlwLLNu+FWtqNckBxUmGH22pDFQinf6JfgzTp80IS4ksdVga/JfhLxS2Ro
+         F7vHLLZfNwvZPvJYBga0XNx4+/mXWXhgHZyGK1JE=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
-Cc:     Linus Walleij <linus.walleij@linaro.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Joey Gouly <joey.gouly@arm.com>,
-        Jonathan Hunter <jonathanh@nvidia.com>,
-        Hector Martin <marcan@marcan.st>,
-        Sven Peter <sven@svenpeter.dev>,
-        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Andy Gross <agross@kernel.org>,
-        Jeffrey Hugo <jeffrey.l.hugo@gmail.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Basavaraj Natikar <Basavaraj.Natikar@amd.com>,
-        Shyam Sundar S K <Shyam-sundar.S-k@amd.com>,
-        linux-gpio@vger.kernel.org, linux-tegra@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-arm-msm@vger.kernel.org, kernel-team@android.com
-Subject: [PATCH v2 03/10] gpio: Add helpers to ease the transition towards immutable irq_chip
-Date:   Tue,  5 Apr 2022 14:54:37 +0100
-Message-Id: <20220405135444.199295-4-maz@kernel.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220405135444.199295-1-maz@kernel.org>
-References: <20220405135444.199295-1-maz@kernel.org>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Jack Wang <jinpu.wang@ionos.com>,
+        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 481/913] scsi: pm8001: Fix command initialization in pm8001_chip_ssp_tm_req()
+Date:   Tue,  5 Apr 2022 09:25:43 +0200
+Message-Id: <20220405070354.273841744@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 185.219.108.64
-X-SA-Exim-Rcpt-To: linux-kernel@vger.kernel.org, linus.walleij@linaro.org, brgl@bgdev.pl, thierry.reding@gmail.com, joey.gouly@arm.com, jonathanh@nvidia.com, marcan@marcan.st, sven@svenpeter.dev, alyssa@rosenzweig.io, bjorn.andersson@linaro.org, agross@kernel.org, jeffrey.l.hugo@gmail.com, tglx@linutronix.de, Basavaraj.Natikar@amd.com, Shyam-sundar.S-k@amd.com, linux-gpio@vger.kernel.org, linux-tegra@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-arm-msm@vger.kernel.org, kernel-team@android.com
-X-SA-Exim-Mail-From: maz@kernel.org
-X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add a couple of new helpers to make it slightly simpler to convert
-drivers to immutable irq_chip structures:
+From: Damien Le Moal <damien.lemoal@opensource.wdc.com>
 
-- GPIOCHIP_IRQ_RESOURCE_HELPERS populates the irq_chip structure
-  with the resource management callbacks
+[ Upstream commit cd2268a180117aa8ebb23e090ba204324b2d0e93 ]
 
-- gpio_irq_chip_set_chip() populates the gpio_irq_chip.chip
-  structure, avoiding the proliferation of ugly casts
+The ds_ads_m field of struct ssp_ini_tm_start_req has the type __le32.
+Assigning a value to it should thus use cpu_to_le32(). This fixes the
+sparse warning:
 
-Signed-off-by: Marc Zyngier <maz@kernel.org>
+warning: incorrect type in assignment (different base types)
+   expected restricted __le32 [addressable] [assigned] [usertype] ds_ads_m
+   got int
+
+Link: https://lore.kernel.org/r/20220220031810.738362-7-damien.lemoal@opensource.wdc.com
+Fixes: dbf9bfe61571 ("[SCSI] pm8001: add SAS/SATA HBA driver")
+Reviewed-by: Jack Wang <jinpu.wang@ionos.com>
+Signed-off-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/linux/gpio/driver.h | 12 ++++++++++++
- 1 file changed, 12 insertions(+)
+ drivers/scsi/pm8001/pm8001_hwi.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/include/linux/gpio/driver.h b/include/linux/gpio/driver.h
-index 066bcfdf878d..832990099097 100644
---- a/include/linux/gpio/driver.h
-+++ b/include/linux/gpio/driver.h
-@@ -583,6 +583,18 @@ void gpiochip_enable_irq(struct gpio_chip *gc, unsigned int offset);
- int gpiochip_irq_reqres(struct irq_data *data);
- void gpiochip_irq_relres(struct irq_data *data);
- 
-+/* Paste this in your irq_chip structure  */
-+#define	GPIOCHIP_IRQ_RESOURCE_HELPERS					\
-+		.irq_request_resources  = gpiochip_irq_reqres,		\
-+		.irq_release_resources  = gpiochip_irq_relres
-+
-+static inline void gpio_irq_chip_set_chip(struct gpio_irq_chip *girq,
-+					  const struct irq_chip *chip)
-+{
-+	/* Yes, dropping const is ugly, but it isn't like we have a choice */
-+	girq->chip = (struct irq_chip *)chip;
-+}
-+
- /* Line status inquiry for drivers */
- bool gpiochip_line_is_open_drain(struct gpio_chip *gc, unsigned int offset);
- bool gpiochip_line_is_open_source(struct gpio_chip *gc, unsigned int offset);
+diff --git a/drivers/scsi/pm8001/pm8001_hwi.c b/drivers/scsi/pm8001/pm8001_hwi.c
+index 1e1630a1a97c..bad0c8b8cbe1 100644
+--- a/drivers/scsi/pm8001/pm8001_hwi.c
++++ b/drivers/scsi/pm8001/pm8001_hwi.c
+@@ -4633,7 +4633,7 @@ int pm8001_chip_ssp_tm_req(struct pm8001_hba_info *pm8001_ha,
+ 	memcpy(sspTMCmd.lun, task->ssp_task.LUN, 8);
+ 	sspTMCmd.tag = cpu_to_le32(ccb->ccb_tag);
+ 	if (pm8001_ha->chip_id != chip_8001)
+-		sspTMCmd.ds_ads_m = 0x08;
++		sspTMCmd.ds_ads_m = cpu_to_le32(0x08);
+ 	circularQ = &pm8001_ha->inbnd_q_tbl[0];
+ 	ret = pm8001_mpi_build_cmd(pm8001_ha, circularQ, opc, &sspTMCmd,
+ 			sizeof(sspTMCmd), 0);
 -- 
 2.34.1
+
+
 
