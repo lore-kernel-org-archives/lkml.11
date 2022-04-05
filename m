@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 52F67C4321E
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 10:28:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B062C43219
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 10:28:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355764AbiDEKV6 (ORCPT
+        id S1355806AbiDEKWF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 06:21:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45930 "EHLO
+        Tue, 5 Apr 2022 06:22:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46006 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241267AbiDEIdD (ORCPT
+        with ESMTP id S241253AbiDEIc6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:33:03 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7064B8E;
-        Tue,  5 Apr 2022 01:31:04 -0700 (PDT)
+        Tue, 5 Apr 2022 04:32:58 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C9796240;
+        Tue,  5 Apr 2022 01:30:41 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 77B71B81BC0;
-        Tue,  5 Apr 2022 08:31:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CA58CC385A1;
-        Tue,  5 Apr 2022 08:31:01 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C1065609D0;
+        Tue,  5 Apr 2022 08:30:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C84FCC385A0;
+        Tue,  5 Apr 2022 08:30:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649147462;
-        bh=xP6Tr2F4niH5CmG/43FEijRnvWU8Se3NAUyhudXwZWU=;
+        s=korg; t=1649147440;
+        bh=ExR9OgwnusTJKSrNCVHWa9/0YVov40hwrNn7KXjpx1I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=M/c19MiUL0jaah/o582wXff29jDzWOBG+sVaBABUai/zgB6+PSk0bA7nuHs0J0Ie+
-         KvsIQ1K7eVDUiuEpTHx/2gW+sUq2pjaFY1y+MNX/tTa3zqVeZtTfnKXKAQtFIz6thD
-         lNXiLpQxMuriUlis2YIpk6y2Z24HxGJ50tP7tlNM=
+        b=AM0QvQaTzkZpy+fKi54FWCn5xVMTXvQSkKhhNZJJWokYvxcAsNbo7FwXrk6qgjEm+
+         Lph5N9TNcwnAnmG1+stwhx3zvDyWB4vgwAxrzpbCYLdu6SFQuUbaxEY9qw36mfwccS
+         ie9DuGpITYP+yyJS7puZfGyW1Tgk014CwnzX25wQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Arnaldo Carvalho de Melo <acme@redhat.com>
-Subject: [PATCH 5.17 1084/1126] libbpf: Define BTF_KIND_* constants in btf.h to avoid compilation errors
-Date:   Tue,  5 Apr 2022 09:30:31 +0200
-Message-Id: <20220405070439.269923427@linuxfoundation.org>
+        stable@vger.kernel.org, Ricky WU <ricky_wu@realtek.com>,
+        Kai-Heng Feng <kai.heng.feng@canonical.com>
+Subject: [PATCH 5.17 1088/1126] mmc: rtsx: Use pm_runtime_{get,put}() to handle runtime PM
+Date:   Tue,  5 Apr 2022 09:30:35 +0200
+Message-Id: <20220405070439.384666474@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -51,69 +49,220 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Toke Høiland-Jørgensen <toke@redhat.com>
+From: Kai-Heng Feng <kai.heng.feng@canonical.com>
 
-commit eaa266d83a3730a15de2ceebcc89e8f6290e8cf6 upstream.
+commit 7499b529d97f752124fa62fefa1d6d44b371215a upstream.
 
-The btf.h header included with libbpf contains inline helper functions to
-check for various BTF kinds. These helpers directly reference the
-BTF_KIND_* constants defined in the kernel header, and because the header
-file is included in user applications, this happens in the user application
-compile units.
+Commit 5b4258f6721f ("misc: rtsx: rts5249 support runtime PM") doesn't
+use pm_runtime_{get,put}() helpers when it should, so the RPM refcount
+keeps at zero, hence its parent driver, rtsx_pci, has to do lots of
+weird tricks to keep it from runtime suspending.
 
-This presents a problem if a user application is compiled on a system with
-older kernel headers because the constants are not available. To avoid
-this, add #defines of the constants directly in btf.h before using them.
+So use those helpers at right places to properly manage runtime PM.
 
-Since the kernel header moved to an enum for BTF_KIND_*, the #defines can
-shadow the enum values without any errors, so we only need #ifndef guards
-for the constants that predates the conversion to enum. We group these so
-there's only one guard for groups of values that were added together.
-
-  [0] Closes: https://github.com/libbpf/libbpf/issues/436
-
-Fixes: 223f903e9c83 ("bpf: Rename BTF_KIND_TAG to BTF_KIND_DECL_TAG")
-Fixes: 5b84bd10363e ("libbpf: Add support for BTF_KIND_TAG")
-Signed-off-by: Toke Høiland-Jørgensen <toke@redhat.com>
-Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
-Acked-by: Arnaldo Carvalho de Melo <acme@redhat.com>
-Link: https://lore.kernel.org/bpf/20220118141327.34231-1-toke@redhat.com
+Fixes: 5b4258f6721f ("misc: rtsx: rts5249 support runtime PM")
+Cc: Ricky WU <ricky_wu@realtek.com>
+Tested-by: Ricky WU <ricky_wu@realtek.com>
+Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
+Link: https://lore.kernel.org/r/20220125055010.1866563-1-kai.heng.feng@canonical.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- tools/lib/bpf/btf.h |   22 +++++++++++++++++++++-
- 1 file changed, 21 insertions(+), 1 deletion(-)
+ drivers/mmc/host/rtsx_pci_sdmmc.c |   44 ++++++++++++++++++++++++++++----------
+ 1 file changed, 33 insertions(+), 11 deletions(-)
 
---- a/tools/lib/bpf/btf.h
-+++ b/tools/lib/bpf/btf.h
-@@ -375,8 +375,28 @@ btf_dump__dump_type_data(struct btf_dump
- 			 const struct btf_dump_type_data_opts *opts);
+--- a/drivers/mmc/host/rtsx_pci_sdmmc.c
++++ b/drivers/mmc/host/rtsx_pci_sdmmc.c
+@@ -806,6 +806,7 @@ static void sd_request(struct work_struc
+ 	struct mmc_request *mrq = host->mrq;
+ 	struct mmc_command *cmd = mrq->cmd;
+ 	struct mmc_data *data = mrq->data;
++	struct device *dev = &host->pdev->dev;
  
- /*
-- * A set of helpers for easier BTF types handling
-+ * A set of helpers for easier BTF types handling.
-+ *
-+ * The inline functions below rely on constants from the kernel headers which
-+ * may not be available for applications including this header file. To avoid
-+ * compilation errors, we define all the constants here that were added after
-+ * the initial introduction of the BTF_KIND* constants.
-  */
-+#ifndef BTF_KIND_FUNC
-+#define BTF_KIND_FUNC		12	/* Function	*/
-+#define BTF_KIND_FUNC_PROTO	13	/* Function Proto	*/
-+#endif
-+#ifndef BTF_KIND_VAR
-+#define BTF_KIND_VAR		14	/* Variable	*/
-+#define BTF_KIND_DATASEC	15	/* Section	*/
-+#endif
-+#ifndef BTF_KIND_FLOAT
-+#define BTF_KIND_FLOAT		16	/* Floating point	*/
-+#endif
-+/* The kernel header switched to enums, so these two were never #defined */
-+#define BTF_KIND_DECL_TAG	17	/* Decl Tag */
-+#define BTF_KIND_TYPE_TAG	18	/* Type Tag */
-+
- static inline __u16 btf_kind(const struct btf_type *t)
+ 	unsigned int data_size = 0;
+ 	int err;
+@@ -822,6 +823,7 @@ static void sd_request(struct work_struc
+ 	}
+ 
+ 	mutex_lock(&pcr->pcr_mutex);
++	pm_runtime_get_sync(dev);
+ 
+ 	rtsx_pci_start_run(pcr);
+ 
+@@ -858,6 +860,8 @@ static void sd_request(struct work_struc
+ 			data->bytes_xfered = data->blocks * data->blksz;
+ 	}
+ 
++	pm_runtime_mark_last_busy(dev);
++	pm_runtime_put_autosuspend(dev);
+ 	mutex_unlock(&pcr->pcr_mutex);
+ 
+ finish:
+@@ -1080,6 +1084,7 @@ static void sdmmc_set_ios(struct mmc_hos
  {
- 	return BTF_INFO_KIND(t->info);
+ 	struct realtek_pci_sdmmc *host = mmc_priv(mmc);
+ 	struct rtsx_pcr *pcr = host->pcr;
++	struct device *dev = &host->pdev->dev;
+ 
+ 	if (host->eject)
+ 		return;
+@@ -1088,6 +1093,7 @@ static void sdmmc_set_ios(struct mmc_hos
+ 		return;
+ 
+ 	mutex_lock(&pcr->pcr_mutex);
++	pm_runtime_get_sync(dev);
+ 
+ 	rtsx_pci_start_run(pcr);
+ 
+@@ -1121,6 +1127,8 @@ static void sdmmc_set_ios(struct mmc_hos
+ 	rtsx_pci_switch_clock(pcr, ios->clock, host->ssc_depth,
+ 			host->initial_mode, host->double_clk, host->vpclk);
+ 
++	pm_runtime_mark_last_busy(dev);
++	pm_runtime_put_autosuspend(dev);
+ 	mutex_unlock(&pcr->pcr_mutex);
+ }
+ 
+@@ -1128,6 +1136,7 @@ static int sdmmc_get_ro(struct mmc_host
+ {
+ 	struct realtek_pci_sdmmc *host = mmc_priv(mmc);
+ 	struct rtsx_pcr *pcr = host->pcr;
++	struct device *dev = &host->pdev->dev;
+ 	int ro = 0;
+ 	u32 val;
+ 
+@@ -1135,6 +1144,7 @@ static int sdmmc_get_ro(struct mmc_host
+ 		return -ENOMEDIUM;
+ 
+ 	mutex_lock(&pcr->pcr_mutex);
++	pm_runtime_get_sync(dev);
+ 
+ 	rtsx_pci_start_run(pcr);
+ 
+@@ -1144,6 +1154,8 @@ static int sdmmc_get_ro(struct mmc_host
+ 	if (val & SD_WRITE_PROTECT)
+ 		ro = 1;
+ 
++	pm_runtime_mark_last_busy(dev);
++	pm_runtime_put_autosuspend(dev);
+ 	mutex_unlock(&pcr->pcr_mutex);
+ 
+ 	return ro;
+@@ -1153,6 +1165,7 @@ static int sdmmc_get_cd(struct mmc_host
+ {
+ 	struct realtek_pci_sdmmc *host = mmc_priv(mmc);
+ 	struct rtsx_pcr *pcr = host->pcr;
++	struct device *dev = &host->pdev->dev;
+ 	int cd = 0;
+ 	u32 val;
+ 
+@@ -1160,6 +1173,7 @@ static int sdmmc_get_cd(struct mmc_host
+ 		return cd;
+ 
+ 	mutex_lock(&pcr->pcr_mutex);
++	pm_runtime_get_sync(dev);
+ 
+ 	rtsx_pci_start_run(pcr);
+ 
+@@ -1169,6 +1183,8 @@ static int sdmmc_get_cd(struct mmc_host
+ 	if (val & SD_EXIST)
+ 		cd = 1;
+ 
++	pm_runtime_mark_last_busy(dev);
++	pm_runtime_put_autosuspend(dev);
+ 	mutex_unlock(&pcr->pcr_mutex);
+ 
+ 	return cd;
+@@ -1251,6 +1267,7 @@ static int sdmmc_switch_voltage(struct m
+ {
+ 	struct realtek_pci_sdmmc *host = mmc_priv(mmc);
+ 	struct rtsx_pcr *pcr = host->pcr;
++	struct device *dev = &host->pdev->dev;
+ 	int err = 0;
+ 	u8 voltage;
+ 
+@@ -1265,6 +1282,7 @@ static int sdmmc_switch_voltage(struct m
+ 		return err;
+ 
+ 	mutex_lock(&pcr->pcr_mutex);
++	pm_runtime_get_sync(dev);
+ 
+ 	rtsx_pci_start_run(pcr);
+ 
+@@ -1294,6 +1312,8 @@ out:
+ 	err = rtsx_pci_write_register(pcr, SD_BUS_STAT,
+ 			SD_CLK_TOGGLE_EN | SD_CLK_FORCE_STOP, 0);
+ 
++	pm_runtime_mark_last_busy(dev);
++	pm_runtime_put_autosuspend(dev);
+ 	mutex_unlock(&pcr->pcr_mutex);
+ 
+ 	return err;
+@@ -1303,6 +1323,7 @@ static int sdmmc_execute_tuning(struct m
+ {
+ 	struct realtek_pci_sdmmc *host = mmc_priv(mmc);
+ 	struct rtsx_pcr *pcr = host->pcr;
++	struct device *dev = &host->pdev->dev;
+ 	int err = 0;
+ 
+ 	if (host->eject)
+@@ -1313,6 +1334,7 @@ static int sdmmc_execute_tuning(struct m
+ 		return err;
+ 
+ 	mutex_lock(&pcr->pcr_mutex);
++	pm_runtime_get_sync(dev);
+ 
+ 	rtsx_pci_start_run(pcr);
+ 
+@@ -1345,6 +1367,8 @@ static int sdmmc_execute_tuning(struct m
+ 		err = sd_change_phase(host, DDR50_RX_PHASE(pcr), true);
+ 
+ out:
++	pm_runtime_mark_last_busy(dev);
++	pm_runtime_put_autosuspend(dev);
+ 	mutex_unlock(&pcr->pcr_mutex);
+ 
+ 	return err;
+@@ -1495,12 +1519,12 @@ static int rtsx_pci_sdmmc_drv_probe(stru
+ 
+ 	realtek_init_host(host);
+ 
+-	if (pcr->rtd3_en) {
+-		pm_runtime_set_autosuspend_delay(&pdev->dev, 5000);
+-		pm_runtime_use_autosuspend(&pdev->dev);
+-		pm_runtime_enable(&pdev->dev);
+-	}
+-
++	pm_runtime_no_callbacks(&pdev->dev);
++	pm_runtime_set_active(&pdev->dev);
++	pm_runtime_enable(&pdev->dev);
++	pm_runtime_set_autosuspend_delay(&pdev->dev, 200);
++	pm_runtime_mark_last_busy(&pdev->dev);
++	pm_runtime_use_autosuspend(&pdev->dev);
+ 
+ 	mmc_add_host(mmc);
+ 
+@@ -1521,11 +1545,6 @@ static int rtsx_pci_sdmmc_drv_remove(str
+ 	pcr->slots[RTSX_SD_CARD].card_event = NULL;
+ 	mmc = host->mmc;
+ 
+-	if (pcr->rtd3_en) {
+-		pm_runtime_dont_use_autosuspend(&pdev->dev);
+-		pm_runtime_disable(&pdev->dev);
+-	}
+-
+ 	cancel_work_sync(&host->work);
+ 
+ 	mutex_lock(&host->host_mutex);
+@@ -1548,6 +1567,9 @@ static int rtsx_pci_sdmmc_drv_remove(str
+ 
+ 	flush_work(&host->work);
+ 
++	pm_runtime_dont_use_autosuspend(&pdev->dev);
++	pm_runtime_disable(&pdev->dev);
++
+ 	mmc_free_host(mmc);
+ 
+ 	dev_dbg(&(pdev->dev),
 
 
