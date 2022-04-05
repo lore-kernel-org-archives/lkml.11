@@ -2,150 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CA6DFC41535
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 22:55:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1933EC35273
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 22:55:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1455118AbiDEWkP (ORCPT
+        id S1455223AbiDEWk2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 18:40:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45160 "EHLO
+        Tue, 5 Apr 2022 18:40:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44278 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358881AbiDELRk (ORCPT
+        with ESMTP id S1348733AbiDEJs3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 07:17:40 -0400
-Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2DEB8A32D
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 03:49:31 -0700 (PDT)
-Received: by mail-ej1-x635.google.com with SMTP id a6so14915022ejk.0
-        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 03:49:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=Adg3pN2RW58wCT9rm+ufFClNqKORGkE/N3E2nxNd7RY=;
-        b=UNwkZnqk7dS8LG08uS2paqAo7c3EjqpY8dO4XyoghVpgARkcT6BjhzsEHkCyaVGpuU
-         VZ6s3URU004FZ/EoRCCHRR/W8F5zWAOv/G7xiHymasP8sycr/kBLCTG0grOPxO/SmNzV
-         UNxkr13NClG5ZDi4Nw5F4ofob7HKxUqPMAGb2b4EYS3xbxKGanh8Z444D6FmFFCj5Fhy
-         ewg3m03VFw9oGe8R2qzecy6YNvD/4gK9TnGx8uN2/HwEVTXXxx/ZLLQWGsrB7fJdJhCc
-         IBEwwcYUVQd+HfJbyfvfFpXVsJhgvtR9mudbizOoFuqeO45C3zBccb4ilmoblr8/ySFK
-         WQ2w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=Adg3pN2RW58wCT9rm+ufFClNqKORGkE/N3E2nxNd7RY=;
-        b=8NIRqzSCkGZkxBmzriTJ7XLeb0dlXhOxJF6sG9MphkKYzpCOnyy/J7QeoTXIQV2089
-         2BckPFByKb4jfMawVSk+170roJok+a50pu29qREEGtEyrVAyTvNgE3KigCebaBDVtwAp
-         7jS/Tl9ZsXZY25UwFewLFnWdTv5xYtvkKxsgwrV2yM1DhD9pfrfd/LUZTpHZ45s456eP
-         QIiuCv8IL6gNsOdi7HtnZPTbfOrEfN6ec954bjbGB1xlGVLsq2JPGUZ6LvZ0TkpwPkAy
-         5MMiE4YPNrcjyGIcJKEApEqKRHQrWueXIciy3lTldUvBGFn8Kl2Q/t9v8qCxqI1zMhIy
-         S1lg==
-X-Gm-Message-State: AOAM5337WWSLfC4jMlJosfdiHczpxvWCzlrxvmNbfcKVG9Tfisjnv3Lc
-        YXkpgmgvMZfSRoK3kP2Zge4=
-X-Google-Smtp-Source: ABdhPJxtwBNi5M3av58Natvm7wrBfwyDLFGOKk8pLWKQyqncAUaQNgIcZ12kpqxDNSOBKvaW+hZhxw==
-X-Received: by 2002:a17:907:c16:b0:6db:682:c8c9 with SMTP id ga22-20020a1709070c1600b006db0682c8c9mr2987787ejc.153.1649155769444;
-        Tue, 05 Apr 2022 03:49:29 -0700 (PDT)
-Received: from localhost.localdomain (ip5f5abb55.dynamic.kabel-deutschland.de. [95.90.187.85])
-        by smtp.gmail.com with ESMTPSA id j12-20020a50e0cc000000b0041cd813ac01sm2436702edl.28.2022.04.05.03.49.28
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 05 Apr 2022 03:49:28 -0700 (PDT)
-From:   Michael Straube <straube.linux@gmail.com>
-To:     gregkh@linuxfoundation.org
-Cc:     Larry.Finger@lwfinger.net, phil@philpotter.co.uk,
-        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
-        Michael Straube <straube.linux@gmail.com>
-Subject: [PATCH v2 4/4] staging: r8188eu: remove GetHalDefVar8188EUsb()
-Date:   Tue,  5 Apr 2022 12:49:10 +0200
-Message-Id: <20220405104910.9769-5-straube.linux@gmail.com>
+        Tue, 5 Apr 2022 05:48:29 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8AC43B571;
+        Tue,  5 Apr 2022 02:34:34 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 65522615E5;
+        Tue,  5 Apr 2022 09:34:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7B1C5C385A2;
+        Tue,  5 Apr 2022 09:34:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649151273;
+        bh=tylOgLFM6Il+rMgUB8Udu/wL4HBT5rFaZMaRx5CY3yY=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=Xnm4ISQLRn5Y/Mqpv4Eq9cTp1bRCuahQPGhcfoOZpVrPA9tNNqvcBsxyNVcCvwsS4
+         RT3wXpLTMYaYCjAN4oI5QON7Xi/Uzc4oUqnWwqOOUgOaqkOpHgOwEI8Iwnk9nXqyGF
+         LRDBalD5Yd/W7wwjjph1TcH0h/tlzT3pdPbKoUh8=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 356/913] ASoC: rockchip: i2s: Fix missing clk_disable_unprepare() in rockchip_i2s_probe
+Date:   Tue,  5 Apr 2022 09:23:38 +0200
+Message-Id: <20220405070350.516765429@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405104910.9769-1-straube.linux@gmail.com>
-References: <20220405104910.9769-1-straube.linux@gmail.com>
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The local variable odm_flag in rtw_dbg_port() is set but never used.
-This are the last two remaining calls to GetHalDefVar8188EUsb(). Both
-calls can be removed and we finally can remove GetHalDefVar8188EUsb()
-itself. This is part of the ongoing effort to get rid of the unwanted
-hal layer.
+From: Miaoqian Lin <linmq006@gmail.com>
 
-Signed-off-by: Michael Straube <straube.linux@gmail.com>
+[ Upstream commit f725d20579807a68afbe5dba69e78b8fa05f5ef0 ]
+
+Fix the missing clk_disable_unprepare() before return
+from rockchip_i2s_probe() in the error handling case.
+
+Fixes: 01605ad12875 ("ASoC: rockchip-i2s: enable "hclk" for rockchip I2S controller")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Link: https://lore.kernel.org/r/20220307083553.26009-1-linmq006@gmail.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
-v2: no changes
+ sound/soc/rockchip/rockchip_i2s.c | 15 ++++++++++-----
+ 1 file changed, 10 insertions(+), 5 deletions(-)
 
- drivers/staging/r8188eu/hal/usb_halinit.c    | 14 --------------
- drivers/staging/r8188eu/include/hal_intf.h   |  1 -
- drivers/staging/r8188eu/os_dep/ioctl_linux.c |  8 +-------
- 3 files changed, 1 insertion(+), 22 deletions(-)
-
-diff --git a/drivers/staging/r8188eu/hal/usb_halinit.c b/drivers/staging/r8188eu/hal/usb_halinit.c
-index 9d39c5ca56a7..c983e42bf523 100644
---- a/drivers/staging/r8188eu/hal/usb_halinit.c
-+++ b/drivers/staging/r8188eu/hal/usb_halinit.c
-@@ -1198,20 +1198,6 @@ void SetHwReg8188EU(struct adapter *Adapter, u8 variable, u8 *val)
+diff --git a/sound/soc/rockchip/rockchip_i2s.c b/sound/soc/rockchip/rockchip_i2s.c
+index 7e89f5b0c237..2880a0537646 100644
+--- a/sound/soc/rockchip/rockchip_i2s.c
++++ b/sound/soc/rockchip/rockchip_i2s.c
+@@ -717,19 +717,23 @@ static int rockchip_i2s_probe(struct platform_device *pdev)
+ 	i2s->mclk = devm_clk_get(&pdev->dev, "i2s_clk");
+ 	if (IS_ERR(i2s->mclk)) {
+ 		dev_err(&pdev->dev, "Can't retrieve i2s master clock\n");
+-		return PTR_ERR(i2s->mclk);
++		ret = PTR_ERR(i2s->mclk);
++		goto err_clk;
+ 	}
  
+ 	regs = devm_platform_get_and_ioremap_resource(pdev, 0, &res);
+-	if (IS_ERR(regs))
+-		return PTR_ERR(regs);
++	if (IS_ERR(regs)) {
++		ret = PTR_ERR(regs);
++		goto err_clk;
++	}
+ 
+ 	i2s->regmap = devm_regmap_init_mmio(&pdev->dev, regs,
+ 					    &rockchip_i2s_regmap_config);
+ 	if (IS_ERR(i2s->regmap)) {
+ 		dev_err(&pdev->dev,
+ 			"Failed to initialise managed register map\n");
+-		return PTR_ERR(i2s->regmap);
++		ret = PTR_ERR(i2s->regmap);
++		goto err_clk;
+ 	}
+ 
+ 	i2s->bclk_ratio = 64;
+@@ -769,7 +773,8 @@ static int rockchip_i2s_probe(struct platform_device *pdev)
+ 		i2s_runtime_suspend(&pdev->dev);
+ err_pm_disable:
+ 	pm_runtime_disable(&pdev->dev);
+-
++err_clk:
++	clk_disable_unprepare(i2s->hclk);
+ 	return ret;
  }
  
--/* Query setting of specified variable. */
--void GetHalDefVar8188EUsb(struct adapter *Adapter, enum hal_def_variable eVariable, void *pValue)
--{
--	struct hal_data_8188e *haldata = &Adapter->haldata;
--
--	switch (eVariable) {
--	case HAL_DEF_DBG_DM_FUNC:
--		*((u32 *)pValue) = haldata->odmpriv.SupportAbility;
--		break;
--	default:
--		break;
--	}
--}
--
- /* Change default setting of specified variable. */
- void SetHalDefVar8188EUsb(struct adapter *Adapter, enum hal_def_variable eVariable, void *pValue)
- {
-diff --git a/drivers/staging/r8188eu/include/hal_intf.h b/drivers/staging/r8188eu/include/hal_intf.h
-index 0bc274a695d9..ab6cab1281ab 100644
---- a/drivers/staging/r8188eu/include/hal_intf.h
-+++ b/drivers/staging/r8188eu/include/hal_intf.h
-@@ -52,7 +52,6 @@ int rtl8188e_IOL_exec_cmds_sync(struct adapter *adapter,
- 				struct xmit_frame *xmit_frame, u32 max_wating_ms, u32 bndy_cnt);
- 
- void SetHalDefVar8188EUsb(struct adapter *Adapter, enum hal_def_variable eVariable, void *pValue);
--void GetHalDefVar8188EUsb(struct adapter *Adapter, enum hal_def_variable eVariable, void *pValue);
- 
- unsigned int rtl8188eu_inirp_init(struct adapter *Adapter);
- 
-diff --git a/drivers/staging/r8188eu/os_dep/ioctl_linux.c b/drivers/staging/r8188eu/os_dep/ioctl_linux.c
-index d127cebb6eae..b6851628e4d2 100644
---- a/drivers/staging/r8188eu/os_dep/ioctl_linux.c
-+++ b/drivers/staging/r8188eu/os_dep/ioctl_linux.c
-@@ -3675,22 +3675,16 @@ static int rtw_dbg_port(struct net_device *dev,
- 			break;
- 		case 0xee:/* turn on/off dynamic funcs */
- 			{
--				u32 odm_flag;
--
--				if (0xf == extra_arg) {
--					GetHalDefVar8188EUsb(padapter, HAL_DEF_DBG_DM_FUNC, &odm_flag);
--				} else {
-+				if (extra_arg != 0xf) {
- 					/*	extra_arg = 0  - disable all dynamic func
- 						extra_arg = 1  - disable DIG
- 						extra_arg = 2  - disable tx power tracking
- 						extra_arg = 3  - turn on all dynamic func
- 					*/
- 					SetHalDefVar8188EUsb(padapter, HAL_DEF_DBG_DM_FUNC, &extra_arg);
--					GetHalDefVar8188EUsb(padapter, HAL_DEF_DBG_DM_FUNC, &odm_flag);
- 				}
- 			}
- 			break;
--
- 		case 0xfd:
- 			rtw_write8(padapter, 0xc50, arg);
- 			rtw_write8(padapter, 0xc58, arg);
 -- 
-2.35.1
+2.34.1
+
+
 
