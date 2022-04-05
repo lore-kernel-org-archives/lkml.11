@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7418DC47084
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 393F3C47082
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:01:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236006AbiDEIBD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 04:01:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55630 "EHLO
+        id S235929AbiDEIAq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 04:00:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57156 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231531AbiDEHtr (ORCPT
+        with ESMTP id S232289AbiDEHtj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 03:49:47 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 136A09398F;
-        Tue,  5 Apr 2022 00:47:05 -0700 (PDT)
+        Tue, 5 Apr 2022 03:49:39 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 825449231A;
+        Tue,  5 Apr 2022 00:46:56 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A89F6B81B92;
-        Tue,  5 Apr 2022 07:47:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0A19AC340EE;
-        Tue,  5 Apr 2022 07:47:01 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 50AE6616BF;
+        Tue,  5 Apr 2022 07:46:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 559E2C340EE;
+        Tue,  5 Apr 2022 07:46:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649144822;
-        bh=ElmofO0t8MaF8IY09Yte0+kOzk2cD6EXAVYxlSObhGA=;
+        s=korg; t=1649144813;
+        bh=shC9lZfikSAMpKtryhJ0fccj+2yQUfMv3orgsp88R6A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=MwgxXu+AnPafZN+wq1NNpJzZWZ7TrYzrARZgBcx6STOVgDUbIGRE9ahWsGMsIUFn2
-         kQ5N/TOVW2lbt4j81byCR74UTIivMfVrurDgHF29cwHeIiN1w7QYWWHtlOpwYKmEqQ
-         JobNUC7+QooobbpC9uv04+1iP6EAhfmp6U3oP5Q0=
+        b=kBhlihyXXSaEi6lTXXU86/+7Cua8RsLGnzO2FVSc3eNg2sp+0SYxi/h84indv7ybF
+         GkgNFJoaI1czf22jui2+xXquv/NgBJ0VpebJE8cLkbu4XsQOxlH9HG1PdYpHkQrNhW
+         VLIrJ7vXrC9Dh1o2HmLW2QCxj53qQxLQd3Nlek6c=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Thomas Zimmermann <tzimmermann@suse.de>,
-        Zack Rusin <zackr@vmware.com>,
-        Javier Martinez Canillas <javierm@redhat.com>,
-        Hans de Goede <hdegoede@redhat.com>
-Subject: [PATCH 5.17 0145/1126] fbdev: Hot-unplug firmware fb devices on forced removal
-Date:   Tue,  5 Apr 2022 09:14:52 +0200
-Message-Id: <20220405070411.838460137@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Shinichiro Kawasaki <shinichiro.kawasaki@wdc.com>,
+        Jens Axboe <axboe@kernel.dk>
+Subject: [PATCH 5.17 0142/1126] block: limit request dispatch loop duration
+Date:   Tue,  5 Apr 2022 09:14:49 +0200
+Message-Id: <20220405070411.748592937@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -50,119 +49,85 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Thomas Zimmermann <tzimmermann@suse.de>
+From: Shin'ichiro Kawasaki <shinichiro.kawasaki@wdc.com>
 
-commit 27599aacbaefcbf2af7b06b0029459bbf682000d upstream.
+commit 572299f03afd676dd4e20669cdaf5ed0fe1379d4 upstream.
 
-Hot-unplug all firmware-framebuffer devices as part of removing
-them via remove_conflicting_framebuffers() et al. Releases all
-memory regions to be acquired by native drivers.
+When IO requests are made continuously and the target block device
+handles requests faster than request arrival, the request dispatch loop
+keeps on repeating to dispatch the arriving requests very long time,
+more than a minute. Since the loop runs as a workqueue worker task, the
+very long loop duration triggers workqueue watchdog timeout and BUG [1].
 
-Firmware, such as EFI, install a framebuffer while posting the
-computer. After removing the firmware-framebuffer device from fbdev,
-a native driver takes over the hardware and the firmware framebuffer
-becomes invalid.
+To avoid the very long loop duration, break the loop periodically. When
+opportunity to dispatch requests still exists, check need_resched(). If
+need_resched() returns true, the dispatch loop already consumed its time
+slice, then reschedule the dispatch work and break the loop. With heavy
+IO load, need_resched() does not return true for 20~30 seconds. To cover
+such case, check time spent in the dispatch loop with jiffies. If more
+than 1 second is spent, reschedule the dispatch work and break the loop.
 
-Firmware-framebuffer drivers, specifically simplefb, don't release
-their device from Linux' device hierarchy. It still owns the firmware
-framebuffer and blocks the native drivers from loading. This has been
-observed in the vmwgfx driver. [1]
+[1]
 
-Initiating a device removal (i.e., hot unplug) as part of
-remove_conflicting_framebuffers() removes the underlying device and
-returns the memory range to the system.
+[  609.691437] BUG: workqueue lockup - pool cpus=10 node=1 flags=0x0 nice=-20 stuck for 35s!
+[  609.701820] Showing busy workqueues and worker pools:
+[  609.707915] workqueue events: flags=0x0
+[  609.712615]   pwq 0: cpus=0 node=0 flags=0x0 nice=0 active=1/256 refcnt=2
+[  609.712626]     pending: drm_fb_helper_damage_work [drm_kms_helper]
+[  609.712687] workqueue events_freezable: flags=0x4
+[  609.732943]   pwq 0: cpus=0 node=0 flags=0x0 nice=0 active=1/256 refcnt=2
+[  609.732952]     pending: pci_pme_list_scan
+[  609.732968] workqueue events_power_efficient: flags=0x80
+[  609.751947]   pwq 0: cpus=0 node=0 flags=0x0 nice=0 active=1/256 refcnt=2
+[  609.751955]     pending: neigh_managed_work
+[  609.752018] workqueue kblockd: flags=0x18
+[  609.769480]   pwq 21: cpus=10 node=1 flags=0x0 nice=-20 active=3/256 refcnt=4
+[  609.769488]     in-flight: 1020:blk_mq_run_work_fn
+[  609.769498]     pending: blk_mq_timeout_work, blk_mq_run_work_fn
+[  609.769744] pool 21: cpus=10 node=1 flags=0x0 nice=-20 hung=35s workers=2 idle: 67
+[  639.899730] BUG: workqueue lockup - pool cpus=10 node=1 flags=0x0 nice=-20 stuck for 66s!
+[  639.909513] Showing busy workqueues and worker pools:
+[  639.915404] workqueue events: flags=0x0
+[  639.920197]   pwq 0: cpus=0 node=0 flags=0x0 nice=0 active=1/256 refcnt=2
+[  639.920215]     pending: drm_fb_helper_damage_work [drm_kms_helper]
+[  639.920365] workqueue kblockd: flags=0x18
+[  639.939932]   pwq 21: cpus=10 node=1 flags=0x0 nice=-20 active=3/256 refcnt=4
+[  639.939942]     in-flight: 1020:blk_mq_run_work_fn
+[  639.939955]     pending: blk_mq_timeout_work, blk_mq_run_work_fn
+[  639.940212] pool 21: cpus=10 node=1 flags=0x0 nice=-20 hung=66s workers=2 idle: 67
 
-[1] https://lore.kernel.org/dri-devel/20220117180359.18114-1-zack@kde.org/
-
-v2:
-	* rename variable 'dev' to 'device' (Javier)
-
-Signed-off-by: Thomas Zimmermann <tzimmermann@suse.de>
-Reported-by: Zack Rusin <zackr@vmware.com>
-Reviewed-by: Javier Martinez Canillas <javierm@redhat.com>
-Reviewed-by: Zack Rusin <zackr@vmware.com>
-Reviewed-by: Hans de Goede <hdegoede@redhat.com>
-CC: stable@vger.kernel.org # v5.11+
-Link: https://patchwork.freedesktop.org/patch/msgid/20220125091222.21457-2-tzimmermann@suse.de
+Fixes: 6e6fcbc27e778 ("blk-mq: support batching dispatch in case of io")
+Signed-off-by: Shin'ichiro Kawasaki <shinichiro.kawasaki@wdc.com>
+Cc: stable@vger.kernel.org # v5.10+
+Link: https://lore.kernel.org/linux-block/20220310091649.zypaem5lkyfadymg@shindev/
+Link: https://lore.kernel.org/r/20220318022641.133484-1-shinichiro.kawasaki@wdc.com
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/video/fbdev/core/fbmem.c |   29 ++++++++++++++++++++++++++---
- include/linux/fb.h               |    1 +
- 2 files changed, 27 insertions(+), 3 deletions(-)
+ block/blk-mq-sched.c |    9 ++++++++-
+ 1 file changed, 8 insertions(+), 1 deletion(-)
 
---- a/drivers/video/fbdev/core/fbmem.c
-+++ b/drivers/video/fbdev/core/fbmem.c
-@@ -25,6 +25,7 @@
- #include <linux/init.h>
- #include <linux/linux_logo.h>
- #include <linux/proc_fs.h>
-+#include <linux/platform_device.h>
- #include <linux/seq_file.h>
- #include <linux/console.h>
- #include <linux/kmod.h>
-@@ -1559,18 +1560,36 @@ static void do_remove_conflicting_frameb
- 	/* check all firmware fbs and kick off if the base addr overlaps */
- 	for_each_registered_fb(i) {
- 		struct apertures_struct *gen_aper;
-+		struct device *device;
+--- a/block/blk-mq-sched.c
++++ b/block/blk-mq-sched.c
+@@ -180,11 +180,18 @@ static int __blk_mq_do_dispatch_sched(st
  
- 		if (!(registered_fb[i]->flags & FBINFO_MISC_FIRMWARE))
- 			continue;
- 
- 		gen_aper = registered_fb[i]->apertures;
-+		device = registered_fb[i]->device;
- 		if (fb_do_apertures_overlap(gen_aper, a) ||
- 			(primary && gen_aper && gen_aper->count &&
- 			 gen_aper->ranges[0].base == VGA_FB_PHYS)) {
- 
- 			printk(KERN_INFO "fb%d: switching to %s from %s\n",
- 			       i, name, registered_fb[i]->fix.id);
--			do_unregister_framebuffer(registered_fb[i]);
-+
-+			/*
-+			 * If we kick-out a firmware driver, we also want to remove
-+			 * the underlying platform device, such as simple-framebuffer,
-+			 * VESA, EFI, etc. A native driver will then be able to
-+			 * allocate the memory range.
-+			 *
-+			 * If it's not a platform device, at least print a warning. A
-+			 * fix would add code to remove the device from the system.
-+			 */
-+			if (dev_is_platform(device)) {
-+				registered_fb[i]->forced_out = true;
-+				platform_device_unregister(to_platform_device(device));
-+			} else {
-+				pr_warn("fb%d: cannot remove device\n", i);
-+				do_unregister_framebuffer(registered_fb[i]);
-+			}
- 		}
- 	}
- }
-@@ -1900,9 +1919,13 @@ EXPORT_SYMBOL(register_framebuffer);
- void
- unregister_framebuffer(struct fb_info *fb_info)
+ static int blk_mq_do_dispatch_sched(struct blk_mq_hw_ctx *hctx)
  {
--	mutex_lock(&registration_lock);
-+	bool forced_out = fb_info->forced_out;
-+
-+	if (!forced_out)
-+		mutex_lock(&registration_lock);
- 	do_unregister_framebuffer(fb_info);
--	mutex_unlock(&registration_lock);
-+	if (!forced_out)
-+		mutex_unlock(&registration_lock);
++	unsigned long end = jiffies + HZ;
+ 	int ret;
+ 
+ 	do {
+ 		ret = __blk_mq_do_dispatch_sched(hctx);
+-	} while (ret == 1);
++		if (ret != 1)
++			break;
++		if (need_resched() || time_is_before_jiffies(end)) {
++			blk_mq_delay_run_hw_queue(hctx, 0);
++			break;
++		}
++	} while (1);
+ 
+ 	return ret;
  }
- EXPORT_SYMBOL(unregister_framebuffer);
- 
---- a/include/linux/fb.h
-+++ b/include/linux/fb.h
-@@ -502,6 +502,7 @@ struct fb_info {
- 	} *apertures;
- 
- 	bool skip_vt_switch; /* no VT switch on suspend/resume required */
-+	bool forced_out; /* set when being removed by another driver */
- };
- 
- static inline struct apertures_struct *alloc_apertures(unsigned int max_num) {
 
 
