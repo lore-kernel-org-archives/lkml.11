@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 20C7DC433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E786C43217
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:26:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1588147AbiDFAOb (ORCPT
+        id S1588160AbiDFAOf (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 20:14:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33022 "EHLO
+        Tue, 5 Apr 2022 20:14:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39264 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354570AbiDEKOj (ORCPT
+        with ESMTP id S238765AbiDEKwc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:14:39 -0400
+        Tue, 5 Apr 2022 06:52:32 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2D366BDC3;
-        Tue,  5 Apr 2022 03:01:15 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE318A8EE8;
+        Tue,  5 Apr 2022 03:28:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6E1A261673;
-        Tue,  5 Apr 2022 10:01:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 75E88C385A1;
-        Tue,  5 Apr 2022 10:01:14 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 80759617AF;
+        Tue,  5 Apr 2022 10:28:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8F17EC385A0;
+        Tue,  5 Apr 2022 10:28:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649152874;
-        bh=FIT3wawucFWfzyjni/wMaQn1OA4tnDnV0gudXsZTwlc=;
+        s=korg; t=1649154487;
+        bh=XJS80OO7Vk4EjtWS1x8wYhqMThUypeCurJ+1Frx+SR0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=04Ru8TKdjl+iQgt2jyTgtZfYGclEd5W2LeiaP4VcRq93H5qy9rqA1KoEuzJpDaMj9
-         l4ZPE/m4fVLnGwrHfpdQtGSlt5haebWGtFHBr1MsKFoGeWZicup49eHIChM8VTktft
-         nniR//qI7nVcT3s9CZWCGN2yJQG2zfrD98/CK2OY=
+        b=NIr3+WX+ql6oF0Jsx5JGb2tvq9wdbS15Pt8syXd7HDcFPvVAcJW1/bUR8vmz5VTXn
+         +/CIB1ZZPy5RoD0C/vlIC8IrgITTHB4k1eGc3SkIlV2gLigVu62itgWoyOAf3xRNlO
+         BsLmgmcdOkW0Y0iWbDiZ4L3AmzHFA0xXakbsTfkM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Claudiu Beznea <claudiu.beznea@microchip.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 020/599] net: dsa: microchip: add spi_device_id tables
-Date:   Tue,  5 Apr 2022 09:25:14 +0200
-Message-Id: <20220405070259.418169239@linuxfoundation.org>
+        stable@vger.kernel.org, Jann Horn <jannh@google.com>,
+        Kees Cook <keescook@chromium.org>,
+        "Eric W. Biederman" <ebiederm@xmission.com>
+Subject: [PATCH 5.10 596/599] coredump: Remove the WARN_ON in dump_vma_snapshot
+Date:   Tue,  5 Apr 2022 09:34:50 +0200
+Message-Id: <20220405070316.575592537@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
 References: <20220405070258.802373272@linuxfoundation.org>
@@ -51,80 +50,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Claudiu Beznea <claudiu.beznea@microchip.com>
+From: Eric W. Biederman <ebiederm@xmission.com>
 
-[ Upstream commit e981bc74aefc6a177b50c16cfa7023599799cf74 ]
+commit 49c1866348f364478a0c4d3dd13fd08bb82d3a5b upstream.
 
-Add spi_device_id tables to avoid logs like "SPI driver ksz9477-switch
-has no spi_device_id".
+The condition is impossible and to the best of my knowledge has never
+triggered.
 
-Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+We are in deep trouble if that conditions happens and we walk past
+the end of our allocated array.
+
+So delete the WARN_ON and the code that makes it look like the kernel
+can handle the case of walking past the end of it's vma_meta array.
+
+Reviewed-by: Jann Horn <jannh@google.com>
+Reviewed-by: Kees Cook <keescook@chromium.org>
+Signed-off-by: "Eric W. Biederman" <ebiederm@xmission.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/dsa/microchip/ksz8795_spi.c | 11 +++++++++++
- drivers/net/dsa/microchip/ksz9477_spi.c | 12 ++++++++++++
- 2 files changed, 23 insertions(+)
+ fs/coredump.c |    6 ------
+ 1 file changed, 6 deletions(-)
 
-diff --git a/drivers/net/dsa/microchip/ksz8795_spi.c b/drivers/net/dsa/microchip/ksz8795_spi.c
-index 8b00f8e6c02f..5639c5c59e25 100644
---- a/drivers/net/dsa/microchip/ksz8795_spi.c
-+++ b/drivers/net/dsa/microchip/ksz8795_spi.c
-@@ -86,12 +86,23 @@ static const struct of_device_id ksz8795_dt_ids[] = {
- };
- MODULE_DEVICE_TABLE(of, ksz8795_dt_ids);
+--- a/fs/coredump.c
++++ b/fs/coredump.c
+@@ -1128,12 +1128,6 @@ static bool dump_vma_snapshot(struct cor
  
-+static const struct spi_device_id ksz8795_spi_ids[] = {
-+	{ "ksz8765" },
-+	{ "ksz8794" },
-+	{ "ksz8795" },
-+	{ "ksz8863" },
-+	{ "ksz8873" },
-+	{ },
-+};
-+MODULE_DEVICE_TABLE(spi, ksz8795_spi_ids);
-+
- static struct spi_driver ksz8795_spi_driver = {
- 	.driver = {
- 		.name	= "ksz8795-switch",
- 		.owner	= THIS_MODULE,
- 		.of_match_table = of_match_ptr(ksz8795_dt_ids),
- 	},
-+	.id_table = ksz8795_spi_ids,
- 	.probe	= ksz8795_spi_probe,
- 	.remove	= ksz8795_spi_remove,
- 	.shutdown = ksz8795_spi_shutdown,
-diff --git a/drivers/net/dsa/microchip/ksz9477_spi.c b/drivers/net/dsa/microchip/ksz9477_spi.c
-index 1142768969c2..9bda83d063e8 100644
---- a/drivers/net/dsa/microchip/ksz9477_spi.c
-+++ b/drivers/net/dsa/microchip/ksz9477_spi.c
-@@ -88,12 +88,24 @@ static const struct of_device_id ksz9477_dt_ids[] = {
- };
- MODULE_DEVICE_TABLE(of, ksz9477_dt_ids);
+ 	mmap_write_unlock(mm);
  
-+static const struct spi_device_id ksz9477_spi_ids[] = {
-+	{ "ksz9477" },
-+	{ "ksz9897" },
-+	{ "ksz9893" },
-+	{ "ksz9563" },
-+	{ "ksz8563" },
-+	{ "ksz9567" },
-+	{ },
-+};
-+MODULE_DEVICE_TABLE(spi, ksz9477_spi_ids);
-+
- static struct spi_driver ksz9477_spi_driver = {
- 	.driver = {
- 		.name	= "ksz9477-switch",
- 		.owner	= THIS_MODULE,
- 		.of_match_table = of_match_ptr(ksz9477_dt_ids),
- 	},
-+	.id_table = ksz9477_spi_ids,
- 	.probe	= ksz9477_spi_probe,
- 	.remove	= ksz9477_spi_remove,
- 	.shutdown = ksz9477_spi_shutdown,
--- 
-2.34.1
-
+-	if (WARN_ON(i != cprm->vma_count)) {
+-		kvfree(cprm->vma_meta);
+-		return false;
+-	}
+-
+-
+ 	for (i = 0; i < cprm->vma_count; i++) {
+ 		struct core_vma_metadata *m = cprm->vma_meta + i;
+ 
 
 
