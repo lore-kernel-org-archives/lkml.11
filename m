@@ -2,44 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BA5B2C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:59:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 178ECC433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:59:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1839130AbiDFA6Z (ORCPT
+        id S1839186AbiDFA6i (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 20:58:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50650 "EHLO
+        Tue, 5 Apr 2022 20:58:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60268 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358037AbiDEK14 (ORCPT
+        with ESMTP id S1356136AbiDEKW7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:27:56 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2CB46694B2;
-        Tue,  5 Apr 2022 03:13:19 -0700 (PDT)
+        Tue, 5 Apr 2022 06:22:59 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2D53B8205;
+        Tue,  5 Apr 2022 03:06:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BF81C6179E;
-        Tue,  5 Apr 2022 10:13:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CF92BC385A2;
-        Tue,  5 Apr 2022 10:13:17 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 007C26172B;
+        Tue,  5 Apr 2022 10:06:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1533BC385A1;
+        Tue,  5 Apr 2022 10:06:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649153598;
-        bh=mufnHjU+LVM9806wOFty/HMgBsTpq4Q9kF7GSPh16ak=;
+        s=korg; t=1649153196;
+        bh=2eXIeeRexCOuSEo8b3vylFyzhx8jNayZAmwbHZPfjpM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=04Zo9z9pYBvUGkziZVNtmDEEjGHwvkLENXxsgpnOk3NRCxp4mn2u8Gau08W2R9Htj
-         6pfm6Rjz+BLm1IH8GEImZPGtHykzyTF5k2+zzbWiFkutUJuwtNbNlP2GJerbTbPvcY
-         onLlsTdm/FnxZozL+uMfZDTpm/D78AMUuR6D2bNw=
+        b=YaKNiIlOd0pHE1gSJjqFn//1vKvGB8uQXfDan7EleO0XkoGI2x/EyC2V37hAt9o9I
+         84pjNpOXRwB4riJeBUr0+vwKOOM3Abf9D7q7T6Y8sliXJefqZp4kFlCU3TOftgeh2I
+         kQcLxmPq1e9Jkv9QpW1I+gmZW4KXNDH14RB6E1Hg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Maor Gottlieb <maorg@nvidia.com>,
-        Leon Romanovsky <leonro@nvidia.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 278/599] RDMA/core: Set MR type in ib_reg_user_mr
-Date:   Tue,  5 Apr 2022 09:29:32 +0200
-Message-Id: <20220405070307.108951717@linuxfoundation.org>
+        stable@vger.kernel.org, Max Filippov <jcmvbkbc@gmail.com>
+Subject: [PATCH 5.10 119/599] xtensa: fix xtensa_wsr always writing 0
+Date:   Tue,  5 Apr 2022 09:26:53 +0200
+Message-Id: <20220405070302.380374239@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
 References: <20220405070258.802373272@linuxfoundation.org>
@@ -51,36 +48,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Maor Gottlieb <maorg@nvidia.com>
+From: Max Filippov <jcmvbkbc@gmail.com>
 
-[ Upstream commit 32a88d16615c2be295571c29273c4ac94cb75309 ]
+commit a3d0245c58f962ee99d4440ea0eaf45fb7f5a5cc upstream.
 
-Add missing assignment of MR type to IB_MR_TYPE_USER.
+The commit cad6fade6e78 ("xtensa: clean up WSR*/RSR*/get_sr/set_sr")
+replaced 'WSR' macro in the function xtensa_wsr with 'xtensa_set_sr',
+but variable 'v' in the xtensa_set_sr body shadowed the argument 'v'
+passed to it, resulting in wrong value written to debug registers.
 
-Fixes: 33006bd4f37f ("IB/core: Introduce ib_reg_user_mr")
-Link: https://lore.kernel.org/r/be2e91bcd6e52dc36be289ae92f30d3a5cc6dcb1.1642491047.git.leonro@nvidia.com
-Signed-off-by: Maor Gottlieb <maorg@nvidia.com>
-Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
-Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fix that by removing intermediate variable from the xtensa_set_sr
+macro body.
+
+Cc: stable@vger.kernel.org
+Fixes: cad6fade6e78 ("xtensa: clean up WSR*/RSR*/get_sr/set_sr")
+Signed-off-by: Max Filippov <jcmvbkbc@gmail.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/infiniband/core/verbs.c | 1 +
- 1 file changed, 1 insertion(+)
+ arch/xtensa/include/asm/processor.h |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/infiniband/core/verbs.c b/drivers/infiniband/core/verbs.c
-index 3d895cc41c3a..597e889ba831 100644
---- a/drivers/infiniband/core/verbs.c
-+++ b/drivers/infiniband/core/verbs.c
-@@ -2078,6 +2078,7 @@ struct ib_mr *ib_reg_user_mr(struct ib_pd *pd, u64 start, u64 length,
- 		return mr;
+--- a/arch/xtensa/include/asm/processor.h
++++ b/arch/xtensa/include/asm/processor.h
+@@ -226,8 +226,8 @@ extern unsigned long get_wchan(struct ta
  
- 	mr->device = pd->device;
-+	mr->type = IB_MR_TYPE_USER;
- 	mr->pd = pd;
- 	mr->dm = NULL;
- 	atomic_inc(&pd->usecnt);
--- 
-2.34.1
-
+ #define xtensa_set_sr(x, sr) \
+ 	({ \
+-	 unsigned int v = (unsigned int)(x); \
+-	 __asm__ __volatile__ ("wsr %0, "__stringify(sr) :: "a"(v)); \
++	 __asm__ __volatile__ ("wsr %0, "__stringify(sr) :: \
++			       "a"((unsigned int)(x))); \
+ 	 })
+ 
+ #define xtensa_get_sr(sr) \
 
 
