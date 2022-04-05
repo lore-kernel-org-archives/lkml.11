@@ -2,97 +2,148 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C7B8BC43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A538BC4332F
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:35:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1589103AbiDFASj (ORCPT
+        id S1589087AbiDFASc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 20:18:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39090 "EHLO
+        Tue, 5 Apr 2022 20:18:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58272 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1573225AbiDES0y (ORCPT
+        with ESMTP id S1358002AbiDEK1l (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 14:26:54 -0400
-Received: from mail-lf1-x136.google.com (mail-lf1-x136.google.com [IPv6:2a00:1450:4864:20::136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14578419A4
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 11:24:56 -0700 (PDT)
-Received: by mail-lf1-x136.google.com with SMTP id p15so24754271lfk.8
-        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 11:24:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=yax7P8EHkvsWnyvnaOpe3ZP8r2G7HKN+i3pXtBsfClM=;
-        b=ahjOaaJmEvTMuw04XfKy8Q/jCeHjGJeiKqvnNpxDiZbgbug2iTCIFR8Le7QuzbJ0sA
-         woMR7Bdoa2OJ21AmrWpJ9wf5UeYzp2npgxgZT+buKF6ZPXRPo7D1odBGOr2gDXJBnEo1
-         dkWcurhuvdFNP8Dk650l2JhDA0fOvj008COWZUoCNgTJfeq4MP8RN6j7rsMKr8OLgz/g
-         +REZDqGSM3Il7wPm+eIG3XRLQMRqOgjGT9K2/gEEyEEZPbgRlOUmBBozA2zAXYVf2nhK
-         G8VsNSrxXA6MnMp6WQTrLd05UsiB5sx51uWWPhPAVm2lr97Bkt0pI2fpK8iXvhS5wgCO
-         +jfw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=yax7P8EHkvsWnyvnaOpe3ZP8r2G7HKN+i3pXtBsfClM=;
-        b=vd84ONRVKPWOLA2ybPVoXzrGNUrjp6dV6i9Q1P7pBfgQEqar/uOfRfTdCYf6cDDrNC
-         NVBHu+2QfGe5nRYO96aga1OkZVPB6fk1UxutgqUfGKweW475LlwEPuSkIFisbVhdQ+Yb
-         iHMeiRC7OV+gBJSSdMrOfU//ervUbR7G+qvl1CSajSz+ARXIbzfQGomhUL8n3WH3NbsN
-         IDJGnTtPcWtGmILV64+O/r5VZ7pf/C8tRYOpwPeUy+NNn7H+OV+xKVdgRPD0WYFXtPyc
-         kFoMRgGW1mPoSq2VRsVvgDDCrEs0TXz76xuIfZCVP/m/Nj17G9AVJkLddN6aQ8ur1rmq
-         1qjg==
-X-Gm-Message-State: AOAM530QYZYubzgDQIYjDaTl9V8VINs9aH0Rdg+8HhbBzIFDJ8XhfRmZ
-        m/U5Rw68E4SFiXM2opIRbnY=
-X-Google-Smtp-Source: ABdhPJxOhepnKOoKA4RqwLPJjMXDoxl/v8mx8vWmtqquCH1q7VX7Pr+WalSB0nHIR8npx8CG+gkjhw==
-X-Received: by 2002:a05:6512:3988:b0:44a:f02e:f28e with SMTP id j8-20020a056512398800b0044af02ef28emr3627503lfu.458.1649183094333;
-        Tue, 05 Apr 2022 11:24:54 -0700 (PDT)
-Received: from noname.. ([2a02:2698:8c2a:226e:6d9:f5ff:fecb:a8ab])
-        by smtp.googlemail.com with ESMTPSA id bg19-20020a05651c0b9300b002497beec608sm1422452ljb.87.2022.04.05.11.24.53
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 05 Apr 2022 11:24:53 -0700 (PDT)
-From:   Grigory Vasilyev <h0tc0d3@gmail.com>
-To:     Rodrigo Siqueira <Rodrigo.Siqueira@amd.com>,
-        Melissa Wen <mwen@igalia.com>
-Cc:     Grigory Vasilyev <h0tc0d3@gmail.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
-        "Pan, Xinhui" <Xinhui.Pan@amd.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>, Jiawei Gu <Jiawei.Gu@amd.com>,
-        Lucas De Marchi <lucas.demarchi@intel.com>,
-        Jani Nikula <jani.nikula@intel.com>,
-        amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] drm/amdgpu: Accessing to a null pointer
-Date:   Tue,  5 Apr 2022 21:24:55 +0300
-Message-Id: <20220405182456.8798-1-h0tc0d3@gmail.com>
+        Tue, 5 Apr 2022 06:27:41 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72CEFD7634;
+        Tue,  5 Apr 2022 03:12:39 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 257F8B81B7A;
+        Tue,  5 Apr 2022 10:12:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6F2F4C385A0;
+        Tue,  5 Apr 2022 10:12:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649153556;
+        bh=fWnZGTaax7ux6XIJiRunoR+0ZtZCkTRhX4NvNDGGMFw=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=WM5no34pE0flo1xzRUHSgzbNbzfXJ0/56O+Jgpzwd0uqKHNHiDmsbNBuFM9+GIFK6
+         /DdehqDVjKbzGfU9CYDhlxpAdCWeKHciPDDxINyK1292PHwpfQbHBcvbVcKOwhT5C0
+         tF6yOIeL5q5eqVhRmIehDDk2sUL+TqQC4HNmcops=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Jagan Teki <jagan@amarulasolutions.com>,
+        Robert Foss <robert.foss@linaro.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 264/599] drm: bridge: adv7511: Fix ADV7535 HPD enablement
+Date:   Tue,  5 Apr 2022 09:29:18 +0200
+Message-Id: <20220405070306.694905921@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
+References: <20220405070258.802373272@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-A typo in the code. It was assumed that it was
-possible to shift the pointer to sizeof(BIOS_ATOM_PREFIX) - 1.
+From: Jagan Teki <jagan@amarulasolutions.com>
 
-Signed-off-by: Grigory Vasilyev <h0tc0d3@gmail.com>
+[ Upstream commit 3dbc84a595d17f64f14fcea00120d31e33e98880 ]
+
+Existing HPD enablement logic is not compatible with ADV7535
+bridge, thus any runtime plug-in of HDMI cable is not working
+on these bridge designs.
+
+Unlike other ADV7511 family of bridges, the ADV7535 require
+HPD_OVERRIDE bit to set and reset for proper handling of HPD
+functionality.
+
+Fix it.
+
+Fixes: 8501fe4b14a3 ("drm: bridge: adv7511: Add support for ADV7535")
+Signed-off-by: Jagan Teki <jagan@amarulasolutions.com>
+Signed-off-by: Robert Foss <robert.foss@linaro.org>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220109172949.168167-1-jagan@amarulasolutions.com
+Reviewed-by: Robert Foss <robert.foss@linaro.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/amd/amdgpu/atom.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/gpu/drm/bridge/adv7511/adv7511.h     |  1 +
+ drivers/gpu/drm/bridge/adv7511/adv7511_drv.c | 29 +++++++++++++++-----
+ 2 files changed, 23 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/gpu/drm/amd/amdgpu/atom.c b/drivers/gpu/drm/amd/amdgpu/atom.c
-index e729973af3c9..be9d61bcb8ae 100644
---- a/drivers/gpu/drm/amd/amdgpu/atom.c
-+++ b/drivers/gpu/drm/amd/amdgpu/atom.c
-@@ -1426,7 +1426,7 @@ static void atom_get_vbios_pn(struct atom_context *ctx)
+diff --git a/drivers/gpu/drm/bridge/adv7511/adv7511.h b/drivers/gpu/drm/bridge/adv7511/adv7511.h
+index a9bb734366ae..a0f6ee15c248 100644
+--- a/drivers/gpu/drm/bridge/adv7511/adv7511.h
++++ b/drivers/gpu/drm/bridge/adv7511/adv7511.h
+@@ -169,6 +169,7 @@
+ #define ADV7511_PACKET_ENABLE_SPARE2		BIT(1)
+ #define ADV7511_PACKET_ENABLE_SPARE1		BIT(0)
  
- 	if (*vbios_str == 0) {
- 		vbios_str = atom_find_str_in_rom(ctx, BIOS_ATOM_PREFIX, 3, 1024, 64);
--		if (vbios_str == NULL)
-+		if (vbios_str != NULL)
- 			vbios_str += sizeof(BIOS_ATOM_PREFIX) - 1;
++#define ADV7535_REG_POWER2_HPD_OVERRIDE		BIT(6)
+ #define ADV7511_REG_POWER2_HPD_SRC_MASK		0xc0
+ #define ADV7511_REG_POWER2_HPD_SRC_BOTH		0x00
+ #define ADV7511_REG_POWER2_HPD_SRC_HPD		0x40
+diff --git a/drivers/gpu/drm/bridge/adv7511/adv7511_drv.c b/drivers/gpu/drm/bridge/adv7511/adv7511_drv.c
+index a0d392c338da..c6f059be4b89 100644
+--- a/drivers/gpu/drm/bridge/adv7511/adv7511_drv.c
++++ b/drivers/gpu/drm/bridge/adv7511/adv7511_drv.c
+@@ -351,11 +351,17 @@ static void __adv7511_power_on(struct adv7511 *adv7511)
+ 	 * from standby or are enabled. When the HPD goes low the adv7511 is
+ 	 * reset and the outputs are disabled which might cause the monitor to
+ 	 * go to standby again. To avoid this we ignore the HPD pin for the
+-	 * first few seconds after enabling the output.
++	 * first few seconds after enabling the output. On the other hand
++	 * adv7535 require to enable HPD Override bit for proper HPD.
+ 	 */
+-	regmap_update_bits(adv7511->regmap, ADV7511_REG_POWER2,
+-			   ADV7511_REG_POWER2_HPD_SRC_MASK,
+-			   ADV7511_REG_POWER2_HPD_SRC_NONE);
++	if (adv7511->type == ADV7535)
++		regmap_update_bits(adv7511->regmap, ADV7511_REG_POWER2,
++				   ADV7535_REG_POWER2_HPD_OVERRIDE,
++				   ADV7535_REG_POWER2_HPD_OVERRIDE);
++	else
++		regmap_update_bits(adv7511->regmap, ADV7511_REG_POWER2,
++				   ADV7511_REG_POWER2_HPD_SRC_MASK,
++				   ADV7511_REG_POWER2_HPD_SRC_NONE);
+ }
+ 
+ static void adv7511_power_on(struct adv7511 *adv7511)
+@@ -375,6 +381,10 @@ static void adv7511_power_on(struct adv7511 *adv7511)
+ static void __adv7511_power_off(struct adv7511 *adv7511)
+ {
+ 	/* TODO: setup additional power down modes */
++	if (adv7511->type == ADV7535)
++		regmap_update_bits(adv7511->regmap, ADV7511_REG_POWER2,
++				   ADV7535_REG_POWER2_HPD_OVERRIDE, 0);
++
+ 	regmap_update_bits(adv7511->regmap, ADV7511_REG_POWER,
+ 			   ADV7511_POWER_POWER_DOWN,
+ 			   ADV7511_POWER_POWER_DOWN);
+@@ -672,9 +682,14 @@ adv7511_detect(struct adv7511 *adv7511, struct drm_connector *connector)
+ 			status = connector_status_disconnected;
+ 	} else {
+ 		/* Renable HPD sensing */
+-		regmap_update_bits(adv7511->regmap, ADV7511_REG_POWER2,
+-				   ADV7511_REG_POWER2_HPD_SRC_MASK,
+-				   ADV7511_REG_POWER2_HPD_SRC_BOTH);
++		if (adv7511->type == ADV7535)
++			regmap_update_bits(adv7511->regmap, ADV7511_REG_POWER2,
++					   ADV7535_REG_POWER2_HPD_OVERRIDE,
++					   ADV7535_REG_POWER2_HPD_OVERRIDE);
++		else
++			regmap_update_bits(adv7511->regmap, ADV7511_REG_POWER2,
++					   ADV7511_REG_POWER2_HPD_SRC_MASK,
++					   ADV7511_REG_POWER2_HPD_SRC_BOTH);
  	}
- 	if (vbios_str != NULL && *vbios_str == 0)
+ 
+ 	adv7511->status = status;
 -- 
-2.35.1
+2.34.1
+
+
 
