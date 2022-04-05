@@ -2,280 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 04F00C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 317DBC43219
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:22:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355331AbiDEUQP (ORCPT
+        id S1356927AbiDEUQX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 16:16:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54744 "EHLO
+        Tue, 5 Apr 2022 16:16:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58388 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1457570AbiDEQKx (ORCPT
+        with ESMTP id S1573366AbiDES5N (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 12:10:53 -0400
-Received: from ssl.serverraum.org (ssl.serverraum.org [IPv6:2a01:4f8:151:8464::1:2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20F3AFD1B;
-        Tue,  5 Apr 2022 09:08:53 -0700 (PDT)
-Received: from mwalle01.kontron.local. (unknown [213.135.10.150])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        Tue, 5 Apr 2022 14:57:13 -0400
+Received: from mail.skyhub.de (mail.skyhub.de [5.9.137.197])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A90F7B8239;
+        Tue,  5 Apr 2022 11:55:12 -0700 (PDT)
+Received: from zn.tnic (p2e55dff8.dip0.t-ipconnect.de [46.85.223.248])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id 31CE422260;
-        Tue,  5 Apr 2022 18:08:51 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1649174931;
+        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 37C3B1EC0374;
+        Tue,  5 Apr 2022 20:55:07 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
+        t=1649184907;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=2p3sjpS/Bg3o28UgK7piCHL/zRE/gDoVsSlTwfbWAqQ=;
-        b=hMCfN8z+XOdJahCnW0raIQnxmiUTsWCzvdBExcEKDAWdGV9SsNa0GQ6pXixZKAW/h3fW5d
-        kj1MS2BRgUJGDEZW4WOmVLXQGm9txK+i09wtdOT6D4zgrw77uGgppPHxW+9rXXWKPhD8Vn
-        GUoS/bPfLvQfqyeLsvp7zUkgSBz/oNM=
-From:   Michael Walle <michael@walle.cc>
-To:     Kavyasree Kotagiri <kavyasree.kotagiri@microchip.com>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>
-Cc:     Arnd Bergmann <arnd@arndb.de>, Olof Johansson <olof@lixom.net>,
-        soc@kernel.org, linux-arm-kernel@lists.infradead.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Claudiu Beznea <claudiu.beznea@microchip.com>,
-        Tudor.Ambarus@microchip.com, Michael Walle <michael@walle.cc>
-Subject: [PATCH v3 7/7] ARM: dts: lan966x: add basic Kontron KSwitch D10 support
-Date:   Tue,  5 Apr 2022 18:08:37 +0200
-Message-Id: <20220405160837.4093563-8-michael@walle.cc>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220405160837.4093563-1-michael@walle.cc>
-References: <20220405160837.4093563-1-michael@walle.cc>
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
+        bh=v2FjWdRnczI9WKt4ClfJ913bandBLADmN4fX24w4Ui4=;
+        b=CW65VH61kzlILvC1aaS6x77amEDhT358yeIFIwhXHg0LUuLo1KxyindYNWNBcB1Epm/PUa
+        Jqj4LEo84G6aE0DNebEuwx7BIznR/jTVutvGPaZnMXa8z6VxzJHewH2E+sqx/sDun0fsBh
+        Oj7RQRh1ieLt6mNg0xVJpuSJWuKqmes=
+Date:   Tue, 5 Apr 2022 20:55:05 +0200
+From:   Borislav Petkov <bp@alien8.de>
+To:     Brijesh Singh <brijesh.singh@amd.com>,
+        Paolo Bonzini <pbonzini@redhat.com>
+Cc:     x86@kernel.org, linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
+        linux-efi@vger.kernel.org, platform-driver-x86@vger.kernel.org,
+        linux-coco@lists.linux.dev, linux-mm@kvack.org,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Joerg Roedel <jroedel@suse.de>,
+        Tom Lendacky <thomas.lendacky@amd.com>,
+        "H. Peter Anvin" <hpa@zytor.com>, Ard Biesheuvel <ardb@kernel.org>,
+        Sean Christopherson <seanjc@google.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Jim Mattson <jmattson@google.com>,
+        Andy Lutomirski <luto@kernel.org>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Sergio Lopez <slp@redhat.com>, Peter Gonda <pgonda@google.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+        David Rientjes <rientjes@google.com>,
+        Dov Murik <dovmurik@linux.ibm.com>,
+        Tobin Feldman-Fitzthum <tobin@ibm.com>,
+        Michael Roth <michael.roth@amd.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
+        Andi Kleen <ak@linux.intel.com>,
+        "Dr . David Alan Gilbert" <dgilbert@redhat.com>,
+        brijesh.ksingh@gmail.com, tony.luck@intel.com, marcorr@google.com,
+        sathyanarayanan.kuppuswamy@linux.intel.com,
+        Venu Busireddy <venu.busireddy@oracle.com>
+Subject: Re: [PATCH v12 2.1/46] KVM: SVM: Create a separate mapping for the
+ SEV-ES save area
+Message-ID: <YkyQib4Jda1epH3G@zn.tnic>
+References: <20220307213356.2797205-3-brijesh.singh@amd.com>
+ <20220405182743.308853-1-brijesh.singh@amd.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20220405182743.308853-1-brijesh.singh@amd.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add basic support for the Kontron KSwitch D10 MMT. It comes in two
-variants: "6G-2GS" which features 6 Gigabit copper ports and two SFP
-cages and "8G" which features 6 Gigbabit copper ports (where two are
-2.5G capable).
+On Tue, Apr 05, 2022 at 01:27:43PM -0500, Brijesh Singh wrote:
+> From: Tom Lendacky <thomas.lendacky@amd.com>
+> 
+> The save area for SEV-ES/SEV-SNP guests, as used by the hardware, is
+> different from the save area of a non SEV-ES/SEV-SNP guest.
+> 
+> This is the first step in defining the multiple save areas to keep them
+> separate and ensuring proper operation amongst the different types of
+> guests. Create an SEV-ES/SEV-SNP save area and adjust usage to the new
+> save area definition where needed.
+> 
+> Reviewed-by: Venu Busireddy <venu.busireddy@oracle.com>
+> Signed-off-by: Tom Lendacky <thomas.lendacky@amd.com>
+> Signed-off-by: Brijesh Singh <brijesh.singh@amd.com>
+> ---
+> 
+> Hi Paolo,
+> 
+> Now there is a conflict when applying this patch on 5.18-rc1. Please
+> use the updated patch when merging the first four patches from the
+> series.
 
-For now the following is supported and working:
- - Kernel console
- - SFP cages I2C bus and mux
- - SPI
- - SGPIO
- - Watchdog
+Right, or if you'd prefer I carried them through the tip tree, lemme
+know.
 
-Signed-off-by: Michael Walle <michael@walle.cc>
----
- arch/arm/boot/dts/Makefile                    |  4 +-
- ...lan966x-kontron-kswitch-d10-mmt-6g-2gs.dts | 77 +++++++++++++++++++
- .../lan966x-kontron-kswitch-d10-mmt-8g.dts    | 13 ++++
- .../dts/lan966x-kontron-kswitch-d10-mmt.dtsi  | 75 ++++++++++++++++++
- 4 files changed, 168 insertions(+), 1 deletion(-)
- create mode 100644 arch/arm/boot/dts/lan966x-kontron-kswitch-d10-mmt-6g-2gs.dts
- create mode 100644 arch/arm/boot/dts/lan966x-kontron-kswitch-d10-mmt-8g.dts
- create mode 100644 arch/arm/boot/dts/lan966x-kontron-kswitch-d10-mmt.dtsi
+Thx.
 
-diff --git a/arch/arm/boot/dts/Makefile b/arch/arm/boot/dts/Makefile
-index 7c16f8a2b738..54beef7c1810 100644
---- a/arch/arm/boot/dts/Makefile
-+++ b/arch/arm/boot/dts/Makefile
-@@ -742,7 +742,9 @@ dtb-$(CONFIG_SOC_IMX7ULP) += \
- 	imx7ulp-com.dtb \
- 	imx7ulp-evk.dtb
- dtb-$(CONFIG_SOC_LAN966) += \
--	lan966x-pcb8291.dtb
-+	lan966x-pcb8291.dtb \
-+	lan966x-kontron-kswitch-d10-mmt-6g-2gs.dtb \
-+	lan966x-kontron-kswitch-d10-mmt-8g.dtb
- dtb-$(CONFIG_SOC_LS1021A) += \
- 	ls1021a-moxa-uc-8410a.dtb \
- 	ls1021a-qds.dtb \
-diff --git a/arch/arm/boot/dts/lan966x-kontron-kswitch-d10-mmt-6g-2gs.dts b/arch/arm/boot/dts/lan966x-kontron-kswitch-d10-mmt-6g-2gs.dts
-new file mode 100644
-index 000000000000..9cf0b791a355
---- /dev/null
-+++ b/arch/arm/boot/dts/lan966x-kontron-kswitch-d10-mmt-6g-2gs.dts
-@@ -0,0 +1,77 @@
-+// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
-+/*
-+ * Device Tree file for the Kontron KSwitch D10 MMT 6G-2GS
-+ */
-+
-+/dts-v1/;
-+#include "lan966x-kontron-kswitch-d10-mmt.dtsi"
-+
-+/ {
-+	model = "Kontron KSwitch D10 MMT 6G-2GS";
-+	compatible = "kontron,kswitch-d10-mmt-6g-2gs", "kontron,s1921",
-+		     "microchip,lan9668", "microchip,lan966";
-+
-+	i2cmux {
-+		compatible = "i2c-mux-gpio";
-+		#address-cells = <1>;
-+		#size-cells = <0>;
-+		mux-gpios = <&sgpio_out 3 2 GPIO_ACTIVE_HIGH>,
-+			    <&sgpio_out 3 3 GPIO_ACTIVE_HIGH>;
-+		i2c-parent = <&i2c4>;
-+
-+		i2c4_0: i2c@1 {
-+			reg = <1>;
-+			#address-cells = <1>;
-+			#size-cells = <0>;
-+		};
-+
-+		i2c4_1: i2c@2 {
-+			reg = <2>;
-+			#address-cells = <1>;
-+			#size-cells = <0>;
-+		};
-+	};
-+
-+	sfp0: sfp0 {
-+		compatible = "sff,sfp";
-+		i2c-bus = <&i2c4_0>;
-+		los-gpios = <&sgpio_in 1 0 GPIO_ACTIVE_HIGH>;
-+		mod-def0-gpios = <&sgpio_in 1 1 GPIO_ACTIVE_LOW>;
-+		maximum-power-milliwatt = <2500>;
-+		tx-disable-gpios = <&sgpio_out 3 0 GPIO_ACTIVE_LOW>;
-+		tx-fault-gpios = <&sgpio_in 0 2 GPIO_ACTIVE_HIGH>;
-+		rate-select0-gpios = <&sgpio_out 2 0 GPIO_ACTIVE_HIGH>;
-+		rate-select1-gpios = <&sgpio_out 2 1 GPIO_ACTIVE_HIGH>;
-+	};
-+
-+	sfp1: sfp1 {
-+		compatible = "sff,sfp";
-+		i2c-bus = <&i2c4_1>;
-+		los-gpios = <&sgpio_in 1 2 GPIO_ACTIVE_HIGH>;
-+		mod-def0-gpios = <&sgpio_in 1 3 GPIO_ACTIVE_LOW>;
-+		maximum-power-milliwatt = <2500>;
-+		tx-disable-gpios = <&sgpio_out 3 1 GPIO_ACTIVE_LOW>;
-+		tx-fault-gpios = <&sgpio_in 0 3 GPIO_ACTIVE_HIGH>;
-+		rate-select0-gpios = <&sgpio_out 2 2 GPIO_ACTIVE_HIGH>;
-+		rate-select1-gpios = <&sgpio_out 2 3 GPIO_ACTIVE_HIGH>;
-+	};
-+};
-+
-+&flx4 {
-+	atmel,flexcom-mode = <ATMEL_FLEXCOM_MODE_TWI>;
-+	status = "okay";
-+
-+	i2c4: i2c@600 {
-+		pinctrl-0 = <&fc4_b_pins>;
-+		pinctrl-names = "default";
-+		status = "okay";
-+	};
-+};
-+
-+&gpio {
-+	fc4_b_pins: fc4-b-i2c-pins {
-+		/* SCL, SDA */
-+		pins = "GPIO_57", "GPIO_58";
-+		function = "fc4_b";
-+	};
-+};
-diff --git a/arch/arm/boot/dts/lan966x-kontron-kswitch-d10-mmt-8g.dts b/arch/arm/boot/dts/lan966x-kontron-kswitch-d10-mmt-8g.dts
-new file mode 100644
-index 000000000000..4b35f6c46e7f
---- /dev/null
-+++ b/arch/arm/boot/dts/lan966x-kontron-kswitch-d10-mmt-8g.dts
-@@ -0,0 +1,13 @@
-+// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
-+/*
-+ * Device Tree file for the Kontron KSwitch D10 MMT 8G
-+ */
-+
-+/dts-v1/;
-+#include "lan966x-kontron-kswitch-d10-mmt.dtsi"
-+
-+/ {
-+	model = "Kontron KSwitch D10 MMT 8G";
-+	compatible = "kontron,kswitch-d10-mmt-8g", "kontron,s1921",
-+		     "microchip,lan9668", "microchip,lan966";
-+};
-diff --git a/arch/arm/boot/dts/lan966x-kontron-kswitch-d10-mmt.dtsi b/arch/arm/boot/dts/lan966x-kontron-kswitch-d10-mmt.dtsi
-new file mode 100644
-index 000000000000..4178fb0bd9c5
---- /dev/null
-+++ b/arch/arm/boot/dts/lan966x-kontron-kswitch-d10-mmt.dtsi
-@@ -0,0 +1,75 @@
-+// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
-+/*
-+ * Common part of the device tree for the Kontron KSwitch D10 MMT
-+ */
-+
-+/dts-v1/;
-+#include "lan966x.dtsi"
-+
-+/ {
-+	aliases {
-+		serial0 = &usart0;
-+	};
-+
-+	chosen {
-+		stdout-path = "serial0:115200n8";
-+	};
-+
-+	gpio-restart {
-+		compatible = "gpio-restart";
-+		gpios = <&gpio 56 GPIO_ACTIVE_LOW>;
-+		priority = <200>;
-+	};
-+};
-+
-+&flx0 {
-+	atmel,flexcom-mode = <ATMEL_FLEXCOM_MODE_USART>;
-+	status = "okay";
-+
-+	usart0: serial@200 {
-+		pinctrl-0 = <&usart0_pins>;
-+		pinctrl-names = "default";
-+		status = "okay";
-+	};
-+};
-+
-+&gpio {
-+	usart0_pins: usart0-pins {
-+		/* RXD, TXD */
-+		pins = "GPIO_25", "GPIO_26";
-+		function = "fc0_b";
-+	};
-+
-+	sgpio_a_pins: sgpio-a-pins {
-+		/* SCK, D0, D1 */
-+		pins = "GPIO_32", "GPIO_33", "GPIO_34";
-+		function = "sgpio_a";
-+	};
-+
-+	sgpio_b_pins: sgpio-b-pins {
-+		/* LD */
-+		pins = "GPIO_64";
-+		function = "sgpio_b";
-+	};
-+};
-+
-+&sgpio {
-+	pinctrl-0 = <&sgpio_a_pins>, <&sgpio_b_pins>;
-+	pinctrl-names = "default";
-+	bus-frequency = <8000000>;
-+	/* arbitrary range because all GPIOs are in software mode */
-+	microchip,sgpio-port-ranges = <0 11>;
-+	status = "okay";
-+
-+	sgpio_in: gpio@0 {
-+		ngpios = <128>;
-+	};
-+
-+	sgpio_out: gpio@1 {
-+		ngpios = <128>;
-+	};
-+};
-+
-+&watchdog {
-+	status = "okay";
-+};
 -- 
-2.30.2
+Regards/Gruss,
+    Boris.
 
+https://people.kernel.org/tglx/notes-about-netiquette
