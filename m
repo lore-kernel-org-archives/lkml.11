@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 180B4C4167D
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 13:24:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0151DC4167B
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 13:24:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1388371AbiDENWG (ORCPT
+        id S1388389AbiDENWJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 09:22:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44286 "EHLO
+        Tue, 5 Apr 2022 09:22:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34658 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344416AbiDEJT4 (ORCPT
+        with ESMTP id S1344732AbiDEJVI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:19:56 -0400
+        Tue, 5 Apr 2022 05:21:08 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9D99C36;
-        Tue,  5 Apr 2022 02:08:14 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A90724BFF;
+        Tue,  5 Apr 2022 02:08:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2865061573;
-        Tue,  5 Apr 2022 09:08:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 39085C385A0;
-        Tue,  5 Apr 2022 09:08:13 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6FB6561577;
+        Tue,  5 Apr 2022 09:08:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7327EC385A1;
+        Tue,  5 Apr 2022 09:08:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649149693;
-        bh=IarqHDYKJbHBln3CcZKc26LuO7T/MvquBPPP1r30uhU=;
+        s=korg; t=1649149718;
+        bh=qW1x31HnZxqlWv9yLK7leVGiHSRFHxjgpFRqN+3ePM4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=uhaYbC4Nax8EB6dlLoHpHTlTaECGbsuMG9XCfEFDwgI4ZaAH8/DHEJ2lmQjCM8cdn
-         f+E2JZhNB0TOnrtclj6fFEPXwh9NHkjXhFq3oZ6faPkLLvOjmMa3hgkKsvXx2oGM2a
-         +eEyKMSd7noGI3zbMUMCm9BaZFq8tpKu3WxxQzN0=
+        b=WVftuMhdy1ZG54iKGq4PViKdgdmhkUJcT3WE9Und/3WKdfRAvOZz0D2OiNRy7eHgO
+         +SCVbUh6890huTTQBgfkQ4FXhCKsdU7Q/qLZz5qYk8LJDJhBqEsIn6sgTckNEW4K7g
+         2CR1Yh3f6Oindm6yD676fsqDsCZBoEYYj7P2gc8w=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Pavel Machek <pavel@denx.de>,
-        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        Biju Das <biju.das.jz@bp.renesas.com>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0808/1017] ASoC: sh: rz-ssi: Make the data structures available before registering the handlers
-Date:   Tue,  5 Apr 2022 09:28:41 +0200
-Message-Id: <20220405070418.232674644@linuxfoundation.org>
+        stable@vger.kernel.org, Antonino Daplas <adaplas@gmail.com>,
+        linux-fbdev@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        Tim Gardner <tim.gardner@canonical.com>,
+        Helge Deller <deller@gmx.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 0816/1017] video: fbdev: nvidiafb: Use strscpy() to prevent buffer overflow
+Date:   Tue,  5 Apr 2022 09:28:49 +0200
+Message-Id: <20220405070418.471174787@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -52,46 +51,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+From: Tim Gardner <tim.gardner@canonical.com>
 
-[ Upstream commit 0788785c78342d422f93b1c9831c2b2b7f137937 ]
+[ Upstream commit 37a1a2e6eeeb101285cd34e12e48a881524701aa ]
 
-Initialize the spinlock and make the data structures available before
-registering the interrupt handlers.
+Coverity complains of a possible buffer overflow. However,
+given the 'static' scope of nvidia_setup_i2c_bus() it looks
+like that can't happen after examiniing the call sites.
 
-Reported-by: Pavel Machek <pavel@denx.de>
-Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-Reviewed-by: Biju Das <biju.das.jz@bp.renesas.com>
-Link: https://lore.kernel.org/r/20220110094711.8574-3-prabhakar.mahadev-lad.rj@bp.renesas.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+CID 19036 (#1 of 1): Copy into fixed size buffer (STRING_OVERFLOW)
+1. fixed_size_dest: You might overrun the 48-character fixed-size string
+  chan->adapter.name by copying name without checking the length.
+2. parameter_as_source: Note: This defect has an elevated risk because the
+  source argument is a parameter of the current function.
+ 89        strcpy(chan->adapter.name, name);
+
+Fix this warning by using strscpy() which will silence the warning and
+prevent any future buffer overflows should the names used to identify the
+channel become much longer.
+
+Cc: Antonino Daplas <adaplas@gmail.com>
+Cc: linux-fbdev@vger.kernel.org
+Cc: dri-devel@lists.freedesktop.org
+Cc: linux-kernel@vger.kernel.org
+Signed-off-by: Tim Gardner <tim.gardner@canonical.com>
+Signed-off-by: Helge Deller <deller@gmx.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/sh/rz-ssi.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ drivers/video/fbdev/nvidia/nv_i2c.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/sound/soc/sh/rz-ssi.c b/sound/soc/sh/rz-ssi.c
-index 37466f65c2b0..16de2633a873 100644
---- a/sound/soc/sh/rz-ssi.c
-+++ b/sound/soc/sh/rz-ssi.c
-@@ -977,6 +977,9 @@ static int rz_ssi_probe(struct platform_device *pdev)
- 	ssi->playback.priv = ssi;
- 	ssi->capture.priv = ssi;
+diff --git a/drivers/video/fbdev/nvidia/nv_i2c.c b/drivers/video/fbdev/nvidia/nv_i2c.c
+index d7994a173245..0b48965a6420 100644
+--- a/drivers/video/fbdev/nvidia/nv_i2c.c
++++ b/drivers/video/fbdev/nvidia/nv_i2c.c
+@@ -86,7 +86,7 @@ static int nvidia_setup_i2c_bus(struct nvidia_i2c_chan *chan, const char *name,
+ {
+ 	int rc;
  
-+	spin_lock_init(&ssi->lock);
-+	dev_set_drvdata(&pdev->dev, ssi);
-+
- 	/* Error Interrupt */
- 	ssi->irq_int = platform_get_irq_byname(pdev, "int_req");
- 	if (ssi->irq_int < 0)
-@@ -1024,8 +1027,6 @@ static int rz_ssi_probe(struct platform_device *pdev)
- 	pm_runtime_enable(&pdev->dev);
- 	pm_runtime_resume_and_get(&pdev->dev);
- 
--	spin_lock_init(&ssi->lock);
--	dev_set_drvdata(&pdev->dev, ssi);
- 	ret = devm_snd_soc_register_component(&pdev->dev, &rz_ssi_soc_component,
- 					      rz_ssi_soc_dai,
- 					      ARRAY_SIZE(rz_ssi_soc_dai));
+-	strcpy(chan->adapter.name, name);
++	strscpy(chan->adapter.name, name, sizeof(chan->adapter.name));
+ 	chan->adapter.owner = THIS_MODULE;
+ 	chan->adapter.class = i2c_class;
+ 	chan->adapter.algo_data = &chan->algo;
 -- 
 2.34.1
 
