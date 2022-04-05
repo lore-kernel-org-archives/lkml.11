@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DB473C35273
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BBA63C4167E
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 13:37:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1390023AbiDENgL (ORCPT
+        id S1385029AbiDENff (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 09:36:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37372 "EHLO
+        Tue, 5 Apr 2022 09:35:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38790 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346605AbiDEJYa (ORCPT
+        with ESMTP id S1347076AbiDEJY6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:24:30 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D1F9B28;
-        Tue,  5 Apr 2022 02:13:48 -0700 (PDT)
+        Tue, 5 Apr 2022 05:24:58 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0E65A9940;
+        Tue,  5 Apr 2022 02:14:46 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 448EFB81C77;
-        Tue,  5 Apr 2022 09:13:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ACC27C385A6;
-        Tue,  5 Apr 2022 09:13:44 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C9FA761674;
+        Tue,  5 Apr 2022 09:14:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D609FC385A3;
+        Tue,  5 Apr 2022 09:14:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649150025;
-        bh=1P7dqhC2TaTndTPDyXwVbqmJovUDvfg+vmyr+QM2+nU=;
+        s=korg; t=1649150083;
+        bh=APJ33ZcyptEY6LH63toIiRLFoQnqhYnaWleZfgvO5SQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PyE5dJAxszd9e6Fk7uDWyJqe3op38l8lFh3icx2Caw6sa405NQxtbEpdKZwGEwiCt
-         3TwIarIsSd/rNxx83t0hoc8oq/M1dQSjaoynyJhroFaJ+TX6a1kDO/gRf4Govi5KIq
-         rfkaFr2/Al0WMZg1QKZ+1Zv7H5I4T1gZcBUzdWqI=
+        b=imTQqj3G5sU0lKFGYpJJPDBDA3ssyM13kVzIXXCFVnW9arXDBvOfwWc6vqlpWQ0fo
+         CYSToS7cJjCfcaVpc934Qdg3t48rIavhVsHIW1nfcIp9oDR1czkkeD5zIIN15v+Tfp
+         BBrEk0UQtCYfrZBnsDQdYSOdY3THv1/3Jv2Gvuf8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tom Rix <trix@redhat.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>
-Subject: [PATCH 5.16 0928/1017] rtc: check if __rtc_read_time was successful
-Date:   Tue,  5 Apr 2022 09:30:41 +0200
-Message-Id: <20220405070421.761859139@linuxfoundation.org>
+        stable@vger.kernel.org, Hulk Robot <hulkci@huawei.com>,
+        Baokun Li <libaokun1@huawei.com>,
+        Richard Weinberger <richard@nod.at>
+Subject: [PATCH 5.16 0947/1017] ubi: Fix race condition between ctrl_cdev_ioctl and ubi_cdev_ioctl
+Date:   Tue,  5 Apr 2022 09:31:00 +0200
+Message-Id: <20220405070422.322895584@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -49,54 +50,192 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tom Rix <trix@redhat.com>
+From: Baokun Li <libaokun1@huawei.com>
 
-commit 915593a7a663b2ad08b895a5f3ba8b19d89d4ebf upstream.
+commit 3cbf0e392f173ba0ce425968c8374a6aa3e90f2e upstream.
 
-Clang static analysis reports this issue
-interface.c:810:8: warning: Passed-by-value struct
-  argument contains uninitialized data
-  now = rtc_tm_to_ktime(tm);
-      ^~~~~~~~~~~~~~~~~~~
+Hulk Robot reported a KASAN report about use-after-free:
+ ==================================================================
+ BUG: KASAN: use-after-free in __list_del_entry_valid+0x13d/0x160
+ Read of size 8 at addr ffff888035e37d98 by task ubiattach/1385
+ [...]
+ Call Trace:
+  klist_dec_and_del+0xa7/0x4a0
+  klist_put+0xc7/0x1a0
+  device_del+0x4d4/0xed0
+  cdev_device_del+0x1a/0x80
+  ubi_attach_mtd_dev+0x2951/0x34b0 [ubi]
+  ctrl_cdev_ioctl+0x286/0x2f0 [ubi]
 
-tm is set by a successful call to __rtc_read_time()
-but its return status is not checked.  Check if
-it was successful before setting the enabled flag.
-Move the decl of err to function scope.
+ Allocated by task 1414:
+  device_add+0x60a/0x18b0
+  cdev_device_add+0x103/0x170
+  ubi_create_volume+0x1118/0x1a10 [ubi]
+  ubi_cdev_ioctl+0xb7f/0x1ba0 [ubi]
 
-Fixes: 2b2f5ff00f63 ("rtc: interface: ignore expired timers when enqueuing new timers")
-Signed-off-by: Tom Rix <trix@redhat.com>
-Signed-off-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
-Link: https://lore.kernel.org/r/20220326194236.2916310-1-trix@redhat.com
+ Freed by task 1385:
+  cdev_device_del+0x1a/0x80
+  ubi_remove_volume+0x438/0x6c0 [ubi]
+  ubi_cdev_ioctl+0xbf4/0x1ba0 [ubi]
+ [...]
+ ==================================================================
+
+The lock held by ctrl_cdev_ioctl is ubi_devices_mutex, but the lock held
+by ubi_cdev_ioctl is ubi->device_mutex. Therefore, the two locks can be
+concurrent.
+
+ctrl_cdev_ioctl contains two operations: ubi_attach and ubi_detach.
+ubi_detach is bug-free because it uses reference counting to prevent
+concurrency. However, uif_init and uif_close in ubi_attach may race with
+ubi_cdev_ioctl.
+
+uif_init will race with ubi_cdev_ioctl as in the following stack.
+           cpu1                   cpu2                  cpu3
+_______________________|________________________|______________________
+ctrl_cdev_ioctl
+ ubi_attach_mtd_dev
+  uif_init
+                           ubi_cdev_ioctl
+                            ubi_create_volume
+                             cdev_device_add
+   ubi_add_volume
+   // sysfs exist
+   kill_volumes
+                                                    ubi_cdev_ioctl
+                                                     ubi_remove_volume
+                                                      cdev_device_del
+                                                       // first free
+    ubi_free_volume
+     cdev_del
+     // double free
+   cdev_device_del
+
+And uif_close will race with ubi_cdev_ioctl as in the following stack.
+           cpu1                   cpu2                  cpu3
+_______________________|________________________|______________________
+ctrl_cdev_ioctl
+ ubi_attach_mtd_dev
+  uif_init
+                           ubi_cdev_ioctl
+                            ubi_create_volume
+                             cdev_device_add
+  ubi_debugfs_init_dev
+  //error goto out_uif;
+  uif_close
+   kill_volumes
+                                                    ubi_cdev_ioctl
+                                                     ubi_remove_volume
+                                                      cdev_device_del
+                                                       // first free
+    ubi_free_volume
+    // double free
+
+The cause of this problem is that commit 714fb87e8bc0 make device
+"available" before it becomes accessible via sysfs. Therefore, we
+roll back the modification. We will fix the race condition between
+ubi device creation and udev by removing ubi_get_device in
+vol_attribute_show and dev_attribute_show.This avoids accessing
+uninitialized ubi_devices[ubi_num].
+
+ubi_get_device is used to prevent devices from being deleted during
+sysfs execution. However, now kernfs ensures that devices will not
+be deleted before all reference counting are released.
+The key process is shown in the following stack.
+
+device_del
+  device_remove_attrs
+    device_remove_groups
+      sysfs_remove_groups
+        sysfs_remove_group
+          remove_files
+            kernfs_remove_by_name
+              kernfs_remove_by_name_ns
+                __kernfs_remove
+                  kernfs_drain
+
+Fixes: 714fb87e8bc0 ("ubi: Fix race condition between ubi device creation and udev")
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Baokun Li <libaokun1@huawei.com>
+Signed-off-by: Richard Weinberger <richard@nod.at>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/rtc/interface.c |    7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
+ drivers/mtd/ubi/build.c |    9 +--------
+ drivers/mtd/ubi/vmt.c   |    8 +-------
+ 2 files changed, 2 insertions(+), 15 deletions(-)
 
---- a/drivers/rtc/interface.c
-+++ b/drivers/rtc/interface.c
-@@ -804,9 +804,13 @@ static int rtc_timer_enqueue(struct rtc_
- 	struct timerqueue_node *next = timerqueue_getnext(&rtc->timerqueue);
- 	struct rtc_time tm;
- 	ktime_t now;
-+	int err;
-+
-+	err = __rtc_read_time(rtc, &tm);
-+	if (err)
-+		return err;
+--- a/drivers/mtd/ubi/build.c
++++ b/drivers/mtd/ubi/build.c
+@@ -351,9 +351,6 @@ static ssize_t dev_attribute_show(struct
+ 	 * we still can use 'ubi->ubi_num'.
+ 	 */
+ 	ubi = container_of(dev, struct ubi_device, dev);
+-	ubi = ubi_get_device(ubi->ubi_num);
+-	if (!ubi)
+-		return -ENODEV;
  
- 	timer->enabled = 1;
--	__rtc_read_time(rtc, &tm);
- 	now = rtc_tm_to_ktime(tm);
+ 	if (attr == &dev_eraseblock_size)
+ 		ret = sprintf(buf, "%d\n", ubi->leb_size);
+@@ -382,7 +379,6 @@ static ssize_t dev_attribute_show(struct
+ 	else
+ 		ret = -EINVAL;
  
- 	/* Skip over expired timers */
-@@ -820,7 +824,6 @@ static int rtc_timer_enqueue(struct rtc_
- 	trace_rtc_timer_enqueue(timer);
- 	if (!next || ktime_before(timer->node.expires, next->expires)) {
- 		struct rtc_wkalrm alarm;
--		int err;
+-	ubi_put_device(ubi);
+ 	return ret;
+ }
  
- 		alarm.time = rtc_ktime_to_tm(timer->node.expires);
- 		alarm.enabled = 1;
+@@ -979,9 +975,6 @@ int ubi_attach_mtd_dev(struct mtd_info *
+ 			goto out_detach;
+ 	}
+ 
+-	/* Make device "available" before it becomes accessible via sysfs */
+-	ubi_devices[ubi_num] = ubi;
+-
+ 	err = uif_init(ubi);
+ 	if (err)
+ 		goto out_detach;
+@@ -1026,6 +1019,7 @@ int ubi_attach_mtd_dev(struct mtd_info *
+ 	wake_up_process(ubi->bgt_thread);
+ 	spin_unlock(&ubi->wl_lock);
+ 
++	ubi_devices[ubi_num] = ubi;
+ 	ubi_notify_all(ubi, UBI_VOLUME_ADDED, NULL);
+ 	return ubi_num;
+ 
+@@ -1034,7 +1028,6 @@ out_debugfs:
+ out_uif:
+ 	uif_close(ubi);
+ out_detach:
+-	ubi_devices[ubi_num] = NULL;
+ 	ubi_wl_close(ubi);
+ 	ubi_free_all_volumes(ubi);
+ 	vfree(ubi->vtbl);
+--- a/drivers/mtd/ubi/vmt.c
++++ b/drivers/mtd/ubi/vmt.c
+@@ -56,16 +56,11 @@ static ssize_t vol_attribute_show(struct
+ {
+ 	int ret;
+ 	struct ubi_volume *vol = container_of(dev, struct ubi_volume, dev);
+-	struct ubi_device *ubi;
+-
+-	ubi = ubi_get_device(vol->ubi->ubi_num);
+-	if (!ubi)
+-		return -ENODEV;
++	struct ubi_device *ubi = vol->ubi;
+ 
+ 	spin_lock(&ubi->volumes_lock);
+ 	if (!ubi->volumes[vol->vol_id]) {
+ 		spin_unlock(&ubi->volumes_lock);
+-		ubi_put_device(ubi);
+ 		return -ENODEV;
+ 	}
+ 	/* Take a reference to prevent volume removal */
+@@ -103,7 +98,6 @@ static ssize_t vol_attribute_show(struct
+ 	vol->ref_count -= 1;
+ 	ubi_assert(vol->ref_count >= 0);
+ 	spin_unlock(&ubi->volumes_lock);
+-	ubi_put_device(ubi);
+ 	return ret;
+ }
+ 
 
 
