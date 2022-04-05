@@ -2,201 +2,190 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4792DC433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 17F6BC433FE
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:40:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380974AbiDEUlI (ORCPT
+        id S1380326AbiDEUkx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 16:41:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45648 "EHLO
+        Tue, 5 Apr 2022 16:40:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37248 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355881AbiDELz1 (ORCPT
+        with ESMTP id S1457468AbiDEQDQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 07:55:27 -0400
-Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59CABE08A;
-        Tue,  5 Apr 2022 04:14:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1649157265; x=1680693265;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version;
-  bh=vbrpyNUOeVKo9n9VcNXQY9SyN/h9/k3hyA5CjPbxRTQ=;
-  b=iPjIgMI8aIC8QoRhDQPkesD5K3RpKzlgrY8Ft/Z6a+8ltXE6Onvxgpld
-   4ibFeUa5w9u2+ADNdSl6yIW3AL7LbQwr9w6COBA2HcV6zBxXE3ZCv3LiT
-   117HzTO03Zd8r5wIJskJKUZPNbVYcu+T1ggjB16G4PtMGZfd6A/ZZGSi7
-   E=;
-Received: from unknown (HELO ironmsg05-sd.qualcomm.com) ([10.53.140.145])
-  by alexa-out-sd-02.qualcomm.com with ESMTP; 05 Apr 2022 04:14:25 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg05-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2022 04:14:09 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Tue, 5 Apr 2022 04:14:09 -0700
-Received: from hu-srivasam-hyd.qualcomm.com (10.80.80.8) by
- nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Tue, 5 Apr 2022 04:14:04 -0700
-From:   Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
-To:     <agross@kernel.org>, <bjorn.andersson@linaro.org>,
-        <robh+dt@kernel.org>, <linux-arm-msm@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <quic_rohitkr@quicinc.com>, <srinivas.kandagatla@linaro.org>,
-        <dianders@chromium.org>, <swboyd@chromium.org>,
-        <judyhsiao@chromium.org>
-CC:     Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>,
-        "Venkata Prasad Potturu" <quic_potturu@quicinc.com>
-Subject: [PATCH v6 3/3] arm64: dts: qcom: sc7280: Add dt nodes for sound card
-Date:   Tue, 5 Apr 2022 16:43:40 +0530
-Message-ID: <1649157220-29304-4-git-send-email-quic_srivasam@quicinc.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1649157220-29304-1-git-send-email-quic_srivasam@quicinc.com>
-References: <1649157220-29304-1-git-send-email-quic_srivasam@quicinc.com>
+        Tue, 5 Apr 2022 12:03:16 -0400
+Received: from mail-qt1-f182.google.com (mail-qt1-f182.google.com [209.85.160.182])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6184D82D0E
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 08:50:42 -0700 (PDT)
+Received: by mail-qt1-f182.google.com with SMTP id s11so11760524qtc.3
+        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 08:50:42 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=v+fdSoVNNjnUGmCkMRGF7bz1AtuvXBZQ7NRsX5hjdRI=;
+        b=nSLAdzBHyiQ5igCN4Pe6k+8/suWInm+i+4F+PDAx12UoG9Wdgv11CKWTvsSnOxjBNh
+         hJzJZlhJTrUqTKt1NdbTqNI0VsqnOwA6Hsy54rxPyOJL14XQrRmMxQtgC2GBxmeFvQgS
+         3wr1mQSQv/TXUMSOWSVMn9tJTJJAq4+C6j3DdT8bNd7LbDWgs11ug0SOZNi8UjzYeC0P
+         QauhEEB5eLT7e4KcJ3Gc/fU+7UkpnUS3RhTSnjzzWDKEg68bGVx717LCcZ8PYyvtaQlj
+         OtVKj2qoJniFPjznF5QgXS0pKNIuxxenWe9zowzts8QyExdLxqzZKfiPvzZ3cn74wm9I
+         4dSg==
+X-Gm-Message-State: AOAM5337h5bv6xUufm5naZodkPtQUqLMHKUhh/gnxxs64EsjINKmjLco
+        A3wRbUlonTlLKmp0nbixP3Q6uwCiQN+m
+X-Google-Smtp-Source: ABdhPJzKzm30OD+0rRZKNl7Nej0zc6frKnnX46QEawCBiKw/KCb8ayvLrIXfjw+ycf+lOxvjqpd0gA==
+X-Received: by 2002:ac8:5b50:0:b0:2eb:8756:d7c1 with SMTP id n16-20020ac85b50000000b002eb8756d7c1mr3615358qtw.378.1649173841365;
+        Tue, 05 Apr 2022 08:50:41 -0700 (PDT)
+Received: from localhost (pool-68-160-176-52.bstnma.fios.verizon.net. [68.160.176.52])
+        by smtp.gmail.com with ESMTPSA id de8-20020a05620a370800b0067ec34c9f27sm8282351qkb.129.2022.04.05.08.50.40
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 05 Apr 2022 08:50:40 -0700 (PDT)
+Date:   Tue, 5 Apr 2022 11:50:39 -0400
+From:   Mike Snitzer <snitzer@kernel.org>
+To:     Michael Trimarchi <michael@amarulasolutions.com>
+Cc:     Alasdair Kergon <agk@redhat.com>, dm-devel@redhat.com,
+        linux-kernel@vger.kernel.org,
+        Fabio Aiuto <fabio.aiuto@amarulasolutions.com>
+Subject: Re: [RFC PATCH] md: dm-init: Wait devices if it's not find on first
+ adpet
+Message-ID: <YkxlTyMFNNdBqFRd@redhat.com>
+References: <20220401220705.82077-1-michael@amarulasolutions.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220401220705.82077-1-michael@amarulasolutions.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add dt nodes for sound card support, which is using WCD938x headset
-playback, capture, I2S speaker playback and DMICs via VA macro.
+On Fri, Apr 01 2022 at  6:07P -0400,
+Michael Trimarchi <michael@amarulasolutions.com> wrote:
 
-Signed-off-by: Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
-Co-developed-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
-Signed-off-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
----
- arch/arm64/boot/dts/qcom/sc7280-crd.dts  |  8 +++
- arch/arm64/boot/dts/qcom/sc7280-idp.dtsi | 93 ++++++++++++++++++++++++++++++++
- 2 files changed, 101 insertions(+)
+> The device driver can be deferrable and can be a race during
+> the dm-init early. We need to wait all the probe are really finished
+> in a loop as is done in do_mounts. This is was tested on kernel 5.4
+> but code seems was not changed since that time
+> 
+> 003: imx8mq-usb-phy 381f0040.usb-phy: 381f0040.usb-phy supply vbus not found, using dummy regulator
+> 003: imx8mq-usb-phy 382f0040.usb-phy: 382f0040.usb-phy supply vbus not found, using dummy regulator
+> 003: imx-cpufreq-dt imx-cpufreq-dt: cpu speed grade 5 mkt segment 0 supported-hw 0x20 0x1
+> 003: caam-dma caam-dma: caam dma support with 2 job rings
+> 000: hctosys: unable to open rtc device (rtc0)
+> 000: device-mapper: init: waiting for all devices to be available before creating mapped devices
+> 002: device-mapper: table: 254:0: verity: Data device lookup failed
+> 002: device-mapper: ioctl: error adding target to table
+> 002: crng init done
+> 003: of_cfs_init
+> 003: of_cfs_init: OK
+> 003: Waiting for root device /dev/dm-0...
+> 001: mmc2: new HS400 Enhanced strobe MMC card at address 0001
+> 001: mmcblk2: mmc2:0001 IB2916 14.6 GiB
+> 001: mmcblk2boot0: mmc2:0001 IB2916 partition 1 4.00 MiB
+> 001: mmcblk2boot1: mmc2:0001 IB2916 partition 2 4.00 MiB
+> 001: mmcblk2rpmb: mmc2:0001 IB2916 partition 3 4.00 MiB, chardev (249:0)
+> 001:  mmcblk2: p1 p2 p3 p4 p5 p6 p7 p8 p9 p10 p11
+> 001: VSD_3V3: disabling
+> 
+> with the patch
+> 
+> 003: device-mapper: init: waiting for all devices to be available before creating mapped devices
+> 
+> 000: device-mapper: table: 254:0: verity: Data device lookup failed
+> 000: device-mapper: ioctl: error adding target to table
+> 002: crng init done
+> 003: device-mapper: init: waiting for all devices to be available before creating mapped devices
+> 003: device-mapper: table: 254:0: verity: Data device lookup failed
+> 003: device-mapper: ioctl: error adding target to table
+> 003: device-mapper: init: waiting for all devices to be available before creating mapped devices
+> 000: device-mapper: table: 254:0: verity: Data device lookup failed
+> 000: device-mapper: ioctl: error adding target to table
+> 002: device-mapper: init: waiting for all devices to be available before creating mapped devices
+> 002: device-mapper: table: 254:0: verity: Data device lookup failed
+> 002: device-mapper: ioctl: error adding target to table
+> 000: device-mapper: init: waiting for all devices to be available before creating mapped devices
+> 000: device-mapper: table: 254:0: verity: Data device lookup failed
+> 000: device-mapper: ioctl: error adding target to table
+> 003: mmc2: new HS400 Enhanced strobe MMC card at address 0001
+> 003: mmcblk2: mmc2:0001 DG4016 14.7 GiB
+> 003: mmcblk2boot0: mmc2:0001 DG4016 partition 1 4.00 MiB
+> 003: mmcblk2boot1: mmc2:0001 DG4016 partition 2 4.00 MiB
+> 003: mmcblk2rpmb: mmc2:0001 DG4016 partition 3 4.00 MiB, chardev (249:0)
+> 003:  mmcblk2: p1 p2 p3 p4 p5 p6 p7 p8 p9 p10 p11
+> 002: device-mapper: init: waiting for all devices to be available before creating mapped devices
+> 003: device-mapper: verity: sha256 using implementation "sha256-caam"
+> 000: device-mapper: ioctl: dm-0 (rootfs) is ready
+> 
+> Signed-off-by: Michael Trimarchi <michael@amarulasolutions.com>
+> ---
+>  drivers/md/dm-init.c | 15 ++++++++++++++-
+>  1 file changed, 14 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/md/dm-init.c b/drivers/md/dm-init.c
+> index b0c45c6ebe0b..d3b754036484 100644
+> --- a/drivers/md/dm-init.c
+> +++ b/drivers/md/dm-init.c
+> @@ -7,7 +7,9 @@
+>   * This file is released under the GPLv2.
+>   */
+>  
+> +#include <linux/async.h>
+>  #include <linux/ctype.h>
+> +#include <linux/delay.h>
+>  #include <linux/device.h>
+>  #include <linux/device-mapper.h>
+>  #include <linux/init.h>
+> @@ -267,6 +269,7 @@ static int __init dm_init_init(void)
+>  	LIST_HEAD(devices);
+>  	char *str;
+>  	int r;
+> +	bool fail = false;
+>  
+>  	if (!create)
+>  		return 0;
+> @@ -275,6 +278,7 @@ static int __init dm_init_init(void)
+>  		DMERR("Argument is too big. Limit is %d", DM_MAX_STR_SIZE);
+>  		return -EINVAL;
+>  	}
+> +retry:
+>  	str = kstrndup(create, DM_MAX_STR_SIZE, GFP_KERNEL);
+>  	if (!str)
+>  		return -ENOMEM;
+> @@ -288,12 +292,21 @@ static int __init dm_init_init(void)
+>  
+>  	list_for_each_entry(dev, &devices, list) {
+>  		if (dm_early_create(&dev->dmi, dev->table,
+> -				    dev->target_args_array))
+> +				    dev->target_args_array)) {
+> +			fail = true;
+>  			break;
+> +		}
+>  	}
+> +
+>  out:
+>  	kfree(str);
+>  	dm_setup_cleanup(&devices);
+> +	if (fail) {
+> +		msleep(5);
+> +		fail = false;
+> +		goto retry;
+> +	}
+> +
+>  	return r;
+>  }
+>  
+> -- 
+> 2.25.1
+> 
 
-diff --git a/arch/arm64/boot/dts/qcom/sc7280-crd.dts b/arch/arm64/boot/dts/qcom/sc7280-crd.dts
-index 224a82d..b1b968a 100644
---- a/arch/arm64/boot/dts/qcom/sc7280-crd.dts
-+++ b/arch/arm64/boot/dts/qcom/sc7280-crd.dts
-@@ -90,6 +90,14 @@ ap_ts_pen_1v8: &i2c13 {
- 	us-euro-gpios = <&tlmm 81 GPIO_ACTIVE_HIGH>;
- };
- 
-+&sound {
-+	audio-routing =
-+		"VA DMIC0", "MIC BIAS1",
-+		"VA DMIC1", "MIC BIAS1",
-+		"VA DMIC2", "MIC BIAS3",
-+		"VA DMIC3", "MIC BIAS3";
-+};
-+
- &tlmm {
- 	tp_int_odl: tp-int-odl {
- 		pins = "gpio7";
-diff --git a/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi b/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
-index e3d8cbf..45e1d82 100644
---- a/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
-+++ b/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
-@@ -84,6 +84,99 @@
- 		pinctrl-names = "default";
- 		pinctrl-0 = <&nvme_pwren>;
- 	};
-+
-+	sound: sound {
-+		compatible = "google,sc7280-herobrine";
-+		model = "sc7280-wcd938x-max98360a-1mic";
-+
-+		audio-routing =
-+				"IN1_HPHL", "HPHL_OUT",
-+				"IN2_HPHR", "HPHR_OUT",
-+				"AMIC1", "MIC BIAS1",
-+				"AMIC2", "MIC BIAS2",
-+				"VA DMIC0", "MIC BIAS3",
-+				"VA DMIC1", "MIC BIAS3",
-+				"VA DMIC2", "MIC BIAS1",
-+				"VA DMIC3", "MIC BIAS1",
-+				"TX SWR_ADC0", "ADC1_OUTPUT",
-+				"TX SWR_ADC1", "ADC2_OUTPUT",
-+				"TX SWR_ADC2", "ADC3_OUTPUT",
-+				"TX SWR_DMIC0", "DMIC1_OUTPUT",
-+				"TX SWR_DMIC1", "DMIC2_OUTPUT",
-+				"TX SWR_DMIC2", "DMIC3_OUTPUT",
-+				"TX SWR_DMIC3", "DMIC4_OUTPUT",
-+				"TX SWR_DMIC4", "DMIC5_OUTPUT",
-+				"TX SWR_DMIC5", "DMIC6_OUTPUT",
-+				"TX SWR_DMIC6", "DMIC7_OUTPUT",
-+				"TX SWR_DMIC7", "DMIC8_OUTPUT";
-+
-+		qcom,msm-mbhc-hphl-swh = <1>;
-+		qcom,msm-mbhc-gnd-swh = <1>;
-+
-+		#address-cells = <1>;
-+		#size-cells = <0>;
-+		#sound-dai-cells = <0>;
-+
-+		dai-link@1 {
-+			link-name = "Secondary MI2S Playback";
-+			reg = <MI2S_SECONDARY>;
-+			cpu {
-+				sound-dai = <&lpass_cpu MI2S_SECONDARY>;
-+			};
-+
-+			codec {
-+				sound-dai = <&max98360a>;
-+			};
-+		};
-+
-+		dai-link@5 {
-+			link-name = "DP Playback";
-+			reg = <LPASS_DP_RX>;
-+			cpu {
-+				sound-dai = <&lpass_cpu LPASS_DP_RX>;
-+			};
-+
-+			codec {
-+				sound-dai = <&mdss_dp>;
-+			};
-+		};
-+
-+		dai-link@6 {
-+			link-name = "WCD Playback";
-+			reg = <LPASS_CDC_DMA_RX0>;
-+			cpu {
-+				sound-dai = <&lpass_cpu LPASS_CDC_DMA_RX0>;
-+			};
-+
-+			codec {
-+				sound-dai = <&wcd938x 0>, <&swr0 0>, <&rxmacro 0>;
-+			};
-+		};
-+
-+		dai-link@19 {
-+			link-name = "WCD Capture";
-+			reg = <LPASS_CDC_DMA_TX3>;
-+			cpu {
-+				sound-dai = <&lpass_cpu LPASS_CDC_DMA_TX3>;
-+			};
-+
-+			codec {
-+				sound-dai = <&wcd938x 1>, <&swr1 0>, <&txmacro 0>;
-+			};
-+		};
-+
-+		dai-link@25 {
-+			link-name = "DMIC Capture";
-+			reg = <LPASS_CDC_DMA_VA_TX0>;
-+			cpu {
-+				sound-dai = <&lpass_cpu LPASS_CDC_DMA_VA_TX0>;
-+			};
-+
-+			codec {
-+				sound-dai = <&vamacro 0>;
-+			};
-+		};
-+	};
- };
- 
- &apps_rsc {
--- 
-2.7.4
+I'm cannot take this as proposed.
 
+If you're going to do something like this, the retries need to be
+bounded. And retry should only be possible for select cases
+(e.g. "verity: Data device lookup failed", which is emitted due to
+dm_get_device failure with a return -ENODEV).
+
+So please narrow this as much as possible (by only allowing retry if
+-ENODEV) and bound the retries to a finite amount.. 5? 10? 20? *shrug*
+
+And please take care to use variable names that are more appropriate
+("fail" is not one of them when you're writing retry code)
+
+Mike
