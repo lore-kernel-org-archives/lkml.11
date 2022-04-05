@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AC4C6C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C20C4C433FE
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 14:32:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1387497AbiDEOcS (ORCPT
+        id S1387512AbiDEOcV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 10:32:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38666 "EHLO
+        Tue, 5 Apr 2022 10:32:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59028 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240310AbiDEJeT (ORCPT
+        with ESMTP id S240045AbiDEJeB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:34:19 -0400
+        Tue, 5 Apr 2022 05:34:01 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B86D81671;
-        Tue,  5 Apr 2022 02:23:47 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B35C0811A1;
+        Tue,  5 Apr 2022 02:23:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EE6BC61654;
-        Tue,  5 Apr 2022 09:23:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0EC01C385A0;
-        Tue,  5 Apr 2022 09:23:45 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E010C615E4;
+        Tue,  5 Apr 2022 09:23:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EF16CC385A2;
+        Tue,  5 Apr 2022 09:23:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649150626;
-        bh=YhiSsJ3TnEyST2jyx9qSBcFa+5qpcWGpbNlsUtKc+X0=;
+        s=korg; t=1649150602;
+        bh=F2sXadztW3MARwarwpZlIp38N5A1LAVO17ur1+LgINs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=AUmdYR+kaO+MlucACf7CXlHUw++biXoweDtnCyR7CivE6fQzPYLOjdWIIkTXT2imW
-         g2MqE9A3ISLqEpHRPjBOPFTZD6hjYS35D37EwJrJjJpmm5ss73k+dvOF+ftJy5jmf3
-         jQgo+Qd0fLxRCdkOc5/DIPY/56NSo/G6MZMr5sxA=
+        b=ihZBfF/UwaZROb9R6rcCsdYRgyNCENTJdkpgjasUuKq3rOLqS0fNpoQlXfdaCEntR
+         lhYyAkM5esxT2U1WkrlFpNpmP21dNKlBWbUnofSU/CuYe1s1XaYj4/H60+Eken3Zn6
+         eOAxePca+qjUrasxsxu1waKLj7HijREORUed6z5Y=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, David Engraf <david.engraf@sysgo.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>, Mark Brown <broonie@kernel.org>
-Subject: [PATCH 5.15 121/913] arm64: signal: nofpsimd: Do not allocate fp/simd context when not available
-Date:   Tue,  5 Apr 2022 09:19:43 +0200
-Message-Id: <20220405070343.454672916@linuxfoundation.org>
+        stable@vger.kernel.org, Mikulas Patocka <mpatocka@redhat.com>,
+        Mike Snitzer <snitzer@redhat.com>
+Subject: [PATCH 5.15 112/913] dm stats: fix too short end duration_ns when using precise_timestamps
+Date:   Tue,  5 Apr 2022 09:19:34 +0200
+Message-Id: <20220405070343.184612912@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
 References: <20220405070339.801210740@linuxfoundation.org>
@@ -50,50 +49,134 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: David Engraf <david.engraf@sysgo.com>
+From: Mike Snitzer <snitzer@redhat.com>
 
-commit 0a32c88ddb9af30e8a16d41d7b9b824c27d29459 upstream.
+commit 0cdb90f0f306384ecbc60dfd6dc48cdbc1f2d0d8 upstream.
 
-Commit 6d502b6ba1b2 ("arm64: signal: nofpsimd: Handle fp/simd context for
-signal frames") introduced saving the fp/simd context for signal handling
-only when support is available. But setup_sigframe_layout() always
-reserves memory for fp/simd context. The additional memory is not touched
-because preserve_fpsimd_context() is not called and thus the magic is
-invalid.
+dm_stats_account_io()'s STAT_PRECISE_TIMESTAMPS support doesn't handle
+the fact that with commit b879f915bc48 ("dm: properly fix redundant
+bio-based IO accounting") io->start_time _may_ be in the past (meaning
+the start_io_acct() was deferred until later).
 
-This may lead to an error when parse_user_sigframe() checks the fp/simd
-area and does not find a valid magic number.
+Add a new dm_stats_recalc_precise_timestamps() helper that will
+set/clear a new 'precise_timestamps' flag in the dm_stats struct based
+on whether any configured stats enable STAT_PRECISE_TIMESTAMPS.
+And update DM core's alloc_io() to use dm_stats_record_start() to set
+stats_aux.duration_ns if stats->precise_timestamps is true.
 
-Signed-off-by: David Engraf <david.engraf@sysgo.com>
-Reviwed-by: Mark Brown <broonie@kernel.org>
-Fixes: 6d502b6ba1b267b3 ("arm64: signal: nofpsimd: Handle fp/simd context for signal frames")
-Cc: <stable@vger.kernel.org> # 5.6.x
-Reviewed-by: Catalin Marinas <catalin.marinas@arm.com>
-Link: https://lore.kernel.org/r/20220225104008.820289-1-david.engraf@sysgo.com
-Signed-off-by: Will Deacon <will@kernel.org>
+Also, remove unused 'last_sector' and 'last_rw' members from the
+dm_stats struct.
+
+Fixes: b879f915bc48 ("dm: properly fix redundant bio-based IO accounting")
+Cc: stable@vger.kernel.org
+Co-developed-by: Mikulas Patocka <mpatocka@redhat.com>
+Signed-off-by: Mikulas Patocka <mpatocka@redhat.com>
+Signed-off-by: Mike Snitzer <snitzer@redhat.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm64/kernel/signal.c |   10 ++++++----
- 1 file changed, 6 insertions(+), 4 deletions(-)
+ drivers/md/dm-stats.c |   28 +++++++++++++++++++++++++---
+ drivers/md/dm-stats.h |    9 +++++++--
+ drivers/md/dm.c       |    2 ++
+ 3 files changed, 34 insertions(+), 5 deletions(-)
 
---- a/arch/arm64/kernel/signal.c
-+++ b/arch/arm64/kernel/signal.c
-@@ -577,10 +577,12 @@ static int setup_sigframe_layout(struct
- {
- 	int err;
+--- a/drivers/md/dm-stats.c
++++ b/drivers/md/dm-stats.c
+@@ -195,6 +195,7 @@ void dm_stats_init(struct dm_stats *stat
  
--	err = sigframe_alloc(user, &user->fpsimd_offset,
--			     sizeof(struct fpsimd_context));
--	if (err)
--		return err;
-+	if (system_supports_fpsimd()) {
-+		err = sigframe_alloc(user, &user->fpsimd_offset,
-+				     sizeof(struct fpsimd_context));
-+		if (err)
-+			return err;
+ 	mutex_init(&stats->mutex);
+ 	INIT_LIST_HEAD(&stats->list);
++	stats->precise_timestamps = false;
+ 	stats->last = alloc_percpu(struct dm_stats_last_position);
+ 	for_each_possible_cpu(cpu) {
+ 		last = per_cpu_ptr(stats->last, cpu);
+@@ -231,6 +232,22 @@ void dm_stats_cleanup(struct dm_stats *s
+ 	mutex_destroy(&stats->mutex);
+ }
+ 
++static void dm_stats_recalc_precise_timestamps(struct dm_stats *stats)
++{
++	struct list_head *l;
++	struct dm_stat *tmp_s;
++	bool precise_timestamps = false;
++
++	list_for_each(l, &stats->list) {
++		tmp_s = container_of(l, struct dm_stat, list_entry);
++		if (tmp_s->stat_flags & STAT_PRECISE_TIMESTAMPS) {
++			precise_timestamps = true;
++			break;
++		}
 +	}
++	stats->precise_timestamps = precise_timestamps;
++}
++
+ static int dm_stats_create(struct dm_stats *stats, sector_t start, sector_t end,
+ 			   sector_t step, unsigned stat_flags,
+ 			   unsigned n_histogram_entries,
+@@ -376,6 +393,9 @@ static int dm_stats_create(struct dm_sta
+ 	}
+ 	ret_id = s->id;
+ 	list_add_tail_rcu(&s->list_entry, l);
++
++	dm_stats_recalc_precise_timestamps(stats);
++
+ 	mutex_unlock(&stats->mutex);
  
- 	/* fault information, if valid */
- 	if (add_all || current->thread.fault_code) {
+ 	resume_callback(md);
+@@ -418,6 +438,9 @@ static int dm_stats_delete(struct dm_sta
+ 	}
+ 
+ 	list_del_rcu(&s->list_entry);
++
++	dm_stats_recalc_precise_timestamps(stats);
++
+ 	mutex_unlock(&stats->mutex);
+ 
+ 	/*
+@@ -654,9 +677,8 @@ void dm_stats_account_io(struct dm_stats
+ 	got_precise_time = false;
+ 	list_for_each_entry_rcu(s, &stats->list, list_entry) {
+ 		if (s->stat_flags & STAT_PRECISE_TIMESTAMPS && !got_precise_time) {
+-			if (!end)
+-				stats_aux->duration_ns = ktime_to_ns(ktime_get());
+-			else
++			/* start (!end) duration_ns is set by DM core's alloc_io() */
++			if (end)
+ 				stats_aux->duration_ns = ktime_to_ns(ktime_get()) - stats_aux->duration_ns;
+ 			got_precise_time = true;
+ 		}
+--- a/drivers/md/dm-stats.h
++++ b/drivers/md/dm-stats.h
+@@ -13,8 +13,7 @@ struct dm_stats {
+ 	struct mutex mutex;
+ 	struct list_head list;	/* list of struct dm_stat */
+ 	struct dm_stats_last_position __percpu *last;
+-	sector_t last_sector;
+-	unsigned last_rw;
++	bool precise_timestamps;
+ };
+ 
+ struct dm_stats_aux {
+@@ -40,4 +39,10 @@ static inline bool dm_stats_used(struct
+ 	return !list_empty(&st->list);
+ }
+ 
++static inline void dm_stats_record_start(struct dm_stats *stats, struct dm_stats_aux *aux)
++{
++	if (unlikely(stats->precise_timestamps))
++		aux->duration_ns = ktime_to_ns(ktime_get());
++}
++
+ #endif
+--- a/drivers/md/dm.c
++++ b/drivers/md/dm.c
+@@ -537,6 +537,8 @@ static struct dm_io *alloc_io(struct map
+ 
+ 	io->start_time = jiffies;
+ 
++	dm_stats_record_start(&md->stats, &io->stats_aux);
++
+ 	return io;
+ }
+ 
 
 
