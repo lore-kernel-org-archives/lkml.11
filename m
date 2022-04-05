@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 54E95C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 10:33:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 02A63C4332F
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 10:34:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240690AbiDEKfJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 06:35:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45886 "EHLO
+        id S242644AbiDEKgA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 06:36:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45878 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240910AbiDEIci (ORCPT
+        with ESMTP id S240820AbiDEIce (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:32:38 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 319B18CD89;
-        Tue,  5 Apr 2022 01:25:18 -0700 (PDT)
+        Tue, 5 Apr 2022 04:32:34 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9AF438AE5C;
+        Tue,  5 Apr 2022 01:25:03 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5CF42B81BC0;
-        Tue,  5 Apr 2022 08:25:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A1770C385A1;
-        Tue,  5 Apr 2022 08:25:15 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9DD7160FF5;
+        Tue,  5 Apr 2022 08:25:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A942DC385A0;
+        Tue,  5 Apr 2022 08:25:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649147116;
-        bh=wFHIxxBTTP4wOS9bz+1lwhshF/VP5NrSb9hmYItn70Y=;
+        s=korg; t=1649147102;
+        bh=MkH5R5DF93Xd6h3fKtnqZk3hN/YKatJAjvoLBElU3d8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lP+5Va8HaNDjQBhIdk6yy+tDdh0oTaG4FOVgpbAe+xeNojE4iUWE/dF5iCYaFvUhK
-         VR97/+yewmvhKZZCpGZMDOJWji/9YmPKtYCFPc+ha6ZHrs9djmGwrXYz9heVVoaaka
-         2Vvhb4UJmnX5C8NZMqfo9yGTIXCuQK/RU72J9TZE=
+        b=Kr5gCoosneFtXH6CxB/bhNk2D4S1qoyWBBrF8Da7RTeJNS6wsyyffPPjMmC7VDpgf
+         C09IBDCgZBFxO6zE5b0Yj0gKH1SYrX0LpB1//GpzpmI4BoVXkWsnvcsO+kSusDQ93D
+         cCOia93E77q4+oFxw4OkH3tNeKRKxb90hELM04h0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Ville=20Syrj=C3=A4l=C3=A4?= 
-        <ville.syrjala@linux.intel.com>,
-        Mika Kahola <mika.kahola@intel.com>,
-        Tvrtko Ursulin <tvrtko.ursulin@intel.com>
-Subject: [PATCH 5.17 0969/1126] drm/i915: Reject unsupported TMDS rates on ICL+
-Date:   Tue,  5 Apr 2022 09:28:36 +0200
-Message-Id: <20220405070435.946243241@linuxfoundation.org>
+        stable@vger.kernel.org, Ben Gardon <bgardon@google.com>,
+        David Matlack <dmatlack@google.com>,
+        Paolo Bonzini <pbonzini@redhat.com>
+Subject: [PATCH 5.17 1000/1126] KVM: Prevent module exit until all VMs are freed
+Date:   Tue,  5 Apr 2022 09:29:07 +0200
+Message-Id: <20220405070436.843321635@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -51,53 +49,75 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ville Syrjälä <ville.syrjala@linux.intel.com>
+From: David Matlack <dmatlack@google.com>
 
-commit 9cddf03b2af07443bebdc73cba21acb360c079e8 upstream.
+commit 5f6de5cbebee925a612856fce6f9182bb3eee0db upstream.
 
-ICL+ PLLs can't genenerate certain frequencies. Running the PLL
-algorithms through for all frequencies 25-594MHz we see a gap just
-above 500 MHz. Specifically 500-522.8MHZ for TC PLLs, and 500-533.2
-MHz for combo PHY PLLs. Reject those frequencies hdmi_port_clock_valid()
-so that we properly filter out unsupported modes and/or color depths
-for HDMI.
+Tie the lifetime the KVM module to the lifetime of each VM via
+kvm.users_count. This way anything that grabs a reference to the VM via
+kvm_get_kvm() cannot accidentally outlive the KVM module.
 
+Prior to this commit, the lifetime of the KVM module was tied to the
+lifetime of /dev/kvm file descriptors, VM file descriptors, and vCPU
+file descriptors by their respective file_operations "owner" field.
+This approach is insufficient because references grabbed via
+kvm_get_kvm() do not prevent closing any of the aforementioned file
+descriptors.
+
+This fixes a long standing theoretical bug in KVM that at least affects
+async page faults. kvm_setup_async_pf() grabs a reference via
+kvm_get_kvm(), and drops it in an asynchronous work callback. Nothing
+prevents the VM file descriptor from being closed and the KVM module
+from being unloaded before this callback runs.
+
+Fixes: af585b921e5d ("KVM: Halt vcpu if page it tries to access is swapped out")
+Fixes: 3d3aab1b973b ("KVM: set owner of cpu and vm file operations")
 Cc: stable@vger.kernel.org
-Closes: https://gitlab.freedesktop.org/drm/intel/-/issues/5247
-Signed-off-by: Ville Syrjälä <ville.syrjala@linux.intel.com>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220311212845.32358-1-ville.syrjala@linux.intel.com
-Reviewed-by: Mika Kahola <mika.kahola@intel.com>
-(cherry picked from commit e5086cb3f3d3f94091be29eec38cf13f8a75a778)
-Signed-off-by: Tvrtko Ursulin <tvrtko.ursulin@intel.com>
+Suggested-by: Ben Gardon <bgardon@google.com>
+[ Based on a patch from Ben implemented for Google's kernel. ]
+Signed-off-by: David Matlack <dmatlack@google.com>
+Message-Id: <20220303183328.1499189-2-dmatlack@google.com>
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/i915/display/intel_hdmi.c |    9 +++++++++
- 1 file changed, 9 insertions(+)
+ virt/kvm/kvm_main.c |   13 +++++++++++++
+ 1 file changed, 13 insertions(+)
 
---- a/drivers/gpu/drm/i915/display/intel_hdmi.c
-+++ b/drivers/gpu/drm/i915/display/intel_hdmi.c
-@@ -1836,6 +1836,7 @@ hdmi_port_clock_valid(struct intel_hdmi
- 		      bool has_hdmi_sink)
- {
- 	struct drm_i915_private *dev_priv = intel_hdmi_to_i915(hdmi);
-+	enum phy phy = intel_port_to_phy(dev_priv, hdmi_to_dig_port(hdmi)->base.port);
+--- a/virt/kvm/kvm_main.c
++++ b/virt/kvm/kvm_main.c
+@@ -117,6 +117,8 @@ EXPORT_SYMBOL_GPL(kvm_debugfs_dir);
  
- 	if (clock < 25000)
- 		return MODE_CLOCK_LOW;
-@@ -1856,6 +1857,14 @@ hdmi_port_clock_valid(struct intel_hdmi
- 	if (IS_CHERRYVIEW(dev_priv) && clock > 216000 && clock < 240000)
- 		return MODE_CLOCK_RANGE;
+ static const struct file_operations stat_fops_per_vm;
  
-+	/* ICL+ combo PHY PLL can't generate 500-533.2 MHz */
-+	if (intel_phy_is_combo(dev_priv, phy) && clock > 500000 && clock < 533200)
-+		return MODE_CLOCK_RANGE;
++static struct file_operations kvm_chardev_ops;
 +
-+	/* ICL+ TC PHY PLL can't generate 500-532.8 MHz */
-+	if (intel_phy_is_tc(dev_priv, phy) && clock > 500000 && clock < 532800)
-+		return MODE_CLOCK_RANGE;
+ static long kvm_vcpu_ioctl(struct file *file, unsigned int ioctl,
+ 			   unsigned long arg);
+ #ifdef CONFIG_KVM_COMPAT
+@@ -1137,6 +1139,16 @@ static struct kvm *kvm_create_vm(unsigne
+ 	preempt_notifier_inc();
+ 	kvm_init_pm_notifier(kvm);
+ 
++	/*
++	 * When the fd passed to this ioctl() is opened it pins the module,
++	 * but try_module_get() also prevents getting a reference if the module
++	 * is in MODULE_STATE_GOING (e.g. if someone ran "rmmod --wait").
++	 */
++	if (!try_module_get(kvm_chardev_ops.owner)) {
++		r = -ENODEV;
++		goto out_err;
++	}
 +
- 	/*
- 	 * SNPS PHYs' MPLLB table-based programming can only handle a fixed
- 	 * set of link rates.
+ 	return kvm;
+ 
+ out_err:
+@@ -1226,6 +1238,7 @@ static void kvm_destroy_vm(struct kvm *k
+ 	preempt_notifier_dec();
+ 	hardware_disable_all();
+ 	mmdrop(mm);
++	module_put(kvm_chardev_ops.owner);
+ }
+ 
+ void kvm_get_kvm(struct kvm *kvm)
 
 
