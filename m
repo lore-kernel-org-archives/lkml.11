@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E2B6C4167B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 70D97C41535
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 13:37:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1389428AbiDENdw (ORCPT
+        id S1389599AbiDENeB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 09:33:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60052 "EHLO
+        Tue, 5 Apr 2022 09:34:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54520 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345993AbiDEJXP (ORCPT
+        with ESMTP id S1346539AbiDEJYR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:23:15 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 292E5A8ED2;
-        Tue,  5 Apr 2022 02:12:45 -0700 (PDT)
+        Tue, 5 Apr 2022 05:24:17 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55847DAFE5;
+        Tue,  5 Apr 2022 02:13:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 98831B818F3;
-        Tue,  5 Apr 2022 09:12:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E1179C385A3;
-        Tue,  5 Apr 2022 09:12:41 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 01C66B81C15;
+        Tue,  5 Apr 2022 09:13:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 63AE5C385A2;
+        Tue,  5 Apr 2022 09:13:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649149962;
-        bh=HmXyQy+1K/lealDgdQq2ot7mCjmICWhV+Bgh4pBkcn0=;
+        s=korg; t=1649150019;
+        bh=ddMf/Q2OYNRAJxNBRf3ZcvSR2v8ceJNOuWDRf7eIQjU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DKFs3s7VzLXfX61/QrJfyaJsJWdIMNfijBVdnjeGAoiSSh5cztwMEKyGOVaY3d8zZ
-         g0Ddn7ANVmDEQF/Qr/QZtpx0KxsJCiP/4P7m4v8GPZ5O6GsLn3dIZm2gG9083sV4yO
-         QfifREBxznTYinmPkJazEnFrvs6OC/XgXhg+nZxw=
+        b=a9684rb47wAOusW4DfFvYSh3ASdtetgjwsX05Iy5kAie4hhphBlyw/DvR1u8brm2G
+         6CXV2k/hTDTmEd7jNmjyWqpm9cpZ16HRty35Ae1dmrg2Qw0i1FqUZLpE3U7LCw40hJ
+         ZI0DLnUG/JTFvp0ebrRu3IJ6dr6zanwPI3u3Ncy4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ben Gardon <bgardon@google.com>,
-        David Matlack <dmatlack@google.com>,
-        Paolo Bonzini <pbonzini@redhat.com>
-Subject: [PATCH 5.16 0904/1017] KVM: Prevent module exit until all VMs are freed
-Date:   Tue,  5 Apr 2022 09:30:17 +0200
-Message-Id: <20220405070421.058915912@linuxfoundation.org>
+        stable@vger.kernel.org, Hugh Dickins <hughd@google.com>,
+        "Matthew Wilcox (Oracle)" <willy@infradead.org>
+Subject: [PATCH 5.16 0926/1017] XArray: Update the LRU list in xas_split()
+Date:   Tue,  5 Apr 2022 09:30:39 +0200
+Message-Id: <20220405070421.703881433@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -50,75 +49,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: David Matlack <dmatlack@google.com>
+From: Matthew Wilcox (Oracle) <willy@infradead.org>
 
-commit 5f6de5cbebee925a612856fce6f9182bb3eee0db upstream.
+commit 3ed4bb77156da0bc732847c8c9df92454c1fbeea upstream.
 
-Tie the lifetime the KVM module to the lifetime of each VM via
-kvm.users_count. This way anything that grabs a reference to the VM via
-kvm_get_kvm() cannot accidentally outlive the KVM module.
+When splitting a value entry, we may need to add the new nodes to the LRU
+list and remove the parent node from the LRU list.  The WARN_ON checks
+in shadow_lru_isolate() catch this oversight.  This bug was latent
+until we stopped splitting folios in shrink_page_list() with commit
+820c4e2e6f51 ("mm/vmscan: Free non-shmem folios without splitting them").
+That allows the creation of large shadow entries, and subsequently when
+trying to page in a small page, we will split the large shadow entry
+in __filemap_add_folio().
 
-Prior to this commit, the lifetime of the KVM module was tied to the
-lifetime of /dev/kvm file descriptors, VM file descriptors, and vCPU
-file descriptors by their respective file_operations "owner" field.
-This approach is insufficient because references grabbed via
-kvm_get_kvm() do not prevent closing any of the aforementioned file
-descriptors.
-
-This fixes a long standing theoretical bug in KVM that at least affects
-async page faults. kvm_setup_async_pf() grabs a reference via
-kvm_get_kvm(), and drops it in an asynchronous work callback. Nothing
-prevents the VM file descriptor from being closed and the KVM module
-from being unloaded before this callback runs.
-
-Fixes: af585b921e5d ("KVM: Halt vcpu if page it tries to access is swapped out")
-Fixes: 3d3aab1b973b ("KVM: set owner of cpu and vm file operations")
-Cc: stable@vger.kernel.org
-Suggested-by: Ben Gardon <bgardon@google.com>
-[ Based on a patch from Ben implemented for Google's kernel. ]
-Signed-off-by: David Matlack <dmatlack@google.com>
-Message-Id: <20220303183328.1499189-2-dmatlack@google.com>
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+Fixes: 8fc75643c5e1 ("XArray: add xas_split")
+Reported-by: Hugh Dickins <hughd@google.com>
+Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- virt/kvm/kvm_main.c |   13 +++++++++++++
- 1 file changed, 13 insertions(+)
+ lib/xarray.c |    2 ++
+ 1 file changed, 2 insertions(+)
 
---- a/virt/kvm/kvm_main.c
-+++ b/virt/kvm/kvm_main.c
-@@ -117,6 +117,8 @@ EXPORT_SYMBOL_GPL(kvm_debugfs_dir);
+--- a/lib/xarray.c
++++ b/lib/xarray.c
+@@ -1081,6 +1081,7 @@ void xas_split(struct xa_state *xas, voi
+ 					xa_mk_node(child));
+ 			if (xa_is_value(curr))
+ 				values--;
++			xas_update(xas, child);
+ 		} else {
+ 			unsigned int canon = offset - xas->xa_sibs;
  
- static const struct file_operations stat_fops_per_vm;
+@@ -1095,6 +1096,7 @@ void xas_split(struct xa_state *xas, voi
+ 	} while (offset-- > xas->xa_offset);
  
-+static struct file_operations kvm_chardev_ops;
-+
- static long kvm_vcpu_ioctl(struct file *file, unsigned int ioctl,
- 			   unsigned long arg);
- #ifdef CONFIG_KVM_COMPAT
-@@ -1107,6 +1109,16 @@ static struct kvm *kvm_create_vm(unsigne
- 	preempt_notifier_inc();
- 	kvm_init_pm_notifier(kvm);
- 
-+	/*
-+	 * When the fd passed to this ioctl() is opened it pins the module,
-+	 * but try_module_get() also prevents getting a reference if the module
-+	 * is in MODULE_STATE_GOING (e.g. if someone ran "rmmod --wait").
-+	 */
-+	if (!try_module_get(kvm_chardev_ops.owner)) {
-+		r = -ENODEV;
-+		goto out_err;
-+	}
-+
- 	return kvm;
- 
- out_err:
-@@ -1196,6 +1208,7 @@ static void kvm_destroy_vm(struct kvm *k
- 	preempt_notifier_dec();
- 	hardware_disable_all();
- 	mmdrop(mm);
-+	module_put(kvm_chardev_ops.owner);
+ 	node->nr_values += values;
++	xas_update(xas, node);
  }
- 
- void kvm_get_kvm(struct kvm *kvm)
+ EXPORT_SYMBOL_GPL(xas_split);
+ #endif
 
 
