@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AFFB4C352A1
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 11:43:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4194BC4707A
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 11:43:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241554AbiDELfL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 07:35:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47530 "EHLO
+        id S234646AbiDELfj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 07:35:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46826 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244715AbiDEIwf (ORCPT
+        with ESMTP id S244708AbiDEIwf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Apr 2022 04:52:35 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E97F1AF34;
-        Tue,  5 Apr 2022 01:42:37 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BDB72D95D0;
+        Tue,  5 Apr 2022 01:42:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1DCC2B81A32;
-        Tue,  5 Apr 2022 08:42:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 88BBDC385A0;
-        Tue,  5 Apr 2022 08:42:34 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 532E6609D0;
+        Tue,  5 Apr 2022 08:42:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 65276C385A1;
+        Tue,  5 Apr 2022 08:42:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649148154;
-        bh=fR0LPZAFW7MV+r5mifjCwMPbuQwjL9+Zm/J+XCY09io=;
+        s=korg; t=1649148143;
+        bh=FMqjZnBTFL1ItX9ExSI+O2OIK8U3hGPGIJE5SD3iFNI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Sh1xkgtK2W6unx+AzZd/ycrz/He8hi5lYSyJ1E2GjlPjUYvnDGSlxBNEwbb6Oywb+
-         xyDDmW5vI6cBL8BKbRM4qqE/zWJViqSen2cUnKQ4dd30vtzPIXWMYFhPm+x5IA33G1
-         2Q9V1SVFq0NQhcCaxrCMScPlARNocuWux4EqQ7v4=
+        b=C6HBWRrrRylf/awCK4sBdjJ6EGEmnjWJes+dXBFhpN5mdD9OVtpUO1o6o6Bv/OEFw
+         8EfB1559ptNZCYnkjapOmX3zquaXw62JVGHxAoNvCJuoRu+/i8SyOcaOmm+9GXpErZ
+         nwukiAYCLreqS+Zqk1C1yiPcz1YjPRxRDCobrgdI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Brandon Wyman <bjwyman@gmail.com>,
-        Guenter Roeck <linux@roeck-us.net>,
+        stable@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
+        Igor Zhbanov <i.zhbanov@omprussia.ru>,
+        "Huang, Ying" <ying.huang@intel.com>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0253/1017] hwmon: (pmbus) Add Vin unit off handling
-Date:   Tue,  5 Apr 2022 09:19:26 +0200
-Message-Id: <20220405070401.772891949@linuxfoundation.org>
+Subject: [PATCH 5.16 0249/1017] ACPI: APEI: fix return value of __setup handlers
+Date:   Tue,  5 Apr 2022 09:19:22 +0200
+Message-Id: <20220405070401.652458142@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -49,59 +51,84 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Brandon Wyman <bjwyman@gmail.com>
+From: Randy Dunlap <rdunlap@infradead.org>
 
-[ Upstream commit a5436af598779219b375c1977555c82def1c35d0 ]
+[ Upstream commit f3303ff649dbf7dcdc6a6e1a922235b12b3028f4 ]
 
-If there is an input undervoltage fault, reported in STATUS_INPUT
-command response, there is quite likely a "Unit Off For Insufficient
-Input Voltage" condition as well.
+__setup() handlers should return 1 to indicate that the boot option
+has been handled. Returning 0 causes a boot option to be listed in
+the Unknown kernel command line parameters and also added to init's
+arg list (if no '=' sign) or environment list (if of the form 'a=b').
 
-Add a constant for bit 3 of STATUS_INPUT. Update the Vin limit
-attributes to include both bits in the mask for clearing faults.
+Unknown kernel command line parameters "erst_disable
+  bert_disable hest_disable BOOT_IMAGE=/boot/bzImage-517rc6", will be
+  passed to user space.
 
-If an input undervoltage fault occurs, causing a unit off for
-insufficient input voltage, but the unit is off bit is not cleared, the
-STATUS_WORD will not be updated to clear the input fault condition.
-Including the unit is off bit (bit 3) allows for the input fault
-condition to completely clear.
+ Run /sbin/init as init process
+   with arguments:
+     /sbin/init
+     erst_disable
+     bert_disable
+     hest_disable
+   with environment:
+     HOME=/
+     TERM=linux
+     BOOT_IMAGE=/boot/bzImage-517rc6
 
-Signed-off-by: Brandon Wyman <bjwyman@gmail.com>
-Link: https://lore.kernel.org/r/20220317232123.2103592-1-bjwyman@gmail.com
-Fixes: b4ce237b7f7d3 ("hwmon: (pmbus) Introduce infrastructure to detect sensors and limit registers")
-[groeck: Dropped unnecessary ()]
-Signed-off-by: Guenter Roeck <linux@roeck-us.net>
+Fixes: a3e2acc5e37b ("ACPI / APEI: Add Boot Error Record Table (BERT) support")
+Fixes: a08f82d08053 ("ACPI, APEI, Error Record Serialization Table (ERST) support")
+Fixes: 9dc966641677 ("ACPI, APEI, HEST table parsing")
+Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+Reported-by: Igor Zhbanov <i.zhbanov@omprussia.ru>
+Link: lore.kernel.org/r/64644a2f-4a20-bab3-1e15-3b2cdd0defe3@omprussia.ru
+Reviewed-by: "Huang, Ying" <ying.huang@intel.com>
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/hwmon/pmbus/pmbus.h      | 1 +
- drivers/hwmon/pmbus/pmbus_core.c | 2 +-
- 2 files changed, 2 insertions(+), 1 deletion(-)
+ drivers/acpi/apei/bert.c | 2 +-
+ drivers/acpi/apei/erst.c | 2 +-
+ drivers/acpi/apei/hest.c | 2 +-
+ 3 files changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/hwmon/pmbus/pmbus.h b/drivers/hwmon/pmbus/pmbus.h
-index e0aa8aa46d8c..ef3a8ecde4df 100644
---- a/drivers/hwmon/pmbus/pmbus.h
-+++ b/drivers/hwmon/pmbus/pmbus.h
-@@ -319,6 +319,7 @@ enum pmbus_fan_mode { percent = 0, rpm };
- /*
-  * STATUS_VOUT, STATUS_INPUT
-  */
-+#define PB_VOLTAGE_VIN_OFF		BIT(3)
- #define PB_VOLTAGE_UV_FAULT		BIT(4)
- #define PB_VOLTAGE_UV_WARNING		BIT(5)
- #define PB_VOLTAGE_OV_WARNING		BIT(6)
-diff --git a/drivers/hwmon/pmbus/pmbus_core.c b/drivers/hwmon/pmbus/pmbus_core.c
-index b1386a4df4cc..ca0bfaf2f691 100644
---- a/drivers/hwmon/pmbus/pmbus_core.c
-+++ b/drivers/hwmon/pmbus/pmbus_core.c
-@@ -1373,7 +1373,7 @@ static const struct pmbus_limit_attr vin_limit_attrs[] = {
- 		.reg = PMBUS_VIN_UV_FAULT_LIMIT,
- 		.attr = "lcrit",
- 		.alarm = "lcrit_alarm",
--		.sbit = PB_VOLTAGE_UV_FAULT,
-+		.sbit = PB_VOLTAGE_UV_FAULT | PB_VOLTAGE_VIN_OFF,
- 	}, {
- 		.reg = PMBUS_VIN_OV_WARN_LIMIT,
- 		.attr = "max",
+diff --git a/drivers/acpi/apei/bert.c b/drivers/acpi/apei/bert.c
+index 19e50fcbf4d6..86211422f4ee 100644
+--- a/drivers/acpi/apei/bert.c
++++ b/drivers/acpi/apei/bert.c
+@@ -77,7 +77,7 @@ static int __init setup_bert_disable(char *str)
+ {
+ 	bert_disable = 1;
+ 
+-	return 0;
++	return 1;
+ }
+ __setup("bert_disable", setup_bert_disable);
+ 
+diff --git a/drivers/acpi/apei/erst.c b/drivers/acpi/apei/erst.c
+index 242f3c2d5533..698d67cee052 100644
+--- a/drivers/acpi/apei/erst.c
++++ b/drivers/acpi/apei/erst.c
+@@ -891,7 +891,7 @@ EXPORT_SYMBOL_GPL(erst_clear);
+ static int __init setup_erst_disable(char *str)
+ {
+ 	erst_disable = 1;
+-	return 0;
++	return 1;
+ }
+ 
+ __setup("erst_disable", setup_erst_disable);
+diff --git a/drivers/acpi/apei/hest.c b/drivers/acpi/apei/hest.c
+index 0edc1ed47673..6aef1ee5e1bd 100644
+--- a/drivers/acpi/apei/hest.c
++++ b/drivers/acpi/apei/hest.c
+@@ -224,7 +224,7 @@ static int __init hest_ghes_dev_register(unsigned int ghes_count)
+ static int __init setup_hest_disable(char *str)
+ {
+ 	hest_disable = HEST_DISABLED;
+-	return 0;
++	return 1;
+ }
+ 
+ __setup("hest_disable", setup_hest_disable);
 -- 
 2.34.1
 
