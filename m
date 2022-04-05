@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BCB70C43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F1E6AC43219
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 13:24:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349287AbiDENF6 (ORCPT
+        id S1358670AbiDENJd (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 09:05:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38220 "EHLO
+        Tue, 5 Apr 2022 09:09:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34472 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343985AbiDEJQo (ORCPT
+        with ESMTP id S1344160AbiDEJS1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:16:44 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93D02E4F;
-        Tue,  5 Apr 2022 02:03:10 -0700 (PDT)
+        Tue, 5 Apr 2022 05:18:27 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DDC45880F;
+        Tue,  5 Apr 2022 02:04:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 0067CCE1BF8;
-        Tue,  5 Apr 2022 09:03:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1C560C385A0;
-        Tue,  5 Apr 2022 09:03:06 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E1B0461003;
+        Tue,  5 Apr 2022 09:04:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F1D23C385A3;
+        Tue,  5 Apr 2022 09:04:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649149387;
-        bh=HF9ZRoT/tkCsXNkCLwa2Fgwjnyr+EaDHb18MxA69YD0=;
+        s=korg; t=1649149481;
+        bh=V+jffPj/n1B4osgu6LsAk2faz/RWgTBC0PsfbB1yEp8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lSu+eHRkl9Tw2lwefu8O0d/O8H1of0GkUhVkhj48vCyJIbQAUGm7Qd09VvVMei4F5
-         o03QQ3qLV5339mn5xPw6tdc0A3Zq+QXpMx8i7EUutDnbsJ8Xhqakwf17fbPIlIoIpC
-         n6E/mgePkjxc24+6RIfFBBh1m1/wVCgLKlM2Y6Og=
+        b=y886MNh4SIPTYmMn7492ucgrt0yfVPePSHZ6KYphYkCXQo9uHa2ZZP/dbFwKJASA5
+         stnGyo6Hq/XPe7pYcT7kbbY3Q0qdbyVoPqX/R5SEiMxB5tw5VIeixD2Wh0OixrjQrp
+         cF2gssgbGHBYoeOGKduf+NC2u6G2kWug1GpNRlI8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
+        stable@vger.kernel.org, NeilBrown <neilb@suse.de>,
+        Trond Myklebust <trond.myklebust@hammerspace.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0696/1017] pinctrl: mediatek: Fix missing of_node_put() in mtk_pctrl_init
-Date:   Tue,  5 Apr 2022 09:26:49 +0200
-Message-Id: <20220405070414.932271484@linuxfoundation.org>
+Subject: [PATCH 5.16 0713/1017] SUNRPC/call_alloc: async tasks mustnt block waiting for memory
+Date:   Tue,  5 Apr 2022 09:27:06 +0200
+Message-Id: <20220405070415.433782641@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -52,43 +50,63 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: NeilBrown <neilb@suse.de>
 
-[ Upstream commit dab4df9ca919f59e5b9dd84385eaf34d4f20dbb0 ]
+[ Upstream commit c487216bec83b0c5a8803e5c61433d33ad7b104d ]
 
-The device_node pointer is returned by of_parse_phandle()  with refcount
-incremented. We should use of_node_put() on it when done.
+When memory is short, new worker threads cannot be created and we depend
+on the minimum one rpciod thread to be able to handle everything.
+So it must not block waiting for memory.
 
-Fixes: a6df410d420a ("pinctrl: mediatek: Add Pinctrl/GPIO driver for mt8135.")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-Link: https://lore.kernel.org/r/20220308071155.21114-1-linmq006@gmail.com
-Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+mempools are particularly a problem as memory can only be released back
+to the mempool by an async rpc task running.  If all available
+workqueue threads are waiting on the mempool, no thread is available to
+return anything.
+
+rpc_malloc() can block, and this might cause deadlocks.
+So check RPC_IS_ASYNC(), rather than RPC_IS_SWAPPER() to determine if
+blocking is acceptable.
+
+Signed-off-by: NeilBrown <neilb@suse.de>
+Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pinctrl/mediatek/pinctrl-mtk-common.c | 2 ++
- 1 file changed, 2 insertions(+)
+ net/sunrpc/sched.c              | 4 +++-
+ net/sunrpc/xprtrdma/transport.c | 4 +++-
+ 2 files changed, 6 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/pinctrl/mediatek/pinctrl-mtk-common.c b/drivers/pinctrl/mediatek/pinctrl-mtk-common.c
-index 5f7c421ab6e7..334cb85855a9 100644
---- a/drivers/pinctrl/mediatek/pinctrl-mtk-common.c
-+++ b/drivers/pinctrl/mediatek/pinctrl-mtk-common.c
-@@ -1038,6 +1038,7 @@ int mtk_pctrl_init(struct platform_device *pdev,
- 	node = of_parse_phandle(np, "mediatek,pctl-regmap", 0);
- 	if (node) {
- 		pctl->regmap1 = syscon_node_to_regmap(node);
-+		of_node_put(node);
- 		if (IS_ERR(pctl->regmap1))
- 			return PTR_ERR(pctl->regmap1);
- 	} else if (regmap) {
-@@ -1051,6 +1052,7 @@ int mtk_pctrl_init(struct platform_device *pdev,
- 	node = of_parse_phandle(np, "mediatek,pctl-regmap", 1);
- 	if (node) {
- 		pctl->regmap2 = syscon_node_to_regmap(node);
-+		of_node_put(node);
- 		if (IS_ERR(pctl->regmap2))
- 			return PTR_ERR(pctl->regmap2);
- 	}
+diff --git a/net/sunrpc/sched.c b/net/sunrpc/sched.c
+index e2c835482791..d5b6e897f5a5 100644
+--- a/net/sunrpc/sched.c
++++ b/net/sunrpc/sched.c
+@@ -1023,8 +1023,10 @@ int rpc_malloc(struct rpc_task *task)
+ 	struct rpc_buffer *buf;
+ 	gfp_t gfp = GFP_NOFS;
+ 
++	if (RPC_IS_ASYNC(task))
++		gfp = GFP_NOWAIT | __GFP_NOWARN;
+ 	if (RPC_IS_SWAPPER(task))
+-		gfp = __GFP_MEMALLOC | GFP_NOWAIT | __GFP_NOWARN;
++		gfp |= __GFP_MEMALLOC;
+ 
+ 	size += sizeof(struct rpc_buffer);
+ 	if (size <= RPC_BUFFER_MAXSIZE)
+diff --git a/net/sunrpc/xprtrdma/transport.c b/net/sunrpc/xprtrdma/transport.c
+index 16e5696314a4..a52277115500 100644
+--- a/net/sunrpc/xprtrdma/transport.c
++++ b/net/sunrpc/xprtrdma/transport.c
+@@ -574,8 +574,10 @@ xprt_rdma_allocate(struct rpc_task *task)
+ 	gfp_t flags;
+ 
+ 	flags = RPCRDMA_DEF_GFP;
++	if (RPC_IS_ASYNC(task))
++		flags = GFP_NOWAIT | __GFP_NOWARN;
+ 	if (RPC_IS_SWAPPER(task))
+-		flags = __GFP_MEMALLOC | GFP_NOWAIT | __GFP_NOWARN;
++		flags |= __GFP_MEMALLOC;
+ 
+ 	if (!rpcrdma_check_regbuf(r_xprt, req->rl_sendbuf, rqst->rq_callsize,
+ 				  flags))
 -- 
 2.34.1
 
