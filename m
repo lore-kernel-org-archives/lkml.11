@@ -2,102 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E25BC433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EAC67C43217
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 01:30:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1453823AbiDFB3T (ORCPT
+        id S1842333AbiDFBas (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 21:29:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52630 "EHLO
+        Tue, 5 Apr 2022 21:30:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35156 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1443721AbiDEPkM (ORCPT
+        with ESMTP id S1352582AbiDEKEo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 11:40:12 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D99018500E
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 06:58:27 -0700 (PDT)
+        Tue, 5 Apr 2022 06:04:44 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F7D6BB0AD;
+        Tue,  5 Apr 2022 02:53:27 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A5C4661926
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 13:58:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2A697C385A7;
-        Tue,  5 Apr 2022 13:58:24 +0000 (UTC)
-From:   Catalin Marinas <catalin.marinas@arm.com>
-To:     Will Deacon <will@kernel.org>, Marc Zyngier <maz@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     linux-mm@kvack.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH 09/10] mm/slab: Simplify create_kmalloc_cache() args and make it static
-Date:   Tue,  5 Apr 2022 14:57:57 +0100
-Message-Id: <20220405135758.774016-10-catalin.marinas@arm.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220405135758.774016-1-catalin.marinas@arm.com>
-References: <20220405135758.774016-1-catalin.marinas@arm.com>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B321461745;
+        Tue,  5 Apr 2022 09:53:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B8E09C385A2;
+        Tue,  5 Apr 2022 09:53:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649152406;
+        bh=eAu7CtqUbejdrEQNt9DreNr/zKSssNpE1NjUjFYTwPA=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=U5v+EwKmJr9liLSdnbw5x6JNwIlXT8shL3U9m2zc38UN9I3brThRoMg4t8itmnIMU
+         QaQ0VSwJsDSxBaCHiqOhYjC63gykRvT/xoQjUhr0GP3qd6kRXizbsBKl/hY+60XWW+
+         FvFZJIEgJjlVkC+mKqhO0IWkGAbKmb7s2aPEFQUM=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Rander Wang <rander.wang@intel.com>,
+        Anthony I Gilea <i@cpp.in>,
+        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
+        Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 765/913] ASoC: Intel: sof_sdw: fix quirks for 2022 HP Spectre x360 13"
+Date:   Tue,  5 Apr 2022 09:30:27 +0200
+Message-Id: <20220405070402.763474011@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-create_kmalloc_cache() is now only called from new_kmalloc_cache() in
-the same file, so make it static. In addition, the useroffset argument
-is always 0 while usersize is the same as size. Remove them.
+From: Anthony I Gilea <i@cpp.in>
 
-Signed-off-by: Catalin Marinas <catalin.marinas@arm.com>
-Cc: Andrew Morton <akpm@linux-foundation.org>
+[ Upstream commit ce73ef6ec67104d1fcc4c5911d77ce83288a0998 ]
+
+HP changed the DMI identification for 2022 devices:
+Product Name: HP Spectre x360 Conv 13-ap0001na
+Product Name: 8709
+This patch relaxes the DMI_MATCH criterion to work with all versions of this product.
+
+Reviewed-by: Rander Wang <rander.wang@intel.com>
+Signed-off-by: Anthony I Gilea <i@cpp.in>
+Signed-off-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+Link: https://lore.kernel.org/r/20220304204532.54675-4-pierre-louis.bossart@linux.intel.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- mm/slab.h        | 3 ---
- mm/slab_common.c | 9 ++++-----
- 2 files changed, 4 insertions(+), 8 deletions(-)
+ drivers/soundwire/dmi-quirks.c   | 2 +-
+ sound/soc/intel/boards/sof_sdw.c | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/mm/slab.h b/mm/slab.h
-index e9238406602a..d334b5e6d7aa 100644
---- a/mm/slab.h
-+++ b/mm/slab.h
-@@ -280,9 +280,6 @@ gfp_t kmalloc_fix_flags(gfp_t flags);
- /* Functions provided by the slab allocators */
- int __kmem_cache_create(struct kmem_cache *, slab_flags_t flags);
- 
--struct kmem_cache *create_kmalloc_cache(const char *name, unsigned int size,
--			slab_flags_t flags, unsigned int useroffset,
--			unsigned int usersize);
- void __init new_kmalloc_cache(int idx, enum kmalloc_cache_type type,
- 			      slab_flags_t flags);
- extern void create_boot_cache(struct kmem_cache *, const char *name,
-diff --git a/mm/slab_common.c b/mm/slab_common.c
-index 594d8a8a68d0..3a9f7a1e6490 100644
---- a/mm/slab_common.c
-+++ b/mm/slab_common.c
-@@ -655,16 +655,15 @@ void __init create_boot_cache(struct kmem_cache *s, const char *name,
- 	s->refcount = -1;	/* Exempt from merging for now */
- }
- 
--struct kmem_cache *__init create_kmalloc_cache(const char *name,
--		unsigned int size, slab_flags_t flags,
--		unsigned int useroffset, unsigned int usersize)
-+static struct kmem_cache *__init create_kmalloc_cache(const char *name,
-+		unsigned int size, slab_flags_t flags)
- {
- 	struct kmem_cache *s = kmem_cache_zalloc(kmem_cache, GFP_NOWAIT);
- 
- 	if (!s)
- 		panic("Out of memory when creating slab %s\n", name);
- 
--	create_boot_cache(s, name, size, flags, useroffset, usersize);
-+	create_boot_cache(s, name, size, flags, 0, size);
- 	kasan_cache_create_kmalloc(s);
- 	list_add(&s->list, &slab_caches);
- 	s->refcount = 1;
-@@ -868,7 +867,7 @@ new_kmalloc_cache(int idx, enum kmalloc_cache_type type, slab_flags_t flags)
- 	if (!kmalloc_caches[type][aligned_idx])
- 		kmalloc_caches[type][aligned_idx] = create_kmalloc_cache(
- 					kmalloc_info[aligned_idx].name[type],
--					aligned_size, flags, 0, aligned_size);
-+					aligned_size, flags);
- 	if (idx != aligned_idx)
- 		kmalloc_caches[type][idx] = kmalloc_caches[type][aligned_idx];
- 
+diff --git a/drivers/soundwire/dmi-quirks.c b/drivers/soundwire/dmi-quirks.c
+index 0ca2a3e3a02e..747983743a14 100644
+--- a/drivers/soundwire/dmi-quirks.c
++++ b/drivers/soundwire/dmi-quirks.c
+@@ -59,7 +59,7 @@ static const struct dmi_system_id adr_remap_quirk_table[] = {
+ 	{
+ 		.matches = {
+ 			DMI_MATCH(DMI_SYS_VENDOR, "HP"),
+-			DMI_MATCH(DMI_PRODUCT_NAME, "HP Spectre x360 Convertible"),
++			DMI_MATCH(DMI_PRODUCT_NAME, "HP Spectre x360 Conv"),
+ 		},
+ 		.driver_data = (void *)intel_tgl_bios,
+ 	},
+diff --git a/sound/soc/intel/boards/sof_sdw.c b/sound/soc/intel/boards/sof_sdw.c
+index 76759b209906..0bf3e56e1d58 100644
+--- a/sound/soc/intel/boards/sof_sdw.c
++++ b/sound/soc/intel/boards/sof_sdw.c
+@@ -184,7 +184,7 @@ static const struct dmi_system_id sof_sdw_quirk_table[] = {
+ 		.callback = sof_sdw_quirk_cb,
+ 		.matches = {
+ 			DMI_MATCH(DMI_SYS_VENDOR, "HP"),
+-			DMI_MATCH(DMI_PRODUCT_NAME, "HP Spectre x360 Convertible"),
++			DMI_MATCH(DMI_PRODUCT_NAME, "HP Spectre x360 Conv"),
+ 		},
+ 		.driver_data = (void *)(SOF_SDW_TGL_HDMI |
+ 					SOF_SDW_PCH_DMIC |
+-- 
+2.34.1
+
+
+
