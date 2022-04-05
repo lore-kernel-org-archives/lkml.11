@@ -2,177 +2,192 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D22A3C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E345EC43217
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:34:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1575722AbiDEXIw (ORCPT
+        id S1575735AbiDEXI6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 19:08:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54448 "EHLO
+        Tue, 5 Apr 2022 19:08:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44176 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1457980AbiDERCr (ORCPT
+        with ESMTP id S1348546AbiDEJsA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 13:02:47 -0400
-Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2050.outbound.protection.outlook.com [40.107.237.50])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9356B2E9C6
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 10:00:48 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=KqQZ6NCU5VOhj72Qsfr+htZee5eDN3kSAY8PIJoflHkBhFssomsMxb3fXSQHCJTVB56bVEc0EwLg+AftRlF95Z5IhiBF0u5xuGqPBd7eTdc3iSAQf2yJho8F2/a5Tij5rOHDkRmsd3T5T3RgkhFTsoga31jLra//O94cwaG10yjN59lgJNiTXP8LcmzLeCe39qvBFeoduMLfGlEnBzbk50AjQqx8Q8qXPG6pNqiWtFgwVQKuviBI2CJoojAxk68zxQz1sARLzJzEdVfOJ83C71wHsEtA5x0Uuss2y8FjvdI4DqEP3b6n1NqntqpYCFaU2tyKYhp8iYqDhKGRu7Ktsg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=bRhaSgwQxursOeBtc3su16M0VCK+blA/0dBA1VenjL8=;
- b=V94L0D4RsMp4DGMAth0C/3OjCezFcBImYG6+dSM6PBCujw3/qQM2E8D/woeNeDB26/ViGCjJBL+VLv03oTE9OdeXlU5WCLVOK4Dt6ogI5Sh7NVz53HyK91/NOTzmiSzJz1NmNSxQvifo9/el6eQSSikV4EfCNSj8nOwarjkC6DiS0cts4OwYWQAz4Oi5MXab4yBC2WRZB3nx9HSwtdzolmsSVmsJBLsvRvs+ZoqHFzmTrJG5HUNgwtrFU6XTn7XL0yvsGZP31ssbzI0SDL63/emhtZBCAlOiiTSu+KC3VRro7/MvpyHll6+cpqRWiaQ8iUOCLKaDbsJeGz08fy5JqA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=bRhaSgwQxursOeBtc3su16M0VCK+blA/0dBA1VenjL8=;
- b=oPylPikBGsqm+wt/eQTRAOu6YJ15mQIpOwnN+Dzegpdxliu5gIql5CZLmQ22j6V/yPRCKYZQa5gCxi10qXlQHujPtdWSfAI+2yFASOJu0JgOECn8M9IPqihZyCYCcG3IDbKNLkCP6medFmlp6DMMORbMGeBHdiub4yAhxwOnXW0=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-Received: from BN9PR12MB5115.namprd12.prod.outlook.com (2603:10b6:408:118::14)
- by CO6PR12MB5474.namprd12.prod.outlook.com (2603:10b6:303:139::9) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5123.31; Tue, 5 Apr
- 2022 17:00:45 +0000
-Received: from BN9PR12MB5115.namprd12.prod.outlook.com
- ([fe80::4839:9431:1040:5cd5]) by BN9PR12MB5115.namprd12.prod.outlook.com
- ([fe80::4839:9431:1040:5cd5%3]) with mapi id 15.20.5123.031; Tue, 5 Apr 2022
- 17:00:44 +0000
-Message-ID: <c55e9866-83f6-a3a0-2ad3-40090e978b40@amd.com>
-Date:   Tue, 5 Apr 2022 13:00:42 -0400
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH] drm/amdkfd: Fix potential NULL pointer dereference
-Content-Language: en-US
-To:     Grigory Vasilyev <h0tc0d3@gmail.com>,
-        Rodrigo Siqueira <Rodrigo.Siqueira@amd.com>,
-        Melissa Wen <mwen@igalia.com>
-Cc:     "Pan, Xinhui" <Xinhui.Pan@amd.com>, linux-kernel@vger.kernel.org,
-        amd-gfx@lists.freedesktop.org, David Airlie <airlied@linux.ie>,
-        dri-devel@lists.freedesktop.org,
-        Alex Deucher <alexander.deucher@amd.com>,
-        =?UTF-8?Q?Christian_K=c3=b6nig?= <christian.koenig@amd.com>
-References: <20220404222132.12740-1-h0tc0d3@gmail.com>
-From:   Felix Kuehling <felix.kuehling@amd.com>
-In-Reply-To: <20220404222132.12740-1-h0tc0d3@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: YT1PR01CA0115.CANPRD01.PROD.OUTLOOK.COM
- (2603:10b6:b01:2c::24) To BN9PR12MB5115.namprd12.prod.outlook.com
- (2603:10b6:408:118::14)
+        Tue, 5 Apr 2022 05:48:00 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 210CC55BDA;
+        Tue,  5 Apr 2022 02:34:08 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 59152B81B75;
+        Tue,  5 Apr 2022 09:34:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BA648C385AA;
+        Tue,  5 Apr 2022 09:34:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649151246;
+        bh=guVlBzD+z8QYs49QmnLxHxL7TQNESW7NlPWrZw/7gKc=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=AHoNgilw539W5JUArm2I5cXiaI1QVt3KALMrVkSZyVBhDfMp4tVWwD3MbNK3F9our
+         PX6RioZcBq6/W0xMge5EiUTkI7aqudxbojKUsENbaNB1v1c3dq7/KNyaTVtxAo4NgW
+         DIhcaOCNNSCFb3VpEDFcFiEhRs5Mm7C1N5GJDop0=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Christoph Hellwig <hch@lst.de>,
+        Dinh Nguyen <dinguyen@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 329/913] uaccess: fix nios2 and microblaze get_user_8()
+Date:   Tue,  5 Apr 2022 09:23:11 +0200
+Message-Id: <20220405070349.712138376@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: e58d55df-24a7-477a-d4f9-08da1725d2dc
-X-MS-TrafficTypeDiagnostic: CO6PR12MB5474:EE_
-X-Microsoft-Antispam-PRVS: <CO6PR12MB54749A4C4B9C51296BBEEA2E92E49@CO6PR12MB5474.namprd12.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: cvOjWkzxtFGgp1x+8pubBFHIzA7ofEHVS6FnkBS5br2GBpR1CdQi3oKLl+K8m631CvPMdBSfKbDPzM4NRgmFjSkGF1rLegK3V8fIwbphjhu5AH7lm8EGPaQZMaek6lwvzr0BmSpWS/m7eWbc/gWPguAWCdm7hgy4T0YwLo2DLoeA+KyEnns1GsFtm63wTxLQg1icg7wQj4+t/8I0iFH26vyaq+KLDEppBouEeSCYbmZJJNwah2MnaQnk3Jb8TfHis8zSxp0VHGUVHSa1Lql9Qe5MuZQEau9tdWiFI0qi05WT1NmAw2f2KrwC+mFzNlkQLFcsngsFKd8xEt/3ZbR+iSqLdRE3kjT1NGlbhB57d7lq9CQ9OGIzheQP/zy/ltV2f+wYuQqWAxVrqkdGocFyZ0LpubgG2DFSk5/RRvsgqLNtvkLtCYBu2NSEYhJ8CoSkvO5RPwMZn40TyUtrSAoeRz2CRrOTGYg7y9Q1o3ByMA8rAS99hg9KUqrEzsLwa7IJWXetB2fLdiYJcE2YBRoHxSgSQ5X9NJ0CbFuAhm8491aCiFQpy2QDSU4J8C+T2gc9FR1ibu/xxkNJB5kMeHafADtmSUX2b1b5W65biLem8fL4KcsrIYFvu63ZmaUe5VwOzGp33AUM0kfEJSef82JLZ/D4ooWZAKUl5Aherdiax1grCtGwGTgfhGR6VD1WxL2st5QKc0VZXoaxym9y04IaQPaSwOoCAxRXD5PH4zsofiY=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN9PR12MB5115.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(8676002)(36756003)(26005)(2616005)(4326008)(66946007)(186003)(6512007)(38100700002)(66476007)(31686004)(66556008)(83380400001)(6506007)(8936002)(110136005)(31696002)(508600001)(5660300002)(44832011)(2906002)(54906003)(6486002)(316002)(86362001)(43740500002)(45980500001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?RUIyRXB5dzNTK2loOHA5ZEJoVWNYQi8xQ0YrZ0Jwc0hDZG03U3llSERTVnp4?=
- =?utf-8?B?Y1ZzUmhHVENUcHJsdEovaWZIL3paTDhCdEZwa0dQTXl2YWVQd3c3UE5iQnNk?=
- =?utf-8?B?Zm42bUVvd3lieERxdW5yU00zVUNydXJDd0xSV0dKWVVrNTNtbk9PZFM5cXhX?=
- =?utf-8?B?anEyOFhxcS9NQzI3NFlNK2lQeGRFektQdFNPWGJqZW1yNUxqVDZTOHpodW4w?=
- =?utf-8?B?cHhDRi9HQjkyT1lHR0ZNSkZNSU5ZT3pTSUc4RkpWSGQzVlRoY0pCODkxaDV0?=
- =?utf-8?B?YWdVeGZ4ZG1DdnIrekdDbWlaWFE4OER3RDhlNmg2RlJHc2VXMVBpZzNUdTQw?=
- =?utf-8?B?RVByR0NLdjZFSDlXdno1aEgwYUJmZzk5aWNkZEp0M2hHTmZhNU1WYXhacHJn?=
- =?utf-8?B?blgzRjg4UExReWlveUo0THdqeVZVRnYwUkJ1OU9QU0VpVVZ1SHFlUmVHOFhL?=
- =?utf-8?B?Tm0vdUtWSnk0MGNCRGp3RnorVGtsdnJ6WmhoaS9UNmRCUi9lZ0JjeHZhbU1v?=
- =?utf-8?B?NVJ5bWZUWTJkelg2ZEFCc3k2UEgxaWhhRlFwWE1tMCt1ZSs2MmVTT2FNZ25t?=
- =?utf-8?B?d0N6OVMyZHJLSFBlOHZBZEJrWTlrZlBQMmd2dzA3MXJ0aVhwbFBvNWNhVmUy?=
- =?utf-8?B?T1N6eEhQM0FVcWtKdmk4ek0xN21UcEROSWRiR1I0d21uZ2x5YUZvc2Q5dmVp?=
- =?utf-8?B?cm0vVHhaMUcwVGZRM3JlVDZUaGN3RWRYRFJZK0p4ZkQ0WmtOa0FHQWxybVlT?=
- =?utf-8?B?OXJpS1o2T1NJYkh5dHBPZjM0UUU2R3libStUbDBicGpJc08rc1hWaUc0Yk01?=
- =?utf-8?B?ZXdhSThYZGl3SjVXdk9URHd3Z2JTNDBidVZDQ1hjajJaM0MyMkpGcHZERXlO?=
- =?utf-8?B?b24zampsa1pTNm1iV3J5dmVjLzJTeG9YOW9XUVpuZ2pibGRuSllDVDNoU2J2?=
- =?utf-8?B?SXFtQUhwb0l4SnJsNGhTUVNRYVVneEhibEZ2UHBYb0lRTVN3Ni9pb1BiT2ZI?=
- =?utf-8?B?M2dSMkFJU3l6Z2JpUmltcFQyNm53QVk4bkVhTVg0RjhxSkJweXozU2c5dkEv?=
- =?utf-8?B?Skp2OFExUldLcXkrN1FwTUIvbGJYalR6Vko3VnljSVJuY2FtV3AxR1lLSWVK?=
- =?utf-8?B?UnZhOVNJK2VVaHphMVlJS3JLMGF1ZURhR1Q4M0lvYW0vbVo3Uk9rMlJoR1VI?=
- =?utf-8?B?Q0tmWlk5dytjMnJwa0xIOHFMbVd5L1FORTRlblQ1bEJBOHBNR0Q2N01uVkps?=
- =?utf-8?B?YTFRVjE0VTk2U0pLZHJmZWp6UHRPbXcwUG5HalQvdi9iZUFZa1VqYXpzWjI2?=
- =?utf-8?B?TFhETGlNbDRmbW84YmNnUHBQY2w5TDcrTFQxcUk4dldXRDhLUVVYRW9haDBq?=
- =?utf-8?B?Vi9SNmNLeXA2bjgyNmwvUUQ0U0ZaUjBCRFNHNnE4bzlOeWRaejUrblEzUmRl?=
- =?utf-8?B?anpMTzN1alltOVNXNUZOM0Q4TGhDYS9DVUZuYS9QbTc4ODFFQXpOekFRemhD?=
- =?utf-8?B?T1dWRmlvK0JqVmxNTDBhbENqR2pzY0I3a3VXT2orKzVqY2o0Wk9TODJyeE5P?=
- =?utf-8?B?YjZvVzJCdlZveVMvYTZZS2p0V1IxY1Zja29Dbit4MEs4dUV4bHErMi94WndJ?=
- =?utf-8?B?NVIvNEhjd1RueTFMVElxUVN0WE9xNktsMHZFZXhRZUhZcnpmMHVBS2FYSXBi?=
- =?utf-8?B?MHp1VWg5eTkrbUhwRTRLUDJoVkx0K3RONTdDT1FFUFIwbjZpS0V4NkYyUnpy?=
- =?utf-8?B?M1Q0K3FINzgvN3BsNmplYjVlayszYzRGMzJYZ1Fjc3d2RVNxN3RaQkdzZlFY?=
- =?utf-8?B?czZuWmdCMnNBS0JycVNLMFVoL1hGa3VFdUtJUFJLNTZjUEJvNFFGNGtscXRE?=
- =?utf-8?B?NC9YMWljVUJUTmJqVjdQbUd6enlaeUlhU2dudXRIRThGTkJoYWI0UjZIcWdN?=
- =?utf-8?B?RmN1YW8ycFRUUGtwYm9SNnZ5UTlBQ21ObkJ4eFQxV20vV2lTVWdELzdHcUQ4?=
- =?utf-8?B?eHhKcVBtekpkTWJKemNqRmRNRzEzVWVvS3JuSWIxRGFTczQzWkxxa09YREpa?=
- =?utf-8?B?MXpwQ1YwTDBqcTZEb3o4c1NXMDdSNWl6NXVCNmxKVlJaTlVVektlT2xYL3E5?=
- =?utf-8?B?eFI0NGZobUlPUVJUcXdzdmdMODJ3Vjlqc3NvNGdYWGxFNTR2ZmwvMFdiZzdJ?=
- =?utf-8?B?VU55dGFkWVRVeXVWQ3pEUUovTlduSTRrSDR4UDdDcy9XMjFzQ0huTy9GazEz?=
- =?utf-8?B?WGZGQnRIUFR4akRJQWJnWHl3amFQV2FJUyttV0phY0dONEhycUtvVVY5RFhU?=
- =?utf-8?B?UDlzanVycTJQME52OVV2SitPbU9MUmRqYlFlRFVNeFhyMDlGZ0JtZz09?=
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: e58d55df-24a7-477a-d4f9-08da1725d2dc
-X-MS-Exchange-CrossTenant-AuthSource: BN9PR12MB5115.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Apr 2022 17:00:44.7606
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 9cSFjzYDu1rICe6cV4W256XyAHzXOktmnWKAirf4l0dzwAiJWbGaYYlUv9qi/nmE/ATXqmjPL9hz+Ne+iu1ONg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CO6PR12MB5474
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Am 2022-04-04 um 18:21 schrieb Grigory Vasilyev:
-> In the amdgpu_amdkfd_get_xgmi_bandwidth_mbytes function,
-> the peer_adev pointer can be NULL and is passed to amdgpu_xgmi_get_num_links.
->
-> In amdgpu_xgmi_get_num_links, peer_adev pointer is dereferenced
-> without any checks: peer_adev->gmc.xgmi.node_id .
+From: Arnd Bergmann <arnd@arndb.de>
 
-What's worse, peer_adev is uninitialized with an undefined value if src 
-is NULL. So that code was definitely bogus.
+[ Upstream commit a97b693c3712f040c5802f32b2d685352e08cefa ]
 
-However, I think your patch will result in incorrect results. Currently 
-amdgpu_amdkfd_get_xgmi_bandwidth is always called with is_min=true if 
-src==NULL, and with is_min=false if src!=NULL. The intention is, that we 
-assume a single XGMI link in the case that src==NULL. That means the 
-is_min parameter is redundant. What we should do instead is, assume that 
-num_links==1 if src==NULL, and drop the is_min parameter.
+These two architectures implement 8-byte get_user() through
+a memcpy() into a four-byte variable, which won't fit.
 
-That would keep things working the way they do now, and prevent 
-potential problems in the future.
+Use a temporary 64-bit variable instead here, and use a double
+cast the way that risc-v and openrisc do to avoid compile-time
+warnings.
 
-Regards,
-   Felix
+Fixes: 6a090e97972d ("arch/microblaze: support get_user() of size 8 bytes")
+Fixes: 5ccc6af5e88e ("nios2: Memory management")
+Reviewed-by: Christoph Hellwig <hch@lst.de>
+Acked-by: Dinh Nguyen <dinguyen@kernel.org>
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ arch/microblaze/include/asm/uaccess.h | 18 +++++++++---------
+ arch/nios2/include/asm/uaccess.h      | 26 ++++++++++++++++----------
+ 2 files changed, 25 insertions(+), 19 deletions(-)
+
+diff --git a/arch/microblaze/include/asm/uaccess.h b/arch/microblaze/include/asm/uaccess.h
+index 5b6e0e7788f4..3fe96979d2c6 100644
+--- a/arch/microblaze/include/asm/uaccess.h
++++ b/arch/microblaze/include/asm/uaccess.h
+@@ -130,27 +130,27 @@ extern long __user_bad(void);
+ 
+ #define __get_user(x, ptr)						\
+ ({									\
+-	unsigned long __gu_val = 0;					\
+ 	long __gu_err;							\
+ 	switch (sizeof(*(ptr))) {					\
+ 	case 1:								\
+-		__get_user_asm("lbu", (ptr), __gu_val, __gu_err);	\
++		__get_user_asm("lbu", (ptr), x, __gu_err);		\
+ 		break;							\
+ 	case 2:								\
+-		__get_user_asm("lhu", (ptr), __gu_val, __gu_err);	\
++		__get_user_asm("lhu", (ptr), x, __gu_err);		\
+ 		break;							\
+ 	case 4:								\
+-		__get_user_asm("lw", (ptr), __gu_val, __gu_err);	\
++		__get_user_asm("lw", (ptr), x, __gu_err);		\
+ 		break;							\
+-	case 8:								\
+-		__gu_err = __copy_from_user(&__gu_val, ptr, 8);		\
+-		if (__gu_err)						\
+-			__gu_err = -EFAULT;				\
++	case 8: {							\
++		__u64 __x = 0;						\
++		__gu_err = raw_copy_from_user(&__x, ptr, 8) ?		\
++							-EFAULT : 0;	\
++		(x) = (typeof(x))(typeof((x) - (x)))__x;		\
+ 		break;							\
++	}								\
+ 	default:							\
+ 		/* __gu_val = 0; __gu_err = -EINVAL;*/ __gu_err = __user_bad();\
+ 	}								\
+-	x = (__force __typeof__(*(ptr))) __gu_val;			\
+ 	__gu_err;							\
+ })
+ 
+diff --git a/arch/nios2/include/asm/uaccess.h b/arch/nios2/include/asm/uaccess.h
+index ba9340e96fd4..ca9285a915ef 100644
+--- a/arch/nios2/include/asm/uaccess.h
++++ b/arch/nios2/include/asm/uaccess.h
+@@ -88,6 +88,7 @@ extern __must_check long strnlen_user(const char __user *s, long n);
+ /* Optimized macros */
+ #define __get_user_asm(val, insn, addr, err)				\
+ {									\
++	unsigned long __gu_val;						\
+ 	__asm__ __volatile__(						\
+ 	"       movi    %0, %3\n"					\
+ 	"1:   " insn " %1, 0(%2)\n"					\
+@@ -96,14 +97,20 @@ extern __must_check long strnlen_user(const char __user *s, long n);
+ 	"       .section __ex_table,\"a\"\n"				\
+ 	"       .word 1b, 2b\n"						\
+ 	"       .previous"						\
+-	: "=&r" (err), "=r" (val)					\
++	: "=&r" (err), "=r" (__gu_val)					\
+ 	: "r" (addr), "i" (-EFAULT));					\
++	val = (__force __typeof__(*(addr)))__gu_val;			\
+ }
+ 
+-#define __get_user_unknown(val, size, ptr, err) do {			\
++extern void __get_user_unknown(void);
++
++#define __get_user_8(val, ptr, err) do {				\
++	u64 __val = 0;							\
+ 	err = 0;							\
+-	if (__copy_from_user(&(val), ptr, size)) {			\
++	if (raw_copy_from_user(&(__val), ptr, sizeof(val))) {		\
+ 		err = -EFAULT;						\
++	} else {							\
++		val = (typeof(val))(typeof((val) - (val)))__val;	\
+ 	}								\
+ 	} while (0)
+ 
+@@ -119,8 +126,11 @@ do {									\
+ 	case 4:								\
+ 		__get_user_asm(val, "ldw", ptr, err);			\
+ 		break;							\
++	case 8:								\
++		__get_user_8(val, ptr, err);				\
++		break;							\
+ 	default:							\
+-		__get_user_unknown(val, size, ptr, err);		\
++		__get_user_unknown();					\
+ 		break;							\
+ 	}								\
+ } while (0)
+@@ -129,9 +139,7 @@ do {									\
+ 	({								\
+ 	long __gu_err = -EFAULT;					\
+ 	const __typeof__(*(ptr)) __user *__gu_ptr = (ptr);		\
+-	unsigned long __gu_val = 0;					\
+-	__get_user_common(__gu_val, sizeof(*(ptr)), __gu_ptr, __gu_err);\
+-	(x) = (__force __typeof__(x))__gu_val;				\
++	__get_user_common(x, sizeof(*(ptr)), __gu_ptr, __gu_err);	\
+ 	__gu_err;							\
+ 	})
+ 
+@@ -139,11 +147,9 @@ do {									\
+ ({									\
+ 	long __gu_err = -EFAULT;					\
+ 	const __typeof__(*(ptr)) __user *__gu_ptr = (ptr);		\
+-	unsigned long __gu_val = 0;					\
+ 	if (access_ok( __gu_ptr, sizeof(*__gu_ptr)))	\
+-		__get_user_common(__gu_val, sizeof(*__gu_ptr),		\
++		__get_user_common(x, sizeof(*__gu_ptr),			\
+ 			__gu_ptr, __gu_err);				\
+-	(x) = (__force __typeof__(x))__gu_val;				\
+ 	__gu_err;							\
+ })
+ 
+-- 
+2.34.1
 
 
->
-> Signed-off-by: Grigory Vasilyev <h0tc0d3@gmail.com>
-> ---
->   drivers/gpu/drm/amd/amdgpu/amdgpu_amdkfd.c | 5 ++---
->   1 file changed, 2 insertions(+), 3 deletions(-)
->
-> diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_amdkfd.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_amdkfd.c
-> index be1a55f8b8c5..1a1006b18016 100644
-> --- a/drivers/gpu/drm/amd/amdgpu/amdgpu_amdkfd.c
-> +++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_amdkfd.c
-> @@ -541,11 +541,10 @@ int amdgpu_amdkfd_get_xgmi_bandwidth_mbytes(struct amdgpu_device *dst,
->   	struct amdgpu_device *adev = dst, *peer_adev;
->   	int num_links;
->   
-> -	if (adev->asic_type != CHIP_ALDEBARAN)
-> +	if (!src || adev->asic_type != CHIP_ALDEBARAN)
->   		return 0;
->   
-> -	if (src)
-> -		peer_adev = src;
-> +	peer_adev = src;
->   
->   	/* num links returns 0 for indirect peers since indirect route is unknown. */
->   	num_links = is_min ? 1 : amdgpu_xgmi_get_num_links(adev, peer_adev);
+
