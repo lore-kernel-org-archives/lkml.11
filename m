@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B4FF2C43219
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:42:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CEA4FC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:42:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386484AbiDEMnp (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 08:43:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41998 "EHLO
+        id S236779AbiDEMoZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 08:44:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41898 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242642AbiDEJIP (ORCPT
+        with ESMTP id S242694AbiDEJIS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:08:15 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C7947460C;
-        Tue,  5 Apr 2022 01:57:02 -0700 (PDT)
+        Tue, 5 Apr 2022 05:08:18 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F39A96C975;
+        Tue,  5 Apr 2022 01:56:58 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id ACD65614E4;
-        Tue,  5 Apr 2022 08:56:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BB0D2C385A0;
-        Tue,  5 Apr 2022 08:56:57 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0695161573;
+        Tue,  5 Apr 2022 08:56:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 12F88C385A0;
+        Tue,  5 Apr 2022 08:56:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649149018;
-        bh=HSH7fv6lD+ZSAT4GTJXOH7W3b71NxWp7xNa9VwW+ayI=;
+        s=korg; t=1649149015;
+        bh=gv4ukajgun+ahxgtodnf+ysa9hRaoF0gRFwqX/nDtkM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VLZhZVfkycY6GGKf3/gjcr9oF1/Fl9QTeQvnRp8Ik6hOLIqvnWdPCO0AsQgW+mik6
-         WOoSKSS9qPqNhXPz5vryC20BERkjq74BZGqefVPw4FMCpMgiHS8ICIHh/Lw3j/0h/D
-         sBLazK7KWK9zsvfNe31eZzczOV7g7mFAdnAZBdvQ=
+        b=HcBVmucWShF328CdQitZ/0gBAVRMIWpIrmwOiDuFy6QRPVNrSyYZNWVS8vTUi50ap
+         21xcoHaglJ6milUmktmzcn9tDdzVBRWLe7JOUb0jCh5waplMt8hdWmqYV1GoRTw0YO
+         83HBnI6adZm/oGw2HATx1mBxcGBvUu2K2FqpKVEw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Alper Gun <alpergun@google.com>,
-        Peter Gonda <pgonda@google.com>,
-        Sean Christopherson <seanjc@google.com>,
+        stable@vger.kernel.org, Sean Christopherson <seanjc@google.com>,
+        Hou Wenlong <houwenlong.hwl@antgroup.com>,
         Paolo Bonzini <pbonzini@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0565/1017] KVM: SVM: Exit to userspace on ENOMEM/EFAULT GHCB errors
-Date:   Tue,  5 Apr 2022 09:24:38 +0200
-Message-Id: <20220405070411.052011524@linuxfoundation.org>
+Subject: [PATCH 5.16 0564/1017] KVM: x86/emulator: Defer not-present segment check in __load_segment_descriptor()
+Date:   Tue,  5 Apr 2022 09:24:37 +0200
+Message-Id: <20220405070411.021331167@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -52,189 +50,66 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sean Christopherson <seanjc@google.com>
+From: Hou Wenlong <houwenlong.hwl@antgroup.com>
 
-[ Upstream commit aa9f58415a8e45598bf44befa90b9d5babe09601 ]
+[ Upstream commit ca85f002258fdac3762c57d12d5e6e401b6a41af ]
 
-Exit to userspace if setup_vmgexit_scratch() fails due to OOM or because
-copying data from guest (userspace) memory failed/faulted.  The OOM
-scenario is clearcut, it's userspace's decision as to whether it should
-terminate the guest, free memory, etc...
+Per Intel's SDM on the "Instruction Set Reference", when
+loading segment descriptor, not-present segment check should
+be after all type and privilege checks. But the emulator checks
+it first, then #NP is triggered instead of #GP if privilege fails
+and segment is not present. Put not-present segment check after
+type and privilege checks in __load_segment_descriptor().
 
-As for -EFAULT, arguably, any guest issue is a violation of the guest's
-contract with userspace, and thus userspace needs to decide how to
-proceed.  E.g. userspace defines what is RAM vs. MMIO and communicates
-that directly to the guest, KVM is not involved in deciding what is/isn't
-RAM nor in communicating that information to the guest.  If the scratch
-GPA doesn't resolve to a memslot, then the guest is not honoring the
-memory configuration as defined by userspace.
-
-And if userspace unmaps an hva for whatever reason, then exiting to
-userspace with -EFAULT is absolutely the right thing to do.  KVM's ABI
-currently sucks and doesn't provide enough information to act on the
--EFAULT, but that will hopefully be remedied in the future as there are
-multiple use cases, e.g. uffd and virtiofs truncation, that shouldn't
-require any work in KVM beyond returning -EFAULT with a small amount of
-metadata.
-
-KVM could define its ABI such that failure to access the scratch area is
-reflected into the guest, i.e. establish a contract with userspace, but
-that's undesirable as it limits KVM's options in the future, e.g. in the
-potential uffd case any failure on a uaccess needs to kick out to
-userspace.  KVM does have several cases where it reflects these errors
-into the guest, e.g. kvm_pv_clock_pairing() and Hyper-V emulation, but
-KVM would preferably "fix" those instead of propagating the falsehood
-that any memory failure is the guest's fault.
-
-Lastly, returning a boolean as an "error" for that a helper that isn't
-named accordingly never works out well.
-
-Fixes: ad5b353240c8 ("KVM: SVM: Do not terminate SEV-ES guests on GHCB validation failure")
-Cc: Alper Gun <alpergun@google.com>
-Cc: Peter Gonda <pgonda@google.com>
-Signed-off-by: Sean Christopherson <seanjc@google.com>
-Message-Id: <20220225205209.3881130-1-seanjc@google.com>
+Fixes: 38ba30ba51a00 (KVM: x86 emulator: Emulate task switch in emulator.c)
+Reviewed-by: Sean Christopherson <seanjc@google.com>
+Signed-off-by: Hou Wenlong <houwenlong.hwl@antgroup.com>
+Message-Id: <52573c01d369f506cadcf7233812427cf7db81a7.1644292363.git.houwenlong.hwl@antgroup.com>
 Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/kvm/svm/sev.c | 36 +++++++++++++++++++++---------------
- 1 file changed, 21 insertions(+), 15 deletions(-)
+ arch/x86/kvm/emulate.c | 14 +++++++++-----
+ 1 file changed, 9 insertions(+), 5 deletions(-)
 
-diff --git a/arch/x86/kvm/svm/sev.c b/arch/x86/kvm/svm/sev.c
-index be2883141220..20a5d3abaeda 100644
---- a/arch/x86/kvm/svm/sev.c
-+++ b/arch/x86/kvm/svm/sev.c
-@@ -2352,7 +2352,7 @@ static void sev_es_sync_from_ghcb(struct vcpu_svm *svm)
- 	memset(ghcb->save.valid_bitmap, 0, sizeof(ghcb->save.valid_bitmap));
- }
- 
--static bool sev_es_validate_vmgexit(struct vcpu_svm *svm)
-+static int sev_es_validate_vmgexit(struct vcpu_svm *svm)
- {
- 	struct kvm_vcpu *vcpu;
- 	struct ghcb *ghcb;
-@@ -2457,7 +2457,7 @@ static bool sev_es_validate_vmgexit(struct vcpu_svm *svm)
- 		goto vmgexit_err;
+diff --git a/arch/x86/kvm/emulate.c b/arch/x86/kvm/emulate.c
+index 28b1a4e57827..5705446c1213 100644
+--- a/arch/x86/kvm/emulate.c
++++ b/arch/x86/kvm/emulate.c
+@@ -1614,11 +1614,6 @@ static int __load_segment_descriptor(struct x86_emulate_ctxt *ctxt,
+ 		goto exception;
  	}
  
--	return true;
-+	return 0;
+-	if (!seg_desc.p) {
+-		err_vec = (seg == VCPU_SREG_SS) ? SS_VECTOR : NP_VECTOR;
+-		goto exception;
+-	}
+-
+ 	dpl = seg_desc.dpl;
  
- vmgexit_err:
- 	vcpu = &svm->vcpu;
-@@ -2480,7 +2480,8 @@ static bool sev_es_validate_vmgexit(struct vcpu_svm *svm)
- 	ghcb_set_sw_exit_info_1(ghcb, 2);
- 	ghcb_set_sw_exit_info_2(ghcb, reason);
- 
--	return false;
-+	/* Resume the guest to "return" the error code. */
-+	return 1;
- }
- 
- void sev_es_unmap_ghcb(struct vcpu_svm *svm)
-@@ -2539,7 +2540,7 @@ void pre_sev_run(struct vcpu_svm *svm, int cpu)
- }
- 
- #define GHCB_SCRATCH_AREA_LIMIT		(16ULL * PAGE_SIZE)
--static bool setup_vmgexit_scratch(struct vcpu_svm *svm, bool sync, u64 len)
-+static int setup_vmgexit_scratch(struct vcpu_svm *svm, bool sync, u64 len)
- {
- 	struct vmcb_control_area *control = &svm->vmcb->control;
- 	struct ghcb *ghcb = svm->sev_es.ghcb;
-@@ -2592,14 +2593,14 @@ static bool setup_vmgexit_scratch(struct vcpu_svm *svm, bool sync, u64 len)
- 		}
- 		scratch_va = kvzalloc(len, GFP_KERNEL_ACCOUNT);
- 		if (!scratch_va)
--			goto e_scratch;
-+			return -ENOMEM;
- 
- 		if (kvm_read_guest(svm->vcpu.kvm, scratch_gpa_beg, scratch_va, len)) {
- 			/* Unable to copy scratch area from guest */
- 			pr_err("vmgexit: kvm_read_guest for scratch area failed\n");
- 
- 			kvfree(scratch_va);
--			goto e_scratch;
-+			return -EFAULT;
- 		}
- 
- 		/*
-@@ -2615,13 +2616,13 @@ static bool setup_vmgexit_scratch(struct vcpu_svm *svm, bool sync, u64 len)
- 	svm->sev_es.ghcb_sa = scratch_va;
- 	svm->sev_es.ghcb_sa_len = len;
- 
--	return true;
-+	return 0;
- 
- e_scratch:
- 	ghcb_set_sw_exit_info_1(ghcb, 2);
- 	ghcb_set_sw_exit_info_2(ghcb, GHCB_ERR_INVALID_SCRATCH_AREA);
- 
--	return false;
-+	return 1;
- }
- 
- static void set_ghcb_msr_bits(struct vcpu_svm *svm, u64 value, u64 mask,
-@@ -2759,17 +2760,18 @@ int sev_handle_vmgexit(struct kvm_vcpu *vcpu)
- 
- 	exit_code = ghcb_get_sw_exit_code(ghcb);
- 
--	if (!sev_es_validate_vmgexit(svm))
--		return 1;
-+	ret = sev_es_validate_vmgexit(svm);
-+	if (ret)
-+		return ret;
- 
- 	sev_es_sync_from_ghcb(svm);
- 	ghcb_set_sw_exit_info_1(ghcb, 0);
- 	ghcb_set_sw_exit_info_2(ghcb, 0);
- 
--	ret = 1;
- 	switch (exit_code) {
- 	case SVM_VMGEXIT_MMIO_READ:
--		if (!setup_vmgexit_scratch(svm, true, control->exit_info_2))
-+		ret = setup_vmgexit_scratch(svm, true, control->exit_info_2);
-+		if (ret)
- 			break;
- 
- 		ret = kvm_sev_es_mmio_read(vcpu,
-@@ -2778,7 +2780,8 @@ int sev_handle_vmgexit(struct kvm_vcpu *vcpu)
- 					   svm->sev_es.ghcb_sa);
- 		break;
- 	case SVM_VMGEXIT_MMIO_WRITE:
--		if (!setup_vmgexit_scratch(svm, false, control->exit_info_2))
-+		ret = setup_vmgexit_scratch(svm, false, control->exit_info_2);
-+		if (ret)
- 			break;
- 
- 		ret = kvm_sev_es_mmio_write(vcpu,
-@@ -2811,6 +2814,7 @@ int sev_handle_vmgexit(struct kvm_vcpu *vcpu)
- 			ghcb_set_sw_exit_info_2(ghcb, GHCB_ERR_INVALID_INPUT);
- 		}
- 
-+		ret = 1;
+ 	switch (seg) {
+@@ -1658,6 +1653,10 @@ static int __load_segment_descriptor(struct x86_emulate_ctxt *ctxt,
+ 	case VCPU_SREG_TR:
+ 		if (seg_desc.s || (seg_desc.type != 1 && seg_desc.type != 9))
+ 			goto exception;
++		if (!seg_desc.p) {
++			err_vec = NP_VECTOR;
++			goto exception;
++		}
+ 		old_desc = seg_desc;
+ 		seg_desc.type |= 2; /* busy */
+ 		ret = ctxt->ops->cmpxchg_emulated(ctxt, desc_addr, &old_desc, &seg_desc,
+@@ -1682,6 +1681,11 @@ static int __load_segment_descriptor(struct x86_emulate_ctxt *ctxt,
  		break;
  	}
- 	case SVM_VMGEXIT_UNSUPPORTED_EVENT:
-@@ -2830,6 +2834,7 @@ int sev_es_string_io(struct vcpu_svm *svm, int size, unsigned int port, int in)
- {
- 	int count;
- 	int bytes;
-+	int r;
  
- 	if (svm->vmcb->control.exit_info_2 > INT_MAX)
- 		return -EINVAL;
-@@ -2838,8 +2843,9 @@ int sev_es_string_io(struct vcpu_svm *svm, int size, unsigned int port, int in)
- 	if (unlikely(check_mul_overflow(count, size, &bytes)))
- 		return -EINVAL;
- 
--	if (!setup_vmgexit_scratch(svm, in, bytes))
--		return 1;
-+	r = setup_vmgexit_scratch(svm, in, bytes);
-+	if (r)
-+		return r;
- 
- 	return kvm_sev_es_string_io(&svm->vcpu, size, port, svm->sev_es.ghcb_sa,
- 				    count, in);
++	if (!seg_desc.p) {
++		err_vec = (seg == VCPU_SREG_SS) ? SS_VECTOR : NP_VECTOR;
++		goto exception;
++	}
++
+ 	if (seg_desc.s) {
+ 		/* mark segment as accessed */
+ 		if (!(seg_desc.type & 1)) {
 -- 
 2.34.1
 
