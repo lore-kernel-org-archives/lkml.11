@@ -2,82 +2,65 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C2BDC3527B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0CC90C433F5
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:41:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1454947AbiDEXPE (ORCPT
+        id S1354957AbiDEXOl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 19:15:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39432 "EHLO
+        Tue, 5 Apr 2022 19:14:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36446 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243492AbiDEKhC (ORCPT
+        with ESMTP id S1344192AbiDENKo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:37:02 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E827A53E32;
-        Tue,  5 Apr 2022 03:22:01 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Tue, 5 Apr 2022 09:10:44 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id AA0CAF3A5F
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 05:12:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1649160747;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=cyh9GNwkSeiWX8VVWJet6cmrStrv1Y1BhHYKMAKCy08=;
+        b=IScO/Fg6YYOK0XE4K4uWIMqeiLkMim9RaLeDC5XdVKtXs7fbnTQ80D+J+SROwK6etAcqRD
+        uilnuci9FFe3e2pMR1UdOZGYQayUXlY1OP3nZzkwypNulwud+OEkv7wWOTFpbh5EOR10s0
+        JLmAcXTjI0wKEsBmZy2eEICxrUNhlfQ=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-610-dTUAcNyXP8m3zdzjVnUzug-1; Tue, 05 Apr 2022 08:12:24 -0400
+X-MC-Unique: dTUAcNyXP8m3zdzjVnUzug-1
+Received: from smtp.corp.redhat.com (int-mx09.intmail.prod.int.rdu2.redhat.com [10.11.54.9])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 67BF8CE1C9D;
-        Tue,  5 Apr 2022 10:22:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8A175C385A1;
-        Tue,  5 Apr 2022 10:21:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649154118;
-        bh=acO79mqm0yvbtjrflsojebLRmE5nRnrPuXbmZzr+qBY=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=znwe//XXlvrg6Y7qBnn9wrmHAik56T5Mlh/CT6R0r44v+WHEAfDUrFS/5H3LIvghf
-         qqH/xlFZAXtTe0+kGsGivERXTpgi8JFskNHm6xjBA8JtImLKogJAa7oSUvWEk5BfPb
-         HYXH+AfV+UNxizH4ho0z8EszLva/6Y6aaAVRHBWY=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
-        Luis Chamberlain <mcgrof@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 447/599] lib/test: use after free in register_test_dev_kmod()
-Date:   Tue,  5 Apr 2022 09:32:21 +0200
-Message-Id: <20220405070312.131794111@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
-User-Agent: quilt/0.66
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 08511100BAA6;
+        Tue,  5 Apr 2022 12:12:24 +0000 (UTC)
+Received: from virtlab701.virt.lab.eng.bos.redhat.com (virtlab701.virt.lab.eng.bos.redhat.com [10.19.152.228])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id C14F74021A6;
+        Tue,  5 Apr 2022 12:12:23 +0000 (UTC)
+From:   Paolo Bonzini <pbonzini@redhat.com>
+To:     Sean Christopherson <seanjc@google.com>
+Cc:     Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Bruno Goncalves <bgoncalv@redhat.com>,
+        Jan Stancek <jstancek@redhat.com>
+Subject: Re: [PATCH] KVM: x86/mmu: Resolve nx_huge_pages when kvm.ko is loaded
+Date:   Tue,  5 Apr 2022 08:12:14 -0400
+Message-Id: <20220405121215.605894-3-pbonzini@redhat.com>
+In-Reply-To: <20220331221359.3912754-1-seanjc@google.com>
+References: 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.9
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dan Carpenter <dan.carpenter@oracle.com>
+Queued, thanks.
 
-[ Upstream commit dc0ce6cc4b133f5f2beb8b47dacae13a7d283c2c ]
-
-The "test_dev" pointer is freed but then returned to the caller.
-
-Fixes: d9c6a72d6fa2 ("kmod: add test driver to stress test the module loader")
-Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
-Signed-off-by: Luis Chamberlain <mcgrof@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- lib/test_kmod.c | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/lib/test_kmod.c b/lib/test_kmod.c
-index eab52770070d..c637f6b5053a 100644
---- a/lib/test_kmod.c
-+++ b/lib/test_kmod.c
-@@ -1155,6 +1155,7 @@ static struct kmod_test_device *register_test_dev_kmod(void)
- 	if (ret) {
- 		pr_err("could not register misc device: %d\n", ret);
- 		free_test_dev_kmod(test_dev);
-+		test_dev = NULL;
- 		goto out;
- 	}
- 
--- 
-2.34.1
-
-
+Paolo
 
