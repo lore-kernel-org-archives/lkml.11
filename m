@@ -2,125 +2,131 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EB269C46467
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:40:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 141F7C4707A
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:40:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349014AbiDEUin (ORCPT
+        id S1352347AbiDEUjQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 16:38:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37260 "EHLO
+        Tue, 5 Apr 2022 16:39:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35102 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1457201AbiDEQCz (ORCPT
+        with ESMTP id S1351915AbiDEKD3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 12:02:55 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 353632A727
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 08:32:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1649172764;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=RVunoBqxd/XMcSCf/aNcM3Bo2FCKUnhDjeaR63SyLgs=;
-        b=EjgC4JahvU1MDFciY2tmV2yHDJmiSxYWZtD1/Dr8ukcbqHZ61Qdyy6iaWBiVNuFXzqd9nl
-        WRjIMLbBGW8i5Ksyf2MOVMLC0EH1WA5bPts6Drqajk5CdVMyzLApw7yjGFqxeCUbpuD3jm
-        69kJag1BByaBnfjHXwSo1w7Jp6TzWv4=
-Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
- [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-212-xm9I_fGBPwCe8hkKiUjZ9Q-1; Tue, 05 Apr 2022 11:32:43 -0400
-X-MC-Unique: xm9I_fGBPwCe8hkKiUjZ9Q-1
-Received: by mail-wm1-f72.google.com with SMTP id r19-20020a7bc093000000b0038e706da7c0so1401286wmh.1
-        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 08:32:43 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=RVunoBqxd/XMcSCf/aNcM3Bo2FCKUnhDjeaR63SyLgs=;
-        b=Tdl7Xiikdpo3YeICgS/uMYYmbVkcaZw2gurWQCm3oJ8AOUh/TBNSOsGYKke7elUVX2
-         8CstJsxN0u6E7FV0lR/J3wvud7/1klca93vXbSsIMZuoCZmC58yOFbqsY9Kxkqarq29d
-         8rOn1Zxdhdcxag4zDSOQyrhoF3dXdrFFs2vQ1t20kWHYozsKBmL/GXGKxUfEjlPPwnBS
-         hwYfHuntky3nzaJ/6onmbXVAo3wTjjEvf5I67/a7WDuRibWDWN/AWi7TbSuWV6S7/vYU
-         bu6o+Ahpuh7t1J0rhRRAfMrXAbSglVDM6jCkc/Y33LT4vkCgVOw7+NwRSXmDGeXNKxWN
-         Ht1g==
-X-Gm-Message-State: AOAM531Z3vcTgxyx8vP06bR9KHYpH/vR+Cl8lmgRFpMk/cXDVRZ+rPZs
-        NnzW2dmdXa6SVNU96dEfl9fO4inIpcRHixxom2ruU6uymTlevY8HwrIXU9a+KJJ/sHgIQHIjz9t
-        crmRBms81FkuXo19pCwrPlaCy
-X-Received: by 2002:adf:f481:0:b0:205:b814:887b with SMTP id l1-20020adff481000000b00205b814887bmr3197546wro.472.1649172761890;
-        Tue, 05 Apr 2022 08:32:41 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJxk0EshXz5dy68LFNeLcoRvlMOAY0pRMlD9cxw8B09LYKsaas8YLt1BZFcNUhoqfeEeSL3uHw==
-X-Received: by 2002:adf:f481:0:b0:205:b814:887b with SMTP id l1-20020adff481000000b00205b814887bmr3197534wro.472.1649172761674;
-        Tue, 05 Apr 2022 08:32:41 -0700 (PDT)
-Received: from [10.32.181.87] (nat-pool-mxp-t.redhat.com. [149.6.153.186])
-        by smtp.googlemail.com with ESMTPSA id p30-20020a05600c1d9e00b0038cc9d6ff0bsm2637394wms.33.2022.04.05.08.32.40
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 05 Apr 2022 08:32:40 -0700 (PDT)
-Message-ID: <ea136ac6-53cf-cdc5-a741-acfb437819b1@redhat.com>
-Date:   Tue, 5 Apr 2022 17:32:39 +0200
+        Tue, 5 Apr 2022 06:03:29 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28101972DB;
+        Tue,  5 Apr 2022 02:52:33 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 63BE9B81B97;
+        Tue,  5 Apr 2022 09:52:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C9F1FC385A6;
+        Tue,  5 Apr 2022 09:52:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649152340;
+        bh=xuNZMXifvmTGhpPgK2BkPkaKp82sCR/h9SV2ylyFzog=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=t1s0Yh3UbcB+5mPLIjUwL5XuptyawVmLuIxTMmFZuNEnqsaLcwclPFhGYnIMNjzf9
+         dhbT9UAPO8bIzKluUr1iR4X8FzNfhHO+JocXzfGbn2mVzk/twdNbJGSA86pBNacP3K
+         R8yL3nBvFPRi1/UVyjJvjGm8cQp825gk850VqN0o=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, George Kennedy <george.kennedy@oracle.com>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Helge Deller <deller@gmx.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 739/913] video: fbdev: cirrusfb: check pixclock to avoid divide by zero
+Date:   Tue,  5 Apr 2022 09:30:01 +0200
+Message-Id: <20220405070401.986511973@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [RFC PATCH v5 074/104] KVM: x86: Add a switch_db_regs flag to
- handle TDX's auto-switched behavior
-Content-Language: en-US
-To:     isaku.yamahata@intel.com, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     isaku.yamahata@gmail.com, Jim Mattson <jmattson@google.com>,
-        erdemaktas@google.com, Connor Kuehl <ckuehl@redhat.com>,
-        Sean Christopherson <seanjc@google.com>
-References: <cover.1646422845.git.isaku.yamahata@intel.com>
- <76c87a1d33bb3ec4a68fe3db2a840b6ddc951929.1646422845.git.isaku.yamahata@intel.com>
-From:   Paolo Bonzini <pbonzini@redhat.com>
-In-Reply-To: <76c87a1d33bb3ec4a68fe3db2a840b6ddc951929.1646422845.git.isaku.yamahata@intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 3/4/22 20:49, isaku.yamahata@intel.com wrote:
->   	vcpu->arch.efer = EFER_SCE | EFER_LME | EFER_LMA | EFER_NX;
->   
-> +	vcpu->arch.switch_db_regs = KVM_DEBUGREG_AUTO_SWITCH;
->   	vcpu->arch.cr0_guest_owned_bits = -1ul;
->   	vcpu->arch.cr4_guest_owned_bits = -1ul;
->   
-> diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
-> index 45e8a02e99bf..89d04cd64cd0 100644
-> --- a/arch/x86/kvm/x86.c
-> +++ b/arch/x86/kvm/x86.c
-> @@ -10084,7 +10084,7 @@ static int vcpu_enter_guest(struct kvm_vcpu *vcpu)
->   	if (vcpu->arch.guest_fpu.xfd_err)
->   		wrmsrl(MSR_IA32_XFD_ERR, vcpu->arch.guest_fpu.xfd_err);
->   
-> -	if (unlikely(vcpu->arch.switch_db_regs)) {
-> +	if (unlikely(vcpu->arch.switch_db_regs & ~KVM_DEBUGREG_AUTO_SWITCH)) {
->   		set_debugreg(0, 7);
->   		set_debugreg(vcpu->arch.eff_db[0], 0);
->   		set_debugreg(vcpu->arch.eff_db[1], 1);
+From: George Kennedy <george.kennedy@oracle.com>
 
-I'm confused.  I'm probably missing something obvious, but where does
-KVM_DEBUGREG_AUTO_SWITCH affect the behavior of KVM?  vcpu_enter_guest
-would still write %db0-%db3 if KVM_DEBUGREG_BP_ENABLED is set, for
-example.
+[ Upstream commit 5c6f402bdcf9e7239c6bc7087eda71ac99b31379 ]
 
-Do you mean:
+Do a sanity check on pixclock value to avoid divide by zero.
 
-	if (unlikely(vcpu->arch.switch_db_regs) &&
-	    !unlikely(vcpu->arch.switch_db_regs & KVM_DEBUGREG_AUTO_SWITCH)) {
+If the pixclock value is zero, the cirrusfb driver will round up
+pixclock to get the derived frequency as close to maxclock as
+possible.
 
-?
+Syzkaller reported a divide error in cirrusfb_check_pixclock.
 
-Paolo
-  
-> @@ -10126,6 +10126,7 @@ static int vcpu_enter_guest(struct kvm_vcpu *vcpu)
->   	 */
->   	if (unlikely(vcpu->arch.switch_db_regs & KVM_DEBUGREG_WONT_EXIT)) {
->   		WARN_ON(vcpu->guest_debug & KVM_GUESTDBG_USE_HW_BP);
-> +		WARN_ON(vcpu->arch.switch_db_regs & KVM_DEBUGREG_AUTO_SWITCH);
->   		static_call(kvm_x86_sync_dirty_debug_regs)(vcpu);
->   		kvm_update_dr0123(vcpu);
->   		kvm_update_dr7(vcpu);
+divide error: 0000 [#1] SMP KASAN PTI
+CPU: 0 PID: 14938 Comm: cirrusfb_test Not tainted 5.15.0-rc6 #1
+Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.11.0-2
+RIP: 0010:cirrusfb_check_var+0x6f1/0x1260
+
+Call Trace:
+ fb_set_var+0x398/0xf90
+ do_fb_ioctl+0x4b8/0x6f0
+ fb_ioctl+0xeb/0x130
+ __x64_sys_ioctl+0x19d/0x220
+ do_syscall_64+0x3a/0x80
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+
+Signed-off-by: George Kennedy <george.kennedy@oracle.com>
+Reviewed-by: Geert Uytterhoeven <geert@linux-m68k.org>
+Signed-off-by: Helge Deller <deller@gmx.de>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/video/fbdev/cirrusfb.c | 16 ++++++++--------
+ 1 file changed, 8 insertions(+), 8 deletions(-)
+
+diff --git a/drivers/video/fbdev/cirrusfb.c b/drivers/video/fbdev/cirrusfb.c
+index 93802abbbc72..3d47c347b897 100644
+--- a/drivers/video/fbdev/cirrusfb.c
++++ b/drivers/video/fbdev/cirrusfb.c
+@@ -469,7 +469,7 @@ static int cirrusfb_check_mclk(struct fb_info *info, long freq)
+ 	return 0;
+ }
+ 
+-static int cirrusfb_check_pixclock(const struct fb_var_screeninfo *var,
++static int cirrusfb_check_pixclock(struct fb_var_screeninfo *var,
+ 				   struct fb_info *info)
+ {
+ 	long freq;
+@@ -478,9 +478,7 @@ static int cirrusfb_check_pixclock(const struct fb_var_screeninfo *var,
+ 	unsigned maxclockidx = var->bits_per_pixel >> 3;
+ 
+ 	/* convert from ps to kHz */
+-	freq = PICOS2KHZ(var->pixclock);
+-
+-	dev_dbg(info->device, "desired pixclock: %ld kHz\n", freq);
++	freq = PICOS2KHZ(var->pixclock ? : 1);
+ 
+ 	maxclock = cirrusfb_board_info[cinfo->btype].maxclock[maxclockidx];
+ 	cinfo->multiplexing = 0;
+@@ -488,11 +486,13 @@ static int cirrusfb_check_pixclock(const struct fb_var_screeninfo *var,
+ 	/* If the frequency is greater than we can support, we might be able
+ 	 * to use multiplexing for the video mode */
+ 	if (freq > maxclock) {
+-		dev_err(info->device,
+-			"Frequency greater than maxclock (%ld kHz)\n",
+-			maxclock);
+-		return -EINVAL;
++		var->pixclock = KHZ2PICOS(maxclock);
++
++		while ((freq = PICOS2KHZ(var->pixclock)) > maxclock)
++			var->pixclock++;
+ 	}
++	dev_dbg(info->device, "desired pixclock: %ld kHz\n", freq);
++
+ 	/*
+ 	 * Additional constraint: 8bpp uses DAC clock doubling to allow maximum
+ 	 * pixel clock
+-- 
+2.34.1
+
+
 
