@@ -2,43 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 451E1C3527A
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:26:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CA69C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:31:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383095AbiDEMYx (ORCPT
+        id S1383132AbiDEMY4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 08:24:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46812 "EHLO
+        Tue, 5 Apr 2022 08:24:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49752 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245025AbiDEIxC (ORCPT
+        with ESMTP id S245024AbiDEIxC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Apr 2022 04:53:02 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92D81C03;
-        Tue,  5 Apr 2022 01:49:52 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2838FDBD;
+        Tue,  5 Apr 2022 01:49:45 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 120EFCE1C6E;
-        Tue,  5 Apr 2022 08:49:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2AE4CC385A1;
-        Tue,  5 Apr 2022 08:49:49 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BA92460FFB;
+        Tue,  5 Apr 2022 08:49:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C95F6C385A1;
+        Tue,  5 Apr 2022 08:49:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649148589;
-        bh=1lPVoZwuXAwYHn+7f3974dvxbfLLihtZpAVIV0JZzHs=;
+        s=korg; t=1649148584;
+        bh=R4dI9hTV80OQykwVVQtO313Vn6qxHNVLb43uj8YjSb8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=oiok3McFn2G5DSey61gpGBzNE8LlpXY5BNRlOUKKZm4LubZmfyje30gnLrBIuta1L
-         oUXZMJ11oE35QQW9p2j7jiq782RkVYUd3VFpvD5wBVJQ3rfK+6SB+O0uFqsZU3Am6E
-         jfVibug2F2vcEVSpNaVJ/nBjW2lqnwIzXW0ATpkQ=
+        b=i6W9JTQv8eYFLJdy2wgfNLa3/uoIc7FTn1mg/ff81SYqw4QJeBb7XAdgzXwjvcdvE
+         AIkYNOVFPTch/3La3hgQxoCXEoemB6dhHil2IQ29slqafRNp88M1zyR+xGsydHHRaR
+         ETK05zVX4JNsD2G4mgWFrRlL8rpj9HiFw0rKmNC4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Wei Fu <fuweid89@gmail.com>,
+        stable@vger.kernel.org,
+        =?UTF-8?q?Mauricio=20V=C3=A1squez?= <mauricio@kinvolk.io>,
         Andrii Nakryiko <andrii@kernel.org>,
+        Quentin Monnet <quentin@isovalent.com>,
+        Song Liu <songliubraving@fb.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0410/1017] bpftool: Only set obj->skeleton on complete success
-Date:   Tue,  5 Apr 2022 09:22:03 +0200
-Message-Id: <20220405070406.458335832@linuxfoundation.org>
+Subject: [PATCH 5.16 0408/1017] bpftool: Fix error check when calling hashmap__new()
+Date:   Tue,  5 Apr 2022 09:22:01 +0200
+Message-Id: <20220405070406.399155518@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -50,49 +53,116 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Wei Fu <fuweid89@gmail.com>
+From: Mauricio Vásquez <mauricio@kinvolk.io>
 
-[ Upstream commit 0991f6a38f576aa9a5e34713e23c998a3310d4d0 ]
+[ Upstream commit 622a5b582cc27d3deedc38fcef68da2972e8e58d ]
 
-After `bpftool gen skeleton`, the ${bpf_app}.skel.h will provide that
-${bpf_app_name}__open helper to load bpf. If there is some error
-like ENOMEM, the ${bpf_app_name}__open will rollback(free) the allocated
-object, including `bpf_object_skeleton`.
+hashmap__new() encodes errors with ERR_PTR(), hence it's not valid to
+check the returned pointer against NULL and IS_ERR() has to be used
+instead.
 
-Since the ${bpf_app_name}__create_skeleton set the obj->skeleton first
-and not rollback it when error, it will cause double-free in
-${bpf_app_name}__destory at ${bpf_app_name}__open. Therefore, we should
-set the obj->skeleton before return 0;
+libbpf_get_error() can't be used in this case as hashmap__new() is not
+part of the public libbpf API and it'll continue using ERR_PTR() after
+libbpf 1.0.
 
-Fixes: 5dc7a8b21144 ("bpftool, selftests/bpf: Embed object file inside skeleton")
-Signed-off-by: Wei Fu <fuweid89@gmail.com>
+Fixes: 8f184732b60b ("bpftool: Switch to libbpf's hashmap for pinned paths of BPF objects")
+Fixes: 2828d0d75b73 ("bpftool: Switch to libbpf's hashmap for programs/maps in BTF listing")
+Fixes: d6699f8e0f83 ("bpftool: Switch to libbpf's hashmap for PIDs/names references")
+Signed-off-by: Mauricio Vásquez <mauricio@kinvolk.io>
 Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
-Link: https://lore.kernel.org/bpf/20220108084008.1053111-1-fuweid89@gmail.com
+Reviewed-by: Quentin Monnet <quentin@isovalent.com>
+Acked-by: Song Liu <songliubraving@fb.com>
+Link: https://lore.kernel.org/bpf/20220107152620.192327-2-mauricio@kinvolk.io
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/bpf/bpftool/gen.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ tools/bpf/bpftool/btf.c  | 2 +-
+ tools/bpf/bpftool/link.c | 3 ++-
+ tools/bpf/bpftool/map.c  | 2 +-
+ tools/bpf/bpftool/pids.c | 3 ++-
+ tools/bpf/bpftool/prog.c | 2 +-
+ 5 files changed, 7 insertions(+), 5 deletions(-)
 
-diff --git a/tools/bpf/bpftool/gen.c b/tools/bpf/bpftool/gen.c
-index 5c18351290f0..587027050f43 100644
---- a/tools/bpf/bpftool/gen.c
-+++ b/tools/bpf/bpftool/gen.c
-@@ -928,7 +928,6 @@ static int do_skeleton(int argc, char **argv)
- 			s = (struct bpf_object_skeleton *)calloc(1, sizeof(*s));\n\
- 			if (!s)						    \n\
- 				goto err;				    \n\
--			obj->skeleton = s;				    \n\
- 									    \n\
- 			s->sz = sizeof(*s);				    \n\
- 			s->name = \"%1$s\";				    \n\
-@@ -1001,6 +1000,7 @@ static int do_skeleton(int argc, char **argv)
- 									    \n\
- 			s->data = (void *)%2$s__elf_bytes(&s->data_sz);	    \n\
- 									    \n\
-+			obj->skeleton = s;				    \n\
- 			return 0;					    \n\
- 		err:							    \n\
- 			bpf_object__destroy_skeleton(s);		    \n\
+diff --git a/tools/bpf/bpftool/btf.c b/tools/bpf/bpftool/btf.c
+index 015d2758f826..4a561ec848c0 100644
+--- a/tools/bpf/bpftool/btf.c
++++ b/tools/bpf/bpftool/btf.c
+@@ -899,7 +899,7 @@ static int do_show(int argc, char **argv)
+ 				      equal_fn_for_key_as_id, NULL);
+ 	btf_map_table = hashmap__new(hash_fn_for_key_as_id,
+ 				     equal_fn_for_key_as_id, NULL);
+-	if (!btf_prog_table || !btf_map_table) {
++	if (IS_ERR(btf_prog_table) || IS_ERR(btf_map_table)) {
+ 		hashmap__free(btf_prog_table);
+ 		hashmap__free(btf_map_table);
+ 		if (fd >= 0)
+diff --git a/tools/bpf/bpftool/link.c b/tools/bpf/bpftool/link.c
+index 2c258db0d352..97dec81950e5 100644
+--- a/tools/bpf/bpftool/link.c
++++ b/tools/bpf/bpftool/link.c
+@@ -2,6 +2,7 @@
+ /* Copyright (C) 2020 Facebook */
+ 
+ #include <errno.h>
++#include <linux/err.h>
+ #include <net/if.h>
+ #include <stdio.h>
+ #include <unistd.h>
+@@ -306,7 +307,7 @@ static int do_show(int argc, char **argv)
+ 	if (show_pinned) {
+ 		link_table = hashmap__new(hash_fn_for_key_as_id,
+ 					  equal_fn_for_key_as_id, NULL);
+-		if (!link_table) {
++		if (IS_ERR(link_table)) {
+ 			p_err("failed to create hashmap for pinned paths");
+ 			return -1;
+ 		}
+diff --git a/tools/bpf/bpftool/map.c b/tools/bpf/bpftool/map.c
+index cae1f1119296..af83ae37d247 100644
+--- a/tools/bpf/bpftool/map.c
++++ b/tools/bpf/bpftool/map.c
+@@ -698,7 +698,7 @@ static int do_show(int argc, char **argv)
+ 	if (show_pinned) {
+ 		map_table = hashmap__new(hash_fn_for_key_as_id,
+ 					 equal_fn_for_key_as_id, NULL);
+-		if (!map_table) {
++		if (IS_ERR(map_table)) {
+ 			p_err("failed to create hashmap for pinned paths");
+ 			return -1;
+ 		}
+diff --git a/tools/bpf/bpftool/pids.c b/tools/bpf/bpftool/pids.c
+index 56b598eee043..7c384d10e95f 100644
+--- a/tools/bpf/bpftool/pids.c
++++ b/tools/bpf/bpftool/pids.c
+@@ -1,6 +1,7 @@
+ // SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+ /* Copyright (C) 2020 Facebook */
+ #include <errno.h>
++#include <linux/err.h>
+ #include <stdbool.h>
+ #include <stdio.h>
+ #include <stdlib.h>
+@@ -101,7 +102,7 @@ int build_obj_refs_table(struct hashmap **map, enum bpf_obj_type type)
+ 	libbpf_print_fn_t default_print;
+ 
+ 	*map = hashmap__new(hash_fn_for_key_as_id, equal_fn_for_key_as_id, NULL);
+-	if (!*map) {
++	if (IS_ERR(*map)) {
+ 		p_err("failed to create hashmap for PID references");
+ 		return -1;
+ 	}
+diff --git a/tools/bpf/bpftool/prog.c b/tools/bpf/bpftool/prog.c
+index 6ccd17b8eb56..41ed566e8c73 100644
+--- a/tools/bpf/bpftool/prog.c
++++ b/tools/bpf/bpftool/prog.c
+@@ -571,7 +571,7 @@ static int do_show(int argc, char **argv)
+ 	if (show_pinned) {
+ 		prog_table = hashmap__new(hash_fn_for_key_as_id,
+ 					  equal_fn_for_key_as_id, NULL);
+-		if (!prog_table) {
++		if (IS_ERR(prog_table)) {
+ 			p_err("failed to create hashmap for pinned paths");
+ 			return -1;
+ 		}
 -- 
 2.34.1
 
