@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D1E63C35276
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:22:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 13C8BC4332F
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:22:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1587132AbiDFAHm (ORCPT
+        id S1587638AbiDFAJq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 20:07:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39548 "EHLO
+        Tue, 5 Apr 2022 20:09:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50434 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348922AbiDEJss (ORCPT
+        with ESMTP id S1358101AbiDEK16 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:48:48 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5631EE4F0;
-        Tue,  5 Apr 2022 02:37:35 -0700 (PDT)
+        Tue, 5 Apr 2022 06:27:58 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3921D6B50F;
+        Tue,  5 Apr 2022 03:15:34 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8227561368;
-        Tue,  5 Apr 2022 09:37:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 94A0EC385A0;
-        Tue,  5 Apr 2022 09:37:34 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DEDE9B81C8B;
+        Tue,  5 Apr 2022 10:15:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 41570C385A0;
+        Tue,  5 Apr 2022 10:15:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649151454;
-        bh=QNoGFnLDPZWBXQwk0TSwDZMOh2bX8rqDTA3X0EL9tfA=;
+        s=korg; t=1649153731;
+        bh=kWQrwV1MfL60Okd0PFTHoSCfRCve5OyjmLT8XqxXrUY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Igt+Tl4rZJy5vI89+QkHjKxQMcS8qkqvRUPb7kwJP3i6KI6snBFAPqjDTr6kRqzff
-         0PXi78UdTDc8UHSFv/vtoMabTBinamW93+cX0TFszIOqJtSSz4SkHVkXPc/rUobeEm
-         f64yJcAUWCzOh+KD6B3CAy8W0Q2lqDyiCSWzrOtc=
+        b=s9z5sIqcri+tV4l6OllnG42Ad3mbvBwgPh/LmCvLLo+1t51wLdT1g01gki1z5L1LF
+         wxOZTpB4I+hcxApZSucXwUs0edLAuP1vJlH/oK2xFT1CsD9VNBTSNmZoVrPAKWX3+o
+         RN7ENbC4MRso4sli2FCaLjzmFasiLu6HLrnRLBEk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Lorenzo Bianconi <lorenzo@kernel.org>,
         Felix Fietkau <nbd@nbd.name>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 422/913] mt76: mt7915: use proper aid value in mt7915_mcu_wtbl_generic_tlv in sta mode
-Date:   Tue,  5 Apr 2022 09:24:44 +0200
-Message-Id: <20220405070352.495259947@linuxfoundation.org>
+Subject: [PATCH 5.10 289/599] mt76: mt7603: check sta_rates pointer in mt7603_sta_rate_tbl_update
+Date:   Tue,  5 Apr 2022 09:29:43 +0200
+Message-Id: <20220405070307.434281492@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
+References: <20220405070258.802373272@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,37 +51,33 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Lorenzo Bianconi <lorenzo@kernel.org>
 
-[ Upstream commit a56b1b0f145ef2d6bb9312dedf3ab8558ef50a5b ]
+[ Upstream commit fc8e2c707ce11c8ec2e992885b0d53a5e04031ac ]
 
-mac80211 provides aid in vif->bss_conf.aid for sta mode and not in
-sta->aid. Fix mt7915_mcu_wtbl_generic_tlv routine using proper value for
-aid in sta mode.
+Check sta_rates pointer value in mt7603_sta_rate_tbl_update routine
+since minstrel_ht_update_rates can fail allocating rates array.
 
-Fixes: e57b7901469fc ("mt76: add mac80211 driver for MT7915 PCIe-based chipsets")
+Fixes: c8846e1015022 ("mt76: add driver for MT7603E and MT7628/7688")
 Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
 Signed-off-by: Felix Fietkau <nbd@nbd.name>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/mediatek/mt76/mt7915/mcu.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ drivers/net/wireless/mediatek/mt76/mt7603/main.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/net/wireless/mediatek/mt76/mt7915/mcu.c b/drivers/net/wireless/mediatek/mt76/mt7915/mcu.c
-index 7440f2b443ec..b157db9f8903 100644
---- a/drivers/net/wireless/mediatek/mt76/mt7915/mcu.c
-+++ b/drivers/net/wireless/mediatek/mt76/mt7915/mcu.c
-@@ -1396,8 +1396,11 @@ mt7915_mcu_wtbl_generic_tlv(struct sk_buff *skb, struct ieee80211_vif *vif,
- 	generic = (struct wtbl_generic *)tlv;
+diff --git a/drivers/net/wireless/mediatek/mt76/mt7603/main.c b/drivers/net/wireless/mediatek/mt76/mt7603/main.c
+index c9226dceb510..bdff89cc3105 100644
+--- a/drivers/net/wireless/mediatek/mt76/mt7603/main.c
++++ b/drivers/net/wireless/mediatek/mt76/mt7603/main.c
+@@ -618,6 +618,9 @@ mt7603_sta_rate_tbl_update(struct ieee80211_hw *hw, struct ieee80211_vif *vif,
+ 	struct ieee80211_sta_rates *sta_rates = rcu_dereference(sta->rates);
+ 	int i;
  
- 	if (sta) {
-+		if (vif->type == NL80211_IFTYPE_STATION)
-+			generic->partial_aid = cpu_to_le16(vif->bss_conf.aid);
-+		else
-+			generic->partial_aid = cpu_to_le16(sta->aid);
- 		memcpy(generic->peer_addr, sta->addr, ETH_ALEN);
--		generic->partial_aid = cpu_to_le16(sta->aid);
- 		generic->muar_idx = mvif->omac_idx;
- 		generic->qos = sta->wme;
- 	} else {
++	if (!sta_rates)
++		return;
++
+ 	spin_lock_bh(&dev->mt76.lock);
+ 	for (i = 0; i < ARRAY_SIZE(msta->rates); i++) {
+ 		msta->rates[i].idx = sta_rates->rate[i].idx;
 -- 
 2.34.1
 
