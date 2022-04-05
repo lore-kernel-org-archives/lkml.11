@@ -2,45 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 91895C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 11:45:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 64BD7C4321E
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 11:45:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378846AbiDELjV (ORCPT
+        id S1378870AbiDELjg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 07:39:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51012 "EHLO
+        Tue, 5 Apr 2022 07:39:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46832 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244716AbiDEIwf (ORCPT
+        with ESMTP id S244717AbiDEIwf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Apr 2022 04:52:35 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6CED31705A;
-        Tue,  5 Apr 2022 01:42:27 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5D9B1AF0D;
+        Tue,  5 Apr 2022 01:42:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 07B986117A;
-        Tue,  5 Apr 2022 08:42:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 13179C385A1;
-        Tue,  5 Apr 2022 08:42:25 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 984D1B81A32;
+        Tue,  5 Apr 2022 08:42:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 04A5BC385A0;
+        Tue,  5 Apr 2022 08:42:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649148146;
-        bh=QdZzKpYR0Ak0Jkw0efMXTY/uKg67msQsuJfRVbPyVW4=;
+        s=korg; t=1649148160;
+        bh=3jS/1+1QYAeYKa8cy05dKsvo8e3E1btsbL4192s26p4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=eSkkqc+jHI3C2me6fhr0oC5VnrhTN74dSo04TOaHbt7X9ooODrYQ5Qqyfx8ipvATY
-         l0lD04uBewF+hRuWEeF65w6pFlorX+WnBOUGu8Y43EC5W088zV0hUHsfNk4drMLfrG
-         WkWfZQb64aYuItRSTIWiIuP5/T/c5q5/C0/+1IDY=
+        b=gSA4FXOmo8JlRLEb+/omQfIEConP6H+p4DIbg0isqJT4+f+gcjUsaUlP/r3/kzrGQ
+         TTB3fJdL5XWYsa7rGnJw+ZGlzlscKFcggom/8z8ZrDPP6UGmE2vWDmd49UgAq4nYx1
+         HRiiuJ2sbR4W4nRgj5bK0QYYQPm4eem+4bF5p1WA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?D=C4=81vis=20Mos=C4=81ns?= <davispuh@gmail.com>,
-        John Allen <john.allen@amd.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
+        stable@vger.kernel.org, Jens Axboe <axboe@kernel.dk>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0250/1017] crypto: ccp - ccp_dmaengine_unregister release dma channels
-Date:   Tue,  5 Apr 2022 09:19:23 +0200
-Message-Id: <20220405070401.682234856@linuxfoundation.org>
+Subject: [PATCH 5.16 0255/1017] io_uring: dont check unrelated req->open.how in accept request
+Date:   Tue,  5 Apr 2022 09:19:28 +0200
+Message-Id: <20220405070401.832562237@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -52,64 +49,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dāvis Mosāns <davispuh@gmail.com>
+From: Jens Axboe <axboe@kernel.dk>
 
-[ Upstream commit 54cce8ecb9254f971b40a72911c6da403720a2d2 ]
+[ Upstream commit adf3a9e9f556613197583a1884f0de40a8bb6fb9 ]
 
-ccp_dmaengine_register adds dma_chan->device_node to dma_dev->channels list
-but ccp_dmaengine_unregister didn't remove them.
-That can cause crashes in various dmaengine methods that tries to use dma_dev->channels
+Looks like a victim of too much copy/paste, we should not be looking
+at req->open.how in accept. The point is to check CLOEXEC and error
+out, which we don't invalid direct descriptors on exec. Hence any
+attempt to get a direct descriptor with CLOEXEC is invalid.
 
-Fixes: 58ea8abf4904 ("crypto: ccp - Register the CCP as a DMA...")
-Signed-off-by: Dāvis Mosāns <davispuh@gmail.com>
-Acked-by: John Allen <john.allen@amd.com>
-Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+No harm is done here, as req->open.how.flags overlaps with
+req->accept.flags, but it's very confusing and might change if either of
+those command structs are modified.
+
+Fixes: aaa4db12ef7b ("io_uring: accept directly into fixed file table")
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/crypto/ccp/ccp-dmaengine.c | 16 ++++++++++++++++
- 1 file changed, 16 insertions(+)
+ fs/io_uring.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/drivers/crypto/ccp/ccp-dmaengine.c b/drivers/crypto/ccp/ccp-dmaengine.c
-index d718db224be4..7d4b4ad1db1f 100644
---- a/drivers/crypto/ccp/ccp-dmaengine.c
-+++ b/drivers/crypto/ccp/ccp-dmaengine.c
-@@ -632,6 +632,20 @@ static int ccp_terminate_all(struct dma_chan *dma_chan)
- 	return 0;
- }
+diff --git a/fs/io_uring.c b/fs/io_uring.c
+index 783d7380331b..974f6fb327e7 100644
+--- a/fs/io_uring.c
++++ b/fs/io_uring.c
+@@ -5178,8 +5178,7 @@ static int io_accept_prep(struct io_kiocb *req, const struct io_uring_sqe *sqe)
+ 	accept->nofile = rlimit(RLIMIT_NOFILE);
  
-+static void ccp_dma_release(struct ccp_device *ccp)
-+{
-+	struct ccp_dma_chan *chan;
-+	struct dma_chan *dma_chan;
-+	unsigned int i;
-+
-+	for (i = 0; i < ccp->cmd_q_count; i++) {
-+		chan = ccp->ccp_dma_chan + i;
-+		dma_chan = &chan->dma_chan;
-+		tasklet_kill(&chan->cleanup_tasklet);
-+		list_del_rcu(&dma_chan->device_node);
-+	}
-+}
-+
- int ccp_dmaengine_register(struct ccp_device *ccp)
- {
- 	struct ccp_dma_chan *chan;
-@@ -736,6 +750,7 @@ int ccp_dmaengine_register(struct ccp_device *ccp)
- 	return 0;
- 
- err_reg:
-+	ccp_dma_release(ccp);
- 	kmem_cache_destroy(ccp->dma_desc_cache);
- 
- err_cache:
-@@ -752,6 +767,7 @@ void ccp_dmaengine_unregister(struct ccp_device *ccp)
- 		return;
- 
- 	dma_async_device_unregister(dma_dev);
-+	ccp_dma_release(ccp);
- 
- 	kmem_cache_destroy(ccp->dma_desc_cache);
- 	kmem_cache_destroy(ccp->dma_cmd_cache);
+ 	accept->file_slot = READ_ONCE(sqe->file_index);
+-	if (accept->file_slot && ((req->open.how.flags & O_CLOEXEC) ||
+-				  (accept->flags & SOCK_CLOEXEC)))
++	if (accept->file_slot && (accept->flags & SOCK_CLOEXEC))
+ 		return -EINVAL;
+ 	if (accept->flags & ~(SOCK_CLOEXEC | SOCK_NONBLOCK))
+ 		return -EINVAL;
 -- 
 2.34.1
 
