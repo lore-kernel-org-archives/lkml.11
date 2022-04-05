@@ -2,128 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 68A64C43217
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 02:19:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C7240C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 02:19:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1847305AbiDFCRQ (ORCPT
+        id S1847383AbiDFCR6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 22:17:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36978 "EHLO
+        Tue, 5 Apr 2022 22:17:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39478 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344894AbiDEUVu (ORCPT
+        with ESMTP id S1345974AbiDEUWB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 16:21:50 -0400
-Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.126.135])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8730B6D1BB;
-        Tue,  5 Apr 2022 13:01:22 -0700 (PDT)
-Received: from leknes.fjasle.eu ([46.142.97.95]) by mrelayeu.kundenserver.de
- (mreue010 [212.227.15.167]) with ESMTPSA (Nemesis) id
- 1MLAAs-1nKqR22ZFa-00IBZv; Tue, 05 Apr 2022 22:00:46 +0200
-Received: by leknes.fjasle.eu (Postfix, from userid 1000)
-        id AB29A3C088; Tue,  5 Apr 2022 22:00:39 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=fjasle.eu; s=mail;
-        t=1649188842; bh=Jp5v0unMM8TX1zb3fmwvi3+6Bc6OHGfiq1HG+GUHVyw=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=HCnghiuB+Wzr1v0Xj7rtxiS0alkX0ofzpVxIAQD6kCNeeJKrRBdzWsEoYLV4WdhGW
-         cK8WpcDjJixQEKeB9CidDTnKmCqBqfYq9K7JWqmuDdZOl3byBsD6cAH/2nOkdkLUED
-         CfyTrc2leT65LiIFaSS13YAg+nRUACsIHfjO8BR8=
-Date:   Tue, 5 Apr 2022 22:00:39 +0200
-From:   Nicolas Schier <nicolas@fjasle.eu>
-To:     Masahiro Yamada <masahiroy@kernel.org>
-Cc:     linux-kbuild@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Michal Marek <michal.lkml@markovi.net>,
-        Nick Desaulniers <ndesaulniers@google.com>
-Subject: Re: [PATCH v2 01/10] kbuild: factor out genksyms command from
- cmd_gensymtypes_{c,S}
-Message-ID: <Ykyf51yQ78g71veR@fjasle.eu>
-References: <20220405113359.2880241-1-masahiroy@kernel.org>
- <20220405113359.2880241-2-masahiroy@kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220405113359.2880241-2-masahiroy@kernel.org>
-X-Provags-ID: V03:K1:oSARpcPyymoleg6RyJVu0DeVUrsJvspIYHiB+agK3g3YJzi5n23
- 863JDClt1QRA49iVriE0QcZMU2v6b2K7KfzkkuLmqLyAIpGbVwpjHjseVGhwynDWQrbQYC4
- I2OVQYgcg/LNYPEPv+xs66YzmYkcsrmOiR+7fJxqGB0+W81LWCfk8CGxLJHYumkD35jqqA8
- aeaGGVTrYnv7TOF/G7Fvw==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:N/nJZWxHmG4=:MQI6zQKrjr6jugH0+jpOEF
- wzao4WqD3FuYGxHoo/ydg8lwOgcOEQ6JkPuJyfgyweswbZnCO9LIRW0L4pPTYjI19WEcRrpsD
- ivMrK1eDaO5zabhjp8FvzcZrJ59SmEvp730GNA5kfCKbBBwK6UV0lqW29w7Cf+BfeS7rvC3ek
- 8oj9iMH/Vk32LfhsDOxY5NG4jR8sUv6YJF7Rd964q9pm1YPYEEdhgLfN4z1KXflWtl4h0jhQ8
- uS0ThIRnvDkkyqUWpare0mu446VGCw5SGpxXnQv0AC+diuKT55QQMSER4sVTbjLe/vMx3XISZ
- QKppKbLZeCyN22CoZRhmoa9PUXCI392eEfn4yMj754Cd2o/tlklwvVCEbK2UtdSvIlV/0nthb
- Zi66yxUV4TvymjT+kBVhRDn58REIHUAuvv9EPH8ro7GJ29dkRMHfNjasqGaMCQGO7k41zaAuT
- l3UOMnoJ8zTqBERxEYDgjH+e3xqyQXX9wNLrMB+LL1HvtNCXLUkJ68UF7dX6s5lnC62OPi0d0
- 5JqKTNZqfPp7yreDWBx8j7o7IqP6O1Uu9m7r9r7xJYkj6DNcqpHW2EfGbVqCL5MZV8ia5WneA
- TbidzkC/Eg2rK6qiVBYz8hl5H687jYGCdL0QOGMBhDp3JATWZ5hP9s4LxYiMc20Pq8JGl1JnQ
- 6UoThxkOHeOo8y3i3cJe6sGGWH1QLn6GL0O9mvoIHYBlatqByOkRRkC5AIRUUnw1NZe0=
+        Tue, 5 Apr 2022 16:22:01 -0400
+Received: from finn.localdomain (finn.gateworks.com [108.161.129.64])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A99976D4EC;
+        Tue,  5 Apr 2022 13:04:45 -0700 (PDT)
+Received: from 068-189-091-139.biz.spectrum.com ([68.189.91.139] helo=tharvey.pdc.gateworks.com)
+        by finn.localdomain with esmtp (Exim 4.93)
+        (envelope-from <tharvey@gateworks.com>)
+        id 1nbpPp-00CFKI-Ep; Tue, 05 Apr 2022 20:04:37 +0000
+From:   Tim Harvey <tharvey@gateworks.com>
+To:     Rob Herring <robh+dt@kernel.org>, Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org
+Cc:     Tim Harvey <tharvey@gateworks.com>
+Subject: [PATCH] imx8mm-venice-gw7902: move UART gpio config into hog group
+Date:   Tue,  5 Apr 2022 13:04:35 -0700
+Message-Id: <20220405200435.18797-1-tharvey@gateworks.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 05, 2022 at 08:33:49PM +0900 Masahiro Yamada wrote:
-> The genksyms command part in cmd_gensymtypes_{c,S} is duplicated.
-> Factor it out into the 'genksyms' macro.
-> 
-> For the readability, I slightly refactor the arguments to genksyms.
-> 
-> Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
-> ---
+Move UART related GPIO into hog group so that they still are pinmuxed
+even if the uart driver is not probed.
 
-Reviewed-by: Nicolas Schier <nicolas@fjasle.eu>
+Signed-off-by: Tim Harvey <tharvey@gateworks.com>
+---
+ .../boot/dts/freescale/imx8mm-venice-gw7902.dts    | 14 +++++---------
+ 1 file changed, 5 insertions(+), 9 deletions(-)
 
-> 
-> Changes in v2:
->   - Fix the location of the closing parenthesis
-> 
->  scripts/Makefile.build | 19 ++++++++-----------
->  1 file changed, 8 insertions(+), 11 deletions(-)
-> 
-> diff --git a/scripts/Makefile.build b/scripts/Makefile.build
-> index 9717e6f6fb31..31e0e33dfe5d 100644
-> --- a/scripts/Makefile.build
-> +++ b/scripts/Makefile.build
-> @@ -125,13 +125,14 @@ cmd_cpp_i_c       = $(CPP) $(c_flags) -o $@ $<
->  $(obj)/%.i: $(src)/%.c FORCE
->  	$(call if_changed_dep,cpp_i_c)
->  
-> +genksyms = scripts/genksyms/genksyms		\
-> +	$(if $(1), -T $(2))			\
-> +	$(if $(CONFIG_MODULE_REL_CRCS), -R)	\
-> +	$(if $(KBUILD_PRESERVE), -p)		\
-> +	-r $(or $(wildcard $(2:.symtypes=.symref)), /dev/null)
-> +
->  # These mirror gensymtypes_S and co below, keep them in synch.
-> -cmd_gensymtypes_c =                                                         \
-> -    $(CPP) -D__GENKSYMS__ $(c_flags) $< |                                   \
-> -    scripts/genksyms/genksyms $(if $(1), -T $(2))                           \
-> -     $(patsubst y,-R,$(CONFIG_MODULE_REL_CRCS))                             \
-> -     $(if $(KBUILD_PRESERVE),-p)                                            \
-> -     -r $(firstword $(wildcard $(2:.symtypes=.symref) /dev/null))
-> +cmd_gensymtypes_c = $(CPP) -D__GENKSYMS__ $(c_flags) $< | $(genksyms)
->  
->  quiet_cmd_cc_symtypes_c = SYM $(quiet_modtag) $@
->  cmd_cc_symtypes_c =                                                         \
-> @@ -344,11 +345,7 @@ cmd_gensymtypes_S =                                                         \
->      $(CPP) $(a_flags) $< |                                                  \
->       grep "\<___EXPORT_SYMBOL\>" |                                          \
->       sed 's/.*___EXPORT_SYMBOL[[:space:]]*\([a-zA-Z0-9_]*\)[[:space:]]*,.*/EXPORT_SYMBOL(\1);/' ; } | \
-> -    $(CPP) -D__GENKSYMS__ $(c_flags) -xc - |                                \
-> -    scripts/genksyms/genksyms $(if $(1), -T $(2))                           \
-> -     $(patsubst y,-R,$(CONFIG_MODULE_REL_CRCS))                             \
-> -     $(if $(KBUILD_PRESERVE),-p)                                            \
-> -     -r $(firstword $(wildcard $(2:.symtypes=.symref) /dev/null))
-> +    $(CPP) -D__GENKSYMS__ $(c_flags) -xc - | $(genksyms)
->  
->  quiet_cmd_cc_symtypes_S = SYM $(quiet_modtag) $@
->  cmd_cc_symtypes_S =                                                         \
-> -- 
-> 2.32.0
-> 
-> 
-
+diff --git a/arch/arm64/boot/dts/freescale/imx8mm-venice-gw7902.dts b/arch/arm64/boot/dts/freescale/imx8mm-venice-gw7902.dts
+index edf0c7aaaef0..49e15a671b67 100644
+--- a/arch/arm64/boot/dts/freescale/imx8mm-venice-gw7902.dts
++++ b/arch/arm64/boot/dts/freescale/imx8mm-venice-gw7902.dts
+@@ -641,7 +641,7 @@
+ /* RS232/RS485/RS422 selectable */
+ &uart1 {
+ 	pinctrl-names = "default";
+-	pinctrl-0 = <&pinctrl_uart1>, <&pinctrl_uart1_gpio>;
++	pinctrl-0 = <&pinctrl_uart1>;
+ 	rts-gpios = <&gpio4 10 GPIO_ACTIVE_LOW>;
+ 	cts-gpios = <&gpio4 11 GPIO_ACTIVE_LOW>;
+ 	status = "okay";
+@@ -742,6 +742,10 @@
+ 			MX8MM_IOMUXC_SPDIF_EXT_CLK_GPIO5_IO5	0x40000041 /* MIPI_GPIO2 */
+ 			MX8MM_IOMUXC_SPDIF_RX_GPIO5_IO4		0x40000041 /* MIPI_GPIO3/PWM2 */
+ 			MX8MM_IOMUXC_SPDIF_TX_GPIO5_IO3		0x40000041 /* MIPI_GPIO4/PWM3 */
++			MX8MM_IOMUXC_SAI2_TXD0_GPIO4_IO26	0x40000110 /* UART1_HALF */
++			MX8MM_IOMUXC_SAI2_TXC_GPIO4_IO25	0x40000110 /* UART1_TERM */
++			MX8MM_IOMUXC_SAI2_RXD0_GPIO4_IO23	0x40000110 /* UART1_RS485 */
++
+ 		>;
+ 	};
+ 
+@@ -886,14 +890,6 @@
+ 		>;
+ 	};
+ 
+-	pinctrl_uart1_gpio: uart1gpiogrp {
+-		fsl,pins = <
+-			MX8MM_IOMUXC_SAI2_TXD0_GPIO4_IO26	0x40000110 /* HALF */
+-			MX8MM_IOMUXC_SAI2_TXC_GPIO4_IO25	0x40000110 /* TERM */
+-			MX8MM_IOMUXC_SAI2_RXD0_GPIO4_IO23	0x40000110 /* RS485 */
+-		>;
+-	};
+-
+ 	pinctrl_uart2: uart2grp {
+ 		fsl,pins = <
+ 			MX8MM_IOMUXC_UART2_RXD_UART2_DCE_RX	0x140
 -- 
-epost|xmpp: nicolas@fjasle.eu          irc://oftc.net/nsc
-↳ gpg: 18ed 52db e34f 860e e9fb  c82b 7d97 0932 55a0 ce7f
-     -- frykten for herren er opphav til kunnskap --
+2.17.1
+
