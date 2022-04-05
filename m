@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 927E6C35296
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:21:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1EC9AC47089
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:21:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234543AbiDEIVT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 04:21:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55528 "EHLO
+        id S239846AbiDEIVH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 04:21:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43932 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235571AbiDEH7v (ORCPT
+        with ESMTP id S235633AbiDEH74 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 03:59:51 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 784F040A19;
-        Tue,  5 Apr 2022 00:55:37 -0700 (PDT)
+        Tue, 5 Apr 2022 03:59:56 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF6841AF1B;
+        Tue,  5 Apr 2022 00:56:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1541D615CD;
-        Tue,  5 Apr 2022 07:55:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1AA03C340EE;
-        Tue,  5 Apr 2022 07:55:35 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9B517B81B18;
+        Tue,  5 Apr 2022 07:56:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DF1AEC340EE;
+        Tue,  5 Apr 2022 07:56:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649145336;
-        bh=nIPnSGOQ2e/NQ2OK6jruFrUnda7HrbHSyCuSBx/dLX0=;
+        s=korg; t=1649145391;
+        bh=arK/Jdx6Jya54jloe0rN7JBuzPaeDIP9HfZ2GK9PVNg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bCoDM4U7gYWMXGnO0Bbme+ou1XxRwi13FLWHhgmV9ljU2ijaX3TkcXpQqp2zWiPSe
-         29bNcIhkhtsfk6zUQyBMiCCo80+8svCFG1jjECqzamT3QpPL3xioleRd6kibclS8SB
-         qdxuNzpxyPLVHuAqHuy5XAvPvLFxnHZTMUt7QrFc=
+        b=qx/E1JVrZ42YgazBO1J7fKevAowx5vgudt8gH3MP1M1VxMpEEpGlyFrjJD/AF1OGy
+         ACVXEL+sho1T+/BhZeYHGlpTIHqyl6VseothFnUf0o1+bp/DTXlr7Gtq+CuOd3tmXA
+         TdTd2YBpjVx66/MaCSIR0OLIGf3ndg7DWVZlTv/8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Muhammad Usama Anjum <usama.anjum@collabora.com>,
-        Alistair Popple <apopple@nvidia.com>,
-        Shuah Khan <skhan@linuxfoundation.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0368/1126] selftests: vm: remove dependecy from internal kernel macros
-Date:   Tue,  5 Apr 2022 09:18:35 +0200
-Message-Id: <20220405070418.428636199@linuxfoundation.org>
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Nishanth Menon <nm@ti.com>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 0340/1126] firmware: ti_sci: Fix compilation failure when CONFIG_TI_SCI_PROTOCOL is not defined
+Date:   Tue,  5 Apr 2022 09:18:07 +0200
+Message-Id: <20220405070417.595774113@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -51,51 +49,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Muhammad Usama Anjum <usama.anjum@collabora.com>
+From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 
-[ Upstream commit 681696862bc1823595c05960a83766d1aa965c17 ]
+[ Upstream commit 043cfff99a18933fda2fb2e163daee73cc07910b ]
 
-The defination of swap() is used from kernel's internal header when this
-test is built in source tree. The build fails when this test is built
-out of source tree as defination of swap() isn't found. Selftests
-shouldn't depend on kernel's internal header files. They can only depend
-on uapi header files. Add the defination of swap() to fix the build
-error:
+Remove an extra ";" which breaks compilation.
 
-	gcc -Wall  -I/linux_mainline2/build/usr/include -no-pie    userfaultfd.c -lrt -lpthread -o /linux_mainline2/build/kselftest/vm/userfaultfd
-	userfaultfd.c: In function ‘userfaultfd_stress’:
-	userfaultfd.c:1530:3: warning: implicit declaration of function ‘swap’; did you mean ‘swab’? [-Wimplicit-function-declaration]
-	 1530 |   swap(area_src, area_dst);
-	      |   ^~~~
-	      |   swab
-	/usr/bin/ld: /tmp/cclUUH7V.o: in function `userfaultfd_stress':
-	userfaultfd.c:(.text+0x4d64): undefined reference to `swap'
-	/usr/bin/ld: userfaultfd.c:(.text+0x4d82): undefined reference to `swap'
-	collect2: error: ld returned 1 exit status
-
-Fixes: 2c769ed7137a ("tools/testing/selftests/vm/userfaultfd.c: use swap() to make code cleaner")
-Signed-off-by: Muhammad Usama Anjum <usama.anjum@collabora.com>
-Reviewed-by: Alistair Popple <apopple@nvidia.com>
-Signed-off-by: Shuah Khan <skhan@linuxfoundation.org>
+Fixes: 53bf2b0e4e4c ("firmware: ti_sci: Add support for getting resource with subtype")
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Signed-off-by: Nishanth Menon <nm@ti.com>
+Link: https://lore.kernel.org/r/e6c3cb793e1a6a2a0ae2528d5a5650dfe6a4b6ff.1640276505.git.christophe.jaillet@wanadoo.fr
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/testing/selftests/vm/userfaultfd.c | 3 +++
- 1 file changed, 3 insertions(+)
+ include/linux/soc/ti/ti_sci_protocol.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/tools/testing/selftests/vm/userfaultfd.c b/tools/testing/selftests/vm/userfaultfd.c
-index 3fc1d2ee2948..c964bfe9fbcd 100644
---- a/tools/testing/selftests/vm/userfaultfd.c
-+++ b/tools/testing/selftests/vm/userfaultfd.c
-@@ -120,6 +120,9 @@ struct uffd_stats {
- 				 ~(unsigned long)(sizeof(unsigned long long) \
- 						  -  1)))
+diff --git a/include/linux/soc/ti/ti_sci_protocol.h b/include/linux/soc/ti/ti_sci_protocol.h
+index 0aad7009b50e..bd0d11af76c5 100644
+--- a/include/linux/soc/ti/ti_sci_protocol.h
++++ b/include/linux/soc/ti/ti_sci_protocol.h
+@@ -645,7 +645,7 @@ devm_ti_sci_get_of_resource(const struct ti_sci_handle *handle,
  
-+#define swap(a, b) \
-+	do { typeof(a) __tmp = (a); (a) = (b); (b) = __tmp; } while (0)
-+
- const char *examples =
-     "# Run anonymous memory test on 100MiB region with 99999 bounces:\n"
-     "./userfaultfd anon 100 99999\n\n"
+ static inline struct ti_sci_resource *
+ devm_ti_sci_get_resource(const struct ti_sci_handle *handle, struct device *dev,
+-			 u32 dev_id, u32 sub_type);
++			 u32 dev_id, u32 sub_type)
+ {
+ 	return ERR_PTR(-EINVAL);
+ }
 -- 
 2.34.1
 
