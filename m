@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 68E43C4167B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 52404C4332F
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 09:12:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240583AbiDEJGM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 05:06:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45384 "EHLO
+        id S238992AbiDEJFf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 05:05:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34810 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238477AbiDEITI (ORCPT
+        with ESMTP id S238265AbiDEISq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:19:08 -0400
+        Tue, 5 Apr 2022 04:18:46 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9246DDF0B;
-        Tue,  5 Apr 2022 01:09:00 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C67B26C964;
+        Tue,  5 Apr 2022 01:08:28 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id F2B0EB81A37;
-        Tue,  5 Apr 2022 08:08:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 52D37C385A2;
-        Tue,  5 Apr 2022 08:08:57 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 628A9B81A37;
+        Tue,  5 Apr 2022 08:08:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CCE64C385A0;
+        Tue,  5 Apr 2022 08:08:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649146137;
-        bh=Mrz80BjJ2Jh+RPjc7Mig+slCavA5b7jhX6T0oLaoi4A=;
+        s=korg; t=1649146107;
+        bh=3DZlFMKW8AtnIFijjSZArz2JKQNQA0Cg5vX6FoyXY4U=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1mbU8ruuAhLaNIk1dBLpXVCzJC2rKkhV2tIfyf21nn/Z0p9RtmT9xm0Jj/BKR8+xn
-         7YCWP9RGQ18x+ZL+oWkwNP8T/lN43VDoNN4Dkoq/fAxVFhQXCOCSERnQ5CibfhAPG/
-         wtjj1dJyLRbV8vVzYnSzvuoG5v19QCXQuOxbECho=
+        b=xMea7LW0Z22DKmnGPSQEXN6PSo8XJ5IVA4jRgoX35BVokGUjgRhTrrF3eYQoOuYbn
+         byIXgy66uddktNIV2wlIUXaLEP5hLuEel6Y2XVLJCK8z8DpmWL6dkwJaxfObgH5iHN
+         rZubE1G2iQ+Iw/L4d8BXO0zVtBYB4t5Pyejct8UI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Lee Jones <lee.jones@linaro.org>,
-        Matti Vaittinen <mazziesaccount@gmail.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>,
-        Sebastian Reichel <sebastian.reichel@collabora.com>,
+        stable@vger.kernel.org,
+        Sreekanth Reddy <sreekanth.reddy@broadcom.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0656/1126] power: ab8500_chargalg: Use CLOCK_MONOTONIC
-Date:   Tue,  5 Apr 2022 09:23:23 +0200
-Message-Id: <20220405070426.885662479@linuxfoundation.org>
+Subject: [PATCH 5.17 0646/1126] scsi: mpt3sas: Fix incorrect 4GB boundary check
+Date:   Tue,  5 Apr 2022 09:23:13 +0200
+Message-Id: <20220405070426.592429846@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -52,56 +50,110 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Linus Walleij <linus.walleij@linaro.org>
+From: Sreekanth Reddy <sreekanth.reddy@broadcom.com>
 
-[ Upstream commit c22fca40522e2be8af168f3087d87d85e404ea72 ]
+[ Upstream commit 208cc9fe6f21112b5cc6cb87065fb8ab66e79316 ]
 
-The HRTimer in the AB8500 charging code is using CLOCK_REALTIME
-to set an alarm some hours forward in time +/- 5 min for a safety
-timer.
+The driver must perform its 4GB boundary check using the pool's DMA address
+instead of using the virtual address.
 
-I have observed that this will sometimes fire sporadically
-early when charging a battery with the result that
-charging stops.
-
-As CLOCK_REALTIME can be subject to adjustments of time from
-sources such as NTP, this cannot be trusted and will likely
-for example fire events if the clock is set forward some hours
-by say NTP.
-
-Use CLOCK_MONOTONIC as indicated in other instances and the
-problem goes away. Also initialize the timer to REL mode
-as this is what will be used later.
-
-Fixes: 257107ae6b9b ("ab8500-chargalg: Use hrtimer")
-Cc: Lee Jones <lee.jones@linaro.org>
-Suggested-by: Matti Vaittinen <mazziesaccount@gmail.com>
-Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
-Reviewed-by: Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>
-Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
+Link: https://lore.kernel.org/r/20220303140230.13098-1-sreekanth.reddy@broadcom.com
+Fixes: d6adc251dd2f ("scsi: mpt3sas: Force PCIe scatterlist allocations to be within same 4 GB region")
+Signed-off-by: Sreekanth Reddy <sreekanth.reddy@broadcom.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/power/supply/ab8500_chargalg.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/scsi/mpt3sas/mpt3sas_base.c | 25 ++++++++++++-------------
+ 1 file changed, 12 insertions(+), 13 deletions(-)
 
-diff --git a/drivers/power/supply/ab8500_chargalg.c b/drivers/power/supply/ab8500_chargalg.c
-index bcf85ae6828e..da490e090ce4 100644
---- a/drivers/power/supply/ab8500_chargalg.c
-+++ b/drivers/power/supply/ab8500_chargalg.c
-@@ -2020,11 +2020,11 @@ static int ab8500_chargalg_probe(struct platform_device *pdev)
- 	psy_cfg.drv_data = di;
+diff --git a/drivers/scsi/mpt3sas/mpt3sas_base.c b/drivers/scsi/mpt3sas/mpt3sas_base.c
+index 76229b839560..fb5a3a348dbe 100644
+--- a/drivers/scsi/mpt3sas/mpt3sas_base.c
++++ b/drivers/scsi/mpt3sas/mpt3sas_base.c
+@@ -5736,14 +5736,13 @@ _base_release_memory_pools(struct MPT3SAS_ADAPTER *ioc)
+  */
  
- 	/* Initilialize safety timer */
--	hrtimer_init(&di->safety_timer, CLOCK_REALTIME, HRTIMER_MODE_ABS);
-+	hrtimer_init(&di->safety_timer, CLOCK_MONOTONIC, HRTIMER_MODE_REL);
- 	di->safety_timer.function = ab8500_chargalg_safety_timer_expired;
+ static int
+-mpt3sas_check_same_4gb_region(long reply_pool_start_address, u32 pool_sz)
++mpt3sas_check_same_4gb_region(dma_addr_t start_address, u32 pool_sz)
+ {
+-	long reply_pool_end_address;
++	dma_addr_t end_address;
  
- 	/* Initilialize maintenance timer */
--	hrtimer_init(&di->maintenance_timer, CLOCK_REALTIME, HRTIMER_MODE_ABS);
-+	hrtimer_init(&di->maintenance_timer, CLOCK_MONOTONIC, HRTIMER_MODE_REL);
- 	di->maintenance_timer.function =
- 		ab8500_chargalg_maintenance_timer_expired;
+-	reply_pool_end_address = reply_pool_start_address + pool_sz;
++	end_address = start_address + pool_sz - 1;
  
+-	if (upper_32_bits(reply_pool_start_address) ==
+-		upper_32_bits(reply_pool_end_address))
++	if (upper_32_bits(start_address) == upper_32_bits(end_address))
+ 		return 1;
+ 	else
+ 		return 0;
+@@ -5804,7 +5803,7 @@ _base_allocate_pcie_sgl_pool(struct MPT3SAS_ADAPTER *ioc, u32 sz)
+ 		}
+ 
+ 		if (!mpt3sas_check_same_4gb_region(
+-		    (long)ioc->pcie_sg_lookup[i].pcie_sgl, sz)) {
++		    ioc->pcie_sg_lookup[i].pcie_sgl_dma, sz)) {
+ 			ioc_err(ioc, "PCIE SGLs are not in same 4G !! pcie sgl (0x%p) dma = (0x%llx)\n",
+ 			    ioc->pcie_sg_lookup[i].pcie_sgl,
+ 			    (unsigned long long)
+@@ -5859,8 +5858,8 @@ _base_allocate_chain_dma_pool(struct MPT3SAS_ADAPTER *ioc, u32 sz)
+ 			    GFP_KERNEL, &ctr->chain_buffer_dma);
+ 			if (!ctr->chain_buffer)
+ 				return -EAGAIN;
+-			if (!mpt3sas_check_same_4gb_region((long)
+-			    ctr->chain_buffer, ioc->chain_segment_sz)) {
++			if (!mpt3sas_check_same_4gb_region(
++			    ctr->chain_buffer_dma, ioc->chain_segment_sz)) {
+ 				ioc_err(ioc,
+ 				    "Chain buffers are not in same 4G !!! Chain buff (0x%p) dma = (0x%llx)\n",
+ 				    ctr->chain_buffer,
+@@ -5896,7 +5895,7 @@ _base_allocate_sense_dma_pool(struct MPT3SAS_ADAPTER *ioc, u32 sz)
+ 	    GFP_KERNEL, &ioc->sense_dma);
+ 	if (!ioc->sense)
+ 		return -EAGAIN;
+-	if (!mpt3sas_check_same_4gb_region((long)ioc->sense, sz)) {
++	if (!mpt3sas_check_same_4gb_region(ioc->sense_dma, sz)) {
+ 		dinitprintk(ioc, pr_err(
+ 		    "Bad Sense Pool! sense (0x%p) sense_dma = (0x%llx)\n",
+ 		    ioc->sense, (unsigned long long) ioc->sense_dma));
+@@ -5929,7 +5928,7 @@ _base_allocate_reply_pool(struct MPT3SAS_ADAPTER *ioc, u32 sz)
+ 	    &ioc->reply_dma);
+ 	if (!ioc->reply)
+ 		return -EAGAIN;
+-	if (!mpt3sas_check_same_4gb_region((long)ioc->reply_free, sz)) {
++	if (!mpt3sas_check_same_4gb_region(ioc->reply_dma, sz)) {
+ 		dinitprintk(ioc, pr_err(
+ 		    "Bad Reply Pool! Reply (0x%p) Reply dma = (0x%llx)\n",
+ 		    ioc->reply, (unsigned long long) ioc->reply_dma));
+@@ -5964,7 +5963,7 @@ _base_allocate_reply_free_dma_pool(struct MPT3SAS_ADAPTER *ioc, u32 sz)
+ 	    GFP_KERNEL, &ioc->reply_free_dma);
+ 	if (!ioc->reply_free)
+ 		return -EAGAIN;
+-	if (!mpt3sas_check_same_4gb_region((long)ioc->reply_free, sz)) {
++	if (!mpt3sas_check_same_4gb_region(ioc->reply_free_dma, sz)) {
+ 		dinitprintk(ioc,
+ 		    pr_err("Bad Reply Free Pool! Reply Free (0x%p) Reply Free dma = (0x%llx)\n",
+ 		    ioc->reply_free, (unsigned long long) ioc->reply_free_dma));
+@@ -6003,7 +6002,7 @@ _base_allocate_reply_post_free_array(struct MPT3SAS_ADAPTER *ioc,
+ 	    GFP_KERNEL, &ioc->reply_post_free_array_dma);
+ 	if (!ioc->reply_post_free_array)
+ 		return -EAGAIN;
+-	if (!mpt3sas_check_same_4gb_region((long)ioc->reply_post_free_array,
++	if (!mpt3sas_check_same_4gb_region(ioc->reply_post_free_array_dma,
+ 	    reply_post_free_array_sz)) {
+ 		dinitprintk(ioc, pr_err(
+ 		    "Bad Reply Free Pool! Reply Free (0x%p) Reply Free dma = (0x%llx)\n",
+@@ -6068,7 +6067,7 @@ base_alloc_rdpq_dma_pool(struct MPT3SAS_ADAPTER *ioc, int sz)
+ 			 * resources and set DMA mask to 32 and allocate.
+ 			 */
+ 			if (!mpt3sas_check_same_4gb_region(
+-				(long)ioc->reply_post[i].reply_post_free, sz)) {
++				ioc->reply_post[i].reply_post_free_dma, sz)) {
+ 				dinitprintk(ioc,
+ 				    ioc_err(ioc, "bad Replypost free pool(0x%p)"
+ 				    "reply_post_free_dma = (0x%llx)\n",
 -- 
 2.34.1
 
