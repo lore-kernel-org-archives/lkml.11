@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 52B2EC433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 67E89C4332F
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 13:32:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356964AbiDENI0 (ORCPT
+        id S1382745AbiDENSM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 09:08:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38482 "EHLO
+        Tue, 5 Apr 2022 09:18:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43644 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344063AbiDEJRZ (ORCPT
+        with ESMTP id S1344348AbiDEJTe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:17:25 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03609237C2;
-        Tue,  5 Apr 2022 02:03:58 -0700 (PDT)
+        Tue, 5 Apr 2022 05:19:34 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 731DBE0D9;
+        Tue,  5 Apr 2022 02:07:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 91E0161571;
-        Tue,  5 Apr 2022 09:03:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9D037C385A0;
-        Tue,  5 Apr 2022 09:03:56 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 25062B81C19;
+        Tue,  5 Apr 2022 09:07:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 674CFC385A0;
+        Tue,  5 Apr 2022 09:07:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649149437;
-        bh=TYK4B6kjg7vfkpzhpVpnNb+aVZu1hz8gIrRdAKmIiQs=;
+        s=korg; t=1649149657;
+        bh=UPyd4KE5RZhuBQ3r29MQ6fG0fXlHOPnapWsvTCOT5Uw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OAUJo0GY8b0+U7fKmaecLpK8Ml/Q2JJkCz/wXgXS7Sy8CA80G/wc4ct91290/xwgL
-         7Ks2Xc+3JH8xOyaSS0ooIuVj5AFdK65jSJ0tUwDcZH45PdNUoBTEX1+cfIBaixqAYR
-         qkkr3bx1ULmLgn8Pffuw8A3D+UdQmjCnK3B87ces=
+        b=r5BNr1UqGl7ljJG4spYyWwQM7Xm4oiHGBUeZfguwGOPoB/nhY04pvFXk5cgJg/Eeq
+         /lAW+Di3XjWEDPmYemCsWxD2JrYJzRIss1hWg9QVnbVuLJc2OUCCV9Zjw8C6dNd8Ni
+         uHgQ6Uu1aWNVI2FqD6QTQ43iiJQFoeFnHRmG509A=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Codrin Ciubotariu <codrin.ciubotariu@microchip.com>,
-        Claudiu Beznea <claudiu.beznea@microchip.com>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        stable@vger.kernel.org, Dai Ngo <dai.ngo@oracle.com>,
+        Chuck Lever <chuck.lever@oracle.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0676/1017] clk: at91: sama7g5: fix parents of PDMCs GCLK
-Date:   Tue,  5 Apr 2022 09:26:29 +0200
-Message-Id: <20220405070414.345995610@linuxfoundation.org>
+Subject: [PATCH 5.16 0792/1017] NFSD: Fix nfsd_breaker_owns_lease() return values
+Date:   Tue,  5 Apr 2022 09:28:25 +0200
+Message-Id: <20220405070417.761952002@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -52,47 +50,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Codrin Ciubotariu <codrin.ciubotariu@microchip.com>
+From: Chuck Lever <chuck.lever@oracle.com>
 
-[ Upstream commit 1a944729d8635fa59638f24e8727d5ccaa0c8c19 ]
+[ Upstream commit 50719bf3442dd6cd05159e9c98d020b3919ce978 ]
 
-Audio PLL can be used as parent by the GCLKs of PDMCs.
+These have been incorrect since the function was introduced.
 
-Fixes: cb783bbbcf54 ("clk: at91: sama7g5: add clock support for sama7g5")
-Signed-off-by: Codrin Ciubotariu <codrin.ciubotariu@microchip.com>
-Reviewed-by: Claudiu Beznea <claudiu.beznea@microchip.com>
-Signed-off-by: Nicolas Ferre <nicolas.ferre@microchip.com>
-Link: https://lore.kernel.org/r/20220304182616.1920392-1-codrin.ciubotariu@microchip.com
+A proper kerneldoc comment is added since this function, though
+static, is part of an external interface.
+
+Reported-by: Dai Ngo <dai.ngo@oracle.com>
+Signed-off-by: Chuck Lever <chuck.lever@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/clk/at91/sama7g5.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ fs/nfsd/nfs4state.c | 12 ++++++++++--
+ 1 file changed, 10 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/clk/at91/sama7g5.c b/drivers/clk/at91/sama7g5.c
-index 369dfafabbca..060e908086a1 100644
---- a/drivers/clk/at91/sama7g5.c
-+++ b/drivers/clk/at91/sama7g5.c
-@@ -696,16 +696,16 @@ static const struct {
- 	{ .n  = "pdmc0_gclk",
- 	  .id = 68,
- 	  .r = { .max = 50000000  },
--	  .pp = { "syspll_divpmcck", "baudpll_divpmcck", },
--	  .pp_mux_table = { 5, 8, },
-+	  .pp = { "syspll_divpmcck", "audiopll_divpmcck", },
-+	  .pp_mux_table = { 5, 9, },
- 	  .pp_count = 2,
- 	  .pp_chg_id = INT_MIN, },
+diff --git a/fs/nfsd/nfs4state.c b/fs/nfsd/nfs4state.c
+index ac0ddde8beef..6075a328d756 100644
+--- a/fs/nfsd/nfs4state.c
++++ b/fs/nfsd/nfs4state.c
+@@ -4693,6 +4693,14 @@ nfsd_break_deleg_cb(struct file_lock *fl)
+ 	return ret;
+ }
  
- 	{ .n  = "pdmc1_gclk",
- 	  .id = 69,
- 	  .r = { .max = 50000000, },
--	  .pp = { "syspll_divpmcck", "baudpll_divpmcck", },
--	  .pp_mux_table = { 5, 8, },
-+	  .pp = { "syspll_divpmcck", "audiopll_divpmcck", },
-+	  .pp_mux_table = { 5, 9, },
- 	  .pp_count = 2,
- 	  .pp_chg_id = INT_MIN, },
++/**
++ * nfsd_breaker_owns_lease - Check if lease conflict was resolved
++ * @fl: Lock state to check
++ *
++ * Return values:
++ *   %true: Lease conflict was resolved
++ *   %false: Lease conflict was not resolved.
++ */
+ static bool nfsd_breaker_owns_lease(struct file_lock *fl)
+ {
+ 	struct nfs4_delegation *dl = fl->fl_owner;
+@@ -4700,11 +4708,11 @@ static bool nfsd_breaker_owns_lease(struct file_lock *fl)
+ 	struct nfs4_client *clp;
  
+ 	if (!i_am_nfsd())
+-		return NULL;
++		return false;
+ 	rqst = kthread_data(current);
+ 	/* Note rq_prog == NFS_ACL_PROGRAM is also possible: */
+ 	if (rqst->rq_prog != NFS_PROGRAM || rqst->rq_vers < 4)
+-		return NULL;
++		return false;
+ 	clp = *(rqst->rq_lease_breaker);
+ 	return dl->dl_stid.sc_client == clp;
+ }
 -- 
 2.34.1
 
