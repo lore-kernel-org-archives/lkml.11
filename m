@@ -2,254 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EF35EC46467
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 22:09:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6847CC3527B
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 22:09:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1391301AbiDEWFK (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 18:05:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60276 "EHLO
+        id S239184AbiDEWGJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 18:06:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54584 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1573644AbiDET3N (ORCPT
+        with ESMTP id S1354022AbiDEKKs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 15:29:13 -0400
-Received: from mail-wr1-x431.google.com (mail-wr1-x431.google.com [IPv6:2a00:1450:4864:20::431])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1877BE9FD
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 12:27:14 -0700 (PDT)
-Received: by mail-wr1-x431.google.com with SMTP id m30so46642wrb.1
-        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 12:27:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=cdfNSB6YwdBXtAmOKuoC0/E9rKkP4kgD9S848WBSXfk=;
-        b=TY9NnIjO74oo7WlNQT9PsMoPMF5h6+xPLyA5QO8u/SDXFqziaZNnfUKRiqoeA8Og/Y
-         c0hJc+DN6HLWln+Z3pTzPn1INJbxqR4wtsIzBusThLzzz4PDcDvp/rKzDgD3rgTug077
-         vvijomlCeAKBAFYVnsTbYxNVL8kc7xE7fcCd83hxWjt91i4Lcdk7PNu2SVXbA5IRCkTL
-         uCtrabBwbsZ4aPZKxmy/EPzvFQSd35CHbgUcVQ7xr4p7zJHqux5W57aNopjFe3lMGcZ9
-         aGQ8boDfBdBSGhs1VZhmLJet1o0YgdmZQxDjy/bnXfCJWBLf7WN/bsgX5K4TYfbE/+JD
-         yf+w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=cdfNSB6YwdBXtAmOKuoC0/E9rKkP4kgD9S848WBSXfk=;
-        b=RHXvltthTFY+Mo7TUDfi14uWKukMTicf6ikruIVHsSEbT0x4keTx+0YcoF/Z9kGsF4
-         yu+JiO8stZREV3wwewfo7ibReHYJMtAfYZ1YELaQlsqe2iR0lhUDvEBdT7gPs3DKO9UM
-         3jbGiDTH9VQqkGJ/xo0cXdPar87SpGI0l9CwlviTVYxRRicvqtrU82WKI8CUxoS76jsB
-         aDjIJFpnIPBPtYK3lSEzL6kwJNITYxFxSi9sabn1pWbBfCK+7wtYnyMIxj6258lpsrNS
-         CU7b59dcT7kj/9FR1ehsgeo6raD37kHaK47r9KewFcb4jh0Iz8QuzdYFIG9kRb6/tIyx
-         31Kw==
-X-Gm-Message-State: AOAM5337SpzlWDLPLm7VyJqVe1051dfYHerg/lz3Cvek67JXmkZ5FLLa
-        BpbpGMjZstAU4tDNMDnZFC0=
-X-Google-Smtp-Source: ABdhPJwSpYrybt/LKrk+e+G2/yVBvSQ/dfsd/p4YAUxA/fL6DDsFBICWmp82dWhBXFhqIna0r19rzg==
-X-Received: by 2002:adf:910d:0:b0:1e3:9484:1601 with SMTP id j13-20020adf910d000000b001e394841601mr3619875wrj.419.1649186833125;
-        Tue, 05 Apr 2022 12:27:13 -0700 (PDT)
-Received: from [192.168.0.149] ([170.253.36.171])
-        by smtp.gmail.com with ESMTPSA id d14-20020a056000186e00b0020405198faasm14555866wri.52.2022.04.05.12.27.11
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 05 Apr 2022 12:27:12 -0700 (PDT)
-Message-ID: <ae2cbf67-aace-bc40-418e-7b41873f814a@gmail.com>
-Date:   Tue, 5 Apr 2022 21:28:12 +0200
+        Tue, 5 Apr 2022 06:10:48 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0BE354F9ED;
+        Tue,  5 Apr 2022 02:56:44 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C8A056157A;
+        Tue,  5 Apr 2022 09:56:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CFB54C385A2;
+        Tue,  5 Apr 2022 09:56:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649152603;
+        bh=BBGt+GgEpJktuRha/6PB6GGM4VbMgSz88KLc5ZHLTZg=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=MzYnBk/7/ZLzjC31R+akUzHNpAUiyrWJPSJSyqrHQEW4+Wrkcd1c9MSx/oL5ECemi
+         d8CdybSWZwsea8A/HDIUJtr+fv6HZGr7xhgtorp6Ie2/nqVd0Ew98ndn1tPsiEbzrV
+         4e8WWiTaq7z3sns460GBvtviCEj2vYItYu5uF4/Q=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Tom Rix <trix@redhat.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>
+Subject: [PATCH 5.15 837/913] rtc: check if __rtc_read_time was successful
+Date:   Tue,  5 Apr 2022 09:31:39 +0200
+Message-Id: <20220405070404.919159950@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: vfork(2) behavior not consistent with fork(2) (was: vfork(2) fails
- after unshare(CLONE_NEWTIME) (was: [Bug 215769] man 2 vfork() does not
- document corner case when PID == 1))
-Content-Language: en-US
-To:     Christian Brauner <brauner@kernel.org>
-Cc:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        =?UTF-8?B?0JrQvtGA0LXQvdCx0LXRgNCzINCc0LDRgNC6?= 
-        <socketpair@gmail.com>, Andrei Vagin <avagin@openvz.org>,
-        Dmitry Safonov <dima@arista.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Arnd Bergmann <arnd@arndb.de>, Serge Hallyn <serge@hallyn.com>,
-        bugzilla-daemon@kernel.org
-References: <bug-215769-216477@https.bugzilla.kernel.org/>
- <bug-215769-216477-to2O9X1Knw@https.bugzilla.kernel.org/>
- <4fb02f5f-60f9-42af-ddd5-fe5af877231f@gmail.com>
- <20220404080519.pi6izyuop3mmdg2g@wittgenstein>
-From:   Alejandro Colomar <alx.manpages@gmail.com>
-In-Reply-To: <20220404080519.pi6izyuop3mmdg2g@wittgenstein>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hey, Christian!
+From: Tom Rix <trix@redhat.com>
 
-On 4/4/22 10:05, Christian Brauner wrote:
-> On Sat, Apr 02, 2022 at 11:15:52PM +0200, Alejandro Colomar (man-pages) wrote:
->> [Added some kernel CCs that may know what's going on]
-[...]
->> Maybe someone in the kernel can send some patch for the clone(2) and/or
->> vfork(2) manual pages that explains the reason (if it's intended).
-> 
-> Hey Alejandro,
-> 
-> I won't be able to send a patch very soon but I can at least explain why
-> you see EINVAL. :)
+commit 915593a7a663b2ad08b895a5f3ba8b19d89d4ebf upstream.
 
-Don't hurry, we're not planning to release any soon :)
+Clang static analysis reports this issue
+interface.c:810:8: warning: Passed-by-value struct
+  argument contains uninitialized data
+  now = rtc_tm_to_ktime(tm);
+      ^~~~~~~~~~~~~~~~~~~
 
-> 
-> This is intended.
-> 
-> vfork() suspends the parent process and the child process will share the
-> same vm as the parent process. If the child process is in a new time
-> namespace different from its parent process it is not allowed to be in
-> the same threadgroup or share virtual memory with the parent process.
-> That's why you see EINVAL.
+tm is set by a successful call to __rtc_read_time()
+but its return status is not checked.  Check if
+it was successful before setting the enabled flag.
+Move the decl of err to function scope.
 
-That makes a lot of sense to me.
+Fixes: 2b2f5ff00f63 ("rtc: interface: ignore expired timers when enqueuing new timers")
+Signed-off-by: Tom Rix <trix@redhat.com>
+Signed-off-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
+Link: https://lore.kernel.org/r/20220326194236.2916310-1-trix@redhat.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ drivers/rtc/interface.c |    7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
-> 
-> Note, the unshare(CLONE_NEWTIME) call will _not_ cause the calling
-> process to be moved into a different time namespace. Only the newly
-> created child process will be after a subsequent
-> fork()/vfork()/clone()/clone3()...
-> 
-> The semantics are equivalent to that of CLONE_NEWPID in this regard. You
-> can see this via /proc/<pid>/ns/ where you see two entries for pid
-> namespaces and also two entries for time namespaces:
-> 
-> * CLONE_NEWTIME
->    * /proc/<pid>/ns/time			// current time namespace
->    * /proc/<pid>/ns/time_for_children	// time namespace for the new child process
-
-Also makes sense.  Michael taught me that a few weeks ago :)
-
-This also triggers some doubt:  will the same problem happen with 
-CLONE_NEWPID since it also moves the child into a new ns (in this case a 
-PID one)?  See test program below.
-
-> 
-> If during fork:
-> 
-> parent_process->time != parent_process->time_for_children
-> 
-> and either CLONE_VM or CLONE_THREAD is set you see EINVAL.
-> 
-> You can thus replicate the same error via:
-> 
-> unshare(CLONE_NEWTIME)
-> 
-> and a
-> 
-> clone() or clone3() call with CLONE_VM or CLONE_THREAD.
-
-So, to test my doubts, I wrote this similar program (and also similar 
-programs where only the CLONE_NEW* flag was changed, one with 
-CLONE_NEWTIME, and one with CLONE_NEWNS)):
-
-$ cat vfork_newpid.c
-#define _GNU_SOURCE
-#include <err.h>
-#include <errno.h>
-#include <linux/sched.h>
-#include <sched.h>
-#include <signal.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <sys/syscall.h>
-#include <unistd.h>
-
-static char *const child_argv[] = {
-	"print_pid",
-	NULL
-};
-
-static char *const child_envp[] = {
-	NULL
-};
-
-int
-main(void)
-{
-	pid_t pid;
-
-	printf("%s: PID: %ld\n", program_invocation_short_name, (long) getpid());
-
-	if (unshare(CLONE_NEWPID) == -1)
-		err(EXIT_FAILURE, "unshare(2)");
-	if (signal(SIGCHLD, SIG_IGN) == SIG_ERR)
-		err(EXIT_FAILURE, "signal(2)");
-
-	pid = syscall(SYS_vfork);
-	//pid = vfork();  // This behaves differently.
-	switch (pid) {
-	case 0:
-		execve("/home/alx/tmp/print_pid", child_argv, child_envp);
-		err(EXIT_SUCCESS, "PID %jd exiting after execve(2)",
-		    (long) getpid());
-	case -1:
-		err(EXIT_FAILURE, "vfork(2)");
-	default:
-		errx(EXIT_SUCCESS, "Parent exiting after vfork(2).");
-	}
-}
-
-$ cat print_pid.c
-#include <err.h>
-#include <stdlib.h>
-#include <unistd.h>
-
-int
-main(void)
-{
-	errx(EXIT_SUCCESS, "PID %jd exiting.", (long) getpid());
-}
-
-$ cc -Wall -Wextra -Werror -o print_pid print_pid.c
-$ cc -Wall -Wextra -Werror -o vfork_newpid vfork_newpid.c
-$
-$
-$ sudo ./vfork_newpid
-vfork_newpid: PID: 8479
-vfork_newpid: PID 8479 exiting after execve(2): Success
-print_pid: PID 1 exiting.
-$
-$
-$ sudo ./vfork_newtime
-vfork_newtime: PID: 8484
-vfork_newtime: vfork(2): Invalid argument
-$
-$
-$ sudo ./vfork_newns
-vfork_newns: PID: 8486
-vfork_newns: PID 8486 exiting after execve(2): Success
-print_pid: PID 8487 exiting.
+--- a/drivers/rtc/interface.c
++++ b/drivers/rtc/interface.c
+@@ -793,9 +793,13 @@ static int rtc_timer_enqueue(struct rtc_
+ 	struct timerqueue_node *next = timerqueue_getnext(&rtc->timerqueue);
+ 	struct rtc_time tm;
+ 	ktime_t now;
++	int err;
++
++	err = __rtc_read_time(rtc, &tm);
++	if (err)
++		return err;
+ 
+ 	timer->enabled = 1;
+-	__rtc_read_time(rtc, &tm);
+ 	now = rtc_tm_to_ktime(tm);
+ 
+ 	/* Skip over expired timers */
+@@ -809,7 +813,6 @@ static int rtc_timer_enqueue(struct rtc_
+ 	trace_rtc_timer_enqueue(timer);
+ 	if (!next || ktime_before(timer->node.expires, next->expires)) {
+ 		struct rtc_wkalrm alarm;
+-		int err;
+ 
+ 		alarm.time = rtc_ktime_to_tm(timer->node.expires);
+ 		alarm.enabled = 1;
 
 
-The first thing I noted is that usage of vfork(2) differs considerably 
-from fork(2), and that's something that's not clear by reading the 
-manual page.  It sais that the parent process is suspended until the 
-child calls execve(2), but I expected it to mean that vfork(2) doesn't 
-return to the parent until that happened, but was otherwise transparent. 
-  I was wrong and my tests showed me that.
-
-I was going to propose an example program for the manual page, when I 
-decided to try a slightly different thing: call vfork() instead of 
-syscall(SYS_vfork);  that changed the behavior to the same one as with 
-fork(2) (i.e., the parent resumes after vfork(2) returns the PID of the 
-child.
-
-Is that also intended?  I couldn't find the glibc wrapper source code, 
-so I don't know what is glibc doing here, but I straced the processes, 
-and they're all calling vfork(), so the behavior should be consistent; 
-it's quite weird.  I'm very confused at this point.
-
-
-I'm also wondering why it's okay to have processes in different PID ns 
-share the same vm, but I guess that's implementation details that I 
-don't need to care that much.
-
-
-Thanks for the details!
-
-Cheers,
-
-Alex
