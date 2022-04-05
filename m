@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 68240C47082
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F0E79C47085
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 14:06:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357485AbiDEODU (ORCPT
+        id S1358623AbiDEODx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 10:03:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46088 "EHLO
+        Tue, 5 Apr 2022 10:03:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46150 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234999AbiDEJap (ORCPT
+        with ESMTP id S235765AbiDEJbC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:30:45 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78F40E7F7E;
-        Tue,  5 Apr 2022 02:17:53 -0700 (PDT)
+        Tue, 5 Apr 2022 05:31:02 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C345220DE;
+        Tue,  5 Apr 2022 02:18:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2482CB81B14;
-        Tue,  5 Apr 2022 09:17:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 84304C385A0;
-        Tue,  5 Apr 2022 09:17:50 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 075E16164D;
+        Tue,  5 Apr 2022 09:18:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1953FC385A2;
+        Tue,  5 Apr 2022 09:18:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649150270;
-        bh=+XNFu5tzAZ28lpUNmFeUfsDI3/CgFwn+nRal1GCbe9E=;
+        s=korg; t=1649150284;
+        bh=Fk7dGV1XNcf85J/QIpn+aGzWIVRLnxGOtlxA3lFhd0I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=EzN9KwGNM4+JrS2szXpFysM0PUKRAmewnnEuSlHy9ANFSWctl/LsgpLNP0wcSHiNt
-         pASG8m3kEp41z37X99VYO3Gypy+z/cg0RtRXKBArdBzVQU+XeJwcqSJWhNmzm9sOQy
-         3Zxgoyg57jEJUph+YfdW4AKAV0V3z8kEimpl/tZk=
+        b=UUSQv3JZNQynooBn46iG7aZ5LIPbomeLpJ2BMuJh0DRP++Wag9btGUN5SuO/ajh1D
+         N27WhjsKhwv2PEiOr05QG+jhAlcm2YexRSszmazbvVGVFmhbEjRbbYD7M6LK5HYt6j
+         EJ0staYscdV1H8KzRSSotQZxYoEzZC9JIJKq/xac=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jann Horn <jannh@google.com>,
-        Kees Cook <keescook@chromium.org>,
-        "Eric W. Biederman" <ebiederm@xmission.com>
-Subject: [PATCH 5.16 1016/1017] coredump/elf: Pass coredump_params into fill_note_info
-Date:   Tue,  5 Apr 2022 09:32:09 +0200
-Message-Id: <20220405070424.353492195@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Alexei Starovoitov <ast@kernel.org>
+Subject: [PATCH 5.16 1004/1017] xsk: Do not write NULL in SW ring at allocation failure
+Date:   Tue,  5 Apr 2022 09:31:57 +0200
+Message-Id: <20220405070424.004155049@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -50,107 +50,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric W. Biederman <ebiederm@xmission.com>
+From: Magnus Karlsson <magnus.karlsson@intel.com>
 
-commit 9ec7d3230717b4fe9b6c7afeb4811909c23fa1d7 upstream.
+commit a95a4d9b39b0324402569ed7395aae59b8fd2b11 upstream.
 
-Instead of individually passing cprm->siginfo and cprm->regs
-into fill_note_info pass all of struct coredump_params.
+For the case when xp_alloc_batch() is used but the batched allocation
+cannot be used, there is a slow path that uses the non-batched
+xp_alloc(). When it fails to allocate an entry, it returns NULL. The
+current code wrote this NULL into the entry of the provided results
+array (pointer to the driver SW ring usually) and returned. This might
+not be what the driver expects and to make things simpler, just write
+successfully allocated xdp_buffs into the SW ring,. The driver might
+have information in there that is still important after an allocation
+failure.
 
-This is preparation to allow fill_files_note to use the existing
-vma snapshot.
+Note that at this point in time, there are no drivers using
+xp_alloc_batch() that could trigger this slow path. But one might get
+added.
 
-Reviewed-by: Jann Horn <jannh@google.com>
-Reviewed-by: Kees Cook <keescook@chromium.org>
-Signed-off-by: "Eric W. Biederman" <ebiederm@xmission.com>
+Fixes: 47e4075df300 ("xsk: Batched buffer allocation for the pool")
+Signed-off-by: Magnus Karlsson <magnus.karlsson@intel.com>
+Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+Link: https://lore.kernel.org/bpf/20220328142123.170157-2-maciej.fijalkowski@intel.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/binfmt_elf.c |   22 +++++++++++-----------
- 1 file changed, 11 insertions(+), 11 deletions(-)
+ net/xdp/xsk_buff_pool.c |    8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
---- a/fs/binfmt_elf.c
-+++ b/fs/binfmt_elf.c
-@@ -1823,7 +1823,7 @@ static int fill_thread_core_info(struct
+--- a/net/xdp/xsk_buff_pool.c
++++ b/net/xdp/xsk_buff_pool.c
+@@ -584,9 +584,13 @@ u32 xp_alloc_batch(struct xsk_buff_pool
+ 	u32 nb_entries1 = 0, nb_entries2;
  
- static int fill_note_info(struct elfhdr *elf, int phdrs,
- 			  struct elf_note_info *info,
--			  const kernel_siginfo_t *siginfo, struct pt_regs *regs)
-+			  struct coredump_params *cprm)
- {
- 	struct task_struct *dump_task = current;
- 	const struct user_regset_view *view = task_user_regset_view(dump_task);
-@@ -1895,7 +1895,7 @@ static int fill_note_info(struct elfhdr
- 	 * Now fill in each thread's information.
- 	 */
- 	for (t = info->thread; t != NULL; t = t->next)
--		if (!fill_thread_core_info(t, view, siginfo->si_signo, &info->size))
-+		if (!fill_thread_core_info(t, view, cprm->siginfo->si_signo, &info->size))
- 			return 0;
- 
- 	/*
-@@ -1904,7 +1904,7 @@ static int fill_note_info(struct elfhdr
- 	fill_psinfo(psinfo, dump_task->group_leader, dump_task->mm);
- 	info->size += notesize(&info->psinfo);
- 
--	fill_siginfo_note(&info->signote, &info->csigdata, siginfo);
-+	fill_siginfo_note(&info->signote, &info->csigdata, cprm->siginfo);
- 	info->size += notesize(&info->signote);
- 
- 	fill_auxv_note(&info->auxv, current->mm);
-@@ -2052,7 +2052,7 @@ static int elf_note_info_init(struct elf
- 
- static int fill_note_info(struct elfhdr *elf, int phdrs,
- 			  struct elf_note_info *info,
--			  const kernel_siginfo_t *siginfo, struct pt_regs *regs)
-+			  struct coredump_params *cprm)
- {
- 	struct core_thread *ct;
- 	struct elf_thread_status *ets;
-@@ -2073,13 +2073,13 @@ static int fill_note_info(struct elfhdr
- 	list_for_each_entry(ets, &info->thread_list, list) {
- 		int sz;
- 
--		sz = elf_dump_thread_status(siginfo->si_signo, ets);
-+		sz = elf_dump_thread_status(cprm->siginfo->si_signo, ets);
- 		info->thread_status_size += sz;
- 	}
- 	/* now collect the dump for the current */
- 	memset(info->prstatus, 0, sizeof(*info->prstatus));
--	fill_prstatus(&info->prstatus->common, current, siginfo->si_signo);
--	elf_core_copy_regs(&info->prstatus->pr_reg, regs);
-+	fill_prstatus(&info->prstatus->common, current, cprm->siginfo->si_signo);
-+	elf_core_copy_regs(&info->prstatus->pr_reg, cprm->regs);
- 
- 	/* Set up header */
- 	fill_elf_header(elf, phdrs, ELF_ARCH, ELF_CORE_EFLAGS);
-@@ -2095,7 +2095,7 @@ static int fill_note_info(struct elfhdr
- 	fill_note(info->notes + 1, "CORE", NT_PRPSINFO,
- 		  sizeof(*info->psinfo), info->psinfo);
- 
--	fill_siginfo_note(info->notes + 2, &info->csigdata, siginfo);
-+	fill_siginfo_note(info->notes + 2, &info->csigdata, cprm->siginfo);
- 	fill_auxv_note(info->notes + 3, current->mm);
- 	info->numnote = 4;
- 
-@@ -2105,8 +2105,8 @@ static int fill_note_info(struct elfhdr
+ 	if (unlikely(pool->dma_need_sync)) {
++		struct xdp_buff *buff;
++
+ 		/* Slow path */
+-		*xdp = xp_alloc(pool);
+-		return !!*xdp;
++		buff = xp_alloc(pool);
++		if (buff)
++			*xdp = buff;
++		return !!buff;
  	}
  
- 	/* Try to dump the FPU. */
--	info->prstatus->pr_fpvalid = elf_core_copy_task_fpregs(current, regs,
--							       info->fpu);
-+	info->prstatus->pr_fpvalid =
-+		elf_core_copy_task_fpregs(current, cprm->regs, info->fpu);
- 	if (info->prstatus->pr_fpvalid)
- 		fill_note(info->notes + info->numnote++,
- 			  "CORE", NT_PRFPREG, sizeof(*info->fpu), info->fpu);
-@@ -2219,7 +2219,7 @@ static int elf_core_dump(struct coredump
- 	 * Collect all the non-memory information about the process for the
- 	 * notes.  This also sets up the file header.
- 	 */
--	if (!fill_note_info(&elf, e_phnum, &info, cprm->siginfo, cprm->regs))
-+	if (!fill_note_info(&elf, e_phnum, &info, cprm))
- 		goto end_coredump;
- 
- 	has_dumped = 1;
+ 	if (unlikely(pool->free_list_cnt)) {
 
 
