@@ -2,128 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BFEECC43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AA9D6C4321E
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:35:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1835518AbiDFAcA (ORCPT
+        id S1835486AbiDFAbx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 20:32:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35054 "EHLO
+        Tue, 5 Apr 2022 20:31:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58696 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353360AbiDEKGC (ORCPT
+        with ESMTP id S1443722AbiDEPkM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:06:02 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4E14BF523;
-        Tue,  5 Apr 2022 02:54:49 -0700 (PDT)
+        Tue, 5 Apr 2022 11:40:12 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 658FE185017
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 06:58:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 701EEB818F3;
-        Tue,  5 Apr 2022 09:54:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D315CC385A1;
-        Tue,  5 Apr 2022 09:54:46 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649152487;
-        bh=BAenPI3zniYQ1aDVr0sckXD6pqxgQvsfzeAhizKzmqo=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=iqTozbOuTRE0Cfa8183oCmOO+g5th4prOSniKTHBl4vFugZ+MEoe9U50f0znPU0Ll
-         30tu7Dxq4Cs/l6/XndMuVqpwWHN/jaIGx4Ju+YltKatvQHIIZS54yt4kbxkzb/UIaF
-         KWYJiNqsqEBAsrAMwLHfUCyTVzPH/MsrPpcxiug8=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Himanshu Madhani <himanshu.madhani@oracle.com>,
-        Arun Easi <aeasi@marvell.com>,
-        Nilesh Javali <njavali@marvell.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>
-Subject: [PATCH 5.15 795/913] scsi: qla2xxx: Fix device reconnect in loop topology
-Date:   Tue,  5 Apr 2022 09:30:57 +0200
-Message-Id: <20220405070403.663121467@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
-User-Agent: quilt/0.66
+        by dfw.source.kernel.org (Postfix) with ESMTPS id F00AC6190C
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 13:58:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7941AC385A6;
+        Tue,  5 Apr 2022 13:58:26 +0000 (UTC)
+From:   Catalin Marinas <catalin.marinas@arm.com>
+To:     Will Deacon <will@kernel.org>, Marc Zyngier <maz@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     linux-mm@kvack.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH 10/10] arm64: Enable dynamic kmalloc() minimum alignment
+Date:   Tue,  5 Apr 2022 14:57:58 +0100
+Message-Id: <20220405135758.774016-11-catalin.marinas@arm.com>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220405135758.774016-1-catalin.marinas@arm.com>
+References: <20220405135758.774016-1-catalin.marinas@arm.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Arun Easi <aeasi@marvell.com>
+Define ARCH_KMALLOC_MINALIGN as 64 since this would be the minimum
+requirement across most arm64 SoCs. Define arch_kmalloc_minalign()
+returning cache_line_size() to set the minimum run-time kmalloc()
+alignment for those SoCs with bigger cache lines.
 
-commit 8ad4be3d15cf144b5834bdb00d5bbe4050938dc7 upstream.
-
-A device logout in loop topology initiates a device connection teardown
-which loses the FW device handle. In loop topo, the device handle is not
-regrabbed leading to device login failures and eventually to loss of the
-device. Fix this by taking the main login path that does it.
-
-Link: https://lore.kernel.org/r/20220110050218.3958-11-njavali@marvell.com
-Cc: stable@vger.kernel.org
-Reviewed-by: Himanshu Madhani <himanshu.madhani@oracle.com>
-Signed-off-by: Arun Easi <aeasi@marvell.com>
-Signed-off-by: Nilesh Javali <njavali@marvell.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Catalin Marinas <catalin.marinas@arm.com>
+Cc: Will Deacon <will@kernel.org>
 ---
- drivers/scsi/qla2xxx/qla_init.c |   15 +++++++++++++++
- drivers/scsi/qla2xxx/qla_os.c   |    5 +++++
- 2 files changed, 20 insertions(+)
+ arch/arm64/include/asm/cache.h | 1 +
+ arch/arm64/kernel/cacheinfo.c  | 7 +++++++
+ 2 files changed, 8 insertions(+)
 
---- a/drivers/scsi/qla2xxx/qla_init.c
-+++ b/drivers/scsi/qla2xxx/qla_init.c
-@@ -975,6 +975,9 @@ static void qla24xx_handle_gnl_done_even
- 				set_bit(RELOGIN_NEEDED, &vha->dpc_flags);
- 			}
- 			break;
-+		case ISP_CFG_NL:
-+			qla24xx_fcport_handle_login(vha, fcport);
-+			break;
- 		default:
- 			break;
- 		}
-@@ -1564,6 +1567,11 @@ static void qla_chk_n2n_b4_login(struct
- 	u8 login = 0;
- 	int rc;
+diff --git a/arch/arm64/include/asm/cache.h b/arch/arm64/include/asm/cache.h
+index a074459f8f2f..0bec986c9d51 100644
+--- a/arch/arm64/include/asm/cache.h
++++ b/arch/arm64/include/asm/cache.h
+@@ -48,6 +48,7 @@
+  * the CPU.
+  */
+ #define ARCH_DMA_MINALIGN	(128)
++#define ARCH_KMALLOC_MINALIGN	(64)
  
-+	ql_dbg(ql_dbg_disc, vha, 0x307b,
-+	    "%s %8phC DS %d LS %d lid %d retries=%d\n",
-+	    __func__, fcport->port_name, fcport->disc_state,
-+	    fcport->fw_login_state, fcport->loop_id, fcport->login_retry);
+ #ifdef CONFIG_KASAN_SW_TAGS
+ #define ARCH_SLAB_MINALIGN	(1ULL << KASAN_SHADOW_SCALE_SHIFT)
+diff --git a/arch/arm64/kernel/cacheinfo.c b/arch/arm64/kernel/cacheinfo.c
+index 587543c6c51c..61211cd597f7 100644
+--- a/arch/arm64/kernel/cacheinfo.c
++++ b/arch/arm64/kernel/cacheinfo.c
+@@ -97,3 +97,10 @@ int populate_cache_leaves(unsigned int cpu)
+ 	}
+ 	return 0;
+ }
 +
- 	if (qla_tgt_mode_enabled(vha))
- 		return;
- 
-@@ -5586,6 +5594,13 @@ qla2x00_configure_local_loop(scsi_qla_ho
- 			memcpy(fcport->node_name, new_fcport->node_name,
- 			    WWN_SIZE);
- 			fcport->scan_state = QLA_FCPORT_FOUND;
-+			if (fcport->login_retry == 0) {
-+				fcport->login_retry = vha->hw->login_retry_count;
-+				ql_dbg(ql_dbg_disc, vha, 0x2135,
-+				    "Port login retry %8phN, lid 0x%04x retry cnt=%d.\n",
-+				    fcport->port_name, fcport->loop_id,
-+				    fcport->login_retry);
-+			}
- 			found++;
- 			break;
- 		}
---- a/drivers/scsi/qla2xxx/qla_os.c
-+++ b/drivers/scsi/qla2xxx/qla_os.c
-@@ -5518,6 +5518,11 @@ void qla2x00_relogin(struct scsi_qla_hos
- 					ea.fcport = fcport;
- 					qla24xx_handle_relogin_event(vha, &ea);
- 				} else if (vha->hw->current_topology ==
-+					 ISP_CFG_NL &&
-+					IS_QLA2XXX_MIDTYPE(vha->hw)) {
-+					(void)qla24xx_fcport_handle_login(vha,
-+									fcport);
-+				} else if (vha->hw->current_topology ==
- 				    ISP_CFG_NL) {
- 					fcport->login_retry--;
- 					status =
-
-
++#ifndef CONFIG_SLOB
++unsigned int arch_kmalloc_minalign(void)
++{
++	return cache_line_size();
++}
++#endif
