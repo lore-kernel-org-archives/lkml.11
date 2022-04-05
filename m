@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 994B4C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AE1DEC433EF
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 11:07:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350235AbiDELDq (ORCPT
+        id S1350291AbiDELDu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 07:03:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53430 "EHLO
+        Tue, 5 Apr 2022 07:03:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48440 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236922AbiDEIlX (ORCPT
+        with ESMTP id S237369AbiDEIly (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:41:23 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A85C310E5;
-        Tue,  5 Apr 2022 01:34:06 -0700 (PDT)
+        Tue, 5 Apr 2022 04:41:54 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCD7B2615;
+        Tue,  5 Apr 2022 01:34:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 23972B81B13;
-        Tue,  5 Apr 2022 08:34:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 83974C385A0;
-        Tue,  5 Apr 2022 08:34:03 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 68D7061470;
+        Tue,  5 Apr 2022 08:34:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7A117C385A1;
+        Tue,  5 Apr 2022 08:34:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649147643;
-        bh=HKZ2APyN8Q6yQ6rOSEX8CU6i+12Lcl92XlYYntOj588=;
+        s=korg; t=1649147668;
+        bh=C6RXfa9OTsIPDL1qL6BYaWRZzDFmkNBH0ycgJlH2syU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=z4v2wpzNUk2N0OmVDb2uvT7bl6Aw+G7YM4PJ7Bc/sZgzTSDojk3a9CVz7VCkwBdWC
-         64dIGfn6Q9GZYoCIGTh0xqtCfmD4aO8vTIEM9nHxMCA+Ulg/sDQ6heZ27SHLoftQj3
-         HPdQ4Yq5ZDaT5rc4Lf5tXlCZpyeQfEafnx+jUNmw=
+        b=ckGnrJ4chEjpwaXCdQyA8Bm/B4bv+e3qke4GR0rvDnUlNTiIa6t3gGK/vrAb0ZXI9
+         omHqOsLzdvjO5W9MLUe+E73GPr00l3bDPxzpSQAA+Xw6UTRVUo8K6dM7h1RtHS/40R
+         TAFCV3LgUKK5fGTrCYSZn3a9W+34eyWRZUYXqoBc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
-        Chuck Lever <chuck.lever@oracle.com>
-Subject: [PATCH 5.16 0068/1017] NFSD: prevent underflow in nfssvc_decode_writeargs()
-Date:   Tue,  5 Apr 2022 09:16:21 +0200
-Message-Id: <20220405070356.207622361@linuxfoundation.org>
+        stable@vger.kernel.org, Sebastian Haas <haas@ems-wuensche.com>,
+        Hangyu Hua <hbh25y@gmail.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>
+Subject: [PATCH 5.16 0080/1017] can: ems_usb: ems_usb_start_xmit(): fix double dev_kfree_skb() in error path
+Date:   Tue,  5 Apr 2022 09:16:33 +0200
+Message-Id: <20220405070356.565651847@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -49,47 +50,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dan Carpenter <dan.carpenter@oracle.com>
+From: Hangyu Hua <hbh25y@gmail.com>
 
-commit 184416d4b98509fb4c3d8fc3d6dc1437896cc159 upstream.
+commit c70222752228a62135cee3409dccefd494a24646 upstream.
 
-Smatch complains:
+There is no need to call dev_kfree_skb() when usb_submit_urb() fails
+beacause can_put_echo_skb() deletes the original skb and
+can_free_echo_skb() deletes the cloned skb.
 
-	fs/nfsd/nfsxdr.c:341 nfssvc_decode_writeargs()
-	warn: no lower bound on 'args->len'
-
-Change the type to unsigned to prevent this issue.
-
+Link: https://lore.kernel.org/all/20220228083639.38183-1-hbh25y@gmail.com
+Fixes: 702171adeed3 ("ems_usb: Added support for EMS CPC-USB/ARM7 CAN/USB interface")
 Cc: stable@vger.kernel.org
-Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
-Signed-off-by: Chuck Lever <chuck.lever@oracle.com>
+Cc: Sebastian Haas <haas@ems-wuensche.com>
+Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
+Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/nfsd/nfsproc.c |    2 +-
- fs/nfsd/xdr.h     |    2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+ drivers/net/can/usb/ems_usb.c |    1 -
+ 1 file changed, 1 deletion(-)
 
---- a/fs/nfsd/nfsproc.c
-+++ b/fs/nfsd/nfsproc.c
-@@ -230,7 +230,7 @@ nfsd_proc_write(struct svc_rqst *rqstp)
- 	unsigned long cnt = argp->len;
- 	unsigned int nvecs;
+--- a/drivers/net/can/usb/ems_usb.c
++++ b/drivers/net/can/usb/ems_usb.c
+@@ -821,7 +821,6 @@ static netdev_tx_t ems_usb_start_xmit(st
  
--	dprintk("nfsd: WRITE    %s %d bytes at %d\n",
-+	dprintk("nfsd: WRITE    %s %u bytes at %d\n",
- 		SVCFH_fmt(&argp->fh),
- 		argp->len, argp->offset);
+ 		usb_unanchor_urb(urb);
+ 		usb_free_coherent(dev->udev, size, buf, urb->transfer_dma);
+-		dev_kfree_skb(skb);
  
---- a/fs/nfsd/xdr.h
-+++ b/fs/nfsd/xdr.h
-@@ -32,7 +32,7 @@ struct nfsd_readargs {
- struct nfsd_writeargs {
- 	svc_fh			fh;
- 	__u32			offset;
--	int			len;
-+	__u32			len;
- 	struct xdr_buf		payload;
- };
+ 		atomic_dec(&dev->active_tx_urbs);
  
 
 
