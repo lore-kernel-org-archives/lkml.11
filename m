@@ -2,47 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 750BCC433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 64E8AC433F5
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 15:21:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1389009AbiDEPVA (ORCPT
+        id S1388970AbiDEPUz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 11:21:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39194 "EHLO
+        Tue, 5 Apr 2022 11:20:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56990 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346982AbiDEJps (ORCPT
+        with ESMTP id S1346906AbiDEJpm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:45:48 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E947ADCA84;
-        Tue,  5 Apr 2022 02:32:12 -0700 (PDT)
+        Tue, 5 Apr 2022 05:45:42 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32AB618379;
+        Tue,  5 Apr 2022 02:32:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6E39A616D9;
-        Tue,  5 Apr 2022 09:32:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 71231C385A6;
-        Tue,  5 Apr 2022 09:32:10 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CACE3B81CC1;
+        Tue,  5 Apr 2022 09:32:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2E008C385C4;
+        Tue,  5 Apr 2022 09:32:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649151131;
-        bh=Go6Z5f/W2tjhRUO6APCSVvZp9thB6QaQP0llR9z2jKo=;
-        h=From:To:In-Reply-To:References:Subject:Date:From;
-        b=hdsFI/q/QvQQgJTabRoqDsscN7FDlRBQbb5rEDsIwQT389IMRr5Vcrq7MnX0zCSXo
-         e4TwiVVhB/Qg/SmKJrpCxDg6oVJxnW16Zn2dCtAJQkl3/wpo2FafjYygnY+r4IYZZp
-         w7G7/274oFfHviHe4Kfv9/xUkx6MRAmwf6ouhLkiLloFXnWd2IvR3+CuIeowXI4E3X
-         cW3A4G/W23mqabqTYz/vKQNE1zuwUyyLlMlODDC/gXwdRheg1XHP9P08pwFT8bTFEM
-         xTeAP11kXG8PMs4ArP84n8ak/5vx/AG+opRv7nV/ra+MVD5Z5PzfOslAtnyFoC4xes
-         5yX+LBhnFaKFQ==
+        s=k20201202; t=1649151124;
+        bh=GjmC2BEcN0KsKZ7ydEfVFphIGpjCxpDNSpkEEa64urQ=;
+        h=From:To:Cc:In-Reply-To:References:Subject:Date:From;
+        b=nNsuW0ERMiz7rPDxZB8Z1DW5F1ZljqyZDRU3LuRnGbPOfIjyDWGqnYMItXQrFk3oQ
+         SL7CUi6P1TQa/VNvIB+wYnsmV8bWHLOT382axLRhlgKaj7kAE7tUxO/34zp8/J7fnF
+         IQEWaMWdTIzBMBA8Ttg03eIbBiuqeij0gayJgsogN8eqH8nXGDeEyPQax3fWtqec11
+         RMK7Qx4jJ/hxsIqqJTC2EFIMx+QPHbQmoFBr54tLn0OZNBWoqwX0azrqZ/sYX4FgD5
+         Zi1xC6asCUFRNOQq5ddKU66DrzQD3IIq8LA7UcbI3KF566PecFxrJyzcVuKfPq8dyh
+         +NX9iwxMFKwZg==
 From:   Mark Brown <broonie@kernel.org>
-To:     Rob Herring <robh+dt@kernel.org>, lgirdwood@gmail.com,
-        krzysztof.kozlowski@linaro.org, cy_huang@richtek.com,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        krzk+dt@kernel.org
-In-Reply-To: <20220401153711.1057853-1-krzysztof.kozlowski@linaro.org>
-References: <20220401153711.1057853-1-krzysztof.kozlowski@linaro.org>
-Subject: Re: [PATCH v2] regulator: dt-bindings: richtek,rt4801: minor comments adjustments
-Message-Id: <164915113019.276837.6765844554684988945.b4-ty@kernel.org>
-Date:   Tue, 05 Apr 2022 10:32:10 +0100
+To:     robh+dt@kernel.org, johnson.wang@mediatek.com
+Cc:     linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, devicetree@vger.kernel.org,
+        Project_Global_Chrome_Upstream_Group@mediatek.com,
+        linux-kernel@vger.kernel.org
+In-Reply-To: <20220317030402.24894-1-johnson.wang@mediatek.com>
+References: <20220317030402.24894-1-johnson.wang@mediatek.com>
+Subject: Re: [PATCH v2 0/2] Add support for MediaTek PMIC MT6366
+Message-Id: <164915112290.276837.17651997512675348293.b4-ty@kernel.org>
+Date:   Tue, 05 Apr 2022 10:32:02 +0100
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
@@ -50,11 +51,15 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 1 Apr 2022 17:37:11 +0200, Krzysztof Kozlowski wrote:
-> Correct grammar in 'enable-gpios' description and remove useless comment
-> about regulator nodes, because these are obvious from patternProperties.
+On Thu, 17 Mar 2022 11:04:00 +0800, Johnson Wang wrote:
+> This patchset adds support for MediaTek PMIC MT6366.
+> MT6366 is the primary PMIC for MT8186 and probably other SOCs.
 > 
+> Changes in v2:
+> - rebase on Linux 5.17-rc8
+> - change subject line
 > 
+> [...]
 
 Applied to
 
@@ -62,8 +67,10 @@ Applied to
 
 Thanks!
 
-[1/1] regulator: dt-bindings: richtek,rt4801: minor comments adjustments
-      commit: 41812783057c01e4e5f1eec649607e4773124dba
+[1/2] regulator: mt6366: Add support for MT6366 regulator
+      commit: d077002c9d07dc6f64d07a362202a1e1081b2f6c
+[2/2] dt-bindings: regulator: Add BUCK and LDO document for MT6358 and MT6366
+      commit: 417dfad7e4f0501853e05a46742a4e47075f034c
 
 All being well this means that it will be integrated into the linux-next
 tree (usually sometime in the next 24 hours) and sent to Linus during
