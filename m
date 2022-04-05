@@ -2,46 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 05743C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:57:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D309BC43219
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:57:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343567AbiDEI5E (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 04:57:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41720 "EHLO
+        id S233231AbiDEI5p (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 04:57:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34814 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235027AbiDEIOp (ORCPT
+        with ESMTP id S236867AbiDEIRG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:14:45 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57F3D9D0E1;
-        Tue,  5 Apr 2022 01:03:16 -0700 (PDT)
+        Tue, 5 Apr 2022 04:17:06 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 204CAAF1E4;
+        Tue,  5 Apr 2022 01:04:46 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9B26F61684;
-        Tue,  5 Apr 2022 08:03:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A5E5BC385A3;
-        Tue,  5 Apr 2022 08:03:14 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9A1ABB81A32;
+        Tue,  5 Apr 2022 08:04:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F1444C385A1;
+        Tue,  5 Apr 2022 08:04:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649145795;
-        bh=k43HI1oa+1ay+oQjwrj4y1FFW04YWbKgIhD+6XlwZdk=;
+        s=korg; t=1649145883;
+        bh=pUXd/odrjqglX+qTSbsO6wGpyhmHpt2EgqG6TEgFfPs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tQTFSQ/RioE/keFYc6rAfshcuiwf8WZPKLQ5ntX6GTFdicRImtJReBohnYaUToybr
-         bdomr0XOV1fv3EmbJL1BzKimvCxO3G3JE2H7rDjYYTLPyfwsy+NhszBY2Ybhz08IVt
-         BNZ/4ozoke63njsGcb3NzaoYkdlRkj5J4ZkTyiTA=
+        b=cOFhOI+U4FPUNYmN0twqMPeWTE8vkt0m7G4pARkKT4qV+OPR8uEDEYVf7xCbVI6dn
+         MEks7T8m9rUrPuBfTWWTrmzeJ/Y3Z3sRj5N20zisfgLQT+YOUTWvQ1czSLN+VFg3Pc
+         p19cWtt7x7MqGs3KvU9oJlyqG3psdXX+p4x3HRKI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        =?UTF-8?q?Alex=20Benn=C3=A9e?= <alex.bennee@linaro.org>,
-        Ben Widawsky <ben.widawsky@intel.com>,
-        Dan Williams <dan.j.williams@intel.com>,
+        Amit Kumar Mahapatra <amit.kumar-mahapatra@xilinx.com>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0532/1126] cxl/regs: Fix size of CXL Capability Header Register
-Date:   Tue,  5 Apr 2022 09:21:19 +0200
-Message-Id: <20220405070423.246673251@linuxfoundation.org>
+Subject: [PATCH 5.17 0565/1126] mtd: rawnand: pl353: Set the nand chip node as the flash node
+Date:   Tue,  5 Apr 2022 09:21:52 +0200
+Message-Id: <20220405070424.217402117@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -53,69 +50,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+From: Amit Kumar Mahapatra <amit.kumar-mahapatra@xilinx.com>
 
-[ Upstream commit 74b0fe80409733055971bbfaf33c80a33fddeeb3 ]
+[ Upstream commit a1fe2ace2c39dcdc7c053705459a73b7598b1e4f ]
 
-In CXL 2.0, 8.2.5.1 CXL Capability Header Register: this register
-is given as 32 bits.
+In devicetree the flash information is embedded within nand chip node,
+so during nand chip initialization the nand chip node should be passed
+to nand_set_flash_node() api, instead of nand controller node.
 
-8.2.3 which covers the CXL 2.0 Component registers, including the
-CXL Capability Header Register states that access restrictions
-specified in Section 8.2.2 apply.
-
-8.2.2 includes:
-* A 32 bit register shall be accessed as a 4 Byte quantity.
-...
-If these rules are not followed, the behavior is undefined.
-
-Discovered during review of CXL QEMU emulation. Alex Bennée pointed
-out there was a comment saying that 4 byte registers must be read
-with a 4 byte read, but 8 byte reads were being emulated.
-
-https://lore.kernel.org/qemu-devel/87bkzyd3c7.fsf@linaro.org/
-
-Fixing that, led to this code failing. Whilst a given hardware
-implementation 'might' work with an 8 byte read, it should not be relied
-upon. The QEMU emulation v5 will return 0 and log the wrong access width.
-
-The code moved, so one fixes tag for where this will directly apply and
-also a reference to the earlier introduction of the code for backports.
-
-Fixes: 0f06157e0135 ("cxl/core: Move register mapping infrastructure")
-Fixes: 08422378c4ad ("cxl/pci: Add HDM decoder capabilities")
-Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Cc: Alex Bennée <alex.bennee@linaro.org>
-Reviewed-by: Ben Widawsky <ben.widawsky@intel.com>
-Link: https://lore.kernel.org/r/20220201153437.2873-1-Jonathan.Cameron@huawei.com
-Signed-off-by: Dan Williams <dan.j.williams@intel.com>
+Fixes: 08d8c62164a3 ("mtd: rawnand: pl353: Add support for the ARM PL353 SMC NAND controller")
+Signed-off-by: Amit Kumar Mahapatra <amit.kumar-mahapatra@xilinx.com>
+Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+Link: https://lore.kernel.org/linux-mtd/20220209053427.27676-1-amit.kumar-mahapatra@xilinx.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/cxl/core/regs.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/mtd/nand/raw/pl35x-nand-controller.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/cxl/core/regs.c b/drivers/cxl/core/regs.c
-index cdc0b75d94f2..6a18ff8739e0 100644
---- a/drivers/cxl/core/regs.c
-+++ b/drivers/cxl/core/regs.c
-@@ -35,7 +35,7 @@ void cxl_probe_component_regs(struct device *dev, void __iomem *base,
- 			      struct cxl_component_reg_map *map)
- {
- 	int cap, cap_count;
--	u64 cap_array;
-+	u32 cap_array;
- 
- 	*map = (struct cxl_component_reg_map) { 0 };
- 
-@@ -45,7 +45,7 @@ void cxl_probe_component_regs(struct device *dev, void __iomem *base,
- 	 */
- 	base += CXL_CM_OFFSET;
- 
--	cap_array = readq(base + CXL_CM_CAP_HDR_OFFSET);
-+	cap_array = readl(base + CXL_CM_CAP_HDR_OFFSET);
- 
- 	if (FIELD_GET(CXL_CM_CAP_HDR_ID_MASK, cap_array) != CM_CAP_HDR_CAP_ID) {
- 		dev_err(dev,
+diff --git a/drivers/mtd/nand/raw/pl35x-nand-controller.c b/drivers/mtd/nand/raw/pl35x-nand-controller.c
+index 8a91e069ee2e..3c6f6aff649f 100644
+--- a/drivers/mtd/nand/raw/pl35x-nand-controller.c
++++ b/drivers/mtd/nand/raw/pl35x-nand-controller.c
+@@ -1062,7 +1062,7 @@ static int pl35x_nand_chip_init(struct pl35x_nandc *nfc,
+ 	chip->controller = &nfc->controller;
+ 	mtd = nand_to_mtd(chip);
+ 	mtd->dev.parent = nfc->dev;
+-	nand_set_flash_node(chip, nfc->dev->of_node);
++	nand_set_flash_node(chip, np);
+ 	if (!mtd->name) {
+ 		mtd->name = devm_kasprintf(nfc->dev, GFP_KERNEL,
+ 					   "%s", PL35X_NANDC_DRIVER_NAME);
 -- 
 2.34.1
 
