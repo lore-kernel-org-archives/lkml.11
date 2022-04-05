@@ -2,44 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EF834C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 09:51:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E54EC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 09:51:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242560AbiDEJhh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 05:37:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34816 "EHLO
+        id S242633AbiDEJhq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 05:37:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34818 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239436AbiDEIUF (ORCPT
+        with ESMTP id S239427AbiDEIUE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:20:05 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6735C91572;
-        Tue,  5 Apr 2022 01:13:11 -0700 (PDT)
+        Tue, 5 Apr 2022 04:20:04 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77C5091350;
+        Tue,  5 Apr 2022 01:13:01 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 143C5B81B90;
-        Tue,  5 Apr 2022 08:13:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 72492C385A2;
-        Tue,  5 Apr 2022 08:13:08 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E9A1160B0B;
+        Tue,  5 Apr 2022 08:13:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E8094C385A2;
+        Tue,  5 Apr 2022 08:12:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649146388;
-        bh=TYK4B6kjg7vfkpzhpVpnNb+aVZu1hz8gIrRdAKmIiQs=;
+        s=korg; t=1649146380;
+        bh=qQXWyRu4TEliDafq6CKePkOIo5nPfDxb/EyW2btOqvo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bCGB/MKleNpOORX8ii2jZrx/Lo+EX3VSG3L8JVO8yPgBwcW1RXM21Ay5MvXpdJqum
-         dwtFQKFnSKJdy4y4TbSviGlm798UYW3ak/zbX+3moFvvLlyzEwpCSw8MXccpM51keP
-         9O850PLTiV8vbnvkEUAKA9W3zZg5Chg2nNeEXr7g=
+        b=DKn9AjFAgNYTZ8ZY/D1JzgRs5xbfUfELO6+zglFpRfN4qs/k7QeO4sADfq4YUqd5R
+         yvkle/zq2NsKzOAglO2EIUa+nvLfkqdF+L4ZbwWOu5JO6edRyHX5fQmvJf3LbeMlay
+         bFAkWoCQ4MQ2U4M0cAwYloia316aIZpHWcvCF3Bg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Codrin Ciubotariu <codrin.ciubotariu@microchip.com>,
-        Claudiu Beznea <claudiu.beznea@microchip.com>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        stable@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
+        Igor Zhbanov <i.zhbanov@omprussia.ru>,
+        Joerg Roedel <joro@8bytes.org>, Christoph Hellwig <hch@lst.de>,
+        Marek Szyprowski <m.szyprowski@samsung.com>,
+        iommu@lists.linux-foundation.org,
+        Robin Murphy <robin.murphy@arm.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0745/1126] clk: at91: sama7g5: fix parents of PDMCs GCLK
-Date:   Tue,  5 Apr 2022 09:24:52 +0200
-Message-Id: <20220405070429.452117570@linuxfoundation.org>
+Subject: [PATCH 5.17 0742/1126] dma-debug: fix return value of __setup handlers
+Date:   Tue,  5 Apr 2022 09:24:49 +0200
+Message-Id: <20220405070429.365761334@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -51,47 +53,70 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Codrin Ciubotariu <codrin.ciubotariu@microchip.com>
+From: Randy Dunlap <rdunlap@infradead.org>
 
-[ Upstream commit 1a944729d8635fa59638f24e8727d5ccaa0c8c19 ]
+[ Upstream commit 80e4390981618e290616dbd06ea190d4576f219d ]
 
-Audio PLL can be used as parent by the GCLKs of PDMCs.
+When valid kernel command line parameters
+  dma_debug=off dma_debug_entries=100
+are used, they are reported as Unknown parameters and added to init's
+environment strings, polluting it.
 
-Fixes: cb783bbbcf54 ("clk: at91: sama7g5: add clock support for sama7g5")
-Signed-off-by: Codrin Ciubotariu <codrin.ciubotariu@microchip.com>
-Reviewed-by: Claudiu Beznea <claudiu.beznea@microchip.com>
-Signed-off-by: Nicolas Ferre <nicolas.ferre@microchip.com>
-Link: https://lore.kernel.org/r/20220304182616.1920392-1-codrin.ciubotariu@microchip.com
+  Unknown kernel command line parameters "BOOT_IMAGE=/boot/bzImage-517rc5
+    dma_debug=off dma_debug_entries=100", will be passed to user space.
+
+and
+
+ Run /sbin/init as init process
+   with arguments:
+     /sbin/init
+   with environment:
+     HOME=/
+     TERM=linux
+     BOOT_IMAGE=/boot/bzImage-517rc5
+     dma_debug=off
+     dma_debug_entries=100
+
+Return 1 from these __setup handlers to indicate that the command line
+option has been handled.
+
+Fixes: 59d3daafa1726 ("dma-debug: add kernel command line parameters")
+Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+Reported-by: Igor Zhbanov <i.zhbanov@omprussia.ru>
+Link: lore.kernel.org/r/64644a2f-4a20-bab3-1e15-3b2cdd0defe3@omprussia.ru
+Cc: Joerg Roedel <joro@8bytes.org>
+Cc: Christoph Hellwig <hch@lst.de>
+Cc: Marek Szyprowski <m.szyprowski@samsung.com>
+Cc: iommu@lists.linux-foundation.org
+Cc: Robin Murphy <robin.murphy@arm.com>
+Signed-off-by: Christoph Hellwig <hch@lst.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/clk/at91/sama7g5.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ kernel/dma/debug.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/clk/at91/sama7g5.c b/drivers/clk/at91/sama7g5.c
-index 369dfafabbca..060e908086a1 100644
---- a/drivers/clk/at91/sama7g5.c
-+++ b/drivers/clk/at91/sama7g5.c
-@@ -696,16 +696,16 @@ static const struct {
- 	{ .n  = "pdmc0_gclk",
- 	  .id = 68,
- 	  .r = { .max = 50000000  },
--	  .pp = { "syspll_divpmcck", "baudpll_divpmcck", },
--	  .pp_mux_table = { 5, 8, },
-+	  .pp = { "syspll_divpmcck", "audiopll_divpmcck", },
-+	  .pp_mux_table = { 5, 9, },
- 	  .pp_count = 2,
- 	  .pp_chg_id = INT_MIN, },
+diff --git a/kernel/dma/debug.c b/kernel/dma/debug.c
+index 7a14ca29c377..f8ff598596b8 100644
+--- a/kernel/dma/debug.c
++++ b/kernel/dma/debug.c
+@@ -927,7 +927,7 @@ static __init int dma_debug_cmdline(char *str)
+ 		global_disable = true;
+ 	}
  
- 	{ .n  = "pdmc1_gclk",
- 	  .id = 69,
- 	  .r = { .max = 50000000, },
--	  .pp = { "syspll_divpmcck", "baudpll_divpmcck", },
--	  .pp_mux_table = { 5, 8, },
-+	  .pp = { "syspll_divpmcck", "audiopll_divpmcck", },
-+	  .pp_mux_table = { 5, 9, },
- 	  .pp_count = 2,
- 	  .pp_chg_id = INT_MIN, },
+-	return 0;
++	return 1;
+ }
  
+ static __init int dma_debug_entries_cmdline(char *str)
+@@ -936,7 +936,7 @@ static __init int dma_debug_entries_cmdline(char *str)
+ 		return -EINVAL;
+ 	if (!get_option(&str, &nr_prealloc_entries))
+ 		nr_prealloc_entries = PREALLOC_DMA_DEBUG_ENTRIES;
+-	return 0;
++	return 1;
+ }
+ 
+ __setup("dma_debug=", dma_debug_cmdline);
 -- 
 2.34.1
 
