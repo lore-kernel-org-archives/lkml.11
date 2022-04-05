@@ -2,84 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C209CC41535
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 02:32:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 20FA7C35273
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 02:32:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1849293AbiDFCe0 (ORCPT
+        id S1849355AbiDFCeg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 22:34:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59400 "EHLO
+        Tue, 5 Apr 2022 22:34:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56462 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1446036AbiDEWWE (ORCPT
+        with ESMTP id S1349583AbiDEW0v (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 18:22:04 -0400
-Received: from mail-qt1-x831.google.com (mail-qt1-x831.google.com [IPv6:2607:f8b0:4864:20::831])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83BB910505B
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 14:14:30 -0700 (PDT)
-Received: by mail-qt1-x831.google.com with SMTP id 10so1189697qtz.11
-        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 14:14:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linuxfoundation.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=o0wDpIkEwpRJQFvM50lGA/vb8efTxI0/dQ/fmk4QzbA=;
-        b=ThI3NTIpoBycVs2LfLGSPPFPXxE4ZirP4bQIXVK4NbCb7Gu+0u7SnfLzt3RF2+v2Ua
-         Om2EemBJj5MGUstXBIhyiQ5C9tIkivpr4u0eqJAwXUtK2uxch/zsc8jti2zcPazIB2hM
-         ZF//e5qzhrW1jE2djugTCfKFrjmvXwhJvNL9c=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=o0wDpIkEwpRJQFvM50lGA/vb8efTxI0/dQ/fmk4QzbA=;
-        b=lF7rBMl/WOXAI4RxCoQTT0Hw+bf+p2zeoxj2cr8d+W1LO7Z0H2bW9GS1CnTOIJQm4E
-         p3/5DDhnYobpYCZIMl271OCGBzO+SSSd9HSF9LXnZCqqkdeJxuTO5W/LMa4HdfAxLrXG
-         i/S2u5dAE256O6xB4HAzYLnzloJkK5cm/2ZfYH88WBmUtDDqkLdJHuL+kFJb0tKj90Rg
-         rWUR/ILNdjMpgV2ctuDpFK4IUEtpa9atgGUuoeDAHKzKmlTa36v8ckdTTkIkOe1PgEo6
-         ISnSiUqEF+G9HQ2MmQrnJ5sj+KWmTAFXIrofPXVCqGgr6KSbzR2cAkthAB47vuvMV6rP
-         j8/Q==
-X-Gm-Message-State: AOAM530H7jfz56mjpM70eILbz7EMALDP5sEGFOrQkDa2nepbf8elIXIm
-        io2Kq7YinjO/THtRNaoimbzfIw==
-X-Google-Smtp-Source: ABdhPJxz81u5YQuiZoDNOUymjm0pKS8xOdGu0TNaTbvTwvmeHetQudOhEx7SLNocVGCOfNZxig1XXA==
-X-Received: by 2002:a05:620a:24c5:b0:67d:99c9:eaf9 with SMTP id m5-20020a05620a24c500b0067d99c9eaf9mr3685452qkn.379.1649193269614;
-        Tue, 05 Apr 2022 14:14:29 -0700 (PDT)
-Received: from meerkat.local (bras-base-mtrlpq5031w-grc-32-216-209-220-127.dsl.bell.ca. [216.209.220.127])
-        by smtp.gmail.com with ESMTPSA id v9-20020a05620a0a8900b0067db9cc46a9sm8216024qkg.62.2022.04.05.14.14.29
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 05 Apr 2022 14:14:29 -0700 (PDT)
-Date:   Tue, 5 Apr 2022 17:14:27 -0400
-From:   Konstantin Ryabitsev <konstantin@linuxfoundation.org>
-To:     Guenter Roeck <linux@roeck-us.net>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Larry Finger <Larry.Finger@lwfinger.net>,
-        Oded Gabbay <ogabbay@kernel.org>, Jiri Slaby <jslaby@suse.cz>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: Linux 5.18-rc1
-Message-ID: <20220405211427.ybl54q5smqicvad4@meerkat.local>
-References: <CAHk-=wg6FWL1xjVyHx7DdjD2dHZETA5_=FqqW17Z19X-WTfWSg@mail.gmail.com>
- <20220404022239.GA1186352@roeck-us.net>
- <CAHk-=wimc7V9mi=P+6p2nnctPYtSM55OSPVERUeJor7fkD_EVg@mail.gmail.com>
- <aba387bd-9799-e0b5-40e3-1bcb552ac74c@roeck-us.net>
- <CAHk-=witgMUS8To6wijxdbQ+QEH0gcHSYV6Y=yzOdb=Q4h9PJA@mail.gmail.com>
- <ea840ab9-0c20-8c06-f7d4-bb9642a63500@roeck-us.net>
+        Tue, 5 Apr 2022 18:26:51 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E68E17A2F6;
+        Tue,  5 Apr 2022 14:24:47 -0700 (PDT)
+From:   John Ogness <john.ogness@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1649193852;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=NJUFDru3qyRPcfEWEwWxICWATudSEIElFknJUgTQ0rI=;
+        b=cCDrq+y4GV3ckhkx0flFd1XPyBIxnBgkMD4TFRB8m3nQ+HlLtjIpzgwvCremvc1EzQLtqu
+        +qhehmh6PeprC5PqL3qAAvNxiyR6qkzBGhSLt+XyHvBZRr2mqTVsFgdEIsI+VXx8CkREUN
+        Us+Vxoci2U4gstiAPEVAwUub7+pMdMUp80sA/LewDbfaVc6MMeqloUiNNONCciWCQKnoWj
+        i1XvU0GDjhnAssqIAYLJHu9QBixaB1lMNWeQKl4SlIppYJUPWRi18M0u8SL1phBxGAUCao
+        9cI2+xyzwHKD3uMCL/OrPB6gG+HnQv0M181JhYU1EOgOQ9RTUztrNwD2BnQcIQ==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1649193852;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=NJUFDru3qyRPcfEWEwWxICWATudSEIElFknJUgTQ0rI=;
+        b=Gf60UpzSNAwZhbH/FbvMcoEFj+IASDOG+6UsBJsVK9yir1a5I2JZsB9eUzG8bzlbDdMrVV
+        RJms7BQQG5P33ECw==
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     Petr Mladek <pmladek@suse.com>,
+        Sergey Senozhatsky <senozhatsky@chromium.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        linux-kernel@vger.kernel.org,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Marco Elver <elver@google.com>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Alexander Potapenko <glider@google.com>,
+        Stephen Boyd <swboyd@chromium.org>,
+        Nicholas Piggin <npiggin@gmail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        "Paul E. McKenney" <paulmck@kernel.org>,
+        Frederic Weisbecker <frederic@kernel.org>,
+        Neeraj Upadhyay <quic_neeraju@quicinc.com>,
+        Josh Triplett <josh@joshtriplett.org>,
+        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+        Lai Jiangshan <jiangshanlai@gmail.com>,
+        Joel Fernandes <joel@joelfernandes.org>,
+        Kees Cook <keescook@chromium.org>,
+        Luis Chamberlain <mcgrof@kernel.org>,
+        Wei Liu <wei.liu@kernel.org>,
+        Xiaoming Ni <nixiaoming@huawei.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Helge Deller <deller@gmx.de>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Shawn Guo <shawn.guo@linaro.org>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>,
+        "Eric W. Biederman" <ebiederm@xmission.com>,
+        Phil Auld <pauld@redhat.com>,
+        Juri Lelli <juri.lelli@redhat.com>,
+        Wang Qing <wangqing@vivo.com>, rcu@vger.kernel.org
+Subject: Re: [PATCH printk v2 00/12] implement threaded console printing
+In-Reply-To: <YkxaTy08ClcNj0P3@smile.fi.intel.com>
+References: <20220405132535.649171-1-john.ogness@linutronix.de>
+ <YkxaTy08ClcNj0P3@smile.fi.intel.com>
+Date:   Tue, 05 Apr 2022 23:30:10 +0206
+Message-ID: <87sfqrrzph.fsf@jogness.linutronix.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <ea840ab9-0c20-8c06-f7d4-bb9642a63500@roeck-us.net>
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Apr 04, 2022 at 09:45:46AM -0700, Guenter Roeck wrote:
-> I tried to tell my provider, but to no avail. Until now I used gmail,
-> but gmail will disable that ability by end of this month, leaving me
-> in the dark. Lose-lose situation for me. Right now I don't have a
-> useful alternative that doesn't require me to change my e-mail
-> address completely (or setting up my own e-mail server which
-> is a pita).
+On 2022-04-05, Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
+> From the list of patches and the only one I am Cc'ed to I can't find
+> the answer to my question,
 
-There are hosting providers that are known to work well. Many people happily
-use fastmail (e.g. Greg KH), and it is known to do All The Right Things when
-it comes to DKIM/DMARC.
+It seems lore is having trouble picking up the series. Until then, I've
+pushed the series to github.com so you can see the code.
 
--K
+> i.e. does it take care about console_unregister() cases at run time?
+> (We have some drivers to call ->exit() for console in that case,
+> perhaps it should do something before calling it.)
+
+Yes. In console_unregister(), the printing thread is shutdown before the
+actual console unregistration takes place. The thread is shutdown here:
+
+https://github.com/Linutronix/linux/blob/b27eb6c3d168d608b3a9d04578e030a3d79d889a/kernel/printk/printk.c#L3393
+
+The console's exit() callback is below that:
+
+https://github.com/Linutronix/linux/blob/b27eb6c3d168d608b3a9d04578e030a3d79d889a/kernel/printk/printk.c#L3429
+
+> Would be nice to see some pointers where I can find the answer and
+> maybe even describing in the cover-letter/commit
+> message/documentation.
+
+I suppose for the console thread patch [0] I could add a paragraph to
+the commit message mentioning kernel thread shutdown for console
+unregistration.
+
+[0] https://github.com/Linutronix/linux/commit/e26ae677da2e339dd268c1f871b81e61e782393f
+
+John
