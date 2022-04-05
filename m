@@ -2,46 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A8A3C4321E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DAED1C4167E
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 22:09:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1391383AbiDEWFY (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 18:05:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58046 "EHLO
+        id S231459AbiDEWFi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 18:05:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43808 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355857AbiDEKWK (ORCPT
+        with ESMTP id S1354395AbiDEKOA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:22:10 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 411A7A5EAD;
-        Tue,  5 Apr 2022 03:05:13 -0700 (PDT)
+        Tue, 5 Apr 2022 06:14:00 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27124692BA;
+        Tue,  5 Apr 2022 03:00:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2F3C16167E;
-        Tue,  5 Apr 2022 10:05:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 32416C385A1;
-        Tue,  5 Apr 2022 10:05:11 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DB6D8B81C83;
+        Tue,  5 Apr 2022 09:59:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 33ABEC385A1;
+        Tue,  5 Apr 2022 09:59:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649153112;
-        bh=ZcVQpwvFrXJtLOsqi3jPXEcTtdIZsDWqBIA96z9gCqY=;
+        s=korg; t=1649152797;
+        bh=/UGrkgR647QQXM3GQRZYQjVcQ6Z9E8jtvWs6yNBcuDQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ePSBlrTNElE/oHLICPC9XdCdNoLK9p1Eqqasiy+Pdb+6KH9vb//bmeV1785Q7G6CM
-         NaMm5Es2xtQM9AC+OqSd/N0293aFVyOxtap0hULlSX+W6Xzc5FFLkepO3aVmTwT30n
-         y8HjL49zx4NR9xiBJ702r2cfl5+TLsOM6ACWBtfM=
+        b=BX1m9XbmmB419nYHNUW4m5KTWdjex61iBKouzFiCuK7NaGBZgG6oKOSKN1denDwcs
+         Gluv6MhqYPP1NpLGOsLH1X6+SAVxuZ+Ix/395/bvYjmWK0RlmKbs5BvgJHwXxpGm/T
+         u3j3IwUb1OxV20eIMw5de9ZG5nA8toDxhTYEnneI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Jann Horn <jannh@google.com>, Kees Cook <keescook@chromium.org>
-Subject: [PATCH 5.10 105/599] pstore: Dont use semaphores in always-atomic-context code
-Date:   Tue,  5 Apr 2022 09:26:39 +0200
-Message-Id: <20220405070301.958868258@linuxfoundation.org>
+        stable@vger.kernel.org, Qiuhao Li <qiuhao@sysec.org>,
+        Gaoning Pan <pgn@zju.edu.cn>, Yongkang Jia <kangel@zju.edu.cn>,
+        syzbot+6cde2282daa792c49ab8@syzkaller.appspotmail.com,
+        Maxim Levitsky <mlevitsk@redhat.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Tadeusz Struk <tadeusz.struk@linaro.org>
+Subject: [PATCH 5.15 904/913] KVM: x86/mmu: do compare-and-exchange of gPTE via the user address
+Date:   Tue,  5 Apr 2022 09:32:46 +0200
+Message-Id: <20220405070406.915680217@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,170 +52,152 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jann Horn <jannh@google.com>
+From: Paolo Bonzini <pbonzini@redhat.com>
 
-commit 8126b1c73108bc691f5643df19071a59a69d0bc6 upstream.
+commit 2a8859f373b0a86f0ece8ec8312607eacf12485d upstream.
 
-pstore_dump() is *always* invoked in atomic context (nowadays in an RCU
-read-side critical section, before that under a spinlock).
-It doesn't make sense to try to use semaphores here.
+FNAME(cmpxchg_gpte) is an inefficient mess.  It is at least decent if it
+can go through get_user_pages_fast(), but if it cannot then it tries to
+use memremap(); that is not just terribly slow, it is also wrong because
+it assumes that the VM_PFNMAP VMA is contiguous.
 
-This is mostly a revert of commit ea84b580b955 ("pstore: Convert buf_lock
-to semaphore"), except that two parts aren't restored back exactly as they
-were:
+The right way to do it would be to do the same thing as
+hva_to_pfn_remapped() does since commit add6a0cd1c5b ("KVM: MMU: try to
+fix up page faults before giving up", 2016-07-05), using follow_pte()
+and fixup_user_fault() to determine the correct address to use for
+memremap().  To do this, one could for example extract hva_to_pfn()
+for use outside virt/kvm/kvm_main.c.  But really there is no reason to
+do that either, because there is already a perfectly valid address to
+do the cmpxchg() on, only it is a userspace address.  That means doing
+user_access_begin()/user_access_end() and writing the code in assembly
+to handle exceptions correctly.  Worse, the guest PTE can be 8-byte
+even on i686 so there is the extra complication of using cmpxchg8b to
+account for.  But at least it is an efficient mess.
 
- - keep the lock initialization in pstore_register
- - in efi_pstore_write(), always set the "block" flag to false
- - omit "is_locked", that was unnecessary since
-   commit 959217c84c27 ("pstore: Actually give up during locking failure")
- - fix the bailout message
+(Thanks to Linus for suggesting improvement on the inline assembly).
 
-The actual problem that the buggy commit was trying to address may have
-been that the use of preemptible() in efi_pstore_write() was wrong - it
-only looks at preempt_count() and the state of IRQs, but __rcu_read_lock()
-doesn't touch either of those under CONFIG_PREEMPT_RCU.
-(Sidenote: CONFIG_PREEMPT_RCU means that the scheduler can preempt tasks in
-RCU read-side critical sections, but you're not allowed to actively
-block/reschedule.)
-
-Lockdep probably never caught the problem because it's very rare that you
-actually hit the contended case, so lockdep always just sees the
-down_trylock(), not the down_interruptible(), and so it can't tell that
-there's a problem.
-
-Fixes: ea84b580b955 ("pstore: Convert buf_lock to semaphore")
+Reported-by: Qiuhao Li <qiuhao@sysec.org>
+Reported-by: Gaoning Pan <pgn@zju.edu.cn>
+Reported-by: Yongkang Jia <kangel@zju.edu.cn>
+Reported-by: syzbot+6cde2282daa792c49ab8@syzkaller.appspotmail.com
+Debugged-by: Tadeusz Struk <tadeusz.struk@linaro.org>
+Tested-by: Maxim Levitsky <mlevitsk@redhat.com>
 Cc: stable@vger.kernel.org
-Acked-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Signed-off-by: Jann Horn <jannh@google.com>
-Signed-off-by: Kees Cook <keescook@chromium.org>
-Link: https://lore.kernel.org/r/20220314185953.2068993-1-jannh@google.com
+Fixes: bd53cb35a3e9 ("X86/KVM: Handle PFNs outside of kernel reach when touching GPTEs")
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/firmware/efi/efi-pstore.c |    2 +-
- fs/pstore/platform.c              |   38 ++++++++++++++++++--------------------
- include/linux/pstore.h            |    6 +++---
- 3 files changed, 22 insertions(+), 24 deletions(-)
+ arch/x86/kvm/mmu/paging_tmpl.h |   77 +++++++++++++++++++----------------------
+ 1 file changed, 37 insertions(+), 40 deletions(-)
 
---- a/drivers/firmware/efi/efi-pstore.c
-+++ b/drivers/firmware/efi/efi-pstore.c
-@@ -266,7 +266,7 @@ static int efi_pstore_write(struct pstor
- 		efi_name[i] = name[i];
- 
- 	ret = efivar_entry_set_safe(efi_name, vendor, PSTORE_EFI_ATTRIBUTES,
--			      preemptible(), record->size, record->psi->buf);
-+			      false, record->size, record->psi->buf);
- 
- 	if (record->reason == KMSG_DUMP_OOPS && try_module_get(THIS_MODULE))
- 		if (!schedule_work(&efivar_work))
---- a/fs/pstore/platform.c
-+++ b/fs/pstore/platform.c
-@@ -143,21 +143,22 @@ static void pstore_timer_kick(void)
- 	mod_timer(&pstore_timer, jiffies + msecs_to_jiffies(pstore_update_ms));
- }
- 
--/*
-- * Should pstore_dump() wait for a concurrent pstore_dump()? If
-- * not, the current pstore_dump() will report a failure to dump
-- * and return.
-- */
--static bool pstore_cannot_wait(enum kmsg_dump_reason reason)
-+static bool pstore_cannot_block_path(enum kmsg_dump_reason reason)
+--- a/arch/x86/kvm/mmu/paging_tmpl.h
++++ b/arch/x86/kvm/mmu/paging_tmpl.h
+@@ -34,9 +34,8 @@
+ 	#define PT_HAVE_ACCESSED_DIRTY(mmu) true
+ 	#ifdef CONFIG_X86_64
+ 	#define PT_MAX_FULL_LEVELS PT64_ROOT_MAX_LEVEL
+-	#define CMPXCHG cmpxchg
++	#define CMPXCHG "cmpxchgq"
+ 	#else
+-	#define CMPXCHG cmpxchg64
+ 	#define PT_MAX_FULL_LEVELS 2
+ 	#endif
+ #elif PTTYPE == 32
+@@ -52,7 +51,7 @@
+ 	#define PT_GUEST_DIRTY_SHIFT PT_DIRTY_SHIFT
+ 	#define PT_GUEST_ACCESSED_SHIFT PT_ACCESSED_SHIFT
+ 	#define PT_HAVE_ACCESSED_DIRTY(mmu) true
+-	#define CMPXCHG cmpxchg
++	#define CMPXCHG "cmpxchgl"
+ #elif PTTYPE == PTTYPE_EPT
+ 	#define pt_element_t u64
+ 	#define guest_walker guest_walkerEPT
+@@ -65,7 +64,9 @@
+ 	#define PT_GUEST_DIRTY_SHIFT 9
+ 	#define PT_GUEST_ACCESSED_SHIFT 8
+ 	#define PT_HAVE_ACCESSED_DIRTY(mmu) ((mmu)->ept_ad)
+-	#define CMPXCHG cmpxchg64
++	#ifdef CONFIG_X86_64
++	#define CMPXCHG "cmpxchgq"
++	#endif
+ 	#define PT_MAX_FULL_LEVELS PT64_ROOT_MAX_LEVEL
+ #else
+ 	#error Invalid PTTYPE value
+@@ -147,43 +148,39 @@ static int FNAME(cmpxchg_gpte)(struct kv
+ 			       pt_element_t __user *ptep_user, unsigned index,
+ 			       pt_element_t orig_pte, pt_element_t new_pte)
  {
--	/* In NMI path, pstore shouldn't block regardless of reason. */
-+	/*
-+	 * In case of NMI path, pstore shouldn't be blocked
-+	 * regardless of reason.
-+	 */
- 	if (in_nmi())
- 		return true;
- 
- 	switch (reason) {
- 	/* In panic case, other cpus are stopped by smp_send_stop(). */
- 	case KMSG_DUMP_PANIC:
--	/* Emergency restart shouldn't be blocked. */
-+	/*
-+	 * Emergency restart shouldn't be blocked by spinning on
-+	 * pstore_info::buf_lock.
-+	 */
- 	case KMSG_DUMP_EMERG:
- 		return true;
- 	default:
-@@ -388,21 +389,19 @@ static void pstore_dump(struct kmsg_dump
- 	unsigned long	total = 0;
- 	const char	*why;
- 	unsigned int	part = 1;
-+	unsigned long	flags = 0;
- 	int		ret;
- 
- 	why = kmsg_dump_reason_str(reason);
- 
--	if (down_trylock(&psinfo->buf_lock)) {
--		/* Failed to acquire lock: give up if we cannot wait. */
--		if (pstore_cannot_wait(reason)) {
--			pr_err("dump skipped in %s path: may corrupt error record\n",
--				in_nmi() ? "NMI" : why);
--			return;
--		}
--		if (down_interruptible(&psinfo->buf_lock)) {
--			pr_err("could not grab semaphore?!\n");
-+	if (pstore_cannot_block_path(reason)) {
-+		if (!spin_trylock_irqsave(&psinfo->buf_lock, flags)) {
-+			pr_err("dump skipped in %s path because of concurrent dump\n",
-+					in_nmi() ? "NMI" : why);
- 			return;
- 		}
-+	} else {
-+		spin_lock_irqsave(&psinfo->buf_lock, flags);
- 	}
- 
- 	oopscount++;
-@@ -464,8 +463,7 @@ static void pstore_dump(struct kmsg_dump
- 		total += record.size;
- 		part++;
- 	}
+-	int npages;
+-	pt_element_t ret;
+-	pt_element_t *table;
+-	struct page *page;
 -
--	up(&psinfo->buf_lock);
-+	spin_unlock_irqrestore(&psinfo->buf_lock, flags);
+-	npages = get_user_pages_fast((unsigned long)ptep_user, 1, FOLL_WRITE, &page);
+-	if (likely(npages == 1)) {
+-		table = kmap_atomic(page);
+-		ret = CMPXCHG(&table[index], orig_pte, new_pte);
+-		kunmap_atomic(table);
+-
+-		kvm_release_page_dirty(page);
+-	} else {
+-		struct vm_area_struct *vma;
+-		unsigned long vaddr = (unsigned long)ptep_user & PAGE_MASK;
+-		unsigned long pfn;
+-		unsigned long paddr;
+-
+-		mmap_read_lock(current->mm);
+-		vma = find_vma_intersection(current->mm, vaddr, vaddr + PAGE_SIZE);
+-		if (!vma || !(vma->vm_flags & VM_PFNMAP)) {
+-			mmap_read_unlock(current->mm);
+-			return -EFAULT;
+-		}
+-		pfn = ((vaddr - vma->vm_start) >> PAGE_SHIFT) + vma->vm_pgoff;
+-		paddr = pfn << PAGE_SHIFT;
+-		table = memremap(paddr, PAGE_SIZE, MEMREMAP_WB);
+-		if (!table) {
+-			mmap_read_unlock(current->mm);
+-			return -EFAULT;
+-		}
+-		ret = CMPXCHG(&table[index], orig_pte, new_pte);
+-		memunmap(table);
+-		mmap_read_unlock(current->mm);
+-	}
++	int r = -EFAULT;
++
++	if (!user_access_begin(ptep_user, sizeof(pt_element_t)))
++		return -EFAULT;
++
++#ifdef CMPXCHG
++	asm volatile("1:" LOCK_PREFIX CMPXCHG " %[new], %[ptr]\n"
++		     "mov $0, %[r]\n"
++		     "setnz %b[r]\n"
++		     "2:"
++		     _ASM_EXTABLE_UA(1b, 2b)
++		     : [ptr] "+m" (*ptep_user),
++		       [old] "+a" (orig_pte),
++		       [r] "+q" (r)
++		     : [new] "r" (new_pte)
++		     : "memory");
++#else
++	asm volatile("1:" LOCK_PREFIX "cmpxchg8b %[ptr]\n"
++		     "movl $0, %[r]\n"
++		     "jz 2f\n"
++		     "incl %[r]\n"
++		     "2:"
++		     _ASM_EXTABLE_UA(1b, 2b)
++		     : [ptr] "+m" (*ptep_user),
++		       [old] "+A" (orig_pte),
++		       [r] "+rm" (r)
++		     : [new_lo] "b" ((u32)new_pte),
++		       [new_hi] "c" ((u32)(new_pte >> 32))
++		     : "memory");
++#endif
+ 
+-	return (ret != orig_pte);
++	user_access_end();
++	return r;
  }
  
- static struct kmsg_dumper pstore_dumper = {
-@@ -591,7 +589,7 @@ int pstore_register(struct pstore_info *
- 		psi->write_user = pstore_write_user_compat;
- 	psinfo = psi;
- 	mutex_init(&psinfo->read_mutex);
--	sema_init(&psinfo->buf_lock, 1);
-+	spin_lock_init(&psinfo->buf_lock);
- 
- 	if (psi->flags & PSTORE_FLAGS_DMESG)
- 		allocate_buf_for_compression();
---- a/include/linux/pstore.h
-+++ b/include/linux/pstore.h
-@@ -14,7 +14,7 @@
- #include <linux/errno.h>
- #include <linux/kmsg_dump.h>
- #include <linux/mutex.h>
--#include <linux/semaphore.h>
-+#include <linux/spinlock.h>
- #include <linux/time.h>
- #include <linux/types.h>
- 
-@@ -87,7 +87,7 @@ struct pstore_record {
-  * @owner:	module which is responsible for this backend driver
-  * @name:	name of the backend driver
-  *
-- * @buf_lock:	semaphore to serialize access to @buf
-+ * @buf_lock:	spinlock to serialize access to @buf
-  * @buf:	preallocated crash dump buffer
-  * @bufsize:	size of @buf available for crash dump bytes (must match
-  *		smallest number of bytes available for writing to a
-@@ -178,7 +178,7 @@ struct pstore_info {
- 	struct module	*owner;
- 	const char	*name;
- 
--	struct semaphore buf_lock;
-+	spinlock_t	buf_lock;
- 	char		*buf;
- 	size_t		bufsize;
- 
+ static bool FNAME(prefetch_invalid_gpte)(struct kvm_vcpu *vcpu,
 
 
