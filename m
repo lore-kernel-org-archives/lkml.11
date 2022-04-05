@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A6A7C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 14:58:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5AFD0C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 14:59:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231388AbiDEPAo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 11:00:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50094 "EHLO
+        id S233408AbiDEPBP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 11:01:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50402 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344969AbiDEJmw (ORCPT
+        with ESMTP id S1345015AbiDEJmy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:42:52 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1345EBF523;
-        Tue,  5 Apr 2022 02:28:14 -0700 (PDT)
+        Tue, 5 Apr 2022 05:42:54 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71A59BF955;
+        Tue,  5 Apr 2022 02:28:20 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B34DFB81C6E;
-        Tue,  5 Apr 2022 09:28:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1FC17C385A0;
-        Tue,  5 Apr 2022 09:28:10 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 834916165C;
+        Tue,  5 Apr 2022 09:28:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 91C06C385A0;
+        Tue,  5 Apr 2022 09:28:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649150891;
-        bh=pOahPITTi3Rfk2l9K/6i8YQm3NX68W5drANb7VaQ5lA=;
+        s=korg; t=1649150899;
+        bh=aR1A0SezXpkQGZdReRE0MJZ9Tozm4kPC8Waf9Ta+wng=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CaAgJZkV81UZbWXlmUzWR14QXGnZyQCOOfZFD86INP0bZKWTMIRmy3pxJGmYmVhnC
-         hEIAW4e3SlP6oFQ1VjtwVNz/thsYfibBO1XiOVwuSHKVJVRe7BdD3cgXKxVCpOZoq0
-         7fVeQOBGRANSsmBokkqJMahC5l6XYTGMdstdPNyU=
+        b=CF1eeraYthcXV0kKjaKBKQ5FfVpx3Z/c6EcFEmvCRl8u4FyJSrq/n90nAxiOun93g
+         E0LOKJtf/YEnlzSa7yn23vVjSD14oA+Dxa4ksXCas+FekVcB30QWXaI/x6y1QNpQbr
+         E/2umvXhqmDR2ujDleZXZiKQcL3u1k7NxkCaJ6dU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
-        Igor Zhbanov <i.zhbanov@omprussia.ru>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        stable@vger.kernel.org,
+        Claudiu Beznea <claudiu.beznea@microchip.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 219/913] PM: hibernate: fix __setup handler error handling
-Date:   Tue,  5 Apr 2022 09:21:21 +0200
-Message-Id: <20220405070346.422532519@linuxfoundation.org>
+Subject: [PATCH 5.15 222/913] hwrng: atmel - disable trng on failure path
+Date:   Tue,  5 Apr 2022 09:21:24 +0200
+Message-Id: <20220405070346.512201057@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
 References: <20220405070339.801210740@linuxfoundation.org>
@@ -50,36 +50,30 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Randy Dunlap <rdunlap@infradead.org>
+From: Claudiu Beznea <claudiu.beznea@microchip.com>
 
-[ Upstream commit ba7ffcd4c4da374b0f64666354eeeda7d3827131 ]
+[ Upstream commit a223ea9f89ab960eb254ba78429efd42eaf845eb ]
 
-If an invalid value is used in "resumedelay=<seconds>", it is
-silently ignored. Add a warning message and then let the __setup
-handler return 1 to indicate that the kernel command line option
-has been handled.
+Call atmel_trng_disable() on failure path of probe.
 
-Fixes: 317cf7e5e85e3 ("PM / hibernate: convert simple_strtoul to kstrtoul")
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Reported-by: Igor Zhbanov <i.zhbanov@omprussia.ru>
-Link: lore.kernel.org/r/64644a2f-4a20-bab3-1e15-3b2cdd0defe3@omprussia.ru
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Fixes: a1fa98d8116f ("hwrng: atmel - disable TRNG during suspend")
+Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- kernel/power/hibernate.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/char/hw_random/atmel-rng.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/kernel/power/hibernate.c b/kernel/power/hibernate.c
-index b0888e9224da..d926852f8119 100644
---- a/kernel/power/hibernate.c
-+++ b/kernel/power/hibernate.c
-@@ -1326,7 +1326,7 @@ static int __init resumedelay_setup(char *str)
- 	int rc = kstrtouint(str, 0, &resume_delay);
+diff --git a/drivers/char/hw_random/atmel-rng.c b/drivers/char/hw_random/atmel-rng.c
+index ecb71c4317a5..8cf0ef501341 100644
+--- a/drivers/char/hw_random/atmel-rng.c
++++ b/drivers/char/hw_random/atmel-rng.c
+@@ -114,6 +114,7 @@ static int atmel_trng_probe(struct platform_device *pdev)
  
- 	if (rc)
--		return rc;
-+		pr_warn("resumedelay: bad option string '%s'\n", str);
- 	return 1;
+ err_register:
+ 	clk_disable_unprepare(trng->clk);
++	atmel_trng_disable(trng);
+ 	return ret;
  }
  
 -- 
