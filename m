@@ -2,129 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EBAFFC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:25:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 99FA3C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:25:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1575188AbiDEXDI (ORCPT
+        id S1575203AbiDEXDQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 19:03:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43682 "EHLO
+        Tue, 5 Apr 2022 19:03:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52498 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1392134AbiDEPfp (ORCPT
+        with ESMTP id S1387609AbiDENPV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 11:35:45 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B7DF0133D9B
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 06:46:35 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 76DA0D6E;
-        Tue,  5 Apr 2022 06:46:35 -0700 (PDT)
-Received: from e121345-lin.cambridge.arm.com (e121345-lin.cambridge.arm.com [10.1.196.40])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id AEAE63F5A1;
-        Tue,  5 Apr 2022 06:46:34 -0700 (PDT)
-From:   Robin Murphy <robin.murphy@arm.com>
-To:     ogabbay@kernel.org, arnd@arndb.de, gregkh@linuxfoundation.org
-Cc:     linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org
-Subject: [PATCH] habanalabs: Stop using iommu_present()
-Date:   Tue,  5 Apr 2022 14:46:31 +0100
-Message-Id: <8201946a5b8b26dab35738b87da24ff27a9f9270.1649166391.git.robin.murphy@arm.com>
-X-Mailer: git-send-email 2.28.0.dirty
+        Tue, 5 Apr 2022 09:15:21 -0400
+Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39D7E12E16D
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 05:20:46 -0700 (PDT)
+Received: by mail-ed1-x535.google.com with SMTP id d7so2761692edn.11
+        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 05:20:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bgdev-pl.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=pEqCOWOz4xgrxd0giUCx9NsDzzIWyIrHtogC8XOTUzE=;
+        b=vQapLbel1yCXuH6GmdojAb8GugegWJl+fxGhwDF9atQlUvGzvn/4Y6yUGfK8vLfmxD
+         du9DXRs/IV8UjMx/BuNyDQMSAU+WEZbwBW6VYzQugY5FN1FTKNO4bGw7/R9qVpmKGeTD
+         hC93Nw68LKZE50qwuxOUuJzaidAihRJ4nrDUpaeZLKsIgCfNpHfRWjyuiBwgFgF4Epqz
+         iWCbjdxDCgXjtNlVB0SG7RCDrZo260wDtiJCp7FyBwrNCOrYkLLYqW22xZ2PL5eiCUJ/
+         QnuYib47iSig9U84lQ0rZ8MmnSRG4tkzgHSEnYvQrZInW7l8YG5NrqXHElYFtCsNuUOe
+         d74A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=pEqCOWOz4xgrxd0giUCx9NsDzzIWyIrHtogC8XOTUzE=;
+        b=7Cdvzy59he5jtG7UM4i0nd2qsnVj0+EJ3e6FVXL6zEUixfIi1hLw4593shsMKLyq1Y
+         koNWMBcthE5sl9u8U6Xumr5pstzJmYPGD5ZTVyeYuB1pRH52qFinhL0N8bO3tqgrpYCK
+         pzZ2Ywp1X50OULSeHF2WK3g6aqTQnB67yhMaxau/rJYLjWBQSguSS8ua5wpE5fEvaIW/
+         q0OCQH7IKOX/+/yhfQTv8P192kkNGlF1J6hsM97jvzYe2qS62Ipq5G911amVKjBvjXoK
+         v3iZfQ+6PLT0MZbsH5HQKYKwhexnaTZBJ6eKFdal98sasDvGXzFI+mIIprOSjJBGTDDA
+         wbpg==
+X-Gm-Message-State: AOAM530rbYilkzH0mE8vwZyuZBhXVmFon1cU2EklwstwmANOGq+gyNWb
+        sKHW+UNUspt20gw6akeSFmvUcKtilmwKXHPiWT85fg==
+X-Google-Smtp-Source: ABdhPJzPcUZJUkjG68RIi0zF7G2pdh+mSzjC64mp73QtY54GjSTBmBaup9OZEVLLzoEWNRSHGiI6uU10f7LtmUaHtto=
+X-Received: by 2002:a50:9f8e:0:b0:41c:d8e5:96f0 with SMTP id
+ c14-20020a509f8e000000b0041cd8e596f0mr3345886edf.69.1649161244777; Tue, 05
+ Apr 2022 05:20:44 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220330150620.2490-1-andriy.shevchenko@linux.intel.com>
+In-Reply-To: <20220330150620.2490-1-andriy.shevchenko@linux.intel.com>
+From:   Bartosz Golaszewski <brgl@bgdev.pl>
+Date:   Tue, 5 Apr 2022 14:20:34 +0200
+Message-ID: <CAMRc=Mdyv5Et0ZsncgrxNkKa_F=VNzBqc9obnz-XH-1jgWSjdg@mail.gmail.com>
+Subject: Re: [PATCH v2 1/1] gpiolib: Get rid of redundant 'else'
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Even if an IOMMU might be present for some PCI segment in the system,
-that doesn't necessarily mean it provides translation for the device
-we care about. Replace iommu_present() with a more appropriate check.
+On Wed, Mar 30, 2022 at 5:06 PM Andy Shevchenko
+<andriy.shevchenko@linux.intel.com> wrote:
+>
+> In the snippets like the following
+>
+>         if (...)
+>                 return / goto / break / continue ...;
+>         else
+>                 ...
+>
+> the 'else' is redundant. Get rid of it. In case of IOCTLs use
+> switch-case pattern that seems the usual in such cases.
+>
+> While at it, clarify necessity of else in gpiod_direction_output()
+> by attaching else if to the closing curly brace on a previous line.
+>
+> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> ---
 
-Signed-off-by: Robin Murphy <robin.murphy@arm.com>
----
- drivers/misc/habanalabs/gaudi/gaudi.c | 8 ++++----
- drivers/misc/habanalabs/goya/goya.c   | 8 ++++----
- 2 files changed, 8 insertions(+), 8 deletions(-)
+Applied, thanks!
 
-diff --git a/drivers/misc/habanalabs/gaudi/gaudi.c b/drivers/misc/habanalabs/gaudi/gaudi.c
-index 21c2b678ff72..5dc66dc7618e 100644
---- a/drivers/misc/habanalabs/gaudi/gaudi.c
-+++ b/drivers/misc/habanalabs/gaudi/gaudi.c
-@@ -6133,7 +6133,7 @@ static int gaudi_debugfs_read32(struct hl_device *hdev, u64 addr,
- 			rc = -EIO;
- 
- 	} else if (addr >= HOST_PHYS_BASE && addr < host_phys_end &&
--			user_address && !iommu_present(&pci_bus_type)) {
-+			user_address && !device_iommu_mapped(&hdev->pdev->dev)) {
- 
- 		*val = *(u32 *) phys_to_virt(addr - HOST_PHYS_BASE);
- 
-@@ -6176,7 +6176,7 @@ static int gaudi_debugfs_write32(struct hl_device *hdev, u64 addr,
- 			rc = -EIO;
- 
- 	} else if (addr >= HOST_PHYS_BASE && addr < host_phys_end &&
--			user_address && !iommu_present(&pci_bus_type)) {
-+			user_address && !device_iommu_mapped(&hdev->pdev->dev)) {
- 
- 		*(u32 *) phys_to_virt(addr - HOST_PHYS_BASE) = val;
- 
-@@ -6223,7 +6223,7 @@ static int gaudi_debugfs_read64(struct hl_device *hdev, u64 addr,
- 			rc = -EIO;
- 
- 	} else if (addr >= HOST_PHYS_BASE && addr < host_phys_end &&
--			user_address && !iommu_present(&pci_bus_type)) {
-+			user_address && !device_iommu_mapped(&hdev->pdev->dev)) {
- 
- 		*val = *(u64 *) phys_to_virt(addr - HOST_PHYS_BASE);
- 
-@@ -6268,7 +6268,7 @@ static int gaudi_debugfs_write64(struct hl_device *hdev, u64 addr,
- 			rc = -EIO;
- 
- 	} else if (addr >= HOST_PHYS_BASE && addr < host_phys_end &&
--			user_address && !iommu_present(&pci_bus_type)) {
-+			user_address && !device_iommu_mapped(&hdev->pdev->dev)) {
- 
- 		*(u64 *) phys_to_virt(addr - HOST_PHYS_BASE) = val;
- 
-diff --git a/drivers/misc/habanalabs/goya/goya.c b/drivers/misc/habanalabs/goya/goya.c
-index ec9358bcbf0b..0c455bf460f4 100644
---- a/drivers/misc/habanalabs/goya/goya.c
-+++ b/drivers/misc/habanalabs/goya/goya.c
-@@ -4309,7 +4309,7 @@ static int goya_debugfs_read32(struct hl_device *hdev, u64 addr,
- 			rc = -EIO;
- 
- 	} else if (addr >= HOST_PHYS_BASE && addr < host_phys_end &&
--			user_address && !iommu_present(&pci_bus_type)) {
-+			user_address && !device_iommu_mapped(&hdev->pdev->dev)) {
- 		*val = *(u32 *) phys_to_virt(addr - HOST_PHYS_BASE);
- 
- 	} else {
-@@ -4369,7 +4369,7 @@ static int goya_debugfs_write32(struct hl_device *hdev, u64 addr,
- 			rc = -EIO;
- 
- 	} else if (addr >= HOST_PHYS_BASE && addr < host_phys_end &&
--			user_address && !iommu_present(&pci_bus_type)) {
-+			user_address && !device_iommu_mapped(&hdev->pdev->dev)) {
- 		*(u32 *) phys_to_virt(addr - HOST_PHYS_BASE) = val;
- 
- 	} else {
-@@ -4418,7 +4418,7 @@ static int goya_debugfs_read64(struct hl_device *hdev, u64 addr,
- 			rc = -EIO;
- 
- 	} else if (addr >= HOST_PHYS_BASE && addr < host_phys_end &&
--			user_address && !iommu_present(&pci_bus_type)) {
-+			user_address && !device_iommu_mapped(&hdev->pdev->dev)) {
- 		*val = *(u64 *) phys_to_virt(addr - HOST_PHYS_BASE);
- 
- 	} else {
-@@ -4465,7 +4465,7 @@ static int goya_debugfs_write64(struct hl_device *hdev, u64 addr,
- 			rc = -EIO;
- 
- 	} else if (addr >= HOST_PHYS_BASE && addr < host_phys_end &&
--			user_address && !iommu_present(&pci_bus_type)) {
-+			user_address && !device_iommu_mapped(&hdev->pdev->dev)) {
- 		*(u64 *) phys_to_virt(addr - HOST_PHYS_BASE) = val;
- 
- 	} else {
--- 
-2.28.0.dirty
-
+Bart
