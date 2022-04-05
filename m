@@ -2,161 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9518EC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:10:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4DF1DC4332F
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:10:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1454623AbiDEXrP (ORCPT
+        id S1582503AbiDEXr4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 19:47:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58510 "EHLO
+        Tue, 5 Apr 2022 19:47:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33606 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352388AbiDEKEb (ORCPT
+        with ESMTP id S1456662AbiDEQB6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:04:31 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99F2FBA31B;
-        Tue,  5 Apr 2022 02:53:11 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3D780B818F3;
-        Tue,  5 Apr 2022 09:53:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8A26AC385A2;
-        Tue,  5 Apr 2022 09:53:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649152388;
-        bh=Qb/oTH/UWrZXJOhd5uOtZEXXGxt5HFJZw3S+Cihmmxc=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Z5ivzd9TLJAwtRh9wQUCxcwiH4KnkaxH+StqwVqLzgRXcDETKdW/LeGyHv/PYHGa0
-         +6sUjJLAnw1yh9SntBEn/nej7V/i++Luc8rPrY3loCiaH7IbmWm2bo+kKlA3uOwSSO
-         c4lHVD/AIGVeaaAtL6czjqI8rYjrmzL1rOrVI/fw=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Richard Schleich <rs@noreya.tech>,
-        Stefan Wahren <stefan.wahren@i2se.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 742/913] ARM: dts: bcm2837: Add the missing L1/L2 cache information
-Date:   Tue,  5 Apr 2022 09:30:04 +0200
-Message-Id: <20220405070402.077174085@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 5 Apr 2022 12:01:58 -0400
+Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B592DFCB
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 08:24:06 -0700 (PDT)
+Received: by mail-pl1-x62c.google.com with SMTP id o20so5452818pla.13
+        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 08:24:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=gaL4daNNx5XyRwsMGVTXgsIpDqFV20lGzvAcOxT5Pxc=;
+        b=XR1rWqooB4cSqOX8klL6QQ5bXML0D9I+c8LZZPvcQC5WHjNtDpu6uiH3xRMe9SG3EM
+         7SxO+lji/FWVuTuv5VEz7GvwQNKIHrtlZzJKLLFIU6+HJJXyqhF1jSbfitjAk4mU56UD
+         2670KEMuz0XBfTmwuShwUTicuUBYggSdXdEA6JObiHzPIlQ+rQqnHR6g0BwxTVNDAz4A
+         Yd18Z3C5x9IfXlytxfT+s4nlS3OnFhYLfdGYV9cLG886o3mC6RQM4O93eH0GJH9LgwRJ
+         +4KocmB/vX4MTyF46d7tbLOyctLs5r7+tSLD2R532rtJddPEojgDZGRVpqBJ44vDBg5i
+         z3nw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=gaL4daNNx5XyRwsMGVTXgsIpDqFV20lGzvAcOxT5Pxc=;
+        b=P7qLuRiS0BoK/EgrP74gVOKUR8ALKST48GBAX+zBDnhxHGxlS5vxyBwkwI509v7sE6
+         kmaFoProhMrXTHUs7BR/10FvdF7//DrX47SbzgDZqGKCg3yDZRkx2xEiiNXm2LcVjvxl
+         sCWKWjAjS+I8GlhcKYEOLD29C45g2RbqZGoCPvMWI2zPd7ivZ0If93Jvef4UKsGEIGZw
+         8sFJJazjMceod9DNzEZ6N6vEPUxUkpd243sQhO+819KdzByjqigtqqM54u8hSh3GpTnk
+         9tgK+xIauDJIfejKN4GJbQIJQaVo3f/R8AczfJCh+y3WxXIaGAWKI1Gj3UdxqPPteYpe
+         fnOA==
+X-Gm-Message-State: AOAM531YvKdNWaZ5trKkUZP/jOsHq7xMUghHV2zVKGc02oq19lv15BmK
+        ju39vn7mnW3DeHq/ggIvg5Hh9w==
+X-Google-Smtp-Source: ABdhPJyIKhb+o+uPOTXcPrUrIAiRm/siuew4fl4U5FXEjG2l5owGW5KhZ9LBJ1W3hSxv+OVRouj7aQ==
+X-Received: by 2002:a17:90a:1941:b0:1ca:a28b:6744 with SMTP id 1-20020a17090a194100b001caa28b6744mr4858515pjh.50.1649172245357;
+        Tue, 05 Apr 2022 08:24:05 -0700 (PDT)
+Received: from p14s (S0106889e681aac74.cg.shawcable.net. [68.147.0.187])
+        by smtp.gmail.com with ESMTPSA id b4-20020a17090a550400b001ca38abb248sm2770940pji.53.2022.04.05.08.24.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 05 Apr 2022 08:24:04 -0700 (PDT)
+Date:   Tue, 5 Apr 2022 09:24:02 -0600
+From:   Mathieu Poirier <mathieu.poirier@linaro.org>
+To:     Arnaud Pouliquen <arnaud.pouliquen@foss.st.com>
+Cc:     Russell King <linux@armlinux.org.uk>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Manivannan Sadhasivam <mani@kernel.org>,
+        Douglas Anderson <dianders@chromium.org>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-remoteproc@vger.kernel.org
+Subject: Re: [PATCH v2] arm: configs: Configs that had RPMSG_CHAR now get
+ RPMSG_CTRL
+Message-ID: <20220405152402.GA4147585@p14s>
+References: <20220405115236.1019955-1-arnaud.pouliquen@foss.st.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220405115236.1019955-1-arnaud.pouliquen@foss.st.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Richard Schleich <rs@noreya.tech>
+On Tue, Apr 05, 2022 at 01:52:36PM +0200, Arnaud Pouliquen wrote:
+> In the commit 617d32938d1b ("rpmsg: Move the rpmsg control device
+> from rpmsg_char to rpmsg_ctrl"), we split the rpmsg_char driver in two.
+> By default give everyone who had the old driver enabled the rpmsg_ctrl
+> driver too.
+> 
+> Signed-off-by: Arnaud Pouliquen <arnaud.pouliquen@foss.st.com>
+> ---
+> 
+> This patch is extracted from the series [1] that has been partially
+> integrated in the Linux Kernel 5.18-rc1.
+> 
+> Update vs previous version:
+> - remove "Fixes:" tag in commit, requested by Mathieu Poirier in [2]
+> 
+> [1]https://lore.kernel.org/lkml/15be2f08-ba03-2b80-6f53-2056359d5c41@gmail.com/T/
+> [2]https://lore.kernel.org/linux-arm-kernel/CANLsYky1_b80qPbgOaLGVYD-GEr21V6C653iGEB7VCU=GbGvAQ@mail.gmail.com/T/
+> ---
+>  arch/arm/configs/qcom_defconfig | 1 +
+>  1 file changed, 1 insertion(+)
+> 
+> diff --git a/arch/arm/configs/qcom_defconfig b/arch/arm/configs/qcom_defconfig
+> index 9981566f2096..2e7e9a4f31f6 100644
+> --- a/arch/arm/configs/qcom_defconfig
+> +++ b/arch/arm/configs/qcom_defconfig
+> @@ -241,6 +241,7 @@ CONFIG_QCOM_Q6V5_PAS=y
+>  CONFIG_QCOM_Q6V5_PIL=y
+>  CONFIG_QCOM_WCNSS_PIL=y
+>  CONFIG_RPMSG_CHAR=y
+> +CONFIG_RPMSG_CTRL=y
+>  CONFIG_RPMSG_QCOM_GLINK_SMEM=y
+>  CONFIG_RPMSG_QCOM_SMD=y
+>  CONFIG_QCOM_COMMAND_DB=y
 
-[ Upstream commit bdf8762da268d2a34abf517c36528413906e9cd5 ]
+Reviewed-by: Mathieu Poirier <mathieu.poirier@linaro.org>
 
-This patch fixes the kernel warning
-"cacheinfo: Unable to detect cache hierarchy for CPU 0"
-for the bcm2837 on newer kernel versions.
-
-Signed-off-by: Richard Schleich <rs@noreya.tech>
-Tested-by: Stefan Wahren <stefan.wahren@i2se.com>
-[florian: Align and remove comments matching property values]
-Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- arch/arm/boot/dts/bcm2837.dtsi | 49 ++++++++++++++++++++++++++++++++++
- 1 file changed, 49 insertions(+)
-
-diff --git a/arch/arm/boot/dts/bcm2837.dtsi b/arch/arm/boot/dts/bcm2837.dtsi
-index 0199ec98cd61..5dbdebc46259 100644
---- a/arch/arm/boot/dts/bcm2837.dtsi
-+++ b/arch/arm/boot/dts/bcm2837.dtsi
-@@ -40,12 +40,26 @@
- 		#size-cells = <0>;
- 		enable-method = "brcm,bcm2836-smp"; // for ARM 32-bit
- 
-+		/* Source for d/i-cache-line-size and d/i-cache-sets
-+		 * https://developer.arm.com/documentation/ddi0500/e/level-1-memory-system
-+		 * /about-the-l1-memory-system?lang=en
-+		 *
-+		 * Source for d/i-cache-size
-+		 * https://magpi.raspberrypi.com/articles/raspberry-pi-3-specs-benchmarks
-+		 */
- 		cpu0: cpu@0 {
- 			device_type = "cpu";
- 			compatible = "arm,cortex-a53";
- 			reg = <0>;
- 			enable-method = "spin-table";
- 			cpu-release-addr = <0x0 0x000000d8>;
-+			d-cache-size = <0x8000>;
-+			d-cache-line-size = <64>;
-+			d-cache-sets = <128>; // 32KiB(size)/64(line-size)=512ways/4-way set
-+			i-cache-size = <0x8000>;
-+			i-cache-line-size = <64>;
-+			i-cache-sets = <256>; // 32KiB(size)/64(line-size)=512ways/2-way set
-+			next-level-cache = <&l2>;
- 		};
- 
- 		cpu1: cpu@1 {
-@@ -54,6 +68,13 @@
- 			reg = <1>;
- 			enable-method = "spin-table";
- 			cpu-release-addr = <0x0 0x000000e0>;
-+			d-cache-size = <0x8000>;
-+			d-cache-line-size = <64>;
-+			d-cache-sets = <128>; // 32KiB(size)/64(line-size)=512ways/4-way set
-+			i-cache-size = <0x8000>;
-+			i-cache-line-size = <64>;
-+			i-cache-sets = <256>; // 32KiB(size)/64(line-size)=512ways/2-way set
-+			next-level-cache = <&l2>;
- 		};
- 
- 		cpu2: cpu@2 {
-@@ -62,6 +83,13 @@
- 			reg = <2>;
- 			enable-method = "spin-table";
- 			cpu-release-addr = <0x0 0x000000e8>;
-+			d-cache-size = <0x8000>;
-+			d-cache-line-size = <64>;
-+			d-cache-sets = <128>; // 32KiB(size)/64(line-size)=512ways/4-way set
-+			i-cache-size = <0x8000>;
-+			i-cache-line-size = <64>;
-+			i-cache-sets = <256>; // 32KiB(size)/64(line-size)=512ways/2-way set
-+			next-level-cache = <&l2>;
- 		};
- 
- 		cpu3: cpu@3 {
-@@ -70,6 +98,27 @@
- 			reg = <3>;
- 			enable-method = "spin-table";
- 			cpu-release-addr = <0x0 0x000000f0>;
-+			d-cache-size = <0x8000>;
-+			d-cache-line-size = <64>;
-+			d-cache-sets = <128>; // 32KiB(size)/64(line-size)=512ways/4-way set
-+			i-cache-size = <0x8000>;
-+			i-cache-line-size = <64>;
-+			i-cache-sets = <256>; // 32KiB(size)/64(line-size)=512ways/2-way set
-+			next-level-cache = <&l2>;
-+		};
-+
-+		/* Source for cache-line-size + cache-sets
-+		 * https://developer.arm.com/documentation/ddi0500
-+		 * /e/level-2-memory-system/about-the-l2-memory-system?lang=en
-+		 * Source for cache-size
-+		 * https://datasheets.raspberrypi.com/cm/cm1-and-cm3-datasheet.pdf
-+		 */
-+		l2: l2-cache0 {
-+			compatible = "cache";
-+			cache-size = <0x80000>;
-+			cache-line-size = <64>;
-+			cache-sets = <512>; // 512KiB(size)/64(line-size)=8192ways/16-way set
-+			cache-level = <2>;
- 		};
- 	};
- };
--- 
-2.34.1
-
-
-
+> -- 
+> 2.25.1
+> 
