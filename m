@@ -2,138 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E37BFC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:09:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A281EC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:09:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1582162AbiDEXmT (ORCPT
+        id S1582309AbiDEXme (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 19:42:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37940 "EHLO
+        Tue, 5 Apr 2022 19:42:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39192 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1573593AbiDETXO (ORCPT
+        with ESMTP id S1348042AbiDEJqx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 15:23:14 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EFF14C432;
-        Tue,  5 Apr 2022 12:21:15 -0700 (PDT)
+        Tue, 5 Apr 2022 05:46:53 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94013E09A6;
+        Tue,  5 Apr 2022 02:33:11 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D6F69B81FA4;
-        Tue,  5 Apr 2022 19:21:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D0B88C385A0;
-        Tue,  5 Apr 2022 19:21:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649186472;
-        bh=BuPDaFFHn9DI+S2jJNJ0UstMiP6cacU6yo5802iH8rs=;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1F56D615E5;
+        Tue,  5 Apr 2022 09:33:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B5107C385A0;
+        Tue,  5 Apr 2022 09:33:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649151190;
+        bh=ffree4QTNFS/AnCZEfxj8SDurCR5FE0zgUbDPN8iszM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tdMW82DnD5bTmA5CqP5EzSXRVOMUszinsLxMfqiNz9OVYhh54+e8ZFVqi+XAj7QXE
-         nnR0bjnC3+DpVo5VV7EcHVGJ6AQHQnB/J82A4cVarwg5fdzyyvDVGV0R5uaJWhUXBo
-         z15clcrY0/kbyQqt9DzJQrDFrDllwUk77es0gIP0TydIoiUMEF+VXWE7BVRLEyCSgO
-         ohRW0JyTukIOAkSmNL5P3vyRUh2c4qIi4IjoQziLPetustN+IVkcNtwBRFWrhWku0v
-         dH14LoanPrI4wBObU98yR2Ie45WWFMwQVV+i7nUn8A2bB25A+i4Px1m0X5aJyJ0zCe
-         w8AfxTrsKRwVA==
-From:   Jeff Layton <jlayton@kernel.org>
-To:     idryomov@gmail.com, xiubli@redhat.com
-Cc:     ceph-devel@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        linux-fscrypt@vger.kernel.org, linux-kernel@vger.kernel.org,
-        lhenriques@suse.de
-Subject: [PATCH v13 44/59] ceph: add __ceph_get_caps helper support
-Date:   Tue,  5 Apr 2022 15:20:15 -0400
-Message-Id: <20220405192030.178326-45-jlayton@kernel.org>
+        b=scSXy6FlT7dq+XKRssNwJ8fKTvT0D/LdJokUoaXDfiWQn3Xmwvkqh/9DsOkrGE7vB
+         xpaqh3kgr4xWyZLc0kyEOapy6Zzxu9iLEGntLnbiAoDzwHcVWzUwCMYfgcUhB11Dc8
+         IcuA5AYxCv+PQqpdCTm2iAXUYNxW1RalR619VBiQ=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Mirela Rabulea <mirela.rabulea@nxp.com>,
+        Jacopo Mondi <jacopo+renesas@jmondi.org>,
+        Hugues Fruchet <hugues.fruchet@st.com>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 325/913] media: ov5640: Fix set format, v4l2_mbus_pixelcode not updated
+Date:   Tue,  5 Apr 2022 09:23:07 +0200
+Message-Id: <20220405070349.592562675@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405192030.178326-1-jlayton@kernel.org>
-References: <20220405192030.178326-1-jlayton@kernel.org>
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xiubo Li <xiubli@redhat.com>
+From: Mirela Rabulea <mirela.rabulea@nxp.com>
 
-Break out the guts of ceph_get_caps into a helper that takes an inode
-and ceph_file_info instead of a file pointer.
+[ Upstream commit e738f5dd67eb8098d75345908a5e73782d0569a5 ]
 
-Signed-off-by: Xiubo Li <xiubli@redhat.com>
-Signed-off-by: Jeff Layton <jlayton@kernel.org>
+In ov5640_set_fmt, pending_fmt_change will always be false, because the
+sensor format is saved before comparing it with the previous format:
+	fmt = &sensor->fmt;...
+	*fmt = *mbus_fmt;...
+	if (mbus_fmt->code != sensor->fmt.code)
+		sensor->pending_fmt_change = true;
+This causes the sensor to capture with the previous pixelcode.
+
+Also, changes might happen even for V4L2_SUBDEV_FORMAT_TRY, so fix that.
+
+Basically, revert back to the state before
+commit 071154499193 ("media: ov5640: Fix set format regression")
+as it was more clear, and then update format even when pixelcode does
+not change, as resolution might change.
+
+Fixes: 071154499193 ("media: ov5640: Fix set format regression")
+Fixes: 6949d864776e ("media: ov5640: do not change mode if format or frame interval is unchanged")
+Fixes: fb98e29ff1ea5 ("media: ov5640: fix mode change regression")
+
+Signed-off-by: Mirela Rabulea <mirela.rabulea@nxp.com>
+Reviewed-by: Jacopo Mondi <jacopo+renesas@jmondi.org>
+Acked-by: Hugues Fruchet <hugues.fruchet@st.com>
+Tested-by: Hugues Fruchet <hugues.fruchet@st.com>
+Signed-off-by: Sakari Ailus <sakari.ailus@linux.intel.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/ceph/caps.c  | 19 +++++++++++++------
- fs/ceph/super.h |  2 ++
- 2 files changed, 15 insertions(+), 6 deletions(-)
+ drivers/media/i2c/ov5640.c | 14 +++++++-------
+ 1 file changed, 7 insertions(+), 7 deletions(-)
 
-diff --git a/fs/ceph/caps.c b/fs/ceph/caps.c
-index cb2c18d43946..69af17df59be 100644
---- a/fs/ceph/caps.c
-+++ b/fs/ceph/caps.c
-@@ -2947,10 +2947,9 @@ int ceph_try_get_caps(struct inode *inode, int need, int want,
-  * due to a small max_size, make sure we check_max_size (and possibly
-  * ask the mds) so we don't get hung up indefinitely.
-  */
--int ceph_get_caps(struct file *filp, int need, int want, loff_t endoff, int *got)
-+int __ceph_get_caps(struct inode *inode, struct ceph_file_info *fi, int need,
-+		    int want, loff_t endoff, int *got)
- {
--	struct ceph_file_info *fi = filp->private_data;
--	struct inode *inode = file_inode(filp);
- 	struct ceph_inode_info *ci = ceph_inode(inode);
- 	struct ceph_fs_client *fsc = ceph_inode_to_client(inode);
- 	int ret, _got, flags;
-@@ -2959,7 +2958,7 @@ int ceph_get_caps(struct file *filp, int need, int want, loff_t endoff, int *got
- 	if (ret < 0)
- 		return ret;
+diff --git a/drivers/media/i2c/ov5640.c b/drivers/media/i2c/ov5640.c
+index ddbd71394db3..db5a19babe67 100644
+--- a/drivers/media/i2c/ov5640.c
++++ b/drivers/media/i2c/ov5640.c
+@@ -2293,7 +2293,6 @@ static int ov5640_set_fmt(struct v4l2_subdev *sd,
+ 	struct ov5640_dev *sensor = to_ov5640_dev(sd);
+ 	const struct ov5640_mode_info *new_mode;
+ 	struct v4l2_mbus_framefmt *mbus_fmt = &format->format;
+-	struct v4l2_mbus_framefmt *fmt;
+ 	int ret;
  
--	if ((fi->fmode & CEPH_FILE_MODE_WR) &&
-+	if (fi && (fi->fmode & CEPH_FILE_MODE_WR) &&
- 	    fi->filp_gen != READ_ONCE(fsc->filp_gen))
- 		return -EBADF;
+ 	if (format->pad != 0)
+@@ -2311,12 +2310,10 @@ static int ov5640_set_fmt(struct v4l2_subdev *sd,
+ 	if (ret)
+ 		goto out;
  
-@@ -2967,7 +2966,7 @@ int ceph_get_caps(struct file *filp, int need, int want, loff_t endoff, int *got
+-	if (format->which == V4L2_SUBDEV_FORMAT_TRY)
+-		fmt = v4l2_subdev_get_try_format(sd, sd_state, 0);
+-	else
+-		fmt = &sensor->fmt;
+-
+-	*fmt = *mbus_fmt;
++	if (format->which == V4L2_SUBDEV_FORMAT_TRY) {
++		*v4l2_subdev_get_try_format(sd, sd_state, 0) = *mbus_fmt;
++		goto out;
++	}
  
- 	while (true) {
- 		flags &= CEPH_FILE_MODE_MASK;
--		if (atomic_read(&fi->num_locks))
-+		if (fi && atomic_read(&fi->num_locks))
- 			flags |= CHECK_FILELOCK;
- 		_got = 0;
- 		ret = try_get_cap_refs(inode, need, want, endoff,
-@@ -3012,7 +3011,7 @@ int ceph_get_caps(struct file *filp, int need, int want, loff_t endoff, int *got
- 				continue;
- 		}
+ 	if (new_mode != sensor->current_mode) {
+ 		sensor->current_mode = new_mode;
+@@ -2325,6 +2322,9 @@ static int ov5640_set_fmt(struct v4l2_subdev *sd,
+ 	if (mbus_fmt->code != sensor->fmt.code)
+ 		sensor->pending_fmt_change = true;
  
--		if ((fi->fmode & CEPH_FILE_MODE_WR) &&
-+		if (fi && (fi->fmode & CEPH_FILE_MODE_WR) &&
- 		    fi->filp_gen != READ_ONCE(fsc->filp_gen)) {
- 			if (ret >= 0 && _got)
- 				ceph_put_cap_refs(ci, _got);
-@@ -3075,6 +3074,14 @@ int ceph_get_caps(struct file *filp, int need, int want, loff_t endoff, int *got
- 	return 0;
- }
- 
-+int ceph_get_caps(struct file *filp, int need, int want, loff_t endoff, int *got)
-+{
-+	struct ceph_file_info *fi = filp->private_data;
-+	struct inode *inode = file_inode(filp);
++	/* update format even if code is unchanged, resolution might change */
++	sensor->fmt = *mbus_fmt;
 +
-+	return __ceph_get_caps(inode, fi, need, want, endoff, got);
-+}
-+
- /*
-  * Take cap refs.  Caller must already know we hold at least one ref
-  * on the caps in question or we don't know this is safe.
-diff --git a/fs/ceph/super.h b/fs/ceph/super.h
-index a97a6f6f3089..752bc3c820ca 100644
---- a/fs/ceph/super.h
-+++ b/fs/ceph/super.h
-@@ -1229,6 +1229,8 @@ extern int ceph_encode_dentry_release(void **p, struct dentry *dn,
- 				      struct inode *dir,
- 				      int mds, int drop, int unless);
- 
-+extern int __ceph_get_caps(struct inode *inode, struct ceph_file_info *fi,
-+			   int need, int want, loff_t endoff, int *got);
- extern int ceph_get_caps(struct file *filp, int need, int want,
- 			 loff_t endoff, int *got);
- extern int ceph_try_get_caps(struct inode *inode,
+ 	__v4l2_ctrl_s_ctrl_int64(sensor->ctrls.pixel_rate,
+ 				 ov5640_calc_pixel_rate(sensor));
+ out:
 -- 
-2.35.1
+2.34.1
+
+
 
