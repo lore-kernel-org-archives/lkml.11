@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E286C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 68862C433EF
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 01:48:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1843345AbiDFBkn (ORCPT
+        id S1843330AbiDFBki (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 21:40:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51596 "EHLO
+        Tue, 5 Apr 2022 21:40:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36194 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354126AbiDEKLw (ORCPT
+        with ESMTP id S1354208AbiDEKMP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:11:52 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E312D50E2C;
-        Tue,  5 Apr 2022 02:57:26 -0700 (PDT)
+        Tue, 5 Apr 2022 06:12:15 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A666254BF4;
+        Tue,  5 Apr 2022 02:58:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 91B89B81B93;
-        Tue,  5 Apr 2022 09:57:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DA22EC385A2;
-        Tue,  5 Apr 2022 09:57:23 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4318C6157A;
+        Tue,  5 Apr 2022 09:58:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 49237C385A1;
+        Tue,  5 Apr 2022 09:58:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649152644;
-        bh=AxMd18gbofm6w4krU29ftLJswZhLQ32cx6ujG2KM8Xk=;
+        s=korg; t=1649152727;
+        bh=wYBk6rN2/OlxhSRKIP2CH/M6OSQISZIo3MuzDWbA440=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=I7sBNzCcFXuEV+sDxcKE6qVX+0ayi86L1GWG866CIRdIJP8KhWFlCVM+0hjVy6am6
-         86D0iRGxxs+MvhsiGDAKU51urKR4IKj1erT1DsgGlq0AIpkd0Sf2OWpAknhKJUXcI7
-         wPwBXh4yA6T5ckoNGZLlnkrJ6cOldPmqpfO6M6+U=
+        b=kqdA7UoXE7+CT6hSqmUR3IUMOz2If/Gdcwl54m45zl8Xw8nXmKhwq9njXmnGo2L1Q
+         08kQiMksI7bqyHVqiCzY9lMgsEbrai8JFCWZ0ePKP5+KOq58aKzkMZMR6a9XuXikT4
+         tgjIxub75vYRyR3yw1NZ9AMjtCdC481Ipg4ySSro=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
-        =?UTF-8?q?Jonathan=20Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Linus Walleij <linus.walleij@linaro.org>
-Subject: [PATCH 5.15 851/913] pinctrl: nuvoton: npcm7xx: Use %zu printk format for ARRAY_SIZE()
-Date:   Tue,  5 Apr 2022 09:31:53 +0200
-Message-Id: <20220405070405.337698523@linuxfoundation.org>
+        stable@vger.kernel.org, Miquel Raynal <miquel.raynal@bootlin.com>,
+        Rob Herring <robh@kernel.org>
+Subject: [PATCH 5.15 882/913] dt-bindings: mtd: nand-controller: Fix a comment in the examples
+Date:   Tue,  5 Apr 2022 09:32:24 +0200
+Message-Id: <20220405070406.260629987@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
 References: <20220405070339.801210740@linuxfoundation.org>
@@ -51,35 +49,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jonathan Neuschäfer <j.neuschaefer@gmx.net>
+From: Miquel Raynal <miquel.raynal@bootlin.com>
 
-commit 9d0f18bca3b557ae5d2128661ac06d33b3f45c0a upstream.
+commit 0e7f1b557974ce297e5e4c9d4245720fbb489886 upstream.
 
-When compile-testing on 64-bit architectures, GCC complains about the
-mismatch of types between the %d format specifier and value returned by
-ARRAY_LENGTH(). Use %zu, which is correct everywhere.
+The controller properties should be in the controller 'parent' node,
+while properties in the children nodes are specific to the NAND
+*chip*. This error was already present during the yaml conversion.
 
-Reported-by: kernel test robot <lkp@intel.com>
-Fixes: 3b588e43ee5c7 ("pinctrl: nuvoton: add NPCM7xx pinctrl and GPIO driver")
-Signed-off-by: Jonathan Neuschäfer <j.neuschaefer@gmx.net>
-Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
-Link: https://lore.kernel.org/r/20220205155332.1308899-2-j.neuschaefer@gmx.net
-Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+Fixes: 2d472aba15ff ("mtd: nand: document the NAND controller/NAND chip DT representation")
+Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+Acked-by: Rob Herring <robh@kernel.org>
+Link: https://lore.kernel.org/linux-mtd/20211216111654.238086-3-miquel.raynal@bootlin.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/pinctrl/nuvoton/pinctrl-npcm7xx.c |    2 +-
+ Documentation/devicetree/bindings/mtd/nand-controller.yaml |    2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/pinctrl/nuvoton/pinctrl-npcm7xx.c
-+++ b/drivers/pinctrl/nuvoton/pinctrl-npcm7xx.c
-@@ -1560,7 +1560,7 @@ static int npcm7xx_get_groups_count(stru
- {
- 	struct npcm7xx_pinctrl *npcm = pinctrl_dev_get_drvdata(pctldev);
+--- a/Documentation/devicetree/bindings/mtd/nand-controller.yaml
++++ b/Documentation/devicetree/bindings/mtd/nand-controller.yaml
+@@ -184,7 +184,7 @@ examples:
+         nand-use-soft-ecc-engine;
+         nand-ecc-algo = "bch";
  
--	dev_dbg(npcm->dev, "group size: %d\n", ARRAY_SIZE(npcm7xx_groups));
-+	dev_dbg(npcm->dev, "group size: %zu\n", ARRAY_SIZE(npcm7xx_groups));
- 	return ARRAY_SIZE(npcm7xx_groups);
- }
+-        /* controller specific properties */
++        /* NAND chip specific properties */
+       };
  
+       nand@1 {
 
 
