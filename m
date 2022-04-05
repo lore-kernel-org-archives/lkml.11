@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B929C41535
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 09:12:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E6AC5C4332F
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 09:12:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239530AbiDEJKv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 05:10:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37814 "EHLO
+        id S239282AbiDEJKj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 05:10:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45580 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239533AbiDEIUN (ORCPT
+        with ESMTP id S239515AbiDEIUL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:20:13 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22615F5C;
-        Tue,  5 Apr 2022 01:15:31 -0700 (PDT)
+        Tue, 5 Apr 2022 04:20:11 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E679EB0;
+        Tue,  5 Apr 2022 01:15:03 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C8302B81B92;
-        Tue,  5 Apr 2022 08:15:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0F9AAC385A0;
-        Tue,  5 Apr 2022 08:15:27 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B12E660B0B;
+        Tue,  5 Apr 2022 08:15:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C2AA9C385A1;
+        Tue,  5 Apr 2022 08:15:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649146528;
-        bh=3A6/wr4Ruqir6XPiFN7OjrQqY55f8efY1tUO+dql6NQ=;
+        s=korg; t=1649146502;
+        bh=R3eMH+O/1A3ZwWuiWMDt9Qc+4Won+DXxAfWIqk0wRgw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hnEqj6QZe5APNOBXduUbK96nGLndoV3q5Mo5NYdBhZ/hhDQdTppkXU6vtkN7KCiT6
-         FmYsBzMnXsL3n7SU+gFOdu+wlWoZ+C5bEvJWxMjodtl7ogjw1mBLppk3N/G9kbFDRF
-         OX+mN4naAWVLFWnBYy6MwB7sUe1FNLxHAw6FTYsg=
+        b=yEiMh18W8wd/+RXx5c5DOObcEButHdc6VVV9psEnNLnjMFgoW+HX2VWk5YiycDV65
+         lg2OlIVs9fHpXwqJc70sCVB4ZYqk42kdHtCNi18k3yJ08GTDcY4WFqGpXgBsCofhuS
+         NvDPkB19Cy/k7aYz6/5FJ/IVh06kNLnH1ctkJ+jw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Jonathan=20Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>,
-        Stephen Boyd <sboyd@kernel.org>,
+        stable@vger.kernel.org, Feng Tang <feng.tang@intel.com>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Igor Zhbanov <i.zhbanov@omprussia.ru>,
+        Randy Dunlap <rdunlap@infradead.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0758/1126] clk: clps711x: Terminate clk_div_table with sentinel element
-Date:   Tue,  5 Apr 2022 09:25:05 +0200
-Message-Id: <20220405070429.832848741@linuxfoundation.org>
+Subject: [PATCH 5.17 0786/1126] driver core: dd: fix return value of __setup handler
+Date:   Tue,  5 Apr 2022 09:25:33 +0200
+Message-Id: <20220405070430.646134546@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -50,40 +51,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jonathan Neuschäfer <j.neuschaefer@gmx.net>
+From: Randy Dunlap <rdunlap@infradead.org>
 
-[ Upstream commit 8bed4ed5aa3431085d9d27afc35d684856460eda ]
+[ Upstream commit f2aad54703dbe630f9d8b235eb58e8c8cc78f37d ]
 
-In order that the end of a clk_div_table can be detected, it must be
-terminated with a sentinel element (.div = 0).
+When "driver_async_probe=nulltty" is used on the kernel boot command line,
+it causes an Unknown parameter message and the string is added to init's
+environment strings, polluting them.
 
-Fixes: 631c53478973d ("clk: Add CLPS711X clk driver")
-Signed-off-by: Jonathan Neuschäfer <j.neuschaefer@gmx.net>
-Link: https://lore.kernel.org/r/20220218000922.134857-5-j.neuschaefer@gmx.net
-Signed-off-by: Stephen Boyd <sboyd@kernel.org>
+  Unknown kernel command line parameters "BOOT_IMAGE=/boot/bzImage-517rc6
+  driver_async_probe=nulltty", will be passed to user space.
+
+ Run /sbin/init as init process
+   with arguments:
+     /sbin/init
+   with environment:
+     HOME=/
+     TERM=linux
+     BOOT_IMAGE=/boot/bzImage-517rc6
+     driver_async_probe=nulltty
+
+Change the return value of the __setup function to 1 to indicate
+that the __setup option has been handled.
+
+Link: lore.kernel.org/r/64644a2f-4a20-bab3-1e15-3b2cdd0defe3@omprussia.ru
+Fixes: 1ea61b68d0f8 ("async: Add cmdline option to specify drivers to be async probed")
+Cc: Feng Tang <feng.tang@intel.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: "Rafael J. Wysocki" <rafael@kernel.org>
+Reported-by: Igor Zhbanov <i.zhbanov@omprussia.ru>
+Reviewed-by: Feng Tang <feng.tang@intel.com>
+Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+Link: https://lore.kernel.org/r/20220301041829.15137-1-rdunlap@infradead.org
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/clk/clk-clps711x.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/base/dd.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/clk/clk-clps711x.c b/drivers/clk/clk-clps711x.c
-index a2c6486ef170..f8417ee2961a 100644
---- a/drivers/clk/clk-clps711x.c
-+++ b/drivers/clk/clk-clps711x.c
-@@ -28,11 +28,13 @@ static const struct clk_div_table spi_div_table[] = {
- 	{ .val = 1, .div = 8, },
- 	{ .val = 2, .div = 2, },
- 	{ .val = 3, .div = 1, },
-+	{ /* sentinel */ }
- };
+diff --git a/drivers/base/dd.c b/drivers/base/dd.c
+index f47cab21430f..752a11d16e26 100644
+--- a/drivers/base/dd.c
++++ b/drivers/base/dd.c
+@@ -810,7 +810,7 @@ static int __init save_async_options(char *buf)
+ 		pr_warn("Too long list of driver names for 'driver_async_probe'!\n");
  
- static const struct clk_div_table timer_div_table[] = {
- 	{ .val = 0, .div = 256, },
- 	{ .val = 1, .div = 1, },
-+	{ /* sentinel */ }
- };
+ 	strlcpy(async_probe_drv_names, buf, ASYNC_DRV_NAMES_MAX_LEN);
+-	return 0;
++	return 1;
+ }
+ __setup("driver_async_probe=", save_async_options);
  
- struct clps711x_clk {
 -- 
 2.34.1
 
