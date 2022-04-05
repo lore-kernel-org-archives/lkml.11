@@ -2,47 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B9AAC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 22:39:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 46A13C43219
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 22:39:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1452553AbiDEWcB (ORCPT
+        id S1452886AbiDEWca (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 18:32:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43270 "EHLO
+        Tue, 5 Apr 2022 18:32:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52112 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349374AbiDEJtp (ORCPT
+        with ESMTP id S1358200AbiDEK2F (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:49:45 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A690F13FBF;
-        Tue,  5 Apr 2022 02:44:36 -0700 (PDT)
+        Tue, 5 Apr 2022 06:28:05 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DE69DEDB;
+        Tue,  5 Apr 2022 03:17:01 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 157E0CE1C90;
-        Tue,  5 Apr 2022 09:44:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1FF51C385A3;
-        Tue,  5 Apr 2022 09:44:32 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B00ABB81C98;
+        Tue,  5 Apr 2022 10:16:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 273D2C385A1;
+        Tue,  5 Apr 2022 10:16:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649151873;
-        bh=pfUa9LayJvonNRTRyNr0npSc/ylo332Q3BdAw9/BZgY=;
+        s=korg; t=1649153818;
+        bh=kzgHQcrCjA+p7uuva8a1RAbHx9mCHZrubx+fE+kU/eE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QnjkRZdXKlV6cIVJ8aq52Ra+uu3a2eFN62g5bsznocGKjo6qMwjWu8lrUC5HOcQ+H
-         mUFYsP/dCcwSkXOM22N7RG5Xw5l2O866MLyIX6W6XMNTEjLIRhT3KYAeGVxcQg8BwB
-         XvCNgunEgtur2WZUqHa7oCi5PI7NwRwoVknCsfYE=
+        b=smy5YQV95vtfk70s2I+IlaJ77ixa9MLuwEmiqr/TjvuLzpGKEHXCFffdZOAU2Rg9A
+         01hcD3b/fF7mqUGn+WiFLjVkdjgk/+ZJM5eIAjPIx5DAp1RS9MwnLn+8DSoutmMerk
+         uApXNMHe9kwExHRbOWSlQK34qYynOJHMzfnHgyy8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ying Xue <ying.xue@windriver.com>,
-        Hoang Le <hoang.h.le@dektech.com.au>,
-        Paolo Abeni <pabeni@redhat.com>,
+        stable@vger.kernel.org, Wang Yufen <wangyufen@huawei.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        John Fastabend <john.fastabend@gmail.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 571/913] tipc: fix the timer expires after interval 100ms
-Date:   Tue,  5 Apr 2022 09:27:13 +0200
-Message-Id: <20220405070356.959803260@linuxfoundation.org>
+Subject: [PATCH 5.10 357/599] bpf, sockmap: Fix more uncharged while msg has more_data
+Date:   Tue,  5 Apr 2022 09:30:51 +0200
+Message-Id: <20220405070309.455772021@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
+References: <20220405070258.802373272@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,43 +51,98 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hoang Le <hoang.h.le@dektech.com.au>
+From: Wang Yufen <wangyufen@huawei.com>
 
-[ Upstream commit 6a7d8cff4a3301087dd139293e9bddcf63827282 ]
+[ Upstream commit 84472b436e760ba439e1969a9e3c5ae7c86de39d ]
 
-In the timer callback function tipc_sk_timeout(), we're trying to
-reschedule another timeout to retransmit a setup request if destination
-link is congested. But we use the incorrect timeout value
-(msecs_to_jiffies(100)) instead of (jiffies + msecs_to_jiffies(100)),
-so that the timer expires immediately, it's irrelevant for original
-description.
+In tcp_bpf_send_verdict(), if msg has more data after
+tcp_bpf_sendmsg_redir():
 
-In this commit we correct the timeout value in sk_reset_timer()
+tcp_bpf_send_verdict()
+ tosend = msg->sg.size  //msg->sg.size = 22220
+ case __SK_REDIRECT:
+  sk_msg_return()  //uncharged msg->sg.size(22220) sk->sk_forward_alloc
+  tcp_bpf_sendmsg_redir() //after tcp_bpf_sendmsg_redir, msg->sg.size=11000
+ goto more_data;
+ tosend = msg->sg.size  //msg->sg.size = 11000
+ case __SK_REDIRECT:
+  sk_msg_return()  //uncharged msg->sg.size(11000) to sk->sk_forward_alloc
 
-Fixes: 6787927475e5 ("tipc: buffer overflow handling in listener socket")
-Acked-by: Ying Xue <ying.xue@windriver.com>
-Signed-off-by: Hoang Le <hoang.h.le@dektech.com.au>
-Link: https://lore.kernel.org/r/20220321042229.314288-1-hoang.h.le@dektech.com.au
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+The msg->sg.size(11000) has been uncharged twice, to fix we can charge the
+remaining msg->sg.size before goto more data.
+
+This issue can cause the following info:
+WARNING: CPU: 0 PID: 9860 at net/core/stream.c:208 sk_stream_kill_queues+0xd4/0x1a0
+Call Trace:
+ <TASK>
+ inet_csk_destroy_sock+0x55/0x110
+ __tcp_close+0x279/0x470
+ tcp_close+0x1f/0x60
+ inet_release+0x3f/0x80
+ __sock_release+0x3d/0xb0
+ sock_close+0x11/0x20
+ __fput+0x92/0x250
+ task_work_run+0x6a/0xa0
+ do_exit+0x33b/0xb60
+ do_group_exit+0x2f/0xa0
+ get_signal+0xb6/0x950
+ arch_do_signal_or_restart+0xac/0x2a0
+ ? vfs_write+0x237/0x290
+ exit_to_user_mode_prepare+0xa9/0x200
+ syscall_exit_to_user_mode+0x12/0x30
+ do_syscall_64+0x46/0x80
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+ </TASK>
+
+WARNING: CPU: 0 PID: 2136 at net/ipv4/af_inet.c:155 inet_sock_destruct+0x13c/0x260
+Call Trace:
+ <TASK>
+ __sk_destruct+0x24/0x1f0
+ sk_psock_destroy+0x19b/0x1c0
+ process_one_work+0x1b3/0x3c0
+ worker_thread+0x30/0x350
+ ? process_one_work+0x3c0/0x3c0
+ kthread+0xe6/0x110
+ ? kthread_complete_and_exit+0x20/0x20
+ ret_from_fork+0x22/0x30
+ </TASK>
+
+Fixes: 604326b41a6f ("bpf, sockmap: convert to generic sk_msg interface")
+Signed-off-by: Wang Yufen <wangyufen@huawei.com>
+Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+Acked-by: John Fastabend <john.fastabend@gmail.com>
+Link: https://lore.kernel.org/bpf/20220304081145.2037182-4-wangyufen@huawei.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/tipc/socket.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ net/ipv4/tcp_bpf.c | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
-diff --git a/net/tipc/socket.c b/net/tipc/socket.c
-index 7545321c3440..17f8c523e33b 100644
---- a/net/tipc/socket.c
-+++ b/net/tipc/socket.c
-@@ -2852,7 +2852,8 @@ static void tipc_sk_retry_connect(struct sock *sk, struct sk_buff_head *list)
+diff --git a/net/ipv4/tcp_bpf.c b/net/ipv4/tcp_bpf.c
+index 6b745ce4108c..c089e8166fa9 100644
+--- a/net/ipv4/tcp_bpf.c
++++ b/net/ipv4/tcp_bpf.c
+@@ -371,7 +371,7 @@ static int tcp_bpf_send_verdict(struct sock *sk, struct sk_psock *psock,
+ 			cork = true;
+ 			psock->cork = NULL;
+ 		}
+-		sk_msg_return(sk, msg, tosend);
++		sk_msg_return(sk, msg, msg->sg.size);
+ 		release_sock(sk);
  
- 	/* Try again later if dest link is congested */
- 	if (tsk->cong_link_cnt) {
--		sk_reset_timer(sk, &sk->sk_timer, msecs_to_jiffies(100));
-+		sk_reset_timer(sk, &sk->sk_timer,
-+			       jiffies + msecs_to_jiffies(100));
- 		return;
+ 		ret = tcp_bpf_sendmsg_redir(sk_redir, msg, tosend, flags);
+@@ -411,8 +411,11 @@ static int tcp_bpf_send_verdict(struct sock *sk, struct sk_psock *psock,
+ 		}
+ 		if (msg &&
+ 		    msg->sg.data[msg->sg.start].page_link &&
+-		    msg->sg.data[msg->sg.start].length)
++		    msg->sg.data[msg->sg.start].length) {
++			if (eval == __SK_REDIRECT)
++				sk_mem_charge(sk, msg->sg.size);
+ 			goto more_data;
++		}
  	}
- 	/* Prepare SYN for retransmit */
+ 	return ret;
+ }
 -- 
 2.34.1
 
