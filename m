@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C276C43217
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 09:53:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A775C4332F
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 09:53:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239463AbiDEJyD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 05:54:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43700 "EHLO
+        id S243432AbiDEJyV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 05:54:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56418 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238546AbiDEITL (ORCPT
+        with ESMTP id S238411AbiDEITE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:19:11 -0400
+        Tue, 5 Apr 2022 04:19:04 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09368E095;
-        Tue,  5 Apr 2022 01:09:07 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B2109FE2;
+        Tue,  5 Apr 2022 01:08:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 894FDB81BB5;
-        Tue,  5 Apr 2022 08:09:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E0EA3C385A2;
-        Tue,  5 Apr 2022 08:09:05 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B7730B81B18;
+        Tue,  5 Apr 2022 08:08:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 27416C385A1;
+        Tue,  5 Apr 2022 08:08:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649146146;
-        bh=TkRjkbHf35GwvaY8YoQCXT3xu4BK4ElnagkTLzoI8O8=;
+        s=korg; t=1649146126;
+        bh=OtMJiNTcTHUQcPH4dSGJwZZlh+3lpDszUo2IbFnk9JM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=INaSO3T2AT5WT2LqRQAuQsGj+Tu8pBcZosAs1wf0S6gDvRpPLgKjxs+X+ck0qO2t2
-         bhGYgCTllLUoy+KJ70zTSS2d2qgiooaazu9dynpv045yTxopnoUwEolPG2iK86UBlW
-         JUb0k5fGEkdIJwXDMheabO0wTzpy+SpzeNwsC/vU=
+        b=oXzYRE8gUJ+4M0Bs+a1bBvEARlpNXFmn6JgVvZJfAKNn5RIniAPSM3bm9wA/DKzvg
+         AoAhSA7syDpsEKVZmAUbD/1cMqG7FlqLryIr6SehUkDa+YR7QPnNS7a5s0GF/8nMl5
+         eTU7BqwfMFxZztmUPfYlFe4GTwjXXgpP0qbNqXIY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
-        Charles Keepax <ckeepax@opensource.cirrus.com>,
-        Sebastian Reichel <sebastian.reichel@collabora.com>,
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Serge Semin <fancer.lancer@gmail.com>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0632/1126] power: supply: wm8350-power: Add missing free in free_charger_irq
-Date:   Tue,  5 Apr 2022 09:22:59 +0200
-Message-Id: <20220405070426.187623890@linuxfoundation.org>
+Subject: [PATCH 5.17 0652/1126] mips: cdmm: Fix refcount leak in mips_cdmm_phys_base
+Date:   Tue,  5 Apr 2022 09:23:19 +0200
+Message-Id: <20220405070426.767935771@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -50,34 +50,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit 6dee930f6f6776d1e5a7edf542c6863b47d9f078 ]
+[ Upstream commit 4528668ca331f7ce5999b7746657b46db5b3b785 ]
 
-In free_charger_irq(), there is no free for 'WM8350_IRQ_CHG_FAST_RDY'.
-Therefore, it should be better to add it in order to avoid the memory leak.
+The of_find_compatible_node() function returns a node pointer with
+refcount incremented, We should use of_node_put() on it when done
+Add the missing of_node_put() to release the refcount.
 
-Fixes: 14431aa0c5a4 ("power_supply: Add support for WM8350 PMU")
-Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Acked-by: Charles Keepax <ckeepax@opensource.cirrus.com>
-Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
+Fixes: 2121aa3e2312 ("mips: cdmm: Add mti,mips-cdmm dtb node support")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Acked-by: Serge Semin <fancer.lancer@gmail.com>
+Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/power/supply/wm8350_power.c | 1 +
+ drivers/bus/mips_cdmm.c | 1 +
  1 file changed, 1 insertion(+)
 
-diff --git a/drivers/power/supply/wm8350_power.c b/drivers/power/supply/wm8350_power.c
-index 9c46c48dccb1..908cfd45d262 100644
---- a/drivers/power/supply/wm8350_power.c
-+++ b/drivers/power/supply/wm8350_power.c
-@@ -524,6 +524,7 @@ static void free_charger_irq(struct wm8350 *wm8350)
- 	wm8350_free_irq(wm8350, WM8350_IRQ_CHG_TO, wm8350);
- 	wm8350_free_irq(wm8350, WM8350_IRQ_CHG_END, wm8350);
- 	wm8350_free_irq(wm8350, WM8350_IRQ_CHG_START, wm8350);
-+	wm8350_free_irq(wm8350, WM8350_IRQ_CHG_FAST_RDY, wm8350);
- 	wm8350_free_irq(wm8350, WM8350_IRQ_CHG_VBATT_LT_3P9, wm8350);
- 	wm8350_free_irq(wm8350, WM8350_IRQ_CHG_VBATT_LT_3P1, wm8350);
- 	wm8350_free_irq(wm8350, WM8350_IRQ_CHG_VBATT_LT_2P85, wm8350);
+diff --git a/drivers/bus/mips_cdmm.c b/drivers/bus/mips_cdmm.c
+index 626dedd110cb..fca0d0669aa9 100644
+--- a/drivers/bus/mips_cdmm.c
++++ b/drivers/bus/mips_cdmm.c
+@@ -351,6 +351,7 @@ phys_addr_t __weak mips_cdmm_phys_base(void)
+ 	np = of_find_compatible_node(NULL, NULL, "mti,mips-cdmm");
+ 	if (np) {
+ 		err = of_address_to_resource(np, 0, &res);
++		of_node_put(np);
+ 		if (!err)
+ 			return res.start;
+ 	}
 -- 
 2.34.1
 
