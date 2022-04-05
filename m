@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ADB9BC4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BEB16C433F5
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:56:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356767AbiDEMun (ORCPT
+        id S1356896AbiDEMus (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 08:50:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42102 "EHLO
+        Tue, 5 Apr 2022 08:50:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41476 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243772AbiDEJJQ (ORCPT
+        with ESMTP id S244112AbiDEJJq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:09:16 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4AC5ECB00F;
-        Tue,  5 Apr 2022 01:58:35 -0700 (PDT)
+        Tue, 5 Apr 2022 05:09:46 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D73E318377;
+        Tue,  5 Apr 2022 01:59:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B11D961476;
-        Tue,  5 Apr 2022 08:58:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C172BC385A0;
-        Tue,  5 Apr 2022 08:58:33 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5D953B81BAE;
+        Tue,  5 Apr 2022 08:59:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BA711C385A3;
+        Tue,  5 Apr 2022 08:59:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649149114;
-        bh=vjsrtqUyE3qmQ6zDoHeGzm8tnzALeS3OuodQrayDuPM=;
+        s=korg; t=1649149147;
+        bh=sFS7G5rZj3C0ZMjUhhbET/vBcgSalnDjkfieF0x48Fg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=eMolNrFsF4126WH58f4PlHGsLiz9hs4YikRzPMdg+/O4BK1xIczgkKdpC/5hPahfY
-         My9pxdG+4jdxAF9JPYOC6K/fHUtbFdoJ9hvKl+pbzao/orGxwG3IdyFBcQFP8oUGw4
-         Ml3EmqYgXxdjihr52v/B12Opq7jCcE1dY8kzcu4U=
+        b=mCTfE9IoUAhinV75Vll4X4HYP3ZayopUiTfMmff5bF7ekv/UGZMjeH3TyJaXNcO2q
+         Z7AI57G5ha+Pk7RmBGKjjYQ6sL6Svy7GOpRFNcHtrACNn27kUP6E2pctf7rJihgl09
+         c1zXt+AXqlx+toTPJpFAPmHtCbR57bQOEkDjNEwc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Wang Yufen <wangyufen@huawei.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        John Fastabend <john.fastabend@gmail.com>,
+        stable@vger.kernel.org, Derek Will <derekrobertwill@gmail.com>,
+        Oliver Hartkopp <socketcan@hartkopp.net>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0600/1017] bpf, sockmap: Fix memleak in tcp_bpf_sendmsg while sk msg is full
-Date:   Tue,  5 Apr 2022 09:25:13 +0200
-Message-Id: <20220405070412.088227343@linuxfoundation.org>
+Subject: [PATCH 5.16 0611/1017] can: isotp: return -EADDRNOTAVAIL when reading from unbound socket
+Date:   Tue,  5 Apr 2022 09:25:24 +0200
+Message-Id: <20220405070412.417635334@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -51,107 +51,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Wang Yufen <wangyufen@huawei.com>
+From: Oliver Hartkopp <socketcan@hartkopp.net>
 
-[ Upstream commit 9c34e38c4a870eb30b13f42f5b44f42e9d19ccb8 ]
+[ Upstream commit 30ffd5332e06316bd69a654c06aa033872979b7c ]
 
-If tcp_bpf_sendmsg() is running while sk msg is full. When sk_msg_alloc()
-returns -ENOMEM error, tcp_bpf_sendmsg() goes to wait_for_memory. If partial
-memory has been alloced by sk_msg_alloc(), that is, msg_tx->sg.size is
-greater than osize after sk_msg_alloc(), memleak occurs. To fix we use
-sk_msg_trim() to release the allocated memory, then goto wait for memory.
+When reading from an unbound can-isotp socket the syscall blocked
+indefinitely. As unbound sockets (without given CAN address information)
+do not make sense anyway we directly return -EADDRNOTAVAIL on read()
+analogue to the known behavior from sendmsg().
 
-Other call paths of sk_msg_alloc() have the similar issue, such as
-tls_sw_sendmsg(), so handle sk_msg_trim logic inside sk_msg_alloc(),
-as Cong Wang suggested.
-
-This issue can cause the following info:
-WARNING: CPU: 3 PID: 7950 at net/core/stream.c:208 sk_stream_kill_queues+0xd4/0x1a0
-Call Trace:
- <TASK>
- inet_csk_destroy_sock+0x55/0x110
- __tcp_close+0x279/0x470
- tcp_close+0x1f/0x60
- inet_release+0x3f/0x80
- __sock_release+0x3d/0xb0
- sock_close+0x11/0x20
- __fput+0x92/0x250
- task_work_run+0x6a/0xa0
- do_exit+0x33b/0xb60
- do_group_exit+0x2f/0xa0
- get_signal+0xb6/0x950
- arch_do_signal_or_restart+0xac/0x2a0
- exit_to_user_mode_prepare+0xa9/0x200
- syscall_exit_to_user_mode+0x12/0x30
- do_syscall_64+0x46/0x80
- entry_SYSCALL_64_after_hwframe+0x44/0xae
- </TASK>
-
-WARNING: CPU: 3 PID: 2094 at net/ipv4/af_inet.c:155 inet_sock_destruct+0x13c/0x260
-Call Trace:
- <TASK>
- __sk_destruct+0x24/0x1f0
- sk_psock_destroy+0x19b/0x1c0
- process_one_work+0x1b3/0x3c0
- kthread+0xe6/0x110
- ret_from_fork+0x22/0x30
- </TASK>
-
-Fixes: 604326b41a6f ("bpf, sockmap: convert to generic sk_msg interface")
-Signed-off-by: Wang Yufen <wangyufen@huawei.com>
-Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
-Acked-by: John Fastabend <john.fastabend@gmail.com>
-Link: https://lore.kernel.org/bpf/20220304081145.2037182-3-wangyufen@huawei.com
+Fixes: e057dd3fc20f ("can: add ISO 15765-2:2016 transport protocol")
+Link: https://github.com/linux-can/can-utils/issues/349
+Link: https://lore.kernel.org/all/20220316164258.54155-2-socketcan@hartkopp.net
+Suggested-by: Derek Will <derekrobertwill@gmail.com>
+Signed-off-by: Oliver Hartkopp <socketcan@hartkopp.net>
+Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/core/skmsg.c | 17 +++++++++++++----
- 1 file changed, 13 insertions(+), 4 deletions(-)
+ net/can/isotp.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/net/core/skmsg.c b/net/core/skmsg.c
-index 929a2b096b04..cc381165ea08 100644
---- a/net/core/skmsg.c
-+++ b/net/core/skmsg.c
-@@ -27,6 +27,7 @@ int sk_msg_alloc(struct sock *sk, struct sk_msg *msg, int len,
- 		 int elem_first_coalesce)
+diff --git a/net/can/isotp.c b/net/can/isotp.c
+index f8e3aeb79e3f..8966f06e0660 100644
+--- a/net/can/isotp.c
++++ b/net/can/isotp.c
+@@ -1005,12 +1005,16 @@ static int isotp_recvmsg(struct socket *sock, struct msghdr *msg, size_t size,
  {
- 	struct page_frag *pfrag = sk_page_frag(sk);
-+	u32 osize = msg->sg.size;
- 	int ret = 0;
+ 	struct sock *sk = sock->sk;
+ 	struct sk_buff *skb;
++	struct isotp_sock *so = isotp_sk(sk);
+ 	int err = 0;
+ 	int noblock;
  
- 	len -= msg->sg.size;
-@@ -35,13 +36,17 @@ int sk_msg_alloc(struct sock *sk, struct sk_msg *msg, int len,
- 		u32 orig_offset;
- 		int use, i;
+ 	noblock = flags & MSG_DONTWAIT;
+ 	flags &= ~MSG_DONTWAIT;
  
--		if (!sk_page_frag_refill(sk, pfrag))
--			return -ENOMEM;
-+		if (!sk_page_frag_refill(sk, pfrag)) {
-+			ret = -ENOMEM;
-+			goto msg_trim;
-+		}
- 
- 		orig_offset = pfrag->offset;
- 		use = min_t(int, len, pfrag->size - orig_offset);
--		if (!sk_wmem_schedule(sk, use))
--			return -ENOMEM;
-+		if (!sk_wmem_schedule(sk, use)) {
-+			ret = -ENOMEM;
-+			goto msg_trim;
-+		}
- 
- 		i = msg->sg.end;
- 		sk_msg_iter_var_prev(i);
-@@ -71,6 +76,10 @@ int sk_msg_alloc(struct sock *sk, struct sk_msg *msg, int len,
- 	}
- 
- 	return ret;
++	if (!so->bound)
++		return -EADDRNOTAVAIL;
 +
-+msg_trim:
-+	sk_msg_trim(sk, msg, osize);
-+	return ret;
- }
- EXPORT_SYMBOL_GPL(sk_msg_alloc);
- 
+ 	skb = skb_recv_datagram(sk, flags, noblock, &err);
+ 	if (!skb)
+ 		return err;
 -- 
 2.34.1
 
