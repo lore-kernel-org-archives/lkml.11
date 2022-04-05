@@ -2,98 +2,132 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EB4A2C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 01:26:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 36E32C43217
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 01:26:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1453302AbiDFBXl (ORCPT
+        id S1841592AbiDFBY2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 21:23:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53186 "EHLO
+        Tue, 5 Apr 2022 21:24:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34530 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1573543AbiDETUD (ORCPT
+        with ESMTP id S1455105AbiDEP7h (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 15:20:03 -0400
-Received: from fllv0015.ext.ti.com (fllv0015.ext.ti.com [198.47.19.141])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A765EEBB90;
-        Tue,  5 Apr 2022 12:18:03 -0700 (PDT)
-Received: from fllv0034.itg.ti.com ([10.64.40.246])
-        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 235JHxYK082442;
-        Tue, 5 Apr 2022 14:17:59 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1649186279;
-        bh=E9zif9I5bUgBOTveI/9CsfWv9DV8Jc8LKT9ySYgZmtY=;
-        h=Date:From:To:CC:Subject:References:In-Reply-To;
-        b=mGH/m1LnUZ0aqJzLlvnsqjtJr02p9p4rvmihNAh+eTCUiV9wJqfjsuTthz8zlG2Zf
-         TgU20lX6XohEfDssOB1uD97wUkPGjYehfw8ver6y2FnF33Vp/OX5b4no3k6eepe2LZ
-         ie5MK98lk/hrhJZHrVX/gBSzn6GANX1sxbl3ItXs=
-Received: from DLEE104.ent.ti.com (dlee104.ent.ti.com [157.170.170.34])
-        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 235JHx8t010500
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Tue, 5 Apr 2022 14:17:59 -0500
-Received: from DLEE112.ent.ti.com (157.170.170.23) by DLEE104.ent.ti.com
- (157.170.170.34) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Tue, 5
- Apr 2022 14:17:58 -0500
-Received: from fllv0040.itg.ti.com (10.64.41.20) by DLEE112.ent.ti.com
- (157.170.170.23) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
- Frontend Transport; Tue, 5 Apr 2022 14:17:58 -0500
-Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
-        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id 235JHwCh019604;
-        Tue, 5 Apr 2022 14:17:58 -0500
-Date:   Wed, 6 Apr 2022 00:47:57 +0530
-From:   Pratyush Yadav <p.yadav@ti.com>
-To:     Sai Krishna Potthuri <lakshmi.sai.krishna.potthuri@xilinx.com>
-CC:     Mark Brown <broonie@kernel.org>, Rob Herring <robh+dt@kernel.org>,
-        <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-spi@vger.kernel.org>,
-        Michal Simek <michal.simek@xilinx.com>, <git@xilinx.com>,
-        <saikrishna12468@gmail.com>, <sgoud@xilinx.com>
-Subject: Re: [PATCH 2/2] spi: cadence-quadspi: Add support for OSPI device
- reset
-Message-ID: <20220405191757.3rzc6q477reusywp@ti.com>
-References: <1649156437-15609-1-git-send-email-lakshmi.sai.krishna.potthuri@xilinx.com>
- <1649156437-15609-3-git-send-email-lakshmi.sai.krishna.potthuri@xilinx.com>
+        Tue, 5 Apr 2022 11:59:37 -0400
+Received: from mail-io1-xd34.google.com (mail-io1-xd34.google.com [IPv6:2607:f8b0:4864:20::d34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80CF51ED05F
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 08:10:05 -0700 (PDT)
+Received: by mail-io1-xd34.google.com with SMTP id r2so15462451iod.9
+        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 08:10:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=odjTcYZDlQIoWSkHe17VwGaSSDqsAiUMG/3xJUCUusY=;
+        b=BIrJnLaJlobJRELofbUGfFGoIys4VbYWUyOHKM6yPYsEcaU68cPexoPGB+FF75wT0l
+         nTLBpmNWQH9/4qlaY0IAqmQ99mQpeHL5s+1WZFh0J7WoAX7+equKRVWQIefnQJGxuh/d
+         12Uk/NDYJwyFUL3HMR+IHHm9e1DqLhSp1oAk5dW6A9KBz/M3GH2qfDskfkemdyJNjOfZ
+         zklDlMXUPCraZit01xyTMy4mXPhfA6rQp9D9ILWlKYTlfAySHdHSrPXE36e/9K358+yp
+         2FY/pAh3O3L/Cdc9+eHFv8jK5bnXsezX/to0L2uZ8nOAf+9AnR8YjKHodr+zV3g6F846
+         Wspw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=odjTcYZDlQIoWSkHe17VwGaSSDqsAiUMG/3xJUCUusY=;
+        b=AcWoWsVKzma/ACKsNdaYHVZ/VcsqlUeCsOCHccPU9Te7MI4L9koX5fwOcr5gUQxdv4
+         YIq2/F3p8pOVaB7BsYtIwDNlqEO5RDVGjWlu9PKk2IQnBYwJ3aXS3jEST2g0NEEnho8d
+         TGgFbLSUXHhIY5HnIMHWm0m7v74lfJCAkxaVIL9aKR61Dt3YohrHSNn3n5Y5mc92mEsi
+         sQjGnOPar20LlnTpeWSh43xLxNik6YFBKK1F4K64jpXZhst6u4tbIUTQwT0pVCvDvWOF
+         bIhVj2n30cittgqEWUP2aq0aeGGHPdO2v99oIjoW8c/et6csb+XJe5YVRI0Dcb/rpaUR
+         MsKg==
+X-Gm-Message-State: AOAM5311z+ZQBsu30jc39xNU7NYxmlR4r1hmx79Z77qz5/TONAMhAhSD
+        WInWVrOvMkNI9VoBuSlczXH4AtC2M8pvFQN+FzA=
+X-Google-Smtp-Source: ABdhPJxAaHeUeJtc2U3f+/5L8fy3AA56uR4U1tXUh2cgSLnkKbaFje6hcmqnAosZq0GKK0ddS4eVRltN814HgJgzkfI=
+X-Received: by 2002:a02:c89a:0:b0:321:25b2:4b52 with SMTP id
+ m26-20020a02c89a000000b0032125b24b52mr2152926jao.218.1649171404854; Tue, 05
+ Apr 2022 08:10:04 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <1649156437-15609-3-git-send-email-lakshmi.sai.krishna.potthuri@xilinx.com>
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+References: <cover.1648049113.git.andreyknvl@google.com> <YkV6QG+VtO7b0H7g@FVFF77S0Q05N>
+In-Reply-To: <YkV6QG+VtO7b0H7g@FVFF77S0Q05N>
+From:   Andrey Konovalov <andreyknvl@gmail.com>
+Date:   Tue, 5 Apr 2022 17:09:54 +0200
+Message-ID: <CA+fCnZfU+Jj3Of+d0d6b3=fJC0F+SfcUHV1p0Gs95exoNsqvmA@mail.gmail.com>
+Subject: Re: [PATCH v2 0/4] kasan, arm64, scs, stacktrace: collect stack
+ traces from Shadow Call Stack
+To:     Mark Rutland <mark.rutland@arm.com>
+Cc:     andrey.konovalov@linux.dev, Marco Elver <elver@google.com>,
+        Alexander Potapenko <glider@google.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        Andrey Ryabinin <ryabinin.a.a@gmail.com>,
+        kasan-dev <kasan-dev@googlegroups.com>,
+        Vincenzo Frascino <vincenzo.frascino@arm.com>,
+        Sami Tolvanen <samitolvanen@google.com>,
+        Peter Collingbourne <pcc@google.com>,
+        Evgenii Stepanov <eugenis@google.com>,
+        Florian Mayer <fmayer@google.com>,
+        Linux Memory Management List <linux-mm@kvack.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Andrey Konovalov <andreyknvl@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 05/04/22 04:30PM, Sai Krishna Potthuri wrote:
-> Cadence OSPI controller always start in SDR mode and it doesn't know
-> the current mode of the flash device (SDR or DDR). This creates issue
-> during Cadence OSPI driver probe if OSPI flash device is in DDR mode.
-> This patch add OSPI flash device reset using HW reset pin for Xilinx
-> Versal platform, this will make sure both Controller and Flash device
-> are in same mode (SDR).
+On Thu, Mar 31, 2022 at 11:54 AM Mark Rutland <mark.rutland@arm.com> wrote:
+>
+> That is an impressive number. TBH, I'm shocked that this has *that* much of an
+> improvement, and I suspect this means we're doing something unnecssarily
+> expensive in the regular unwinder.
+>
+> I've given some specific comments on patches, but a a high-level, I don't want
+> to add yet another unwind mechanism. For maintenance and correctness reasons,
+> we've spent the last few years consolidating various unwinders, which this
+> unfortunately goes against.
+>
+> I see that there are number of cases this unwinder will fall afoul of (e.g.
+> kretprobes and ftrace graph trampolines), and making those work correctly will
+> require changes elsewhere (e.g. as we rely upon a snapshot of the FP to
+> disambiguate cases today).
 
-Is this supposed to reset the OSPI flash or the controller? If you are 
-resetting it in the flash then you should handle this from the flash 
-driver, not from here.
+Do I understand correctly that kretprobes and ftrace modify frames
+saved on SCS? So, if either is enabled, SCS frames might contain their
+addresses instead of actual PCs?
 
-Also, as of now at least, SPI NOR only works when the flash is in SDR 
-mode. For TI platforms, we reset the flash in the bootloader (U-Boot), 
-before handing control off to the kernel. If you do want to properly 
-handle flashes that are handed to the kernel in DDR mode, I would 
-suggest you update SPI NOR instead to detect the flash mode and work 
-from there. This would also allow us to support flashes that boot in DDR 
-mode, so would still be in DDR mode even after a reset.
+If so, this is good enough for our use case. Having kretprobes or
+ftrace enabled is an unusual setting and there's no requirement to
+support it.
 
-> Xilinx Versal platform has a dedicated pin used for OSPI device reset.
-> As part of the reset sequence, configure the pin to enable
-> hysteresis and set the direction of the pin to output before toggling
-> the pin. Provided the required delay ranges while toggling the pin to
-> meet the most of the OSPI flash devices reset pulse width, reset recovery
-> and CS high to reset high timings.
-> 
-> Signed-off-by: Sai Krishna Potthuri <lakshmi.sai.krishna.potthuri@xilinx.com>
-[...]
+The goal is to have stack trace collection working in most cases
+during a normal usage of an Android device. Being not feature-complete
+and not covering all possible peculiar cases is fine.
 
--- 
-Regards,
-Pratyush Yadav
-Texas Instruments Inc.
+> I'm also very much not keen on having to stash things in the entry assembly for
+> this distinct unwinder.
+
+I'll drop these changes, I'll respond on that patch.
+
+> Going forward, I'm also planning on making changes to the way we unwind across
+> exception boundaries (e.g. to report the LR and FP), and as that depends on
+> finding the pt_regs based on the FP, that's not going to work with SCS.
+>
+> So at a high level, I don't want to add an SCS based unwinder.
+>
+> However, I'm very much open to how we could improve the standard unwinder to be
+> faster, which would be more generally beneficial. I can see that there are some
+> things we could reasonably do with simple refactoring.
+
+The intention of adding an SCS-based unwinder it to use in production
+together with MTE-based KASAN. Thus, it needs to be as fast as
+possible. I doubt even a very optimized FP-based unwinder will compare
+with a simple loop over SCS frames.
+
+It seems a pity to let the kernel maintain the current call trace via
+SCS and then not to use it to collect stack traces.
+
+Would it be acceptable if we keep the SCS unwinder code in mm/kasan
+and not integrate with the common stacktrace machanisms?
+
+Thanks!
