@@ -2,100 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C7D18C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B2667C433EF
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:21:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1584465AbiDEX6U (ORCPT
+        id S1584418AbiDEX6Q (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 19:58:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38010 "EHLO
+        Tue, 5 Apr 2022 19:58:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37666 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351687AbiDEKDL (ORCPT
+        with ESMTP id S1348399AbiDEJrh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:03:11 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3136973060;
-        Tue,  5 Apr 2022 02:52:12 -0700 (PDT)
+        Tue, 5 Apr 2022 05:47:37 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BDD76E57B;
+        Tue,  5 Apr 2022 02:33:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 81237616D7;
-        Tue,  5 Apr 2022 09:52:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8BFB5C385A2;
-        Tue,  5 Apr 2022 09:52:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649152331;
-        bh=qW1x31HnZxqlWv9yLK7leVGiHSRFHxjgpFRqN+3ePM4=;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1D5D4616D2;
+        Tue,  5 Apr 2022 09:33:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E16F6C385A6;
+        Tue,  5 Apr 2022 09:33:49 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649151233;
+        bh=68gbc2AXKSN3tRLzHyhrzyqpSc4gZP8dxeQpKcf9ezA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qWz10RDKOyKNugTych2AqL1vRausJfYBSRUYZ7Bq5NDgsi8yNgQbA5wTyOj04hM/U
-         ymkdTxPnTD5fQHsoXt81rge6I7uNnlSgfKnq8kN7wkgILsUcuWU4OTSx4yohwcdkul
-         QnVLfc7pt1jbz6K0v2r907ZMYsHbfKm2K1SJBp+8=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Antonino Daplas <adaplas@gmail.com>,
-        linux-fbdev@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        Tim Gardner <tim.gardner@canonical.com>,
-        Helge Deller <deller@gmx.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 737/913] video: fbdev: nvidiafb: Use strscpy() to prevent buffer overflow
-Date:   Tue,  5 Apr 2022 09:29:59 +0200
-Message-Id: <20220405070401.926691966@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
-User-Agent: quilt/0.66
+        b=pZcXmZ+AWPl+uE14MwKlMpmmcsKfi3t1I3TnC+TGAc4agrmtaPtWcGP6znqejd017
+         07Blju+cSqrhL4+m/2HwlI4Y+fS+YLVm8booS5rdL3RhK85mLr2vf2AScdCmCw0Z6m
+         MDVvanNn0UbMNZpzKG99fYRC1Vd5Oddmv2dzjpmGkbTGPO5Mtd1P/XfvUgKSo+Aht7
+         KM5g6wH57uvRB93250SuWzyDBpAhSGZBUd2yTm/+ZsXQVdxVi14TQBhoc4PsJbJiX9
+         oMi0Xibos6mNUXNdrzd5Dj1CZxDA0qTvGetZgD6hNUH1f91L8z8bUrIIJjNnTIQaEE
+         1ybOAVUFVjtQg==
+From:   Masami Hiramatsu <mhiramat@kernel.org>
+To:     Alexei Starovoitov <ast@kernel.org>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Daniel Borkmann <daniel@iogearbox.net>,
+        Shubham Bansal <illusionist.neo@gmail.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Masami Hiramatsu <mhiramat@kernel.org>, bpf@vger.kernel.org,
+        kernel-team@fb.com, Jiri Olsa <jolsa@kernel.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        "Naveen N . Rao" <naveen.n.rao@linux.ibm.com>,
+        Anil S Keshavamurthy <anil.s.keshavamurthy@intel.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        linux-kernel@vger.kernel.org, Mark Rutland <mark.rutland@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Russell King <linux@armlinux.org.uk>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        linux-arm-kernel@lists.infradead.org
+Subject: [PATCH bpf 1/4] ARM: unwind: Initialize the lr_addr field of unwind_ctrl_block
+Date:   Tue,  5 Apr 2022 18:33:47 +0900
+Message-Id: <164915122721.982637.1510683757540074397.stgit@devnote2>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <164915121498.982637.12787715964983738566.stgit@devnote2>
+References: <164915121498.982637.12787715964983738566.stgit@devnote2>
+User-Agent: StGit/0.19
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tim Gardner <tim.gardner@canonical.com>
+Since the unwind_ctrl_block::lr_addr is finally passed to
+stackframe::lr_addr, that value will be exposed unconditionally.
+Thus it should be initialized.
 
-[ Upstream commit 37a1a2e6eeeb101285cd34e12e48a881524701aa ]
+Without this fix, when unwind_frame() doesn't update the
+unwind_ctrl_block::lr_addr (e.g. 'lr' register is not saved in the
+target function), stackframe::lr_addr will contain a wrong value.
 
-Coverity complains of a possible buffer overflow. However,
-given the 'static' scope of nvidia_setup_i2c_bus() it looks
-like that can't happen after examiniing the call sites.
-
-CID 19036 (#1 of 1): Copy into fixed size buffer (STRING_OVERFLOW)
-1. fixed_size_dest: You might overrun the 48-character fixed-size string
-  chan->adapter.name by copying name without checking the length.
-2. parameter_as_source: Note: This defect has an elevated risk because the
-  source argument is a parameter of the current function.
- 89        strcpy(chan->adapter.name, name);
-
-Fix this warning by using strscpy() which will silence the warning and
-prevent any future buffer overflows should the names used to identify the
-channel become much longer.
-
-Cc: Antonino Daplas <adaplas@gmail.com>
-Cc: linux-fbdev@vger.kernel.org
-Cc: dri-devel@lists.freedesktop.org
-Cc: linux-kernel@vger.kernel.org
-Signed-off-by: Tim Gardner <tim.gardner@canonical.com>
-Signed-off-by: Helge Deller <deller@gmx.de>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Masami Hiramatsu <mhiramat@kernel.org>
 ---
- drivers/video/fbdev/nvidia/nv_i2c.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/arm/kernel/unwind.c |    1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/video/fbdev/nvidia/nv_i2c.c b/drivers/video/fbdev/nvidia/nv_i2c.c
-index d7994a173245..0b48965a6420 100644
---- a/drivers/video/fbdev/nvidia/nv_i2c.c
-+++ b/drivers/video/fbdev/nvidia/nv_i2c.c
-@@ -86,7 +86,7 @@ static int nvidia_setup_i2c_bus(struct nvidia_i2c_chan *chan, const char *name,
- {
- 	int rc;
+diff --git a/arch/arm/kernel/unwind.c b/arch/arm/kernel/unwind.c
+index a37ea6c772cd..93e767682cf4 100644
+--- a/arch/arm/kernel/unwind.c
++++ b/arch/arm/kernel/unwind.c
+@@ -404,6 +404,7 @@ int unwind_frame(struct stackframe *frame)
+ 	ctrl.vrs[SP] = frame->sp;
+ 	ctrl.vrs[LR] = frame->lr;
+ 	ctrl.vrs[PC] = 0;
++	ctrl.lr_addr = 0;
  
--	strcpy(chan->adapter.name, name);
-+	strscpy(chan->adapter.name, name, sizeof(chan->adapter.name));
- 	chan->adapter.owner = THIS_MODULE;
- 	chan->adapter.class = i2c_class;
- 	chan->adapter.algo_data = &chan->algo;
--- 
-2.34.1
-
-
+ 	if (idx->insn == 1)
+ 		/* can't unwind */
 
