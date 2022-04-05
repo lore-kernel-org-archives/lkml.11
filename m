@@ -2,123 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 349DCC4321E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F754C43217
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 01:48:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1843746AbiDFBlz (ORCPT
+        id S1843702AbiDFBlw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 21:41:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33876 "EHLO
+        Tue, 5 Apr 2022 21:41:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58678 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343769AbiDEKjl (ORCPT
+        with ESMTP id S1355765AbiDELz0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:39:41 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1B22C78;
-        Tue,  5 Apr 2022 03:24:32 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6D138B81C8A;
-        Tue,  5 Apr 2022 10:24:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BC436C385A0;
-        Tue,  5 Apr 2022 10:24:29 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649154270;
-        bh=c21vQ3R+8GL+5QHmo2cBGWmdKu6Rc/xJc0zSQJrrqF0=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PCDoW+YtmyStHEjAZJDVhzjcnD/hn+UswDik8B2YNRYZbQ41RJKApFKvJdpWDAH9v
-         p2ZTTdjRi5v4fIJVlu66rkjgM5lEiKmmusAC67j6VMDlSXyPn7dZBEyaj4NPEGHXje
-         8bSxaRjjna5FCMSH6jDkE+gwPwXoQesMRcrMlRDg=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Himanshu Madhani <himanshu.madhani@oracle.com>,
-        Quinn Tran <qutran@marvell.com>,
-        Nilesh Javali <njavali@marvell.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>
-Subject: [PATCH 5.10 518/599] scsi: qla2xxx: Fix scheduling while atomic
-Date:   Tue,  5 Apr 2022 09:33:32 +0200
-Message-Id: <20220405070314.253954520@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 5 Apr 2022 07:55:26 -0400
+Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7F7A25F7
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 04:13:07 -0700 (PDT)
+Received: by mail-ej1-x62f.google.com with SMTP id a6so15034451ejk.0
+        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 04:13:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=xXIhb/k84YUPugErMI4w+XHiSb+7tM5DtyIUg35QKOc=;
+        b=SOPe4Fz/Gd0TUXDXKPCA9VoNLaiWukRADEe+B53JR11QrjxpXX4bD5JteQJNyeAAOH
+         7Au36PBclje86I2cu21Niy3oUS+GkRm704J0owWn0QAx5TRdjzRNZ5gFJ7u820ACv5JK
+         Xwmcn6pK/x3/XOAKU3T3YubJpVAHynGMPw7I6zaQwGXz4jIo5fZ+fdrSnzw+vWtm0Ie3
+         S6tds5TD7gJA4XDWha9NpRUZFDjcUHYsEyAsK6Yu9PteZcZrqZ4cL09OoPMIsz+yyWW4
+         ZbDH9q104w1NxHqClHj/TA3OwMZNaq4ELH/TQQajLAKM/1DspmKkvByFILxwlsmMrY1C
+         VpFA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=xXIhb/k84YUPugErMI4w+XHiSb+7tM5DtyIUg35QKOc=;
+        b=qD1xjylm3nX4/izhuZOpLJRmKwiXF6BLnxfd+fsj0FiVvgpw9gDanEpKjlcXjyOXCH
+         WdumN8WH3Pod1RiflPKttDIcxlShcVwTUDcHUErCH0ZlmrZ7h3alpJO6wvgSo7MykJmP
+         ePUQOJeFIMPn21kksrk2j3NfgtIP7v2cGNzX8fg5BSaWznem8KPTzpan+NTZDvbrwRz1
+         1T8jvU3uHGw3GdX0tgw2GSrbPQBSzVsycEN20zNJ5saiU2WBfMt9k+ibAdy5IpfZVlPY
+         GmTgUh36Hstcmb23mhCY6OljLYsIvoLZ8kLJJ68IwvNpV4HFR/hpoie8J/KKRouG8oKa
+         lYRw==
+X-Gm-Message-State: AOAM530iQbdu2mgMxj5S5C3AWIC1WPIUNpw0Ax+IHu8p5+et3QEf+u9f
+        Ji7rwMhsl43+s3sZ2I+15Eio7Q==
+X-Google-Smtp-Source: ABdhPJw9WvUhJrFGkEik3lLZvdk/MbisSziS8oeO/5WpSrdz1zCrQ+9wuri02UKa/reqvm1xDDaKZw==
+X-Received: by 2002:a17:907:d16:b0:6d6:e3b6:9cd8 with SMTP id gn22-20020a1709070d1600b006d6e3b69cd8mr2972056ejc.94.1649157186513;
+        Tue, 05 Apr 2022 04:13:06 -0700 (PDT)
+Received: from [192.168.0.181] (xdsl-188-155-201-27.adslplus.ch. [188.155.201.27])
+        by smtp.gmail.com with ESMTPSA id hr38-20020a1709073fa600b006e0280f3bbdsm5435580ejc.110.2022.04.05.04.13.05
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 05 Apr 2022 04:13:06 -0700 (PDT)
+Message-ID: <f7617857-b438-b527-315f-7543b9654a66@linaro.org>
+Date:   Tue, 5 Apr 2022 13:13:05 +0200
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH v2 1/4] dt-bindings: I2C: Add Qualcomm Geni based QUP I2C
+ bindings
+Content-Language: en-US
+To:     Kuldeep Singh <singh.kuldeep87k@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>
+Cc:     linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org, linux-i2c@vger.kernel.org
+References: <20220404182938.29492-1-singh.kuldeep87k@gmail.com>
+ <20220404182938.29492-2-singh.kuldeep87k@gmail.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220404182938.29492-2-singh.kuldeep87k@gmail.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Quinn Tran <qutran@marvell.com>
-
-commit afd438ff874ca40b74321b3fa19bd61adfd7ca0c upstream.
-
-The driver makes a call into midlayer (fc_remote_port_delete) which can put
-the thread to sleep. The thread that originates the call is in interrupt
-context. The combination of the two trigger a crash. Schedule the call in
-non-interrupt context where it is more safe.
-
-kernel: BUG: scheduling while atomic: swapper/7/0/0x00010000
-kernel: Call Trace:
-kernel:  <IRQ>
-kernel:  dump_stack+0x66/0x81
-kernel:  __schedule_bug.cold.90+0x5/0x1d
-kernel:  __schedule+0x7af/0x960
-kernel:  schedule+0x28/0x80
-kernel:  schedule_timeout+0x26d/0x3b0
-kernel:  wait_for_completion+0xb4/0x140
-kernel:  ? wake_up_q+0x70/0x70
-kernel:  __wait_rcu_gp+0x12c/0x160
-kernel:  ? sdev_evt_alloc+0xc0/0x180 [scsi_mod]
-kernel:  synchronize_sched+0x6c/0x80
-kernel:  ? call_rcu_bh+0x20/0x20
-kernel:  ? __bpf_trace_rcu_invoke_callback+0x10/0x10
-kernel:  sdev_evt_alloc+0xfd/0x180 [scsi_mod]
-kernel:  starget_for_each_device+0x85/0xb0 [scsi_mod]
-kernel:  ? scsi_init_io+0x360/0x3d0 [scsi_mod]
-kernel:  scsi_init_io+0x388/0x3d0 [scsi_mod]
-kernel:  device_for_each_child+0x54/0x90
-kernel:  fc_remote_port_delete+0x70/0xe0 [scsi_transport_fc]
-kernel:  qla2x00_schedule_rport_del+0x62/0xf0 [qla2xxx]
-kernel:  qla2x00_mark_device_lost+0x9c/0xd0 [qla2xxx]
-kernel:  qla24xx_handle_plogi_done_event+0x55f/0x570 [qla2xxx]
-kernel:  qla2x00_async_login_sp_done+0xd2/0x100 [qla2xxx]
-kernel:  qla24xx_logio_entry+0x13a/0x3c0 [qla2xxx]
-kernel:  qla24xx_process_response_queue+0x306/0x400 [qla2xxx]
-kernel:  qla24xx_msix_rsp_q+0x3f/0xb0 [qla2xxx]
-kernel:  __handle_irq_event_percpu+0x40/0x180
-kernel:  handle_irq_event_percpu+0x30/0x80
-kernel:  handle_irq_event+0x36/0x60
-
-Link: https://lore.kernel.org/r/20220110050218.3958-7-njavali@marvell.com
-Cc: stable@vger.kernel.org
-Reviewed-by: Himanshu Madhani <himanshu.madhani@oracle.com>
-Signed-off-by: Quinn Tran <qutran@marvell.com>
-Signed-off-by: Nilesh Javali <njavali@marvell.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- drivers/scsi/qla2xxx/qla_init.c |    7 +------
- 1 file changed, 1 insertion(+), 6 deletions(-)
-
---- a/drivers/scsi/qla2xxx/qla_init.c
-+++ b/drivers/scsi/qla2xxx/qla_init.c
-@@ -2114,12 +2114,7 @@ qla24xx_handle_plogi_done_event(struct s
- 		ql_dbg(ql_dbg_disc, vha, 0x20eb, "%s %d %8phC cmd error %x\n",
- 		    __func__, __LINE__, ea->fcport->port_name, ea->data[1]);
- 
--		ea->fcport->flags &= ~FCF_ASYNC_SENT;
--		qla2x00_set_fcport_disc_state(ea->fcport, DSC_LOGIN_FAILED);
--		if (ea->data[1] & QLA_LOGIO_LOGIN_RETRIED)
--			set_bit(RELOGIN_NEEDED, &vha->dpc_flags);
--		else
--			qla2x00_mark_device_lost(vha, ea->fcport, 1);
-+		qlt_schedule_sess_for_deletion(ea->fcport);
- 		break;
- 	case MBS_LOOP_ID_USED:
- 		/* data[1] = IO PARAM 1 = nport ID  */
+On 04/04/2022 20:29, Kuldeep Singh wrote:
+> GENI(generic interface) based Qualcomm Universal Peripheral controller
+> can support multiple serial interfaces like SPI,UART and I2C.
+> 
+> Unlike other I2C controllers, QUP I2C bindings are present in parent
+> schema. Move it out from parent to an individual binding and let parent
+> refer to child schema later on.
+> 
+> Please note, current schema isn't complete as it misses out few
+> properties and thus, add these missing properties along the process.
+> 
+> Signed-off-by: Kuldeep Singh <singh.kuldeep87k@gmail.com>
+> ---
+> v2:
+> - Change compatible from enum to const
+> - Drop clock-frequency description
+> - Sort nodes
+> ---
+>  .../bindings/i2c/qcom,i2c-geni-qcom.yaml      | 100 ++++++++++++++++++
+>  1 file changed, 100 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/i2c/qcom,i2c-geni-qcom.yaml
+> 
 
 
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+
+
+Best regards,
+Krzysztof
