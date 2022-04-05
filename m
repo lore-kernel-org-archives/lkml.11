@@ -2,86 +2,55 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 470FFC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:20:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 17A6FC46467
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:20:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237243AbiDEIRt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 04:17:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54458 "EHLO
+        id S235415AbiDEIQJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 04:16:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57654 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235650AbiDEH77 (ORCPT
+        with ESMTP id S235528AbiDEH7u (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 03:59:59 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ADF811BE8B;
-        Tue,  5 Apr 2022 00:56:50 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 616E4B81B90;
-        Tue,  5 Apr 2022 07:56:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B74BDC340EE;
-        Tue,  5 Apr 2022 07:56:47 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649145408;
-        bh=L7t5eCcbxKioBhlB6WdiF/7kW9vwa2XNaTwBhgAO9Cw=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=MRJ144yxZ5dn91keSkrPp+ZcWBiA8snUNok4WhMxWyY51XpIsWDmpVB+LF5Snv7iT
-         bm0d6/D6GnEiN4IrdWTiybQ1G7n1ERxO/Ai72ucLXYu6BQc+oVNhdEkEHZmOggd0An
-         JfRpJjS2JMYIRBl/GIsqv1kzjK/2MG0rBvM+NZOs=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Codrin Ciubotariu <codrin.ciubotariu@microchip.com>,
+        Tue, 5 Apr 2022 03:59:50 -0400
+Received: from mx.socionext.com (mx.socionext.com [202.248.49.38])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 659F53E0FA;
+        Tue,  5 Apr 2022 00:55:06 -0700 (PDT)
+Received: from unknown (HELO iyokan2-ex.css.socionext.com) ([172.31.9.54])
+  by mx.socionext.com with ESMTP; 05 Apr 2022 16:55:05 +0900
+Received: from mail.mfilter.local (m-filter-2 [10.213.24.62])
+        by iyokan2-ex.css.socionext.com (Postfix) with ESMTP id AD5E22058B50;
+        Tue,  5 Apr 2022 16:55:05 +0900 (JST)
+Received: from 172.31.9.51 (172.31.9.51) by m-FILTER with ESMTP; Tue, 5 Apr 2022 16:55:05 +0900
+Received: from plum.e01.socionext.com (unknown [10.212.243.119])
+        by kinkan2.css.socionext.com (Postfix) with ESMTP id 1C5B3B6389;
+        Tue,  5 Apr 2022 16:55:05 +0900 (JST)
+From:   Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
+To:     Liam Girdwood <lgirdwood@gmail.com>,
         Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0395/1126] ASoC: atmel: Add missing of_node_put() in at91sam9g20ek_audio_probe
-Date:   Tue,  5 Apr 2022 09:19:02 +0200
-Message-Id: <20220405070419.222010820@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
-References: <20220405070407.513532867@linuxfoundation.org>
-User-Agent: quilt/0.66
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>
+Cc:     Masami Hiramatsu <mhiramat@kernel.org>, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
+Subject: [PATCH 0/2] dt-bindings: regulator: Fix uniphier descriptions
+Date:   Tue,  5 Apr 2022 16:55:01 +0900
+Message-Id: <1649145303-30221-1-git-send-email-hayashi.kunihiko@socionext.com>
+X-Mailer: git-send-email 2.7.4
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+This series fixes dt-schema descriptions for regulators implemented in
+UniPhier SoCs.
 
-[ Upstream commit f590797fa3c1bccdd19e55441592a23b46aef449 ]
+Kunihiko Hayashi (2):
+  dt-bindings: regulator: uniphier: Clean up clocks, resets, and their
+    names using compatible string
+  dt-bindings: regulator: uniphier: Use unevaluatedProperties
 
-This node pointer is returned by of_parse_phandle() with refcount
-incremented in this function.
-Calling of_node_put() to avoid the refcount leak.
+ .../socionext,uniphier-regulator.yaml         | 57 +++++++++++++------
+ 1 file changed, 39 insertions(+), 18 deletions(-)
 
-Fixes: 531f67e41dcd ("ASoC: at91sam9g20ek-wm8731: convert to dt support")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Reviewed-by: Codrin Ciubotariu <codrin.ciubotariu@microchip.com>
-Link: https://lore.kernel.org/r/20220307124539.1743-1-linmq006@gmail.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- sound/soc/atmel/sam9g20_wm8731.c | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/sound/soc/atmel/sam9g20_wm8731.c b/sound/soc/atmel/sam9g20_wm8731.c
-index 915da92e1ec8..33e43013ff77 100644
---- a/sound/soc/atmel/sam9g20_wm8731.c
-+++ b/sound/soc/atmel/sam9g20_wm8731.c
-@@ -214,6 +214,7 @@ static int at91sam9g20ek_audio_probe(struct platform_device *pdev)
- 	cpu_np = of_parse_phandle(np, "atmel,ssc-controller", 0);
- 	if (!cpu_np) {
- 		dev_err(&pdev->dev, "dai and pcm info missing\n");
-+		of_node_put(codec_np);
- 		return -EINVAL;
- 	}
- 	at91sam9g20ek_dai.cpus->of_node = cpu_np;
 -- 
-2.34.1
-
-
+2.25.1
 
