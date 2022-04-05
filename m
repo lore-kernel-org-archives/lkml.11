@@ -2,42 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D202DC433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C3E8CC4332F
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:25:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1574795AbiDEXBM (ORCPT
+        id S1574772AbiDEXBG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 19:01:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55826 "EHLO
+        Tue, 5 Apr 2022 19:01:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50238 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345071AbiDEKki (ORCPT
+        with ESMTP id S238546AbiDEKfQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:40:38 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5416E2DAA9;
-        Tue,  5 Apr 2022 03:25:48 -0700 (PDT)
+        Tue, 5 Apr 2022 06:35:16 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 477E73D4BC;
+        Tue,  5 Apr 2022 03:20:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E4E9461425;
-        Tue,  5 Apr 2022 10:25:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C4C20C385A0;
-        Tue,  5 Apr 2022 10:25:46 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D8D3D616D7;
+        Tue,  5 Apr 2022 10:20:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F08E3C385A1;
+        Tue,  5 Apr 2022 10:20:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649154347;
-        bh=g0TljGLO1IzFHta7Q9gIR9X96djpoWB7T6QSJAJD6jc=;
+        s=korg; t=1649154046;
+        bh=tz5dKMKdWhwlPogvpzcTJlJIFOcl7X9ZbyiFjU7lt1E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=alwI5WbJ7QDqBGpuLSvRbcViYqBgLaBPbf6dvr8sIkwJdAiUqxpgrAAHX8sOaBaOa
-         aWERUPWvA0hdJ4AJOVJgppypa1H1nOiJSRx+cOSOLPkbc7M/uzdtRSlU8pmk803ykx
-         lEaILzePDSVw/Mcu4RJKyAh7LZ9mpfuMJAfgf0vg=
+        b=06NHh+Vn1kbk2oxjCxuEssMdYZfkpb0TMGB1zra1sToQVeIi1MhYwGWyKJdfQQPYi
+         Fmf/9klvIBr1+VkHniMHtcetoFV/nYm16J+n8SP4TcEGt4yMcJxHhXzPbl3T0ThL7q
+         wp++7KXDHk05vvgqIK10oBLE+NSOBWl5n2CqIbew=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.10 547/599] wireguard: socket: ignore v6 endpoints when ipv6 is disabled
-Date:   Tue,  5 Apr 2022 09:34:01 +0200
-Message-Id: <20220405070315.119252507@linuxfoundation.org>
+        stable@vger.kernel.org,
+        =?UTF-8?q?Marek=20Marczykowski-G=C3=B3recki?= 
+        <marmarek@invisiblethingslab.com>, Juergen Gross <jgross@suse.com>,
+        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 437/599] xen: fix is_xen_pmu()
+Date:   Tue,  5 Apr 2022 09:32:11 +0200
+Message-Id: <20220405070311.836925618@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
 References: <20220405070258.802373272@linuxfoundation.org>
@@ -49,45 +52,124 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jason A. Donenfeld <Jason@zx2c4.com>
+From: Juergen Gross <jgross@suse.com>
 
-commit 77fc73ac89be96ec8f39e8efa53885caa7cb3645 upstream.
+[ Upstream commit de2ae403b4c0e79a3410e63bc448542fbb9f9bfc ]
 
-The previous commit fixed a memory leak on the send path in the event
-that IPv6 is disabled at compile time, but how did a packet even arrive
-there to begin with? It turns out we have previously allowed IPv6
-endpoints even when IPv6 support is disabled at compile time. This is
-awkward and inconsistent. Instead, let's just ignore all things IPv6,
-the same way we do other malformed endpoints, in the case where IPv6 is
-disabled.
+is_xen_pmu() is taking the cpu number as parameter, but it is not using
+it. Instead it just tests whether the Xen PMU initialization on the
+current cpu did succeed. As this test is done by checking a percpu
+pointer, preemption needs to be disabled in order to avoid switching
+the cpu while doing the test. While resuming from suspend() this seems
+not to be the case:
 
-Fixes: e7096c131e51 ("net: WireGuard secure network tunnel")
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+[   88.082751] ACPI: PM: Low-level resume complete
+[   88.087933] ACPI: EC: EC started
+[   88.091464] ACPI: PM: Restoring platform NVS memory
+[   88.097166] xen_acpi_processor: Uploading Xen processor PM info
+[   88.103850] Enabling non-boot CPUs ...
+[   88.108128] installing Xen timer for CPU 1
+[   88.112763] BUG: using smp_processor_id() in preemptible [00000000] code: systemd-sleep/7138
+[   88.122256] caller is is_xen_pmu+0x12/0x30
+[   88.126937] CPU: 0 PID: 7138 Comm: systemd-sleep Tainted: G        W         5.16.13-2.fc32.qubes.x86_64 #1
+[   88.137939] Hardware name: Star Labs StarBook/StarBook, BIOS 7.97 03/21/2022
+[   88.145930] Call Trace:
+[   88.148757]  <TASK>
+[   88.151193]  dump_stack_lvl+0x48/0x5e
+[   88.155381]  check_preemption_disabled+0xde/0xe0
+[   88.160641]  is_xen_pmu+0x12/0x30
+[   88.164441]  xen_smp_intr_init_pv+0x75/0x100
+
+Fix that by replacing is_xen_pmu() by a simple boolean variable which
+reflects the Xen PMU initialization state on cpu 0.
+
+Modify xen_pmu_init() to return early in case it is being called for a
+cpu other than cpu 0 and the boolean variable not being set.
+
+Fixes: bf6dfb154d93 ("xen/PMU: PMU emulation code")
+Reported-by: Marek Marczykowski-Górecki <marmarek@invisiblethingslab.com>
+Signed-off-by: Juergen Gross <jgross@suse.com>
+Reviewed-by: Boris Ostrovsky <boris.ostrovsky@oracle.com>
+Link: https://lore.kernel.org/r/20220325142002.31789-1-jgross@suse.com
+Signed-off-by: Boris Ostrovsky <boris.ostrovsky@oracle.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireguard/socket.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ arch/x86/xen/pmu.c    | 10 ++++------
+ arch/x86/xen/pmu.h    |  3 ++-
+ arch/x86/xen/smp_pv.c |  2 +-
+ 3 files changed, 7 insertions(+), 8 deletions(-)
 
---- a/drivers/net/wireguard/socket.c
-+++ b/drivers/net/wireguard/socket.c
-@@ -242,7 +242,7 @@ int wg_socket_endpoint_from_skb(struct e
- 		endpoint->addr4.sin_addr.s_addr = ip_hdr(skb)->saddr;
- 		endpoint->src4.s_addr = ip_hdr(skb)->daddr;
- 		endpoint->src_if4 = skb->skb_iif;
--	} else if (skb->protocol == htons(ETH_P_IPV6)) {
-+	} else if (IS_ENABLED(CONFIG_IPV6) && skb->protocol == htons(ETH_P_IPV6)) {
- 		endpoint->addr6.sin6_family = AF_INET6;
- 		endpoint->addr6.sin6_port = udp_hdr(skb)->source;
- 		endpoint->addr6.sin6_addr = ipv6_hdr(skb)->saddr;
-@@ -285,7 +285,7 @@ void wg_socket_set_peer_endpoint(struct
- 		peer->endpoint.addr4 = endpoint->addr4;
- 		peer->endpoint.src4 = endpoint->src4;
- 		peer->endpoint.src_if4 = endpoint->src_if4;
--	} else if (endpoint->addr.sa_family == AF_INET6) {
-+	} else if (IS_ENABLED(CONFIG_IPV6) && endpoint->addr.sa_family == AF_INET6) {
- 		peer->endpoint.addr6 = endpoint->addr6;
- 		peer->endpoint.src6 = endpoint->src6;
- 	} else {
+diff --git a/arch/x86/xen/pmu.c b/arch/x86/xen/pmu.c
+index e13b0b49fcdf..d7249f4c90f1 100644
+--- a/arch/x86/xen/pmu.c
++++ b/arch/x86/xen/pmu.c
+@@ -512,10 +512,7 @@ irqreturn_t xen_pmu_irq_handler(int irq, void *dev_id)
+ 	return ret;
+ }
+ 
+-bool is_xen_pmu(int cpu)
+-{
+-	return (get_xenpmu_data() != NULL);
+-}
++bool is_xen_pmu;
+ 
+ void xen_pmu_init(int cpu)
+ {
+@@ -526,7 +523,7 @@ void xen_pmu_init(int cpu)
+ 
+ 	BUILD_BUG_ON(sizeof(struct xen_pmu_data) > PAGE_SIZE);
+ 
+-	if (xen_hvm_domain())
++	if (xen_hvm_domain() || (cpu != 0 && !is_xen_pmu))
+ 		return;
+ 
+ 	xenpmu_data = (struct xen_pmu_data *)get_zeroed_page(GFP_KERNEL);
+@@ -547,7 +544,8 @@ void xen_pmu_init(int cpu)
+ 	per_cpu(xenpmu_shared, cpu).xenpmu_data = xenpmu_data;
+ 	per_cpu(xenpmu_shared, cpu).flags = 0;
+ 
+-	if (cpu == 0) {
++	if (!is_xen_pmu) {
++		is_xen_pmu = true;
+ 		perf_register_guest_info_callbacks(&xen_guest_cbs);
+ 		xen_pmu_arch_init();
+ 	}
+diff --git a/arch/x86/xen/pmu.h b/arch/x86/xen/pmu.h
+index 0e83a160589b..65c58894fc79 100644
+--- a/arch/x86/xen/pmu.h
++++ b/arch/x86/xen/pmu.h
+@@ -4,6 +4,8 @@
+ 
+ #include <xen/interface/xenpmu.h>
+ 
++extern bool is_xen_pmu;
++
+ irqreturn_t xen_pmu_irq_handler(int irq, void *dev_id);
+ #ifdef CONFIG_XEN_HAVE_VPMU
+ void xen_pmu_init(int cpu);
+@@ -12,7 +14,6 @@ void xen_pmu_finish(int cpu);
+ static inline void xen_pmu_init(int cpu) {}
+ static inline void xen_pmu_finish(int cpu) {}
+ #endif
+-bool is_xen_pmu(int cpu);
+ bool pmu_msr_read(unsigned int msr, uint64_t *val, int *err);
+ bool pmu_msr_write(unsigned int msr, uint32_t low, uint32_t high, int *err);
+ int pmu_apic_update(uint32_t reg);
+diff --git a/arch/x86/xen/smp_pv.c b/arch/x86/xen/smp_pv.c
+index 8f9e7e2407c8..35b6d15d874d 100644
+--- a/arch/x86/xen/smp_pv.c
++++ b/arch/x86/xen/smp_pv.c
+@@ -130,7 +130,7 @@ int xen_smp_intr_init_pv(unsigned int cpu)
+ 	per_cpu(xen_irq_work, cpu).irq = rc;
+ 	per_cpu(xen_irq_work, cpu).name = callfunc_name;
+ 
+-	if (is_xen_pmu(cpu)) {
++	if (is_xen_pmu) {
+ 		pmu_name = kasprintf(GFP_KERNEL, "pmu%d", cpu);
+ 		rc = bind_virq_to_irqhandler(VIRQ_XENPMU, cpu,
+ 					     xen_pmu_irq_handler,
+-- 
+2.34.1
+
 
 
