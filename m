@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 74769C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 839CBC433F5
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 02:11:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1455525AbiDFCJt (ORCPT
+        id S1573251AbiDFCKK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 22:09:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50642 "EHLO
+        Tue, 5 Apr 2022 22:10:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41188 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358249AbiDEK2K (ORCPT
+        with ESMTP id S1356201AbiDEKXY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:28:10 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72529BF56;
-        Tue,  5 Apr 2022 03:17:28 -0700 (PDT)
+        Tue, 5 Apr 2022 06:23:24 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3E7BBAB83;
+        Tue,  5 Apr 2022 03:07:39 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0E92E6176C;
-        Tue,  5 Apr 2022 10:17:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 16DA2C385A1;
-        Tue,  5 Apr 2022 10:17:26 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 84812B81C88;
+        Tue,  5 Apr 2022 10:07:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EE19DC385A1;
+        Tue,  5 Apr 2022 10:07:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649153847;
-        bh=l99Mt8In48+c+7JJh4arIQJ0SwmWXax74CpxbShDX/A=;
+        s=korg; t=1649153257;
+        bh=tK6afXarxi7FhsDLlwqx1kKdUhq4SqCojETP3BwMOyA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RlH/vpipHZuvw+rMgqeeu05IBGuOMd5eaPdQ4xAFjxV6tETsoZO9nKBd/pTBR13p1
-         AlFOgiKk2nRF/Pp1yrcbvfAyysVUGp9+OwFBR6aYx5AU+JEj4l6ORwexaCSt0Xizv4
-         y/pDCqn2BfaCPUShwU8HfMNWyBN478jQFP59qwfs=
+        b=OJoJhiN2Y45kJaFz3d1ImBT5qQKGyifL6ieS9J7D8JvjiTeJXzuvhpofy1yIz0tia
+         l8ruDMmFVwZP46Joi1EuGNRxG0CuzvOQVfNewJS29/opg4FMk4ThdVVcgWQGc7crd/
+         iL7SGqbAZqKz54/xFAPxqNLAkfrCrp0DduxzwxN0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Xu Kuohai <xukuohai@huawei.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Song Liu <songliubraving@fb.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 330/599] libbpf: Skip forward declaration when counting duplicated type names
-Date:   Tue,  5 Apr 2022 09:30:24 +0200
-Message-Id: <20220405070308.653121909@linuxfoundation.org>
+        stable@vger.kernel.org, Linus Walleij <linus.walleij@linaro.org>,
+        Arend van Spriel <arend.vanspriel@broadcom.com>,
+        Hector Martin <marcan@marcan.st>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Kalle Valo <kvalo@kernel.org>
+Subject: [PATCH 5.10 121/599] brcmfmac: pcie: Release firmwares in the brcmf_pcie_setup error path
+Date:   Tue,  5 Apr 2022 09:26:55 +0200
+Message-Id: <20220405070302.439232619@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
 References: <20220405070258.802373272@linuxfoundation.org>
@@ -51,54 +52,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xu Kuohai <xukuohai@huawei.com>
+From: Hector Martin <marcan@marcan.st>
 
-[ Upstream commit 4226961b0019b2e1612029e8950a9e911affc995 ]
+commit 5e90f0f3ead014867dade7a22f93958119f5efab upstream.
 
-Currently if a declaration appears in the BTF before the definition, the
-definition is dumped as a conflicting name, e.g.:
+This avoids leaking memory if brcmf_chip_get_raminfo fails. Note that
+the CLM blob is released in the device remove path.
 
-    $ bpftool btf dump file vmlinux format raw | grep "'unix_sock'"
-    [81287] FWD 'unix_sock' fwd_kind=struct
-    [89336] STRUCT 'unix_sock' size=1024 vlen=14
-
-    $ bpftool btf dump file vmlinux format c | grep "struct unix_sock"
-    struct unix_sock;
-    struct unix_sock___2 {	<--- conflict, the "___2" is unexpected
-		    struct unix_sock___2 *unix_sk;
-
-This causes a compilation error if the dump output is used as a header file.
-
-Fix it by skipping declaration when counting duplicated type names.
-
-Fixes: 351131b51c7a ("libbpf: add btf_dump API for BTF-to-C conversion")
-Signed-off-by: Xu Kuohai <xukuohai@huawei.com>
-Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
-Acked-by: Song Liu <songliubraving@fb.com>
-Link: https://lore.kernel.org/bpf/20220301053250.1464204-2-xukuohai@huawei.com
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 82f93cf46d60 ("brcmfmac: get chip's default RAM info during PCIe setup")
+Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
+Reviewed-by: Arend van Spriel <arend.vanspriel@broadcom.com>
+Cc: stable@vger.kernel.org
+Signed-off-by: Hector Martin <marcan@marcan.st>
+Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+Signed-off-by: Kalle Valo <kvalo@kernel.org>
+Link: https://lore.kernel.org/r/20220131160713.245637-2-marcan@marcan.st
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- tools/lib/bpf/btf_dump.c | 5 +++++
- 1 file changed, 5 insertions(+)
+ drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c |    2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/tools/lib/bpf/btf_dump.c b/tools/lib/bpf/btf_dump.c
-index 0911aea4cdbe..bd22853be4a6 100644
---- a/tools/lib/bpf/btf_dump.c
-+++ b/tools/lib/bpf/btf_dump.c
-@@ -1416,6 +1416,11 @@ static const char *btf_dump_resolve_name(struct btf_dump *d, __u32 id,
- 	if (s->name_resolved)
- 		return *cached_name ? *cached_name : orig_name;
+--- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c
++++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c
+@@ -1775,6 +1775,8 @@ static void brcmf_pcie_setup(struct devi
+ 	ret = brcmf_chip_get_raminfo(devinfo->ci);
+ 	if (ret) {
+ 		brcmf_err(bus, "Failed to get RAM info\n");
++		release_firmware(fw);
++		brcmf_fw_nvram_free(nvram);
+ 		goto fail;
+ 	}
  
-+	if (btf_is_fwd(t) || (btf_is_enum(t) && btf_vlen(t) == 0)) {
-+		s->name_resolved = 1;
-+		return orig_name;
-+	}
-+
- 	dup_cnt = btf_dump_name_dups(d, name_map, orig_name);
- 	if (dup_cnt > 1) {
- 		const size_t max_len = 256;
--- 
-2.34.1
-
 
 
