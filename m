@@ -2,180 +2,246 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3CFA7C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 21:18:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E8B54C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 21:18:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359765AbiDEVPy (ORCPT
+        id S1376299AbiDEVP7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 17:15:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47756 "EHLO
+        Tue, 5 Apr 2022 17:15:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45640 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1443710AbiDEPkL (ORCPT
+        with ESMTP id S1384218AbiDEM1Q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 11:40:11 -0400
-Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2153185001
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 06:58:18 -0700 (PDT)
-Received: by mail-pj1-x102d.google.com with SMTP id o5-20020a17090ad20500b001ca8a1dc47aso2625620pju.1
-        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 06:58:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=o7h/xULvdyEDh2cXrTeUDNp6mCbC3SZGRAjjX+CJOmc=;
-        b=dX0TBgiFesGZPye+ce1FhcnwVtnDLeUGtAPAJXbw/QgVQ8VZTPFXJ5JUdy5/PWkCXT
-         KZ/WEiTSd0AI2vEcTxCUGe3Z9yDE4v8BshFb0/gQEpSZiSysL7rKri+BqcstrvDUVzlz
-         CfHonLoXFbyqRHwTdCRpIXmdCfo9p1/+ubusexSSGDoqnV5k+62M85RKjm4ibgQvc28F
-         IWv0B2m60eJn8o3I6yKgeJFn1Bvyytg+yiEyWzI6xkwvplFHw/rHqQKG8n78L3p3qau9
-         vJKrFLoVpav4beD21/hofdoax1BBoZ4xMihQfCdY6MUTfQaZaOLGsrnZmvUXEX0L5fTN
-         tD1g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=o7h/xULvdyEDh2cXrTeUDNp6mCbC3SZGRAjjX+CJOmc=;
-        b=5moFFSpVfO+jvT73mMTqKPWHOM2GYB0jSqWA8zqABsXUUMyaV0ZvOHJDXvtRqdWsF+
-         rV7YH1z8TPPlA/aJLMHFVQvlCDkz/BiK4JowDOJ3n5+4dodqaGGCAZQka0v19qvwieKg
-         WF0pgLgWFAuMZjI4hje5uCTBxuv6c036B5+YqdCPBgYyvxcZRU1P4JUpLuExTPf5QrTp
-         fmcHAMpPj5Bz3icjHpZhP+h7xzO/7CQa2l1Xi5IskTRhkzVYI32YB3GkVkBg2q8Lfrl0
-         rYC8A21Cm9YdtaNgZUG7Xw6Qr8Dv2ze/tau3yHHNGWV9j5Yf7rQKbeKCCQJhrdozFCfu
-         fmlQ==
-X-Gm-Message-State: AOAM532DtYpEYTriqK/5geWoOUN6wtNl7pvu885+pDPm808gQRiRwQ+/
-        xDHYKeDSDHyA0qGMxDM945VH
-X-Google-Smtp-Source: ABdhPJwHDO18XPklWopbOJZUuwxh8xW73IX9pwkmyAAdLbfexOBpzjvC11TSQLRT14t90ZQHDwrrZA==
-X-Received: by 2002:a17:90a:454a:b0:1ca:91c7:df66 with SMTP id r10-20020a17090a454a00b001ca91c7df66mr4265256pjm.186.1649167098090;
-        Tue, 05 Apr 2022 06:58:18 -0700 (PDT)
-Received: from localhost.localdomain ([59.92.98.98])
-        by smtp.gmail.com with ESMTPSA id u14-20020a056a00124e00b004fab8f3245fsm16785402pfi.149.2022.04.05.06.58.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 05 Apr 2022 06:58:17 -0700 (PDT)
-From:   Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-To:     gregkh@linuxfoundation.org
-Cc:     linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        elder@linaro.org, mhi@lists.linux.dev, quic_hemantk@quicinc.com,
-        quic_bbhatt@quicinc.com, quic_jhugo@quicinc.com,
-        bjorn.andersson@linaro.org, dmitry.baryshkov@linaro.org,
-        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-Subject: [PATCH 03/18] bus: mhi: ep: Add support for creating and destroying MHI EP devices
-Date:   Tue,  5 Apr 2022 19:27:39 +0530
-Message-Id: <20220405135754.6622-4-manivannan.sadhasivam@linaro.org>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220405135754.6622-1-manivannan.sadhasivam@linaro.org>
-References: <20220405135754.6622-1-manivannan.sadhasivam@linaro.org>
+        Tue, 5 Apr 2022 08:27:16 -0400
+Received: from conuserg-12.nifty.com (conuserg-12.nifty.com [210.131.2.79])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0984E72E1B;
+        Tue,  5 Apr 2022 04:35:50 -0700 (PDT)
+Received: from grover.. (133-32-177-133.west.xps.vectant.ne.jp [133.32.177.133]) (authenticated)
+        by conuserg-12.nifty.com with ESMTP id 235BYCGu000464;
+        Tue, 5 Apr 2022 20:34:17 +0900
+DKIM-Filter: OpenDKIM Filter v2.10.3 conuserg-12.nifty.com 235BYCGu000464
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
+        s=dec2015msa; t=1649158458;
+        bh=xHw08sV1P7djqAfiHb5ZZpE2FCl7EdNPfQ2AKXOC1LQ=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=Tg5lQO4MTmYIwmMFvfiphHN64ZDtYzZrRaOVeSlwLV1dzrrb78p68cE9PM67D4obJ
+         wsGrh6fee1th0zcYazx2Nr7lBvlLaQUbGWe7StvUw4d0qDdJN/zdDPZWUrjCWZvXJk
+         JQUt8NeeQX1ghIZWPw0R59LyRx4+E5Zs1VyTy066BERqDhkfpHwXLItA4Hit3hhPiM
+         ebpysZFpK0nRtmFIuz8W3Ua7vz2apvuBB79fEjUuHOLyDETSlcWCietxKc+yN438nZ
+         JgmdY80OpYgjZfoR+Oy47a4tymUxC+BdgwKLpRVNdqigq39pGF/SdrFlJYQ2oV2K8W
+         Drk2PNJNjC+qQ==
+X-Nifty-SrcIP: [133.32.177.133]
+From:   Masahiro Yamada <masahiroy@kernel.org>
+To:     linux-kbuild@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Alexander Lobakin <alobakin@pm.me>,
+        Michal Marek <michal.lkml@markovi.net>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Nicolas Schier <n.schier@avm.de>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        Sami Tolvanen <samitolvanen@google.com>
+Subject: [PATCH v2 08/10] kbuild: split the second line of *.mod into *.usyms
+Date:   Tue,  5 Apr 2022 20:33:56 +0900
+Message-Id: <20220405113359.2880241-9-masahiroy@kernel.org>
+X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20220405113359.2880241-1-masahiroy@kernel.org>
+References: <20220405113359.2880241-1-masahiroy@kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This commit adds support for creating and destroying MHI endpoint devices.
-The MHI endpoint devices binds to the MHI endpoint channels and are used
-to transfer data between MHI host and endpoint device.
+The *.mod files have two lines; the first line lists the member objects
+of the module, and the second line, if CONFIG_TRIM_UNUSED_KSYMS=y, lists
+the undefined symbols.
 
-There is a single MHI EP device for each channel pair. The devices will be
-created when the corresponding channels has been started by the host and
-will be destroyed during MHI EP power down and reset.
+These two are orthogonal. For further cleanups, lets' split the second
+line out to separate *.usyms files, which are generated only when
+CONFIG_TRIM_UNUSED_KSYMS=y.
 
-Reviewed-by: Alex Elder <elder@linaro.org>
-Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+Previously, the list of undefined symbols ended up with a very long
+line, but now symbols are split by new lines.
+
+Use 'sed' like we did before commit 7d32358be8ac ("kbuild: avoid split
+lines in .mod files").
+
+Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
 ---
- drivers/bus/mhi/ep/main.c | 83 +++++++++++++++++++++++++++++++++++++++
- 1 file changed, 83 insertions(+)
 
-diff --git a/drivers/bus/mhi/ep/main.c b/drivers/bus/mhi/ep/main.c
-index f7d5f75fc083..6c64745e8a06 100644
---- a/drivers/bus/mhi/ep/main.c
-+++ b/drivers/bus/mhi/ep/main.c
-@@ -68,6 +68,89 @@ static struct mhi_ep_device *mhi_ep_alloc_device(struct mhi_ep_cntrl *mhi_cntrl,
- 	return mhi_dev;
- }
+Changes in v2:
+  - new
+
+ .gitignore                  |  1 +
+ Makefile                    |  2 +-
+ scripts/Makefile.build      | 17 +++++++++--------
+ scripts/adjust_autoksyms.sh |  2 +-
+ scripts/gen_autoksyms.sh    | 18 +++++++++++-------
+ scripts/mod/sumversion.c    | 11 ++---------
+ 6 files changed, 25 insertions(+), 26 deletions(-)
+
+diff --git a/.gitignore b/.gitignore
+index 7afd412dadd2..265959544978 100644
+--- a/.gitignore
++++ b/.gitignore
+@@ -45,6 +45,7 @@
+ *.symversions
+ *.tab.[ch]
+ *.tar
++*.usyms
+ *.xz
+ *.zst
+ Module.symvers
+diff --git a/Makefile b/Makefile
+index d9336e783be3..82ee893909e9 100644
+--- a/Makefile
++++ b/Makefile
+@@ -1848,7 +1848,7 @@ clean: $(clean-dirs)
+ 		-o -name '*.ko.*' \
+ 		-o -name '*.dtb' -o -name '*.dtbo' -o -name '*.dtb.S' -o -name '*.dt.yaml' \
+ 		-o -name '*.dwo' -o -name '*.lst' \
+-		-o -name '*.su' -o -name '*.mod' \
++		-o -name '*.su' -o -name '*.mod' -o -name '*.usyms' \
+ 		-o -name '.*.d' -o -name '.*.tmp' -o -name '*.mod.c' \
+ 		-o -name '*.lex.c' -o -name '*.tab.[ch]' \
+ 		-o -name '*.asn1.[ch]' \
+diff --git a/scripts/Makefile.build b/scripts/Makefile.build
+index 63625877aeae..d934bdf84de4 100644
+--- a/scripts/Makefile.build
++++ b/scripts/Makefile.build
+@@ -85,7 +85,8 @@ ifdef need-builtin
+ targets-for-builtin += $(obj)/built-in.a
+ endif
  
-+/*
-+ * MHI channels are always defined in pairs with UL as the even numbered
-+ * channel and DL as odd numbered one. This function gets UL channel (primary)
-+ * as the ch_id and always looks after the next entry in channel list for
-+ * the corresponding DL channel (secondary).
-+ */
-+static int mhi_ep_create_device(struct mhi_ep_cntrl *mhi_cntrl, u32 ch_id)
-+{
-+	struct mhi_ep_chan *mhi_chan = &mhi_cntrl->mhi_chan[ch_id];
-+	struct device *dev = mhi_cntrl->cntrl_dev;
-+	struct mhi_ep_device *mhi_dev;
-+	int ret;
+-targets-for-modules := $(patsubst %.o, %.mod, $(filter %.o, $(obj-m)))
++targets-for-modules := $(foreach suffix, mod $(if $(CONFIG_TRIM_UNUSED_KSYMS), usyms), \
++				$(patsubst %.o, %.$(suffix), $(filter %.o, $(obj-m))))
+ 
+ ifneq ($(CONFIG_LTO_CLANG)$(CONFIG_X86_KERNEL_IBT),)
+ targets-for-modules += $(patsubst %.o, %.prelink.o, $(filter %.o, $(obj-m)))
+@@ -260,9 +261,6 @@ endif
+ ifdef CONFIG_TRIM_UNUSED_KSYMS
+ cmd_gen_ksymdeps = \
+ 	$(CONFIG_SHELL) $(srctree)/scripts/gen_ksymdeps.sh $@ >> $(dot-target).cmd
+-
+-# List module undefined symbols
+-undefined_syms = $(NM) $< | $(AWK) '$$1 == "U" { printf("%s%s", x++ ? " " : "", $$2) }';
+ endif
+ 
+ define rule_cc_o_c
+@@ -309,14 +307,17 @@ endif
+ 
+ multi-m-prereqs = $(sort $(addprefix $(obj)/, $($*-objs) $($*-y) $($*-m)))
+ 
+-cmd_mod = { \
+-	echo $(if $(multi-m-prereqs), $(multi-m-prereqs), $(@:.mod=.o)); \
+-	$(undefined_syms) echo; \
+-	} > $@
++cmd_mod = echo $(if $(multi-m-prereqs), $(multi-m-prereqs), $(@:.mod=.o)) > $@
+ 
+ $(obj)/%.mod: $(obj)/%$(mod-prelink-ext).o FORCE
+ 	$(call if_changed,mod)
+ 
++# List module undefined symbols
++cmd_undefined_syms = $(NM) $< | sed -n 's/^  *U //p' > $@
 +
-+	/* Check if the channel name is same for both UL and DL */
-+	if (strcmp(mhi_chan->name, mhi_chan[1].name)) {
-+		dev_err(dev, "UL and DL channel names are not same: (%s) != (%s)\n",
-+			mhi_chan->name, mhi_chan[1].name);
-+		return -EINVAL;
-+	}
++$(obj)/%.usyms: $(obj)/%$(mod-prelink-ext).o FORCE
++	$(call if_changed,undefined_syms)
 +
-+	mhi_dev = mhi_ep_alloc_device(mhi_cntrl, MHI_DEVICE_XFER);
-+	if (IS_ERR(mhi_dev))
-+		return PTR_ERR(mhi_dev);
+ quiet_cmd_cc_lst_c = MKLST   $@
+       cmd_cc_lst_c = $(CC) $(c_flags) -g -c -o $*.o $< && \
+ 		     $(CONFIG_SHELL) $(srctree)/scripts/makelst $*.o \
+diff --git a/scripts/adjust_autoksyms.sh b/scripts/adjust_autoksyms.sh
+index 59fdb875e818..f1b5ac818411 100755
+--- a/scripts/adjust_autoksyms.sh
++++ b/scripts/adjust_autoksyms.sh
+@@ -35,7 +35,7 @@ case "$KBUILD_VERBOSE" in
+ esac
+ 
+ # Generate a new symbol list file
+-$CONFIG_SHELL $srctree/scripts/gen_autoksyms.sh "$new_ksyms_file"
++$CONFIG_SHELL $srctree/scripts/gen_autoksyms.sh --modorder "$new_ksyms_file"
+ 
+ # Extract changes between old and new list and touch corresponding
+ # dependency files.
+diff --git a/scripts/gen_autoksyms.sh b/scripts/gen_autoksyms.sh
+index 120225c541c5..faacf7062122 100755
+--- a/scripts/gen_autoksyms.sh
++++ b/scripts/gen_autoksyms.sh
+@@ -2,13 +2,10 @@
+ # SPDX-License-Identifier: GPL-2.0-only
+ 
+ # Create an autoksyms.h header file from the list of all module's needed symbols
+-# as recorded on the second line of *.mod files and the user-provided symbol
+-# whitelist.
++# as recorded in *.usyms files and the user-provided symbol whitelist.
+ 
+ set -e
+ 
+-output_file="$1"
+-
+ # Use "make V=1" to debug this script.
+ case "$KBUILD_VERBOSE" in
+ *1*)
+@@ -16,6 +13,15 @@ case "$KBUILD_VERBOSE" in
+ 	;;
+ esac
+ 
++read_modorder=
 +
-+	/* Configure primary channel */
-+	mhi_dev->ul_chan = mhi_chan;
-+	get_device(&mhi_dev->dev);
-+	mhi_chan->mhi_dev = mhi_dev;
++if [ "$1" = --modorder ]; then
++	shift
++	read_modorder=1
++fi
 +
-+	/* Configure secondary channel as well */
-+	mhi_chan++;
-+	mhi_dev->dl_chan = mhi_chan;
-+	get_device(&mhi_dev->dev);
-+	mhi_chan->mhi_dev = mhi_dev;
++output_file="$1"
 +
-+	/* Channel name is same for both UL and DL */
-+	mhi_dev->name = mhi_chan->name;
-+	dev_set_name(&mhi_dev->dev, "%s_%s",
-+		     dev_name(&mhi_cntrl->mhi_dev->dev),
-+		     mhi_dev->name);
-+
-+	ret = device_add(&mhi_dev->dev);
-+	if (ret)
-+		put_device(&mhi_dev->dev);
-+
-+	return ret;
-+}
-+
-+static int mhi_ep_destroy_device(struct device *dev, void *data)
-+{
-+	struct mhi_ep_device *mhi_dev;
-+	struct mhi_ep_cntrl *mhi_cntrl;
-+	struct mhi_ep_chan *ul_chan, *dl_chan;
-+
-+	if (dev->bus != &mhi_ep_bus_type)
-+		return 0;
-+
-+	mhi_dev = to_mhi_ep_device(dev);
-+	mhi_cntrl = mhi_dev->mhi_cntrl;
-+
-+	/* Only destroy devices created for channels */
-+	if (mhi_dev->dev_type == MHI_DEVICE_CONTROLLER)
-+		return 0;
-+
-+	ul_chan = mhi_dev->ul_chan;
-+	dl_chan = mhi_dev->dl_chan;
-+
-+	if (ul_chan)
-+		put_device(&ul_chan->mhi_dev->dev);
-+
-+	if (dl_chan)
-+		put_device(&dl_chan->mhi_dev->dev);
-+
-+	dev_dbg(&mhi_cntrl->mhi_dev->dev, "Destroying device for chan:%s\n",
-+		 mhi_dev->name);
-+
-+	/* Notify the client and remove the device from MHI bus */
-+	device_del(dev);
-+	put_device(dev);
-+
-+	return 0;
-+}
-+
- static int mhi_ep_chan_init(struct mhi_ep_cntrl *mhi_cntrl,
- 			    const struct mhi_ep_cntrl_config *config)
+ needed_symbols=
+ 
+ # Special case for modversions (see modpost.c)
+@@ -41,10 +47,8 @@ cat > "$output_file" << EOT
+ 
+ EOT
+ 
+-[ -f modules.order ] && modlist=modules.order || modlist=/dev/null
+-
  {
+-	sed 's/ko$/mod/' $modlist | xargs -n1 sed -n -e '2p'
++	[ -n "${read_modorder}" ] && sed 's/ko$/usyms/' modules.order | xargs cat
+ 	echo "$needed_symbols"
+ 	[ -n "$ksym_wl" ] && cat "$ksym_wl"
+ } | sed -e 's/ /\n/g' | sed -n -e '/^$/!p' |
+diff --git a/scripts/mod/sumversion.c b/scripts/mod/sumversion.c
+index 905c0ec291e1..0125698f2037 100644
+--- a/scripts/mod/sumversion.c
++++ b/scripts/mod/sumversion.c
+@@ -387,7 +387,7 @@ static int parse_source_files(const char *objfile, struct md4_ctx *md)
+ /* Calc and record src checksum. */
+ void get_src_version(const char *modname, char sum[], unsigned sumlen)
+ {
+-	char *buf, *pos, *firstline;
++	char *buf;
+ 	struct md4_ctx md;
+ 	char *fname;
+ 	char filelist[PATH_MAX + 1];
+@@ -397,15 +397,8 @@ void get_src_version(const char *modname, char sum[], unsigned sumlen)
+ 
+ 	buf = read_text_file(filelist);
+ 
+-	pos = buf;
+-	firstline = get_line(&pos);
+-	if (!firstline) {
+-		warn("bad ending versions file for %s\n", modname);
+-		goto free;
+-	}
+-
+ 	md4_init(&md);
+-	while ((fname = strsep(&firstline, " "))) {
++	while ((fname = strsep(&buf, " \n"))) {
+ 		if (!*fname)
+ 			continue;
+ 		if (!(is_static_library(fname)) &&
 -- 
-2.25.1
+2.32.0
 
