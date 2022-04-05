@@ -2,101 +2,67 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 17578C4167B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2FD02C35294
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 21:09:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348555AbiDEVJm (ORCPT
+        id S1349252AbiDEVJs (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 17:09:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50654 "EHLO
+        Tue, 5 Apr 2022 17:09:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37218 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358028AbiDEK1z (ORCPT
+        with ESMTP id S1457500AbiDEQDS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:27:55 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63029689A6;
-        Tue,  5 Apr 2022 03:13:08 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        Tue, 5 Apr 2022 12:03:18 -0400
+Received: from ms.lwn.net (ms.lwn.net [45.79.88.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55358655E;
+        Tue,  5 Apr 2022 08:54:58 -0700 (PDT)
+Received: from localhost (unknown [IPv6:2601:281:8300:35:2589:2a93:190d:b787])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id F2CF461777;
-        Tue,  5 Apr 2022 10:13:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 10D1FC385A0;
-        Tue,  5 Apr 2022 10:13:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649153587;
-        bh=0C40SgLp/lwFglandYY9iJGkhMxzFWz9IyNwKsYpjig=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=quUteL8t85uHezbky+H8CeGFlvc2KLpeBN3XuaVkVEmPxv5kGdNO7XOYNmbwS217l
-         0XawKcyT/JafqUPyuYMmRxgAN7aGr+o87kdrktYsh5aCY7WvKR6L8q2LX1fC15SegU
-         fj4U8QeyPoyuNwLhhJupUk2yD/MPvT78Lm2vjz2A=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zhou Qingyang <zhou1615@umn.edu>,
-        Lyude Paul <lyude@redhat.com>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 274/599] drm/nouveau/acr: Fix undefined behavior in nvkm_acr_hsfw_load_bl()
-Date:   Tue,  5 Apr 2022 09:29:28 +0200
-Message-Id: <20220405070306.992187729@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
-User-Agent: quilt/0.66
+        by ms.lwn.net (Postfix) with ESMTPSA id CEF7930D;
+        Tue,  5 Apr 2022 15:54:57 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 ms.lwn.net CEF7930D
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=lwn.net; s=20201203;
+        t=1649174098; bh=8czQkcllnkLc2ffyQYQE6iEWi4lIyDFZArXbdalGqqQ=;
+        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
+        b=kFUqBaYuZz6zipwPKAgzM++Hy6GKl8ab8TdkUZtxOp7TXOKSjfl0BzELfDh+xbV91
+         fu1sJA0ht9w31U/xbee5p5yPVbnMY74oGEXnspVK4qlxIguhSFnboFpRtlCrRhUn1x
+         ful+dh5udV1DK80EmuZb5Wuqm0lA6SF4zG6JApZT7aBmYmqtcLssR+aDSV9xt1ZD9J
+         JVsxDvquVMF0fKKYcRl+SE8aWNt50OOpnAlPdpcjKOLPOdJvWB2/V1IF03FYt9yiQO
+         0h4UaKuCCwfVryomAJsfplXQpTCztC6D6LMj9TNQVi3Dk+SVLBtQ0xQMJleRaSD/K1
+         HOkJ7qmbYEZGQ==
+From:   Jonathan Corbet <corbet@lwn.net>
+To:     Konstantin Ryabitsev <konstantin@linuxfoundation.org>
+Cc:     linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        patches@lists.linux.dev
+Subject: Re: [PATCH] Documentation: kernel-hacking: minor edits for style
+In-Reply-To: <20220329195117.azs4kaflc6ksfzdh@meerkat.local>
+References: <20220329195117.azs4kaflc6ksfzdh@meerkat.local>
+Date:   Tue, 05 Apr 2022 09:54:57 -0600
+Message-ID: <87v8vned9q.fsf@meer.lwn.net>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zhou Qingyang <zhou1615@umn.edu>
+Konstantin Ryabitsev <konstantin@linuxfoundation.org> writes:
 
-[ Upstream commit 2343bcdb4747d4f418a4daf2e898b94f86c24a59 ]
+> Rusty's kernel-hacking guides provide important information, however
+> they are written in a narrative style that some readers may interpret as
+> off-putting. Since the goal is to make kernel documentation accessible
+> to as many new developers as possible, it's best to avoid the turns of
+> phrase that require a specific cultural context to properly understand.
+>
+> Signed-off-by: Konstantin Ryabitsev <konstantin@linuxfoundation.org>
+> ---
+>  Documentation/kernel-hacking/hacking.rst | 36 ++++++++++++------------
+>  Documentation/kernel-hacking/locking.rst |  5 +---
+>  2 files changed, 19 insertions(+), 22 deletions(-)
 
-In nvkm_acr_hsfw_load_bl(), the return value of kmalloc() is directly
-passed to memcpy(), which could lead to undefined behavior on failure
-of kmalloc().
+*Sigh*...it's kind of sad to see the character of Rusty's writing being
+chipped away over time; this isn't the first sanitization patch applied
+to this file.  It certainly needs a lot more work than this to match
+current practice.  Oh well, I've applied it, thanks.
 
-Fix this bug by using kmemdup() instead of kmalloc()+memcpy().
-
-This bug was found by a static analyzer.
-
-Builds with 'make allyesconfig' show no new warnings,
-and our static analyzer no longer warns about this code.
-
-Fixes: 22dcda45a3d1 ("drm/nouveau/acr: implement new subdev to replace "secure boot"")
-Signed-off-by: Zhou Qingyang <zhou1615@umn.edu>
-Reviewed-by: Lyude Paul <lyude@redhat.com>
-Signed-off-by: Lyude Paul <lyude@redhat.com>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220124165856.57022-1-zhou1615@umn.edu
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/gpu/drm/nouveau/nvkm/subdev/acr/hsfw.c | 9 +++++----
- 1 file changed, 5 insertions(+), 4 deletions(-)
-
-diff --git a/drivers/gpu/drm/nouveau/nvkm/subdev/acr/hsfw.c b/drivers/gpu/drm/nouveau/nvkm/subdev/acr/hsfw.c
-index 667fa016496e..a6ea89a5d51a 100644
---- a/drivers/gpu/drm/nouveau/nvkm/subdev/acr/hsfw.c
-+++ b/drivers/gpu/drm/nouveau/nvkm/subdev/acr/hsfw.c
-@@ -142,11 +142,12 @@ nvkm_acr_hsfw_load_bl(struct nvkm_acr *acr, const char *name, int ver,
- 
- 	hsfw->imem_size = desc->code_size;
- 	hsfw->imem_tag = desc->start_tag;
--	hsfw->imem = kmalloc(desc->code_size, GFP_KERNEL);
--	memcpy(hsfw->imem, data + desc->code_off, desc->code_size);
--
-+	hsfw->imem = kmemdup(data + desc->code_off, desc->code_size, GFP_KERNEL);
- 	nvkm_firmware_put(fw);
--	return 0;
-+	if (!hsfw->imem)
-+		return -ENOMEM;
-+	else
-+		return 0;
- }
- 
- int
--- 
-2.34.1
-
-
-
+jon
