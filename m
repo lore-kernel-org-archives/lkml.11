@@ -2,100 +2,160 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D28EC433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 52D53C433FE
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:42:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1578654AbiDEXYW (ORCPT
+        id S1578668AbiDEXY0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 19:24:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46718 "EHLO
+        Tue, 5 Apr 2022 19:24:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60408 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358079AbiDEK16 (ORCPT
+        with ESMTP id S1443718AbiDEPkL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:27:58 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F98560D86;
-        Tue,  5 Apr 2022 03:14:58 -0700 (PDT)
+        Tue, 5 Apr 2022 11:40:11 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B738814FB99
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 06:58:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C9EC0B81B7A;
-        Tue,  5 Apr 2022 10:14:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 29BDAC385A1;
-        Tue,  5 Apr 2022 10:14:55 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649153695;
-        bh=sr3LZrPOkIdDnxYBshlhTqQx6kFEt1lc9zaoiMvEjD4=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HQ5LSClGORKCj85WF70HNmHQQelK/hR2ZW8JUd/pbzugezGQYjGOnKO61b1ybRspG
-         92zFDQ/sQKhnsxhfnDVz+HYtcdJkTkRHFtQJ2xGFqXlPTS/ihLyTZr77yKkInQ6rKA
-         cP97WBN7TzxLR8SQdnhQnREeK7yS25hLkleSkQBo=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jack Wang <jinpu.wang@ionos.com>,
-        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 313/599] scsi: pm8001: Fix payload initialization in pm80xx_encrypt_update()
-Date:   Tue,  5 Apr 2022 09:30:07 +0200
-Message-Id: <20220405070308.147635068@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
-User-Agent: quilt/0.66
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5268C61910
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 13:58:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D18DAC385A4;
+        Tue,  5 Apr 2022 13:58:21 +0000 (UTC)
+From:   Catalin Marinas <catalin.marinas@arm.com>
+To:     Will Deacon <will@kernel.org>, Marc Zyngier <maz@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     linux-mm@kvack.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH 08/10] mm/slab: Allow dynamic kmalloc() minimum alignment
+Date:   Tue,  5 Apr 2022 14:57:56 +0100
+Message-Id: <20220405135758.774016-9-catalin.marinas@arm.com>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220405135758.774016-1-catalin.marinas@arm.com>
+References: <20220405135758.774016-1-catalin.marinas@arm.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Damien Le Moal <damien.lemoal@opensource.wdc.com>
+ARCH_KMALLOC_MINALIGN represents the minimum guaranteed kmalloc()
+alignment but an architecture may require a larger run-time alignment.
+Do not create kmalloc caches smaller than arch_kmalloc_minalign().
 
-[ Upstream commit f8b12dfb476dad38ce755aaf5e2df46f06f1822e ]
-
-All fields of the kek_mgmt_req structure have the type __le32. So make sure
-to use cpu_to_le32() to initialize them. This suppresses the sparse
-warning:
-
-warning: incorrect type in assignment (different base types)
-   expected restricted __le32 [addressable] [assigned] [usertype] new_curidx_ksop
-   got int
-
-Link: https://lore.kernel.org/r/20220220031810.738362-10-damien.lemoal@opensource.wdc.com
-Fixes: f5860992db55 ("[SCSI] pm80xx: Added SPCv/ve specific hardware functionalities and relevant changes in common files")
-Reviewed-by: Jack Wang <jinpu.wang@ionos.com>
-Signed-off-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Catalin Marinas <catalin.marinas@arm.com>
+Cc: Andrew Morton <akpm@linux-foundation.org>
 ---
- drivers/scsi/pm8001/pm80xx_hwi.c | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+ include/linux/slab.h |  2 ++
+ mm/slab.c            |  6 +-----
+ mm/slab.h            |  2 ++
+ mm/slab_common.c     | 33 +++++++++++++++++++++++----------
+ 4 files changed, 28 insertions(+), 15 deletions(-)
 
-diff --git a/drivers/scsi/pm8001/pm80xx_hwi.c b/drivers/scsi/pm8001/pm80xx_hwi.c
-index f9736e02010d..ac6334f8d791 100644
---- a/drivers/scsi/pm8001/pm80xx_hwi.c
-+++ b/drivers/scsi/pm8001/pm80xx_hwi.c
-@@ -1403,12 +1403,13 @@ static int pm80xx_encrypt_update(struct pm8001_hba_info *pm8001_ha)
- 	/* Currently only one key is used. New KEK index is 1.
- 	 * Current KEK index is 1. Store KEK to NVRAM is 1.
+diff --git a/include/linux/slab.h b/include/linux/slab.h
+index d58211bdeceb..2137dba85691 100644
+--- a/include/linux/slab.h
++++ b/include/linux/slab.h
+@@ -332,6 +332,8 @@ enum kmalloc_cache_type {
+ extern struct kmem_cache *
+ kmalloc_caches[NR_KMALLOC_TYPES][KMALLOC_SHIFT_HIGH + 1];
+ 
++unsigned int arch_kmalloc_minalign(void);
++
+ /*
+  * Define gfp bits that should not be set for KMALLOC_NORMAL.
+  */
+diff --git a/mm/slab.c b/mm/slab.c
+index b04e40078bdf..4aaeeb9c994d 100644
+--- a/mm/slab.c
++++ b/mm/slab.c
+@@ -1256,11 +1256,7 @@ void __init kmem_cache_init(void)
+ 	 * Initialize the caches that provide memory for the  kmem_cache_node
+ 	 * structures first.  Without this, further allocations will bug.
  	 */
--	payload.new_curidx_ksop = ((1 << 24) | (1 << 16) | (1 << 8) |
--					KEK_MGMT_SUBOP_KEYCARDUPDATE);
-+	payload.new_curidx_ksop =
-+		cpu_to_le32(((1 << 24) | (1 << 16) | (1 << 8) |
-+			     KEK_MGMT_SUBOP_KEYCARDUPDATE));
+-	kmalloc_caches[KMALLOC_NORMAL][INDEX_NODE] = create_kmalloc_cache(
+-				kmalloc_info[INDEX_NODE].name[KMALLOC_NORMAL],
+-				kmalloc_info[INDEX_NODE].size,
+-				ARCH_KMALLOC_FLAGS, 0,
+-				kmalloc_info[INDEX_NODE].size);
++	new_kmalloc_cache(INDEX_NODE, KMALLOC_NORMAL, ARCH_KMALLOC_FLAGS);
+ 	slab_state = PARTIAL_NODE;
+ 	setup_kmalloc_cache_index_table();
  
- 	pm8001_dbg(pm8001_ha, DEV,
- 		   "Saving Encryption info to flash. payload 0x%x\n",
--		   payload.new_curidx_ksop);
-+		   le32_to_cpu(payload.new_curidx_ksop));
+diff --git a/mm/slab.h b/mm/slab.h
+index fd7ae2024897..e9238406602a 100644
+--- a/mm/slab.h
++++ b/mm/slab.h
+@@ -283,6 +283,8 @@ int __kmem_cache_create(struct kmem_cache *, slab_flags_t flags);
+ struct kmem_cache *create_kmalloc_cache(const char *name, unsigned int size,
+ 			slab_flags_t flags, unsigned int useroffset,
+ 			unsigned int usersize);
++void __init new_kmalloc_cache(int idx, enum kmalloc_cache_type type,
++			      slab_flags_t flags);
+ extern void create_boot_cache(struct kmem_cache *, const char *name,
+ 			unsigned int size, slab_flags_t flags,
+ 			unsigned int useroffset, unsigned int usersize);
+diff --git a/mm/slab_common.c b/mm/slab_common.c
+index 6ee64d6208b3..594d8a8a68d0 100644
+--- a/mm/slab_common.c
++++ b/mm/slab_common.c
+@@ -838,9 +838,18 @@ void __init setup_kmalloc_cache_index_table(void)
+ 	}
+ }
  
- 	rc = pm8001_mpi_build_cmd(pm8001_ha, circularQ, opc, &payload,
- 			sizeof(payload), 0);
--- 
-2.34.1
-
-
-
+-static void __init
++unsigned int __weak arch_kmalloc_minalign(void)
++{
++	return ARCH_KMALLOC_MINALIGN;
++}
++
++void __init
+ new_kmalloc_cache(int idx, enum kmalloc_cache_type type, slab_flags_t flags)
+ {
++	unsigned int minalign = arch_kmalloc_minalign();
++	unsigned int aligned_size = kmalloc_info[idx].size;
++	int aligned_idx = idx;
++
+ 	if (type == KMALLOC_RECLAIM) {
+ 		flags |= SLAB_RECLAIM_ACCOUNT;
+ 	} else if (IS_ENABLED(CONFIG_MEMCG_KMEM) && (type == KMALLOC_CGROUP)) {
+@@ -851,10 +860,17 @@ new_kmalloc_cache(int idx, enum kmalloc_cache_type type, slab_flags_t flags)
+ 		flags |= SLAB_ACCOUNT;
+ 	}
+ 
+-	kmalloc_caches[type][idx] = create_kmalloc_cache(
+-					kmalloc_info[idx].name[type],
+-					kmalloc_info[idx].size, flags, 0,
+-					kmalloc_info[idx].size);
++	if (minalign > ARCH_KMALLOC_MINALIGN) {
++		aligned_size = ALIGN(aligned_size, minalign);
++		aligned_idx = __kmalloc_index(aligned_size, false);
++	}
++
++	if (!kmalloc_caches[type][aligned_idx])
++		kmalloc_caches[type][aligned_idx] = create_kmalloc_cache(
++					kmalloc_info[aligned_idx].name[type],
++					aligned_size, flags, 0, aligned_size);
++	if (idx != aligned_idx)
++		kmalloc_caches[type][idx] = kmalloc_caches[type][aligned_idx];
+ 
+ 	/*
+ 	 * If CONFIG_MEMCG_KMEM is enabled, disable cache merging for
+@@ -904,11 +920,8 @@ void __init create_kmalloc_caches(slab_flags_t flags)
+ 		struct kmem_cache *s = kmalloc_caches[KMALLOC_NORMAL][i];
+ 
+ 		if (s) {
+-			kmalloc_caches[KMALLOC_DMA][i] = create_kmalloc_cache(
+-				kmalloc_info[i].name[KMALLOC_DMA],
+-				kmalloc_info[i].size,
+-				SLAB_CACHE_DMA | flags, 0,
+-				kmalloc_info[i].size);
++			new_kmalloc_cache(i, KMALLOC_DMA,
++					  SLAB_CACHE_DMA | flags);
+ 		}
+ 	}
+ #endif
