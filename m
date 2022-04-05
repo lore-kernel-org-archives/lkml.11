@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 94269C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CF90CC43219
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:19:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383019AbiDEMRr (ORCPT
+        id S1383055AbiDEMRz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 08:17:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47636 "EHLO
+        Tue, 5 Apr 2022 08:17:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47778 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244973AbiDEIww (ORCPT
+        with ESMTP id S244971AbiDEIww (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Apr 2022 04:52:52 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 805451CFFB;
-        Tue,  5 Apr 2022 01:48:19 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 997211CFE5;
+        Tue,  5 Apr 2022 01:48:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1C9A660FFC;
-        Tue,  5 Apr 2022 08:48:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 31986C385A1;
-        Tue,  5 Apr 2022 08:48:18 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 46168B818F7;
+        Tue,  5 Apr 2022 08:48:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8805AC385A1;
+        Tue,  5 Apr 2022 08:48:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649148498;
-        bh=kTf509aGxUC2L+Qqne7LOHBXyNCvMcSwY5mKQwAKabs=;
+        s=korg; t=1649148495;
+        bh=KK+VudrWUz/uioNtrgiRdIcswanyWA9dVTY+SNt1vgc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=aj9+VWZpxB8NdjuLlKU9mVsGJJ1W6QrX5kmtUW6qV5RZWQrmLNMCbk123Z01jgjvj
-         MgZcOaffFJNJjLKM7AP2aVswfS3Fv41MBnRIXRONgJzcsPIt9czNgyPoum6mXYT0ro
-         b2/QFgXoA5Ck9bCFp7pyRrRX5KFQYyWCOqWuqlVk=
+        b=RjZ+RT+wRAzbSx38wQmBgBJZWkt0CnqEuB8Kx0jf8AMRrCfy5wpF4YitOhba3NELx
+         NYMeqXHjReqr75Kg/JijfxuS6S73vt4skpod55nE8zmozRYxDcLXEW79j45ovnRmBk
+         K5Mof9emUcgPyv7ubbC1GFMscqYA89xQU+TmqrWo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jakob Koschel <jakobkoschel@gmail.com>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0376/1017] media: saa7134: fix incorrect use to determine if list is empty
-Date:   Tue,  5 Apr 2022 09:21:29 +0200
-Message-Id: <20220405070405.447370620@linuxfoundation.org>
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Helge Deller <deller@gmx.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 0375/1017] video: fbdev: omapfb: Add missing of_node_put() in dvic_probe_of
+Date:   Tue,  5 Apr 2022 09:21:28 +0200
+Message-Id: <20220405070405.417740054@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -50,47 +49,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jakob Koschel <jakobkoschel@gmail.com>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit 9f1f4b642451d35667a4dc6a9c0a89d954b530a3 ]
+[ Upstream commit a58c22cfbbf62fefca090334bbd35fd132e92a23 ]
 
-'dev' will *always* be set by list_for_each_entry().
-It is incorrect to assume that the iterator value will be NULL if the
-list is empty.
+The device_node pointer is returned by of_parse_phandle()  with refcount
+incremented. We should use of_node_put() on it when done.
 
-Instead of checking the pointer it should be checked if
-the list is empty.
-
-Fixes: 79dd0c69f05f ("V4L: 925: saa7134 alsa is now a standalone module")
-Signed-off-by: Jakob Koschel <jakobkoschel@gmail.com>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Fixes: f76ee892a99e ("omapfb: copy omapdss & displays for omapfb")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Signed-off-by: Helge Deller <deller@gmx.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/pci/saa7134/saa7134-alsa.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/video/fbdev/omap2/omapfb/displays/connector-dvi.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/media/pci/saa7134/saa7134-alsa.c b/drivers/media/pci/saa7134/saa7134-alsa.c
-index fb24d2ed3621..d3cde05a6eba 100644
---- a/drivers/media/pci/saa7134/saa7134-alsa.c
-+++ b/drivers/media/pci/saa7134/saa7134-alsa.c
-@@ -1214,7 +1214,7 @@ static int alsa_device_exit(struct saa7134_dev *dev)
- 
- static int saa7134_alsa_init(void)
- {
--	struct saa7134_dev *dev = NULL;
-+	struct saa7134_dev *dev;
- 
- 	saa7134_dmasound_init = alsa_device_init;
- 	saa7134_dmasound_exit = alsa_device_exit;
-@@ -1229,7 +1229,7 @@ static int saa7134_alsa_init(void)
- 			alsa_device_init(dev);
- 	}
- 
--	if (dev == NULL)
-+	if (list_empty(&saa7134_devlist))
- 		pr_info("saa7134 ALSA: no saa7134 cards found\n");
- 
- 	return 0;
+diff --git a/drivers/video/fbdev/omap2/omapfb/displays/connector-dvi.c b/drivers/video/fbdev/omap2/omapfb/displays/connector-dvi.c
+index 2fa436475b40..c8ad3ef42bd3 100644
+--- a/drivers/video/fbdev/omap2/omapfb/displays/connector-dvi.c
++++ b/drivers/video/fbdev/omap2/omapfb/displays/connector-dvi.c
+@@ -246,6 +246,7 @@ static int dvic_probe_of(struct platform_device *pdev)
+ 	adapter_node = of_parse_phandle(node, "ddc-i2c-bus", 0);
+ 	if (adapter_node) {
+ 		adapter = of_get_i2c_adapter_by_node(adapter_node);
++		of_node_put(adapter_node);
+ 		if (adapter == NULL) {
+ 			dev_err(&pdev->dev, "failed to parse ddc-i2c-bus\n");
+ 			omap_dss_put_device(ddata->in);
 -- 
 2.34.1
 
