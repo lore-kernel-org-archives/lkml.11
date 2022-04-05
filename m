@@ -2,43 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A9C5AC4707F
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 11:47:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C5592C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 11:47:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230147AbiDELr0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 07:47:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46802 "EHLO
+        id S237313AbiDELsG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 07:48:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47834 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244885AbiDEIwp (ORCPT
+        with ESMTP id S244886AbiDEIwp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Apr 2022 04:52:45 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7645B240A0;
-        Tue,  5 Apr 2022 01:45:32 -0700 (PDT)
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCADE240AC;
+        Tue,  5 Apr 2022 01:45:39 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id F230F6117A;
-        Tue,  5 Apr 2022 08:45:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 09E2FC385A0;
-        Tue,  5 Apr 2022 08:45:30 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 59EACCE1BF9;
+        Tue,  5 Apr 2022 08:45:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 72583C385A1;
+        Tue,  5 Apr 2022 08:45:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649148331;
-        bh=NQFMtH+kWndgmA+yhsg5RrKKwi97HfRpOI2EkHxbDk0=;
+        s=korg; t=1649148336;
+        bh=Znaktkp0TlhhTmv22siN8VXYQMsR80xwUmAM0j+apdc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=EYHrzwwYZnxjqcH1aHHqeaaULRSHpyJNF3nxfvjQKQ+MTfR4Z85S9PKKGToiSH4aa
-         eJwJto9i+OUZ1f9o00C7eXV7KUDzojZv8xucHDF3hXvwbUKOdAoM3Sb8RmnEONN0KF
-         Ug6GWFtSeHf2VMzUNdF4gxt8c8yweTGtWxn/H+mo=
+        b=GAkMWZCf/LaZbih3ShZA5p09U0e0DgklPLzBrDYouSdDWTNw+iOhJkb9Fmq0DZjvG
+         zKGFuL8wBFHXMdWebbNGrYwJE7/yqzxcgjG0bvOBql1dFp1V/+f+FQa5kSRl1ip+eK
+         FPndxI1yunBTpLCsD4OziDNcKkCoyErV/iFhUovE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, devicetree@vger.kernel.org,
-        Maulik Shah <quic_mkshah@quicinc.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0319/1017] arm64: dts: qcom: sm8150: Correct TCS configuration for apps rsc
-Date:   Tue,  5 Apr 2022 09:20:32 +0200
-Message-Id: <20220405070403.747282298@linuxfoundation.org>
+        stable@vger.kernel.org, YueHaibing <yuehaibing@huawei.com>,
+        Helge Deller <deller@gmx.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 0303/1017] video: fbdev: controlfb: Fix COMPILE_TEST build
+Date:   Tue,  5 Apr 2022 09:20:16 +0200
+Message-Id: <20220405070403.269627532@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -50,39 +48,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Maulik Shah <quic_mkshah@quicinc.com>
+From: YueHaibing <yuehaibing@huawei.com>
 
-[ Upstream commit 17ac8af678b6da6a8f1df7da8ebf2c5198741827 ]
+[ Upstream commit 567e44fb51b4f909ae58038a7301352eecea8426 ]
 
-Correct the TCS config by updating the number of TCSes for each type.
+If PPC_BOOK3S, PPC_PMAC and PPC32 is n, COMPILE_TEST build fails:
 
-Cc: devicetree@vger.kernel.org
-Fixes: d8cf9372b654 ("arm64: dts: qcom: sm8150: Add apps shared nodes")
-Signed-off-by: Maulik Shah <quic_mkshah@quicinc.com>
-Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Link: https://lore.kernel.org/r/1641749107-31979-2-git-send-email-quic_mkshah@quicinc.com
+drivers/video/fbdev/controlfb.c:70:0: error: "pgprot_cached_wthru" redefined [-Werror]
+ #define pgprot_cached_wthru(prot) (prot)
+
+In file included from ./arch/powerpc/include/asm/pgtable.h:20:0,
+                 from ./include/linux/pgtable.h:6,
+                 from ./include/linux/mm.h:33,
+                 from drivers/video/fbdev/controlfb.c:37:
+./arch/powerpc/include/asm/nohash/pgtable.h:243:0: note: this is the location of the previous definition
+ #define pgprot_cached_wthru(prot) (__pgprot((pgprot_val(prot) & ~_PAGE_CACHE_CTL) | \
+
+Fixes: a07a63b0e24d ("video: fbdev: controlfb: add COMPILE_TEST support")
+Signed-off-by: YueHaibing <yuehaibing@huawei.com>
+Signed-off-by: Helge Deller <deller@gmx.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/boot/dts/qcom/sm8150.dtsi | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/video/fbdev/controlfb.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/arch/arm64/boot/dts/qcom/sm8150.dtsi b/arch/arm64/boot/dts/qcom/sm8150.dtsi
-index 81b4ff2cc4cd..37f758cc4cc7 100644
---- a/arch/arm64/boot/dts/qcom/sm8150.dtsi
-+++ b/arch/arm64/boot/dts/qcom/sm8150.dtsi
-@@ -3557,9 +3557,9 @@
- 			qcom,tcs-offset = <0xd00>;
- 			qcom,drv-id = <2>;
- 			qcom,tcs-config = <ACTIVE_TCS  2>,
--					  <SLEEP_TCS   1>,
--					  <WAKE_TCS    1>,
--					  <CONTROL_TCS 0>;
-+					  <SLEEP_TCS   3>,
-+					  <WAKE_TCS    3>,
-+					  <CONTROL_TCS 1>;
- 
- 			rpmhcc: clock-controller {
- 				compatible = "qcom,sm8150-rpmh-clk";
+diff --git a/drivers/video/fbdev/controlfb.c b/drivers/video/fbdev/controlfb.c
+index 509311471d51..bd59e7b11ed5 100644
+--- a/drivers/video/fbdev/controlfb.c
++++ b/drivers/video/fbdev/controlfb.c
+@@ -67,7 +67,9 @@
+ #define out_8(addr, val)	(void)(val)
+ #define in_le32(addr)		0
+ #define out_le32(addr, val)	(void)(val)
++#ifndef pgprot_cached_wthru
+ #define pgprot_cached_wthru(prot) (prot)
++#endif
+ #else
+ static void invalid_vram_cache(void __force *addr)
+ {
 -- 
 2.34.1
 
