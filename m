@@ -2,128 +2,62 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 37B8AC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 01:26:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 12D5BC43219
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 01:26:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1841708AbiDFBZW (ORCPT
+        id S1841790AbiDFBZs (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 21:25:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53188 "EHLO
+        Tue, 5 Apr 2022 21:25:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37352 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1453872AbiDEP51 (ORCPT
+        with ESMTP id S1457456AbiDEQDP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 11:57:27 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFD63141D9D
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 08:02:25 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        Tue, 5 Apr 2022 12:03:15 -0400
+Received: from ms.lwn.net (ms.lwn.net [IPv6:2600:3c01:e000:3a1::42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 476C24FC45;
+        Tue,  5 Apr 2022 08:44:54 -0700 (PDT)
+Received: from localhost (unknown [IPv6:2601:281:8300:35:2589:2a93:190d:b787])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 47A26B81E56
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 15:02:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8C21EC385A1;
-        Tue,  5 Apr 2022 15:02:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649170943;
-        bh=Ra/03EFX5mzh6Q7bAuF5V7b3yZhKCzD8UNsg2MKHH24=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=rIgEKXlspNbXek7p1WoN/d+mkKu3Nfa8cBFmmXaa3zM1MOzJHAaNrX2XOMt6AL4Se
-         aKsuIqXU0jX9K9qb8rMRxLGXiIEhBcE7+x4B2gNTygCfF7EV5iBQztirOljQWwzHdg
-         I+prIHrsuwc9fuHnZIEAV15TtdOGCgpdTXTrk9oY=
-Date:   Tue, 5 Apr 2022 17:02:20 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Sevinj Aghayeva <sevinj.aghayeva@gmail.com>
-Cc:     linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
-        outreachy@lists.linux.dev
-Subject: Re: [PATCH] staging: rtl8723bs: fix indentation
-Message-ID: <YkxZ/NMSNPQ59tRc@kroah.com>
-References: <20220405145424.GA623343@euclid>
+        by ms.lwn.net (Postfix) with ESMTPSA id C920C30D;
+        Tue,  5 Apr 2022 15:44:53 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 ms.lwn.net C920C30D
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=lwn.net; s=20201203;
+        t=1649173494; bh=Y8JQDAaUoR51nr0vreh9K+hDkAMzDHJLaO+1EAdFo9U=;
+        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
+        b=lu+X5ocZQ6WZkbc2wXsM4cqL34a9FLx1z3xpNTOL3MT4WKsa5vuLqHNmJNNRUEhmr
+         URG4ecTZsNnVxgMf/x1lsfzpYbSGj7uoQjS0M6JRxWEO/InCglQctIWK0sYZAoWCz7
+         LeYJ558E8Paj4f32H7ziSiD2dogckzHvwzDbqcQ3ti5gK7p/hxVfA9A8ewHRdZp56Z
+         0XJ73mMFyorsbpO8kHDT5xJp+hSd6SZ1b0tIdTSEWugZPIyAy9hSLGqbXF6G0R+u4R
+         GWuvP0THvPffQb9yi8v3hSWKNtBJtP7sB1LG4xZFx3nsjyWp86ninn35Hb3QRf6LRq
+         q13qDHPZUvwDA==
+From:   Jonathan Corbet <corbet@lwn.net>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Stephen Boyd <sboyd@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Subject: Re: [PATCH] Documentation/process: mention patch changelog in
+ review process
+In-Reply-To: <20220402100706.57507-1-krzysztof.kozlowski@linaro.org>
+References: <20220402100706.57507-1-krzysztof.kozlowski@linaro.org>
+Date:   Tue, 05 Apr 2022 09:44:52 -0600
+Message-ID: <874k37fsaz.fsf@meer.lwn.net>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220405145424.GA623343@euclid>
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 05, 2022 at 10:54:24AM -0400, Sevinj Aghayeva wrote:
-> Adhere to Linux kernel coding style.
-> 
-> Reported by checkpatch:
-> 
-> WARNING: suspect code indent for conditional statements
-> 
-> Signed-off-by: Sevinj Aghayeva <sevinj.aghayeva@gmail.com>
+Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org> writes:
+
+> Extend the "Respond to review comments" section of "Submitting patches"
+> with reference to patch changelogs.
+>
+> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 > ---
->  drivers/staging/rtl8723bs/core/rtw_mlme_ext.c | 14 +++-----------
->  1 file changed, 3 insertions(+), 11 deletions(-)
-> 
-> diff --git a/drivers/staging/rtl8723bs/core/rtw_mlme_ext.c b/drivers/staging/rtl8723bs/core/rtw_mlme_ext.c
-> index 04e29e228c1e..1bdbd0971f73 100644
-> --- a/drivers/staging/rtl8723bs/core/rtw_mlme_ext.c
-> +++ b/drivers/staging/rtl8723bs/core/rtw_mlme_ext.c
-> @@ -5143,17 +5143,9 @@ void link_timer_hdl(struct timer_list *t)
->  	} else if (pmlmeinfo->state & WIFI_FW_AUTH_STATE) {
->  		/* re-auth timer */
->  		if (++pmlmeinfo->reauth_count > REAUTH_LIMIT) {
-> -			/* if (pmlmeinfo->auth_algo != dot11AuthAlgrthm_Auto) */
-> -			/*  */
-> -				pmlmeinfo->state = 0;
-> -				report_join_res(padapter, -1);
-> -				return;
-> -			/*  */
-> -			/* else */
-> -			/*  */
-> -			/* 	pmlmeinfo->auth_algo = dot11AuthAlgrthm_Shared; */
-> -			/* 	pmlmeinfo->reauth_count = 0; */
-> -			/*  */
-> +			pmlmeinfo->state = 0;
-> +			report_join_res(padapter, -1);
-> +			return;
->  		}
->  
->  		pmlmeinfo->auth_seq = 1;
-> -- 
-> 2.25.1
-> 
-> 
+>  Documentation/process/submitting-patches.rst | 5 ++++-
+>  1 file changed, 4 insertions(+), 1 deletion(-)
 
-Hi,
+Applied, thanks.
 
-This is the friendly patch-bot of Greg Kroah-Hartman.  You have sent him
-a patch that has triggered this response.  He used to manually respond
-to these common problems, but in order to save his sanity (he kept
-writing the same thing over and over, yet to different people), I was
-created.  Hopefully you will not take offence and will fix the problem
-in your patch and resubmit it so that it can be accepted into the Linux
-kernel tree.
-
-You are receiving this message because of the following common error(s)
-as indicated below:
-
-- You did not specify a description of why the patch is needed, or
-  possibly, any description at all, in the email body.  Please read the
-  section entitled "The canonical patch format" in the kernel file,
-  Documentation/SubmittingPatches for what is needed in order to
-  properly describe the change.
-
-- You did not write a descriptive Subject: for the patch, allowing Greg,
-  and everyone else, to know what this patch is all about.  Please read
-  the section entitled "The canonical patch format" in the kernel file,
-  Documentation/SubmittingPatches for what a proper Subject: line should
-  look like.
-
-- This looks like a new version of a previously submitted patch, but you
-  did not list below the --- line any changes from the previous version.
-  Please read the section entitled "The canonical patch format" in the
-  kernel file, Documentation/SubmittingPatches for what needs to be done
-  here to properly describe this.
-
-If you wish to discuss this problem further, or you have questions about
-how to resolve this issue, please feel free to respond to this email and
-Greg will reply once he has dug out from the pending patches received
-from other developers.
-
-thanks,
-
-greg k-h's patch email bot
+jon
