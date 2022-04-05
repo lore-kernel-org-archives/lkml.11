@@ -2,97 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F1A9AC4167E
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 22:55:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D2A51C352A1
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 22:55:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1456654AbiDEWqc (ORCPT
+        id S1456474AbiDEWp6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 18:46:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55028 "EHLO
+        Tue, 5 Apr 2022 18:45:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51190 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349628AbiDEJul (ORCPT
+        with ESMTP id S1572991AbiDERm0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:50:41 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 727F7E62;
-        Tue,  5 Apr 2022 02:48:43 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id B1DF6CE1C99;
-        Tue,  5 Apr 2022 09:48:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D346FC385A1;
-        Tue,  5 Apr 2022 09:48:39 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649152120;
-        bh=zmoBrpkFlTZYhj/TROCAwUiDj37bQOV6cJLOHvjtEOA=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bNw1mUNj3tLPl+RRe4Dltbcq2XaK0W5ytia8txxtWgqOo4h530r98jK9TsnvlAp7K
-         L6Tzbtagx+/+q+dP/0ZJqPv8grouXCXfCdy32x96N88aLhS4GPSuotPtcLvF1K7cLI
-         UGZUktYXfvCZnW+IMqw8htepoxFzbEYprATXbfVo=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Maxime Ripard <maxime@cerno.tech>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 623/913] clk: Fix clk_hw_get_clk() when dev is NULL
-Date:   Tue,  5 Apr 2022 09:28:05 +0200
-Message-Id: <20220405070358.514037298@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 5 Apr 2022 13:42:26 -0400
+Received: from 1.mo560.mail-out.ovh.net (1.mo560.mail-out.ovh.net [46.105.63.121])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE597B91A9
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 10:40:27 -0700 (PDT)
+Received: from player691.ha.ovh.net (unknown [10.108.4.183])
+        by mo560.mail-out.ovh.net (Postfix) with ESMTP id 9372423A32
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 17:40:26 +0000 (UTC)
+Received: from sk2.org (82-65-25-201.subs.proxad.net [82.65.25.201])
+        (Authenticated sender: steve@sk2.org)
+        by player691.ha.ovh.net (Postfix) with ESMTPSA id 271F5293C8F1F;
+        Tue,  5 Apr 2022 17:40:21 +0000 (UTC)
+Authentication-Results: garm.ovh; auth=pass (GARM-101G004618b8f4f-e2e9-40cb-b8ab-e15530b48acd,
+                    8AF55017BACD44284FC599BC4826E0280D36FCC4) smtp.auth=steve@sk2.org
+X-OVh-ClientIp: 82.65.25.201
+From:   Stephen Kitt <steve@sk2.org>
+To:     Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>
+Cc:     patches@opensource.cirrus.com, Wolfram Sang <wsa@kernel.org>,
+        linux-kernel@vger.kernel.org, Stephen Kitt <steve@sk2.org>
+Subject: [PATCH v2] ASoC: wm8731: use simple i2c probe function
+Date:   Tue,  5 Apr 2022 19:39:52 +0200
+Message-Id: <20220405173952.2180743-1-steve@sk2.org>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+X-Ovh-Tracer-Id: 9154129193012921990
+X-VR-SPAMSTATE: OK
+X-VR-SPAMSCORE: -100
+X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvvddrudejgedgudduvdcutefuodetggdotefrodftvfcurfhrohhfihhlvgemucfqggfjpdevjffgvefmvefgnecuuegrihhlohhuthemucehtddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjughrpefhvffufffkofgggfestdekredtredttdenucfhrhhomhepufhtvghphhgvnhcumfhithhtuceoshhtvghvvgesshhkvddrohhrgheqnecuggftrfgrthhtvghrnhepteegudfgleekieekteeggeetveefueefteeugfduieeitdfhhedtfeefkedvfeefnecukfhppedtrddtrddtrddtpdekvddrieehrddvhedrvddtudenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhhouggvpehsmhhtphhouhhtpdhhvghlohepphhlrgihvghrieeluddrhhgrrdhovhhhrdhnvghtpdhinhgvtheptddrtddrtddrtddpmhgrihhlfhhrohhmpehsthgvvhgvsehskhdvrdhorhhgpdhnsggprhgtphhtthhopedupdhrtghpthhtoheplhhinhhugidqkhgvrhhnvghlsehvghgvrhdrkhgvrhhnvghlrdhorhhg
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Maxime Ripard <maxime@cerno.tech>
+The i2c probe functions here don't use the id information provided in
+their second argument, so the single-parameter i2c probe function
+("probe_new") can be used instead.
 
-[ Upstream commit 0c1b56df451716ba207bbf59f303473643eee4fd ]
+This avoids scanning the identifier tables during probes.
 
-Any registered clk_core structure can have a NULL pointer in its dev
-field. While never actually documented, this is evidenced by the wide
-usage of clk_register and clk_hw_register with a NULL device pointer,
-and the fact that the core of_clk_hw_register() function also passes a
-NULL device pointer.
-
-A call to clk_hw_get_clk() on a clk_hw struct whose clk_core is in that
-case will result in a NULL pointer derefence when it calls dev_name() on
-that NULL device pointer.
-
-Add a test for this case and use NULL as the dev_id if the device
-pointer is NULL.
-
-Fixes: 30d6f8c15d2c ("clk: add api to get clk consumer from clk_hw")
-Signed-off-by: Maxime Ripard <maxime@cerno.tech>
-Link: https://lore.kernel.org/r/20220225143534.405820-2-maxime@cerno.tech
-Signed-off-by: Stephen Boyd <sboyd@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Stephen Kitt <steve@sk2.org>
 ---
- drivers/clk/clk.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+Changes since v1:
+  - rebased on sound/for-next instead of v5.18-rc1
+---
+ sound/soc/codecs/wm8731-i2c.c | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/clk/clk.c b/drivers/clk/clk.c
-index ac11cefc3191..32fd2853e8b2 100644
---- a/drivers/clk/clk.c
-+++ b/drivers/clk/clk.c
-@@ -3730,8 +3730,9 @@ struct clk *clk_hw_create_clk(struct device *dev, struct clk_hw *hw,
- struct clk *clk_hw_get_clk(struct clk_hw *hw, const char *con_id)
+diff --git a/sound/soc/codecs/wm8731-i2c.c b/sound/soc/codecs/wm8731-i2c.c
+index c70f5db891e7..fdf03bf91606 100644
+--- a/sound/soc/codecs/wm8731-i2c.c
++++ b/sound/soc/codecs/wm8731-i2c.c
+@@ -23,8 +23,7 @@ static const struct of_device_id wm8731_of_match[] = {
+ };
+ MODULE_DEVICE_TABLE(of, wm8731_of_match);
+ 
+-static int wm8731_i2c_probe(struct i2c_client *i2c,
+-			    const struct i2c_device_id *id)
++static int wm8731_i2c_probe(struct i2c_client *i2c)
  {
- 	struct device *dev = hw->core->dev;
-+	const char *name = dev ? dev_name(dev) : NULL;
+ 	struct wm8731_priv *wm8731;
+ 	int ret;
+@@ -58,7 +57,7 @@ static struct i2c_driver wm8731_i2c_driver = {
+ 		.name = "wm8731",
+ 		.of_match_table = wm8731_of_match,
+ 	},
+-	.probe =    wm8731_i2c_probe,
++	.probe_new = wm8731_i2c_probe,
+ 	.id_table = wm8731_i2c_id,
+ };
  
--	return clk_hw_create_clk(dev, hw, dev_name(dev), con_id);
-+	return clk_hw_create_clk(dev, hw, name, con_id);
- }
- EXPORT_SYMBOL(clk_hw_get_clk);
- 
+
+base-commit: b66751b6e3591eafe5c9cbabd68a45731b0083e3
 -- 
-2.34.1
-
-
+2.27.0
 
