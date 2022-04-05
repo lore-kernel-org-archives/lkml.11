@@ -2,96 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B05E3C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 01:10:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 16361C43217
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 01:10:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1840235AbiDFBHm (ORCPT
+        id S1840337AbiDFBHr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 21:07:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60308 "EHLO
+        Tue, 5 Apr 2022 21:07:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39108 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1446546AbiDEPos (ORCPT
+        with ESMTP id S1349063AbiDEJtD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 11:44:48 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A553220F0
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 07:17:49 -0700 (PDT)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id 8D5FF210FD;
-        Tue,  5 Apr 2022 14:17:47 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1649168267; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=BvTEfQ7kJIqh1i2okodWWZaOv98eaMhKZYSbbqfbqYA=;
-        b=d9XBmlgmY3A70bvfCltmJ743BPcZgNoVojfxXvCHM8d7PWevIOpBrYxcAk0yedES0cZCmP
-        CNOw62MQnC5Y4eifXYgoEwgM3YY+C/9/0UUoSLlmAslbdcz2H+losrp4380tiGFQD+6SFh
-        7K1OE/Qh8ajN+ALwVhvhTrWzzaaXa5M=
-Received: from suse.cz (unknown [10.100.201.86])
+        Tue, 5 Apr 2022 05:49:03 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97C40972EC;
+        Tue,  5 Apr 2022 02:39:36 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id D2921A3B8A;
-        Tue,  5 Apr 2022 14:17:46 +0000 (UTC)
-Date:   Tue, 5 Apr 2022 16:17:43 +0200
-From:   Michal Hocko <mhocko@suse.com>
-To:     Alexander Sverdlin <alexander.sverdlin@nokia.com>
-Cc:     Nicholas Piggin <npiggin@gmail.com>,
-        Alexander Duyck <alexanderduyck@fb.com>,
-        Matthew Wilcox <willy@infradead.org>,
-        Hugh Dickins <hughd@google.com>, Yu Zhao <yuzhao@google.com>,
-        Mel Gorman <mgorman@techsingularity.net>,
-        Lee Schermerhorn <lee.schermerhorn@hp.com>,
-        Sasha Levin <sashal@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: mm: swap: locking in release_pages()
-Message-ID: <YkxPh8nHhvT7t1OW@dhcp22.suse.cz>
-References: <89009285-c75d-0f09-5b08-d133c42a18f9@nokia.com>
- <YkwdRnuQBjoJ01YK@dhcp22.suse.cz>
- <dc5eb22d-5389-bacb-3756-253e774a8394@nokia.com>
- <Ykwr7OHllqM+Dpii@dhcp22.suse.cz>
- <404b3d6e-510e-c15f-a28b-7425bcc67cc2@nokia.com>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 36BF2615E5;
+        Tue,  5 Apr 2022 09:39:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 46794C385A1;
+        Tue,  5 Apr 2022 09:39:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649151575;
+        bh=7gTKzdAjIhJ4TyghWQTU70eQQNjzp0fVaBux+pHJOAM=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=wUmVpzPp+8G/Q0BbaFqrlkOsazKM2H+GF1KEiWU4dilLktOM8efYfYofoISl6dd2u
+         7VJU/2L/QxEQYrkLeoNLDF3ZCYoWWkpYdsa7NWaIbt9eEbBNcwHycYsKhrMMAzRroq
+         laK3WeJRzcBZTw/zXvUULkBCR4J89gpq4FuMWdCg=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Colin Ian King <colin.king@canonical.com>,
+        Luca Coelho <luciano.coelho@intel.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 466/913] iwlwifi: Fix -EIO error code that is never returned
+Date:   Tue,  5 Apr 2022 09:25:28 +0200
+Message-Id: <20220405070353.816391980@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <404b3d6e-510e-c15f-a28b-7425bcc67cc2@nokia.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue 05-04-22 16:00:54, Alexander Sverdlin wrote:
-> Hello Michal!
-> 
-> On 05/04/2022 13:45, Michal Hocko wrote:
-> >>>> 1. Crash of v5.4.170 on an ARM32 machine:
-> >>>>
-> >>>> Unable to handle kernel NULL pointer dereference at virtual address 00000104
-> >>>> pgd = e138149d
-> >>>> [00000104] *pgd=84d2fd003, *pmd=8ffd6f003
-> >>>> Internal error: Oops: a07 [#1] PREEMPT SMP ARM
-> >>>> ...
-> >>>> CPU: 1 PID: 6172 Comm: AaSysInfoRColle Tainted: G    B      O      5.4.170-... #1
-> >>>> Hardware name: Keystone
-> >>>> PC is at release_pages+0x194/0x358
-> >>>> LR is at release_pages+0x10c/0x358
-> >>> Which LOC does this correspond to? (faddr2line should give you a nice
-> >>> output).
-> >> Sorry, I forgot this info in the initial report:
-> >>
-> >> this is indeed the del_page_from_lru_list() in this crash.
-> > Could you be more specific please? Is the problem in list_del or
-> > update_lru_size?
-> 
-> static inline void __list_del(struct list_head * prev, struct list_head * next)
-> {
->         next->prev = prev;    <--
+From: Colin Ian King <colin.king@canonical.com>
 
-OK, I see. AFAICS this means that entry->next is NULL which doesn't look
-like somebody else has done list_del as that would leave poison values
-behind. Maybe somebody has clobbered the page state.
+[ Upstream commit c305c94bdc18e45b5ad1db54da4269f8cbfdff6b ]
 
-In any case I would recommend reproducing without stable patches and/or
-with the current Linus tree.
+Currently the error -EIO is being assinged to variable ret when
+the READY_BIT is not set but the function iwlagn_mac_start returns
+0 rather than ret. Fix this by returning ret instead of 0.
+
+Addresses-Coverity: ("Unused value")
+Fixes: 7335613ae27a ("iwlwifi: move all mac80211 related functions to one place")
+Signed-off-by: Colin Ian King <colin.king@canonical.com>
+Link: https://lore.kernel.org/r/20210907104658.14706-1-colin.king@canonical.com
+Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/net/wireless/intel/iwlwifi/dvm/mac80211.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/net/wireless/intel/iwlwifi/dvm/mac80211.c b/drivers/net/wireless/intel/iwlwifi/dvm/mac80211.c
+index 75e7665773c5..90fe4adca492 100644
+--- a/drivers/net/wireless/intel/iwlwifi/dvm/mac80211.c
++++ b/drivers/net/wireless/intel/iwlwifi/dvm/mac80211.c
+@@ -304,7 +304,7 @@ static int iwlagn_mac_start(struct ieee80211_hw *hw)
+ 
+ 	priv->is_open = 1;
+ 	IWL_DEBUG_MAC80211(priv, "leave\n");
+-	return 0;
++	return ret;
+ }
+ 
+ static void iwlagn_mac_stop(struct ieee80211_hw *hw)
 -- 
-Michal Hocko
-SUSE Labs
+2.34.1
+
+
+
