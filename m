@@ -2,48 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E7188C4167B
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:52:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F0BFC3527D
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:52:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349000AbiDEXgc (ORCPT
+        id S1354133AbiDEXhA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 19:36:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44178 "EHLO
+        Tue, 5 Apr 2022 19:37:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50540 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348899AbiDEJsp (ORCPT
+        with ESMTP id S1357235AbiDEKZ5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:48:45 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11363EACB7;
-        Tue,  5 Apr 2022 02:36:57 -0700 (PDT)
+        Tue, 5 Apr 2022 06:25:57 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5485C27B36;
+        Tue,  5 Apr 2022 03:09:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A4146615E5;
-        Tue,  5 Apr 2022 09:36:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B67B9C385A0;
-        Tue,  5 Apr 2022 09:36:55 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C0647B81C8A;
+        Tue,  5 Apr 2022 10:09:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 06B37C385A1;
+        Tue,  5 Apr 2022 10:09:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649151416;
-        bh=6teVxoPhBawGeWELxNYk1AiLJDt6H6dR+P6fL/PEkA8=;
+        s=korg; t=1649153386;
+        bh=sVR33FUtTlVIApPJsjKgr9pJZo5UOvcNrviZQ+t5OWs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=C9dB5U/x47ZPaagWDX6tgXCzE6KgCwJ1Vlbp1a/591Sd3v74NTn7rLAwoNq+Gc1ma
-         EvGe+2FwX/OkYIbyqRdlKTbFC/aMaViv3hK/+0HI274mN27qd4UuMFRhKsW32cy/lE
-         EaEu4GiQQffz/il83P73+9fZ3fCkcdp63LaOpZ1I=
+        b=uLPq974f1ExBEQUMtBI2jirpyJD1RM8xn9eLbEEsyXun0nagWifOcGJCgMKc06t7U
+         7cnxaZ7KdsOY7piuDqOH3B1X5XIu5umKd2j+6IDKrcxFBKb6rvJc9cDmRfk1LySnEg
+         G8Fj/SCzLZjyCUIVsRTQ1ls95w4oK7/wy+bMTww0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        syzbot+f83a1df1ed4f67e8d8ad@syzkaller.appspotmail.com,
-        Pavel Skripkin <paskripkin@gmail.com>,
-        Kalle Valo <quic_kvalo@quicinc.com>,
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 406/913] ath9k_htc: fix uninit value bugs
-Date:   Tue,  5 Apr 2022 09:24:28 +0200
-Message-Id: <20220405070352.017118926@linuxfoundation.org>
+Subject: [PATCH 5.10 166/599] hwrng: nomadik - Change clk_disable to clk_disable_unprepare
+Date:   Tue,  5 Apr 2022 09:27:40 +0200
+Message-Id: <20220405070303.782754804@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
+References: <20220405070258.802373272@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -52,98 +51,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pavel Skripkin <paskripkin@gmail.com>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit d1e0df1c57bd30871dd1c855742a7c346dbca853 ]
+[ Upstream commit 7f0f1f3ef62ed7a40e30aff28115bd94c4211d1d ]
 
-Syzbot reported 2 KMSAN bugs in ath9k. All of them are caused by missing
-field initialization.
+The corresponding API for clk_prepare_enable is clk_disable_unprepare,
+other than clk_disable_unprepare.
 
-In htc_connect_service() svc_meta_len and pad are not initialized. Based
-on code it looks like in current skb there is no service data, so simply
-initialize svc_meta_len to 0.
+Fix this by changing clk_disable to clk_disable_unprepare.
 
-htc_issue_send() does not initialize htc_frame_hdr::control array. Based
-on firmware code, it will initialize it by itself, so simply zero whole
-array to make KMSAN happy
-
-Fail logs:
-
-BUG: KMSAN: kernel-usb-infoleak in usb_submit_urb+0x6c1/0x2aa0 drivers/usb/core/urb.c:430
- usb_submit_urb+0x6c1/0x2aa0 drivers/usb/core/urb.c:430
- hif_usb_send_regout drivers/net/wireless/ath/ath9k/hif_usb.c:127 [inline]
- hif_usb_send+0x5f0/0x16f0 drivers/net/wireless/ath/ath9k/hif_usb.c:479
- htc_issue_send drivers/net/wireless/ath/ath9k/htc_hst.c:34 [inline]
- htc_connect_service+0x143e/0x1960 drivers/net/wireless/ath/ath9k/htc_hst.c:275
-...
-
-Uninit was created at:
- slab_post_alloc_hook mm/slab.h:524 [inline]
- slab_alloc_node mm/slub.c:3251 [inline]
- __kmalloc_node_track_caller+0xe0c/0x1510 mm/slub.c:4974
- kmalloc_reserve net/core/skbuff.c:354 [inline]
- __alloc_skb+0x545/0xf90 net/core/skbuff.c:426
- alloc_skb include/linux/skbuff.h:1126 [inline]
- htc_connect_service+0x1029/0x1960 drivers/net/wireless/ath/ath9k/htc_hst.c:258
-...
-
-Bytes 4-7 of 18 are uninitialized
-Memory access of size 18 starts at ffff888027377e00
-
-BUG: KMSAN: kernel-usb-infoleak in usb_submit_urb+0x6c1/0x2aa0 drivers/usb/core/urb.c:430
- usb_submit_urb+0x6c1/0x2aa0 drivers/usb/core/urb.c:430
- hif_usb_send_regout drivers/net/wireless/ath/ath9k/hif_usb.c:127 [inline]
- hif_usb_send+0x5f0/0x16f0 drivers/net/wireless/ath/ath9k/hif_usb.c:479
- htc_issue_send drivers/net/wireless/ath/ath9k/htc_hst.c:34 [inline]
- htc_connect_service+0x143e/0x1960 drivers/net/wireless/ath/ath9k/htc_hst.c:275
-...
-
-Uninit was created at:
- slab_post_alloc_hook mm/slab.h:524 [inline]
- slab_alloc_node mm/slub.c:3251 [inline]
- __kmalloc_node_track_caller+0xe0c/0x1510 mm/slub.c:4974
- kmalloc_reserve net/core/skbuff.c:354 [inline]
- __alloc_skb+0x545/0xf90 net/core/skbuff.c:426
- alloc_skb include/linux/skbuff.h:1126 [inline]
- htc_connect_service+0x1029/0x1960 drivers/net/wireless/ath/ath9k/htc_hst.c:258
-...
-
-Bytes 16-17 of 18 are uninitialized
-Memory access of size 18 starts at ffff888027377e00
-
-Fixes: fb9987d0f748 ("ath9k_htc: Support for AR9271 chipset.")
-Reported-by: syzbot+f83a1df1ed4f67e8d8ad@syzkaller.appspotmail.com
-Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
-Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
-Link: https://lore.kernel.org/r/20220115122733.11160-1-paskripkin@gmail.com
+Fixes: beca35d05cc2 ("hwrng: nomadik - use clk_prepare_enable()")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/ath/ath9k/htc_hst.c | 5 +++++
- 1 file changed, 5 insertions(+)
+ drivers/char/hw_random/nomadik-rng.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/wireless/ath/ath9k/htc_hst.c b/drivers/net/wireless/ath/ath9k/htc_hst.c
-index 510e61e97dbc..994ec48b2f66 100644
---- a/drivers/net/wireless/ath/ath9k/htc_hst.c
-+++ b/drivers/net/wireless/ath/ath9k/htc_hst.c
-@@ -30,6 +30,7 @@ static int htc_issue_send(struct htc_target *target, struct sk_buff* skb,
- 	hdr->endpoint_id = epid;
- 	hdr->flags = flags;
- 	hdr->payload_len = cpu_to_be16(len);
-+	memset(hdr->control, 0, sizeof(hdr->control));
+diff --git a/drivers/char/hw_random/nomadik-rng.c b/drivers/char/hw_random/nomadik-rng.c
+index 67947a19aa22..e8f9621e7954 100644
+--- a/drivers/char/hw_random/nomadik-rng.c
++++ b/drivers/char/hw_random/nomadik-rng.c
+@@ -65,14 +65,14 @@ static int nmk_rng_probe(struct amba_device *dev, const struct amba_id *id)
+ out_release:
+ 	amba_release_regions(dev);
+ out_clk:
+-	clk_disable(rng_clk);
++	clk_disable_unprepare(rng_clk);
+ 	return ret;
+ }
  
- 	status = target->hif->send(target->hif_dev, endpoint->ul_pipeid, skb);
+ static void nmk_rng_remove(struct amba_device *dev)
+ {
+ 	amba_release_regions(dev);
+-	clk_disable(rng_clk);
++	clk_disable_unprepare(rng_clk);
+ }
  
-@@ -272,6 +273,10 @@ int htc_connect_service(struct htc_target *target,
- 	conn_msg->dl_pipeid = endpoint->dl_pipeid;
- 	conn_msg->ul_pipeid = endpoint->ul_pipeid;
- 
-+	/* To prevent infoleak */
-+	conn_msg->svc_meta_len = 0;
-+	conn_msg->pad = 0;
-+
- 	ret = htc_issue_send(target, skb, skb->len, 0, ENDPOINT0);
- 	if (ret)
- 		goto err;
+ static const struct amba_id nmk_rng_ids[] = {
 -- 
 2.34.1
 
