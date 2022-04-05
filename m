@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7FFAEC43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A1D9C433FE
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 14:31:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240209AbiDEO1W (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 10:27:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55408 "EHLO
+        id S236916AbiDEO0n (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 10:26:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59042 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238969AbiDEJdN (ORCPT
+        with ESMTP id S238970AbiDEJdN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Apr 2022 05:33:13 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D1006549;
-        Tue,  5 Apr 2022 02:21:06 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1A9F6370;
+        Tue,  5 Apr 2022 02:20:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1726E6144D;
-        Tue,  5 Apr 2022 09:21:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 28521C385A0;
-        Tue,  5 Apr 2022 09:21:04 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 73B3BB81B75;
+        Tue,  5 Apr 2022 09:20:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B99D1C385A3;
+        Tue,  5 Apr 2022 09:20:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649150465;
-        bh=HKZ2APyN8Q6yQ6rOSEX8CU6i+12Lcl92XlYYntOj588=;
+        s=korg; t=1649150457;
+        bh=2mbQAsg1ojvN2fz5ehSmAEL4IcrsYT0ZF5XIupg9S1g=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=MN3M57GndW7mY5CnSnlukMDAXNgXwOUx03N2TP8XN2flFUYzhz0OnrfmrzxxK9s5M
-         6Wk2RsHsGFRIlHGVEBVAutfPk8+6IJUv1vRM5T+q9Vfr6kX0k0EhIps2e9+jL9D834
-         2MWknDdFk04k8oCIU0zHjPNPuzJpYKmxYKehA9Bc=
+        b=wXPgXdnV6ewqp/iTpaBEN39/lEiGkUP/RSIlnABon3Hm7H22dfwNVpg7GTWPXxIjw
+         oIQk1aAEbbqNrWu/EpMc16K/u0S68nThUlMYcn6G3jsafpPivyAAlkI6/KtESKGlHb
+         Xf6ZdvOERciO+gm9k77axFuzDX9DDSUc6HA+NPYQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
-        Chuck Lever <chuck.lever@oracle.com>
-Subject: [PATCH 5.15 065/913] NFSD: prevent underflow in nfssvc_decode_writeargs()
-Date:   Tue,  5 Apr 2022 09:18:47 +0200
-Message-Id: <20220405070341.771822379@linuxfoundation.org>
+        stable@vger.kernel.org, Gwendal Grignou <gwendal@chromium.org>,
+        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+        Jiri Kosina <jkosina@suse.cz>
+Subject: [PATCH 5.15 062/913] HID: intel-ish-hid: Use dma_alloc_coherent for firmware update
+Date:   Tue,  5 Apr 2022 09:18:44 +0200
+Message-Id: <20220405070341.682757585@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
 References: <20220405070339.801210740@linuxfoundation.org>
@@ -48,47 +49,92 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dan Carpenter <dan.carpenter@oracle.com>
+From: Gwendal Grignou <gwendal@chromium.org>
 
-commit 184416d4b98509fb4c3d8fc3d6dc1437896cc159 upstream.
+commit f97ec5d75e9261a5da78dc28a8955b7cc0c4468b upstream.
 
-Smatch complains:
+Allocating memory with kmalloc and GPF_DMA32 is not allowed, the
+allocator will ignore the attribute.
 
-	fs/nfsd/nfsxdr.c:341 nfssvc_decode_writeargs()
-	warn: no lower bound on 'args->len'
+Instead, use dma_alloc_coherent() API as we allocate a small amount of
+memory to transfer firmware fragment to the ISH.
 
-Change the type to unsigned to prevent this issue.
+On Arcada chromebook, after the patch the warning:
+"Unexpected gfp: 0x4 (GFP_DMA32). Fixing up to gfp: 0xcc0 (GFP_KERNEL).  Fix your code!"
+is gone. The ISH firmware is loaded properly and we can interact with
+the ISH:
+> ectool  --name cros_ish version
+...
+Build info:    arcada_ish_v2.0.3661+3c1a1c1ae0 2022-02-08 05:37:47 @localhost
+Tool version:  v2.0.12300-900b03ec7f 2022-02-08 10:01:48 @localhost
 
+Fixes: commit 91b228107da3 ("HID: intel-ish-hid: ISH firmware loader client driver")
+Signed-off-by: Gwendal Grignou <gwendal@chromium.org>
+Acked-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
 Cc: stable@vger.kernel.org
-Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
-Signed-off-by: Chuck Lever <chuck.lever@oracle.com>
+Signed-off-by: Jiri Kosina <jkosina@suse.cz>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/nfsd/nfsproc.c |    2 +-
- fs/nfsd/xdr.h     |    2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+ drivers/hid/intel-ish-hid/ishtp-fw-loader.c |   29 ++--------------------------
+ 1 file changed, 3 insertions(+), 26 deletions(-)
 
---- a/fs/nfsd/nfsproc.c
-+++ b/fs/nfsd/nfsproc.c
-@@ -230,7 +230,7 @@ nfsd_proc_write(struct svc_rqst *rqstp)
- 	unsigned long cnt = argp->len;
- 	unsigned int nvecs;
+--- a/drivers/hid/intel-ish-hid/ishtp-fw-loader.c
++++ b/drivers/hid/intel-ish-hid/ishtp-fw-loader.c
+@@ -657,21 +657,12 @@ static int ish_fw_xfer_direct_dma(struct
+ 	 */
+ 	payload_max_size &= ~(L1_CACHE_BYTES - 1);
  
--	dprintk("nfsd: WRITE    %s %d bytes at %d\n",
-+	dprintk("nfsd: WRITE    %s %u bytes at %d\n",
- 		SVCFH_fmt(&argp->fh),
- 		argp->len, argp->offset);
+-	dma_buf = kmalloc(payload_max_size, GFP_KERNEL | GFP_DMA32);
++	dma_buf = dma_alloc_coherent(devc, payload_max_size, &dma_buf_phy, GFP_KERNEL);
+ 	if (!dma_buf) {
+ 		client_data->flag_retry = true;
+ 		return -ENOMEM;
+ 	}
  
---- a/fs/nfsd/xdr.h
-+++ b/fs/nfsd/xdr.h
-@@ -32,7 +32,7 @@ struct nfsd_readargs {
- struct nfsd_writeargs {
- 	svc_fh			fh;
- 	__u32			offset;
--	int			len;
-+	__u32			len;
- 	struct xdr_buf		payload;
- };
+-	dma_buf_phy = dma_map_single(devc, dma_buf, payload_max_size,
+-				     DMA_TO_DEVICE);
+-	if (dma_mapping_error(devc, dma_buf_phy)) {
+-		dev_err(cl_data_to_dev(client_data), "DMA map failed\n");
+-		client_data->flag_retry = true;
+-		rv = -ENOMEM;
+-		goto end_err_dma_buf_release;
+-	}
+-
+ 	ldr_xfer_dma_frag.fragment.hdr.command = LOADER_CMD_XFER_FRAGMENT;
+ 	ldr_xfer_dma_frag.fragment.xfer_mode = LOADER_XFER_MODE_DIRECT_DMA;
+ 	ldr_xfer_dma_frag.ddr_phys_addr = (u64)dma_buf_phy;
+@@ -691,14 +682,7 @@ static int ish_fw_xfer_direct_dma(struct
+ 		ldr_xfer_dma_frag.fragment.size = fragment_size;
+ 		memcpy(dma_buf, &fw->data[fragment_offset], fragment_size);
+ 
+-		dma_sync_single_for_device(devc, dma_buf_phy,
+-					   payload_max_size,
+-					   DMA_TO_DEVICE);
+-
+-		/*
+-		 * Flush cache here because the dma_sync_single_for_device()
+-		 * does not do for x86.
+-		 */
++		/* Flush cache to be sure the data is in main memory. */
+ 		clflush_cache_range(dma_buf, payload_max_size);
+ 
+ 		dev_dbg(cl_data_to_dev(client_data),
+@@ -721,15 +705,8 @@ static int ish_fw_xfer_direct_dma(struct
+ 		fragment_offset += fragment_size;
+ 	}
+ 
+-	dma_unmap_single(devc, dma_buf_phy, payload_max_size, DMA_TO_DEVICE);
+-	kfree(dma_buf);
+-	return 0;
+-
+ end_err_resp_buf_release:
+-	/* Free ISH buffer if not done already, in error case */
+-	dma_unmap_single(devc, dma_buf_phy, payload_max_size, DMA_TO_DEVICE);
+-end_err_dma_buf_release:
+-	kfree(dma_buf);
++	dma_free_coherent(devc, payload_max_size, dma_buf, dma_buf_phy);
+ 	return rv;
+ }
  
 
 
