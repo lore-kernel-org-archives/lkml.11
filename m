@@ -2,111 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9339DC35273
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A8CC7C46467
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 01:06:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1839555AbiDFBEt (ORCPT
+        id S1839574AbiDFBFC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 21:04:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44238 "EHLO
+        Tue, 5 Apr 2022 21:05:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43252 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356190AbiDEKXU (ORCPT
+        with ESMTP id S1572894AbiDERQE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:23:20 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE8F7BAB81;
-        Tue,  5 Apr 2022 03:07:32 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6AD9E6172B;
-        Tue,  5 Apr 2022 10:07:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 72691C385A2;
-        Tue,  5 Apr 2022 10:07:31 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649153251;
-        bh=PCrH6URjmuB5guwZhaskUFJLccnRisVbZQOv3UYszQI=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Osjra9+o8VJYNUMxq45/7+qjwnTS+yR4Edj72KM1tNa0eILBGWaxsn08z7ndOThCe
-         GCjlvamcru7XH+NcjMGfXi29DOetpc5exdFHD9lc9qwB88WwTjbBHoVmEb+ohidzXT
-         2Z+PtZPATZl6Sj8u1sUJKrfwrlliz1Uf9QAzA4Pc=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Nicolai Stange <nstange@suse.de>,
-        Petr Vorel <pvorel@suse.cz>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 155/599] crypto: vmx - add missing dependencies
-Date:   Tue,  5 Apr 2022 09:27:29 +0200
-Message-Id: <20220405070303.455481280@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 5 Apr 2022 13:16:04 -0400
+X-Greylist: delayed 12359 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 05 Apr 2022 10:14:04 PDT
+Received: from 10.mo550.mail-out.ovh.net (10.mo550.mail-out.ovh.net [178.32.96.102])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E243921AD
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 10:14:04 -0700 (PDT)
+Received: from player728.ha.ovh.net (unknown [10.108.1.13])
+        by mo550.mail-out.ovh.net (Postfix) with ESMTP id 7266224066
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 16:37:58 +0000 (UTC)
+Received: from sk2.org (82-65-25-201.subs.proxad.net [82.65.25.201])
+        (Authenticated sender: steve@sk2.org)
+        by player728.ha.ovh.net (Postfix) with ESMTPSA id 12A9D2918D61E;
+        Tue,  5 Apr 2022 16:37:53 +0000 (UTC)
+Authentication-Results: garm.ovh; auth=pass (GARM-102R004cd3fc30c-2cb9-44a9-b250-9c495a8aa197,
+                    8AF55017BACD44284FC599BC4826E0280D36FCC4) smtp.auth=steve@sk2.org
+X-OVh-ClientIp: 82.65.25.201
+From:   Stephen Kitt <steve@sk2.org>
+To:     Matthias Brugger <matthias.bgg@gmail.com>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>
+Cc:     Wolfram Sang <wsa@kernel.org>, linux-kernel@vger.kernel.org,
+        Stephen Kitt <steve@sk2.org>
+Subject: [PATCH] ASoC: mt6660: use simple i2c probe function
+Date:   Tue,  5 Apr 2022 18:37:50 +0200
+Message-Id: <20220405163750.2158916-1-steve@sk2.org>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+X-Ovh-Tracer-Id: 8099160983115957894
+X-VR-SPAMSTATE: OK
+X-VR-SPAMSCORE: -100
+X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvvddrudejgedgleelucetufdoteggodetrfdotffvucfrrhhofhhilhgvmecuqfggjfdpvefjgfevmfevgfenuceurghilhhouhhtmecuhedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmnecujfgurhephffvufffkffoggfgsedtkeertdertddtnecuhfhrohhmpefuthgvphhhvghnucfmihhtthcuoehsthgvvhgvsehskhdvrdhorhhgqeenucggtffrrghtthgvrhhnpeetgedugfelkeeikeetgeegteevfeeufeetuefgudeiiedthfehtdeffeekvdeffeenucfkpheptddrtddrtddrtddpkedvrdeihedrvdehrddvtddunecuvehluhhsthgvrhfuihiivgepfeenucfrrghrrghmpehmohguvgepshhmthhpohhuthdphhgvlhhopehplhgrhigvrhejvdekrdhhrgdrohhvhhdrnhgvthdpihhnvghtpedtrddtrddtrddtpdhmrghilhhfrhhomhepshhtvghvvgesshhkvddrohhrghdpnhgspghrtghpthhtohepuddprhgtphhtthhopehlihhnuhigqdhkvghrnhgvlhesvhhgvghrrdhkvghrnhgvlhdrohhrgh
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Petr Vorel <pvorel@suse.cz>
+The i2c probe functions here don't use the id information provided in
+their second argument, so the single-parameter i2c probe function
+("probe_new") can be used instead.
 
-[ Upstream commit 647d41d3952d726d4ae49e853a9eff68ebad3b3f ]
+This avoids scanning the identifier tables during probes.
 
-vmx-crypto module depends on CRYPTO_AES, CRYPTO_CBC, CRYPTO_CTR or
-CRYPTO_XTS, thus add them.
-
-These dependencies are likely to be enabled, but if
-CRYPTO_DEV_VMX=y && !CRYPTO_MANAGER_DISABLE_TESTS
-and either of CRYPTO_AES, CRYPTO_CBC, CRYPTO_CTR or CRYPTO_XTS is built
-as module or disabled, alg_test() from crypto/testmgr.c complains during
-boot about failing to allocate the generic fallback implementations
-(2 == ENOENT):
-
-[    0.540953] Failed to allocate xts(aes) fallback: -2
-[    0.541014] alg: skcipher: failed to allocate transform for p8_aes_xts: -2
-[    0.541120] alg: self-tests for p8_aes_xts (xts(aes)) failed (rc=-2)
-[    0.544440] Failed to allocate ctr(aes) fallback: -2
-[    0.544497] alg: skcipher: failed to allocate transform for p8_aes_ctr: -2
-[    0.544603] alg: self-tests for p8_aes_ctr (ctr(aes)) failed (rc=-2)
-[    0.547992] Failed to allocate cbc(aes) fallback: -2
-[    0.548052] alg: skcipher: failed to allocate transform for p8_aes_cbc: -2
-[    0.548156] alg: self-tests for p8_aes_cbc (cbc(aes)) failed (rc=-2)
-[    0.550745] Failed to allocate transformation for 'aes': -2
-[    0.550801] alg: cipher: Failed to load transform for p8_aes: -2
-[    0.550892] alg: self-tests for p8_aes (aes) failed (rc=-2)
-
-Fixes: c07f5d3da643 ("crypto: vmx - Adding support for XTS")
-Fixes: d2e3ae6f3aba ("crypto: vmx - Enabling VMX module for PPC64")
-
-Suggested-by: Nicolai Stange <nstange@suse.de>
-Signed-off-by: Petr Vorel <pvorel@suse.cz>
-Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Stephen Kitt <steve@sk2.org>
 ---
- drivers/crypto/vmx/Kconfig | 4 ++++
- 1 file changed, 4 insertions(+)
+ sound/soc/codecs/mt6660.c | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/crypto/vmx/Kconfig b/drivers/crypto/vmx/Kconfig
-index c85fab7ef0bd..b2c28b87f14b 100644
---- a/drivers/crypto/vmx/Kconfig
-+++ b/drivers/crypto/vmx/Kconfig
-@@ -2,7 +2,11 @@
- config CRYPTO_DEV_VMX_ENCRYPT
- 	tristate "Encryption acceleration support on P8 CPU"
- 	depends on CRYPTO_DEV_VMX
-+	select CRYPTO_AES
-+	select CRYPTO_CBC
-+	select CRYPTO_CTR
- 	select CRYPTO_GHASH
-+	select CRYPTO_XTS
- 	default m
- 	help
- 	  Support for VMX cryptographic acceleration instructions on Power8 CPU.
+diff --git a/sound/soc/codecs/mt6660.c b/sound/soc/codecs/mt6660.c
+index 3a881523c30f..c84a0b850f89 100644
+--- a/sound/soc/codecs/mt6660.c
++++ b/sound/soc/codecs/mt6660.c
+@@ -456,8 +456,7 @@ static int _mt6660_read_chip_revision(struct mt6660_chip *chip)
+ 	return 0;
+ }
+ 
+-static int mt6660_i2c_probe(struct i2c_client *client,
+-			    const struct i2c_device_id *id)
++static int mt6660_i2c_probe(struct i2c_client *client)
+ {
+ 	struct mt6660_chip *chip = NULL;
+ 	int ret;
+@@ -567,7 +566,7 @@ static struct i2c_driver mt6660_i2c_driver = {
+ 		.of_match_table = of_match_ptr(mt6660_of_id),
+ 		.pm = &mt6660_dev_pm_ops,
+ 	},
+-	.probe = mt6660_i2c_probe,
++	.probe_new = mt6660_i2c_probe,
+ 	.remove = mt6660_i2c_remove,
+ 	.id_table = mt6660_i2c_id,
+ };
 -- 
-2.34.1
-
-
+2.27.0
 
