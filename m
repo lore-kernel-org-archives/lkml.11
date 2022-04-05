@@ -2,161 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9DDE5C4707A
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C5E8EC3527D
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:35:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384031AbiDEM1F (ORCPT
+        id S1384130AbiDEM1M (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 08:27:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37486 "EHLO
+        Tue, 5 Apr 2022 08:27:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59118 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240830AbiDEIsE (ORCPT
+        with ESMTP id S245183AbiDEIyN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:48:04 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB6172611E;
-        Tue,  5 Apr 2022 01:36:28 -0700 (PDT)
-Date:   Tue, 05 Apr 2022 08:36:16 -0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1649147778;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:  content-transfer-encoding:content-transfer-encoding;
-        bh=EG76px1djD7LhuP2FsvVqSe9KJ1HtJ99tnTsa5NZMzM=;
-        b=pRMPOdbf0QVkChK0gP4+YCQuxX3+9WmS97X8OjgfTavV3P4RpeQKlW3Z6mH5xEeo66YKwf
-        NXSw0EuWvnuYD1k3h290JJGp/yjqEL+jxTzQdRORdc8gvzlxryOB8FCktkr03q1AIDTQLJ
-        K5io8KYm7foZk/U1/8zDQO8/FdfW08SKnSD40eW+8t0+v9/BbeX1qFYrlkB0X7oMKgjXV9
-        wektTMWaGEzJ6l++k/BvaAE7gr9gBy4Wmqk16l8Vfo21TEmEGkyINMQFasjnH9Bn6O7NpB
-        rfPkQQ9oj/blbyCRg+RstNgQIMD3d6VLW9xu/wLsIimaVQxMknHCu2l9aibGPg==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1649147778;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:  content-transfer-encoding:content-transfer-encoding;
-        bh=EG76px1djD7LhuP2FsvVqSe9KJ1HtJ99tnTsa5NZMzM=;
-        b=9dBD20I1CvVQmxYG2prEh5xPyuA5vlSWB/pWNwzTu1xMrpbUKf54pX53d0cY7aYDdg0kby
-        KoWo538drSLmjQDg==
-From:   "tip-bot2 for Peter Zijlstra" <tip-bot2@linutronix.de>
-Sender: tip-bot2@linutronix.de
-Reply-to: linux-kernel@vger.kernel.org
-To:     linux-tip-commits@vger.kernel.org
-Subject: [tip: locking/core] locking/mutex: Make contention tracepoints more
- consistent wrt adaptive spinning
-Cc:     "Peter Zijlstra (Intel)" <peterz@infradead.org>, x86@kernel.org,
-        linux-kernel@vger.kernel.org
+        Tue, 5 Apr 2022 04:54:13 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32F9B2609;
+        Tue,  5 Apr 2022 01:51:50 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C63D961509;
+        Tue,  5 Apr 2022 08:51:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D33D2C385A0;
+        Tue,  5 Apr 2022 08:51:48 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649148709;
+        bh=q0syxxaTH7xp2V/r98sFo2P+r4nVpI03Joft2BVr5xI=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=eQMNk2gB2cejchGoDc8hBFcDxWG2pCWnF83gbI3CGXTCAzR2hWrqKeeGgtcPqij7j
+         n7z/k4IUSUmmFZIhb045NCbMO0/oitMyY9Wimy1tHDQYxw/bwqXtyTKNg//NwmqQnn
+         D4mw5bk36PHyXnJ2tpx1N7hTLe6Oa6MONYxuKh/U=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Lorenzo Bianconi <lorenzo@kernel.org>,
+        Felix Fietkau <nbd@nbd.name>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 0453/1017] mt76: mt7915: use proper aid value in mt7915_mcu_sta_basic_tlv
+Date:   Tue,  5 Apr 2022 09:22:46 +0200
+Message-Id: <20220405070407.745073528@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
+References: <20220405070354.155796697@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Message-ID: <164914777661.389.2436402911593584852.tip-bot2@tip-bot2>
-Robot-ID: <tip-bot2@linutronix.de>
-Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The following commit has been merged into the locking/core branch of tip:
+From: Lorenzo Bianconi <lorenzo@kernel.org>
 
-Commit-ID:     dc1f7893a70fe403983bd8492f177bf993940e2c
-Gitweb:        https://git.kernel.org/tip/dc1f7893a70fe403983bd8492f177bf993940e2c
-Author:        Peter Zijlstra <peterz@infradead.org>
-AuthorDate:    Wed, 30 Mar 2022 13:06:54 +02:00
-Committer:     Peter Zijlstra <peterz@infradead.org>
-CommitterDate: Tue, 05 Apr 2022 10:24:36 +02:00
+[ Upstream commit abdb8bc94be4cf68aa71c9a8ee0bad9b3e6f52d3 ]
 
-locking/mutex: Make contention tracepoints more consistent wrt adaptive spinning
+Similar to mt7915_mcu_wtbl_generic_tlv, rely on vif->bss_conf.aid for
+aid in sta mode and not on sta->aid.
 
-Have the trace_contention_*() tracepoints consistently include
-adaptive spinning. In order to differentiate between the spinning and
-non-spinning states add LCB_F_MUTEX and combine with LCB_F_SPIN.
-
-The consequence is that a mutex contention can now triggler multiple
-_begin() tracepoints before triggering an _end().
-
-Additionally, this fixes one path where mutex would trigger _end()
-without ever seeing a _begin().
-
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Fixes: e57b7901469fc ("mt76: add mac80211 driver for MT7915 PCIe-based chipsets")
+Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+Signed-off-by: Felix Fietkau <nbd@nbd.name>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/trace/events/lock.h |  4 +++-
- kernel/locking/mutex.c      | 16 ++++++++++++----
- 2 files changed, 15 insertions(+), 5 deletions(-)
+ drivers/net/wireless/mediatek/mt76/mt7915/mcu.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/include/trace/events/lock.h b/include/trace/events/lock.h
-index b9b6e3e..9ebd081 100644
---- a/include/trace/events/lock.h
-+++ b/include/trace/events/lock.h
-@@ -14,6 +14,7 @@
- #define LCB_F_WRITE	(1U << 2)
- #define LCB_F_RT	(1U << 3)
- #define LCB_F_PERCPU	(1U << 4)
-+#define LCB_F_MUTEX	(1U << 5)
- 
- 
- #ifdef CONFIG_LOCKDEP
-@@ -113,7 +114,8 @@ TRACE_EVENT(contention_begin,
- 				{ LCB_F_READ,		"READ" },
- 				{ LCB_F_WRITE,		"WRITE" },
- 				{ LCB_F_RT,		"RT" },
--				{ LCB_F_PERCPU,		"PERCPU" }
-+				{ LCB_F_PERCPU,		"PERCPU" },
-+				{ LCB_F_MUTEX,		"MUTEX" }
- 			  ))
- );
- 
-diff --git a/kernel/locking/mutex.c b/kernel/locking/mutex.c
-index c88deda..d973fe6 100644
---- a/kernel/locking/mutex.c
-+++ b/kernel/locking/mutex.c
-@@ -602,12 +602,14 @@ __mutex_lock_common(struct mutex *lock, unsigned int state, unsigned int subclas
- 	preempt_disable();
- 	mutex_acquire_nest(&lock->dep_map, subclass, 0, nest_lock, ip);
- 
-+	trace_contention_begin(lock, LCB_F_MUTEX | LCB_F_SPIN);
- 	if (__mutex_trylock(lock) ||
- 	    mutex_optimistic_spin(lock, ww_ctx, NULL)) {
- 		/* got the lock, yay! */
- 		lock_acquired(&lock->dep_map, ip);
- 		if (ww_ctx)
- 			ww_mutex_set_context_fastpath(ww, ww_ctx);
-+		trace_contention_end(lock, 0);
- 		preempt_enable();
- 		return 0;
- 	}
-@@ -644,7 +646,7 @@ __mutex_lock_common(struct mutex *lock, unsigned int state, unsigned int subclas
+diff --git a/drivers/net/wireless/mediatek/mt76/mt7915/mcu.c b/drivers/net/wireless/mediatek/mt76/mt7915/mcu.c
+index 8cdf689b383e..abc798536a81 100644
+--- a/drivers/net/wireless/mediatek/mt76/mt7915/mcu.c
++++ b/drivers/net/wireless/mediatek/mt76/mt7915/mcu.c
+@@ -1321,12 +1321,15 @@ mt7915_mcu_sta_basic_tlv(struct sk_buff *skb, struct ieee80211_vif *vif,
+ 	case NL80211_IFTYPE_MESH_POINT:
+ 	case NL80211_IFTYPE_AP:
+ 		basic->conn_type = cpu_to_le32(CONNECTION_INFRA_STA);
++		basic->aid = cpu_to_le16(sta->aid);
+ 		break;
+ 	case NL80211_IFTYPE_STATION:
+ 		basic->conn_type = cpu_to_le32(CONNECTION_INFRA_AP);
++		basic->aid = cpu_to_le16(vif->bss_conf.aid);
+ 		break;
+ 	case NL80211_IFTYPE_ADHOC:
+ 		basic->conn_type = cpu_to_le32(CONNECTION_IBSS_ADHOC);
++		basic->aid = cpu_to_le16(sta->aid);
+ 		break;
+ 	default:
+ 		WARN_ON(1);
+@@ -1334,7 +1337,6 @@ mt7915_mcu_sta_basic_tlv(struct sk_buff *skb, struct ieee80211_vif *vif,
  	}
  
- 	set_current_state(state);
--	trace_contention_begin(lock, 0);
-+	trace_contention_begin(lock, LCB_F_MUTEX);
- 	for (;;) {
- 		bool first;
+ 	memcpy(basic->peer_addr, sta->addr, ETH_ALEN);
+-	basic->aid = cpu_to_le16(sta->aid);
+ 	basic->qos = sta->wme;
+ }
  
-@@ -684,10 +686,16 @@ __mutex_lock_common(struct mutex *lock, unsigned int state, unsigned int subclas
- 		 * state back to RUNNING and fall through the next schedule(),
- 		 * or we must see its unlock and acquire.
- 		 */
--		if (__mutex_trylock_or_handoff(lock, first) ||
--		    (first && mutex_optimistic_spin(lock, ww_ctx, &waiter)))
-+		if (__mutex_trylock_or_handoff(lock, first))
- 			break;
- 
-+		if (first) {
-+			trace_contention_begin(lock, LCB_F_MUTEX | LCB_F_SPIN);
-+			if (mutex_optimistic_spin(lock, ww_ctx, &waiter))
-+				break;
-+			trace_contention_begin(lock, LCB_F_MUTEX);
-+		}
-+
- 		raw_spin_lock(&lock->wait_lock);
- 	}
- 	raw_spin_lock(&lock->wait_lock);
-@@ -723,8 +731,8 @@ skip_wait:
- err:
- 	__set_current_state(TASK_RUNNING);
- 	__mutex_remove_waiter(lock, &waiter);
--	trace_contention_end(lock, ret);
- err_early_kill:
-+	trace_contention_end(lock, ret);
- 	raw_spin_unlock(&lock->wait_lock);
- 	debug_mutex_free_waiter(&waiter);
- 	mutex_release(&lock->dep_map, ip);
+-- 
+2.34.1
+
+
+
