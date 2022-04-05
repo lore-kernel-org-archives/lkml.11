@@ -2,190 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0999BC433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C868C43219
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:40:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1836891AbiDFAkg (ORCPT
+        id S1836954AbiDFAlC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 20:40:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60386 "EHLO
+        Tue, 5 Apr 2022 20:41:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59722 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1443779AbiDEPkR (ORCPT
+        with ESMTP id S1445217AbiDEPml (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 11:40:17 -0400
-Received: from mail-pf1-x42d.google.com (mail-pf1-x42d.google.com [IPv6:2607:f8b0:4864:20::42d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79E286FA19
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 06:59:32 -0700 (PDT)
-Received: by mail-pf1-x42d.google.com with SMTP id p8so12164900pfh.8
-        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 06:59:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=qFXomhHOlRXcuYSu2VTavCR7TmWd+0G4V458iu5OlvM=;
-        b=OVBa/4kqlzEmoELnAN/0mTt7ddoTItJ9fZOzsluUCzvlxHMR5LlEa27+4wKNj5HY6l
-         +dyO0RsQWJ6qLatkdPD/jGzsPIMYdGh5eFBWWTIrqy0h1UUjAKJB3GK64uXY9mINapJk
-         0WSq0I3m+H1SMzflZQTJAE0Noyhbt0DrGXZACefS+TlygUS6Y46xm/rCU2Jy5t1NGxtt
-         69mho63QClXfvK59CKWQ98iQUiGavxUhtFyoshI6ZrvXjvM4zblZo804r3V54YV533gE
-         +MaxlSgY/vQa/BJGlrV03g4yekDtbsAiXn6KfpaJWjrdIrHAkmYPh1reIhgiPb7vuAsm
-         QcZg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=qFXomhHOlRXcuYSu2VTavCR7TmWd+0G4V458iu5OlvM=;
-        b=L7FhKadSCYLm2anALYZdHK6qlFIgM4pkvCRZxqc3A9p7VKWEeYdDaD3By49m4AsBck
-         Jp+Ft1SI1NaIjzcJHXhdIKliL7nxZ0zlssmJxUgdRNziWArBn6sesbWh2AqJ7I2BRHLS
-         bONCt/r80+jVceyqNFRuHW0sHy8YbPVBg+munEiV8JikL4uajIU8yRvkufZ8l9vf+o92
-         1B8p+cJonWB2VNJ5reDjft6rrZPSJo5Y+VNUBhhGtQUZVQ48s2Zv+mgEARiw8apwKnnC
-         XCbUPssiNcrhWkS+0EblDWe+nXUrnjwYtCD1sGknvET1EXwWcWHfb8vG7vHc0f4AK1JE
-         AhEA==
-X-Gm-Message-State: AOAM530VIOQzzen2+C8rtmeOletGLII2HYXoGtQbuWfnZW01puosbBa0
-        xD/iJTCbFzDUXJWXtJuUiArd
-X-Google-Smtp-Source: ABdhPJzjAFMtlNNMcn978sSk84yQ8/SjT7VR0/m3/NHEsGVrvtmAG9H/ATIZenHZztmnx3vaqBC0FQ==
-X-Received: by 2002:a05:6a00:27a2:b0:4fa:e893:bb68 with SMTP id bd34-20020a056a0027a200b004fae893bb68mr3688149pfb.82.1649167171771;
-        Tue, 05 Apr 2022 06:59:31 -0700 (PDT)
-Received: from localhost.localdomain ([59.92.98.98])
-        by smtp.gmail.com with ESMTPSA id u14-20020a056a00124e00b004fab8f3245fsm16785402pfi.149.2022.04.05.06.59.27
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 05 Apr 2022 06:59:31 -0700 (PDT)
-From:   Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-To:     gregkh@linuxfoundation.org
-Cc:     linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        elder@linaro.org, mhi@lists.linux.dev, quic_hemantk@quicinc.com,
-        quic_bbhatt@quicinc.com, quic_jhugo@quicinc.com,
-        bjorn.andersson@linaro.org, dmitry.baryshkov@linaro.org,
-        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-Subject: [PATCH 17/18] bus: mhi: ep: Add support for suspending and resuming channels
-Date:   Tue,  5 Apr 2022 19:27:53 +0530
-Message-Id: <20220405135754.6622-18-manivannan.sadhasivam@linaro.org>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220405135754.6622-1-manivannan.sadhasivam@linaro.org>
-References: <20220405135754.6622-1-manivannan.sadhasivam@linaro.org>
+        Tue, 5 Apr 2022 11:42:41 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E8C62191437
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 07:08:05 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 9388C23A;
+        Tue,  5 Apr 2022 07:08:05 -0700 (PDT)
+Received: from bogus (unknown [10.57.43.163])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 14E7D3F5A1;
+        Tue,  5 Apr 2022 07:08:03 -0700 (PDT)
+Date:   Tue, 5 Apr 2022 15:08:00 +0100
+From:   Sudeep Holla <sudeep.holla@arm.com>
+To:     Randy Dunlap <rdunlap@infradead.org>
+Cc:     linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Liviu Dudau <liviu.dudau@arm.com>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        kernel test robot <lkp@intel.com>
+Subject: Re: [PATCH 1/2] ARM: vexpress/spc: Fix doxygen comments
+Message-ID: <20220405140800.baww2wrow3hdp5ho@bogus>
+References: <20220404130207.1162445-1-sudeep.holla@arm.com>
+ <008aae79-4a6c-721f-7ef5-7b73f6d7e000@infradead.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <008aae79-4a6c-721f-7ef5-7b73f6d7e000@infradead.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add support for suspending and resuming the channels in MHI endpoint stack.
-The channels will be moved to the suspended state during M3 state
-transition and will be resumed during M0 transition.
+Hi Randy,
 
-Reviewed-by: Alex Elder <elder@linaro.org>
-Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
----
- drivers/bus/mhi/ep/internal.h |  2 ++
- drivers/bus/mhi/ep/main.c     | 58 +++++++++++++++++++++++++++++++++++
- drivers/bus/mhi/ep/sm.c       |  5 +++
- 3 files changed, 65 insertions(+)
+On Mon, Apr 04, 2022 at 05:21:39PM -0700, Randy Dunlap wrote:
+> Hi--
+> 
+> On 4/4/22 06:02, Sudeep Holla wrote:
+> > Kbuild bot reported the following doxygen build warning:
+> > 
+> >   |  arch/arm/mach-versatile/spc.c:231: warning: This comment starts with
+> >   |		'/**', but isn't a kernel-doc comment.
+> >   |		Refer Documentation/doc-guide/kernel-doc.rst
+> >   |  		* ve_spc_cpu_in_wfi(u32 cpu, u32 cluster)
+> > 
+> > Fix the issue by dropping the parameters specified in the kernel doc.
+> > 
+> > Cc: Liviu Dudau <liviu.dudau@arm.com>
+> > Cc: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+> > Reported-by: kernel test robot <lkp@intel.com>
+> > Link: https://lore.kernel.org/linux-doc/202204031026.4ogKxt89-lkp@intel.com
+> > Signed-off-by: Sudeep Holla <sudeep.holla@arm.com>
+> > ---
+> >  arch/arm/mach-vexpress/spc.c | 2 +-
+> >  1 file changed, 1 insertion(+), 1 deletion(-)
+> > 
+> > diff --git a/arch/arm/mach-vexpress/spc.c b/arch/arm/mach-vexpress/spc.c
+> > index 1c6500c4e6a1..8f99d47d4b89 100644
+> > --- a/arch/arm/mach-vexpress/spc.c
+> > +++ b/arch/arm/mach-vexpress/spc.c
+> > @@ -228,7 +228,7 @@ static u32 standbywfi_cpu_mask(u32 cpu, u32 cluster)
+> >  }
+> >  
+> >  /**
+> > - * ve_spc_cpu_in_wfi(u32 cpu, u32 cluster)
+> > + * ve_spc_cpu_in_wfi()
+> 
+> This line still needs a "function short description," e.g.
+> 
+> + * ve_spc_cpu_in_wfi() - fooble the barfloppity
+> 
+> similar to what you did in patch 2/2.
 
-diff --git a/drivers/bus/mhi/ep/internal.h b/drivers/bus/mhi/ep/internal.h
-index d201d755560c..a2125fa5fe2f 100644
---- a/drivers/bus/mhi/ep/internal.h
-+++ b/drivers/bus/mhi/ep/internal.h
-@@ -212,5 +212,7 @@ int mhi_ep_set_m0_state(struct mhi_ep_cntrl *mhi_cntrl);
- int mhi_ep_set_m3_state(struct mhi_ep_cntrl *mhi_cntrl);
- int mhi_ep_set_ready_state(struct mhi_ep_cntrl *mhi_cntrl);
- void mhi_ep_handle_syserr(struct mhi_ep_cntrl *mhi_cntrl);
-+void mhi_ep_resume_channels(struct mhi_ep_cntrl *mhi_cntrl);
-+void mhi_ep_suspend_channels(struct mhi_ep_cntrl *mhi_cntrl);
- 
- #endif
-diff --git a/drivers/bus/mhi/ep/main.c b/drivers/bus/mhi/ep/main.c
-index 660d1e9791d3..bae5f40ec15e 100644
---- a/drivers/bus/mhi/ep/main.c
-+++ b/drivers/bus/mhi/ep/main.c
-@@ -1097,6 +1097,64 @@ void mhi_ep_power_down(struct mhi_ep_cntrl *mhi_cntrl)
- }
- EXPORT_SYMBOL_GPL(mhi_ep_power_down);
- 
-+void mhi_ep_suspend_channels(struct mhi_ep_cntrl *mhi_cntrl)
-+{
-+	struct mhi_ep_chan *mhi_chan;
-+	u32 tmp;
-+	int i;
-+
-+	for (i = 0; i < mhi_cntrl->max_chan; i++) {
-+		mhi_chan = &mhi_cntrl->mhi_chan[i];
-+
-+		if (!mhi_chan->mhi_dev)
-+			continue;
-+
-+		mutex_lock(&mhi_chan->lock);
-+		/* Skip if the channel is not currently running */
-+		tmp = le32_to_cpu(mhi_cntrl->ch_ctx_cache[i].chcfg);
-+		if (FIELD_GET(CHAN_CTX_CHSTATE_MASK, tmp) != MHI_CH_STATE_RUNNING) {
-+			mutex_unlock(&mhi_chan->lock);
-+			continue;
-+		}
-+
-+		dev_dbg(&mhi_chan->mhi_dev->dev, "Suspending channel\n");
-+		/* Set channel state to SUSPENDED */
-+		tmp &= ~CHAN_CTX_CHSTATE_MASK;
-+		tmp |= FIELD_PREP(CHAN_CTX_CHSTATE_MASK, MHI_CH_STATE_SUSPENDED);
-+		mhi_cntrl->ch_ctx_cache[i].chcfg = cpu_to_le32(tmp);
-+		mutex_unlock(&mhi_chan->lock);
-+	}
-+}
-+
-+void mhi_ep_resume_channels(struct mhi_ep_cntrl *mhi_cntrl)
-+{
-+	struct mhi_ep_chan *mhi_chan;
-+	u32 tmp;
-+	int i;
-+
-+	for (i = 0; i < mhi_cntrl->max_chan; i++) {
-+		mhi_chan = &mhi_cntrl->mhi_chan[i];
-+
-+		if (!mhi_chan->mhi_dev)
-+			continue;
-+
-+		mutex_lock(&mhi_chan->lock);
-+		/* Skip if the channel is not currently suspended */
-+		tmp = le32_to_cpu(mhi_cntrl->ch_ctx_cache[i].chcfg);
-+		if (FIELD_GET(CHAN_CTX_CHSTATE_MASK, tmp) != MHI_CH_STATE_SUSPENDED) {
-+			mutex_unlock(&mhi_chan->lock);
-+			continue;
-+		}
-+
-+		dev_dbg(&mhi_chan->mhi_dev->dev, "Resuming channel\n");
-+		/* Set channel state to RUNNING */
-+		tmp &= ~CHAN_CTX_CHSTATE_MASK;
-+		tmp |= FIELD_PREP(CHAN_CTX_CHSTATE_MASK, MHI_CH_STATE_RUNNING);
-+		mhi_cntrl->ch_ctx_cache[i].chcfg = cpu_to_le32(tmp);
-+		mutex_unlock(&mhi_chan->lock);
-+	}
-+}
-+
- static void mhi_ep_release_device(struct device *dev)
- {
- 	struct mhi_ep_device *mhi_dev = to_mhi_ep_device(dev);
-diff --git a/drivers/bus/mhi/ep/sm.c b/drivers/bus/mhi/ep/sm.c
-index e3865b85399d..3655c19e23c7 100644
---- a/drivers/bus/mhi/ep/sm.c
-+++ b/drivers/bus/mhi/ep/sm.c
-@@ -62,8 +62,11 @@ int mhi_ep_set_m0_state(struct mhi_ep_cntrl *mhi_cntrl)
- 	enum mhi_state old_state;
- 	int ret;
- 
-+	/* If MHI is in M3, resume suspended channels */
- 	spin_lock_bh(&mhi_cntrl->state_lock);
- 	old_state = mhi_cntrl->mhi_state;
-+	if (old_state == MHI_STATE_M3)
-+		mhi_ep_resume_channels(mhi_cntrl);
- 
- 	ret = mhi_ep_set_mhi_state(mhi_cntrl, MHI_STATE_M0);
- 	spin_unlock_bh(&mhi_cntrl->state_lock);
-@@ -106,6 +109,8 @@ int mhi_ep_set_m3_state(struct mhi_ep_cntrl *mhi_cntrl)
- 		return ret;
- 	}
- 
-+	mhi_ep_suspend_channels(mhi_cntrl);
-+
- 	/* Signal host that the device moved to M3 */
- 	ret = mhi_ep_send_state_change_event(mhi_cntrl, MHI_STATE_M3);
- 	if (ret) {
+I did this intentionally, I can move only this from the other patch.
+Since I saw few others w/o description, I addressed all at once in the
+second patch and just remove warning reported in this patch. I am fine
+either way.
+
+> 
+> >   *
+> >   * @cpu: mpidr[7:0] bitfield describing CPU affinity level within cluster
+> >   * @cluster: mpidr[15:8] bitfield describing cluster affinity level
+> 
+> and I would s/doxygen/kernel-doc/ for both patches.
+> 
+
+Sure will do.
+
 -- 
-2.25.1
-
+Regards,
+Sudeep
