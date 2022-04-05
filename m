@@ -2,108 +2,66 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E0FAC4707F
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:09:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0736BC35296
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:09:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1582050AbiDEXlw (ORCPT
+        id S1582100AbiDEXmB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 19:41:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51882 "EHLO
+        Tue, 5 Apr 2022 19:42:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53458 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358047AbiDEK15 (ORCPT
+        with ESMTP id S1457541AbiDEQI0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:27:57 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D12C46640;
-        Tue,  5 Apr 2022 03:13:49 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        Tue, 5 Apr 2022 12:08:26 -0400
+Received: from mail.skyhub.de (mail.skyhub.de [5.9.137.197])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C022825CD
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 09:06:27 -0700 (PDT)
+Received: from zn.tnic (p2e55dff8.dip0.t-ipconnect.de [46.85.223.248])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D3DC4B81C6C;
-        Tue,  5 Apr 2022 10:13:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 45179C385A1;
-        Tue,  5 Apr 2022 10:13:46 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649153626;
-        bh=GDqglo8yZ0C0FcfzITCC3M2c4Tvp8oSLHW16T1/TXls=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nbK52h5VPZ97sS6cMJRGk+jCbU+b+Pa8cFCK+lHOheYXkLmFKwPP6d35FJnimga6z
-         i76JExOAemsl7mseccPUG0MIMFX+6F1XltdZ28LseLHX96YZSH5T9xxDXpwTGsNOMW
-         FZadQ6kR4NAyAx0d4OOyscdaMPS2uS6mZMkmd6W0=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 241/599] ASoC: fsi: Add check for clk_enable
-Date:   Tue,  5 Apr 2022 09:28:55 +0200
-Message-Id: <20220405070306.012540248@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
-User-Agent: quilt/0.66
+        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 752E21EC0502;
+        Tue,  5 Apr 2022 18:06:22 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
+        t=1649174782;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
+        bh=+l8x0npVHQPxXN8Jiw+gTLW632Eoh0dwy+8lcfQVWk8=;
+        b=gegC6rwLvXB2k5OYbibB7lCieya+klwRoI9ayiojrjzhL5+dgOrStUCrd9Zuge5TiWA+qx
+        hqxZKJiVM/6bxN5fLDL7xISUUDmvsibLMFEtFzQRUT65RwM/EvUdZwy97j0+8nhQmrqrwS
+        9mOhd7Kerbl6Tv7wZS6hITMkaS4j51Y=
+Date:   Tue, 5 Apr 2022 18:06:19 +0200
+From:   Borislav Petkov <bp@alien8.de>
+To:     Takashi Iwai <tiwai@suse.de>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Takashi Iwai <tiwai@suse.com>, alsa-devel@alsa-project.org
+Subject: Re: [PATCH 02/11] ALSA: usb-audio: Fix undefined behavior due to
+ shift overflowing the constant
+Message-ID: <Ykxo+0p5IeeM7mge@zn.tnic>
+References: <20220405151517.29753-1-bp@alien8.de>
+ <20220405151517.29753-3-bp@alien8.de>
+ <s5hwng35yvz.wl-tiwai@suse.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <s5hwng35yvz.wl-tiwai@suse.de>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+On Tue, Apr 05, 2022 at 05:32:48PM +0200, Takashi Iwai wrote:
+> > +#define USB_ID(vendor, product) ((((unsigned int)vendor) << 16) | (product))
+> 
+> Parentheses are needed around vendor (as usual for a macro).
+> Could you resubmit with it?
 
-[ Upstream commit 405afed8a728f23cfaa02f75bbc8bdd6b7322123 ]
+Or you can fix it up while applying. :)
 
-As the potential failure of the clk_enable(),
-it should be better to check it and return error
-if fails.
+Thx.
 
-Fixes: ab6f6d85210c ("ASoC: fsi: add master clock control functions")
-Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Link: https://lore.kernel.org/r/20220302062844.46869-1-jiasheng@iscas.ac.cn
-Signed-off-by: Mark Brown <broonie@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- sound/soc/sh/fsi.c | 19 ++++++++++++++++---
- 1 file changed, 16 insertions(+), 3 deletions(-)
-
-diff --git a/sound/soc/sh/fsi.c b/sound/soc/sh/fsi.c
-index 3c574792231b..0fa72907d5bf 100644
---- a/sound/soc/sh/fsi.c
-+++ b/sound/soc/sh/fsi.c
-@@ -816,14 +816,27 @@ static int fsi_clk_enable(struct device *dev,
- 			return ret;
- 		}
- 
--		clk_enable(clock->xck);
--		clk_enable(clock->ick);
--		clk_enable(clock->div);
-+		ret = clk_enable(clock->xck);
-+		if (ret)
-+			goto err;
-+		ret = clk_enable(clock->ick);
-+		if (ret)
-+			goto disable_xck;
-+		ret = clk_enable(clock->div);
-+		if (ret)
-+			goto disable_ick;
- 
- 		clock->count++;
- 	}
- 
- 	return ret;
-+
-+disable_ick:
-+	clk_disable(clock->ick);
-+disable_xck:
-+	clk_disable(clock->xck);
-+err:
-+	return ret;
- }
- 
- static int fsi_clk_disable(struct device *dev,
 -- 
-2.34.1
+Regards/Gruss,
+    Boris.
 
-
-
+https://people.kernel.org/tglx/notes-about-netiquette
