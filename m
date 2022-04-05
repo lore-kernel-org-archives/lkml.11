@@ -2,87 +2,71 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C106BC35296
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 21:04:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F88FC4332F
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 21:04:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344255AbiDEVCU (ORCPT
+        id S1344852AbiDEVCy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 17:02:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52482 "EHLO
+        Tue, 5 Apr 2022 17:02:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40230 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1444548AbiDEPlj (ORCPT
+        with ESMTP id S1573062AbiDERu5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 11:41:39 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FD03F8ED9
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 07:05:45 -0700 (PDT)
+        Tue, 5 Apr 2022 13:50:57 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F26D4D4C81;
+        Tue,  5 Apr 2022 10:48:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B8908B81DD4
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 14:05:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4BAD1C385A0;
-        Tue,  5 Apr 2022 14:05:40 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8DD98616C5;
+        Tue,  5 Apr 2022 17:48:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id F1934C385A0;
+        Tue,  5 Apr 2022 17:48:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649167542;
-        bh=mLvsbHYwNiYZf89pICUm4u8OqvidTl/bGcsttyjqxKo=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=u3W3tyKRMH8dJXSiDyRLgs0ecSok+iTVounw+M+iMZl5VAUpyhvOW2/EAz8x3a9Ph
-         lWzhVwrzDy/c3m654NWOv+TTLRUbDmI7Swc/CAkBoJy/n4lZDOzcvEzhhz4+bZATVP
-         qR4Rho0i/6gG6prDeDm9JBXLfwCj81WXqKT5u0oOaOWSI63wqmmS0wgt5whfhXk1eV
-         HP52xl2pYElxpdnJtQjRxC3DALbm1B+QmK+E7SnULuuO0dihly3gJdv7HBI3TD1TxX
-         e9CINfLnp0koNqO3CCRKls2+8OSSvKwORDpDAk8vvgrg0kQDsj1tunZJc1IOm+ENPQ
-         gvZIsxDu38M5w==
-Date:   Tue, 5 Apr 2022 15:05:37 +0100
-From:   Mark Brown <broonie@kernel.org>
-To:     Catalin Marinas <catalin.marinas@arm.com>
-Cc:     Will Deacon <will@kernel.org>, Marc Zyngier <maz@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        linux-mm@kvack.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 05/10] drivers/spi: Use ARCH_DMA_MINALIGN instead of
- ARCH_KMALLOC_MINALIGN
-Message-ID: <YkxMsbRidcGaNHEl@sirena.org.uk>
-References: <20220405135758.774016-1-catalin.marinas@arm.com>
- <20220405135758.774016-6-catalin.marinas@arm.com>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="sDUXE/n0DhecXB+p"
-Content-Disposition: inline
-In-Reply-To: <20220405135758.774016-6-catalin.marinas@arm.com>
-X-Cookie: diplomacy, n:
+        s=k20201202; t=1649180937;
+        bh=+1O856swZ0z6MyxA17arCGEyqFnENo2NE4LLuIMWiQk=;
+        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
+        b=B3i5mDiLzPCFJVHSLcYE8l7AFBLzBhcryxnkLtKhyMA55ds2LiVRcYIJjE8X3a/Dj
+         6znJt7exe5G+LbwfrI8FCJTMnQZRNYAkIOvoLAqcPN9KxIzPjngf+ouYVvFdzg7om/
+         bPVtTAaV/IE6BC2/ISXh9k4Ec8AI63B9M4iEC2DoqV8QbEZn5nfBdFubMHsS2/FOgC
+         QSHRdCvaTHPz4rOiDla75dX/RlEWAi4rR1PuF//fFhPmW64Kc7lQHIWQcGuxXkQ4hN
+         rimGX3fA2ZZGw6H4LmdGklbj+rK9AjbU3EBluM/mDkk9Z7FVyIEX/gkEC1J9FJXpNb
+         +8qYI1DKgMjfA==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id DC033E6D402;
+        Tue,  5 Apr 2022 17:48:56 +0000 (UTC)
+Subject: Re: [GIT PULL] virtio: fixes, cleanups
+From:   pr-tracker-bot@kernel.org
+In-Reply-To: <20220404063128-mutt-send-email-mst@kernel.org>
+References: <20220404063128-mutt-send-email-mst@kernel.org>
+X-PR-Tracked-List-Id: Linux virtualization <virtualization.lists.linux-foundation.org>
+X-PR-Tracked-Message-Id: <20220404063128-mutt-send-email-mst@kernel.org>
+X-PR-Tracked-Remote: https://git.kernel.org/pub/scm/linux/kernel/git/mst/vhost.git tags/for_linus
+X-PR-Tracked-Commit-Id: 1c80cf031e0204fde471558ee40183695773ce13
+X-PR-Merge-Tree: torvalds/linux.git
+X-PR-Merge-Refname: refs/heads/master
+X-PR-Merge-Commit-Id: 3e732ebf7316ac83e8562db7e64cc68aec390a18
+Message-Id: <164918093688.27639.685715483194892648.pr-tracker-bot@kernel.org>
+Date:   Tue, 05 Apr 2022 17:48:56 +0000
+To:     "Michael S. Tsirkin" <mst@redhat.com>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        kvm@vger.kernel.org, mst@redhat.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, elic@nvidia.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+The pull request you sent on Mon, 4 Apr 2022 06:31:28 -0400:
 
---sDUXE/n0DhecXB+p
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+> https://git.kernel.org/pub/scm/linux/kernel/git/mst/vhost.git tags/for_linus
 
-On Tue, Apr 05, 2022 at 02:57:53PM +0100, Catalin Marinas wrote:
-> ARCH_DMA_MINALIGN represents the minimum (static) alignment for safe DMA
-> operations while ARCH_KMALLOC_MINALIGN is the minimum kmalloc() objects
-> alignment.
+has been merged into torvalds/linux.git:
+https://git.kernel.org/torvalds/c/3e732ebf7316ac83e8562db7e64cc68aec390a18
 
-Acked-by: Mark Brown <broonie@kernel.org>
+Thank you!
 
---sDUXE/n0DhecXB+p
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmJMTLAACgkQJNaLcl1U
-h9CZywf8DvQ9It3zlTp1923Nk+sjayiHtSyj0NUz7v2SeU+qBDaEc6uiEV4m62om
-zJ9ZCXULrZCyR8xGlxKJbcY855QVISvit0bVDXHkfh9ui7FstXphjBsPNtEkJPoi
-FM8HmdCCIAT1xWWpFQlC5lIoD127dGaP1mHimjeG/AzLxDGLDaj034XJ5UxyZZa3
-BXVXC3h0/INjNHcvkYLDKFOV6/K6GmFp+z8p4oAbbwjbxPbYkRli+AvpZHesm+Gj
-//rAXzhnd2CRcbF2gJG9peLrLMfYvYBDxIIije9GMxfHi7sZfR+soUBjfriN5BgT
-jgsXumz/fY4fChAJH/ph3U1YIC1f6Q==
-=lFIn
------END PGP SIGNATURE-----
-
---sDUXE/n0DhecXB+p--
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/prtracker.html
