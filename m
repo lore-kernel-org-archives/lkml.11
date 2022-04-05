@@ -2,60 +2,60 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0502BC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 02:42:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 34D40C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 02:42:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230071AbiDECoA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 22:44:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49470 "EHLO
+        id S229828AbiDECoE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 4 Apr 2022 22:44:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49516 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229914AbiDECnR (ORCPT
+        with ESMTP id S229968AbiDECnS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 22:43:17 -0400
+        Mon, 4 Apr 2022 22:43:18 -0400
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 66FCC39A6BF
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 18:48:58 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id BBA461265B0
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 18:49:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1649123337;
+        s=mimecast20190719; t=1649123345;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=9Tho0jTi/mP2SxzzY9PiukQljtVmr59NjLeFBDKY3mg=;
-        b=VvYOROd87jq+Jg2/XfDAYGNmhXghpTkG00CR2PUzRMNtHtM8tMJOnheAERPmyU9s4n/G/i
-        5a5Gp4XQO2UvH0fjCGQQ+HosVBnJAtD3z5fStbt6/jk3l4iSbSAMZz9fpmyrBfOgCb4z6a
-        thBjITEovDD8fcCcg4/ahIprgOJz/QA=
-Received: from mail-il1-f199.google.com (mail-il1-f199.google.com
- [209.85.166.199]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=cMJ3LqPsnbXMwjHxk9MsuTKHubQJUVkMzfk9UWY8MQ4=;
+        b=X/tVQ8WuOQcs0Wry4k6Knl/HQdFenm3wqauPxGciWndda0ShSWTg5YNdxEAd2h1B81Ek4Q
+        2g5S7GOjRQ6hYyinImlpnCw3tWIvZktoFMgwppixwBVtaXdU5cz1Ypks3d/eFJEV56rcG1
+        TolWm05GZ+RFYX/AfpoMQxKW3B4nkIM=
+Received: from mail-il1-f198.google.com (mail-il1-f198.google.com
+ [209.85.166.198]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-116-F3aZemvIOrizMzRkvM_hLw-1; Mon, 04 Apr 2022 21:48:56 -0400
-X-MC-Unique: F3aZemvIOrizMzRkvM_hLw-1
-Received: by mail-il1-f199.google.com with SMTP id m3-20020a056e02158300b002b6e3d1f97cso7181907ilu.19
-        for <linux-kernel@vger.kernel.org>; Mon, 04 Apr 2022 18:48:56 -0700 (PDT)
+ us-mta-490--fqfR7a5PF-QmGErn5FBAQ-1; Mon, 04 Apr 2022 21:49:04 -0400
+X-MC-Unique: -fqfR7a5PF-QmGErn5FBAQ-1
+Received: by mail-il1-f198.google.com with SMTP id o17-20020a92c691000000b002c2c04aebe7so7201424ilg.8
+        for <linux-kernel@vger.kernel.org>; Mon, 04 Apr 2022 18:49:04 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=9Tho0jTi/mP2SxzzY9PiukQljtVmr59NjLeFBDKY3mg=;
-        b=3ygzHfw73x/LbAoxCzoKI3d7UiwMg/yDhzIoQ2spn3i/c0pOsCuwklI8u/UOoIM/mh
-         2Wu440nsFtpNyqJWZQDhn8u3SKCnYa88oI3YJa6W99CYXVXb3qdWxSRuVJLc9NlAsuM0
-         qfnB5FDyi1EOG/GyUK4rOK8CvT2qX/3NjxVmQ0FOBV/vLaF0qHBqoBu+jQKE0p6XQ4M8
-         G7vXKDJHvQ5bwpTjnNb2JIZCM2jW/Fp3M40dE1siO6BeiCXyLq2AQThng+1moHKZRz45
-         M6yDZ1FEfbDm0w/40CUG58w+f8qZVKISD3PBvPV56Ly3Z+LjugCiOSKTAInIaIKziczv
-         v+Hg==
-X-Gm-Message-State: AOAM532csGB5kwIJxbQ/tEemkxCNU0AflItFAVv4/SeqkyzhUXQ399dT
-        +BuP18qCn4QCZbshrF0D11NtYGumjhnY3Q5BtuWrnl6c+ZX0ldu0y7jtzC1UEL4Pl5cCWfAxOt0
-        YEI2z9t7+gG1R/M7KUMQd9aGAzHEJKZs7wGzt35H4mEJj0lU2VS6q/sebSiA+kEoIg89e0UJKjA
+        bh=cMJ3LqPsnbXMwjHxk9MsuTKHubQJUVkMzfk9UWY8MQ4=;
+        b=V37JTsiuXmt6HVhI/dSGTM12e9LjvHe2059rBZqWgWAEavYvMHgtR3tPPSJ/JkzW3M
+         AaXr/M0BZQkuiruS2vTYfEo0SxVvUgsaIGZMGtZTaQdFwkCstth0CWsBQHWKRCdPxJUl
+         lyylOxNPYda1buAP/J+WzOPEJZXcwgRbmNJpg7MQddMdU48+mLQ43mt75wDD5iXPnsCg
+         46cjiihyPw7cMMTWaHoXKH52lDQ9nXuMgiKXqha5htvibCdgz3ovHNrD5XoXmY/piyUb
+         9/epjN5rJs3e1uXJySVGbYT3y+2AcjjR3pH/32oV6Ys5l8dWLtvSRW9nqcFeoeWDTATG
+         XlAg==
+X-Gm-Message-State: AOAM530uobI3IjEu+nodRcxCLxEwQy1H0DdCP/Qxi1lCV1IJUMnSbY+z
+        C9ppKJx0Q8VzpmSg1IAZtUQlCNm4KajeydCB+/3hQJLfNNIx0XPEv76wZH3DpMWw6nN7YRwXQ7H
+        /chxDxKdetlXBCnJLrD8tGzfQ+7vtZct8op0FukAao87diUAXrRFfDVS3eaxI0AJF2z6E6P9ytQ
         ==
-X-Received: by 2002:a6b:e60a:0:b0:646:3e9e:172f with SMTP id g10-20020a6be60a000000b006463e9e172fmr604274ioh.1.1649123335833;
-        Mon, 04 Apr 2022 18:48:55 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwEUfWYkT5v8wLM/eubINNRKFmNMGPSIHFsXbNqMBzFCqBGDzRGSMNc6UHIgjk9FfldR5FQwA==
-X-Received: by 2002:a6b:e60a:0:b0:646:3e9e:172f with SMTP id g10-20020a6be60a000000b006463e9e172fmr604247ioh.1.1649123335505;
-        Mon, 04 Apr 2022 18:48:55 -0700 (PDT)
+X-Received: by 2002:a05:6602:2e10:b0:649:e2d4:3334 with SMTP id o16-20020a0566022e1000b00649e2d43334mr586232iow.210.1649123344085;
+        Mon, 04 Apr 2022 18:49:04 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJzbt1ibJTi0gvyMJwC5hy/Js4ILQPnWU9UGGKs5bKIIkDs9NeLq7C5AVpY51XCUy10wipducA==
+X-Received: by 2002:a05:6602:2e10:b0:649:e2d4:3334 with SMTP id o16-20020a0566022e1000b00649e2d43334mr586205iow.210.1649123343719;
+        Mon, 04 Apr 2022 18:49:03 -0700 (PDT)
 Received: from localhost.localdomain (cpec09435e3e0ee-cmc09435e3e0ec.cpe.net.cable.rogers.com. [99.241.198.116])
-        by smtp.gmail.com with ESMTPSA id k6-20020a6b4006000000b00649d7111ebasm7563860ioa.0.2022.04.04.18.48.54
+        by smtp.gmail.com with ESMTPSA id y8-20020a920908000000b002ca38acaa60sm2917919ilg.81.2022.04.04.18.49.02
         (version=TLS1_3 cipher=TLS_CHACHA20_POLY1305_SHA256 bits=256/256);
-        Mon, 04 Apr 2022 18:48:55 -0700 (PDT)
+        Mon, 04 Apr 2022 18:49:03 -0700 (PDT)
 From:   Peter Xu <peterx@redhat.com>
 To:     linux-kernel@vger.kernel.org, linux-mm@kvack.org
 Cc:     Mike Kravetz <mike.kravetz@oracle.com>,
@@ -70,9 +70,9 @@ Cc:     Mike Kravetz <mike.kravetz@oracle.com>,
         Andrew Morton <akpm@linux-foundation.org>,
         Axel Rasmussen <axelrasmussen@google.com>,
         Alistair Popple <apopple@nvidia.com>, peterx@redhat.com
-Subject: [PATCH v8 09/23] mm/shmem: Allows file-back mem to be uffd wr-protected on thps
-Date:   Mon,  4 Apr 2022 21:48:52 -0400
-Message-Id: <20220405014852.14413-1-peterx@redhat.com>
+Subject: [PATCH v8 12/23] mm/hugetlb: Hook page faults for uffd write protection
+Date:   Mon,  4 Apr 2022 21:49:01 -0400
+Message-Id: <20220405014901.14590-1-peterx@redhat.com>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <20220405014646.13522-1-peterx@redhat.com>
 References: <20220405014646.13522-1-peterx@redhat.com>
@@ -82,50 +82,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-We don't have "huge" version of pte markers, instead when necessary we split
-the thp.
+Hook up hugetlbfs_fault() with the capability to handle userfaultfd-wp faults.
 
-However split the thp is not enough, because file-backed thp is handled totally
-differently comparing to anonymous thps: rather than doing a real split, the
-thp pmd will simply got cleared in __split_huge_pmd_locked().
+We do this slightly earlier than hugetlb_cow() so that we can avoid taking some
+extra locks that we definitely don't need.
 
-That is not enough if e.g. when there is a thp covers range [0, 2M) but we want
-to wr-protect small page resides in [4K, 8K) range, because after
-__split_huge_pmd() returns, there will be a none pmd, and change_pmd_range()
-will just skip it right after the split.
-
-Here we leverage the previously introduced change_pmd_prepare() macro so that
-we'll populate the pmd with a pgtable page after the pmd split (in which
-process the pmd will be cleared for cases like shmem).  Then change_pte_range()
-will do all the rest for us by installing the uffd-wp pte marker at any none
-pte that we'd like to wr-protect.
-
+Reviewed-by: Mike Kravetz <mike.kravetz@oracle.com>
 Signed-off-by: Peter Xu <peterx@redhat.com>
 ---
- mm/mprotect.c | 9 ++++++++-
- 1 file changed, 8 insertions(+), 1 deletion(-)
+ mm/hugetlb.c | 20 ++++++++++++++++++++
+ 1 file changed, 20 insertions(+)
 
-diff --git a/mm/mprotect.c b/mm/mprotect.c
-index bd62d5938c6c..e0a567b66d07 100644
---- a/mm/mprotect.c
-+++ b/mm/mprotect.c
-@@ -333,8 +333,15 @@ static inline unsigned long change_pmd_range(struct vm_area_struct *vma,
- 		}
+diff --git a/mm/hugetlb.c b/mm/hugetlb.c
+index dd642cfc538b..82df0fcfedf9 100644
+--- a/mm/hugetlb.c
++++ b/mm/hugetlb.c
+@@ -5711,6 +5711,26 @@ vm_fault_t hugetlb_fault(struct mm_struct *mm, struct vm_area_struct *vma,
+ 	if (unlikely(!pte_same(entry, huge_ptep_get(ptep))))
+ 		goto out_ptl;
  
- 		if (is_swap_pmd(*pmd) || pmd_trans_huge(*pmd) || pmd_devmap(*pmd)) {
--			if (next - addr != HPAGE_PMD_SIZE) {
-+			if ((next - addr != HPAGE_PMD_SIZE) ||
-+			    uffd_wp_protect_file(vma, cp_flags)) {
- 				__split_huge_pmd(vma, pmd, addr, false, NULL);
-+				/*
-+				 * For file-backed, the pmd could have been
-+				 * cleared; make sure pmd populated if
-+				 * necessary, then fall-through to pte level.
-+				 */
-+				change_pmd_prepare(vma, pmd, cp_flags);
- 			} else {
- 				int nr_ptes = change_huge_pmd(vma, pmd, addr,
- 							      newprot, cp_flags);
++	/* Handle userfault-wp first, before trying to lock more pages */
++	if (userfaultfd_wp(vma) && huge_pte_uffd_wp(huge_ptep_get(ptep)) &&
++	    (flags & FAULT_FLAG_WRITE) && !huge_pte_write(entry)) {
++		struct vm_fault vmf = {
++			.vma = vma,
++			.address = haddr,
++			.real_address = address,
++			.flags = flags,
++		};
++
++		spin_unlock(ptl);
++		if (pagecache_page) {
++			unlock_page(pagecache_page);
++			put_page(pagecache_page);
++		}
++		mutex_unlock(&hugetlb_fault_mutex_table[hash]);
++		i_mmap_unlock_read(mapping);
++		return handle_userfault(&vmf, VM_UFFD_WP);
++	}
++
+ 	/*
+ 	 * hugetlb_wp() requires page locks of pte_page(entry) and
+ 	 * pagecache_page, so here we need take the former one
 -- 
 2.32.0
 
