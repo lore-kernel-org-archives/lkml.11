@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 09D08C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 44370C4167B
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:40:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356656AbiDEUf6 (ORCPT
+        id S1358856AbiDEUgS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 16:35:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55968 "EHLO
+        Tue, 5 Apr 2022 16:36:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47296 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345129AbiDEKkp (ORCPT
+        with ESMTP id S1349501AbiDEJt6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:40:45 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C717D2DD5F;
-        Tue,  5 Apr 2022 03:26:00 -0700 (PDT)
+        Tue, 5 Apr 2022 05:49:58 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E02B89B;
+        Tue,  5 Apr 2022 02:47:50 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 843F8B81C8B;
-        Tue,  5 Apr 2022 10:25:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E9156C385A0;
-        Tue,  5 Apr 2022 10:25:57 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 5DCCCCE1C90;
+        Tue,  5 Apr 2022 09:47:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 73263C385A3;
+        Tue,  5 Apr 2022 09:47:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649154358;
-        bh=fZ0+p4iMcwpif+8pcG9AucA+SY+U0ec5ESJny4FBwTk=;
+        s=korg; t=1649152067;
+        bh=AvslXiiGZCRFOeGrGZqo2rx705V5+cRos00EJU0PUxc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pzxjm+U0DN71T0VHGDWUFGWyJn10bR/g5MlvgMOtDxQxCBn5Zaf6SawSB8dWECP7B
-         tn4oFcyqRJEqhr9s73/+ITMRSi33zCi9rISiQystRkHCOtcCSDgNx2pE3LUun194Xj
-         xBm2hZWUo+NcPSPBQ4XOW2OdWPNQyLb1UOMiA9cA=
+        b=gOWe46uAWDXGbiGsj6/89e2cbBwCk5rwnEG6PNWsoyqBWG57rnrIYBSmhre/SjaQ7
+         UQ1fO6zJxBUkBqBh6xwjFRJ88FQ/Pg6g8KZjaqkqGG0Y8bLECQFHWLVTeQA/4wbMbn
+         UptkRSJpAl8HBqnSNeJ3gol9sXVG75JWHlnXC/cg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tom Rix <trix@redhat.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>
-Subject: [PATCH 5.10 551/599] can: mcp251xfd: mcp251xfd_register_get_dev_id(): fix return of error value
-Date:   Tue,  5 Apr 2022 09:34:05 +0200
-Message-Id: <20220405070315.236747699@linuxfoundation.org>
+        stable@vger.kernel.org, Yonghua Huang <yonghua.huang@intel.com>,
+        Fei Li <fei1.li@intel.com>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 643/913] virt: acrn: obtain pa from VMA with PFNMAP flag
+Date:   Tue,  5 Apr 2022 09:28:25 +0200
+Message-Id: <20220405070359.114200785@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,40 +49,68 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tom Rix <trix@redhat.com>
+From: Yonghua Huang <yonghua.huang@intel.com>
 
-commit fa7b514d2b2894e052b8e94c7a29feb98e90093f upstream.
+[ Upstream commit 8a6e85f75a83d16a71077e41f2720c691f432002 ]
 
-Clang static analysis reports this issue:
+ acrn_vm_ram_map can't pin the user pages with VM_PFNMAP flag
+ by calling get_user_pages_fast(), the PA(physical pages)
+ may be mapped by kernel driver and set PFNMAP flag.
 
-| mcp251xfd-core.c:1813:7: warning: The left operand
-|   of '&' is a garbage value
-|   FIELD_GET(MCP251XFD_REG_DEVID_ID_MASK, dev_id),
-|   ^                                      ~~~~~~
+ This patch fixes logic to setup EPT mapping for PFN mapped RAM region
+ by checking the memory attribute before adding EPT mapping for them.
 
-dev_id is set in a successful call to mcp251xfd_register_get_dev_id().
-Though the status of calls made by mcp251xfd_register_get_dev_id() are
-checked and handled, their status' are not returned. So return err.
-
-Fixes: 55e5b97f003e ("can: mcp25xxfd: add driver for Microchip MCP25xxFD SPI CAN")
-Link: https://lore.kernel.org/all/20220319153128.2164120-1-trix@redhat.com
-Signed-off-by: Tom Rix <trix@redhat.com>
-Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
+Fixes: 88f537d5e8dd ("virt: acrn: Introduce EPT mapping management")
+Signed-off-by: Yonghua Huang <yonghua.huang@intel.com>
+Signed-off-by: Fei Li <fei1.li@intel.com>
+Link: https://lore.kernel.org/r/20220228022212.419406-1-yonghua.huang@intel.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/can/spi/mcp251xfd/mcp251xfd-core.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/virt/acrn/mm.c | 24 ++++++++++++++++++++++++
+ 1 file changed, 24 insertions(+)
 
---- a/drivers/net/can/spi/mcp251xfd/mcp251xfd-core.c
-+++ b/drivers/net/can/spi/mcp251xfd/mcp251xfd-core.c
-@@ -2578,7 +2578,7 @@ mcp251xfd_register_get_dev_id(const stru
-  out_kfree_buf_rx:
- 	kfree(buf_rx);
+diff --git a/drivers/virt/acrn/mm.c b/drivers/virt/acrn/mm.c
+index c4f2e15c8a2b..3b1b1e7a844b 100644
+--- a/drivers/virt/acrn/mm.c
++++ b/drivers/virt/acrn/mm.c
+@@ -162,10 +162,34 @@ int acrn_vm_ram_map(struct acrn_vm *vm, struct acrn_vm_memmap *memmap)
+ 	void *remap_vaddr;
+ 	int ret, pinned;
+ 	u64 user_vm_pa;
++	unsigned long pfn;
++	struct vm_area_struct *vma;
  
--	return 0;
-+	return err;
- }
+ 	if (!vm || !memmap)
+ 		return -EINVAL;
  
- #define MCP251XFD_QUIRK_ACTIVE(quirk) \
++	mmap_read_lock(current->mm);
++	vma = vma_lookup(current->mm, memmap->vma_base);
++	if (vma && ((vma->vm_flags & VM_PFNMAP) != 0)) {
++		if ((memmap->vma_base + memmap->len) > vma->vm_end) {
++			mmap_read_unlock(current->mm);
++			return -EINVAL;
++		}
++
++		ret = follow_pfn(vma, memmap->vma_base, &pfn);
++		mmap_read_unlock(current->mm);
++		if (ret < 0) {
++			dev_dbg(acrn_dev.this_device,
++				"Failed to lookup PFN at VMA:%pK.\n", (void *)memmap->vma_base);
++			return ret;
++		}
++
++		return acrn_mm_region_add(vm, memmap->user_vm_pa,
++			 PFN_PHYS(pfn), memmap->len,
++			 ACRN_MEM_TYPE_WB, memmap->attr);
++	}
++	mmap_read_unlock(current->mm);
++
+ 	/* Get the page number of the map region */
+ 	nr_pages = memmap->len >> PAGE_SHIFT;
+ 	pages = vzalloc(nr_pages * sizeof(struct page *));
+-- 
+2.34.1
+
 
 
