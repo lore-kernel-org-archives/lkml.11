@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 217C9C3527A
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 72ED5C4707F
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 10:30:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357230AbiDEKZ5 (ORCPT
+        id S1357438AbiDEK0W (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 06:25:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44064 "EHLO
+        Tue, 5 Apr 2022 06:26:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45836 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241183AbiDEIcx (ORCPT
+        with ESMTP id S241133AbiDEIcv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:32:53 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD7711705F;
-        Tue,  5 Apr 2022 01:29:09 -0700 (PDT)
+        Tue, 5 Apr 2022 04:32:51 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CF31E7;
+        Tue,  5 Apr 2022 01:28:30 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4DACA609D0;
-        Tue,  5 Apr 2022 08:29:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5BB57C385A4;
-        Tue,  5 Apr 2022 08:29:08 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CE141B81BB1;
+        Tue,  5 Apr 2022 08:28:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3ED98C385A1;
+        Tue,  5 Apr 2022 08:28:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649147348;
-        bh=NbhZxulE4dNDdM0dc5jITvejFZIK3spTYPiD1mxRs+A=;
+        s=korg; t=1649147307;
+        bh=vnpu9QTCzpmy20Jhz1m5rSkro66moiw7kneSHf7UJ3U=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=G9oXcp0bwRqnovLEo/9S5DT2BUrIl+8qv8FFAV3IJWAC6IXQ0fqxxR5N3sR21U9mI
-         gfGd+FTow+iBCX7j7gUgtLRNaTYPfKZort1y74IFBQUDu5BYYCF2AtostTXLfV+MjQ
-         NmAq5+UuVbjeiskeTPVul3gjse28rdvj7Q3tnKZQ=
+        b=WjyYnAhI7rZ6zOtYEbjqpDJEyGZLXza7P9LjVeEk+Uj9ZKhDFMhC4XVDzx2jbB8V/
+         nzyU1VYDriJa+G5CFofWzxrk+UYzXouu4X+eyaSLmwIDRN1BCyAOFayHEwAxUyi3IC
+         YGBwAs0fwqnfdzvLegGwTbT0AQHPh6KB4mBf0BXU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Namhyung Kim <namhyung@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Yonghong Song <yhs@fb.com>, Eugene Loh <eugene.loh@oracle.com>
-Subject: [PATCH 5.17 1085/1126] bpf: Adjust BPF stack helper functions to accommodate skip > 0
-Date:   Tue,  5 Apr 2022 09:30:32 +0200
-Message-Id: <20220405070439.298622313@linuxfoundation.org>
+        stable@vger.kernel.org, Marc Zyngier <maz@kernel.org>,
+        Sven Schnelle <svens@linux.ibm.com>,
+        "Steven Rostedt (Google)" <rostedt@goodmis.org>
+Subject: [PATCH 5.17 1076/1126] tracing: Have type enum modifications copy the strings
+Date:   Tue,  5 Apr 2022 09:30:23 +0200
+Message-Id: <20220405070439.038297302@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -50,201 +50,156 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Namhyung Kim <namhyung@kernel.org>
+From: Steven Rostedt (Google) <rostedt@goodmis.org>
 
-commit ee2a098851bfbe8bcdd964c0121f4246f00ff41e upstream.
+commit 795301d3c28996219d555023ac6863401b6076bc upstream.
 
-Let's say that the caller has storage for num_elem stack frames.  Then,
-the BPF stack helper functions walk the stack for only num_elem frames.
-This means that if skip > 0, one keeps only 'num_elem - skip' frames.
+When an enum is used in the visible parts of a trace event that is
+exported to user space, the user space applications like perf and
+trace-cmd do not have a way to know what the value of the enum is. To
+solve this, at boot up (or module load) the printk formats are modified to
+replace the enum with their numeric value in the string output.
 
-This is because it sets init_nr in the perf_callchain_entry to the end
-of the buffer to save num_elem entries only.  I believe it was because
-the perf callchain code unwound the stack frames until it reached the
-global max size (sysctl_perf_event_max_stack).
+Array fields of the event are defined by [<nr-elements>] in the type
+portion of the format file so that the user space parsers can correctly
+parse the array into the appropriate size chunks. But in some trace
+events, an enum is used in defining the size of the array, which once
+again breaks the parsing of user space tooling.
 
-However it now has perf_callchain_entry_ctx.max_stack to limit the
-iteration locally.  This simplifies the code to handle init_nr in the
-BPF callstack entries and removes the confusion with the perf_event's
-__PERF_SAMPLE_CALLCHAIN_EARLY which sets init_nr to 0.
+This was solved the same way as the print formats were, but it modified
+the type strings of the trace event. This caused crashes in some
+architectures because, as supposed to the print string, is a const string
+value. This was not detected on x86, as it appears that const strings are
+still writable (at least in boot up), but other architectures this is not
+the case, and writing to a const string will cause a kernel fault.
 
-Also change the comment on bpf_get_stack() in the header file to be
-more explicit what the return value means.
+To fix this, use kstrdup() to copy the type before modifying it. If the
+trace event is for the core kernel there's no need to free it because the
+string will be in use for the life of the machine being on line. For
+modules, create a link list to store all the strings being allocated for
+modules and when the module is removed, free them.
 
-Fixes: c195651e565a ("bpf: add bpf_get_stack helper")
-Signed-off-by: Namhyung Kim <namhyung@kernel.org>
-Signed-off-by: Alexei Starovoitov <ast@kernel.org>
-Acked-by: Yonghong Song <yhs@fb.com>
-Link: https://lore.kernel.org/bpf/30a7b5d5-6726-1cc2-eaee-8da2828a9a9c@oracle.com
-Link: https://lore.kernel.org/bpf/20220314182042.71025-1-namhyung@kernel.org
+Link: https://lore.kernel.org/all/yt9dr1706b4i.fsf@linux.ibm.com/
+Link: https://lkml.kernel.org/r/20220318153432.3984b871@gandalf.local.home
+
+Tested-by: Marc Zyngier <maz@kernel.org>
+Tested-by: Sven Schnelle <svens@linux.ibm.com>
+Reported-by: Sven Schnelle <svens@linux.ibm.com>
+Fixes: b3bc8547d3be ("tracing: Have TRACE_DEFINE_ENUM affect trace event types as well")
+Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-
-Based-on-patch-by: Eugene Loh <eugene.loh@oracle.com>
 ---
- include/uapi/linux/bpf.h |    8 +++---
- kernel/bpf/stackmap.c    |   56 ++++++++++++++++++++---------------------------
- 2 files changed, 28 insertions(+), 36 deletions(-)
+ kernel/trace/trace_events.c |   62 +++++++++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 61 insertions(+), 1 deletion(-)
 
---- a/include/uapi/linux/bpf.h
-+++ b/include/uapi/linux/bpf.h
-@@ -2975,8 +2975,8 @@ union bpf_attr {
-  *
-  * 			# sysctl kernel.perf_event_max_stack=<new value>
-  * 	Return
-- * 		A non-negative value equal to or less than *size* on success,
-- * 		or a negative error in case of failure.
-+ * 		The non-negative copied *buf* length equal to or less than
-+ * 		*size* on success, or a negative error in case of failure.
-  *
-  * long bpf_skb_load_bytes_relative(const void *skb, u32 offset, void *to, u32 len, u32 start_header)
-  * 	Description
-@@ -4279,8 +4279,8 @@ union bpf_attr {
-  *
-  *			# sysctl kernel.perf_event_max_stack=<new value>
-  *	Return
-- *		A non-negative value equal to or less than *size* on success,
-- *		or a negative error in case of failure.
-+ * 		The non-negative copied *buf* length equal to or less than
-+ * 		*size* on success, or a negative error in case of failure.
-  *
-  * long bpf_load_hdr_opt(struct bpf_sock_ops *skops, void *searchby_res, u32 len, u64 flags)
-  *	Description
---- a/kernel/bpf/stackmap.c
-+++ b/kernel/bpf/stackmap.c
-@@ -166,7 +166,7 @@ static void stack_map_get_build_id_offse
+--- a/kernel/trace/trace_events.c
++++ b/kernel/trace/trace_events.c
+@@ -40,6 +40,14 @@ static LIST_HEAD(ftrace_generic_fields);
+ static LIST_HEAD(ftrace_common_fields);
+ static bool eventdir_initialized;
+ 
++static LIST_HEAD(module_strings);
++
++struct module_string {
++	struct list_head	next;
++	struct module		*module;
++	char			*str;
++};
++
+ #define GFP_TRACE (GFP_KERNEL | __GFP_ZERO)
+ 
+ static struct kmem_cache *field_cachep;
+@@ -2637,14 +2645,40 @@ static void update_event_printk(struct t
+ 	}
  }
  
- static struct perf_callchain_entry *
--get_callchain_entry_for_task(struct task_struct *task, u32 init_nr)
-+get_callchain_entry_for_task(struct task_struct *task, u32 max_depth)
++static void add_str_to_module(struct module *module, char *str)
++{
++	struct module_string *modstr;
++
++	modstr = kmalloc(sizeof(*modstr), GFP_KERNEL);
++
++	/*
++	 * If we failed to allocate memory here, then we'll just
++	 * let the str memory leak when the module is removed.
++	 * If this fails to allocate, there's worse problems than
++	 * a leaked string on module removal.
++	 */
++	if (WARN_ON_ONCE(!modstr))
++		return;
++
++	modstr->module = module;
++	modstr->str = str;
++
++	list_add(&modstr->next, &module_strings);
++}
++
+ static void update_event_fields(struct trace_event_call *call,
+ 				struct trace_eval_map *map)
  {
- #ifdef CONFIG_STACKTRACE
- 	struct perf_callchain_entry *entry;
-@@ -177,9 +177,8 @@ get_callchain_entry_for_task(struct task
- 	if (!entry)
- 		return NULL;
+ 	struct ftrace_event_field *field;
+ 	struct list_head *head;
+ 	char *ptr;
++	char *str;
+ 	int len = strlen(map->eval_string);
  
--	entry->nr = init_nr +
--		stack_trace_save_tsk(task, (unsigned long *)(entry->ip + init_nr),
--				     sysctl_perf_event_max_stack - init_nr, 0);
-+	entry->nr = stack_trace_save_tsk(task, (unsigned long *)entry->ip,
-+					 max_depth, 0);
++	/* Dynamic events should never have field maps */
++	if (WARN_ON_ONCE(call->flags & TRACE_EVENT_FL_DYNAMIC))
++		return;
++
+ 	head = trace_get_fields(call);
+ 	list_for_each_entry(field, head, link) {
+ 		ptr = strchr(field->type, '[');
+@@ -2658,9 +2692,26 @@ static void update_event_fields(struct t
+ 		if (strncmp(map->eval_string, ptr, len) != 0)
+ 			continue;
  
- 	/* stack_trace_save_tsk() works on unsigned long array, while
- 	 * perf_callchain_entry uses u64 array. For 32-bit systems, it is
-@@ -191,7 +190,7 @@ get_callchain_entry_for_task(struct task
- 		int i;
- 
- 		/* copy data from the end to avoid using extra buffer */
--		for (i = entry->nr - 1; i >= (int)init_nr; i--)
-+		for (i = entry->nr - 1; i >= 0; i--)
- 			to[i] = (u64)(from[i]);
++		str = kstrdup(field->type, GFP_KERNEL);
++		if (WARN_ON_ONCE(!str))
++			return;
++		ptr = str + (ptr - field->type);
+ 		ptr = eval_replace(ptr, map, len);
+ 		/* enum/sizeof string smaller than value */
+-		WARN_ON_ONCE(!ptr);
++		if (WARN_ON_ONCE(!ptr)) {
++			kfree(str);
++			continue;
++		}
++
++		/*
++		 * If the event is part of a module, then we need to free the string
++		 * when the module is removed. Otherwise, it will stay allocated
++		 * until a reboot.
++		 */
++		if (call->module)
++			add_str_to_module(call->module, str);
++
++		field->type = str;
  	}
+ }
  
-@@ -208,27 +207,19 @@ static long __bpf_get_stackid(struct bpf
+@@ -2885,6 +2936,7 @@ static void trace_module_add_events(stru
+ static void trace_module_remove_events(struct module *mod)
  {
- 	struct bpf_stack_map *smap = container_of(map, struct bpf_stack_map, map);
- 	struct stack_map_bucket *bucket, *new_bucket, *old_bucket;
--	u32 max_depth = map->value_size / stack_map_data_size(map);
--	/* stack_map_alloc() checks that max_depth <= sysctl_perf_event_max_stack */
--	u32 init_nr = sysctl_perf_event_max_stack - max_depth;
- 	u32 skip = flags & BPF_F_SKIP_FIELD_MASK;
- 	u32 hash, id, trace_nr, trace_len;
- 	bool user = flags & BPF_F_USER_STACK;
- 	u64 *ips;
- 	bool hash_matches;
+ 	struct trace_event_call *call, *p;
++	struct module_string *modstr, *m;
  
--	/* get_perf_callchain() guarantees that trace->nr >= init_nr
--	 * and trace-nr <= sysctl_perf_event_max_stack, so trace_nr <= max_depth
--	 */
--	trace_nr = trace->nr - init_nr;
--
--	if (trace_nr <= skip)
-+	if (trace->nr <= skip)
- 		/* skipping more than usable stack trace */
- 		return -EFAULT;
+ 	down_write(&trace_event_sem);
+ 	list_for_each_entry_safe(call, p, &ftrace_events, list) {
+@@ -2893,6 +2945,14 @@ static void trace_module_remove_events(s
+ 		if (call->module == mod)
+ 			__trace_remove_event_call(call);
+ 	}
++	/* Check for any strings allocade for this module */
++	list_for_each_entry_safe(modstr, m, &module_strings, next) {
++		if (modstr->module != mod)
++			continue;
++		list_del(&modstr->next);
++		kfree(modstr->str);
++		kfree(modstr);
++	}
+ 	up_write(&trace_event_sem);
  
--	trace_nr -= skip;
-+	trace_nr = trace->nr - skip;
- 	trace_len = trace_nr * sizeof(u64);
--	ips = trace->ip + skip + init_nr;
-+	ips = trace->ip + skip;
- 	hash = jhash2((u32 *)ips, trace_len / sizeof(u32), 0);
- 	id = hash & (smap->n_buckets - 1);
- 	bucket = READ_ONCE(smap->buckets[id]);
-@@ -285,8 +276,7 @@ BPF_CALL_3(bpf_get_stackid, struct pt_re
- 	   u64, flags)
- {
- 	u32 max_depth = map->value_size / stack_map_data_size(map);
--	/* stack_map_alloc() checks that max_depth <= sysctl_perf_event_max_stack */
--	u32 init_nr = sysctl_perf_event_max_stack - max_depth;
-+	u32 skip = flags & BPF_F_SKIP_FIELD_MASK;
- 	bool user = flags & BPF_F_USER_STACK;
- 	struct perf_callchain_entry *trace;
- 	bool kernel = !user;
-@@ -295,8 +285,12 @@ BPF_CALL_3(bpf_get_stackid, struct pt_re
- 			       BPF_F_FAST_STACK_CMP | BPF_F_REUSE_STACKID)))
- 		return -EINVAL;
- 
--	trace = get_perf_callchain(regs, init_nr, kernel, user,
--				   sysctl_perf_event_max_stack, false, false);
-+	max_depth += skip;
-+	if (max_depth > sysctl_perf_event_max_stack)
-+		max_depth = sysctl_perf_event_max_stack;
-+
-+	trace = get_perf_callchain(regs, 0, kernel, user, max_depth,
-+				   false, false);
- 
- 	if (unlikely(!trace))
- 		/* couldn't fetch the stack trace */
-@@ -387,7 +381,7 @@ static long __bpf_get_stack(struct pt_re
- 			    struct perf_callchain_entry *trace_in,
- 			    void *buf, u32 size, u64 flags)
- {
--	u32 init_nr, trace_nr, copy_len, elem_size, num_elem;
-+	u32 trace_nr, copy_len, elem_size, num_elem, max_depth;
- 	bool user_build_id = flags & BPF_F_USER_BUILD_ID;
- 	u32 skip = flags & BPF_F_SKIP_FIELD_MASK;
- 	bool user = flags & BPF_F_USER_STACK;
-@@ -412,30 +406,28 @@ static long __bpf_get_stack(struct pt_re
- 		goto err_fault;
- 
- 	num_elem = size / elem_size;
--	if (sysctl_perf_event_max_stack < num_elem)
--		init_nr = 0;
--	else
--		init_nr = sysctl_perf_event_max_stack - num_elem;
-+	max_depth = num_elem + skip;
-+	if (sysctl_perf_event_max_stack < max_depth)
-+		max_depth = sysctl_perf_event_max_stack;
- 
- 	if (trace_in)
- 		trace = trace_in;
- 	else if (kernel && task)
--		trace = get_callchain_entry_for_task(task, init_nr);
-+		trace = get_callchain_entry_for_task(task, max_depth);
- 	else
--		trace = get_perf_callchain(regs, init_nr, kernel, user,
--					   sysctl_perf_event_max_stack,
-+		trace = get_perf_callchain(regs, 0, kernel, user, max_depth,
- 					   false, false);
- 	if (unlikely(!trace))
- 		goto err_fault;
- 
--	trace_nr = trace->nr - init_nr;
--	if (trace_nr < skip)
-+	if (trace->nr < skip)
- 		goto err_fault;
- 
--	trace_nr -= skip;
-+	trace_nr = trace->nr - skip;
- 	trace_nr = (trace_nr <= num_elem) ? trace_nr : num_elem;
- 	copy_len = trace_nr * elem_size;
--	ips = trace->ip + skip + init_nr;
-+
-+	ips = trace->ip + skip;
- 	if (user && user_build_id)
- 		stack_map_get_build_id_offset(buf, ips, trace_nr, user);
- 	else
+ 	/*
 
 
