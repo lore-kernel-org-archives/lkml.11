@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D4C1DC4167D
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:54:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 23F37C4167E
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:54:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378271AbiDEUxU (ORCPT
+        id S1379070AbiDEUxq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 16:53:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39896 "EHLO
+        Tue, 5 Apr 2022 16:53:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39416 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349494AbiDEJt5 (ORCPT
+        with ESMTP id S1348908AbiDEJsp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:49:57 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53E3CDE;
-        Tue,  5 Apr 2022 02:47:35 -0700 (PDT)
+        Tue, 5 Apr 2022 05:48:45 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03E73ED9CF;
+        Tue,  5 Apr 2022 02:37:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E35FB61577;
-        Tue,  5 Apr 2022 09:47:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0089AC385A2;
-        Tue,  5 Apr 2022 09:47:33 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B0B7FB81C85;
+        Tue,  5 Apr 2022 09:37:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0916FC385A2;
+        Tue,  5 Apr 2022 09:37:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649152054;
-        bh=JmaNtigfUnMcwsF3xKmTQqdXp5ARBWiDqFS0XyEvciQ=;
+        s=korg; t=1649151433;
+        bh=knSZJFIMRWinjbhcAEm67BfNfcppWL2o4SDxmfc/p/8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gXx1GpuR4KcPx/DoIgn3G4W0MWNO2Fx8gtoXi5ngRhqt0aGer1Uou+6IpA3X7Bosv
-         z6d45PWaQ3Aamx85oSiS/UkTGvc5OqMgOHvoxY0LzSCR2vaI0ulZAs1LXtZtCzdmIW
-         oQGpp768z5sHDmyCp5HN5TdzQ6Uv9yajHGLC++A8=
+        b=AVingTsL9FAcnkcJSwYqbXKqrmK7xfDtEq7msxkEjDBdUda5xuJ3YjHg6CDuYt/9s
+         LRoUNAbq78oGtfgSZqkC6wcl5ZkUFaqLux2qBBP7cqGAZRE1/DDWe5MeTWb/0ppdAE
+         X8kM18Myti/FHBJ2MEojVv51ZF4XIgfQYbMXe3IE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
+        stable@vger.kernel.org,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 638/913] pinctrl: nomadik: Add missing of_node_put() in nmk_pinctrl_probe
-Date:   Tue,  5 Apr 2022 09:28:20 +0200
-Message-Id: <20220405070358.964669519@linuxfoundation.org>
+Subject: [PATCH 5.15 374/913] drm/meson: osd_afbcd: Add an exit callback to struct meson_afbcd_ops
+Date:   Tue,  5 Apr 2022 09:23:56 +0200
+Message-Id: <20220405070351.057399319@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
 References: <20220405070339.801210740@linuxfoundation.org>
@@ -50,39 +51,142 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
 
-[ Upstream commit c09ac191b1f97cfa06f394dbfd7a5db07986cefc ]
+[ Upstream commit 04b8a5d9cfd171f65df75f444b5617a372649edd ]
 
-This node pointer is returned by of_parse_phandle() with refcount
-incremented in this function. Calling of_node_put() to avoid
-the refcount leak.
+Use this to simplify the driver shutdown. It will also come handy when
+fixing the error handling in meson_drv_bind_master().
 
-Fixes: 32e67eee670e ("pinctrl: nomadik: Allow prcm_base to be extracted from Device Tree")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Link: https://lore.kernel.org/r/20220307115116.25316-1-linmq006@gmail.com
-Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Fixes: d1b5e41e13a7e9 ("drm/meson: Add AFBCD module driver")
+Acked-by: Neil Armstrong <narmstrong@baylibre.com>
+Signed-off-by: Neil Armstrong <narmstrong@baylibre.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20211230235515.1627522-2-martin.blumenstingl@googlemail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pinctrl/nomadik/pinctrl-nomadik.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/gpu/drm/meson/meson_drv.c       |  6 ++--
+ drivers/gpu/drm/meson/meson_osd_afbcd.c | 41 ++++++++++++++++---------
+ drivers/gpu/drm/meson/meson_osd_afbcd.h |  1 +
+ 3 files changed, 30 insertions(+), 18 deletions(-)
 
-diff --git a/drivers/pinctrl/nomadik/pinctrl-nomadik.c b/drivers/pinctrl/nomadik/pinctrl-nomadik.c
-index 39828e9c3120..4757bf964d3c 100644
---- a/drivers/pinctrl/nomadik/pinctrl-nomadik.c
-+++ b/drivers/pinctrl/nomadik/pinctrl-nomadik.c
-@@ -1883,8 +1883,10 @@ static int nmk_pinctrl_probe(struct platform_device *pdev)
- 	}
+diff --git a/drivers/gpu/drm/meson/meson_drv.c b/drivers/gpu/drm/meson/meson_drv.c
+index bc0d60df04ae..62846af2f5e5 100644
+--- a/drivers/gpu/drm/meson/meson_drv.c
++++ b/drivers/gpu/drm/meson/meson_drv.c
+@@ -381,10 +381,8 @@ static void meson_drv_unbind(struct device *dev)
+ 	free_irq(priv->vsync_irq, drm);
+ 	drm_dev_put(drm);
  
- 	prcm_np = of_parse_phandle(np, "prcm", 0);
--	if (prcm_np)
-+	if (prcm_np) {
- 		npct->prcm_base = of_iomap(prcm_np, 0);
-+		of_node_put(prcm_np);
-+	}
- 	if (!npct->prcm_base) {
- 		if (version == PINCTRL_NMK_STN8815) {
- 			dev_info(&pdev->dev,
+-	if (priv->afbcd.ops) {
+-		priv->afbcd.ops->reset(priv);
+-		meson_rdma_free(priv);
+-	}
++	if (priv->afbcd.ops)
++		priv->afbcd.ops->exit(priv);
+ }
+ 
+ static const struct component_master_ops meson_drv_master_ops = {
+diff --git a/drivers/gpu/drm/meson/meson_osd_afbcd.c b/drivers/gpu/drm/meson/meson_osd_afbcd.c
+index ffc6b584dbf8..0cdbe899402f 100644
+--- a/drivers/gpu/drm/meson/meson_osd_afbcd.c
++++ b/drivers/gpu/drm/meson/meson_osd_afbcd.c
+@@ -79,11 +79,6 @@ static bool meson_gxm_afbcd_supported_fmt(u64 modifier, uint32_t format)
+ 	return meson_gxm_afbcd_pixel_fmt(modifier, format) >= 0;
+ }
+ 
+-static int meson_gxm_afbcd_init(struct meson_drm *priv)
+-{
+-	return 0;
+-}
+-
+ static int meson_gxm_afbcd_reset(struct meson_drm *priv)
+ {
+ 	writel_relaxed(VIU_SW_RESET_OSD1_AFBCD,
+@@ -93,6 +88,16 @@ static int meson_gxm_afbcd_reset(struct meson_drm *priv)
+ 	return 0;
+ }
+ 
++static int meson_gxm_afbcd_init(struct meson_drm *priv)
++{
++	return 0;
++}
++
++static void meson_gxm_afbcd_exit(struct meson_drm *priv)
++{
++	meson_gxm_afbcd_reset(priv);
++}
++
+ static int meson_gxm_afbcd_enable(struct meson_drm *priv)
+ {
+ 	writel_relaxed(FIELD_PREP(OSD1_AFBCD_ID_FIFO_THRD, 0x40) |
+@@ -172,6 +177,7 @@ static int meson_gxm_afbcd_setup(struct meson_drm *priv)
+ 
+ struct meson_afbcd_ops meson_afbcd_gxm_ops = {
+ 	.init = meson_gxm_afbcd_init,
++	.exit = meson_gxm_afbcd_exit,
+ 	.reset = meson_gxm_afbcd_reset,
+ 	.enable = meson_gxm_afbcd_enable,
+ 	.disable = meson_gxm_afbcd_disable,
+@@ -269,6 +275,18 @@ static bool meson_g12a_afbcd_supported_fmt(u64 modifier, uint32_t format)
+ 	return meson_g12a_afbcd_pixel_fmt(modifier, format) >= 0;
+ }
+ 
++static int meson_g12a_afbcd_reset(struct meson_drm *priv)
++{
++	meson_rdma_reset(priv);
++
++	meson_rdma_writel_sync(priv, VIU_SW_RESET_G12A_AFBC_ARB |
++			       VIU_SW_RESET_G12A_OSD1_AFBCD,
++			       VIU_SW_RESET);
++	meson_rdma_writel_sync(priv, 0, VIU_SW_RESET);
++
++	return 0;
++}
++
+ static int meson_g12a_afbcd_init(struct meson_drm *priv)
+ {
+ 	int ret;
+@@ -286,16 +304,10 @@ static int meson_g12a_afbcd_init(struct meson_drm *priv)
+ 	return 0;
+ }
+ 
+-static int meson_g12a_afbcd_reset(struct meson_drm *priv)
++static void meson_g12a_afbcd_exit(struct meson_drm *priv)
+ {
+-	meson_rdma_reset(priv);
+-
+-	meson_rdma_writel_sync(priv, VIU_SW_RESET_G12A_AFBC_ARB |
+-			       VIU_SW_RESET_G12A_OSD1_AFBCD,
+-			       VIU_SW_RESET);
+-	meson_rdma_writel_sync(priv, 0, VIU_SW_RESET);
+-
+-	return 0;
++	meson_g12a_afbcd_reset(priv);
++	meson_rdma_free(priv);
+ }
+ 
+ static int meson_g12a_afbcd_enable(struct meson_drm *priv)
+@@ -380,6 +392,7 @@ static int meson_g12a_afbcd_setup(struct meson_drm *priv)
+ 
+ struct meson_afbcd_ops meson_afbcd_g12a_ops = {
+ 	.init = meson_g12a_afbcd_init,
++	.exit = meson_g12a_afbcd_exit,
+ 	.reset = meson_g12a_afbcd_reset,
+ 	.enable = meson_g12a_afbcd_enable,
+ 	.disable = meson_g12a_afbcd_disable,
+diff --git a/drivers/gpu/drm/meson/meson_osd_afbcd.h b/drivers/gpu/drm/meson/meson_osd_afbcd.h
+index 5e5523304f42..e77ddeb6416f 100644
+--- a/drivers/gpu/drm/meson/meson_osd_afbcd.h
++++ b/drivers/gpu/drm/meson/meson_osd_afbcd.h
+@@ -14,6 +14,7 @@
+ 
+ struct meson_afbcd_ops {
+ 	int (*init)(struct meson_drm *priv);
++	void (*exit)(struct meson_drm *priv);
+ 	int (*reset)(struct meson_drm *priv);
+ 	int (*enable)(struct meson_drm *priv);
+ 	int (*disable)(struct meson_drm *priv);
 -- 
 2.34.1
 
