@@ -2,155 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B01DC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 05:43:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 47E72C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 05:43:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229912AbiDEFpI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 01:45:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34260 "EHLO
+        id S229928AbiDEFpY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 01:45:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35326 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229657AbiDEFpH (ORCPT
+        with ESMTP id S229731AbiDEFpU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 01:45:07 -0400
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 456AC7D036;
-        Mon,  4 Apr 2022 22:43:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649137389; x=1680673389;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=QkhwjM4NOVGIGV18viP88LLCyv8YTx7E+6w6ZCZlrFY=;
-  b=YY6vRpGMaD3wmxes0B2k3Ff1GdkZEuxfXjvj65kyhYKQIMPtG5h/ipGs
-   WMqEiuU9vuVRMSKEMJ1WBjK+xqtum4BnDwh0mkOROaBHwnoXW8DBEbskj
-   yxiZvn41A6datIvHfHOnMqSdXUoz5WptBEnCnqo2lqx6jzXFvihLJGmsW
-   lwgBgpNY3V5xGeA3mlN++VJ8IQp3fogTJdDDfwVNwrcwthp+PNBMpnrkV
-   03BMZLE1z1PKieKd4z6GPXjjGqTe7gGQ90vTPECEydDvr9KQNk4tk81SX
-   6AIpUBU/CfcBLD0hQjp2h+I4PBItn+4dOoclAb+u3H7f/4CmN+5amYqgW
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10307"; a="260366446"
-X-IronPort-AV: E=Sophos;i="5.90,235,1643702400"; 
-   d="scan'208";a="260366446"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Apr 2022 22:43:08 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,235,1643702400"; 
-   d="scan'208";a="523857444"
-Received: from yilunxu-optiplex-7050.sh.intel.com (HELO localhost) ([10.239.159.135])
-  by orsmga006.jf.intel.com with ESMTP; 04 Apr 2022 22:43:06 -0700
-Date:   Tue, 5 Apr 2022 13:35:47 +0800
-From:   Xu Yilun <yilun.xu@intel.com>
-To:     Nava kishore Manne <nava.manne@xilinx.com>
-Cc:     mdf@kernel.org, hao.wu@intel.com, trix@redhat.com,
-        michal.simek@xilinx.com, linux-fpga@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        git@xilinx.com
-Subject: Re: [PATCH v3 5/5] fpga: fpga-region: Add missing kernel-doc
- description
-Message-ID: <20220405053547.GA249845@yilunxu-OptiPlex-7050>
-References: <20220403051641.3867610-1-nava.manne@xilinx.com>
- <20220403051641.3867610-6-nava.manne@xilinx.com>
+        Tue, 5 Apr 2022 01:45:20 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0EE417F239;
+        Mon,  4 Apr 2022 22:43:23 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9B54261138;
+        Tue,  5 Apr 2022 05:43:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8B612C340EE;
+        Tue,  5 Apr 2022 05:43:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649137402;
+        bh=sYFlsSIWnWY7H6pXl64UUXZKTyvh2XfqGMJOM5IlQgc=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=fcp+rxuW3kUhrT6QyWAoWbVm4gtx9v6BPIBnRjhjNOWlk+PBQBEZq7U+8GTSJmqi6
+         O1yMuk569h4MA00+xc8GC6bj8yJvWHlBNLNa17/FMWGwLaHe6eUDrxeFWtIbqbeoe2
+         /YFEdgjmtbULiQelaDiH+dN85wYw6G8xBoNi6tVJ8m0bBzMwR0FesakeprBPHK0V3P
+         vE9NLKMEb3UveWniUIBkqPzY+dECo7GWpw8Br2Xrz1w6G+QP/GfCjZRuzxYi0bSu8E
+         yw6AW1mc+F+rgEdKcAsllPObIToNnrzM6er3UxBbQk+F6K1hANQQoc7lNACvyFgKYG
+         xe48pp/+sL5tw==
+Date:   Tue, 5 Apr 2022 08:43:17 +0300
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Saeed Mahameed <saeed@kernel.org>
+Cc:     Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+        Jason Gunthorpe <jgg@nvidia.com>, linux-kernel@vger.kernel.org,
+        linux-rdma@vger.kernel.org, netdev@vger.kernel.org,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Tariq Toukan <tariqt@nvidia.com>
+Subject: Re: [PATCH mlx5-next 4/5] net/mlx5: Remove tls vs. ktls separation
+ as it is the same
+Message-ID: <YkvW9SNJeb5VPmeg@unreal>
+References: <cover.1649073691.git.leonro@nvidia.com>
+ <67e596599edcffb0de43f26551208dfd34ac777e.1649073691.git.leonro@nvidia.com>
+ <20220405003322.afko7uo527w5j3zu@sx1>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220403051641.3867610-6-nava.manne@xilinx.com>
+In-Reply-To: <20220405003322.afko7uo527w5j3zu@sx1>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Apr 03, 2022 at 10:46:41AM +0530, Nava kishore Manne wrote:
-> Fixed the warnings: No description found for return value of 'xxx'
+On Mon, Apr 04, 2022 at 05:33:22PM -0700, Saeed Mahameed wrote:
+> On 04 Apr 15:08, Leon Romanovsky wrote:
+> > From: Leon Romanovsky <leonro@nvidia.com>
+> > 
+> > After removal FPGA TLS, we can remove tls->ktls indirection too,
+> > as it is the same thing.
+> > 
+> > Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
+> > Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
+> > ---
+> > .../net/ethernet/mellanox/mlx5/core/Makefile  |  2 +-
+> > .../ethernet/mellanox/mlx5/core/en/params.c   |  2 +-
+> > .../mellanox/mlx5/core/en_accel/en_accel.h    | 11 +--
+> > .../mellanox/mlx5/core/en_accel/ktls.c        | 22 ++++-
+> > .../mellanox/mlx5/core/en_accel/ktls.h        | 32 +++++++
+> > .../mellanox/mlx5/core/en_accel/ktls_rx.c     |  2 +-
+> > .../en_accel/{tls_stats.c => ktls_stats.c}    | 38 ++++-----
+> > .../mellanox/mlx5/core/en_accel/ktls_tx.c     | 18 +++-
+> > .../mellanox/mlx5/core/en_accel/ktls_txrx.h   | 28 +++++-
+> > .../mellanox/mlx5/core/en_accel/tls.c         | 70 ---------------
+> > .../mellanox/mlx5/core/en_accel/tls.h         | 85 -------------------
+> > .../mellanox/mlx5/core/en_accel/tls_rxtx.c    | 70 ---------------
+> > .../mellanox/mlx5/core/en_accel/tls_rxtx.h    | 85 -------------------
+> > .../net/ethernet/mellanox/mlx5/core/en_main.c |  8 +-
+> > .../net/ethernet/mellanox/mlx5/core/en_rx.c   |  5 +-
+> > .../ethernet/mellanox/mlx5/core/en_stats.c    |  8 +-
+> > 16 files changed, 130 insertions(+), 356 deletions(-)
+> > rename drivers/net/ethernet/mellanox/mlx5/core/en_accel/{tls_stats.c => ktls_stats.c} (76%)
+> 
+> Why not ktls_*.c => tls_*.c ?
 
-The commit message is not clear. There are descriptions for some
-functions, but not in right format.
-
-Thanks,
-Yilun
+Mostly because other drivers use _ktls_ name for this type of functionality.
+Plus internally, Tariq suggested to squash everything into ktls.
 
 > 
-> Signed-off-by: Nava kishore Manne <nava.manne@xilinx.com>
-> ---
-> Changes for v2:
->                 -Replaced s/@return:/Return:/
-> Changes for v3:
->                -Updated commit description.
+> Since we now have one TLS implementation, it would've been easier to maybe
+> repurpose TLS to be KTLS only and avoid renaming every TLS to KTLS in all
+> functions and files.
 > 
->  drivers/fpga/of-fpga-region.c | 16 +++++++++-------
->  1 file changed, 9 insertions(+), 7 deletions(-)
+> So just keep tls.c and all mlx5_tls_xyz functions and implement ktls
+> directly in them, the renaming will be done only on the ktls implementation
+> part of the code rather than in every caller.
+
+Should I do it or keep this patch as is?
+
+Thanks
+
 > 
-> diff --git a/drivers/fpga/of-fpga-region.c b/drivers/fpga/of-fpga-region.c
-> index 50b83057c048..9e330a2c0a1b 100644
-> --- a/drivers/fpga/of-fpga-region.c
-> +++ b/drivers/fpga/of-fpga-region.c
-> @@ -28,7 +28,7 @@ MODULE_DEVICE_TABLE(of, fpga_region_of_match);
->   *
->   * Caller will need to put_device(&region->dev) when done.
->   *
-> - * Returns FPGA Region struct or NULL
-> + * Return: FPGA Region struct or NULL
->   */
->  static struct fpga_region *of_fpga_region_find(struct device_node *np)
->  {
-> @@ -80,7 +80,7 @@ static struct fpga_manager *of_fpga_region_get_mgr(struct device_node *np)
->   * Caller should call fpga_bridges_put(&region->bridge_list) when
->   * done with the bridges.
->   *
-> - * Return 0 for success (even if there are no bridges specified)
-> + * Return: 0 for success (even if there are no bridges specified)
->   * or -EBUSY if any of the bridges are in use.
->   */
->  static int of_fpga_region_get_bridges(struct fpga_region *region)
-> @@ -139,13 +139,13 @@ static int of_fpga_region_get_bridges(struct fpga_region *region)
->  }
->  
->  /**
-> - * child_regions_with_firmware
-> + * child_regions_with_firmware - Used to check the child region info.
->   * @overlay: device node of the overlay
->   *
->   * If the overlay adds child FPGA regions, they are not allowed to have
->   * firmware-name property.
->   *
-> - * Return 0 for OK or -EINVAL if child FPGA region adds firmware-name.
-> + * Return: 0 for OK or -EINVAL if child FPGA region adds firmware-name.
->   */
->  static int child_regions_with_firmware(struct device_node *overlay)
->  {
-> @@ -184,7 +184,7 @@ static int child_regions_with_firmware(struct device_node *overlay)
->   * Given an overlay applied to an FPGA region, parse the FPGA image specific
->   * info in the overlay and do some checking.
->   *
-> - * Returns:
-> + * Return:
->   *   NULL if overlay doesn't direct us to program the FPGA.
->   *   fpga_image_info struct if there is an image to program.
->   *   error code for invalid overlay.
-> @@ -279,7 +279,7 @@ static struct fpga_image_info *of_fpga_region_parse_ov(
->   * If the checks fail, overlay is rejected and does not get added to the
->   * live tree.
->   *
-> - * Returns 0 for success or negative error code for failure.
-> + * Return: 0 for success or negative error code for failure.
->   */
->  static int of_fpga_region_notify_pre_apply(struct fpga_region *region,
->  					   struct of_overlay_notify_data *nd)
-> @@ -339,7 +339,7 @@ static void of_fpga_region_notify_post_remove(struct fpga_region *region,
->   * This notifier handles programming an FPGA when a "firmware-name" property is
->   * added to an fpga-region.
->   *
-> - * Returns NOTIFY_OK or error if FPGA programming fails.
-> + * Return: NOTIFY_OK or error if FPGA programming fails.
->   */
->  static int of_fpga_region_notify(struct notifier_block *nb,
->  				 unsigned long action, void *arg)
-> @@ -446,6 +446,8 @@ static struct platform_driver of_fpga_region_driver = {
->  /**
->   * of_fpga_region_init - init function for fpga_region class
->   * Creates the fpga_region class and registers a reconfig notifier.
-> + *
-> + * Return: 0 on success, negative error code otherwise.
->   */
->  static int __init of_fpga_region_init(void)
->  {
-> -- 
-> 2.25.1
+> > delete mode 100644 drivers/net/ethernet/mellanox/mlx5/core/en_accel/tls.c
+> > delete mode 100644 drivers/net/ethernet/mellanox/mlx5/core/en_accel/tls.h
+> > delete mode 100644 drivers/net/ethernet/mellanox/mlx5/core/en_accel/tls_rxtx.c
+> > delete mode 100644 drivers/net/ethernet/mellanox/mlx5/core/en_accel/tls_rxtx.h
+> > 
+> 
