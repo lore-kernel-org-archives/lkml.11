@@ -2,102 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 94F53C3527A
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F796C4707E
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 01:33:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1842924AbiDFBfX (ORCPT
+        id S1842886AbiDFBfP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 21:35:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35304 "EHLO
+        Tue, 5 Apr 2022 21:35:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47444 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1573180AbiDESJn (ORCPT
+        with ESMTP id S1348870AbiDEJsm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 14:09:43 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18F1620F75
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 11:07:44 -0700 (PDT)
+        Tue, 5 Apr 2022 05:48:42 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D252AB8232;
+        Tue,  5 Apr 2022 02:36:45 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BE093B81F44
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 18:07:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3423AC385A1
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 18:07:41 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="o0Aae4I9"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1649182059;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=xxzjqX5zjzLBo9lliEEikr0oRvt6ogdQu6U4p96NT6I=;
-        b=o0Aae4I9EimBqL9ko0l77v5DNgp1H8q0wYg36+jx9FLIhp/ySjP/C0YReA4kdJE8s5VikX
-        WJYyr2M3DEUsEhyaiHN3+HA8B02ei6ipoDaEx0nk/dD2Wj5p036R6PxoYSmudfiRdp8+CW
-        7/H9H/tGKgq2fFISg+msCI9mkHABnTg=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 26dfa0ea (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO)
-        for <linux-kernel@vger.kernel.org>;
-        Tue, 5 Apr 2022 18:07:39 +0000 (UTC)
-Received: by mail-yw1-f178.google.com with SMTP id 00721157ae682-2e5e31c34bfso295787b3.10
-        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 11:07:38 -0700 (PDT)
-X-Gm-Message-State: AOAM530EkRyqILLLvabzmpCYjoHSVFYshezfap9ThflvV82d+WTLuoME
-        6VFrQ2wMjhC3QU9p3WFMCmhtD+7xpORzTVV8vd8=
-X-Google-Smtp-Source: ABdhPJwgMSBVflV1AO9hG8WdOm0cTEje20yVoBJYN/+T+2YMZjd5/HTPsyBepBs5y6PkleZtjxp9htNQAFtdAPoEFNE=
-X-Received: by 2002:a0d:d508:0:b0:2e5:d9ec:d668 with SMTP id
- x8-20020a0dd508000000b002e5d9ecd668mr3959503ywd.499.1649182058356; Tue, 05
- Apr 2022 11:07:38 -0700 (PDT)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6C0DD61368;
+        Tue,  5 Apr 2022 09:36:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7EBA1C385A2;
+        Tue,  5 Apr 2022 09:36:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649151404;
+        bh=Lz+RnShiOWqhr9VZ2Hk0RmfdNwsgPLj1BY8SZvVpN7E=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=SEY+2zDl0pLMAPjzjIR14nvtC18XzCuHAKzgfa+6NOrw43x126tbxp28cbqWIc5de
+         6+zHEQzN7v7tXanjN0e1tIQ2FrhpChRfRMuQ2PYSYuOmPnvNA9dsTbq4ZIeuAzFo8z
+         wqkMlsjZmPebQH08KAGnei//iuznHeQj5psqe8FU=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Tom Rix <trix@redhat.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 402/913] drm/amd/pm: return -ENOTSUPP if there is no get_dpm_ultimate_freq function
+Date:   Tue,  5 Apr 2022 09:24:24 +0200
+Message-Id: <20220405070351.897150038@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-References: <20220405163931.1108442-1-jannh@google.com>
-In-Reply-To: <20220405163931.1108442-1-jannh@google.com>
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-Date:   Tue, 5 Apr 2022 20:07:27 +0200
-X-Gmail-Original-Message-ID: <CAHmME9pW6heXtPrfCP7J6ODgSc8sotsv6E3dnJoVBaPi+Ph=HA@mail.gmail.com>
-Message-ID: <CAHmME9pW6heXtPrfCP7J6ODgSc8sotsv6E3dnJoVBaPi+Ph=HA@mail.gmail.com>
-Subject: Re: [PATCH] random: Fix signal_pending() usage
-To:     Jann Horn <jannh@google.com>
-Cc:     "Theodore Ts'o" <tytso@mit.edu>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Sebastian Siewior <bigeasy@linutronix.de>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Jann,
+From: Tom Rix <trix@redhat.com>
 
-On Tue, Apr 5, 2022 at 6:39 PM Jann Horn <jannh@google.com> wrote:
-> signal_pending() checks TIF_NOTIFY_SIGNAL and TIF_SIGPENDING, which signal
-> that the task should bail out of the syscall when possible.
-> This is a separate concept from need_resched(), which checks
-> TIF_NEED_RESCHED, signalling that the task should preempt.
->
-> In particular, with the current code, the signal_pending() bailout probably
-> won't work reliably.
->
-> Change this to look like other functions that read lots of data, such as
-> read_zero().
->
-> Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+[ Upstream commit 430e6a0212b2a0eb1de5e9d47a016fa79edf3978 ]
 
-Applied, thanks.
+clang static analysis reports this represenative problem
+amdgpu_smu.c:144:18: warning: The left operand of '*' is a garbage value
+        return clk_freq * 100;
+               ~~~~~~~~ ^
 
-One funny aspect of the fact that signal_pending() hasn't worked right
-since the genesis commit is that this has probably led to a lot of
-userspace code that doesn't check the result from read() or
-getrandom(), and that code has worked mostly fine.
+If there is no get_dpm_ultimate_freq function,
+smu_get_dpm_freq_range returns success without setting the
+output min,max parameters.  So return an -ENOTSUPP error.
 
-I wonder if we should do something about that. Worth noting is that
-we're no longer contending with /dev/random periodically blocking as
-the "entropy runs out" nonsense. I can think of two possible changes,
-which maybe aren't mutually exclusive:
+Fixes: e5ef784b1e17 ("drm/amd/powerplay: revise calling chain on retrieving frequency range")
+Signed-off-by: Tom Rix <trix@redhat.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/gpu/drm/amd/pm/swsmu/amdgpu_smu.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-1) Turn signal_pending() into fatal_signal_pending() throughout the file.
-2) Rather than not checking signal_pending() for reads of length <=
-256, we could not check for signal_pending() for the first 256 bytes
-of any length read.
+diff --git a/drivers/gpu/drm/amd/pm/swsmu/amdgpu_smu.c b/drivers/gpu/drm/amd/pm/swsmu/amdgpu_smu.c
+index 6dc83cfad9d8..8acdb244b99f 100644
+--- a/drivers/gpu/drm/amd/pm/swsmu/amdgpu_smu.c
++++ b/drivers/gpu/drm/amd/pm/swsmu/amdgpu_smu.c
+@@ -138,7 +138,7 @@ int smu_get_dpm_freq_range(struct smu_context *smu,
+ 			   uint32_t *min,
+ 			   uint32_t *max)
+ {
+-	int ret = 0;
++	int ret = -ENOTSUPP;
+ 
+ 	if (!min && !max)
+ 		return -EINVAL;
+-- 
+2.34.1
 
-Both of these would be changing userspace behavior, so it should
-probably be considered carefully. Any thoughts?
 
-Jason
+
