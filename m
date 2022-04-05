@@ -2,117 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A7E33C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 02:49:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DCDACC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 02:50:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230325AbiDECvA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 22:51:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44774 "EHLO
+        id S230234AbiDECwV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 4 Apr 2022 22:52:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48110 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230248AbiDECuq (ORCPT
+        with ESMTP id S230138AbiDECvA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 22:50:46 -0400
-Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B09982DE868
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 18:57:34 -0700 (PDT)
-Received: by mail-ej1-x62d.google.com with SMTP id dr20so23529538ejc.6
-        for <linux-kernel@vger.kernel.org>; Mon, 04 Apr 2022 18:57:34 -0700 (PDT)
+        Mon, 4 Apr 2022 22:51:00 -0400
+Received: from mail-pl1-x62e.google.com (mail-pl1-x62e.google.com [IPv6:2607:f8b0:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8480E298CAA;
+        Mon,  4 Apr 2022 19:25:45 -0700 (PDT)
+Received: by mail-pl1-x62e.google.com with SMTP id d15so4366934pll.10;
+        Mon, 04 Apr 2022 19:25:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=8lHhYFW2wjM+XVs/ce0McLe3nK2usueM9y5Aj9STafs=;
-        b=FA3yAVlH7wWlUJcQ3bx0/NKcDywUaZwtbXLP0LgBSGRsj2d2snpgTAmXJYtAOj88Gp
-         CYtFbUBDTDcuvuZ6eF8j53jpAsLinkhtZ/Ef7Uhmox18cVGyrIEp9+qFcKK1GR7ahTX/
-         46ca7IWLXUxpUvV8Z7tJKIFbNnbydN6hr9cY+q8rAaP9tsLoMgJ8dqWI49WpKCiDRpTE
-         PsOSqjptGmbI4aFA5uNyW/woYfgGQRFmmcyMJSCyS7fEbURD8nDhaF9Hpqc7RVgDWTbv
-         FTwkLzXuSi1Xd9T4XDBVXpZaK/RmyVsS1OQLe+XLBuvnqnOFHJVS4qvUkD342N6xOgZB
-         9o0Q==
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id;
+        bh=s770C6klEms02pbWlMqZ7qzWEPI+Uww/MfxHY8uG4vE=;
+        b=Pi6mX9On/6yXOYMtjiBhc3JF8ZWFIRVuB7b32wQWsydrrhfhluarLLBI4GwRpY3nrc
+         k9h02aLbUfoEgJSHyDJupyCYlT/lWVPfnn6MXNOHdcr6MtZwIrCvMRNTRpvgauX74wIt
+         ZfUHLkiEc/EO3heydgGisZp/s4ZCKV0bGC6YNrIiTUtykoBVBYjUfLRuH5TS46eIpWgm
+         d2G++eLTzs7sXcAfpSCzKY3EUTgWExD+E1EN7d2yupU3ynJISX/JQ4QEznEXjmWP0IM+
+         ol4kaCMAAQlenisLyJLh2z7BKXpeU1d1BAnEjV04xU7+fkjhfz1sihAuM9m3cvtGo6s6
+         zYJA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=8lHhYFW2wjM+XVs/ce0McLe3nK2usueM9y5Aj9STafs=;
-        b=zmhSTXfZ0+X5V3rcvlV8GVzONwjTrEHF0i48QZaYNn7uFn4LYRLCYArytbQzOUNQZe
-         AQyYhRL86ojhJVqbGV2YEBtWWdJfATlc8NNHitZFRr1GR0awSHIhnocQaJQQC2oqznv6
-         eTn9CC4CE33Kp+DZQvpiXnXNI8WuZyql1fvojBsVMgioUjMbEDkwR+xaqfBqY1IP3B11
-         XKIQevcMkgQOz1zxEsyae+9Iz559ueQYCe4hPIJB5z7qs/0qKJKhL+uEFjZhmWJDv9cz
-         WyebmJcFkFWxdFSIaTgO1A9iR1hCKO7vq7/MIs5ClWYsSKBDwyU7ytkMoNjOp8vSJZyj
-         obvA==
-X-Gm-Message-State: AOAM531yOFi5NkStuPKDxgf91y24yy1PjLhonOVy+URlaMZMVeKFJTaf
-        1QftVkLi2HtYjMsyXMnGDuyRNYTN0VfyJrL7dvgxcA==
-X-Google-Smtp-Source: ABdhPJzWg56tGOZzoo6mjBM60wGyjWHjZEk8WIMAmh9wb7iaHGuDP2UkNGGEbl/PJn03N2TZh9MDxqyZayUe0V0A/Ic=
-X-Received: by 2002:a17:907:1624:b0:6db:8caa:d71 with SMTP id
- hb36-20020a170907162400b006db8caa0d71mr1097692ejc.723.1649123853100; Mon, 04
- Apr 2022 18:57:33 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220404041101.6276-1-akihiko.odaki@gmail.com>
-In-Reply-To: <20220404041101.6276-1-akihiko.odaki@gmail.com>
-From:   Guenter Roeck <groeck@google.com>
-Date:   Mon, 4 Apr 2022 18:57:22 -0700
-Message-ID: <CABXOdTe9u_DW=NZM1-J120Gu1gibDy8SsgHP3bJwwLsE_iuLAQ@mail.gmail.com>
-Subject: Re: [PATCH] platform/chrome: cros_ec_typec: Check for EC driver
-To:     Akihiko Odaki <akihiko.odaki@gmail.com>
-Cc:     linux-kernel <linux-kernel@vger.kernel.org>,
-        chrome-platform@lists.linux.dev,
-        Prashant Malani <pmalani@chromium.org>,
-        Benson Leung <bleung@chromium.org>,
-        Guenter Roeck <groeck@chromium.org>
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=s770C6klEms02pbWlMqZ7qzWEPI+Uww/MfxHY8uG4vE=;
+        b=HveN34a8/lO/LdEv8zjZwjqK+wzaSgucO7KwVwDJT33Lxlkn2yeLQlWrAmqs46DGUW
+         8THYFbKTVlrttPyl/zGyNMz/qbw99GVQiV1UkhJyZ9rWH7cvQiSFs8G+mcE/bV2k7Pja
+         n4o59I1X5WH8uKQVioEJQ08UHSa2hRqh8Df/LnyfnpOjhHz04m/geHWyoNh671mAwy0U
+         VydftvZ3XvpjpnQ2uGX7meQhEzEsvEgbGo4SKmlsJ2cgpecchgRGnxkj9fmnQMsqAmxM
+         3wUHvuXI8SmKC7B9PvboLlvxsiPzYem55zPXoydaem3+Ug2QgPHLR/nl8d+diz7NwlTp
+         ra/Q==
+X-Gm-Message-State: AOAM53134PREd9pzgBBF8tm16TDG48w5pEpHhLuRWUtgornSiHm8NMei
+        RD2hyDrSKf8zme5bIcJ0YGnuS8mT5OJejA==
+X-Google-Smtp-Source: ABdhPJwmBgrLbIlKAQPHNKz0xTu5okVlttnvouUNoCPFbvhEiveNTyPJzyt3jvsp1cecI/Xmo75sSg==
+X-Received: by 2002:a17:902:c745:b0:151:e8fa:629b with SMTP id q5-20020a170902c74500b00151e8fa629bmr671335plq.90.1649117161263;
+        Mon, 04 Apr 2022 17:06:01 -0700 (PDT)
+Received: from localhost.localdomain ([183.156.181.188])
+        by smtp.googlemail.com with ESMTPSA id y4-20020a056a00190400b004fac0896e35sm13600693pfi.42.2022.04.04.17.05.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 04 Apr 2022 17:06:00 -0700 (PDT)
+From:   Xiaomeng Tong <xiam0nd.tong@gmail.com>
+To:     christopher.lee@cspi.com, davem@davemloft.net, kuba@kernel.org,
+        pabeni@redhat.com
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Xiaomeng Tong <xiam0nd.tong@gmail.com>
+Subject: [RESEND][PATCH v2] myri10ge: remove an unneeded NULL check
+Date:   Tue,  5 Apr 2022 08:05:53 +0800
+Message-Id: <20220405000553.21856-1-xiam0nd.tong@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Apr 3, 2022 at 9:11 PM Akihiko Odaki <akihiko.odaki@gmail.com> wrote:
->
-> The EC driver may not be initialized when cros_typec_probe is called,
-> particulary when CONFIG_CROS_EC_CHARDEV=m.
->
+The define of skb_list_walk_safe(first, skb, next_skb) is:
+  for ((skb) = (first), (next_skb) = (skb) ? (skb)->next : NULL; (skb);  \
+     (skb) = (next_skb), (next_skb) = (skb) ? (skb)->next : NULL)
 
-Does this cause a crash ? If so, do you have a crash log ?
+Thus, if the 'segs' passed as 'first' into the skb_list_walk_safe is NULL,
+the loop will exit immediately. In other words, it can be sure the 'segs'
+is non-NULL when we run inside the loop. So just remove the unnecessary
+NULL check. Also remove the unneeded assignmnets.
 
-Reason for asking is that I saw the following crash, and it would be
-good to know if the problem is the same.
+Signed-off-by: Xiaomeng Tong <xiam0nd.tong@gmail.com>
+---
+changes since v1:
+ - remove the unneeded assignmnets.
 
-<1>[    6.651137] #PF: error_code(0x0002) - not-present page
-<6>[    6.651139] PGD 0 P4D 0
-<4>[    6.651143] Oops: 0002 [#1] PREEMPT SMP NOPTI
-<4>[    6.651146] CPU: 0 PID: 1656 Comm: udevd Tainted: G     U
-    5.4.163-17384-g99ca1c60d20c #1
-<4>[    6.651147] Hardware name: HP Lantis/Lantis, BIOS
-Google_Lantis.13606.204.0 05/26/2021
-<4>[    6.651152] RIP: 0010:mutex_lock+0x2b/0x3c
-...
-<4>[    6.651174] Call Trace:
-<4>[    6.651180]  cros_ec_cmd_xfer+0x22/0xc1
-<4>[    6.651183]  cros_ec_cmd_xfer_status+0x19/0x59
-<4>[    6.651185]  cros_ec_command+0x82/0xc3
-<4>[    6.651189]  cros_typec_probe+0x8a/0x5a2 [cros_ec_typec]
+v1: https://lore.kernel.org/lkml/20220319052350.26535-1-xiam0nd.tong@gmail.com/
+---
+ drivers/net/ethernet/myricom/myri10ge/myri10ge.c | 8 ++------
+ 1 file changed, 2 insertions(+), 6 deletions(-)
 
-> Signed-off-by: Akihiko Odaki <akihiko.odaki@gmail.com>
+diff --git a/drivers/net/ethernet/myricom/myri10ge/myri10ge.c b/drivers/net/ethernet/myricom/myri10ge/myri10ge.c
+index 50ac3ee2577a..071657e3dba8 100644
+--- a/drivers/net/ethernet/myricom/myri10ge/myri10ge.c
++++ b/drivers/net/ethernet/myricom/myri10ge/myri10ge.c
+@@ -2903,12 +2903,8 @@ static netdev_tx_t myri10ge_sw_tso(struct sk_buff *skb,
+ 		status = myri10ge_xmit(curr, dev);
+ 		if (status != 0) {
+ 			dev_kfree_skb_any(curr);
+-			if (segs != NULL) {
+-				curr = segs;
+-				segs = next;
+-				curr->next = NULL;
+-				dev_kfree_skb_any(segs);
+-			}
++			segs->next = NULL;
++			dev_kfree_skb_any(next);
+ 			goto drop;
+ 		}
+ 	}
+-- 
+2.17.1
 
-Not sure if this is the best solution, but I don't know a better one.
-
-Reviewed-by: Guenter Roeck <groeck@chromium.org>
-
-> ---
->  drivers/platform/chrome/cros_ec_typec.c | 3 +++
->  1 file changed, 3 insertions(+)
->
-> diff --git a/drivers/platform/chrome/cros_ec_typec.c b/drivers/platform/chrome/cros_ec_typec.c
-> index 4bd2752c0823..7cb2e35c4ded 100644
-> --- a/drivers/platform/chrome/cros_ec_typec.c
-> +++ b/drivers/platform/chrome/cros_ec_typec.c
-> @@ -1084,6 +1084,9 @@ static int cros_typec_probe(struct platform_device *pdev)
->         }
->
->         ec_dev = dev_get_drvdata(&typec->ec->ec->dev);
-> +       if (!ec_dev)
-> +               return -EPROBE_DEFER;
-> +
->         typec->typec_cmd_supported = cros_ec_check_features(ec_dev, EC_FEATURE_TYPEC_CMD);
->         typec->needs_mux_ack = cros_ec_check_features(ec_dev, EC_FEATURE_TYPEC_MUX_REQUIRE_AP_ACK);
->
-> --
-> 2.35.1
->
