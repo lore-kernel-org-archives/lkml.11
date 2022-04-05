@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6421DC4321E
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:20:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 715EAC38161
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:20:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237299AbiDEIRx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 04:17:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55540 "EHLO
+        id S237155AbiDEIRo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 04:17:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44082 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235651AbiDEH77 (ORCPT
+        with ESMTP id S235655AbiDEH77 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Apr 2022 03:59:59 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C99791BE9E;
-        Tue,  5 Apr 2022 00:56:51 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD242193DC;
+        Tue,  5 Apr 2022 00:57:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 64D9A61722;
-        Tue,  5 Apr 2022 07:56:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6F96BC340EE;
-        Tue,  5 Apr 2022 07:56:50 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6CB446167D;
+        Tue,  5 Apr 2022 07:57:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7C398C340EE;
+        Tue,  5 Apr 2022 07:57:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649145410;
-        bh=G96Dh5WtfTKppnov59BIh9FH3+pya1x2zXt3Qam/+VU=;
+        s=korg; t=1649145432;
+        bh=rxdAyvvmA/UlhnfN0owAZEkyZFn65KN7y8JgBBlQXAE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CdhCNpu4PMdhOmML0ehTdASdCLc8R5l1o08J3Bar4WsBXCvIvktllExC4oF+ltXHI
-         Pk+Ik9W9c2XtCC/k/ZkS5o2S36ls/57+Ad7IhG657nC10bofyhaj7iJLu2pFsR8Z5p
-         4xO5DSu45l3hBRBKh71kx2Vuavo9LDKLddKFhrdQ=
+        b=PQtZBtUNMgzQ93BGq5yPeBfhIofv7ZGPiW3zCmvNl/rWNBmpbNUDCodOW3f3oi83G
+         JeQ/qJT4Kub4kAm85RDqDsAdHIW7TSY+qi2wc96j3cIHhCPvAhG3GErULP3T1e0to8
+         20AAioLa7GcDrLFRpKU0QbKaXCyOT3X1If2mVHfM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
-        Charles Keepax <ckeepax@opensource.cirrus.com>,
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Peter Ujfalusi <peter.ujfalusi@linux.intel.com>,
         Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0396/1126] ASoC: wm8350: Handle error for wm8350_register_irq
-Date:   Tue,  5 Apr 2022 09:19:03 +0200
-Message-Id: <20220405070419.251459319@linuxfoundation.org>
+Subject: [PATCH 5.17 0403/1126] ASoC: SOF: Add missing of_node_put() in imx8m_probe
+Date:   Tue,  5 Apr 2022 09:19:10 +0200
+Message-Id: <20220405070419.455366281@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -50,71 +50,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit db0350da8084ad549bca16cc0486c11cc70a1f9b ]
+[ Upstream commit 5575f7f49134c7386a684335c9007737c606d3b5 ]
 
-As the potential failure of the wm8350_register_irq(),
-it should be better to check it and return error if fails.
-Also, use 'free_' in order to avoid the same code.
+The device_node pointer is returned by of_parse_phandle()  with refcount
+incremented. We should use of_node_put() on it when done.
 
-Fixes: a6ba2b2dabb5 ("ASoC: Implement WM8350 headphone jack detection")
-Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Acked-by: Charles Keepax <ckeepax@opensource.cirrus.com>
-Link: https://lore.kernel.org/r/20220304023821.391936-1-jiasheng@iscas.ac.cn
+Fixes: afb93d716533 ("ASoC: SOF: imx: Add i.MX8M HW support")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Reviewed-by: Peter Ujfalusi <peter.ujfalusi@linux.intel.com>
+Link: https://lore.kernel.org/r/20220308023325.31702-1-linmq006@gmail.com
 Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/codecs/wm8350.c | 28 ++++++++++++++++++++++++----
- 1 file changed, 24 insertions(+), 4 deletions(-)
+ sound/soc/sof/imx/imx8m.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/sound/soc/codecs/wm8350.c b/sound/soc/codecs/wm8350.c
-index 15d42ce3b21d..41504ce2a682 100644
---- a/sound/soc/codecs/wm8350.c
-+++ b/sound/soc/codecs/wm8350.c
-@@ -1537,18 +1537,38 @@ static  int wm8350_component_probe(struct snd_soc_component *component)
- 	wm8350_clear_bits(wm8350, WM8350_JACK_DETECT,
- 			  WM8350_JDL_ENA | WM8350_JDR_ENA);
+diff --git a/sound/soc/sof/imx/imx8m.c b/sound/soc/sof/imx/imx8m.c
+index 788e77bcb603..60251486b24b 100644
+--- a/sound/soc/sof/imx/imx8m.c
++++ b/sound/soc/sof/imx/imx8m.c
+@@ -224,6 +224,7 @@ static int imx8m_probe(struct snd_sof_dev *sdev)
+ 	}
  
--	wm8350_register_irq(wm8350, WM8350_IRQ_CODEC_JCK_DET_L,
-+	ret = wm8350_register_irq(wm8350, WM8350_IRQ_CODEC_JCK_DET_L,
- 			    wm8350_hpl_jack_handler, 0, "Left jack detect",
- 			    priv);
--	wm8350_register_irq(wm8350, WM8350_IRQ_CODEC_JCK_DET_R,
-+	if (ret != 0)
-+		goto err;
-+
-+	ret = wm8350_register_irq(wm8350, WM8350_IRQ_CODEC_JCK_DET_R,
- 			    wm8350_hpr_jack_handler, 0, "Right jack detect",
- 			    priv);
--	wm8350_register_irq(wm8350, WM8350_IRQ_CODEC_MICSCD,
-+	if (ret != 0)
-+		goto free_jck_det_l;
-+
-+	ret = wm8350_register_irq(wm8350, WM8350_IRQ_CODEC_MICSCD,
- 			    wm8350_mic_handler, 0, "Microphone short", priv);
--	wm8350_register_irq(wm8350, WM8350_IRQ_CODEC_MICD,
-+	if (ret != 0)
-+		goto free_jck_det_r;
-+
-+	ret = wm8350_register_irq(wm8350, WM8350_IRQ_CODEC_MICD,
- 			    wm8350_mic_handler, 0, "Microphone detect", priv);
-+	if (ret != 0)
-+		goto free_micscd;
- 
- 	return 0;
-+
-+free_micscd:
-+	wm8350_free_irq(wm8350, WM8350_IRQ_CODEC_MICSCD, priv);
-+free_jck_det_r:
-+	wm8350_free_irq(wm8350, WM8350_IRQ_CODEC_JCK_DET_R, priv);
-+free_jck_det_l:
-+	wm8350_free_irq(wm8350, WM8350_IRQ_CODEC_JCK_DET_L, priv);
-+err:
-+	return ret;
- }
- 
- static void wm8350_component_remove(struct snd_soc_component *component)
+ 	ret = of_address_to_resource(res_node, 0, &res);
++	of_node_put(res_node);
+ 	if (ret) {
+ 		dev_err(&pdev->dev, "failed to get reserved region address\n");
+ 		goto exit_pdev_unregister;
 -- 
 2.34.1
 
