@@ -2,94 +2,131 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D16FC433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E42BC433EF
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 11:06:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348176AbiDELCc (ORCPT
+        id S1348111AbiDELC0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 07:02:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53406 "EHLO
+        Tue, 5 Apr 2022 07:02:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50818 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236921AbiDEIlX (ORCPT
+        with ESMTP id S239006AbiDEIbG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:41:23 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E7710114C
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 01:34:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1649147656;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=Z65CXYbIBUl/IlVCrlM6BZQKF+ZppxomZMYuDllBYxE=;
-        b=FgxQGsUhQ6/Ul6iA5ukP1u5jptq6njHxozoGUJI7Ky1QS0VITiCW0eItR4vU/q6m/I5uiv
-        yhKiPpg6P/YPU1tE1bikZr/Lz5I42NNsSGkXxjdjXnjr0arQhnsTnC2/tPGLvPP5mlIXtg
-        5gRVyDk6jGBOohC/CwWAW8YaGuJ0gUQ=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-64-bYIfSXvxPQ2HCL19_IPyWQ-1; Tue, 05 Apr 2022 04:34:12 -0400
-X-MC-Unique: bYIfSXvxPQ2HCL19_IPyWQ-1
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.rdu2.redhat.com [10.11.54.7])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        Tue, 5 Apr 2022 04:31:06 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 157C54B41D;
+        Tue,  5 Apr 2022 01:23:13 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 1CF3F38025E9;
-        Tue,  5 Apr 2022 08:34:01 +0000 (UTC)
-Received: from localhost (dhcp-192-213.str.redhat.com [10.33.192.213])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 28080145D850;
-        Tue,  5 Apr 2022 08:33:43 +0000 (UTC)
-From:   Cornelia Huck <cohuck@redhat.com>
-To:     "Michael S. Tsirkin" <mst@redhat.com>
-Cc:     zhenwei pi <pizhenwei@bytedance.com>, arei.gonglei@huawei.com,
-        jasowang@redhat.com, virtualization@lists.linux-foundation.org,
-        linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org,
-        herbert@gondor.apana.org.au, helei.sig11@bytedance.com
-Subject: Re: [PATCH v3 0/4] Introduce akcipher service for virtio-crypto
-In-Reply-To: <20220405012015-mutt-send-email-mst@kernel.org>
-Organization: Red Hat GmbH
-References: <20220302033917.1295334-1-pizhenwei@bytedance.com>
- <a9d1dfc1-080e-fba2-8fbb-28718b067e0d@bytedance.com>
- <20220307040431-mutt-send-email-mst@kernel.org>
- <87h778g8nn.fsf@redhat.com>
- <20220405012015-mutt-send-email-mst@kernel.org>
-User-Agent: Notmuch/0.34 (https://notmuchmail.org)
-Date:   Tue, 05 Apr 2022 10:33:42 +0200
-Message-ID: <87ee2cexp5.fsf@redhat.com>
+        by ams.source.kernel.org (Postfix) with ESMTPS id 25B34B81B92;
+        Tue,  5 Apr 2022 08:23:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 89DCEC385A1;
+        Tue,  5 Apr 2022 08:23:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649146990;
+        bh=W6/FozryWmHJIOLVr6EslcB5S8a0evFD9y3rf1ZcPUs=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=CernNq6LSlo/HOpjCew40Ha0GYCD/xQa0EIVficYntU8ZaFu1behV5dwFRF8VYqax
+         Z50W6HBccBwx2P9krzruWrpphJUdl/B5a+y6kPFFvSWF/e+lNQdyDMUFBnhNI4oHE8
+         kcVq8uws56qiY/wRpDSp2fDP6WYx+dJ7V7NsaS5E=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Svyatoslav Ryhel <clamor95@gmail.com>,
+        Thierry Reding <treding@nvidia.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 0924/1126] ARM: tegra: transformer: Drop reg-shift for Tegra HS UART
+Date:   Tue,  5 Apr 2022 09:27:51 +0200
+Message-Id: <20220405070434.640507230@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
+References: <20220405070407.513532867@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.7
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 05 2022, "Michael S. Tsirkin" <mst@redhat.com> wrote:
+From: Svyatoslav Ryhel <clamor95@gmail.com>
 
-> On Mon, Apr 04, 2022 at 05:39:24PM +0200, Cornelia Huck wrote:
->> On Mon, Mar 07 2022, "Michael S. Tsirkin" <mst@redhat.com> wrote:
->> 
->> > On Mon, Mar 07, 2022 at 10:42:30AM +0800, zhenwei pi wrote:
->> >> Hi, Michael & Lei
->> >> 
->> >> The full patchset has been reviewed by Gonglei, thanks to Gonglei.
->> >> Should I modify the virtio crypto specification(use "__le32 akcipher_algo;"
->> >> instead of "__le32 reserve;" only, see v1->v2 change), and start a new issue
->> >> for a revoting procedure?
->> >
->> > You can but not it probably will be deferred to 1.3. OK with you?
->> >
->> >> Also cc Cornelia Huck.
->> 
->> [Apologies, I'm horribly behind on my email backlog, and on virtio
->> things in general :(]
->> 
->> The akcipher update had been deferred for 1.2, so I think it will be 1.3
->> material. However, I just noticed while browsing the fine lwn.net merge
->> window summary that this seems to have been merged already. That
->> situation is less than ideal, although I don't expect any really bad
->> problems, given that there had not been any negative feedback for the
->> spec proposal that I remember.
->
-> Let's open a 1.3 branch? What do you think?
+[ Upstream commit 79b788bfc787b60699d46b9e273b42ebe18336b3 ]
 
-Yes, that's probably best, before things start piling up.
+When the Tegra High-Speed UART is used instead of the regular UART, the
+reg-shift property is implied from the compatible string and should not
+be explicitly listed.
+
+Signed-off-by: Svyatoslav Ryhel <clamor95@gmail.com>
+Signed-off-by: Thierry Reding <treding@nvidia.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ arch/arm/boot/dts/tegra20-asus-tf101.dts               | 2 ++
+ arch/arm/boot/dts/tegra30-asus-transformer-common.dtsi | 2 ++
+ arch/arm/boot/dts/tegra30-pegatron-chagall.dts         | 2 ++
+ 3 files changed, 6 insertions(+)
+
+diff --git a/arch/arm/boot/dts/tegra20-asus-tf101.dts b/arch/arm/boot/dts/tegra20-asus-tf101.dts
+index 020172ee7340..e3267cda15cc 100644
+--- a/arch/arm/boot/dts/tegra20-asus-tf101.dts
++++ b/arch/arm/boot/dts/tegra20-asus-tf101.dts
+@@ -442,11 +442,13 @@
+ 
+ 	serial@70006040 {
+ 		compatible = "nvidia,tegra20-hsuart";
++		/delete-property/ reg-shift;
+ 		/* GPS BCM4751 */
+ 	};
+ 
+ 	serial@70006200 {
+ 		compatible = "nvidia,tegra20-hsuart";
++		/delete-property/ reg-shift;
+ 		status = "okay";
+ 
+ 		/* Azurewave AW-NH615 BCM4329B1 */
+diff --git a/arch/arm/boot/dts/tegra30-asus-transformer-common.dtsi b/arch/arm/boot/dts/tegra30-asus-transformer-common.dtsi
+index 85b43a86a26d..c662ab261ed5 100644
+--- a/arch/arm/boot/dts/tegra30-asus-transformer-common.dtsi
++++ b/arch/arm/boot/dts/tegra30-asus-transformer-common.dtsi
+@@ -1080,6 +1080,7 @@
+ 
+ 	serial@70006040 {
+ 		compatible = "nvidia,tegra30-hsuart";
++		/delete-property/ reg-shift;
+ 		status = "okay";
+ 
+ 		/* Broadcom GPS BCM47511 */
+@@ -1087,6 +1088,7 @@
+ 
+ 	serial@70006200 {
+ 		compatible = "nvidia,tegra30-hsuart";
++		/delete-property/ reg-shift;
+ 		status = "okay";
+ 
+ 		nvidia,adjust-baud-rates = <0 9600 100>,
+diff --git a/arch/arm/boot/dts/tegra30-pegatron-chagall.dts b/arch/arm/boot/dts/tegra30-pegatron-chagall.dts
+index f4b2d4218849..8ce61035290b 100644
+--- a/arch/arm/boot/dts/tegra30-pegatron-chagall.dts
++++ b/arch/arm/boot/dts/tegra30-pegatron-chagall.dts
+@@ -1103,6 +1103,7 @@
+ 
+ 	uartb: serial@70006040 {
+ 		compatible = "nvidia,tegra30-hsuart";
++		/delete-property/ reg-shift;
+ 		status = "okay";
+ 
+ 		/* Broadcom GPS BCM47511 */
+@@ -1110,6 +1111,7 @@
+ 
+ 	uartc: serial@70006200 {
+ 		compatible = "nvidia,tegra30-hsuart";
++		/delete-property/ reg-shift;
+ 		status = "okay";
+ 
+ 		nvidia,adjust-baud-rates = <0 9600 100>,
+-- 
+2.34.1
+
+
 
