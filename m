@@ -2,107 +2,136 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C8ECDC4167B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EC795C4167E
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 02:08:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1846766AbiDFCIf (ORCPT
+        id S1846799AbiDFCIm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 22:08:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58754 "EHLO
+        Tue, 5 Apr 2022 22:08:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50042 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1389337AbiDENdo (ORCPT
+        with ESMTP id S1357934AbiDEK13 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 09:33:44 -0400
+        Tue, 5 Apr 2022 06:27:29 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCD24E9C90;
-        Tue,  5 Apr 2022 05:39:05 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80EDB8F9A0;
+        Tue,  5 Apr 2022 03:11:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9201461802;
-        Tue,  5 Apr 2022 12:39:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5CF7CC385A1;
-        Tue,  5 Apr 2022 12:39:03 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="fOURhmSn"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1649162341;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=0yCGiJPMEhyBglrpRDw/N/UymMsKw6+o4Dn9AYLm1Ro=;
-        b=fOURhmSnfUqQ2UY50KIdC6WuOwRLuZqE9uXVqWrjYHBRr8HiCCMOU9c9DcrdYfLwCQzyS/
-        SZvvF3eZb9hicxAy7rAHVJfETHUqXB3lXlm3BmenBkuHQ8ERGe09vte7nIlWW7ubllM5OI
-        33yPc34rjyWRXeVUtg0ZGNUh/OFrJYI=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 1dcef730 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
-        Tue, 5 Apr 2022 12:39:00 +0000 (UTC)
-Received: by mail-yw1-f181.google.com with SMTP id 00721157ae682-2eb3db5b172so88079487b3.6;
-        Tue, 05 Apr 2022 05:39:00 -0700 (PDT)
-X-Gm-Message-State: AOAM5316UDXjtr/8t1BkyZgEYtDDP4WD1ooheA6+jsY68aIcW23ndFag
-        h2KbXp9qnFSHHGeEfjQyEJkJsGuOS60XqwDiTJE=
-X-Google-Smtp-Source: ABdhPJzReerSJeFzBuDuWWB1BCduZovdDNRtUnzeD2HQItFoRgMyYRs0aj5KZJPM4aTyTVvYuF2w5uZ+AhZe+1/Abok=
-X-Received: by 2002:a0d:e607:0:b0:2eb:87de:2cc4 with SMTP id
- p7-20020a0de607000000b002eb87de2cc4mr2392483ywe.485.1649162339400; Tue, 05
- Apr 2022 05:38:59 -0700 (PDT)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AA5D06179E;
+        Tue,  5 Apr 2022 10:11:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 90121C385A0;
+        Tue,  5 Apr 2022 10:11:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649153482;
+        bh=MV1itl6rqfL9cQ+0uC0MpvC4tCW7XXeVrtbCRx+bwZE=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=dV7bXOc155cHJiJ3gqHIXjHFhGI2R6pvwxxDYFf9/K6gnOcxtYlortLB5kQplUkZm
+         mN1DIE06hiTtj6hRa97W8BeKfEOv/PnFUEIAqatPlCzIn1ZvjSMGpCIAUVW0hEPCrC
+         ptIeFesUzovf2HEqTU+B21GrX2MTqwF0V3WPcO3c=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
+        kernel test robot <lkp@intel.com>,
+        Angelo Dureghello <angelo@sysam.it>,
+        Greg Ungerer <gerg@kernel.org>,
+        Greg Ungerer <gerg@linux-m68k.org>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        linux-m68k@lists.linux-m68k.org, uclinux-dev@uclinux.org,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 236/599] m68k: coldfire/device.c: only build for MCF_EDMA when h/w macros are defined
+Date:   Tue,  5 Apr 2022 09:28:50 +0200
+Message-Id: <20220405070305.863022487@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
+References: <20220405070258.802373272@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Received: by 2002:a05:7110:470c:b0:173:a80b:3ec5 with HTTP; Tue, 5 Apr 2022
- 05:38:58 -0700 (PDT)
-In-Reply-To: <202204041953.D7E0BA15@keescook>
-References: <CAHmME9otYi4pCzZwSGnK40dp1QMRVPxp+DBysVuLXUKkXinAxg@mail.gmail.com>
- <20220403204036.1269562-1-Jason@zx2c4.com> <202204041144.96FC64A8@keescook>
- <Ykt1cj0wPKEsHL2q@zx2c4.com> <202204041953.D7E0BA15@keescook>
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-Date:   Tue, 5 Apr 2022 14:38:58 +0200
-X-Gmail-Original-Message-ID: <CAHmME9rC-pmi3K=w06-bOsHP5=tPv9CS51hr69P1C5tmvHf_mA@mail.gmail.com>
-Message-ID: <CAHmME9rC-pmi3K=w06-bOsHP5=tPv9CS51hr69P1C5tmvHf_mA@mail.gmail.com>
-Subject: Re: [PATCH v2] gcc-plugins: latent_entropy: use /dev/urandom
-To:     Kees Cook <keescook@chromium.org>
-Cc:     linux-hardening@vger.kernel.org, linux-kernel@vger.kernel.org,
-        stable@vger.kernel.org, PaX Team <pageexec@freemail.hu>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Kees,
+From: Randy Dunlap <rdunlap@infradead.org>
 
-On 4/5/22, Kees Cook <keescook@chromium.org> wrote:
-> On Tue, Apr 05, 2022 at 12:47:14AM +0200, Jason A. Donenfeld wrote:
->> On Mon, Apr 4, 2022 at 8:49 PM Kees Cook <keescook@chromium.org> wrote:
->> > This mixes two changes: the pRNG change and the "use urandom if
->> > non-deterministic" change. I think these should be split, so the pRNG
->> > change can be explicitly justified.
->>
->> Alright, I'll split those. Or, more probably, just drop the xorshift
->> thing. There's not actually a strong reason for preferring xorshift. I
->> did it because it produces more uniformity and is faster to compute and
->> all that. But none of that stuff actually matters here. It was just a
->> sort of "well I'm at it..." thing.
->
-> Well, it's nice to have and you already wrote it, so seems a waste to
-> just drop it. :)
->
->> > >  static struct plugin_info latent_entropy_plugin_info = {
->> > > -     .version        = "201606141920vanilla",
->> > > +     .version        = "202203311920vanilla",
->> >
->> > This doesn't really need to be versioned. We can change this to just
->> > "vanilla", IMO.
->>
->> Okay. I suppose you want it to be in a different patch too, right? In
->> which case I'll leave it out and maybe get to it later. (I suppose one
->> probably needs to double check whether it's used for anything
->> interesting like dwarf debug info or whatever, where maybe it's
->> helpful?)
->
-> Hm, I don't think it shows up anywhere, but you can just drop the hunk
-> that touch it. I can remove them all with a separate patch later.
->
+[ Upstream commit e6e1e7b19fa132d23d09c465942aab4c110d3da9 ]
 
-Okay. That's what I did here
-https://lore.kernel.org/lkml/20220404230709.124508-1-Jason@zx2c4.com/
-so awaiting your merge. (I still find all aspects of v2 more
-preferable for a variety of weak reasons in case you'd like to merge
-that instead, but v3 is available now.)
+When CONFIG_MCF_EDMA is set (due to COMPILE_TEST, not due to
+CONFIG_M5441x), coldfire/device.c has compile errors due to
+missing MCFEDMA_* symbols. In the .config file that was provided,
+CONFIG_M5206=y, not CONFIG_M5441x, so <asm/m5441xsim.h> is not
+included in coldfire/device.c.
 
-Jason
+Only build the MCF_EDMA code in coldfire/device.c if the MCFEDMA_*
+hardware macros are defined.
+
+Fixes these build errors:
+
+../arch/m68k/coldfire/device.c:512:35: error: 'MCFEDMA_BASE' undeclared here (not in a function); did you mean 'MCFDMA_BASE1'?
+  512 |                 .start          = MCFEDMA_BASE,
+../arch/m68k/coldfire/device.c:513:50: error: 'MCFEDMA_SIZE' undeclared here (not in a function)
+  513 |                 .end            = MCFEDMA_BASE + MCFEDMA_SIZE - 1,
+../arch/m68k/coldfire/device.c:517:35: error: 'MCFEDMA_IRQ_INTR0' undeclared here (not in a function)
+  517 |                 .start          = MCFEDMA_IRQ_INTR0,
+../arch/m68k/coldfire/device.c:523:35: error: 'MCFEDMA_IRQ_INTR16' undeclared here (not in a function)
+  523 |                 .start          = MCFEDMA_IRQ_INTR16,
+../arch/m68k/coldfire/device.c:529:35: error: 'MCFEDMA_IRQ_INTR56' undeclared here (not in a function)
+  529 |                 .start          = MCFEDMA_IRQ_INTR56,
+../arch/m68k/coldfire/device.c:535:35: error: 'MCFEDMA_IRQ_ERR' undeclared here (not in a function)
+  535 |                 .start          = MCFEDMA_IRQ_ERR,
+
+Fixes: d7e9d01ac292 ("m68k: add ColdFire mcf5441x eDMA platform support")
+Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+Reported-by: kernel test robot <lkp@intel.com>
+Link: lore.kernel.org/r/202203030252.P752DK46-lkp@intel.com
+Cc: Angelo Dureghello <angelo@sysam.it>
+Cc: Greg Ungerer <gerg@kernel.org>
+Cc: Greg Ungerer <gerg@linux-m68k.org>
+Cc: Geert Uytterhoeven <geert@linux-m68k.org>
+Cc: linux-m68k@lists.linux-m68k.org
+Cc: uclinux-dev@uclinux.org
+Signed-off-by: Greg Ungerer <gerg@linux-m68k.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ arch/m68k/coldfire/device.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/arch/m68k/coldfire/device.c b/arch/m68k/coldfire/device.c
+index 59f7dfe50a4d..a055616942a1 100644
+--- a/arch/m68k/coldfire/device.c
++++ b/arch/m68k/coldfire/device.c
+@@ -480,7 +480,7 @@ static struct platform_device mcf_i2c5 = {
+ #endif /* MCFI2C_BASE5 */
+ #endif /* IS_ENABLED(CONFIG_I2C_IMX) */
+ 
+-#if IS_ENABLED(CONFIG_MCF_EDMA)
++#ifdef MCFEDMA_BASE
+ 
+ static const struct dma_slave_map mcf_edma_map[] = {
+ 	{ "dreq0", "rx-tx", MCF_EDMA_FILTER_PARAM(0) },
+@@ -552,7 +552,7 @@ static struct platform_device mcf_edma = {
+ 		.platform_data = &mcf_edma_data,
+ 	}
+ };
+-#endif /* IS_ENABLED(CONFIG_MCF_EDMA) */
++#endif /* MCFEDMA_BASE */
+ 
+ #ifdef MCFSDHC_BASE
+ static struct mcf_esdhc_platform_data mcf_esdhc_data = {
+@@ -610,7 +610,7 @@ static struct platform_device *mcf_devices[] __initdata = {
+ 	&mcf_i2c5,
+ #endif
+ #endif
+-#if IS_ENABLED(CONFIG_MCF_EDMA)
++#ifdef MCFEDMA_BASE
+ 	&mcf_edma,
+ #endif
+ #ifdef MCFSDHC_BASE
+-- 
+2.34.1
+
+
+
