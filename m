@@ -2,40 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E476C35274
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 14:32:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C7D3C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 14:32:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241679AbiDEOdt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 10:33:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48084 "EHLO
+        id S1387802AbiDEOcx (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 10:32:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58740 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238739AbiDEJcl (ORCPT
+        with ESMTP id S238903AbiDEJdC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:32:41 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C31FCFDB;
-        Tue,  5 Apr 2022 02:19:56 -0700 (PDT)
+        Tue, 5 Apr 2022 05:33:02 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A013DB;
+        Tue,  5 Apr 2022 02:20:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5C8AE615E5;
-        Tue,  5 Apr 2022 09:19:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 71EBDC385A0;
-        Tue,  5 Apr 2022 09:19:55 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2F041B81B75;
+        Tue,  5 Apr 2022 09:20:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7E5E8C385A3;
+        Tue,  5 Apr 2022 09:20:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649150395;
-        bh=j5OThtCkKw8wixPROr3bHPlF7VL+nQO2b6T38K84FyM=;
+        s=korg; t=1649150420;
+        bh=hiepfgHCUoOr2gSHKgyDZg8utOmO3xMK1AQWFOpqwto=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gPuZYEbDFkjZHgQmZwVXy2Ij8BIZJDJURDv6ajsc74PqCje/R0/cHgDygaMCwTwhE
-         hV3bmko1ZO1+xVVvIlPziu7447xJgw3jIfI31shjqHwqDIThOleT9PCMbBfbjuzbtj
-         BUHdWWaP+h58s7hhxTmXtJ9Eiqpxsv3WnjWeWRWk=
+        b=cxGp3D6HN6wXyYpj8xegz+HJikfjf4v5a4G1h50RgsGke9vykPLgUYa1FKl8PMHaM
+         nRb4dzySLrMOS/6sCsqtICCq3pQsf5uwDpdz0N2oKbjp/JcgysYowlFpPXQyWrT0hd
+         5da+IYY9ofhCuJPMmrkJN4XftOA5DHDfk+oVnrug=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Johan Hovold <johan@kernel.org>
-Subject: [PATCH 5.15 005/913] USB: serial: simple: add Nokia phone driver
-Date:   Tue,  5 Apr 2022 09:17:47 +0200
-Message-Id: <20220405070339.972994154@linuxfoundation.org>
+        stable@vger.kernel.org, Quentin Schulz <foss+kernel@0leil.net>,
+        Quentin Schulz <quentin.schulz@theobroma-systems.com>,
+        Heiko Stuebner <heiko@sntech.de>
+Subject: [PATCH 5.15 050/913] clk: rockchip: re-add rational best approximation algorithm to the fractional divider
+Date:   Tue,  5 Apr 2022 09:18:32 +0200
+Message-Id: <20220405070341.320272822@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
 References: <20220405070339.801210740@linuxfoundation.org>
@@ -47,150 +50,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Johan Hovold <johan@kernel.org>
+From: Quentin Schulz <quentin.schulz@theobroma-systems.com>
 
-commit c4b9c570965f75d0d55e639747f1e5ccdad2fae0 upstream.
+commit 10b74af310735860510a533433b1d3ab2e05a138 upstream.
 
-Add a new "simple" driver for certain Nokia phones, including Nokia 130
-(RM-1035) which exposes two serial ports in "charging only" mode:
+In commit 4e7cf74fa3b2 ("clk: fractional-divider: Export approximation
+algorithm to the CCF users"), the code handling the rational best
+approximation algorithm was replaced by a call to the core
+clk_fractional_divider_general_approximation function which did the same
+thing back then.
 
-Bus 001 Device 009: ID 0421:069a Nokia Mobile Phones 130 [RM-1035] (Charging only)
-Device Descriptor:
-  bLength                18
-  bDescriptorType         1
-  bcdUSB               2.00
-  bDeviceClass            0
-  bDeviceSubClass         0
-  bDeviceProtocol         0
-  bMaxPacketSize0         8
-  idVendor           0x0421 Nokia Mobile Phones
-  idProduct          0x069a 130 [RM-1035] (Charging only)
-  bcdDevice            1.00
-  iManufacturer           1 Nokia
-  iProduct                2 Nokia 130 (RM-1035)
-  iSerial                 0
-  bNumConfigurations      1
-  Configuration Descriptor:
-    bLength                 9
-    bDescriptorType         2
-    wTotalLength       0x0037
-    bNumInterfaces          2
-    bConfigurationValue     1
-    iConfiguration          0
-    bmAttributes         0x80
-      (Bus Powered)
-    MaxPower              500mA
-    Interface Descriptor:
-      bLength                 9
-      bDescriptorType         4
-      bInterfaceNumber        0
-      bAlternateSetting       0
-      bNumEndpoints           2
-      bInterfaceClass       255 Vendor Specific Class
-      bInterfaceSubClass    255 Vendor Specific Subclass
-      bInterfaceProtocol    255 Vendor Specific Protocol
-      iInterface              0
-      Endpoint Descriptor:
-        bLength                 7
-        bDescriptorType         5
-        bEndpointAddress     0x81  EP 1 IN
-        bmAttributes            2
-          Transfer Type            Bulk
-          Synch Type               None
-          Usage Type               Data
-        wMaxPacketSize     0x0040  1x 64 bytes
-        bInterval               0
-      Endpoint Descriptor:
-        bLength                 7
-        bDescriptorType         5
-        bEndpointAddress     0x01  EP 1 OUT
-        bmAttributes            2
-          Transfer Type            Bulk
-          Synch Type               None
-          Usage Type               Data
-        wMaxPacketSize     0x0040  1x 64 bytes
-        bInterval               0
-    Interface Descriptor:
-      bLength                 9
-      bDescriptorType         4
-      bInterfaceNumber        1
-      bAlternateSetting       0
-      bNumEndpoints           2
-      bInterfaceClass       255 Vendor Specific Class
-      bInterfaceSubClass    255 Vendor Specific Subclass
-      bInterfaceProtocol    255 Vendor Specific Protocol
-      iInterface              0
-      Endpoint Descriptor:
-        bLength                 7
-        bDescriptorType         5
-        bEndpointAddress     0x82  EP 2 IN
-        bmAttributes            2
-          Transfer Type            Bulk
-          Synch Type               None
-          Usage Type               Data
-        wMaxPacketSize     0x0040  1x 64 bytes
-        bInterval               0
-      Endpoint Descriptor:
-        bLength                 7
-        bDescriptorType         5
-        bEndpointAddress     0x02  EP 2 OUT
-        bmAttributes            2
-          Transfer Type            Bulk
-          Synch Type               None
-          Usage Type               Data
-        wMaxPacketSize     0x0040  1x 64 bytes
-        bInterval               0
-Device Status:     0x0000
-  (Bus Powered)
+However, in commit 82f53f9ee577 ("clk: fractional-divider: Introduce
+POWER_OF_TWO_PS flag"), this common code was made conditional on
+CLK_FRAC_DIVIDER_POWER_OF_TWO_PS flag which was not added back to the
+rockchip clock driver.
 
+This broke the ltk050h3146w-a2 MIPI DSI display present on a PX30-based
+downstream board.
+
+Let's add the flag to the fractional divider flags so that the original
+and intended behavior is brought back to the rockchip clock drivers.
+
+Fixes: 82f53f9ee577 ("clk: fractional-divider: Introduce POWER_OF_TWO_PS flag")
 Cc: stable@vger.kernel.org
-Link: https://lore.kernel.org/r/20220228084919.10656-1-johan@kernel.org
-Signed-off-by: Johan Hovold <johan@kernel.org>
+Cc: Quentin Schulz <foss+kernel@0leil.net>
+Signed-off-by: Quentin Schulz <quentin.schulz@theobroma-systems.com>
+Link: https://lore.kernel.org/r/20220131163224.708002-1-quentin.schulz@theobroma-systems.com
+Signed-off-by: Heiko Stuebner <heiko@sntech.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/usb/serial/Kconfig             |    1 +
- drivers/usb/serial/usb-serial-simple.c |    7 +++++++
- 2 files changed, 8 insertions(+)
+ drivers/clk/rockchip/clk.c |    3 +++
+ 1 file changed, 3 insertions(+)
 
---- a/drivers/usb/serial/Kconfig
-+++ b/drivers/usb/serial/Kconfig
-@@ -66,6 +66,7 @@ config USB_SERIAL_SIMPLE
- 		- Libtransistor USB console
- 		- a number of Motorola phones
- 		- Motorola Tetra devices
-+		- Nokia mobile phones
- 		- Novatel Wireless GPS receivers
- 		- Siemens USB/MPI adapter.
- 		- ViVOtech ViVOpay USB device.
---- a/drivers/usb/serial/usb-serial-simple.c
-+++ b/drivers/usb/serial/usb-serial-simple.c
-@@ -91,6 +91,11 @@ DEVICE(moto_modem, MOTO_IDS);
- 	{ USB_DEVICE(0x0cad, 0x9016) }	/* TPG2200 */
- DEVICE(motorola_tetra, MOTOROLA_TETRA_IDS);
+--- a/drivers/clk/rockchip/clk.c
++++ b/drivers/clk/rockchip/clk.c
+@@ -180,6 +180,7 @@ static void rockchip_fractional_approxim
+ 		unsigned long rate, unsigned long *parent_rate,
+ 		unsigned long *m, unsigned long *n)
+ {
++	struct clk_fractional_divider *fd = to_clk_fd(hw);
+ 	unsigned long p_rate, p_parent_rate;
+ 	struct clk_hw *p_parent;
  
-+/* Nokia mobile phone driver */
-+#define NOKIA_IDS()			\
-+	{ USB_DEVICE(0x0421, 0x069a) }	/* Nokia 130 (RM-1035) */
-+DEVICE(nokia, NOKIA_IDS);
+@@ -190,6 +191,8 @@ static void rockchip_fractional_approxim
+ 		*parent_rate = p_parent_rate;
+ 	}
+ 
++	fd->flags |= CLK_FRAC_DIVIDER_POWER_OF_TWO_PS;
 +
- /* Novatel Wireless GPS driver */
- #define NOVATEL_IDS()			\
- 	{ USB_DEVICE(0x09d7, 0x0100) }	/* NovAtel FlexPack GPS */
-@@ -123,6 +128,7 @@ static struct usb_serial_driver * const
- 	&vivopay_device,
- 	&moto_modem_device,
- 	&motorola_tetra_device,
-+	&nokia_device,
- 	&novatel_gps_device,
- 	&hp4x_device,
- 	&suunto_device,
-@@ -140,6 +146,7 @@ static const struct usb_device_id id_tab
- 	VIVOPAY_IDS(),
- 	MOTO_IDS(),
- 	MOTOROLA_TETRA_IDS(),
-+	NOKIA_IDS(),
- 	NOVATEL_IDS(),
- 	HP4X_IDS(),
- 	SUUNTO_IDS(),
+ 	clk_fractional_divider_general_approximation(hw, rate, parent_rate, m, n);
+ }
+ 
 
 
