@@ -2,41 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9257BC43219
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 10:17:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 751C0C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 10:17:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353805AbiDEKJ3 (ORCPT
+        id S1353828AbiDEKJe (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 06:09:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44064 "EHLO
+        Tue, 5 Apr 2022 06:09:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33842 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241074AbiDEIcr (ORCPT
+        with ESMTP id S241068AbiDEIcq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:32:47 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C66A1B91AC;
-        Tue,  5 Apr 2022 01:26:46 -0700 (PDT)
+        Tue, 5 Apr 2022 04:32:46 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1437BB91AF;
+        Tue,  5 Apr 2022 01:26:34 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 75986B81BAF;
-        Tue,  5 Apr 2022 08:26:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DD3AAC385A4;
-        Tue,  5 Apr 2022 08:26:43 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A4ED06117A;
+        Tue,  5 Apr 2022 08:26:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B6D7AC385A1;
+        Tue,  5 Apr 2022 08:26:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649147204;
-        bh=WEzZA7KphCwxsPg16crtXDZyTJfB5qhlsaeZdSfVPQE=;
+        s=korg; t=1649147193;
+        bh=UO2eg/kU3zQNVWeY1pHzVEaHjxnStJIMnFDNAI8p7yE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cSo9kjb6VUAIxXVf3yMIApMo+bdaO+TYkxR8+XQI3Hs5B0+iykw8BZNorLpmLxGFk
-         qwPuFWdS+FdJ81oMjj7gNZpO3ZevoteJohtou6efzVmSHlaJx7HZ87JR8tf4fwVfUN
-         txDWvR7BqjW/YZYbN9pNxSfN7Ns+6JxcQQ6EIrxA=
+        b=0qIB7q9TT0NU54BvDQKjjB08ARwVkt7UDZDKzpDoIW6U1udbGW5FswB+i49sqiIAZ
+         D5/FRLeF06C9e/tA/0MLnEkPyqnaefL8xiAU9YlHjZnoQnfCU/rLYex8HqmWAVJZ4f
+         etEKSShzEsYVIVa2kzHTOGuVaKaLECDm1mIEGEUo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Herbert Xu <herbert@gondor.apana.org.au>
-Subject: [PATCH 5.17 1038/1126] crypto: arm/aes-neonbs-cbc - Select generic cbc and aes
-Date:   Tue,  5 Apr 2022 09:29:45 +0200
-Message-Id: <20220405070437.942973993@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Xiaolong Huang <butterflyhuangxx@gmail.com>,
+        David Howells <dhowells@redhat.com>,
+        Marc Dionne <marc.dionne@auristor.com>,
+        linux-afs@lists.infradead.org, Paolo Abeni <pabeni@redhat.com>
+Subject: [PATCH 5.17 1034/1126] rxrpc: fix some null-ptr-deref bugs in server_key.c
+Date:   Tue,  5 Apr 2022 09:29:41 +0200
+Message-Id: <20220405070437.826693540@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -48,31 +52,87 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Herbert Xu <herbert@gondor.apana.org.au>
+From: Xiaolong Huang <butterflyhuangxx@gmail.com>
 
-commit c8bd296cca3434b13b28b074eaeb78a23284de77 upstream.
+commit ff8376ade4f668130385839cef586a0990f8ef87 upstream.
 
-The algorithm __cbc-aes-neonbs requires a fallback so we need
-to select the config options for them or otherwise it will fail
-to register on boot-up.
+Some function calls are not implemented in rxrpc_no_security, there are
+preparse_server_key, free_preparse_server_key and destroy_server_key.
+When rxrpc security type is rxrpc_no_security, user can easily trigger a
+null-ptr-deref bug via ioctl. So judgment should be added to prevent it
 
-Fixes: 00b99ad2bac2 ("crypto: arm/aes-neonbs - Use generic cbc...")
-Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+The crash log:
+user@syzkaller:~$ ./rxrpc_preparse_s
+[   37.956878][T15626] BUG: kernel NULL pointer dereference, address: 0000000000000000
+[   37.957645][T15626] #PF: supervisor instruction fetch in kernel mode
+[   37.958229][T15626] #PF: error_code(0x0010) - not-present page
+[   37.958762][T15626] PGD 4aadf067 P4D 4aadf067 PUD 4aade067 PMD 0
+[   37.959321][T15626] Oops: 0010 [#1] PREEMPT SMP
+[   37.959739][T15626] CPU: 0 PID: 15626 Comm: rxrpc_preparse_ Not tainted 5.17.0-01442-gb47d5a4f6b8d #43
+[   37.960588][T15626] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.13.0-1ubuntu1 04/01/2014
+[   37.961474][T15626] RIP: 0010:0x0
+[   37.961787][T15626] Code: Unable to access opcode bytes at RIP 0xffffffffffffffd6.
+[   37.962480][T15626] RSP: 0018:ffffc9000d9abdc0 EFLAGS: 00010286
+[   37.963018][T15626] RAX: ffffffff84335200 RBX: ffff888012a1ce80 RCX: 0000000000000000
+[   37.963727][T15626] RDX: 0000000000000000 RSI: ffffffff84a736dc RDI: ffffc9000d9abe48
+[   37.964425][T15626] RBP: ffffc9000d9abe48 R08: 0000000000000000 R09: 0000000000000002
+[   37.965118][T15626] R10: 000000000000000a R11: f000000000000000 R12: ffff888013145680
+[   37.965836][T15626] R13: 0000000000000000 R14: ffffffffffffffec R15: ffff8880432aba80
+[   37.966441][T15626] FS:  00007f2177907700(0000) GS:ffff88803ec00000(0000) knlGS:0000000000000000
+[   37.966979][T15626] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[   37.967384][T15626] CR2: ffffffffffffffd6 CR3: 000000004aaf1000 CR4: 00000000000006f0
+[   37.967864][T15626] Call Trace:
+[   37.968062][T15626]  <TASK>
+[   37.968240][T15626]  rxrpc_preparse_s+0x59/0x90
+[   37.968541][T15626]  key_create_or_update+0x174/0x510
+[   37.968863][T15626]  __x64_sys_add_key+0x139/0x1d0
+[   37.969165][T15626]  do_syscall_64+0x35/0xb0
+[   37.969451][T15626]  entry_SYSCALL_64_after_hwframe+0x44/0xae
+[   37.969824][T15626] RIP: 0033:0x43a1f9
+
+Signed-off-by: Xiaolong Huang <butterflyhuangxx@gmail.com>
+Tested-by: Xiaolong Huang <butterflyhuangxx@gmail.com>
+Signed-off-by: David Howells <dhowells@redhat.com>
+Acked-by: Marc Dionne <marc.dionne@auristor.com>
+cc: linux-afs@lists.infradead.org
+Link: http://lists.infradead.org/pipermail/linux-afs/2022-March/005069.html
+Fixes: 12da59fcab5a ("rxrpc: Hand server key parsing off to the security class")
+Link: https://lore.kernel.org/r/164865013439.2941502.8966285221215590921.stgit@warthog.procyon.org.uk
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm/crypto/Kconfig |    2 ++
- 1 file changed, 2 insertions(+)
+ net/rxrpc/server_key.c |    7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
---- a/arch/arm/crypto/Kconfig
-+++ b/arch/arm/crypto/Kconfig
-@@ -102,6 +102,8 @@ config CRYPTO_AES_ARM_BS
- 	depends on KERNEL_MODE_NEON
- 	select CRYPTO_SKCIPHER
- 	select CRYPTO_LIB_AES
-+	select CRYPTO_AES
-+	select CRYPTO_CBC
- 	select CRYPTO_SIMD
- 	help
- 	  Use a faster and more secure NEON based implementation of AES in CBC,
+--- a/net/rxrpc/server_key.c
++++ b/net/rxrpc/server_key.c
+@@ -84,6 +84,9 @@ static int rxrpc_preparse_s(struct key_p
+ 
+ 	prep->payload.data[1] = (struct rxrpc_security *)sec;
+ 
++	if (!sec->preparse_server_key)
++		return -EINVAL;
++
+ 	return sec->preparse_server_key(prep);
+ }
+ 
+@@ -91,7 +94,7 @@ static void rxrpc_free_preparse_s(struct
+ {
+ 	const struct rxrpc_security *sec = prep->payload.data[1];
+ 
+-	if (sec)
++	if (sec && sec->free_preparse_server_key)
+ 		sec->free_preparse_server_key(prep);
+ }
+ 
+@@ -99,7 +102,7 @@ static void rxrpc_destroy_s(struct key *
+ {
+ 	const struct rxrpc_security *sec = key->payload.data[1];
+ 
+-	if (sec)
++	if (sec && sec->destroy_server_key)
+ 		sec->destroy_server_key(key);
+ }
+ 
 
 
