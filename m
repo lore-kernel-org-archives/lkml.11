@@ -2,82 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 40EAAC46467
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7CFB3C3527B
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 21:50:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383947AbiDEVqe (ORCPT
+        id S1384110AbiDEVqy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 17:46:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42536 "EHLO
+        Tue, 5 Apr 2022 17:46:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50492 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1457744AbiDEQiy (ORCPT
+        with ESMTP id S1357969AbiDEK1g (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 12:38:54 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C295D4C84
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 09:36:56 -0700 (PDT)
-From:   Thomas Gleixner <tglx@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1649176614;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=IPEm072E8FKkKXf7xYeG5Rr06A0qV3ZtKJkAJTFl2us=;
-        b=3XBImYBOM467XP0kbv6mEhGJH9yCiVcCoJfXXYMexLgp+09PEf3G5eRgfXEjGizbfY32li
-        q6Aloaa5xst6kaWm5GtIRE09YN/xUipA1gYkJX2Tcv7SfSMwp7jeb/DD3QG5ufx4uJXVW4
-        dNI31rW0IipHqyvR9vNIWyCVYK7zn8BdYHwZ9cfH11WncF4vBt471/ztTReir7T14SMBkz
-        Wa2d8uX2PERiZFubN+rP7NuDNQOnaeUboGpzC59ZmLWnzUPsFmNayQC1run6FRSg0xInN+
-        ++XFDB4T3SZ7bpCgBG8bt7NQixPE6hv1PWoDEgNe/BIBXICNhjN2uKQx/pwIpg==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1649176614;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=IPEm072E8FKkKXf7xYeG5Rr06A0qV3ZtKJkAJTFl2us=;
-        b=VA4Z9W9LDNsjaTBzCefRUHmN/VkusECn5JukLM4m3q1lGIhpV/RudqrrPe9DEdIb54jgPm
-        Zm1RDhYOsNdYt2Aw==
-To:     Alexey Dobriyan <adobriyan@gmail.com>, x86@kernel.org
-Cc:     mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
-        hpa@zytor.com, linux-kernel@vger.kernel.org, adobriyan@gmail.com
-Subject: Re: [PATCH 1/5] x86/alternative: simplify DUMP_BYTES macro
-In-Reply-To: <20220311144312.88466-1-adobriyan@gmail.com>
-References: <20220311144312.88466-1-adobriyan@gmail.com>
-Date:   Tue, 05 Apr 2022 18:36:53 +0200
-Message-ID: <87v8vn1o7u.ffs@tglx>
+        Tue, 5 Apr 2022 06:27:36 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45581C6ED3;
+        Tue,  5 Apr 2022 03:11:48 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 88BCE6179E;
+        Tue,  5 Apr 2022 10:11:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A03C7C385A0;
+        Tue,  5 Apr 2022 10:11:46 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649153507;
+        bh=xxS6GdHGJkYMjVSVrUfCKW1ErDOC0rmcttmcIAWQ56U=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=PJOLJdE2qkGUxCieV9Th6IkEQjQVZ7jIYxizaoHDYHw7Q7CEPwDu0B/rCWwTYgNzT
+         ihuhVFhYqMUWyvArNaygDm5j9TPBF/4HN+LH94mbcy2KjxaW807HTEcvJHokvqZz+9
+         8uv/aEDelDfUO9iV0+oMfRjuDRtS81Fq2KZG336o=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        Daniel Thompson <daniel.thompson@linaro.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 207/599] soc: qcom: aoss: remove spurious IRQF_ONESHOT flags
+Date:   Tue,  5 Apr 2022 09:28:21 +0200
+Message-Id: <20220405070305.001769569@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
+References: <20220405070258.802373272@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Mar 11 2022 at 17:43, Alexey Dobriyan wrote:
-> Avoid zero length check with clever whitespace placement in the format
-> string.
->
-> Signed-off-by: Alexey Dobriyan (CloudLinux) <adobriyan@gmail.com>
-> ---
->  arch/x86/kernel/alternative.c | 21 +++++++++------------
->  1 file changed, 9 insertions(+), 12 deletions(-)
->
-> diff --git a/arch/x86/kernel/alternative.c b/arch/x86/kernel/alternative.c
-> index 5007c3ffe96f..6c9758ee6810 100644
-> --- a/arch/x86/kernel/alternative.c
-> +++ b/arch/x86/kernel/alternative.c
-> @@ -66,13 +66,10 @@ do {									\
->  	if (unlikely(debug_alternative)) {				\
->  		int j;							\
->  									\
-> -		if (!(len))						\
-> -			break;						\
-> -									\
+From: Daniel Thompson <daniel.thompson@linaro.org>
 
-How does that clever whitespace placement prevent this being printed in
-the len == 0 case, which is a legit case?
+[ Upstream commit 8030cb9a55688c1339edd284d9d6ce5f9fc75160 ]
 
->  		printk(KERN_DEBUG pr_fmt(fmt), ##args);			\
+Quoting the header comments, IRQF_ONESHOT is "Used by threaded interrupts
+which need to keep the irq line disabled until the threaded handler has
+been run.". When applied to an interrupt that doesn't request a threaded
+irq then IRQF_ONESHOT has a lesser known (undocumented?) side effect,
+which it to disable the forced threading of the irq. For "normal" kernels
+(without forced threading) then, if there is no thread_fn, then
+IRQF_ONESHOT is a nop.
 
-This is debug muck. So why does it have to be "optimized"?
+In this case disabling forced threading is not appropriate for this driver
+because it calls wake_up_all() and this API cannot be called from
+no-thread interrupt handlers on PREEMPT_RT systems (deadlock risk, triggers
+sleeping-while-atomic warnings).
 
-Thanks,
+Fix this by removing IRQF_ONESHOT.
 
-        tglx
+Fixes: 2209481409b7 ("soc: qcom: Add AOSS QMP driver")
+Signed-off-by: Daniel Thompson <daniel.thompson@linaro.org>
+[bjorn: Added Fixes tag]
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Link: https://lore.kernel.org/r/20220127173554.158111-1-daniel.thompson@linaro.org
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/soc/qcom/qcom_aoss.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/soc/qcom/qcom_aoss.c b/drivers/soc/qcom/qcom_aoss.c
+index 4fe88d4690e2..941499b11758 100644
+--- a/drivers/soc/qcom/qcom_aoss.c
++++ b/drivers/soc/qcom/qcom_aoss.c
+@@ -548,7 +548,7 @@ static int qmp_probe(struct platform_device *pdev)
+ 	}
+ 
+ 	irq = platform_get_irq(pdev, 0);
+-	ret = devm_request_irq(&pdev->dev, irq, qmp_intr, IRQF_ONESHOT,
++	ret = devm_request_irq(&pdev->dev, irq, qmp_intr, 0,
+ 			       "aoss-qmp", qmp);
+ 	if (ret < 0) {
+ 		dev_err(&pdev->dev, "failed to request interrupt\n");
+-- 
+2.34.1
+
+
+
