@@ -2,74 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 52135C35296
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C1492C352AA
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:19:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234155AbiDEIMR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 04:12:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55540 "EHLO
+        id S234335AbiDEIMw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 04:12:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48508 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233645AbiDEH5V (ORCPT
+        with ESMTP id S233863AbiDEH5r (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 03:57:21 -0400
-Received: from mx.socionext.com (mx.socionext.com [202.248.49.38])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B3FE44ECFA;
-        Tue,  5 Apr 2022 00:51:19 -0700 (PDT)
-Received: from unknown (HELO kinkan2-ex.css.socionext.com) ([172.31.9.52])
-  by mx.socionext.com with ESMTP; 05 Apr 2022 16:51:15 +0900
-Received: from mail.mfilter.local (m-filter-1 [10.213.24.61])
-        by kinkan2-ex.css.socionext.com (Postfix) with ESMTP id A85A92058443;
-        Tue,  5 Apr 2022 16:51:15 +0900 (JST)
-Received: from 172.31.9.51 (172.31.9.51) by m-FILTER with ESMTP; Tue, 5 Apr 2022 16:51:15 +0900
-Received: from plum.e01.socionext.com (unknown [10.212.243.119])
-        by kinkan2.css.socionext.com (Postfix) with ESMTP id 1BFF9B6389;
-        Tue,  5 Apr 2022 16:51:15 +0900 (JST)
-From:   Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
-To:     Jingoo Han <jingoohan1@gmail.com>,
-        Gustavo Pimentel <gustavo.pimentel@synopsys.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>
-Cc:     Masami Hiramatsu <mhiramat@kernel.org>, linux-pci@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org,
-        Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
-Subject: [PATCH 1/3] dt-bindings: PCI: designware-ep: Increase maxItems of reg and reg-names
-Date:   Tue,  5 Apr 2022 16:51:00 +0900
-Message-Id: <1649145062-29833-2-git-send-email-hayashi.kunihiko@socionext.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1649145062-29833-1-git-send-email-hayashi.kunihiko@socionext.com>
-References: <1649145062-29833-1-git-send-email-hayashi.kunihiko@socionext.com>
+        Tue, 5 Apr 2022 03:57:47 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D826553739;
+        Tue,  5 Apr 2022 00:51:33 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AAFCAB81B16;
+        Tue,  5 Apr 2022 07:51:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 083FCC340EE;
+        Tue,  5 Apr 2022 07:51:27 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649145088;
+        bh=pSydohIEH8hAnUftG32WzdKMxDIz2MIh7j3q0vM9n6U=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=svAhnZb6o5NpDW2oTrumtUFOCl/Y5044pVzRlos7+YkIWrd0gvpYZ0JwPkYcrtv9f
+         skovc18z2ncsoM/1wKxgHYD7uCnS6oOIWjUyB/7igKsRtRZ+HwFxFp5MY/1qJUqBaV
+         u7SHKIy/eXFTYlsOyzdomT630gErE4TQcQdQRLK0=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Minye Zhu <zhuminye@bytedance.com>,
+        Chengming Zhou <zhouchengming@bytedance.com>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        Tejun Heo <tj@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 0280/1126] sched/cpuacct: Fix charge percpu cpuusage
+Date:   Tue,  5 Apr 2022 09:17:07 +0200
+Message-Id: <20220405070415.828840858@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
+References: <20220405070407.513532867@linuxfoundation.org>
+User-Agent: quilt/0.66
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-UniPhier PCIe EP controller has 5 register mappings (dbi, dbi2, link,
-config and atu), so maxItems of "reg" and "reg-names" should allow 5.
+From: Chengming Zhou <zhouchengming@bytedance.com>
 
-Signed-off-by: Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
+[ Upstream commit 248cc9993d1cc12b8e9ed716cc3fc09f6c3517dd ]
+
+The cpuacct_account_field() is always called by the current task
+itself, so it's ok to use __this_cpu_add() to charge the tick time.
+
+But cpuacct_charge() maybe called by update_curr() in load_balance()
+on a random CPU, different from the CPU on which the task is running.
+So __this_cpu_add() will charge that cputime to a random incorrect CPU.
+
+Fixes: 73e6aafd9ea8 ("sched/cpuacct: Simplify the cpuacct code")
+Reported-by: Minye Zhu <zhuminye@bytedance.com>
+Signed-off-by: Chengming Zhou <zhouchengming@bytedance.com>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Acked-by: Tejun Heo <tj@kernel.org>
+Link: https://lore.kernel.org/r/20220220051426.5274-1-zhouchengming@bytedance.com
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- Documentation/devicetree/bindings/pci/snps,dw-pcie-ep.yaml | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ kernel/sched/cpuacct.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/Documentation/devicetree/bindings/pci/snps,dw-pcie-ep.yaml b/Documentation/devicetree/bindings/pci/snps,dw-pcie-ep.yaml
-index e59059ab5be0..03f97e7c4089 100644
---- a/Documentation/devicetree/bindings/pci/snps,dw-pcie-ep.yaml
-+++ b/Documentation/devicetree/bindings/pci/snps,dw-pcie-ep.yaml
-@@ -28,11 +28,11 @@ properties:
-       versions.
-       For designware core version >= 4.80, it may contain ATU address space.
-     minItems: 2
--    maxItems: 4
-+    maxItems: 5
+diff --git a/kernel/sched/cpuacct.c b/kernel/sched/cpuacct.c
+index 3d06c5e4220d..307800586ac8 100644
+--- a/kernel/sched/cpuacct.c
++++ b/kernel/sched/cpuacct.c
+@@ -334,12 +334,13 @@ static struct cftype files[] = {
+  */
+ void cpuacct_charge(struct task_struct *tsk, u64 cputime)
+ {
++	unsigned int cpu = task_cpu(tsk);
+ 	struct cpuacct *ca;
  
-   reg-names:
-     minItems: 2
--    maxItems: 4
-+    maxItems: 5
-     items:
-       enum: [dbi, dbi2, config, atu, addr_space, link, atu_dma, appl]
+ 	rcu_read_lock();
  
+ 	for (ca = task_ca(tsk); ca; ca = parent_ca(ca))
+-		__this_cpu_add(*ca->cpuusage, cputime);
++		*per_cpu_ptr(ca->cpuusage, cpu) += cputime;
+ 
+ 	rcu_read_unlock();
+ }
 -- 
-2.25.1
+2.34.1
+
+
 
