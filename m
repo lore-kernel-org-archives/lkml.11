@@ -2,93 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B77BC433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A1F7C3527B
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 21:10:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354365AbiDEVKb (ORCPT
+        id S1354742AbiDEVKd (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 17:10:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52492 "EHLO
+        Tue, 5 Apr 2022 17:10:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33008 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1387700AbiDENP0 (ORCPT
+        with ESMTP id S240264AbiDEKbi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 09:15:26 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id AAD1612F156
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 05:21:14 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 08866D6E;
-        Tue,  5 Apr 2022 05:21:14 -0700 (PDT)
-Received: from [192.168.178.6] (unknown [172.31.20.19])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 2881B3F5A1;
-        Tue,  5 Apr 2022 05:21:12 -0700 (PDT)
-Message-ID: <f71d132d-02a0-918c-ab2b-3234d0d492a4@arm.com>
-Date:   Tue, 5 Apr 2022 14:21:10 +0200
+        Tue, 5 Apr 2022 06:31:38 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 146C23BE;
+        Tue,  5 Apr 2022 03:18:31 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A3F5861777;
+        Tue,  5 Apr 2022 10:18:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8B50EC385A2;
+        Tue,  5 Apr 2022 10:18:29 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649153910;
+        bh=jdRZxhGVBh24b1pO4PjXneg0iSK34WICAWHCxcRCZRY=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=Ls9qXCY8u3E6s1z6AbJhKOcYTxGGyA8Lm5V4JflnJVGxcD4sUa5Ce13eOk/SawvmX
+         DJn6ZYcYR/J1XVNeR65zVDEsFmfBnIRgecL0vl42/o2LHVD11JN0KfNjnuIjImQxQx
+         F2Sbbb8D4ELKgt+0IRSCtWONR6tU1G8MW/TxcZCA=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Andrzej Hajda <andrzej.hajda@intel.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Laurent Pinchart <Laurent.pinchart@ideasonboard.com>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        Vinod Koul <vkoul@kernel.org>,
+        Heiko Stuebner <heiko@sntech.de>,
+        Maxime Ripard <mripard@kernel.org>,
+        =?UTF-8?q?Guido=20G=C3=BCnther?= <agx@sigxcpu.org>,
+        Liu Ying <victor.liu@nxp.com>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 391/599] phy: dphy: Correct lpx parameter and its derivatives(ta_{get,go,sure})
+Date:   Tue,  5 Apr 2022 09:31:25 +0200
+Message-Id: <20220405070310.466368441@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
+References: <20220405070258.802373272@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [Linux 5.18-rc1] WARNING: CPU: 1 PID: 0 at
- kernel/sched/fair.c:3355 update_blocked_averages
-Content-Language: en-US
-To:     Ammar Faizi <ammarfaizi2@gnuweeb.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Cc:     Ben Segall <bsegall@google.com>,
-        Daniel Bristot de Oliveira <bristot@redhat.com>,
-        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Mel Gorman <mgorman@suse.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Vincent Guittot <vincent.guittot@linaro.org>
-References: <b86541ea-7d96-5a24-1b65-37c24c70d3ff@gnuweeb.org>
-From:   Dietmar Eggemann <dietmar.eggemann@arm.com>
-In-Reply-To: <b86541ea-7d96-5a24-1b65-37c24c70d3ff@gnuweeb.org>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 04/04/2022 08:19, Ammar Faizi wrote:
-> 
-> Hello scheduler maintainers,
-> 
-> I got the following warning in Linux 5.18-rc1, I don't have the
-> reproducer yet,
-> it happens randomly. Please shed some light.
+From: Liu Ying <victor.liu@nxp.com>
 
-Tried to recreate the issue but no success so far. I used you config
-file, clang-14 and a Xeon CPU E5-2690 v2 (2 sockets 40 CPUs) with 20
-two-level cgoupv1 taskgroups '/X/Y' with 'hackbench (10 groups, 40 fds)
-+ idling' running in all '/X/Y/'.
+[ Upstream commit 3153fa38e38af566cf6454a03b1dbadaf6f323c0 ]
 
-What userspace are you running?
+According to the comment of the function phy_mipi_dphy_get_default_config(),
+it uses minimum D-PHY timings based on MIPI D-PHY specification.  They are
+derived from the valid ranges specified in Section 6.9, Table 14, Page 41
+of the D-PHY specification (v1.2).  The table 14 explicitly mentions that
+the minimum T-LPX parameter is 50 nanoseconds and the minimum TA-SURE
+parameter is T-LPX nanoseconds.  Likewise, the kernel doc of the 'lpx' and
+'ta_sure' members of struct phy_configure_opts_mipi_dphy mentions that
+the minimum values are 50000 picoseconds and @lpx picoseconds respectively.
+Also, the function phy_mipi_dphy_config_validate() checks if cfg->lpx is
+less than 50000 picoseconds and if cfg->ta_sure is less than cfg->lpx,
+which hints the same minimum values.
 
-There seemed to be some pressure on your machine when it happened?
+Without this patch, the function phy_mipi_dphy_get_default_config()
+wrongly sets cfg->lpx to 60000 picoseconds and cfg->ta_sure to 2 * cfg->lpx.
+So, let's correct them to 50000 picoseconds and cfg->lpx respectively.
 
-> <6>[13420.623334][    C7] perf: interrupt took too long (2530 > 2500),
-> lowering kernel.perf_event_max_sample_rate to 78900
+Note that I've only tested the patch with RM67191 DSI panel on i.MX8mq EVK.
+Help is needed to test with other i.MX8mq, Meson and Rockchip platforms,
+as I don't have the hardwares.
 
-Maybe you could split the SCHED_WARN_ON so we know which signal causes this?
+Fixes: dddc97e82303 ("phy: dphy: Add configuration helpers")
+Cc: Andrzej Hajda <andrzej.hajda@intel.com>
+Cc: Neil Armstrong <narmstrong@baylibre.com>
+Cc: Laurent Pinchart <Laurent.pinchart@ideasonboard.com>
+Cc: Kishon Vijay Abraham I <kishon@ti.com>
+Cc: Vinod Koul <vkoul@kernel.org>
+Cc: Heiko Stuebner <heiko@sntech.de>
+Cc: Maxime Ripard <mripard@kernel.org>
+Cc: Guido Günther <agx@sigxcpu.org>
+Signed-off-by: Liu Ying <victor.liu@nxp.com>
+Link: https://lore.kernel.org/r/20220216071257.1647703-1-victor.liu@nxp.com
+Signed-off-by: Vinod Koul <vkoul@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/phy/phy-core-mipi-dphy.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
-index d4bd299d67ab..0d45e09e5bfc 100644
---- a/kernel/sched/fair.c
-+++ b/kernel/sched/fair.c
-@@ -3350,9 +3350,9 @@ static inline bool cfs_rq_is_decayed(struct cfs_rq
-*cfs_rq)
-         * Make sure that rounding and/or propagation of PELT values never
-         * break this.
-         */
--       SCHED_WARN_ON(cfs_rq->avg.load_avg ||
--                     cfs_rq->avg.util_avg ||
--                     cfs_rq->avg.runnable_avg);
-+       SCHED_WARN_ON(cfs_rq->avg.load_avg);
-+       SCHED_WARN_ON(cfs_rq->avg.util_avg);
-+       SCHED_WARN_ON(cfs_rq->avg.runnable_avg);
+diff --git a/drivers/phy/phy-core-mipi-dphy.c b/drivers/phy/phy-core-mipi-dphy.c
+index 14e0551cd319..0aa740b73d0d 100644
+--- a/drivers/phy/phy-core-mipi-dphy.c
++++ b/drivers/phy/phy-core-mipi-dphy.c
+@@ -66,10 +66,10 @@ int phy_mipi_dphy_get_default_config(unsigned long pixel_clock,
+ 	cfg->hs_trail = max(4 * 8 * ui, 60000 + 4 * 4 * ui);
+ 
+ 	cfg->init = 100;
+-	cfg->lpx = 60000;
++	cfg->lpx = 50000;
+ 	cfg->ta_get = 5 * cfg->lpx;
+ 	cfg->ta_go = 4 * cfg->lpx;
+-	cfg->ta_sure = 2 * cfg->lpx;
++	cfg->ta_sure = cfg->lpx;
+ 	cfg->wakeup = 1000;
+ 
+ 	cfg->hs_clk_rate = hs_clk_rate;
+-- 
+2.34.1
 
-        return true;
- }
 
-[...]
+
