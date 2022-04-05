@@ -2,81 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EF2CFC43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D1B4AC4321E
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:15:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1441887AbiDEUHF (ORCPT
+        id S1392411AbiDEUG4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 16:07:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43020 "EHLO
+        Tue, 5 Apr 2022 16:06:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50790 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354632AbiDENH2 (ORCPT
+        with ESMTP id S1358184AbiDEK2F (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 09:07:28 -0400
-Received: from ssl.serverraum.org (ssl.serverraum.org [176.9.125.105])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C4A4222B2;
-        Tue,  5 Apr 2022 05:09:57 -0700 (PDT)
-Received: from mwalle01.kontron.local. (unknown [213.135.10.150])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        Tue, 5 Apr 2022 06:28:05 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 458D69E9D5;
+        Tue,  5 Apr 2022 03:16:27 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id 8DC8022247;
-        Tue,  5 Apr 2022 14:09:55 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1649160595;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=N3QegVmrV1duTmro584pVd3S+Weu0aeOJNo5pVDKL/g=;
-        b=b6AzGRPwXUkUocumc/PNKiR8cbZZ5gdSpF5XNLOzJ6dkBWvgO3nBiip2cWD9JVhff1tyah
-        IvofnNScb4uzbrOmQE+9ZJfHSmkyEdgTKMrT4GmcpyqfbN8REAWC5qR4g/cdXc/++hn1Wq
-        34bMgfY+8B7cuY0DoEk0GBnuP6bkIAg=
-From:   Michael Walle <michael@walle.cc>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>
-Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Michael Walle <michael@walle.cc>
-Subject: [PATCH net-next v3 0/3] net: phy: mscc-miim: add MDIO bus frequency support
-Date:   Tue,  5 Apr 2022 14:09:48 +0200
-Message-Id: <20220405120951.4044875-1-michael@walle.cc>
-X-Mailer: git-send-email 2.30.2
+        by ams.source.kernel.org (Postfix) with ESMTPS id EDE62B81B7A;
+        Tue,  5 Apr 2022 10:16:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 68454C385A0;
+        Tue,  5 Apr 2022 10:16:24 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649153784;
+        bh=vC3HpaQC66yZXonEgmL5Uq5YOTH5rq+MgVEPdR036Wo=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=RPsQraQ7SNI3hcqDJ6P+JEBa54aV+IfT8u3m5VB9JI+v0JcfX2EBCd4Xa0s0vjM1e
+         sNvSLQWfXySg8QqSdiY1ItobycgkT+vUAd0iNiVqD0RZlqusbPAA8YmwGmtTn3Ft6W
+         R39qvUfPzfqoyZ4mVABjTY5pzpgFDk40whuPkRi8=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Felix Maurer <fmaurer@redhat.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 346/599] selftests/bpf: Make test_lwt_ip_encap more stable and faster
+Date:   Tue,  5 Apr 2022 09:30:40 +0200
+Message-Id: <20220405070309.124744738@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
+References: <20220405070258.802373272@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Introduce MDIO bus frequency support. This way the board can have a
-faster (or maybe slower) bus frequency than the hardware default.
+From: Felix Maurer <fmaurer@redhat.com>
 
-changes since v2:
- - resend, no RFC anymore, because net-next is open again
+[ Upstream commit d23a8720327d33616f584d76c80824bfa4699be6 ]
 
-changes since v1:
- - fail probe if clock-frequency is set, but not clock is given
- - rename clk_freq to bus_freq
- - add maxItems to interrupts property
- - put compatible and reg first in the example
+In test_lwt_ip_encap, the ingress IPv6 encap test failed from time to
+time. The failure occured when an IPv4 ping through the IPv6 GRE
+encapsulation did not receive a reply within the timeout. The IPv4 ping
+and the IPv6 ping in the test used different timeouts (1 sec for IPv4
+and 6 sec for IPv6), probably taking into account that IPv6 might need
+longer to successfully complete. However, when IPv4 pings (with the
+short timeout) are encapsulated into the IPv6 tunnel, the delays of IPv6
+apply.
 
-Michael Walle (3):
-  dt-bindings: net: convert mscc-miim to YAML format
-  dt-bindings: net: mscc-miim: add clock and clock-frequency
-  net: phy: mscc-miim: add support to set MDIO bus frequency
+The actual reason for the long delays with IPv6 was that the IPv6
+neighbor discovery sometimes did not complete in time. This was caused
+by the outgoing interface only having a tentative link local address,
+i.e., not having completed DAD for that lladdr. The ND was successfully
+retried after 1 sec but that was too late for the ping timeout.
 
- .../devicetree/bindings/net/mscc,miim.yaml    | 61 +++++++++++++++++++
- .../devicetree/bindings/net/mscc-miim.txt     | 26 --------
- drivers/net/mdio/mdio-mscc-miim.c             | 58 +++++++++++++++++-
- 3 files changed, 117 insertions(+), 28 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/net/mscc,miim.yaml
- delete mode 100644 Documentation/devicetree/bindings/net/mscc-miim.txt
+The IPv6 addresses for the test were already added with nodad. However,
+for the lladdrs, DAD was still performed. We now disable DAD in the test
+netns completely and just assume that the two lladdrs on each veth pair
+do not collide. This removes all the delays for IPv6 traffic in the
+test.
 
+Without the delays, we can now also reduce the delay of the IPv6 ping to
+1 sec. This makes the whole test complete faster because we don't need
+to wait for the excessive timeout for each IPv6 ping that is supposed
+to fail.
+
+Fixes: 0fde56e4385b0 ("selftests: bpf: add test_lwt_ip_encap selftest")
+Signed-off-by: Felix Maurer <fmaurer@redhat.com>
+Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+Link: https://lore.kernel.org/bpf/4987d549d48b4e316cd5b3936de69c8d4bc75a4f.1646305899.git.fmaurer@redhat.com
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ tools/testing/selftests/bpf/test_lwt_ip_encap.sh | 10 +++++++++-
+ 1 file changed, 9 insertions(+), 1 deletion(-)
+
+diff --git a/tools/testing/selftests/bpf/test_lwt_ip_encap.sh b/tools/testing/selftests/bpf/test_lwt_ip_encap.sh
+index b497bb85b667..6c69c42b1d60 100755
+--- a/tools/testing/selftests/bpf/test_lwt_ip_encap.sh
++++ b/tools/testing/selftests/bpf/test_lwt_ip_encap.sh
+@@ -120,6 +120,14 @@ setup()
+ 	ip netns exec ${NS2} sysctl -wq net.ipv4.conf.default.rp_filter=0
+ 	ip netns exec ${NS3} sysctl -wq net.ipv4.conf.default.rp_filter=0
+ 
++	# disable IPv6 DAD because it sometimes takes too long and fails tests
++	ip netns exec ${NS1} sysctl -wq net.ipv6.conf.all.accept_dad=0
++	ip netns exec ${NS2} sysctl -wq net.ipv6.conf.all.accept_dad=0
++	ip netns exec ${NS3} sysctl -wq net.ipv6.conf.all.accept_dad=0
++	ip netns exec ${NS1} sysctl -wq net.ipv6.conf.default.accept_dad=0
++	ip netns exec ${NS2} sysctl -wq net.ipv6.conf.default.accept_dad=0
++	ip netns exec ${NS3} sysctl -wq net.ipv6.conf.default.accept_dad=0
++
+ 	ip link add veth1 type veth peer name veth2
+ 	ip link add veth3 type veth peer name veth4
+ 	ip link add veth5 type veth peer name veth6
+@@ -289,7 +297,7 @@ test_ping()
+ 		ip netns exec ${NS1} ping  -c 1 -W 1 -I veth1 ${IPv4_DST} 2>&1 > /dev/null
+ 		RET=$?
+ 	elif [ "${PROTO}" == "IPv6" ] ; then
+-		ip netns exec ${NS1} ping6 -c 1 -W 6 -I veth1 ${IPv6_DST} 2>&1 > /dev/null
++		ip netns exec ${NS1} ping6 -c 1 -W 1 -I veth1 ${IPv6_DST} 2>&1 > /dev/null
+ 		RET=$?
+ 	else
+ 		echo "    test_ping: unknown PROTO: ${PROTO}"
 -- 
-2.30.2
+2.34.1
+
+
 
