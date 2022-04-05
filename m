@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3EF5CC47082
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B4B4EC47084
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:56:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379491AbiDEMxH (ORCPT
+        id S1379840AbiDEMx0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 08:53:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38158 "EHLO
+        Tue, 5 Apr 2022 08:53:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51010 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245226AbiDEJLp (ORCPT
+        with ESMTP id S245717AbiDEJMM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:11:45 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78D2C2B267;
-        Tue,  5 Apr 2022 01:59:56 -0700 (PDT)
+        Tue, 5 Apr 2022 05:12:12 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89CB72656A;
+        Tue,  5 Apr 2022 02:00:11 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C1EFBB80DA1;
-        Tue,  5 Apr 2022 08:59:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3612AC385A1;
-        Tue,  5 Apr 2022 08:59:53 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5196E61572;
+        Tue,  5 Apr 2022 09:00:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5A71CC385A0;
+        Tue,  5 Apr 2022 09:00:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649149193;
-        bh=wTZLCXNOjVt+S6FiSZPMEAOxnXnFypP8IM3fxUsZe+U=;
+        s=korg; t=1649149210;
+        bh=Cipu5dWvA4Fcfg5SJvwbNaPMyLdpjhlldvr5qdKcBmo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=t7cNeZgbKTOsfZ88WTrFoognw1K0+mz6eijw6geJTJAKPbycM41xRjqlKmm6t1o4h
-         dD1Z11Pda50DqByC1UF8in1p0e8tNTKPk7CzBEyupyvmJrSK0E+Y/atwz5AwArJc5o
-         1HYRrPXVj5bIThAHMI+ayEwyW72j5GbrcmIs1sMc=
+        b=KstjAr5ybHDHJF4+xQ1TMOFH5nCxI5Tnydp7I7oVp2ldmegfZf5S2mMsGCOWac+QZ
+         w0/vMLTl6UIrjR+DptCHieYN5IvqyPvxemgRiwuiAhOhgk/cjW5Ehu93iB5EVP/CvN
+         xtR/VUrR0tkoczOZ0RGQQdWle9U9N86ahHIrP80M=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, David Dai <zdai@linux.ibm.com>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Sachin Sant <sachinp@linux.ibm.com>,
+        stable@vger.kernel.org, Leon Romanovsky <leonro@nvidia.com>,
+        Jason Gunthorpe <jgg@nvidia.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0627/1017] powerpc/pseries: Fix use after free in remove_phb_dynamic()
-Date:   Tue,  5 Apr 2022 09:25:40 +0200
-Message-Id: <20220405070412.892940320@linuxfoundation.org>
+Subject: [PATCH 5.16 0597/1017] Revert "RDMA/core: Fix ib_qp_usecnt_dec() called when error"
+Date:   Tue,  5 Apr 2022 09:25:10 +0200
+Message-Id: <20220405070411.998553080@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -51,93 +50,101 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Michael Ellerman <mpe@ellerman.id.au>
+From: Leon Romanovsky <leonro@nvidia.com>
 
-[ Upstream commit fe2640bd7a62f1f7c3f55fbda31084085075bc30 ]
+[ Upstream commit 7922d3de4d270a9aedb71212fc0d5ae697ced516 ]
 
-In remove_phb_dynamic() we use &phb->io_resource, after we've called
-device_unregister(&host_bridge->dev). But the unregister may have freed
-phb, because pcibios_free_controller_deferred() is the release function
-for the host_bridge.
+This reverts commit 7c4a539ec38f4ce400a0f3fcb5ff6c940fcd67bb. which causes
+to the following error in mlx4.
 
-If there are no outstanding references when we call device_unregister()
-then phb will be freed out from under us.
+  Destroy of kernel CQ shouldn't fail
+  WARNING: CPU: 4 PID: 18064 at include/rdma/ib_verbs.h:3936 mlx4_ib_dealloc_xrcd+0x12e/0x1b0 [mlx4_ib]
+  Modules linked in: bonding ib_ipoib ip_gre ipip tunnel4 geneve rdma_ucm nf_tables ib_umad mlx4_en mlx4_ib ib_uverbs mlx4_core ip6_gre gre ip6_tunnel tunnel6 iptable_raw openvswitch nsh rpcrdma ib_iser libiscsi scsi_transport_iscsi rdma_cm iw_cm ib_cm ib_core xt_conntrack xt_MASQUERADE nf_conntrack_netlink nfnetlink xt_addrtype iptable_nat nf_nat br_netfilter overlay fuse [last unloaded: mlx4_core]
+  CPU: 4 PID: 18064 Comm: ibv_xsrq_pingpo Not tainted 5.17.0-rc7_master_62c6ecb #1
+  Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS rel-1.13.0-0-gf21b5a4aeb02-prebuilt.qemu.org 04/01/2014
+  RIP: 0010:mlx4_ib_dealloc_xrcd+0x12e/0x1b0 [mlx4_ib]
+  Code: 1e 93 08 00 40 80 fd 01 0f 87 fa f1 04 00 83 e5 01 0f 85 2b ff ff ff 48 c7 c7 20 4f b6 a0 c6 05 fd 92 08 00 01 e8 47 c9 82 e2 <0f> 0b e9 11 ff ff ff 0f b6 2d eb 92 08 00 40 80 fd 01 0f 87 b1 f1
+  RSP: 0018:ffff8881a4957750 EFLAGS: 00010286
+  RAX: 0000000000000000 RBX: ffff8881ac4b6800 RCX: 0000000000000000
+  RDX: 0000000000000027 RSI: 0000000000000004 RDI: ffffed103492aedc
+  RBP: 0000000000000000 R08: 0000000000000001 R09: ffff8884d2e378eb
+  R10: ffffed109a5c6f1d R11: 0000000000000001 R12: ffff888132620000
+  R13: ffff8881a4957a90 R14: ffff8881aa2d4000 R15: ffff8881a4957ad0
+  FS:  00007f0401747740(0000) GS:ffff8884d2e00000(0000) knlGS:0000000000000000
+  CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+  CR2: 000055f8ae036118 CR3: 000000012fe94005 CR4: 0000000000370ea0
+  DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+  DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+  Call Trace:
+   <TASK>
+   ib_dealloc_xrcd_user+0xce/0x120 [ib_core]
+   ib_uverbs_dealloc_xrcd+0xad/0x210 [ib_uverbs]
+   uverbs_free_xrcd+0xe8/0x190 [ib_uverbs]
+   destroy_hw_idr_uobject+0x7a/0x130 [ib_uverbs]
+   uverbs_destroy_uobject+0x164/0x730 [ib_uverbs]
+   uobj_destroy+0x72/0xf0 [ib_uverbs]
+   ib_uverbs_cmd_verbs+0x19fb/0x3110 [ib_uverbs]
+   ib_uverbs_ioctl+0x169/0x260 [ib_uverbs]
+   __x64_sys_ioctl+0x856/0x1550
+   do_syscall_64+0x3d/0x90
+   entry_SYSCALL_64_after_hwframe+0x44/0xae
 
-This has gone mainly unnoticed, but with slub_debug and page_poison
-enabled it can lead to a crash:
-
-  PID: 7574   TASK: c0000000d492cb80  CPU: 13  COMMAND: "drmgr"
-   #0 [c0000000e4f075a0] crash_kexec at c00000000027d7dc
-   #1 [c0000000e4f075d0] oops_end at c000000000029608
-   #2 [c0000000e4f07650] __bad_page_fault at c0000000000904b4
-   #3 [c0000000e4f076c0] do_bad_slb_fault at c00000000009a5a8
-   #4 [c0000000e4f076f0] data_access_slb_common_virt at c000000000008b30
-   Data SLB Access [380] exception frame:
-   R0:  c000000000167250    R1:  c0000000e4f07a00    R2:  c000000002a46100
-   R3:  c000000002b39ce8    R4:  00000000000000c0    R5:  00000000000000a9
-   R6:  3894674d000000c0    R7:  0000000000000000    R8:  00000000000000ff
-   R9:  0000000000000100    R10: 6b6b6b6b6b6b6b6b    R11: 0000000000008000
-   R12: c00000000023da80    R13: c0000009ffd38b00    R14: 0000000000000000
-   R15: 000000011c87f0f0    R16: 0000000000000006    R17: 0000000000000003
-   R18: 0000000000000002    R19: 0000000000000004    R20: 0000000000000005
-   R21: 000000011c87ede8    R22: 000000011c87c5a8    R23: 000000011c87d3a0
-   R24: 0000000000000000    R25: 0000000000000001    R26: c0000000e4f07cc8
-   R27: c00000004d1cc400    R28: c0080000031d00e8    R29: c00000004d23d800
-   R30: c00000004d1d2400    R31: c00000004d1d2540
-   NIP: c000000000167258    MSR: 8000000000009033    OR3: c000000000e9f474
-   CTR: 0000000000000000    LR:  c000000000167250    XER: 0000000020040003
-   CCR: 0000000024088420    MQ:  0000000000000000    DAR: 6b6b6b6b6b6b6ba3
-   DSISR: c0000000e4f07920     Syscall Result: fffffffffffffff2
-   [NIP  : release_resource+56]
-   [LR   : release_resource+48]
-   #5 [c0000000e4f07a00] release_resource at c000000000167258  (unreliable)
-   #6 [c0000000e4f07a30] remove_phb_dynamic at c000000000105648
-   #7 [c0000000e4f07ab0] dlpar_remove_slot at c0080000031a09e8 [rpadlpar_io]
-   #8 [c0000000e4f07b50] remove_slot_store at c0080000031a0b9c [rpadlpar_io]
-   #9 [c0000000e4f07be0] kobj_attr_store at c000000000817d8c
-  #10 [c0000000e4f07c00] sysfs_kf_write at c00000000063e504
-  #11 [c0000000e4f07c20] kernfs_fop_write_iter at c00000000063d868
-  #12 [c0000000e4f07c70] new_sync_write at c00000000054339c
-  #13 [c0000000e4f07d10] vfs_write at c000000000546624
-  #14 [c0000000e4f07d60] ksys_write at c0000000005469f4
-  #15 [c0000000e4f07db0] system_call_exception at c000000000030840
-  #16 [c0000000e4f07e10] system_call_vectored_common at c00000000000c168
-
-To avoid it, we can take a reference to the host_bridge->dev until we're
-done using phb. Then when we drop the reference the phb will be freed.
-
-Fixes: 2dd9c11b9d4d ("powerpc/pseries: use pci_host_bridge.release_fn() to kfree(phb)")
-Reported-by: David Dai <zdai@linux.ibm.com>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Tested-by: Sachin Sant <sachinp@linux.ibm.com>
-Link: https://lore.kernel.org/r/20220318034219.1188008-1-mpe@ellerman.id.au
+Fixes: 7c4a539ec38f ("RDMA/core: Fix ib_qp_usecnt_dec() called when error")
+Link: https://lore.kernel.org/r/74c11029adaf449b3b9228a77cc82f39e9e892c8.1646851220.git.leonro@nvidia.com
+Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
+Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/powerpc/platforms/pseries/pci_dlpar.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/infiniband/core/uverbs_cmd.c          | 1 +
+ drivers/infiniband/core/uverbs_std_types_qp.c | 1 +
+ drivers/infiniband/core/verbs.c               | 3 ++-
+ 3 files changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/arch/powerpc/platforms/pseries/pci_dlpar.c b/arch/powerpc/platforms/pseries/pci_dlpar.c
-index 90c9d3531694..4ba824568119 100644
---- a/arch/powerpc/platforms/pseries/pci_dlpar.c
-+++ b/arch/powerpc/platforms/pseries/pci_dlpar.c
-@@ -78,6 +78,9 @@ int remove_phb_dynamic(struct pci_controller *phb)
+diff --git a/drivers/infiniband/core/uverbs_cmd.c b/drivers/infiniband/core/uverbs_cmd.c
+index 5a99e31df5f5..d1345d76d9b1 100644
+--- a/drivers/infiniband/core/uverbs_cmd.c
++++ b/drivers/infiniband/core/uverbs_cmd.c
+@@ -1438,6 +1438,7 @@ static int create_qp(struct uverbs_attr_bundle *attrs,
+ 		ret = PTR_ERR(qp);
+ 		goto err_put;
+ 	}
++	ib_qp_usecnt_inc(qp);
  
- 	pseries_msi_free_domains(phb);
+ 	obj->uevent.uobject.object = qp;
+ 	obj->uevent.event_file = READ_ONCE(attrs->ufile->default_async_file);
+diff --git a/drivers/infiniband/core/uverbs_std_types_qp.c b/drivers/infiniband/core/uverbs_std_types_qp.c
+index 75353e09c6fe..dd1075466f61 100644
+--- a/drivers/infiniband/core/uverbs_std_types_qp.c
++++ b/drivers/infiniband/core/uverbs_std_types_qp.c
+@@ -254,6 +254,7 @@ static int UVERBS_HANDLER(UVERBS_METHOD_QP_CREATE)(
+ 		ret = PTR_ERR(qp);
+ 		goto err_put;
+ 	}
++	ib_qp_usecnt_inc(qp);
  
-+	/* Keep a reference so phb isn't freed yet */
-+	get_device(&host_bridge->dev);
+ 	if (attr.qp_type == IB_QPT_XRC_TGT) {
+ 		obj->uxrcd = container_of(xrcd_uobj, struct ib_uxrcd_object,
+diff --git a/drivers/infiniband/core/verbs.c b/drivers/infiniband/core/verbs.c
+index 961055eb330d..e821dc94a43e 100644
+--- a/drivers/infiniband/core/verbs.c
++++ b/drivers/infiniband/core/verbs.c
+@@ -1253,7 +1253,6 @@ static struct ib_qp *create_qp(struct ib_device *dev, struct ib_pd *pd,
+ 	if (ret)
+ 		goto err_security;
+ 
+-	ib_qp_usecnt_inc(qp);
+ 	rdma_restrack_add(&qp->res);
+ 	return qp;
+ 
+@@ -1354,6 +1353,8 @@ struct ib_qp *ib_create_qp_kernel(struct ib_pd *pd,
+ 	if (IS_ERR(qp))
+ 		return qp;
+ 
++	ib_qp_usecnt_inc(qp);
 +
- 	/* Remove the PCI bus and unregister the bridge device from sysfs */
- 	phb->bus = NULL;
- 	pci_remove_bus(b);
-@@ -101,6 +104,7 @@ int remove_phb_dynamic(struct pci_controller *phb)
- 	 * the pcibios_free_controller_deferred() callback;
- 	 * see pseries_root_bridge_prepare().
- 	 */
-+	put_device(&host_bridge->dev);
- 
- 	return 0;
- }
+ 	if (qp_init_attr->cap.max_rdma_ctxs) {
+ 		ret = rdma_rw_init_mrs(qp, qp_init_attr);
+ 		if (ret)
 -- 
 2.34.1
 
