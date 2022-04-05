@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EB674C4167E
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 11:42:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 977A1C35274
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 11:42:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378200AbiDELb5 (ORCPT
+        id S1377778AbiDELah (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 07:31:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52206 "EHLO
+        Tue, 5 Apr 2022 07:30:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46834 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244431AbiDEIwF (ORCPT
+        with ESMTP id S243821AbiDEIvH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:52:05 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E6CBD5EA0;
-        Tue,  5 Apr 2022 01:41:03 -0700 (PDT)
+        Tue, 5 Apr 2022 04:51:07 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A325CC8BFA;
+        Tue,  5 Apr 2022 01:39:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1D58DB81C14;
-        Tue,  5 Apr 2022 08:40:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 78AECC385A1;
-        Tue,  5 Apr 2022 08:40:41 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 12204B81C15;
+        Tue,  5 Apr 2022 08:39:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5F33DC385A1;
+        Tue,  5 Apr 2022 08:38:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649148041;
-        bh=ChCoChCJ+bm2s/23Tdv+MYjgZvCiKzNdR0c3alOGOmQ=;
+        s=korg; t=1649147938;
+        bh=G6i5haVbj2OduWENChWdZ9mhaLevM6O81fzdyfMMJVU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gTbGMc62rPkmj4V2DPdxHynrb45Y8KSqN4sgGVsAul1jADhCNmecOltvM1MpjGWLl
-         b1f7IBDPXYZZNR8XQWndX7YUL4dpG7ieuGnYEUrS0eFanbI+fVZTQ765oYTUKGXFEs
-         M/trcpXkfMRYCZJY4//MmmhKiYgiaze2YktCzHAY=
+        b=S7I+qgbtsojzs2lBkQj/UikNzMlc0VMK1xaJvqvFgXQOrma8+Ww98fGGx6VLSmV6D
+         baZ0lcWdml2+a6VYSk7jFGom8uWC/XYkHuQ1SZCRM880RS1umYstD7CqA/yymHzcLc
+         gTWEl6xPaUuJA5LTFM4WzPvpSpr+XNInRRD+BpAY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0212/1017] spi: tegra114: Add missing IRQ check in tegra_spi_probe
-Date:   Tue,  5 Apr 2022 09:18:45 +0200
-Message-Id: <20220405070400.544121890@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Stanimir Varbanov <stanimir.varbanov@linaro.org>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>
+Subject: [PATCH 5.16 0176/1017] media: venus: venc: Fix h264 8x8 transform control
+Date:   Tue,  5 Apr 2022 09:18:09 +0200
+Message-Id: <20220405070359.455799626@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -50,41 +50,66 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Stanimir Varbanov <stanimir.varbanov@linaro.org>
 
-[ Upstream commit 4f92724d4b92c024e721063f520d66e11ca4b54b ]
+commit 61b3317dd424a3488b6754d7ff8301944d9d17d7 upstream.
 
-This func misses checking for platform_get_irq()'s call and may passes the
-negative error codes to request_threaded_irq(), which takes unsigned IRQ #,
-causing it to fail with -EINVAL, overriding an original error code.
-Stop calling request_threaded_irq() with invalid IRQ #s.
+During encoder driver open controls are initialized via a call
+to v4l2_ctrl_handler_setup which returns EINVAL error for
+V4L2_CID_MPEG_VIDEO_H264_8X8_TRANSFORM v4l2 control. The control
+default value is disabled and because of firmware limitations
+8x8 transform cannot be disabled for the supported HIGH and
+CONSTRAINED_HIGH profiles.
 
-Fixes: f333a331adfa ("spi/tegra114: add spi driver")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Link: https://lore.kernel.org/r/20220128165238.25615-1-linmq006@gmail.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+To fix the issue change the control default value to enabled
+(this is fine because the firmware enables 8x8 transform for
+high and constrained_high profiles by default). Also, correct
+the checking of profile ids in s_ctrl from hfi to v4l2 ids.
+
+cc: stable@vger.kernel.org # 5.15+
+Fixes: bfee75f73c37 ("media: venus: venc: add support for V4L2_CID_MPEG_VIDEO_H264_8X8_TRANSFORM control")
+Signed-off-by: Stanimir Varbanov <stanimir.varbanov@linaro.org>
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/spi/spi-tegra114.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/media/platform/qcom/venus/venc.c       |    4 ++--
+ drivers/media/platform/qcom/venus/venc_ctrls.c |    6 +++---
+ 2 files changed, 5 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/spi/spi-tegra114.c b/drivers/spi/spi-tegra114.c
-index e9de1d958bbd..8f345247a8c3 100644
---- a/drivers/spi/spi-tegra114.c
-+++ b/drivers/spi/spi-tegra114.c
-@@ -1352,6 +1352,10 @@ static int tegra_spi_probe(struct platform_device *pdev)
- 	tspi->phys = r->start;
+--- a/drivers/media/platform/qcom/venus/venc.c
++++ b/drivers/media/platform/qcom/venus/venc.c
+@@ -662,8 +662,8 @@ static int venc_set_properties(struct ve
  
- 	spi_irq = platform_get_irq(pdev, 0);
-+	if (spi_irq < 0) {
-+		ret = spi_irq;
-+		goto exit_free_master;
-+	}
- 	tspi->irq = spi_irq;
+ 		ptype = HFI_PROPERTY_PARAM_VENC_H264_TRANSFORM_8X8;
+ 		h264_transform.enable_type = 0;
+-		if (ctr->profile.h264 == HFI_H264_PROFILE_HIGH ||
+-		    ctr->profile.h264 == HFI_H264_PROFILE_CONSTRAINED_HIGH)
++		if (ctr->profile.h264 == V4L2_MPEG_VIDEO_H264_PROFILE_HIGH ||
++		    ctr->profile.h264 == V4L2_MPEG_VIDEO_H264_PROFILE_CONSTRAINED_HIGH)
+ 			h264_transform.enable_type = ctr->h264_8x8_transform;
  
- 	tspi->clk = devm_clk_get(&pdev->dev, "spi");
--- 
-2.34.1
-
+ 		ret = hfi_session_set_property(inst, ptype, &h264_transform);
+--- a/drivers/media/platform/qcom/venus/venc_ctrls.c
++++ b/drivers/media/platform/qcom/venus/venc_ctrls.c
+@@ -320,8 +320,8 @@ static int venc_op_s_ctrl(struct v4l2_ct
+ 		ctr->intra_refresh_period = ctrl->val;
+ 		break;
+ 	case V4L2_CID_MPEG_VIDEO_H264_8X8_TRANSFORM:
+-		if (ctr->profile.h264 != HFI_H264_PROFILE_HIGH &&
+-		    ctr->profile.h264 != HFI_H264_PROFILE_CONSTRAINED_HIGH)
++		if (ctr->profile.h264 != V4L2_MPEG_VIDEO_H264_PROFILE_HIGH &&
++		    ctr->profile.h264 != V4L2_MPEG_VIDEO_H264_PROFILE_CONSTRAINED_HIGH)
+ 			return -EINVAL;
+ 
+ 		/*
+@@ -457,7 +457,7 @@ int venc_ctrl_init(struct venus_inst *in
+ 			  V4L2_CID_MPEG_VIDEO_H264_I_FRAME_MIN_QP, 1, 51, 1, 1);
+ 
+ 	v4l2_ctrl_new_std(&inst->ctrl_handler, &venc_ctrl_ops,
+-			  V4L2_CID_MPEG_VIDEO_H264_8X8_TRANSFORM, 0, 1, 1, 0);
++			  V4L2_CID_MPEG_VIDEO_H264_8X8_TRANSFORM, 0, 1, 1, 1);
+ 
+ 	v4l2_ctrl_new_std(&inst->ctrl_handler, &venc_ctrl_ops,
+ 			  V4L2_CID_MPEG_VIDEO_H264_P_FRAME_MIN_QP, 1, 51, 1, 1);
 
 
