@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 300F0C43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A493C4332F
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 21:50:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384942AbiDEVsn (ORCPT
+        id S1384835AbiDEVsY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 17:48:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44254 "EHLO
+        Tue, 5 Apr 2022 17:48:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50640 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356558AbiDEKYF (ORCPT
+        with ESMTP id S1358014AbiDEK1q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:24:05 -0400
+        Tue, 5 Apr 2022 06:27:46 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1471BD8B6;
-        Tue,  5 Apr 2022 03:08:33 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46C16DB494;
+        Tue,  5 Apr 2022 03:12:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 57FDD6167E;
-        Tue,  5 Apr 2022 10:08:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6C14EC385A1;
-        Tue,  5 Apr 2022 10:08:32 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C131661777;
+        Tue,  5 Apr 2022 10:12:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CD32BC385A1;
+        Tue,  5 Apr 2022 10:12:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649153312;
-        bh=tZvM3CY4dLxgH94wtkiyadE3sY646r4yLbEKcCADgo4=;
+        s=korg; t=1649153576;
+        bh=kTf509aGxUC2L+Qqne7LOHBXyNCvMcSwY5mKQwAKabs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=h3JBFbobZJaogTT9j9X+Y/r9Kxd5mWFkoOLP+PeqroDBbmjeu9g3GG0pkay8safe9
-         w/2yeHdiekQ2oP51j6znlxL98M21RSBB5vW0khaCu/5QAnQswkhc8hP8h4t+REGRJN
-         nvQWAewdPUgMYk8Wd5KQEKrHIXoMjkfZ44vVX5Qk=
+        b=qwxx4oXhRKh20XTY4FE6wn/vOz2z7B4e2hoL1nYK7TzBJySgFnjOrRODrGZTw+7nO
+         P2Sr428VhV+GXqW1WaLge5Weaa61h4GV7QzC+KrNLCzS3snjV3+xtmEZ3sSyN+SnTl
+         XorQY1IdWvf+4PrTybuqSNeBd71YBKMn4eW88bs0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Adrian Hunter <adrian.hunter@intel.com>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        stable@vger.kernel.org, Jakob Koschel <jakobkoschel@gmail.com>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 178/599] perf/x86/intel/pt: Fix address filter config for 32-bit kernel
-Date:   Tue,  5 Apr 2022 09:27:52 +0200
-Message-Id: <20220405070304.138931518@linuxfoundation.org>
+Subject: [PATCH 5.10 244/599] media: saa7134: fix incorrect use to determine if list is empty
+Date:   Tue,  5 Apr 2022 09:28:58 +0200
+Message-Id: <20220405070306.102272087@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
 References: <20220405070258.802373272@linuxfoundation.org>
@@ -50,35 +50,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Adrian Hunter <adrian.hunter@intel.com>
+From: Jakob Koschel <jakobkoschel@gmail.com>
 
-[ Upstream commit e5524bf1047eb3b3f3f33b5f59897ba67b3ade87 ]
+[ Upstream commit 9f1f4b642451d35667a4dc6a9c0a89d954b530a3 ]
 
-Change from shifting 'unsigned long' to 'u64' to prevent the config bits
-being lost on a 32-bit kernel.
+'dev' will *always* be set by list_for_each_entry().
+It is incorrect to assume that the iterator value will be NULL if the
+list is empty.
 
-Fixes: eadf48cab4b6b0 ("perf/x86/intel/pt: Add support for address range filtering in PT")
-Signed-off-by: Adrian Hunter <adrian.hunter@intel.com>
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Link: https://lore.kernel.org/r/20220131072453.2839535-5-adrian.hunter@intel.com
+Instead of checking the pointer it should be checked if
+the list is empty.
+
+Fixes: 79dd0c69f05f ("V4L: 925: saa7134 alsa is now a standalone module")
+Signed-off-by: Jakob Koschel <jakobkoschel@gmail.com>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/events/intel/pt.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/media/pci/saa7134/saa7134-alsa.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/arch/x86/events/intel/pt.c b/arch/x86/events/intel/pt.c
-index c084899e9582..cc3b79c06685 100644
---- a/arch/x86/events/intel/pt.c
-+++ b/arch/x86/events/intel/pt.c
-@@ -472,7 +472,7 @@ static u64 pt_config_filters(struct perf_event *event)
- 			pt->filters.filter[range].msr_b = filter->msr_b;
- 		}
+diff --git a/drivers/media/pci/saa7134/saa7134-alsa.c b/drivers/media/pci/saa7134/saa7134-alsa.c
+index fb24d2ed3621..d3cde05a6eba 100644
+--- a/drivers/media/pci/saa7134/saa7134-alsa.c
++++ b/drivers/media/pci/saa7134/saa7134-alsa.c
+@@ -1214,7 +1214,7 @@ static int alsa_device_exit(struct saa7134_dev *dev)
  
--		rtit_ctl |= filter->config << pt_address_ranges[range].reg_off;
-+		rtit_ctl |= (u64)filter->config << pt_address_ranges[range].reg_off;
+ static int saa7134_alsa_init(void)
+ {
+-	struct saa7134_dev *dev = NULL;
++	struct saa7134_dev *dev;
+ 
+ 	saa7134_dmasound_init = alsa_device_init;
+ 	saa7134_dmasound_exit = alsa_device_exit;
+@@ -1229,7 +1229,7 @@ static int saa7134_alsa_init(void)
+ 			alsa_device_init(dev);
  	}
  
- 	return rtit_ctl;
+-	if (dev == NULL)
++	if (list_empty(&saa7134_devlist))
+ 		pr_info("saa7134 ALSA: no saa7134 cards found\n");
+ 
+ 	return 0;
 -- 
 2.34.1
 
