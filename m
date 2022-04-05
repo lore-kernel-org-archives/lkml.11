@@ -2,88 +2,270 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E77EFC4167B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D75CDC43219
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:42:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1578605AbiDEXYO (ORCPT
+        id S1578589AbiDEXYK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 19:24:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43050 "EHLO
+        Tue, 5 Apr 2022 19:24:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39938 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349450AbiDEJtx (ORCPT
+        with ESMTP id S1573209AbiDESTT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:49:53 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B23BB27B20;
-        Tue,  5 Apr 2022 02:46:13 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4C4956164D;
-        Tue,  5 Apr 2022 09:46:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5E93AC385A3;
-        Tue,  5 Apr 2022 09:46:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649151972;
-        bh=Erirp5qaLkmT2KhloGasa14482cQS95b1zyeEUKtpyc=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mMr+n9w61cnl0LydRa2hhEDZgoMDJxB9UfThttNvQxhU8JqbmlWJqQ4aRlDXMGo83
-         mY2OdxT9pA8El8y7ivf/baSZ7d1PyXGQR5pZW2yVoz6obpVcm6Ha8oI8q4mx4qw7CG
-         LayLWgfc6lIh0aTB7vqe5UmBL5ilMrHlLDXOi5Go=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Pavel Skripkin <paskripkin@gmail.com>,
-        Martin Kaiser <martin@kaiser.cx>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 607/913] staging: r8188eu: fix endless loop in recv_func
-Date:   Tue,  5 Apr 2022 09:27:49 +0200
-Message-Id: <20220405070358.036454946@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 5 Apr 2022 14:19:19 -0400
+Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9EC7CEF087;
+        Tue,  5 Apr 2022 11:17:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1649182639; x=1680718639;
+  h=from:to:cc:subject:date:message-id:mime-version;
+  bh=bwqwyzqwG2MNZKE8hl5seyqxC+Y62bblO4gxfvbXvAY=;
+  b=c0yBI+SGBSPZ+KLRNvlpTjPT3mRAO2yJuOtYt9AYWbkBANAcBnw3b7ZF
+   jSuX9aTIEB51bizB41sh1Rykjyq5EUYdaBFqbGZJnfdjtNRnZP5zgmuEx
+   tjFkqEo4wyFzw6qKjQ4syDMeTh63b6bb/1GvdgO2FYyQAuU3wuiV6wEft
+   w=;
+Received: from ironmsg08-lv.qualcomm.com ([10.47.202.152])
+  by alexa-out.qualcomm.com with ESMTP; 05 Apr 2022 11:17:19 -0700
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg08-lv.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2022 11:17:19 -0700
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Tue, 5 Apr 2022 11:17:18 -0700
+Received: from khsieh-linux1.qualcomm.com (10.80.80.8) by
+ nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Tue, 5 Apr 2022 11:17:17 -0700
+From:   Kuogee Hsieh <quic_khsieh@quicinc.com>
+To:     <robdclark@gmail.com>, <sean@poorly.run>, <swboyd@chromium.org>,
+        <vkoul@kernel.org>, <daniel@ffwll.ch>, <airlied@linux.ie>,
+        <agross@kernel.org>, <dmitry.baryshkov@linaro.org>,
+        <bjorn.andersson@linaro.org>
+CC:     <quic_abhinavk@quicinc.com>, <quic_aravindh@quicinc.com>,
+        <quic_khsieh@quicinc.com>, <quic_sbillaka@quicinc.com>,
+        <freedreno@lists.freedesktop.org>,
+        <dri-devel@lists.freedesktop.org>, <linux-arm-msm@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: [PATCH] drm/msm/dp: enhance both connect and disconnect pending_timeout handle
+Date:   Tue, 5 Apr 2022 11:17:07 -0700
+Message-ID: <1649182627-8068-1-git-send-email-quic_khsieh@quicinc.com>
+X-Mailer: git-send-email 2.7.4
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Martin Kaiser <martin@kaiser.cx>
+HPD plugin handle is responsible for setting up main link and depend on
+user space frame work to start video stream. Similarly, HPD unplugged
+handle is responsible for tearing down main link and depend on user space
+frame work to stop video stream. Connect_pending_timeout and disconnect_
+pending_timeout are fired after 5 seconds timer expired to tear down main
+link and video stream and restore DP driver state into known default
+DISCONNECTED state in the case of frame work does not response uevent
+original from DP driver so that DP driver can recover gracefully.
 
-[ Upstream commit 1327fcf175fa63d3b7a058b8148ed7714acdc035 ]
+The original connect_pending_timeout and disconnect_pending_timeout were
+not implemented correctly. This patch enhance both timeout functions to
+tear down main link and video stream correctly once timer is fired.
 
-Fix an endless loop in recv_func. If pending_frame is not NULL, we're
-stuck in the while loop forever. We have to call rtw_alloc_recvframe
-each time we loop.
+Fixes: 8ede2ecc3e5e ("drm/msm/dp: Add DP compliance tests on Snapdragon Chipsets")
 
-Fixes: 15865124feed ("staging: r8188eu: introduce new core dir for RTL8188eu driver")
-Reported-by: Pavel Skripkin <paskripkin@gmail.com>
-Signed-off-by: Martin Kaiser <martin@kaiser.cx>
-Link: https://lore.kernel.org/r/20220226181457.1138035-4-martin@kaiser.cx
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Kuogee Hsieh <quic_khsieh@quicinc.com>
 ---
- drivers/staging/r8188eu/core/rtw_recv.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ drivers/gpu/drm/msm/dp/dp_ctrl.c    | 34 ++++++++++++++++++++++++--
+ drivers/gpu/drm/msm/dp/dp_ctrl.h    |  1 +
+ drivers/gpu/drm/msm/dp/dp_display.c | 48 +++++++++++++++++++++++++++----------
+ 3 files changed, 68 insertions(+), 15 deletions(-)
 
-diff --git a/drivers/staging/r8188eu/core/rtw_recv.c b/drivers/staging/r8188eu/core/rtw_recv.c
-index e082edfbaad8..30ca9f1e0363 100644
---- a/drivers/staging/r8188eu/core/rtw_recv.c
-+++ b/drivers/staging/r8188eu/core/rtw_recv.c
-@@ -1942,8 +1942,7 @@ static int recv_func(struct adapter *padapter, struct recv_frame *rframe)
- 		struct recv_frame *pending_frame;
- 		int cnt = 0;
+diff --git a/drivers/gpu/drm/msm/dp/dp_ctrl.c b/drivers/gpu/drm/msm/dp/dp_ctrl.c
+index dcd0126..3f4cf6d 100644
+--- a/drivers/gpu/drm/msm/dp/dp_ctrl.c
++++ b/drivers/gpu/drm/msm/dp/dp_ctrl.c
+@@ -1910,7 +1910,7 @@ int dp_ctrl_off_link_stream(struct dp_ctrl *dp_ctrl)
+ 	return ret;
+ }
  
--		pending_frame = rtw_alloc_recvframe(&padapter->recvpriv.uc_swdec_pending_queue);
--		while (pending_frame) {
-+		while ((pending_frame = rtw_alloc_recvframe(&padapter->recvpriv.uc_swdec_pending_queue))) {
- 			cnt++;
- 			recv_func_posthandle(padapter, pending_frame);
+-int dp_ctrl_off(struct dp_ctrl *dp_ctrl)
++int dp_ctrl_off_link(struct dp_ctrl *dp_ctrl)
+ {
+ 	struct dp_ctrl_private *ctrl;
+ 	struct dp_io *dp_io;
+@@ -1926,7 +1926,37 @@ int dp_ctrl_off(struct dp_ctrl *dp_ctrl)
+ 
+ 	dp_catalog_ctrl_mainlink_ctrl(ctrl->catalog, false);
+ 
+-	dp_catalog_ctrl_reset(ctrl->catalog);
++	ret = dp_power_clk_enable(ctrl->power, DP_CTRL_PM, false);
++	if (ret) {
++		DRM_ERROR("Failed to disable link clocks. ret=%d\n", ret);
++	}
++
++	DRM_DEBUG_DP("Before, phy=%x init_count=%d power_on=%d\n",
++		(u32)(uintptr_t)phy, phy->init_count, phy->power_count);
++
++	phy_power_off(phy);
++
++	DRM_DEBUG_DP("After, phy=%x init_count=%d power_on=%d\n",
++		(u32)(uintptr_t)phy, phy->init_count, phy->power_count);
++
++	return ret;
++}
++
++int dp_ctrl_off(struct dp_ctrl *dp_ctrl)
++{
++	struct dp_ctrl_private *ctrl;
++	struct dp_io *dp_io;
++	struct phy *phy;
++	int ret = 0;
++
++	if (!dp_ctrl)
++		return -EINVAL;
++
++	ctrl = container_of(dp_ctrl, struct dp_ctrl_private, dp_ctrl);
++	dp_io = &ctrl->parser->io;
++	phy = dp_io->phy;
++
++	dp_catalog_ctrl_mainlink_ctrl(ctrl->catalog, false);
+ 
+ 	ret = dp_power_clk_enable(ctrl->power, DP_STREAM_PM, false);
+ 	if (ret)
+diff --git a/drivers/gpu/drm/msm/dp/dp_ctrl.h b/drivers/gpu/drm/msm/dp/dp_ctrl.h
+index 2433edb..ffafe17 100644
+--- a/drivers/gpu/drm/msm/dp/dp_ctrl.h
++++ b/drivers/gpu/drm/msm/dp/dp_ctrl.h
+@@ -22,6 +22,7 @@ struct dp_ctrl {
+ int dp_ctrl_on_link(struct dp_ctrl *dp_ctrl);
+ int dp_ctrl_on_stream(struct dp_ctrl *dp_ctrl);
+ int dp_ctrl_off_link_stream(struct dp_ctrl *dp_ctrl);
++int dp_ctrl_off_link(struct dp_ctrl *dp_ctrl);
+ int dp_ctrl_off(struct dp_ctrl *dp_ctrl);
+ void dp_ctrl_push_idle(struct dp_ctrl *dp_ctrl);
+ void dp_ctrl_isr(struct dp_ctrl *dp_ctrl);
+diff --git a/drivers/gpu/drm/msm/dp/dp_display.c b/drivers/gpu/drm/msm/dp/dp_display.c
+index 178b774..56bf7c5 100644
+--- a/drivers/gpu/drm/msm/dp/dp_display.c
++++ b/drivers/gpu/drm/msm/dp/dp_display.c
+@@ -593,10 +593,16 @@ static int dp_connect_pending_timeout(struct dp_display_private *dp, u32 data)
+ 
+ 	mutex_lock(&dp->event_mutex);
+ 
++	/*
++	 * main link had been setup but video is not ready yet
++	 * only tear down main link
++	 */
+ 	state = dp->hpd_state;
+ 	if (state == ST_CONNECT_PENDING) {
+-		dp->hpd_state = ST_CONNECTED;
+ 		DRM_DEBUG_DP("type=%d\n", dp->dp_display.connector_type);
++		dp_ctrl_off_link(dp->ctrl);
++		dp_display_host_phy_exit(dp);
++		dp->hpd_state = ST_DISCONNECTED;
+ 	}
+ 
+ 	mutex_unlock(&dp->event_mutex);
+@@ -645,6 +651,7 @@ static int dp_hpd_unplug_handle(struct dp_display_private *dp, u32 data)
+ 		if (dp->link->sink_count == 0) {
+ 			dp_display_host_phy_exit(dp);
  		}
++		dp_display_usbpd_disconnect_cb(&dp->pdev->dev);
+ 		mutex_unlock(&dp->event_mutex);
+ 		return 0;
+ 	}
+@@ -661,19 +668,19 @@ static int dp_hpd_unplug_handle(struct dp_display_private *dp, u32 data)
+ 		return 0;
+ 	}
+ 
+-	dp->hpd_state = ST_DISCONNECT_PENDING;
+-
+ 	/* disable HPD plug interrupts */
+ 	dp_catalog_hpd_config_intr(dp->catalog, DP_DP_HPD_PLUG_INT_MASK, false);
+ 
+-	/*
+-	 * We don't need separate work for disconnect as
+-	 * connect/attention interrupts are disabled
+-	 */
+ 	dp_display_usbpd_disconnect_cb(&dp->pdev->dev);
+ 
+-	/* start sentinel checking in case of missing uevent */
+-	dp_add_event(dp, EV_DISCONNECT_PENDING_TIMEOUT, 0, DP_TIMEOUT_5_SECOND);
++	if (state == ST_DISPLAY_OFF) {
++		dp->hpd_state = ST_DISCONNECTED;
++
++	} else {
++		/* start sentinel checking in case of missing uevent */
++		dp_add_event(dp, EV_DISCONNECT_PENDING_TIMEOUT, 0, DP_TIMEOUT_5_SECOND);
++		dp->hpd_state = ST_DISCONNECT_PENDING;
++	}
+ 
+ 	/* signal the disconnect event early to ensure proper teardown */
+ 	dp_display_handle_plugged_change(&dp->dp_display, false);
+@@ -695,10 +702,16 @@ static int dp_disconnect_pending_timeout(struct dp_display_private *dp, u32 data
+ 
+ 	mutex_lock(&dp->event_mutex);
+ 
++	/*
++	 * main link had been set up and video is ready
++	 * tear down main link, video stream and phy
++	 */
+ 	state =  dp->hpd_state;
+ 	if (state == ST_DISCONNECT_PENDING) {
+-		dp->hpd_state = ST_DISCONNECTED;
+ 		DRM_DEBUG_DP("type=%d\n", dp->dp_display.connector_type);
++		dp_ctrl_off(dp->ctrl);
++		dp_display_host_phy_exit(dp);
++		dp->hpd_state = ST_DISCONNECTED;
+ 	}
+ 
+ 	mutex_unlock(&dp->event_mutex);
+@@ -1571,6 +1584,12 @@ int msm_dp_display_enable(struct msm_dp *dp, struct drm_encoder *encoder)
+ 
+ 	mutex_lock(&dp_display->event_mutex);
+ 
++	state =  dp_display->hpd_state;
++	if (state == ST_DISCONNECTED) {
++		mutex_unlock(&dp_display->event_mutex);
++		return rc;
++	}
++
+ 	/* stop sentinel checking */
+ 	dp_del_event(dp_display, EV_CONNECT_PENDING_TIMEOUT);
+ 
+@@ -1588,8 +1607,6 @@ int msm_dp_display_enable(struct msm_dp *dp, struct drm_encoder *encoder)
+ 		return rc;
+ 	}
+ 
+-	state =  dp_display->hpd_state;
+-
+ 	if (state == ST_DISPLAY_OFF)
+ 		dp_display_host_phy_init(dp_display);
+ 
+@@ -1638,13 +1655,18 @@ int msm_dp_display_disable(struct msm_dp *dp, struct drm_encoder *encoder)
+ 	/* stop sentinel checking */
+ 	dp_del_event(dp_display, EV_DISCONNECT_PENDING_TIMEOUT);
+ 
++	state =  dp_display->hpd_state;
++	if (state == ST_DISCONNECTED || state == ST_DISPLAY_OFF) {
++		mutex_unlock(&dp_display->event_mutex);
++		return rc;
++	}
++
+ 	dp_display_disable(dp_display, 0);
+ 
+ 	rc = dp_display_unprepare(dp);
+ 	if (rc)
+ 		DRM_ERROR("DP display unprepare failed, rc=%d\n", rc);
+ 
+-	state =  dp_display->hpd_state;
+ 	if (state == ST_DISCONNECT_PENDING) {
+ 		/* completed disconnection */
+ 		dp_display->hpd_state = ST_DISCONNECTED;
 -- 
-2.34.1
-
-
+The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
+a Linux Foundation Collaborative Project
 
