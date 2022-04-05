@@ -2,98 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D0687C4167E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C209CC41535
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 02:32:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1849305AbiDFCe3 (ORCPT
+        id S1849293AbiDFCe0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 22:34:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54504 "EHLO
+        Tue, 5 Apr 2022 22:34:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59400 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1444238AbiDEWVB (ORCPT
+        with ESMTP id S1446036AbiDEWWE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 18:21:01 -0400
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1505199692;
-        Tue,  5 Apr 2022 13:45:17 -0700 (PDT)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: nicolas)
-        with ESMTPSA id D871B1F448CB
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1649191516;
-        bh=MTyE9QSy2RUy2J+DqczMQkzQ2U7CksfjNGFIrOd9SV8=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=MTXu3z2Sz1/ihUk9LZChVIPAu71KKvYLI63WUFsq4V+t+dI6Wag5rJC/4VfrlWEAt
-         SHCFbLtM0ElNJ6q/LTy8Fka4/R7QxDjtFb5b2ys/ylpAgiNd09Dthhs3i6RlAzF2+8
-         KkrLLA3Vc5wQaRElF9X6hTJ3mZagl5aRNxB+Pse30ELEthfHEuCEyA6Vtb81yvHYcB
-         KDLbKeGdvxSwFIel+bibpclOtNwo47xv/L+eLMFcyCiaBxeUMKoYJUzLRZdnZQg2l2
-         QE35nAKfteTRgyw5P75CyRJkYNcCG2otWffSBriRi2X6QkJrsNNUQDZnl8v22Q8s6z
-         aQ2K4uCfvjT+A==
-From:   Nicolas Dufresne <nicolas.dufresne@collabora.com>
-To:     Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Tue, 5 Apr 2022 18:22:04 -0400
+Received: from mail-qt1-x831.google.com (mail-qt1-x831.google.com [IPv6:2607:f8b0:4864:20::831])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83BB910505B
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 14:14:30 -0700 (PDT)
+Received: by mail-qt1-x831.google.com with SMTP id 10so1189697qtz.11
+        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 14:14:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linuxfoundation.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=o0wDpIkEwpRJQFvM50lGA/vb8efTxI0/dQ/fmk4QzbA=;
+        b=ThI3NTIpoBycVs2LfLGSPPFPXxE4ZirP4bQIXVK4NbCb7Gu+0u7SnfLzt3RF2+v2Ua
+         Om2EemBJj5MGUstXBIhyiQ5C9tIkivpr4u0eqJAwXUtK2uxch/zsc8jti2zcPazIB2hM
+         ZF//e5qzhrW1jE2djugTCfKFrjmvXwhJvNL9c=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=o0wDpIkEwpRJQFvM50lGA/vb8efTxI0/dQ/fmk4QzbA=;
+        b=lF7rBMl/WOXAI4RxCoQTT0Hw+bf+p2zeoxj2cr8d+W1LO7Z0H2bW9GS1CnTOIJQm4E
+         p3/5DDhnYobpYCZIMl271OCGBzO+SSSd9HSF9LXnZCqqkdeJxuTO5W/LMa4HdfAxLrXG
+         i/S2u5dAE256O6xB4HAzYLnzloJkK5cm/2ZfYH88WBmUtDDqkLdJHuL+kFJb0tKj90Rg
+         rWUR/ILNdjMpgV2ctuDpFK4IUEtpa9atgGUuoeDAHKzKmlTa36v8ckdTTkIkOe1PgEo6
+         ISnSiUqEF+G9HQ2MmQrnJ5sj+KWmTAFXIrofPXVCqGgr6KSbzR2cAkthAB47vuvMV6rP
+         j8/Q==
+X-Gm-Message-State: AOAM530H7jfz56mjpM70eILbz7EMALDP5sEGFOrQkDa2nepbf8elIXIm
+        io2Kq7YinjO/THtRNaoimbzfIw==
+X-Google-Smtp-Source: ABdhPJxz81u5YQuiZoDNOUymjm0pKS8xOdGu0TNaTbvTwvmeHetQudOhEx7SLNocVGCOfNZxig1XXA==
+X-Received: by 2002:a05:620a:24c5:b0:67d:99c9:eaf9 with SMTP id m5-20020a05620a24c500b0067d99c9eaf9mr3685452qkn.379.1649193269614;
+        Tue, 05 Apr 2022 14:14:29 -0700 (PDT)
+Received: from meerkat.local (bras-base-mtrlpq5031w-grc-32-216-209-220-127.dsl.bell.ca. [216.209.220.127])
+        by smtp.gmail.com with ESMTPSA id v9-20020a05620a0a8900b0067db9cc46a9sm8216024qkg.62.2022.04.05.14.14.29
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 05 Apr 2022 14:14:29 -0700 (PDT)
+Date:   Tue, 5 Apr 2022 17:14:27 -0400
+From:   Konstantin Ryabitsev <konstantin@linuxfoundation.org>
+To:     Guenter Roeck <linux@roeck-us.net>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Larry Finger <Larry.Finger@lwfinger.net>,
+        Oded Gabbay <ogabbay@kernel.org>, Jiri Slaby <jslaby@suse.cz>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     kernel@collabora.com, linux-kernel@vger.kernel.org,
-        Sebastian Fricke <sebastian.fricke@collabora.com>,
-        linux-media@vger.kernel.org, linux-rockchip@lists.infradead.org,
-        linux-staging@lists.linux.dev
-Subject: [PATCH v3 20/24] media: rkvdec: Enable capture buffer holding for H264
-Date:   Tue,  5 Apr 2022 16:44:21 -0400
-Message-Id: <20220405204426.259074-21-nicolas.dufresne@collabora.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220405204426.259074-1-nicolas.dufresne@collabora.com>
-References: <20220405204426.259074-1-nicolas.dufresne@collabora.com>
+Subject: Re: Linux 5.18-rc1
+Message-ID: <20220405211427.ybl54q5smqicvad4@meerkat.local>
+References: <CAHk-=wg6FWL1xjVyHx7DdjD2dHZETA5_=FqqW17Z19X-WTfWSg@mail.gmail.com>
+ <20220404022239.GA1186352@roeck-us.net>
+ <CAHk-=wimc7V9mi=P+6p2nnctPYtSM55OSPVERUeJor7fkD_EVg@mail.gmail.com>
+ <aba387bd-9799-e0b5-40e3-1bcb552ac74c@roeck-us.net>
+ <CAHk-=witgMUS8To6wijxdbQ+QEH0gcHSYV6Y=yzOdb=Q4h9PJA@mail.gmail.com>
+ <ea840ab9-0c20-8c06-f7d4-bb9642a63500@roeck-us.net>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <ea840ab9-0c20-8c06-f7d4-bb9642a63500@roeck-us.net>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In order to support interlaced video decoding, the driver must
-allow holding the capture buffer so that the second field can
-be decoded into it.
+On Mon, Apr 04, 2022 at 09:45:46AM -0700, Guenter Roeck wrote:
+> I tried to tell my provider, but to no avail. Until now I used gmail,
+> but gmail will disable that ability by end of this month, leaving me
+> in the dark. Lose-lose situation for me. Right now I don't have a
+> useful alternative that doesn't require me to change my e-mail
+> address completely (or setting up my own e-mail server which
+> is a pita).
 
-Signed-off-by: Nicolas Dufresne <nicolas.dufresne@collabora.com>
-Reviewed-by: Sebastian Fricke <sebastian.fricke@collabora.com>
----
- drivers/staging/media/rkvdec/rkvdec.c | 4 ++++
- drivers/staging/media/rkvdec/rkvdec.h | 1 +
- 2 files changed, 5 insertions(+)
+There are hosting providers that are known to work well. Many people happily
+use fastmail (e.g. Greg KH), and it is known to do All The Right Things when
+it comes to DKIM/DMARC.
 
-diff --git a/drivers/staging/media/rkvdec/rkvdec.c b/drivers/staging/media/rkvdec/rkvdec.c
-index 2bc4b1a40989..7bab7586918c 100644
---- a/drivers/staging/media/rkvdec/rkvdec.c
-+++ b/drivers/staging/media/rkvdec/rkvdec.c
-@@ -127,6 +127,7 @@ static const struct rkvdec_coded_fmt_desc rkvdec_coded_fmts[] = {
- 		.ops = &rkvdec_h264_fmt_ops,
- 		.num_decoded_fmts = ARRAY_SIZE(rkvdec_h264_vp9_decoded_fmts),
- 		.decoded_fmts = rkvdec_h264_vp9_decoded_fmts,
-+		.subsystem_flags = VB2_V4L2_FL_SUPPORTS_M2M_HOLD_CAPTURE_BUF,
- 	},
- 	{
- 		.fourcc = V4L2_PIX_FMT_VP9_FRAME,
-@@ -385,6 +386,9 @@ static int rkvdec_s_output_fmt(struct file *file, void *priv,
- 	cap_fmt->fmt.pix_mp.ycbcr_enc = f->fmt.pix_mp.ycbcr_enc;
- 	cap_fmt->fmt.pix_mp.quantization = f->fmt.pix_mp.quantization;
- 
-+	/* Enable format specific queue features */
-+	vq->subsystem_flags |= desc->subsystem_flags;
-+
- 	return 0;
- }
- 
-diff --git a/drivers/staging/media/rkvdec/rkvdec.h b/drivers/staging/media/rkvdec/rkvdec.h
-index 9df0fba799a4..633335ebb9c4 100644
---- a/drivers/staging/media/rkvdec/rkvdec.h
-+++ b/drivers/staging/media/rkvdec/rkvdec.h
-@@ -82,6 +82,7 @@ struct rkvdec_coded_fmt_desc {
- 	const struct rkvdec_coded_fmt_ops *ops;
- 	unsigned int num_decoded_fmts;
- 	const u32 *decoded_fmts;
-+	u32 subsystem_flags;
- };
- 
- struct rkvdec_dev {
--- 
-2.34.1
-
+-K
