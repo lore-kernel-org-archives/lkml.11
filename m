@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3836EC433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E072C433FE
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 01:00:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1445766AbiDFBA0 (ORCPT
+        id S1450445AbiDFBAo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 21:00:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35276 "EHLO
+        Tue, 5 Apr 2022 21:00:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48780 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243444AbiDEKfe (ORCPT
+        with ESMTP id S1356795AbiDEKYz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:35:34 -0400
+        Tue, 5 Apr 2022 06:24:55 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3965A33886;
-        Tue,  5 Apr 2022 03:20:35 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8000BBF534;
+        Tue,  5 Apr 2022 03:09:03 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CD643B81C6C;
-        Tue,  5 Apr 2022 10:20:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1FF26C385A1;
-        Tue,  5 Apr 2022 10:20:31 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 25646B81C8A;
+        Tue,  5 Apr 2022 10:09:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6B6E3C385A0;
+        Tue,  5 Apr 2022 10:09:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649154032;
-        bh=tn3oV95hj2cGFdS6S3E/vvbtOLleHeDX+ydYbf8M3tc=;
+        s=korg; t=1649153340;
+        bh=N2f6m20kE+loFXcxNeBy/z1fvxrsZDIACl7WBcDq760=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Lqtl3kAestwAEdmimKGGCWZPPoOQVUwUOjDrcEl+xTuZSsTikohpU9k3oS72hi+UV
-         GVevb00S9AVJy83C5Kx+O35NpDkmJVu0kfK/HXHnPL8yX4nYF+iDOK8DXDC1tduWaD
-         7yww9parTCfJm4eLN9+2OD/XsLDgG07Fv5SH3N7w=
+        b=DIh8CS+cW6uW/ZAAKMOkvrA9jOBBWMSiRnL3mxZMkas0n3szxKajV9QGNGE1VX4Dm
+         PjUN8hXP9fMNUC/7qBAm83ZVJpSj9cD9lE8PDCRDqWzHaoiWteC2lXgRXw3Plcxrg+
+         lgrOTaIU7boGaoeF6SGm8NqW2PINKnMIRx6puCdY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Olga Kornievskaia <kolga@netapp.com>,
-        Trond Myklebust <trond.myklebust@hammerspace.com>,
+        stable@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
+        Igor Zhbanov <i.zhbanov@omprussia.ru>,
+        "Huang, Ying" <ying.huang@intel.com>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 433/599] NFSv4.1: dont retry BIND_CONN_TO_SESSION on session error
-Date:   Tue,  5 Apr 2022 09:32:07 +0200
-Message-Id: <20220405070311.718223497@linuxfoundation.org>
+Subject: [PATCH 5.10 161/599] ACPI: APEI: fix return value of __setup handlers
+Date:   Tue,  5 Apr 2022 09:27:35 +0200
+Message-Id: <20220405070303.632247894@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
 References: <20220405070258.802373272@linuxfoundation.org>
@@ -50,33 +52,84 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Olga Kornievskaia <kolga@netapp.com>
+From: Randy Dunlap <rdunlap@infradead.org>
 
-[ Upstream commit 1d15d121cc2ad4d016a7dc1493132a9696f91fc5 ]
+[ Upstream commit f3303ff649dbf7dcdc6a6e1a922235b12b3028f4 ]
 
-There is no reason to retry the operation if a session error had
-occurred in such case result structure isn't filled out.
+__setup() handlers should return 1 to indicate that the boot option
+has been handled. Returning 0 causes a boot option to be listed in
+the Unknown kernel command line parameters and also added to init's
+arg list (if no '=' sign) or environment list (if of the form 'a=b').
 
-Fixes: dff58530c4ca ("NFSv4.1: fix handling of backchannel binding in BIND_CONN_TO_SESSION")
-Signed-off-by: Olga Kornievskaia <kolga@netapp.com>
-Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
+Unknown kernel command line parameters "erst_disable
+  bert_disable hest_disable BOOT_IMAGE=/boot/bzImage-517rc6", will be
+  passed to user space.
+
+ Run /sbin/init as init process
+   with arguments:
+     /sbin/init
+     erst_disable
+     bert_disable
+     hest_disable
+   with environment:
+     HOME=/
+     TERM=linux
+     BOOT_IMAGE=/boot/bzImage-517rc6
+
+Fixes: a3e2acc5e37b ("ACPI / APEI: Add Boot Error Record Table (BERT) support")
+Fixes: a08f82d08053 ("ACPI, APEI, Error Record Serialization Table (ERST) support")
+Fixes: 9dc966641677 ("ACPI, APEI, HEST table parsing")
+Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+Reported-by: Igor Zhbanov <i.zhbanov@omprussia.ru>
+Link: lore.kernel.org/r/64644a2f-4a20-bab3-1e15-3b2cdd0defe3@omprussia.ru
+Reviewed-by: "Huang, Ying" <ying.huang@intel.com>
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/nfs/nfs4proc.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/acpi/apei/bert.c | 2 +-
+ drivers/acpi/apei/erst.c | 2 +-
+ drivers/acpi/apei/hest.c | 2 +-
+ 3 files changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/fs/nfs/nfs4proc.c b/fs/nfs/nfs4proc.c
-index d222a980164b..77199d356042 100644
---- a/fs/nfs/nfs4proc.c
-+++ b/fs/nfs/nfs4proc.c
-@@ -8205,6 +8205,7 @@ nfs4_bind_one_conn_to_session_done(struct rpc_task *task, void *calldata)
- 	case -NFS4ERR_DEADSESSION:
- 		nfs4_schedule_session_recovery(clp->cl_session,
- 				task->tk_status);
-+		return;
- 	}
- 	if (args->dir == NFS4_CDFC4_FORE_OR_BOTH &&
- 			res->dir != NFS4_CDFS4_BOTH) {
+diff --git a/drivers/acpi/apei/bert.c b/drivers/acpi/apei/bert.c
+index 19e50fcbf4d6..86211422f4ee 100644
+--- a/drivers/acpi/apei/bert.c
++++ b/drivers/acpi/apei/bert.c
+@@ -77,7 +77,7 @@ static int __init setup_bert_disable(char *str)
+ {
+ 	bert_disable = 1;
+ 
+-	return 0;
++	return 1;
+ }
+ __setup("bert_disable", setup_bert_disable);
+ 
+diff --git a/drivers/acpi/apei/erst.c b/drivers/acpi/apei/erst.c
+index 2e0b0fcad960..83efb52a3f31 100644
+--- a/drivers/acpi/apei/erst.c
++++ b/drivers/acpi/apei/erst.c
+@@ -891,7 +891,7 @@ EXPORT_SYMBOL_GPL(erst_clear);
+ static int __init setup_erst_disable(char *str)
+ {
+ 	erst_disable = 1;
+-	return 0;
++	return 1;
+ }
+ 
+ __setup("erst_disable", setup_erst_disable);
+diff --git a/drivers/acpi/apei/hest.c b/drivers/acpi/apei/hest.c
+index 6e980fe16772..7bf48c2776fb 100644
+--- a/drivers/acpi/apei/hest.c
++++ b/drivers/acpi/apei/hest.c
+@@ -219,7 +219,7 @@ static int __init hest_ghes_dev_register(unsigned int ghes_count)
+ static int __init setup_hest_disable(char *str)
+ {
+ 	hest_disable = HEST_DISABLED;
+-	return 0;
++	return 1;
+ }
+ 
+ __setup("hest_disable", setup_hest_disable);
 -- 
 2.34.1
 
