@@ -2,112 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 73692C4321E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 91689C4167D
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:23:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232349AbiDEURW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 16:17:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44784 "EHLO
+        id S236573AbiDEURu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 16:17:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46718 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1384276AbiDEPOy (ORCPT
+        with ESMTP id S1357960AbiDEK1d (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 11:14:54 -0400
-Received: from gnuweeb.org (gnuweeb.org [51.81.211.47])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D18320F58
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 06:29:17 -0700 (PDT)
-Received: from [192.168.137.80] (unknown [182.2.74.86])
-        by gnuweeb.org (Postfix) with ESMTPSA id 817617E342;
-        Tue,  5 Apr 2022 13:29:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gnuweeb.org;
-        s=default; t=1649165356;
-        bh=uhjmyqCr5OwOhwtddzDczmaKyd1OpK7B0pVdY6yUzsU=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=Xv/VvDq1G5l3g+F4JGca9f8EyByl27s/3e+PX1uX1km0gUENZt8pBz9XjfERXQJ4h
-         Pp0ipO6MfXvr9NL94dhv6mGiAlV0ocA6NLUH6uPKfBwiRy5Tf00a475qYPhglDEiJW
-         8xGBDRVOQLRCiv4UAZMLnZCwzpS/204A0zEz9Q0QGGxx+iqM3v+yTyxOrh6OAN9145
-         y9g/HsPoH3+9qAhlQn7dSJ+5zFJzcVqcGkrDkjmCraDoBnaJYqTQacmQpUE/2maBJ/
-         s8fXummwbYsvgENLZEkY7FQR/wEz7NOYhM/FfexN56gSHS9m6DxbPyIddEzuzifoab
-         xR52iQQyA0bEw==
-Message-ID: <df464935-9743-0f4c-1edb-e0204bab938e@gnuweeb.org>
-Date:   Tue, 5 Apr 2022 20:29:08 +0700
+        Tue, 5 Apr 2022 06:27:33 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96237B6E46;
+        Tue,  5 Apr 2022 03:11:42 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0E898617A4;
+        Tue,  5 Apr 2022 10:11:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 175FBC385A1;
+        Tue,  5 Apr 2022 10:11:40 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649153501;
+        bh=yHW2nIW4xOOOvIV8sPoV3gr9Hs17N6DHwCarP2t75uU=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=PEadMo94nGMGpqG+DYy+QVlx7ySCHdst3mEXQt+/v7TCssFnVcteE6DbJasSqYSWi
+         2JPzfTxcprbJm20AQ21AxmX4eabnlh3FH/GTy+nxM48OVkRko8rUDjNL290vRSwvJ5
+         qLawB3shkwIJunRfnu9VoACaC8kt2chKtC6GnhgQ=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 205/599] soc: qcom: rpmpd: Check for null return of devm_kcalloc
+Date:   Tue,  5 Apr 2022 09:28:19 +0200
+Message-Id: <20220405070304.942382196@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
+References: <20220405070258.802373272@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [Linux 5.18-rc1] WARNING: CPU: 1 PID: 0 at
- kernel/sched/fair.c:3355 update_blocked_averages
-Content-Language: en-US
-To:     Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Cc:     Ben Segall <bsegall@google.com>,
-        Daniel Bristot de Oliveira <bristot@redhat.com>,
-        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Mel Gorman <mgorman@suse.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Vincent Guittot <vincent.guittot@linaro.org>
-References: <b86541ea-7d96-5a24-1b65-37c24c70d3ff@gnuweeb.org>
- <f71d132d-02a0-918c-ab2b-3234d0d492a4@arm.com>
-From:   Ammar Faizi <ammarfaizi2@gnuweeb.org>
-In-Reply-To: <f71d132d-02a0-918c-ab2b-3234d0d492a4@arm.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 4/5/22 7:21 PM, Dietmar Eggemann wrote:
-> Maybe you could split the SCHED_WARN_ON so we know which signal causes this?
-> 
-> diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
-> index d4bd299d67ab..0d45e09e5bfc 100644
-> --- a/kernel/sched/fair.c
-> +++ b/kernel/sched/fair.c
-> @@ -3350,9 +3350,9 @@ static inline bool cfs_rq_is_decayed(struct cfs_rq
-> *cfs_rq)
->           * Make sure that rounding and/or propagation of PELT values never
->           * break this.
->           */
-> -       SCHED_WARN_ON(cfs_rq->avg.load_avg ||
-> -                     cfs_rq->avg.util_avg ||
-> -                     cfs_rq->avg.runnable_avg);
-> +       SCHED_WARN_ON(cfs_rq->avg.load_avg);
-> +       SCHED_WARN_ON(cfs_rq->avg.util_avg);
-> +       SCHED_WARN_ON(cfs_rq->avg.runnable_avg);
-> 
->          return true;
->   }
+From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
 
-error: corrupt patch at line 6
+[ Upstream commit 5a811126d38f9767a20cc271b34db7c8efc5a46c ]
 
-Trivial enough, fixed it. Compiling now...
+Because of the possible failure of the allocation, data->domains might
+be NULL pointer and will cause the dereference of the NULL pointer
+later.
+Therefore, it might be better to check it and directly return -ENOMEM
+without releasing data manually if fails, because the comment of the
+devm_kmalloc() says "Memory allocated with this function is
+automatically freed on driver detach.".
 
-ammarfaizi2@integral2:~/work/linux.work$ git log -n1
-commit 3123109284176b1532874591f7c81f3837bbdc17 (HEAD -> master, tag: v5.18-rc1, @torvalds/linux/master)
-Author: Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Sun Apr 3 14:08:21 2022 -0700
+Fixes: bbe3a66c3f5a ("soc: qcom: rpmpd: Add a Power domain driver to model corners")
+Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Link: https://lore.kernel.org/r/20211231094419.1941054-1-jiasheng@iscas.ac.cn
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/soc/qcom/rpmpd.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-     Linux 5.18-rc1
-ammarfaizi2@integral2:~/work/linux.work$ git diff
-diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
-index d4bd299d67ab..0d45e09e5bfc 100644
---- a/kernel/sched/fair.c
-+++ b/kernel/sched/fair.c
-@@ -3350,9 +3350,9 @@ static inline bool cfs_rq_is_decayed(struct cfs_rq *cfs_rq)
-  	 * Make sure that rounding and/or propagation of PELT values never
-  	 * break this.
-  	 */
--	SCHED_WARN_ON(cfs_rq->avg.load_avg ||
--		      cfs_rq->avg.util_avg ||
--		      cfs_rq->avg.runnable_avg);
-+	SCHED_WARN_ON(cfs_rq->avg.load_avg);
-+	SCHED_WARN_ON(cfs_rq->avg.util_avg);
-+	SCHED_WARN_ON(cfs_rq->avg.runnable_avg);
-  
-  	return true;
-  }
-ammarfaizi2@integral2:~/work/linux.work$
-
+diff --git a/drivers/soc/qcom/rpmpd.c b/drivers/soc/qcom/rpmpd.c
+index f2168e4259b2..c6084c0d3530 100644
+--- a/drivers/soc/qcom/rpmpd.c
++++ b/drivers/soc/qcom/rpmpd.c
+@@ -387,6 +387,9 @@ static int rpmpd_probe(struct platform_device *pdev)
+ 
+ 	data->domains = devm_kcalloc(&pdev->dev, num, sizeof(*data->domains),
+ 				     GFP_KERNEL);
++	if (!data->domains)
++		return -ENOMEM;
++
+ 	data->num_domains = num;
+ 
+ 	for (i = 0; i < num; i++) {
 -- 
-Ammar Faizi
+2.34.1
+
+
+
