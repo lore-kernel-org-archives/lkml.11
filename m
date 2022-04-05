@@ -2,346 +2,248 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 96AF7C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 01:10:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C258C3527A
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 01:10:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1447444AbiDFBIx (ORCPT
+        id S1450500AbiDFBJL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 21:08:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35636 "EHLO
+        Tue, 5 Apr 2022 21:09:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57584 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1573556AbiDETWl (ORCPT
+        with ESMTP id S1352131AbiDEPLv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 15:22:41 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 180DB3CFDB;
-        Tue,  5 Apr 2022 12:20:41 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CCC7BB81FA8;
-        Tue,  5 Apr 2022 19:20:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E21C4C385A5;
-        Tue,  5 Apr 2022 19:20:37 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649186438;
-        bh=IDUUHHm/lC7WrXghg2b9EU8N6n8Ce+tfjO41Cd6bRik=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dhktCP+xu/cqLvctOE/rx1gdsCr5pDA7kMHOPUawFFzNQfiFv9eku0wq7nUhNfN4H
-         H6IE85bgpbP9jy75hpLr21nKoUiYGMrGmBsH+4tl414GeR/UEbCpJe9BgHZ7xqGh10
-         vAfE1pUQ8eYuFRy2AeCj7Y7GV1+iuBI0Leh7W8pMMMbGTCWi9pNi5xcpPoEjxAMnR6
-         4PApdZBTvZig6xzbiLkHQqBQR7wC9Wkcb0qAD18S82yLidU9dPRcTy4+WDlWQsi0DL
-         IHkkYnatKiF9238Rx8z2NA+4zIN6jVPWzxRHmpao2ZZQScYKkeEy6r0PrKNat8eBU4
-         bvEIRishb0cCQ==
-From:   Jeff Layton <jlayton@kernel.org>
-To:     idryomov@gmail.com, xiubli@redhat.com
-Cc:     ceph-devel@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        linux-fscrypt@vger.kernel.org, linux-kernel@vger.kernel.org,
-        lhenriques@suse.de
-Subject: [PATCH v13 07/59] ceph: add new mount option to enable sparse reads
-Date:   Tue,  5 Apr 2022 15:19:38 -0400
-Message-Id: <20220405192030.178326-8-jlayton@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405192030.178326-1-jlayton@kernel.org>
-References: <20220405192030.178326-1-jlayton@kernel.org>
+        Tue, 5 Apr 2022 11:11:51 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43BC8108741;
+        Tue,  5 Apr 2022 06:25:40 -0700 (PDT)
+From:   John Ogness <john.ogness@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1649165137;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=3uTtNKEIWvK40el6X/tph7T5OFPK+Qu+KPdH0jY6/NM=;
+        b=nUIDNekKdxeQDgfR6WR0r5ry08qg4CHFu3HMoiENog4Pmqwzgiz6j/H2nDVwQ7X4I7ZBTc
+        LVVeIErmf+0eMJDu4z0m+MkgJzZo8H14BoaXZXvBixke8URYXcOQhspk0wehzCD8X/8bFM
+        7k3eUay7ycFm2+USCUYO5oGn9ycxvvx7mnfHkhx0aiVAaM8Vsb1au1biFYfol0cQxVTOd6
+        RD8qnVXDU+0N64DgudnxcD9o/K5D/emT5HCKSX91o99sx/ni4aTlPxj0hZPYhA2fnVoSiU
+        OS81aVoCcwLrLKl1GgemvSl6WE6akmtyeV/FtctY5sKo0MDpCTaxGt90OdpGZw==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1649165137;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=3uTtNKEIWvK40el6X/tph7T5OFPK+Qu+KPdH0jY6/NM=;
+        b=+nzqxfmjtL5R0gTBDsuIkCbGDRHq1Z/T5zsfM/DHW+QxwPbN/tyS1il78axqHyzAVBdv5p
+        vCw069dKqi684iCQ==
+To:     Petr Mladek <pmladek@suse.com>
+Cc:     Sergey Senozhatsky <senozhatsky@chromium.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        linux-kernel@vger.kernel.org,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Marco Elver <elver@google.com>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Alexander Potapenko <glider@google.com>,
+        Stephen Boyd <swboyd@chromium.org>,
+        Nicholas Piggin <npiggin@gmail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        "Paul E. McKenney" <paulmck@kernel.org>,
+        Frederic Weisbecker <frederic@kernel.org>,
+        Neeraj Upadhyay <quic_neeraju@quicinc.com>,
+        Josh Triplett <josh@joshtriplett.org>,
+        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+        Lai Jiangshan <jiangshanlai@gmail.com>,
+        Joel Fernandes <joel@joelfernandes.org>,
+        Kees Cook <keescook@chromium.org>,
+        Luis Chamberlain <mcgrof@kernel.org>,
+        Wei Liu <wei.liu@kernel.org>,
+        Xiaoming Ni <nixiaoming@huawei.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Helge Deller <deller@gmx.de>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Shawn Guo <shawn.guo@linaro.org>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>,
+        "Eric W. Biederman" <ebiederm@xmission.com>,
+        Phil Auld <pauld@redhat.com>,
+        Juri Lelli <juri.lelli@redhat.com>,
+        Wang Qing <wangqing@vivo.com>, rcu@vger.kernel.org
+Subject: [PATCH printk v2 00/12] implement threaded console printing
+Date:   Tue,  5 Apr 2022 15:31:23 +0206
+Message-Id: <20220405132535.649171-1-john.ogness@linutronix.de>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add a new mount option that has the client issue sparse reads instead of
-normal ones. The callers now preallocate an sparse extent buffer that
-the libceph receive code can populate and hand back after the operation
-completes.
+This is v2 of a series to implement a kthread for each registered
+console. v1 is here [0]. The kthreads locklessly retrieve the
+records from the printk ringbuffer and also do not cause any lock
+contention between each other. This allows consoles to run at full
+speed. For example, a netconsole is able to dump records much
+faster than a serial or vt console. Also, during normal operation,
+it completely decouples printk() callers from console printing.
 
-After a successful sparse read, we can't use the req->r_result value to
-determine the amount of data "read", so instead we set the received
-length to be from the end of the last extent in the buffer. Any
-interstitial holes will have been filled by the receive code.
+There are situations where kthread printing is not sufficient. For
+example, during panic situations, where the kthreads may not get a
+chance to schedule. In such cases, the current method of attempting
+to print directly within the printk() caller context is used. New
+functions printk_prefer_direct_enter() and
+printk_prefer_direct_exit() are made available to mark areas of the
+kernel where direct printing is preferred. (These should only be
+areas that do not occur during normal operation.)
 
-Reviewed-by: Xiubo Li <xiubli@redhat.com>
-Signed-off-by: Jeff Layton <jlayton@kernel.org>
----
- fs/ceph/addr.c  | 17 +++++++++++++++--
- fs/ceph/file.c  | 51 +++++++++++++++++++++++++++++++++++++++++--------
- fs/ceph/super.c | 16 +++++++++++++++-
- fs/ceph/super.h |  1 +
- 4 files changed, 74 insertions(+), 11 deletions(-)
+This series also introduces pr_flush(): a might_sleep() function
+that will block until all active printing threads have caught up
+to the latest record at the time of the pr_flush() call. This
+function is useful, for example, to wait until pending records
+are flushed to consoles before suspending.
 
-diff --git a/fs/ceph/addr.c b/fs/ceph/addr.c
-index aa25bffd4823..99021431a391 100644
---- a/fs/ceph/addr.c
-+++ b/fs/ceph/addr.c
-@@ -219,8 +219,10 @@ static void finish_netfs_read(struct ceph_osd_request *req)
- 	struct ceph_fs_client *fsc = ceph_inode_to_client(req->r_inode);
- 	struct ceph_osd_data *osd_data = osd_req_op_extent_osd_data(req, 0);
- 	struct netfs_io_subrequest *subreq = req->r_priv;
-+	struct ceph_osd_req_op *op = &req->r_ops[0];
- 	int num_pages;
- 	int err = req->r_result;
-+	bool sparse = (op->op == CEPH_OSD_OP_SPARSE_READ);
- 
- 	ceph_update_read_metrics(&fsc->mdsc->metric, req->r_start_latency,
- 				 req->r_end_latency, osd_data->length, err);
-@@ -229,7 +231,9 @@ static void finish_netfs_read(struct ceph_osd_request *req)
- 	     subreq->len, i_size_read(req->r_inode));
- 
- 	/* no object means success but no data */
--	if (err == -ENOENT)
-+	if (sparse && err >= 0)
-+		err = ceph_sparse_ext_map_end(op);
-+	else if (err == -ENOENT)
- 		err = 0;
- 	else if (err == -EBLOCKLISTED)
- 		fsc->blocklisted = true;
-@@ -310,13 +314,14 @@ static void ceph_netfs_issue_read(struct netfs_io_subrequest *subreq)
- 	size_t page_off;
- 	int err = 0;
- 	u64 len = subreq->len;
-+	bool sparse = ceph_test_mount_opt(fsc, SPARSEREAD);
- 
- 	if (ci->i_inline_version != CEPH_INLINE_NONE &&
- 	    ceph_netfs_issue_op_inline(subreq))
- 		return;
- 
- 	req = ceph_osdc_new_request(&fsc->client->osdc, &ci->i_layout, vino, subreq->start, &len,
--			0, 1, CEPH_OSD_OP_READ,
-+			0, 1, sparse ? CEPH_OSD_OP_SPARSE_READ : CEPH_OSD_OP_READ,
- 			CEPH_OSD_FLAG_READ | fsc->client->osdc.client->options->read_from_replica,
- 			NULL, ci->i_truncate_seq, ci->i_truncate_size, false);
- 	if (IS_ERR(req)) {
-@@ -325,6 +330,14 @@ static void ceph_netfs_issue_read(struct netfs_io_subrequest *subreq)
- 		goto out;
- 	}
- 
-+	if (sparse) {
-+		err = ceph_alloc_sparse_ext_map(&req->r_ops[0]);
-+		if (err) {
-+			ceph_osdc_put_request(req);
-+			goto out;
-+		}
-+	}
-+
- 	dout("%s: pos=%llu orig_len=%zu len=%llu\n", __func__, subreq->start, subreq->len, len);
- 	iov_iter_xarray(&iter, READ, &rreq->mapping->i_pages, subreq->start, len);
- 	err = iov_iter_get_pages_alloc(&iter, &pages, len, &page_off);
-diff --git a/fs/ceph/file.c b/fs/ceph/file.c
-index 6c9e837aa1d3..9ee6e92bfed0 100644
---- a/fs/ceph/file.c
-+++ b/fs/ceph/file.c
-@@ -905,6 +905,7 @@ static ssize_t ceph_sync_read(struct kiocb *iocb, struct iov_iter *to,
- 	u64 off = iocb->ki_pos;
- 	u64 len = iov_iter_count(to);
- 	u64 i_size = i_size_read(inode);
-+	bool sparse = ceph_test_mount_opt(fsc, SPARSEREAD);
- 
- 	dout("sync_read on file %p %llu~%u %s\n", file, off, (unsigned)len,
- 	     (file->f_flags & O_DIRECT) ? "O_DIRECT" : "");
-@@ -931,10 +932,12 @@ static ssize_t ceph_sync_read(struct kiocb *iocb, struct iov_iter *to,
- 		bool more;
- 		int idx;
- 		size_t left;
-+		struct ceph_osd_req_op *op;
- 
- 		req = ceph_osdc_new_request(osdc, &ci->i_layout,
- 					ci->i_vino, off, &len, 0, 1,
--					CEPH_OSD_OP_READ, CEPH_OSD_FLAG_READ,
-+					sparse ? CEPH_OSD_OP_SPARSE_READ : CEPH_OSD_OP_READ,
-+					CEPH_OSD_FLAG_READ,
- 					NULL, ci->i_truncate_seq,
- 					ci->i_truncate_size, false);
- 		if (IS_ERR(req)) {
-@@ -955,6 +958,16 @@ static ssize_t ceph_sync_read(struct kiocb *iocb, struct iov_iter *to,
- 
- 		osd_req_op_extent_osd_data_pages(req, 0, pages, len, page_off,
- 						 false, false);
-+
-+		op = &req->r_ops[0];
-+		if (sparse) {
-+			ret = ceph_alloc_sparse_ext_map(op);
-+			if (ret) {
-+				ceph_osdc_put_request(req);
-+				break;
-+			}
-+		}
-+
- 		ret = ceph_osdc_start_request(osdc, req, false);
- 		if (!ret)
- 			ret = ceph_osdc_wait_request(osdc, req);
-@@ -964,19 +977,24 @@ static ssize_t ceph_sync_read(struct kiocb *iocb, struct iov_iter *to,
- 					 req->r_end_latency,
- 					 len, ret);
- 
--		ceph_osdc_put_request(req);
--
- 		i_size = i_size_read(inode);
- 		dout("sync_read %llu~%llu got %zd i_size %llu%s\n",
- 		     off, len, ret, i_size, (more ? " MORE" : ""));
- 
--		if (ret == -ENOENT)
-+		/* Fix it to go to end of extent map */
-+		if (sparse && ret >= 0)
-+			ret = ceph_sparse_ext_map_end(op);
-+		else if (ret == -ENOENT)
- 			ret = 0;
-+
-+		ceph_osdc_put_request(req);
-+
- 		if (ret >= 0 && ret < len && (off + ret < i_size)) {
- 			int zlen = min(len - ret, i_size - off - ret);
- 			int zoff = page_off + ret;
-+
- 			dout("sync_read zero gap %llu~%llu\n",
--                             off + ret, off + ret + zlen);
-+				off + ret, off + ret + zlen);
- 			ceph_zero_page_vector_range(zoff, zlen, pages);
- 			ret += zlen;
- 		}
-@@ -1095,8 +1113,10 @@ static void ceph_aio_complete_req(struct ceph_osd_request *req)
- 	struct inode *inode = req->r_inode;
- 	struct ceph_aio_request *aio_req = req->r_priv;
- 	struct ceph_osd_data *osd_data = osd_req_op_extent_osd_data(req, 0);
-+	struct ceph_osd_req_op *op = &req->r_ops[0];
- 	struct ceph_client_metric *metric = &ceph_sb_to_mdsc(inode->i_sb)->metric;
- 	unsigned int len = osd_data->bvec_pos.iter.bi_size;
-+	bool sparse = (op->op == CEPH_OSD_OP_SPARSE_READ);
- 
- 	BUG_ON(osd_data->type != CEPH_OSD_DATA_TYPE_BVECS);
- 	BUG_ON(!osd_data->num_bvecs);
-@@ -1117,6 +1137,8 @@ static void ceph_aio_complete_req(struct ceph_osd_request *req)
- 		}
- 		rc = -ENOMEM;
- 	} else if (!aio_req->write) {
-+		if (sparse && rc >= 0)
-+			rc = ceph_sparse_ext_map_end(op);
- 		if (rc == -ENOENT)
- 			rc = 0;
- 		if (rc >= 0 && len > rc) {
-@@ -1253,6 +1275,7 @@ ceph_direct_read_write(struct kiocb *iocb, struct iov_iter *iter,
- 	loff_t pos = iocb->ki_pos;
- 	bool write = iov_iter_rw(iter) == WRITE;
- 	bool should_dirty = !write && iter_is_iovec(iter);
-+	bool sparse = ceph_test_mount_opt(fsc, SPARSEREAD);
- 
- 	if (write && ceph_snap(file_inode(file)) != CEPH_NOSNAP)
- 		return -EROFS;
-@@ -1280,6 +1303,8 @@ ceph_direct_read_write(struct kiocb *iocb, struct iov_iter *iter,
- 	while (iov_iter_count(iter) > 0) {
- 		u64 size = iov_iter_count(iter);
- 		ssize_t len;
-+		struct ceph_osd_req_op *op;
-+		int readop = sparse ?  CEPH_OSD_OP_SPARSE_READ : CEPH_OSD_OP_READ;
- 
- 		if (write)
- 			size = min_t(u64, size, fsc->mount_options->wsize);
-@@ -1290,8 +1315,7 @@ ceph_direct_read_write(struct kiocb *iocb, struct iov_iter *iter,
- 		req = ceph_osdc_new_request(&fsc->client->osdc, &ci->i_layout,
- 					    vino, pos, &size, 0,
- 					    1,
--					    write ? CEPH_OSD_OP_WRITE :
--						    CEPH_OSD_OP_READ,
-+					    write ? CEPH_OSD_OP_WRITE : readop,
- 					    flags, snapc,
- 					    ci->i_truncate_seq,
- 					    ci->i_truncate_size,
-@@ -1342,6 +1366,14 @@ ceph_direct_read_write(struct kiocb *iocb, struct iov_iter *iter,
- 		}
- 
- 		osd_req_op_extent_osd_data_bvecs(req, 0, bvecs, num_pages, len);
-+		op = &req->r_ops[0];
-+		if (sparse) {
-+			ret = ceph_alloc_sparse_ext_map(op);
-+			if (ret) {
-+				ceph_osdc_put_request(req);
-+				break;
-+			}
-+		}
- 
- 		if (aio_req) {
- 			aio_req->total_len += len;
-@@ -1370,8 +1402,11 @@ ceph_direct_read_write(struct kiocb *iocb, struct iov_iter *iter,
- 
- 		size = i_size_read(inode);
- 		if (!write) {
--			if (ret == -ENOENT)
-+			if (sparse && ret >= 0)
-+				ret = ceph_sparse_ext_map_end(op);
-+			else if (ret == -ENOENT)
- 				ret = 0;
-+
- 			if (ret >= 0 && ret < len && pos + ret < size) {
- 				struct iov_iter i;
- 				int zlen = min_t(size_t, len - ret,
-diff --git a/fs/ceph/super.c b/fs/ceph/super.c
-index e6987d295079..26d924dda721 100644
---- a/fs/ceph/super.c
-+++ b/fs/ceph/super.c
-@@ -163,6 +163,7 @@ enum {
- 	Opt_copyfrom,
- 	Opt_wsync,
- 	Opt_pagecache,
-+	Opt_sparseread,
- };
- 
- enum ceph_recover_session_mode {
-@@ -205,6 +206,7 @@ static const struct fs_parameter_spec ceph_mount_parameters[] = {
- 	fsparam_u32	("wsize",			Opt_wsize),
- 	fsparam_flag_no	("wsync",			Opt_wsync),
- 	fsparam_flag_no	("pagecache",			Opt_pagecache),
-+	fsparam_flag_no	("sparseread",			Opt_sparseread),
- 	{}
- };
- 
-@@ -574,6 +576,12 @@ static int ceph_parse_mount_param(struct fs_context *fc,
- 		else
- 			fsopt->flags &= ~CEPH_MOUNT_OPT_NOPAGECACHE;
- 		break;
-+	case Opt_sparseread:
-+		if (result.negated)
-+			fsopt->flags &= ~CEPH_MOUNT_OPT_SPARSEREAD;
-+		else
-+			fsopt->flags |= CEPH_MOUNT_OPT_SPARSEREAD;
-+		break;
- 	default:
- 		BUG();
- 	}
-@@ -708,9 +716,10 @@ static int ceph_show_options(struct seq_file *m, struct dentry *root)
- 
- 	if (!(fsopt->flags & CEPH_MOUNT_OPT_ASYNC_DIROPS))
- 		seq_puts(m, ",wsync");
--
- 	if (fsopt->flags & CEPH_MOUNT_OPT_NOPAGECACHE)
- 		seq_puts(m, ",nopagecache");
-+	if (fsopt->flags & CEPH_MOUNT_OPT_SPARSEREAD)
-+		seq_puts(m, ",sparseread");
- 
- 	if (fsopt->wsize != CEPH_MAX_WRITE_SIZE)
- 		seq_printf(m, ",wsize=%u", fsopt->wsize);
-@@ -1290,6 +1299,11 @@ static int ceph_reconfigure_fc(struct fs_context *fc)
- 	else
- 		ceph_clear_mount_opt(fsc, ASYNC_DIROPS);
- 
-+	if (fsopt->flags & CEPH_MOUNT_OPT_SPARSEREAD)
-+		ceph_set_mount_opt(fsc, SPARSEREAD);
-+	else
-+		ceph_clear_mount_opt(fsc, SPARSEREAD);
-+
- 	if (strcmp_null(fsc->mount_options->mon_addr, fsopt->mon_addr)) {
- 		kfree(fsc->mount_options->mon_addr);
- 		fsc->mount_options->mon_addr = fsopt->mon_addr;
-diff --git a/fs/ceph/super.h b/fs/ceph/super.h
-index 73db7f6021f3..80a2399f2878 100644
---- a/fs/ceph/super.h
-+++ b/fs/ceph/super.h
-@@ -41,6 +41,7 @@
- #define CEPH_MOUNT_OPT_NOCOPYFROM      (1<<14) /* don't use RADOS 'copy-from' op */
- #define CEPH_MOUNT_OPT_ASYNC_DIROPS    (1<<15) /* allow async directory ops */
- #define CEPH_MOUNT_OPT_NOPAGECACHE     (1<<16) /* bypass pagecache altogether */
-+#define CEPH_MOUNT_OPT_SPARSEREAD      (1<<17) /* always do sparse reads */
- 
- #define CEPH_MOUNT_OPT_DEFAULT			\
- 	(CEPH_MOUNT_OPT_DCACHE |		\
+Note that this series does *not* increase the reliability of console
+printing. Rather it focuses on the non-interference aspect of
+printk() by decoupling printk() callers from printing (during normal
+operation). Nonetheless, the reliability aspect should not worsen
+due to this series.
+
+Changes since v1:
+
+- Rename nearly all new variables, functions, macros, and flags:
+
+  variables:
+  @console_lock_count        --> @console_kthreads_active
+  @consoles_paused           --> @console_kthreads_blocked
+  @kthreads_started          --> @printk_kthreads_available
+  @printk_direct             --> @printk_prefer_direct
+
+  functions/macros:
+  console_excl_trylock()     --> console_kthreads_atomic_tryblock()
+  console_excl_unlock()      --> console_kthreads_atomic_unblock()
+  console_printer_tryenter() --> console_kthread_printing_tryenter()
+  console_printer_exit()     --> console_kthread_printing_exit()
+  pause_all_consoles()       --> console_kthreads_block()
+  unpause_all_consoles()     --> console_kthreads_unblock()
+  printk_direct_enter()      --> printk_prefer_direct_enter()
+  printk_direct_exit()       --> printk_prefer_direct_exit()
+  start_printk_kthread()     --> printk_start_kthread()
+
+  console flags:
+  CON_PAUSED                 --> CON_THD_BLOCKED
+
+- Drop the patch to avoid VT printing if in an atomic context. (This
+  can only be done after the Linux BSoD feature is implemented.)
+
+- Keep printk_delay() in the printk() context. (We may want to move
+  this into printer contexts later.)
+
+- Keep console_trylock() usage to reacquire the console lock in
+  console_unlock().
+
+- Keep cpu_online(raw_smp_processor_id()) in the check if a console
+  is usable and remove the printk_percpu_data_ready() check (percpu
+  data is always ready for consoles).
+
+- Start console printer threads as an early_initcall. This means
+  threads are active before multiple CPUs come online.
+
+- Remove "system_state < SYSTEM_RUNNING" as a reason to allow direct
+  printing. @kthreads_started is used for the early boot decision.
+
+- Add console_kthreads_atomically_blocked() macro.
+
+- Add printk_console_msg() macro to printk messages with console
+  details. The macro allows print indexing.
+
+- Add __pr_flush() to allow waiting for only a single console.
+
+- Add a full memory barrier in wake_up_klogd() to ensure new records
+  are visible before checking if the waitqueue is empty.
+
+- Wake kthreads when exiting preferred direct mode.
+
+- Wake kthreads when a CPU comes online.
+
+- In unregister_console(), stop the printer thread before acquiring
+  the console lock.
+
+- Print "thread started" message after all allocations successful.
+
+- Permanently enable preferred direct printing if there are any
+  errors setting up any of the threaded console printers.
+
+- Keep threaded printers asleep if there is no con->write()
+  callback.
+
+- Keep threaded printers asleep if preferred direct printing is
+  active.
+
+- Always allow handovers if the console is locked.
+
+- Only stop irqsoff tracing if handovers are allowed.
+
+- console_emit_next_record() is for when the console is not locked,
+  console_emit_next_record_transferable() is for when the console is
+  locked.
+
+- Wait for console printers to catch up after unblanking the screen.
+
+- In console_stop(), only wait for the stopping console.
+
+- In console_start(), only wait for the starting console.
+
+- Print only 1 record per wait cycle to increase chances of direct
+  printing taking over.
+
+- Repurpose the irqwork flag PRINTK_PENDING_OUTPUT for direct
+  printing.
+
+- Add caution notice and tips to description of
+  printk_cpu_sync_get_irqsave() on how to use it correctly.
+
+- Improve the comments explaining why preemption is disabled during
+  direct printing.
+
+- Improve commit message to explain the motivation for expanding the
+  console lock and how it works.
+
+John Ogness
+
+[0] https://lore.kernel.org/all/20220207194323.273637-1-john.ogness@linutronix.de
+
+John Ogness (12):
+  printk: rename cpulock functions
+  printk: cpu sync always disable interrupts
+  printk: get caller_id/timestamp after migration disable
+  printk: call boot_delay_msec() in printk_delay()
+  printk: add macro for console detail messages
+  printk: refactor and rework printing logic
+  printk: move buffer definitions into console_emit_next_record() caller
+  printk: add pr_flush()
+  printk: add functions to prefer direct printing
+  printk: add kthread console printers
+  printk: extend console_lock for proper kthread support
+  printk: remove @console_locked
+
+ drivers/tty/sysrq.c     |    2 +
+ include/linux/console.h |   19 +
+ include/linux/printk.h  |   82 ++-
+ kernel/hung_task.c      |   11 +-
+ kernel/panic.c          |    4 +
+ kernel/printk/printk.c  | 1070 +++++++++++++++++++++++++++++----------
+ kernel/rcu/tree_stall.h |    2 +
+ kernel/reboot.c         |   14 +-
+ kernel/watchdog.c       |    4 +
+ kernel/watchdog_hld.c   |    4 +
+ lib/dump_stack.c        |    4 +-
+ lib/nmi_backtrace.c     |    4 +-
+ 12 files changed, 908 insertions(+), 312 deletions(-)
+
+
+base-commit: 3ef4ea3d84ca568dcd57816b9521e82e3bd94f08
 -- 
-2.35.1
+2.30.2
 
