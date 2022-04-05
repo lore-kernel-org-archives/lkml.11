@@ -2,46 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9AE39C4167E
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 10:49:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 716CCC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 10:50:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345207AbiDEKku (ORCPT
+        id S1345395AbiDEKlP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 06:40:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33842 "EHLO
+        Tue, 5 Apr 2022 06:41:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53140 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238498AbiDEIaj (ORCPT
+        with ESMTP id S240354AbiDEIby (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:30:39 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55C9227CD9;
-        Tue,  5 Apr 2022 01:22:23 -0700 (PDT)
+        Tue, 5 Apr 2022 04:31:54 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B8976FA21;
+        Tue,  5 Apr 2022 01:24:21 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9831AB81BD6;
-        Tue,  5 Apr 2022 08:22:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E89EBC385A5;
-        Tue,  5 Apr 2022 08:22:20 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4B9FC60FFB;
+        Tue,  5 Apr 2022 08:24:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 61EF0C385A0;
+        Tue,  5 Apr 2022 08:24:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649146941;
-        bh=hpbWX8YBC6s4oo45QHF2m7r8EsVxECiMVkMLp+Qwi3A=;
+        s=korg; t=1649147045;
+        bh=gKjV3QLPv6TeU0BZhoxIGrkmjtEcGY8pEsjKlh+Y7xY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=F37NIj3COKBOOn63Gv+5yXJJpS9Iw6JHiCgMAQuCtfXT5spSZ/WRbizdhKPOwCYYb
-         7TdfphFvJuYB1MpgUVds//aWRIFKqyo2lTc0nCQ5UbmZFlBvWhXM/e1WmqtAJPu+km
-         u5SrLCzmIhHHyh7HcOCarAvSkGT/R6hBDwrZrYcE=
+        b=fMmmA1kbMLWccjQJkW4E2Ci/gZHkrt96z7JRKv77cbYrlQjIMY6muNThVnFj+Bofp
+         mc4hiROlnChCbe8BcjeMhd7aDIQAVyw4FXjk1MW6RjnT5T73MO9vjXk9n2comORmMc
+         Wnzv6I4Ny7sX7x7OFghtdzsJLyLBiRpwHPAk54EQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
-        Bard Liao <yung-chuan.liao@linux.intel.com>,
-        =?UTF-8?q?P=C3=A9ter=20Ujfalusi?= <peter.ujfalusi@linux.intel.com>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0944/1126] ASoC: Intel: sof_es8336: log all quirks
-Date:   Tue,  5 Apr 2022 09:28:11 +0200
-Message-Id: <20220405070435.217682770@linuxfoundation.org>
+        stable@vger.kernel.org, Joe Carnuccio <joe.carnuccio@cavium.com>,
+        Nilesh Javali <njavali@marvell.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>
+Subject: [PATCH 5.17 0982/1126] scsi: qla2xxx: Check for firmware dump already collected
+Date:   Tue,  5 Apr 2022 09:28:49 +0200
+Message-Id: <20220405070436.323124241@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -53,43 +50,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+From: Joe Carnuccio <joe.carnuccio@cavium.com>
 
-[ Upstream commit 9c818d849192491a8799b1cb14ca0f7aead4fb09 ]
+commit cfbafad7c6032d449a5a07f2d273acd2437bbc6a upstream.
 
-We only logged the SSP quirk, make sure the GPIO and DMIC quirks are
-exposed.
+While allocating firmware dump, check if dump is already collected and do
+not re-allocate the buffer.
 
-Signed-off-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
-Reviewed-by: Bard Liao <yung-chuan.liao@linux.intel.com>
-Reviewed-by: Péter Ujfalusi <peter.ujfalusi@linux.intel.com>
-Link: https://lore.kernel.org/r/20220308192610.392950-16-pierre-louis.bossart@linux.intel.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Link: https://lore.kernel.org/r/20220110050218.3958-17-njavali@marvell.com
+Cc: stable@vger.kernel.org
+Signed-off-by: Joe Carnuccio <joe.carnuccio@cavium.com>
+Signed-off-by: Nilesh Javali <njavali@marvell.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/soc/intel/boards/sof_es8336.c | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
+ drivers/scsi/qla2xxx/qla_init.c |    8 ++++++++
+ 1 file changed, 8 insertions(+)
 
-diff --git a/sound/soc/intel/boards/sof_es8336.c b/sound/soc/intel/boards/sof_es8336.c
-index 46e453915f82..764560439d46 100644
---- a/sound/soc/intel/boards/sof_es8336.c
-+++ b/sound/soc/intel/boards/sof_es8336.c
-@@ -63,7 +63,12 @@ static const struct acpi_gpio_mapping *gpio_mapping = acpi_es8336_gpios;
+--- a/drivers/scsi/qla2xxx/qla_init.c
++++ b/drivers/scsi/qla2xxx/qla_init.c
+@@ -3482,6 +3482,14 @@ qla2x00_alloc_fw_dump(scsi_qla_host_t *v
+ 	struct rsp_que *rsp = ha->rsp_q_map[0];
+ 	struct qla2xxx_fw_dump *fw_dump;
  
- static void log_quirks(struct device *dev)
- {
--	dev_info(dev, "quirk SSP%ld",  SOF_ES8336_SSP_CODEC(quirk));
-+	dev_info(dev, "quirk mask %#lx\n", quirk);
-+	dev_info(dev, "quirk SSP%ld\n",  SOF_ES8336_SSP_CODEC(quirk));
-+	if (quirk & SOF_ES8336_ENABLE_DMIC)
-+		dev_info(dev, "quirk DMIC enabled\n");
-+	if (quirk & SOF_ES8336_TGL_GPIO_QUIRK)
-+		dev_info(dev, "quirk TGL GPIO enabled\n");
- }
++	if (ha->fw_dump) {
++		ql_dbg(ql_dbg_init, vha, 0x00bd,
++		    "Firmware dump already allocated.\n");
++		return;
++	}
++
++	ha->fw_dumped = 0;
++	ha->fw_dump_cap_flags = 0;
+ 	dump_size = fixed_size = mem_size = eft_size = fce_size = mq_size = 0;
+ 	req_q_size = rsp_q_size = 0;
  
- static int sof_es8316_speaker_power_event(struct snd_soc_dapm_widget *w,
--- 
-2.34.1
-
 
 
