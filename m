@@ -2,85 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A22BFC46467
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:50:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EAE06C3527A
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:50:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1837892AbiDFAtB (ORCPT
+        id S1837989AbiDFAti (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 20:49:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37674 "EHLO
+        Tue, 5 Apr 2022 20:49:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56122 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1452191AbiDEPyf (ORCPT
+        with ESMTP id S1455525AbiDEQAH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 11:54:35 -0400
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E06971D3077;
-        Tue,  5 Apr 2022 07:50:30 -0700 (PDT)
-Received: from localhost (unknown [IPv6:2a02:3030:0:2f5a:2277:ba57:a2c0:2])
+        Tue, 5 Apr 2022 12:00:07 -0400
+Received: from mail.skyhub.de (mail.skyhub.de [IPv6:2a01:4f8:190:11c2::b:1457])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A37166AD3;
+        Tue,  5 Apr 2022 08:16:16 -0700 (PDT)
+Received: from zn.tnic (p2e55dff8.dip0.t-ipconnect.de [46.85.223.248])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        (Authenticated sender: sebastianfricke)
-        by bhuna.collabora.co.uk (Postfix) with ESMTPSA id 626051F44FBD;
-        Tue,  5 Apr 2022 15:50:24 +0100 (BST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1649170224;
-        bh=aUWjMFcKdA/ahzvcq6qNxNOe4FMWkYYbLu73Qvpgl0w=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=U+MGghngzjg05eWaLvwMsCBeWsVxk8Z5QWXjbrXvZkApCZU55ktgvN58ekEgDUBOs
-         Svvlhaa+vCXBfzpmkKdhxGBfu1h4SGk1lCodM/zrTrEc+6XB+qoXaVYhVZtdCO0TA3
-         Wl2p4r5KItJwaiT5T0BJhAw+k0dhSg8L0dApr7cZ3F0QTF9L1SwP5oPIL6a8J6CL+B
-         iH4dF0/9fvlECQ5hGngEpr0F0xx20+9UKhPnpEx1SKR6AkOCU8elAiLKFOZNicD4Ip
-         sFw5fQWkq58nAABH2RyrooFIsZDZp3TiTlfPVdFbXHAoOpZXGF+BW8lbaMuWS/4bTW
-         kkkkxz3gKn6gQ==
-Date:   Tue, 5 Apr 2022 16:50:20 +0200
-From:   Sebastian Fricke <sebastian.fricke@collabora.com>
-To:     Steven Rostedt <rostedt@goodmis.org>
-Cc:     Mark Rutland <mark.rutland@arm.com>,
-        linux-trace-devel@vger.kernel.org,
-        LKML <linux-kernel@vger.kernel.org>,
-        linux-arm-kernel@lists.infradead.org,
-        Ard Biesheuvel <ard.biesheuvel@linaro.org>,
-        Amit Daniel Kachhap <amit.kachhap@arm.com>,
-        Torsten Duwe <duwe@suse.de>
-Subject: Re: Corrupted function tracer in 5.17.0-rc1
-Message-ID: <20220405145020.55nopur6ccjyndnr@basti-XPS-13-9310>
-References: <20220404125212.tuby556kara5t56c@basti-XPS-13-9310>
- <20220404102607.5c9cb515@gandalf.local.home>
- <YksG6LXUCwIZhK8k@FVFF77S0Q05N>
- <20220404110633.1b246d55@gandalf.local.home>
+        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id E1B731EC0576;
+        Tue,  5 Apr 2022 17:16:10 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
+        t=1649171771;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=AKDLQe/dPEsrthvk8DnqVfdROlALev9E4MPr2/mYC3c=;
+        b=avwuDCDJzrRV5vhJCZCf6wLf1RWpmroqdHmBeTIQDKxladtn0DJ9zGp9itab8MYMyEbYss
+        TOfTXejLUEN1L5nDRn7AZ7D7YF8ChYFuSTeKDiX2nmMJ1bkc/eI1mD4LrIpU4B8EAchEpu
+        cnSlgQKOVSckOX99hnMsH9UATzmK88A=
+From:   Borislav Petkov <bp@alien8.de>
+To:     LKML <linux-kernel@vger.kernel.org>
+Cc:     Leon Romanovsky <leon@kernel.org>,
+        Saeed Mahameed <saeedm@nvidia.com>, linux-rdma@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: [PATCH 10/11] IB/mlx5: Fix undefined behavior due to shift overflowing the constant
+Date:   Tue,  5 Apr 2022 17:15:16 +0200
+Message-Id: <20220405151517.29753-11-bp@alien8.de>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405151517.29753-1-bp@alien8.de>
+References: <20220405151517.29753-1-bp@alien8.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Disposition: inline
-In-Reply-To: <20220404110633.1b246d55@gandalf.local.home>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hey Steven & Mark,
+From: Borislav Petkov <bp@suse.de>
 
-On 04.04.2022 11:06, Steven Rostedt wrote:
->On Mon, 4 Apr 2022 15:55:36 +0100
->Mark Rutland <mark.rutland@arm.com> wrote:
->
->> From the title, this is v5.17-rc1, which is known broken due to the mcount sort
->> issue that was subsequently fixed in commit:
->
->Ah, yes. I was thinking of 5.18-rc1 (which has just been released)
->
->>
->>   4ed308c445a1e3ab ("ftrace: Have architectures opt-in for mcount build time sorting")
->>
->> Is it possible to try with the final v5.17? Or at least try with that patch
->> cherry-picked?
->
->Right, 5.17-rc1 is known broken. Please try the latest, 5.17 and let us
->know if it is still an issue.
+Fix:
 
-Using 5.18-rc1 it works well, thanks for the quick help.
->
->Thanks,
->
->-- Steve
+  drivers/infiniband/hw/mlx5/main.c: In function ‘translate_eth_legacy_proto_oper’:
+  drivers/infiniband/hw/mlx5/main.c:370:2: error: case label does not reduce to an integer constant
+    case MLX5E_PROT_MASK(MLX5E_50GBASE_KR2):
+    ^~~~
 
-Greetings,
-Sebastian
+See https://lore.kernel.org/r/YkwQ6%2BtIH8GQpuct@zn.tnic for the gory
+details as to why it triggers with older gccs only.
+
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Cc: Leon Romanovsky <leon@kernel.org>
+Cc: Saeed Mahameed <saeedm@nvidia.com>
+Cc: linux-rdma@vger.kernel.org
+Cc: netdev@vger.kernel.org
+---
+ include/linux/mlx5/port.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/include/linux/mlx5/port.h b/include/linux/mlx5/port.h
+index 28a928b0684b..e96ee1e348cb 100644
+--- a/include/linux/mlx5/port.h
++++ b/include/linux/mlx5/port.h
+@@ -141,7 +141,7 @@ enum mlx5_ptys_width {
+ 	MLX5_PTYS_WIDTH_12X	= 1 << 4,
+ };
+ 
+-#define MLX5E_PROT_MASK(link_mode) (1 << link_mode)
++#define MLX5E_PROT_MASK(link_mode) (1U << link_mode)
+ #define MLX5_GET_ETH_PROTO(reg, out, ext, field)	\
+ 	(ext ? MLX5_GET(reg, out, ext_##field) :	\
+ 	MLX5_GET(reg, out, field))
+-- 
+2.35.1
+
