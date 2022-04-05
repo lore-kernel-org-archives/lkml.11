@@ -2,225 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C565C4332F
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 21:38:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 49A75C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 21:38:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229619AbiDEVjs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 17:39:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45564 "EHLO
+        id S233290AbiDEVkA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 17:40:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40556 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382370AbiDEMPE (ORCPT
+        with ESMTP id S1573312AbiDESwp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 08:15:04 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21DF1A8886;
-        Tue,  5 Apr 2022 04:25:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1649157927; x=1680693927;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=VyOpHSV5HKkBdPnmNq5O+pK+4MQGLYr78YNp/R3g7B4=;
-  b=t8iYuilbKLzNj1kcbqzJxUoEE58Rlx7Ip3NzCvTF9uLNPWiW0uWrVv8f
-   zy3iptPUApl6Ne7Cj0kG/01usEagfPhi/9j9/0+mCv+/hwxUFtIClEWBh
-   3EqjB2N/aHixxbwHbAYmwZAiu2PGuj64HgTQvl5Vj3towhDrXBhd/jip3
-   wWyU6UaBQtSvVxXTYAjEKtgxPQjarOq+o6ej6wG0FKFaeqcUrzVfAtT5c
-   ZAVS4yIkeWxFlOw0lDTNg92PDOR7KpLP2r3oSXVPrT+qBH9ISKrlA2MR8
-   LtA7hKS02hAwAOO4MoWkjQ4vmKSqFe+W0PX3CqQzsIQiyM9AZNvKXSt5r
-   g==;
-X-IronPort-AV: E=Sophos;i="5.90,236,1643698800"; 
-   d="scan'208";a="158916307"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 05 Apr 2022 04:25:26 -0700
-Received: from chn-vm-ex02.mchp-main.com (10.10.87.72) by
- chn-vm-ex02.mchp-main.com (10.10.87.72) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Tue, 5 Apr 2022 04:25:24 -0700
-Received: from localhost.localdomain (10.10.115.15) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Tue, 5 Apr 2022 04:25:22 -0700
-From:   Claudiu Beznea <claudiu.beznea@microchip.com>
-To:     <robh+dt@kernel.org>, <nicolas.ferre@microchip.com>,
-        <alexandre.belloni@bootlin.com>, <p.zabel@pengutronix.de>,
-        <sre@kernel.org>
-CC:     <linux-arm-kernel@lists.infradead.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-pm@vger.kernel.org>,
-        Claudiu Beznea <claudiu.beznea@microchip.com>
-Subject: [PATCH 1/8] ARM: dts: at91: use generic name for reset controller
-Date:   Tue, 5 Apr 2022 14:27:17 +0300
-Message-ID: <20220405112724.2760905-2-claudiu.beznea@microchip.com>
-X-Mailer: git-send-email 2.33.0
-In-Reply-To: <20220405112724.2760905-1-claudiu.beznea@microchip.com>
-References: <20220405112724.2760905-1-claudiu.beznea@microchip.com>
+        Tue, 5 Apr 2022 14:52:45 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7259B1AAB
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 11:50:46 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 27FB1618E1
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 18:50:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 81310C385A7;
+        Tue,  5 Apr 2022 18:50:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649184645;
+        bh=SEYzK4vSPeMJtzy43JQGZXAJd12jPg80CMxvL3TbA+w=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=Ftuf1iTnz8Nu5ZYDyk8s11y7iQSVnmZXMjBWjZkkG+vjWMk+7bJATzu15mgn0PQPN
+         c7WdUa//KVMOS/YfTc5PpI3Fs3Of6n8MCsI/AAMODdDuo4m88I0tklSSIkFOr9pUKp
+         zjJuNazMQLa4iMionLKyXyV3Rk6Haa8ZNHlf9GOvAuFhNT7aQ2ChjU8CoVO+zIZYLS
+         tqEpjwrlwwaIBXdeQ8TJmdAbpj4M7J/naaKnah3PHJIwmrvmfNR0CnHb18iNEoW6bO
+         Y17bP3EuCu908PqsT/LplVGE/crve5mY7xNBBXisSKQFOg8FiZNoK99SU5QVo8NpD6
+         gJxk7Z1YyKTug==
+Received: from sofa.misterjones.org ([185.219.108.64] helo=why.lan)
+        by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <maz@kernel.org>)
+        id 1nboGJ-001tpg-Fx; Tue, 05 Apr 2022 19:50:43 +0100
+From:   Marc Zyngier <maz@kernel.org>
+To:     linux-kernel <linux-kernel@vger.kernel.org>
+Cc:     Thomas Gleixner <tglx@linutronix.de>,
+        John Garry <john.garry@huawei.com>,
+        Xiongfeng Wang <wangxiongfeng2@huawei.com>,
+        David Decotigny <ddecotig@google.com>
+Subject: [PATCH v3 3/3] irqchip/gic-v3: Always trust the managed affinity provided by the core code
+Date:   Tue,  5 Apr 2022 19:50:40 +0100
+Message-Id: <20220405185040.206297-4-maz@kernel.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220405185040.206297-1-maz@kernel.org>
+References: <20220405185040.206297-1-maz@kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+X-SA-Exim-Connect-IP: 185.219.108.64
+X-SA-Exim-Rcpt-To: linux-kernel@vger.kernel.org, tglx@linutronix.de, john.garry@huawei.com, wangxiongfeng2@huawei.com, ddecotig@google.com
+X-SA-Exim-Mail-From: maz@kernel.org
+X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Use generic name for reset controller of AT91 devices to comply with
-DT specifications.
+Now that the core code has been fixed to always give us an affinity
+that only includes online CPUs, directly use this affinity when
+computing a target CPU.
 
-Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
+Signed-off-by: Marc Zyngier <maz@kernel.org>
 ---
- arch/arm/boot/dts/at91sam9260.dtsi | 2 +-
- arch/arm/boot/dts/at91sam9261.dtsi | 2 +-
- arch/arm/boot/dts/at91sam9263.dtsi | 2 +-
- arch/arm/boot/dts/at91sam9g45.dtsi | 2 +-
- arch/arm/boot/dts/at91sam9n12.dtsi | 2 +-
- arch/arm/boot/dts/at91sam9rl.dtsi  | 2 +-
- arch/arm/boot/dts/at91sam9x5.dtsi  | 2 +-
- arch/arm/boot/dts/sam9x60.dtsi     | 2 +-
- arch/arm/boot/dts/sama5d2.dtsi     | 2 +-
- arch/arm/boot/dts/sama5d3.dtsi     | 2 +-
- arch/arm/boot/dts/sama5d4.dtsi     | 2 +-
- 11 files changed, 11 insertions(+), 11 deletions(-)
+ drivers/irqchip/irq-gic-v3-its.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/arm/boot/dts/at91sam9260.dtsi b/arch/arm/boot/dts/at91sam9260.dtsi
-index 7368347c9357..9d9820db9482 100644
---- a/arch/arm/boot/dts/at91sam9260.dtsi
-+++ b/arch/arm/boot/dts/at91sam9260.dtsi
-@@ -123,7 +123,7 @@ pmc: pmc@fffffc00 {
- 				clock-names = "slow_xtal", "main_xtal";
- 			};
+diff --git a/drivers/irqchip/irq-gic-v3-its.c b/drivers/irqchip/irq-gic-v3-its.c
+index cd772973114a..2656efd5d2b6 100644
+--- a/drivers/irqchip/irq-gic-v3-its.c
++++ b/drivers/irqchip/irq-gic-v3-its.c
+@@ -1624,7 +1624,7 @@ static int its_select_cpu(struct irq_data *d,
  
--			rstc@fffffd00 {
-+			reset-controller@fffffd00 {
- 				compatible = "atmel,at91sam9260-rstc";
- 				reg = <0xfffffd00 0x10>;
- 				clocks = <&pmc PMC_TYPE_CORE PMC_SLOW>;
-diff --git a/arch/arm/boot/dts/at91sam9261.dtsi b/arch/arm/boot/dts/at91sam9261.dtsi
-index 7adc36ca8a46..259aca565305 100644
---- a/arch/arm/boot/dts/at91sam9261.dtsi
-+++ b/arch/arm/boot/dts/at91sam9261.dtsi
-@@ -603,7 +603,7 @@ pmc: pmc@fffffc00 {
- 				clock-names = "slow_xtal", "main_xtal";
- 			};
+ 		cpu = cpumask_pick_least_loaded(d, tmpmask);
+ 	} else {
+-		cpumask_and(tmpmask, irq_data_get_affinity_mask(d), cpu_online_mask);
++		cpumask_copy(tmpmask, aff_mask);
  
--			rstc@fffffd00 {
-+			reset-controller@fffffd00 {
- 				compatible = "atmel,at91sam9260-rstc";
- 				reg = <0xfffffd00 0x10>;
- 				clocks = <&slow_xtal>;
-diff --git a/arch/arm/boot/dts/at91sam9263.dtsi b/arch/arm/boot/dts/at91sam9263.dtsi
-index fe45d96239c9..c080df8c2312 100644
---- a/arch/arm/boot/dts/at91sam9263.dtsi
-+++ b/arch/arm/boot/dts/at91sam9263.dtsi
-@@ -151,7 +151,7 @@ tcb0: timer@fff7c000 {
- 				clock-names = "t0_clk", "slow_clk";
- 			};
- 
--			rstc@fffffd00 {
-+			reset-controller@fffffd00 {
- 				compatible = "atmel,at91sam9260-rstc";
- 				reg = <0xfffffd00 0x10>;
- 				clocks = <&slow_xtal>;
-diff --git a/arch/arm/boot/dts/at91sam9g45.dtsi b/arch/arm/boot/dts/at91sam9g45.dtsi
-index 2ab730fd6472..09794561c7ce 100644
---- a/arch/arm/boot/dts/at91sam9g45.dtsi
-+++ b/arch/arm/boot/dts/at91sam9g45.dtsi
-@@ -137,7 +137,7 @@ pmc: pmc@fffffc00 {
- 				clock-names = "slow_clk", "main_xtal";
- 			};
- 
--			rstc@fffffd00 {
-+			reset-controller@fffffd00 {
- 				compatible = "atmel,at91sam9g45-rstc";
- 				reg = <0xfffffd00 0x10>;
- 				clocks = <&clk32k>;
-diff --git a/arch/arm/boot/dts/at91sam9n12.dtsi b/arch/arm/boot/dts/at91sam9n12.dtsi
-index 0785389f5507..556f35ce49e3 100644
---- a/arch/arm/boot/dts/at91sam9n12.dtsi
-+++ b/arch/arm/boot/dts/at91sam9n12.dtsi
-@@ -126,7 +126,7 @@ pmc: pmc@fffffc00 {
- 				interrupts = <1 IRQ_TYPE_LEVEL_HIGH 7>;
- 			};
- 
--			rstc@fffffe00 {
-+			reset-controller@fffffe00 {
- 				compatible = "atmel,at91sam9g45-rstc";
- 				reg = <0xfffffe00 0x10>;
- 				clocks = <&clk32k>;
-diff --git a/arch/arm/boot/dts/at91sam9rl.dtsi b/arch/arm/boot/dts/at91sam9rl.dtsi
-index 730d1182c73e..12c634811820 100644
---- a/arch/arm/boot/dts/at91sam9rl.dtsi
-+++ b/arch/arm/boot/dts/at91sam9rl.dtsi
-@@ -766,7 +766,7 @@ pmc: pmc@fffffc00 {
- 				clock-names = "slow_clk", "main_xtal";
- 			};
- 
--			rstc@fffffd00 {
-+			reset-controller@fffffd00 {
- 				compatible = "atmel,at91sam9260-rstc";
- 				reg = <0xfffffd00 0x10>;
- 				clocks = <&clk32k>;
-diff --git a/arch/arm/boot/dts/at91sam9x5.dtsi b/arch/arm/boot/dts/at91sam9x5.dtsi
-index 395e883644cd..ea3b11336c79 100644
---- a/arch/arm/boot/dts/at91sam9x5.dtsi
-+++ b/arch/arm/boot/dts/at91sam9x5.dtsi
-@@ -134,7 +134,7 @@ pmc: pmc@fffffc00 {
- 				clock-names = "slow_clk", "main_xtal";
- 			};
- 
--			reset_controller: rstc@fffffe00 {
-+			reset_controller: reset-controller@fffffe00 {
- 				compatible = "atmel,at91sam9g45-rstc";
- 				reg = <0xfffffe00 0x10>;
- 				clocks = <&clk32k>;
-diff --git a/arch/arm/boot/dts/sam9x60.dtsi b/arch/arm/boot/dts/sam9x60.dtsi
-index ec45ced3cde6..211e743e2597 100644
---- a/arch/arm/boot/dts/sam9x60.dtsi
-+++ b/arch/arm/boot/dts/sam9x60.dtsi
-@@ -671,7 +671,7 @@ pmc: pmc@fffffc00 {
- 				clock-names = "td_slck", "md_slck", "main_xtal";
- 			};
- 
--			reset_controller: rstc@fffffe00 {
-+			reset_controller: reset-controller@fffffe00 {
- 				compatible = "microchip,sam9x60-rstc";
- 				reg = <0xfffffe00 0x10>;
- 				clocks = <&clk32k 0>;
-diff --git a/arch/arm/boot/dts/sama5d2.dtsi b/arch/arm/boot/dts/sama5d2.dtsi
-index 09c741e8ecb8..769befc06b57 100644
---- a/arch/arm/boot/dts/sama5d2.dtsi
-+++ b/arch/arm/boot/dts/sama5d2.dtsi
-@@ -662,7 +662,7 @@ securam: sram@f8044000 {
- 				ranges = <0 0xf8044000 0x1420>;
- 			};
- 
--			reset_controller: rstc@f8048000 {
-+			reset_controller: reset-controller@f8048000 {
- 				compatible = "atmel,sama5d3-rstc";
- 				reg = <0xf8048000 0x10>;
- 				clocks = <&clk32k>;
-diff --git a/arch/arm/boot/dts/sama5d3.dtsi b/arch/arm/boot/dts/sama5d3.dtsi
-index d1841bffe3c5..ab124c09f70e 100644
---- a/arch/arm/boot/dts/sama5d3.dtsi
-+++ b/arch/arm/boot/dts/sama5d3.dtsi
-@@ -1003,7 +1003,7 @@ pmc: pmc@fffffc00 {
- 				clock-names = "slow_clk", "main_xtal";
- 			};
- 
--			reset_controller: rstc@fffffe00 {
-+			reset_controller: reset-controller@fffffe00 {
- 				compatible = "atmel,sama5d3-rstc", "atmel,at91sam9g45-rstc";
- 				reg = <0xfffffe00 0x10>;
- 				clocks = <&clk32k>;
-diff --git a/arch/arm/boot/dts/sama5d4.dtsi b/arch/arm/boot/dts/sama5d4.dtsi
-index f6e3e6f57252..bc41d302dbf3 100644
---- a/arch/arm/boot/dts/sama5d4.dtsi
-+++ b/arch/arm/boot/dts/sama5d4.dtsi
-@@ -729,7 +729,7 @@ pmecc: ecc-engine@ffffc070 {
- 				};
- 			};
- 
--			reset_controller: rstc@fc068600 {
-+			reset_controller: reset-controller@fc068600 {
- 				compatible = "atmel,sama5d3-rstc", "atmel,at91sam9g45-rstc";
- 				reg = <0xfc068600 0x10>;
- 				clocks = <&clk32k>;
+ 		/* If we cannot cross sockets, limit the search to that node */
+ 		if ((its_dev->its->flags & ITS_FLAGS_WORKAROUND_CAVIUM_23144) &&
 -- 
-2.32.0
+2.34.1
 
