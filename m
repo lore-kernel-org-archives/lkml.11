@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A6E9BC43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 978F4C433EF
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:16:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1449220AbiDEUKU (ORCPT
+        id S1449131AbiDEUKR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 16:10:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33786 "EHLO
+        Tue, 5 Apr 2022 16:10:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33938 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354097AbiDEKLl (ORCPT
+        with ESMTP id S1353453AbiDEKGN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:11:41 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 561E5506C8;
-        Tue,  5 Apr 2022 02:57:14 -0700 (PDT)
+        Tue, 5 Apr 2022 06:06:13 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8194BF979;
+        Tue,  5 Apr 2022 02:55:06 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CB75E616D7;
-        Tue,  5 Apr 2022 09:57:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DCD2BC385A1;
-        Tue,  5 Apr 2022 09:57:12 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 22FD4B818F3;
+        Tue,  5 Apr 2022 09:55:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 75321C385A3;
+        Tue,  5 Apr 2022 09:55:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649152633;
-        bh=/jXyjXnKVL7ginhzj5vU2rBOllvhtBJIJKYKH7J0cos=;
+        s=korg; t=1649152503;
+        bh=JvjyQbqzGBHoo/fnIR59SnE5qGnqo560ZSO1/q6vJIc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JtZBri6AiPcD17ZOaTsIf+HV4j9YAOjJGCpc5POWiqdJNtTcdPMOvkoJontWLnv7n
-         bt60KXH2n9VWJiLusRO9JsvWcArHNsqZDx6NY19ZYyDPs8Id2g5AKWewO1pJzCAEYD
-         vjBruH0mfdYVJAb6jcPRQiTxQ4+nGMav25ShZfsA=
+        b=hoOgbezBodw+wT0ewOVqlBWrpkCYnfhg+S6sW6w6NxG7QznKmUxCm/F5R9EWjddch
+         5YETxjSqIOOPj+GEE3PzZp2C/vtH7MktPmR2zXDukwAUCZ3ItvjEEGiorEdJ8+Cs7f
+         rVPbdCjFRp5bLjdNs5egQ95rqQo/db6jT/9Uz2dY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Chen-Yu Tsai <wenst@chromium.org>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Linus Walleij <linus.walleij@linaro.org>
-Subject: [PATCH 5.15 847/913] pinctrl: pinconf-generic: Print arguments for bias-pull-*
-Date:   Tue,  5 Apr 2022 09:31:49 +0200
-Message-Id: <20220405070405.217586932@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Himanshu Madhani <himanshu.madhani@oracle.com>,
+        Quinn Tran <qutran@marvell.com>,
+        Nilesh Javali <njavali@marvell.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>
+Subject: [PATCH 5.15 801/913] scsi: qla2xxx: Fix disk failure to rediscover
+Date:   Tue,  5 Apr 2022 09:31:03 +0200
+Message-Id: <20220405070403.842354690@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
 References: <20220405070339.801210740@linuxfoundation.org>
@@ -51,42 +52,74 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chen-Yu Tsai <wenst@chromium.org>
+From: Quinn Tran <qutran@marvell.com>
 
-commit 188e5834b930acd03ad3cf7c5e7aa24db9665a29 upstream.
+commit 6a45c8e137d4e2c72eecf1ac7cf64f2fdfcead99 upstream.
 
-The bias-pull-* properties, or PIN_CONFIG_BIAS_PULL_* pin config
-parameters, accept optional arguments in ohms denoting the strength of
-the pin bias.
+User experienced some of the LUN failed to get rediscovered after long
+cable pull test. The issue is triggered by a race condition between driver
+setting session online state vs starting the LUN scan process at the same
+time. Current code set the online state after notifying the session is
+available. In this case, trigger to start the LUN scan process happened
+before driver could set the session in online state.  LUN scan ends up with
+failure due to the session online check was failing.
 
-Print these values out in debugfs as well.
+Set the online state before reporting of the availability of the session.
 
-Fixes: eec450713e5c ("pinctrl: pinconf-generic: Add flag to print arguments")
-Signed-off-by: Chen-Yu Tsai <wenst@chromium.org>
-Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-Tested-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-Link: https://lore.kernel.org/r/20220308100956.2750295-2-wenst@chromium.org
-Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+Link: https://lore.kernel.org/r/20220310092604.22950-3-njavali@marvell.com
+Fixes: aecf043443d3 ("scsi: qla2xxx: Fix Remote port registration")
+Cc: stable@vger.kernel.org
+Reviewed-by: Himanshu Madhani <himanshu.madhani@oracle.com>
+Signed-off-by: Quinn Tran <qutran@marvell.com>
+Signed-off-by: Nilesh Javali <njavali@marvell.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/pinctrl/pinconf-generic.c |    6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/scsi/qla2xxx/qla_init.c |    5 +++--
+ drivers/scsi/qla2xxx/qla_nvme.c |    5 +++++
+ 2 files changed, 8 insertions(+), 2 deletions(-)
 
---- a/drivers/pinctrl/pinconf-generic.c
-+++ b/drivers/pinctrl/pinconf-generic.c
-@@ -30,10 +30,10 @@ static const struct pin_config_item conf
- 	PCONFDUMP(PIN_CONFIG_BIAS_BUS_HOLD, "input bias bus hold", NULL, false),
- 	PCONFDUMP(PIN_CONFIG_BIAS_DISABLE, "input bias disabled", NULL, false),
- 	PCONFDUMP(PIN_CONFIG_BIAS_HIGH_IMPEDANCE, "input bias high impedance", NULL, false),
--	PCONFDUMP(PIN_CONFIG_BIAS_PULL_DOWN, "input bias pull down", NULL, false),
-+	PCONFDUMP(PIN_CONFIG_BIAS_PULL_DOWN, "input bias pull down", "ohms", true),
- 	PCONFDUMP(PIN_CONFIG_BIAS_PULL_PIN_DEFAULT,
--				"input bias pull to pin specific state", NULL, false),
--	PCONFDUMP(PIN_CONFIG_BIAS_PULL_UP, "input bias pull up", NULL, false),
-+				"input bias pull to pin specific state", "ohms", true),
-+	PCONFDUMP(PIN_CONFIG_BIAS_PULL_UP, "input bias pull up", "ohms", true),
- 	PCONFDUMP(PIN_CONFIG_DRIVE_OPEN_DRAIN, "output drive open drain", NULL, false),
- 	PCONFDUMP(PIN_CONFIG_DRIVE_OPEN_SOURCE, "output drive open source", NULL, false),
- 	PCONFDUMP(PIN_CONFIG_DRIVE_PUSH_PULL, "output drive push pull", NULL, false),
+--- a/drivers/scsi/qla2xxx/qla_init.c
++++ b/drivers/scsi/qla2xxx/qla_init.c
+@@ -5740,6 +5740,8 @@ qla2x00_reg_remote_port(scsi_qla_host_t
+ 	if (atomic_read(&fcport->state) == FCS_ONLINE)
+ 		return;
+ 
++	qla2x00_set_fcport_state(fcport, FCS_ONLINE);
++
+ 	rport_ids.node_name = wwn_to_u64(fcport->node_name);
+ 	rport_ids.port_name = wwn_to_u64(fcport->port_name);
+ 	rport_ids.port_id = fcport->d_id.b.domain << 16 |
+@@ -5847,6 +5849,7 @@ qla2x00_update_fcport(scsi_qla_host_t *v
+ 		qla2x00_reg_remote_port(vha, fcport);
+ 		break;
+ 	case MODE_TARGET:
++		qla2x00_set_fcport_state(fcport, FCS_ONLINE);
+ 		if (!vha->vha_tgt.qla_tgt->tgt_stop &&
+ 			!vha->vha_tgt.qla_tgt->tgt_stopped)
+ 			qlt_fc_port_added(vha, fcport);
+@@ -5861,8 +5864,6 @@ qla2x00_update_fcport(scsi_qla_host_t *v
+ 		break;
+ 	}
+ 
+-	qla2x00_set_fcport_state(fcport, FCS_ONLINE);
+-
+ 	if (IS_IIDMA_CAPABLE(vha->hw) && vha->hw->flags.gpsc_supported) {
+ 		if (fcport->id_changed) {
+ 			fcport->id_changed = 0;
+--- a/drivers/scsi/qla2xxx/qla_nvme.c
++++ b/drivers/scsi/qla2xxx/qla_nvme.c
+@@ -35,6 +35,11 @@ int qla_nvme_register_remote(struct scsi
+ 		(fcport->nvme_flag & NVME_FLAG_REGISTERED))
+ 		return 0;
+ 
++	if (atomic_read(&fcport->state) == FCS_ONLINE)
++		return 0;
++
++	qla2x00_set_fcport_state(fcport, FCS_ONLINE);
++
+ 	fcport->nvme_flag &= ~NVME_FLAG_RESETTING;
+ 
+ 	memset(&req, 0, sizeof(struct nvme_fc_port_info));
 
 
