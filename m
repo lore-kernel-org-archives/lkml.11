@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 05581C38A05
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E8C02C35273
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:36:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241420AbiDEIdd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 04:33:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55918 "EHLO
+        id S241497AbiDEIeB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 04:34:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53898 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232913AbiDEH4Y (ORCPT
+        with ESMTP id S236351AbiDEICG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 03:56:24 -0400
+        Tue, 5 Apr 2022 04:02:06 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DB1F393FF;
-        Tue,  5 Apr 2022 00:50:41 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85FB149FB3;
+        Tue,  5 Apr 2022 01:00:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 89879B81BAF;
-        Tue,  5 Apr 2022 07:50:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D2ADBC340EE;
-        Tue,  5 Apr 2022 07:50:37 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 48B4AB81B18;
+        Tue,  5 Apr 2022 08:00:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A5861C34111;
+        Tue,  5 Apr 2022 08:00:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649145038;
-        bh=MKRg38jZK8tHFNvKjii0k0eEeqrz1/BymVE0DM+j9RY=;
+        s=korg; t=1649145606;
+        bh=NW9L56q7ySvb2Jz96h+/0TUHuIwTaKUNVVBYloTIWEw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=yIjrWm3hPfYmjR4hGRHuFyGLIyN3Hz+f7sYybJNSja6iuMVP/RWL55oTvlubKWSBc
-         9HTzIHwcXWnSd/CWGz8ioNujZqGxLsAUE5Q3qkLopqOFqqK7p6VoSb4bdK5B+9hMk5
-         mtXNmGE6fMgPoyHhc75JYoYdDjiG9u5smy81V7o4=
+        b=yOhnAuUDfYgny3q0znB1cxrKZmz1rLYWTIMfLrkklOyAY5omRrg0A639yY/b9WMu3
+         zeyjLuDFnhhSMHih0XnVudxBepmHgYtQPpG/kJRW00jAQxzs6PqF/HMafLQshmik9n
+         bktqqi2urNC5+MqxoRdrzS6NkYZiV0+FzdOKFU1c=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Chengming Zhou <zhouchengming@bytedance.com>,
-        Tejun Heo <tj@kernel.org>, Jens Axboe <axboe@kernel.dk>,
+        stable@vger.kernel.org, Tobias Waldekranz <tobias@waldekranz.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0223/1126] blk-cgroup: set blkg iostat after percpu stat aggregation
-Date:   Tue,  5 Apr 2022 09:16:10 +0200
-Message-Id: <20220405070414.155113290@linuxfoundation.org>
+Subject: [PATCH 5.17 0462/1126] net: dsa: Avoid cross-chip syncing of VLAN filtering
+Date:   Tue,  5 Apr 2022 09:20:09 +0200
+Message-Id: <20220405070421.187137582@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -50,56 +50,60 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chengming Zhou <zhouchengming@bytedance.com>
+From: Tobias Waldekranz <tobias@waldekranz.com>
 
-[ Upstream commit f122d103b564e5fb7c82de902c6f8f6cbdf50ec9 ]
+[ Upstream commit 108dc8741c203e9d6ce4e973367f1bac20c7192b ]
 
-Don't need to do blkg_iostat_set for top blkg iostat on each CPU,
-so move it after percpu stat aggregation.
+Changes to VLAN filtering are not applicable to cross-chip
+notifications.
 
-Fixes: ef45fe470e1e ("blk-cgroup: show global disk stats in root cgroup io.stat")
-Signed-off-by: Chengming Zhou <zhouchengming@bytedance.com>
-Acked-by: Tejun Heo <tj@kernel.org>
-Link: https://lore.kernel.org/r/20220213085902.88884-1-zhouchengming@bytedance.com
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
+On a system like this:
+
+.-----.   .-----.   .-----.
+| sw1 +---+ sw2 +---+ sw3 |
+'-1-2-'   '-1-2-'   '-1-2-'
+
+Before this change, upon sw1p1 leaving a bridge, a call to
+dsa_port_vlan_filtering would also be made to sw2p1 and sw3p1.
+
+In this scenario:
+
+.---------.   .-----.   .-----.
+|   sw1   +---+ sw2 +---+ sw3 |
+'-1-2-3-4-'   '-1-2-'   '-1-2-'
+
+When sw1p4 would leave a bridge, dsa_port_vlan_filtering would be
+called for sw2 and sw3 with a non-existing port - leading to array
+out-of-bounds accesses and crashes on mv88e6xxx.
+
+Fixes: d371b7c92d19 ("net: dsa: Unset vlan_filtering when ports leave the bridge")
+Signed-off-by: Tobias Waldekranz <tobias@waldekranz.com>
+Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- block/blk-cgroup.c | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
+ net/dsa/switch.c | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
 
-diff --git a/block/blk-cgroup.c b/block/blk-cgroup.c
-index 650f7e27989f..87a1c0c3fa40 100644
---- a/block/blk-cgroup.c
-+++ b/block/blk-cgroup.c
-@@ -857,11 +857,11 @@ static void blkcg_fill_root_iostats(void)
- 			blk_queue_root_blkg(bdev_get_queue(bdev));
- 		struct blkg_iostat tmp;
- 		int cpu;
-+		unsigned long flags;
+diff --git a/net/dsa/switch.c b/net/dsa/switch.c
+index 9f9b70d6070a..517cc83d13cc 100644
+--- a/net/dsa/switch.c
++++ b/net/dsa/switch.c
+@@ -180,9 +180,11 @@ static int dsa_switch_bridge_leave(struct dsa_switch *ds,
+ 						info->sw_index, info->port,
+ 						info->bridge);
  
- 		memset(&tmp, 0, sizeof(tmp));
- 		for_each_possible_cpu(cpu) {
- 			struct disk_stats *cpu_dkstats;
--			unsigned long flags;
+-	err = dsa_switch_sync_vlan_filtering(ds, info);
+-	if (err)
+-		return err;
++	if (ds->dst->index == info->tree_index && ds->index == info->sw_index) {
++		err = dsa_switch_sync_vlan_filtering(ds, info);
++		if (err)
++			return err;
++	}
  
- 			cpu_dkstats = per_cpu_ptr(bdev->bd_stats, cpu);
- 			tmp.ios[BLKG_IOSTAT_READ] +=
-@@ -877,11 +877,11 @@ static void blkcg_fill_root_iostats(void)
- 				cpu_dkstats->sectors[STAT_WRITE] << 9;
- 			tmp.bytes[BLKG_IOSTAT_DISCARD] +=
- 				cpu_dkstats->sectors[STAT_DISCARD] << 9;
--
--			flags = u64_stats_update_begin_irqsave(&blkg->iostat.sync);
--			blkg_iostat_set(&blkg->iostat.cur, &tmp);
--			u64_stats_update_end_irqrestore(&blkg->iostat.sync, flags);
- 		}
-+
-+		flags = u64_stats_update_begin_irqsave(&blkg->iostat.sync);
-+		blkg_iostat_set(&blkg->iostat.cur, &tmp);
-+		u64_stats_update_end_irqrestore(&blkg->iostat.sync, flags);
- 	}
+ 	return dsa_tag_8021q_bridge_leave(ds, info);
  }
- 
 -- 
 2.34.1
 
