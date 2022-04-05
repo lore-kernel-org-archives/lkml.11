@@ -2,153 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 12FFEC433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 24CFFC433F5
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 11:30:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376851AbiDELYQ (ORCPT
+        id S1376871AbiDELYY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 07:24:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38078 "EHLO
+        Tue, 5 Apr 2022 07:24:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40844 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241715AbiDEIsd (ORCPT
+        with ESMTP id S241686AbiDEIsc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:48:33 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4808A2B266;
-        Tue,  5 Apr 2022 01:36:53 -0700 (PDT)
-Date:   Tue, 05 Apr 2022 08:36:40 -0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1649147801;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=pkQm3GtvyTZptL48b9wj9XoVnDZnrbTzypjlh3EthbA=;
-        b=oQukEbaAHv+PICw1epe6g3zo1wjOF0ncP88pbeza/sGBTN5I6/XMsGupXSeXJq9gXa5Q34
-        fq3Gb3Cc3lOIPBc2hhhTjOOfv0TBwrYvI4O1Zyq3hofzamId04HkmpJ/x8LHohJ/xlRqY0
-        LW0IJ88xuPeQXeuiXSunv0NgkTdbeR3I0bbh7BSgDZWTzMp/ji8oxBi2hNG42RX0V8otK5
-        HdBp/NX6D1W/HQtL8pitFWY/ZjlErImMUWMwr1CSlMkTLZHXvv6RYlx5is7JHo/SDCj2Bx
-        gMgus/zy/+xV+S9tqWtVuWisSVUDVmw1uGZFGTAqQKDa/8iVJjpos9wjNBvMcw==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1649147801;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=pkQm3GtvyTZptL48b9wj9XoVnDZnrbTzypjlh3EthbA=;
-        b=UKZ/L3roD9j8MmKB3GrH0puOXiW4PsDzPeb6ktQ6Wiz2B9vIgkdhGroaFj8wXVQ8P36yMY
-        S/2izcGYGfHWUABA==
-From:   "tip-bot2 for Stephane Eranian" <tip-bot2@linutronix.de>
-Sender: tip-bot2@linutronix.de
-Reply-to: linux-kernel@vger.kernel.org
-To:     linux-tip-commits@vger.kernel.org
-Subject: [tip: perf/core] perf/x86/amd: Enable branch sampling priv level filtering
-Cc:     Stephane Eranian <eranian@google.com>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>, x86@kernel.org,
-        linux-kernel@vger.kernel.org
-In-Reply-To: <20220322221517.2510440-6-eranian@google.com>
-References: <20220322221517.2510440-6-eranian@google.com>
+        Tue, 5 Apr 2022 04:48:32 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 334BA2B198;
+        Tue,  5 Apr 2022 01:36:52 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BE99E60B0A;
+        Tue,  5 Apr 2022 08:36:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C956EC385A2;
+        Tue,  5 Apr 2022 08:36:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649147806;
+        bh=H1+P5ydnkNvIffoIN0hQLjP4BuxZN2DzPaXE+WVrpUk=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=bUJk+ITCPWOm95/UDH+bXBW8/Jc3oFJfzq3jZznGa7M5RZr1VW9HE5OhpaQBJk+Rx
+         GOmz4q1PMQ+OQ90VwIYe5dp80RNWu8u3bmxMEkgYqzgwYVgFfUdvvq41ZpNX28ylcN
+         0vs65pMWmOUZk7wgzO+1jTZlXqXOdqNzweRVcX5U=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Jordan Crouse <jordan@cosmicpenguin.net>,
+        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>
+Subject: [PATCH 5.16 0129/1017] arm64: dts: qcom: sm8250: Fix MSI IRQ for PCIe1 and PCIe2
+Date:   Tue,  5 Apr 2022 09:17:22 +0200
+Message-Id: <20220405070358.029439451@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
+References: <20220405070354.155796697@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Message-ID: <164914780085.389.2438404579704499076.tip-bot2@tip-bot2>
-Robot-ID: <tip-bot2@linutronix.de>
-Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The following commit has been merged into the perf/core branch of tip:
+From: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
 
-Commit-ID:     8910075d61a37e5b0d82e6c83ed9a0a31fe9ea08
-Gitweb:        https://git.kernel.org/tip/8910075d61a37e5b0d82e6c83ed9a0a31fe9ea08
-Author:        Stephane Eranian <eranian@google.com>
-AuthorDate:    Tue, 22 Mar 2022 15:15:09 -07:00
-Committer:     Peter Zijlstra <peterz@infradead.org>
-CommitterDate: Tue, 05 Apr 2022 10:24:37 +02:00
+commit 1b7101e8124b450f2d6a35591e9cbb478c143ace upstream.
 
-perf/x86/amd: Enable branch sampling priv level filtering
+Fix the MSI IRQ used for PCIe instances 1 and 2.
 
-The AMD Branch Sampling features does not provide hardware filtering by
-privilege level. The associated PMU counter does but not the branch sampling
-by itself. Given how BRS operates there is a possibility that BRS captures
-kernel level branches even though the event is programmed to count only at
-the user level.
-
-Implement a workaround in software by removing the branches which belong to
-the wrong privilege level. The privilege level is evaluated on the target of
-the branch and not the source so as to be compatible with other architectures.
-As a consequence of this patch, the number of entries in the
-PERF_RECORD_BRANCH_STACK buffer may be less than the maximum (16).  It could
-even be zero. Another consequence is that consecutive entries in the branch
-stack may not reflect actual code path and may have discontinuities, in case
-kernel branches were suppressed. But this is no different than what happens
-on other architectures.
-
-Signed-off-by: Stephane Eranian <eranian@google.com>
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Link: https://lore.kernel.org/r/20220322221517.2510440-6-eranian@google.com
+Cc: stable@vger.kernel.org
+Fixes: e53bdfc00977 ("arm64: dts: qcom: sm8250: Add PCIe support")
+Reported-by: Jordan Crouse <jordan@cosmicpenguin.net>
+Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Link: https://lore.kernel.org/r/20220112035556.5108-1-manivannan.sadhasivam@linaro.org
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/events/amd/brs.c | 26 ++++++++++++++++++++------
- 1 file changed, 20 insertions(+), 6 deletions(-)
+ arch/arm64/boot/dts/qcom/sm8250.dtsi |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/arch/x86/events/amd/brs.c b/arch/x86/events/amd/brs.c
-index 3c13c48..40461c3 100644
---- a/arch/x86/events/amd/brs.c
-+++ b/arch/x86/events/amd/brs.c
-@@ -92,10 +92,6 @@ int amd_brs_setup_filter(struct perf_event *event)
- 	if ((type & ~PERF_SAMPLE_BRANCH_PLM_ALL) != PERF_SAMPLE_BRANCH_ANY)
- 		return -EINVAL;
+--- a/arch/arm64/boot/dts/qcom/sm8250.dtsi
++++ b/arch/arm64/boot/dts/qcom/sm8250.dtsi
+@@ -1487,7 +1487,7 @@
+ 			ranges = <0x01000000 0x0 0x40200000 0x0 0x40200000 0x0 0x100000>,
+ 				 <0x02000000 0x0 0x40300000 0x0 0x40300000 0x0 0x1fd00000>;
  
--	/* can only capture at all priv levels due to the way BRS works */
--	if ((type & PERF_SAMPLE_BRANCH_PLM_ALL) != PERF_SAMPLE_BRANCH_PLM_ALL)
--		return -EINVAL;
--
- 	return 0;
- }
+-			interrupts = <GIC_SPI 306 IRQ_TYPE_EDGE_RISING>;
++			interrupts = <GIC_SPI 307 IRQ_TYPE_LEVEL_HIGH>;
+ 			interrupt-names = "msi";
+ 			#interrupt-cells = <1>;
+ 			interrupt-map-mask = <0 0 0 0x7>;
+@@ -1593,7 +1593,7 @@
+ 			ranges = <0x01000000 0x0 0x64200000 0x0 0x64200000 0x0 0x100000>,
+ 				 <0x02000000 0x0 0x64300000 0x0 0x64300000 0x0 0x3d00000>;
  
-@@ -195,6 +191,21 @@ void amd_brs_disable_all(void)
- 		amd_brs_disable();
- }
- 
-+static bool amd_brs_match_plm(struct perf_event *event, u64 to)
-+{
-+	int type = event->attr.branch_sample_type;
-+	int plm_k = PERF_SAMPLE_BRANCH_KERNEL | PERF_SAMPLE_BRANCH_HV;
-+	int plm_u = PERF_SAMPLE_BRANCH_USER;
-+
-+	if (!(type & plm_k) && kernel_ip(to))
-+		return 0;
-+
-+	if (!(type & plm_u) && !kernel_ip(to))
-+		return 0;
-+
-+	return 1;
-+}
-+
- /*
-  * Caller must ensure amd_brs_inuse() is true before calling
-  * return:
-@@ -252,8 +263,6 @@ void amd_brs_drain(void)
- 		if (to == BRS_POISON)
- 			break;
- 
--		rdmsrl(brs_from(brs_idx), from);
--
- 		/*
- 		 * Sign-extend SAMP_BR_TO to 64 bits, bits 61-63 are reserved.
- 		 * Necessary to generate proper virtual addresses suitable for
-@@ -261,6 +270,11 @@ void amd_brs_drain(void)
- 		 */
- 		to = (u64)(((s64)to << shift) >> shift);
- 
-+		if (!amd_brs_match_plm(event, to))
-+			continue;
-+
-+		rdmsrl(brs_from(brs_idx), from);
-+
- 		perf_clear_branch_entry_bitfields(br+nr);
- 
- 		br[nr].from = from;
+-			interrupts = <GIC_SPI 236 IRQ_TYPE_EDGE_RISING>;
++			interrupts = <GIC_SPI 243 IRQ_TYPE_LEVEL_HIGH>;
+ 			interrupt-names = "msi";
+ 			#interrupt-cells = <1>;
+ 			interrupt-map-mask = <0 0 0 0x7>;
+
+
