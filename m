@@ -2,192 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C5E9EC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 21:37:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 99438C35276
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 21:37:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229997AbiDEVea (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 17:34:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33784 "EHLO
+        id S1380649AbiDEVhS (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 17:37:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40040 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243759AbiDEKhl (ORCPT
+        with ESMTP id S1572884AbiDERO1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:37:41 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A40C55BD2;
-        Tue,  5 Apr 2022 03:23:05 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E32A461676;
-        Tue,  5 Apr 2022 10:23:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F18B4C385A0;
-        Tue,  5 Apr 2022 10:23:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649154184;
-        bh=PaGBNH3IO+vHhfj5CQrJJiXJVdx0NKXBLXt6WjCBSr8=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KmcR9mISZEUP5/Rr6f5/Ped9KCET5PtQNUPUMwqIwQrnjR7IkNOPIMvPvH7IHCMaI
-         ppbbMOezC7DwwIX7wu6W+QSEy5t7h225Y80VNl46YoBEC2fwHJ1/hqqwkoWE/eTvNS
-         2wqv8tDJV/fvFfmMOrGaViqHJxhV96aP/7SjfMpY=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Dave Stevenson <dave.stevenson@raspberrypi.com>,
-        Detlev Casanova <detlev.casanova@collabora.com>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 450/599] regulator: rpi-panel: Handle I2C errors/timing to the Atmel
-Date:   Tue,  5 Apr 2022 09:32:24 +0200
-Message-Id: <20220405070312.221260685@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 5 Apr 2022 13:14:27 -0400
+Received: from 2.mo561.mail-out.ovh.net (2.mo561.mail-out.ovh.net [46.105.75.36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD23432989
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 10:12:26 -0700 (PDT)
+Received: from player762.ha.ovh.net (unknown [10.108.1.112])
+        by mo561.mail-out.ovh.net (Postfix) with ESMTP id 10F4F23A6E
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 17:12:25 +0000 (UTC)
+Received: from sk2.org (82-65-25-201.subs.proxad.net [82.65.25.201])
+        (Authenticated sender: steve@sk2.org)
+        by player762.ha.ovh.net (Postfix) with ESMTPSA id 61C2F29206EEE;
+        Tue,  5 Apr 2022 17:12:21 +0000 (UTC)
+Authentication-Results: garm.ovh; auth=pass (GARM-97G002ee460736-7180-41c2-ae20-0f3875438c60,
+                    8AF55017BACD44284FC599BC4826E0280D36FCC4) smtp.auth=steve@sk2.org
+X-OVh-ClientIp: 82.65.25.201
+From:   Stephen Kitt <steve@sk2.org>
+To:     Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>
+Cc:     linux-kernel@vger.kernel.org, Stephen Kitt <steve@sk2.org>
+Subject: [PATCH] ASoC: rt1016: enable building
+Date:   Tue,  5 Apr 2022 19:11:58 +0200
+Message-Id: <20220405171158.2168762-1-steve@sk2.org>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+X-Ovh-Tracer-Id: 8680688283019937414
+X-VR-SPAMSTATE: OK
+X-VR-SPAMSCORE: -100
+X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvvddrudejgedguddtiecutefuodetggdotefrodftvfcurfhrohhfihhlvgemucfqggfjpdevjffgvefmvefgnecuuegrihhlohhuthemucehtddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjughrpefhvffufffkofgggfestdekredtredttdenucfhrhhomhepufhtvghphhgvnhcumfhithhtuceoshhtvghvvgesshhkvddrohhrgheqnecuggftrfgrthhtvghrnhepteegudfgleekieekteeggeetveefueefteeugfduieeitdfhhedtfeefkedvfeefnecukfhppedtrddtrddtrddtpdekvddrieehrddvhedrvddtudenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhhouggvpehsmhhtphhouhhtpdhhvghlohepphhlrgihvghrjeeivddrhhgrrdhovhhhrdhnvghtpdhinhgvtheptddrtddrtddrtddpmhgrihhlfhhrohhmpehsthgvvhgvsehskhdvrdhorhhgpdhnsggprhgtphhtthhopedupdhrtghpthhtoheplhhinhhugidqkhgvrhhnvghlsehvghgvrhdrkhgvrhhnvghlrdhorhhg
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dave Stevenson <dave.stevenson@raspberrypi.com>
+The rt1016 driver wasn't listed in Kconfig and Makefile, which AFAICT
+means it isn't ever built. This patch adds the appropriate entries to
+Kconfig and Makefile.
 
-[ Upstream commit 5665eee7a3800430e7dc3ef6f25722476b603186 ]
-
-The Atmel is doing some things in the I2C ISR, during which
-period it will not respond to further commands. This is
-particularly true of the POWERON command.
-
-Increase delays appropriately, and retry should I2C errors be
-reported.
-
-Signed-off-by: Dave Stevenson <dave.stevenson@raspberrypi.com>
-Signed-off-by: Detlev Casanova <detlev.casanova@collabora.com>
-Link: https://lore.kernel.org/r/20220124220129.158891-3-detlev.casanova@collabora.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Stephen Kitt <steve@sk2.org>
 ---
- .../regulator/rpi-panel-attiny-regulator.c    | 56 +++++++++++++++----
- 1 file changed, 46 insertions(+), 10 deletions(-)
+ sound/soc/codecs/Kconfig  | 5 +++++
+ sound/soc/codecs/Makefile | 2 ++
+ 2 files changed, 7 insertions(+)
 
-diff --git a/drivers/regulator/rpi-panel-attiny-regulator.c b/drivers/regulator/rpi-panel-attiny-regulator.c
-index ee46bfbf5eee..991b4730d768 100644
---- a/drivers/regulator/rpi-panel-attiny-regulator.c
-+++ b/drivers/regulator/rpi-panel-attiny-regulator.c
-@@ -37,11 +37,24 @@ static const struct regmap_config attiny_regmap_config = {
- static int attiny_lcd_power_enable(struct regulator_dev *rdev)
- {
- 	unsigned int data;
-+	int ret, i;
+diff --git a/sound/soc/codecs/Kconfig b/sound/soc/codecs/Kconfig
+index f46a22660103..986aec12d5e4 100644
+--- a/sound/soc/codecs/Kconfig
++++ b/sound/soc/codecs/Kconfig
+@@ -168,6 +168,7 @@ config SND_SOC_ALL_CODECS
+ 	imply SND_SOC_RT1011
+ 	imply SND_SOC_RT1015
+ 	imply SND_SOC_RT1015P
++	imply SND_SOC_RT1016
+ 	imply SND_SOC_RT1019
+ 	imply SND_SOC_RT1305
+ 	imply SND_SOC_RT1308
+@@ -1215,6 +1216,10 @@ config SND_SOC_RT1015P
+ 	tristate
+ 	depends on GPIOLIB
  
- 	regmap_write(rdev->regmap, REG_POWERON, 1);
-+	msleep(80);
++config SND_SOC_RT1016
++	tristate
++	depends on I2C
 +
- 	/* Wait for nPWRDWN to go low to indicate poweron is done. */
--	regmap_read_poll_timeout(rdev->regmap, REG_PORTB, data,
--					data & BIT(0), 10, 1000000);
-+	for (i = 0; i < 20; i++) {
-+		ret = regmap_read(rdev->regmap, REG_PORTB, &data);
-+		if (!ret) {
-+			if (data & BIT(0))
-+				break;
-+		}
-+		usleep_range(10000, 12000);
-+	}
-+	usleep_range(10000, 12000);
-+
-+	if (ret)
-+		pr_err("%s: regmap_read_poll_timeout failed %d\n", __func__, ret);
- 
- 	/* Default to the same orientation as the closed source
- 	 * firmware used for the panel.  Runtime rotation
-@@ -57,23 +70,34 @@ static int attiny_lcd_power_disable(struct regulator_dev *rdev)
- {
- 	regmap_write(rdev->regmap, REG_PWM, 0);
- 	regmap_write(rdev->regmap, REG_POWERON, 0);
--	udelay(1);
-+	msleep(30);
- 	return 0;
- }
- 
- static int attiny_lcd_power_is_enabled(struct regulator_dev *rdev)
- {
- 	unsigned int data;
--	int ret;
-+	int ret, i;
- 
--	ret = regmap_read(rdev->regmap, REG_POWERON, &data);
-+	for (i = 0; i < 10; i++) {
-+		ret = regmap_read(rdev->regmap, REG_POWERON, &data);
-+		if (!ret)
-+			break;
-+		usleep_range(10000, 12000);
-+	}
- 	if (ret < 0)
- 		return ret;
- 
- 	if (!(data & BIT(0)))
- 		return 0;
- 
--	ret = regmap_read(rdev->regmap, REG_PORTB, &data);
-+	for (i = 0; i < 10; i++) {
-+		ret = regmap_read(rdev->regmap, REG_PORTB, &data);
-+		if (!ret)
-+			break;
-+		usleep_range(10000, 12000);
-+	}
-+
- 	if (ret < 0)
- 		return ret;
- 
-@@ -103,20 +127,32 @@ static int attiny_update_status(struct backlight_device *bl)
- {
- 	struct regmap *regmap = bl_get_data(bl);
- 	int brightness = bl->props.brightness;
-+	int ret, i;
- 
- 	if (bl->props.power != FB_BLANK_UNBLANK ||
- 	    bl->props.fb_blank != FB_BLANK_UNBLANK)
- 		brightness = 0;
- 
--	return regmap_write(regmap, REG_PWM, brightness);
-+	for (i = 0; i < 10; i++) {
-+		ret = regmap_write(regmap, REG_PWM, brightness);
-+		if (!ret)
-+			break;
-+	}
-+
-+	return ret;
- }
- 
- static int attiny_get_brightness(struct backlight_device *bl)
- {
- 	struct regmap *regmap = bl_get_data(bl);
--	int ret, brightness;
-+	int ret, brightness, i;
-+
-+	for (i = 0; i < 10; i++) {
-+		ret = regmap_read(regmap, REG_PWM, &brightness);
-+		if (!ret)
-+			break;
-+	}
- 
--	ret = regmap_read(regmap, REG_PWM, &brightness);
- 	if (ret)
- 		return ret;
- 
-@@ -166,7 +202,7 @@ static int attiny_i2c_probe(struct i2c_client *i2c,
- 	}
- 
- 	regmap_write(regmap, REG_POWERON, 0);
--	mdelay(1);
-+	msleep(30);
- 
- 	config.dev = &i2c->dev;
- 	config.regmap = regmap;
+ config SND_SOC_RT1019
+ 	tristate
+ 	depends on I2C
+diff --git a/sound/soc/codecs/Makefile b/sound/soc/codecs/Makefile
+index 8637e9e869e3..a955cd5a8cff 100644
+--- a/sound/soc/codecs/Makefile
++++ b/sound/soc/codecs/Makefile
+@@ -181,6 +181,7 @@ snd-soc-rl6347a-objs := rl6347a.o
+ snd-soc-rt1011-objs := rt1011.o
+ snd-soc-rt1015-objs := rt1015.o
+ snd-soc-rt1015p-objs := rt1015p.o
++snd-soc-rt1016-objs := rt1016.o
+ snd-soc-rt1019-objs := rt1019.o
+ snd-soc-rt1305-objs := rt1305.o
+ snd-soc-rt1308-objs := rt1308.o
+@@ -520,6 +521,7 @@ obj-$(CONFIG_SND_SOC_RL6347A)	+= snd-soc-rl6347a.o
+ obj-$(CONFIG_SND_SOC_RT1011)	+= snd-soc-rt1011.o
+ obj-$(CONFIG_SND_SOC_RT1015)	+= snd-soc-rt1015.o
+ obj-$(CONFIG_SND_SOC_RT1015P)	+= snd-soc-rt1015p.o
++obj-$(CONFIG_SND_SOC_RT1016)	+= snd-soc-rt1016.o
+ obj-$(CONFIG_SND_SOC_RT1019)	+= snd-soc-rt1019.o
+ obj-$(CONFIG_SND_SOC_RT1305)	+= snd-soc-rt1305.o
+ obj-$(CONFIG_SND_SOC_RT1308)	+= snd-soc-rt1308.o
 -- 
-2.34.1
-
-
+2.27.0
 
