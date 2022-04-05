@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A7CC5C4167E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EB39AC35276
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:42:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1578998AbiDEXZq (ORCPT
+        id S1579096AbiDEX0G (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 19:25:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56208 "EHLO
+        Tue, 5 Apr 2022 19:26:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43040 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353991AbiDEKKR (ORCPT
+        with ESMTP id S1349424AbiDEJtu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:10:17 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E952DC6240;
-        Tue,  5 Apr 2022 02:56:30 -0700 (PDT)
+        Tue, 5 Apr 2022 05:49:50 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13D4321252;
+        Tue,  5 Apr 2022 02:45:27 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 58E88CE1C9D;
-        Tue,  5 Apr 2022 09:56:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 60084C385A3;
-        Tue,  5 Apr 2022 09:56:26 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A22C861673;
+        Tue,  5 Apr 2022 09:45:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B2BBEC385A2;
+        Tue,  5 Apr 2022 09:45:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649152586;
-        bh=9FEs9vOrkJJDlurXarSttw8Ls20U/XrgNh9nEfnRwf0=;
+        s=korg; t=1649151926;
+        bh=3AAfmV1E7ZyolsYIXp/JwPHq9XUWn1MBMJ+mufJjPQw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BuDHlckLyRofg58natySgdu8WkoJXUDwKH6Hh05avmfh9c1qbV4z+p+kgCl5wFLPV
-         Zvg0yE1K2s+yDZEAb4s93yGL3Do06T0vzRepVsCUiBqstMK8oHeZVbu9v4bAuxbcD3
-         ataMm6cfIMVR5FJfTwiopIhbt3GLNbAAY7j7g3t8=
+        b=lFVUGV96q5KX3+4hHvBNPGPJ4nZZ5XLDLvcY9ZnyRRzFm2ePkjTosuo1zDTQRkxaP
+         5Ja7ETxlx9y32zzQM5wrWaniUGvaTh4Zqe7kVSvWyP4Z2vpg2+NnLErZukPG8dxNMc
+         xRApdaKOKuPKs4u1pqzTsgpP9FUObJE/vtkJA+kk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>,
-        Anders Roxell <anders.roxell@linaro.org>,
-        Segher Boessenkool <segher@kernel.crashing.org>,
-        Michael Ellerman <mpe@ellerman.id.au>
-Subject: [PATCH 5.15 782/913] powerpc: Fix build errors with newer binutils
-Date:   Tue,  5 Apr 2022 09:30:44 +0200
-Message-Id: <20220405070403.275747446@linuxfoundation.org>
+        stable@vger.kernel.org, Hans de Goede <hdegoede@redhat.com>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 592/913] iio: mma8452: Fix probe failing when an i2c_device_id is used
+Date:   Tue,  5 Apr 2022 09:27:34 +0200
+Message-Id: <20220405070357.588190614@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
 References: <20220405070339.801210740@linuxfoundation.org>
@@ -51,164 +50,143 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Anders Roxell <anders.roxell@linaro.org>
+From: Hans de Goede <hdegoede@redhat.com>
 
-commit 8667d0d64dd1f84fd41b5897fd87fa9113ae05e3 upstream.
+[ Upstream commit a47ac019e7e8129b93a0b991e04b2a59872e053d ]
 
-Building tinyconfig with gcc (Debian 11.2.0-16) and assembler (Debian
-2.37.90.20220207) the following build error shows up:
+The mma8452_driver declares both of_match_table and i2c_driver.id_table
+match-tables, but its probe() function only checked for of matches.
 
-  {standard input}: Assembler messages:
-  {standard input}:1190: Error: unrecognized opcode: `stbcix'
-  {standard input}:1433: Error: unrecognized opcode: `lwzcix'
-  {standard input}:1453: Error: unrecognized opcode: `stbcix'
-  {standard input}:1460: Error: unrecognized opcode: `stwcix'
-  {standard input}:1596: Error: unrecognized opcode: `stbcix'
-  ...
+Add support for i2c_device_id matches. This fixes the driver not loading
+on some x86 tablets (e.g. the Nextbook Ares 8) where the i2c_client is
+instantiated by platform code using an i2c_device_id.
 
-Rework to add assembler directives [1] around the instruction. Going
-through them one by one shows that the changes should be safe.  Like
-__get_user_atomic_128_aligned() is only called in p9_hmi_special_emu(),
-which according to the name is specific to power9.  And __raw_rm_read*()
-are only called in things that are powernv or book3s_hv specific.
+Drop of_match_ptr() protection to avoid unused warning.
 
-[1] https://sourceware.org/binutils/docs/as/PowerPC_002dPseudo.html#PowerPC_002dPseudo
-
-Cc: stable@vger.kernel.org
-Co-developed-by: Arnd Bergmann <arnd@arndb.de>
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-Signed-off-by: Anders Roxell <anders.roxell@linaro.org>
-Reviewed-by: Segher Boessenkool <segher@kernel.crashing.org>
-[mpe: Make commit subject more descriptive]
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20220224162215.3406642-2-anders.roxell@linaro.org
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: c3cdd6e48e35 ("iio: mma8452: refactor for seperating chip specific data")
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+Link: https://lore.kernel.org/r/20220208124336.511884-1-hdegoede@redhat.com
+Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/powerpc/include/asm/io.h        |   40 ++++++++++++++++++++++++++++-------
- arch/powerpc/include/asm/uaccess.h   |    3 ++
- arch/powerpc/platforms/powernv/rng.c |    6 ++++-
- 3 files changed, 40 insertions(+), 9 deletions(-)
+ drivers/iio/accel/mma8452.c | 29 ++++++++++++++++++-----------
+ 1 file changed, 18 insertions(+), 11 deletions(-)
 
---- a/arch/powerpc/include/asm/io.h
-+++ b/arch/powerpc/include/asm/io.h
-@@ -359,25 +359,37 @@ static inline void __raw_writeq_be(unsig
+diff --git a/drivers/iio/accel/mma8452.c b/drivers/iio/accel/mma8452.c
+index 09c7f10fefb6..21a99467f364 100644
+--- a/drivers/iio/accel/mma8452.c
++++ b/drivers/iio/accel/mma8452.c
+@@ -176,6 +176,7 @@ static const struct mma8452_event_regs trans_ev_regs = {
+  * @enabled_events:		event flags enabled and handled by this driver
   */
- static inline void __raw_rm_writeb(u8 val, volatile void __iomem *paddr)
- {
--	__asm__ __volatile__("stbcix %0,0,%1"
-+	__asm__ __volatile__(".machine push;   \
-+			      .machine power6; \
-+			      stbcix %0,0,%1;  \
-+			      .machine pop;"
- 		: : "r" (val), "r" (paddr) : "memory");
- }
+ struct mma_chip_info {
++	const char *name;
+ 	u8 chip_id;
+ 	const struct iio_chan_spec *channels;
+ 	int num_channels;
+@@ -1301,6 +1302,7 @@ enum {
  
- static inline void __raw_rm_writew(u16 val, volatile void __iomem *paddr)
- {
--	__asm__ __volatile__("sthcix %0,0,%1"
-+	__asm__ __volatile__(".machine push;   \
-+			      .machine power6; \
-+			      sthcix %0,0,%1;  \
-+			      .machine pop;"
- 		: : "r" (val), "r" (paddr) : "memory");
- }
+ static const struct mma_chip_info mma_chip_info_table[] = {
+ 	[mma8451] = {
++		.name = "mma8451",
+ 		.chip_id = MMA8451_DEVICE_ID,
+ 		.channels = mma8451_channels,
+ 		.num_channels = ARRAY_SIZE(mma8451_channels),
+@@ -1325,6 +1327,7 @@ static const struct mma_chip_info mma_chip_info_table[] = {
+ 					MMA8452_INT_FF_MT,
+ 	},
+ 	[mma8452] = {
++		.name = "mma8452",
+ 		.chip_id = MMA8452_DEVICE_ID,
+ 		.channels = mma8452_channels,
+ 		.num_channels = ARRAY_SIZE(mma8452_channels),
+@@ -1341,6 +1344,7 @@ static const struct mma_chip_info mma_chip_info_table[] = {
+ 					MMA8452_INT_FF_MT,
+ 	},
+ 	[mma8453] = {
++		.name = "mma8453",
+ 		.chip_id = MMA8453_DEVICE_ID,
+ 		.channels = mma8453_channels,
+ 		.num_channels = ARRAY_SIZE(mma8453_channels),
+@@ -1357,6 +1361,7 @@ static const struct mma_chip_info mma_chip_info_table[] = {
+ 					MMA8452_INT_FF_MT,
+ 	},
+ 	[mma8652] = {
++		.name = "mma8652",
+ 		.chip_id = MMA8652_DEVICE_ID,
+ 		.channels = mma8652_channels,
+ 		.num_channels = ARRAY_SIZE(mma8652_channels),
+@@ -1366,6 +1371,7 @@ static const struct mma_chip_info mma_chip_info_table[] = {
+ 		.enabled_events = MMA8452_INT_FF_MT,
+ 	},
+ 	[mma8653] = {
++		.name = "mma8653",
+ 		.chip_id = MMA8653_DEVICE_ID,
+ 		.channels = mma8653_channels,
+ 		.num_channels = ARRAY_SIZE(mma8653_channels),
+@@ -1380,6 +1386,7 @@ static const struct mma_chip_info mma_chip_info_table[] = {
+ 		.enabled_events = MMA8452_INT_FF_MT,
+ 	},
+ 	[fxls8471] = {
++		.name = "fxls8471",
+ 		.chip_id = FXLS8471_DEVICE_ID,
+ 		.channels = mma8451_channels,
+ 		.num_channels = ARRAY_SIZE(mma8451_channels),
+@@ -1522,13 +1529,6 @@ static int mma8452_probe(struct i2c_client *client,
+ 	struct mma8452_data *data;
+ 	struct iio_dev *indio_dev;
+ 	int ret;
+-	const struct of_device_id *match;
+-
+-	match = of_match_device(mma8452_dt_ids, &client->dev);
+-	if (!match) {
+-		dev_err(&client->dev, "unknown device model\n");
+-		return -ENODEV;
+-	}
  
- static inline void __raw_rm_writel(u32 val, volatile void __iomem *paddr)
- {
--	__asm__ __volatile__("stwcix %0,0,%1"
-+	__asm__ __volatile__(".machine push;   \
-+			      .machine power6; \
-+			      stwcix %0,0,%1;  \
-+			      .machine pop;"
- 		: : "r" (val), "r" (paddr) : "memory");
- }
+ 	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
+ 	if (!indio_dev)
+@@ -1537,7 +1537,14 @@ static int mma8452_probe(struct i2c_client *client,
+ 	data = iio_priv(indio_dev);
+ 	data->client = client;
+ 	mutex_init(&data->lock);
+-	data->chip_info = match->data;
++
++	data->chip_info = device_get_match_data(&client->dev);
++	if (!data->chip_info && id) {
++		data->chip_info = &mma_chip_info_table[id->driver_data];
++	} else {
++		dev_err(&client->dev, "unknown device model\n");
++		return -ENODEV;
++	}
  
- static inline void __raw_rm_writeq(u64 val, volatile void __iomem *paddr)
- {
--	__asm__ __volatile__("stdcix %0,0,%1"
-+	__asm__ __volatile__(".machine push;   \
-+			      .machine power6; \
-+			      stdcix %0,0,%1;  \
-+			      .machine pop;"
- 		: : "r" (val), "r" (paddr) : "memory");
- }
+ 	data->vdd_reg = devm_regulator_get(&client->dev, "vdd");
+ 	if (IS_ERR(data->vdd_reg))
+@@ -1581,11 +1588,11 @@ static int mma8452_probe(struct i2c_client *client,
+ 	}
  
-@@ -389,7 +401,10 @@ static inline void __raw_rm_writeq_be(u6
- static inline u8 __raw_rm_readb(volatile void __iomem *paddr)
- {
- 	u8 ret;
--	__asm__ __volatile__("lbzcix %0,0, %1"
-+	__asm__ __volatile__(".machine push;   \
-+			      .machine power6; \
-+			      lbzcix %0,0, %1; \
-+			      .machine pop;"
- 			     : "=r" (ret) : "r" (paddr) : "memory");
- 	return ret;
- }
-@@ -397,7 +412,10 @@ static inline u8 __raw_rm_readb(volatile
- static inline u16 __raw_rm_readw(volatile void __iomem *paddr)
- {
- 	u16 ret;
--	__asm__ __volatile__("lhzcix %0,0, %1"
-+	__asm__ __volatile__(".machine push;   \
-+			      .machine power6; \
-+			      lhzcix %0,0, %1; \
-+			      .machine pop;"
- 			     : "=r" (ret) : "r" (paddr) : "memory");
- 	return ret;
- }
-@@ -405,7 +423,10 @@ static inline u16 __raw_rm_readw(volatil
- static inline u32 __raw_rm_readl(volatile void __iomem *paddr)
- {
- 	u32 ret;
--	__asm__ __volatile__("lwzcix %0,0, %1"
-+	__asm__ __volatile__(".machine push;   \
-+			      .machine power6; \
-+			      lwzcix %0,0, %1; \
-+			      .machine pop;"
- 			     : "=r" (ret) : "r" (paddr) : "memory");
- 	return ret;
- }
-@@ -413,7 +434,10 @@ static inline u32 __raw_rm_readl(volatil
- static inline u64 __raw_rm_readq(volatile void __iomem *paddr)
- {
- 	u64 ret;
--	__asm__ __volatile__("ldcix %0,0, %1"
-+	__asm__ __volatile__(".machine push;   \
-+			      .machine power6; \
-+			      ldcix %0,0, %1;  \
-+			      .machine pop;"
- 			     : "=r" (ret) : "r" (paddr) : "memory");
- 	return ret;
- }
---- a/arch/powerpc/include/asm/uaccess.h
-+++ b/arch/powerpc/include/asm/uaccess.h
-@@ -125,8 +125,11 @@ do {								\
-  */
- #define __get_user_atomic_128_aligned(kaddr, uaddr, err)		\
- 	__asm__ __volatile__(				\
-+		".machine push\n"			\
-+		".machine altivec\n"			\
- 		"1:	lvx  0,0,%1	# get user\n"	\
- 		" 	stvx 0,0,%2	# put kernel\n"	\
-+		".machine pop\n"			\
- 		"2:\n"					\
- 		".section .fixup,\"ax\"\n"		\
- 		"3:	li %0,%3\n"			\
---- a/arch/powerpc/platforms/powernv/rng.c
-+++ b/arch/powerpc/platforms/powernv/rng.c
-@@ -43,7 +43,11 @@ static unsigned long rng_whiten(struct p
- 	unsigned long parity;
+ 	dev_info(&client->dev, "registering %s accelerometer; ID 0x%x\n",
+-		 match->compatible, data->chip_info->chip_id);
++		 data->chip_info->name, data->chip_info->chip_id);
  
- 	/* Calculate the parity of the value */
--	asm ("popcntd %0,%1" : "=r" (parity) : "r" (val));
-+	asm (".machine push;   \
-+	      .machine power7; \
-+	      popcntd %0,%1;   \
-+	      .machine pop;"
-+	     : "=r" (parity) : "r" (val));
- 
- 	/* xor our value with the previous mask */
- 	val ^= rng->mask;
+ 	i2c_set_clientdata(client, indio_dev);
+ 	indio_dev->info = &mma8452_info;
+-	indio_dev->name = id->name;
++	indio_dev->name = data->chip_info->name;
+ 	indio_dev->modes = INDIO_DIRECT_MODE;
+ 	indio_dev->channels = data->chip_info->channels;
+ 	indio_dev->num_channels = data->chip_info->num_channels;
+@@ -1810,7 +1817,7 @@ MODULE_DEVICE_TABLE(i2c, mma8452_id);
+ static struct i2c_driver mma8452_driver = {
+ 	.driver = {
+ 		.name	= "mma8452",
+-		.of_match_table = of_match_ptr(mma8452_dt_ids),
++		.of_match_table = mma8452_dt_ids,
+ 		.pm	= &mma8452_pm_ops,
+ 	},
+ 	.probe = mma8452_probe,
+-- 
+2.34.1
+
 
 
