@@ -2,45 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 985BDC35273
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 88E3AC4167E
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 21:09:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238089AbiDEVGo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 17:06:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46470 "EHLO
+        id S236909AbiDEVGU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 17:06:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56800 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358436AbiDEK2Y (ORCPT
+        with ESMTP id S1354482AbiDEKOU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:28:24 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FDB2B247C;
-        Tue,  5 Apr 2022 03:18:01 -0700 (PDT)
+        Tue, 5 Apr 2022 06:14:20 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E8966AA54;
+        Tue,  5 Apr 2022 03:00:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B5D60617AA;
-        Tue,  5 Apr 2022 10:18:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C49D2C385A0;
-        Tue,  5 Apr 2022 10:17:59 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A10AD61740;
+        Tue,  5 Apr 2022 10:00:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B29C9C385A1;
+        Tue,  5 Apr 2022 10:00:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649153880;
-        bh=9HMECe3u2F6DkVfQDRSfxWSlqpn77kHqRP3q+B9jlqY=;
+        s=korg; t=1649152839;
+        bh=MsV8DgKXGuz2DfrIRr/ZPD8lwz9vIdTNb0HeSyI9PBU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YpuYuQriD/wu2AiBQR6ClOtHpG5mTa+7usHtfxyndkCSn80yQvn3H7tLlbTHywgGC
-         9WlaRpiYi7xn6uUoruxudm5BWUglniRWyaAzki/TDkxe20yyhlKmGreZZxc9YepzsR
-         CdHzsornobh0yFCQSxnXi6yw4/aJEVvipCqBMHB8=
+        b=Tj2+lHV1gh1dgSOTHpmp9nSkCDZQVRVEbldFzrdVb7simxlobBlUvUaOZB/wcqJGx
+         hYEn+rnr1nW7QSvspjZ5ZZ1W1P2RSruXk5MMIGP1+p5kZhFapRcGU2uegV8rMINy+e
+         i84IZHNwXGnxN5gX09W2XeicoSaQybrWVAOer0+w=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Guenter Roeck <linux@roeck-us.net>,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 381/599] fsi: Aspeed: Fix a potential double free
-Date:   Tue,  5 Apr 2022 09:31:15 +0200
-Message-Id: <20220405070310.169388127@linuxfoundation.org>
+        stable@vger.kernel.org, David Stevens <stevensd@chromium.org>,
+        Christoph Hellwig <hch@lst.de>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Joerg Roedel <jroedel@suse.de>,
+        Mario Limonciello <Mario.Limonciello@amd.com>
+Subject: [PATCH 5.15 906/913] iommu/dma: Fold _swiotlb helpers into callers
+Date:   Tue,  5 Apr 2022 09:32:48 +0200
+Message-Id: <20220405070406.975651673@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,95 +51,202 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+From: David Stevens <stevensd@chromium.org>
 
-[ Upstream commit 83ba7e895debc529803a7a258653f2fe9bf3bf40 ]
+commit 9b49bbc2c4dfd0431bf7ff4e862171189cf94b7e upstream.
 
-A struct device can never be devm_alloc()'ed.
-Here, it is embedded in "struct fsi_master", and "struct fsi_master" is
-embedded in "struct fsi_master_aspeed".
+Fold the _swiotlb helper functions into the respective _page functions,
+since recent fixes have moved all logic from the _page functions to the
+_swiotlb functions.
 
-Since "struct device" is embedded, the data structure embedding it must be
-released with the release function, as is already done here.
-
-So use kzalloc() instead of devm_kzalloc() when allocating "aspeed" and
-update all error handling branches accordingly.
-
-This prevent a potential double free().
-
-This also fix another issue if opb_readl() fails. Instead of a direct
-return, it now jumps in the error handling path.
-
-Fixes: 606397d67f41 ("fsi: Add ast2600 master driver")
-Suggested-by: Greg KH <gregkh@linuxfoundation.org>
-Suggested-by: Guenter Roeck <linux@roeck-us.net>
-Reviewed-by: Guenter Roeck <linux@roeck-us.net>
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Link: https://lore.kernel.org/r/2c123f8b0a40dc1a061fae982169fe030b4f47e6.1641765339.git.christophe.jaillet@wanadoo.fr
+Signed-off-by: David Stevens <stevensd@chromium.org>
+Reviewed-by: Christoph Hellwig <hch@lst.de>
+Reviewed-by: Robin Murphy <robin.murphy@arm.com>
+Link: https://lore.kernel.org/r/20210929023300.335969-5-stevensd@google.com
+Signed-off-by: Joerg Roedel <jroedel@suse.de>
+Cc: Mario Limonciello <Mario.Limonciello@amd.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/fsi/fsi-master-aspeed.c | 17 +++++++++++------
- 1 file changed, 11 insertions(+), 6 deletions(-)
+ drivers/iommu/dma-iommu.c |  135 ++++++++++++++++++++--------------------------
+ 1 file changed, 59 insertions(+), 76 deletions(-)
 
-diff --git a/drivers/fsi/fsi-master-aspeed.c b/drivers/fsi/fsi-master-aspeed.c
-index 5d2469d44607..87edc77260d2 100644
---- a/drivers/fsi/fsi-master-aspeed.c
-+++ b/drivers/fsi/fsi-master-aspeed.c
-@@ -534,25 +534,28 @@ static int fsi_master_aspeed_probe(struct platform_device *pdev)
- 		return rc;
- 	}
- 
--	aspeed = devm_kzalloc(&pdev->dev, sizeof(*aspeed), GFP_KERNEL);
-+	aspeed = kzalloc(sizeof(*aspeed), GFP_KERNEL);
- 	if (!aspeed)
- 		return -ENOMEM;
- 
- 	aspeed->dev = &pdev->dev;
- 
- 	aspeed->base = devm_platform_ioremap_resource(pdev, 0);
--	if (IS_ERR(aspeed->base))
--		return PTR_ERR(aspeed->base);
-+	if (IS_ERR(aspeed->base)) {
-+		rc = PTR_ERR(aspeed->base);
-+		goto err_free_aspeed;
-+	}
- 
- 	aspeed->clk = devm_clk_get(aspeed->dev, NULL);
- 	if (IS_ERR(aspeed->clk)) {
- 		dev_err(aspeed->dev, "couldn't get clock\n");
--		return PTR_ERR(aspeed->clk);
-+		rc = PTR_ERR(aspeed->clk);
-+		goto err_free_aspeed;
- 	}
- 	rc = clk_prepare_enable(aspeed->clk);
- 	if (rc) {
- 		dev_err(aspeed->dev, "couldn't enable clock\n");
--		return rc;
-+		goto err_free_aspeed;
- 	}
- 
- 	rc = setup_cfam_reset(aspeed);
-@@ -587,7 +590,7 @@ static int fsi_master_aspeed_probe(struct platform_device *pdev)
- 	rc = opb_readl(aspeed, ctrl_base + FSI_MVER, &raw);
- 	if (rc) {
- 		dev_err(&pdev->dev, "failed to read hub version\n");
--		return rc;
-+		goto err_release;
- 	}
- 
- 	reg = be32_to_cpu(raw);
-@@ -626,6 +629,8 @@ static int fsi_master_aspeed_probe(struct platform_device *pdev)
- 
- err_release:
- 	clk_disable_unprepare(aspeed->clk);
-+err_free_aspeed:
-+	kfree(aspeed);
- 	return rc;
+--- a/drivers/iommu/dma-iommu.c
++++ b/drivers/iommu/dma-iommu.c
+@@ -510,26 +510,6 @@ static void __iommu_dma_unmap(struct dev
+ 	iommu_dma_free_iova(cookie, dma_addr, size, &iotlb_gather);
  }
  
--- 
-2.34.1
-
+-static void __iommu_dma_unmap_swiotlb(struct device *dev, dma_addr_t dma_addr,
+-		size_t size, enum dma_data_direction dir,
+-		unsigned long attrs)
+-{
+-	struct iommu_domain *domain = iommu_get_dma_domain(dev);
+-	phys_addr_t phys;
+-
+-	phys = iommu_iova_to_phys(domain, dma_addr);
+-	if (WARN_ON(!phys))
+-		return;
+-
+-	if (!(attrs & DMA_ATTR_SKIP_CPU_SYNC) && !dev_is_dma_coherent(dev))
+-		arch_sync_dma_for_cpu(phys, size, dir);
+-
+-	__iommu_dma_unmap(dev, dma_addr, size);
+-
+-	if (unlikely(is_swiotlb_buffer(dev, phys)))
+-		swiotlb_tbl_unmap_single(dev, phys, size, dir, attrs);
+-}
+-
+ static dma_addr_t __iommu_dma_map(struct device *dev, phys_addr_t phys,
+ 		size_t size, int prot, u64 dma_mask)
+ {
+@@ -556,55 +536,6 @@ static dma_addr_t __iommu_dma_map(struct
+ 	return iova + iova_off;
+ }
+ 
+-static dma_addr_t __iommu_dma_map_swiotlb(struct device *dev, phys_addr_t phys,
+-		size_t org_size, dma_addr_t dma_mask, bool coherent,
+-		enum dma_data_direction dir, unsigned long attrs)
+-{
+-	int prot = dma_info_to_prot(dir, coherent, attrs);
+-	struct iommu_domain *domain = iommu_get_dma_domain(dev);
+-	struct iommu_dma_cookie *cookie = domain->iova_cookie;
+-	struct iova_domain *iovad = &cookie->iovad;
+-	size_t aligned_size = org_size;
+-	void *padding_start;
+-	size_t padding_size;
+-	dma_addr_t iova;
+-
+-	/*
+-	 * If both the physical buffer start address and size are
+-	 * page aligned, we don't need to use a bounce page.
+-	 */
+-	if (IS_ENABLED(CONFIG_SWIOTLB) && dev_is_untrusted(dev) &&
+-	    iova_offset(iovad, phys | org_size)) {
+-		aligned_size = iova_align(iovad, org_size);
+-		phys = swiotlb_tbl_map_single(dev, phys, org_size,
+-					      aligned_size, dir, attrs);
+-
+-		if (phys == DMA_MAPPING_ERROR)
+-			return DMA_MAPPING_ERROR;
+-
+-		/* Cleanup the padding area. */
+-		padding_start = phys_to_virt(phys);
+-		padding_size = aligned_size;
+-
+-		if (!(attrs & DMA_ATTR_SKIP_CPU_SYNC) &&
+-		    (dir == DMA_TO_DEVICE ||
+-		     dir == DMA_BIDIRECTIONAL)) {
+-			padding_start += org_size;
+-			padding_size -= org_size;
+-		}
+-
+-		memset(padding_start, 0, padding_size);
+-	}
+-
+-	if (!coherent && !(attrs & DMA_ATTR_SKIP_CPU_SYNC))
+-		arch_sync_dma_for_device(phys, org_size, dir);
+-
+-	iova = __iommu_dma_map(dev, phys, aligned_size, prot, dma_mask);
+-	if (iova == DMA_MAPPING_ERROR && is_swiotlb_buffer(dev, phys))
+-		swiotlb_tbl_unmap_single(dev, phys, org_size, dir, attrs);
+-	return iova;
+-}
+-
+ static void __iommu_dma_free_pages(struct page **pages, int count)
+ {
+ 	while (count--)
+@@ -866,15 +797,68 @@ static dma_addr_t iommu_dma_map_page(str
+ {
+ 	phys_addr_t phys = page_to_phys(page) + offset;
+ 	bool coherent = dev_is_dma_coherent(dev);
++	int prot = dma_info_to_prot(dir, coherent, attrs);
++	struct iommu_domain *domain = iommu_get_dma_domain(dev);
++	struct iommu_dma_cookie *cookie = domain->iova_cookie;
++	struct iova_domain *iovad = &cookie->iovad;
++	size_t aligned_size = size;
++	dma_addr_t iova, dma_mask = dma_get_mask(dev);
++
++	/*
++	 * If both the physical buffer start address and size are
++	 * page aligned, we don't need to use a bounce page.
++	 */
++	if (IS_ENABLED(CONFIG_SWIOTLB) && dev_is_untrusted(dev) &&
++	    iova_offset(iovad, phys | size)) {
++		void *padding_start;
++		size_t padding_size;
++
++		aligned_size = iova_align(iovad, size);
++		phys = swiotlb_tbl_map_single(dev, phys, size,
++					      aligned_size, dir, attrs);
++
++		if (phys == DMA_MAPPING_ERROR)
++			return DMA_MAPPING_ERROR;
+ 
+-	return __iommu_dma_map_swiotlb(dev, phys, size, dma_get_mask(dev),
+-			coherent, dir, attrs);
++		/* Cleanup the padding area. */
++		padding_start = phys_to_virt(phys);
++		padding_size = aligned_size;
++
++		if (!(attrs & DMA_ATTR_SKIP_CPU_SYNC) &&
++		    (dir == DMA_TO_DEVICE || dir == DMA_BIDIRECTIONAL)) {
++			padding_start += size;
++			padding_size -= size;
++		}
++
++		memset(padding_start, 0, padding_size);
++	}
++
++	if (!coherent && !(attrs & DMA_ATTR_SKIP_CPU_SYNC))
++		arch_sync_dma_for_device(phys, size, dir);
++
++	iova = __iommu_dma_map(dev, phys, aligned_size, prot, dma_mask);
++	if (iova == DMA_MAPPING_ERROR && is_swiotlb_buffer(dev, phys))
++		swiotlb_tbl_unmap_single(dev, phys, size, dir, attrs);
++	return iova;
+ }
+ 
+ static void iommu_dma_unmap_page(struct device *dev, dma_addr_t dma_handle,
+ 		size_t size, enum dma_data_direction dir, unsigned long attrs)
+ {
+-	__iommu_dma_unmap_swiotlb(dev, dma_handle, size, dir, attrs);
++	struct iommu_domain *domain = iommu_get_dma_domain(dev);
++	phys_addr_t phys;
++
++	phys = iommu_iova_to_phys(domain, dma_handle);
++	if (WARN_ON(!phys))
++		return;
++
++	if (!(attrs & DMA_ATTR_SKIP_CPU_SYNC) && !dev_is_dma_coherent(dev))
++		arch_sync_dma_for_cpu(phys, size, dir);
++
++	__iommu_dma_unmap(dev, dma_handle, size);
++
++	if (unlikely(is_swiotlb_buffer(dev, phys)))
++		swiotlb_tbl_unmap_single(dev, phys, size, dir, attrs);
+ }
+ 
+ /*
+@@ -959,7 +943,7 @@ static void iommu_dma_unmap_sg_swiotlb(s
+ 	int i;
+ 
+ 	for_each_sg(sg, s, nents, i)
+-		__iommu_dma_unmap_swiotlb(dev, sg_dma_address(s),
++		iommu_dma_unmap_page(dev, sg_dma_address(s),
+ 				sg_dma_len(s), dir, attrs);
+ }
+ 
+@@ -970,9 +954,8 @@ static int iommu_dma_map_sg_swiotlb(stru
+ 	int i;
+ 
+ 	for_each_sg(sg, s, nents, i) {
+-		sg_dma_address(s) = __iommu_dma_map_swiotlb(dev, sg_phys(s),
+-				s->length, dma_get_mask(dev),
+-				dev_is_dma_coherent(dev), dir, attrs);
++		sg_dma_address(s) = iommu_dma_map_page(dev, sg_page(s),
++				s->offset, s->length, dir, attrs);
+ 		if (sg_dma_address(s) == DMA_MAPPING_ERROR)
+ 			goto out_unmap;
+ 		sg_dma_len(s) = s->length;
 
 
