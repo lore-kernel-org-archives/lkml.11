@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A2820C4321E
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:01:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C18C7C4167B
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:01:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236358AbiDEICH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 04:02:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55590 "EHLO
+        id S233798AbiDEH5o (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 03:57:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34082 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233175AbiDEHwM (ORCPT
+        with ESMTP id S232517AbiDEHqh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 03:52:12 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 149BC366A4;
-        Tue,  5 Apr 2022 00:48:35 -0700 (PDT)
+        Tue, 5 Apr 2022 03:46:37 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 646D6939B3;
+        Tue,  5 Apr 2022 00:42:27 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 68EB8B81B18;
-        Tue,  5 Apr 2022 07:48:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B75ABC36AE3;
-        Tue,  5 Apr 2022 07:48:32 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CF09E6164B;
+        Tue,  5 Apr 2022 07:42:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E3CE1C3410F;
+        Tue,  5 Apr 2022 07:42:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649144913;
-        bh=Wlk6znE7Peto4IjGuHDah8DH2CcfZPR9nUHnMTJt52Y=;
+        s=korg; t=1649144546;
+        bh=upjup/PH9p+NOiB48oXfZdK7fKPqGxjGolVx04MBn/8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=IEG3oHbUdC5i35qxutl75jP8rhvmgXCUluWSTCz+ScjT4aAkYpq77m2pprOWPKEGX
-         FRRZPsRqlnjURNe4HM2sJFu1EjsrywvYgAmi4lyjo2V84ZQLye10znjSec8V9Ap99X
-         eaHVTYj1B97Zrade4Lj7+xhzU1eELEAuGVDcKA+c=
+        b=N0SrAXngKlulQ+GeinP1BVx3GVFbzfnOsVUKwumkC4s5jJn0F7hUIzwUE4I2KY5u5
+         C+1ccTB9O1jux0p8Nd5quAf8b6ZWo3/pevcBTKhIrVMrIWJl5piD/mdWCbdgd1783k
+         +mfHWGPT/eVIpp2eff3i1mikQi/usrE7gXm0l5vQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Claudio Imbrenda <imbrenda@linux.ibm.com>,
-        Christian Borntraeger <borntraeger@linux.ibm.com>,
-        Janis Schoetterl-Glausch <scgl@linux.ibm.com>
-Subject: [PATCH 5.17 0182/1126] KVM: s390x: fix SCK locking
-Date:   Tue,  5 Apr 2022 09:15:29 +0200
-Message-Id: <20220405070412.948385679@linuxfoundation.org>
+        stable@vger.kernel.org, Shyam Sundar <ssundar@marvell.com>,
+        Nilesh Javali <njavali@marvell.com>,
+        Himanshu Madhani <himanshu.madhani@oracle.com>,
+        James Smart <jsmart2021@gmail.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>
+Subject: [PATCH 5.17 0083/1126] scsi: scsi_transport_fc: Fix FPIN Link Integrity statistics counters
+Date:   Tue,  5 Apr 2022 09:13:50 +0200
+Message-Id: <20220405070410.005096835@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -49,126 +51,128 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Claudio Imbrenda <imbrenda@linux.ibm.com>
+From: James Smart <jsmart2021@gmail.com>
 
-commit c0573ba5c5a2244dc02060b1f374d4593c1d20b7 upstream.
+commit 07e0984b96ec1ba8c6de1c092b986b00ea0c114c upstream.
 
-When handling the SCK instruction, the kvm lock is taken, even though
-the vcpu lock is already being held. The normal locking order is kvm
-lock first and then vcpu lock. This is can (and in some circumstances
-does) lead to deadlocks.
+In the original FPIN commit, stats were incremented by the event_count.
+Event_count is the minimum # of events that must occur before an FPIN is
+sent. Thus, its not the actual number of events, and could be significantly
+off (too low) as it doesn't reflect anything not reported.  Rather than
+attempt to count events, have the statistic count how many FPINS cross the
+threshold and were reported.
 
-The function kvm_s390_set_tod_clock is called both by the SCK handler
-and by some IOCTLs to set the clock. The IOCTLs will not hold the vcpu
-lock, so they can safely take the kvm lock. The SCK handler holds the
-vcpu lock, but will also somehow need to acquire the kvm lock without
-relinquishing the vcpu lock.
-
-The solution is to factor out the code to set the clock, and provide
-two wrappers. One is called like the original function and does the
-locking, the other is called kvm_s390_try_set_tod_clock and uses
-trylock to try to acquire the kvm lock. This new wrapper is then used
-in the SCK handler. If locking fails, -EAGAIN is returned, which is
-eventually propagated to userspace, thus also freeing the vcpu lock and
-allowing for forward progress.
-
-This is not the most efficient or elegant way to solve this issue, but
-the SCK instruction is deprecated and its performance is not critical.
-
-The goal of this patch is just to provide a simple but correct way to
-fix the bug.
-
-Fixes: 6a3f95a6b04c ("KVM: s390: Intercept SCK instruction")
-Signed-off-by: Claudio Imbrenda <imbrenda@linux.ibm.com>
-Reviewed-by: Christian Borntraeger <borntraeger@linux.ibm.com>
-Reviewed-by: Janis Schoetterl-Glausch <scgl@linux.ibm.com>
-Link: https://lore.kernel.org/r/20220301143340.111129-1-imbrenda@linux.ibm.com
-Cc: stable@vger.kernel.org
-Signed-off-by: Christian Borntraeger <borntraeger@linux.ibm.com>
+Link: https://lore.kernel.org/r/20220301175536.60250-1-jsmart2021@gmail.com
+Fixes: 3dcfe0de5a97 ("scsi: fc: Parse FPIN packets and update statistics")
+Cc: <stable@vger.kernel.org> # v5.11+
+Cc: Shyam Sundar <ssundar@marvell.com>
+Cc: Nilesh Javali <njavali@marvell.com>
+Reviewed-by: Himanshu Madhani <himanshu.madhani@oracle.com>
+Signed-off-by: James Smart <jsmart2021@gmail.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/s390/kvm/kvm-s390.c |   19 ++++++++++++++++---
- arch/s390/kvm/kvm-s390.h |    4 ++--
- arch/s390/kvm/priv.c     |   15 ++++++++++++++-
- 3 files changed, 32 insertions(+), 6 deletions(-)
+ drivers/scsi/scsi_transport_fc.c |   39 ++++++++++++++++-----------------------
+ 1 file changed, 16 insertions(+), 23 deletions(-)
 
---- a/arch/s390/kvm/kvm-s390.c
-+++ b/arch/s390/kvm/kvm-s390.c
-@@ -3869,14 +3869,12 @@ retry:
- 	return 0;
- }
+--- a/drivers/scsi/scsi_transport_fc.c
++++ b/drivers/scsi/scsi_transport_fc.c
+@@ -34,7 +34,7 @@ static int fc_bsg_hostadd(struct Scsi_Ho
+ static int fc_bsg_rportadd(struct Scsi_Host *, struct fc_rport *);
+ static void fc_bsg_remove(struct request_queue *);
+ static void fc_bsg_goose_queue(struct fc_rport *);
+-static void fc_li_stats_update(struct fc_fn_li_desc *li_desc,
++static void fc_li_stats_update(u16 event_type,
+ 			       struct fc_fpin_stats *stats);
+ static void fc_delivery_stats_update(u32 reason_code,
+ 				     struct fc_fpin_stats *stats);
+@@ -670,42 +670,34 @@ fc_find_rport_by_wwpn(struct Scsi_Host *
+ EXPORT_SYMBOL(fc_find_rport_by_wwpn);
  
--void kvm_s390_set_tod_clock(struct kvm *kvm,
--			    const struct kvm_s390_vm_tod_clock *gtod)
-+static void __kvm_s390_set_tod_clock(struct kvm *kvm, const struct kvm_s390_vm_tod_clock *gtod)
+ static void
+-fc_li_stats_update(struct fc_fn_li_desc *li_desc,
++fc_li_stats_update(u16 event_type,
+ 		   struct fc_fpin_stats *stats)
  {
- 	struct kvm_vcpu *vcpu;
- 	union tod_clock clk;
- 	unsigned long i;
+-	stats->li += be32_to_cpu(li_desc->event_count);
+-	switch (be16_to_cpu(li_desc->event_type)) {
++	stats->li++;
++	switch (event_type) {
+ 	case FPIN_LI_UNKNOWN:
+-		stats->li_failure_unknown +=
+-		    be32_to_cpu(li_desc->event_count);
++		stats->li_failure_unknown++;
+ 		break;
+ 	case FPIN_LI_LINK_FAILURE:
+-		stats->li_link_failure_count +=
+-		    be32_to_cpu(li_desc->event_count);
++		stats->li_link_failure_count++;
+ 		break;
+ 	case FPIN_LI_LOSS_OF_SYNC:
+-		stats->li_loss_of_sync_count +=
+-		    be32_to_cpu(li_desc->event_count);
++		stats->li_loss_of_sync_count++;
+ 		break;
+ 	case FPIN_LI_LOSS_OF_SIG:
+-		stats->li_loss_of_signals_count +=
+-		    be32_to_cpu(li_desc->event_count);
++		stats->li_loss_of_signals_count++;
+ 		break;
+ 	case FPIN_LI_PRIM_SEQ_ERR:
+-		stats->li_prim_seq_err_count +=
+-		    be32_to_cpu(li_desc->event_count);
++		stats->li_prim_seq_err_count++;
+ 		break;
+ 	case FPIN_LI_INVALID_TX_WD:
+-		stats->li_invalid_tx_word_count +=
+-		    be32_to_cpu(li_desc->event_count);
++		stats->li_invalid_tx_word_count++;
+ 		break;
+ 	case FPIN_LI_INVALID_CRC:
+-		stats->li_invalid_crc_count +=
+-		    be32_to_cpu(li_desc->event_count);
++		stats->li_invalid_crc_count++;
+ 		break;
+ 	case FPIN_LI_DEVICE_SPEC:
+-		stats->li_device_specific +=
+-		    be32_to_cpu(li_desc->event_count);
++		stats->li_device_specific++;
+ 		break;
+ 	}
+ }
+@@ -767,6 +759,7 @@ fc_fpin_li_stats_update(struct Scsi_Host
+ 	struct fc_rport *attach_rport = NULL;
+ 	struct fc_host_attrs *fc_host = shost_to_fc_host(shost);
+ 	struct fc_fn_li_desc *li_desc = (struct fc_fn_li_desc *)tlv;
++	u16 event_type = be16_to_cpu(li_desc->event_type);
+ 	u64 wwpn;
  
--	mutex_lock(&kvm->lock);
- 	preempt_disable();
+ 	rport = fc_find_rport_by_wwpn(shost,
+@@ -775,7 +768,7 @@ fc_fpin_li_stats_update(struct Scsi_Host
+ 	    (rport->roles & FC_PORT_ROLE_FCP_TARGET ||
+ 	     rport->roles & FC_PORT_ROLE_NVME_TARGET)) {
+ 		attach_rport = rport;
+-		fc_li_stats_update(li_desc, &attach_rport->fpin_stats);
++		fc_li_stats_update(event_type, &attach_rport->fpin_stats);
+ 	}
  
- 	store_tod_clock_ext(&clk);
-@@ -3897,7 +3895,22 @@ void kvm_s390_set_tod_clock(struct kvm *
+ 	if (be32_to_cpu(li_desc->pname_count) > 0) {
+@@ -789,14 +782,14 @@ fc_fpin_li_stats_update(struct Scsi_Host
+ 			    rport->roles & FC_PORT_ROLE_NVME_TARGET)) {
+ 				if (rport == attach_rport)
+ 					continue;
+-				fc_li_stats_update(li_desc,
++				fc_li_stats_update(event_type,
+ 						   &rport->fpin_stats);
+ 			}
+ 		}
+ 	}
  
- 	kvm_s390_vcpu_unblock_all(kvm);
- 	preempt_enable();
-+}
-+
-+void kvm_s390_set_tod_clock(struct kvm *kvm, const struct kvm_s390_vm_tod_clock *gtod)
-+{
-+	mutex_lock(&kvm->lock);
-+	__kvm_s390_set_tod_clock(kvm, gtod);
-+	mutex_unlock(&kvm->lock);
-+}
-+
-+int kvm_s390_try_set_tod_clock(struct kvm *kvm, const struct kvm_s390_vm_tod_clock *gtod)
-+{
-+	if (!mutex_trylock(&kvm->lock))
-+		return 0;
-+	__kvm_s390_set_tod_clock(kvm, gtod);
- 	mutex_unlock(&kvm->lock);
-+	return 1;
+ 	if (fc_host->port_name == be64_to_cpu(li_desc->attached_wwpn))
+-		fc_li_stats_update(li_desc, &fc_host->fpin_stats);
++		fc_li_stats_update(event_type, &fc_host->fpin_stats);
  }
  
- /**
---- a/arch/s390/kvm/kvm-s390.h
-+++ b/arch/s390/kvm/kvm-s390.h
-@@ -349,8 +349,8 @@ int kvm_s390_handle_sigp(struct kvm_vcpu
- int kvm_s390_handle_sigp_pei(struct kvm_vcpu *vcpu);
- 
- /* implemented in kvm-s390.c */
--void kvm_s390_set_tod_clock(struct kvm *kvm,
--			    const struct kvm_s390_vm_tod_clock *gtod);
-+void kvm_s390_set_tod_clock(struct kvm *kvm, const struct kvm_s390_vm_tod_clock *gtod);
-+int kvm_s390_try_set_tod_clock(struct kvm *kvm, const struct kvm_s390_vm_tod_clock *gtod);
- long kvm_arch_fault_in_page(struct kvm_vcpu *vcpu, gpa_t gpa, int writable);
- int kvm_s390_store_status_unloaded(struct kvm_vcpu *vcpu, unsigned long addr);
- int kvm_s390_vcpu_store_status(struct kvm_vcpu *vcpu, unsigned long addr);
---- a/arch/s390/kvm/priv.c
-+++ b/arch/s390/kvm/priv.c
-@@ -102,7 +102,20 @@ static int handle_set_clock(struct kvm_v
- 		return kvm_s390_inject_prog_cond(vcpu, rc);
- 
- 	VCPU_EVENT(vcpu, 3, "SCK: setting guest TOD to 0x%llx", gtod.tod);
--	kvm_s390_set_tod_clock(vcpu->kvm, &gtod);
-+	/*
-+	 * To set the TOD clock the kvm lock must be taken, but the vcpu lock
-+	 * is already held in handle_set_clock. The usual lock order is the
-+	 * opposite.  As SCK is deprecated and should not be used in several
-+	 * cases, for example when the multiple epoch facility or TOD clock
-+	 * steering facility is installed (see Principles of Operation),  a
-+	 * slow path can be used.  If the lock can not be taken via try_lock,
-+	 * the instruction will be retried via -EAGAIN at a later point in
-+	 * time.
-+	 */
-+	if (!kvm_s390_try_set_tod_clock(vcpu->kvm, &gtod)) {
-+		kvm_s390_retry_instr(vcpu);
-+		return -EAGAIN;
-+	}
- 
- 	kvm_s390_set_psw_cc(vcpu, 0);
- 	return 0;
+ /*
 
 
