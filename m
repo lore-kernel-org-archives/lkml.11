@@ -2,43 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EB84AC4332F
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 13:24:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 88013C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 13:24:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1387602AbiDENPV (ORCPT
+        id S1357805AbiDENI6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 09:15:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60620 "EHLO
+        Tue, 5 Apr 2022 09:08:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60606 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344271AbiDEJTD (ORCPT
+        with ESMTP id S1344119AbiDEJSS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:19:03 -0400
+        Tue, 5 Apr 2022 05:18:18 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4566622B14;
-        Tue,  5 Apr 2022 02:06:46 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7A4137A3E;
+        Tue,  5 Apr 2022 02:04:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D74F361571;
-        Tue,  5 Apr 2022 09:06:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EDDDCC385A1;
-        Tue,  5 Apr 2022 09:06:44 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 692A961564;
+        Tue,  5 Apr 2022 09:04:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 42FDDC385A0;
+        Tue,  5 Apr 2022 09:04:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649149605;
-        bh=A/hAMMRh3XJNdD9x1AAtbacK618VtXEYBp3Ix1ZXMfo=;
+        s=korg; t=1649149453;
+        bh=Kez2sL3RMdmqfeeAkd8I0EFnzgYorCR1t5sLLVWdCdc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=AAKXUvTO3Jf/UhSqvcjtd6jXVq11fhbxo6Cb89WdKQlifS+B68zNzvZKZSdKczTXX
-         pL3n+AUzTXfuvNc/bxdpacX9kcgnjiCKD/8fcugzfXTJfPztM/azJ79HOz8Wuzc9lH
-         x5dBRzMUX8b8KqpeyO8XMhZYBnfRcQ9gIZVG2QQE=
+        b=JcXB/rHgU7sSNrJUWvozvhZqQWwVpfeiHW5DgtCiDXVpN12SvwnI2/aIwKbehUV0B
+         M+m5DO4rpuB/jiLJ3OXSYPjnQnZYYoNaq3EyB9wERrOPo7CGpCP5A2gG8rSNJyvx97
+         RRzSJuyF/GTfZhOXBdjBTQrqYyH7QCgXTksyWGa0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Matt Brown <matthew.brown.dev@gmail.com>,
-        Paul Menzel <pmenzel@molgen.mpg.de>,
-        Song Liu <song@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0775/1017] lib/raid6/test/Makefile: Use $(pound) instead of \# for Make 4.3
-Date:   Tue,  5 Apr 2022 09:28:08 +0200
-Message-Id: <20220405070417.263405796@linuxfoundation.org>
+        stable@vger.kernel.org, Thomas Richter <tmricht@linux.ibm.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Sumanth Korikkar <sumanthk@linux.ibm.com>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Sven Schnelle <svens@linux.ibm.com>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Arnaldo Carvalho de Melo <acme@redhat.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 0721/1017] perf stat: Fix forked applications enablement of counters
+Date:   Tue,  5 Apr 2022 09:27:14 +0200
+Message-Id: <20220405070415.668585336@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -50,80 +56,97 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Paul Menzel <pmenzel@molgen.mpg.de>
+From: Thomas Richter <tmricht@linux.ibm.com>
 
-[ Upstream commit 633174a7046ec3b4572bec24ef98e6ee89bce14b ]
+[ Upstream commit d0a0a511493d269514fcbd852481cdca32c95350 ]
 
-Buidling raid6test on Ubuntu 21.10 (ppc64le) with GNU Make 4.3 shows the
-errors below:
+I have run into the following issue:
 
-    $ cd lib/raid6/test/
-    $ make
-    <stdin>:1:1: error: stray ‘\’ in program
-    <stdin>:1:2: error: stray ‘#’ in program
-    <stdin>:1:11: error: expected ‘=’, ‘,’, ‘;’, ‘asm’ or ‘__attribute__’ \
-        before ‘<’ token
+ # perf stat -a -e new_pmu/INSTRUCTION_7/ --  mytest -c1 7
 
-    [...]
+ Performance counter stats for 'system wide':
 
-The errors come from the HAS_ALTIVEC test, which fails, and the POWER
-optimized versions are not built. That’s also reason nobody noticed on the
-other architectures.
+                 0      new_pmu/INSTRUCTION_7/
 
-GNU Make 4.3 does not remove the backslash anymore. From the 4.3 release
-announcment:
+       0.000366428 seconds time elapsed
+ #
 
-> * WARNING: Backward-incompatibility!
->   Number signs (#) appearing inside a macro reference or function invocation
->   no longer introduce comments and should not be escaped with backslashes:
->   thus a call such as:
->     foo := $(shell echo '#')
->   is legal.  Previously the number sign needed to be escaped, for example:
->     foo := $(shell echo '\#')
->   Now this latter will resolve to "\#".  If you want to write makefiles
->   portable to both versions, assign the number sign to a variable:
->     H := \#
->     foo := $(shell echo '$H')
->   This was claimed to be fixed in 3.81, but wasn't, for some reason.
->   To detect this change search for 'nocomment' in the .FEATURES variable.
+The new PMU for s390 counts the execution of certain CPU instructions.
+The root cause is the extremely small run time of the mytest program. It
+just executes some assembly instructions and then exits.
 
-So, do the same as commit 9564a8cf422d ("Kbuild: fix # escaping in .cmd
-files for future Make") and commit 929bef467771 ("bpf: Use $(pound) instead
-of \# in Makefiles") and define and use a $(pound) variable.
+In above invocation the instruction is executed exactly one time (-c1
+option). The PMU is expected to report this one time execution by a
+counter value of one, but fails to do so in some cases, not all.
 
-Reference for the change in make:
-https://git.savannah.gnu.org/cgit/make.git/commit/?id=c6966b323811c37acedff05b57
+Debugging reveals the invocation of the child process is done
+*before* the counter events are installed and enabled.
 
-Cc: Matt Brown <matthew.brown.dev@gmail.com>
-Signed-off-by: Paul Menzel <pmenzel@molgen.mpg.de>
-Signed-off-by: Song Liu <song@kernel.org>
+Tracing reveals that sometimes the child process starts and exits before
+the event is installed on all CPUs. The more CPUs the machine has, the
+more often this miscount happens.
+
+Fix this by reversing the start of the work load after the events have
+been installed on the specified CPUs. Now the comment also matches the
+code.
+
+Output after:
+
+ # perf stat -a -e new_pmu/INSTRUCTION_7/ --  mytest -c1 7
+
+ Performance counter stats for 'system wide':
+
+                 1      new_pmu/INSTRUCTION_7/
+
+       0.000366428 seconds time elapsed
+ #
+
+Now the correct result is reported rock solid all the time regardless
+how many CPUs are online.
+
+Reviewers notes:
+
+Jiri:
+
+Right, without -a the event has enable_on_exec so the race does not
+matter, but it's a problem for system wide with fork.
+
+Namhyung:
+
+Agreed. Also we may move the enable_counters() and the clock code out of
+the if block to be shared with the else block.
+
+Fixes: acf2892270dcc428 ("perf stat: Use perf_evlist__prepare/start_workload()")
+Signed-off-by: Thomas Richter <tmricht@linux.ibm.com>
+Acked-by: Jiri Olsa <jolsa@kernel.org>
+Acked-by: Namhyung Kim <namhyung@kernel.org>
+Acked-by: Sumanth Korikkar <sumanthk@linux.ibm.com>
+Cc: Heiko Carstens <hca@linux.ibm.com>
+Cc: Sven Schnelle <svens@linux.ibm.com>
+Cc: Vasily Gorbik <gor@linux.ibm.com>
+Link: https://lore.kernel.org/r/20220317155346.577384-1-tmricht@linux.ibm.com
+Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- lib/raid6/test/Makefile | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ tools/perf/builtin-stat.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/lib/raid6/test/Makefile b/lib/raid6/test/Makefile
-index a4c7cd74cff5..4fb7700a741b 100644
---- a/lib/raid6/test/Makefile
-+++ b/lib/raid6/test/Makefile
-@@ -4,6 +4,8 @@
- # from userspace.
- #
+diff --git a/tools/perf/builtin-stat.c b/tools/perf/builtin-stat.c
+index 7974933dbc77..08c024038ca7 100644
+--- a/tools/perf/builtin-stat.c
++++ b/tools/perf/builtin-stat.c
+@@ -956,10 +956,10 @@ static int __run_perf_stat(int argc, const char **argv, int run_idx)
+ 	 * Enable counters and exec the command:
+ 	 */
+ 	if (forks) {
+-		evlist__start_workload(evsel_list);
+ 		err = enable_counters();
+ 		if (err)
+ 			return -1;
++		evlist__start_workload(evsel_list);
  
-+pound := \#
-+
- CC	 = gcc
- OPTFLAGS = -O2			# Adjust as desired
- CFLAGS	 = -I.. -I ../../../include -g $(OPTFLAGS)
-@@ -42,7 +44,7 @@ else ifeq ($(HAS_NEON),yes)
-         OBJS   += neon.o neon1.o neon2.o neon4.o neon8.o recov_neon.o recov_neon_inner.o
-         CFLAGS += -DCONFIG_KERNEL_MODE_NEON=1
- else
--        HAS_ALTIVEC := $(shell printf '\#include <altivec.h>\nvector int a;\n' |\
-+        HAS_ALTIVEC := $(shell printf '$(pound)include <altivec.h>\nvector int a;\n' |\
-                          gcc -c -x c - >/dev/null && rm ./-.o && echo yes)
-         ifeq ($(HAS_ALTIVEC),yes)
-                 CFLAGS += -I../../../arch/powerpc/include
+ 		t0 = rdclock();
+ 		clock_gettime(CLOCK_MONOTONIC, &ref_time);
 -- 
 2.34.1
 
