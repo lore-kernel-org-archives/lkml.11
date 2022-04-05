@@ -2,41 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 30C26C35276
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C4061C4707E
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:36:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238933AbiDEIbD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 04:31:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57656 "EHLO
+        id S240227AbiDEIbs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 04:31:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54458 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234418AbiDEH6Q (ORCPT
+        with ESMTP id S234237AbiDEH6F (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 03:58:16 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FA05A207F;
-        Tue,  5 Apr 2022 00:52:33 -0700 (PDT)
+        Tue, 5 Apr 2022 03:58:05 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DC651EAD8;
+        Tue,  5 Apr 2022 00:52:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9255361776;
-        Tue,  5 Apr 2022 07:52:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 942E7C340EE;
-        Tue,  5 Apr 2022 07:52:31 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6932F61748;
+        Tue,  5 Apr 2022 07:51:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 49F5DC340EE;
+        Tue,  5 Apr 2022 07:51:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649145152;
-        bh=wW7hBrd8WbElT+a3VEIhzbGS4fWJeuBfm+gGhc+2uIg=;
+        s=korg; t=1649145118;
+        bh=4/1Ta9DLRHChKUxyfQZvPcc9G9gUQByvnjw5/X1NOmk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=aBrqnLtVnr96UV05gdhOdh2gFz177YKwu8VIIXOCNtCGoo2KV0mZMVIVUer5oXJla
-         amI4CYzOFQabWzG/KvEDZ8pbIkjNXh+Hr+LQknpf2muvWfNPKSLto7j7gSVinTotrV
-         wkwTRmFbob+qoD7+3MdMJUwvSiSCLjUaNZPP2MFM=
+        b=M/DkKaouovd/mDqlQlTQgSMSz0JNq8pPoOy4MUn3epuv3ms9yOIe+Fj0xZrTO6XnL
+         gl2iwMbajhKkOs6cLlCSPPrDEw7px5QN7epv7A6IALnlJ/pWyT2WVsB11qiuM9tGOr
+         WaQ5XMfEpd3/FMgpGWTVK5dzL7c7BEcP/NUiuI/w=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Joel Jaeschke <joel.jaeschke@gmail.com>,
-        Jens Axboe <axboe@kernel.dk>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0265/1126] io_uring: terminate manual loop iterator loop correctly for non-vecs
-Date:   Tue,  5 Apr 2022 09:16:52 +0200
-Message-Id: <20220405070415.388717836@linuxfoundation.org>
+        stable@vger.kernel.org, Peng Liu <liupeng256@huawei.com>,
+        Marco Elver <elver@google.com>,
+        Daniel Latypov <dlatypov@google.com>,
+        Brendan Higgins <brendanhiggins@google.com>,
+        Alexander Potapenko <glider@google.com>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        Wang Kefeng <wangkefeng.wang@huawei.com>,
+        David Gow <davidgow@google.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 0290/1126] kunit: make kunit_test_timeout compatible with comment
+Date:   Tue,  5 Apr 2022 09:17:17 +0200
+Message-Id: <20220405070416.126304096@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -48,46 +57,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jens Axboe <axboe@kernel.dk>
+From: Peng Liu <liupeng256@huawei.com>
 
-[ Upstream commit 5e929367468c8f97cd1ffb0417316cecfebef94b ]
+[ Upstream commit bdd015f7b71b92c2e4ecabac689642cc72553e04 ]
 
-The fix for not advancing the iterator if we're using fixed buffers is
-broken in that it can hit a condition where we don't terminate the loop.
-This results in io-wq looping forever, asking to read (or write) 0 bytes
-for every subsequent loop.
+In function kunit_test_timeout, it is declared "300 * MSEC_PER_SEC"
+represent 5min.  However, it is wrong when dealing with arm64 whose
+default HZ = 250, or some other situations.  Use msecs_to_jiffies to fix
+this, and kunit_test_timeout will work as desired.
 
-Reported-by: Joel Jaeschke <joel.jaeschke@gmail.com>
-Link: https://github.com/axboe/liburing/issues/549
-Fixes: 16c8d2df7ec0 ("io_uring: ensure symmetry in handling iter types in loop_rw_iter()")
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Link: https://lkml.kernel.org/r/20220309083753.1561921-3-liupeng256@huawei.com
+Fixes: 5f3e06208920 ("kunit: test: add support for test abort")
+Signed-off-by: Peng Liu <liupeng256@huawei.com>
+Reviewed-by: Marco Elver <elver@google.com>
+Reviewed-by: Daniel Latypov <dlatypov@google.com>
+Reviewed-by: Brendan Higgins <brendanhiggins@google.com>
+Tested-by: Brendan Higgins <brendanhiggins@google.com>
+Cc: Alexander Potapenko <glider@google.com>
+Cc: Dmitry Vyukov <dvyukov@google.com>
+Cc: Wang Kefeng <wangkefeng.wang@huawei.com>
+Cc: David Gow <davidgow@google.com>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/io_uring.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ lib/kunit/try-catch.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/fs/io_uring.c b/fs/io_uring.c
-index 5ea7650b74eb..fa1c6e7b3c30 100644
---- a/fs/io_uring.c
-+++ b/fs/io_uring.c
-@@ -3440,13 +3440,15 @@ static ssize_t loop_rw_iter(int rw, struct io_kiocb *req, struct iov_iter *iter)
- 				ret = nr;
- 			break;
- 		}
-+		ret += nr;
- 		if (!iov_iter_is_bvec(iter)) {
- 			iov_iter_advance(iter, nr);
- 		} else {
--			req->rw.len -= nr;
- 			req->rw.addr += nr;
-+			req->rw.len -= nr;
-+			if (!req->rw.len)
-+				break;
- 		}
--		ret += nr;
- 		if (nr != iovec.iov_len)
- 			break;
- 	}
+diff --git a/lib/kunit/try-catch.c b/lib/kunit/try-catch.c
+index be38a2c5ecc2..42825941f19f 100644
+--- a/lib/kunit/try-catch.c
++++ b/lib/kunit/try-catch.c
+@@ -52,7 +52,7 @@ static unsigned long kunit_test_timeout(void)
+ 	 * If tests timeout due to exceeding sysctl_hung_task_timeout_secs,
+ 	 * the task will be killed and an oops generated.
+ 	 */
+-	return 300 * MSEC_PER_SEC; /* 5 min */
++	return 300 * msecs_to_jiffies(MSEC_PER_SEC); /* 5 min */
+ }
+ 
+ void kunit_try_catch_run(struct kunit_try_catch *try_catch, void *context)
 -- 
 2.34.1
 
