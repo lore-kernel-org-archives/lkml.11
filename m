@@ -2,82 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B20E5C47080
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:17:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E318C47081
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:17:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1574437AbiDEW4G (ORCPT
+        id S1574499AbiDEW4W (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 18:56:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34032 "EHLO
+        Tue, 5 Apr 2022 18:56:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54570 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1384219AbiDEM1Q (ORCPT
+        with ESMTP id S1457562AbiDEQKs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 08:27:16 -0400
-Received: from conuserg-12.nifty.com (conuserg-12.nifty.com [210.131.2.79])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D0DF7486F;
-        Tue,  5 Apr 2022 04:35:52 -0700 (PDT)
-Received: from grover.. (133-32-177-133.west.xps.vectant.ne.jp [133.32.177.133]) (authenticated)
-        by conuserg-12.nifty.com with ESMTP id 235BYCGm000464;
-        Tue, 5 Apr 2022 20:34:12 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conuserg-12.nifty.com 235BYCGm000464
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1649158453;
-        bh=tlKllE+DeH+owxkSzZkT6wnBC6VcqxWAXsQhSEB8rk0=;
-        h=From:To:Cc:Subject:Date:From;
-        b=YdaL0ynmtbZVeMCw/+dhJuynpbARiMg258nxmjvJekOGt/BAROJZ5u5E6dzP9wHKk
-         z5WhiExOSraf3CMM3c6G+MBalNLwRSGDm+9bYdG5m0wFFYf8nRPWh9cmzKi924/NMO
-         AjCuGRYQZ8qtd70DvHof32c9rcC6cOiqixuQ3s7ZqYWWeS0/zYgRBTKEITtDktDB9X
-         a5r0Dly+Or5at2+zpXgdhCnEdSBqqQd6W6cWZmLP1hPR9XE/aYOGGg9WIK+12igwJn
-         wP97HdvKtkFIMPe+w69PRGXtEsrb+/Eo5STtoAHjICWMdV9YuDuv2bfDgpgRkmYk/z
-         fvA9GM3qVrezA==
-X-Nifty-SrcIP: [133.32.177.133]
-From:   Masahiro Yamada <masahiroy@kernel.org>
-To:     linux-kbuild@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Alexander Lobakin <alobakin@pm.me>,
-        Michal Marek <michal.lkml@markovi.net>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Nicolas Schier <n.schier@avm.de>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        Sami Tolvanen <samitolvanen@google.com>, llvm@lists.linux.dev
-Subject: [PATCH v2 00/10] kbuild: misc cleanups
-Date:   Tue,  5 Apr 2022 20:33:48 +0900
-Message-Id: <20220405113359.2880241-1-masahiroy@kernel.org>
-X-Mailer: git-send-email 2.32.0
+        Tue, 5 Apr 2022 12:10:48 -0400
+Received: from ssl.serverraum.org (ssl.serverraum.org [176.9.125.105])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85800265E;
+        Tue,  5 Apr 2022 09:08:47 -0700 (PDT)
+Received: from mwalle01.kontron.local. (unknown [213.135.10.150])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by ssl.serverraum.org (Postfix) with ESMTPSA id 20F2222248;
+        Tue,  5 Apr 2022 18:08:44 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
+        t=1649174924;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=3odAN6Em2/FjwJHL8RWzQ78BiwMrPTpdrGtZRc272oI=;
+        b=Gc01Cfv9kOW/4lv4YeNgO9lxwBiYOy6PIR7zmY9AfRMYj5FIRpXUASQxRQ+vvcyameRuWm
+        v9UltLyG7MCH0MSfen1fmgTS/iJHlKiXKgaSQrtUNazMyDUH7glQus/ExvSlGR9xppaf3i
+        htwq6MrpA+nUDCwPIc70udu+HrRIUq8=
+From:   Michael Walle <michael@walle.cc>
+To:     Kavyasree Kotagiri <kavyasree.kotagiri@microchip.com>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>
+Cc:     Arnd Bergmann <arnd@arndb.de>, Olof Johansson <olof@lixom.net>,
+        soc@kernel.org, linux-arm-kernel@lists.infradead.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>,
+        Tudor.Ambarus@microchip.com, Michael Walle <michael@walle.cc>
+Subject: [PATCH v3 1/7] ARM: dts: lan966x: swap dma channels for crypto node
+Date:   Tue,  5 Apr 2022 18:08:31 +0200
+Message-Id: <20220405160837.4093563-2-michael@walle.cc>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220405160837.4093563-1-michael@walle.cc>
+References: <20220405160837.4093563-1-michael@walle.cc>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+The YAML binding (crypto/atmel,at91sam9g46-aes.yaml) mandates the order
+of the channels. Swap them to pass devicetree validation.
 
-This is a series of prerequisite cleanups of my next work.
+Fixes: 290deaa10c50 ("ARM: dts: add DT for lan966 SoC and 2-port board pcb8291")
+Signed-off-by: Michael Walle <michael@walle.cc>
+Reviewed-by: Claudiu Beznea <claudiu.beznea@microchip.com>
+---
+ arch/arm/boot/dts/lan966x.dtsi | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-
-Masahiro Yamada (10):
-  kbuild: factor out genksyms command from cmd_gensymtypes_{c,S}
-  kbuild: do not remove empty *.symtypes explicitly
-  modpost: remove useless export_from_sec()
-  modpost: move export_from_secname() call to more relevant place
-  modpost: remove redundant initializes for static variables
-  modpost: remove annoying namespace_from_kstrtabns()
-  kbuild: get rid of duplication in the first line of *.mod files
-  kbuild: split the second line of *.mod into *.usyms
-  kbuild: refactor cmd_modversions_c
-  kbuild: refactor cmd_modversions_S
-
- .gitignore                  |  1 +
- Makefile                    |  2 +-
- scripts/Makefile.build      | 86 ++++++++++++++++---------------------
- scripts/adjust_autoksyms.sh |  2 +-
- scripts/gen_autoksyms.sh    | 18 +++++---
- scripts/mod/modpost.c       | 49 ++++++---------------
- scripts/mod/modpost.h       |  4 --
- scripts/mod/sumversion.c    | 11 +----
- 8 files changed, 64 insertions(+), 109 deletions(-)
-
+diff --git a/arch/arm/boot/dts/lan966x.dtsi b/arch/arm/boot/dts/lan966x.dtsi
+index 604a41269ebe..a99ffb4cfb8a 100644
+--- a/arch/arm/boot/dts/lan966x.dtsi
++++ b/arch/arm/boot/dts/lan966x.dtsi
+@@ -114,9 +114,9 @@ aes: crypto@e004c000 {
+ 			compatible = "atmel,at91sam9g46-aes";
+ 			reg = <0xe004c000 0x100>;
+ 			interrupts = <GIC_SPI 53 IRQ_TYPE_LEVEL_HIGH>;
+-			dmas = <&dma0 AT91_XDMAC_DT_PERID(13)>,
+-			       <&dma0 AT91_XDMAC_DT_PERID(12)>;
+-			dma-names = "rx", "tx";
++			dmas = <&dma0 AT91_XDMAC_DT_PERID(12)>,
++			       <&dma0 AT91_XDMAC_DT_PERID(13)>;
++			dma-names = "tx", "rx";
+ 			clocks = <&nic_clk>;
+ 			clock-names = "aes_clk";
+ 		};
 -- 
-2.32.0
+2.30.2
 
