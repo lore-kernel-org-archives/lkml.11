@@ -2,104 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C2E6CC4332F
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 15:22:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C67BC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 15:23:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234152AbiDEPYl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 11:24:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59288 "EHLO
+        id S242229AbiDEPZL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 11:25:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59708 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347210AbiDEJqI (ORCPT
+        with ESMTP id S1347201AbiDEJqI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Apr 2022 05:46:08 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8AA8CDD97B;
-        Tue,  5 Apr 2022 02:32:37 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACF21DD96E;
+        Tue,  5 Apr 2022 02:32:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 27313615E5;
-        Tue,  5 Apr 2022 09:32:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 39962C385A2;
-        Tue,  5 Apr 2022 09:32:36 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649151156;
-        bh=TdNHD+ThQdFDNYzUnyywSIQFu/8Rmrh1akcMl4pdADg=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mTqCmeGdGNXyAGp+MeGmYdeQuVVJUFjroorq57uFz8FF00U5mqasa+pzXq/YUlhRK
-         4tCJr+h989D6vfEOHP9BFXKb77T5S4v3SPjF+q0yi9LJzzJ7JbZZhi4ZHe17/cxAGV
-         5sxXMgghaZRZ4PFB+eVZVICX1MueVr1q74WukJ+w=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 314/913] media: usb: go7007: s2250-board: fix leak in probe()
-Date:   Tue,  5 Apr 2022 09:22:56 +0200
-Message-Id: <20220405070349.265093600@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
-User-Agent: quilt/0.66
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5A60CB81CB3;
+        Tue,  5 Apr 2022 09:32:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 735BBC385A3;
+        Tue,  5 Apr 2022 09:32:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649151154;
+        bh=cg99cbuB8hB++j+fhgEa4ZdrqC7Cu38pehUZLH1w4KY=;
+        h=From:To:Cc:In-Reply-To:References:Subject:Date:From;
+        b=IIgjUBS99lYPqvwHgyFLa1h4B+7F7O2C9jIzDXHtBh4yXjL/VM5gyaqNRq/qVMVce
+         i6tJBXscdBWey2Qx0IHyiShR+AkNqxnxyrUSfgVC/JL69cuW1Er4dd+IP/QV2TAFJB
+         5N6HGtShxQqUbmLMshbvgbmhA8NnZK6O+W3oz+XRPr++uL07hQoTwk53wTXuEkQP4R
+         MkssquhUvVngM0wKXwsdAx0jQmvbuojxswkDIgZhOh46AkmfHITAb6TLu8SzVA9M8v
+         5/NLbwjd8FdUqQaDNY7uOhbyytzZJLBA/+DhcN7rYRzuC27tdUnGKwRlxRQ+frUPcM
+         kWO7h/NlW9i4Q==
+From:   Mark Brown <broonie@kernel.org>
+To:     leilk.liu@mediatek.com
+Cc:     linux-kernel@vger.kernel.org, linux-mediatek@lists.infradead.org,
+        devicetree@vger.kernel.org, robh+dt@kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-spi@vger.kernel.org,
+        matthias.bgg@gmail.com
+In-Reply-To: <20220401071616.8874-1-leilk.liu@mediatek.com>
+References: <20220401071616.8874-1-leilk.liu@mediatek.com>
+Subject: Re: [PATCH V7 0/3] spi: mediatek: add single/quad mode support
+Message-Id: <164915115220.276894.6481675196400953567.b4-ty@kernel.org>
+Date:   Tue, 05 Apr 2022 10:32:32 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dan Carpenter <dan.carpenter@oracle.com>
+On Fri, 1 Apr 2022 15:16:13 +0800, Leilk Liu wrote:
+> This series of patches are based on spi for-next, and provide 3 patches to support MT7986.
+> 
+> V7:
+> 1. add Reviewed-by: Rob Herring
+> 
+> V6:
+>  1. remove SPI_CFG3_IPM_PIN_MODE_OFFSET.
+>  2. add Reviewed-by: AngeloGioacchino Del Regno
+> 
+> [...]
 
-[ Upstream commit 67e4550ecd6164bfbdff54c169e5bbf9ccfaf14d ]
+Applied to
 
-Call i2c_unregister_device(audio) on this error path.
+   https://git.kernel.org/pub/scm/linux/kernel/git/broonie/spi.git for-next
 
-Fixes: d3b2ccd9e307 ("[media] s2250: convert to the control framework")
-Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/media/usb/go7007/s2250-board.c | 10 ++++------
- 1 file changed, 4 insertions(+), 6 deletions(-)
+Thanks!
 
-diff --git a/drivers/media/usb/go7007/s2250-board.c b/drivers/media/usb/go7007/s2250-board.c
-index c742cc88fac5..1fa6f10ee157 100644
---- a/drivers/media/usb/go7007/s2250-board.c
-+++ b/drivers/media/usb/go7007/s2250-board.c
-@@ -504,6 +504,7 @@ static int s2250_probe(struct i2c_client *client,
- 	u8 *data;
- 	struct go7007 *go = i2c_get_adapdata(adapter);
- 	struct go7007_usb *usb = go->hpi_context;
-+	int err = -EIO;
- 
- 	audio = i2c_new_dummy_device(adapter, TLV320_ADDRESS >> 1);
- 	if (IS_ERR(audio))
-@@ -532,11 +533,8 @@ static int s2250_probe(struct i2c_client *client,
- 		V4L2_CID_HUE, -512, 511, 1, 0);
- 	sd->ctrl_handler = &state->hdl;
- 	if (state->hdl.error) {
--		int err = state->hdl.error;
--
--		v4l2_ctrl_handler_free(&state->hdl);
--		kfree(state);
--		return err;
-+		err = state->hdl.error;
-+		goto fail;
- 	}
- 
- 	state->std = V4L2_STD_NTSC;
-@@ -600,7 +598,7 @@ static int s2250_probe(struct i2c_client *client,
- 	i2c_unregister_device(audio);
- 	v4l2_ctrl_handler_free(&state->hdl);
- 	kfree(state);
--	return -EIO;
-+	return err;
- }
- 
- static int s2250_remove(struct i2c_client *client)
--- 
-2.34.1
+[1/3] spi: mediatek: add spi memory support for ipm design
+      commit: 9f763fd20da7d892ffaedac0c58d821922f8a674
+[2/3] dt-bindings: spi: support hclk
+      (no commit info)
+[3/3] spi: mediatek: support hclk
+      commit: a740f4e684c020ea57a8a198a9322d739f7ab6d5
 
+All being well this means that it will be integrated into the linux-next
+tree (usually sometime in the next 24 hours) and sent to Linus during
+the next merge window (or sooner if it is a bug fix), however if
+problems are discovered then the patch may be dropped or reverted.
 
+You may get further e-mails resulting from automated or manual testing
+and review of the tree, please engage with people reporting problems and
+send followup patches addressing any issues that are reported if needed.
 
+If any updates are required or you are submitting further changes they
+should be sent as incremental updates against current git, existing
+patches will not be replaced.
+
+Please add any relevant lists and maintainers to the CCs when replying
+to this mail.
+
+Thanks,
+Mark
