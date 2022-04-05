@@ -2,94 +2,201 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 02E33C4167B
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 21:04:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4CF0EC4167E
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 21:04:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345651AbiDEVDF (ORCPT
+        id S1346503AbiDEVD2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 17:03:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46592 "EHLO
+        Tue, 5 Apr 2022 17:03:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60370 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1447329AbiDEPqS (ORCPT
+        with ESMTP id S1443774AbiDEPkR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 11:46:18 -0400
-Received: from mail-wm1-x34a.google.com (mail-wm1-x34a.google.com [IPv6:2a00:1450:4864:20::34a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A018D91565
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 07:21:08 -0700 (PDT)
-Received: by mail-wm1-x34a.google.com with SMTP id c125-20020a1c3583000000b0038e3f6e871aso4079128wma.8
-        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 07:21:08 -0700 (PDT)
+        Tue, 5 Apr 2022 11:40:17 -0400
+Received: from mail-pg1-x532.google.com (mail-pg1-x532.google.com [IPv6:2607:f8b0:4864:20::532])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6AB0D6D965
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 06:59:27 -0700 (PDT)
+Received: by mail-pg1-x532.google.com with SMTP id 66so3579744pga.12
+        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 06:59:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:message-id:mime-version:subject:from:to:cc;
-        bh=m3vxItKXnUJTINlJEdj+JcIaXhSRzpBzJXMN0Ho5eps=;
-        b=U/rCu1Z2QfNGh7871ZpZdN4wY/+Lh1Wn/I5Ha6phoPhUI3yRDteIeF+TZGPPbHc3Ai
-         BBQSP1z5sD9b+wklr0ZXpHQDx20253jpVlFYCml1fsblFB2Q243A1smZeVhSbDbYut0u
-         z7IHIiryy2SGXsp58k8lugrnBQWpAfe4UaUoIoiLNUWU6VPrmVSPjgLFVRjjlsnuviJh
-         g2vIiFzGHXI6KSMbAEIY16WttCiHeVwLMIUVeWsgv9R9tws08lP2EReN2yTioJTEcmxr
-         8dTXpSzd/4Gkzv5UDngHARkRMF8rXO+CxVkuFg6Z/c+C3T3Db9QNzs4r4LR3an7j0BQQ
-         bBuw==
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=E+SQkI8tVlI4jEqDsrvXcRJCPOkCJbjsifs7DqmFPQU=;
+        b=F1th3g0JNq7sNSNfOm0ALiRYeuYZM2iXOmWzzZJL+8GNoC4jx3HDXMgv+cj5iYZlMo
+         H/7Vti5RLX2H/SZEO1xcjNqYUiBJ4ZFzAXNDX5+cmapCQVVJZ/tw9dqf99Tvm2dfkPFI
+         oI5Y3NhvX3hHF11OtPMa1zhFIV2vwQLsnPhzC7Bsh2R+59S66USau1r0ipKudYrCS1dI
+         sWdqXhKfJvoGlmPFFKM3+dejVKIqmKp8DrIiH1DEggkRELlYVL2U9jqmH1+J29rHGoOk
+         lGvveewF/wHrHHvPGp3j+caIeriGg3q7SWo8YFiNz2/KR+rh27E9hDMVRv1Mp1j/v3l5
+         E3Fw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-        bh=m3vxItKXnUJTINlJEdj+JcIaXhSRzpBzJXMN0Ho5eps=;
-        b=dY+cr4XghiiNDq5E2AFWN39V7i2lWNwXnGfqAVwsLwohr/AdAMIHjCDtVin09lpR4X
-         MTFTjJSmlwa8vC7wDNVPjXfz11j4P4tE9TfqvhodTb6XAajuKY0gp1Bm+C9JjmcTTgdb
-         BboTdjOPdhGS/gUtiAW8FIenJ4SyVYQ1DU6Ens0bti0xtrCg1dvBW1KAxIRnw+Syln4a
-         aGgnZVQQ5ykKJfG/HWjbUCFKTi+vWyAOzQs/tKNNjrmsV2DUIxLVYYWjliF2C0v0txD7
-         8L1NJoEh/5Ks4swA2PkuQzgKDJqOdvig52XTp9M1BoCZIGjcNcafRku0quDyqMo7YtJD
-         lipg==
-X-Gm-Message-State: AOAM53120/yRG3VPGfYa7cDuI8ANawVrpoZWTS+dzkl6dZc3F2W+GrCM
-        N38W+URgQ6ORP4AwSxHyV8yLNcyeFwMNIut98mg=
-X-Google-Smtp-Source: ABdhPJwN5QFMBNAx6z4lJuIDDPZMY0wbemxu/vZ7lASsb58ZkL62PcBPIS8ol+sPOaL6RzriqT4z3Z6RSNAw7S3JJqU=
-X-Received: from sene.c.googlers.com ([fda3:e722:ac3:cc00:28:9cb1:c0a8:27c4])
- (user=sebastianene job=sendgmr) by 2002:a05:600c:4f87:b0:38c:adde:1d99 with
- SMTP id n7-20020a05600c4f8700b0038cadde1d99mr3320464wmq.16.1649168466877;
- Tue, 05 Apr 2022 07:21:06 -0700 (PDT)
-Date:   Tue,  5 Apr 2022 14:19:53 +0000
-Message-Id: <20220405141954.1489782-1-sebastianene@google.com>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.35.1.1094.g7c7d902a7c-goog
-Subject: [PATCH 0/2] Detect stalls on guest vCPUS
-From:   Sebastian Ene <sebastianene@google.com>
-To:     Wim Van Sebroeck <wim@linux-watchdog.org>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Rob Herring <robh+dt@kernel.org>
-Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-watchdog@vger.kernel.org, will@kernel.org,
-        qperret@google.com, maz@kernel.org,
-        Sebastian Ene <sebastianene@google.com>
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=E+SQkI8tVlI4jEqDsrvXcRJCPOkCJbjsifs7DqmFPQU=;
+        b=gj0mHyPR+yucDStvCWkGgquZMpQtdFLOqtx+aKzojyg43dUOhay5t2UdFcoCFuNM53
+         wbODMZOQA2XQxU74El/XeJ3qSbtwyWMbmopGX1VboaiaYXNWw6kN512RxfQunT+kHuEf
+         Xihw7EdiqCPstyxBudzZ0/iLxcvDEMfbkqclazb7uNcn5W7g0P13y9TDh/TP2pveUf1q
+         kiH+d1mRKEbEDwljr89vBe2jHJcA/9vIjOm3I6qoWUdmybrudatoL7MP1MBfM1U5UOnS
+         gcwC7dpW45f7698g2BboiAX/0Gs1xlReNDZHtIWx9NQY4B31XAwyeJkQDfUyX3MVgYxc
+         B8xg==
+X-Gm-Message-State: AOAM5315N88FkQwos5GsJ6RGQS3gs41W0pi7HNfJes48h0t6mtzQtrnv
+        FFRkVHzctO2gCuUFvJhz68AK
+X-Google-Smtp-Source: ABdhPJyDpYxf/V8Kk/gaKC49XkK63Vb4EcJoGHtj0kKmpW/eoGeklX0IKjacsqaCE818+pL8lMiBMw==
+X-Received: by 2002:a63:ea51:0:b0:380:7c35:188e with SMTP id l17-20020a63ea51000000b003807c35188emr2990713pgk.607.1649167166725;
+        Tue, 05 Apr 2022 06:59:26 -0700 (PDT)
+Received: from localhost.localdomain ([59.92.98.98])
+        by smtp.gmail.com with ESMTPSA id u14-20020a056a00124e00b004fab8f3245fsm16785402pfi.149.2022.04.05.06.59.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 05 Apr 2022 06:59:26 -0700 (PDT)
+From:   Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+To:     gregkh@linuxfoundation.org
+Cc:     linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        elder@linaro.org, mhi@lists.linux.dev, quic_hemantk@quicinc.com,
+        quic_bbhatt@quicinc.com, quic_jhugo@quicinc.com,
+        bjorn.andersson@linaro.org, dmitry.baryshkov@linaro.org,
+        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+Subject: [PATCH 16/18] bus: mhi: ep: Add support for queueing SKBs to the host
+Date:   Tue,  5 Apr 2022 19:27:52 +0530
+Message-Id: <20220405135754.6622-17-manivannan.sadhasivam@linaro.org>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220405135754.6622-1-manivannan.sadhasivam@linaro.org>
+References: <20220405135754.6622-1-manivannan.sadhasivam@linaro.org>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This adds a mechanism to detect stalls on the guest vCPUS by creating a
-per CPU hrtimer which periodically 'pets' the host backend driver.
+Add support for queueing SKBs to the host over the transfer ring of the
+relevant channel. The mhi_ep_queue_skb() API will be used by the client
+networking drivers to queue the SKBs to the host over MHI bus.
 
-This device driver acts as a soft lockup detector by relying on the host
-backend driver to measure the elapesed time between subsequent 'pet' events.
-If the elapsed time doesn't match an expected value, the backend driver
-decides that the guest vCPU is locked and resets the guest. The host
-backend driver takes into account the time that the guest is not
-running. The communication with the backend driver is done through MMIO
-and the register layout of the virtual watchdog is described as part of
-the backend driver changes.
+The host will add ring elements to the transfer ring periodically for
+the device and the device will write SKBs to the ring elements. If a
+single SKB doesn't fit in a ring element (TRE), it will be placed in
+multiple ring elements and the overflow event will be sent for all ring
+elements except the last one. For the last ring element, the EOT event
+will be sent indicating the packet boundary.
 
-The host backend driver is implemented as part of:
-https://chromium-review.googlesource.com/c/chromiumos/platform/crosvm/+/3548817
+Reviewed-by: Alex Elder <elder@linaro.org>
+Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+---
+ drivers/bus/mhi/ep/main.c | 82 +++++++++++++++++++++++++++++++++++++++
+ include/linux/mhi_ep.h    |  9 +++++
+ 2 files changed, 91 insertions(+)
 
-Sebastian Ene (2):
-  dt-bindings: watchdog: Add qemu,vm-watchdog compatible
-  watchdog: Add a mechanism to detect stalls on guest vCPUs
-
- .../devicetree/bindings/watchdog/vm-wdt.yaml  |  44 ++++
- drivers/watchdog/Kconfig                      |   8 +
- drivers/watchdog/Makefile                     |   1 +
- drivers/watchdog/vm-wdt.c                     | 215 ++++++++++++++++++
- 4 files changed, 268 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/watchdog/vm-wdt.yaml
- create mode 100644 drivers/watchdog/vm-wdt.c
-
+diff --git a/drivers/bus/mhi/ep/main.c b/drivers/bus/mhi/ep/main.c
+index e2ed10b4a9d2..660d1e9791d3 100644
+--- a/drivers/bus/mhi/ep/main.c
++++ b/drivers/bus/mhi/ep/main.c
+@@ -434,6 +434,88 @@ static int mhi_ep_process_ch_ring(struct mhi_ep_ring *ring, struct mhi_ring_elem
+ 	return 0;
+ }
+ 
++/* TODO: Handle partially formed TDs */
++int mhi_ep_queue_skb(struct mhi_ep_device *mhi_dev, struct sk_buff *skb)
++{
++	struct mhi_ep_cntrl *mhi_cntrl = mhi_dev->mhi_cntrl;
++	struct mhi_ep_chan *mhi_chan = mhi_dev->dl_chan;
++	struct device *dev = &mhi_chan->mhi_dev->dev;
++	struct mhi_ring_element *el;
++	u32 buf_left, read_offset;
++	struct mhi_ep_ring *ring;
++	enum mhi_ev_ccs code;
++	void *read_addr;
++	u64 write_addr;
++	size_t tr_len;
++	u32 tre_len;
++	int ret;
++
++	buf_left = skb->len;
++	ring = &mhi_cntrl->mhi_chan[mhi_chan->chan].ring;
++
++	mutex_lock(&mhi_chan->lock);
++
++	do {
++		/* Don't process the transfer ring if the channel is not in RUNNING state */
++		if (mhi_chan->state != MHI_CH_STATE_RUNNING) {
++			dev_err(dev, "Channel not available\n");
++			ret = -ENODEV;
++			goto err_exit;
++		}
++
++		if (mhi_ep_queue_is_empty(mhi_dev, DMA_FROM_DEVICE)) {
++			dev_err(dev, "TRE not available!\n");
++			ret = -ENOSPC;
++			goto err_exit;
++		}
++
++		el = &ring->ring_cache[ring->rd_offset];
++		tre_len = MHI_TRE_DATA_GET_LEN(el);
++
++		tr_len = min(buf_left, tre_len);
++		read_offset = skb->len - buf_left;
++		read_addr = skb->data + read_offset;
++		write_addr = MHI_TRE_DATA_GET_PTR(el);
++
++		dev_dbg(dev, "Writing %zd bytes to channel (%u)\n", tr_len, ring->ch_id);
++		ret = mhi_cntrl->write_to_host(mhi_cntrl, read_addr, write_addr, tr_len);
++		if (ret < 0) {
++			dev_err(dev, "Error writing to the channel\n");
++			goto err_exit;
++		}
++
++		buf_left -= tr_len;
++		/*
++		 * For all TREs queued by the host for DL channel, only the EOT flag will be set.
++		 * If the packet doesn't fit into a single TRE, send the OVERFLOW event to
++		 * the host so that the host can adjust the packet boundary to next TREs. Else send
++		 * the EOT event to the host indicating the packet boundary.
++		 */
++		if (buf_left)
++			code = MHI_EV_CC_OVERFLOW;
++		else
++			code = MHI_EV_CC_EOT;
++
++		ret = mhi_ep_send_completion_event(mhi_cntrl, ring, el, tr_len, code);
++		if (ret) {
++			dev_err(dev, "Error sending transfer completion event\n");
++			goto err_exit;
++		}
++
++		mhi_ep_ring_inc_index(ring);
++	} while (buf_left);
++
++	mutex_unlock(&mhi_chan->lock);
++
++	return 0;
++
++err_exit:
++	mutex_unlock(&mhi_chan->lock);
++
++	return ret;
++}
++EXPORT_SYMBOL_GPL(mhi_ep_queue_skb);
++
+ static int mhi_ep_cache_host_cfg(struct mhi_ep_cntrl *mhi_cntrl)
+ {
+ 	size_t cmd_ctx_host_size, ch_ctx_host_size, ev_ctx_host_size;
+diff --git a/include/linux/mhi_ep.h b/include/linux/mhi_ep.h
+index eecc8f35d630..478aece17046 100644
+--- a/include/linux/mhi_ep.h
++++ b/include/linux/mhi_ep.h
+@@ -265,4 +265,13 @@ void mhi_ep_power_down(struct mhi_ep_cntrl *mhi_cntrl);
+  */
+ bool mhi_ep_queue_is_empty(struct mhi_ep_device *mhi_dev, enum dma_data_direction dir);
+ 
++/**
++ * mhi_ep_queue_skb - Send SKBs to host over MHI Endpoint
++ * @mhi_dev: Device associated with the DL channel
++ * @skb: SKBs to be queued
++ *
++ * Return: 0 if the SKBs has been sent successfully, a negative error code otherwise.
++ */
++int mhi_ep_queue_skb(struct mhi_ep_device *mhi_dev, struct sk_buff *skb);
++
+ #endif
 -- 
-2.35.1.1094.g7c7d902a7c-goog
+2.25.1
 
