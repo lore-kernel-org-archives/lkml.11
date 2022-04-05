@@ -2,98 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C9029C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:02:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8195CC46467
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:02:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1444046AbiDEWup (ORCPT
+        id S1448746AbiDEWvR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 18:50:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32972 "EHLO
+        Tue, 5 Apr 2022 18:51:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39730 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1573647AbiDET31 (ORCPT
+        with ESMTP id S1349086AbiDEJtG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 15:29:27 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B46B8BF000;
-        Tue,  5 Apr 2022 12:27:28 -0700 (PDT)
-Date:   Tue, 05 Apr 2022 19:27:26 -0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1649186847;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=SH++pPXt5/MXSBZwUFXzyKmchSB5rWCVJKOal0mJc68=;
-        b=qOYLmLAh6SrCv0U7WUKdx6kDqTdT45JSqFSK7l7WnGZEIQG8EH/o3+VOyTVKy36my+YN1u
-        yQNjG/UhjPr3JEsssUonnTR8ZX9hbs8QBiosXuBLn/SYadeG6fsixMIR4pXFA/UJ56zXIi
-        FBBjzEjKXmligf64RB9EuiIpzVwXQktYi7FiTO2qzpCPcJYlmYtzvezC7ycCW7P+ijPlq7
-        NtBbhhafIRMbftlDETAevYwRDDPrNf2wv+cdHw6r3+T/Mz26a875Of+LxPnQImWjXnBAf0
-        KhOMGHzsRKTZyErU2mwOMaUF907dXR22OZVnzop/0vaqjRldRdtshDjYG2sxjw==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1649186847;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=SH++pPXt5/MXSBZwUFXzyKmchSB5rWCVJKOal0mJc68=;
-        b=7QfmmMCDW0T1IbXkwHXAGX9/cOJHP30DP6rOz6x5yGbr8ZySm7EVJBlgDbXsyUUuKRRkAA
-        r4D4Yj9GACKseZAw==
-From:   "tip-bot2 for Peter Gonda" <tip-bot2@linutronix.de>
-Sender: tip-bot2@linutronix.de
-Reply-to: linux-kernel@vger.kernel.org
-To:     linux-tip-commits@vger.kernel.org
-Subject: [tip: x86/sev] x86/sev-es: Replace open-coded hlt-loop with
- sev_es_terminate()
-Cc:     Peter Gonda <pgonda@google.com>, Borislav Petkov <bp@suse.de>,
-        Joerg Roedel <jroedel@suse.de>, x86@kernel.org,
-        linux-kernel@vger.kernel.org
-In-Reply-To: <20220317211913.1397427-1-pgonda@google.com>
-References: <20220317211913.1397427-1-pgonda@google.com>
+        Tue, 5 Apr 2022 05:49:06 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2F2DA9958;
+        Tue,  5 Apr 2022 02:40:28 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 64546B81B14;
+        Tue,  5 Apr 2022 09:40:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D3007C385A1;
+        Tue,  5 Apr 2022 09:40:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649151626;
+        bh=/fOvHyfuNZxEjQinF8Uu0DrUexcyDz192XnxFGsCerg=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=mtxXlqVzXztEh0xDI+kuXGQUTPCNAp7vLwVEtUl04dmxSHAY8GbLtiOsbrxR8MDBG
+         EzuzEfq0H2vgmRaIfoWvenE64HLpxAsYxMIaBpoywm0IEd+D1lAIrviITWJKc7nKXd
+         N0nQLjGHxNnoGKG08wldJcq2uS890P8MfEP5bZWk=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, John Garry <john.garry@huawei.com>,
+        Jack Wang <jinpu.wang@ionos.com>,
+        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 482/913] scsi: pm8001: Fix payload initialization in pm80xx_set_thermal_config()
+Date:   Tue,  5 Apr 2022 09:25:44 +0200
+Message-Id: <20220405070354.303822296@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Message-ID: <164918684623.389.10520041359552585691.tip-bot2@tip-bot2>
-Robot-ID: <tip-bot2@linutronix.de>
-Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The following commit has been merged into the x86/sev branch of tip:
+From: Damien Le Moal <damien.lemoal@opensource.wdc.com>
 
-Commit-ID:     453e580abcdb53f688d5711c68bec96bea35430d
-Gitweb:        https://git.kernel.org/tip/453e580abcdb53f688d5711c68bec96bea35430d
-Author:        Peter Gonda <pgonda@google.com>
-AuthorDate:    Thu, 17 Mar 2022 14:19:13 -07:00
-Committer:     Borislav Petkov <bp@suse.de>
-CommitterDate: Tue, 05 Apr 2022 19:33:55 +02:00
+[ Upstream commit bb225b12dbcc82d53d637d10b8d70b64494f8c16 ]
 
-x86/sev-es: Replace open-coded hlt-loop with sev_es_terminate()
+The fields of the set_ctrl_cfg_req structure have the __le32 type, so use
+cpu_to_le32() to assign them. This removes the sparse warnings:
 
-Replace the halt loop in handle_vc_boot_ghcb() with an
-sev_es_terminate(). The HLT gives the system no indication the guest is
-unhappy. The termination request will signal there was an error during
-VC handling during boot.
+warning: incorrect type in assignment (different base types)
+    expected restricted __le32
+    got unsigned int
 
-Signed-off-by: Peter Gonda <pgonda@google.com>
-Signed-off-by: Borislav Petkov <bp@suse.de>
-Reviewed-by: Joerg Roedel <jroedel@suse.de>
-Link: https://lore.kernel.org/r/20220317211913.1397427-1-pgonda@google.com
+Link: https://lore.kernel.org/r/20220220031810.738362-8-damien.lemoal@opensource.wdc.com
+Fixes: 842784e0d15b ("pm80xx: Update For Thermal Page Code")
+Fixes: f5860992db55 ("[SCSI] pm80xx: Added SPCv/ve specific hardware functionalities and relevant changes in common files")
+Reviewed-by: John Garry <john.garry@huawei.com>
+Reviewed-by: Jack Wang <jinpu.wang@ionos.com>
+Signed-off-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/kernel/sev.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ drivers/scsi/pm8001/pm80xx_hwi.c | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
 
-diff --git a/arch/x86/kernel/sev.c b/arch/x86/kernel/sev.c
-index e6d316a..ae87fbf 100644
---- a/arch/x86/kernel/sev.c
-+++ b/arch/x86/kernel/sev.c
-@@ -1425,6 +1425,5 @@ bool __init handle_vc_boot_ghcb(struct pt_regs *regs)
- fail:
- 	show_regs(regs);
+diff --git a/drivers/scsi/pm8001/pm80xx_hwi.c b/drivers/scsi/pm8001/pm80xx_hwi.c
+index 11887ac8ad0f..ed6b5e7c2136 100644
+--- a/drivers/scsi/pm8001/pm80xx_hwi.c
++++ b/drivers/scsi/pm8001/pm80xx_hwi.c
+@@ -1202,9 +1202,11 @@ pm80xx_set_thermal_config(struct pm8001_hba_info *pm8001_ha)
+ 	else
+ 		page_code = THERMAL_PAGE_CODE_8H;
  
--	while (true)
--		halt();
-+	sev_es_terminate(GHCB_SEV_ES_GEN_REQ);
- }
+-	payload.cfg_pg[0] = (THERMAL_LOG_ENABLE << 9) |
+-				(THERMAL_ENABLE << 8) | page_code;
+-	payload.cfg_pg[1] = (LTEMPHIL << 24) | (RTEMPHIL << 8);
++	payload.cfg_pg[0] =
++		cpu_to_le32((THERMAL_LOG_ENABLE << 9) |
++			    (THERMAL_ENABLE << 8) | page_code);
++	payload.cfg_pg[1] =
++		cpu_to_le32((LTEMPHIL << 24) | (RTEMPHIL << 8));
+ 
+ 	pm8001_dbg(pm8001_ha, DEV,
+ 		   "Setting up thermal config. cfg_pg 0 0x%x cfg_pg 1 0x%x\n",
+-- 
+2.34.1
+
+
+
