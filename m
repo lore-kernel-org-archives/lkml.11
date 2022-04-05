@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ABB61C43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E42E5C4167B
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 09:12:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241015AbiDEJG5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 05:06:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34702 "EHLO
+        id S241479AbiDEJHF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 05:07:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34762 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239254AbiDEIT4 (ORCPT
+        with ESMTP id S239282AbiDEIT5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:19:56 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1CF37DE34;
-        Tue,  5 Apr 2022 01:10:41 -0700 (PDT)
+        Tue, 5 Apr 2022 04:19:57 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67EA67EB09;
+        Tue,  5 Apr 2022 01:10:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 78A95B81B90;
-        Tue,  5 Apr 2022 08:10:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DCE78C385A0;
-        Tue,  5 Apr 2022 08:10:38 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0FC25B81A32;
+        Tue,  5 Apr 2022 08:10:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 57839C385A1;
+        Tue,  5 Apr 2022 08:10:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649146239;
-        bh=mNrzE2y4jaCJIXuG3CMdKKY1QnNmRPTne+P4BnMs2vQ=;
+        s=korg; t=1649146244;
+        bh=Hu4dbKNy8spOcv0bYaIc3cooKjm8aFrqHqcPi00MxDw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=c8lW2pUaD/WY2bry+XgCTw6uCRQLO8BIOSLE4BCIL/Ty4XTS6RkWtc3CZzbm7xAX7
-         E25yp0+IcE/ik8FUUccrOVfRV9ZrDLcQfT6hyXaxucGeSRjxYDtuvEcWyU1Vysrduu
-         7an6LyRnaEttP9w+T2OY8M8SVVqbdjB6+razSzF8=
+        b=OBhuvqgZTp8KTYlXl4j0NaZOStJHrivHbGgOyNIQbRsQLVyV9IVESOzgwKyHTfs5b
+         CV3FzIV6eYEPWf2KaQ57WBl0QQKbgjYs/RYLRuKCAjyrOgoCzavFYQSWv6eP5RgUuY
+         JxJzUktBH7viRJ0vahrmJMcyRw7KphtHmmgAuqgM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Peter Rosin <peda@axentia.se>,
-        Wolfram Sang <wsa@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0692/1126] i2c: mux: demux-pinctrl: do not deactivate a master that is not active
-Date:   Tue,  5 Apr 2022 09:23:59 +0200
-Message-Id: <20220405070427.924835122@linuxfoundation.org>
+        stable@vger.kernel.org, Thomas Osterried <thomas@osterried.de>,
+        Duoming Zhou <duoming@zju.edu.cn>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 0694/1126] ax25: Fix refcount leaks caused by ax25_cb_del()
+Date:   Tue,  5 Apr 2022 09:24:01 +0200
+Message-Id: <20220405070427.981928238@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -48,50 +50,101 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Peter Rosin <peda@axentia.se>
+From: Duoming Zhou <duoming@zju.edu.cn>
 
-[ Upstream commit 1a22aabf20adf89cb216f566913196128766f25b ]
+[ Upstream commit 9fd75b66b8f68498454d685dc4ba13192ae069b0 ]
 
-Attempting to rollback the activation of the current master when
-the current master has not been activated is bad. priv->cur_chan
-and priv->cur_adap are both still zeroed out and the rollback
-may result in attempts to revert an of changeset that has not been
-applied and do result in calls to both del and put the zeroed out
-i2c_adapter. Maybe it crashes, or whatever, but it's bad in any
-case.
+The previous commit d01ffb9eee4a ("ax25: add refcount in ax25_dev to
+avoid UAF bugs") and commit feef318c855a ("ax25: fix UAF bugs of
+net_device caused by rebinding operation") increase the refcounts of
+ax25_dev and net_device in ax25_bind() and decrease the matching refcounts
+in ax25_kill_by_device() in order to prevent UAF bugs, but there are
+reference count leaks.
 
-Fixes: e9d1a0a41d44 ("i2c: mux: demux-pinctrl: Fix an error handling path in 'i2c_demux_pinctrl_probe()'")
-Signed-off-by: Peter Rosin <peda@axentia.se>
-Signed-off-by: Wolfram Sang <wsa@kernel.org>
+The root cause of refcount leaks is shown below:
+
+     (Thread 1)                      |      (Thread 2)
+ax25_bind()                          |
+ ...                                 |
+ ax25_addr_ax25dev()                 |
+  ax25_dev_hold()   //(1)            |
+  ...                                |
+ dev_hold_track()   //(2)            |
+ ...                                 | ax25_destroy_socket()
+                                     |  ax25_cb_del()
+                                     |   ...
+                                     |   hlist_del_init() //(3)
+                                     |
+                                     |
+     (Thread 3)                      |
+ax25_kill_by_device()                |
+ ...                                 |
+ ax25_for_each(s, &ax25_list) {      |
+  if (s->ax25_dev == ax25_dev) //(4) |
+   ...                               |
+
+Firstly, we use ax25_bind() to increase the refcount of ax25_dev in
+position (1) and increase the refcount of net_device in position (2).
+Then, we use ax25_cb_del() invoked by ax25_destroy_socket() to delete
+ax25_cb in hlist in position (3) before calling ax25_kill_by_device().
+Finally, the decrements of refcounts in ax25_kill_by_device() will not
+be executed, because no s->ax25_dev equals to ax25_dev in position (4).
+
+This patch adds decrements of refcounts in ax25_release() and use
+lock_sock() to do synchronization. If refcounts decrease in ax25_release(),
+the decrements of refcounts in ax25_kill_by_device() will not be
+executed and vice versa.
+
+Fixes: d01ffb9eee4a ("ax25: add refcount in ax25_dev to avoid UAF bugs")
+Fixes: 87563a043cef ("ax25: fix reference count leaks of ax25_dev")
+Fixes: feef318c855a ("ax25: fix UAF bugs of net_device caused by rebinding operation")
+Reported-by: Thomas Osterried <thomas@osterried.de>
+Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/i2c/muxes/i2c-demux-pinctrl.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ net/ax25/af_ax25.c | 14 +++++++++++---
+ 1 file changed, 11 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/i2c/muxes/i2c-demux-pinctrl.c b/drivers/i2c/muxes/i2c-demux-pinctrl.c
-index 5365199a31f4..f7a7405d4350 100644
---- a/drivers/i2c/muxes/i2c-demux-pinctrl.c
-+++ b/drivers/i2c/muxes/i2c-demux-pinctrl.c
-@@ -261,7 +261,7 @@ static int i2c_demux_pinctrl_probe(struct platform_device *pdev)
+diff --git a/net/ax25/af_ax25.c b/net/ax25/af_ax25.c
+index 6bd097180772..cf8847cfc664 100644
+--- a/net/ax25/af_ax25.c
++++ b/net/ax25/af_ax25.c
+@@ -98,8 +98,10 @@ static void ax25_kill_by_device(struct net_device *dev)
+ 			spin_unlock_bh(&ax25_list_lock);
+ 			lock_sock(sk);
+ 			s->ax25_dev = NULL;
+-			dev_put_track(ax25_dev->dev, &ax25_dev->dev_tracker);
+-			ax25_dev_put(ax25_dev);
++			if (sk->sk_socket) {
++				dev_put_track(ax25_dev->dev, &ax25_dev->dev_tracker);
++				ax25_dev_put(ax25_dev);
++			}
+ 			ax25_disconnect(s, ENETUNREACH);
+ 			release_sock(sk);
+ 			spin_lock_bh(&ax25_list_lock);
+@@ -979,14 +981,20 @@ static int ax25_release(struct socket *sock)
+ {
+ 	struct sock *sk = sock->sk;
+ 	ax25_cb *ax25;
++	ax25_dev *ax25_dev;
  
- 	err = device_create_file(&pdev->dev, &dev_attr_available_masters);
- 	if (err)
--		goto err_rollback;
-+		goto err_rollback_activation;
+ 	if (sk == NULL)
+ 		return 0;
  
- 	err = device_create_file(&pdev->dev, &dev_attr_current_master);
- 	if (err)
-@@ -271,8 +271,9 @@ static int i2c_demux_pinctrl_probe(struct platform_device *pdev)
+ 	sock_hold(sk);
+-	sock_orphan(sk);
+ 	lock_sock(sk);
++	sock_orphan(sk);
+ 	ax25 = sk_to_ax25(sk);
++	ax25_dev = ax25->ax25_dev;
++	if (ax25_dev) {
++		dev_put_track(ax25_dev->dev, &ax25_dev->dev_tracker);
++		ax25_dev_put(ax25_dev);
++	}
  
- err_rollback_available:
- 	device_remove_file(&pdev->dev, &dev_attr_available_masters);
--err_rollback:
-+err_rollback_activation:
- 	i2c_demux_deactivate_master(priv);
-+err_rollback:
- 	for (j = 0; j < i; j++) {
- 		of_node_put(priv->chan[j].parent_np);
- 		of_changeset_destroy(&priv->chan[j].chgset);
+ 	if (sk->sk_type == SOCK_SEQPACKET) {
+ 		switch (ax25->state) {
 -- 
 2.34.1
 
