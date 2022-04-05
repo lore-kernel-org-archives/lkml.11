@@ -2,42 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3428CC43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 06414C433F5
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:11:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356556AbiDEMJ5 (ORCPT
+        id S1356306AbiDEMJw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 08:09:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46822 "EHLO
+        Tue, 5 Apr 2022 08:09:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53834 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244720AbiDEIwf (ORCPT
+        with ESMTP id S244693AbiDEIwe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:52:35 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05B6B1A3A6;
-        Tue,  5 Apr 2022 01:42:44 -0700 (PDT)
+        Tue, 5 Apr 2022 04:52:34 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01690D8F4E;
+        Tue,  5 Apr 2022 01:42:04 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 950BD61003;
-        Tue,  5 Apr 2022 08:42:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A698DC385A1;
-        Tue,  5 Apr 2022 08:42:42 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8B1F1B81C15;
+        Tue,  5 Apr 2022 08:42:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D6CB0C385A1;
+        Tue,  5 Apr 2022 08:42:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649148163;
-        bh=XEw2Y6drUkp+hZx/0W0mg8thTAFr3EsviwmUE3IGpIg=;
+        s=korg; t=1649148122;
+        bh=bgJm6wH0LQOptKnK7GXaPPAhDXn78DplyNlwQZkCo08=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=F9bWElkzEQeMk6AibRF/05XJnJFIEKXilf07fnOCq9jFztc0/+pDbqQF/W8RcOaGn
-         5OdoSlzEwAU1N8mYYgzaw+dp2DRqrmoad3OwgoesRxhua6NeTnUVUuMrkDkciRz6Hx
-         gtztgUpT8/fackQEYl2aiDleGXIL7/0NGZBm3AMY=
+        b=ThAiFEGcpxZFgDgk7K5QyAmRfLQ+bs1BBNyA0z82tZPtWHz39VTWuzisUNDyXJWAo
+         fr4M7jBOm2pqJCbLfcgH3miuhlpmusBNSSoPZoJ+fK4mcY2YPSrnP25EyaTp+pAf7J
+         m6Ei8yUXujmF7HhRk35hiXyXPhZVU1zdhUjZzKTk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Joel Jaeschke <joel.jaeschke@gmail.com>,
-        Jens Axboe <axboe@kernel.dk>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0256/1017] io_uring: terminate manual loop iterator loop correctly for non-vecs
-Date:   Tue,  5 Apr 2022 09:19:29 +0200
-Message-Id: <20220405070401.862362471@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Marek Szyprowski <m.szyprowski@samsung.com>,
+        Chanwoo Choi <cw00.choi@samsung.com>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        Sam Protsenko <semen.protsenko@linaro.org>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 0242/1017] clocksource/drivers/exynos_mct: Refactor resources allocation
+Date:   Tue,  5 Apr 2022 09:19:15 +0200
+Message-Id: <20220405070401.441469213@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -49,46 +54,109 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jens Axboe <axboe@kernel.dk>
+From: Marek Szyprowski <m.szyprowski@samsung.com>
 
-[ Upstream commit 5e929367468c8f97cd1ffb0417316cecfebef94b ]
+[ Upstream commit 7cd925a8823d16de5614d3f0aabea9948747accd ]
 
-The fix for not advancing the iterator if we're using fixed buffers is
-broken in that it can hit a condition where we don't terminate the loop.
-This results in io-wq looping forever, asking to read (or write) 0 bytes
-for every subsequent loop.
+Move interrupts allocation from exynos4_timer_resources() into separate
+function together with the interrupt number parsing code from
+mct_init_dt(), so the code for managing interrupts is kept together.
+While touching exynos4_timer_resources() function, move of_iomap() to it.
+No functional changes.
 
-Reported-by: Joel Jaeschke <joel.jaeschke@gmail.com>
-Link: https://github.com/axboe/liburing/issues/549
-Fixes: 16c8d2df7ec0 ("io_uring: ensure symmetry in handling iter types in loop_rw_iter()")
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Signed-off-by: Marek Szyprowski <m.szyprowski@samsung.com>
+Reviewed-by: Chanwoo Choi <cw00.choi@samsung.com>
+Tested-by: Chanwoo Choi <cw00.choi@samsung.com>
+Reviewed-by: Krzysztof Kozlowski <krzk@kernel.org>
+Signed-off-by: Sam Protsenko <semen.protsenko@linaro.org>
+Link: https://lore.kernel.org/r/20211101193531.15078-2-semen.protsenko@linaro.org
+Signed-off-by: Daniel Lezcano <daniel.lezcano@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/io_uring.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ drivers/clocksource/exynos_mct.c | 50 +++++++++++++++++++-------------
+ 1 file changed, 30 insertions(+), 20 deletions(-)
 
-diff --git a/fs/io_uring.c b/fs/io_uring.c
-index 974f6fb327e7..2d25c51b8a5d 100644
---- a/fs/io_uring.c
-+++ b/fs/io_uring.c
-@@ -3350,13 +3350,15 @@ static ssize_t loop_rw_iter(int rw, struct io_kiocb *req, struct iov_iter *iter)
- 				ret = nr;
- 			break;
- 		}
-+		ret += nr;
- 		if (!iov_iter_is_bvec(iter)) {
- 			iov_iter_advance(iter, nr);
- 		} else {
--			req->rw.len -= nr;
- 			req->rw.addr += nr;
-+			req->rw.len -= nr;
-+			if (!req->rw.len)
-+				break;
- 		}
--		ret += nr;
- 		if (nr != iovec.iov_len)
- 			break;
- 	}
+diff --git a/drivers/clocksource/exynos_mct.c b/drivers/clocksource/exynos_mct.c
+index 5e3e96d3d1b9..857cf12ebe57 100644
+--- a/drivers/clocksource/exynos_mct.c
++++ b/drivers/clocksource/exynos_mct.c
+@@ -504,11 +504,14 @@ static int exynos4_mct_dying_cpu(unsigned int cpu)
+ 	return 0;
+ }
+ 
+-static int __init exynos4_timer_resources(struct device_node *np, void __iomem *base)
++static int __init exynos4_timer_resources(struct device_node *np)
+ {
+-	int err, cpu;
+ 	struct clk *mct_clk, *tick_clk;
+ 
++	reg_base = of_iomap(np, 0);
++	if (!reg_base)
++		panic("%s: unable to ioremap mct address space\n", __func__);
++
+ 	tick_clk = of_clk_get_by_name(np, "fin_pll");
+ 	if (IS_ERR(tick_clk))
+ 		panic("%s: unable to determine tick clock rate\n", __func__);
+@@ -519,9 +522,27 @@ static int __init exynos4_timer_resources(struct device_node *np, void __iomem *
+ 		panic("%s: unable to retrieve mct clock instance\n", __func__);
+ 	clk_prepare_enable(mct_clk);
+ 
+-	reg_base = base;
+-	if (!reg_base)
+-		panic("%s: unable to ioremap mct address space\n", __func__);
++	return 0;
++}
++
++static int __init exynos4_timer_interrupts(struct device_node *np,
++					   unsigned int int_type)
++{
++	int nr_irqs, i, err, cpu;
++
++	mct_int_type = int_type;
++
++	/* This driver uses only one global timer interrupt */
++	mct_irqs[MCT_G0_IRQ] = irq_of_parse_and_map(np, MCT_G0_IRQ);
++
++	/*
++	 * Find out the number of local irqs specified. The local
++	 * timer irqs are specified after the four global timer
++	 * irqs are specified.
++	 */
++	nr_irqs = of_irq_count(np);
++	for (i = MCT_L0_IRQ; i < nr_irqs; i++)
++		mct_irqs[i] = irq_of_parse_and_map(np, i);
+ 
+ 	if (mct_int_type == MCT_INT_PPI) {
+ 
+@@ -581,24 +602,13 @@ static int __init exynos4_timer_resources(struct device_node *np, void __iomem *
+ 
+ static int __init mct_init_dt(struct device_node *np, unsigned int int_type)
+ {
+-	u32 nr_irqs, i;
+ 	int ret;
+ 
+-	mct_int_type = int_type;
+-
+-	/* This driver uses only one global timer interrupt */
+-	mct_irqs[MCT_G0_IRQ] = irq_of_parse_and_map(np, MCT_G0_IRQ);
+-
+-	/*
+-	 * Find out the number of local irqs specified. The local
+-	 * timer irqs are specified after the four global timer
+-	 * irqs are specified.
+-	 */
+-	nr_irqs = of_irq_count(np);
+-	for (i = MCT_L0_IRQ; i < nr_irqs; i++)
+-		mct_irqs[i] = irq_of_parse_and_map(np, i);
++	ret = exynos4_timer_resources(np);
++	if (ret)
++		return ret;
+ 
+-	ret = exynos4_timer_resources(np, of_iomap(np, 0));
++	ret = exynos4_timer_interrupts(np, int_type);
+ 	if (ret)
+ 		return ret;
+ 
 -- 
 2.34.1
 
