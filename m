@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 45F25C3527A
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2FC14C41535
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:00:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233733AbiDEH5b (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 03:57:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34098 "EHLO
+        id S233664AbiDEH5W (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 03:57:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47246 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232767AbiDEHrI (ORCPT
+        with ESMTP id S232846AbiDEHrM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 03:47:08 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9AA429AE4B;
-        Tue,  5 Apr 2022 00:42:59 -0700 (PDT)
+        Tue, 5 Apr 2022 03:47:12 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F7549BAEC;
+        Tue,  5 Apr 2022 00:43:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id CCA56CE1BDB;
-        Tue,  5 Apr 2022 07:42:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E45DDC34110;
-        Tue,  5 Apr 2022 07:42:55 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0B17B616EA;
+        Tue,  5 Apr 2022 07:43:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 19CE4C340EE;
+        Tue,  5 Apr 2022 07:43:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649144576;
-        bh=FTdr9P169BdkCBRchSv5Z3/8Y8m9sOPzKMm0EvuZZRQ=;
+        s=korg; t=1649144587;
+        bh=4iUmOk5/GozwDpgKi7hLyUraN9Mogw+oxDftcgffzLY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=u/rd3mo3lX7/Ymj+J/+2c0YhheSlREXisrK49+ZMAJHgq+MyfHe2U1VO5z0MTpXSJ
-         bNOFgpQem5h313zsBd7FWaxm4apQ2Wir3+N7rr9Rha7rExYqUgKOdKQ+7fnXAFSgu0
-         i09Hrxcea04RHEVlMl0sNvYAI/bS+epC0TFAr7ig=
+        b=PgQdAV8tfFGFou52P6HqvILeclFd3xTGE9jlRkkMQUJKveA5e/kKgmlB4heHd6SHC
+         6Y40IMBYoMIkdVZl5lLL3u3s0z1wiSWUFcVarW66SFZvH0IuxX04YZjYI5+IPEZ3m/
+         zi+tYjK1aiTSXKr5XwBOlYfiU/Htg/oGMGmmMPhc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Xiaomeng Tong <xiam0nd.tong@gmail.com>,
-        Shyam Prasad N <sprasad@microsoft.com>,
-        Steve French <stfrench@microsoft.com>
-Subject: [PATCH 5.17 0093/1126] cifs: fix incorrect use of list iterator after the loop
-Date:   Tue,  5 Apr 2022 09:14:00 +0200
-Message-Id: <20220405070410.297721725@linuxfoundation.org>
+        stable@vger.kernel.org, Juhyung Park <qkrwngud825@gmail.com>,
+        Chao Yu <chao@kernel.org>, Jaegeuk Kim <jaegeuk@kernel.org>
+Subject: [PATCH 5.17 0060/1126] f2fs: quota: fix loop condition at f2fs_quota_sync()
+Date:   Tue,  5 Apr 2022 09:13:27 +0200
+Message-Id: <20220405070409.331238945@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -49,50 +48,95 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xiaomeng Tong <xiam0nd.tong@gmail.com>
+From: Juhyung Park <qkrwngud825@gmail.com>
 
-commit a96c94481f5993eac2271f9fb4d009b7dc076c24 upstream.
+commit 680af5b824a52faa819167628665804a14f0e0df upstream.
 
-The bug is here:
-if (!tcon) {
-	resched = true;
-	list_del_init(&ses->rlist);
-	cifs_put_smb_ses(ses);
+cnt should be passed to sb_has_quota_active() instead of type to check
+active quota properly.
 
-Because the list_for_each_entry() never exits early (without any
-break/goto/return inside the loop), the iterator 'ses' after the
-loop will always be an pointer to a invalid struct containing the
-HEAD (&pserver->smb_ses_list). As a result, the uses of 'ses' above
-will lead to a invalid memory access.
+Moreover, when the type is -1, the compiler with enough inline knowledge
+can discard sb_has_quota_active() check altogether, causing a NULL pointer
+dereference at the following inode_lock(dqopt->files[cnt]):
 
-The original intention should have been to walk each entry 'ses' in
-'&tmp_ses_list', delete '&ses->rlist' and put 'ses'. So fix it with
-a list_for_each_entry_safe().
+[    2.796010] Unable to handle kernel NULL pointer dereference at virtual address 00000000000000a0
+[    2.796024] Mem abort info:
+[    2.796025]   ESR = 0x96000005
+[    2.796028]   EC = 0x25: DABT (current EL), IL = 32 bits
+[    2.796029]   SET = 0, FnV = 0
+[    2.796031]   EA = 0, S1PTW = 0
+[    2.796032] Data abort info:
+[    2.796034]   ISV = 0, ISS = 0x00000005
+[    2.796035]   CM = 0, WnR = 0
+[    2.796046] user pgtable: 4k pages, 39-bit VAs, pgdp=00000003370d1000
+[    2.796048] [00000000000000a0] pgd=0000000000000000, pud=0000000000000000
+[    2.796051] Internal error: Oops: 96000005 [#1] PREEMPT SMP
+[    2.796056] CPU: 7 PID: 640 Comm: f2fs_ckpt-259:7 Tainted: G S                5.4.179-arter97-r8-64666-g2f16e087f9d8 #1
+[    2.796057] Hardware name: Qualcomm Technologies, Inc. Lahaina MTP lemonadep (DT)
+[    2.796059] pstate: 80c00005 (Nzcv daif +PAN +UAO)
+[    2.796065] pc : down_write+0x28/0x70
+[    2.796070] lr : f2fs_quota_sync+0x100/0x294
+[    2.796071] sp : ffffffa3f48ffc30
+[    2.796073] x29: ffffffa3f48ffc30 x28: 0000000000000000
+[    2.796075] x27: ffffffa3f6d718b8 x26: ffffffa415fe9d80
+[    2.796077] x25: ffffffa3f7290048 x24: 0000000000000001
+[    2.796078] x23: 0000000000000000 x22: ffffffa3f7290000
+[    2.796080] x21: ffffffa3f72904a0 x20: ffffffa3f7290110
+[    2.796081] x19: ffffffa3f77a9800 x18: ffffffc020aae038
+[    2.796083] x17: ffffffa40e38e040 x16: ffffffa40e38e6d0
+[    2.796085] x15: ffffffa40e38e6cc x14: ffffffa40e38e6d0
+[    2.796086] x13: 00000000000004f6 x12: 00162c44ff493000
+[    2.796088] x11: 0000000000000400 x10: ffffffa40e38c948
+[    2.796090] x9 : 0000000000000000 x8 : 00000000000000a0
+[    2.796091] x7 : 0000000000000000 x6 : 0000d1060f00002a
+[    2.796093] x5 : ffffffa3f48ff718 x4 : 000000000000000d
+[    2.796094] x3 : 00000000060c0000 x2 : 0000000000000001
+[    2.796096] x1 : 0000000000000000 x0 : 00000000000000a0
+[    2.796098] Call trace:
+[    2.796100]  down_write+0x28/0x70
+[    2.796102]  f2fs_quota_sync+0x100/0x294
+[    2.796104]  block_operations+0x120/0x204
+[    2.796106]  f2fs_write_checkpoint+0x11c/0x520
+[    2.796107]  __checkpoint_and_complete_reqs+0x7c/0xd34
+[    2.796109]  issue_checkpoint_thread+0x6c/0xb8
+[    2.796112]  kthread+0x138/0x414
+[    2.796114]  ret_from_fork+0x10/0x18
+[    2.796117] Code: aa0803e0 aa1f03e1 52800022 aa0103e9 (c8e97d02)
+[    2.796120] ---[ end trace 96e942e8eb6a0b53 ]---
+[    2.800116] Kernel panic - not syncing: Fatal exception
+[    2.800120] SMP: stopping secondary CPUs
 
-Cc: stable@vger.kernel.org # 5.17
-Fixes: 3663c9045f51a ("cifs: check reconnects for channels of active tcons too")
-Signed-off-by: Xiaomeng Tong <xiam0nd.tong@gmail.com>
-Reviewed-by: Shyam Prasad N <sprasad@microsoft.com>
-Signed-off-by: Steve French <stfrench@microsoft.com>
+Fixes: 9de71ede81e6 ("f2fs: quota: fix potential deadlock")
+Cc: <stable@vger.kernel.org> # v5.15+
+Signed-off-by: Juhyung Park <qkrwngud825@gmail.com>
+Reviewed-by: Chao Yu <chao@kernel.org>
+Signed-off-by: Jaegeuk Kim <jaegeuk@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/cifs/smb2pdu.c |    6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ fs/f2fs/super.c |    6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
---- a/fs/cifs/smb2pdu.c
-+++ b/fs/cifs/smb2pdu.c
-@@ -3858,8 +3858,10 @@ void smb2_reconnect_server(struct work_s
- 	tcon = kzalloc(sizeof(struct cifs_tcon), GFP_KERNEL);
- 	if (!tcon) {
- 		resched = true;
--		list_del_init(&ses->rlist);
--		cifs_put_smb_ses(ses);
-+		list_for_each_entry_safe(ses, ses2, &tmp_ses_list, rlist) {
-+			list_del_init(&ses->rlist);
-+			cifs_put_smb_ses(ses);
-+		}
- 		goto done;
- 	}
+--- a/fs/f2fs/super.c
++++ b/fs/f2fs/super.c
+@@ -2688,7 +2688,7 @@ int f2fs_quota_sync(struct super_block *
+ 	struct f2fs_sb_info *sbi = F2FS_SB(sb);
+ 	struct quota_info *dqopt = sb_dqopt(sb);
+ 	int cnt;
+-	int ret;
++	int ret = 0;
+ 
+ 	/*
+ 	 * Now when everything is written we can discard the pagecache so
+@@ -2699,8 +2699,8 @@ int f2fs_quota_sync(struct super_block *
+ 		if (type != -1 && cnt != type)
+ 			continue;
+ 
+-		if (!sb_has_quota_active(sb, type))
+-			return 0;
++		if (!sb_has_quota_active(sb, cnt))
++			continue;
+ 
+ 		inode_lock(dqopt->files[cnt]);
  
 
 
