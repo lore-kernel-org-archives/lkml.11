@@ -2,41 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B5A95C4167E
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:57:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 05743C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:57:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245581AbiDEI4X (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 04:56:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57652 "EHLO
+        id S1343567AbiDEI5E (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 04:57:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41720 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233848AbiDEILO (ORCPT
+        with ESMTP id S235027AbiDEIOp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:11:14 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEF0E6D958;
-        Tue,  5 Apr 2022 01:02:55 -0700 (PDT)
+        Tue, 5 Apr 2022 04:14:45 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57F3D9D0E1;
+        Tue,  5 Apr 2022 01:03:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 05ACFB81B7F;
-        Tue,  5 Apr 2022 08:02:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4B51BC385A0;
-        Tue,  5 Apr 2022 08:02:52 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9B26F61684;
+        Tue,  5 Apr 2022 08:03:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A5E5BC385A3;
+        Tue,  5 Apr 2022 08:03:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649145772;
-        bh=4MTiWijwlGUxq4wU1Rr947Nq2Su7l0ulz9oWKLVR2/Y=;
+        s=korg; t=1649145795;
+        bh=k43HI1oa+1ay+oQjwrj4y1FFW04YWbKgIhD+6XlwZdk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GyCqO+JLzz4pBHS8rO9puXFe3AehkhIkJC+j5xgWGnDxK20zl+g9RuHQ+UdluuP+G
-         LApGGq+1jKrv0lFW56uKajZI2hUFNJKl4AZs78VLTwOihVCBCTRTSqw6lfX1NOzQ22
-         G7XgI1OQ/iEyid3+k+lRY77tbiKASeKgN8NarqJQ=
+        b=tQTFSQ/RioE/keFYc6rAfshcuiwf8WZPKLQ5ntX6GTFdicRImtJReBohnYaUToybr
+         bdomr0XOV1fv3EmbJL1BzKimvCxO3G3JE2H7rDjYYTLPyfwsy+NhszBY2Ybhz08IVt
+         BNZ/4ozoke63njsGcb3NzaoYkdlRkj5J4ZkTyiTA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Lorenzo Bianconi <lorenzo@kernel.org>,
-        Felix Fietkau <nbd@nbd.name>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0507/1126] mt76: mt7921s: fix a possible memory leak in mt7921_load_patch
-Date:   Tue,  5 Apr 2022 09:20:54 +0200
-Message-Id: <20220405070422.509561156@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        =?UTF-8?q?Alex=20Benn=C3=A9e?= <alex.bennee@linaro.org>,
+        Ben Widawsky <ben.widawsky@intel.com>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 0532/1126] cxl/regs: Fix size of CXL Capability Header Register
+Date:   Tue,  5 Apr 2022 09:21:19 +0200
+Message-Id: <20220405070423.246673251@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -48,39 +53,69 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lorenzo Bianconi <lorenzo@kernel.org>
+From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 
-[ Upstream commit 11005b18f453aa192d035d410c11d07edcba5a45 ]
+[ Upstream commit 74b0fe80409733055971bbfaf33c80a33fddeeb3 ]
 
-Always release fw data at the end of mt7921_load_patch routine.
+In CXL 2.0, 8.2.5.1 CXL Capability Header Register: this register
+is given as 32 bits.
 
-Fixes: 78b217580c509 ("mt76: mt7921s: fix bus hang with wrong privilege")
-Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
-Signed-off-by: Felix Fietkau <nbd@nbd.name>
+8.2.3 which covers the CXL 2.0 Component registers, including the
+CXL Capability Header Register states that access restrictions
+specified in Section 8.2.2 apply.
+
+8.2.2 includes:
+* A 32 bit register shall be accessed as a 4 Byte quantity.
+...
+If these rules are not followed, the behavior is undefined.
+
+Discovered during review of CXL QEMU emulation. Alex Bennée pointed
+out there was a comment saying that 4 byte registers must be read
+with a 4 byte read, but 8 byte reads were being emulated.
+
+https://lore.kernel.org/qemu-devel/87bkzyd3c7.fsf@linaro.org/
+
+Fixing that, led to this code failing. Whilst a given hardware
+implementation 'might' work with an 8 byte read, it should not be relied
+upon. The QEMU emulation v5 will return 0 and log the wrong access width.
+
+The code moved, so one fixes tag for where this will directly apply and
+also a reference to the earlier introduction of the code for backports.
+
+Fixes: 0f06157e0135 ("cxl/core: Move register mapping infrastructure")
+Fixes: 08422378c4ad ("cxl/pci: Add HDM decoder capabilities")
+Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Cc: Alex Bennée <alex.bennee@linaro.org>
+Reviewed-by: Ben Widawsky <ben.widawsky@intel.com>
+Link: https://lore.kernel.org/r/20220201153437.2873-1-Jonathan.Cameron@huawei.com
+Signed-off-by: Dan Williams <dan.j.williams@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/mediatek/mt76/mt7921/mcu.c | 8 ++------
- 1 file changed, 2 insertions(+), 6 deletions(-)
+ drivers/cxl/core/regs.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/wireless/mediatek/mt76/mt7921/mcu.c b/drivers/net/wireless/mediatek/mt76/mt7921/mcu.c
-index 152e7579f77d..e82545a7fcc1 100644
---- a/drivers/net/wireless/mediatek/mt76/mt7921/mcu.c
-+++ b/drivers/net/wireless/mediatek/mt76/mt7921/mcu.c
-@@ -707,12 +707,8 @@ static int mt7921_load_patch(struct mt7921_dev *dev)
- 	if (mt76_is_sdio(&dev->mt76)) {
- 		/* activate again */
- 		ret = __mt7921_mcu_fw_pmctrl(dev);
--		if (ret)
--			return ret;
--
--		ret = __mt7921_mcu_drv_pmctrl(dev);
--		if (ret)
--			return ret;
-+		if (!ret)
-+			ret = __mt7921_mcu_drv_pmctrl(dev);
- 	}
+diff --git a/drivers/cxl/core/regs.c b/drivers/cxl/core/regs.c
+index cdc0b75d94f2..6a18ff8739e0 100644
+--- a/drivers/cxl/core/regs.c
++++ b/drivers/cxl/core/regs.c
+@@ -35,7 +35,7 @@ void cxl_probe_component_regs(struct device *dev, void __iomem *base,
+ 			      struct cxl_component_reg_map *map)
+ {
+ 	int cap, cap_count;
+-	u64 cap_array;
++	u32 cap_array;
  
- out:
+ 	*map = (struct cxl_component_reg_map) { 0 };
+ 
+@@ -45,7 +45,7 @@ void cxl_probe_component_regs(struct device *dev, void __iomem *base,
+ 	 */
+ 	base += CXL_CM_OFFSET;
+ 
+-	cap_array = readq(base + CXL_CM_CAP_HDR_OFFSET);
++	cap_array = readl(base + CXL_CM_CAP_HDR_OFFSET);
+ 
+ 	if (FIELD_GET(CXL_CM_CAP_HDR_ID_MASK, cap_array) != CM_CAP_HDR_CAP_ID) {
+ 		dev_err(dev,
 -- 
 2.34.1
 
