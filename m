@@ -2,54 +2,54 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2EA3FC433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1FBE0C433F5
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 02:47:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1849951AbiDFCpk (ORCPT
+        id S1849929AbiDFCpJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 22:45:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46548 "EHLO
+        Tue, 5 Apr 2022 22:45:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39396 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1580276AbiDEXeH (ORCPT
+        with ESMTP id S1579936AbiDEXd1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 19:34:07 -0400
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C8661162BC
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 14:54:36 -0700 (PDT)
+        Tue, 5 Apr 2022 19:33:27 -0400
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C05A66D192
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 14:53:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649195680; x=1680731680;
+  t=1649195617; x=1680731617;
   h=date:from:to:cc:subject:message-id:mime-version:
    content-transfer-encoding;
-  bh=InyNG7brVOrB+pbl6SuP7WIX8fZMnSQ9ZXXp7iCGQ/w=;
-  b=ep8pXFq49omlqkqd/F1crhUsL67sviamgTLIhV5leoRnLqj0gpNUkutB
-   8lHelMRUcldAiZ2I7JxD9nVC6v3eM0ljsNi3n5odR1fAR+M4MsMvIcF3Y
-   BL8GBNHI+yHCRAcFnde4uU/8Ja81ME4emaOgf9dp5RwJ6bv1E/9SZKC9c
-   co0aPCtP0l0liMolfC5vAE5+K/eOIhDA84cvLnLz9QwVTu7pwW98s7gq0
-   j0sbUsnYVFqalrYDicezr56gPG10suZaYwkYgl3BYcvqbgdx9uEYFEX7H
-   wwpkgdehwn57PKPTaXLZZGQbENp8lm8Q6csq4acamsPS0IHVRdN7i5xxu
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10308"; a="347314238"
+  bh=jOQ3qZfueW8Eqz0wuq/rProhwJxLPT79a/0eeS/6rzM=;
+  b=m/vLjsDtk94jZ3BCJRexWY+tDl78Lmht69vkzK85H3v9kh4bHxMYuPMt
+   4u30anuFK0nHYVP60YoGgnUoQZvmPZ2jF5KMj6UzhM+77udOsuZcIkhQn
+   Km4lQqnbuB/zZHu4GnOnO3Z6wY+MxoKobofEz0SiUS6FgfaMl4gMGi3zv
+   wjjHbb9BU3BeWaDQSkYX7SxBzFwjSLY3kb6VK+w0uo3Hzaflv94AzAlrT
+   MIHuCCBCTYodRMsLsUnVCRd3y1OzjRp3cZapaZCBiMANvrgLpEu+gu28f
+   +1GGnrm4EjbkdFsZRMb7Q/Oo4it3IZ4qzAda9Mif+xVLf4gsxrwBCzB7y
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10308"; a="243012457"
 X-IronPort-AV: E=Sophos;i="5.90,238,1643702400"; 
-   d="scan'208";a="347314238"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2022 14:54:36 -0700
+   d="scan'208";a="243012457"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2022 14:53:36 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.90,238,1643702400"; 
-   d="scan'208";a="556689594"
+   d="scan'208";a="524176979"
 Received: from lkp-server02.sh.intel.com (HELO a44fdfb70b94) ([10.239.97.151])
-  by fmsmga007.fm.intel.com with ESMTP; 05 Apr 2022 14:54:35 -0700
+  by orsmga006.jf.intel.com with ESMTP; 05 Apr 2022 14:53:35 -0700
 Received: from kbuild by a44fdfb70b94 with local (Exim 4.95)
         (envelope-from <lkp@intel.com>)
-        id 1nbr8F-0003nd-0R;
-        Tue, 05 Apr 2022 21:54:35 +0000
-Date:   Wed, 06 Apr 2022 05:53:35 +0800
+        id 1nbr7G-0003nB-QS;
+        Tue, 05 Apr 2022 21:53:34 +0000
+Date:   Wed, 06 Apr 2022 05:53:20 +0800
 From:   kernel test robot <lkp@intel.com>
 To:     "x86-ml" <x86@kernel.org>
 Cc:     linux-kernel@vger.kernel.org
-Subject: [tip:perf/urgent] BUILD SUCCESS
- e19cd0b6fa5938c51d7b928010d584f0de93913a
-Message-ID: <624cba5f.4fH6PK3nQClk0OsR%lkp@intel.com>
+Subject: [tip:x86/urgent] BUILD SUCCESS
+ 7a53f408902d913cd541b4f8ad7dbcd4961f5b82
+Message-ID: <624cba50.4qL9XiGCSV+esfyB%lkp@intel.com>
 User-Agent: Heirloom mailx 12.5 6/20/10
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
@@ -58,10 +58,10 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git perf/urgent
-branch HEAD: e19cd0b6fa5938c51d7b928010d584f0de93913a  perf/core: Always set cpuctx cgrp when enable cgroup event
+tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git x86/urgent
+branch HEAD: 7a53f408902d913cd541b4f8ad7dbcd4961f5b82  objtool: Fix SLS validation for kcov tail-call replacement
 
-elapsed time: 728m
+elapsed time: 726m
 
 configs tested: 148
 configs skipped: 4
