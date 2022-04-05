@@ -2,94 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5753FC433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 75820C433FE
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 02:08:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1846841AbiDFCIs (ORCPT
+        id S1846862AbiDFCI4 convert rfc822-to-8bit (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 22:08:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42468 "EHLO
+        Tue, 5 Apr 2022 22:08:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51852 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356146AbiDEKW7 (ORCPT
+        with ESMTP id S1357841AbiDEO5D (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:22:59 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48A2DB91B9;
-        Tue,  5 Apr 2022 03:06:55 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id F0448B81C86;
-        Tue,  5 Apr 2022 10:06:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6598EC385A2;
-        Tue,  5 Apr 2022 10:06:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649153212;
-        bh=m9IdsWkhwEHDsIk1mPp3Sw2dqcl6n6tF8/nLt+2Yvdk=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Nd6nxQv+19zHv8YcO1A4c6PQEcbdWePO8R6uH1ipLcyO37loPUHSQoP77H0OcESFl
-         INloMuJTPrx1iNgGlfbKel8Sh8uxHyQ+wN3NOgd6ppb/7/dzhBfDA4daYthg+MQtdc
-         j+3jOEKAlVTlV9VIIpNkUHXYsivCm4jMq7+81OYU=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Gilad Ben-Yossef <gilad@benyossef.com>,
-        Corentin Labbe <clabbe.montjoie@gmail.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 142/599] crypto: ccree - dont attempt 0 len DMA mappings
-Date:   Tue,  5 Apr 2022 09:27:16 +0200
-Message-Id: <20220405070303.067867519@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 5 Apr 2022 10:57:03 -0400
+Received: from mail-yw1-f178.google.com (mail-yw1-f178.google.com [209.85.128.178])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC343169B0C;
+        Tue,  5 Apr 2022 06:23:02 -0700 (PDT)
+Received: by mail-yw1-f178.google.com with SMTP id 00721157ae682-2eafabbc80aso135119877b3.11;
+        Tue, 05 Apr 2022 06:23:02 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=7A4P9kn8lX4sQ7Htb6dVWHUymvJRsd1UwLVgcXfrzcY=;
+        b=1JeLcq/jxTDd964pW6ogdHlJxVr8MMS8irQgftGCWQtbPADDPFzk1Z/QbLuVHlihbk
+         ov066ahR8eT3FdyBQkof0Y53tBUrVRp/p7tYyrxW7uYz+YaTJ9hlPzrHdKYf6R2rF8V+
+         bS+2QrKOKwwu9ND7KOu5jxVMk+UvdRoKrnNG6JceRWXPTPGST+PyquTZPKBz6i5r4iIV
+         BieZpy7L97IPcd9fi+s8ba/M2iARklmDVYgSg6zlZsGyUbrkVUCqoCID2J/4pxec+clr
+         lCPF8CRghx21zTKzzrK94warG0/3MEFep0Tp07sRq2/Fv+ssX9q/ugFdSkakDqSixCTP
+         9zEA==
+X-Gm-Message-State: AOAM531TtsjghQFB6YL53glCVsv7OgjrTJcKMcPscZb1VFkKyQ0/bBsF
+        nWKHxxRy7bJO6a/EATko2KqghU9yoRg3CHOMdV0=
+X-Google-Smtp-Source: ABdhPJycfqaQNd811FMhkXgQfDqevZ83CiXYssxwULKvsQGRHFOOAMwuLYDGOU9KcjHSXp7vTAqGzq/4etcE7UXaUuo=
+X-Received: by 2002:a81:36cf:0:b0:2e5:2597:a026 with SMTP id
+ d198-20020a8136cf000000b002e52597a026mr2616210ywa.301.1649164981760; Tue, 05
+ Apr 2022 06:23:01 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <20220325113148.588163-1-clement.leger@bootlin.com>
+ <20220325113148.588163-4-clement.leger@bootlin.com> <Yj3SFYdUQ4r7GXqs@smile.fi.intel.com>
+ <20220328162812.16deac92@fixe.home>
+In-Reply-To: <20220328162812.16deac92@fixe.home>
+From:   "Rafael J. Wysocki" <rafael@kernel.org>
+Date:   Tue, 5 Apr 2022 15:22:51 +0200
+Message-ID: <CAJZ5v0hOjaOCUxbFzKG90Db0bgfdb3q988oAvLB4kmD3-HS8sQ@mail.gmail.com>
+Subject: Re: [PATCH v3 3/9] device property: add index argument to
+ property_read_string_array() callback
+To:     =?UTF-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>
+Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Daniel Scally <djrscally@gmail.com>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Rafael J . Wysocki" <rafael@kernel.org>,
+        Wolfram Sang <wsa@kernel.org>, Peter Rosin <peda@axentia.se>,
+        Rob Herring <robh+dt@kernel.org>,
+        Frank Rowand <frowand.list@gmail.com>,
+        Len Brown <lenb@kernel.org>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Allan Nielsen <allan.nielsen@microchip.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+        linux-i2c <linux-i2c@vger.kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Gilad Ben-Yossef <gilad@benyossef.com>
+On Mon, Mar 28, 2022 at 4:29 PM Clément Léger <clement.leger@bootlin.com> wrote:
+>
+> Le Fri, 25 Mar 2022 16:30:45 +0200,
+> Andy Shevchenko <andriy.shevchenko@linux.intel.com> a écrit :
+>
+> > >     pointer = property_entry_find(props, propname, length);
+> > >     if (IS_ERR(pointer))
+> > >             return PTR_ERR(pointer);
+> >
+> > > +   if (index >= array_len)
+> > > +           return -ENODATA;
+> >
+> > I was about to ask if we can check this before the
+> > property_entry_find() call, but realized that in such case it will
+> > shadow possible errors due to wrong or absent property.
+>
+> I think you are actually right, the check can be done after
+> property_entry_count_elems_of_size() since it already checks for the
+> property to be present. I'll move that check.
+>
+> >
+> > ...
+> >
+> > > -           of_property_read_string_array(node, propname, val,
+> > > nval) :
+> > > +           of_property_read_string_array_index(node,
+> > > propname, val, nval,
+> > > +                                               index) :
+> >
+> > Dunno about the style there, but I think it can be one line.
+>
+> Seems like the complete file is strictly applying the 80 columns rules
+> so I thought it was better to keep it like this. However, I think the
+> ternary oeprator is not really readable with such split.
 
-[ Upstream commit 1fb37b5692c915edcc2448a6b37255738c7c77e0 ]
+So FWIW I would entirely change it to
 
-Refuse to try mapping zero bytes as this may cause a fault
-on some configurations / platforms and it seems the prev.
-attempt is not enough and we need to be more explicit.
+if (!val)
+        return of_property_count_strings(node, propname);
 
-Signed-off-by: Gilad Ben-Yossef <gilad@benyossef.com>
-Reported-by: Corentin Labbe <clabbe.montjoie@gmail.com>
-Fixes: ce0fc6db38de ("crypto: ccree - protect against empty or NULL
-scatterlists")
-Tested-by: Corentin Labbe <clabbe.montjoie@gmail.com>
-Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/crypto/ccree/cc_buffer_mgr.c | 7 +++++++
- 1 file changed, 7 insertions(+)
+return of_property_read_string_array_index(node, propname, val,
 
-diff --git a/drivers/crypto/ccree/cc_buffer_mgr.c b/drivers/crypto/ccree/cc_buffer_mgr.c
-index a5e041d9d2cf..11e0278c8631 100644
---- a/drivers/crypto/ccree/cc_buffer_mgr.c
-+++ b/drivers/crypto/ccree/cc_buffer_mgr.c
-@@ -258,6 +258,13 @@ static int cc_map_sg(struct device *dev, struct scatterlist *sg,
- {
- 	int ret = 0;
- 
-+	if (!nbytes) {
-+		*mapped_nents = 0;
-+		*lbytes = 0;
-+		*nents = 0;
-+		return 0;
-+	}
-+
- 	*nents = cc_get_sgl_nents(dev, sg, nbytes, lbytes);
- 	if (*nents > max_sg_nents) {
- 		*nents = 0;
--- 
-2.34.1
+nval, index);
 
-
-
+which IMO would be way easier to read.
