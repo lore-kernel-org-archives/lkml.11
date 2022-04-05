@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A27DC4332F
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 22:31:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D16D8C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 22:31:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1443769AbiDEWUl (ORCPT
+        id S1443601AbiDEWUf (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 18:20:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57290 "EHLO
+        Tue, 5 Apr 2022 18:20:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56050 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243511AbiDEKgv (ORCPT
+        with ESMTP id S1354648AbiDEKO5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:36:51 -0400
+        Tue, 5 Apr 2022 06:14:57 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13C7054FA2;
-        Tue,  5 Apr 2022 03:22:25 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E4756C1ED;
+        Tue,  5 Apr 2022 03:02:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9F193B81C8A;
-        Tue,  5 Apr 2022 10:22:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1A7B3C385A0;
-        Tue,  5 Apr 2022 10:22:22 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3CD10B81C83;
+        Tue,  5 Apr 2022 10:02:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 83D38C385A1;
+        Tue,  5 Apr 2022 10:02:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649154143;
-        bh=ZZJ2Y9OuUBQ1gJaIssElG4wArHFWqk1f3tUsMF6/rtM=;
+        s=korg; t=1649152935;
+        bh=gfV629Zgz/51l+/HtStoc6+xPlrAsyPHiNc5Qtfgl50=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Y8Gq4ORv7hrlP26ltwKNdqjyxFjsuu98KcLWSumj8GoHO6tnMPspWZ8ZC9BL1IF2R
-         zCHsKbgGW0RAOXEXidj7gQF8hQObp0fE1m/ScvQBlOdGaCGe2TjSyYumszr5v0csbW
-         Ef0L9Ey8Xe1327cmGNiKOOd5U3DcB/diFkxpzn4E=
+        b=emS12iRw6EHfmVh+DpR9Po0LRA9HmErfdCNwW4Ch3J0ydU50zEnHv52C4fPDufOST
+         PTzAU2ZHlzp3MAIhjE0gX2gW6x4ZzO2UsTE0dfKoUZm2WFNqrla0wT098/cZN9F1J3
+         S27vZyMa/kovuMi6p69Tlxb8+K1ffxXLjTPyw148=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        syzbot+d59332e2db681cf18f0318a06e994ebbb529a8db@syzkaller.appspotmail.com,
-        Lee Jones <lee.jones@linaro.org>, Theodore Tso <tytso@mit.edu>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 473/599] ext4: dont BUG if someone dirty pages without asking ext4 first
-Date:   Tue,  5 Apr 2022 09:32:47 +0200
-Message-Id: <20220405070312.900870293@linuxfoundation.org>
+        stable@vger.kernel.org, Liam Beguin <liambeguin@gmail.com>,
+        Peter Rosin <peda@axentia.se>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Stable@vger.kernel.org,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Subject: [PATCH 5.10 035/599] iio: inkern: apply consumer scale when no channel scale is available
+Date:   Tue,  5 Apr 2022 09:25:29 +0200
+Message-Id: <20220405070259.867876473@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
 References: <20220405070258.802373272@linuxfoundation.org>
@@ -51,84 +52,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Theodore Ts'o <tytso@mit.edu>
+From: Liam Beguin <liambeguin@gmail.com>
 
-[ Upstream commit cc5095747edfb054ca2068d01af20be3fcc3634f ]
+commit 14b457fdde38de594a4bc4bd9075019319d978da upstream.
 
-[un]pin_user_pages_remote is dirtying pages without properly warning
-the file system in advance.  A related race was noted by Jan Kara in
-2018[1]; however, more recently instead of it being a very hard-to-hit
-race, it could be reliably triggered by process_vm_writev(2) which was
-discovered by Syzbot[2].
+When a consumer calls iio_read_channel_processed() and no channel scale
+is available, it's assumed that the scale is one and the raw value is
+returned as expected.
 
-This is technically a bug in mm/gup.c, but arguably ext4 is fragile in
-that if some other kernel subsystem dirty pages without properly
-notifying the file system using page_mkwrite(), ext4 will BUG, while
-other file systems will not BUG (although data will still be lost).
+On the other hand, if the consumer calls iio_convert_raw_to_processed()
+the scaling factor requested by the consumer is not applied.
 
-So instead of crashing with a BUG, issue a warning (since there may be
-potential data loss) and just mark the page as clean to avoid
-unprivileged denial of service attacks until the problem can be
-properly fixed.  More discussion and background can be found in the
-thread starting at [2].
+This for example causes the consumer to process mV when expecting uV.
+Make sure to always apply the scaling factor requested by the consumer.
 
-[1] https://lore.kernel.org/linux-mm/20180103100430.GE4911@quack2.suse.cz
-[2] https://lore.kernel.org/r/Yg0m6IjcNmfaSokM@google.com
-
-Reported-by: syzbot+d59332e2db681cf18f0318a06e994ebbb529a8db@syzkaller.appspotmail.com
-Reported-by: Lee Jones <lee.jones@linaro.org>
-Signed-off-by: Theodore Ts'o <tytso@mit.edu>
-Link: https://lore.kernel.org/r/YiDS9wVfq4mM2jGK@mit.edu
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: adc8ec5ff183 ("iio: inkern: pass through raw values if no scaling")
+Signed-off-by: Liam Beguin <liambeguin@gmail.com>
+Reviewed-by: Peter Rosin <peda@axentia.se>
+Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+Link: https://lore.kernel.org/r/20220108205319.2046348-3-liambeguin@gmail.com
+Cc: <Stable@vger.kernel.org>
+Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/ext4/inode.c | 25 +++++++++++++++++++++++++
- 1 file changed, 25 insertions(+)
+ drivers/iio/inkern.c |    6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/fs/ext4/inode.c b/fs/ext4/inode.c
-index d59474a54189..96546df39bcf 100644
---- a/fs/ext4/inode.c
-+++ b/fs/ext4/inode.c
-@@ -2023,6 +2023,15 @@ static int ext4_writepage(struct page *page,
- 	else
- 		len = PAGE_SIZE;
+--- a/drivers/iio/inkern.c
++++ b/drivers/iio/inkern.c
+@@ -573,10 +573,10 @@ static int iio_convert_raw_to_processed_
+ 					IIO_CHAN_INFO_SCALE);
+ 	if (scale_type < 0) {
+ 		/*
+-		 * Just pass raw values as processed if no scaling is
+-		 * available.
++		 * If no channel scaling is available apply consumer scale to
++		 * raw value and return.
+ 		 */
+-		*processed = raw;
++		*processed = raw * scale;
+ 		return 0;
+ 	}
  
-+	/* Should never happen but for bugs in other kernel subsystems */
-+	if (!page_has_buffers(page)) {
-+		ext4_warning_inode(inode,
-+		   "page %lu does not have buffers attached", page->index);
-+		ClearPageDirty(page);
-+		unlock_page(page);
-+		return 0;
-+	}
-+
- 	page_bufs = page_buffers(page);
- 	/*
- 	 * We cannot do block allocation or other extent handling in this
-@@ -2626,6 +2635,22 @@ static int mpage_prepare_extent_to_map(struct mpage_da_data *mpd)
- 			wait_on_page_writeback(page);
- 			BUG_ON(PageWriteback(page));
- 
-+			/*
-+			 * Should never happen but for buggy code in
-+			 * other subsystems that call
-+			 * set_page_dirty() without properly warning
-+			 * the file system first.  See [1] for more
-+			 * information.
-+			 *
-+			 * [1] https://lore.kernel.org/linux-mm/20180103100430.GE4911@quack2.suse.cz
-+			 */
-+			if (!page_has_buffers(page)) {
-+				ext4_warning_inode(mpd->inode, "page %lu does not have buffers attached", page->index);
-+				ClearPageDirty(page);
-+				unlock_page(page);
-+				continue;
-+			}
-+
- 			if (mpd->map.m_len == 0)
- 				mpd->first_page = page->index;
- 			mpd->next_page = page->index + 1;
--- 
-2.34.1
-
 
 
