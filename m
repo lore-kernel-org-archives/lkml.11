@@ -2,46 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 37D1CC4707F
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 11:21:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1018AC35274
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 11:21:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359410AbiDELSt (ORCPT
+        id S1359482AbiDELT1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 07:18:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34846 "EHLO
+        Tue, 5 Apr 2022 07:19:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55022 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237008AbiDEIRg (ORCPT
+        with ESMTP id S236756AbiDEIRB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:17:36 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5DD9AF1CF;
-        Tue,  5 Apr 2022 01:04:59 -0700 (PDT)
+        Tue, 5 Apr 2022 04:17:01 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5BB06929E;
+        Tue,  5 Apr 2022 01:04:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 972C9617EA;
-        Tue,  5 Apr 2022 08:04:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9F2D5C385A2;
-        Tue,  5 Apr 2022 08:04:48 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 99D2F61748;
+        Tue,  5 Apr 2022 08:04:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AAB2DC385A3;
+        Tue,  5 Apr 2022 08:04:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649145889;
-        bh=LzU+oI0FFacSct4eVCvTz2D0LQ8alLCVVfpb2Ekg4lo=;
+        s=korg; t=1649145872;
+        bh=CFhc9Z45Qbk4NWrtr4wnxdRKTBGyRPuDjO8Z/VPVtoQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BkiAgSpB/A3s5fjflrkz1KjtbG7P6lDKLqMTdvTfX+/54j0rV7gzmDwt5M7Bw16T8
-         ruGAjs7jlQvYNUrXxquAQNQYY7gEBSLfNA+HVC9dsdYj04scAYiAZYCckkYlFqWUJ+
-         LdMmbp/nK7VmwNoXSc/xDfAXTsymq7y7/Br19fgY=
+        b=lZ0SPCNQN4tUZADfcZGKkSMStocM70uouXaQd1o0FWXH7CqP2AyrzRl+FmSmr79Gr
+         9DkPMJonTfOEWtxew61ceX3LccS7nFl1Erv3IvSRIVEgWZ6e3hNBfdWvW5U4rk/Fwt
+         /1VSEwMesRBo7cKth349Y3VXNVKbtTPh25S82QSw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hersen Wu <hersenwu@amd.com>,
-        Jasdeep Dhillon <jdhillon@amd.com>,
-        Roman Li <Roman.Li@amd.com>,
-        Daniel Wheeler <daniel.wheeler@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
+        stable@vger.kernel.org,
+        Mukesh Sisodiya <mukesh.sisodiya@intel.com>,
+        Luca Coelho <luciano.coelho@intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0549/1126] drm/amd/display: Add affected crtcs to atomic state for dsc mst unplug
-Date:   Tue,  5 Apr 2022 09:21:36 +0200
-Message-Id: <20220405070423.747140025@linuxfoundation.org>
+Subject: [PATCH 5.17 0561/1126] iwlwifi: yoyo: Avoid using dram data if allocation failed
+Date:   Tue,  5 Apr 2022 09:21:48 +0200
+Message-Id: <20220405070424.100101437@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -53,55 +51,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Roman Li <Roman.Li@amd.com>
+From: Mukesh Sisodiya <mukesh.sisodiya@intel.com>
 
-[ Upstream commit 128f8ed5902a287a6bb4afe0ffdae8a80b2a64ec ]
+[ Upstream commit e2d53d10ef666859517360e711fd7761e7e984ce ]
 
-[Why]
-When display topology changed on DSC hub we add all crtcs with dsc support to
-atomic state.
-Refer to patch:"drm/amd/display: Trigger modesets on MST DSC connectors"
-However the original implementation may skip crtc if the topology change
-caused by unplug.
-That potentially could lead to no-lightup or corruption on DSC hub after
-unplug event on one of the connectors.
+The config set TLV setting depend on dram allocation
+and if allocation failed the data used in config set tlv
+should not set this.
+Adding the check if dram fragment is available or not.
 
-[How]
-Update add_affected_mst_dsc_crtcs() to use old connector state
-if new connector state has no crtc (undergoes modeset due to unplug)
-
-Fixes: 44be939ff7ac58 ("drm/amd/display: Trigger modesets on MST DSC connectors")
-
-Reviewed-by: Hersen Wu <hersenwu@amd.com>
-Acked-by: Jasdeep Dhillon <jdhillon@amd.com>
-Signed-off-by: Roman Li <Roman.Li@amd.com>
-Tested-by: Daniel Wheeler <daniel.wheeler@amd.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Signed-off-by: Mukesh Sisodiya <mukesh.sisodiya@intel.com>
+Fixes: 1a5daead217c ("iwlwifi: yoyo: support for ROM usniffer")
+Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
+Link: https://lore.kernel.org/r/iwlwifi.20220204122220.44835d181528.I3e78ba29c13bbeada017fcb2a620f3552c1dfa30@changeid
+Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c | 7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
+ drivers/net/wireless/intel/iwlwifi/iwl-dbg-tlv.c | 13 ++++++++++---
+ 1 file changed, 10 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
-index 5f4a346c9c2a..eae9f9e26f0e 100644
---- a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
-+++ b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
-@@ -10861,10 +10861,13 @@ static int dm_check_crtc_cursor(struct drm_atomic_state *state,
- static int add_affected_mst_dsc_crtcs(struct drm_atomic_state *state, struct drm_crtc *crtc)
- {
- 	struct drm_connector *connector;
--	struct drm_connector_state *conn_state;
-+	struct drm_connector_state *conn_state, *old_conn_state;
- 	struct amdgpu_dm_connector *aconnector = NULL;
- 	int i;
--	for_each_new_connector_in_state(state, connector, conn_state, i) {
-+	for_each_oldnew_connector_in_state(state, connector, old_conn_state, conn_state, i) {
-+		if (!conn_state->crtc)
-+			conn_state = old_conn_state;
-+
- 		if (conn_state->crtc != crtc)
- 			continue;
+diff --git a/drivers/net/wireless/intel/iwlwifi/iwl-dbg-tlv.c b/drivers/net/wireless/intel/iwlwifi/iwl-dbg-tlv.c
+index c73672d61356..42f6f8bb83be 100644
+--- a/drivers/net/wireless/intel/iwlwifi/iwl-dbg-tlv.c
++++ b/drivers/net/wireless/intel/iwlwifi/iwl-dbg-tlv.c
+@@ -861,11 +861,18 @@ static void iwl_dbg_tlv_apply_config(struct iwl_fw_runtime *fwrt,
+ 		case IWL_FW_INI_CONFIG_SET_TYPE_DBGC_DRAM_ADDR: {
+ 			struct iwl_dbgc1_info dram_info = {};
+ 			struct iwl_dram_data *frags = &fwrt->trans->dbg.fw_mon_ini[1].frags[0];
+-			__le64 dram_base_addr = cpu_to_le64(frags->physical);
+-			__le32 dram_size = cpu_to_le32(frags->size);
+-			u64  dram_addr = le64_to_cpu(dram_base_addr);
++			__le64 dram_base_addr;
++			__le32 dram_size;
++			u64 dram_addr;
+ 			u32 ret;
  
++			if (!frags)
++				break;
++
++			dram_base_addr = cpu_to_le64(frags->physical);
++			dram_size = cpu_to_le32(frags->size);
++			dram_addr = le64_to_cpu(dram_base_addr);
++
+ 			IWL_DEBUG_FW(fwrt, "WRT: dram_base_addr 0x%016llx, dram_size 0x%x\n",
+ 				     dram_base_addr, dram_size);
+ 			IWL_DEBUG_FW(fwrt, "WRT: config_list->addr_offset: %u\n",
 -- 
 2.34.1
 
