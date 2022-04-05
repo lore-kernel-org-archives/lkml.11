@@ -2,151 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A15E1C4332F
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 19:56:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C4BBDC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:10:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238354AbiDET5K (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 15:57:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59514 "EHLO
+        id S233591AbiDET63 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 15:58:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52172 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1455142AbiDEP7k (ORCPT
+        with ESMTP id S1354161AbiDEKMM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 11:59:40 -0400
-Received: from mail-lf1-x12d.google.com (mail-lf1-x12d.google.com [IPv6:2a00:1450:4864:20::12d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8179B108772
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 08:11:25 -0700 (PDT)
-Received: by mail-lf1-x12d.google.com with SMTP id p10so23731807lfa.12
-        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 08:11:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:organization:in-reply-to
-         :content-transfer-encoding;
-        bh=knadBC5/9Dlj8rbZddGyUUv9/Z5ol7Dtv9U1ioqP9jA=;
-        b=4WXxBwXx7EL1bnbBadqVFwnRXzEoKBnMCPyQY1ZoY51R3YnPyJSrpchjfB6SICDwsJ
-         5alKgXGkZ0+I2dyFvgJGXRqq9S7J0CWijdEsqtbZyqcsb9/kzsafqkVrI8xVxcY72nkg
-         UGCEDmkItzRH77RJhiDAiVZmPMq9iBdIfg9uaN8BHGlPsTQynByp4OpSEyaEevxlFS77
-         Qef8G+zninZ7IFRAGP9u/2MlkCD19bQzY1o2vc3fSvDaAeHrUE7NH83wxI08mKsTZK7G
-         sJ5I+oQd+gn/b/mCW4Ct/uXiaXcZ1hOSLpsU3SjMOep+xv/JHCQbkqq7/lg9kEhzrpAK
-         li0Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:organization:in-reply-to
-         :content-transfer-encoding;
-        bh=knadBC5/9Dlj8rbZddGyUUv9/Z5ol7Dtv9U1ioqP9jA=;
-        b=Qslq5YwGcXsLmb1Pm3TapmUIbLb0aK8j5tnQjiOgvSaSc2GPEAUuTY49t6RoWKg7+3
-         RioNGzuKHAqXz6MuiIkNGGRbgFFV3gGn7Kxw6rqQtexzvsmlxpaRP06fvMWs8O5KK74N
-         oGSOYoijNyqP/51dfRs08CioBgKw0fuz9l7ERQv3zLWC4cKmPE95Q521rXxuGhPNeuhZ
-         9LZZHpvSR2eLZYqbXOKgPcKJ7onyShYkXFMJRQFV8RuQ0qUeCP4QsDrcsU0hFd6zuDoa
-         se6fAMleGjRhhUk+gDeRgZkjXEWLk6e4y8e656aZH7D0Z4/bbboedJNXWMGgnHb5DYEr
-         b4Yg==
-X-Gm-Message-State: AOAM531yXbWu3ryuB4hxiMFkoSkPm5t/mlCWFYk1WVzfaYrjPSDbv74j
-        9ugVk9MRyy3YeD8sceeWsN8qww==
-X-Google-Smtp-Source: ABdhPJzACQiDfI4qUdkgsvTX0RPVvPl+IFhGVEeH45oKkhd6o7WfMVVtWugGdQVsuaBLCEHNpE0Tsw==
-X-Received: by 2002:a05:6512:3a83:b0:44a:5878:24d6 with SMTP id q3-20020a0565123a8300b0044a587824d6mr2899935lfu.426.1649171480237;
-        Tue, 05 Apr 2022 08:11:20 -0700 (PDT)
-Received: from ?IPV6:2001:861:44c0:66c0:5cd5:d9c8:ef4:b0ed? ([2001:861:44c0:66c0:5cd5:d9c8:ef4:b0ed])
-        by smtp.gmail.com with ESMTPSA id x23-20020a056512047700b0044a3c53e12dsm1533643lfd.169.2022.04.05.08.11.19
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 05 Apr 2022 08:11:19 -0700 (PDT)
-Message-ID: <a27da359-3922-e4ee-16d2-b4cb6fc06ca8@baylibre.com>
-Date:   Tue, 5 Apr 2022 17:11:18 +0200
+        Tue, 5 Apr 2022 06:12:12 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7BFE517E9;
+        Tue,  5 Apr 2022 02:57:48 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 871B4B81B18;
+        Tue,  5 Apr 2022 09:57:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CB7E5C385A2;
+        Tue,  5 Apr 2022 09:57:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649152666;
+        bh=c0v1kwfw9nemCbOgxAxvygAY6BW/Q0cDvVzauxVeYLo=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=Qtyv4Hk4atwZjbT4DF3YjF8UBWA2Tty8ZsffXkCKCe7b+fRZa7cFcekx/YE4LOs23
+         8quM8zsSWPUmBP9nXo0ZjXx/GTBu3t4ifss4GMYPLbWpq1S8h0AAl9t9IvAlrawAu1
+         lfRKXV4DVkweBUGZfs4Y7RUhAo5BhWgblhRAMPrA=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, kernel test robot <oliver.sang@intel.com>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        Huang Rui <ray.huang@amd.com>
+Subject: [PATCH 5.15 858/913] ACPI: CPPC: Avoid out of bounds access when parsing _CPC data
+Date:   Tue,  5 Apr 2022 09:32:00 +0200
+Message-Id: <20220405070405.545873390@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH 0/3] Ensure Low period of SCL is correct
-Content-Language: en-US
-To:     tanure@linux.com, Kevin Hilman <khilman@baylibre.com>
-Cc:     Jerome Brunet <jbrunet@baylibre.com>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        linux-i2c@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-amlogic@lists.infradead.org, linux-kernel@vger.kernel.org
-References: <20220326102229.421718-1-tanure@linux.com>
- <7hee2lu82n.fsf@baylibre.com>
- <CAJX_Q+1Y5pO_AGaFSXfo-J3EdGQeM2XYXzvsUtjtAFEXdwKEdQ@mail.gmail.com>
-From:   Neil Armstrong <narmstrong@baylibre.com>
-Organization: Baylibre
-In-Reply-To: <CAJX_Q+1Y5pO_AGaFSXfo-J3EdGQeM2XYXzvsUtjtAFEXdwKEdQ@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+From: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 
-On 28/03/2022 23:51, Lucas Tanure wrote:
-> 
-> 
-> On Mon, 28 Mar 2022, 21:37 Kevin Hilman, <khilman@baylibre.com <mailto:khilman@baylibre.com>> wrote:
-> 
->     Hi Lucas,
-> 
->     Lucas Tanure <tanure@linux.com <mailto:tanure@linux.com>> writes:
-> 
->      > The default duty cycle of 33% is less than the required
->      > by the I2C specs for the LOW period of the SCL clock.
->      >
->      > So, for 100Khz or less, use 50%H/50%L duty cycle, and
->      > for the clock above 100Khz, use 40%H/60%L duty cycle.
->      > That ensures the low period of SCL is always more than
->      > the minimum required by the specs at any given frequency.
-> 
->     Thanks for the fixes!
-> 
->     This is going to affect all SoCs, so ould you please summarize how your
->     changes were tested, and on which SoCs & boards?
-> 
->     Thanks,
-> 
->     Kevin
-> 
-> 
-> Hi,
-> 
-> I only tested against vim3 board, measured the bus with an saleae logic pro 16.
-> The measurements were with 100k, 400k and a few in between frequencies.
-> 
-> Is that enough?
+commit 40d8abf364bcab23bc715a9221a3c8623956257b upstream.
 
-I did a few measures on the Libre Computer Le Potato S905X board:
+If the NumEntries field in the _CPC return package is less than 2, do
+not attempt to access the "Revision" element of that package, because
+it may not be present then.
 
-i2c_AO:
+Fixes: 337aadff8e45 ("ACPI: Introduce CPU performance controls using CPPC")
+BugLink: https://lore.kernel.org/lkml/20220322143534.GC32582@xsang-OptiPlex-9020/
+Reported-by: kernel test robot <oliver.sang@intel.com>
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Reviewed-by: Huang Rui <ray.huang@amd.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ drivers/acpi/cppc_acpi.c |    5 +++++
+ 1 file changed, 5 insertions(+)
 
-Before the patchset, I got:
-- 100KHz: 1.66uS HIGH, 6.75uS LOW, 20%/80%, Freq 118KHz /!\
-- 400KHz: Unable to decode, clock line is invalid, Data line is also invalid
+--- a/drivers/acpi/cppc_acpi.c
++++ b/drivers/acpi/cppc_acpi.c
+@@ -703,6 +703,11 @@ int acpi_cppc_processor_probe(struct acp
+ 	cpc_obj = &out_obj->package.elements[0];
+ 	if (cpc_obj->type == ACPI_TYPE_INTEGER)	{
+ 		num_ent = cpc_obj->integer.value;
++		if (num_ent <= 1) {
++			pr_debug("Unexpected _CPC NumEntries value (%d) for CPU:%d\n",
++				 num_ent, pr->id);
++			goto out_free;
++		}
+ 	} else {
+ 		pr_debug("Unexpected entry type(%d) for NumEntries\n",
+ 				cpc_obj->type);
 
-With the patchset
-- 100KHz: 4.25uS HIGH, 6.58uS LOW, 40%/60%, Freq 92KHz
-- 400KHz: 0.33uS HIGH, 3.00uS LOW, 10%/90%, Freq 300KHz
-
-i2c_B:
-
-Before the patchset, I got:
-- 100KHz: 2.25uS HIGH, 5.41uS LOW, 29%/71%, Freq 130KHz /!\
-- 400KHz: 0.42uS HIGH, 1.66uS LOW, 20%/80%, Freq 480KHz /!\
-
-With the patchset
-- 100KHz: 4.75uS HIGH, 5.42uS LOW, 46%/54%, Freq 98KHz
-- 400KHz: 0.66uS HIGH, 2.00uS LOW, 24%/75%, Freq 375KHz
-
-
-So this fixes the frequency, before they were invalid.
-And it fixes 400KHz on i2c_AO...
-
-I do not understand why behavior is different between i2c_AO & i2c_B, they
-are feed with the same clock so it should be the same.
-
-Did you check on both i2c interfaces ? can you share your results ?
-
-Neil
-
-> 
-> Thanks
-> Lucas
-> 
-> 
-> 
 
