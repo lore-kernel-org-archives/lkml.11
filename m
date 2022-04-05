@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 211BBC4332F
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:53:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C7007C43217
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:53:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352471AbiDEMti (ORCPT
+        id S1353434AbiDEMtp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 08:49:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41938 "EHLO
+        Tue, 5 Apr 2022 08:49:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41928 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244195AbiDEJJs (ORCPT
+        with ESMTP id S244259AbiDEJJv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:09:48 -0400
+        Tue, 5 Apr 2022 05:09:51 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9016DBC30;
-        Tue,  5 Apr 2022 01:58:59 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE5A7205EC;
+        Tue,  5 Apr 2022 01:59:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 681166157A;
-        Tue,  5 Apr 2022 08:58:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 79331C385A1;
-        Tue,  5 Apr 2022 08:58:58 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7FCF16159F;
+        Tue,  5 Apr 2022 08:59:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8DC53C385A3;
+        Tue,  5 Apr 2022 08:59:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649149138;
-        bh=OtMJiNTcTHUQcPH4dSGJwZZlh+3lpDszUo2IbFnk9JM=;
+        s=korg; t=1649149149;
+        bh=68tEdpLmNp8IW56JqoG0OPYoak/d+7TDd4489L5IY4I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YxRKd2PS2xWWv7grxLBhK80POBaMUP4x7fowwxDB1TVu3eG1XlQ8sL/gObrIwGNr+
-         e6/bIbT2Lk3uwJUHVVVeIh3XsRAxVxoPkrjrLsTp5OF8p/UovsmkwA6vFlPnVdhsue
-         5SNFClV59HPl5nnkmjXIgh4VauD5lkIY7RTTvWcc=
+        b=dS//EjcIwWb2cdYLKF7AzuuMboCnqtQALcuCzcGQ8VrSc0EZHOV7RIu8svBrD9U2M
+         LFKBOeU2bGbX+Tx0JUI9vOpFxmlRX3lt0pKTG8WV2jXaQibJxU8FhILIiD/C6KYuT7
+         Zf+KSWA9+FBbTqke0l7B+LsivkOjWR/yfvedxWOs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Serge Semin <fancer.lancer@gmail.com>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        stable@vger.kernel.org, Derek Will <derekrobertwill@gmail.com>,
+        Oliver Hartkopp <socketcan@hartkopp.net>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0591/1017] mips: cdmm: Fix refcount leak in mips_cdmm_phys_base
-Date:   Tue,  5 Apr 2022 09:25:04 +0200
-Message-Id: <20220405070411.821863650@linuxfoundation.org>
+Subject: [PATCH 5.16 0612/1017] can: isotp: support MSG_TRUNC flag when reading from socket
+Date:   Tue,  5 Apr 2022 09:25:25 +0200
+Message-Id: <20220405070412.448960205@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -51,35 +51,84 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Oliver Hartkopp <socketcan@hartkopp.net>
 
-[ Upstream commit 4528668ca331f7ce5999b7746657b46db5b3b785 ]
+[ Upstream commit 42bf50a1795a1854d48717b7361dbdbce496b16b ]
 
-The of_find_compatible_node() function returns a node pointer with
-refcount incremented, We should use of_node_put() on it when done
-Add the missing of_node_put() to release the refcount.
+When providing the MSG_TRUNC flag via recvmsg() syscall the return value
+provides the real length of the packet or datagram, even when it was longer
+than the passed buffer.
 
-Fixes: 2121aa3e2312 ("mips: cdmm: Add mti,mips-cdmm dtb node support")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Acked-by: Serge Semin <fancer.lancer@gmail.com>
-Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+Fixes: e057dd3fc20f ("can: add ISO 15765-2:2016 transport protocol")
+Link: https://github.com/linux-can/can-utils/issues/347#issuecomment-1065932671
+Link: https://lore.kernel.org/all/20220316164258.54155-3-socketcan@hartkopp.net
+Suggested-by: Derek Will <derekrobertwill@gmail.com>
+Signed-off-by: Oliver Hartkopp <socketcan@hartkopp.net>
+Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/bus/mips_cdmm.c | 1 +
- 1 file changed, 1 insertion(+)
+ net/can/isotp.c | 27 +++++++++++++++------------
+ 1 file changed, 15 insertions(+), 12 deletions(-)
 
-diff --git a/drivers/bus/mips_cdmm.c b/drivers/bus/mips_cdmm.c
-index 626dedd110cb..fca0d0669aa9 100644
---- a/drivers/bus/mips_cdmm.c
-+++ b/drivers/bus/mips_cdmm.c
-@@ -351,6 +351,7 @@ phys_addr_t __weak mips_cdmm_phys_base(void)
- 	np = of_find_compatible_node(NULL, NULL, "mti,mips-cdmm");
- 	if (np) {
- 		err = of_address_to_resource(np, 0, &res);
-+		of_node_put(np);
- 		if (!err)
- 			return res.start;
+diff --git a/net/can/isotp.c b/net/can/isotp.c
+index 8966f06e0660..ad61342d2e16 100644
+--- a/net/can/isotp.c
++++ b/net/can/isotp.c
+@@ -1006,29 +1006,28 @@ static int isotp_recvmsg(struct socket *sock, struct msghdr *msg, size_t size,
+ 	struct sock *sk = sock->sk;
+ 	struct sk_buff *skb;
+ 	struct isotp_sock *so = isotp_sk(sk);
+-	int err = 0;
+-	int noblock;
++	int noblock = flags & MSG_DONTWAIT;
++	int ret = 0;
+ 
+-	noblock = flags & MSG_DONTWAIT;
+-	flags &= ~MSG_DONTWAIT;
++	if (flags & ~(MSG_DONTWAIT | MSG_TRUNC))
++		return -EINVAL;
+ 
+ 	if (!so->bound)
+ 		return -EADDRNOTAVAIL;
+ 
+-	skb = skb_recv_datagram(sk, flags, noblock, &err);
++	flags &= ~MSG_DONTWAIT;
++	skb = skb_recv_datagram(sk, flags, noblock, &ret);
+ 	if (!skb)
+-		return err;
++		return ret;
+ 
+ 	if (size < skb->len)
+ 		msg->msg_flags |= MSG_TRUNC;
+ 	else
+ 		size = skb->len;
+ 
+-	err = memcpy_to_msg(msg, skb->data, size);
+-	if (err < 0) {
+-		skb_free_datagram(sk, skb);
+-		return err;
+-	}
++	ret = memcpy_to_msg(msg, skb->data, size);
++	if (ret < 0)
++		goto out_err;
+ 
+ 	sock_recv_timestamp(msg, sk, skb);
+ 
+@@ -1038,9 +1037,13 @@ static int isotp_recvmsg(struct socket *sock, struct msghdr *msg, size_t size,
+ 		memcpy(msg->msg_name, skb->cb, msg->msg_namelen);
  	}
+ 
++	/* set length of return value */
++	ret = (flags & MSG_TRUNC) ? skb->len : size;
++
++out_err:
+ 	skb_free_datagram(sk, skb);
+ 
+-	return size;
++	return ret;
+ }
+ 
+ static int isotp_release(struct socket *sock)
 -- 
 2.34.1
 
