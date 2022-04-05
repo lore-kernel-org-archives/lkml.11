@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C742DC433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 03E20C35295
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:19:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234009AbiDEILn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 04:11:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48220 "EHLO
+        id S234051AbiDEIMD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 04:12:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48370 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233337AbiDEH5E (ORCPT
+        with ESMTP id S233504AbiDEH5N (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 03:57:04 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A36184504C;
-        Tue,  5 Apr 2022 00:50:55 -0700 (PDT)
+        Tue, 5 Apr 2022 03:57:13 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB5A44B852;
+        Tue,  5 Apr 2022 00:51:09 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0BBECB81BAF;
-        Tue,  5 Apr 2022 07:50:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6CFFEC340EE;
-        Tue,  5 Apr 2022 07:50:52 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9B16761728;
+        Tue,  5 Apr 2022 07:51:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A8C25C340EE;
+        Tue,  5 Apr 2022 07:51:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649145052;
-        bh=S9cmyvSafNm0XeTi5sEgSrscdGdc2H02qmOF7tU8Kz4=;
+        s=korg; t=1649145064;
+        bh=6u6dVmWOAc7he5mMg4R2E5sd6D/8PJLwEWyTO7PHVws=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=w1DTVntSHDMojccmFFdqNBm5oLaIiI/AzVIg2MAeuWPPjoRG7GdytWnmHD4HCFIb7
-         pYx32UfdQNbKQMJphHXp8EHDqkLsWnjNUbjRQB3W3HK7hZT9/CwrVbZIEInRMkqIgi
-         iVj0q/zd3KL52gYINaDINFVPI4I1gZ95LAIXDhYU=
+        b=gSdjmCgDvrpuB0blTBpMk5hRdrd8VhV5/+kXWQTx0rIH5N2KTpedia3w1+GE0TUvS
+         dNXoYfZgkJF948coa9JDRIw7n5KmAgY6uEti5iRomYkEU6sAcq6yjvsvDYncZRLeeE
+         AwydMim4A/Dw4qLcYGbwpf/OU4wJmpGoZvVPXmk8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zhipeng Tan <tanzhipeng@hust.edu.cn>,
-        Jicheng Shao <shaojicheng@hust.edu.cn>,
-        Chao Yu <chao@kernel.org>, Jaegeuk Kim <jaegeuk@kernel.org>,
+        stable@vger.kernel.org, Qais Yousef <qais.yousef@arm.com>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0268/1126] f2fs: fix to enable ATGC correctly via gc_idle sysfs interface
-Date:   Tue,  5 Apr 2022 09:16:55 +0200
-Message-Id: <20220405070415.477113051@linuxfoundation.org>
+Subject: [PATCH 5.17 0272/1126] sched/uclamp: Fix iowait boost escaping uclamp restriction
+Date:   Tue,  5 Apr 2022 09:16:59 +0200
+Message-Id: <20220405070415.594288251@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -50,36 +50,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chao Yu <chao@kernel.org>
+From: Qais Yousef <qais.yousef@arm.com>
 
-[ Upstream commit 7d19e3dab0002e527052b0aaf986e8c32e5537bf ]
+[ Upstream commit d37aee9018e68b0d356195caefbb651910e0bbfa ]
 
-It needs to assign sbi->gc_mode with GC_IDLE_AT rather than GC_AT when
-user tries to enable ATGC via gc_idle sysfs interface, fix it.
+iowait_boost signal is applied independently of util and doesn't take
+into account uclamp settings of the rq. An io heavy task that is capped
+by uclamp_max could still request higher frequency because
+sugov_iowait_apply() doesn't clamp the boost via uclamp_rq_util_with()
+like effective_cpu_util() does.
 
-Fixes: 093749e296e2 ("f2fs: support age threshold based garbage collection")
-Cc: Zhipeng Tan <tanzhipeng@hust.edu.cn>
-Signed-off-by: Jicheng Shao <shaojicheng@hust.edu.cn>
-Signed-off-by: Chao Yu <chao@kernel.org>
-Signed-off-by: Jaegeuk Kim <jaegeuk@kernel.org>
+Make sure that iowait_boost honours uclamp requests by calling
+uclamp_rq_util_with() when applying the boost.
+
+Fixes: 982d9cdc22c9 ("sched/cpufreq, sched/uclamp: Add clamps for FAIR and RT tasks")
+Signed-off-by: Qais Yousef <qais.yousef@arm.com>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Acked-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Link: https://lore.kernel.org/r/20211216225320.2957053-3-qais.yousef@arm.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/f2fs/sysfs.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ kernel/sched/cpufreq_schedutil.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/fs/f2fs/sysfs.c b/fs/f2fs/sysfs.c
-index 8ac506671245..bdb1b5c05be2 100644
---- a/fs/f2fs/sysfs.c
-+++ b/fs/f2fs/sysfs.c
-@@ -481,7 +481,7 @@ static ssize_t __sbi_store(struct f2fs_attr *a,
- 		} else if (t == GC_IDLE_AT) {
- 			if (!sbi->am.atgc_enabled)
- 				return -EINVAL;
--			sbi->gc_mode = GC_AT;
-+			sbi->gc_mode = GC_IDLE_AT;
- 		} else {
- 			sbi->gc_mode = GC_NORMAL;
- 		}
+diff --git a/kernel/sched/cpufreq_schedutil.c b/kernel/sched/cpufreq_schedutil.c
+index 62d98b09aaa5..6d65ab6e484e 100644
+--- a/kernel/sched/cpufreq_schedutil.c
++++ b/kernel/sched/cpufreq_schedutil.c
+@@ -289,6 +289,7 @@ static void sugov_iowait_apply(struct sugov_cpu *sg_cpu, u64 time)
+ 	 * into the same scale so we can compare.
+ 	 */
+ 	boost = (sg_cpu->iowait_boost * sg_cpu->max) >> SCHED_CAPACITY_SHIFT;
++	boost = uclamp_rq_util_with(cpu_rq(sg_cpu->cpu), boost, NULL);
+ 	if (sg_cpu->util < boost)
+ 		sg_cpu->util = boost;
+ }
 -- 
 2.34.1
 
