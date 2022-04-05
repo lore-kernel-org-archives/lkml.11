@@ -2,95 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 31AB5C3527D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C35FC3527B
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:42:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1579154AbiDEX0T (ORCPT
+        id S1579135AbiDEX0O (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 19:26:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53316 "EHLO
+        Tue, 5 Apr 2022 19:26:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33008 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1386637AbiDEMzA (ORCPT
+        with ESMTP id S1358072AbiDEK15 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 08:55:00 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 24D2035269
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 04:59:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1649159947;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=caJ3Mn8x8sphClTxTGmFig0egR97QkRAGfFS5UfDfJg=;
-        b=iMJFKuyd/NBBDuasFz+Q19WyHs8C7u61QUqviYeugCG9DDi3fB/04ubzBzwagCheInmqgz
-        KC7volVEs2MjcggioH5JIo+jxd/6fC6eyjduVUE5JlPSJsHMmZNa55Icckq9Wsau+oMOzu
-        eNwUgue0KuQf8euHSXsu3d+va/5refk=
-Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com
- [209.85.221.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-192-C5yzQZkLNIu-BwW0aaP_fg-1; Tue, 05 Apr 2022 07:59:06 -0400
-X-MC-Unique: C5yzQZkLNIu-BwW0aaP_fg-1
-Received: by mail-wr1-f72.google.com with SMTP id j18-20020adfa552000000b002060a011303so1553466wrb.14
-        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 04:59:05 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=caJ3Mn8x8sphClTxTGmFig0egR97QkRAGfFS5UfDfJg=;
-        b=PjBJCyRdByM26EfNLiTMQugjSpdTBAQBYBaPMwQ9urJ3b2OydWF14FMV6n6naGQSia
-         5FOE9VFwhUKksKeB8oACI7cpgzEevl5FZyiQHzsyBKnueVOnVwkHcC//tqnxHTftR6YQ
-         CbeH2LE6PGqUJ1Zm82mhIi3EXROwegWYOk6txkj/rlP3gjgXwZbCj9hJE50ORofeNp2+
-         G5Rd/HmxLDQPhmWF2AJLHCcbQ/MKWQnO48aRgg4iB7Gbh8s5KBN03ojNhe+rss8o8L42
-         /lC1RXx9stmNS6RNPY67Ao34KaDcageypnAIrgAghpBbW0gGgtaYvm9VAH/0PA/IoPiO
-         6KeQ==
-X-Gm-Message-State: AOAM533uZjaNKgQ81gu7I10VqaTSMqckTc8NAe6o03Hw4PE4KvmkA+vG
-        SmX2VnO8wA6Lz1ir++QTrpvsrk1T4oYCoiYEt5ga00ATaZoJMWTodXy7kXSW/JwZuxtIpbYgjdc
-        WcpxhVIxCPx0VyzGGls/H4p1p
-X-Received: by 2002:a1c:f705:0:b0:37d:f2e5:d8ec with SMTP id v5-20020a1cf705000000b0037df2e5d8ecmr2850173wmh.21.1649159944331;
-        Tue, 05 Apr 2022 04:59:04 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwgAb5I4ZF3qI+9Z9tb/LO2zK3svds/SwszckCB8AT7KGF6vHKrXQi2sIZ1Gsir9F/APs8Zzw==
-X-Received: by 2002:a1c:f705:0:b0:37d:f2e5:d8ec with SMTP id v5-20020a1cf705000000b0037df2e5d8ecmr2850160wmh.21.1649159944150;
-        Tue, 05 Apr 2022 04:59:04 -0700 (PDT)
-Received: from redhat.com ([2.52.17.211])
-        by smtp.gmail.com with ESMTPSA id w7-20020a1cf607000000b00389a5390180sm1949693wmc.25.2022.04.05.04.59.02
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 05 Apr 2022 04:59:03 -0700 (PDT)
-Date:   Tue, 5 Apr 2022 07:59:00 -0400
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Christoph Hellwig <hch@infradead.org>
-Cc:     Masahiro Yamada <masahiroy@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>, linux-kernel@vger.kernel.org,
-        linux-kbuild@vger.kernel.org, linux-arch@vger.kernel.org
-Subject: Re: [PATCH 8/8] virtio_ring.h: do not include <stdint.h> from
- exported header
-Message-ID: <20220405075756-mutt-send-email-mst@kernel.org>
-References: <20220404061948.2111820-1-masahiroy@kernel.org>
- <20220404061948.2111820-9-masahiroy@kernel.org>
- <Ykqh3mEy5uY8spe8@infradead.org>
+        Tue, 5 Apr 2022 06:27:57 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 626B55A166;
+        Tue,  5 Apr 2022 03:14:34 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id F3C4961777;
+        Tue,  5 Apr 2022 10:14:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0DDA3C385A1;
+        Tue,  5 Apr 2022 10:14:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649153673;
+        bh=+Z+iOIZiTwTn+gyRQKPoDa7Gxs2LV6jj2/L1a8FvIns=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=YRnaYt7WFUkwHCpNtpvxVGWFygMsgW3THJsom1K83HOeDY3VHHjHj6JUHBSkyxB3J
+         EX299TccWxeBlys2HcDnern/Wt9J9pO1MOhr5QFsP5nPJT5zL5CuEgRc8z8GCbe+Kc
+         DSc3ldF81+oWTyUY9nPCzyBkCyvXg6rcUtxKLoG8=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Stephen Boyd <swboyd@chromium.org>,
+        Abhinav Kumar <quic_abhinavk@quicinc.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 306/599] drm/msm/dpu: add DSPP blocks teardown
+Date:   Tue,  5 Apr 2022 09:30:00 +0200
+Message-Id: <20220405070307.941271688@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
+References: <20220405070258.802373272@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Ykqh3mEy5uY8spe8@infradead.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Apr 04, 2022 at 12:44:30AM -0700, Christoph Hellwig wrote:
-> On Mon, Apr 04, 2022 at 03:19:48PM +0900, Masahiro Yamada wrote:
-> >  	vr->num = num;
-> >  	vr->desc = p;
-> >  	vr->avail = (struct vring_avail *)((char *)p + num * sizeof(struct vring_desc));
-> > -	vr->used = (void *)(((uintptr_t)&vr->avail->ring[num] + sizeof(__virtio16)
-> > +	vr->used = (void *)(((__kernel_uintptr_t)&vr->avail->ring[num] + sizeof(__virtio16)
-> >  		+ align-1) & ~(align - 1));
-> 
-> This really does not look like it should be in a uapi header to start
-> with.
+From: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
 
-It's a way to document a complex structure layout of virtio 0.9. It's
-ugly but it's been like this for years. For virtio 1.0 we moved away
-from this but a bunch of tools keep using legacy.
+[ Upstream commit d5c5e78f217172e87d8fb2c3418dd8b58b4adfcb ]
 
+Add missing calls to dpu_hw_dspp_destroy() to free resources allocated
+for DSPP hardware blocks.
+
+Fixes: e47616df008b ("drm/msm/dpu: add support for color processing blocks in dpu driver")
+Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Reviewed-by: Stephen Boyd <swboyd@chromium.org>
+Reviewed-by: Abhinav Kumar <quic_abhinavk@quicinc.com>
+Link: https://lore.kernel.org/r/20220121210618.3482550-3-dmitry.baryshkov@linaro.org
+Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/gpu/drm/msm/disp/dpu1/dpu_rm.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
+
+diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_rm.c b/drivers/gpu/drm/msm/disp/dpu1/dpu_rm.c
+index 9b2b5044e8e0..74a13ccad34c 100644
+--- a/drivers/gpu/drm/msm/disp/dpu1/dpu_rm.c
++++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_rm.c
+@@ -34,6 +34,14 @@ int dpu_rm_destroy(struct dpu_rm *rm)
+ {
+ 	int i;
+ 
++	for (i = 0; i < ARRAY_SIZE(rm->dspp_blks); i++) {
++		struct dpu_hw_dspp *hw;
++
++		if (rm->dspp_blks[i]) {
++			hw = to_dpu_hw_dspp(rm->dspp_blks[i]);
++			dpu_hw_dspp_destroy(hw);
++		}
++	}
+ 	for (i = 0; i < ARRAY_SIZE(rm->pingpong_blks); i++) {
+ 		struct dpu_hw_pingpong *hw;
+ 
 -- 
-MST
+2.34.1
+
+
 
