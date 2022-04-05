@@ -2,45 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C6BC8C352A8
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 44FF3C433EF
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 13:41:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385156AbiDENlx (ORCPT
+        id S1383222AbiDENlD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 09:41:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42830 "EHLO
+        Tue, 5 Apr 2022 09:41:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44180 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345264AbiDEJWX (ORCPT
+        with ESMTP id S1345297AbiDEJWY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:22:23 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DED2D3FBFC;
-        Tue,  5 Apr 2022 02:10:05 -0700 (PDT)
+        Tue, 5 Apr 2022 05:22:24 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A91372BB18;
+        Tue,  5 Apr 2022 02:10:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DB0FB61576;
-        Tue,  5 Apr 2022 09:10:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EB561C385A2;
-        Tue,  5 Apr 2022 09:10:03 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CCAA3B81A12;
+        Tue,  5 Apr 2022 09:10:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 42C26C385A2;
+        Tue,  5 Apr 2022 09:10:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649149804;
-        bh=zDnDnqnkUnkvRiU0Bpg3UFg6AFN8i60eOTOfhbTGywk=;
+        s=korg; t=1649149815;
+        bh=hpbWX8YBC6s4oo45QHF2m7r8EsVxECiMVkMLp+Qwi3A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gNWlgUft0Pfa0IYpiY3nbrX0zcWgfc4nx0pqX/uqsUnBc8xvAqoE5VSDJ4PdIpw2M
-         BZkpdEs+iBIGEl+vnepW1cNAi3CPZwLUNx+UuloGe13sFkur30Db4ew2x8hJZgAMCJ
-         o2xLRM4EzyufMDh6D+TvYE3lBF1lyiHKfZAljPJA=
+        b=aC6G91vk1Uhlq/gGclet39VO0a6a2olxo5y4P01VDLLN/HOgh4NcHvHiMv3pZbkyF
+         IeVOJAa4gmcAa5N+qaghBmP1lfrhbCuUpwxD1pIAIgSo9uzvVSuuCiY00RVFmnHFGW
+         4bDA9XFkimBt96XjUXuIyi4ASIudsxDs3jhyFsQs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Rander Wang <rander.wang@intel.com>,
-        Anthony I Gilea <i@cpp.in>,
+        stable@vger.kernel.org,
         Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
+        Bard Liao <yung-chuan.liao@linux.intel.com>,
+        =?UTF-8?q?P=C3=A9ter=20Ujfalusi?= <peter.ujfalusi@linux.intel.com>,
         Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0848/1017] ASoC: Intel: sof_sdw: fix quirks for 2022 HP Spectre x360 13"
-Date:   Tue,  5 Apr 2022 09:29:21 +0200
-Message-Id: <20220405070419.410977809@linuxfoundation.org>
+Subject: [PATCH 5.16 0852/1017] ASoC: Intel: sof_es8336: log all quirks
+Date:   Tue,  5 Apr 2022 09:29:25 +0200
+Message-Id: <20220405070419.527635255@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -52,52 +53,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Anthony I Gilea <i@cpp.in>
+From: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
 
-[ Upstream commit ce73ef6ec67104d1fcc4c5911d77ce83288a0998 ]
+[ Upstream commit 9c818d849192491a8799b1cb14ca0f7aead4fb09 ]
 
-HP changed the DMI identification for 2022 devices:
-Product Name: HP Spectre x360 Conv 13-ap0001na
-Product Name: 8709
-This patch relaxes the DMI_MATCH criterion to work with all versions of this product.
+We only logged the SSP quirk, make sure the GPIO and DMIC quirks are
+exposed.
 
-Reviewed-by: Rander Wang <rander.wang@intel.com>
-Signed-off-by: Anthony I Gilea <i@cpp.in>
 Signed-off-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
-Link: https://lore.kernel.org/r/20220304204532.54675-4-pierre-louis.bossart@linux.intel.com
+Reviewed-by: Bard Liao <yung-chuan.liao@linux.intel.com>
+Reviewed-by: Péter Ujfalusi <peter.ujfalusi@linux.intel.com>
+Link: https://lore.kernel.org/r/20220308192610.392950-16-pierre-louis.bossart@linux.intel.com
 Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/soundwire/dmi-quirks.c   | 2 +-
- sound/soc/intel/boards/sof_sdw.c | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+ sound/soc/intel/boards/sof_es8336.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/soundwire/dmi-quirks.c b/drivers/soundwire/dmi-quirks.c
-index 0ca2a3e3a02e..747983743a14 100644
---- a/drivers/soundwire/dmi-quirks.c
-+++ b/drivers/soundwire/dmi-quirks.c
-@@ -59,7 +59,7 @@ static const struct dmi_system_id adr_remap_quirk_table[] = {
- 	{
- 		.matches = {
- 			DMI_MATCH(DMI_SYS_VENDOR, "HP"),
--			DMI_MATCH(DMI_PRODUCT_NAME, "HP Spectre x360 Convertible"),
-+			DMI_MATCH(DMI_PRODUCT_NAME, "HP Spectre x360 Conv"),
- 		},
- 		.driver_data = (void *)intel_tgl_bios,
- 	},
-diff --git a/sound/soc/intel/boards/sof_sdw.c b/sound/soc/intel/boards/sof_sdw.c
-index 54eefaff62a7..182e23bc2f34 100644
---- a/sound/soc/intel/boards/sof_sdw.c
-+++ b/sound/soc/intel/boards/sof_sdw.c
-@@ -184,7 +184,7 @@ static const struct dmi_system_id sof_sdw_quirk_table[] = {
- 		.callback = sof_sdw_quirk_cb,
- 		.matches = {
- 			DMI_MATCH(DMI_SYS_VENDOR, "HP"),
--			DMI_MATCH(DMI_PRODUCT_NAME, "HP Spectre x360 Convertible"),
-+			DMI_MATCH(DMI_PRODUCT_NAME, "HP Spectre x360 Conv"),
- 		},
- 		.driver_data = (void *)(SOF_SDW_TGL_HDMI |
- 					SOF_SDW_PCH_DMIC |
+diff --git a/sound/soc/intel/boards/sof_es8336.c b/sound/soc/intel/boards/sof_es8336.c
+index 46e453915f82..764560439d46 100644
+--- a/sound/soc/intel/boards/sof_es8336.c
++++ b/sound/soc/intel/boards/sof_es8336.c
+@@ -63,7 +63,12 @@ static const struct acpi_gpio_mapping *gpio_mapping = acpi_es8336_gpios;
+ 
+ static void log_quirks(struct device *dev)
+ {
+-	dev_info(dev, "quirk SSP%ld",  SOF_ES8336_SSP_CODEC(quirk));
++	dev_info(dev, "quirk mask %#lx\n", quirk);
++	dev_info(dev, "quirk SSP%ld\n",  SOF_ES8336_SSP_CODEC(quirk));
++	if (quirk & SOF_ES8336_ENABLE_DMIC)
++		dev_info(dev, "quirk DMIC enabled\n");
++	if (quirk & SOF_ES8336_TGL_GPIO_QUIRK)
++		dev_info(dev, "quirk TGL GPIO enabled\n");
+ }
+ 
+ static int sof_es8316_speaker_power_event(struct snd_soc_dapm_widget *w,
 -- 
 2.34.1
 
