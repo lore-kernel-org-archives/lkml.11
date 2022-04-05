@@ -2,48 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D38BC3527D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3DFF5C3527B
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:41:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1576356AbiDEXKe (ORCPT
+        id S1576313AbiDEXKa (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 19:10:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43976 "EHLO
+        Tue, 5 Apr 2022 19:10:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60308 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348102AbiDEKpr (ORCPT
+        with ESMTP id S1350015AbiDEJwU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:45:47 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0BA134673;
-        Tue,  5 Apr 2022 03:26:53 -0700 (PDT)
+        Tue, 5 Apr 2022 05:52:20 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65CB036E21;
+        Tue,  5 Apr 2022 02:50:21 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6FFA261743;
-        Tue,  5 Apr 2022 10:26:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7F309C385A0;
-        Tue,  5 Apr 2022 10:26:52 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 169C1B817D3;
+        Tue,  5 Apr 2022 09:50:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6CA8EC385A3;
+        Tue,  5 Apr 2022 09:50:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649154412;
-        bh=4Om7rs0x2EQFU2v84dM08SeVJ3v5+NTV2V76upqeUas=;
+        s=korg; t=1649152218;
+        bh=5KA/8ySZ2n1/KKSMcoJazR7rOJ6n1FuR1d09mg0Xu70=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ARzr2iJjqVofm3J+vi6rewBNa3RmwssvzkGE1QeaZYXD5tFVLqtdmpSS03yZt6rPG
-         a20HKQkrWf9EABpE3wA4TiZR759j4+Djz6s7NArn9ddx5BCoNC3qvGSPyYdnTZbgag
-         FQ2eEpN25iLVEk4XASWmTzpAAh/yECzelLwJiOuM=
+        b=S95rJj6TCs/BckiW1ouUzQeV0pV8zKIP9DQe1bTeuC5QUfFTK9mus06iXI48r/uiD
+         M0qrHjDA3Ra1RB0r0lJkMjuq6DFR9YqAus/zDVgBRghYB/01JFcuNRHUO19cVT3w45
+         h5nw7d2sXwKn0pdIN7qSIK0Hw7QL1pYzPIrn1quA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Himanshu Madhani <himanshu.madhani@oracle.com>,
-        Manish Rangankar <mrangankar@marvell.com>,
-        Nilesh Javali <njavali@marvell.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>
-Subject: [PATCH 5.10 531/599] scsi: qla2xxx: Use correct feature type field during RFF_ID processing
-Date:   Tue,  5 Apr 2022 09:33:45 +0200
-Message-Id: <20220405070314.642305752@linuxfoundation.org>
+        stable@vger.kernel.org, Marc Zyngier <maz@kernel.org>,
+        Maulik Shah <quic_mkshah@quicinc.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 697/913] irqchip/qcom-pdc: Fix broken locking
+Date:   Tue,  5 Apr 2022 09:29:19 +0200
+Message-Id: <20220405070400.727193727@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -52,46 +50,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Manish Rangankar <mrangankar@marvell.com>
+From: Marc Zyngier <maz@kernel.org>
 
-commit a7e05f7a1bcbe4ee055479242de46c5c16ab03b1 upstream.
+[ Upstream commit a6aca2f460e203781dc41391913cc5b54f4bc0ce ]
 
-During SNS Register FC-4 Features (RFF_ID) the initiator driver was sending
-incorrect type field for NVMe supported device. Use correct feature type
-field.
+pdc_enable_intr() serves as a primitive to qcom_pdc_gic_{en,dis}able,
+and has a raw spinlock for mutual exclusion, which is uses with
+interruptible primitives.
 
-Link: https://lore.kernel.org/r/20220310092604.22950-12-njavali@marvell.com
-Fixes: e374f9f59281 ("scsi: qla2xxx: Migrate switch registration commands away from mailbox interface")
-Cc: stable@vger.kernel.org
-Reviewed-by: Himanshu Madhani <himanshu.madhani@oracle.com>
-Signed-off-by: Manish Rangankar <mrangankar@marvell.com>
-Signed-off-by: Nilesh Javali <njavali@marvell.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+This means that this critical section can itself be interrupted.
+Should the interrupt also be a PDC interrupt, and the endpoint driver
+perform an irq_disable() on that interrupt, we end-up in a deadlock.
+
+Fix this by using the irqsave/irqrestore variants of the locking
+primitives.
+
+Signed-off-by: Marc Zyngier <maz@kernel.org>
+Reviewed-by: Maulik Shah <quic_mkshah@quicinc.com>
+Link: https://lore.kernel.org/r/20220224101226.88373-5-maz@kernel.org
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/qla2xxx/qla_gs.c |    5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
+ drivers/irqchip/qcom-pdc.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
---- a/drivers/scsi/qla2xxx/qla_gs.c
-+++ b/drivers/scsi/qla2xxx/qla_gs.c
-@@ -676,8 +676,7 @@ qla2x00_rff_id(scsi_qla_host_t *vha, u8
- 		return (QLA_SUCCESS);
- 	}
+diff --git a/drivers/irqchip/qcom-pdc.c b/drivers/irqchip/qcom-pdc.c
+index 173e6520e06e..c0b457f26ec4 100644
+--- a/drivers/irqchip/qcom-pdc.c
++++ b/drivers/irqchip/qcom-pdc.c
+@@ -56,17 +56,18 @@ static u32 pdc_reg_read(int reg, u32 i)
+ static void pdc_enable_intr(struct irq_data *d, bool on)
+ {
+ 	int pin_out = d->hwirq;
++	unsigned long flags;
+ 	u32 index, mask;
+ 	u32 enable;
  
--	return qla_async_rffid(vha, &vha->d_id, qlt_rff_id(vha),
--	    FC4_TYPE_FCP_SCSI);
-+	return qla_async_rffid(vha, &vha->d_id, qlt_rff_id(vha), type);
+ 	index = pin_out / 32;
+ 	mask = pin_out % 32;
+ 
+-	raw_spin_lock(&pdc_lock);
++	raw_spin_lock_irqsave(&pdc_lock, flags);
+ 	enable = pdc_reg_read(IRQ_ENABLE_BANK, index);
+ 	enable = on ? ENABLE_INTR(enable, mask) : CLEAR_INTR(enable, mask);
+ 	pdc_reg_write(IRQ_ENABLE_BANK, index, enable);
+-	raw_spin_unlock(&pdc_lock);
++	raw_spin_unlock_irqrestore(&pdc_lock, flags);
  }
  
- static int qla_async_rffid(scsi_qla_host_t *vha, port_id_t *d_id,
-@@ -727,7 +726,7 @@ static int qla_async_rffid(scsi_qla_host
- 	/* Prepare CT arguments -- port_id, FC-4 feature, FC-4 type */
- 	ct_req->req.rff_id.port_id = port_id_to_be_id(*d_id);
- 	ct_req->req.rff_id.fc4_feature = fc4feature;
--	ct_req->req.rff_id.fc4_type = fc4type;		/* SCSI - FCP */
-+	ct_req->req.rff_id.fc4_type = fc4type;		/* SCSI-FCP or FC-NVMe */
- 
- 	sp->u.iocb_cmd.u.ctarg.req_size = RFF_ID_REQ_SIZE;
- 	sp->u.iocb_cmd.u.ctarg.rsp_size = RFF_ID_RSP_SIZE;
+ static void qcom_pdc_gic_disable(struct irq_data *d)
+-- 
+2.34.1
+
 
 
