@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F5E3C3527B
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 10:28:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 72007C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 10:28:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355954AbiDEKWX (ORCPT
+        id S1355975AbiDEKWe (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 06:22:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43946 "EHLO
+        Tue, 5 Apr 2022 06:22:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46000 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241256AbiDEIc6 (ORCPT
+        with ESMTP id S241259AbiDEIc6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Apr 2022 04:32:58 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D304D62D7;
-        Tue,  5 Apr 2022 01:30:46 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09E3B62E7;
+        Tue,  5 Apr 2022 01:30:51 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6E233609D0;
-        Tue,  5 Apr 2022 08:30:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 789CCC385A1;
-        Tue,  5 Apr 2022 08:30:45 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C345EB81BC0;
+        Tue,  5 Apr 2022 08:30:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3A638C385A1;
+        Tue,  5 Apr 2022 08:30:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649147445;
-        bh=+XNFu5tzAZ28lpUNmFeUfsDI3/CgFwn+nRal1GCbe9E=;
+        s=korg; t=1649147448;
+        bh=+1uthk7lYAmO9wnvrPL07V5fVwTvslmy0jK66nFRxSs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=R9HW318qcRDjd6FxgDir/48etQihrLiMdBd9pkzetI4d9S9FT5q4+dLVX8OXsR3EI
-         Cl7RK1uyWDUvJiGtjBxTk27z6UNWRWM5QtVfbfvPcczBJjdJotl55pHpTjFz3vx/+M
-         8w6v48BZbt3Hb0ANuX869ndkb7zakD2DLWruPkq8=
+        b=KOuy0ZbkdOYAwGAeRdjF1q+cNfGzra1iJp4b1QwOk6ovYMBQEHg/Qvb4tNGGdKxAn
+         zLkAtKIiz7G4nHprXbF3tG8+3OsD25aC3VP32mWFHXrmVnXhhcQZ5nkpZ7mTtNSYJX
+         GL1qG+DYM/Z1aHlgn/+7qTig+w1FCxuqhah++JsY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jann Horn <jannh@google.com>,
-        Kees Cook <keescook@chromium.org>,
-        "Eric W. Biederman" <ebiederm@xmission.com>
-Subject: [PATCH 5.17 1125/1126] coredump/elf: Pass coredump_params into fill_note_info
-Date:   Tue,  5 Apr 2022 09:31:12 +0200
-Message-Id: <20220405070440.446167256@linuxfoundation.org>
+        stable@vger.kernel.org, Miquel Raynal <miquel.raynal@bootlin.com>,
+        Rob Herring <robh@kernel.org>
+Subject: [PATCH 5.17 1089/1126] dt-bindings: mtd: nand-controller: Fix the reg property description
+Date:   Tue,  5 Apr 2022 09:30:36 +0200
+Message-Id: <20220405070439.413895406@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -50,107 +49,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric W. Biederman <ebiederm@xmission.com>
+From: Miquel Raynal <miquel.raynal@bootlin.com>
 
-commit 9ec7d3230717b4fe9b6c7afeb4811909c23fa1d7 upstream.
+commit 93f2ec9e401276fb4ea9903194a5bfcf175f9a2c upstream.
 
-Instead of individually passing cprm->siginfo and cprm->regs
-into fill_note_info pass all of struct coredump_params.
+The reg property of a NAND device always references the chip-selects.
+The ready/busy lines are described in the nand-rb property. I believe
+this was a harmless copy/paste error during the conversion to yaml.
 
-This is preparation to allow fill_files_note to use the existing
-vma snapshot.
-
-Reviewed-by: Jann Horn <jannh@google.com>
-Reviewed-by: Kees Cook <keescook@chromium.org>
-Signed-off-by: "Eric W. Biederman" <ebiederm@xmission.com>
+Fixes: 212e49693592 ("dt-bindings: mtd: Add YAML schemas for the generic NAND options")
+Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+Acked-by: Rob Herring <robh@kernel.org>
+Link: https://lore.kernel.org/linux-mtd/20211216111654.238086-2-miquel.raynal@bootlin.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/binfmt_elf.c |   22 +++++++++++-----------
- 1 file changed, 11 insertions(+), 11 deletions(-)
+ Documentation/devicetree/bindings/mtd/nand-controller.yaml |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/fs/binfmt_elf.c
-+++ b/fs/binfmt_elf.c
-@@ -1823,7 +1823,7 @@ static int fill_thread_core_info(struct
+--- a/Documentation/devicetree/bindings/mtd/nand-controller.yaml
++++ b/Documentation/devicetree/bindings/mtd/nand-controller.yaml
+@@ -55,7 +55,7 @@ patternProperties:
+     properties:
+       reg:
+         description:
+-          Contains the native Ready/Busy IDs.
++          Contains the chip-select IDs.
  
- static int fill_note_info(struct elfhdr *elf, int phdrs,
- 			  struct elf_note_info *info,
--			  const kernel_siginfo_t *siginfo, struct pt_regs *regs)
-+			  struct coredump_params *cprm)
- {
- 	struct task_struct *dump_task = current;
- 	const struct user_regset_view *view = task_user_regset_view(dump_task);
-@@ -1895,7 +1895,7 @@ static int fill_note_info(struct elfhdr
- 	 * Now fill in each thread's information.
- 	 */
- 	for (t = info->thread; t != NULL; t = t->next)
--		if (!fill_thread_core_info(t, view, siginfo->si_signo, &info->size))
-+		if (!fill_thread_core_info(t, view, cprm->siginfo->si_signo, &info->size))
- 			return 0;
- 
- 	/*
-@@ -1904,7 +1904,7 @@ static int fill_note_info(struct elfhdr
- 	fill_psinfo(psinfo, dump_task->group_leader, dump_task->mm);
- 	info->size += notesize(&info->psinfo);
- 
--	fill_siginfo_note(&info->signote, &info->csigdata, siginfo);
-+	fill_siginfo_note(&info->signote, &info->csigdata, cprm->siginfo);
- 	info->size += notesize(&info->signote);
- 
- 	fill_auxv_note(&info->auxv, current->mm);
-@@ -2052,7 +2052,7 @@ static int elf_note_info_init(struct elf
- 
- static int fill_note_info(struct elfhdr *elf, int phdrs,
- 			  struct elf_note_info *info,
--			  const kernel_siginfo_t *siginfo, struct pt_regs *regs)
-+			  struct coredump_params *cprm)
- {
- 	struct core_thread *ct;
- 	struct elf_thread_status *ets;
-@@ -2073,13 +2073,13 @@ static int fill_note_info(struct elfhdr
- 	list_for_each_entry(ets, &info->thread_list, list) {
- 		int sz;
- 
--		sz = elf_dump_thread_status(siginfo->si_signo, ets);
-+		sz = elf_dump_thread_status(cprm->siginfo->si_signo, ets);
- 		info->thread_status_size += sz;
- 	}
- 	/* now collect the dump for the current */
- 	memset(info->prstatus, 0, sizeof(*info->prstatus));
--	fill_prstatus(&info->prstatus->common, current, siginfo->si_signo);
--	elf_core_copy_regs(&info->prstatus->pr_reg, regs);
-+	fill_prstatus(&info->prstatus->common, current, cprm->siginfo->si_signo);
-+	elf_core_copy_regs(&info->prstatus->pr_reg, cprm->regs);
- 
- 	/* Set up header */
- 	fill_elf_header(elf, phdrs, ELF_ARCH, ELF_CORE_EFLAGS);
-@@ -2095,7 +2095,7 @@ static int fill_note_info(struct elfhdr
- 	fill_note(info->notes + 1, "CORE", NT_PRPSINFO,
- 		  sizeof(*info->psinfo), info->psinfo);
- 
--	fill_siginfo_note(info->notes + 2, &info->csigdata, siginfo);
-+	fill_siginfo_note(info->notes + 2, &info->csigdata, cprm->siginfo);
- 	fill_auxv_note(info->notes + 3, current->mm);
- 	info->numnote = 4;
- 
-@@ -2105,8 +2105,8 @@ static int fill_note_info(struct elfhdr
- 	}
- 
- 	/* Try to dump the FPU. */
--	info->prstatus->pr_fpvalid = elf_core_copy_task_fpregs(current, regs,
--							       info->fpu);
-+	info->prstatus->pr_fpvalid =
-+		elf_core_copy_task_fpregs(current, cprm->regs, info->fpu);
- 	if (info->prstatus->pr_fpvalid)
- 		fill_note(info->notes + info->numnote++,
- 			  "CORE", NT_PRFPREG, sizeof(*info->fpu), info->fpu);
-@@ -2219,7 +2219,7 @@ static int elf_core_dump(struct coredump
- 	 * Collect all the non-memory information about the process for the
- 	 * notes.  This also sets up the file header.
- 	 */
--	if (!fill_note_info(&elf, e_phnum, &info, cprm->siginfo, cprm->regs))
-+	if (!fill_note_info(&elf, e_phnum, &info, cprm))
- 		goto end_coredump;
- 
- 	has_dumped = 1;
+       nand-ecc-engine:
+         allOf:
 
 
