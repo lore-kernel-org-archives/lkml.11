@@ -2,99 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B975FC43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C8ECDC4167B
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 02:08:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1846751AbiDFCIe (ORCPT
+        id S1846766AbiDFCIf (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 22:08:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59182 "EHLO
+        Tue, 5 Apr 2022 22:08:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58754 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356255AbiDEKXc (ORCPT
+        with ESMTP id S1389337AbiDENdo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:23:32 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3B32BABBF;
-        Tue,  5 Apr 2022 03:08:04 -0700 (PDT)
+        Tue, 5 Apr 2022 09:33:44 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCD24E9C90;
+        Tue,  5 Apr 2022 05:39:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8CAD8B81B7A;
-        Tue,  5 Apr 2022 10:08:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CFEE7C385A1;
-        Tue,  5 Apr 2022 10:08:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649153282;
-        bh=xMuBtpSMi0tR4uqVjAuMkRQrPn1kVymN+i1l75YiSig=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0qIRl9cLfbPXOCUdA2UgUzcK9y3DNd4cokvmPuApIPvvrA4G+3pTjODJihlc4nTzD
-         UVP6EgLS6BYuiQF3RbujKKl0k/01AmJxAEeojrvnMbd/e9R5YnsxLkuFNLv6J5L10F
-         ItchsbGdB/OC5re4zgjM1jjqdF/xEQNZo+Ro34ds=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
-        Igor Zhbanov <i.zhbanov@omprussia.ru>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 168/599] clocksource: acpi_pm: fix return value of __setup handler
-Date:   Tue,  5 Apr 2022 09:27:42 +0200
-Message-Id: <20220405070303.841916069@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
-User-Agent: quilt/0.66
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9201461802;
+        Tue,  5 Apr 2022 12:39:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5CF7CC385A1;
+        Tue,  5 Apr 2022 12:39:03 +0000 (UTC)
+Authentication-Results: smtp.kernel.org;
+        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="fOURhmSn"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
+        t=1649162341;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=0yCGiJPMEhyBglrpRDw/N/UymMsKw6+o4Dn9AYLm1Ro=;
+        b=fOURhmSnfUqQ2UY50KIdC6WuOwRLuZqE9uXVqWrjYHBRr8HiCCMOU9c9DcrdYfLwCQzyS/
+        SZvvF3eZb9hicxAy7rAHVJfETHUqXB3lXlm3BmenBkuHQ8ERGe09vte7nIlWW7ubllM5OI
+        33yPc34rjyWRXeVUtg0ZGNUh/OFrJYI=
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 1dcef730 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
+        Tue, 5 Apr 2022 12:39:00 +0000 (UTC)
+Received: by mail-yw1-f181.google.com with SMTP id 00721157ae682-2eb3db5b172so88079487b3.6;
+        Tue, 05 Apr 2022 05:39:00 -0700 (PDT)
+X-Gm-Message-State: AOAM5316UDXjtr/8t1BkyZgEYtDDP4WD1ooheA6+jsY68aIcW23ndFag
+        h2KbXp9qnFSHHGeEfjQyEJkJsGuOS60XqwDiTJE=
+X-Google-Smtp-Source: ABdhPJzReerSJeFzBuDuWWB1BCduZovdDNRtUnzeD2HQItFoRgMyYRs0aj5KZJPM4aTyTVvYuF2w5uZ+AhZe+1/Abok=
+X-Received: by 2002:a0d:e607:0:b0:2eb:87de:2cc4 with SMTP id
+ p7-20020a0de607000000b002eb87de2cc4mr2392483ywe.485.1649162339400; Tue, 05
+ Apr 2022 05:38:59 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Received: by 2002:a05:7110:470c:b0:173:a80b:3ec5 with HTTP; Tue, 5 Apr 2022
+ 05:38:58 -0700 (PDT)
+In-Reply-To: <202204041953.D7E0BA15@keescook>
+References: <CAHmME9otYi4pCzZwSGnK40dp1QMRVPxp+DBysVuLXUKkXinAxg@mail.gmail.com>
+ <20220403204036.1269562-1-Jason@zx2c4.com> <202204041144.96FC64A8@keescook>
+ <Ykt1cj0wPKEsHL2q@zx2c4.com> <202204041953.D7E0BA15@keescook>
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+Date:   Tue, 5 Apr 2022 14:38:58 +0200
+X-Gmail-Original-Message-ID: <CAHmME9rC-pmi3K=w06-bOsHP5=tPv9CS51hr69P1C5tmvHf_mA@mail.gmail.com>
+Message-ID: <CAHmME9rC-pmi3K=w06-bOsHP5=tPv9CS51hr69P1C5tmvHf_mA@mail.gmail.com>
+Subject: Re: [PATCH v2] gcc-plugins: latent_entropy: use /dev/urandom
+To:     Kees Cook <keescook@chromium.org>
+Cc:     linux-hardening@vger.kernel.org, linux-kernel@vger.kernel.org,
+        stable@vger.kernel.org, PaX Team <pageexec@freemail.hu>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Randy Dunlap <rdunlap@infradead.org>
+Hi Kees,
 
-[ Upstream commit 6a861abceecb68497dd82a324fee45a5332dcece ]
+On 4/5/22, Kees Cook <keescook@chromium.org> wrote:
+> On Tue, Apr 05, 2022 at 12:47:14AM +0200, Jason A. Donenfeld wrote:
+>> On Mon, Apr 4, 2022 at 8:49 PM Kees Cook <keescook@chromium.org> wrote:
+>> > This mixes two changes: the pRNG change and the "use urandom if
+>> > non-deterministic" change. I think these should be split, so the pRNG
+>> > change can be explicitly justified.
+>>
+>> Alright, I'll split those. Or, more probably, just drop the xorshift
+>> thing. There's not actually a strong reason for preferring xorshift. I
+>> did it because it produces more uniformity and is faster to compute and
+>> all that. But none of that stuff actually matters here. It was just a
+>> sort of "well I'm at it..." thing.
+>
+> Well, it's nice to have and you already wrote it, so seems a waste to
+> just drop it. :)
+>
+>> > >  static struct plugin_info latent_entropy_plugin_info = {
+>> > > -     .version        = "201606141920vanilla",
+>> > > +     .version        = "202203311920vanilla",
+>> >
+>> > This doesn't really need to be versioned. We can change this to just
+>> > "vanilla", IMO.
+>>
+>> Okay. I suppose you want it to be in a different patch too, right? In
+>> which case I'll leave it out and maybe get to it later. (I suppose one
+>> probably needs to double check whether it's used for anything
+>> interesting like dwarf debug info or whatever, where maybe it's
+>> helpful?)
+>
+> Hm, I don't think it shows up anywhere, but you can just drop the hunk
+> that touch it. I can remove them all with a separate patch later.
+>
 
-__setup() handlers should return 1 to obsolete_checksetup() in
-init/main.c to indicate that the boot option has been handled.
-A return of 0 causes the boot option/value to be listed as an Unknown
-kernel parameter and added to init's (limited) environment strings.
+Okay. That's what I did here
+https://lore.kernel.org/lkml/20220404230709.124508-1-Jason@zx2c4.com/
+so awaiting your merge. (I still find all aspects of v2 more
+preferable for a variety of weak reasons in case you'd like to merge
+that instead, but v3 is available now.)
 
-The __setup() handler interface isn't meant to handle negative return
-values -- they are non-zero, so they mean "handled" (like a return
-value of 1 does), but that's just a quirk. So return 1 from
-parse_pmtmr(). Also print a warning message if kstrtouint() returns
-an error.
-
-Fixes: 6b148507d3d0 ("pmtmr: allow command line override of ioport")
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Reported-by: Igor Zhbanov <i.zhbanov@omprussia.ru>
-Link: lore.kernel.org/r/64644a2f-4a20-bab3-1e15-3b2cdd0defe3@omprussia.ru
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/clocksource/acpi_pm.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/clocksource/acpi_pm.c b/drivers/clocksource/acpi_pm.c
-index eb596ff9e7bb..279ddff81ab4 100644
---- a/drivers/clocksource/acpi_pm.c
-+++ b/drivers/clocksource/acpi_pm.c
-@@ -229,8 +229,10 @@ static int __init parse_pmtmr(char *arg)
- 	int ret;
- 
- 	ret = kstrtouint(arg, 16, &base);
--	if (ret)
--		return ret;
-+	if (ret) {
-+		pr_warn("PMTMR: invalid 'pmtmr=' value: '%s'\n", arg);
-+		return 1;
-+	}
- 
- 	pr_info("PMTMR IOPort override: 0x%04x -> 0x%04x\n", pmtmr_ioport,
- 		base);
--- 
-2.34.1
-
-
-
+Jason
