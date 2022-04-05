@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A1F21C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 07:40:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 51800C4332F
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 07:40:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231839AbiDEHmD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 03:42:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53946 "EHLO
+        id S231869AbiDEHmR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 03:42:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54404 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231894AbiDEHl3 (ORCPT
+        with ESMTP id S231733AbiDEHld (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 03:41:29 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C84E2E9D0;
-        Tue,  5 Apr 2022 00:39:31 -0700 (PDT)
+        Tue, 5 Apr 2022 03:41:33 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 870164B43F;
+        Tue,  5 Apr 2022 00:39:35 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D653D6150D;
-        Tue,  5 Apr 2022 07:39:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E8A85C340EE;
-        Tue,  5 Apr 2022 07:39:29 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2BEDAB81B16;
+        Tue,  5 Apr 2022 07:39:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9A1C1C340EE;
+        Tue,  5 Apr 2022 07:39:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649144370;
-        bh=iNiqVVs3RFLMStxPJaJA1NO2p1BzNFd9jBlWtITpKTY=;
+        s=korg; t=1649144373;
+        bh=B8Q+cSPIOi/M5XObkjw1M58uMGbxfVaxxo5QHsotE6w=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fVIdhMKZiIlRTtHi0xfZ5TtvU11YJIvgECZzbBJeuIEm0MyZeDszka3Xl8ZJYEM0i
-         9rSq9f6mPe2OdtJpbXQiK1Fva7152PWRpzjM+FSnJZKRISvy7CMM7918KOksyPzHaw
-         LjjxGMoaBudvLNfRf22t5uxYV4KMhF/lNZXfGGgI=
+        b=Lsmd6fewgbrgBllthUQAjmK+iCIHTIXj7+S5OXKPwo0l1fKkXqwf3fFKWsF4W5l4w
+         eNq+eDU0nQmAZk03NIzQWvvgT+6dmHf69DBZYo1mkksVEflt1KeKqRVkitLqLfOdMq
+         MQvWtYfxhWWaDls6TiSqsJziv3aLd7NMwgcapEl8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Sven Peter <sven@svenpeter.dev>
-Subject: [PATCH 5.17 0013/1126] usb: typec: tipd: Forward plug orientation to typec subsystem
-Date:   Tue,  5 Apr 2022 09:12:40 +0200
-Message-Id: <20220405070407.929240198@linuxfoundation.org>
+        stable@vger.kernel.org, Manivannan Sadhasivam <mani@kernel.org>,
+        Yonglin Tan <yonglin.tan@outlook.com>,
+        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+Subject: [PATCH 5.17 0022/1126] bus: mhi: pci_generic: Add mru_default for Quectel EM1xx series
+Date:   Tue,  5 Apr 2022 09:12:49 +0200
+Message-Id: <20220405070408.196497441@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -49,55 +49,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sven Peter <sven@svenpeter.dev>
+From: Yonglin Tan <yonglin.tan@outlook.com>
 
-commit 676748389f5db74e7d28f9d630eebd75cb8a11b4 upstream.
+commit 2413ffbf19a95cfcd7adf63135c5a9343a66d0a2 upstream.
 
-In order to bring up the USB3 PHY on the Apple M1 we need to know the
-orientation of the Type-C cable. Extract it from the status register and
-forward it to the typec subsystem.
+For default mechanism, the driver uses default MRU 3500 if mru_default
+is not initialized. The Qualcomm configured the MRU size to 32768 in the
+WWAN device FW. So, we align the driver setting with Qualcomm FW setting.
 
-Reviewed-by: Heikki Krogerus <heikki.krogerus@linux.intel.com>
-Cc: stable <stable@vger.kernel.org>
-Signed-off-by: Sven Peter <sven@svenpeter.dev>
-Link: https://lore.kernel.org/r/20220226125912.59828-1-sven@svenpeter.dev
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Link: https://lore.kernel.org/r/MEYP282MB2374EE345DADDB591AFDA6AFFD2E9@MEYP282MB2374.AUSP282.PROD.OUTLOOK.COM
+Fixes: ac4bf60bbaa0 ("bus: mhi: pci_generic: Introduce quectel EM1XXGR-L support")
+Cc: stable@vger.kernel.org
+Reviewed-by: Manivannan Sadhasivam <mani@kernel.org>
+Signed-off-by: Yonglin Tan <yonglin.tan@outlook.com>
+Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+Link: https://lore.kernel.org/r/20220301160308.107452-2-manivannan.sadhasivam@linaro.org
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/usb/typec/tipd/core.c     |    5 +++++
- drivers/usb/typec/tipd/tps6598x.h |    1 +
- 2 files changed, 6 insertions(+)
+ drivers/bus/mhi/pci_generic.c |    1 +
+ 1 file changed, 1 insertion(+)
 
---- a/drivers/usb/typec/tipd/core.c
-+++ b/drivers/usb/typec/tipd/core.c
-@@ -256,6 +256,10 @@ static int tps6598x_connect(struct tps65
- 	typec_set_pwr_opmode(tps->port, mode);
- 	typec_set_pwr_role(tps->port, TPS_STATUS_TO_TYPEC_PORTROLE(status));
- 	typec_set_vconn_role(tps->port, TPS_STATUS_TO_TYPEC_VCONN(status));
-+	if (TPS_STATUS_TO_UPSIDE_DOWN(status))
-+		typec_set_orientation(tps->port, TYPEC_ORIENTATION_REVERSE);
-+	else
-+		typec_set_orientation(tps->port, TYPEC_ORIENTATION_NORMAL);
- 	tps6598x_set_data_role(tps, TPS_STATUS_TO_TYPEC_DATAROLE(status), true);
+--- a/drivers/bus/mhi/pci_generic.c
++++ b/drivers/bus/mhi/pci_generic.c
+@@ -327,6 +327,7 @@ static const struct mhi_pci_dev_info mhi
+ 	.config = &modem_quectel_em1xx_config,
+ 	.bar_num = MHI_PCI_DEFAULT_BAR_NUM,
+ 	.dma_data_width = 32,
++	.mru_default = 32768,
+ 	.sideband_wake = true,
+ };
  
- 	tps->partner = typec_register_partner(tps->port, &desc);
-@@ -278,6 +282,7 @@ static void tps6598x_disconnect(struct t
- 	typec_set_pwr_opmode(tps->port, TYPEC_PWR_MODE_USB);
- 	typec_set_pwr_role(tps->port, TPS_STATUS_TO_TYPEC_PORTROLE(status));
- 	typec_set_vconn_role(tps->port, TPS_STATUS_TO_TYPEC_VCONN(status));
-+	typec_set_orientation(tps->port, TYPEC_ORIENTATION_NONE);
- 	tps6598x_set_data_role(tps, TPS_STATUS_TO_TYPEC_DATAROLE(status), false);
- 
- 	power_supply_changed(tps->psy);
---- a/drivers/usb/typec/tipd/tps6598x.h
-+++ b/drivers/usb/typec/tipd/tps6598x.h
-@@ -17,6 +17,7 @@
- /* TPS_REG_STATUS bits */
- #define TPS_STATUS_PLUG_PRESENT		BIT(0)
- #define TPS_STATUS_PLUG_UPSIDE_DOWN	BIT(4)
-+#define TPS_STATUS_TO_UPSIDE_DOWN(s)	(!!((s) & TPS_STATUS_PLUG_UPSIDE_DOWN))
- #define TPS_STATUS_PORTROLE		BIT(5)
- #define TPS_STATUS_TO_TYPEC_PORTROLE(s) (!!((s) & TPS_STATUS_PORTROLE))
- #define TPS_STATUS_DATAROLE		BIT(6)
 
 
