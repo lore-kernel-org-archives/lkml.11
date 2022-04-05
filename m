@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 28D55C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 13:52:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 40D4CC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 13:53:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234205AbiDENx6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 09:53:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60098 "EHLO
+        id S236408AbiDENym (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 09:54:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44262 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345005AbiDEJWI (ORCPT
+        with ESMTP id S1344824AbiDEJVT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:22:08 -0400
+        Tue, 5 Apr 2022 05:21:19 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E59F8266B;
-        Tue,  5 Apr 2022 02:08:58 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C99825EB4;
+        Tue,  5 Apr 2022 02:08:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C719361577;
-        Tue,  5 Apr 2022 09:08:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D759CC385A2;
-        Tue,  5 Apr 2022 09:08:57 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DA8DB61571;
+        Tue,  5 Apr 2022 09:08:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EEAEAC385A0;
+        Tue,  5 Apr 2022 09:08:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649149738;
-        bh=PSAWW/Nw9gcKd2tq0UOU4St9E3PTIIk5kU+nkR20mk8=;
+        s=korg; t=1649149727;
+        bh=TfW7T4LLiZbMAJKWnDbyoXtY7mFp1MuFCsVtbGpkdmo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cwB1UwFdO2uXKMgun+88xp+r+A0gJy3B2GRI3nQYuRBz4xPt829sSgNdGRE9jDjVO
-         5InL9xjUj6/EdpxvDHCJ0Jae5xSj9glju7rGe9GY6mdIiiSoDiioGXS/RyHwZUULzb
-         lIJvSI5Ui5o1YRQ1Nkt+R6VjZHQm8NLLcih3H0yU=
+        b=g6FfJHaxe3fWRQBmfqvojtOlgBNEqiqJguY6ryANG9WixgA9VxBbY3BK23tsL6R78
+         RIGgt+ZSH88Qmvwi7b84dSvgP7bYiwWFia728JHufLFrEdDHnMZe0HpueYBTk2py4s
+         4lWu8fnR5bzktF9V/z3cRuUuyHdVa7esTdydgqRI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Josef Bacik <josef@toxicpanda.com>,
-        David Sterba <dsterba@suse.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0796/1017] btrfs: handle csum lookup errors properly on reads
-Date:   Tue,  5 Apr 2022 09:28:29 +0200
-Message-Id: <20220405070417.878940354@linuxfoundation.org>
+        stable@vger.kernel.org, Zeal Robot <zealci@zte.com.cn>,
+        Yang Guang <yang.guang5@zte.com.cn>,
+        Helge Deller <deller@gmx.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 0819/1017] video: fbdev: omapfb: acx565akm: replace snprintf with sysfs_emit
+Date:   Tue,  5 Apr 2022 09:28:52 +0200
+Message-Id: <20220405070418.558876589@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -49,112 +49,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Josef Bacik <josef@toxicpanda.com>
+From: Yang Guang <yang.guang5@zte.com.cn>
 
-[ Upstream commit 1784b7d502a94b561eae58249adde5f72c26eb3c ]
+[ Upstream commit 24565bc4115961db7ee64fcc7ad2a7437c0d0a49 ]
 
-Currently any error we get while trying to lookup csums during reads
-shows up as a missing csum, and then on the read completion side we
-print an error saying there was a csum mismatch and we increase the
-device corruption count.
+coccinelle report:
+./drivers/video/fbdev/omap2/omapfb/displays/panel-sony-acx565akm.c:
+479:9-17: WARNING: use scnprintf or sprintf
 
-However we could have gotten an EIO from the lookup.  We could also be
-inside of a memory constrained container and gotten a ENOMEM while
-trying to do the read.  In either case we don't want to make this look
-like a file system corruption problem, we want to make it look like the
-actual error it is.  Capture any negative value, convert it to the
-appropriate blk_status_t, free the csum array if we have one and bail.
+Use sysfs_emit instead of scnprintf or sprintf makes more sense.
 
-Note: a possible improvement would be to make the relocation code look
-up the owning inode and see if it's marked as NODATASUM and set
-EXTENT_NODATASUM there, that way if there's corruption and there isn't a
-checksum when we want it we can fail here rather than later.
-
-Signed-off-by: Josef Bacik <josef@toxicpanda.com>
-Signed-off-by: David Sterba <dsterba@suse.com>
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: Yang Guang <yang.guang5@zte.com.cn>
+Signed-off-by: Helge Deller <deller@gmx.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/btrfs/file-item.c | 36 ++++++++++++++++++++++--------------
- 1 file changed, 22 insertions(+), 14 deletions(-)
+ .../video/fbdev/omap2/omapfb/displays/panel-sony-acx565akm.c    | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/fs/btrfs/file-item.c b/fs/btrfs/file-item.c
-index 91ae1caa1bdb..a68d9cab12ea 100644
---- a/fs/btrfs/file-item.c
-+++ b/fs/btrfs/file-item.c
-@@ -366,6 +366,7 @@ blk_status_t btrfs_lookup_bio_sums(struct inode *inode, struct bio *bio, u8 *dst
- {
- 	struct btrfs_fs_info *fs_info = btrfs_sb(inode->i_sb);
- 	struct extent_io_tree *io_tree = &BTRFS_I(inode)->io_tree;
-+	struct btrfs_bio *bbio = NULL;
- 	struct btrfs_path *path;
- 	const u32 sectorsize = fs_info->sectorsize;
- 	const u32 csum_size = fs_info->csum_size;
-@@ -375,6 +376,7 @@ blk_status_t btrfs_lookup_bio_sums(struct inode *inode, struct bio *bio, u8 *dst
- 	u8 *csum;
- 	const unsigned int nblocks = orig_len >> fs_info->sectorsize_bits;
- 	int count = 0;
-+	blk_status_t ret = BLK_STS_OK;
+diff --git a/drivers/video/fbdev/omap2/omapfb/displays/panel-sony-acx565akm.c b/drivers/video/fbdev/omap2/omapfb/displays/panel-sony-acx565akm.c
+index 8d8b5ff7d43c..3696eb09b69b 100644
+--- a/drivers/video/fbdev/omap2/omapfb/displays/panel-sony-acx565akm.c
++++ b/drivers/video/fbdev/omap2/omapfb/displays/panel-sony-acx565akm.c
+@@ -476,7 +476,7 @@ static ssize_t show_cabc_available_modes(struct device *dev,
+ 	int i;
  
- 	if (!fs_info->csum_root || (BTRFS_I(inode)->flags & BTRFS_INODE_NODATASUM))
- 		return BLK_STS_OK;
-@@ -397,7 +399,7 @@ blk_status_t btrfs_lookup_bio_sums(struct inode *inode, struct bio *bio, u8 *dst
- 		return BLK_STS_RESOURCE;
+ 	if (!ddata->has_cabc)
+-		return snprintf(buf, PAGE_SIZE, "%s\n", cabc_modes[0]);
++		return sysfs_emit(buf, "%s\n", cabc_modes[0]);
  
- 	if (!dst) {
--		struct btrfs_bio *bbio = btrfs_bio(bio);
-+		bbio = btrfs_bio(bio);
- 
- 		if (nblocks * csum_size > BTRFS_BIO_INLINE_CSUM_SIZE) {
- 			bbio->csum = kmalloc_array(nblocks, csum_size, GFP_NOFS);
-@@ -453,21 +455,27 @@ blk_status_t btrfs_lookup_bio_sums(struct inode *inode, struct bio *bio, u8 *dst
- 
- 		count = search_csum_tree(fs_info, path, cur_disk_bytenr,
- 					 search_len, csum_dst);
--		if (count <= 0) {
--			/*
--			 * Either we hit a critical error or we didn't find
--			 * the csum.
--			 * Either way, we put zero into the csums dst, and skip
--			 * to the next sector.
--			 */
-+		if (count < 0) {
-+			ret = errno_to_blk_status(count);
-+			if (bbio)
-+				btrfs_bio_free_csum(bbio);
-+			break;
-+		}
-+
-+		/*
-+		 * We didn't find a csum for this range.  We need to make sure
-+		 * we complain loudly about this, because we are not NODATASUM.
-+		 *
-+		 * However for the DATA_RELOC inode we could potentially be
-+		 * relocating data extents for a NODATASUM inode, so the inode
-+		 * itself won't be marked with NODATASUM, but the extent we're
-+		 * copying is in fact NODATASUM.  If we don't find a csum we
-+		 * assume this is the case.
-+		 */
-+		if (count == 0) {
- 			memset(csum_dst, 0, csum_size);
- 			count = 1;
- 
--			/*
--			 * For data reloc inode, we need to mark the range
--			 * NODATASUM so that balance won't report false csum
--			 * error.
--			 */
- 			if (BTRFS_I(inode)->root->root_key.objectid ==
- 			    BTRFS_DATA_RELOC_TREE_OBJECTID) {
- 				u64 file_offset;
-@@ -488,7 +496,7 @@ blk_status_t btrfs_lookup_bio_sums(struct inode *inode, struct bio *bio, u8 *dst
- 	}
- 
- 	btrfs_free_path(path);
--	return BLK_STS_OK;
-+	return ret;
- }
- 
- int btrfs_lookup_csums_range(struct btrfs_root *root, u64 start, u64 end,
+ 	for (i = 0, len = 0;
+ 	     len < PAGE_SIZE && i < ARRAY_SIZE(cabc_modes); i++)
 -- 
 2.34.1
 
