@@ -2,190 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 17F6BC433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EF963C43219
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:40:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380326AbiDEUkx (ORCPT
+        id S1381790AbiDEUlS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 16:40:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37248 "EHLO
+        Tue, 5 Apr 2022 16:41:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59278 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1457468AbiDEQDQ (ORCPT
+        with ESMTP id S1356050AbiDEKWu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 12:03:16 -0400
-Received: from mail-qt1-f182.google.com (mail-qt1-f182.google.com [209.85.160.182])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6184D82D0E
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 08:50:42 -0700 (PDT)
-Received: by mail-qt1-f182.google.com with SMTP id s11so11760524qtc.3
-        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 08:50:42 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=v+fdSoVNNjnUGmCkMRGF7bz1AtuvXBZQ7NRsX5hjdRI=;
-        b=nSLAdzBHyiQ5igCN4Pe6k+8/suWInm+i+4F+PDAx12UoG9Wdgv11CKWTvsSnOxjBNh
-         hJzJZlhJTrUqTKt1NdbTqNI0VsqnOwA6Hsy54rxPyOJL14XQrRmMxQtgC2GBxmeFvQgS
-         3wr1mQSQv/TXUMSOWSVMn9tJTJJAq4+C6j3DdT8bNd7LbDWgs11ug0SOZNi8UjzYeC0P
-         QauhEEB5eLT7e4KcJ3Gc/fU+7UkpnUS3RhTSnjzzWDKEg68bGVx717LCcZ8PYyvtaQlj
-         OtVKj2qoJniFPjznF5QgXS0pKNIuxxenWe9zowzts8QyExdLxqzZKfiPvzZ3cn74wm9I
-         4dSg==
-X-Gm-Message-State: AOAM5337h5bv6xUufm5naZodkPtQUqLMHKUhh/gnxxs64EsjINKmjLco
-        A3wRbUlonTlLKmp0nbixP3Q6uwCiQN+m
-X-Google-Smtp-Source: ABdhPJzKzm30OD+0rRZKNl7Nej0zc6frKnnX46QEawCBiKw/KCb8ayvLrIXfjw+ycf+lOxvjqpd0gA==
-X-Received: by 2002:ac8:5b50:0:b0:2eb:8756:d7c1 with SMTP id n16-20020ac85b50000000b002eb8756d7c1mr3615358qtw.378.1649173841365;
-        Tue, 05 Apr 2022 08:50:41 -0700 (PDT)
-Received: from localhost (pool-68-160-176-52.bstnma.fios.verizon.net. [68.160.176.52])
-        by smtp.gmail.com with ESMTPSA id de8-20020a05620a370800b0067ec34c9f27sm8282351qkb.129.2022.04.05.08.50.40
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 05 Apr 2022 08:50:40 -0700 (PDT)
-Date:   Tue, 5 Apr 2022 11:50:39 -0400
-From:   Mike Snitzer <snitzer@kernel.org>
-To:     Michael Trimarchi <michael@amarulasolutions.com>
-Cc:     Alasdair Kergon <agk@redhat.com>, dm-devel@redhat.com,
-        linux-kernel@vger.kernel.org,
-        Fabio Aiuto <fabio.aiuto@amarulasolutions.com>
-Subject: Re: [RFC PATCH] md: dm-init: Wait devices if it's not find on first
- adpet
-Message-ID: <YkxlTyMFNNdBqFRd@redhat.com>
-References: <20220401220705.82077-1-michael@amarulasolutions.com>
+        Tue, 5 Apr 2022 06:22:50 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 827C2AC044;
+        Tue,  5 Apr 2022 03:05:41 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E35C56167E;
+        Tue,  5 Apr 2022 10:05:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 018ECC385A2;
+        Tue,  5 Apr 2022 10:05:39 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649153140;
+        bh=9ZFDDhY/swhbtnUTI1swTrMLKGNPHHThkWr5qPxbwOQ=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=f6XievaABNZMfONiAbv7emK3iXl6bwBXnTP+KT0LLjU+bLLL59PGD6dNFcDrW21y/
+         Xk2uRXGQux8cn3+BBOWH6KRuW540EmnMMBuTeZ16W3vtDqo8Sy6qkD230WT9q1tbea
+         vWxDQQU0Lk04o/o2pUT2ufhJ7AUsbUk0VO3Utwvw=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Mikulas Patocka <mpatocka@redhat.com>,
+        Milan Broz <gmazyland@gmail.com>,
+        Mike Snitzer <snitzer@kernel.org>
+Subject: [PATCH 5.10 079/599] dm integrity: set journal entry unused when shrinking device
+Date:   Tue,  5 Apr 2022 09:26:13 +0200
+Message-Id: <20220405070301.176421140@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
+References: <20220405070258.802373272@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220401220705.82077-1-michael@amarulasolutions.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Apr 01 2022 at  6:07P -0400,
-Michael Trimarchi <michael@amarulasolutions.com> wrote:
+From: Mikulas Patocka <mpatocka@redhat.com>
 
-> The device driver can be deferrable and can be a race during
-> the dm-init early. We need to wait all the probe are really finished
-> in a loop as is done in do_mounts. This is was tested on kernel 5.4
-> but code seems was not changed since that time
-> 
-> 003: imx8mq-usb-phy 381f0040.usb-phy: 381f0040.usb-phy supply vbus not found, using dummy regulator
-> 003: imx8mq-usb-phy 382f0040.usb-phy: 382f0040.usb-phy supply vbus not found, using dummy regulator
-> 003: imx-cpufreq-dt imx-cpufreq-dt: cpu speed grade 5 mkt segment 0 supported-hw 0x20 0x1
-> 003: caam-dma caam-dma: caam dma support with 2 job rings
-> 000: hctosys: unable to open rtc device (rtc0)
-> 000: device-mapper: init: waiting for all devices to be available before creating mapped devices
-> 002: device-mapper: table: 254:0: verity: Data device lookup failed
-> 002: device-mapper: ioctl: error adding target to table
-> 002: crng init done
-> 003: of_cfs_init
-> 003: of_cfs_init: OK
-> 003: Waiting for root device /dev/dm-0...
-> 001: mmc2: new HS400 Enhanced strobe MMC card at address 0001
-> 001: mmcblk2: mmc2:0001 IB2916 14.6 GiB
-> 001: mmcblk2boot0: mmc2:0001 IB2916 partition 1 4.00 MiB
-> 001: mmcblk2boot1: mmc2:0001 IB2916 partition 2 4.00 MiB
-> 001: mmcblk2rpmb: mmc2:0001 IB2916 partition 3 4.00 MiB, chardev (249:0)
-> 001:  mmcblk2: p1 p2 p3 p4 p5 p6 p7 p8 p9 p10 p11
-> 001: VSD_3V3: disabling
-> 
-> with the patch
-> 
-> 003: device-mapper: init: waiting for all devices to be available before creating mapped devices
-> 
-> 000: device-mapper: table: 254:0: verity: Data device lookup failed
-> 000: device-mapper: ioctl: error adding target to table
-> 002: crng init done
-> 003: device-mapper: init: waiting for all devices to be available before creating mapped devices
-> 003: device-mapper: table: 254:0: verity: Data device lookup failed
-> 003: device-mapper: ioctl: error adding target to table
-> 003: device-mapper: init: waiting for all devices to be available before creating mapped devices
-> 000: device-mapper: table: 254:0: verity: Data device lookup failed
-> 000: device-mapper: ioctl: error adding target to table
-> 002: device-mapper: init: waiting for all devices to be available before creating mapped devices
-> 002: device-mapper: table: 254:0: verity: Data device lookup failed
-> 002: device-mapper: ioctl: error adding target to table
-> 000: device-mapper: init: waiting for all devices to be available before creating mapped devices
-> 000: device-mapper: table: 254:0: verity: Data device lookup failed
-> 000: device-mapper: ioctl: error adding target to table
-> 003: mmc2: new HS400 Enhanced strobe MMC card at address 0001
-> 003: mmcblk2: mmc2:0001 DG4016 14.7 GiB
-> 003: mmcblk2boot0: mmc2:0001 DG4016 partition 1 4.00 MiB
-> 003: mmcblk2boot1: mmc2:0001 DG4016 partition 2 4.00 MiB
-> 003: mmcblk2rpmb: mmc2:0001 DG4016 partition 3 4.00 MiB, chardev (249:0)
-> 003:  mmcblk2: p1 p2 p3 p4 p5 p6 p7 p8 p9 p10 p11
-> 002: device-mapper: init: waiting for all devices to be available before creating mapped devices
-> 003: device-mapper: verity: sha256 using implementation "sha256-caam"
-> 000: device-mapper: ioctl: dm-0 (rootfs) is ready
-> 
-> Signed-off-by: Michael Trimarchi <michael@amarulasolutions.com>
-> ---
->  drivers/md/dm-init.c | 15 ++++++++++++++-
->  1 file changed, 14 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/md/dm-init.c b/drivers/md/dm-init.c
-> index b0c45c6ebe0b..d3b754036484 100644
-> --- a/drivers/md/dm-init.c
-> +++ b/drivers/md/dm-init.c
-> @@ -7,7 +7,9 @@
->   * This file is released under the GPLv2.
->   */
->  
-> +#include <linux/async.h>
->  #include <linux/ctype.h>
-> +#include <linux/delay.h>
->  #include <linux/device.h>
->  #include <linux/device-mapper.h>
->  #include <linux/init.h>
-> @@ -267,6 +269,7 @@ static int __init dm_init_init(void)
->  	LIST_HEAD(devices);
->  	char *str;
->  	int r;
-> +	bool fail = false;
->  
->  	if (!create)
->  		return 0;
-> @@ -275,6 +278,7 @@ static int __init dm_init_init(void)
->  		DMERR("Argument is too big. Limit is %d", DM_MAX_STR_SIZE);
->  		return -EINVAL;
->  	}
-> +retry:
->  	str = kstrndup(create, DM_MAX_STR_SIZE, GFP_KERNEL);
->  	if (!str)
->  		return -ENOMEM;
-> @@ -288,12 +292,21 @@ static int __init dm_init_init(void)
->  
->  	list_for_each_entry(dev, &devices, list) {
->  		if (dm_early_create(&dev->dmi, dev->table,
-> -				    dev->target_args_array))
-> +				    dev->target_args_array)) {
-> +			fail = true;
->  			break;
-> +		}
->  	}
-> +
->  out:
->  	kfree(str);
->  	dm_setup_cleanup(&devices);
-> +	if (fail) {
-> +		msleep(5);
-> +		fail = false;
-> +		goto retry;
-> +	}
-> +
->  	return r;
->  }
->  
-> -- 
-> 2.25.1
-> 
+commit cc09e8a9dec4f0e8299e80a7a2a8e6f54164a10b upstream.
 
-I'm cannot take this as proposed.
+Commit f6f72f32c22c ("dm integrity: don't replay journal data past the
+end of the device") skips journal replay if the target sector points
+beyond the end of the device. Unfortunatelly, it doesn't set the
+journal entry unused, which resulted in this BUG being triggered:
+BUG_ON(!journal_entry_is_unused(je))
 
-If you're going to do something like this, the retries need to be
-bounded. And retry should only be possible for select cases
-(e.g. "verity: Data device lookup failed", which is emitted due to
-dm_get_device failure with a return -ENODEV).
+Fix this by calling journal_entry_set_unused() for this case.
 
-So please narrow this as much as possible (by only allowing retry if
--ENODEV) and bound the retries to a finite amount.. 5? 10? 20? *shrug*
+Fixes: f6f72f32c22c ("dm integrity: don't replay journal data past the end of the device")
+Cc: stable@vger.kernel.org # v5.7+
+Signed-off-by: Mikulas Patocka <mpatocka@redhat.com>
+Tested-by: Milan Broz <gmazyland@gmail.com>
+[snitzer: revised header]
+Signed-off-by: Mike Snitzer <snitzer@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ drivers/md/dm-integrity.c |    6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-And please take care to use variable names that are more appropriate
-("fail" is not one of them when you're writing retry code)
+--- a/drivers/md/dm-integrity.c
++++ b/drivers/md/dm-integrity.c
+@@ -2354,9 +2354,11 @@ static void do_journal_write(struct dm_i
+ 					dm_integrity_io_error(ic, "invalid sector in journal", -EIO);
+ 					sec &= ~(sector_t)(ic->sectors_per_block - 1);
+ 				}
++				if (unlikely(sec >= ic->provided_data_sectors)) {
++					journal_entry_set_unused(je);
++					continue;
++				}
+ 			}
+-			if (unlikely(sec >= ic->provided_data_sectors))
+-				continue;
+ 			get_area_and_offset(ic, sec, &area, &offset);
+ 			restore_last_bytes(ic, access_journal_data(ic, i, j), je);
+ 			for (k = j + 1; k < ic->journal_section_entries; k++) {
 
-Mike
+
