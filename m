@@ -2,114 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B6F4FC41535
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:35:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EE59FC3527D
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:35:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1589216AbiDFATH (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 20:19:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37084 "EHLO
+        id S230094AbiDFAT0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 20:19:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50692 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1457895AbiDEQ5o (ORCPT
+        with ESMTP id S1358155AbiDEK2C (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 12:57:44 -0400
-Received: from mail.skyhub.de (mail.skyhub.de [IPv6:2a01:4f8:190:11c2::b:1457])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C729220BD6;
-        Tue,  5 Apr 2022 09:55:41 -0700 (PDT)
-Received: from zn.tnic (p2e55dff8.dip0.t-ipconnect.de [46.85.223.248])
+        Tue, 5 Apr 2022 06:28:02 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5947C9D4F8;
+        Tue,  5 Apr 2022 03:16:03 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 796EF1EC0502;
-        Tue,  5 Apr 2022 18:55:35 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
-        t=1649177735;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=JY4/OPfg1PtWK4WJhPTqkYrmoKWgxT1mUYXtCHiS4ug=;
-        b=k5ii1JF5xPofyJTFKU5oNprGEWoub9d1wYkVRZs2+LqjlasIW90ySctLvwVo/9iM6bXfqe
-        wfV6moDTGIN5YaUgAbBRYTYDjmbdGAm+M4sPvzkxnjhEbuDGFo4qpkzUqVT2XGMCiEq16D
-        LCgp9HqbqIiI1MlXEv+1qMEUzNt1DkU=
-Date:   Tue, 5 Apr 2022 18:55:37 +0200
-From:   Borislav Petkov <bp@alien8.de>
-To:     Kalle Valo <kvalo@kernel.org>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        Arend van Spriel <aspriel@gmail.com>,
-        Franky Lin <franky.lin@broadcom.com>,
-        Hante Meuleman <hante.meuleman@broadcom.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        brcm80211-dev-list.pdl@broadcom.com, netdev@vger.kernel.org,
-        linux-wireless@vger.kernel.org
-Subject: [RESEND PATCH 06/11] brcmfmac: sdio: Fix undefined behavior due to
- shift overflowing the constant
-Message-ID: <Ykx0iRlvtBnKqtbG@zn.tnic>
-References: <20220405151517.29753-1-bp@alien8.de>
- <20220405151517.29753-7-bp@alien8.de>
- <87y20jr1qt.fsf@kernel.org>
- <YkxpIQHKLXmGBwV1@zn.tnic>
- <87pmlvqye0.fsf@kernel.org>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EA8916179E;
+        Tue,  5 Apr 2022 10:16:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 03618C385A0;
+        Tue,  5 Apr 2022 10:16:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649153762;
+        bh=M++LqbkOcaNMdYU7FwBHBjnWXZ7kMQuwGOw1w2rIsQU=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=L+qsJBdLg6oVvm9TpQrxhG097nhBR+GdT9ivUXU22wa9ULVfHzILdpFmsSGiX01S7
+         fFsFbANMtdozmXqNp0AcYxUc/17D9UbKQ7vIOb+TzQPJQGiQ/t1syMwwXU9lEKUgV7
+         /Zg7zTmIl6vImoTgOuV73QCZDU3ZuyptJeilsYkQ=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>,
+        Mike Marciniszyn <mike.marciniszyn@cornelisnetworks.com>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 339/599] IB/hfi1: Allow larger MTU without AIP
+Date:   Tue,  5 Apr 2022 09:30:33 +0200
+Message-Id: <20220405070308.921133002@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
+References: <20220405070258.802373272@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <87pmlvqye0.fsf@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Fix:
+From: Mike Marciniszyn <mike.marciniszyn@cornelisnetworks.com>
 
-  drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c: In function ‘brcmf_sdio_drivestrengthinit’:
-  drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c:3798:2: error: case label does not reduce to an integer constant
-    case SDIOD_DRVSTR_KEY(BRCM_CC_43143_CHIP_ID, 17):
-    ^~~~
-  drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c:3809:2: error: case label does not reduce to an integer constant
-    case SDIOD_DRVSTR_KEY(BRCM_CC_43362_CHIP_ID, 13):
-    ^~~~
+[ Upstream commit b135e324d7a2e7fa0a7ef925076136e799b79f44 ]
 
-See https://lore.kernel.org/r/YkwQ6%2BtIH8GQpuct@zn.tnic for the gory
-details as to why it triggers with older gccs only.
+The AIP code signals the phys_mtu in the following query_port()
+fragment:
 
-Signed-off-by: Borislav Petkov <bp@suse.de>
-Cc: Arend van Spriel <aspriel@gmail.com>
-Cc: Franky Lin <franky.lin@broadcom.com>
-Cc: Hante Meuleman <hante.meuleman@broadcom.com>
-Cc: Kalle Valo <kvalo@kernel.org>
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: brcm80211-dev-list.pdl@broadcom.com
-Cc: netdev@vger.kernel.org
+	props->phys_mtu = HFI1_CAP_IS_KSET(AIP) ? hfi1_max_mtu :
+				ib_mtu_enum_to_int(props->max_mtu);
+
+Using the largest MTU possible should not depend on AIP.
+
+Fix by unconditionally using the hfi1_max_mtu value.
+
+Fixes: 6d72344cf6c4 ("IB/ipoib: Increase ipoib Datagram mode MTU's upper limit")
+Link: https://lore.kernel.org/r/1644348309-174874-1-git-send-email-mike.marciniszyn@cornelisnetworks.com
+Reviewed-by: Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>
+Signed-off-by: Mike Marciniszyn <mike.marciniszyn@cornelisnetworks.com>
+Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
+ drivers/infiniband/hw/hfi1/verbs.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-Resend, this time with linux-wireless on Cc so that patchwork can pick
-it up.
-
-Thx.
-
- drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c
-index ba3c159111d3..d78ccc223709 100644
---- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c
-+++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c
-@@ -557,7 +557,7 @@ enum brcmf_sdio_frmtype {
- 	BRCMF_SDIO_FT_SUB,
- };
+diff --git a/drivers/infiniband/hw/hfi1/verbs.c b/drivers/infiniband/hw/hfi1/verbs.c
+index 3591923abebb..5f3edd255ca3 100644
+--- a/drivers/infiniband/hw/hfi1/verbs.c
++++ b/drivers/infiniband/hw/hfi1/verbs.c
+@@ -1439,8 +1439,7 @@ static int query_port(struct rvt_dev_info *rdi, u8 port_num,
+ 				      4096 : hfi1_max_mtu), IB_MTU_4096);
+ 	props->active_mtu = !valid_ib_mtu(ppd->ibmtu) ? props->max_mtu :
+ 		mtu_to_enum(ppd->ibmtu, IB_MTU_4096);
+-	props->phys_mtu = HFI1_CAP_IS_KSET(AIP) ? hfi1_max_mtu :
+-				ib_mtu_enum_to_int(props->max_mtu);
++	props->phys_mtu = hfi1_max_mtu;
  
--#define SDIOD_DRVSTR_KEY(chip, pmu)     (((chip) << 16) | (pmu))
-+#define SDIOD_DRVSTR_KEY(chip, pmu)     (((unsigned int)(chip) << 16) | (pmu))
- 
- /* SDIO Pad drive strength to select value mappings */
- struct sdiod_drive_str {
+ 	return 0;
+ }
 -- 
-2.35.1
+2.34.1
 
 
--- 
-Regards/Gruss,
-    Boris.
 
-https://people.kernel.org/tglx/notes-about-netiquette
