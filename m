@@ -2,87 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 14FEDC433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2ABE5C43219
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 21:38:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383198AbiDEVj3 (ORCPT
+        id S1383294AbiDEVje (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 17:39:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55074 "EHLO
+        Tue, 5 Apr 2022 17:39:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58502 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358212AbiDEK2H (ORCPT
+        with ESMTP id S1444564AbiDEPlk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:28:07 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3964BF4E;
-        Tue,  5 Apr 2022 03:17:08 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        Tue, 5 Apr 2022 11:41:40 -0400
+Received: from mail.skyhub.de (mail.skyhub.de [IPv6:2a01:4f8:190:11c2::b:1457])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E168F73077
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 07:05:53 -0700 (PDT)
+Received: from zn.tnic (p2e55dff8.dip0.t-ipconnect.de [46.85.223.248])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 536FB617AA;
-        Tue,  5 Apr 2022 10:17:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 658A9C385A2;
-        Tue,  5 Apr 2022 10:17:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649153827;
-        bh=CSM//Rz3PDHvzk+BYq71+X+1Jm1t0/cBCElyGnnl1/g=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=yGFOtd9edQG6ixd4zV54l00AJOjMXFkO7h6LWZItm41QwWvfl6Ev6C3XnX7LhDSgX
-         69j1GRFiohyk1vQdBmkryR1YHO4yTU5omZxRQHJx/HnPWQ8wEn0JZAuhEx8BPhI7vi
-         RumHyMw4uqoeJX2FYAfZU4QCCDSQPW5Obnpf7LW8=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Alan Stern <stern@rowland.harvard.edu>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 360/599] USB: storage: ums-realtek: fix error code in rts51x_read_mem()
-Date:   Tue,  5 Apr 2022 09:30:54 +0200
-Message-Id: <20220405070309.545154045@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
-User-Agent: quilt/0.66
+        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 196ED1EC04D6;
+        Tue,  5 Apr 2022 16:05:48 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
+        t=1649167548;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
+        bh=ABkgJ7WZFU27xa+T6ghR5OktxwYJzWigVN97vtpvhqU=;
+        b=QGvnVdS+Rakt7j93ycaMpKSdeoZxsBAHpOHJJqCChN7wRLawTlCq2gVLBvyFvbu/roQEko
+        JupxNxuGnSWL/xPOfK2J774LQyyQPvcf6YsYrjdKAiPfyO1vWaWHuZkw1Er3brGa117u11
+        8js4ySSQOPHOjY4+0Y3y8i2mCWIY8zA=
+Date:   Tue, 5 Apr 2022 16:05:43 +0200
+From:   Borislav Petkov <bp@alien8.de>
+To:     Wyes Karny <wyes.karny@amd.com>
+Cc:     linux-kernel@vger.kernel.org, Lewis.Carroll@amd.com,
+        Mario.Limonciello@amd.com, gautham.shenoy@amd.com,
+        Ananth.Narayan@amd.com, bharata@amd.com, len.brown@intel.com,
+        x86@kernel.org, tglx@linutronix.de, mingo@redhat.com,
+        dave.hansen@linux.intel.com, hpa@zytor.com, peterz@infradead.org,
+        chang.seok.bae@intel.com, keescook@chromium.org, metze@samba.org,
+        zhengqi.arch@bytedance.com, mark.rutland@arm.com
+Subject: Re: [PATCH] x86: Prefer MWAIT over HALT on AMD processors
+Message-ID: <YkxMtx9zdk+nH33r@zn.tnic>
+References: <20220405130021.557880-1-wyes.karny@amd.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20220405130021.557880-1-wyes.karny@amd.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dan Carpenter <dan.carpenter@oracle.com>
+On Tue, Apr 05, 2022 at 06:30:21PM +0530, Wyes Karny wrote:
+> From: Lewis Caroll <lewis.carroll@amd.com>
+> 
+> Currently in the absence of the cpuidle driver (eg: when global
+> C-States are disabled in the BIOS or when cpuidle is driver is not
+> compiled in),
 
-[ Upstream commit b07cabb8361dc692522538205552b1b9dab134be ]
+When does that ever happen?
 
-The rts51x_read_mem() function should return negative error codes.
-Currently if the kmalloc() fails it returns USB_STOR_TRANSPORT_ERROR (3)
-which is treated as success by the callers.
+Sounds like a very very niche situation to me...
 
-Fixes: 065e60964e29 ("ums_realtek: do not use stack memory for DMA")
-Acked-by: Alan Stern <stern@rowland.harvard.edu>
-Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
-Link: https://lore.kernel.org/r/20220304073504.GA26464@kili
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/usb/storage/realtek_cr.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+> Here we enable MWAIT instruction as the default idle call for AMD
+> Zen processors which support MWAIT. We retain the existing behaviour
+> for older processors which depend on HALT.
 
-diff --git a/drivers/usb/storage/realtek_cr.c b/drivers/usb/storage/realtek_cr.c
-index 3789698d9d3c..0c423916d7bf 100644
---- a/drivers/usb/storage/realtek_cr.c
-+++ b/drivers/usb/storage/realtek_cr.c
-@@ -365,7 +365,7 @@ static int rts51x_read_mem(struct us_data *us, u16 addr, u8 *data, u16 len)
- 
- 	buf = kmalloc(len, GFP_NOIO);
- 	if (buf == NULL)
--		return USB_STOR_TRANSPORT_ERROR;
-+		return -ENOMEM;
- 
- 	usb_stor_dbg(us, "addr = 0x%x, len = %d\n", addr, len);
- 
+Please use passive voice in your commit message: no "we" or "I", etc,
+and describe your changes in imperative mood.
+
+Also, pls read section "2) Describe your changes" in
+Documentation/process/submitting-patches.rst for more details.
+
+Also, see section "Changelog" in
+Documentation/process/maintainer-tip.rst
+
+Bottom line is: personal pronouns are ambiguous in text, especially with
+so many parties/companies/etc developing the kernel so let's avoid them
+please.
+
+>  static int prefer_mwait_c1_over_halt(const struct cpuinfo_x86 *c)
+>  {
+> -	if (c->x86_vendor != X86_VENDOR_INTEL)
+> +	if (!early_mwait_supported(c))
+
+Isn't it enough to simply do here:
+
+	if (cpu_has(c, X86_FEATURE_ZEN))
+		return 1;
+
+        if (c->x86_vendor != X86_VENDOR_INTEL)
+                return 0;
+
+	...
+
+
 -- 
-2.34.1
+Regards/Gruss,
+    Boris.
 
-
-
+https://people.kernel.org/tglx/notes-about-netiquette
