@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 72B97C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 06:35:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 21189C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 06:35:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230338AbiDEGh3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 02:37:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48668 "EHLO
+        id S230308AbiDEGhf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 02:37:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48796 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230258AbiDEGhM (ORCPT
+        with ESMTP id S230284AbiDEGhN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 02:37:12 -0400
-Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D727418B37
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 23:35:11 -0700 (PDT)
-Received: by mail-ej1-x636.google.com with SMTP id ot30so14595608ejb.12
-        for <linux-kernel@vger.kernel.org>; Mon, 04 Apr 2022 23:35:11 -0700 (PDT)
+        Tue, 5 Apr 2022 02:37:13 -0400
+Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B9FC19288
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 23:35:13 -0700 (PDT)
+Received: by mail-ej1-x62d.google.com with SMTP id bg10so24581838ejb.4
+        for <linux-kernel@vger.kernel.org>; Mon, 04 Apr 2022 23:35:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=pIzqrLEArTXL9YEy+XaJ/FROhoWjUa+sSmTt7exmUDk=;
-        b=g/Wp9izCtjP+pujnOzpMmSaHIDrbRrODb9ePL9jawCeiGJkLVBjAGcfKCw0lfCc6/2
-         gDgmbmjWD4aI2jnqaXbGNOzsQG8uxKWeY1i/e3iK3I16CD7zDzrSUucckMoMw8IqHidc
-         ywog1qoL9sEXzk/RB7aWJx3UMbqN/Iv2evZKBmYZZlSCrVdqt0BAi8KQJ4h2zs/j0osI
-         ldm8F8Qe6bZS9NZjQb5P6olO7y1v/5i1oJS7AUJ1BkTFuLPsCLISTZUdB9kFE5q2L6am
-         Ibpdwi5sVI4keHyZiRnvtTUaTZk8PeF0IuWeMgbzkSMGesgGciyyqffwzOhrmUvVdDeM
-         0Nng==
+        bh=ijNe1gxoWsdrm+oek0ryQTviG9eFIwp156wwm7qwtvc=;
+        b=XoQd7eXmayRtgXenCj/0DqYnAREZxy5QhvyHa07LX2TmVGqPuvMWhiGZsWuEJzAaOv
+         b3uh+52P1EfWWtIYWmaRsqBEPIADtdA8P830tUbhD6kfhvJKBU9Xe0TYR5f/bPddweyV
+         KyJW6rl2x17jbiYl8YzD8bMHPgG9IiBwtCI+T5AO87H9n5+xefKCk/19M/q6/qEbP99j
+         efPrZL1aj7Bx29kxIYC6nYLHYdRIOGuyX0TsUsErtCcoQVweIE7q1WqnUabqg3QC9yII
+         d8IuI8IBnbfbJvo77L2RsrlNKbC1mJC/Wx8DCxSY+31l/jYdTLy/7ksP9yP1nmP+B9oV
+         9mMw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=pIzqrLEArTXL9YEy+XaJ/FROhoWjUa+sSmTt7exmUDk=;
-        b=ggWIb6HKwbyohJw0jWteEgCxIIgWZtKFkbu5I6JRRLHJgLtr82ExMie12Qwg68drWJ
-         BSZnsfVXwi0FSggt9CN7IA4X/lHHDlGBbkoxoEZl+P+cu6u40lP8LDzSqCWzaYQ+p8SR
-         gZkmGJpf6sMYKrEKu3UvHMO9XdvVdsLV1dqGgRUQbeNtE0n5Coak1VVqVlAhGOJcP+/k
-         ZMKz+SVvnOIQtLDsJes1NlpdvkQl5V7aQyVsVTmHoXeSnkbPQNOl3YwRq4O4Ja+DGv1z
-         skpuTpMJZxh6D39wtbaNKOmn4y6+x1S2C/pkjWdjVPa6VDg4JhU7I/VTS2f64TdrSPUx
-         GA4w==
-X-Gm-Message-State: AOAM530hXJFTLDhdaZW/MMP7oWpeUuIgnTQGQVG5OJwWwod0p3HicyQY
-        hZQg5yX/Y8KnLMwo/TZ1htdKBA==
-X-Google-Smtp-Source: ABdhPJxBPLSmFJOR/eOs7koL5omf6BAJZ93Q2JPoICcnJguJG2S9NCWngvrh/VUmxdSt30vAKfDJmQ==
-X-Received: by 2002:a17:906:32d8:b0:6ce:d850:f79 with SMTP id k24-20020a17090632d800b006ced8500f79mr1940891ejk.414.1649140509808;
-        Mon, 04 Apr 2022 23:35:09 -0700 (PDT)
+        bh=ijNe1gxoWsdrm+oek0ryQTviG9eFIwp156wwm7qwtvc=;
+        b=Od6RVvjADQ+WdWS4JDxgeUlE7RNcADJZIKMej245mLn294OjKRjoEE+QnVYftfC7+X
+         Z8m6RZX+40r7VJPci/1KMqh1/ILWqKIEOtFO7Zy02hLKyFmC3FYMMceZApfDXeYWNDy4
+         2u2/CB18+AzsitTdqCxu8WzCjNvF1djWIGL33qFacnQEqfVZxqB8CBzJCxCiiKYlULxp
+         RCjAEaLPUirNLtwaq+eQmW5DFweKHpsHO3ZXlgjhq7uj1jb0v9XXZa9o9RB7/tOHvYh0
+         cJ8Afm76eGqZJif1G96Jh+/qwvMOUnwqhJjs+W7ccOCuuB7W4MTTya8N+409DFQe3GGv
+         CX2A==
+X-Gm-Message-State: AOAM532VmAlbwrRYF7K1kdmOeATSFr1WwdwzPqC8H/AYQiuUhJYQVP6G
+        8lG70L7XUzGD6HOFx5Uv+YG8/A==
+X-Google-Smtp-Source: ABdhPJwg5JBDqrawA1o2xD7WCotpEUIzxo1lhvopQDFfw4uK7iSYPG7EQxrBTXwe/ersvfz+2ikRVg==
+X-Received: by 2002:a17:907:6e10:b0:6e7:f672:f39b with SMTP id sd16-20020a1709076e1000b006e7f672f39bmr1966930ejc.451.1649140512065;
+        Mon, 04 Apr 2022 23:35:12 -0700 (PDT)
 Received: from localhost.localdomain (xdsl-188-155-201-27.adslplus.ch. [188.155.201.27])
-        by smtp.gmail.com with ESMTPSA id bs7-20020a056402304700b004197e5d2350sm6086543edb.54.2022.04.04.23.35.08
+        by smtp.gmail.com with ESMTPSA id bs7-20020a056402304700b004197e5d2350sm6086543edb.54.2022.04.04.23.35.11
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 04 Apr 2022 23:35:09 -0700 (PDT)
+        Mon, 04 Apr 2022 23:35:11 -0700 (PDT)
 From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 To:     Andy Gross <agross@kernel.org>,
         Bjorn Andersson <bjorn.andersson@linaro.org>,
@@ -60,9 +60,9 @@ To:     Andy Gross <agross@kernel.org>,
         linux-spi@vger.kernel.org
 Cc:     Kuldeep Singh <singh.kuldeep87k@gmail.com>,
         Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [PATCH v4 1/9] arm64: dts: qcom: align dmas in I2C/SPI/UART with DT schema
-Date:   Tue,  5 Apr 2022 08:34:43 +0200
-Message-Id: <20220405063451.12011-2-krzysztof.kozlowski@linaro.org>
+Subject: [PATCH v4 3/9] ARM: dts: qcom: ipq4019: align dmas in SPI/UART with DT schema
+Date:   Tue,  5 Apr 2022 08:34:45 +0200
+Message-Id: <20220405063451.12011-4-krzysztof.kozlowski@linaro.org>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <20220405063451.12011-1-krzysztof.kozlowski@linaro.org>
 References: <20220405063451.12011-1-krzysztof.kozlowski@linaro.org>
@@ -81,237 +81,79 @@ Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
 Dropped Kuldeep's ack because of changes - more properties changed.
 ---
- arch/arm64/boot/dts/qcom/ipq6018.dtsi |  8 +++----
- arch/arm64/boot/dts/qcom/ipq8074.dtsi | 16 +++++++-------
- arch/arm64/boot/dts/qcom/msm8916.dtsi | 32 +++++++++++++--------------
- arch/arm64/boot/dts/qcom/qcs404.dtsi  | 20 ++++++++---------
- 4 files changed, 38 insertions(+), 38 deletions(-)
+ arch/arm/boot/dts/qcom-ipq4019.dtsi | 24 ++++++++++++------------
+ 1 file changed, 12 insertions(+), 12 deletions(-)
 
-diff --git a/arch/arm64/boot/dts/qcom/ipq6018.dtsi b/arch/arm64/boot/dts/qcom/ipq6018.dtsi
-index aac56575e30d..87c28ffa44d3 100644
---- a/arch/arm64/boot/dts/qcom/ipq6018.dtsi
-+++ b/arch/arm64/boot/dts/qcom/ipq6018.dtsi
-@@ -322,8 +322,8 @@ i2c_0: i2c@78b6000 {
- 				<&gcc GCC_BLSP1_QUP2_I2C_APPS_CLK>;
- 			clock-names = "iface", "core";
- 			clock-frequency  = <400000>;
--			dmas = <&blsp_dma 15>, <&blsp_dma 14>;
+diff --git a/arch/arm/boot/dts/qcom-ipq4019.dtsi b/arch/arm/boot/dts/qcom-ipq4019.dtsi
+index a9d0566a3190..1f6c4ab7f37e 100644
+--- a/arch/arm/boot/dts/qcom-ipq4019.dtsi
++++ b/arch/arm/boot/dts/qcom-ipq4019.dtsi
+@@ -253,8 +253,8 @@ blsp1_spi1: spi@78b5000 { /* BLSP1 QUP1 */
+ 			clock-names = "core", "iface";
+ 			#address-cells = <1>;
+ 			#size-cells = <0>;
+-			dmas = <&blsp_dma 5>, <&blsp_dma 4>;
 -			dma-names = "rx", "tx";
-+			dmas = <&blsp_dma 14>, <&blsp_dma 15>;
++			dmas = <&blsp_dma 4>, <&blsp_dma 5>;
 +			dma-names = "tx", "rx";
  			status = "disabled";
  		};
  
-@@ -337,8 +337,8 @@ i2c_1: i2c@78b7000 { /* BLSP1 QUP2 */
- 				<&gcc GCC_BLSP1_QUP3_I2C_APPS_CLK>;
- 			clock-names = "iface", "core";
- 			clock-frequency  = <400000>;
--			dmas = <&blsp_dma 17>, <&blsp_dma 16>;
+@@ -267,8 +267,8 @@ blsp1_spi2: spi@78b6000 { /* BLSP1 QUP2 */
+ 			clock-names = "core", "iface";
+ 			#address-cells = <1>;
+ 			#size-cells = <0>;
+-			dmas = <&blsp_dma 7>, <&blsp_dma 6>;
 -			dma-names = "rx", "tx";
-+			dmas = <&blsp_dma 16>, <&blsp_dma 17>;
++			dmas = <&blsp_dma 6>, <&blsp_dma 7>;
 +			dma-names = "tx", "rx";
  			status = "disabled";
  		};
  
-diff --git a/arch/arm64/boot/dts/qcom/ipq8074.dtsi b/arch/arm64/boot/dts/qcom/ipq8074.dtsi
-index d80b1cefab10..2072638006a4 100644
---- a/arch/arm64/boot/dts/qcom/ipq8074.dtsi
-+++ b/arch/arm64/boot/dts/qcom/ipq8074.dtsi
-@@ -471,8 +471,8 @@ blsp1_i2c2: i2c@78b6000 {
- 				<&gcc GCC_BLSP1_QUP2_I2C_APPS_CLK>;
+@@ -281,8 +281,8 @@ blsp1_i2c3: i2c@78b7000 { /* BLSP1 QUP3 */
  			clock-names = "iface", "core";
- 			clock-frequency = <400000>;
--			dmas = <&blsp_dma 15>, <&blsp_dma 14>;
+ 			#address-cells = <1>;
+ 			#size-cells = <0>;
+-			dmas = <&blsp_dma 9>, <&blsp_dma 8>;
 -			dma-names = "rx", "tx";
-+			dmas = <&blsp_dma 14>, <&blsp_dma 15>;
-+			dma-names = "tx", "rx";
- 			pinctrl-0 = <&i2c_0_pins>;
- 			pinctrl-names = "default";
- 			status = "disabled";
-@@ -488,8 +488,8 @@ blsp1_i2c3: i2c@78b7000 {
- 				<&gcc GCC_BLSP1_QUP3_I2C_APPS_CLK>;
- 			clock-names = "iface", "core";
- 			clock-frequency = <100000>;
--			dmas = <&blsp_dma 17>, <&blsp_dma 16>;
--			dma-names = "rx", "tx";
-+			dmas = <&blsp_dma 16>, <&blsp_dma 17>;
++			dmas = <&blsp_dma 8>, <&blsp_dma 9>;
 +			dma-names = "tx", "rx";
  			status = "disabled";
  		};
  
-@@ -503,8 +503,8 @@ blsp1_i2c5: i2c@78b9000 {
- 				 <&gcc GCC_BLSP1_QUP5_I2C_APPS_CLK>;
+@@ -295,8 +295,8 @@ blsp1_i2c4: i2c@78b8000 { /* BLSP1 QUP4 */
  			clock-names = "iface", "core";
- 			clock-frequency = <400000>;
--			dmas = <&blsp_dma 21>, <&blsp_dma 20>;
+ 			#address-cells = <1>;
+ 			#size-cells = <0>;
+-			dmas = <&blsp_dma 11>, <&blsp_dma 10>;
 -			dma-names = "rx", "tx";
-+			dmas = <&blsp_dma 20>, <&blsp_dma 21>;
++			dmas = <&blsp_dma 10>, <&blsp_dma 11>;
 +			dma-names = "tx", "rx";
  			status = "disabled";
  		};
  
-@@ -518,8 +518,8 @@ blsp1_i2c6: i2c@78ba000 {
- 				 <&gcc GCC_BLSP1_QUP6_I2C_APPS_CLK>;
- 			clock-names = "iface", "core";
- 			clock-frequency = <100000>;
--			dmas = <&blsp_dma 23>, <&blsp_dma 22>;
--			dma-names = "rx", "tx";
-+			dmas = <&blsp_dma 22>, <&blsp_dma 23>;
-+			dma-names = "tx", "rx";
- 			status = "disabled";
- 		};
- 
-diff --git a/arch/arm64/boot/dts/qcom/msm8916.dtsi b/arch/arm64/boot/dts/qcom/msm8916.dtsi
-index e34963505e07..384fc8738130 100644
---- a/arch/arm64/boot/dts/qcom/msm8916.dtsi
-+++ b/arch/arm64/boot/dts/qcom/msm8916.dtsi
-@@ -1485,8 +1485,8 @@ blsp1_uart1: serial@78af000 {
- 			interrupts = <GIC_SPI 107 IRQ_TYPE_LEVEL_HIGH>;
- 			clocks = <&gcc GCC_BLSP1_UART1_APPS_CLK>, <&gcc GCC_BLSP1_AHB_CLK>;
+@@ -382,8 +382,8 @@ blsp1_uart1: serial@78af000 {
+ 			clocks = <&gcc GCC_BLSP1_UART1_APPS_CLK>,
+ 				<&gcc GCC_BLSP1_AHB_CLK>;
  			clock-names = "core", "iface";
 -			dmas = <&blsp_dma 1>, <&blsp_dma 0>;
 -			dma-names = "rx", "tx";
 +			dmas = <&blsp_dma 0>, <&blsp_dma 1>;
 +			dma-names = "tx", "rx";
- 			pinctrl-names = "default", "sleep";
- 			pinctrl-0 = <&blsp1_uart1_default>;
- 			pinctrl-1 = <&blsp1_uart1_sleep>;
-@@ -1499,8 +1499,8 @@ blsp1_uart2: serial@78b0000 {
- 			interrupts = <GIC_SPI 108 IRQ_TYPE_LEVEL_HIGH>;
- 			clocks = <&gcc GCC_BLSP1_UART2_APPS_CLK>, <&gcc GCC_BLSP1_AHB_CLK>;
+ 		};
+ 
+ 		blsp1_uart2: serial@78b0000 {
+@@ -394,8 +394,8 @@ blsp1_uart2: serial@78b0000 {
+ 			clocks = <&gcc GCC_BLSP1_UART2_APPS_CLK>,
+ 				<&gcc GCC_BLSP1_AHB_CLK>;
  			clock-names = "core", "iface";
 -			dmas = <&blsp_dma 3>, <&blsp_dma 2>;
 -			dma-names = "rx", "tx";
 +			dmas = <&blsp_dma 2>, <&blsp_dma 3>;
 +			dma-names = "tx", "rx";
- 			pinctrl-names = "default", "sleep";
- 			pinctrl-0 = <&blsp1_uart2_default>;
- 			pinctrl-1 = <&blsp1_uart2_sleep>;
-@@ -1529,8 +1529,8 @@ blsp_spi1: spi@78b5000 {
- 			clocks = <&gcc GCC_BLSP1_QUP1_SPI_APPS_CLK>,
- 				 <&gcc GCC_BLSP1_AHB_CLK>;
- 			clock-names = "core", "iface";
--			dmas = <&blsp_dma 5>, <&blsp_dma 4>;
--			dma-names = "rx", "tx";
-+			dmas = <&blsp_dma 4>, <&blsp_dma 5>;
-+			dma-names = "tx", "rx";
- 			pinctrl-names = "default", "sleep";
- 			pinctrl-0 = <&spi1_default>;
- 			pinctrl-1 = <&spi1_sleep>;
-@@ -1561,8 +1561,8 @@ blsp_spi2: spi@78b6000 {
- 			clocks = <&gcc GCC_BLSP1_QUP2_SPI_APPS_CLK>,
- 				 <&gcc GCC_BLSP1_AHB_CLK>;
- 			clock-names = "core", "iface";
--			dmas = <&blsp_dma 7>, <&blsp_dma 6>;
--			dma-names = "rx", "tx";
-+			dmas = <&blsp_dma 6>, <&blsp_dma 7>;
-+			dma-names = "tx", "rx";
- 			pinctrl-names = "default", "sleep";
- 			pinctrl-0 = <&spi2_default>;
- 			pinctrl-1 = <&spi2_sleep>;
-@@ -1593,8 +1593,8 @@ blsp_spi3: spi@78b7000 {
- 			clocks = <&gcc GCC_BLSP1_QUP3_SPI_APPS_CLK>,
- 				 <&gcc GCC_BLSP1_AHB_CLK>;
- 			clock-names = "core", "iface";
--			dmas = <&blsp_dma 9>, <&blsp_dma 8>;
--			dma-names = "rx", "tx";
-+			dmas = <&blsp_dma 8>, <&blsp_dma 9>;
-+			dma-names = "tx", "rx";
- 			pinctrl-names = "default", "sleep";
- 			pinctrl-0 = <&spi3_default>;
- 			pinctrl-1 = <&spi3_sleep>;
-@@ -1625,8 +1625,8 @@ blsp_spi4: spi@78b8000 {
- 			clocks = <&gcc GCC_BLSP1_QUP4_SPI_APPS_CLK>,
- 				 <&gcc GCC_BLSP1_AHB_CLK>;
- 			clock-names = "core", "iface";
--			dmas = <&blsp_dma 11>, <&blsp_dma 10>;
--			dma-names = "rx", "tx";
-+			dmas = <&blsp_dma 10>, <&blsp_dma 11>;
-+			dma-names = "tx", "rx";
- 			pinctrl-names = "default", "sleep";
- 			pinctrl-0 = <&spi4_default>;
- 			pinctrl-1 = <&spi4_sleep>;
-@@ -1657,8 +1657,8 @@ blsp_spi5: spi@78b9000 {
- 			clocks = <&gcc GCC_BLSP1_QUP5_SPI_APPS_CLK>,
- 				 <&gcc GCC_BLSP1_AHB_CLK>;
- 			clock-names = "core", "iface";
--			dmas = <&blsp_dma 13>, <&blsp_dma 12>;
--			dma-names = "rx", "tx";
-+			dmas = <&blsp_dma 12>, <&blsp_dma 13>;
-+			dma-names = "tx", "rx";
- 			pinctrl-names = "default", "sleep";
- 			pinctrl-0 = <&spi5_default>;
- 			pinctrl-1 = <&spi5_sleep>;
-@@ -1689,8 +1689,8 @@ blsp_spi6: spi@78ba000 {
- 			clocks = <&gcc GCC_BLSP1_QUP6_SPI_APPS_CLK>,
- 				 <&gcc GCC_BLSP1_AHB_CLK>;
- 			clock-names = "core", "iface";
--			dmas = <&blsp_dma 15>, <&blsp_dma 14>;
--			dma-names = "rx", "tx";
-+			dmas = <&blsp_dma 14>, <&blsp_dma 15>;
-+			dma-names = "tx", "rx";
- 			pinctrl-names = "default", "sleep";
- 			pinctrl-0 = <&spi6_default>;
- 			pinctrl-1 = <&spi6_sleep>;
-diff --git a/arch/arm64/boot/dts/qcom/qcs404.dtsi b/arch/arm64/boot/dts/qcom/qcs404.dtsi
-index 3f06f7cd3cf2..6b3a8e1006d0 100644
---- a/arch/arm64/boot/dts/qcom/qcs404.dtsi
-+++ b/arch/arm64/boot/dts/qcom/qcs404.dtsi
-@@ -823,8 +823,8 @@ blsp1_uart0: serial@78af000 {
- 			interrupts = <GIC_SPI 107 IRQ_TYPE_LEVEL_HIGH>;
- 			clocks = <&gcc GCC_BLSP1_UART0_APPS_CLK>, <&gcc GCC_BLSP1_AHB_CLK>;
- 			clock-names = "core", "iface";
--			dmas = <&blsp1_dma 1>, <&blsp1_dma 0>;
--			dma-names = "rx", "tx";
-+			dmas = <&blsp1_dma 0>, <&blsp1_dma 1>;
-+			dma-names = "tx", "rx";
- 			pinctrl-names = "default";
- 			pinctrl-0 = <&blsp1_uart0_default>;
- 			status = "disabled";
-@@ -836,8 +836,8 @@ blsp1_uart1: serial@78b0000 {
- 			interrupts = <GIC_SPI 108 IRQ_TYPE_LEVEL_HIGH>;
- 			clocks = <&gcc GCC_BLSP1_UART1_APPS_CLK>, <&gcc GCC_BLSP1_AHB_CLK>;
- 			clock-names = "core", "iface";
--			dmas = <&blsp1_dma 3>, <&blsp1_dma 2>;
--			dma-names = "rx", "tx";
-+			dmas = <&blsp1_dma 2>, <&blsp1_dma 3>;
-+			dma-names = "tx", "rx";
- 			pinctrl-names = "default";
- 			pinctrl-0 = <&blsp1_uart1_default>;
- 			status = "disabled";
-@@ -849,8 +849,8 @@ blsp1_uart2: serial@78b1000 {
- 			interrupts = <GIC_SPI 118 IRQ_TYPE_LEVEL_HIGH>;
- 			clocks = <&gcc GCC_BLSP1_UART2_APPS_CLK>, <&gcc GCC_BLSP1_AHB_CLK>;
- 			clock-names = "core", "iface";
--			dmas = <&blsp1_dma 5>, <&blsp1_dma 4>;
--			dma-names = "rx", "tx";
-+			dmas = <&blsp1_dma 4>, <&blsp1_dma 5>;
-+			dma-names = "tx", "rx";
- 			pinctrl-names = "default";
- 			pinctrl-0 = <&blsp1_uart2_default>;
- 			status = "okay";
-@@ -903,8 +903,8 @@ blsp1_uart3: serial@78b2000 {
- 			interrupts = <GIC_SPI 119 IRQ_TYPE_LEVEL_HIGH>;
- 			clocks = <&gcc GCC_BLSP1_UART3_APPS_CLK>, <&gcc GCC_BLSP1_AHB_CLK>;
- 			clock-names = "core", "iface";
--			dmas = <&blsp1_dma 7>, <&blsp1_dma 6>;
--			dma-names = "rx", "tx";
-+			dmas = <&blsp1_dma 6>, <&blsp1_dma 7>;
-+			dma-names = "tx", "rx";
- 			pinctrl-names = "default";
- 			pinctrl-0 = <&blsp1_uart3_default>;
- 			status = "disabled";
-@@ -1067,8 +1067,8 @@ blsp2_uart0: serial@7aef000 {
- 			interrupts = <GIC_SPI 297 IRQ_TYPE_LEVEL_HIGH>;
- 			clocks = <&gcc GCC_BLSP2_UART0_APPS_CLK>, <&gcc GCC_BLSP2_AHB_CLK>;
- 			clock-names = "core", "iface";
--			dmas = <&blsp2_dma 1>, <&blsp2_dma 0>;
--			dma-names = "rx", "tx";
-+			dmas = <&blsp2_dma 0>, <&blsp2_dma 1>;
-+			dma-names = "tx", "rx";
- 			pinctrl-names = "default";
- 			pinctrl-0 = <&blsp2_uart0_default>;
- 			status = "disabled";
+ 		};
+ 
+ 		watchdog: watchdog@b017000 {
 -- 
 2.32.0
 
