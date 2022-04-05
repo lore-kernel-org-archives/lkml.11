@@ -2,201 +2,254 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CC514C41535
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EF35EC46467
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 22:09:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1391478AbiDEWFc (ORCPT
+        id S1391301AbiDEWFK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 18:05:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45068 "EHLO
+        Tue, 5 Apr 2022 18:05:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60276 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357361AbiDELQV (ORCPT
+        with ESMTP id S1573644AbiDET3N (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 07:16:21 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B2CE22DAA9;
-        Tue,  5 Apr 2022 03:41:16 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 7FB7FD6E;
-        Tue,  5 Apr 2022 03:41:16 -0700 (PDT)
-Received: from e121345-lin.cambridge.arm.com (e121345-lin.cambridge.arm.com [10.1.196.40])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 180CA3F5A1;
-        Tue,  5 Apr 2022 03:41:14 -0700 (PDT)
-From:   Robin Murphy <robin.murphy@arm.com>
-To:     joro@8bytes.org, baolu.lu@linux.intel.com,
-        andreas.noever@gmail.com, michael.jamet@intel.com,
-        mika.westerberg@linux.intel.com, YehezkelShB@gmail.com
-Cc:     iommu@lists.linux-foundation.org, linux-usb@vger.kernel.org,
-        linux-kernel@vger.kernel.org, mario.limonciello@amd.com, hch@lst.de
-Subject: [PATCH v3 3/4] thunderbolt: Make iommu_dma_protection more accurate
-Date:   Tue,  5 Apr 2022 11:41:03 +0100
-Message-Id: <b1f89ea2ad38221e0b75783357b9afb53087061d.1649089693.git.robin.murphy@arm.com>
-X-Mailer: git-send-email 2.28.0.dirty
-In-Reply-To: <cover.1649089693.git.robin.murphy@arm.com>
-References: <cover.1649089693.git.robin.murphy@arm.com>
+        Tue, 5 Apr 2022 15:29:13 -0400
+Received: from mail-wr1-x431.google.com (mail-wr1-x431.google.com [IPv6:2a00:1450:4864:20::431])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1877BE9FD
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 12:27:14 -0700 (PDT)
+Received: by mail-wr1-x431.google.com with SMTP id m30so46642wrb.1
+        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 12:27:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=cdfNSB6YwdBXtAmOKuoC0/E9rKkP4kgD9S848WBSXfk=;
+        b=TY9NnIjO74oo7WlNQT9PsMoPMF5h6+xPLyA5QO8u/SDXFqziaZNnfUKRiqoeA8Og/Y
+         c0hJc+DN6HLWln+Z3pTzPn1INJbxqR4wtsIzBusThLzzz4PDcDvp/rKzDgD3rgTug077
+         vvijomlCeAKBAFYVnsTbYxNVL8kc7xE7fcCd83hxWjt91i4Lcdk7PNu2SVXbA5IRCkTL
+         uCtrabBwbsZ4aPZKxmy/EPzvFQSd35CHbgUcVQ7xr4p7zJHqux5W57aNopjFe3lMGcZ9
+         aGQ8boDfBdBSGhs1VZhmLJet1o0YgdmZQxDjy/bnXfCJWBLf7WN/bsgX5K4TYfbE/+JD
+         yf+w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=cdfNSB6YwdBXtAmOKuoC0/E9rKkP4kgD9S848WBSXfk=;
+        b=RHXvltthTFY+Mo7TUDfi14uWKukMTicf6ikruIVHsSEbT0x4keTx+0YcoF/Z9kGsF4
+         yu+JiO8stZREV3wwewfo7ibReHYJMtAfYZ1YELaQlsqe2iR0lhUDvEBdT7gPs3DKO9UM
+         3jbGiDTH9VQqkGJ/xo0cXdPar87SpGI0l9CwlviTVYxRRicvqtrU82WKI8CUxoS76jsB
+         aDjIJFpnIPBPtYK3lSEzL6kwJNITYxFxSi9sabn1pWbBfCK+7wtYnyMIxj6258lpsrNS
+         CU7b59dcT7kj/9FR1ehsgeo6raD37kHaK47r9KewFcb4jh0Iz8QuzdYFIG9kRb6/tIyx
+         31Kw==
+X-Gm-Message-State: AOAM5337SpzlWDLPLm7VyJqVe1051dfYHerg/lz3Cvek67JXmkZ5FLLa
+        BpbpGMjZstAU4tDNMDnZFC0=
+X-Google-Smtp-Source: ABdhPJwSpYrybt/LKrk+e+G2/yVBvSQ/dfsd/p4YAUxA/fL6DDsFBICWmp82dWhBXFhqIna0r19rzg==
+X-Received: by 2002:adf:910d:0:b0:1e3:9484:1601 with SMTP id j13-20020adf910d000000b001e394841601mr3619875wrj.419.1649186833125;
+        Tue, 05 Apr 2022 12:27:13 -0700 (PDT)
+Received: from [192.168.0.149] ([170.253.36.171])
+        by smtp.gmail.com with ESMTPSA id d14-20020a056000186e00b0020405198faasm14555866wri.52.2022.04.05.12.27.11
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 05 Apr 2022 12:27:12 -0700 (PDT)
+Message-ID: <ae2cbf67-aace-bc40-418e-7b41873f814a@gmail.com>
+Date:   Tue, 5 Apr 2022 21:28:12 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: vfork(2) behavior not consistent with fork(2) (was: vfork(2) fails
+ after unshare(CLONE_NEWTIME) (was: [Bug 215769] man 2 vfork() does not
+ document corner case when PID == 1))
+Content-Language: en-US
+To:     Christian Brauner <brauner@kernel.org>
+Cc:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        =?UTF-8?B?0JrQvtGA0LXQvdCx0LXRgNCzINCc0LDRgNC6?= 
+        <socketpair@gmail.com>, Andrei Vagin <avagin@openvz.org>,
+        Dmitry Safonov <dima@arista.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Arnd Bergmann <arnd@arndb.de>, Serge Hallyn <serge@hallyn.com>,
+        bugzilla-daemon@kernel.org
+References: <bug-215769-216477@https.bugzilla.kernel.org/>
+ <bug-215769-216477-to2O9X1Knw@https.bugzilla.kernel.org/>
+ <4fb02f5f-60f9-42af-ddd5-fe5af877231f@gmail.com>
+ <20220404080519.pi6izyuop3mmdg2g@wittgenstein>
+From:   Alejandro Colomar <alx.manpages@gmail.com>
+In-Reply-To: <20220404080519.pi6izyuop3mmdg2g@wittgenstein>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Between me trying to get rid of iommu_present() and Mario wanting to
-support the AMD equivalent of DMAR_PLATFORM_OPT_IN, scrutiny has shown
-that the iommu_dma_protection attribute is being far too optimistic.
-Even if an IOMMU might be present for some PCI segment in the system,
-that doesn't necessarily mean it provides translation for the device(s)
-we care about. Furthermore, all that DMAR_PLATFORM_OPT_IN really does
-is tell us that memory was protected before the kernel was loaded, and
-prevent the user from disabling the intel-iommu driver entirely. While
-that lets us assume kernel integrity, what matters for actual runtime
-DMA protection is whether we trust individual devices, based on the
-"external facing" property that we expect firmware to describe for
-Thunderbolt ports.
+Hey, Christian!
 
-It's proven challenging to determine the appropriate ports accurately
-given the variety of possible topologies, so while still not getting a
-perfect answer, by putting enough faith in firmware we can at least get
-a good bit closer. If we can see that any device near a Thunderbolt NHI
-has all the requisites for Kernel DMA Protection, chances are that it
-*is* a relevant port, but moreover that implies that firmware is playing
-the game overall, so we'll use that to assume that all Thunderbolt ports
-should be correctly marked and thus will end up fully protected.
+On 4/4/22 10:05, Christian Brauner wrote:
+> On Sat, Apr 02, 2022 at 11:15:52PM +0200, Alejandro Colomar (man-pages) wrote:
+>> [Added some kernel CCs that may know what's going on]
+[...]
+>> Maybe someone in the kernel can send some patch for the clone(2) and/or
+>> vfork(2) manual pages that explains the reason (if it's intended).
+> 
+> Hey Alejandro,
+> 
+> I won't be able to send a patch very soon but I can at least explain why
+> you see EINVAL. :)
 
-CC: Mario Limonciello <mario.limonciello@amd.com>
-Reviewed-by: Christoph Hellwig <hch@lst.de>
-Signed-off-by: Robin Murphy <robin.murphy@arm.com>
----
+Don't hurry, we're not planning to release any soon :)
 
-v3: Check for correct external_facing property, add debug message.
+> 
+> This is intended.
+> 
+> vfork() suspends the parent process and the child process will share the
+> same vm as the parent process. If the child process is in a new time
+> namespace different from its parent process it is not allowed to be in
+> the same threadgroup or share virtual memory with the parent process.
+> That's why you see EINVAL.
 
- drivers/thunderbolt/domain.c | 12 +++-------
- drivers/thunderbolt/nhi.c    | 44 ++++++++++++++++++++++++++++++++++++
- include/linux/thunderbolt.h  |  2 ++
- 3 files changed, 49 insertions(+), 9 deletions(-)
+That makes a lot of sense to me.
 
-diff --git a/drivers/thunderbolt/domain.c b/drivers/thunderbolt/domain.c
-index 7018d959f775..2889a214dadc 100644
---- a/drivers/thunderbolt/domain.c
-+++ b/drivers/thunderbolt/domain.c
-@@ -7,9 +7,7 @@
-  */
- 
- #include <linux/device.h>
--#include <linux/dmar.h>
- #include <linux/idr.h>
--#include <linux/iommu.h>
- #include <linux/module.h>
- #include <linux/pm_runtime.h>
- #include <linux/slab.h>
-@@ -257,13 +255,9 @@ static ssize_t iommu_dma_protection_show(struct device *dev,
- 					 struct device_attribute *attr,
- 					 char *buf)
- {
--	/*
--	 * Kernel DMA protection is a feature where Thunderbolt security is
--	 * handled natively using IOMMU. It is enabled when IOMMU is
--	 * enabled and ACPI DMAR table has DMAR_PLATFORM_OPT_IN set.
--	 */
--	return sprintf(buf, "%d\n",
--		       iommu_present(&pci_bus_type) && dmar_platform_optin());
-+	struct tb *tb = container_of(dev, struct tb, dev);
-+
-+	return sysfs_emit(buf, "%d\n", tb->nhi->iommu_dma_protection);
- }
- static DEVICE_ATTR_RO(iommu_dma_protection);
- 
-diff --git a/drivers/thunderbolt/nhi.c b/drivers/thunderbolt/nhi.c
-index 4a582183f675..4bc87b0f003a 100644
---- a/drivers/thunderbolt/nhi.c
-+++ b/drivers/thunderbolt/nhi.c
-@@ -15,9 +15,11 @@
- #include <linux/pci.h>
- #include <linux/dma-mapping.h>
- #include <linux/interrupt.h>
-+#include <linux/iommu.h>
- #include <linux/module.h>
- #include <linux/delay.h>
- #include <linux/property.h>
-+#include <linux/string_helpers.h>
- 
- #include "nhi.h"
- #include "nhi_regs.h"
-@@ -1103,6 +1105,47 @@ static void nhi_check_quirks(struct tb_nhi *nhi)
- 		nhi->quirks |= QUIRK_AUTO_CLEAR_INT;
- }
- 
-+static int nhi_check_iommu_pdev(struct pci_dev *pdev, void *data)
-+{
-+	if (!pdev->external_facing ||
-+	    !device_iommu_capable(&pdev->dev, IOMMU_CAP_PRE_BOOT_PROTECTION))
-+		return 0;
-+	*(bool *)data = true;
-+	return 1; /* Stop walking */
-+}
-+
-+static void nhi_check_iommu(struct tb_nhi *nhi)
-+{
-+	struct pci_bus *bus = nhi->pdev->bus;
-+	bool port_ok = false;
-+
-+	/*
-+	 * Ideally what we'd do here is grab every PCI device that
-+	 * represents a tunnelling adapter for this NHI and check their
-+	 * status directly, but unfortunately USB4 seems to make it
-+	 * obnoxiously difficult to reliably make any correlation.
-+	 *
-+	 * So for now we'll have to bodge it... Hoping that the system
-+	 * is at least sane enough that an adapter is in the same PCI
-+	 * segment as its NHI, if we can find *something* on that segment
-+	 * which meets the requirements for Kernel DMA Protection, we'll
-+	 * take that to imply that firmware is aware and has (hopefully)
-+	 * done the right thing in general. We need to know that the PCI
-+	 * layer has seen the ExternalFacingPort property which will then
-+	 * inform the IOMMU layer to enforce the complete "untrusted DMA"
-+	 * flow, but also that the IOMMU driver itself can be trusted not
-+	 * to have been subverted by a pre-boot DMA attack.
-+	 */
-+	while (bus->parent)
-+		bus = bus->parent;
-+
-+	pci_walk_bus(bus, nhi_check_iommu_pdev, &port_ok);
-+
-+	nhi->iommu_dma_protection = port_ok;
-+	dev_dbg(&nhi->pdev->dev, "IOMMU DMA protection is %s\n",
-+		str_enabled_disabled(port_ok));
-+}
-+
- static int nhi_init_msi(struct tb_nhi *nhi)
- {
- 	struct pci_dev *pdev = nhi->pdev;
-@@ -1220,6 +1263,7 @@ static int nhi_probe(struct pci_dev *pdev, const struct pci_device_id *id)
- 		return -ENOMEM;
- 
- 	nhi_check_quirks(nhi);
-+	nhi_check_iommu(nhi);
- 
- 	res = nhi_init_msi(nhi);
- 	if (res) {
-diff --git a/include/linux/thunderbolt.h b/include/linux/thunderbolt.h
-index 124e13cb1469..7a8ad984e651 100644
---- a/include/linux/thunderbolt.h
-+++ b/include/linux/thunderbolt.h
-@@ -465,6 +465,7 @@ static inline struct tb_xdomain *tb_service_parent(struct tb_service *svc)
-  * @msix_ida: Used to allocate MSI-X vectors for rings
-  * @going_away: The host controller device is about to disappear so when
-  *		this flag is set, avoid touching the hardware anymore.
-+ * @iommu_dma_protection: An IOMMU will isolate external-facing ports.
-  * @interrupt_work: Work scheduled to handle ring interrupt when no
-  *		    MSI-X is used.
-  * @hop_count: Number of rings (end point hops) supported by NHI.
-@@ -479,6 +480,7 @@ struct tb_nhi {
- 	struct tb_ring **rx_rings;
- 	struct ida msix_ida;
- 	bool going_away;
-+	bool iommu_dma_protection;
- 	struct work_struct interrupt_work;
- 	u32 hop_count;
- 	unsigned long quirks;
--- 
-2.28.0.dirty
+> 
+> Note, the unshare(CLONE_NEWTIME) call will _not_ cause the calling
+> process to be moved into a different time namespace. Only the newly
+> created child process will be after a subsequent
+> fork()/vfork()/clone()/clone3()...
+> 
+> The semantics are equivalent to that of CLONE_NEWPID in this regard. You
+> can see this via /proc/<pid>/ns/ where you see two entries for pid
+> namespaces and also two entries for time namespaces:
+> 
+> * CLONE_NEWTIME
+>    * /proc/<pid>/ns/time			// current time namespace
+>    * /proc/<pid>/ns/time_for_children	// time namespace for the new child process
 
+Also makes sense.  Michael taught me that a few weeks ago :)
+
+This also triggers some doubt:  will the same problem happen with 
+CLONE_NEWPID since it also moves the child into a new ns (in this case a 
+PID one)?  See test program below.
+
+> 
+> If during fork:
+> 
+> parent_process->time != parent_process->time_for_children
+> 
+> and either CLONE_VM or CLONE_THREAD is set you see EINVAL.
+> 
+> You can thus replicate the same error via:
+> 
+> unshare(CLONE_NEWTIME)
+> 
+> and a
+> 
+> clone() or clone3() call with CLONE_VM or CLONE_THREAD.
+
+So, to test my doubts, I wrote this similar program (and also similar 
+programs where only the CLONE_NEW* flag was changed, one with 
+CLONE_NEWTIME, and one with CLONE_NEWNS)):
+
+$ cat vfork_newpid.c
+#define _GNU_SOURCE
+#include <err.h>
+#include <errno.h>
+#include <linux/sched.h>
+#include <sched.h>
+#include <signal.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <sys/syscall.h>
+#include <unistd.h>
+
+static char *const child_argv[] = {
+	"print_pid",
+	NULL
+};
+
+static char *const child_envp[] = {
+	NULL
+};
+
+int
+main(void)
+{
+	pid_t pid;
+
+	printf("%s: PID: %ld\n", program_invocation_short_name, (long) getpid());
+
+	if (unshare(CLONE_NEWPID) == -1)
+		err(EXIT_FAILURE, "unshare(2)");
+	if (signal(SIGCHLD, SIG_IGN) == SIG_ERR)
+		err(EXIT_FAILURE, "signal(2)");
+
+	pid = syscall(SYS_vfork);
+	//pid = vfork();  // This behaves differently.
+	switch (pid) {
+	case 0:
+		execve("/home/alx/tmp/print_pid", child_argv, child_envp);
+		err(EXIT_SUCCESS, "PID %jd exiting after execve(2)",
+		    (long) getpid());
+	case -1:
+		err(EXIT_FAILURE, "vfork(2)");
+	default:
+		errx(EXIT_SUCCESS, "Parent exiting after vfork(2).");
+	}
+}
+
+$ cat print_pid.c
+#include <err.h>
+#include <stdlib.h>
+#include <unistd.h>
+
+int
+main(void)
+{
+	errx(EXIT_SUCCESS, "PID %jd exiting.", (long) getpid());
+}
+
+$ cc -Wall -Wextra -Werror -o print_pid print_pid.c
+$ cc -Wall -Wextra -Werror -o vfork_newpid vfork_newpid.c
+$
+$
+$ sudo ./vfork_newpid
+vfork_newpid: PID: 8479
+vfork_newpid: PID 8479 exiting after execve(2): Success
+print_pid: PID 1 exiting.
+$
+$
+$ sudo ./vfork_newtime
+vfork_newtime: PID: 8484
+vfork_newtime: vfork(2): Invalid argument
+$
+$
+$ sudo ./vfork_newns
+vfork_newns: PID: 8486
+vfork_newns: PID 8486 exiting after execve(2): Success
+print_pid: PID 8487 exiting.
+
+
+The first thing I noted is that usage of vfork(2) differs considerably 
+from fork(2), and that's something that's not clear by reading the 
+manual page.  It sais that the parent process is suspended until the 
+child calls execve(2), but I expected it to mean that vfork(2) doesn't 
+return to the parent until that happened, but was otherwise transparent. 
+  I was wrong and my tests showed me that.
+
+I was going to propose an example program for the manual page, when I 
+decided to try a slightly different thing: call vfork() instead of 
+syscall(SYS_vfork);  that changed the behavior to the same one as with 
+fork(2) (i.e., the parent resumes after vfork(2) returns the PID of the 
+child.
+
+Is that also intended?  I couldn't find the glibc wrapper source code, 
+so I don't know what is glibc doing here, but I straced the processes, 
+and they're all calling vfork(), so the behavior should be consistent; 
+it's quite weird.  I'm very confused at this point.
+
+
+I'm also wondering why it's okay to have processes in different PID ns 
+share the same vm, but I guess that's implementation details that I 
+don't need to care that much.
+
+
+Thanks for the details!
+
+Cheers,
+
+Alex
