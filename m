@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8FB77C4167B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 79C8CC4167D
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 13:23:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358910AbiDENJv (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 09:09:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43996 "EHLO
+        id S244489AbiDENEV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 09:04:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51034 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344174AbiDEJSd (ORCPT
+        with ESMTP id S238747AbiDEJQR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:18:33 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FDF1633AD;
-        Tue,  5 Apr 2022 02:04:58 -0700 (PDT)
+        Tue, 5 Apr 2022 05:16:17 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC392D1CED;
+        Tue,  5 Apr 2022 02:01:50 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3C33E61572;
-        Tue,  5 Apr 2022 09:04:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4B5C6C385A1;
-        Tue,  5 Apr 2022 09:04:57 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9D454B81A22;
+        Tue,  5 Apr 2022 09:01:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E8F1EC385A0;
+        Tue,  5 Apr 2022 09:01:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649149497;
-        bh=Uuc8TI2J6LCVOUkBalK+gztZd5pAzXYyYOxYGnUtsdc=;
+        s=korg; t=1649149308;
+        bh=nHD0pg0JPdDBQlubw4lET+r6B3XXrvHryuZbDJCYbcE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=17Lr7DEm6vwxF9+1gglEwiUKOeBidIDJxmBRMluF+yHC6Mqdg5Cn3WggrnjIxl2Ul
-         3wqiANlHDR/58jucVwmXuggd38xL3h3tWZ4sPuTYbVdTHhHkvXs05wmDZECqMdKU0a
-         lsO7WbY2k1ULFTP9J4xmEFB75lwQIphw4Oaz4L1g=
+        b=FRu8R2S5m9o8Lap9wGsgH0GjpbT83S8H0v4SgFeclbSf7cLx5+4eGdEe9e7f9C92G
+         oX8JruHOsX+tWzuUGflaWMwukwtd06l0j+RZ7jAmGTqp6OBaa5xvJ6gnHYWRSM9JzP
+         Ie5blp7kR+WcwN4dDyOGo5k9PWx/3smAYE7sUfBE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Olga Kornievskaia <aglo@umich.edu>,
-        Trond Myklebust <trond.myklebust@hammerspace.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0736/1017] NFS: Dont loop forever in nfs_do_recoalesce()
-Date:   Tue,  5 Apr 2022 09:27:29 +0200
-Message-Id: <20220405070416.112617513@linuxfoundation.org>
+        stable@vger.kernel.org,
+        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 0668/1017] serial: 8250: Fix race condition in RTS-after-send handling
+Date:   Tue,  5 Apr 2022 09:26:21 +0200
+Message-Id: <20220405070414.110149314@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -50,38 +49,58 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Trond Myklebust <trond.myklebust@hammerspace.com>
+From: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 
-[ Upstream commit d02d81efc7564b4d5446a02e0214a164cf00b1f3 ]
+[ Upstream commit dedab69fd650ea74710b2e626e63fd35584ef773 ]
 
-If __nfs_pageio_add_request() fails to add the request, it will return
-with either desc->pg_error < 0, or mirror->pg_recoalesce will be set, so
-we are guaranteed either to exit the function altogether, or to loop.
+Set em485->active_timer = NULL isn't always enough to take out the stop
+timer. While there is a check that it acts in the right state (i.e.
+waiting for RTS-after-send to pass after sending some chars) but the
+following might happen:
 
-However if there is nothing left in mirror->pg_list to coalesce, we must
-exit, so make sure that we clear mirror->pg_recoalesce every time we
-loop.
+ - CPU1: some chars send, shifter becomes empty, stop tx timer armed
+ - CPU0: more chars send before RTS-after-send expired
+ - CPU0: shifter empty irq, port lock taken
+ - CPU1: tx timer triggers, waits for port lock
+ - CPU0: em485->active_timer = &em485->stop_tx_timer, hrtimer_start(),
+   releases lock()
+ - CPU1: get lock, see em485->active_timer == &em485->stop_tx_timer,
+   tear down RTS too early
 
-Reported-by: Olga Kornievskaia <aglo@umich.edu>
-Fixes: 70536bf4eb07 ("NFS: Clean up reset of the mirror accounting variables")
-Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
+This fix bases on research done by Steffen Trumtrar.
+
+Fixes: b86f86e8e7c5 ("serial: 8250: fix potential deadlock in rs485-mode")
+Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+Link: https://lore.kernel.org/r/20220215160236.344236-1-u.kleine-koenig@pengutronix.de
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/nfs/pagelist.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/tty/serial/8250/8250_port.c | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
 
-diff --git a/fs/nfs/pagelist.c b/fs/nfs/pagelist.c
-index ad7f83dc9a2d..815d63080245 100644
---- a/fs/nfs/pagelist.c
-+++ b/fs/nfs/pagelist.c
-@@ -1218,6 +1218,7 @@ static int nfs_do_recoalesce(struct nfs_pageio_descriptor *desc)
+diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
+index b34e84695c8c..344fbe7426f6 100644
+--- a/drivers/tty/serial/8250/8250_port.c
++++ b/drivers/tty/serial/8250/8250_port.c
+@@ -1623,6 +1623,18 @@ static inline void start_tx_rs485(struct uart_port *port)
+ 	struct uart_8250_port *up = up_to_u8250p(port);
+ 	struct uart_8250_em485 *em485 = up->em485;
  
- 	do {
- 		list_splice_init(&mirror->pg_list, &head);
-+		mirror->pg_recoalesce = 0;
++	/*
++	 * While serial8250_em485_handle_stop_tx() is a noop if
++	 * em485->active_timer != &em485->stop_tx_timer, it might happen that
++	 * the timer is still armed and triggers only after the current bunch of
++	 * chars is send and em485->active_timer == &em485->stop_tx_timer again.
++	 * So cancel the timer. There is still a theoretical race condition if
++	 * the timer is already running and only comes around to check for
++	 * em485->active_timer when &em485->stop_tx_timer is armed again.
++	 */
++	if (em485->active_timer == &em485->stop_tx_timer)
++		hrtimer_try_to_cancel(&em485->stop_tx_timer);
++
+ 	em485->active_timer = NULL;
  
- 		while (!list_empty(&head)) {
- 			struct nfs_page *req;
+ 	if (em485->tx_stopped) {
 -- 
 2.34.1
 
