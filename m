@@ -2,89 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ABC1AC4321E
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:27:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D9F06C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:27:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1588967AbiDFAR4 (ORCPT
+        id S1588982AbiDFASD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 20:17:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40312 "EHLO
+        Tue, 5 Apr 2022 20:18:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36196 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1573283AbiDESoc (ORCPT
+        with ESMTP id S1354210AbiDEKMP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 14:44:32 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 658464665D;
-        Tue,  5 Apr 2022 11:42:33 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 11B8EB81B96;
-        Tue,  5 Apr 2022 18:42:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 531FFC385A1;
-        Tue,  5 Apr 2022 18:42:30 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649184150;
-        bh=mvmeqellZ7AaVX6VtMeym2zkFjPuHDmY40DOFQO7lfM=;
-        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
-        b=tR+IxCxWCoiQvHe8Cgma6S5S8B7nJicGKA4dX+azos97LSyLku3xwIs/QMDK0IQG5
-         wy6/34DtwvSWrmRbHhOhDcUG/Oth/4/TAXwgk/qNlMAY8TkBdZNKerNGWawMtksxTm
-         6r81YvWOVEjI+4r8VU6bXplBN3cM+cV33LRowXoDxXryUKcfin1bad40+x7LSHrtEr
-         rmuNGZCwCCcCbUeYfEQK0l52KOondHsj8goVnoc8/6WtRiIX3pCgUgSkksaR05XUYq
-         BSBvqT3npvApJymP6iMxePAUTbevbEQYBCWioPkq1umK5OONCYsLmk07tHpwevxMmA
-         LOUiT4yqKZULQ==
-Message-ID: <539fa318941debfe757874c4fb067f6018777045.camel@kernel.org>
-Subject: Re: [PATCH V3 21/30] selftests/sgx: Add test for EPCM permission
- changes
-From:   Jarkko Sakkinen <jarkko@kernel.org>
-To:     Reinette Chatre <reinette.chatre@intel.com>
-Cc:     dave.hansen@linux.intel.com, tglx@linutronix.de, bp@alien8.de,
-        luto@kernel.org, mingo@redhat.com, linux-sgx@vger.kernel.org,
-        x86@kernel.org, seanjc@google.com, kai.huang@intel.com,
-        cathy.zhang@intel.com, cedric.xing@intel.com,
-        haitao.huang@intel.com, mark.shanahan@intel.com, hpa@zytor.com,
-        linux-kernel@vger.kernel.org
-Date:   Tue, 05 Apr 2022 21:43:40 +0300
-In-Reply-To: <5ea8d567-5d82-6815-013a-70f4e3f913b9@intel.com>
-References: <cover.1648847675.git.reinette.chatre@intel.com>
-         <b2304ac0322d945b4bfdce36d3aae654f6ed35a0.1648847675.git.reinette.chatre@intel.com>
-         <Ykvpi6HRL9cLorw6@kernel.org>
-         <5ea8d567-5d82-6815-013a-70f4e3f913b9@intel.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.42.4 
+        Tue, 5 Apr 2022 06:12:15 -0400
+Received: from mail.netfilter.org (mail.netfilter.org [217.70.188.207])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7947F5548E;
+        Tue,  5 Apr 2022 02:58:52 -0700 (PDT)
+Received: from netfilter.org (unknown [78.30.32.163])
+        by mail.netfilter.org (Postfix) with ESMTPSA id 7C5DF6303B;
+        Tue,  5 Apr 2022 11:55:13 +0200 (CEST)
+Date:   Tue, 5 Apr 2022 11:58:48 +0200
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     Vasily Averin <vasily.averin@linux.dev>
+Cc:     Florian Westphal <fw@strlen.de>, kernel@openvz.org,
+        Jozsef Kadlecsik <kadlec@netfilter.org>,
+        netfilter-devel@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Roman Gushchin <roman.gushchin@linux.dev>
+Subject: Re: [PATCH v2] nft: memcg accounting for dynamically allocated
+ objects
+Message-ID: <YkwS2F0ZrE73KONJ@salvia>
+References: <935e4270-9e0e-4cd0-ffb4-9c1eb3d9c56e@linux.dev>
+ <121a6930-9ebd-e488-e109-273a403a93cb@linux.dev>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <121a6930-9ebd-e488-e109-273a403a93cb@linux.dev>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 2022-04-05 at 10:28 -0700, Reinette Chatre wrote:
-> Hi Jarkko,
->=20
-> On 4/5/2022 12:02 AM, Jarkko Sakkinen wrote:
-> > Lacking:
-> >=20
-> > KERNEL SELFTEST FRAMEWORK
-> > M:=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0Shuah Khan <shuah@kernel.org>
-> > M:=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0Shuah Khan <skhan@linuxfoundation=
-.org>
-> > L:=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0linux-kselftest@vger.kernel.org
-> > S:=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0Maintained
-> > Q:=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0https://patchwork.kernel.org/proj=
-ect/linux-kselftest/list/
-> > T:=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0git git://git.kernel.org/pub/scm/=
-linux/kernel/git/shuah/linux-kselftest.git
-> > F:=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0Documentation/dev-tools/kselftest=
-*
-> > F:=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0tools/testing/selftests/
-> >=20
->=20
-> My apologies. I'll add the kselftest folks to the next version.
->=20
-> Reinette
+On Sat, Apr 02, 2022 at 12:50:37PM +0300, Vasily Averin wrote:
+> nft_*.c files whose NFT_EXPR_STATEFUL flag is set on need to
+> use __GFP_ACCOUNT flag for objects that are dynamically
+> allocated from the packet path.
+> 
+> Such objects are allocated inside nft_expr_ops->init() callbacks
+> executed in task context while processing netlink messages.
+> 
+> In addition, this patch adds accounting to nft_set_elem_expr_clone()
+> used for the same purposes.
 
-No worries, just reminding that now is a good time, since the different
-parts of the patch set are settling.=20
-
-BR, Jarkko
-
+Applied to nf, thanks
