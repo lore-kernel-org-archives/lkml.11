@@ -2,44 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C227C3A5A3
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 10:08:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C338C3527B
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 10:08:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352325AbiDEKEZ (ORCPT
+        id S1351321AbiDEKCI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 06:04:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37238 "EHLO
+        Tue, 5 Apr 2022 06:02:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59104 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237426AbiDEISB (ORCPT
+        with ESMTP id S234193AbiDEIYn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:18:01 -0400
+        Tue, 5 Apr 2022 04:24:43 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E039B6D07;
-        Tue,  5 Apr 2022 01:06:16 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D95712AC8;
+        Tue,  5 Apr 2022 01:20:20 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id AD381617EF;
-        Tue,  5 Apr 2022 08:06:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BF7A4C385A1;
-        Tue,  5 Apr 2022 08:06:14 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3428760FFB;
+        Tue,  5 Apr 2022 08:20:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 41DABC385A2;
+        Tue,  5 Apr 2022 08:20:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649145975;
-        bh=CsXFAbQiXAE7EdhvgvZvfFnE7JeU66yXTWJIbyY8xH0=;
+        s=korg; t=1649146819;
+        bh=Yw9KpInkgsNYhh+OCNup/aC8fKxzxvvo6UbYxOjbCnQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RptIOb09fclr1OhdaGNDwBvRIf3lEDiVHlu7jIaNRCg8vgjCKBRvAaCFDtqGH/NIi
-         NFMEW3Y2C3s8oP1ky0Jz4A7QPkDnz1vcMbHmE8b0aSvKsv95NIiLv8ZmG2H2RHQ4Wb
-         cWwimsfo//17zs17gAVPYgsLV6UpqXtN+8kyqurU=
+        b=nbEHyq/KmI0HilHKuvRBzjE7cGj7JK8JPtPIGPiyjnjZzYL7ohfSZ5rqy7ji7oKMu
+         1g2uy8cryi+wDS5WgXw7f3C/b99iiHAQF55yrMv1C0rQkeLpsQeAcc50NTNV38Xpp5
+         6XPbJa1pzLg20rTIagQimbrdb4mTacDVrjmp896Y=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Aharon Landau <aharonl@nvidia.com>,
-        Leon Romanovsky <leonro@nvidia.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
+        stable@vger.kernel.org, Yong Wu <yong.wu@mediatek.com>,
+        Joerg Roedel <jroedel@suse.de>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0598/1126] RDMA/mlx5: Fix the flow of a miss in the allocation of a cache ODP MR
-Date:   Tue,  5 Apr 2022 09:22:25 +0200
-Message-Id: <20220405070425.187941527@linuxfoundation.org>
+Subject: [PATCH 5.17 0900/1126] media: iommu/mediatek: Return ENODEV if the device is NULL
+Date:   Tue,  5 Apr 2022 09:27:27 +0200
+Message-Id: <20220405070433.942304612@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -51,37 +54,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Aharon Landau <aharonl@nvidia.com>
+From: Yong Wu <yong.wu@mediatek.com>
 
-[ Upstream commit 2f0e60d5e9f96341a0c8a01be8878cdb3b29ff20 ]
+[ Upstream commit 2fb0feed51085db77606de9b9477c96894328809 ]
 
-When an ODP MR cache entry is empty and trying to allocate it, increment
-the ent->miss counter and call to queue_adjust_cache_locked() to verify
-the entry is balanced.
+The platform device is created at:
+of_platform_default_populate_init:  arch_initcall_sync
+  ->of_platform_populate
+        ->of_platform_device_create_pdata
 
-Fixes: aad719dcf379 ("RDMA/mlx5: Allow MRs to be created in the cache synchronously")
-Link: https://lore.kernel.org/r/09503e295276dcacc92cb1d8aef1ad0961c99dc1.1644947594.git.leonro@nvidia.com
-Signed-off-by: Aharon Landau <aharonl@nvidia.com>
-Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
-Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+When entering our probe, all the devices should be already created.
+if it is null, means NODEV. Currently we don't get the fail case.
+It's a minor fix, no need add fixes tags.
+
+Signed-off-by: Yong Wu <yong.wu@mediatek.com>
+Acked-by: Joerg Roedel <jroedel@suse.de>
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/infiniband/hw/mlx5/mr.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/iommu/mtk_iommu.c    | 2 +-
+ drivers/iommu/mtk_iommu_v1.c | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/infiniband/hw/mlx5/mr.c b/drivers/infiniband/hw/mlx5/mr.c
-index 157d862fb864..2910d7833313 100644
---- a/drivers/infiniband/hw/mlx5/mr.c
-+++ b/drivers/infiniband/hw/mlx5/mr.c
-@@ -585,6 +585,8 @@ struct mlx5_ib_mr *mlx5_mr_cache_alloc(struct mlx5_ib_dev *dev,
- 	ent = &cache->ent[entry];
- 	spin_lock_irq(&ent->lock);
- 	if (list_empty(&ent->head)) {
-+		queue_adjust_cache_locked(ent);
-+		ent->miss++;
- 		spin_unlock_irq(&ent->lock);
- 		mr = create_cache_mr(ent);
- 		if (IS_ERR(mr))
+diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
+index 25b834104790..77ae20ff9b35 100644
+--- a/drivers/iommu/mtk_iommu.c
++++ b/drivers/iommu/mtk_iommu.c
+@@ -848,7 +848,7 @@ static int mtk_iommu_probe(struct platform_device *pdev)
+ 		plarbdev = of_find_device_by_node(larbnode);
+ 		if (!plarbdev) {
+ 			of_node_put(larbnode);
+-			return -EPROBE_DEFER;
++			return -ENODEV;
+ 		}
+ 		data->larb_imu[id].dev = &plarbdev->dev;
+ 
+diff --git a/drivers/iommu/mtk_iommu_v1.c b/drivers/iommu/mtk_iommu_v1.c
+index 1467ba1e4417..68bf02f87cfd 100644
+--- a/drivers/iommu/mtk_iommu_v1.c
++++ b/drivers/iommu/mtk_iommu_v1.c
+@@ -604,7 +604,7 @@ static int mtk_iommu_probe(struct platform_device *pdev)
+ 		plarbdev = of_find_device_by_node(larbnode);
+ 		if (!plarbdev) {
+ 			of_node_put(larbnode);
+-			return -EPROBE_DEFER;
++			return -ENODEV;
+ 		}
+ 		data->larb_imu[i].dev = &plarbdev->dev;
+ 
 -- 
 2.34.1
 
