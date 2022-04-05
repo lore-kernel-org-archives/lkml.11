@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F230C43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0786BC433EF
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 13:37:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384349AbiDENcM (ORCPT
+        id S1384060AbiDENcC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 09:32:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60048 "EHLO
+        Tue, 5 Apr 2022 09:32:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44280 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345794AbiDEJXC (ORCPT
+        with ESMTP id S1345721AbiDEJW6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:23:02 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E12D99D0E8;
-        Tue,  5 Apr 2022 02:12:14 -0700 (PDT)
+        Tue, 5 Apr 2022 05:22:58 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3769D71A26;
+        Tue,  5 Apr 2022 02:11:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 85C82B80DA1;
-        Tue,  5 Apr 2022 09:12:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DA3B2C385A0;
-        Tue,  5 Apr 2022 09:12:11 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BA9B8615F1;
+        Tue,  5 Apr 2022 09:11:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C6160C385A2;
+        Tue,  5 Apr 2022 09:11:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649149932;
-        bh=Y1PEmIAZMnzpISyH6SBsQsjo9DqagN4V+23i6TnvIKo=;
+        s=korg; t=1649149918;
+        bh=otzYYpWm1DE4l/EFXF5rmcG0L81c9Jdh+PbhGx+ObK8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Pn+YF36P/YHALl7dIVHsuby+A8dAOxIXXFc8pGo8Aw7G67CQhQtDrfG8SbuRd9JxC
-         ggYK+9gKuULOfn0XTpuRljGwaYoz6aq0tiMThY56Em+1pVcFte7yOpddAOVrEVCwhX
-         JKJbVAd27fAL4PXHeHG7kryh8HJuQOgwFizA2Tv0=
+        b=NBrapJftrBSkE4LyjbNQ0ZLrzoa4RZa1cleiN9bKlKS8oK1NWKFHOTEBdC/YbxQu4
+         +l6X6m1blA0KhEG8BCkzpGlMA4WAWyfWgBTjx5+BbtiSHqpew/3Lk916TDpl7x6D+R
+         4De1Tff5zmTgqlXh4FQb3Yx0C5SoTkzn2sBDYI7A=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Marco Patalano <mpatalan@redhat.com>,
+        stable@vger.kernel.org,
         Himanshu Madhani <himanshu.madhani@oracle.com>,
-        Arun Easi <aeasi@marvell.com>,
+        Quinn Tran <qutran@marvell.com>,
         Nilesh Javali <njavali@marvell.com>,
         "Martin K. Petersen" <martin.petersen@oracle.com>
-Subject: [PATCH 5.16 0894/1017] scsi: qla2xxx: Fix crash during module load unload test
-Date:   Tue,  5 Apr 2022 09:30:07 +0200
-Message-Id: <20220405070420.764804490@linuxfoundation.org>
+Subject: [PATCH 5.16 0889/1017] scsi: qla2xxx: Fix disk failure to rediscover
+Date:   Tue,  5 Apr 2022 09:30:02 +0200
+Message-Id: <20220405070420.618127102@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -52,58 +52,74 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Arun Easi <aeasi@marvell.com>
+From: Quinn Tran <qutran@marvell.com>
 
-commit 0972252450f90db56dd5415a20e2aec21a08d036 upstream.
+commit 6a45c8e137d4e2c72eecf1ac7cf64f2fdfcead99 upstream.
 
-During purex packet handling the driver was incorrectly freeing a
-pre-allocated structure. Fix this by skipping that entry.
+User experienced some of the LUN failed to get rediscovered after long
+cable pull test. The issue is triggered by a race condition between driver
+setting session online state vs starting the LUN scan process at the same
+time. Current code set the online state after notifying the session is
+available. In this case, trigger to start the LUN scan process happened
+before driver could set the session in online state.  LUN scan ends up with
+failure due to the session online check was failing.
 
-System crashed with the following stack during a module unload test.
+Set the online state before reporting of the availability of the session.
 
-Call Trace:
-	sbitmap_init_node+0x7f/0x1e0
-	sbitmap_queue_init_node+0x24/0x150
-	blk_mq_init_bitmaps+0x3d/0xa0
-	blk_mq_init_tags+0x68/0x90
-	blk_mq_alloc_map_and_rqs+0x44/0x120
-	blk_mq_alloc_set_map_and_rqs+0x63/0x150
-	blk_mq_alloc_tag_set+0x11b/0x230
-	scsi_add_host_with_dma.cold+0x3f/0x245
-	qla2x00_probe_one+0xd5a/0x1b80 [qla2xxx]
-
-Call Trace with slub_debug and debug kernel:
-	kasan_report_invalid_free+0x50/0x80
-	__kasan_slab_free+0x137/0x150
-	slab_free_freelist_hook+0xc6/0x190
-	kfree+0xe8/0x2e0
-	qla2x00_free_device+0x3bb/0x5d0 [qla2xxx]
-	qla2x00_remove_one+0x668/0xcf0 [qla2xxx]
-
-Link: https://lore.kernel.org/r/20220310092604.22950-6-njavali@marvell.com
-Fixes: 62e9dd177732 ("scsi: qla2xxx: Change in PUREX to handle FPIN ELS requests")
+Link: https://lore.kernel.org/r/20220310092604.22950-3-njavali@marvell.com
+Fixes: aecf043443d3 ("scsi: qla2xxx: Fix Remote port registration")
 Cc: stable@vger.kernel.org
-Reported-by: Marco Patalano <mpatalan@redhat.com>
-Tested-by: Marco Patalano <mpatalan@redhat.com>
 Reviewed-by: Himanshu Madhani <himanshu.madhani@oracle.com>
-Signed-off-by: Arun Easi <aeasi@marvell.com>
+Signed-off-by: Quinn Tran <qutran@marvell.com>
 Signed-off-by: Nilesh Javali <njavali@marvell.com>
 Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/scsi/qla2xxx/qla_os.c |    2 ++
- 1 file changed, 2 insertions(+)
+ drivers/scsi/qla2xxx/qla_init.c |    5 +++--
+ drivers/scsi/qla2xxx/qla_nvme.c |    5 +++++
+ 2 files changed, 8 insertions(+), 2 deletions(-)
 
---- a/drivers/scsi/qla2xxx/qla_os.c
-+++ b/drivers/scsi/qla2xxx/qla_os.c
-@@ -3896,6 +3896,8 @@ qla24xx_free_purex_list(struct purex_lis
- 	spin_lock_irqsave(&list->lock, flags);
- 	list_for_each_entry_safe(item, next, &list->head, list) {
- 		list_del(&item->list);
-+		if (item == &item->vha->default_item)
-+			continue;
- 		kfree(item);
+--- a/drivers/scsi/qla2xxx/qla_init.c
++++ b/drivers/scsi/qla2xxx/qla_init.c
+@@ -5758,6 +5758,8 @@ qla2x00_reg_remote_port(scsi_qla_host_t
+ 	if (atomic_read(&fcport->state) == FCS_ONLINE)
+ 		return;
+ 
++	qla2x00_set_fcport_state(fcport, FCS_ONLINE);
++
+ 	rport_ids.node_name = wwn_to_u64(fcport->node_name);
+ 	rport_ids.port_name = wwn_to_u64(fcport->port_name);
+ 	rport_ids.port_id = fcport->d_id.b.domain << 16 |
+@@ -5865,6 +5867,7 @@ qla2x00_update_fcport(scsi_qla_host_t *v
+ 		qla2x00_reg_remote_port(vha, fcport);
+ 		break;
+ 	case MODE_TARGET:
++		qla2x00_set_fcport_state(fcport, FCS_ONLINE);
+ 		if (!vha->vha_tgt.qla_tgt->tgt_stop &&
+ 			!vha->vha_tgt.qla_tgt->tgt_stopped)
+ 			qlt_fc_port_added(vha, fcport);
+@@ -5879,8 +5882,6 @@ qla2x00_update_fcport(scsi_qla_host_t *v
+ 		break;
  	}
- 	spin_unlock_irqrestore(&list->lock, flags);
+ 
+-	qla2x00_set_fcport_state(fcport, FCS_ONLINE);
+-
+ 	if (IS_IIDMA_CAPABLE(vha->hw) && vha->hw->flags.gpsc_supported) {
+ 		if (fcport->id_changed) {
+ 			fcport->id_changed = 0;
+--- a/drivers/scsi/qla2xxx/qla_nvme.c
++++ b/drivers/scsi/qla2xxx/qla_nvme.c
+@@ -37,6 +37,11 @@ int qla_nvme_register_remote(struct scsi
+ 		(fcport->nvme_flag & NVME_FLAG_REGISTERED))
+ 		return 0;
+ 
++	if (atomic_read(&fcport->state) == FCS_ONLINE)
++		return 0;
++
++	qla2x00_set_fcport_state(fcport, FCS_ONLINE);
++
+ 	fcport->nvme_flag &= ~NVME_FLAG_RESETTING;
+ 
+ 	memset(&req, 0, sizeof(struct nvme_fc_port_info));
 
 
