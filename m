@@ -2,48 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B4022C47084
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:17:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 83128C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:18:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1574553AbiDEW4c (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 18:56:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47412 "EHLO
+        id S229865AbiDEW4r (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 18:56:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39314 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348495AbiDEJrv (ORCPT
+        with ESMTP id S1349066AbiDEJtD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:47:51 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F8702192;
-        Tue,  5 Apr 2022 02:34:04 -0700 (PDT)
+        Tue, 5 Apr 2022 05:49:03 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0376BA94F2;
+        Tue,  5 Apr 2022 02:39:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D314D616D1;
-        Tue,  5 Apr 2022 09:34:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C0F89C385A3;
-        Tue,  5 Apr 2022 09:34:02 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 98D30B81B14;
+        Tue,  5 Apr 2022 09:39:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0F31EC385A1;
+        Tue,  5 Apr 2022 09:39:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649151243;
-        bh=g/yUqTevTV8GciHyd7YeKtTHAieQUSEzbtaW7BPaBVs=;
+        s=korg; t=1649151578;
+        bh=Z6EtSuCeXdh+PqwaoRlWSAWz4RHxvKlbnH7nuI5gNC0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WIky5rH09kW9WaRUayObFmHUlesS4DFLu97ryPPnJvWpGJ+raXX9uFhyeoXi2prWX
-         k4kTTsgMJc5trNz3ZFTEMwctK3B7unBtsT9wueJ3BeKA2ro+k0vzNEOuL4dVmD5otL
-         CmHsL72yU3ckjPN/FeLIm3Tji85Y+Pw9ItgUNc4s=
+        b=M/1Fj+Ta169HxbnUWcnDgOkRS9BUjeE8STfB0F2QMmSnjOZ0aiU8p28PKBUlBcgb5
+         yYTO9KZwCKr8NtThl1IgEof+5hwSOO2sazRk5lRErFTFlTUDBYEqZofOeBGyOV/O8h
+         ZqiX3jXQrgrH/GIZlQWUJ/AZC00TS63t8UbBgRxk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
-        kernel test robot <lkp@intel.com>,
-        Angelo Dureghello <angelo@sysam.it>,
-        Greg Ungerer <gerg@kernel.org>,
-        Greg Ungerer <gerg@linux-m68k.org>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        linux-m68k@lists.linux-m68k.org, uclinux-dev@uclinux.org,
+        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
+        Luca Coelho <luciano.coelho@intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 346/913] m68k: coldfire/device.c: only build for MCF_EDMA when h/w macros are defined
-Date:   Tue,  5 Apr 2022 09:23:28 +0200
-Message-Id: <20220405070350.216701790@linuxfoundation.org>
+Subject: [PATCH 5.15 467/913] iwlwifi: mvm: Fix an error code in iwl_mvm_up()
+Date:   Tue,  5 Apr 2022 09:25:29 +0200
+Message-Id: <20220405070353.846025776@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
 References: <20220405070339.801210740@linuxfoundation.org>
@@ -55,81 +49,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Randy Dunlap <rdunlap@infradead.org>
+From: Dan Carpenter <dan.carpenter@oracle.com>
 
-[ Upstream commit e6e1e7b19fa132d23d09c465942aab4c110d3da9 ]
+[ Upstream commit 583d18336abdfb1b355270289ff8f6a2608ba905 ]
 
-When CONFIG_MCF_EDMA is set (due to COMPILE_TEST, not due to
-CONFIG_M5441x), coldfire/device.c has compile errors due to
-missing MCFEDMA_* symbols. In the .config file that was provided,
-CONFIG_M5206=y, not CONFIG_M5441x, so <asm/m5441xsim.h> is not
-included in coldfire/device.c.
+Return -ENODEV instead of success on this error path.
 
-Only build the MCF_EDMA code in coldfire/device.c if the MCFEDMA_*
-hardware macros are defined.
-
-Fixes these build errors:
-
-../arch/m68k/coldfire/device.c:512:35: error: 'MCFEDMA_BASE' undeclared here (not in a function); did you mean 'MCFDMA_BASE1'?
-  512 |                 .start          = MCFEDMA_BASE,
-../arch/m68k/coldfire/device.c:513:50: error: 'MCFEDMA_SIZE' undeclared here (not in a function)
-  513 |                 .end            = MCFEDMA_BASE + MCFEDMA_SIZE - 1,
-../arch/m68k/coldfire/device.c:517:35: error: 'MCFEDMA_IRQ_INTR0' undeclared here (not in a function)
-  517 |                 .start          = MCFEDMA_IRQ_INTR0,
-../arch/m68k/coldfire/device.c:523:35: error: 'MCFEDMA_IRQ_INTR16' undeclared here (not in a function)
-  523 |                 .start          = MCFEDMA_IRQ_INTR16,
-../arch/m68k/coldfire/device.c:529:35: error: 'MCFEDMA_IRQ_INTR56' undeclared here (not in a function)
-  529 |                 .start          = MCFEDMA_IRQ_INTR56,
-../arch/m68k/coldfire/device.c:535:35: error: 'MCFEDMA_IRQ_ERR' undeclared here (not in a function)
-  535 |                 .start          = MCFEDMA_IRQ_ERR,
-
-Fixes: d7e9d01ac292 ("m68k: add ColdFire mcf5441x eDMA platform support")
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Reported-by: kernel test robot <lkp@intel.com>
-Link: lore.kernel.org/r/202203030252.P752DK46-lkp@intel.com
-Cc: Angelo Dureghello <angelo@sysam.it>
-Cc: Greg Ungerer <gerg@kernel.org>
-Cc: Greg Ungerer <gerg@linux-m68k.org>
-Cc: Geert Uytterhoeven <geert@linux-m68k.org>
-Cc: linux-m68k@lists.linux-m68k.org
-Cc: uclinux-dev@uclinux.org
-Signed-off-by: Greg Ungerer <gerg@linux-m68k.org>
+Fixes: dd36a507c806 ("iwlwifi: mvm: look for the first supported channel when add/remove phy ctxt")
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+Link: https://lore.kernel.org/r/20210816183930.GA2068@kili
+Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/m68k/coldfire/device.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/net/wireless/intel/iwlwifi/mvm/fw.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/arch/m68k/coldfire/device.c b/arch/m68k/coldfire/device.c
-index 0386252e9d04..4218750414bb 100644
---- a/arch/m68k/coldfire/device.c
-+++ b/arch/m68k/coldfire/device.c
-@@ -480,7 +480,7 @@ static struct platform_device mcf_i2c5 = {
- #endif /* MCFI2C_BASE5 */
- #endif /* IS_ENABLED(CONFIG_I2C_IMX) */
+diff --git a/drivers/net/wireless/intel/iwlwifi/mvm/fw.c b/drivers/net/wireless/intel/iwlwifi/mvm/fw.c
+index bcc032c815dc..6d439ae7b50b 100644
+--- a/drivers/net/wireless/intel/iwlwifi/mvm/fw.c
++++ b/drivers/net/wireless/intel/iwlwifi/mvm/fw.c
+@@ -1489,8 +1489,10 @@ int iwl_mvm_up(struct iwl_mvm *mvm)
+ 	while (!sband && i < NUM_NL80211_BANDS)
+ 		sband = mvm->hw->wiphy->bands[i++];
  
--#if IS_ENABLED(CONFIG_MCF_EDMA)
-+#ifdef MCFEDMA_BASE
+-	if (WARN_ON_ONCE(!sband))
++	if (WARN_ON_ONCE(!sband)) {
++		ret = -ENODEV;
+ 		goto error;
++	}
  
- static const struct dma_slave_map mcf_edma_map[] = {
- 	{ "dreq0", "rx-tx", MCF_EDMA_FILTER_PARAM(0) },
-@@ -552,7 +552,7 @@ static struct platform_device mcf_edma = {
- 		.platform_data = &mcf_edma_data,
- 	}
- };
--#endif /* IS_ENABLED(CONFIG_MCF_EDMA) */
-+#endif /* MCFEDMA_BASE */
+ 	chan = &sband->channels[0];
  
- #ifdef MCFSDHC_BASE
- static struct mcf_esdhc_platform_data mcf_esdhc_data = {
-@@ -651,7 +651,7 @@ static struct platform_device *mcf_devices[] __initdata = {
- 	&mcf_i2c5,
- #endif
- #endif
--#if IS_ENABLED(CONFIG_MCF_EDMA)
-+#ifdef MCFEDMA_BASE
- 	&mcf_edma,
- #endif
- #ifdef MCFSDHC_BASE
 -- 
 2.34.1
 
