@@ -2,117 +2,258 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 75820C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3817CC433EF
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 02:08:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1846862AbiDFCI4 convert rfc822-to-8bit (ORCPT
+        id S1846810AbiDFCIp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 22:08:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51852 "EHLO
+        Tue, 5 Apr 2022 22:08:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39520 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357841AbiDEO5D (ORCPT
+        with ESMTP id S1573658AbiDETja (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 10:57:03 -0400
-Received: from mail-yw1-f178.google.com (mail-yw1-f178.google.com [209.85.128.178])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC343169B0C;
-        Tue,  5 Apr 2022 06:23:02 -0700 (PDT)
-Received: by mail-yw1-f178.google.com with SMTP id 00721157ae682-2eafabbc80aso135119877b3.11;
-        Tue, 05 Apr 2022 06:23:02 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=7A4P9kn8lX4sQ7Htb6dVWHUymvJRsd1UwLVgcXfrzcY=;
-        b=1JeLcq/jxTDd964pW6ogdHlJxVr8MMS8irQgftGCWQtbPADDPFzk1Z/QbLuVHlihbk
-         ov066ahR8eT3FdyBQkof0Y53tBUrVRp/p7tYyrxW7uYz+YaTJ9hlPzrHdKYf6R2rF8V+
-         bS+2QrKOKwwu9ND7KOu5jxVMk+UvdRoKrnNG6JceRWXPTPGST+PyquTZPKBz6i5r4iIV
-         BieZpy7L97IPcd9fi+s8ba/M2iARklmDVYgSg6zlZsGyUbrkVUCqoCID2J/4pxec+clr
-         lCPF8CRghx21zTKzzrK94warG0/3MEFep0Tp07sRq2/Fv+ssX9q/ugFdSkakDqSixCTP
-         9zEA==
-X-Gm-Message-State: AOAM531TtsjghQFB6YL53glCVsv7OgjrTJcKMcPscZb1VFkKyQ0/bBsF
-        nWKHxxRy7bJO6a/EATko2KqghU9yoRg3CHOMdV0=
-X-Google-Smtp-Source: ABdhPJycfqaQNd811FMhkXgQfDqevZ83CiXYssxwULKvsQGRHFOOAMwuLYDGOU9KcjHSXp7vTAqGzq/4etcE7UXaUuo=
-X-Received: by 2002:a81:36cf:0:b0:2e5:2597:a026 with SMTP id
- d198-20020a8136cf000000b002e52597a026mr2616210ywa.301.1649164981760; Tue, 05
- Apr 2022 06:23:01 -0700 (PDT)
+        Tue, 5 Apr 2022 15:39:30 -0400
+Received: from lelv0143.ext.ti.com (lelv0143.ext.ti.com [198.47.23.248])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AAEFE245BD;
+        Tue,  5 Apr 2022 12:37:31 -0700 (PDT)
+Received: from lelv0265.itg.ti.com ([10.180.67.224])
+        by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id 235JbNjd108077;
+        Tue, 5 Apr 2022 14:37:23 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1649187443;
+        bh=vtus/60BuspHiW8pCcteyIqj6DRsxR0bpl4QDFqiV0c=;
+        h=Date:From:To:CC:Subject:References:In-Reply-To;
+        b=sRiFsishexfnwFwes5Cfd4trvIkLpL9nmCMdGpyI5QBXLBpmzcWYA+IGYq0gWX93O
+         FYRtMuHM8z5A56zJmmQL3+3teVDmNwyYOGsnKYmTFMvs4+scJ4aNEIF64sMpHk9/rQ
+         e3A0MY/ChDfxOo/WTKf50KnOA6+/gvYM2dDbSX7Y=
+Received: from DLEE112.ent.ti.com (dlee112.ent.ti.com [157.170.170.23])
+        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 235JbMhJ003784
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Tue, 5 Apr 2022 14:37:22 -0500
+Received: from DLEE103.ent.ti.com (157.170.170.33) by DLEE112.ent.ti.com
+ (157.170.170.23) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Tue, 5
+ Apr 2022 14:37:22 -0500
+Received: from fllv0040.itg.ti.com (10.64.41.20) by DLEE103.ent.ti.com
+ (157.170.170.33) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
+ Frontend Transport; Tue, 5 Apr 2022 14:37:22 -0500
+Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
+        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id 235JbLSc041064;
+        Tue, 5 Apr 2022 14:37:22 -0500
+Date:   Wed, 6 Apr 2022 01:07:21 +0530
+From:   Pratyush Yadav <p.yadav@ti.com>
+To:     Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
+CC:     Mark Brown <broonie@kernel.org>,
+        Tudor Ambarus <tudor.ambarus@microchip.com>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Ramuthevar Vadivel Murugan 
+        <vadivel.muruganx.ramuthevar@linux.intel.com>,
+        <linux-spi@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] spi: cadence-quadspi: fix protocol setup for non-1-1-X
+ operations
+Message-ID: <20220405193721.5jf3umfn3dvv6fxd@ti.com>
+References: <20220331110819.133392-1-matthias.schiffer@ew.tq-group.com>
+ <20220401100606.iz52jbrdcz6pd5sg@ti.com>
+ <6b2bfa6614fbb9339b94a191ab933a2c25b8b4d7.camel@ew.tq-group.com>
 MIME-Version: 1.0
-References: <20220325113148.588163-1-clement.leger@bootlin.com>
- <20220325113148.588163-4-clement.leger@bootlin.com> <Yj3SFYdUQ4r7GXqs@smile.fi.intel.com>
- <20220328162812.16deac92@fixe.home>
-In-Reply-To: <20220328162812.16deac92@fixe.home>
-From:   "Rafael J. Wysocki" <rafael@kernel.org>
-Date:   Tue, 5 Apr 2022 15:22:51 +0200
-Message-ID: <CAJZ5v0hOjaOCUxbFzKG90Db0bgfdb3q988oAvLB4kmD3-HS8sQ@mail.gmail.com>
-Subject: Re: [PATCH v3 3/9] device property: add index argument to
- property_read_string_array() callback
-To:     =?UTF-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>
-Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Daniel Scally <djrscally@gmail.com>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J . Wysocki" <rafael@kernel.org>,
-        Wolfram Sang <wsa@kernel.org>, Peter Rosin <peda@axentia.se>,
-        Rob Herring <robh+dt@kernel.org>,
-        Frank Rowand <frowand.list@gmail.com>,
-        Len Brown <lenb@kernel.org>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Allan Nielsen <allan.nielsen@microchip.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
-        linux-i2c <linux-i2c@vger.kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <6b2bfa6614fbb9339b94a191ab933a2c25b8b4d7.camel@ew.tq-group.com>
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Mar 28, 2022 at 4:29 PM Clément Léger <clement.leger@bootlin.com> wrote:
->
-> Le Fri, 25 Mar 2022 16:30:45 +0200,
-> Andy Shevchenko <andriy.shevchenko@linux.intel.com> a écrit :
->
-> > >     pointer = property_entry_find(props, propname, length);
-> > >     if (IS_ERR(pointer))
-> > >             return PTR_ERR(pointer);
-> >
-> > > +   if (index >= array_len)
-> > > +           return -ENODATA;
-> >
-> > I was about to ask if we can check this before the
-> > property_entry_find() call, but realized that in such case it will
-> > shadow possible errors due to wrong or absent property.
->
-> I think you are actually right, the check can be done after
-> property_entry_count_elems_of_size() since it already checks for the
-> property to be present. I'll move that check.
->
-> >
-> > ...
-> >
-> > > -           of_property_read_string_array(node, propname, val,
-> > > nval) :
-> > > +           of_property_read_string_array_index(node,
-> > > propname, val, nval,
-> > > +                                               index) :
-> >
-> > Dunno about the style there, but I think it can be one line.
->
-> Seems like the complete file is strictly applying the 80 columns rules
-> so I thought it was better to keep it like this. However, I think the
-> ternary oeprator is not really readable with such split.
+On 01/04/22 12:20PM, Matthias Schiffer wrote:
+> On Fri, 2022-04-01 at 15:36 +0530, Pratyush Yadav wrote:
+> > Hi Matthias,
+> > 
+> > On 31/03/22 01:08PM, Matthias Schiffer wrote:
+> > > cqspi_set_protocol() only set the data width, but ignored the
+> > > command
+> > > and address width (except for 8-8-8 DTR ops), leading to corruption
+> > > of
+> > > all transfers using 1-X-X or X-X-X ops. Fix by setting the other
+> > > two
+> > > widths as well.
+> > > 
+> > > While we're at it, simplify the code a bit by replacing the
+> > > CQSPI_INST_TYPE_* constants with ilog2().
+> > > 
+> > > Tested on a TI AM64x with a Macronix MX25U51245G QSPI flash with 1-
+> > > 4-4
+> > > read and write operations.
+> > > 
+> > > Fixes: a314f6367787 ("mtd: spi-nor: Convert cadence-quadspi to use
+> > > spi-mem framework")
+> > 
+> > I think a fixes tag is wrong here. The old driver did not support 1-
+> > X-X 
+> > modes either. So you are not fixing anything, you are adding a new 
+> > feature. I don't think we should backport this patch to stable.
+> 
+> 
+> Giving a precise fixes tag is a bit difficult. The referenced commit
+> made the driver (accidentally) accept commands like 1-4-4 without
+> handing them correctly, causing data corruption for flashs that support
+> these modes. The data corruption is fixed by my patch.
 
-So FWIW I would entirely change it to
+Ah, you're right. I missed the fact that the original driver explicitly 
+checked for 1-1-1, 1-1-4, and 1-1-8, and returned an error for the rest. 
+So your patch does indeed fix a bug.
 
-if (!val)
-        return of_property_count_strings(node, propname);
+> 
+> As the change was unintended, one option would be to split this patch
+> into two parts: One fix patch that makes cqspi_set_protocol() -EINVAL
+> again for all commands that are not 1-1-X, and one feature patch that
+> adds actual support for these commands.
+> 
+> My thought process was that making these commands work correctly can't
+> break anything that is not already broken in current stable kernels.
+> But if you prefer the minimal change, I can send a v2 that splits the
+> patch.
 
-return of_property_read_string_array_index(node, propname, val,
+Yes, but as I commented below, I would prefer you rework the driver to 
+drop cqspi_set_protocol() entirely. For doing that the 2 patch approach 
+would work best so we don't end up getting the new code backported to 
+stable as well.
 
-nval, index);
+> 
+> Regards,
+> Matthias
+> 
+> 
+> 
+> > 
+> > > Signed-off-by: Matthias Schiffer <matthias.schiffer@ew.tq-group.com
+> > > >
+> > > ---
+> > >  drivers/spi/spi-cadence-quadspi.c | 46 ++++++++-------------------
+> > > ----
+> > >  1 file changed, 12 insertions(+), 34 deletions(-)
+> > > 
+> > > diff --git a/drivers/spi/spi-cadence-quadspi.c b/drivers/spi/spi-
+> > > cadence-quadspi.c
+> > > index b0c9f62ccefb..616ada891974 100644
+> > > --- a/drivers/spi/spi-cadence-quadspi.c
+> > > +++ b/drivers/spi/spi-cadence-quadspi.c
+> > > @@ -19,6 +19,7 @@
+> > >  #include <linux/iopoll.h>
+> > >  #include <linux/jiffies.h>
+> > >  #include <linux/kernel.h>
+> > > +#include <linux/log2.h>
+> > >  #include <linux/module.h>
+> > >  #include <linux/of_device.h>
+> > >  #include <linux/of.h>
+> > > @@ -102,12 +103,6 @@ struct cqspi_driver_platdata {
+> > >  #define CQSPI_TIMEOUT_MS			500
+> > >  #define CQSPI_READ_TIMEOUT_MS			10
+> > >  
+> > > -/* Instruction type */
+> > > -#define CQSPI_INST_TYPE_SINGLE			0
+> > > -#define CQSPI_INST_TYPE_DUAL			1
+> > > -#define CQSPI_INST_TYPE_QUAD			2
+> > > -#define CQSPI_INST_TYPE_OCTAL			3
+> > > -
+> > >  #define CQSPI_DUMMY_CLKS_PER_BYTE		8
+> > >  #define CQSPI_DUMMY_BYTES_MAX			4
+> > >  #define CQSPI_DUMMY_CLKS_MAX			31
+> > > @@ -376,10 +371,6 @@ static unsigned int cqspi_calc_dummy(const
+> > > struct spi_mem_op *op, bool dtr)
+> > >  static int cqspi_set_protocol(struct cqspi_flash_pdata *f_pdata,
+> > >  			      const struct spi_mem_op *op)
+> > >  {
+> > > -	f_pdata->inst_width = CQSPI_INST_TYPE_SINGLE;
+> > > -	f_pdata->addr_width = CQSPI_INST_TYPE_SINGLE;
+> > > -	f_pdata->data_width = CQSPI_INST_TYPE_SINGLE;
+> > > -
+> > >  	/*
+> > >  	 * For an op to be DTR, cmd phase along with every other non-
+> > > empty
+> > >  	 * phase should have dtr field set to 1. If an op phase has
+> > > zero
+> > > @@ -389,32 +380,23 @@ static int cqspi_set_protocol(struct
+> > > cqspi_flash_pdata *f_pdata,
+> > >  		       (!op->addr.nbytes || op->addr.dtr) &&
+> > >  		       (!op->data.nbytes || op->data.dtr);
+> > >  
+> > > -	switch (op->data.buswidth) {
+> > > -	case 0:
+> > > -		break;
+> > > -	case 1:
+> > > -		f_pdata->data_width = CQSPI_INST_TYPE_SINGLE;
+> > > -		break;
+> > > -	case 2:
+> > > -		f_pdata->data_width = CQSPI_INST_TYPE_DUAL;
+> > > -		break;
+> > > -	case 4:
+> > > -		f_pdata->data_width = CQSPI_INST_TYPE_QUAD;
+> > > -		break;
+> > > -	case 8:
+> > > -		f_pdata->data_width = CQSPI_INST_TYPE_OCTAL;
+> > > -		break;
+> > > -	default:
+> > > -		return -EINVAL;
+> > > -	}
+> > > +	f_pdata->inst_width = 0;
+> > > +	if (op->cmd.buswidth)
+> > > +		f_pdata->inst_width = ilog2(op->cmd.buswidth);
+> > > +
+> > > +	f_pdata->addr_width = 0;
+> > > +	if (op->addr.buswidth)
+> > > +		f_pdata->addr_width = ilog2(op->addr.buswidth);
+> > > +
+> > > +	f_pdata->data_width = 0;
+> > > +	if (op->data.buswidth)
+> > > +		f_pdata->data_width = ilog2(op->data.buswidth);
+> > 
+> > Honestly, I think we should get rid of cqspi_set_protocol() entirely.
+> > I 
+> > see no need to store f_pdata->{instr,addr,data}_width since we 
+> > recalculate those for each op execution anyway. So why not just use
+> > the 
+> > spi_mem_op to get those values directly and be rid of all this mess?
+> > 
+> > >  
+> > >  	/* Right now we only support 8-8-8 DTR mode. */
+> > >  	if (f_pdata->dtr) {
+> > >  		switch (op->cmd.buswidth) {
+> > >  		case 0:
+> > > -			break;
+> > >  		case 8:
+> > > -			f_pdata->inst_width = CQSPI_INST_TYPE_OCTAL;
+> > >  			break;
+> > >  		default:
+> > >  			return -EINVAL;
+> > > @@ -422,9 +404,7 @@ static int cqspi_set_protocol(struct
+> > > cqspi_flash_pdata *f_pdata,
+> > >  
+> > >  		switch (op->addr.buswidth) {
+> > >  		case 0:
+> > > -			break;
+> > >  		case 8:
+> > > -			f_pdata->addr_width = CQSPI_INST_TYPE_OCTAL;
+> > >  			break;
+> > >  		default:
+> > >  			return -EINVAL;
+> > > @@ -432,9 +412,7 @@ static int cqspi_set_protocol(struct
+> > > cqspi_flash_pdata *f_pdata,
+> > >  
+> > >  		switch (op->data.buswidth) {
+> > >  		case 0:
+> > > -			break;
+> > >  		case 8:
+> > > -			f_pdata->data_width = CQSPI_INST_TYPE_OCTAL;
+> > >  			break;
+> > >  		default:
+> > >  			return -EINVAL;
+> > > -- 
+> > > 2.25.1
+> > > 
+> 
 
-which IMO would be way easier to read.
+-- 
+Regards,
+Pratyush Yadav
+Texas Instruments Inc.
