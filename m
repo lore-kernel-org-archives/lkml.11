@@ -2,67 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A458C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 07:21:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 188E1C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 07:26:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231618AbiDEHXI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 03:23:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48156 "EHLO
+        id S231483AbiDEH2J (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 03:28:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57494 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231799AbiDEHWo (ORCPT
+        with ESMTP id S229450AbiDEH2E (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 03:22:44 -0400
-X-Greylist: delayed 84052 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 05 Apr 2022 00:20:37 PDT
-Received: from relay1-d.mail.gandi.net (relay1-d.mail.gandi.net [217.70.183.193])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A28F01D8;
-        Tue,  5 Apr 2022 00:20:36 -0700 (PDT)
-Received: (Authenticated sender: miquel.raynal@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id D202024000C;
-        Tue,  5 Apr 2022 07:20:24 +0000 (UTC)
+        Tue, 5 Apr 2022 03:28:04 -0400
+Received: from relay8-d.mail.gandi.net (relay8-d.mail.gandi.net [217.70.183.201])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DB0726AC0;
+        Tue,  5 Apr 2022 00:26:04 -0700 (PDT)
+Received: (Authenticated sender: clement.leger@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id 5D0781BF205;
+        Tue,  5 Apr 2022 07:26:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1649143234;
+        t=1649143563;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=zpvfYdyA2PB7667ZTFEYC37nx0xbGndnvQLkh+GtoUc=;
-        b=h7hY9Jo6S5R/X/FMHAFNGYaEyyD9HrfcpGcmAW5frfsecCC8u0xeUQQZ7JJb45pOrHonQB
-        5BUPWLjFDMmnXKq8WFiKDZ403XDFDD3uIdBDZGdjYfUK2vA9d+Kl12efhuNWtX6uUBeAD1
-        ZagFg9uip+bqYD9yNMQuWKLcKDvGVechHM2qXYq5Z7w0TZ7+vA4RMnPoIGlT4x8B7KblfB
-        V24FmKwjDy+xZkws3pak/3FMAGk01NGyF9vPRPS4j6lir8BcHO7X57ZJqSo0K/d1ua1lm8
-        udxlvKJRsxYPs3EMlnJ/PgeLM42VMwMEJGAUGncNYDAaN0Gxb83tniqf8XtcTg==
-Date:   Tue, 5 Apr 2022 09:20:24 +0200
-From:   Miquel Raynal <miquel.raynal@bootlin.com>
-To:     Chuanhong Guo <gch981213@gmail.com>
-Cc:     Rob Herring <robh@kernel.org>, Rob Herring <robh+dt@kernel.org>,
-        linux-spi@vger.kernel.org,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Wolfram Sang <wsa+renesas@sang-engineering.com>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Richard Weinberger <richard@nod.at>,
-        Pratyush Yadav <p.yadav@ti.com>,
-        linux-arm-kernel@lists.infradead.org,
-        Cai Huoqing <cai.huoqing@linux.dev>,
-        Roger Quadros <rogerq@kernel.org>,
-        Yu Kuai <yukuai3@huawei.com>,
-        linux-mediatek@lists.infradead.org,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        devicetree@vger.kernel.org, Mark Brown <broonie@kernel.org>,
-        linux-kernel@vger.kernel.org, Paul Cercueil <paul@crapouillou.net>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Colin Ian King <colin.king@intel.com>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        linux-mtd@lists.infradead.org
-Subject: Re: [PATCH v3 4/5] dt-bindings: spi: add binding doc for
- spi-mtk-snfi
-Message-ID: <20220405092024.25d97c33@xps13>
-In-Reply-To: <CAJsYDVLaXAoL=TcPun6rckcA_cdUS-zFy_7M6uCpfzX+jbQEag@mail.gmail.com>
-References: <20220404131818.1817794-1-gch981213@gmail.com>
-        <20220404131818.1817794-5-gch981213@gmail.com>
-        <1649088538.050456.1436949.nullmailer@robh.at.kernel.org>
-        <CAJsYDVLaXAoL=TcPun6rckcA_cdUS-zFy_7M6uCpfzX+jbQEag@mail.gmail.com>
+        bh=3aYdJv1c3x76qPIILK7iOMtk/QOsfJfFzAQtz6UrxU0=;
+        b=o5zJTgpxUzuajIIHNLVIqd6D7PNI0cy1ZbmZHCpqUbDDUd/4HAaRA+CL7ocwWZnYTCY3mk
+        b+u90n1nEzLFtu0XgK6KGlU6Sw0X53CVSIJalp9wXnql73H8GvSiBUdiKd//qydDndQmzV
+        UeZ/36HfWY7ezAqGsKNaMJTU3SHdmP7ta4BkhrSQ9oHjjfNIKbd6VJgr95khwIC/QlCBbm
+        gP/Ab8rTn0nnL2JgIc0BFJxB6o52G3+f7Ueq/LtUawEQtbUUuY8wQVEs/4/lFIBZACmIWF
+        oJNNhlQTjgS9peeGM+0RexBOUrbiKxKYHwr8zeg0hQ3RIQEgsZwYgPj5aMbVDw==
+Date:   Tue, 5 Apr 2022 09:24:34 +0200
+From:   =?UTF-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>
+To:     Rob Herring <robh@kernel.org>
+Cc:     Philipp Zabel <p.zabel@pengutronix.de>,
+        Frank Rowand <frowand.list@gmail.com>,
+        Lars Povlsen <lars.povlsen@microchip.com>,
+        Steen Hegelund <Steen.Hegelund@microchip.com>,
+        UNGLinuxDriver@microchip.com,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Allan Nielsen <allan.nielsen@microchip.com>,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
+Subject: Re: [PATCH v2 0/3] add fwnode support to reset subsystem
+Message-ID: <20220405092434.6e424ed4@fixe.home>
+In-Reply-To: <Ykst0Vb4fk+iALzc@robh.at.kernel.org>
+References: <20220324141237.297207-1-clement.leger@bootlin.com>
+        <Ykst0Vb4fk+iALzc@robh.at.kernel.org>
 Organization: Bootlin
-X-Mailer: Claws Mail 3.17.7 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.31; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
@@ -70,46 +56,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello,
+Le Mon, 4 Apr 2022 12:41:37 -0500,
+Rob Herring <robh@kernel.org> a =C3=A9crit :
 
-gch981213@gmail.com wrote on Tue, 5 Apr 2022 10:55:51 +0800:
+> On Thu, Mar 24, 2022 at 03:12:34PM +0100, Cl=C3=A9ment L=C3=A9ger wrote:
+> > This series is part of a larger series which aims at adding fwnode
+> > support in multiple subsystems [1]. The goal of this series was to
+> > add support for software node in various subsystem but in a first
+> > time only the fwnode support had gained consensus and will be added
+> > to multiple subsystems. =20
+>=20
+> The goal is describing a solution. What is the problem?
+>=20
+> What's the scenario where you have a reset provider not described by=20
+> firmware providing resets to devices (consumers) also not described by=20
+> firmware.
 
-> Hi Rob!
->=20
-> On Tue, Apr 5, 2022 at 12:09 AM Rob Herring <robh@kernel.org> wrote:
-> > [...]
-> > My bot found errors running 'make DT_CHECKER_FLAGS=3D-m dt_binding_chec=
-k'
-> > on your patch (DT_CHECKER_FLAGS is new in v5.13):
-> >
-> > yamllint warnings/errors:
-> >
-> > dtschema/dtc warnings/errors:
-> > /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/sp=
-i/mediatek,spi-mtk-snfi.example.dt.yaml: spi@1100d000: 'ecc-engine' is a re=
-quired property
-> >         From schema: /builds/robherring/linux-dt-review/Documentation/d=
-evicetree/bindings/spi/mediatek,spi-mtk-snfi.yaml
-> > Documentation/devicetree/bindings/spi/mediatek,spi-mtk-snfi.example.dt.=
-yaml:0:0: /example-0/soc/spi@1100d000/flash@0: failed to match any schema w=
-ith compatible: ['spi-nand'] =20
->=20
-> I ran the tests myself and it's only complaining about the ecc-engine nam=
-e:
->=20
-> /home/user/src/kernels/linux/Documentation/devicetree/bindings/spi/mediat=
-ek,spi-mtk-snfi.example.dtb:
-> spi@1100d000: 'ecc-engine' is a required property
-> From schema: /home/user/src/kernels/linux/Documentation/devicetree/bindin=
-gs/spi/mediatek,spi-mtk-snfi.yaml
->=20
-> It says nothing about the spi-nand part.
-> I'd like to keep the flash@0 node in the example to demonstrate the
-> nand-ecc-engine usage. What should I do?
+Hi Rob, there was a link attached to this series since there was a
+previous one that was sent which described the problem. Here is a link
+to the same thread but to a specific message which clarifies the
+problem and the solutions that were mentionned by other maintainers
+(ACPI overlays, DT overlays, software nodes and so on):
 
-You can try including spi-nand.yaml (like you do with
-spi-controller.yaml). You should no longer need to define
-nand-ecc-engine then as it is already described there?
+https://lore.kernel.org/netdev/20220224154040.2633a4e4@fixe.home/
 
-Thanks,
-Miqu=C3=A8l
+>=20
+> > For the moment ACPI node support is excluded from the fwnode support
+> > to avoid creating an unspecified ACPI reset device description. With
+> > these modifications, both driver that uses the fwnode_ API or the of_
+> > API to register the reset controller will be usable by consumer
+> > whatever the type of node that is used. =20
+>=20
+> Good, because controlling reset lines directly isn't how the ACPI device=
+=20
+> model works AFAIK.
+
+This was based on Mark Brown feedback.
+
+>=20
+> > One question raised by this series is that I'm not sure if all reset
+> > drivers should be modified to use the new fwnode support or keep the
+> > existing device-tree support. Maintainer advice on that particular
+> > question will be welcome. =20
+>=20
+> That would be pointless churn IMO. Why do we need to convert drivers=20
+> which the vast majority will never use anything but DT?
+
+To have a single interface to maintain and to remove duplicated fields
+(of_node, fwnode, fwnode_xlate, of_xlate) from reset controller struct.
+
+
+--=20
+Cl=C3=A9ment L=C3=A9ger,
+Embedded Linux and Kernel engineer at Bootlin
+https://bootlin.com
