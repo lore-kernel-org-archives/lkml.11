@@ -2,45 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F1E7C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 01:00:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3836EC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 01:00:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1443391AbiDFBAL (ORCPT
+        id S1445766AbiDFBA0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 21:00:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39896 "EHLO
+        Tue, 5 Apr 2022 21:00:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35276 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348923AbiDEJss (ORCPT
+        with ESMTP id S243444AbiDEKfe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:48:48 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A584EE4F2;
-        Tue,  5 Apr 2022 02:37:41 -0700 (PDT)
+        Tue, 5 Apr 2022 06:35:34 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3965A33886;
+        Tue,  5 Apr 2022 03:20:35 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 364B66164D;
-        Tue,  5 Apr 2022 09:37:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 438BFC385A0;
-        Tue,  5 Apr 2022 09:37:40 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CD643B81C6C;
+        Tue,  5 Apr 2022 10:20:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1FF26C385A1;
+        Tue,  5 Apr 2022 10:20:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649151460;
-        bh=FsqVb7UY4dwPIR3FljaqZy0qpdr4pSnoSN/L8zEspPU=;
+        s=korg; t=1649154032;
+        bh=tn3oV95hj2cGFdS6S3E/vvbtOLleHeDX+ydYbf8M3tc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=grJ19rz0icPRHRPlUAGg4Ko8/e8hXQnMo1YHSokXGaGtvdzavduBsOS0KngDesZT6
-         sdGM2trRwAbeKycC1Y8UlvLCNubV5ZLCN1oex67UzMPM/qoKSXzpoEVUyjvCalx+yB
-         hpKJcwQ0Jgco7p44UjD8wmchhl/EsTcWr7V0lk8U=
+        b=Lqtl3kAestwAEdmimKGGCWZPPoOQVUwUOjDrcEl+xTuZSsTikohpU9k3oS72hi+UV
+         GVevb00S9AVJy83C5Kx+O35NpDkmJVu0kfK/HXHnPL8yX4nYF+iDOK8DXDC1tduWaD
+         7yww9parTCfJm4eLN9+2OD/XsLDgG07Fv5SH3N7w=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Lorenzo Bianconi <lorenzo@kernel.org>,
-        Felix Fietkau <nbd@nbd.name>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 424/913] mt76: mt7921: fix a leftover race in runtime-pm
-Date:   Tue,  5 Apr 2022 09:24:46 +0200
-Message-Id: <20220405070352.554938115@linuxfoundation.org>
+        stable@vger.kernel.org, Olga Kornievskaia <kolga@netapp.com>,
+        Trond Myklebust <trond.myklebust@hammerspace.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 433/599] NFSv4.1: dont retry BIND_CONN_TO_SESSION on session error
+Date:   Tue,  5 Apr 2022 09:32:07 +0200
+Message-Id: <20220405070311.718223497@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
+References: <20220405070258.802373272@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,41 +50,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lorenzo Bianconi <lorenzo@kernel.org>
+From: Olga Kornievskaia <kolga@netapp.com>
 
-[ Upstream commit 591cdccebdd4d02eb46d400dea911136400cc567 ]
+[ Upstream commit 1d15d121cc2ad4d016a7dc1493132a9696f91fc5 ]
 
-Fix a possible race in mt7921_pm_power_save_work() if rx/tx napi
-schedules ps_work and we are currently accessing device register
-on a different cpu.
+There is no reason to retry the operation if a session error had
+occurred in such case result structure isn't filled out.
 
-Fixes: 1d8efc741df8 ("mt76: mt7921: introduce Runtime PM support")
-Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
-Signed-off-by: Felix Fietkau <nbd@nbd.name>
+Fixes: dff58530c4ca ("NFSv4.1: fix handling of backchannel binding in BIND_CONN_TO_SESSION")
+Signed-off-by: Olga Kornievskaia <kolga@netapp.com>
+Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/mediatek/mt76/mt7921/mac.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
+ fs/nfs/nfs4proc.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/net/wireless/mediatek/mt76/mt7921/mac.c b/drivers/net/wireless/mediatek/mt76/mt7921/mac.c
-index 04a288029c98..c093920a597d 100644
---- a/drivers/net/wireless/mediatek/mt76/mt7921/mac.c
-+++ b/drivers/net/wireless/mediatek/mt76/mt7921/mac.c
-@@ -1550,6 +1550,14 @@ void mt7921_pm_power_save_work(struct work_struct *work)
- 	    test_bit(MT76_HW_SCHED_SCANNING, &mphy->state))
- 		goto out;
- 
-+	if (mutex_is_locked(&dev->mt76.mutex))
-+		/* if mt76 mutex is held we should not put the device
-+		 * to sleep since we are currently accessing device
-+		 * register map. We need to wait for the next power_save
-+		 * trigger.
-+		 */
-+		goto out;
-+
- 	if (time_is_after_jiffies(dev->pm.last_activity + delta)) {
- 		delta = dev->pm.last_activity + delta - jiffies;
- 		goto out;
+diff --git a/fs/nfs/nfs4proc.c b/fs/nfs/nfs4proc.c
+index d222a980164b..77199d356042 100644
+--- a/fs/nfs/nfs4proc.c
++++ b/fs/nfs/nfs4proc.c
+@@ -8205,6 +8205,7 @@ nfs4_bind_one_conn_to_session_done(struct rpc_task *task, void *calldata)
+ 	case -NFS4ERR_DEADSESSION:
+ 		nfs4_schedule_session_recovery(clp->cl_session,
+ 				task->tk_status);
++		return;
+ 	}
+ 	if (args->dir == NFS4_CDFC4_FORE_OR_BOTH &&
+ 			res->dir != NFS4_CDFS4_BOTH) {
 -- 
 2.34.1
 
