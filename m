@@ -2,82 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E7B3C4167E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 596CDC43217
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:56:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384293AbiDEUzl (ORCPT
+        id S1384036AbiDEUzc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 16:55:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54606 "EHLO
+        Tue, 5 Apr 2022 16:55:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34022 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1457564AbiDEQKt (ORCPT
+        with ESMTP id S1384133AbiDEM1M (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 12:10:49 -0400
-Received: from ssl.serverraum.org (ssl.serverraum.org [IPv6:2a01:4f8:151:8464::1:2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4687B75;
-        Tue,  5 Apr 2022 09:08:50 -0700 (PDT)
-Received: from mwalle01.kontron.local. (unknown [213.135.10.150])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id 262BB2224F;
-        Tue,  5 Apr 2022 18:08:47 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1649174927;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=iTjJ/DlqGlB4KU5V2+oNHmLmbkHl/GSxV7xd7CiwzNc=;
-        b=RgJsiwfILuKJCsY8+3oJcObhGC2VBqBDyUB6M8+CfWkJQgWGbuJvyW5qd+dDnKbq660TMy
-        Ekr/aod0aiZfAEG2qnPNnBEkz89LGT0L6lu4wyNVEeZ4Lh5mun/LB7lIJN4Y5Z82oQ9PmH
-        hDperpebx6swNwQ3e1wfw8DIpe+5mZA=
-From:   Michael Walle <michael@walle.cc>
-To:     Kavyasree Kotagiri <kavyasree.kotagiri@microchip.com>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>
-Cc:     Arnd Bergmann <arnd@arndb.de>, Olof Johansson <olof@lixom.net>,
-        soc@kernel.org, linux-arm-kernel@lists.infradead.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Claudiu Beznea <claudiu.beznea@microchip.com>,
-        Tudor.Ambarus@microchip.com, Michael Walle <michael@walle.cc>
-Subject: [PATCH v3 3/7] ARM: dts: lan966x: add missing uart DMA channel
-Date:   Tue,  5 Apr 2022 18:08:33 +0200
-Message-Id: <20220405160837.4093563-4-michael@walle.cc>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220405160837.4093563-1-michael@walle.cc>
-References: <20220405160837.4093563-1-michael@walle.cc>
+        Tue, 5 Apr 2022 08:27:12 -0400
+Received: from conuserg-12.nifty.com (conuserg-12.nifty.com [210.131.2.79])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F21C357B0E;
+        Tue,  5 Apr 2022 04:35:19 -0700 (PDT)
+Received: from grover.. (133-32-177-133.west.xps.vectant.ne.jp [133.32.177.133]) (authenticated)
+        by conuserg-12.nifty.com with ESMTP id 235BYCGq000464;
+        Tue, 5 Apr 2022 20:34:15 +0900
+DKIM-Filter: OpenDKIM Filter v2.10.3 conuserg-12.nifty.com 235BYCGq000464
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
+        s=dec2015msa; t=1649158455;
+        bh=yB8mBxh6zgfFkl1vR4ponG9HVyr7i/FNMeStWHFyu/w=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=h0WQLw9dcMALq734ybEzZQq76OeHfQxuob6gpI5eh80gF2Uz9pGzrXICIkcRUStAS
+         K25/8dKR9NZGr0vc0fC/nS68dzZca6mYfVasGPxgZkQqkGfoIVyo5KtEbO3Ev4XUGt
+         pFq5V07TpDITzwvO3b80w1jkFQI8gYbF9tdOTwftw3UvyiSrlJm8aNI3ipxfu8K0q0
+         3WWKcRUZDPrbI8pUPhS7xx1tDmOz7k/xTldK1szWZab7Izbs7rlrPBmNc4wJRFtA34
+         VakyuWNidnh86Yb+lmI3yVGw1ZxyowpWwNuSxjsskejHC6ySAp4SIK+toeONLl114D
+         k9n4B7BiatM+Q==
+X-Nifty-SrcIP: [133.32.177.133]
+From:   Masahiro Yamada <masahiroy@kernel.org>
+To:     linux-kbuild@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Michal Marek <michal.lkml@markovi.net>
+Subject: [PATCH v2 04/10] modpost: move export_from_secname() call to more relevant place
+Date:   Tue,  5 Apr 2022 20:33:52 +0900
+Message-Id: <20220405113359.2880241-5-masahiroy@kernel.org>
+X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20220405113359.2880241-1-masahiroy@kernel.org>
+References: <20220405113359.2880241-1-masahiroy@kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The usart node of the flexcom3 block is missing the DMA channels. Add
-it.
+The assigned 'export' is only used when
 
-Signed-off-by: Michael Walle <michael@walle.cc>
-Reviewed-by: Claudiu Beznea <claudiu.beznea@microchip.com>
+    if (strstarts(symname, "__ksymtab_"))
+
+is met. The else-part of the assignment is the dead code.
+
+Move the export_from_secname() call to where it is used.
+
+Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
 ---
- arch/arm/boot/dts/lan966x.dtsi | 3 +++
- 1 file changed, 3 insertions(+)
 
-diff --git a/arch/arm/boot/dts/lan966x.dtsi b/arch/arm/boot/dts/lan966x.dtsi
-index 4c7beebbd1ef..e9d6c16d04cf 100644
---- a/arch/arm/boot/dts/lan966x.dtsi
-+++ b/arch/arm/boot/dts/lan966x.dtsi
-@@ -144,6 +144,9 @@ usart3: serial@200 {
- 				compatible = "atmel,at91sam9260-usart";
- 				reg = <0x200 0x200>;
- 				interrupts = <GIC_SPI 51 IRQ_TYPE_LEVEL_HIGH>;
-+				dmas = <&dma0 AT91_XDMAC_DT_PERID(9)>,
-+				       <&dma0 AT91_XDMAC_DT_PERID(8)>;
-+				dma-names = "tx", "rx";
- 				clocks = <&nic_clk>;
- 				clock-names = "usart";
- 				atmel,fifo-size = <32>;
+(no changes since v1)
+
+ scripts/mod/modpost.c | 10 ++++------
+ 1 file changed, 4 insertions(+), 6 deletions(-)
+
+diff --git a/scripts/mod/modpost.c b/scripts/mod/modpost.c
+index eebb32689816..f9e54247ae1d 100644
+--- a/scripts/mod/modpost.c
++++ b/scripts/mod/modpost.c
+@@ -684,14 +684,8 @@ static void handle_modversion(const struct module *mod,
+ static void handle_symbol(struct module *mod, struct elf_info *info,
+ 			  const Elf_Sym *sym, const char *symname)
+ {
+-	enum export export;
+ 	const char *name;
+ 
+-	if (strstarts(symname, "__ksymtab"))
+-		export = export_from_secname(info, get_secindex(info, sym));
+-	else
+-		export = export_unknown;
+-
+ 	switch (sym->st_shndx) {
+ 	case SHN_COMMON:
+ 		if (strstarts(symname, "__gnu_lto_")) {
+@@ -726,7 +720,11 @@ static void handle_symbol(struct module *mod, struct elf_info *info,
+ 	default:
+ 		/* All exported symbols */
+ 		if (strstarts(symname, "__ksymtab_")) {
++			enum export export;
++
+ 			name = symname + strlen("__ksymtab_");
++			export = export_from_secname(info,
++						     get_secindex(info, sym));
+ 			sym_add_exported(name, mod, export);
+ 		}
+ 		if (strcmp(symname, "init_module") == 0)
 -- 
-2.30.2
+2.32.0
 
