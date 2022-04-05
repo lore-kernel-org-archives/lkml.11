@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 74A72C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 15:14:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 39E0FC4332F
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 15:14:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242610AbiDEPIn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 11:08:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54984 "EHLO
+        id S243750AbiDEPJb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 11:09:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55206 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345545AbiDEJng (ORCPT
+        with ESMTP id S1345568AbiDEJni (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:43:36 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4F8B237ED;
-        Tue,  5 Apr 2022 02:29:11 -0700 (PDT)
+        Tue, 5 Apr 2022 05:43:38 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3EB1BC3369;
+        Tue,  5 Apr 2022 02:29:25 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8E8B4B81CA4;
-        Tue,  5 Apr 2022 09:29:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D4E85C385A2;
-        Tue,  5 Apr 2022 09:29:08 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 018CC6165C;
+        Tue,  5 Apr 2022 09:29:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 168F2C385A0;
+        Tue,  5 Apr 2022 09:29:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649150949;
-        bh=YFr4/nojKaAOU/ZZjc5sHloKXZS8yH7kQ2huS/c3kYc=;
+        s=korg; t=1649150954;
+        bh=fR0LPZAFW7MV+r5mifjCwMPbuQwjL9+Zm/J+XCY09io=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=I95BWDWkLihO4K/T/1wQh5dHyFkYj3BKdOIMPYQ0xsXd+UzM7ORuqPK0UWw1YYjht
-         cR+Rk85HFUX9zj3Bdn7lnauX0WCBLwL85hsykz8hJ6eXK5fQtHaZwN3wmD/66jFlVS
-         3ekLmWHjG3Rpckb8cTItuHEbvfo+IAYcnc6QkIBs=
+        b=VZgtBdLuZE55Hdl8HjUB8H+zquUvtIaEHjZX5JyKQYUOXz2JYjBOYLRk91ofmCD/T
+         oPCmx4Pmk3MbAkURdpS8J3XeSel27DxdY4P66uR6f7PaT5NnRrEVyrk7ccG2/cG72D
+         H1/0rypxKRzZ8Vu0WTb91dQkybop7xRF2QSj+V5A=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jianglei Nie <niejianglei2021@163.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
+        stable@vger.kernel.org, Brandon Wyman <bjwyman@gmail.com>,
+        Guenter Roeck <linux@roeck-us.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 238/913] crypto: ccree - Fix use after free in cc_cipher_exit()
-Date:   Tue,  5 Apr 2022 09:21:40 +0200
-Message-Id: <20220405070346.989696538@linuxfoundation.org>
+Subject: [PATCH 5.15 240/913] hwmon: (pmbus) Add Vin unit off handling
+Date:   Tue,  5 Apr 2022 09:21:42 +0200
+Message-Id: <20220405070347.050547234@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
 References: <20220405070339.801210740@linuxfoundation.org>
@@ -49,38 +49,59 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jianglei Nie <niejianglei2021@163.com>
+From: Brandon Wyman <bjwyman@gmail.com>
 
-[ Upstream commit 3d950c34074ed74d2713c3856ba01264523289e6 ]
+[ Upstream commit a5436af598779219b375c1977555c82def1c35d0 ]
 
-kfree_sensitive(ctx_p->user.key) will free the ctx_p->user.key. But
-ctx_p->user.key is still used in the next line, which will lead to a
-use after free.
+If there is an input undervoltage fault, reported in STATUS_INPUT
+command response, there is quite likely a "Unit Off For Insufficient
+Input Voltage" condition as well.
 
-We can call kfree_sensitive() after dev_dbg() to avoid the uaf.
+Add a constant for bit 3 of STATUS_INPUT. Update the Vin limit
+attributes to include both bits in the mask for clearing faults.
 
-Fixes: 63ee04c8b491 ("crypto: ccree - add skcipher support")
-Signed-off-by: Jianglei Nie <niejianglei2021@163.com>
-Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+If an input undervoltage fault occurs, causing a unit off for
+insufficient input voltage, but the unit is off bit is not cleared, the
+STATUS_WORD will not be updated to clear the input fault condition.
+Including the unit is off bit (bit 3) allows for the input fault
+condition to completely clear.
+
+Signed-off-by: Brandon Wyman <bjwyman@gmail.com>
+Link: https://lore.kernel.org/r/20220317232123.2103592-1-bjwyman@gmail.com
+Fixes: b4ce237b7f7d3 ("hwmon: (pmbus) Introduce infrastructure to detect sensors and limit registers")
+[groeck: Dropped unnecessary ()]
+Signed-off-by: Guenter Roeck <linux@roeck-us.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/crypto/ccree/cc_cipher.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/hwmon/pmbus/pmbus.h      | 1 +
+ drivers/hwmon/pmbus/pmbus_core.c | 2 +-
+ 2 files changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/crypto/ccree/cc_cipher.c b/drivers/crypto/ccree/cc_cipher.c
-index 78833491f534..309da6334a0a 100644
---- a/drivers/crypto/ccree/cc_cipher.c
-+++ b/drivers/crypto/ccree/cc_cipher.c
-@@ -257,8 +257,8 @@ static void cc_cipher_exit(struct crypto_tfm *tfm)
- 		&ctx_p->user.key_dma_addr);
- 
- 	/* Free key buffer in context */
--	kfree_sensitive(ctx_p->user.key);
- 	dev_dbg(dev, "Free key buffer in context. key=@%p\n", ctx_p->user.key);
-+	kfree_sensitive(ctx_p->user.key);
- }
- 
- struct tdes_keys {
+diff --git a/drivers/hwmon/pmbus/pmbus.h b/drivers/hwmon/pmbus/pmbus.h
+index e0aa8aa46d8c..ef3a8ecde4df 100644
+--- a/drivers/hwmon/pmbus/pmbus.h
++++ b/drivers/hwmon/pmbus/pmbus.h
+@@ -319,6 +319,7 @@ enum pmbus_fan_mode { percent = 0, rpm };
+ /*
+  * STATUS_VOUT, STATUS_INPUT
+  */
++#define PB_VOLTAGE_VIN_OFF		BIT(3)
+ #define PB_VOLTAGE_UV_FAULT		BIT(4)
+ #define PB_VOLTAGE_UV_WARNING		BIT(5)
+ #define PB_VOLTAGE_OV_WARNING		BIT(6)
+diff --git a/drivers/hwmon/pmbus/pmbus_core.c b/drivers/hwmon/pmbus/pmbus_core.c
+index b1386a4df4cc..ca0bfaf2f691 100644
+--- a/drivers/hwmon/pmbus/pmbus_core.c
++++ b/drivers/hwmon/pmbus/pmbus_core.c
+@@ -1373,7 +1373,7 @@ static const struct pmbus_limit_attr vin_limit_attrs[] = {
+ 		.reg = PMBUS_VIN_UV_FAULT_LIMIT,
+ 		.attr = "lcrit",
+ 		.alarm = "lcrit_alarm",
+-		.sbit = PB_VOLTAGE_UV_FAULT,
++		.sbit = PB_VOLTAGE_UV_FAULT | PB_VOLTAGE_VIN_OFF,
+ 	}, {
+ 		.reg = PMBUS_VIN_OV_WARN_LIMIT,
+ 		.attr = "max",
 -- 
 2.34.1
 
