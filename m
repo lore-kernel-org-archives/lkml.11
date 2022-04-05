@@ -2,93 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9468CC433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E190CC4321E
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 15:21:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1389086AbiDEPVE (ORCPT
+        id S1389462AbiDEPVT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 11:21:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39466 "EHLO
+        Tue, 5 Apr 2022 11:21:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53164 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347021AbiDEJpy (ORCPT
+        with ESMTP id S1347108AbiDEJqB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:45:54 -0400
+        Tue, 5 Apr 2022 05:46:01 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94861DCAB2;
-        Tue,  5 Apr 2022 02:32:15 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7A67765BF;
+        Tue,  5 Apr 2022 02:32:25 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 18A6B61368;
-        Tue,  5 Apr 2022 09:32:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2A6EEC385A2;
-        Tue,  5 Apr 2022 09:32:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649151134;
-        bh=Znaktkp0TlhhTmv22siN8VXYQMsR80xwUmAM0j+apdc=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Q18bL4XuhWxLox5jJOsAy1UahBegivjT/t0MG+fx8vpq4Jjkh1ClI5B/RJDgz+feO
-         cLt6LVo8NOZBk5RbyJvM28IiSS7k8Qhi09rMzBIHh1x2FlcqLeuubnJwJOYHfrd5sI
-         h49EDUalbGbLRGKr3VJzxcxfCdSC0ssEV9Rce3Ng=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, YueHaibing <yuehaibing@huawei.com>,
-        Helge Deller <deller@gmx.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 289/913] video: fbdev: controlfb: Fix COMPILE_TEST build
-Date:   Tue,  5 Apr 2022 09:22:31 +0200
-Message-Id: <20220405070348.520689482@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
-User-Agent: quilt/0.66
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 731B261368;
+        Tue,  5 Apr 2022 09:32:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 323E3C385A3;
+        Tue,  5 Apr 2022 09:32:24 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649151144;
+        bh=gtg/844s9h3xTR3RsnVeF76EQtCjsTf/GUDiVtKfzvU=;
+        h=From:To:In-Reply-To:References:Subject:Date:From;
+        b=nbpOslMFh3wAVvyI1MDcj5Gw8snqyEQfPeUqmHfu4GytZ8DNo5u0p1hm/bkjqUu7+
+         B3EcJ7ibOeswMRU4BaRu32dxDivhAGhbxIasYyyRts8KoC1vLwmRHiSQRoGm3z1eba
+         DefGXezAbeDsLl8LpgPADIfEURE4ShIC8jaH96jTREzi5J/5pjmWexY32o6IQmhQyX
+         QsnNCd7RwsXWaN1sZdlwlke05yc/02aOd8rsadaYIHSwolrwOZDQ2XEV8+MxZ9wYxW
+         nuxJ5CDAhxfviCNIB32CFhm9jzFkbvY1i4PRYU8xGKOLpbaeZqpye/LyqJ/j690g2a
+         kRbIGR46Abi8w==
+From:   Mark Brown <broonie@kernel.org>
+To:     linux-kernel@vger.kernel.org, linux-spi@vger.kernel.org,
+        andriy.shevchenko@linux.intel.com
+In-Reply-To: <20220323140215.2568-1-andriy.shevchenko@linux.intel.com>
+References: <20220323140215.2568-1-andriy.shevchenko@linux.intel.com>
+Subject: Re: (subset) [PATCH v1 1/4] spidev: Do not use atomic bit operations when allocating minor
+Message-Id: <164915114392.276894.5947563879065898122.b4-ty@kernel.org>
+Date:   Tue, 05 Apr 2022 10:32:23 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: YueHaibing <yuehaibing@huawei.com>
+On Wed, 23 Mar 2022 16:02:12 +0200, Andy Shevchenko wrote:
+> There is no need to use atomic bit operations when allocating a minor
+> number since it's done under a mutex. Moreover, one of the operations
+> that is in use is non-atomic anyway.
+> 
+> 
 
-[ Upstream commit 567e44fb51b4f909ae58038a7301352eecea8426 ]
+Applied to
 
-If PPC_BOOK3S, PPC_PMAC and PPC32 is n, COMPILE_TEST build fails:
+   https://git.kernel.org/pub/scm/linux/kernel/git/broonie/spi.git for-next
 
-drivers/video/fbdev/controlfb.c:70:0: error: "pgprot_cached_wthru" redefined [-Werror]
- #define pgprot_cached_wthru(prot) (prot)
+Thanks!
 
-In file included from ./arch/powerpc/include/asm/pgtable.h:20:0,
-                 from ./include/linux/pgtable.h:6,
-                 from ./include/linux/mm.h:33,
-                 from drivers/video/fbdev/controlfb.c:37:
-./arch/powerpc/include/asm/nohash/pgtable.h:243:0: note: this is the location of the previous definition
- #define pgprot_cached_wthru(prot) (__pgprot((pgprot_val(prot) & ~_PAGE_CACHE_CTL) | \
+[2/4] spidev: Convert BUILD_BUG_ON() to static_assert()
+      commit: d21b94bf3ac44aa7759c0de6f72c0a887eb9e23b
+[3/4] spidev: Replace ACPI specific code by device_get_match_data()
+      commit: 2a7f669dd8f6561d227e724ca2614c25732f4799
+[4/4] spidev: Replace OF specific code by device property API
+      commit: 88a285192084edab6657e819f7f130f9cfcb0579
 
-Fixes: a07a63b0e24d ("video: fbdev: controlfb: add COMPILE_TEST support")
-Signed-off-by: YueHaibing <yuehaibing@huawei.com>
-Signed-off-by: Helge Deller <deller@gmx.de>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/video/fbdev/controlfb.c | 2 ++
- 1 file changed, 2 insertions(+)
+All being well this means that it will be integrated into the linux-next
+tree (usually sometime in the next 24 hours) and sent to Linus during
+the next merge window (or sooner if it is a bug fix), however if
+problems are discovered then the patch may be dropped or reverted.
 
-diff --git a/drivers/video/fbdev/controlfb.c b/drivers/video/fbdev/controlfb.c
-index 509311471d51..bd59e7b11ed5 100644
---- a/drivers/video/fbdev/controlfb.c
-+++ b/drivers/video/fbdev/controlfb.c
-@@ -67,7 +67,9 @@
- #define out_8(addr, val)	(void)(val)
- #define in_le32(addr)		0
- #define out_le32(addr, val)	(void)(val)
-+#ifndef pgprot_cached_wthru
- #define pgprot_cached_wthru(prot) (prot)
-+#endif
- #else
- static void invalid_vram_cache(void __force *addr)
- {
--- 
-2.34.1
+You may get further e-mails resulting from automated or manual testing
+and review of the tree, please engage with people reporting problems and
+send followup patches addressing any issues that are reported if needed.
 
+If any updates are required or you are submitting further changes they
+should be sent as incremental updates against current git, existing
+patches will not be replaced.
 
+Please add any relevant lists and maintainers to the CCs when replying
+to this mail.
 
+Thanks,
+Mark
