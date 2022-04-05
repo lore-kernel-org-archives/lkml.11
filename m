@@ -2,136 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 360CDC3527B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 62E4EC4707F
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:40:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355194AbiDEUjl (ORCPT
+        id S1357762AbiDEUkB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 16:39:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37384 "EHLO
+        Tue, 5 Apr 2022 16:40:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57676 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1451590AbiDEPxg (ORCPT
+        with ESMTP id S1355248AbiDEKSn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 11:53:36 -0400
-Received: from mail-oa1-f48.google.com (mail-oa1-f48.google.com [209.85.160.48])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA0ED1C8A9E;
-        Tue,  5 Apr 2022 07:47:22 -0700 (PDT)
-Received: by mail-oa1-f48.google.com with SMTP id 586e51a60fabf-ddfa38f1c1so14589337fac.11;
-        Tue, 05 Apr 2022 07:47:22 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=8u0j6s/bnO1ru96ZH1GkIYKuWp6uTK4JpdnHlGfuDhA=;
-        b=CgnYOJhe9CIGcUbeahSe6iJ1U18lacubNo40QlQBzUV7bghD7Cdit1/i68D2p6ocO7
-         jFSTerVt0PZPxAIngnibhIe+jK8xedWID6pWbnR61RBj8LHKN80KEm7YrRhUP1TAjFAj
-         vTz192f/akBC8A7K6ZXzSJCtls7nU6k+pI3ZQ33b5uxG2v+vC5sNmhK40bVocwULmMaM
-         Hcc19osQjQbhfMlV70eoYOR6uSsFX7olHs2dl5uc9n2tCoUUsL/t+LBVl+UlsmmHDEZr
-         4Xaa5xxsIxzKTkJ1OynZK/99JpmZBCRe2XQyWi3IBY5JuNWMSQ/M5Pud2ZZu9LW6mKuN
-         1ZBA==
-X-Gm-Message-State: AOAM532TsKUa16iU0g4eF9oo7TaT4n7m9oYHj25EihvaO9oNHORCCYSh
-        DzB/lHgvJi2Sz2GTvFouaA==
-X-Google-Smtp-Source: ABdhPJxTv66QjljJi0z1Dgv/PMrNV/nc5x/lgqp82IxUqPbW5MQNlD8HiscKmc7xmHFADchiD0i1LQ==
-X-Received: by 2002:a05:6871:99:b0:d6:ac91:d53c with SMTP id u25-20020a056871009900b000d6ac91d53cmr1673287oaa.10.1649170041832;
-        Tue, 05 Apr 2022 07:47:21 -0700 (PDT)
-Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id a6-20020a9d4706000000b005cdff2d400bsm5740767otf.24.2022.04.05.07.47.20
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 05 Apr 2022 07:47:21 -0700 (PDT)
-Received: (nullmailer pid 3259938 invoked by uid 1000);
-        Tue, 05 Apr 2022 14:47:20 -0000
-Date:   Tue, 5 Apr 2022 09:47:20 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     =?iso-8859-1?Q?Cl=E9ment_L=E9ger?= <clement.leger@bootlin.com>,
-        Lizhi Hou <lizhi.hou@xilinx.com>,
-        Sonal Santan <sonal.santan@xilinx.com>
-Cc:     Philipp Zabel <p.zabel@pengutronix.de>,
-        Frank Rowand <frowand.list@gmail.com>,
-        Lars Povlsen <lars.povlsen@microchip.com>,
-        Steen Hegelund <Steen.Hegelund@microchip.com>,
-        UNGLinuxDriver@microchip.com,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Allan Nielsen <allan.nielsen@microchip.com>,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        Stefano Stabellini <sstabellini@kernel.org>
-Subject: Re: [PATCH v2 0/3] add fwnode support to reset subsystem
-Message-ID: <YkxWeMNw9Ba0KjHM@robh.at.kernel.org>
-References: <20220324141237.297207-1-clement.leger@bootlin.com>
- <Ykst0Vb4fk+iALzc@robh.at.kernel.org>
- <20220405092434.6e424ed4@fixe.home>
+        Tue, 5 Apr 2022 06:18:43 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48D8FFD3A;
+        Tue,  5 Apr 2022 03:04:36 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E633FB81C8B;
+        Tue,  5 Apr 2022 10:04:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 425AEC385A2;
+        Tue,  5 Apr 2022 10:04:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649153073;
+        bh=CLWf3OMHKzeZvde0sUqk3oNEVx0H7Xs+0c0PJsByIdQ=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=YSm5xkFUkayn6nZEAuWe5/Uqv1Ga1MBxQSR+bKv1Reqj56WS6jYqVbPtBV25L81R3
+         92n/WnjMs3nuATnm8o/FKBlsCkKQ8Mxo/PhFHBmRhO8R64IZqxtI0BpHMeFqw66pu/
+         n7NKasoh0mO4zFUNfeLHfyVclaZsNuiA5Smj3rqk=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Pekka Pessi <ppessi@nvidia.com>,
+        Jon Hunter <jonathanh@nvidia.com>,
+        Thierry Reding <treding@nvidia.com>,
+        Jassi Brar <jaswinder.singh@linaro.org>
+Subject: [PATCH 5.10 093/599] mailbox: tegra-hsp: Flush whole channel
+Date:   Tue,  5 Apr 2022 09:26:27 +0200
+Message-Id: <20220405070301.595991009@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
+References: <20220405070258.802373272@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220405092434.6e424ed4@fixe.home>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-+ some Xilinx folks
+From: Pekka Pessi <ppessi@nvidia.com>
 
-On Tue, Apr 05, 2022 at 09:24:34AM +0200, Clément Léger wrote:
-> Le Mon, 4 Apr 2022 12:41:37 -0500,
-> Rob Herring <robh@kernel.org> a écrit :
-> 
-> > On Thu, Mar 24, 2022 at 03:12:34PM +0100, Clément Léger wrote:
-> > > This series is part of a larger series which aims at adding fwnode
-> > > support in multiple subsystems [1]. The goal of this series was to
-> > > add support for software node in various subsystem but in a first
-> > > time only the fwnode support had gained consensus and will be added
-> > > to multiple subsystems.  
-> > 
-> > The goal is describing a solution. What is the problem?
-> > 
-> > What's the scenario where you have a reset provider not described by 
-> > firmware providing resets to devices (consumers) also not described by 
-> > firmware.
-> 
-> Hi Rob, there was a link attached to this series since there was a
-> previous one that was sent which described the problem. Here is a link
-> to the same thread but to a specific message which clarifies the
-> problem and the solutions that were mentionned by other maintainers
-> (ACPI overlays, DT overlays, software nodes and so on):
-> 
-> https://lore.kernel.org/netdev/20220224154040.2633a4e4@fixe.home/
+commit 60de2d2dc284e0dd1c2c897d08625bde24ef3454 upstream.
 
-Thanks, but your commit message should explain the problem. The problem 
-is not subsystems don't support fwnode.
+The txdone can re-fill the mailbox. Keep polling the mailbox during the
+flush until all the messages have been delivered.
 
-This is the exact same problem the Xilinx folks are trying to solve with 
-their PCIe FPGA cards[1] (and that is not really a v1). They need to 
-describe h/w downstream from a 'discoverable' device. Their case is 
-further complicated with the dynamic nature of FPGAs. It's also not just 
-PCIe. Another usecase is describing downstream devices on USB FTDI 
-serial chips which can have GPIO, I2C, SPI downstream. And then you want 
-to plug in 10 of those.
+This fixes an issue with the Tegra Combined UART (TCU) where output can
+get truncated under high traffic load.
 
-I don't think swnodes are going to scale for these usecases. We moved 
-h/w description out of the kernel for a reason. Why are we adding that 
-back in a new form? The complexity for what folks want to describe is 
-only going to increase.
+Signed-off-by: Pekka Pessi <ppessi@nvidia.com>
+Tested-by: Jon Hunter <jonathanh@nvidia.com>
+Fixes: 91b1b1c3da8a ("mailbox: tegra-hsp: Add support for shared mailboxes")
+Cc: stable@vger.kernel.org
+Signed-off-by: Thierry Reding <treding@nvidia.com>
+Reviewed-by: Jon Hunter <jonathanh@nvidia.com>
+Signed-off-by: Jassi Brar <jaswinder.singh@linaro.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ drivers/mailbox/tegra-hsp.c |    5 +++++
+ 1 file changed, 5 insertions(+)
 
-I think DT overlays is the right (or only) solution here. Of course the 
-DT maintainer would say that. Actually, I would be happier to not have 
-to support overlays in the kernel.
-
-I've told the Xilinx folks the same thing, but I would separate this 
-into 2 parts. First is just h/w work in a DT based system. Second is 
-creating a base tree an overlay can be applied to. The first part should 
-be pretty straightforward. We already have PCI bus bindings. The only 
-tricky part is getting address translation working from leaf device thru 
-the PCI bus to host bus, but support for that should all be in place 
-(given we support ISA buses off of PCI bus). The second part will 
-require generating PCI DT nodes at runtime. That may be needed for both 
-DT and ACPI systems as we don't always describe all the PCI hierarchy in 
-DT. That could work either by the PCI subsystem creating nodes as it
-populates devices or your driver could make a request to populate nodes 
-for its hierarchy. That's not a hard problem to solve. That's what 
-OpenFirmware implementations do already.
-
-Rob
+--- a/drivers/mailbox/tegra-hsp.c
++++ b/drivers/mailbox/tegra-hsp.c
+@@ -410,6 +410,11 @@ static int tegra_hsp_mailbox_flush(struc
+ 		value = tegra_hsp_channel_readl(ch, HSP_SM_SHRD_MBOX);
+ 		if ((value & HSP_SM_SHRD_MBOX_FULL) == 0) {
+ 			mbox_chan_txdone(chan, 0);
++
++			/* Wait until channel is empty */
++			if (chan->active_req != NULL)
++				continue;
++
+ 			return 0;
+ 		}
+ 
 
 
-https://lore.kernel.org/lkml/20220216050056.311496-1-lizhi.hou@xilinx.com/
