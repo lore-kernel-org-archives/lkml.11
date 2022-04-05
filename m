@@ -2,91 +2,174 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AED35C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 89FC9C433EF
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:16:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1453321AbiDEULN (ORCPT
+        id S1451354AbiDEUKy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 16:11:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50688 "EHLO
+        Tue, 5 Apr 2022 16:10:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48792 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241245AbiDEK25 (ORCPT
+        with ESMTP id S1444196AbiDEPlA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:28:57 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D022DCA87;
-        Tue,  5 Apr 2022 03:18:12 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8B867617CE;
-        Tue,  5 Apr 2022 10:18:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 98975C385A1;
-        Tue,  5 Apr 2022 10:18:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649153891;
-        bh=faqY+AXvpbMhVT1szSwVM98pjikIjwm3hnilT/iR77Y=;
+        Tue, 5 Apr 2022 11:41:00 -0400
+Received: from conuserg-09.nifty.com (conuserg-09.nifty.com [210.131.2.76])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C74B5FD3;
+        Tue,  5 Apr 2022 07:03:31 -0700 (PDT)
+Received: from grover.. (133-32-177-133.west.xps.vectant.ne.jp [133.32.177.133]) (authenticated)
+        by conuserg-09.nifty.com with ESMTP id 235E2k8L021295;
+        Tue, 5 Apr 2022 23:02:48 +0900
+DKIM-Filter: OpenDKIM Filter v2.10.3 conuserg-09.nifty.com 235E2k8L021295
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
+        s=dec2015msa; t=1649167369;
+        bh=EKCTJzUdUAuHIhmyqzQO5DkjoUd5sMZA3XV4MtVgo6g=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Hf6SIC8lCAL/jpmkMpaA1E/PhFUfOKIC06CNOqX4HxI3p3xcJL//3o7BXSU6SLluH
-         4Se5AB0aiV00pjtPGCro0v6TZRDiqr2rGUxrqBm6F/4t8PMoDIJ7YfVEY/W3etIhzE
-         GOn2Fjd4v2TDr+2ha+e+1B7uMgfAgcNk5FEoPzRg=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Libin Yang <libin.yang@intel.com>,
-        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
-        Rander Wang <rander.wang@intel.com>,
-        Bard Liao <yung-chuan.liao@linux.intel.com>,
-        Vinod Koul <vkoul@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 384/599] soundwire: intel: fix wrong register name in intel_shim_wake
-Date:   Tue,  5 Apr 2022 09:31:18 +0200
-Message-Id: <20220405070310.257483324@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
-User-Agent: quilt/0.66
+        b=MhOn01GySX77Cjemm3oCakRXcI11I2w6P7ivi9W6aTx/LVS2cBOtPIlxCUtLi1XMM
+         UpIEidA/FLeoegbtsbJ4/sdSb+QIYKiholVhbkRs14VfO5a8SmIA5lVXKJEyllOpEN
+         R9mxoFcDJOkucbF9KGVhv4v43bYIPNv/7vtI3Q7J6Pp9ShrpIRo2BqKM2mpYed4G0k
+         n4DMa3IbYZIedsY0Bw2Sx2LKxzSa0bjSFOPCd7++CSU37EnQOmYchsmyyTcqCDuhv1
+         lSnj/CWnQhjiSbrwuViSX9jr9CpwKiZY1MEpzwoGpgw7CUednaT7hqrP27tQm8HsjG
+         pJDiGd/SUxbJA==
+X-Nifty-SrcIP: [133.32.177.133]
+From:   Masahiro Yamada <masahiroy@kernel.org>
+To:     linux-kbuild@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Michal Marek <michal.lkml@markovi.net>
+Subject: [PATCH v2 03/10] modpost: remove useless export_from_sec()
+Date:   Tue,  5 Apr 2022 23:02:22 +0900
+Message-Id: <20220405140229.2895394-4-masahiroy@kernel.org>
+X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20220405140229.2895394-1-masahiroy@kernel.org>
+References: <20220405140229.2895394-1-masahiroy@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Libin Yang <libin.yang@intel.com>
+With commit 1743694eb235 ("modpost: stop symbol preloading for
+modversion CRC") applied, now export_from_sec() is useless.
 
-[ Upstream commit 3957db3ae3dae6f8b8168791f154567fe49e1fd7 ]
+handle_symbol() is called for every symbol in the ELF.
 
-When clearing the sdw wakests status, we should use SDW_SHIM_WAKESTS.
+When 'symname' does not start with "__ksymtab", export_from_sec() is
+called, and the returned value is stored in 'export'.
 
-Fixes: 4a17c441c7cb ("soundwire: intel: revisit SHIM programming sequences.")
-Signed-off-by: Libin Yang <libin.yang@intel.com>
-Reviewed-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
-Reviewed-by: Rander Wang <rander.wang@intel.com>
-Signed-off-by: Bard Liao <yung-chuan.liao@linux.intel.com>
-Link: https://lore.kernel.org/r/20220126011451.27853-1-yung-chuan.liao@linux.intel.com
-Signed-off-by: Vinod Koul <vkoul@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+It is used in the last part of handle_symbol():
+
+    if (strstarts(symname, "__ksymtab_")) {
+            name = symname + strlen("__ksymtab_");
+            sym_add_exported(name, mod, export);
+    }
+
+'export' is used only when 'symname' starts with "__ksymtab_".
+
+So, the value returned by export_from_sec() is never used.
+
+Remove useless export_from_sec(). This makes further cleanups possible.
+
+I put the temporary code:
+
+    export = export_unknown;
+
+Otherwise, I would get the compiler warning:
+
+    warning: 'export' may be used uninitialized in this function [-Wmaybe-uninitialized]
+
+This is apparently false positive because
+
+    if (strstarts(symname, "__ksymtab_")
+
+... is a stronger condition than:
+
+    if (strstarts(symname, "__ksymtab")
+
+Anyway, this part will be cleaned up by the next commit.
+
+Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
 ---
- drivers/soundwire/intel.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/soundwire/intel.c b/drivers/soundwire/intel.c
-index dad4326a2a71..824d9f900aca 100644
---- a/drivers/soundwire/intel.c
-+++ b/drivers/soundwire/intel.c
-@@ -521,8 +521,8 @@ static void intel_shim_wake(struct sdw_intel *sdw, bool wake_enable)
- 
- 		/* Clear wake status */
- 		wake_sts = intel_readw(shim, SDW_SHIM_WAKESTS);
--		wake_sts |= (SDW_SHIM_WAKEEN_ENABLE << link_id);
--		intel_writew(shim, SDW_SHIM_WAKESTS_STATUS, wake_sts);
-+		wake_sts |= (SDW_SHIM_WAKESTS_STATUS << link_id);
-+		intel_writew(shim, SDW_SHIM_WAKESTS, wake_sts);
- 	}
- 	mutex_unlock(sdw->link_res->shim_lock);
+Changes in v2:
+  - Fix compiler warning
+
+ scripts/mod/modpost.c | 17 ++---------------
+ scripts/mod/modpost.h |  4 ----
+ 2 files changed, 2 insertions(+), 19 deletions(-)
+
+diff --git a/scripts/mod/modpost.c b/scripts/mod/modpost.c
+index ed9d056d2108..eebb32689816 100644
+--- a/scripts/mod/modpost.c
++++ b/scripts/mod/modpost.c
+@@ -369,16 +369,6 @@ static enum export export_from_secname(struct elf_info *elf, unsigned int sec)
+ 		return export_unknown;
  }
+ 
+-static enum export export_from_sec(struct elf_info *elf, unsigned int sec)
+-{
+-	if (sec == elf->export_sec)
+-		return export_plain;
+-	else if (sec == elf->export_gpl_sec)
+-		return export_gpl;
+-	else
+-		return export_unknown;
+-}
+-
+ static const char *namespace_from_kstrtabns(const struct elf_info *info,
+ 					    const Elf_Sym *sym)
+ {
+@@ -576,10 +566,7 @@ static int parse_elf(struct elf_info *info, const char *filename)
+ 				fatal("%s has NOBITS .modinfo\n", filename);
+ 			info->modinfo = (void *)hdr + sechdrs[i].sh_offset;
+ 			info->modinfo_len = sechdrs[i].sh_size;
+-		} else if (strcmp(secname, "__ksymtab") == 0)
+-			info->export_sec = i;
+-		else if (strcmp(secname, "__ksymtab_gpl") == 0)
+-			info->export_gpl_sec = i;
++		}
+ 
+ 		if (sechdrs[i].sh_type == SHT_SYMTAB) {
+ 			unsigned int sh_link_idx;
+@@ -703,7 +690,7 @@ static void handle_symbol(struct module *mod, struct elf_info *info,
+ 	if (strstarts(symname, "__ksymtab"))
+ 		export = export_from_secname(info, get_secindex(info, sym));
+ 	else
+-		export = export_from_sec(info, get_secindex(info, sym));
++		export = export_unknown;
+ 
+ 	switch (sym->st_shndx) {
+ 	case SHN_COMMON:
+diff --git a/scripts/mod/modpost.h b/scripts/mod/modpost.h
+index 0c47ff95c0e2..a85dcec3669a 100644
+--- a/scripts/mod/modpost.h
++++ b/scripts/mod/modpost.h
+@@ -25,7 +25,6 @@
+ #define Elf_Sym     Elf32_Sym
+ #define Elf_Addr    Elf32_Addr
+ #define Elf_Sword   Elf64_Sword
+-#define Elf_Section Elf32_Half
+ #define ELF_ST_BIND ELF32_ST_BIND
+ #define ELF_ST_TYPE ELF32_ST_TYPE
+ 
+@@ -40,7 +39,6 @@
+ #define Elf_Sym     Elf64_Sym
+ #define Elf_Addr    Elf64_Addr
+ #define Elf_Sword   Elf64_Sxword
+-#define Elf_Section Elf64_Half
+ #define ELF_ST_BIND ELF64_ST_BIND
+ #define ELF_ST_TYPE ELF64_ST_TYPE
+ 
+@@ -138,8 +136,6 @@ struct elf_info {
+ 	Elf_Shdr     *sechdrs;
+ 	Elf_Sym      *symtab_start;
+ 	Elf_Sym      *symtab_stop;
+-	Elf_Section  export_sec;
+-	Elf_Section  export_gpl_sec;
+ 	char         *strtab;
+ 	char	     *modinfo;
+ 	unsigned int modinfo_len;
 -- 
-2.34.1
-
-
+2.32.0
 
