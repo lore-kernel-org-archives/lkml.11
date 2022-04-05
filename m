@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F36EC47081
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1DFB5C35295
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 01:06:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1839886AbiDFBGO (ORCPT
+        id S1839859AbiDFBGF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 21:06:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43986 "EHLO
+        Tue, 5 Apr 2022 21:06:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33870 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349170AbiDEJtW (ORCPT
+        with ESMTP id S243758AbiDEKhl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:49:22 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C7796550;
-        Tue,  5 Apr 2022 02:42:05 -0700 (PDT)
+        Tue, 5 Apr 2022 06:37:41 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6E5955BC7;
+        Tue,  5 Apr 2022 03:23:04 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B23A0B818F3;
-        Tue,  5 Apr 2022 09:42:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0B91CC385A3;
-        Tue,  5 Apr 2022 09:42:01 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 1744ACE1B5F;
+        Tue,  5 Apr 2022 10:23:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 35650C385A0;
+        Tue,  5 Apr 2022 10:23:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649151722;
-        bh=ivnWN4g9I2Bm8Vfn53gXQ28EBwfV06Z7FNHo7ZzZOuE=;
+        s=korg; t=1649154181;
+        bh=CNRBQopooIEtsueaUrSSUgiLsrLEPIgLmSdYpJLQ7Ls=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=V/lF9za98Y8+Olg7QSJbLqjp9jqPqW/odsM96A8+m4md6E7okb2o0/47B/pN6Stxa
-         OEdJ0HS1Orj4vNJhwZ3T3oLcFNdjVdd/awhbqjvRX7FaHnRLJHfh638huGJOJPHZI2
-         BQgd0CrFFGkWHnk+Fy9ouKgXuXI7uVeUe9KNYjZU=
+        b=0O71vywxRhb0AkByryTCkpHrngY7PWAPh8vU9pZ6Z4yckZeVd4QZ+/BhQ4lvZ2Z6l
+         lRWiOZnP37vfByhLWQ+B489ipNdk4JjVNS4o09oEqPRkfRzveIyKmvueY/jvCNNAt3
+         uiB2PvxFUph9g0rg4hJZiEVXv2s8I2ZHKhi9Pgdg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Robert Hancock <robert.hancock@calian.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 518/913] net: axienet: fix RX ring refill allocation failure handling
-Date:   Tue,  5 Apr 2022 09:26:20 +0200
-Message-Id: <20220405070355.381109882@linuxfoundation.org>
+        stable@vger.kernel.org, George Kennedy <george.kennedy@oracle.com>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Helge Deller <deller@gmx.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 485/599] video: fbdev: cirrusfb: check pixclock to avoid divide by zero
+Date:   Tue,  5 Apr 2022 09:32:59 +0200
+Message-Id: <20220405070313.261277495@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
+References: <20220405070258.802373272@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,139 +50,81 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Robert Hancock <robert.hancock@calian.com>
+From: George Kennedy <george.kennedy@oracle.com>
 
-[ Upstream commit 7a7d340ba4d9351e4c8847b898a2b996727a922a ]
+[ Upstream commit 5c6f402bdcf9e7239c6bc7087eda71ac99b31379 ]
 
-If a memory allocation error occurred during an attempt to refill a slot
-in the RX ring after the packet was received, the hardware tail pointer
-would still have been updated to point to or past the slot which remained
-marked as previously completed. This would likely result in the DMA engine
-raising an error when it eventually tried to use that slot again.
+Do a sanity check on pixclock value to avoid divide by zero.
 
-If a slot cannot be refilled, then just stop processing and do not move
-the tail pointer past it. On the next attempt, we should skip receiving
-the packet from the empty slot and just try to refill it again.
+If the pixclock value is zero, the cirrusfb driver will round up
+pixclock to get the derived frequency as close to maxclock as
+possible.
 
-This failure mode has not actually been observed, but was found as part
-of other driver updates.
+Syzkaller reported a divide error in cirrusfb_check_pixclock.
 
-Fixes: 8a3b7a252dca ("drivers/net/ethernet/xilinx: added Xilinx AXI Ethernet driver")
-Signed-off-by: Robert Hancock <robert.hancock@calian.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+divide error: 0000 [#1] SMP KASAN PTI
+CPU: 0 PID: 14938 Comm: cirrusfb_test Not tainted 5.15.0-rc6 #1
+Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.11.0-2
+RIP: 0010:cirrusfb_check_var+0x6f1/0x1260
+
+Call Trace:
+ fb_set_var+0x398/0xf90
+ do_fb_ioctl+0x4b8/0x6f0
+ fb_ioctl+0xeb/0x130
+ __x64_sys_ioctl+0x19d/0x220
+ do_syscall_64+0x3a/0x80
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+
+Signed-off-by: George Kennedy <george.kennedy@oracle.com>
+Reviewed-by: Geert Uytterhoeven <geert@linux-m68k.org>
+Signed-off-by: Helge Deller <deller@gmx.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../net/ethernet/xilinx/xilinx_axienet_main.c | 72 +++++++++++--------
- 1 file changed, 42 insertions(+), 30 deletions(-)
+ drivers/video/fbdev/cirrusfb.c | 16 ++++++++--------
+ 1 file changed, 8 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/net/ethernet/xilinx/xilinx_axienet_main.c b/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
-index 2169417210c2..80637ffcca93 100644
---- a/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
-+++ b/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
-@@ -857,46 +857,53 @@ static void axienet_recv(struct net_device *ndev)
- 	while ((cur_p->status & XAXIDMA_BD_STS_COMPLETE_MASK)) {
- 		dma_addr_t phys;
+diff --git a/drivers/video/fbdev/cirrusfb.c b/drivers/video/fbdev/cirrusfb.c
+index 15a9ee7cd734..b4980bc2985e 100644
+--- a/drivers/video/fbdev/cirrusfb.c
++++ b/drivers/video/fbdev/cirrusfb.c
+@@ -469,7 +469,7 @@ static int cirrusfb_check_mclk(struct fb_info *info, long freq)
+ 	return 0;
+ }
  
--		tail_p = lp->rx_bd_p + sizeof(*lp->rx_bd_v) * lp->rx_bd_ci;
+-static int cirrusfb_check_pixclock(const struct fb_var_screeninfo *var,
++static int cirrusfb_check_pixclock(struct fb_var_screeninfo *var,
+ 				   struct fb_info *info)
+ {
+ 	long freq;
+@@ -478,9 +478,7 @@ static int cirrusfb_check_pixclock(const struct fb_var_screeninfo *var,
+ 	unsigned maxclockidx = var->bits_per_pixel >> 3;
+ 
+ 	/* convert from ps to kHz */
+-	freq = PICOS2KHZ(var->pixclock);
 -
- 		/* Ensure we see complete descriptor update */
- 		dma_rmb();
--		phys = desc_get_phys_addr(lp, cur_p);
--		dma_unmap_single(ndev->dev.parent, phys, lp->max_frm_size,
--				 DMA_FROM_DEVICE);
+-	dev_dbg(info->device, "desired pixclock: %ld kHz\n", freq);
++	freq = PICOS2KHZ(var->pixclock ? : 1);
  
- 		skb = cur_p->skb;
- 		cur_p->skb = NULL;
--		length = cur_p->app4 & 0x0000FFFF;
--
--		skb_put(skb, length);
--		skb->protocol = eth_type_trans(skb, ndev);
--		/*skb_checksum_none_assert(skb);*/
--		skb->ip_summed = CHECKSUM_NONE;
--
--		/* if we're doing Rx csum offload, set it up */
--		if (lp->features & XAE_FEATURE_FULL_RX_CSUM) {
--			csumstatus = (cur_p->app2 &
--				      XAE_FULL_CSUM_STATUS_MASK) >> 3;
--			if ((csumstatus == XAE_IP_TCP_CSUM_VALIDATED) ||
--			    (csumstatus == XAE_IP_UDP_CSUM_VALIDATED)) {
--				skb->ip_summed = CHECKSUM_UNNECESSARY;
+ 	maxclock = cirrusfb_board_info[cinfo->btype].maxclock[maxclockidx];
+ 	cinfo->multiplexing = 0;
+@@ -488,11 +486,13 @@ static int cirrusfb_check_pixclock(const struct fb_var_screeninfo *var,
+ 	/* If the frequency is greater than we can support, we might be able
+ 	 * to use multiplexing for the video mode */
+ 	if (freq > maxclock) {
+-		dev_err(info->device,
+-			"Frequency greater than maxclock (%ld kHz)\n",
+-			maxclock);
+-		return -EINVAL;
++		var->pixclock = KHZ2PICOS(maxclock);
 +
-+		/* skb could be NULL if a previous pass already received the
-+		 * packet for this slot in the ring, but failed to refill it
-+		 * with a newly allocated buffer. In this case, don't try to
-+		 * receive it again.
-+		 */
-+		if (likely(skb)) {
-+			length = cur_p->app4 & 0x0000FFFF;
++		while ((freq = PICOS2KHZ(var->pixclock)) > maxclock)
++			var->pixclock++;
+ 	}
++	dev_dbg(info->device, "desired pixclock: %ld kHz\n", freq);
 +
-+			phys = desc_get_phys_addr(lp, cur_p);
-+			dma_unmap_single(ndev->dev.parent, phys, lp->max_frm_size,
-+					 DMA_FROM_DEVICE);
-+
-+			skb_put(skb, length);
-+			skb->protocol = eth_type_trans(skb, ndev);
-+			/*skb_checksum_none_assert(skb);*/
-+			skb->ip_summed = CHECKSUM_NONE;
-+
-+			/* if we're doing Rx csum offload, set it up */
-+			if (lp->features & XAE_FEATURE_FULL_RX_CSUM) {
-+				csumstatus = (cur_p->app2 &
-+					      XAE_FULL_CSUM_STATUS_MASK) >> 3;
-+				if (csumstatus == XAE_IP_TCP_CSUM_VALIDATED ||
-+				    csumstatus == XAE_IP_UDP_CSUM_VALIDATED) {
-+					skb->ip_summed = CHECKSUM_UNNECESSARY;
-+				}
-+			} else if ((lp->features & XAE_FEATURE_PARTIAL_RX_CSUM) != 0 &&
-+				   skb->protocol == htons(ETH_P_IP) &&
-+				   skb->len > 64) {
-+				skb->csum = be32_to_cpu(cur_p->app3 & 0xFFFF);
-+				skb->ip_summed = CHECKSUM_COMPLETE;
- 			}
--		} else if ((lp->features & XAE_FEATURE_PARTIAL_RX_CSUM) != 0 &&
--			   skb->protocol == htons(ETH_P_IP) &&
--			   skb->len > 64) {
--			skb->csum = be32_to_cpu(cur_p->app3 & 0xFFFF);
--			skb->ip_summed = CHECKSUM_COMPLETE;
--		}
- 
--		netif_rx(skb);
-+			netif_rx(skb);
- 
--		size += length;
--		packets++;
-+			size += length;
-+			packets++;
-+		}
- 
- 		new_skb = netdev_alloc_skb_ip_align(ndev, lp->max_frm_size);
- 		if (!new_skb)
--			return;
-+			break;
- 
- 		phys = dma_map_single(ndev->dev.parent, new_skb->data,
- 				      lp->max_frm_size,
-@@ -905,7 +912,7 @@ static void axienet_recv(struct net_device *ndev)
- 			if (net_ratelimit())
- 				netdev_err(ndev, "RX DMA mapping error\n");
- 			dev_kfree_skb(new_skb);
--			return;
-+			break;
- 		}
- 		desc_set_phys_addr(lp, phys, cur_p);
- 
-@@ -913,6 +920,11 @@ static void axienet_recv(struct net_device *ndev)
- 		cur_p->status = 0;
- 		cur_p->skb = new_skb;
- 
-+		/* Only update tail_p to mark this slot as usable after it has
-+		 * been successfully refilled.
-+		 */
-+		tail_p = lp->rx_bd_p + sizeof(*lp->rx_bd_v) * lp->rx_bd_ci;
-+
- 		if (++lp->rx_bd_ci >= lp->rx_bd_num)
- 			lp->rx_bd_ci = 0;
- 		cur_p = &lp->rx_bd_v[lp->rx_bd_ci];
+ 	/*
+ 	 * Additional constraint: 8bpp uses DAC clock doubling to allow maximum
+ 	 * pixel clock
 -- 
 2.34.1
 
