@@ -2,47 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 952EFC4332F
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 09:52:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 099AEC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 09:53:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346479AbiDEJpG (ORCPT
+        id S1346909AbiDEJpm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 05:45:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37238 "EHLO
+        Tue, 5 Apr 2022 05:45:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53260 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239038AbiDEITo (ORCPT
+        with ESMTP id S235568AbiDEIVa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:19:44 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5601A75E6D;
-        Tue,  5 Apr 2022 01:10:04 -0700 (PDT)
+        Tue, 5 Apr 2022 04:21:30 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB2FE2196;
+        Tue,  5 Apr 2022 01:19:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 46588B81A32;
-        Tue,  5 Apr 2022 08:10:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 82191C385A1;
-        Tue,  5 Apr 2022 08:10:01 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2CB4360B12;
+        Tue,  5 Apr 2022 08:19:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 37F55C385A0;
+        Tue,  5 Apr 2022 08:19:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649146201;
-        bh=40R9kc5aBeoKOIfKNAfHBDLpStxymn0Zg5mTScWioOs=;
+        s=korg; t=1649146756;
+        bh=fUO8fVrX1Jo52Tl8cdXg4tG8zouKK4Q2Jo6qUwezPwQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=zcUWbMk5AX0W6L7wXYL8IKTQjcUJq05un+KZO0G+dNtXXlyoBFY3S6qA62tWYBinI
-         6kTLCkw2qGXOKayynDmQuiIldf9vhice1jlQWkaFhBjo72hcAkYsaitsB/KoYBK9nw
-         x9WeQaVuY5B7bETAKWfrZz2IWFunGssJ0H4WKhK4=
+        b=f0G9tQllYSKIWjzEA5PgcYmqBdMdRs+VYP1uBp8qXa7DW521PLreQgWe5OH6nxFfV
+         hyFiddRPlBwTFjkPdKKHh34paHpXcZKjSg4Gxspcl9kyfBov7k8ByOLN8n7/pzGhVV
+         b2zSsDX+z/2Hwb4eMnhzO75orSdkNP5oNqgp+mb4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Khaled Almahallawy <khaled.almahallawy@intel.com>,
-        Charlton Lin <charlton.lin@intel.com>,
-        =?UTF-8?q?Jouni=20H=C3=B6gander?= <jouni.hogander@intel.com>,
-        =?UTF-8?q?Jos=C3=A9=20Roberto=20de=20Souza?= <jose.souza@intel.com>,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+        stable@vger.kernel.org, Zhouyi Zhou <zhouzhouyi@gmail.com>,
+        "Paul E. McKenney" <paulmck@kernel.org>,
+        Frederic Weisbecker <frederic@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0672/1126] drm/i915/display: Do not re-enable PSR after it was marked as not reliable
-Date:   Tue,  5 Apr 2022 09:23:39 +0200
-Message-Id: <20220405070427.351205777@linuxfoundation.org>
+Subject: [PATCH 5.17 0840/1126] rcu: Mark writes to the rcu_segcblist structures ->flags field
+Date:   Tue,  5 Apr 2022 09:26:27 +0200
+Message-Id: <20220405070432.210797778@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -54,57 +51,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: José Roberto de Souza <jose.souza@intel.com>
+From: Paul E. McKenney <paulmck@kernel.org>
 
-[ Upstream commit 278da06c03655c2bb9bc36ebdf45b90a079b3bfd ]
+[ Upstream commit c09929031018913b5783872a8b8cdddef4a543c7 ]
 
-If a error happens and sink_not_reliable is set, PSR should be disabled
-for good but that is not happening.
-It would be disabled by the function handling the PSR error but then
-on the next fastset it would be enabled again in
-_intel_psr_post_plane_update().
-It would only be disabled for good in the next modeset where has_psr
-will be set false.
+KCSAN reports data races between the rcu_segcblist_clear_flags() and
+rcu_segcblist_set_flags() functions, though misreporting the latter
+as a call to rcu_segcblist_is_enabled() from call_rcu().  This commit
+converts the updates of this field to WRITE_ONCE(), relying on the
+resulting unmarked reads to continue to detect buggy concurrent writes
+to this field.
 
-v2:
-- release psr lock before continue
-
-Fixes: 9ce5884e5139 ("drm/i915/display: Only keep PSR enabled if there is active planes")
-Reported-by: Khaled Almahallawy <khaled.almahallawy@intel.com>
-Reported-by: Charlton Lin <charlton.lin@intel.com>
-Cc: Jouni Högander <jouni.hogander@intel.com>
-Signed-off-by: José Roberto de Souza <jose.souza@intel.com>
-Reviewed-by: Jouni Högander <jouni.hogander@intel.com>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220311185149.110527-2-jose.souza@intel.com
-(cherry picked from commit 15f26bdc81f7f03561aaea5a10d87bd6638e1459)
-Signed-off-by: Joonas Lahtinen <joonas.lahtinen@linux.intel.com>
+Reported-by: Zhouyi Zhou <zhouzhouyi@gmail.com>
+Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
+Cc: Frederic Weisbecker <frederic@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/i915/display/intel_psr.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ kernel/rcu/rcu_segcblist.h | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/gpu/drm/i915/display/intel_psr.c b/drivers/gpu/drm/i915/display/intel_psr.c
-index 00279e8c2775..b00de57cc957 100644
---- a/drivers/gpu/drm/i915/display/intel_psr.c
-+++ b/drivers/gpu/drm/i915/display/intel_psr.c
-@@ -1816,6 +1816,9 @@ static void _intel_psr_post_plane_update(const struct intel_atomic_state *state,
- 
- 		mutex_lock(&psr->lock);
- 
-+		if (psr->sink_not_reliable)
-+			goto exit;
-+
- 		drm_WARN_ON(&dev_priv->drm, psr->enabled && !crtc_state->active_planes);
- 
- 		/* Only enable if there is active planes */
-@@ -1826,6 +1829,7 @@ static void _intel_psr_post_plane_update(const struct intel_atomic_state *state,
- 		if (crtc_state->crc_enabled && psr->enabled)
- 			psr_force_hw_tracking_exit(intel_dp);
- 
-+exit:
- 		mutex_unlock(&psr->lock);
- 	}
+diff --git a/kernel/rcu/rcu_segcblist.h b/kernel/rcu/rcu_segcblist.h
+index e373fbe44da5..431cee212467 100644
+--- a/kernel/rcu/rcu_segcblist.h
++++ b/kernel/rcu/rcu_segcblist.h
+@@ -56,13 +56,13 @@ static inline long rcu_segcblist_n_cbs(struct rcu_segcblist *rsclp)
+ static inline void rcu_segcblist_set_flags(struct rcu_segcblist *rsclp,
+ 					   int flags)
+ {
+-	rsclp->flags |= flags;
++	WRITE_ONCE(rsclp->flags, rsclp->flags | flags);
  }
+ 
+ static inline void rcu_segcblist_clear_flags(struct rcu_segcblist *rsclp,
+ 					     int flags)
+ {
+-	rsclp->flags &= ~flags;
++	WRITE_ONCE(rsclp->flags, rsclp->flags & ~flags);
+ }
+ 
+ static inline bool rcu_segcblist_test_flags(struct rcu_segcblist *rsclp,
 -- 
 2.34.1
 
