@@ -2,44 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 91ED0C4321E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BB697C4167D
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 01:48:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1843535AbiDFBlM (ORCPT
+        id S1843576AbiDFBlU (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 21:41:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54620 "EHLO
+        Tue, 5 Apr 2022 21:41:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56012 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349605AbiDEJue (ORCPT
+        with ESMTP id S1354199AbiDEKMP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:50:34 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3E89280;
-        Tue,  5 Apr 2022 02:48:35 -0700 (PDT)
+        Tue, 5 Apr 2022 06:12:15 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76AA053A40;
+        Tue,  5 Apr 2022 02:58:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 61026614FB;
-        Tue,  5 Apr 2022 09:48:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6C404C385A2;
-        Tue,  5 Apr 2022 09:48:34 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 2B007CE1BF8;
+        Tue,  5 Apr 2022 09:58:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4CE18C385A2;
+        Tue,  5 Apr 2022 09:58:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649152114;
-        bh=fb9efia5mVrZlJD4idK/NLmTQmEyTQOi7uyPx6MOOJs=;
+        s=korg; t=1649152710;
+        bh=izMv/LMDq16sbMxK8dWa52dHpvXUUl3PEqt/CPB1xl4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=S1KQptpDxMh92d+v/r6BFyUrN0zUmBuOMKpnyTxUeidIjV0721UsSkhG7kvwnw0ue
-         0mTKZgOCKl38NoxCINGMLailt2SaIxR8xmYKo/yGq8wCkL6InqMUgyYj1eyFdN3sIa
-         SreFydBshmc22VAwfKelAO20UBAFF8BnGBsH9TxU=
+        b=RRiWXXKLZM7LQp2NV/ekzsBTwdkn7MBDG7WaBz/PjoiCgX4996Fimmwoox6vwjPcu
+         YzvJ9SLk0vYgCqAXee/XtUMSWCs1oME9q7S64LmHHgHQyaM2QwghAzkKWw6LPH//+v
+         /9X+d8HiQsqF4yubR30NBtB/Co1G3UgnVZLJ5A0A=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Jonathan=20Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 621/913] clk: hisilicon: Terminate clk_div_table with sentinel element
-Date:   Tue,  5 Apr 2022 09:28:03 +0200
-Message-Id: <20220405070358.454684927@linuxfoundation.org>
+        stable@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
+        Igor Zhbanov <i.zhbanov@omprussia.ru>,
+        Chris von Recklinghausen <crecklin@redhat.com>,
+        Kees Cook <keescook@chromium.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Subject: [PATCH 5.15 876/913] mm/usercopy: return 1 from hardened_usercopy __setup() handler
+Date:   Tue,  5 Apr 2022 09:32:18 +0200
+Message-Id: <20220405070406.081233495@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
 References: <20220405070339.801210740@linuxfoundation.org>
@@ -51,39 +53,63 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jonathan Neuschäfer <j.neuschaefer@gmx.net>
+From: Randy Dunlap <rdunlap@infradead.org>
 
-[ Upstream commit 113b261bdf2b4fd34e7769a147a7acd0a4d9137f ]
+commit 05fe3c103f7e6b8b4fca8a7001dfc9ed4628085b upstream.
 
-In order that the end of a clk_div_table can be detected, it must be
-terminated with a sentinel element (.div = 0).
+__setup() handlers should return 1 if the command line option is handled
+and 0 if not (or maybe never return 0; it just pollutes init's
+environment).  This prevents:
 
-Fixes: 6c81966107dc0 ("clk: hisilicon: Add clock driver for hi3559A SoC")
-Signed-off-by: Jonathan Neuschäfer <j.neuschaefer@gmx.net>
-Link: https://lore.kernel.org/r/20220218000922.134857-4-j.neuschaefer@gmx.net
-Signed-off-by: Stephen Boyd <sboyd@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+  Unknown kernel command line parameters \
+  "BOOT_IMAGE=/boot/bzImage-517rc5 hardened_usercopy=off", will be \
+  passed to user space.
+
+  Run /sbin/init as init process
+   with arguments:
+     /sbin/init
+   with environment:
+     HOME=/
+     TERM=linux
+     BOOT_IMAGE=/boot/bzImage-517rc5
+     hardened_usercopy=off
+or
+     hardened_usercopy=on
+but when "hardened_usercopy=foo" is used, there is no Unknown kernel
+command line parameter.
+
+Return 1 to indicate that the boot option has been handled.
+Print a warning if strtobool() returns an error on the option string,
+but do not mark this as in unknown command line option and do not cause
+init's environment to be polluted with this string.
+
+Link: https://lkml.kernel.org/r/20220222034249.14795-1-rdunlap@infradead.org
+Link: lore.kernel.org/r/64644a2f-4a20-bab3-1e15-3b2cdd0defe3@omprussia.ru
+Fixes: b5cb15d9372ab ("usercopy: Allow boot cmdline disabling of hardening")
+Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+Reported-by: Igor Zhbanov <i.zhbanov@omprussia.ru>
+Acked-by: Chris von Recklinghausen <crecklin@redhat.com>
+Cc: Kees Cook <keescook@chromium.org>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/clk/hisilicon/clk-hi3559a.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ mm/usercopy.c |    5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/clk/hisilicon/clk-hi3559a.c b/drivers/clk/hisilicon/clk-hi3559a.c
-index 56012a3d0219..9ea1a80acbe8 100644
---- a/drivers/clk/hisilicon/clk-hi3559a.c
-+++ b/drivers/clk/hisilicon/clk-hi3559a.c
-@@ -611,8 +611,8 @@ static struct hisi_mux_clock hi3559av100_shub_mux_clks[] = {
+--- a/mm/usercopy.c
++++ b/mm/usercopy.c
+@@ -294,7 +294,10 @@ static bool enable_checks __initdata = t
  
+ static int __init parse_hardened_usercopy(char *str)
+ {
+-	return strtobool(str, &enable_checks);
++	if (strtobool(str, &enable_checks))
++		pr_warn("Invalid option string for hardened_usercopy: '%s'\n",
++			str);
++	return 1;
+ }
  
- /* shub div clk */
--static struct clk_div_table shub_spi_clk_table[] = {{0, 8}, {1, 4}, {2, 2}};
--static struct clk_div_table shub_uart_div_clk_table[] = {{1, 8}, {2, 4}};
-+static struct clk_div_table shub_spi_clk_table[] = {{0, 8}, {1, 4}, {2, 2}, {/*sentinel*/}};
-+static struct clk_div_table shub_uart_div_clk_table[] = {{1, 8}, {2, 4}, {/*sentinel*/}};
- 
- static struct hisi_divider_clock hi3559av100_shub_div_clks[] = {
- 	{ HI3559AV100_SHUB_SPI_SOURCE_CLK, "clk_spi_clk", "shub_clk", 0, 0x20, 24, 2,
--- 
-2.34.1
-
+ __setup("hardened_usercopy=", parse_hardened_usercopy);
 
 
