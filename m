@@ -2,124 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F7DFC4167D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 429D5C4167E
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 15:21:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1389262AbiDEPVM (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 11:21:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54728 "EHLO
+        id S237695AbiDEPWV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 11:22:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39314 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347084AbiDEJp6 (ORCPT
+        with ESMTP id S1347137AbiDEJqC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:45:58 -0400
+        Tue, 5 Apr 2022 05:46:02 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF7FADBC;
-        Tue,  5 Apr 2022 02:32:20 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CBB9DCE2E;
+        Tue,  5 Apr 2022 02:32:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7C04A616DB;
-        Tue,  5 Apr 2022 09:32:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8B6DCC385A4;
-        Tue,  5 Apr 2022 09:32:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649151139;
-        bh=t5hSDXWP6k/P9FBxBYltmkBE2Tk7nS9oj8fqA/DqdYQ=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JWpFRcWGbakR4RZwU/dn2KV7wP1xYlTJKPGt7hBXWI26VxB/QO4VG/e++IJL5QOe7
-         IDIIskvN8rF5a7hE3z3IdasrUULO25N/fgPGbuXSAf1t9l99XzhxrXnquHY//gkRTB
-         YAxrdnFXlhR/5xk9/q0594swmNaplcKEJ0EZ3O2s=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Petr Mladek <pmladek@suse.com>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 308/913] vsprintf: Fix potential unaligned access
-Date:   Tue,  5 Apr 2022 09:22:50 +0200
-Message-Id: <20220405070349.087838793@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
-User-Agent: quilt/0.66
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1A41B616E3;
+        Tue,  5 Apr 2022 09:32:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D1117C385A4;
+        Tue,  5 Apr 2022 09:32:29 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649151150;
+        bh=pwpVhI8k5umqPw1rCqRZHC3hmjlAQwEh7jZoPos1oUE=;
+        h=From:To:Cc:In-Reply-To:References:Subject:Date:From;
+        b=UGox+5N0wsUGeWdDZg2mnDqInQ9WZWFTTjg8C68QzublVGk+GLk+65CL8O9G8FYQ1
+         4VRIH97uM/8caPtgdElJ6OLDgHLXAWzJ6KBvfXZT6HFHxtRhWGLKGaEpwGlJxh6Qaw
+         LepBqp3tc0Ag1p7d4NEtuE8oJN0cR60XqWEJXdZks1XyEb+Sxlb6kxPzXhGPJN9rkt
+         3vxfUmh//EuKganUO/UIh5cZ3nGKG7sIN28Ryn474XMeAzYoBCNxJeioLNhMazU/4G
+         x/DXTJ9rHtB5eUBLqHwAg44bNmY2YO8/2OEzZQJ1ktCr/RMr5eq203rnZ0R3yPQIS+
+         KsYthHxNmJvIA==
+From:   Mark Brown <broonie@kernel.org>
+To:     christophe.leroy@csgroup.eu
+Cc:     linux-kernel@vger.kernel.org, linux-spi@vger.kernel.org
+In-Reply-To: <5ed3298d8b5b1b5bf681d79584c61cb495852f4e.1648833423.git.christophe.leroy@csgroup.eu>
+References: <5ed3298d8b5b1b5bf681d79584c61cb495852f4e.1648833423.git.christophe.leroy@csgroup.eu>
+Subject: Re: [PATCH] spi: Prepare cleanup of powerpc's asm/prom.h
+Message-Id: <164915114958.276894.7475754044101563566.b4-ty@kernel.org>
+Date:   Tue, 05 Apr 2022 10:32:29 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+On Sat, 2 Apr 2022 11:50:21 +0200, Christophe Leroy wrote:
+> powerpc's asm/prom.h brings some headers that it doesn't
+> need itself.
+> 
+> In order to clean it up, first add missing headers in
+> users of asm/prom.h
+> 
+> 
+> [...]
 
-[ Upstream commit d75b26f880f60ead301e79ba0f4a635c5a60767f ]
+Applied to
 
-The %p4cc specifier in some cases might get an unaligned pointer.
-Due to this we need to make copy to local variable once to avoid
-potential crashes on some architectures due to improper access.
+   https://git.kernel.org/pub/scm/linux/kernel/git/broonie/spi.git for-next
 
-Fixes: af612e43de6d ("lib/vsprintf: Add support for printing V4L2 and DRM fourccs")
-Cc: Sakari Ailus <sakari.ailus@linux.intel.com>
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Reviewed-by: Petr Mladek <pmladek@suse.com>
-Signed-off-by: Petr Mladek <pmladek@suse.com>
-Link: https://lore.kernel.org/r/20220127181233.72910-1-andriy.shevchenko@linux.intel.com
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- lib/vsprintf.c | 12 +++++++-----
- 1 file changed, 7 insertions(+), 5 deletions(-)
+Thanks!
 
-diff --git a/lib/vsprintf.c b/lib/vsprintf.c
-index d7ad44f2c8f5..ec07f6312445 100644
---- a/lib/vsprintf.c
-+++ b/lib/vsprintf.c
-@@ -49,6 +49,7 @@
- 
- #include <asm/page.h>		/* for PAGE_SIZE */
- #include <asm/byteorder.h>	/* cpu_to_le16 */
-+#include <asm/unaligned.h>
- 
- #include <linux/string_helpers.h>
- #include "kstrtox.h"
-@@ -1771,7 +1772,7 @@ char *fourcc_string(char *buf, char *end, const u32 *fourcc,
- 	char output[sizeof("0123 little-endian (0x01234567)")];
- 	char *p = output;
- 	unsigned int i;
--	u32 val;
-+	u32 orig, val;
- 
- 	if (fmt[1] != 'c' || fmt[2] != 'c')
- 		return error_string(buf, end, "(%p4?)", spec);
-@@ -1779,21 +1780,22 @@ char *fourcc_string(char *buf, char *end, const u32 *fourcc,
- 	if (check_pointer(&buf, end, fourcc, spec))
- 		return buf;
- 
--	val = *fourcc & ~BIT(31);
-+	orig = get_unaligned(fourcc);
-+	val = orig & ~BIT(31);
- 
--	for (i = 0; i < sizeof(*fourcc); i++) {
-+	for (i = 0; i < sizeof(u32); i++) {
- 		unsigned char c = val >> (i * 8);
- 
- 		/* Print non-control ASCII characters as-is, dot otherwise */
- 		*p++ = isascii(c) && isprint(c) ? c : '.';
- 	}
- 
--	strcpy(p, *fourcc & BIT(31) ? " big-endian" : " little-endian");
-+	strcpy(p, orig & BIT(31) ? " big-endian" : " little-endian");
- 	p += strlen(p);
- 
- 	*p++ = ' ';
- 	*p++ = '(';
--	p = special_hex_number(p, output + sizeof(output) - 2, *fourcc, sizeof(u32));
-+	p = special_hex_number(p, output + sizeof(output) - 2, orig, sizeof(u32));
- 	*p++ = ')';
- 	*p = '\0';
- 
--- 
-2.34.1
+[1/1] spi: Prepare cleanup of powerpc's asm/prom.h
+      commit: 02b3024824f48a270f6170901f1abeb1edb1619f
 
+All being well this means that it will be integrated into the linux-next
+tree (usually sometime in the next 24 hours) and sent to Linus during
+the next merge window (or sooner if it is a bug fix), however if
+problems are discovered then the patch may be dropped or reverted.
 
+You may get further e-mails resulting from automated or manual testing
+and review of the tree, please engage with people reporting problems and
+send followup patches addressing any issues that are reported if needed.
 
+If any updates are required or you are submitting further changes they
+should be sent as incremental updates against current git, existing
+patches will not be replaced.
+
+Please add any relevant lists and maintainers to the CCs when replying
+to this mail.
+
+Thanks,
+Mark
