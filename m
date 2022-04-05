@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1296AC433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5ABA3C4321E
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 11:21:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355911AbiDELPG (ORCPT
+        id S1356527AbiDELPf (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 07:15:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34730 "EHLO
+        Tue, 5 Apr 2022 07:15:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55022 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237266AbiDEIRw (ORCPT
+        with ESMTP id S237095AbiDEIRl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:17:52 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 352BE69CC3;
-        Tue,  5 Apr 2022 01:05:54 -0700 (PDT)
+        Tue, 5 Apr 2022 04:17:41 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E47D7B0A72;
+        Tue,  5 Apr 2022 01:05:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A4E0A617E9;
-        Tue,  5 Apr 2022 08:05:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B6978C385A2;
-        Tue,  5 Apr 2022 08:05:52 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9891EB81A32;
+        Tue,  5 Apr 2022 08:05:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0D810C385A2;
+        Tue,  5 Apr 2022 08:05:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649145953;
-        bh=JWSpzLHpWqKGkFwCTk0nOHoD9KufYRoCj9fLiLPPjJg=;
+        s=korg; t=1649145908;
+        bh=DtgPalVCccaATQj0jaFNcsMve7obrls4FSjEP7bN7aM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RZVOVgjNdxEozwO9JKorxs7KgBc0GgvT/LGNwKZ/VBgllZUBG4+HDAT66msKVQ8jX
-         QuilBZ48Ibh1Z3MZp2m1nHlOeahqGdvc60z1UfvxHhpYTxCabhLPRW39MEZG2osNlw
-         eBSEaKV7YZoO7X8Mja3yG/DkEo/xAC+P7QMV/TYI=
+        b=GNj8EJHpiFEkpB/DiqxzEJAtN835LJA6lZ9qNCb1JKco1v4hDDRpFv/kqN/mJMoHP
+         AO3szRo2Tk0ShYXAajVgKwoid41z09/i0nlKgZ1oA/p4hZJyit4VNb8KgyshWPQF/K
+         dBYwHm/ciuKmp62YfXcFhl/vSuCZeHGg8CoRxQZE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jack Wang <jinpu.wang@ionos.com>,
-        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        stable@vger.kernel.org, Abhinav Kumar <quic_abhinavk@quicinc.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Stephen Boyd <swboyd@chromium.org>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0587/1126] scsi: pm8001: Fix payload initialization in pm80xx_encrypt_update()
-Date:   Tue,  5 Apr 2022 09:22:14 +0200
-Message-Id: <20220405070424.863273674@linuxfoundation.org>
+Subject: [PATCH 5.17 0573/1126] drm/msm/dpu: fix dp audio condition
+Date:   Tue,  5 Apr 2022 09:22:00 +0200
+Message-Id: <20220405070424.452243006@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -51,49 +52,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Damien Le Moal <damien.lemoal@opensource.wdc.com>
+From: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
 
-[ Upstream commit f8b12dfb476dad38ce755aaf5e2df46f06f1822e ]
+[ Upstream commit 1e0505a5a7a2fea243f8e6d7e13fcde65f9e41bc ]
 
-All fields of the kek_mgmt_req structure have the type __le32. So make sure
-to use cpu_to_le32() to initialize them. This suppresses the sparse
-warning:
+DP audio enablement code which is comparing intf_type,
+DRM_MODE_ENCODER_TMDS (= 2) with DRM_MODE_CONNECTOR_DisplayPort (= 10).
+Which would never succeed. Fix it to check for DRM_MODE_ENCODER_TMDS.
 
-warning: incorrect type in assignment (different base types)
-   expected restricted __le32 [addressable] [assigned] [usertype] new_curidx_ksop
-   got int
-
-Link: https://lore.kernel.org/r/20220220031810.738362-10-damien.lemoal@opensource.wdc.com
-Fixes: f5860992db55 ("[SCSI] pm80xx: Added SPCv/ve specific hardware functionalities and relevant changes in common files")
-Reviewed-by: Jack Wang <jinpu.wang@ionos.com>
-Signed-off-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Fixes: d13e36d7d222 ("drm/msm/dp: add audio support for Display Port on MSM")
+Reviewed-by: Abhinav Kumar <quic_abhinavk@quicinc.com>
+Reviewed-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Reviewed-by: Stephen Boyd <swboyd@chromium.org>
+Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Link: https://lore.kernel.org/r/20220217035358.465904-2-dmitry.baryshkov@linaro.org
+Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/pm8001/pm80xx_hwi.c | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+ drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/scsi/pm8001/pm80xx_hwi.c b/drivers/scsi/pm8001/pm80xx_hwi.c
-index 19f9fb4da9c1..cbb0cd2e71c1 100644
---- a/drivers/scsi/pm8001/pm80xx_hwi.c
-+++ b/drivers/scsi/pm8001/pm80xx_hwi.c
-@@ -1407,12 +1407,13 @@ static int pm80xx_encrypt_update(struct pm8001_hba_info *pm8001_ha)
- 	/* Currently only one key is used. New KEK index is 1.
- 	 * Current KEK index is 1. Store KEK to NVRAM is 1.
- 	 */
--	payload.new_curidx_ksop = ((1 << 24) | (1 << 16) | (1 << 8) |
--					KEK_MGMT_SUBOP_KEYCARDUPDATE);
-+	payload.new_curidx_ksop =
-+		cpu_to_le32(((1 << 24) | (1 << 16) | (1 << 8) |
-+			     KEK_MGMT_SUBOP_KEYCARDUPDATE));
+diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c b/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c
+index 1e648db439f9..02d0fae1c6dc 100644
+--- a/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c
++++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c
+@@ -1099,7 +1099,7 @@ static void _dpu_encoder_virt_enable_helper(struct drm_encoder *drm_enc)
+ 	}
  
- 	pm8001_dbg(pm8001_ha, DEV,
- 		   "Saving Encryption info to flash. payload 0x%x\n",
--		   payload.new_curidx_ksop);
-+		   le32_to_cpu(payload.new_curidx_ksop));
  
- 	rc = pm8001_mpi_build_cmd(pm8001_ha, circularQ, opc, &payload,
- 			sizeof(payload), 0);
+-	if (dpu_enc->disp_info.intf_type == DRM_MODE_CONNECTOR_DisplayPort &&
++	if (dpu_enc->disp_info.intf_type == DRM_MODE_ENCODER_TMDS &&
+ 		dpu_enc->cur_master->hw_mdptop &&
+ 		dpu_enc->cur_master->hw_mdptop->ops.intf_audio_select)
+ 		dpu_enc->cur_master->hw_mdptop->ops.intf_audio_select(
 -- 
 2.34.1
 
