@@ -2,196 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DAE65C47081
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CCC16C35280
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:28:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381300AbiDEU3F (ORCPT
+        id S1381082AbiDEU3B (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 16:29:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43206 "EHLO
+        Tue, 5 Apr 2022 16:29:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53508 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354628AbiDEKO5 (ORCPT
+        with ESMTP id S1457972AbiDERCY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:14:57 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E28F6BDEC;
-        Tue,  5 Apr 2022 03:01:45 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id AF6DEB81B96;
-        Tue,  5 Apr 2022 10:01:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 203BCC385A2;
-        Tue,  5 Apr 2022 10:01:41 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649152902;
-        bh=j5OThtCkKw8wixPROr3bHPlF7VL+nQO2b6T38K84FyM=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=zZv/Lqv7Jg7KcklVQW4krWaN+0tQMGr5hM23DcBzl74f/jrjScO9rVLplM4FxDnAl
-         CCHKmGmMqrgD+rPxNVcjFhklT51PqheoxaNw1bjHWyeSrmWiuXMkzT92s3ixYy2Oz9
-         fwr2ZoZz8Rez9XXpfaHfIGgzB86vt3r9BYM1NBYw=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Johan Hovold <johan@kernel.org>
-Subject: [PATCH 5.10 003/599] USB: serial: simple: add Nokia phone driver
-Date:   Tue,  5 Apr 2022 09:24:57 +0200
-Message-Id: <20220405070258.912898995@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 5 Apr 2022 13:02:24 -0400
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01B412E9C6
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 10:00:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649178025; x=1680714025;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=k7SeToO452mTi6XqawYJZEIVpub9vEr3cmiDJ4ugJ9I=;
+  b=f7vTPay2okWsxMimb+yP4/jkpxyV0sT8PWTIon6rM8VRwvT1EMPpqILp
+   epgj97wKB9K8f2uLHSlEG6D3nMdz3Q4rg1wXf3FYJF7BgcN5s+vO1Eu4e
+   4C2ElS4BZviKaBiMaKAGvVgrSpJkDfZvlqgVSg12CyjjGiu9srQgLqPie
+   uGvS7xXT9Lo1C6C1t2HH/ELJK9dijkW4rRkNFn2fLOQtlVpM4UNOnn30J
+   gdRGUtwpBDlJIskyqHT9gLZisGcdc2lYByfUr/2clU7aQBQVWTeWNZXLK
+   2NXRnXytq6zru8getxZ1EyWsD1qxiXwj1eMYPQqEFXo+p1oKv07Ru7mYR
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10308"; a="240738095"
+X-IronPort-AV: E=Sophos;i="5.90,236,1643702400"; 
+   d="scan'208";a="240738095"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2022 10:00:25 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,236,1643702400"; 
+   d="scan'208";a="587999497"
+Received: from lkp-server02.sh.intel.com (HELO a44fdfb70b94) ([10.239.97.151])
+  by orsmga001.jf.intel.com with ESMTP; 05 Apr 2022 10:00:24 -0700
+Received: from kbuild by a44fdfb70b94 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nbmXX-0003cA-CT;
+        Tue, 05 Apr 2022 17:00:23 +0000
+Date:   Wed, 6 Apr 2022 01:00:05 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Ville =?iso-8859-1?Q?Syrj=E4l=E4?= <ville.syrjala@linux.intel.com>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
+Subject: [vsyrjala:vbt_panel_type_pnp_id_2 31/32]
+ drivers/gpu/drm/i915/display/intel_bios.c:619:9: sparse: sparse: cast to
+ restricted __be16
+Message-ID: <202204060009.xXKxOfo4-lkp@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Johan Hovold <johan@kernel.org>
+tree:   https://github.com/vsyrjala/linux.git vbt_panel_type_pnp_id_2
+head:   805ff25c9e3d368cf07b5ce3c36a37a7240185ff
+commit: d7d51fb935143002f73468eee9fd1ed3bafa7b08 [31/32] drm/i915/bios: Dump PNPID and panel name
+config: i386-randconfig-s001 (https://download.01.org/0day-ci/archive/20220406/202204060009.xXKxOfo4-lkp@intel.com/config)
+compiler: gcc-11 (Debian 11.2.0-19) 11.2.0
+reproduce:
+        # apt-get install sparse
+        # sparse version: v0.6.4-dirty
+        # https://github.com/vsyrjala/linux/commit/d7d51fb935143002f73468eee9fd1ed3bafa7b08
+        git remote add vsyrjala https://github.com/vsyrjala/linux.git
+        git fetch --no-tags vsyrjala vbt_panel_type_pnp_id_2
+        git checkout d7d51fb935143002f73468eee9fd1ed3bafa7b08
+        # save the config file to linux build tree
+        mkdir build_dir
+        make W=1 C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=i386 SHELL=/bin/bash drivers/gpu/drm/i915/
 
-commit c4b9c570965f75d0d55e639747f1e5ccdad2fae0 upstream.
-
-Add a new "simple" driver for certain Nokia phones, including Nokia 130
-(RM-1035) which exposes two serial ports in "charging only" mode:
-
-Bus 001 Device 009: ID 0421:069a Nokia Mobile Phones 130 [RM-1035] (Charging only)
-Device Descriptor:
-  bLength                18
-  bDescriptorType         1
-  bcdUSB               2.00
-  bDeviceClass            0
-  bDeviceSubClass         0
-  bDeviceProtocol         0
-  bMaxPacketSize0         8
-  idVendor           0x0421 Nokia Mobile Phones
-  idProduct          0x069a 130 [RM-1035] (Charging only)
-  bcdDevice            1.00
-  iManufacturer           1 Nokia
-  iProduct                2 Nokia 130 (RM-1035)
-  iSerial                 0
-  bNumConfigurations      1
-  Configuration Descriptor:
-    bLength                 9
-    bDescriptorType         2
-    wTotalLength       0x0037
-    bNumInterfaces          2
-    bConfigurationValue     1
-    iConfiguration          0
-    bmAttributes         0x80
-      (Bus Powered)
-    MaxPower              500mA
-    Interface Descriptor:
-      bLength                 9
-      bDescriptorType         4
-      bInterfaceNumber        0
-      bAlternateSetting       0
-      bNumEndpoints           2
-      bInterfaceClass       255 Vendor Specific Class
-      bInterfaceSubClass    255 Vendor Specific Subclass
-      bInterfaceProtocol    255 Vendor Specific Protocol
-      iInterface              0
-      Endpoint Descriptor:
-        bLength                 7
-        bDescriptorType         5
-        bEndpointAddress     0x81  EP 1 IN
-        bmAttributes            2
-          Transfer Type            Bulk
-          Synch Type               None
-          Usage Type               Data
-        wMaxPacketSize     0x0040  1x 64 bytes
-        bInterval               0
-      Endpoint Descriptor:
-        bLength                 7
-        bDescriptorType         5
-        bEndpointAddress     0x01  EP 1 OUT
-        bmAttributes            2
-          Transfer Type            Bulk
-          Synch Type               None
-          Usage Type               Data
-        wMaxPacketSize     0x0040  1x 64 bytes
-        bInterval               0
-    Interface Descriptor:
-      bLength                 9
-      bDescriptorType         4
-      bInterfaceNumber        1
-      bAlternateSetting       0
-      bNumEndpoints           2
-      bInterfaceClass       255 Vendor Specific Class
-      bInterfaceSubClass    255 Vendor Specific Subclass
-      bInterfaceProtocol    255 Vendor Specific Protocol
-      iInterface              0
-      Endpoint Descriptor:
-        bLength                 7
-        bDescriptorType         5
-        bEndpointAddress     0x82  EP 2 IN
-        bmAttributes            2
-          Transfer Type            Bulk
-          Synch Type               None
-          Usage Type               Data
-        wMaxPacketSize     0x0040  1x 64 bytes
-        bInterval               0
-      Endpoint Descriptor:
-        bLength                 7
-        bDescriptorType         5
-        bEndpointAddress     0x02  EP 2 OUT
-        bmAttributes            2
-          Transfer Type            Bulk
-          Synch Type               None
-          Usage Type               Data
-        wMaxPacketSize     0x0040  1x 64 bytes
-        bInterval               0
-Device Status:     0x0000
-  (Bus Powered)
-
-Cc: stable@vger.kernel.org
-Link: https://lore.kernel.org/r/20220228084919.10656-1-johan@kernel.org
-Signed-off-by: Johan Hovold <johan@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- drivers/usb/serial/Kconfig             |    1 +
- drivers/usb/serial/usb-serial-simple.c |    7 +++++++
- 2 files changed, 8 insertions(+)
-
---- a/drivers/usb/serial/Kconfig
-+++ b/drivers/usb/serial/Kconfig
-@@ -66,6 +66,7 @@ config USB_SERIAL_SIMPLE
- 		- Libtransistor USB console
- 		- a number of Motorola phones
- 		- Motorola Tetra devices
-+		- Nokia mobile phones
- 		- Novatel Wireless GPS receivers
- 		- Siemens USB/MPI adapter.
- 		- ViVOtech ViVOpay USB device.
---- a/drivers/usb/serial/usb-serial-simple.c
-+++ b/drivers/usb/serial/usb-serial-simple.c
-@@ -91,6 +91,11 @@ DEVICE(moto_modem, MOTO_IDS);
- 	{ USB_DEVICE(0x0cad, 0x9016) }	/* TPG2200 */
- DEVICE(motorola_tetra, MOTOROLA_TETRA_IDS);
- 
-+/* Nokia mobile phone driver */
-+#define NOKIA_IDS()			\
-+	{ USB_DEVICE(0x0421, 0x069a) }	/* Nokia 130 (RM-1035) */
-+DEVICE(nokia, NOKIA_IDS);
-+
- /* Novatel Wireless GPS driver */
- #define NOVATEL_IDS()			\
- 	{ USB_DEVICE(0x09d7, 0x0100) }	/* NovAtel FlexPack GPS */
-@@ -123,6 +128,7 @@ static struct usb_serial_driver * const
- 	&vivopay_device,
- 	&moto_modem_device,
- 	&motorola_tetra_device,
-+	&nokia_device,
- 	&novatel_gps_device,
- 	&hp4x_device,
- 	&suunto_device,
-@@ -140,6 +146,7 @@ static const struct usb_device_id id_tab
- 	VIVOPAY_IDS(),
- 	MOTO_IDS(),
- 	MOTOROLA_TETRA_IDS(),
-+	NOKIA_IDS(),
- 	NOVATEL_IDS(),
- 	HP4X_IDS(),
- 	SUUNTO_IDS(),
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
 
+sparse warnings: (new ones prefixed by >>)
+>> drivers/gpu/drm/i915/display/intel_bios.c:619:9: sparse: sparse: cast to restricted __be16
+
+vim +619 drivers/gpu/drm/i915/display/intel_bios.c
+
+   612	
+   613	static void dump_pnp_id(struct drm_i915_private *i915,
+   614				const struct lvds_pnp_id *pnp_id,
+   615				const char *name)
+   616	{
+   617		char vend[4];
+   618	
+ > 619		drm_dbg_kms(&i915->drm, "%s PNPID mfg: %s (0x%x), prod: %u, serial: %u, week: %d, year: %d\n",
+   620			    name, drm_edid_decode_mfg_id(be16_to_cpu(pnp_id->mfg_name), vend),
+   621			    pnp_id->mfg_name, pnp_id->product_code, pnp_id->serial,
+   622			    pnp_id->mfg_week, pnp_id->mfg_year + 1990);
+   623	}
+   624	
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
