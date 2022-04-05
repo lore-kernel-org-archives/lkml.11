@@ -2,110 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7402FC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 22:56:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C9029C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:02:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349211AbiDEWuM (ORCPT
+        id S1444046AbiDEWup (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 18:50:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34574 "EHLO
+        Tue, 5 Apr 2022 18:50:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32972 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1392189AbiDEPft (ORCPT
+        with ESMTP id S1573647AbiDET31 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 11:35:49 -0400
-Received: from smtp1.axis.com (smtp1.axis.com [195.60.68.17])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 518DA12D;
-        Tue,  5 Apr 2022 06:48:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=axis.com; q=dns/txt; s=axis-central1; t=1649166488;
-  x=1680702488;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=79rrKpJvSV/IyMMLjk1fyhAdjuzODykc4KbTAF2mUFs=;
-  b=FiOVSqtEplqlpGbV24QKDAr+i8WFGbW038mF84zzzjMGLHloCAF5NPgY
-   spNiGw/JW64vBk2PDKMYeRrzNnvvX9UHBY/B/HepKgx6Ad8lZokZPYdBy
-   7OpaZ9BsvHs1aZCwW+kuNlJhW2Z2+5tJgZDQoPpNYBx3HZTZqRoW8yTb2
-   L/kbhgJPZ67FRSZN5VimMCXaFg5e7MBpW2w5kOfvVuD4jRmwgAUY0TEzv
-   O9FAaZn51Fi/MSdDTB4FNunqqBA9Ty8O7mk1/2xsvz1tde3N99GsfhgrV
-   4GYLxtosbMlYV/YxgZvfwIh/MPM7kvdpyaf1CLkQR25ioPVRlRFcC7BrW
-   w==;
-Date:   Tue, 5 Apr 2022 15:48:05 +0200
-From:   Vincent Whitchurch <vincent.whitchurch@axis.com>
-To:     Jonathan Cameron <jic23@kernel.org>
-CC:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        kernel <kernel@axis.com>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-um@lists.infradead.org" <linux-um@lists.infradead.org>,
-        "shuah@kernel.org" <shuah@kernel.org>,
-        "brendanhiggins@google.com" <brendanhiggins@google.com>,
-        "linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>,
-        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-        "lgirdwood@gmail.com" <lgirdwood@gmail.com>,
-        "broonie@kernel.org" <broonie@kernel.org>,
-        "a.zummo@towertech.it" <a.zummo@towertech.it>,
-        "alexandre.belloni@bootlin.com" <alexandre.belloni@bootlin.com>,
-        "linux-rtc@vger.kernel.org" <linux-rtc@vger.kernel.org>,
-        "corbet@lwn.net" <corbet@lwn.net>,
-        "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>
-Subject: Re: [RFC v1 08/10] iio: light: vcnl4000: add roadtest
-Message-ID: <20220405134805.GA28574@axis.com>
-References: <20220311162445.346685-1-vincent.whitchurch@axis.com>
- <20220311162445.346685-9-vincent.whitchurch@axis.com>
- <20220320170253.5b946c84@jic23-huawei>
+        Tue, 5 Apr 2022 15:29:27 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B46B8BF000;
+        Tue,  5 Apr 2022 12:27:28 -0700 (PDT)
+Date:   Tue, 05 Apr 2022 19:27:26 -0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1649186847;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=SH++pPXt5/MXSBZwUFXzyKmchSB5rWCVJKOal0mJc68=;
+        b=qOYLmLAh6SrCv0U7WUKdx6kDqTdT45JSqFSK7l7WnGZEIQG8EH/o3+VOyTVKy36my+YN1u
+        yQNjG/UhjPr3JEsssUonnTR8ZX9hbs8QBiosXuBLn/SYadeG6fsixMIR4pXFA/UJ56zXIi
+        FBBjzEjKXmligf64RB9EuiIpzVwXQktYi7FiTO2qzpCPcJYlmYtzvezC7ycCW7P+ijPlq7
+        NtBbhhafIRMbftlDETAevYwRDDPrNf2wv+cdHw6r3+T/Mz26a875Of+LxPnQImWjXnBAf0
+        KhOMGHzsRKTZyErU2mwOMaUF907dXR22OZVnzop/0vaqjRldRdtshDjYG2sxjw==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1649186847;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=SH++pPXt5/MXSBZwUFXzyKmchSB5rWCVJKOal0mJc68=;
+        b=7QfmmMCDW0T1IbXkwHXAGX9/cOJHP30DP6rOz6x5yGbr8ZySm7EVJBlgDbXsyUUuKRRkAA
+        r4D4Yj9GACKseZAw==
+From:   "tip-bot2 for Peter Gonda" <tip-bot2@linutronix.de>
+Sender: tip-bot2@linutronix.de
+Reply-to: linux-kernel@vger.kernel.org
+To:     linux-tip-commits@vger.kernel.org
+Subject: [tip: x86/sev] x86/sev-es: Replace open-coded hlt-loop with
+ sev_es_terminate()
+Cc:     Peter Gonda <pgonda@google.com>, Borislav Petkov <bp@suse.de>,
+        Joerg Roedel <jroedel@suse.de>, x86@kernel.org,
+        linux-kernel@vger.kernel.org
+In-Reply-To: <20220317211913.1397427-1-pgonda@google.com>
+References: <20220317211913.1397427-1-pgonda@google.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20220320170253.5b946c84@jic23-huawei>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Message-ID: <164918684623.389.10520041359552585691.tip-bot2@tip-bot2>
+Robot-ID: <tip-bot2@linutronix.de>
+Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Mar 20, 2022 at 06:02:53PM +0100, Jonathan Cameron wrote:
-> Very interesting bit of work. My current approach for similar testing
-> is to write a qemu model for the hardware, but that currently
-> requires carefully crafted tests. Most of the time I'm only doing
-> that to verify refactoring of existing drivers. 
+The following commit has been merged into the x86/sev branch of tip:
 
-Thank you for taking a look!
+Commit-ID:     453e580abcdb53f688d5711c68bec96bea35430d
+Gitweb:        https://git.kernel.org/tip/453e580abcdb53f688d5711c68bec96bea35430d
+Author:        Peter Gonda <pgonda@google.com>
+AuthorDate:    Thu, 17 Mar 2022 14:19:13 -07:00
+Committer:     Borislav Petkov <bp@suse.de>
+CommitterDate: Tue, 05 Apr 2022 19:33:55 +02:00
 
-> One thing that makes me nervous here is the python element though
-> as I've not written significant python in about 20 years.
-> That is going to be a burden for kernel developers and maintainers...
-> Nothing quite like badly written tests to make for a mess in the long run
-> and I suspect my python for example would be very very badly written :)
+x86/sev-es: Replace open-coded hlt-loop with sev_es_terminate()
 
-There's a bunch of static checkers to ensure that the code follows some
-basic guidelines, and CI can check that the tests work consistently, and
-also calculate metrics such as test execution time and code coverage, so
-even non-idiomatic Python in the tests wouldn't be entirely broken.
+Replace the halt loop in handle_vc_boot_ghcb() with an
+sev_es_terminate(). The HLT gives the system no indication the guest is
+unhappy. The termination request will signal there was an error during
+VC handling during boot.
 
-And unlike driver code, if the tests for a particular driver later do
-turn out to be bad (in what way?), we could just throw those particular
-tests out without breaking anybody's system.
+Signed-off-by: Peter Gonda <pgonda@google.com>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Reviewed-by: Joerg Roedel <jroedel@suse.de>
+Link: https://lore.kernel.org/r/20220317211913.1397427-1-pgonda@google.com
+---
+ arch/x86/kernel/sev.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-> Cut and paste will of course get us a long way...
-
-Isn't some amount of copy/paste followed by modification to be expected
-even if the framework is written in say C (just as there's already
-copy/paste + modification involved when writing drivers)?
-
-As for the core logic of individual driver tests excluding the framework
-bits, I have a hard time imagining what Python syntax looks like to
-someone with no knowledge of Python, so yes, I guess it's going to be
-harder to review.
-
-> I dream of a world where every driver is testable by people with out hardware
-> but I fear it may be a while yet.  Hopefully this will get us a little
-> closer!
-> 
-> I more or less follow what is going on here (good docs btw in the earlier
-> patch definitely helped).
-> 
-> So far I'm thoroughly in favour of road test subject to actually being
-> able to review the tests or getting sufficient support to do so.
-> It's a 'how to scale it' question really...
-
-Would rewriting the framework in C and forcing tests to be written in
-that language mean that maintainers would be able to review tests
-without external support?
+diff --git a/arch/x86/kernel/sev.c b/arch/x86/kernel/sev.c
+index e6d316a..ae87fbf 100644
+--- a/arch/x86/kernel/sev.c
++++ b/arch/x86/kernel/sev.c
+@@ -1425,6 +1425,5 @@ bool __init handle_vc_boot_ghcb(struct pt_regs *regs)
+ fail:
+ 	show_regs(regs);
+ 
+-	while (true)
+-		halt();
++	sev_es_terminate(GHCB_SEV_ES_GEN_REQ);
+ }
