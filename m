@@ -2,47 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 48F73C43219
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 01:48:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EEE2AC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 01:48:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1843761AbiDFBmB (ORCPT
+        id S1843808AbiDFBmH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 21:42:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45148 "EHLO
+        Tue, 5 Apr 2022 21:42:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52112 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354451AbiDEKOQ (ORCPT
+        with ESMTP id S1357671AbiDEK0n (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:14:16 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD4BA69CFE;
-        Tue,  5 Apr 2022 03:00:05 -0700 (PDT)
+        Tue, 5 Apr 2022 06:26:43 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBBD534669;
+        Tue,  5 Apr 2022 03:10:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 854FBB81C98;
-        Tue,  5 Apr 2022 10:00:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D30C1C385A2;
-        Tue,  5 Apr 2022 10:00:02 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5FE706172B;
+        Tue,  5 Apr 2022 10:10:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6710AC385A0;
+        Tue,  5 Apr 2022 10:10:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649152803;
-        bh=csoXg8xfP54KyRaAROKfOyTrSMX5tlMmyn9Qsmva0YE=;
+        s=korg; t=1649153435;
+        bh=zZUpulxjp8MFrormfip6zMCIpYZ6J5kv9bWMRs0bt64=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=X84JRmiEiSGR+s+s9QW/aU+fsP89brgJJh7xSk8AUq5YDEndiCU288tyIuFNXjqRJ
-         8r52WAyiu5cXxSchjTAo2O47srO4J25exFOONChXQJGePzt55mXe5PNoFOQM0pp9G9
-         08OS2VxyYu0CDUUA/ZZVoA7qnWvV6kS17cDb/6Ks=
+        b=wkDkRr04hN33TE5DkoCXEHbzkEP2d23SsNhSxwoxJRW4WHj74oeleKQpcEeH9w3cS
+         psb7kDjD2YVjHOPsD1/tCmTeJaoUsNjmwxgObo79up+Eg7g3wu7Eetvfdqmhsx9m0L
+         0RDJFq6UPuzI0sMAJ213RvUUXXnxKHH4rdZoMP8c=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Halil Pasic <pasic@linux.ibm.com>,
-        Oleksandr Natalenko <oleksandr@natalenko.name>,
-        Christoph Hellwig <hch@lst.de>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [PATCH 5.15 869/913] Reinstate some of "swiotlb: rework "fix info leak with DMA_FROM_DEVICE""
-Date:   Tue,  5 Apr 2022 09:32:11 +0200
-Message-Id: <20220405070405.872766400@linuxfoundation.org>
+        stable@vger.kernel.org, TOTE Robot <oslab@tsinghua.edu.cn>,
+        Jia-Ju Bai <baijiaju1990@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 222/599] ASoC: rt5663: check the return value of devm_kzalloc() in rt5663_parse_dp()
+Date:   Tue,  5 Apr 2022 09:28:36 +0200
+Message-Id: <20220405070305.448716395@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
+References: <20220405070258.802373272@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,88 +51,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Linus Torvalds <torvalds@linux-foundation.org>
+From: Jia-Ju Bai <baijiaju1990@gmail.com>
 
-commit 901c7280ca0d5e2b4a8929fbe0bfb007ac2a6544 upstream.
+[ Upstream commit 4d06f92f38b799295ae22c98be7a20cac3e2a1a7 ]
 
-Halil Pasic points out [1] that the full revert of that commit (revert
-in bddac7c1e02b), and that a partial revert that only reverts the
-problematic case, but still keeps some of the cleanups is probably
-better.  ￼
+The function devm_kzalloc() in rt5663_parse_dp() can fail, so its return
+value should be checked.
 
-And that partial revert [2] had already been verified by Oleksandr
-Natalenko to also fix the issue, I had just missed that in the long
-discussion.
-
-So let's reinstate the cleanups from commit aa6f8dcbab47 ("swiotlb:
-rework "fix info leak with DMA_FROM_DEVICE""), and effectively only
-revert the part that caused problems.
-
-Link: https://lore.kernel.org/all/20220328013731.017ae3e3.pasic@linux.ibm.com/ [1]
-Link: https://lore.kernel.org/all/20220324055732.GB12078@lst.de/ [2]
-Link: https://lore.kernel.org/all/4386660.LvFx2qVVIh@natalenko.name/ [3]
-Suggested-by: Halil Pasic <pasic@linux.ibm.com>
-Tested-by: Oleksandr Natalenko <oleksandr@natalenko.name>
-Cc: Christoph Hellwig <hch@lst.de>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 457c25efc592 ("ASoC: rt5663: Add the function of impedance sensing")
+Reported-by: TOTE Robot <oslab@tsinghua.edu.cn>
+Signed-off-by: Jia-Ju Bai <baijiaju1990@gmail.com>
+Link: https://lore.kernel.org/r/20220225131030.27248-1-baijiaju1990@gmail.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- Documentation/core-api/dma-attributes.rst |    8 --------
- include/linux/dma-mapping.h               |    8 --------
- kernel/dma/swiotlb.c                      |   12 ++++++++----
- 3 files changed, 8 insertions(+), 20 deletions(-)
+ sound/soc/codecs/rt5663.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
---- a/Documentation/core-api/dma-attributes.rst
-+++ b/Documentation/core-api/dma-attributes.rst
-@@ -130,11 +130,3 @@ accesses to DMA buffers in both privileg
- subsystem that the buffer is fully accessible at the elevated privilege
- level (and ideally inaccessible or at least read-only at the
- lesser-privileged levels).
--
--DMA_ATTR_OVERWRITE
--------------------
--
--This is a hint to the DMA-mapping subsystem that the device is expected to
--overwrite the entire mapped size, thus the caller does not require any of the
--previous buffer contents to be preserved. This allows bounce-buffering
--implementations to optimise DMA_FROM_DEVICE transfers.
---- a/include/linux/dma-mapping.h
-+++ b/include/linux/dma-mapping.h
-@@ -62,14 +62,6 @@
- #define DMA_ATTR_PRIVILEGED		(1UL << 9)
- 
- /*
-- * This is a hint to the DMA-mapping subsystem that the device is expected
-- * to overwrite the entire mapped size, thus the caller does not require any
-- * of the previous buffer contents to be preserved. This allows
-- * bounce-buffering implementations to optimise DMA_FROM_DEVICE transfers.
-- */
--#define DMA_ATTR_OVERWRITE		(1UL << 10)
--
--/*
-  * A dma_addr_t can hold any valid DMA or bus address for the platform.  It can
-  * be given to a device to use as a DMA source or target.  It is specific to a
-  * given device and there may be a translation between the CPU physical address
---- a/kernel/dma/swiotlb.c
-+++ b/kernel/dma/swiotlb.c
-@@ -578,10 +578,14 @@ phys_addr_t swiotlb_tbl_map_single(struc
- 	for (i = 0; i < nr_slots(alloc_size + offset); i++)
- 		mem->slots[index + i].orig_addr = slot_addr(orig_addr, i);
- 	tlb_addr = slot_addr(mem->start, index) + offset;
--	if (!(attrs & DMA_ATTR_SKIP_CPU_SYNC) &&
--	    (!(attrs & DMA_ATTR_OVERWRITE) || dir == DMA_TO_DEVICE ||
--	    dir == DMA_BIDIRECTIONAL))
--		swiotlb_bounce(dev, tlb_addr, mapping_size, DMA_TO_DEVICE);
-+	/*
-+	 * When dir == DMA_FROM_DEVICE we could omit the copy from the orig
-+	 * to the tlb buffer, if we knew for sure the device will
-+	 * overwirte the entire current content. But we don't. Thus
-+	 * unconditional bounce may prevent leaking swiotlb content (i.e.
-+	 * kernel memory) to user-space.
-+	 */
-+	swiotlb_bounce(dev, tlb_addr, mapping_size, DMA_TO_DEVICE);
- 	return tlb_addr;
- }
- 
+diff --git a/sound/soc/codecs/rt5663.c b/sound/soc/codecs/rt5663.c
+index db8a41aaa385..4423e61bf1ab 100644
+--- a/sound/soc/codecs/rt5663.c
++++ b/sound/soc/codecs/rt5663.c
+@@ -3478,6 +3478,8 @@ static int rt5663_parse_dp(struct rt5663_priv *rt5663, struct device *dev)
+ 		table_size = sizeof(struct impedance_mapping_table) *
+ 			rt5663->pdata.impedance_sensing_num;
+ 		rt5663->imp_table = devm_kzalloc(dev, table_size, GFP_KERNEL);
++		if (!rt5663->imp_table)
++			return -ENOMEM;
+ 		ret = device_property_read_u32_array(dev,
+ 			"realtek,impedance_sensing_table",
+ 			(u32 *)rt5663->imp_table, table_size);
+-- 
+2.34.1
+
 
 
