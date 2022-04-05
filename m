@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 35994C4167D
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 09:27:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 82F53C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 09:27:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347509AbiDEJ1I (ORCPT
+        id S1347533AbiDEJ1V (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 05:27:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34692 "EHLO
+        Tue, 5 Apr 2022 05:27:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45578 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239633AbiDEIUU (ORCPT
+        with ESMTP id S239642AbiDEIUX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:20:20 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B696220;
-        Tue,  5 Apr 2022 01:17:58 -0700 (PDT)
+        Tue, 5 Apr 2022 04:20:23 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F209244;
+        Tue,  5 Apr 2022 01:18:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5E383B81A32;
-        Tue,  5 Apr 2022 08:17:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BCC16C385A1;
-        Tue,  5 Apr 2022 08:17:55 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3C9E760B0B;
+        Tue,  5 Apr 2022 08:18:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4D645C385A1;
+        Tue,  5 Apr 2022 08:18:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649146676;
-        bh=YCzwUFyhUEJ/GM5eR1opJD1pGTH09ZAKXiiX9wurdYo=;
+        s=korg; t=1649146681;
+        bh=3hDtQEHfWIJkLh3b5M0cJNcopCDOOF5++nmwce1+xTQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=w5hh1n7Xs/MzlwJLUN28xVdz3bi8A8rzNqZDIdzGRErvWAufyH1TcaaO2dKQDSEty
-         T8REizvK0O9rVkUw8MC3hmII1HvXYbb/gcFvXCyK6+7/zP+3dMcIluPTFQUy0/WQrZ
-         35sXPlqb1a/KH5VkqzvwRfgcmaURJTDUkABT9vy0=
+        b=TLIRBNwhctFkHCraT3/rkrh4cb+17g+o5qnDpB304vnn4iXGrV8NF9CEFTaJ1bpLQ
+         YEcKp3gJ+HN9LWvw3ilbw/U3kSHKx6UGl7MMxcc4uf8tIdItmK72fnvsKgDxDP2/sN
+         MtfvNPiVw7nCxim2IpJzPXxm4Qjj14ZDv97SQ/mU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Nathan Chancellor <nathan@kernel.org>,
-        Fangrui Song <maskray@google.com>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Will Deacon <will@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0849/1126] arm64: module: remove (NOLOAD) from linker script
-Date:   Tue,  5 Apr 2022 09:26:36 +0200
-Message-Id: <20220405070432.469188454@linuxfoundation.org>
+        stable@vger.kernel.org, Chaitanya Kulkarni <kch@nvidia.com>,
+        Himanshu Madhani <himanshu.madhani@oracle.com>,
+        Jens Axboe <axboe@kernel.dk>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 0851/1126] loop: use sysfs_emit() in the sysfs xxx show()
+Date:   Tue,  5 Apr 2022 09:26:38 +0200
+Message-Id: <20220405070432.525807253@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -51,52 +50,71 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Fangrui Song <maskray@google.com>
+From: Chaitanya Kulkarni <kch@nvidia.com>
 
-[ Upstream commit 4013e26670c590944abdab56c4fa797527b74325 ]
+[ Upstream commit b27824d31f09ea7b4a6ba2c1b18bd328df3e8bed ]
 
-On ELF, (NOLOAD) sets the section type to SHT_NOBITS[1]. It is conceptually
-inappropriate for .plt and .text.* sections which are always
-SHT_PROGBITS.
+sprintf does not know the PAGE_SIZE maximum of the temporary buffer
+used for outputting sysfs content and it's possible to overrun the
+PAGE_SIZE buffer length.
 
-In GNU ld, if PLT entries are needed, .plt will be SHT_PROGBITS anyway
-and (NOLOAD) will be essentially ignored. In ld.lld, since
-https://reviews.llvm.org/D118840 ("[ELF] Support (TYPE=<value>) to
-customize the output section type"), ld.lld will report a `section type
-mismatch` error. Just remove (NOLOAD) to fix the error.
+Use a generic sysfs_emit function that knows the size of the
+temporary buffer and ensures that no overrun is done for offset
+attribute in
+loop_attr_[offset|sizelimit|autoclear|partscan|dio]_show() callbacks.
 
-[1] https://lld.llvm.org/ELF/linker_script.html As of today, "The
-section should be marked as not loadable" on
-https://sourceware.org/binutils/docs/ld/Output-Section-Type.html is
-outdated for ELF.
-
-Tested-by: Nathan Chancellor <nathan@kernel.org>
-Reported-by: Nathan Chancellor <nathan@kernel.org>
-Signed-off-by: Fangrui Song <maskray@google.com>
-Acked-by: Ard Biesheuvel <ardb@kernel.org>
-Link: https://lore.kernel.org/r/20220218081209.354383-1-maskray@google.com
-Signed-off-by: Will Deacon <will@kernel.org>
+Signed-off-by: Chaitanya Kulkarni <kch@nvidia.com>
+Reviewed-by: Himanshu Madhani <himanshu.madhani@oracle.com>
+Link: https://lore.kernel.org/r/20220215213310.7264-2-kch@nvidia.com
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/include/asm/module.lds.h | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/block/loop.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
-diff --git a/arch/arm64/include/asm/module.lds.h b/arch/arm64/include/asm/module.lds.h
-index a11ccadd47d2..094701ec5500 100644
---- a/arch/arm64/include/asm/module.lds.h
-+++ b/arch/arm64/include/asm/module.lds.h
-@@ -1,8 +1,8 @@
- SECTIONS {
- #ifdef CONFIG_ARM64_MODULE_PLTS
--	.plt 0 (NOLOAD) : { BYTE(0) }
--	.init.plt 0 (NOLOAD) : { BYTE(0) }
--	.text.ftrace_trampoline 0 (NOLOAD) : { BYTE(0) }
-+	.plt 0 : { BYTE(0) }
-+	.init.plt 0 : { BYTE(0) }
-+	.text.ftrace_trampoline 0 : { BYTE(0) }
- #endif
+diff --git a/drivers/block/loop.c b/drivers/block/loop.c
+index 19fe19eaa50e..e65d1e24cab3 100644
+--- a/drivers/block/loop.c
++++ b/drivers/block/loop.c
+@@ -681,33 +681,33 @@ static ssize_t loop_attr_backing_file_show(struct loop_device *lo, char *buf)
  
- #ifdef CONFIG_KASAN_SW_TAGS
+ static ssize_t loop_attr_offset_show(struct loop_device *lo, char *buf)
+ {
+-	return sprintf(buf, "%llu\n", (unsigned long long)lo->lo_offset);
++	return sysfs_emit(buf, "%llu\n", (unsigned long long)lo->lo_offset);
+ }
+ 
+ static ssize_t loop_attr_sizelimit_show(struct loop_device *lo, char *buf)
+ {
+-	return sprintf(buf, "%llu\n", (unsigned long long)lo->lo_sizelimit);
++	return sysfs_emit(buf, "%llu\n", (unsigned long long)lo->lo_sizelimit);
+ }
+ 
+ static ssize_t loop_attr_autoclear_show(struct loop_device *lo, char *buf)
+ {
+ 	int autoclear = (lo->lo_flags & LO_FLAGS_AUTOCLEAR);
+ 
+-	return sprintf(buf, "%s\n", autoclear ? "1" : "0");
++	return sysfs_emit(buf, "%s\n", autoclear ? "1" : "0");
+ }
+ 
+ static ssize_t loop_attr_partscan_show(struct loop_device *lo, char *buf)
+ {
+ 	int partscan = (lo->lo_flags & LO_FLAGS_PARTSCAN);
+ 
+-	return sprintf(buf, "%s\n", partscan ? "1" : "0");
++	return sysfs_emit(buf, "%s\n", partscan ? "1" : "0");
+ }
+ 
+ static ssize_t loop_attr_dio_show(struct loop_device *lo, char *buf)
+ {
+ 	int dio = (lo->lo_flags & LO_FLAGS_DIRECT_IO);
+ 
+-	return sprintf(buf, "%s\n", dio ? "1" : "0");
++	return sysfs_emit(buf, "%s\n", dio ? "1" : "0");
+ }
+ 
+ LOOP_ATTR_RO(backing_file);
 -- 
 2.34.1
 
