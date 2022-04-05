@@ -2,84 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 064D5C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 300F0C43217
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 21:50:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384766AbiDEVsN (ORCPT
+        id S1384942AbiDEVsn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 17:48:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54258 "EHLO
+        Tue, 5 Apr 2022 17:48:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44254 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380313AbiDENOB (ORCPT
+        with ESMTP id S1356558AbiDEKYF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 09:14:01 -0400
-Received: from smtp2.axis.com (smtp2.axis.com [195.60.68.18])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0895E123BE0;
-        Tue,  5 Apr 2022 05:16:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=axis.com; q=dns/txt; s=axis-central1; t=1649160999;
-  x=1680696999;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=WGpnRbO3Pa93kFXTsPdsfO2hw74rogk5OdNNNdqKnyo=;
-  b=qBNyGDzTr2KIP+FVoBPdK+IqSRK2y+sHO88HSPrcQTJTpYPYrRlKZA3A
-   4i7oPzidll0KBp2wGYQb+Tv1dM80IqygUG0/WaRADq4JzvPENKFKoZ4f2
-   XN4D+tU6A2MmuaJX3tTPh9o4Nkv7zxa4Wo+VHW35zfjsGqbQEph+QwLJB
-   7PFdbZKiT/8BgSe58LXHBENUnis4zXxsV872CbSEaEFqkKO1Sv7WBiV3N
-   Car90Lx0JUmT0tISW6w2mRWKbK1U6diWhVx4UuoVXwv5Fcuxk+mbQ+rDZ
-   ukD48Fn8NRIDZjHCxjfk43o/2BtMh4QkAKtX/8foY/BAWHUu4m/xqIxqv
-   A==;
-From:   Vincent Whitchurch <vincent.whitchurch@axis.com>
-To:     <wsa@kernel.org>
-CC:     <kernel@axis.com>,
-        Vincent Whitchurch <vincent.whitchurch@axis.com>,
-        <linux-i2c@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <krzk+dt@kernel.org>, <robh+dt@kernel.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: [PATCH 0/2] i2c: Allow disabling auto detection via devicetree
-Date:   Tue, 5 Apr 2022 14:16:25 +0200
-Message-ID: <20220405121627.1560949-1-vincent.whitchurch@axis.com>
-X-Mailer: git-send-email 2.34.1
+        Tue, 5 Apr 2022 06:24:05 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1471BD8B6;
+        Tue,  5 Apr 2022 03:08:33 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 57FDD6167E;
+        Tue,  5 Apr 2022 10:08:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6C14EC385A1;
+        Tue,  5 Apr 2022 10:08:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649153312;
+        bh=tZvM3CY4dLxgH94wtkiyadE3sY646r4yLbEKcCADgo4=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=h3JBFbobZJaogTT9j9X+Y/r9Kxd5mWFkoOLP+PeqroDBbmjeu9g3GG0pkay8safe9
+         w/2yeHdiekQ2oP51j6znlxL98M21RSBB5vW0khaCu/5QAnQswkhc8hP8h4t+REGRJN
+         nvQWAewdPUgMYk8Wd5KQEKrHIXoMjkfZ44vVX5Qk=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Adrian Hunter <adrian.hunter@intel.com>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 178/599] perf/x86/intel/pt: Fix address filter config for 32-bit kernel
+Date:   Tue,  5 Apr 2022 09:27:52 +0200
+Message-Id: <20220405070304.138931518@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
+References: <20220405070258.802373272@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When a driver with a ->detect callback (such as lm75) is loaded, the i2c core
-performs I2C transactions on the bus to all the addresses listed in that
-driver's address_list.  This kind of probing wastes time and as
-Documentation/i2c/instantiating-devices.rst says, this method is not
-recommended and it is instead advised to list all devices in the devicetree.
+From: Adrian Hunter <adrian.hunter@intel.com>
 
-However, even if all the devices are listed in the devicetree, there is
-currently no way to prevent the core from attempting auto detection short of
-patching controller drivers to not pass the I2C_CLASS* bits in adap->class.
-The latter is not always possible since generic drivers like i2c-gpio set these
-bits.
+[ Upstream commit e5524bf1047eb3b3f3f33b5f59897ba67b3ade87 ]
 
-To avoid this unnecessary probing and reduce boot time, this series adds a
-property to the devicetree and support in the I2C core to allow this feature to
-be disabled.
+Change from shifting 'unsigned long' to 'u64' to prevent the config bits
+being lost on a 32-bit kernel.
 
-Cc: linux-i2c@vger.kernel.org
+Fixes: eadf48cab4b6b0 ("perf/x86/intel/pt: Add support for address range filtering in PT")
+Signed-off-by: Adrian Hunter <adrian.hunter@intel.com>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Link: https://lore.kernel.org/r/20220131072453.2839535-5-adrian.hunter@intel.com
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ arch/x86/events/intel/pt.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Cc: devicetree@vger.kernel.org
-Cc: krzk+dt@kernel.org
-Cc: robh+dt@kernel.org
-
-Cc: linux-kernel@vger.kernel.org
-
-Vincent Whitchurch (2):
-  i2c: add binding to prevent device detection
-  i2c: core: support no-detect property
-
- Documentation/devicetree/bindings/i2c/i2c.txt | 4 ++++
- drivers/i2c/i2c-core-base.c                   | 8 +++++++-
- include/linux/i2c.h                           | 1 +
- 3 files changed, 12 insertions(+), 1 deletion(-)
-
+diff --git a/arch/x86/events/intel/pt.c b/arch/x86/events/intel/pt.c
+index c084899e9582..cc3b79c06685 100644
+--- a/arch/x86/events/intel/pt.c
++++ b/arch/x86/events/intel/pt.c
+@@ -472,7 +472,7 @@ static u64 pt_config_filters(struct perf_event *event)
+ 			pt->filters.filter[range].msr_b = filter->msr_b;
+ 		}
+ 
+-		rtit_ctl |= filter->config << pt_address_ranges[range].reg_off;
++		rtit_ctl |= (u64)filter->config << pt_address_ranges[range].reg_off;
+ 	}
+ 
+ 	return rtit_ctl;
 -- 
 2.34.1
+
+
 
