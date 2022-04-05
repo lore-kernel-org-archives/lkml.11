@@ -2,102 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AD046C4321E
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:28:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7AA5CC4167E
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:28:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354759AbiDEU1G (ORCPT
+        id S1359649AbiDEU1i (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 16:27:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33432 "EHLO
+        Tue, 5 Apr 2022 16:27:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57134 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343564AbiDENEx (ORCPT
+        with ESMTP id S1349770AbiDEJvU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 09:04:53 -0400
-Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com [IPv6:2a00:1450:4864:20::432])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6CA6511F793
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 05:06:27 -0700 (PDT)
-Received: by mail-wr1-x432.google.com with SMTP id d3so8154340wrb.7
-        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 05:06:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=9elements.com; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=z46lGhLfI6ugeu1P3zjJF0oXFB21fasaHhYIlRjoeMU=;
-        b=c/SA4frMQAMHJXuDb0VyOfv2BeFzsflHSheqcsZper5NrOSCQcDkjHGkxYhD4uNF1C
-         I+Xyo11kF6QE1iNzQI+lBBNtJBJlEw/7qjhL9zW8sCmr6cjvigCUy4IPjhJCB5vSpU94
-         9dfv3K/TYdm865KWJVTxotArxbpGIJW+TdPaCTIMUmJW1PQAD6LS4ywWbwzBHQ7eeKu+
-         +jmxW9ZK/GZp36hKFxCgGgwc1Qsp6IIjZTNUulESiraVoRjdGe8BJ2ZPyEN0UqrFAEND
-         G/xGtqqj7CdZj9tqiScMA7VXvzoLTSrcZ3FGc/BH8vD8+90EyfHcd31cemhdem4NlzJt
-         Grug==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=z46lGhLfI6ugeu1P3zjJF0oXFB21fasaHhYIlRjoeMU=;
-        b=IuuAqhyNpfBlFQS/NsaDdEWJEx3wtxpfAyNMnlJ0CpP4kt333aWBKO4tVZppsie2nb
-         /NVF8T9sBRvDKNg5EQ4Aj5ciVQWsQLN6Bd12VCJSyrL4FWR/rHxLpQUxW08rJ9Cba39I
-         tC+zRzZejSyssW/1Q1oDx1I/MJCh2mtVWaNsm8tqR5ymJ8BcrwepcjfT9+JXX8KPXMdE
-         RnputksrxAuDAyLdNa+t4plB7PnMV9dn33SZA6kXBKTPueh8LLO/jWi68DYpTxgE6m51
-         X7l4chCbqauIHONJGp0siZc2iO0Ech4ESjYlcwF836dfDsFtcIKfZ+9IAolyJQve9XIh
-         +rZg==
-X-Gm-Message-State: AOAM533TBrT9S9vSZtZAyfX3uZYmSdgUdQZ00m6l7fSYebXsPN95EpFu
-        kQmqLo2gPTiIs9rjSbYTHz4S1w==
-X-Google-Smtp-Source: ABdhPJyqTOFEOFeAFt/2YcX1+9+RtfO1i6wtivOXlQ7O002sz/pWInKXqVkJNxQ9hZqMYs1r9BBdQQ==
-X-Received: by 2002:adf:8066:0:b0:206:1563:8b2b with SMTP id 93-20020adf8066000000b0020615638b2bmr2518784wrk.582.1649160385937;
-        Tue, 05 Apr 2022 05:06:25 -0700 (PDT)
-Received: from fedora.lab.9e.network (ip-078-094-000-051.um19.pools.vodafone-ip.de. [78.94.0.51])
-        by smtp.gmail.com with ESMTPSA id r16-20020a7bc090000000b0038e73023334sm1994323wmh.2.2022.04.05.05.06.24
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 05 Apr 2022 05:06:25 -0700 (PDT)
-From:   Patrick Rudolph <patrick.rudolph@9elements.com>
-To:     Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        linux-i2c@vger.kernel.org
-Cc:     Patrick Rudolph <patrick.rudolph@9elements.com>,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [v7 0/3] Add support for Maxim MAX735x/MAX736x variants
-Date:   Tue,  5 Apr 2022 14:05:48 +0200
-Message-Id: <20220405120552.433415-1-patrick.rudolph@9elements.com>
+        Tue, 5 Apr 2022 05:51:20 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 869D8186EE;
+        Tue,  5 Apr 2022 02:49:22 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 163D6615E3;
+        Tue,  5 Apr 2022 09:49:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 27828C385A2;
+        Tue,  5 Apr 2022 09:49:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649152161;
+        bh=7YUnPeYxarf7zslWpL73PYpMwLDUnxnQZtWx1wJq5pg=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=sj+hbsOKAl5ULzyawmXlNOuLNlcQPvNQM4jx/Xd5MLJpxxHfwz5rkQgxtaDyxqNj1
+         SKUt9Lx4RJNQcoQxhliQgQ1JaMrePK/3Au232hZF4lAu48hW4XrPp2YOADb9Ok37eV
+         N7isNp5upyPHfWB3qId05oMmp+8sMXa8+N4expzI=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 660/913] net: enetc: report software timestamping via SO_TIMESTAMPING
+Date:   Tue,  5 Apr 2022 09:28:42 +0200
+Message-Id: <20220405070359.621564833@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-v7:
-- Reworked the commit message, comments and renamed a struct
-  field. No functional change.
+From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-v6:
-- Fix typo in dt-bindings
+[ Upstream commit feb13dcb1818b775fbd9191f797be67cd605f03e ]
 
-v5:
-- Remove optional and make vdd-supply mandatory
+Let user space properly determine that the enetc driver provides
+software timestamps.
 
-v4:
-- Add missing maxitems dt-bindings property
+Fixes: 4caefbce06d1 ("enetc: add software timestamping")
+Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+Reviewed-by: Claudiu Manoil <claudiu.manoil@nxp.com>
+Link: https://lore.kernel.org/r/20220324161210.4122281-1-vladimir.oltean@nxp.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/net/ethernet/freescale/enetc/enetc_ethtool.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-v3:
-- Merge dt-bindings into i2c-mux-pca954x.yaml
-
-v2:
-- Move dt-bindings to separate file
-- Added support for MAX736x as they are very similar
-- Fixed an issue found by kernel test robot
-- Dropped max735x property and custom IRQ check
-- Added MAX7357 config register defines instead of magic values
-- Renamed vcc-supply to vdd-supply
-
-Patrick Rudolph (3):
-  dt-bindings: i2c: Add Maxim MAX735x/MAX736x variants
-  i2c: muxes: pca954x: Add MAX735x/MAX736x support
-  i2c: muxes: pca954x: Add regulator support
-
- .../bindings/i2c/i2c-mux-pca954x.yaml         |  44 ++++--
- drivers/i2c/muxes/Kconfig                     |   4 +-
- drivers/i2c/muxes/i2c-mux-pca954x.c           | 126 ++++++++++++++++--
- 3 files changed, 153 insertions(+), 21 deletions(-)
-
+diff --git a/drivers/net/ethernet/freescale/enetc/enetc_ethtool.c b/drivers/net/ethernet/freescale/enetc/enetc_ethtool.c
+index 910b9f722504..d62c188c8748 100644
+--- a/drivers/net/ethernet/freescale/enetc/enetc_ethtool.c
++++ b/drivers/net/ethernet/freescale/enetc/enetc_ethtool.c
+@@ -672,7 +672,10 @@ static int enetc_get_ts_info(struct net_device *ndev,
+ #ifdef CONFIG_FSL_ENETC_PTP_CLOCK
+ 	info->so_timestamping = SOF_TIMESTAMPING_TX_HARDWARE |
+ 				SOF_TIMESTAMPING_RX_HARDWARE |
+-				SOF_TIMESTAMPING_RAW_HARDWARE;
++				SOF_TIMESTAMPING_RAW_HARDWARE |
++				SOF_TIMESTAMPING_TX_SOFTWARE |
++				SOF_TIMESTAMPING_RX_SOFTWARE |
++				SOF_TIMESTAMPING_SOFTWARE;
+ 
+ 	info->tx_types = (1 << HWTSTAMP_TX_OFF) |
+ 			 (1 << HWTSTAMP_TX_ON) |
 -- 
 2.34.1
+
+
 
