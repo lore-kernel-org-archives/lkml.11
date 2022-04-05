@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F934C4321E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AE54AC43219
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:40:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1836400AbiDFAgF (ORCPT
+        id S1836422AbiDFAgJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 20:36:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37026 "EHLO
+        Tue, 5 Apr 2022 20:36:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44278 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349089AbiDEJtG (ORCPT
+        with ESMTP id S1349537AbiDEJuK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:49:06 -0400
+        Tue, 5 Apr 2022 05:50:10 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3373EA995C;
-        Tue,  5 Apr 2022 02:40:34 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7ED1ED2;
+        Tue,  5 Apr 2022 02:48:12 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E3699B81B14;
-        Tue,  5 Apr 2022 09:40:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 58B88C385A1;
-        Tue,  5 Apr 2022 09:40:31 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 32AAFB818F3;
+        Tue,  5 Apr 2022 09:48:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 968E9C385A2;
+        Tue,  5 Apr 2022 09:48:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649151631;
-        bh=OThjdhWAJy2ZdOmn8E572dDHuYeVeeYjsuJEwal4jL0=;
+        s=korg; t=1649152090;
+        bh=PqrFbKAQyXKwl0v7cOGh1pHbYwGlR3OhlpPtiYy8umo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tmeNBzhO6aF12MDe7De6DhnG1c+FPS2Rg/jz+s7aZdJ9asZtjnwLkFpZ4btNV+sz+
-         IttXkVNMPqrPrOGM+03u4iAB88/WLtPSwpZ6IJBzjb3N+nua21W9lutLg/3f50y3F9
-         NvU9kLFjuYOLFXxIqi++hzwpu9pgwqFiTDlERCK8=
+        b=DjnDIsLm2/IpyMcKyttFE+2YHXypBVEb0tVDWehm/213GELyPOSLd8oH3Zfvm73l1
+         /TfhFb+Mi64HN6w3oBZvRZFeXof3qxL/FVYrk41UEgyQKlmp2gFnxEu/jLIQry3Yj6
+         v+Srcw6z1YjXyyecn8pCuOHwqs90p+8LGXrPd89s=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jack Wang <jinpu.wang@ionos.com>,
-        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        stable@vger.kernel.org, Olga Kornievskaia <kolga@netapp.com>,
+        Trond Myklebust <trond.myklebust@hammerspace.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 484/913] scsi: pm8001: Fix payload initialization in pm80xx_encrypt_update()
-Date:   Tue,  5 Apr 2022 09:25:46 +0200
-Message-Id: <20220405070354.363687172@linuxfoundation.org>
+Subject: [PATCH 5.15 650/913] SUNRPC dont resend a task on an offlined transport
+Date:   Tue,  5 Apr 2022 09:28:32 +0200
+Message-Id: <20220405070359.322380929@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
 References: <20220405070339.801210740@linuxfoundation.org>
@@ -51,49 +50,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Damien Le Moal <damien.lemoal@opensource.wdc.com>
+From: Olga Kornievskaia <kolga@netapp.com>
 
-[ Upstream commit f8b12dfb476dad38ce755aaf5e2df46f06f1822e ]
+[ Upstream commit 82ee41b85cef16b4be1f4732650012d9baaedddd ]
 
-All fields of the kek_mgmt_req structure have the type __le32. So make sure
-to use cpu_to_le32() to initialize them. This suppresses the sparse
-warning:
+When a task is being retried, due to an NFS error, if the assigned
+transport has been put offline and the task is relocatable pick a new
+transport.
 
-warning: incorrect type in assignment (different base types)
-   expected restricted __le32 [addressable] [assigned] [usertype] new_curidx_ksop
-   got int
-
-Link: https://lore.kernel.org/r/20220220031810.738362-10-damien.lemoal@opensource.wdc.com
-Fixes: f5860992db55 ("[SCSI] pm80xx: Added SPCv/ve specific hardware functionalities and relevant changes in common files")
-Reviewed-by: Jack Wang <jinpu.wang@ionos.com>
-Signed-off-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Fixes: 6f081693e7b2b ("sunrpc: remove an offlined xprt using sysfs")
+Signed-off-by: Olga Kornievskaia <kolga@netapp.com>
+Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/pm8001/pm80xx_hwi.c | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+ net/sunrpc/clnt.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/scsi/pm8001/pm80xx_hwi.c b/drivers/scsi/pm8001/pm80xx_hwi.c
-index 69789aa73fd1..e606a9b1c3af 100644
---- a/drivers/scsi/pm8001/pm80xx_hwi.c
-+++ b/drivers/scsi/pm8001/pm80xx_hwi.c
-@@ -1406,12 +1406,13 @@ static int pm80xx_encrypt_update(struct pm8001_hba_info *pm8001_ha)
- 	/* Currently only one key is used. New KEK index is 1.
- 	 * Current KEK index is 1. Store KEK to NVRAM is 1.
- 	 */
--	payload.new_curidx_ksop = ((1 << 24) | (1 << 16) | (1 << 8) |
--					KEK_MGMT_SUBOP_KEYCARDUPDATE);
-+	payload.new_curidx_ksop =
-+		cpu_to_le32(((1 << 24) | (1 << 16) | (1 << 8) |
-+			     KEK_MGMT_SUBOP_KEYCARDUPDATE));
- 
- 	pm8001_dbg(pm8001_ha, DEV,
- 		   "Saving Encryption info to flash. payload 0x%x\n",
--		   payload.new_curidx_ksop);
-+		   le32_to_cpu(payload.new_curidx_ksop));
- 
- 	rc = pm8001_mpi_build_cmd(pm8001_ha, circularQ, opc, &payload,
- 			sizeof(payload), 0);
+diff --git a/net/sunrpc/clnt.c b/net/sunrpc/clnt.c
+index 5da1d7e8468a..5d5627bf3b18 100644
+--- a/net/sunrpc/clnt.c
++++ b/net/sunrpc/clnt.c
+@@ -1065,7 +1065,9 @@ rpc_task_get_next_xprt(struct rpc_clnt *clnt)
+ static
+ void rpc_task_set_transport(struct rpc_task *task, struct rpc_clnt *clnt)
+ {
+-	if (task->tk_xprt)
++	if (task->tk_xprt &&
++			!(test_bit(XPRT_OFFLINE, &task->tk_xprt->state) &&
++                        (task->tk_flags & RPC_TASK_MOVEABLE)))
+ 		return;
+ 	if (task->tk_flags & RPC_TASK_NO_ROUND_ROBIN)
+ 		task->tk_xprt = rpc_task_get_first_xprt(clnt);
 -- 
 2.34.1
 
