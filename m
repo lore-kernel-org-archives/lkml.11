@@ -2,133 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D809EC43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 70ED7C433EF
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 22:39:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1453508AbiDEWdK (ORCPT
+        id S1453482AbiDEWdG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 18:33:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53874 "EHLO
+        Tue, 5 Apr 2022 18:33:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43898 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353614AbiDEKIe (ORCPT
+        with ESMTP id S1349529AbiDEJuE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:08:34 -0400
-Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EAB0C3358
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 02:55:31 -0700 (PDT)
-Received: by mail-ej1-x632.google.com with SMTP id bh17so25558700ejb.8
-        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 02:55:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=c9bcsFTz7o1nm6T6sdAD3XwMAfi3610i3GxsLP1j6GY=;
-        b=bWkvwp9wKo7oK0PWO7l+fyV9iJKA01a9CrDr8gPEZrRYTMyPiW7uH0PnKGKYi/V2qO
-         8+wfTV2QScMQCc3WMmmmqbhUsW3o0XiKVmUddIdgEiKvHaiQw8RYSHt4WKn11X/jFTUu
-         ctH0fgMUoQ+98re9S7pbjyVRqKnlEY1uFtBFZLPfMszzjCJn8KgyCkYsa1NENh34dlPl
-         /w80buM+JoFVZQvayAM0w0MsuGRoCKDl064zYloABRjlWZ5G5nQRGMCPBuJnibxV4Ceu
-         Sj2s9pXXsj9PwGVlnRUxP2pE96TGF/O5f287B225fOlHhvR5u6BgXEJEy9c5Fn1/+Fep
-         /Kzg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=c9bcsFTz7o1nm6T6sdAD3XwMAfi3610i3GxsLP1j6GY=;
-        b=pJg88aOrClXaLoetQO2nLSFNSyH1jwfmn+Z7dLo0Z/IgOv66A7p3uBL/esvupYvu9/
-         IuccWqGSPf/rDBo2lRsxDxAP7IkX/CivyycobVjIBNfh/JOaPv3lHgdq4HO0MMUMOdhu
-         Vu5wXRt6DP0taL3OX8m1wLEH/JbwD40cdzcuuhekWWMlidDO5Qlilw1bjUchqnNhXjOX
-         RFP0GV4URZMpoQ3Rf9rktuWqsagWCfy+rqiD1v2Yd7HD8rW+zTQMOX0QO5Ev36QvVmp/
-         vYKYYjHaoh0t6Dta69TNTR02Qtvu0izY9rNibe+RxZCvA+Ia3/5tG+Q+tjjaglrnJD4y
-         TJag==
-X-Gm-Message-State: AOAM532OsCud0HBXXz+B/7lhMB43GSbvfEtpKbRR0UvtI+ntXLeFOkMS
-        ulicltMCN9WJFNuhGYl9o7ObFZPZ+P+7+/AaICg=
-X-Google-Smtp-Source: ABdhPJxqX58QBB/FJLa4jq5hUa9Gru6wPvY57zbPfPCDS76TiHrgDvbMWpCcLLa+fN7M0ssz08RmFGqaUq6S5QWTMNg=
-X-Received: by 2002:a17:906:7714:b0:6ba:8a6a:b464 with SMTP id
- q20-20020a170906771400b006ba8a6ab464mr2587437ejm.613.1649152529642; Tue, 05
- Apr 2022 02:55:29 -0700 (PDT)
+        Tue, 5 Apr 2022 05:50:04 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E87381B4;
+        Tue,  5 Apr 2022 02:48:06 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A4E57B817D3;
+        Tue,  5 Apr 2022 09:48:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1E91CC385A1;
+        Tue,  5 Apr 2022 09:48:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649152084;
+        bh=+ZIW8t4x0ThwpjfSahCA2lfR+DiLR6YdOj+9nIWr+Hs=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=loGaT7xdkDFOg7Bzoa70i8sod4mOwAyfCB3zc76mt/jLJbyywFkSsaqMOG5P1Sh6O
+         9lWi6EzcRH7rSpQVAnN3+X7p1p5lhkczUPIWBfxm6Ui0KieihOmR29UJEyMs9ayxKy
+         bgAF/1soWQFg6Qv+ovcviebh+v/vWY6Ep2Af2qJQ=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Pavel Skripkin <paskripkin@gmail.com>,
+        Dave Kleikamp <dave.kleikamp@oracle.com>,
+        Sasha Levin <sashal@kernel.org>,
+        syzbot+46f5c25af73eb8330eb6@syzkaller.appspotmail.com
+Subject: [PATCH 5.15 648/913] jfs: fix divide error in dbNextAG
+Date:   Tue,  5 Apr 2022 09:28:30 +0200
+Message-Id: <20220405070359.262982999@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-References: <20211120193916.1309236-1-aford173@gmail.com> <319e976acb0a686e596b88520dbcda59c78afe9e.camel@pengutronix.de>
- <CAHCN7x+5HXJEdRKbm80trpNwxZRAMhX12+FQ0JeVvrqKpKf+BA@mail.gmail.com> <20220405064458.GA129381@dragon>
-In-Reply-To: <20220405064458.GA129381@dragon>
-From:   Adam Ford <aford173@gmail.com>
-Date:   Tue, 5 Apr 2022 04:55:18 -0500
-Message-ID: <CAHCN7xKShNswT2JDZFZ9vSQ9_Kk1T+Ow3+=9as8sZ7mDQ6E1Vg@mail.gmail.com>
-Subject: Re: [PATCH] soc: imx: gpcv2: keep i.MX8MM VPU-H1 bus clock active
-To:     Shawn Guo <shawnguo@kernel.org>
-Cc:     Lucas Stach <l.stach@pengutronix.de>,
-        arm-soc <linux-arm-kernel@lists.infradead.org>,
-        Tim Harvey <tharvey@gateworks.com>,
-        Adam Ford-BE <aford@beaconembedded.com>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Peng Fan <peng.fan@nxp.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 5, 2022 at 1:45 AM Shawn Guo <shawnguo@kernel.org> wrote:
->
-> On Thu, Mar 31, 2022 at 06:32:13AM -0500, Adam Ford wrote:
-> > On Thu, Mar 31, 2022 at 4:28 AM Lucas Stach <l.stach@pengutronix.de> wrote:
-> > >
-> > > Hi Adam, hi Shawn,
-> > >
-> > > Am Samstag, dem 20.11.2021 um 13:39 -0600 schrieb Adam Ford:
-> > > > Enable the vpu-h1 clock when the domain is active because reading
-> > > > or writing to the VPU-H1 IP block cause the system to hang.
-> > > >
-> > > > Fixes: 656ade7aa42a ("soc: imx: gpcv2: keep i.MX8M* bus clocks enabled")
-> > > > Signed-off-by: Adam Ford <aford173@gmail.com>
-> > > >
-> > > > diff --git a/drivers/soc/imx/gpcv2.c b/drivers/soc/imx/gpcv2.c
-> > > > index b8d52d8d29db..7b6dfa33dcb9 100644
-> > > > --- a/drivers/soc/imx/gpcv2.c
-> > > > +++ b/drivers/soc/imx/gpcv2.c
-> > > > @@ -734,6 +734,7 @@ static const struct imx_pgc_domain imx8mm_pgc_domains[] = {
-> > > >                       .map = IMX8MM_VPUH1_A53_DOMAIN,
-> > > >               },
-> > > >               .pgc   = BIT(IMX8MM_PGC_VPUH1),
-> > > > +             .keep_clocks = true,
-> > > >       },
-> > > >
-> > > I missed this patch and just stumbled across it when looking at the git
-> > > history. I don't think this patch is correct. The H1 GPC domain does
-> > > not even have clocks assigned in the DT, so there is nothing to keep
-> > > active. Also H1 is not a MIX domain, so it should not keep any bus
-> > > clocks active, that is the job of the VPUMIX domain.
-> > >
-> > > While this patch is a no-op, as far as I can see, it still seems wrong
-> > > and I think it should be reverted.
-> >
-> > At the time I sent this, I was working with some people in the media
-> > group to split the G1 and G2 up in the imx8mq and add G1 and G2
-> > support in the imx8mm.  I had inquired about the feasibility of using
-> > the H1 encoder on the imx8mm, but I needed to read some registers from
-> > the IP block to see which features were fused out.  I tried several
-> > different options to get the H1 to not hang when reading registers,
-> > and that was the only solution I found that worked.  I thought it odd
-> > as well since the G1 and G2 decoders didn't appear to need this.
-> > However, during the course of my investigation, I learned that the
-> > JPEG encoder was fused out of the imx8mm, and there wasn't a plan to
-> > add VP8 or H.264 encodering any time soon.   Since it is, as you put
-> > it, a no-op, I have no objections to reverting it.
->
-> I do not quite follow.  You claimed that the change fixes a system hang.
-> Are we getting the hang back if we revert the change?
+From: Pavel Skripkin <paskripkin@gmail.com>
 
-It was hanging when I has trying to use the H1 VPU, and this did fix
-it, but it seemed weird to me.  Unfortunately, Hantro H1 driver that
-is currently in Linux only supports JPEG, and the H1 VPU in the imx8mm
-has JPEG fused out.  As of right now, there is no H1 VPU consumer, so
-there is nobody attempting to enable the H1 power domain, so it
-remains a no-op.  If it's reverted, we'll have to revisit the issue in
-the future to prevent the hanging, but that will also require a new
-Hantro driver.
+[ Upstream commit 2cc7cc01c15f57d056318c33705647f87dcd4aab ]
 
-adam
->
-> Shawn
+Syzbot reported divide error in dbNextAG(). The problem was in missing
+validation check for malicious image.
+
+Syzbot crafted an image with bmp->db_numag equal to 0. There wasn't any
+validation checks, but dbNextAG() blindly use bmp->db_numag in divide
+expression
+
+Fix it by validating bmp->db_numag in dbMount() and return an error if
+image is malicious
+
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Reported-and-tested-by: syzbot+46f5c25af73eb8330eb6@syzkaller.appspotmail.com
+Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
+Signed-off-by: Dave Kleikamp <dave.kleikamp@oracle.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ fs/jfs/jfs_dmap.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
+
+diff --git a/fs/jfs/jfs_dmap.c b/fs/jfs/jfs_dmap.c
+index 91f4ec93dab1..d8502f4989d9 100644
+--- a/fs/jfs/jfs_dmap.c
++++ b/fs/jfs/jfs_dmap.c
+@@ -148,6 +148,7 @@ static const s8 budtab[256] = {
+  *	0	- success
+  *	-ENOMEM	- insufficient memory
+  *	-EIO	- i/o error
++ *	-EINVAL - wrong bmap data
+  */
+ int dbMount(struct inode *ipbmap)
+ {
+@@ -179,6 +180,12 @@ int dbMount(struct inode *ipbmap)
+ 	bmp->db_nfree = le64_to_cpu(dbmp_le->dn_nfree);
+ 	bmp->db_l2nbperpage = le32_to_cpu(dbmp_le->dn_l2nbperpage);
+ 	bmp->db_numag = le32_to_cpu(dbmp_le->dn_numag);
++	if (!bmp->db_numag) {
++		release_metapage(mp);
++		kfree(bmp);
++		return -EINVAL;
++	}
++
+ 	bmp->db_maxlevel = le32_to_cpu(dbmp_le->dn_maxlevel);
+ 	bmp->db_maxag = le32_to_cpu(dbmp_le->dn_maxag);
+ 	bmp->db_agpref = le32_to_cpu(dbmp_le->dn_agpref);
+-- 
+2.34.1
+
+
+
