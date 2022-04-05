@@ -2,91 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 43F95C4167B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E7B3C4167E
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:56:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383918AbiDEUz0 (ORCPT
+        id S1384293AbiDEUzl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 16:55:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43878 "EHLO
+        Tue, 5 Apr 2022 16:55:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54606 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1443104AbiDEPi5 (ORCPT
+        with ESMTP id S1457564AbiDEQKt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 11:38:57 -0400
-Received: from mx0b-001ae601.pphosted.com (mx0a-001ae601.pphosted.com [67.231.149.25])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B1A81456F4;
-        Tue,  5 Apr 2022 06:54:40 -0700 (PDT)
-Received: from pps.filterd (m0077473.ppops.net [127.0.0.1])
-        by mx0a-001ae601.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 235BpSUC025148;
-        Tue, 5 Apr 2022 08:54:25 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cirrus.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding : content-type; s=PODMain02222019;
- bh=sKPCxZ+xTBcQoblGnSzkvv6udMhhqbVepx2ZD2fI5i0=;
- b=ATDDzgl9AUjcR8Pw6A0mgx4kf0fSH/e85cwNTm/yhKInblbRe6Sp0a3tqHDado5wJO1+
- uLpck0Wyx6piRQG9PHKHj34HO6+mGu1vHveI94nwEOr6q9y+8vhRu84aOaDHt5Uj4taO
- vmIhpKdntkF8BiPWrAaVfErMrp9mzAWR7RlySY/mSLG0GUVzaFbx8DYCIs6sR063FTeK
- 5xDC2tiyTZnh0eoTi4layLJtiRMlbOog07SVfAHCo6pnA8mS0uNK4hPJWi4VEfzf/dPm
- D5kMPEE+t5XzzFX1jc/kz+St7r+jwHPaOs/vq0Ub9VfmmHI838qTK3AFNCSzvTutIo/3 xQ== 
-Received: from ediex02.ad.cirrus.com ([84.19.233.68])
-        by mx0a-001ae601.pphosted.com (PPS) with ESMTPS id 3f6kw2brwt-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Tue, 05 Apr 2022 08:54:25 -0500
-Received: from EDIEX01.ad.cirrus.com (198.61.84.80) by EDIEX02.ad.cirrus.com
- (198.61.84.81) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Tue, 5 Apr
- 2022 14:54:23 +0100
-Received: from ediswmail.ad.cirrus.com (198.61.86.93) by EDIEX01.ad.cirrus.com
- (198.61.84.80) with Microsoft SMTP Server id 15.1.2375.24 via Frontend
- Transport; Tue, 5 Apr 2022 14:54:23 +0100
-Received: from AUSNPC0LSNW1-debian.cirrus.com (AUSNPC0LSNW1.ad.cirrus.com [198.61.65.88])
-        by ediswmail.ad.cirrus.com (Postfix) with ESMTP id 378B8B1A;
-        Tue,  5 Apr 2022 13:54:23 +0000 (UTC)
-From:   Richard Fitzgerald <rf@opensource.cirrus.com>
-To:     <broonie@kernel.org>
-CC:     <robh+dt@kernel.org>, <alsa-devel@alsa-project.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <patches@opensource.cirrus.com>,
-        Richard Fitzgerald <rf@opensource.cirrus.com>
-Subject: [PATCH v2 1/5] ASoC: soc.h: Add SOC_SINGLE_S_TLV() macro
-Date:   Tue, 5 Apr 2022 14:54:15 +0100
-Message-ID: <20220405135419.1230088-2-rf@opensource.cirrus.com>
+        Tue, 5 Apr 2022 12:10:49 -0400
+Received: from ssl.serverraum.org (ssl.serverraum.org [IPv6:2a01:4f8:151:8464::1:2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4687B75;
+        Tue,  5 Apr 2022 09:08:50 -0700 (PDT)
+Received: from mwalle01.kontron.local. (unknown [213.135.10.150])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by ssl.serverraum.org (Postfix) with ESMTPSA id 262BB2224F;
+        Tue,  5 Apr 2022 18:08:47 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
+        t=1649174927;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=iTjJ/DlqGlB4KU5V2+oNHmLmbkHl/GSxV7xd7CiwzNc=;
+        b=RgJsiwfILuKJCsY8+3oJcObhGC2VBqBDyUB6M8+CfWkJQgWGbuJvyW5qd+dDnKbq660TMy
+        Ekr/aod0aiZfAEG2qnPNnBEkz89LGT0L6lu4wyNVEeZ4Lh5mun/LB7lIJN4Y5Z82oQ9PmH
+        hDperpebx6swNwQ3e1wfw8DIpe+5mZA=
+From:   Michael Walle <michael@walle.cc>
+To:     Kavyasree Kotagiri <kavyasree.kotagiri@microchip.com>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>
+Cc:     Arnd Bergmann <arnd@arndb.de>, Olof Johansson <olof@lixom.net>,
+        soc@kernel.org, linux-arm-kernel@lists.infradead.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>,
+        Tudor.Ambarus@microchip.com, Michael Walle <michael@walle.cc>
+Subject: [PATCH v3 3/7] ARM: dts: lan966x: add missing uart DMA channel
+Date:   Tue,  5 Apr 2022 18:08:33 +0200
+Message-Id: <20220405160837.4093563-4-michael@walle.cc>
 X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220405135419.1230088-1-rf@opensource.cirrus.com>
-References: <20220405135419.1230088-1-rf@opensource.cirrus.com>
+In-Reply-To: <20220405160837.4093563-1-michael@walle.cc>
+References: <20220405160837.4093563-1-michael@walle.cc>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Proofpoint-ORIG-GUID: yuf6CHlyAXEpejNsxbiA-4FDRbynNDev
-X-Proofpoint-GUID: yuf6CHlyAXEpejNsxbiA-4FDRbynNDev
-X-Proofpoint-Spam-Reason: safe
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add a convenience macro for defining a single (mono) TLV control
-with a signed value. This can already be done by using
-SOC_DOUBLE_R_S_TLV() with the same address for left and right
-registers, but a dedicated macro is more readable.
+The usart node of the flexcom3 block is missing the DMA channels. Add
+it.
 
-Signed-off-by: Richard Fitzgerald <rf@opensource.cirrus.com>
+Signed-off-by: Michael Walle <michael@walle.cc>
+Reviewed-by: Claudiu Beznea <claudiu.beznea@microchip.com>
 ---
- include/sound/soc.h | 2 ++
- 1 file changed, 2 insertions(+)
+ arch/arm/boot/dts/lan966x.dtsi | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/include/sound/soc.h b/include/sound/soc.h
-index d3d3a26e8867..55fb6a6d7d25 100644
---- a/include/sound/soc.h
-+++ b/include/sound/soc.h
-@@ -176,6 +176,8 @@
- 	.get = snd_soc_get_volsw, .put = snd_soc_put_volsw, \
- 	.private_value = SOC_DOUBLE_R_S_VALUE(reg_left, reg_right, xshift, \
- 					    xmin, xmax, xsign_bit, xinvert) }
-+#define SOC_SINGLE_S_TLV(xname, xreg, xshift, xmin, xmax, xsign_bit, xinvert, tlv_array) \
-+	SOC_DOUBLE_R_S_TLV(xname, xreg, xreg, xshift, xmin, xmax, xsign_bit, xinvert, tlv_array)
- #define SOC_SINGLE_S8_TLV(xname, xreg, xmin, xmax, tlv_array) \
- {	.iface  = SNDRV_CTL_ELEM_IFACE_MIXER, .name = (xname), \
- 	.access = SNDRV_CTL_ELEM_ACCESS_TLV_READ | \
+diff --git a/arch/arm/boot/dts/lan966x.dtsi b/arch/arm/boot/dts/lan966x.dtsi
+index 4c7beebbd1ef..e9d6c16d04cf 100644
+--- a/arch/arm/boot/dts/lan966x.dtsi
++++ b/arch/arm/boot/dts/lan966x.dtsi
+@@ -144,6 +144,9 @@ usart3: serial@200 {
+ 				compatible = "atmel,at91sam9260-usart";
+ 				reg = <0x200 0x200>;
+ 				interrupts = <GIC_SPI 51 IRQ_TYPE_LEVEL_HIGH>;
++				dmas = <&dma0 AT91_XDMAC_DT_PERID(9)>,
++				       <&dma0 AT91_XDMAC_DT_PERID(8)>;
++				dma-names = "tx", "rx";
+ 				clocks = <&nic_clk>;
+ 				clock-names = "usart";
+ 				atmel,fifo-size = <32>;
 -- 
 2.30.2
 
