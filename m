@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1EED2C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F230C43217
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 13:37:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384170AbiDENcF (ORCPT
+        id S1384349AbiDENcM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 09:32:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59570 "EHLO
+        Tue, 5 Apr 2022 09:32:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60048 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345734AbiDEJW7 (ORCPT
+        with ESMTP id S1345794AbiDEJXC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:22:59 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 291397658C;
-        Tue,  5 Apr 2022 02:12:02 -0700 (PDT)
+        Tue, 5 Apr 2022 05:23:02 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E12D99D0E8;
+        Tue,  5 Apr 2022 02:12:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 96C18614FC;
-        Tue,  5 Apr 2022 09:12:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9DD57C385A0;
-        Tue,  5 Apr 2022 09:12:00 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 85C82B80DA1;
+        Tue,  5 Apr 2022 09:12:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DA3B2C385A0;
+        Tue,  5 Apr 2022 09:12:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649149921;
-        bh=SFn7HXy38WbuXIdV25XiRFO7vWz4qgzjQwSg/20WH1Q=;
+        s=korg; t=1649149932;
+        bh=Y1PEmIAZMnzpISyH6SBsQsjo9DqagN4V+23i6TnvIKo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=k7An7QnDtbrTOdxlC47MV1kSUViawNsI7SLNUbF7zOciDqS41kRFPFusWiJ0FtX0N
-         iGZsJt6g9qb2CbGBFabvyJs6CSxztPzpoiLzA17OUPdOn16VxnuiBqwpx9BDowfQqT
-         ZjUVpXLMQSplw0rJ+rYmNTR5EFeApDae+u3/0+GY=
+        b=Pn+YF36P/YHALl7dIVHsuby+A8dAOxIXXFc8pGo8Aw7G67CQhQtDrfG8SbuRd9JxC
+         ggYK+9gKuULOfn0XTpuRljGwaYoz6aq0tiMThY56Em+1pVcFte7yOpddAOVrEVCwhX
+         JKJbVAd27fAL4PXHeHG7kryh8HJuQOgwFizA2Tv0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
+        stable@vger.kernel.org, Marco Patalano <mpatalan@redhat.com>,
         Himanshu Madhani <himanshu.madhani@oracle.com>,
-        Quinn Tran <qutran@marvell.com>,
+        Arun Easi <aeasi@marvell.com>,
         Nilesh Javali <njavali@marvell.com>,
         "Martin K. Petersen" <martin.petersen@oracle.com>
-Subject: [PATCH 5.16 0890/1017] scsi: qla2xxx: Fix incorrect reporting of task management failure
-Date:   Tue,  5 Apr 2022 09:30:03 +0200
-Message-Id: <20220405070420.647761568@linuxfoundation.org>
+Subject: [PATCH 5.16 0894/1017] scsi: qla2xxx: Fix crash during module load unload test
+Date:   Tue,  5 Apr 2022 09:30:07 +0200
+Message-Id: <20220405070420.764804490@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -52,37 +52,58 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Quinn Tran <qutran@marvell.com>
+From: Arun Easi <aeasi@marvell.com>
 
-commit 58ca5999e0367d131de82a75257fbfd5aed0195d upstream.
+commit 0972252450f90db56dd5415a20e2aec21a08d036 upstream.
 
-User experienced no task management error while target device is responding
-with error. The RSP_CODE field in the status IOCB is in little endian.
-Driver assumes it's big endian and it picked up erroneous data.
+During purex packet handling the driver was incorrectly freeing a
+pre-allocated structure. Fix this by skipping that entry.
 
-Convert the data back to big endian as is on the wire.
+System crashed with the following stack during a module unload test.
 
-Link: https://lore.kernel.org/r/20220310092604.22950-2-njavali@marvell.com
-Fixes: faef62d13463 ("[SCSI] qla2xxx: Fix Task Management command asynchronous handling")
+Call Trace:
+	sbitmap_init_node+0x7f/0x1e0
+	sbitmap_queue_init_node+0x24/0x150
+	blk_mq_init_bitmaps+0x3d/0xa0
+	blk_mq_init_tags+0x68/0x90
+	blk_mq_alloc_map_and_rqs+0x44/0x120
+	blk_mq_alloc_set_map_and_rqs+0x63/0x150
+	blk_mq_alloc_tag_set+0x11b/0x230
+	scsi_add_host_with_dma.cold+0x3f/0x245
+	qla2x00_probe_one+0xd5a/0x1b80 [qla2xxx]
+
+Call Trace with slub_debug and debug kernel:
+	kasan_report_invalid_free+0x50/0x80
+	__kasan_slab_free+0x137/0x150
+	slab_free_freelist_hook+0xc6/0x190
+	kfree+0xe8/0x2e0
+	qla2x00_free_device+0x3bb/0x5d0 [qla2xxx]
+	qla2x00_remove_one+0x668/0xcf0 [qla2xxx]
+
+Link: https://lore.kernel.org/r/20220310092604.22950-6-njavali@marvell.com
+Fixes: 62e9dd177732 ("scsi: qla2xxx: Change in PUREX to handle FPIN ELS requests")
 Cc: stable@vger.kernel.org
+Reported-by: Marco Patalano <mpatalan@redhat.com>
+Tested-by: Marco Patalano <mpatalan@redhat.com>
 Reviewed-by: Himanshu Madhani <himanshu.madhani@oracle.com>
-Signed-off-by: Quinn Tran <qutran@marvell.com>
+Signed-off-by: Arun Easi <aeasi@marvell.com>
 Signed-off-by: Nilesh Javali <njavali@marvell.com>
 Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/scsi/qla2xxx/qla_isr.c |    1 +
- 1 file changed, 1 insertion(+)
+ drivers/scsi/qla2xxx/qla_os.c |    2 ++
+ 1 file changed, 2 insertions(+)
 
---- a/drivers/scsi/qla2xxx/qla_isr.c
-+++ b/drivers/scsi/qla2xxx/qla_isr.c
-@@ -2498,6 +2498,7 @@ qla24xx_tm_iocb_entry(scsi_qla_host_t *v
- 		iocb->u.tmf.data = QLA_FUNCTION_FAILED;
- 	} else if ((le16_to_cpu(sts->scsi_status) &
- 	    SS_RESPONSE_INFO_LEN_VALID)) {
-+		host_to_fcp_swap(sts->data, sizeof(sts->data));
- 		if (le32_to_cpu(sts->rsp_data_len) < 4) {
- 			ql_log(ql_log_warn, fcport->vha, 0x503b,
- 			    "Async-%s error - hdl=%x not enough response(%d).\n",
+--- a/drivers/scsi/qla2xxx/qla_os.c
++++ b/drivers/scsi/qla2xxx/qla_os.c
+@@ -3896,6 +3896,8 @@ qla24xx_free_purex_list(struct purex_lis
+ 	spin_lock_irqsave(&list->lock, flags);
+ 	list_for_each_entry_safe(item, next, &list->head, list) {
+ 		list_del(&item->list);
++		if (item == &item->vha->default_item)
++			continue;
+ 		kfree(item);
+ 	}
+ 	spin_unlock_irqrestore(&list->lock, flags);
 
 
