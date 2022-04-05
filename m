@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0ECC5C38161
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 11:47:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7CCB6C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 11:47:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381629AbiDELql (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 07:46:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46618 "EHLO
+        id S237808AbiDELrA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 07:47:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50830 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244873AbiDEIwo (ORCPT
+        with ESMTP id S244883AbiDEIwp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:52:44 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6694A23BEA;
-        Tue,  5 Apr 2022 01:45:15 -0700 (PDT)
+        Tue, 5 Apr 2022 04:52:45 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B4E323BF7;
+        Tue,  5 Apr 2022 01:45:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id D8FD7CE1C6B;
-        Tue,  5 Apr 2022 08:45:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ED0F4C385A1;
-        Tue,  5 Apr 2022 08:45:11 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 091D9B81B18;
+        Tue,  5 Apr 2022 08:45:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4931AC385A1;
+        Tue,  5 Apr 2022 08:45:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649148312;
-        bh=n42Mv9mJiqaTeh+zUQOoVQHUPM1+yP94/zgTbe6p7QE=;
+        s=korg; t=1649148328;
+        bh=ppIPX3URR0acf6wOyfL262wQNE8KPCBIqOOvB243B1U=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FSYOisXnTq2CehsupUcKDWqc4STmpX0j3ejbRx4Z323bTReXLcmxUQX+qRBM8wgTX
-         7qySGLXtBXrgjjUo8sMrSX0Oa1HkkSoozqu5yb4RhRoOE0LPddIPBRSrlEqtMFK76K
-         wNgksXr/WUdPHG3Negj5ZO1Yxf6oozbvXLCQIfas=
+        b=TDGGIpb1acRhzIZ9RVto86ToWYDn24O4MV/WMsKGNBkIaU+n/Ll0VnKN2QBGxmnwJ
+         8n6H9mh8BuvVsAiD/Vv3bSfYNBgrvtfhF/UjzVdasFSF/ZMTiZy2XHWrfBNSinNujf
+         N6pK2d3i4iIZK2HsD8UA3mSv1fKlkBY+QTsH+fik=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        stable@vger.kernel.org,
+        =?UTF-8?q?Rafa=C5=82=20Mi=C5=82ecki?= <rafal@milecki.pl>,
+        Florian Fainelli <f.fainelli@gmail.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0312/1017] soc: qcom: rpmpd: Check for null return of devm_kcalloc
-Date:   Tue,  5 Apr 2022 09:20:25 +0200
-Message-Id: <20220405070403.538520758@linuxfoundation.org>
+Subject: [PATCH 5.16 0318/1017] arm64: dts: broadcom: bcm4908: use proper TWD binding
+Date:   Tue,  5 Apr 2022 09:20:31 +0200
+Message-Id: <20220405070403.717394334@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -50,41 +50,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+From: Rafał Miłecki <rafal@milecki.pl>
 
-[ Upstream commit 5a811126d38f9767a20cc271b34db7c8efc5a46c ]
+[ Upstream commit 33826e9c6ba76b265d4e26cb95493fa27ed78974 ]
 
-Because of the possible failure of the allocation, data->domains might
-be NULL pointer and will cause the dereference of the NULL pointer
-later.
-Therefore, it might be better to check it and directly return -ENOMEM
-without releasing data manually if fails, because the comment of the
-devm_kmalloc() says "Memory allocated with this function is
-automatically freed on driver detach.".
+Block at <ff800400 0x4c> is a TWD that contains timers, watchdog and
+reset. Actual timers happen to be at block beginning but they only span
+across the first 0x28 registers. It means the old block description was
+incorrect (size 0x3c).
 
-Fixes: bbe3a66c3f5a ("soc: qcom: rpmpd: Add a Power domain driver to model corners")
-Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Link: https://lore.kernel.org/r/20211231094419.1941054-1-jiasheng@iscas.ac.cn
+Drop timers binding for now and use documented TWD binding. Timers
+should be properly documented and defined as TWD subnode.
+
+Fixes: 2961f69f151c ("arm64: dts: broadcom: add BCM4908 and Asus GT-AC5300 early DTS files")
+Signed-off-by: Rafał Miłecki <rafal@milecki.pl>
+Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/soc/qcom/rpmpd.c | 3 +++
- 1 file changed, 3 insertions(+)
+ arch/arm64/boot/dts/broadcom/bcm4908/bcm4908.dtsi | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/soc/qcom/rpmpd.c b/drivers/soc/qcom/rpmpd.c
-index 4f69fb9b2e0e..69b587822e39 100644
---- a/drivers/soc/qcom/rpmpd.c
-+++ b/drivers/soc/qcom/rpmpd.c
-@@ -570,6 +570,9 @@ static int rpmpd_probe(struct platform_device *pdev)
+diff --git a/arch/arm64/boot/dts/broadcom/bcm4908/bcm4908.dtsi b/arch/arm64/boot/dts/broadcom/bcm4908/bcm4908.dtsi
+index 984c737fa627..6e738f2a3701 100644
+--- a/arch/arm64/boot/dts/broadcom/bcm4908/bcm4908.dtsi
++++ b/arch/arm64/boot/dts/broadcom/bcm4908/bcm4908.dtsi
+@@ -273,9 +273,9 @@
+ 		#size-cells = <1>;
+ 		ranges = <0x00 0x00 0xff800000 0x3000>;
  
- 	data->domains = devm_kcalloc(&pdev->dev, num, sizeof(*data->domains),
- 				     GFP_KERNEL);
-+	if (!data->domains)
-+		return -ENOMEM;
-+
- 	data->num_domains = num;
+-		timer: timer@400 {
+-			compatible = "brcm,bcm6328-timer", "syscon";
+-			reg = <0x400 0x3c>;
++		twd: timer-mfd@400 {
++			compatible = "brcm,bcm4908-twd", "simple-mfd", "syscon";
++			reg = <0x400 0x4c>;
+ 		};
  
- 	for (i = 0; i < num; i++) {
+ 		gpio0: gpio-controller@500 {
+@@ -330,7 +330,7 @@
+ 
+ 	reboot {
+ 		compatible = "syscon-reboot";
+-		regmap = <&timer>;
++		regmap = <&twd>;
+ 		offset = <0x34>;
+ 		mask = <1>;
+ 	};
 -- 
 2.34.1
 
