@@ -2,109 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 856D2C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EBAFFC433FE
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:25:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1575174AbiDEXDC (ORCPT
+        id S1575188AbiDEXDI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 19:03:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50762 "EHLO
+        Tue, 5 Apr 2022 19:03:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43682 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357882AbiDEK1W (ORCPT
+        with ESMTP id S1392134AbiDEPfp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:27:22 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 875164A918;
-        Tue,  5 Apr 2022 03:11:01 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 235536172B;
-        Tue,  5 Apr 2022 10:11:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2C80EC385A1;
-        Tue,  5 Apr 2022 10:10:59 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649153460;
-        bh=/WtJySjaHTwCqUhYX6wURi4WDdrk0AMB8cEEqWIkQZI=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=EgRAvjShBLUgb4cM8nZ8VywLGA93i0/+jm/0NmFn+NtyJda973XF1ZGqgq+j3JgBd
-         Y7aCJjgTdMtK5mebnvSOUp2emuctDHPqKn+x9jSOjmy6NJT38GtMILbOAMjsQkO0eA
-         aCcOowpBOd9ohfIzP38gepITo8L40zYyjLaAc34o=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 230/599] ASoC: dwc-i2s: Handle errors for clk_enable
-Date:   Tue,  5 Apr 2022 09:28:44 +0200
-Message-Id: <20220405070305.685303431@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 5 Apr 2022 11:35:45 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B7DF0133D9B
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 06:46:35 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 76DA0D6E;
+        Tue,  5 Apr 2022 06:46:35 -0700 (PDT)
+Received: from e121345-lin.cambridge.arm.com (e121345-lin.cambridge.arm.com [10.1.196.40])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id AEAE63F5A1;
+        Tue,  5 Apr 2022 06:46:34 -0700 (PDT)
+From:   Robin Murphy <robin.murphy@arm.com>
+To:     ogabbay@kernel.org, arnd@arndb.de, gregkh@linuxfoundation.org
+Cc:     linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org
+Subject: [PATCH] habanalabs: Stop using iommu_present()
+Date:   Tue,  5 Apr 2022 14:46:31 +0100
+Message-Id: <8201946a5b8b26dab35738b87da24ff27a9f9270.1649166391.git.robin.murphy@arm.com>
+X-Mailer: git-send-email 2.28.0.dirty
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Even if an IOMMU might be present for some PCI segment in the system,
+that doesn't necessarily mean it provides translation for the device
+we care about. Replace iommu_present() with a more appropriate check.
 
-[ Upstream commit 45ea97d74313bae681328b0c36fa348036777644 ]
-
-As the potential failure of the clk_enable(),
-it should be better to check it, as same as clk_prepare_enable().
-
-Fixes: c9afc1834e81 ("ASoC: dwc: Disallow building designware_pcm as a module")
-Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Link: https://lore.kernel.org/r/20220301084742.3751939-1-jiasheng@iscas.ac.cn
-Signed-off-by: Mark Brown <broonie@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Robin Murphy <robin.murphy@arm.com>
 ---
- sound/soc/dwc/dwc-i2s.c | 17 ++++++++++++-----
- 1 file changed, 12 insertions(+), 5 deletions(-)
+ drivers/misc/habanalabs/gaudi/gaudi.c | 8 ++++----
+ drivers/misc/habanalabs/goya/goya.c   | 8 ++++----
+ 2 files changed, 8 insertions(+), 8 deletions(-)
 
-diff --git a/sound/soc/dwc/dwc-i2s.c b/sound/soc/dwc/dwc-i2s.c
-index fd4160289fac..36da0f01571a 100644
---- a/sound/soc/dwc/dwc-i2s.c
-+++ b/sound/soc/dwc/dwc-i2s.c
-@@ -403,9 +403,13 @@ static int dw_i2s_runtime_suspend(struct device *dev)
- static int dw_i2s_runtime_resume(struct device *dev)
- {
- 	struct dw_i2s_dev *dw_dev = dev_get_drvdata(dev);
-+	int ret;
+diff --git a/drivers/misc/habanalabs/gaudi/gaudi.c b/drivers/misc/habanalabs/gaudi/gaudi.c
+index 21c2b678ff72..5dc66dc7618e 100644
+--- a/drivers/misc/habanalabs/gaudi/gaudi.c
++++ b/drivers/misc/habanalabs/gaudi/gaudi.c
+@@ -6133,7 +6133,7 @@ static int gaudi_debugfs_read32(struct hl_device *hdev, u64 addr,
+ 			rc = -EIO;
  
--	if (dw_dev->capability & DW_I2S_MASTER)
--		clk_enable(dw_dev->clk);
-+	if (dw_dev->capability & DW_I2S_MASTER) {
-+		ret = clk_enable(dw_dev->clk);
-+		if (ret)
-+			return ret;
-+	}
- 	return 0;
- }
+ 	} else if (addr >= HOST_PHYS_BASE && addr < host_phys_end &&
+-			user_address && !iommu_present(&pci_bus_type)) {
++			user_address && !device_iommu_mapped(&hdev->pdev->dev)) {
  
-@@ -422,10 +426,13 @@ static int dw_i2s_resume(struct snd_soc_component *component)
- {
- 	struct dw_i2s_dev *dev = snd_soc_component_get_drvdata(component);
- 	struct snd_soc_dai *dai;
--	int stream;
-+	int stream, ret;
+ 		*val = *(u32 *) phys_to_virt(addr - HOST_PHYS_BASE);
  
--	if (dev->capability & DW_I2S_MASTER)
--		clk_enable(dev->clk);
-+	if (dev->capability & DW_I2S_MASTER) {
-+		ret = clk_enable(dev->clk);
-+		if (ret)
-+			return ret;
-+	}
+@@ -6176,7 +6176,7 @@ static int gaudi_debugfs_write32(struct hl_device *hdev, u64 addr,
+ 			rc = -EIO;
  
- 	for_each_component_dais(component, dai) {
- 		for_each_pcm_streams(stream)
+ 	} else if (addr >= HOST_PHYS_BASE && addr < host_phys_end &&
+-			user_address && !iommu_present(&pci_bus_type)) {
++			user_address && !device_iommu_mapped(&hdev->pdev->dev)) {
+ 
+ 		*(u32 *) phys_to_virt(addr - HOST_PHYS_BASE) = val;
+ 
+@@ -6223,7 +6223,7 @@ static int gaudi_debugfs_read64(struct hl_device *hdev, u64 addr,
+ 			rc = -EIO;
+ 
+ 	} else if (addr >= HOST_PHYS_BASE && addr < host_phys_end &&
+-			user_address && !iommu_present(&pci_bus_type)) {
++			user_address && !device_iommu_mapped(&hdev->pdev->dev)) {
+ 
+ 		*val = *(u64 *) phys_to_virt(addr - HOST_PHYS_BASE);
+ 
+@@ -6268,7 +6268,7 @@ static int gaudi_debugfs_write64(struct hl_device *hdev, u64 addr,
+ 			rc = -EIO;
+ 
+ 	} else if (addr >= HOST_PHYS_BASE && addr < host_phys_end &&
+-			user_address && !iommu_present(&pci_bus_type)) {
++			user_address && !device_iommu_mapped(&hdev->pdev->dev)) {
+ 
+ 		*(u64 *) phys_to_virt(addr - HOST_PHYS_BASE) = val;
+ 
+diff --git a/drivers/misc/habanalabs/goya/goya.c b/drivers/misc/habanalabs/goya/goya.c
+index ec9358bcbf0b..0c455bf460f4 100644
+--- a/drivers/misc/habanalabs/goya/goya.c
++++ b/drivers/misc/habanalabs/goya/goya.c
+@@ -4309,7 +4309,7 @@ static int goya_debugfs_read32(struct hl_device *hdev, u64 addr,
+ 			rc = -EIO;
+ 
+ 	} else if (addr >= HOST_PHYS_BASE && addr < host_phys_end &&
+-			user_address && !iommu_present(&pci_bus_type)) {
++			user_address && !device_iommu_mapped(&hdev->pdev->dev)) {
+ 		*val = *(u32 *) phys_to_virt(addr - HOST_PHYS_BASE);
+ 
+ 	} else {
+@@ -4369,7 +4369,7 @@ static int goya_debugfs_write32(struct hl_device *hdev, u64 addr,
+ 			rc = -EIO;
+ 
+ 	} else if (addr >= HOST_PHYS_BASE && addr < host_phys_end &&
+-			user_address && !iommu_present(&pci_bus_type)) {
++			user_address && !device_iommu_mapped(&hdev->pdev->dev)) {
+ 		*(u32 *) phys_to_virt(addr - HOST_PHYS_BASE) = val;
+ 
+ 	} else {
+@@ -4418,7 +4418,7 @@ static int goya_debugfs_read64(struct hl_device *hdev, u64 addr,
+ 			rc = -EIO;
+ 
+ 	} else if (addr >= HOST_PHYS_BASE && addr < host_phys_end &&
+-			user_address && !iommu_present(&pci_bus_type)) {
++			user_address && !device_iommu_mapped(&hdev->pdev->dev)) {
+ 		*val = *(u64 *) phys_to_virt(addr - HOST_PHYS_BASE);
+ 
+ 	} else {
+@@ -4465,7 +4465,7 @@ static int goya_debugfs_write64(struct hl_device *hdev, u64 addr,
+ 			rc = -EIO;
+ 
+ 	} else if (addr >= HOST_PHYS_BASE && addr < host_phys_end &&
+-			user_address && !iommu_present(&pci_bus_type)) {
++			user_address && !device_iommu_mapped(&hdev->pdev->dev)) {
+ 		*(u64 *) phys_to_virt(addr - HOST_PHYS_BASE) = val;
+ 
+ 	} else {
 -- 
-2.34.1
-
-
+2.28.0.dirty
 
