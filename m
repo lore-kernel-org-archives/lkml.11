@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 24423C43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0DF58C43219
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 10:50:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347361AbiDEKov (ORCPT
+        id S1347312AbiDEKoq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 06:44:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45624 "EHLO
+        Tue, 5 Apr 2022 06:44:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46048 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241060AbiDEIcq (ORCPT
+        with ESMTP id S241067AbiDEIcq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Apr 2022 04:32:46 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BF60B820A;
-        Tue,  5 Apr 2022 01:26:20 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48650B91B1;
+        Tue,  5 Apr 2022 01:26:41 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3C26A60FFC;
-        Tue,  5 Apr 2022 08:26:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4B527C385A4;
-        Tue,  5 Apr 2022 08:26:19 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 049DCB81BC0;
+        Tue,  5 Apr 2022 08:26:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 507C6C385A2;
+        Tue,  5 Apr 2022 08:26:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649147179;
-        bh=Sa1kMv1sdCnfZFoBz5fJjwVY0FENvkmbuFF3lGAys4I=;
+        s=korg; t=1649147198;
+        bh=aVUBwy5ixGJpNkudBT7QG5qe2UFBdxE/HFTF2miR6uw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jvoJA7wKO/A/lVy8R0d0OtRBeGVgef/NAuwt/TooroqU/XJvRXdCt9cTv5C93r8ge
-         moc4ItCq+zDePZDTY/LC5qtE/YWaG0hRYeT/aHNotkqZZJ+dmpucqEWz5BEyaWK6Hh
-         ftlA6rX0JQmI/oV9TiEPjlL9rzDRH72kJZvGzoR8=
+        b=lalFWzbfUM0NZVEmJRnqbRdoTebdJJMYNCKrokmByywHDTGrbDWuklkUf0/q2kNfJ
+         EItEmzr43QW6cGa/KJCia+0ulvQIZAZoGLIrskWOnVjue3qY4e+mF7ERPRuc6ETzuV
+         G3o+YYBGhekRG+d3XDLl9/Qk/UJgOnS+qlD+AsKA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Andreas Gruenbacher <agruenba@redhat.com>
-Subject: [PATCH 5.17 1030/1126] gfs2: Fix gfs2_file_buffered_write endless loop workaround
-Date:   Tue,  5 Apr 2022 09:29:37 +0200
-Message-Id: <20220405070437.712017452@linuxfoundation.org>
+        stable@vger.kernel.org, Jacky Bai <ping.bai@nxp.com>,
+        Peng Fan <peng.fan@nxp.com>, Robin Gong <yibin.gong@nxp.com>,
+        Jassi Brar <jaswinder.singh@linaro.org>
+Subject: [PATCH 5.17 1036/1126] mailbox: imx: fix wakeup failure from freeze mode
+Date:   Tue,  5 Apr 2022 09:29:43 +0200
+Message-Id: <20220405070437.885209263@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -48,28 +50,69 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Andreas Gruenbacher <agruenba@redhat.com>
+From: Robin Gong <yibin.gong@nxp.com>
 
-commit 46f3e0421ccb5474b5c006b0089b9dfd42534bb6 upstream.
+commit 892cb524ae8a27bf5e42f711318371acd9a9f74a upstream.
 
-Since commit 554c577cee95b, gfs2_file_buffered_write() can accidentally
-return a truncated iov_iter, which might confuse callers.  Fix that.
+Since IRQF_NO_SUSPEND used for imx mailbox driver, that means this irq
+can't be used for wakeup source so that can't wakeup from freeze mode.
+Add pm_system_wakeup() to wakeup from freeze mode.
 
-Fixes: 554c577cee95b ("gfs2: Prevent endless loops in gfs2_file_buffered_write")
-Signed-off-by: Andreas Gruenbacher <agruenba@redhat.com>
+Fixes: b7b2796b9b31e("mailbox: imx: ONLY IPC MU needs IRQF_NO_SUSPEND flag")
+Reviewed-by: Jacky Bai <ping.bai@nxp.com>
+Reviewed-by: Peng Fan <peng.fan@nxp.com>
+Signed-off-by: Robin Gong <yibin.gong@nxp.com>
+Signed-off-by: Peng Fan <peng.fan@nxp.com>
+Signed-off-by: Jassi Brar <jaswinder.singh@linaro.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/gfs2/file.c |    1 +
- 1 file changed, 1 insertion(+)
+ drivers/mailbox/imx-mailbox.c |    9 +++++++++
+ 1 file changed, 9 insertions(+)
 
---- a/fs/gfs2/file.c
-+++ b/fs/gfs2/file.c
-@@ -1083,6 +1083,7 @@ out_uninit:
- 	gfs2_holder_uninit(gh);
- 	if (statfs_gh)
- 		kfree(statfs_gh);
-+	from->count = orig_count - read;
- 	return read ? read : ret;
+--- a/drivers/mailbox/imx-mailbox.c
++++ b/drivers/mailbox/imx-mailbox.c
+@@ -14,6 +14,7 @@
+ #include <linux/module.h>
+ #include <linux/of_device.h>
+ #include <linux/pm_runtime.h>
++#include <linux/suspend.h>
+ #include <linux/slab.h>
+ 
+ #define IMX_MU_CHANS		16
+@@ -76,6 +77,7 @@ struct imx_mu_priv {
+ 	const struct imx_mu_dcfg	*dcfg;
+ 	struct clk		*clk;
+ 	int			irq;
++	bool			suspend;
+ 
+ 	u32 xcr[4];
+ 
+@@ -334,6 +336,9 @@ static irqreturn_t imx_mu_isr(int irq, v
+ 		return IRQ_NONE;
+ 	}
+ 
++	if (priv->suspend)
++		pm_system_wakeup();
++
+ 	return IRQ_HANDLED;
+ }
+ 
+@@ -702,6 +707,8 @@ static int __maybe_unused imx_mu_suspend
+ 			priv->xcr[i] = imx_mu_read(priv, priv->dcfg->xCR[i]);
+ 	}
+ 
++	priv->suspend = true;
++
+ 	return 0;
+ }
+ 
+@@ -723,6 +730,8 @@ static int __maybe_unused imx_mu_resume_
+ 			imx_mu_write(priv, priv->xcr[i], priv->dcfg->xCR[i]);
+ 	}
+ 
++	priv->suspend = false;
++
+ 	return 0;
  }
  
 
