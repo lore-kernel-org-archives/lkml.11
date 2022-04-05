@@ -2,43 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 00315C43219
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:02:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 42AFFC4321E
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:02:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380466AbiDEL62 (ORCPT
+        id S1380755AbiDEL6f (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 07:58:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51136 "EHLO
+        Tue, 5 Apr 2022 07:58:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46546 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245019AbiDEIxC (ORCPT
+        with ESMTP id S245038AbiDEIxC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Apr 2022 04:53:02 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4844D9D;
-        Tue,  5 Apr 2022 01:49:36 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F6E9E10;
+        Tue,  5 Apr 2022 01:50:20 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 81EA160FFB;
-        Tue,  5 Apr 2022 08:49:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 96349C385A1;
-        Tue,  5 Apr 2022 08:49:35 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1E4E8B81B92;
+        Tue,  5 Apr 2022 08:50:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 68E8FC385A0;
+        Tue,  5 Apr 2022 08:50:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649148576;
-        bh=m0gxXestR9TuCF6pwebEyOfHf08GivCI31KBId5HBac=;
+        s=korg; t=1649148617;
+        bh=8byxPXwxejjXlkL2TpUmT+yCJ0uneYeRDygEpoPrvLA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CwXOhh2jae1aaO0AzlLf6CAo6z0BIwPCQk0s2Np/wjeVxcV2Hdprq02iDWYoPjaFr
-         LhAX9a3slRIX/kke3H45VZ81pvmpgPYBlMVcwv4t5ICw5uBhhimvLukl0Ii/UxLuYz
-         jfhP2x6oZZe9q4syd/GzfLkZEOeQPAljwj2e83XA=
+        b=j4fxY5Y8v7FhkNzBnIFFxyBzynQEJFetrc/vVb1eOLh5oUYewrmLC5C6KpQUl9BNS
+         wjbvGc/32UMF/ZEV3VLBQo1RYmZfwYDBrc6dQQj1cgjkNNpqEYUv62eYlHlhoSGYdw
+         TR+FRaecyC/TPcpj7LSImj6bVx6DnI0RS323J6UM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Wen Gong <quic_wgong@quicinc.com>,
-        Kalle Valo <quic_kvalo@quicinc.com>,
+        stable@vger.kernel.org,
+        Michael Trimarchi <michael@amarulasolutions.com>,
+        Dario Binacchi <dario.binacchi@amarulasolutions.com>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0405/1017] ath10k: fix memory overwrite of the WoWLAN wakeup packet pattern
-Date:   Tue,  5 Apr 2022 09:21:58 +0200
-Message-Id: <20220405070406.310457627@linuxfoundation.org>
+Subject: [PATCH 5.16 0419/1017] mtd: rawnand: gpmi: fix controller timings setting
+Date:   Tue,  5 Apr 2022 09:22:12 +0200
+Message-Id: <20220405070406.726487734@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -50,54 +53,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Wen Gong <quic_wgong@quicinc.com>
+From: Dario Binacchi <dario.binacchi@amarulasolutions.com>
 
-[ Upstream commit e3fb3d4418fce5484dfe7995fcd94c18b10a431a ]
+[ Upstream commit 2970bf5a32f079e1e9197411db4fe9faccb1503a ]
 
-In function ath10k_wow_convert_8023_to_80211(), it will do memcpy for
-the new->pattern, and currently the new->pattern and new->mask is same
-with the old, then the memcpy of new->pattern will also overwrite the
-old->pattern, because the header format of new->pattern is 802.11,
-its length is larger than the old->pattern which is 802.3. Then the
-operation of "Copy frame body" will copy a mistake value because the
-body memory has been overwrite when memcpy the new->pattern.
+Set the controller registers according to the real clock rate. The
+controller registers configuration (setup, hold, timeout, ... cycles)
+depends on the clock rate of the GPMI. Using the real rate instead of
+the ideal one, avoids that this inaccuracy (required_rate - real_rate)
+affects the registers setting.
 
-Assign another empty value to new_pattern to avoid the overwrite issue.
+This patch has been tested on two custom boards with i.MX28 and i.MX6
+SOCs:
+- i.MX28:
+  required rate 100MHz, real rate 99.3MHz
+- i.MX6
+  required rate 100MHz, real rate 99MHz
 
-Tested-on: QCA6174 hw3.2 SDIO WLAN.RMH.4.4.1-00049
-
-Fixes: fa3440fa2fa1 ("ath10k: convert wow pattern from 802.3 to 802.11")
-Signed-off-by: Wen Gong <quic_wgong@quicinc.com>
-Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
-Link: https://lore.kernel.org/r/20211222031347.25463-1-quic_wgong@quicinc.com
+Fixes: b1206122069a ("mtd: rawnand: gpmi: use core timings instead of an empirical derivation")
+Co-developed-by: Michael Trimarchi <michael@amarulasolutions.com>
+Signed-off-by: Michael Trimarchi <michael@amarulasolutions.com>
+Signed-off-by: Dario Binacchi <dario.binacchi@amarulasolutions.com>
+Tested-by: Sascha Hauer <s.hauer@pengutronix.de>
+Reviewed-by: Sascha Hauer <s.hauer@pengutronix.de>
+Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+Link: https://lore.kernel.org/linux-mtd/20220118095434.35081-3-dario.binacchi@amarulasolutions.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/ath/ath10k/wow.c | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+ drivers/mtd/nand/raw/gpmi-nand/gpmi-nand.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/net/wireless/ath/ath10k/wow.c b/drivers/net/wireless/ath/ath10k/wow.c
-index 7d65c115669f..20b9aa8ddf7d 100644
---- a/drivers/net/wireless/ath/ath10k/wow.c
-+++ b/drivers/net/wireless/ath/ath10k/wow.c
-@@ -337,14 +337,15 @@ static int ath10k_vif_wow_set_wakeups(struct ath10k_vif *arvif,
- 			if (patterns[i].mask[j / 8] & BIT(j % 8))
- 				bitmask[j] = 0xff;
- 		old_pattern.mask = bitmask;
--		new_pattern = old_pattern;
+diff --git a/drivers/mtd/nand/raw/gpmi-nand/gpmi-nand.c b/drivers/mtd/nand/raw/gpmi-nand/gpmi-nand.c
+index 5eb20dfe4186..42e0aab1a00c 100644
+--- a/drivers/mtd/nand/raw/gpmi-nand/gpmi-nand.c
++++ b/drivers/mtd/nand/raw/gpmi-nand/gpmi-nand.c
+@@ -648,6 +648,7 @@ static void gpmi_nfc_compute_timings(struct gpmi_nand_data *this,
+ 				     const struct nand_sdr_timings *sdr)
+ {
+ 	struct gpmi_nfc_hardware_timing *hw = &this->hw;
++	struct resources *r = &this->resources;
+ 	unsigned int dll_threshold_ps = this->devdata->max_chain_delay;
+ 	unsigned int period_ps, reference_period_ps;
+ 	unsigned int data_setup_cycles, data_hold_cycles, addr_setup_cycles;
+@@ -671,6 +672,8 @@ static void gpmi_nfc_compute_timings(struct gpmi_nand_data *this,
+ 		wrn_dly_sel = BV_GPMI_CTRL1_WRN_DLY_SEL_NO_DELAY;
+ 	}
  
- 		if (ar->wmi.rx_decap_mode == ATH10K_HW_TXRX_NATIVE_WIFI) {
--			if (patterns[i].pkt_offset < ETH_HLEN)
-+			if (patterns[i].pkt_offset < ETH_HLEN) {
- 				ath10k_wow_convert_8023_to_80211(&new_pattern,
- 								 &old_pattern);
--			else
-+			} else {
-+				new_pattern = old_pattern;
- 				new_pattern.pkt_offset += WOW_HDR_LEN - ETH_HLEN;
-+			}
- 		}
++	hw->clk_rate = clk_round_rate(r->clock[0], hw->clk_rate);
++
+ 	/* SDR core timings are given in picoseconds */
+ 	period_ps = div_u64((u64)NSEC_PER_SEC * 1000, hw->clk_rate);
  
- 		if (WARN_ON(new_pattern.pattern_len > WOW_MAX_PATTERN_SIZE))
 -- 
 2.34.1
 
