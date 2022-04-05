@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 88E02C35273
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:09:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3248FC3527D
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:09:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230464AbiDEXn3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 19:43:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44600 "EHLO
+        id S1582146AbiDEXmQ (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 19:42:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51844 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240228AbiDEKcj (ORCPT
+        with ESMTP id S236874AbiDEKwc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:32:39 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99F07DE0A5;
-        Tue,  5 Apr 2022 03:18:35 -0700 (PDT)
+        Tue, 5 Apr 2022 06:52:32 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6875A88A4;
+        Tue,  5 Apr 2022 03:28:04 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 45933B81C9A;
-        Tue,  5 Apr 2022 10:18:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8F634C385A1;
-        Tue,  5 Apr 2022 10:18:32 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 75573B81C8A;
+        Tue,  5 Apr 2022 10:28:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DD47AC385A0;
+        Tue,  5 Apr 2022 10:28:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649153913;
-        bh=KoGQ+0vWP49KzgTOCU/ifdDn7F7KOjvEzSHR2vQTS+U=;
+        s=korg; t=1649154482;
+        bh=aRb7S04sY/GxwJUW4w/d5+i5w9ixOXDT72i6vqBPgGk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JCKwaOrl+MVaxfZ4AnuHdJLwKVqtcvlLG42vd+B++FOXcbAXuAVy+qzljC1P8KUzC
-         +oTwm1dlmWX8mDcOeMJhT58lh0hGk4av9egMI3m1/AkYgQ4O+6HhWfgwtasqcElM0/
-         knsNKsdJ6EzIb0r4pwjDbawqN1F+CqzQB5txcrjQ=
+        b=Ol92E35XNbVQz3HEx2+GFkEKdQeW1WprAUN3xDRM7fssR4orlGIxqsaPbucpptrHe
+         c8vipUmYG7ciQHimf40pVLS1lA/9hDaNoNFNMQ9FoqBhUv8WIJQ+WsO6oVqzwYAUB3
+         5CB2NrwwWJhnxPz8YdMjWRpkKRhgCjE0IcF7pjHs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Qing Wang <wangqing@vivo.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 392/599] serial: 8250_mid: Balance reference count for PCI DMA device
-Date:   Tue,  5 Apr 2022 09:31:26 +0200
-Message-Id: <20220405070310.496745566@linuxfoundation.org>
+        stable@vger.kernel.org, Hangyu Hua <hbh25y@gmail.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>
+Subject: [PATCH 5.10 594/599] can: usb_8dev: usb_8dev_start_xmit(): fix double dev_kfree_skb() in error path
+Date:   Tue,  5 Apr 2022 09:34:48 +0200
+Message-Id: <20220405070316.517010114@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
 References: <20220405070258.802373272@linuxfoundation.org>
@@ -49,93 +49,69 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+From: Hangyu Hua <hbh25y@gmail.com>
 
-[ Upstream commit 67ec6dd0b257bd81b4e9fcac89b29da72f6265e5 ]
+commit 3d3925ff6433f98992685a9679613a2cc97f3ce2 upstream.
 
-The pci_get_slot() increases its reference count, the caller
-must decrement the reference count by calling pci_dev_put().
+There is no need to call dev_kfree_skb() when usb_submit_urb() fails
+because can_put_echo_skb() deletes original skb and
+can_free_echo_skb() deletes the cloned skb.
 
-Fixes: 90b9aacf912a ("serial: 8250_pci: add Intel Tangier support")
-Fixes: f549e94effa1 ("serial: 8250_pci: add Intel Penwell ports")
-Reported-by: Qing Wang <wangqing@vivo.com>
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Depends-on: d9eda9bab237 ("serial: 8250_pci: Intel MID UART support to its own driver")
-Link: https://lore.kernel.org/r/20220215100920.41984-1-andriy.shevchenko@linux.intel.com
+Fixes: 0024d8ad1639 ("can: usb_8dev: Add support for USB2CAN interface from 8 devices")
+Link: https://lore.kernel.org/all/20220311080614.45229-1-hbh25y@gmail.com
+Cc: stable@vger.kernel.org
+Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
+Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/serial/8250/8250_mid.c | 19 +++++++++++++++----
- 1 file changed, 15 insertions(+), 4 deletions(-)
+ drivers/net/can/usb/usb_8dev.c |   30 ++++++++++++++----------------
+ 1 file changed, 14 insertions(+), 16 deletions(-)
 
-diff --git a/drivers/tty/serial/8250/8250_mid.c b/drivers/tty/serial/8250/8250_mid.c
-index efa0515139f8..e6c1791609dd 100644
---- a/drivers/tty/serial/8250/8250_mid.c
-+++ b/drivers/tty/serial/8250/8250_mid.c
-@@ -73,6 +73,11 @@ static int pnw_setup(struct mid8250 *mid, struct uart_port *p)
- 	return 0;
- }
+--- a/drivers/net/can/usb/usb_8dev.c
++++ b/drivers/net/can/usb/usb_8dev.c
+@@ -670,9 +670,20 @@ static netdev_tx_t usb_8dev_start_xmit(s
+ 	atomic_inc(&priv->active_tx_urbs);
  
-+static void pnw_exit(struct mid8250 *mid)
-+{
-+	pci_dev_put(mid->dma_dev);
-+}
+ 	err = usb_submit_urb(urb, GFP_ATOMIC);
+-	if (unlikely(err))
+-		goto failed;
+-	else if (atomic_read(&priv->active_tx_urbs) >= MAX_TX_URBS)
++	if (unlikely(err)) {
++		can_free_echo_skb(netdev, context->echo_index);
 +
- static int tng_handle_irq(struct uart_port *p)
- {
- 	struct mid8250 *mid = p->private_data;
-@@ -124,6 +129,11 @@ static int tng_setup(struct mid8250 *mid, struct uart_port *p)
- 	return 0;
- }
- 
-+static void tng_exit(struct mid8250 *mid)
-+{
-+	pci_dev_put(mid->dma_dev);
-+}
++		usb_unanchor_urb(urb);
++		usb_free_coherent(priv->udev, size, buf, urb->transfer_dma);
 +
- static int dnv_handle_irq(struct uart_port *p)
- {
- 	struct mid8250 *mid = p->private_data;
-@@ -330,9 +340,9 @@ static int mid8250_probe(struct pci_dev *pdev, const struct pci_device_id *id)
- 
- 	pci_set_drvdata(pdev, mid);
- 	return 0;
++		atomic_dec(&priv->active_tx_urbs);
 +
- err:
--	if (mid->board->exit)
--		mid->board->exit(mid);
-+	mid->board->exit(mid);
- 	return ret;
- }
++		if (err == -ENODEV)
++			netif_device_detach(netdev);
++		else
++			netdev_warn(netdev, "failed tx_urb %d\n", err);
++		stats->tx_dropped++;
++	} else if (atomic_read(&priv->active_tx_urbs) >= MAX_TX_URBS)
+ 		/* Slow down tx path */
+ 		netif_stop_queue(netdev);
  
-@@ -342,8 +352,7 @@ static void mid8250_remove(struct pci_dev *pdev)
+@@ -691,19 +702,6 @@ nofreecontext:
  
- 	serial8250_unregister_port(mid->line);
+ 	return NETDEV_TX_BUSY;
  
--	if (mid->board->exit)
--		mid->board->exit(mid);
-+	mid->board->exit(mid);
- }
+-failed:
+-	can_free_echo_skb(netdev, context->echo_index);
+-
+-	usb_unanchor_urb(urb);
+-	usb_free_coherent(priv->udev, size, buf, urb->transfer_dma);
+-
+-	atomic_dec(&priv->active_tx_urbs);
+-
+-	if (err == -ENODEV)
+-		netif_device_detach(netdev);
+-	else
+-		netdev_warn(netdev, "failed tx_urb %d\n", err);
+-
+ nomembuf:
+ 	usb_free_urb(urb);
  
- static const struct mid8250_board pnw_board = {
-@@ -351,6 +360,7 @@ static const struct mid8250_board pnw_board = {
- 	.freq = 50000000,
- 	.base_baud = 115200,
- 	.setup = pnw_setup,
-+	.exit = pnw_exit,
- };
- 
- static const struct mid8250_board tng_board = {
-@@ -358,6 +368,7 @@ static const struct mid8250_board tng_board = {
- 	.freq = 38400000,
- 	.base_baud = 1843200,
- 	.setup = tng_setup,
-+	.exit = tng_exit,
- };
- 
- static const struct mid8250_board dnv_board = {
--- 
-2.34.1
-
 
 
