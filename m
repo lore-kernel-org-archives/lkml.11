@@ -2,88 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F0C7C4167E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A48ECC35273
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:16:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1447741AbiDEUJb (ORCPT
+        id S1447873AbiDEUJg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 16:09:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40752 "EHLO
+        Tue, 5 Apr 2022 16:09:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39346 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243567AbiDEKhC (ORCPT
+        with ESMTP id S1357778AbiDEOhs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:37:02 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEAE755214;
-        Tue,  5 Apr 2022 03:22:36 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 81926B81B96;
-        Tue,  5 Apr 2022 10:22:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ED6D2C385A1;
-        Tue,  5 Apr 2022 10:22:33 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649154154;
-        bh=Bv183cuMnjASOgeDqKcSzrlKxh0yZWU2L8cOdlTTSvg=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=enMqQpMn5tREefR/g85VhM6puXT4LhEabmUVDXRP2wdTqqEBMC1pD/9Ob9HblsHC2
-         vXhIaD8siYaV49tnyFmULIDZs9vzkdRswwuEyF8SHDTSzuU+fNBL5Ko4Z9SRyHZNCM
-         vdo962AmOciRCBvOU54CFzqu0OTicJH8QZtdGLIc=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Chao Yu <chao.yu@oppo.com>,
-        Jaegeuk Kim <jaegeuk@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 476/599] f2fs: compress: fix to print raw data size in error path of lz4 decompression
-Date:   Tue,  5 Apr 2022 09:32:50 +0200
-Message-Id: <20220405070312.990876553@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 5 Apr 2022 10:37:48 -0400
+Received: from www262.sakura.ne.jp (www262.sakura.ne.jp [202.181.97.72])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7F28126FAB;
+        Tue,  5 Apr 2022 06:16:08 -0700 (PDT)
+Received: from fsav114.sakura.ne.jp (fsav114.sakura.ne.jp [27.133.134.241])
+        by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTP id 235DFlkC033288;
+        Tue, 5 Apr 2022 22:15:47 +0900 (JST)
+        (envelope-from penguin-kernel@I-love.SAKURA.ne.jp)
+Received: from www262.sakura.ne.jp (202.181.97.72)
+ by fsav114.sakura.ne.jp (F-Secure/fsigk_smtp/550/fsav114.sakura.ne.jp);
+ Tue, 05 Apr 2022 22:15:47 +0900 (JST)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/fsav114.sakura.ne.jp)
+Received: from [192.168.1.9] (M106072142033.v4.enabler.ne.jp [106.72.142.33])
+        (authenticated bits=0)
+        by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTPSA id 235DFkv5033285
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NO);
+        Tue, 5 Apr 2022 22:15:47 +0900 (JST)
+        (envelope-from penguin-kernel@I-love.SAKURA.ne.jp)
+Message-ID: <286f411f-8482-6c0b-c005-01d7d20f9dbe@I-love.SAKURA.ne.jp>
+Date:   Tue, 5 Apr 2022 22:15:47 +0900
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Windows NT 6.3; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [syzbot] INFO: task can't die in blkdev_common_ioctl
+Content-Language: en-US
+To:     Christoph Hellwig <hch@infradead.org>
+Cc:     syzbot <syzbot+4f1a237abaf14719db49@syzkaller.appspotmail.com>,
+        axboe@kernel.dk, linux-block@vger.kernel.org,
+        linux-kernel@vger.kernel.org, syzkaller-bugs@googlegroups.com,
+        Jan Kara <jack@suse.cz>
+References: <0000000000007a4a2d05dba6baa6@google.com>
+ <d3213c1a-f82a-02f6-b5b2-0d3242e0242a@I-love.SAKURA.ne.jp>
+ <Ykp63pk7aSj/bNRT@infradead.org>
+ <67179a84-8be7-4c93-e355-2ca50666f960@I-love.SAKURA.ne.jp>
+ <YkvlRnO3Ho/mrk0V@infradead.org>
+From:   Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
+In-Reply-To: <YkvlRnO3Ho/mrk0V@infradead.org>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chao Yu <chao@kernel.org>
+On 2022/04/05 15:44, Christoph Hellwig wrote:
+> On Mon, Apr 04, 2022 at 02:12:14PM +0900, Tetsuo Handa wrote:
+>> On 2022/04/04 13:58, Christoph Hellwig wrote:
+>> My patch proposes filemap_invalidate_lock_killable() and converts only
+>> blkdev_fallocate() case as a starting point. Nothing prevents us from
+>> converting e.g. blk_ioctl_zeroout() case as well. The "not come through
+>> blkdev_fallocate" is bogus.
+> 
+> Sure, we could try to convert most of the > 50 instances of
+> filemap_invalidate_lock to be killable.  But that:
+> 
+>   a) isn't what your patch actuall did
 
-[ Upstream commit d284af43f703760e261b1601378a0c13a19d5f1f ]
+We can step by step convert all possible locations.
 
-In lz4_decompress_pages(), if size of decompressed data is not equal to
-expected one, we should print the size rather than size of target buffer
-for decompressed data, fix it.
+>   b) doesn't solve the underlying issue that is wasn't designed to to be
+>      held over very extremely long running operations
 
-Signed-off-by: Chao Yu <chao.yu@oppo.com>
-Signed-off-by: Jaegeuk Kim <jaegeuk@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- fs/f2fs/compress.c | 5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
+Do you want to introduce state variables like Lo_rundown in order to
+avoid holding this invalidate lock? That will be a lot of complication.
 
-diff --git a/fs/f2fs/compress.c b/fs/f2fs/compress.c
-index ec542e8c46cc..1541da5ace85 100644
---- a/fs/f2fs/compress.c
-+++ b/fs/f2fs/compress.c
-@@ -286,10 +286,9 @@ static int lz4_decompress_pages(struct decompress_io_ctx *dic)
- 	}
- 
- 	if (ret != PAGE_SIZE << dic->log_cluster_size) {
--		printk_ratelimited("%sF2FS-fs (%s): lz4 invalid rlen:%zu, "
-+		printk_ratelimited("%sF2FS-fs (%s): lz4 invalid ret:%d, "
- 					"expected:%lu\n", KERN_ERR,
--					F2FS_I_SB(dic->inode)->sb->s_id,
--					dic->rlen,
-+					F2FS_I_SB(dic->inode)->sb->s_id, ret,
- 					PAGE_SIZE << dic->log_cluster_size);
- 		return -EIO;
- 	}
--- 
-2.34.1
+> 
+> Or to get back to what I said before - I don't think we can just hold
+> the lock over manually zeroing potentially gigabytes of blocks.
+> 
 
+Periodically releasing this invalidate lock may result in inconsistent
+output. One can issue conflicting request (e.g. enlarging a file and
+truncating that file). If truncate happens while partially enlarged (or
+writing non-zero values while partially zeroed), resuming will need to
+undo what was done during this invalidate lock was released. (Or do you
+want to make conflicting requests fail with e.g. -EBUSY, possibly breaking
+userspace programs?)
 
+Serialization via holding throughout this zeroing/fallocate operation
+is needed for returning consistent output.
+
+> In other words:  we'll need to chunk the zeroing up if we want
+> to hold the invalidate lock, I see no ther way to properly fix this.
+
+I don't think that we can chunk the zeroing/fallocate up, for
+I don't think that we can determine appropriate chunk size.
+It might be 4KB, it might be 1MB, it might be 1GB, but who knows which
+size is safe for avoiding hung task warning on this invalidate lock.
+
+The block device might be super slow (e.g. as slow as floppy disk, or
+networking block device over very slow network). Also, hung task watchdog
+timeout and concurrent requests colliding on this invalidate lock are not
+visible to current thread doing actual zeroing/fallocate.
+
+All we could afford will be to make this invalidate lock killable and
+sometimes check fatal_signal_pending() inside zeroing/fallocate loop.
 
