@@ -2,50 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 65084C3527D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 74ECDC4707F
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:15:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1388748AbiDEUFv (ORCPT
+        id S1389439AbiDEUF7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 16:05:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39730 "EHLO
+        Tue, 5 Apr 2022 16:05:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58278 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349380AbiDEJtq (ORCPT
+        with ESMTP id S1358109AbiDEK17 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:49:46 -0400
+        Tue, 5 Apr 2022 06:27:59 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 496ED1C9;
-        Tue,  5 Apr 2022 02:44:45 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA46378FFE;
+        Tue,  5 Apr 2022 03:15:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D9D516164D;
-        Tue,  5 Apr 2022 09:44:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EC098C385A3;
-        Tue,  5 Apr 2022 09:44:43 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 47B1561777;
+        Tue,  5 Apr 2022 10:15:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 536CFC385A1;
+        Tue,  5 Apr 2022 10:15:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649151884;
-        bh=PbU3Zy+C03rpWGayUy2MlpDNrRuZYXE7DvqU86BFgbo=;
+        s=korg; t=1649153742;
+        bh=YIIjYNuNqtC8QLnqR4WnTEIhcQ4W4IebWPcPoV7WjgI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=z0aS7p6vTfHe8R3EC5I7OgbdaPL5M1d9WM1d7Z2R+xikud8bdrQU/ZpGy3bDsw386
-         WDJsqvtK7JQR43GNDqySkN44Cp142VzzgmcNu8jdSgw5OSxAOPeXiGXyJHICYLir7z
-         Idwdd2O8RwPBEuIa+2ySFxEVMezJAZnBrTv7tTOs=
+        b=UpFDfZw7zv375JSL6swZ3umdO3kFfK0KMfjjjG3U5Sq6TRPk0QYRmG1jhoqFCgUUC
+         G36AF5C0QbCB1ZCx/52tC6C6ppd3RRnbVGUAvh8Uo1cVpHIF2ILBrX7WMaCogknjNU
+         epbHd6+9ROkDGZ3PUK5ye7wrIxWEIVJjLZxnzG7g=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Alexander Lobakin <alexandr.lobakin@intel.com>,
-        Michal Kubiak <michal.kubiak@intel.com>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        Jakub Kicinski <kuba@kernel.org>,
+        stable@vger.kernel.org, Bastien Nocera <hadess@hadess.net>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Sebastian Reichel <sebastian.reichel@collabora.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 574/913] ice: dont allow to run ice_send_event_to_aux() in atomic ctx
-Date:   Tue,  5 Apr 2022 09:27:16 +0200
-Message-Id: <20220405070357.051712419@linuxfoundation.org>
+Subject: [PATCH 5.10 324/599] power: supply: bq24190_charger: Fix bq24190_vbus_is_enabled() wrong false return
+Date:   Tue,  5 Apr 2022 09:30:18 +0200
+Message-Id: <20220405070308.474830617@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
+References: <20220405070258.802373272@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -54,45 +52,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alexander Lobakin <alexandr.lobakin@intel.com>
+From: Hans de Goede <hdegoede@redhat.com>
 
-[ Upstream commit 5a3156932da06f09953764de113419f254086faf ]
+[ Upstream commit f7731754fdce33dad19be746f647d6ac47c5d695 ]
 
-ice_send_event_to_aux() eventually descends to mutex_lock()
-(-> might_sched()), so it must not be called under non-task
-context. However, at least two fixes have happened already for the
-bug splats occurred due to this function being called from atomic
-context.
-To make the emergency landings softer, bail out early when executed
-in non-task context emitting a warn splat only once. This way we
-trade some events being potentially lost for system stability and
-avoid any related hangs and crashes.
+The datasheet says that the BQ24190_REG_POC_CHG_CONFIG bits can
+have a value of either 10(0x2) or 11(0x3) for OTG (5V boost regulator)
+mode.
 
-Fixes: 348048e724a0e ("ice: Implement iidc operations")
-Signed-off-by: Alexander Lobakin <alexandr.lobakin@intel.com>
-Tested-by: Michal Kubiak <michal.kubiak@intel.com>
-Reviewed-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-Acked-by: Tony Nguyen <anthony.l.nguyen@intel.com>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Sofar bq24190_vbus_is_enabled() was only checking for 10 but some BIOS-es
+uses 11 when enabling the regulator at boot.
+
+Make bq24190_vbus_is_enabled() also check for 11 so that it does not
+wrongly returns false when the bits are set to 11.
+
+Fixes: 66b6bef2c4e0 ("power: supply: bq24190_charger: Export 5V boost converter as regulator")
+Cc: Bastien Nocera <hadess@hadess.net>
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/intel/ice/ice_idc.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/power/supply/bq24190_charger.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/intel/ice/ice_idc.c b/drivers/net/ethernet/intel/ice/ice_idc.c
-index adcc9a251595..a2714988dd96 100644
---- a/drivers/net/ethernet/intel/ice/ice_idc.c
-+++ b/drivers/net/ethernet/intel/ice/ice_idc.c
-@@ -34,6 +34,9 @@ void ice_send_event_to_aux(struct ice_pf *pf, struct iidc_event *event)
- {
- 	struct iidc_auxiliary_drv *iadrv;
+diff --git a/drivers/power/supply/bq24190_charger.c b/drivers/power/supply/bq24190_charger.c
+index 845af0f44c02..8c3c378dce0d 100644
+--- a/drivers/power/supply/bq24190_charger.c
++++ b/drivers/power/supply/bq24190_charger.c
+@@ -41,6 +41,7 @@
+ #define BQ24190_REG_POC_CHG_CONFIG_DISABLE		0x0
+ #define BQ24190_REG_POC_CHG_CONFIG_CHARGE		0x1
+ #define BQ24190_REG_POC_CHG_CONFIG_OTG			0x2
++#define BQ24190_REG_POC_CHG_CONFIG_OTG_ALT		0x3
+ #define BQ24190_REG_POC_SYS_MIN_MASK		(BIT(3) | BIT(2) | BIT(1))
+ #define BQ24190_REG_POC_SYS_MIN_SHIFT		1
+ #define BQ24190_REG_POC_SYS_MIN_MIN			3000
+@@ -552,7 +553,11 @@ static int bq24190_vbus_is_enabled(struct regulator_dev *dev)
+ 	pm_runtime_mark_last_busy(bdi->dev);
+ 	pm_runtime_put_autosuspend(bdi->dev);
  
-+	if (WARN_ON_ONCE(!in_task()))
-+		return;
+-	return ret ? ret : val == BQ24190_REG_POC_CHG_CONFIG_OTG;
++	if (ret)
++		return ret;
 +
- 	if (!pf->adev)
- 		return;
++	return (val == BQ24190_REG_POC_CHG_CONFIG_OTG ||
++		val == BQ24190_REG_POC_CHG_CONFIG_OTG_ALT);
+ }
  
+ static const struct regulator_ops bq24190_vbus_ops = {
 -- 
 2.34.1
 
