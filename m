@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 26B93C47080
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:39:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B244C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:39:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385343AbiDEMcf (ORCPT
+        id S1385373AbiDEMct (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 08:32:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36638 "EHLO
+        Tue, 5 Apr 2022 08:32:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52782 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236039AbiDEI7o (ORCPT
+        with ESMTP id S236258AbiDEJAO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:59:44 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C9BD255AD;
-        Tue,  5 Apr 2022 01:53:26 -0700 (PDT)
+        Tue, 5 Apr 2022 05:00:14 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9C9C26AEC;
+        Tue,  5 Apr 2022 01:53:32 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 686A961003;
-        Tue,  5 Apr 2022 08:53:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7F464C385A1;
-        Tue,  5 Apr 2022 08:53:24 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9A320B81C69;
+        Tue,  5 Apr 2022 08:53:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E177BC385A0;
+        Tue,  5 Apr 2022 08:53:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649148804;
-        bh=H9YrjQMoX5Tf6SSBBMB7UlmEDAvSUYEDqi5RKX3WyUU=;
+        s=korg; t=1649148810;
+        bh=ko2SpRfNjpELYGxgdaGx9p3UeCcclOfeq8wiIuIytGQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=drkf5XnCtuu/i0gsjDOculEyi+1o2DbOlrtuiYLSxRZ1BVo+R34bRnkMSLTJXG2Pz
-         lQAm91b3xnda71JxELX7yekbhxCQCQ7lS1q3twzGtpmA0ApL6PqTCwhEa0Mvr3ku7h
-         tDJxg6lJ+4Oxfn1HNrznByckURrggCQUlthQYNr0=
+        b=gM7cgR+Ro6iNSWChwYbgplT1GF+AKFD9BinkULpu1fJ3pvhXPxyUdEGoyyhCckaVa
+         Oyf0iP09j7p3Q/mMtXRIoAxn/plHh9ypLQRsJ44BuxGLYO+rQmkm9P9fhGbWfWQ7Kr
+         /pqY4TDRvmISqQBuI+KdqlEvYSDRgGs0zH5mnMPc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Yonghong Song <yhs@fb.com>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0487/1017] libbpf: Fix signedness bug in btf_dump_array_data()
-Date:   Tue,  5 Apr 2022 09:23:20 +0200
-Message-Id: <20220405070408.754584448@linuxfoundation.org>
+        stable@vger.kernel.org, Dan Williams <dan.j.williams@intel.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 0489/1017] tools/testing/cxl: Fix root port to host bridge assignment
+Date:   Tue,  5 Apr 2022 09:23:22 +0200
+Message-Id: <20220405070408.814606454@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -50,45 +49,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dan Carpenter <dan.carpenter@oracle.com>
+From: Dan Williams <dan.j.williams@intel.com>
 
-[ Upstream commit 4172843ed4a38f97084032f74f07b2037b5da3a6 ]
+[ Upstream commit a4a0ce242fcd7022349212c4e2f795762e6ff050 ]
 
-The btf__resolve_size() function returns negative error codes so
-"elem_size" must be signed for the error handling to work.
+Mocked root-ports are meant to be round-robin assigned to host-bridges.
 
-Fixes: 920d16af9b42 ("libbpf: BTF dumper support for typed data")
-Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
-Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
-Acked-by: Yonghong Song <yhs@fb.com>
-Link: https://lore.kernel.org/bpf/20220208071552.GB10495@kili
+Fixes: 67dcdd4d3b83 ("tools/testing/cxl: Introduce a mocked-up CXL port hierarchy")
+Link: https://lore.kernel.org/r/164298431629.3018233.14004377108116384485.stgit@dwillia2-desk3.amr.corp.intel.com
+Signed-off-by: Dan Williams <dan.j.williams@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/lib/bpf/btf_dump.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ tools/testing/cxl/test/cxl.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/tools/lib/bpf/btf_dump.c b/tools/lib/bpf/btf_dump.c
-index 5cae71600631..700dfd362c4a 100644
---- a/tools/lib/bpf/btf_dump.c
-+++ b/tools/lib/bpf/btf_dump.c
-@@ -1839,14 +1839,15 @@ static int btf_dump_array_data(struct btf_dump *d,
- {
- 	const struct btf_array *array = btf_array(t);
- 	const struct btf_type *elem_type;
--	__u32 i, elem_size = 0, elem_type_id;
-+	__u32 i, elem_type_id;
-+	__s64 elem_size;
- 	bool is_array_member;
+diff --git a/tools/testing/cxl/test/cxl.c b/tools/testing/cxl/test/cxl.c
+index cb32f9e27d5d..5a39b3fdcac4 100644
+--- a/tools/testing/cxl/test/cxl.c
++++ b/tools/testing/cxl/test/cxl.c
+@@ -488,7 +488,7 @@ static __init int cxl_test_init(void)
  
- 	elem_type_id = array->type;
- 	elem_type = skip_mods_and_typedefs(d->btf, elem_type_id, NULL);
- 	elem_size = btf__resolve_size(d->btf, elem_type_id);
- 	if (elem_size <= 0) {
--		pr_warn("unexpected elem size %d for array type [%u]\n", elem_size, id);
-+		pr_warn("unexpected elem size %lld for array type [%u]\n", elem_size, id);
- 		return -EINVAL;
- 	}
+ 	for (i = 0; i < ARRAY_SIZE(cxl_root_port); i++) {
+ 		struct platform_device *bridge =
+-			cxl_host_bridge[i / NR_CXL_ROOT_PORTS];
++			cxl_host_bridge[i % ARRAY_SIZE(cxl_host_bridge)];
+ 		struct platform_device *pdev;
  
+ 		pdev = platform_device_alloc("cxl_root_port", i);
 -- 
 2.34.1
 
