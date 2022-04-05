@@ -2,48 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A569C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:28:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C21EBC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:28:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382084AbiDEU30 (ORCPT
+        id S1382327AbiDEU3a (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 16:29:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43270 "EHLO
+        Tue, 5 Apr 2022 16:29:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46878 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349469AbiDEJtz (ORCPT
+        with ESMTP id S1354561AbiDEKOj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:49:55 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 192CDFD25;
-        Tue,  5 Apr 2022 02:46:49 -0700 (PDT)
+        Tue, 5 Apr 2022 06:14:39 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D7066B0B8;
+        Tue,  5 Apr 2022 03:00:51 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id AA31A6164D;
-        Tue,  5 Apr 2022 09:46:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BCD4AC385A2;
-        Tue,  5 Apr 2022 09:46:47 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9769661500;
+        Tue,  5 Apr 2022 10:00:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ACD74C385A4;
+        Tue,  5 Apr 2022 10:00:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649152008;
-        bh=3LxEPkMJu4WUWNwLsa7IzbFHRo3wh5QvDBNDMq0dVUQ=;
+        s=korg; t=1649152850;
+        bh=0ZUeWdXu1ZgtTPdMCy428BD2+xFElBllT5uy5kE9/yA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=EW9avq9Kgl6PHJh15BuKMotpDbcje5S2eLON40R829EQ5+kImCNfUSmv/uGDxtdtr
-         n/wRUc31uZawf+UH1AedZJ46RKIMKGyPDoX1BKF83+e41DWkhyY7iTzjrX5QWFmAUR
-         tQVI4tXLA1obz0EpAfrlRy32YmtdTlhlFi05geIs=
+        b=cBjDlrRF1nFZZXIhnZO4+vQ2HO38RQmLTj1gc9LXRpp09mzC0bdJZwkN+64/crF21
+         o/LRHKseqqAyms6bxi/xhgWlB4xGhWHweHTslzEq/bxkwWINSte6cO4eeAP/6LFCxZ
+         V8Mou0I68ScuxFDm9gI00lc10bJRr6RgaFh5AIMw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Rodolfo Giometti <giometti@enneenne.com>,
-        Robert Hancock <robert.hancock@calian.com>,
+        stable@vger.kernel.org, Zheyu Ma <zheyuma97@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 583/913] pps: clients: gpio: Propagate return value from pps_gpio_probe
-Date:   Tue,  5 Apr 2022 09:27:25 +0200
-Message-Id: <20220405070357.320464632@linuxfoundation.org>
+Subject: [PATCH 5.10 012/599] ethernet: sun: Free the coherent when failing in probing
+Date:   Tue,  5 Apr 2022 09:25:06 +0200
+Message-Id: <20220405070259.181233490@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
+References: <20220405070258.802373272@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -52,41 +51,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Robert Hancock <robert.hancock@calian.com>
+From: Zheyu Ma <zheyuma97@gmail.com>
 
-[ Upstream commit abaca3179b41d4b3b115f27814ee36f6fb45e897 ]
+[ Upstream commit bb77bd31c281f70ec77c9c4f584950a779e05cf8 ]
 
-If the pps-gpio driver was probed prior to the GPIO device it uses, the
-devm_gpiod_get call returned an -EPROBE_DEFER error, but pps_gpio_probe
-replaced that error code with -EINVAL, causing the pps-gpio probe to
-fail and not be retried later. Propagate the error return value so that
-deferred probe works properly.
+When the driver fails to register net device, it should free the DMA
+region first, and then do other cleanup.
 
-Fixes: 161520451dfa (pps: new client driver using GPIO)
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Acked-by: Rodolfo Giometti <giometti@enneenne.com>
-Signed-off-by: Robert Hancock <robert.hancock@calian.com>
-Signed-off-by: Rodolfo Giometti <giometti@enneenne.com>
-Link: https://lore.kernel.org/r/20220112205214.2060954-1-robert.hancock@calian.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pps/clients/pps-gpio.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/ethernet/sun/sunhme.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/pps/clients/pps-gpio.c b/drivers/pps/clients/pps-gpio.c
-index 35799e6401c9..2f4b11b4dfcd 100644
---- a/drivers/pps/clients/pps-gpio.c
-+++ b/drivers/pps/clients/pps-gpio.c
-@@ -169,7 +169,7 @@ static int pps_gpio_probe(struct platform_device *pdev)
- 	/* GPIO setup */
- 	ret = pps_gpio_setup(dev);
- 	if (ret)
--		return -EINVAL;
-+		return ret;
+diff --git a/drivers/net/ethernet/sun/sunhme.c b/drivers/net/ethernet/sun/sunhme.c
+index 54b53dbdb33c..69fc47089e62 100644
+--- a/drivers/net/ethernet/sun/sunhme.c
++++ b/drivers/net/ethernet/sun/sunhme.c
+@@ -3163,7 +3163,7 @@ static int happy_meal_pci_probe(struct pci_dev *pdev,
+ 	if (err) {
+ 		printk(KERN_ERR "happymeal(PCI): Cannot register net device, "
+ 		       "aborting.\n");
+-		goto err_out_iounmap;
++		goto err_out_free_coherent;
+ 	}
  
- 	/* IRQ setup */
- 	ret = gpiod_to_irq(data->gpio_pin);
+ 	pci_set_drvdata(pdev, hp);
+@@ -3196,6 +3196,10 @@ static int happy_meal_pci_probe(struct pci_dev *pdev,
+ 
+ 	return 0;
+ 
++err_out_free_coherent:
++	dma_free_coherent(hp->dma_dev, PAGE_SIZE,
++			  hp->happy_block, hp->hblock_dvma);
++
+ err_out_iounmap:
+ 	iounmap(hp->gregs);
+ 
 -- 
 2.34.1
 
