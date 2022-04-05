@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 76501C43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 616C3C433FE
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 01:48:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1843940AbiDFBmZ (ORCPT
+        id S1572958AbiDFBog (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 21:42:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60264 "EHLO
+        Tue, 5 Apr 2022 21:44:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39298 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356314AbiDEKXg (ORCPT
+        with ESMTP id S239460AbiDEKyt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:23:36 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5EC2BB0AE;
-        Tue,  5 Apr 2022 03:08:09 -0700 (PDT)
+        Tue, 5 Apr 2022 06:54:49 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75DFD167C6;
+        Tue,  5 Apr 2022 03:28:28 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7198B6176C;
-        Tue,  5 Apr 2022 10:08:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 86BEDC385A2;
-        Tue,  5 Apr 2022 10:08:07 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DAF956142E;
+        Tue,  5 Apr 2022 10:28:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EB769C385A1;
+        Tue,  5 Apr 2022 10:28:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649153287;
-        bh=R7jBaNNOIfBcdkDD1sAHN6W5EEcD4afMpqTGiA3CiWY=;
+        s=korg; t=1649154507;
+        bh=aKh0tHKvR74V6nM79eP3it47vBl/S2hzvwvQLmnZUAk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kDgYjHIWRB7bYX76Jlw5ninWbblEUBj1zY5Lv5FISAfA5BaO7yDOqVxa75SvHCb4Q
-         dS6//zvTpdZGYyHmpqDghPNFXA8/w5HoNso4z1UegdrDqQ8KHNqbP0j5fNW4FJn5zd
-         cez8gFXA52FyaZgChvquEnIf2eZAR/+2bAaEhX04=
+        b=TnTRrmtcWD/8neouT1PzSbmPmh9oBZOE2Kf4wa5PtteFlhCbQEIN0noXa5QqWf3SM
+         QNAQ9EXDd17TYiwBLYT9CD4Stcr+IE2i9aSoltth5HD76zhIZLLkU8O0YYSWbue9S+
+         rjefjyEprsJZLa43qBesnGVrN3k7Z/wh7bFVNneQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, David Howells <dhowells@redhat.com>,
-        "Fabio M. De Francesco" <fmdefrancesco@gmail.com>,
-        Sasha Levin <sashal@kernel.org>,
-        syzbot+d55757faa9b80590767b@syzkaller.appspotmail.com
-Subject: [PATCH 5.10 170/599] watch_queue: Fix NULL dereference in error cleanup
-Date:   Tue,  5 Apr 2022 09:27:44 +0200
-Message-Id: <20220405070303.901025767@linuxfoundation.org>
+        stable@vger.kernel.org, Sander Vanheule <sander@svanheule.net>,
+        =?UTF-8?q?Ar=C4=B1n=C3=A7=20=C3=9CNAL?= <arinc.unal@arinc9.com>
+Subject: [PATCH 5.10 573/599] staging: mt7621-dts: fix pinctrl-0 items to be size-1 items on ethernet
+Date:   Tue,  5 Apr 2022 09:34:27 +0200
+Message-Id: <20220405070315.894886253@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
 References: <20220405070258.802373272@linuxfoundation.org>
@@ -51,68 +49,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: David Howells <dhowells@redhat.com>
+From: Arınç ÜNAL <arinc.unal@arinc9.com>
 
-[ Upstream commit a635415a064e77bcfbf43da413fd9dfe0bbed9cb ]
+commit 25e4f5220efead592c83200241e098e757d37e1f upstream.
 
-In watch_queue_set_size(), the error cleanup code doesn't take account of
-the fact that __free_page() can't handle a NULL pointer when trying to free
-up buffer pages that did get allocated.
+Fix pinctrl-0 items under the ethernet node to be size-1 items.
+Current notation would be used on specifications with non-zero cells.
 
-Fix this by only calling __free_page() on the pages actually allocated.
-
-Without the fix, this can lead to something like the following:
-
-BUG: KASAN: null-ptr-deref in __free_pages+0x1f/0x1b0 mm/page_alloc.c:5473
-Read of size 4 at addr 0000000000000034 by task syz-executor168/3599
-...
-Call Trace:
- <TASK>
- __dump_stack lib/dump_stack.c:88 [inline]
- dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
- __kasan_report mm/kasan/report.c:446 [inline]
- kasan_report.cold+0x66/0xdf mm/kasan/report.c:459
- check_region_inline mm/kasan/generic.c:183 [inline]
- kasan_check_range+0x13d/0x180 mm/kasan/generic.c:189
- instrument_atomic_read include/linux/instrumented.h:71 [inline]
- atomic_read include/linux/atomic/atomic-instrumented.h:27 [inline]
- page_ref_count include/linux/page_ref.h:67 [inline]
- put_page_testzero include/linux/mm.h:717 [inline]
- __free_pages+0x1f/0x1b0 mm/page_alloc.c:5473
- watch_queue_set_size+0x499/0x630 kernel/watch_queue.c:275
- pipe_ioctl+0xac/0x2b0 fs/pipe.c:632
- vfs_ioctl fs/ioctl.c:51 [inline]
- __do_sys_ioctl fs/ioctl.c:874 [inline]
- __se_sys_ioctl fs/ioctl.c:860 [inline]
- __x64_sys_ioctl+0x193/0x200 fs/ioctl.c:860
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-
-Fixes: c73be61cede5 ("pipe: Add general notification queue support")
-Reported-and-tested-by: syzbot+d55757faa9b80590767b@syzkaller.appspotmail.com
-Signed-off-by: David Howells <dhowells@redhat.com>
-Reviewed-by: Fabio M. De Francesco <fmdefrancesco@gmail.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 0a93c0d75809 ("staging: mt7621-dts: fix pinctrl properties for ethernet")
+Reported-by: Sander Vanheule <sander@svanheule.net>
+Signed-off-by: Arınç ÜNAL <arinc.unal@arinc9.com>
+Link: https://lore.kernel.org/r/20220215081725.3463-1-arinc.unal@arinc9.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- kernel/watch_queue.c | 2 +-
+ drivers/staging/mt7621-dts/mt7621.dtsi |    2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/kernel/watch_queue.c b/kernel/watch_queue.c
-index e3f144d96026..45a8eb90e5fc 100644
---- a/kernel/watch_queue.c
-+++ b/kernel/watch_queue.c
-@@ -274,7 +274,7 @@ long watch_queue_set_size(struct pipe_inode_info *pipe, unsigned int nr_notes)
- 	return 0;
+--- a/drivers/staging/mt7621-dts/mt7621.dtsi
++++ b/drivers/staging/mt7621-dts/mt7621.dtsi
+@@ -413,7 +413,7 @@
+ 		mediatek,ethsys = <&ethsys>;
  
- error_p:
--	for (i = 0; i < nr_pages; i++)
-+	while (--i >= 0)
- 		__free_page(pages[i]);
- 	kfree(pages);
- error:
--- 
-2.34.1
-
+ 		pinctrl-names = "default";
+-		pinctrl-0 = <&rgmii1_pins &rgmii2_pins &mdio_pins>;
++		pinctrl-0 = <&mdio_pins>, <&rgmii1_pins>, <&rgmii2_pins>;
+ 
+ 		gmac0: mac@0 {
+ 			compatible = "mediatek,eth-mac";
 
 
