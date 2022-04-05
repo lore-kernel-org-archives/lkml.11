@@ -2,46 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 27FAAC35276
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 22:55:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E01E3C4167E
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 22:55:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1455415AbiDEWke (ORCPT
+        id S1455144AbiDEWkT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 18:40:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39808 "EHLO
+        Tue, 5 Apr 2022 18:40:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50696 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349439AbiDEJtw (ORCPT
+        with ESMTP id S1357384AbiDEK0Q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:49:52 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C3232612A;
-        Tue,  5 Apr 2022 02:45:57 -0700 (PDT)
+        Tue, 5 Apr 2022 06:26:16 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BF4A2C676;
+        Tue,  5 Apr 2022 03:10:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id ED5E061673;
-        Tue,  5 Apr 2022 09:45:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 085BAC385A2;
-        Tue,  5 Apr 2022 09:45:55 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E5AB5B81C98;
+        Tue,  5 Apr 2022 10:10:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3F8CBC385A3;
+        Tue,  5 Apr 2022 10:10:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649151956;
-        bh=vlsDkRIrg9lVMWtGIcEFZ5hEXMuZHl/txAJWCN+u1qw=;
+        s=korg; t=1649153405;
+        bh=gMbvZ05ZpJKtXwRjQP06B4ijX/7d6xDwGRztoLLbyAs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dBlY9BM4N7DWnd1lRQ2kxf2JNO3FTiObGXicreLCZFaIQKdpHvlv2iS+HFaLPi9rs
-         dy1L5Ef3sFKXXNN9rmevA21ddlvCitFECkdT6f3fPgPpZCeHoC6SzQMbTp24yyD4UA
-         lT6Rorfd+7DamsloMog/yFXaH0jqv2G4pITHlsQ4=
+        b=JE00Fbm76y2yFMWW+Fd7t0MmS7mDN9jjXTHqfBLWtvCK8IgbNS9zwPJWfS0/YAEMe
+         39e2EEMBN4nFFaE6QGubLxom1Ar4CbW7jwAko2Vr/KM2/UVcv/wevhFtC3tYT3WjLW
+         ZE/+caxFKzQ6LSekzLfW++pT7pfpuMDGOds1RCpU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Trond Myklebust <trond.myklebust@hammerspace.com>,
+        Paul Kocialkowski <paul.kocialkowski@bootlin.com>,
+        Maxime Ripard <maxime@cerno.tech>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 602/913] NFS: Use of mapping_set_error() results in spurious errors
-Date:   Tue,  5 Apr 2022 09:27:44 +0200
-Message-Id: <20220405070357.886289136@linuxfoundation.org>
+Subject: [PATCH 5.10 212/599] ARM: dts: sun8i: v3s: Move the csi1 block to follow address order
+Date:   Tue,  5 Apr 2022 09:28:26 +0200
+Message-Id: <20220405070305.150190421@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
+References: <20220405070258.802373272@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,39 +51,62 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Trond Myklebust <trond.myklebust@hammerspace.com>
+From: Paul Kocialkowski <paul.kocialkowski@bootlin.com>
 
-[ Upstream commit 6c984083ec2453dfd3fcf98f392f34500c73e3f2 ]
+[ Upstream commit c4af51698c4fb4fc683f2ac67f482cdf9ba2cd13 ]
 
-The use of mapping_set_error() in conjunction with calls to
-filemap_check_errors() is problematic because every error gets reported
-as either an EIO or an ENOSPC by filemap_check_errors() in functions
-such as filemap_write_and_wait() or filemap_write_and_wait_range().
-In almost all cases, we prefer to use the more nuanced wb errors.
+The csi1 block node was mistakenly added before the gic node, although
+its address comes after the gic's. Move the node to its correct
+position.
 
-Fixes: b8946d7bfb94 ("NFS: Revalidate the file mapping on all fatal writeback errors")
-Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
+Fixes: 90e048101fa1 ("ARM: dts: sun8i: V3/V3s/S3/S3L: add CSI1 device node")
+Signed-off-by: Paul Kocialkowski <paul.kocialkowski@bootlin.com>
+Signed-off-by: Maxime Ripard <maxime@cerno.tech>
+Link: https://lore.kernel.org/r/20220205185429.2278860-2-paul.kocialkowski@bootlin.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/nfs/write.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ arch/arm/boot/dts/sun8i-v3s.dtsi | 22 +++++++++++-----------
+ 1 file changed, 11 insertions(+), 11 deletions(-)
 
-diff --git a/fs/nfs/write.c b/fs/nfs/write.c
-index 7dce3e735fc5..0691b0b02147 100644
---- a/fs/nfs/write.c
-+++ b/fs/nfs/write.c
-@@ -314,7 +314,10 @@ static void nfs_mapping_set_error(struct page *page, int error)
- 	struct address_space *mapping = page_file_mapping(page);
+diff --git a/arch/arm/boot/dts/sun8i-v3s.dtsi b/arch/arm/boot/dts/sun8i-v3s.dtsi
+index 89abd4cc7e23..b21ecb820b13 100644
+--- a/arch/arm/boot/dts/sun8i-v3s.dtsi
++++ b/arch/arm/boot/dts/sun8i-v3s.dtsi
+@@ -524,6 +524,17 @@
+ 			#size-cells = <0>;
+ 		};
  
- 	SetPageError(page);
--	mapping_set_error(mapping, error);
-+	filemap_set_wb_err(mapping, error);
-+	if (mapping->host)
-+		errseq_set(&mapping->host->i_sb->s_wb_err,
-+			   error == -ENOSPC ? -ENOSPC : -EIO);
- 	nfs_set_pageerror(mapping);
- }
- 
++		gic: interrupt-controller@1c81000 {
++			compatible = "arm,gic-400";
++			reg = <0x01c81000 0x1000>,
++			      <0x01c82000 0x2000>,
++			      <0x01c84000 0x2000>,
++			      <0x01c86000 0x2000>;
++			interrupt-controller;
++			#interrupt-cells = <3>;
++			interrupts = <GIC_PPI 9 (GIC_CPU_MASK_SIMPLE(4) | IRQ_TYPE_LEVEL_HIGH)>;
++		};
++
+ 		csi1: camera@1cb4000 {
+ 			compatible = "allwinner,sun8i-v3s-csi";
+ 			reg = <0x01cb4000 0x3000>;
+@@ -535,16 +546,5 @@
+ 			resets = <&ccu RST_BUS_CSI>;
+ 			status = "disabled";
+ 		};
+-
+-		gic: interrupt-controller@1c81000 {
+-			compatible = "arm,gic-400";
+-			reg = <0x01c81000 0x1000>,
+-			      <0x01c82000 0x2000>,
+-			      <0x01c84000 0x2000>,
+-			      <0x01c86000 0x2000>;
+-			interrupt-controller;
+-			#interrupt-cells = <3>;
+-			interrupts = <GIC_PPI 9 (GIC_CPU_MASK_SIMPLE(4) | IRQ_TYPE_LEVEL_HIGH)>;
+-		};
+ 	};
+ };
 -- 
 2.34.1
 
