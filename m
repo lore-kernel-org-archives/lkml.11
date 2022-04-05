@@ -2,42 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 60D4BC47082
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E19CC352AA
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 14:31:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1387195AbiDEOah (ORCPT
+        id S1387147AbiDEOaR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 10:30:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40998 "EHLO
+        Tue, 5 Apr 2022 10:30:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40174 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240305AbiDEJeC (ORCPT
+        with ESMTP id S240044AbiDEJeB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:34:02 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1AA936E34B;
-        Tue,  5 Apr 2022 02:23:42 -0700 (PDT)
+        Tue, 5 Apr 2022 05:34:01 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1155780233;
+        Tue,  5 Apr 2022 02:23:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A6CB16165C;
-        Tue,  5 Apr 2022 09:23:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B2FCEC385A2;
-        Tue,  5 Apr 2022 09:23:40 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BD614B81C8B;
+        Tue,  5 Apr 2022 09:23:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 099AEC385A2;
+        Tue,  5 Apr 2022 09:23:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649150621;
-        bh=/vSptA5YddKrMRYEVwozcLIsPiINX27TrXq69pfeqmQ=;
+        s=korg; t=1649150599;
+        bh=yd6u9ETwkDQ70bORWJl2+AWajsudmLZn14KtxPA5cqE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=zFBOHa2fxaiXd01QzwZCuF+2ArZcMEqmsscE9Y/145DO9e8VHVbb2zPHcOdZS+Ref
-         jQeqjgnfAkI9Ce5O5Mok6nYJsWmPRWOCAdXx08MiTU05ApUkDTJU5nENQ96MOizu4k
-         NBWzs69g/ya+wCG4zZ/rc+O0eyuc+zKN12YqnT4o=
+        b=o5ev8uv4InJZ0CBF1js6XPoFV7RoxDmdERUTNOxKtUUX9w+LdMzdaRfvn5ybMvDxv
+         +tEfxCZZ/khKFT4HRIe601mkfwFX/O7o2LGNkbVlTzav7OtoNqbXIvEeghrDdiPsn0
+         hMxbLy9VTBFXUqyj0xq9PvoNkc3G1U+peVcmoUgU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Andreas Gruenbacher <agruenba@redhat.com>,
-        Anand Jain <anand.jain@oracle.com>
-Subject: [PATCH 5.15 119/913] powerpc/kvm: Fix kvm_use_magic_page
-Date:   Tue,  5 Apr 2022 09:19:41 +0200
-Message-Id: <20220405070343.394194028@linuxfoundation.org>
+        stable@vger.kernel.org, Rik van Riel <riel@surriel.com>,
+        Miaohe Lin <linmiaohe@huawei.com>,
+        Naoya Horiguchi <naoya.horiguchi@nec.com>,
+        Oscar Salvador <osalvador@suse.de>,
+        John Hubbard <jhubbard@nvidia.com>,
+        Mel Gorman <mgorman@suse.de>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Matthew Wilcox <willy@infradead.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Subject: [PATCH 5.15 085/913] mm: invalidate hwpoison page cache page in fault path
+Date:   Tue,  5 Apr 2022 09:19:07 +0200
+Message-Id: <20220405070342.370386312@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
 References: <20220405070339.801210740@linuxfoundation.org>
@@ -49,33 +57,63 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Andreas Gruenbacher <agruenba@redhat.com>
+From: Rik van Riel <riel@surriel.com>
 
-commit 0c8eb2884a42d992c7726539328b7d3568f22143 upstream.
+commit e53ac7374e64dede04d745ff0e70ff5048378d1f upstream.
 
-When switching from __get_user to fault_in_pages_readable, commit
-9f9eae5ce717 broke kvm_use_magic_page: like __get_user,
-fault_in_pages_readable returns 0 on success.
+Sometimes the page offlining code can leave behind a hwpoisoned clean
+page cache page.  This can lead to programs being killed over and over
+and over again as they fault in the hwpoisoned page, get killed, and
+then get re-spawned by whatever wanted to run them.
 
-Fixes: 9f9eae5ce717 ("powerpc/kvm: Prefer fault_in_pages_readable function")
-Cc: stable@vger.kernel.org # v4.18+
-Signed-off-by: Andreas Gruenbacher <agruenba@redhat.com>
-Signed-off-by: Anand Jain <anand.jain@oracle.com>
+This is particularly embarrassing when the page was offlined due to
+having too many corrected memory errors.  Now we are killing tasks due
+to them trying to access memory that probably isn't even corrupted.
+
+This problem can be avoided by invalidating the page from the page fault
+handler, which already has a branch for dealing with these kinds of
+pages.  With this patch we simply pretend the page fault was successful
+if the page was invalidated, return to userspace, incur another page
+fault, read in the file from disk (to a new memory page), and then
+everything works again.
+
+Link: https://lkml.kernel.org/r/20220212213740.423efcea@imladris.surriel.com
+Signed-off-by: Rik van Riel <riel@surriel.com>
+Reviewed-by: Miaohe Lin <linmiaohe@huawei.com>
+Acked-by: Naoya Horiguchi <naoya.horiguchi@nec.com>
+Reviewed-by: Oscar Salvador <osalvador@suse.de>
+Cc: John Hubbard <jhubbard@nvidia.com>
+Cc: Mel Gorman <mgorman@suse.de>
+Cc: Johannes Weiner <hannes@cmpxchg.org>
+Cc: Matthew Wilcox <willy@infradead.org>
+Cc: <stable@vger.kernel.org>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/powerpc/kernel/kvm.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ mm/memory.c |    9 +++++++--
+ 1 file changed, 7 insertions(+), 2 deletions(-)
 
---- a/arch/powerpc/kernel/kvm.c
-+++ b/arch/powerpc/kernel/kvm.c
-@@ -669,7 +669,7 @@ static void __init kvm_use_magic_page(vo
- 	on_each_cpu(kvm_map_magic_page, &features, 1);
+--- a/mm/memory.c
++++ b/mm/memory.c
+@@ -3861,11 +3861,16 @@ static vm_fault_t __do_fault(struct vm_f
+ 		return ret;
  
- 	/* Quick self-test to see if the mapping works */
--	if (!fault_in_pages_readable((const char *)KVM_MAGIC_PAGE, sizeof(u32))) {
-+	if (fault_in_pages_readable((const char *)KVM_MAGIC_PAGE, sizeof(u32))) {
- 		kvm_patching_worked = false;
- 		return;
+ 	if (unlikely(PageHWPoison(vmf->page))) {
+-		if (ret & VM_FAULT_LOCKED)
++		vm_fault_t poisonret = VM_FAULT_HWPOISON;
++		if (ret & VM_FAULT_LOCKED) {
++			/* Retry if a clean page was removed from the cache. */
++			if (invalidate_inode_page(vmf->page))
++				poisonret = 0;
+ 			unlock_page(vmf->page);
++		}
+ 		put_page(vmf->page);
+ 		vmf->page = NULL;
+-		return VM_FAULT_HWPOISON;
++		return poisonret;
  	}
+ 
+ 	if (unlikely(!(ret & VM_FAULT_LOCKED)))
 
 
