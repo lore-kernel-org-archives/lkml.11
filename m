@@ -2,47 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E01E3C4167E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EED0BC46467
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 22:55:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1455144AbiDEWkT (ORCPT
+        id S1455165AbiDEWkX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 18:40:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50696 "EHLO
+        Tue, 5 Apr 2022 18:40:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39466 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357384AbiDEK0Q (ORCPT
+        with ESMTP id S1349307AbiDEJtg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:26:16 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BF4A2C676;
-        Tue,  5 Apr 2022 03:10:08 -0700 (PDT)
+        Tue, 5 Apr 2022 05:49:36 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB9AFB99;
+        Tue,  5 Apr 2022 02:43:52 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E5AB5B81C98;
-        Tue,  5 Apr 2022 10:10:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3F8CBC385A3;
-        Tue,  5 Apr 2022 10:10:05 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5AC6061368;
+        Tue,  5 Apr 2022 09:43:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 61CF4C385A2;
+        Tue,  5 Apr 2022 09:43:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649153405;
-        bh=gMbvZ05ZpJKtXwRjQP06B4ijX/7d6xDwGRztoLLbyAs=;
+        s=korg; t=1649151831;
+        bh=uQoHJ3NW9CnApT7MV8GyRFwYt2MTapU0cySGZldJvYo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JE00Fbm76y2yFMWW+Fd7t0MmS7mDN9jjXTHqfBLWtvCK8IgbNS9zwPJWfS0/YAEMe
-         39e2EEMBN4nFFaE6QGubLxom1Ar4CbW7jwAko2Vr/KM2/UVcv/wevhFtC3tYT3WjLW
-         ZE/+caxFKzQ6LSekzLfW++pT7pfpuMDGOds1RCpU=
+        b=ax4sgprKOyNRtQSJ2FMKXrkV0l09CPyv9OShtF78PdE1sxz8azt/3oGl+n17o7iYS
+         1dGsdEdJ7D7PEN2OjiYZS08znanJabm+JAE4IgX9NDbzGQUX2tVqA+UK+m1jZYem3+
+         6rya1Nj1+7KqrbbHgPUr5/Hj1hrC2KLHzyIccLwU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Paul Kocialkowski <paul.kocialkowski@bootlin.com>,
-        Maxime Ripard <maxime@cerno.tech>,
+        stable@vger.kernel.org, Niels Dossche <dossche.niels@gmail.com>,
+        Marcel Holtmann <marcel@holtmann.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 212/599] ARM: dts: sun8i: v3s: Move the csi1 block to follow address order
-Date:   Tue,  5 Apr 2022 09:28:26 +0200
-Message-Id: <20220405070305.150190421@linuxfoundation.org>
+Subject: [PATCH 5.15 557/913] Bluetooth: call hci_le_conn_failed with hdev lock in hci_le_conn_failed
+Date:   Tue,  5 Apr 2022 09:26:59 +0200
+Message-Id: <20220405070356.542777819@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,62 +50,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Paul Kocialkowski <paul.kocialkowski@bootlin.com>
+From: Niels Dossche <dossche.niels@gmail.com>
 
-[ Upstream commit c4af51698c4fb4fc683f2ac67f482cdf9ba2cd13 ]
+[ Upstream commit 9fa6b4cda3b414e990f008f45f9bcecbcb54d4d1 ]
 
-The csi1 block node was mistakenly added before the gic node, although
-its address comes after the gic's. Move the node to its correct
-position.
+hci_le_conn_failed function's documentation says that the caller must
+hold hdev->lock. The only callsite that does not hold that lock is
+hci_le_conn_failed. The other 3 callsites hold the hdev->lock very
+locally. The solution is to hold the lock during the call to
+hci_le_conn_failed.
 
-Fixes: 90e048101fa1 ("ARM: dts: sun8i: V3/V3s/S3/S3L: add CSI1 device node")
-Signed-off-by: Paul Kocialkowski <paul.kocialkowski@bootlin.com>
-Signed-off-by: Maxime Ripard <maxime@cerno.tech>
-Link: https://lore.kernel.org/r/20220205185429.2278860-2-paul.kocialkowski@bootlin.com
+Fixes: 3c857757ef6e ("Bluetooth: Add directed advertising support through connect()")
+Signed-off-by: Niels Dossche <dossche.niels@gmail.com>
+Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/boot/dts/sun8i-v3s.dtsi | 22 +++++++++++-----------
- 1 file changed, 11 insertions(+), 11 deletions(-)
+ net/bluetooth/hci_conn.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/arch/arm/boot/dts/sun8i-v3s.dtsi b/arch/arm/boot/dts/sun8i-v3s.dtsi
-index 89abd4cc7e23..b21ecb820b13 100644
---- a/arch/arm/boot/dts/sun8i-v3s.dtsi
-+++ b/arch/arm/boot/dts/sun8i-v3s.dtsi
-@@ -524,6 +524,17 @@
- 			#size-cells = <0>;
- 		};
+diff --git a/net/bluetooth/hci_conn.c b/net/bluetooth/hci_conn.c
+index 2b5059a56cda..7a7e92be1652 100644
+--- a/net/bluetooth/hci_conn.c
++++ b/net/bluetooth/hci_conn.c
+@@ -541,7 +541,9 @@ static void le_conn_timeout(struct work_struct *work)
+ 	if (conn->role == HCI_ROLE_SLAVE) {
+ 		/* Disable LE Advertising */
+ 		le_disable_advertising(hdev);
++		hci_dev_lock(hdev);
+ 		hci_le_conn_failed(conn, HCI_ERROR_ADVERTISING_TIMEOUT);
++		hci_dev_unlock(hdev);
+ 		return;
+ 	}
  
-+		gic: interrupt-controller@1c81000 {
-+			compatible = "arm,gic-400";
-+			reg = <0x01c81000 0x1000>,
-+			      <0x01c82000 0x2000>,
-+			      <0x01c84000 0x2000>,
-+			      <0x01c86000 0x2000>;
-+			interrupt-controller;
-+			#interrupt-cells = <3>;
-+			interrupts = <GIC_PPI 9 (GIC_CPU_MASK_SIMPLE(4) | IRQ_TYPE_LEVEL_HIGH)>;
-+		};
-+
- 		csi1: camera@1cb4000 {
- 			compatible = "allwinner,sun8i-v3s-csi";
- 			reg = <0x01cb4000 0x3000>;
-@@ -535,16 +546,5 @@
- 			resets = <&ccu RST_BUS_CSI>;
- 			status = "disabled";
- 		};
--
--		gic: interrupt-controller@1c81000 {
--			compatible = "arm,gic-400";
--			reg = <0x01c81000 0x1000>,
--			      <0x01c82000 0x2000>,
--			      <0x01c84000 0x2000>,
--			      <0x01c86000 0x2000>;
--			interrupt-controller;
--			#interrupt-cells = <3>;
--			interrupts = <GIC_PPI 9 (GIC_CPU_MASK_SIMPLE(4) | IRQ_TYPE_LEVEL_HIGH)>;
--		};
- 	};
- };
 -- 
 2.34.1
 
