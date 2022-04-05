@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 48C75C35274
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 14:20:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A299C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 14:20:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384481AbiDEOSH (ORCPT
+        id S1384564AbiDEOSN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 10:18:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55688 "EHLO
+        Tue, 5 Apr 2022 10:18:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40740 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239002AbiDEJdP (ORCPT
+        with ESMTP id S239005AbiDEJdP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Apr 2022 05:33:15 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA77AAE76;
-        Tue,  5 Apr 2022 02:21:25 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 349A71D0FB;
+        Tue,  5 Apr 2022 02:21:38 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7655B61659;
-        Tue,  5 Apr 2022 09:21:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 785F6C385A2;
-        Tue,  5 Apr 2022 09:21:24 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E4FB7B81C6F;
+        Tue,  5 Apr 2022 09:21:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4FC95C385A2;
+        Tue,  5 Apr 2022 09:21:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649150484;
-        bh=GI69kqRZ/96tdDLJ7TS13wmPucNv5WoL1rV8SBNQJ00=;
+        s=korg; t=1649150495;
+        bh=3TnHiDcoE4UN7piXzw8IEQIziQxDeP2KahwoBf8cuVg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=zsJkViU49TlXaCs0rCheEHZCaYhfeHBW/hnWN6x63hBbwxvGgEMTdOmvOOV7OYqAr
-         MErQOL10/cndXoA+1Aa4XBvu1IK6h+5Qbg+IHdzscM/N01YqsrYHtb3DReyhnwyEtm
-         U9E7itOgSmktWRHZ1boLMx5FIhpwx0QBeHIw20ec=
+        b=rOVuOE+JM5IFVUpNiJIaERhtcJghxBdC2+eh67aGBGovCJlw72BE1OrYeYhmG/bDY
+         tsH+pkyATvWvEYw5Zv3SocE8meD35nQuHUiijuX1lBXvqlWU6+ll9EshiqbBoTrSTz
+         cs5seFWpMK1oAj/9jD58wIPaWcdjGjNGTuWlHvoc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaohe Lin <linmiaohe@huawei.com>,
-        "Eric W. Biederman" <ebiederm@xmission.com>
-Subject: [PATCH 5.15 071/913] mm/mlock: fix two bugs in user_shm_lock()
-Date:   Tue,  5 Apr 2022 09:18:53 +0200
-Message-Id: <20220405070341.952843038@linuxfoundation.org>
+        stable@vger.kernel.org, Mason Yang <masonccyang@mxic.com.tw>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Zhengxun Li <zhengxunli@mxic.com.tw>,
+        Mark Brown <broonie@kernel.org>
+Subject: [PATCH 5.15 075/913] spi: mxic: Fix the transmit path
+Date:   Tue,  5 Apr 2022 09:18:57 +0200
+Message-Id: <20220405070342.072193500@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
 References: <20220405070339.801210740@linuxfoundation.org>
@@ -49,51 +51,66 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaohe Lin <linmiaohe@huawei.com>
+From: Miquel Raynal <miquel.raynal@bootlin.com>
 
-commit e97824ff663ce3509fe040431c713182c2f058b1 upstream.
+commit 5fd6739e0df7e320bcac103dfb95fe75941fea17 upstream.
 
-user_shm_lock forgets to set allowed to 0 when get_ucounts fails. So the
-later user_shm_unlock might do the extra dec_rlimit_ucounts. Also in the
-RLIM_INFINITY case, user_shm_lock will success regardless of the value of
-memlock where memblock == LONG_MAX && !capable(CAP_IPC_LOCK) should fail.
-Fix all of these by changing the code to leave lock_limit at ULONG_MAX aka
-RLIM_INFINITY, leave "allowed" initialized to 0 and remove the special case
-of RLIM_INFINITY as nothing can be greater than ULONG_MAX.
+By working with external hardware ECC engines, we figured out that
+Under certain circumstances, it is needed for the SPI controller to
+check INT_TX_EMPTY and INT_RX_NOT_EMPTY in both receive and transmit
+path (not only in the receive path). The delay penalty being
+negligible, move this code in the common path.
 
-Credit goes to Eric W. Biederman for proposing simplifying the code and
-thus catching the later bug.
-
-Fixes: d7c9e99aee48 ("Reimplement RLIMIT_MEMLOCK on top of ucounts")
-Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
+Fixes: b942d80b0a39 ("spi: Add MXIC controller driver")
 Cc: stable@vger.kernel.org
-v1: https://lkml.kernel.org/r/20220310132417.41189-1-linmiaohe@huawei.com
-v2: https://lkml.kernel.org/r/20220314064039.62972-1-linmiaohe@huawei.com
-Link: https://lkml.kernel.org/r/20220322080918.59861-1-linmiaohe@huawei.com
-Signed-off-by: Eric W. Biederman <ebiederm@xmission.com>
+Suggested-by: Mason Yang <masonccyang@mxic.com.tw>
+Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+Reviewed-by: Zhengxun Li <zhengxunli@mxic.com.tw>
+Reviewed-by: Mark Brown <broonie@kernel.org>
+Link: https://lore.kernel.org/linux-mtd/20220127091808.1043392-10-miquel.raynal@bootlin.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- mm/mlock.c |    7 +++----
- 1 file changed, 3 insertions(+), 4 deletions(-)
+ drivers/spi/spi-mxic.c |   26 +++++++++++---------------
+ 1 file changed, 11 insertions(+), 15 deletions(-)
 
---- a/mm/mlock.c
-+++ b/mm/mlock.c
-@@ -826,13 +826,12 @@ int user_shm_lock(size_t size, struct uc
+--- a/drivers/spi/spi-mxic.c
++++ b/drivers/spi/spi-mxic.c
+@@ -304,25 +304,21 @@ static int mxic_spi_data_xfer(struct mxi
  
- 	locked = (size + PAGE_SIZE - 1) >> PAGE_SHIFT;
- 	lock_limit = rlimit(RLIMIT_MEMLOCK);
--	if (lock_limit == RLIM_INFINITY)
--		allowed = 1;
--	lock_limit >>= PAGE_SHIFT;
-+	if (lock_limit != RLIM_INFINITY)
-+		lock_limit >>= PAGE_SHIFT;
- 	spin_lock(&shmlock_user_lock);
- 	memlock = inc_rlimit_ucounts(ucounts, UCOUNT_RLIMIT_MEMLOCK, locked);
+ 		writel(data, mxic->regs + TXD(nbytes % 4));
  
--	if (!allowed && (memlock == LONG_MAX || memlock > lock_limit) && !capable(CAP_IPC_LOCK)) {
-+	if ((memlock == LONG_MAX || memlock > lock_limit) && !capable(CAP_IPC_LOCK)) {
- 		dec_rlimit_ucounts(ucounts, UCOUNT_RLIMIT_MEMLOCK, locked);
- 		goto out;
- 	}
+-		if (rxbuf) {
+-			ret = readl_poll_timeout(mxic->regs + INT_STS, sts,
+-						 sts & INT_TX_EMPTY, 0,
+-						 USEC_PER_SEC);
+-			if (ret)
+-				return ret;
++		ret = readl_poll_timeout(mxic->regs + INT_STS, sts,
++					 sts & INT_TX_EMPTY, 0, USEC_PER_SEC);
++		if (ret)
++			return ret;
+ 
+-			ret = readl_poll_timeout(mxic->regs + INT_STS, sts,
+-						 sts & INT_RX_NOT_EMPTY, 0,
+-						 USEC_PER_SEC);
+-			if (ret)
+-				return ret;
++		ret = readl_poll_timeout(mxic->regs + INT_STS, sts,
++					 sts & INT_RX_NOT_EMPTY, 0,
++					 USEC_PER_SEC);
++		if (ret)
++			return ret;
+ 
+-			data = readl(mxic->regs + RXD);
++		data = readl(mxic->regs + RXD);
++		if (rxbuf) {
+ 			data >>= (8 * (4 - nbytes));
+ 			memcpy(rxbuf + pos, &data, nbytes);
+-			WARN_ON(readl(mxic->regs + INT_STS) & INT_RX_NOT_EMPTY);
+-		} else {
+-			readl(mxic->regs + RXD);
+ 		}
+ 		WARN_ON(readl(mxic->regs + INT_STS) & INT_RX_NOT_EMPTY);
+ 
 
 
