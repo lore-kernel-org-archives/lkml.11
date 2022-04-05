@@ -2,45 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E9DD1C4321E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CA9B3C4167D
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:41:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1578232AbiDEXTH (ORCPT
+        id S1578217AbiDEXTF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 19:19:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39738 "EHLO
+        Tue, 5 Apr 2022 19:19:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50662 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348921AbiDEJsr (ORCPT
+        with ESMTP id S1357137AbiDEKZn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:48:47 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45FB5EE4ED;
-        Tue,  5 Apr 2022 02:37:33 -0700 (PDT)
+        Tue, 5 Apr 2022 06:25:43 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96C1F53E0F;
+        Tue,  5 Apr 2022 03:09:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D5F6061368;
-        Tue,  5 Apr 2022 09:37:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E5452C385A2;
-        Tue,  5 Apr 2022 09:37:31 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 22A62616E7;
+        Tue,  5 Apr 2022 10:09:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 30C01C385A0;
+        Tue,  5 Apr 2022 10:09:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649151452;
-        bh=PcI19hqCNDQNOO07Q9W/VnngPzZoICRke9OEaBIjGf0=;
+        s=korg; t=1649153375;
+        bh=OV47iBJ5fsFk1E4W5Sw81qOODEtHY8MEP71aX2/Lg+A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Xzl2g0MTsShWMOO67zbjV3v7wJyONiMqkWi+cr7ZRHvSpkQXGayTgAk/ZeTgBUVo5
-         39vytaA1OcNmfiCBtp9rP7Ps4fKxw/LkmjgX+XtsyjYpJHCU1hQhzQNTA5gxu50Qk+
-         veDnk3gxMWOcE/lUJD0CVQwBng37TvergU61kfz8=
+        b=2sLKwxFYGiKfC5ptjrPslQhJ6s5FYO/a77X6rbvmK56df+3uZXBl6lHZVpAs3mVb5
+         sdOTb9JtGMbIyCDXtascdRG2boR/UT2IuPdVngzOwnbOkI1WZwMFAV2i5vvBHPfuoV
+         843sGPQHJbwucFiZOySyjyAuUNypXpj7nudUHMYQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Lorenzo Bianconi <lorenzo@kernel.org>,
-        Felix Fietkau <nbd@nbd.name>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 421/913] mt76: connac: fix sta_rec_wtbl tag len
-Date:   Tue,  5 Apr 2022 09:24:43 +0200
-Message-Id: <20220405070352.465463203@linuxfoundation.org>
+        stable@vger.kernel.org, Sam Ravnborg <sam@ravnborg.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 198/599] video: fbdev: controlfb: Fix set but not used warnings
+Date:   Tue,  5 Apr 2022 09:28:12 +0200
+Message-Id: <20220405070304.732913507@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
+References: <20220405070258.802373272@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,34 +53,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lorenzo Bianconi <lorenzo@kernel.org>
+From: Sam Ravnborg <sam@ravnborg.org>
 
-[ Upstream commit 74c337ec0905d99111fc63a15f2e0784b9ed5503 ]
+[ Upstream commit 4aca4dbcac9d8eed8a8dc15b6883270a20a84218 ]
 
-Similar to mt7915 driver, fix tag len error for sta_rec_wtbl, which
-causes fw parsing error for the tags placed behind it.
+The controlfb driver has a number of dummy defines for IO operations.
+They were introduced in commit a07a63b0e24d
+("video: fbdev: controlfb: add COMPILE_TEST support").
 
-Fixes: d0e274af2f2e4 ("mt76: mt76_connac: create mcu library")
-Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
-Signed-off-by: Felix Fietkau <nbd@nbd.name>
+The write variants did not use their value parameter in the
+dummy versions, resulting in set but not used warnings.
+Fix this by adding "(void)val" to silence the compiler.
+
+Signed-off-by: Sam Ravnborg <sam@ravnborg.org>
+Acked-by: Thomas Zimmermann <tzimmermann@suse.de>
+Cc: Sam Ravnborg <sam@ravnborg.org>
+Cc: Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>
+Cc: "Gustavo A. R. Silva" <gustavoars@kernel.org>
+Cc: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://patchwork.freedesktop.org/patch/msgid/20201206190247.1861316-13-sam@ravnborg.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/mediatek/mt76/mt76_connac_mcu.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/video/fbdev/controlfb.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/wireless/mediatek/mt76/mt76_connac_mcu.c b/drivers/net/wireless/mediatek/mt76/mt76_connac_mcu.c
-index d25b50e76932..017bd59c4ea8 100644
---- a/drivers/net/wireless/mediatek/mt76/mt76_connac_mcu.c
-+++ b/drivers/net/wireless/mediatek/mt76/mt76_connac_mcu.c
-@@ -295,7 +295,7 @@ mt76_connac_mcu_alloc_wtbl_req(struct mt76_dev *dev, struct mt76_wcid *wcid,
- 	}
- 
- 	if (sta_hdr)
--		sta_hdr->len = cpu_to_le16(sizeof(hdr));
-+		le16_add_cpu(&sta_hdr->len, sizeof(hdr));
- 
- 	return skb_put_data(nskb, &hdr, sizeof(hdr));
- }
+diff --git a/drivers/video/fbdev/controlfb.c b/drivers/video/fbdev/controlfb.c
+index 2df56bd303d2..509311471d51 100644
+--- a/drivers/video/fbdev/controlfb.c
++++ b/drivers/video/fbdev/controlfb.c
+@@ -64,9 +64,9 @@
+ #undef in_le32
+ #undef out_le32
+ #define in_8(addr)		0
+-#define out_8(addr, val)
++#define out_8(addr, val)	(void)(val)
+ #define in_le32(addr)		0
+-#define out_le32(addr, val)
++#define out_le32(addr, val)	(void)(val)
+ #define pgprot_cached_wthru(prot) (prot)
+ #else
+ static void invalid_vram_cache(void __force *addr)
 -- 
 2.34.1
 
