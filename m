@@ -2,45 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F3F40C352A8
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 13:32:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E416C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 13:32:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357594AbiDEN31 (ORCPT
+        id S1380310AbiDEN35 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 09:29:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43066 "EHLO
+        Tue, 5 Apr 2022 09:29:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44282 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345261AbiDEJWX (ORCPT
+        with ESMTP id S1345314AbiDEJWZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:22:23 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DC9A3E5C9;
-        Tue,  5 Apr 2022 02:10:02 -0700 (PDT)
+        Tue, 5 Apr 2022 05:22:25 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A43C43389;
+        Tue,  5 Apr 2022 02:10:25 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 231E561003;
-        Tue,  5 Apr 2022 09:10:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3ADC4C385A2;
-        Tue,  5 Apr 2022 09:10:01 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9070C614FC;
+        Tue,  5 Apr 2022 09:10:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9930AC385A0;
+        Tue,  5 Apr 2022 09:10:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649149801;
-        bh=GsAv312AdYmmt1e+wMqZIwMIBSqRjZ1+lgs4z1QfSXo=;
+        s=korg; t=1649149824;
+        bh=jpH1FFqHwA9Rcvx435BbU8+Ijry2x5lxT/g9E4on9Sg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lSeJOBgK80nxw8wQ7vV/hlN/sk36Ya6XJfLyfBK86/tifxY2YR6d33pKl7ldTNRUI
-         8ETtCA2FQ+7qvcjxFPFSZwMRU6UD3ShOTerYlbgiI3s/nj4yT7eQXULNchcMr0tJUy
-         FXInnObAOLhJ49xSXRT9STdqXgNPeeSPUh3GyX5g=
+        b=jxOtjWoivyK8oriC7ruazGHIU1QBCQCm7ioTEnR6Oarh9vt5UhRp90055mJLIriWk
+         oj9ofKr2fbaZWHXU4s0JvNHWcAauNt+S4ToefpoEq5dSK4VcLop82LbPXYv/Rc63Fo
+         I9tc5exSNNl2JUl/xENIWoMS7IHOkF8Kls4cUEIg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, syzkaller <syzkaller@googlegroups.com>,
-        Dongliang Mu <mudongliangabcd@gmail.com>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        stable@vger.kernel.org, Ulf Hansson <ulf.hansson@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0847/1017] media: hdpvr: initialize dev->worker at hdpvr_register_videodev
-Date:   Tue,  5 Apr 2022 09:29:20 +0200
-Message-Id: <20220405070419.381404472@linuxfoundation.org>
+Subject: [PATCH 5.16 0854/1017] mmc: host: Return an error when ->enable_sdio_irq() ops is missing
+Date:   Tue,  5 Apr 2022 09:29:27 +0200
+Message-Id: <20220405070419.586137766@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -52,59 +49,58 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dongliang Mu <mudongliangabcd@gmail.com>
+From: Ulf Hansson <ulf.hansson@linaro.org>
 
-[ Upstream commit 07922937e9a580825f9965c46fd15e23ba5754b6 ]
+[ Upstream commit d6c9219ca1139b74541b2a98cee47a3426d754a9 ]
 
-hdpvr_register_videodev is responsible to initialize a worker in
-hdpvr_device. However, the worker is only initialized at
-hdpvr_start_streaming other than hdpvr_register_videodev.
-When hdpvr_probe does not initialize its worker, the hdpvr_disconnect
-will encounter one WARN in flush_work.The stack trace is as follows:
+Even if the current WARN() notifies the user that something is severely
+wrong, we can still end up in a PANIC() when trying to invoke the missing
+->enable_sdio_irq() ops. Therefore, let's also return an error code and
+prevent the host from being added.
 
- hdpvr_disconnect+0xb8/0xf2 drivers/media/usb/hdpvr/hdpvr-core.c:425
- usb_unbind_interface+0xbf/0x3a0 drivers/usb/core/driver.c:458
- __device_release_driver drivers/base/dd.c:1206 [inline]
- device_release_driver_internal+0x22a/0x230 drivers/base/dd.c:1237
- bus_remove_device+0x108/0x160 drivers/base/bus.c:529
- device_del+0x1fe/0x510 drivers/base/core.c:3592
- usb_disable_device+0xd1/0x1d0 drivers/usb/core/message.c:1419
- usb_disconnect+0x109/0x330 drivers/usb/core/hub.c:2228
+While at it, move the code into a separate function to prepare for
+subsequent changes and for further host caps validations.
 
-Fix this by moving the initialization of dev->worker to the starting of
-hdpvr_register_videodev
-
-Reported-by: syzkaller <syzkaller@googlegroups.com>
-Signed-off-by: Dongliang Mu <mudongliangabcd@gmail.com>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
+Link: https://lore.kernel.org/r/20220303165142.129745-1-ulf.hansson@linaro.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/usb/hdpvr/hdpvr-video.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/mmc/core/host.c | 15 +++++++++++++--
+ 1 file changed, 13 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/media/usb/hdpvr/hdpvr-video.c b/drivers/media/usb/hdpvr/hdpvr-video.c
-index 563128d11731..60e57e0f1927 100644
---- a/drivers/media/usb/hdpvr/hdpvr-video.c
-+++ b/drivers/media/usb/hdpvr/hdpvr-video.c
-@@ -308,7 +308,6 @@ static int hdpvr_start_streaming(struct hdpvr_device *dev)
+diff --git a/drivers/mmc/core/host.c b/drivers/mmc/core/host.c
+index cf140f4ec864..d739e2b631fe 100644
+--- a/drivers/mmc/core/host.c
++++ b/drivers/mmc/core/host.c
+@@ -588,6 +588,16 @@ struct mmc_host *mmc_alloc_host(int extra, struct device *dev)
  
- 	dev->status = STATUS_STREAMING;
+ EXPORT_SYMBOL(mmc_alloc_host);
  
--	INIT_WORK(&dev->worker, hdpvr_transmit_buffers);
- 	schedule_work(&dev->worker);
- 
- 	v4l2_dbg(MSG_BUFFER, hdpvr_debug, &dev->v4l2_dev,
-@@ -1165,6 +1164,9 @@ int hdpvr_register_videodev(struct hdpvr_device *dev, struct device *parent,
- 	bool ac3 = dev->flags & HDPVR_FLAG_AC3_CAP;
- 	int res;
- 
-+	// initialize dev->worker
-+	INIT_WORK(&dev->worker, hdpvr_transmit_buffers);
++static int mmc_validate_host_caps(struct mmc_host *host)
++{
++	if (host->caps & MMC_CAP_SDIO_IRQ && !host->ops->enable_sdio_irq) {
++		dev_warn(host->parent, "missing ->enable_sdio_irq() ops\n");
++		return -EINVAL;
++	}
 +
- 	dev->cur_std = V4L2_STD_525_60;
- 	dev->width = 720;
- 	dev->height = 480;
++	return 0;
++}
++
+ /**
+  *	mmc_add_host - initialise host hardware
+  *	@host: mmc host
+@@ -600,8 +610,9 @@ int mmc_add_host(struct mmc_host *host)
+ {
+ 	int err;
+ 
+-	WARN_ON((host->caps & MMC_CAP_SDIO_IRQ) &&
+-		!host->ops->enable_sdio_irq);
++	err = mmc_validate_host_caps(host);
++	if (err)
++		return err;
+ 
+ 	err = device_add(&host->class_dev);
+ 	if (err)
 -- 
 2.34.1
 
