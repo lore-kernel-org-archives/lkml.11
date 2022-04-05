@@ -2,160 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 52D53C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 84EAAC43217
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:42:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1578668AbiDEXY0 (ORCPT
+        id S1578718AbiDEXYm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 19:24:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60408 "EHLO
+        Tue, 5 Apr 2022 19:24:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36968 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1443718AbiDEPkL (ORCPT
+        with ESMTP id S1389627AbiDENeE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 11:40:11 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B738814FB99
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 06:58:24 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5268C61910
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 13:58:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D18DAC385A4;
-        Tue,  5 Apr 2022 13:58:21 +0000 (UTC)
-From:   Catalin Marinas <catalin.marinas@arm.com>
-To:     Will Deacon <will@kernel.org>, Marc Zyngier <maz@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     linux-mm@kvack.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH 08/10] mm/slab: Allow dynamic kmalloc() minimum alignment
-Date:   Tue,  5 Apr 2022 14:57:56 +0100
-Message-Id: <20220405135758.774016-9-catalin.marinas@arm.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220405135758.774016-1-catalin.marinas@arm.com>
-References: <20220405135758.774016-1-catalin.marinas@arm.com>
+        Tue, 5 Apr 2022 09:34:04 -0400
+Received: from lelv0142.ext.ti.com (lelv0142.ext.ti.com [198.47.23.249])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34E15137022
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 05:39:47 -0700 (PDT)
+Received: from lelv0266.itg.ti.com ([10.180.67.225])
+        by lelv0142.ext.ti.com (8.15.2/8.15.2) with ESMTP id 235CdbGR027079;
+        Tue, 5 Apr 2022 07:39:37 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1649162377;
+        bh=/OV5EIXkyfTUEfMK+NbO/uRsTKu3O0KPAyqpHSHxqVY=;
+        h=From:To:CC:Subject:Date;
+        b=rBhAQvK+jG6gu6yh+a7D4lygUBpzbeisNCiBjy3MNPUnwXIrHof24o1aJMlicO6tc
+         P58OgNH+HBMBItFGCTa1Mo1RTPG/vdjiUMWMY0sNLaFoWxatW0qG7oxjQkmOJHPtzB
+         8DSsfUVYO1E4JjPYVAV2pwlcCnQ3Wj/Yx0n0cHPQ=
+Received: from DFLE100.ent.ti.com (dfle100.ent.ti.com [10.64.6.21])
+        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 235CdbAo035535
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Tue, 5 Apr 2022 07:39:37 -0500
+Received: from DFLE100.ent.ti.com (10.64.6.21) by DFLE100.ent.ti.com
+ (10.64.6.21) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Tue, 5
+ Apr 2022 07:39:37 -0500
+Received: from fllv0040.itg.ti.com (10.64.41.20) by DFLE100.ent.ti.com
+ (10.64.6.21) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
+ Frontend Transport; Tue, 5 Apr 2022 07:39:37 -0500
+Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
+        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id 235CdbEr112656;
+        Tue, 5 Apr 2022 07:39:37 -0500
+From:   Nishanth Menon <nm@ti.com>
+To:     Nicolas Palix <nicolas.palix@imag.fr>,
+        Julia Lawall <Julia.Lawall@inria.fr>
+CC:     <linux-kernel@vger.kernel.org>, <cocci@inria.fr>,
+        Kirill Smelkov <kirr@nexedi.com>, Nishanth Menon <nm@ti.com>
+Subject: [PATCH V2] coccinelle: api/stream_open: Introduce metavariables for checks
+Date:   Tue, 5 Apr 2022 07:39:36 -0500
+Message-ID: <20220405123936.30259-1-nm@ti.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-ARCH_KMALLOC_MINALIGN represents the minimum guaranteed kmalloc()
-alignment but an architecture may require a larger run-time alignment.
-Do not create kmalloc caches smaller than arch_kmalloc_minalign().
+Coccinelle spatch version 1.1.1 reports the following:
+warning: line 134: should no_llseek be a metavariable?
+warning: line 141: should noop_llseek be a metavariable?
+warning: line 223: should nonseekable_open be a metavariable?
+warning: line 290: should nonseekable_open be a metavariable?
+warning: line 338: should nonseekable_open be a metavariable?
 
-Signed-off-by: Catalin Marinas <catalin.marinas@arm.com>
-Cc: Andrew Morton <akpm@linux-foundation.org>
+So, introduce these as symbols to be specific C identifier to match.
+
+Signed-off-by: Nishanth Menon <nm@ti.com>
 ---
- include/linux/slab.h |  2 ++
- mm/slab.c            |  6 +-----
- mm/slab.h            |  2 ++
- mm/slab_common.c     | 33 +++++++++++++++++++++++----------
- 4 files changed, 28 insertions(+), 15 deletions(-)
 
-diff --git a/include/linux/slab.h b/include/linux/slab.h
-index d58211bdeceb..2137dba85691 100644
---- a/include/linux/slab.h
-+++ b/include/linux/slab.h
-@@ -332,6 +332,8 @@ enum kmalloc_cache_type {
- extern struct kmem_cache *
- kmalloc_caches[NR_KMALLOC_TYPES][KMALLOC_SHIFT_HIGH + 1];
+based on: next-20220404
+Changes since V1:
+
+* Switch from identifier to more specific symbol
+
+V1: https://lore.kernel.org/all/20220404215926.14811-1-nm@ti.com/
+
+ scripts/coccinelle/api/stream_open.cocci | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+diff --git a/scripts/coccinelle/api/stream_open.cocci b/scripts/coccinelle/api/stream_open.cocci
+index df00d6619b06..d33732f35710 100644
+--- a/scripts/coccinelle/api/stream_open.cocci
++++ b/scripts/coccinelle/api/stream_open.cocci
+@@ -129,6 +129,7 @@ identifier llseek_f;
  
-+unsigned int arch_kmalloc_minalign(void);
-+
- /*
-  * Define gfp bits that should not be set for KMALLOC_NORMAL.
-  */
-diff --git a/mm/slab.c b/mm/slab.c
-index b04e40078bdf..4aaeeb9c994d 100644
---- a/mm/slab.c
-+++ b/mm/slab.c
-@@ -1256,11 +1256,7 @@ void __init kmem_cache_init(void)
- 	 * Initialize the caches that provide memory for the  kmem_cache_node
- 	 * structures first.  Without this, further allocations will bug.
- 	 */
--	kmalloc_caches[KMALLOC_NORMAL][INDEX_NODE] = create_kmalloc_cache(
--				kmalloc_info[INDEX_NODE].name[KMALLOC_NORMAL],
--				kmalloc_info[INDEX_NODE].size,
--				ARCH_KMALLOC_FLAGS, 0,
--				kmalloc_info[INDEX_NODE].size);
-+	new_kmalloc_cache(INDEX_NODE, KMALLOC_NORMAL, ARCH_KMALLOC_FLAGS);
- 	slab_state = PARTIAL_NODE;
- 	setup_kmalloc_cache_index_table();
+ @ has_no_llseek @
+ identifier fops0.fops;
++symbol no_llseek;
+ @@
+   struct file_operations fops = {
+     .llseek = no_llseek,
+@@ -136,6 +137,7 @@ identifier fops0.fops;
  
-diff --git a/mm/slab.h b/mm/slab.h
-index fd7ae2024897..e9238406602a 100644
---- a/mm/slab.h
-+++ b/mm/slab.h
-@@ -283,6 +283,8 @@ int __kmem_cache_create(struct kmem_cache *, slab_flags_t flags);
- struct kmem_cache *create_kmalloc_cache(const char *name, unsigned int size,
- 			slab_flags_t flags, unsigned int useroffset,
- 			unsigned int usersize);
-+void __init new_kmalloc_cache(int idx, enum kmalloc_cache_type type,
-+			      slab_flags_t flags);
- extern void create_boot_cache(struct kmem_cache *, const char *name,
- 			unsigned int size, slab_flags_t flags,
- 			unsigned int useroffset, unsigned int usersize);
-diff --git a/mm/slab_common.c b/mm/slab_common.c
-index 6ee64d6208b3..594d8a8a68d0 100644
---- a/mm/slab_common.c
-+++ b/mm/slab_common.c
-@@ -838,9 +838,18 @@ void __init setup_kmalloc_cache_index_table(void)
- 	}
- }
+ @ has_noop_llseek @
+ identifier fops0.fops;
++symbol noop_llseek;
+ @@
+   struct file_operations fops = {
+     .llseek = noop_llseek,
+@@ -216,6 +218,7 @@ identifier stream_writer.writestream;
  
--static void __init
-+unsigned int __weak arch_kmalloc_minalign(void)
-+{
-+	return ARCH_KMALLOC_MINALIGN;
-+}
-+
-+void __init
- new_kmalloc_cache(int idx, enum kmalloc_cache_type type, slab_flags_t flags)
- {
-+	unsigned int minalign = arch_kmalloc_minalign();
-+	unsigned int aligned_size = kmalloc_info[idx].size;
-+	int aligned_idx = idx;
-+
- 	if (type == KMALLOC_RECLAIM) {
- 		flags |= SLAB_RECLAIM_ACCOUNT;
- 	} else if (IS_ENABLED(CONFIG_MEMCG_KMEM) && (type == KMALLOC_CGROUP)) {
-@@ -851,10 +860,17 @@ new_kmalloc_cache(int idx, enum kmalloc_cache_type type, slab_flags_t flags)
- 		flags |= SLAB_ACCOUNT;
- 	}
+ @ report_rw depends on report @
+ identifier fops_rw.openfunc;
++symbol nonseekable_open;
+ position p1;
+ @@
+   openfunc(...) {
+@@ -283,6 +286,7 @@ identifier stream_reader.readstream;
  
--	kmalloc_caches[type][idx] = create_kmalloc_cache(
--					kmalloc_info[idx].name[type],
--					kmalloc_info[idx].size, flags, 0,
--					kmalloc_info[idx].size);
-+	if (minalign > ARCH_KMALLOC_MINALIGN) {
-+		aligned_size = ALIGN(aligned_size, minalign);
-+		aligned_idx = __kmalloc_index(aligned_size, false);
-+	}
-+
-+	if (!kmalloc_caches[type][aligned_idx])
-+		kmalloc_caches[type][aligned_idx] = create_kmalloc_cache(
-+					kmalloc_info[aligned_idx].name[type],
-+					aligned_size, flags, 0, aligned_size);
-+	if (idx != aligned_idx)
-+		kmalloc_caches[type][idx] = kmalloc_caches[type][aligned_idx];
+ @ report_r depends on report @
+ identifier fops_r.openfunc;
++symbol nonseekable_open;
+ position p1;
+ @@
+   openfunc(...) {
+@@ -331,6 +335,7 @@ identifier stream_writer.writestream;
  
- 	/*
- 	 * If CONFIG_MEMCG_KMEM is enabled, disable cache merging for
-@@ -904,11 +920,8 @@ void __init create_kmalloc_caches(slab_flags_t flags)
- 		struct kmem_cache *s = kmalloc_caches[KMALLOC_NORMAL][i];
- 
- 		if (s) {
--			kmalloc_caches[KMALLOC_DMA][i] = create_kmalloc_cache(
--				kmalloc_info[i].name[KMALLOC_DMA],
--				kmalloc_info[i].size,
--				SLAB_CACHE_DMA | flags, 0,
--				kmalloc_info[i].size);
-+			new_kmalloc_cache(i, KMALLOC_DMA,
-+					  SLAB_CACHE_DMA | flags);
- 		}
- 	}
- #endif
+ @ report_w depends on report @
+ identifier fops_w.openfunc;
++symbol nonseekable_open;
+ position p1;
+ @@
+   openfunc(...) {
+-- 
+2.31.1
+
