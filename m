@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CEA4FC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:42:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5AA85C4332F
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:43:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236779AbiDEMoZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 08:44:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41898 "EHLO
+        id S236613AbiDEMpA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 08:45:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41494 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242694AbiDEJIS (ORCPT
+        with ESMTP id S242704AbiDEJIS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Apr 2022 05:08:18 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F39A96C975;
-        Tue,  5 Apr 2022 01:56:58 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84DB275E60;
+        Tue,  5 Apr 2022 01:57:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0695161573;
-        Tue,  5 Apr 2022 08:56:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 12F88C385A0;
-        Tue,  5 Apr 2022 08:56:54 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6CD8461577;
+        Tue,  5 Apr 2022 08:57:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7C8D6C385A0;
+        Tue,  5 Apr 2022 08:57:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649149015;
-        bh=gv4ukajgun+ahxgtodnf+ysa9hRaoF0gRFwqX/nDtkM=;
+        s=korg; t=1649149031;
+        bh=bLgjVcnUj4tcrOszUiESG7XYIWk+hFyD1xAOR+/+N1A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HcBVmucWShF328CdQitZ/0gBAVRMIWpIrmwOiDuFy6QRPVNrSyYZNWVS8vTUi50ap
-         21xcoHaglJ6milUmktmzcn9tDdzVBRWLe7JOUb0jCh5waplMt8hdWmqYV1GoRTw0YO
-         83HBnI6adZm/oGw2HATx1mBxcGBvUu2K2FqpKVEw=
+        b=pn+WPR+B1GoAyk0PwMbIIZMl6iy59aJ1SXxBsNtIre7/504rdehEvRbUoKa3hfcCA
+         kBkr4jYGz0GbPhMu7leItBi6xUrFb/6GTWz8Wt4mawwaNp7A9vzoCN4NJk8eMiH4Yi
+         FN4ZnE5FjOr+81QBI9W3i0Pj7vmSgE/v4/ZRVTHg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sean Christopherson <seanjc@google.com>,
-        Hou Wenlong <houwenlong.hwl@antgroup.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
+        stable@vger.kernel.org,
+        Divya Koppera <Divya.Koppera@microchip.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0564/1017] KVM: x86/emulator: Defer not-present segment check in __load_segment_descriptor()
-Date:   Tue,  5 Apr 2022 09:24:37 +0200
-Message-Id: <20220405070411.021331167@linuxfoundation.org>
+Subject: [PATCH 5.16 0569/1017] net: phy: micrel: Fix concurrent register access
+Date:   Tue,  5 Apr 2022 09:24:42 +0200
+Message-Id: <20220405070411.169298291@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -50,66 +50,74 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hou Wenlong <houwenlong.hwl@antgroup.com>
+From: Divya Koppera <Divya.Koppera@microchip.com>
 
-[ Upstream commit ca85f002258fdac3762c57d12d5e6e401b6a41af ]
+[ Upstream commit 4488f6b6148045424459ef1d5b153c6895ee1dbb ]
 
-Per Intel's SDM on the "Instruction Set Reference", when
-loading segment descriptor, not-present segment check should
-be after all type and privilege checks. But the emulator checks
-it first, then #NP is triggered instead of #GP if privilege fails
-and segment is not present. Put not-present segment check after
-type and privilege checks in __load_segment_descriptor().
+Make Extended page register accessing atomic,
+to overcome unexpected output from register
+reads/writes.
 
-Fixes: 38ba30ba51a00 (KVM: x86 emulator: Emulate task switch in emulator.c)
-Reviewed-by: Sean Christopherson <seanjc@google.com>
-Signed-off-by: Hou Wenlong <houwenlong.hwl@antgroup.com>
-Message-Id: <52573c01d369f506cadcf7233812427cf7db81a7.1644292363.git.houwenlong.hwl@antgroup.com>
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+Fixes: 7c2dcfa295b1 ("net: phy: micrel: Add support for LAN8804 PHY")
+Signed-off-by: Divya Koppera<Divya.Koppera@microchip.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/kvm/emulate.c | 14 +++++++++-----
- 1 file changed, 9 insertions(+), 5 deletions(-)
+ drivers/net/phy/micrel.c | 32 +++++++++++++++++---------------
+ 1 file changed, 17 insertions(+), 15 deletions(-)
 
-diff --git a/arch/x86/kvm/emulate.c b/arch/x86/kvm/emulate.c
-index 28b1a4e57827..5705446c1213 100644
---- a/arch/x86/kvm/emulate.c
-+++ b/arch/x86/kvm/emulate.c
-@@ -1614,11 +1614,6 @@ static int __load_segment_descriptor(struct x86_emulate_ctxt *ctxt,
- 		goto exception;
- 	}
+diff --git a/drivers/net/phy/micrel.c b/drivers/net/phy/micrel.c
+index 76ef4e019ca9..15fe0fa78092 100644
+--- a/drivers/net/phy/micrel.c
++++ b/drivers/net/phy/micrel.c
+@@ -1575,11 +1575,13 @@ static int lanphy_read_page_reg(struct phy_device *phydev, int page, u32 addr)
+ {
+ 	u32 data;
  
--	if (!seg_desc.p) {
--		err_vec = (seg == VCPU_SREG_SS) ? SS_VECTOR : NP_VECTOR;
--		goto exception;
--	}
+-	phy_write(phydev, LAN_EXT_PAGE_ACCESS_CONTROL, page);
+-	phy_write(phydev, LAN_EXT_PAGE_ACCESS_ADDRESS_DATA, addr);
+-	phy_write(phydev, LAN_EXT_PAGE_ACCESS_CONTROL,
+-		  (page | LAN_EXT_PAGE_ACCESS_CTRL_EP_FUNC));
+-	data = phy_read(phydev, LAN_EXT_PAGE_ACCESS_ADDRESS_DATA);
++	phy_lock_mdio_bus(phydev);
++	__phy_write(phydev, LAN_EXT_PAGE_ACCESS_CONTROL, page);
++	__phy_write(phydev, LAN_EXT_PAGE_ACCESS_ADDRESS_DATA, addr);
++	__phy_write(phydev, LAN_EXT_PAGE_ACCESS_CONTROL,
++		    (page | LAN_EXT_PAGE_ACCESS_CTRL_EP_FUNC));
++	data = __phy_read(phydev, LAN_EXT_PAGE_ACCESS_ADDRESS_DATA);
++	phy_unlock_mdio_bus(phydev);
+ 
+ 	return data;
+ }
+@@ -1587,18 +1589,18 @@ static int lanphy_read_page_reg(struct phy_device *phydev, int page, u32 addr)
+ static int lanphy_write_page_reg(struct phy_device *phydev, int page, u16 addr,
+ 				 u16 val)
+ {
+-	phy_write(phydev, LAN_EXT_PAGE_ACCESS_CONTROL, page);
+-	phy_write(phydev, LAN_EXT_PAGE_ACCESS_ADDRESS_DATA, addr);
+-	phy_write(phydev, LAN_EXT_PAGE_ACCESS_CONTROL,
+-		  (page | LAN_EXT_PAGE_ACCESS_CTRL_EP_FUNC));
 -
- 	dpl = seg_desc.dpl;
- 
- 	switch (seg) {
-@@ -1658,6 +1653,10 @@ static int __load_segment_descriptor(struct x86_emulate_ctxt *ctxt,
- 	case VCPU_SREG_TR:
- 		if (seg_desc.s || (seg_desc.type != 1 && seg_desc.type != 9))
- 			goto exception;
-+		if (!seg_desc.p) {
-+			err_vec = NP_VECTOR;
-+			goto exception;
-+		}
- 		old_desc = seg_desc;
- 		seg_desc.type |= 2; /* busy */
- 		ret = ctxt->ops->cmpxchg_emulated(ctxt, desc_addr, &old_desc, &seg_desc,
-@@ -1682,6 +1681,11 @@ static int __load_segment_descriptor(struct x86_emulate_ctxt *ctxt,
- 		break;
- 	}
- 
-+	if (!seg_desc.p) {
-+		err_vec = (seg == VCPU_SREG_SS) ? SS_VECTOR : NP_VECTOR;
-+		goto exception;
-+	}
+-	val = phy_write(phydev, LAN_EXT_PAGE_ACCESS_ADDRESS_DATA, val);
+-	if (val) {
++	phy_lock_mdio_bus(phydev);
++	__phy_write(phydev, LAN_EXT_PAGE_ACCESS_CONTROL, page);
++	__phy_write(phydev, LAN_EXT_PAGE_ACCESS_ADDRESS_DATA, addr);
++	__phy_write(phydev, LAN_EXT_PAGE_ACCESS_CONTROL,
++		    page | LAN_EXT_PAGE_ACCESS_CTRL_EP_FUNC);
 +
- 	if (seg_desc.s) {
- 		/* mark segment as accessed */
- 		if (!(seg_desc.type & 1)) {
++	val = __phy_write(phydev, LAN_EXT_PAGE_ACCESS_ADDRESS_DATA, val);
++	if (val != 0)
+ 		phydev_err(phydev, "Error: phy_write has returned error %d\n",
+ 			   val);
+-		return val;
+-	}
+-	return 0;
++	phy_unlock_mdio_bus(phydev);
++	return val;
+ }
+ 
+ static int lan8804_config_init(struct phy_device *phydev)
 -- 
 2.34.1
 
