@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A5B0C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:08:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A0CEFC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:08:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232955AbiDEIKq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 04:10:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48510 "EHLO
+        id S233683AbiDEIKx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 04:10:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48316 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232642AbiDEHyP (ORCPT
+        with ESMTP id S232489AbiDEHza (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 03:54:15 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5617334652;
-        Tue,  5 Apr 2022 00:50:19 -0700 (PDT)
+        Tue, 5 Apr 2022 03:55:30 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F22C37036;
+        Tue,  5 Apr 2022 00:50:32 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D5E89B81B9C;
-        Tue,  5 Apr 2022 07:50:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 424C9C340EE;
-        Tue,  5 Apr 2022 07:50:16 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 60ABBB81BB1;
+        Tue,  5 Apr 2022 07:50:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B7EC1C340EE;
+        Tue,  5 Apr 2022 07:50:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649145016;
-        bh=cOvpwQJTw7gWEKGJhWUj4AsASxuLwhZB0JKb1hmt1Wk=;
+        s=korg; t=1649145030;
+        bh=nK806L/HXQjI0JbXIYqotYrEiT9JChqTmGRmHJKNS4I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xXXEwRP8VxQeQbeDiRj2NPOslLWadMmXbc1bsDiB4xXVvuoNjeDK7VpGYRWF9yECB
-         AEoJ2imXzmiTgMTfNxD54HyOMp9SbJ9ImuUVVYTIKA5qOKSO57WgZ5hB5ldpYKIc3r
-         vtVT5SQvSsf0TX/I61dsay7UWTZ8ClOTjm094kCI=
+        b=UUaEJFViSY75cR1fd1UvBUKGqTuvE2hfrKgvMk7e3/XCL8DiQU1lztHC//GibkcWW
+         OFR8KXSSEQqEtic5diMf/x2HeMf4O3p89L0EwnKfs+6JYJ2WKe4T89jhYcWlKsI7EJ
+         mxJGvKqhdlXbTTQdurgprAVOvt3TEAtXR5AcnJH4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Robin Murphy <robin.murphy@arm.com>,
+        stable@vger.kernel.org, Jianyong Wu <jianyong.wu@arm.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
         Will Deacon <will@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0253/1126] perf/arm-cmn: Update watchpoint format
-Date:   Tue,  5 Apr 2022 09:16:40 +0200
-Message-Id: <20220405070415.036583062@linuxfoundation.org>
+Subject: [PATCH 5.17 0220/1126] arm64/mm: avoid fixmap race condition when create pud mapping
+Date:   Tue,  5 Apr 2022 09:16:07 +0200
+Message-Id: <20220405070414.067288639@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -48,74 +49,73 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Robin Murphy <robin.murphy@arm.com>
+From: Jianyong Wu <jianyong.wu@arm.com>
 
-[ Upstream commit 31fac565773981df43f018b2dbfbc7a3164f4b6c ]
+[ Upstream commit ee017ee353506fcec58e481673e4331ff198a80e ]
 
->From CMN-650 onwards, some of the fields in the watchpoint config
-registers moved subtly enough to easily overlook. Watchpoint events are
-still only partially supported on newer IPs - which in itself deserves
-noting - but were not intended to become any *less* functional than on
-CMN-600.
+The 'fixmap' is a global resource and is used recursively by
+create pud mapping(), leading to a potential race condition in the
+presence of a concurrent call to alloc_init_pud():
 
-Fixes: 60d1504070c2 ("perf/arm-cmn: Support new IP features")
-Signed-off-by: Robin Murphy <robin.murphy@arm.com>
-Link: https://lore.kernel.org/r/e1ce4c2f1e4f73ab1c60c3a85e4037cd62dd6352.1645727871.git.robin.murphy@arm.com
+kernel_init thread                          virtio-mem workqueue thread
+==================                          ===========================
+
+  alloc_init_pud(...)                       alloc_init_pud(...)
+  pudp = pud_set_fixmap_offset(...)         pudp = pud_set_fixmap_offset(...)
+  READ_ONCE(*pudp)
+  pud_clear_fixmap(...)
+                                            READ_ONCE(*pudp) // CRASH!
+
+As kernel may sleep during creating pud mapping, introduce a mutex lock to
+serialise use of the fixmap entries by alloc_init_pud(). However, there is
+no need for locking in early boot stage and it doesn't work well with
+KASLR enabled when early boot. So, enable lock when system_state doesn't
+equal to "SYSTEM_BOOTING".
+
+Signed-off-by: Jianyong Wu <jianyong.wu@arm.com>
+Reviewed-by: Catalin Marinas <catalin.marinas@arm.com>
+Fixes: f4710445458c ("arm64: mm: use fixmap when creating page tables")
+Link: https://lore.kernel.org/r/20220201114400.56885-1-jianyong.wu@arm.com
 Signed-off-by: Will Deacon <will@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/perf/arm-cmn.c | 18 ++++++++++++------
- 1 file changed, 12 insertions(+), 6 deletions(-)
+ arch/arm64/mm/mmu.c | 9 +++++++++
+ 1 file changed, 9 insertions(+)
 
-diff --git a/drivers/perf/arm-cmn.c b/drivers/perf/arm-cmn.c
-index d45e8c17e1f8..71448229bc5e 100644
---- a/drivers/perf/arm-cmn.c
-+++ b/drivers/perf/arm-cmn.c
-@@ -71,9 +71,11 @@
- #define CMN_DTM_WPn(n)			(0x1A0 + (n) * 0x18)
- #define CMN_DTM_WPn_CONFIG(n)		(CMN_DTM_WPn(n) + 0x00)
- #define CMN_DTM_WPn_CONFIG_WP_DEV_SEL2	GENMASK_ULL(18,17)
--#define CMN_DTM_WPn_CONFIG_WP_COMBINE	BIT(6)
--#define CMN_DTM_WPn_CONFIG_WP_EXCLUSIVE	BIT(5)
--#define CMN_DTM_WPn_CONFIG_WP_GRP	BIT(4)
-+#define CMN_DTM_WPn_CONFIG_WP_COMBINE	BIT(9)
-+#define CMN_DTM_WPn_CONFIG_WP_EXCLUSIVE	BIT(8)
-+#define CMN600_WPn_CONFIG_WP_COMBINE	BIT(6)
-+#define CMN600_WPn_CONFIG_WP_EXCLUSIVE	BIT(5)
-+#define CMN_DTM_WPn_CONFIG_WP_GRP	GENMASK_ULL(5, 4)
- #define CMN_DTM_WPn_CONFIG_WP_CHN_SEL	GENMASK_ULL(3, 1)
- #define CMN_DTM_WPn_CONFIG_WP_DEV_SEL	BIT(0)
- #define CMN_DTM_WPn_VAL(n)		(CMN_DTM_WPn(n) + 0x08)
-@@ -155,6 +157,7 @@
- #define CMN_CONFIG_WP_COMBINE		GENMASK_ULL(27, 24)
- #define CMN_CONFIG_WP_DEV_SEL		GENMASK_ULL(50, 48)
- #define CMN_CONFIG_WP_CHN_SEL		GENMASK_ULL(55, 51)
-+/* Note that we don't yet support the tertiary match group on newer IPs */
- #define CMN_CONFIG_WP_GRP		BIT_ULL(56)
- #define CMN_CONFIG_WP_EXCLUSIVE		BIT_ULL(57)
- #define CMN_CONFIG1_WP_VAL		GENMASK_ULL(63, 0)
-@@ -908,15 +911,18 @@ static u32 arm_cmn_wp_config(struct perf_event *event)
- 	u32 grp = CMN_EVENT_WP_GRP(event);
- 	u32 exc = CMN_EVENT_WP_EXCLUSIVE(event);
- 	u32 combine = CMN_EVENT_WP_COMBINE(event);
-+	bool is_cmn600 = to_cmn(event->pmu)->model == CMN600;
+diff --git a/arch/arm64/mm/mmu.c b/arch/arm64/mm/mmu.c
+index 044d2021c20c..37b8230cda6a 100644
+--- a/arch/arm64/mm/mmu.c
++++ b/arch/arm64/mm/mmu.c
+@@ -63,6 +63,7 @@ static pmd_t bm_pmd[PTRS_PER_PMD] __page_aligned_bss __maybe_unused;
+ static pud_t bm_pud[PTRS_PER_PUD] __page_aligned_bss __maybe_unused;
  
- 	config = FIELD_PREP(CMN_DTM_WPn_CONFIG_WP_DEV_SEL, dev) |
- 		 FIELD_PREP(CMN_DTM_WPn_CONFIG_WP_CHN_SEL, chn) |
- 		 FIELD_PREP(CMN_DTM_WPn_CONFIG_WP_GRP, grp) |
--		 FIELD_PREP(CMN_DTM_WPn_CONFIG_WP_EXCLUSIVE, exc) |
- 		 FIELD_PREP(CMN_DTM_WPn_CONFIG_WP_DEV_SEL2, dev >> 1);
-+	if (exc)
-+		config |= is_cmn600 ? CMN600_WPn_CONFIG_WP_EXCLUSIVE :
-+				      CMN_DTM_WPn_CONFIG_WP_EXCLUSIVE;
- 	if (combine && !grp)
--		config |= CMN_DTM_WPn_CONFIG_WP_COMBINE;
--
-+		config |= is_cmn600 ? CMN600_WPn_CONFIG_WP_COMBINE :
-+				      CMN_DTM_WPn_CONFIG_WP_COMBINE;
- 	return config;
+ static DEFINE_SPINLOCK(swapper_pgdir_lock);
++static DEFINE_MUTEX(fixmap_lock);
+ 
+ void set_swapper_pgd(pgd_t *pgdp, pgd_t pgd)
+ {
+@@ -329,6 +330,12 @@ static void alloc_init_pud(pgd_t *pgdp, unsigned long addr, unsigned long end,
+ 	}
+ 	BUG_ON(p4d_bad(p4d));
+ 
++	/*
++	 * No need for locking during early boot. And it doesn't work as
++	 * expected with KASLR enabled.
++	 */
++	if (system_state != SYSTEM_BOOTING)
++		mutex_lock(&fixmap_lock);
+ 	pudp = pud_set_fixmap_offset(p4dp, addr);
+ 	do {
+ 		pud_t old_pud = READ_ONCE(*pudp);
+@@ -359,6 +366,8 @@ static void alloc_init_pud(pgd_t *pgdp, unsigned long addr, unsigned long end,
+ 	} while (pudp++, addr = next, addr != end);
+ 
+ 	pud_clear_fixmap();
++	if (system_state != SYSTEM_BOOTING)
++		mutex_unlock(&fixmap_lock);
  }
  
+ static void __create_pgd_mapping(pgd_t *pgdir, phys_addr_t phys,
 -- 
 2.34.1
 
