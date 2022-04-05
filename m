@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 03FE4C43217
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:20:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C259DC4332F
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:20:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234803AbiDEIOL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 04:14:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57662 "EHLO
+        id S234714AbiDEIN6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 04:13:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55580 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234782AbiDEH6u (ORCPT
+        with ESMTP id S234701AbiDEH6q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 03:58:50 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B200AA01F;
-        Tue,  5 Apr 2022 00:53:18 -0700 (PDT)
+        Tue, 5 Apr 2022 03:58:46 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B56E1A9950;
+        Tue,  5 Apr 2022 00:53:12 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0C4BDB81BA7;
-        Tue,  5 Apr 2022 07:53:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5AC38C340EE;
-        Tue,  5 Apr 2022 07:53:15 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 58078B81BA7;
+        Tue,  5 Apr 2022 07:53:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BF610C36AE3;
+        Tue,  5 Apr 2022 07:53:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649145195;
-        bh=lfMoL5Nyc8RJg1qdgYmPYov80y4msIbqIDeHePByH+4=;
+        s=korg; t=1649145190;
+        bh=5a4w0X02E9XeqceD8KGfG2dRL/J743LjSjuw3PThuj0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ztqXNchSQ6ECwmT3ggG+CKoJKeUgsuZlmA4QfsNRK8TcCO3c2uAB8GnC2hU/ZR3n5
-         T/0IPOwweHWSUY7FcuVNHfhvflpSAAOaftrRWE1K38n5NJQdeRz1LX4MUou4/qZkrO
-         TFs5B0JiTBAvS+NwwY7jUJNR3yt3RZgXLlke+bhA=
+        b=m0I7+mTXVX+HUY9n37JzqKrQWCKcKNyK2H8bfz4tv1RkNGJ8Fkl5kjRBOIQo8C6jZ
+         lCURqE+8Nn+P99/KPZhY5z3OE4z2oThkkBOOq5zous8BLYH+E1RJRK7A1uSFko6KPu
+         EqbLcAViCkxFq8ie7+Td3mdthTwwZ7GS1rnSq0Ho=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hulk Robot <hulkci@huawei.com>,
-        Wang Hai <wanghai38@huawei.com>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Helge Deller <deller@gmx.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0319/1126] video: fbdev: smscufx: Fix null-ptr-deref in ufx_usb_probe()
-Date:   Tue,  5 Apr 2022 09:17:46 +0200
-Message-Id: <20220405070416.979751940@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Martin Kepplinger <martin.kepplinger@puri.sm>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 0300/1126] media: imx: imx8mq-mipi-csi2: remove wrong irq config write operation
+Date:   Tue,  5 Apr 2022 09:17:27 +0200
+Message-Id: <20220405070416.420881581@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -50,60 +51,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Wang Hai <wanghai38@huawei.com>
+From: Martin Kepplinger <martin.kepplinger@puri.sm>
 
-[ Upstream commit 1791f487f877a9e83d81c8677bd3e7b259e7cb27 ]
+[ Upstream commit 59c2b6d51803ad6b7af28f2a60a843b24374e692 ]
 
-I got a null-ptr-deref report:
+The place where this register writel() that masks one interrupt is placed
+does not guarantee that the device is powered so that's not allowed.
+Moreover imx8mq_mipi_csi_start_stream() masks the interrupt anyway so the
+write is not even needed. Remove it as this is a mistake that slipped in
+with the driver.
 
-BUG: kernel NULL pointer dereference, address: 0000000000000000
-...
-RIP: 0010:fb_destroy_modelist+0x38/0x100
-...
-Call Trace:
- ufx_usb_probe.cold+0x2b5/0xac1 [smscufx]
- usb_probe_interface+0x1aa/0x3c0 [usbcore]
- really_probe+0x167/0x460
-...
- ret_from_fork+0x1f/0x30
-
-If fb_alloc_cmap() fails in ufx_usb_probe(), fb_destroy_modelist() will
-be called to destroy modelist in the error handling path. But modelist
-has not been initialized yet, so it will result in null-ptr-deref.
-
-Initialize modelist before calling fb_alloc_cmap() to fix this bug.
-
-Fixes: 3c8a63e22a08 ("Add support for SMSC UFX6000/7000 USB display adapters")
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: Wang Hai <wanghai38@huawei.com>
-Acked-by: Thomas Zimmermann <tzimmermann@suse.de>
-Signed-off-by: Helge Deller <deller@gmx.de>
+Fixes: f33fd8d77dd0 ("media: imx: add a driver for i.MX8MQ mipi csi rx phy and controller")
+Signed-off-by: Martin Kepplinger <martin.kepplinger@puri.sm>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/video/fbdev/smscufx.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ drivers/staging/media/imx/imx8mq-mipi-csi2.c | 3 ---
+ 1 file changed, 3 deletions(-)
 
-diff --git a/drivers/video/fbdev/smscufx.c b/drivers/video/fbdev/smscufx.c
-index bfac3ee4a642..28768c272b73 100644
---- a/drivers/video/fbdev/smscufx.c
-+++ b/drivers/video/fbdev/smscufx.c
-@@ -1656,6 +1656,7 @@ static int ufx_usb_probe(struct usb_interface *interface,
- 	info->par = dev;
- 	info->pseudo_palette = dev->pseudo_palette;
- 	info->fbops = &ufx_ops;
-+	INIT_LIST_HEAD(&info->modelist);
+diff --git a/drivers/staging/media/imx/imx8mq-mipi-csi2.c b/drivers/staging/media/imx/imx8mq-mipi-csi2.c
+index 7adbdd14daa9..8f3cc138c52c 100644
+--- a/drivers/staging/media/imx/imx8mq-mipi-csi2.c
++++ b/drivers/staging/media/imx/imx8mq-mipi-csi2.c
+@@ -398,9 +398,6 @@ static int imx8mq_mipi_csi_s_stream(struct v4l2_subdev *sd, int enable)
+ 	struct csi_state *state = mipi_sd_to_csi2_state(sd);
+ 	int ret = 0;
  
- 	retval = fb_alloc_cmap(&info->cmap, 256, 0);
- 	if (retval < 0) {
-@@ -1666,8 +1667,6 @@ static int ufx_usb_probe(struct usb_interface *interface,
- 	INIT_DELAYED_WORK(&dev->free_framebuffer_work,
- 			  ufx_free_framebuffer_work);
- 
--	INIT_LIST_HEAD(&info->modelist);
+-	imx8mq_mipi_csi_write(state, CSI2RX_IRQ_MASK,
+-			      CSI2RX_IRQ_MASK_ULPS_STATUS_CHANGE);
 -
- 	retval = ufx_reg_read(dev, 0x3000, &id_rev);
- 	check_warn_goto_error(retval, "error %d reading 0x3000 register from device", retval);
- 	dev_dbg(dev->gdev, "ID_REV register value 0x%08x", id_rev);
+ 	if (enable) {
+ 		ret = pm_runtime_resume_and_get(state->dev);
+ 		if (ret < 0)
 -- 
 2.34.1
 
