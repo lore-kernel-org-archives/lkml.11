@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EF7D5C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 22:39:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5DAA5C43217
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 22:39:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1452437AbiDEWbw (ORCPT
+        id S1452651AbiDEWcN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 18:31:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42280 "EHLO
+        Tue, 5 Apr 2022 18:32:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47290 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357188AbiDEKZs (ORCPT
+        with ESMTP id S1358077AbiDEK16 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:25:48 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 632574F45E;
-        Tue,  5 Apr 2022 03:09:43 -0700 (PDT)
+        Tue, 5 Apr 2022 06:27:58 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0967A5DA70;
+        Tue,  5 Apr 2022 03:14:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 20D5BB81C99;
-        Tue,  5 Apr 2022 10:09:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 85D44C385A1;
-        Tue,  5 Apr 2022 10:09:40 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BA404B81C6C;
+        Tue,  5 Apr 2022 10:14:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 275A8C385A0;
+        Tue,  5 Apr 2022 10:14:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649153380;
-        bh=iaSwEjjuWRcxTwl+l28MhCYSoH0dBAcZnjsk1fku08Y=;
+        s=korg; t=1649153684;
+        bh=39PmLqv2+w5GKMPNLeMPqqK1B/qn7bVnaO5kt9RT0oE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZVBURlHeIyV5shavaDYoH90+Gc5qdLdunkopQ9EpRQBnyQLFPH8nj6BZxCFTnVNGg
-         xzKq/LJDp3Xvc8NsHbtDdT7W2xKQ8K82rLVxI9uXjGfBb4WIqQWE8iXWJrpH/oKTxd
-         fGY5BU0FyYhX449mF0duj+eYqXYRWOrw5Pm0X8uE=
+        b=r1h3gkttgCmNHNQMrXhvmBtE4WgbgU5YgfxYBk8vbYf9n6vNFAqlnw2aVQ6BEL90a
+         XFW4uV9i2wSO0np/hkV2hjM90GVpx/V9iU5zdIE0b4Gpc6DtvMn/KKfam0kImjrgmk
+         K4mEzGeOlgw5QXKTe0qcdGLALXIcI4pek0LbmK6U=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Eric Auger <eric.auger@redhat.com>,
-        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>, Sasha Levin <sashal@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>
-Subject: [PATCH 5.10 164/599] vfio: platform: simplify device removal
-Date:   Tue,  5 Apr 2022 09:27:38 +0200
-Message-Id: <20220405070303.721581867@linuxfoundation.org>
+        stable@vger.kernel.org, Jack Wang <jinpu.wang@ionos.com>,
+        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 310/599] scsi: pm8001: Fix command initialization in pm8001_chip_ssp_tm_req()
+Date:   Tue,  5 Apr 2022 09:30:04 +0200
+Message-Id: <20220405070308.058265444@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
 References: <20220405070258.802373272@linuxfoundation.org>
@@ -51,49 +51,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+From: Damien Le Moal <damien.lemoal@opensource.wdc.com>
 
-[ Upstream commit 5b495ac8fe03b9e0d2e775f9064c3e2a340ff440 ]
+[ Upstream commit cd2268a180117aa8ebb23e090ba204324b2d0e93 ]
 
-vfio_platform_remove_common() cannot return non-NULL in
-vfio_amba_remove() as the latter is only called if vfio_amba_probe()
-returned success.
+The ds_ads_m field of struct ssp_ini_tm_start_req has the type __le32.
+Assigning a value to it should thus use cpu_to_le32(). This fixes the
+sparse warning:
 
-Diagnosed-by: Arnd Bergmann <arnd@arndb.de>
-Acked-by: Eric Auger <eric.auger@redhat.com>
-Link: https://lore.kernel.org/r/20210126165835.687514-4-u.kleine-koenig@pengutronix.de
-Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+warning: incorrect type in assignment (different base types)
+   expected restricted __le32 [addressable] [assigned] [usertype] ds_ads_m
+   got int
+
+Link: https://lore.kernel.org/r/20220220031810.738362-7-damien.lemoal@opensource.wdc.com
+Fixes: dbf9bfe61571 ("[SCSI] pm8001: add SAS/SATA HBA driver")
+Reviewed-by: Jack Wang <jinpu.wang@ionos.com>
+Signed-off-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/vfio/platform/vfio_amba.c | 14 +++++---------
- 1 file changed, 5 insertions(+), 9 deletions(-)
+ drivers/scsi/pm8001/pm8001_hwi.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/vfio/platform/vfio_amba.c b/drivers/vfio/platform/vfio_amba.c
-index 9636a2afaecd..7b3ebf1558e1 100644
---- a/drivers/vfio/platform/vfio_amba.c
-+++ b/drivers/vfio/platform/vfio_amba.c
-@@ -73,16 +73,12 @@ static int vfio_amba_probe(struct amba_device *adev, const struct amba_id *id)
- 
- static int vfio_amba_remove(struct amba_device *adev)
- {
--	struct vfio_platform_device *vdev;
--
--	vdev = vfio_platform_remove_common(&adev->dev);
--	if (vdev) {
--		kfree(vdev->name);
--		kfree(vdev);
--		return 0;
--	}
-+	struct vfio_platform_device *vdev =
-+		vfio_platform_remove_common(&adev->dev);
- 
--	return -EINVAL;
-+	kfree(vdev->name);
-+	kfree(vdev);
-+	return 0;
- }
- 
- static const struct amba_id pl330_ids[] = {
+diff --git a/drivers/scsi/pm8001/pm8001_hwi.c b/drivers/scsi/pm8001/pm8001_hwi.c
+index eb63f8c5a6f9..0e6a0b50bfb9 100644
+--- a/drivers/scsi/pm8001/pm8001_hwi.c
++++ b/drivers/scsi/pm8001/pm8001_hwi.c
+@@ -4575,7 +4575,7 @@ int pm8001_chip_ssp_tm_req(struct pm8001_hba_info *pm8001_ha,
+ 	memcpy(sspTMCmd.lun, task->ssp_task.LUN, 8);
+ 	sspTMCmd.tag = cpu_to_le32(ccb->ccb_tag);
+ 	if (pm8001_ha->chip_id != chip_8001)
+-		sspTMCmd.ds_ads_m = 0x08;
++		sspTMCmd.ds_ads_m = cpu_to_le32(0x08);
+ 	circularQ = &pm8001_ha->inbnd_q_tbl[0];
+ 	ret = pm8001_mpi_build_cmd(pm8001_ha, circularQ, opc, &sspTMCmd,
+ 			sizeof(sspTMCmd), 0);
 -- 
 2.34.1
 
