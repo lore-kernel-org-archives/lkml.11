@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C355C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 11:42:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 471DCC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 11:42:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378007AbiDELbR (ORCPT
+        id S1378041AbiDELbY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 07:31:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47636 "EHLO
+        Tue, 5 Apr 2022 07:31:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46156 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244164AbiDEIvr (ORCPT
+        with ESMTP id S244167AbiDEIvr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Apr 2022 04:51:47 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA7BBD3AC4;
-        Tue,  5 Apr 2022 01:40:26 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5894BD3ACB;
+        Tue,  5 Apr 2022 01:40:27 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 465D9B81BBF;
-        Tue,  5 Apr 2022 08:40:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 98C9EC385A1;
-        Tue,  5 Apr 2022 08:40:24 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A3B1BB81C69;
+        Tue,  5 Apr 2022 08:40:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E8EB8C385A1;
+        Tue,  5 Apr 2022 08:40:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649148025;
-        bh=EIqZGIC3MEY6zK++/3lavNvUv7djR+iZn/Z4aFTomR0=;
+        s=korg; t=1649148005;
+        bh=bd6rYXGYbU0BS3hg2ZtondeDJ5v2EGuiw/BaeVtysrk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=r/vHtTnmCOWrGPF/ynyA0PZfOtZCMTuVm4vCfKV/hJJy04q8f687FPSrn+OZPwu+l
-         5mpAYyZWUWVQH05kxmIN6AeXy0GWNbGNEBW9Jyh3viexeOGaHNWcaEK2q1AQlZw2O9
-         Ph4j8ny6q7gxBQkJUtniVRSTf+f8YHkel8SQWXEw=
+        b=MSGPNXrFILqifhP6JY4ZPJ+/qlFxYCgDwIzwWDQRKOTLRPgdrOUtsIwT3SFhWxh7z
+         hjALd92c2Sf/HXAHknX1fXVAzcwHnpqWZ3kUTLosSxTIUnPMqo+9JExUcz+O9Pd6g4
+         ar8bKQMXDcrV1DTGyo/70YEJDGUAbkQ9LQ8E0bo8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Corentin Labbe <clabbe.montjoie@gmail.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0207/1017] crypto: authenc - Fix sleep in atomic context in decrypt_tail
-Date:   Tue,  5 Apr 2022 09:18:40 +0200
-Message-Id: <20220405070400.395510344@linuxfoundation.org>
+        stable@vger.kernel.org, "GONG, Ruiqi" <gongruiqi1@huawei.com>,
+        Casey Schaufler <casey@schaufler-ca.com>,
+        Paul Moore <paul@paul-moore.com>,
+        Sasha Levin <sashal@kernel.org>, GONG@vger.kernel.org
+Subject: [PATCH 5.16 0201/1017] selinux: access superblock_security_struct in LSM blob way
+Date:   Tue,  5 Apr 2022 09:18:34 +0200
+Message-Id: <20220405070400.216504660@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -50,40 +51,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Herbert Xu <herbert@gondor.apana.org.au>
+From: GONG, Ruiqi <gongruiqi1@huawei.com>
 
-[ Upstream commit 66eae850333d639fc278d6f915c6fc01499ea893 ]
+[ Upstream commit 0266c25e7c2821181b610595df42cbca6bc93cb8 ]
 
-The function crypto_authenc_decrypt_tail discards its flags
-argument and always relies on the flags from the original request
-when starting its sub-request.
+LSM blob has been involved for superblock's security struct. So fix the
+remaining direct access to sb->s_security by using the LSM blob
+mechanism.
 
-This is clearly wrong as it may cause the SLEEPABLE flag to be
-set when it shouldn't.
-
-Fixes: 92d95ba91772 ("crypto: authenc - Convert to new AEAD interface")
-Reported-by: Corentin Labbe <clabbe.montjoie@gmail.com>
-Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
-Tested-by: Corentin Labbe <clabbe.montjoie@gmail.com>
-Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+Fixes: 08abe46b2cfc ("selinux: fall back to SECURITY_FS_USE_GENFS if no xattr support")
+Fixes: 69c4a42d72eb ("lsm,selinux: add new hook to compare new mount to an existing mount")
+Signed-off-by: GONG, Ruiqi <gongruiqi1@huawei.com>
+Reviewed-by: Casey Schaufler <casey@schaufler-ca.com>
+Signed-off-by: Paul Moore <paul@paul-moore.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- crypto/authenc.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ security/selinux/hooks.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/crypto/authenc.c b/crypto/authenc.c
-index 670bf1a01d00..17f674a7cdff 100644
---- a/crypto/authenc.c
-+++ b/crypto/authenc.c
-@@ -253,7 +253,7 @@ static int crypto_authenc_decrypt_tail(struct aead_request *req,
- 		dst = scatterwalk_ffwd(areq_ctx->dst, req->dst, req->assoclen);
+diff --git a/security/selinux/hooks.c b/security/selinux/hooks.c
+index 49b4f59db35e..5b4b738a3be4 100644
+--- a/security/selinux/hooks.c
++++ b/security/selinux/hooks.c
+@@ -492,7 +492,7 @@ static int selinux_is_sblabel_mnt(struct super_block *sb)
  
- 	skcipher_request_set_tfm(skreq, ctx->enc);
--	skcipher_request_set_callback(skreq, aead_request_flags(req),
-+	skcipher_request_set_callback(skreq, flags,
- 				      req->base.complete, req->base.data);
- 	skcipher_request_set_crypt(skreq, src, dst,
- 				   req->cryptlen - authsize, req->iv);
+ static int sb_check_xattr_support(struct super_block *sb)
+ {
+-	struct superblock_security_struct *sbsec = sb->s_security;
++	struct superblock_security_struct *sbsec = selinux_superblock(sb);
+ 	struct dentry *root = sb->s_root;
+ 	struct inode *root_inode = d_backing_inode(root);
+ 	u32 sid;
+@@ -2696,7 +2696,7 @@ static int selinux_sb_eat_lsm_opts(char *options, void **mnt_opts)
+ static int selinux_sb_mnt_opts_compat(struct super_block *sb, void *mnt_opts)
+ {
+ 	struct selinux_mnt_opts *opts = mnt_opts;
+-	struct superblock_security_struct *sbsec = sb->s_security;
++	struct superblock_security_struct *sbsec = selinux_superblock(sb);
+ 	u32 sid;
+ 	int rc;
+ 
 -- 
 2.34.1
 
