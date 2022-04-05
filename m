@@ -2,193 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 29739C43219
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 21:18:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B9373C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 21:18:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232069AbiDEVQy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 17:16:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50854 "EHLO
+        id S241356AbiDEVSH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 17:18:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42942 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355436AbiDELOr (ORCPT
+        with ESMTP id S1457630AbiDEQUm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 07:14:47 -0400
-Received: from mail-oi1-x22a.google.com (mail-oi1-x22a.google.com [IPv6:2607:f8b0:4864:20::22a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84F194D62A
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 03:34:44 -0700 (PDT)
-Received: by mail-oi1-x22a.google.com with SMTP id z8so12937958oix.3
-        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 03:34:44 -0700 (PDT)
+        Tue, 5 Apr 2022 12:20:42 -0400
+Received: from mail-lf1-x12c.google.com (mail-lf1-x12c.google.com [IPv6:2a00:1450:4864:20::12c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A004955AB
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 09:18:41 -0700 (PDT)
+Received: by mail-lf1-x12c.google.com with SMTP id y32so8864781lfa.6
+        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 09:18:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ffwll.ch; s=google;
+        d=google.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=tzmhcp5RxadQONeu9KvciYKiNgXbRJejI1iC090AVWg=;
-        b=Ckyr/H4Efk9eg4/2J/KBC2fSKKkO3KzksdjLcY3RBSzT9NMCmfFcmXQP/tFtKO/470
-         cq+ZnczUI9w3TuhLKpo/lVk0VJYzTyel84GgUrfYKCT9mv2hijbapBsI0e1FG7FrRJmb
-         fLucT+sdtvHXDNR/H3K7C3fno1IoUuh9gjqUQ=
+        bh=wIU2TEaS8WXbUqpi1fM6EfmEmwnBi19lD4NhlLBz3ig=;
+        b=H8/4Lx4V0XygDs2dccjNd7TS7BtZ2fMSdr3xp4cjLVJj1pIAG8E/lefcRKdKOVEcDq
+         0K+DG1Xns7N/k3s/nBe/9wCZfncNH69qMkDM9XvpXMRkvH+bCU2KCXleFNDWKjkqewpk
+         IPy2hfj/pbDYC90dDuVUsKY0KS75145Wb2v/078FGCGX71uwEW/JGKMcMqr+9Cj2bPOp
+         HKSXu5vKjskeXytHF25DvAkVsnlFk15eVE4zcractjvW8tvGzunroHoHyGFtu1iB8E40
+         C7FXx+WgMFYFECMibHGBn5OK/9VMXK53nQXr/V6k+ni5i/+X5vRXaQu+vE2tXjFzGv2x
+         SYWw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=tzmhcp5RxadQONeu9KvciYKiNgXbRJejI1iC090AVWg=;
-        b=RmAjORmcNhejd4HCi9U9MkW++uipkhHohUZ0DOqWhcMWp1PpRJ6QLXXpIcgk+dNvLW
-         APvLyl4gBLIuAchy1dP7aTu1lojV1CmC52GqPv+6WvnDz75nih5j2GbFojX3UnoewFZa
-         PkTJNI8wQYxS8ih1+nXj7TTgNZw8A78U14uUzunNKWxaXnU1b5apo958lXsLiZtr8fd4
-         Ui0Z4jTn40XxT01p/xR/TeU9LuN3MDhv9ZexdooJQrVqyNnpjIu1I1u1EnbQz5DinpyX
-         /I7Twby5DfMPk4/F1nZPpoehm9JWwl9wGr/qgXt6KGAWsGbTVqVJrVkoAHaEMU7noSkQ
-         BmKQ==
-X-Gm-Message-State: AOAM53171uJSW0SDI7AjSplq7lK/1thR5Yy0GAby7+FftrwjYIUki2fp
-        jNw8ThULr1QUrcoOSWvMv8ComtqdU6cuvogMLtyP9Q==
-X-Google-Smtp-Source: ABdhPJzqoYVSx47i8TUU2SwXKC01iWiGjmQ1+pUIxIWzSlGlgOjCn7FBVo4L4bnb1FUmBmYZzaS59mRu1JbpVJ6Lf+k=
-X-Received: by 2002:a05:6808:1596:b0:2f7:5d89:eec7 with SMTP id
- t22-20020a056808159600b002f75d89eec7mr1125899oiw.228.1649154883395; Tue, 05
- Apr 2022 03:34:43 -0700 (PDT)
+        bh=wIU2TEaS8WXbUqpi1fM6EfmEmwnBi19lD4NhlLBz3ig=;
+        b=TKGyc4BPJTXm7xJvn3DKYupngiaWUsUtiWfSX0JSrb70yyZAv5OtFach5QiRyn4VKW
+         Q0HPP346lZO44xKptj4lzUA0s3Gm36uZRvYtAWjOb0Ka947n1UqD612lsRkHumPD7tJ+
+         OEgOXQQAfV8JRWA7LNGtXgDDxrsPWFb8CHpTa61axCDGQMAR592MyM87yapgAY3pfyZY
+         YQwlRtt1mFzNk5Uhtmko3a61XnVKkxrCk1WA/XgHpORKvp80BFjSY9ZuB6FlIcetXWy7
+         AmV8ZWcNsEV+4pHiqgWS+N8nxdw6FfqDNlEac2pre2sfSeN7qrpmeamdAWv/zp82g/5a
+         OQUQ==
+X-Gm-Message-State: AOAM532Qb1Uok0ZYrLCZXYBLQzH6JnRcBj8ELdy9Dg+3TtgAkrMshtap
+        FxErSUyWmtp6Azp22+yvs/QlpL2Jym969m3cHDjrgqbhCwN/Nw==
+X-Google-Smtp-Source: ABdhPJzyIXHKLyRxKNDc0gfAZnnCNVmFVcYvD3pwWFNRifi2q7UjxoNx7BuehqH/sa8M5LtAyeh2d+vmVolrtFy4p0A=
+X-Received: by 2002:a05:6512:3da1:b0:44a:2aeb:28e4 with SMTP id
+ k33-20020a0565123da100b0044a2aeb28e4mr3016271lfv.579.1649175515578; Tue, 05
+ Apr 2022 09:18:35 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220208210824.2238981-1-daniel.vetter@ffwll.ch>
- <20220208210824.2238981-19-daniel.vetter@ffwll.ch> <4ae20b63-f452-fdb4-ced6-d4968a8d69f0@redhat.com>
- <Ykv/k/WoVemoCJJA@phenom.ffwll.local> <YkwAhSt9HlbxcuZo@phenom.ffwll.local>
- <408ffe9b-f09f-dc7e-7f5e-a93b311a06fa@redhat.com> <CAKMK7uHf6H8mhSm6eDHUruWK5Xc2cSPkJUX6v-jpeQfjS19dKw@mail.gmail.com>
- <e124af06-4f24-277a-543a-82b383f48cea@redhat.com>
-In-Reply-To: <e124af06-4f24-277a-543a-82b383f48cea@redhat.com>
-From:   Daniel Vetter <daniel@ffwll.ch>
-Date:   Tue, 5 Apr 2022 12:34:31 +0200
-Message-ID: <CAKMK7uH4GgDQJZguT-k0QmgEAHYHuDEbBtjYje51_Rtqzud0yw@mail.gmail.com>
-Subject: Re: [PATCH v2 18/19] Revert "fbdev: Prevent probing generic drivers
- if a FB is already registered"
-To:     Javier Martinez Canillas <javierm@redhat.com>,
-        Greg KH <gregkh@linuxfoundation.org>
-Cc:     DRI Development <dri-devel@lists.freedesktop.org>,
-        Intel Graphics Development <intel-gfx@lists.freedesktop.org>,
-        linux-fbdev@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Zack Rusin <zackr@vmware.com>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Ilya Trukhanov <lahvuun@gmail.com>,
-        Daniel Vetter <daniel.vetter@intel.com>,
-        Peter Jones <pjones@redhat.com>
+References: <20220405113359.2880241-1-masahiroy@kernel.org> <20220405113359.2880241-3-masahiroy@kernel.org>
+In-Reply-To: <20220405113359.2880241-3-masahiroy@kernel.org>
+From:   Nick Desaulniers <ndesaulniers@google.com>
+Date:   Tue, 5 Apr 2022 09:18:23 -0700
+Message-ID: <CAKwvOd=13RwpvTQ5O86aQkyrGVSbqJkCWwsvU+DbRsGiKNS71A@mail.gmail.com>
+Subject: Re: [PATCH v2 02/10] kbuild: do not remove empty *.symtypes explicitly
+To:     Masahiro Yamada <masahiroy@kernel.org>
+Cc:     linux-kbuild@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Michal Marek <michal.lkml@markovi.net>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 5 Apr 2022 at 11:52, Javier Martinez Canillas
-<javierm@redhat.com> wrote:
+On Tue, Apr 5, 2022 at 4:34 AM Masahiro Yamada <masahiroy@kernel.org> wrote:
 >
-> On 4/5/22 11:24, Daniel Vetter wrote:
-> > On Tue, 5 Apr 2022 at 11:19, Javier Martinez Canillas
+> Presumably, 'test -s $@ || rm -f $@' intends to remove the output when
+> the genksyms command fails.
 >
-> [snip]
+> It is unneeded because .DELETE_ON_ERROR automatically removes the output
+> on failure.
 >
-> >>
-> >> This is how I think that work, please let me know if you see something
-> >> wrong in my logic:
-> >>
-> >> 1) A PCI device of OF device is registered for the GPU, this attempt to
-> >>    match a registered driver but no driver was registered that match yet.
-> >>
-> >> 2) The efifb driver is built-in, will be initialized according to the link
-> >>    order of the objects under drivers/video and the fbdev driver is registered.
-> >>
-> >>    There is no platform device or PCI/OF device registered that matches.
-> >>
-> >> 3) The DRM driver is built-in, will be initialized according to the link
-> >>    order of the objects under drivers/gpu and the DRM driver is registered.
-> >>
-> >>    This matches the device registered in (1) and the DRM driver probes.
-> >>
-> >> 4) The DRM driver .probe kicks out any conflicting DRM drivers and pdev
-> >>    before registering the DRM device.
-> >>
-> >>    There are no conflicting drivers or platform device at this point.
-> >>
-> >> 5) Latter at some point the drivers/firmware/sysfb.c init function is
-> >>    executed, and this registers a platform device for the generic fb.
-> >>
-> >>    This device matches the efifb driver registered in (2) and the fbdev
-> >>    driver probes.
-> >>
-> >>    Since that happens *after* the DRM driver already matched, probed
-> >>    and registered the DRM device, that is a bug and what the reverted
-> >>    patch worked around.
-> >>
-> >> So we need to prevent (5) if (1) and (3) already happened. Having a flag
-> >> set in the fbdev core somewhere when remove_conflicting_framebuffers()
-> >> is called could be a solution indeed.
-> >>
-> >> That is, the fbdev core needs to know that a DRM driver already probed
-> >> and make register_framebuffer() fail if info->flag & FBINFO_MISC_FIRMWARE
-> >>
-> >> I can attempt to write a patch for that.
-> >
-> > Ah yeah that could be an issue. I think the right fix is to replace
-> > the platform dev unregister with a sysfb_unregister() function in
-> > sysfb.c, which is synced with a common lock with the sysfb_init
-> > function and a small boolean. I think I can type that up quickly for
-> > v3.
->
-> It's more complicated than that since sysfb is just *one* of the several
-> places where platform devices can be registered for video devices.
->
-> For instance, the vga16fb driver registers its own platform device in
-> its module_init() function so that can also happen after the conflicting
-> framebuffers (and associated devices) were removed by a DRM driver probe.
->
-> I tried to minimize the issue for that particular driver with commit:
->
-> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=0499f419b76f
->
-> But the point stands, it all boils down to the fact that you have two
-> different subsystems registering video drivers and they don't know all
-> about each other to take a proper decision.
->
-> Right now the drm_aperture_remove_conflicting_framebuffers() call signals
-> in one direction from DRM to fbdev but there isn't a communication in the
-> other direction, from fbdev to DRM.
->
-> I believe the correct fix would be for the fbdev core to keep a list of
-> the apertures struct that are passed to remove_conflicting_framebuffers(),
-> that way it will know what apertures are not available anymore and prevent
-> to register any fbdev framebuffer that conflicts with one already present.
+> Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
 
-Hm that still feels like reinventing a driver model, badly.
+Thanks for the patch!
+Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
 
-I think there's two cleaner solutions:
-- move all the firmware driver platform_dev into sysfb.c, and then
-just bind the special cases against that (e.g. offb, vga16fb and all
-these). Then we'd have one sysfb_try_unregister(struct device *dev)
-interface that fbmem.c uses.
-- let fbmem.c call into each of these firmware device providers, which
-means some loops most likely (like we can't call into vga16fb), so
-probably need to move that into fbmem.c and it all gets a bit messy.
-
-> Let me know if you think that makes sense and I can attempt to write a fix.
-
-I still think unregistering the platform_dev properly makes the most
-sense, and feels like the most proper linux device model solution
-instead of hacks on top - if the firmware fb is unuseable because a
-native driver has taken over, we should nuke that. And also the
-firmware fb driver would then just bind to that platform_dev if it
-exists, and only if it exists. Also I think it should be the
-responsibility of whichever piece of code that registers these
-platform devices to ensure that platform_dev actually still exists.
-That's why I think pushing all that code into sysfb.c is probably the
-cleanest solution.
-
-fbdev predates all that stuff by a lot, hence the hand-rolling.
-
-But maybe Greg has some more thoughts here too?
--Daniel
-
+> ---
 >
+> Changes in v2:
+>   - Fix accidental drop of '> /dev/null'
+>
+>  scripts/Makefile.build | 8 ++------
+>  1 file changed, 2 insertions(+), 6 deletions(-)
+>
+> diff --git a/scripts/Makefile.build b/scripts/Makefile.build
+> index 31e0e33dfe5d..3ef2373f0a57 100644
+> --- a/scripts/Makefile.build
+> +++ b/scripts/Makefile.build
+> @@ -135,9 +135,7 @@ genksyms = scripts/genksyms/genksyms                \
+>  cmd_gensymtypes_c = $(CPP) -D__GENKSYMS__ $(c_flags) $< | $(genksyms)
+>
+>  quiet_cmd_cc_symtypes_c = SYM $(quiet_modtag) $@
+> -cmd_cc_symtypes_c =                                                         \
+> -    $(call cmd_gensymtypes_c,true,$@) >/dev/null;                           \
+> -    test -s $@ || rm -f $@
+> +      cmd_cc_symtypes_c = $(call cmd_gensymtypes_c,true,$@) >/dev/null
+>
+>  $(obj)/%.symtypes : $(src)/%.c FORCE
+>         $(call cmd,cc_symtypes_c)
+> @@ -348,9 +346,7 @@ cmd_gensymtypes_S =                                                         \
+>      $(CPP) -D__GENKSYMS__ $(c_flags) -xc - | $(genksyms)
+>
+>  quiet_cmd_cc_symtypes_S = SYM $(quiet_modtag) $@
+> -cmd_cc_symtypes_S =                                                         \
+> -    $(call cmd_gensymtypes_S,true,$@) >/dev/null;                           \
+> -    test -s $@ || rm -f $@
+> +      cmd_cc_symtypes_S = $(call cmd_gensymtypes_S,true,$@) >/dev/null
+>
+>  $(obj)/%.symtypes : $(src)/%.S FORCE
+>         $(call cmd,cc_symtypes_S)
 > --
-> Best regards,
->
-> Javier Martinez Canillas
-> Linux Engineering
-> Red Hat
+> 2.32.0
 >
 
 
 -- 
-Daniel Vetter
-Software Engineer, Intel Corporation
-http://blog.ffwll.ch
+Thanks,
+~Nick Desaulniers
