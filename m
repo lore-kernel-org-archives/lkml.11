@@ -2,172 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A6647C4707F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E0A47C47081
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:10:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358394AbiDEUED (ORCPT
+        id S1359510AbiDEUEI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 16:04:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37008 "EHLO
+        Tue, 5 Apr 2022 16:04:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52300 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1457337AbiDEQDG (ORCPT
+        with ESMTP id S1354175AbiDEKMP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 12:03:06 -0400
-Received: from smtp-42ac.mail.infomaniak.ch (smtp-42ac.mail.infomaniak.ch [84.16.66.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 519C121818
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 08:38:21 -0700 (PDT)
-Received: from smtp-2-0000.mail.infomaniak.ch (unknown [10.5.36.107])
-        by smtp-3-3000.mail.infomaniak.ch (Postfix) with ESMTPS id 4KXsHG6sFqzMpxx0;
-        Tue,  5 Apr 2022 17:38:18 +0200 (CEST)
-Received: from ns3096276.ip-94-23-54.eu (unknown [23.97.221.149])
-        by smtp-2-0000.mail.infomaniak.ch (Postfix) with ESMTPA id 4KXsHB10mbzlhNts;
-        Tue,  5 Apr 2022 17:38:13 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=digikod.net;
-        s=20191114; t=1649173098;
-        bh=CsXI63Mo7UO6r/uWwmX4gFbUZp/CXy5CRXKt0P6gt6c=;
-        h=Date:To:Cc:References:From:Subject:In-Reply-To:From;
-        b=gmHoadq5c/jpwjvzRlDxdSe/QMSdIkQfuWdwnlle2JMgrxICKuYw2Otz5agkacD7Z
-         B3oSAGjmLbhr+bMhGpyxWhZRNmQP4WVnKkPPMB7gr9oFepQ8SCfZOo8micekUP/VgR
-         nsB09g6YQOZdXoGywDPjQHeZ/pGkYe4CO0FU08J8=
-Message-ID: <1eeae491-7f4f-2cbc-7dbb-04e926c78b89@digikod.net>
-Date:   Tue, 5 Apr 2022 17:38:39 +0200
+        Tue, 5 Apr 2022 06:12:15 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D67D50E33;
+        Tue,  5 Apr 2022 02:57:57 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EC2E3B81B18;
+        Tue,  5 Apr 2022 09:57:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3E114C385A1;
+        Tue,  5 Apr 2022 09:57:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649152674;
+        bh=fiVzT95+a5QkHnGpoPHbZ5qYYyO35JuD9pBA12LY8Tg=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=1ja+btqe8+szqE05D2GTRsAPPAK5AxIlHm9WXmJQIOHcuO0XlqQDIZOUNXidReh1E
+         UlGcJ6aa9NfniU8/SHFjVor/qXKeKKTqQMeeJNN9oHfjmzmuHySlVFCWmIHRo6xMUo
+         BX1iy10PA4OXphR+G54UG0asd1/7x4hAlhotUVV0=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Alyssa Ross <hi@alyssa.is>,
+        Tzung-Bi Shih <tzungbi@google.com>,
+        Prashant Malani <pmalani@chromium.org>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Benson Leung <bleung@chromium.org>
+Subject: [PATCH 5.15 861/913] platform/chrome: cros_ec_typec: Check for EC device
+Date:   Tue,  5 Apr 2022 09:32:03 +0200
+Message-Id: <20220405070405.634759278@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-User-Agent: 
-Content-Language: en-US
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     Kees Cook <keescook@chromium.org>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Christian Heimes <christian@python.org>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        James Morris <jmorris@namei.org>,
-        Luis Chamberlain <mcgrof@kernel.org>,
-        Mimi Zohar <zohar@linux.ibm.com>,
-        Muhammad Usama Anjum <usama.anjum@collabora.com>,
-        Paul Moore <paul@paul-moore.com>,
-        =?UTF-8?Q?Philippe_Tr=c3=a9buchet?= 
-        <philippe.trebuchet@ssi.gouv.fr>,
-        Shuah Khan <skhan@linuxfoundation.org>,
-        Steve Dower <steve.dower@python.org>,
-        Thibaut Sautereau <thibaut.sautereau@ssi.gouv.fr>,
-        Vincent Strubel <vincent.strubel@ssi.gouv.fr>,
-        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
-        linux-integrity <linux-integrity@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        LSM List <linux-security-module@vger.kernel.org>,
-        Christian Brauner <brauner@kernel.org>
-References: <20220321161557.495388-1-mic@digikod.net>
- <202204041130.F649632@keescook>
- <CAHk-=wgoC76v-4s0xVr1Xvnx-8xZ8M+LWgyq5qGLA5UBimEXtQ@mail.gmail.com>
- <816667d8-2a6c-6334-94a4-6127699d4144@digikod.net>
- <CAHk-=wjPuRi5uYs9SuQ2Xn+8+RnhoKgjPEwNm42+AGKDrjTU5g@mail.gmail.com>
-From:   =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mic@digikod.net>
-Subject: Re: [GIT PULL] Add trusted_for(2) (was O_MAYEXEC)
-In-Reply-To: <CAHk-=wjPuRi5uYs9SuQ2Xn+8+RnhoKgjPEwNm42+AGKDrjTU5g@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+From: Prashant Malani <pmalani@chromium.org>
 
-On 04/04/2022 23:28, Linus Torvalds wrote:
-> On Mon, Apr 4, 2022 at 1:29 PM Mickaël Salaün <mic@digikod.net> wrote:
->>
->> This initial proposal was using a new faccessat2(2) flag:
->> AT_INTERPRETED, see
->> https://lore.kernel.org/all/20200908075956.1069018-2-mic@digikod.net/
->> What do you think about that? I'm happy to get back to this version if
->> everyone is OK with it.
-> 
-> I'm certainly happi_er_ with that, but I find that particular patch
-> odd for other reasons.
-> 
-> In no particular order:
-> 
->   - what's with the insane non-C syntax? Double parentheses have no
-> actual meaning in C:
-> 
->       if ((flags & AT_INTERPRETED)) {
->           if ((mode & MAY_EXEC)) {
-> 
->     so I don't understand why you'd use that strance thing.
+commit ffebd90532728086007038986900426544e3df4e upstream.
 
-I guess it comes from a previous version that ANDed two booleans.
+The Type C ACPI device on older Chromebooks is not generated correctly
+(since their EC firmware doesn't support the new commands required). In
+such cases, the crafted ACPI device doesn't have an EC parent, and it is
+therefore not useful (it shouldn't be generated in the first place since
+the EC firmware doesn't support any of the Type C commands).
 
+To handle devices which use these older firmware revisions, check for
+the parent EC device handle, and fail the probe if it's not found.
 
-> 
->   - why is this an AT_INTERPRETED flag? I don't understand the name, I
-> don't understand the semantics.
+Fixes: fdc6b21e2444 ("platform/chrome: Add Type C connector class driver")
+Reported-by: Alyssa Ross <hi@alyssa.is>
+Reviewed-by: Tzung-Bi Shih <tzungbi@google.com>
+Signed-off-by: Prashant Malani <pmalani@chromium.org>
+Acked-by: Heikki Krogerus <heikki.krogerus@linux.intel.com>
+Reviewed-by: Alyssa Ross <hi@alyssa.is>
+Tested-by: Alyssa Ross <hi@alyssa.is>
+Link: https://lore.kernel.org/r/20220126190219.3095419-1-pmalani@chromium.org
+Signed-off-by: Benson Leung <bleung@chromium.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ drivers/platform/chrome/cros_ec_typec.c |    6 ++++++
+ 1 file changed, 6 insertions(+)
 
-I wasn't sure it was a good idea to add another mode bit, so I ended up 
-using a flag to not break compatibility of other mode checks but extend 
-the semantic to interpreted scripts. But I agree that a new mode makes 
-sense.
-
-
-> 
->     Why would that flag have the same value as AT_SYMLINK_FOLLOW?
-
-It was a bug.
-
-
-> 
->     Why isn't this just a new _mode_ bit, which is what I feel is
-> sensible? We only use three bits (with no bits set meaning
-> "existence"), so we have *tons* of bits left in that namespace, and it
-> would make much more sense to me to have
-> 
->          #define EXECVE_OK 8
-> 
->      which is the same as the "group exec" bit, so it actually makes
-> some kind of sense too.
-
-Looks fine to me. The "EXECVE_" prefix is a bit weird but it will not be 
-defined in the kernel like X_OK and others anyway, and as you said, it 
-matches S_IXGRP.
+--- a/drivers/platform/chrome/cros_ec_typec.c
++++ b/drivers/platform/chrome/cros_ec_typec.c
+@@ -1106,7 +1106,13 @@ static int cros_typec_probe(struct platf
+ 		return -ENOMEM;
+ 
+ 	typec->dev = dev;
++
+ 	typec->ec = dev_get_drvdata(pdev->dev.parent);
++	if (!typec->ec) {
++		dev_err(dev, "couldn't find parent EC device\n");
++		return -ENODEV;
++	}
++
+ 	platform_set_drvdata(pdev, typec);
+ 
+ 	ret = cros_typec_get_cmd_version(typec);
 
 
-> 
->   - related to that "I don't understand the semantics", the
-> "documentation" for that thing doesn't make sense either:
-> 
->      +         The
->      +    main usage is for script
->      +    interpreters to enforce a policy
->      +    consistent with the kernel's one
->      +    (through sysctl configuration or LSM
->      +    policy).  */
-
-I'll synchronize the documentation with a next series.
-
-
-> 
-> Now, what I *think* you mean is
-See a following email in reply to Kees.
-[...]
-
-> 
-> And yes, we still need to talk details:
-> 
->   - no backwards compatibility issues, because we've happily always
-> checked 'mode' for being valid, so old kernels will always return
-> -EINVAL.
-> 
->   - POSIX namespace issues for EXECVE_OK means that the name probably
-> needs some thinking (maybe we just need to call it __ACCESS_OK_EXECVE
-> internally or something - the kernel actually doesn't even export the
-> existing [FRWX]_OK values, because we "know" they map tho the usual
-> "owner RWX" bits, with F being "no bit set")
-
-Right, I cannot find a better name for now.
-
-See a following email in reply to Kees.
-[...]
-
-> 
-> So to recap: I'm very much ok with some access() extension, but I
-> think even that very much needs clarification, and the existing patch
-> is just odd in many many ways.
-
-This v8 was kind of an early version, I'll update everything. Thanks!
