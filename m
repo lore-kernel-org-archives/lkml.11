@@ -2,42 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A290C4167B
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 13:33:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A7B2DC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 13:33:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383630AbiDENbI (ORCPT
+        id S1383691AbiDENbN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 09:31:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44276 "EHLO
+        Tue, 5 Apr 2022 09:31:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59572 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345630AbiDEJWx (ORCPT
+        with ESMTP id S1345631AbiDEJWx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Apr 2022 05:22:53 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2F164ECDA;
-        Tue,  5 Apr 2022 02:11:28 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8EE3A4ECE1;
+        Tue,  5 Apr 2022 02:11:26 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8EE3161577;
-        Tue,  5 Apr 2022 09:11:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9837BC385A0;
-        Tue,  5 Apr 2022 09:11:27 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D63C261003;
+        Tue,  5 Apr 2022 09:11:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DAC63C385A0;
+        Tue,  5 Apr 2022 09:11:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649149888;
-        bh=B+LL6HqRHaXg/j5A4/f7HpsysJBncMEphF9/Mdw/N7Y=;
+        s=korg; t=1649149885;
+        bh=r0yx3Istyx8LKKzY2BhVP/B45E7YnwmAFuCpV/DMYCw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=plvVhtONZ1FP5jw6j4V3z/lTxML6oXeCCON4GKHRd5mf9aQh7QuasLGC0nzfeSTnY
-         bSvs8/Qu/0UyAO1t7Fsv14cT+Af6S8Sy85AR/5E5j2/aBg9ku5Pph+3P5bWfxBeG68
-         Qmg4GT0QB0YzWZbXul/H+WfcfvESLNzJy8sl6h3g=
+        b=sVXj6aIdhilV3waEMUTMoj/YwlGjDuy8Jlzlz4qhNz7qqIXJBjc3+X2EV2G30Ffcx
+         ZIalv9vrur40ZuQ8thsOOip0UCR3p47D3Gw7joIkq+DypS90mDFO783eB7xs2JaUMJ
+         GVKcDJQIi0IPxsC47ip5WhmRchLyM3u1FKF+y59g=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0839/1017] lib/test_lockup: fix kernel pointer check for separate address spaces
-Date:   Tue,  5 Apr 2022 09:29:12 +0200
-Message-Id: <20220405070419.145775392@linuxfoundation.org>
+        stable@vger.kernel.org,
+        =?UTF-8?q?Ville=20Syrj=C3=A4l=C3=A4?= 
+        <ville.syrjala@linux.intel.com>,
+        Mika Kahola <mika.kahola@intel.com>,
+        Tvrtko Ursulin <tvrtko.ursulin@intel.com>
+Subject: [PATCH 5.16 0874/1017] drm/i915: Reject unsupported TMDS rates on ICL+
+Date:   Tue,  5 Apr 2022 09:29:47 +0200
+Message-Id: <20220405070420.178728428@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -49,48 +52,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Arnd Bergmann <arnd@arndb.de>
+From: Ville Syrjälä <ville.syrjala@linux.intel.com>
 
-[ Upstream commit 5a06fcb15b43d1f7bf740c672950122331cb5655 ]
+commit 9cddf03b2af07443bebdc73cba21acb360c079e8 upstream.
 
-test_kernel_ptr() uses access_ok() to figure out if a given address
-points to user space instead of kernel space. However on architectures
-that set CONFIG_ALTERNATE_USER_ADDRESS_SPACE, a pointer can be valid
-for both, and the check always fails because access_ok() returns true.
+ICL+ PLLs can't genenerate certain frequencies. Running the PLL
+algorithms through for all frequencies 25-594MHz we see a gap just
+above 500 MHz. Specifically 500-522.8MHZ for TC PLLs, and 500-533.2
+MHz for combo PHY PLLs. Reject those frequencies hdmi_port_clock_valid()
+so that we properly filter out unsupported modes and/or color depths
+for HDMI.
 
-Make the check for user space pointers conditional on the type of
-address space layout.
-
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Cc: stable@vger.kernel.org
+Closes: https://gitlab.freedesktop.org/drm/intel/-/issues/5247
+Signed-off-by: Ville Syrjälä <ville.syrjala@linux.intel.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220311212845.32358-1-ville.syrjala@linux.intel.com
+Reviewed-by: Mika Kahola <mika.kahola@intel.com>
+(cherry picked from commit e5086cb3f3d3f94091be29eec38cf13f8a75a778)
+Signed-off-by: Tvrtko Ursulin <tvrtko.ursulin@intel.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- lib/test_lockup.c | 11 ++++++++---
- 1 file changed, 8 insertions(+), 3 deletions(-)
+ drivers/gpu/drm/i915/display/intel_hdmi.c |    9 +++++++++
+ 1 file changed, 9 insertions(+)
 
-diff --git a/lib/test_lockup.c b/lib/test_lockup.c
-index 6a0f329a794a..c3fd87d6c2dd 100644
---- a/lib/test_lockup.c
-+++ b/lib/test_lockup.c
-@@ -417,9 +417,14 @@ static bool test_kernel_ptr(unsigned long addr, int size)
- 		return false;
+--- a/drivers/gpu/drm/i915/display/intel_hdmi.c
++++ b/drivers/gpu/drm/i915/display/intel_hdmi.c
+@@ -1831,6 +1831,7 @@ hdmi_port_clock_valid(struct intel_hdmi
+ 		      bool has_hdmi_sink)
+ {
+ 	struct drm_i915_private *dev_priv = intel_hdmi_to_i915(hdmi);
++	enum phy phy = intel_port_to_phy(dev_priv, hdmi_to_dig_port(hdmi)->base.port);
  
- 	/* should be at least readable kernel address */
--	if (access_ok((void __user *)ptr, 1) ||
--	    access_ok((void __user *)ptr + size - 1, 1) ||
--	    get_kernel_nofault(buf, ptr) ||
-+	if (!IS_ENABLED(CONFIG_ALTERNATE_USER_ADDRESS_SPACE) &&
-+	    (access_ok((void __user *)ptr, 1) ||
-+	     access_ok((void __user *)ptr + size - 1, 1))) {
-+		pr_err("user space ptr invalid in kernel: %#lx\n", addr);
-+		return true;
-+	}
+ 	if (clock < 25000)
+ 		return MODE_CLOCK_LOW;
+@@ -1851,6 +1852,14 @@ hdmi_port_clock_valid(struct intel_hdmi
+ 	if (IS_CHERRYVIEW(dev_priv) && clock > 216000 && clock < 240000)
+ 		return MODE_CLOCK_RANGE;
+ 
++	/* ICL+ combo PHY PLL can't generate 500-533.2 MHz */
++	if (intel_phy_is_combo(dev_priv, phy) && clock > 500000 && clock < 533200)
++		return MODE_CLOCK_RANGE;
 +
-+	if (get_kernel_nofault(buf, ptr) ||
- 	    get_kernel_nofault(buf, ptr + size - 1)) {
- 		pr_err("invalid kernel ptr: %#lx\n", addr);
- 		return true;
--- 
-2.34.1
-
++	/* ICL+ TC PHY PLL can't generate 500-532.8 MHz */
++	if (intel_phy_is_tc(dev_priv, phy) && clock > 500000 && clock < 532800)
++		return MODE_CLOCK_RANGE;
++
+ 	/*
+ 	 * SNPS PHYs' MPLLB table-based programming can only handle a fixed
+ 	 * set of link rates.
 
 
