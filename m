@@ -2,96 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DF182C4707A
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 22:55:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 134C0C3527E
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 22:55:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1455880AbiDEWok (ORCPT
+        id S1456138AbiDEWpV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 18:44:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54768 "EHLO
+        Tue, 5 Apr 2022 18:45:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47414 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1573194AbiDESPu (ORCPT
+        with ESMTP id S1349136AbiDEJtM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 14:15:50 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 690B9140C6;
-        Tue,  5 Apr 2022 11:13:49 -0700 (PDT)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id 35811210DD;
-        Tue,  5 Apr 2022 18:13:48 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1649182428;
-        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
-         cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=EfLZS1Fjnkm0H+g213hibaWDOALEX+x0bMu4UJYXHy8=;
-        b=gtFsupNU2XJjbDI26P/V+DBfJqIla6WaLeyX1MdUUJBoKpY8XCW6Ox/hJ6k5vrrETkfsaf
-        /BRlKNgcc6S+z8xFNLb9NFxp0w6L8J6cU0K3k0d64L+c1tZ1ZXqd/6ZyoH8FOf80KPE0Az
-        ONFj2wafYWrDy5N8a86cyb+fobKy2qw=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1649182428;
-        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
-         cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=EfLZS1Fjnkm0H+g213hibaWDOALEX+x0bMu4UJYXHy8=;
-        b=/T8jyprkGKvGaS53PoKSliU9C96JGKuZTkM2HxRfQ6VhtEthDMD9257BP9SJhEKhdRx61i
-        VvWkTphPVQhHNpBg==
-Received: from ds.suse.cz (ds.suse.cz [10.100.12.205])
-        by relay2.suse.de (Postfix) with ESMTP id 2859EA3B83;
-        Tue,  5 Apr 2022 18:13:48 +0000 (UTC)
-Received: by ds.suse.cz (Postfix, from userid 10065)
-        id B2213DA80E; Tue,  5 Apr 2022 20:09:46 +0200 (CEST)
-Date:   Tue, 5 Apr 2022 20:09:46 +0200
-From:   David Sterba <dsterba@suse.cz>
-To:     Matthew Wilcox <willy@infradead.org>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        linux-fsdevel@vger.kernel.org
-Subject: Re: [GIT PULL] Folio fixes for 5.18
-Message-ID: <20220405180946.GA15609@suse.cz>
-Reply-To: dsterba@suse.cz
-Mail-Followup-To: dsterba@suse.cz, Matthew Wilcox <willy@infradead.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        linux-fsdevel@vger.kernel.org
-References: <YkdKgzil38iyc7rX@casper.infradead.org>
- <20220405120848.GV15609@twin.jikos.cz>
- <YkxQkZ24Zz9KCxK1@casper.infradead.org>
+        Tue, 5 Apr 2022 05:49:12 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5502D119;
+        Tue,  5 Apr 2022 02:41:21 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 02636B818F3;
+        Tue,  5 Apr 2022 09:41:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 68818C385A3;
+        Tue,  5 Apr 2022 09:41:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649151678;
+        bh=68/DhO5dODneTJ5vXxjoSOTJudPdbEsjy/axiEHdOHE=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=p2Epm4jX+KeQZ6zOwxwuoyXi3Y7JG8L2Y5VozBzIr0e//9S89PJVfQbJz5m1uS1g2
+         856+oudDueaiUX54PULLI/SeYQCXZpc+WRce5u/AnXtfFBR38kO6IwdmX3YUw6JmXg
+         gfkniZ4EBtxGZceew028i5VHSVYCDrfDp34+GFvI=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Mustafa Ismail <mustafa.ismail@intel.com>,
+        Shiraz Saleem <shiraz.saleem@intel.com>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 503/913] RDMA/irdma: Fix Passthrough mode in VM
+Date:   Tue,  5 Apr 2022 09:26:05 +0200
+Message-Id: <20220405070354.931496945@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YkxQkZ24Zz9KCxK1@casper.infradead.org>
-User-Agent: Mutt/1.5.23.1-rc1 (2014-03-12)
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 05, 2022 at 03:22:09PM +0100, Matthew Wilcox wrote:
-> On Tue, Apr 05, 2022 at 02:08:48PM +0200, David Sterba wrote:
-> > Matthew, can you please always CC linux-btrfs@vger.kernel.org for any
-> > patches that touch code under fs/btrfs? I've only noticed your folio
-> > updates in this pull request. Some of the changes are plain API switch,
-> > that's fine but I want to know about that, some changes seem to slightly
-> > modify logic that I'd really like to review and there are several missed
-> > opportunities to fix coding style. Thanks.
-> 
-> I'm sorry, that's an unreasonable request.  There's ~50 filesystems
-> that use address_space_operations and cc'ing individual filesystems
-> on VFS-wide changes isn't feaasible.
+From: Mustafa Ismail <mustafa.ismail@intel.com>
 
-How many filesystems have you touched in the recent changes? I've
-counted about 7 subsystems in commit 704528d895dd ("fs: Remove
-->readpages address space operation"), the rest are VFS/MM changes or
-individual filesystems in separate patches.
+[ Upstream commit b200189626b5cefbaf8be9cadd7a28215e065bb9 ]
 
-Examples of btrfs-only changes, there are more like that in the pull as
-you probably know:
+Using PCI_FUNC macro in a VM, when the device is in passthrough mode does
+not provide the real function instance. This means that currently, devices
+will not probe unless the instance in the VM matches the instance in the
+host.
 
-8e1dec8eb8b0 ("btrfs: Use folio_invalidate()").
-895586eb6898 ("btrfs: Convert from invalidatepage to invalidate_folio")
-...
+Fix this by getting the pf_id from the LAN during the probe.
 
-You know you can slap a CC: linux-btrfs@vger.kernel.org to the patch
-tag and forget about it, is that unreasonable? No. If you're updating
-the same filesystems repeatedly you can copy the CC list for all of
-them.
+Fixes: 8498a30e1b94 ("RDMA/irdma: Register auxiliary driver and implement private channel OPs")
+Link: https://lore.kernel.org/r/20220225163211.127-3-shiraz.saleem@intel.com
+Signed-off-by: Mustafa Ismail <mustafa.ismail@intel.com>
+Signed-off-by: Shiraz Saleem <shiraz.saleem@intel.com>
+Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/infiniband/hw/irdma/hw.c       | 2 +-
+ drivers/infiniband/hw/irdma/i40iw_if.c | 1 +
+ drivers/infiniband/hw/irdma/main.c     | 1 +
+ drivers/infiniband/hw/irdma/main.h     | 1 +
+ 4 files changed, 4 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/infiniband/hw/irdma/hw.c b/drivers/infiniband/hw/irdma/hw.c
+index aa119441eb45..4f763e552eae 100644
+--- a/drivers/infiniband/hw/irdma/hw.c
++++ b/drivers/infiniband/hw/irdma/hw.c
+@@ -1608,7 +1608,7 @@ static enum irdma_status_code irdma_initialize_dev(struct irdma_pci_f *rf)
+ 	info.fpm_commit_buf = mem.va;
+ 
+ 	info.bar0 = rf->hw.hw_addr;
+-	info.hmc_fn_id = PCI_FUNC(rf->pcidev->devfn);
++	info.hmc_fn_id = rf->pf_id;
+ 	info.hw = &rf->hw;
+ 	status = irdma_sc_dev_init(rf->rdma_ver, &rf->sc_dev, &info);
+ 	if (status)
+diff --git a/drivers/infiniband/hw/irdma/i40iw_if.c b/drivers/infiniband/hw/irdma/i40iw_if.c
+index d219f64b2c3d..a6f758b61b0c 100644
+--- a/drivers/infiniband/hw/irdma/i40iw_if.c
++++ b/drivers/infiniband/hw/irdma/i40iw_if.c
+@@ -77,6 +77,7 @@ static void i40iw_fill_device_info(struct irdma_device *iwdev, struct i40e_info
+ 	rf->rdma_ver = IRDMA_GEN_1;
+ 	rf->gen_ops.request_reset = i40iw_request_reset;
+ 	rf->pcidev = cdev_info->pcidev;
++	rf->pf_id = cdev_info->fid;
+ 	rf->hw.hw_addr = cdev_info->hw_addr;
+ 	rf->cdev = cdev_info;
+ 	rf->msix_count = cdev_info->msix_count;
+diff --git a/drivers/infiniband/hw/irdma/main.c b/drivers/infiniband/hw/irdma/main.c
+index 51a41359e0b4..c556a36e7670 100644
+--- a/drivers/infiniband/hw/irdma/main.c
++++ b/drivers/infiniband/hw/irdma/main.c
+@@ -226,6 +226,7 @@ static void irdma_fill_device_info(struct irdma_device *iwdev, struct ice_pf *pf
+ 	rf->hw.hw_addr = pf->hw.hw_addr;
+ 	rf->pcidev = pf->pdev;
+ 	rf->msix_count =  pf->num_rdma_msix;
++	rf->pf_id = pf->hw.pf_id;
+ 	rf->msix_entries = &pf->msix_entries[pf->rdma_base_vector];
+ 	rf->default_vsi.vsi_idx = vsi->vsi_num;
+ 	rf->protocol_used = IRDMA_ROCE_PROTOCOL_ONLY;
+diff --git a/drivers/infiniband/hw/irdma/main.h b/drivers/infiniband/hw/irdma/main.h
+index 8b215f3cee89..454b4b370386 100644
+--- a/drivers/infiniband/hw/irdma/main.h
++++ b/drivers/infiniband/hw/irdma/main.h
+@@ -257,6 +257,7 @@ struct irdma_pci_f {
+ 	u8 *mem_rsrc;
+ 	u8 rdma_ver;
+ 	u8 rst_to;
++	u8 pf_id;
+ 	enum irdma_protocol_used protocol_used;
+ 	u32 sd_type;
+ 	u32 msix_count;
+-- 
+2.34.1
+
+
+
