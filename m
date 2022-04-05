@@ -2,184 +2,233 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F12F4C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:22:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D73BC433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:22:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1587509AbiDFAJc (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 20:09:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36708 "EHLO
+        id S232588AbiDFALs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 20:11:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38822 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344821AbiDENKo (ORCPT
+        with ESMTP id S1573607AbiDETX1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 09:10:44 -0400
-Received: from pegase2.c-s.fr (pegase2.c-s.fr [93.17.235.10])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 839CA8FE44
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 05:12:24 -0700 (PDT)
-Received: from localhost (mailhub3.si.c-s.fr [172.26.127.67])
-        by localhost (Postfix) with ESMTP id 4KXmjZ2LPmz9sT7;
-        Tue,  5 Apr 2022 14:12:18 +0200 (CEST)
-X-Virus-Scanned: amavisd-new at c-s.fr
-Received: from pegase2.c-s.fr ([172.26.127.65])
-        by localhost (pegase2.c-s.fr [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id gdQ4MYRGJgtj; Tue,  5 Apr 2022 14:12:18 +0200 (CEST)
-Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
-        by pegase2.c-s.fr (Postfix) with ESMTP id 4KXmjY2WCtz9sT9;
-        Tue,  5 Apr 2022 14:12:17 +0200 (CEST)
-Received: from localhost (localhost [127.0.0.1])
-        by messagerie.si.c-s.fr (Postfix) with ESMTP id 3CE778B77A;
-        Tue,  5 Apr 2022 14:12:17 +0200 (CEST)
-X-Virus-Scanned: amavisd-new at c-s.fr
-Received: from messagerie.si.c-s.fr ([127.0.0.1])
-        by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
-        with ESMTP id 2Ig34h1Zy_oY; Tue,  5 Apr 2022 14:12:17 +0200 (CEST)
-Received: from PO20335.IDSI0.si.c-s.fr (unknown [172.25.230.108])
-        by messagerie.si.c-s.fr (Postfix) with ESMTP id 0EE148B776;
-        Tue,  5 Apr 2022 14:12:17 +0200 (CEST)
-Received: from PO20335.IDSI0.si.c-s.fr (localhost [127.0.0.1])
-        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.16.1) with ESMTPS id 235CCB1L352487
-        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
-        Tue, 5 Apr 2022 14:12:11 +0200
-Received: (from chleroy@localhost)
-        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.17.1/Submit) id 235CCBZ4352486;
-        Tue, 5 Apr 2022 14:12:11 +0200
-X-Authentication-Warning: PO20335.IDSI0.si.c-s.fr: chleroy set sender to christophe.leroy@csgroup.eu using -f
-From:   Christophe Leroy <christophe.leroy@csgroup.eu>
-To:     Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>,
-        Michael Ellerman <mpe@ellerman.id.au>
-Cc:     Christophe Leroy <christophe.leroy@csgroup.eu>,
-        linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org
-Subject: [PATCH 2/5] powerpc/8xx: Convert CPM1 error interrupt handler to platform driver
-Date:   Tue,  5 Apr 2022 14:12:01 +0200
-Message-Id: <375a72df6e4a26c5959cc81a6c6d46152efa2306.1649160685.git.christophe.leroy@csgroup.eu>
+        Tue, 5 Apr 2022 15:23:27 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF22653732;
+        Tue,  5 Apr 2022 12:21:27 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 80596B81F6B;
+        Tue,  5 Apr 2022 19:21:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 74EFAC385A3;
+        Tue,  5 Apr 2022 19:21:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649186486;
+        bh=1HTi64VCd1Ogi3wR7tPqfrc9qpnlV1qUcf0emucjZvI=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=heaSs3yLTTKz8Q6XQgWZcMqi2Gv8r6shJTd9gP+sVI2tTw0pUrhm3Y0dNox/Ze+Ql
+         A84yG8eq2JyhO2dO4U2kfTaYxJSOU+lb0zg42760/buCJVAYkLbRQ/PHnte83KAQjk
+         krqBHw48PntS95l9keAXe9d1+U60mQ+wVle+PGY30AQgKuyyIugC1+MlFjf5Lcf+6g
+         osK8aF0k1BU21pd7LrGoKbv+1hn+8QB5iWrJMbGk85kTiCvXM6YyTYfWPn7yCrdZsX
+         rt+7HQOW7hlv+c2Q5se3S/tBYZazhxRY/PZGbgmsb/58yeqtJvRdccmG+HgHFKqtks
+         7s5wGK1T0zPBg==
+From:   Jeff Layton <jlayton@kernel.org>
+To:     idryomov@gmail.com, xiubli@redhat.com
+Cc:     ceph-devel@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        linux-fscrypt@vger.kernel.org, linux-kernel@vger.kernel.org,
+        lhenriques@suse.de
+Subject: [PATCH v13 59/59] ceph: fscrypt support for writepages
+Date:   Tue,  5 Apr 2022 15:20:30 -0400
+Message-Id: <20220405192030.178326-60-jlayton@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <d3a7dc832d905bed14b35d83410cdb69a7ba20e8.1649160685.git.christophe.leroy@csgroup.eu>
-References: <d3a7dc832d905bed14b35d83410cdb69a7ba20e8.1649160685.git.christophe.leroy@csgroup.eu>
+In-Reply-To: <20220405192030.178326-1-jlayton@kernel.org>
+References: <20220405192030.178326-1-jlayton@kernel.org>
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1649160722; l=3256; s=20211009; h=from:subject:message-id; bh=iBfAM7j9zDFlEgqnwHTDh48Q3s/XSmi+wspQbzDZSEI=; b=Ofgaf1JdhrxOoLgHu6t1R08TjiE1ORUqWBGiAlfCCPyHbo4rxwMOfnJ2nvxTPyqlPtTEgtCiZuoa /i5ao+HlB6MKbQhuXzAV+XomDUHjAL9YoiRPmf69bSNbsew94Kq8
-X-Developer-Key: i=christophe.leroy@csgroup.eu; a=ed25519; pk=HIzTzUj91asvincQGOFx6+ZF5AoUuP9GdOtQChs7Mm0=
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add CPM error interrupt as a standalone platform driver,
-to simplify the init of CPM interrupt handler.
+Add the appropriate machinery to write back dirty data with encryption.
 
-Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
+Signed-off-by: Jeff Layton <jlayton@kernel.org>
 ---
- arch/powerpc/platforms/8xx/cpm1-ic.c | 73 +++++++++++++++++-----------
- 1 file changed, 44 insertions(+), 29 deletions(-)
+ fs/ceph/addr.c   | 63 +++++++++++++++++++++++++++++++++++++++---------
+ fs/ceph/crypto.h | 18 +++++++++++++-
+ 2 files changed, 68 insertions(+), 13 deletions(-)
 
-diff --git a/arch/powerpc/platforms/8xx/cpm1-ic.c b/arch/powerpc/platforms/8xx/cpm1-ic.c
-index d5cf0ee7c07d..d22b4fc2d4cf 100644
---- a/arch/powerpc/platforms/8xx/cpm1-ic.c
-+++ b/arch/powerpc/platforms/8xx/cpm1-ic.c
-@@ -8,6 +8,7 @@
- #include <linux/interrupt.h>
- #include <linux/irqdomain.h>
- #include <linux/of_irq.h>
-+#include <linux/platform_device.h>
- #include <asm/cpm1.h>
+diff --git a/fs/ceph/addr.c b/fs/ceph/addr.c
+index ff015f251fcc..939819a1cf41 100644
+--- a/fs/ceph/addr.c
++++ b/fs/ceph/addr.c
+@@ -545,10 +545,12 @@ static u64 get_writepages_data_length(struct inode *inode,
+ 				      struct page *page, u64 start)
+ {
+ 	struct ceph_inode_info *ci = ceph_inode(inode);
+-	struct ceph_snap_context *snapc = page_snap_context(page);
++	struct ceph_snap_context *snapc;
+ 	struct ceph_cap_snap *capsnap = NULL;
+ 	u64 end = i_size_read(inode);
++	u64 ret;
  
- static cpic8xx_t __iomem *cpic_reg;
-@@ -67,17 +68,6 @@ static int cpm_pic_host_map(struct irq_domain *h, unsigned int virq,
++	snapc = page_snap_context(ceph_fscrypt_pagecache_page(page));
+ 	if (snapc != ci->i_head_snapc) {
+ 		bool found = false;
+ 		spin_lock(&ci->i_ceph_lock);
+@@ -563,9 +565,12 @@ static u64 get_writepages_data_length(struct inode *inode,
+ 		spin_unlock(&ci->i_ceph_lock);
+ 		WARN_ON(!found);
+ 	}
+-	if (end > page_offset(page) + thp_size(page))
+-		end = page_offset(page) + thp_size(page);
+-	return end > start ? end - start : 0;
++	if (end > ceph_fscrypt_page_offset(page) + thp_size(page))
++		end = ceph_fscrypt_page_offset(page) + thp_size(page);
++	ret = end > start ? end - start : 0;
++	if (ret && fscrypt_is_bounce_page(page))
++		ret = round_up(ret, CEPH_FSCRYPT_BLOCK_SIZE);
++	return ret;
+ }
+ 
+ /*
+@@ -787,6 +792,11 @@ static void writepages_finish(struct ceph_osd_request *req)
+ 		total_pages += num_pages;
+ 		for (j = 0; j < num_pages; j++) {
+ 			page = osd_data->pages[j];
++			if (fscrypt_is_bounce_page(page)) {
++				page = fscrypt_pagecache_page(page);
++				fscrypt_free_bounce_page(osd_data->pages[j]);
++				osd_data->pages[j] = page;
++			}
+ 			BUG_ON(!page);
+ 			WARN_ON(!PageUptodate(page));
+ 
+@@ -1048,9 +1058,28 @@ static int ceph_writepages_start(struct address_space *mapping,
+ 				    fsc->mount_options->congestion_kb))
+ 				fsc->write_congested = true;
+ 
+-			pages[locked_pages++] = page;
+-			pvec.pages[i] = NULL;
++			if (IS_ENCRYPTED(inode)) {
++				pages[locked_pages] =
++					fscrypt_encrypt_pagecache_blocks(page,
++						PAGE_SIZE, 0,
++						locked_pages ? GFP_NOWAIT : GFP_NOFS);
++				if (IS_ERR(pages[locked_pages])) {
++					if (PTR_ERR(pages[locked_pages]) == -EINVAL)
++						pr_err("%s: inode->i_blkbits=%hhu\n",
++							__func__, inode->i_blkbits);
++					/* better not fail on first page! */
++					BUG_ON(locked_pages == 0);
++					pages[locked_pages] = NULL;
++					redirty_page_for_writepage(wbc, page);
++					unlock_page(page);
++					break;
++				}
++				++locked_pages;
++			} else {
++				pages[locked_pages++] = page;
++			}
+ 
++			pvec.pages[i] = NULL;
+ 			len += thp_size(page);
+ 		}
+ 
+@@ -1078,7 +1107,7 @@ static int ceph_writepages_start(struct address_space *mapping,
+ 		}
+ 
+ new_request:
+-		offset = page_offset(pages[0]);
++		offset = ceph_fscrypt_page_offset(pages[0]);
+ 		len = wsize;
+ 
+ 		req = ceph_osdc_new_request(&fsc->client->osdc,
+@@ -1099,8 +1128,8 @@ static int ceph_writepages_start(struct address_space *mapping,
+ 						ceph_wbc.truncate_size, true);
+ 			BUG_ON(IS_ERR(req));
+ 		}
+-		BUG_ON(len < page_offset(pages[locked_pages - 1]) +
+-			     thp_size(page) - offset);
++		BUG_ON(len < ceph_fscrypt_page_offset(pages[locked_pages - 1]) +
++			     thp_size(pages[locked_pages - 1]) - offset);
+ 
+ 		req->r_callback = writepages_finish;
+ 		req->r_inode = inode;
+@@ -1110,7 +1139,9 @@ static int ceph_writepages_start(struct address_space *mapping,
+ 		data_pages = pages;
+ 		op_idx = 0;
+ 		for (i = 0; i < locked_pages; i++) {
+-			u64 cur_offset = page_offset(pages[i]);
++			struct page *page = ceph_fscrypt_pagecache_page(pages[i]);
++
++			u64 cur_offset = page_offset(page);
+ 			/*
+ 			 * Discontinuity in page range? Ceph can handle that by just passing
+ 			 * multiple extents in the write op.
+@@ -1139,9 +1170,9 @@ static int ceph_writepages_start(struct address_space *mapping,
+ 				op_idx++;
+ 			}
+ 
+-			set_page_writeback(pages[i]);
++			set_page_writeback(page);
+ 			if (caching)
+-				ceph_set_page_fscache(pages[i]);
++				ceph_set_page_fscache(page);
+ 			len += thp_size(page);
+ 		}
+ 		ceph_fscache_write_to_cache(inode, offset, len, caching);
+@@ -1157,8 +1188,16 @@ static int ceph_writepages_start(struct address_space *mapping,
+ 							 offset);
+ 			len = max(len, min_len);
+ 		}
++		if (IS_ENCRYPTED(inode))
++			len = round_up(len, CEPH_FSCRYPT_BLOCK_SIZE);
++
+ 		dout("writepages got pages at %llu~%llu\n", offset, len);
+ 
++		if (IS_ENCRYPTED(inode) &&
++		    ((offset | len) & ~CEPH_FSCRYPT_BLOCK_MASK))
++			pr_warn("%s: bad encrypted write offset=%lld len=%llu\n",
++				__func__, offset, len);
++
+ 		osd_req_op_extent_osd_data_pages(req, op_idx, data_pages, len,
+ 						 0, from_pool, false);
+ 		osd_req_op_extent_update(req, op_idx, len);
+diff --git a/fs/ceph/crypto.h b/fs/ceph/crypto.h
+index 92a7b221a975..0cf526f07567 100644
+--- a/fs/ceph/crypto.h
++++ b/fs/ceph/crypto.h
+@@ -146,6 +146,12 @@ int ceph_fscrypt_decrypt_extents(struct inode *inode, struct page **page, u64 of
+ 				 struct ceph_sparse_extent *map, u32 ext_cnt);
+ int ceph_fscrypt_encrypt_pages(struct inode *inode, struct page **page, u64 off,
+ 				int len, gfp_t gfp);
++
++static inline struct page *ceph_fscrypt_pagecache_page(struct page *page)
++{
++	return fscrypt_is_bounce_page(page) ?  fscrypt_pagecache_page(page) : page;
++}
++
+ #else /* CONFIG_FS_ENCRYPTION */
+ 
+ static inline void ceph_fscrypt_set_ops(struct super_block *sb)
+@@ -235,6 +241,16 @@ static inline int ceph_fscrypt_encrypt_pages(struct inode *inode, struct page **
+ {
  	return 0;
  }
- 
--/*
-- * The CPM can generate the error interrupt when there is a race condition
-- * between generating and masking interrupts.  All we have to do is ACK it
-- * and return.  This is a no-op function so we don't need any special
-- * tests in the interrupt handler.
-- */
--static irqreturn_t cpm_error_interrupt(int irq, void *dev)
--{
--	return IRQ_HANDLED;
--}
--
- static const struct irq_domain_ops cpm_pic_host_ops = {
- 	.map = cpm_pic_host_map,
- };
-@@ -86,7 +76,7 @@ unsigned int __init cpm_pic_init(void)
- {
- 	struct device_node *np = NULL;
- 	struct resource res;
--	unsigned int sirq = 0, hwirq, eirq;
-+	unsigned int sirq = 0, hwirq;
- 	int ret;
- 
- 	pr_debug("cpm_pic_init\n");
-@@ -126,26 +116,51 @@ unsigned int __init cpm_pic_init(void)
- 		goto end;
- 	}
- 
--	/* Install our own error handler. */
--	np = of_find_compatible_node(NULL, NULL, "fsl,cpm1");
--	if (np == NULL)
--		np = of_find_node_by_type(NULL, "cpm");
--	if (np == NULL) {
--		printk(KERN_ERR "CPM PIC init: can not find cpm node\n");
--		goto end;
--	}
--
--	eirq = irq_of_parse_and_map(np, 0);
--	if (!eirq)
--		goto end;
--
--	if (request_irq(eirq, cpm_error_interrupt, IRQF_NO_THREAD, "error",
--			NULL))
--		printk(KERN_ERR "Could not allocate CPM error IRQ!");
--
- 	setbits32(&cpic_reg->cpic_cicr, CICR_IEN);
- 
- end:
- 	of_node_put(np);
- 	return sirq;
- }
 +
-+/*
-+ * The CPM can generate the error interrupt when there is a race condition
-+ * between generating and masking interrupts.  All we have to do is ACK it
-+ * and return.  This is a no-op function so we don't need any special
-+ * tests in the interrupt handler.
-+ */
-+static irqreturn_t cpm_error_interrupt(int irq, void *dev)
++static inline struct page *ceph_fscrypt_pagecache_page(struct page *page)
 +{
-+	return IRQ_HANDLED;
++	return page;
++}
+ #endif /* CONFIG_FS_ENCRYPTION */
+ 
+-#endif
++static inline loff_t ceph_fscrypt_page_offset(struct page *page)
++{
++	return page_offset(ceph_fscrypt_pagecache_page(page));
 +}
 +
-+static int cpm_error_probe(struct platform_device *pdev)
-+{
-+	int irq;
-+
-+	irq = platform_get_irq(pdev, 0);
-+	if (irq < 0)
-+		return irq;
-+
-+	return request_irq(irq, cpm_error_interrupt, IRQF_NO_THREAD, "error", NULL);
-+}
-+
-+static const struct of_device_id cpm_error_ids[] = {
-+	{ .compatible = "fsl,cpm1" },
-+	{ .type = "cpm" },
-+	{},
-+};
-+
-+static struct platform_driver cpm_error_driver = {
-+	.driver	= {
-+		.name		= "cpm-error",
-+		.of_match_table	= cpm_error_ids,
-+	},
-+	.probe	= cpm_error_probe,
-+};
-+
-+static int __init cpm_error_init(void)
-+{
-+	return platform_driver_register(&cpm_error_driver);
-+}
-+subsys_initcall(cpm_error_init);
++#endif /* _CEPH_CRYPTO_H */
 -- 
 2.35.1
 
