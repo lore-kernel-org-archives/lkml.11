@@ -2,147 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B3C2C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D6815C4321E
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 21:09:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344200AbiDEVIl (ORCPT
+        id S1346244AbiDEVJQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 17:08:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60148 "EHLO
+        Tue, 5 Apr 2022 17:09:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56050 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1443877AbiDEPkY (ORCPT
+        with ESMTP id S1353977AbiDEKKO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 11:40:24 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 856BF11D78E
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 07:01:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=UbTGWkO/rEjN35uuRu4kiIpkbVTt6nafNn/HUzlDHhs=; b=V4uwaUUhdLmPfn7O0b8gxkizRD
-        9ryrp6BgwX9pHnZyCJv8NE92yTA1lDTfgop4tL/t2QiDtXsgGdlKLAj6F8rfLcId0Io74OpqmpTui
-        1nZ15Wvi992swXhXh/vm8zWx5bmPQGcfCqmU/gqMTRbn3lxF5zxrpKlTKHKzwJEqdGnkfQp3h5UqH
-        KfOcBmnMDHX49zoe1jWo/1rRBoxCI299xCSvK3NOaM0ajQoCqwYPf8LfBOL0cmsPpVIIAVwkd2e4d
-        4E06VTxtZm6w8wD/lWkcgQwQFwmtDO8CavjnZsiWoAbfh84iu0azI5F5keJPCCdP7n7zJJQnNvWgI
-        FyzgT5cg==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
-        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nbjkE-006lpZ-BO; Tue, 05 Apr 2022 14:01:18 +0000
-Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id E50B33001EA;
-        Tue,  5 Apr 2022 16:01:15 +0200 (CEST)
-Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
-        id CAC2A30C28E79; Tue,  5 Apr 2022 16:01:15 +0200 (CEST)
-Date:   Tue, 5 Apr 2022 16:01:15 +0200
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     kernel test robot <lkp@intel.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Josh Poimboeuf <jpoimboe@redhat.com>, mbenes@suse.cz,
-        x86@kernel.org
-Subject: Re: drivers/gpu/drm/i915/i915.prelink.o: warning: objtool:
- __intel_wait_for_register_fw.cold()+0xce: relocation to !ENDBR:
- vlv_allow_gt_wake.cold+0x0
-Message-ID: <YkxLqznOz0ldTz5a@hirez.programming.kicks-ass.net>
-References: <202204041241.Hw855BWm-lkp@intel.com>
+        Tue, 5 Apr 2022 06:10:14 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E06DDC5599;
+        Tue,  5 Apr 2022 02:56:07 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7648061676;
+        Tue,  5 Apr 2022 09:56:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8A096C385A2;
+        Tue,  5 Apr 2022 09:56:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649152566;
+        bh=r0yx3Istyx8LKKzY2BhVP/B45E7YnwmAFuCpV/DMYCw=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=b3tPPUFKoYGEDA8XRewFVrzBwRqS1oVyeXwMaQImRQg5936eLSjmN1wZ2VFb5SWmI
+         6pKAup9JPdJ/K+LFmvojwssO9LsS7EL58HgqylxkyjJg5OsqpQDVa7IkKAsNnAiAh8
+         sCeHpQ94WNnJTWByF3PvJMdJ6q734vLoXVsLE1F0=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        =?UTF-8?q?Ville=20Syrj=C3=A4l=C3=A4?= 
+        <ville.syrjala@linux.intel.com>,
+        Mika Kahola <mika.kahola@intel.com>,
+        Tvrtko Ursulin <tvrtko.ursulin@intel.com>
+Subject: [PATCH 5.15 786/913] drm/i915: Reject unsupported TMDS rates on ICL+
+Date:   Tue,  5 Apr 2022 09:30:48 +0200
+Message-Id: <20220405070403.394798356@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <202204041241.Hw855BWm-lkp@intel.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Apr 04, 2022 at 12:33:19PM +0800, kernel test robot wrote:
-> tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-> head:   3123109284176b1532874591f7c81f3837bbdc17
-> commit: d31ed5d767c0452b4f49846d80a0bfeafa3a4ded kbuild: Fixup the IBT kbuild changes
-> date:   12 days ago
-> config: x86_64-randconfig-a011-20220404 (https://download.01.org/0day-ci/archive/20220404/202204041241.Hw855BWm-lkp@intel.com/config)
-> compiler: gcc-11 (Debian 11.2.0-19) 11.2.0
-> reproduce (this is a W=1 build):
->         # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=d31ed5d767c0452b4f49846d80a0bfeafa3a4ded
->         git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
->         git fetch --no-tags linus master
->         git checkout d31ed5d767c0452b4f49846d80a0bfeafa3a4ded
->         # save the config file to linux build tree
->         mkdir build_dir
->         make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash drivers/gpu/
-> 
-> If you fix the issue, kindly add following tag as appropriate
-> Reported-by: kernel test robot <lkp@intel.com>
-> 
-> All warnings (new ones prefixed by >>):
-> 
-> >> drivers/gpu/drm/i915/i915.prelink.o: warning: objtool: __intel_wait_for_register_fw.cold()+0xce: relocation to !ENDBR: vlv_allow_gt_wake.cold+0x0
->    drivers/gpu/drm/i915/i915.prelink.o: warning: objtool: gen6_alloc_va_range.cold()+0x1c6: relocation to !ENDBR: i915_vma_unpin.cold+0x0
-> >> drivers/gpu/drm/i915/i915.prelink.o: warning: objtool: fence_update.cold()+0x14a: relocation to !ENDBR: i915_vma_revoke_fence.cold+0x0
->    drivers/gpu/drm/i915/i915.prelink.o: warning: objtool: eb_move_to_gpu.cold()+0x52: relocation to !ENDBR: i915_reset_gen7_sol_offsets.cold+0x0
-> >> drivers/gpu/drm/i915/i915.prelink.o: warning: objtool: __i915_gem_object_release_mmap_gtt.cold()+0xce: relocation to !ENDBR: i915_gem_mmap.cold+0x0
->    drivers/gpu/drm/i915/i915.prelink.o: warning: objtool: i915_ttm_io_mem_pfn.cold()+0x52: relocation to !ENDBR: i915_ttm_delayed_free.cold+0x0
-> >> drivers/gpu/drm/i915/i915.prelink.o: warning: objtool: ttm_vm_close.cold()+0x52: relocation to !ENDBR: ttm_vm_open.cold+0x0
->    drivers/gpu/drm/i915/i915.prelink.o: warning: objtool: ttm_vm_open.cold()+0x52: relocation to !ENDBR: i915_ttm_shrinker_release_pages.cold+0x0
+From: Ville Syrjälä <ville.syrjala@linux.intel.com>
 
+commit 9cddf03b2af07443bebdc73cba21acb360c079e8 upstream.
+
+ICL+ PLLs can't genenerate certain frequencies. Running the PLL
+algorithms through for all frequencies 25-594MHz we see a gap just
+above 500 MHz. Specifically 500-522.8MHZ for TC PLLs, and 500-533.2
+MHz for combo PHY PLLs. Reject those frequencies hdmi_port_clock_valid()
+so that we properly filter out unsupported modes and/or color depths
+for HDMI.
+
+Cc: stable@vger.kernel.org
+Closes: https://gitlab.freedesktop.org/drm/intel/-/issues/5247
+Signed-off-by: Ville Syrjälä <ville.syrjala@linux.intel.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220311212845.32358-1-ville.syrjala@linux.intel.com
+Reviewed-by: Mika Kahola <mika.kahola@intel.com>
+(cherry picked from commit e5086cb3f3d3f94091be29eec38cf13f8a75a778)
+Signed-off-by: Tvrtko Ursulin <tvrtko.ursulin@intel.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
-Subject: objtool/ibt: Allow _THIS_IP_ at: sym+len
-From: Peter Zijlstra <peterz@infradead.org>
-Date: Tue Apr  5 15:54:41 CEST 2022
+ drivers/gpu/drm/i915/display/intel_hdmi.c |    9 +++++++++
+ 1 file changed, 9 insertions(+)
 
-0day robot reported:
-
-  drivers/gpu/drm/i915/i915.prelink.o: warning: objtool: __intel_wait_for_register_fw.cold()+0xce: relocation to !ENDBR: vlv_allow_gt_wake.cold+0x0
-
-Which turns out to be GCC placing a _THIS_IP_ past the end of the
-function:
-
-0000000000001d00 <__intel_wait_for_register_fw.cold>:
-    ...
-    1dce:       48 c7 c7 00 00 00 00    mov    $0x0,%rdi        1dd1: R_X86_64_32S      .text.unlikely+0x1df8
-    1dd5:       e8 00 00 00 00          call   1dda <__intel_wait_for_register_fw.cold+0xda>    1dd6: R_X86_64_PLT32    __trace_bprintk-0x4
-    ...
-    1df6:       0f 0b                   ud2
-
-Add an exception for this one weird case...
-
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
----
- tools/objtool/check.c |   17 +++++++++++++++++
- 1 file changed, 17 insertions(+)
-
---- a/tools/objtool/check.c
-+++ b/tools/objtool/check.c
-@@ -3198,6 +3198,8 @@ static void warn_noendbr(const char *msg
- static void validate_ibt_dest(struct objtool_file *file, struct instruction *insn,
- 			      struct instruction *dest)
+--- a/drivers/gpu/drm/i915/display/intel_hdmi.c
++++ b/drivers/gpu/drm/i915/display/intel_hdmi.c
+@@ -1831,6 +1831,7 @@ hdmi_port_clock_valid(struct intel_hdmi
+ 		      bool has_hdmi_sink)
  {
-+	struct instruction *last, *next;
-+
- 	if (dest->func && dest->func == insn->func) {
- 		/*
- 		 * Anything from->to self is either _THIS_IP_ or IRET-to-self.
-@@ -3217,6 +3219,21 @@ static void validate_ibt_dest(struct obj
- 	if (dest->noendbr)
- 		return;
+ 	struct drm_i915_private *dev_priv = intel_hdmi_to_i915(hdmi);
++	enum phy phy = intel_port_to_phy(dev_priv, hdmi_to_dig_port(hdmi)->base.port);
  
-+	/*
-+	 * Occasionally, when the last instruction of the function is UD2, GCC
-+	 * manages to generate a text reference to the instruction after it.
-+	 */
-+	last = next = insn;
-+	for (;;) {
-+		next = next_insn_same_sec(file, next);
-+		if (!next || next->func != insn->func)
-+			break;
-+		last = next;
-+	}
-+	if (last->type == INSN_BUG &&
-+	    last->offset + last->len == dest->offset)
-+		return;
-+
- 	warn_noendbr("", insn->sec, insn->offset, dest);
- }
+ 	if (clock < 25000)
+ 		return MODE_CLOCK_LOW;
+@@ -1851,6 +1852,14 @@ hdmi_port_clock_valid(struct intel_hdmi
+ 	if (IS_CHERRYVIEW(dev_priv) && clock > 216000 && clock < 240000)
+ 		return MODE_CLOCK_RANGE;
  
++	/* ICL+ combo PHY PLL can't generate 500-533.2 MHz */
++	if (intel_phy_is_combo(dev_priv, phy) && clock > 500000 && clock < 533200)
++		return MODE_CLOCK_RANGE;
++
++	/* ICL+ TC PHY PLL can't generate 500-532.8 MHz */
++	if (intel_phy_is_tc(dev_priv, phy) && clock > 500000 && clock < 532800)
++		return MODE_CLOCK_RANGE;
++
+ 	/*
+ 	 * SNPS PHYs' MPLLB table-based programming can only handle a fixed
+ 	 * set of link rates.
+
+
