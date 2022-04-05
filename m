@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A87CBC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:17:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C1A1C4167B
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:17:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1452839AbiDEULJ (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 16:11:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34702 "EHLO
+        id S242427AbiDEUNF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 16:13:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50660 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356078AbiDEKWv (ORCPT
+        with ESMTP id S1358007AbiDEK1m (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:22:51 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B76FB0A7B;
-        Tue,  5 Apr 2022 03:05:57 -0700 (PDT)
+        Tue, 5 Apr 2022 06:27:42 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1491D9EB6;
+        Tue,  5 Apr 2022 03:12:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BB19EB81B7A;
-        Tue,  5 Apr 2022 10:05:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 27599C385A1;
-        Tue,  5 Apr 2022 10:05:53 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6D29A61777;
+        Tue,  5 Apr 2022 10:12:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 81423C385A1;
+        Tue,  5 Apr 2022 10:12:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649153154;
-        bh=/vSptA5YddKrMRYEVwozcLIsPiINX27TrXq69pfeqmQ=;
+        s=korg; t=1649153567;
+        bh=ZgLDfPyvIdJTTM2KlzuPc6Q78su2GBwEKJtd6o6xQEM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ED59cCxGMywuTenfBfVaK0a0JxHxw+SW51ixwpakoMiGP7q19D9wrgdZp+edGvJJR
-         A4GcBCZvERuKACs6Mj4/cnjZuK3fucq/ncT7TfZztji8aBZa9jY8I+TrOcUd3zhunJ
-         pnGqmKsH5/y0Yy+KrUGDgXRI595yr59ApO/KQFOE=
+        b=Mf1/7sim1cdx8b/kPQU8kGsxmBykq4OD2cu/vA67LF4eXAUk/7pvwVZZFRa0U2kHe
+         yKxQXorjADZJsWc0vribhDaKTG4jIBNZtMVAKf4Edp5Pd/UeYTW/FtY00JbJ3k2Nn1
+         Y3BLmyfhU2eevhfEaaPkO2n0f1JhiiziCsQV5R/0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Andreas Gruenbacher <agruenba@redhat.com>,
-        Anand Jain <anand.jain@oracle.com>
-Subject: [PATCH 5.10 082/599] powerpc/kvm: Fix kvm_use_magic_page
-Date:   Tue,  5 Apr 2022 09:26:16 +0200
-Message-Id: <20220405070301.266586275@linuxfoundation.org>
+        stable@vger.kernel.org, Pavel Skripkin <paskripkin@gmail.com>,
+        Gerd Hoffmann <kraxel@redhat.com>,
+        Sasha Levin <sashal@kernel.org>,
+        syzbot+2c56b725ec547fa9cb29@syzkaller.appspotmail.com
+Subject: [PATCH 5.10 268/599] udmabuf: validate ubuf->pagecount
+Date:   Tue,  5 Apr 2022 09:29:22 +0200
+Message-Id: <20220405070306.811711198@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
 References: <20220405070258.802373272@linuxfoundation.org>
@@ -49,33 +50,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Andreas Gruenbacher <agruenba@redhat.com>
+From: Pavel Skripkin <paskripkin@gmail.com>
 
-commit 0c8eb2884a42d992c7726539328b7d3568f22143 upstream.
+[ Upstream commit 2b6dd600dd72573c23ea180b5b0b2f1813405882 ]
 
-When switching from __get_user to fault_in_pages_readable, commit
-9f9eae5ce717 broke kvm_use_magic_page: like __get_user,
-fault_in_pages_readable returns 0 on success.
+Syzbot has reported GPF in sg_alloc_append_table_from_pages(). The
+problem was in ubuf->pages == ZERO_PTR.
 
-Fixes: 9f9eae5ce717 ("powerpc/kvm: Prefer fault_in_pages_readable function")
-Cc: stable@vger.kernel.org # v4.18+
-Signed-off-by: Andreas Gruenbacher <agruenba@redhat.com>
-Signed-off-by: Anand Jain <anand.jain@oracle.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+ubuf->pagecount is calculated from arguments passed from user-space. If
+user creates udmabuf with list.size == 0 then ubuf->pagecount will be
+also equal to zero; it causes kmalloc_array() to return ZERO_PTR.
+
+Fix it by validating ubuf->pagecount before passing it to
+kmalloc_array().
+
+Fixes: fbb0de795078 ("Add udmabuf misc device")
+Reported-and-tested-by: syzbot+2c56b725ec547fa9cb29@syzkaller.appspotmail.com
+Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
+Link: http://patchwork.freedesktop.org/patch/msgid/20211230142649.23022-1-paskripkin@gmail.com
+Signed-off-by: Gerd Hoffmann <kraxel@redhat.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/powerpc/kernel/kvm.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/dma-buf/udmabuf.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
---- a/arch/powerpc/kernel/kvm.c
-+++ b/arch/powerpc/kernel/kvm.c
-@@ -669,7 +669,7 @@ static void __init kvm_use_magic_page(vo
- 	on_each_cpu(kvm_map_magic_page, &features, 1);
- 
- 	/* Quick self-test to see if the mapping works */
--	if (!fault_in_pages_readable((const char *)KVM_MAGIC_PAGE, sizeof(u32))) {
-+	if (fault_in_pages_readable((const char *)KVM_MAGIC_PAGE, sizeof(u32))) {
- 		kvm_patching_worked = false;
- 		return;
+diff --git a/drivers/dma-buf/udmabuf.c b/drivers/dma-buf/udmabuf.c
+index db732f71e59a..cfbf10128aae 100644
+--- a/drivers/dma-buf/udmabuf.c
++++ b/drivers/dma-buf/udmabuf.c
+@@ -181,6 +181,10 @@ static long udmabuf_create(struct miscdevice *device,
+ 		if (ubuf->pagecount > pglimit)
+ 			goto err;
  	}
++
++	if (!ubuf->pagecount)
++		goto err;
++
+ 	ubuf->pages = kmalloc_array(ubuf->pagecount, sizeof(*ubuf->pages),
+ 				    GFP_KERNEL);
+ 	if (!ubuf->pages) {
+-- 
+2.34.1
+
 
 
