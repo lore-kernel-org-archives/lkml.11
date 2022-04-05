@@ -2,40 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1606DC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 14:46:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 41118C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 14:46:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238853AbiDEOrr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 10:47:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38324 "EHLO
+        id S239162AbiDEOsZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 10:48:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50286 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244521AbiDEJl1 (ORCPT
+        with ESMTP id S244531AbiDEJl1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Apr 2022 05:41:27 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD799BBE01;
-        Tue,  5 Apr 2022 02:26:54 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15D70BB93E;
+        Tue,  5 Apr 2022 02:26:52 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5ADB06144D;
-        Tue,  5 Apr 2022 09:26:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6DF1AC385A3;
-        Tue,  5 Apr 2022 09:26:53 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A612D61654;
+        Tue,  5 Apr 2022 09:26:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B18B3C385A0;
+        Tue,  5 Apr 2022 09:26:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649150813;
-        bh=vCNxLByh22qWpvDtzrk7nKcRMnmgzftlBFDb7fx5dWY=;
+        s=korg; t=1649150811;
+        bh=+BHQqudulgEYltZ9gQF+z7ttfxp1/b+/to9PAe+f8pc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LBbzIceB1Fhg4w25eaCo0HlI7z8/RAiSunTpQSFrWHIzTs3vb1NyOCy+gODLfVXpA
-         4usa4BrU0oDhsN2FBhOVhxHP9JvTUPBiHoLAua0+aMxnA07lyYlP7DD5MbCIV91P64
-         7TePqFiNVb7PLmKug5wjWrTDybgJkVoXs2K/1uG8=
+        b=kDs+QzUhnxoIWik+Z3k+oiNbhE6PgtsiC1s5aKrxIx4xN3Q/YihFl5/6QSgn0fU2Y
+         4zm35j/6+sWF2NkS7D71iMBMKlZguQ9iRKeatq+CX0B1IAvk2MPPrNvSkpaN6kFjUX
+         tUPHqO7SMl1OykId3y3kUhy5O2bySHJpHcngowYM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Max Filippov <jcmvbkbc@gmail.com>
-Subject: [PATCH 5.15 173/913] xtensa: fix stop_machine_cpuslocked call in patch_text
-Date:   Tue,  5 Apr 2022 09:20:35 +0200
-Message-Id: <20220405070345.038365579@linuxfoundation.org>
+        stable@vger.kernel.org, "GONG, Ruiqi" <gongruiqi1@huawei.com>,
+        Casey Schaufler <casey@schaufler-ca.com>,
+        Paul Moore <paul@paul-moore.com>,
+        Sasha Levin <sashal@kernel.org>, GONG@vger.kernel.org
+Subject: [PATCH 5.15 190/913] selinux: access superblock_security_struct in LSM blob way
+Date:   Tue,  5 Apr 2022 09:20:52 +0200
+Message-Id: <20220405070345.553109394@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
 References: <20220405070339.801210740@linuxfoundation.org>
@@ -47,34 +50,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Max Filippov <jcmvbkbc@gmail.com>
+From: GONG, Ruiqi <gongruiqi1@huawei.com>
 
-commit f406f2d03e07afc199dd8cf501f361dde6be8a69 upstream.
+[ Upstream commit 0266c25e7c2821181b610595df42cbca6bc93cb8 ]
 
-patch_text must invoke patch_text_stop_machine on all online CPUs, but
-it calls stop_machine_cpuslocked with NULL cpumask. As a result only one
-CPU runs patch_text_stop_machine potentially leaving stale icache
-entries on other CPUs. Fix that by calling stop_machine_cpuslocked with
-cpu_online_mask as the last argument.
+LSM blob has been involved for superblock's security struct. So fix the
+remaining direct access to sb->s_security by using the LSM blob
+mechanism.
 
-Cc: stable@vger.kernel.org
-Fixes: 64711f9a47d4 ("xtensa: implement jump_label support")
-Signed-off-by: Max Filippov <jcmvbkbc@gmail.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 08abe46b2cfc ("selinux: fall back to SECURITY_FS_USE_GENFS if no xattr support")
+Fixes: 69c4a42d72eb ("lsm,selinux: add new hook to compare new mount to an existing mount")
+Signed-off-by: GONG, Ruiqi <gongruiqi1@huawei.com>
+Reviewed-by: Casey Schaufler <casey@schaufler-ca.com>
+Signed-off-by: Paul Moore <paul@paul-moore.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/xtensa/kernel/jump_label.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ security/selinux/hooks.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/arch/xtensa/kernel/jump_label.c
-+++ b/arch/xtensa/kernel/jump_label.c
-@@ -61,7 +61,7 @@ static void patch_text(unsigned long add
- 			.data = data,
- 		};
- 		stop_machine_cpuslocked(patch_text_stop_machine,
--					&patch, NULL);
-+					&patch, cpu_online_mask);
- 	} else {
- 		unsigned long flags;
+diff --git a/security/selinux/hooks.c b/security/selinux/hooks.c
+index baa12d1007c7..0981008ac7d3 100644
+--- a/security/selinux/hooks.c
++++ b/security/selinux/hooks.c
+@@ -492,7 +492,7 @@ static int selinux_is_sblabel_mnt(struct super_block *sb)
  
+ static int sb_check_xattr_support(struct super_block *sb)
+ {
+-	struct superblock_security_struct *sbsec = sb->s_security;
++	struct superblock_security_struct *sbsec = selinux_superblock(sb);
+ 	struct dentry *root = sb->s_root;
+ 	struct inode *root_inode = d_backing_inode(root);
+ 	u32 sid;
+@@ -2695,7 +2695,7 @@ static int selinux_sb_eat_lsm_opts(char *options, void **mnt_opts)
+ static int selinux_sb_mnt_opts_compat(struct super_block *sb, void *mnt_opts)
+ {
+ 	struct selinux_mnt_opts *opts = mnt_opts;
+-	struct superblock_security_struct *sbsec = sb->s_security;
++	struct superblock_security_struct *sbsec = selinux_superblock(sb);
+ 	u32 sid;
+ 	int rc;
+ 
+-- 
+2.34.1
+
 
 
