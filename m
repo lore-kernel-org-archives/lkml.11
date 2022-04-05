@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 95DE7C4167B
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 10:09:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0806FC4167D
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 10:09:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353639AbiDEKIn (ORCPT
+        id S1353663AbiDEKIu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 06:08:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60898 "EHLO
+        Tue, 5 Apr 2022 06:08:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45840 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241006AbiDEIcn (ORCPT
+        with ESMTP id S241003AbiDEIcn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Apr 2022 04:32:43 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82927AFAE2;
-        Tue,  5 Apr 2022 01:25:53 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA719AF1FF;
+        Tue,  5 Apr 2022 01:25:52 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D870560FF7;
-        Tue,  5 Apr 2022 08:25:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EFC68C385A1;
-        Tue,  5 Apr 2022 08:25:51 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E5F20B81BC1;
+        Tue,  5 Apr 2022 08:25:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 45E61C385A2;
+        Tue,  5 Apr 2022 08:25:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649147152;
-        bh=tKl8Rar6xGkNX+SNXpGptpyUaVGPaBj0bQ16qgQWdwk=;
+        s=korg; t=1649147149;
+        bh=iq8AqRU800SkK5yV2TAoTB1ZOPRUbNaL+4tPg++3X4Y=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ORavolQsCDkkbMNOMxauUiG24WSoBinzUqnlBSYymlXvQe8t7TghPBF/UGzKxHmxc
-         YcSXNAaz6RB1lGhlhWudrC3fteXtpyqULzkgIbdos+UGsqw1HdXmqzTaHSOU9jooj8
-         ypnGIOHfpJg5eHHZAvjVn7GAEJWV2cQSi5Y6ie7k=
+        b=q1LxRMsd7z8j0F4S83IcPTmq3TZW1Um8fql7FzzqpIxogP7jYDkoeBvhhV14XkxQY
+         tanGcWWIdah7V4XlZdpwgsJeEDYhZTjYyvVqRjEOePT3UW2/7p3u5Rn5FmFsGgG/km
+         SdNjcyUnkXrRxaIcelNXesysDoznWktlLx8Lm6cw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, David Woodhouse <dwmw2@infradead.org>,
-        Paolo Bonzini <pbonzini@redhat.com>
-Subject: [PATCH 5.17 1003/1126] KVM: avoid double put_page with gfn-to-pfn cache
-Date:   Tue,  5 Apr 2022 09:29:10 +0200
-Message-Id: <20220405070436.931601245@linuxfoundation.org>
+        stable@vger.kernel.org, Hangyu Hua <hbh25y@gmail.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>
+Subject: [PATCH 5.17 1020/1126] can: mcba_usb: mcba_usb_start_xmit(): fix double dev_kfree_skb in error path
+Date:   Tue,  5 Apr 2022 09:29:27 +0200
+Message-Id: <20220405070437.424550501@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -49,34 +49,32 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: David Woodhouse <dwmw@amazon.co.uk>
+From: Hangyu Hua <hbh25y@gmail.com>
 
-commit 79593c086eb95eb2886f36ee6f78a1d6845e1bdf upstream.
+commit 04c9b00ba83594a29813d6b1fb8fdc93a3915174 upstream.
 
-If the cache's user host virtual address becomes invalid, there
-is still a path from kvm_gfn_to_pfn_cache_refresh() where __release_gpc()
-could release the pfn but the gpc->pfn field has not been overwritten
-with an error value.  If this happens, kvm_gfn_to_pfn_cache_unmap will
-call put_page again on the same page.
+There is no need to call dev_kfree_skb() when usb_submit_urb() fails
+because can_put_echo_skb() deletes original skb and
+can_free_echo_skb() deletes the cloned skb.
 
-Cc: stable@vger.kernel.org
-Fixes: 982ed0de4753 ("KVM: Reinstate gfn_to_pfn_cache with invalidation support")
-Signed-off-by: David Woodhouse <dwmw2@infradead.org>
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+Fixes: 51f3baad7de9 ("can: mcba_usb: Add support for Microchip CAN BUS Analyzer")
+Link: https://lore.kernel.org/all/20220311080208.45047-1-hbh25y@gmail.com
+Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
+Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- virt/kvm/pfncache.c |    1 +
- 1 file changed, 1 insertion(+)
+ drivers/net/can/usb/mcba_usb.c |    1 -
+ 1 file changed, 1 deletion(-)
 
---- a/virt/kvm/pfncache.c
-+++ b/virt/kvm/pfncache.c
-@@ -191,6 +191,7 @@ int kvm_gfn_to_pfn_cache_refresh(struct
- 		gpc->uhva = gfn_to_hva_memslot(gpc->memslot, gfn);
+--- a/drivers/net/can/usb/mcba_usb.c
++++ b/drivers/net/can/usb/mcba_usb.c
+@@ -364,7 +364,6 @@ static netdev_tx_t mcba_usb_start_xmit(s
+ xmit_failed:
+ 	can_free_echo_skb(priv->netdev, ctx->ndx, NULL);
+ 	mcba_usb_free_ctx(ctx);
+-	dev_kfree_skb(skb);
+ 	stats->tx_dropped++;
  
- 		if (kvm_is_error_hva(gpc->uhva)) {
-+			gpc->pfn = KVM_PFN_ERR_FAULT;
- 			ret = -EFAULT;
- 			goto out;
- 		}
+ 	return NETDEV_TX_OK;
 
 
