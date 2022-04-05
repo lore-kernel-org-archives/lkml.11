@@ -2,220 +2,135 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3439CC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:11:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D14BC43217
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:11:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1573830AbiDEWx0 convert rfc822-to-8bit (ORCPT
+        id S1573865AbiDEWxf (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 18:53:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47620 "EHLO
+        Tue, 5 Apr 2022 18:53:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51998 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1457864AbiDEQxP (ORCPT
+        with ESMTP id S1458142AbiDERKP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 12:53:15 -0400
-Received: from mail-ej1-f41.google.com (mail-ej1-f41.google.com [209.85.218.41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9FF0326E6
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 09:51:14 -0700 (PDT)
-Received: by mail-ej1-f41.google.com with SMTP id k23so24503510ejd.3
-        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 09:51:14 -0700 (PDT)
+        Tue, 5 Apr 2022 13:10:15 -0400
+Received: from smtp-relay-internal-1.canonical.com (smtp-relay-internal-1.canonical.com [185.125.188.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96BB853E0D
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 10:08:10 -0700 (PDT)
+Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com [209.85.221.70])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id 3F46B3F7F8
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 17:08:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1649178489;
+        bh=5ihDC8svoYNzIK8hMFPyp1shfnbI2+1sTt6+M9occ8s=;
+        h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+         To:Cc:Content-Type;
+        b=IUkkLfimBJWf98kUMI2g9SirAuVXQOUPA3bh6YbbqNWxS3lgf7t/5zA6RflitTCXs
+         41HLAJtp1A9U4o7JeMLl9l2TJ6P1vjIfMA8NxvppLlEwoz6u633oTtGVUXNp95nemM
+         IEzCMIzuFKWRs4Q7DgtXA6JvSSBR7RjD8VHQ0nECVlSAtxWxBGxvhBCIvyeGR4La0o
+         ATEwFzYYfPz3ue8rsJfddPbmFOXnsfnKgnuJopniPUIws7tCE0S/2DmJy4EsXEbRD8
+         TI78+BnSjHtKOS9CoceoCh+S7CB2IrkUW4/VVyR0PUDHf3A+xNNhvZORbXJZiuJXe8
+         ZAea2dKoz/1vQ==
+Received: by mail-wr1-f70.google.com with SMTP id e4-20020adfa444000000b002060b7347f8so1774897wra.6
+        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 10:08:09 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc:content-transfer-encoding;
-        bh=IPrQE+Xi3gKFHtaa4iFeqv2z1Mz1gUVNTO0GQNazrug=;
-        b=7MoYEpMW8uhJs4XPW8BacZ5qjLb2PeXqwyzQ0K3deVvGUJEcx+gyEl6KT5NNldM298
-         WI9R+z+/YYaUaZxtQt8mFU7HaLSeuHRITaQf8YTo3aaLr40XD+Mn9pADeQ14P5u+kwJF
-         Yy4m7yc/cMkEQSUjlSI5CBjGe8JxV831889R/fBUSeW6cwMU3/8InfiCqB6uHI7T6/r+
-         F6MG3uoycmXMYCEZkwcBv4ZuMBhcuBcNYWf9P8lk2D8ehuv5ay2j7Lk+gMTlBhmgURD3
-         gNDTK/LqJcn1vWjLCwjBUVhvIiSEBakVfMtIF08t730Uhf1mR6kpRO3SiiEhtB8hjSUq
-         WNXg==
-X-Gm-Message-State: AOAM532fh6n9/ywHyFcpbw1R9iDjDs0EcWFSzrKbcqqHhagB3biMqrn9
-        0zo9C5JTfk2KMwKinYcIIqR2FGs2z1vxElhR/asz8g==
-X-Google-Smtp-Source: ABdhPJyZW/jtaBf+smr/b2HpqbwulVx0oqg/WWEhSXUKh3LtpTZgEBwALPc6rzivGSbB+HNhFhDLiW9iIutaI4bUvA0=
-X-Received: by 2002:a17:907:1b20:b0:6da:649b:d99e with SMTP id
- mp32-20020a1709071b2000b006da649bd99emr4506275ejc.712.1649177473217; Tue, 05
- Apr 2022 09:51:13 -0700 (PDT)
+        bh=5ihDC8svoYNzIK8hMFPyp1shfnbI2+1sTt6+M9occ8s=;
+        b=LzdtEnWw6B+LkEinl205j07VAqNbZL90SRMcQM1AaXTamf1AFYNypaR/5CeipNh/rc
+         YJcefi0t2ffxYloQADmqz6DNf6pj36ckRQrKZWcVdt/zUaT2f5cmekpFO3WeIZtjJ3me
+         DTPUcBlkZOHE1YwZoAIaWyQ3HPFPoF1ODiRBbC5GOD8pzZoEo6yH2HOxfGoNGIdLwhqW
+         nKMIQ6Dk03e+acqWqAtRWWYq29ErtjfribZf8XvZ8mGcIa/wxySuqqC70oqejZO2K3Hv
+         t1uW9RPwEPfE4ox6Chbo0K0C8aruZCBnul9PV3ZP/wQULMcfrGOgI1AYGzUnC/063xx+
+         P5ow==
+X-Gm-Message-State: AOAM532NSTiQ3WOfAGk/r19Gm/ZWqa3bz3YkqsWDBm8wvpmXmDo6rPFG
+        I2XrhxURBdxND1yJjoqsbuvWlwsON230+r36pGoOVKBQO/1tqVTs8XNNPM4AolZTUamSyf+ALMk
+        qWRnr7959fzwG916mteYssIEDgHrj+WoDLiTPgOx6t073izQKfAexhInkog==
+X-Received: by 2002:a05:6000:1203:b0:206:1837:b5a8 with SMTP id e3-20020a056000120300b002061837b5a8mr3473856wrx.232.1649178486071;
+        Tue, 05 Apr 2022 10:08:06 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJziuMa66ZbQ9P/QeRUcn9JlFEqtsJOCFfYeHJTQhJe868mBJWdgkEPXXRcbxUGQEfP9hhmpi0r6jO87fnMEX18=
+X-Received: by 2002:a05:6000:1203:b0:206:1837:b5a8 with SMTP id
+ e3-20020a056000120300b002061837b5a8mr3473845wrx.232.1649178485847; Tue, 05
+ Apr 2022 10:08:05 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220405070407.513532867@linuxfoundation.org> <20220405070435.188697055@linuxfoundation.org>
-In-Reply-To: <20220405070435.188697055@linuxfoundation.org>
-From:   Justin Forbes <jforbes@fedoraproject.org>
-Date:   Tue, 5 Apr 2022 11:51:02 -0500
-Message-ID: <CAFxkdAov41sA0V7D82BVophn8Nn6RPyLwPz-VmW5mLOXg1NYEw@mail.gmail.com>
-Subject: Re: [PATCH 5.17 0943/1126] ASoC: Intel: sof_es8336: use NHLT
- information to set dmic and SSP
+References: <20220405070354.155796697@linuxfoundation.org> <20220405070400.156176848@linuxfoundation.org>
+ <YkxjbVp3W2LeVIeL@xps13.dannf> <Ykx1o2PbNzGlp1ds@kroah.com>
+In-Reply-To: <Ykx1o2PbNzGlp1ds@kroah.com>
+From:   dann frazier <dann.frazier@canonical.com>
+Date:   Tue, 5 Apr 2022 11:07:53 -0600
+Message-ID: <CALdTtnv2w5d0N4ez7JTsxaWMa6v2c5j9-guVjkUq33=UDNFMGA@mail.gmail.com>
+Subject: Re: [PATCH 5.16 0199/1017] PCI: xgene: Revert "PCI: xgene: Fix IB
+ window setup"
 To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        Stable <stable@vger.kernel.org>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
-        Bard Liao <yung-chuan.liao@linux.intel.com>,
-        =?UTF-8?Q?P=C3=A9ter_Ujfalusi?= <peter.ujfalusi@linux.intel.com>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        Marc Zyngier <maz@kernel.org>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Rob Herring <robh@kernel.org>,
+        Toan Le <toan@os.amperecomputing.com>,
+        =?UTF-8?Q?Krzysztof_Wilczy=C5=84ski?= <kw@linux.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        =?UTF-8?Q?St=C3=A9phane_Graber?= <stgraber@ubuntu.com>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8BIT
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 5, 2022 at 4:14 AM Greg Kroah-Hartman
+On Tue, Apr 5, 2022 at 11:00 AM Greg Kroah-Hartman
 <gregkh@linuxfoundation.org> wrote:
 >
-> From: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+> On Tue, Apr 05, 2022 at 09:42:37AM -0600, dann frazier wrote:
+> > On Tue, Apr 05, 2022 at 09:18:32AM +0200, Greg Kroah-Hartman wrote:
+> > > From: Marc Zyngier <maz@kernel.org>
+> > >
+> > > commit 825da4e9cec68713fbb02dc6f71fe1bf65fe8050 upstream.
+> > >
+> > > Commit c7a75d07827a ("PCI: xgene: Fix IB window setup") tried to
+> > > fix the damages that 6dce5aa59e0b ("PCI: xgene: Use inbound resources
+> > > for setup") caused, but actually didn't improve anything for some
+> > > plarforms (at least Mustang and m400 are still broken).
+> > >
+> > > Given that 6dce5aa59e0b has been reverted, revert this patch as well,
+> > > restoring the PCIe support on XGene to its pre-5.5, working state.
+> > >
+> > > Link: https://lore.kernel.org/r/YjN8pT5e6/8cRohQ@xps13.dannf
+> > > Link: https://lore.kernel.org/r/20220321104843.949645-3-maz@kernel.or=
+g
+> > > Fixes: c7a75d07827a ("PCI: xgene: Fix IB window setup")
+> > > Signed-off-by: Marc Zyngier <maz@kernel.org>
+> > > Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+> > > Cc: stable@vger.kernel.org
+> > > Cc: Rob Herring <robh@kernel.org>
+> > > Cc: Toan Le <toan@os.amperecomputing.com>
+> > > Cc: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+> > > Cc: Krzysztof Wilczy=C5=84ski <kw@linux.com>
+> > > Cc: Bjorn Helgaas <bhelgaas@google.com>
+> > > Cc: St=C3=A9phane Graber <stgraber@ubuntu.com>
+> > > Cc: dann frazier <dann.frazier@canonical.com>
+> > > Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> > > ---
+> > >  drivers/pci/controller/pci-xgene.c |    2 +-
+> > >  1 file changed, 1 insertion(+), 1 deletion(-)
+> >
+> > Hi Greg,
+> >
+> >   I don't think it makes sense to apply this to 5.10.y, 5.15.y &
+> > 5.16.y w/o also applying a backport of 1874b6d7ab1, because without
+> > that we will regress support for St=C3=A9phane's X-Gene2-based systems.=
+ The
+> > backport of 1874b6d7ab1 was rejected for these trees because it doesn't
+> > apply cleanly, but I've just submitted new versions that do.
 >
-> [ Upstream commit 651c304df7f6e3fbb4779527efa3eb128ef91329 ]
->
-> Since we see a proliferation of devices with various configurations,
-> we want to automatically set the DMIC and SSP information. This patch
-> relies on the information extracted from NHLT and partially reverts
-> existing DMI quirks added by commit a164137ce91a ("ASoC: Intel: add
-> machine driver for SOF+ES8336")
->
-> Note that NHLT can report multiple SSPs, choosing from the
-> ssp_link_mask in an MSB-first manner was found experimentally to work
-> fine.
->
-> The only thing that cannot be detected is the GPIO type, and users may
-> want to use the quirk override parameter if the 'wrong' solution is
-> provided.
->
-> Tested-by: Mauro Carvalho Chehab <mchehab@kernel.org>
-> Signed-off-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
-> Reviewed-by: Bard Liao <yung-chuan.liao@linux.intel.com>
-> Reviewed-by: Péter Ujfalusi <peter.ujfalusi@linux.intel.com>
-> Link: https://lore.kernel.org/r/20220308192610.392950-15-pierre-louis.bossart@linux.intel.com
-> Signed-off-by: Mark Brown <broonie@kernel.org>
-> Signed-off-by: Sasha Levin <sashal@kernel.org>
+> Where were those patches sent to?  I don't seem to see them on the
+> stable list, did I miss them?
 
-It seems this patch is missing a dependent patch in the backport,
-specifically commit
-679aa83a0fb70dcbf9e97cbdfd573e6fc8bf9b1a ASoC: soc-acpi: add
-information on I2S/TDM link mask
+These are the message IDs:
+<20220405142505.1268999-1-dann.frazier@canonical.com>
+<20220405153419.1330755-1-dann.frazier@canonical.com>
 
-sound/soc/intel/boards/sof_es8336.c: In function 'sof_es8336_probe':
-sound/soc/intel/boards/sof_es8336.c:482:32: error: 'struct
-snd_soc_acpi_mach_params' has no member named 'i2s_link_mask'; did you
-mean 'link_mask'?
-  482 |         if (!mach->mach_params.i2s_link_mask) {
-      |                                ^~~~~~~~~~~~~
-      |                                link_mask
-sound/soc/intel/boards/sof_es8336.c:494:39: error: 'struct
-snd_soc_acpi_mach_params' has no member named 'i2s_link_mask'; did you
-mean 'link_mask'?
-  494 |                 if (mach->mach_params.i2s_link_mask & BIT(2))
-      |                                       ^~~~~~~~~~~~~
-      |                                       link_mask
-sound/soc/intel/boards/sof_es8336.c:496:44: error: 'struct
-snd_soc_acpi_mach_params' has no member named 'i2s_link_mask'; did you
-mean 'link_mask'?
-  496 |                 else if (mach->mach_params.i2s_link_mask & BIT(1))
-      |                                            ^~~~~~~~~~~~~
-      |                                            link_mask
-sound/soc/intel/boards/sof_es8336.c:498:45: error: 'struct
-snd_soc_acpi_mach_params' has no member named 'i2s_link_mask'; did you
-mean 'link_mask'?
-  498 |                 else  if (mach->mach_params.i2s_link_mask & BIT(0))
-      |                                             ^~~~~~~~~~~~~
-      |                                             link_mask
-make[4]: *** [scripts/Makefile.build:288:
-sound/soc/intel/boards/sof_es8336.o] Error 1
+I've just bounced them directly to you as well. Thanks Greg!
 
-Justin
-
->  sound/soc/intel/boards/sof_es8336.c | 56 +++++++++++++++++++++--------
->  1 file changed, 41 insertions(+), 15 deletions(-)
->
-> diff --git a/sound/soc/intel/boards/sof_es8336.c b/sound/soc/intel/boards/sof_es8336.c
-> index 20d577eaab6d..46e453915f82 100644
-> --- a/sound/soc/intel/boards/sof_es8336.c
-> +++ b/sound/soc/intel/boards/sof_es8336.c
-> @@ -228,24 +228,25 @@ static int sof_es8336_quirk_cb(const struct dmi_system_id *id)
->         return 1;
->  }
->
-> +/*
-> + * this table should only be used to add GPIO or jack-detection quirks
-> + * that cannot be detected from ACPI tables. The SSP and DMIC
-> + * information are providing by the platform driver and are aligned
-> + * with the topology used.
-> + *
-> + * If the GPIO support is missing, the quirk parameter can be used to
-> + * enable speakers. In that case it's recommended to keep the SSP and DMIC
-> + * information consistent, overriding the SSP and DMIC can only be done
-> + * if the topology file is modified as well.
-> + */
->  static const struct dmi_system_id sof_es8336_quirk_table[] = {
-> -       {
-> -               .callback = sof_es8336_quirk_cb,
-> -               .matches = {
-> -                       DMI_MATCH(DMI_SYS_VENDOR, "CHUWI Innovation And Technology"),
-> -                       DMI_MATCH(DMI_BOARD_NAME, "Hi10 X"),
-> -               },
-> -               .driver_data = (void *)SOF_ES8336_SSP_CODEC(2)
-> -       },
->         {
->                 .callback = sof_es8336_quirk_cb,
->                 .matches = {
->                         DMI_MATCH(DMI_SYS_VENDOR, "IP3 tech"),
->                         DMI_MATCH(DMI_BOARD_NAME, "WN1"),
->                 },
-> -               .driver_data = (void *)(SOF_ES8336_SSP_CODEC(0) |
-> -                                       SOF_ES8336_TGL_GPIO_QUIRK |
-> -                                       SOF_ES8336_ENABLE_DMIC)
-> +               .driver_data = (void *)(SOF_ES8336_TGL_GPIO_QUIRK)
->         },
->         {}
->  };
-> @@ -470,11 +471,33 @@ static int sof_es8336_probe(struct platform_device *pdev)
->         card = &sof_es8336_card;
->         card->dev = dev;
->
-> -       if (!dmi_check_system(sof_es8336_quirk_table))
-> -               quirk = SOF_ES8336_SSP_CODEC(2);
-> +       /* check GPIO DMI quirks */
-> +       dmi_check_system(sof_es8336_quirk_table);
->
-> -       if (quirk & SOF_ES8336_ENABLE_DMIC)
-> -               dmic_be_num = 2;
-> +       if (!mach->mach_params.i2s_link_mask) {
-> +               dev_warn(dev, "No I2S link information provided, using SSP0. This may need to be modified with the quirk module parameter\n");
-> +       } else {
-> +               /*
-> +                * Set configuration based on platform NHLT.
-> +                * In this machine driver, we can only support one SSP for the
-> +                * ES8336 link, the else-if below are intentional.
-> +                * In some cases multiple SSPs can be reported by NHLT, starting MSB-first
-> +                * seems to pick the right connection.
-> +                */
-> +               unsigned long ssp = 0;
-> +
-> +               if (mach->mach_params.i2s_link_mask & BIT(2))
-> +                       ssp = SOF_ES8336_SSP_CODEC(2);
-> +               else if (mach->mach_params.i2s_link_mask & BIT(1))
-> +                       ssp = SOF_ES8336_SSP_CODEC(1);
-> +               else  if (mach->mach_params.i2s_link_mask & BIT(0))
-> +                       ssp = SOF_ES8336_SSP_CODEC(0);
-> +
-> +               quirk |= ssp;
-> +       }
-> +
-> +       if (mach->mach_params.dmic_num)
-> +               quirk |= SOF_ES8336_ENABLE_DMIC;
->
->         if (quirk_override != -1) {
->                 dev_info(dev, "Overriding quirk 0x%lx => 0x%x\n",
-> @@ -483,6 +506,9 @@ static int sof_es8336_probe(struct platform_device *pdev)
->         }
->         log_quirks(dev);
->
-> +       if (quirk & SOF_ES8336_ENABLE_DMIC)
-> +               dmic_be_num = 2;
-> +
->         sof_es8336_card.num_links += dmic_be_num + hdmi_num;
->         dai_links = sof_card_dai_links_create(dev,
->                                               SOF_ES8336_SSP_CODEC(quirk),
-> --
-> 2.34.1
->
->
->
+ -dann
