@@ -2,50 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9140DC4167B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A6314C4321E
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 14:32:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1388261AbiDEOd2 (ORCPT
+        id S1387927AbiDEOdB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 10:33:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39134 "EHLO
+        Tue, 5 Apr 2022 10:33:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58660 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238760AbiDEJcp (ORCPT
+        with ESMTP id S238899AbiDEJdC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:32:45 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C43982AFF;
-        Tue,  5 Apr 2022 02:20:03 -0700 (PDT)
+        Tue, 5 Apr 2022 05:33:02 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27830E9C;
+        Tue,  5 Apr 2022 02:20:44 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 710F5B81B75;
-        Tue,  5 Apr 2022 09:20:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B0D6DC385A4;
-        Tue,  5 Apr 2022 09:20:00 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B53E861574;
+        Tue,  5 Apr 2022 09:20:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C0A08C385A2;
+        Tue,  5 Apr 2022 09:20:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649150401;
-        bh=MVgAlWvP92ctLAd+b4nIN9lxSN72tSLbU4rwT1rGihY=;
+        s=korg; t=1649150443;
+        bh=L+a2SzSVzn4E/4douuC9asR0dAPEwbbhzHSIRnZEM04=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=s9bjq6+gVmKFpO1/5uBwpOvVlyIJBYSlWdvbCv6Ssm1UZryo0VaCZMs2b4Pow96tL
-         yoHIQM+dMDkDlX2K3QpeT/O03pcOUGjarRGomrBSS4X5yZDjkLJyQTv6h5BNOYwACF
-         lsocq5sDdSsbKfi75yi0fxJz97+itSoKcL+vsxDk=
+        b=kiNcc+/P9OJlGKxKmu73f7uaqcPSVTG4movAQwhZqW/3W1YGcAumZP481FK3+rWLJ
+         Ls2WXXCZ2lpZ3+UqAhtA7iV3D2mMZ2Ntc2MNxyEvt21XQtdHG7dTNGpCctaefoRBor
+         oHjHM6wL+MAa3WD4j91gWLjIT0ZE+f9+g2cLTlEA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
-        kernel test robot <lkp@intel.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        "K. Y. Srinivasan" <kys@microsoft.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        Wei Liu <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>,
-        linux-hyperv@vger.kernel.org,
-        Michael Kelley <mikelley@microsoft.com>,
-        =?UTF-8?q?Petr=20=C5=A0tetiar?= <ynezz@true.cz>
-Subject: [PATCH 5.15 007/913] hv: utils: add PTP_1588_CLOCK to Kconfig to fix build
-Date:   Tue,  5 Apr 2022 09:17:49 +0200
-Message-Id: <20220405070340.032267794@linuxfoundation.org>
+        stable@vger.kernel.org, Sasha Levin <sashal@kernel.org>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Bagas Sanjaya <bagasdotme@gmail.com>
+Subject: [PATCH 5.15 058/913] Documentation: add link to stable release candidate tree
+Date:   Tue,  5 Apr 2022 09:18:40 +0200
+Message-Id: <20220405070341.562159086@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
 References: <20220405070339.801210740@linuxfoundation.org>
@@ -57,50 +50,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Randy Dunlap <rdunlap@infradead.org>
+From: Bagas Sanjaya <bagasdotme@gmail.com>
 
-commit 1dc2f2b81a6a9895da59f3915760f6c0c3074492 upstream.
+commit 587d39b260c4d090166314d64be70b1f6a26b0b5 upstream.
 
-The hyperv utilities use PTP clock interfaces and should depend a
-a kconfig symbol such that they will be built as a loadable module or
-builtin so that linker errors do not happen.
+There is also stable release candidate tree. Mention it, however with a
+warning that the tree is for testing purposes.
 
-Prevents these build errors:
-
-ld: drivers/hv/hv_util.o: in function `hv_timesync_deinit':
-hv_util.c:(.text+0x37d): undefined reference to `ptp_clock_unregister'
-ld: drivers/hv/hv_util.o: in function `hv_timesync_init':
-hv_util.c:(.text+0x738): undefined reference to `ptp_clock_register'
-
-Fixes: 3716a49a81ba ("hv_utils: implement Hyper-V PTP source")
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Reported-by: kernel test robot <lkp@intel.com>
-Cc: Arnd Bergmann <arnd@arndb.de>
-Cc: "K. Y. Srinivasan" <kys@microsoft.com>
-Cc: Haiyang Zhang <haiyangz@microsoft.com>
-Cc: Stephen Hemminger <sthemmin@microsoft.com>
-Cc: Wei Liu <wei.liu@kernel.org>
-Cc: Dexuan Cui <decui@microsoft.com>
-Cc: linux-hyperv@vger.kernel.org
 Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Reviewed-by: Michael Kelley <mikelley@microsoft.com>
-Link: https://lore.kernel.org/r/20211126023316.25184-1-rdunlap@infradead.org
-Signed-off-by: Wei Liu <wei.liu@kernel.org>
-Cc: Petr Štetiar <ynezz@true.cz>
+Cc: Sasha Levin <sashal@kernel.org>
+Cc: Jonathan Corbet <corbet@lwn.net>
+Cc: stable@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
+Signed-off-by: Bagas Sanjaya <bagasdotme@gmail.com>
+Link: https://lore.kernel.org/r/20220314113329.485372-5-bagasdotme@gmail.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/hv/Kconfig |    1 +
- 1 file changed, 1 insertion(+)
+ Documentation/process/stable-kernel-rules.rst |    9 +++++++++
+ 1 file changed, 9 insertions(+)
 
---- a/drivers/hv/Kconfig
-+++ b/drivers/hv/Kconfig
-@@ -18,6 +18,7 @@ config HYPERV_TIMER
- config HYPERV_UTILS
- 	tristate "Microsoft Hyper-V Utilities driver"
- 	depends on HYPERV && CONNECTOR && NLS
-+	depends on PTP_1588_CLOCK_OPTIONAL
- 	help
- 	  Select this option to enable the Hyper-V Utilities.
+--- a/Documentation/process/stable-kernel-rules.rst
++++ b/Documentation/process/stable-kernel-rules.rst
+@@ -170,6 +170,15 @@ Trees
  
+ 	https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable.git
+ 
++ - The release candidate of all stable kernel versions can be found at:
++
++        https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git/
++
++   .. warning::
++      The -stable-rc tree is a snapshot in time of the stable-queue tree and
++      will change frequently, hence will be rebased often. It should only be
++      used for testing purposes (e.g. to be consumed by CI systems).
++
+ 
+ Review committee
+ ----------------
 
 
