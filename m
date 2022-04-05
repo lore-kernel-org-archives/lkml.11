@@ -2,114 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BB697C4167D
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 01:48:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 56254C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 01:48:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1843576AbiDFBlU (ORCPT
+        id S1843590AbiDFBlY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 21:41:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56012 "EHLO
+        Tue, 5 Apr 2022 21:41:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55566 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354199AbiDEKMP (ORCPT
+        with ESMTP id S1573097AbiDER7D (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:12:15 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76AA053A40;
-        Tue,  5 Apr 2022 02:58:33 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 2B007CE1BF8;
-        Tue,  5 Apr 2022 09:58:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4CE18C385A2;
-        Tue,  5 Apr 2022 09:58:30 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649152710;
-        bh=izMv/LMDq16sbMxK8dWa52dHpvXUUl3PEqt/CPB1xl4=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RRiWXXKLZM7LQp2NV/ekzsBTwdkn7MBDG7WaBz/PjoiCgX4996Fimmwoox6vwjPcu
-         YzvJ9SLk0vYgCqAXee/XtUMSWCs1oME9q7S64LmHHgHQyaM2QwghAzkKWw6LPH//+v
-         /9X+d8HiQsqF4yubR30NBtB/Co1G3UgnVZLJ5A0A=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
-        Igor Zhbanov <i.zhbanov@omprussia.ru>,
-        Chris von Recklinghausen <crecklin@redhat.com>,
-        Kees Cook <keescook@chromium.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [PATCH 5.15 876/913] mm/usercopy: return 1 from hardened_usercopy __setup() handler
-Date:   Tue,  5 Apr 2022 09:32:18 +0200
-Message-Id: <20220405070406.081233495@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 5 Apr 2022 13:59:03 -0400
+Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31B48E7F47
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 10:57:04 -0700 (PDT)
+Received: by mail-ej1-x635.google.com with SMTP id r13so28323755ejd.5
+        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 10:57:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=fWlXCTkYGyXzOu6P6awXX/6nfl84WYIZI9g+WSGOyw0=;
+        b=jwx0XQUGCaRHrpcErZBCsWMj23/VXGgzoKqDbPSw2f+7F8N/d9igo6HIZ+sSRTWP9a
+         hqVlvkcMJHhbv8xYnDkM7bGSTq93zYJVCDN/0Uym3PloU+pHINLS9cTw6XdP9ouh17le
+         it2++ow9VO0gUkSzqvwdCeMBzqbqoP5MRFjfawj+UxJefktYATV0WZknO8TYNGxTGfMQ
+         A4SEg3p8c2YD/MFhBiOnIcKNUo84CMezQUHC+Em+oj9ZjR24dmD358+boudl6sT0Vpem
+         JS1XGjGYbGqUCc76nIevCdXkQ4b19TaL0abiCBotNqqN7PtVcy3R/zqZT3DhISco56Xk
+         7VWw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=fWlXCTkYGyXzOu6P6awXX/6nfl84WYIZI9g+WSGOyw0=;
+        b=G9iMyqI/e/iqin9Jtu8sd14qGrmjdaUeLWFUgDRUzh1typilbXJJ4MX4qQcS2ruVGL
+         AMN8kuVGCDjulpnrSHEkGMRfp1sIX0vHETg8GZAcNcIrGfpwbDaV7DMJUxYe2Q1RRrcO
+         YD4KF1IGxxRWg1b97Xpl3e98sdhhvlmDYd3ZqaIVpZ8qONq4lDl6f8zX7BWdAR7LAhPk
+         BenR0QJKk6M8kKEwIM8CimBSwgt1NPDc1fBdiPfUDao+U3/3ZOvl/ZGngsZJjT9Npbqx
+         zSWGpggrEKYjgYtv5SJisVf3snjErJyIPAoZEZkZxMoNDt4rIaBqwsk6g3ygUa3u3UFE
+         vTOw==
+X-Gm-Message-State: AOAM531Ke9Bbn7/OQmgP4Yi5m7MKbNdiTPzlVU+wxOn4W2RB2sPhFsZj
+        GCZ8c1DpiWLNFCaoAXtFhQnqj+OHBbilCnLboUI=
+X-Google-Smtp-Source: ABdhPJzNwJLndNEvf8of6myr8gcbYVYJMmeilk2VVKShekHBfh+c8nN7LVIdcrL0bjowhSiwuKS+l8gYahoKhGqXbFU=
+X-Received: by 2002:a17:906:d10c:b0:6cd:4aa2:cd62 with SMTP id
+ b12-20020a170906d10c00b006cd4aa2cd62mr4684858ejz.229.1649181422577; Tue, 05
+ Apr 2022 10:57:02 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <20220405173918.1000846-1-robdclark@gmail.com>
+In-Reply-To: <20220405173918.1000846-1-robdclark@gmail.com>
+From:   Chia-I Wu <olvaffe@gmail.com>
+Date:   Tue, 5 Apr 2022 10:56:51 -0700
+Message-ID: <CAPaKu7Tur-_Kf3Lb9U=98Yr_08onxPHNKTPh2anHU6zLPhr5ZQ@mail.gmail.com>
+Subject: Re: [PATCH] drm/virtio: Add execbuf flag to request no fence-event
+To:     Rob Clark <robdclark@gmail.com>
+Cc:     ML dri-devel <dri-devel@lists.freedesktop.org>,
+        Rob Clark <robdclark@chromium.org>,
+        David Airlie <airlied@linux.ie>,
+        Gerd Hoffmann <kraxel@redhat.com>,
+        Gurchetan Singh <gurchetansingh@chromium.org>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        "open list:VIRTIO GPU DRIVER" 
+        <virtualization@lists.linux-foundation.org>,
+        open list <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Randy Dunlap <rdunlap@infradead.org>
+On Tue, Apr 5, 2022 at 10:38 AM Rob Clark <robdclark@gmail.com> wrote:
+>
+> From: Rob Clark <robdclark@chromium.org>
+>
+> It would have been cleaner to have a flag to *request* the fence event.
+> But that ship has sailed.  So add a flag so that userspace which doesn't
+> care about the events can opt-out.
+>
+> Signed-off-by: Rob Clark <robdclark@chromium.org>
+Reviewed-by: Chia-I Wu <olvaffe@gmail.com>
 
-commit 05fe3c103f7e6b8b4fca8a7001dfc9ed4628085b upstream.
+Might want to wait for Gurchetan to chime in as he added the mechanism.
 
-__setup() handlers should return 1 if the command line option is handled
-and 0 if not (or maybe never return 0; it just pollutes init's
-environment).  This prevents:
-
-  Unknown kernel command line parameters \
-  "BOOT_IMAGE=/boot/bzImage-517rc5 hardened_usercopy=off", will be \
-  passed to user space.
-
-  Run /sbin/init as init process
-   with arguments:
-     /sbin/init
-   with environment:
-     HOME=/
-     TERM=linux
-     BOOT_IMAGE=/boot/bzImage-517rc5
-     hardened_usercopy=off
-or
-     hardened_usercopy=on
-but when "hardened_usercopy=foo" is used, there is no Unknown kernel
-command line parameter.
-
-Return 1 to indicate that the boot option has been handled.
-Print a warning if strtobool() returns an error on the option string,
-but do not mark this as in unknown command line option and do not cause
-init's environment to be polluted with this string.
-
-Link: https://lkml.kernel.org/r/20220222034249.14795-1-rdunlap@infradead.org
-Link: lore.kernel.org/r/64644a2f-4a20-bab3-1e15-3b2cdd0defe3@omprussia.ru
-Fixes: b5cb15d9372ab ("usercopy: Allow boot cmdline disabling of hardening")
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Reported-by: Igor Zhbanov <i.zhbanov@omprussia.ru>
-Acked-by: Chris von Recklinghausen <crecklin@redhat.com>
-Cc: Kees Cook <keescook@chromium.org>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- mm/usercopy.c |    5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
-
---- a/mm/usercopy.c
-+++ b/mm/usercopy.c
-@@ -294,7 +294,10 @@ static bool enable_checks __initdata = t
- 
- static int __init parse_hardened_usercopy(char *str)
- {
--	return strtobool(str, &enable_checks);
-+	if (strtobool(str, &enable_checks))
-+		pr_warn("Invalid option string for hardened_usercopy: '%s'\n",
-+			str);
-+	return 1;
- }
- 
- __setup("hardened_usercopy=", parse_hardened_usercopy);
-
-
+> ---
+>  drivers/gpu/drm/virtio/virtgpu_ioctl.c | 8 +++++---
+>  include/uapi/drm/virtgpu_drm.h         | 2 ++
+>  2 files changed, 7 insertions(+), 3 deletions(-)
+>
+> diff --git a/drivers/gpu/drm/virtio/virtgpu_ioctl.c b/drivers/gpu/drm/virtio/virtgpu_ioctl.c
+> index 3a8078f2ee27..09f1aa263f91 100644
+> --- a/drivers/gpu/drm/virtio/virtgpu_ioctl.c
+> +++ b/drivers/gpu/drm/virtio/virtgpu_ioctl.c
+> @@ -225,9 +225,11 @@ static int virtio_gpu_execbuffer_ioctl(struct drm_device *dev, void *data,
+>                 goto out_unresv;
+>         }
+>
+> -       ret = virtio_gpu_fence_event_create(dev, file, out_fence, ring_idx);
+> -       if (ret)
+> -               goto out_unresv;
+> +       if (!(exbuf->flags & VIRTGPU_EXECBUF_NO_EVENT)) {
+> +               ret = virtio_gpu_fence_event_create(dev, file, out_fence, ring_idx);
+> +               if (ret)
+> +                       goto out_unresv;
+> +       }
+>
+>         if (out_fence_fd >= 0) {
+>                 sync_file = sync_file_create(&out_fence->f);
+> diff --git a/include/uapi/drm/virtgpu_drm.h b/include/uapi/drm/virtgpu_drm.h
+> index 0512fde5e697..d06cac3407cc 100644
+> --- a/include/uapi/drm/virtgpu_drm.h
+> +++ b/include/uapi/drm/virtgpu_drm.h
+> @@ -52,10 +52,12 @@ extern "C" {
+>  #define VIRTGPU_EXECBUF_FENCE_FD_IN    0x01
+>  #define VIRTGPU_EXECBUF_FENCE_FD_OUT   0x02
+>  #define VIRTGPU_EXECBUF_RING_IDX       0x04
+> +#define VIRTGPU_EXECBUF_NO_EVENT       0x08
+>  #define VIRTGPU_EXECBUF_FLAGS  (\
+>                 VIRTGPU_EXECBUF_FENCE_FD_IN |\
+>                 VIRTGPU_EXECBUF_FENCE_FD_OUT |\
+>                 VIRTGPU_EXECBUF_RING_IDX |\
+> +               VIRTGPU_EXECBUF_NO_EVENT |\
+>                 0)
+>
+>  struct drm_virtgpu_map {
+> --
+> 2.35.1
+>
