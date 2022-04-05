@@ -2,86 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AEA9AC35295
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 80641C35294
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 02:02:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1845845AbiDFCB2 (ORCPT
+        id S1845760AbiDFCBA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 22:01:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43462 "EHLO
+        Tue, 5 Apr 2022 22:01:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59176 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349417AbiDEJtt (ORCPT
+        with ESMTP id S1456020AbiDEQBB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:49:49 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18C271AD83;
-        Tue,  5 Apr 2022 02:45:10 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A7D1561368;
-        Tue,  5 Apr 2022 09:45:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B5F89C385A3;
-        Tue,  5 Apr 2022 09:45:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649151909;
-        bh=suba1xzXWvaIbJzsfonGz0DLngK0q0zBAS7BYPJhF/A=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Xs7KCJ6Z4PbkUoDaFyXQSq8NP08tv7eyxJq3HFgQRI9QgNIa0IVvYSpmpTBB5JZAW
-         UjT9byWL4MbIAE0L7B3AOhYWnd3hjWxfb8V/eeVb4byyA3GuYx9RvagT8oFl+YeVlI
-         h4B5NakJrnVaCHRQomAb6hgPbVX97hYyqqAFKuTw=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Luca Weiss <luca@z3ntu.xyz>,
-        Viresh Kumar <viresh.kumar@linaro.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 586/913] cpufreq: qcom-cpufreq-nvmem: fix reading of PVS Valid fuse
-Date:   Tue,  5 Apr 2022 09:27:28 +0200
-Message-Id: <20220405070357.409452929@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 5 Apr 2022 12:01:01 -0400
+Received: from mail-pg1-x535.google.com (mail-pg1-x535.google.com [IPv6:2607:f8b0:4864:20::535])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9086310EC47;
+        Tue,  5 Apr 2022 08:21:01 -0700 (PDT)
+Received: by mail-pg1-x535.google.com with SMTP id t13so11254501pgn.8;
+        Tue, 05 Apr 2022 08:21:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=SHjhT11QJLGtZsbv7qutvvrQlP9cOU0JDI8HIlLfHA8=;
+        b=BImjb/zPCWU/GtQJpRV/yqeubbJF5ypno1NeNwhTEXo8vPmqYMz6DvBlPk/zUBBw5c
+         T5IITVFyGQ+MDKrGLLwVHQNSq/E0SPhVukYnTrQNOPqPnUvyXG6QOP5xMrtl8WUCYtRx
+         z45tfIo7bHNHHm4Vk1Go3amIyrg8xaipzA4DFXJGirfc+Zr6nWp+Wt1Qu1w4AYHBK/xT
+         J02TVcf9mtsbzLmWznVQO5ubfTxkWSQnUefkTjuJVVH7zaxlBitXzaQSPOoB5TM4fJD4
+         qSU71L8XLWLKLDhcc92wDkUmv858NfrhuM4n1XRY25ETjuvFmZocrTSri8bBYLUYROMv
+         1DLw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=SHjhT11QJLGtZsbv7qutvvrQlP9cOU0JDI8HIlLfHA8=;
+        b=IY21whEiPtFmFUAIFCagiLyheSqZ+/M7uUBozskibr/xu4Hh4xROzX8b1W5DEkgKh1
+         N9wB8uIzyYk7Iq9HhJRY2cWc7WjBnoFR5f5C5NprxA0WrOiFJiV5QcTxW3PbkxbNGoSS
+         zVu4eyBSuWiMhrlFeGOpK0Fiw3mb7eV+T3y/Ed56cTHkIRhcBiCg3JSZaSPdAen4YyAg
+         UwaqWJdZVG4bvpKBeBGCJygGX6I+xHyfuAjBqnfKYgdlC0DRuDggD1jGK8Aa6X4UFVFW
+         I5DopghFW5KmA+DsmZffcuFxXTNJ7YUkUXOI9RZDROkLUBAtIztYV9VL3t7coGmBSZAx
+         au5Q==
+X-Gm-Message-State: AOAM532lFoa212xLn99m6xPcgR6Z8D1icfuTBV3L+BpxBFkcdaDvSeTP
+        rQUbPrhlw7cP9iYbx5rQZVE=
+X-Google-Smtp-Source: ABdhPJz10LK9mWNyLvcbGinG5G8znu+dSHzDYS9oaSkAHLnI/2WzAA5N6RpcWr6EzDHfBf7CzL3d9A==
+X-Received: by 2002:a65:410a:0:b0:399:38b9:8ba with SMTP id w10-20020a65410a000000b0039938b908bamr3263236pgp.526.1649172060727;
+        Tue, 05 Apr 2022 08:21:00 -0700 (PDT)
+Received: from [192.168.1.3] (ip72-194-116-95.oc.oc.cox.net. [72.194.116.95])
+        by smtp.gmail.com with ESMTPSA id q9-20020a638c49000000b00398677b6f25sm13859264pgn.70.2022.04.05.08.20.59
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 05 Apr 2022 08:20:59 -0700 (PDT)
+Message-ID: <3820a75e-95d7-b6d4-73a0-159eec69ea13@gmail.com>
+Date:   Tue, 5 Apr 2022 08:20:58 -0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH 5.15 000/913] 5.15.33-rc1 review
+Content-Language: en-US
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org
+Cc:     stable@vger.kernel.org, torvalds@linux-foundation.org,
+        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
+        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
+        jonathanh@nvidia.com, sudipm.mukherjee@gmail.com,
+        slade@sladewatkins.com
+References: <20220405070339.801210740@linuxfoundation.org>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Luca Weiss <luca@z3ntu.xyz>
 
-[ Upstream commit 4a8a77abf0e2b6468ba0281e33384cbec5fb476a ]
 
-The fuse consists of 64 bits, with this statement we're supposed to get
-the upper 32 bits but it actually read out of bounds and got 0 instead
-of the desired value which lead to the "PVS bin not set." codepath being
-run resetting our pvs value.
+On 4/5/2022 12:17 AM, Greg Kroah-Hartman wrote:
+> This is the start of the stable review cycle for the 5.15.33 release.
+> There are 913 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
+> 
+> Responses should be made by Thu, 07 Apr 2022 07:01:33 +0000.
+> Anything received after that time might be too late.
+> 
+> The whole patch series can be found in one patch at:
+> 	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.15.33-rc1.gz
+> or in the git tree and branch at:
+> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.15.y
+> and the diffstat can be found below.
+> 
+> thanks,
+> 
+> greg k-h
 
-Fixes: a8811ec764f9 ("cpufreq: qcom: Add support for krait based socs")
-Signed-off-by: Luca Weiss <luca@z3ntu.xyz>
-Signed-off-by: Viresh Kumar <viresh.kumar@linaro.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/cpufreq/qcom-cpufreq-nvmem.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+On ARCH_BRCMSTB using 32-bit and 64-bit ARM kernels:
 
-diff --git a/drivers/cpufreq/qcom-cpufreq-nvmem.c b/drivers/cpufreq/qcom-cpufreq-nvmem.c
-index d1744b5d9619..6dfa86971a75 100644
---- a/drivers/cpufreq/qcom-cpufreq-nvmem.c
-+++ b/drivers/cpufreq/qcom-cpufreq-nvmem.c
-@@ -130,7 +130,7 @@ static void get_krait_bin_format_b(struct device *cpu_dev,
- 	}
- 
- 	/* Check PVS_BLOW_STATUS */
--	pte_efuse = *(((u32 *)buf) + 4);
-+	pte_efuse = *(((u32 *)buf) + 1);
- 	pte_efuse &= BIT(21);
- 	if (pte_efuse) {
- 		dev_dbg(cpu_dev, "PVS bin: %d\n", *pvs);
+Tested-by: Florian Fainelli <f.fainelli@gmail.com>
 -- 
-2.34.1
-
-
-
+Florian
