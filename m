@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EB64FC3527A
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 09:32:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1DB9BC3527D
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 09:32:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239164AbiDEJdc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 05:33:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51528 "EHLO
+        id S239585AbiDEJdr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 05:33:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34696 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239725AbiDEIUh (ORCPT
+        with ESMTP id S239484AbiDEIUH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:20:37 -0400
+        Tue, 5 Apr 2022 04:20:07 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1986A8D;
-        Tue,  5 Apr 2022 01:18:40 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF616986DA;
+        Tue,  5 Apr 2022 01:14:12 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C9EFBB81A37;
-        Tue,  5 Apr 2022 08:18:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 42515C385A1;
-        Tue,  5 Apr 2022 08:18:37 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E8777B81B90;
+        Tue,  5 Apr 2022 08:14:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 56C62C385A0;
+        Tue,  5 Apr 2022 08:14:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649146717;
-        bh=xm9x/FZCEUK/x/FQ/b38Amq5e9rRH5/BKJxWdvbog6E=;
+        s=korg; t=1649146449;
+        bh=HF9ZRoT/tkCsXNkCLwa2Fgwjnyr+EaDHb18MxA69YD0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=va8IIjQD/ygPZ6hzAG1pNvNUyb4mYUA3CXJFyVvo3jUwB31WhUy4wumlCgJNpqx01
-         k7K7EI2HFukBgM6kF7LcDGPed5Ak6v94/uceZ3lCyuocgTZx2AupQFTko4xv2b7hzw
-         pTXBxothB4H5vSKXolsmkH7s4sVEXuDRorSozh5Y=
+        b=N4l6hm4mXy1KKFVqJzNoOFd9dfVXpiIk904vjDvlRdQK7WdhkFGBqicxK/qK1bGAj
+         xWoeVoT+Q6a4Nw7K73Nwoc8QlHmHEfgfTky0cDiJhGHt3CN1ajlBgsdWaL3HCJt9B0
+         Cjl5ZiB6qVzxassrq2WkcknLTMn/DVAEkn8skb4I=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Darren Hart <darren@os.amperecomputing.com>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0863/1126] ACPI/APEI: Limit printable size of BERT table data
-Date:   Tue,  5 Apr 2022 09:26:50 +0200
-Message-Id: <20220405070432.870209350@linuxfoundation.org>
+Subject: [PATCH 5.17 0769/1126] pinctrl: mediatek: Fix missing of_node_put() in mtk_pctrl_init
+Date:   Tue,  5 Apr 2022 09:25:16 +0200
+Message-Id: <20220405070430.153831300@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -50,70 +51,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Darren Hart <darren@os.amperecomputing.com>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit 3f8dec116210ca649163574ed5f8df1e3b837d07 ]
+[ Upstream commit dab4df9ca919f59e5b9dd84385eaf34d4f20dbb0 ]
 
-Platforms with large BERT table data can trigger soft lockup errors
-while attempting to print the entire BERT table data to the console at
-boot:
+The device_node pointer is returned by of_parse_phandle()  with refcount
+incremented. We should use of_node_put() on it when done.
 
-  watchdog: BUG: soft lockup - CPU#160 stuck for 23s! [swapper/0:1]
-
-Observed on Ampere Altra systems with a single BERT record of ~250KB.
-
-The original bert driver appears to have assumed relatively small table
-data. Since it is impractical to reassemble large table data from
-interwoven console messages, and the table data is available in
-
-  /sys/firmware/acpi/tables/data/BERT
-
-limit the size for tables printed to the console to 1024 (for no reason
-other than it seemed like a good place to kick off the discussion, would
-appreciate feedback from existing users in terms of what size would
-maintain their current usage model).
-
-Alternatively, we could make printing a CONFIG option, use the
-bert_disable boot arg (or something similar), or use a debug log level.
-However, all those solutions require extra steps or change the existing
-behavior for small table data. Limiting the size preserves existing
-behavior on existing platforms with small table data, and eliminates the
-soft lockups for platforms with large table data, while still making it
-available.
-
-Signed-off-by: Darren Hart <darren@os.amperecomputing.com>
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Fixes: a6df410d420a ("pinctrl: mediatek: Add Pinctrl/GPIO driver for mt8135.")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+Link: https://lore.kernel.org/r/20220308071155.21114-1-linmq006@gmail.com
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/acpi/apei/bert.c | 8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+ drivers/pinctrl/mediatek/pinctrl-mtk-common.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/acpi/apei/bert.c b/drivers/acpi/apei/bert.c
-index 86211422f4ee..598fd19b65fa 100644
---- a/drivers/acpi/apei/bert.c
-+++ b/drivers/acpi/apei/bert.c
-@@ -29,6 +29,7 @@
- 
- #undef pr_fmt
- #define pr_fmt(fmt) "BERT: " fmt
-+#define ACPI_BERT_PRINT_MAX_LEN 1024
- 
- static int bert_disable;
- 
-@@ -58,8 +59,11 @@ static void __init bert_print_all(struct acpi_bert_region *region,
- 		}
- 
- 		pr_info_once("Error records from previous boot:\n");
--
--		cper_estatus_print(KERN_INFO HW_ERR, estatus);
-+		if (region_len < ACPI_BERT_PRINT_MAX_LEN)
-+			cper_estatus_print(KERN_INFO HW_ERR, estatus);
-+		else
-+			pr_info_once("Max print length exceeded, table data is available at:\n"
-+				     "/sys/firmware/acpi/tables/data/BERT");
- 
- 		/*
- 		 * Because the boot error source is "one-time polled" type,
+diff --git a/drivers/pinctrl/mediatek/pinctrl-mtk-common.c b/drivers/pinctrl/mediatek/pinctrl-mtk-common.c
+index 5f7c421ab6e7..334cb85855a9 100644
+--- a/drivers/pinctrl/mediatek/pinctrl-mtk-common.c
++++ b/drivers/pinctrl/mediatek/pinctrl-mtk-common.c
+@@ -1038,6 +1038,7 @@ int mtk_pctrl_init(struct platform_device *pdev,
+ 	node = of_parse_phandle(np, "mediatek,pctl-regmap", 0);
+ 	if (node) {
+ 		pctl->regmap1 = syscon_node_to_regmap(node);
++		of_node_put(node);
+ 		if (IS_ERR(pctl->regmap1))
+ 			return PTR_ERR(pctl->regmap1);
+ 	} else if (regmap) {
+@@ -1051,6 +1052,7 @@ int mtk_pctrl_init(struct platform_device *pdev,
+ 	node = of_parse_phandle(np, "mediatek,pctl-regmap", 1);
+ 	if (node) {
+ 		pctl->regmap2 = syscon_node_to_regmap(node);
++		of_node_put(node);
+ 		if (IS_ERR(pctl->regmap2))
+ 			return PTR_ERR(pctl->regmap2);
+ 	}
 -- 
 2.34.1
 
