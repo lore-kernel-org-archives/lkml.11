@@ -2,46 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8093FC38162
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:09:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9518EC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:10:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1450962AbiDEXqw (ORCPT
+        id S1454623AbiDEXrP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 19:46:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33784 "EHLO
+        Tue, 5 Apr 2022 19:47:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58510 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242860AbiDEKfe (ORCPT
+        with ESMTP id S1352388AbiDEKEb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:35:34 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49CA5DF497;
-        Tue,  5 Apr 2022 03:19:24 -0700 (PDT)
+        Tue, 5 Apr 2022 06:04:31 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99F2FBA31B;
+        Tue,  5 Apr 2022 02:53:11 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D43B8617CA;
-        Tue,  5 Apr 2022 10:19:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E165FC385A1;
-        Tue,  5 Apr 2022 10:19:22 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3D780B818F3;
+        Tue,  5 Apr 2022 09:53:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8A26AC385A2;
+        Tue,  5 Apr 2022 09:53:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649153963;
-        bh=4zHTUQBUJz8Jg/fy+DBNG6bHNHfHiQRfq5MW2UJ0gZ8=;
+        s=korg; t=1649152388;
+        bh=Qb/oTH/UWrZXJOhd5uOtZEXXGxt5HFJZw3S+Cihmmxc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=G0skozuJ4QEg8M7ReKkzw/LO0GqcCIafVTIcIwwHlZf3D1rpuNX6o9w1i0iut14aZ
-         xp6a63hJWUbLFOrW91JYQqhq70vj9cZo4AN61civTufNBPTc0TiZZtUOQGKs+g4E6J
-         62/7SVsb8ohubcLb7J5b9I+yPfPcA0rRQiX0x8vQ=
+        b=Z5ivzd9TLJAwtRh9wQUCxcwiH4KnkaxH+StqwVqLzgRXcDETKdW/LeGyHv/PYHGa0
+         +6sUjJLAnw1yh9SntBEn/nej7V/i++Luc8rPrY3loCiaH7IbmWm2bo+kKlA3uOwSSO
+         c4lHVD/AIGVeaaAtL6czjqI8rYjrmzL1rOrVI/fw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mick Lorain <micklorain@protonmail.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
+        stable@vger.kernel.org, Richard Schleich <rs@noreya.tech>,
+        Stefan Wahren <stefan.wahren@i2se.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 372/599] PCI: Avoid broken MSI on SB600 USB devices
-Date:   Tue,  5 Apr 2022 09:31:06 +0200
-Message-Id: <20220405070309.900387133@linuxfoundation.org>
+Subject: [PATCH 5.15 742/913] ARM: dts: bcm2837: Add the missing L1/L2 cache information
+Date:   Tue,  5 Apr 2022 09:30:04 +0200
+Message-Id: <20220405070402.077174085@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,59 +51,110 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Bjorn Helgaas <bhelgaas@google.com>
+From: Richard Schleich <rs@noreya.tech>
 
-[ Upstream commit 63cd736f449445edcd7f0bcc7d84453e9beec0aa ]
+[ Upstream commit bdf8762da268d2a34abf517c36528413906e9cd5 ]
 
-Some ATI SB600 USB adapters advertise MSI, but if INTx is disabled by
-setting PCI_COMMAND_INTX_DISABLE, MSI doesn't work either.  The PCI/PCIe
-specs do not require software to set PCI_COMMAND_INTX_DISABLE when enabling
-MSI, but Linux has done that for many years.
+This patch fixes the kernel warning
+"cacheinfo: Unable to detect cache hierarchy for CPU 0"
+for the bcm2837 on newer kernel versions.
 
-Mick reported that 306c54d0edb6 ("usb: hcd: Try MSI interrupts on PCI
-devices") broke these devices.  Prior to 306c54d0edb6, they used INTx.
-Starting with 306c54d0edb6, they use MSI, and and the fact that Linux sets
-PCI_COMMAND_INTX_DISABLE means both INTx and MSI are disabled on these
-devices.
-
-Avoid this SB600 defect by disabling MSI so we use INTx as before.
-
-Fixes: 306c54d0edb6 ("usb: hcd: Try MSI interrupts on PCI devices")
-Link: https://lore.kernel.org/r/20220321183446.1108325-1-helgaas@kernel.org
-Link: https://bugzilla.kernel.org/show_bug.cgi?id=215690
-Link: https://lore.kernel.org/all/PxIByDyBRcsbpcmVhGSNDFAoUcMmb78ctXCkw6fbpx25TGlCHvA6SJjjFkNr1FfQZMntYPTNyvEnblxzAZ8a6jP9ddLpKeCN6Chi_2FuexU=@protonmail.com/
-Link: https://lore.kernel.org/r/20220314101448.90074-1-andriy.shevchenko@linux.intel.com
-BugLink: https://lore.kernel.org/all/20200702143045.23429-1-andriy.shevchenko@linux.intel.com/
-Reported-by: Mick Lorain <micklorain@protonmail.com>
-Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
+Signed-off-by: Richard Schleich <rs@noreya.tech>
+Tested-by: Stefan Wahren <stefan.wahren@i2se.com>
+[florian: Align and remove comments matching property values]
+Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pci/quirks.c | 12 ++++++++++++
- 1 file changed, 12 insertions(+)
+ arch/arm/boot/dts/bcm2837.dtsi | 49 ++++++++++++++++++++++++++++++++++
+ 1 file changed, 49 insertions(+)
 
-diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
-index 95fcc735c88e..1be2894ada70 100644
---- a/drivers/pci/quirks.c
-+++ b/drivers/pci/quirks.c
-@@ -1816,6 +1816,18 @@ static void quirk_alder_ioapic(struct pci_dev *pdev)
- DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL,	PCI_DEVICE_ID_INTEL_EESSC,	quirk_alder_ioapic);
- #endif
+diff --git a/arch/arm/boot/dts/bcm2837.dtsi b/arch/arm/boot/dts/bcm2837.dtsi
+index 0199ec98cd61..5dbdebc46259 100644
+--- a/arch/arm/boot/dts/bcm2837.dtsi
++++ b/arch/arm/boot/dts/bcm2837.dtsi
+@@ -40,12 +40,26 @@
+ 		#size-cells = <0>;
+ 		enable-method = "brcm,bcm2836-smp"; // for ARM 32-bit
  
-+static void quirk_no_msi(struct pci_dev *dev)
-+{
-+	pci_info(dev, "avoiding MSI to work around a hardware defect\n");
-+	dev->no_msi = 1;
-+}
-+DECLARE_PCI_FIXUP_FINAL(PCI_VENDOR_ID_ATI, 0x4386, quirk_no_msi);
-+DECLARE_PCI_FIXUP_FINAL(PCI_VENDOR_ID_ATI, 0x4387, quirk_no_msi);
-+DECLARE_PCI_FIXUP_FINAL(PCI_VENDOR_ID_ATI, 0x4388, quirk_no_msi);
-+DECLARE_PCI_FIXUP_FINAL(PCI_VENDOR_ID_ATI, 0x4389, quirk_no_msi);
-+DECLARE_PCI_FIXUP_FINAL(PCI_VENDOR_ID_ATI, 0x438a, quirk_no_msi);
-+DECLARE_PCI_FIXUP_FINAL(PCI_VENDOR_ID_ATI, 0x438b, quirk_no_msi);
++		/* Source for d/i-cache-line-size and d/i-cache-sets
++		 * https://developer.arm.com/documentation/ddi0500/e/level-1-memory-system
++		 * /about-the-l1-memory-system?lang=en
++		 *
++		 * Source for d/i-cache-size
++		 * https://magpi.raspberrypi.com/articles/raspberry-pi-3-specs-benchmarks
++		 */
+ 		cpu0: cpu@0 {
+ 			device_type = "cpu";
+ 			compatible = "arm,cortex-a53";
+ 			reg = <0>;
+ 			enable-method = "spin-table";
+ 			cpu-release-addr = <0x0 0x000000d8>;
++			d-cache-size = <0x8000>;
++			d-cache-line-size = <64>;
++			d-cache-sets = <128>; // 32KiB(size)/64(line-size)=512ways/4-way set
++			i-cache-size = <0x8000>;
++			i-cache-line-size = <64>;
++			i-cache-sets = <256>; // 32KiB(size)/64(line-size)=512ways/2-way set
++			next-level-cache = <&l2>;
+ 		};
+ 
+ 		cpu1: cpu@1 {
+@@ -54,6 +68,13 @@
+ 			reg = <1>;
+ 			enable-method = "spin-table";
+ 			cpu-release-addr = <0x0 0x000000e0>;
++			d-cache-size = <0x8000>;
++			d-cache-line-size = <64>;
++			d-cache-sets = <128>; // 32KiB(size)/64(line-size)=512ways/4-way set
++			i-cache-size = <0x8000>;
++			i-cache-line-size = <64>;
++			i-cache-sets = <256>; // 32KiB(size)/64(line-size)=512ways/2-way set
++			next-level-cache = <&l2>;
+ 		};
+ 
+ 		cpu2: cpu@2 {
+@@ -62,6 +83,13 @@
+ 			reg = <2>;
+ 			enable-method = "spin-table";
+ 			cpu-release-addr = <0x0 0x000000e8>;
++			d-cache-size = <0x8000>;
++			d-cache-line-size = <64>;
++			d-cache-sets = <128>; // 32KiB(size)/64(line-size)=512ways/4-way set
++			i-cache-size = <0x8000>;
++			i-cache-line-size = <64>;
++			i-cache-sets = <256>; // 32KiB(size)/64(line-size)=512ways/2-way set
++			next-level-cache = <&l2>;
+ 		};
+ 
+ 		cpu3: cpu@3 {
+@@ -70,6 +98,27 @@
+ 			reg = <3>;
+ 			enable-method = "spin-table";
+ 			cpu-release-addr = <0x0 0x000000f0>;
++			d-cache-size = <0x8000>;
++			d-cache-line-size = <64>;
++			d-cache-sets = <128>; // 32KiB(size)/64(line-size)=512ways/4-way set
++			i-cache-size = <0x8000>;
++			i-cache-line-size = <64>;
++			i-cache-sets = <256>; // 32KiB(size)/64(line-size)=512ways/2-way set
++			next-level-cache = <&l2>;
++		};
 +
- static void quirk_pcie_mch(struct pci_dev *pdev)
- {
- 	pdev->no_msi = 1;
++		/* Source for cache-line-size + cache-sets
++		 * https://developer.arm.com/documentation/ddi0500
++		 * /e/level-2-memory-system/about-the-l2-memory-system?lang=en
++		 * Source for cache-size
++		 * https://datasheets.raspberrypi.com/cm/cm1-and-cm3-datasheet.pdf
++		 */
++		l2: l2-cache0 {
++			compatible = "cache";
++			cache-size = <0x80000>;
++			cache-line-size = <64>;
++			cache-sets = <512>; // 512KiB(size)/64(line-size)=8192ways/16-way set
++			cache-level = <2>;
+ 		};
+ 	};
+ };
 -- 
 2.34.1
 
