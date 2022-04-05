@@ -2,46 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 797B5C3527D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 54C86C3527B
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:17:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1574394AbiDEWz4 (ORCPT
+        id S1574352AbiDEWzq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 18:55:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59706 "EHLO
+        Tue, 5 Apr 2022 18:55:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45472 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354049AbiDEKLN (ORCPT
+        with ESMTP id S1354941AbiDEKQg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:11:13 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A03BD4DF4C;
-        Tue,  5 Apr 2022 02:57:00 -0700 (PDT)
+        Tue, 5 Apr 2022 06:16:36 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C79429CA2;
+        Tue,  5 Apr 2022 03:04:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3F0536157A;
-        Tue,  5 Apr 2022 09:57:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 544F8C385A1;
-        Tue,  5 Apr 2022 09:56:59 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5544CB81BC0;
+        Tue,  5 Apr 2022 10:04:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C3639C385A2;
+        Tue,  5 Apr 2022 10:04:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649152619;
-        bh=jl6Snp2v0QTf7bMzCJgP0Dv9BzB/beZVOt0Nxq39c78=;
+        s=korg; t=1649153057;
+        bh=ODSRxNeQPv3kjyymodGtEnar1cFgVjua8tmYL335+po=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZyuxQCKh6PGIoAENeuoQnVzyAJGMiEJGg6HMQjOZNF3qQPIJ+zVKQSdc6i1IaT/K2
-         R74hqzNVRTnqZ1b53V7MgM6eimeXYLajQh2sCX+Kt3sHH0DoWWziXH0NIohiI6DIBY
-         jfCaFvgCFm29rsn9DJHl/FfoSR4Mhr1EVMqiXEwE=
+        b=vV4HKGMLFEO5LuyvElHAgX06z+2oULe8kHvtTdClrDHnTyVRD5Y2E5FvqUfUDTHTx
+         mBsBtfGM6eieoz/w/R5PzlcCrAAuwGZd5sKfdRRo7r1GY0E802/+iaOn3Grc2cCS4Y
+         rbW3l5EGbfTgPDv6nIyeFkX8eyF/cA+EZZF0yvqo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zhihao Cheng <chengzhihao1@huawei.com>,
-        Baokun Li <libaokun1@huawei.com>,
-        Richard Weinberger <richard@nod.at>
-Subject: [PATCH 5.15 825/913] ubifs: rename_whiteout: correct old_dir size computing
-Date:   Tue,  5 Apr 2022 09:31:27 +0200
-Message-Id: <20220405070404.559560592@linuxfoundation.org>
+        stable@vger.kernel.org, Marc Zyngier <maz@kernel.org>,
+        Nishanth Menon <nm@ti.com>
+Subject: [PATCH 5.10 087/599] arm64: dts: ti: k3-j7200: Fix gic-v3 compatible regs
+Date:   Tue,  5 Apr 2022 09:26:21 +0200
+Message-Id: <20220405070301.418580791@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
+References: <20220405070258.802373272@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,35 +49,59 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Baokun Li <libaokun1@huawei.com>
+From: Nishanth Menon <nm@ti.com>
 
-commit 705757274599e2e064dd3054aabc74e8af31a095 upstream.
+commit 1a307cc299430dd7139d351a3b8941f493dfa885 upstream.
 
-When renaming the whiteout file, the old whiteout file is not deleted.
-Therefore, we add the old dentry size to the old dir like XFS.
-Otherwise, an error may be reported due to `fscki->calc_sz != fscki->size`
-in check_indes.
+Though GIC ARE option is disabled for no GIC-v2 compatibility,
+Cortex-A72 is free to implement the CPU interface as long as it
+communicates with the GIC using the stream protocol. This requires
+that the SoC integration mark out the PERIPHBASE[1] as reserved area
+within the SoC. See longer discussion in [2] for further information.
 
-Fixes: 9e0a1fff8db56ea ("ubifs: Implement RENAME_WHITEOUT")
-Reported-by: Zhihao Cheng <chengzhihao1@huawei.com>
-Signed-off-by: Baokun Li <libaokun1@huawei.com>
-Signed-off-by: Richard Weinberger <richard@nod.at>
+Update the GIC register map to indicate offsets from PERIPHBASE based
+on [3]. Without doing this, systems like kvm will not function with
+gic-v2 emulation.
+
+[1] https://developer.arm.com/documentation/100095/0002/system-control/aarch64-register-descriptions/configuration-base-address-register--el1
+[2] https://lore.kernel.org/all/87k0e0tirw.wl-maz@kernel.org/
+[3] https://developer.arm.com/documentation/100095/0002/way1382452674438
+
+Cc: stable@vger.kernel.org
+Fixes: d361ed88455f ("arm64: dts: ti: Add support for J7200 SoC")
+Reported-by: Marc Zyngier <maz@kernel.org>
+Signed-off-by: Nishanth Menon <nm@ti.com>
+Acked-by: Marc Zyngier <maz@kernel.org>
+Link: https://lore.kernel.org/r/20220215201008.15235-4-nm@ti.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/ubifs/dir.c |    3 +++
- 1 file changed, 3 insertions(+)
+ arch/arm64/boot/dts/ti/k3-j7200-main.dtsi |    5 ++++-
+ arch/arm64/boot/dts/ti/k3-j7200.dtsi      |    1 +
+ 2 files changed, 5 insertions(+), 1 deletion(-)
 
---- a/fs/ubifs/dir.c
-+++ b/fs/ubifs/dir.c
-@@ -1402,6 +1402,9 @@ static int do_rename(struct inode *old_d
- 			iput(whiteout);
- 			goto out_release;
- 		}
-+
-+		/* Add the old_dentry size to the old_dir size. */
-+		old_sz -= CALC_DENT_SIZE(fname_len(&old_nm));
- 	}
+--- a/arch/arm64/boot/dts/ti/k3-j7200-main.dtsi
++++ b/arch/arm64/boot/dts/ti/k3-j7200-main.dtsi
+@@ -47,7 +47,10 @@
+ 		#interrupt-cells = <3>;
+ 		interrupt-controller;
+ 		reg = <0x00 0x01800000 0x00 0x10000>,	/* GICD */
+-		      <0x00 0x01900000 0x00 0x100000>;	/* GICR */
++		      <0x00 0x01900000 0x00 0x100000>,	/* GICR */
++		      <0x00 0x6f000000 0x00 0x2000>,	/* GICC */
++		      <0x00 0x6f010000 0x00 0x1000>,	/* GICH */
++		      <0x00 0x6f020000 0x00 0x2000>;	/* GICV */
  
- 	lock_4_inodes(old_dir, new_dir, new_inode, whiteout);
+ 		/* vcpumntirq: virtual CPU interface maintenance interrupt */
+ 		interrupts = <GIC_PPI 9 IRQ_TYPE_LEVEL_HIGH>;
+--- a/arch/arm64/boot/dts/ti/k3-j7200.dtsi
++++ b/arch/arm64/boot/dts/ti/k3-j7200.dtsi
+@@ -127,6 +127,7 @@
+ 			 <0x00 0x00a40000 0x00 0x00a40000 0x00 0x00000800>, /* timesync router */
+ 			 <0x00 0x01000000 0x00 0x01000000 0x00 0x0d000000>, /* Most peripherals */
+ 			 <0x00 0x30000000 0x00 0x30000000 0x00 0x0c400000>, /* MAIN NAVSS */
++			 <0x00 0x6f000000 0x00 0x6f000000 0x00 0x00310000>, /* A72 PERIPHBASE */
+ 			 <0x00 0x70000000 0x00 0x70000000 0x00 0x00800000>, /* MSMC RAM */
+ 			 <0x00 0x18000000 0x00 0x18000000 0x00 0x08000000>, /* PCIe1 DAT0 */
+ 			 <0x41 0x00000000 0x41 0x00000000 0x01 0x00000000>, /* PCIe1 DAT1 */
 
 
