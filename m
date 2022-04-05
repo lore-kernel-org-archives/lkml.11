@@ -2,103 +2,138 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 24E99C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 07:08:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 64CB2C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 07:10:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231395AbiDEHKi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 03:10:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37380 "EHLO
+        id S231390AbiDEHMI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 03:12:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42126 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230097AbiDEHKb (ORCPT
+        with ESMTP id S229963AbiDEHME (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 03:10:31 -0400
-Received: from mout.kundenserver.de (mout.kundenserver.de [217.72.192.74])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E3B8AE68;
-        Tue,  5 Apr 2022 00:08:31 -0700 (PDT)
-Received: from mail-wm1-f52.google.com ([209.85.128.52]) by
- mrelayeu.kundenserver.de (mreue106 [213.165.67.113]) with ESMTPSA (Nemesis)
- id 1N2mS2-1o0gYU13vQ-0138sv; Tue, 05 Apr 2022 09:08:30 +0200
-Received: by mail-wm1-f52.google.com with SMTP id h16so7369089wmd.0;
-        Tue, 05 Apr 2022 00:08:30 -0700 (PDT)
-X-Gm-Message-State: AOAM533uF+b4xAa6Ic2bQpbYjoG/RGOkmn+3taMPbMxBhp2EX5An+Xmo
-        rYi6zYE+2gSbnT9p+vHCWNu2AhFJO18VuGt1jJs=
-X-Google-Smtp-Source: ABdhPJxPvBD3liGjE4wcwAU/5uhv3UpZs9CP1VYRV8xEB/qANbka4xub+huj1JgZoNT228F8duYYmCMymQ3lWUBTDoI=
-X-Received: by 2002:a05:600c:4ecc:b0:38e:354d:909 with SMTP id
- g12-20020a05600c4ecc00b0038e354d0909mr1768472wmq.33.1649142509779; Tue, 05
- Apr 2022 00:08:29 -0700 (PDT)
+        Tue, 5 Apr 2022 03:12:04 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 757D54B1E2;
+        Tue,  5 Apr 2022 00:10:05 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 05957615FE;
+        Tue,  5 Apr 2022 07:10:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DEBBAC340EE;
+        Tue,  5 Apr 2022 07:10:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649142604;
+        bh=R0qfjYmhRyfgzwAdAmpXuqarK6SmFDQ1XokwxK9loxQ=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=d9Eevjye9Rlmz7JV6Frf1lwqsLbud2Y9zSDCIowIUYts0TKrl5ypkN4QO1cgmJaen
+         WMi20mJZrflA2PBUknzisE9r4iZ58n6vkXrUtxSJ/uLjAz52FlmrKvznyxBIJtEDh1
+         tvSP4CGqk8mPiXsxaHeW742OPj+G5lloQf//ajwlrZoZ7pn7OXc0vyU9u6zyNke7MV
+         Wo0smeuYEGKeqjvRfzrMEi3ipSzRYKTA4POp2wPhTHj0112AxsaxrtrvpZrkCtz4R7
+         LAVXEEdp/OEPrXz1uboo0n22UqMFXCWxjlCnAndVVsJDVPEDj+yPkMgxGpBkC+qN6p
+         LfLjiIYihFTHg==
+Date:   Tue, 5 Apr 2022 10:11:15 +0300
+From:   Jarkko Sakkinen <jarkko@kernel.org>
+To:     Reinette Chatre <reinette.chatre@intel.com>
+Cc:     dave.hansen@linux.intel.com, tglx@linutronix.de, bp@alien8.de,
+        luto@kernel.org, mingo@redhat.com, linux-sgx@vger.kernel.org,
+        x86@kernel.org, seanjc@google.com, kai.huang@intel.com,
+        cathy.zhang@intel.com, cedric.xing@intel.com,
+        haitao.huang@intel.com, mark.shanahan@intel.com, hpa@zytor.com,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH V3 19/30] x86/sgx: Free up EPC pages directly to support
+ large page ranges
+Message-ID: <Ykvrk4hYvBEnNOOl@kernel.org>
+References: <cover.1648847675.git.reinette.chatre@intel.com>
+ <b3a17e1ce7bcd14db3c28903e8a97f094998ae74.1648847675.git.reinette.chatre@intel.com>
 MIME-Version: 1.0
-References: <CAHk-=wg6FWL1xjVyHx7DdjD2dHZETA5_=FqqW17Z19X-WTfWSg@mail.gmail.com>
- <20220404074734.1092959-1-geert@linux-m68k.org> <alpine.DEB.2.22.394.2204041006230.1941618@ramsan.of.borg>
- <20220404092655.GR1544202@dread.disaster.area> <CAMuHMdWgqdR1o3wT9pjB=w8z=2xaDFv5DJX58-HPHOFRm3Tr8Q@mail.gmail.com>
- <CAK8P3a0QrihBR_2FQ7uZ5w2JmLjv7czfrrarCMmJOhvNdJ3p9g@mail.gmail.com>
- <20220404221605.GS1544202@dread.disaster.area> <CAMuHMdWak-zarKA_eCxWm5uhejWAXi0XkAuekfpAKRczLfhq3g@mail.gmail.com>
-In-Reply-To: <CAMuHMdWak-zarKA_eCxWm5uhejWAXi0XkAuekfpAKRczLfhq3g@mail.gmail.com>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Tue, 5 Apr 2022 09:08:13 +0200
-X-Gmail-Original-Message-ID: <CAK8P3a1JArChbzRDFU0YPCy-7QZgqSoHe8JTH4g0yOz_Mi_MEA@mail.gmail.com>
-Message-ID: <CAK8P3a1JArChbzRDFU0YPCy-7QZgqSoHe8JTH4g0yOz_Mi_MEA@mail.gmail.com>
-Subject: Re: Build regressions/improvements in v5.18-rc1
-To:     Geert Uytterhoeven <geert@linux-m68k.org>
-Cc:     Dave Chinner <david@fromorbit.com>, Arnd Bergmann <arnd@arndb.de>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-xfs <linux-xfs@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Provags-ID: V03:K1:v9JTIi8qJtPG3PIp92ZT1BP7xmoboLcO+2N58Y0rG8EUhOm7Txw
- FajvsKKlzhdlcaQTsyIaUM9+ML0BjbRuHavN4q8FSwUzJTTJZoGPOucY4nJLuNxRD3agKmV
- ZgLJvxMlCM3sXqoOLPU6f3WLfLUdVomfUMidgtlZAXRZq+SYumE+t+Z3zkFyEcjlKtj1j2O
- zjLCHmOP1uoXs2JAYWOmQ==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:F6FWl9H0mQY=:mOtSjqg6Xn4k4DEScVdk+i
- eP6YitvK+wB5dVoo6IPKnGVQ0bfZqOg0Px1eh4RgNlvtK57Z2UXVwF8ilqEfS2yoIX54o/4tR
- nl5w5y5QluOsKaS9DlSLRgArTckW5TxPeOJYhBFo6zE5TaIes9hbwoRRpY9yWTBUjCxjzIzlP
- w+l5k8hAPcjeiHaM+GsU/zmSEYGVPKQ/6dypB+nlFwqoUFDUhap9Kv9h/HVCYza0efskXOKjq
- OChO11lkYvU0K8woTHHS8QfK9jXxYpNCc+Y3T3dzGHe22+zb86C6dd3hWdoGnNxxz3Xkrcef9
- eeY87vUWZ+CfmX5fY9VRyxg064V4BEodsPkssn0FTnBzWXZdYUIAas5/gilcDo4o4/22Jfyfd
- s0Pav7lxpHwLoAGKSFOMAr039TjniDo8goTEiI8LqsA4/duZIRgaXddEre4H6hSKTB9SvyT2W
- IIgSP6egsS/uhMHRwi6kIDETHGC3Q8z7j3pkHZY5fuXVpj3t+yOekpRYuSNu8i3pBLKQG2r4F
- jAmFyvnolPZaI7pcrhgQNY8ShbsEOCoeUf41S3LjjyBV9AsyvuBL/ohESvIDzzxz1XO1ZHY2p
- +1DbeOI4WXHwTtuBlR5+XOS1v6h6D6HjHig1YdEL1IvAL7Hb4onVpfk1AgaRD+WhclR2ZF0mH
- sZPFstixJXm5WwVOgSTfEVy4fQoZvVIQTVAstJbtFFg7nNZYkU4ZxEiVqCLtDRt2wOEdEJOVF
- peC5Vt2EtABLN6SkGnWJmmIo26QN7iOuVFUtvpqbBoOot0HqUWCfqTg6D2dSLWjlAxusCiH5J
- Q0E4ToUVgfOX8ictrwEugfM7VBvSXW6u/6TRa97HcDNxbfEj/E=
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <b3a17e1ce7bcd14db3c28903e8a97f094998ae74.1648847675.git.reinette.chatre@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-?On Tue, Apr 5, 2022 at 8:47 AM Geert Uytterhoeven <geert@linux-m68k.org> wrote:
-> On Tue, Apr 5, 2022 at 12:16 AM Dave Chinner <david@fromorbit.com> wrote:
-> > So XFS only uses these flags in unsigned int fields that are
-> > typed via:
-> >
-> > typedef unsigned int xfs_buf_flags_t;
-> >
-> > So on the surface, declaring the flag values as ULONG and then writing
-> > them into a UINT field is not a nice thing to be doing.
-> >
-> > I really don't want to change the xfs_buf_flags_t type to an
-> > unsigned long, because that changes the packing of the first
-> > cacheline of the struct xfs_buf and the contents of that cacheline
-> > are performance critical for the lookup fastpath....
->
-> Hence just use "1u << n" instead of "1ul << n"?
+On Mon, Apr 04, 2022 at 09:49:27AM -0700, Reinette Chatre wrote:
+> The page reclaimer ensures availability of EPC pages across all
+> enclaves. In support of this it runs independently from the
+> individual enclaves in order to take locks from the different
+> enclaves as it writes pages to swap.
+> 
+> When needing to load a page from swap an EPC page needs to be
+> available for its contents to be loaded into. Loading an existing
+> enclave page from swap does not reclaim EPC pages directly if
+> none are available, instead the reclaimer is woken when the
+> available EPC pages are found to be below a watermark.
+> 
+> When iterating over a large number of pages in an oversubscribed
+> environment there is a race between the reclaimer woken up and
+> EPC pages reclaimed fast enough for the page operations to proceed.
+> 
+> Ensure there are EPC pages available before attempting to load
+> a page that may potentially be pulled from swap into an available
+> EPC page.
+> 
+> Signed-off-by: Reinette Chatre <reinette.chatre@intel.com>
+> ---
+> No changes since V2
+> 
+> Changes since v1:
+> - Reword commit message.
+> 
+>  arch/x86/kernel/cpu/sgx/ioctl.c | 6 ++++++
+>  arch/x86/kernel/cpu/sgx/main.c  | 6 ++++++
+>  arch/x86/kernel/cpu/sgx/sgx.h   | 1 +
+>  3 files changed, 13 insertions(+)
+> 
+> diff --git a/arch/x86/kernel/cpu/sgx/ioctl.c b/arch/x86/kernel/cpu/sgx/ioctl.c
+> index 515e1961cc02..f88bc1236276 100644
+> --- a/arch/x86/kernel/cpu/sgx/ioctl.c
+> +++ b/arch/x86/kernel/cpu/sgx/ioctl.c
+> @@ -777,6 +777,8 @@ sgx_enclave_restrict_permissions(struct sgx_encl *encl,
+>  	for (c = 0 ; c < modp->length; c += PAGE_SIZE) {
+>  		addr = encl->base + modp->offset + c;
+>  
+> +		sgx_direct_reclaim();
+> +
+>  		mutex_lock(&encl->lock);
+>  
+>  		entry = sgx_encl_load_page(encl, addr);
+> @@ -934,6 +936,8 @@ static long sgx_enclave_modify_type(struct sgx_encl *encl,
+>  	for (c = 0 ; c < modt->length; c += PAGE_SIZE) {
+>  		addr = encl->base + modt->offset + c;
+>  
+> +		sgx_direct_reclaim();
+> +
+>  		mutex_lock(&encl->lock);
+>  
+>  		entry = sgx_encl_load_page(encl, addr);
+> @@ -1129,6 +1133,8 @@ static long sgx_encl_remove_pages(struct sgx_encl *encl,
+>  	for (c = 0 ; c < params->length; c += PAGE_SIZE) {
+>  		addr = encl->base + params->offset + c;
+>  
+> +		sgx_direct_reclaim();
+> +
+>  		mutex_lock(&encl->lock);
+>  
+>  		entry = sgx_encl_load_page(encl, addr);
+> diff --git a/arch/x86/kernel/cpu/sgx/main.c b/arch/x86/kernel/cpu/sgx/main.c
+> index 6e2cb7564080..545da16bb3ea 100644
+> --- a/arch/x86/kernel/cpu/sgx/main.c
+> +++ b/arch/x86/kernel/cpu/sgx/main.c
+> @@ -370,6 +370,12 @@ static bool sgx_should_reclaim(unsigned long watermark)
+>  	       !list_empty(&sgx_active_page_list);
+>  }
+>  
+> +void sgx_direct_reclaim(void)
+> +{
+> +	if (sgx_should_reclaim(SGX_NR_LOW_PAGES))
+> +		sgx_reclaim_pages();
+> +}
 
-Right, that avoids the error as well. I picked '1ul' to match the type of
-the variable it's assigned to, but as Dave said the intended type is
-'u32', so '1u' is better here.
+Please, instead open code this to both locations - not enough redundancy
+to be worth of new function. Causes only unnecessary cross-referencing
+when maintaining. Otherwise, I agree with the idea.
 
-> > Looking at __print_flags, the internal array type declaration is:
-> >
-> > struct trace_print_flags {
-> >         unsigned long           mask;
-> >         const char              *name;
-> > };
-> >
-> > and that's the source of the problem.  I notice __print_flags_u64()
-> > exists, but __print_flags_u32() does not. Should it?
+BR, Jarkko
 
-It's not the source of the error, as there is no signed integer
-overflow when assigning an unsigned int to an unsigned long.
-
-It may be helpful to add a __print_flags_u32(), but it's unrelated
-to the problem at hand.
-
-       Arnd
