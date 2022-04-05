@@ -2,47 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C552FC35273
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F3795C3527A
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:17:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1582966AbiDEXun (ORCPT
+        id S1583003AbiDEXuu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 19:50:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39108 "EHLO
+        Tue, 5 Apr 2022 19:50:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43928 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349238AbiDEJt2 (ORCPT
+        with ESMTP id S1349459AbiDEJtx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:49:28 -0400
+        Tue, 5 Apr 2022 05:49:53 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4BA272315C;
-        Tue,  5 Apr 2022 02:43:08 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6051D1004;
+        Tue,  5 Apr 2022 02:46:27 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DD22B61675;
-        Tue,  5 Apr 2022 09:43:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E4BD5C385A1;
-        Tue,  5 Apr 2022 09:43:06 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id F0B4F61680;
+        Tue,  5 Apr 2022 09:46:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 05FB9C385A2;
+        Tue,  5 Apr 2022 09:46:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649151787;
-        bh=7Vx2WvST/3UetrRUM4JsvOUg6Uksvk+kePktchHbQIc=;
+        s=korg; t=1649151986;
+        bh=0UVw1YIHqiI61x9atIvc1XzjmQZco7kHz8d5msPmZN4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=AQbyk6RB/rovKedEwfyVqomq9KQD1X0SLCUfBYT3J0Hltx2WGV9HGjzNLOJryZfTt
-         IZSNikf7fWCwoCDPOUDt6HFQQaIDW7typSr7Mo8qW317eLm2qmN1T57Dg2JoE91Q93
-         5YZU/82u8ecKHU5n9JNTq7psbH3BWARytNhN1B8o=
+        b=MpJ/eikWk/0kguYsDFk6NpAjyZ9DsBE4mUjy79TCHxXZWrMAIEuJA6dNom4xdqzCP
+         m02c4jLKbz9oqewlNXUvLPlx9MQE7hv+gbjCNCpL1MhlFwY3llpB+Tw381bTkfVE1U
+         UY4/scL9CY+673n0XNMfuytEzfEP8guU4TOGWSLI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
-        Igor Zhbanov <i.zhbanov@omprussia.ru>,
-        James Morris <jmorris@namei.org>,
-        Kentaro Takeda <takedakn@nttdata.co.jp>,
-        tomoyo-dev-en@lists.osdn.me, "Serge E. Hallyn" <serge@hallyn.com>,
-        Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>,
+        stable@vger.kernel.org, Taniya Das <tdas@codeaurora.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 492/913] TOMOYO: fix __setup handlers return values
-Date:   Tue,  5 Apr 2022 09:25:54 +0200
-Message-Id: <20220405070354.602618440@linuxfoundation.org>
+Subject: [PATCH 5.15 612/913] clk: qcom: clk-rcg2: Update logic to calculate D value for RCG
+Date:   Tue,  5 Apr 2022 09:27:54 +0200
+Message-Id: <20220405070358.186115662@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
 References: <20220405070339.801210740@linuxfoundation.org>
@@ -54,70 +50,58 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Randy Dunlap <rdunlap@infradead.org>
+From: Taniya Das <tdas@codeaurora.org>
 
-[ Upstream commit 39844b7e3084baecef52d1498b5fa81afa2cefa9 ]
+[ Upstream commit 58922910add18583d5273c2edcdb9fd7bf4eca02 ]
 
-__setup() handlers should return 1 if the parameter is handled.
-Returning 0 causes the entire string to be added to init's
-environment strings (limited to 32 strings), unnecessarily polluting it.
+The display pixel clock has a requirement on certain newer platforms to
+support M/N as (2/3) and the final D value calculated results in
+underflow errors.
+As the current implementation does not check for D value is within
+the accepted range for a given M & N value. Update the logic to
+calculate the final D value based on the range.
 
-Using the documented strings "TOMOYO_loader=string1" and
-"TOMOYO_trigger=string2" causes an Unknown parameter message:
-  Unknown kernel command line parameters
-    "BOOT_IMAGE=/boot/bzImage-517rc5 TOMOYO_loader=string1 \
-     TOMOYO_trigger=string2", will be passed to user space.
-
-and these strings are added to init's environment string space:
-  Run /sbin/init as init process
-    with arguments:
-     /sbin/init
-    with environment:
-     HOME=/
-     TERM=linux
-     BOOT_IMAGE=/boot/bzImage-517rc5
-     TOMOYO_loader=string1
-     TOMOYO_trigger=string2
-
-With this change, these __setup handlers act as expected,
-and init's environment is not polluted with these strings.
-
-Fixes: 0e4ae0e0dec63 ("TOMOYO: Make several options configurable.")
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Reported-by: Igor Zhbanov <i.zhbanov@omprussia.ru>
-Link: https://lore.kernel.org/r/64644a2f-4a20-bab3-1e15-3b2cdd0defe3@omprussia.ru
-Cc: James Morris <jmorris@namei.org>
-Cc: Kentaro Takeda <takedakn@nttdata.co.jp>
-Cc: tomoyo-dev-en@lists.osdn.me
-Cc: "Serge E. Hallyn" <serge@hallyn.com>
-Signed-off-by: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
+Fixes: 99cbd064b059f ("clk: qcom: Support display RCG clocks")
+Signed-off-by: Taniya Das <tdas@codeaurora.org>
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Link: https://lore.kernel.org/r/20220227175536.3131-1-tdas@codeaurora.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- security/tomoyo/load_policy.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/clk/qcom/clk-rcg2.c | 13 +++++++++++--
+ 1 file changed, 11 insertions(+), 2 deletions(-)
 
-diff --git a/security/tomoyo/load_policy.c b/security/tomoyo/load_policy.c
-index 3445ae6fd479..363b65be87ab 100644
---- a/security/tomoyo/load_policy.c
-+++ b/security/tomoyo/load_policy.c
-@@ -24,7 +24,7 @@ static const char *tomoyo_loader;
- static int __init tomoyo_loader_setup(char *str)
- {
- 	tomoyo_loader = str;
--	return 0;
-+	return 1;
- }
+diff --git a/drivers/clk/qcom/clk-rcg2.c b/drivers/clk/qcom/clk-rcg2.c
+index e1b1b426fae4..b831975a9606 100644
+--- a/drivers/clk/qcom/clk-rcg2.c
++++ b/drivers/clk/qcom/clk-rcg2.c
+@@ -264,7 +264,7 @@ static int clk_rcg2_determine_floor_rate(struct clk_hw *hw,
  
- __setup("TOMOYO_loader=", tomoyo_loader_setup);
-@@ -64,7 +64,7 @@ static const char *tomoyo_trigger;
- static int __init tomoyo_trigger_setup(char *str)
+ static int __clk_rcg2_configure(struct clk_rcg2 *rcg, const struct freq_tbl *f)
  {
- 	tomoyo_trigger = str;
--	return 0;
-+	return 1;
- }
+-	u32 cfg, mask;
++	u32 cfg, mask, d_val, not2d_val, n_minus_m;
+ 	struct clk_hw *hw = &rcg->clkr.hw;
+ 	int ret, index = qcom_find_src_index(hw, rcg->parent_map, f->src);
  
- __setup("TOMOYO_trigger=", tomoyo_trigger_setup);
+@@ -283,8 +283,17 @@ static int __clk_rcg2_configure(struct clk_rcg2 *rcg, const struct freq_tbl *f)
+ 		if (ret)
+ 			return ret;
+ 
++		/* Calculate 2d value */
++		d_val = f->n;
++
++		n_minus_m = f->n - f->m;
++		n_minus_m *= 2;
++
++		d_val = clamp_t(u32, d_val, f->m, n_minus_m);
++		not2d_val = ~d_val & mask;
++
+ 		ret = regmap_update_bits(rcg->clkr.regmap,
+-				RCG_D_OFFSET(rcg), mask, ~f->n);
++				RCG_D_OFFSET(rcg), mask, not2d_val);
+ 		if (ret)
+ 			return ret;
+ 	}
 -- 
 2.34.1
 
