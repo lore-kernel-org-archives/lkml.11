@@ -2,223 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E700C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D5FFC4332F
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 03:23:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2360052AbiDFDYT (ORCPT
+        id S2360067AbiDFDYe (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 23:24:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50618 "EHLO
+        Tue, 5 Apr 2022 23:24:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58634 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1848385AbiDFCVE (ORCPT
+        with ESMTP id S1847587AbiDFCTN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 22:21:04 -0400
-Received: from mail-lj1-x22c.google.com (mail-lj1-x22c.google.com [IPv6:2a00:1450:4864:20::22c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF7BB27CE0A
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 16:42:38 -0700 (PDT)
-Received: by mail-lj1-x22c.google.com with SMTP id c15so1034576ljr.9
-        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 16:42:38 -0700 (PDT)
+        Tue, 5 Apr 2022 22:19:13 -0400
+Received: from mail-pg1-x536.google.com (mail-pg1-x536.google.com [IPv6:2607:f8b0:4864:20::536])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BA94264F56
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 16:36:45 -0700 (PDT)
+Received: by mail-pg1-x536.google.com with SMTP id t4so726083pgc.1
+        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 16:36:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=Jvd8yLkL4H4JMSJ4KoB1/KxgXXtRYZgPmAmGLOJdDus=;
-        b=PoMu5ik5/yViCVccnBhUOXg7CMfjb6jA2lxAUxUKu8U3QiFo1bAN9ndX++nD+VUOTb
-         QtSseUsk1zCurh9CnfZ5ckLgHMynwYkjIv2BG1B3IEm/yGM9XhzYh/16PnP1Cg9UOzaU
-         QHxIdsDrT2bZfVKudVvwiG2WpY20CKgWgM4QIkjMvnBDLTGAEmIMfFQZxC9wawfgC2jB
-         Lh7xLdtWuPbjy0xJCQmp9QUOZNWvjjWKJ3gxJqj+iFqJ/JkvhW3ddUcVOIrORY077fiM
-         tglCVL+oz2Mf6emzuxtNHMezz1CpJKpaySbVIMvQ9TzN5JRc7wjvzSLoMCMNDMCGvGvj
-         U6/g==
+        d=heitbaum.com; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=5lljrXUFbagVeQhy8RP29MKKFHgUe/4Kwp5xKXHPRzY=;
+        b=dGvRJCdJUlRc45VkNmI0Sdh3AdsiexL36YcyCO+Az5ochInbrORyu4H/8hjpeVoBdg
+         JTCdbsx3p8vJka3z3HtrbozjGZv6OEO2wmDVthzLovFpZWy7LWedENYo9RjPzEC1uUjr
+         KrHOTO23jHaA0t6dCE3OHQoWgr0a21n9tfY4Q=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=Jvd8yLkL4H4JMSJ4KoB1/KxgXXtRYZgPmAmGLOJdDus=;
-        b=sykyDFeiy/7QkwzFCOCjqSSec9wXc9W9mviAghQ2FtIkfUQzvswHWzf2EGmD7DP0hH
-         vQZR9DSEifrXmoMtU54ETB7lI2qqC5B1Ge4QCtKfLqa3t/F1atzclnJAzTzlQ8HuUK1F
-         rtxZUqEVsjOT2k5tZOS+6X1mxzcQVLyKN41UrZBXHwNrNkUGOANvxHweZ+B5u8B4ba/R
-         6UFekMuu26cxahsKG+CMmiWPMSHAnJ0F5VPmMm0vrAzP8kG7GS2U4cEsV6CGmlGFMvEh
-         cfnEvP+lTJ7nEnb2qdTMSprPSLp+zcMEKr502e2VZEGtHITJ7cth+l0EYWNPlIhjTjY6
-         XmSg==
-X-Gm-Message-State: AOAM531SE9x2PuP+5G/b/BLiSeowcbzd8zYBm7HVpE3mp84neOJ7WEh+
-        F7dfW68YKorsCp7xVanut607J7z58F174Q==
-X-Google-Smtp-Source: ABdhPJwJurYqLtF/SAzZ6/+lSfeZmeFaSLKmwD+ujlty37GIYbc4JDTjheD3AefDplUEwXQV6ADzjg==
-X-Received: by 2002:a2e:7316:0:b0:24a:f59a:3c06 with SMTP id o22-20020a2e7316000000b0024af59a3c06mr3738312ljc.294.1649202155353;
-        Tue, 05 Apr 2022 16:42:35 -0700 (PDT)
-Received: from [192.168.1.211] ([37.153.55.125])
-        by smtp.gmail.com with ESMTPSA id w13-20020a2e998d000000b002496199495csm1465715lji.55.2022.04.05.16.42.34
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 05 Apr 2022 16:42:34 -0700 (PDT)
-Message-ID: <f5fc9704-5c22-8c95-b6d6-e2c20145672c@linaro.org>
-Date:   Wed, 6 Apr 2022 02:42:34 +0300
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=5lljrXUFbagVeQhy8RP29MKKFHgUe/4Kwp5xKXHPRzY=;
+        b=qDw1lzlU3w+zrfbQbQ/q7mhdAfVEpGR3x7kVeGz1hUsjMN21kn8W5UWAOcvG54//m1
+         avwlGTQhgEx/uM2Jyr0vj3gyGuJsyj4VGTQ5gaIZhsqGFg8S/tSQTUb7jITG06MXs9aJ
+         TGKzqwBQeSsgAuPh+jaP/i0qO+9G/nV9O8bLrNo5N8Ql2CoUIX9YbsdvH5VxRQzYYjm/
+         3yBCbL/+kxpRrgeHw8jZ5kI67rOiiiiOL+JyQYiVowroHarrBk/3DnOmrjmPH/CdySkK
+         d01BcTtZafprHsC8lFf3PYAwx173AVG9ByZG/KI//TMzFRWJ7JFdhGnwjVQ/c2SdMXIb
+         2hOw==
+X-Gm-Message-State: AOAM531x8+2oEw5luPANQNGFgxJARo1BQyORV0bcbkVW6Q6hhVSfYBST
+        xlm41J6iMB3kyxgcx2Cf+v1bqg==
+X-Google-Smtp-Source: ABdhPJxUlF0h6wSLBKFki0A2lv7nc1KXFZ58f5y3cc8o9aBNyNPF2ITMR9PpUBTloHb+3nLypC2CLg==
+X-Received: by 2002:a63:3346:0:b0:398:5811:6b9d with SMTP id z67-20020a633346000000b0039858116b9dmr4717005pgz.137.1649201804007;
+        Tue, 05 Apr 2022 16:36:44 -0700 (PDT)
+Received: from 4acdf3643319 ([203.221.136.13])
+        by smtp.gmail.com with ESMTPSA id p3-20020a056a000b4300b004faee36ea56sm17099627pfo.155.2022.04.05.16.36.39
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 05 Apr 2022 16:36:43 -0700 (PDT)
+Date:   Tue, 5 Apr 2022 23:36:34 +0000
+From:   Rudi Heitbaum <rudi@heitbaum.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        torvalds@linux-foundation.org, akpm@linux-foundation.org,
+        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
+        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
+        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
+        slade@sladewatkins.com
+Subject: Re: [PATCH 5.17 0000/1126] 5.17.2-rc1 review
+Message-ID: <20220405233634.GA7@4acdf3643319>
+References: <20220405070407.513532867@linuxfoundation.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH v6 14/14] drm/msm/dsi: Add support for DSC configuration
-Content-Language: en-GB
-To:     Vinod Koul <vkoul@kernel.org>, Rob Clark <robdclark@gmail.com>
-Cc:     linux-arm-msm@vger.kernel.org,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Jonathan Marek <jonathan@marek.ca>,
-        Abhinav Kumar <quic_abhinavk@quicinc.com>,
-        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        freedreno@lists.freedesktop.org
-References: <20220404163436.956875-1-vkoul@kernel.org>
- <20220404163436.956875-15-vkoul@kernel.org>
-From:   Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-In-Reply-To: <20220404163436.956875-15-vkoul@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 04/04/2022 19:34, Vinod Koul wrote:
-> When DSC is enabled, we need to configure DSI registers accordingly and
-> configure the respective stream compression registers.
+On Tue, Apr 05, 2022 at 09:12:27AM +0200, Greg Kroah-Hartman wrote:
+> This is the start of the stable review cycle for the 5.17.2 release.
+> There are 1126 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
 > 
-> Add support to calculate the register setting based on DSC params and
-> timing information and configure these registers.
-> 
-> Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-> Signed-off-by: Vinod Koul <vkoul@kernel.org>
-> ---
->   drivers/gpu/drm/msm/dsi/dsi_host.c | 98 +++++++++++++++++++++++++++++-
->   1 file changed, 97 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/gpu/drm/msm/dsi/dsi_host.c b/drivers/gpu/drm/msm/dsi/dsi_host.c
-> index eb0be34add45..f3ed6c40b9e1 100644
-> --- a/drivers/gpu/drm/msm/dsi/dsi_host.c
-> +++ b/drivers/gpu/drm/msm/dsi/dsi_host.c
-> @@ -912,6 +912,65 @@ static void dsi_ctrl_config(struct msm_dsi_host *msm_host, bool enable,
->   		dsi_write(msm_host, REG_DSI_CPHY_MODE_CTRL, BIT(0));
->   }
->   
-> +static void dsi_update_dsc_timing(struct msm_dsi_host *msm_host, bool is_cmd_mode, u32 hdisplay)
-> +{
-> +	struct msm_display_dsc_config *dsc = msm_host->dsc;
-> +	u32 reg, intf_width, reg_ctrl, reg_ctrl2;
-> +	u32 slice_per_intf, total_bytes_per_intf;
-> +	u32 pkt_per_line;
-> +	u32 bytes_in_slice;
-> +	u32 eol_byte_num;
-> +
-> +	/* first calculate dsc parameters and then program
-> +	 * compress mode registers
-> +	 */
-> +	intf_width = hdisplay;
-> +	slice_per_intf = DIV_ROUND_UP(intf_width, dsc->drm->slice_width);
-> +
-> +	/* If slice_per_pkt is greater than slice_per_intf
-> +	 * then default to 1. This can happen during partial
-> +	 * update.
-> +	 */
-> +	if (slice_per_intf > dsc->drm->slice_count)
-> +		dsc->drm->slice_count = 1;
-> +
-> +	slice_per_intf = DIV_ROUND_UP(hdisplay, dsc->drm->slice_width);
-> +	bytes_in_slice = DIV_ROUND_UP(dsc->drm->slice_width * dsc->drm->bits_per_pixel, 8);
-> +
-> +	dsc->drm->slice_chunk_size = bytes_in_slice;
-> +
-> +	total_bytes_per_intf = bytes_in_slice * slice_per_intf;
-> +
-> +	eol_byte_num = total_bytes_per_intf % 3;
-> +	pkt_per_line = slice_per_intf / dsc->drm->slice_count;
-> +
-> +	if (is_cmd_mode) /* packet data type */
-> +		reg = DSI_COMMAND_COMPRESSION_MODE_CTRL_STREAM0_DATATYPE(MIPI_DSI_DCS_LONG_WRITE);
-> +	else
-> +		reg = DSI_VIDEO_COMPRESSION_MODE_CTRL_DATATYPE(MIPI_DSI_COMPRESSED_PIXEL_STREAM);
-> +
-> +	/* DSI_VIDEO_COMPRESSION_MODE & DSI_COMMAND_COMPRESSION_MODE
-> +	 * registers have similar offsets, so for below common code use
-> +	 * DSI_VIDEO_COMPRESSION_MODE_XXXX for setting bits
-> +	 */
-> +	reg |= DSI_VIDEO_COMPRESSION_MODE_CTRL_PKT_PER_LINE(pkt_per_line >> 1);
-> +	reg |= DSI_VIDEO_COMPRESSION_MODE_CTRL_EOL_BYTE_NUM(eol_byte_num);
-> +	reg |= DSI_VIDEO_COMPRESSION_MODE_CTRL_EN;
-> +
-> +	if (is_cmd_mode) {
-> +		reg_ctrl = dsi_read(msm_host, REG_DSI_COMMAND_COMPRESSION_MODE_CTRL);
-> +		reg_ctrl2 = dsi_read(msm_host, REG_DSI_COMMAND_COMPRESSION_MODE_CTRL2);
-> +
-> +		reg_ctrl |= reg;
-> +		reg_ctrl2 |= DSI_COMMAND_COMPRESSION_MODE_CTRL2_STREAM0_SLICE_WIDTH(bytes_in_slice);
-> +
-> +		dsi_write(msm_host, REG_DSI_COMMAND_COMPRESSION_MODE_CTRL, reg);
+> Responses should be made by Thu, 07 Apr 2022 07:01:33 +0000.
+> Anything received after that time might be too late.
 
-reg_ctrl, as reported by testing robot
+Hi Greg,
 
-> +		dsi_write(msm_host, REG_DSI_COMMAND_COMPRESSION_MODE_CTRL2, reg_ctrl2);
-> +	} else {
-> +		dsi_write(msm_host, REG_DSI_VIDEO_COMPRESSION_MODE_CTRL, reg);
-> +	}
-> +}
-> +
->   static void dsi_timing_setup(struct msm_dsi_host *msm_host, bool is_bonded_dsi)
->   {
->   	struct drm_display_mode *mode = msm_host->mode;
-> @@ -944,7 +1003,38 @@ static void dsi_timing_setup(struct msm_dsi_host *msm_host, bool is_bonded_dsi)
->   		hdisplay /= 2;
->   	}
->   
-> +	if (msm_host->dsc) {
-> +		struct msm_display_dsc_config *dsc = msm_host->dsc;
-> +
-> +		/* update dsc params with timing params */
-> +		if (!dsc || !mode->hdisplay || !mode->vdisplay) {
-> +			pr_err("DSI: invalid input: pic_width: %d pic_height: %d\n",
-> +			       mode->hdisplay, mode->vdisplay);
-> +			return;
-> +		}
-> +
-> +		dsc->drm->pic_width = mode->hdisplay;
-> +		dsc->drm->pic_height = mode->vdisplay;
-> +		DBG("Mode %dx%d\n", dsc->drm->pic_width, dsc->drm->pic_height);
-> +
-> +		/* we do the calculations for dsc parameters here so that
-> +		 * panel can use these parameters
-> +		 */
-> +		dsi_populate_dsc_params(dsc);
-> +
-> +		/* Divide the display by 3 but keep back/font porch and
-> +		 * pulse width same
-> +		 */
-> +		h_total -= hdisplay;
-> +		hdisplay /= 3;
-> +		h_total += hdisplay;
-> +		ha_end = ha_start + hdisplay;
-> +	}
-> +
->   	if (msm_host->mode_flags & MIPI_DSI_MODE_VIDEO) {
-> +		if (msm_host->dsc)
-> +			dsi_update_dsc_timing(msm_host, false, mode->hdisplay);
-> +
->   		dsi_write(msm_host, REG_DSI_ACTIVE_H,
->   			DSI_ACTIVE_H_START(ha_start) |
->   			DSI_ACTIVE_H_END(ha_end));
-> @@ -963,8 +1053,14 @@ static void dsi_timing_setup(struct msm_dsi_host *msm_host, bool is_bonded_dsi)
->   			DSI_ACTIVE_VSYNC_VPOS_START(vs_start) |
->   			DSI_ACTIVE_VSYNC_VPOS_END(vs_end));
->   	} else {		/* command mode */
-> +		if (msm_host->dsc)
-> +			dsi_update_dsc_timing(msm_host, true, mode->hdisplay);
-> +
->   		/* image data and 1 byte write_memory_start cmd */
-> -		wc = hdisplay * dsi_get_bpp(msm_host->format) / 8 + 1;
-> +		if (!msm_host->dsc)
-> +			wc = hdisplay * dsi_get_bpp(msm_host->format) / 8 + 1;
-> +		else
-> +			wc = mode->hdisplay / 2 + 1;
->   
->   		dsi_write(msm_host, REG_DSI_CMD_MDP_STREAM0_CTRL,
->   			DSI_CMD_MDP_STREAM0_CTRL_WORD_COUNT(wc) |
+5.17.2-rc1 tested.
 
+Run tested on:
+- Allwinner H6 (Tanix TX6)
+- Intel Tiger Lake x86_64 (nuc11 i7-1165G7)
 
--- 
-With best wishes
-Dmitry
+In addition - build tested on:
+- Allwinner A64
+- Allwinner H3
+- Allwinner H5
+- NXP iMX6
+- NXP iMX8
+- Qualcomm Dragonboard
+- Rockchip RK3288
+- Rockchip RK3328
+- Rockchip RK3399pro
+- Samsung Exynos
+
+Tested-by: Rudi Heitbaum <rudi@heitbaum.com>
+--
+Rudi
