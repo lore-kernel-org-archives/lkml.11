@@ -2,149 +2,214 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D7A2FC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 10:26:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 34131C3527E
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 10:26:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354612AbiDEKOy (ORCPT
+        id S1354693AbiDEKPM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 06:14:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34436 "EHLO
+        Tue, 5 Apr 2022 06:15:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45826 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241213AbiDEIcz (ORCPT
+        with ESMTP id S241196AbiDEIcy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:32:55 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6495217AA1;
-        Tue,  5 Apr 2022 01:29:40 -0700 (PDT)
-Date:   Tue, 05 Apr 2022 08:29:37 -0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1649147379;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=Xf02MVHN4JR7VuJJrUFdSIQZRkwuZ0C8MK8iLKWLcQk=;
-        b=IIn3vSJNaAs7G+1rR35chBNTwK5Uw3lmT3weRbX9ql7RW3fJpF5x/Mu41mvNaywrFod2fi
-        g/huQLKZ0oKi+IX5ETZ/tZjTzgFD5Ugw0GCyaufaEYvuR2K0WqafWUegg3p3LlNw4EQv3t
-        vf49Zqm7o98czxEGexiR/nxsmGLYs+nMs8nJsgOWtwLCCvRsaivbYGTtkepClDbEhTLT1W
-        +HyPOYSRQLz3E7ej2dbjvoMtvT0d4VUDtgnzH2lt77vlldTSsGbN+r12IYStBX9027jJHF
-        gx+kqQ4hIh9w13mcgemb5pRUYSsXE+5gE1f7S0s5qn/POpOY/rtUe62CBupjCQ==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1649147379;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=Xf02MVHN4JR7VuJJrUFdSIQZRkwuZ0C8MK8iLKWLcQk=;
-        b=vQlsxWAg09eKYJSZLGOM+Z+mAKAtN6pDD+sf1WKGWzRS0mSznZQxyrT/pq0T36eUNLyfe7
-        l1LxaayzHjTqEQCw==
-From:   "tip-bot2 for Peter Zijlstra" <tip-bot2@linutronix.de>
-Sender: tip-bot2@linutronix.de
-Reply-to: linux-kernel@vger.kernel.org
-To:     linux-tip-commits@vger.kernel.org
-Subject: [tip: x86/urgent] objtool: Fix IBT tail-call detection
-Cc:     Stephen Rothwell <sfr@canb.auug.org.au>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>, x86@kernel.org,
-        linux-kernel@vger.kernel.org
-In-Reply-To: <20220322115125.811582125@infradead.org>
-References: <20220322115125.811582125@infradead.org>
+        Tue, 5 Apr 2022 04:32:54 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 997F6213;
+        Tue,  5 Apr 2022 01:29:30 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 48B22B81BD8;
+        Tue,  5 Apr 2022 08:29:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A593AC385A1;
+        Tue,  5 Apr 2022 08:29:27 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649147368;
+        bh=mYkTsnuQLkzRGrnY2qGz83S8IFS+s5HtUyUhPBgeswg=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=tU/aHrw0y7HKwHQNrYPfJQD7dtVeUZ0jM5Ckxo/B+8FJRySkku1WzNAj9MwislIZd
+         FhpoOpVgOgLMHmkvsqnQcE/E9+RLtrnLL+PaLdF+GJ8mdkd4HM5oeBjXHcyjzEJvO7
+         G6QkafcsqVew9C+KctzWcudvfU12CqPTBC503Jvc=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, syzbot <syzkaller@googlegroups.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Marco Elver <elver@google.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 5.17 1100/1126] net: preserve skb_end_offset() in skb_unclone_keeptruesize()
+Date:   Tue,  5 Apr 2022 09:30:47 +0200
+Message-Id: <20220405070439.727483999@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
+References: <20220405070407.513532867@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Message-ID: <164914737798.389.68339904332129316.tip-bot2@tip-bot2>
-Robot-ID: <tip-bot2@linutronix.de>
-Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The following commit has been merged into the x86/urgent branch of tip:
+From: Eric Dumazet <edumazet@google.com>
 
-Commit-ID:     d139bca4b824ffb9731763c31b271a24b595948a
-Gitweb:        https://git.kernel.org/tip/d139bca4b824ffb9731763c31b271a24b595948a
-Author:        Peter Zijlstra <peterz@infradead.org>
-AuthorDate:    Tue, 22 Mar 2022 12:33:31 +01:00
-Committer:     Peter Zijlstra <peterz@infradead.org>
-CommitterDate: Tue, 05 Apr 2022 10:24:40 +02:00
+commit 2b88cba55883eaafbc9b7cbff0b2c7cdba71ed01 upstream.
 
-objtool: Fix IBT tail-call detection
+syzbot found another way to trigger the infamous WARN_ON_ONCE(delta < len)
+in skb_try_coalesce() [1]
 
-Objtool reports:
+I was able to root cause the issue to kfence.
 
-  arch/x86/crypto/poly1305-x86_64.o: warning: objtool: poly1305_blocks_avx() falls through to next function poly1305_blocks_x86_64()
-  arch/x86/crypto/poly1305-x86_64.o: warning: objtool: poly1305_emit_avx() falls through to next function poly1305_emit_x86_64()
-  arch/x86/crypto/poly1305-x86_64.o: warning: objtool: poly1305_blocks_avx2() falls through to next function poly1305_blocks_x86_64()
+When kfence is in action, the following assertion is no longer true:
 
-Which reads like:
+int size = xxxx;
+void *ptr1 = kmalloc(size, gfp);
+void *ptr2 = kmalloc(size, gfp);
 
-0000000000000040 <poly1305_blocks_x86_64>:
-	 40:       f3 0f 1e fa             endbr64
-	...
+if (ptr1 && ptr2)
+	ASSERT(ksize(ptr1) == ksize(ptr2));
 
-0000000000000400 <poly1305_blocks_avx>:
-	400:       f3 0f 1e fa             endbr64
-	404:       44 8b 47 14             mov    0x14(%rdi),%r8d
-	408:       48 81 fa 80 00 00 00    cmp    $0x80,%rdx
-	40f:       73 09                   jae    41a <poly1305_blocks_avx+0x1a>
-	411:       45 85 c0                test   %r8d,%r8d
-	414:       0f 84 2a fc ff ff       je     44 <poly1305_blocks_x86_64+0x4>
-	...
+We attempted to fix these issues in the blamed commits, but forgot
+that TCP was possibly shifting data after skb_unclone_keeptruesize()
+has been used, notably from tcp_retrans_try_collapse().
 
-These are simple conditional tail-calls and *should* be recognised as
-such by objtool, however due to a mistake in commit 08f87a93c8ec
-("objtool: Validate IBT assumptions") this is failing.
+So we not only need to keep same skb->truesize value,
+we also need to make sure TCP wont fill new tailroom
+that pskb_expand_head() was able to get from a
+addr = kmalloc(...) followed by ksize(addr)
 
-Specifically, the jump_dest is +4, this means the instruction pointed
-at will not be ENDBR and as such it will fail the second clause of
-is_first_func_insn() that was supposed to capture this exact case.
+Split skb_unclone_keeptruesize() into two parts:
 
-Instead, have is_first_func_insn() look at the previous instruction.
+1) Inline skb_unclone_keeptruesize() for the common case,
+   when skb is not cloned.
 
-Fixes: 08f87a93c8ec ("objtool: Validate IBT assumptions")
-Reported-by: Stephen Rothwell <sfr@canb.auug.org.au>
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Link: https://lkml.kernel.org/r/20220322115125.811582125@infradead.org
+2) Out of line __skb_unclone_keeptruesize() for the 'slow path'.
+
+WARNING: CPU: 1 PID: 6490 at net/core/skbuff.c:5295 skb_try_coalesce+0x1235/0x1560 net/core/skbuff.c:5295
+Modules linked in:
+CPU: 1 PID: 6490 Comm: syz-executor161 Not tainted 5.17.0-rc4-syzkaller-00229-g4f12b742eb2b #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+RIP: 0010:skb_try_coalesce+0x1235/0x1560 net/core/skbuff.c:5295
+Code: bf 01 00 00 00 0f b7 c0 89 c6 89 44 24 20 e8 62 24 4e fa 8b 44 24 20 83 e8 01 0f 85 e5 f0 ff ff e9 87 f4 ff ff e8 cb 20 4e fa <0f> 0b e9 06 f9 ff ff e8 af b2 95 fa e9 69 f0 ff ff e8 95 b2 95 fa
+RSP: 0018:ffffc900063af268 EFLAGS: 00010293
+RAX: 0000000000000000 RBX: 00000000ffffffd5 RCX: 0000000000000000
+RDX: ffff88806fc05700 RSI: ffffffff872abd55 RDI: 0000000000000003
+RBP: ffff88806e675500 R08: 00000000ffffffd5 R09: 0000000000000000
+R10: ffffffff872ab659 R11: 0000000000000000 R12: ffff88806dd554e8
+R13: ffff88806dd9bac0 R14: ffff88806dd9a2c0 R15: 0000000000000155
+FS:  00007f18014f9700(0000) GS:ffff8880b9c00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 0000000020002000 CR3: 000000006be7a000 CR4: 00000000003506f0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ <TASK>
+ tcp_try_coalesce net/ipv4/tcp_input.c:4651 [inline]
+ tcp_try_coalesce+0x393/0x920 net/ipv4/tcp_input.c:4630
+ tcp_queue_rcv+0x8a/0x6e0 net/ipv4/tcp_input.c:4914
+ tcp_data_queue+0x11fd/0x4bb0 net/ipv4/tcp_input.c:5025
+ tcp_rcv_established+0x81e/0x1ff0 net/ipv4/tcp_input.c:5947
+ tcp_v4_do_rcv+0x65e/0x980 net/ipv4/tcp_ipv4.c:1719
+ sk_backlog_rcv include/net/sock.h:1037 [inline]
+ __release_sock+0x134/0x3b0 net/core/sock.c:2779
+ release_sock+0x54/0x1b0 net/core/sock.c:3311
+ sk_wait_data+0x177/0x450 net/core/sock.c:2821
+ tcp_recvmsg_locked+0xe28/0x1fd0 net/ipv4/tcp.c:2457
+ tcp_recvmsg+0x137/0x610 net/ipv4/tcp.c:2572
+ inet_recvmsg+0x11b/0x5e0 net/ipv4/af_inet.c:850
+ sock_recvmsg_nosec net/socket.c:948 [inline]
+ sock_recvmsg net/socket.c:966 [inline]
+ sock_recvmsg net/socket.c:962 [inline]
+ ____sys_recvmsg+0x2c4/0x600 net/socket.c:2632
+ ___sys_recvmsg+0x127/0x200 net/socket.c:2674
+ __sys_recvmsg+0xe2/0x1a0 net/socket.c:2704
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+
+Fixes: c4777efa751d ("net: add and use skb_unclone_keeptruesize() helper")
+Fixes: 097b9146c0e2 ("net: fix up truesize of cloned skb in skb_prepare_for_shift()")
+Reported-by: syzbot <syzkaller@googlegroups.com>
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Cc: Marco Elver <elver@google.com>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- tools/objtool/check.c | 19 ++++++++++++++-----
- 1 file changed, 14 insertions(+), 5 deletions(-)
+ include/linux/skbuff.h |   18 +++++++++---------
+ net/core/skbuff.c      |   32 ++++++++++++++++++++++++++++++++
+ 2 files changed, 41 insertions(+), 9 deletions(-)
 
-diff --git a/tools/objtool/check.c b/tools/objtool/check.c
-index 6de5085..b848e1d 100644
---- a/tools/objtool/check.c
-+++ b/tools/objtool/check.c
-@@ -1239,11 +1239,20 @@ static bool same_function(struct instruction *insn1, struct instruction *insn2)
- 	return insn1->func->pfunc == insn2->func->pfunc;
+--- a/include/linux/skbuff.h
++++ b/include/linux/skbuff.h
+@@ -1734,19 +1734,19 @@ static inline int skb_unclone(struct sk_
+ 	return 0;
  }
  
--static bool is_first_func_insn(struct instruction *insn)
-+static bool is_first_func_insn(struct objtool_file *file, struct instruction *insn)
+-/* This variant of skb_unclone() makes sure skb->truesize is not changed */
++/* This variant of skb_unclone() makes sure skb->truesize
++ * and skb_end_offset() are not changed, whenever a new skb->head is needed.
++ *
++ * Indeed there is no guarantee that ksize(kmalloc(X)) == ksize(kmalloc(X))
++ * when various debugging features are in place.
++ */
++int __skb_unclone_keeptruesize(struct sk_buff *skb, gfp_t pri);
+ static inline int skb_unclone_keeptruesize(struct sk_buff *skb, gfp_t pri)
  {
--	return insn->offset == insn->func->offset ||
--	       (insn->type == INSN_ENDBR &&
--		insn->offset == insn->func->offset + insn->len);
-+	if (insn->offset == insn->func->offset)
-+		return true;
-+
-+	if (ibt) {
-+		struct instruction *prev = prev_insn_same_sym(file, insn);
-+
-+		if (prev && prev->type == INSN_ENDBR &&
-+		    insn->offset == insn->func->offset + prev->len)
-+			return true;
-+	}
-+
-+	return false;
+ 	might_sleep_if(gfpflags_allow_blocking(pri));
+ 
+-	if (skb_cloned(skb)) {
+-		unsigned int save = skb->truesize;
+-		int res;
+-
+-		res = pskb_expand_head(skb, 0, 0, pri);
+-		skb->truesize = save;
+-		return res;
+-	}
++	if (skb_cloned(skb))
++		return __skb_unclone_keeptruesize(skb, pri);
+ 	return 0;
  }
  
- /*
-@@ -1327,7 +1336,7 @@ static int add_jump_destinations(struct objtool_file *file)
- 				insn->jump_dest->func->pfunc = insn->func;
+--- a/net/core/skbuff.c
++++ b/net/core/skbuff.c
+@@ -1787,6 +1787,38 @@ struct sk_buff *skb_realloc_headroom(str
+ }
+ EXPORT_SYMBOL(skb_realloc_headroom);
  
- 			} else if (!same_function(insn, insn->jump_dest) &&
--				   is_first_func_insn(insn->jump_dest)) {
-+				   is_first_func_insn(file, insn->jump_dest)) {
- 				/* internal sibling call (without reloc) */
- 				add_call_dest(file, insn, insn->jump_dest->func, true);
- 			}
++int __skb_unclone_keeptruesize(struct sk_buff *skb, gfp_t pri)
++{
++	unsigned int saved_end_offset, saved_truesize;
++	struct skb_shared_info *shinfo;
++	int res;
++
++	saved_end_offset = skb_end_offset(skb);
++	saved_truesize = skb->truesize;
++
++	res = pskb_expand_head(skb, 0, 0, pri);
++	if (res)
++		return res;
++
++	skb->truesize = saved_truesize;
++
++	if (likely(skb_end_offset(skb) == saved_end_offset))
++		return 0;
++
++	shinfo = skb_shinfo(skb);
++
++	/* We are about to change back skb->end,
++	 * we need to move skb_shinfo() to its new location.
++	 */
++	memmove(skb->head + saved_end_offset,
++		shinfo,
++		offsetof(struct skb_shared_info, frags[shinfo->nr_frags]));
++
++	skb_set_end_offset(skb, saved_end_offset);
++
++	return 0;
++}
++
+ /**
+  *	skb_expand_head - reallocate header of &sk_buff
+  *	@skb: buffer to reallocate
+
+
