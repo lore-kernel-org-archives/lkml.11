@@ -2,119 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F0B54C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 02:23:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A8E0C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 02:23:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1848415AbiDFCWY (ORCPT
+        id S1848444AbiDFCXA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 22:22:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37630 "EHLO
+        Tue, 5 Apr 2022 22:23:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37656 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241322AbiDEUpv (ORCPT
+        with ESMTP id S1358894AbiDEUuG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 16:45:51 -0400
-Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.126.133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60E9AD9EB5;
-        Tue,  5 Apr 2022 13:22:23 -0700 (PDT)
-Received: from leknes.fjasle.eu ([46.142.97.95]) by mrelayeu.kundenserver.de
- (mreue011 [212.227.15.167]) with ESMTPSA (Nemesis) id
- 1MxV4T-1nvrQ50Jpp-00xpap; Tue, 05 Apr 2022 22:16:20 +0200
-Received: by leknes.fjasle.eu (Postfix, from userid 1000)
-        id 13DF73C088; Tue,  5 Apr 2022 22:16:16 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=fjasle.eu; s=mail;
-        t=1649189778; bh=GPfCvVD2BrdOXMdNnxNrFcntwH8cnF/qTfQuCuV8YzY=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=ZCVPqPQLOy4IRjuET4veOmGPaRaH8zVgC8X5Q//kiDNo254elLsNsrH/jF+A4SfDu
-         fJZol9+js3503xEoh7PNBYfKbO4LsyncqVXwuiW/p1Pz591LUO4stHSWT9jb6f0fpS
-         LwxB4TC/8gRUaXeB6joOFiKkqPwVjCg78ukR8ZIw=
-Date:   Tue, 5 Apr 2022 22:16:16 +0200
-From:   Nicolas Schier <nicolas@fjasle.eu>
-To:     Masahiro Yamada <masahiroy@kernel.org>
-Cc:     linux-kbuild@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Michal Marek <michal.lkml@markovi.net>,
-        Nick Desaulniers <ndesaulniers@google.com>
-Subject: Re: [PATCH v2 07/10] kbuild: get rid of duplication in the first
- line of *.mod files
-Message-ID: <YkyjkAWb56wqL3iK@fjasle.eu>
-References: <20220405113359.2880241-1-masahiroy@kernel.org>
- <20220405113359.2880241-8-masahiroy@kernel.org>
+        Tue, 5 Apr 2022 16:50:06 -0400
+Received: from nbd.name (nbd.name [IPv6:2a01:4f8:221:3d45::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8616966ADB;
+        Tue,  5 Apr 2022 13:24:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=nbd.name;
+         s=20160729; h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:
+        Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=gXvEQrfZY9HNBpxfU0Zzm6NHw+EacTGssl2BnoA7qE0=; b=J/ymy3Uqmx90f5JQAtw03vc9mI
+        argCvDrmevWZn0QJBD+TAfBEovMmoU9fFQtdxBxq/MuDi7lA885JpmqN346nTYSu/rGDeO9+1Zpyw
+        snXS5Ep9sk87UP6kj0wY6cSoPwMkT3ONEZH/30dNvKHuzbFEnFn/3KOY5I0HKFEj2iJQ=;
+Received: from p200300daa70ef200456864e8b8d10029.dip0.t-ipconnect.de ([2003:da:a70e:f200:4568:64e8:b8d1:29] helo=Maecks.lan)
+        by ds12 with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.89)
+        (envelope-from <nbd@nbd.name>)
+        id 1nbpJX-00035V-7B; Tue, 05 Apr 2022 21:58:07 +0200
+From:   Felix Fietkau <nbd@nbd.name>
+To:     netdev@vger.kernel.org, John Crispin <john@phrozen.org>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Mark Lee <Mark-MC.Lee@mediatek.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>
+Cc:     linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v2 10/14] net: ethernet: mtk_eth_soc: support TC_SETUP_BLOCK for PPE offload
+Date:   Tue,  5 Apr 2022 21:57:51 +0200
+Message-Id: <20220405195755.10817-11-nbd@nbd.name>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405195755.10817-1-nbd@nbd.name>
+References: <20220405195755.10817-1-nbd@nbd.name>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220405113359.2880241-8-masahiroy@kernel.org>
-X-Provags-ID: V03:K1:rFb6rOPGOYf54rAUdi4Z7QmLIEC3PNtz5bjBHKiS5S9kz/rp0KY
- IFv++Z8xORrnNoHxVlKCCwBFePfvbMorNonoqK+eS37J6mA0sVrUMi5KhrL+g8s38nFS+it
- jaAii3I6IpoNQwagGGA/fzFzKXA4tIs3r2YX7NcLWQV/jDfiPZzrKBJHQo4UaW/xEY0twmi
- fVbOPGXwmVOOeNcIh86/g==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:Ac6prOacJsQ=:p+T22kYzZjC80rzUVrllUV
- ji899ZO6uA6RoUtAgYk8IZZV1v6/Il8KGEN8e1kPelzhvp6QSHSRdBmykibXrRbBFG41xQeP1
- gOjOlFnoKvE7DNqn7H0cwQVD6g0lHHsU2mElvBL73v8gU7JruB4viokTp2JJjTcX1ejdRnMQ4
- M/5/8h3Fy6ECkDYQeiMf8/wxuFx/JsVCFil1toUGlGuRs8q/30p1U6Z1hbyLlMewwea18iHfg
- uHrl4pFb88gS3XRed7Q4/v4gPqWTzGyE1BIvN2eGWDi331J77VZ0uBH8aa0aZS9tmXB98nnt0
- ldp3yfFeiCgviIYH9Via4XmsR4B+fWm6TA/xIUXmLlwGppE55kirdoi28QXbGmE9HSG6qaSAb
- 8uS8DyYwVOQgkAJ4i1XVphUoxtTWnolRaDqAx6aZqlV/D/I1+zVX0qp2jKWBTpYeV1+OHnJVu
- 2Jg1sHE6Wu8EGeI5ecf1DWG+x6wjRCJRa2WO24akBRPI8daVDSwHUM/0qloUUYNVTMK3iDF/S
- xwwW6M2fK8SjcZsMHPdCq49U+gAcVvolTnWUlMaMal+KjhzlbOq6Senx5Z6+RQA29+228MMsz
- iQIwXFYA3/PjoT5sfioSIV59SueftRAJuzL/y3ryNYg6tKaVvKT8TWnns0PD47pvP+JH8I0T8
- +ttgm0pPp5/hNHiseCnlEYdpfkKs+A1zEelJuK9dmu69yeipd5yzJp2yYIk1nWq4+mJY=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 05, 2022 at 08:33:55PM +0900 Masahiro Yamada wrote:
-> The first line of *.mod lists the member objects of the module.
-> This list may contain duplication if the same object is added multiple
-> times, like this:
-> 
->   obj-m := foo.o
->   foo-$(CONFIG_FOO1_X) += foo1.o
->   foo-$(CONFIG_FOO1_Y) += foo1.o
->   foo-$(CONFIG_FOO2_X) += foo2.o
->   foo-$(CONFIG_FOO2_Y) += foo2.o
-> 
-> This is probably not a big deal. As far as I know, the only small
-> problem is scripts/mod/sumversion.c parses the same file over again.
-> This can be avoided by adding $(sort ...). It has a side-effect that
-> sorts the objects alphabetically, but it is not a big deal, either.
-> 
-> Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
-> ---
-> 
-> Changes in v2:
->   - new
-> 
->  scripts/Makefile.build | 4 +++-
->  1 file changed, 3 insertions(+), 1 deletion(-)
-> 
-> diff --git a/scripts/Makefile.build b/scripts/Makefile.build
-> index 3ef2373f0a57..63625877aeae 100644
-> --- a/scripts/Makefile.build
-> +++ b/scripts/Makefile.build
-> @@ -307,8 +307,10 @@ $(obj)/%.prelink.o: $(obj)/%.o FORCE
->  	$(call if_changed,cc_prelink_modules)
->  endif
->  
-> +multi-m-prereqs = $(sort $(addprefix $(obj)/, $($*-objs) $($*-y) $($*-m)))
-> +
->  cmd_mod = { \
-> -	echo $(if $($*-objs)$($*-y)$($*-m), $(addprefix $(obj)/, $($*-objs) $($*-y) $($*-m)), $(@:.mod=.o)); \
-> +	echo $(if $(multi-m-prereqs), $(multi-m-prereqs), $(@:.mod=.o)); \
+This allows offload entries to be created from user space
 
-I'd rather expected to see $(or) here, too, as in commit 5c8166419acf ("kbuild:
-replace $(if A,A,B) with $(or A,B)").
+Signed-off-by: Felix Fietkau <nbd@nbd.name>
+---
+ drivers/net/ethernet/mediatek/mtk_ppe_offload.c | 9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
 
-Reviewed-by: Nicolas Schier <nicolas@fjasle.eu>
-
->  	$(undefined_syms) echo; \
->  	} > $@
->  
-> -- 
-> 2.32.0
-> 
-> 
-
+diff --git a/drivers/net/ethernet/mediatek/mtk_ppe_offload.c b/drivers/net/ethernet/mediatek/mtk_ppe_offload.c
+index 0113cddcebf4..da3bc93676f8 100644
+--- a/drivers/net/ethernet/mediatek/mtk_ppe_offload.c
++++ b/drivers/net/ethernet/mediatek/mtk_ppe_offload.c
+@@ -563,10 +563,13 @@ mtk_eth_setup_tc_block(struct net_device *dev, struct flow_block_offload *f)
+ int mtk_eth_setup_tc(struct net_device *dev, enum tc_setup_type type,
+ 		     void *type_data)
+ {
+-	if (type == TC_SETUP_FT)
++	switch (type) {
++	case TC_SETUP_BLOCK:
++	case TC_SETUP_FT:
+ 		return mtk_eth_setup_tc_block(dev, type_data);
+-
+-	return -EOPNOTSUPP;
++	default:
++		return -EOPNOTSUPP;
++	}
+ }
+ 
+ int mtk_eth_offload_init(struct mtk_eth *eth)
 -- 
-epost|xmpp: nicolas@fjasle.eu          irc://oftc.net/nsc
-↳ gpg: 18ed 52db e34f 860e e9fb  c82b 7d97 0932 55a0 ce7f
-     -- frykten for herren er opphav til kunnskap --
+2.35.1
+
