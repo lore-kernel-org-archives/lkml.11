@@ -2,117 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D1CEC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 07:20:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 450CAC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 07:20:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231222AbiDEHWt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 03:22:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33538 "EHLO
+        id S231597AbiDEHWy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 03:22:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32786 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232117AbiDEHVb (ORCPT
+        with ESMTP id S232145AbiDEHVc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 03:21:31 -0400
-Received: from mail-wm1-x331.google.com (mail-wm1-x331.google.com [IPv6:2a00:1450:4864:20::331])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F77F64F7
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 00:18:18 -0700 (PDT)
-Received: by mail-wm1-x331.google.com with SMTP id k124-20020a1ca182000000b0038c9cf6e2a6so1035569wme.0
-        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 00:18:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=brainfault-org.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=j5tZD+8M1iPFQIpWPsYamWZAVUcin+PVrYzA4YmgT9M=;
-        b=fwxyiskvlIWhb4yoz+2d8DfK/fDF9kpIsj1v16e5zIvUjuTsRqhCJOFl05KNjnR1dw
-         oonmm9pVay2hFWOiOFAbJ7dn7AHRarZUB51K/rDMrO52UGnRsj0lSzd2lgRxtb+OxIRl
-         IgpXfxAnPI2wpb+5qJeC0MuWD3RZGoIQEZ+ogFkEYpSYTVQw4ABKMBca0ZXnLKFMvEQz
-         QdhofkXfbLPxcHl4i2KJqdCwUeO5sC1D7G1h/tn68KmMvPa0ZOVhXIkAy7QphAYkTazb
-         USrRPCFfrjAaMOaC2mAVwXLODZM++PjK43MI+M9Q3aTBfmuFw1YJzwLkykwbNCFn9o1+
-         X6WQ==
+        Tue, 5 Apr 2022 03:21:32 -0400
+Received: from mail-qk1-f182.google.com (mail-qk1-f182.google.com [209.85.222.182])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 659002673;
+        Tue,  5 Apr 2022 00:19:06 -0700 (PDT)
+Received: by mail-qk1-f182.google.com with SMTP id r127so9594161qke.13;
+        Tue, 05 Apr 2022 00:19:06 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=j5tZD+8M1iPFQIpWPsYamWZAVUcin+PVrYzA4YmgT9M=;
-        b=0sqhfuK+Pa+FAWRyG22piCTUPPJSbGb5E2AQBDSHFRzeUwLilN45lAgyvhvcOFOG0t
-         onZdAmxiKJpzFXNlaObKdMmUb0PkTOiqyGuTPWAPVvfPN/3lxK1ykgZeBsRNNUuT/ofp
-         65xlmt68yKaPfPzVWnYaRHAYw6HmytAw1yFjDsVhldZRwn+Lv0h21R/lsl60gb8SB4Jr
-         FoSWfeud6EIwX8u4bNZKU7ZumPbUELCqPRsR5WYJF580VvTOWVIKGGq/D8VvYMc0WMRI
-         bzLk7L+8y6TJ7/NZcJ8RriPDFkWsY3aOhkcur1tE+mZE6RbBbvNy3fncdb3j8+9MnEIu
-         gdZQ==
-X-Gm-Message-State: AOAM530yF2Y5V/VUzRM/gO2iq6tab+GlTIIsC1jzdK/5V4ysoBF+xiq/
-        JsiCBfnV3jYEA9MqPfNxvMLHCv5gOs4939I12wFsiw==
-X-Google-Smtp-Source: ABdhPJwdmM8TCHa4eoVn8sKC+Sod0b/E/a9HSoTDWMUxnS9+yZz84ZdrIE85cb44FScPTht6hP0nLp3dojxP605Lpt4=
-X-Received: by 2002:a05:600c:3c9b:b0:38e:4c59:68b9 with SMTP id
- bg27-20020a05600c3c9b00b0038e4c5968b9mr1754749wmb.105.1649143096491; Tue, 05
- Apr 2022 00:18:16 -0700 (PDT)
+         :message-id:subject:to;
+        bh=QPcHUa3F1FA3vGNrAzISpugHlEW8eB7hP5JHaRv4hrM=;
+        b=2VeVDB7OZ21ARY3D6FR+O6Qd4/cMURF/Xhkjv6Yo8mMgNi4K1hPphfinp2kY0pWQvo
+         3TS38hjc5WmkvAZkq5ydxXv++oLtFuqRSbUilFOrNx7g/1JthZzBO5ESrz8eWHZMqJNR
+         ieHoh6+eWz3Ux8csG9ccca/ibnRbeIZ5p/T1F2JhBIvf8LVlPQBf58adciPdafODgT6P
+         NwbzLAlwZpatFTy8x6C/iRAILxvaoBZ+xSfzRpVzULDFZZFWP2IC4CB+ZAFr1UtiY8Bt
+         ZqQJU5h/+vQHfNVxZJbYsHdKlTsCXmTPCZ1hdDrU+nfW2+18F1cX8Yb8QmS0EQcwvR22
+         g/6Q==
+X-Gm-Message-State: AOAM533VbF/QSwTJcX/fOHRsVQFnsf9mkw0bvRak6wbsfstOes4X90YU
+        uB/yjlLd6oSwXecioUZqI7XcoXXTUwWPJg==
+X-Google-Smtp-Source: ABdhPJzS64ah6w0hW3u2e851zl5OCdww2oZHYhBXIowQVAYee0J8TD5wZs/52A+TpOIlRNryXMeFjQ==
+X-Received: by 2002:ae9:ed97:0:b0:67b:2755:310f with SMTP id c145-20020ae9ed97000000b0067b2755310fmr1260790qkg.117.1649143145432;
+        Tue, 05 Apr 2022 00:19:05 -0700 (PDT)
+Received: from mail-yb1-f169.google.com (mail-yb1-f169.google.com. [209.85.219.169])
+        by smtp.gmail.com with ESMTPSA id o21-20020ac85a55000000b002e16389b501sm10098113qta.96.2022.04.05.00.19.04
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 05 Apr 2022 00:19:05 -0700 (PDT)
+Received: by mail-yb1-f169.google.com with SMTP id x131so9251734ybe.11;
+        Tue, 05 Apr 2022 00:19:04 -0700 (PDT)
+X-Received: by 2002:a5b:a8f:0:b0:633:fd57:f587 with SMTP id
+ h15-20020a5b0a8f000000b00633fd57f587mr1518396ybq.506.1649143144568; Tue, 05
+ Apr 2022 00:19:04 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220329072911.1692766-1-apatel@ventanamicro.com> <20220329072911.1692766-2-apatel@ventanamicro.com>
-In-Reply-To: <20220329072911.1692766-2-apatel@ventanamicro.com>
-From:   Anup Patel <anup@brainfault.org>
-Date:   Tue, 5 Apr 2022 12:48:03 +0530
-Message-ID: <CAAhSdy2=q4u9UR7zYks5A-3k1q4srOqk14O3+a14sUS5Qa+Ppg@mail.gmail.com>
-Subject: Re: [PATCH 1/3] KVM: selftests: riscv: Set PTE A and D bits in
- VS-stage page table
-To:     Anup Patel <apatel@ventanamicro.com>
-Cc:     Paolo Bonzini <pbonzini@redhat.com>,
-        Atish Patra <atishp@atishpatra.org>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Alistair Francis <Alistair.Francis@wdc.com>,
-        KVM General <kvm@vger.kernel.org>,
-        "open list:KERNEL VIRTUAL MACHINE FOR RISC-V (KVM/riscv)" 
-        <kvm-riscv@lists.infradead.org>,
-        linux-riscv <linux-riscv@lists.infradead.org>,
-        "linux-kernel@vger.kernel.org List" <linux-kernel@vger.kernel.org>
+References: <20220404172322.32578-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+ <20220404172322.32578-3-prabhakar.mahadev-lad.rj@bp.renesas.com>
+ <Yks3Q75ZrUkXSjwz@ninjato> <CA+V-a8skF4h6yhjSFw5PXQEbgKEQt6kMs9bEsO3OCNfE1hu46A@mail.gmail.com>
+ <YkvJXu7Y6Tc68U9e@shikoro>
+In-Reply-To: <YkvJXu7Y6Tc68U9e@shikoro>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Tue, 5 Apr 2022 09:18:53 +0200
+X-Gmail-Original-Message-ID: <CAMuHMdXWexUCJeFQwTM8X=27KoU8gyE8HGH0bTJV=VvgXfun+A@mail.gmail.com>
+Message-ID: <CAMuHMdXWexUCJeFQwTM8X=27KoU8gyE8HGH0bTJV=VvgXfun+A@mail.gmail.com>
+Subject: Re: [PATCH 2/2] mmc: renesas_internal_dmac: Fix typo's
+To:     Wolfram Sang <wsa+renesas@sang-engineering.com>,
+        "Lad, Prabhakar" <prabhakar.csengg@gmail.com>,
+        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
+        Linux MMC List <linux-mmc@vger.kernel.org>,
+        Pavel Machek <pavel@denx.de>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        Biju Das <biju.das.jz@bp.renesas.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Mar 29, 2022 at 12:59 PM Anup Patel <apatel@ventanamicro.com> wrote:
+On Tue, Apr 5, 2022 at 6:51 AM Wolfram Sang
+<wsa+renesas@sang-engineering.com> wrote:
+> > > > -     /* This DMAC cannot handle if buffer is not 128-bytes alignment */
+> > > > +     /* This DMAC cannot handle if buffer is not 128-bytes aligned */
+> > >
+> > > Well, as we are here now, I think this can be further improved.
+> > >
+> > "The internal DMAC supports 128-bytes aligned buffers only", does this
+> > sound good?
 >
-> Supporting hardware updates of PTE A and D bits is optional for any
-> RISC-V implementation so current software strategy is to always set
-> these bits in both G-stage (hypervisor) and VS-stage (guest kernel).
->
-> If PTE A and D bits are not set by software (hypervisor or guest)
-> then RISC-V implementations not supporting hardware updates of these
-> bits will cause traps even for perfectly valid PTEs.
->
-> Based on above explanation, the VS-stage page table created by various
-> KVM selftest applications is not correct because PTE A and D bits are
-> not set. This patch fixes VS-stage page table programming of PTE A and
-> D bits for KVM selftests.
->
-> Fixes: 3e06cdf10520 ("KVM: selftests: Add initial support for RISC-V
-> 64-bit")
-> Signed-off-by: Anup Patel <apatel@ventanamicro.com>
+> I'd think it should be "128 byte aligned"? But I can't explain why, just
+> a gut feeling.
 
-I have queued this patch for RC fixes.
+I'd say "128-byte aligned".
+But let the native speakers^Wwriters decide ;-)
 
-Thanks,
-Anup
+Gr{oetje,eeting}s,
 
-> ---
->  tools/testing/selftests/kvm/include/riscv/processor.h | 4 +++-
->  1 file changed, 3 insertions(+), 1 deletion(-)
->
-> diff --git a/tools/testing/selftests/kvm/include/riscv/processor.h b/tools/testing/selftests/kvm/include/riscv/processor.h
-> index dc284c6bdbc3..eca5c622efd2 100644
-> --- a/tools/testing/selftests/kvm/include/riscv/processor.h
-> +++ b/tools/testing/selftests/kvm/include/riscv/processor.h
-> @@ -101,7 +101,9 @@ static inline void set_reg(struct kvm_vm *vm, uint32_t vcpuid, uint64_t id,
->  #define PGTBL_PTE_WRITE_SHIFT                  2
->  #define PGTBL_PTE_READ_MASK                    0x0000000000000002ULL
->  #define PGTBL_PTE_READ_SHIFT                   1
-> -#define PGTBL_PTE_PERM_MASK                    (PGTBL_PTE_EXECUTE_MASK | \
-> +#define PGTBL_PTE_PERM_MASK                    (PGTBL_PTE_ACCESSED_MASK | \
-> +                                                PGTBL_PTE_DIRTY_MASK | \
-> +                                                PGTBL_PTE_EXECUTE_MASK | \
->                                                  PGTBL_PTE_WRITE_MASK | \
->                                                  PGTBL_PTE_READ_MASK)
->  #define PGTBL_PTE_VALID_MASK                   0x0000000000000001ULL
-> --
-> 2.25.1
->
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
