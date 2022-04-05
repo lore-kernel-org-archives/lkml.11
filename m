@@ -2,49 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 88013C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 78106C433F5
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 13:24:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357805AbiDENI6 (ORCPT
+        id S1353146AbiDENLA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 09:08:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60606 "EHLO
+        Tue, 5 Apr 2022 09:11:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34656 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344119AbiDEJSS (ORCPT
+        with ESMTP id S1344194AbiDEJSh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:18:18 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7A4137A3E;
-        Tue,  5 Apr 2022 02:04:14 -0700 (PDT)
+        Tue, 5 Apr 2022 05:18:37 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 301AB9BADE;
+        Tue,  5 Apr 2022 02:05:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 692A961564;
-        Tue,  5 Apr 2022 09:04:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 42FDDC385A0;
-        Tue,  5 Apr 2022 09:04:13 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D3838B818F3;
+        Tue,  5 Apr 2022 09:05:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2E542C385A3;
+        Tue,  5 Apr 2022 09:05:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649149453;
-        bh=Kez2sL3RMdmqfeeAkd8I0EFnzgYorCR1t5sLLVWdCdc=;
+        s=korg; t=1649149516;
+        bh=H+wrthQDzaXAAOeIRN9O2lru9UGFfZdwB03CMg1HSOs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JcXB/rHgU7sSNrJUWvozvhZqQWwVpfeiHW5DgtCiDXVpN12SvwnI2/aIwKbehUV0B
-         M+m5DO4rpuB/jiLJ3OXSYPjnQnZYYoNaq3EyB9wERrOPo7CGpCP5A2gG8rSNJyvx97
-         RRzSJuyF/GTfZhOXBdjBTQrqYyH7QCgXTksyWGa0=
+        b=hMWuAaqAWt9rQN92LpAvNUQ+4t7U33QAMWv2sZAc7SpXW0wsXVcdPFz41UPqqXmrC
+         r+3KQKBU7WUC2iSE7P+abOka1raME5QNGShOb51EX08UcWzfPRyWFdds+jk2x7VWGK
+         26cPmReklCRylZPq1h4NQb1bGAADKXsOdj/op8So=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Thomas Richter <tmricht@linux.ibm.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Sumanth Korikkar <sumanthk@linux.ibm.com>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Sven Schnelle <svens@linux.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Arnaldo Carvalho de Melo <acme@redhat.com>,
+        stable@vger.kernel.org, Tom Rix <trix@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0721/1017] perf stat: Fix forked applications enablement of counters
-Date:   Tue,  5 Apr 2022 09:27:14 +0200
-Message-Id: <20220405070415.668585336@linuxfoundation.org>
+Subject: [PATCH 5.16 0742/1017] octeontx2-af: initialize action variable
+Date:   Tue,  5 Apr 2022 09:27:35 +0200
+Message-Id: <20220405070416.288510791@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -56,97 +50,107 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Thomas Richter <tmricht@linux.ibm.com>
+From: Tom Rix <trix@redhat.com>
 
-[ Upstream commit d0a0a511493d269514fcbd852481cdca32c95350 ]
+[ Upstream commit 33b5bc9e703383e396f275d51fc4bafa48dbae5a ]
 
-I have run into the following issue:
+Clang static analysis reports this representative issue
+rvu_npc.c:898:15: warning: Assigned value is garbage
+  or undefined
+  req.match_id = action.match_id;
+               ^ ~~~~~~~~~~~~~~~
 
- # perf stat -a -e new_pmu/INSTRUCTION_7/ --  mytest -c1 7
+The initial setting of action is conditional on
+ if (is_mcam_entry_enabled(...))
+The later check of action.op will sometimes be garbage.
+So initialize action.
 
- Performance counter stats for 'system wide':
+Reduce setting of
+  *(u64 *)&action = 0x00;
+to
+  *(u64 *)&action = 0;
 
-                 0      new_pmu/INSTRUCTION_7/
-
-       0.000366428 seconds time elapsed
- #
-
-The new PMU for s390 counts the execution of certain CPU instructions.
-The root cause is the extremely small run time of the mytest program. It
-just executes some assembly instructions and then exits.
-
-In above invocation the instruction is executed exactly one time (-c1
-option). The PMU is expected to report this one time execution by a
-counter value of one, but fails to do so in some cases, not all.
-
-Debugging reveals the invocation of the child process is done
-*before* the counter events are installed and enabled.
-
-Tracing reveals that sometimes the child process starts and exits before
-the event is installed on all CPUs. The more CPUs the machine has, the
-more often this miscount happens.
-
-Fix this by reversing the start of the work load after the events have
-been installed on the specified CPUs. Now the comment also matches the
-code.
-
-Output after:
-
- # perf stat -a -e new_pmu/INSTRUCTION_7/ --  mytest -c1 7
-
- Performance counter stats for 'system wide':
-
-                 1      new_pmu/INSTRUCTION_7/
-
-       0.000366428 seconds time elapsed
- #
-
-Now the correct result is reported rock solid all the time regardless
-how many CPUs are online.
-
-Reviewers notes:
-
-Jiri:
-
-Right, without -a the event has enable_on_exec so the race does not
-matter, but it's a problem for system wide with fork.
-
-Namhyung:
-
-Agreed. Also we may move the enable_counters() and the clock code out of
-the if block to be shared with the else block.
-
-Fixes: acf2892270dcc428 ("perf stat: Use perf_evlist__prepare/start_workload()")
-Signed-off-by: Thomas Richter <tmricht@linux.ibm.com>
-Acked-by: Jiri Olsa <jolsa@kernel.org>
-Acked-by: Namhyung Kim <namhyung@kernel.org>
-Acked-by: Sumanth Korikkar <sumanthk@linux.ibm.com>
-Cc: Heiko Carstens <hca@linux.ibm.com>
-Cc: Sven Schnelle <svens@linux.ibm.com>
-Cc: Vasily Gorbik <gor@linux.ibm.com>
-Link: https://lore.kernel.org/r/20220317155346.577384-1-tmricht@linux.ibm.com
-Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
+Fixes: 967db3529eca ("octeontx2-af: add support for multicast/promisc packet replication feature")
+Signed-off-by: Tom Rix <trix@redhat.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/perf/builtin-stat.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ .../net/ethernet/marvell/octeontx2/af/rvu_npc.c   | 15 +++++++--------
+ 1 file changed, 7 insertions(+), 8 deletions(-)
 
-diff --git a/tools/perf/builtin-stat.c b/tools/perf/builtin-stat.c
-index 7974933dbc77..08c024038ca7 100644
---- a/tools/perf/builtin-stat.c
-+++ b/tools/perf/builtin-stat.c
-@@ -956,10 +956,10 @@ static int __run_perf_stat(int argc, const char **argv, int run_idx)
- 	 * Enable counters and exec the command:
- 	 */
- 	if (forks) {
--		evlist__start_workload(evsel_list);
- 		err = enable_counters();
- 		if (err)
- 			return -1;
-+		evlist__start_workload(evsel_list);
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_npc.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu_npc.c
+index 91f86d77cd41..3a31fb8cc155 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_npc.c
++++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_npc.c
+@@ -605,7 +605,7 @@ void rvu_npc_install_ucast_entry(struct rvu *rvu, u16 pcifunc,
+ 	struct npc_install_flow_req req = { 0 };
+ 	struct npc_install_flow_rsp rsp = { 0 };
+ 	struct npc_mcam *mcam = &rvu->hw->mcam;
+-	struct nix_rx_action action;
++	struct nix_rx_action action = { 0 };
+ 	int blkaddr, index;
  
- 		t0 = rdclock();
- 		clock_gettime(CLOCK_MONOTONIC, &ref_time);
+ 	/* AF's and SDP VFs work in promiscuous mode */
+@@ -626,7 +626,6 @@ void rvu_npc_install_ucast_entry(struct rvu *rvu, u16 pcifunc,
+ 		*(u64 *)&action = npc_get_mcam_action(rvu, mcam,
+ 						      blkaddr, index);
+ 	} else {
+-		*(u64 *)&action = 0x00;
+ 		action.op = NIX_RX_ACTIONOP_UCAST;
+ 		action.pf_func = pcifunc;
+ 	}
+@@ -657,7 +656,7 @@ void rvu_npc_install_promisc_entry(struct rvu *rvu, u16 pcifunc,
+ 	struct npc_mcam *mcam = &rvu->hw->mcam;
+ 	struct rvu_hwinfo *hw = rvu->hw;
+ 	int blkaddr, ucast_idx, index;
+-	struct nix_rx_action action;
++	struct nix_rx_action action = { 0 };
+ 	u64 relaxed_mask;
+ 
+ 	if (!hw->cap.nix_rx_multicast && is_cgx_vf(rvu, pcifunc))
+@@ -685,14 +684,14 @@ void rvu_npc_install_promisc_entry(struct rvu *rvu, u16 pcifunc,
+ 						      blkaddr, ucast_idx);
+ 
+ 	if (action.op != NIX_RX_ACTIONOP_RSS) {
+-		*(u64 *)&action = 0x00;
++		*(u64 *)&action = 0;
+ 		action.op = NIX_RX_ACTIONOP_UCAST;
+ 	}
+ 
+ 	/* RX_ACTION set to MCAST for CGX PF's */
+ 	if (hw->cap.nix_rx_multicast && pfvf->use_mce_list &&
+ 	    is_pf_cgxmapped(rvu, rvu_get_pf(pcifunc))) {
+-		*(u64 *)&action = 0x00;
++		*(u64 *)&action = 0;
+ 		action.op = NIX_RX_ACTIONOP_MCAST;
+ 		pfvf = rvu_get_pfvf(rvu, pcifunc & ~RVU_PFVF_FUNC_MASK);
+ 		action.index = pfvf->promisc_mce_idx;
+@@ -832,7 +831,7 @@ void rvu_npc_install_allmulti_entry(struct rvu *rvu, u16 pcifunc, int nixlf,
+ 	struct rvu_hwinfo *hw = rvu->hw;
+ 	int blkaddr, ucast_idx, index;
+ 	u8 mac_addr[ETH_ALEN] = { 0 };
+-	struct nix_rx_action action;
++	struct nix_rx_action action = { 0 };
+ 	struct rvu_pfvf *pfvf;
+ 	u16 vf_func;
+ 
+@@ -861,14 +860,14 @@ void rvu_npc_install_allmulti_entry(struct rvu *rvu, u16 pcifunc, int nixlf,
+ 							blkaddr, ucast_idx);
+ 
+ 	if (action.op != NIX_RX_ACTIONOP_RSS) {
+-		*(u64 *)&action = 0x00;
++		*(u64 *)&action = 0;
+ 		action.op = NIX_RX_ACTIONOP_UCAST;
+ 		action.pf_func = pcifunc;
+ 	}
+ 
+ 	/* RX_ACTION set to MCAST for CGX PF's */
+ 	if (hw->cap.nix_rx_multicast && pfvf->use_mce_list) {
+-		*(u64 *)&action = 0x00;
++		*(u64 *)&action = 0;
+ 		action.op = NIX_RX_ACTIONOP_MCAST;
+ 		action.index = pfvf->mcast_mce_idx;
+ 	}
 -- 
 2.34.1
 
