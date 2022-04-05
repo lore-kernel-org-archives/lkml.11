@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 57B39C4332F
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:18:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C600C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:18:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382546AbiDEMPr (ORCPT
+        id S1382567AbiDEMP4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 08:15:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51052 "EHLO
+        Tue, 5 Apr 2022 08:15:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47862 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244909AbiDEIwq (ORCPT
+        with ESMTP id S244908AbiDEIwq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Apr 2022 04:52:46 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 075A7245B5;
-        Tue,  5 Apr 2022 01:46:03 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68D5924948;
+        Tue,  5 Apr 2022 01:46:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9025C6117A;
-        Tue,  5 Apr 2022 08:46:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 97875C385A0;
-        Tue,  5 Apr 2022 08:46:01 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0BBDBB81BAE;
+        Tue,  5 Apr 2022 08:46:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6D2B9C385A0;
+        Tue,  5 Apr 2022 08:46:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649148362;
-        bh=KPm1yhX8itA60T9NSlrJoLLEguqqJLGw5Tnm4qUUNxM=;
+        s=korg; t=1649148364;
+        bh=dzWhcPIWdsa4A39sNEcEVgjZ6v05Z816/SN2s+i6y/Y=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TlF0VHVvuUmjnccvzTfALALwU38JxkqpWcH2D1VUbabIS3vQ6gXruWbETfD/RG9lB
-         nfsNGBOel06HRuIn9OIjOFy7FZNazxjTsvZmmK9tne1e1lKBG+y2Pq/pAXZQv6vUjR
-         JiKd/Z9W9qmG5C/Z2yYRuHFPIMElQ5LpBZBLe+80=
+        b=ZVCRmowKLwLrBY87p5mixckWL7fYWuoVuoj6ckBlFu6uu/0c8RSujwuJ3Yer5PQR9
+         whkO6hgeApiwRhbhI9SWULPX6p3xDFnZeVdU4fJX5rB2F5pRQ1XkigvYhr9+iBaKFj
+         uLirsO1bea443rxigRvNyyQRJYZWMIWN8b2HL8U0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Petr Mladek <pmladek@suse.com>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0329/1017] vsprintf: Fix potential unaligned access
-Date:   Tue,  5 Apr 2022 09:20:42 +0200
-Message-Id: <20220405070404.047600293@linuxfoundation.org>
+        stable@vger.kernel.org, Marek Vasut <marex@denx.de>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Fabio Estevam <festevam@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 0330/1017] ARM: dts: imx: Add missing LVDS decoder on M53Menlo
+Date:   Tue,  5 Apr 2022 09:20:43 +0200
+Message-Id: <20220405070404.077109510@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -51,73 +52,79 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+From: Marek Vasut <marex@denx.de>
 
-[ Upstream commit d75b26f880f60ead301e79ba0f4a635c5a60767f ]
+[ Upstream commit 0c6f71176ea43d6f4003a4d57f7bb518c5ad6145 ]
 
-The %p4cc specifier in some cases might get an unaligned pointer.
-Due to this we need to make copy to local variable once to avoid
-potential crashes on some architectures due to improper access.
+The M53Menlo display unit uses an LVDS-to-DPI bridge, TI DS90CF364A.
+Describe this bridge in DT, otherwise the DT incorrectly describes
+DPI panel attached directly to LVDS source.
 
-Fixes: af612e43de6d ("lib/vsprintf: Add support for printing V4L2 and DRM fourccs")
-Cc: Sakari Ailus <sakari.ailus@linux.intel.com>
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Reviewed-by: Petr Mladek <pmladek@suse.com>
-Signed-off-by: Petr Mladek <pmladek@suse.com>
-Link: https://lore.kernel.org/r/20220127181233.72910-1-andriy.shevchenko@linux.intel.com
+Fixes: 716be61d1869 ("ARM: dts: imx53: Add Menlosystems M53 board")
+Signed-off-by: Marek Vasut <marex@denx.de>
+Cc: Shawn Guo <shawnguo@kernel.org>
+Cc: Fabio Estevam <festevam@gmail.com>
+Cc: NXP Linux Team <linux-imx@nxp.com>
+Signed-off-by: Shawn Guo <shawnguo@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- lib/vsprintf.c | 12 +++++++-----
- 1 file changed, 7 insertions(+), 5 deletions(-)
+ arch/arm/boot/dts/imx53-m53menlo.dts | 29 ++++++++++++++++++++++++++--
+ 1 file changed, 27 insertions(+), 2 deletions(-)
 
-diff --git a/lib/vsprintf.c b/lib/vsprintf.c
-index 58d5e567f836..01e61c85f274 100644
---- a/lib/vsprintf.c
-+++ b/lib/vsprintf.c
-@@ -49,6 +49,7 @@
+diff --git a/arch/arm/boot/dts/imx53-m53menlo.dts b/arch/arm/boot/dts/imx53-m53menlo.dts
+index 4f88e96d81dd..d5c68d1ea707 100644
+--- a/arch/arm/boot/dts/imx53-m53menlo.dts
++++ b/arch/arm/boot/dts/imx53-m53menlo.dts
+@@ -53,6 +53,31 @@
+ 		};
+ 	};
  
- #include <asm/page.h>		/* for PAGE_SIZE */
- #include <asm/byteorder.h>	/* cpu_to_le16 */
-+#include <asm/unaligned.h>
++	lvds-decoder {
++		compatible = "ti,ds90cf364a", "lvds-decoder";
++
++		ports {
++			#address-cells = <1>;
++			#size-cells = <0>;
++
++			port@0 {
++				reg = <0>;
++
++				lvds_decoder_in: endpoint {
++					remote-endpoint = <&lvds0_out>;
++				};
++			};
++
++			port@1 {
++				reg = <1>;
++
++				lvds_decoder_out: endpoint {
++					remote-endpoint = <&panel_in>;
++				};
++			};
++		};
++	};
++
+ 	panel {
+ 		compatible = "edt,etm0700g0dh6";
+ 		pinctrl-0 = <&pinctrl_display_gpio>;
+@@ -61,7 +86,7 @@
  
- #include <linux/string_helpers.h>
- #include "kstrtox.h"
-@@ -1771,7 +1772,7 @@ char *fourcc_string(char *buf, char *end, const u32 *fourcc,
- 	char output[sizeof("0123 little-endian (0x01234567)")];
- 	char *p = output;
- 	unsigned int i;
--	u32 val;
-+	u32 orig, val;
+ 		port {
+ 			panel_in: endpoint {
+-				remote-endpoint = <&lvds0_out>;
++				remote-endpoint = <&lvds_decoder_out>;
+ 			};
+ 		};
+ 	};
+@@ -450,7 +475,7 @@
+ 			reg = <2>;
  
- 	if (fmt[1] != 'c' || fmt[2] != 'c')
- 		return error_string(buf, end, "(%p4?)", spec);
-@@ -1779,21 +1780,22 @@ char *fourcc_string(char *buf, char *end, const u32 *fourcc,
- 	if (check_pointer(&buf, end, fourcc, spec))
- 		return buf;
- 
--	val = *fourcc & ~BIT(31);
-+	orig = get_unaligned(fourcc);
-+	val = orig & ~BIT(31);
- 
--	for (i = 0; i < sizeof(*fourcc); i++) {
-+	for (i = 0; i < sizeof(u32); i++) {
- 		unsigned char c = val >> (i * 8);
- 
- 		/* Print non-control ASCII characters as-is, dot otherwise */
- 		*p++ = isascii(c) && isprint(c) ? c : '.';
- 	}
- 
--	strcpy(p, *fourcc & BIT(31) ? " big-endian" : " little-endian");
-+	strcpy(p, orig & BIT(31) ? " big-endian" : " little-endian");
- 	p += strlen(p);
- 
- 	*p++ = ' ';
- 	*p++ = '(';
--	p = special_hex_number(p, output + sizeof(output) - 2, *fourcc, sizeof(u32));
-+	p = special_hex_number(p, output + sizeof(output) - 2, orig, sizeof(u32));
- 	*p++ = ')';
- 	*p = '\0';
- 
+ 			lvds0_out: endpoint {
+-				remote-endpoint = <&panel_in>;
++				remote-endpoint = <&lvds_decoder_in>;
+ 			};
+ 		};
+ 	};
 -- 
 2.34.1
 
