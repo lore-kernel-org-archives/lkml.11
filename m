@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 460CEC43219
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:21:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 16DCEC43217
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:21:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239270AbiDEIT5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 04:19:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44084 "EHLO
+        id S239703AbiDEIUb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 04:20:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55910 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235679AbiDEIAA (ORCPT
+        with ESMTP id S235634AbiDEH74 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:00:00 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D37B193E8;
-        Tue,  5 Apr 2022 00:57:41 -0700 (PDT)
+        Tue, 5 Apr 2022 03:59:56 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A235C1AF3A;
+        Tue,  5 Apr 2022 00:56:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1A22B615CD;
-        Tue,  5 Apr 2022 07:57:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2F88BC340EE;
-        Tue,  5 Apr 2022 07:57:40 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4EF32B81B18;
+        Tue,  5 Apr 2022 07:56:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A454FC340EE;
+        Tue,  5 Apr 2022 07:56:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649145460;
-        bh=9xEAKMpxGzf2culwYA+lPprUuDTBQpTKmsGMIu0d/v0=;
+        s=korg; t=1649145394;
+        bh=DuYmSyEzedX7U/nY9Gg5hYz0dMAKEediBXzyg56hMdA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZUT/0MhVEsF1LSkoVR3YUQ2U2vbEXzGMefbLgvlY5W8LoEQp3PzviqkHFNxI2gzTc
-         tMioP31PSvMay5FPtfX0R+WMOvm7By8Ujw0PSAj/3IoUarkZEe2nkPQJDiQtFWW1Um
-         nBO9lO8aeFceZzaIR5In4haR0UhACy2dowcQVKxI=
+        b=qav+hcWE46twwS5cupmpMzvQ03YCwF2/LUhMBY8J5nT6a8PwnWOWSRqVDe8WgHBt/
+         taXYdMtS42+jxhD2usR7LdI/LdpRkxkK2KUMTOCpCCgKVvg64MdKLFlN/hxwSsritH
+         LdzL8mrAZNZ2OKs6vkgrDBpP5AYSo9uCvHoyL00Q=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0412/1126] mmc: davinci_mmc: Handle error for clk_enable
-Date:   Tue,  5 Apr 2022 09:19:19 +0200
-Message-Id: <20220405070419.719535298@linuxfoundation.org>
+Subject: [PATCH 5.17 0382/1126] ASoC: atmel_ssc_dai: Handle errors for clk_enable
+Date:   Tue,  5 Apr 2022 09:18:49 +0200
+Message-Id: <20220405070418.838826040@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -51,39 +51,36 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
 
-[ Upstream commit 09e7af76db02c74f2a339b3cb2d95460fa2ddbe4 ]
+[ Upstream commit f9e2ca0640e59d19af0ff285ee5591ed39069b09 ]
 
 As the potential failure of the clk_enable(),
-it should be better to check it and return error
-if fails.
+it should be better to check it and return error if fals.
 
-Fixes: bbce5802afc5 ("davinci: mmc: updates to suspend/resume implementation")
+Fixes: cbaadf0f90d6 ("ASoC: atmel_ssc_dai: refactor the startup and shutdown")
 Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Link: https://lore.kernel.org/r/20220308071415.1093393-1-jiasheng@iscas.ac.cn
-Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
+Link: https://lore.kernel.org/r/20220301090637.3776558-1-jiasheng@iscas.ac.cn
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/mmc/host/davinci_mmc.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+ sound/soc/atmel/atmel_ssc_dai.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/mmc/host/davinci_mmc.c b/drivers/mmc/host/davinci_mmc.c
-index 2a757c88f9d2..80de660027d8 100644
---- a/drivers/mmc/host/davinci_mmc.c
-+++ b/drivers/mmc/host/davinci_mmc.c
-@@ -1375,8 +1375,12 @@ static int davinci_mmcsd_suspend(struct device *dev)
- static int davinci_mmcsd_resume(struct device *dev)
- {
- 	struct mmc_davinci_host *host = dev_get_drvdata(dev);
-+	int ret;
-+
-+	ret = clk_enable(host->clk);
+diff --git a/sound/soc/atmel/atmel_ssc_dai.c b/sound/soc/atmel/atmel_ssc_dai.c
+index 26e2bc690d86..c1dea8d62416 100644
+--- a/sound/soc/atmel/atmel_ssc_dai.c
++++ b/sound/soc/atmel/atmel_ssc_dai.c
+@@ -280,7 +280,10 @@ static int atmel_ssc_startup(struct snd_pcm_substream *substream,
+ 
+ 	/* Enable PMC peripheral clock for this SSC */
+ 	pr_debug("atmel_ssc_dai: Starting clock\n");
+-	clk_enable(ssc_p->ssc->clk);
++	ret = clk_enable(ssc_p->ssc->clk);
 +	if (ret)
 +		return ret;
++
+ 	ssc_p->mck_rate = clk_get_rate(ssc_p->ssc->clk);
  
--	clk_enable(host->clk);
- 	mmc_davinci_reset_ctrl(host, 0);
- 
- 	return 0;
+ 	/* Reset the SSC unless initialized to keep it in a clean state */
 -- 
 2.34.1
 
