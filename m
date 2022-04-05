@@ -2,81 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A3E71C43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 79894C433EF
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 01:49:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1844166AbiDFBqK (ORCPT
+        id S1844129AbiDFBph (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 21:46:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33986 "EHLO
+        Tue, 5 Apr 2022 21:45:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53670 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357363AbiDELQV (ORCPT
+        with ESMTP id S1358291AbiDEK2N (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 07:16:21 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 60157DF53;
-        Tue,  5 Apr 2022 03:41:09 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 193ACD6E;
-        Tue,  5 Apr 2022 03:41:09 -0700 (PDT)
-Received: from e121345-lin.cambridge.arm.com (e121345-lin.cambridge.arm.com [10.1.196.40])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id A35C13F5A1;
-        Tue,  5 Apr 2022 03:41:07 -0700 (PDT)
-From:   Robin Murphy <robin.murphy@arm.com>
-To:     joro@8bytes.org, baolu.lu@linux.intel.com,
-        andreas.noever@gmail.com, michael.jamet@intel.com,
-        mika.westerberg@linux.intel.com, YehezkelShB@gmail.com
-Cc:     iommu@lists.linux-foundation.org, linux-usb@vger.kernel.org,
-        linux-kernel@vger.kernel.org, mario.limonciello@amd.com, hch@lst.de
-Subject: [PATCH v3 0/4] thunderbolt: Make iommu_dma_protection more accurate
-Date:   Tue,  5 Apr 2022 11:41:00 +0100
-Message-Id: <cover.1649089693.git.robin.murphy@arm.com>
-X-Mailer: git-send-email 2.28.0.dirty
+        Tue, 5 Apr 2022 06:28:13 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78F2513FB8;
+        Tue,  5 Apr 2022 03:17:50 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0796261777;
+        Tue,  5 Apr 2022 10:17:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 18708C385A0;
+        Tue,  5 Apr 2022 10:17:48 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649153869;
+        bh=STE1V4eBIELbzwjKqO/RVxava5O5udGBwQKcKktC430=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=N8kEsqRP7gQyhBcFT4VHqM0DPzllUTklF7s04fzrp9YApyldWzTILveCGfHmyGfG1
+         7r2dCMbi6GOkKMC9YpIT80HnQJRZLT2itIxVc0FnFCqEW2Bwg5faCDEN/GO3ri5chf
+         sLMueyqevBAkymZDtFppmtA9/MeTRFBNwIjamWlk=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Lee Jones <lee.jones@linaro.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 377/599] mfd: asic3: Add missing iounmap() on error asic3_mfd_probe
+Date:   Tue,  5 Apr 2022 09:31:11 +0200
+Message-Id: <20220405070310.048907715@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
+References: <20220405070258.802373272@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi all,
+From: Miaoqian Lin <linmq006@gmail.com>
 
-Here's the third and hopefully final outing for this series, addressing
-Mika's review comments from last time and taking advantage of 5.18-rc1
-goodies to be even cleaner and more complete. I've also picked up
-Mario's AMD IOMMU patch to keep the whole topic together.
+[ Upstream commit e84ee1a75f944a0fe3c277aaa10c426603d2b0bc ]
 
-Unless there's other pending Thunderbolt development which might
-conflict, I suspect it would be simplest for the whole lot to go through
-the IOMMU tree.
+Add the missing iounmap() before return from asic3_mfd_probe
+in the error handling case.
 
-Thanks,
-Robin.
+Fixes: 64e8867ba809 ("mfd: tmio_mmc hardware abstraction for CNF area")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Signed-off-by: Lee Jones <lee.jones@linaro.org>
+Link: https://lore.kernel.org/r/20220307072947.5369-1-linmq006@gmail.com
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/mfd/asic3.c | 10 +++++++---
+ 1 file changed, 7 insertions(+), 3 deletions(-)
 
-
-Mario Limonciello (1):
-  iommu/amd: Indicate whether DMA remap support is enabled
-
-Robin Murphy (3):
-  iommu: Introduce device_iommu_capable()
-  iommu: Add capability for pre-boot DMA protection
-  thunderbolt: Make iommu_dma_protection more accurate
-
- drivers/iommu/amd/amd_iommu_types.h         |  4 ++
- drivers/iommu/amd/init.c                    |  3 ++
- drivers/iommu/amd/iommu.c                   |  4 +-
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c |  2 +-
- drivers/iommu/arm/arm-smmu/arm-smmu.c       |  2 +-
- drivers/iommu/arm/arm-smmu/qcom_iommu.c     |  2 +-
- drivers/iommu/fsl_pamu_domain.c             |  2 +-
- drivers/iommu/intel/iommu.c                 |  4 +-
- drivers/iommu/iommu.c                       | 25 +++++++++++-
- drivers/iommu/s390-iommu.c                  |  2 +-
- drivers/thunderbolt/domain.c                | 12 ++----
- drivers/thunderbolt/nhi.c                   | 44 +++++++++++++++++++++
- include/linux/iommu.h                       | 10 ++++-
- include/linux/thunderbolt.h                 |  2 +
- 14 files changed, 100 insertions(+), 18 deletions(-)
-
+diff --git a/drivers/mfd/asic3.c b/drivers/mfd/asic3.c
+index a6bd2134cea2..14e4bbe6a9da 100644
+--- a/drivers/mfd/asic3.c
++++ b/drivers/mfd/asic3.c
+@@ -914,14 +914,14 @@ static int __init asic3_mfd_probe(struct platform_device *pdev,
+ 		ret = mfd_add_devices(&pdev->dev, pdev->id,
+ 			&asic3_cell_ds1wm, 1, mem, asic->irq_base, NULL);
+ 		if (ret < 0)
+-			goto out;
++			goto out_unmap;
+ 	}
+ 
+ 	if (mem_sdio && (irq >= 0)) {
+ 		ret = mfd_add_devices(&pdev->dev, pdev->id,
+ 			&asic3_cell_mmc, 1, mem_sdio, irq, NULL);
+ 		if (ret < 0)
+-			goto out;
++			goto out_unmap;
+ 	}
+ 
+ 	ret = 0;
+@@ -935,8 +935,12 @@ static int __init asic3_mfd_probe(struct platform_device *pdev,
+ 		ret = mfd_add_devices(&pdev->dev, 0,
+ 			asic3_cell_leds, ASIC3_NUM_LEDS, NULL, 0, NULL);
+ 	}
++	return ret;
+ 
+- out:
++out_unmap:
++	if (asic->tmio_cnf)
++		iounmap(asic->tmio_cnf);
++out:
+ 	return ret;
+ }
+ 
 -- 
-2.28.0.dirty
+2.34.1
+
+
 
