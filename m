@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 90FB2C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AFF1AC35276
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:57:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1839061AbiDFA6J (ORCPT
+        id S1839114AbiDFA6T (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 20:58:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47888 "EHLO
+        Tue, 5 Apr 2022 20:58:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35144 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349006AbiDEJsz (ORCPT
+        with ESMTP id S1352977AbiDEKFZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:48:55 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66459DF41;
-        Tue,  5 Apr 2022 02:39:03 -0700 (PDT)
+        Tue, 5 Apr 2022 06:05:25 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CCEC66CAD;
+        Tue,  5 Apr 2022 02:54:09 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 80DC3B81B7F;
-        Tue,  5 Apr 2022 09:39:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D0254C385A2;
-        Tue,  5 Apr 2022 09:38:59 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B0620616DC;
+        Tue,  5 Apr 2022 09:54:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BE136C385A1;
+        Tue,  5 Apr 2022 09:54:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649151540;
-        bh=TIY/MaJG64dJFYhgSREZ7Io2V0kw+HnjbuZ5wtzkwkI=;
+        s=korg; t=1649152448;
+        bh=VCXhcLSrVvTeO0IQHQZr4uPBoieIuuvOWSLR6KAWsYs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pmTpJlyYHfuOmgFW0VwPlHzwrVNL3zz7ir75eGGDTkrivWiWpdRpzt3K3Ias36kCQ
-         7aF3RwA2v2bu/LcW20kChCaWORhQe7F1gJodXo6pzc8IER51hNTFKgl5/go10kMDos
-         5ec0RiaLNlMSR2mGUgtI5DKAd935lepAJ6Jg1QoM=
+        b=PN2bwnbjhHEVlI8YEhtlODtVOLJYkpV/zNQ+pJGw/3exfOIIZwU/i7ayfHqQTmXjo
+         b0H7uMDJ4F4+y/GbnWJ0QPnwCYw7hsiZ78Yu7Ocixqaoauc7tArLmzK3BoKrGpJ1B0
+         wrdlW72Pqn1ZuP2jWJYXaU0gabIh4JS0l53HMMmk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zhiqian Guan <zhguan@redhat.com>,
-        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 450/913] libbpf: Use dynamically allocated buffer when receiving netlink messages
-Date:   Tue,  5 Apr 2022 09:25:12 +0200
-Message-Id: <20220405070353.337403206@linuxfoundation.org>
+        stable@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>,
+        Anders Roxell <anders.roxell@linaro.org>,
+        Michael Ellerman <mpe@ellerman.id.au>
+Subject: [PATCH 5.15 779/913] powerpc/lib/sstep: Fix sthcx instruction
+Date:   Tue,  5 Apr 2022 09:30:41 +0200
+Message-Id: <20220405070403.184599669@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
 References: <20220405070339.801210740@linuxfoundation.org>
@@ -52,131 +50,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Toke Høiland-Jørgensen <toke@redhat.com>
+From: Anders Roxell <anders.roxell@linaro.org>
 
-[ Upstream commit 9c3de619e13ee6693ec5ac74f50b7aa89056a70e ]
+commit a633cb1edddaa643fadc70abc88f89a408fa834a upstream.
 
-When receiving netlink messages, libbpf was using a statically allocated
-stack buffer of 4k bytes. This happened to work fine on systems with a 4k
-page size, but on systems with larger page sizes it can lead to truncated
-messages. The user-visible impact of this was that libbpf would insist no
-XDP program was attached to some interfaces because that bit of the netlink
-message got chopped off.
+Looks like there been a copy paste mistake when added the instruction
+'stbcx' twice and one was probably meant to be 'sthcx'. Changing to
+'sthcx' from 'stbcx'.
 
-Fix this by switching to a dynamically allocated buffer; we borrow the
-approach from iproute2 of using recvmsg() with MSG_PEEK|MSG_TRUNC to get
-the actual size of the pending message before receiving it, adjusting the
-buffer as necessary. While we're at it, also add retries on interrupted
-system calls around the recvmsg() call.
-
-v2:
-  - Move peek logic to libbpf_netlink_recv(), don't double free on ENOMEM.
-
-Fixes: 8bbb77b7c7a2 ("libbpf: Add various netlink helpers")
-Reported-by: Zhiqian Guan <zhguan@redhat.com>
-Signed-off-by: Toke Høiland-Jørgensen <toke@redhat.com>
-Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
-Acked-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
-Link: https://lore.kernel.org/bpf/20220211234819.612288-1-toke@redhat.com
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 350779a29f11 ("powerpc: Handle most loads and stores in instruction emulation code")
+Cc: stable@vger.kernel.org # v4.14+
+Reported-by: Arnd Bergmann <arnd@arndb.de>
+Signed-off-by: Anders Roxell <anders.roxell@linaro.org>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/20220224162215.3406642-1-anders.roxell@linaro.org
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- tools/lib/bpf/netlink.c | 55 ++++++++++++++++++++++++++++++++++++++---
- 1 file changed, 51 insertions(+), 4 deletions(-)
+ arch/powerpc/lib/sstep.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/tools/lib/bpf/netlink.c b/tools/lib/bpf/netlink.c
-index 39f25e09b51e..69b353d55dbf 100644
---- a/tools/lib/bpf/netlink.c
-+++ b/tools/lib/bpf/netlink.c
-@@ -87,29 +87,75 @@ enum {
- 	NL_DONE,
- };
- 
-+static int netlink_recvmsg(int sock, struct msghdr *mhdr, int flags)
-+{
-+	int len;
-+
-+	do {
-+		len = recvmsg(sock, mhdr, flags);
-+	} while (len < 0 && (errno == EINTR || errno == EAGAIN));
-+
-+	if (len < 0)
-+		return -errno;
-+	return len;
-+}
-+
-+static int alloc_iov(struct iovec *iov, int len)
-+{
-+	void *nbuf;
-+
-+	nbuf = realloc(iov->iov_base, len);
-+	if (!nbuf)
-+		return -ENOMEM;
-+
-+	iov->iov_base = nbuf;
-+	iov->iov_len = len;
-+	return 0;
-+}
-+
- static int libbpf_netlink_recv(int sock, __u32 nl_pid, int seq,
- 			       __dump_nlmsg_t _fn, libbpf_dump_nlmsg_t fn,
- 			       void *cookie)
- {
-+	struct iovec iov = {};
-+	struct msghdr mhdr = {
-+		.msg_iov = &iov,
-+		.msg_iovlen = 1,
-+	};
- 	bool multipart = true;
- 	struct nlmsgerr *err;
- 	struct nlmsghdr *nh;
--	char buf[4096];
- 	int len, ret;
- 
-+	ret = alloc_iov(&iov, 4096);
-+	if (ret)
-+		goto done;
-+
- 	while (multipart) {
- start:
- 		multipart = false;
--		len = recv(sock, buf, sizeof(buf), 0);
-+		len = netlink_recvmsg(sock, &mhdr, MSG_PEEK | MSG_TRUNC);
-+		if (len < 0) {
-+			ret = len;
-+			goto done;
-+		}
-+
-+		if (len > iov.iov_len) {
-+			ret = alloc_iov(&iov, len);
-+			if (ret)
-+				goto done;
-+		}
-+
-+		len = netlink_recvmsg(sock, &mhdr, 0);
- 		if (len < 0) {
--			ret = -errno;
-+			ret = len;
- 			goto done;
- 		}
- 
- 		if (len == 0)
+--- a/arch/powerpc/lib/sstep.c
++++ b/arch/powerpc/lib/sstep.c
+@@ -3306,7 +3306,7 @@ int emulate_loadstore(struct pt_regs *re
+ 			__put_user_asmx(op->val, ea, err, "stbcx.", cr);
  			break;
- 
--		for (nh = (struct nlmsghdr *)buf; NLMSG_OK(nh, len);
-+		for (nh = (struct nlmsghdr *)iov.iov_base; NLMSG_OK(nh, len);
- 		     nh = NLMSG_NEXT(nh, len)) {
- 			if (nh->nlmsg_pid != nl_pid) {
- 				ret = -LIBBPF_ERRNO__WRNGPID;
-@@ -151,6 +197,7 @@ static int libbpf_netlink_recv(int sock, __u32 nl_pid, int seq,
- 	}
- 	ret = 0;
- done:
-+	free(iov.iov_base);
- 	return ret;
- }
- 
--- 
-2.34.1
-
+ 		case 2:
+-			__put_user_asmx(op->val, ea, err, "stbcx.", cr);
++			__put_user_asmx(op->val, ea, err, "sthcx.", cr);
+ 			break;
+ #endif
+ 		case 4:
 
 
