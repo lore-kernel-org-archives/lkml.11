@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C1DF2C4321E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D6DFCC41535
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:35:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383729AbiDEM0W (ORCPT
+        id S1383766AbiDEM0Z (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 08:26:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59252 "EHLO
+        Tue, 5 Apr 2022 08:26:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38380 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245161AbiDEIyM (ORCPT
+        with ESMTP id S240972AbiDEIsW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:54:12 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 171A9BE4;
-        Tue,  5 Apr 2022 01:51:42 -0700 (PDT)
+        Tue, 5 Apr 2022 04:48:22 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1AC2627CE4;
+        Tue,  5 Apr 2022 01:36:38 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A7CFA61504;
-        Tue,  5 Apr 2022 08:51:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B5064C385A1;
-        Tue,  5 Apr 2022 08:51:40 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DF09FB81C19;
+        Tue,  5 Apr 2022 08:36:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3A808C385A0;
+        Tue,  5 Apr 2022 08:36:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649148701;
-        bh=ksj7NaMP7Eh/EV7FFmcfWjOot3c2gY7+vG8k34T7j4o=;
+        s=korg; t=1649147794;
+        bh=SFZhGojlTJsFtEcOoR6TsDZqCuHRKYKgaXsoBWxvPMc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qkcbWWedk4Hndh8cy5qlrCGeG+mb5uQbBL6WUHOyH7bgtU2+6SCHbyaCTrtcnkryE
-         PjZpAZJ+GenAOpfh9aKCfIihXRc6+Nzc2tJGo/foEuBrQ0Wl1xhfdqL/h/b+rgPUCv
-         4ciDBFhVtB5ZPgiZThTZo6BGLhV9L/7hKUtcC/OA=
+        b=unM3H+u0TsIoMABySbqalihJMTQYC1hlE4XhqG9MQfWhA8kN/daEHsNdBkmhyrqV/
+         uEunVVG29uXfeZhmHtogRgHCpcZ1GBqKQAmMz9cHnrWVgYCyKO+5ykvMdn1VRJLL2V
+         ukhcSyAKmgQRgvJjt4xL8Zsyi4EvH9tUytTUnM0s=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Athira Rajeev <atrajeev@linux.vnet.ibm.com>,
-        Madhavan Srinivasan <maddy@linux.vnet.ibm.com>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0450/1017] powerpc/perf: Dont use perf_hw_context for trace IMC PMU
-Date:   Tue,  5 Apr 2022 09:22:43 +0200
-Message-Id: <20220405070407.656770484@linuxfoundation.org>
+        syzbot+2339c27f5c66c652843e@syzkaller.appspotmail.com,
+        Oliver Hartkopp <socketcan@hartkopp.net>,
+        Marc Kleine-Budde <mkl@pengutronix.de>
+Subject: [PATCH 5.16 0125/1017] can: isotp: sanitize CAN ID checks in isotp_bind()
+Date:   Tue,  5 Apr 2022 09:17:18 +0200
+Message-Id: <20220405070357.909829068@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -52,52 +51,104 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Athira Rajeev <atrajeev@linux.vnet.ibm.com>
+From: Oliver Hartkopp <socketcan@hartkopp.net>
 
-[ Upstream commit 0198322379c25215b2778482bf1221743a76e2b5 ]
+commit 3ea566422cbde9610c2734980d1286ab681bb40e upstream.
 
-Trace IMC (In-Memory collection counters) in powerpc is useful for
-application level profiling.
+Syzbot created an environment that lead to a state machine status that
+can not be reached with a compliant CAN ID address configuration.
+The provided address information consisted of CAN ID 0x6000001 and 0xC28001
+which both boil down to 11 bit CAN IDs 0x001 in sending and receiving.
 
-For trace_imc, presently task context (task_ctx_nr) is set to
-perf_hw_context. But perf_hw_context should only be used for CPU PMU.
-See commit 26657848502b ("perf/core: Verify we have a single
-perf_hw_context PMU").
+Sanitize the SFF/EFF CAN ID values before performing the address checks.
 
-So for trace_imc, even though it is per thread PMU, it is preferred to
-use sw_context in order to be able to do application level monitoring.
-Hence change the task_ctx_nr to use perf_sw_context.
-
-Fixes: 012ae244845f ("powerpc/perf: Trace imc PMU functions")
-Signed-off-by: Athira Rajeev <atrajeev@linux.vnet.ibm.com>
-Reviewed-by: Madhavan Srinivasan <maddy@linux.vnet.ibm.com>
-[mpe: Update subject & incorporate notes into change log, reflow comment]
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20220202041837.65968-1-atrajeev@linux.vnet.ibm.com
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: e057dd3fc20f ("can: add ISO 15765-2:2016 transport protocol")
+Link: https://lore.kernel.org/all/20220316164258.54155-1-socketcan@hartkopp.net
+Reported-by: syzbot+2339c27f5c66c652843e@syzkaller.appspotmail.com
+Signed-off-by: Oliver Hartkopp <socketcan@hartkopp.net>
+Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/powerpc/perf/imc-pmu.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+ net/can/isotp.c |   38 ++++++++++++++++++++------------------
+ 1 file changed, 20 insertions(+), 18 deletions(-)
 
-diff --git a/arch/powerpc/perf/imc-pmu.c b/arch/powerpc/perf/imc-pmu.c
-index e106909ff9c3..e7583fbcc8fa 100644
---- a/arch/powerpc/perf/imc-pmu.c
-+++ b/arch/powerpc/perf/imc-pmu.c
-@@ -1457,7 +1457,11 @@ static int trace_imc_event_init(struct perf_event *event)
+--- a/net/can/isotp.c
++++ b/net/can/isotp.c
+@@ -1104,6 +1104,7 @@ static int isotp_bind(struct socket *soc
+ 	struct net *net = sock_net(sk);
+ 	int ifindex;
+ 	struct net_device *dev;
++	canid_t tx_id, rx_id;
+ 	int err = 0;
+ 	int notify_enetdown = 0;
+ 	int do_rx_reg = 1;
+@@ -1111,8 +1112,18 @@ static int isotp_bind(struct socket *soc
+ 	if (len < ISOTP_MIN_NAMELEN)
+ 		return -EINVAL;
  
- 	event->hw.idx = -1;
+-	if (addr->can_addr.tp.tx_id & (CAN_ERR_FLAG | CAN_RTR_FLAG))
+-		return -EADDRNOTAVAIL;
++	/* sanitize tx/rx CAN identifiers */
++	tx_id = addr->can_addr.tp.tx_id;
++	if (tx_id & CAN_EFF_FLAG)
++		tx_id &= (CAN_EFF_FLAG | CAN_EFF_MASK);
++	else
++		tx_id &= CAN_SFF_MASK;
++
++	rx_id = addr->can_addr.tp.rx_id;
++	if (rx_id & CAN_EFF_FLAG)
++		rx_id &= (CAN_EFF_FLAG | CAN_EFF_MASK);
++	else
++		rx_id &= CAN_SFF_MASK;
  
--	event->pmu->task_ctx_nr = perf_hw_context;
-+	/*
-+	 * There can only be a single PMU for perf_hw_context events which is assigned to
-+	 * core PMU. Hence use "perf_sw_context" for trace_imc.
-+	 */
-+	event->pmu->task_ctx_nr = perf_sw_context;
- 	event->destroy = reset_global_refc;
- 	return 0;
- }
--- 
-2.34.1
-
+ 	if (!addr->can_ifindex)
+ 		return -ENODEV;
+@@ -1124,21 +1135,13 @@ static int isotp_bind(struct socket *soc
+ 		do_rx_reg = 0;
+ 
+ 	/* do not validate rx address for functional addressing */
+-	if (do_rx_reg) {
+-		if (addr->can_addr.tp.rx_id == addr->can_addr.tp.tx_id) {
+-			err = -EADDRNOTAVAIL;
+-			goto out;
+-		}
+-
+-		if (addr->can_addr.tp.rx_id & (CAN_ERR_FLAG | CAN_RTR_FLAG)) {
+-			err = -EADDRNOTAVAIL;
+-			goto out;
+-		}
++	if (do_rx_reg && rx_id == tx_id) {
++		err = -EADDRNOTAVAIL;
++		goto out;
+ 	}
+ 
+ 	if (so->bound && addr->can_ifindex == so->ifindex &&
+-	    addr->can_addr.tp.rx_id == so->rxid &&
+-	    addr->can_addr.tp.tx_id == so->txid)
++	    rx_id == so->rxid && tx_id == so->txid)
+ 		goto out;
+ 
+ 	dev = dev_get_by_index(net, addr->can_ifindex);
+@@ -1162,8 +1165,7 @@ static int isotp_bind(struct socket *soc
+ 	ifindex = dev->ifindex;
+ 
+ 	if (do_rx_reg)
+-		can_rx_register(net, dev, addr->can_addr.tp.rx_id,
+-				SINGLE_MASK(addr->can_addr.tp.rx_id),
++		can_rx_register(net, dev, rx_id, SINGLE_MASK(rx_id),
+ 				isotp_rcv, sk, "isotp", sk);
+ 
+ 	dev_put(dev);
+@@ -1183,8 +1185,8 @@ static int isotp_bind(struct socket *soc
+ 
+ 	/* switch to new settings */
+ 	so->ifindex = ifindex;
+-	so->rxid = addr->can_addr.tp.rx_id;
+-	so->txid = addr->can_addr.tp.tx_id;
++	so->rxid = rx_id;
++	so->txid = tx_id;
+ 	so->bound = 1;
+ 
+ out:
 
 
