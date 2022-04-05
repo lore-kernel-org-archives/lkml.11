@@ -2,107 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C7D74C4167B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A38B2C43219
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 01:33:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1842677AbiDFBeD (ORCPT
+        id S1842585AbiDFBdV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 21:34:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38244 "EHLO
+        Tue, 5 Apr 2022 21:33:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46470 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352955AbiDEPLw (ORCPT
+        with ESMTP id S1357058AbiDEKZd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 11:11:52 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30FF1108BF8
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 06:25:43 -0700 (PDT)
-From:   John Ogness <john.ogness@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1649165139;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=+FB2Z6hYDK+Vgm7eUKCCLcgZ+HVauZdnVGbPABY+Y1k=;
-        b=icB3EMpOJuf8texvfCSBnBqyOgoXH4jrA/rn3q+E7sG/yby41Mh5RJVHaEJI7dpCiYFw1h
-        u8sMcgI+zzoeJ/2gSxNfpASvWFjAk+zceA9Yjq5Q5aTLMea/YVGUcS3VV7CV34e8IN9UZs
-        u2aETwfQJwYFp6HBLkb6exE9JqEDNJBOVgf3gWG78kmRu2QqJ89FQIWzh7M4uSooYh+eoJ
-        10F0fFOZdMWVreNSqjvbvq/tkEr0xQiR3hWt8S25/fhLxoLk0IVDORAKlB7IHU1bykGZ1V
-        3Swttqj/DbI/eff1+04GM9MaFcj4xrBatdY6MjCj5AWClOAEfOKEI3Xlp22Mpg==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1649165139;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=+FB2Z6hYDK+Vgm7eUKCCLcgZ+HVauZdnVGbPABY+Y1k=;
-        b=2M0/eko3SPx6uw1glcr44L6P/SRq4cDR4eI8PzhDrRh6QpnASTNBIx2YwRQp4QzShOodSt
-        243RTUjuY6GI0rBA==
-To:     Petr Mladek <pmladek@suse.com>
-Cc:     Sergey Senozhatsky <senozhatsky@chromium.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH printk v2 05/12] printk: add macro for console detail messages
-Date:   Tue,  5 Apr 2022 15:31:28 +0206
-Message-Id: <20220405132535.649171-6-john.ogness@linutronix.de>
-In-Reply-To: <20220405132535.649171-1-john.ogness@linutronix.de>
-References: <20220405132535.649171-1-john.ogness@linutronix.de>
+        Tue, 5 Apr 2022 06:25:33 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EB812A6;
+        Tue,  5 Apr 2022 03:09:28 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BD9976176C;
+        Tue,  5 Apr 2022 10:09:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CEC4CC385A0;
+        Tue,  5 Apr 2022 10:09:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649153367;
+        bh=hGfpX2/660mo2vFk//XI/hXob0LrOy9/SJhBumtFWJs=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=RP/8l4F9jslyfeut2IOmxx7RnFH8+k10GVwyzCE270XIlGS7jiWqshzS5FAyKkqIM
+         Gpr807NLeZ59jV+eFzbxFsjkc7gxxg6rt6TVtvPdkutGqHXPpebzG/C8xVFHNy+x/9
+         We9MHqRR9D5EI/ED3J4n+A4GdGwT8bxbDEOhxoPY=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Jammy Huang <jammy_huang@aspeedtech.com>,
+        Joel Stanley <joel@jms.id.au>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 196/599] media: aspeed: Correct value for h-total-pixels
+Date:   Tue,  5 Apr 2022 09:28:10 +0200
+Message-Id: <20220405070304.674131677@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
+References: <20220405070258.802373272@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-It is useful to generate log messages that include details about
-the related console. Rather than duplicate the logic to assemble
-the details, put that logic into a macro printk_console_msg().
+From: Jammy Huang <jammy_huang@aspeedtech.com>
 
-Once console printers become threaded, this macro will find many
-users.
+[ Upstream commit 4b732a0016853eaff35944f900b0db66f3914374 ]
 
-Signed-off-by: John Ogness <john.ogness@linutronix.de>
+Previous reg-field, 0x98[11:0], stands for the period of the detected
+hsync signal.
+Use the correct reg, 0xa0, to get h-total in pixels.
+
+Fixes: d2b4387f3bdf ("media: platform: Add Aspeed Video Engine driver")
+Signed-off-by: Jammy Huang <jammy_huang@aspeedtech.com>
+Reviewed-by: Joel Stanley <joel@jms.id.au>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- kernel/printk/printk.c | 12 ++++++------
- 1 file changed, 6 insertions(+), 6 deletions(-)
+ drivers/media/platform/aspeed-video.c | 9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
 
-diff --git a/kernel/printk/printk.c b/kernel/printk/printk.c
-index fb9a6eaf54fd..39ca9d758e52 100644
---- a/kernel/printk/printk.c
-+++ b/kernel/printk/printk.c
-@@ -2993,6 +2993,10 @@ static void try_enable_default_console(struct console *newcon)
- 		newcon->flags |= CON_CONSDEV;
- }
+diff --git a/drivers/media/platform/aspeed-video.c b/drivers/media/platform/aspeed-video.c
+index debc7509c173..757a58829a51 100644
+--- a/drivers/media/platform/aspeed-video.c
++++ b/drivers/media/platform/aspeed-video.c
+@@ -151,7 +151,7 @@
+ #define  VE_SRC_TB_EDGE_DET_BOT		GENMASK(28, VE_SRC_TB_EDGE_DET_BOT_SHF)
  
-+#define printk_console_msg(c, lvl, msg) \
-+	printk(lvl pr_fmt("%sconsole [%s%d] " msg "\n"), \
-+	       (c->flags & CON_BOOT) ? "boot" : "", c->name, c->index)
+ #define VE_MODE_DETECT_STATUS		0x098
+-#define  VE_MODE_DETECT_H_PIXELS	GENMASK(11, 0)
++#define  VE_MODE_DETECT_H_PERIOD	GENMASK(11, 0)
+ #define  VE_MODE_DETECT_V_LINES_SHF	16
+ #define  VE_MODE_DETECT_V_LINES		GENMASK(27, VE_MODE_DETECT_V_LINES_SHF)
+ #define  VE_MODE_DETECT_STATUS_VSYNC	BIT(28)
+@@ -162,6 +162,8 @@
+ #define  VE_SYNC_STATUS_VSYNC_SHF	16
+ #define  VE_SYNC_STATUS_VSYNC		GENMASK(27, VE_SYNC_STATUS_VSYNC_SHF)
+ 
++#define VE_H_TOTAL_PIXELS		0x0A0
 +
- /*
-  * The console driver calls this routine during kernel initialization
-  * to register the console printing procedure with printk() and to
-@@ -3131,9 +3135,7 @@ void register_console(struct console *newcon)
- 	 * users know there might be something in the kernel's log buffer that
- 	 * went to the bootconsole (that they do not see on the real console)
- 	 */
--	pr_info("%sconsole [%s%d] enabled\n",
--		(newcon->flags & CON_BOOT) ? "boot" : "" ,
--		newcon->name, newcon->index);
-+	printk_console_msg(newcon, KERN_INFO, "enabled");
- 	if (bootcon_enabled &&
- 	    ((newcon->flags & (CON_CONSDEV | CON_BOOT)) == CON_CONSDEV) &&
- 	    !keep_bootcon) {
-@@ -3152,9 +3154,7 @@ int unregister_console(struct console *console)
- 	struct console *con;
- 	int res;
+ #define VE_INTERRUPT_CTRL		0x304
+ #define VE_INTERRUPT_STATUS		0x308
+ #define  VE_INTERRUPT_MODE_DETECT_WD	BIT(0)
+@@ -765,6 +767,7 @@ static void aspeed_video_get_resolution(struct aspeed_video *video)
+ 	u32 src_lr_edge;
+ 	u32 src_tb_edge;
+ 	u32 sync;
++	u32 htotal;
+ 	struct v4l2_bt_timings *det = &video->detected_timings;
  
--	pr_info("%sconsole [%s%d] disabled\n",
--		(console->flags & CON_BOOT) ? "boot" : "" ,
--		console->name, console->index);
-+	printk_console_msg(console, KERN_INFO, "disabled");
+ 	det->width = MIN_WIDTH;
+@@ -809,6 +812,7 @@ static void aspeed_video_get_resolution(struct aspeed_video *video)
+ 		src_tb_edge = aspeed_video_read(video, VE_SRC_TB_EDGE_DET);
+ 		mds = aspeed_video_read(video, VE_MODE_DETECT_STATUS);
+ 		sync = aspeed_video_read(video, VE_SYNC_STATUS);
++		htotal = aspeed_video_read(video, VE_H_TOTAL_PIXELS);
  
- 	res = _braille_unregister_console(console);
- 	if (res < 0)
+ 		video->frame_bottom = (src_tb_edge & VE_SRC_TB_EDGE_DET_BOT) >>
+ 			VE_SRC_TB_EDGE_DET_BOT_SHF;
+@@ -825,8 +829,7 @@ static void aspeed_video_get_resolution(struct aspeed_video *video)
+ 			VE_SRC_LR_EDGE_DET_RT_SHF;
+ 		video->frame_left = src_lr_edge & VE_SRC_LR_EDGE_DET_LEFT;
+ 		det->hfrontporch = video->frame_left;
+-		det->hbackporch = (mds & VE_MODE_DETECT_H_PIXELS) -
+-			video->frame_right;
++		det->hbackporch = htotal - video->frame_right;
+ 		det->hsync = sync & VE_SYNC_STATUS_HSYNC;
+ 		if (video->frame_left > video->frame_right)
+ 			continue;
 -- 
-2.30.2
+2.34.1
+
+
 
