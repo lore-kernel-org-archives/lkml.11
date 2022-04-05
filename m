@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7FCB7C3527A
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 10:50:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 062A1C47080
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 10:50:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344654AbiDEKkG (ORCPT
+        id S1346669AbiDEKnp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 06:40:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57576 "EHLO
+        Tue, 5 Apr 2022 06:43:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60898 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237774AbiDEISV (ORCPT
+        with ESMTP id S241110AbiDEIct (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:18:21 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B5F66C48F;
-        Tue,  5 Apr 2022 01:07:28 -0700 (PDT)
+        Tue, 5 Apr 2022 04:32:49 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C17A1573E;
+        Tue,  5 Apr 2022 01:27:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B1D4F617DB;
-        Tue,  5 Apr 2022 08:07:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B4E95C385A0;
-        Tue,  5 Apr 2022 08:07:26 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BD4BB609D0;
+        Tue,  5 Apr 2022 08:27:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D1645C385A2;
+        Tue,  5 Apr 2022 08:27:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649146047;
-        bh=6a+J8Z2w8Z6Qruts/DZLmTBIqS7Wo60wqTP9EFkA6x0=;
+        s=korg; t=1649147261;
+        bh=ju9FU22MfB+ePx543AKTfSg4v7Ler6NNa/m0AdVhx4Q=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LLhyo8yVmJkyjnkE193xujenCq9k+WLOjvrZw1Za/Dmv6SGW2F0LvYurYDXjS4l2S
-         nKhrNKKrxcrDBuAUw/qQk9sik564VPjrL5R97lZY9i77/ekQas9x3wvjEmwDefeBrU
-         nIfrcB2fF8xpMX0YfLXdWhHoYzcuSRT2NxcLD77I=
+        b=2sMW2+tBuPz7ujereR4yeCmG8LAzXf39iH5kBqRy5OcCU8ex3F9VBjIYleyq5hS0A
+         1bHadjhHZZ35BTzWrT/1Mw4jUaWT3XvOr1N0dqZjD/ID2ZWm4wFP+6ydCJ9E0kUEwX
+         WKJix49uwd3T7qXsIsUpPwAqE7Q2M6rkO/HcvIYk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zhenzhong Duan <zhenzhong.duan@intel.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0622/1126] KVM: x86: Fix emulation in writing cr8
-Date:   Tue,  5 Apr 2022 09:22:49 +0200
-Message-Id: <20220405070425.892877391@linuxfoundation.org>
+        stable@vger.kernel.org, Alyssa Ross <hi@alyssa.is>,
+        Tzung-Bi Shih <tzungbi@google.com>,
+        Prashant Malani <pmalani@chromium.org>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Benson Leung <bleung@chromium.org>
+Subject: [PATCH 5.17 1061/1126] platform/chrome: cros_ec_typec: Check for EC device
+Date:   Tue,  5 Apr 2022 09:30:08 +0200
+Message-Id: <20220405070438.604049387@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -51,65 +52,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zhenzhong Duan <zhenzhong.duan@intel.com>
+From: Prashant Malani <pmalani@chromium.org>
 
-[ Upstream commit f66af9f222f08d5b11ea41c1bd6c07a0f12daa07 ]
+commit ffebd90532728086007038986900426544e3df4e upstream.
 
-In emulation of writing to cr8, one of the lowest four bits in TPR[3:0]
-is kept.
+The Type C ACPI device on older Chromebooks is not generated correctly
+(since their EC firmware doesn't support the new commands required). In
+such cases, the crafted ACPI device doesn't have an EC parent, and it is
+therefore not useful (it shouldn't be generated in the first place since
+the EC firmware doesn't support any of the Type C commands).
 
-According to Intel SDM 10.8.6.1(baremetal scenario):
-"APIC.TPR[bits 7:4] = CR8[bits 3:0], APIC.TPR[bits 3:0] = 0";
+To handle devices which use these older firmware revisions, check for
+the parent EC device handle, and fail the probe if it's not found.
 
-and SDM 28.3(use TPR shadow):
-"MOV to CR8. The instruction stores bits 3:0 of its source operand into
-bits 7:4 of VTPR; the remainder of VTPR (bits 3:0 and bits 31:8) are
-cleared.";
-
-and AMD's APM 16.6.4:
-"Task Priority Sub-class (TPS)-Bits 3 : 0. The TPS field indicates the
-current sub-priority to be used when arbitrating lowest-priority messages.
-This field is written with zero when TPR is written using the architectural
-CR8 register.";
-
-so in KVM emulated scenario, clear TPR[3:0] to make a consistent behavior
-as in other scenarios.
-
-This doesn't impact evaluation and delivery of pending virtual interrupts
-because processor does not use the processor-priority sub-class to
-determine which interrupts to delivery and which to inhibit.
-
-Sub-class is used by hardware to arbitrate lowest priority interrupts,
-but KVM just does a round-robin style delivery.
-
-Fixes: b93463aa59d6 ("KVM: Accelerated apic support")
-Signed-off-by: Zhenzhong Duan <zhenzhong.duan@intel.com>
-Reviewed-by: Sean Christopherson <seanjc@google.com>
-Message-Id: <20220210094506.20181-1-zhenzhong.duan@intel.com>
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: fdc6b21e2444 ("platform/chrome: Add Type C connector class driver")
+Reported-by: Alyssa Ross <hi@alyssa.is>
+Reviewed-by: Tzung-Bi Shih <tzungbi@google.com>
+Signed-off-by: Prashant Malani <pmalani@chromium.org>
+Acked-by: Heikki Krogerus <heikki.krogerus@linux.intel.com>
+Reviewed-by: Alyssa Ross <hi@alyssa.is>
+Tested-by: Alyssa Ross <hi@alyssa.is>
+Link: https://lore.kernel.org/r/20220126190219.3095419-1-pmalani@chromium.org
+Signed-off-by: Benson Leung <bleung@chromium.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/kvm/lapic.c | 5 +----
- 1 file changed, 1 insertion(+), 4 deletions(-)
+ drivers/platform/chrome/cros_ec_typec.c |    6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/arch/x86/kvm/lapic.c b/arch/x86/kvm/lapic.c
-index 9322e6340a74..7a93ad2593c7 100644
---- a/arch/x86/kvm/lapic.c
-+++ b/arch/x86/kvm/lapic.c
-@@ -2242,10 +2242,7 @@ void kvm_set_lapic_tscdeadline_msr(struct kvm_vcpu *vcpu, u64 data)
+--- a/drivers/platform/chrome/cros_ec_typec.c
++++ b/drivers/platform/chrome/cros_ec_typec.c
+@@ -1075,7 +1075,13 @@ static int cros_typec_probe(struct platf
+ 		return -ENOMEM;
  
- void kvm_lapic_set_tpr(struct kvm_vcpu *vcpu, unsigned long cr8)
- {
--	struct kvm_lapic *apic = vcpu->arch.apic;
--
--	apic_set_tpr(apic, ((cr8 & 0x0f) << 4)
--		     | (kvm_lapic_get_reg(apic, APIC_TASKPRI) & 4));
-+	apic_set_tpr(vcpu->arch.apic, (cr8 & 0x0f) << 4);
- }
+ 	typec->dev = dev;
++
+ 	typec->ec = dev_get_drvdata(pdev->dev.parent);
++	if (!typec->ec) {
++		dev_err(dev, "couldn't find parent EC device\n");
++		return -ENODEV;
++	}
++
+ 	platform_set_drvdata(pdev, typec);
  
- u64 kvm_lapic_get_cr8(struct kvm_vcpu *vcpu)
--- 
-2.34.1
-
+ 	ret = cros_typec_get_cmd_version(typec);
 
 
