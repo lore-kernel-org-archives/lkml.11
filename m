@@ -2,85 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 99FA3C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:25:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F543C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:25:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1575203AbiDEXDQ (ORCPT
+        id S1575223AbiDEXDV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 19:03:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52498 "EHLO
+        Tue, 5 Apr 2022 19:03:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51882 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1387609AbiDENPV (ORCPT
+        with ESMTP id S1358269AbiDEK2L (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 09:15:21 -0400
-Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39D7E12E16D
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 05:20:46 -0700 (PDT)
-Received: by mail-ed1-x535.google.com with SMTP id d7so2761692edn.11
-        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 05:20:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bgdev-pl.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=pEqCOWOz4xgrxd0giUCx9NsDzzIWyIrHtogC8XOTUzE=;
-        b=vQapLbel1yCXuH6GmdojAb8GugegWJl+fxGhwDF9atQlUvGzvn/4Y6yUGfK8vLfmxD
-         du9DXRs/IV8UjMx/BuNyDQMSAU+WEZbwBW6VYzQugY5FN1FTKNO4bGw7/R9qVpmKGeTD
-         hC93Nw68LKZE50qwuxOUuJzaidAihRJ4nrDUpaeZLKsIgCfNpHfRWjyuiBwgFgF4Epqz
-         iWCbjdxDCgXjtNlVB0SG7RCDrZo260wDtiJCp7FyBwrNCOrYkLLYqW22xZ2PL5eiCUJ/
-         QnuYib47iSig9U84lQ0rZ8MmnSRG4tkzgHSEnYvQrZInW7l8YG5NrqXHElYFtCsNuUOe
-         d74A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=pEqCOWOz4xgrxd0giUCx9NsDzzIWyIrHtogC8XOTUzE=;
-        b=7Cdvzy59he5jtG7UM4i0nd2qsnVj0+EJ3e6FVXL6zEUixfIi1hLw4593shsMKLyq1Y
-         koNWMBcthE5sl9u8U6Xumr5pstzJmYPGD5ZTVyeYuB1pRH52qFinhL0N8bO3tqgrpYCK
-         pzZ2Ywp1X50OULSeHF2WK3g6aqTQnB67yhMaxau/rJYLjWBQSguSS8ua5wpE5fEvaIW/
-         q0OCQH7IKOX/+/yhfQTv8P192kkNGlF1J6hsM97jvzYe2qS62Ipq5G911amVKjBvjXoK
-         v3iZfQ+6PLT0MZbsH5HQKYKwhexnaTZBJ6eKFdal98sasDvGXzFI+mIIprOSjJBGTDDA
-         wbpg==
-X-Gm-Message-State: AOAM530rbYilkzH0mE8vwZyuZBhXVmFon1cU2EklwstwmANOGq+gyNWb
-        sKHW+UNUspt20gw6akeSFmvUcKtilmwKXHPiWT85fg==
-X-Google-Smtp-Source: ABdhPJzPcUZJUkjG68RIi0zF7G2pdh+mSzjC64mp73QtY54GjSTBmBaup9OZEVLLzoEWNRSHGiI6uU10f7LtmUaHtto=
-X-Received: by 2002:a50:9f8e:0:b0:41c:d8e5:96f0 with SMTP id
- c14-20020a509f8e000000b0041cd8e596f0mr3345886edf.69.1649161244777; Tue, 05
- Apr 2022 05:20:44 -0700 (PDT)
+        Tue, 5 Apr 2022 06:28:11 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA20D12624;
+        Tue,  5 Apr 2022 03:17:47 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 56F19617C2;
+        Tue,  5 Apr 2022 10:17:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5E748C385A2;
+        Tue,  5 Apr 2022 10:17:46 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649153866;
+        bh=UI518gNvZYc7Bl5O77cnb5llWvp/Mku9p8fq+HkHNQs=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=fg1BMkxtFtLXaC+vTReXOaWHvm2K36H5yET5T/eQ8xRy5Ymx8fSIKEwfzvs4uU0UB
+         LdlO8+aK/Wi39Wn93iIMg8i9f5N1s547OHwiLvRxYDOndvFlrJp7dMO4PsUcn3ypC+
+         AdTrZohoXL8GHljCWA96U6cyw7+4Os1FNPc9O2o0=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Ying Xue <ying.xue@windriver.com>,
+        Hoang Le <hoang.h.le@dektech.com.au>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 376/599] tipc: fix the timer expires after interval 100ms
+Date:   Tue,  5 Apr 2022 09:31:10 +0200
+Message-Id: <20220405070310.019726757@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
+References: <20220405070258.802373272@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-References: <20220330150620.2490-1-andriy.shevchenko@linux.intel.com>
-In-Reply-To: <20220330150620.2490-1-andriy.shevchenko@linux.intel.com>
-From:   Bartosz Golaszewski <brgl@bgdev.pl>
-Date:   Tue, 5 Apr 2022 14:20:34 +0200
-Message-ID: <CAMRc=Mdyv5Et0ZsncgrxNkKa_F=VNzBqc9obnz-XH-1jgWSjdg@mail.gmail.com>
-Subject: Re: [PATCH v2 1/1] gpiolib: Get rid of redundant 'else'
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc:     "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Mar 30, 2022 at 5:06 PM Andy Shevchenko
-<andriy.shevchenko@linux.intel.com> wrote:
->
-> In the snippets like the following
->
->         if (...)
->                 return / goto / break / continue ...;
->         else
->                 ...
->
-> the 'else' is redundant. Get rid of it. In case of IOCTLs use
-> switch-case pattern that seems the usual in such cases.
->
-> While at it, clarify necessity of else in gpiod_direction_output()
-> by attaching else if to the closing curly brace on a previous line.
->
-> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-> ---
+From: Hoang Le <hoang.h.le@dektech.com.au>
 
-Applied, thanks!
+[ Upstream commit 6a7d8cff4a3301087dd139293e9bddcf63827282 ]
 
-Bart
+In the timer callback function tipc_sk_timeout(), we're trying to
+reschedule another timeout to retransmit a setup request if destination
+link is congested. But we use the incorrect timeout value
+(msecs_to_jiffies(100)) instead of (jiffies + msecs_to_jiffies(100)),
+so that the timer expires immediately, it's irrelevant for original
+description.
+
+In this commit we correct the timeout value in sk_reset_timer()
+
+Fixes: 6787927475e5 ("tipc: buffer overflow handling in listener socket")
+Acked-by: Ying Xue <ying.xue@windriver.com>
+Signed-off-by: Hoang Le <hoang.h.le@dektech.com.au>
+Link: https://lore.kernel.org/r/20220321042229.314288-1-hoang.h.le@dektech.com.au
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ net/tipc/socket.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/net/tipc/socket.c b/net/tipc/socket.c
+index 8d2c98531af4..42283dc6c5b7 100644
+--- a/net/tipc/socket.c
++++ b/net/tipc/socket.c
+@@ -2846,7 +2846,8 @@ static void tipc_sk_retry_connect(struct sock *sk, struct sk_buff_head *list)
+ 
+ 	/* Try again later if dest link is congested */
+ 	if (tsk->cong_link_cnt) {
+-		sk_reset_timer(sk, &sk->sk_timer, msecs_to_jiffies(100));
++		sk_reset_timer(sk, &sk->sk_timer,
++			       jiffies + msecs_to_jiffies(100));
+ 		return;
+ 	}
+ 	/* Prepare SYN for retransmit */
+-- 
+2.34.1
+
+
+
