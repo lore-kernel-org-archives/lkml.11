@@ -2,43 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F0716C4167D
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:51:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 392FDC4167E
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:51:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1579515AbiDEXbb (ORCPT
+        id S1579613AbiDEXcG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 19:31:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33930 "EHLO
+        Tue, 5 Apr 2022 19:32:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39810 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352107AbiDEKDz (ORCPT
+        with ESMTP id S1349288AbiDEJtd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:03:55 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 605E2AC063;
-        Tue,  5 Apr 2022 02:52:50 -0700 (PDT)
+        Tue, 5 Apr 2022 05:49:33 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45AF810FDA;
+        Tue,  5 Apr 2022 02:43:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 934C36165C;
-        Tue,  5 Apr 2022 09:52:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A834AC385A1;
-        Tue,  5 Apr 2022 09:52:49 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id F01BBB818F3;
+        Tue,  5 Apr 2022 09:43:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4D1CBC385A3;
+        Tue,  5 Apr 2022 09:43:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649152370;
-        bh=U5KdjcZpRwnm8d/Y39hurzwu6xnD8BhkqRY0h6mwIEw=;
+        s=korg; t=1649151820;
+        bh=K42QkayVvGfoqUO3AMD2fmm46tyYo/VhVx5kCxI5O6w=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nElw8v+iPspf/DSifXqPhLJvdH3sa56gPHM5delCFJBRn7o5Pjh1OoY1PsXdd9gB8
-         BMCXL7Eq+ahjp1YqnPpQNIGs8N1HqXApWTcIThj5RSI66hJN3aomtSp+90KXK5Y+yz
-         g3VVA1wPgtmkuiKyNLurR6Fqnl0QvPytkXoABc3g=
+        b=Qw7GAi+EhIpsWQWFKwAvNrqUGl146OHTkFru69AM7JXWxQZn1lf4WfazidhQIhWAJ
+         O9AJnxlfdg/Dz51kCz7gxzhnuIzRv6Mr0G0Sb184gM+3XXv8TsoZB8Ijj/BZcmPluq
+         ri7DreL5KtY5hs/eYqhZv/7FmdiOpjIFRh9YUr+A=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Shengjiu Wang <shengjiu.wang@nxp.com>,
-        Mark Brown <broonie@kernel.org>,
+        stable@vger.kernel.org, Lee Jones <lee.jones@linaro.org>,
+        Matti Vaittinen <mazziesaccount@gmail.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>,
+        Sebastian Reichel <sebastian.reichel@collabora.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 753/913] ASoC: soc-core: skip zero num_dai component in searching dai name
-Date:   Tue,  5 Apr 2022 09:30:15 +0200
-Message-Id: <20220405070402.404338441@linuxfoundation.org>
+Subject: [PATCH 5.15 536/913] power: ab8500_chargalg: Use CLOCK_MONOTONIC
+Date:   Tue,  5 Apr 2022 09:26:38 +0200
+Message-Id: <20220405070355.916061620@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
 References: <20220405070339.801210740@linuxfoundation.org>
@@ -50,45 +53,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Shengjiu Wang <shengjiu.wang@nxp.com>
+From: Linus Walleij <linus.walleij@linaro.org>
 
-[ Upstream commit f7d344a2bd5ec81fbd1ce76928fd059e57ec9bea ]
+[ Upstream commit c22fca40522e2be8af168f3087d87d85e404ea72 ]
 
-In the case like dmaengine which's not a dai but as a component, the
-num_dai is zero, dmaengine component has the same component_of_node
-as cpu dai, when cpu dai component is not ready, but dmaengine component
-is ready, try to get cpu dai name, the snd_soc_get_dai_name() return
--EINVAL, not -EPROBE_DEFER, that cause below error:
+The HRTimer in the AB8500 charging code is using CLOCK_REALTIME
+to set an alarm some hours forward in time +/- 5 min for a safety
+timer.
 
-asoc-simple-card <card name>: parse error -22
-asoc-simple-card: probe of <card name> failed with error -22
+I have observed that this will sometimes fire sporadically
+early when charging a battery with the result that
+charging stops.
 
-The sound card failed to probe.
+As CLOCK_REALTIME can be subject to adjustments of time from
+sources such as NTP, this cannot be trusted and will likely
+for example fire events if the clock is set forward some hours
+by say NTP.
 
-So this patch fixes the issue above by skipping the zero num_dai
-component in searching dai name.
+Use CLOCK_MONOTONIC as indicated in other instances and the
+problem goes away. Also initialize the timer to REL mode
+as this is what will be used later.
 
-Signed-off-by: Shengjiu Wang <shengjiu.wang@nxp.com>
-Link: https://lore.kernel.org/r/1644491952-7457-1-git-send-email-shengjiu.wang@nxp.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Fixes: 257107ae6b9b ("ab8500-chargalg: Use hrtimer")
+Cc: Lee Jones <lee.jones@linaro.org>
+Suggested-by: Matti Vaittinen <mazziesaccount@gmail.com>
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+Reviewed-by: Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>
+Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/soc-core.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/power/supply/ab8500_chargalg.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/sound/soc/soc-core.c b/sound/soc/soc-core.c
-index 80ca260595fd..5da762807824 100644
---- a/sound/soc/soc-core.c
-+++ b/sound/soc/soc-core.c
-@@ -3208,7 +3208,7 @@ int snd_soc_get_dai_name(const struct of_phandle_args *args,
- 	for_each_component(pos) {
- 		struct device_node *component_of_node = soc_component_to_node(pos);
+diff --git a/drivers/power/supply/ab8500_chargalg.c b/drivers/power/supply/ab8500_chargalg.c
+index ff4b26b1ceca..b809fa5abbba 100644
+--- a/drivers/power/supply/ab8500_chargalg.c
++++ b/drivers/power/supply/ab8500_chargalg.c
+@@ -2019,11 +2019,11 @@ static int ab8500_chargalg_probe(struct platform_device *pdev)
+ 	psy_cfg.drv_data = di;
  
--		if (component_of_node != args->np)
-+		if (component_of_node != args->np || !pos->num_dai)
- 			continue;
+ 	/* Initilialize safety timer */
+-	hrtimer_init(&di->safety_timer, CLOCK_REALTIME, HRTIMER_MODE_ABS);
++	hrtimer_init(&di->safety_timer, CLOCK_MONOTONIC, HRTIMER_MODE_REL);
+ 	di->safety_timer.function = ab8500_chargalg_safety_timer_expired;
  
- 		ret = snd_soc_component_of_xlate_dai_name(pos, args, dai_name);
+ 	/* Initilialize maintenance timer */
+-	hrtimer_init(&di->maintenance_timer, CLOCK_REALTIME, HRTIMER_MODE_ABS);
++	hrtimer_init(&di->maintenance_timer, CLOCK_MONOTONIC, HRTIMER_MODE_REL);
+ 	di->maintenance_timer.function =
+ 		ab8500_chargalg_maintenance_timer_expired;
+ 
 -- 
 2.34.1
 
