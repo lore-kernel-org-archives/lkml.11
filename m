@@ -2,51 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6AE60C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 14:20:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A619C4332F
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 14:21:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384746AbiDEOSW (ORCPT
+        id S1384815AbiDEOS0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 10:18:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39964 "EHLO
+        Tue, 5 Apr 2022 10:18:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53894 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239706AbiDEJeA (ORCPT
+        with ESMTP id S239697AbiDEJeA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Apr 2022 05:34:00 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99BCC7C17A;
-        Tue,  5 Apr 2022 02:23:06 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86AE078911;
+        Tue,  5 Apr 2022 02:22:55 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 39CAC61654;
-        Tue,  5 Apr 2022 09:23:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 132B5C385A2;
-        Tue,  5 Apr 2022 09:23:05 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 243FE6144D;
+        Tue,  5 Apr 2022 09:22:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3B37FC385A0;
+        Tue,  5 Apr 2022 09:22:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649150585;
-        bh=Ucxf3WQ4gL7VbEZenMpfiHmJYn7xo1lpnxFgStCQBcQ=;
+        s=korg; t=1649150574;
+        bh=9oeaOtDRB/SGVsQXC0FYtjORDubOt8V3HM+oZFsGGz4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jZL7M+cVaVni1XwsEOZsdnvlvtZq0pfeI198lyx9mLEhAJLvjTp0r8ghXyqz6bz7x
-         aoiWHRji0pRxFcl69PYt2yCFjpjqa/wKPGKtuKnmDOQFaiL303mtud7ysiXTMl+3c0
-         G37gTZMC+i0S1hr64XNhkFRixBY1jrqWO0FdFuaM=
+        b=umdtQ3u1Hh86WM491LLpt/m9v+/dlHTsMOY7l0D3P3jdS1FIuRAGLocZGNw8Hr6HY
+         jG/CZHWsCfdeRAujP8JzZC08E3ClTAMJ8gkJvKQZU2pZQIQFRoGSv8xhfXkRQTPn5v
+         OBHE48Z71vaUQa0TS/DKc1rLMiz6chlDUqhJnQ00=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Charan Teja Kalla <quic_charante@quicinc.com>,
-        David Rientjes <rientjes@google.com>,
-        Michal Hocko <mhocko@suse.com>,
-        Minchan Kim <minchan@kernel.org>,
-        Nadav Amit <nadav.amit@gmail.com>,
-        Stephen Rothwell <sfr@canb.auug.org.au>,
-        Suren Baghdasaryan <surenb@google.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [PATCH 5.15 107/913] mm: madvise: skip unmapped vma holes passed to process_madvise
-Date:   Tue,  5 Apr 2022 09:19:29 +0200
-Message-Id: <20220405070343.034015380@linuxfoundation.org>
+        =?UTF-8?q?Mateusz=20Jo=C5=84czyk?= <mat.jonczyk@o2.pl>,
+        Alessandro Zummo <a.zummo@towertech.it>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Thomas Gleixner <tglx@linutronix.de>
+Subject: [PATCH 5.15 103/913] rtc: mc146818-lib: fix locking in mc146818_set_time
+Date:   Tue,  5 Apr 2022 09:19:25 +0200
+Message-Id: <20220405070342.914276063@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
 References: <20220405070339.801210740@linuxfoundation.org>
@@ -58,57 +52,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Charan Teja Kalla <quic_charante@quicinc.com>
+From: Mateusz Jończyk <mat.jonczyk@o2.pl>
 
-commit 08095d6310a7ce43256b4251577bc66a25c6e1a6 upstream.
+commit 811f5559270f25c34c338d6eaa2ece2544c3d3bd upstream.
 
-The process_madvise() system call is expected to skip holes in vma passed
-through 'struct iovec' vector list.  But do_madvise, which
-process_madvise() calls for each vma, returns ENOMEM in case of unmapped
-holes, despite the VMA is processed.
+In mc146818_set_time(), CMOS_READ(RTC_CONTROL) was performed without the
+rtc_lock taken, which is required for CMOS accesses. Fix this.
 
-Thus process_madvise() should treat ENOMEM as expected and consider the
-VMA passed to as processed and continue processing other vma's in the
-vector list.  Returning -ENOMEM to user, despite the VMA is processed,
-will be unable to figure out where to start the next madvise.
+Nothing in kernel modifies RTC_DM_BINARY, so a separate critical section
+is allowed here.
 
-Link: https://lkml.kernel.org/r/4f091776142f2ebf7b94018146de72318474e686.1647008754.git.quic_charante@quicinc.com
-Fixes: ecb8ac8b1f14("mm/madvise: introduce process_madvise() syscall: an external memory hinting API")
-Signed-off-by: Charan Teja Kalla <quic_charante@quicinc.com>
-Cc: David Rientjes <rientjes@google.com>
-Cc: Michal Hocko <mhocko@suse.com>
-Cc: Minchan Kim <minchan@kernel.org>
-Cc: Nadav Amit <nadav.amit@gmail.com>
-Cc: Stephen Rothwell <sfr@canb.auug.org.au>
-Cc: Suren Baghdasaryan <surenb@google.com>
-Cc: Vlastimil Babka <vbabka@suse.cz>
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Fixes: dcf257e92622 ("rtc: mc146818: Reduce spinlock section in mc146818_set_time()")
+Signed-off-by: Mateusz Jończyk <mat.jonczyk@o2.pl>
+Cc: Alessandro Zummo <a.zummo@towertech.it>
+Cc: Alexandre Belloni <alexandre.belloni@bootlin.com>
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Cc: stable@vger.kernel.org
+Signed-off-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
+Link: https://lore.kernel.org/r/20220220090403.153928-1-mat.jonczyk@o2.pl
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- mm/madvise.c |    9 ++++++++-
- 1 file changed, 8 insertions(+), 1 deletion(-)
+ drivers/rtc/rtc-mc146818-lib.c |    6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
---- a/mm/madvise.c
-+++ b/mm/madvise.c
-@@ -1287,9 +1287,16 @@ SYSCALL_DEFINE5(process_madvise, int, pi
+--- a/drivers/rtc/rtc-mc146818-lib.c
++++ b/drivers/rtc/rtc-mc146818-lib.c
+@@ -176,8 +176,10 @@ int mc146818_set_time(struct rtc_time *t
+ 	if (yrs >= 100)
+ 		yrs -= 100;
  
- 	while (iov_iter_count(&iter)) {
- 		iovec = iov_iter_iovec(&iter);
-+		/*
-+		 * do_madvise returns ENOMEM if unmapped holes are present
-+		 * in the passed VMA. process_madvise() is expected to skip
-+		 * unmapped holes passed to it in the 'struct iovec' list
-+		 * and not fail because of them. Thus treat -ENOMEM return
-+		 * from do_madvise as valid and continue processing.
-+		 */
- 		ret = do_madvise(mm, (unsigned long)iovec.iov_base,
- 					iovec.iov_len, behavior);
--		if (ret < 0)
-+		if (ret < 0 && ret != -ENOMEM)
- 			break;
- 		iov_iter_advance(&iter, iovec.iov_len);
- 	}
+-	if (!(CMOS_READ(RTC_CONTROL) & RTC_DM_BINARY)
+-	    || RTC_ALWAYS_BCD) {
++	spin_lock_irqsave(&rtc_lock, flags);
++	save_control = CMOS_READ(RTC_CONTROL);
++	spin_unlock_irqrestore(&rtc_lock, flags);
++	if (!(save_control & RTC_DM_BINARY) || RTC_ALWAYS_BCD) {
+ 		sec = bin2bcd(sec);
+ 		min = bin2bcd(min);
+ 		hrs = bin2bcd(hrs);
 
 
