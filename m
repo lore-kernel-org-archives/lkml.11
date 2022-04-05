@@ -2,85 +2,75 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0ADBEC4321E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B5FFC4167B
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 22:55:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230029AbiDEWlD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 18:41:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37886 "EHLO
+        id S235607AbiDEWlR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 18:41:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35340 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1458051AbiDERGa (ORCPT
+        with ESMTP id S1457620AbiDEQSS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 13:06:30 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8EE34AC055;
-        Tue,  5 Apr 2022 10:04:31 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 449D0B81E8B;
-        Tue,  5 Apr 2022 17:04:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E9940C385A1;
-        Tue,  5 Apr 2022 17:04:27 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649178269;
-        bh=iGN91+OiBItNZNzY+Mn+vZ/ESbyWFHcFeK6CblH8sQw=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=nQZ6tqagjnEpbIvhMEyUXiNO0AQegHgbIMoiap6q9+4lMoK0pXeq1oRmztByxY98g
-         YNspkHtIX+jJXKjcUVjfjZKQ2UxBvQEdgHrP97VMJmqM5Kopm/gEHhfztMezezKOkq
-         HoXMiPCcWVAQlxPfosqTX2z4F5MmHZ6koOEik3tExhBOhssf5ekfneV2bzstCQKdPx
-         uZDkPCI7BQwR6mtvvatZNyCcIa6U0+Wq/1eenyZr6FYTdpceFPFJRVM9S+l5t4bJXs
-         99DK5bpO1mDq2sOIPa8H4fxy2nQnVOxXkbh8KOD0eAVdUkIqwf5JY+CvGT/AkflbO6
-         CstoCAedzwk0w==
-Date:   Tue, 5 Apr 2022 18:04:24 +0100
-From:   Mark Brown <broonie@kernel.org>
-To:     "Rafael J. Wysocki" <rjw@rjwysocki.net>
-Cc:     Linux ACPI <linux-acpi@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>, linux-spi@vger.kernel.org
-Subject: Re: [PATCH v1] ACPI: bus: Eliminate acpi_bus_get_device()
-Message-ID: <Ykx2mOzf/xy8NMXr@sirena.org.uk>
-References: <5817980.lOV4Wx5bFT@kreacher>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="QPzbWFNPsCze9VF6"
-Content-Disposition: inline
-In-Reply-To: <5817980.lOV4Wx5bFT@kreacher>
-X-Cookie: diplomacy, n:
+        Tue, 5 Apr 2022 12:18:18 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F566193D3
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 09:16:19 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out1.suse.de (Postfix) with ESMTP id EED1C210F1;
+        Tue,  5 Apr 2022 16:16:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1649175377; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=1ZOY9F/5g5PeZhpDl0566aC7WZpwSzJmzpmgZjPPJCs=;
+        b=pM1EpMtmCVxrKZFrB9tLqjrLE/6GD5oYc2vVk5dgZvS3rczpy1QwsGUxs5Ek+3YtY8ypfz
+        tndqeVZDbPxz0CSEDVeYltfZSc705g9k9/oUkNgPkMsIZsu9pYe2B52yB/LAVhQp7mcElm
+        shSt4QJMq65o/v3icBKz/C+vagGCyPQ=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1649175377;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=1ZOY9F/5g5PeZhpDl0566aC7WZpwSzJmzpmgZjPPJCs=;
+        b=4Tej+bvG48jBLEq/iHWdONwEYnh5u0NpMsK9fU3f845V8jHN/awTO0gI5ReSv3mI0p3/Yr
+        e8FE95qhuVdKaOBw==
+Received: from alsa1.suse.de (alsa1.suse.de [10.160.4.42])
+        by relay2.suse.de (Postfix) with ESMTP id CF989A3B83;
+        Tue,  5 Apr 2022 16:16:17 +0000 (UTC)
+Date:   Tue, 05 Apr 2022 18:16:17 +0200
+Message-ID: <s5hilrn5wvi.wl-tiwai@suse.de>
+From:   Takashi Iwai <tiwai@suse.de>
+To:     Borislav Petkov <bp@alien8.de>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Takashi Iwai <tiwai@suse.com>, alsa-devel@alsa-project.org
+Subject: Re: [PATCH 02/11] ALSA: usb-audio: Fix undefined behavior due to shift overflowing the constant
+In-Reply-To: <Ykxo+0p5IeeM7mge@zn.tnic>
+References: <20220405151517.29753-1-bp@alien8.de>
+        <20220405151517.29753-3-bp@alien8.de>
+        <s5hwng35yvz.wl-tiwai@suse.de>
+        <Ykxo+0p5IeeM7mge@zn.tnic>
+User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI/1.14.6 (Maruoka)
+ FLIM/1.14.9 (=?UTF-8?B?R29qxY0=?=) APEL/10.8 Emacs/25.3
+ (x86_64-suse-linux-gnu) MULE/6.0 (HANACHIRUSATO)
+MIME-Version: 1.0 (generated by SEMI 1.14.6 - "Maruoka")
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Tue, 05 Apr 2022 18:06:19 +0200,
+Borislav Petkov wrote:
+> 
+> On Tue, Apr 05, 2022 at 05:32:48PM +0200, Takashi Iwai wrote:
+> > > +#define USB_ID(vendor, product) ((((unsigned int)vendor) << 16) | (product))
+> > 
+> > Parentheses are needed around vendor (as usual for a macro).
+> > Could you resubmit with it?
+> 
+> Or you can fix it up while applying. :)
 
---QPzbWFNPsCze9VF6
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+If you prefer, sure.
 
-On Tue, Apr 05, 2022 at 06:57:10PM +0200, Rafael J. Wysocki wrote:
-> From: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
->=20
-> Replace the last instance of acpi_bus_get_device(), added recently
-> by commit 87e59b36e5e2 ("spi: Support selection of the index of the
-> ACPI Spi Resource before alloc"), with acpi_fetch_acpi_dev() and
-> finally drop acpi_bus_get_device() that has no more users.
 
-Acked-by: Mark Brown <broonie@kernel.org>
-
-Or I can take this via the SPI tree?
-
---QPzbWFNPsCze9VF6
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmJMdpcACgkQJNaLcl1U
-h9DxDwf/QLzs4X1kcw3lh2J1QFJoikeWfy+wjpGlQvnW8BFu5QtafcdLIgozDZLJ
-4p+4bi2dgUoJlaYf0/aDSVE+lI5bUigDn0eaRZQSrbhKFOY3mN4WgiGuBzMMvUav
-FSqLEmUbUv8kAnBjiCpa0ICwnYSKuvIdyoN799H8ab8Nh3Wo0lQdWb38fZXiEyMm
-0EufArY7CQSoQOK8pyKbZY9hmuC8YtlwTY6MHe4wM6UY2likXlCjcjj5sGJQI/h+
-Qq/tWw4Hfb9uklMZQG1YfAOynbIW2xH25ozOyttT6oJdmtQs5RBGt+uAIg0njVC1
-NBjlVEy49YGv9PSoLycg3OObkem2Ew==
-=j4ZY
------END PGP SIGNATURE-----
-
---QPzbWFNPsCze9VF6--
+Takashi
