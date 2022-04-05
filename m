@@ -2,99 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EF24DC352A8
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 22:55:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0ABE4C4321E
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 22:55:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1456513AbiDEWqG (ORCPT
+        id S1456549AbiDEWqN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 18:46:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37136 "EHLO
+        Tue, 5 Apr 2022 18:46:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34442 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1457467AbiDEQDQ (ORCPT
+        with ESMTP id S1344418AbiDEKjq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 12:03:16 -0400
-Received: from mail-wm1-x329.google.com (mail-wm1-x329.google.com [IPv6:2a00:1450:4864:20::329])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5CCB73B295;
-        Tue,  5 Apr 2022 08:48:57 -0700 (PDT)
-Received: by mail-wm1-x329.google.com with SMTP id p26-20020a05600c1d9a00b0038ccbff1951so1497822wms.1;
-        Tue, 05 Apr 2022 08:48:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=A0FjBEpfdUc2aMXGxH1WIchkePURSO+P+PD9Wm9NGP0=;
-        b=de+iQACJDntQIFyVxDxW4OrrQwlo2Zxp5d8eJLvzPHLzA1KwtwhbnT+AeX8F/vuAMb
-         j+xXSO5fTCnXuBxXlckCplXKHUyx2ysLrYClJJhuveU++JdqQTh/N/PxSIMYMBFWjVys
-         3/rG49+/l85lGHJt9RUBZ0WgUs1hk/OSjwYvgBOY+U1HI4Pxq5xr1G8ekWeDFVAWl5U3
-         dNCmy7j3DObCw4y7RgevyioB4XBRhZkerg2aLSLPgSN2HyF01a+SJKHsGIrAEXTgoMH+
-         Pg/D0Y5b8skQuuGBcE5bkSIomGh0bL/rJ5ZR9BX+duwyIN1eZf0nJtNhhzKpo/424zAw
-         sEmA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:message-id:date:mime-version:user-agent
-         :subject:content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=A0FjBEpfdUc2aMXGxH1WIchkePURSO+P+PD9Wm9NGP0=;
-        b=G7zjliX79bkSMGG1oU773ELhoDFSfuo9MZKPZkBcbmD1FhTKycUNUwc843beOxIFvb
-         wGxSjuFSEsTMyIo8OPGd/aO269uRkgp2ksK+eT0OAP+lm6Q90gdpIbx1sMtxsIq3gO8z
-         bGryGOtCMLyQnrL32xuMoE6lyybn4+HOVxnH/fQ3hIh07zmZgMQ2UQMnrLnfZcK2f8xm
-         yp6Hbr7+RDcycFReCsCevglGJg5OX10w7jsUo4786b9c+wieQgqo4PfKPOBVxwi2OsaD
-         RUUb1UT2GCV/qjhw1ZQ3FxRUu90M3+w6W2cF59WWNlFJLU/2B/bmdskP/O/o0iwa9l/P
-         nPIA==
-X-Gm-Message-State: AOAM531B8p15pnRnh8fu9/90E24y6rbNWC+EEiNM/JvqErHmSfklK9mG
-        PjeHxFNfQqh4LYpbng32070=
-X-Google-Smtp-Source: ABdhPJy4G3ivTYsyI2foaN8va9EG3/g2rVGg49E9xdhQxUpyfj3gymEsoseDyfjIMGb2kqNEYIh6Fg==
-X-Received: by 2002:a05:600c:4f43:b0:38c:b270:f9af with SMTP id m3-20020a05600c4f4300b0038cb270f9afmr3761818wmq.36.1649173735827;
-        Tue, 05 Apr 2022 08:48:55 -0700 (PDT)
-Received: from [10.32.181.87] (nat-pool-mxp-t.redhat.com. [149.6.153.186])
-        by smtp.googlemail.com with ESMTPSA id a11-20020a056000188b00b00204109f7826sm14041183wri.28.2022.04.05.08.48.54
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 05 Apr 2022 08:48:55 -0700 (PDT)
-Sender: Paolo Bonzini <paolo.bonzini@gmail.com>
-Message-ID: <efbe06a7-3624-2a5a-c1c4-be86f63951e3@redhat.com>
-Date:   Tue, 5 Apr 2022 17:48:54 +0200
+        Tue, 5 Apr 2022 06:39:46 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C64926AFB;
+        Tue,  5 Apr 2022 03:25:07 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AAD156141D;
+        Tue,  5 Apr 2022 10:25:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B7D15C385A0;
+        Tue,  5 Apr 2022 10:25:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649154306;
+        bh=+wq173W039LLwt49okhsC1cU/Yg0EMixvemiQqA7vmw=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=bWtP/X5h8zjMQagFoUKseIiNvCaEuX6rUADjTZn8i2VJcE99e26JB3mMAOKDm+XaG
+         LS0DzGQAk/TDXhO1ABDtVubx99QtP388J8DoDul8G0S6IagQdPGm9RS7gFWiaU2aL0
+         YFHGF+Takub6w0LIeSNrR+i6652tXuOAsU+yLwkw=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Zeal Robot <zealci@zte.com.cn>,
+        Jing Yao <yao.jing2@zte.com.cn>, Helge Deller <deller@gmx.de>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 495/599] video: fbdev: omapfb: panel-dsi-cm: Use sysfs_emit() instead of snprintf()
+Date:   Tue,  5 Apr 2022 09:33:09 +0200
+Message-Id: <20220405070313.559022323@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
+References: <20220405070258.802373272@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [RFC PATCH v5 101/104] KVM: TDX: Silently ignore INIT/SIPI
-Content-Language: en-US
-To:     isaku.yamahata@intel.com, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     isaku.yamahata@gmail.com, Jim Mattson <jmattson@google.com>,
-        erdemaktas@google.com, Connor Kuehl <ckuehl@redhat.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Tom Lendacky <thomas.lendacky@amd.com>
-References: <cover.1646422845.git.isaku.yamahata@intel.com>
- <d0eb8fa53e782a244397168df856f9f904e4d1cd.1646422845.git.isaku.yamahata@intel.com>
-From:   Paolo Bonzini <pbonzini@redhat.com>
-In-Reply-To: <d0eb8fa53e782a244397168df856f9f904e4d1cd.1646422845.git.isaku.yamahata@intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 3/4/22 20:49, isaku.yamahata@intel.com wrote:
-> +		if (kvm_init_sipi_unsupported(vcpu->kvm))
-> +			/*
-> +			 * TDX doesn't support INIT.  Ignore INIT event.  In the
-> +			 * case of SIPI, the callback of
-> +			 * vcpu_deliver_sipi_vector ignores it.
-> +			 */
->   			vcpu->arch.mp_state = KVM_MP_STATE_RUNNABLE;
-> -		else
-> -			vcpu->arch.mp_state = KVM_MP_STATE_INIT_RECEIVED;
-> +		else {
-> +			kvm_vcpu_reset(vcpu, true);
-> +			if (kvm_vcpu_is_bsp(apic->vcpu))
-> +				vcpu->arch.mp_state = KVM_MP_STATE_RUNNABLE;
-> +			else
-> +				vcpu->arch.mp_state = KVM_MP_STATE_INIT_RECEIVED;
-> +		}
+From: Jing Yao <yao.jing2@zte.com.cn>
 
-Should you check vcpu->arch.guest_state_protected instead of 
-special-casing TDX?  KVM_APIC_INIT is not valid for SEV-ES either, if I 
-remember correctly.
+[ Upstream commit f63658a59c3d439c8ad7b290f8ec270980e0f384 ]
 
-Paolo
+Use sysfs_emit instead of scnprintf, snprintf or sprintf.
+
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: Jing Yao <yao.jing2@zte.com.cn>
+Signed-off-by: Helge Deller <deller@gmx.de>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/video/fbdev/omap2/omapfb/displays/panel-dsi-cm.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/video/fbdev/omap2/omapfb/displays/panel-dsi-cm.c b/drivers/video/fbdev/omap2/omapfb/displays/panel-dsi-cm.c
+index 4b0793abdd84..a2c7c5cb1523 100644
+--- a/drivers/video/fbdev/omap2/omapfb/displays/panel-dsi-cm.c
++++ b/drivers/video/fbdev/omap2/omapfb/displays/panel-dsi-cm.c
+@@ -409,7 +409,7 @@ static ssize_t dsicm_num_errors_show(struct device *dev,
+ 	if (r)
+ 		return r;
+ 
+-	return snprintf(buf, PAGE_SIZE, "%d\n", errors);
++	return sysfs_emit(buf, "%d\n", errors);
+ }
+ 
+ static ssize_t dsicm_hw_revision_show(struct device *dev,
+@@ -439,7 +439,7 @@ static ssize_t dsicm_hw_revision_show(struct device *dev,
+ 	if (r)
+ 		return r;
+ 
+-	return snprintf(buf, PAGE_SIZE, "%02x.%02x.%02x\n", id1, id2, id3);
++	return sysfs_emit(buf, "%02x.%02x.%02x\n", id1, id2, id3);
+ }
+ 
+ static ssize_t dsicm_store_ulps(struct device *dev,
+@@ -487,7 +487,7 @@ static ssize_t dsicm_show_ulps(struct device *dev,
+ 	t = ddata->ulps_enabled;
+ 	mutex_unlock(&ddata->lock);
+ 
+-	return snprintf(buf, PAGE_SIZE, "%u\n", t);
++	return sysfs_emit(buf, "%u\n", t);
+ }
+ 
+ static ssize_t dsicm_store_ulps_timeout(struct device *dev,
+@@ -532,7 +532,7 @@ static ssize_t dsicm_show_ulps_timeout(struct device *dev,
+ 	t = ddata->ulps_timeout;
+ 	mutex_unlock(&ddata->lock);
+ 
+-	return snprintf(buf, PAGE_SIZE, "%u\n", t);
++	return sysfs_emit(buf, "%u\n", t);
+ }
+ 
+ static DEVICE_ATTR(num_dsi_errors, S_IRUGO, dsicm_num_errors_show, NULL);
+-- 
+2.34.1
+
+
+
