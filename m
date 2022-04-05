@@ -2,44 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 667D1C4707A
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1AE2BC4167E
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 13:24:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359262AbiDENKM (ORCPT
+        id S1377229AbiDENMt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 09:10:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44274 "EHLO
+        Tue, 5 Apr 2022 09:12:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44330 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344192AbiDEJSh (ORCPT
+        with ESMTP id S1344208AbiDEJSi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:18:37 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 643024091C;
-        Tue,  5 Apr 2022 02:05:09 -0700 (PDT)
+        Tue, 5 Apr 2022 05:18:38 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DC2F46160;
+        Tue,  5 Apr 2022 02:05:41 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 03B3C61003;
-        Tue,  5 Apr 2022 09:05:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 147CCC385A0;
-        Tue,  5 Apr 2022 09:05:07 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 04E8FB80DA1;
+        Tue,  5 Apr 2022 09:05:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 528F8C385A0;
+        Tue,  5 Apr 2022 09:05:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649149508;
-        bh=BKFbN78+A/5yk54tSfiWqE/xHZibpiB0gV7vX3QvTg4=;
+        s=korg; t=1649149538;
+        bh=3KGFa6EC32xjqdgLhOOEcMv8VXMCN8d2FHi3RO5nQi4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=uM/doR/AvMWwFz4AYcp38bRg5N+zb2j9hlCH8m8mGK5RKeUFB9dZH5g/w6j5hphv8
-         WwelXwT9yJw/noene5xqOPmGF0lStca/uXLWSocdbS5+yvx6czlGGMzQlI2urZmnTK
-         80ijXll0RIstwjLBpnis/qslda2NGVJJC8w0jD4A=
+        b=dFTnPohZziTFSJSK4RzKjZ+Q4q0RtAiKLHWkfsiDNvXcYzN5WlMzltHmX5y5WN8My
+         BfdmSQzcYt31skI/W4pK4oRn0I42L/WXklgjP9lQvq3tixZJhlCVelQuTO3sjFMzA6
+         X7ONEw6FuImwOf9AL2AuAGc5/wB5j3ulsRlHsHGo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Duoming Zhou <duoming@zju.edu.cn>,
-        Lin Ma <linma@zju.edu.cn>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0740/1017] net/x25: Fix null-ptr-deref caused by x25_disconnect
-Date:   Tue,  5 Apr 2022 09:27:33 +0200
-Message-Id: <20220405070416.229821462@linuxfoundation.org>
+        stable@vger.kernel.org, Fedor Pchelkin <aissur0002@gmail.com>,
+        Alexey Khoroshilov <khoroshilov@ispras.ru>,
+        Christian Brauner <brauner@kernel.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Sasha Levin <sashal@kernel.org>,
+        "Jason A . Donenfeld" <Jason@zx2c4.com>
+Subject: [PATCH 5.16 0750/1017] fs: fix fd table size alignment properly
+Date:   Tue,  5 Apr 2022 09:27:43 +0200
+Message-Id: <20220405070416.523221428@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -51,63 +53,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Duoming Zhou <duoming@zju.edu.cn>
+From: Linus Torvalds <torvalds@linux-foundation.org>
 
-[ Upstream commit 7781607938c8371d4c2b243527430241c62e39c2 ]
+[ Upstream commit d888c83fcec75194a8a48ccd283953bdba7b2550 ]
 
-When the link layer is terminating, x25->neighbour will be set to NULL
-in x25_disconnect(). As a result, it could cause null-ptr-deref bugs in
-x25_sendmsg(),x25_recvmsg() and x25_connect(). One of the bugs is
-shown below.
+Jason Donenfeld reports that my commit 1c24a186398f ("fs: fd tables have
+to be multiples of BITS_PER_LONG") doesn't work, and the reason is an
+embarrassing brown-paper-bag bug.
 
-    (Thread 1)                 |  (Thread 2)
-x25_link_terminated()          | x25_recvmsg()
- x25_kill_by_neigh()           |  ...
-  x25_disconnect()             |  lock_sock(sk)
-   ...                         |  ...
-   x25->neighbour = NULL //(1) |
-   ...                         |  x25->neighbour->extended //(2)
+Yes, we want to align the number of fds to BITS_PER_LONG, and yes, the
+reason they might not be aligned is because the incoming 'max_fd'
+argument might not be aligned.
 
-The code sets NULL to x25->neighbour in position (1) and dereferences
-x25->neighbour in position (2), which could cause null-ptr-deref bug.
+But aligining the argument - while simple - will cause a "infinitely
+big" maxfd (eg NR_OPEN_MAX) to just overflow to zero.  Which most
+definitely isn't what we want either.
 
-This patch adds lock_sock() in x25_kill_by_neigh() in order to synchronize
-with x25_sendmsg(), x25_recvmsg() and x25_connect(). What`s more, the
-sock held by lock_sock() is not NULL, because it is extracted from x25_list
-and uses x25_list_lock to synchronize.
+The obvious fix was always just to do the alignment last, but I had
+moved it earlier just to make the patch smaller and the code look
+simpler.  Duh.  It certainly made _me_ look simple.
 
-Fixes: 4becb7ee5b3d ("net/x25: Fix x25_neigh refcnt leak when x25 disconnect")
-Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
-Reviewed-by: Lin Ma <linma@zju.edu.cn>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Fixes: 1c24a186398f ("fs: fd tables have to be multiples of BITS_PER_LONG")
+Reported-and-tested-by: Jason A. Donenfeld <Jason@zx2c4.com>
+Cc: Fedor Pchelkin <aissur0002@gmail.com>
+Cc: Alexey Khoroshilov <khoroshilov@ispras.ru>
+Cc: Christian Brauner <brauner@kernel.org>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/x25/af_x25.c | 11 ++++++++---
- 1 file changed, 8 insertions(+), 3 deletions(-)
+ fs/file.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/net/x25/af_x25.c b/net/x25/af_x25.c
-index 3583354a7d7f..3a171828638b 100644
---- a/net/x25/af_x25.c
-+++ b/net/x25/af_x25.c
-@@ -1765,10 +1765,15 @@ void x25_kill_by_neigh(struct x25_neigh *nb)
+diff --git a/fs/file.c b/fs/file.c
+index c01c29417ae6..ee9317346702 100644
+--- a/fs/file.c
++++ b/fs/file.c
+@@ -303,10 +303,9 @@ static unsigned int sane_fdtable_size(struct fdtable *fdt, unsigned int max_fds)
+ 	unsigned int count;
  
- 	write_lock_bh(&x25_list_lock);
+ 	count = count_open_files(fdt);
+-	max_fds = ALIGN(max_fds, BITS_PER_LONG);
+ 	if (max_fds < NR_OPEN_DEFAULT)
+ 		max_fds = NR_OPEN_DEFAULT;
+-	return min(count, max_fds);
++	return ALIGN(min(count, max_fds), BITS_PER_LONG);
+ }
  
--	sk_for_each(s, &x25_list)
--		if (x25_sk(s)->neighbour == nb)
-+	sk_for_each(s, &x25_list) {
-+		if (x25_sk(s)->neighbour == nb) {
-+			write_unlock_bh(&x25_list_lock);
-+			lock_sock(s);
- 			x25_disconnect(s, ENETUNREACH, 0, 0);
--
-+			release_sock(s);
-+			write_lock_bh(&x25_list_lock);
-+		}
-+	}
- 	write_unlock_bh(&x25_list_lock);
- 
- 	/* Remove any related forwards */
+ /*
 -- 
 2.34.1
 
