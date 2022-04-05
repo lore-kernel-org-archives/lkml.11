@@ -2,45 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 781F7C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8CDC6C43219
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 01:48:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1844029AbiDFBm5 (ORCPT
+        id S1844059AbiDFBnD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 21:42:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51344 "EHLO
+        Tue, 5 Apr 2022 21:43:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33210 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349506AbiDEKTR (ORCPT
+        with ESMTP id S1350068AbiDEJwk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:19:17 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA974140C2;
-        Tue,  5 Apr 2022 03:04:42 -0700 (PDT)
+        Tue, 5 Apr 2022 05:52:40 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 710EC47AC2;
+        Tue,  5 Apr 2022 02:50:41 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 246E96167E;
-        Tue,  5 Apr 2022 10:04:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 38FD9C385A2;
-        Tue,  5 Apr 2022 10:04:41 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 28B9CB818F3;
+        Tue,  5 Apr 2022 09:50:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 78242C385A1;
+        Tue,  5 Apr 2022 09:50:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649153081;
-        bh=65v/Mhq1vJHIlp0/ueHvsif4fe6gAfi+72RU4MfFwZI=;
+        s=korg; t=1649152238;
+        bh=BYLceQ27HCG3skTU1Q/nNGBO22BIEfWtYYg8LclAFG0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Q7acPTJNdWq8cHIvG38SQPnxxvIQn7juIaBpmKRW5A4eH36+Q23gGLpnQXphKjmQ9
-         0IlgEnF7b+ViDVoYksVvLO7ZHfdSBR/sus/LruMsiwrT3gVpk6sBBVD8S+lJ4GIc9S
-         rHguGuR2RX023f3NRXW3hrbkTP+17f3GVzX6CnRg=
+        b=Yy+OJjA6OfMiVrL2s+UA0R5TFHOwYvGnkV3NmafU0IWz95CTyl5SoboQLBoJ3/LxR
+         FnT+Ze+rznoieNpy+kECqUiO6zniQzQUceBLJ7M3PfyS/aRIgMJHfglfVjV0LI/LDl
+         WGkneZVC//0BEKUkU6g0aZwZGGlXKlrsu3aSO0pU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tejun Heo <tj@kernel.org>,
-        Josef Bacik <jbacik@fb.com>, Jens Axboe <axboe@kernel.dk>
-Subject: [PATCH 5.10 095/599] block: dont merge across cgroup boundaries if blkcg is enabled
-Date:   Tue,  5 Apr 2022 09:26:29 +0200
-Message-Id: <20220405070301.658077817@linuxfoundation.org>
+        stable@vger.kernel.org, Ido Schimmel <idosch@nvidia.com>,
+        David Ahern <dsahern@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 667/913] selftests: test_vxlan_under_vrf: Fix broken test case
+Date:   Tue,  5 Apr 2022 09:28:49 +0200
+Message-Id: <20220405070359.829072423@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,112 +51,69 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tejun Heo <tj@kernel.org>
+From: Ido Schimmel <idosch@nvidia.com>
 
-commit 6b2b04590b51aa4cf395fcd185ce439cab5961dc upstream.
+[ Upstream commit b50d3b46f84282d795ae3076111acb75ae1031f3 ]
 
-blk-iocost and iolatency are cgroup aware rq-qos policies but they didn't
-disable merges across different cgroups. This obviously can lead to
-accounting and control errors but more importantly to priority inversions -
-e.g. an IO which belongs to a higher priority cgroup or IO class may end up
-getting throttled incorrectly because it gets merged to an IO issued from a
-low priority cgroup.
+The purpose of the last test case is to test VXLAN encapsulation and
+decapsulation when the underlay lookup takes place in a non-default VRF.
+This is achieved by enslaving the physical device of the tunnel to a
+VRF.
 
-Fix it by adding blk_cgroup_mergeable() which is called from merge paths and
-rejects cross-cgroup and cross-issue_as_root merges.
+The binding of the VXLAN UDP socket to the VRF happens when the VXLAN
+device itself is opened, not when its physical device is opened. This
+was also mentioned in the cited commit ("tests that moving the underlay
+from a VRF to another works when down/up the VXLAN interface"), but the
+test did something else.
 
-Signed-off-by: Tejun Heo <tj@kernel.org>
-Fixes: d70675121546 ("block: introduce blk-iolatency io controller")
-Cc: stable@vger.kernel.org # v4.19+
-Cc: Josef Bacik <jbacik@fb.com>
-Link: https://lore.kernel.org/r/Yi/eE/6zFNyWJ+qd@slm.duckdns.org
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fix it by reopening the VXLAN device instead of its physical device.
+
+Before:
+
+ # ./test_vxlan_under_vrf.sh
+ Checking HV connectivity                                           [ OK ]
+ Check VM connectivity through VXLAN (underlay in the default VRF)  [ OK ]
+ Check VM connectivity through VXLAN (underlay in a VRF)            [FAIL]
+
+After:
+
+ # ./test_vxlan_under_vrf.sh
+ Checking HV connectivity                                           [ OK ]
+ Check VM connectivity through VXLAN (underlay in the default VRF)  [ OK ]
+ Check VM connectivity through VXLAN (underlay in a VRF)            [ OK ]
+
+Fixes: 03f1c26b1c56 ("test/net: Add script for VXLAN underlay in a VRF")
+Signed-off-by: Ido Schimmel <idosch@nvidia.com>
+Reviewed-by: David Ahern <dsahern@kernel.org>
+Link: https://lore.kernel.org/r/20220324200514.1638326-1-idosch@nvidia.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- block/blk-merge.c          |   11 +++++++++++
- include/linux/blk-cgroup.h |   17 +++++++++++++++++
- 2 files changed, 28 insertions(+)
+ tools/testing/selftests/net/test_vxlan_under_vrf.sh | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
---- a/block/blk-merge.c
-+++ b/block/blk-merge.c
-@@ -7,6 +7,7 @@
- #include <linux/bio.h>
- #include <linux/blkdev.h>
- #include <linux/scatterlist.h>
-+#include <linux/blk-cgroup.h>
+diff --git a/tools/testing/selftests/net/test_vxlan_under_vrf.sh b/tools/testing/selftests/net/test_vxlan_under_vrf.sh
+index 534c8b7699ab..6fadc8e2f116 100755
+--- a/tools/testing/selftests/net/test_vxlan_under_vrf.sh
++++ b/tools/testing/selftests/net/test_vxlan_under_vrf.sh
+@@ -118,11 +118,11 @@ echo "[ OK ]"
  
- #include <trace/events/block.h>
+ # Move the underlay to a non-default VRF
+ ip -netns hv-1 link set veth0 vrf vrf-underlay
+-ip -netns hv-1 link set veth0 down
+-ip -netns hv-1 link set veth0 up
++ip -netns hv-1 link set vxlan0 down
++ip -netns hv-1 link set vxlan0 up
+ ip -netns hv-2 link set veth0 vrf vrf-underlay
+-ip -netns hv-2 link set veth0 down
+-ip -netns hv-2 link set veth0 up
++ip -netns hv-2 link set vxlan0 down
++ip -netns hv-2 link set vxlan0 up
  
-@@ -554,6 +555,9 @@ static inline unsigned int blk_rq_get_ma
- static inline int ll_new_hw_segment(struct request *req, struct bio *bio,
- 		unsigned int nr_phys_segs)
- {
-+	if (!blk_cgroup_mergeable(req, bio))
-+		goto no_merge;
-+
- 	if (blk_integrity_merge_bio(req->q, req, bio) == false)
- 		goto no_merge;
- 
-@@ -650,6 +654,9 @@ static int ll_merge_requests_fn(struct r
- 	if (total_phys_segments > blk_rq_get_max_segments(req))
- 		return 0;
- 
-+	if (!blk_cgroup_mergeable(req, next->bio))
-+		return 0;
-+
- 	if (blk_integrity_merge_rq(q, req, next) == false)
- 		return 0;
- 
-@@ -861,6 +868,10 @@ bool blk_rq_merge_ok(struct request *rq,
- 	if (rq->rq_disk != bio->bi_disk)
- 		return false;
- 
-+	/* don't merge across cgroup boundaries */
-+	if (!blk_cgroup_mergeable(rq, bio))
-+		return false;
-+
- 	/* only merge integrity protected bio into ditto rq */
- 	if (blk_integrity_merge_bio(rq->q, rq, bio) == false)
- 		return false;
---- a/include/linux/blk-cgroup.h
-+++ b/include/linux/blk-cgroup.h
-@@ -24,6 +24,7 @@
- #include <linux/atomic.h>
- #include <linux/kthread.h>
- #include <linux/fs.h>
-+#include <linux/blk-mq.h>
- 
- /* percpu_counter batch for blkg_[rw]stats, per-cpu drift doesn't matter */
- #define BLKG_STAT_CPU_BATCH	(INT_MAX / 2)
-@@ -599,6 +600,21 @@ static inline void blkcg_clear_delay(str
- 		atomic_dec(&blkg->blkcg->css.cgroup->congestion_count);
- }
- 
-+/**
-+ * blk_cgroup_mergeable - Determine whether to allow or disallow merges
-+ * @rq: request to merge into
-+ * @bio: bio to merge
-+ *
-+ * @bio and @rq should belong to the same cgroup and their issue_as_root should
-+ * match. The latter is necessary as we don't want to throttle e.g. a metadata
-+ * update because it happens to be next to a regular IO.
-+ */
-+static inline bool blk_cgroup_mergeable(struct request *rq, struct bio *bio)
-+{
-+	return rq->bio->bi_blkg == bio->bi_blkg &&
-+		bio_issue_as_root_blkg(rq->bio) == bio_issue_as_root_blkg(bio);
-+}
-+
- void blk_cgroup_bio_start(struct bio *bio);
- void blkcg_add_delay(struct blkcg_gq *blkg, u64 now, u64 delta);
- void blkcg_schedule_throttle(struct request_queue *q, bool use_memdelay);
-@@ -654,6 +670,7 @@ static inline void blkg_put(struct blkcg
- static inline bool blkcg_punt_bio_submit(struct bio *bio) { return false; }
- static inline void blkcg_bio_issue_init(struct bio *bio) { }
- static inline void blk_cgroup_bio_start(struct bio *bio) { }
-+static inline bool blk_cgroup_mergeable(struct request *rq, struct bio *bio) { return true; }
- 
- #define blk_queue_for_each_rl(rl, q)	\
- 	for ((rl) = &(q)->root_rl; (rl); (rl) = NULL)
+ echo -n "Check VM connectivity through VXLAN (underlay in a VRF)            "
+ ip netns exec vm-1 ping -c 1 -W 1 10.0.0.2 &> /dev/null || (echo "[FAIL]"; false)
+-- 
+2.34.1
+
 
 
