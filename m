@@ -2,46 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E50C3C352A7
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 13:32:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B43CC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 13:32:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356426AbiDEN3M (ORCPT
+        id S1379948AbiDEN3v (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 09:29:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45834 "EHLO
+        Tue, 5 Apr 2022 09:29:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44250 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345262AbiDEJWX (ORCPT
+        with ESMTP id S1345312AbiDEJWZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:22:23 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78CB03F8B7;
-        Tue,  5 Apr 2022 02:10:01 -0700 (PDT)
+        Tue, 5 Apr 2022 05:22:25 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 136252AE00;
+        Tue,  5 Apr 2022 02:10:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2E77FB81A22;
-        Tue,  5 Apr 2022 09:10:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8038EC385A2;
-        Tue,  5 Apr 2022 09:09:58 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A6EC361527;
+        Tue,  5 Apr 2022 09:10:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B0648C385A2;
+        Tue,  5 Apr 2022 09:10:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649149798;
-        bh=Cah0xlxi9vX/JXqn6RvksIYmQRGk5+CJsMN43zZ9Jn4=;
+        s=korg; t=1649149821;
+        bh=BS9+xBaILP2NTve/YGTy5aoxWamiPKm3xneZ2z7LGuc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Jgn4sJdczJ9fV/yjdFXrbYAiDJurA5XtG+nsbNjwk6+bGhjAK7mD/XJNe0GdwDyAK
-         YCVCfhhoB3Hsrj3yp6HVvioEQsUjAQpQ17h0JMcfxhOrJOvhHHpG73GjshMTSjLlGU
-         y3VYlD8J5o5GKW3p9TzEJs/teih9h2c/lUB/+M5o=
+        b=oV6OPfcMbWKXZZvcL+wPwe0gvLdyrKJ4HqdoSukuUr6Uqo3PUGYwsEnlolbx57R6G
+         40flP+Sp5hV+kupJvCNnc+WeT/4n0+ttB8gspgWzUmOI2w+cfBB/atdlGA0nQYt8oe
+         dV8M5cSCHdbxw9LY3cmb14lNMkfivRvuDGyN1KK4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        =?UTF-8?q?Maximilian=20B=C3=B6hm?= <maximilian.boehm@elbmurf.de>,
-        Pavel Skripkin <paskripkin@gmail.com>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        =?UTF-8?q?Daniel=20Gonz=C3=A1lez=20Cabanelas?= <dgcbueu@gmail.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0846/1017] media: Revert "media: em28xx: add missing em28xx_close_extension"
-Date:   Tue,  5 Apr 2022 09:29:19 +0200
-Message-Id: <20220405070419.352052052@linuxfoundation.org>
+Subject: [PATCH 5.16 0836/1017] media: cx88-mpeg: clear interrupt status register before streaming video
+Date:   Tue,  5 Apr 2022 09:29:09 +0200
+Message-Id: <20220405070419.057876762@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -53,45 +50,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pavel Skripkin <paskripkin@gmail.com>
+From: Daniel González Cabanelas <dgcbueu@gmail.com>
 
-[ Upstream commit fde18c3bac3f964d8333ae53b304d8fee430502b ]
+[ Upstream commit 56cb61f70e547e1b0cdfe6ff5a1f1ce6242e6d96 ]
 
-This reverts commit 2c98b8a3458df03abdc6945bbef67ef91d181938.
+Some cx88 video cards may have transport stream status interrupts set
+to 1 from cold start, causing errors like this:
 
-Reverted patch causes problems with Hauppauge WinTV dualHD as Maximilian
-reported [1]. Since quick solution didn't come up let's just revert it
-to make this device work with upstream kernels.
+  cx88xx: cx88_print_irqbits: core:irq mpeg  [0x100000] ts_err?*
+  cx8802: cx8802_mpeg_irq: mpeg:general errors: 0x00100000
 
-Link: https://lore.kernel.org/all/6a72a37b-e972-187d-0322-16336e12bdc5@elbmurf.de/ [1]
+According to CX2388x datasheet, the interrupt status register should be
+cleared before enabling IRQs to stream video.
 
-Reported-by: Maximilian Böhm <maximilian.boehm@elbmurf.de>
-Tested-by: Maximilian Böhm <maximilian.boehm@elbmurf.de>
-Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+Fix it by clearing the Transport Stream Interrupt Status register.
+
+Signed-off-by: Daniel González Cabanelas <dgcbueu@gmail.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/usb/em28xx/em28xx-cards.c | 5 +----
- 1 file changed, 1 insertion(+), 4 deletions(-)
+ drivers/media/pci/cx88/cx88-mpeg.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/media/usb/em28xx/em28xx-cards.c b/drivers/media/usb/em28xx/em28xx-cards.c
-index f3b56c065ee1..ae25d2cbfdfe 100644
---- a/drivers/media/usb/em28xx/em28xx-cards.c
-+++ b/drivers/media/usb/em28xx/em28xx-cards.c
-@@ -4150,11 +4150,8 @@ static void em28xx_usb_disconnect(struct usb_interface *intf)
+diff --git a/drivers/media/pci/cx88/cx88-mpeg.c b/drivers/media/pci/cx88/cx88-mpeg.c
+index 680e1e3fe89b..2c1d5137ac47 100644
+--- a/drivers/media/pci/cx88/cx88-mpeg.c
++++ b/drivers/media/pci/cx88/cx88-mpeg.c
+@@ -162,6 +162,9 @@ int cx8802_start_dma(struct cx8802_dev    *dev,
+ 	cx_write(MO_TS_GPCNTRL, GP_COUNT_CONTROL_RESET);
+ 	q->count = 0;
  
- 	em28xx_close_extension(dev);
- 
--	if (dev->dev_next) {
--		em28xx_close_extension(dev->dev_next);
-+	if (dev->dev_next)
- 		em28xx_release_resources(dev->dev_next);
--	}
--
- 	em28xx_release_resources(dev);
- 
- 	if (dev->dev_next) {
++	/* clear interrupt status register */
++	cx_write(MO_TS_INTSTAT,  0x1f1111);
++
+ 	/* enable irqs */
+ 	dprintk(1, "setting the interrupt mask\n");
+ 	cx_set(MO_PCI_INTMSK, core->pci_irqmask | PCI_INT_TSINT);
 -- 
 2.34.1
 
