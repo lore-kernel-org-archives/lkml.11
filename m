@@ -2,80 +2,183 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 48E71C4332F
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 01:42:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8CCEEC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 01:42:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241995AbiDFBf7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 21:35:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35664 "EHLO
+        id S1384731AbiDFBgW (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 21:36:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33856 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1454559AbiDEP6j (ORCPT
+        with ESMTP id S1344108AbiDEKjp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 11:58:39 -0400
-Received: from mail.pr-group.ru (mail.pr-group.ru [178.18.215.3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86916443EB
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 08:04:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-        d=metrotek.ru; s=mail;
-        h=from:subject:date:message-id:to:cc:mime-version:content-transfer-encoding;
-        bh=2mjX0OzZBY3rlbKbLExUJUebHgkF1v+WvCOVbppC/gU=;
-        b=f1KXC0gbAa1Sl5wYmkACVrUj+W0Pyz2+qiG45PzK/KYG3AzFM/qjbCmrkozTnZFFrdWyCiODBitvp
-         XwQ2l9EGHebaSkK13kVX6jVbPN3cw3Cz9be7wSYeyTUMJr7XIO2Eay1TDGzzNlHrHo4EkfiFeMHVZz
-         SGBUoZLoZ591yvW5rqDKbwdsVuOHI0qN5BzsOmGEQe+4ZRODUNGF8BD41Umpom96LGx189Ywd50LBK
-         hWnfnsLnCQ4I4g+aNX9peK02YPEfGsoRQs3Uv/4GnK8LXVyPljetSy6BoWtsQitpGXUG4JyiYe25PT
-         zWjua6QcyjzI5eUMFPn3uRVU9l50nQw==
-X-Kerio-Anti-Spam:  Build: [Engines: 2.16.2.1410, Stamp: 3], Multi: [Enabled, t: (0.000008,0.005307)], BW: [Enabled, t: (0.000013,0.000001)], RTDA: [Enabled, t: (0.070428), Hit: No, Details: v2.33.0; Id: 15.52k5sq.1fvt4228p.1g3j; mclb], total: 0(700)
-X-Footer: bWV0cm90ZWsucnU=
-Received: from h-e2.ddg ([85.143.252.66])
-        (authenticated user i.bornyakov@metrotek.ru)
-        by mail.pr-group.ru with ESMTPSA
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256 bits));
-        Tue, 5 Apr 2022 18:03:59 +0300
-From:   Ivan Bornyakov <i.bornyakov@metrotek.ru>
-Cc:     andrew@lunn.ch, hkallweit1@gmail.com, linux@armlinux.org.uk,
-        davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        system@metrotek.ru, Ivan Bornyakov <i.bornyakov@metrotek.ru>
-Subject: [PATCH net] net: phy: marvell-88x2222: set proper phydev->port
-Date:   Tue,  5 Apr 2022 18:03:05 +0300
-Message-Id: <20220405150305.151573-1-i.bornyakov@metrotek.ru>
-X-Mailer: git-send-email 2.25.1
+        Tue, 5 Apr 2022 06:39:45 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DBE812611D;
+        Tue,  5 Apr 2022 03:25:00 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 4DCD8CE0B18;
+        Tue,  5 Apr 2022 10:24:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6280CC385A0;
+        Tue,  5 Apr 2022 10:24:57 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649154297;
+        bh=IrqnNTvRac6zDFBz8lPZ519erod6BwbMDCIQfnHanu8=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=mO25bh0/cBSbAAIQQLoJD2VRvwsWkKqNoIetd6THlo0VsfZrXr4JGFfmdjimhmwIm
+         jc5CpxNZHuParllXKmopO1QFq+STvvXppR2PLdrsqNaR0GCdr6r5ccvPzlEaOaIwLI
+         ULu2JcM7mEvXo3pouUBS9Z0K1wwBNnww1L0BVcpY=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Ard Biesheuvel <ardb@kernel.org>,
+        "Steven Rostedt (Google)" <rostedt@goodmis.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 492/599] ARM: ftrace: avoid redundant loads or clobbering IP
+Date:   Tue,  5 Apr 2022 09:33:06 +0200
+Message-Id: <20220405070313.468807707@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
+References: <20220405070258.802373272@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-phydev->port was not set and always reported as PORT_TP.
-Set phydev->port according to inserted SFP module.
+From: Ard Biesheuvel <ardb@kernel.org>
 
-Signed-off-by: Ivan Bornyakov <i.bornyakov@metrotek.ru>
+[ Upstream commit d11967870815b5ab89843980e35aab616c97c463 ]
+
+Tweak the ftrace return paths to avoid redundant loads of SP, as well as
+unnecessary clobbering of IP.
+
+This also fixes the inconsistency of using MOV to perform a function
+return, which is sub-optimal on recent micro-architectures but more
+importantly, does not perform an interworking return, unlike compiler
+generated function returns in Thumb2 builds.
+
+Let's fix this by popping PC from the stack like most ordinary code
+does.
+
+Signed-off-by: Ard Biesheuvel <ardb@kernel.org>
+Reviewed-by: Steven Rostedt (Google) <rostedt@goodmis.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/phy/marvell-88x2222.c | 2 ++
- 1 file changed, 2 insertions(+)
+ arch/arm/kernel/entry-ftrace.S | 51 +++++++++++++++-------------------
+ 1 file changed, 22 insertions(+), 29 deletions(-)
 
-diff --git a/drivers/net/phy/marvell-88x2222.c b/drivers/net/phy/marvell-88x2222.c
-index ec4f1407a78c..9f971b37ec35 100644
---- a/drivers/net/phy/marvell-88x2222.c
-+++ b/drivers/net/phy/marvell-88x2222.c
-@@ -603,6 +603,7 @@ static int mv2222_sfp_insert(void *upstream, const struct sfp_eeprom_id *id)
- 	dev = &phydev->mdio.dev;
+diff --git a/arch/arm/kernel/entry-ftrace.S b/arch/arm/kernel/entry-ftrace.S
+index f4886fb6e9ba..f33c171e3090 100644
+--- a/arch/arm/kernel/entry-ftrace.S
++++ b/arch/arm/kernel/entry-ftrace.S
+@@ -22,10 +22,7 @@
+  * mcount can be thought of as a function called in the middle of a subroutine
+  * call.  As such, it needs to be transparent for both the caller and the
+  * callee: the original lr needs to be restored when leaving mcount, and no
+- * registers should be clobbered.  (In the __gnu_mcount_nc implementation, we
+- * clobber the ip register.  This is OK because the ARM calling convention
+- * allows it to be clobbered in subroutines and doesn't use it to hold
+- * parameters.)
++ * registers should be clobbered.
+  *
+  * When using dynamic ftrace, we patch out the mcount call by a "pop {lr}"
+  * instead of the __gnu_mcount_nc call (see arch/arm/kernel/ftrace.c).
+@@ -70,26 +67,25 @@
  
- 	sfp_parse_support(phydev->sfp_bus, id, sfp_supported);
-+	phydev->port = sfp_parse_port(phydev->sfp_bus, id, sfp_supported);
- 	sfp_interface = sfp_select_interface(phydev->sfp_bus, sfp_supported);
+ .macro __ftrace_regs_caller
  
- 	dev_info(dev, "%s SFP module inserted\n", phy_modes(sfp_interface));
-@@ -639,6 +640,7 @@ static void mv2222_sfp_remove(void *upstream)
+-	sub	sp, sp, #8	@ space for PC and CPSR OLD_R0,
++	str	lr, [sp, #-8]!	@ store LR as PC and make space for CPSR/OLD_R0,
+ 				@ OLD_R0 will overwrite previous LR
  
- 	priv->line_interface = PHY_INTERFACE_MODE_NA;
- 	linkmode_zero(priv->supported);
-+	phydev->port = PORT_OTHER;
- }
+-	add 	ip, sp, #12	@ move in IP the value of SP as it was
+-				@ before the push {lr} of the mcount mechanism
++	ldr	lr, [sp, #8]    @ get previous LR
  
- static void mv2222_sfp_link_up(void *upstream)
+-	str     lr, [sp, #0]    @ store LR instead of PC
++	str	r0, [sp, #8]	@ write r0 as OLD_R0 over previous LR
+ 
+-	ldr     lr, [sp, #8]    @ get previous LR
++	str	lr, [sp, #-4]!	@ store previous LR as LR
+ 
+-	str	r0, [sp, #8]	@ write r0 as OLD_R0 over previous LR
++	add 	lr, sp, #16	@ move in LR the value of SP as it was
++				@ before the push {lr} of the mcount mechanism
+ 
+-	stmdb   sp!, {ip, lr}
+-	stmdb   sp!, {r0-r11, lr}
++	push	{r0-r11, ip, lr}
+ 
+ 	@ stack content at this point:
+ 	@ 0  4          48   52       56            60   64    68       72
+-	@ R0 | R1 | ... | LR | SP + 4 | previous LR | LR | PSR | OLD_R0 |
++	@ R0 | R1 | ... | IP | SP + 4 | previous LR | LR | PSR | OLD_R0 |
+ 
+-	mov r3, sp				@ struct pt_regs*
++	mov	r3, sp				@ struct pt_regs*
+ 
+ 	ldr r2, =function_trace_op
+ 	ldr r2, [r2]				@ pointer to the current
+@@ -112,11 +108,9 @@ ftrace_graph_regs_call:
+ #endif
+ 
+ 	@ pop saved regs
+-	ldmia   sp!, {r0-r12}			@ restore r0 through r12
+-	ldr	ip, [sp, #8]			@ restore PC
+-	ldr	lr, [sp, #4]			@ restore LR
+-	ldr	sp, [sp, #0]			@ restore SP
+-	mov	pc, ip				@ return
++	pop	{r0-r11, ip, lr}		@ restore r0 through r12
++	ldr	lr, [sp], #4			@ restore LR
++	ldr	pc, [sp], #12
+ .endm
+ 
+ #ifdef CONFIG_FUNCTION_GRAPH_TRACER
+@@ -132,11 +126,9 @@ ftrace_graph_regs_call:
+ 	bl	prepare_ftrace_return
+ 
+ 	@ pop registers saved in ftrace_regs_caller
+-	ldmia   sp!, {r0-r12}			@ restore r0 through r12
+-	ldr	ip, [sp, #8]			@ restore PC
+-	ldr	lr, [sp, #4]			@ restore LR
+-	ldr	sp, [sp, #0]			@ restore SP
+-	mov	pc, ip				@ return
++	pop	{r0-r11, ip, lr}		@ restore r0 through r12
++	ldr	lr, [sp], #4			@ restore LR
++	ldr	pc, [sp], #12
+ 
+ .endm
+ #endif
+@@ -202,16 +194,17 @@ ftrace_graph_call\suffix:
+ .endm
+ 
+ .macro mcount_exit
+-	ldmia	sp!, {r0-r3, ip, lr}
+-	ret	ip
++	ldmia	sp!, {r0-r3}
++	ldr	lr, [sp, #4]
++	ldr	pc, [sp], #8
+ .endm
+ 
+ ENTRY(__gnu_mcount_nc)
+ UNWIND(.fnstart)
+ #ifdef CONFIG_DYNAMIC_FTRACE
+-	mov	ip, lr
+-	ldmia	sp!, {lr}
+-	ret	ip
++	push	{lr}
++	ldr	lr, [sp, #4]
++	ldr	pc, [sp], #8
+ #else
+ 	__mcount
+ #endif
 -- 
-2.25.1
+2.34.1
+
 
 
