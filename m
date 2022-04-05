@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0AAEFC433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4117BC4321E
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 09:12:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242220AbiDEJHq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 05:07:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33102 "EHLO
+        id S242475AbiDEJIF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 05:08:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34812 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239360AbiDEIUA (ORCPT
+        with ESMTP id S239405AbiDEIUD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:20:00 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8F89BD897;
-        Tue,  5 Apr 2022 01:11:50 -0700 (PDT)
+        Tue, 5 Apr 2022 04:20:03 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51FE78F994;
+        Tue,  5 Apr 2022 01:12:39 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8FB9CB81B90;
-        Tue,  5 Apr 2022 08:11:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C9670C385A0;
-        Tue,  5 Apr 2022 08:11:47 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DE1BD609D0;
+        Tue,  5 Apr 2022 08:12:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EFABAC385A1;
+        Tue,  5 Apr 2022 08:12:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649146308;
-        bh=lHHOGHVmr7qWwaPYUHQ99Hm9LnXzzyxu1DtucskLisY=;
+        s=korg; t=1649146358;
+        bh=ZrBx/V3acJlgQ12UnqLhqWAttKiqFm6Qs4xSb9E1cPg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GLbKGDLfBZWcJ+kylj0xGw3jOJ2QDi2/tezIO2SZK4STsLBu9C5OLk03QQF3ZiYV7
-         LqqEs/xAMavRgQhq03p6qM+WD2gWlpsaU5sseBoah/vWbPDGmJ6ovQ9LhbFK4DLA5f
-         XDBy3XA5GB5nU6Clf6jeC9VEDW9bnZD7idwqj7G4=
+        b=LgdxbDhhvB0GR/u/gOpOrn3yF4QFFOz6BRXAqMTNM1bOPL3xG7M2SyIapINJrZnin
+         pzw962blBxw06lwbHzJKWnmtUzkuT0I5QDYAQPH2eHDAt5dXSI6lX4csb9TjknN1tP
+         sxoMMIckLnMw69pvbKfk6BCQyLXOrHkFL2A3wCTI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Richard Zhu <hongxing.zhu@nxp.com>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Lucas Stach <l.stach@pengutronix.de>,
+        stable@vger.kernel.org, Qing Wang <wangqing@vivo.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0679/1126] PCI: imx6: Assert i.MX8MM CLKREQ# even if no device present
-Date:   Tue,  5 Apr 2022 09:23:46 +0200
-Message-Id: <20220405070427.551805233@linuxfoundation.org>
+Subject: [PATCH 5.17 0735/1126] serial: 8250_lpss: Balance reference count for PCI DMA device
+Date:   Tue,  5 Apr 2022 09:24:42 +0200
+Message-Id: <20220405070429.163520154@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -50,45 +49,111 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Richard Zhu <hongxing.zhu@nxp.com>
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 
-[ Upstream commit 45514f78c65cc9a09437f20e180625f94f769863 ]
+[ Upstream commit 5318f70da7e82649d794fc27d8a127c22aa3566e ]
 
-The CLKREQ# signal is an open drain, active low signal that is driven
-low by the remote Endpoint device. But it might not be driven low if no
-Endpoint device is connected.
+The pci_get_slot() increases its reference count, the caller
+must decrement the reference count by calling pci_dev_put().
 
-On i.MX8MM PCIe, phy_init() may fail and system boot may hang if no
-Endpoint is connected to assert CLKREQ#.
-
-Handle this as on i.MX8MQ, where we explicitly assert CLKREQ# so the
-PHY can be initialized.
-
-Link: https://lore.kernel.org/r/1645672013-8949-1-git-send-email-hongxing.zhu@nxp.com
-Fixes: 178e244cb6e2 ("PCI: imx: Add the imx8mm pcie support")
-Signed-off-by: Richard Zhu <hongxing.zhu@nxp.com>
-Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-Reviewed-by: Lucas Stach <l.stach@pengutronix.de>
+Fixes: 9a1870ce812e ("serial: 8250: don't use slave_id of dma_slave_config")
+Depends-on: a13e19cf3dc1 ("serial: 8250_lpss: split LPSS driver to separate module")
+Reported-by: Qing Wang <wangqing@vivo.com>
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Link: https://lore.kernel.org/r/20220223151240.70248-1-andriy.shevchenko@linux.intel.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pci/controller/dwc/pci-imx6.c | 4 ----
- 1 file changed, 4 deletions(-)
+ drivers/tty/serial/8250/8250_lpss.c | 28 ++++++++++++++++++++++------
+ 1 file changed, 22 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/pci/controller/dwc/pci-imx6.c b/drivers/pci/controller/dwc/pci-imx6.c
-index 77fc510c6d0d..d09ad4e1f432 100644
---- a/drivers/pci/controller/dwc/pci-imx6.c
-+++ b/drivers/pci/controller/dwc/pci-imx6.c
-@@ -453,10 +453,6 @@ static int imx6_pcie_enable_ref_clk(struct imx6_pcie *imx6_pcie)
- 	case IMX7D:
- 		break;
- 	case IMX8MM:
--		ret = clk_prepare_enable(imx6_pcie->pcie_aux);
--		if (ret)
--			dev_err(dev, "unable to enable pcie_aux clock\n");
--		break;
- 	case IMX8MQ:
- 		ret = clk_prepare_enable(imx6_pcie->pcie_aux);
- 		if (ret) {
+diff --git a/drivers/tty/serial/8250/8250_lpss.c b/drivers/tty/serial/8250/8250_lpss.c
+index d3bafec7619d..0f5af061e0b4 100644
+--- a/drivers/tty/serial/8250/8250_lpss.c
++++ b/drivers/tty/serial/8250/8250_lpss.c
+@@ -117,8 +117,7 @@ static int byt_serial_setup(struct lpss8250 *lpss, struct uart_port *port)
+ {
+ 	struct dw_dma_slave *param = &lpss->dma_param;
+ 	struct pci_dev *pdev = to_pci_dev(port->dev);
+-	unsigned int dma_devfn = PCI_DEVFN(PCI_SLOT(pdev->devfn), 0);
+-	struct pci_dev *dma_dev = pci_get_slot(pdev->bus, dma_devfn);
++	struct pci_dev *dma_dev;
+ 
+ 	switch (pdev->device) {
+ 	case PCI_DEVICE_ID_INTEL_BYT_UART1:
+@@ -137,6 +136,8 @@ static int byt_serial_setup(struct lpss8250 *lpss, struct uart_port *port)
+ 		return -EINVAL;
+ 	}
+ 
++	dma_dev = pci_get_slot(pdev->bus, PCI_DEVFN(PCI_SLOT(pdev->devfn), 0));
++
+ 	param->dma_dev = &dma_dev->dev;
+ 	param->m_master = 0;
+ 	param->p_master = 1;
+@@ -152,6 +153,14 @@ static int byt_serial_setup(struct lpss8250 *lpss, struct uart_port *port)
+ 	return 0;
+ }
+ 
++static void byt_serial_exit(struct lpss8250 *lpss)
++{
++	struct dw_dma_slave *param = &lpss->dma_param;
++
++	/* Paired with pci_get_slot() in the byt_serial_setup() above */
++	put_device(param->dma_dev);
++}
++
+ static int ehl_serial_setup(struct lpss8250 *lpss, struct uart_port *port)
+ {
+ 	struct uart_8250_dma *dma = &lpss->data.dma;
+@@ -170,6 +179,13 @@ static int ehl_serial_setup(struct lpss8250 *lpss, struct uart_port *port)
+ 	return 0;
+ }
+ 
++static void ehl_serial_exit(struct lpss8250 *lpss)
++{
++	struct uart_8250_port *up = serial8250_get_port(lpss->data.line);
++
++	up->dma = NULL;
++}
++
+ #ifdef CONFIG_SERIAL_8250_DMA
+ static const struct dw_dma_platform_data qrk_serial_dma_pdata = {
+ 	.nr_channels = 2,
+@@ -344,8 +360,7 @@ static int lpss8250_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+ 	return 0;
+ 
+ err_exit:
+-	if (lpss->board->exit)
+-		lpss->board->exit(lpss);
++	lpss->board->exit(lpss);
+ 	pci_free_irq_vectors(pdev);
+ 	return ret;
+ }
+@@ -356,8 +371,7 @@ static void lpss8250_remove(struct pci_dev *pdev)
+ 
+ 	serial8250_unregister_port(lpss->data.line);
+ 
+-	if (lpss->board->exit)
+-		lpss->board->exit(lpss);
++	lpss->board->exit(lpss);
+ 	pci_free_irq_vectors(pdev);
+ }
+ 
+@@ -365,12 +379,14 @@ static const struct lpss8250_board byt_board = {
+ 	.freq = 100000000,
+ 	.base_baud = 2764800,
+ 	.setup = byt_serial_setup,
++	.exit = byt_serial_exit,
+ };
+ 
+ static const struct lpss8250_board ehl_board = {
+ 	.freq = 200000000,
+ 	.base_baud = 12500000,
+ 	.setup = ehl_serial_setup,
++	.exit = ehl_serial_exit,
+ };
+ 
+ static const struct lpss8250_board qrk_board = {
 -- 
 2.34.1
 
