@@ -2,41 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 34998C43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1342CC4321E
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:26:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1588693AbiDFARA (ORCPT
+        id S1588669AbiDFAQy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 20:17:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42278 "EHLO
+        Tue, 5 Apr 2022 20:16:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34746 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356096AbiDEKW4 (ORCPT
+        with ESMTP id S242983AbiDEKfX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:22:56 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94164B2478;
-        Tue,  5 Apr 2022 03:06:08 -0700 (PDT)
+        Tue, 5 Apr 2022 06:35:23 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 552015159C;
+        Tue,  5 Apr 2022 03:21:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4397AB81C8B;
-        Tue,  5 Apr 2022 10:06:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9DCA1C385A3;
-        Tue,  5 Apr 2022 10:06:05 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id C1D0DCE1C9D;
+        Tue,  5 Apr 2022 10:21:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CE301C385A1;
+        Tue,  5 Apr 2022 10:21:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649153166;
-        bh=vCNxLByh22qWpvDtzrk7nKcRMnmgzftlBFDb7fx5dWY=;
+        s=korg; t=1649154071;
+        bh=GJWTx2va9kVPJ+UsHarwUFYycQHMaT1jG3zkI1xGkhM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lUwiV5xyHTAkVuB5Q3pq6nFnxuRhdmpAyZ9w2ffxMN4yHVmsl0k2Jn2NUI8+w25ig
-         YghWYKtbolUGS/+EMui35oIlWHXEL2KuTJxikJU5IEQoBiyEPW/1z4eppG5K2S3OZv
-         O/i6VZt6PEv/o7TOZHwEtEQYUvnb6rNXUdqhOgQM=
+        b=q55aI/fAz+Fx406NumGvvgsXOg9L4mTrGSdLnUHK5xs9/8pFzFR6HH8g8b7+PEb5z
+         Sgle4GO3KJBTknA3/FOCg2WO1RWgZuQGbbmR2sl5DbZswBhQfW7b5bK13ZAWUaGEN0
+         PBz0DJobBFjeAFgFX0/e7kE8ymE3FDfEufo5Br6w=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Max Filippov <jcmvbkbc@gmail.com>
-Subject: [PATCH 5.10 118/599] xtensa: fix stop_machine_cpuslocked call in patch_text
-Date:   Tue,  5 Apr 2022 09:26:52 +0200
-Message-Id: <20220405070302.351684079@linuxfoundation.org>
+        stable@vger.kernel.org,
+        =?UTF-8?q?Jonathan=20Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>,
+        =?UTF-8?q?Philippe=20Mathieu-Daud=C3=A9?= <f4bug@amsat.org>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 410/599] clk: loongson1: Terminate clk_div_table with sentinel element
+Date:   Tue,  5 Apr 2022 09:31:44 +0200
+Message-Id: <20220405070311.033626747@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
 References: <20220405070258.802373272@linuxfoundation.org>
@@ -48,34 +52,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Max Filippov <jcmvbkbc@gmail.com>
+From: Jonathan Neuschäfer <j.neuschaefer@gmx.net>
 
-commit f406f2d03e07afc199dd8cf501f361dde6be8a69 upstream.
+[ Upstream commit 3eb00f89162e80083dfcaa842468b510462cfeaa ]
 
-patch_text must invoke patch_text_stop_machine on all online CPUs, but
-it calls stop_machine_cpuslocked with NULL cpumask. As a result only one
-CPU runs patch_text_stop_machine potentially leaving stale icache
-entries on other CPUs. Fix that by calling stop_machine_cpuslocked with
-cpu_online_mask as the last argument.
+In order that the end of a clk_div_table can be detected, it must be
+terminated with a sentinel element (.div = 0).
 
-Cc: stable@vger.kernel.org
-Fixes: 64711f9a47d4 ("xtensa: implement jump_label support")
-Signed-off-by: Max Filippov <jcmvbkbc@gmail.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: b4626a7f4892 ("CLK: Add Loongson1C clock support")
+Signed-off-by: Jonathan Neuschäfer <j.neuschaefer@gmx.net>
+Reviewed-by: Philippe Mathieu-Daudé <f4bug@amsat.org>
+Link: https://lore.kernel.org/r/20220218000922.134857-3-j.neuschaefer@gmx.net
+Signed-off-by: Stephen Boyd <sboyd@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/xtensa/kernel/jump_label.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/clk/loongson1/clk-loongson1c.c | 1 +
+ 1 file changed, 1 insertion(+)
 
---- a/arch/xtensa/kernel/jump_label.c
-+++ b/arch/xtensa/kernel/jump_label.c
-@@ -61,7 +61,7 @@ static void patch_text(unsigned long add
- 			.data = data,
- 		};
- 		stop_machine_cpuslocked(patch_text_stop_machine,
--					&patch, NULL);
-+					&patch, cpu_online_mask);
- 	} else {
- 		unsigned long flags;
+diff --git a/drivers/clk/loongson1/clk-loongson1c.c b/drivers/clk/loongson1/clk-loongson1c.c
+index 703f87622cf5..1ebf740380ef 100644
+--- a/drivers/clk/loongson1/clk-loongson1c.c
++++ b/drivers/clk/loongson1/clk-loongson1c.c
+@@ -37,6 +37,7 @@ static const struct clk_div_table ahb_div_table[] = {
+ 	[1] = { .val = 1, .div = 4 },
+ 	[2] = { .val = 2, .div = 3 },
+ 	[3] = { .val = 3, .div = 3 },
++	[4] = { /* sentinel */ }
+ };
  
+ void __init ls1x_clk_init(void)
+-- 
+2.34.1
+
 
 
