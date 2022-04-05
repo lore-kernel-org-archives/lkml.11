@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 38FA5C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 85B5DC433F5
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:19:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382982AbiDEMRi (ORCPT
+        id S1382999AbiDEMRl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 08:17:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51188 "EHLO
+        Tue, 5 Apr 2022 08:17:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51190 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244947AbiDEIwt (ORCPT
+        with ESMTP id S244936AbiDEIws (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:52:49 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1552024BCE;
-        Tue,  5 Apr 2022 01:47:24 -0700 (PDT)
+        Tue, 5 Apr 2022 04:52:48 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F19FB24977;
+        Tue,  5 Apr 2022 01:46:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 881ECCE1BF9;
-        Tue,  5 Apr 2022 08:47:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9E71FC385A0;
-        Tue,  5 Apr 2022 08:47:20 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8DBD8614FD;
+        Tue,  5 Apr 2022 08:46:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9996FC385A1;
+        Tue,  5 Apr 2022 08:46:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649148441;
-        bh=4CbGFM1Lbe8DmiPQBMYFTnVQIyjT1+Fi1scJt5CW+h8=;
+        s=korg; t=1649148419;
+        bh=7wnlgHT1RIJpVnS9Yrdz9dgDs8GDXeJxl614hLxTywo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BEp9GTLpYbJ/9LHeOcWLN6nIaphVbnVDJZkIJMYWJxz2v4Ep8QFtnZNhlSa4twtG6
-         FxzOm+5u6IGU97tsxmm0LPlDzdls1UB7WiAZdJvLnBKnBheEHZZ+RepY5r0Pi4W1FA
-         tV37CcEoYAOyfENmgoHgl89QO9U094IqD+G7HWUk=
+        b=2ledxKDBc6kRFDZhRWMaCJ4IIBvCiLSTW5Sd0aUEo2cfVOWOt2jJ7MC5//NdjH4XE
+         gyP1coV6YAGO39VvNQY4ozpkLBWxrcmYsF4Oa4mrDFb4wIQ26gaWW+niiNd2hUFtSD
+         mqbTGr5wJVQMi6Gx6NetLmRAv+syXCGyfoQF0DUg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
-        Mark Brown <broonie@kernel.org>,
+        stable@vger.kernel.org, Jammy Huang <jammy_huang@aspeedtech.com>,
+        Joel Stanley <joel@jms.id.au>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0359/1017] ASoC: mxs-saif: Handle errors for clk_enable
-Date:   Tue,  5 Apr 2022 09:21:12 +0200
-Message-Id: <20220405070404.941951979@linuxfoundation.org>
+Subject: [PATCH 5.16 0301/1017] media: aspeed: Correct value for h-total-pixels
+Date:   Tue,  5 Apr 2022 09:20:14 +0200
+Message-Id: <20220405070403.210158572@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -50,38 +52,72 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+From: Jammy Huang <jammy_huang@aspeedtech.com>
 
-[ Upstream commit 2ecf362d220317debf5da376e0390e9f7a3f7b29 ]
+[ Upstream commit 4b732a0016853eaff35944f900b0db66f3914374 ]
 
-As the potential failure of the clk_enable(),
-it should be better to check it, like mxs_saif_trigger().
+Previous reg-field, 0x98[11:0], stands for the period of the detected
+hsync signal.
+Use the correct reg, 0xa0, to get h-total in pixels.
 
-Fixes: d0ba4c014934 ("ASoC: mxs-saif: set a base clock rate for EXTMASTER mode work")
-Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Link: https://lore.kernel.org/r/20220301081717.3727190-1-jiasheng@iscas.ac.cn
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Fixes: d2b4387f3bdf ("media: platform: Add Aspeed Video Engine driver")
+Signed-off-by: Jammy Huang <jammy_huang@aspeedtech.com>
+Reviewed-by: Joel Stanley <joel@jms.id.au>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/mxs/mxs-saif.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ drivers/media/platform/aspeed-video.c | 9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
 
-diff --git a/sound/soc/mxs/mxs-saif.c b/sound/soc/mxs/mxs-saif.c
-index 6a2d24d48964..879c1221a809 100644
---- a/sound/soc/mxs/mxs-saif.c
-+++ b/sound/soc/mxs/mxs-saif.c
-@@ -455,7 +455,10 @@ static int mxs_saif_hw_params(struct snd_pcm_substream *substream,
- 		* basic clock which should be fast enough for the internal
- 		* logic.
- 		*/
--		clk_enable(saif->clk);
-+		ret = clk_enable(saif->clk);
-+		if (ret)
-+			return ret;
+diff --git a/drivers/media/platform/aspeed-video.c b/drivers/media/platform/aspeed-video.c
+index 7a24daf7165a..bdeecde0d997 100644
+--- a/drivers/media/platform/aspeed-video.c
++++ b/drivers/media/platform/aspeed-video.c
+@@ -153,7 +153,7 @@
+ #define  VE_SRC_TB_EDGE_DET_BOT		GENMASK(28, VE_SRC_TB_EDGE_DET_BOT_SHF)
+ 
+ #define VE_MODE_DETECT_STATUS		0x098
+-#define  VE_MODE_DETECT_H_PIXELS	GENMASK(11, 0)
++#define  VE_MODE_DETECT_H_PERIOD	GENMASK(11, 0)
+ #define  VE_MODE_DETECT_V_LINES_SHF	16
+ #define  VE_MODE_DETECT_V_LINES		GENMASK(27, VE_MODE_DETECT_V_LINES_SHF)
+ #define  VE_MODE_DETECT_STATUS_VSYNC	BIT(28)
+@@ -164,6 +164,8 @@
+ #define  VE_SYNC_STATUS_VSYNC_SHF	16
+ #define  VE_SYNC_STATUS_VSYNC		GENMASK(27, VE_SYNC_STATUS_VSYNC_SHF)
+ 
++#define VE_H_TOTAL_PIXELS		0x0A0
 +
- 		ret = clk_set_rate(saif->clk, 24000000);
- 		clk_disable(saif->clk);
- 		if (ret)
+ #define VE_INTERRUPT_CTRL		0x304
+ #define VE_INTERRUPT_STATUS		0x308
+ #define  VE_INTERRUPT_MODE_DETECT_WD	BIT(0)
+@@ -802,6 +804,7 @@ static void aspeed_video_get_resolution(struct aspeed_video *video)
+ 	u32 src_lr_edge;
+ 	u32 src_tb_edge;
+ 	u32 sync;
++	u32 htotal;
+ 	struct v4l2_bt_timings *det = &video->detected_timings;
+ 
+ 	det->width = MIN_WIDTH;
+@@ -847,6 +850,7 @@ static void aspeed_video_get_resolution(struct aspeed_video *video)
+ 		src_tb_edge = aspeed_video_read(video, VE_SRC_TB_EDGE_DET);
+ 		mds = aspeed_video_read(video, VE_MODE_DETECT_STATUS);
+ 		sync = aspeed_video_read(video, VE_SYNC_STATUS);
++		htotal = aspeed_video_read(video, VE_H_TOTAL_PIXELS);
+ 
+ 		video->frame_bottom = (src_tb_edge & VE_SRC_TB_EDGE_DET_BOT) >>
+ 			VE_SRC_TB_EDGE_DET_BOT_SHF;
+@@ -863,8 +867,7 @@ static void aspeed_video_get_resolution(struct aspeed_video *video)
+ 			VE_SRC_LR_EDGE_DET_RT_SHF;
+ 		video->frame_left = src_lr_edge & VE_SRC_LR_EDGE_DET_LEFT;
+ 		det->hfrontporch = video->frame_left;
+-		det->hbackporch = (mds & VE_MODE_DETECT_H_PIXELS) -
+-			video->frame_right;
++		det->hbackporch = htotal - video->frame_right;
+ 		det->hsync = sync & VE_SYNC_STATUS_HSYNC;
+ 		if (video->frame_left > video->frame_right)
+ 			continue;
 -- 
 2.34.1
 
