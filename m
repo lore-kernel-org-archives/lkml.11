@@ -2,45 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F561C3527A
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9CD1CC4707F
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 15:20:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380865AbiDEPNw (ORCPT
+        id S1381267AbiDEPOA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 11:13:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39654 "EHLO
+        Tue, 5 Apr 2022 11:14:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39130 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346471AbiDEJpG (ORCPT
+        with ESMTP id S1346399AbiDEJo6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:45:06 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C220DA6C9;
-        Tue,  5 Apr 2022 02:30:43 -0700 (PDT)
+        Tue, 5 Apr 2022 05:44:58 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78525DA092;
+        Tue,  5 Apr 2022 02:30:34 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4D83B61680;
-        Tue,  5 Apr 2022 09:30:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5BBFFC385A0;
-        Tue,  5 Apr 2022 09:30:42 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 22EDBB81C9A;
+        Tue,  5 Apr 2022 09:30:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 56EC5C385A0;
+        Tue,  5 Apr 2022 09:30:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649151042;
-        bh=V1VGlB8xohNj2+E9BWo9EiGxaBJPtDjW4GlFISWrWlA=;
+        s=korg; t=1649151031;
+        bh=N5YuzNwpOwcv8GQHddlkDpohg7yOXF5kxECIrRY5wHo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=zdBlLbiPmopacKUZs+b2l0I31nBnpm/V7KJAinWimx7cNgna7tdXGv+KSEbnvsfgj
-         e3IkEXgn395VV4ZS7dOp/iT/s5WuFEIcA1DZG0NndC6Fer/AW6LyH5vdCwpnLVXE/Q
-         3e1LcOuHrW0GSaly0FY3acEf4gRpBs+udl2807PQ=
+        b=jBRCj69Gybp7+Rs4wFB2OxR3HE1zRPh5X2NoJoVz5gZa5BB0ISMffr8YOuPjq81s1
+         zGeVY/RT/Hl8S0IyikUOXZoYHe32xVV6ZETDujCML9bZK6nta6wL53U6QnGXNnwEs2
+         g1Re+H6VxDQwE69HCOrW3hvo1rtyMHAuPgPxdZTY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Martin Kepplinger <martin.kepplinger@puri.sm>,
+        stable@vger.kernel.org, Jonathan Marek <jonathan@marek.ca>,
+        Robert Foss <robert.foss@linaro.org>,
+        Julian Grahsl <jgrahsl@snap.com>,
+        Bryan ODonoghue <bryan.odonoghue@linaro.org>,
         Hans Verkuil <hverkuil-cisco@xs4all.nl>,
         Mauro Carvalho Chehab <mchehab@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 273/913] media: imx: imx8mq-mipi-csi2: remove wrong irq config write operation
-Date:   Tue,  5 Apr 2022 09:22:15 +0200
-Message-Id: <20220405070348.041369695@linuxfoundation.org>
+Subject: [PATCH 5.15 269/913] media: camss: vfe-170: fix "VFE halt timeout" error
+Date:   Tue,  5 Apr 2022 09:22:11 +0200
+Message-Id: <20220405070347.920711534@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
 References: <20220405070339.801210740@linuxfoundation.org>
@@ -52,39 +54,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Martin Kepplinger <martin.kepplinger@puri.sm>
+From: Jonathan Marek <jonathan@marek.ca>
 
-[ Upstream commit 59c2b6d51803ad6b7af28f2a60a843b24374e692 ]
+[ Upstream commit 1ce8c48b06f249a9739e36c5d56883f6f49ce047 ]
 
-The place where this register writel() that masks one interrupt is placed
-does not guarantee that the device is powered so that's not allowed.
-Moreover imx8mq_mipi_csi_start_stream() masks the interrupt anyway so the
-write is not even needed. Remove it as this is a mistake that slipped in
-with the driver.
+This function waits for halt_complete but doesn't do anything to cause
+it to complete, and always hits the "VFE halt timeout" error. Just delete
+this code for now.
 
-Fixes: f33fd8d77dd0 ("media: imx: add a driver for i.MX8MQ mipi csi rx phy and controller")
-Signed-off-by: Martin Kepplinger <martin.kepplinger@puri.sm>
+Fixes: 7319cdf189bb ("media: camss: Add support for VFE hardware version Titan 170")
+Signed-off-by: Jonathan Marek <jonathan@marek.ca>
+Reviewed-by: Robert Foss <robert.foss@linaro.org>
+Tested-by: Julian Grahsl <jgrahsl@snap.com>
+Tested-by: Bryan O'Donoghue <bryan.odonoghue@linaro.org>
+Signed-off-by: Bryan O'Donoghue <bryan.odonoghue@linaro.org>
 Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
 Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/staging/media/imx/imx8mq-mipi-csi2.c | 3 ---
- 1 file changed, 3 deletions(-)
+ drivers/media/platform/qcom/camss/camss-vfe-170.c | 12 +-----------
+ 1 file changed, 1 insertion(+), 11 deletions(-)
 
-diff --git a/drivers/staging/media/imx/imx8mq-mipi-csi2.c b/drivers/staging/media/imx/imx8mq-mipi-csi2.c
-index a6f562009b9a..e9e771717120 100644
---- a/drivers/staging/media/imx/imx8mq-mipi-csi2.c
-+++ b/drivers/staging/media/imx/imx8mq-mipi-csi2.c
-@@ -398,9 +398,6 @@ static int imx8mq_mipi_csi_s_stream(struct v4l2_subdev *sd, int enable)
- 	struct csi_state *state = mipi_sd_to_csi2_state(sd);
- 	int ret = 0;
- 
--	imx8mq_mipi_csi_write(state, CSI2RX_IRQ_MASK,
--			      CSI2RX_IRQ_MASK_ULPS_STATUS_CHANGE);
+diff --git a/drivers/media/platform/qcom/camss/camss-vfe-170.c b/drivers/media/platform/qcom/camss/camss-vfe-170.c
+index 8594d275b41d..02cb8005504a 100644
+--- a/drivers/media/platform/qcom/camss/camss-vfe-170.c
++++ b/drivers/media/platform/qcom/camss/camss-vfe-170.c
+@@ -399,17 +399,7 @@ static irqreturn_t vfe_isr(int irq, void *dev)
+  */
+ static int vfe_halt(struct vfe_device *vfe)
+ {
+-	unsigned long time;
 -
- 	if (enable) {
- 		ret = pm_runtime_resume_and_get(state->dev);
- 		if (ret < 0)
+-	reinit_completion(&vfe->halt_complete);
+-
+-	time = wait_for_completion_timeout(&vfe->halt_complete,
+-					   msecs_to_jiffies(VFE_HALT_TIMEOUT_MS));
+-	if (!time) {
+-		dev_err(vfe->camss->dev, "VFE halt timeout\n");
+-		return -EIO;
+-	}
+-
++	/* rely on vfe_disable_output() to stop the VFE */
+ 	return 0;
+ }
+ 
 -- 
 2.34.1
 
