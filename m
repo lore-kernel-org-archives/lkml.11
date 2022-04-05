@@ -2,101 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E23AC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 22:10:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B026DC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 22:11:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346732AbiDEWM0 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 18:12:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59112 "EHLO
+        id S229539AbiDEWNJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 18:13:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39324 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1385663AbiDEOSn (ORCPT
+        with ESMTP id S232192AbiDEJtQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 10:18:43 -0400
-Received: from mail-yb1-xb30.google.com (mail-yb1-xb30.google.com [IPv6:2607:f8b0:4864:20::b30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7567524F14
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 06:06:40 -0700 (PDT)
-Received: by mail-yb1-xb30.google.com with SMTP id z33so18718611ybh.5
-        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 06:06:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=icqYVBohFnFJ5oHU+nslboiajB+SnOBn5hI9MsTTjY0=;
-        b=mM//HIZLG1UpdS/W5Yy5oOygxhC5rnGWHf7ARQX2GQL3/AyfTsSmLzf/7ahtZbvV/+
-         J31q3h7p95gD1CyKhPFKcNo521T6GI58bHmk51/JZ/ETQBhQwlmXCaRzHBMHBAPNlzVR
-         XHRBa2JLFjQv1Zhyds+BkZ1ahlUzMQdAjNbPU5qpI68wwYx9JU72nZv3D+OVeiG0V4vt
-         SpnqJyUQPuFpU7ksk645ui5I94ErGcXSkPaFBTWQRggi9XmaTlRR4ak2+cuhzsRWgr73
-         HYQQMTkrPDn0nkSvoCWvGmGNU1rhhP9FqwyZJIwfa3C6ZMLU/Mk7CK0ZkwWC7vKGMyPq
-         KlNw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=icqYVBohFnFJ5oHU+nslboiajB+SnOBn5hI9MsTTjY0=;
-        b=FoBiXJxP/Cw+cewa5kk5mCyoROhCIBrvUvYexglsy4PQSiJctrjvPR1CGW2omx5g4Z
-         Wwna/AloQpTyYxMjU6eRVcJkE0CFyWhS5XBW3jm7TpgmIRIqrpKLbJ/R1oh6J6XBXJpY
-         R+Ll2B0UN25VITCfnvwvRXzNffwoOdwjfsR1u3K8sx31SVMzuX94fLH0EC6WbRrPa/D9
-         gxVmZtt7AWR/CG2XSIhH3IDcBxM6VzhobWmhi5sTtzHFsuhVd+LEV6Q3pfLaoqhjsnuL
-         l7nDHuNzjsAm57arsqqbj/1tY6l7lXs1Df+BnLZY9Xlebll3yLWmlpAQezf1eZAdTtBv
-         vxSw==
-X-Gm-Message-State: AOAM531uik5181a/0tlcE79PC5arnX+qP07URxn7WF7FWKxi20eGdXEe
-        PpWA7T4T3+W3O7RN+QvmxeLNRJM7khOfeVQOJP4=
-X-Google-Smtp-Source: ABdhPJx/No+FakBF2W6Q7NjIKNVgdeDDfalX0yfWAyYloetqiOxeiYnltU3PjsBP6kphCcUsdhyh3MxaVwUUvRHe5o4=
-X-Received: by 2002:a5b:8c4:0:b0:633:e30a:8ade with SMTP id
- w4-20020a5b08c4000000b00633e30a8ademr2441915ybq.517.1649163999198; Tue, 05
- Apr 2022 06:06:39 -0700 (PDT)
+        Tue, 5 Apr 2022 05:49:16 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A4E263B1;
+        Tue,  5 Apr 2022 02:41:54 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EDD89B81C19;
+        Tue,  5 Apr 2022 09:41:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 47F63C385A1;
+        Tue,  5 Apr 2022 09:41:51 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649151711;
+        bh=TkRjkbHf35GwvaY8YoQCXT3xu4BK4ElnagkTLzoI8O8=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=kThMRwPtZJGQj15fEuBAH5B8gLaTkixYiQWFAkVlh8tMGFGKHqeHUFFl42BCplfqB
+         N0Rumc3GbIWMQY4BByUcZyCUPGqLQLGrbKmC8v9vFxH2z/rTu1luUOZidoijDKwR8v
+         +2hDBqEGxQUWt1Dr0WM7jDDlHWOZgwzjVwNPOGaI=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
+        Charles Keepax <ckeepax@opensource.cirrus.com>,
+        Sebastian Reichel <sebastian.reichel@collabora.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 514/913] power: supply: wm8350-power: Add missing free in free_charger_irq
+Date:   Tue,  5 Apr 2022 09:26:16 +0200
+Message-Id: <20220405070355.261188313@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-References: <YkHXO6LGHAN0p1pq@debian> <787d309d-f0b6-4f27-ed31-6811fd7c9293@suse.de>
- <CADVatmM0mP9u9H_LY8qm+ZpezyELdeBSWqQameZnb0dP7TUsQw@mail.gmail.com> <1116eb70-516e-13b3-0697-4af00430bae8@suse.de>
-In-Reply-To: <1116eb70-516e-13b3-0697-4af00430bae8@suse.de>
-From:   Sudip Mukherjee <sudipm.mukherjee@gmail.com>
-Date:   Tue, 5 Apr 2022 14:06:03 +0100
-Message-ID: <CADVatmMdBmU9E4XEnc8Y=JdvUKVvVgawJWtHqojW5hFHkkfaJQ@mail.gmail.com>
-Subject: Re: regression: NULL pointer dereference due to 27599aacbaef ("fbdev:
- Hot-unplug firmware fb devices on forced removal")
-To:     Thomas Zimmermann <tzimmermann@suse.de>
-Cc:     Javier Martinez Canillas <javierm@redhat.com>,
-        Zack Rusin <zackr@vmware.com>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Apr 4, 2022 at 8:46 PM Thomas Zimmermann <tzimmermann@suse.de> wrote:
->
-> Hi
->
-> Am 31.03.22 um 10:25 schrieb Sudip Mukherjee:
-> > On Thu, Mar 31, 2022 at 8:07 AM Thomas Zimmermann <tzimmermann@suse.de> wrote:
-> >>
-> >>
-> >>
-> >> Am 28.03.22 um 17:41 schrieb Sudip Mukherjee:
-> >>> Hi Thomas,
-> >>>
-> >>> We usually run boot tests with linux mainline HEAD commit almost every
-> >>> night on ppc64 qemu. And my tests had been failing for last few days.
-> >>
-> >> Could you please provide your kernel's config file?
-> >
-> > Thanks for taking a look at it.
-> > The config is attached.
-> >
-> >
->
-> I was able to reproduce and fix the issue locally. Please have a look at
-> [1] for the patch.
+From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
 
-Thanks Thomas.
+[ Upstream commit 6dee930f6f6776d1e5a7edf542c6863b47d9f078 ]
 
-And I can confirm it fixes the problem for me too.
-Tested-by: Sudip Mukherjee <sudip.mukherjee@codethink.co.uk>
+In free_charger_irq(), there is no free for 'WM8350_IRQ_CHG_FAST_RDY'.
+Therefore, it should be better to add it in order to avoid the memory leak.
 
+Fixes: 14431aa0c5a4 ("power_supply: Add support for WM8350 PMU")
+Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Acked-by: Charles Keepax <ckeepax@opensource.cirrus.com>
+Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/power/supply/wm8350_power.c | 1 +
+ 1 file changed, 1 insertion(+)
 
+diff --git a/drivers/power/supply/wm8350_power.c b/drivers/power/supply/wm8350_power.c
+index 9c46c48dccb1..908cfd45d262 100644
+--- a/drivers/power/supply/wm8350_power.c
++++ b/drivers/power/supply/wm8350_power.c
+@@ -524,6 +524,7 @@ static void free_charger_irq(struct wm8350 *wm8350)
+ 	wm8350_free_irq(wm8350, WM8350_IRQ_CHG_TO, wm8350);
+ 	wm8350_free_irq(wm8350, WM8350_IRQ_CHG_END, wm8350);
+ 	wm8350_free_irq(wm8350, WM8350_IRQ_CHG_START, wm8350);
++	wm8350_free_irq(wm8350, WM8350_IRQ_CHG_FAST_RDY, wm8350);
+ 	wm8350_free_irq(wm8350, WM8350_IRQ_CHG_VBATT_LT_3P9, wm8350);
+ 	wm8350_free_irq(wm8350, WM8350_IRQ_CHG_VBATT_LT_3P1, wm8350);
+ 	wm8350_free_irq(wm8350, WM8350_IRQ_CHG_VBATT_LT_2P85, wm8350);
 -- 
-Regards
-Sudip
+2.34.1
+
+
+
