@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4969BC433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C2BFC3527D
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 10:30:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357353AbiDEK0N (ORCPT
+        id S1357394AbiDEK0R (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 06:26:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45552 "EHLO
+        Tue, 5 Apr 2022 06:26:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45932 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241121AbiDEIcv (ORCPT
+        with ESMTP id S241123AbiDEIcv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Apr 2022 04:32:51 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C750315A31;
-        Tue,  5 Apr 2022 01:27:59 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B358216584;
+        Tue,  5 Apr 2022 01:28:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 81B2CB81B13;
-        Tue,  5 Apr 2022 08:27:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E4545C385A1;
-        Tue,  5 Apr 2022 08:27:56 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4EF97609D0;
+        Tue,  5 Apr 2022 08:28:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5E334C385A1;
+        Tue,  5 Apr 2022 08:28:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649147277;
-        bh=CsCfsrqveqsvvCg/VUPqJOnuL/ZARRvyzdCgukRxZig=;
+        s=korg; t=1649147296;
+        bh=FjlwNEak2Y5XHLiuM71zpUltWSfxCrU7knvshYNWE0c=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Chi9LlevsCp+K2EVpmYZvnEWiulU7wLFs4lsfpj9UmXpq30s2SBHHg1VzcQzUxsu+
-         0TGfqU2L6YCBdLrmNxXm1BiB7smI1lYSEdj2bQgisq9pHeNw5MRIlzfoNZTCiURKiP
-         vb7hpf5a2wtYj/z0FgjAU4r2kxS29ihyC3W4YofY=
+        b=f+zkipLGwWcfop8jTB2itFaVq6jPS2HukyvxjPIrbhhG6ry0t6UCKjyxm3DZI5MeM
+         I9INxh17hcRPtxftGNZuDMPouaPkOuTy1JbtABa6NEjjECBcI2a2ViWibsvZFlMCkk
+         pdI9lpbDuAphT1pr/qCRz7eFuiAtLdwJ9q3qufh4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Joerg Roedel <jroedel@suse.de>,
-        Borislav Petkov <bp@suse.de>,
-        Tom Lendacky <thomas.lendacky@amd.com>
-Subject: [PATCH 5.17 1066/1126] x86/sev: Unroll string mmio with CC_ATTR_GUEST_UNROLL_STRING_IO
-Date:   Tue,  5 Apr 2022 09:30:13 +0200
-Message-Id: <20220405070438.747427541@linuxfoundation.org>
+        stable@vger.kernel.org, Jiaxin Yu <jiaxin.yu@mediatek.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Mark Brown <broonie@kernel.org>
+Subject: [PATCH 5.17 1046/1126] ASoC: mediatek: mt6358: add missing EXPORT_SYMBOLs
+Date:   Tue,  5 Apr 2022 09:29:53 +0200
+Message-Id: <20220405070438.174765036@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -50,145 +51,60 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Joerg Roedel <jroedel@suse.de>
+From: Jiaxin Yu <jiaxin.yu@mediatek.com>
 
-commit 4009a4ac82dd95b8cd2b62bd30019476983f0aff upstream.
+commit a7663c89f4193dbf717572e46e5a3251940dbdc8 upstream.
 
-The io-specific memcpy/memset functions use string mmio accesses to do
-their work. Under SEV, the hypervisor can't emulate these instructions
-because they read/write directly from/to encrypted memory.
+Fixes the following build errors when mt6358 is configured as module:
 
-KVM will inject a page fault exception into the guest when it is asked
-to emulate string mmio instructions for an SEV guest:
+>> ERROR: modpost: "mt6358_set_mtkaif_protocol"
+>> [sound/soc/mediatek/mt8186/mt8186-mt6366-rt1019-rt5682s.ko] undefined!
+>> ERROR: modpost: "mt6358_set_mtkaif_protocol"
+>> [sound/soc/mediatek/mt8186/mt8186-mt6366-da7219-max98357.ko] undefined!
 
-  BUG: unable to handle page fault for address: ffffc90000065068
-  #PF: supervisor read access in kernel mode
-  #PF: error_code(0x0000) - not-present page
-  PGD 8000100000067 P4D 8000100000067 PUD 80001000fb067 PMD 80001000fc067 PTE 80000000fed40173
-  Oops: 0000 [#1] PREEMPT SMP NOPTI
-  CPU: 0 PID: 1 Comm: swapper/0 Not tainted 5.17.0-rc7 #3
-
-As string mmio for an SEV guest can not be supported by the
-hypervisor, unroll the instructions for CC_ATTR_GUEST_UNROLL_STRING_IO
-enabled kernels.
-
-This issue appears when kernels are launched in recent libvirt-managed
-SEV virtual machines, because virt-install started to add a tpm-crb
-device to the guest by default and proactively because, raisins:
-
-  https://github.com/virt-manager/virt-manager/commit/eb58c09f488b0633ed1eea012cd311e48864401e
-
-and as that commit says, the default adding of a TPM can be disabled
-with "virt-install ... --tpm none".
-
-The kernel driver for tpm-crb uses memcpy_to/from_io() functions to
-access MMIO memory, resulting in a page-fault injected by KVM and
-crashing the kernel at boot.
-
-  [ bp: Massage and extend commit message. ]
-
-Fixes: d8aa7eea78a1 ('x86/mm: Add Secure Encrypted Virtualization (SEV) support')
-Signed-off-by: Joerg Roedel <jroedel@suse.de>
-Signed-off-by: Borislav Petkov <bp@suse.de>
-Reviewed-by: Tom Lendacky <thomas.lendacky@amd.com>
-Cc: <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/20220321093351.23976-1-joro@8bytes.org
+Fixes: 6a8d4198ca80 ("ASoC: mediatek: mt6358: add codec driver")
+Signed-off-by: Jiaxin Yu <jiaxin.yu@mediatek.com>
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+Link: https://lore.kernel.org/r/20220319120325.11882-1-jiaxin.yu@mediatek.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/lib/iomem.c |   65 ++++++++++++++++++++++++++++++++++++++++++++-------
- 1 file changed, 57 insertions(+), 8 deletions(-)
+ sound/soc/codecs/mt6358.c |    4 ++++
+ 1 file changed, 4 insertions(+)
 
---- a/arch/x86/lib/iomem.c
-+++ b/arch/x86/lib/iomem.c
-@@ -22,7 +22,7 @@ static __always_inline void rep_movs(voi
- 		     : "memory");
+--- a/sound/soc/codecs/mt6358.c
++++ b/sound/soc/codecs/mt6358.c
+@@ -107,6 +107,7 @@ int mt6358_set_mtkaif_protocol(struct sn
+ 	priv->mtkaif_protocol = mtkaif_protocol;
+ 	return 0;
  }
++EXPORT_SYMBOL_GPL(mt6358_set_mtkaif_protocol);
  
--void memcpy_fromio(void *to, const volatile void __iomem *from, size_t n)
-+static void string_memcpy_fromio(void *to, const volatile void __iomem *from, size_t n)
+ static void playback_gpio_set(struct mt6358_priv *priv)
  {
- 	if (unlikely(!n))
- 		return;
-@@ -38,9 +38,8 @@ void memcpy_fromio(void *to, const volat
- 	}
- 	rep_movs(to, (const void *)from, n);
+@@ -273,6 +274,7 @@ int mt6358_mtkaif_calibration_enable(str
+ 			   1 << RG_AUD_PAD_TOP_DAT_MISO_LOOPBACK_SFT);
+ 	return 0;
  }
--EXPORT_SYMBOL(memcpy_fromio);
++EXPORT_SYMBOL_GPL(mt6358_mtkaif_calibration_enable);
  
--void memcpy_toio(volatile void __iomem *to, const void *from, size_t n)
-+static void string_memcpy_toio(volatile void __iomem *to, const void *from, size_t n)
+ int mt6358_mtkaif_calibration_disable(struct snd_soc_component *cmpnt)
  {
- 	if (unlikely(!n))
- 		return;
-@@ -56,14 +55,64 @@ void memcpy_toio(volatile void __iomem *
- 	}
- 	rep_movs((void *)to, (const void *) from, n);
+@@ -296,6 +298,7 @@ int mt6358_mtkaif_calibration_disable(st
+ 	capture_gpio_reset(priv);
+ 	return 0;
  }
-+
-+static void unrolled_memcpy_fromio(void *to, const volatile void __iomem *from, size_t n)
-+{
-+	const volatile char __iomem *in = from;
-+	char *out = to;
-+	int i;
-+
-+	for (i = 0; i < n; ++i)
-+		out[i] = readb(&in[i]);
-+}
-+
-+static void unrolled_memcpy_toio(volatile void __iomem *to, const void *from, size_t n)
-+{
-+	volatile char __iomem *out = to;
-+	const char *in = from;
-+	int i;
-+
-+	for (i = 0; i < n; ++i)
-+		writeb(in[i], &out[i]);
-+}
-+
-+static void unrolled_memset_io(volatile void __iomem *a, int b, size_t c)
-+{
-+	volatile char __iomem *mem = a;
-+	int i;
-+
-+	for (i = 0; i < c; ++i)
-+		writeb(b, &mem[i]);
-+}
-+
-+void memcpy_fromio(void *to, const volatile void __iomem *from, size_t n)
-+{
-+	if (cc_platform_has(CC_ATTR_GUEST_UNROLL_STRING_IO))
-+		unrolled_memcpy_fromio(to, from, n);
-+	else
-+		string_memcpy_fromio(to, from, n);
-+}
-+EXPORT_SYMBOL(memcpy_fromio);
-+
-+void memcpy_toio(volatile void __iomem *to, const void *from, size_t n)
-+{
-+	if (cc_platform_has(CC_ATTR_GUEST_UNROLL_STRING_IO))
-+		unrolled_memcpy_toio(to, from, n);
-+	else
-+		string_memcpy_toio(to, from, n);
-+}
- EXPORT_SYMBOL(memcpy_toio);
++EXPORT_SYMBOL_GPL(mt6358_mtkaif_calibration_disable);
  
- void memset_io(volatile void __iomem *a, int b, size_t c)
- {
--	/*
--	 * TODO: memset can mangle the IO patterns quite a bit.
--	 * perhaps it would be better to use a dumb one:
--	 */
--	memset((void *)a, b, c);
-+	if (cc_platform_has(CC_ATTR_GUEST_UNROLL_STRING_IO)) {
-+		unrolled_memset_io(a, b, c);
-+	} else {
-+		/*
-+		 * TODO: memset can mangle the IO patterns quite a bit.
-+		 * perhaps it would be better to use a dumb one:
-+		 */
-+		memset((void *)a, b, c);
-+	}
+ int mt6358_set_mtkaif_calibration_phase(struct snd_soc_component *cmpnt,
+ 					int phase_1, int phase_2)
+@@ -310,6 +313,7 @@ int mt6358_set_mtkaif_calibration_phase(
+ 			   phase_2 << RG_AUD_PAD_TOP_PHASE_MODE2_SFT);
+ 	return 0;
  }
- EXPORT_SYMBOL(memset_io);
++EXPORT_SYMBOL_GPL(mt6358_set_mtkaif_calibration_phase);
+ 
+ /* dl pga gain */
+ enum {
 
 
