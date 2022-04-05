@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 40C31C3527D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2187BC35276
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:40:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1836766AbiDFAjm (ORCPT
+        id S1836713AbiDFAjI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 20:39:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46458 "EHLO
+        Tue, 5 Apr 2022 20:39:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50662 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237628AbiDEKdB (ORCPT
+        with ESMTP id S1358258AbiDEK2K (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:33:01 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16FB1DEB97;
-        Tue,  5 Apr 2022 03:19:00 -0700 (PDT)
+        Tue, 5 Apr 2022 06:28:10 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF7C3DE92;
+        Tue,  5 Apr 2022 03:17:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CDADEB81C8A;
-        Tue,  5 Apr 2022 10:18:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3DC3BC385A1;
-        Tue,  5 Apr 2022 10:18:57 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8E4146176C;
+        Tue,  5 Apr 2022 10:17:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 996AFC385A1;
+        Tue,  5 Apr 2022 10:17:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649153937;
-        bh=nHOg9kX+MbvlIgN8jRKrk4EKwtzKb7SaZy1WfCamDGo=;
+        s=korg; t=1649153853;
+        bh=u9rCPfReMu1CF3XAbSDPGJv4mLkXhlcRuj4PzOdlpg8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vbUe8Mgn4Pwnb2UIzepeDf4/pyG/jDFjG9QtzovAOliiWDw2gYUqR1hGOLNyvdPPy
-         ELA3UYITxRBJgfLakHM1BZuYfuITZXpZwvnKShdNEDSRgKwdQT5jFdgqveJNHtOsd3
-         7CbCNNlGa1s9dG7wUGfGzBGewM5fmmkNtarncLt4=
+        b=Fa79Birc6F8XGlSTUc+g+shWlZ42vPzjfTI9MyFJ5q6kvAHZd6oC82VRD1jtQ3WHk
+         igaXBYWaycYbXH9MQ7jxKU+MKA658ib/004J4uAmNkkrEB7YHJjxmj+GPpfu2lhnKb
+         73R7eeZTpOH+VAufRJcDxOJIhn4QroSj+zTzRvtw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, David Wolfe <david.wolfe@nxp.com>,
-        Abel Vesa <abel.vesa@nxp.com>, Peng Fan <peng.fan@nxp.com>,
+        stable@vger.kernel.org, Michael Ellerman <mpe@ellerman.id.au>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 400/599] clk: imx7d: Remove audio_mclk_root_clk
-Date:   Tue,  5 Apr 2022 09:31:34 +0200
-Message-Id: <20220405070310.733879929@linuxfoundation.org>
+Subject: [PATCH 5.10 332/599] powerpc/Makefile: Dont pass -mcpu=powerpc64 when building 32-bit
+Date:   Tue,  5 Apr 2022 09:30:26 +0200
+Message-Id: <20220405070308.712573783@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
 References: <20220405070258.802373272@linuxfoundation.org>
@@ -50,36 +49,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Abel Vesa <abel.vesa@nxp.com>
+From: Michael Ellerman <mpe@ellerman.id.au>
 
-[ Upstream commit eccac77ede3946c90143447cdc785dc16aec4b24 ]
+[ Upstream commit 2863dd2db23e0407f6c50b8ba5c0e55abef894f1 ]
 
-The audio_mclk_root_clk was added as a gate with the CCGR121 (0x4790),
-but according to the reference manual, there is no such gate. The
-CCGR121 belongs to ECSPI2 and it is not shared.
+When CONFIG_GENERIC_CPU=y (true for all our defconfigs) we pass
+-mcpu=powerpc64 to the compiler, even when we're building a 32-bit
+kernel.
 
-Fixes: 8f6d8094b215b57 ("ARM: imx: add imx7d clk tree support")
-Reported-by: David Wolfe <david.wolfe@nxp.com>
-Signed-off-by: Abel Vesa <abel.vesa@nxp.com>
-Reviewed-by: Peng Fan <peng.fan@nxp.com>
-Link: https://lore.kernel.org/r/20220127141052.1900174-2-abel.vesa@nxp.com
+This happens because we have an ifdef CONFIG_PPC_BOOK3S_64/else block in
+the Makefile that was written before 32-bit supported GENERIC_CPU. Prior
+to that the else block only applied to 64-bit Book3E.
+
+The GCC man page says -mcpu=powerpc64 "[specifies] a pure ... 64-bit big
+endian PowerPC ... architecture machine [type], with an appropriate,
+generic processor model assumed for scheduling purposes."
+
+It's unclear how that interacts with -m32, which we are also passing,
+although obviously -m32 is taking precedence in some sense, as the
+32-bit kernel only contains 32-bit instructions.
+
+This was noticed by inspection, not via any bug reports, but it does
+affect code generation. Comparing before/after code generation, there
+are some changes to instruction scheduling, and the after case (with
+-mcpu=powerpc64 removed) the compiler seems more keen to use r8.
+
+Fix it by making the else case only apply to Book3E 64, which excludes
+32-bit.
+
+Fixes: 0e00a8c9fd92 ("powerpc: Allow CPU selection also on PPC32")
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/20220215112858.304779-1-mpe@ellerman.id.au
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/clk/imx/clk-imx7d.c | 1 -
- 1 file changed, 1 deletion(-)
+ arch/powerpc/Makefile | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/clk/imx/clk-imx7d.c b/drivers/clk/imx/clk-imx7d.c
-index c4e0f1c07192..3f6fd7ef2a68 100644
---- a/drivers/clk/imx/clk-imx7d.c
-+++ b/drivers/clk/imx/clk-imx7d.c
-@@ -849,7 +849,6 @@ static void __init imx7d_clocks_init(struct device_node *ccm_node)
- 	hws[IMX7D_WDOG4_ROOT_CLK] = imx_clk_hw_gate4("wdog4_root_clk", "wdog_post_div", base + 0x49f0, 0);
- 	hws[IMX7D_KPP_ROOT_CLK] = imx_clk_hw_gate4("kpp_root_clk", "ipg_root_clk", base + 0x4aa0, 0);
- 	hws[IMX7D_CSI_MCLK_ROOT_CLK] = imx_clk_hw_gate4("csi_mclk_root_clk", "csi_mclk_post_div", base + 0x4490, 0);
--	hws[IMX7D_AUDIO_MCLK_ROOT_CLK] = imx_clk_hw_gate4("audio_mclk_root_clk", "audio_mclk_post_div", base + 0x4790, 0);
- 	hws[IMX7D_WRCLK_ROOT_CLK] = imx_clk_hw_gate4("wrclk_root_clk", "wrclk_post_div", base + 0x47a0, 0);
- 	hws[IMX7D_USB_CTRL_CLK] = imx_clk_hw_gate4("usb_ctrl_clk", "ahb_root_clk", base + 0x4680, 0);
- 	hws[IMX7D_USB_PHY1_CLK] = imx_clk_hw_gate4("usb_phy1_clk", "pll_usb1_main_clk", base + 0x46a0, 0);
+diff --git a/arch/powerpc/Makefile b/arch/powerpc/Makefile
+index 5c8c06215dd4..7a96cdefbd4e 100644
+--- a/arch/powerpc/Makefile
++++ b/arch/powerpc/Makefile
+@@ -172,7 +172,7 @@ else
+ CFLAGS-$(CONFIG_GENERIC_CPU) += $(call cc-option,-mtune=power7,$(call cc-option,-mtune=power5))
+ CFLAGS-$(CONFIG_GENERIC_CPU) += $(call cc-option,-mcpu=power5,-mcpu=power4)
+ endif
+-else
++else ifdef CONFIG_PPC_BOOK3E_64
+ CFLAGS-$(CONFIG_GENERIC_CPU) += -mcpu=powerpc64
+ endif
+ 
 -- 
 2.34.1
 
