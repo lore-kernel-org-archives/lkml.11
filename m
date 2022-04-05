@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 147C1C4332F
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 09:12:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F24FFC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 09:12:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243917AbiDEJJj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 05:09:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46264 "EHLO
+        id S243861AbiDEJJc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 05:09:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34714 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239499AbiDEIUI (ORCPT
+        with ESMTP id S239493AbiDEIUI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Apr 2022 04:20:08 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9270B2A;
-        Tue,  5 Apr 2022 01:14:38 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4146B0A;
+        Tue,  5 Apr 2022 01:14:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 65AE760AFB;
-        Tue,  5 Apr 2022 08:14:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 705FDC385A0;
-        Tue,  5 Apr 2022 08:14:37 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6112EB81B90;
+        Tue,  5 Apr 2022 08:14:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C1D81C385A1;
+        Tue,  5 Apr 2022 08:14:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649146477;
-        bh=MyfrGR6SN78HoHqE1W243AQAx11Y7mJpaWheVxSLE9g=;
+        s=korg; t=1649146461;
+        bh=oAyDcBuvjmsJalWEXosrvxoNCoCAuiWwe1NdEN4k2bk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ae8keG81N9kj3ma+IWlHmhdaItk1Mh3yGe4k/8m8cm/TWXP3+2iXJ2UVp2pswdb/h
-         Y6mwfGUDunbosdSAW+LiD6CF1114lfN1xVOoisHD9qMnina0LGm73LBcZr4almzpds
-         TOcSDFcmrWzNG/Nnpgg4NiKXnjCUZ8kG0YwoI2K4=
+        b=z3CpbNMUMBkDAFdvLJtzphX8K19S/uRyxUTvqh4dgEbLOEa0rvrjiYMTsumubqu1l
+         gfDvlg92q4j8kIHsRYBs1C/bglTpJN7OmMd9MZDvq7EpGlGUKslCMb4zS98fu7zpkp
+         pQEUbu4MkunAUG2L/zwXSvKTGmMSkDgtYhcSWJlg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
-        Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>,
+        stable@vger.kernel.org,
+        =?UTF-8?q?Jonathan=20Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>,
+        Manivannan Sadhasivam <mani@kernel.org>,
         Stephen Boyd <sboyd@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0778/1126] clk: visconti: prevent array overflow in visconti_clk_register_gates()
-Date:   Tue,  5 Apr 2022 09:25:25 +0200
-Message-Id: <20220405070430.413899080@linuxfoundation.org>
+Subject: [PATCH 5.17 0755/1126] clk: actions: Terminate clk_div_table with sentinel element
+Date:   Tue,  5 Apr 2022 09:25:02 +0200
+Message-Id: <20220405070429.745909340@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -50,65 +51,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dan Carpenter <dan.carpenter@oracle.com>
+From: Jonathan Neuschäfer <j.neuschaefer@gmx.net>
 
-[ Upstream commit c5601e0720ce1a3ad895f94a5838530edde01ed3 ]
+[ Upstream commit d8a441e53e2434b1401e52dfd66b05263e442edc ]
 
-This code was using -1 to represent that there was no reset function.
-Unfortunately, the -1 was stored in u8 so the if (clks[i].rs_id >= 0)
-condition was always true.  This lead to an out of bounds access in
-visconti_clk_register_gates().
+In order that the end of a clk_div_table can be detected, it must be
+terminated with a sentinel element (.div = 0).
 
-Fixes: b4cbe606dc36 ("clk: visconti: Add support common clock driver and reset driver")
-Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
-Link: https://lore.kernel.org/r/20220316083533.GA30941@kili
-Acked-by: Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>
+In owl-s900.s, the { 0, 8 } element was probably meant to be just that,
+so this patch changes { 0, 8 } to { 0, 0 }.
+
+Fixes: d47317ca4ade1 ("clk: actions: Add S700 SoC clock support")
+Fixes: d85d20053e195 ("clk: actions: Add S900 SoC clock support")
+Signed-off-by: Jonathan Neuschäfer <j.neuschaefer@gmx.net>
+Reviewed-by: Manivannan Sadhasivam <mani@kernel.org>
+Link: https://lore.kernel.org/r/20220218000922.134857-2-j.neuschaefer@gmx.net
 Signed-off-by: Stephen Boyd <sboyd@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/clk/visconti/clkc-tmpv770x.c | 2 +-
- drivers/clk/visconti/clkc.c          | 2 +-
- drivers/clk/visconti/clkc.h          | 3 +++
- 3 files changed, 5 insertions(+), 2 deletions(-)
+ drivers/clk/actions/owl-s700.c | 1 +
+ drivers/clk/actions/owl-s900.c | 2 +-
+ 2 files changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/clk/visconti/clkc-tmpv770x.c b/drivers/clk/visconti/clkc-tmpv770x.c
-index c2b2f41a85a4..6c753b2cb558 100644
---- a/drivers/clk/visconti/clkc-tmpv770x.c
-+++ b/drivers/clk/visconti/clkc-tmpv770x.c
-@@ -176,7 +176,7 @@ static const struct visconti_clk_gate_table clk_gate_tables[] = {
- 	{ TMPV770X_CLK_WRCK, "wrck",
- 		clks_parent_data, ARRAY_SIZE(clks_parent_data),
- 		0, 0x68, 0x168, 9, 32,
--		-1, }, /* No reset */
-+		NO_RESET, },
- 	{ TMPV770X_CLK_PICKMON, "pickmon",
- 		clks_parent_data, ARRAY_SIZE(clks_parent_data),
- 		0, 0x10, 0x110, 8, 4,
-diff --git a/drivers/clk/visconti/clkc.c b/drivers/clk/visconti/clkc.c
-index 56a8a4ffebca..d0b193b5d0b3 100644
---- a/drivers/clk/visconti/clkc.c
-+++ b/drivers/clk/visconti/clkc.c
-@@ -147,7 +147,7 @@ int visconti_clk_register_gates(struct visconti_clk_provider *ctx,
- 		if (!dev_name)
- 			return -ENOMEM;
+diff --git a/drivers/clk/actions/owl-s700.c b/drivers/clk/actions/owl-s700.c
+index a2f34d13fb54..6ea7da1d6d75 100644
+--- a/drivers/clk/actions/owl-s700.c
++++ b/drivers/clk/actions/owl-s700.c
+@@ -162,6 +162,7 @@ static struct clk_div_table hdmia_div_table[] = {
  
--		if (clks[i].rs_id >= 0) {
-+		if (clks[i].rs_id != NO_RESET) {
- 			rson_offset = reset[clks[i].rs_id].rson_offset;
- 			rsoff_offset = reset[clks[i].rs_id].rsoff_offset;
- 			rs_idx = reset[clks[i].rs_id].rs_idx;
-diff --git a/drivers/clk/visconti/clkc.h b/drivers/clk/visconti/clkc.h
-index 09ed82ff64e4..8756a1ec42ef 100644
---- a/drivers/clk/visconti/clkc.h
-+++ b/drivers/clk/visconti/clkc.h
-@@ -73,4 +73,7 @@ int visconti_clk_register_gates(struct visconti_clk_provider *data,
- 				 int num_gate,
- 				 const struct visconti_reset_data *reset,
- 				 spinlock_t *lock);
-+
-+#define NO_RESET 0xFF
-+
- #endif /* _VISCONTI_CLKC_H_ */
+ static struct clk_div_table rmii_div_table[] = {
+ 	{0, 4},   {1, 10},
++	{0, 0}
+ };
+ 
+ /* divider clocks */
+diff --git a/drivers/clk/actions/owl-s900.c b/drivers/clk/actions/owl-s900.c
+index 790890978424..5144ada2c7e1 100644
+--- a/drivers/clk/actions/owl-s900.c
++++ b/drivers/clk/actions/owl-s900.c
+@@ -140,7 +140,7 @@ static struct clk_div_table rmii_ref_div_table[] = {
+ 
+ static struct clk_div_table usb3_mac_div_table[] = {
+ 	{ 1, 2 }, { 2, 3 }, { 3, 4 },
+-	{ 0, 8 },
++	{ 0, 0 }
+ };
+ 
+ static struct clk_div_table i2s_div_table[] = {
 -- 
 2.34.1
 
