@@ -2,122 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E8FFC4321E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A3A41C41535
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 01:13:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1841054AbiDFBPB (ORCPT
+        id S1841092AbiDFBPM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 21:15:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41026 "EHLO
+        Tue, 5 Apr 2022 21:15:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52344 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1572982AbiDERkG (ORCPT
+        with ESMTP id S1354220AbiDEKMT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 13:40:06 -0400
-X-Greylist: delayed 1196 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 05 Apr 2022 10:38:06 PDT
-Received: from 16.mo581.mail-out.ovh.net (16.mo581.mail-out.ovh.net [46.105.72.216])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED701B8202
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 10:38:06 -0700 (PDT)
-Received: from player771.ha.ovh.net (unknown [10.110.208.183])
-        by mo581.mail-out.ovh.net (Postfix) with ESMTP id DFE52239A6
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 16:59:10 +0000 (UTC)
-Received: from sk2.org (82-65-25-201.subs.proxad.net [82.65.25.201])
-        (Authenticated sender: steve@sk2.org)
-        by player771.ha.ovh.net (Postfix) with ESMTPSA id 79485293E35B3;
-        Tue,  5 Apr 2022 16:59:06 +0000 (UTC)
-Authentication-Results: garm.ovh; auth=pass (GARM-106R0065628e882-527f-4d1e-a890-3f76ab6a3621,
-                    8AF55017BACD44284FC599BC4826E0280D36FCC4) smtp.auth=steve@sk2.org
-X-OVh-ClientIp: 82.65.25.201
-From:   Stephen Kitt <steve@sk2.org>
-To:     Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>
-Cc:     Wolfram Sang <wsa@kernel.org>, linux-kernel@vger.kernel.org,
-        Stephen Kitt <steve@sk2.org>
-Subject: [PATCH 00/14] ASoC: remaining simple i2c probe changes
-Date:   Tue,  5 Apr 2022 18:58:22 +0200
-Message-Id: <20220405165836.2165310-1-steve@sk2.org>
-X-Mailer: git-send-email 2.27.0
+        Tue, 5 Apr 2022 06:12:19 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 705BA64E8;
+        Tue,  5 Apr 2022 02:59:01 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 293EAB817D3;
+        Tue,  5 Apr 2022 09:59:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8DEE5C385A1;
+        Tue,  5 Apr 2022 09:58:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649152738;
+        bh=TYA85x5KePZrtgYFgh6mR2q5VCFcpvIyZhFCo2/nG68=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=mphnfcTySsEPDMZGld5Rklu7Sr/pzTbd/8zBJXh7Sn07A6Ubd+jJLuLxFuRnC8hkC
+         oqoWRS8ZhqFMNADzy+6uWUNINOkaUT2kZIPQur0+i7SYbHJznrxf4auz4vHlcdDCAi
+         XAs4KfBJu5c4w9yYYHoJai59jCBNmWXo0XPUyTdk=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        Horatiu Vultur <horatiu.vultur@microchip.com>,
+        Linus Walleij <linus.walleij@linaro.org>
+Subject: [PATCH 5.15 885/913] dt-bindings: pinctrl: pinctrl-microchip-sgpio: Fix example
+Date:   Tue,  5 Apr 2022 09:32:27 +0200
+Message-Id: <20220405070406.349744134@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-Ovh-Tracer-Id: 8457197150388913798
-X-VR-SPAMSTATE: OK
-X-VR-SPAMSCORE: -100
-X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvvddrudejgedguddtgecutefuodetggdotefrodftvfcurfhrohhfihhlvgemucfqggfjpdevjffgvefmvefgnecuuegrihhlohhuthemucehtddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjughrpefhvffufffkofgggfestdekredtredttdenucfhrhhomhepufhtvghphhgvnhcumfhithhtuceoshhtvghvvgesshhkvddrohhrgheqnecuggftrfgrthhtvghrnhepteegudfgleekieekteeggeetveefueefteeugfduieeitdfhhedtfeefkedvfeefnecukfhppedtrddtrddtrddtpdekvddrieehrddvhedrvddtudenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhhouggvpehsmhhtphhouhhtpdhhvghlohepphhlrgihvghrjeejuddrhhgrrdhovhhhrdhnvghtpdhinhgvtheptddrtddrtddrtddpmhgrihhlfhhrohhmpehsthgvvhgvsehskhdvrdhorhhgpdhnsggprhgtphhtthhopedupdhrtghpthhtoheplhhinhhugidqkhgvrhhnvghlsehvghgvrhdrkhgvrhhnvghlrdhorhhg
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This series covers all the remaining changes to migrate
-sound/soc/codecs i2c probes to probe_new, where the const struct
-i2c_client * argument is unused; there are a few remaining files which
-use the argument and will need i2c_match_id migration.
+From: Horatiu Vultur <horatiu.vultur@microchip.com>
 
-These are all files without a more specific maintainer than Liam and
-Mark as SoC supporters (unlike all my previous patches).
+commit a6ff90f3fbd4d902aad8777f0329cef3a2768bde upstream.
 
-Stephen Kitt (14):
-  ASoC: ak4*: use simple i2c probe function
-  ASoC: cx2072x: use simple i2c probe function
-  ASoC: es83*: use simple i2c probe function
-  ASoC: lm4857: use simple i2c probe function
-  ASoC: max9*: use simple i2c probe function
-  ASoC: ml26124: use simple i2c probe function
-  ASoC: nau8*: use simple i2c probe function
-  ASoC: pcm*: use simple i2c probe function
-  ASoC: sta*: use simple i2c probe function
-  ASoC: tas*: use simple i2c probe function
-  ASoC: tda7419: use simple i2c probe function
-  ASoC: tlv320*: use simple i2c probe function
-  ASoC: ts3a227e: use simple i2c probe function
-  ASoC: uda1380: use simple i2c probe function
+The blamed commit adds support for irq, but the reqisters for irq are
+outside of the memory size. They are at address 0x108. Therefore update
+the memory size to cover all the registers used by the device.
 
- sound/soc/codecs/ak4118.c          | 5 ++---
- sound/soc/codecs/ak4535.c          | 5 ++---
- sound/soc/codecs/ak4641.c          | 5 ++---
- sound/soc/codecs/ak4671.c          | 5 ++---
- sound/soc/codecs/cx2072x.c         | 5 ++---
- sound/soc/codecs/es8316.c          | 5 ++---
- sound/soc/codecs/es8328-i2c.c      | 5 ++---
- sound/soc/codecs/lm4857.c          | 5 ++---
- sound/soc/codecs/max9768.c         | 5 ++---
- sound/soc/codecs/max98371.c        | 5 ++---
- sound/soc/codecs/max98373-i2c.c    | 5 ++---
- sound/soc/codecs/max98390.c        | 5 ++---
- sound/soc/codecs/max9850.c         | 5 ++---
- sound/soc/codecs/max98504.c        | 5 ++---
- sound/soc/codecs/max98520.c        | 4 ++--
- sound/soc/codecs/max9867.c         | 5 ++---
- sound/soc/codecs/max9877.c         | 5 ++---
- sound/soc/codecs/max98925.c        | 5 ++---
- sound/soc/codecs/max98926.c        | 5 ++---
- sound/soc/codecs/max98927.c        | 5 ++---
- sound/soc/codecs/ml26124.c         | 5 ++---
- sound/soc/codecs/nau8540.c         | 5 ++---
- sound/soc/codecs/nau8810.c         | 5 ++---
- sound/soc/codecs/nau8821.c         | 5 ++---
- sound/soc/codecs/nau8822.c         | 5 ++---
- sound/soc/codecs/nau8824.c         | 5 ++---
- sound/soc/codecs/nau8825.c         | 5 ++---
- sound/soc/codecs/pcm1681.c         | 5 ++---
- sound/soc/codecs/pcm1789-i2c.c     | 5 ++---
- sound/soc/codecs/pcm179x-i2c.c     | 5 ++---
- sound/soc/codecs/pcm3168a-i2c.c    | 5 ++---
- sound/soc/codecs/pcm512x-i2c.c     | 5 ++---
- sound/soc/codecs/sta32x.c          | 5 ++---
- sound/soc/codecs/sta350.c          | 5 ++---
- sound/soc/codecs/sta529.c          | 5 ++---
- sound/soc/codecs/tas2552.c         | 5 ++---
- sound/soc/codecs/tas2764.c         | 5 ++---
- sound/soc/codecs/tas2770.c         | 5 ++---
- sound/soc/codecs/tas5086.c         | 5 ++---
- sound/soc/codecs/tas6424.c         | 5 ++---
- sound/soc/codecs/tda7419.c         | 5 ++---
- sound/soc/codecs/tlv320adcx140.c   | 5 ++---
- sound/soc/codecs/tlv320aic23-i2c.c | 5 ++---
- sound/soc/codecs/tlv320dac33.c     | 5 ++---
- sound/soc/codecs/ts3a227e.c        | 5 ++---
- sound/soc/codecs/uda1380.c         | 5 ++---
- 46 files changed, 92 insertions(+), 137 deletions(-)
+Fixes: 01a9350bdd49fb ("dt-bindings: pinctrl: pinctrl-microchip-sgpio: Add irq support")
+Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
+Link: https://lore.kernel.org/r/20220204153535.465827-2-horatiu.vultur@microchip.com
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ Documentation/devicetree/bindings/pinctrl/microchip,sparx5-sgpio.yaml |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
--- 
-2.27.0
+--- a/Documentation/devicetree/bindings/pinctrl/microchip,sparx5-sgpio.yaml
++++ b/Documentation/devicetree/bindings/pinctrl/microchip,sparx5-sgpio.yaml
+@@ -138,7 +138,7 @@ examples:
+       clocks = <&sys_clk>;
+       pinctrl-0 = <&sgpio2_pins>;
+       pinctrl-names = "default";
+-      reg = <0x1101059c 0x100>;
++      reg = <0x1101059c 0x118>;
+       microchip,sgpio-port-ranges = <0 0>, <16 18>, <28 31>;
+       bus-frequency = <25000000>;
+       sgpio_in2: gpio@0 {
+
 
