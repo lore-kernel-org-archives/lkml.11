@@ -2,47 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C94EC4332F
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 22:04:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0EA5AC4167B
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 22:04:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1390215AbiDEWDZ (ORCPT
+        id S1390379AbiDEWDm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 18:03:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46620 "EHLO
+        Tue, 5 Apr 2022 18:03:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44278 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357975AbiDEK1h (ORCPT
+        with ESMTP id S1349490AbiDEJt5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:27:37 -0400
+        Tue, 5 Apr 2022 05:49:57 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50778CD335;
-        Tue,  5 Apr 2022 03:12:00 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50D94D2;
+        Tue,  5 Apr 2022 02:47:34 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0A65CB81B7A;
-        Tue,  5 Apr 2022 10:11:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6222DC385A1;
-        Tue,  5 Apr 2022 10:11:57 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 06252B81B76;
+        Tue,  5 Apr 2022 09:47:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 58E67C385A2;
+        Tue,  5 Apr 2022 09:47:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649153517;
-        bh=TqgaRzDre7yag1CqyqM9emE+nY8wsrYrMnO0ieJPUpY=;
+        s=korg; t=1649152051;
+        bh=H/Bje5hmDtCNNdNb6F1c/bsu09pr84sD2glYE/vcp/I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Xd/TCE+AXbBaVrBZkCLj+JTxF4OEMrvY9TTx3anAoeuDdSNOscAWroWrnYvRDGtp9
-         BpNATDdo7t2aazWv50z3CrX1F+Iido19TxAt0q475uhv5MQvF2/OHFBblXj8pgDS4E
-         4W+bZLqHjqaN8plo6ZZbt9D7PBxrIEpcbNLQ0Tdg=
+        b=n34SxCyMYE4G3uCImPwO0n0ghUQFcx8wSdrV38E2w604haFZaVNSWVcP9DMg5PaTw
+         B8UBLBm0vdoeJIE748KQZkVG9e1gJpMVxbeAFVWfiaImLv7azccXvV7bMHwL7xwIxR
+         eoOnZwApbwParEDFc1SMSjubz81dx/liEWmV1+k8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Shengjiu Wang <shengjiu.wang@nxp.com>,
-        Fabio Estevam <festevam@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
+        stable@vger.kernel.org, Michael Walle <michael@walle.cc>,
+        Linus Walleij <linus.walleij@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 251/599] ASoC: fsl_spdif: Disable TX clock when stop
-Date:   Tue,  5 Apr 2022 09:29:05 +0200
-Message-Id: <20220405070306.309197882@linuxfoundation.org>
+Subject: [PATCH 5.15 637/913] pinctrl: microchip-sgpio: lock RMW access
+Date:   Tue,  5 Apr 2022 09:28:19 +0200
+Message-Id: <20220405070358.935138311@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,39 +50,108 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Shengjiu Wang <shengjiu.wang@nxp.com>
+From: Michael Walle <michael@walle.cc>
 
-[ Upstream commit 6ddf611219ba8f7c8fa0d26b39710a641e7d37a5 ]
+[ Upstream commit 7996c5f5ec7a20b3f6b8fae93fcf3cb8f1c01743 ]
 
-The TX clock source may be changed in next case, need to
-disable it when stop, otherwise the TX may not work after
-changing the clock source, error log is:
+Protect any RMW access to the registers by a spinlock.
 
-aplay: pcm_write:2058: write error: Input/output error
-
-Fixes: a2388a498ad2 ("ASoC: fsl: Add S/PDIF CPU DAI driver")
-Signed-off-by: Shengjiu Wang <shengjiu.wang@nxp.com>
-Reviewed-by: Fabio Estevam <festevam@gmail.com>
-Link: https://lore.kernel.org/r/1646879863-27711-1-git-send-email-shengjiu.wang@nxp.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Fixes: 7e5ea974e61c ("pinctrl: pinctrl-microchip-sgpio: Add pinctrl driver for Microsemi Serial GPIO")
+Signed-off-by: Michael Walle <michael@walle.cc>
+Link: https://lore.kernel.org/r/20220226204507.2511633-2-michael@walle.cc
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/fsl/fsl_spdif.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/pinctrl/pinctrl-microchip-sgpio.c | 15 +++++++++++++++
+ 1 file changed, 15 insertions(+)
 
-diff --git a/sound/soc/fsl/fsl_spdif.c b/sound/soc/fsl/fsl_spdif.c
-index 15bcb0f38ec9..d01e8d516df1 100644
---- a/sound/soc/fsl/fsl_spdif.c
-+++ b/sound/soc/fsl/fsl_spdif.c
-@@ -544,6 +544,8 @@ static void fsl_spdif_shutdown(struct snd_pcm_substream *substream,
- 		mask = SCR_TXFIFO_AUTOSYNC_MASK | SCR_TXFIFO_CTRL_MASK |
- 			SCR_TXSEL_MASK | SCR_USRC_SEL_MASK |
- 			SCR_TXFIFO_FSEL_MASK;
-+		/* Disable TX clock */
-+		regmap_update_bits(regmap, REG_SPDIF_STC, STC_TXCLK_ALL_EN_MASK, 0);
- 	} else {
- 		scr = SCR_RXFIFO_OFF | SCR_RXFIFO_CTL_ZERO;
- 		mask = SCR_RXFIFO_FSEL_MASK | SCR_RXFIFO_AUTOSYNC_MASK|
+diff --git a/drivers/pinctrl/pinctrl-microchip-sgpio.c b/drivers/pinctrl/pinctrl-microchip-sgpio.c
+index 78765faa245a..dfa374195694 100644
+--- a/drivers/pinctrl/pinctrl-microchip-sgpio.c
++++ b/drivers/pinctrl/pinctrl-microchip-sgpio.c
+@@ -18,6 +18,7 @@
+ #include <linux/platform_device.h>
+ #include <linux/property.h>
+ #include <linux/reset.h>
++#include <linux/spinlock.h>
+ 
+ #include "core.h"
+ #include "pinconf.h"
+@@ -115,6 +116,7 @@ struct sgpio_priv {
+ 	u32 clock;
+ 	u32 __iomem *regs;
+ 	const struct sgpio_properties *properties;
++	spinlock_t lock;
+ };
+ 
+ struct sgpio_port_addr {
+@@ -216,6 +218,7 @@ static void sgpio_output_set(struct sgpio_priv *priv,
+ 			     int value)
+ {
+ 	unsigned int bit = SGPIO_SRC_BITS * addr->bit;
++	unsigned long flags;
+ 	u32 clr, set;
+ 
+ 	switch (priv->properties->arch) {
+@@ -234,7 +237,10 @@ static void sgpio_output_set(struct sgpio_priv *priv,
+ 	default:
+ 		return;
+ 	}
++
++	spin_lock_irqsave(&priv->lock, flags);
+ 	sgpio_clrsetbits(priv, REG_PORT_CONFIG, addr->port, clr, set);
++	spin_unlock_irqrestore(&priv->lock, flags);
+ }
+ 
+ static int sgpio_output_get(struct sgpio_priv *priv,
+@@ -562,10 +568,13 @@ static void microchip_sgpio_irq_settype(struct irq_data *data,
+ 	struct sgpio_bank *bank = gpiochip_get_data(chip);
+ 	unsigned int gpio = irqd_to_hwirq(data);
+ 	struct sgpio_port_addr addr;
++	unsigned long flags;
+ 	u32 ena;
+ 
+ 	sgpio_pin_to_addr(bank->priv, gpio, &addr);
+ 
++	spin_lock_irqsave(&bank->priv->lock, flags);
++
+ 	/* Disable interrupt while changing type */
+ 	ena = sgpio_readl(bank->priv, REG_INT_ENABLE, addr.bit);
+ 	sgpio_writel(bank->priv, ena & ~BIT(addr.port), REG_INT_ENABLE, addr.bit);
+@@ -582,6 +591,8 @@ static void microchip_sgpio_irq_settype(struct irq_data *data,
+ 
+ 	/* Possibly re-enable interrupts */
+ 	sgpio_writel(bank->priv, ena, REG_INT_ENABLE, addr.bit);
++
++	spin_unlock_irqrestore(&bank->priv->lock, flags);
+ }
+ 
+ static void microchip_sgpio_irq_setreg(struct irq_data *data,
+@@ -592,13 +603,16 @@ static void microchip_sgpio_irq_setreg(struct irq_data *data,
+ 	struct sgpio_bank *bank = gpiochip_get_data(chip);
+ 	unsigned int gpio = irqd_to_hwirq(data);
+ 	struct sgpio_port_addr addr;
++	unsigned long flags;
+ 
+ 	sgpio_pin_to_addr(bank->priv, gpio, &addr);
+ 
++	spin_lock_irqsave(&bank->priv->lock, flags);
+ 	if (clear)
+ 		sgpio_clrsetbits(bank->priv, reg, addr.bit, BIT(addr.port), 0);
+ 	else
+ 		sgpio_clrsetbits(bank->priv, reg, addr.bit, 0, BIT(addr.port));
++	spin_unlock_irqrestore(&bank->priv->lock, flags);
+ }
+ 
+ static void microchip_sgpio_irq_mask(struct irq_data *data)
+@@ -814,6 +828,7 @@ static int microchip_sgpio_probe(struct platform_device *pdev)
+ 		return -ENOMEM;
+ 
+ 	priv->dev = dev;
++	spin_lock_init(&priv->lock);
+ 
+ 	reset = devm_reset_control_get_optional_shared(&pdev->dev, "switch");
+ 	if (IS_ERR(reset))
 -- 
 2.34.1
 
