@@ -2,45 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B125C47085
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F6ADC38A04
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 10:04:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350484AbiDEJ6k (ORCPT
+        id S1350515AbiDEJ6p (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 05:58:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55452 "EHLO
+        Tue, 5 Apr 2022 05:58:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34706 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238133AbiDEISl (ORCPT
+        with ESMTP id S238081AbiDEISj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:18:41 -0400
+        Tue, 5 Apr 2022 04:18:39 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C97D9B9193;
-        Tue,  5 Apr 2022 01:08:08 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 153AAB82CF;
+        Tue,  5 Apr 2022 01:08:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BAF65B81BAF;
-        Tue,  5 Apr 2022 08:08:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 16544C385A0;
-        Tue,  5 Apr 2022 08:08:04 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2B229B81A32;
+        Tue,  5 Apr 2022 08:08:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 90069C385A0;
+        Tue,  5 Apr 2022 08:07:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649146085;
-        bh=UjsimMY8mXFbubZ1Ptnk8VmWm4SoyR1XlgZaRQBMXP4=;
+        s=korg; t=1649146079;
+        bh=uwMJn5PYzXABLSp9ORl7yBZwQM2OEnkHyq08SBv7TVk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YfztPVstWRddSi+2yxfHd5xbwo2IeO0R50BnWjuF4A1zDZYkqcKcjwBuzP5GW9sgS
-         rjTtGQX/Hh5DxcVA0huUYXzTmGP06KHW58PMhsZWSw0xoeUGFPqBjcf+nyAx1pv8Cf
-         QSYKS979xz01XInJd6cqtHciNBWG088Jg0KD7Kxk=
+        b=ICg55WZA5hf/rc9Gh63HtZU8sx/AVEcsDbuaUUQv14MOocE15FWpLOWMmka4A+PDg
+         i+2fSH6/OCwe6TdO61CwJ0Ne4lanXixx1AS1RzzcNMiqsBpeRgs8V1cxlhJvsgxCuW
+         DXZ8JRbIbo/eDlq6fo4cSg7ZPJSi0DQl0/AWfdEY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Angela Czubak <acz@semihalf.com>,
-        Marek Maslanka <mm@semihalf.com>,
-        Radoslaw Biernacki <rad@semihalf.com>,
-        Luiz Augusto von Dentz <luiz.von.dentz@intel.com>,
+        stable@vger.kernel.org,
+        Luiz Angelo Daros de Luca <luizluca@gmail.com>,
+        =?UTF-8?q?Ar=C4=B1n=C3=A7=20=C3=9CNAL?= <arinc.unal@arinc9.com>,
+        =?UTF-8?q?Alvin=20=C5=A0ipraga?= <alsi@bang-olufsen.dk>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0630/1126] Bluetooth: Fix skb allocation in mgmt_remote_name() & mgmt_device_connected()
-Date:   Tue,  5 Apr 2022 09:22:57 +0200
-Message-Id: <20220405070426.128609733@linuxfoundation.org>
+Subject: [PATCH 5.17 0597/1126] net: dsa: realtek-smi: move to subdirectory
+Date:   Tue,  5 Apr 2022 09:22:24 +0200
+Message-Id: <20220405070425.158109101@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -52,93 +56,150 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Radoslaw Biernacki <rad@semihalf.com>
+From: Luiz Angelo Daros de Luca <luizluca@gmail.com>
 
-[ Upstream commit ba17bb62ce415950753c19d16bb43b2bd3701158 ]
+[ Upstream commit 319a70a5fea9590e9431dd57f56191996c4787f4 ]
 
-This patch fixes skb allocation, as lack of space for ev might push skb
-tail beyond its end.
-Also introduce eir_precalc_len() that can be used instead of magic
-numbers for similar eir operations on skb.
-
-Fixes: cf1bce1de7eeb ("Bluetooth: mgmt: Make use of mgmt_send_event_skb in MGMT_EV_DEVICE_FOUND")
-Fixes: e96741437ef0a ("Bluetooth: mgmt: Make use of mgmt_send_event_skb in MGMT_EV_DEVICE_CONNECTED")
-Signed-off-by: Angela Czubak <acz@semihalf.com>
-Signed-off-by: Marek Maslanka <mm@semihalf.com>
-Signed-off-by: Radoslaw Biernacki <rad@semihalf.com>
-Signed-off-by: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
+Signed-off-by: Luiz Angelo Daros de Luca <luizluca@gmail.com>
+Tested-by: Arınç ÜNAL <arinc.unal@arinc9.com>
+Reviewed-by: Alvin Šipraga <alsi@bang-olufsen.dk>
+Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/bluetooth/eir.h  |  5 +++++
- net/bluetooth/mgmt.c | 18 ++++++++----------
- 2 files changed, 13 insertions(+), 10 deletions(-)
+ MAINTAINERS                                   |  3 +--
+ drivers/net/dsa/Kconfig                       | 12 +----------
+ drivers/net/dsa/Makefile                      |  3 +--
+ drivers/net/dsa/realtek/Kconfig               | 20 +++++++++++++++++++
+ drivers/net/dsa/realtek/Makefile              |  3 +++
+ .../net/dsa/{ => realtek}/realtek-smi-core.c  |  0
+ .../net/dsa/{ => realtek}/realtek-smi-core.h  |  0
+ drivers/net/dsa/{ => realtek}/rtl8365mb.c     |  0
+ drivers/net/dsa/{ => realtek}/rtl8366.c       |  0
+ drivers/net/dsa/{ => realtek}/rtl8366rb.c     |  0
+ 10 files changed, 26 insertions(+), 15 deletions(-)
+ create mode 100644 drivers/net/dsa/realtek/Kconfig
+ create mode 100644 drivers/net/dsa/realtek/Makefile
+ rename drivers/net/dsa/{ => realtek}/realtek-smi-core.c (100%)
+ rename drivers/net/dsa/{ => realtek}/realtek-smi-core.h (100%)
+ rename drivers/net/dsa/{ => realtek}/rtl8365mb.c (100%)
+ rename drivers/net/dsa/{ => realtek}/rtl8366.c (100%)
+ rename drivers/net/dsa/{ => realtek}/rtl8366rb.c (100%)
 
-diff --git a/net/bluetooth/eir.h b/net/bluetooth/eir.h
-index 05e2e917fc25..e5876751f07e 100644
---- a/net/bluetooth/eir.h
-+++ b/net/bluetooth/eir.h
-@@ -15,6 +15,11 @@ u8 eir_create_scan_rsp(struct hci_dev *hdev, u8 instance, u8 *ptr);
- u8 eir_append_local_name(struct hci_dev *hdev, u8 *eir, u8 ad_len);
- u8 eir_append_appearance(struct hci_dev *hdev, u8 *ptr, u8 ad_len);
+diff --git a/MAINTAINERS b/MAINTAINERS
+index cd0f68d4a34a..d9b2f1731ee0 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -16373,8 +16373,7 @@ M:	Linus Walleij <linus.walleij@linaro.org>
+ M:	Alvin Šipraga <alsi@bang-olufsen.dk>
+ S:	Maintained
+ F:	Documentation/devicetree/bindings/net/dsa/realtek-smi.txt
+-F:	drivers/net/dsa/realtek-smi*
+-F:	drivers/net/dsa/rtl83*
++F:	drivers/net/dsa/realtek/*
  
-+static inline u16 eir_precalc_len(u8 data_len)
-+{
-+	return sizeof(u8) * 2 + data_len;
-+}
+ REALTEK WIRELESS DRIVER (rtlwifi family)
+ M:	Ping-Ke Shih <pkshih@realtek.com>
+diff --git a/drivers/net/dsa/Kconfig b/drivers/net/dsa/Kconfig
+index 0029d279616f..37a3dabdce31 100644
+--- a/drivers/net/dsa/Kconfig
++++ b/drivers/net/dsa/Kconfig
+@@ -68,17 +68,7 @@ config NET_DSA_QCA8K
+ 	  This enables support for the Qualcomm Atheros QCA8K Ethernet
+ 	  switch chips.
+ 
+-config NET_DSA_REALTEK_SMI
+-	tristate "Realtek SMI Ethernet switch family support"
+-	select NET_DSA_TAG_RTL4_A
+-	select NET_DSA_TAG_RTL8_4
+-	select FIXED_PHY
+-	select IRQ_DOMAIN
+-	select REALTEK_PHY
+-	select REGMAP
+-	help
+-	  This enables support for the Realtek SMI-based switch
+-	  chips, currently only RTL8366RB.
++source "drivers/net/dsa/realtek/Kconfig"
+ 
+ config NET_DSA_SMSC_LAN9303
+ 	tristate
+diff --git a/drivers/net/dsa/Makefile b/drivers/net/dsa/Makefile
+index 8da1569a34e6..e73838c12256 100644
+--- a/drivers/net/dsa/Makefile
++++ b/drivers/net/dsa/Makefile
+@@ -9,8 +9,6 @@ obj-$(CONFIG_NET_DSA_LANTIQ_GSWIP) += lantiq_gswip.o
+ obj-$(CONFIG_NET_DSA_MT7530)	+= mt7530.o
+ obj-$(CONFIG_NET_DSA_MV88E6060) += mv88e6060.o
+ obj-$(CONFIG_NET_DSA_QCA8K)	+= qca8k.o
+-obj-$(CONFIG_NET_DSA_REALTEK_SMI) += realtek-smi.o
+-realtek-smi-objs		:= realtek-smi-core.o rtl8366.o rtl8366rb.o rtl8365mb.o
+ obj-$(CONFIG_NET_DSA_SMSC_LAN9303) += lan9303-core.o
+ obj-$(CONFIG_NET_DSA_SMSC_LAN9303_I2C) += lan9303_i2c.o
+ obj-$(CONFIG_NET_DSA_SMSC_LAN9303_MDIO) += lan9303_mdio.o
+@@ -23,5 +21,6 @@ obj-y				+= microchip/
+ obj-y				+= mv88e6xxx/
+ obj-y				+= ocelot/
+ obj-y				+= qca/
++obj-y				+= realtek/
+ obj-y				+= sja1105/
+ obj-y				+= xrs700x/
+diff --git a/drivers/net/dsa/realtek/Kconfig b/drivers/net/dsa/realtek/Kconfig
+new file mode 100644
+index 000000000000..1c62212fb0ec
+--- /dev/null
++++ b/drivers/net/dsa/realtek/Kconfig
+@@ -0,0 +1,20 @@
++# SPDX-License-Identifier: GPL-2.0-only
++menuconfig NET_DSA_REALTEK
++	tristate "Realtek Ethernet switch family support"
++	depends on NET_DSA
++	select NET_DSA_TAG_RTL4_A
++	select NET_DSA_TAG_RTL8_4
++	select FIXED_PHY
++	select IRQ_DOMAIN
++	select REALTEK_PHY
++	select REGMAP
++	help
++	  Select to enable support for Realtek Ethernet switch chips.
 +
- static inline u16 eir_append_data(u8 *eir, u16 eir_len, u8 type,
- 				  u8 *data, u8 data_len)
- {
-diff --git a/net/bluetooth/mgmt.c b/net/bluetooth/mgmt.c
-index 230a7a8196c0..15eab8b968ce 100644
---- a/net/bluetooth/mgmt.c
-+++ b/net/bluetooth/mgmt.c
-@@ -9086,12 +9086,14 @@ void mgmt_device_connected(struct hci_dev *hdev, struct hci_conn *conn,
- 	u16 eir_len = 0;
- 	u32 flags = 0;
- 
-+	/* allocate buff for LE or BR/EDR adv */
- 	if (conn->le_adv_data_len > 0)
- 		skb = mgmt_alloc_skb(hdev, MGMT_EV_DEVICE_CONNECTED,
--				     conn->le_adv_data_len);
-+				     sizeof(*ev) + conn->le_adv_data_len);
- 	else
- 		skb = mgmt_alloc_skb(hdev, MGMT_EV_DEVICE_CONNECTED,
--				     2 + name_len + 5);
-+				     sizeof(*ev) + (name ? eir_precalc_len(name_len) : 0) +
-+				     eir_precalc_len(sizeof(conn->dev_class)));
- 
- 	ev = skb_put(skb, sizeof(*ev));
- 	bacpy(&ev->addr.bdaddr, &conn->dst);
-@@ -9707,13 +9709,11 @@ void mgmt_remote_name(struct hci_dev *hdev, bdaddr_t *bdaddr, u8 link_type,
- {
- 	struct sk_buff *skb;
- 	struct mgmt_ev_device_found *ev;
--	u16 eir_len;
--	u32 flags;
-+	u16 eir_len = 0;
-+	u32 flags = 0;
- 
--	if (name_len)
--		skb = mgmt_alloc_skb(hdev, MGMT_EV_DEVICE_FOUND, 2 + name_len);
--	else
--		skb = mgmt_alloc_skb(hdev, MGMT_EV_DEVICE_FOUND, 0);
-+	skb = mgmt_alloc_skb(hdev, MGMT_EV_DEVICE_FOUND,
-+			     sizeof(*ev) + (name ? eir_precalc_len(name_len) : 0));
- 
- 	ev = skb_put(skb, sizeof(*ev));
- 	bacpy(&ev->addr.bdaddr, bdaddr);
-@@ -9723,10 +9723,8 @@ void mgmt_remote_name(struct hci_dev *hdev, bdaddr_t *bdaddr, u8 link_type,
- 	if (name) {
- 		eir_len = eir_append_data(ev->eir, 0, EIR_NAME_COMPLETE, name,
- 					  name_len);
--		flags = 0;
- 		skb_put(skb, eir_len);
- 	} else {
--		eir_len = 0;
- 		flags = MGMT_DEV_FOUND_NAME_REQUEST_FAILED;
- 	}
- 
++config NET_DSA_REALTEK_SMI
++	tristate "Realtek SMI connected switch driver"
++	depends on NET_DSA_REALTEK
++	default y
++	help
++	  Select to enable support for registering switches connected
++	  through SMI.
+diff --git a/drivers/net/dsa/realtek/Makefile b/drivers/net/dsa/realtek/Makefile
+new file mode 100644
+index 000000000000..323b921bfce0
+--- /dev/null
++++ b/drivers/net/dsa/realtek/Makefile
+@@ -0,0 +1,3 @@
++# SPDX-License-Identifier: GPL-2.0
++obj-$(CONFIG_NET_DSA_REALTEK_SMI) 	+= realtek-smi.o
++realtek-smi-objs			:= realtek-smi-core.o rtl8366.o rtl8366rb.o rtl8365mb.o
+diff --git a/drivers/net/dsa/realtek-smi-core.c b/drivers/net/dsa/realtek/realtek-smi-core.c
+similarity index 100%
+rename from drivers/net/dsa/realtek-smi-core.c
+rename to drivers/net/dsa/realtek/realtek-smi-core.c
+diff --git a/drivers/net/dsa/realtek-smi-core.h b/drivers/net/dsa/realtek/realtek-smi-core.h
+similarity index 100%
+rename from drivers/net/dsa/realtek-smi-core.h
+rename to drivers/net/dsa/realtek/realtek-smi-core.h
+diff --git a/drivers/net/dsa/rtl8365mb.c b/drivers/net/dsa/realtek/rtl8365mb.c
+similarity index 100%
+rename from drivers/net/dsa/rtl8365mb.c
+rename to drivers/net/dsa/realtek/rtl8365mb.c
+diff --git a/drivers/net/dsa/rtl8366.c b/drivers/net/dsa/realtek/rtl8366.c
+similarity index 100%
+rename from drivers/net/dsa/rtl8366.c
+rename to drivers/net/dsa/realtek/rtl8366.c
+diff --git a/drivers/net/dsa/rtl8366rb.c b/drivers/net/dsa/realtek/rtl8366rb.c
+similarity index 100%
+rename from drivers/net/dsa/rtl8366rb.c
+rename to drivers/net/dsa/realtek/rtl8366rb.c
 -- 
 2.34.1
 
