@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B725C3A589
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 10:04:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 09ECAC4708C
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 10:04:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350576AbiDEJ65 (ORCPT
+        id S1350598AbiDEJ7C (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 05:58:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56978 "EHLO
+        Tue, 5 Apr 2022 05:59:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39568 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239968AbiDEIV5 (ORCPT
+        with ESMTP id S238055AbiDEISi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:21:57 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74266BC3A;
-        Tue,  5 Apr 2022 01:19:33 -0700 (PDT)
+        Tue, 5 Apr 2022 04:18:38 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E23C0B8239;
+        Tue,  5 Apr 2022 01:07:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id CD355CE1BF3;
-        Tue,  5 Apr 2022 08:19:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D4637C385A0;
-        Tue,  5 Apr 2022 08:19:29 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 63FC0B81A37;
+        Tue,  5 Apr 2022 08:07:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CE4FCC385A1;
+        Tue,  5 Apr 2022 08:07:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649146770;
-        bh=p4qOkgGo1/eyoeVeoSnjF3H2g47JG7CGB9P5oxsXQkc=;
+        s=korg; t=1649146077;
+        bh=eJrefJQk4zVnwzJreJENCV/Yc4osiJG3XfaSFOpJCWQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=p+XWc1pzqMLtf75U6M/wKunLDgsOa1ngaFndAdVk2QNL9GquBwQuPOWDp3ReXXpmV
-         8lXmZJjCmefJ544lFzc8u59sG8PIbOXhKGU53PYnzHRq4cbkLnfFKKyS1J9399SqEu
-         /ASQ54wDN/34RPYE0MdVf8WpS6TnbPsIRRtS3LTs=
+        b=tzKlOalw9581ClKFYFT4zirB1Ss9HCrBk5DWOS999JZ0M348aeFDUzZCUqL2oxyOs
+         Jzmqv4hdhJGmM05RIV3N+CR108dABnDjxtAycfyztzJM50/z4Ty/eFCn9TJLFGZzT4
+         5C4Twzj9f/IwAXocpPx9ofziuYh/v2pOsZ16z+QY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, rftc <rftc@gmx.de>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
+        stable@vger.kernel.org,
+        Luiz Angelo Daros de Luca <luizluca@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0844/1126] crypto: xts - Add softdep on ecb
-Date:   Tue,  5 Apr 2022 09:26:31 +0200
-Message-Id: <20220405070432.325069788@linuxfoundation.org>
+Subject: [PATCH 5.17 0596/1126] net: dsa: realtek-smi: fix kdoc warnings
+Date:   Tue,  5 Apr 2022 09:22:23 +0200
+Message-Id: <20220405070425.128618793@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -50,30 +51,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Herbert Xu <herbert@gondor.apana.org.au>
+From: Luiz Angelo Daros de Luca <luizluca@gmail.com>
 
-[ Upstream commit dfe085d8dcd0bb1fe20cc2327e81c8064cead441 ]
+[ Upstream commit 0f0c6da03ba37739901ca5db4361c1ef1ae9463f ]
 
-The xts module needs ecb to be present as it's meant to work
-on top of ecb.  This patch adds a softdep so ecb can be included
-automatically into the initramfs.
+Removed kdoc mark for incomplete struct description.
+Added a return description for rtl8366rb_drop_untagged.
 
-Reported-by: rftc <rftc@gmx.de>
-Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+Signed-off-by: Luiz Angelo Daros de Luca <luizluca@gmail.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- crypto/xts.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/net/dsa/realtek-smi-core.h | 4 ++--
+ drivers/net/dsa/rtl8366rb.c        | 2 ++
+ 2 files changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/crypto/xts.c b/crypto/xts.c
-index 6c12f30dbdd6..63c85b9e64e0 100644
---- a/crypto/xts.c
-+++ b/crypto/xts.c
-@@ -466,3 +466,4 @@ MODULE_LICENSE("GPL");
- MODULE_DESCRIPTION("XTS block cipher mode");
- MODULE_ALIAS_CRYPTO("xts");
- MODULE_IMPORT_NS(CRYPTO_INTERNAL);
-+MODULE_SOFTDEP("pre: ecb");
+diff --git a/drivers/net/dsa/realtek-smi-core.h b/drivers/net/dsa/realtek-smi-core.h
+index 5bfa53e2480a..faed387d8db3 100644
+--- a/drivers/net/dsa/realtek-smi-core.h
++++ b/drivers/net/dsa/realtek-smi-core.h
+@@ -25,7 +25,7 @@ struct rtl8366_mib_counter {
+ 	const char	*name;
+ };
+ 
+-/**
++/*
+  * struct rtl8366_vlan_mc - Virtual LAN member configuration
+  */
+ struct rtl8366_vlan_mc {
+@@ -74,7 +74,7 @@ struct realtek_smi {
+ 	void			*chip_data; /* Per-chip extra variant data */
+ };
+ 
+-/**
++/*
+  * struct realtek_smi_ops - vtable for the per-SMI-chiptype operations
+  * @detect: detects the chiptype
+  */
+diff --git a/drivers/net/dsa/rtl8366rb.c b/drivers/net/dsa/rtl8366rb.c
+index ecc19bd5115f..4f8c06d7ab3a 100644
+--- a/drivers/net/dsa/rtl8366rb.c
++++ b/drivers/net/dsa/rtl8366rb.c
+@@ -1252,6 +1252,8 @@ rtl8366rb_port_bridge_leave(struct dsa_switch *ds, int port,
+  * @smi: SMI state container
+  * @port: the port to drop untagged and C-tagged frames on
+  * @drop: whether to drop or pass untagged and C-tagged frames
++ *
++ * Return: zero for success, a negative number on error.
+  */
+ static int rtl8366rb_drop_untagged(struct realtek_smi *smi, int port, bool drop)
+ {
 -- 
 2.34.1
 
