@@ -2,95 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 01792C35280
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 66563C433EF
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 22:55:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1455994AbiDEWo4 (ORCPT
+        id S1455794AbiDEWoM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 18:44:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36324 "EHLO
+        Tue, 5 Apr 2022 18:44:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47428 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348777AbiDEJsf (ORCPT
+        with ESMTP id S1349467AbiDEJtz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:48:35 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4D356A412;
-        Tue,  5 Apr 2022 02:35:06 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6A8DE61680;
-        Tue,  5 Apr 2022 09:35:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 70981C385A2;
-        Tue,  5 Apr 2022 09:35:05 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649151305;
-        bh=f0i/LJ/rej/qlGXRfE9/Nw2sVL0swZ4PvX3YV1//QE0=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fa33y3vc0+bqFVaSekMHmTPxtrhw4J9+g15GhgUHsHJZW2gUnm7fZPhmReibA1BN4
-         kUqiE8H/6j0YlxayYcGUi/ZAb5sU8twsDlzElznA+Ob3bbaGT1Xo4zZesv2o8/abnj
-         uSumr+BifsEHi6j2xD+ID2xHlCPdeu8yEBcO8JI4=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 366/913] ASoC: msm8916-wcd-digital: Fix missing clk_disable_unprepare() in msm8916_wcd_digital_probe
-Date:   Tue,  5 Apr 2022 09:23:48 +0200
-Message-Id: <20220405070350.817089346@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 5 Apr 2022 05:49:55 -0400
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55F5FFD1D;
+        Tue,  5 Apr 2022 02:46:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649152006; x=1680688006;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=HZf/S7rVd3q8yY5bhWH8nEyTLZa+T5GesGL7jfopFXY=;
+  b=BxM8NniRHwZrdAKEyoRLdXzc21jdTLEM9ka8fp3n/zXnd+M+0StfBm+k
+   eMR8T0cGhJ6qJ8HA3WOqarsQO+Hy9tneZ49D7KOIgc9Rm2Jy7uvHv8h0L
+   BF02vZexaKVbpoWUnU6ip8r1JbXE29qYrUL9Ea/5rZA82O3NiUfdlr85o
+   cqzzMdhU6wa6XufFvZRehT5+j3GQluyuMm4ryCsxoyJST4FZpe3NIfxzY
+   VdNCAirZJJgpJlKc55AIb9I7T3fTn6peH5Dbutw/ygh7IlJvdbV1M2Y6Z
+   Z/jB2NDvZkkn+ROUt+R+wCIYbD6eNe8Hp1J7GRPDvjQriQzhxoFg/3ZVa
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10307"; a="242851251"
+X-IronPort-AV: E=Sophos;i="5.90,236,1643702400"; 
+   d="scan'208";a="242851251"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2022 02:46:45 -0700
+X-IronPort-AV: E=Sophos;i="5.90,236,1643702400"; 
+   d="scan'208";a="651826968"
+Received: from lahna.fi.intel.com (HELO lahna) ([10.237.72.162])
+  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2022 02:46:43 -0700
+Received: by lahna (sSMTP sendmail emulation); Tue, 05 Apr 2022 12:46:40 +0300
+Date:   Tue, 5 Apr 2022 12:46:40 +0300
+From:   Mika Westerberg <mika.westerberg@linux.intel.com>
+To:     "Rafael J. Wysocki" <rjw@rjwysocki.net>
+Cc:     Linux ACPI <linux-acpi@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Linux PM <linux-pm@vger.kernel.org>,
+        Linux PCI <linux-pci@vger.kernel.org>,
+        Bjorn Helgaas <helgaas@kernel.org>
+Subject: Re: [PATCH v1 0/3] ACPI: PCI: PM: Power up PCI devices with ACPI
+ companions upfront
+Message-ID: <YkwQAKcFU4CzYX5E@lahna>
+References: <21439956.EfDdHjke4D@kreacher>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <21439956.EfDdHjke4D@kreacher>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+Hi Rafael,
 
-[ Upstream commit 375a347da4889f64d86e1ab7f4e6702b6e9bf299 ]
+On Mon, Apr 04, 2022 at 05:20:30PM +0200, Rafael J. Wysocki wrote:
+> Hi All,
+> 
+> There are cases in which the power state of a PCI device depends on an ACPI
+> power resource (or more of them) in such a way that when the given power
+> resource is in the "off" state, the PCI device depending on it is in D3cold.
+> 
+> On some systems, the initial state of these power resources is "off", so the
+> kernel should not access the config space of PCI devices depending on them,
+> until the power resources in question are turned "on", but currently that is
+> not respected during PCI device enumeration.  Namely, the PCI device
+> enumeration code walks the entire bus and enumerates all of the devices it
+> can find, including the ones whose initial power state in principle depends on
+> the ACPI power resources in the "off" state.
 
-Fix the missing clk_disable_unprepare() before return
-from msm8916_wcd_digital_probe in the error handling case.
+I guess these devices do not have _PRE() method either.
 
-Fixes: 150db8c5afa1 ("ASoC: codecs: Add msm8916-wcd digital codec")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Link: https://lore.kernel.org/r/20220307084523.28687-1-linmq006@gmail.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- sound/soc/codecs/msm8916-wcd-digital.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+> Apparently, most of the time, the config space of such devices is accessible
+> regardless of the state of the ACPI power resource associated with the PCI
+> device, so the device enumeration is successful, but there are two potential
+> issues related to this behavior.  First off, even if the given PCI device
+> is accessible when the ACPI power resource depended on by it is "off",
+> changing its configuration may confuse the platform firmware and lead to
+> problems when the ACPI power resource in question is turned "on".  Second,
+> the PCI device may not be actually accessible at all when the ACPI power
+> resource depended on by it is "off", in which case it won't be found during
+> the PCI enumeration of devices.
+> 
+> This patch series addresses that problem by turning "on" all ACPI power
+> resources depended on by PCI devices before attempting to access the config
+> space of those devices for the first time.
 
-diff --git a/sound/soc/codecs/msm8916-wcd-digital.c b/sound/soc/codecs/msm8916-wcd-digital.c
-index fcc10c8bc625..9ad7fc0baf07 100644
---- a/sound/soc/codecs/msm8916-wcd-digital.c
-+++ b/sound/soc/codecs/msm8916-wcd-digital.c
-@@ -1201,7 +1201,7 @@ static int msm8916_wcd_digital_probe(struct platform_device *pdev)
- 	ret = clk_prepare_enable(priv->mclk);
- 	if (ret < 0) {
- 		dev_err(dev, "failed to enable mclk %d\n", ret);
--		return ret;
-+		goto err_clk;
- 	}
- 
- 	dev_set_drvdata(dev, priv);
-@@ -1209,6 +1209,9 @@ static int msm8916_wcd_digital_probe(struct platform_device *pdev)
- 	return devm_snd_soc_register_component(dev, &msm8916_wcd_digital,
- 				      msm8916_wcd_digital_dai,
- 				      ARRAY_SIZE(msm8916_wcd_digital_dai));
-+err_clk:
-+	clk_disable_unprepare(priv->ahbclk);
-+	return ret;
- }
- 
- static int msm8916_wcd_digital_remove(struct platform_device *pdev)
--- 
-2.34.1
+Makes sense.
 
+For the series,
 
-
+Reviewed-by: Mika Westerberg <mika.westerberg@linux.intel.com>
