@@ -2,265 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7FC83C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 22:55:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 60F47C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 22:55:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1457899AbiDEWrr (ORCPT
+        id S1458091AbiDEWry (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 18:47:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58582 "EHLO
+        Tue, 5 Apr 2022 18:47:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44460 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1573214AbiDESY2 (ORCPT
+        with ESMTP id S1573229AbiDES3V (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 14:24:28 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD7434B1F7
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 11:22:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649182948; x=1680718948;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=t+jqLhXF602tscQP97f4wSy1QeXsfz6MXjAFbX6OTrk=;
-  b=BhiNqPOwRlk6V1gdES5Diuo8bZ3ZPWbs5ogLtRs0JkPN7ZQVxvSQf6tJ
-   BCV4Etb+hEAHgloRG9WrlrdtzgPJPmO2jnTJI54k/MGHd9LqwkJ05kZCi
-   1WlZDNE5EZshuwYFf3sE5ctVNJbAuTrPg9U4T+DkhOVnbcYtEXo1uaW3P
-   HVesIlUFPL19P+wl6nVvHL69Aah/Q6Nvxn0+jC3zkwDd2Tp4N+9eLOz4h
-   Eds7GXCVrr6N3mk++17H2jBEwmcBp598E6m3IgIoZjc/mc3sz7n4iEwPL
-   MhtUwy/gzV7xA7PH9K0GFKmmjTw0fo0mwG2T8eT3RarA9HhiOkQlUT5YQ
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10308"; a="260824251"
-X-IronPort-AV: E=Sophos;i="5.90,236,1643702400"; 
-   d="scan'208";a="260824251"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2022 11:22:28 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,236,1643702400"; 
-   d="scan'208";a="588035653"
-Received: from lkp-server02.sh.intel.com (HELO a44fdfb70b94) ([10.239.97.151])
-  by orsmga001.jf.intel.com with ESMTP; 05 Apr 2022 11:22:25 -0700
-Received: from kbuild by a44fdfb70b94 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nbnov-0003ev-16;
-        Tue, 05 Apr 2022 18:22:25 +0000
-Date:   Wed, 6 Apr 2022 02:21:29 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     "Peter Zijlstra (Intel)" <peterz@infradead.org>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        Chen Yu <yu.c.chen@intel.com>, linux-kernel@vger.kernel.org,
-        Tim Chen <tim.c.chen@linux.intel.com>
-Subject: [yu-chen-surf:sched 1/2] WARNING: modpost:
- vmlinux.o(.text+0x9e24b8): Section mismatch in reference from the function
- iscsi_create_session() to the function .exit.text:test_ww_mutex_exit()
-Message-ID: <202204060222.wCunKJY5-lkp@intel.com>
+        Tue, 5 Apr 2022 14:29:21 -0400
+Received: from mail-yw1-f179.google.com (mail-yw1-f179.google.com [209.85.128.179])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AAA2025C2;
+        Tue,  5 Apr 2022 11:27:22 -0700 (PDT)
+Received: by mail-yw1-f179.google.com with SMTP id 00721157ae682-2eb680211d9so958947b3.9;
+        Tue, 05 Apr 2022 11:27:22 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=TDSUXKUMUVWSTSAUnF2dex+MaWNmmjp5ImjClvPiSUM=;
+        b=RGO6TAcERqiIMwGt7g6xpxeuTZ2jWgU0HTQAuY9uNfLVvqR1fv/f1cM9zOze2M2LRO
+         94gistLEvC+1kHGKS27BtuIZgWhwBEyLX738r4ncDOZdDDpWKNvfiU4S50wPrigkMoa9
+         TeYJ3w573rquZtEjNa5iuEhwybzjjv/xnnbE9afOoTSWMmsMAXfpYWJ0zm6tzVRjD1Gg
+         WoYWylUY7Pl7sdFUtabxeHrK4lVtZ9lqc1hddhQqFDnEAq7dnWVPY3IJnB+KZPjqwPUj
+         URlboPe26EaDAr3ONNBhO8YiXFpXX1XiVWryxek15FSRhwNRLQsir0an381xdTUUxMRZ
+         YR5g==
+X-Gm-Message-State: AOAM531nZmIE7Go6MGA+t6ku0ZiH/xaSsZWLReMZNWwI9dYKfU6cXOE4
+        3UVA1a9+wLkk+bHMwNlQQ/GMh52gDfwz9fLdAt0=
+X-Google-Smtp-Source: ABdhPJxvpzZoLalW9oAr6Uo4r58VCzGGEEAfBQWaV0XhBzVYnxUbdaEM7De5H1E6hh6DkbujzDLIdDHaxqNpOx3mbp0=
+X-Received: by 2002:a81:bc5:0:b0:2e6:dcfe:bfcb with SMTP id
+ 188-20020a810bc5000000b002e6dcfebfcbmr4003320ywl.19.1649183241811; Tue, 05
+ Apr 2022 11:27:21 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <20220324190950.70486-1-dave@stgolabs.net> <20220324190950.70486-2-dave@stgolabs.net>
+In-Reply-To: <20220324190950.70486-2-dave@stgolabs.net>
+From:   "Rafael J. Wysocki" <rafael@kernel.org>
+Date:   Tue, 5 Apr 2022 20:27:11 +0200
+Message-ID: <CAJZ5v0ibz6R0cNzmLX0NLW7pyYH68XsxXjuZDoF=G4+L5ZB7rg@mail.gmail.com>
+Subject: Re: [PATCH 1/3] thermal: int340x: Fix bogus acpi_buffer pointer freeing
+To:     Davidlohr Bueso <dave@stgolabs.net>
+Cc:     "Rafael J. Wysocki" <rafael@kernel.org>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Amit Kucheria <amitk@kernel.org>,
+        "Zhang, Rui" <rui.zhang@intel.com>,
+        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+        Linux PM <linux-pm@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/yu-chen-surf/linux.git sched
-head:   b5da2faf435871f1c615da2e336976fb6455fe53
-commit: c319c5f71d3359991a7cde110c1382a3f0c2ed8d [1/2] sched/fair: Don't rely on ->exec_start for migration
-config: riscv-buildonly-randconfig-r004-20220405 (https://download.01.org/0day-ci/archive/20220406/202204060222.wCunKJY5-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project c4a1b07d0979e7ff20d7d541af666d822d66b566)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # install riscv cross compiling tool for clang build
-        # apt-get install binutils-riscv64-linux-gnu
-        # https://github.com/yu-chen-surf/linux/commit/c319c5f71d3359991a7cde110c1382a3f0c2ed8d
-        git remote add yu-chen-surf https://github.com/yu-chen-surf/linux.git
-        git fetch --no-tags yu-chen-surf sched
-        git checkout c319c5f71d3359991a7cde110c1382a3f0c2ed8d
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=riscv SHELL=/bin/bash
+On Thu, Mar 24, 2022 at 8:10 PM Davidlohr Bueso <dave@stgolabs.net> wrote:
+>
+> It is the caller's responsibility to free only upon ACPI_SUCCESS.
+>
+> Signed-off-by: Davidlohr Bueso <dave@stgolabs.net>
+> ---
+>  drivers/thermal/intel/int340x_thermal/int3400_thermal.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+>
+> diff --git a/drivers/thermal/intel/int340x_thermal/int3400_thermal.c b/drivers/thermal/intel/int340x_thermal/int3400_thermal.c
+> index 4954800b9850..0e7931c286ec 100644
+> --- a/drivers/thermal/intel/int340x_thermal/int3400_thermal.c
+> +++ b/drivers/thermal/intel/int340x_thermal/int3400_thermal.c
+> @@ -186,11 +186,11 @@ static int int3400_thermal_run_osc(acpi_handle handle, char *uuid_str, int *enab
+>                 ret = *((u32 *)(context.ret.pointer + 4));
+>                 if (ret != *enable)
+>                         result = -EPERM;
+> +
+> +               kfree(context.ret.pointer);
+>         } else
+>                 result = -EPERM;
+>
+> -       kfree(context.ret.pointer);
+> -
+>         return result;
+>  }
+>
+> --
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+Because the code before the change is not incorrect, this is a cleanup
+rather than a fix, so I've adjusted the subject a bit and applied this
+along with the [2-3/3] as 5.19 material.
 
-All warnings (new ones prefixed by >>, old ones prefixed by <<):
-
->> WARNING: modpost: vmlinux.o(.text+0x9e24b8): Section mismatch in reference from the function iscsi_create_session() to the function .exit.text:test_ww_mutex_exit()
-The function iscsi_create_session() references a function in an exit section.
-Often the function test_ww_mutex_exit() has valid usage outside the exit section
-and the fix is to remove the __exit annotation of test_ww_mutex_exit.
---
->> WARNING: modpost: vmlinux.o(.text+0x9eb23c): Section mismatch in reference from the function sas_unregister_ha() to the function .init.text:set_reset_devices()
-The function sas_unregister_ha() references
-the function __init set_reset_devices().
-This is often because sas_unregister_ha lacks a __init
-annotation or the annotation of set_reset_devices is wrong.
---
->> WARNING: modpost: vmlinux.o(.text+0x9f2398): Section mismatch in reference from the function sas_queuecommand() to the function .init.text:set_reset_devices()
-The function sas_queuecommand() references
-the function __init set_reset_devices().
-This is often because sas_queuecommand lacks a __init
-annotation or the annotation of set_reset_devices is wrong.
---
->> WARNING: modpost: vmlinux.o(.text+0x9f23e4): Section mismatch in reference from the function sas_queuecommand() to the variable .init.text:.LBB1_22
-The function sas_queuecommand() references
-the variable __init .LBB1_22.
-This is often because sas_queuecommand lacks a __init
-annotation or the annotation of .LBB1_22 is wrong.
---
->> WARNING: modpost: vmlinux.o(.text+0x9f2694): Section mismatch in reference from the function sas_queue_reset() to the function .init.text:set_reset_devices()
-The function sas_queue_reset() references
-the function __init set_reset_devices().
-This is often because sas_queue_reset lacks a __init
-annotation or the annotation of set_reset_devices is wrong.
---
->> WARNING: modpost: vmlinux.o(.text+0x9f314e): Section mismatch in reference from the function sas_ioctl() to the function .init.text:set_reset_devices()
-The function sas_ioctl() references
-the function __init set_reset_devices().
-This is often because sas_ioctl lacks a __init
-annotation or the annotation of set_reset_devices is wrong.
---
->> WARNING: modpost: vmlinux.o(.text+0x9f3230): Section mismatch in reference from the function sas_target_alloc() to the variable .init.text:.LBB1_25
-The function sas_target_alloc() references
-the variable __init .LBB1_25.
-This is often because sas_target_alloc lacks a __init
-annotation or the annotation of .LBB1_25 is wrong.
---
->> WARNING: modpost: vmlinux.o(.text+0x9f32aa): Section mismatch in reference from the function sas_slave_configure() to the function .init.text:set_reset_devices()
-The function sas_slave_configure() references
-the function __init set_reset_devices().
-This is often because sas_slave_configure lacks a __init
-annotation or the annotation of set_reset_devices is wrong.
---
->> WARNING: modpost: vmlinux.o(.text+0x9f3374): Section mismatch in reference from the function sas_change_queue_depth() to the function .init.text:set_reset_devices()
-The function sas_change_queue_depth() references
-the function __init set_reset_devices().
-This is often because sas_change_queue_depth lacks a __init
-annotation or the annotation of set_reset_devices is wrong.
---
->> WARNING: modpost: vmlinux.o(.text+0x9f3b9a): Section mismatch in reference from the function sas_abort_task_set() to the function .init.text:set_reset_devices()
-The function sas_abort_task_set() references
-the function __init set_reset_devices().
-This is often because sas_abort_task_set lacks a __init
-annotation or the annotation of set_reset_devices is wrong.
---
->> WARNING: modpost: vmlinux.o(.text+0x9f3c04): Section mismatch in reference from the function sas_clear_task_set() to the function .init.text:set_reset_devices()
-The function sas_clear_task_set() references
-the function __init set_reset_devices().
-This is often because sas_clear_task_set lacks a __init
-annotation or the annotation of set_reset_devices is wrong.
-..
-
-Note: the below error/warnings can be found in parent commit:
-<< WARNING: modpost: vmlinux.o(.text+0xcdc6e0): Section mismatch in reference from the function ath11k_mac_bcn_tx_event() to the function .exit.text:test_ww_mutex_exit()
-<< WARNING: modpost: vmlinux.o(.text+0xce3040): Section mismatch in reference from the function ath11k_mac_op_ampdu_action() to the function .exit.text:test_ww_mutex_exit()
-<< WARNING: modpost: vmlinux.o(.text+0xd233ca): Section mismatch in reference from the function b43_calc_nrssi_slope() to the function .init.text:set_reset_devices()
-<< WARNING: modpost: vmlinux.o(.text+0xce5966): Section mismatch in reference from the function ath11k_mac_op_assign_vif_chanctx() to the function .init.text:init_ntfs_fs()
-<< WARNING: modpost: vmlinux.o(.text+0xd2401a): Section mismatch in reference from the function b43_set_txpower_g() to the function .init.text:set_reset_devices()
-<< WARNING: modpost: vmlinux.o(.text+0xd24478): Section mismatch in reference from the function b43_set_all_gains() to the function .init.text:set_reset_devices()
-<< WARNING: modpost: vmlinux.o(.text+0xd2457e): Section mismatch in reference from the function b43_set_original_gains() to the function .init.text:set_reset_devices()
-<< WARNING: modpost: vmlinux.o(.text+0xd24758): Section mismatch in reference from the function b43_radio_interference_mitigation_disable() to the function .init.text:set_reset_devices()
-<< WARNING: modpost: vmlinux.o(.text+0xce59a4): Section mismatch in reference from the function ath11k_mac_op_assign_vif_chanctx() to the function .exit.text:test_ww_mutex_exit()
-<< WARNING: modpost: vmlinux.o(.text+0xd28972): Section mismatch in reference from the function b43_gphy_dc_lt_init() to the function .init.text:set_reset_devices()
-<< WARNING: modpost: vmlinux.o(.text+0xcdc6e0): Section mismatch in reference from the function ath11k_mac_bcn_tx_event() to the function .exit.text:test_ww_mutex_exit()
-<< WARNING: modpost: vmlinux.o(.text+0xce3040): Section mismatch in reference from the function ath11k_mac_op_ampdu_action() to the function .exit.text:test_ww_mutex_exit()
-<< WARNING: modpost: vmlinux.o(.text+0xd233ca): Section mismatch in reference from the function b43_calc_nrssi_slope() to the function .init.text:set_reset_devices()
-<< WARNING: modpost: vmlinux.o(.text+0xce5966): Section mismatch in reference from the function ath11k_mac_op_assign_vif_chanctx() to the function .init.text:init_ntfs_fs()
-<< WARNING: modpost: vmlinux.o(.text+0xd2401a): Section mismatch in reference from the function b43_set_txpower_g() to the function .init.text:set_reset_devices()
-<< WARNING: modpost: vmlinux.o(.text+0xd24478): Section mismatch in reference from the function b43_set_all_gains() to the function .init.text:set_reset_devices()
-<< WARNING: modpost: vmlinux.o(.text+0xd2457e): Section mismatch in reference from the function b43_set_original_gains() to the function .init.text:set_reset_devices()
-<< WARNING: modpost: vmlinux.o(.text+0xd24758): Section mismatch in reference from the function b43_radio_interference_mitigation_disable() to the function .init.text:set_reset_devices()
-<< WARNING: modpost: vmlinux.o(.text+0xce59a4): Section mismatch in reference from the function ath11k_mac_op_assign_vif_chanctx() to the function .exit.text:test_ww_mutex_exit()
-<< WARNING: modpost: vmlinux.o(.text+0xd28972): Section mismatch in reference from the function b43_gphy_dc_lt_init() to the function .init.text:set_reset_devices()
-<< WARNING: modpost: vmlinux.o(.text+0xcdc6e0): Section mismatch in reference from the function ath11k_mac_bcn_tx_event() to the function .exit.text:test_ww_mutex_exit()
-<< WARNING: modpost: vmlinux.o(.text+0xce3040): Section mismatch in reference from the function ath11k_mac_op_ampdu_action() to the function .exit.text:test_ww_mutex_exit()
-<< WARNING: modpost: vmlinux.o(.text+0xd233ca): Section mismatch in reference from the function b43_calc_nrssi_slope() to the function .init.text:set_reset_devices()
-<< WARNING: modpost: vmlinux.o(.text+0xce5966): Section mismatch in reference from the function ath11k_mac_op_assign_vif_chanctx() to the function .init.text:init_ntfs_fs()
-<< WARNING: modpost: vmlinux.o(.text+0xd2401a): Section mismatch in reference from the function b43_set_txpower_g() to the function .init.text:set_reset_devices()
-<< WARNING: modpost: vmlinux.o(.text+0xd24478): Section mismatch in reference from the function b43_set_all_gains() to the function .init.text:set_reset_devices()
-<< WARNING: modpost: vmlinux.o(.text+0xd2457e): Section mismatch in reference from the function b43_set_original_gains() to the function .init.text:set_reset_devices()
-<< WARNING: modpost: vmlinux.o(.text+0xd24758): Section mismatch in reference from the function b43_radio_interference_mitigation_disable() to the function .init.text:set_reset_devices()
-<< WARNING: modpost: vmlinux.o(.text+0xce59a4): Section mismatch in reference from the function ath11k_mac_op_assign_vif_chanctx() to the function .exit.text:test_ww_mutex_exit()
-<< WARNING: modpost: vmlinux.o(.text+0xd28972): Section mismatch in reference from the function b43_gphy_dc_lt_init() to the function .init.text:set_reset_devices()
-<< WARNING: modpost: vmlinux.o(.text+0xcdc6e0): Section mismatch in reference from the function ath11k_mac_bcn_tx_event() to the function .exit.text:test_ww_mutex_exit()
-<< WARNING: modpost: vmlinux.o(.text+0xce3040): Section mismatch in reference from the function ath11k_mac_op_ampdu_action() to the function .exit.text:test_ww_mutex_exit()
-<< WARNING: modpost: vmlinux.o(.text+0xd233ca): Section mismatch in reference from the function b43_calc_nrssi_slope() to the function .init.text:set_reset_devices()
-<< WARNING: modpost: vmlinux.o(.text+0xce5966): Section mismatch in reference from the function ath11k_mac_op_assign_vif_chanctx() to the function .init.text:init_ntfs_fs()
-<< WARNING: modpost: vmlinux.o(.text+0xd2401a): Section mismatch in reference from the function b43_set_txpower_g() to the function .init.text:set_reset_devices()
-<< WARNING: modpost: vmlinux.o(.text+0xd24478): Section mismatch in reference from the function b43_set_all_gains() to the function .init.text:set_reset_devices()
-<< WARNING: modpost: vmlinux.o(.text+0xd2457e): Section mismatch in reference from the function b43_set_original_gains() to the function .init.text:set_reset_devices()
-<< WARNING: modpost: vmlinux.o(.text+0xd24758): Section mismatch in reference from the function b43_radio_interference_mitigation_disable() to the function .init.text:set_reset_devices()
-<< WARNING: modpost: vmlinux.o(.text+0xce59a4): Section mismatch in reference from the function ath11k_mac_op_assign_vif_chanctx() to the function .exit.text:test_ww_mutex_exit()
-<< WARNING: modpost: vmlinux.o(.text+0xd28972): Section mismatch in reference from the function b43_gphy_dc_lt_init() to the function .init.text:set_reset_devices()
-<< WARNING: modpost: vmlinux.o(.text+0xcdc6e0): Section mismatch in reference from the function ath11k_mac_bcn_tx_event() to the function .exit.text:test_ww_mutex_exit()
-<< WARNING: modpost: vmlinux.o(.text+0xce3040): Section mismatch in reference from the function ath11k_mac_op_ampdu_action() to the function .exit.text:test_ww_mutex_exit()
-<< WARNING: modpost: vmlinux.o(.text+0xd233ca): Section mismatch in reference from the function b43_calc_nrssi_slope() to the function .init.text:set_reset_devices()
-<< WARNING: modpost: vmlinux.o(.text+0xce5966): Section mismatch in reference from the function ath11k_mac_op_assign_vif_chanctx() to the function .init.text:init_ntfs_fs()
-<< WARNING: modpost: vmlinux.o(.text+0xd2401a): Section mismatch in reference from the function b43_set_txpower_g() to the function .init.text:set_reset_devices()
-<< WARNING: modpost: vmlinux.o(.text+0xd24478): Section mismatch in reference from the function b43_set_all_gains() to the function .init.text:set_reset_devices()
-<< WARNING: modpost: vmlinux.o(.text+0xd2457e): Section mismatch in reference from the function b43_set_original_gains() to the function .init.text:set_reset_devices()
-<< WARNING: modpost: vmlinux.o(.text+0xd24758): Section mismatch in reference from the function b43_radio_interference_mitigation_disable() to the function .init.text:set_reset_devices()
-<< WARNING: modpost: vmlinux.o(.text+0xce59a4): Section mismatch in reference from the function ath11k_mac_op_assign_vif_chanctx() to the function .exit.text:test_ww_mutex_exit()
-<< WARNING: modpost: vmlinux.o(.text+0xd28972): Section mismatch in reference from the function b43_gphy_dc_lt_init() to the function .init.text:set_reset_devices()
-<< WARNING: modpost: vmlinux.o(.text+0xcdc6e0): Section mismatch in reference from the function ath11k_mac_bcn_tx_event() to the function .exit.text:test_ww_mutex_exit()
-<< WARNING: modpost: vmlinux.o(.text+0xce3040): Section mismatch in reference from the function ath11k_mac_op_ampdu_action() to the function .exit.text:test_ww_mutex_exit()
-<< WARNING: modpost: vmlinux.o(.text+0xd233ca): Section mismatch in reference from the function b43_calc_nrssi_slope() to the function .init.text:set_reset_devices()
-<< WARNING: modpost: vmlinux.o(.text+0xce5966): Section mismatch in reference from the function ath11k_mac_op_assign_vif_chanctx() to the function .init.text:init_ntfs_fs()
-<< WARNING: modpost: vmlinux.o(.text+0xd2401a): Section mismatch in reference from the function b43_set_txpower_g() to the function .init.text:set_reset_devices()
-<< WARNING: modpost: vmlinux.o(.text+0xd24478): Section mismatch in reference from the function b43_set_all_gains() to the function .init.text:set_reset_devices()
-<< WARNING: modpost: vmlinux.o(.text+0xd2457e): Section mismatch in reference from the function b43_set_original_gains() to the function .init.text:set_reset_devices()
-<< WARNING: modpost: vmlinux.o(.text+0xd24758): Section mismatch in reference from the function b43_radio_interference_mitigation_disable() to the function .init.text:set_reset_devices()
-<< WARNING: modpost: vmlinux.o(.text+0xce59a4): Section mismatch in reference from the function ath11k_mac_op_assign_vif_chanctx() to the function .exit.text:test_ww_mutex_exit()
-<< WARNING: modpost: vmlinux.o(.text+0xd28972): Section mismatch in reference from the function b43_gphy_dc_lt_init() to the function .init.text:set_reset_devices()
-<< WARNING: modpost: vmlinux.o(.text+0xcdc6e0): Section mismatch in reference from the function ath11k_mac_bcn_tx_event() to the function .exit.text:test_ww_mutex_exit()
-<< WARNING: modpost: vmlinux.o(.text+0xce3040): Section mismatch in reference from the function ath11k_mac_op_ampdu_action() to the function .exit.text:test_ww_mutex_exit()
-<< WARNING: modpost: vmlinux.o(.text+0xd233ca): Section mismatch in reference from the function b43_calc_nrssi_slope() to the function .init.text:set_reset_devices()
-<< WARNING: modpost: vmlinux.o(.text+0xce5966): Section mismatch in reference from the function ath11k_mac_op_assign_vif_chanctx() to the function .init.text:init_ntfs_fs()
-<< WARNING: modpost: vmlinux.o(.text+0xd2401a): Section mismatch in reference from the function b43_set_txpower_g() to the function .init.text:set_reset_devices()
-<< WARNING: modpost: vmlinux.o(.text+0xd24478): Section mismatch in reference from the function b43_set_all_gains() to the function .init.text:set_reset_devices()
-<< WARNING: modpost: vmlinux.o(.text+0xd2457e): Section mismatch in reference from the function b43_set_original_gains() to the function .init.text:set_reset_devices()
-<< WARNING: modpost: vmlinux.o(.text+0xd24758): Section mismatch in reference from the function b43_radio_interference_mitigation_disable() to the function .init.text:set_reset_devices()
-<< WARNING: modpost: vmlinux.o(.text+0xce59a4): Section mismatch in reference from the function ath11k_mac_op_assign_vif_chanctx() to the function .exit.text:test_ww_mutex_exit()
-<< WARNING: modpost: vmlinux.o(.text+0xd28972): Section mismatch in reference from the function b43_gphy_dc_lt_init() to the function .init.text:set_reset_devices()
-<< WARNING: modpost: vmlinux.o(.text+0xcdc6e0): Section mismatch in reference from the function ath11k_mac_bcn_tx_event() to the function .exit.text:test_ww_mutex_exit()
-<< WARNING: modpost: vmlinux.o(.text+0xce3040): Section mismatch in reference from the function ath11k_mac_op_ampdu_action() to the function .exit.text:test_ww_mutex_exit()
-<< WARNING: modpost: vmlinux.o(.text+0xd233ca): Section mismatch in reference from the function b43_calc_nrssi_slope() to the function .init.text:set_reset_devices()
-<< WARNING: modpost: vmlinux.o(.text+0xce5966): Section mismatch in reference from the function ath11k_mac_op_assign_vif_chanctx() to the function .init.text:init_ntfs_fs()
-<< WARNING: modpost: vmlinux.o(.text+0xd2401a): Section mismatch in reference from the function b43_set_txpower_g() to the function .init.text:set_reset_devices()
-<< WARNING: modpost: vmlinux.o(.text+0xd24478): Section mismatch in reference from the function b43_set_all_gains() to the function .init.text:set_reset_devices()
-<< WARNING: modpost: vmlinux.o(.text+0xd2457e): Section mismatch in reference from the function b43_set_original_gains() to the function .init.text:set_reset_devices()
-<< WARNING: modpost: vmlinux.o(.text+0xd24758): Section mismatch in reference from the function b43_radio_interference_mitigation_disable() to the function .init.text:set_reset_devices()
-<< WARNING: modpost: vmlinux.o(.text+0xce59a4): Section mismatch in reference from the function ath11k_mac_op_assign_vif_chanctx() to the function .exit.text:test_ww_mutex_exit()
-<< WARNING: modpost: vmlinux.o(.text+0xd28972): Section mismatch in reference from the function b43_gphy_dc_lt_init() to the function .init.text:set_reset_devices()
-<< WARNING: modpost: vmlinux.o(.text+0xcdc6e0): Section mismatch in reference from the function ath11k_mac_bcn_tx_event() to the function .exit.text:test_ww_mutex_exit()
-<< WARNING: modpost: vmlinux.o(.text+0xce3040): Section mismatch in reference from the function ath11k_mac_op_ampdu_action() to the function .exit.text:test_ww_mutex_exit()
-<< WARNING: modpost: vmlinux.o(.text+0xd233ca): Section mismatch in reference from the function b43_calc_nrssi_slope() to the function .init.text:set_reset_devices()
-<< WARNING: modpost: vmlinux.o(.text+0xce5966): Section mismatch in reference from the function ath11k_mac_op_assign_vif_chanctx() to the function .init.text:init_ntfs_fs()
-<< WARNING: modpost: vmlinux.o(.text+0xd2401a): Section mismatch in reference from the function b43_set_txpower_g() to the function .init.text:set_reset_devices()
-<< WARNING: modpost: vmlinux.o(.text+0xd24478): Section mismatch in reference from the function b43_set_all_gains() to the function .init.text:set_reset_devices()
-<< WARNING: modpost: vmlinux.o(.text+0xd2457e): Section mismatch in reference from the function b43_set_original_gains() to the function .init.text:set_reset_devices()
-<< WARNING: modpost: vmlinux.o(.text+0xd24758): Section mismatch in reference from the function b43_radio_interference_mitigation_disable() to the function .init.text:set_reset_devices()
-<< WARNING: modpost: vmlinux.o(.text+0xce59a4): Section mismatch in reference from the function ath11k_mac_op_assign_vif_chanctx() to the function .exit.text:test_ww_mutex_exit()
-<< WARNING: modpost: vmlinux.o(.text+0xd28972): Section mismatch in reference from the function b43_gphy_dc_lt_init() to the function .init.text:set_reset_devices()
-<< WARNING: modpost: vmlinux.o(.text+0xcdc6e0): Section mismatch in reference from the function ath11k_mac_bcn_tx_event() to the function .exit.text:test_ww_mutex_exit()
-<< WARNING: modpost: vmlinux.o(.text+0xce3040): Section mismatch in reference from the function ath11k_mac_op_ampdu_action() to the function .exit.text:test_ww_mutex_exit()
-<< WARNING: modpost: vmlinux.o(.text+0xd233ca): Section mismatch in reference from the function b43_calc_nrssi_slope() to the function .init.text:set_reset_devices()
-<< WARNING: modpost: vmlinux.o(.text+0xce5966): Section mismatch in reference from the function ath11k_mac_op_assign_vif_chanctx() to the function .init.text:init_ntfs_fs()
-<< WARNING: modpost: vmlinux.o(.text+0xd2401a): Section mismatch in reference from the function b43_set_txpower_g() to the function .init.text:set_reset_devices()
-<< WARNING: modpost: vmlinux.o(.text+0xd24478): Section mismatch in reference from the function b43_set_all_gains() to the function .init.text:set_reset_devices()
-<< WARNING: modpost: vmlinux.o(.text+0xd2457e): Section mismatch in reference from the function b43_set_original_gains() to the function .init.text:set_reset_devices()
-<< WARNING: modpost: vmlinux.o(.text+0xd24758): Section mismatch in reference from the function b43_radio_interference_mitigation_disable() to the function .init.text:set_reset_devices()
-<< WARNING: modpost: vmlinux.o(.text+0xce59a4): Section mismatch in reference from the function ath11k_mac_op_assign_vif_chanctx() to the function .exit.text:test_ww_mutex_exit()
-<< WARNING: modpost: vmlinux.o(.text+0xd28972): Section mismatch in reference from the function b43_gphy_dc_lt_init() to the function .init.text:set_reset_devices()
-<< WARNING: modpost: vmlinux.o(.text+0xcdc6e0): Section mismatch in reference from the function ath11k_mac_bcn_tx_event() to the function .exit.text:test_ww_mutex_exit()
-<< WARNING: modpost: vmlinux.o(.text+0xce3040): Section mismatch in reference from the function ath11k_mac_op_ampdu_action() to the function .exit.text:test_ww_mutex_exit()
-<< WARNING: modpost: vmlinux.o(.text+0xd233ca): Section mismatch in reference from the function b43_calc_nrssi_slope() to the function .init.text:set_reset_devices()
-<< WARNING: modpost: vmlinux.o(.text+0xce5966): Section mismatch in reference from the function ath11k_mac_op_assign_vif_chanctx() to the function .init.text:init_ntfs_fs()
-<< WARNING: modpost: vmlinux.o(.text+0xd2401a): Section mismatch in reference from the function b43_set_txpower_g() to the function .init.text:set_reset_devices()
-<< WARNING: modpost: vmlinux.o(.text+0xd24478): Section mismatch in reference from the function b43_set_all_gains() to the function .init.text:set_reset_devices()
-<< WARNING: modpost: vmlinux.o(.text+0xd2457e): Section mismatch in reference from the function b43_set_original_gains() to the function .init.text:set_reset_devices()
-<< WARNING: modpost: vmlinux.o(.text+0xd24758): Section mismatch in reference from the function b43_radio_interference_mitigation_disable() to the function .init.text:set_reset_devices()
-<< WARNING: modpost: vmlinux.o(.text+0xce59a4): Section mismatch in reference from the function ath11k_mac_op_assign_vif_chanctx() to the function .exit.text:test_ww_mutex_exit()
-<< WARNING: modpost: vmlinux.o(.text+0xd28972): Section mismatch in reference from the function b43_gphy_dc_lt_init() to the function .init.text:set_reset_devices()
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Thanks!
