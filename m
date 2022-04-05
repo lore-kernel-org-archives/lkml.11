@@ -2,42 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E22CC433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3CBCEC43219
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 13:33:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383530AbiDENaw (ORCPT
+        id S1383593AbiDENbC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 09:30:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60026 "EHLO
+        Tue, 5 Apr 2022 09:31:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60048 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345465AbiDEJWh (ORCPT
+        with ESMTP id S1345602AbiDEJWw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:22:37 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6A484B1F7;
-        Tue,  5 Apr 2022 02:11:00 -0700 (PDT)
+        Tue, 5 Apr 2022 05:22:52 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42B3D4E39A;
+        Tue,  5 Apr 2022 02:11:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 47B9AB818F3;
-        Tue,  5 Apr 2022 09:10:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 83088C385A0;
-        Tue,  5 Apr 2022 09:10:57 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id ECDF2B81A22;
+        Tue,  5 Apr 2022 09:11:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 58F3EC385A2;
+        Tue,  5 Apr 2022 09:11:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649149857;
-        bh=i6ekhz8yvn0w0xbt01pqAW4L3Qfv2grJOD45n0DZ3D8=;
+        s=korg; t=1649149876;
+        bh=kkViTKLxtjTpFBT2dicv1m1kwZOz0euKBQaPrCLNz78=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LUHam74465FdvGZRizgQkDgG93nCQmtYvnp5Mdj30TZ58JjK3OS95JTVWhoyA5v0g
-         bsj+U2Nnvx3ORUPhU8IlOlpmVEWFmENr/fc8gslC1KKf2y29P8cq3g6+r09xAJUW42
-         +u4+P5B+g19tloAMUCLO27i+JCnOqu7+sroCGTZc=
+        b=tHimlaVn766KIMMpbatMDM4yVwIFAwlmt5drOftk3pzMDbTordOCIiPMFZc6udYYP
+         VYCdf3ntt+FsOkoFCe0rtx5VK7exQiHtgzB7RClheQ2E5lo4LWCAaldUtEhHoUS5X8
+         w8GzAZuBed5slWguVsfQSV0jlFWsZ/jsBgCGTffA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Paolo Bonzini <pbonzini@redhat.com>
-Subject: [PATCH 5.16 0865/1017] KVM: x86: hyper-v: HVCALL_SEND_IPI_EX is an XMM fast hypercall
-Date:   Tue,  5 Apr 2022 09:29:38 +0200
-Message-Id: <20220405070419.911625128@linuxfoundation.org>
+        stable@vger.kernel.org,
+        =?UTF-8?q?Ville=20Syrj=C3=A4l=C3=A4?= 
+        <ville.syrjala@linux.intel.com>,
+        Stanislav Lisovskiy <stanislav.lisovskiy@intel.com>,
+        Tvrtko Ursulin <tvrtko.ursulin@intel.com>
+Subject: [PATCH 5.16 0872/1017] drm/i915: Treat SAGV block time 0 as SAGV disabled
+Date:   Tue,  5 Apr 2022 09:29:45 +0200
+Message-Id: <20220405070420.120133998@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -49,127 +52,64 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vitaly Kuznetsov <vkuznets@redhat.com>
+From: Ville Syrjälä <ville.syrjala@linux.intel.com>
 
-commit 47d3e5cdfe607ec6883eb0faa7acf05b8cb3f92a upstream.
+commit 1937f3feb0e84089ae4065e09c871b8ab4676f01 upstream.
 
-It has been proven on practice that at least Windows Server 2019 tries
-using HVCALL_SEND_IPI_EX in 'XMM fast' mode when it has more than 64 vCPUs
-and it needs to send an IPI to a vCPU > 63. Similarly to other XMM Fast
-hypercalls (HVCALL_FLUSH_VIRTUAL_ADDRESS_{LIST,SPACE}{,_EX}), this
-information is missing in TLFS as of 6.0b. Currently, KVM returns an error
-(HV_STATUS_INVALID_HYPERCALL_INPUT) and Windows crashes.
+For modern platforms the spec explicitly states that a
+SAGV block time of zero means that SAGV is not supported.
+Let's extend that to all platforms. Supposedly there should
+be no systems where this isn't true, and it'll allow us to:
+- use the same code regardless of older vs. newer platform
+- wm latencies already treat 0 as disabled, so this fits well
+  with other related code
+- make it a bit more clear when SAGV is used vs. not
+- avoid overflows from adding U32_MAX with a u16 wm0 latency value
+  which could cause us to miscalculate the SAGV watermarks on tgl+
 
-Note, HVCALL_SEND_IPI is a 'standard' fast hypercall (not 'XMM fast') as
-all its parameters fit into RDX:R8 and this is handled by KVM correctly.
-
-Cc: stable@vger.kernel.org # 5.14.x: 3244867af8c0: KVM: x86: Ignore sparse banks size for an "all CPUs", non-sparse IPI req
-Cc: stable@vger.kernel.org # 5.14.x
-Fixes: d8f5537a8816 ("KVM: hyper-v: Advertise support for fast XMM hypercalls")
-Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
-Message-Id: <20220222154642.684285-5-vkuznets@redhat.com>
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+Cc: stable@vger.kernel.org
+Signed-off-by: Ville Syrjälä <ville.syrjala@linux.intel.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220309164948.10671-2-ville.syrjala@linux.intel.com
+Reviewed-by: Stanislav Lisovskiy <stanislav.lisovskiy@intel.com>
+(cherry picked from commit d8f5855b31c0523ea3b171db8dfb998830e8735d)
+Signed-off-by: Tvrtko Ursulin <tvrtko.ursulin@intel.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/kvm/hyperv.c |   52 ++++++++++++++++++++++++++++++++------------------
- 1 file changed, 34 insertions(+), 18 deletions(-)
+ drivers/gpu/drm/i915/intel_pm.c |   10 ++++++----
+ 1 file changed, 6 insertions(+), 4 deletions(-)
 
---- a/arch/x86/kvm/hyperv.c
-+++ b/arch/x86/kvm/hyperv.c
-@@ -1889,6 +1889,7 @@ static u64 kvm_hv_send_ipi(struct kvm_vc
- 	int sparse_banks_len;
- 	u32 vector;
- 	bool all_cpus;
-+	int i;
- 
- 	if (hc->code == HVCALL_SEND_IPI) {
- 		if (!hc->fast) {
-@@ -1909,9 +1910,15 @@ static u64 kvm_hv_send_ipi(struct kvm_vc
- 
- 		trace_kvm_hv_send_ipi(vector, sparse_banks[0]);
- 	} else {
--		if (unlikely(kvm_read_guest(kvm, hc->ingpa, &send_ipi_ex,
--					    sizeof(send_ipi_ex))))
--			return HV_STATUS_INVALID_HYPERCALL_INPUT;
-+		if (!hc->fast) {
-+			if (unlikely(kvm_read_guest(kvm, hc->ingpa, &send_ipi_ex,
-+						    sizeof(send_ipi_ex))))
-+				return HV_STATUS_INVALID_HYPERCALL_INPUT;
-+		} else {
-+			send_ipi_ex.vector = (u32)hc->ingpa;
-+			send_ipi_ex.vp_set.format = hc->outgpa;
-+			send_ipi_ex.vp_set.valid_bank_mask = sse128_lo(hc->xmm[0]);
-+		}
- 
- 		trace_kvm_hv_send_ipi_ex(send_ipi_ex.vector,
- 					 send_ipi_ex.vp_set.format,
-@@ -1919,8 +1926,7 @@ static u64 kvm_hv_send_ipi(struct kvm_vc
- 
- 		vector = send_ipi_ex.vector;
- 		valid_bank_mask = send_ipi_ex.vp_set.valid_bank_mask;
--		sparse_banks_len = bitmap_weight(&valid_bank_mask, 64) *
--			sizeof(sparse_banks[0]);
-+		sparse_banks_len = bitmap_weight(&valid_bank_mask, 64);
- 
- 		all_cpus = send_ipi_ex.vp_set.format == HV_GENERIC_SET_ALL;
- 
-@@ -1930,12 +1936,27 @@ static u64 kvm_hv_send_ipi(struct kvm_vc
- 		if (!sparse_banks_len)
- 			goto ret_success;
- 
--		if (kvm_read_guest(kvm,
--				   hc->ingpa + offsetof(struct hv_send_ipi_ex,
--							vp_set.bank_contents),
--				   sparse_banks,
--				   sparse_banks_len))
--			return HV_STATUS_INVALID_HYPERCALL_INPUT;
-+		if (!hc->fast) {
-+			if (kvm_read_guest(kvm,
-+					   hc->ingpa + offsetof(struct hv_send_ipi_ex,
-+								vp_set.bank_contents),
-+					   sparse_banks,
-+					   sparse_banks_len * sizeof(sparse_banks[0])))
-+				return HV_STATUS_INVALID_HYPERCALL_INPUT;
-+		} else {
-+			/*
-+			 * The lower half of XMM0 is already consumed, each XMM holds
-+			 * two sparse banks.
-+			 */
-+			if (sparse_banks_len > (2 * HV_HYPERCALL_MAX_XMM_REGISTERS - 1))
-+				return HV_STATUS_INVALID_HYPERCALL_INPUT;
-+			for (i = 0; i < sparse_banks_len; i++) {
-+				if (i % 2)
-+					sparse_banks[i] = sse128_lo(hc->xmm[(i + 1) / 2]);
-+				else
-+					sparse_banks[i] = sse128_hi(hc->xmm[i / 2]);
-+			}
-+		}
+--- a/drivers/gpu/drm/i915/intel_pm.c
++++ b/drivers/gpu/drm/i915/intel_pm.c
+@@ -3712,8 +3712,7 @@ skl_setup_sagv_block_time(struct drm_i91
+ 		MISSING_CASE(DISPLAY_VER(dev_priv));
  	}
  
- check_and_send_ipi:
-@@ -2097,6 +2118,7 @@ static bool is_xmm_fast_hypercall(struct
- 	case HVCALL_FLUSH_VIRTUAL_ADDRESS_SPACE:
- 	case HVCALL_FLUSH_VIRTUAL_ADDRESS_LIST_EX:
- 	case HVCALL_FLUSH_VIRTUAL_ADDRESS_SPACE_EX:
-+	case HVCALL_SEND_IPI_EX:
- 		return true;
- 	}
+-	/* Default to an unusable block time */
+-	dev_priv->sagv_block_time_us = -1;
++	dev_priv->sagv_block_time_us = 0;
+ }
  
-@@ -2264,14 +2286,8 @@ int kvm_hv_hypercall(struct kvm_vcpu *vc
- 		ret = kvm_hv_flush_tlb(vcpu, &hc);
- 		break;
- 	case HVCALL_SEND_IPI:
--		if (unlikely(hc.rep)) {
--			ret = HV_STATUS_INVALID_HYPERCALL_INPUT;
--			break;
--		}
--		ret = kvm_hv_send_ipi(vcpu, &hc);
--		break;
- 	case HVCALL_SEND_IPI_EX:
--		if (unlikely(hc.fast || hc.rep)) {
-+		if (unlikely(hc.rep)) {
- 			ret = HV_STATUS_INVALID_HYPERCALL_INPUT;
- 			break;
- 		}
+ /*
+@@ -5634,7 +5633,7 @@ static void skl_compute_plane_wm(const s
+ 	result->min_ddb_alloc = max(min_ddb_alloc, blocks) + 1;
+ 	result->enable = true;
+ 
+-	if (DISPLAY_VER(dev_priv) < 12)
++	if (DISPLAY_VER(dev_priv) < 12 && dev_priv->sagv_block_time_us)
+ 		result->can_sagv = latency >= dev_priv->sagv_block_time_us;
+ }
+ 
+@@ -5665,7 +5664,10 @@ static void tgl_compute_sagv_wm(const st
+ 	struct drm_i915_private *dev_priv = to_i915(crtc_state->uapi.crtc->dev);
+ 	struct skl_wm_level *sagv_wm = &plane_wm->sagv.wm0;
+ 	struct skl_wm_level *levels = plane_wm->wm;
+-	unsigned int latency = dev_priv->wm.skl_latency[0] + dev_priv->sagv_block_time_us;
++	unsigned int latency = 0;
++
++	if (dev_priv->sagv_block_time_us)
++		latency = dev_priv->sagv_block_time_us + dev_priv->wm.skl_latency[0];
+ 
+ 	skl_compute_plane_wm(crtc_state, 0, latency,
+ 			     wm_params, &levels[0],
 
 
