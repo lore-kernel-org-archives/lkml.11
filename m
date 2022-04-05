@@ -2,48 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 663C5C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7773EC43217
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:16:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1450577AbiDEUKl (ORCPT
+        id S1451027AbiDEUKr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 16:10:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33866 "EHLO
+        Tue, 5 Apr 2022 16:10:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36848 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245744AbiDEKjg (ORCPT
+        with ESMTP id S1455446AbiDEQAC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:39:36 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95370A5EA9;
-        Tue,  5 Apr 2022 03:24:25 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        Tue, 5 Apr 2022 12:00:02 -0400
+Received: from mail.skyhub.de (mail.skyhub.de [5.9.137.197])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE2D837A0D;
+        Tue,  5 Apr 2022 08:15:33 -0700 (PDT)
+Received: from zn.tnic (p2e55dff8.dip0.t-ipconnect.de [46.85.223.248])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 31C066141B;
-        Tue,  5 Apr 2022 10:24:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 428FEC385A0;
-        Tue,  5 Apr 2022 10:24:24 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649154264;
-        bh=7uyU7E8nxC0nXViS7KVUZ+a1glED64j3pQUfJQJfqB4=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HrbfMGZUKNoy0wX6J+3cZ4PHfy+oXBoWzPE/loGIMjJBJhonqJCV7MFoxbAeOMKti
-         MQK/w7eNK4mplM56VFusWBpL+acRZRpMgUbHIdOqyeWH0h5Wq5o5q7TTpkECT3KIRl
-         WYFO3HULeC0FdiKvTlGDzCErWG5HZGzTtgxzA48I=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>,
-        Anders Roxell <anders.roxell@linaro.org>,
-        Segher Boessenkool <segher@kernel.crashing.org>,
-        Michael Ellerman <mpe@ellerman.id.au>
-Subject: [PATCH 5.10 516/599] powerpc: Fix build errors with newer binutils
-Date:   Tue,  5 Apr 2022 09:33:30 +0200
-Message-Id: <20220405070314.194613614@linuxfoundation.org>
+        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id A17AB1EC0502;
+        Tue,  5 Apr 2022 17:15:28 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
+        t=1649171728;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=eiC67LvkcRptZ4vBTwfJLFk18efdkgw7h4pbP4PEKXY=;
+        b=hEUAFCh5v61AOluFcbWJkVxBkYfuIDLTWZWTaNKwVuVmu8wc+ckaad77AK2YlaNTKYaKYr
+        PFWhwwmQ9gQeF8jRu3SmcKDmXrgnwAArO/a7S61IZhA6h2tlUYrDO9pU2nhCnoYP+GqDpb
+        1jWA7ewvTWjdwVvE2eQxHNCiexjNsnM=
+From:   Borislav Petkov <bp@alien8.de>
+To:     LKML <linux-kernel@vger.kernel.org>
+Cc:     Adaptec OEM Raid Solutions <aacraid@microsemi.com>,
+        "James E.J. Bottomley" <jejb@linux.ibm.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        linux-scsi@vger.kernel.org
+Subject: [PATCH 01/11] scsi: aacraid: Fix undefined behavior due to shift overflowing the constant
+Date:   Tue,  5 Apr 2022 17:15:07 +0200
+Message-Id: <20220405151517.29753-2-bp@alien8.de>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
-User-Agent: quilt/0.66
+In-Reply-To: <20220405151517.29753-1-bp@alien8.de>
+References: <20220405151517.29753-1-bp@alien8.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -51,164 +50,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Anders Roxell <anders.roxell@linaro.org>
+From: Borislav Petkov <bp@suse.de>
 
-commit 8667d0d64dd1f84fd41b5897fd87fa9113ae05e3 upstream.
+Fix
 
-Building tinyconfig with gcc (Debian 11.2.0-16) and assembler (Debian
-2.37.90.20220207) the following build error shows up:
+  drivers/scsi/aacraid/commsup.c: In function ‘aac_handle_sa_aif’:
+  drivers/scsi/aacraid/commsup.c:1983:2: error: case label does not reduce to an integer constant
+    case SA_AIF_BPCFG_CHANGE:
+    ^~~~
 
-  {standard input}: Assembler messages:
-  {standard input}:1190: Error: unrecognized opcode: `stbcix'
-  {standard input}:1433: Error: unrecognized opcode: `lwzcix'
-  {standard input}:1453: Error: unrecognized opcode: `stbcix'
-  {standard input}:1460: Error: unrecognized opcode: `stwcix'
-  {standard input}:1596: Error: unrecognized opcode: `stbcix'
-  ...
+See https://lore.kernel.org/r/YkwQ6%2BtIH8GQpuct@zn.tnic for the gory
+details as to why it triggers with older gccs only.
 
-Rework to add assembler directives [1] around the instruction. Going
-through them one by one shows that the changes should be safe.  Like
-__get_user_atomic_128_aligned() is only called in p9_hmi_special_emu(),
-which according to the name is specific to power9.  And __raw_rm_read*()
-are only called in things that are powernv or book3s_hv specific.
-
-[1] https://sourceware.org/binutils/docs/as/PowerPC_002dPseudo.html#PowerPC_002dPseudo
-
-Cc: stable@vger.kernel.org
-Co-developed-by: Arnd Bergmann <arnd@arndb.de>
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-Signed-off-by: Anders Roxell <anders.roxell@linaro.org>
-Reviewed-by: Segher Boessenkool <segher@kernel.crashing.org>
-[mpe: Make commit subject more descriptive]
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20220224162215.3406642-2-anders.roxell@linaro.org
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Cc: Adaptec OEM Raid Solutions <aacraid@microsemi.com>
+Cc: "James E.J. Bottomley" <jejb@linux.ibm.com>
+Cc: "Martin K. Petersen" <martin.petersen@oracle.com>
+Cc: linux-scsi@vger.kernel.org
 ---
- arch/powerpc/include/asm/io.h        |   40 ++++++++++++++++++++++++++++-------
- arch/powerpc/include/asm/uaccess.h   |    3 ++
- arch/powerpc/platforms/powernv/rng.c |    6 ++++-
- 3 files changed, 40 insertions(+), 9 deletions(-)
+ drivers/scsi/aacraid/aacraid.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/arch/powerpc/include/asm/io.h
-+++ b/arch/powerpc/include/asm/io.h
-@@ -344,25 +344,37 @@ static inline void __raw_writeq_be(unsig
-  */
- static inline void __raw_rm_writeb(u8 val, volatile void __iomem *paddr)
- {
--	__asm__ __volatile__("stbcix %0,0,%1"
-+	__asm__ __volatile__(".machine push;   \
-+			      .machine power6; \
-+			      stbcix %0,0,%1;  \
-+			      .machine pop;"
- 		: : "r" (val), "r" (paddr) : "memory");
- }
+diff --git a/drivers/scsi/aacraid/aacraid.h b/drivers/scsi/aacraid/aacraid.h
+index f849e7c9d428..5e115e8b2ba4 100644
+--- a/drivers/scsi/aacraid/aacraid.h
++++ b/drivers/scsi/aacraid/aacraid.h
+@@ -121,7 +121,7 @@ enum {
+ #define SA_AIF_PDEV_CHANGE		(1<<4)
+ #define SA_AIF_LDEV_CHANGE		(1<<5)
+ #define SA_AIF_BPSTAT_CHANGE		(1<<30)
+-#define SA_AIF_BPCFG_CHANGE		(1<<31)
++#define SA_AIF_BPCFG_CHANGE		(1U<<31)
  
- static inline void __raw_rm_writew(u16 val, volatile void __iomem *paddr)
- {
--	__asm__ __volatile__("sthcix %0,0,%1"
-+	__asm__ __volatile__(".machine push;   \
-+			      .machine power6; \
-+			      sthcix %0,0,%1;  \
-+			      .machine pop;"
- 		: : "r" (val), "r" (paddr) : "memory");
- }
- 
- static inline void __raw_rm_writel(u32 val, volatile void __iomem *paddr)
- {
--	__asm__ __volatile__("stwcix %0,0,%1"
-+	__asm__ __volatile__(".machine push;   \
-+			      .machine power6; \
-+			      stwcix %0,0,%1;  \
-+			      .machine pop;"
- 		: : "r" (val), "r" (paddr) : "memory");
- }
- 
- static inline void __raw_rm_writeq(u64 val, volatile void __iomem *paddr)
- {
--	__asm__ __volatile__("stdcix %0,0,%1"
-+	__asm__ __volatile__(".machine push;   \
-+			      .machine power6; \
-+			      stdcix %0,0,%1;  \
-+			      .machine pop;"
- 		: : "r" (val), "r" (paddr) : "memory");
- }
- 
-@@ -374,7 +386,10 @@ static inline void __raw_rm_writeq_be(u6
- static inline u8 __raw_rm_readb(volatile void __iomem *paddr)
- {
- 	u8 ret;
--	__asm__ __volatile__("lbzcix %0,0, %1"
-+	__asm__ __volatile__(".machine push;   \
-+			      .machine power6; \
-+			      lbzcix %0,0, %1; \
-+			      .machine pop;"
- 			     : "=r" (ret) : "r" (paddr) : "memory");
- 	return ret;
- }
-@@ -382,7 +397,10 @@ static inline u8 __raw_rm_readb(volatile
- static inline u16 __raw_rm_readw(volatile void __iomem *paddr)
- {
- 	u16 ret;
--	__asm__ __volatile__("lhzcix %0,0, %1"
-+	__asm__ __volatile__(".machine push;   \
-+			      .machine power6; \
-+			      lhzcix %0,0, %1; \
-+			      .machine pop;"
- 			     : "=r" (ret) : "r" (paddr) : "memory");
- 	return ret;
- }
-@@ -390,7 +408,10 @@ static inline u16 __raw_rm_readw(volatil
- static inline u32 __raw_rm_readl(volatile void __iomem *paddr)
- {
- 	u32 ret;
--	__asm__ __volatile__("lwzcix %0,0, %1"
-+	__asm__ __volatile__(".machine push;   \
-+			      .machine power6; \
-+			      lwzcix %0,0, %1; \
-+			      .machine pop;"
- 			     : "=r" (ret) : "r" (paddr) : "memory");
- 	return ret;
- }
-@@ -398,7 +419,10 @@ static inline u32 __raw_rm_readl(volatil
- static inline u64 __raw_rm_readq(volatile void __iomem *paddr)
- {
- 	u64 ret;
--	__asm__ __volatile__("ldcix %0,0, %1"
-+	__asm__ __volatile__(".machine push;   \
-+			      .machine power6; \
-+			      ldcix %0,0, %1;  \
-+			      .machine pop;"
- 			     : "=r" (ret) : "r" (paddr) : "memory");
- 	return ret;
- }
---- a/arch/powerpc/include/asm/uaccess.h
-+++ b/arch/powerpc/include/asm/uaccess.h
-@@ -229,8 +229,11 @@ extern long __get_user_bad(void);
-  */
- #define __get_user_atomic_128_aligned(kaddr, uaddr, err)		\
- 	__asm__ __volatile__(				\
-+		".machine push\n"			\
-+		".machine altivec\n"			\
- 		"1:	lvx  0,0,%1	# get user\n"	\
- 		" 	stvx 0,0,%2	# put kernel\n"	\
-+		".machine pop\n"			\
- 		"2:\n"					\
- 		".section .fixup,\"ax\"\n"		\
- 		"3:	li %0,%3\n"			\
---- a/arch/powerpc/platforms/powernv/rng.c
-+++ b/arch/powerpc/platforms/powernv/rng.c
-@@ -43,7 +43,11 @@ static unsigned long rng_whiten(struct p
- 	unsigned long parity;
- 
- 	/* Calculate the parity of the value */
--	asm ("popcntd %0,%1" : "=r" (parity) : "r" (val));
-+	asm (".machine push;   \
-+	      .machine power7; \
-+	      popcntd %0,%1;   \
-+	      .machine pop;"
-+	     : "=r" (parity) : "r" (val));
- 
- 	/* xor our value with the previous mask */
- 	val ^= rng->mask;
-
+ #define HBA_MAX_SG_EMBEDDED		28
+ #define HBA_MAX_SG_SEPARATE		90
+-- 
+2.35.1
 
