@@ -2,120 +2,155 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E4B2FC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:52:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E850C4332F
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:52:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1580075AbiDEXdu (ORCPT
+        id S1580139AbiDEXeC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 19:33:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43648 "EHLO
+        Tue, 5 Apr 2022 19:34:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43932 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348819AbiDEJsj (ORCPT
+        with ESMTP id S1382393AbiDEMPE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:48:39 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 695DAADD66;
-        Tue,  5 Apr 2022 02:36:15 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 043C061675;
-        Tue,  5 Apr 2022 09:36:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0E146C385A0;
-        Tue,  5 Apr 2022 09:36:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649151374;
-        bh=cHh6Am89UvKmAAC6DhpJgKI9IPbPSd8DeXy2OH/l794=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=og2SSEgZXqrAJDWTGwOmos+tVuYTV4fOqA/Lek8t1d7jHdchr/ErrV5DNiX51UfwC
-         En3L0tqDabMuvzwyOJN5/s2Ybt+nkj/iLEQaz4eUUZvgZDYmv3yB1MLoSZlvJDqSvf
-         df4BmomxUFuLbRdhC8D4IVPAEo1oDot9ESK7/BOE=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yiru Xu <xyru1999@gmail.com>,
-        Pavel Skripkin <paskripkin@gmail.com>,
-        Marcel Holtmann <marcel@holtmann.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 392/913] Bluetooth: hci_serdev: call init_rwsem() before p->open()
-Date:   Tue,  5 Apr 2022 09:24:14 +0200
-Message-Id: <20220405070351.598011800@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 5 Apr 2022 08:15:04 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73843B8211;
+        Tue,  5 Apr 2022 04:25:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1649157936; x=1680693936;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=Ioal/KUBbdxMkJnA+gxPguV8rV4ionWp+UmNMFGaWwU=;
+  b=cAVnzm4qQ/Y2JFyg7QnHk05U+tgxk/OEez9lTO3J04YJ2CtlmiGwxiDw
+   72CzzH9uwLlE6dPP1zggUhIcjSBA8082VQ5slM34eMlV8Dk1td6GGeOjB
+   fIz/xeqpr1mWp/Ct9ETtGIdZVmSglpnyW2ZhxpgjUoeNwLXaGQwQrC7Zm
+   pnT+d5hKBcQKfAa6DhxWJgYVPkUZO2BzmYLXmpcZE6AvPunyLWBaEgKyE
+   GbwMMTnuj88Muu012GvIHrrCP6tYalEy3L0XSIJOeg1EQ8ZGbx3BpEyGi
+   Ukmn7rj9bFkpzMNNgxwy9Rx2a7t3AsBIpPuQ55iEJTCtci+IIhu7PFFtT
+   A==;
+X-IronPort-AV: E=Sophos;i="5.90,236,1643698800"; 
+   d="scan'208";a="159346905"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 05 Apr 2022 04:25:35 -0700
+Received: from chn-vm-ex02.mchp-main.com (10.10.87.72) by
+ chn-vm-ex02.mchp-main.com (10.10.87.72) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Tue, 5 Apr 2022 04:25:35 -0700
+Received: from localhost.localdomain (10.10.115.15) by
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
+ 15.1.2375.17 via Frontend Transport; Tue, 5 Apr 2022 04:25:32 -0700
+From:   Claudiu Beznea <claudiu.beznea@microchip.com>
+To:     <robh+dt@kernel.org>, <nicolas.ferre@microchip.com>,
+        <alexandre.belloni@bootlin.com>, <p.zabel@pengutronix.de>,
+        <sre@kernel.org>
+CC:     <linux-arm-kernel@lists.infradead.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-pm@vger.kernel.org>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>
+Subject: [PATCH 5/8] power: reset: at91-reset: add at91_reset_data
+Date:   Tue, 5 Apr 2022 14:27:21 +0300
+Message-ID: <20220405112724.2760905-6-claudiu.beznea@microchip.com>
+X-Mailer: git-send-email 2.33.0
+In-Reply-To: <20220405112724.2760905-1-claudiu.beznea@microchip.com>
+References: <20220405112724.2760905-1-claudiu.beznea@microchip.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pavel Skripkin <paskripkin@gmail.com>
+Add struct at91_reset_data to keep per platform related information.
+This is a prerequisite for adding reset_controller_dev support.
 
-[ Upstream commit 9d7cbe2b9cf5f650067df4f402fdd799d4bbb4e1 ]
-
-kvartet reported, that hci_uart_tx_wakeup() uses uninitialized rwsem.
-The problem was in wrong place for percpu_init_rwsem() call.
-
-hci_uart_proto::open() may register a timer whose callback may call
-hci_uart_tx_wakeup(). There is a chance, that hci_uart_register_device()
-thread won't be fast enough to call percpu_init_rwsem().
-
-Fix it my moving percpu_init_rwsem() call before p->open().
-
-INFO: trying to register non-static key.
-The code is fine but needs lockdep annotation, or maybe
-you didn't initialize this object before use?
-turning off the locking correctness validator.
-CPU: 2 PID: 18524 Comm: syz-executor.5 Not tainted 5.16.0-rc6 #9
-...
-Call Trace:
- <IRQ>
- __dump_stack lib/dump_stack.c:88 [inline]
- dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
- assign_lock_key kernel/locking/lockdep.c:951 [inline]
- register_lock_class+0x148d/0x1950 kernel/locking/lockdep.c:1263
- __lock_acquire+0x106/0x57e0 kernel/locking/lockdep.c:4906
- lock_acquire kernel/locking/lockdep.c:5637 [inline]
- lock_acquire+0x1ab/0x520 kernel/locking/lockdep.c:5602
- percpu_down_read_trylock include/linux/percpu-rwsem.h:92 [inline]
- hci_uart_tx_wakeup+0x12e/0x490 drivers/bluetooth/hci_ldisc.c:124
- h5_timed_event+0x32f/0x6a0 drivers/bluetooth/hci_h5.c:188
- call_timer_fn+0x1a5/0x6b0 kernel/time/timer.c:1421
-
-Fixes: d73e17281665 ("Bluetooth: hci_serdev: Init hci_uart proto_lock to avoid oops")
-Reported-by: Yiru Xu <xyru1999@gmail.com>
-Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
-Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
 ---
- drivers/bluetooth/hci_serdev.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/power/reset/at91-reset.c | 33 +++++++++++++++++++++++---------
+ 1 file changed, 24 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/bluetooth/hci_serdev.c b/drivers/bluetooth/hci_serdev.c
-index 3b00d82d36cf..4cda890ce647 100644
---- a/drivers/bluetooth/hci_serdev.c
-+++ b/drivers/bluetooth/hci_serdev.c
-@@ -305,6 +305,8 @@ int hci_uart_register_device(struct hci_uart *hu,
- 	if (err)
- 		return err;
+diff --git a/drivers/power/reset/at91-reset.c b/drivers/power/reset/at91-reset.c
+index 64def79d557a..0d721e27f545 100644
+--- a/drivers/power/reset/at91-reset.c
++++ b/drivers/power/reset/at91-reset.c
+@@ -59,6 +59,11 @@ struct at91_reset {
+ 	u32 ramc_lpr;
+ };
  
-+	percpu_init_rwsem(&hu->proto_lock);
++struct at91_reset_data {
++	u32 reset_args;
++	u32 n_device_reset;
++};
 +
- 	err = p->open(hu);
- 	if (err)
- 		goto err_open;
-@@ -327,7 +329,6 @@ int hci_uart_register_device(struct hci_uart *hu,
+ /*
+ * unless the SDRAM is cleanly shutdown before we hit the
+ * reset register it can be left driving the data bus and
+@@ -153,29 +158,34 @@ static const struct of_device_id at91_ramc_of_match[] = {
+ 	{ /* sentinel */ }
+ };
  
- 	INIT_WORK(&hu->init_ready, hci_uart_init_work);
- 	INIT_WORK(&hu->write_work, hci_uart_write_work);
--	percpu_init_rwsem(&hu->proto_lock);
++static const struct at91_reset_data sam9260 = {
++	.reset_args = AT91_RSTC_KEY | AT91_RSTC_PERRST | AT91_RSTC_PROCRST,
++};
++
++static const struct at91_reset_data samx7 = {
++	.reset_args = AT91_RSTC_KEY | AT91_RSTC_PROCRST,
++};
++
+ static const struct of_device_id at91_reset_of_match[] = {
+ 	{
+ 		.compatible = "atmel,at91sam9260-rstc",
+-		.data = (void *)(AT91_RSTC_KEY | AT91_RSTC_PERRST |
+-				 AT91_RSTC_PROCRST),
++		.data = &sam9260,
+ 	},
+ 	{
+ 		.compatible = "atmel,at91sam9g45-rstc",
+-		.data = (void *)(AT91_RSTC_KEY | AT91_RSTC_PERRST |
+-				 AT91_RSTC_PROCRST)
++		.data = &sam9260,
+ 	},
+ 	{
+ 		.compatible = "atmel,sama5d3-rstc",
+-		.data = (void *)(AT91_RSTC_KEY | AT91_RSTC_PERRST |
+-				 AT91_RSTC_PROCRST)
++		.data = &sam9260,
+ 	},
+ 	{
+ 		.compatible = "atmel,samx7-rstc",
+-		.data = (void *)(AT91_RSTC_KEY | AT91_RSTC_PROCRST)
++		.data = &samx7,
+ 	},
+ 	{
+ 		.compatible = "microchip,sam9x60-rstc",
+-		.data = (void *)(AT91_RSTC_KEY | AT91_RSTC_PROCRST)
++		.data = &samx7,
+ 	},
+ 	{ /* sentinel */ }
+ };
+@@ -184,6 +194,7 @@ MODULE_DEVICE_TABLE(of, at91_reset_of_match);
+ static int __init at91_reset_probe(struct platform_device *pdev)
+ {
+ 	const struct of_device_id *match;
++	const struct at91_reset_data *data;
+ 	struct at91_reset *reset;
+ 	struct device_node *np;
+ 	int ret, idx = 0;
+@@ -213,9 +224,13 @@ static int __init at91_reset_probe(struct platform_device *pdev)
+ 	}
  
- 	/* Only when vendor specific setup callback is provided, consider
- 	 * the manufacturer information valid. This avoids filling in the
+ 	match = of_match_node(at91_reset_of_match, pdev->dev.of_node);
++	if (!match || !match->data)
++		return -ENODEV;
++
++	data = match->data;
+ 	reset->nb.notifier_call = at91_reset;
+ 	reset->nb.priority = 192;
+-	reset->args = (u32)match->data;
++	reset->args = data->reset_args;
+ 
+ 	reset->sclk = devm_clk_get(&pdev->dev, NULL);
+ 	if (IS_ERR(reset->sclk))
 -- 
-2.34.1
-
-
+2.32.0
 
