@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0AE99C47085
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3CCFEC352AA
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 22:09:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1392455AbiDEWJs (ORCPT
+        id S1392539AbiDEWKB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 18:09:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39108 "EHLO
+        Tue, 5 Apr 2022 18:10:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46438 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349347AbiDEJtl (ORCPT
+        with ESMTP id S241169AbiDEKfO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:49:41 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47FACDBC;
-        Tue,  5 Apr 2022 02:44:19 -0700 (PDT)
+        Tue, 5 Apr 2022 06:35:14 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4BF052A715;
+        Tue,  5 Apr 2022 03:20:06 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 08CA5B817D3;
-        Tue,  5 Apr 2022 09:44:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4DBD5C385A2;
-        Tue,  5 Apr 2022 09:44:16 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DB6CA616D7;
+        Tue,  5 Apr 2022 10:20:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EAE80C385A1;
+        Tue,  5 Apr 2022 10:20:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649151856;
-        bh=98aCFofgFx1i2qmaGNmZ2Ir40iIRhlyna9C5ZXP/Y2o=;
+        s=korg; t=1649154005;
+        bh=5FrGcilHNiUz4isouMtLYPMowkNlL7KbZe/hG/nvb8c=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1zxKVXEiH0Nj3a108bCEZ6cymdOupquHXyny9iUU3ZuBgK1Md4ZSyu398PNtRZ5ho
-         5Ao3mC2GoEAvs5NRazgQNhTULPr4pZqCqKmQCQHCeI3j8ENFyPcDOL1MR9RuX1pZe9
-         HSOdDBb+9/TL9KXh/l7jAuCIjbruQEnzz0NQRKoQ=
+        b=CYTwXAB1yUDinYNFu1HQGoktjjVR4E+D0M+ihAAAVR9vUK2EbmxttE/U1ekxN+d8m
+         V+KMNNUOF7XHGrGChBLZkgsLBmtleZduWj/BMKs5yGopAgOtc03CFxAG0O8l1gqj1d
+         oHV3giWrTJCCbao7mLbTVWeTUqXtjuC2aFl6u3zU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hangbin Liu <liuhangbin@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 565/913] selftests/bpf/test_lirc_mode2.sh: Exit with proper code
-Date:   Tue,  5 Apr 2022 09:27:07 +0200
-Message-Id: <20220405070356.780493269@linuxfoundation.org>
+Subject: [PATCH 5.10 424/599] pinctrl/rockchip: Add missing of_node_put() in rockchip_pinctrl_probe
+Date:   Tue,  5 Apr 2022 09:31:58 +0200
+Message-Id: <20220405070311.450555929@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
+References: <20220405070258.802373272@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,53 +50,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hangbin Liu <liuhangbin@gmail.com>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit ec80906b0fbd7be11e3e960813b977b1ffe5f8fe ]
+[ Upstream commit 89388f8730699c259f8090ec435fb43569efe4ac ]
 
-When test_lirc_mode2_user exec failed, the test report failed but still
-exit with 0. Fix it by exiting with an error code.
+The device_node pointer is returned by of_parse_phandle()  with refcount
+incremented. We should use of_node_put() on it when done.
 
-Another issue is for the LIRCDEV checking. With bash -n, we need to quote
-the variable, or it will always be true. So if test_lirc_mode2_user was
-not run, just exit with skip code.
-
-Fixes: 6bdd533cee9a ("bpf: add selftest for lirc_mode2 type program")
-Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
-Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
-Link: https://lore.kernel.org/bpf/20220321024149.157861-1-liuhangbin@gmail.com
+Fixes: 1e747e59cc4d ("pinctrl: rockchip: base regmap supplied by a syscon")
+Fixes: 14dee8677e19 ("pinctrl: rockchip: let pmu registers be supplied by a syscon")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Link: https://lore.kernel.org/r/20220307120234.28657-1-linmq006@gmail.com
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/testing/selftests/bpf/test_lirc_mode2.sh | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ drivers/pinctrl/pinctrl-rockchip.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/tools/testing/selftests/bpf/test_lirc_mode2.sh b/tools/testing/selftests/bpf/test_lirc_mode2.sh
-index ec4e15948e40..5252b91f48a1 100755
---- a/tools/testing/selftests/bpf/test_lirc_mode2.sh
-+++ b/tools/testing/selftests/bpf/test_lirc_mode2.sh
-@@ -3,6 +3,7 @@
- 
- # Kselftest framework requirement - SKIP code is 4.
- ksft_skip=4
-+ret=$ksft_skip
- 
- msg="skip all tests:"
- if [ $UID != 0 ]; then
-@@ -25,7 +26,7 @@ do
- 	fi
- done
- 
--if [ -n $LIRCDEV ];
-+if [ -n "$LIRCDEV" ];
- then
- 	TYPE=lirc_mode2
- 	./test_lirc_mode2_user $LIRCDEV $INPUTDEV
-@@ -36,3 +37,5 @@ then
- 		echo -e ${GREEN}"PASS: $TYPE"${NC}
- 	fi
- fi
-+
-+exit $ret
+diff --git a/drivers/pinctrl/pinctrl-rockchip.c b/drivers/pinctrl/pinctrl-rockchip.c
+index 53a0badc6b03..9df48e0cf4cb 100644
+--- a/drivers/pinctrl/pinctrl-rockchip.c
++++ b/drivers/pinctrl/pinctrl-rockchip.c
+@@ -3774,6 +3774,7 @@ static int rockchip_pinctrl_probe(struct platform_device *pdev)
+ 	node = of_parse_phandle(np, "rockchip,grf", 0);
+ 	if (node) {
+ 		info->regmap_base = syscon_node_to_regmap(node);
++		of_node_put(node);
+ 		if (IS_ERR(info->regmap_base))
+ 			return PTR_ERR(info->regmap_base);
+ 	} else {
+@@ -3810,6 +3811,7 @@ static int rockchip_pinctrl_probe(struct platform_device *pdev)
+ 	node = of_parse_phandle(np, "rockchip,pmu", 0);
+ 	if (node) {
+ 		info->regmap_pmu = syscon_node_to_regmap(node);
++		of_node_put(node);
+ 		if (IS_ERR(info->regmap_pmu))
+ 			return PTR_ERR(info->regmap_pmu);
+ 	}
 -- 
 2.34.1
 
