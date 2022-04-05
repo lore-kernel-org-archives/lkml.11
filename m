@@ -2,48 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4834EC4167D
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 01:06:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D294C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 01:06:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1840053AbiDFBHB (ORCPT
+        id S1839984AbiDFBGl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 21:07:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58498 "EHLO
+        Tue, 5 Apr 2022 21:06:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47556 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358173AbiDEK2D (ORCPT
+        with ESMTP id S1349069AbiDEJtD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:28:03 -0400
+        Tue, 5 Apr 2022 05:49:03 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8AF2F9E9CF;
-        Tue,  5 Apr 2022 03:16:14 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10345A94F7;
+        Tue,  5 Apr 2022 02:39:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 272A2617AA;
-        Tue,  5 Apr 2022 10:16:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 30612C385A1;
-        Tue,  5 Apr 2022 10:16:13 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A3A31615E5;
+        Tue,  5 Apr 2022 09:39:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B852EC385A2;
+        Tue,  5 Apr 2022 09:39:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649153773;
-        bh=iQbWa7FkDzKDrqRhKmG28GLMHXByK/y1EroL37HmjqY=;
+        s=korg; t=1649151587;
+        bh=D9X4N7CjniGGLjHiUlduDQRYx7n6Zjs8euUw2wDCyR0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dqOHoq/rIKrETsZGjgHXPsCZE5QXRuBVl2FO2L9MlGmSG44MBSSw2Vx8kDbYO21Z3
-         uSSvbRyAa2yjs9AVlpvjx0IIdCVcl3dQiY6rIpVsDf4cJvXHEn5aynQMdJJDFhiklC
-         5IhELSdVsloa5GtlLryzIhPYPFEMzle0Kl2uB/1w=
+        b=2Rm32ttEIbYYPiaEsX4YQUeoW0a8uBb9Y8YqSScfYGOedQEWc9VrCoBag+JU6gGsj
+         rKtIs03XexKrQ43z6eO2c58H+7YsEYJdsMzYDnHpk5EzjA6/DORu2xTbfBGKazj7Lz
+         f7ZdFTtaDj4ome4CYeIDrovGr49sN1n4pyutkjHo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yihang Li <liyihang6@hisilicon.com>,
-        Xiang Chen <chenxiang66@hisilicon.com>,
-        John Garry <john.garry@huawei.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        stable@vger.kernel.org, Kuogee Hsieh <quic_khsieh@quicinc.com>,
+        Stephen Boyd <swboyd@chromium.org>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 325/599] scsi: hisi_sas: Change permission of parameter prot_mask
-Date:   Tue,  5 Apr 2022 09:30:19 +0200
-Message-Id: <20220405070308.504847406@linuxfoundation.org>
+Subject: [PATCH 5.15 470/913] drm/msm/dp: stop link training after link training 2 failed
+Date:   Tue,  5 Apr 2022 09:25:32 +0200
+Message-Id: <20220405070353.943570972@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -52,40 +51,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xiang Chen <chenxiang66@hisilicon.com>
+From: Kuogee Hsieh <quic_khsieh@quicinc.com>
 
-[ Upstream commit c4e070457a93705e56ed06b3910d9e5fe56d3be3 ]
+[ Upstream commit 9051d629dbf7a998a40f7eac65a9512b01bc3bb8 ]
 
-Currently the permission of parameter prot_mask is 0x0, which means that
-the member does not appear in sysfs. Change it as other module parameters
-to 0444 for world-readable.
+Each DP link training contains link training 1 followed by link
+training 2.  There is maximum of 5 retries of DP link training
+before declared link training failed. It is required to stop link
+training at end of link training 2 if it is failed so that next
+link training 1 can start freshly. This patch fixes link compliance
+test  case 4.3.1.13 (Source Device Link Training EQ Fallback Test).
 
-[mkp: s/v3/v2/]
+Changes in v10:
+--  group into one series
 
-Link: https://lore.kernel.org/r/1645703489-87194-2-git-send-email-john.garry@huawei.com
-Fixes: d6a9000b81be ("scsi: hisi_sas: Add support for DIF feature for v2 hw")
-Reported-by: Yihang Li <liyihang6@hisilicon.com>
-Signed-off-by: Xiang Chen <chenxiang66@hisilicon.com>
-Signed-off-by: John Garry <john.garry@huawei.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Changes in v11:
+-- drop drm/msm/dp: dp_link_parse_sink_count() return immediately if aux read
+
+Fixes: 2e0adc765d88 ("drm/msm/dp: do not end dp link training until video is ready")
+Signed-off-by: Kuogee Hsieh <quic_khsieh@quicinc.com>
+Reviewed-by: Stephen Boyd <swboyd@chromium.org>
+Link: https://lore.kernel.org/r/1642531648-8448-5-git-send-email-quic_khsieh@quicinc.com
+Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/hisi_sas/hisi_sas_v3_hw.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/gpu/drm/msm/dp/dp_ctrl.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/scsi/hisi_sas/hisi_sas_v3_hw.c b/drivers/scsi/hisi_sas/hisi_sas_v3_hw.c
-index 50a1c3478a6e..a8998b016b86 100644
---- a/drivers/scsi/hisi_sas/hisi_sas_v3_hw.c
-+++ b/drivers/scsi/hisi_sas/hisi_sas_v3_hw.c
-@@ -514,7 +514,7 @@ MODULE_PARM_DESC(intr_conv, "interrupt converge enable (0-1)");
+diff --git a/drivers/gpu/drm/msm/dp/dp_ctrl.c b/drivers/gpu/drm/msm/dp/dp_ctrl.c
+index 62e75dc8afc6..4af281d97493 100644
+--- a/drivers/gpu/drm/msm/dp/dp_ctrl.c
++++ b/drivers/gpu/drm/msm/dp/dp_ctrl.c
+@@ -1744,6 +1744,9 @@ int dp_ctrl_on_link(struct dp_ctrl *dp_ctrl)
+ 				/* end with failure */
+ 				break; /* lane == 1 already */
+ 			}
++
++			/* stop link training before start re training  */
++			dp_ctrl_clear_training_pattern(ctrl);
+ 		}
+ 	}
  
- /* permit overriding the host protection capabilities mask (EEDP/T10 PI) */
- static int prot_mask;
--module_param(prot_mask, int, 0);
-+module_param(prot_mask, int, 0444);
- MODULE_PARM_DESC(prot_mask, " host protection capabilities mask, def=0x0 ");
- 
- static bool auto_affine_msi_experimental;
 -- 
 2.34.1
 
