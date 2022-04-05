@@ -2,94 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C67BC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 15:23:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CEFE4C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 15:23:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242229AbiDEPZL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 11:25:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59708 "EHLO
+        id S243831AbiDEPZr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 11:25:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50108 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347201AbiDEJqI (ORCPT
+        with ESMTP id S1344689AbiDEJmY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:46:08 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACF21DD96E;
-        Tue,  5 Apr 2022 02:32:36 -0700 (PDT)
+        Tue, 5 Apr 2022 05:42:24 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93843BF00F;
+        Tue,  5 Apr 2022 02:27:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5A60CB81CB3;
-        Tue,  5 Apr 2022 09:32:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 735BBC385A3;
-        Tue,  5 Apr 2022 09:32:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649151154;
-        bh=cg99cbuB8hB++j+fhgEa4ZdrqC7Cu38pehUZLH1w4KY=;
-        h=From:To:Cc:In-Reply-To:References:Subject:Date:From;
-        b=IIgjUBS99lYPqvwHgyFLa1h4B+7F7O2C9jIzDXHtBh4yXjL/VM5gyaqNRq/qVMVce
-         i6tJBXscdBWey2Qx0IHyiShR+AkNqxnxyrUSfgVC/JL69cuW1Er4dd+IP/QV2TAFJB
-         5N6HGtShxQqUbmLMshbvgbmhA8NnZK6O+W3oz+XRPr++uL07hQoTwk53wTXuEkQP4R
-         MkssquhUvVngM0wKXwsdAx0jQmvbuojxswkDIgZhOh46AkmfHITAb6TLu8SzVA9M8v
-         5/NLbwjd8FdUqQaDNY7uOhbyytzZJLBA/+DhcN7rYRzuC27tdUnGKwRlxRQ+frUPcM
-         kWO7h/NlW9i4Q==
-From:   Mark Brown <broonie@kernel.org>
-To:     leilk.liu@mediatek.com
-Cc:     linux-kernel@vger.kernel.org, linux-mediatek@lists.infradead.org,
-        devicetree@vger.kernel.org, robh+dt@kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-spi@vger.kernel.org,
-        matthias.bgg@gmail.com
-In-Reply-To: <20220401071616.8874-1-leilk.liu@mediatek.com>
-References: <20220401071616.8874-1-leilk.liu@mediatek.com>
-Subject: Re: [PATCH V7 0/3] spi: mediatek: add single/quad mode support
-Message-Id: <164915115220.276894.6481675196400953567.b4-ty@kernel.org>
-Date:   Tue, 05 Apr 2022 10:32:32 +0100
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4F792B81C84;
+        Tue,  5 Apr 2022 09:27:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9BB5BC385A2;
+        Tue,  5 Apr 2022 09:27:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649150875;
+        bh=fA6jlSOTDUzNe8YCEepk5YnDTbZKLllnbhM2A2nSFIA=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=185Zr/F9MRnqlvTftRAWhR0pYs9PFWXzZaadMMjgHL0quRH+YS60EXzT/e9xUbXHF
+         ImGzuwN0FrUBf8v/rKs3vh7s3CpCsZbwFrJj0taf5hzYhoSo3DtxIM4xm58wN0kbvX
+         sOPE8xz2OmY4WfGSbB7lqKWbrWzinOAIQyelKtQw=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Linus Walleij <linus.walleij@linaro.org>,
+        Arend van Spriel <arend.vanspriel@broadcom.com>,
+        Hector Martin <marcan@marcan.st>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Kalle Valo <kvalo@kernel.org>
+Subject: [PATCH 5.15 180/913] brcmfmac: pcie: Release firmwares in the brcmf_pcie_setup error path
+Date:   Tue,  5 Apr 2022 09:20:42 +0200
+Message-Id: <20220405070345.250153004@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 1 Apr 2022 15:16:13 +0800, Leilk Liu wrote:
-> This series of patches are based on spi for-next, and provide 3 patches to support MT7986.
-> 
-> V7:
-> 1. add Reviewed-by: Rob Herring
-> 
-> V6:
->  1. remove SPI_CFG3_IPM_PIN_MODE_OFFSET.
->  2. add Reviewed-by: AngeloGioacchino Del Regno
-> 
-> [...]
+From: Hector Martin <marcan@marcan.st>
 
-Applied to
+commit 5e90f0f3ead014867dade7a22f93958119f5efab upstream.
 
-   https://git.kernel.org/pub/scm/linux/kernel/git/broonie/spi.git for-next
+This avoids leaking memory if brcmf_chip_get_raminfo fails. Note that
+the CLM blob is released in the device remove path.
 
-Thanks!
+Fixes: 82f93cf46d60 ("brcmfmac: get chip's default RAM info during PCIe setup")
+Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
+Reviewed-by: Arend van Spriel <arend.vanspriel@broadcom.com>
+Cc: stable@vger.kernel.org
+Signed-off-by: Hector Martin <marcan@marcan.st>
+Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+Signed-off-by: Kalle Valo <kvalo@kernel.org>
+Link: https://lore.kernel.org/r/20220131160713.245637-2-marcan@marcan.st
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c |    2 ++
+ 1 file changed, 2 insertions(+)
 
-[1/3] spi: mediatek: add spi memory support for ipm design
-      commit: 9f763fd20da7d892ffaedac0c58d821922f8a674
-[2/3] dt-bindings: spi: support hclk
-      (no commit info)
-[3/3] spi: mediatek: support hclk
-      commit: a740f4e684c020ea57a8a198a9322d739f7ab6d5
+--- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c
++++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c
+@@ -1777,6 +1777,8 @@ static void brcmf_pcie_setup(struct devi
+ 	ret = brcmf_chip_get_raminfo(devinfo->ci);
+ 	if (ret) {
+ 		brcmf_err(bus, "Failed to get RAM info\n");
++		release_firmware(fw);
++		brcmf_fw_nvram_free(nvram);
+ 		goto fail;
+ 	}
+ 
 
-All being well this means that it will be integrated into the linux-next
-tree (usually sometime in the next 24 hours) and sent to Linus during
-the next merge window (or sooner if it is a bug fix), however if
-problems are discovered then the patch may be dropped or reverted.
 
-You may get further e-mails resulting from automated or manual testing
-and review of the tree, please engage with people reporting problems and
-send followup patches addressing any issues that are reported if needed.
-
-If any updates are required or you are submitting further changes they
-should be sent as incremental updates against current git, existing
-patches will not be replaced.
-
-Please add any relevant lists and maintainers to the CCs when replying
-to this mail.
-
-Thanks,
-Mark
