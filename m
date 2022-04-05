@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0FD5FC35296
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C3379C47086
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 10:30:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357755AbiDEK1K (ORCPT
+        id S1358331AbiDEK2R (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 06:27:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45442 "EHLO
+        Tue, 5 Apr 2022 06:28:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45884 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241115AbiDEIcu (ORCPT
+        with ESMTP id S241032AbiDEIco (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:32:50 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FE3015A0C;
-        Tue,  5 Apr 2022 01:27:50 -0700 (PDT)
+        Tue, 5 Apr 2022 04:32:44 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0E7EB6D25;
+        Tue,  5 Apr 2022 01:26:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D221560B0E;
-        Tue,  5 Apr 2022 08:27:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E07BBC385A2;
-        Tue,  5 Apr 2022 08:27:48 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2C178B81B13;
+        Tue,  5 Apr 2022 08:26:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 69F70C385A2;
+        Tue,  5 Apr 2022 08:26:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649147269;
-        bh=8amx3lYhPdvxlPyXrtkPsQvIG3FbeBS5jWOreTSZbyk=;
+        s=korg; t=1649147165;
+        bh=ordbT1ol/NytMCy2eDm57yDhNZz58uR1lbLYcHMG7BA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZhB9D8QzRl4uEQctqbS7KMhbyRLkxdS3ZKQ1T9NelBbTofYNhr+WFXhKt3JTKTHL0
-         U4A0DMJ2tIzNtnbSa6XnhYBvMcdKVf79mz0uk9l3nDmAx2x7H/hB7BkdecYZDQ0j+b
-         EB59KbTEVIRwTfAIAOEc/eefug+4vWthQUWXQjTI=
+        b=j0me1tNXYldifSaWky/ag3w01hbX73M9fI6jJT6gU/lTI2dbUHWYPtSkOE4ioFsf9
+         Mx6Fw/PjIL+UXe+eH3x+/UhC/dT7nteOUc1LzdwrMVgwFqJRbyRfsOfmXq/ZXzZ2hx
+         R5qp7D3JWR8k/5btHWAcn9+uai36nrksPIxaafr8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Derek Will <derekrobertwill@gmail.com>,
-        Oliver Hartkopp <socketcan@hartkopp.net>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 1063/1126] can: isotp: restore accidentally removed MSG_PEEK feature
-Date:   Tue,  5 Apr 2022 09:30:10 +0200
-Message-Id: <20220405070438.661468390@linuxfoundation.org>
+        stable@vger.kernel.org, Masahiro Yamada <masahiroy@kernel.org>,
+        Mark Brown <broonie@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>
+Subject: [PATCH 5.17 1025/1126] modpost: restore the warning message for missing symbol versions
+Date:   Tue,  5 Apr 2022 09:29:32 +0200
+Message-Id: <20220405070437.567790746@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -51,48 +50,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Oliver Hartkopp <socketcan@hartkopp.net>
+From: Masahiro Yamada <masahiroy@kernel.org>
 
-[ Upstream commit e382fea8ae54f5bb62869c6b69b33993d43adeca ]
+commit bf5c0c2231bcab677e5cdfb7f73e6c79f6d8c2d4 upstream.
 
-In commit 42bf50a1795a ("can: isotp: support MSG_TRUNC flag when
-reading from socket") a new check for recvmsg flags has been
-introduced that only checked for the flags that are handled in
-isotp_recvmsg() itself.
+This log message was accidentally chopped off.
 
-This accidentally removed the MSG_PEEK feature flag which is processed
-later in the call chain in __skb_try_recv_from_queue().
+I was wondering why this happened, but checking the ML log, Mark
+precisely followed my suggestion [1].
 
-Add MSG_PEEK to the set of valid flags to restore the feature.
+I just used "..." because I was too lazy to type the sentence fully.
+Sorry for the confusion.
 
-Fixes: 42bf50a1795a ("can: isotp: support MSG_TRUNC flag when reading from socket")
-Link: https://github.com/linux-can/can-utils/issues/347#issuecomment-1079554254
-Link: https://lore.kernel.org/all/20220328113611.3691-1-socketcan@hartkopp.net
-Reported-by: Derek Will <derekrobertwill@gmail.com>
-Suggested-by: Derek Will <derekrobertwill@gmail.com>
-Tested-by: Derek Will <derekrobertwill@gmail.com>
-Signed-off-by: Oliver Hartkopp <socketcan@hartkopp.net>
-Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+[1]: https://lore.kernel.org/all/CAK7LNAR6bXXk9-ZzZYpTqzFqdYbQsZHmiWspu27rtsFxvfRuVA@mail.gmail.com/
+
+Fixes: 4a6795933a89 ("kbuild: modpost: Explicitly warn about unprototyped symbols")
+Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+Acked-by: Mark Brown <broonie@kernel.org>
+Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/can/isotp.c | 2 +-
+ scripts/mod/modpost.c |    2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/can/isotp.c b/net/can/isotp.c
-index ad61342d2e16..a95d171b3a64 100644
---- a/net/can/isotp.c
-+++ b/net/can/isotp.c
-@@ -1009,7 +1009,7 @@ static int isotp_recvmsg(struct socket *sock, struct msghdr *msg, size_t size,
- 	int noblock = flags & MSG_DONTWAIT;
- 	int ret = 0;
+--- a/scripts/mod/modpost.c
++++ b/scripts/mod/modpost.c
+@@ -669,7 +669,7 @@ static void handle_modversion(const stru
+ 	unsigned int crc;
  
--	if (flags & ~(MSG_DONTWAIT | MSG_TRUNC))
-+	if (flags & ~(MSG_DONTWAIT | MSG_TRUNC | MSG_PEEK))
- 		return -EINVAL;
- 
- 	if (!so->bound)
--- 
-2.34.1
-
+ 	if (sym->st_shndx == SHN_UNDEF) {
+-		warn("EXPORT symbol \"%s\" [%s%s] version ...\n"
++		warn("EXPORT symbol \"%s\" [%s%s] version generation failed, symbol will not be versioned.\n"
+ 		     "Is \"%s\" prototyped in <asm/asm-prototypes.h>?\n",
+ 		     symname, mod->name, mod->is_vmlinux ? "" : ".ko",
+ 		     symname);
 
 
