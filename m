@@ -2,47 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 00663C43219
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:35:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 161F2C4167D
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:35:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1835680AbiDFAc4 (ORCPT
+        id S1835696AbiDFAdB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 20:32:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49774 "EHLO
+        Tue, 5 Apr 2022 20:33:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43846 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358190AbiDEK2F (ORCPT
+        with ESMTP id S1349427AbiDEJtv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:28:05 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98FBB1F629;
-        Tue,  5 Apr 2022 03:16:38 -0700 (PDT)
+        Tue, 5 Apr 2022 05:49:51 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71D856548;
+        Tue,  5 Apr 2022 02:45:35 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 56345B81B7A;
-        Tue,  5 Apr 2022 10:16:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BD4B4C385A1;
-        Tue,  5 Apr 2022 10:16:35 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0FF3D61576;
+        Tue,  5 Apr 2022 09:45:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 233ABC385A2;
+        Tue,  5 Apr 2022 09:45:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649153796;
-        bh=C2iDyueRs+iO3TcFt7NP8EmWJUbFs7eGUQBM3p6j4XU=;
+        s=korg; t=1649151934;
+        bh=Wo3qURxNOmx313HrkJXbHsYdZQWj33iWhYmabLSxV7w=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ka2WgA2neBocVuivTq9RTQlfpc6i1TXcp09kEjGyTkGF1KaL89wcFgFsZZ/rFRXI1
-         H8S3A0BOTkOCEtF8816hLvtiRQLBwTE9fQ1qm5D2grfoq8UcdO76kGb8I5rYN+TSsZ
-         StpVQ3x8r1P8z2RbRvtmZpm6xBNho2eJkkMYbFas=
+        b=11KXF/+c4RDrMkKF/XMfiWkGIGpFxLEE8sGocp3iMNklFO5lCvBY80T0mPXIWRwuN
+         oiJJDG4cPQ46cPnuMIxF3XiZktE+PfLd+qvc6cMWydHvdq/OePcb3XZ37EG2baCTk2
+         aZIyVfc0MTUAMzEF7yQO/RN3byIQPBbBQDcFsUXo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Jeff Johnson <quic_jjohnson@quicinc.com>,
-        Kalle Valo <quic_kvalo@quicinc.com>,
+        stable@vger.kernel.org, Phillip Potter <phil@philpotter.co.uk>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 350/599] ath10k: Fix error handling in ath10k_setup_msa_resources
-Date:   Tue,  5 Apr 2022 09:30:44 +0200
-Message-Id: <20220405070309.240779822@linuxfoundation.org>
+Subject: [PATCH 5.15 577/913] staging: r8188eu: convert DBG_88E_LEVEL call in hal/rtl8188e_hal_init.c
+Date:   Tue,  5 Apr 2022 09:27:19 +0200
+Message-Id: <20220405070357.142720926@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,43 +49,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Phillip Potter <phil@philpotter.co.uk>
 
-[ Upstream commit 9747a78d5f758a5284751a10aee13c30d02bd5f1 ]
+[ Upstream commit 5ec394d58bdba731c2a33645be7018e71f72f287 ]
 
-The device_node pointer is returned by of_parse_phandle() with refcount
-incremented. We should use of_node_put() on it when done.
+Convert DBG_88E_LEVEL macro call in hal/rtl8188e_hal_init.c to plain
+dev_dbg call, as although the information is potentially useful, we should
+be exposing it using standard kernel debugging functionality.
 
-This function only calls of_node_put() in the regular path.
-And it will cause refcount leak in error path.
-
-Fixes: 727fec790ead ("ath10k: Setup the msa resources before qmi init")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Reviewed-by: Jeff Johnson <quic_jjohnson@quicinc.com>
-Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
-Link: https://lore.kernel.org/r/20220308070238.19295-1-linmq006@gmail.com
+Signed-off-by: Phillip Potter <phil@philpotter.co.uk>
+Link: https://lore.kernel.org/r/20211129002041.865-6-phil@philpotter.co.uk
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/ath/ath10k/snoc.c | 2 +-
+ drivers/staging/r8188eu/hal/rtl8188e_hal_init.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/wireless/ath/ath10k/snoc.c b/drivers/net/wireless/ath/ath10k/snoc.c
-index daae470ecf5a..e5a296039f71 100644
---- a/drivers/net/wireless/ath/ath10k/snoc.c
-+++ b/drivers/net/wireless/ath/ath10k/snoc.c
-@@ -1477,11 +1477,11 @@ static int ath10k_setup_msa_resources(struct ath10k *ar, u32 msa_size)
- 	node = of_parse_phandle(dev->of_node, "memory-region", 0);
- 	if (node) {
- 		ret = of_address_to_resource(node, 0, &r);
-+		of_node_put(node);
- 		if (ret) {
- 			dev_err(dev, "failed to resolve msa fixed region\n");
- 			return ret;
- 		}
--		of_node_put(node);
+diff --git a/drivers/staging/r8188eu/hal/rtl8188e_hal_init.c b/drivers/staging/r8188eu/hal/rtl8188e_hal_init.c
+index 14758361960c..a677b2049ef3 100644
+--- a/drivers/staging/r8188eu/hal/rtl8188e_hal_init.c
++++ b/drivers/staging/r8188eu/hal/rtl8188e_hal_init.c
+@@ -573,7 +573,7 @@ static int load_firmware(struct rt_firmware *pFirmware, struct device *device)
+ 	memcpy(pFirmware->szFwBuffer, fw->data, fw->size);
+ 	pFirmware->ulFwLength = fw->size;
+ 	release_firmware(fw);
+-	DBG_88E_LEVEL(_drv_info_, "+%s: !bUsedWoWLANFw, FmrmwareLen:%d+\n", __func__, pFirmware->ulFwLength);
++	dev_dbg(device, "!bUsedWoWLANFw, FmrmwareLen:%d+\n", pFirmware->ulFwLength);
  
- 		ar->msa.paddr = r.start;
- 		ar->msa.mem_size = resource_size(&r);
+ Exit:
+ 	return rtStatus;
 -- 
 2.34.1
 
