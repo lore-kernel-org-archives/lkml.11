@@ -2,173 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B7FEFC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 01:59:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C5271C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 02:03:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229603AbiDECBl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 22:01:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38412 "EHLO
+        id S229592AbiDECFe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 4 Apr 2022 22:05:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47050 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229546AbiDECBj (ORCPT
+        with ESMTP id S229563AbiDECF0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 22:01:39 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF48C462B01;
-        Mon,  4 Apr 2022 18:18:12 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 30A9060DC6;
-        Tue,  5 Apr 2022 01:08:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 31008C2BBE4;
-        Tue,  5 Apr 2022 01:08:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649120887;
-        bh=Jpz+Jv4Xaf7lFDh2SyosScKUc58hWmkQlsew08yht+o=;
-        h=From:To:Cc:Subject:Date:From;
-        b=gXub8KIAxJdu63/6MTrPAGneJXnd33dv3jqT5/0InvZyfMvDdsjypiJF0mto6q6Cv
-         YWCf8Tb872r+2Rl4K9dpQUcB0YJk+XoyfGUjkRiSq1wT7U65peaU4UbicSrtviTo8W
-         bKrnRxxCVyVNqiaycQ0H+MvUz/I08bwaZjFP+K+YB68g0lBYcBZPCap2uO3Um6Rr1H
-         31i+hM6JhR63/nOoS0nS25pbmjnnod8+BTvHDo0btkMBCDBxLEzm+X8BmKfzrn5mVr
-         hP8iJuyoWGAAyVcn2uyRCX0dpaOgNLWjJX73pEa9FAxZ6EIuT9Gx0YdUddFU/a11Oz
-         lO9XgGO2Tr/5Q==
-From:   Frederic Weisbecker <frederic@kernel.org>
-To:     LKML <linux-kernel@vger.kernel.org>
-Cc:     Frederic Weisbecker <frederic@kernel.org>,
-        linux-rt-users <linux-rt-users@vger.kernel.org>,
-        Mel Gorman <mgorman@suse.de>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Thomas Gleixner <tglx@linutronix.de>
-Subject: [RT][PATCH 1/2] rcutorture: Also force sched priority to timersd on boosting test
-Date:   Tue,  5 Apr 2022 03:07:51 +0200
-Message-Id: <20220405010752.1347437-1-frederic@kernel.org>
-X-Mailer: git-send-email 2.25.1
+        Mon, 4 Apr 2022 22:05:26 -0400
+Received: from mail-oi1-x236.google.com (mail-oi1-x236.google.com [IPv6:2607:f8b0:4864:20::236])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70FA8135081;
+        Mon,  4 Apr 2022 18:22:13 -0700 (PDT)
+Received: by mail-oi1-x236.google.com with SMTP id t21so11901663oie.11;
+        Mon, 04 Apr 2022 18:22:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=y7CfRmOu2mFNhlP27BBXPAgEnRTv2JAfJlw4FzS8AkI=;
+        b=Z/ADUipXSo6cCCoApgoWmuri8ib7Z2ZRmbnR54h8/VrIGaueK5QGu/WZtyWNFshPcu
+         iAUxF22NOgckmUzcLG64u90kuydHGTVHt9OYXf690baDj9sOYSCj/jaZkbYXeWXHpMmB
+         fAHEsMsaWg7XOguwyTv9/4z8MTuyMLKrHnwV08vQpUkIZUwgrbHKz3AVmSD3jtcNlM/x
+         0UinNkINbSntmhwlU0tlzyGj/QAvnPpxiM0jFhKpPSABVsY/8/XIx1H5kYyTNNFKFogR
+         jNANubjJDZQhCftsvAm3pWtbim5rG5UTWikV3yCU0eXPRTt1v5MNXIOEz9cyijS6kP55
+         XDvQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=y7CfRmOu2mFNhlP27BBXPAgEnRTv2JAfJlw4FzS8AkI=;
+        b=LP6A0w0tgaMTEoQt/CdUYE9qBQGsBNo8Z8vLuS1o6ayplFYbJkgXfpjiEJBQxTFFi0
+         3mLGOevxCl0Boeg3O9XU3vXF7wA+GIxscRcvhwPdp82+jZz7tElpf/TfHhSrUHkXGAq6
+         WgGgq7VZny1ApersE8krX2x/FJIQ6kqDOyqAF5ffCi+SoLDRn/5m5xBynQ/a57xkMoVu
+         XC7o8KVTX7GKXtgLrKFGYbGEFokgX6zSo8puN0Hq6WAlQ4JrCgcDu633lI+DhJUspOL+
+         NJOEzWTt4a1L0JgLrD2uqSD7mYT0h7tDkV9Ibz0shwdKw6HfMgp9ZSyVxRH+giCXTYV2
+         CRfw==
+X-Gm-Message-State: AOAM530rmVfmY6W3K8TkJ6OG7BU288KIniTRaJ6ZMm4jBTWEnAsoS/fX
+        WUNj4NyB7KSdmCOF5NMT8j51dUJYBEwLoMu6qa2UkD5rZSc=
+X-Google-Smtp-Source: ABdhPJyefORiL8A7gzvpS7dFgoDZqSwDNKY91Ji/hlxmeFS27O7LqO1jBzOIggw1AkXZ8Y44Dm+GJ8fQng2R1BpN3QQ=
+X-Received: by 2002:a17:90a:5298:b0:1ca:7fb3:145 with SMTP id
+ w24-20020a17090a529800b001ca7fb30145mr1036706pjh.200.1649119741666; Mon, 04
+ Apr 2022 17:49:01 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220404200250.321455-1-shy828301@gmail.com> <YkuKbMbSecBVsa1k@casper.infradead.org>
+In-Reply-To: <YkuKbMbSecBVsa1k@casper.infradead.org>
+From:   Yang Shi <shy828301@gmail.com>
+Date:   Mon, 4 Apr 2022 17:48:49 -0700
+Message-ID: <CAHbLzkoWPN+ahrvu2JrvoDpf8J_QGR6Ug6BbPnC11C82Lb-NaA@mail.gmail.com>
+Subject: Re: [v3 PATCH 0/8] Make khugepaged collapse readonly FS THP more consistent
+To:     Matthew Wilcox <willy@infradead.org>
+Cc:     Vlastimil Babka <vbabka@suse.cz>,
+        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
+        Miaohe Lin <linmiaohe@huawei.com>,
+        Song Liu <songliubraving@fb.com>,
+        Rik van Riel <riel@surriel.com>, Zi Yan <ziy@nvidia.com>,
+        "Theodore Ts'o" <tytso@mit.edu>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linux MM <linux-mm@kvack.org>,
+        Linux FS-devel Mailing List <linux-fsdevel@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-ksoftirqd is statically boosted to the priority level right above the
-one of rcu_torture_boost() so that timers, which torture readers rely on,
-get a chance to run while rcu_torture_boost() is polling.
+On Mon, Apr 4, 2022 at 5:16 PM Matthew Wilcox <willy@infradead.org> wrote:
+>
+> On Mon, Apr 04, 2022 at 01:02:42PM -0700, Yang Shi wrote:
+> > The readonly FS THP relies on khugepaged to collapse THP for suitable
+> > vmas.  But it is kind of "random luck" for khugepaged to see the
+> > readonly FS vmas (see report: https://lore.kernel.org/linux-mm/00f195d4-d039-3cf2-d3a1-a2c88de397a0@suse.cz/) since currently the vmas are registered to khugepaged when:
+>
+> I still don't see the point.  The effort should be put into
+> supporting large folios, not in making this hack work better.
 
-However timers processing got split from ksoftirqd into their own kthread
-(timersd) that isn't boosted. It has the same SCHED_FIFO low prio as
-rcu_torture_boost() and therefore timers can't preempt it and may
-starve.
+The series makes sense even though the hack is replaced by large
+folios IMHO. The problem is the file VMAs may be not registered by
+khugepaged consistently for some THP modes, for example, always,
+regardless of whether it's readonly or the hack is gone or not. IIUC
+even though the hack is replaced by the large folios, we still have
+khugepaged to collapse pmd-mappable huge pages for both anonymous vmas
+and file vmas, right? Or are you thinking about killing khugepaged
+soon with supporting large folios?
 
-The issue can be triggered in practice on v5.17.1-rt17 using:
+Anyway it may make things clearer if the cover letter is rephrased to:
 
-	./kvm.sh --allcpus --configs TREE04 --duration 10m --kconfig "CONFIG_EXPERT=y CONFIG_PREEMPT_RT=y"
+When khugepaged collapses file THPs, its behavior is not consistent.
+It is kind of "random luck" for khugepaged to see the file vmas (see
+report: https://lore.kernel.org/linux-mm/00f195d4-d039-3cf2-d3a1-a2c88de397a0@suse.cz/)
+since currently the vmas are registered to khugepaged when:
+  - Anon huge pmd page fault
+  - VMA merge
+  - MADV_HUGEPAGE
+  - Shmem mmap
 
-triggering the following:
+If the above conditions are not met, even though khugepaged is enabled
+it won't see any file vma at all.  MADV_HUGEPAGE could be specified
+explicitly to tell khugepaged to collapse this area, but when
+khugepaged mode is "always" it should scan suitable vmas as long as
+VM_NOHUGEPAGE is not set.
 
-	 rcu-torture: rcu_torture_boost boosting failed
-	 Boost inversion thread ->rt_priority 1 gp_state 12908 jiffies 3501
-	 rcu: rcu_preempt: wait state: RCU_GP_WAIT_FQS(5) ->state: 0x402 ->rt_priority 2 delta ->gp_start 3502 ->gp_activity 3502 ->gp_req_activity 3502 ->gp_wake_time 3502 ->gp_wake_seq 12897 ->gp_seq 12901 ->gp_seq_needed 12904 ->gp_max 4057 ->gp_flags 0x0
-	 rcu:     rcu_node 0:7 ->gp_seq 12901 ->gp_seq_needed 12904 ->qsmask 0x2 .... ->n_boosts 0
-	 rcu:     rcu_node 0:3 ->gp_seq 12901 ->gp_seq_needed 12908 ->qsmask 0x0 b... ->n_boosts 22
-	 rcu:     cpu 0 ->gp_seq_needed 12904
-	 rcu:     rcu_node 4:7 ->gp_seq 12901 ->gp_seq_needed 12908 ->qsmask 0x0 b..G ->n_boosts 6
-	 rcu:     cpu 5 ->gp_seq_needed 12904
-	 rcu:    CB 1^0->2 KbclSW F5089 L5089 C1 ..... q0 S CPU 0
-	 rcu:    CB 2^0->3 KbclSW F16859 L16859 C1 ..... q0 S CPU 0
-	 rcu:    CB 3^0->-1 KbclSW F3502 L3502 C2 .W12908.N. q4 S CPU 0
-	 rcu: nocb GP 4 KldtS .[W.] .G:12904 rnp 4:7 1459 S CPU 0
-	 rcu:    CB 4^4->5 KbclSW F9918 L10534 C4 ..... q0 S CPU 0
-	 rcu:    CB 5^4->6 KbclSW F2550 L2550 C2 .W12904.N. q8 S CPU 0
-	 rcu:    CB 6^4->7 KbclSW F6639 L7253 C0 ..... q0 S CPU 0
-	 rcu:    CB 7^4->-1 KbclSW F30685 L30685 C1 ..... q0 S CPU 0
-	 rcu: RCU callbacks invoked since boot: 236075
-	 rcu_tasks: RTGS_WAIT_CBS(11) since 409853 g:0 i:0/0 k.
-	 rcu_tasks_rude: RTGS_WAIT_CBS(11) since 409851 g:0 i:0/0 k.
-	 rcu_tasks_trace: RTGS_WAIT_CBS(11) since 409848 g:0 i:0/0 k. N0 h:0/0/0
-	 Boost inversion: GP 12908 still pending.
-	 rcu-torture: rtc: 0000000093327eb2 ver: 1504 tfle: 0 rta: 1505 rtaf: 0 rtf: 1493 rtmbe: 0 rtmbkf: 0/782 rtbe: 0 rtbke: 0 rtbre: 0 rtbf: 1 rtb: 7 nt: 66220 onoff: 6/6:11/12 40,763:29,5050 1537:11766 (HZ=1000) barrier: 239/240:0 read-exits: 67 nocb-toggles: 0:0
-	 rcu-torture: !!!
-	 ------------[ cut here ]------------
-	 WARNING: CPU: 5 PID: 121 at kernel/rcu/rcutorture.c:1870 rcu_torture_stats_print+0x5ad/0x610
-	 Modules linked in:
-	 CPU: 5 PID: 121 Comm: rcu_torture_sta Not tainted 5.17.1-rt17 #63
-	 Hardware name: QEMU Standard PC (Q35 + ICH9, 2009)
-	 RIP: 0010:rcu_torture_stats_print+0x5ad/0x610
-	 Code: c7 01 02 00 74 02 0f 0b 48 83 3d 35 c7 01 02 00 74 02 0f 0b 48 83 3d 21 c7 01 02 00 74 02 0f 0b 48 83 3d 0d c7 01 02 00 74 02 <0f> 0b 83 eb 01 0f 8e ba fc ff ff 0f 0b e9 b3 fc ff ff 8b 05 8f c6
-	 RSP: 0018:ffffa7560041fdf8 EFLAGS: 00010202
-	 RAX: 0000000000000000 RBX: 0000000000000001 RCX: 0000000000000001
-	 RDX: 0000000000000000 RSI: 40000000ffffe735 RDI: 00000000ffffffff
-	 RBP: 00000000000005d5 R08: ffffffffaf65f6e0 R09: ffffffffafee3a7c
-	 R10: ffffa75600427d58 R11: 0000000020212121 R12: ffffa7560041fe20
-	 R13: ffffa7560041fe78 R14: 0000000000000000 R15: 000000000001bd20
-	 FS:  0000000000000000(0000) GS:ffff9fe7df540000(0000) knlGS:0000000000000000
-	 CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-	 CR2: 0000000000000000 CR3: 0000000014216000 CR4: 00000000000006e0
-	 DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-	 DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-	 Call Trace:
-	  <TASK>
-	  ? lock_timer_base+0x62/0x80
-	  ? rcu_torture_stats_print+0x610/0x610
-	  rcu_torture_stats+0x29/0x70
-	  kthread+0x118/0x130
-	  ? kthread_complete_and_exit+0x20/0x20
-	  ret_from_fork+0x22/0x30
-	  </TASK>
-
-Fix this with statically boosting timersd just like is done with ksoftirqd.
-
-Suggested-by: Mel Gorman <mgorman@suse.de>
-Cc: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Cc: Thomas Gleixner <tglx@linutronix.de>
-Signed-off-by: Frederic Weisbecker <frederic@kernel.org>
----
- include/linux/interrupt.h | 1 +
- kernel/rcu/rcutorture.c   | 6 ++++++
- kernel/softirq.c          | 2 +-
- 3 files changed, 8 insertions(+), 1 deletion(-)
-
-diff --git a/include/linux/interrupt.h b/include/linux/interrupt.h
-index db4a23d07a57..e4b8a04e67ce 100644
---- a/include/linux/interrupt.h
-+++ b/include/linux/interrupt.h
-@@ -606,6 +606,7 @@ extern void raise_softirq_irqoff(unsigned int nr);
- extern void raise_softirq(unsigned int nr);
- 
- #ifdef CONFIG_PREEMPT_RT
-+DECLARE_PER_CPU(struct task_struct *, timersd);
- extern void raise_timer_softirq(void);
- extern void raise_hrtimer_softirq(void);
- 
-diff --git a/kernel/rcu/rcutorture.c b/kernel/rcu/rcutorture.c
-index 422f7e4cc08d..ac9715ed58ba 100644
---- a/kernel/rcu/rcutorture.c
-+++ b/kernel/rcu/rcutorture.c
-@@ -3283,6 +3283,12 @@ rcu_torture_init(void)
- 				WARN_ON_ONCE(!t);
- 				sp.sched_priority = 2;
- 				sched_setscheduler_nocheck(t, SCHED_FIFO, &sp);
-+#ifdef CONFIG_PREEMPT_RT
-+				t = per_cpu(timersd, cpu);
-+				WARN_ON_ONCE(!t);
-+				sp.sched_priority = 2;
-+				sched_setscheduler_nocheck(t, SCHED_FIFO, &sp);
-+#endif
- 			}
- 		}
- 	}
-diff --git a/kernel/softirq.c b/kernel/softirq.c
-index 22948c2109f5..89eb45614af6 100644
---- a/kernel/softirq.c
-+++ b/kernel/softirq.c
-@@ -624,7 +624,7 @@ static inline void tick_irq_exit(void)
- #endif
- }
- 
--static DEFINE_PER_CPU(struct task_struct *, timersd);
-+DEFINE_PER_CPU(struct task_struct *, timersd);
- static DEFINE_PER_CPU(unsigned long, pending_timer_softirq);
- 
- static unsigned int local_pending_timers(void)
--- 
-2.25.1
-
+So make sure file vmas are registered to khugepaged to make the
+behavior more consistent.
