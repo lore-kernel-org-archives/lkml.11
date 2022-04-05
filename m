@@ -2,296 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D527BC4332F
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 02:53:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F0E1C43217
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 02:53:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1850475AbiDFCxf (ORCPT
+        id S1850535AbiDFCyD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 22:53:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49636 "EHLO
+        Tue, 5 Apr 2022 22:54:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60404 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1835829AbiDFAdm (ORCPT
+        with ESMTP id S1443195AbiDFAYo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 20:33:42 -0400
-Received: from sonic312-30.consmr.mail.ne1.yahoo.com (sonic312-30.consmr.mail.ne1.yahoo.com [66.163.191.211])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BF1C104A76
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 15:47:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1649198856; bh=kuHtMKHl/c2qIGNhAGVZoANBI56QWLO5me7QncFB0/4=; h=Date:Subject:To:Cc:References:From:In-Reply-To:From:Subject:Reply-To; b=lw/b5SvbMVXuoNhOkN60MTNvRK0sDPou7k8Sm8/fDot5jNIhKwRd3eHlRDH4X++09rQEJw1wr+aKES2kF0F5dOMKeDQUZQ6F4HZOWGED0RDC4zr9xcZY9Qk6H8JLGIQho7PvJeTl8oKy7KnIOIiPnQQ7B7oSZHdV7nV34QwwpPvCV1hoQGTxbT/4rS1hlwLxnfvKtak1zmDmffa+AUzFsTThb4ap/GSRNi9jovUUtR5yK7ddvNvJrvphSyDebb/pwGdWdzuXAqm2VSIbgKe10iBQx3wYqNt0U7V+Z2fvGSGZwR7tJu3GBEoFohyivhXzK9FuIP48+lJCqFVNv9I8hQ==
-X-SONIC-DKIM-SIGN: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1649198856; bh=VbxZHvRlQ3ApM+hvxQitthNUVXoy1RKh/KVchJBGZGS=; h=X-Sonic-MF:Date:Subject:To:From:From:Subject; b=oGp9qOO4oZpK+WQMwTyI6AQctVQpLckSVRDCMM9EY4+URlBQmX+gpK78IfGzEbJ1WQOoAgSAqaV7gbPSvkBrQmDEU+odSwN0Z7UaU315n38j5LFqVI6pfJGjwXZEkE0sJ20imT5mnbnidmwOGI5FZKeajBcL6gMT9w9tZ6VAPJSnOE5tnZANcnkdMh7dqLfFizhLODK+mnLGixLVyp1AgVBsFojT0K3uAfCKlTIeoM31WO7VJJKdaVbU1W5+cjem8eiUyG/ev9ipDWUvQK/goHUd0yZOMuHWRMtTMakOWirSW07wdwQdxNy89lTohXsPGu8sAAXcWlEgAmiEApvXZw==
-X-YMail-OSG: KM__rusVM1mvT51zYphGFvuxV3vMoEUz.64XbPOnJeUfM3Q02p8tjzbCHPbxK90
- xEbDliiZmXka7VwlPeFd9D1DD5e1OCiK71seGddNJdacxGYZBFqNL38S22jUAAh2NKwCZgZ3a1qm
- b68mSbOJTcl892WIwb.mTv9vYc9nK6H9jOBvffECkgbEOIuJ2OTT0OCGlYe38K9gXdoiudYOOpHl
- 2fh_s6WdkypLC5Nfeyk4z1adY.Se94Xlv.8WW64_g.Q6gsD7htFWlmyKKuIjT7IOL6GjWm9Szqd1
- R3UV59okWBjij2lkAmEvm1OGVvxhNPUS.liSAj2FU0qfbfjIyuTRodjmQ44ijXaF_l.ncSA6E7D2
- 52uqJTjoWIGYu33gu7Y9smglgLO03sxROpSKDJjLYSmqq5TZV191mqxNk6qpvwyo1.It_zg1CqAM
- _I4TYKmrHvNzptK8N1w3ksNztLX_e0N5gHbhAJlQPW5Bw6ykmInAWc_WUaCDq_nMTrMNQ0.BQLAW
- WCRbo_nap91myK7S6jaZMMJbCJQlKQ0d19nAP0GXwM.U0k4qdC3wPw9KG8_ejbIeSpZDDcf8IzrJ
- 4bQvcIjmYkKtr30WANdICKGFIG6qoNp9Fg95.2kjpGHvmwHPuO6qR9YqjocDnUP97EQvkTGUoZTC
- fmWLce.3nw8OaynFbR2KRNYiUriJl8uXIATVYpJyjRTwAIa8rjrwbAhxUP5NVN_nxvbt9B0qD1vL
- iF5dcCV7zA.vqsgkTlPIKvL7geTOs3C_5Q.EkNfAn5PlCJi3y1zODah_iTZ4ecECSgQVOQRR_lvQ
- 5sUCI4wSaPH5EOmTNV6q7bTyu3MxHVIaMUAIVoLi_8k4EtldfkqaEeKispwKxjk.YDkONtPJE0Cc
- pE8iFJVkuJaeEnENzECZy3vMXBzWkyWrlOzxhd.x5VcN.LvY_kezvJ9przKkPd24eoo3B9kOZUKP
- NS_jcRoQPrm.gnozfYxNufkt9qbgJaWqXnPjXRpcK_nHwdGqJ9SrZII7p1ZaQmL_NGh5eShl5Ak0
- oCDgnLQHlke0.mPoBs.DXXK7r8bayP2uWHxez.cMKyi2mCozH06SzzozGsmV2DV4wRVeNnQ5NnD7
- duFgvP9y0siotq8UHHEY2GCd5kkjmdaAUd1iyLgVlxPeMAd89ho9zCouqCHg9YuIHw3L_NEVlpyt
- 6bEP0KxoUYtsVKOeWmn1lqMZxOkdMux8JF.jzEan8uwwC2iFVX62Zh.3mtBLMy4wCtI2ydJ7NwVg
- kIvCoToLc5RDNWmOhaNfzcZ9SpG03jdgluv5cLh1oyTvjJti37BVGbQVSuFKambK6zz6fPT3JpqQ
- Td7uMTzGQLDd3aM3r4lpQwkkq6ZgvfZuI74TGG1Qz72OiRGT6ElyxmqgTz9DPI0QPCS8zFtBd5wN
- g7GXxswBII_DtM6v2a2SqBZlQJnDZCEbYwvF6Rsb7KLhj9nTdtNLv40B05j5uX6eOcjh6.gjicjh
- 4n2hzMomOHjxFoL26zmw2HZQXDRB9WrXRegbN6o9ZS7S56GISCNn0e.GVx1_ANGl1Y9ITLgc3mkj
- aeGxLxguvgu5LBpKKyxuQl92.GCrYlYGg9HBZk_gNpX.esY3Yg6VvCP7BctyRlX5CWY0a9REhZJK
- YiZHe20QUET91dvI8o.O7mlwNgp2u8k7LNi3gGdWWoDQLdXbXVKDqqN8p.OkQ_PT6MQFWhvWD6Hq
- lQi_UcfdeW3nTE0YTi7wBXLRaPZq2rA6YO6mbYysziXrkHmx9aCMWS1.7xLOO2J43QzBZ7VjWuOp
- mr2bspwwUWdOji.Vpcv8AgMMWnL2l9RHnGmuIXsm.HAAsC.rmVV9vmPHZtotu0A2DOfy6b8a.kDo
- 88dY442gAarDTf8zkzmeXacI80hqCh0bPv.qB_AqAuDz8UFgHzXk6kRu6lMfytQN56jEeBNu5Xav
- WAcMHhj._SoyiuB1CBQ_SLZ1CY5EpL3Iyd3J9TY3sxDmLjffnDicxHqypaiKCVj_kLP6XvZDVPDC
- iyDxzHS.Msc7c3OGGTk6..15qsMeGybeAzJrJPCL1fE309eHGaV_S4Jk04LwlcKG_q0pxqPS7NCO
- lvKrLp6NdUSkWJWPqisJBlzCNx0nElmqBXE2hAc2_hYCT_zwuwkjKJLWpKiy5Q8p8ZXptLMQaK_n
- h7bPvT_uLr4.6T.jmGFpAcr.PEWhdDEqORzK1ytMR5S1ocjyiSITC5gOz0z6sv3U1VufvspTMC_V
- OyGNoO0g8_WnT_BFdlHO7W5vCSMmUK1kEBFdnH8P0oNSTwlTNikou0acFupkLZ0z2
-X-Sonic-MF: <casey@schaufler-ca.com>
-Received: from sonic.gate.mail.ne1.yahoo.com by sonic312.consmr.mail.ne1.yahoo.com with HTTP; Tue, 5 Apr 2022 22:47:36 +0000
-Received: by hermes--canary-production-bf1-665cdb9985-4zttc (VZM Hermes SMTP Server) with ESMTPA ID eaa50fa1da4b68d1bc9a73fb183248ea;
-          Tue, 05 Apr 2022 22:47:33 +0000 (UTC)
-Message-ID: <5ce85845-824c-32fb-3807-6f9ab95ad6fe@schaufler-ca.com>
-Date:   Tue, 5 Apr 2022 15:47:30 -0700
+        Tue, 5 Apr 2022 20:24:44 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 557C9114DF8
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 15:42:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1649198567;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=+8N2nEftHorXiQZo04N/kjaENlnJ2VuHv0uZxFWXn7Q=;
+        b=OpgUHNPklJcN7SGlfBjO1+iBSI7J48WKVPfLGBO7Zr1R3MH2EkPZOymj9+BV0mCz4Ci4jI
+        QzHF1ZHDljdO6rxjcL5f1tRSM8DnJ8sllATyM18K0pbfASl393IRMqkm5OD+9C8v96rPoz
+        AjYpOQ/B4a0hjZdbue3VzJrIHtaws74=
+Received: from mail-il1-f198.google.com (mail-il1-f198.google.com
+ [209.85.166.198]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-633-ulcX9o16N36BonBWGaQJAw-1; Tue, 05 Apr 2022 18:42:46 -0400
+X-MC-Unique: ulcX9o16N36BonBWGaQJAw-1
+Received: by mail-il1-f198.google.com with SMTP id a2-20020a056e020e0200b002ca4850353fso568484ilk.5
+        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 15:42:46 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=+8N2nEftHorXiQZo04N/kjaENlnJ2VuHv0uZxFWXn7Q=;
+        b=idp2CTl5gUKMVEw/JAvH1a1PlF3/VXd1wJGFuCCtqIzXRnyWLAz9EXbg9hkL+TUNL0
+         dFmP+vDbK4p9doJnfMd9jvqRXfJZJrIl41m/VpJRzFwM0hgD1ZvheIS9utsibeeA77rm
+         3KeMVV1XdtexTiaf/9AaxGIvEfKSxycBG/3IlP6CEEhC7QtHP8wE01DRUgJgH37nSQQC
+         rupxPAua1lkT8po70Tle4VlUhwFOR4sWlR/N021i2pu8m75Z+BWEcD7B2SX1fPssGC/2
+         1lMuies6pxj8o8Yt434H6w7kPqi/sB8yL/QJQnlbPsiBh53NsqPXskOaDw1/c5vN4FrC
+         tspQ==
+X-Gm-Message-State: AOAM532wYU0vA0wSO9Z+DshuzBNUoseG1LCa1nrgsfYzS2Y3bWzO76j5
+        1Mybmb7Hp4tb37PGmyG9mJvMDSeOZkRvJMyhgSiNeyJ0HL06MH0Z7t0IkC9CbvxkB6XNbnLwvyQ
+        wiVXlyud3xmeRWkdMKabp89OG
+X-Received: by 2002:a02:90c9:0:b0:323:98e6:1ae8 with SMTP id c9-20020a0290c9000000b0032398e61ae8mr3235678jag.15.1649198565920;
+        Tue, 05 Apr 2022 15:42:45 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJw7beoc4Wjg2CM343vNV6LoH7yBntkh+W+VyThAA0YDKfNeShAjU3T1xFae52SNC/tCZoFpsw==
+X-Received: by 2002:a02:90c9:0:b0:323:98e6:1ae8 with SMTP id c9-20020a0290c9000000b0032398e61ae8mr3235670jag.15.1649198565687;
+        Tue, 05 Apr 2022 15:42:45 -0700 (PDT)
+Received: from xz-m1.local (cpec09435e3e0ee-cmc09435e3e0ec.cpe.net.cable.rogers.com. [99.241.198.116])
+        by smtp.gmail.com with ESMTPSA id b12-20020a6be70c000000b00648f61d9652sm9162595ioh.52.2022.04.05.15.42.44
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 05 Apr 2022 15:42:45 -0700 (PDT)
+Date:   Tue, 5 Apr 2022 18:42:43 -0400
+From:   Peter Xu <peterx@redhat.com>
+To:     Andrew Morton <akpm@linux-foundation.org>
+Cc:     linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        Mike Kravetz <mike.kravetz@oracle.com>,
+        David Hildenbrand <david@redhat.com>,
+        Matthew Wilcox <willy@infradead.org>,
+        Alistair Popple <apopple@nvidia.com>,
+        Nadav Amit <nadav.amit@gmail.com>,
+        Axel Rasmussen <axelrasmussen@google.com>,
+        Andrea Arcangeli <aarcange@redhat.com>,
+        "Kirill A . Shutemov" <kirill@shutemov.name>,
+        Hugh Dickins <hughd@google.com>,
+        Jerome Glisse <jglisse@redhat.com>,
+        Mike Rapoport <rppt@linux.vnet.ibm.com>
+Subject: Re: [PATCH v8 00/23] userfaultfd-wp: Support shmem and hugetlbfs
+Message-ID: <YkzF4/e86qwcuXiA@xz-m1.local>
+References: <20220405014646.13522-1-peterx@redhat.com>
+ <20220405151616.bf25fa4aad55536cd031e1ab@linux-foundation.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [POC][USER SPACE][PATCH] Introduce LSM to protect pinned objects
-Content-Language: en-US
-To:     Roberto Sassu <roberto.sassu@huawei.com>, corbet@lwn.net,
-        viro@zeniv.linux.org.uk, ast@kernel.org, daniel@iogearbox.net,
-        andrii@kernel.org, kpsingh@kernel.org, tixxdz@gmail.com,
-        shuah@kernel.org, mcoquelin.stm32@gmail.com,
-        alexandre.torgue@foss.st.com, zohar@linux.ibm.com
-Cc:     linux-doc@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-kselftest@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org,
-        linux-integrity@vger.kernel.org,
-        linux-security-module@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Casey Schaufler <casey@schaufler-ca.com>
-References: <CACYkzJ7ZVbL2MG7ugmDEfogSPAHkYYMCHxRO_eBCJJmBZyn6Rw@mail.gmail.com>
- <20220405131116.3810418-1-roberto.sassu@huawei.com>
-From:   Casey Schaufler <casey@schaufler-ca.com>
-In-Reply-To: <20220405131116.3810418-1-roberto.sassu@huawei.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Mailer: WebService/1.1.20001 mail.backend.jedi.jws.acl:role.jedi.acl.token.atz.jws.hermes.yahoo
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20220405151616.bf25fa4aad55536cd031e1ab@linux-foundation.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 4/5/2022 6:11 AM, Roberto Sassu wrote:
-> Introduce a new LSM to protect pinned objects in a bpf filesystem
+On Tue, Apr 05, 2022 at 03:16:16PM -0700, Andrew Morton wrote:
+> On Mon,  4 Apr 2022 21:46:23 -0400 Peter Xu <peterx@redhat.com> wrote:
+> 
+> > This is v8 of the series to add shmem+hugetlbfs support for userfaultfd
+> > write protection. 
+> 
+> Various compilation catastrophes with x86_64 allnoconfig.  I poked at
+> the include ordering for a while but other things quickly became more
+> attractive ;)
 
-This is *not an LSM*. Do not call it an LSM. It is a set of
-eBPF programs. We have all the opportunities for confusion
-that we need. I suggested that you call this a BPF security
-module (BSM) earlier today. You have any number of things
-you can call this that won't be objectionable.
+Sorry about that.  I still don't know what's the problem, but I'll give it
+a shot soon.
 
-> instance. This is useful for example to ensure that an LSM will always
-> enforce its policy, even despite root tries to unload the corresponding
-> eBPF program.
+I think I only tried out with the new configs but not all the rest configs.
+I thought there're some bot looking after that one, from which I used to
+receive build reports. And IIRC I fixed some build issues in early versions
+from those reports.  Maybe I was wrong..
 
-How is this going to ensure that SELinux enforces its policy?
-AppArmor has no eBPF program that corresponds to its policy,
-neither does any other existing LSM, save BPF. Your claim is
-nonsensical in the face of LSM behavior.
+Any more hints on the latter?
 
-> Achieve the protection by denying inode unlink and unmount of the
-> protected bpf filesystem instance. Since protected inodes hold a
-> reference of the link of loaded programs (e.g. LSM hooks), denying
-> operations on them will prevent the ref count of the links from reaching
-> zero, ensuring that the programs remain always active.
->
-> Enable the protection only for the instance created by the user space
-> counterpart of the LSM, and don't interfere with other instances, so
-> that their behavior remains unchanged.
->
-> Suggested-by: Djalal Harouni <tixxdz@gmail.com>
-> Signed-off-by: Roberto Sassu <roberto.sassu@huawei.com>
-> ---
->   .gitignore       |  4 +++
->   Makefile         | 18 ++++++++++++++
->   bpffs_lsm_kern.c | 63 ++++++++++++++++++++++++++++++++++++++++++++++++
->   bpffs_lsm_user.c | 60 +++++++++++++++++++++++++++++++++++++++++++++
->   4 files changed, 145 insertions(+)
->   create mode 100644 .gitignore
->   create mode 100644 Makefile
->   create mode 100644 bpffs_lsm_kern.c
->   create mode 100644 bpffs_lsm_user.c
->
-> diff --git a/.gitignore b/.gitignore
-> new file mode 100644
-> index 000000000000..7fa02964f1dc
-> --- /dev/null
-> +++ b/.gitignore
-> @@ -0,0 +1,4 @@
-> +*.o
-> +vmlinux.h
-> +bpffs_lsm_kern.skel.h
-> +bpffs_lsm_user
-> diff --git a/Makefile b/Makefile
-> new file mode 100644
-> index 000000000000..c3d805759db3
-> --- /dev/null
-> +++ b/Makefile
-> @@ -0,0 +1,18 @@
-> +# SPDX-License-Identifier: GPL-2.0
-> +all: bpffs_lsm_user
-> +
-> +clean:
-> +	rm -rf bpffs_lsm.skel.h vmlinux.h bpffs_lsm_kern.o bpffs_lsm_user
-> +
-> +vmlinux.h:
-> +	/usr/sbin/bpftool btf dump file /sys/kernel/btf/vmlinux format c > \
-> +			  vmlinux.h
-> +
-> +bpffs_lsm_kern.skel.h: bpffs_lsm_kern.o
-> +	bpftool gen skeleton $< > $@
-> +
-> +bpffs_lsm_kern.o: bpffs_lsm_kern.c vmlinux.h
-> +	clang -Wall -Werror -g -O2 -target bpf -c $< -o $@
-> +
-> +bpffs_lsm_user: bpffs_lsm_user.c bpffs_lsm_kern.skel.h bpffs_lsm_kern.o
-> +	cc -Wall -Werror -g -o $@ $< -lbpf
-> diff --git a/bpffs_lsm_kern.c b/bpffs_lsm_kern.c
-> new file mode 100644
-> index 000000000000..b3ccb2a75c95
-> --- /dev/null
-> +++ b/bpffs_lsm_kern.c
-> @@ -0,0 +1,63 @@
-> +// SPDX-License-Identifier: GPL-2.0
-> +/*
-> + * Copyright (C) 2022 Huawei Technologies Duesseldorf GmbH
-> + *
-> + * Authors:
-> + * Roberto Sassu <roberto.sassu@huawei.com>
-> + *
-> + * Implement an LSM to protect a bpf filesystem instance.
-> + */
-> +
-> +#include "vmlinux.h"
-> +#include <errno.h>
-> +#include <bpf/bpf_helpers.h>
-> +#include <bpf/bpf_tracing.h>
-> +#include <bpf/bpf_core_read.h>
-> +
-> +char _license[] SEC("license") = "GPL";
-> +
-> +uint32_t monitored_pid = 0;
-> +
-> +struct {
-> +	__uint(type, BPF_MAP_TYPE_INODE_STORAGE);
-> +	__uint(map_flags, BPF_F_NO_PREALLOC);
-> +	__type(key, int);
-> +	__type(value, sizeof(uint8_t));
-> +} inode_storage_map SEC(".maps");
-> +
-> +SEC("lsm/sb_set_mnt_opts")
-> +int BPF_PROG(sb_set_mnt_opts, struct super_block *sb, void *mnt_opts,
-> +	     unsigned long kern_flags, unsigned long *set_kern_flags)
-> +{
-> +	u32 pid;
-> +
-> +	pid = bpf_get_current_pid_tgid() >> 32;
-> +	if (pid != monitored_pid)
-> +		return 0;
-> +
-> +	if (!bpf_inode_storage_get(&inode_storage_map, sb->s_root->d_inode, 0,
-> +				   BPF_LOCAL_STORAGE_GET_F_CREATE))
-> +		return -EPERM;
-> +
-> +	return 0;
-> +}
-> +
-> +SEC("lsm/inode_unlink")
-> +int BPF_PROG(inode_unlink, struct inode *dir, struct dentry *dentry)
-> +{
-> +	if (bpf_inode_storage_get(&inode_storage_map,
-> +				  dir->i_sb->s_root->d_inode, 0, 0))
-> +		return -EPERM;
-> +
-> +	return 0;
-> +}
-> +
-> +SEC("lsm/sb_umount")
-> +int BPF_PROG(sb_umount, struct vfsmount *mnt, int flags)
-> +{
-> +	if (bpf_inode_storage_get(&inode_storage_map,
-> +				  mnt->mnt_sb->s_root->d_inode, 0, 0))
-> +		return -EPERM;
-> +
-> +	return 0;
-> +}
-> diff --git a/bpffs_lsm_user.c b/bpffs_lsm_user.c
-> new file mode 100644
-> index 000000000000..e20180cc5db9
-> --- /dev/null
-> +++ b/bpffs_lsm_user.c
-> @@ -0,0 +1,60 @@
-> +// SPDX-License-Identifier: GPL-2.0
-> +/*
-> + * Copyright (C) 2022 Huawei Technologies Duesseldorf GmbH
-> + *
-> + * Author: Roberto Sassu <roberto.sassu@huawei.com>
-> + *
-> + * Implement the user space side of the LSM for bpffs.
-> + */
-> +
-> +#include <fcntl.h>
-> +#include <unistd.h>
-> +#include <stdio.h>
-> +#include <errno.h>
-> +#include <stdlib.h>
-> +#include <unistd.h>
-> +#include <limits.h>
-> +#include <sys/mount.h>
-> +#include <sys/stat.h>
-> +
-> +#include "bpffs_lsm_kern.skel.h"
-> +
-> +#define MOUNT_FLAGS (MS_NOSUID | MS_NODEV | MS_NOEXEC | MS_RELATIME)
-> +
-> +int main(int argc, char *argv[])
-> +{
-> +	char mntpoint[] = "/tmp/bpf_private_mountXXXXXX";
-> +	char path[PATH_MAX];
-> +	struct bpffs_lsm_kern *skel;
-> +	int ret, i;
-> +
-> +	skel = bpffs_lsm_kern__open_and_load();
-> +	if (!skel)
-> +		return -EINVAL;
-> +
-> +	ret = bpffs_lsm_kern__attach(skel);
-> +	if (ret < 0)
-> +		goto out_destroy;
-> +
-> +	mkdtemp(mntpoint);
-> +
-> +	skel->bss->monitored_pid = getpid();
-> +	ret = mount(mntpoint, mntpoint, "bpf", MOUNT_FLAGS, NULL);
-> +	skel->bss->monitored_pid = 0;
-> +
-> +	if (ret < 0)
-> +		goto out_destroy;
-> +
-> +	for (i = 0; i < skel->skeleton->prog_cnt; i++) {
-> +		snprintf(path, sizeof(path), "%s/%s", mntpoint,
-> +			 skel->skeleton->progs[i].name);
-> +		ret = bpf_link__pin(*skel->skeleton->progs[i].link, path);
-> +		if (ret < 0)
-> +			goto out_destroy;
-> +	}
-> +
-> +	ret = 0;
-> +out_destroy:
-> +	bpffs_lsm_kern__destroy(skel);
-> +	return ret;
-> +}
+Thanks,
+
+-- 
+Peter Xu
+
