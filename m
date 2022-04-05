@@ -2,88 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0624CC433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 24C23C4332F
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:23:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345906AbiDEUWA (ORCPT
+        id S1346816AbiDEUWK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 16:22:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45298 "EHLO
+        Tue, 5 Apr 2022 16:22:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32912 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348833AbiDEJsk (ORCPT
+        with ESMTP id S1457787AbiDEQtQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:48:40 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5679AB3DEC;
-        Tue,  5 Apr 2022 02:36:32 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E386361675;
-        Tue,  5 Apr 2022 09:36:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EE380C385A2;
-        Tue,  5 Apr 2022 09:36:30 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649151391;
-        bh=SzrysxvBq5ZNLxqpDPYaIE3D44TsoqwU/9BTGFVVG8w=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nyce7OYoMeaoGfSx9h4JKgz8gRHe8w4JiQFBb77lUHtp/UAVI1+3Lt3tMCqrIqnXw
-         ixLQeA2hH2rZn4MtqegRldfb/bZdb5BU9eUH3DWrm5V4KyCPyrpGtI5I9bm7XSvmYI
-         bigut6eLGU4iF7s/n8VQhy//cD6Wshc2o52MONpc=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Meng Tang <tangmeng@uniontech.com>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 371/913] ASoC: amd: Fix reference to PCM buffer address
-Date:   Tue,  5 Apr 2022 09:23:53 +0200
-Message-Id: <20220405070350.967960528@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 5 Apr 2022 12:49:16 -0400
+Received: from mail-lf1-x129.google.com (mail-lf1-x129.google.com [IPv6:2a00:1450:4864:20::129])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C155EF7B7
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 09:47:17 -0700 (PDT)
+Received: by mail-lf1-x129.google.com with SMTP id b17so16620816lfv.3
+        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 09:47:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=UEhM/YV2YdBzzmeRnY7JhZnKZDh2nVlggSS8Y2uY7lI=;
+        b=sUVpCDJQ8J/CRA8PR7PPY48C1InS+CQhJSLs1znkm7e//MzZx9EXf2LdEMJsgySE3X
+         Y8yxY0zXSYvL37Y/zNyAFZTYibEv8PqrpTwowl0xMd7/zBmORHLrvr41WRd83ZkSdD4o
+         e1sQVHSRRQmyx7w9vUVqaBe27zEFh616QD5fSO6hNEt0/0ownUdzSGXXrK6GKyNF5I/3
+         hTsLFm9HbeGonYTzD9z9irJeAfu1Th/QWskdyJ6P0ysm/PVhc2BC+IZifkws8aNTKJZA
+         wjcNCK8Nt6GGzIVo2gAti0iJSH5ytX7DUJQc6A3NnlxRQz0Udzg+BOyLgUXRgnYDlQUQ
+         60IQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=UEhM/YV2YdBzzmeRnY7JhZnKZDh2nVlggSS8Y2uY7lI=;
+        b=6KPU0EtgSjCncZ6w0a2mDrMZmeS9wrFpC6ivgDj4S2LAskUVm9lCP5kCTEO8H71lIy
+         f6lNac84H4iJjLZbjEBIl4jrKWZgYvVJE9JzLrrW26AmC+zHOVs114zem0CTTWbDbRd7
+         jfJQxNaEGlfIvuQsPyctEJd1wZsgxmOJhiJ69lQlCCwlI4z+0JQxQJQGKH20bx+GpbHL
+         wnfPkVNqXSUAD0RwhiPpiSGr3XM3gHQ8zcL0fGW1jQNVsNpNJaiehbm2mN+LYbeBYxex
+         h+0ptx21kcg/z3DSgjUZzU5dFKBT+8XRhvYrUxaiJb9VtoUHOLL4lRVmi8wYYuPWukhU
+         4aPg==
+X-Gm-Message-State: AOAM533nvbjYwKrF6Y9Tg7RaeAQVVQ1lGGb1bLzMkiTMqGOroKLaDdFe
+        7CGpySrvDJfk0MpUy13yDv/j9C84VTkTrjjDyXb4eQ==
+X-Google-Smtp-Source: ABdhPJyKkxCjonnx/UVgfMj7EGt2uj4XEQygSAlfsJv6l51yF47d09NTJ20QL1Rq0QmtacVYXuZbQrURhJ4NW2FaMn0=
+X-Received: by 2002:a05:6512:33d4:b0:44a:9971:de48 with SMTP id
+ d20-20020a05651233d400b0044a9971de48mr3211524lfg.392.1649177235321; Tue, 05
+ Apr 2022 09:47:15 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <20220405113359.2880241-1-masahiroy@kernel.org> <20220405113359.2880241-11-masahiroy@kernel.org>
+In-Reply-To: <20220405113359.2880241-11-masahiroy@kernel.org>
+From:   Nick Desaulniers <ndesaulniers@google.com>
+Date:   Tue, 5 Apr 2022 09:47:04 -0700
+Message-ID: <CAKwvOd=cEDiS-XUpGFiF=7uaJSKPmkxK4bv37cr5uHgwC_M3TQ@mail.gmail.com>
+Subject: Re: [PATCH v2 10/10] kbuild: refactor cmd_modversions_S
+To:     Masahiro Yamada <masahiroy@kernel.org>
+Cc:     linux-kbuild@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Michal Marek <michal.lkml@markovi.net>,
+        Sami Tolvanen <samitolvanen@google.com>,
+        Kees Cook <keescook@chromium.org>,
+        Nathan Chancellor <nathan@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Meng Tang <tangmeng@uniontech.com>
+On Tue, Apr 5, 2022 at 4:34 AM Masahiro Yamada <masahiroy@kernel.org> wrote:
+>
+> Split the code into two macros, cmd_gen_symversions_S for running
+> genksyms, and cmd_modversions for running $(LD) to update the object
+> with CRCs.
+>
+> Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
 
-[ Upstream commit 54e1bf9f6177a3ffbd920474f4481a25361163aa ]
+Thanks for the patch!
+Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
 
-PCM buffers might be allocated dynamically when the buffer
-preallocation failed or a larger buffer is requested, and it's not
-guaranteed that substream->dma_buffer points to the actually used
-buffer.  The driver needs to refer to substream->runtime->dma_addr
-instead for the buffer address.
+> ---
+>
+> Changes in v2:
+>   - new
+>
+>  scripts/Makefile.build | 15 ++++-----------
+>  1 file changed, 4 insertions(+), 11 deletions(-)
+>
+> diff --git a/scripts/Makefile.build b/scripts/Makefile.build
+> index ba2be555f942..58be0997c5dd 100644
+> --- a/scripts/Makefile.build
+> +++ b/scripts/Makefile.build
+> @@ -274,7 +274,8 @@ define rule_as_o_S
+>         $(call cmd_and_fixdep,as_o_S)
+>         $(call cmd,gen_ksymdeps)
+>         $(call cmd,gen_objtooldep)
+> -       $(call cmd,modversions_S)
+> +       $(call cmd,gen_symversions_S)
+> +       $(call cmd,modversions)
+>  endef
+>
+>  # Built-in and composite module parts
+> @@ -366,16 +367,8 @@ ifdef CONFIG_ASM_MODVERSIONS
+>  # versioning matches the C process described above, with difference that
+>  # we parse asm-prototypes.h C header to get function definitions.
+>
+> -cmd_modversions_S =                                                            \
+> -       if $(OBJDUMP) -h $@ | grep -q __ksymtab; then                           \
+> -               $(call cmd_gensymtypes_S,$(KBUILD_SYMTYPES),$(@:.o=.symtypes))  \
+> -                   > $(@D)/.tmp_$(@F:.o=.ver);                                 \
+> -                                                                               \
+> -               $(LD) $(KBUILD_LDFLAGS) -r -o $(@D)/.tmp_$(@F) $@               \
+> -                       -T $(@D)/.tmp_$(@F:.o=.ver);                            \
+> -               mv -f $(@D)/.tmp_$(@F) $@;                                      \
+> -               rm -f $(@D)/.tmp_$(@F:.o=.ver);                                 \
+> -       fi
+> +cmd_gen_symversions_S = $(call gen_symversions,S)
+> +
+>  endif
+>
+>  $(obj)/%.o: $(src)/%.S FORCE
+> --
+> 2.32.0
+>
 
-Fixes: cab396d8b22c1 ("ASoC: amd: add ACP5x pcm dma driver ops")
-Signed-off-by: Meng Tang <tangmeng@uniontech.com>
-Link: https://lore.kernel.org/r/20220316091303.9745-1-tangmeng@uniontech.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- sound/soc/amd/vangogh/acp5x-pcm-dma.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/sound/soc/amd/vangogh/acp5x-pcm-dma.c b/sound/soc/amd/vangogh/acp5x-pcm-dma.c
-index f10de38976cb..6abcc2133a2c 100644
---- a/sound/soc/amd/vangogh/acp5x-pcm-dma.c
-+++ b/sound/soc/amd/vangogh/acp5x-pcm-dma.c
-@@ -281,7 +281,7 @@ static int acp5x_dma_hw_params(struct snd_soc_component *component,
- 		return -EINVAL;
- 	}
- 	size = params_buffer_bytes(params);
--	rtd->dma_addr = substream->dma_buffer.addr;
-+	rtd->dma_addr = substream->runtime->dma_addr;
- 	rtd->num_pages = (PAGE_ALIGN(size) >> PAGE_SHIFT);
- 	config_acp5x_dma(rtd, substream->stream);
- 	return 0;
 -- 
-2.34.1
-
-
-
+Thanks,
+~Nick Desaulniers
