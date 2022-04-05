@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D435AC4321E
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 03:09:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 974D2C4321E
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 03:16:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1453331AbiDFDKK (ORCPT
+        id S1455814AbiDFDMC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 23:10:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39824 "EHLO
+        Tue, 5 Apr 2022 23:12:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39826 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1847118AbiDFCNE (ORCPT
+        with ESMTP id S1847121AbiDFCNH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 22:13:04 -0400
-Received: from mga06.intel.com (mga06.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48D271B084F
+        Tue, 5 Apr 2022 22:13:07 -0400
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 669481B0851
         for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 16:35:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1649201710; x=1680737710;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=hxQWyoS4DbIQRhNKITgqCSwkHL6zaw902zeZglOmV94=;
-  b=ks21agHVsUZ7+rfdCJxjdA+GQ81XQuXIfWozlUCzlbZ7tpLI9fL6Nu5/
-   OwUqOr3G+cJahcPDc2RONiaoIY6zGU7BRd5IcyBh7dzshC0ew0kKEQRVB
-   V2X88hBO+waL138JCcgbZ5sq78R+piknqXqpjbcTszS1SCzMUtjI3+rbc
-   XTTCjT/YgH0nyzbB0HVWuMqQ4WaeMhmRwjUEURVQyoZ45UX69ZGYw/KnD
-   IyRomr8T8W+3l10adV+1o+kEQvKlkeD+92OL5gwU+oSuuOPdUYe5A8boM
-   Mq7AF4QKm22LTfnfCE/QVeX9Uk7+eXpS+s3gUgXhxPvpnRXrsePqiuaWB
+  bh=OidrHPMxmp9/jeYr1oUNMSVSM0G/a5ioRx/DHvnseiY=;
+  b=UIhJeaGdc5vcGyYEFBEZDf2P83jfEnPGaWQ3ChRTKaXtGw97gA9B/szw
+   gYeumzvP8prKILV/FnSCPN1p9VyTunfJvaFQ45RnIK7/xckzLFkd36S6w
+   ngvBxOWM3DmCjEuluuiqejjCHOysDIetyRh2fe7wRqZOJccKQAC4u7TE+
+   drIcJ20o0YLy8NJGdC7M3tKjq7pAzIt1FUgdBxAbXMHsmSJvZOnlHXJm/
+   p3PVbY7dIY1cp8yqhFDpyKsa1g20a280ChDrhxI9IzLO4VqYdEZYnPv88
+   BgC9DAud1GFe23bdxGtxaJMGTlxjLWnb7jKXBnhjqGkJP3NeIkepqKtCS
    g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10308"; a="321586015"
+X-IronPort-AV: E=McAfee;i="6200,9189,10308"; a="260588101"
 X-IronPort-AV: E=Sophos;i="5.90,238,1643702400"; 
-   d="scan'208";a="321586015"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2022 16:34:40 -0700
+   d="scan'208";a="260588101"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2022 16:34:48 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.90,238,1643702400"; 
-   d="scan'208";a="697135284"
+   d="scan'208";a="549273488"
 Received: from black.fi.intel.com ([10.237.72.28])
-  by fmsmga001.fm.intel.com with ESMTP; 05 Apr 2022 16:34:33 -0700
+  by orsmga007.jf.intel.com with ESMTP; 05 Apr 2022 16:34:41 -0700
 Received: by black.fi.intel.com (Postfix, from userid 1000)
-        id 8879032E; Wed,  6 Apr 2022 02:29:45 +0300 (EEST)
+        id D192F62E; Wed,  6 Apr 2022 02:29:45 +0300 (EEST)
 From:   "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
 To:     tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
         dave.hansen@intel.com, luto@kernel.org, peterz@infradead.org
@@ -54,9 +54,9 @@ Cc:     sathyanarayanan.kuppuswamy@linux.intel.com, aarcange@redhat.com,
         linux-kernel@vger.kernel.org,
         "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
         Dave Hansen <dave.hansen@linux.intel.com>
-Subject: [PATCHv8 02/30] x86/tdx: Provide common base for SEAMCALL and TDCALL C wrappers
-Date:   Wed,  6 Apr 2022 02:29:11 +0300
-Message-Id: <20220405232939.73860-3-kirill.shutemov@linux.intel.com>
+Subject: [PATCHv8 08/30] x86/tdx: Add HLT support for TDX guests
+Date:   Wed,  6 Apr 2022 02:29:17 +0300
+Message-Id: <20220405232939.73860-9-kirill.shutemov@linux.intel.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405232939.73860-1-kirill.shutemov@linux.intel.com>
 References: <20220405232939.73860-1-kirill.shutemov@linux.intel.com>
@@ -66,228 +66,244 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Secure Arbitration Mode (SEAM) is an extension of VMX architecture.  It
-defines a new VMX root operation (SEAM VMX root) and a new VMX non-root
-operation (SEAM VMX non-root) which are both isolated from the legacy
-VMX operation where the host kernel runs.
+The HLT instruction is a privileged instruction, executing it stops
+instruction execution and places the processor in a HALT state. It
+is used in kernel for cases like reboot, idle loop and exception fixup
+handlers. For the idle case, interrupts will be enabled (using STI)
+before the HLT instruction (this is also called safe_halt()).
 
-A CPU-attested software module (called 'TDX module') runs in SEAM VMX
-root to manage and protect VMs running in SEAM VMX non-root.  SEAM VMX
-root is also used to host another CPU-attested software module (called
-'P-SEAMLDR') to load and update the TDX module.
+To support the HLT instruction in TDX guests, it needs to be emulated
+using TDVMCALL (hypercall to VMM). More details about it can be found
+in Intel Trust Domain Extensions (Intel TDX) Guest-Host-Communication
+Interface (GHCI) specification, section TDVMCALL[Instruction.HLT].
 
-Host kernel transits to either P-SEAMLDR or TDX module via the new
-SEAMCALL instruction, which is essentially a VMExit from VMX root mode
-to SEAM VMX root mode.  SEAMCALLs are leaf functions defined by
-P-SEAMLDR and TDX module around the new SEAMCALL instruction.
+In TDX guests, executing HLT instruction will generate a #VE, which is
+used to emulate the HLT instruction. But #VE based emulation will not
+work for the safe_halt() flavor, because it requires STI instruction to
+be executed just before the TDCALL. Since idle loop is the only user of
+safe_halt() variant, handle it as a special case.
 
-A guest kernel can also communicate with TDX module via TDCALL
-instruction.
+To avoid *safe_halt() call in the idle function, define the
+tdx_guest_idle() and use it to override the "x86_idle" function pointer
+for a valid TDX guest.
 
-TDCALLs and SEAMCALLs use an ABI different from the x86-64 system-v ABI.
-RAX is used to carry both the SEAMCALL leaf function number (input) and
-the completion status (output).  Additional GPRs (RCX, RDX, R8-R11) may
-be further used as both input and output operands in individual leaf.
+Alternative choices like PV ops have been considered for adding
+safe_halt() support. But it was rejected because HLT paravirt calls
+only exist under PARAVIRT_XXL, and enabling it in TDX guest just for
+safe_halt() use case is not worth the cost.
 
-TDCALL and SEAMCALL share the same ABI and require the largely same
-code to pass down arguments and retrieve results.
-
-Define an assembly macro that can be used to implement C wrapper for
-both TDCALL and SEAMCALL.
-
-Suggested-by: Thomas Gleixner <tglx@linutronix.de>
+Co-developed-by: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
+Signed-off-by: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
+Reviewed-by: Andi Kleen <ak@linux.intel.com>
+Reviewed-by: Tony Luck <tony.luck@intel.com>
 Signed-off-by: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
 Reviewed-by: Dave Hansen <dave.hansen@linux.intel.com>
-Reviewed-by: Thomas Gleixner <tglx@linutronix.de>
 ---
-TDCALL wrapper will be implemented using the macro later in the series.
-SEAMCALL wrapper is out-of-scope for the series and will be implemented
-as part of TDX host enabling.
----
- arch/x86/include/asm/tdx.h      | 29 ++++++++++
- arch/x86/kernel/asm-offsets.c   |  9 ++++
- arch/x86/virt/vmx/tdx/tdxcall.S | 96 +++++++++++++++++++++++++++++++++
- 3 files changed, 134 insertions(+)
- create mode 100644 arch/x86/virt/vmx/tdx/tdxcall.S
+ arch/x86/coco/tdx/tdcall.S | 13 ++++++
+ arch/x86/coco/tdx/tdx.c    | 93 +++++++++++++++++++++++++++++++++++++-
+ arch/x86/include/asm/tdx.h |  4 ++
+ arch/x86/kernel/process.c  |  4 ++
+ 4 files changed, 112 insertions(+), 2 deletions(-)
 
+diff --git a/arch/x86/coco/tdx/tdcall.S b/arch/x86/coco/tdx/tdcall.S
+index 662479ccf630..245888290bb6 100644
+--- a/arch/x86/coco/tdx/tdcall.S
++++ b/arch/x86/coco/tdx/tdcall.S
+@@ -139,6 +139,19 @@ SYM_FUNC_START(__tdx_hypercall)
+ 
+ 	movl $TDVMCALL_EXPOSE_REGS_MASK, %ecx
+ 
++	/*
++	 * For the idle loop STI needs to be called directly before the TDCALL
++	 * that enters idle (EXIT_REASON_HLT case). STI instruction enables
++	 * interrupts only one instruction later. If there is a window between
++	 * STI and the instruction that emulates the HALT state, there is a
++	 * chance for interrupts to happen in this window, which can delay the
++	 * HLT operation indefinitely. Since this is the not the desired
++	 * result, conditionally call STI before TDCALL.
++	 */
++	testq $TDX_HCALL_ISSUE_STI, %rsi
++	jz .Lskip_sti
++	sti
++.Lskip_sti:
+ 	tdcall
+ 
+ 	/*
+diff --git a/arch/x86/coco/tdx/tdx.c b/arch/x86/coco/tdx/tdx.c
+index 60a3f2ff5b95..ed7302581cc7 100644
+--- a/arch/x86/coco/tdx/tdx.c
++++ b/arch/x86/coco/tdx/tdx.c
+@@ -7,6 +7,7 @@
+ #include <linux/cpufeature.h>
+ #include <asm/coco.h>
+ #include <asm/tdx.h>
++#include <asm/vmx.h>
+ 
+ /* TDX module Call Leaf IDs */
+ #define TDX_GET_INFO			1
+@@ -36,6 +37,17 @@ void __tdx_hypercall_failed(void)
+ 	panic("TDVMCALL failed. TDX module bug?");
+ }
+ 
++/*
++ * The TDG.VP.VMCALL-Instruction-execution sub-functions are defined
++ * independently from but are currently matched 1:1 with VMX EXIT_REASONs.
++ * Reusing the KVM EXIT_REASON macros makes it easier to connect the host and
++ * guest sides of these calls.
++ */
++static u64 hcall_func(u64 exit_reason)
++{
++	return exit_reason;
++}
++
+ /*
+  * Used for TDX guests to make calls directly to the TD module.  This
+  * should only be used for calls that have no legitimate reason to fail
+@@ -74,6 +86,62 @@ static u64 get_cc_mask(void)
+ 	return BIT_ULL(gpa_width - 1);
+ }
+ 
++static u64 __cpuidle __halt(const bool irq_disabled, const bool do_sti)
++{
++	struct tdx_hypercall_args args = {
++		.r10 = TDX_HYPERCALL_STANDARD,
++		.r11 = hcall_func(EXIT_REASON_HLT),
++		.r12 = irq_disabled,
++	};
++
++	/*
++	 * Emulate HLT operation via hypercall. More info about ABI
++	 * can be found in TDX Guest-Host-Communication Interface
++	 * (GHCI), section 3.8 TDG.VP.VMCALL<Instruction.HLT>.
++	 *
++	 * The VMM uses the "IRQ disabled" param to understand IRQ
++	 * enabled status (RFLAGS.IF) of the TD guest and to determine
++	 * whether or not it should schedule the halted vCPU if an
++	 * IRQ becomes pending. E.g. if IRQs are disabled, the VMM
++	 * can keep the vCPU in virtual HLT, even if an IRQ is
++	 * pending, without hanging/breaking the guest.
++	 */
++	return __tdx_hypercall(&args, do_sti ? TDX_HCALL_ISSUE_STI : 0);
++}
++
++static bool handle_halt(void)
++{
++	/*
++	 * Since non safe halt is mainly used in CPU offlining
++	 * and the guest will always stay in the halt state, don't
++	 * call the STI instruction (set do_sti as false).
++	 */
++	const bool irq_disabled = irqs_disabled();
++	const bool do_sti = false;
++
++	if (__halt(irq_disabled, do_sti))
++		return false;
++
++	return true;
++}
++
++void __cpuidle tdx_safe_halt(void)
++{
++	 /*
++	  * For do_sti=true case, __tdx_hypercall() function enables
++	  * interrupts using the STI instruction before the TDCALL. So
++	  * set irq_disabled as false.
++	  */
++	const bool irq_disabled = false;
++	const bool do_sti = true;
++
++	/*
++	 * Use WARN_ONCE() to report the failure.
++	 */
++	if (__halt(irq_disabled, do_sti))
++		WARN_ONCE(1, "HLT instruction emulation failed\n");
++}
++
+ void tdx_get_ve_info(struct ve_info *ve)
+ {
+ 	struct tdx_module_output out;
+@@ -104,11 +172,32 @@ void tdx_get_ve_info(struct ve_info *ve)
+ 	ve->instr_info  = upper_32_bits(out.r10);
+ }
+ 
++/* Handle the kernel #VE */
++static bool virt_exception_kernel(struct pt_regs *regs, struct ve_info *ve)
++{
++	switch (ve->exit_reason) {
++	case EXIT_REASON_HLT:
++		return handle_halt();
++	default:
++		pr_warn("Unexpected #VE: %lld\n", ve->exit_reason);
++		return false;
++	}
++}
++
+ bool tdx_handle_virt_exception(struct pt_regs *regs, struct ve_info *ve)
+ {
+-	pr_warn("Unexpected #VE: %lld\n", ve->exit_reason);
++	bool ret;
++
++	if (user_mode(regs))
++		ret = false;
++	else
++		ret = virt_exception_kernel(regs, ve);
++
++	/* After successful #VE handling, move the IP */
++	if (ret)
++		regs->ip += ve->instr_len;
+ 
+-	return false;
++	return ret;
+ }
+ 
+ void __init tdx_early_init(void)
 diff --git a/arch/x86/include/asm/tdx.h b/arch/x86/include/asm/tdx.h
-index ba8042ce61c2..cb4c4e607c43 100644
+index c4142e7b004c..cbd61e142f4e 100644
 --- a/arch/x86/include/asm/tdx.h
 +++ b/arch/x86/include/asm/tdx.h
-@@ -4,10 +4,38 @@
- #define _ASM_X86_TDX_H
+@@ -14,6 +14,7 @@
+ #define TDX_HYPERCALL_STANDARD  0
  
- #include <linux/init.h>
-+#include <linux/bits.h>
+ #define TDX_HCALL_HAS_OUTPUT	BIT(0)
++#define TDX_HCALL_ISSUE_STI	BIT(1)
  
- #define TDX_CPUID_LEAF_ID	0x21
- #define TDX_IDENT		"IntelTDX    "
+ /*
+  * SW-defined error codes.
+@@ -91,9 +92,12 @@ void tdx_get_ve_info(struct ve_info *ve);
  
-+/*
-+ * SW-defined error codes.
-+ *
-+ * Bits 47:40 == 0xFF indicate Reserved status code class that never used by
-+ * TDX module.
-+ */
-+#define TDX_ERROR			_BITUL(63)
-+#define TDX_SW_ERROR			(TDX_ERROR | GENMASK_ULL(47, 40))
-+#define TDX_SEAMCALL_VMFAILINVALID	(TDX_SW_ERROR | _UL(0xFFFF0000))
+ bool tdx_handle_virt_exception(struct pt_regs *regs, struct ve_info *ve);
+ 
++void tdx_safe_halt(void);
 +
-+#ifndef __ASSEMBLY__
-+
-+/*
-+ * Used to gather the output registers values of the TDCALL and SEAMCALL
-+ * instructions when requesting services from the TDX module.
-+ *
-+ * This is a software only structure and not part of the TDX module/VMM ABI.
-+ */
-+struct tdx_module_output {
-+	u64 rcx;
-+	u64 rdx;
-+	u64 r8;
-+	u64 r9;
-+	u64 r10;
-+	u64 r11;
-+};
-+
- #ifdef CONFIG_INTEL_TDX_GUEST
+ #else
  
- void __init tdx_early_init(void);
-@@ -18,4 +46,5 @@ static inline void tdx_early_init(void) { };
+ static inline void tdx_early_init(void) { };
++static inline void tdx_safe_halt(void) { };
  
  #endif /* CONFIG_INTEL_TDX_GUEST */
  
-+#endif /* !__ASSEMBLY__ */
- #endif /* _ASM_X86_TDX_H */
-diff --git a/arch/x86/kernel/asm-offsets.c b/arch/x86/kernel/asm-offsets.c
-index 9fb0a2f8b62a..7dca52f5cfc6 100644
---- a/arch/x86/kernel/asm-offsets.c
-+++ b/arch/x86/kernel/asm-offsets.c
-@@ -18,6 +18,7 @@
- #include <asm/bootparam.h>
- #include <asm/suspend.h>
- #include <asm/tlbflush.h>
+diff --git a/arch/x86/kernel/process.c b/arch/x86/kernel/process.c
+index b370767f5b19..dbaf12c43fe1 100644
+--- a/arch/x86/kernel/process.c
++++ b/arch/x86/kernel/process.c
+@@ -46,6 +46,7 @@
+ #include <asm/proto.h>
+ #include <asm/frame.h>
+ #include <asm/unwind.h>
 +#include <asm/tdx.h>
  
- #ifdef CONFIG_XEN
- #include <xen/interface/xen.h>
-@@ -65,6 +66,14 @@ static void __used common(void)
- 	OFFSET(XEN_vcpu_info_arch_cr2, vcpu_info, arch.cr2);
- #endif
+ #include "process.h"
  
-+	BLANK();
-+	OFFSET(TDX_MODULE_rcx, tdx_module_output, rcx);
-+	OFFSET(TDX_MODULE_rdx, tdx_module_output, rdx);
-+	OFFSET(TDX_MODULE_r8,  tdx_module_output, r8);
-+	OFFSET(TDX_MODULE_r9,  tdx_module_output, r9);
-+	OFFSET(TDX_MODULE_r10, tdx_module_output, r10);
-+	OFFSET(TDX_MODULE_r11, tdx_module_output, r11);
-+
- 	BLANK();
- 	OFFSET(BP_scratch, boot_params, scratch);
- 	OFFSET(BP_secure_boot, boot_params, secure_boot);
-diff --git a/arch/x86/virt/vmx/tdx/tdxcall.S b/arch/x86/virt/vmx/tdx/tdxcall.S
-new file mode 100644
-index 000000000000..49a54356ae99
---- /dev/null
-+++ b/arch/x86/virt/vmx/tdx/tdxcall.S
-@@ -0,0 +1,96 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+#include <asm/asm-offsets.h>
-+#include <asm/tdx.h>
-+
-+/*
-+ * TDCALL and SEAMCALL are supported in Binutils >= 2.36.
-+ */
-+#define tdcall		.byte 0x66,0x0f,0x01,0xcc
-+#define seamcall	.byte 0x66,0x0f,0x01,0xcf
-+
-+/*
-+ * TDX_MODULE_CALL - common helper macro for both
-+ *                 TDCALL and SEAMCALL instructions.
-+ *
-+ * TDCALL   - used by TDX guests to make requests to the
-+ *            TDX module and hypercalls to the VMM.
-+ * SEAMCALL - used by TDX hosts to make requests to the
-+ *            TDX module.
-+ */
-+.macro TDX_MODULE_CALL host:req
-+	/*
-+	 * R12 will be used as temporary storage for struct tdx_module_output
-+	 * pointer. Since R12-R15 registers are not used by TDCALL/SEAMCALL
-+	 * services supported by this function, it can be reused.
-+	 */
-+
-+	/* Callee saved, so preserve it */
-+	push %r12
-+
-+	/*
-+	 * Push output pointer to stack.
-+	 * After the operation, it will be fetched into R12 register.
-+	 */
-+	push %r9
-+
-+	/* Mangle function call ABI into TDCALL/SEAMCALL ABI: */
-+	/* Move Leaf ID to RAX */
-+	mov %rdi, %rax
-+	/* Move input 4 to R9 */
-+	mov %r8,  %r9
-+	/* Move input 3 to R8 */
-+	mov %rcx, %r8
-+	/* Move input 1 to RCX */
-+	mov %rsi, %rcx
-+	/* Leave input param 2 in RDX */
-+
-+	.if \host
-+	seamcall
-+	/*
-+	 * SEAMCALL instruction is essentially a VMExit from VMX root
-+	 * mode to SEAM VMX root mode.  VMfailInvalid (CF=1) indicates
-+	 * that the targeted SEAM firmware is not loaded or disabled,
-+	 * or P-SEAMLDR is busy with another SEAMCALL.  %rax is not
-+	 * changed in this case.
-+	 *
-+	 * Set %rax to TDX_SEAMCALL_VMFAILINVALID for VMfailInvalid.
-+	 * This value will never be used as actual SEAMCALL error code as
-+	 * it is from the Reserved status code class.
-+	 */
-+	jnc .Lno_vmfailinvalid
-+	mov $TDX_SEAMCALL_VMFAILINVALID, %rax
-+.Lno_vmfailinvalid:
-+
-+	.else
-+	tdcall
-+	.endif
-+
-+	/*
-+	 * Fetch output pointer from stack to R12 (It is used
-+	 * as temporary storage)
-+	 */
-+	pop %r12
-+
-+	/*
-+	 * Since this macro can be invoked with NULL as an output pointer,
-+	 * check if caller provided an output struct before storing output
-+	 * registers.
-+	 *
-+	 * Update output registers, even if the call failed (RAX != 0).
-+	 * Other registers may contain details of the failure.
-+	 */
-+	test %r12, %r12
-+	jz .Lno_output_struct
-+
-+	/* Copy result registers to output struct: */
-+	movq %rcx, TDX_MODULE_rcx(%r12)
-+	movq %rdx, TDX_MODULE_rdx(%r12)
-+	movq %r8,  TDX_MODULE_r8(%r12)
-+	movq %r9,  TDX_MODULE_r9(%r12)
-+	movq %r10, TDX_MODULE_r10(%r12)
-+	movq %r11, TDX_MODULE_r11(%r12)
-+
-+.Lno_output_struct:
-+	/* Restore the state of R12 register */
-+	pop %r12
-+.endm
+@@ -873,6 +874,9 @@ void select_idle_routine(const struct cpuinfo_x86 *c)
+ 	} else if (prefer_mwait_c1_over_halt(c)) {
+ 		pr_info("using mwait in idle threads\n");
+ 		x86_idle = mwait_idle;
++	} else if (cpu_feature_enabled(X86_FEATURE_TDX_GUEST)) {
++		pr_info("using TDX aware idle routine\n");
++		x86_idle = tdx_safe_halt;
+ 	} else
+ 		x86_idle = default_idle;
+ }
 -- 
 2.35.1
 
