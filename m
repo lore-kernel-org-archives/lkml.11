@@ -2,132 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 59354C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E4BBAC4332F
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 01:10:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1840600AbiDFBLP (ORCPT
+        id S1840620AbiDFBLZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 21:11:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35096 "EHLO
+        Tue, 5 Apr 2022 21:11:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45634 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352649AbiDEKEv (ORCPT
+        with ESMTP id S1384316AbiDEM1U (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:04:51 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B36DBB93B;
-        Tue,  5 Apr 2022 02:53:38 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        Tue, 5 Apr 2022 08:27:20 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80CE91081;
+        Tue,  5 Apr 2022 04:37:27 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id 437051F745;
+        Tue,  5 Apr 2022 11:37:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1649158646; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=x/t3SjRnhPaSXevc9vrywYcQpK4eEOXAuLXInpS+vPM=;
+        b=g5NkbI2Uzazs6PjANwf0oKp0CY8k/1d3EI+ZMtTjf4vt+uaq6mYDRabxyyYPsAc6BQ9ETo
+        CgvrzD2MBCjEuVmeGDxKOQuBeIBUu1+wcQeF1Uc8CR4B8/YfsWGSuZk7DfLyuX6ppD+pQ9
+        399xQy4mm72wqT32d2nHWM59mkQsmr4=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1649158646;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=x/t3SjRnhPaSXevc9vrywYcQpK4eEOXAuLXInpS+vPM=;
+        b=tRp6stXVdOFLRWkZCE2HKzJru0KgZXVn5CMQWw+qQWhAgcr0/CZatdQnQhqSnKqnTTlkUS
+        RXwb0GWRr+Wa6oAw==
+Received: from murzim.suse.de (murzim.suse.de [10.160.4.192])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id F18F661741;
-        Tue,  5 Apr 2022 09:53:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DAF58C385A2;
-        Tue,  5 Apr 2022 09:53:36 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649152417;
-        bh=f5kwN4S2vdesuUj/xzMZWQjyIOdPLVM7/VR9lrPVkig=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BuSg87JuxayP3ctVQis9jOmJ7kKvOxCvjLi4d5sf8P/Lv21Y6y7e7d3xDmzIcO4jZ
-         xDJ72ADbLX0uaooCc5PqFq6Eg8+adM+ti8LqV3122x0RL/2uy8+n2ugVikmG5BJWyQ
-         N2lWlWmZLDysOG2lHOGaxLkoFL82DCIw9L4fEWns=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Matt Kramer <mccleetus@gmail.com>,
-        Takashi Iwai <tiwai@suse.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 769/913] ALSA: hda/realtek: Add alc256-samsung-headphone fixup
-Date:   Tue,  5 Apr 2022 09:30:31 +0200
-Message-Id: <20220405070402.883278443@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
-User-Agent: quilt/0.66
+        by relay2.suse.de (Postfix) with ESMTPS id 3C8B8A3B88;
+        Tue,  5 Apr 2022 11:37:26 +0000 (UTC)
+Date:   Tue, 5 Apr 2022 13:37:26 +0200 (CEST)
+From:   Richard Biener <rguenther@suse.de>
+To:     Borislav Petkov <bp@alien8.de>
+cc:     linux-toolchains@vger.kernel.org, Michael Matz <matz@suse.de>,
+        lkml <linux-kernel@vger.kernel.org>
+Subject: Re: older gccs and case labels producing integer constants
+In-Reply-To: <YkwbygWj/C3XooMV@zn.tnic>
+Message-ID: <pn935o4p-82sn-275n-s793-r85qr8q85o9r@fhfr.qr>
+References: <YkwQ6+tIH8GQpuct@zn.tnic> <7o5nn52-nqn1-oo13-s6o9-59r85r91o768@fhfr.qr> <onrq8p1-582o-6rs9-r682-rs9sqoq7sq6p@fhfr.qr> <YkwbygWj/C3XooMV@zn.tnic>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/mixed; boundary="-1609908220-1109596832-1649158646=:27745"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Matt Kramer <mccleetus@gmail.com>
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
 
-[ Upstream commit ef248d9bd616b04df8be25539a4dc5db4b6c56f4 ]
+---1609908220-1109596832-1649158646=:27745
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8BIT
 
-This fixes the near-silence of the headphone jack on the ALC256-based
-Samsung Galaxy Book Flex Alpha (NP730QCJ). The magic verbs were found
-through trial and error, using known ALC298 hacks as inspiration. The
-fixup is auto-enabled only when the NP730QCJ is detected. It can be
-manually enabled using model=alc256-samsung-headphone.
+On Tue, 5 Apr 2022, Borislav Petkov wrote:
 
-Signed-off-by: Matt Kramer <mccleetus@gmail.com>
-Link: https://lore.kernel.org/r/3168355.aeNJFYEL58@linus
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- Documentation/sound/hd-audio/models.rst |  4 ++++
- sound/pci/hda/patch_realtek.c           | 11 +++++++++++
- 2 files changed, 15 insertions(+)
+> On Tue, Apr 05, 2022 at 12:06:45PM +0200, Richard Biener wrote:
+> > Wird auch mit gcc 11 rejected.  Kanns sein dass mit gcc 7 andere
+> > compiler flags genommen werden?
+> 
+> Found it:
+> 
+> $ gcc -fsanitize=shift -c switch.c
+> switch.c: In function ‘foo’:
+> switch.c:10:7: error: case label does not reduce to an integer constant
+>        case (((0xfc08) << 16) | (0x0101)):;
+> 
+> $ gcc --version
+> gcc (SUSE Linux) 7.4.1 20190905 [gcc-7-branch revision 275407]
+> Copyright (C) 2017 Free Software Foundation, Inc.
+> 
+> Something not fully backported?
 
-diff --git a/Documentation/sound/hd-audio/models.rst b/Documentation/sound/hd-audio/models.rst
-index d25335993e55..9b52f50a6854 100644
---- a/Documentation/sound/hd-audio/models.rst
-+++ b/Documentation/sound/hd-audio/models.rst
-@@ -261,6 +261,10 @@ alc-sense-combo
- huawei-mbx-stereo
-     Enable initialization verbs for Huawei MBX stereo speakers;
-     might be risky, try this at your own risk
-+alc298-samsung-headphone
-+    Samsung laptops with ALC298
-+alc256-samsung-headphone
-+    Samsung laptops with ALC256
- 
- ALC66x/67x/892
- ==============
-diff --git a/sound/pci/hda/patch_realtek.c b/sound/pci/hda/patch_realtek.c
-index 888d049d5304..f6e5ed34dd09 100644
---- a/sound/pci/hda/patch_realtek.c
-+++ b/sound/pci/hda/patch_realtek.c
-@@ -6816,6 +6816,7 @@ enum {
- 	ALC236_FIXUP_HP_MUTE_LED,
- 	ALC236_FIXUP_HP_MUTE_LED_MICMUTE_VREF,
- 	ALC298_FIXUP_SAMSUNG_HEADPHONE_VERY_QUIET,
-+	ALC256_FIXUP_SAMSUNG_HEADPHONE_VERY_QUIET,
- 	ALC295_FIXUP_ASUS_MIC_NO_PRESENCE,
- 	ALC269VC_FIXUP_ACER_VCOPPERBOX_PINS,
- 	ALC269VC_FIXUP_ACER_HEADSET_MIC,
-@@ -8138,6 +8139,14 @@ static const struct hda_fixup alc269_fixups[] = {
- 			{ }
- 		},
- 	},
-+	[ALC256_FIXUP_SAMSUNG_HEADPHONE_VERY_QUIET] = {
-+		.type = HDA_FIXUP_VERBS,
-+		.v.verbs = (const struct hda_verb[]) {
-+			{ 0x20, AC_VERB_SET_COEF_INDEX, 0x08},
-+			{ 0x20, AC_VERB_SET_PROC_COEF, 0x2fcf},
-+			{ }
-+		},
-+	},
- 	[ALC295_FIXUP_ASUS_MIC_NO_PRESENCE] = {
- 		.type = HDA_FIXUP_PINS,
- 		.v.pins = (const struct hda_pintbl[]) {
-@@ -8900,6 +8909,7 @@ static const struct snd_pci_quirk alc269_fixup_tbl[] = {
- 	SND_PCI_QUIRK(0x144d, 0xc740, "Samsung Ativ book 8 (NP870Z5G)", ALC269_FIXUP_ATIV_BOOK_8),
- 	SND_PCI_QUIRK(0x144d, 0xc812, "Samsung Notebook Pen S (NT950SBE-X58)", ALC298_FIXUP_SAMSUNG_HEADPHONE_VERY_QUIET),
- 	SND_PCI_QUIRK(0x144d, 0xc830, "Samsung Galaxy Book Ion (NT950XCJ-X716A)", ALC298_FIXUP_SAMSUNG_HEADPHONE_VERY_QUIET),
-+	SND_PCI_QUIRK(0x144d, 0xc832, "Samsung Galaxy Book Flex Alpha (NP730QCJ)", ALC256_FIXUP_SAMSUNG_HEADPHONE_VERY_QUIET),
- 	SND_PCI_QUIRK(0x1458, 0xfa53, "Gigabyte BXBT-2807", ALC283_FIXUP_HEADSET_MIC),
- 	SND_PCI_QUIRK(0x1462, 0xb120, "MSI Cubi MS-B120", ALC283_FIXUP_HEADSET_MIC),
- 	SND_PCI_QUIRK(0x1462, 0xb171, "Cubi N 8GL (MS-B171)", ALC283_FIXUP_HEADSET_MIC),
-@@ -9242,6 +9252,7 @@ static const struct hda_model_fixup alc269_fixup_models[] = {
- 	{.id = ALC298_FIXUP_HUAWEI_MBX_STEREO, .name = "huawei-mbx-stereo"},
- 	{.id = ALC256_FIXUP_MEDION_HEADSET_NO_PRESENCE, .name = "alc256-medion-headset"},
- 	{.id = ALC298_FIXUP_SAMSUNG_HEADPHONE_VERY_QUIET, .name = "alc298-samsung-headphone"},
-+	{.id = ALC256_FIXUP_SAMSUNG_HEADPHONE_VERY_QUIET, .name = "alc256-samsung-headphone"},
- 	{.id = ALC255_FIXUP_XIAOMI_HEADSET_MIC, .name = "alc255-xiaomi-headset"},
- 	{.id = ALC274_FIXUP_HP_MIC, .name = "alc274-hp-mic-detect"},
- 	{.id = ALC245_FIXUP_HP_X360_AMP, .name = "alc245-hp-x360-amp"},
+Probably early vs. late folding change in the frontend.  So yes,
+don't use -fsanitize=... ;)
+
+Richard.
+
 -- 
-2.34.1
-
-
-
+Richard Biener <rguenther@suse.de>
+SUSE Software Solutions Germany GmbH, Maxfeldstrasse 5, 90409 Nuernberg,
+Germany; GF: Ivo Totev; HRB 36809 (AG Nuernberg)
+---1609908220-1109596832-1649158646=:27745--
