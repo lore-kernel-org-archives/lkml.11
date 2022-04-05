@@ -2,87 +2,133 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 98B6FC433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 828ECC4332F
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:40:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1836505AbiDFAg3 (ORCPT
+        id S1836491AbiDFAgZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 20:36:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43864 "EHLO
+        Tue, 5 Apr 2022 20:36:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51960 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1442117AbiDEPhA (ORCPT
+        with ESMTP id S1355268AbiDEKSu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 11:37:00 -0400
-Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D464EBB89;
-        Tue,  5 Apr 2022 06:51:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1649166671; x=1680702671;
-  h=from:to:cc:subject:date:message-id:mime-version;
-  bh=5D34UaduOZxKtOtP2D5/LdeG9bz85Hpl1MRZfRSaHn0=;
-  b=gxt8cLCJqem8Dt5ynQRTkjaqvLiF3Zs05j72SRVaBh6wJNBnQwYMM1r3
-   MscESIabo/JXbBi5BKKgnjVJum/zNIkbE4Dsbn67drc/8dpixyKMK9BK+
-   Ugp7BODBhtzrHFNQG5HYQQDDGmP9kXEsuRcawfAb3d2HNQAGcmFwE0bxL
-   I=;
-Received: from unknown (HELO ironmsg02-sd.qualcomm.com) ([10.53.140.142])
-  by alexa-out-sd-02.qualcomm.com with ESMTP; 05 Apr 2022 06:51:11 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg02-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2022 06:51:10 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Tue, 5 Apr 2022 06:51:10 -0700
-Received: from c-skakit-linux.qualcomm.com (10.80.80.8) by
- nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Tue, 5 Apr 2022 06:51:06 -0700
-From:   Satya Priya <quic_c_skakit@quicinc.com>
-To:     Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>
-CC:     Lee Jones <lee.jones@linaro.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        <linux-arm-msm@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <swboyd@chromium.org>,
-        <quic_collinsd@quicinc.com>, <quic_subbaram@quicinc.com>,
-        <quic_jprakash@quicinc.com>,
-        Satya Priya <quic_c_skakit@quicinc.com>
-Subject: [PATCH V9 0/6] Add Qualcomm Technologies, Inc. PM8008 regulator driver
-Date:   Tue, 5 Apr 2022 19:20:27 +0530
-Message-ID: <1649166633-25872-1-git-send-email-quic_c_skakit@quicinc.com>
-X-Mailer: git-send-email 2.7.4
+        Tue, 5 Apr 2022 06:18:50 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4363C10FE1;
+        Tue,  5 Apr 2022 03:04:37 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CDB5F61673;
+        Tue,  5 Apr 2022 10:04:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DE4FEC385A2;
+        Tue,  5 Apr 2022 10:04:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649153076;
+        bh=uos+dZQFyuLbUjPtiaSV8Nc9hZwgOh9eP9pCprv8FZs=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=EMOpZ/6zfwaZ/KCCdwYhL17zUXNW2udDxGs2Zq+CTaC2r/tOsEG41czJSWiiSUD1s
+         DF9oOqmmW0fc9iQV7MbH28XJKuRiX9luX7mx9gKZzk5UNtUjHBXq/fVik3eSUspq2W
+         dF6xPXmOgGwIEneCrH8xpG++dT6t8oChCIGfONPI=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        Shinichiro Kawasaki <shinichiro.kawasaki@wdc.com>,
+        Jens Axboe <axboe@kernel.dk>
+Subject: [PATCH 5.10 094/599] block: limit request dispatch loop duration
+Date:   Tue,  5 Apr 2022 09:26:28 +0200
+Message-Id: <20220405070301.627744791@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
+References: <20220405070258.802373272@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Satya Priya (6):
-  dt-bindings: mfd: pm8008: Add reset-gpios
-  dt-bindings: mfd: pm8008: Add pm8008 regulator bindings
-  mfd: pm8008: Add mfd cell struct to register LDOs
-  regulator: Add a regulator driver for the PM8008 PMIC
-  arm64: dts: qcom: pm8008: Add base dts file
-  arm64: dts: qcom: sc7280: Add pm8008 support for sc7280-idp
+From: Shin'ichiro Kawasaki <shinichiro.kawasaki@wdc.com>
 
- .../bindings/mfd/qcom,pm8008-regulators.yaml       |  84 +++++++++
- .../devicetree/bindings/mfd/qcom,pm8008.yaml       |   7 +
- arch/arm64/boot/dts/qcom/pm8008.dtsi               |  47 +++++
- arch/arm64/boot/dts/qcom/sc7280-idp.dtsi           |  68 +++++++
- drivers/mfd/qcom-pm8008.c                          |  80 +++++++-
- drivers/regulator/Kconfig                          |   9 +
- drivers/regulator/Makefile                         |   1 +
- drivers/regulator/qcom-pm8008-regulator.c          | 205 +++++++++++++++++++++
- 8 files changed, 499 insertions(+), 2 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/mfd/qcom,pm8008-regulators.yaml
- create mode 100644 arch/arm64/boot/dts/qcom/pm8008.dtsi
- create mode 100644 drivers/regulator/qcom-pm8008-regulator.c
+commit 572299f03afd676dd4e20669cdaf5ed0fe1379d4 upstream.
 
--- 
-2.7.4
+When IO requests are made continuously and the target block device
+handles requests faster than request arrival, the request dispatch loop
+keeps on repeating to dispatch the arriving requests very long time,
+more than a minute. Since the loop runs as a workqueue worker task, the
+very long loop duration triggers workqueue watchdog timeout and BUG [1].
+
+To avoid the very long loop duration, break the loop periodically. When
+opportunity to dispatch requests still exists, check need_resched(). If
+need_resched() returns true, the dispatch loop already consumed its time
+slice, then reschedule the dispatch work and break the loop. With heavy
+IO load, need_resched() does not return true for 20~30 seconds. To cover
+such case, check time spent in the dispatch loop with jiffies. If more
+than 1 second is spent, reschedule the dispatch work and break the loop.
+
+[1]
+
+[  609.691437] BUG: workqueue lockup - pool cpus=10 node=1 flags=0x0 nice=-20 stuck for 35s!
+[  609.701820] Showing busy workqueues and worker pools:
+[  609.707915] workqueue events: flags=0x0
+[  609.712615]   pwq 0: cpus=0 node=0 flags=0x0 nice=0 active=1/256 refcnt=2
+[  609.712626]     pending: drm_fb_helper_damage_work [drm_kms_helper]
+[  609.712687] workqueue events_freezable: flags=0x4
+[  609.732943]   pwq 0: cpus=0 node=0 flags=0x0 nice=0 active=1/256 refcnt=2
+[  609.732952]     pending: pci_pme_list_scan
+[  609.732968] workqueue events_power_efficient: flags=0x80
+[  609.751947]   pwq 0: cpus=0 node=0 flags=0x0 nice=0 active=1/256 refcnt=2
+[  609.751955]     pending: neigh_managed_work
+[  609.752018] workqueue kblockd: flags=0x18
+[  609.769480]   pwq 21: cpus=10 node=1 flags=0x0 nice=-20 active=3/256 refcnt=4
+[  609.769488]     in-flight: 1020:blk_mq_run_work_fn
+[  609.769498]     pending: blk_mq_timeout_work, blk_mq_run_work_fn
+[  609.769744] pool 21: cpus=10 node=1 flags=0x0 nice=-20 hung=35s workers=2 idle: 67
+[  639.899730] BUG: workqueue lockup - pool cpus=10 node=1 flags=0x0 nice=-20 stuck for 66s!
+[  639.909513] Showing busy workqueues and worker pools:
+[  639.915404] workqueue events: flags=0x0
+[  639.920197]   pwq 0: cpus=0 node=0 flags=0x0 nice=0 active=1/256 refcnt=2
+[  639.920215]     pending: drm_fb_helper_damage_work [drm_kms_helper]
+[  639.920365] workqueue kblockd: flags=0x18
+[  639.939932]   pwq 21: cpus=10 node=1 flags=0x0 nice=-20 active=3/256 refcnt=4
+[  639.939942]     in-flight: 1020:blk_mq_run_work_fn
+[  639.939955]     pending: blk_mq_timeout_work, blk_mq_run_work_fn
+[  639.940212] pool 21: cpus=10 node=1 flags=0x0 nice=-20 hung=66s workers=2 idle: 67
+
+Fixes: 6e6fcbc27e778 ("blk-mq: support batching dispatch in case of io")
+Signed-off-by: Shin'ichiro Kawasaki <shinichiro.kawasaki@wdc.com>
+Cc: stable@vger.kernel.org # v5.10+
+Link: https://lore.kernel.org/linux-block/20220310091649.zypaem5lkyfadymg@shindev/
+Link: https://lore.kernel.org/r/20220318022641.133484-1-shinichiro.kawasaki@wdc.com
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ block/blk-mq-sched.c |    9 ++++++++-
+ 1 file changed, 8 insertions(+), 1 deletion(-)
+
+--- a/block/blk-mq-sched.c
++++ b/block/blk-mq-sched.c
+@@ -194,11 +194,18 @@ static int __blk_mq_do_dispatch_sched(st
+ 
+ static int blk_mq_do_dispatch_sched(struct blk_mq_hw_ctx *hctx)
+ {
++	unsigned long end = jiffies + HZ;
+ 	int ret;
+ 
+ 	do {
+ 		ret = __blk_mq_do_dispatch_sched(hctx);
+-	} while (ret == 1);
++		if (ret != 1)
++			break;
++		if (need_resched() || time_is_before_jiffies(end)) {
++			blk_mq_delay_run_hw_queue(hctx, 0);
++			break;
++		}
++	} while (1);
+ 
+ 	return ret;
+ }
+
 
