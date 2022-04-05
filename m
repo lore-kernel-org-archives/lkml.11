@@ -2,41 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 59056C43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 448AAC4332F
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:01:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234544AbiDEH6i (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 03:58:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34082 "EHLO
+        id S234475AbiDEH6g (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 03:58:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34262 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233483AbiDEHrx (ORCPT
+        with ESMTP id S233108AbiDEHr2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 03:47:53 -0400
+        Tue, 5 Apr 2022 03:47:28 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1551992D0A;
-        Tue,  5 Apr 2022 00:44:26 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1957B972FF;
+        Tue,  5 Apr 2022 00:43:39 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A498C616D9;
-        Tue,  5 Apr 2022 07:44:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ADEA9C340EE;
-        Tue,  5 Apr 2022 07:44:24 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 72172616C4;
+        Tue,  5 Apr 2022 07:43:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5E033C340EE;
+        Tue,  5 Apr 2022 07:43:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649144665;
-        bh=La6UeLC9pU0YR/nd2zxsp4eY/JmzDSkVGJeVw5h4l44=;
+        s=korg; t=1649144617;
+        bh=5GLxWDCGq3Rzt274EPTNttgW7QLApZtJxsJNkrorsb0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KteBKpMVmt3VmaLHVH94kproFdBi3oUQME6u8gTX//8KZMdHGgm2fMIKYejzTp0LG
-         MILV2ALk+R7nL5GBuX9nXi8EjxCeHAM23ng0lOem/Ly4qTV3raTXn002ZkqfkxRHOR
-         mdAAkFjCbQTXriA94lrqll8xWiakbw7S0oubYlT0=
+        b=HYP722hdm2tn3PB4Rwf++Uvp2N7uHs6BCiBCjA77mR75yQqpL+Dq3l1VjuAnp4Nq7
+         GGQ8sjlAE4tp34HaSl/a3QEtxfuX85T20DUS5sXCh/qzQ9vaW40Ao26tyI/n7IOWCr
+         OCwBaYVDSo8DiaxwVzfvOgcV14TgCZLTGOljY8hA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Marc Zyngier <maz@kernel.org>,
-        Nishanth Menon <nm@ti.com>
-Subject: [PATCH 5.17 0125/1126] arm64: dts: ti: k3-j7200: Fix gic-v3 compatible regs
-Date:   Tue,  5 Apr 2022 09:14:32 +0200
-Message-Id: <20220405070411.245025833@linuxfoundation.org>
+        stable@vger.kernel.org, Kuan-Ying Lee <Kuan-Ying.Lee@mediatek.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Chinwen Chang <chinwen.chang@mediatek.com>,
+        Nicholas Tang <nicholas.tang@mediatek.com>,
+        Yee Lee <yee.lee@mediatek.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Subject: [PATCH 5.17 0110/1126] mm/kmemleak: reset tag when compare object pointer
+Date:   Tue,  5 Apr 2022 09:14:17 +0200
+Message-Id: <20220405070410.800091508@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -48,59 +54,99 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nishanth Menon <nm@ti.com>
+From: Kuan-Ying Lee <Kuan-Ying.Lee@mediatek.com>
 
-commit 1a307cc299430dd7139d351a3b8941f493dfa885 upstream.
+commit bfc8089f00fa526dea983844c880fa8106c33ac4 upstream.
 
-Though GIC ARE option is disabled for no GIC-v2 compatibility,
-Cortex-A72 is free to implement the CPU interface as long as it
-communicates with the GIC using the stream protocol. This requires
-that the SoC integration mark out the PERIPHBASE[1] as reserved area
-within the SoC. See longer discussion in [2] for further information.
+When we use HW-tag based kasan and enable vmalloc support, we hit the
+following bug.  It is due to comparison between tagged object and
+non-tagged pointer.
 
-Update the GIC register map to indicate offsets from PERIPHBASE based
-on [3]. Without doing this, systems like kvm will not function with
-gic-v2 emulation.
+We need to reset the kasan tag when we need to compare tagged object and
+non-tagged pointer.
 
-[1] https://developer.arm.com/documentation/100095/0002/system-control/aarch64-register-descriptions/configuration-base-address-register--el1
-[2] https://lore.kernel.org/all/87k0e0tirw.wl-maz@kernel.org/
-[3] https://developer.arm.com/documentation/100095/0002/way1382452674438
+  kmemleak: [name:kmemleak&]Scan area larger than object 0xffffffe77076f440
+  CPU: 4 PID: 1 Comm: init Tainted: G S      W         5.15.25-android13-0-g5cacf919c2bc #1
+  Hardware name: MT6983(ENG) (DT)
+  Call trace:
+   add_scan_area+0xc4/0x244
+   kmemleak_scan_area+0x40/0x9c
+   layout_and_allocate+0x1e8/0x288
+   load_module+0x2c8/0xf00
+   __se_sys_finit_module+0x190/0x1d0
+   __arm64_sys_finit_module+0x20/0x30
+   invoke_syscall+0x60/0x170
+   el0_svc_common+0xc8/0x114
+   do_el0_svc+0x28/0xa0
+   el0_svc+0x60/0xf8
+   el0t_64_sync_handler+0x88/0xec
+   el0t_64_sync+0x1b4/0x1b8
+  kmemleak: [name:kmemleak&]Object 0xf5ffffe77076b000 (size 32768):
+  kmemleak: [name:kmemleak&]  comm "init", pid 1, jiffies 4294894197
+  kmemleak: [name:kmemleak&]  min_count = 0
+  kmemleak: [name:kmemleak&]  count = 0
+  kmemleak: [name:kmemleak&]  flags = 0x1
+  kmemleak: [name:kmemleak&]  checksum = 0
+  kmemleak: [name:kmemleak&]  backtrace:
+       module_alloc+0x9c/0x120
+       move_module+0x34/0x19c
+       layout_and_allocate+0x1c4/0x288
+       load_module+0x2c8/0xf00
+       __se_sys_finit_module+0x190/0x1d0
+       __arm64_sys_finit_module+0x20/0x30
+       invoke_syscall+0x60/0x170
+       el0_svc_common+0xc8/0x114
+       do_el0_svc+0x28/0xa0
+       el0_svc+0x60/0xf8
+       el0t_64_sync_handler+0x88/0xec
+       el0t_64_sync+0x1b4/0x1b8
 
-Cc: stable@vger.kernel.org
-Fixes: d361ed88455f ("arm64: dts: ti: Add support for J7200 SoC")
-Reported-by: Marc Zyngier <maz@kernel.org>
-Signed-off-by: Nishanth Menon <nm@ti.com>
-Acked-by: Marc Zyngier <maz@kernel.org>
-Link: https://lore.kernel.org/r/20220215201008.15235-4-nm@ti.com
+Link: https://lkml.kernel.org/r/20220318034051.30687-1-Kuan-Ying.Lee@mediatek.com
+Signed-off-by: Kuan-Ying Lee <Kuan-Ying.Lee@mediatek.com>
+Reviewed-by: Catalin Marinas <catalin.marinas@arm.com>
+Cc: Matthias Brugger <matthias.bgg@gmail.com>
+Cc: Chinwen Chang <chinwen.chang@mediatek.com>
+Cc: Nicholas Tang <nicholas.tang@mediatek.com>
+Cc: Yee Lee <yee.lee@mediatek.com>
+Cc: <stable@vger.kernel.org>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm64/boot/dts/ti/k3-j7200-main.dtsi |    5 ++++-
- arch/arm64/boot/dts/ti/k3-j7200.dtsi      |    1 +
- 2 files changed, 5 insertions(+), 1 deletion(-)
+ mm/kmemleak.c |    9 +++++++--
+ 1 file changed, 7 insertions(+), 2 deletions(-)
 
---- a/arch/arm64/boot/dts/ti/k3-j7200-main.dtsi
-+++ b/arch/arm64/boot/dts/ti/k3-j7200-main.dtsi
-@@ -54,7 +54,10 @@
- 		#interrupt-cells = <3>;
- 		interrupt-controller;
- 		reg = <0x00 0x01800000 0x00 0x10000>,	/* GICD */
--		      <0x00 0x01900000 0x00 0x100000>;	/* GICR */
-+		      <0x00 0x01900000 0x00 0x100000>,	/* GICR */
-+		      <0x00 0x6f000000 0x00 0x2000>,	/* GICC */
-+		      <0x00 0x6f010000 0x00 0x1000>,	/* GICH */
-+		      <0x00 0x6f020000 0x00 0x2000>;	/* GICV */
+--- a/mm/kmemleak.c
++++ b/mm/kmemleak.c
+@@ -796,6 +796,8 @@ static void add_scan_area(unsigned long
+ 	unsigned long flags;
+ 	struct kmemleak_object *object;
+ 	struct kmemleak_scan_area *area = NULL;
++	unsigned long untagged_ptr;
++	unsigned long untagged_objp;
  
- 		/* vcpumntirq: virtual CPU interface maintenance interrupt */
- 		interrupts = <GIC_PPI 9 IRQ_TYPE_LEVEL_HIGH>;
---- a/arch/arm64/boot/dts/ti/k3-j7200.dtsi
-+++ b/arch/arm64/boot/dts/ti/k3-j7200.dtsi
-@@ -129,6 +129,7 @@
- 			 <0x00 0x00a40000 0x00 0x00a40000 0x00 0x00000800>, /* timesync router */
- 			 <0x00 0x01000000 0x00 0x01000000 0x00 0x0d000000>, /* Most peripherals */
- 			 <0x00 0x30000000 0x00 0x30000000 0x00 0x0c400000>, /* MAIN NAVSS */
-+			 <0x00 0x6f000000 0x00 0x6f000000 0x00 0x00310000>, /* A72 PERIPHBASE */
- 			 <0x00 0x70000000 0x00 0x70000000 0x00 0x00800000>, /* MSMC RAM */
- 			 <0x00 0x18000000 0x00 0x18000000 0x00 0x08000000>, /* PCIe1 DAT0 */
- 			 <0x41 0x00000000 0x41 0x00000000 0x01 0x00000000>, /* PCIe1 DAT1 */
+ 	object = find_and_get_object(ptr, 1);
+ 	if (!object) {
+@@ -804,6 +806,9 @@ static void add_scan_area(unsigned long
+ 		return;
+ 	}
+ 
++	untagged_ptr = (unsigned long)kasan_reset_tag((void *)ptr);
++	untagged_objp = (unsigned long)kasan_reset_tag((void *)object->pointer);
++
+ 	if (scan_area_cache)
+ 		area = kmem_cache_alloc(scan_area_cache, gfp_kmemleak_mask(gfp));
+ 
+@@ -815,8 +820,8 @@ static void add_scan_area(unsigned long
+ 		goto out_unlock;
+ 	}
+ 	if (size == SIZE_MAX) {
+-		size = object->pointer + object->size - ptr;
+-	} else if (ptr + size > object->pointer + object->size) {
++		size = untagged_objp + object->size - untagged_ptr;
++	} else if (untagged_ptr + size > untagged_objp + object->size) {
+ 		kmemleak_warn("Scan area larger than object 0x%08lx\n", ptr);
+ 		dump_object_info(object);
+ 		kmem_cache_free(scan_area_cache, area);
 
 
