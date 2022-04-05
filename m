@@ -2,112 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A6571C4167D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C09A6C4707A
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:41:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1577830AbiDEXRE (ORCPT
+        id S1577876AbiDEXRT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 19:17:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42656 "EHLO
+        Tue, 5 Apr 2022 19:17:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41188 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1457915AbiDEQ7M (ORCPT
+        with ESMTP id S1355724AbiDEKVn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 12:59:12 -0400
-Received: from cloudserver094114.home.pl (cloudserver094114.home.pl [79.96.170.134])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C618B4A915;
-        Tue,  5 Apr 2022 09:57:13 -0700 (PDT)
-Received: from localhost (127.0.0.1) (HELO v370.home.net.pl)
- by /usr/run/smtp (/usr/run/postfix/private/idea_relay_lmtp) via UNIX with SMTP (IdeaSmtpServer 5.0.0)
- id 742f0ee565e3f865; Tue, 5 Apr 2022 18:57:12 +0200
-Received: from kreacher.localnet (unknown [213.134.181.136])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        Tue, 5 Apr 2022 06:21:43 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20E3B83031;
+        Tue,  5 Apr 2022 03:05:04 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by v370.home.net.pl (Postfix) with ESMTPSA id 8220B66BCB7;
-        Tue,  5 Apr 2022 18:57:11 +0200 (CEST)
-From:   "Rafael J. Wysocki" <rjw@rjwysocki.net>
-To:     Linux ACPI <linux-acpi@vger.kernel.org>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        Mark Brown <broonie@kernel.org>, linux-spi@vger.kernel.org
-Subject: [PATCH v1] ACPI: bus: Eliminate acpi_bus_get_device()
-Date:   Tue, 05 Apr 2022 18:57:10 +0200
-Message-ID: <5817980.lOV4Wx5bFT@kreacher>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4EF58616E7;
+        Tue,  5 Apr 2022 10:05:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5C3A8C385A1;
+        Tue,  5 Apr 2022 10:05:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649153103;
+        bh=WNP6Khvhm5d3jm0balr1Rh0ZzmOjXFEoQMP607kv07Y=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=LZaaORXGZrzM8ACna2UqYMCn+X5a5WJdVs75my7PK07Tt9Tb/M10I2HXO8C7FeRyA
+         7ZJ3qBOhkt8Hy1+XlVjk/Q5u2YlzL5kdt2RZUk8yFuLc1GJ1N1BZlCThVip8x8XamD
+         8uMV3lna+ryZgURKTl71iHsyMOj1C/mqqEbUDgZg=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Jocelyn Falempe <jfalempe@redhat.com>,
+        Javier Martinez Canillas <javierm@redhat.com>,
+        Lyude Paul <lyude@redhat.com>,
+        Thomas Zimmermann <tzimmermann@suse.de>
+Subject: [PATCH 5.10 103/599] mgag200 fix memmapsl configuration in GCTL6 register
+Date:   Tue,  5 Apr 2022 09:26:37 +0200
+Message-Id: <20220405070301.898742921@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
+References: <20220405070258.802373272@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="UTF-8"
-X-CLIENT-IP: 213.134.181.136
-X-CLIENT-HOSTNAME: 213.134.181.136
-X-VADE-SPAMSTATE: clean
-X-VADE-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvvddrudejgedguddtfecutefuodetggdotefrodftvfcurfhrohhfihhlvgemucfjqffogffrnfdpggftiffpkfenuceurghilhhouhhtmecuudehtdenucesvcftvggtihhpihgvnhhtshculddquddttddmnecujfgurhephffvufffkfgggfgtsehtufertddttdejnecuhfhrohhmpedftfgrfhgrvghlucflrdcuhgihshhotghkihdfuceorhhjfiesrhhjfiihshhotghkihdrnhgvtheqnecuggftrfgrthhtvghrnhephfegtdffjeehkeegleejveevtdeugfffieeijeduuddtkefgjedvheeujeejtedvnecukfhppedvudefrddufeegrddukedurddufeeinecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehinhgvthepvddufedrudefgedrudekuddrudefiedphhgvlhhopehkrhgvrggthhgvrhdrlhhotggrlhhnvghtpdhmrghilhhfrhhomhepfdftrghfrggvlhculfdrucghhihsohgtkhhifdcuoehrjhifsehrjhifhihsohgtkhhirdhnvghtqedpnhgspghrtghpthhtohepgedprhgtphhtthhopehlihhnuhigqdgrtghpihesvhhgvghrrdhkvghrnhgvlhdrohhrghdprhgtphhtthhopehlihhnuhigqdhkvghrnhgvlhesvhhgvghrrdhkvghrnhgvlhdrohhrghdprhgtphhtthhopegsrhhoohhnihgvsehkvghrnhgvlhdrohhrghdprhgtphhtthhopehlihhnuhigqdhsphhisehvghgvrhdrkhgvrhhnvghlrdhorhhg
-X-DCC--Metrics: v370.home.net.pl 1024; Body=4 Fuz1=4 Fuz2=4
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+From: Jocelyn Falempe <jfalempe@redhat.com>
 
-Replace the last instance of acpi_bus_get_device(), added recently
-by commit 87e59b36e5e2 ("spi: Support selection of the index of the
-ACPI Spi Resource before alloc"), with acpi_fetch_acpi_dev() and
-finally drop acpi_bus_get_device() that has no more users.
+commit 028a73e10705af1ffd51f2537460f616dc58680e upstream.
 
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+On some servers with MGA G200_SE_A (rev 42), booting with Legacy BIOS,
+the hardware hangs when using kdump and kexec into the kdump kernel.
+This happens when the uncompress code tries to write "Decompressing Linux"
+to the VGA Console.
+
+It can be reproduced by writing to the VGA console (0xB8000) after
+booting to graphic mode, it generates the following error:
+
+kernel:NMI: PCI system error (SERR) for reason a0 on CPU 0.
+kernel:Dazed and confused, but trying to continue
+
+The root cause is the configuration of the MGA GCTL6 register
+
+According to the GCTL6 register documentation:
+
+bit 0 is gcgrmode:
+    0: Enables alpha mode, and the character generator addressing system is
+     activated.
+    1: Enables graphics mode, and the character addressing system is not
+     used.
+
+bit 1 is chainodd even:
+    0: The A0 signal of the memory address bus is used during system memory
+     addressing.
+    1: Allows A0 to be replaced by either the A16 signal of the system
+     address (ifmemmapsl is ‘00’), or by the hpgoddev (MISC<5>, odd/even
+     page select) field, described on page 3-294).
+
+bit 3-2 are memmapsl:
+    Memory map select bits 1 and 0. VGA.
+    These bits select where the video memory is mapped, as shown below:
+        00 => A0000h - BFFFFh
+        01 => A0000h - AFFFFh
+        10 => B0000h - B7FFFh
+        11 => B8000h - BFFFFh
+
+bit 7-4 are reserved.
+
+Current code set it to 0x05 => memmapsl to b01 => 0xa0000 (graphic mode)
+But on x86, the VGA console is at 0xb8000 (text mode)
+In arch/x86/boot/compressed/misc.c debug strings are written to 0xb8000
+As the driver doesn't use this mapping at 0xa0000, it is safe to set it to
+0xb8000 instead, to avoid kernel hang on G200_SE_A rev42, with kexec/kdump.
+
+Thus changing the value 0x05 to 0x0d
+
+Signed-off-by: Jocelyn Falempe <jfalempe@redhat.com>
+Reviewed-by: Javier Martinez Canillas <javierm@redhat.com>
+Acked-by: Lyude Paul <lyude@redhat.com>
+Cc: stable@vger.kernel.org
+Signed-off-by: Thomas Zimmermann <tzimmermann@suse.de>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220119102905.1194787-1-jfalempe@redhat.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/acpi/scan.c     |   13 -------------
- drivers/spi/spi.c       |    3 ++-
- include/acpi/acpi_bus.h |    1 -
- 3 files changed, 2 insertions(+), 15 deletions(-)
+ drivers/gpu/drm/mgag200/mgag200_mode.c |    5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-Index: linux-pm/drivers/spi/spi.c
-===================================================================
---- linux-pm.orig/drivers/spi/spi.c
-+++ linux-pm/drivers/spi/spi.c
-@@ -2406,7 +2406,8 @@ static int acpi_spi_add_resource(struct
- 			} else {
- 				struct acpi_device *adev;
+--- a/drivers/gpu/drm/mgag200/mgag200_mode.c
++++ b/drivers/gpu/drm/mgag200/mgag200_mode.c
+@@ -1243,7 +1243,10 @@ static void mgag200_set_format_regs(stru
+ 	WREG_GFX(3, 0x00);
+ 	WREG_GFX(4, 0x00);
+ 	WREG_GFX(5, 0x40);
+-	WREG_GFX(6, 0x05);
++	/* GCTL6 should be 0x05, but we configure memmapsl to 0xb8000 (text mode),
++	 * so that it doesn't hang when running kexec/kdump on G200_SE rev42.
++	 */
++	WREG_GFX(6, 0x0d);
+ 	WREG_GFX(7, 0x0f);
+ 	WREG_GFX(8, 0x0f);
  
--				if (acpi_bus_get_device(parent_handle, &adev))
-+				adev = acpi_fetch_acpi_dev(parent_handle);
-+				if (!adev)
- 					return -ENODEV;
- 
- 				ctlr = acpi_spi_find_controller_by_adev(adev);
-Index: linux-pm/include/acpi/acpi_bus.h
-===================================================================
---- linux-pm.orig/include/acpi/acpi_bus.h
-+++ linux-pm/include/acpi/acpi_bus.h
-@@ -511,7 +511,6 @@ extern int unregister_acpi_notifier(stru
-  * External Functions
-  */
- 
--int acpi_bus_get_device(acpi_handle handle, struct acpi_device **device);
- struct acpi_device *acpi_fetch_acpi_dev(acpi_handle handle);
- acpi_status acpi_bus_get_status_handle(acpi_handle handle,
- 				       unsigned long long *sta);
-Index: linux-pm/drivers/acpi/scan.c
-===================================================================
---- linux-pm.orig/drivers/acpi/scan.c
-+++ linux-pm/drivers/acpi/scan.c
-@@ -588,19 +588,6 @@ static struct acpi_device *handle_to_dev
- 	return adev;
- }
- 
--int acpi_bus_get_device(acpi_handle handle, struct acpi_device **device)
--{
--	if (!device)
--		return -EINVAL;
--
--	*device = handle_to_device(handle, NULL);
--	if (!*device)
--		return -ENODEV;
--
--	return 0;
--}
--EXPORT_SYMBOL(acpi_bus_get_device);
--
- /**
-  * acpi_fetch_acpi_dev - Retrieve ACPI device object.
-  * @handle: ACPI handle associated with the requested ACPI device object.
-
 
 
