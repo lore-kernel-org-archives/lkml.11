@@ -2,195 +2,268 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D7B01C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ED327C43217
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 11:25:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376642AbiDELWq (ORCPT
+        id S1376683AbiDELWu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 07:22:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42514 "EHLO
+        Tue, 5 Apr 2022 07:22:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42524 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241820AbiDEIsf (ORCPT
+        with ESMTP id S242259AbiDEIsl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:48:35 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67CDB2DD64;
-        Tue,  5 Apr 2022 01:36:56 -0700 (PDT)
-Date:   Tue, 05 Apr 2022 08:36:44 -0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1649147805;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=ucBsEPltY9eSC64DbQJ8DwlIx2reohOENUnQiBsi4YI=;
-        b=NK7hbBBtmULO3BJ9Aftd7/bJRk7SUJsz5wDu5GrjceHZOUMJsatEI1CjGXvIPhRuG/bNKl
-        sDncDgNsIQfGQdFcvmg7yCF1pfPs66hK3myyVJ+Ldr7lzOpNnEB/31NrzW5/erVzYMrZBA
-        3mUW06XEZ/ef86JcqnDsUKhelHKEkUyskXP/TiauVCfD5yUFGIS/LY97f41vEN7H0CiMqo
-        UpxSM+bLoaNwU8spdappRRQw5FGbEDLnRqCiNFy5OgV8S2O7zG1K2k16sr1vW0wQZTYfHN
-        Y/qeoX7ltqzYBT6L7wTpH+n66af055oOBXNZikMofYaVLxwc2tBUNaLgtO/3ow==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1649147805;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=ucBsEPltY9eSC64DbQJ8DwlIx2reohOENUnQiBsi4YI=;
-        b=w6lE2cz/ue6SwuyYrx+QGx0iYuo2uSBbCFCfNdbz6R9cl5vsHl+8mS0JWKsRZh4yATKN3l
-        XY+3xg8qGgPZasDA==
-From:   "tip-bot2 for Stephane Eranian" <tip-bot2@linutronix.de>
-Sender: tip-bot2@linutronix.de
-Reply-to: linux-kernel@vger.kernel.org
-To:     linux-tip-commits@vger.kernel.org
-Subject: [tip: perf/core] perf/core: Add perf_clear_branch_entry_bitfields() helper
-Cc:     Stephane Eranian <eranian@google.com>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>, x86@kernel.org,
-        linux-kernel@vger.kernel.org
-In-Reply-To: <20220322221517.2510440-2-eranian@google.com>
-References: <20220322221517.2510440-2-eranian@google.com>
+        Tue, 5 Apr 2022 04:48:41 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACC1838D91;
+        Tue,  5 Apr 2022 01:37:07 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C73B4614EF;
+        Tue,  5 Apr 2022 08:37:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DCFECC385A1;
+        Tue,  5 Apr 2022 08:37:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649147825;
+        bh=B2Gvg2dMSeDybRBkutfI6uE2QcVJM3mGlmrR9iRhpZw=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=WEEvWxWRq6KO5rZUEHRs64OfRq3xQ3HFqG3WKfigTdvS21viYvZ7muwrsTDQxjk+2
+         vaIPeDSsPBcW5fyOtIjyGxTVPaopJ1YG9Vh1lBvv6nrHHJLEAkWbKfUjcc+qphFlih
+         VvYXjdMg+u/CZQyi9XKHKLyW2kBsUzK+RbfbAVhI=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Sergey Shtylyov <s.shtylyov@omp.ru>,
+        Ulf Hansson <ulf.hansson@linaro.org>
+Subject: [PATCH 5.16 0135/1017] mmc: core: use sysfs_emit() instead of sprintf()
+Date:   Tue,  5 Apr 2022 09:17:28 +0200
+Message-Id: <20220405070358.210521626@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
+References: <20220405070354.155796697@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Message-ID: <164914780435.389.4936921314797335229.tip-bot2@tip-bot2>
-Robot-ID: <tip-bot2@linutronix.de>
-Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The following commit has been merged into the perf/core branch of tip:
+From: Sergey Shtylyov <s.shtylyov@omp.ru>
 
-Commit-ID:     bfe4daf850f45d92dcd3da477f0b0456620294c3
-Gitweb:        https://git.kernel.org/tip/bfe4daf850f45d92dcd3da477f0b0456620294c3
-Author:        Stephane Eranian <eranian@google.com>
-AuthorDate:    Tue, 22 Mar 2022 15:15:05 -07:00
-Committer:     Peter Zijlstra <peterz@infradead.org>
-CommitterDate: Tue, 05 Apr 2022 10:24:36 +02:00
+commit f5d8a5fe77ce933f53eb8f2e22bb7a1a2019ea11 upstream.
 
-perf/core: Add perf_clear_branch_entry_bitfields() helper
+sprintf() (still used in the MMC core for the sysfs output) is vulnerable
+to the buffer overflow.  Use the new-fangled sysfs_emit() instead.
 
-Make it simpler to reset all the info fields on the
-perf_branch_entry by adding a helper inline function.
+Found by Linux Verification Center (linuxtesting.org) with the SVACE static
+analysis tool.
 
-The goal is to centralize the initialization to avoid missing
-a field in case more are added.
-
-Signed-off-by: Stephane Eranian <eranian@google.com>
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Link: https://lore.kernel.org/r/20220322221517.2510440-2-eranian@google.com
+Signed-off-by: Sergey Shtylyov <s.shtylyov@omp.ru>
+Cc: stable@vger.kernel.org
+Link: https://lore.kernel.org/r/717729b2-d65b-c72e-9fac-471d28d00b5a@omp.ru
+Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/events/intel/lbr.c | 36 +++++++++++++++++-------------------
- include/linux/perf_event.h  | 16 ++++++++++++++++-
- 2 files changed, 33 insertions(+), 19 deletions(-)
+ drivers/mmc/core/bus.c      |    9 +++++----
+ drivers/mmc/core/bus.h      |    3 ++-
+ drivers/mmc/core/mmc.c      |   16 ++++++++--------
+ drivers/mmc/core/sd.c       |   27 +++++++++++++--------------
+ drivers/mmc/core/sdio.c     |    5 +++--
+ drivers/mmc/core/sdio_bus.c |    7 ++++---
+ 6 files changed, 35 insertions(+), 32 deletions(-)
 
-diff --git a/arch/x86/events/intel/lbr.c b/arch/x86/events/intel/lbr.c
-index fe1742c..13179f3 100644
---- a/arch/x86/events/intel/lbr.c
-+++ b/arch/x86/events/intel/lbr.c
-@@ -769,6 +769,7 @@ void intel_pmu_lbr_disable_all(void)
- void intel_pmu_lbr_read_32(struct cpu_hw_events *cpuc)
+--- a/drivers/mmc/core/bus.c
++++ b/drivers/mmc/core/bus.c
+@@ -15,6 +15,7 @@
+ #include <linux/stat.h>
+ #include <linux/of.h>
+ #include <linux/pm_runtime.h>
++#include <linux/sysfs.h>
+ 
+ #include <linux/mmc/card.h>
+ #include <linux/mmc/host.h>
+@@ -34,13 +35,13 @@ static ssize_t type_show(struct device *
+ 
+ 	switch (card->type) {
+ 	case MMC_TYPE_MMC:
+-		return sprintf(buf, "MMC\n");
++		return sysfs_emit(buf, "MMC\n");
+ 	case MMC_TYPE_SD:
+-		return sprintf(buf, "SD\n");
++		return sysfs_emit(buf, "SD\n");
+ 	case MMC_TYPE_SDIO:
+-		return sprintf(buf, "SDIO\n");
++		return sysfs_emit(buf, "SDIO\n");
+ 	case MMC_TYPE_SD_COMBO:
+-		return sprintf(buf, "SDcombo\n");
++		return sysfs_emit(buf, "SDcombo\n");
+ 	default:
+ 		return -EFAULT;
+ 	}
+--- a/drivers/mmc/core/bus.h
++++ b/drivers/mmc/core/bus.h
+@@ -9,6 +9,7 @@
+ #define _MMC_CORE_BUS_H
+ 
+ #include <linux/device.h>
++#include <linux/sysfs.h>
+ 
+ struct mmc_host;
+ struct mmc_card;
+@@ -17,7 +18,7 @@ struct mmc_card;
+ static ssize_t mmc_##name##_show (struct device *dev, struct device_attribute *attr, char *buf)	\
+ {										\
+ 	struct mmc_card *card = mmc_dev_to_card(dev);				\
+-	return sprintf(buf, fmt, args);						\
++	return sysfs_emit(buf, fmt, args);					\
+ }										\
+ static DEVICE_ATTR(name, S_IRUGO, mmc_##name##_show, NULL)
+ 
+--- a/drivers/mmc/core/mmc.c
++++ b/drivers/mmc/core/mmc.c
+@@ -12,6 +12,7 @@
+ #include <linux/slab.h>
+ #include <linux/stat.h>
+ #include <linux/pm_runtime.h>
++#include <linux/sysfs.h>
+ 
+ #include <linux/mmc/host.h>
+ #include <linux/mmc/card.h>
+@@ -812,12 +813,11 @@ static ssize_t mmc_fwrev_show(struct dev
  {
- 	unsigned long mask = x86_pmu.lbr_nr - 1;
-+	struct perf_branch_entry *br = cpuc->lbr_entries;
- 	u64 tos = intel_pmu_lbr_tos();
- 	int i;
+ 	struct mmc_card *card = mmc_dev_to_card(dev);
  
-@@ -784,15 +785,11 @@ void intel_pmu_lbr_read_32(struct cpu_hw_events *cpuc)
- 
- 		rdmsrl(x86_pmu.lbr_from + lbr_idx, msr_lastbranch.lbr);
- 
--		cpuc->lbr_entries[i].from	= msr_lastbranch.from;
--		cpuc->lbr_entries[i].to		= msr_lastbranch.to;
--		cpuc->lbr_entries[i].mispred	= 0;
--		cpuc->lbr_entries[i].predicted	= 0;
--		cpuc->lbr_entries[i].in_tx	= 0;
--		cpuc->lbr_entries[i].abort	= 0;
--		cpuc->lbr_entries[i].cycles	= 0;
--		cpuc->lbr_entries[i].type	= 0;
--		cpuc->lbr_entries[i].reserved	= 0;
-+		perf_clear_branch_entry_bitfields(br);
-+
-+		br->from	= msr_lastbranch.from;
-+		br->to		= msr_lastbranch.to;
-+		br++;
- 	}
- 	cpuc->lbr_stack.nr = i;
- 	cpuc->lbr_stack.hw_idx = tos;
-@@ -807,6 +804,7 @@ void intel_pmu_lbr_read_64(struct cpu_hw_events *cpuc)
- {
- 	bool need_info = false, call_stack = false;
- 	unsigned long mask = x86_pmu.lbr_nr - 1;
-+	struct perf_branch_entry *br = cpuc->lbr_entries;
- 	u64 tos = intel_pmu_lbr_tos();
- 	int i;
- 	int out = 0;
-@@ -878,15 +876,14 @@ void intel_pmu_lbr_read_64(struct cpu_hw_events *cpuc)
- 		if (abort && x86_pmu.lbr_double_abort && out > 0)
- 			out--;
- 
--		cpuc->lbr_entries[out].from	 = from;
--		cpuc->lbr_entries[out].to	 = to;
--		cpuc->lbr_entries[out].mispred	 = mis;
--		cpuc->lbr_entries[out].predicted = pred;
--		cpuc->lbr_entries[out].in_tx	 = in_tx;
--		cpuc->lbr_entries[out].abort	 = abort;
--		cpuc->lbr_entries[out].cycles	 = cycles;
--		cpuc->lbr_entries[out].type	 = 0;
--		cpuc->lbr_entries[out].reserved	 = 0;
-+		perf_clear_branch_entry_bitfields(br+out);
-+		br[out].from	 = from;
-+		br[out].to	 = to;
-+		br[out].mispred	 = mis;
-+		br[out].predicted = pred;
-+		br[out].in_tx	 = in_tx;
-+		br[out].abort	 = abort;
-+		br[out].cycles	 = cycles;
- 		out++;
- 	}
- 	cpuc->lbr_stack.nr = out;
-@@ -951,6 +948,8 @@ static void intel_pmu_store_lbr(struct cpu_hw_events *cpuc,
- 		to = rdlbr_to(i, lbr);
- 		info = rdlbr_info(i, lbr);
- 
-+		perf_clear_branch_entry_bitfields(e);
-+
- 		e->from		= from;
- 		e->to		= to;
- 		e->mispred	= get_lbr_mispred(info);
-@@ -959,7 +958,6 @@ static void intel_pmu_store_lbr(struct cpu_hw_events *cpuc,
- 		e->abort	= !!(info & LBR_INFO_ABORT);
- 		e->cycles	= get_lbr_cycles(info);
- 		e->type		= get_lbr_br_type(info);
--		e->reserved	= 0;
- 	}
- 
- 	cpuc->lbr_stack.nr = i;
-diff --git a/include/linux/perf_event.h b/include/linux/perf_event.h
-index af97dd4..a411080 100644
---- a/include/linux/perf_event.h
-+++ b/include/linux/perf_event.h
-@@ -1063,6 +1063,22 @@ static inline void perf_sample_data_init(struct perf_sample_data *data,
- 	data->txn = 0;
+-	if (card->ext_csd.rev < 7) {
+-		return sprintf(buf, "0x%x\n", card->cid.fwrev);
+-	} else {
+-		return sprintf(buf, "0x%*phN\n", MMC_FIRMWARE_LEN,
+-			       card->ext_csd.fwrev);
+-	}
++	if (card->ext_csd.rev < 7)
++		return sysfs_emit(buf, "0x%x\n", card->cid.fwrev);
++	else
++		return sysfs_emit(buf, "0x%*phN\n", MMC_FIRMWARE_LEN,
++				  card->ext_csd.fwrev);
  }
  
-+/*
-+ * Clear all bitfields in the perf_branch_entry.
-+ * The to and from fields are not cleared because they are
-+ * systematically modified by caller.
-+ */
-+static inline void perf_clear_branch_entry_bitfields(struct perf_branch_entry *br)
+ static DEVICE_ATTR(fwrev, S_IRUGO, mmc_fwrev_show, NULL);
+@@ -830,10 +830,10 @@ static ssize_t mmc_dsr_show(struct devic
+ 	struct mmc_host *host = card->host;
+ 
+ 	if (card->csd.dsr_imp && host->dsr_req)
+-		return sprintf(buf, "0x%x\n", host->dsr);
++		return sysfs_emit(buf, "0x%x\n", host->dsr);
+ 	else
+ 		/* return default DSR value */
+-		return sprintf(buf, "0x%x\n", 0x404);
++		return sysfs_emit(buf, "0x%x\n", 0x404);
+ }
+ 
+ static DEVICE_ATTR(dsr, S_IRUGO, mmc_dsr_show, NULL);
+--- a/drivers/mmc/core/sd.c
++++ b/drivers/mmc/core/sd.c
+@@ -13,6 +13,7 @@
+ #include <linux/stat.h>
+ #include <linux/pm_runtime.h>
+ #include <linux/scatterlist.h>
++#include <linux/sysfs.h>
+ 
+ #include <linux/mmc/host.h>
+ #include <linux/mmc/card.h>
+@@ -708,18 +709,16 @@ MMC_DEV_ATTR(ocr, "0x%08x\n", card->ocr)
+ MMC_DEV_ATTR(rca, "0x%04x\n", card->rca);
+ 
+ 
+-static ssize_t mmc_dsr_show(struct device *dev,
+-                           struct device_attribute *attr,
+-                           char *buf)
+-{
+-       struct mmc_card *card = mmc_dev_to_card(dev);
+-       struct mmc_host *host = card->host;
+-
+-       if (card->csd.dsr_imp && host->dsr_req)
+-               return sprintf(buf, "0x%x\n", host->dsr);
+-       else
+-               /* return default DSR value */
+-               return sprintf(buf, "0x%x\n", 0x404);
++static ssize_t mmc_dsr_show(struct device *dev, struct device_attribute *attr,
++			    char *buf)
 +{
-+	br->mispred = 0;
-+	br->predicted = 0;
-+	br->in_tx = 0;
-+	br->abort = 0;
-+	br->cycles = 0;
-+	br->type = 0;
-+	br->reserved = 0;
-+}
++	struct mmc_card *card = mmc_dev_to_card(dev);
++	struct mmc_host *host = card->host;
 +
- extern void perf_output_sample(struct perf_output_handle *handle,
- 			       struct perf_event_header *header,
- 			       struct perf_sample_data *data,
++	if (card->csd.dsr_imp && host->dsr_req)
++		return sysfs_emit(buf, "0x%x\n", host->dsr);
++	/* return default DSR value */
++	return sysfs_emit(buf, "0x%x\n", 0x404);
+ }
+ 
+ static DEVICE_ATTR(dsr, S_IRUGO, mmc_dsr_show, NULL);
+@@ -735,9 +734,9 @@ static ssize_t info##num##_show(struct d
+ 												\
+ 	if (num > card->num_info)								\
+ 		return -ENODATA;								\
+-	if (!card->info[num-1][0])								\
++	if (!card->info[num - 1][0])								\
+ 		return 0;									\
+-	return sprintf(buf, "%s\n", card->info[num-1]);						\
++	return sysfs_emit(buf, "%s\n", card->info[num - 1]);					\
+ }												\
+ static DEVICE_ATTR_RO(info##num)
+ 
+--- a/drivers/mmc/core/sdio.c
++++ b/drivers/mmc/core/sdio.c
+@@ -7,6 +7,7 @@
+ 
+ #include <linux/err.h>
+ #include <linux/pm_runtime.h>
++#include <linux/sysfs.h>
+ 
+ #include <linux/mmc/host.h>
+ #include <linux/mmc/card.h>
+@@ -40,9 +41,9 @@ static ssize_t info##num##_show(struct d
+ 												\
+ 	if (num > card->num_info)								\
+ 		return -ENODATA;								\
+-	if (!card->info[num-1][0])								\
++	if (!card->info[num - 1][0])								\
+ 		return 0;									\
+-	return sprintf(buf, "%s\n", card->info[num-1]);						\
++	return sysfs_emit(buf, "%s\n", card->info[num - 1]);					\
+ }												\
+ static DEVICE_ATTR_RO(info##num)
+ 
+--- a/drivers/mmc/core/sdio_bus.c
++++ b/drivers/mmc/core/sdio_bus.c
+@@ -14,6 +14,7 @@
+ #include <linux/pm_runtime.h>
+ #include <linux/pm_domain.h>
+ #include <linux/acpi.h>
++#include <linux/sysfs.h>
+ 
+ #include <linux/mmc/card.h>
+ #include <linux/mmc/host.h>
+@@ -35,7 +36,7 @@ field##_show(struct device *dev, struct
+ 	struct sdio_func *func;						\
+ 									\
+ 	func = dev_to_sdio_func (dev);					\
+-	return sprintf(buf, format_string, args);			\
++	return sysfs_emit(buf, format_string, args);			\
+ }									\
+ static DEVICE_ATTR_RO(field)
+ 
+@@ -52,9 +53,9 @@ static ssize_t info##num##_show(struct d
+ 												\
+ 	if (num > func->num_info)								\
+ 		return -ENODATA;								\
+-	if (!func->info[num-1][0])								\
++	if (!func->info[num - 1][0])								\
+ 		return 0;									\
+-	return sprintf(buf, "%s\n", func->info[num-1]);						\
++	return sysfs_emit(buf, "%s\n", func->info[num - 1]);					\
+ }												\
+ static DEVICE_ATTR_RO(info##num)
+ 
+
+
