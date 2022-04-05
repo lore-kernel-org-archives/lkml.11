@@ -2,83 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E95AC4321E
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 02:53:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 02073C43219
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 02:53:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1850555AbiDFCyI (ORCPT
+        id S1850507AbiDFCx5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 22:54:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40294 "EHLO
+        Tue, 5 Apr 2022 22:53:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51860 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1836748AbiDFAja (ORCPT
+        with ESMTP id S1836201AbiDFAfQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 20:39:30 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA9191AECA5
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 15:49:15 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3792661989
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 22:49:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2ACC3C385A0;
-        Tue,  5 Apr 2022 22:49:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linux-foundation.org;
-        s=korg; t=1649198953;
-        bh=awHlS99jHdeeMvW5vMaa8y/eOaLgtQdto8jxDdWuvoQ=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=yW8xzL99stdIIsz1Uwj8ViHVbX6o3MGkdk44C90KDUPId1u1fTiKrM/mhj+w9my6a
-         NKkuPzZ8tep66QFQCMXVXJvbzDykqLe9xpPaHvZNa9ngt2PRiTliYYyLF+A/hMVXPj
-         95uIs5AyCqnV6GBbZyjMH3A/pUDCQIgmIOEYVc2E=
-Date:   Tue, 5 Apr 2022 15:49:12 -0700
-From:   Andrew Morton <akpm@linux-foundation.org>
-To:     Peter Xu <peterx@redhat.com>
-Cc:     linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        Mike Kravetz <mike.kravetz@oracle.com>,
-        David Hildenbrand <david@redhat.com>,
-        Matthew Wilcox <willy@infradead.org>,
-        Alistair Popple <apopple@nvidia.com>,
-        Nadav Amit <nadav.amit@gmail.com>,
-        Axel Rasmussen <axelrasmussen@google.com>,
-        Andrea Arcangeli <aarcange@redhat.com>,
-        "Kirill A . Shutemov" <kirill@shutemov.name>,
-        Hugh Dickins <hughd@google.com>,
-        Jerome Glisse <jglisse@redhat.com>,
-        Mike Rapoport <rppt@linux.vnet.ibm.com>
-Subject: Re: [PATCH v8 00/23] userfaultfd-wp: Support shmem and hugetlbfs
-Message-Id: <20220405154912.4cda03c2cc5d801d25d5c2dd@linux-foundation.org>
-In-Reply-To: <YkzF4/e86qwcuXiA@xz-m1.local>
-References: <20220405014646.13522-1-peterx@redhat.com>
-        <20220405151616.bf25fa4aad55536cd031e1ab@linux-foundation.org>
-        <YkzF4/e86qwcuXiA@xz-m1.local>
-X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.33; x86_64-redhat-linux-gnu)
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+        Tue, 5 Apr 2022 20:35:16 -0400
+Received: from mail-pg1-x536.google.com (mail-pg1-x536.google.com [IPv6:2607:f8b0:4864:20::536])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FD2415FD5;
+        Tue,  5 Apr 2022 15:48:11 -0700 (PDT)
+Received: by mail-pg1-x536.google.com with SMTP id k14so674454pga.0;
+        Tue, 05 Apr 2022 15:48:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:from:in-reply-to:subject:to:cc
+         :content-transfer-encoding;
+        bh=WeQRBWICcKsG6vLLIzWdoFskEeVQFi7P73q8nszBBDA=;
+        b=VoBQLxjXKRhgoEZMZJRAv5QfNyAH8MytMo8DwH5Dv9nt8nIWUKqs2NRJ1NU3+nWmP9
+         XRUmMxfCwtPIcqQ6NjRZynr+btsYF8TAPnJtxi3rxDWEgVm9guXw60BZUqEwu7Qc5Yrw
+         gYUB9ysEURQQra9mLfL8Cwnfm7CjIrB6QcZBDrTBsaUBpdP5u9SsKrXS04Q0A5ItzrRB
+         JEFqxbsi2StfGSYfdCVjke+C/BhaCXVUmeFsYFNLY5KmAm6vEifcLHFdCzVPpE/0G8a6
+         LFCc9t+FoOI/W06An24Ls81JlW0rp5YEkY1f2CkDQm3LvyGPzrwcUImBRwjFDMdTsAoZ
+         knSQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:from:in-reply-to:subject:to:cc
+         :content-transfer-encoding;
+        bh=WeQRBWICcKsG6vLLIzWdoFskEeVQFi7P73q8nszBBDA=;
+        b=M9qIFi2TRt3cGrnqzrOx8im4/23CSbxh5CPMppsyrINeJxCG4glFjEziDFtj51QDwB
+         bDUuIwCBokMpMs7+KpnjoKBXAQjQZL0mRNQE0w415VzRB6q3XIBp0L8QjBQLT8UO2ifo
+         VXUn4aHLu937W+lUokVc5YXSQl/uvVd9ly6zK3bTLrMpHinvRLVlwX5IdV2bFYcjpwVM
+         /fc0FuTyEJyI/lEgD/8wA3CK8ceeO69yN2k2pgP+51O7W324cNgY8v1Oyzr1ct0IMm25
+         WJDlzE800jbjZl3HGzc+iQLDpHozMpLitH+tIqzfZAfPIPscCWtyghRlG28FFCuI+9hy
+         w94Q==
+X-Gm-Message-State: AOAM530TxsH+bwPZEVRlZje+1Y2bbtt0SeDueXJuKqyK6fuJ0RPJHG7u
+        XV09kvx1z+P0lqrZrpg9JtE0E0Xw4KHYQf8B+90=
+X-Google-Smtp-Source: ABdhPJw6zyo2FFbI9UTmLozRelgtiDM42JkhZ6L78RnLYYxl6fTZ8LJBFBZI2xZqVlv+Y+q+AKvizw==
+X-Received: by 2002:a63:3819:0:b0:398:1338:1118 with SMTP id f25-20020a633819000000b0039813381118mr4523806pga.33.1649198882974;
+        Tue, 05 Apr 2022 15:48:02 -0700 (PDT)
+Received: from cl-arch-kdev (cl-arch-kdev.xen.prgmr.com. [2605:2700:0:2:a800:ff:fed6:fc0d])
+        by smtp.gmail.com with ESMTPSA id q203-20020a632ad4000000b003987c421eb2sm14434334pgq.34.2022.04.05.15.48.01
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 05 Apr 2022 15:48:02 -0700 (PDT)
+Message-ID: <624cc722.1c69fb81.44fdc.649f@mx.google.com>
+Date:   Tue, 05 Apr 2022 15:48:02 -0700 (PDT)
+X-Google-Original-Date: Tue, 05 Apr 2022 22:48:00 GMT
+From:   Fox Chen <foxhlchen@gmail.com>
+In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
+Subject: RE: [PATCH 5.17 0000/1126] 5.17.2-rc1 review
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, torvalds@linux-foundation.org,
+        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
+        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
+        jonathanh@nvidia.com, f.fainelli@gmail.com,
+        sudipm.mukherjee@gmail.com, slade@sladewatkins.com,
+        Fox Chen <foxhlchen@gmail.com>
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 5 Apr 2022 18:42:43 -0400 Peter Xu <peterx@redhat.com> wrote:
+On Tue,  5 Apr 2022 09:12:27 +0200, Greg Kroah-Hartman <gregkh@linuxfoundation.org> wrote:
+> This is the start of the stable review cycle for the 5.17.2 release.
+> There are 1126 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
+> 
+> Responses should be made by Thu, 07 Apr 2022 07:01:33 +0000.
+> Anything received after that time might be too late.
+> 
+> The whole patch series can be found in one patch at:
+> 	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.17.2-rc1.gz
+> or in the git tree and branch at:
+> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.17.y
+> and the diffstat can be found below.
+> 
+> thanks,
+> 
+> greg k-h
+> 
 
-> On Tue, Apr 05, 2022 at 03:16:16PM -0700, Andrew Morton wrote:
-> > On Mon,  4 Apr 2022 21:46:23 -0400 Peter Xu <peterx@redhat.com> wrote:
-> > 
-> > > This is v8 of the series to add shmem+hugetlbfs support for userfaultfd
-> > > write protection. 
-> > 
-> > Various compilation catastrophes with x86_64 allnoconfig.  I poked at
-> > the include ordering for a while but other things quickly became more
-> > attractive ;)
-> 
-> Sorry about that.  I still don't know what's the problem, but I'll give it
-> a shot soon.
-> 
-> I think I only tried out with the new configs but not all the rest configs.
-> I thought there're some bot looking after that one, from which I used to
-> receive build reports. And IIRC I fixed some build issues in early versions
-> from those reports.  Maybe I was wrong..
-> 
-> Any more hints on the latter?
+5.17.2-rc1 Successfully Compiled and booted on my Raspberry PI 4b (8g) (bcm2711)
+                
+Tested-by: Fox Chen <foxhlchen@gmail.com>
 
-`make allnoconfig'?
