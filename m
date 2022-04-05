@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7FEE0C4167B
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 11:21:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 81F5CC43217
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 11:23:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359562AbiDELUC (ORCPT
+        id S1359586AbiDELUJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 07:20:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34818 "EHLO
+        Tue, 5 Apr 2022 07:20:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34692 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236709AbiDEIQ5 (ORCPT
+        with ESMTP id S236635AbiDEIQx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:16:57 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7081DAD123;
-        Tue,  5 Apr 2022 01:04:32 -0700 (PDT)
+        Tue, 5 Apr 2022 04:16:53 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8FD64AC916;
+        Tue,  5 Apr 2022 01:04:26 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B8A66B81B90;
-        Tue,  5 Apr 2022 08:04:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 08B62C385A2;
-        Tue,  5 Apr 2022 08:04:28 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5E5FE6167A;
+        Tue,  5 Apr 2022 08:04:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5BC5EC385A1;
+        Tue,  5 Apr 2022 08:04:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649145869;
-        bh=sc9pWM0Et+OG2UDsJfEDeDUGc1KeOVmKtHvxnrWQ5Ag=;
+        s=korg; t=1649145863;
+        bh=44+/UR9a/KL4i0Hp8WLt/w0fWfsdce7H2UPnoORDWCI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VB3prBfeirjDxhttXUI65+LukTqupTVQYNP0W7TSbI43yYGeqGMmnYA3gqsw9oXMa
-         Sc590s7Mn9dRD/L6cehaLzEnuaJj5wXZLcnpkvJWL58VCxXI6Bs70fNNr7OtOHAIaI
-         4VD9aHV+dd8YGduYNzAgBs2SB6WRRxQakzS/61RU=
+        b=XHbhMyMQfHk57ztHVg6yQ71GBeAwYcNiDGwwI7IzZ+vNXyF7WXS2T8Ska+8cKnDyf
+         1wmueIQzXrOk/NS34yZqXRqU3vy/IZdt2d+C+erdZskgOkNsof+S35qiIU7DGXm3m8
+         8dykTKZsTj0fciHyq6n5Hzu5Q0byWIJfSyAaKIRE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Rotem Saado <rotem.saado@intel.com>,
-        Luca Coelho <luciano.coelho@intel.com>,
+        stable@vger.kernel.org, Luca Coelho <luciano.coelho@intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0560/1126] iwlwifi: yoyo: remove DBGI_SRAM address reset writing
-Date:   Tue,  5 Apr 2022 09:21:47 +0200
-Message-Id: <20220405070424.070708637@linuxfoundation.org>
+Subject: [PATCH 5.17 0558/1126] iwlwifi: mvm: dont iterate unadded vifs when handling FW SMPS req
+Date:   Tue,  5 Apr 2022 09:21:45 +0200
+Message-Id: <20220405070424.012256645@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -50,52 +49,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Rotem Saado <rotem.saado@intel.com>
+From: Luca Coelho <luciano.coelho@intel.com>
 
-[ Upstream commit ce014c9861544bb4e789323d0d8956a5ad262e25 ]
+[ Upstream commit 8a265d1a619c16400406c9d598411850ee104aed ]
 
-Due to preg protection we cannot write to this register
-while FW is running (when FW in Halt it is ok).
-since we have some cases that we need to dump this
-region while FW is running remove this writing from DRV.
-FW will do this writing.
+We may not have all the interfaces added to the driver when we get the
+THERMAL_DUAL_CHAIN_REQUEST notification from the FW, so instead of
+iterating all vifs to update SMPS, iterate only the ones that are
+already assigned.  The interfaces that were not assigned yet, will be
+updated accordingly when we start using them.
 
-Signed-off-by: Rotem Saado <rotem.saado@intel.com>
-Fixes: 89639e06d0f3 ("iwlwifi: yoyo: support for new DBGI_SRAM region")
 Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
-Link: https://lore.kernel.org/r/iwlwifi.20220129105618.209f3078bc74.I463530bd2f40daedb39f6d9df987bb7cee209033@changeid
+Fixes: 2a7ce54ccc23 ("iwlwifi: mvm: honour firmware SMPS requests")
+Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
+Link: https://lore.kernel.org/r/iwlwifi.20220129105618.9416aade2ba0.I0b71142f89e3f158aa058a1dfb2517c8c1fa3726@changeid
 Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/intel/iwlwifi/fw/dbg.c   | 2 --
- drivers/net/wireless/intel/iwlwifi/iwl-prph.h | 2 --
- 2 files changed, 4 deletions(-)
+ drivers/net/wireless/intel/iwlwifi/mvm/ops.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/wireless/intel/iwlwifi/fw/dbg.c b/drivers/net/wireless/intel/iwlwifi/fw/dbg.c
-index 7ad9cee925da..372cc950cc88 100644
---- a/drivers/net/wireless/intel/iwlwifi/fw/dbg.c
-+++ b/drivers/net/wireless/intel/iwlwifi/fw/dbg.c
-@@ -1561,8 +1561,6 @@ iwl_dump_ini_dbgi_sram_iter(struct iwl_fw_runtime *fwrt,
- 		return -EBUSY;
- 
- 	range->range_data_size = reg->dev_addr.size;
--	iwl_write_prph_no_grab(fwrt->trans, DBGI_SRAM_TARGET_ACCESS_CFG,
--			       DBGI_SRAM_TARGET_ACCESS_CFG_RESET_ADDRESS_MSK);
- 	for (i = 0; i < (le32_to_cpu(reg->dev_addr.size) / 4); i++) {
- 		prph_data = iwl_read_prph_no_grab(fwrt->trans, (i % 2) ?
- 					  DBGI_SRAM_TARGET_ACCESS_RDATA_MSB :
-diff --git a/drivers/net/wireless/intel/iwlwifi/iwl-prph.h b/drivers/net/wireless/intel/iwlwifi/iwl-prph.h
-index 95b3dae7b504..9331a6b6bf36 100644
---- a/drivers/net/wireless/intel/iwlwifi/iwl-prph.h
-+++ b/drivers/net/wireless/intel/iwlwifi/iwl-prph.h
-@@ -354,8 +354,6 @@
- #define WFPM_GP2			0xA030B4
- 
- /* DBGI SRAM Register details */
--#define DBGI_SRAM_TARGET_ACCESS_CFG			0x00A2E14C
--#define DBGI_SRAM_TARGET_ACCESS_CFG_RESET_ADDRESS_MSK	0x10000
- #define DBGI_SRAM_TARGET_ACCESS_RDATA_LSB		0x00A2E154
- #define DBGI_SRAM_TARGET_ACCESS_RDATA_MSB		0x00A2E158
+diff --git a/drivers/net/wireless/intel/iwlwifi/mvm/ops.c b/drivers/net/wireless/intel/iwlwifi/mvm/ops.c
+index 1f8b97995b94..069d54501e30 100644
+--- a/drivers/net/wireless/intel/iwlwifi/mvm/ops.c
++++ b/drivers/net/wireless/intel/iwlwifi/mvm/ops.c
+@@ -235,7 +235,8 @@ static void iwl_mvm_rx_thermal_dual_chain_req(struct iwl_mvm *mvm,
+ 	 */
+ 	mvm->fw_static_smps_request =
+ 		req->event == cpu_to_le32(THERMAL_DUAL_CHAIN_REQ_DISABLE);
+-	ieee80211_iterate_interfaces(mvm->hw, IEEE80211_IFACE_ITER_NORMAL,
++	ieee80211_iterate_interfaces(mvm->hw,
++				     IEEE80211_IFACE_SKIP_SDATA_NOT_IN_DRIVER,
+ 				     iwl_mvm_intf_dual_chain_req, NULL);
+ }
  
 -- 
 2.34.1
