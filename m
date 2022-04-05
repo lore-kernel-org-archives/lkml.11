@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E8F82C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D1538C433EF
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 13:41:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1390198AbiDENhe (ORCPT
+        id S1390179AbiDENhZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 09:37:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34468 "EHLO
+        Tue, 5 Apr 2022 09:37:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41500 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343974AbiDEJQn (ORCPT
+        with ESMTP id S242408AbiDEJHx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:16:43 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF8E3D64F7;
-        Tue,  5 Apr 2022 02:02:15 -0700 (PDT)
+        Tue, 5 Apr 2022 05:07:53 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51E526AA49;
+        Tue,  5 Apr 2022 01:56:52 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 58928B81C19;
-        Tue,  5 Apr 2022 09:02:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B817EC385A0;
-        Tue,  5 Apr 2022 09:02:12 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9D94961572;
+        Tue,  5 Apr 2022 08:56:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AF95CC385A0;
+        Tue,  5 Apr 2022 08:56:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649149333;
-        bh=nFAlM8SC4bGfTFPK+QEVwKUwAblEGofTTZTQdXpBBfo=;
+        s=korg; t=1649149007;
+        bh=/P8TunVzWGpmmpgr6qat+AphEiaH/CrUmR30w+542Fs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bXYL0xScU5LhLRrvw5AtpRn3UnCViqIIgnsT62sZJH37ib5fv3BwpnuUcquh4bmzQ
-         N1pT0nSwWNGbGfc51bYDGtZnByNiWt4zRuiXcBRt8TPo8VTF30VU2lGCR2uBbhmuQZ
-         Y1sND9oGV15Yz5VwJ/UxIcmfykpd9unvMUuE+aw8=
+        b=1qQKjnNVytpUXwgHNWappBGfyHGqchqGTtOjjO5x56FBPd2SsJfeCGUZOjGO3UKm4
+         IS07dC8/XRLKiL7IjbY1AJXYdjBrF3MvnYXfrKb30AngiXuGQNkTDvo2IMgWEbOKae
+         UHGbzC3J7N4rbmc3PzY+1P8fvSTKQR5Dr2NzNS2k=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Trond Myklebust <trond.myklebust@hammerspace.com>,
+        stable@vger.kernel.org, Ping Fang <pifang@redhat.com>,
+        Daniel Henrique Barboza <danielhb413@gmail.com>,
+        Michael Ellerman <mpe@ellerman.id.au>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0671/1017] NFS: Return valid errors from nfs2/3_decode_dirent()
-Date:   Tue,  5 Apr 2022 09:26:24 +0200
-Message-Id: <20220405070414.198433601@linuxfoundation.org>
+Subject: [PATCH 5.16 0561/1017] powerpc/mm/numa: skip NUMA_NO_NODE onlining in parse_numa_properties()
+Date:   Tue,  5 Apr 2022 09:24:34 +0200
+Message-Id: <20220405070410.932484127@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -50,104 +51,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Trond Myklebust <trond.myklebust@hammerspace.com>
+From: Daniel Henrique Barboza <danielhb413@gmail.com>
 
-[ Upstream commit 64cfca85bacde54caa64e0ab855c48734894fa37 ]
+[ Upstream commit 749ed4a20657bcea66a6e082ca3dc0d228cbec80 ]
 
-Valid return values for decode_dirent() callback functions are:
- 0: Success
- -EBADCOOKIE: End of directory
- -EAGAIN: End of xdr_stream
+Executing node_set_online() when nid = NUMA_NO_NODE results in an
+undefined behavior. node_set_online() will call node_set_state(), into
+__node_set(), into set_bit(), and since NUMA_NO_NODE is -1 we'll end up
+doing a negative shift operation inside
+arch/powerpc/include/asm/bitops.h. This potential UB was detected
+running a kernel with CONFIG_UBSAN.
 
-All errors need to map into one of those three values.
+The behavior was introduced by commit 10f78fd0dabb ("powerpc/numa: Fix a
+regression on memoryless node 0"), where the check for nid > 0 was
+removed to fix a problem that was happening with nid = 0, but the result
+is that now we're trying to online NUMA_NO_NODE nids as well.
 
-Fixes: 573c4e1ef53a ("NFS: Simplify ->decode_dirent() calling sequence")
-Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
+Checking for nid >= 0 will allow node 0 to be onlined while avoiding
+this UB with NUMA_NO_NODE.
+
+Fixes: 10f78fd0dabb ("powerpc/numa: Fix a regression on memoryless node 0")
+Reported-by: Ping Fang <pifang@redhat.com>
+Signed-off-by: Daniel Henrique Barboza <danielhb413@gmail.com>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/20220224182312.1012527-1-danielhb413@gmail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/nfs/nfs2xdr.c |  2 +-
- fs/nfs/nfs3xdr.c | 21 ++++++---------------
- 2 files changed, 7 insertions(+), 16 deletions(-)
+ arch/powerpc/mm/numa.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/fs/nfs/nfs2xdr.c b/fs/nfs/nfs2xdr.c
-index 7fba7711e6b3..3d5ba43f44bb 100644
---- a/fs/nfs/nfs2xdr.c
-+++ b/fs/nfs/nfs2xdr.c
-@@ -949,7 +949,7 @@ int nfs2_decode_dirent(struct xdr_stream *xdr, struct nfs_entry *entry,
+diff --git a/arch/powerpc/mm/numa.c b/arch/powerpc/mm/numa.c
+index 59d3cfcd7887..5fb829256b59 100644
+--- a/arch/powerpc/mm/numa.c
++++ b/arch/powerpc/mm/numa.c
+@@ -956,7 +956,9 @@ static int __init parse_numa_properties(void)
+ 			of_node_put(cpu);
+ 		}
  
- 	error = decode_filename_inline(xdr, &entry->name, &entry->len);
- 	if (unlikely(error))
--		return error;
-+		return -EAGAIN;
- 
- 	/*
- 	 * The type (size and byte order) of nfscookie isn't defined in
-diff --git a/fs/nfs/nfs3xdr.c b/fs/nfs/nfs3xdr.c
-index 54a1d21cbcc6..7ab60ad98776 100644
---- a/fs/nfs/nfs3xdr.c
-+++ b/fs/nfs/nfs3xdr.c
-@@ -1967,7 +1967,6 @@ int nfs3_decode_dirent(struct xdr_stream *xdr, struct nfs_entry *entry,
- 		       bool plus)
- {
- 	struct user_namespace *userns = rpc_userns(entry->server->client);
--	struct nfs_entry old = *entry;
- 	__be32 *p;
- 	int error;
- 	u64 new_cookie;
-@@ -1987,15 +1986,15 @@ int nfs3_decode_dirent(struct xdr_stream *xdr, struct nfs_entry *entry,
- 
- 	error = decode_fileid3(xdr, &entry->ino);
- 	if (unlikely(error))
--		return error;
-+		return -EAGAIN;
- 
- 	error = decode_inline_filename3(xdr, &entry->name, &entry->len);
- 	if (unlikely(error))
--		return error;
-+		return -EAGAIN;
- 
- 	error = decode_cookie3(xdr, &new_cookie);
- 	if (unlikely(error))
--		return error;
-+		return -EAGAIN;
- 
- 	entry->d_type = DT_UNKNOWN;
- 
-@@ -2003,7 +2002,7 @@ int nfs3_decode_dirent(struct xdr_stream *xdr, struct nfs_entry *entry,
- 		entry->fattr->valid = 0;
- 		error = decode_post_op_attr(xdr, entry->fattr, userns);
- 		if (unlikely(error))
--			return error;
-+			return -EAGAIN;
- 		if (entry->fattr->valid & NFS_ATTR_FATTR_V3)
- 			entry->d_type = nfs_umode_to_dtype(entry->fattr->mode);
- 
-@@ -2018,11 +2017,8 @@ int nfs3_decode_dirent(struct xdr_stream *xdr, struct nfs_entry *entry,
- 			return -EAGAIN;
- 		if (*p != xdr_zero) {
- 			error = decode_nfs_fh3(xdr, entry->fh);
--			if (unlikely(error)) {
--				if (error == -E2BIG)
--					goto out_truncated;
--				return error;
--			}
-+			if (unlikely(error))
-+				return -EAGAIN;
- 		} else
- 			zero_nfs_fh3(entry->fh);
+-		node_set_online(nid);
++		/* node_set_online() is an UB if 'nid' is negative */
++		if (likely(nid >= 0))
++			node_set_online(nid);
  	}
-@@ -2031,11 +2027,6 @@ int nfs3_decode_dirent(struct xdr_stream *xdr, struct nfs_entry *entry,
- 	entry->cookie = new_cookie;
  
- 	return 0;
--
--out_truncated:
--	dprintk("NFS: directory entry contains invalid file handle\n");
--	*entry = old;
--	return -EAGAIN;
- }
- 
- /*
+ 	get_n_mem_cells(&n_mem_addr_cells, &n_mem_size_cells);
 -- 
 2.34.1
 
