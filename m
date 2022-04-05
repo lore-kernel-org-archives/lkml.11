@@ -2,83 +2,189 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DD2F7C4321E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C9ABCC43219
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:56:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383568AbiDEUzP (ORCPT
+        id S1382938AbiDEUzK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 16:55:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43736 "EHLO
+        Tue, 5 Apr 2022 16:55:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36170 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354645AbiDEKO5 (ORCPT
+        with ESMTP id S1392147AbiDEPfq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:14:57 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31CF16C1D5;
-        Tue,  5 Apr 2022 03:02:08 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C00856172B;
-        Tue,  5 Apr 2022 10:02:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C81E7C385A2;
-        Tue,  5 Apr 2022 10:02:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649152927;
-        bh=WShbQXSabFJ84DUQ7BZubSHOJSxU09EfsVqM5MsbdRg=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NZQ+XQCemkKza0SQY7bZmfbeOpCdsgMW3TTzPRqeMjdvz7wveWD/PnLIumE+Nx39Z
-         ZpQ5SPZ5tTyWN1eUo/sNGEdy8FkR7IpV8GD8xZ9bTmwtnObzXWU5T06dYHwrdR5DPH
-         hzjXV5H7s9MkO8d1/C6Hq+7PTrEdttOMC+A/4uUA=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Daniel Palmer <daniel@0x0f.com>,
-        Arnd Bergmann <arnd@arndb.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 008/599] ARM: mstar: Select HAVE_ARM_ARCH_TIMER
-Date:   Tue,  5 Apr 2022 09:25:02 +0200
-Message-Id: <20220405070259.061969249@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 5 Apr 2022 11:35:46 -0400
+Received: from perceval.ideasonboard.com (perceval.ideasonboard.com [IPv6:2001:4b98:dc2:55:216:3eff:fef7:d647])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CAF9F710DB;
+        Tue,  5 Apr 2022 06:46:39 -0700 (PDT)
+Received: from pendragon.ideasonboard.com (117.145-247-81.adsl-dyn.isp.belgacom.be [81.247.145.117])
+        by perceval.ideasonboard.com (Postfix) with ESMTPSA id A8D535D;
+        Tue,  5 Apr 2022 15:46:37 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=ideasonboard.com;
+        s=mail; t=1649166397;
+        bh=NozpGi0NsTMG/sB7xLGYVBuLZzmbJ7B3Gwh+tj4+cQI=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=G8zkeM3lID2r8WMzYcbEXGAKX30vNSczc4ScWlOdPdazVH/RfNFQL0KJdhysWOadF
+         UCQQNWpNkGeaaTSgDAiZVcb+ZdCBuPEJQszJlD+quolRO/UOwM3K1+BDhoqKaHBHyj
+         YDypJs7DW5COOEgATFL/Z3vHTMi97p9eqOQGL8UM=
+Date:   Tue, 5 Apr 2022 16:46:34 +0300
+From:   Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+To:     Patrick Rudolph <patrick.rudolph@9elements.com>
+Cc:     Peter Rosin <peda@axentia.se>, Rob Herring <robh+dt@kernel.org>,
+        linux-i2c@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [v7 1/3] dt-bindings: i2c: Add Maxim MAX735x/MAX736x variants
+Message-ID: <YkxIOgTl876orHbf@pendragon.ideasonboard.com>
+References: <20220405120552.433415-1-patrick.rudolph@9elements.com>
+ <20220405120552.433415-2-patrick.rudolph@9elements.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20220405120552.433415-2-patrick.rudolph@9elements.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Daniel Palmer <daniel@0x0f.com>
+Hi Patrick,
 
-[ Upstream commit ea49432d184a6a09f84461604b7711a4e9f5ec9c ]
+Thank you for the patch.
 
-The mstar SoCs have an arch timer but HAVE_ARM_ARCH_TIMER wasn't
-selected. If MSC313E_TIMER isn't selected then the kernel gets
-stuck at boot because there are no timers available.
+On Tue, Apr 05, 2022 at 02:05:49PM +0200, Patrick Rudolph wrote:
+> Update the pca954x bindings to add support for the Maxim MAX735x/MAX736x
+> chips. The functionality will be provided by the exisintg pca954x driver.
+> 
+> While on it make the interrupts support conditionally as not all of the
+> existing chips have interrupts.
+> 
+> For chips that are powered off by default add an optional regulator
+> called vdd-supply.
+> 
+> Signed-off-by: Patrick Rudolph <patrick.rudolph@9elements.com>
+> ---
+>  .../bindings/i2c/i2c-mux-pca954x.yaml         | 44 ++++++++++++++-----
+>  1 file changed, 34 insertions(+), 10 deletions(-)
+> 
+> diff --git a/Documentation/devicetree/bindings/i2c/i2c-mux-pca954x.yaml b/Documentation/devicetree/bindings/i2c/i2c-mux-pca954x.yaml
+> index 9f1726d0356b..132c3e54e7ab 100644
+> --- a/Documentation/devicetree/bindings/i2c/i2c-mux-pca954x.yaml
+> +++ b/Documentation/devicetree/bindings/i2c/i2c-mux-pca954x.yaml
+> @@ -4,21 +4,48 @@
+>  $id: http://devicetree.org/schemas/i2c/i2c-mux-pca954x.yaml#
+>  $schema: http://devicetree.org/meta-schemas/core.yaml#
+>  
+> -title: NXP PCA954x I2C bus switch
+> +title: NXP PCA954x I2C and compatible bus switches
+>  
+>  maintainers:
+>    - Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+>  
+>  description:
+> -  The binding supports NXP PCA954x and PCA984x I2C mux/switch devices.
+> +  The binding supports NXP PCA954x and PCA984x I2C mux/switch devices,
+> +  and the Maxim MAX735x and MAX736x I2C mux/switch devices.
+>  
+>  allOf:
+>    - $ref: /schemas/i2c/i2c-mux.yaml#
+> +  - if:
+> +      properties:
+> +        compatible:
+> +          contains:
+> +            enum:
+> +              - maxim,max7367
+> +              - maxim,max7369
+> +              - nxp,pca9542
+> +              - nxp,pca9543
+> +              - nxp,pca9544
+> +              - nxp,pca9545
+> +    then:
+> +      properties:
+> +        interrupts:
+> +          maxItems: 1
+> +
+> +        "#interrupt-cells":
+> +          const: 2
+> +
+> +        interrupt-controller: true
 
-Signed-off-by: Daniel Palmer <daniel@0x0f.com>
-Link: https://lore.kernel.org/r/20220301104349.3040422-1-daniel@0x0f.com'
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- arch/arm/mach-mstar/Kconfig | 1 +
- 1 file changed, 1 insertion(+)
+It feels a bit out of place to have those properties listed before the
+main "properties" property, but we can only have a sincel allOf. I
+wonder if the i2c-mux schema could be selected automatically based on
+node name, but that's out of scope for this patch.
 
-diff --git a/arch/arm/mach-mstar/Kconfig b/arch/arm/mach-mstar/Kconfig
-index 576d1ab293c8..30560fdf87ed 100644
---- a/arch/arm/mach-mstar/Kconfig
-+++ b/arch/arm/mach-mstar/Kconfig
-@@ -3,6 +3,7 @@ menuconfig ARCH_MSTARV7
- 	depends on ARCH_MULTI_V7
- 	select ARM_GIC
- 	select ARM_HEAVY_MB
-+	select HAVE_ARM_ARCH_TIMER
- 	select MST_IRQ
- 	help
- 	  Support for newer MStar/Sigmastar SoC families that are
+I thought it was more customary to define properties in the main
+"properties" property, and then have
+
+if:
+  not:
+    properties:
+      compatible:
+        contains:
+          enum:
+            - maxim,max7367
+            - maxim,max7369
+            - nxp,pca9542
+            - nxp,pca9543
+            - nxp,pca9544
+            - nxp,pca9545
+  then:
+    properties:
+      interrupts: false
+      "#interrupt-cells": false
+      interrupt-controller: false
+
+I don't mind much either way though, but if one option is preferred over
+the other, we may want to be consistent.
+
+Reviewed-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+
+>  properties:
+>    compatible:
+>      oneOf:
+>        - enum:
+> +          - maxim,max7356
+> +          - maxim,max7357
+> +          - maxim,max7358
+> +          - maxim,max7367
+> +          - maxim,max7368
+> +          - maxim,max7369
+>            - nxp,pca9540
+>            - nxp,pca9542
+>            - nxp,pca9543
+> @@ -38,14 +65,6 @@ properties:
+>    reg:
+>      maxItems: 1
+>  
+> -  interrupts:
+> -    maxItems: 1
+> -
+> -  "#interrupt-cells":
+> -    const: 2
+> -
+> -  interrupt-controller: true
+> -
+>    reset-gpios:
+>      maxItems: 1
+>  
+> @@ -59,6 +78,9 @@ properties:
+>      description: if present, overrides i2c-mux-idle-disconnect
+>      $ref: /schemas/mux/mux-controller.yaml#/properties/idle-state
+>  
+> +  vdd-supply:
+> +    description: A voltage regulator supplying power to the chip.
+> +
+>  required:
+>    - compatible
+>    - reg
+> @@ -79,6 +101,8 @@ examples:
+>              #size-cells = <0>;
+>              reg = <0x74>;
+>  
+> +            vdd-supply = <&p3v3>;
+> +
+>              interrupt-parent = <&ipic>;
+>              interrupts = <17 IRQ_TYPE_LEVEL_LOW>;
+>              interrupt-controller;
+
 -- 
-2.34.1
+Regards,
 
-
-
+Laurent Pinchart
