@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E740EC4167B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D761BC43217
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 13:23:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359285AbiDENLk (ORCPT
+        id S1344203AbiDENQ4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 09:11:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34664 "EHLO
+        Tue, 5 Apr 2022 09:16:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60606 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344203AbiDEJSi (ORCPT
+        with ESMTP id S1344275AbiDEJTD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:18:38 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 820099E9EF;
-        Tue,  5 Apr 2022 02:05:27 -0700 (PDT)
+        Tue, 5 Apr 2022 05:19:03 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FC02DC9;
+        Tue,  5 Apr 2022 02:06:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2E616B818F3;
-        Tue,  5 Apr 2022 09:05:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 85B24C385A0;
-        Tue,  5 Apr 2022 09:05:24 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B9AE8B81BBF;
+        Tue,  5 Apr 2022 09:06:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 12AD5C385A0;
+        Tue,  5 Apr 2022 09:06:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649149524;
-        bh=vp5P+tlZ9AwejLKFANiTgrszGOHonIstSV2V0M0I7Kk=;
+        s=korg; t=1649149616;
+        bh=TzN9S2c1jJpI9v8G0EpdcxObJsrqJKiqIfBV48VR++4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=aqnCy//8R9edZ3vwq/XYMmZERHy3qaimDcp6bdyOn0wO7MoF9hKc+Rc0UERUHqwoI
-         XCJvSeiIJKkIhU/kGqNrxax5kgZw+PQqKEA3on9hcIDck7iJ9lbaw6Ryn3nsjFjW8r
-         4zF5lh//knalq1g5JXshNdNEcWvhq4KEOkg48JOI=
+        b=N+d4YF2nTX/oV7e0RKqfS67JUVC1eGPgcYBTu4mAN4aHu3/0SrYQeB6avua4bufT9
+         1bBfSWipP87m740iP3/zpVLKnehPP7Tln9PI++n9EoXE+so1K5EbQCraDQQtu82P6G
+         zc2BmMCO7huiYvwXWMmckN1JMN/UoxoN6tB9WLqA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Florian Westphal <fw@strlen.de>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0745/1017] net/sched: act_ct: fix ref leak when switching zones
-Date:   Tue,  5 Apr 2022 09:27:38 +0200
-Message-Id: <20220405070416.376431731@linuxfoundation.org>
+        stable@vger.kernel.org, John David Anglin <dave.anglin@bell.net>,
+        Helge Deller <deller@gmx.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 0779/1017] parisc: Fix non-access data TLB cache flush faults
+Date:   Tue,  5 Apr 2022 09:28:12 +0200
+Message-Id: <20220405070417.381378238@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -51,63 +49,90 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+From: John David Anglin <dave.anglin@bell.net>
 
-[ Upstream commit bcb74e132a76ce0502bb33d5b65533a4ed72d159 ]
+[ Upstream commit f839e5f1cef36ce268950c387129b1bfefdaebc9 ]
 
-When switching zones or network namespaces without doing a ct clear in
-between, it is now leaking a reference to the old ct entry. That's
-because tcf_ct_skb_nfct_cached() returns false and
-tcf_ct_flow_table_lookup() may simply overwrite it.
+When a page is not present, we get non-access data TLB faults from
+the fdc and fic instructions in flush_user_dcache_range_asm and
+flush_user_icache_range_asm. When these occur, the cache line is
+not invalidated and potentially we get memory corruption. The
+problem was hidden by the nullification of the flush instructions.
 
-The fix is to, as the ct entry is not reusable, free it already at
-tcf_ct_skb_nfct_cached().
+These faults also affect performance. With pa8800/pa8900 processors,
+there will be 32 faults per 4 KB page since the cache line is 128
+bytes.  There will be more faults with earlier processors.
 
-Reported-by: Florian Westphal <fw@strlen.de>
-Fixes: 2f131de361f6 ("net/sched: act_ct: Fix flow table lookup after ct clear or switching zones")
-Signed-off-by: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+The problem is fixed by using flush_cache_pages(). It does the flush
+using a tmp alias mapping.
+
+The flush_cache_pages() call in flush_cache_range() flushed too
+large a range.
+
+V2: Remove unnecessary preempt_disable() and preempt_enable() calls.
+
+Signed-off-by: John David Anglin <dave.anglin@bell.net>
+Signed-off-by: Helge Deller <deller@gmx.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/sched/act_ct.c | 15 +++++++++------
- 1 file changed, 9 insertions(+), 6 deletions(-)
+ arch/parisc/kernel/cache.c | 28 +---------------------------
+ 1 file changed, 1 insertion(+), 27 deletions(-)
 
-diff --git a/net/sched/act_ct.c b/net/sched/act_ct.c
-index 240b3c5d2eb1..553bf41671a6 100644
---- a/net/sched/act_ct.c
-+++ b/net/sched/act_ct.c
-@@ -583,22 +583,25 @@ static bool tcf_ct_skb_nfct_cached(struct net *net, struct sk_buff *skb,
- 	if (!ct)
- 		return false;
- 	if (!net_eq(net, read_pnet(&ct->ct_net)))
--		return false;
-+		goto drop_ct;
- 	if (nf_ct_zone(ct)->id != zone_id)
--		return false;
-+		goto drop_ct;
- 
- 	/* Force conntrack entry direction. */
- 	if (force && CTINFO2DIR(ctinfo) != IP_CT_DIR_ORIGINAL) {
- 		if (nf_ct_is_confirmed(ct))
- 			nf_ct_kill(ct);
- 
--		nf_ct_put(ct);
--		nf_ct_set(skb, NULL, IP_CT_UNTRACKED);
--
--		return false;
-+		goto drop_ct;
+diff --git a/arch/parisc/kernel/cache.c b/arch/parisc/kernel/cache.c
+index 94150b91c96f..bce71cefe572 100644
+--- a/arch/parisc/kernel/cache.c
++++ b/arch/parisc/kernel/cache.c
+@@ -558,15 +558,6 @@ static void flush_cache_pages(struct vm_area_struct *vma, struct mm_struct *mm,
  	}
- 
- 	return true;
-+
-+drop_ct:
-+	nf_ct_put(ct);
-+	nf_ct_set(skb, NULL, IP_CT_UNTRACKED);
-+
-+	return false;
  }
  
- /* Trim the skb to the length specified by the IP/IPv6 header,
+-static void flush_user_cache_tlb(struct vm_area_struct *vma,
+-				 unsigned long start, unsigned long end)
+-{
+-	flush_user_dcache_range_asm(start, end);
+-	if (vma->vm_flags & VM_EXEC)
+-		flush_user_icache_range_asm(start, end);
+-	flush_tlb_range(vma, start, end);
+-}
+-
+ void flush_cache_mm(struct mm_struct *mm)
+ {
+ 	struct vm_area_struct *vma;
+@@ -581,17 +572,8 @@ void flush_cache_mm(struct mm_struct *mm)
+ 		return;
+ 	}
+ 
+-	preempt_disable();
+-	if (mm->context == mfsp(3)) {
+-		for (vma = mm->mmap; vma; vma = vma->vm_next)
+-			flush_user_cache_tlb(vma, vma->vm_start, vma->vm_end);
+-		preempt_enable();
+-		return;
+-	}
+-
+ 	for (vma = mm->mmap; vma; vma = vma->vm_next)
+ 		flush_cache_pages(vma, mm, vma->vm_start, vma->vm_end);
+-	preempt_enable();
+ }
+ 
+ void flush_cache_range(struct vm_area_struct *vma,
+@@ -605,15 +587,7 @@ void flush_cache_range(struct vm_area_struct *vma,
+ 		return;
+ 	}
+ 
+-	preempt_disable();
+-	if (vma->vm_mm->context == mfsp(3)) {
+-		flush_user_cache_tlb(vma, start, end);
+-		preempt_enable();
+-		return;
+-	}
+-
+-	flush_cache_pages(vma, vma->vm_mm, vma->vm_start, vma->vm_end);
+-	preempt_enable();
++	flush_cache_pages(vma, vma->vm_mm, start, end);
+ }
+ 
+ void
 -- 
 2.34.1
 
