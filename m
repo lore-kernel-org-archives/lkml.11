@@ -2,114 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 274EFC35294
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1203AC47081
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 21:37:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381772AbiDEViO (ORCPT
+        id S1381669AbiDEViJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 17:38:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39130 "EHLO
+        Tue, 5 Apr 2022 17:38:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34568 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349333AbiDEJtk (ORCPT
+        with ESMTP id S1392105AbiDEPfn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:49:40 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 332005FD3;
-        Tue,  5 Apr 2022 02:44:06 -0700 (PDT)
+        Tue, 5 Apr 2022 11:35:43 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 639A812E775
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 06:46:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5BD1B615E5;
-        Tue,  5 Apr 2022 09:44:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 65FA1C385A1;
-        Tue,  5 Apr 2022 09:44:05 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0A5B1B81C6D
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 13:46:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 46BB2C385A0;
+        Tue,  5 Apr 2022 13:46:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649151845;
-        bh=WsW6LYCcpbPQgKzCuxo3ZJJAg7nrkIEDruFN5ptLGag=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xjqXxcB8ykg3qrypjRYLMaimJxe+X2sZjjBSp++2OBFqGvm5urkZuX2jM+3+CxjSm
-         5+Jy9G4c0VMub8O/UroZCtoURmHUbNGQvICn813PtKvJzhYv5i2skNTpGoKeqfMC8X
-         pF4WqLHOIZ/GH8mkbgs50M0VHoGsZYKsA5EE3keY=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Phil Sutter <phil@nwl.cc>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 562/913] netfilter: conntrack: Add and use nf_ct_set_auto_assign_helper_warned()
-Date:   Tue,  5 Apr 2022 09:27:04 +0200
-Message-Id: <20220405070356.691019707@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
-User-Agent: quilt/0.66
+        s=korg; t=1649166367;
+        bh=tEPAy+NbytRr8LPw00hVjTlHe62y4ooPjjnn32amCII=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=OyNi6FyvaNdAHMo2HEF5qEjBKMeMUTU3O/vPvFBgdkzXewf1tDQ+QF0VMQIG3TTrx
+         sr/y65z0al95dQNkLplZ3mcnx9HCK4sJFFf8gQjgzLIJ8sohAxlK86eIHYgOca+g2n
+         iacvEz+fISPqWVOzWMP3bo8LeSGYymg4P8JaHOFg=
+Date:   Tue, 5 Apr 2022 15:45:49 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Larry Finger <Larry.Finger@lwfinger.net>
+Cc:     Alaa Mohamed <eng.alaamohamedsoliman.am@gmail.com>,
+        outreachy@lists.linux.dev, phil@philpotter.co.uk,
+        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 2/2] staging: r8188eu: Add line after declarations
+Message-ID: <YkxIDdCrJT1rV3SZ@kroah.com>
+References: <860d8e222e2b695ce5cb4f48aa46a7f66e05d8e4.1649082939.git.eng.alaamohamedsoliman.am@gmail.com>
+ <19d8f316e43d16c9341f7fe94e68534cf60cc05c.1649082939.git.eng.alaamohamedsoliman.am@gmail.com>
+ <c8461d9c-dda1-3c1e-0e3b-169073e8c4d0@lwfinger.net>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <c8461d9c-dda1-3c1e-0e3b-169073e8c4d0@lwfinger.net>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Phil Sutter <phil@nwl.cc>
+On Mon, Apr 04, 2022 at 01:47:33PM -0500, Larry Finger wrote:
+> On 4/4/22 09:39, Alaa Mohamed wrote:
+> > Reported by checkpatch:
+> > 
+> > WARNING: Missing a blank line after declarations
+> > 
+> > Signed-off-by: Alaa Mohamed <eng.alaamohamedsoliman.am@gmail.com>
+> > ---
+> >   drivers/staging/r8188eu/core/rtw_br_ext.c | 5 +++--
+> >   1 file changed, 3 insertions(+), 2 deletions(-)
+> > 
+> > diff --git a/drivers/staging/r8188eu/core/rtw_br_ext.c b/drivers/staging/r8188eu/core/rtw_br_ext.c
+> > index 7c664f80fa99..f7811b46db1c 100644
+> > --- a/drivers/staging/r8188eu/core/rtw_br_ext.c
+> > +++ b/drivers/staging/r8188eu/core/rtw_br_ext.c
+> > @@ -313,6 +313,7 @@ void nat25_db_cleanup(struct adapter *priv)
+> >   	for (i = 0; i < NAT25_HASH_SIZE; i++) {
+> >   		struct nat25_network_db_entry *f;
+> > +
+> >   		f = priv->nethash[i];
+> >   		while (f) {
+> >   			struct nat25_network_db_entry *g;
+> > @@ -339,12 +340,12 @@ void nat25_db_expire(struct adapter *priv)
+> >   	for (i = 0; i < NAT25_HASH_SIZE; i++) {
+> >   		struct nat25_network_db_entry *f;
+> > -		f = priv->nethash[i];
+> > +		f = priv->nethash[i];
+> >   		while (f) {
+> >   			struct nat25_network_db_entry *g;
+> > -			g = f->next_hash;
+> > +			g = f->next_hash;
+> >   			if (__nat25_has_expired(f)) {
+> >   				if (atomic_dec_and_test(&f->use_count)) {
+> >   					if (priv->scdb_entry == f) {
+> 
+> Acked_by: Larry Finger <Larry.Finger@lwfinger.net>
+> 
+> That applies to both patches.
 
-[ Upstream commit 31d0bb9763efad30377505f3467f958d1ebe1e3d ]
+b4 doesn't pick this ack up for both patches, you either need to do it
+on the 0/X message, or on each one individually.
 
-The function sets the pernet boolean to avoid the spurious warning from
-nf_ct_lookup_helper() when assigning conntrack helpers via nftables.
+thanks,
 
-Fixes: 1a64edf54f55 ("netfilter: nft_ct: add helper set support")
-Signed-off-by: Phil Sutter <phil@nwl.cc>
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- include/net/netfilter/nf_conntrack_helper.h | 1 +
- net/netfilter/nf_conntrack_helper.c         | 6 ++++++
- net/netfilter/nft_ct.c                      | 3 +++
- 3 files changed, 10 insertions(+)
-
-diff --git a/include/net/netfilter/nf_conntrack_helper.h b/include/net/netfilter/nf_conntrack_helper.h
-index 37f0fbefb060..9939c366f720 100644
---- a/include/net/netfilter/nf_conntrack_helper.h
-+++ b/include/net/netfilter/nf_conntrack_helper.h
-@@ -177,4 +177,5 @@ void nf_nat_helper_unregister(struct nf_conntrack_nat_helper *nat);
- int nf_nat_helper_try_module_get(const char *name, u16 l3num,
- 				 u8 protonum);
- void nf_nat_helper_put(struct nf_conntrack_helper *helper);
-+void nf_ct_set_auto_assign_helper_warned(struct net *net);
- #endif /*_NF_CONNTRACK_HELPER_H*/
-diff --git a/net/netfilter/nf_conntrack_helper.c b/net/netfilter/nf_conntrack_helper.c
-index ae4488a13c70..ceb38a7b37cb 100644
---- a/net/netfilter/nf_conntrack_helper.c
-+++ b/net/netfilter/nf_conntrack_helper.c
-@@ -556,6 +556,12 @@ static const struct nf_ct_ext_type helper_extend = {
- 	.id	= NF_CT_EXT_HELPER,
- };
- 
-+void nf_ct_set_auto_assign_helper_warned(struct net *net)
-+{
-+	nf_ct_pernet(net)->auto_assign_helper_warned = true;
-+}
-+EXPORT_SYMBOL_GPL(nf_ct_set_auto_assign_helper_warned);
-+
- void nf_conntrack_helper_pernet_init(struct net *net)
- {
- 	struct nf_conntrack_net *cnet = nf_ct_pernet(net);
-diff --git a/net/netfilter/nft_ct.c b/net/netfilter/nft_ct.c
-index 99b1de14ff7e..54ecb9fbf2de 100644
---- a/net/netfilter/nft_ct.c
-+++ b/net/netfilter/nft_ct.c
-@@ -1040,6 +1040,9 @@ static int nft_ct_helper_obj_init(const struct nft_ctx *ctx,
- 	if (err < 0)
- 		goto err_put_helper;
- 
-+	/* Avoid the bogus warning, helper will be assigned after CT init */
-+	nf_ct_set_auto_assign_helper_warned(ctx->net);
-+
- 	return 0;
- 
- err_put_helper:
--- 
-2.34.1
-
-
-
+greg k-h
