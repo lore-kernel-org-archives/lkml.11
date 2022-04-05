@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B214C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 09:52:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 93E88C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 09:52:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244464AbiDEJlW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 05:41:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34720 "EHLO
+        id S244607AbiDEJlc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 05:41:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52480 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239087AbiDEITr (ORCPT
+        with ESMTP id S239842AbiDEIVF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:19:47 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0F5F765A8;
-        Tue,  5 Apr 2022 01:10:11 -0700 (PDT)
+        Tue, 5 Apr 2022 04:21:05 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2910CE41;
+        Tue,  5 Apr 2022 01:19:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6A88960AFB;
-        Tue,  5 Apr 2022 08:10:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7D7A9C385A1;
-        Tue,  5 Apr 2022 08:10:10 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D7595B81B92;
+        Tue,  5 Apr 2022 08:19:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 393DEC385A1;
+        Tue,  5 Apr 2022 08:19:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649146210;
-        bh=o7xH8q1QcBDjg+NQiSO+r0qpDbFOAcGSWY82F81nOho=;
+        s=korg; t=1649146745;
+        bh=JLGEI5VU07W1DBK8iHJcfnKy6qqnAle1Lo81C0XR89o=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=zlvgrOfCbkP/kSHaVGKfO3aMiqx9nSccgMdOB+6uMs203cdvTHZxU9YRnyVGuXS+O
-         vUm7WtUkkoqUizBRHSNAMcuGhVmgDRSLY8/WjonlXQfzkdj9MHXliYD6sfaZll4R++
-         azlMYmso5AlGXxwXx2WYAmAk7m+iHQeCOkf7ejBs=
+        b=JsnnVA7JOmc9+FI3LzFjOsqNuRGtrRPqIVil/tExG9qygKN6fWTIZ14Dd8+oc1nb9
+         +N0Il7I5w24DZ3fl4IzQKuYzCiKKKAWrct2wfNMR68jqsyz5M1KSZOpEEgJuUV0rSO
+         SBT7MR1pyH/0bhOQpAa9Bypj8DKOreSGC1QdOeto=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        syzbot+b9bd12fbed3485a3e51f@syzkaller.appspotmail.com,
-        Pavel Skripkin <paskripkin@gmail.com>,
-        Marcel Holtmann <marcel@holtmann.org>,
+        stable@vger.kernel.org, Ritesh Harjani <riteshh@linux.ibm.com>,
+        Jan Kara <jack@suse.cz>, Theodore Tso <tytso@mit.edu>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0683/1126] Bluetooth: hci_uart: add missing NULL check in h5_enqueue
-Date:   Tue,  5 Apr 2022 09:23:50 +0200
-Message-Id: <20220405070427.665899043@linuxfoundation.org>
+Subject: [PATCH 5.17 0872/1126] ext4: correct cluster len and clusters changed accounting in ext4_mb_mark_bb
+Date:   Tue,  5 Apr 2022 09:26:59 +0200
+Message-Id: <20220405070433.132870927@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -51,44 +49,79 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pavel Skripkin <paskripkin@gmail.com>
+From: Ritesh Harjani <riteshh@linux.ibm.com>
 
-[ Upstream commit 32cb08e958696908a9aad5e49a78d74f7e32fffb ]
+[ Upstream commit a5c0e2fdf7cea535ba03259894dc184e5a4c2800 ]
 
-Syzbot hit general protection fault in __pm_runtime_resume(). The problem
-was in missing NULL check.
+ext4_mb_mark_bb() currently wrongly calculates cluster len (clen) and
+flex_group->free_clusters. This patch fixes that.
 
-hu->serdev can be NULL and we should not blindly pass &serdev->dev
-somewhere, since it will cause GPF.
+Identified based on code review of ext4_mb_mark_bb() function.
 
-Reported-by: syzbot+b9bd12fbed3485a3e51f@syzkaller.appspotmail.com
-Fixes: d9dd833cf6d2 ("Bluetooth: hci_h5: Add runtime suspend")
-Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
-Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
+Signed-off-by: Ritesh Harjani <riteshh@linux.ibm.com>
+Reviewed-by: Jan Kara <jack@suse.cz>
+Link: https://lore.kernel.org/r/a0b035d536bafa88110b74456853774b64c8ac40.1644992609.git.riteshh@linux.ibm.com
+Signed-off-by: Theodore Ts'o <tytso@mit.edu>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/bluetooth/hci_h5.c | 8 +++++---
- 1 file changed, 5 insertions(+), 3 deletions(-)
+ fs/ext4/mballoc.c | 19 ++++++++++++-------
+ 1 file changed, 12 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/bluetooth/hci_h5.c b/drivers/bluetooth/hci_h5.c
-index 34286ffe0568..7ac6908a4dfb 100644
---- a/drivers/bluetooth/hci_h5.c
-+++ b/drivers/bluetooth/hci_h5.c
-@@ -629,9 +629,11 @@ static int h5_enqueue(struct hci_uart *hu, struct sk_buff *skb)
- 		break;
+diff --git a/fs/ext4/mballoc.c b/fs/ext4/mballoc.c
+index f9be6ab482a5..eac21e2b1132 100644
+--- a/fs/ext4/mballoc.c
++++ b/fs/ext4/mballoc.c
+@@ -3899,10 +3899,11 @@ void ext4_mb_mark_bb(struct super_block *sb, ext4_fsblk_t block,
+ 	struct ext4_sb_info *sbi = EXT4_SB(sb);
+ 	ext4_group_t group;
+ 	ext4_grpblk_t blkoff;
+-	int i, clen, err;
++	int i, err;
+ 	int already;
++	unsigned int clen, clen_changed;
+ 
+-	clen = EXT4_B2C(sbi, len);
++	clen = EXT4_NUM_B2C(sbi, len);
+ 
+ 	ext4_get_group_no_and_offset(sb, block, &group, &blkoff);
+ 	bitmap_bh = ext4_read_block_bitmap(sb, group);
+@@ -3923,6 +3924,7 @@ void ext4_mb_mark_bb(struct super_block *sb, ext4_fsblk_t block,
+ 		if (!mb_test_bit(blkoff + i, bitmap_bh->b_data) == !state)
+ 			already++;
+ 
++	clen_changed = clen - already;
+ 	if (state)
+ 		ext4_set_bits(bitmap_bh->b_data, blkoff, clen);
+ 	else
+@@ -3935,9 +3937,9 @@ void ext4_mb_mark_bb(struct super_block *sb, ext4_fsblk_t block,
+ 						group, gdp));
+ 	}
+ 	if (state)
+-		clen = ext4_free_group_clusters(sb, gdp) - clen + already;
++		clen = ext4_free_group_clusters(sb, gdp) - clen_changed;
+ 	else
+-		clen = ext4_free_group_clusters(sb, gdp) + clen - already;
++		clen = ext4_free_group_clusters(sb, gdp) + clen_changed;
+ 
+ 	ext4_free_group_clusters_set(sb, gdp, clen);
+ 	ext4_block_bitmap_csum_set(sb, group, gdp, bitmap_bh);
+@@ -3947,10 +3949,13 @@ void ext4_mb_mark_bb(struct super_block *sb, ext4_fsblk_t block,
+ 
+ 	if (sbi->s_log_groups_per_flex) {
+ 		ext4_group_t flex_group = ext4_flex_group(sbi, group);
++		struct flex_groups *fg = sbi_array_rcu_deref(sbi,
++					   s_flex_groups, flex_group);
+ 
+-		atomic64_sub(len,
+-			     &sbi_array_rcu_deref(sbi, s_flex_groups,
+-						  flex_group)->free_clusters);
++		if (state)
++			atomic64_sub(clen_changed, &fg->free_clusters);
++		else
++			atomic64_add(clen_changed, &fg->free_clusters);
  	}
  
--	pm_runtime_get_sync(&hu->serdev->dev);
--	pm_runtime_mark_last_busy(&hu->serdev->dev);
--	pm_runtime_put_autosuspend(&hu->serdev->dev);
-+	if (hu->serdev) {
-+		pm_runtime_get_sync(&hu->serdev->dev);
-+		pm_runtime_mark_last_busy(&hu->serdev->dev);
-+		pm_runtime_put_autosuspend(&hu->serdev->dev);
-+	}
- 
- 	return 0;
- }
+ 	err = ext4_handle_dirty_metadata(NULL, NULL, bitmap_bh);
 -- 
 2.34.1
 
