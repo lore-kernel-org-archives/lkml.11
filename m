@@ -2,104 +2,165 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 389A8C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4EA7FC433FE
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 01:42:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1842982AbiDFBfo (ORCPT
+        id S1842991AbiDFBfs (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 21:35:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40312 "EHLO
+        Tue, 5 Apr 2022 21:35:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43080 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343881AbiDEM47 (ORCPT
+        with ESMTP id S1349356AbiDEJtm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 08:56:59 -0400
-Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4604F6BDF0
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 04:59:40 -0700 (PDT)
-Received: by mail-ej1-x62c.google.com with SMTP id p15so26158320ejc.7
-        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 04:59:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=oKfl96ffJzP0jk2BGX9X8+oVaB0Jilri5i9RHEz+bkk=;
-        b=bVV5ndjxBJSAES/HgU+ux2AI7Bty9KrqQwHtYKeW9eSIQv4Po2YJsQHgLPohipx8IP
-         PxRvdXLmsyIPVjT9j4Tc5Yhxic4T/Eja6UcPn/nQcTeR2sqwT2wwtKPdYinJD9KpPznu
-         zCTrlPZc0fsA263zJHGypILi1/yZ5y0WzBYeTNtNggQ3nEkCAPcxxCxVv5u6a9a58Rkn
-         pzDpJHUhJ6nirgZljWXvZYVvZD3eBtaK2lihlc9+NR4rKdxtDH1QAXNBC9VEKEKYrdSQ
-         8/RMef6ffPxTX3CBb9hBjgZkYMuXNHdWx640l+5/ar95azlmk9Puv8QtSjUjoYWo4mB8
-         hDVQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=oKfl96ffJzP0jk2BGX9X8+oVaB0Jilri5i9RHEz+bkk=;
-        b=m22ucuTRnF3JCJscFMy8eNP1By+1x/UD3nJQxds20SDgPXs3V7blmQ/Ho6+YygRnaK
-         Zo4utQt7aU4WgAzdp/5NeQXxWA6dggcPWGs7jJ4G+9Nwbj1sxptVzjxT2mIJMQURU6lf
-         4BXowyeABPAjCDOKUKDVLfKANgSLC8lViSHL79IakKElTDXUjtelKhaIGbwgC1L/F7Sx
-         4W22tKZAJSYnkf9x8FEzMZVVe4ujtY8Ffa1s2MmLtLaAIZnev4Ed+sAeXMQ49Cn/kX7j
-         lgXjdVD+QYbrgCwLOvtviZxBJ/bWRD06wx9xdHh9TrD4Y6pYASShvQ7IWNxr2si23grI
-         crDA==
-X-Gm-Message-State: AOAM5319v5WarX+gVZy0ucJZz8cvc1ec1n3MYqyIOJKH0XAD5YB+7RUT
-        0ds54fNdVJ7Y8G8uQaS0INnjrw==
-X-Google-Smtp-Source: ABdhPJzMcNUjaa3bb1bVgn7DmGJkg+zPMPP6CGc9NuQO6JPcTcmni3gRSsg5r+DqqBrN5dw/F5Rurg==
-X-Received: by 2002:a17:907:6d9b:b0:6db:8eab:94e0 with SMTP id sb27-20020a1709076d9b00b006db8eab94e0mr3116827ejc.687.1649159978936;
-        Tue, 05 Apr 2022 04:59:38 -0700 (PDT)
-Received: from [192.168.0.181] (xdsl-188-155-201-27.adslplus.ch. [188.155.201.27])
-        by smtp.gmail.com with ESMTPSA id f1-20020a056402194100b00416b174987asm6660211edz.35.2022.04.05.04.59.37
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 05 Apr 2022 04:59:38 -0700 (PDT)
-Message-ID: <14ce8189-6ea7-75d8-1b03-56dcb8eda2ac@linaro.org>
-Date:   Tue, 5 Apr 2022 13:59:37 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH RFC net-next v2 1/3] dt-bindings: net: convert mscc-miim
- to YAML format
-Content-Language: en-US
-To:     Michael Walle <michael@walle.cc>,
-        "David S . Miller" <davem@davemloft.net>,
+        Tue, 5 Apr 2022 05:49:42 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED7A17652;
+        Tue,  5 Apr 2022 02:44:24 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A3717B81B76;
+        Tue,  5 Apr 2022 09:44:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0A41AC385A2;
+        Tue,  5 Apr 2022 09:44:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649151862;
+        bh=gX6eklSrr01ENRDvKU//U3/JktbriZq5IwC08qnk9k0=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=CHiHXH8CwI2cuUrok22ucNWWPTrMoIlQOv7fhRRHbNMbdkdbHjDTs4Okr0BWEGREv
+         9IE9tdE1tgXl1LPqqZblT9DeY1yP6omAsCEmjd0R8lc29PlvdZFO90NJs/AnCRVof2
+         w3GLHwP3udejJffOS8NbYVJfm/t867NmRO717+mU=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Peter Robinson <pbrobinson@gmail.com>,
+        Jeremy Linton <jeremy.linton@arm.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>
-Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20220401215834.3757692-1-michael@walle.cc>
- <20220401215834.3757692-2-michael@walle.cc>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220401215834.3757692-2-michael@walle.cc>
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 567/913] net: bcmgenet: Use stronger register read/writes to assure ordering
+Date:   Tue,  5 Apr 2022 09:27:09 +0200
+Message-Id: <20220405070356.840232036@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
+User-Agent: quilt/0.66
+MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 01/04/2022 23:58, Michael Walle wrote:
-> Convert the mscc-miim device tree binding to the new YAML format.
-> 
-> The original binding don't mention if the interrupt property is optional
-> or not. But on the SparX-5 SoC, for example, the interrupt property isn't
-> used, thus in the new binding that property is optional. FWIW the driver
-> doesn't use interrupts at all.
-> 
-> Signed-off-by: Michael Walle <michael@walle.cc>
-> ---
->  .../devicetree/bindings/net/mscc,miim.yaml    | 56 +++++++++++++++++++
->  .../devicetree/bindings/net/mscc-miim.txt     | 26 ---------
->  2 files changed, 56 insertions(+), 26 deletions(-)
->  create mode 100644 Documentation/devicetree/bindings/net/mscc,miim.yaml
->  delete mode 100644 Documentation/devicetree/bindings/net/mscc-miim.txt
-> 
+From: Jeremy Linton <jeremy.linton@arm.com>
+
+[ Upstream commit 8d3ea3d402db94b61075617e71b67459a714a502 ]
+
+GCC12 appears to be much smarter about its dependency tracking and is
+aware that the relaxed variants are just normal loads and stores and
+this is causing problems like:
+
+[  210.074549] ------------[ cut here ]------------
+[  210.079223] NETDEV WATCHDOG: enabcm6e4ei0 (bcmgenet): transmit queue 1 timed out
+[  210.086717] WARNING: CPU: 1 PID: 0 at net/sched/sch_generic.c:529 dev_watchdog+0x234/0x240
+[  210.095044] Modules linked in: genet(E) nft_fib_inet nft_fib_ipv4 nft_fib_ipv6 nft_fib nft_reject_inet nf_reject_ipv4 nf_reject_ipv6 nft_reject nft_ct nft_chain_nat]
+[  210.146561] ACPI CPPC: PCC check channel failed for ss: 0. ret=-110
+[  210.146927] CPU: 1 PID: 0 Comm: swapper/1 Tainted: G            E     5.17.0-rc7G12+ #58
+[  210.153226] CPPC Cpufreq:cppc_scale_freq_workfn: failed to read perf counters
+[  210.161349] Hardware name: Raspberry Pi Foundation Raspberry Pi 4 Model B/Raspberry Pi 4 Model B, BIOS EDK2-DEV 02/08/2022
+[  210.161353] pstate: 80400005 (Nzcv daif +PAN -UAO -TCO -DIT -SSBS BTYPE=--)
+[  210.161358] pc : dev_watchdog+0x234/0x240
+[  210.161364] lr : dev_watchdog+0x234/0x240
+[  210.161368] sp : ffff8000080a3a40
+[  210.161370] x29: ffff8000080a3a40 x28: ffffcd425af87000 x27: ffff8000080a3b20
+[  210.205150] x26: ffffcd425aa00000 x25: 0000000000000001 x24: ffffcd425af8ec08
+[  210.212321] x23: 0000000000000100 x22: ffffcd425af87000 x21: ffff55b142688000
+[  210.219491] x20: 0000000000000001 x19: ffff55b1426884c8 x18: ffffffffffffffff
+[  210.226661] x17: 64656d6974203120 x16: 0000000000000001 x15: 6d736e617274203a
+[  210.233831] x14: 2974656e65676d63 x13: ffffcd4259c300d8 x12: ffffcd425b07d5f0
+[  210.241001] x11: 00000000ffffffff x10: ffffcd425b07d5f0 x9 : ffffcd4258bdad9c
+[  210.248171] x8 : 00000000ffffdfff x7 : 000000000000003f x6 : 0000000000000000
+[  210.255341] x5 : 0000000000000000 x4 : 0000000000000000 x3 : 0000000000001000
+[  210.262511] x2 : 0000000000001000 x1 : 0000000000000005 x0 : 0000000000000044
+[  210.269682] Call trace:
+[  210.272133]  dev_watchdog+0x234/0x240
+[  210.275811]  call_timer_fn+0x3c/0x15c
+[  210.279489]  __run_timers.part.0+0x288/0x310
+[  210.283777]  run_timer_softirq+0x48/0x80
+[  210.287716]  __do_softirq+0x128/0x360
+[  210.291392]  __irq_exit_rcu+0x138/0x140
+[  210.295243]  irq_exit_rcu+0x1c/0x30
+[  210.298745]  el1_interrupt+0x38/0x54
+[  210.302334]  el1h_64_irq_handler+0x18/0x24
+[  210.306445]  el1h_64_irq+0x7c/0x80
+[  210.309857]  arch_cpu_idle+0x18/0x2c
+[  210.313445]  default_idle_call+0x4c/0x140
+[  210.317470]  cpuidle_idle_call+0x14c/0x1a0
+[  210.321584]  do_idle+0xb0/0x100
+[  210.324737]  cpu_startup_entry+0x30/0x8c
+[  210.328675]  secondary_start_kernel+0xe4/0x110
+[  210.333138]  __secondary_switched+0x94/0x98
+
+The assumption when these were relaxed seems to be that device memory
+would be mapped non reordering, and that other constructs
+(spinlocks/etc) would provide the barriers to assure that packet data
+and in memory rings/queues were ordered with respect to device
+register reads/writes. This itself seems a bit sketchy, but the real
+problem with GCC12 is that it is moving the actual reads/writes around
+at will as though they were independent operations when in truth they
+are not, but the compiler can't know that. When looking at the
+assembly dumps for many of these routines its possible to see very
+clean, but not strictly in program order operations occurring as the
+compiler would be free to do if these weren't actually register
+reads/write operations.
+
+Its possible to suppress the timeout with a liberal bit of dma_mb()'s
+sprinkled around but the device still seems unable to reliably
+send/receive data. A better plan is to use the safer readl/writel
+everywhere.
+
+Since this partially reverts an older commit, which notes the use of
+the relaxed variants for performance reasons. I would suggest that
+any performance problems with this commit are targeted at relaxing only
+the performance critical code paths after assuring proper barriers.
+
+Fixes: 69d2ea9c79898 ("net: bcmgenet: Use correct I/O accessors")
+Reported-by: Peter Robinson <pbrobinson@gmail.com>
+Signed-off-by: Jeremy Linton <jeremy.linton@arm.com>
+Acked-by: Peter Robinson <pbrobinson@gmail.com>
+Tested-by: Peter Robinson <pbrobinson@gmail.com>
+Acked-by: Florian Fainelli <f.fainelli@gmail.com>
+Link: https://lore.kernel.org/r/20220310045358.224350-1-jeremy.linton@arm.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/net/ethernet/broadcom/genet/bcmgenet.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/net/ethernet/broadcom/genet/bcmgenet.c b/drivers/net/ethernet/broadcom/genet/bcmgenet.c
+index b4f99dd284e5..510e0cf64fa9 100644
+--- a/drivers/net/ethernet/broadcom/genet/bcmgenet.c
++++ b/drivers/net/ethernet/broadcom/genet/bcmgenet.c
+@@ -76,7 +76,7 @@ static inline void bcmgenet_writel(u32 value, void __iomem *offset)
+ 	if (IS_ENABLED(CONFIG_MIPS) && IS_ENABLED(CONFIG_CPU_BIG_ENDIAN))
+ 		__raw_writel(value, offset);
+ 	else
+-		writel_relaxed(value, offset);
++		writel(value, offset);
+ }
+ 
+ static inline u32 bcmgenet_readl(void __iomem *offset)
+@@ -84,7 +84,7 @@ static inline u32 bcmgenet_readl(void __iomem *offset)
+ 	if (IS_ENABLED(CONFIG_MIPS) && IS_ENABLED(CONFIG_CPU_BIG_ENDIAN))
+ 		return __raw_readl(offset);
+ 	else
+-		return readl_relaxed(offset);
++		return readl(offset);
+ }
+ 
+ static inline void dmadesc_set_length_status(struct bcmgenet_priv *priv,
+-- 
+2.34.1
 
 
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
-
-Best regards,
-Krzysztof
