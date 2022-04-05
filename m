@@ -2,41 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C9F3C4167D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F131C41535
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 07:50:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233149AbiDEHwL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 03:52:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34082 "EHLO
+        id S233209AbiDEHwO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 03:52:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47170 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232956AbiDEHrS (ORCPT
+        with ESMTP id S233045AbiDEHrY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 03:47:18 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EEDAE9D04D;
-        Tue,  5 Apr 2022 00:43:20 -0700 (PDT)
+        Tue, 5 Apr 2022 03:47:24 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5198E972E5;
+        Tue,  5 Apr 2022 00:43:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9A325B81B18;
-        Tue,  5 Apr 2022 07:43:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0F2AFC340EE;
-        Tue,  5 Apr 2022 07:43:17 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EE661616C4;
+        Tue,  5 Apr 2022 07:43:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 05D82C340EE;
+        Tue,  5 Apr 2022 07:43:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649144598;
-        bh=Ioh69ua165BbMXVW+E2e6d+Za5woHfANcKOg7vhADZw=;
+        s=korg; t=1649144612;
+        bh=cvKdZ6StMfm6zRKMs64+nsuqFYWwxL633CUZBelPVRc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qa1lBG0WBhPUzvZ7pAvAyBVbydn9pK86PnbEEpoo246GUXv895/YnTPr9KgZO1xSu
-         u56hoFxFqjddntRqc/LI4izT5tOUtUDDWF95f8I+YiQXtbHbzfoQnSIZG7gMWIv8ee
-         syzE1al7plHzeRxeS0xzvEyMi3QvgOi6wMj380BU=
+        b=VLw2pkbEcUmqxE77Vdnh9AKrVmhFReFgcdU6n3/wwlXI09uCK8WutkEWPAUZcFrQJ
+         942pSCMLALOXF2lSTJ51CfQTa5h2C5UPZo6ihVRiTYbOTUqRMHr9rg6AnEhZ3WR59C
+         OvdF31FjWBXvUzy0FDhVIFr6VVgdcT+NAxZ11vsk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, NeilBrown <neilb@suse.de>,
-        Trond Myklebust <trond.myklebust@hammerspace.com>
-Subject: [PATCH 5.17 0054/1126] SUNRPC: avoid race between mod_timer() and del_timer_sync()
-Date:   Tue,  5 Apr 2022 09:13:21 +0200
-Message-Id: <20220405070409.152980751@linuxfoundation.org>
+        stable@vger.kernel.org, Rik van Riel <riel@surriel.com>,
+        Miaohe Lin <linmiaohe@huawei.com>,
+        Naoya Horiguchi <naoya.horiguchi@nec.com>,
+        Oscar Salvador <osalvador@suse.de>,
+        Mel Gorman <mgorman@suse.de>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Subject: [PATCH 5.17 0108/1126] mm,hwpoison: unmap poisoned page before invalidation
+Date:   Tue,  5 Apr 2022 09:14:15 +0200
+Message-Id: <20220405070410.740756156@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -48,49 +54,67 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: NeilBrown <neilb@suse.de>
+From: Rik van Riel <riel@surriel.com>
 
-commit 3848e96edf4788f772d83990022fa7023a233d83 upstream.
+commit 3149c79f3cb0e2e3bafb7cfadacec090cbd250d3 upstream.
 
-xprt_destory() claims XPRT_LOCKED and then calls del_timer_sync().
-Both xprt_unlock_connect() and xprt_release() call
- ->release_xprt()
-which drops XPRT_LOCKED and *then* xprt_schedule_autodisconnect()
-which calls mod_timer().
+In some cases it appears the invalidation of a hwpoisoned page fails
+because the page is still mapped in another process.  This can cause a
+program to be continuously restarted and die when it page faults on the
+page that was not invalidated.  Avoid that problem by unmapping the
+hwpoisoned page when we find it.
 
-This may result in mod_timer() being called *after* del_timer_sync().
-When this happens, the timer may fire long after the xprt has been freed,
-and run_timer_softirq() will probably crash.
+Another issue is that sometimes we end up oopsing in finish_fault, if
+the code tries to do something with the now-NULL vmf->page.  I did not
+hit this error when submitting the previous patch because there are
+several opportunities for alloc_set_pte to bail out before accessing
+vmf->page, and that apparently happened on those systems, and most of
+the time on other systems, too.
 
-The pairing of ->release_xprt() and xprt_schedule_autodisconnect() is
-always called under ->transport_lock.  So if we take ->transport_lock to
-call del_timer_sync(), we can be sure that mod_timer() will run first
-(if it runs at all).
+However, across several million systems that error does occur a handful
+of times a day.  It can be avoided by returning VM_FAULT_NOPAGE which
+will cause do_read_fault to return before calling finish_fault.
 
-Cc: stable@vger.kernel.org
-Signed-off-by: NeilBrown <neilb@suse.de>
-Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
+Link: https://lkml.kernel.org/r/20220325161428.5068d97e@imladris.surriel.com
+Fixes: e53ac7374e64 ("mm: invalidate hwpoison page cache page in fault path")
+Signed-off-by: Rik van Riel <riel@surriel.com>
+Reviewed-by: Miaohe Lin <linmiaohe@huawei.com>
+Tested-by: Naoya Horiguchi <naoya.horiguchi@nec.com>
+Reviewed-by: Oscar Salvador <osalvador@suse.de>
+Cc: Mel Gorman <mgorman@suse.de>
+Cc: Johannes Weiner <hannes@cmpxchg.org>
+Cc: <stable@vger.kernel.org>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/sunrpc/xprt.c |    7 +++++++
- 1 file changed, 7 insertions(+)
+ mm/memory.c |   12 ++++++++----
+ 1 file changed, 8 insertions(+), 4 deletions(-)
 
---- a/net/sunrpc/xprt.c
-+++ b/net/sunrpc/xprt.c
-@@ -2112,7 +2112,14 @@ static void xprt_destroy(struct rpc_xprt
- 	 */
- 	wait_on_bit_lock(&xprt->state, XPRT_LOCKED, TASK_UNINTERRUPTIBLE);
+--- a/mm/memory.c
++++ b/mm/memory.c
+@@ -3893,14 +3893,18 @@ static vm_fault_t __do_fault(struct vm_f
+ 		return ret;
  
-+	/*
-+	 * xprt_schedule_autodisconnect() can run after XPRT_LOCKED
-+	 * is cleared.  We use ->transport_lock to ensure the mod_timer()
-+	 * can only run *before* del_time_sync(), never after.
-+	 */
-+	spin_lock(&xprt->transport_lock);
- 	del_timer_sync(&xprt->timer);
-+	spin_unlock(&xprt->transport_lock);
- 
- 	/*
- 	 * Destroy sockets etc from the system workqueue so they can
+ 	if (unlikely(PageHWPoison(vmf->page))) {
++		struct page *page = vmf->page;
+ 		vm_fault_t poisonret = VM_FAULT_HWPOISON;
+ 		if (ret & VM_FAULT_LOCKED) {
++			if (page_mapped(page))
++				unmap_mapping_pages(page_mapping(page),
++						    page->index, 1, false);
+ 			/* Retry if a clean page was removed from the cache. */
+-			if (invalidate_inode_page(vmf->page))
+-				poisonret = 0;
+-			unlock_page(vmf->page);
++			if (invalidate_inode_page(page))
++				poisonret = VM_FAULT_NOPAGE;
++			unlock_page(page);
+ 		}
+-		put_page(vmf->page);
++		put_page(page);
+ 		vmf->page = NULL;
+ 		return poisonret;
+ 	}
 
 
