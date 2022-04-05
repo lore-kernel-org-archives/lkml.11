@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 05593C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 78E1EC4332F
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:35:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237473AbiDEI3W (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 04:29:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49852 "EHLO
+        id S237699AbiDEI3j (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 04:29:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55906 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235959AbiDEIAw (ORCPT
+        with ESMTP id S234613AbiDEH6l (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:00:52 -0400
+        Tue, 5 Apr 2022 03:58:41 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66ED84838D;
-        Tue,  5 Apr 2022 00:58:54 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94659A94C5;
+        Tue,  5 Apr 2022 00:52:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 262E4B81B18;
-        Tue,  5 Apr 2022 07:58:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 704FEC340EE;
-        Tue,  5 Apr 2022 07:58:51 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B7ED2B81B14;
+        Tue,  5 Apr 2022 07:52:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 209B4C34110;
+        Tue,  5 Apr 2022 07:52:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649145531;
-        bh=KTLwSTgDEzAbj911kue+HNBgznSoxQk32rT0DI32z1k=;
+        s=korg; t=1649145176;
+        bh=w6IIUKVs89R5LQU7C6a2ZqdX/tYHmHkwDBHZ4jPxnts=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xBQ46F5fGM7XsiKpHmCDUIxVzo09pTaMbES069UqvLtZFBHEJ5QmScaejQA+Yox+z
-         Ek1C6RWS27VPMQVwAjKY5pyhjO8Tk1u9Xr2ek9AOBOUgwc975HrmL+rS3wcq6mCd5T
-         2bbe7u6c66V8SoA5oTxq5a73MJL4esEnT1/MXku4=
+        b=c9u2zBbEx0Die03jb+wy98vvKMRFaritjGyOZtQPs1BjGWTaxE2YtKs9rVJgnxJ5N
+         fUW1/tAg7Vt08TzVEV0y7KuQEmTL0ePwJLSEc36yVM/I+mfNxkgRV9f8MrW3ld9qIo
+         CrTD0uoNOGhf32Qh8IdNNlcMFdOLSIO2xh+crdFI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kumar Kartikeya Dwivedi <memxor@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
+        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0440/1126] bpf: Fix UAF due to race between btf_try_get_module and load_module
-Date:   Tue,  5 Apr 2022 09:19:47 +0200
-Message-Id: <20220405070420.539054289@linuxfoundation.org>
+Subject: [PATCH 5.17 0313/1126] media: v4l: Avoid unaligned access warnings when printing 4cc modifiers
+Date:   Tue,  5 Apr 2022 09:17:40 +0200
+Message-Id: <20220405070416.803405485@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -49,163 +50,71 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kumar Kartikeya Dwivedi <memxor@gmail.com>
+From: Sakari Ailus <sakari.ailus@linux.intel.com>
 
-[ Upstream commit 18688de203b47e5d8d9d0953385bf30b5949324f ]
+[ Upstream commit 24bb30c8c894ec7213ad810b46e2a6a4c12136c1 ]
 
-While working on code to populate kfunc BTF ID sets for module BTF from
-its initcall, I noticed that by the time the initcall is invoked, the
-module BTF can already be seen by userspace (and the BPF verifier). The
-existing btf_try_get_module calls try_module_get which only fails if
-mod->state == MODULE_STATE_GOING, i.e. it can increment module reference
-when module initcall is happening in parallel.
+Pointers V4L2 pixelformat and dataformat fields in a few packed structs
+are directly passed to printk family of functions. This could result in an
+unaligned access albeit no such possibility appears to exist at the
+moment i.e. this clang warning appears to be a false positive.
 
-Currently, BTF parsing happens from MODULE_STATE_COMING notifier
-callback. At this point, the module initcalls have not been invoked.
-The notifier callback parses and prepares the module BTF, allocates an
-ID, which publishes it to userspace, and then adds it to the btf_modules
-list allowing the kernel to invoke btf_try_get_module for the BTF.
+Address the warning by copying the pixelformat or dataformat value to a
+local variable first.
 
-However, at this point, the module has not been fully initialized (i.e.
-its initcalls have not finished). The code in module.c can still fail
-and free the module, without caring for other users. However, nothing
-stops btf_try_get_module from succeeding between the state transition
-from MODULE_STATE_COMING to MODULE_STATE_LIVE.
-
-This leads to a use-after-free issue when BPF program loads
-successfully in the state transition, load_module's do_init_module call
-fails and frees the module, and BPF program fd on close calls module_put
-for the freed module. Future patch has test case to verify we don't
-regress in this area in future.
-
-There are multiple points after prepare_coming_module (in load_module)
-where failure can occur and module loading can return error. We
-illustrate and test for the race using the last point where it can
-practically occur (in module __init function).
-
-An illustration of the race:
-
-CPU 0                           CPU 1
-			  load_module
-			    notifier_call(MODULE_STATE_COMING)
-			      btf_parse_module
-			      btf_alloc_id	// Published to userspace
-			      list_add(&btf_mod->list, btf_modules)
-			    mod->init(...)
-...				^
-bpf_check		        |
-check_pseudo_btf_id             |
-  btf_try_get_module            |
-    returns true                |  ...
-...                             |  module __init in progress
-return prog_fd                  |  ...
-...                             V
-			    if (ret < 0)
-			      free_module(mod)
-			    ...
-close(prog_fd)
- ...
- bpf_prog_free_deferred
-  module_put(used_btf.mod) // use-after-free
-
-We fix this issue by setting a flag BTF_MODULE_F_LIVE, from the notifier
-callback when MODULE_STATE_LIVE state is reached for the module, so that
-we return NULL from btf_try_get_module for modules that are not fully
-formed. Since try_module_get already checks that module is not in
-MODULE_STATE_GOING state, and that is the only transition a live module
-can make before being removed from btf_modules list, this is enough to
-close the race and prevent the bug.
-
-A later selftest patch crafts the race condition artifically to verify
-that it has been fixed, and that verifier fails to load program (with
-ENXIO).
-
-Lastly, a couple of comments:
-
- 1. Even if this race didn't exist, it seems more appropriate to only
-    access resources (ksyms and kfuncs) of a fully formed module which
-    has been initialized completely.
-
- 2. This patch was born out of need for synchronization against module
-    initcall for the next patch, so it is needed for correctness even
-    without the aforementioned race condition. The BTF resources
-    initialized by module initcall are set up once and then only looked
-    up, so just waiting until the initcall has finished ensures correct
-    behavior.
-
-Fixes: 541c3bad8dc5 ("bpf: Support BPF ksym variables in kernel modules")
-Signed-off-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
-Link: https://lore.kernel.org/r/20220114163953.1455836-2-memxor@gmail.com
-Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+Reported-by: kernel test robot <lkp@intel.com>
+Fixes: e927e1e0f0dd ("v4l: ioctl: Use %p4cc printk modifier to print FourCC codes")
+Signed-off-by: Sakari Ailus <sakari.ailus@linux.intel.com>
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- kernel/bpf/btf.c | 26 ++++++++++++++++++++++++--
- 1 file changed, 24 insertions(+), 2 deletions(-)
+ drivers/media/v4l2-core/v4l2-ioctl.c | 12 +++++++-----
+ 1 file changed, 7 insertions(+), 5 deletions(-)
 
-diff --git a/kernel/bpf/btf.c b/kernel/bpf/btf.c
-index 3e23b3fa79ff..a3b5a6bf99e7 100644
---- a/kernel/bpf/btf.c
-+++ b/kernel/bpf/btf.c
-@@ -6201,12 +6201,17 @@ bool btf_id_set_contains(const struct btf_id_set *set, u32 id)
- 	return bsearch(&id, set->ids, set->cnt, sizeof(u32), btf_id_cmp_func) != NULL;
+diff --git a/drivers/media/v4l2-core/v4l2-ioctl.c b/drivers/media/v4l2-core/v4l2-ioctl.c
+index 9ac557b8e146..642cb90f457c 100644
+--- a/drivers/media/v4l2-core/v4l2-ioctl.c
++++ b/drivers/media/v4l2-core/v4l2-ioctl.c
+@@ -279,8 +279,8 @@ static void v4l_print_format(const void *arg, bool write_only)
+ 	const struct v4l2_vbi_format *vbi;
+ 	const struct v4l2_sliced_vbi_format *sliced;
+ 	const struct v4l2_window *win;
+-	const struct v4l2_sdr_format *sdr;
+ 	const struct v4l2_meta_format *meta;
++	u32 pixelformat;
+ 	u32 planes;
+ 	unsigned i;
+ 
+@@ -299,8 +299,9 @@ static void v4l_print_format(const void *arg, bool write_only)
+ 	case V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE:
+ 	case V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE:
+ 		mp = &p->fmt.pix_mp;
++		pixelformat = mp->pixelformat;
+ 		pr_cont(", width=%u, height=%u, format=%p4cc, field=%s, colorspace=%d, num_planes=%u, flags=0x%x, ycbcr_enc=%u, quantization=%u, xfer_func=%u\n",
+-			mp->width, mp->height, &mp->pixelformat,
++			mp->width, mp->height, &pixelformat,
+ 			prt_names(mp->field, v4l2_field_names),
+ 			mp->colorspace, mp->num_planes, mp->flags,
+ 			mp->ycbcr_enc, mp->quantization, mp->xfer_func);
+@@ -343,14 +344,15 @@ static void v4l_print_format(const void *arg, bool write_only)
+ 		break;
+ 	case V4L2_BUF_TYPE_SDR_CAPTURE:
+ 	case V4L2_BUF_TYPE_SDR_OUTPUT:
+-		sdr = &p->fmt.sdr;
+-		pr_cont(", pixelformat=%p4cc\n", &sdr->pixelformat);
++		pixelformat = p->fmt.sdr.pixelformat;
++		pr_cont(", pixelformat=%p4cc\n", &pixelformat);
+ 		break;
+ 	case V4L2_BUF_TYPE_META_CAPTURE:
+ 	case V4L2_BUF_TYPE_META_OUTPUT:
+ 		meta = &p->fmt.meta;
++		pixelformat = meta->dataformat;
+ 		pr_cont(", dataformat=%p4cc, buffersize=%u\n",
+-			&meta->dataformat, meta->buffersize);
++			&pixelformat, meta->buffersize);
+ 		break;
+ 	}
  }
- 
-+enum {
-+	BTF_MODULE_F_LIVE = (1 << 0),
-+};
-+
- #ifdef CONFIG_DEBUG_INFO_BTF_MODULES
- struct btf_module {
- 	struct list_head list;
- 	struct module *module;
- 	struct btf *btf;
- 	struct bin_attribute *sysfs_attr;
-+	int flags;
- };
- 
- static LIST_HEAD(btf_modules);
-@@ -6234,7 +6239,8 @@ static int btf_module_notify(struct notifier_block *nb, unsigned long op,
- 	int err = 0;
- 
- 	if (mod->btf_data_size == 0 ||
--	    (op != MODULE_STATE_COMING && op != MODULE_STATE_GOING))
-+	    (op != MODULE_STATE_COMING && op != MODULE_STATE_LIVE &&
-+	     op != MODULE_STATE_GOING))
- 		goto out;
- 
- 	switch (op) {
-@@ -6292,6 +6298,17 @@ static int btf_module_notify(struct notifier_block *nb, unsigned long op,
- 			btf_mod->sysfs_attr = attr;
- 		}
- 
-+		break;
-+	case MODULE_STATE_LIVE:
-+		mutex_lock(&btf_module_mutex);
-+		list_for_each_entry_safe(btf_mod, tmp, &btf_modules, list) {
-+			if (btf_mod->module != module)
-+				continue;
-+
-+			btf_mod->flags |= BTF_MODULE_F_LIVE;
-+			break;
-+		}
-+		mutex_unlock(&btf_module_mutex);
- 		break;
- 	case MODULE_STATE_GOING:
- 		mutex_lock(&btf_module_mutex);
-@@ -6339,7 +6356,12 @@ struct module *btf_try_get_module(const struct btf *btf)
- 		if (btf_mod->btf != btf)
- 			continue;
- 
--		if (try_module_get(btf_mod->module))
-+		/* We must only consider module whose __init routine has
-+		 * finished, hence we must check for BTF_MODULE_F_LIVE flag,
-+		 * which is set from the notifier callback for
-+		 * MODULE_STATE_LIVE.
-+		 */
-+		if ((btf_mod->flags & BTF_MODULE_F_LIVE) && try_module_get(btf_mod->module))
- 			res = btf_mod->module;
- 
- 		break;
 -- 
 2.34.1
 
