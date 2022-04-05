@@ -2,149 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0ECDDC4321E
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 01:54:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C1139C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 01:54:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1845010AbiDFBxj (ORCPT
+        id S1844907AbiDFBxX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 21:53:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45854 "EHLO
+        Tue, 5 Apr 2022 21:53:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49454 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354744AbiDEPMI (ORCPT
+        with ESMTP id S1381369AbiDEMya (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 11:12:08 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94423109A72
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 06:25:44 -0700 (PDT)
-From:   John Ogness <john.ogness@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1649165143;
+        Tue, 5 Apr 2022 08:54:30 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id DAB422A245
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 04:57:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1649159876;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=fVfL+n5pd7cP1D7iEgDx1sRuang/QKBVMoT4FjG4/yk=;
-        b=Z4nVgeULPomW2cxkt6UXVHgmZZsRMtR4IhKYUvX3dM5ab8P35/8nOSw2UPU3Z1oXtFdcsa
-        ruMmgDJazjwdxEV9orlxT66kfiVD8ME6ej/Y+L6ugMmgKeVy52hACAmNsxZoA76Kd0Gimj
-        qhgKpK2NHrwmgFJk9GVhLymXgYtxDi2NviRzy4tdcV3vxFUY3Zb5vEq4Z1jOAqfr8CE6DR
-        OCYf2yPixn+L0+8f0H/1Xx3xyYRfYpvPJET58HWbcDlkop0n+K8/jlvov+ssjQ7PEp/kTi
-        K4fW0mqqUNZweAAT4Zw5cPgxWV8+Fgm6NGOmn+xRRzONzYx3ge0d4L1XoqzTRg==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1649165143;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=fVfL+n5pd7cP1D7iEgDx1sRuang/QKBVMoT4FjG4/yk=;
-        b=sTMt6t9kqCm7ejmE2CrJp4LikiVOUb/79aOdzF8qg0ReNoJFzExYHeDQ2pMd6RIuFXjvCG
-        TL6DYm/M7xZ/6eAA==
-To:     Petr Mladek <pmladek@suse.com>
-Cc:     Sergey Senozhatsky <senozhatsky@chromium.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH printk v2 12/12] printk: remove @console_locked
-Date:   Tue,  5 Apr 2022 15:31:35 +0206
-Message-Id: <20220405132535.649171-13-john.ogness@linutronix.de>
-In-Reply-To: <20220405132535.649171-1-john.ogness@linutronix.de>
-References: <20220405132535.649171-1-john.ogness@linutronix.de>
+        bh=4tf5cml5DKG34+H+/7P2EmXNj5BSxC+Di2E2isNkLxI=;
+        b=FMaHchrKG6XpC7FD/TeQSV7BU/qJeC7Y46qGHuva84JnyPcWTLA46ejpvwFdR5Aa1ILMCW
+        DEu7Ct6bPBrZ5wmyaXdPotWzeG2d5xUQh3MyLmmg5CQXJ25jqdI5+wxlKHBxMHTr9SFJAR
+        G21QB3Ojg6Q8Jj3yCP/uWCbQ9Vm49KU=
+Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
+ [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-551-Bcz6GHBcMueo2E7al-xubw-1; Tue, 05 Apr 2022 07:57:54 -0400
+X-MC-Unique: Bcz6GHBcMueo2E7al-xubw-1
+Received: by mail-wm1-f70.google.com with SMTP id c125-20020a1c3583000000b0038e3f6e871aso3915971wma.8
+        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 04:57:54 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=4tf5cml5DKG34+H+/7P2EmXNj5BSxC+Di2E2isNkLxI=;
+        b=E9VxXdTGcaU4kIu5Tf23AKuzS/1onCGwnUSbYOxzqdLC26HJaW6qGX6HPNQR5VUbQ9
+         wyJDMXGmeyj21gBIeo85q1yHkzU3KPGjAyWbCMwqqsMmKWBqRGyMgkSnfPSt1GJT4MFd
+         U7MMCeo1jrLjoTIltRPjHZ0sgoL86g1Vrdh4oGN7xPQbxBKT34f2598GbToN1UzlQz2N
+         C93aCHyaKe1iULi9T7pNkKwLEEYheiZktREwGsE9sMszBs8ynJGRys1Aud4S4GnToscT
+         +UiPaDBRkuLvzaPvanvjRjckdTPBjzOWCDLYLrYhhOmSugqHXb7r9OLb2kknfsiHr+CD
+         tm5g==
+X-Gm-Message-State: AOAM533PieHzHNHUxgLUo2tE2SnV4qsLFLusWSHxGgzAPc6KHRYnRkMw
+        iAakHHCoJe+uC/gW6QDWlCnHV6GXq4q3E/nOhxOOV9jtzmD2krwQRFlO3upzAhjdNRTj9sZDWic
+        Q4wdytACxOMdllAxjZvG4tXxQ
+X-Received: by 2002:adf:8050:0:b0:206:40a:a770 with SMTP id 74-20020adf8050000000b00206040aa770mr2535503wrk.380.1649159873350;
+        Tue, 05 Apr 2022 04:57:53 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJzgqTZayIX4u/UnvkTDHW17PSUoPyzp3WUxX6v1B27xgUyGVSxDLohCf9WBiOzGI5DL0p4UMA==
+X-Received: by 2002:adf:8050:0:b0:206:40a:a770 with SMTP id 74-20020adf8050000000b00206040aa770mr2535488wrk.380.1649159873090;
+        Tue, 05 Apr 2022 04:57:53 -0700 (PDT)
+Received: from redhat.com ([2.52.17.211])
+        by smtp.gmail.com with ESMTPSA id f11-20020a7bcc0b000000b0037e0c362b6dsm1992438wmh.31.2022.04.05.04.57.51
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 05 Apr 2022 04:57:52 -0700 (PDT)
+Date:   Tue, 5 Apr 2022 07:57:49 -0400
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Masahiro Yamada <masahiroy@kernel.org>
+Cc:     Arnd Bergmann <arnd@arndb.de>, linux-kernel@vger.kernel.org,
+        linux-kbuild@vger.kernel.org, linux-arch@vger.kernel.org
+Subject: Re: [PATCH 8/8] virtio_ring.h: do not include <stdint.h> from
+ exported header
+Message-ID: <20220405075738-mutt-send-email-mst@kernel.org>
+References: <20220404061948.2111820-1-masahiroy@kernel.org>
+ <20220404061948.2111820-9-masahiroy@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220404061948.2111820-9-masahiroy@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The static global variable @console_locked is used to help debug
-VT code to make sure that certain code paths are running with
-the console_lock held. However, this information is also available
-with the static global variable @console_kthreads_blocked (for
-locking via console_lock()), and the static global variable
-@console_kthreads_active (for locking via console_trylock()).
+On Mon, Apr 04, 2022 at 03:19:48PM +0900, Masahiro Yamada wrote:
+> Arnd mentioned a limitation when including <stdint.h> from UAPI
+> headers. [1]
+> 
+> Besides, I'd like exported headers to be as compliant with the
+> traditional C as possible.
+> 
+> In fact, the UAPI headers are compile-tested with -std=c90 (see
+> usr/include/Makefile) even though the kernel itself is now built
+> with -std=gnu11.
+> 
+> Currently, include/uapi/linux/virtio_ring.h includes <stdint.h>
+> presumably because it uses uintptr_t.
+> 
+> Replace it with __kernel_uintptr_t, and stop including <stdint.h>.
+> 
+> [1]: https://lore.kernel.org/all/CAK8P3a0bz8XYJOsmND2=CT_oTDmGMJGaRo9+QMroEhpekSMEaQ@mail.gmail.com/
+> 
+> Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
 
-Remove @console_locked and update is_console_locked() to use the
-alternative variables.
+Acked-by: Michael S. Tsirkin <mst@redhat.com>
 
-Signed-off-by: John Ogness <john.ogness@linutronix.de>
-Reviewed-by: Petr Mladek <pmladek@suse.com>
----
- kernel/printk/printk.c | 29 ++++++++++++++---------------
- 1 file changed, 14 insertions(+), 15 deletions(-)
-
-diff --git a/kernel/printk/printk.c b/kernel/printk/printk.c
-index a5525a7b7bc5..2da66adac87e 100644
---- a/kernel/printk/printk.c
-+++ b/kernel/printk/printk.c
-@@ -340,15 +340,7 @@ static void console_kthreads_unblock(void)
- 	console_kthreads_blocked = false;
- }
- 
--/*
-- * This is used for debugging the mess that is the VT code by
-- * keeping track if we have the console semaphore held. It's
-- * definitely not the perfect debug tool (we don't know if _WE_
-- * hold it and are racing, but it helps tracking those weird code
-- * paths in the console code where we end up in places I want
-- * locked without the console semaphore held).
-- */
--static int console_locked, console_suspended;
-+static int console_suspended;
- 
- /*
-  *	Array of consoles built from command line options (console=)
-@@ -2675,7 +2667,6 @@ void console_lock(void)
- 	if (console_suspended)
- 		return;
- 	console_kthreads_block();
--	console_locked = 1;
- 	console_may_schedule = 1;
- }
- EXPORT_SYMBOL(console_lock);
-@@ -2700,15 +2691,26 @@ int console_trylock(void)
- 		up_console_sem();
- 		return 0;
- 	}
--	console_locked = 1;
- 	console_may_schedule = 0;
- 	return 1;
- }
- EXPORT_SYMBOL(console_trylock);
- 
-+/*
-+ * This is used to help to make sure that certain paths within the VT code are
-+ * running with the console lock held. It is definitely not the perfect debug
-+ * tool (it is not known if the VT code is the task holding the console lock),
-+ * but it helps tracking those weird code paths in the console code such as
-+ * when the console is suspended: where the console is not locked but no
-+ * console printing may occur.
-+ *
-+ * Note: This returns true when the console is suspended but is not locked.
-+ *       This is intentional because the VT code must consider that situation
-+ *       the same as if the console was locked.
-+ */
- int is_console_locked(void)
- {
--	return (console_locked || atomic_read(&console_kthreads_active));
-+	return (console_kthreads_blocked || atomic_read(&console_kthreads_active));
- }
- EXPORT_SYMBOL(is_console_locked);
- 
-@@ -2759,8 +2761,6 @@ static inline bool console_is_usable(struct console *con)
- 
- static void __console_unlock(void)
- {
--	console_locked = 0;
--
- 	/*
- 	 * Depending on whether console_lock() or console_trylock() was used,
- 	 * appropriately allow the kthread printers to continue.
-@@ -3058,7 +3058,6 @@ void console_unblank(void)
- 	} else
- 		console_lock();
- 
--	console_locked = 1;
- 	console_may_schedule = 0;
- 	for_each_console(c)
- 		if ((c->flags & CON_ENABLED) && c->unblank)
--- 
-2.30.2
+> ---
+> 
+>  include/uapi/linux/virtio_ring.h | 6 ++----
+>  1 file changed, 2 insertions(+), 4 deletions(-)
+> 
+> diff --git a/include/uapi/linux/virtio_ring.h b/include/uapi/linux/virtio_ring.h
+> index 476d3e5c0fe7..6329e4ff35f4 100644
+> --- a/include/uapi/linux/virtio_ring.h
+> +++ b/include/uapi/linux/virtio_ring.h
+> @@ -31,9 +31,7 @@
+>   * SUCH DAMAGE.
+>   *
+>   * Copyright Rusty Russell IBM Corporation 2007. */
+> -#ifndef __KERNEL__
+> -#include <stdint.h>
+> -#endif
+> +
+>  #include <linux/types.h>
+>  #include <linux/virtio_types.h>
+>  
+> @@ -196,7 +194,7 @@ static inline void vring_init(struct vring *vr, unsigned int num, void *p,
+>  	vr->num = num;
+>  	vr->desc = p;
+>  	vr->avail = (struct vring_avail *)((char *)p + num * sizeof(struct vring_desc));
+> -	vr->used = (void *)(((uintptr_t)&vr->avail->ring[num] + sizeof(__virtio16)
+> +	vr->used = (void *)(((__kernel_uintptr_t)&vr->avail->ring[num] + sizeof(__virtio16)
+>  		+ align-1) & ~(align - 1));
+>  }
+>  
+> -- 
+> 2.32.0
+> 
+> 
 
