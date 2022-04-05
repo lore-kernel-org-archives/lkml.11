@@ -2,47 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 74436C35273
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 01:30:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5970BC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 01:33:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236673AbiDFBb6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 21:31:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33260 "EHLO
+        id S245621AbiDFBcR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 21:32:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59232 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350071AbiDEJwk (ORCPT
+        with ESMTP id S1356025AbiDEKWr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:52:40 -0400
+        Tue, 5 Apr 2022 06:22:47 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8ED5148893;
-        Tue,  5 Apr 2022 02:50:42 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 086A1AA000;
+        Tue,  5 Apr 2022 03:05:38 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 180B7615E3;
-        Tue,  5 Apr 2022 09:50:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 28E26C385A1;
-        Tue,  5 Apr 2022 09:50:40 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 46BE06167E;
+        Tue,  5 Apr 2022 10:05:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 516F0C385A2;
+        Tue,  5 Apr 2022 10:05:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649152241;
-        bh=pONLUX1/XreyVe65IKeyG1wQLSMZqhZ3jM/+bDVog24=;
+        s=korg; t=1649153137;
+        bh=CRkojIeG8hfsFSBTHg4oYYawOOdZgescy1u4wNygcPs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DzusMr6dAkVj+bAMRNOIm13oh6H3/1pmIxhMS/IMKeUfzuDY8wPRsImVr6WW8lERd
-         VLrtjmtCWfpZbAbW7ocAEVGGzqNVRw5GUuaToUyg3Bz5bks1LhT5C9AgKk461hwAqU
-         kTg0KBEGPs8ywN+V3AZ/3WQPF/8Y2rgOc/nCGbJ8=
+        b=MvrN48pLoehhK0fZbYK4we3bnZ9kfoZ8K5fWKcvdCo447guioiSwYDLg0n0sqKCS5
+         FJRy/kmkHoTS9uP3Ly+6fwF3Rb2FCqcSaK6TW7hI3J80il7duNrfBtN0oGZ3ygTRFj
+         03ePlSnDyHEmf4iOxZldRbR/GBs4Q8eSqBZAS0CQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Dmitry Osipenko <dmitry.osipenko@collabora.com>,
-        Maxime Ripard <maxime@cerno.tech>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 658/913] clk: Initialize orphan req_rate
-Date:   Tue,  5 Apr 2022 09:28:40 +0200
-Message-Id: <20220405070359.561641377@linuxfoundation.org>
+        stable@vger.kernel.org, Jan-Benedict Glaw <jbglaw@lug-owl.de>,
+        Sudip Mukherjee <sudipm.mukherjee@gmail.com>,
+        "Maciej W. Rozycki" <macro@orcam.me.uk>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+Subject: [PATCH 5.10 114/599] DEC: Limit PMAX memory probing to R3k systems
+Date:   Tue,  5 Apr 2022 09:26:48 +0200
+Message-Id: <20220405070302.231375636@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
+References: <20220405070258.802373272@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,68 +50,70 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Maxime Ripard <maxime@cerno.tech>
+From: Maciej W. Rozycki <macro@orcam.me.uk>
 
-[ Upstream commit 5f7e2af00807f2117650e711a58b7f0e986ce1df ]
+commit 244eae91a94c6dab82b3232967d10eeb9dfa21c6 upstream.
 
-When registering a clock that doesn't have a recalc_rate implementation,
-and doesn't have its parent registered yet, we initialize the clk_core
-rate and 'req_rate' fields to 0.
+Recent tightening of the opcode table in binutils so as to consistently
+disallow the assembly or disassembly of CP0 instructions not supported
+by the processor architecture chosen has caused a regression like below:
 
-The rate field is later updated when the parent is registered in
-clk_core_reparent_orphans_nolock() using __clk_recalc_rates(), but the
-'req_rate' field is never updated.
+arch/mips/dec/prom/locore.S: Assembler messages:
+arch/mips/dec/prom/locore.S:29: Error: opcode not supported on this processor: r4600 (mips3) `rfe'
 
-This leads to an issue in clk_set_rate_range() and clk_put(), since
-those functions will call clk_set_rate() with the content of 'req_rate'
-to provide drivers with the opportunity to change the rate based on the
-new boundaries. In this case, we would call clk_set_rate() with a rate
-of 0, effectively enforcing the minimum allowed for this clock whenever
-we would call one of those two functions, even though the actual rate
-might be within range.
+in a piece of code used to probe for memory with PMAX DECstation models,
+which have non-REX firmware.  Those computers always have an R2000 CPU
+and consequently the exception handler used in memory probing uses the
+RFE instruction, which those processors use.
 
-Let's fix this by setting 'req_rate' in
-clk_core_reparent_orphans_nolock() with the rate field content just
-updated by the call to __clk_recalc_rates().
+While adding 64-bit support this code was correctly excluded for 64-bit
+configurations, however it should have also been excluded for irrelevant
+32-bit configurations.  Do this now then, and only enable PMAX memory
+probing for R3k systems.
 
-Fixes: 1c8e600440c7 ("clk: Add rate constraints to clocks")
-Reported-by: Dmitry Osipenko <dmitry.osipenko@collabora.com>
-Tested-by: Dmitry Osipenko <dmitry.osipenko@collabora.com> # T30 Nexus7
-Signed-off-by: Maxime Ripard <maxime@cerno.tech>
-Link: https://lore.kernel.org/r/20220325161144.1901695-2-maxime@cerno.tech
-[sboyd@kernel.org: Reword comment]
-Signed-off-by: Stephen Boyd <sboyd@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Reported-by: Jan-Benedict Glaw <jbglaw@lug-owl.de>
+Reported-by: Sudip Mukherjee <sudipm.mukherjee@gmail.com>
+Signed-off-by: Maciej W. Rozycki <macro@orcam.me.uk>
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Cc: stable@vger.kernel.org # v2.6.12+
+Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/clk/clk.c | 13 +++++++++++++
- 1 file changed, 13 insertions(+)
+ arch/mips/dec/prom/Makefile      |    2 +-
+ arch/mips/include/asm/dec/prom.h |   15 +++++----------
+ 2 files changed, 6 insertions(+), 11 deletions(-)
 
-diff --git a/drivers/clk/clk.c b/drivers/clk/clk.c
-index 32fd2853e8b2..5cef73a85901 100644
---- a/drivers/clk/clk.c
-+++ b/drivers/clk/clk.c
-@@ -3410,6 +3410,19 @@ static void clk_core_reparent_orphans_nolock(void)
- 			__clk_set_parent_after(orphan, parent, NULL);
- 			__clk_recalc_accuracies(orphan);
- 			__clk_recalc_rates(orphan, 0);
-+
-+			/*
-+			 * __clk_init_parent() will set the initial req_rate to
-+			 * 0 if the clock doesn't have clk_ops::recalc_rate and
-+			 * is an orphan when it's registered.
-+			 *
-+			 * 'req_rate' is used by clk_set_rate_range() and
-+			 * clk_put() to trigger a clk_set_rate() call whenever
-+			 * the boundaries are modified. Let's make sure
-+			 * 'req_rate' is set to something non-zero so that
-+			 * clk_set_rate_range() doesn't drop the frequency.
-+			 */
-+			orphan->req_rate = orphan->rate;
- 		}
- 	}
- }
--- 
-2.34.1
-
+--- a/arch/mips/dec/prom/Makefile
++++ b/arch/mips/dec/prom/Makefile
+@@ -6,4 +6,4 @@
+ 
+ lib-y			+= init.o memory.o cmdline.o identify.o console.o
+ 
+-lib-$(CONFIG_32BIT)	+= locore.o
++lib-$(CONFIG_CPU_R3000)	+= locore.o
+--- a/arch/mips/include/asm/dec/prom.h
++++ b/arch/mips/include/asm/dec/prom.h
+@@ -43,16 +43,11 @@
+  */
+ #define REX_PROM_MAGIC		0x30464354
+ 
+-#ifdef CONFIG_64BIT
+-
+-#define prom_is_rex(magic)	1	/* KN04 and KN05 are REX PROMs.  */
+-
+-#else /* !CONFIG_64BIT */
+-
+-#define prom_is_rex(magic)	((magic) == REX_PROM_MAGIC)
+-
+-#endif /* !CONFIG_64BIT */
+-
++/* KN04 and KN05 are REX PROMs, so only do the check for R3k systems.  */
++static inline bool prom_is_rex(u32 magic)
++{
++	return !IS_ENABLED(CONFIG_CPU_R3000) || magic == REX_PROM_MAGIC;
++}
+ 
+ /*
+  * 3MIN/MAXINE PROM entry points for DS5000/1xx's, DS5000/xx's and
 
 
