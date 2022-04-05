@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A02C2C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 07:43:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BFEE9C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 07:43:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231495AbiDEHpd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 03:45:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34212 "EHLO
+        id S231980AbiDEHpi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 03:45:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57402 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231950AbiDEHnd (ORCPT
+        with ESMTP id S232117AbiDEHoX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 03:43:33 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1EB83939A9;
-        Tue,  5 Apr 2022 00:40:29 -0700 (PDT)
+        Tue, 5 Apr 2022 03:44:23 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FB7B972A1;
+        Tue,  5 Apr 2022 00:40:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 8EE48CE1BDB;
-        Tue,  5 Apr 2022 07:40:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A548CC340EE;
-        Tue,  5 Apr 2022 07:40:25 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id F265FCE1AC3;
+        Tue,  5 Apr 2022 07:40:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 13D78C34116;
+        Tue,  5 Apr 2022 07:40:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649144426;
-        bh=hiepfgHCUoOr2gSHKgyDZg8utOmO3xMK1AQWFOpqwto=;
+        s=korg; t=1649144456;
+        bh=GHdBnWH3UX1Xlg0sRoZEr/y66U2ZsPElXuujtK71+AE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GkJr9qC2KCZP+nlnqKrC9pedg74fEqzMJoWoIjYhtYx6ezqePD4DklPcHENSQr+3h
-         IEUVDU7DDq3gFlKwZwaDNchdZAd0615j7tccuVr3XOUBBYbM8Yh0VwOw9y7b2SJ1UX
-         1THFIiwBFTWbPnzUg6PZ/5tCK9+WKC6+agTFJCxI=
+        b=kcUe1CAXuKVFBdW7j9rjnnj/g8XnXZyPlJokB0Q9GMJht1rjc/CaCHsgk3G9oJR8a
+         IWLBlXqmIB5QW8qn2llwqh/h+HZ9QSlOTv0ekK6RFzNSubPWtYrpzw0bieM3Otcsct
+         utcGPDyJmgtekpc7JWk0ptgPuBzQw8YKNPDOhrV4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Quentin Schulz <foss+kernel@0leil.net>,
-        Quentin Schulz <quentin.schulz@theobroma-systems.com>,
-        Heiko Stuebner <heiko@sntech.de>
-Subject: [PATCH 5.17 0040/1126] clk: rockchip: re-add rational best approximation algorithm to the fractional divider
-Date:   Tue,  5 Apr 2022 09:13:07 +0200
-Message-Id: <20220405070408.735525184@linuxfoundation.org>
+        stable@vger.kernel.org, Sasha Levin <sashal@kernel.org>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Bagas Sanjaya <bagasdotme@gmail.com>
+Subject: [PATCH 5.17 0050/1126] Documentation: update stable tree link
+Date:   Tue,  5 Apr 2022 09:13:17 +0200
+Message-Id: <20220405070409.033577752@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -49,56 +49,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Quentin Schulz <quentin.schulz@theobroma-systems.com>
+From: Bagas Sanjaya <bagasdotme@gmail.com>
 
-commit 10b74af310735860510a533433b1d3ab2e05a138 upstream.
+commit 555d44932c67e617d89bc13c81c7efac5b51fcfa upstream.
 
-In commit 4e7cf74fa3b2 ("clk: fractional-divider: Export approximation
-algorithm to the CCF users"), the code handling the rational best
-approximation algorithm was replaced by a call to the core
-clk_fractional_divider_general_approximation function which did the same
-thing back then.
+The link to stable tree is redirected to
+https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git. Update
+accordingly.
 
-However, in commit 82f53f9ee577 ("clk: fractional-divider: Introduce
-POWER_OF_TWO_PS flag"), this common code was made conditional on
-CLK_FRAC_DIVIDER_POWER_OF_TWO_PS flag which was not added back to the
-rockchip clock driver.
-
-This broke the ltk050h3146w-a2 MIPI DSI display present on a PX30-based
-downstream board.
-
-Let's add the flag to the fractional divider flags so that the original
-and intended behavior is brought back to the rockchip clock drivers.
-
-Fixes: 82f53f9ee577 ("clk: fractional-divider: Introduce POWER_OF_TWO_PS flag")
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Sasha Levin <sashal@kernel.org>
+Cc: Jonathan Corbet <corbet@lwn.net>
 Cc: stable@vger.kernel.org
-Cc: Quentin Schulz <foss+kernel@0leil.net>
-Signed-off-by: Quentin Schulz <quentin.schulz@theobroma-systems.com>
-Link: https://lore.kernel.org/r/20220131163224.708002-1-quentin.schulz@theobroma-systems.com
-Signed-off-by: Heiko Stuebner <heiko@sntech.de>
+Cc: linux-kernel@vger.kernel.org
+Signed-off-by: Bagas Sanjaya <bagasdotme@gmail.com>
+Link: https://lore.kernel.org/r/20220314113329.485372-6-bagasdotme@gmail.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/clk/rockchip/clk.c |    3 +++
- 1 file changed, 3 insertions(+)
+ Documentation/process/stable-kernel-rules.rst |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/clk/rockchip/clk.c
-+++ b/drivers/clk/rockchip/clk.c
-@@ -180,6 +180,7 @@ static void rockchip_fractional_approxim
- 		unsigned long rate, unsigned long *parent_rate,
- 		unsigned long *m, unsigned long *n)
- {
-+	struct clk_fractional_divider *fd = to_clk_fd(hw);
- 	unsigned long p_rate, p_parent_rate;
- 	struct clk_hw *p_parent;
+--- a/Documentation/process/stable-kernel-rules.rst
++++ b/Documentation/process/stable-kernel-rules.rst
+@@ -168,7 +168,7 @@ Trees
+  - The finalized and tagged releases of all stable kernels can be found
+    in separate branches per version at:
  
-@@ -190,6 +191,8 @@ static void rockchip_fractional_approxim
- 		*parent_rate = p_parent_rate;
- 	}
+-	https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable.git
++	https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git
  
-+	fd->flags |= CLK_FRAC_DIVIDER_POWER_OF_TWO_PS;
-+
- 	clk_fractional_divider_general_approximation(hw, rate, parent_rate, m, n);
- }
+  - The release candidate of all stable kernel versions can be found at:
  
 
 
