@@ -2,44 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 498E6C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 39D0DC47080
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 13:24:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359044AbiDENKB (ORCPT
+        id S1388196AbiDENV3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 09:10:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53070 "EHLO
+        Tue, 5 Apr 2022 09:21:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34658 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344159AbiDEJS1 (ORCPT
+        with ESMTP id S1344402AbiDEJTv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:18:27 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2620B5B3D3;
-        Tue,  5 Apr 2022 02:04:45 -0700 (PDT)
+        Tue, 5 Apr 2022 05:19:51 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC567305;
+        Tue,  5 Apr 2022 02:08:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B51F8614E4;
-        Tue,  5 Apr 2022 09:04:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BE5F8C385A1;
-        Tue,  5 Apr 2022 09:04:43 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 729D6B81A12;
+        Tue,  5 Apr 2022 09:08:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D856BC385A0;
+        Tue,  5 Apr 2022 09:08:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649149484;
-        bh=2R99bVrCP0tjVddYJvZrWRKY00NA2/UxWhsgD5k3QFo=;
+        s=korg; t=1649149688;
+        bh=5UMlgXP9Kt7zNY8E5AlJDpLF7i4vLGx8OtzMkKu8RiA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=F0FrIYhx+Adn3mY7QlmwD2sTvkDkJV96Eq4ClnbzRWNLFQeggb4fM2vwTOP/lmmZM
-         ih3s9/2UwvbF6JrBt9doYozq10obfCGDKKrEoap2Q85jwQyLMB+esszluQLCc43Ou8
-         4nFXk/JIAE62dKZs37elvxbWDccFCayEVz4qbnVA=
+        b=IsLzvvlGNtGRTgGRf3H/T+PZbnXtdzxkTv1ueBaCYcKTMbOKdWDOpnlR505+k6d4D
+         gaH1qPxIay9iBXc8/Q4Y4fcOFbr0euTWWk++IcAkHPig9OGZq/edDd/Qoy3Tl5elRw
+         LDzJ6hhII1x4igqjROkmnwK2/qX5wJ67/s41iDYo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jian Shen <shenjian15@huawei.com>,
-        Guangbin Huang <huangguangbin2@huawei.com>,
-        Jakub Kicinski <kuba@kernel.org>,
+        stable@vger.kernel.org,
+        Eugen Hristev <eugen.hristev@microchip.com>,
+        Jacopo Mondi <jacopo@jmondi.org>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0731/1017] net: hns3: add vlan list lock to protect vlan list
-Date:   Tue,  5 Apr 2022 09:27:24 +0200
-Message-Id: <20220405070415.965539838@linuxfoundation.org>
+Subject: [PATCH 5.16 0806/1017] media: atmel: atmel-isc-base: report frame sizes as full supported range
+Date:   Tue,  5 Apr 2022 09:28:39 +0200
+Message-Id: <20220405070418.173782477@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -51,180 +53,71 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jian Shen <shenjian15@huawei.com>
+From: Eugen Hristev <eugen.hristev@microchip.com>
 
-[ Upstream commit 1932a624ab88ff407d1a1d567fe581faa15dc725 ]
+[ Upstream commit 72802a86e11c34e819fbfb38f58c5aef668f833d ]
 
-When adding port base VLAN, vf VLAN need to remove from HW and modify
-the vlan state in vf VLAN list as false. If the periodicity task is
-freeing the same node, it may cause "use after free" error.
-This patch adds a vlan list lock to protect the vlan list.
+The ISC supports a full broad range of frame sizes.
+Until now, the subdevice was queried for possible frame sizes and these
+were reported to the user space.
+However, the ISC should not care about which frame sizes the subdev
+supports, as long as this frame size is supported.
+Thus, report a continuous range from smallest frame size up to the max
+resolution.
 
-Fixes: c6075b193462 ("net: hns3: Record VF vlan tables")
-Signed-off-by: Jian Shen <shenjian15@huawei.com>
-Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Eugen Hristev <eugen.hristev@microchip.com>
+Reviewed-by: Jacopo Mondi <jacopo@jmondi.org>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../hisilicon/hns3/hns3pf/hclge_main.c        | 38 +++++++++++++++++--
- .../hisilicon/hns3/hns3pf/hclge_main.h        |  1 +
- 2 files changed, 35 insertions(+), 4 deletions(-)
+ drivers/media/platform/atmel/atmel-isc-base.c | 22 +++++++++----------
+ 1 file changed, 10 insertions(+), 12 deletions(-)
 
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-index 0338b4ffa003..3ba24c6d004d 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-@@ -10237,19 +10237,28 @@ static void hclge_add_vport_vlan_table(struct hclge_vport *vport, u16 vlan_id,
- 				       bool writen_to_tbl)
+diff --git a/drivers/media/platform/atmel/atmel-isc-base.c b/drivers/media/platform/atmel/atmel-isc-base.c
+index 660cd0ab6749..24807782c9e5 100644
+--- a/drivers/media/platform/atmel/atmel-isc-base.c
++++ b/drivers/media/platform/atmel/atmel-isc-base.c
+@@ -1369,14 +1369,12 @@ static int isc_enum_framesizes(struct file *file, void *fh,
+ 			       struct v4l2_frmsizeenum *fsize)
  {
- 	struct hclge_vport_vlan_cfg *vlan, *tmp;
-+	struct hclge_dev *hdev = vport->back;
- 
--	list_for_each_entry_safe(vlan, tmp, &vport->vlan_list, node)
--		if (vlan->vlan_id == vlan_id)
-+	mutex_lock(&hdev->vport_lock);
-+
-+	list_for_each_entry_safe(vlan, tmp, &vport->vlan_list, node) {
-+		if (vlan->vlan_id == vlan_id) {
-+			mutex_unlock(&hdev->vport_lock);
- 			return;
-+		}
-+	}
- 
- 	vlan = kzalloc(sizeof(*vlan), GFP_KERNEL);
--	if (!vlan)
-+	if (!vlan) {
-+		mutex_unlock(&hdev->vport_lock);
- 		return;
-+	}
- 
- 	vlan->hd_tbl_status = writen_to_tbl;
- 	vlan->vlan_id = vlan_id;
- 
- 	list_add_tail(&vlan->node, &vport->vlan_list);
-+	mutex_unlock(&hdev->vport_lock);
- }
- 
- static int hclge_add_vport_all_vlan_table(struct hclge_vport *vport)
-@@ -10258,6 +10267,8 @@ static int hclge_add_vport_all_vlan_table(struct hclge_vport *vport)
- 	struct hclge_dev *hdev = vport->back;
- 	int ret;
- 
-+	mutex_lock(&hdev->vport_lock);
-+
- 	list_for_each_entry_safe(vlan, tmp, &vport->vlan_list, node) {
- 		if (!vlan->hd_tbl_status) {
- 			ret = hclge_set_vlan_filter_hw(hdev, htons(ETH_P_8021Q),
-@@ -10267,12 +10278,16 @@ static int hclge_add_vport_all_vlan_table(struct hclge_vport *vport)
- 				dev_err(&hdev->pdev->dev,
- 					"restore vport vlan list failed, ret=%d\n",
- 					ret);
-+
-+				mutex_unlock(&hdev->vport_lock);
- 				return ret;
- 			}
- 		}
- 		vlan->hd_tbl_status = true;
- 	}
- 
-+	mutex_unlock(&hdev->vport_lock);
-+
- 	return 0;
- }
- 
-@@ -10282,6 +10297,8 @@ static void hclge_rm_vport_vlan_table(struct hclge_vport *vport, u16 vlan_id,
- 	struct hclge_vport_vlan_cfg *vlan, *tmp;
- 	struct hclge_dev *hdev = vport->back;
- 
-+	mutex_lock(&hdev->vport_lock);
-+
- 	list_for_each_entry_safe(vlan, tmp, &vport->vlan_list, node) {
- 		if (vlan->vlan_id == vlan_id) {
- 			if (is_write_tbl && vlan->hd_tbl_status)
-@@ -10296,6 +10313,8 @@ static void hclge_rm_vport_vlan_table(struct hclge_vport *vport, u16 vlan_id,
- 			break;
- 		}
- 	}
-+
-+	mutex_unlock(&hdev->vport_lock);
- }
- 
- void hclge_rm_vport_all_vlan_table(struct hclge_vport *vport, bool is_del_list)
-@@ -10303,6 +10322,8 @@ void hclge_rm_vport_all_vlan_table(struct hclge_vport *vport, bool is_del_list)
- 	struct hclge_vport_vlan_cfg *vlan, *tmp;
- 	struct hclge_dev *hdev = vport->back;
- 
-+	mutex_lock(&hdev->vport_lock);
-+
- 	list_for_each_entry_safe(vlan, tmp, &vport->vlan_list, node) {
- 		if (vlan->hd_tbl_status)
- 			hclge_set_vlan_filter_hw(hdev,
-@@ -10318,6 +10339,7 @@ void hclge_rm_vport_all_vlan_table(struct hclge_vport *vport, bool is_del_list)
- 		}
- 	}
- 	clear_bit(vport->vport_id, hdev->vf_vlan_full);
-+	mutex_unlock(&hdev->vport_lock);
- }
- 
- void hclge_uninit_vport_vlan_table(struct hclge_dev *hdev)
-@@ -10326,6 +10348,8 @@ void hclge_uninit_vport_vlan_table(struct hclge_dev *hdev)
- 	struct hclge_vport *vport;
+ 	struct isc_device *isc = video_drvdata(file);
+-	struct v4l2_subdev_frame_size_enum fse = {
+-		.code = isc->config.sd_format->mbus_code,
+-		.index = fsize->index,
+-		.which = V4L2_SUBDEV_FORMAT_ACTIVE,
+-	};
+ 	int ret = -EINVAL;
  	int i;
  
-+	mutex_lock(&hdev->vport_lock);
++	if (fsize->index)
++		return -EINVAL;
 +
- 	for (i = 0; i < hdev->num_alloc_vport; i++) {
- 		vport = &hdev->vport[i];
- 		list_for_each_entry_safe(vlan, tmp, &vport->vlan_list, node) {
-@@ -10333,6 +10357,8 @@ void hclge_uninit_vport_vlan_table(struct hclge_dev *hdev)
- 			kfree(vlan);
- 		}
- 	}
-+
-+	mutex_unlock(&hdev->vport_lock);
+ 	for (i = 0; i < isc->num_user_formats; i++)
+ 		if (isc->user_formats[i]->fourcc == fsize->pixel_format)
+ 			ret = 0;
+@@ -1388,14 +1386,14 @@ static int isc_enum_framesizes(struct file *file, void *fh,
+ 	if (ret)
+ 		return ret;
+ 
+-	ret = v4l2_subdev_call(isc->current_subdev->sd, pad, enum_frame_size,
+-			       NULL, &fse);
+-	if (ret)
+-		return ret;
++	fsize->type = V4L2_FRMSIZE_TYPE_CONTINUOUS;
+ 
+-	fsize->type = V4L2_FRMSIZE_TYPE_DISCRETE;
+-	fsize->discrete.width = fse.max_width;
+-	fsize->discrete.height = fse.max_height;
++	fsize->stepwise.min_width = 16;
++	fsize->stepwise.max_width = isc->max_width;
++	fsize->stepwise.min_height = 16;
++	fsize->stepwise.max_height = isc->max_height;
++	fsize->stepwise.step_width = 1;
++	fsize->stepwise.step_height = 1;
+ 
+ 	return 0;
  }
- 
- void hclge_restore_vport_port_base_vlan_config(struct hclge_dev *hdev)
-@@ -10372,6 +10398,8 @@ void hclge_restore_vport_vlan_table(struct hclge_vport *vport)
- 	struct hclge_dev *hdev = vport->back;
- 	int ret;
- 
-+	mutex_lock(&hdev->vport_lock);
-+
- 	if (vport->port_base_vlan_cfg.state == HNAE3_PORT_BASE_VLAN_DISABLE) {
- 		list_for_each_entry_safe(vlan, tmp, &vport->vlan_list, node) {
- 			ret = hclge_set_vlan_filter_hw(hdev, htons(ETH_P_8021Q),
-@@ -10382,6 +10410,8 @@ void hclge_restore_vport_vlan_table(struct hclge_vport *vport)
- 			vlan->hd_tbl_status = true;
- 		}
- 	}
-+
-+	mutex_unlock(&hdev->vport_lock);
- }
- 
- /* For global reset and imp reset, hardware will clear the mac table,
-@@ -12279,8 +12309,8 @@ static void hclge_uninit_ae_dev(struct hnae3_ae_dev *ae_dev)
- 	hclge_misc_irq_uninit(hdev);
- 	hclge_devlink_uninit(hdev);
- 	hclge_pci_uninit(hdev);
--	mutex_destroy(&hdev->vport_lock);
- 	hclge_uninit_vport_vlan_table(hdev);
-+	mutex_destroy(&hdev->vport_lock);
- 	ae_dev->priv = NULL;
- }
- 
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h
-index 801268b61e96..c841cce2d025 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h
-@@ -1087,6 +1087,7 @@ struct hclge_vport {
- 	spinlock_t mac_list_lock; /* protect mac address need to add/detele */
- 	struct list_head uc_mac_list;   /* Store VF unicast table */
- 	struct list_head mc_mac_list;   /* Store VF multicast table */
-+
- 	struct list_head vlan_list;     /* Store VF vlan table */
- };
- 
 -- 
 2.34.1
 
