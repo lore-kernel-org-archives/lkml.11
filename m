@@ -2,93 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 87051C43217
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 15:20:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C16BC4321E
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 15:20:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386008AbiDEPP3 (ORCPT
+        id S1386122AbiDEPPq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 11:15:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54750 "EHLO
+        Tue, 5 Apr 2022 11:15:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39130 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346693AbiDEJpV (ORCPT
+        with ESMTP id S1346708AbiDEJpV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Apr 2022 05:45:21 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 954D736686;
-        Tue,  5 Apr 2022 02:31:22 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7451ADAFFE;
+        Tue,  5 Apr 2022 02:31:27 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 49783B81C6E;
-        Tue,  5 Apr 2022 09:31:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 46064C385A4;
-        Tue,  5 Apr 2022 09:31:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649151080;
-        bh=wy56N3GzvYwz3j65YfFa+VXSzdPu9MSFvDzmV75JFcI=;
-        h=From:To:Cc:In-Reply-To:References:Subject:Date:From;
-        b=Uw9NTNC//zeTxqHZTEt4wLakcW6Vca5oWrRklfwR41ipRkQD1LKGG7M4UAp02aGd3
-         cGdIRa5b6cTKewezf1I9Y0medT9WnPanu8PiTQrk/VtC8ATTFt2pgz4CKGS+gmCrxM
-         Csd12UL4VZTJELkoUiw6KDb4RA7pg8OBIRMN9nRmS/3H8yytd6dRUyFxSqtYL9gWCo
-         h54HRHwAW7L/Pyb3SY1v50Ct+V2TteZDEZbbTQOaIGpOT3HadOvZHRQ+N7N/3yvG8B
-         lGDalUeSuET+N3cxZfsnuSZyLtEc4eG6tT9Vzy6iGmDDrONkzbSDC/FgOL01D8Pz6f
-         2NDkk0PylUgrw==
-From:   Mark Brown <broonie@kernel.org>
-To:     xiam0nd.tong@gmail.com, oder_chiou@realtek.com,
-        lgirdwood@gmail.com, tiwai@suse.com, perex@perex.cz
-Cc:     derek.fang@realtek.com, stable@vger.kernel.org,
-        alsa-devel@alsa-project.org, linux-kernel@vger.kernel.org
-In-Reply-To: <20220327081002.12684-1-xiam0nd.tong@gmail.com>
-References: <20220327081002.12684-1-xiam0nd.tong@gmail.com>
-Subject: Re: [PATCH] codecs: rt5682: fix an incorrect NULL check on list iterator
-Message-Id: <164915107801.276574.16249779388452959492.b4-ty@kernel.org>
-Date:   Tue, 05 Apr 2022 10:31:18 +0100
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 11EFC616AE;
+        Tue,  5 Apr 2022 09:31:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 212DDC385A4;
+        Tue,  5 Apr 2022 09:31:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649151086;
+        bh=V1UOHCySsxvOsjmVNhtwQgiiy4jbORYVeLbhecPA394=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=evB5eWLYNWDJSHelO4fyYmZ4bMb9PcSMWBNP5b3FlWt6hzYkF2vRti5qVt28CAd1N
+         cI+Jtm/wuoKNmaV+sXxwHferVHMCUiK405Hp4jTaOe/5jzDYbakl+yG6vtSrduYplw
+         Wf4fDd0pXYfPoB8KULnJGtKcB4jOwu5//hfmew88=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Adrian Hunter <adrian.hunter@intel.com>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 251/913] perf/core: Fix address filter parser for multiple filters
+Date:   Tue,  5 Apr 2022 09:21:53 +0200
+Message-Id: <20220405070347.380488944@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, 27 Mar 2022 16:10:02 +0800, Xiaomeng Tong wrote:
-> The bug is here:
-> 	if (!dai) {
-> 
-> The list iterator value 'dai' will *always* be set and non-NULL
-> by for_each_component_dais(), so it is incorrect to assume that
-> the iterator value will be NULL if the list is empty or no element
-> is found (In fact, it will be a bogus pointer to an invalid struct
-> object containing the HEAD). Otherwise it will bypass the check
-> 'if (!dai) {' (never call dev_err() and never return -ENODEV;)
-> and lead to invalid memory access lately when calling
-> 'rt5682_set_bclk1_ratio(dai, factor);'.
-> 
-> [...]
+From: Adrian Hunter <adrian.hunter@intel.com>
 
-Applied to
+[ Upstream commit d680ff24e9e14444c63945b43a37ede7cd6958f9 ]
 
-   https://git.kernel.org/pub/scm/linux/kernel/git/broonie/sound.git for-next
+Reset appropriate variables in the parser loop between parsing separate
+filters, so that they do not interfere with parsing the next filter.
 
-Thanks!
+Fixes: 375637bc524952 ("perf/core: Introduce address range filtering")
+Signed-off-by: Adrian Hunter <adrian.hunter@intel.com>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Link: https://lore.kernel.org/r/20220131072453.2839535-4-adrian.hunter@intel.com
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ kernel/events/core.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-[1/1] codecs: rt5682: fix an incorrect NULL check on list iterator
-      commit: c8618d65007ba68d7891130642d73e89372101e8
+diff --git a/kernel/events/core.c b/kernel/events/core.c
+index b81652fc2cdd..62022380ad8d 100644
+--- a/kernel/events/core.c
++++ b/kernel/events/core.c
+@@ -10530,8 +10530,11 @@ perf_event_parse_addr_filter(struct perf_event *event, char *fstr,
+ 			}
+ 
+ 			/* ready to consume more filters */
++			kfree(filename);
++			filename = NULL;
+ 			state = IF_STATE_ACTION;
+ 			filter = NULL;
++			kernel = 0;
+ 		}
+ 	}
+ 
+-- 
+2.34.1
 
-All being well this means that it will be integrated into the linux-next
-tree (usually sometime in the next 24 hours) and sent to Linus during
-the next merge window (or sooner if it is a bug fix), however if
-problems are discovered then the patch may be dropped or reverted.
 
-You may get further e-mails resulting from automated or manual testing
-and review of the tree, please engage with people reporting problems and
-send followup patches addressing any issues that are reported if needed.
 
-If any updates are required or you are submitting further changes they
-should be sent as incremental updates against current git, existing
-patches will not be replaced.
-
-Please add any relevant lists and maintainers to the CCs when replying
-to this mail.
-
-Thanks,
-Mark
