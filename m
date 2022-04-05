@@ -2,44 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B195C43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 65E0BC43219
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:59:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1839354AbiDFA7K (ORCPT
+        id S1839330AbiDFA7F (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 20:59:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59314 "EHLO
+        Tue, 5 Apr 2022 20:59:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46234 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355939AbiDEKWP (ORCPT
+        with ESMTP id S1348675AbiDEKsF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:22:15 -0400
+        Tue, 5 Apr 2022 06:48:05 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14A0FAA028;
-        Tue,  5 Apr 2022 03:05:31 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59A0F63BF0;
+        Tue,  5 Apr 2022 03:27:20 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7AEBEB81C83;
-        Tue,  5 Apr 2022 10:05:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CCFB8C385A1;
-        Tue,  5 Apr 2022 10:05:28 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E3FC3B81B18;
+        Tue,  5 Apr 2022 10:27:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 527A1C385A0;
+        Tue,  5 Apr 2022 10:27:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649153129;
-        bh=wxo5Qgm4ML6MQghSIyIPjrQXgvNxgJgLaqb67pNgPhk=;
+        s=korg; t=1649154437;
+        bh=izMv/LMDq16sbMxK8dWa52dHpvXUUl3PEqt/CPB1xl4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=l29fCfWEI3Rz6M2cYx1+nX7bH2z+G4kXgRtREj59wJa4ybjVwgjhOamYVJV5tXG9n
-         mCLTOPuu6g7Qy8iKiub14v86VevCMqUfoO9dl3AaMZOMvoQkyH3l/uCHsoEF6n2nwO
-         AIXZyhl/5WML11iIjMeWZoTbYEfJX/nCEUCMTH3U=
+        b=xpslcnrkn5jN71mI9tgTGudtnm1dzUnK1+bRFc4a1204DUVbZx/9U39Q8Tci4h8+p
+         UM3F7BwKL2oyl1PwbCO/FUAD1Bp4jqDGS9hWdBPpeF8/URn7jbxlhlXw2jWF2LYcny
+         f/gQHogbQiym2fWAMenOAq7kbPXP9izHz8qNXLiY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tadeusz Struk <tadeusz.struk@linaro.org>,
-        Vitaly Chikunov <vt@altlinux.org>,
-        Eric Biggers <ebiggers@google.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>
-Subject: [PATCH 5.10 111/599] crypto: rsa-pkcs1pad - restore signature length check
-Date:   Tue,  5 Apr 2022 09:26:45 +0200
-Message-Id: <20220405070302.140155099@linuxfoundation.org>
+        stable@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
+        Igor Zhbanov <i.zhbanov@omprussia.ru>,
+        Chris von Recklinghausen <crecklin@redhat.com>,
+        Kees Cook <keescook@chromium.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Subject: [PATCH 5.10 579/599] mm/usercopy: return 1 from hardened_usercopy __setup() handler
+Date:   Tue,  5 Apr 2022 09:34:33 +0200
+Message-Id: <20220405070316.073093929@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
 References: <20220405070258.802373272@linuxfoundation.org>
@@ -51,46 +53,63 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric Biggers <ebiggers@google.com>
+From: Randy Dunlap <rdunlap@infradead.org>
 
-commit d3481accd974541e6a5d6a1fb588924a3519c36e upstream.
+commit 05fe3c103f7e6b8b4fca8a7001dfc9ed4628085b upstream.
 
-RSA PKCS#1 v1.5 signatures are required to be the same length as the RSA
-key size.  RFC8017 specifically requires the verifier to check this
-(https://datatracker.ietf.org/doc/html/rfc8017#section-8.2.2).
+__setup() handlers should return 1 if the command line option is handled
+and 0 if not (or maybe never return 0; it just pollutes init's
+environment).  This prevents:
 
-Commit a49de377e051 ("crypto: Add hash param to pkcs1pad") changed the
-kernel to allow longer signatures, but didn't explain this part of the
-change; it seems to be unrelated to the rest of the commit.
+  Unknown kernel command line parameters \
+  "BOOT_IMAGE=/boot/bzImage-517rc5 hardened_usercopy=off", will be \
+  passed to user space.
 
-Revert this change, since it doesn't appear to be correct.
+  Run /sbin/init as init process
+   with arguments:
+     /sbin/init
+   with environment:
+     HOME=/
+     TERM=linux
+     BOOT_IMAGE=/boot/bzImage-517rc5
+     hardened_usercopy=off
+or
+     hardened_usercopy=on
+but when "hardened_usercopy=foo" is used, there is no Unknown kernel
+command line parameter.
 
-We can be pretty sure that no one is relying on overly-long signatures
-(which would have to be front-padded with zeroes) being supported, given
-that they would have been broken since commit c7381b012872
-("crypto: akcipher - new verify API for public key algorithms").
+Return 1 to indicate that the boot option has been handled.
+Print a warning if strtobool() returns an error on the option string,
+but do not mark this as in unknown command line option and do not cause
+init's environment to be polluted with this string.
 
-Fixes: a49de377e051 ("crypto: Add hash param to pkcs1pad")
-Cc: <stable@vger.kernel.org> # v4.6+
-Cc: Tadeusz Struk <tadeusz.struk@linaro.org>
-Suggested-by: Vitaly Chikunov <vt@altlinux.org>
-Signed-off-by: Eric Biggers <ebiggers@google.com>
-Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+Link: https://lkml.kernel.org/r/20220222034249.14795-1-rdunlap@infradead.org
+Link: lore.kernel.org/r/64644a2f-4a20-bab3-1e15-3b2cdd0defe3@omprussia.ru
+Fixes: b5cb15d9372ab ("usercopy: Allow boot cmdline disabling of hardening")
+Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+Reported-by: Igor Zhbanov <i.zhbanov@omprussia.ru>
+Acked-by: Chris von Recklinghausen <crecklin@redhat.com>
+Cc: Kees Cook <keescook@chromium.org>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- crypto/rsa-pkcs1pad.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ mm/usercopy.c |    5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
---- a/crypto/rsa-pkcs1pad.c
-+++ b/crypto/rsa-pkcs1pad.c
-@@ -538,7 +538,7 @@ static int pkcs1pad_verify(struct akciph
+--- a/mm/usercopy.c
++++ b/mm/usercopy.c
+@@ -294,7 +294,10 @@ static bool enable_checks __initdata = t
  
- 	if (WARN_ON(req->dst) ||
- 	    WARN_ON(!req->dst_len) ||
--	    !ctx->key_size || req->src_len < ctx->key_size)
-+	    !ctx->key_size || req->src_len != ctx->key_size)
- 		return -EINVAL;
+ static int __init parse_hardened_usercopy(char *str)
+ {
+-	return strtobool(str, &enable_checks);
++	if (strtobool(str, &enable_checks))
++		pr_warn("Invalid option string for hardened_usercopy: '%s'\n",
++			str);
++	return 1;
+ }
  
- 	req_ctx->out_buf = kmalloc(ctx->key_size + req->dst_len, GFP_KERNEL);
+ __setup("hardened_usercopy=", parse_hardened_usercopy);
 
 
