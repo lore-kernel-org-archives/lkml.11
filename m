@@ -2,85 +2,183 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ACD0CC433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C97AC433EF
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:56:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380714AbiDEUyi (ORCPT
+        id S1380451AbiDEUye (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 16:54:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39584 "EHLO
+        Tue, 5 Apr 2022 16:54:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38722 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348905AbiDEJsp (ORCPT
+        with ESMTP id S1573281AbiDESnQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:48:45 -0400
+        Tue, 5 Apr 2022 14:43:16 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63AC8EBAFB;
-        Tue,  5 Apr 2022 02:37:01 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 243C53632E;
+        Tue,  5 Apr 2022 11:41:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0F493B81B14;
-        Tue,  5 Apr 2022 09:37:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 744BEC385A2;
-        Tue,  5 Apr 2022 09:36:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649151418;
-        bh=3qWkXhv2+bEE/LEDVk1aJsXGXJIZNAa4/cwBCrH755U=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kHR7dFBS5R2DXhreVpnhbKb0B+fwxBpMe9h+lBxpa8WdQdPibcVByLSSnmK4/E1Hl
-         emmJkGS/T3Ao0MCWTEjWVY95hugkfKVYsqLv94KtoHeOJ9ZNHShQO3vF73YwG4nQfC
-         NSxpcJFrheVKpXp4BLH3sGe/LLVLU5Tv75w8+o3Q=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Maor Gottlieb <maorg@nvidia.com>,
-        Leon Romanovsky <leonro@nvidia.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 407/913] RDMA/core: Set MR type in ib_reg_user_mr
-Date:   Tue,  5 Apr 2022 09:24:29 +0200
-Message-Id: <20220405070352.046593553@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
-User-Agent: quilt/0.66
+        by ams.source.kernel.org (Postfix) with ESMTPS id C791AB81F87;
+        Tue,  5 Apr 2022 18:41:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2D3CDC385A0;
+        Tue,  5 Apr 2022 18:41:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649184074;
+        bh=A6Cglr/SX17RIdHYKRyt+DQUM0hwlXEDX/OSPfNNycE=;
+        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
+        b=FQGFEP789xWtWnwcwTXm40YoB6KiidAU6/C+PhRP9bYnU4SCmEb/eawdW2A3baTWh
+         idC9yo3PgnuNan+HF+IwSf0Br9AWKgC4bakOnDHjQ1nBnODA351Sl2Ph+h+0k90njx
+         zgGj+V1ptUowyS6UZxL+FKVDeXWpqZAPHfYFlIbvMUG4YdhmS8cQ7uv4OV13kz/8YV
+         jrpJduVXr3TKJjoJ82KDInuxGQ8btJ+PBPlAF4C3JEFmiyGYmyyd4ay+y/H5J7LRfM
+         EGoXLxEJ9QaY/NQICofIK8o85nGHWd+wNmbU9/g+miJRyX0zXWpJMmN0M3AboP9oj4
+         tOi7tg6DLqqEQ==
+Message-ID: <ddef013dc9ce496ff5840f42cf0651637060b4f2.camel@kernel.org>
+Subject: Re: [PATCH V3 19/30] x86/sgx: Free up EPC pages directly to support
+ large page ranges
+From:   Jarkko Sakkinen <jarkko@kernel.org>
+To:     Reinette Chatre <reinette.chatre@intel.com>
+Cc:     dave.hansen@linux.intel.com, tglx@linutronix.de, bp@alien8.de,
+        luto@kernel.org, mingo@redhat.com, linux-sgx@vger.kernel.org,
+        x86@kernel.org, seanjc@google.com, kai.huang@intel.com,
+        cathy.zhang@intel.com, cedric.xing@intel.com,
+        haitao.huang@intel.com, mark.shanahan@intel.com, hpa@zytor.com,
+        linux-kernel@vger.kernel.org
+Date:   Tue, 05 Apr 2022 21:42:24 +0300
+In-Reply-To: <e118f4c6-7216-15f3-2bda-3a5851b0bcb1@intel.com>
+References: <cover.1648847675.git.reinette.chatre@intel.com>
+         <b3a17e1ce7bcd14db3c28903e8a97f094998ae74.1648847675.git.reinette.chatre@intel.com>
+         <Ykvrk4hYvBEnNOOl@kernel.org>
+         <e118f4c6-7216-15f3-2bda-3a5851b0bcb1@intel.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.42.4 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Maor Gottlieb <maorg@nvidia.com>
+On Tue, 2022-04-05 at 10:13 -0700, Reinette Chatre wrote:
+> Hi Jarkko,
+>=20
+> On 4/5/2022 12:11 AM, Jarkko Sakkinen wrote:
+> > On Mon, Apr 04, 2022 at 09:49:27AM -0700, Reinette Chatre wrote:
+> > > The page reclaimer ensures availability of EPC pages across all
+> > > enclaves. In support of this it runs independently from the
+> > > individual enclaves in order to take locks from the different
+> > > enclaves as it writes pages to swap.
+> > >=20
+> > > When needing to load a page from swap an EPC page needs to be
+> > > available for its contents to be loaded into. Loading an existing
+> > > enclave page from swap does not reclaim EPC pages directly if
+> > > none are available, instead the reclaimer is woken when the
+> > > available EPC pages are found to be below a watermark.
+> > >=20
+> > > When iterating over a large number of pages in an oversubscribed
+> > > environment there is a race between the reclaimer woken up and
+> > > EPC pages reclaimed fast enough for the page operations to proceed.
+> > >=20
+> > > Ensure there are EPC pages available before attempting to load
+> > > a page that may potentially be pulled from swap into an available
+> > > EPC page.
+> > >=20
+> > > Signed-off-by: Reinette Chatre <reinette.chatre@intel.com>
+> > > ---
+> > > No changes since V2
+> > >=20
+> > > Changes since v1:
+> > > - Reword commit message.
+> > >=20
+> > > =C2=A0arch/x86/kernel/cpu/sgx/ioctl.c | 6 ++++++
+> > > =C2=A0arch/x86/kernel/cpu/sgx/main.c=C2=A0 | 6 ++++++
+> > > =C2=A0arch/x86/kernel/cpu/sgx/sgx.h=C2=A0=C2=A0 | 1 +
+> > > =C2=A03 files changed, 13 insertions(+)
+> > >=20
+> > > diff --git a/arch/x86/kernel/cpu/sgx/ioctl.c b/arch/x86/kernel/cpu/sg=
+x/ioctl.c
+> > > index 515e1961cc02..f88bc1236276 100644
+> > > --- a/arch/x86/kernel/cpu/sgx/ioctl.c
+> > > +++ b/arch/x86/kernel/cpu/sgx/ioctl.c
+> > > @@ -777,6 +777,8 @@ sgx_enclave_restrict_permissions(struct sgx_encl =
+*encl,
+> > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0for (c =3D 0 ; c < mo=
+dp->length; c +=3D PAGE_SIZE) {
+> > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0addr =3D encl->base + modp->offset + c;
+> > > =C2=A0
+> > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0sgx_direct_reclaim();
+> > > +
+> > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0mutex_lock(&encl->lock);
+> > > =C2=A0
+> > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0entry =3D sgx_encl_load_page(encl, addr);
+> > > @@ -934,6 +936,8 @@ static long sgx_enclave_modify_type(struct sgx_en=
+cl *encl,
+> > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0for (c =3D 0 ; c < mo=
+dt->length; c +=3D PAGE_SIZE) {
+> > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0addr =3D encl->base + modt->offset + c;
+> > > =C2=A0
+> > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0sgx_direct_reclaim();
+> > > +
+> > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0mutex_lock(&encl->lock);
+> > > =C2=A0
+> > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0entry =3D sgx_encl_load_page(encl, addr);
+> > > @@ -1129,6 +1133,8 @@ static long sgx_encl_remove_pages(struct sgx_en=
+cl *encl,
+> > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0for (c =3D 0 ; c < pa=
+rams->length; c +=3D PAGE_SIZE) {
+> > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0addr =3D encl->base + params->offset + c;
+> > > =C2=A0
+> > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0sgx_direct_reclaim();
+> > > +
+> > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0mutex_lock(&encl->lock);
+> > > =C2=A0
+> > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0entry =3D sgx_encl_load_page(encl, addr);
+> > > diff --git a/arch/x86/kernel/cpu/sgx/main.c b/arch/x86/kernel/cpu/sgx=
+/main.c
+> > > index 6e2cb7564080..545da16bb3ea 100644
+> > > --- a/arch/x86/kernel/cpu/sgx/main.c
+> > > +++ b/arch/x86/kernel/cpu/sgx/main.c
+> > > @@ -370,6 +370,12 @@ static bool sgx_should_reclaim(unsigned long wat=
+ermark)
+> > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0 !list_empty(&sgx_active_page_list);
+> > > =C2=A0}
+> > > =C2=A0
+> > > +void sgx_direct_reclaim(void)
+> > > +{
+> > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0if (sgx_should_reclaim(SGX=
+_NR_LOW_PAGES))
+> > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0sgx_reclaim_pages();
+> > > +}
+> >=20
+> > Please, instead open code this to both locations - not enough redundanc=
+y
+> > to be worth of new function. Causes only unnecessary cross-referencing
+> > when maintaining. Otherwise, I agree with the idea.
+> >=20
+>=20
+> hmmm, that means the heart of the reclaimer (sgx_reclaim_pages()) would b=
+e
+> made available for direct use from everywhere in the driver. I will look =
+into this.
+>=20
+> Reinette
+>=20
 
-[ Upstream commit 32a88d16615c2be295571c29273c4ac94cb75309 ]
+It's a valid enough point. Let's keep it as it is :-)
 
-Add missing assignment of MR type to IB_MR_TYPE_USER.
+Acked-by: Jarkko Sakkinen <jarkko@kernel.org>
 
-Fixes: 33006bd4f37f ("IB/core: Introduce ib_reg_user_mr")
-Link: https://lore.kernel.org/r/be2e91bcd6e52dc36be289ae92f30d3a5cc6dcb1.1642491047.git.leonro@nvidia.com
-Signed-off-by: Maor Gottlieb <maorg@nvidia.com>
-Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
-Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/infiniband/core/verbs.c | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/drivers/infiniband/core/verbs.c b/drivers/infiniband/core/verbs.c
-index 20a46d873145..59e20936b800 100644
---- a/drivers/infiniband/core/verbs.c
-+++ b/drivers/infiniband/core/verbs.c
-@@ -2153,6 +2153,7 @@ struct ib_mr *ib_reg_user_mr(struct ib_pd *pd, u64 start, u64 length,
- 		return mr;
- 
- 	mr->device = pd->device;
-+	mr->type = IB_MR_TYPE_USER;
- 	mr->pd = pd;
- 	mr->dm = NULL;
- 	atomic_inc(&pd->usecnt);
--- 
-2.34.1
-
-
-
+BR, Jarkko
