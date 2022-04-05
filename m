@@ -2,49 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E10AC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:59:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C547C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:59:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1839264AbiDFA6o (ORCPT
+        id S1839280AbiDFA6v (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 20:58:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54244 "EHLO
+        Tue, 5 Apr 2022 20:58:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47412 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349560AbiDEJuQ (ORCPT
+        with ESMTP id S1349329AbiDEJtj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:50:16 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 066A19B;
-        Tue,  5 Apr 2022 02:48:19 -0700 (PDT)
+        Tue, 5 Apr 2022 05:49:39 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B526D2DF1;
+        Tue,  5 Apr 2022 02:44:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 97A05615E5;
-        Tue,  5 Apr 2022 09:48:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7D80BC385A1;
-        Tue,  5 Apr 2022 09:48:17 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5F8C9B817D3;
+        Tue,  5 Apr 2022 09:44:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C4558C385A1;
+        Tue,  5 Apr 2022 09:43:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649152098;
-        bh=do+8eEDPBQpwYEPcf4XkVabUT7HYYAJoLGuwgo0KY/c=;
+        s=korg; t=1649151840;
+        bh=yrQk/XIIlYNaH6bGJzY3EtFzh7n9iwUU8rSENQg7smo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=eGgJk6FIfNO9v6hJv0/RWLdpZSrtPQCRTPREGRmIAMmMDq8GbCJffD6gbn0B0N1zi
-         zjWUq/PcTWRZvcvIJKrxP8uG1EioGQrf3C/FK/a2z5+gz5GVuY9aWmTMwC8L1IZ6Yu
-         B75yHycSIsNOfCsc2+y2HtdbS6mvLr5xaAOYm02g=
+        b=eVjBl1M+hhooItK5YhOnsYKE6vwzMRHy0xqhJE/DPf4WMWYpx/xwYdeBcvAQpwQZL
+         Zg4UTk1kyydtp1nSLh31cUm7Ic3Fvg36JmJGZGKzuqauGjopfyo+4qnThs2vkMjyDa
+         NB4TnoAa++KAraMDS5tQCfKbo1cGtS5mp9wB+1ic=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Thomas Richter <tmricht@linux.ibm.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Sumanth Korikkar <sumanthk@linux.ibm.com>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Sven Schnelle <svens@linux.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Arnaldo Carvalho de Melo <acme@redhat.com>,
+        stable@vger.kernel.org, Petr Machata <petrm@nvidia.com>,
+        Ido Schimmel <idosch@nvidia.com>,
+        Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 653/913] perf stat: Fix forked applications enablement of counters
-Date:   Tue,  5 Apr 2022 09:28:35 +0200
-Message-Id: <20220405070359.412755534@linuxfoundation.org>
+Subject: [PATCH 5.15 560/913] af_netlink: Fix shift out of bounds in group mask calculation
+Date:   Tue,  5 Apr 2022 09:27:02 +0200
+Message-Id: <20220405070356.631304130@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
 References: <20220405070339.801210740@linuxfoundation.org>
@@ -56,97 +51,60 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Thomas Richter <tmricht@linux.ibm.com>
+From: Petr Machata <petrm@nvidia.com>
 
-[ Upstream commit d0a0a511493d269514fcbd852481cdca32c95350 ]
+[ Upstream commit 0caf6d9922192dd1afa8dc2131abfb4df1443b9f ]
 
-I have run into the following issue:
+When a netlink message is received, netlink_recvmsg() fills in the address
+of the sender. One of the fields is the 32-bit bitfield nl_groups, which
+carries the multicast group on which the message was received. The least
+significant bit corresponds to group 1, and therefore the highest group
+that the field can represent is 32. Above that, the UB sanitizer flags the
+out-of-bounds shift attempts.
 
- # perf stat -a -e new_pmu/INSTRUCTION_7/ --  mytest -c1 7
+Which bits end up being set in such case is implementation defined, but
+it's either going to be a wrong non-zero value, or zero, which is at least
+not misleading. Make the latter choice deterministic by always setting to 0
+for higher-numbered multicast groups.
 
- Performance counter stats for 'system wide':
+To get information about membership in groups >= 32, userspace is expected
+to use nl_pktinfo control messages[0], which are enabled by NETLINK_PKTINFO
+socket option.
+[0] https://lwn.net/Articles/147608/
 
-                 0      new_pmu/INSTRUCTION_7/
+The way to trigger this issue is e.g. through monitoring the BRVLAN group:
 
-       0.000366428 seconds time elapsed
- #
+	# bridge monitor vlan &
+	# ip link add name br type bridge
 
-The new PMU for s390 counts the execution of certain CPU instructions.
-The root cause is the extremely small run time of the mytest program. It
-just executes some assembly instructions and then exits.
+Which produces the following citation:
 
-In above invocation the instruction is executed exactly one time (-c1
-option). The PMU is expected to report this one time execution by a
-counter value of one, but fails to do so in some cases, not all.
+	UBSAN: shift-out-of-bounds in net/netlink/af_netlink.c:162:19
+	shift exponent 32 is too large for 32-bit type 'int'
 
-Debugging reveals the invocation of the child process is done
-*before* the counter events are installed and enabled.
-
-Tracing reveals that sometimes the child process starts and exits before
-the event is installed on all CPUs. The more CPUs the machine has, the
-more often this miscount happens.
-
-Fix this by reversing the start of the work load after the events have
-been installed on the specified CPUs. Now the comment also matches the
-code.
-
-Output after:
-
- # perf stat -a -e new_pmu/INSTRUCTION_7/ --  mytest -c1 7
-
- Performance counter stats for 'system wide':
-
-                 1      new_pmu/INSTRUCTION_7/
-
-       0.000366428 seconds time elapsed
- #
-
-Now the correct result is reported rock solid all the time regardless
-how many CPUs are online.
-
-Reviewers notes:
-
-Jiri:
-
-Right, without -a the event has enable_on_exec so the race does not
-matter, but it's a problem for system wide with fork.
-
-Namhyung:
-
-Agreed. Also we may move the enable_counters() and the clock code out of
-the if block to be shared with the else block.
-
-Fixes: acf2892270dcc428 ("perf stat: Use perf_evlist__prepare/start_workload()")
-Signed-off-by: Thomas Richter <tmricht@linux.ibm.com>
-Acked-by: Jiri Olsa <jolsa@kernel.org>
-Acked-by: Namhyung Kim <namhyung@kernel.org>
-Acked-by: Sumanth Korikkar <sumanthk@linux.ibm.com>
-Cc: Heiko Carstens <hca@linux.ibm.com>
-Cc: Sven Schnelle <svens@linux.ibm.com>
-Cc: Vasily Gorbik <gor@linux.ibm.com>
-Link: https://lore.kernel.org/r/20220317155346.577384-1-tmricht@linux.ibm.com
-Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
+Fixes: f7fa9b10edbb ("[NETLINK]: Support dynamic number of multicast groups per netlink family")
+Signed-off-by: Petr Machata <petrm@nvidia.com>
+Reviewed-by: Ido Schimmel <idosch@nvidia.com>
+Link: https://lore.kernel.org/r/2bef6aabf201d1fc16cca139a744700cff9dcb04.1647527635.git.petrm@nvidia.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/perf/builtin-stat.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/netlink/af_netlink.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/tools/perf/builtin-stat.c b/tools/perf/builtin-stat.c
-index f0ecfda34ece..1a194edb5452 100644
---- a/tools/perf/builtin-stat.c
-+++ b/tools/perf/builtin-stat.c
-@@ -956,10 +956,10 @@ static int __run_perf_stat(int argc, const char **argv, int run_idx)
- 	 * Enable counters and exec the command:
- 	 */
- 	if (forks) {
--		evlist__start_workload(evsel_list);
- 		err = enable_counters();
- 		if (err)
- 			return -1;
-+		evlist__start_workload(evsel_list);
+diff --git a/net/netlink/af_netlink.c b/net/netlink/af_netlink.c
+index 81ba8e51e01f..83ca93b32f5f 100644
+--- a/net/netlink/af_netlink.c
++++ b/net/netlink/af_netlink.c
+@@ -157,6 +157,8 @@ EXPORT_SYMBOL(do_trace_netlink_extack);
  
- 		t0 = rdclock();
- 		clock_gettime(CLOCK_MONOTONIC, &ref_time);
+ static inline u32 netlink_group_mask(u32 group)
+ {
++	if (group > 32)
++		return 0;
+ 	return group ? 1 << (group - 1) : 0;
+ }
+ 
 -- 
 2.34.1
 
