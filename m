@@ -2,47 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C4D1C388F3
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:01:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 232C4C35295
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:01:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236261AbiDEIBv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 04:01:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57248 "EHLO
+        id S235914AbiDEIAn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 04:00:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55590 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232682AbiDEHvi (ORCPT
+        with ESMTP id S232174AbiDEHtl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 03:51:38 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02CFB972C7;
-        Tue,  5 Apr 2022 00:47:38 -0700 (PDT)
+        Tue, 5 Apr 2022 03:49:41 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3079C92D01;
+        Tue,  5 Apr 2022 00:46:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A4496B81B98;
-        Tue,  5 Apr 2022 07:47:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F39D0C36AE5;
-        Tue,  5 Apr 2022 07:47:34 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3FDDD616DE;
+        Tue,  5 Apr 2022 07:46:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 48C60C340EE;
+        Tue,  5 Apr 2022 07:46:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649144855;
-        bh=V0AMbed3y2aTkDzH3QoR1TLnabPaMgt3c7GcI48nFnI=;
+        s=korg; t=1649144816;
+        bh=lYuDuCZyM1/21wlsDLWnPTHlGYhxcYDWK3hJXAIaYcs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QS83CQK8OPZQ+aw1Jfd5jOEaTiG5J/CwiajGeHslv0qUnY4acEUEMyY6A0VLmDBTu
-         xaXHDaYxzWt1DvzpWDKH0oxku7SjJ0BZZz39+1rkTKbF2e2hOmbbU9D8n4VzWzZsIS
-         /OZZrDT4CJlTMXzmgdrkUGziLytH3LMxvS35DvOQ=
+        b=a+OqbXVBAoZi68VT8KNGkETKWT9izAB6YbFN9AgHp6xrzXs+ZQuM9nmI1/vXpln0N
+         HphzXu9G1apX0sd4p+dbE+OFe9x4nz2YhNtSgZT6SWGpRu4pLobwNyd/RznIHGve6T
+         emXcDS0yOwBboEiWoZbuVzC1SCxRn45dZr1kcsxM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Marc Zyngier <maz@kernel.org>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Rob Herring <robh@kernel.org>,
-        Toan Le <toan@os.amperecomputing.com>,
-        =?UTF-8?q?Krzysztof=20Wilczy=C5=84ski?= <kw@linux.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        =?UTF-8?q?St=C3=A9phane=20Graber?= <stgraber@ubuntu.com>,
-        dann frazier <dann.frazier@canonical.com>
-Subject: [PATCH 5.17 0196/1126] PCI: xgene: Revert "PCI: xgene: Use inbound resources for setup"
-Date:   Tue,  5 Apr 2022 09:15:43 +0200
-Message-Id: <20220405070413.360448939@linuxfoundation.org>
+        stable@vger.kernel.org, Tejun Heo <tj@kernel.org>,
+        Josef Bacik <jbacik@fb.com>, Jens Axboe <axboe@kernel.dk>
+Subject: [PATCH 5.17 0143/1126] block: dont merge across cgroup boundaries if blkcg is enabled
+Date:   Tue,  5 Apr 2022 09:14:50 +0200
+Message-Id: <20220405070411.778775549@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -54,105 +48,112 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Marc Zyngier <maz@kernel.org>
+From: Tejun Heo <tj@kernel.org>
 
-commit 1874b6d7ab1bdc900e8398026350313ac29caddb upstream.
+commit 6b2b04590b51aa4cf395fcd185ce439cab5961dc upstream.
 
-Commit 6dce5aa59e0b ("PCI: xgene: Use inbound resources for setup")
-killed PCIe on my XGene-1 box (a Mustang board). The machine itself
-is still alive, but half of its storage (over NVMe) is gone, and the
-NVMe driver just times out.
+blk-iocost and iolatency are cgroup aware rq-qos policies but they didn't
+disable merges across different cgroups. This obviously can lead to
+accounting and control errors but more importantly to priority inversions -
+e.g. an IO which belongs to a higher priority cgroup or IO class may end up
+getting throttled incorrectly because it gets merged to an IO issued from a
+low priority cgroup.
 
-Note that this machine boots with a device tree provided by the
-UEFI firmware (2016 vintage), which could well be non conformant
-with the spec, hence the breakage.
+Fix it by adding blk_cgroup_mergeable() which is called from merge paths and
+rejects cross-cgroup and cross-issue_as_root merges.
 
-With the patch reverted, the box boots 5.17-rc8 with flying colors.
-
-Link: https://lore.kernel.org/all/Yf2wTLjmcRj+AbDv@xps13.dannf
-Link: https://lore.kernel.org/r/20220321104843.949645-2-maz@kernel.org
-Fixes: 6dce5aa59e0b ("PCI: xgene: Use inbound resources for setup")
-Signed-off-by: Marc Zyngier <maz@kernel.org>
-Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-Cc: stable@vger.kernel.org
-Cc: Rob Herring <robh@kernel.org>
-Cc: Toan Le <toan@os.amperecomputing.com>
-Cc: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-Cc: Krzysztof Wilczyński <kw@linux.com>
-Cc: Bjorn Helgaas <bhelgaas@google.com>
-Cc: Stéphane Graber <stgraber@ubuntu.com>
-Cc: dann frazier <dann.frazier@canonical.com>
+Signed-off-by: Tejun Heo <tj@kernel.org>
+Fixes: d70675121546 ("block: introduce blk-iolatency io controller")
+Cc: stable@vger.kernel.org # v4.19+
+Cc: Josef Bacik <jbacik@fb.com>
+Link: https://lore.kernel.org/r/Yi/eE/6zFNyWJ+qd@slm.duckdns.org
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/pci/controller/pci-xgene.c |   33 ++++++++++++++++++++++-----------
- 1 file changed, 22 insertions(+), 11 deletions(-)
+ block/blk-merge.c          |   11 +++++++++++
+ include/linux/blk-cgroup.h |   17 +++++++++++++++++
+ 2 files changed, 28 insertions(+)
 
---- a/drivers/pci/controller/pci-xgene.c
-+++ b/drivers/pci/controller/pci-xgene.c
-@@ -479,28 +479,27 @@ static int xgene_pcie_select_ib_reg(u8 *
- }
+--- a/block/blk-merge.c
++++ b/block/blk-merge.c
+@@ -9,6 +9,7 @@
+ #include <linux/blk-integrity.h>
+ #include <linux/scatterlist.h>
+ #include <linux/part_stat.h>
++#include <linux/blk-cgroup.h>
  
- static void xgene_pcie_setup_ib_reg(struct xgene_pcie *port,
--				    struct resource_entry *entry,
--				    u8 *ib_reg_mask)
-+				    struct of_pci_range *range, u8 *ib_reg_mask)
+ #include <trace/events/block.h>
+ 
+@@ -600,6 +601,9 @@ static inline unsigned int blk_rq_get_ma
+ static inline int ll_new_hw_segment(struct request *req, struct bio *bio,
+ 		unsigned int nr_phys_segs)
  {
- 	void __iomem *cfg_base = port->cfg_base;
- 	struct device *dev = port->dev;
- 	void __iomem *bar_addr;
- 	u32 pim_reg;
--	u64 cpu_addr = entry->res->start;
--	u64 pci_addr = cpu_addr - entry->offset;
--	u64 size = resource_size(entry->res);
-+	u64 cpu_addr = range->cpu_addr;
-+	u64 pci_addr = range->pci_addr;
-+	u64 size = range->size;
- 	u64 mask = ~(size - 1) | EN_REG;
- 	u32 flags = PCI_BASE_ADDRESS_MEM_TYPE_64;
- 	u32 bar_low;
- 	int region;
- 
--	region = xgene_pcie_select_ib_reg(ib_reg_mask, size);
-+	region = xgene_pcie_select_ib_reg(ib_reg_mask, range->size);
- 	if (region < 0) {
- 		dev_warn(dev, "invalid pcie dma-range config\n");
- 		return;
- 	}
- 
--	if (entry->res->flags & IORESOURCE_PREFETCH)
-+	if (range->flags & IORESOURCE_PREFETCH)
- 		flags |= PCI_BASE_ADDRESS_MEM_PREFETCH;
- 
- 	bar_low = pcie_bar_low_val((u32)cpu_addr, flags);
-@@ -531,13 +530,25 @@ static void xgene_pcie_setup_ib_reg(stru
- 
- static int xgene_pcie_parse_map_dma_ranges(struct xgene_pcie *port)
- {
--	struct pci_host_bridge *bridge = pci_host_bridge_from_priv(port);
--	struct resource_entry *entry;
-+	struct device_node *np = port->node;
-+	struct of_pci_range range;
-+	struct of_pci_range_parser parser;
-+	struct device *dev = port->dev;
- 	u8 ib_reg_mask = 0;
- 
--	resource_list_for_each_entry(entry, &bridge->dma_ranges)
--		xgene_pcie_setup_ib_reg(port, entry, &ib_reg_mask);
-+	if (of_pci_dma_range_parser_init(&parser, np)) {
-+		dev_err(dev, "missing dma-ranges property\n");
-+		return -EINVAL;
-+	}
- 
-+	/* Get the dma-ranges from DT */
-+	for_each_of_pci_range(&parser, &range) {
-+		u64 end = range.cpu_addr + range.size - 1;
++	if (!blk_cgroup_mergeable(req, bio))
++		goto no_merge;
 +
-+		dev_dbg(dev, "0x%08x 0x%016llx..0x%016llx -> 0x%016llx\n",
-+			range.flags, range.cpu_addr, end, range.pci_addr);
-+		xgene_pcie_setup_ib_reg(port, &range, &ib_reg_mask);
-+	}
- 	return 0;
+ 	if (blk_integrity_merge_bio(req->q, req, bio) == false)
+ 		goto no_merge;
+ 
+@@ -696,6 +700,9 @@ static int ll_merge_requests_fn(struct r
+ 	if (total_phys_segments > blk_rq_get_max_segments(req))
+ 		return 0;
+ 
++	if (!blk_cgroup_mergeable(req, next->bio))
++		return 0;
++
+ 	if (blk_integrity_merge_rq(q, req, next) == false)
+ 		return 0;
+ 
+@@ -904,6 +911,10 @@ bool blk_rq_merge_ok(struct request *rq,
+ 	if (bio_data_dir(bio) != rq_data_dir(rq))
+ 		return false;
+ 
++	/* don't merge across cgroup boundaries */
++	if (!blk_cgroup_mergeable(rq, bio))
++		return false;
++
+ 	/* only merge integrity protected bio into ditto rq */
+ 	if (blk_integrity_merge_bio(rq->q, rq, bio) == false)
+ 		return false;
+--- a/include/linux/blk-cgroup.h
++++ b/include/linux/blk-cgroup.h
+@@ -24,6 +24,7 @@
+ #include <linux/atomic.h>
+ #include <linux/kthread.h>
+ #include <linux/fs.h>
++#include <linux/blk-mq.h>
+ 
+ /* percpu_counter batch for blkg_[rw]stats, per-cpu drift doesn't matter */
+ #define BLKG_STAT_CPU_BATCH	(INT_MAX / 2)
+@@ -604,6 +605,21 @@ static inline void blkcg_clear_delay(str
+ 		atomic_dec(&blkg->blkcg->css.cgroup->congestion_count);
  }
  
++/**
++ * blk_cgroup_mergeable - Determine whether to allow or disallow merges
++ * @rq: request to merge into
++ * @bio: bio to merge
++ *
++ * @bio and @rq should belong to the same cgroup and their issue_as_root should
++ * match. The latter is necessary as we don't want to throttle e.g. a metadata
++ * update because it happens to be next to a regular IO.
++ */
++static inline bool blk_cgroup_mergeable(struct request *rq, struct bio *bio)
++{
++	return rq->bio->bi_blkg == bio->bi_blkg &&
++		bio_issue_as_root_blkg(rq->bio) == bio_issue_as_root_blkg(bio);
++}
++
+ void blk_cgroup_bio_start(struct bio *bio);
+ void blkcg_add_delay(struct blkcg_gq *blkg, u64 now, u64 delta);
+ void blkcg_schedule_throttle(struct request_queue *q, bool use_memdelay);
+@@ -659,6 +675,7 @@ static inline void blkg_put(struct blkcg
+ static inline bool blkcg_punt_bio_submit(struct bio *bio) { return false; }
+ static inline void blkcg_bio_issue_init(struct bio *bio) { }
+ static inline void blk_cgroup_bio_start(struct bio *bio) { }
++static inline bool blk_cgroup_mergeable(struct request *rq, struct bio *bio) { return true; }
+ 
+ #define blk_queue_for_each_rl(rl, q)	\
+ 	for ((rl) = &(q)->root_rl; (rl); (rl) = NULL)
 
 
