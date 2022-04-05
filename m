@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C9C53C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 07:43:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B851C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 07:43:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231475AbiDEHpI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 03:45:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55418 "EHLO
+        id S232064AbiDEHpK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 03:45:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56092 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232089AbiDEHoV (ORCPT
+        with ESMTP id S232087AbiDEHoT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 03:44:21 -0400
+        Tue, 5 Apr 2022 03:44:19 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE8C196807;
-        Tue,  5 Apr 2022 00:40:50 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6C6F939FE;
+        Tue,  5 Apr 2022 00:40:45 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5C75EB81B18;
-        Tue,  5 Apr 2022 07:40:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B9D09C340EE;
-        Tue,  5 Apr 2022 07:40:47 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EEA2AB81B14;
+        Tue,  5 Apr 2022 07:40:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 64F34C340EE;
+        Tue,  5 Apr 2022 07:40:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649144448;
-        bh=S5JSbPs7QsysBWhnR3G8MjqokpkFfZdd3XOVDP5puGs=;
+        s=korg; t=1649144442;
+        bh=sbrwT/SUZKgQS5k/o8rRHTPmV5lhx0fWxEXy5URgNCI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=m9leIdhCdY7KahLyWfcFyeYPv9Yp8mLtW/73CsvaP7VlVo68WQ0c0O03D+W7hRl1n
-         zcViEQL5YG3TIyMgoDv0ygSBXeTb9fdpi5zURm8xbDZI9LhFsApheb69MJkGK+p3JC
-         FYzxh0jCtLUqoivrgvTR293/LxEufzv33LGtJhe4=
+        b=Ed0JQs2aQQL7eS6tXUYKpdi8tg5N7oVw6tqa8aanw1s5WzNJDWw1mLBVq2NYTiC8U
+         lhz/xvzWTgzkScUzvtJWwGiO7BGIFrXVioklleIJ1h9Cjm0cg/8qloyHst8vUhsqSH
+         ddB4+97C6d2toQGyD0BQlReMFprcbUlKLq+4y+o8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Stefan Berger <stefanb@linux.ibm.com>,
-        Tianjia Zhang <tianjia.zhang@linux.alibaba.com>,
-        Eric Biggers <ebiggers@google.com>,
-        Vitaly Chikunov <vt@altlinux.org>,
-        Jarkko Sakkinen <jarkko@kernel.org>
-Subject: [PATCH 5.17 0047/1126] KEYS: asymmetric: enforce that sig algo matches key algo
-Date:   Tue,  5 Apr 2022 09:13:14 +0200
-Message-Id: <20220405070408.944532144@linuxfoundation.org>
+        stable@vger.kernel.org, kernel test robot <oliver.sang@intel.com>,
+        Ronnie Sahlberg <lsahlber@redhat.com>,
+        Steve French <stfrench@microsoft.com>
+Subject: [PATCH 5.17 0045/1126] cifs: we do not need a spinlock around the tree access during umount
+Date:   Tue,  5 Apr 2022 09:13:12 +0200
+Message-Id: <20220405070408.882278419@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -51,97 +49,71 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric Biggers <ebiggers@google.com>
+From: Ronnie Sahlberg <lsahlber@redhat.com>
 
-commit 2abc9c246e0548e52985b10440c9ea3e9f65f793 upstream.
+commit 9a14b65d590105d393b63f5320e1594edda7c672 upstream.
 
-Most callers of public_key_verify_signature(), including most indirect
-callers via verify_signature() as well as pkcs7_verify_sig_chain(),
-don't check that public_key_signature::pkey_algo matches
-public_key::pkey_algo.  These should always match.  However, a malicious
-signature could intentionally declare an unintended algorithm.  It is
-essential that such signatures be rejected outright, or that the
-algorithm of the *key* be used -- not the algorithm of the signature as
-that would allow attackers to choose the algorithm used.
+Remove the spinlock around the tree traversal as we are calling possibly
+sleeping functions.
+We do not need a spinlock here as there will be no modifications to this
+tree at this point.
 
-Currently, public_key_verify_signature() correctly uses the key's
-algorithm when deciding which akcipher to allocate.  That's good.
-However, it uses the signature's algorithm when deciding whether to do
-the first step of SM2, which is incorrect.  Also, v4.19 and older
-kernels used the signature's algorithm for the entire process.
+This prevents warnings like this to occur in dmesg:
+[  653.774996] BUG: sleeping function called from invalid context at kernel/loc\
+king/mutex.c:280
+[  653.775088] in_atomic(): 1, irqs_disabled(): 0, non_block: 0, pid: 1827, nam\
+e: umount
+[  653.775152] preempt_count: 1, expected: 0
+[  653.775191] CPU: 0 PID: 1827 Comm: umount Tainted: G        W  OE     5.17.0\
+-rc7-00006-g4eb628dd74df #135
+[  653.775195] Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.14.0-\
+1.fc33 04/01/2014
+[  653.775197] Call Trace:
+[  653.775199]  <TASK>
+[  653.775202]  dump_stack_lvl+0x34/0x44
+[  653.775209]  __might_resched.cold+0x13f/0x172
+[  653.775213]  mutex_lock+0x75/0xf0
+[  653.775217]  ? __mutex_lock_slowpath+0x10/0x10
+[  653.775220]  ? _raw_write_lock_irq+0xd0/0xd0
+[  653.775224]  ? dput+0x6b/0x360
+[  653.775228]  cifs_kill_sb+0xff/0x1d0 [cifs]
+[  653.775285]  deactivate_locked_super+0x85/0x130
+[  653.775289]  cleanup_mnt+0x32c/0x4d0
+[  653.775292]  ? path_umount+0x228/0x380
+[  653.775296]  task_work_run+0xd8/0x180
+[  653.775301]  exit_to_user_mode_loop+0x152/0x160
+[  653.775306]  exit_to_user_mode_prepare+0x89/0xd0
+[  653.775315]  syscall_exit_to_user_mode+0x12/0x30
+[  653.775322]  do_syscall_64+0x48/0x90
+[  653.775326]  entry_SYSCALL_64_after_hwframe+0x44/0xae
 
-Prevent such errors by making public_key_verify_signature() enforce that
-the signature's algorithm (if given) matches the key's algorithm.
-
-Also remove two checks of this done by callers, which are now redundant.
-
+Fixes: 187af6e98b44e5d8f25e1d41a92db138eb54416f ("cifs: fix handlecache and multiuser")
+Reported-by: kernel test robot <oliver.sang@intel.com>
 Cc: stable@vger.kernel.org
-Tested-by: Stefan Berger <stefanb@linux.ibm.com>
-Tested-by: Tianjia Zhang <tianjia.zhang@linux.alibaba.com>
-Signed-off-by: Eric Biggers <ebiggers@google.com>
-Reviewed-by: Vitaly Chikunov <vt@altlinux.org>
-Reviewed-by: Jarkko Sakkinen <jarkko@kernel.org>
-Signed-off-by: Jarkko Sakkinen <jarkko@kernel.org>
+Signed-off-by: Ronnie Sahlberg <lsahlber@redhat.com>
+Signed-off-by: Steve French <stfrench@microsoft.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- crypto/asymmetric_keys/pkcs7_verify.c    |    6 ------
- crypto/asymmetric_keys/public_key.c      |   15 +++++++++++++++
- crypto/asymmetric_keys/x509_public_key.c |    6 ------
- 3 files changed, 15 insertions(+), 12 deletions(-)
+ fs/cifs/cifsfs.c |    2 --
+ 1 file changed, 2 deletions(-)
 
---- a/crypto/asymmetric_keys/pkcs7_verify.c
-+++ b/crypto/asymmetric_keys/pkcs7_verify.c
-@@ -174,12 +174,6 @@ static int pkcs7_find_key(struct pkcs7_m
- 		pr_devel("Sig %u: Found cert serial match X.509[%u]\n",
- 			 sinfo->index, certix);
- 
--		if (strcmp(x509->pub->pkey_algo, sinfo->sig->pkey_algo) != 0) {
--			pr_warn("Sig %u: X.509 algo and PKCS#7 sig algo don't match\n",
--				sinfo->index);
--			continue;
--		}
--
- 		sinfo->signer = x509;
- 		return 0;
+--- a/fs/cifs/cifsfs.c
++++ b/fs/cifs/cifsfs.c
+@@ -266,7 +266,6 @@ static void cifs_kill_sb(struct super_bl
+ 		dput(cifs_sb->root);
+ 		cifs_sb->root = NULL;
  	}
---- a/crypto/asymmetric_keys/public_key.c
-+++ b/crypto/asymmetric_keys/public_key.c
-@@ -325,6 +325,21 @@ int public_key_verify_signature(const st
- 	BUG_ON(!sig);
- 	BUG_ON(!sig->s);
- 
-+	/*
-+	 * If the signature specifies a public key algorithm, it *must* match
-+	 * the key's actual public key algorithm.
-+	 *
-+	 * Small exception: ECDSA signatures don't specify the curve, but ECDSA
-+	 * keys do.  So the strings can mismatch slightly in that case:
-+	 * "ecdsa-nist-*" for the key, but "ecdsa" for the signature.
-+	 */
-+	if (sig->pkey_algo) {
-+		if (strcmp(pkey->pkey_algo, sig->pkey_algo) != 0 &&
-+		    (strncmp(pkey->pkey_algo, "ecdsa-", 6) != 0 ||
-+		     strcmp(sig->pkey_algo, "ecdsa") != 0))
-+			return -EKEYREJECTED;
-+	}
-+
- 	ret = software_key_determine_akcipher(sig->encoding,
- 					      sig->hash_algo,
- 					      pkey, alg_name);
---- a/crypto/asymmetric_keys/x509_public_key.c
-+++ b/crypto/asymmetric_keys/x509_public_key.c
-@@ -128,12 +128,6 @@ int x509_check_for_self_signed(struct x5
- 			goto out;
+-	spin_lock(&cifs_sb->tlink_tree_lock);
+ 	node = rb_first(root);
+ 	while (node != NULL) {
+ 		tlink = rb_entry(node, struct tcon_link, tl_rbnode);
+@@ -280,7 +279,6 @@ static void cifs_kill_sb(struct super_bl
+ 		mutex_unlock(&cfid->fid_mutex);
+ 		node = rb_next(node);
  	}
+-	spin_unlock(&cifs_sb->tlink_tree_lock);
  
--	ret = -EKEYREJECTED;
--	if (strcmp(cert->pub->pkey_algo, cert->sig->pkey_algo) != 0 &&
--	    (strncmp(cert->pub->pkey_algo, "ecdsa-", 6) != 0 ||
--	     strcmp(cert->sig->pkey_algo, "ecdsa") != 0))
--		goto out;
--
- 	ret = public_key_verify_signature(cert->pub, cert->sig);
- 	if (ret < 0) {
- 		if (ret == -ENOPKG) {
+ 	kill_anon_super(sb);
+ 	cifs_umount(cifs_sb);
 
 
