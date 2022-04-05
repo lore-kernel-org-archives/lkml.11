@@ -2,45 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C7E80C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 07:48:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DCCCBC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 07:48:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232251AbiDEHuO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 03:50:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57884 "EHLO
+        id S232336AbiDEHuX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 03:50:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55722 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232374AbiDEHqb (ORCPT
+        with ESMTP id S232320AbiDEHq3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 03:46:31 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 179EE9A98D;
-        Tue,  5 Apr 2022 00:42:09 -0700 (PDT)
+        Tue, 5 Apr 2022 03:46:29 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 150AD99EDD;
+        Tue,  5 Apr 2022 00:42:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C5FFBB81B75;
-        Tue,  5 Apr 2022 07:42:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 38424C340EE;
-        Tue,  5 Apr 2022 07:42:06 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A64EB6164B;
+        Tue,  5 Apr 2022 07:42:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B2EB5C340EE;
+        Tue,  5 Apr 2022 07:42:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649144526;
-        bh=fKGsAcnGkdDH2Ic2fcQgnLFdX1e9rvKJlOCEFRK4Q3g=;
+        s=korg; t=1649144521;
+        bh=5IqUjJTSOJ5iA71G3v7PMy802c6wfxcw7Yd0aVsWReA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xErKDVC9C2SjCylfnm+u6niwbNDFcF4XJEgXULboPz4z+80G3F7IV5ZYygQxcpIqt
-         etuZTNOpBnyeCyLjtXw4gw2W809URsO80i0sOd/LEv+L/d29Be1rX2Gsj0wxDYQGxf
-         L0xB4Q4aUWrU7NxBp6PfGkrofhaDVuEO7RS7H45s=
+        b=mpNCIZg5Shk3gP5/9TEtKgq4XBts3ZjwbciNpPxiUQN/rbdVxqGmXXcJ62CAKqmD4
+         Ltqit5gWhOOw5fcn91I+9CVe/HgTYLYkS/xO8VLChjHTM1LLl7UOPTBEW0JbFTM1XI
+         yGS4lolxQeWIwb+cjshqYR54kZF2cvSh8GlrOydc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Minchan Kim <minchan@kernel.org>,
-        Chris Goldsworthy <cgoldswo@codeaurora.org>,
-        Marcelo Tosatti <mtosatti@redhat.com>,
-        John Dias <joaodias@google.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [PATCH 5.17 0076/1126] mm: fs: fix lru_cache_disabled race in bh_lru
-Date:   Tue,  5 Apr 2022 09:13:43 +0200
-Message-Id: <20220405070409.799931519@linuxfoundation.org>
+        stable@vger.kernel.org, Baokun Li <libaokun1@huawei.com>,
+        Richard Weinberger <richard@nod.at>
+Subject: [PATCH 5.17 0074/1126] jffs2: fix memory leak in jffs2_do_mount_fs
+Date:   Tue,  5 Apr 2022 09:13:41 +0200
+Message-Id: <20220405070409.741905535@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -52,67 +48,71 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Minchan Kim <minchan@kernel.org>
+From: Baokun Li <libaokun1@huawei.com>
 
-commit c0226eb8bde854e016a594a16f5c0d98aca426fa upstream.
+commit d051cef784de4d54835f6b6836d98a8f6935772c upstream.
 
-Check lru_cache_disabled under bh_lru_lock.  Otherwise, it could introduce
-race below and it fails to migrate pages containing buffer_head.
+If jffs2_build_filesystem() in jffs2_do_mount_fs() returns an error,
+we can observe the following kmemleak report:
 
-   CPU 0					CPU 1
+--------------------------------------------
+unreferenced object 0xffff88811b25a640 (size 64):
+  comm "mount", pid 691, jiffies 4294957728 (age 71.952s)
+  hex dump (first 32 bytes):
+    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+  backtrace:
+    [<ffffffffa493be24>] kmem_cache_alloc_trace+0x584/0x880
+    [<ffffffffa5423a06>] jffs2_sum_init+0x86/0x130
+    [<ffffffffa5400e58>] jffs2_do_mount_fs+0x798/0xac0
+    [<ffffffffa540acf3>] jffs2_do_fill_super+0x383/0xc30
+    [<ffffffffa540c00a>] jffs2_fill_super+0x2ea/0x4c0
+    [...]
+unreferenced object 0xffff88812c760000 (size 65536):
+  comm "mount", pid 691, jiffies 4294957728 (age 71.952s)
+  hex dump (first 32 bytes):
+    bb bb bb bb bb bb bb bb bb bb bb bb bb bb bb bb  ................
+    bb bb bb bb bb bb bb bb bb bb bb bb bb bb bb bb  ................
+  backtrace:
+    [<ffffffffa493a449>] __kmalloc+0x6b9/0x910
+    [<ffffffffa5423a57>] jffs2_sum_init+0xd7/0x130
+    [<ffffffffa5400e58>] jffs2_do_mount_fs+0x798/0xac0
+    [<ffffffffa540acf3>] jffs2_do_fill_super+0x383/0xc30
+    [<ffffffffa540c00a>] jffs2_fill_super+0x2ea/0x4c0
+    [...]
+--------------------------------------------
 
-bh_lru_install
-                                       lru_cache_disable
-  lru_cache_disabled = false
-                                       atomic_inc(&lru_disable_count);
-				       invalidate_bh_lrus_cpu of CPU 0
-				       bh_lru_lock
-				       __invalidate_bh_lrus
-				       bh_lru_unlock
-  bh_lru_lock
-  install the bh
-  bh_lru_unlock
+This is because the resources allocated in jffs2_sum_init() are not
+released. Call jffs2_sum_exit() to release these resources to solve
+the problem.
 
-WHen this race happens a CMA allocation fails, which is critical for
-the workload which depends on CMA.
-
-Link: https://lkml.kernel.org/r/20220308180709.2017638-1-minchan@kernel.org
-Fixes: 8cc621d2f45d ("mm: fs: invalidate BH LRU during page migration")
-Signed-off-by: Minchan Kim <minchan@kernel.org>
-Cc: Chris Goldsworthy <cgoldswo@codeaurora.org>
-Cc: Marcelo Tosatti <mtosatti@redhat.com>
-Cc: John Dias <joaodias@google.com>
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Fixes: e631ddba5887 ("[JFFS2] Add erase block summary support (mount time improvement)")
+Cc: stable@vger.kernel.org
+Signed-off-by: Baokun Li <libaokun1@huawei.com>
+Signed-off-by: Richard Weinberger <richard@nod.at>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/buffer.c |    8 +++++---
- 1 file changed, 5 insertions(+), 3 deletions(-)
+ fs/jffs2/build.c |    4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
---- a/fs/buffer.c
-+++ b/fs/buffer.c
-@@ -1235,16 +1235,18 @@ static void bh_lru_install(struct buffer
- 	int i;
+--- a/fs/jffs2/build.c
++++ b/fs/jffs2/build.c
+@@ -415,13 +415,15 @@ int jffs2_do_mount_fs(struct jffs2_sb_in
+ 		jffs2_free_ino_caches(c);
+ 		jffs2_free_raw_node_refs(c);
+ 		ret = -EIO;
+-		goto out_free;
++		goto out_sum_exit;
+ 	}
  
- 	check_irqs_on();
-+	bh_lru_lock();
-+
- 	/*
- 	 * the refcount of buffer_head in bh_lru prevents dropping the
- 	 * attached page(i.e., try_to_free_buffers) so it could cause
- 	 * failing page migration.
- 	 * Skip putting upcoming bh into bh_lru until migration is done.
- 	 */
--	if (lru_cache_disabled())
-+	if (lru_cache_disabled()) {
-+		bh_lru_unlock();
- 		return;
--
--	bh_lru_lock();
-+	}
+ 	jffs2_calc_trigger_levels(c);
  
- 	b = this_cpu_ptr(&bh_lrus);
- 	for (i = 0; i < BH_LRU_SIZE; i++) {
+ 	return 0;
+ 
++ out_sum_exit:
++	jffs2_sum_exit(c);
+  out_free:
+ 	kvfree(c->blocks);
+ 
 
 
