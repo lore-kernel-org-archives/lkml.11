@@ -2,174 +2,152 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9857EC4332F
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:10:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 537C9C35273
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:10:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378858AbiDEUEV (ORCPT
+        id S1380431AbiDEUEk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 16:04:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45680 "EHLO
+        Tue, 5 Apr 2022 16:04:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37992 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1384128AbiDEM1M (ORCPT
+        with ESMTP id S1573044AbiDERsk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 08:27:12 -0400
-Received: from conuserg-12.nifty.com (conuserg-12.nifty.com [210.131.2.79])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C342957B02;
-        Tue,  5 Apr 2022 04:35:18 -0700 (PDT)
-Received: from grover.. (133-32-177-133.west.xps.vectant.ne.jp [133.32.177.133]) (authenticated)
-        by conuserg-12.nifty.com with ESMTP id 235BYCGp000464;
-        Tue, 5 Apr 2022 20:34:14 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conuserg-12.nifty.com 235BYCGp000464
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1649158454;
-        bh=EKCTJzUdUAuHIhmyqzQO5DkjoUd5sMZA3XV4MtVgo6g=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DWk37DbYUH+hKAxMwDTIpp4kMMEj+RJPnrCiqJ07xppk6Up0RBLZ+4DTHM7fLj0iK
-         /xbtGtmyRMylOKuKjhH42edScU0bLJ+jsJAcCnsj6Y62upLX/ZUkr6bv/NIXgOnmmo
-         M8snVpltT/XM37UiUKKsR89rVjlcALGWVo9zrOU6HUQ/r1tHhODKq9frJbEVaXVw8i
-         kgwhyvkl8jjozVQ1BjZXdg0wOpmOke2A4huZax8zw1M3iDJdjYWXNVM3VIlUlT51tl
-         YktT6Ccqx7R/NLsCYUo2YZf0CDDnRtuouzREtLeUmsDqpDSAoaetk9Xos+SSjb7OCM
-         tDrin0mmTl/IA==
-X-Nifty-SrcIP: [133.32.177.133]
-From:   Masahiro Yamada <masahiroy@kernel.org>
-To:     linux-kbuild@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Michal Marek <michal.lkml@markovi.net>
-Subject: [PATCH v2 03/10] modpost: remove useless export_from_sec()
-Date:   Tue,  5 Apr 2022 20:33:51 +0900
-Message-Id: <20220405113359.2880241-4-masahiroy@kernel.org>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220405113359.2880241-1-masahiroy@kernel.org>
-References: <20220405113359.2880241-1-masahiroy@kernel.org>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Tue, 5 Apr 2022 13:48:40 -0400
+Received: from mail-pg1-x54a.google.com (mail-pg1-x54a.google.com [IPv6:2607:f8b0:4864:20::54a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0675D1110
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 10:46:41 -0700 (PDT)
+Received: by mail-pg1-x54a.google.com with SMTP id b18-20020a63d812000000b0037e1aa59c0bso424pgh.12
+        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 10:46:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=cMTfDoOyyWLXLeBs6Ru7ToFxgfyCJggJkw0OXJMsEV8=;
+        b=nMfcorGlUtXECOW5K6EgdcUsQAcrop5tc3p5tTcoHcmFQiM5G5UW0zRhxr26er4OAr
+         s5v6PQmrcXR71vJMJDEVfVEi6/BGDusf+GDkbu49tMPrbowlSFMgbHig8rD6DZQZmHS/
+         gTgnI4kYoSwt8c9IAifAu8FjUB03lSAsOwDTfv4kzBKiHU0OL9rQtUzoK2zqYD2KA11X
+         nFbw2gOlMW++pZybJgMCWKH5eIObGH2WsSttfM4SljNf6flXef8ppdyyjRZcy6syqETb
+         Qz+OoSYfRbFJuVp2fxQw2x7mz/1KezSRobYkumFfNg+k6O320lkst6vJRzOrzHfYxTYo
+         fojQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=cMTfDoOyyWLXLeBs6Ru7ToFxgfyCJggJkw0OXJMsEV8=;
+        b=tyRR/Uv0t2b8/mYPBoK7E8rgyQ2jeL26tVlgX0ZubKawS62oS1Q8ymM9Hh1yEdNRoM
+         eqPYyyVv4zDrLV2I3yh8pYA2OWTr3eo5jdV+H7FFfiepV1as8AAYzm0LdOh8Z9caJivz
+         dh0CUrzsZt4SnxRec4buFbCyZP9EZ/3W6o1elhYkLl69taB7v3dJpIjCNsfncNxO/Upf
+         ws6VvNLzs2PztYe2tHF72mXosMqqL0nSRbPUizS8NPi1uVyh3H+n6dKlttqIydg/Sgsj
+         RIESeMRBWHR/lKwAf/O848DF18XBlW81R3PtxS8DdRL/NKVgz96fzXm7dbdujRAnHanJ
+         joOQ==
+X-Gm-Message-State: AOAM5330zdGDbHCKuqhubGaHxwIrniV3V7QYsCst7cFAXTnm6C4RaEXU
+        uuRysbRsVE9mtjjNcZdm4LzSbN3aU/g=
+X-Google-Smtp-Source: ABdhPJyyh/3pCquJqcSiGkL89OJvx9V1mCcnl2ur+7wPBn4VOBCz5evBX3VHphcCk3xlVaHFHjDW5vPwJhk=
+X-Received: from pgonda1.kir.corp.google.com ([2620:15c:29:203:9f5c:353e:771c:7686])
+ (user=pgonda job=sendgmr) by 2002:a05:6a00:8c5:b0:4fe:134d:30d3 with SMTP id
+ s5-20020a056a0008c500b004fe134d30d3mr4801602pfu.3.1649180801244; Tue, 05 Apr
+ 2022 10:46:41 -0700 (PDT)
+Date:   Tue,  5 Apr 2022 10:46:37 -0700
+Message-Id: <20220405174637.2074319-1-pgonda@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.35.1.1094.g7c7d902a7c-goog
+Subject: [PATCH v2] KVM: SEV: Mark nested locking of vcpu->mutex
+From:   Peter Gonda <pgonda@google.com>
+To:     kvm@vger.kernel.org
+Cc:     Peter Gonda <pgonda@google.com>,
+        John Sperbeck <jsperbeck@google.com>,
+        David Rientjes <rientjes@google.com>,
+        Sean Christopherson <seanjc@google.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-With commit 1743694eb235 ("modpost: stop symbol preloading for
-modversion CRC") applied, now export_from_sec() is useless.
+svm_vm_migrate_from() uses sev_lock_vcpus_for_migration() to lock all
+source and target vcpu->mutex. Mark the nested subclasses to avoid false
+positives from lockdep.
 
-handle_symbol() is called for every symbol in the ELF.
+Warning example:
+============================================
+WARNING: possible recursive locking detected
+5.17.0-dbg-DEV #15 Tainted: G           O
+--------------------------------------------
+sev_migrate_tes/18859 is trying to acquire lock:
+ffff8d672d484238 (&vcpu->mutex){+.+.}-{3:3}, at: sev_lock_vcpus_for_migration+0x7e/0x150
+but task is already holding lock:
+ffff8d67703f81f8 (&vcpu->mutex){+.+.}-{3:3}, at: sev_lock_vcpus_for_migration+0x7e/0x150
+other info that might help us debug this:
+ Possible unsafe locking scenario:
+       CPU0
+       ----
+  lock(&vcpu->mutex);
+  lock(&vcpu->mutex);
+ *** DEADLOCK ***
+ May be due to missing lock nesting notation
+3 locks held by sev_migrate_tes/18859:
+ #0: ffff9302f91323b8 (&kvm->lock){+.+.}-{3:3}, at: sev_vm_move_enc_context_from+0x96/0x740
+ #1: ffff9302f906a3b8 (&kvm->lock/1){+.+.}-{3:3}, at: sev_vm_move_enc_context_from+0xae/0x740
+ #2: ffff8d67703f81f8 (&vcpu->mutex){+.+.}-{3:3}, at: sev_lock_vcpus_for_migration+0x7e/0x150
 
-When 'symname' does not start with "__ksymtab", export_from_sec() is
-called, and the returned value is stored in 'export'.
+Fixes: b56639318bb2b ("KVM: SEV: Add support for SEV intra host migration")
+Reported-by: John Sperbeck<jsperbeck@google.com>
+Suggested-by: David Rientjes <rientjes@google.com>
+Suggested-by: Sean Christopherson <seanjc@google.com>
+Cc: Paolo Bonzini <pbonzini@redhat.com>
+Cc: kvm@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
+Signed-off-by: Peter Gonda <pgonda@google.com>
 
-It is used in the last part of handle_symbol():
-
-    if (strstarts(symname, "__ksymtab_")) {
-            name = symname + strlen("__ksymtab_");
-            sym_add_exported(name, mod, export);
-    }
-
-'export' is used only when 'symname' starts with "__ksymtab_".
-
-So, the value returned by export_from_sec() is never used.
-
-Remove useless export_from_sec(). This makes further cleanups possible.
-
-I put the temporary code:
-
-    export = export_unknown;
-
-Otherwise, I would get the compiler warning:
-
-    warning: 'export' may be used uninitialized in this function [-Wmaybe-uninitialized]
-
-This is apparently false positive because
-
-    if (strstarts(symname, "__ksymtab_")
-
-... is a stronger condition than:
-
-    if (strstarts(symname, "__ksymtab")
-
-Anyway, this part will be cleaned up by the next commit.
-
-Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
-Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
 ---
 
-Changes in v2:
-  - Fix compiler warning
+Tested by running sev_migrate_tests with lockdep enabled. Before we see
+a warning from sev_lock_vcpus_for_migration(). After we get no warnings.
 
- scripts/mod/modpost.c | 17 ++---------------
- scripts/mod/modpost.h |  4 ----
- 2 files changed, 2 insertions(+), 19 deletions(-)
+---
+ arch/x86/kvm/svm/sev.c | 15 +++++++++++----
+ 1 file changed, 11 insertions(+), 4 deletions(-)
 
-diff --git a/scripts/mod/modpost.c b/scripts/mod/modpost.c
-index ed9d056d2108..eebb32689816 100644
---- a/scripts/mod/modpost.c
-+++ b/scripts/mod/modpost.c
-@@ -369,16 +369,6 @@ static enum export export_from_secname(struct elf_info *elf, unsigned int sec)
- 		return export_unknown;
+diff --git a/arch/x86/kvm/svm/sev.c b/arch/x86/kvm/svm/sev.c
+index 75fa6dd268f0..673e1ee2cfc9 100644
+--- a/arch/x86/kvm/svm/sev.c
++++ b/arch/x86/kvm/svm/sev.c
+@@ -1591,14 +1591,21 @@ static void sev_unlock_two_vms(struct kvm *dst_kvm, struct kvm *src_kvm)
+ 	atomic_set_release(&src_sev->migration_in_progress, 0);
  }
  
--static enum export export_from_sec(struct elf_info *elf, unsigned int sec)
--{
--	if (sec == elf->export_sec)
--		return export_plain;
--	else if (sec == elf->export_gpl_sec)
--		return export_gpl;
--	else
--		return export_unknown;
--}
--
- static const char *namespace_from_kstrtabns(const struct elf_info *info,
- 					    const Elf_Sym *sym)
++#define SEV_MIGRATION_SOURCE 0
++#define SEV_MIGRATION_TARGET 1
+ 
+-static int sev_lock_vcpus_for_migration(struct kvm *kvm)
++/*
++ * To avoid lockdep warnings callers should pass @vm argument with either
++ * SEV_MIGRATION_SOURCE or SEV_MIGRATE_TARGET. This allows subclassing of all
++ * vCPU mutex locks.
++ */
++static int sev_lock_vcpus_for_migration(struct kvm *kvm, int vm)
  {
-@@ -576,10 +566,7 @@ static int parse_elf(struct elf_info *info, const char *filename)
- 				fatal("%s has NOBITS .modinfo\n", filename);
- 			info->modinfo = (void *)hdr + sechdrs[i].sh_offset;
- 			info->modinfo_len = sechdrs[i].sh_size;
--		} else if (strcmp(secname, "__ksymtab") == 0)
--			info->export_sec = i;
--		else if (strcmp(secname, "__ksymtab_gpl") == 0)
--			info->export_gpl_sec = i;
-+		}
+ 	struct kvm_vcpu *vcpu;
+ 	unsigned long i, j;
  
- 		if (sechdrs[i].sh_type == SHT_SYMTAB) {
- 			unsigned int sh_link_idx;
-@@ -703,7 +690,7 @@ static void handle_symbol(struct module *mod, struct elf_info *info,
- 	if (strstarts(symname, "__ksymtab"))
- 		export = export_from_secname(info, get_secindex(info, sym));
- 	else
--		export = export_from_sec(info, get_secindex(info, sym));
-+		export = export_unknown;
+ 	kvm_for_each_vcpu(i, vcpu, kvm) {
+-		if (mutex_lock_killable(&vcpu->mutex))
++		if (mutex_lock_killable_nested(&vcpu->mutex, i * 2 + vm))
+ 			goto out_unlock;
+ 	}
  
- 	switch (sym->st_shndx) {
- 	case SHN_COMMON:
-diff --git a/scripts/mod/modpost.h b/scripts/mod/modpost.h
-index 0c47ff95c0e2..a85dcec3669a 100644
---- a/scripts/mod/modpost.h
-+++ b/scripts/mod/modpost.h
-@@ -25,7 +25,6 @@
- #define Elf_Sym     Elf32_Sym
- #define Elf_Addr    Elf32_Addr
- #define Elf_Sword   Elf64_Sword
--#define Elf_Section Elf32_Half
- #define ELF_ST_BIND ELF32_ST_BIND
- #define ELF_ST_TYPE ELF32_ST_TYPE
+@@ -1745,10 +1752,10 @@ int sev_vm_move_enc_context_from(struct kvm *kvm, unsigned int source_fd)
+ 		charged = true;
+ 	}
  
-@@ -40,7 +39,6 @@
- #define Elf_Sym     Elf64_Sym
- #define Elf_Addr    Elf64_Addr
- #define Elf_Sword   Elf64_Sxword
--#define Elf_Section Elf64_Half
- #define ELF_ST_BIND ELF64_ST_BIND
- #define ELF_ST_TYPE ELF64_ST_TYPE
+-	ret = sev_lock_vcpus_for_migration(kvm);
++	ret = sev_lock_vcpus_for_migration(kvm, SEV_MIGRATION_SOURCE);
+ 	if (ret)
+ 		goto out_dst_cgroup;
+-	ret = sev_lock_vcpus_for_migration(source_kvm);
++	ret = sev_lock_vcpus_for_migration(source_kvm, SEV_MIGRATION_TARGET);
+ 	if (ret)
+ 		goto out_dst_vcpu;
  
-@@ -138,8 +136,6 @@ struct elf_info {
- 	Elf_Shdr     *sechdrs;
- 	Elf_Sym      *symtab_start;
- 	Elf_Sym      *symtab_stop;
--	Elf_Section  export_sec;
--	Elf_Section  export_gpl_sec;
- 	char         *strtab;
- 	char	     *modinfo;
- 	unsigned int modinfo_len;
 -- 
-2.32.0
+2.35.1.1094.g7c7d902a7c-goog
 
