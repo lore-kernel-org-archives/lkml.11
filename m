@@ -2,164 +2,170 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E821DC433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:09:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 09FF3C43219
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:09:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1582366AbiDEXmw (ORCPT
+        id S1582382AbiDEXm4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 19:42:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52630 "EHLO
+        Tue, 5 Apr 2022 19:42:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39768 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1443205AbiDEPjK (ORCPT
+        with ESMTP id S1348942AbiDEJst (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 11:39:10 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E300C147AE1;
-        Tue,  5 Apr 2022 06:55:05 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 32088B81D5C;
-        Tue,  5 Apr 2022 13:55:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DAA3DC385A7;
-        Tue,  5 Apr 2022 13:55:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649166902;
-        bh=5PC7cNcGGV9G0+eiFziaHyPdpTmXLBiQSjJ1/TC4vHU=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OHp+DpQ8tq3YWaIyyPnnCclgtnrI8TWTrlnE3G7ufpDrr/06gugrT6pNUXCTLOFc9
-         vfUMs4bRFwz7HO4xxWTiCuTr1l+7H8CmdXgiYJ+ToyPwD+7tDWx+0VTwH5BvpmUgqJ
-         8834A5mq04rRZVqQiG+UJ0xRcn+0aoFQNP/paht14/Xv1kiQOpXqjbfQl1NPoDN3Kv
-         2Tbmgd4+W9QbuEcY9y9UcDR8a0Z4eg8dmSXb5lZxM+NHYWy33sCxyH6sX0Prm9JDmd
-         WwrR5bCzR9TNEI0hPfotVkbMy3Q+BQ+Q1kcmsaRxhvBYOQckQJTaRwm2eXuB6E5s6L
-         tccY8CC37Nkrw==
-Received: from sofa.misterjones.org ([185.219.108.64] helo=why.lan)
-        by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <maz@kernel.org>)
-        id 1nbje8-001q4g-S7; Tue, 05 Apr 2022 14:55:00 +0100
-From:   Marc Zyngier <maz@kernel.org>
+        Tue, 5 Apr 2022 05:48:49 -0400
+Received: from mail-wm1-x32f.google.com (mail-wm1-x32f.google.com [IPv6:2a00:1450:4864:20::32f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BBB5A1457
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 02:38:03 -0700 (PDT)
+Received: by mail-wm1-x32f.google.com with SMTP id p189so7580603wmp.3
+        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 02:38:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=nkD/AciaywdTGKHQbOXWmFjk83Y1bSrfB27hzYXm0xI=;
+        b=NnpxvYsBqdGhKQw10fl8I+jFW+0TSKk/XRN6GnXOlx41EpMviuxdB4rMN23OhliIgv
+         tgAMQibc8aBuT3j/O0UAAOK/DduW4rP157w43znLLHbgb/7rEl7yQP9rr/p9WTJURqTB
+         vOXiOPso0dO9K2ztcYbDXYJ0XYVq9TGRRgZcJid/H+yX3Jw8HDMBd85kWr4ltsJhxsFF
+         c8gOWy+VAdKner92D4nhHtN0QabbsS9a3d81iWVu+cLIw8GzbapDNtqJ9AYHedlHZNWh
+         wbn+GhdhhH+FLXMTwQ2xui30pywFHwACTjK2rQR1u4pW0ZfGS/cRJErFAsPY4IJb7ro4
+         7m8A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=nkD/AciaywdTGKHQbOXWmFjk83Y1bSrfB27hzYXm0xI=;
+        b=4it/hoYzWtrWk5LGBP70nYdDjZZ/W7XveRefdzVv6CEeyRolhCVIIaUvLZJBLUGi9k
+         b3GKWeI3oxweiZxU0gS1sZcfbfky3U6GxnarMwba7Qtpp3RSpdi+l1wfv5Yg4TisgBdv
+         PPzhSmFPg7vdVeKHZEe0J1SIfUmH0KB61t8g0lK0dkgtlmU/9aSZBijON8RU6bCg8tcc
+         25+4Me6KXyR6DU/iC/bX5cpXUNCoMg1b/hEtvp9DeQTvj0ThnWuYDrz3Be22hw0QpbIX
+         Cwxgl5CUj9749zMghJCBpvF7o8t+Yy6MA5ANqZdSZ/lcgWIYAzgQsZY5CQbIBjRWkdV+
+         GU1g==
+X-Gm-Message-State: AOAM530oi5DzT7hSjQsSzBMNZRI8x80vZ3uKmXpLRHNeXFlDniWYM4pL
+        o3MXuEclHAj86pFhFn4ispIJBTAPce+13Q==
+X-Google-Smtp-Source: ABdhPJwkMEdcFMRSetOSc9QI210EtaRngB0m9hh4Crs0LghOWJkF24XQaLI4LFfl/+JKVDgrHnfOVA==
+X-Received: by 2002:a05:600c:5106:b0:38e:38f8:858 with SMTP id o6-20020a05600c510600b0038e38f80858mr2185653wms.109.1649151481620;
+        Tue, 05 Apr 2022 02:38:01 -0700 (PDT)
+Received: from zen.linaroharston ([51.148.130.216])
+        by smtp.gmail.com with ESMTPSA id f9-20020a05600c4e8900b0038cc29bb0e1sm2014358wmq.4.2022.04.05.02.38.00
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 05 Apr 2022 02:38:00 -0700 (PDT)
+Received: from zen.lan (localhost [127.0.0.1])
+        by zen.linaroharston (Postfix) with ESMTP id 00E8F1FFB7;
+        Tue,  5 Apr 2022 10:38:00 +0100 (BST)
+From:   =?UTF-8?q?Alex=20Benn=C3=A9e?= <alex.bennee@linaro.org>
 To:     linux-kernel@vger.kernel.org
-Cc:     Linus Walleij <linus.walleij@linaro.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Joey Gouly <joey.gouly@arm.com>,
-        Jonathan Hunter <jonathanh@nvidia.com>,
-        Hector Martin <marcan@marcan.st>,
-        Sven Peter <sven@svenpeter.dev>,
-        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Andy Gross <agross@kernel.org>,
-        Jeffrey Hugo <jeffrey.l.hugo@gmail.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Basavaraj Natikar <Basavaraj.Natikar@amd.com>,
-        Shyam Sundar S K <Shyam-sundar.S-k@amd.com>,
-        linux-gpio@vger.kernel.org, linux-tegra@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-arm-msm@vger.kernel.org, kernel-team@android.com
-Subject: [PATCH v2 05/10] gpio: pl061: Make the irqchip immutable
-Date:   Tue,  5 Apr 2022 14:54:39 +0100
-Message-Id: <20220405135444.199295-6-maz@kernel.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220405135444.199295-1-maz@kernel.org>
-References: <20220405135444.199295-1-maz@kernel.org>
+Cc:     maxim.uvarov@linaro.org, joakim.bech@linaro.org,
+        ulf.hansson@linaro.org, ilias.apalodimas@linaro.org,
+        arnd@linaro.org, ruchika.gupta@linaro.org, tomas.winkler@intel.com,
+        yang.huang@intel.com, bing.zhu@intel.com,
+        Matti.Moell@opensynergy.com, hmo@opensynergy.com,
+        linux-mmc@vger.kernel.org, linux-scsi@vger.kernel.org,
+        =?UTF-8?q?Alex=20Benn=C3=A9e?= <alex.bennee@linaro.org>
+Subject: [PATCH  v2 0/4] rpmb subsystem, uapi and virtio-rpmb driver
+Date:   Tue,  5 Apr 2022 10:37:55 +0100
+Message-Id: <20220405093759.1126835-1-alex.bennee@linaro.org>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 185.219.108.64
-X-SA-Exim-Rcpt-To: linux-kernel@vger.kernel.org, linus.walleij@linaro.org, brgl@bgdev.pl, thierry.reding@gmail.com, joey.gouly@arm.com, jonathanh@nvidia.com, marcan@marcan.st, sven@svenpeter.dev, alyssa@rosenzweig.io, bjorn.andersson@linaro.org, agross@kernel.org, jeffrey.l.hugo@gmail.com, tglx@linutronix.de, Basavaraj.Natikar@amd.com, Shyam-sundar.S-k@amd.com, linux-gpio@vger.kernel.org, linux-tegra@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-arm-msm@vger.kernel.org, kernel-team@android.com
-X-SA-Exim-Mail-From: maz@kernel.org
-X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Prevent gpiolib from messing with the irqchip by advertising
-the irq_chip structure as immutable, making it const, and adding
-the various calls that gpiolib relies upon.
+Hi,
 
-Signed-off-by: Marc Zyngier <maz@kernel.org>
----
- drivers/gpio/gpio-pl061.c | 32 +++++++++++++++++++++++---------
- 1 file changed, 23 insertions(+), 9 deletions(-)
+This is another attempt to come up with an RPMB API for the kernel.
+The last discussion of this was in the thread:
 
-diff --git a/drivers/gpio/gpio-pl061.c b/drivers/gpio/gpio-pl061.c
-index 4ecab700f23f..6464056cb6ae 100644
---- a/drivers/gpio/gpio-pl061.c
-+++ b/drivers/gpio/gpio-pl061.c
-@@ -52,7 +52,6 @@ struct pl061 {
- 
- 	void __iomem		*base;
- 	struct gpio_chip	gc;
--	struct irq_chip		irq_chip;
- 	int			parent_irq;
- 
- #ifdef CONFIG_PM
-@@ -241,6 +240,8 @@ static void pl061_irq_mask(struct irq_data *d)
- 	gpioie = readb(pl061->base + GPIOIE) & ~mask;
- 	writeb(gpioie, pl061->base + GPIOIE);
- 	raw_spin_unlock(&pl061->lock);
-+
-+	gpiochip_disable_irq(gc, d->hwirq);
- }
- 
- static void pl061_irq_unmask(struct irq_data *d)
-@@ -250,6 +251,8 @@ static void pl061_irq_unmask(struct irq_data *d)
- 	u8 mask = BIT(irqd_to_hwirq(d) % PL061_GPIO_NR);
- 	u8 gpioie;
- 
-+	gpiochip_enable_irq(gc, d->hwirq);
-+
- 	raw_spin_lock(&pl061->lock);
- 	gpioie = readb(pl061->base + GPIOIE) | mask;
- 	writeb(gpioie, pl061->base + GPIOIE);
-@@ -283,6 +286,24 @@ static int pl061_irq_set_wake(struct irq_data *d, unsigned int state)
- 	return irq_set_irq_wake(pl061->parent_irq, state);
- }
- 
-+static void pl061_irq_print_chip(struct irq_data *data, struct seq_file *p)
-+{
-+	struct gpio_chip *gc = irq_data_get_irq_chip_data(data);
-+
-+	seq_printf(p, dev_name(gc->parent));
-+}
-+
-+static const struct irq_chip pl061_irq_chip = {
-+	.irq_ack		= pl061_irq_ack,
-+	.irq_mask		= pl061_irq_mask,
-+	.irq_unmask		= pl061_irq_unmask,
-+	.irq_set_type		= pl061_irq_type,
-+	.irq_set_wake		= pl061_irq_set_wake,
-+	.irq_print_chip		= pl061_irq_print_chip,
-+	.flags			= IRQCHIP_IMMUTABLE,
-+	GPIOCHIP_IRQ_RESOURCE_HELPERS,
-+};
-+
- static int pl061_probe(struct amba_device *adev, const struct amba_id *id)
- {
- 	struct device *dev = &adev->dev;
-@@ -315,13 +336,6 @@ static int pl061_probe(struct amba_device *adev, const struct amba_id *id)
- 	/*
- 	 * irq_chip support
- 	 */
--	pl061->irq_chip.name = dev_name(dev);
--	pl061->irq_chip.irq_ack	= pl061_irq_ack;
--	pl061->irq_chip.irq_mask = pl061_irq_mask;
--	pl061->irq_chip.irq_unmask = pl061_irq_unmask;
--	pl061->irq_chip.irq_set_type = pl061_irq_type;
--	pl061->irq_chip.irq_set_wake = pl061_irq_set_wake;
--
- 	writeb(0, pl061->base + GPIOIE); /* disable irqs */
- 	irq = adev->irq[0];
- 	if (!irq)
-@@ -329,7 +343,7 @@ static int pl061_probe(struct amba_device *adev, const struct amba_id *id)
- 	pl061->parent_irq = irq;
- 
- 	girq = &pl061->gc.irq;
--	girq->chip = &pl061->irq_chip;
-+	gpio_irq_chip_set_chip(girq, &pl061_irq_chip);
- 	girq->parent_handler = pl061_irq_handler;
- 	girq->num_parents = 1;
- 	girq->parents = devm_kcalloc(dev, 1, sizeof(*girq->parents),
+  Subject: [RFC PATCH  0/5] RPMB internal and user-space API + WIP virtio-rpmb frontend
+  Date: Wed,  3 Mar 2021 13:54:55 +0000
+  Message-Id: <20210303135500.24673-1-alex.bennee@linaro.org>
+
+The series provides for the RPMB sub-system, a new chardev API driven
+by ioctls and a full multi-block capable virtio-rpmb driver. You can
+find a working vhost-user backend in my QEMU branch here:
+
+  https://github.com/stsquad/qemu/commits/virtio/vhost-user-rpmb-v2
+
+The branch is a little messy but I'll be posting a cleaned up version
+in the following weeks. The only real changes to the backend is the
+multi-block awareness and some tweaks to deal with QEMU internals
+handling VirtIO config space messages which weren't previously
+exercised. The test.sh script in tools/rpmb works through the various
+transactions but isn't comprehensive.
+
+Changes since the last posting:
+
+  - frame construction is mostly back in userspace
+
+  The previous discussion showed there wasn't any appetite for using
+  the kernels keyctl() interface so userspace yet again takes
+  responsibility for constructing most* frames. Currently these are
+  all pure virtio-rpmb frames but the code is written so we can plug
+  in additional frame types. The virtio-rpmb driver does some
+  validation and in some cases (* read-blocks) constructs the request
+  frame in the driver. It would take someone implementing a driver for
+  another RPMB device type to see if this makes sense.
+
+  - user-space interface is still split across several ioctls
+
+  Although 3 of the ioctls share the common rpmb_ioc_reqresp_cmd
+  structure it does mean things like capacity, write_count and
+  read_blocks can have their own structure associated with the
+  command.
+
+As before I shall follow up with the QEMU based vhost-user backend and
+hopefully a rust-vmm re-implementation. However I've no direct
+interest in implementing the interfaces to real hardware. I leave that
+to people who have access to such things and are willing to take up
+the maintainer burden if this is merged.
+
+Regards,
+
+Alex
+    
+
+Alex Bennée (4):
+  rpmb: add Replay Protected Memory Block (RPMB) subsystem
+  char: rpmb: provide a user space interface
+  rpmb: create virtio rpmb frontend driver
+  tools rpmb: add RPBM access tool
+
+ .../userspace-api/ioctl/ioctl-number.rst      |    1 +
+ MAINTAINERS                                   |    9 +
+ drivers/Kconfig                               |    2 +
+ drivers/Makefile                              |    1 +
+ drivers/rpmb/Kconfig                          |   28 +
+ drivers/rpmb/Makefile                         |    9 +
+ drivers/rpmb/cdev.c                           |  309 +++++
+ drivers/rpmb/core.c                           |  439 +++++++
+ drivers/rpmb/rpmb-cdev.h                      |   17 +
+ drivers/rpmb/virtio_rpmb.c                    |  518 ++++++++
+ include/linux/rpmb.h                          |  182 +++
+ include/uapi/linux/rpmb.h                     |   99 ++
+ include/uapi/linux/virtio_rpmb.h              |   54 +
+ tools/Makefile                                |   16 +-
+ tools/rpmb/.gitignore                         |    2 +
+ tools/rpmb/Makefile                           |   41 +
+ tools/rpmb/key                                |    1 +
+ tools/rpmb/rpmb.c                             | 1083 +++++++++++++++++
+ tools/rpmb/test.sh                            |   22 +
+ 19 files changed, 2828 insertions(+), 5 deletions(-)
+ create mode 100644 drivers/rpmb/Kconfig
+ create mode 100644 drivers/rpmb/Makefile
+ create mode 100644 drivers/rpmb/cdev.c
+ create mode 100644 drivers/rpmb/core.c
+ create mode 100644 drivers/rpmb/rpmb-cdev.h
+ create mode 100644 drivers/rpmb/virtio_rpmb.c
+ create mode 100644 include/linux/rpmb.h
+ create mode 100644 include/uapi/linux/rpmb.h
+ create mode 100644 include/uapi/linux/virtio_rpmb.h
+ create mode 100644 tools/rpmb/.gitignore
+ create mode 100644 tools/rpmb/Makefile
+ create mode 100644 tools/rpmb/key
+ create mode 100644 tools/rpmb/rpmb.c
+ create mode 100755 tools/rpmb/test.sh
+
 -- 
-2.34.1
+2.30.2
 
