@@ -2,131 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DFAC2C4321E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 02E33C4167B
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 21:04:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345483AbiDEVC7 (ORCPT
+        id S1345651AbiDEVDF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 17:02:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39330 "EHLO
+        Tue, 5 Apr 2022 17:03:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46592 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349135AbiDEJtM (ORCPT
+        with ESMTP id S1447329AbiDEPqS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:49:12 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43F56CF;
-        Tue,  5 Apr 2022 02:41:14 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D534661673;
-        Tue,  5 Apr 2022 09:41:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DDA60C385A4;
-        Tue,  5 Apr 2022 09:41:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649151673;
-        bh=9n0s1PVnFShGn2pmObyGWleDrpp43npEIx1yGJvstUM=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=s3N6DI+J+nPUi7QncrOKYDrkkKNlUgLiv9K0NefbTh/ZgGdSUO4OxPtGUE/6WxVBi
-         pnWYObaRPJB4WMgtz1g0PoZipzHh/+Ea1H9M3TunF9HwCwobX5Q+edupm8TTfVVZ6E
-         8WLdknoMmWDzNU8UAfAb77DQDrECRgDLRwOTRfZU=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Sebastian Reichel <sebastian.reichel@collabora.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 493/913] power: supply: sbs-charger: Dont cancel work that is not initialized
-Date:   Tue,  5 Apr 2022 09:25:55 +0200
-Message-Id: <20220405070354.632314836@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
-User-Agent: quilt/0.66
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+        Tue, 5 Apr 2022 11:46:18 -0400
+Received: from mail-wm1-x34a.google.com (mail-wm1-x34a.google.com [IPv6:2a00:1450:4864:20::34a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A018D91565
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 07:21:08 -0700 (PDT)
+Received: by mail-wm1-x34a.google.com with SMTP id c125-20020a1c3583000000b0038e3f6e871aso4079128wma.8
+        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 07:21:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=m3vxItKXnUJTINlJEdj+JcIaXhSRzpBzJXMN0Ho5eps=;
+        b=U/rCu1Z2QfNGh7871ZpZdN4wY/+Lh1Wn/I5Ha6phoPhUI3yRDteIeF+TZGPPbHc3Ai
+         BBQSP1z5sD9b+wklr0ZXpHQDx20253jpVlFYCml1fsblFB2Q243A1smZeVhSbDbYut0u
+         z7IHIiryy2SGXsp58k8lugrnBQWpAfe4UaUoIoiLNUWU6VPrmVSPjgLFVRjjlsnuviJh
+         g2vIiFzGHXI6KSMbAEIY16WttCiHeVwLMIUVeWsgv9R9tws08lP2EReN2yTioJTEcmxr
+         8dTXpSzd/4Gkzv5UDngHARkRMF8rXO+CxVkuFg6Z/c+C3T3Db9QNzs4r4LR3an7j0BQQ
+         bBuw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=m3vxItKXnUJTINlJEdj+JcIaXhSRzpBzJXMN0Ho5eps=;
+        b=dY+cr4XghiiNDq5E2AFWN39V7i2lWNwXnGfqAVwsLwohr/AdAMIHjCDtVin09lpR4X
+         MTFTjJSmlwa8vC7wDNVPjXfz11j4P4tE9TfqvhodTb6XAajuKY0gp1Bm+C9JjmcTTgdb
+         BboTdjOPdhGS/gUtiAW8FIenJ4SyVYQ1DU6Ens0bti0xtrCg1dvBW1KAxIRnw+Syln4a
+         aGgnZVQQ5ykKJfG/HWjbUCFKTi+vWyAOzQs/tKNNjrmsV2DUIxLVYYWjliF2C0v0txD7
+         8L1NJoEh/5Ks4swA2PkuQzgKDJqOdvig52XTp9M1BoCZIGjcNcafRku0quDyqMo7YtJD
+         lipg==
+X-Gm-Message-State: AOAM53120/yRG3VPGfYa7cDuI8ANawVrpoZWTS+dzkl6dZc3F2W+GrCM
+        N38W+URgQ6ORP4AwSxHyV8yLNcyeFwMNIut98mg=
+X-Google-Smtp-Source: ABdhPJwN5QFMBNAx6z4lJuIDDPZMY0wbemxu/vZ7lASsb58ZkL62PcBPIS8ol+sPOaL6RzriqT4z3Z6RSNAw7S3JJqU=
+X-Received: from sene.c.googlers.com ([fda3:e722:ac3:cc00:28:9cb1:c0a8:27c4])
+ (user=sebastianene job=sendgmr) by 2002:a05:600c:4f87:b0:38c:adde:1d99 with
+ SMTP id n7-20020a05600c4f8700b0038cadde1d99mr3320464wmq.16.1649168466877;
+ Tue, 05 Apr 2022 07:21:06 -0700 (PDT)
+Date:   Tue,  5 Apr 2022 14:19:53 +0000
+Message-Id: <20220405141954.1489782-1-sebastianene@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.35.1.1094.g7c7d902a7c-goog
+Subject: [PATCH 0/2] Detect stalls on guest vCPUS
+From:   Sebastian Ene <sebastianene@google.com>
+To:     Wim Van Sebroeck <wim@linux-watchdog.org>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Rob Herring <robh+dt@kernel.org>
+Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-watchdog@vger.kernel.org, will@kernel.org,
+        qperret@google.com, maz@kernel.org,
+        Sebastian Ene <sebastianene@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+This adds a mechanism to detect stalls on the guest vCPUS by creating a
+per CPU hrtimer which periodically 'pets' the host backend driver.
 
-[ Upstream commit de85193cff0d94d030a53656d8fcc41794807bef ]
+This device driver acts as a soft lockup detector by relying on the host
+backend driver to measure the elapesed time between subsequent 'pet' events.
+If the elapsed time doesn't match an expected value, the backend driver
+decides that the guest vCPU is locked and resets the guest. The host
+backend driver takes into account the time that the guest is not
+running. The communication with the backend driver is done through MMIO
+and the register layout of the virtual watchdog is described as part of
+the backend driver changes.
 
-This driver can use an interrupt or polling in order get the charger's
-status.
+The host backend driver is implemented as part of:
+https://chromium-review.googlesource.com/c/chromiumos/platform/crosvm/+/3548817
 
-When using polling, a delayed work is used.
+Sebastian Ene (2):
+  dt-bindings: watchdog: Add qemu,vm-watchdog compatible
+  watchdog: Add a mechanism to detect stalls on guest vCPUs
 
-However, the remove() function unconditionally call
-cancel_delayed_work_sync(), even if the delayed work is not used and is not
-initialized.
+ .../devicetree/bindings/watchdog/vm-wdt.yaml  |  44 ++++
+ drivers/watchdog/Kconfig                      |   8 +
+ drivers/watchdog/Makefile                     |   1 +
+ drivers/watchdog/vm-wdt.c                     | 215 ++++++++++++++++++
+ 4 files changed, 268 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/watchdog/vm-wdt.yaml
+ create mode 100644 drivers/watchdog/vm-wdt.c
 
-In order to fix it, use devm_delayed_work_autocancel() and remove the now
-useless remove() function.
-
-Fixes: feb583e37f8a ("power: supply: add sbs-charger driver")
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/power/supply/sbs-charger.c | 18 +++++++-----------
- 1 file changed, 7 insertions(+), 11 deletions(-)
-
-diff --git a/drivers/power/supply/sbs-charger.c b/drivers/power/supply/sbs-charger.c
-index 6fa65d118ec1..b08f7d0c4181 100644
---- a/drivers/power/supply/sbs-charger.c
-+++ b/drivers/power/supply/sbs-charger.c
-@@ -18,6 +18,7 @@
- #include <linux/interrupt.h>
- #include <linux/regmap.h>
- #include <linux/bitops.h>
-+#include <linux/devm-helpers.h>
- 
- #define SBS_CHARGER_REG_SPEC_INFO		0x11
- #define SBS_CHARGER_REG_STATUS			0x13
-@@ -209,7 +210,12 @@ static int sbs_probe(struct i2c_client *client,
- 		if (ret)
- 			return dev_err_probe(&client->dev, ret, "Failed to request irq\n");
- 	} else {
--		INIT_DELAYED_WORK(&chip->work, sbs_delayed_work);
-+		ret = devm_delayed_work_autocancel(&client->dev, &chip->work,
-+						   sbs_delayed_work);
-+		if (ret)
-+			return dev_err_probe(&client->dev, ret,
-+					     "Failed to init work for polling\n");
-+
- 		schedule_delayed_work(&chip->work,
- 				      msecs_to_jiffies(SBS_CHARGER_POLL_TIME));
- 	}
-@@ -220,15 +226,6 @@ static int sbs_probe(struct i2c_client *client,
- 	return 0;
- }
- 
--static int sbs_remove(struct i2c_client *client)
--{
--	struct sbs_info *chip = i2c_get_clientdata(client);
--
--	cancel_delayed_work_sync(&chip->work);
--
--	return 0;
--}
--
- #ifdef CONFIG_OF
- static const struct of_device_id sbs_dt_ids[] = {
- 	{ .compatible = "sbs,sbs-charger" },
-@@ -245,7 +242,6 @@ MODULE_DEVICE_TABLE(i2c, sbs_id);
- 
- static struct i2c_driver sbs_driver = {
- 	.probe		= sbs_probe,
--	.remove		= sbs_remove,
- 	.id_table	= sbs_id,
- 	.driver = {
- 		.name	= "sbs-charger",
 -- 
-2.34.1
-
-
+2.35.1.1094.g7c7d902a7c-goog
 
