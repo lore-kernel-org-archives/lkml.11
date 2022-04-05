@@ -2,48 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D6844C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 658B0C35276
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:35:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1835112AbiDFATX (ORCPT
+        id S1835084AbiDFATQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 20:19:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52352 "EHLO
+        Tue, 5 Apr 2022 20:19:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53668 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353574AbiDEKIO (ORCPT
+        with ESMTP id S1358086AbiDEK16 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:08:14 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD6BEC3343;
-        Tue,  5 Apr 2022 02:55:25 -0700 (PDT)
+        Tue, 5 Apr 2022 06:27:58 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43C6A63BFD;
+        Tue,  5 Apr 2022 03:15:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6CF4CB81B93;
-        Tue,  5 Apr 2022 09:55:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B3B92C385A1;
-        Tue,  5 Apr 2022 09:55:22 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9936261777;
+        Tue,  5 Apr 2022 10:15:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A6BE4C385A1;
+        Tue,  5 Apr 2022 10:15:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649152523;
-        bh=1UUYMi3bjzdKnIhkTnNEObHL0h8mDv9RYUxrh2kdPcQ=;
+        s=korg; t=1649153701;
+        bh=ZdV6ezsMk3V6sM6lkStGF05ZOy84+4YG0suNH2uUlFw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kd0SjV2z568E2Q967ecQjJFetzKZGa94E6tslovWmhr5BeodAcGErYQZOmDD8tYzq
-         5lthR83LTRJOXYUE1ujgqr2zWH5Ziig9oXd2yGH/P5MDsxHDzh5gq4jwHFUzP/7pRX
-         2c7RjLNXYCVl3RIg3tRy6vPQ6FkpGu/gleSUn8EQ=
+        b=Y9h1druI6Fm5w2onkIY1X9RZLIRtWdLjcLwxsmBadbR33R6BGY6NnM1iyTuycAlWj
+         +SUFseSpQa6zPHZO8F61lEHreLB8o+6VazQ+wP9vcHLqLNaJBEfPKD32I6XcYiXUxC
+         wF8xz86nm6C3iARCECM43M0WgsXRcjCMCc9ZAqjI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Himanshu Madhani <himanshu.madhani@oracle.com>,
-        Quinn Tran <qutran@marvell.com>,
-        Nilesh Javali <njavali@marvell.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>
-Subject: [PATCH 5.15 807/913] scsi: qla2xxx: Reduce false trigger to login
-Date:   Tue,  5 Apr 2022 09:31:09 +0200
-Message-Id: <20220405070404.022001020@linuxfoundation.org>
+        stable@vger.kernel.org, Jack Wang <jinpu.wang@ionos.com>,
+        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 315/599] scsi: pm8001: Fix le32 values handling in pm80xx_chip_sata_req()
+Date:   Tue,  5 Apr 2022 09:30:09 +0200
+Message-Id: <20220405070308.206521927@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
+References: <20220405070258.802373272@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -52,47 +51,190 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Quinn Tran <qutran@marvell.com>
+From: Damien Le Moal <damien.lemoal@opensource.wdc.com>
 
-commit d2646eed7b19a206912f49101178cbbaa507256c upstream.
+[ Upstream commit fd6d0e376211d7ed759db96b0fbd9a1cee67d462 ]
 
-While a session is in the middle of a relogin, a late RSCN can be delivered
-from switch. RSCN trigger fabric scan where the scan logic can trigger
-another session login while a login is in progress.  Reduce the extra
-trigger to prevent multiple logins to the same session.
+Make sure that the __le32 fields of struct sata_cmd are manipulated after
+applying the correct endian conversion. That is, use cpu_to_le32() for
+assigning values and le32_to_cpu() for consulting a field value.  In
+particular, make sure that the calculations for the 4G boundary check are
+done using CPU endianness and *not* little endian values. With these fixes,
+many sparse warnings are removed.
 
-Link: https://lore.kernel.org/r/20220310092604.22950-10-njavali@marvell.com
-Fixes: bee8b84686c4 ("scsi: qla2xxx: Reduce redundant ADISC command for RSCNs")
-Cc: stable@vger.kernel.org
-Reviewed-by: Himanshu Madhani <himanshu.madhani@oracle.com>
-Signed-off-by: Quinn Tran <qutran@marvell.com>
-Signed-off-by: Nilesh Javali <njavali@marvell.com>
+While at it, fix some code identation and add blank lines after variable
+declarations and in some other places to make this code more readable.
+
+Link: https://lore.kernel.org/r/20220220031810.738362-12-damien.lemoal@opensource.wdc.com
+Fixes: 0ecdf00ba6e5 ("[SCSI] pm80xx: 4G boundary fix.")
+Reviewed-by: Jack Wang <jinpu.wang@ionos.com>
+Signed-off-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
 Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/qla2xxx/qla_init.c |    5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ drivers/scsi/pm8001/pm80xx_hwi.c | 82 ++++++++++++++++++--------------
+ 1 file changed, 45 insertions(+), 37 deletions(-)
 
---- a/drivers/scsi/qla2xxx/qla_init.c
-+++ b/drivers/scsi/qla2xxx/qla_init.c
-@@ -1645,7 +1645,8 @@ int qla24xx_fcport_handle_login(struct s
- 	    fcport->login_gen, fcport->loop_id, fcport->scan_state,
- 	    fcport->fc4_type);
- 
--	if (fcport->scan_state != QLA_FCPORT_FOUND)
-+	if (fcport->scan_state != QLA_FCPORT_FOUND ||
-+	    fcport->disc_state == DSC_DELETE_PEND)
- 		return 0;
- 
- 	if ((fcport->loop_id != FC_NO_LOOP_ID) &&
-@@ -1666,7 +1667,7 @@ int qla24xx_fcport_handle_login(struct s
- 	if (vha->host->active_mode == MODE_TARGET && !N2N_TOPO(vha->hw))
- 		return 0;
- 
--	if (fcport->flags & FCF_ASYNC_SENT) {
-+	if (fcport->flags & (FCF_ASYNC_SENT | FCF_ASYNC_ACTIVE)) {
- 		set_bit(RELOGIN_NEEDED, &vha->dpc_flags);
- 		return 0;
+diff --git a/drivers/scsi/pm8001/pm80xx_hwi.c b/drivers/scsi/pm8001/pm80xx_hwi.c
+index 33b5172d55cf..d620bb747a5b 100644
+--- a/drivers/scsi/pm8001/pm80xx_hwi.c
++++ b/drivers/scsi/pm8001/pm80xx_hwi.c
+@@ -4467,7 +4467,7 @@ static int pm80xx_chip_sata_req(struct pm8001_hba_info *pm8001_ha,
+ 	u32 q_index, cpu_id;
+ 	struct sata_start_req sata_cmd;
+ 	u32 hdr_tag, ncg_tag = 0;
+-	u64 phys_addr, start_addr, end_addr;
++	u64 phys_addr, end_addr;
+ 	u32 end_addr_high, end_addr_low;
+ 	u32 ATAP = 0x0;
+ 	u32 dir;
+@@ -4528,32 +4528,38 @@ static int pm80xx_chip_sata_req(struct pm8001_hba_info *pm8001_ha,
+ 			pm8001_chip_make_sg(task->scatter,
+ 						ccb->n_elem, ccb->buf_prd);
+ 			phys_addr = ccb->ccb_dma_handle;
+-			sata_cmd.enc_addr_low = lower_32_bits(phys_addr);
+-			sata_cmd.enc_addr_high = upper_32_bits(phys_addr);
++			sata_cmd.enc_addr_low =
++				cpu_to_le32(lower_32_bits(phys_addr));
++			sata_cmd.enc_addr_high =
++				cpu_to_le32(upper_32_bits(phys_addr));
+ 			sata_cmd.enc_esgl = cpu_to_le32(1 << 31);
+ 		} else if (task->num_scatter == 1) {
+ 			u64 dma_addr = sg_dma_address(task->scatter);
+-			sata_cmd.enc_addr_low = lower_32_bits(dma_addr);
+-			sata_cmd.enc_addr_high = upper_32_bits(dma_addr);
++
++			sata_cmd.enc_addr_low =
++				cpu_to_le32(lower_32_bits(dma_addr));
++			sata_cmd.enc_addr_high =
++				cpu_to_le32(upper_32_bits(dma_addr));
+ 			sata_cmd.enc_len = cpu_to_le32(task->total_xfer_len);
+ 			sata_cmd.enc_esgl = 0;
++
+ 			/* Check 4G Boundary */
+-			start_addr = cpu_to_le64(dma_addr);
+-			end_addr = (start_addr + sata_cmd.enc_len) - 1;
+-			end_addr_low = cpu_to_le32(lower_32_bits(end_addr));
+-			end_addr_high = cpu_to_le32(upper_32_bits(end_addr));
+-			if (end_addr_high != sata_cmd.enc_addr_high) {
++			end_addr = dma_addr + le32_to_cpu(sata_cmd.enc_len) - 1;
++			end_addr_low = lower_32_bits(end_addr);
++			end_addr_high = upper_32_bits(end_addr);
++			if (end_addr_high != le32_to_cpu(sata_cmd.enc_addr_high)) {
+ 				pm8001_dbg(pm8001_ha, FAIL,
+ 					   "The sg list address start_addr=0x%016llx data_len=0x%x end_addr_high=0x%08x end_addr_low=0x%08x has crossed 4G boundary\n",
+-					   start_addr, sata_cmd.enc_len,
++					   dma_addr,
++					   le32_to_cpu(sata_cmd.enc_len),
+ 					   end_addr_high, end_addr_low);
+ 				pm8001_chip_make_sg(task->scatter, 1,
+ 					ccb->buf_prd);
+ 				phys_addr = ccb->ccb_dma_handle;
+ 				sata_cmd.enc_addr_low =
+-					lower_32_bits(phys_addr);
++					cpu_to_le32(lower_32_bits(phys_addr));
+ 				sata_cmd.enc_addr_high =
+-					upper_32_bits(phys_addr);
++					cpu_to_le32(upper_32_bits(phys_addr));
+ 				sata_cmd.enc_esgl =
+ 					cpu_to_le32(1 << 31);
+ 			}
+@@ -4564,7 +4570,8 @@ static int pm80xx_chip_sata_req(struct pm8001_hba_info *pm8001_ha,
+ 			sata_cmd.enc_esgl = 0;
+ 		}
+ 		/* XTS mode. All other fields are 0 */
+-		sata_cmd.key_index_mode = 0x6 << 4;
++		sata_cmd.key_index_mode = cpu_to_le32(0x6 << 4);
++
+ 		/* set tweak values. Should be the start lba */
+ 		sata_cmd.twk_val0 =
+ 			cpu_to_le32((sata_cmd.sata_fis.lbal_exp << 24) |
+@@ -4590,31 +4597,31 @@ static int pm80xx_chip_sata_req(struct pm8001_hba_info *pm8001_ha,
+ 			phys_addr = ccb->ccb_dma_handle;
+ 			sata_cmd.addr_low = lower_32_bits(phys_addr);
+ 			sata_cmd.addr_high = upper_32_bits(phys_addr);
+-			sata_cmd.esgl = cpu_to_le32(1 << 31);
++			sata_cmd.esgl = cpu_to_le32(1U << 31);
+ 		} else if (task->num_scatter == 1) {
+ 			u64 dma_addr = sg_dma_address(task->scatter);
++
+ 			sata_cmd.addr_low = lower_32_bits(dma_addr);
+ 			sata_cmd.addr_high = upper_32_bits(dma_addr);
+ 			sata_cmd.len = cpu_to_le32(task->total_xfer_len);
+ 			sata_cmd.esgl = 0;
++
+ 			/* Check 4G Boundary */
+-			start_addr = cpu_to_le64(dma_addr);
+-			end_addr = (start_addr + sata_cmd.len) - 1;
+-			end_addr_low = cpu_to_le32(lower_32_bits(end_addr));
+-			end_addr_high = cpu_to_le32(upper_32_bits(end_addr));
++			end_addr = dma_addr + le32_to_cpu(sata_cmd.len) - 1;
++			end_addr_low = lower_32_bits(end_addr);
++			end_addr_high = upper_32_bits(end_addr);
+ 			if (end_addr_high != sata_cmd.addr_high) {
+ 				pm8001_dbg(pm8001_ha, FAIL,
+ 					   "The sg list address start_addr=0x%016llx data_len=0x%xend_addr_high=0x%08x end_addr_low=0x%08x has crossed 4G boundary\n",
+-					   start_addr, sata_cmd.len,
++					   dma_addr,
++					   le32_to_cpu(sata_cmd.len),
+ 					   end_addr_high, end_addr_low);
+ 				pm8001_chip_make_sg(task->scatter, 1,
+ 					ccb->buf_prd);
+ 				phys_addr = ccb->ccb_dma_handle;
+-				sata_cmd.addr_low =
+-					lower_32_bits(phys_addr);
+-				sata_cmd.addr_high =
+-					upper_32_bits(phys_addr);
+-				sata_cmd.esgl = cpu_to_le32(1 << 31);
++				sata_cmd.addr_low = lower_32_bits(phys_addr);
++				sata_cmd.addr_high = upper_32_bits(phys_addr);
++				sata_cmd.esgl = cpu_to_le32(1U << 31);
+ 			}
+ 		} else if (task->num_scatter == 0) {
+ 			sata_cmd.addr_low = 0;
+@@ -4622,27 +4629,28 @@ static int pm80xx_chip_sata_req(struct pm8001_hba_info *pm8001_ha,
+ 			sata_cmd.len = cpu_to_le32(task->total_xfer_len);
+ 			sata_cmd.esgl = 0;
+ 		}
++
+ 		/* scsi cdb */
+ 		sata_cmd.atapi_scsi_cdb[0] =
+ 			cpu_to_le32(((task->ata_task.atapi_packet[0]) |
+-			(task->ata_task.atapi_packet[1] << 8) |
+-			(task->ata_task.atapi_packet[2] << 16) |
+-			(task->ata_task.atapi_packet[3] << 24)));
++				     (task->ata_task.atapi_packet[1] << 8) |
++				     (task->ata_task.atapi_packet[2] << 16) |
++				     (task->ata_task.atapi_packet[3] << 24)));
+ 		sata_cmd.atapi_scsi_cdb[1] =
+ 			cpu_to_le32(((task->ata_task.atapi_packet[4]) |
+-			(task->ata_task.atapi_packet[5] << 8) |
+-			(task->ata_task.atapi_packet[6] << 16) |
+-			(task->ata_task.atapi_packet[7] << 24)));
++				     (task->ata_task.atapi_packet[5] << 8) |
++				     (task->ata_task.atapi_packet[6] << 16) |
++				     (task->ata_task.atapi_packet[7] << 24)));
+ 		sata_cmd.atapi_scsi_cdb[2] =
+ 			cpu_to_le32(((task->ata_task.atapi_packet[8]) |
+-			(task->ata_task.atapi_packet[9] << 8) |
+-			(task->ata_task.atapi_packet[10] << 16) |
+-			(task->ata_task.atapi_packet[11] << 24)));
++				     (task->ata_task.atapi_packet[9] << 8) |
++				     (task->ata_task.atapi_packet[10] << 16) |
++				     (task->ata_task.atapi_packet[11] << 24)));
+ 		sata_cmd.atapi_scsi_cdb[3] =
+ 			cpu_to_le32(((task->ata_task.atapi_packet[12]) |
+-			(task->ata_task.atapi_packet[13] << 8) |
+-			(task->ata_task.atapi_packet[14] << 16) |
+-			(task->ata_task.atapi_packet[15] << 24)));
++				     (task->ata_task.atapi_packet[13] << 8) |
++				     (task->ata_task.atapi_packet[14] << 16) |
++				     (task->ata_task.atapi_packet[15] << 24)));
  	}
+ 
+ 	/* Check for read log for failed drive and return */
+-- 
+2.34.1
+
 
 
