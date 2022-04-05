@@ -2,46 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D276BC3527A
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 02:39:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B64B4C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 02:39:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1448768AbiDFCgD (ORCPT
+        id S1451025AbiDFCg2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 22:36:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43736 "EHLO
+        Tue, 5 Apr 2022 22:36:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53208 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1444225AbiDEWVB (ORCPT
+        with ESMTP id S1444148AbiDEWVA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 18:21:01 -0400
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C998B8E1BB;
-        Tue,  5 Apr 2022 13:45:11 -0700 (PDT)
+        Tue, 5 Apr 2022 18:21:00 -0400
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E13AA75215;
+        Tue,  5 Apr 2022 13:44:59 -0700 (PDT)
 Received: from [127.0.0.1] (localhost [127.0.0.1])
         (Authenticated sender: nicolas)
-        with ESMTPSA id 47B301F448A1
+        with ESMTPSA id 19F1B1F44826
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1649191510;
-        bh=t6w6zh2urP7UBHlWH5GWukchWArbLK9mbtqizbdraAY=;
+        s=mail; t=1649191498;
+        bh=SqPD7oTR+3FuYunP0khMcdvMcGz4bOvgAm9j9vzmvSk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TkK+aVQN462OFzg3kXJMyyDzO9T5YZP4amtnyD+IC682s9lJt9HfFWJIqL5686Ljz
-         /JF9E3x+CLnwgJ8byoIc1gLKjhAYVf5LLJvnskfXyFbE0nNpttYv4gxOg1s9CsRTNs
-         AwdTGwxXdcxGIx/YlfnIu7+3Za8p8RI0he0Yu3Pa62uJ73r6KAHWnd+2NyYoKq+xfR
-         vULVmlkefvGmBpcWiLzWObKsI1+YnxZxTF0muf+/GqNSWumbYdHjzwdySXF38cSXGe
-         eWSRYf7IRpZi0MWDeZfFszhSmt7gZWD2MD7j0ZuG/oZyTGQAwwt26oDn+Fis6PS2GV
-         ylea4nyVQ09Pw==
+        b=e98qXzKjRZFuL/1d64MdD/TSfoAuS+Rtbo1M33dWwT8qxn1uhQ7PvPAwsAZrsYtnV
+         QQhRUOSl1PTbGUwxM+dGBF6iVLVERKpfP4wx66wBrzf1aS39TbPzHtztbeY6k7mMUu
+         Az2rMIaHgmJuhS4AxGnabihK857+cIB8+6yErqIxbyd8syfyFWTTezxqEwEzvtwxGy
+         zuO//SrfBlNw8DW8ttI7xS+A7TWnzY3Sww+oqSSYBDUopTOFivBwlIkseGHK0nvlTf
+         n6M5KFFBALD5wfkLqqlr5HL9+ta52NxEfdqRfSuJnku56+nW3l4YXiSiYGW9Xozl2o
+         BufRJcuQ0V0dA==
 From:   Nicolas Dufresne <nicolas.dufresne@collabora.com>
-To:     Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Mauro Carvalho Chehab <mchehab@kernel.org>
 Cc:     kernel@collabora.com, linux-kernel@vger.kernel.org,
-        Jonas Karlman <jonas@kwiboo.se>,
-        Ezequiel Garcia <ezequiel@collabora.com>,
         Sebastian Fricke <sebastian.fricke@collabora.com>,
-        linux-media@vger.kernel.org, linux-rockchip@lists.infradead.org,
-        linux-staging@lists.linux.dev
-Subject: [PATCH v3 17/24] media: rkvdec: h264: Fix reference frame_num wrap for second field
-Date:   Tue,  5 Apr 2022 16:44:18 -0400
-Message-Id: <20220405204426.259074-18-nicolas.dufresne@collabora.com>
+        linux-media@vger.kernel.org
+Subject: [PATCH v3 11/24] media: v4l2: Reorder field reflist
+Date:   Tue,  5 Apr 2022 16:44:12 -0400
+Message-Id: <20220405204426.259074-12-nicolas.dufresne@collabora.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220405204426.259074-1-nicolas.dufresne@collabora.com>
 References: <20220405204426.259074-1-nicolas.dufresne@collabora.com>
@@ -51,38 +46,86 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jonas Karlman <jonas@kwiboo.se>
+As per spec, the field reflist requires interleaving top and bottom
+field in a specific way that does not fit inside the sort operation.
+The process consist of alternating references parity, starting with
+a reference of the same parity as the current picture. This
+processs is done twice, once for short term references and a second
+time for the long term references.
 
-When decoding the second field in a complementary field pair the second
-field is sharing the same frame_num with the first field.
-
-Currently the frame_num for the first field is wrapped when it matches the
-field being decoded, this cause issues to decode the second field in a
-complementary field pair.
-
-Fix this by using inclusive comparison, less than or equal.
-
-Signed-off-by: Jonas Karlman <jonas@kwiboo.se>
 Signed-off-by: Nicolas Dufresne <nicolas.dufresne@collabora.com>
-Reviewed-by: Ezequiel Garcia <ezequiel@collabora.com>
 Reviewed-by: Sebastian Fricke <sebastian.fricke@collabora.com>
 ---
- drivers/staging/media/rkvdec/rkvdec-h264.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/media/v4l2-core/v4l2-h264.c | 42 +++++++++++++++++++++++++++++
+ 1 file changed, 42 insertions(+)
 
-diff --git a/drivers/staging/media/rkvdec/rkvdec-h264.c b/drivers/staging/media/rkvdec/rkvdec-h264.c
-index f081b476340f..60eaf06b6e25 100644
---- a/drivers/staging/media/rkvdec/rkvdec-h264.c
-+++ b/drivers/staging/media/rkvdec/rkvdec-h264.c
-@@ -781,7 +781,7 @@ static void assemble_hw_rps(struct rkvdec_ctx *ctx,
- 			continue;
+diff --git a/drivers/media/v4l2-core/v4l2-h264.c b/drivers/media/v4l2-core/v4l2-h264.c
+index 7e1eba03099a..d2d1f3bed7e8 100644
+--- a/drivers/media/v4l2-core/v4l2-h264.c
++++ b/drivers/media/v4l2-core/v4l2-h264.c
+@@ -244,6 +244,40 @@ static int v4l2_h264_b1_ref_list_cmp(const void *ptra, const void *ptrb,
+ 	return poca < pocb ? -1 : 1;
+ }
  
- 		if (dpb[i].flags & V4L2_H264_DPB_ENTRY_FLAG_LONG_TERM ||
--		    dpb[i].frame_num < dec_params->frame_num) {
-+		    dpb[i].frame_num <= dec_params->frame_num) {
- 			p[i] = dpb[i].frame_num;
- 			continue;
- 		}
++/*
++ * The references need to be reordered so that references are alternating
++ * between top and bottom field references starting with the current picture
++ * parity. This has to be * done for short term and long term references
++ * separately.
++ */
++static void reorder_field_reflist(const struct v4l2_h264_reflist_builder *b,
++				  struct v4l2_h264_reference *reflist)
++{
++	struct v4l2_h264_reference tmplist[V4L2_H264_REF_LIST_LEN];
++	u8 lt, i = 0, j = 0, k = 0;
++
++	memcpy(tmplist, reflist, sizeof(tmplist[0]) * b->num_valid);
++
++	for (lt = 0; lt <= 1; lt++) {
++		do {
++			for (; i < b->num_valid && b->refs[tmplist[i].index].longterm == lt; i++) {
++				if (tmplist[i].fields == b->cur_pic_fields) {
++					reflist[k++] = tmplist[i++];
++					break;
++				}
++			}
++
++			for (; j < b->num_valid && b->refs[tmplist[j].index].longterm == lt; j++) {
++				if (tmplist[j].fields != b->cur_pic_fields) {
++					reflist[k++] = tmplist[j++];
++					break;
++				}
++			}
++		} while ((i < b->num_valid && b->refs[tmplist[i].index].longterm == lt) ||
++			 (j < b->num_valid && b->refs[tmplist[j].index].longterm == lt));
++	}
++}
++
+ static char ref_type_to_char (u8 ref_type)
+ {
+ 	switch (ref_type) {
+@@ -346,6 +380,9 @@ v4l2_h264_build_p_ref_list(const struct v4l2_h264_reflist_builder *builder,
+ 	sort_r(reflist, builder->num_valid, sizeof(*reflist),
+ 	       v4l2_h264_p_ref_list_cmp, NULL, builder);
+ 
++	if (builder->cur_pic_fields != V4L2_H264_FRAME_REF)
++		reorder_field_reflist(builder, reflist);
++
+ 	print_ref_list_p(builder, reflist);
+ }
+ EXPORT_SYMBOL_GPL(v4l2_h264_build_p_ref_list);
+@@ -379,6 +416,11 @@ v4l2_h264_build_b_ref_lists(const struct v4l2_h264_reflist_builder *builder,
+ 	sort_r(b1_reflist, builder->num_valid, sizeof(*b1_reflist),
+ 	       v4l2_h264_b1_ref_list_cmp, NULL, builder);
+ 
++	if (builder->cur_pic_fields != V4L2_H264_FRAME_REF) {
++		reorder_field_reflist(builder, b0_reflist);
++		reorder_field_reflist(builder, b1_reflist);
++	}
++
+ 	if (builder->num_valid > 1 &&
+ 	    !memcmp(b1_reflist, b0_reflist, builder->num_valid))
+ 		swap(b1_reflist[0], b1_reflist[1]);
 -- 
 2.34.1
 
