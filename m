@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B0A9C35280
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 686C1C4707A
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:40:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1836813AbiDFAkR (ORCPT
+        id S1836799AbiDFAkG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 20:40:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50656 "EHLO
+        Tue, 5 Apr 2022 20:40:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49352 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358144AbiDEK2B (ORCPT
+        with ESMTP id S1358773AbiDELRa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:28:01 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2ABCD6F;
-        Tue,  5 Apr 2022 03:15:53 -0700 (PDT)
+        Tue, 5 Apr 2022 07:17:30 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F83DDFD52;
+        Tue,  5 Apr 2022 03:19:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 958B2B81C88;
-        Tue,  5 Apr 2022 10:15:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E4067C385A1;
-        Tue,  5 Apr 2022 10:15:50 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0A61961562;
+        Tue,  5 Apr 2022 10:19:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1692AC385A0;
+        Tue,  5 Apr 2022 10:19:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649153751;
-        bh=SlsaqqrfsNXwbG3O4t57lo1Bqx+OaenWM8NPlmowooY=;
+        s=korg; t=1649153982;
+        bh=ZfobBtkv0dNRmNXjqAgvo8TFqgxLcLeOrAxHVbstjGI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Mc8n62G4I7Lxm7EUakd+0OSjM3eJ/k+JVUNk3TGmvSWWrXgG/fajs+9fAu44lP412
-         2x7vTcgE4JWy84//tXEUBtmfmcJpape69rEP7H4o0WgY1z412GWu3s4vkfeo1G4TDE
-         V4GUzFMd4y0NlkfhpkCly5y2O6LjqsBamUS7gpMU=
+        b=ZIa4BU0/YVBgYATTyjtpGF/FWcodlJTH+LVSpRoJ/QrM4wbGuvkvsKoB2ucnbWf4u
+         Nrd0VIRStkK6C1fyj/80y0GVPtS+Rq/aro/kVzt2Sm4OT/ykyZ1HYd3QvIXNYMPiAR
+         I0uoxq1/0uWHk6af6CASmqkISICRWGTFB5P55Ms0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Anssi Hannula <anssi.hannula@bitwise.fi>,
-        Michael Kelley <mikelley@microsoft.com>,
-        Wei Liu <wei.liu@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 335/599] hv_balloon: rate-limit "Unhandled message" warning
-Date:   Tue,  5 Apr 2022 09:30:29 +0200
-Message-Id: <20220405070308.801152475@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Sergio Paracuellos <sergio.paracuellos@gmail.com>,
+        =?UTF-8?q?Ar=C4=B1n=C3=A7=20=C3=9CNAL?= <arinc.unal@arinc9.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 416/599] staging: mt7621-dts: fix pinctrl properties for ethernet
+Date:   Tue,  5 Apr 2022 09:31:50 +0200
+Message-Id: <20220405070311.211992749@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
 References: <20220405070258.802373272@linuxfoundation.org>
@@ -50,49 +51,91 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Anssi Hannula <anssi.hannula@bitwise.fi>
+From: Arınç ÜNAL <arinc.unal@arinc9.com>
 
-[ Upstream commit 1d7286729aa616772be334eb908e11f527e1e291 ]
+[ Upstream commit 0a93c0d75809582893e82039143591b9265b520e ]
 
-For a couple of times I have encountered a situation where
+Add pinctrl properties with rgmii1 & mdio pins under ethernet node which
+was wrongfully put under an external phy node.
+GMAC1 will start working with this fix.
 
-  hv_balloon: Unhandled message: type: 12447
+Link: https://lore.kernel.org/netdev/02ecce91-7aad-4392-c9d7-f45ca1b31e0b@arinc9.com/T/
 
-is being flooded over 1 million times per second with various values,
-filling the log and consuming cycles, making debugging difficult.
+Move GB-PC2 specific phy_external node to its own device tree.
 
-Add rate limiting to the message.
-
-Most other Hyper-V drivers already have similar rate limiting in their
-message callbacks.
-
-The cause of the floods in my case was probably fixed by 96d9d1fa5cd5
-("Drivers: hv: balloon: account for vmbus packet header in
-max_pkt_size").
-
-Fixes: 9aa8b50b2b3d ("Drivers: hv: Add Hyper-V balloon driver")
-Signed-off-by: Anssi Hannula <anssi.hannula@bitwise.fi>
-Reviewed-by: Michael Kelley <mikelley@microsoft.com>
-Link: https://lore.kernel.org/r/20220222141400.98160-1-anssi.hannula@bitwise.fi
-Signed-off-by: Wei Liu <wei.liu@kernel.org>
+Reviewed-by: Sergio Paracuellos <sergio.paracuellos@gmail.com>
+Signed-off-by: Arınç ÜNAL <arinc.unal@arinc9.com>
+Link: https://lore.kernel.org/r/20220125153903.1469-5-arinc.unal@arinc9.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/hv/hv_balloon.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/staging/mt7621-dts/gbpc2.dts   | 16 +++++++++++-----
+ drivers/staging/mt7621-dts/mt7621.dtsi | 13 +++----------
+ 2 files changed, 14 insertions(+), 15 deletions(-)
 
-diff --git a/drivers/hv/hv_balloon.c b/drivers/hv/hv_balloon.c
-index eb56e09ae15f..6a716996a625 100644
---- a/drivers/hv/hv_balloon.c
-+++ b/drivers/hv/hv_balloon.c
-@@ -1558,7 +1558,7 @@ static void balloon_onchannelcallback(void *context)
- 			break;
+diff --git a/drivers/staging/mt7621-dts/gbpc2.dts b/drivers/staging/mt7621-dts/gbpc2.dts
+index 52760e7351f6..f9b69091bfc0 100644
+--- a/drivers/staging/mt7621-dts/gbpc2.dts
++++ b/drivers/staging/mt7621-dts/gbpc2.dts
+@@ -12,10 +12,16 @@
+ 	function = "gpio";
+ };
  
- 		default:
--			pr_warn("Unhandled message: type: %d\n", dm_hdr->type);
-+			pr_warn_ratelimited("Unhandled message: type: %d\n", dm_hdr->type);
+-&gmac1 {
+-	status = "ok";
+-};
++&ethernet {
++	gmac1: mac@1 {
++		status = "ok";
++		phy-handle = <&phy_external>;
++	};
  
- 		}
- 	}
+-&phy_external {
+-	status = "ok";
++	mdio-bus {
++		phy_external: ethernet-phy@5 {
++			reg = <5>;
++			phy-mode = "rgmii-rxid";
++		};
++	};
+ };
+diff --git a/drivers/staging/mt7621-dts/mt7621.dtsi b/drivers/staging/mt7621-dts/mt7621.dtsi
+index 50f6d89f4673..51c0061daa37 100644
+--- a/drivers/staging/mt7621-dts/mt7621.dtsi
++++ b/drivers/staging/mt7621-dts/mt7621.dtsi
+@@ -412,6 +412,9 @@
+ 
+ 		mediatek,ethsys = <&ethsys>;
+ 
++		pinctrl-names = "default";
++		pinctrl-0 = <&rgmii1_pins &rgmii2_pins &mdio_pins>;
++
+ 		gmac0: mac@0 {
+ 			compatible = "mediatek,eth-mac";
+ 			reg = <0>;
+@@ -429,22 +432,12 @@
+ 			reg = <1>;
+ 			status = "off";
+ 			phy-mode = "rgmii-rxid";
+-			phy-handle = <&phy_external>;
+ 		};
+ 
+ 		mdio-bus {
+ 			#address-cells = <1>;
+ 			#size-cells = <0>;
+ 
+-			phy_external: ethernet-phy@5 {
+-				status = "off";
+-				reg = <5>;
+-				phy-mode = "rgmii-rxid";
+-
+-				pinctrl-names = "default";
+-				pinctrl-0 = <&rgmii2_pins>;
+-			};
+-
+ 			switch0: switch0@0 {
+ 				compatible = "mediatek,mt7621";
+ 				#address-cells = <1>;
 -- 
 2.34.1
 
