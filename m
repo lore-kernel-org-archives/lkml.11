@@ -2,46 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A187AC4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A659C433FE
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 21:09:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345138AbiDEVIy (ORCPT
+        id S1344555AbiDEVIr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 17:08:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39548 "EHLO
+        Tue, 5 Apr 2022 17:08:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46876 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348462AbiDEJrr (ORCPT
+        with ESMTP id S1354560AbiDEKOj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:47:47 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8AA113F38;
-        Tue,  5 Apr 2022 02:33:57 -0700 (PDT)
+        Tue, 5 Apr 2022 06:14:39 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B81486B0BA;
+        Tue,  5 Apr 2022 03:00:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 61EF4B81C82;
-        Tue,  5 Apr 2022 09:33:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BEBBEC385A0;
-        Tue,  5 Apr 2022 09:33:54 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4DB7261676;
+        Tue,  5 Apr 2022 10:00:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5B710C385A1;
+        Tue,  5 Apr 2022 10:00:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649151235;
-        bh=Qc5JUQdNaG632zqHws9pZ7Yz8zs6uc92MCr5DjfyIrU=;
+        s=korg; t=1649152852;
+        bh=YcAXeTWc0J/20QqSUfzXau2aqRTILZulL3uxemPHlIs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=uq+Trpb0tW6yiLOxThaAXSpINp4ft7J0JUSSndqMr9SWlTMgY0zwXK2VEv6D8ieEM
-         dlQHuDSxwF4m5Bb4IIy+5NGO60h7yPCqH2nXOkLaiw7Vnw6uluXmT8b3qOiXwJeI3n
-         fPtG/wH1EM1y1HwRtTbfmt0yvdGAZ+VCFJAAzvKA=
+        b=Ai+UefR7GpFoBcZ+zfqAyXg4RAM7myWFGyMRQ4JmcOQJNmyTG5xJDE6Jm1d3Q6Xvf
+         y/nkioSKiZNZx9UaoXY07yMam40Fkl3Rsbil+Umbs0kOOIGyRxT1lh9zsCyntZwv15
+         VB57d9G59QsaB+sR9fDJSrfLlDrik0rYDq6iIQ1Y=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jia-Ju Bai <baijiaju1990@gmail.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        stable@vger.kernel.org,
+        Marcelo Roberto Jimenez <marcelo.jimenez@gmail.com>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 343/913] memory: emif: check the pointer temp in get_device_details()
-Date:   Tue,  5 Apr 2022 09:23:25 +0200
-Message-Id: <20220405070350.128361318@linuxfoundation.org>
+Subject: [PATCH 5.10 013/599] gpio: Revert regression in sysfs-gpio (gpiolib.c)
+Date:   Tue,  5 Apr 2022 09:25:07 +0200
+Message-Id: <20220405070259.211158709@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
+References: <20220405070258.802373272@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,35 +51,58 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jia-Ju Bai <baijiaju1990@gmail.com>
+From: Marcelo Roberto Jimenez <marcelo.jimenez@gmail.com>
 
-[ Upstream commit 5b5ab1bfa1898c6d52936a57c25c5ceba2cb2f87 ]
+[ Upstream commit fc328a7d1fcce263db0b046917a66f3aa6e68719 ]
 
-The pointer temp is allocated by devm_kzalloc(), so it should be
-checked for error handling.
+Some GPIO lines have stopped working after the patch
+commit 2ab73c6d8323f ("gpio: Support GPIO controllers without pin-ranges")
 
-Fixes: 7ec944538dde ("memory: emif: add basic infrastructure for EMIF driver")
-Signed-off-by: Jia-Ju Bai <baijiaju1990@gmail.com>
-Link: https://lore.kernel.org/r/20220225132552.27894-1-baijiaju1990@gmail.com
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+And this has supposedly been fixed in the following patches
+commit 89ad556b7f96a ("gpio: Avoid using pin ranges with !PINCTRL")
+commit 6dbbf84603961 ("gpiolib: Don't free if pin ranges are not defined")
+
+But an erratic behavior where some GPIO lines work while others do not work
+has been introduced.
+
+This patch reverts those changes so that the sysfs-gpio interface works
+properly again.
+
+Signed-off-by: Marcelo Roberto Jimenez <marcelo.jimenez@gmail.com>
+Signed-off-by: Bartosz Golaszewski <brgl@bgdev.pl>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/memory/emif.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/gpio/gpiolib.c | 10 ----------
+ 1 file changed, 10 deletions(-)
 
-diff --git a/drivers/memory/emif.c b/drivers/memory/emif.c
-index d4d4044e05b3..ecc78d6f89ed 100644
---- a/drivers/memory/emif.c
-+++ b/drivers/memory/emif.c
-@@ -1025,7 +1025,7 @@ static struct emif_data *__init_or_module get_device_details(
- 	temp	= devm_kzalloc(dev, sizeof(*pd), GFP_KERNEL);
- 	dev_info = devm_kzalloc(dev, sizeof(*dev_info), GFP_KERNEL);
- 
--	if (!emif || !pd || !dev_info) {
-+	if (!emif || !temp || !dev_info) {
- 		dev_err(dev, "%s:%d: allocation error\n", __func__, __LINE__);
- 		goto error;
- 	}
+diff --git a/drivers/gpio/gpiolib.c b/drivers/gpio/gpiolib.c
+index 00526fdd7691..bbf34d84636d 100644
+--- a/drivers/gpio/gpiolib.c
++++ b/drivers/gpio/gpiolib.c
+@@ -1804,11 +1804,6 @@ static inline void gpiochip_irqchip_free_valid_mask(struct gpio_chip *gc)
+  */
+ int gpiochip_generic_request(struct gpio_chip *gc, unsigned offset)
+ {
+-#ifdef CONFIG_PINCTRL
+-	if (list_empty(&gc->gpiodev->pin_ranges))
+-		return 0;
+-#endif
+-
+ 	return pinctrl_gpio_request(gc->gpiodev->base + offset);
+ }
+ EXPORT_SYMBOL_GPL(gpiochip_generic_request);
+@@ -1820,11 +1815,6 @@ EXPORT_SYMBOL_GPL(gpiochip_generic_request);
+  */
+ void gpiochip_generic_free(struct gpio_chip *gc, unsigned offset)
+ {
+-#ifdef CONFIG_PINCTRL
+-	if (list_empty(&gc->gpiodev->pin_ranges))
+-		return;
+-#endif
+-
+ 	pinctrl_gpio_free(gc->gpiodev->base + offset);
+ }
+ EXPORT_SYMBOL_GPL(gpiochip_generic_free);
 -- 
 2.34.1
 
