@@ -2,46 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D0A3C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BAA16C433EF
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 21:37:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380953AbiDEVhe (ORCPT
+        id S1381067AbiDEVhj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 17:37:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59294 "EHLO
+        Tue, 5 Apr 2022 17:37:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33008 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348321AbiDEJrb (ORCPT
+        with ESMTP id S1358203AbiDEK2F (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:47:31 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A0C96C49E;
-        Tue,  5 Apr 2022 02:33:42 -0700 (PDT)
+        Tue, 5 Apr 2022 06:28:05 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F2EEDF11;
+        Tue,  5 Apr 2022 03:17:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 81520B81C86;
-        Tue,  5 Apr 2022 09:33:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C9196C385A0;
-        Tue,  5 Apr 2022 09:33:40 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EF73361777;
+        Tue,  5 Apr 2022 10:17:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0C198C385A0;
+        Tue,  5 Apr 2022 10:17:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649151221;
-        bh=4CbGFM1Lbe8DmiPQBMYFTnVQIyjT1+Fi1scJt5CW+h8=;
+        s=korg; t=1649153821;
+        bh=4aZGSueq1nni+HIWlZFJGt9xx0C6ejjiA6qyw9yZHqA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ULvlNA4MPJhFVp9bD5bEM8mi94vTwT9o0Ogaj/HNlNVvZEU8VsbzsphU8LPFIYCrs
-         PvgjAheyZ1Jbqm/WfeHLw2pdLjQsTJ3tJfDPpUHU6pJEBOpPvgRuTO6FkrJh3Cczfx
-         3igQ3ngxin6F3Jce07UqS/cGhcZK+kYMROpdc1z0=
+        b=Ze3dA1yRCQ7R3ZMHmahNmNm/NOZgIBdG7VjxOZtqklT9+e5mpL/1JHxbL01Zt4n+p
+         XfT69Ms9Rvykda8YFfKZBP5YTP1eMj8Q8q+5uZp5xvU1lI09eVWeVXaKFgFOhccfDK
+         74AYOmsfyuu1OY8fEF/XR6zCG8Cp6bNPzxsbGBb4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
-        Mark Brown <broonie@kernel.org>,
+        stable@vger.kernel.org, Wang Yufen <wangyufen@huawei.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        John Fastabend <john.fastabend@gmail.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 338/913] ASoC: mxs-saif: Handle errors for clk_enable
-Date:   Tue,  5 Apr 2022 09:23:20 +0200
-Message-Id: <20220405070349.980719157@linuxfoundation.org>
+Subject: [PATCH 5.10 358/599] bpf, sockmap: Fix double uncharge the mem of sk_msg
+Date:   Tue,  5 Apr 2022 09:30:52 +0200
+Message-Id: <20220405070309.485312156@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
+References: <20220405070258.802373272@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,38 +51,70 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+From: Wang Yufen <wangyufen@huawei.com>
 
-[ Upstream commit 2ecf362d220317debf5da376e0390e9f7a3f7b29 ]
+[ Upstream commit 2486ab434b2c2a14e9237296db00b1e1b7ae3273 ]
 
-As the potential failure of the clk_enable(),
-it should be better to check it, like mxs_saif_trigger().
+If tcp_bpf_sendmsg is running during a tear down operation, psock may be
+freed.
 
-Fixes: d0ba4c014934 ("ASoC: mxs-saif: set a base clock rate for EXTMASTER mode work")
-Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Link: https://lore.kernel.org/r/20220301081717.3727190-1-jiasheng@iscas.ac.cn
-Signed-off-by: Mark Brown <broonie@kernel.org>
+tcp_bpf_sendmsg()
+ tcp_bpf_send_verdict()
+  sk_msg_return()
+  tcp_bpf_sendmsg_redir()
+   unlikely(!psock))
+     sk_msg_free()
+
+The mem of msg has been uncharged in tcp_bpf_send_verdict() by
+sk_msg_return(), and would be uncharged by sk_msg_free() again. When psock
+is null, we can simply returning an error code, this would then trigger
+the sk_msg_free_nocharge in the error path of __SK_REDIRECT and would have
+the side effect of throwing an error up to user space. This would be a
+slight change in behavior from user side but would look the same as an
+error if the redirect on the socket threw an error.
+
+This issue can cause the following info:
+WARNING: CPU: 0 PID: 2136 at net/ipv4/af_inet.c:155 inet_sock_destruct+0x13c/0x260
+Call Trace:
+ <TASK>
+ __sk_destruct+0x24/0x1f0
+ sk_psock_destroy+0x19b/0x1c0
+ process_one_work+0x1b3/0x3c0
+ worker_thread+0x30/0x350
+ ? process_one_work+0x3c0/0x3c0
+ kthread+0xe6/0x110
+ ? kthread_complete_and_exit+0x20/0x20
+ ret_from_fork+0x22/0x30
+ </TASK>
+
+Fixes: 604326b41a6f ("bpf, sockmap: convert to generic sk_msg interface")
+Signed-off-by: Wang Yufen <wangyufen@huawei.com>
+Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+Acked-by: John Fastabend <john.fastabend@gmail.com>
+Link: https://lore.kernel.org/bpf/20220304081145.2037182-5-wangyufen@huawei.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/mxs/mxs-saif.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ net/ipv4/tcp_bpf.c | 7 +++----
+ 1 file changed, 3 insertions(+), 4 deletions(-)
 
-diff --git a/sound/soc/mxs/mxs-saif.c b/sound/soc/mxs/mxs-saif.c
-index 6a2d24d48964..879c1221a809 100644
---- a/sound/soc/mxs/mxs-saif.c
-+++ b/sound/soc/mxs/mxs-saif.c
-@@ -455,7 +455,10 @@ static int mxs_saif_hw_params(struct snd_pcm_substream *substream,
- 		* basic clock which should be fast enough for the internal
- 		* logic.
- 		*/
--		clk_enable(saif->clk);
-+		ret = clk_enable(saif->clk);
-+		if (ret)
-+			return ret;
+diff --git a/net/ipv4/tcp_bpf.c b/net/ipv4/tcp_bpf.c
+index c089e8166fa9..eaf2308c355a 100644
+--- a/net/ipv4/tcp_bpf.c
++++ b/net/ipv4/tcp_bpf.c
+@@ -218,10 +218,9 @@ int tcp_bpf_sendmsg_redir(struct sock *sk, struct sk_msg *msg,
+ 	struct sk_psock *psock = sk_psock_get(sk);
+ 	int ret;
+ 
+-	if (unlikely(!psock)) {
+-		sk_msg_free(sk, msg);
+-		return 0;
+-	}
++	if (unlikely(!psock))
++		return -EPIPE;
 +
- 		ret = clk_set_rate(saif->clk, 24000000);
- 		clk_disable(saif->clk);
- 		if (ret)
+ 	ret = ingress ? bpf_tcp_ingress(sk, psock, msg, bytes, flags) :
+ 			tcp_bpf_push_locked(sk, msg, bytes, flags, false);
+ 	sk_psock_put(sk, psock);
 -- 
 2.34.1
 
