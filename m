@@ -2,103 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F253CC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 14:18:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 20F72C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 14:18:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378654AbiDEOPV (ORCPT
+        id S1379342AbiDEOPc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 10:15:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55108 "EHLO
+        Tue, 5 Apr 2022 10:15:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38670 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238524AbiDEJci (ORCPT
+        with ESMTP id S238449AbiDEJci (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Apr 2022 05:32:38 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23B92CF2;
+Received: from ssl.serverraum.org (ssl.serverraum.org [176.9.125.105])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3207D6C;
         Tue,  5 Apr 2022 02:19:29 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+Received: from ssl.serverraum.org (web.serverraum.org [172.16.0.2])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B442D61574;
-        Tue,  5 Apr 2022 09:19:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C145BC385A2;
-        Tue,  5 Apr 2022 09:19:27 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649150368;
-        bh=pqyCCTrhe5vZ7ug0CKbXdyFqbSvs0f9tVv+alM+FO8k=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Io/VyoIsLTQJVR79d0jF8JNR6H4G3mOvuRIQjj3AQzf20YNIwUAbvrVntSqabOJXF
-         VInp3nPv2zpM2cZsZBuNr8dZfyQHwM74SaTe1sMunbow0eZBQYJgO5WiY3sJByx+Wm
-         fc0fEbm4gyxf03WziOSXy16z10cWnVsL0drRQvD8=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Sven Peter <sven@svenpeter.dev>
-Subject: [PATCH 5.15 031/913] usb: typec: tipd: Forward plug orientation to typec subsystem
-Date:   Tue,  5 Apr 2022 09:18:13 +0200
-Message-Id: <20220405070340.749540342@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
-User-Agent: quilt/0.66
+        by ssl.serverraum.org (Postfix) with ESMTPSA id E1FF7221D4;
+        Tue,  5 Apr 2022 11:19:27 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
+        t=1649150368;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=BOvj4u69nnl0MRspeEi8s3JMbY/tCVXYqntAM7FXoYM=;
+        b=m3RUG0UMPDNFyI4gv+Ph23UcaiROlA2mhed7gN+Xme7uDlxgUwIZtiS2q3oJgilsF5toFx
+        pHqXmbcoIlcQ6mNT9wgqyLFnA/NUyTxsASJRXOzUDrJgBRhSY3g6QlwFVEpdkUMvNFVx9p
+        /nuXiThKwOhvWNzhZC9D6WKUNayp138=
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+Date:   Tue, 05 Apr 2022 11:19:27 +0200
+From:   Michael Walle <michael@walle.cc>
+To:     Kurt Kanzenbach <kurt@linutronix.de>
+Cc:     Andrew Lunn <andrew@lunn.ch>, richardcochran@gmail.com,
+        davem@davemloft.net, grygorii.strashko@ti.com, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, linux@armlinux.org.uk,
+        mlichvar@redhat.com, netdev@vger.kernel.org,
+        qiangqing.zhang@nxp.com, vladimir.oltean@nxp.com
+Subject: Re: [PATCH RFC V1 net-next 3/4] net: Let the active time stamping
+ layer be selectable.
+In-Reply-To: <877d83rjjc.fsf@kurt>
+References: <20220104014215.GA20062@hoboy.vegasvil.org>
+ <20220404150508.3945833-1-michael@walle.cc> <YksMvHgXZxA+YZci@lunn.ch>
+ <e5a6f6193b86388ed7a081939b8745be@walle.cc> <877d83rjjc.fsf@kurt>
+User-Agent: Roundcube Webmail/1.4.13
+Message-ID: <ad4a8d3efbeaacf241a19bfbca5976f9@walle.cc>
+X-Sender: michael@walle.cc
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sven Peter <sven@svenpeter.dev>
+Am 2022-04-05 11:01, schrieb Kurt Kanzenbach:
+> On Mon Apr 04 2022, Michael Walle wrote:
+>> That would make sense. I guess what bothers me with the current
+>> mechanism is that a feature addition to the PHY in the *future* (the
+>> timestamping support) might break a board - or at least changes the
+>> behavior by suddenly using PHY timestamping.
+> 
+> Currently PHY timestamping is hidden behind a configuration option
+> (NETWORK_PHY_TIMESTAMPING). By disabling this option the default
+> behavior should stay at MAC timestamping even if additional features
+> are added on top of the PHY drivers at later stages. Or not?
 
-commit 676748389f5db74e7d28f9d630eebd75cb8a11b4 upstream.
+That is correct. But a Kconfig option has several drawbacks:
+(1) Doesn't work with boards where I might want PHY timestamping
+     on *some* ports, thus I need to enable it and then stumple
+     across the same problem.
+(2) Doesn't work with generic distro support, which is what is
+     ARM pushing right now with their SystemReady stuff (among other
+     things also for embeddem system). Despite that, I have two boards
+     which are already ready for booting debian out of the box for
+     example. While I might convince Debian to enable that option
+     (as I see it, that option is there to disable the additional
+     overhead) it certainly won't be on a per board basis.
+     Actually for keeping the MAC timestamping as is, you'd need to
+     convince a distribution to never enable the PHY timestamping
+     kconfig option.
 
-In order to bring up the USB3 PHY on the Apple M1 we need to know the
-orientation of the Type-C cable. Extract it from the status register and
-forward it to the typec subsystem.
+So yes, I agree it will work when you have control over your
+kconfig options, after all (1) might be more academic. But I'm
+really concerned about (2).
 
-Reviewed-by: Heikki Krogerus <heikki.krogerus@linux.intel.com>
-Cc: stable <stable@vger.kernel.org>
-Signed-off-by: Sven Peter <sven@svenpeter.dev>
-Link: https://lore.kernel.org/r/20220226125912.59828-1-sven@svenpeter.dev
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- drivers/usb/typec/tipd/core.c     |    5 +++++
- drivers/usb/typec/tipd/tps6598x.h |    1 +
- 2 files changed, 6 insertions(+)
-
---- a/drivers/usb/typec/tipd/core.c
-+++ b/drivers/usb/typec/tipd/core.c
-@@ -246,6 +246,10 @@ static int tps6598x_connect(struct tps65
- 	typec_set_pwr_opmode(tps->port, mode);
- 	typec_set_pwr_role(tps->port, TPS_STATUS_TO_TYPEC_PORTROLE(status));
- 	typec_set_vconn_role(tps->port, TPS_STATUS_TO_TYPEC_VCONN(status));
-+	if (TPS_STATUS_TO_UPSIDE_DOWN(status))
-+		typec_set_orientation(tps->port, TYPEC_ORIENTATION_REVERSE);
-+	else
-+		typec_set_orientation(tps->port, TYPEC_ORIENTATION_NORMAL);
- 	tps6598x_set_data_role(tps, TPS_STATUS_TO_TYPEC_DATAROLE(status), true);
- 
- 	tps->partner = typec_register_partner(tps->port, &desc);
-@@ -268,6 +272,7 @@ static void tps6598x_disconnect(struct t
- 	typec_set_pwr_opmode(tps->port, TYPEC_PWR_MODE_USB);
- 	typec_set_pwr_role(tps->port, TPS_STATUS_TO_TYPEC_PORTROLE(status));
- 	typec_set_vconn_role(tps->port, TPS_STATUS_TO_TYPEC_VCONN(status));
-+	typec_set_orientation(tps->port, TYPEC_ORIENTATION_NONE);
- 	tps6598x_set_data_role(tps, TPS_STATUS_TO_TYPEC_DATAROLE(status), false);
- 
- 	power_supply_changed(tps->psy);
---- a/drivers/usb/typec/tipd/tps6598x.h
-+++ b/drivers/usb/typec/tipd/tps6598x.h
-@@ -17,6 +17,7 @@
- /* TPS_REG_STATUS bits */
- #define TPS_STATUS_PLUG_PRESENT		BIT(0)
- #define TPS_STATUS_PLUG_UPSIDE_DOWN	BIT(4)
-+#define TPS_STATUS_TO_UPSIDE_DOWN(s)	(!!((s) & TPS_STATUS_PLUG_UPSIDE_DOWN))
- #define TPS_STATUS_PORTROLE		BIT(5)
- #define TPS_STATUS_TO_TYPEC_PORTROLE(s) (!!((s) & TPS_STATUS_PORTROLE))
- #define TPS_STATUS_DATAROLE		BIT(6)
-
-
+-michael
