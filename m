@@ -2,86 +2,177 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 68691C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:51:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 10177C47081
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:51:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237361AbiDEIlv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 04:41:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51782 "EHLO
+        id S237414AbiDEImK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 04:42:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48426 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236136AbiDEIBb (ORCPT
+        with ESMTP id S233807AbiDEH5p (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:01:31 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80B5849FB3;
-        Tue,  5 Apr 2022 00:59:33 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1E5ED61668;
-        Tue,  5 Apr 2022 07:59:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3412BC340EE;
-        Tue,  5 Apr 2022 07:59:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649145572;
-        bh=F2QB7kb0dawbt9xWarnKA2zPFQV/q0hPhE2v5d7TAd4=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=oVuzoDeLa9X9EtThxGP6ZOv8lIO8sDtKF4d/BAkF+Jo+XRyGXxeDFyPX6ilcDqHCi
-         tLIVP3FLWfPt/woR6+blX12iKJMXDFkJax3CcBwvfUrrc/m6/EurADv2X3UnvL0k+u
-         gE/EiQgJpQOP3tPbiXVT14GVDtbxOz+JwlXHjagY=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Robert Foss <robert.foss@linaro.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0425/1126] drm/bridge: Fix free wrong object in sii8620_init_rcp_input_dev
-Date:   Tue,  5 Apr 2022 09:19:32 +0200
-Message-Id: <20220405070420.100328320@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
-References: <20220405070407.513532867@linuxfoundation.org>
-User-Agent: quilt/0.66
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+        Tue, 5 Apr 2022 03:57:45 -0400
+Received: from mx.socionext.com (mx.socionext.com [202.248.49.38])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6194F51588;
+        Tue,  5 Apr 2022 00:51:29 -0700 (PDT)
+Received: from unknown (HELO iyokan2-ex.css.socionext.com) ([172.31.9.54])
+  by mx.socionext.com with ESMTP; 05 Apr 2022 16:51:16 +0900
+Received: from mail.mfilter.local (m-filter-1 [10.213.24.61])
+        by iyokan2-ex.css.socionext.com (Postfix) with ESMTP id AFF6C2058B50;
+        Tue,  5 Apr 2022 16:51:16 +0900 (JST)
+Received: from 172.31.9.51 (172.31.9.51) by m-FILTER with ESMTP; Tue, 5 Apr 2022 16:51:16 +0900
+Received: from plum.e01.socionext.com (unknown [10.212.243.119])
+        by kinkan2.css.socionext.com (Postfix) with ESMTP id EA7B9B6389;
+        Tue,  5 Apr 2022 16:51:15 +0900 (JST)
+From:   Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
+To:     Jingoo Han <jingoohan1@gmail.com>,
+        Gustavo Pimentel <gustavo.pimentel@synopsys.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>
+Cc:     Masami Hiramatsu <mhiramat@kernel.org>, linux-pci@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org,
+        Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
+Subject: [PATCH 2/3] dt-bindings: PCI: uniphier-ep: Clean up reg, clocks, resets, and their names using compatible string
+Date:   Tue,  5 Apr 2022 16:51:01 +0900
+Message-Id: <1649145062-29833-3-git-send-email-hayashi.kunihiko@socionext.com>
+X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1649145062-29833-1-git-send-email-hayashi.kunihiko@socionext.com>
+References: <1649145062-29833-1-git-send-email-hayashi.kunihiko@socionext.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+Instead of "oneOf:" choices, use "allOf:" and "if:" to define reg, clocks,
+resets, and their names that can be taken by the compatible string.
 
-[ Upstream commit 7c442e76c06cb1bef16a6c523487438175584eea ]
+The order of their names doesn't change here.
 
-rc_dev is allocated by rc_allocate_device(), and doesn't assigned to
-ctx->rc_dev before calling  rc_free_device(ctx->rc_dev).
-So it should call rc_free_device(rc_dev);
-
-Fixes: e25f1f7c94e1 ("drm/bridge/sii8620: add remote control support")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Reviewed-by: Robert Foss <robert.foss@linaro.org>
-Signed-off-by: Robert Foss <robert.foss@linaro.org>
-Link: https://patchwork.freedesktop.org/patch/msgid/20211227092522.21755-1-linmq006@gmail.com
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
 ---
- drivers/gpu/drm/bridge/sil-sii8620.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ .../pci/socionext,uniphier-pcie-ep.yaml       | 84 ++++++++++++-------
+ 1 file changed, 56 insertions(+), 28 deletions(-)
 
-diff --git a/drivers/gpu/drm/bridge/sil-sii8620.c b/drivers/gpu/drm/bridge/sil-sii8620.c
-index 843265d7f1b1..ec7745c31da0 100644
---- a/drivers/gpu/drm/bridge/sil-sii8620.c
-+++ b/drivers/gpu/drm/bridge/sil-sii8620.c
-@@ -2120,7 +2120,7 @@ static void sii8620_init_rcp_input_dev(struct sii8620 *ctx)
- 	if (ret) {
- 		dev_err(ctx->dev, "Failed to register RC device\n");
- 		ctx->error = ret;
--		rc_free_device(ctx->rc_dev);
-+		rc_free_device(rc_dev);
- 		return;
- 	}
- 	ctx->rc_dev = rc_dev;
+diff --git a/Documentation/devicetree/bindings/pci/socionext,uniphier-pcie-ep.yaml b/Documentation/devicetree/bindings/pci/socionext,uniphier-pcie-ep.yaml
+index 437e61618d06..49a5b2ca266c 100644
+--- a/Documentation/devicetree/bindings/pci/socionext,uniphier-pcie-ep.yaml
++++ b/Documentation/devicetree/bindings/pci/socionext,uniphier-pcie-ep.yaml
+@@ -15,9 +15,6 @@ description: |
+ maintainers:
+   - Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
+ 
+-allOf:
+-  - $ref: /schemas/pci/snps,dw-pcie-ep.yaml#
+-
+ properties:
+   compatible:
+     enum:
+@@ -28,41 +25,19 @@ properties:
+     minItems: 4
+     maxItems: 5
+ 
+-  reg-names:
+-    oneOf:
+-      - items:
+-          - const: dbi
+-          - const: dbi2
+-          - const: link
+-          - const: addr_space
+-      - items:
+-          - const: dbi
+-          - const: dbi2
+-          - const: link
+-          - const: addr_space
+-          - const: atu
++  reg-names: true
+ 
+   clocks:
+     minItems: 1
+     maxItems: 2
+ 
+-  clock-names:
+-    oneOf:
+-      - items:              # for Pro5
+-          - const: gio
+-          - const: link
+-      - const: link         # for NX1
++  clock-names: true
+ 
+   resets:
+     minItems: 1
+     maxItems: 2
+ 
+-  reset-names:
+-    oneOf:
+-      - items:              # for Pro5
+-          - const: gio
+-          - const: link
+-      - const: link         # for NX1
++  reset-names: true
+ 
+   num-ib-windows:
+     const: 16
+@@ -78,6 +53,59 @@ properties:
+   phy-names:
+     const: pcie-phy
+ 
++allOf:
++  - $ref: /schemas/pci/snps,dw-pcie-ep.yaml#
++  - if:
++      properties:
++        compatible:
++          contains:
++            const: socionext,uniphier-pro5-pcie-ep
++    then:
++      properties:
++        reg:
++          minItems: 4
++          maxItems: 4
++        reg-names:
++          items:
++            - const: dbi
++            - const: dbi2
++            - const: link
++            - const: addr_space
++        clocks:
++          minItems: 2
++          maxItems: 2
++        clock-names:
++          items:
++            - const: gio
++            - const: link
++        resets:
++          minItems: 2
++          maxItems: 2
++        reset-names:
++          items:
++            - const: gio
++            - const: link
++    else:
++      properties:
++        reg:
++          minItems: 4
++          maxItems: 5
++        reg-names:
++          items:
++            - const: dbi
++            - const: dbi2
++            - const: link
++            - const: addr_space
++            - const: atu
++        clocks:
++          maxItems: 1
++        clock-names:
++          const: link
++        resets:
++          maxItems: 1
++        reset-names:
++          const: link
++
+ required:
+   - compatible
+   - reg
 -- 
-2.34.1
-
-
+2.25.1
 
