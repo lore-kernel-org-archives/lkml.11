@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D03D9C43217
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 13:33:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D4B6C4321E
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 13:33:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383495AbiDENap (ORCPT
+        id S1383570AbiDENa4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 09:30:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44250 "EHLO
+        Tue, 5 Apr 2022 09:30:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44284 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345428AbiDEJWd (ORCPT
+        with ESMTP id S1345521AbiDEJWr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:22:33 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CE124A91A;
-        Tue,  5 Apr 2022 02:10:56 -0700 (PDT)
+        Tue, 5 Apr 2022 05:22:47 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D89894C40B;
+        Tue,  5 Apr 2022 02:11:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C617661527;
-        Tue,  5 Apr 2022 09:10:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D3642C385A0;
-        Tue,  5 Apr 2022 09:10:54 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 667FAB81A22;
+        Tue,  5 Apr 2022 09:11:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AAE6DC385A4;
+        Tue,  5 Apr 2022 09:11:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649149855;
-        bh=8VTJKxnFGmJl+q+s6XaRFXc08iUt6ahkmVP/NwzLsz4=;
+        s=korg; t=1649149866;
+        bh=8Lxz8YXku8+/UbywXNde6FytYLkgLbFrUsn5jXKeWto=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xqjil2mu7Wxd+r7uitqcaBGx7BS5gNWwy+XQ+oeS/1g6otGQTv0Ax9av9QVfxD11Z
-         4JDfuzcdsZtPb7cL4cokdPasUOi493gKwKBpS+x7xGo+8S+krKL/nSOOLsoNTWkuhM
-         8VsxG1A9eITg+lcYjfzvZvcNfEikhCAqbsuonM7U=
+        b=Xvc0BMWzatxUby+JCWnJHCtcqX5awlbVF6PF92a1B01oJQ40NrAkzADWG1gP3UZoj
+         B0FxWzN/6Q2EjCrS+dS/fLsHTuyQa/bh466OmCY6In/Yv+9szSmnGw0/1PEVOGUZoC
+         6nVFrRcNi02robhSXNWIe4V9m3W8u+4GjE4Kb8qQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Paolo Bonzini <pbonzini@redhat.com>
-Subject: [PATCH 5.16 0864/1017] KVM: x86: hyper-v: Fix the maximum number of sparse banks for XMM fast TLB flush hypercalls
-Date:   Tue,  5 Apr 2022 09:29:37 +0200
-Message-Id: <20220405070419.881405296@linuxfoundation.org>
+        stable@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>,
+        Anders Roxell <anders.roxell@linaro.org>,
+        Segher Boessenkool <segher@kernel.crashing.org>,
+        Michael Ellerman <mpe@ellerman.id.au>
+Subject: [PATCH 5.16 0868/1017] powerpc/lib/sstep: Fix build errors with newer binutils
+Date:   Tue,  5 Apr 2022 09:29:41 +0200
+Message-Id: <20220405070420.001577709@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -49,36 +51,61 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vitaly Kuznetsov <vkuznets@redhat.com>
+From: Anders Roxell <anders.roxell@linaro.org>
 
-commit 7321f47eada53a395fb3086d49297eebb19e8e58 upstream.
+commit 8219d31effa7be5dbc7ff915d7970672e028c701 upstream.
 
-When TLB flush hypercalls (HVCALL_FLUSH_VIRTUAL_ADDRESS_{LIST,SPACE}_EX are
-issued in 'XMM fast' mode, the maximum number of allowed sparse_banks is
-not 'HV_HYPERCALL_MAX_XMM_REGISTERS - 1' (5) but twice as many (10) as each
-XMM register is 128 bit long and can hold two 64 bit long banks.
+Building tinyconfig with gcc (Debian 11.2.0-16) and assembler (Debian
+2.37.90.20220207) the following build error shows up:
 
-Cc: stable@vger.kernel.org # 5.14.x
-Fixes: 5974565bc26d ("KVM: x86: kvm_hv_flush_tlb use inputs from XMM registers")
-Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
-Message-Id: <20220222154642.684285-4-vkuznets@redhat.com>
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+  {standard input}: Assembler messages:
+  {standard input}:10576: Error: unrecognized opcode: `stbcx.'
+  {standard input}:10680: Error: unrecognized opcode: `lharx'
+  {standard input}:10694: Error: unrecognized opcode: `lbarx'
+
+Rework to add assembler directives [1] around the instruction.  The
+problem with this might be that we can trick a power6 into
+single-stepping through an stbcx. for instance, and it will execute that
+in kernel mode.
+
+[1] https://sourceware.org/binutils/docs/as/PowerPC_002dPseudo.html#PowerPC_002dPseudo
+
+Fixes: 350779a29f11 ("powerpc: Handle most loads and stores in instruction emulation code")
+Cc: stable@vger.kernel.org # v4.14+
+Co-developed-by: Arnd Bergmann <arnd@arndb.de>
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+Signed-off-by: Anders Roxell <anders.roxell@linaro.org>
+Reviewed-by: Segher Boessenkool <segher@kernel.crashing.org>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/20220224162215.3406642-3-anders.roxell@linaro.org
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/kvm/hyperv.c |    3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ arch/powerpc/lib/sstep.c |    6 ++++++
+ 1 file changed, 6 insertions(+)
 
---- a/arch/x86/kvm/hyperv.c
-+++ b/arch/x86/kvm/hyperv.c
-@@ -1819,7 +1819,8 @@ static u64 kvm_hv_flush_tlb(struct kvm_v
+--- a/arch/powerpc/lib/sstep.c
++++ b/arch/powerpc/lib/sstep.c
+@@ -1097,7 +1097,10 @@ NOKPROBE_SYMBOL(emulate_dcbz);
  
- 		if (!all_cpus) {
- 			if (hc->fast) {
--				if (sparse_banks_len > HV_HYPERCALL_MAX_XMM_REGISTERS - 1)
-+				/* XMM0 is already consumed, each XMM holds two sparse banks. */
-+				if (sparse_banks_len > 2 * (HV_HYPERCALL_MAX_XMM_REGISTERS - 1))
- 					return HV_STATUS_INVALID_HYPERCALL_INPUT;
- 				for (i = 0; i < sparse_banks_len; i += 2) {
- 					sparse_banks[i] = sse128_lo(hc->xmm[i / 2 + 1]);
+ #define __put_user_asmx(x, addr, err, op, cr)		\
+ 	__asm__ __volatile__(				\
++		".machine push\n"			\
++		".machine power8\n"			\
+ 		"1:	" op " %2,0,%3\n"		\
++		".machine pop\n"			\
+ 		"	mfcr	%1\n"			\
+ 		"2:\n"					\
+ 		".section .fixup,\"ax\"\n"		\
+@@ -1110,7 +1113,10 @@ NOKPROBE_SYMBOL(emulate_dcbz);
+ 
+ #define __get_user_asmx(x, addr, err, op)		\
+ 	__asm__ __volatile__(				\
++		".machine push\n"			\
++		".machine power8\n"			\
+ 		"1:	"op" %1,0,%2\n"			\
++		".machine pop\n"			\
+ 		"2:\n"					\
+ 		".section .fixup,\"ax\"\n"		\
+ 		"3:	li	%0,%3\n"		\
 
 
