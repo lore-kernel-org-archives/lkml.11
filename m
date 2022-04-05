@@ -2,112 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B576AC4167E
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 01:53:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EF6ADC43219
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 01:53:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1844680AbiDFBvG (ORCPT
+        id S1844703AbiDFBv2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 21:51:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53476 "EHLO
+        Tue, 5 Apr 2022 21:51:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60308 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1384078AbiDEPOw (ORCPT
+        with ESMTP id S1443904AbiDEPk0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 11:14:52 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 295A1689A6;
-        Tue,  5 Apr 2022 06:28:51 -0700 (PDT)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id DABBD210DE;
-        Tue,  5 Apr 2022 13:28:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1649165329; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=B1KHdOwVSkxc4cwioVl/fqGmb4ILJaNXLeIecIndREU=;
-        b=Jg1tYOq01mB8B0vxbgs4NgOXJtRQr3uDIvlYQoTjvOY7mEVQ3u6at1FQZe9Tw3SE3QbNZ9
-        yZdEcUaKfQVEW+gX5DmsUmWlZ09rfQXT/6A699HqreRbUT5ylyrydwStiI9dbGzoL9EGpI
-        vudzaTBUEUaXlugYM7VcAAseaxSEPf4=
-Received: from ds.suse.cz (ds.suse.cz [10.100.12.205])
-        by relay2.suse.de (Postfix) with ESMTP id CF71DA3B87;
-        Tue,  5 Apr 2022 13:28:49 +0000 (UTC)
-Received: by ds.suse.cz (Postfix, from userid 10065)
-        id B1C70DA80E; Tue,  5 Apr 2022 15:24:48 +0200 (CEST)
-From:   David Sterba <dsterba@suse.com>
-To:     torvalds@linux-foundation.org
-Cc:     David Sterba <dsterba@suse.com>, linux-btrfs@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [GIT PULL] Btrfs fixes for 5.18-rc2
-Date:   Tue,  5 Apr 2022 15:24:47 +0200
-Message-ID: <cover.1649109877.git.dsterba@suse.com>
-X-Mailer: git-send-email 2.34.1
+        Tue, 5 Apr 2022 11:40:26 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D4E2114DFCB
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 07:02:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1649167327;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=nJYEigw7gcZXWEyFZUr/9QDtSTka9JkbzhfWwkRGDd4=;
+        b=hOpDRQghpVeyVJnRZi6pPt5LDyWPt0GDS3xutIDt4N22Am4v5LGHULtyJg9ReKGcHhTXdj
+        BxDQbbS86WQ4lvpDhX1WLxIkAY3OPHTzhD8U/k9VYJGCEH1yiUzGOatmZ3rlP61n5zExsP
+        nh8zicYOWdZVJ7uynezC/dUP+Dui5Ak=
+Received: from mail-wr1-f71.google.com (mail-wr1-f71.google.com
+ [209.85.221.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-636-LIj8ySS4M2OktSYiYq33WA-1; Tue, 05 Apr 2022 10:02:06 -0400
+X-MC-Unique: LIj8ySS4M2OktSYiYq33WA-1
+Received: by mail-wr1-f71.google.com with SMTP id r16-20020adfbb10000000b002060d469943so1482412wrg.4
+        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 07:02:05 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=nJYEigw7gcZXWEyFZUr/9QDtSTka9JkbzhfWwkRGDd4=;
+        b=gT3s0McmaL0z+p5Zy5dH2Xe+Oq4s+0dtgR6ouETVQuq9+A2sgAHF5kX33s7DfoQidV
+         M4wYc55s6jftP/XATnLw8RkYLR9ZbTU0xjpFYOElB0hjsRD8wkcSRk3PO4ZkVSO9oSNz
+         6YVNsDlj061E6uz29CW50jxOB2LIM/uHTdx7BFbEJz/rwRcz5icQ32p4RHJ0470VPhLZ
+         /gdyb84+3JFGvrlX6yc0TLPlA6fLbriTa4/l83UAs9nuwb6esmBf4cer/xjZY+i9eVmJ
+         fWlxSRfihMLlC7Lhpg6fE5V5yJdrwlZhbDLYIXPYM6zpcjmxWdpuKkron2JW3sdhAlrv
+         hXRw==
+X-Gm-Message-State: AOAM5335VkCTq3PI016qRohwVCiCAEJtB3+P35eTXx4Lh23KVnCzgikU
+        sN38WQ8KPoYZZ4/Omj9/ebhDqx8GEKa2OT7dIifVSA3z8dfHPOstWeuloJcTUt2uVfGkhziG4gx
+        +MDXfPP9W3G0Qf2yr1t55dAch
+X-Received: by 2002:a1c:f415:0:b0:37f:ab4d:1df2 with SMTP id z21-20020a1cf415000000b0037fab4d1df2mr3179624wma.75.1649167324789;
+        Tue, 05 Apr 2022 07:02:04 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwqPGd+rNCrPBb3Q21XRMUvq4vybPEOtd0ya7GXcUXL9gILlofg8Ok3vTZuptV9jgnNtmqezw==
+X-Received: by 2002:a1c:f415:0:b0:37f:ab4d:1df2 with SMTP id z21-20020a1cf415000000b0037fab4d1df2mr3179606wma.75.1649167324553;
+        Tue, 05 Apr 2022 07:02:04 -0700 (PDT)
+Received: from [10.32.181.87] (nat-pool-mxp-t.redhat.com. [149.6.153.186])
+        by smtp.googlemail.com with ESMTPSA id j2-20020a5d6182000000b00206134c3225sm5083632wru.67.2022.04.05.07.02.02
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 05 Apr 2022 07:02:03 -0700 (PDT)
+Message-ID: <240599a4-47f0-fe7e-1270-5ec7fbc0da0b@redhat.com>
+Date:   Tue, 5 Apr 2022 16:02:02 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [RFC PATCH v5 033/104] KVM: x86: Add infrastructure for stolen
+ GPA bits
+Content-Language: en-US
+To:     Isaku Yamahata <isaku.yamahata@gmail.com>,
+        Kai Huang <kai.huang@intel.com>
+Cc:     isaku.yamahata@intel.com, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Jim Mattson <jmattson@google.com>,
+        erdemaktas@google.com, Connor Kuehl <ckuehl@redhat.com>,
+        Sean Christopherson <seanjc@google.com>,
+        Chao Peng <chao.p.peng@linux.intel.com>
+References: <cover.1646422845.git.isaku.yamahata@intel.com>
+ <a21c1f9065cf27db54820b2b504db4e507835584.1646422845.git.isaku.yamahata@intel.com>
+ <2b8038c17b85658a054191b362840240bd66e46b.camel@intel.com>
+ <20220401023426.GF2084469@ls.amr.corp.intel.com>
+From:   Paolo Bonzini <pbonzini@redhat.com>
+In-Reply-To: <20220401023426.GF2084469@ls.amr.corp.intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
-Message-ID: <20220405132447.-UxNZrBWqrtLokNqO5q7mpVic4cU7rlHxRimzayqReE@z>
 
-Hi,
+On 4/1/22 04:34, Isaku Yamahata wrote:
+> Sure, this patch heavily changed from the original patch Now.  One suggestion
+> is that private/shared is characteristic to kvm page fault, not gpa/gfn.
+> It's TDX specific.
+> 
+> - Add a helper function to check if KVM MMU is TD or VM. Right now
+>    kvm_gfn_stolen_mask() is used.  Probably kvm_mmu_has_private_bit().
+>    (any better name?)
 
-please pull the following fixes for btrfs, thanks.
+I think use of kvm_gfn_stolen_mask() should be minimized anyway.  I 
+would rename it to to kvm_{gfn,gpa}_private_mask and not return bool.
 
-- prevent deleting subvolume with active swapfile
+> - Let's keep address conversion functions: address => unalias/shared/private
 
-- fix qgroup reserve limit calculation overflow
+unalias is the same as private.  It doesn't seem to have a lot of uses. 
+  I would just inline "x & ~gfn_private_mask", or "x & 
+~kvm_gfn_private_mask(kvm)"; or the same with gpa of course.
 
-- remove device count in superblock and its item in one transaction so
-  they cant't get out of sync
+The shared and private conversion functions should remain.
 
-- skip defragmenting an isolated sector, this could cause some extra IO
+> - Add struct kvm_page_fault.is_private
+>    see how kvm_is_private_{gpa, gfn}() can be removed (or reduced).
 
-- unify handling of mtime/permissions in hole punch with fallocate
+Agreed.
 
-- zoned mode fixes:
-  - remove assert checking for only single mode, we have the DUP mode
-    implemented
+Paolo
 
-  - fix potential lockdep warning while traversing devices when checking
-    for zone activation
-
-----------------------------------------------------------------
-The following changes since commit d3e29967079c522ce1c5cab0e9fab2c280b977eb:
-
-  btrfs: zoned: put block group after final usage (2022-03-14 13:13:54 +0100)
-
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/kdave/linux.git for-5.18-rc1-tag
-
-for you to fetch changes up to 60021bd754c6ca0addc6817994f20290a321d8d6:
-
-  btrfs: prevent subvol with swapfile from being deleted (2022-03-24 17:50:57 +0100)
-
-----------------------------------------------------------------
-Darrick J. Wong (1):
-      btrfs: fix fallocate to use file_modified to update permissions consistently
-
-Ethan Lien (1):
-      btrfs: fix qgroup reserve overflow the qgroup limit
-
-Johannes Thumshirn (2):
-      btrfs: zoned: traverse devices under chunk_mutex in btrfs_can_activate_zone
-      btrfs: zoned: remove left over ASSERT checking for single profile
-
-Josef Bacik (1):
-      btrfs: do not warn for free space inode in cow_file_range
-
-Kaiwen Hu (1):
-      btrfs: prevent subvol with swapfile from being deleted
-
-Qu Wenruo (2):
-      btrfs: remove device item and update super block in the same transaction
-      btrfs: avoid defragging extents whose next extents are not targets
-
- fs/btrfs/extent_io.h |  2 +-
- fs/btrfs/file.c      | 13 +++++++++--
- fs/btrfs/inode.c     | 23 ++++++++++++++++++-
- fs/btrfs/ioctl.c     | 20 +++++++++++-----
- fs/btrfs/volumes.c   | 65 ++++++++++++++++++++++------------------------------
- fs/btrfs/zoned.c     | 13 ++++-------
- 6 files changed, 81 insertions(+), 55 deletions(-)
