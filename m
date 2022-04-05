@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 26AC4C43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 72D95C35273
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 09:51:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242957AbiDEJik (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 05:38:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33820 "EHLO
+        id S242991AbiDEJim (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 05:38:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46054 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239389AbiDEIUC (ORCPT
+        with ESMTP id S239392AbiDEIUC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Apr 2022 04:20:02 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E890FC558D;
-        Tue,  5 Apr 2022 01:12:19 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 216FBC4E03;
+        Tue,  5 Apr 2022 01:12:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 868CB60AFB;
-        Tue,  5 Apr 2022 08:12:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 91FDAC385A0;
-        Tue,  5 Apr 2022 08:12:18 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B09A760B0E;
+        Tue,  5 Apr 2022 08:12:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BD124C385A0;
+        Tue,  5 Apr 2022 08:12:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649146339;
-        bh=B4ZcG0QXqpeghTBVKDIRTsP/36gZD9K13i5RowxWSZc=;
+        s=korg; t=1649146336;
+        bh=mmZ2Jvn5IljWceAQxbq/am6ExJcO/DLxJptcZiszCck=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=oDc+nN2S1BwVCUlUzbgfGPDAN7SDXtM+qtSQN3EtzcOTlFheKFM7J0jKcWyNES0sK
-         gDx49rCaYoqwlki6wv8jq3CDFNgKirz9kHu21l73IYxSS5e24vu1rov+YIB6wCwVlK
-         1Ju8/Kig3H9rgP8oLBGjOIwqzzXzpaRRHaD+eG3s=
+        b=b77YDsQRImN3TueRKprczzLFxQHTRS6oJR5rk5vxa9b7nZ4zUDm68FVT+iLZKJ6w5
+         HDLAOHRegqf404kxM1GEse7VddlGnRQA2skcpCwl1EHlIWh/ojtsN92c0EloW+6a9a
+         qb6zTVNTUNOCpaw7/UDNRPKi9ZW0kvzs9yttKYrk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
         Geert Uytterhoeven <geert+renesas@glider.be>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0729/1126] pinctrl: renesas: r8a77470: Reduce size for narrow VIN1 channel
-Date:   Tue,  5 Apr 2022 09:24:36 +0200
-Message-Id: <20220405070428.988558813@linuxfoundation.org>
+Subject: [PATCH 5.17 0728/1126] clk: renesas: r8a779f0: Fix RSW2 clock divider
+Date:   Tue,  5 Apr 2022 09:24:35 +0200
+Message-Id: <20220405070428.960190253@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -51,46 +51,37 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Geert Uytterhoeven <geert+renesas@glider.be>
 
-[ Upstream commit 9e04a0eda84fccab0ac22a33825ad53f47c968c7 ]
+[ Upstream commit 691419f90f7fb8a6f247b477cb539644e11431da ]
 
-The second video-in channel on RZ/G1C has only 12 data lanes, but the
-pin control driver uses the vin_data union, which is meant for 24 data
-lanes, thus wasting space.
+According to Section 8.1.2 Figure 8.1.1 ("Block Diagram of CPG"), Note
+22 ("RSW2 divider"), and Table 8.1.4d ("Lists of CPG clocks generated
+from CPGMA1"), the RSwitch2 and PCI Express clock is generated from PLL5
+by dividing by two, followed by the RSW2 divider.  As PLL5 runs at 3200
+MHz, and RSW2 is fixed to 320 MHz, the RSW2 divider must be 5.
 
-Fix this by using the vin_data12 union instead.
+Correct the parent and the fixed divider.
 
-This reduces kernel size by 96 bytes.
-
-Fixes: 50f3f2d73e3426ba ("pinctrl: sh-pfc: Reduce kernel size for narrow VIN channels")
+Fixes: 24aaff6a6ce4c4de ("clk: renesas: cpg-mssr: Add support for R-Car S4-8")
 Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
-Link: https://lore.kernel.org/r/52716fa89139f6f92592633edb52804d4c5e18f0.1640269757.git.geert+renesas@glider.be
+Link: https://lore.kernel.org/r/d6a406f31e6f02f892e0253f4e8a9a2f68fd652e.1641566003.git.geert+renesas@glider.be
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pinctrl/renesas/pfc-r8a77470.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/clk/renesas/r8a779f0-cpg-mssr.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/pinctrl/renesas/pfc-r8a77470.c b/drivers/pinctrl/renesas/pfc-r8a77470.c
-index e6e5487691c1..cf7153d06a95 100644
---- a/drivers/pinctrl/renesas/pfc-r8a77470.c
-+++ b/drivers/pinctrl/renesas/pfc-r8a77470.c
-@@ -2140,7 +2140,7 @@ static const unsigned int vin0_clk_mux[] = {
- 	VI0_CLK_MARK,
- };
- /* - VIN1 ------------------------------------------------------------------- */
--static const union vin_data vin1_data_pins = {
-+static const union vin_data12 vin1_data_pins = {
- 	.data12 = {
- 		RCAR_GP_PIN(3,  1), RCAR_GP_PIN(3, 2),
- 		RCAR_GP_PIN(3,  3), RCAR_GP_PIN(3, 4),
-@@ -2150,7 +2150,7 @@ static const union vin_data vin1_data_pins = {
- 		RCAR_GP_PIN(3, 15), RCAR_GP_PIN(3, 16),
- 	},
- };
--static const union vin_data vin1_data_mux = {
-+static const union vin_data12 vin1_data_mux = {
- 	.data12 = {
- 		VI1_DATA0_MARK, VI1_DATA1_MARK,
- 		VI1_DATA2_MARK, VI1_DATA3_MARK,
+diff --git a/drivers/clk/renesas/r8a779f0-cpg-mssr.c b/drivers/clk/renesas/r8a779f0-cpg-mssr.c
+index e6ec02c2c2a8..344957d533d8 100644
+--- a/drivers/clk/renesas/r8a779f0-cpg-mssr.c
++++ b/drivers/clk/renesas/r8a779f0-cpg-mssr.c
+@@ -103,7 +103,7 @@ static const struct cpg_core_clk r8a779f0_core_clks[] __initconst = {
+ 	DEF_FIXED("s0d12_hsc",	R8A779F0_CLK_S0D12_HSC,	CLK_S0,		12, 1),
+ 	DEF_FIXED("cl16m_hsc",	R8A779F0_CLK_CL16M_HSC,	CLK_S0,		48, 1),
+ 	DEF_FIXED("s0d2_cc",	R8A779F0_CLK_S0D2_CC,	CLK_S0,		2, 1),
+-	DEF_FIXED("rsw2",	R8A779F0_CLK_RSW2,	CLK_PLL5,	2, 1),
++	DEF_FIXED("rsw2",	R8A779F0_CLK_RSW2,	CLK_PLL5_DIV2,	5, 1),
+ 	DEF_FIXED("cbfusa",	R8A779F0_CLK_CBFUSA,	CLK_EXTAL,	2, 1),
+ 	DEF_FIXED("cpex",	R8A779F0_CLK_CPEX,	CLK_EXTAL,	2, 1),
+ 
 -- 
 2.34.1
 
