@@ -2,100 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 49471C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:26:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D2BCC43219
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:26:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1443028AbiDEXFo (ORCPT
+        id S1448842AbiDEXGQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 19:05:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36848 "EHLO
+        Tue, 5 Apr 2022 19:06:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55736 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1457389AbiDEQDK (ORCPT
+        with ESMTP id S1573174AbiDESHn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 12:03:10 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF1795FD1
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 08:40:03 -0700 (PDT)
-Date:   Tue, 05 Apr 2022 15:40:01 -0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1649173202;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=fNbbUHgi/gK/PTQ31pgIOB6t17WinOBxdwpVyjEkEbM=;
-        b=Z9Vy1nch1xK52dTad/qeqNBSy96OTq/6V6Ki7EAESoEmIRVvWGB5pCn1o64AGRSBh9HqgP
-        lHjbdDSynxcEVk83OY6mqdu4IYQzwyHJwiNshZZRY336jCtFcVb4gxmzPsI4FCl4cFL3k+
-        OJd9W3oZ7Geoa+PT8e/YktJe/SGf7ksqH9aBJA3iuKapeiUjY5aBOqSyRrXTeg8SXr6qzQ
-        znYMWJ8GNzhbQ7SRdrq+RlCOBoj/RrEFvdiT2oHYQDqOmIanwoR2I/pge1FxH/ywdiiC/K
-        4yxTb/Hfnk/60HuSKVWIaFF0wsp30rejvAkLw9ig4LbYdPEiTDKX9s5Zd/ZRoA==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1649173202;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=fNbbUHgi/gK/PTQ31pgIOB6t17WinOBxdwpVyjEkEbM=;
-        b=5d5Dz9wJbqo7KdfzbHn0Bl4Xr46bk2sJ6vWZ54OojqflVYA2orxDazMcEQ1EItwYZXqf60
-        xLDAWIoZPlQLRWDA==
-From:   "irqchip-bot for Yang Yingliang" <tip-bot2@linutronix.de>
-Sender: tip-bot2@linutronix.de
-Reply-to: linux-kernel@vger.kernel.org
-To:     linux-kernel@vger.kernel.org
-Subject: [irqchip: irq/irqchip-fixes] irqchip/irq-qcom-mpm: fix return value
- check in qcom_mpm_init()
-Cc:     Hulk Robot <hulkci@huawei.com>,
-        Yang Yingliang <yangyingliang@huawei.com>,
-        Shawn Guo <shawn.guo@linaro.org>,
-        Marc Zyngier <maz@kernel.org>, tglx@linutronix.de
-In-Reply-To: <20220316025100.1758413-1-yangyingliang@huawei.com>
-References: <20220316025100.1758413-1-yangyingliang@huawei.com>
+        Tue, 5 Apr 2022 14:07:43 -0400
+Received: from mail-lf1-x12c.google.com (mail-lf1-x12c.google.com [IPv6:2a00:1450:4864:20::12c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5A7A1F623
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 11:05:41 -0700 (PDT)
+Received: by mail-lf1-x12c.google.com with SMTP id 5so24729928lfp.1
+        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 11:05:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=X0ND6VwIEZwinAToHYv1JdQDzPnywveE91KVWFTQSKU=;
+        b=RBo9gfw+D1FKrMZUzQe7qcOB2qaHge7l/8AZd+/yufIzV5iTwW+v7Gjmkr/gKOAcNR
+         I2VGdF2YwGb7Zle/dZok5Yyl2CtHHebkp9lEYidiaJhOvNRNDTRQVF7A8nfj401cpygQ
+         FO2NhbyaeDO4GmHuxCFSiKMxVLVZMBk0GflYWXitt5FIktd0zIcCKMjhsaq2+XV96aWQ
+         ynP4oGJx6nvLzcrAbZ7wzwjeuf2QjqP3JYzssIEKsY4U3nzMObksFK1B2lE2y5EpJaSQ
+         fBPtz7EBAjtN5TKpS5F13PNhDk+urTpeI9xzG4SuKlQa2s11FC4PGryTK0PeQ5RBbjZ/
+         u4AA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=X0ND6VwIEZwinAToHYv1JdQDzPnywveE91KVWFTQSKU=;
+        b=0Zr5YG2W6njDKKW/7BfqVUUybvOxSf9NA8Fq8nBwrny793FgtjyM7+Jv4GZFEqBAft
+         Bbhsva8ovqH10w4wdMaAsdP5qB6i8J/vPu6RMYPsUlGF/SXDV76LLgC2RoOoeZH1g//b
+         y8sjG+PqjNO0RBnx01tpcx5mNMzUJhjzd4N3jtWIJ4F7VGkrTkoiK1jNUvTShZv1s4jt
+         ++IQWizwvRWibQiWSRQRBb9nkSLD1f5F2FTreMdktXwh1tfuzieqUnEvOj3kQz5+p/Nl
+         X70Q5j7qp/hscvVrpV+M03hkBwntaBMOCPhTiYKFPlTkuh2ITMwV+y1zb1ESt6H4MCqD
+         K55g==
+X-Gm-Message-State: AOAM530xf4N/O/zVsrGSmQpDHfNVOvFg5uEaDrTwqr9FSeeXVpnH/NdK
+        MKoJ7Hq7FFc7dOWyG25QHDbIJGClMceHivRWYFQ3BNweJZpQvQ==
+X-Google-Smtp-Source: ABdhPJz8Ob2IFSJ2xU2SEyque7PyMmTt1CuxsFgqOZW+PCOTKSh0Ys9Ztyvr9JrHOENxXbwRXkEU1ITLIiTlI2b9UYE=
+X-Received: by 2002:ac2:5223:0:b0:448:5100:e427 with SMTP id
+ i3-20020ac25223000000b004485100e427mr3474419lfl.87.1649181939752; Tue, 05 Apr
+ 2022 11:05:39 -0700 (PDT)
 MIME-Version: 1.0
-Message-ID: <164917320118.389.3735346894420767089.tip-bot2@tip-bot2>
-Robot-ID: <tip-bot2@linutronix.de>
-Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+References: <20220402131546.3383578-1-trix@redhat.com>
+In-Reply-To: <20220402131546.3383578-1-trix@redhat.com>
+From:   Nick Desaulniers <ndesaulniers@google.com>
+Date:   Tue, 5 Apr 2022 11:05:28 -0700
+Message-ID: <CAKwvOdnVcXgJtJsVujXpEVOLrY_BU5BPHN4tW_ziXNB-xnZPkw@mail.gmail.com>
+Subject: Re: [PATCH] lib: remove back_str initialization
+To:     Tom Rix <trix@redhat.com>,
+        Andrew Morton <akpm@linux-foundation.org>
+Cc:     nathan@kernel.org, linux-kernel@vger.kernel.org,
+        llvm@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The following commit has been merged into the irq/irqchip-fixes branch of irqchip:
+On Sat, Apr 2, 2022 at 6:16 AM Tom Rix <trix@redhat.com> wrote:
+>
+> Clang static analysis reports this false positive
+> glob.c:48:32: warning: Assigned value is garbage
+>   or undefined
+>   char const *back_pat = NULL, *back_str = back_str;
+>                                 ^~~~~~~~   ~~~~~~~~
+>
+> back_str is set after back_pat and it's use is
+> protected by the !back_pat check.  It is not
+> necessary to initialize back_str, so remove
+> the initialization.
+>
 
-Commit-ID:     76ff614a79152cee07a2c48080c3dc91c56f0f1d
-Gitweb:        https://git.kernel.org/pub/scm/linux/kernel/git/maz/arm-platforms/76ff614a79152cee07a2c48080c3dc91c56f0f1d
-Author:        Yang Yingliang <yangyingliang@huawei.com>
-AuthorDate:    Wed, 16 Mar 2022 10:51:00 +08:00
-Committer:     Marc Zyngier <maz@kernel.org>
-CommitterDate: Tue, 05 Apr 2022 16:33:13 +01:00
+Thanks for the patch!
+Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
 
-irqchip/irq-qcom-mpm: fix return value check in qcom_mpm_init()
+Andrew, would you mind picking this up for us, please?
 
-If devm_platform_ioremap_resource() fails, it never returns
-NULL, replace NULL check with IS_ERR().
+> Signed-off-by: Tom Rix <trix@redhat.com>
+> ---
+>  lib/glob.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/lib/glob.c b/lib/glob.c
+> index 85ecbda45cd8..15b73f490720 100644
+> --- a/lib/glob.c
+> +++ b/lib/glob.c
+> @@ -45,7 +45,7 @@ bool __pure glob_match(char const *pat, char const *str)
+>          * (no exception for /), it can be easily proved that there's
+>          * never a need to backtrack multiple levels.
+>          */
+> -       char const *back_pat = NULL, *back_str = back_str;
+> +       char const *back_pat = NULL, *back_str;
+>
+>         /*
+>          * Loop over each token (character or class) in pat, matching
+> --
+> 2.27.0
+>
 
-Fixes: a6199bb514d8 ("irqchip: Add Qualcomm MPM controller driver")
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
-Acked-by: Shawn Guo <shawn.guo@linaro.org>
-Signed-off-by: Marc Zyngier <maz@kernel.org>
-Link: https://lore.kernel.org/r/20220316025100.1758413-1-yangyingliang@huawei.com
----
- drivers/irqchip/irq-qcom-mpm.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/irqchip/irq-qcom-mpm.c b/drivers/irqchip/irq-qcom-mpm.c
-index eea5a75..d306146 100644
---- a/drivers/irqchip/irq-qcom-mpm.c
-+++ b/drivers/irqchip/irq-qcom-mpm.c
-@@ -375,7 +375,7 @@ static int qcom_mpm_init(struct device_node *np, struct device_node *parent)
- 	raw_spin_lock_init(&priv->lock);
- 
- 	priv->base = devm_platform_ioremap_resource(pdev, 0);
--	if (!priv->base)
-+	if (IS_ERR(priv->base))
- 		return PTR_ERR(priv->base);
- 
- 	for (i = 0; i < priv->reg_stride; i++) {
+-- 
+Thanks,
+~Nick Desaulniers
