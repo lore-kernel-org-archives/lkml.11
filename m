@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ACA31C4167B
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 13:23:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A6619C35274
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 13:23:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381055AbiDENOc (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 09:14:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45120 "EHLO
+        id S244642AbiDENEc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 09:04:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40632 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344219AbiDEJSs (ORCPT
+        with ESMTP id S238821AbiDEJQR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:18:48 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A0D349683;
-        Tue,  5 Apr 2022 02:05:42 -0700 (PDT)
+        Tue, 5 Apr 2022 05:16:17 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4443BD1CCC;
+        Tue,  5 Apr 2022 02:01:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0017161564;
-        Tue,  5 Apr 2022 09:05:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 099D7C385A0;
-        Tue,  5 Apr 2022 09:05:40 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EE601B81A12;
+        Tue,  5 Apr 2022 09:01:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4A30AC385A0;
+        Tue,  5 Apr 2022 09:01:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649149541;
-        bh=+HmpgAwitYAtX3vItdMTFYGz4EiR3MK7TjuXfzAqvNc=;
+        s=korg; t=1649149305;
+        bh=c4RVyvYRsj9YXVP3ghCAxHj+YV5+ROVijwrQU5DYrUM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0yhMO/z87z2wOuAzM4GVYh5juh+h1TNvqIGfx7SSM4gUpiAPgJqzhHdfGzvTQJV1A
-         dhq/LkbAkyI4dJa80xvAdp6mjdfKhPWPRNuE3Yh3vfN7/haMvBfPAxh3ayriyr9NsR
-         BttgPdH0fa94zxLk42Ing/kahpY138Q020jOgefM=
+        b=2bnFFliwoRLqJGWIFTkqzDx8GPEo2eRxhf6S5f7Jp1KpEtAfLMnomicvgMGB9CvM5
+         nWW1Dndu6CSp0V3jvXQ5OjHUoxdhwkEA9w+9RkpdBDPEJOXs+fB1/U3MbZLWVNB+xl
+         TUmVgerJj1mPiG5BGRxZj95JSuekEKR0yYf34l1o=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Enrico Scholz <enrico.scholz@sigma-chemnitz.de>,
         Trond Myklebust <trond.myklebust@hammerspace.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0715/1017] SUNRPC: Dont call connect() more than once on a TCP socket
-Date:   Tue,  5 Apr 2022 09:27:08 +0200
-Message-Id: <20220405070415.493509770@linuxfoundation.org>
+Subject: [PATCH 5.16 0667/1017] NFS: Use of mapping_set_error() results in spurious errors
+Date:   Tue,  5 Apr 2022 09:26:20 +0200
+Message-Id: <20220405070414.081004263@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -53,81 +51,37 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Trond Myklebust <trond.myklebust@hammerspace.com>
 
-[ Upstream commit 89f42494f92f448747bd8a7ab1ae8b5d5520577d ]
+[ Upstream commit 6c984083ec2453dfd3fcf98f392f34500c73e3f2 ]
 
-Avoid socket state races due to repeated calls to ->connect() using the
-same socket. If connect() returns 0 due to the connection having
-completed, but we are in fact in a closing state, then we may leave the
-XPRT_CONNECTING flag set on the transport.
+The use of mapping_set_error() in conjunction with calls to
+filemap_check_errors() is problematic because every error gets reported
+as either an EIO or an ENOSPC by filemap_check_errors() in functions
+such as filemap_write_and_wait() or filemap_write_and_wait_range().
+In almost all cases, we prefer to use the more nuanced wb errors.
 
-Reported-by: Enrico Scholz <enrico.scholz@sigma-chemnitz.de>
-Fixes: 3be232f11a3c ("SUNRPC: Prevent immediate close+reconnect")
+Fixes: b8946d7bfb94 ("NFS: Revalidate the file mapping on all fatal writeback errors")
 Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/linux/sunrpc/xprtsock.h |  1 +
- net/sunrpc/xprtsock.c           | 22 ++++++++++++----------
- 2 files changed, 13 insertions(+), 10 deletions(-)
+ fs/nfs/write.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/include/linux/sunrpc/xprtsock.h b/include/linux/sunrpc/xprtsock.h
-index 3c1423ee74b4..fed813ffe7db 100644
---- a/include/linux/sunrpc/xprtsock.h
-+++ b/include/linux/sunrpc/xprtsock.h
-@@ -88,5 +88,6 @@ struct sock_xprt {
- #define XPRT_SOCK_WAKE_WRITE	(5)
- #define XPRT_SOCK_WAKE_PENDING	(6)
- #define XPRT_SOCK_WAKE_DISCONNECT	(7)
-+#define XPRT_SOCK_CONNECT_SENT	(8)
+diff --git a/fs/nfs/write.c b/fs/nfs/write.c
+index 9b7619ce17a7..7a23b4644507 100644
+--- a/fs/nfs/write.c
++++ b/fs/nfs/write.c
+@@ -315,7 +315,10 @@ static void nfs_mapping_set_error(struct page *page, int error)
+ 	struct address_space *mapping = page_file_mapping(page);
  
- #endif /* _LINUX_SUNRPC_XPRTSOCK_H */
-diff --git a/net/sunrpc/xprtsock.c b/net/sunrpc/xprtsock.c
-index 821eeea1c83b..37d961c1a5c9 100644
---- a/net/sunrpc/xprtsock.c
-+++ b/net/sunrpc/xprtsock.c
-@@ -2257,10 +2257,15 @@ static void xs_tcp_setup_socket(struct work_struct *work)
+ 	SetPageError(page);
+-	mapping_set_error(mapping, error);
++	filemap_set_wb_err(mapping, error);
++	if (mapping->host)
++		errseq_set(&mapping->host->i_sb->s_wb_err,
++			   error == -ENOSPC ? -ENOSPC : -EIO);
+ 	nfs_set_pageerror(mapping);
+ }
  
- 	if (atomic_read(&xprt->swapper))
- 		current->flags |= PF_MEMALLOC;
--	if (!sock) {
--		sock = xs_create_sock(xprt, transport,
--				xs_addr(xprt)->sa_family, SOCK_STREAM,
--				IPPROTO_TCP, true);
-+
-+	if (xprt_connected(xprt))
-+		goto out;
-+	if (test_and_clear_bit(XPRT_SOCK_CONNECT_SENT,
-+			       &transport->sock_state) ||
-+	    !sock) {
-+		xs_reset_transport(transport);
-+		sock = xs_create_sock(xprt, transport, xs_addr(xprt)->sa_family,
-+				      SOCK_STREAM, IPPROTO_TCP, true);
- 		if (IS_ERR(sock)) {
- 			xprt_wake_pending_tasks(xprt, PTR_ERR(sock));
- 			goto out;
-@@ -2284,6 +2289,7 @@ static void xs_tcp_setup_socket(struct work_struct *work)
- 		fallthrough;
- 	case -EINPROGRESS:
- 		/* SYN_SENT! */
-+		set_bit(XPRT_SOCK_CONNECT_SENT, &transport->sock_state);
- 		if (xprt->reestablish_timeout < XS_TCP_INIT_REEST_TO)
- 			xprt->reestablish_timeout = XS_TCP_INIT_REEST_TO;
- 		fallthrough;
-@@ -2345,13 +2351,9 @@ static void xs_connect(struct rpc_xprt *xprt, struct rpc_task *task)
- 
- 	WARN_ON_ONCE(!xprt_lock_connect(xprt, task, transport));
- 
--	if (transport->sock != NULL && !xprt_connecting(xprt)) {
-+	if (transport->sock != NULL) {
- 		dprintk("RPC:       xs_connect delayed xprt %p for %lu "
--				"seconds\n",
--				xprt, xprt->reestablish_timeout / HZ);
--
--		/* Start by resetting any existing state */
--		xs_reset_transport(transport);
-+			"seconds\n", xprt, xprt->reestablish_timeout / HZ);
- 
- 		delay = xprt_reconnect_delay(xprt);
- 		xprt_reconnect_backoff(xprt, XS_TCP_INIT_REEST_TO);
 -- 
 2.34.1
 
