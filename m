@@ -2,46 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DAB8BC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 13:23:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3813CC43219
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 13:23:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1388083AbiDENUz (ORCPT
+        id S1387864AbiDENTl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 09:20:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44262 "EHLO
+        Tue, 5 Apr 2022 09:19:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43064 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344361AbiDEJTe (ORCPT
+        with ESMTP id S1344286AbiDEJTE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:19:34 -0400
+        Tue, 5 Apr 2022 05:19:04 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3C8011F;
-        Tue,  5 Apr 2022 02:07:56 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C278237DE;
+        Tue,  5 Apr 2022 02:07:21 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9EE72B81A12;
-        Tue,  5 Apr 2022 09:07:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E940DC385A1;
-        Tue,  5 Apr 2022 09:07:53 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C5900B80DA1;
+        Tue,  5 Apr 2022 09:07:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 34078C385A0;
+        Tue,  5 Apr 2022 09:07:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649149674;
-        bh=qBElXJ90QRgQ8W5VnsNr6T5Wz+r+3jv9YBNbGL+C/PI=;
+        s=korg; t=1649149638;
+        bh=xorRcJWLyDePlbEryOuirjB9N5M1QbwwaFb0JW6nk/c=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=adNZPA11YHOGWheHySjb7gIBxAO6jT+V8e0kM+DE/1sglWxZTV+bK/udLK4zsLEov
-         U/8EZhtG2D/sDILHttpMvWYxFOzsQDwn/lI9mCYSlR4nn+09tHTCO3RkrKFSRcKC35
-         5XN//MB8YDq9seyGXBeymjUke55v1bN9za1uMzeg=
+        b=fRZqc0EruEqYXXB5NTC5Yd1/wx7Zrkrszgj27h4HLiGPxfUhzjFtKJ3h1NR9jMnB5
+         dPFDjJ7AGgwpg4ar4pNEeQLdeLBa0qHF7WvfVk1h5WXXVhQxhrPt3wuxRKZ8np9639
+         hLe8wUs0N9FJdAN+E8qenM8l+RCBZQcleBZplpwI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        syzbot+d1e3b1d92d25abf97943@syzkaller.appspotmail.com,
-        Casey Schaufler <casey@schaufler-ca.com>,
-        James Morris <jamorris@linux.microsoft.com>,
-        Paul Moore <paul@paul-moore.com>,
+        stable@vger.kernel.org, Ritesh Harjani <riteshh@linux.ibm.com>,
+        Jan Kara <jack@suse.cz>, Theodore Tso <tytso@mit.edu>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0751/1017] LSM: general protection fault in legacy_parse_param
-Date:   Tue,  5 Apr 2022 09:27:44 +0200
-Message-Id: <20220405070416.552864745@linuxfoundation.org>
+Subject: [PATCH 5.16 0786/1017] ext4: correct cluster len and clusters changed accounting in ext4_mb_mark_bb
+Date:   Tue,  5 Apr 2022 09:28:19 +0200
+Message-Id: <20220405070417.585711425@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -53,77 +50,79 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Casey Schaufler <casey@schaufler-ca.com>
+From: Ritesh Harjani <riteshh@linux.ibm.com>
 
-[ Upstream commit ecff30575b5ad0eda149aadad247b7f75411fd47 ]
+[ Upstream commit a5c0e2fdf7cea535ba03259894dc184e5a4c2800 ]
 
-The usual LSM hook "bail on fail" scheme doesn't work for cases where
-a security module may return an error code indicating that it does not
-recognize an input.  In this particular case Smack sees a mount option
-that it recognizes, and returns 0. A call to a BPF hook follows, which
-returns -ENOPARAM, which confuses the caller because Smack has processed
-its data.
+ext4_mb_mark_bb() currently wrongly calculates cluster len (clen) and
+flex_group->free_clusters. This patch fixes that.
 
-The SELinux hook incorrectly returns 1 on success. There was a time
-when this was correct, however the current expectation is that it
-return 0 on success. This is repaired.
+Identified based on code review of ext4_mb_mark_bb() function.
 
-Reported-by: syzbot+d1e3b1d92d25abf97943@syzkaller.appspotmail.com
-Signed-off-by: Casey Schaufler <casey@schaufler-ca.com>
-Acked-by: James Morris <jamorris@linux.microsoft.com>
-Signed-off-by: Paul Moore <paul@paul-moore.com>
+Signed-off-by: Ritesh Harjani <riteshh@linux.ibm.com>
+Reviewed-by: Jan Kara <jack@suse.cz>
+Link: https://lore.kernel.org/r/a0b035d536bafa88110b74456853774b64c8ac40.1644992609.git.riteshh@linux.ibm.com
+Signed-off-by: Theodore Ts'o <tytso@mit.edu>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- security/security.c      | 17 +++++++++++++++--
- security/selinux/hooks.c |  5 ++---
- 2 files changed, 17 insertions(+), 5 deletions(-)
+ fs/ext4/mballoc.c | 19 ++++++++++++-------
+ 1 file changed, 12 insertions(+), 7 deletions(-)
 
-diff --git a/security/security.c b/security/security.c
-index cf6615b5e820..745a8bf66d91 100644
---- a/security/security.c
-+++ b/security/security.c
-@@ -884,9 +884,22 @@ int security_fs_context_dup(struct fs_context *fc, struct fs_context *src_fc)
- 	return call_int_hook(fs_context_dup, 0, fc, src_fc);
- }
+diff --git a/fs/ext4/mballoc.c b/fs/ext4/mballoc.c
+index e872ea582555..c0868b82a62f 100644
+--- a/fs/ext4/mballoc.c
++++ b/fs/ext4/mballoc.c
+@@ -3899,10 +3899,11 @@ void ext4_mb_mark_bb(struct super_block *sb, ext4_fsblk_t block,
+ 	struct ext4_sb_info *sbi = EXT4_SB(sb);
+ 	ext4_group_t group;
+ 	ext4_grpblk_t blkoff;
+-	int i, clen, err;
++	int i, err;
+ 	int already;
++	unsigned int clen, clen_changed;
  
--int security_fs_context_parse_param(struct fs_context *fc, struct fs_parameter *param)
-+int security_fs_context_parse_param(struct fs_context *fc,
-+				    struct fs_parameter *param)
- {
--	return call_int_hook(fs_context_parse_param, -ENOPARAM, fc, param);
-+	struct security_hook_list *hp;
-+	int trc;
-+	int rc = -ENOPARAM;
-+
-+	hlist_for_each_entry(hp, &security_hook_heads.fs_context_parse_param,
-+			     list) {
-+		trc = hp->hook.fs_context_parse_param(fc, param);
-+		if (trc == 0)
-+			rc = 0;
-+		else if (trc != -ENOPARAM)
-+			return trc;
-+	}
-+	return rc;
- }
+-	clen = EXT4_B2C(sbi, len);
++	clen = EXT4_NUM_B2C(sbi, len);
  
- int security_sb_alloc(struct super_block *sb)
-diff --git a/security/selinux/hooks.c b/security/selinux/hooks.c
-index 93eac9464c5f..69b0709bd156 100644
---- a/security/selinux/hooks.c
-+++ b/security/selinux/hooks.c
-@@ -2916,10 +2916,9 @@ static int selinux_fs_context_parse_param(struct fs_context *fc,
- 		return opt;
+ 	ext4_get_group_no_and_offset(sb, block, &group, &blkoff);
+ 	bitmap_bh = ext4_read_block_bitmap(sb, group);
+@@ -3923,6 +3924,7 @@ void ext4_mb_mark_bb(struct super_block *sb, ext4_fsblk_t block,
+ 		if (!mb_test_bit(blkoff + i, bitmap_bh->b_data) == !state)
+ 			already++;
  
- 	rc = selinux_add_opt(opt, param->string, &fc->security);
--	if (!rc) {
-+	if (!rc)
- 		param->string = NULL;
--		rc = 1;
--	}
-+
- 	return rc;
- }
++	clen_changed = clen - already;
+ 	if (state)
+ 		ext4_set_bits(bitmap_bh->b_data, blkoff, clen);
+ 	else
+@@ -3935,9 +3937,9 @@ void ext4_mb_mark_bb(struct super_block *sb, ext4_fsblk_t block,
+ 						group, gdp));
+ 	}
+ 	if (state)
+-		clen = ext4_free_group_clusters(sb, gdp) - clen + already;
++		clen = ext4_free_group_clusters(sb, gdp) - clen_changed;
+ 	else
+-		clen = ext4_free_group_clusters(sb, gdp) + clen - already;
++		clen = ext4_free_group_clusters(sb, gdp) + clen_changed;
  
+ 	ext4_free_group_clusters_set(sb, gdp, clen);
+ 	ext4_block_bitmap_csum_set(sb, group, gdp, bitmap_bh);
+@@ -3947,10 +3949,13 @@ void ext4_mb_mark_bb(struct super_block *sb, ext4_fsblk_t block,
+ 
+ 	if (sbi->s_log_groups_per_flex) {
+ 		ext4_group_t flex_group = ext4_flex_group(sbi, group);
++		struct flex_groups *fg = sbi_array_rcu_deref(sbi,
++					   s_flex_groups, flex_group);
+ 
+-		atomic64_sub(len,
+-			     &sbi_array_rcu_deref(sbi, s_flex_groups,
+-						  flex_group)->free_clusters);
++		if (state)
++			atomic64_sub(clen_changed, &fg->free_clusters);
++		else
++			atomic64_add(clen_changed, &fg->free_clusters);
+ 	}
+ 
+ 	err = ext4_handle_dirty_metadata(NULL, NULL, bitmap_bh);
 -- 
 2.34.1
 
