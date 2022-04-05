@@ -2,43 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B304C35280
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 76895C3527E
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:02:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359142AbiDEL4z (ORCPT
+        id S1358903AbiDEL4t (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 07:56:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46796 "EHLO
+        Tue, 5 Apr 2022 07:56:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46824 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244975AbiDEIww (ORCPT
+        with ESMTP id S244945AbiDEIwt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:52:52 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A26D71D0D1;
-        Tue,  5 Apr 2022 01:48:22 -0700 (PDT)
+        Tue, 5 Apr 2022 04:52:49 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FF4E24BCC;
+        Tue,  5 Apr 2022 01:47:21 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 417B2614F9;
-        Tue,  5 Apr 2022 08:48:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1C9CEC385A1;
-        Tue,  5 Apr 2022 08:48:20 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id B4AECCE1C2B;
+        Tue,  5 Apr 2022 08:47:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A0B3BC385A1;
+        Tue,  5 Apr 2022 08:47:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649148501;
-        bh=Ps1nATeswKaRTByy9Vpj0FarmADqO69/M4NEGtVD1Cc=;
+        s=korg; t=1649148438;
+        bh=K3KpOz7kXmndjWfYEJDm29Zc1GUZwo74eJhkKF8o4r4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0VzTKqrVVBpR4DDQxAYYNTdWVgUpHWxeBsPpS3GOsr/pCUj0q0oSpO2/F43eTZpCe
-         0Fqzc5Ewc9RuzmWa7uAKUjvcS06JlYqdzIMT6GCK4RokIAmBKPnM61uNvEUBkec1N4
-         OiZ2hzfszJ8OYqvMg/s45TVz9Z/Lfsvur6kh7uvs=
+        b=w7GfMlcAyBqp+LoKfhGpEen+i8BUDPGWC3uwO9A8jUkRXZPuxBhRsOJcrRBfKKDjp
+         RUi/Y6Efd/T+4aZZmlvAyv4rp8UDZ84sOGdV+WjslZpldWd+PtBPE3Ukd73y3P6Rlp
+         CRMH2KIM7kb3S99YkDt5Hr86Z5QOGoK3SWzCbrJ0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Martin Dauskardt <martin.dauskardt@gmx.de>,
+        stable@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
+        Igor Zhbanov <i.zhbanov@omprussia.ru>,
+        Borislav Petkov <bp@suse.de>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Petr Mladek <pmladek@suse.com>,
+        Sergey Senozhatsky <senozhatsky@chromium.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        John Ogness <john.ogness@linutronix.de>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0377/1017] ivtv: fix incorrect device_caps for ivtvfb
-Date:   Tue,  5 Apr 2022 09:21:30 +0200
-Message-Id: <20220405070405.476917127@linuxfoundation.org>
+Subject: [PATCH 5.16 0358/1017] printk: fix return value of printk.devkmsg __setup handler
+Date:   Tue,  5 Apr 2022 09:21:11 +0200
+Message-Id: <20220405070404.912052325@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -50,121 +56,68 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+From: Randy Dunlap <rdunlap@infradead.org>
 
-[ Upstream commit 25e94139218c0293b4375233c14f2256d7dcfaa8 ]
+[ Upstream commit b665eae7a788c5e2bc10f9ac3c0137aa0ad1fc97 ]
 
-The VIDIOC_G_FBUF and related overlay ioctls no longer worked (-ENOTTY was
-returned).
+If an invalid option value is used with "printk.devkmsg=<value>",
+it is silently ignored.
+If a valid option value is used, it is honored but the wrong return
+value (0) is used, indicating that the command line option had an
+error and was not handled. This string is not added to init's
+environment strings due to init/main.c::unknown_bootoption()
+checking for a '.' in the boot option string and then considering
+that string to be an "Unused module parameter".
 
-The root cause was the introduction of the caps field in ivtv-driver.h.
-While loading the ivtvfb module would update the video_device device_caps
-field with V4L2_CAP_VIDEO_OUTPUT_OVERLAY it would not update that caps
-field, and that's what the overlay ioctls would look at.
+Print a warning message if a bad option string is used.
+Always return 1 from the __setup handler to indicate that the command
+line option has been handled.
 
-It's a bad idea to keep information in two places, so drop the caps field
-and only use vdev.device_caps.
-
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Reported-by: Martin Dauskardt <martin.dauskardt@gmx.de>
-Fixes: 2161536516ed (media: media/pci: set device_caps in struct video_device)
+Fixes: 750afe7babd1 ("printk: add kernel parameter to control writes to /dev/kmsg")
+Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+Reported-by: Igor Zhbanov <i.zhbanov@omprussia.ru>
+Link: lore.kernel.org/r/64644a2f-4a20-bab3-1e15-3b2cdd0defe3@omprussia.ru
+Cc: Borislav Petkov <bp@suse.de>
+Cc: Andrew Morton <akpm@linux-foundation.org>
+Cc: Petr Mladek <pmladek@suse.com>
+Cc: Sergey Senozhatsky <senozhatsky@chromium.org>
+Cc: Steven Rostedt <rostedt@goodmis.org>
+Cc: John Ogness <john.ogness@linutronix.de>
+Reviewed-by: John Ogness <john.ogness@linutronix.de>
+Reviewed-by: Sergey Senozhatsky <senozhatsky@chromium.org>
+Reviewed-by: Petr Mladek <pmladek@suse.com>
+Signed-off-by: Petr Mladek <pmladek@suse.com>
+Link: https://lore.kernel.org/r/20220228220556.23484-1-rdunlap@infradead.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/pci/ivtv/ivtv-driver.h  |  1 -
- drivers/media/pci/ivtv/ivtv-ioctl.c   | 10 +++++-----
- drivers/media/pci/ivtv/ivtv-streams.c | 11 ++++-------
- 3 files changed, 9 insertions(+), 13 deletions(-)
+ kernel/printk/printk.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/media/pci/ivtv/ivtv-driver.h b/drivers/media/pci/ivtv/ivtv-driver.h
-index 4cf92dee6527..ce3a7ca51736 100644
---- a/drivers/media/pci/ivtv/ivtv-driver.h
-+++ b/drivers/media/pci/ivtv/ivtv-driver.h
-@@ -330,7 +330,6 @@ struct ivtv_stream {
- 	struct ivtv *itv;		/* for ease of use */
- 	const char *name;		/* name of the stream */
- 	int type;			/* stream type */
--	u32 caps;			/* V4L2 capabilities */
+diff --git a/kernel/printk/printk.c b/kernel/printk/printk.c
+index 57b132b658e1..4187946a28f9 100644
+--- a/kernel/printk/printk.c
++++ b/kernel/printk/printk.c
+@@ -146,8 +146,10 @@ static int __control_devkmsg(char *str)
  
- 	struct v4l2_fh *fh;		/* pointer to the streaming filehandle */
- 	spinlock_t qlock;		/* locks access to the queues */
-diff --git a/drivers/media/pci/ivtv/ivtv-ioctl.c b/drivers/media/pci/ivtv/ivtv-ioctl.c
-index 0cdf6b3210c2..fee460e2ca86 100644
---- a/drivers/media/pci/ivtv/ivtv-ioctl.c
-+++ b/drivers/media/pci/ivtv/ivtv-ioctl.c
-@@ -438,7 +438,7 @@ static int ivtv_g_fmt_vid_out_overlay(struct file *file, void *fh, struct v4l2_f
- 	struct ivtv_stream *s = &itv->streams[fh2id(fh)->type];
- 	struct v4l2_window *winfmt = &fmt->fmt.win;
+ static int __init control_devkmsg(char *str)
+ {
+-	if (__control_devkmsg(str) < 0)
++	if (__control_devkmsg(str) < 0) {
++		pr_warn("printk.devkmsg: bad option string '%s'\n", str);
+ 		return 1;
++	}
  
--	if (!(s->caps & V4L2_CAP_VIDEO_OUTPUT_OVERLAY))
-+	if (!(s->vdev.device_caps & V4L2_CAP_VIDEO_OUTPUT_OVERLAY))
- 		return -EINVAL;
- 	if (!itv->osd_video_pbase)
- 		return -EINVAL;
-@@ -549,7 +549,7 @@ static int ivtv_try_fmt_vid_out_overlay(struct file *file, void *fh, struct v4l2
- 	u32 chromakey = fmt->fmt.win.chromakey;
- 	u8 global_alpha = fmt->fmt.win.global_alpha;
+ 	/*
+ 	 * Set sysctl string accordingly:
+@@ -166,7 +168,7 @@ static int __init control_devkmsg(char *str)
+ 	 */
+ 	devkmsg_log |= DEVKMSG_LOG_MASK_LOCK;
  
--	if (!(s->caps & V4L2_CAP_VIDEO_OUTPUT_OVERLAY))
-+	if (!(s->vdev.device_caps & V4L2_CAP_VIDEO_OUTPUT_OVERLAY))
- 		return -EINVAL;
- 	if (!itv->osd_video_pbase)
- 		return -EINVAL;
-@@ -1383,7 +1383,7 @@ static int ivtv_g_fbuf(struct file *file, void *fh, struct v4l2_framebuffer *fb)
- 		0,
- 	};
+-	return 0;
++	return 1;
+ }
+ __setup("printk.devkmsg=", control_devkmsg);
  
--	if (!(s->caps & V4L2_CAP_VIDEO_OUTPUT_OVERLAY))
-+	if (!(s->vdev.device_caps & V4L2_CAP_VIDEO_OUTPUT_OVERLAY))
- 		return -ENOTTY;
- 	if (!itv->osd_video_pbase)
- 		return -ENOTTY;
-@@ -1450,7 +1450,7 @@ static int ivtv_s_fbuf(struct file *file, void *fh, const struct v4l2_framebuffe
- 	struct ivtv_stream *s = &itv->streams[fh2id(fh)->type];
- 	struct yuv_playback_info *yi = &itv->yuv_info;
- 
--	if (!(s->caps & V4L2_CAP_VIDEO_OUTPUT_OVERLAY))
-+	if (!(s->vdev.device_caps & V4L2_CAP_VIDEO_OUTPUT_OVERLAY))
- 		return -ENOTTY;
- 	if (!itv->osd_video_pbase)
- 		return -ENOTTY;
-@@ -1470,7 +1470,7 @@ static int ivtv_overlay(struct file *file, void *fh, unsigned int on)
- 	struct ivtv *itv = id->itv;
- 	struct ivtv_stream *s = &itv->streams[fh2id(fh)->type];
- 
--	if (!(s->caps & V4L2_CAP_VIDEO_OUTPUT_OVERLAY))
-+	if (!(s->vdev.device_caps & V4L2_CAP_VIDEO_OUTPUT_OVERLAY))
- 		return -ENOTTY;
- 	if (!itv->osd_video_pbase)
- 		return -ENOTTY;
-diff --git a/drivers/media/pci/ivtv/ivtv-streams.c b/drivers/media/pci/ivtv/ivtv-streams.c
-index 6e455948cc77..13d7d55e6594 100644
---- a/drivers/media/pci/ivtv/ivtv-streams.c
-+++ b/drivers/media/pci/ivtv/ivtv-streams.c
-@@ -176,7 +176,7 @@ static void ivtv_stream_init(struct ivtv *itv, int type)
- 	s->itv = itv;
- 	s->type = type;
- 	s->name = ivtv_stream_info[type].name;
--	s->caps = ivtv_stream_info[type].v4l2_caps;
-+	s->vdev.device_caps = ivtv_stream_info[type].v4l2_caps;
- 
- 	if (ivtv_stream_info[type].pio)
- 		s->dma = DMA_NONE;
-@@ -299,12 +299,9 @@ static int ivtv_reg_dev(struct ivtv *itv, int type)
- 		if (s_mpg->vdev.v4l2_dev)
- 			num = s_mpg->vdev.num + ivtv_stream_info[type].num_offset;
- 	}
--	s->vdev.device_caps = s->caps;
--	if (itv->osd_video_pbase) {
--		itv->streams[IVTV_DEC_STREAM_TYPE_YUV].vdev.device_caps |=
--			V4L2_CAP_VIDEO_OUTPUT_OVERLAY;
--		itv->streams[IVTV_DEC_STREAM_TYPE_MPG].vdev.device_caps |=
--			V4L2_CAP_VIDEO_OUTPUT_OVERLAY;
-+	if (itv->osd_video_pbase && (type == IVTV_DEC_STREAM_TYPE_YUV ||
-+				     type == IVTV_DEC_STREAM_TYPE_MPG)) {
-+		s->vdev.device_caps |= V4L2_CAP_VIDEO_OUTPUT_OVERLAY;
- 		itv->v4l2_cap |= V4L2_CAP_VIDEO_OUTPUT_OVERLAY;
- 	}
- 	video_set_drvdata(&s->vdev, s);
 -- 
 2.34.1
 
