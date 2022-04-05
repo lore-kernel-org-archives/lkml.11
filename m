@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 03055C4321E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 28C5BC4167D
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 13:23:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1388307AbiDENVx (ORCPT
+        id S1357130AbiDENId (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 09:21:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60616 "EHLO
+        Tue, 5 Apr 2022 09:08:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40468 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344696AbiDEJVG (ORCPT
+        with ESMTP id S1344039AbiDEJQ6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:21:06 -0400
+        Tue, 5 Apr 2022 05:16:58 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 361AE237FF;
-        Tue,  5 Apr 2022 02:08:28 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8EA3413E10;
+        Tue,  5 Apr 2022 02:03:52 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0595E61564;
-        Tue,  5 Apr 2022 09:08:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 15436C385A0;
-        Tue,  5 Apr 2022 09:08:26 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 205F361003;
+        Tue,  5 Apr 2022 09:03:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 32050C385A0;
+        Tue,  5 Apr 2022 09:03:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649149707;
-        bh=VlcoB2NN9O2FYLHqTNDYV/Vv3oVh0iUwfatCynBEVBc=;
+        s=korg; t=1649149431;
+        bh=ryI4nmnWCITwgMxyxAhVGbPtmN7Hf4iB4cJjnuFKMfs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2DTllwcm/mbT6THd2gdgdlvHDDs7t12EspTP7Z1s6Hz0aMkWQ45EXkZYzHLER17Gv
-         2cFMmWJfX705lh/wE20hud0f9aHx8vIwT84elETAmQqGIDjab5mp7WzCZqyNo/wPJ8
-         xJRhWV76EgBacvvBE30CDx0I1jP/QhBFavsUxKjs=
+        b=Lohf1MQbTDkMvVweUrSz6E9G1AxJEKJLfW/i8czryPFEJoOLod3YzwHRIJh+F1mbH
+         awnipcyIiEC31Sdx8EpiU7/WkrGs4REmpthfWco0BHSCCMh9VRWzfcOYRA3LnzbvP+
+         cVIU9jDAxXEL1PSnIM7vLEItOTgXafg5PnKVjoWM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Boris Burkov <boris@bur.io>,
-        Johannes Thumshirn <johannes.thumshirn@wdc.com>,
-        Josef Bacik <josef@toxicpanda.com>,
-        David Sterba <dsterba@suse.com>,
+        stable@vger.kernel.org,
+        anton ivanov <anton.ivanov@cambridgegreys.com>,
+        Julius Werner <jwerner@chromium.org>,
+        David Gow <davidgow@google.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0795/1017] btrfs: make search_csum_tree return 0 if we get -EFBIG
-Date:   Tue,  5 Apr 2022 09:28:28 +0200
-Message-Id: <20220405070417.849784472@linuxfoundation.org>
+Subject: [PATCH 5.16 0710/1017] firmware: google: Properly state IOMEM dependency
+Date:   Tue,  5 Apr 2022 09:27:03 +0200
+Message-Id: <20220405070415.346082419@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -52,49 +52,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Josef Bacik <josef@toxicpanda.com>
+From: David Gow <davidgow@google.com>
 
-[ Upstream commit 03ddb19d2ea745228879b9334f3b550c88acb10a ]
+[ Upstream commit 37fd83916da2e4cae03d350015c82a67b1b334c4 ]
 
-We can either fail to find a csum entry at all and return -ENOENT, or we
-can find a range that is close, but return -EFBIG.  In essence these
-both mean the same thing when we are doing a lookup for a csum in an
-existing range, we didn't find a csum.  We want to treat both of these
-errors the same way, complain loudly that there wasn't a csum.  This
-currently happens anyway because we do
+The Google Coreboot implementation requires IOMEM functions
+(memmremap, memunmap, devm_memremap), but does not specify this is its
+Kconfig. This results in build errors when HAS_IOMEM is not set, such as
+on some UML configurations:
 
-	count = search_csum_tree();
-	if (count <= 0) {
-		// reloc and error handling
-	}
+/usr/bin/ld: drivers/firmware/google/coreboot_table.o: in function `coreboot_table_probe':
+coreboot_table.c:(.text+0x311): undefined reference to `memremap'
+/usr/bin/ld: coreboot_table.c:(.text+0x34e): undefined reference to `memunmap'
+/usr/bin/ld: drivers/firmware/google/memconsole-coreboot.o: in function `memconsole_probe':
+memconsole-coreboot.c:(.text+0x12d): undefined reference to `memremap'
+/usr/bin/ld: memconsole-coreboot.c:(.text+0x17e): undefined reference to `devm_memremap'
+/usr/bin/ld: memconsole-coreboot.c:(.text+0x191): undefined reference to `memunmap'
+/usr/bin/ld: drivers/firmware/google/vpd.o: in function `vpd_section_destroy.isra.0':
+vpd.c:(.text+0x300): undefined reference to `memunmap'
+/usr/bin/ld: drivers/firmware/google/vpd.o: in function `vpd_section_init':
+vpd.c:(.text+0x382): undefined reference to `memremap'
+/usr/bin/ld: vpd.c:(.text+0x459): undefined reference to `memunmap'
+/usr/bin/ld: drivers/firmware/google/vpd.o: in function `vpd_probe':
+vpd.c:(.text+0x59d): undefined reference to `memremap'
+/usr/bin/ld: vpd.c:(.text+0x5d3): undefined reference to `memunmap'
+collect2: error: ld returned 1 exit status
 
-However it forces us to incorrectly treat EIO or ENOMEM errors as on
-disk corruption.  Fix this by returning 0 if we get either -ENOENT or
--EFBIG from btrfs_lookup_csum() so we can do proper error handling.
-
-Reviewed-by: Boris Burkov <boris@bur.io>
-Reviewed-by: Johannes Thumshirn <johannes.thumshirn@wdc.com>
-Signed-off-by: Josef Bacik <josef@toxicpanda.com>
-Reviewed-by: David Sterba <dsterba@suse.com>
-Signed-off-by: David Sterba <dsterba@suse.com>
+Fixes: a28aad66da8b ("firmware: coreboot: Collapse platform drivers into bus core")
+Acked-By: anton ivanov <anton.ivanov@cambridgegreys.com>
+Acked-By: Julius Werner <jwerner@chromium.org>
+Signed-off-by: David Gow <davidgow@google.com>
+Link: https://lore.kernel.org/r/20220225041502.1901806-1-davidgow@google.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/btrfs/file-item.c | 2 +-
+ drivers/firmware/google/Kconfig | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/fs/btrfs/file-item.c b/fs/btrfs/file-item.c
-index d1cbb64a78f3..91ae1caa1bdb 100644
---- a/fs/btrfs/file-item.c
-+++ b/fs/btrfs/file-item.c
-@@ -303,7 +303,7 @@ static int search_csum_tree(struct btrfs_fs_info *fs_info,
- 	read_extent_buffer(path->nodes[0], dst, (unsigned long)item,
- 			ret * csum_size);
- out:
--	if (ret == -ENOENT)
-+	if (ret == -ENOENT || ret == -EFBIG)
- 		ret = 0;
- 	return ret;
- }
+diff --git a/drivers/firmware/google/Kconfig b/drivers/firmware/google/Kconfig
+index 931544c9f63d..983e07dc022e 100644
+--- a/drivers/firmware/google/Kconfig
++++ b/drivers/firmware/google/Kconfig
+@@ -21,7 +21,7 @@ config GOOGLE_SMI
+ 
+ config GOOGLE_COREBOOT_TABLE
+ 	tristate "Coreboot Table Access"
+-	depends on ACPI || OF
++	depends on HAS_IOMEM && (ACPI || OF)
+ 	help
+ 	  This option enables the coreboot_table module, which provides other
+ 	  firmware modules access to the coreboot table. The coreboot table
 -- 
 2.34.1
 
