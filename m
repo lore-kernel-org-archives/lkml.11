@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ED9AAC4321E
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 15:20:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1395BC4167B
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 15:20:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350780AbiDEPLt (ORCPT
+        id S1380599AbiDEPNr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 11:11:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54146 "EHLO
+        Tue, 5 Apr 2022 11:13:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39548 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345995AbiDEJoQ (ORCPT
+        with ESMTP id S1346457AbiDEJpE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:44:16 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E6E5C6EC2;
-        Tue,  5 Apr 2022 02:29:54 -0700 (PDT)
+        Tue, 5 Apr 2022 05:45:04 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03EFCDA0B1;
+        Tue,  5 Apr 2022 02:30:41 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BC980616B6;
-        Tue,  5 Apr 2022 09:29:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C02CFC385A4;
-        Tue,  5 Apr 2022 09:29:52 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9362661368;
+        Tue,  5 Apr 2022 09:30:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A9C12C385A2;
+        Tue,  5 Apr 2022 09:30:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649150993;
-        bh=f7lk/uatWZehCCEatvm6qnumEhlCGUuUHdGZqbrb3Fw=;
+        s=korg; t=1649151040;
+        bh=GOCjvPSffRKuugb0uITMfSMEobaooJl1sG41hMr87RY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OYHu23M/P8LgKmDUonyIo8DyaS7veL0Knj4HdzUyOhupWOE6LM4FqiBVGdeOyDBlU
-         46/sZ8UVU00xQUO+eqea/6UJ2uyiz/ZFCFmzhxGIZWyC3mzl0Lu3YSawqowfEUyTYZ
-         E+VBB/UYmJVgN0pcuXkTnrHbhcfXUEytuTn2+UDY=
+        b=HToBeCZAY3ziKVXeWYvcdVl+lx4lisKoMhvdjrHOmkVuS6tGdem9jxwjdffCx4m25
+         JURBQN4wxmdXv4bc5Dp7dW2kmPd3sNa5gzkOAFfVCP5X81u/oD+UTLBfoTS/pjn4Ko
+         fCMoUX6JVgXYZZmRr/8gxBZ2HS/EIANYs+b19loQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Minye Zhu <zhuminye@bytedance.com>,
-        Chengming Zhou <zhouchengming@bytedance.com>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Tejun Heo <tj@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 256/913] sched/cpuacct: Fix charge percpu cpuusage
-Date:   Tue,  5 Apr 2022 09:21:58 +0200
-Message-Id: <20220405070347.528824559@linuxfoundation.org>
+        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
+        Tzung-Bi Shih <tzungbi@google.com>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 272/913] media: mtk-vcodec: potential dereference of null pointer
+Date:   Tue,  5 Apr 2022 09:22:14 +0200
+Message-Id: <20220405070348.012092957@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
 References: <20220405070339.801210740@linuxfoundation.org>
@@ -51,47 +52,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chengming Zhou <zhouchengming@bytedance.com>
+From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
 
-[ Upstream commit 248cc9993d1cc12b8e9ed716cc3fc09f6c3517dd ]
+[ Upstream commit e25a89f743b18c029bfbe5e1663ae0c7190912b0 ]
 
-The cpuacct_account_field() is always called by the current task
-itself, so it's ok to use __this_cpu_add() to charge the tick time.
+The return value of devm_kzalloc() needs to be checked.
+To avoid use of null pointer in case of thefailure of alloc.
 
-But cpuacct_charge() maybe called by update_curr() in load_balance()
-on a random CPU, different from the CPU on which the task is running.
-So __this_cpu_add() will charge that cputime to a random incorrect CPU.
-
-Fixes: 73e6aafd9ea8 ("sched/cpuacct: Simplify the cpuacct code")
-Reported-by: Minye Zhu <zhuminye@bytedance.com>
-Signed-off-by: Chengming Zhou <zhouchengming@bytedance.com>
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Acked-by: Tejun Heo <tj@kernel.org>
-Link: https://lore.kernel.org/r/20220220051426.5274-1-zhouchengming@bytedance.com
+Fixes: 46233e91fa24 ("media: mtk-vcodec: move firmware implementations into their own files")
+Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Reviewed-by: Tzung-Bi Shih <tzungbi@google.com>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- kernel/sched/cpuacct.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/media/platform/mtk-vcodec/mtk_vcodec_fw_vpu.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/kernel/sched/cpuacct.c b/kernel/sched/cpuacct.c
-index ab67d97a8442..cacc2076ad21 100644
---- a/kernel/sched/cpuacct.c
-+++ b/kernel/sched/cpuacct.c
-@@ -328,12 +328,13 @@ static struct cftype files[] = {
-  */
- void cpuacct_charge(struct task_struct *tsk, u64 cputime)
- {
-+	unsigned int cpu = task_cpu(tsk);
- 	struct cpuacct *ca;
+diff --git a/drivers/media/platform/mtk-vcodec/mtk_vcodec_fw_vpu.c b/drivers/media/platform/mtk-vcodec/mtk_vcodec_fw_vpu.c
+index cd27f637dbe7..cfc7ebed8fb7 100644
+--- a/drivers/media/platform/mtk-vcodec/mtk_vcodec_fw_vpu.c
++++ b/drivers/media/platform/mtk-vcodec/mtk_vcodec_fw_vpu.c
+@@ -102,6 +102,8 @@ struct mtk_vcodec_fw *mtk_vcodec_fw_vpu_init(struct mtk_vcodec_dev *dev,
+ 	vpu_wdt_reg_handler(fw_pdev, mtk_vcodec_vpu_reset_handler, dev, rst_id);
  
- 	rcu_read_lock();
- 
- 	for (ca = task_ca(tsk); ca; ca = parent_ca(ca))
--		__this_cpu_add(*ca->cpuusage, cputime);
-+		*per_cpu_ptr(ca->cpuusage, cpu) += cputime;
- 
- 	rcu_read_unlock();
- }
+ 	fw = devm_kzalloc(&dev->plat_dev->dev, sizeof(*fw), GFP_KERNEL);
++	if (!fw)
++		return ERR_PTR(-ENOMEM);
+ 	fw->type = VPU;
+ 	fw->ops = &mtk_vcodec_vpu_msg;
+ 	fw->pdev = fw_pdev;
 -- 
 2.34.1
 
