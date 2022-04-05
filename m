@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BE551C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F564C433F5
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:26:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1588394AbiDFAPs (ORCPT
+        id S1588376AbiDFAPn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 20:15:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50688 "EHLO
+        Tue, 5 Apr 2022 20:15:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58412 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358147AbiDEK2C (ORCPT
+        with ESMTP id S1358042AbiDEK15 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:28:02 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 759DF9BBB8;
-        Tue,  5 Apr 2022 03:15:56 -0700 (PDT)
+        Tue, 5 Apr 2022 06:27:57 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82C5DE007;
+        Tue,  5 Apr 2022 03:13:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2ECB7B81C98;
-        Tue,  5 Apr 2022 10:15:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 97DE9C385A0;
-        Tue,  5 Apr 2022 10:15:53 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1EAB661562;
+        Tue,  5 Apr 2022 10:13:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 20A3AC385A1;
+        Tue,  5 Apr 2022 10:13:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649153754;
-        bh=pllJwSg82srfAKyDgvJ4BWWLH9Horfff9Wx5+FML3QA=;
+        s=korg; t=1649153612;
+        bh=IOwZUCG26Vrfyw/jN2POlfRyr/RiH+j6OxFZxe43ysQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XtravBLMLz5dcQzsfBBzSsz6ZqUf7TThda3enjHf3DokVi2C5rJReiRwnJSOV2/li
-         H/tSNOAjr5V6Mn8lAPZJXqLUiy/KCCjofpGSaNuKliovM6pYs4vJea+CAqwvCTM6D7
-         3qyxNAJ6IYX/Z3KGR2+kX6ISoc/rEiJn2s0mAlxM=
+        b=Rlsy3rwOufZVIHksHZ61CPudtKyXqJituffCVManHFH/btiwJ8YS3Axe9CrXGxLP8
+         9binBcxpG3+mmyNNhAZc5ZZGtotGjJWaFD1MXMfgwz+4SpcrID/His35AqPH5lm0oT
+         9rB6EScYky6o83c1mYcavYkSlCHNVKNXqNhrgTYU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Robert Hancock <robert.hancock@calian.com>,
-        Michal Simek <michal.simek@xilinx.com>,
-        Wolfram Sang <wsa@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 336/599] i2c: xiic: Make bus names unique
-Date:   Tue,  5 Apr 2022 09:30:30 +0200
-Message-Id: <20220405070308.830822507@linuxfoundation.org>
+        stable@vger.kernel.org, Yang Yingliang <yangyingliang@huawei.com>,
+        Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 246/599] ASoC: rockchip: i2s: Use devm_platform_get_and_ioremap_resource()
+Date:   Tue,  5 Apr 2022 09:29:00 +0200
+Message-Id: <20220405070306.161288966@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
 References: <20220405070258.802373272@linuxfoundation.org>
@@ -50,47 +50,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Robert Hancock <robert.hancock@calian.com>
+From: Yang Yingliang <yangyingliang@huawei.com>
 
-[ Upstream commit 1d366c2f9df8279df2adbb60471f86fc40a1c39e ]
+[ Upstream commit 4ffbcd4ab0b6f77d29acde69dc25bd95318fae5e ]
 
-This driver is for an FPGA logic core, so there can be arbitrarily many
-instances of the bus on a given system. Previously all of the I2C bus
-names were "xiic-i2c" which caused issues with lm_sensors when trying to
-map human-readable names to sensor inputs because it could not properly
-distinguish the busses, for example. Append the platform device name to
-the I2C bus name so it is unique between different instances.
+Use devm_platform_get_and_ioremap_resource() to simplify
+code.
 
-Fixes: e1d5b6598cdc ("i2c: Add support for Xilinx XPS IIC Bus Interface")
-Signed-off-by: Robert Hancock <robert.hancock@calian.com>
-Tested-by: Michal Simek <michal.simek@xilinx.com>
-Signed-off-by: Wolfram Sang <wsa@kernel.org>
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+Link: https://lore.kernel.org/r/20210615141502.1683686-1-yangyingliang@huawei.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/i2c/busses/i2c-xiic.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ sound/soc/rockchip/rockchip_i2s.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/drivers/i2c/busses/i2c-xiic.c b/drivers/i2c/busses/i2c-xiic.c
-index 2a8568b97c14..8dabb6ffb1a4 100644
---- a/drivers/i2c/busses/i2c-xiic.c
-+++ b/drivers/i2c/busses/i2c-xiic.c
-@@ -756,7 +756,6 @@ static const struct i2c_adapter_quirks xiic_quirks = {
+diff --git a/sound/soc/rockchip/rockchip_i2s.c b/sound/soc/rockchip/rockchip_i2s.c
+index fa84ec695b52..18f13bf1021c 100644
+--- a/sound/soc/rockchip/rockchip_i2s.c
++++ b/sound/soc/rockchip/rockchip_i2s.c
+@@ -627,8 +627,7 @@ static int rockchip_i2s_probe(struct platform_device *pdev)
+ 		return PTR_ERR(i2s->mclk);
+ 	}
  
- static const struct i2c_adapter xiic_adapter = {
- 	.owner = THIS_MODULE,
--	.name = DRIVER_NAME,
- 	.class = I2C_CLASS_DEPRECATED,
- 	.algo = &xiic_algorithm,
- 	.quirks = &xiic_quirks,
-@@ -793,6 +792,8 @@ static int xiic_i2c_probe(struct platform_device *pdev)
- 	i2c_set_adapdata(&i2c->adap, i2c);
- 	i2c->adap.dev.parent = &pdev->dev;
- 	i2c->adap.dev.of_node = pdev->dev.of_node;
-+	snprintf(i2c->adap.name, sizeof(i2c->adap.name),
-+		 DRIVER_NAME " %s", pdev->name);
+-	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+-	regs = devm_ioremap_resource(&pdev->dev, res);
++	regs = devm_platform_get_and_ioremap_resource(pdev, 0, &res);
+ 	if (IS_ERR(regs))
+ 		return PTR_ERR(regs);
  
- 	mutex_init(&i2c->lock);
- 	init_waitqueue_head(&i2c->wait);
 -- 
 2.34.1
 
