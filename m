@@ -2,367 +2,164 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C8234C43217
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 02:55:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 52934C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 03:01:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1445262AbiDFC5Q (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 22:57:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42314 "EHLO
+        id S233588AbiDFC52 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 22:57:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43062 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1446578AbiDFBQR (ORCPT
+        with ESMTP id S1449057AbiDFBQZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 21:16:17 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7756C245B3;
-        Tue,  5 Apr 2022 16:08:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649200127; x=1680736127;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=Xp43dfjNB+BJfz5gN1k7pk22qVpg2ISIf8p6jr207ZY=;
-  b=oDwzrA2tihl3CX3LTZQ3gFuiE0t6kn8EKP4Viai4HBQQL+qKwH2+PF1M
-   Z00Fyg0pplXwpa+lhAY4pRUHx0sWw7uWZBVNBGlFChtgYh4cyfItjDtXG
-   MSajakf4nao2uatLYlB4J9MBm9WzHXNO2TTwJi4UYdnC6iq4/k5DcDbUG
-   F3JiuCjKIgDLqKnl3mMbD5UTB3t6nKH+/DJZ4JneIwMqrDQlXqJ5rRPKc
-   5IBWj5j7Wst38oGZIbT+TaKZUAcuWy57eUIdW4UsCxMjuHUljaQ8HRMGo
-   DA/qvyEhftjQ1146rfrbGmU+83Sywjv5FAYqIK+PRGNXNMekqrRWp+ogT
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10308"; a="261060064"
-X-IronPort-AV: E=Sophos;i="5.90,238,1643702400"; 
-   d="scan'208";a="261060064"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2022 16:08:47 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,238,1643702400"; 
-   d="scan'208";a="658149390"
-Received: from lkp-server02.sh.intel.com (HELO a44fdfb70b94) ([10.239.97.151])
-  by orsmga004.jf.intel.com with ESMTP; 05 Apr 2022 16:08:38 -0700
-Received: from kbuild by a44fdfb70b94 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nbsHu-0003qj-3i;
-        Tue, 05 Apr 2022 23:08:38 +0000
-Date:   Wed, 6 Apr 2022 07:07:52 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Wells Lu <wellslutw@gmail.com>, davem@davemloft.net,
-        kuba@kernel.org, robh+dt@kernel.org, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        p.zabel@pengutronix.de, pabeni@redhat.com, krzk+dt@kernel.org,
-        roopa@nvidia.com, andrew@lunn.ch, edumazet@google.com
-Cc:     kbuild-all@lists.01.org, wells.lu@sunplus.com,
-        Wells Lu <wellslutw@gmail.com>
-Subject: Re: [PATCH net-next v6 2/2] net: ethernet: Add driver for Sunplus
- SP7021
-Message-ID: <202204060616.kl1yKwP5-lkp@intel.com>
-References: <1649016459-23989-3-git-send-email-wellslutw@gmail.com>
+        Tue, 5 Apr 2022 21:16:25 -0400
+Received: from NAM04-MW2-obe.outbound.protection.outlook.com (mail-mw2nam08on2047.outbound.protection.outlook.com [40.107.101.47])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6E1D4CD43;
+        Tue,  5 Apr 2022 16:09:22 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=SvQIiQMkeW3HfEkr5LcrqcBTlQ0ZZ0ixnUm0TDjo4m3dHZ9yJSV3m2aaEZMjaB8H+FLSptJzUefzYyvP48Qb1KePpmcKCXwH1R9/reJEDHrlVuuRyAhsXo9ZizNUtEg4oyyUmdDVc5W0DKpuHLfxf0mCfLlAwYwWJTDBvj8EKgaoIIpjIajtnSGkdT1tuXlwnFJLNOU5xKyH/bRwTRFkE5mhD5IubSOyD+sIDVZXbi78giHsGpm5UrLnnhzHqb2kORNtF8Oe0gzdwZCVGW4VyRywUhBuIH+ZH3rKeXelxHonk3EMlTk/dxLaC7bQXzQdJNnaT7whii0CR8BKo3YCcQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=SuRMXmbyLXKaP7ohyz8cLcPKFddGQ6x65bALJVKYpY4=;
+ b=kNskKoWRB7jrZpDTAVH458hTNMPHsvws/d7f9ePCPHulNZ1QBqHKUksPFnjC03gOu3JIPBEpASatQcH0+BJrNCzwHGjCoP+vPwev8H6i4omFmbVBE/cRqErbsmicRB9BXX32mlkqwqBqkm1b/vzW+CA7Qgd9aLHyXKCLWp+TzbCoM1Z09ievaV6yOJppEOJdJ6SnCtU+UAQMxYMCnIlK9nHT6vhxwIfG2+QMBnBZnCjXTFoLcdEEXdAalasvIy7+VQgQ90FbiM4jhtZpINz7BadW1eP1PIlGId5+SlnqAIMzndb6HlZ9Na+Wtxonq4Ph6idO0qR0/1eVH17x3i2SHw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 165.204.84.17) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=amd.com;
+ dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
+ header.from=amd.com; dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=SuRMXmbyLXKaP7ohyz8cLcPKFddGQ6x65bALJVKYpY4=;
+ b=tIC947NUNdbZC6hK7W+MVaqp14YNWNB5fnMDrxXu+AxLon6eLcIMABStNpqAO9G/UkKKUXZcPjzWuPiga9dhwJh0sdcWd3J29px4uUtPCTfuO6sSxoQEvKTD5EtuhilXsxsgn5ZaQ197zTrg1z/b+ZoCXPyionJ0A7vamGGYFQg=
+Received: from MW4PR04CA0084.namprd04.prod.outlook.com (2603:10b6:303:6b::29)
+ by BL1PR12MB5095.namprd12.prod.outlook.com (2603:10b6:208:31b::16) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5123.31; Tue, 5 Apr
+ 2022 23:09:19 +0000
+Received: from CO1NAM11FT008.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:303:6b:cafe::c5) by MW4PR04CA0084.outlook.office365.com
+ (2603:10b6:303:6b::29) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5123.31 via Frontend
+ Transport; Tue, 5 Apr 2022 23:09:19 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
+ smtp.mailfrom=amd.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=amd.com;
+Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
+ 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
+ client-ip=165.204.84.17; helo=SATLEXMB04.amd.com;
+Received: from SATLEXMB04.amd.com (165.204.84.17) by
+ CO1NAM11FT008.mail.protection.outlook.com (10.13.175.191) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.5144.20 via Frontend Transport; Tue, 5 Apr 2022 23:09:19 +0000
+Received: from sp5-759chost.amd.com (10.180.168.240) by SATLEXMB04.amd.com
+ (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Tue, 5 Apr
+ 2022 18:09:17 -0500
+From:   Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+To:     <linux-kernel@vger.kernel.org>, <kvm@vger.kernel.org>,
+        <x86@kernel.org>
+CC:     <mlevitsk@redhat.com>, <seanjc@google.com>, <pbonzini@redhat.com>,
+        <joro@8bytes.org>, <tglx@linutronix.de>, <mingo@redhat.com>,
+        <bp@alien8.de>, <peterz@infradead.org>, <hpa@zytor.com>,
+        <jon.grimm@amd.com>, <wei.huang2@amd.com>, <terry.bowman@amd.com>,
+        Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+Subject: [PATCH 00/12] Introducing AMD x2APIC Virtualization (x2AVIC) support.
+Date:   Tue, 5 Apr 2022 18:08:43 -0500
+Message-ID: <20220405230855.15376-1-suravee.suthikulpanit@amd.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1649016459-23989-3-git-send-email-wellslutw@gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.180.168.240]
+X-ClientProxiedBy: SATLEXMB03.amd.com (10.181.40.144) To SATLEXMB04.amd.com
+ (10.181.40.145)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 4e870e14-3610-4db2-ca05-08da1759504f
+X-MS-TrafficTypeDiagnostic: BL1PR12MB5095:EE_
+X-Microsoft-Antispam-PRVS: <BL1PR12MB5095F46A5335DD8822383A40F3E49@BL1PR12MB5095.namprd12.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: PmnZkneZjqqqqVzi6HGMW+rrGvhBd+t4EbhT+93Gu0n9+ZRLCFIJNfy0NF832SEH3x5+iHkR5fyp0i2xc02WNnIwbZbOOLzksnypWs8uJhviKfgvyuMqonkPf5C+mKxX+BYRhQ+hBVfk388fVEznocJgSh/2+cxNhw/s6Q6qWxW/yTCLJo/Io+Bvi3meC8/jbdSdt4w/8WLVREz9uCDHVbDpIF0sG1Pa1IKqRAeNlSqn82lsscE5M25YYPnLTJAPk0uEk+uQDG8bq1BKisM/eVzT2GREsumFWV3i0coWVBU4SZNU1GnDAiRojRFq52iBCxeU2nnFnYm7Frkaqc+tLROWNwe6PfYoowl95FCzvsFKZXCi/cO7FIC7lSGle1gmLq6LgilfAsKlLn0OHAW6j9Q2SBkgXHhC54ubyULLMmn7bQcHxJtt9ZaiJaYiS+NXAGy3hcv4c0JzUBrjhgXVrf8fjF3Pq1g1np5OLos25asET5NvqNoNI8ziVcvaqJQs04SARYEeQPRokCMEmgEFv6rvME44Ng91AxBxqlbmD8o1/7YpD3EVLE92KZiCrQxQT2JivrMKEieiH2Hw+2Zvcm8A7jQWI9FJrA5csVyoaRjtdRk6SUZ2dFnOWL1hjD1/0i9pqL+eG8oyLWAFLLhV6aKq8+WU6pPcsmqOUdWgYIw2FGOLd23rJF8O/SZxttkqzWvoMo6HOu7WVC2I5EonieCL/TlbqMmbGK/982s4rNA0UWesonft40BvzaeElZ83bBokQMIbwJkpK1Z53b/EB36nRZWjMUgtmyjmm82sVPY=
+X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230001)(4636009)(40470700004)(46966006)(36840700001)(36756003)(356005)(36860700001)(8676002)(70586007)(70206006)(47076005)(82310400005)(8936002)(83380400001)(7416002)(5660300002)(44832011)(81166007)(4326008)(86362001)(26005)(6666004)(316002)(2616005)(186003)(16526019)(336012)(110136005)(426003)(54906003)(1076003)(508600001)(2906002)(40460700003)(7696005)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Apr 2022 23:09:19.0937
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 4e870e14-3610-4db2-ca05-08da1759504f
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
+X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT008.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL1PR12MB5095
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Wells,
+Previously, with AVIC, guest needs to disable x2APIC capability and
+can only run in APIC mode to activate hardware-accelerated interrupt
+virtualization.  With x2AVIC, guest can run in x2APIC mode.
+This feature is indicated by the CPUID Fn8000_000A EDX[14],
+and it can be activated by setting bit 31 (enable AVIC) and
+bit 30 (x2APIC mode) of VMCB offset 60h.
 
-I love your patch! Yet something to improve:
+The mode of interrupt virtualization can dynamically change during runtime.
+For example, when AVIC is enabled, the hypervisor currently keeps track of
+the AVIC activation and set the VMCB bit 31 accordingly. With x2AVIC,
+the guest OS can also switch between APIC and x2APIC modes during runtime.
+The kvm_amd driver needs to also keep track and set the VMCB
+bit 30 accordingly. 
 
-[auto build test ERROR on net/master]
-[also build test ERROR on robh/for-next linus/master v5.18-rc1 next-20220405]
-[cannot apply to net-next/master]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
+Besides, for x2AVIC, kvm_amd driver needs to disable interception for the
+x2APIC MSR range to allow AVIC hardware to virtualize register accesses.
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Wells-Lu/This-is-a-patch-series-for-Ethernet-driver-of-Sunplus-SP7021-SoC/20220404-040949
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net.git 692930cc435099580a4b9e32fa781b0688c18439
-config: alpha-randconfig-c004-20220405 (https://download.01.org/0day-ci/archive/20220406/202204060616.kl1yKwP5-lkp@intel.com/config)
-compiler: alpha-linux-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/d8d2085594ea52869669a553bb6d60e0b3a1f412
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Wells-Lu/This-is-a-patch-series-for-Ethernet-driver-of-Sunplus-SP7021-SoC/20220404-040949
-        git checkout d8d2085594ea52869669a553bb6d60e0b3a1f412
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=alpha SHELL=/bin/bash
+Testing:
+  * This series has been tested booting a Linux VM with x2APIC physical
+    and logical modes upto 512 vCPUs.
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+Regards,
+Suravee
 
-All errors (new ones prefixed by >>):
+Change from RFCv2 (https://lore.kernel.org/all/5876774a-c188-2026-1328-a4292022832b@amd.com/t/)
+  * Rebase to v5.17
+  * Clean up based on review comments from Maxim (Thank!!)
+  * Patch 6/12: Remove the kvm_get_apic_id() introduced in RFCv2, and
+    simply do not support updating physical and logical ID when in x2APIC mode.
+  * Patch 7/12: Extend the svm_direct_access_msrs to include x2APIC MSR range
+    instead of declaring a new data structure. 
+  * Patch 8/12: Remove force svm_refresh_apicv_exec_ctrl(), and do not
+    update avic_vapic_bar.
+  * Patch 12/12: New to this series.
 
-   drivers/pinctrl/sunplus/sppctl.c: In function 'sppctl_gpio_new':
->> drivers/pinctrl/sunplus/sppctl.c:559:14: error: 'struct gpio_chip' has no member named 'of_gpio_n_cells'
-     559 |         gchip->of_gpio_n_cells  = 2;
-         |              ^~
---
-   drivers/net/ethernet/sunplus/spl2sw_driver.c: In function 'spl2sw_get_eth_child_node':
->> drivers/net/ethernet/sunplus/spl2sw_driver.c:328:9: error: implicit declaration of function 'for_each_child_of_node'; did you mean 'for_each_online_node'? [-Werror=implicit-function-declaration]
-     328 |         for_each_child_of_node(ether_np, port_np) {
-         |         ^~~~~~~~~~~~~~~~~~~~~~
-         |         for_each_online_node
->> drivers/net/ethernet/sunplus/spl2sw_driver.c:328:50: error: expected ';' before '{' token
-     328 |         for_each_child_of_node(ether_np, port_np) {
-         |                                                  ^~
-         |                                                  ;
-   drivers/net/ethernet/sunplus/spl2sw_driver.c:326:13: warning: unused variable 'port_id' [-Wunused-variable]
-     326 |         int port_id;
-         |             ^~~~~~~
-   drivers/net/ethernet/sunplus/spl2sw_driver.c:342:1: error: no return statement in function returning non-void [-Werror=return-type]
-     342 | }
-         | ^
-   drivers/net/ethernet/sunplus/spl2sw_driver.c: In function 'spl2sw_probe':
->> drivers/net/ethernet/sunplus/spl2sw_driver.c:407:24: error: implicit declaration of function 'of_get_child_by_name' [-Werror=implicit-function-declaration]
-     407 |         eth_ports_np = of_get_child_by_name(pdev->dev.of_node, "ethernet-ports");
-         |                        ^~~~~~~~~~~~~~~~~~~~
-   drivers/net/ethernet/sunplus/spl2sw_driver.c:407:22: warning: assignment to 'struct device_node *' from 'int' makes pointer from integer without a cast [-Wint-conversion]
-     407 |         eth_ports_np = of_get_child_by_name(pdev->dev.of_node, "ethernet-ports");
-         |                      ^
->> drivers/net/ethernet/sunplus/spl2sw_driver.c:428:26: error: implicit declaration of function 'of_parse_phandle' [-Werror=implicit-function-declaration]
-     428 |                 phy_np = of_parse_phandle(port_np, "phy-handle", 0);
-         |                          ^~~~~~~~~~~~~~~~
-   drivers/net/ethernet/sunplus/spl2sw_driver.c:428:24: warning: assignment to 'struct device_node *' from 'int' makes pointer from integer without a cast [-Wint-conversion]
-     428 |                 phy_np = of_parse_phandle(port_np, "phy-handle", 0);
-         |                        ^
-   cc1: some warnings being treated as errors
+Suravee Suthikulpanit (12):
+  x86/cpufeatures: Introduce x2AVIC CPUID bit
+  KVM: x86: lapic: Rename [GET/SET]_APIC_DEST_FIELD to
+    [GET/SET]_XAPIC_DEST_FIELD
+  KVM: SVM: Detect X2APIC virtualization (x2AVIC) support
+  KVM: SVM: Update max number of vCPUs supported for x2AVIC mode
+  KVM: SVM: Update avic_kick_target_vcpus to support 32-bit APIC ID
+  KVM: SVM: Do not support updating APIC ID when in x2APIC mode
+  KVM: SVM: Adding support for configuring x2APIC MSRs interception
+  KVM: SVM: Update AVIC settings when changing APIC mode
+  KVM: SVM: Introduce helper functions to (de)activate AVIC and x2AVIC
+  KVM: SVM: Do not throw warning when calling avic_vcpu_load on a
+    running vcpu
+  KVM: SVM: Do not inhibit APICv when x2APIC is present
+  kvm/x86: Remove APICV activate mode inconsistency check
 
-Kconfig warnings: (for reference only)
-   WARNING: unmet direct dependencies detected for PINCTRL_SPPCTL
-   Depends on PINCTRL && SOC_SP7021 && OF && HAS_IOMEM
-   Selected by
-   - SP7021_EMAC && NETDEVICES && ETHERNET && NET_VENDOR_SUNPLUS && (SOC_SP7021 || COMPILE_TEST
-
-
-vim +328 drivers/net/ethernet/sunplus/spl2sw_driver.c
-
-   322	
-   323	static struct device_node *spl2sw_get_eth_child_node(struct device_node *ether_np, int id)
-   324	{
-   325		struct device_node *port_np;
-   326		int port_id;
-   327	
- > 328		for_each_child_of_node(ether_np, port_np) {
-   329			/* It is not a 'port' node, continue. */
-   330			if (strcmp(port_np->name, "port"))
-   331				continue;
-   332	
-   333			if (of_property_read_u32(port_np, "reg", &port_id) < 0)
-   334				continue;
-   335	
-   336			if (port_id == id)
-   337				return port_np;
-   338		}
-   339	
-   340		/* Not found! */
-   341		return NULL;
-   342	}
-   343	
-   344	static int spl2sw_probe(struct platform_device *pdev)
-   345	{
-   346		struct device_node *eth_ports_np;
-   347		struct device_node *port_np;
-   348		struct spl2sw_common *comm;
-   349		struct device_node *phy_np;
-   350		phy_interface_t phy_mode;
-   351		struct net_device *ndev;
-   352		u8 mac_addr[ETH_ALEN];
-   353		struct spl2sw_mac *mac;
-   354		int irq, i;
-   355		int ret;
-   356	
-   357		if (platform_get_drvdata(pdev))
-   358			return -ENODEV;
-   359	
-   360		/* Allocate memory for 'spl2sw_common' area. */
-   361		comm = devm_kzalloc(&pdev->dev, sizeof(*comm), GFP_KERNEL);
-   362		if (!comm)
-   363			return -ENOMEM;
-   364		comm->pdev = pdev;
-   365	
-   366		spin_lock_init(&comm->rx_lock);
-   367		spin_lock_init(&comm->tx_lock);
-   368		spin_lock_init(&comm->mdio_lock);
-   369	
-   370		/* Get memory resource 0 from dts. */
-   371		comm->l2sw_reg_base = devm_platform_ioremap_resource(pdev, 0);
-   372		if (IS_ERR(comm->l2sw_reg_base))
-   373			return PTR_ERR(comm->l2sw_reg_base);
-   374	
-   375		/* Get irq resource from dts. */
-   376		ret = platform_get_irq(pdev, 0);
-   377		if (ret < 0)
-   378			return ret;
-   379		irq = ret;
-   380	
-   381		/* Get clock controller. */
-   382		comm->clk = devm_clk_get(&pdev->dev, NULL);
-   383		if (IS_ERR(comm->clk)) {
-   384			dev_err_probe(&pdev->dev, PTR_ERR(comm->clk),
-   385				      "Failed to retrieve clock controller!\n");
-   386			return PTR_ERR(comm->clk);
-   387		}
-   388	
-   389		/* Get reset controller. */
-   390		comm->rstc = devm_reset_control_get_exclusive(&pdev->dev, NULL);
-   391		if (IS_ERR(comm->rstc)) {
-   392			dev_err_probe(&pdev->dev, PTR_ERR(comm->rstc),
-   393				      "Failed to retrieve reset controller!\n");
-   394			return PTR_ERR(comm->rstc);
-   395		}
-   396	
-   397		/* Enable clock. */
-   398		clk_prepare_enable(comm->clk);
-   399		udelay(1);
-   400	
-   401		reset_control_assert(comm->rstc);
-   402		udelay(1);
-   403		reset_control_deassert(comm->rstc);
-   404		udelay(1);
-   405	
-   406		/* Get child node ethernet-ports. */
- > 407		eth_ports_np = of_get_child_by_name(pdev->dev.of_node, "ethernet-ports");
-   408		if (!eth_ports_np) {
-   409			dev_err(&pdev->dev, "No ethernet-ports child node found!\n");
-   410			ret = -ENODEV;
-   411			goto out_clk_disable;
-   412		}
-   413	
-   414		for (i = 0; i < MAX_NETDEV_NUM; i++) {
-   415			/* Get port@i of node ethernet-ports. */
-   416			port_np = spl2sw_get_eth_child_node(eth_ports_np, i);
-   417			if (!port_np)
-   418				continue;
-   419	
-   420			/* Get phy-mode. */
-   421			if (of_get_phy_mode(port_np, &phy_mode)) {
-   422				dev_err(&pdev->dev, "Failed to get phy-mode property of port@%d!\n",
-   423					i);
-   424				continue;
-   425			}
-   426	
-   427			/* Get phy-handle. */
- > 428			phy_np = of_parse_phandle(port_np, "phy-handle", 0);
-   429			if (!phy_np) {
-   430				dev_err(&pdev->dev, "Failed to get phy-handle property of port@%d!\n",
-   431					i);
-   432				continue;
-   433			}
-   434	
-   435			/* Get mac-address from nvmem. */
-   436			ret = spl2sw_nvmem_get_mac_address(&pdev->dev, port_np, mac_addr);
-   437			if (ret) {
-   438				dev_info(&pdev->dev, "Generate a random mac address!\n");
-   439	
-   440				/* Generate a mac address using OUI of Sunplus Technology
-   441				 * and random controller number.
-   442				 */
-   443				mac_addr[0] = 0xfc; /* OUI of Sunplus: fc:4b:bc */
-   444				mac_addr[1] = 0x4b;
-   445				mac_addr[2] = 0xbc;
-   446				mac_addr[3] = get_random_int() % 256;
-   447				mac_addr[4] = get_random_int() % 256;
-   448				mac_addr[5] = get_random_int() % 256;
-   449			}
-   450	
-   451			/* Initialize the net device. */
-   452			ret = spl2sw_init_netdev(pdev, mac_addr, &ndev);
-   453			if (ret)
-   454				goto out_unregister_dev;
-   455	
-   456			ndev->irq = irq;
-   457			comm->ndev[i] = ndev;
-   458			mac = netdev_priv(ndev);
-   459			mac->phy_node = phy_np;
-   460			mac->phy_mode = phy_mode;
-   461			mac->comm = comm;
-   462	
-   463			mac->lan_port = 0x1 << i;	/* forward to port i */
-   464			mac->to_vlan = 0x1 << i;	/* vlan group: i     */
-   465			mac->vlan_id = i;		/* vlan group: i     */
-   466	
-   467			/* Set MAC address */
-   468			ret = spl2sw_mac_addr_add(mac);
-   469			if (ret)
-   470				goto out_unregister_dev;
-   471	
-   472			spl2sw_mac_rx_mode_set(mac);
-   473		}
-   474	
-   475		/* Find first valid net device. */
-   476		for (i = 0; i < MAX_NETDEV_NUM; i++) {
-   477			if (comm->ndev[i])
-   478				break;
-   479		}
-   480		if (i >= MAX_NETDEV_NUM) {
-   481			dev_err(&pdev->dev, "No valid ethernet port!\n");
-   482			ret = -ENODEV;
-   483			goto out_clk_disable;
-   484		}
-   485	
-   486		/* Save first valid net device */
-   487		ndev = comm->ndev[i];
-   488		platform_set_drvdata(pdev, ndev);
-   489	
-   490		/* Request irq. */
-   491		ret = devm_request_irq(&pdev->dev, irq, spl2sw_ethernet_interrupt,
-   492				       0, ndev->name, ndev);
-   493		if (ret) {
-   494			netdev_err(ndev, "Failed to request irq #%d for \"%s\"!\n",
-   495				   irq, ndev->name);
-   496			goto out_unregister_dev;
-   497		}
-   498	
-   499		/* Initialize mdio bus */
-   500		ret = spl2sw_mdio_init(comm);
-   501		if (ret) {
-   502			netdev_err(ndev, "Failed to initialize mdio bus!\n");
-   503			goto out_unregister_dev;
-   504		}
-   505	
-   506		ret = spl2sw_mac_addr_del_all(comm);
-   507		if (ret)
-   508			goto out_free_mdio;
-   509	
-   510		ret = spl2sw_descs_init(comm);
-   511		if (ret) {
-   512			dev_err(&comm->pdev->dev, "Fail to initialize mac descriptors!\n");
-   513			spl2sw_descs_free(comm);
-   514			goto out_free_mdio;
-   515		}
-   516	
-   517		spl2sw_mac_init(comm);
-   518	
-   519		ret = spl2sw_phy_connect(comm);
-   520		if (ret) {
-   521			netdev_err(ndev, "Failed to connect phy!\n");
-   522			goto out_free_mdio;
-   523		}
-   524	
-   525		netif_napi_add(ndev, &comm->rx_napi, spl2sw_rx_poll, SPL2SW_RX_NAPI_WEIGHT);
-   526		napi_enable(&comm->rx_napi);
-   527		netif_napi_add(ndev, &comm->tx_napi, spl2sw_tx_poll, SPL2SW_TX_NAPI_WEIGHT);
-   528		napi_enable(&comm->tx_napi);
-   529		return 0;
-   530	
-   531	out_free_mdio:
-   532		spl2sw_mdio_remove(comm);
-   533	
-   534	out_unregister_dev:
-   535		for (i = 0; i < MAX_NETDEV_NUM; i++)
-   536			if (comm->ndev[i])
-   537				unregister_netdev(comm->ndev[i]);
-   538	
-   539	out_clk_disable:
-   540		clk_disable_unprepare(comm->clk);
-   541		return ret;
-   542	}
-   543	
+ arch/x86/hyperv/hv_apic.c          |   2 +-
+ arch/x86/include/asm/apicdef.h     |   4 +-
+ arch/x86/include/asm/cpufeatures.h |   1 +
+ arch/x86/include/asm/svm.h         |  16 ++-
+ arch/x86/kernel/apic/apic.c        |   2 +-
+ arch/x86/kernel/apic/ipi.c         |   2 +-
+ arch/x86/kvm/lapic.c               |   2 +-
+ arch/x86/kvm/svm/avic.c            | 151 ++++++++++++++++++++++++++---
+ arch/x86/kvm/svm/svm.c             |  56 ++++++-----
+ arch/x86/kvm/svm/svm.h             |   7 +-
+ arch/x86/kvm/x86.c                 |  13 +--
+ 11 files changed, 202 insertions(+), 54 deletions(-)
 
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+2.25.1
+
