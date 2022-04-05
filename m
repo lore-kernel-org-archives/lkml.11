@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CD1C3C352A7
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 22:09:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E168BC43217
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 22:09:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1392248AbiDEWJh (ORCPT
+        id S1441999AbiDEWKf (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 18:09:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48780 "EHLO
+        Tue, 5 Apr 2022 18:10:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45292 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358198AbiDEK2F (ORCPT
+        with ESMTP id S242151AbiDEKcm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:28:05 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E762C5FE1;
-        Tue,  5 Apr 2022 03:16:53 -0700 (PDT)
+        Tue, 5 Apr 2022 06:32:42 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53A1CDE91E;
+        Tue,  5 Apr 2022 03:18:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 84B9C617A4;
-        Tue,  5 Apr 2022 10:16:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 937BBC385A0;
-        Tue,  5 Apr 2022 10:16:52 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B77876176C;
+        Tue,  5 Apr 2022 10:18:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C721BC385A1;
+        Tue,  5 Apr 2022 10:18:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649153813;
-        bh=ZpJa06M24vlUXxlUQAshkic/5mp5lbLahynR0Rd5WWA=;
+        s=korg; t=1649153921;
+        bh=xmrh2iJoKtO7Uj8EXFVlXCpuel45WEUN3vbTnItiqJA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GD/Rz0ApSKcLI5ELjEuavGQDVZPyxbm7OKoOdXR2QvARtfa/5Eiy4JrsmnGkG/bi1
-         tfzP64wMlxLkibAVPNstVBtkczThc7cAGDEX9df6cKwD6uW1ChFvtHI4OEHwd403id
-         01ZO61vfp9jG1ABkZJapImr1HGCdEbFBKnVEhF3w=
+        b=KVx+t7TjVqlavXbgp2tgpHBQI7cHukeZ2AsXsmFhiLs2InhV37dmmIl/JBczxq/E4
+         AKsZrQeppBXoKwgKYbZIs3FEkPwo2KeuSTasZ/VgGkrLP915xCkU6cPZy2+3G209O4
+         YPfvSXRpv8aB0D9vRoUVG3CUU+zjx/HrrILWrs2k=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yongzhi Liu <lyz_cs@pku.edu.cn>,
-        Jason Gunthorpe <jgg@nvidia.com>,
+        stable@vger.kernel.org,
+        Trond Myklebust <trond.myklebust@hammerspace.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 355/599] RDMA/mlx5: Fix memory leak in error flow for subscribe event routine
-Date:   Tue,  5 Apr 2022 09:30:49 +0200
-Message-Id: <20220405070309.396885113@linuxfoundation.org>
+Subject: [PATCH 5.10 394/599] NFS: Use of mapping_set_error() results in spurious errors
+Date:   Tue,  5 Apr 2022 09:31:28 +0200
+Message-Id: <20220405070310.556059052@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
 References: <20220405070258.802373272@linuxfoundation.org>
@@ -50,37 +50,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yongzhi Liu <lyz_cs@pku.edu.cn>
+From: Trond Myklebust <trond.myklebust@hammerspace.com>
 
-[ Upstream commit 087f9c3f2309ed183f7e4b85ae57121d8663224d ]
+[ Upstream commit 6c984083ec2453dfd3fcf98f392f34500c73e3f2 ]
 
-In case the second xa_insert() fails, the obj_event is not released.  Fix
-the error unwind flow to free that memory to avoid a memory leak.
+The use of mapping_set_error() in conjunction with calls to
+filemap_check_errors() is problematic because every error gets reported
+as either an EIO or an ENOSPC by filemap_check_errors() in functions
+such as filemap_write_and_wait() or filemap_write_and_wait_range().
+In almost all cases, we prefer to use the more nuanced wb errors.
 
-Fixes: 759738537142 ("IB/mlx5: Enable subscription for device events over DEVX")
-Link: https://lore.kernel.org/r/1647018361-18266-1-git-send-email-lyz_cs@pku.edu.cn
-Signed-off-by: Yongzhi Liu <lyz_cs@pku.edu.cn>
-Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+Fixes: b8946d7bfb94 ("NFS: Revalidate the file mapping on all fatal writeback errors")
+Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/infiniband/hw/mlx5/devx.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ fs/nfs/write.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/infiniband/hw/mlx5/devx.c b/drivers/infiniband/hw/mlx5/devx.c
-index 343e6709d9fc..2f053f48f1be 100644
---- a/drivers/infiniband/hw/mlx5/devx.c
-+++ b/drivers/infiniband/hw/mlx5/devx.c
-@@ -1792,8 +1792,10 @@ subscribe_event_xa_alloc(struct mlx5_devx_event_table *devx_event_table,
- 				key_level2,
- 				obj_event,
- 				GFP_KERNEL);
--		if (err)
-+		if (err) {
-+			kfree(obj_event);
- 			return err;
-+		}
- 		INIT_LIST_HEAD(&obj_event->obj_sub_list);
- 	}
+diff --git a/fs/nfs/write.c b/fs/nfs/write.c
+index bde4c362841f..cc926e69ee9b 100644
+--- a/fs/nfs/write.c
++++ b/fs/nfs/write.c
+@@ -314,7 +314,10 @@ static void nfs_mapping_set_error(struct page *page, int error)
+ 	struct address_space *mapping = page_file_mapping(page);
+ 
+ 	SetPageError(page);
+-	mapping_set_error(mapping, error);
++	filemap_set_wb_err(mapping, error);
++	if (mapping->host)
++		errseq_set(&mapping->host->i_sb->s_wb_err,
++			   error == -ENOSPC ? -ENOSPC : -EIO);
+ 	nfs_set_pageerror(mapping);
+ }
  
 -- 
 2.34.1
