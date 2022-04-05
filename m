@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D32F0C3A59F
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 10:08:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 996D3C4332F
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 10:08:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352129AbiDEKD4 (ORCPT
+        id S1352960AbiDEKFY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 06:03:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39568 "EHLO
+        Tue, 5 Apr 2022 06:05:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52752 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237505AbiDEISE (ORCPT
+        with ESMTP id S239125AbiDEIbL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:18:04 -0400
+        Tue, 5 Apr 2022 04:31:11 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7180F69CC6;
-        Tue,  5 Apr 2022 01:06:28 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19740496B3;
+        Tue,  5 Apr 2022 01:23:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BD260B81A32;
-        Tue,  5 Apr 2022 08:06:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 36E8EC385A1;
-        Tue,  5 Apr 2022 08:06:26 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5828CB81BD6;
+        Tue,  5 Apr 2022 08:23:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C48E5C385B4;
+        Tue,  5 Apr 2022 08:23:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649145986;
-        bh=aIhk6PWvgA5r+4ayB0G884nngyqJ9qOnaKV994l4LlA=;
+        s=korg; t=1649146988;
+        bh=Iq2ZvXe9ADabMGnOc1m2KwnYvzAf0dQnMn6C1TUJ2QA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Epdz4/K808yleSRRmHh0H8yXKBERlJ+s6H/MLn3rIKCk6/SmX4rvVxdPeXRv8+WsS
-         bvJ448VnjNRKC3B3oIZ3/TMYsle5DGPr49+wWHo0+lzZD6By0phkFEmb/PVPOcfkJf
-         qfFIagehlOF6LlVgEjEzte+FWiqPNpglKt9Rz4ls=
+        b=jEY5HTEuUy52xcqnIf3YhC79PsF4NV9Ez311b1I8w7cw54TDTQpx4V2LMLcM7NTSW
+         djcUOZXEdhPSFzlrPnS5xcuq/JL5SNG7DDm/tb8Hlr4+W5/eeUAqb7LDXqp0aKIGcs
+         TVpkDAB+9/iAfYW15JKFCoAjZvL3p+MXHc/58NbM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sujuan Chen <sujuan.chen@mediatek.com>,
-        Ryder Lee <ryder.lee@mediatek.com>,
-        Bo Jiao <Bo.Jiao@mediatek.com>, Felix Fietkau <nbd@nbd.name>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0602/1126] mt76: mt7915: enlarge wcid size to 544
-Date:   Tue,  5 Apr 2022 09:22:29 +0200
-Message-Id: <20220405070425.304342695@linuxfoundation.org>
+        stable@vger.kernel.org, Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Paolo Bonzini <pbonzini@redhat.com>
+Subject: [PATCH 5.17 0959/1126] KVM: x86: hyper-v: HVCALL_SEND_IPI_EX is an XMM fast hypercall
+Date:   Tue,  5 Apr 2022 09:28:26 +0200
+Message-Id: <20220405070435.653745066@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -51,94 +49,127 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Bo Jiao <Bo.Jiao@mediatek.com>
+From: Vitaly Kuznetsov <vkuznets@redhat.com>
 
-[ Upstream commit b37d0c9735bc1976f85636e06e07f1a7547d969d ]
+commit 47d3e5cdfe607ec6883eb0faa7acf05b8cb3f92a upstream.
 
-The mt7916 can support up to 544 wcid entries.
-This is an intermediate patch to add mt7916 support.
+It has been proven on practice that at least Windows Server 2019 tries
+using HVCALL_SEND_IPI_EX in 'XMM fast' mode when it has more than 64 vCPUs
+and it needs to send an IPI to a vCPU > 63. Similarly to other XMM Fast
+hypercalls (HVCALL_FLUSH_VIRTUAL_ADDRESS_{LIST,SPACE}{,_EX}), this
+information is missing in TLFS as of 6.0b. Currently, KVM returns an error
+(HV_STATUS_INVALID_HYPERCALL_INPUT) and Windows crashes.
 
-Co-developed-by: Sujuan Chen <sujuan.chen@mediatek.com>
-Signed-off-by: Sujuan Chen <sujuan.chen@mediatek.com>
-Co-developed-by: Ryder Lee <ryder.lee@mediatek.com>
-Signed-off-by: Ryder Lee <ryder.lee@mediatek.com>
-Signed-off-by: Bo Jiao <Bo.Jiao@mediatek.com>
-Signed-off-by: Felix Fietkau <nbd@nbd.name>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Note, HVCALL_SEND_IPI is a 'standard' fast hypercall (not 'XMM fast') as
+all its parameters fit into RDX:R8 and this is handled by KVM correctly.
+
+Cc: stable@vger.kernel.org # 5.14.x: 3244867af8c0: KVM: x86: Ignore sparse banks size for an "all CPUs", non-sparse IPI req
+Cc: stable@vger.kernel.org # 5.14.x
+Fixes: d8f5537a8816 ("KVM: hyper-v: Advertise support for fast XMM hypercalls")
+Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
+Message-Id: <20220222154642.684285-5-vkuznets@redhat.com>
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/wireless/mediatek/mt76/mt76.h          | 2 +-
- drivers/net/wireless/mediatek/mt76/mt7915/init.c   | 2 +-
- drivers/net/wireless/mediatek/mt76/mt7915/mac.c    | 2 +-
- drivers/net/wireless/mediatek/mt76/mt7915/mt7915.h | 8 +++++++-
- 4 files changed, 10 insertions(+), 4 deletions(-)
+ arch/x86/kvm/hyperv.c |   52 ++++++++++++++++++++++++++++++++------------------
+ 1 file changed, 34 insertions(+), 18 deletions(-)
 
-diff --git a/drivers/net/wireless/mediatek/mt76/mt76.h b/drivers/net/wireless/mediatek/mt76/mt76.h
-index 404c3d1a70d6..1f6f7a44d3f0 100644
---- a/drivers/net/wireless/mediatek/mt76/mt76.h
-+++ b/drivers/net/wireless/mediatek/mt76/mt76.h
-@@ -224,7 +224,7 @@ enum mt76_wcid_flags {
- 	MT_WCID_FLAG_HDR_TRANS,
- };
+--- a/arch/x86/kvm/hyperv.c
++++ b/arch/x86/kvm/hyperv.c
+@@ -1890,6 +1890,7 @@ static u64 kvm_hv_send_ipi(struct kvm_vc
+ 	int sparse_banks_len;
+ 	u32 vector;
+ 	bool all_cpus;
++	int i;
  
--#define MT76_N_WCIDS 288
-+#define MT76_N_WCIDS 544
+ 	if (hc->code == HVCALL_SEND_IPI) {
+ 		if (!hc->fast) {
+@@ -1910,9 +1911,15 @@ static u64 kvm_hv_send_ipi(struct kvm_vc
  
- /* stored in ieee80211_tx_info::hw_queue */
- #define MT_TX_HW_QUEUE_EXT_PHY		BIT(3)
-diff --git a/drivers/net/wireless/mediatek/mt76/mt7915/init.c b/drivers/net/wireless/mediatek/mt76/mt7915/init.c
-index d054cdecd5f7..29517ca08de0 100644
---- a/drivers/net/wireless/mediatek/mt76/mt7915/init.c
-+++ b/drivers/net/wireless/mediatek/mt76/mt7915/init.c
-@@ -399,7 +399,7 @@ static void mt7915_mac_init(struct mt7915_dev *dev)
- 	/* enable hardware de-agg */
- 	mt76_set(dev, MT_MDP_DCR0, MT_MDP_DCR0_DAMSDU_EN);
+ 		trace_kvm_hv_send_ipi(vector, sparse_banks[0]);
+ 	} else {
+-		if (unlikely(kvm_read_guest(kvm, hc->ingpa, &send_ipi_ex,
+-					    sizeof(send_ipi_ex))))
+-			return HV_STATUS_INVALID_HYPERCALL_INPUT;
++		if (!hc->fast) {
++			if (unlikely(kvm_read_guest(kvm, hc->ingpa, &send_ipi_ex,
++						    sizeof(send_ipi_ex))))
++				return HV_STATUS_INVALID_HYPERCALL_INPUT;
++		} else {
++			send_ipi_ex.vector = (u32)hc->ingpa;
++			send_ipi_ex.vp_set.format = hc->outgpa;
++			send_ipi_ex.vp_set.valid_bank_mask = sse128_lo(hc->xmm[0]);
++		}
  
--	for (i = 0; i < MT7915_WTBL_SIZE; i++)
-+	for (i = 0; i < mt7915_wtbl_size(dev); i++)
- 		mt7915_mac_wtbl_update(dev, i,
- 				       MT_WTBL_UPDATE_ADM_COUNT_CLEAR);
- 	for (i = 0; i < 2; i++)
-diff --git a/drivers/net/wireless/mediatek/mt76/mt7915/mac.c b/drivers/net/wireless/mediatek/mt76/mt7915/mac.c
-index 12567b653607..db267642924d 100644
---- a/drivers/net/wireless/mediatek/mt76/mt7915/mac.c
-+++ b/drivers/net/wireless/mediatek/mt76/mt7915/mac.c
-@@ -1598,7 +1598,7 @@ static void mt7915_mac_add_txs(struct mt7915_dev *dev, void *data)
- 	if (pid < MT_PACKET_ID_FIRST)
- 		return;
+ 		trace_kvm_hv_send_ipi_ex(send_ipi_ex.vector,
+ 					 send_ipi_ex.vp_set.format,
+@@ -1920,8 +1927,7 @@ static u64 kvm_hv_send_ipi(struct kvm_vc
  
--	if (wcidx >= MT7915_WTBL_SIZE)
-+	if (wcidx >= mt7915_wtbl_size(dev))
- 		return;
+ 		vector = send_ipi_ex.vector;
+ 		valid_bank_mask = send_ipi_ex.vp_set.valid_bank_mask;
+-		sparse_banks_len = bitmap_weight(&valid_bank_mask, 64) *
+-			sizeof(sparse_banks[0]);
++		sparse_banks_len = bitmap_weight(&valid_bank_mask, 64);
  
- 	rcu_read_lock();
-diff --git a/drivers/net/wireless/mediatek/mt76/mt7915/mt7915.h b/drivers/net/wireless/mediatek/mt76/mt7915/mt7915.h
-index 42d887383e8d..12ca54566461 100644
---- a/drivers/net/wireless/mediatek/mt76/mt7915/mt7915.h
-+++ b/drivers/net/wireless/mediatek/mt76/mt7915/mt7915.h
-@@ -12,7 +12,8 @@
- #define MT7915_MAX_INTERFACES		19
- #define MT7915_MAX_WMM_SETS		4
- #define MT7915_WTBL_SIZE		288
--#define MT7915_WTBL_RESERVED		(MT7915_WTBL_SIZE - 1)
-+#define MT7916_WTBL_SIZE		544
-+#define MT7915_WTBL_RESERVED		(mt7915_wtbl_size(dev) - 1)
- #define MT7915_WTBL_STA			(MT7915_WTBL_RESERVED - \
- 					 MT7915_MAX_INTERFACES)
+ 		all_cpus = send_ipi_ex.vp_set.format == HV_GENERIC_SET_ALL;
  
-@@ -449,6 +450,11 @@ static inline bool is_mt7915(struct mt76_dev *dev)
- 	return mt76_chip(dev) == 0x7915;
- }
+@@ -1931,12 +1937,27 @@ static u64 kvm_hv_send_ipi(struct kvm_vc
+ 		if (!sparse_banks_len)
+ 			goto ret_success;
  
-+static inline u16 mt7915_wtbl_size(struct mt7915_dev *dev)
-+{
-+	return is_mt7915(&dev->mt76) ? MT7915_WTBL_SIZE : MT7916_WTBL_SIZE;
-+}
-+
- void mt7915_dual_hif_set_irq_mask(struct mt7915_dev *dev, bool write_reg,
- 				  u32 clear, u32 set);
+-		if (kvm_read_guest(kvm,
+-				   hc->ingpa + offsetof(struct hv_send_ipi_ex,
+-							vp_set.bank_contents),
+-				   sparse_banks,
+-				   sparse_banks_len))
+-			return HV_STATUS_INVALID_HYPERCALL_INPUT;
++		if (!hc->fast) {
++			if (kvm_read_guest(kvm,
++					   hc->ingpa + offsetof(struct hv_send_ipi_ex,
++								vp_set.bank_contents),
++					   sparse_banks,
++					   sparse_banks_len * sizeof(sparse_banks[0])))
++				return HV_STATUS_INVALID_HYPERCALL_INPUT;
++		} else {
++			/*
++			 * The lower half of XMM0 is already consumed, each XMM holds
++			 * two sparse banks.
++			 */
++			if (sparse_banks_len > (2 * HV_HYPERCALL_MAX_XMM_REGISTERS - 1))
++				return HV_STATUS_INVALID_HYPERCALL_INPUT;
++			for (i = 0; i < sparse_banks_len; i++) {
++				if (i % 2)
++					sparse_banks[i] = sse128_lo(hc->xmm[(i + 1) / 2]);
++				else
++					sparse_banks[i] = sse128_hi(hc->xmm[i / 2]);
++			}
++		}
+ 	}
  
--- 
-2.34.1
-
+ check_and_send_ipi:
+@@ -2098,6 +2119,7 @@ static bool is_xmm_fast_hypercall(struct
+ 	case HVCALL_FLUSH_VIRTUAL_ADDRESS_SPACE:
+ 	case HVCALL_FLUSH_VIRTUAL_ADDRESS_LIST_EX:
+ 	case HVCALL_FLUSH_VIRTUAL_ADDRESS_SPACE_EX:
++	case HVCALL_SEND_IPI_EX:
+ 		return true;
+ 	}
+ 
+@@ -2265,14 +2287,8 @@ int kvm_hv_hypercall(struct kvm_vcpu *vc
+ 		ret = kvm_hv_flush_tlb(vcpu, &hc);
+ 		break;
+ 	case HVCALL_SEND_IPI:
+-		if (unlikely(hc.rep)) {
+-			ret = HV_STATUS_INVALID_HYPERCALL_INPUT;
+-			break;
+-		}
+-		ret = kvm_hv_send_ipi(vcpu, &hc);
+-		break;
+ 	case HVCALL_SEND_IPI_EX:
+-		if (unlikely(hc.fast || hc.rep)) {
++		if (unlikely(hc.rep)) {
+ 			ret = HV_STATUS_INVALID_HYPERCALL_INPUT;
+ 			break;
+ 		}
 
 
