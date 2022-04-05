@@ -2,95 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 958A7C43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 76261C4332F
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:54:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356105AbiDEUv6 (ORCPT
+        id S1353669AbiDEUvn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 16:51:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60166 "EHLO
+        Tue, 5 Apr 2022 16:51:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46444 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1446352AbiDEPoc (ORCPT
+        with ESMTP id S242779AbiDEKfS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 11:44:32 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id CC12EF3A5A
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 07:14:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1649168077;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=s1FajxbgsqVMCBu63jXGn1+aPvj2NTsHX4bAwRMuwJA=;
-        b=JE+V071sEq+VTQUEc6Kabvq+H1BYIw6/9vS42lBqTneEkxnjyGsBBltMDGrm5wRAXd2WLn
-        rvS03+p40uXxeerQcFvG+xJPCDLu7sN55bSUcajXe9qU30kzJ16jHfQMURCbXJPiBydLFG
-        nOwgSyuvGHpsW4WcRtLmgjmRv+zb2nI=
-Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
- [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-224-wFT2nYbbNUied3t0GWT30Q-1; Tue, 05 Apr 2022 10:14:36 -0400
-X-MC-Unique: wFT2nYbbNUied3t0GWT30Q-1
-Received: by mail-wm1-f71.google.com with SMTP id l7-20020a05600c1d0700b0038c9c48f1e7so1412384wms.2
-        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 07:14:36 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=s1FajxbgsqVMCBu63jXGn1+aPvj2NTsHX4bAwRMuwJA=;
-        b=qLGkkIPcCQMqITcuR5u2PKZhOiB2L27mqe1JJIdDnZW6EXoumttTcHhYJZW+KfOubn
-         CQevRbtqeLq2Gza7FIauL49ouuCq6pmq5DxFw0P+EMHIZjSZG2zrHIIPyepsdm2nvjPE
-         Ek6cpA7I/+nuwcBg0rXrO6FfIQCC5NVjVFoZ2OyBXTVzXZnwy80Rmiwatwa2KL9sDSLI
-         K9Ah//8MqQ02eimiBvDAseeQLoddwpuhPZLykvq9H/rsXUY6yaj/riVjPX1MKtSvgGeP
-         ZvoxmWYqWGSLML+4WvGZTqVNA/xMXHu19aePtuSink/6X+tblQrz1MR7AWME+dGGwqx2
-         0rDA==
-X-Gm-Message-State: AOAM530AaFrYzh9dVzIuduaDnKCUHez5yqDofawcT/f3Dg6BmlBBvgKG
-        Sc91fKZ/XfDTqj/DCvDygyG/doRTKP0kqK2Mk+UVhNCPlz4ozgHNMsxZn5QDxDkCfuAGl9MinL9
-        lZTHJvYRFnHRa5ALVr4qLRR3g
-X-Received: by 2002:a1c:770e:0:b0:38e:75d3:16f2 with SMTP id t14-20020a1c770e000000b0038e75d316f2mr3273390wmi.204.1649168075042;
-        Tue, 05 Apr 2022 07:14:35 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJy0i/G3vVj9aCvUeJLCdQgkQJ/EXqzINMACk7vhYKQRAW/kztpNzYQEiPpBmVYpnzcHKHvbew==
-X-Received: by 2002:a1c:770e:0:b0:38e:75d3:16f2 with SMTP id t14-20020a1c770e000000b0038e75d316f2mr3273377wmi.204.1649168074862;
-        Tue, 05 Apr 2022 07:14:34 -0700 (PDT)
-Received: from [10.32.181.87] (nat-pool-mxp-t.redhat.com. [149.6.153.186])
-        by smtp.googlemail.com with ESMTPSA id g6-20020a5d5406000000b001f049726044sm11960422wrv.79.2022.04.05.07.14.33
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 05 Apr 2022 07:14:34 -0700 (PDT)
-Message-ID: <1474e665-c619-1a01-3a28-51894161e316@redhat.com>
-Date:   Tue, 5 Apr 2022 16:14:25 +0200
+        Tue, 5 Apr 2022 06:35:18 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3680E28E0A;
+        Tue,  5 Apr 2022 03:20:05 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DE8D6B81C98;
+        Tue,  5 Apr 2022 10:20:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 36F68C385A1;
+        Tue,  5 Apr 2022 10:20:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649154002;
+        bh=0j/wEErfBcQgGljGCh1iEYUXjRQR4qsAs7iaKW8EU74=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=el4KNmps5qQn8apkKrI9sqbm33BnSlb4h08SU54xQ2+fBH/LOa3hlRd9WLNiJyIXO
+         nqFCpLpPZOrJ0oR3rezP0MEuTUdpINbTNqg2q7cFD783uU2o0YbNMvGlePfy9e04jX
+         L2oj0EP7QCu7B2nMQk+f48etSoO+FrAZGYQ4or1s=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 423/599] pinctrl: nomadik: Add missing of_node_put() in nmk_pinctrl_probe
+Date:   Tue,  5 Apr 2022 09:31:57 +0200
+Message-Id: <20220405070311.421058085@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
+References: <20220405070258.802373272@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [RFC PATCH v5 037/104] KVM: x86/mmu: Allow non-zero init value
- for shadow PTE
-Content-Language: en-US
-To:     Kai Huang <kai.huang@intel.com>, isaku.yamahata@intel.com,
-        kvm@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     isaku.yamahata@gmail.com, Jim Mattson <jmattson@google.com>,
-        erdemaktas@google.com, Connor Kuehl <ckuehl@redhat.com>,
-        Sean Christopherson <seanjc@google.com>
-References: <cover.1646422845.git.isaku.yamahata@intel.com>
- <b74b3660f9d16deafe83f2670539a8287bef988f.1646422845.git.isaku.yamahata@intel.com>
- <968de4765e63d8255ae1b3ac7062ffdca64706e4.camel@intel.com>
- <3cfffe9a29e53ae58dc59d0af3d52128babde79f.camel@intel.com>
-From:   Paolo Bonzini <pbonzini@redhat.com>
-In-Reply-To: <3cfffe9a29e53ae58dc59d0af3d52128babde79f.camel@intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 4/1/22 09:13, Kai Huang wrote:
-> Btw, I think the relevant part of TDP MMU change should be included in this
-> patch too otherwise TDP MMU is broken with this patch.
+From: Miaoqian Lin <linmq006@gmail.com>
 
-I agree.
+[ Upstream commit c09ac191b1f97cfa06f394dbfd7a5db07986cefc ]
 
-Paolo
+This node pointer is returned by of_parse_phandle() with refcount
+incremented in this function. Calling of_node_put() to avoid
+the refcount leak.
 
-> Actually in this series legacy MMU is not supported to work with TDX, so above
-> change to legacy MMU doesn't matter actually.  Instead, TDP MMU change should be
-> here.
+Fixes: 32e67eee670e ("pinctrl: nomadik: Allow prcm_base to be extracted from Device Tree")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Link: https://lore.kernel.org/r/20220307115116.25316-1-linmq006@gmail.com
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/pinctrl/nomadik/pinctrl-nomadik.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/pinctrl/nomadik/pinctrl-nomadik.c b/drivers/pinctrl/nomadik/pinctrl-nomadik.c
+index 657e35a75d84..6d77feda9090 100644
+--- a/drivers/pinctrl/nomadik/pinctrl-nomadik.c
++++ b/drivers/pinctrl/nomadik/pinctrl-nomadik.c
+@@ -1883,8 +1883,10 @@ static int nmk_pinctrl_probe(struct platform_device *pdev)
+ 	}
+ 
+ 	prcm_np = of_parse_phandle(np, "prcm", 0);
+-	if (prcm_np)
++	if (prcm_np) {
+ 		npct->prcm_base = of_iomap(prcm_np, 0);
++		of_node_put(prcm_np);
++	}
+ 	if (!npct->prcm_base) {
+ 		if (version == PINCTRL_NMK_STN8815) {
+ 			dev_info(&pdev->dev,
+-- 
+2.34.1
+
+
 
