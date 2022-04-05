@@ -2,123 +2,186 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 44442C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 54777C4321E
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:16:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1447242AbiDEUJW (ORCPT
+        id S1447334AbiDEUJ0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 16:09:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48954 "EHLO
+        Tue, 5 Apr 2022 16:09:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39344 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1457533AbiDEQG3 (ORCPT
+        with ESMTP id S1349072AbiDEJtD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 12:06:29 -0400
-Received: from mx07-00178001.pphosted.com (mx07-00178001.pphosted.com [185.132.182.106])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00533DDA;
-        Tue,  5 Apr 2022 09:04:29 -0700 (PDT)
-Received: from pps.filterd (m0241204.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 235ANpX7013964;
-        Tue, 5 Apr 2022 18:04:09 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=selector1;
- bh=siZuhc+89Jo9JDA/pbHU2hXuJ1K7MHFkUHJM38FJfmw=;
- b=wjcnvV0EE/7FrSLN1x2A8CbH1mUtD2blQDYwa/L32Abma3dUt+KypinbB/YCNajWtFRR
- QadwC+5pppvKXtF3T6KAambfwcr1uH0TliGG7d6+ouJmyV3NWFJuyV+uZr5518Kqdl1K
- a13t6OlHsHmNUdYADAkZMHSN+M/cwhN831PcTFBt8sK6vXkjYAt6rzpPUR9WHhoKqq+p
- QVcZ7bLp90qHjeOSFj3rZBdGRWPcymFcg+kHOsbAchmw/bHXthgRkClkD4q4CSyW+Mla
- 7qV2fe7yPDnofLmlafzNRa+H81c99c1eodrCAB5twZ3IUZbrPwLa+4znao1AkP0xyOD+ +Q== 
-Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3f6du0r4em-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 05 Apr 2022 18:04:09 +0200
-Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id C2A4810002A;
-        Tue,  5 Apr 2022 18:04:08 +0200 (CEST)
-Received: from Webmail-eu.st.com (sfhdag2node2.st.com [10.75.127.5])
-        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 9B6DB245534;
-        Tue,  5 Apr 2022 18:04:08 +0200 (CEST)
-Received: from [10.201.20.246] (10.75.127.48) by SFHDAG2NODE2.st.com
- (10.75.127.5) with Microsoft SMTP Server (TLS) id 15.0.1497.26; Tue, 5 Apr
- 2022 18:04:07 +0200
-Message-ID: <9f10659b-a778-1c9b-09ba-bd4dbc3f7c66@foss.st.com>
-Date:   Tue, 5 Apr 2022 18:04:06 +0200
+        Tue, 5 Apr 2022 05:49:03 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FFAFA94FC;
+        Tue,  5 Apr 2022 02:39:56 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0C2F161663;
+        Tue,  5 Apr 2022 09:39:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 12B90C385A1;
+        Tue,  5 Apr 2022 09:39:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649151595;
+        bh=boKlnM2yflvc03R8I1ckjS0zp0DlxT6z7I1Cu1oiFnQ=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=QeVWtEQw6YVPQ3FD8jYlxkgaMLuomUa6TuboGAWMhtm43DZY9WomShl8SNRrJjQNg
+         hy/aRwV4Rz9kIBaCd5UHJs3lv+JT/qPoLac5Ut40DECmJ9nCfrs+ykiXst0olsGG2h
+         zaiUODscy1pEfXGmklOlWED1fexTVTX58it6rQuI=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        Marijn Suijten <marijn.suijten@somainline.org>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@somainline.org>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 472/913] drm/msm/dsi: Use "ref" fw clock instead of global name for VCO parent
+Date:   Tue,  5 Apr 2022 09:25:34 +0200
+Message-Id: <20220405070354.003413638@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH v2] arm64: defconfig: Config that had RPMSG_CHAR now gets
- RPMSG_CTRL
-Content-Language: en-US
-To:     Mathieu Poirier <mathieu.poirier@linaro.org>
-CC:     Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <linux-remoteproc@vger.kernel.org>
-References: <20220405115524.1020499-1-arnaud.pouliquen@foss.st.com>
- <20220405152555.GB4147585@p14s>
-From:   Arnaud POULIQUEN <arnaud.pouliquen@foss.st.com>
-In-Reply-To: <20220405152555.GB4147585@p14s>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.75.127.48]
-X-ClientProxiedBy: SFHDAG2NODE1.st.com (10.75.127.4) To SFHDAG2NODE2.st.com
- (10.75.127.5)
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.850,Hydra:6.0.425,FMLib:17.11.64.514
- definitions=2022-04-05_04,2022-04-05_01,2022-02-23_01
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+From: Marijn Suijten <marijn.suijten@somainline.org>
+
+[ Upstream commit 3a3ee71bd8e14c5e852c71f317eebfda8f88dff0 ]
+
+All DSI PHY/PLL drivers were referencing their VCO parent clock by a
+global name, most of which don't exist or have been renamed.  These
+clock drivers seem to function fine without that except the 14nm driver
+for sdm6xx [1].
+
+At the same time all DTs provide a "ref" clock as per the requirements
+of dsi-phy-common.yaml, but the clock is never used.  This patchset puts
+that clock to use without relying on a global clock name, so that all
+dependencies are explicitly defined in DT (the firmware) in the end.
+
+Note that this patch intentionally breaks older firmware (DT) that
+relies on the clock to be found globally instead.  The only affected
+platform is msm8974 [2] for whose dsi_phy_28nm a .name="xo" fallback is
+left in place to accommodate a more graceful transition period.  All
+other platforms had the "ref" clock added to their phy node since its
+inception, or in a followup patch some time after.  These patches
+wrongly assumed that the "ref" clock was actively used and have hence
+been listed as "Fixes:" below.
+Furthermore apq8064 was providing the wrong 19.2MHz cxo instead of
+27MHz pxo clock, which has been addressed in [3].
+
+It is expected that both [2] and [3] are applied to the tree well in
+advance of this patch such that any actual breakage is extremely
+unlikely, but might still occur if kernel upgrades are performed without
+the DT to match.  After some time the fallback for msm8974 can be
+removed again as well.
+
+[1]: https://lore.kernel.org/linux-arm-msm/386db1a6-a1cd-3c7d-a88e-dc83f8a1be96@somainline.org/
+[2]: https://lore.kernel.org/linux-arm-msm/20210830175739.143401-1-marijn.suijten@somainline.org/
+[3]: https://lore.kernel.org/linux-arm-msm/20210829203027.276143-2-marijn.suijten@somainline.org/
+
+Fixes: 79e51645a1dd ("arm64: dts: qcom: msm8916: Set 'xo_board' as ref clock of the DSI PHY")
+Fixes: 6969d1d9c615 ("ARM: dts: qcom-apq8064: Set 'cxo_board' as ref clock of the DSI PHY")
+Fixes: 0c0e72705a33 ("arm64: dts: sdm845: Set 'bi_tcxo' as ref clock of the DSI PHYs")
+Signed-off-by: Marijn Suijten <marijn.suijten@somainline.org>
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@somainline.org>
+Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Link: https://lore.kernel.org/r/20210911131922.387964-2-marijn.suijten@somainline.org
+Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/gpu/drm/msm/dsi/phy/dsi_phy_10nm.c      | 4 +++-
+ drivers/gpu/drm/msm/dsi/phy/dsi_phy_14nm.c      | 4 +++-
+ drivers/gpu/drm/msm/dsi/phy/dsi_phy_28nm.c      | 4 +++-
+ drivers/gpu/drm/msm/dsi/phy/dsi_phy_28nm_8960.c | 4 +++-
+ drivers/gpu/drm/msm/dsi/phy/dsi_phy_7nm.c       | 4 +++-
+ 5 files changed, 15 insertions(+), 5 deletions(-)
+
+diff --git a/drivers/gpu/drm/msm/dsi/phy/dsi_phy_10nm.c b/drivers/gpu/drm/msm/dsi/phy/dsi_phy_10nm.c
+index d8128f50b0dd..0b782cc18b3f 100644
+--- a/drivers/gpu/drm/msm/dsi/phy/dsi_phy_10nm.c
++++ b/drivers/gpu/drm/msm/dsi/phy/dsi_phy_10nm.c
+@@ -562,7 +562,9 @@ static int pll_10nm_register(struct dsi_pll_10nm *pll_10nm, struct clk_hw **prov
+ 	char clk_name[32], parent[32], vco_name[32];
+ 	char parent2[32], parent3[32], parent4[32];
+ 	struct clk_init_data vco_init = {
+-		.parent_names = (const char *[]){ "xo" },
++		.parent_data = &(const struct clk_parent_data) {
++			.fw_name = "ref",
++		},
+ 		.num_parents = 1,
+ 		.name = vco_name,
+ 		.flags = CLK_IGNORE_UNUSED,
+diff --git a/drivers/gpu/drm/msm/dsi/phy/dsi_phy_14nm.c b/drivers/gpu/drm/msm/dsi/phy/dsi_phy_14nm.c
+index 5b4e991f220d..1c1e9861b93f 100644
+--- a/drivers/gpu/drm/msm/dsi/phy/dsi_phy_14nm.c
++++ b/drivers/gpu/drm/msm/dsi/phy/dsi_phy_14nm.c
+@@ -804,7 +804,9 @@ static int pll_14nm_register(struct dsi_pll_14nm *pll_14nm, struct clk_hw **prov
+ {
+ 	char clk_name[32], parent[32], vco_name[32];
+ 	struct clk_init_data vco_init = {
+-		.parent_names = (const char *[]){ "xo" },
++		.parent_data = &(const struct clk_parent_data) {
++			.fw_name = "ref",
++		},
+ 		.num_parents = 1,
+ 		.name = vco_name,
+ 		.flags = CLK_IGNORE_UNUSED,
+diff --git a/drivers/gpu/drm/msm/dsi/phy/dsi_phy_28nm.c b/drivers/gpu/drm/msm/dsi/phy/dsi_phy_28nm.c
+index 2da673a2add6..48eab80b548e 100644
+--- a/drivers/gpu/drm/msm/dsi/phy/dsi_phy_28nm.c
++++ b/drivers/gpu/drm/msm/dsi/phy/dsi_phy_28nm.c
+@@ -521,7 +521,9 @@ static int pll_28nm_register(struct dsi_pll_28nm *pll_28nm, struct clk_hw **prov
+ {
+ 	char clk_name[32], parent1[32], parent2[32], vco_name[32];
+ 	struct clk_init_data vco_init = {
+-		.parent_names = (const char *[]){ "xo" },
++		.parent_data = &(const struct clk_parent_data) {
++			.fw_name = "ref", .name = "xo",
++		},
+ 		.num_parents = 1,
+ 		.name = vco_name,
+ 		.flags = CLK_IGNORE_UNUSED,
+diff --git a/drivers/gpu/drm/msm/dsi/phy/dsi_phy_28nm_8960.c b/drivers/gpu/drm/msm/dsi/phy/dsi_phy_28nm_8960.c
+index 71ed4aa0dc67..fc56cdcc9ad6 100644
+--- a/drivers/gpu/drm/msm/dsi/phy/dsi_phy_28nm_8960.c
++++ b/drivers/gpu/drm/msm/dsi/phy/dsi_phy_28nm_8960.c
+@@ -385,7 +385,9 @@ static int pll_28nm_register(struct dsi_pll_28nm *pll_28nm, struct clk_hw **prov
+ {
+ 	char *clk_name, *parent_name, *vco_name;
+ 	struct clk_init_data vco_init = {
+-		.parent_names = (const char *[]){ "pxo" },
++		.parent_data = &(const struct clk_parent_data) {
++			.fw_name = "ref",
++		},
+ 		.num_parents = 1,
+ 		.flags = CLK_IGNORE_UNUSED,
+ 		.ops = &clk_ops_dsi_pll_28nm_vco,
+diff --git a/drivers/gpu/drm/msm/dsi/phy/dsi_phy_7nm.c b/drivers/gpu/drm/msm/dsi/phy/dsi_phy_7nm.c
+index cb297b08458e..9f7c408325ba 100644
+--- a/drivers/gpu/drm/msm/dsi/phy/dsi_phy_7nm.c
++++ b/drivers/gpu/drm/msm/dsi/phy/dsi_phy_7nm.c
+@@ -590,7 +590,9 @@ static int pll_7nm_register(struct dsi_pll_7nm *pll_7nm, struct clk_hw **provide
+ 	char clk_name[32], parent[32], vco_name[32];
+ 	char parent2[32], parent3[32], parent4[32];
+ 	struct clk_init_data vco_init = {
+-		.parent_names = (const char *[]){ "bi_tcxo" },
++		.parent_data = &(const struct clk_parent_data) {
++			.fw_name = "ref",
++		},
+ 		.num_parents = 1,
+ 		.name = vco_name,
+ 		.flags = CLK_IGNORE_UNUSED,
+-- 
+2.34.1
 
 
-On 4/5/22 17:25, Mathieu Poirier wrote:
-> On Tue, Apr 05, 2022 at 01:55:24PM +0200, Arnaud Pouliquen wrote:
->> In the commit 617d32938d1b ("rpmsg: Move the rpmsg control device
->> from rpmsg_char to rpmsg_ctrl"), we split the rpmsg_char driver in two.
->> By default give everyone who had the old driver enabled the rpmsg_ctrl
->> driver too.
->>
->> Signed-off-by: Arnaud Pouliquen <arnaud.pouliquen@foss.st.com>
-> 
-> This patch is missing a separation marker, i.e "---", just above.  Without it
-> the text below is also included in the changelog, and it shouldn't.
 
-A badly controlled cleaning... I send a V3
-
-My apologizes,
-Arnaud 
-
-> 
-> Thanks,
-> Mathieu
-> 
->>
->> This patch is extracted from the series [1] that has been partially
->> integrated in the Linux Kernel 5.18-rc1.
->>
->> Update vs previous version:
->> - remove "Fixes:" tag in commit, requested by Mathieu Poirier in [2]
->>
->> [1]https://lore.kernel.org/lkml/15be2f08-ba03-2b80-6f53-2056359d5c41@gmail.com/T/
->> [2]https://lore.kernel.org/linux-arm-kernel/CANLsYky1_b80qPbgOaLGVYD-GEr21V6C653iGEB7VCU=GbGvAQ@mail.gmail.com/T/
->> ---
->>  arch/arm64/configs/defconfig | 1 +
->>  1 file changed, 1 insertion(+)
->>
->> diff --git a/arch/arm64/configs/defconfig b/arch/arm64/configs/defconfig
->> index 50aa3d75ab4f..3f8906b8a2ca 100644
->> --- a/arch/arm64/configs/defconfig
->> +++ b/arch/arm64/configs/defconfig
->> @@ -1053,6 +1053,7 @@ CONFIG_QCOM_Q6V5_PAS=m
->>  CONFIG_QCOM_SYSMON=m
->>  CONFIG_QCOM_WCNSS_PIL=m
->>  CONFIG_RPMSG_CHAR=m
->> +CONFIG_RPMSG_CTRL=m
->>  CONFIG_RPMSG_QCOM_GLINK_RPM=y
->>  CONFIG_RPMSG_QCOM_GLINK_SMEM=m
->>  CONFIG_RPMSG_QCOM_SMD=y
->> -- 
->> 2.25.1
->>
