@@ -2,155 +2,138 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 89D80C43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 736A8C4332F
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 11:42:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378119AbiDELbj (ORCPT
+        id S1378087AbiDELbf (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 07:31:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47636 "EHLO
+        Tue, 5 Apr 2022 07:31:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50830 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244358AbiDEIv7 (ORCPT
+        with ESMTP id S244286AbiDEIvz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:51:59 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B0C6D4451;
-        Tue,  5 Apr 2022 01:40:48 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6CF4AB81C69;
-        Tue,  5 Apr 2022 08:40:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D181DC385A4;
-        Tue,  5 Apr 2022 08:40:46 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649148047;
-        bh=xMTWoOG1DuSsSOJTpFqmJoGyzRzHLywWkD5GWPh5E4I=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=AK4yUI5OBuT2YeExfw4jDmAbq2uNIBx+0RsCfwxvzRr2XF6LaoLhPYVe0t7AWrh1j
-         r8MvETcvvEKGLlWei5GN+E8eGJXKgqkkodjAu6Wm8Gx1IeDZeAxz2eoZ4r/w1V3JBs
-         yg1+oZzAXxGxJN9y1/dv55eV/ZoBUOcS17NDIqFA=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Marco Elver <elver@google.com>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Kees Cook <keescook@chromium.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0214/1017] stack: Constrain and fix stack offset randomization with Clang builds
-Date:   Tue,  5 Apr 2022 09:18:47 +0200
-Message-Id: <20220405070400.603149784@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
-References: <20220405070354.155796697@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 5 Apr 2022 04:51:55 -0400
+Received: from mail-ed1-x543.google.com (mail-ed1-x543.google.com [IPv6:2a00:1450:4864:20::543])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E72CAD4C8D
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 01:40:41 -0700 (PDT)
+Received: by mail-ed1-x543.google.com with SMTP id r10so8300894eda.1
+        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 01:40:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ffwll.ch; s=google;
+        h=date:from:to:subject:message-id:mail-followup-to:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=QRQdW4TxY/XkOYOT3oxLG3OIsaxqVCqvMm2visUSAZI=;
+        b=R5WyFM3Hb3GT2s4H08DzUIMQiUCuX9Lg5BSB6FtLOqpb9+K0R/+NXBIvm5gKP5c9J3
+         9uKEocy6gvBxFpFp3qCT0vApX1ZAxWoy2UjfBaiGsZGlxJO8MBrCopzDmKf7hLQSHfEx
+         1t/1TiVB/Zv+FY3jh4d8cFdSJTjj852yReO4U=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:subject:message-id:mail-followup-to
+         :references:mime-version:content-disposition:in-reply-to;
+        bh=QRQdW4TxY/XkOYOT3oxLG3OIsaxqVCqvMm2visUSAZI=;
+        b=pxM9nim1RMDCMHV2ngZ9qW3oqdOG1IYoFkKaL49+ttdbYROq70IP1ZyxYNOqkXkgpt
+         GyE0CVxBKKpvVPexNYbhYQBkUhH53sd1Tueag68dGAl/NkVZmDIqcb5345Ohruhev7UB
+         ddomkJ/pPvc0hFrk638nihXG4hracGDvOzDM9jsYCgYsepurjy4DGS3VYb6zpXxGVxfO
+         L7XbBxr/31FA09GoKZkFUqvVZ65qM/QosRQFNrLXrShXx0Vk8x6T363HJqvnYln2xrjy
+         SRSr1dIM0pBN6hEg0GroKPx8EhzRVsl37liLUoSILVRO1LUK8OXSa+oQQz8Q9eM16hVU
+         493Q==
+X-Gm-Message-State: AOAM530roTsZnlfIf/03YGfqLbWa0pm50F1sCHK9rViabhG9nwuqwLs/
+        rFArVQEaLFmByhQtdSEsSMrFlg==
+X-Google-Smtp-Source: ABdhPJxdMNTJdlht0ASSjqOZpmGfUZPUZ3aVJQxSpEJt0tJUibhrkRySvqoqStIMLvI+YtZTojtm1Q==
+X-Received: by 2002:a05:6402:31e2:b0:41c:dd5e:3c61 with SMTP id dy2-20020a05640231e200b0041cdd5e3c61mr2342747edb.407.1649148039950;
+        Tue, 05 Apr 2022 01:40:39 -0700 (PDT)
+Received: from phenom.ffwll.local ([2a02:168:57f4:0:efd0:b9e5:5ae6:c2fa])
+        by smtp.gmail.com with ESMTPSA id d7-20020a170906174700b006e80a7e3111sm568499eje.17.2022.04.05.01.40.38
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 05 Apr 2022 01:40:39 -0700 (PDT)
+Date:   Tue, 5 Apr 2022 10:40:37 +0200
+From:   Daniel Vetter <daniel@ffwll.ch>
+To:     Javier Martinez Canillas <javierm@redhat.com>,
+        DRI Development <dri-devel@lists.freedesktop.org>,
+        Intel Graphics Development <intel-gfx@lists.freedesktop.org>,
+        linux-fbdev@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Zack Rusin <zackr@vmware.com>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Ilya Trukhanov <lahvuun@gmail.com>,
+        Daniel Vetter <daniel.vetter@intel.com>,
+        Peter Jones <pjones@redhat.com>
+Subject: Re: [PATCH v2 18/19] Revert "fbdev: Prevent probing generic drivers
+ if a FB is already registered"
+Message-ID: <YkwAhSt9HlbxcuZo@phenom.ffwll.local>
+Mail-Followup-To: Javier Martinez Canillas <javierm@redhat.com>,
+        DRI Development <dri-devel@lists.freedesktop.org>,
+        Intel Graphics Development <intel-gfx@lists.freedesktop.org>,
+        linux-fbdev@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Zack Rusin <zackr@vmware.com>, Hans de Goede <hdegoede@redhat.com>,
+        Ilya Trukhanov <lahvuun@gmail.com>,
+        Daniel Vetter <daniel.vetter@intel.com>,
+        Peter Jones <pjones@redhat.com>
+References: <20220208210824.2238981-1-daniel.vetter@ffwll.ch>
+ <20220208210824.2238981-19-daniel.vetter@ffwll.ch>
+ <4ae20b63-f452-fdb4-ced6-d4968a8d69f0@redhat.com>
+ <Ykv/k/WoVemoCJJA@phenom.ffwll.local>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Ykv/k/WoVemoCJJA@phenom.ffwll.local>
+X-Operating-System: Linux phenom 5.10.0-8-amd64 
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Marco Elver <elver@google.com>
+On Tue, Apr 05, 2022 at 10:36:35AM +0200, Daniel Vetter wrote:
+> On Wed, Feb 09, 2022 at 01:19:26AM +0100, Javier Martinez Canillas wrote:
+> > On 2/8/22 22:08, Daniel Vetter wrote:
+> > > This reverts commit fb561bf9abde49f7e00fdbf9ed2ccf2d86cac8ee.
+> > > 
+> > > With
+> > > 
+> > > commit 27599aacbaefcbf2af7b06b0029459bbf682000d
+> > > Author: Thomas Zimmermann <tzimmermann@suse.de>
+> > > Date:   Tue Jan 25 10:12:18 2022 +0100
+> > > 
+> > >     fbdev: Hot-unplug firmware fb devices on forced removal
+> > > 
+> > > this should be fixed properly and we can remove this somewhat hackish
+> > > check here (e.g. this won't catch drm drivers if fbdev emulation isn't
+> > > enabled).
+> > >
+> > 
+> > Unfortunately this hack can't be reverted yet. Thomas' patch solves the issue
+> > of platform devices matched with fbdev drivers to be properly unregistered if
+> > a DRM driver attempts to remove all the conflicting framebuffers.
+> > 
+> > But the problem that fb561bf9abde ("fbdev: Prevent probing generic drivers if
+> > a FB is already registered") worked around is different. It happens when the
+> > DRM driver is probed before the {efi,simple}fb and other fbdev drivers, the
+> > kicking out of conflicting framebuffers already happened and these drivers
+> > will be allowed to probe even when a DRM driver is already present.
+> > 
+> > We need a clearer way to prevent it, but can't revert fb561bf9abde until that.
+> 
+> Yeah that entire area is a mess still, ideally we'd have something else
+> creating the platform devices, and efifb/offb and all these would just
+> bind against them.
+> 
+> Hm one idea that just crossed my mind: Could we have a flag in fb_info for
+> fw drivers, and check this in framebuffer_register? Then at least all the
+> logic would be in the fbdev core.
 
-[ Upstream commit efa90c11f62e6b7252fb75efe2787056872a627c ]
+Ok coffee just kicked in, how exactly does your scenario work?
 
-All supported versions of Clang perform auto-init of __builtin_alloca()
-when stack auto-init is on (CONFIG_INIT_STACK_ALL_{ZERO,PATTERN}).
+This code I'm reverting here is in the platform_dev->probe function.
+Thomas' patch removes the platform_dev. How exactly can you still probe
+against a platform dev if that platform dev is gone?
 
-add_random_kstack_offset() uses __builtin_alloca() to add a stack
-offset. This means, when CONFIG_INIT_STACK_ALL_{ZERO,PATTERN} is
-enabled, add_random_kstack_offset() will auto-init that unused portion
-of the stack used to add an offset.
+Iow, now that I reponder your case after a few weeks I'm no longer sure
+things work like you claim.
 
-There are several problems with this:
-
-	1. These offsets can be as large as 1023 bytes. Performing
-	   memset() on them isn't exactly cheap, and this is done on
-	   every syscall entry.
-
-	2. Architectures adding add_random_kstack_offset() to syscall
-	   entry implemented in C require them to be 'noinstr' (e.g. see
-	   x86 and s390). The potential problem here is that a call to
-	   memset may occur, which is not noinstr.
-
-A x86_64 defconfig kernel with Clang 11 and CONFIG_VMLINUX_VALIDATION shows:
-
- | vmlinux.o: warning: objtool: do_syscall_64()+0x9d: call to memset() leaves .noinstr.text section
- | vmlinux.o: warning: objtool: do_int80_syscall_32()+0xab: call to memset() leaves .noinstr.text section
- | vmlinux.o: warning: objtool: __do_fast_syscall_32()+0xe2: call to memset() leaves .noinstr.text section
- | vmlinux.o: warning: objtool: fixup_bad_iret()+0x2f: call to memset() leaves .noinstr.text section
-
-Clang 14 (unreleased) will introduce a way to skip alloca initialization
-via __builtin_alloca_uninitialized() (https://reviews.llvm.org/D115440).
-
-Constrain RANDOMIZE_KSTACK_OFFSET to only be enabled if no stack
-auto-init is enabled, the compiler is GCC, or Clang is version 14+. Use
-__builtin_alloca_uninitialized() if the compiler provides it, as is done
-by Clang 14.
-
-Link: https://lkml.kernel.org/r/YbHTKUjEejZCLyhX@elver.google.com
-Fixes: 39218ff4c625 ("stack: Optionally randomize kernel stack offset each syscall")
-Signed-off-by: Marco Elver <elver@google.com>
-Reviewed-by: Nathan Chancellor <nathan@kernel.org>
-Acked-by: Kees Cook <keescook@chromium.org>
-Signed-off-by: Kees Cook <keescook@chromium.org>
-Link: https://lore.kernel.org/r/20220131090521.1947110-2-elver@google.com
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- arch/Kconfig                     |  1 +
- include/linux/randomize_kstack.h | 16 ++++++++++++++--
- 2 files changed, 15 insertions(+), 2 deletions(-)
-
-diff --git a/arch/Kconfig b/arch/Kconfig
-index d3c4ab249e9c..a825f8251f3d 100644
---- a/arch/Kconfig
-+++ b/arch/Kconfig
-@@ -1159,6 +1159,7 @@ config HAVE_ARCH_RANDOMIZE_KSTACK_OFFSET
- config RANDOMIZE_KSTACK_OFFSET_DEFAULT
- 	bool "Randomize kernel stack offset on syscall entry"
- 	depends on HAVE_ARCH_RANDOMIZE_KSTACK_OFFSET
-+	depends on INIT_STACK_NONE || !CC_IS_CLANG || CLANG_VERSION >= 140000
- 	help
- 	  The kernel stack offset can be randomized (after pt_regs) by
- 	  roughly 5 bits of entropy, frustrating memory corruption
-diff --git a/include/linux/randomize_kstack.h b/include/linux/randomize_kstack.h
-index bebc911161b6..d373f1bcbf7c 100644
---- a/include/linux/randomize_kstack.h
-+++ b/include/linux/randomize_kstack.h
-@@ -16,8 +16,20 @@ DECLARE_PER_CPU(u32, kstack_offset);
-  * alignment. Also, since this use is being explicitly masked to a max of
-  * 10 bits, stack-clash style attacks are unlikely. For more details see
-  * "VLAs" in Documentation/process/deprecated.rst
-+ *
-+ * The normal __builtin_alloca() is initialized with INIT_STACK_ALL (currently
-+ * only with Clang and not GCC). Initializing the unused area on each syscall
-+ * entry is expensive, and generating an implicit call to memset() may also be
-+ * problematic (such as in noinstr functions). Therefore, if the compiler
-+ * supports it (which it should if it initializes allocas), always use the
-+ * "uninitialized" variant of the builtin.
-  */
--void *__builtin_alloca(size_t size);
-+#if __has_builtin(__builtin_alloca_uninitialized)
-+#define __kstack_alloca __builtin_alloca_uninitialized
-+#else
-+#define __kstack_alloca __builtin_alloca
-+#endif
-+
- /*
-  * Use, at most, 10 bits of entropy. We explicitly cap this to keep the
-  * "VLA" from being unbounded (see above). 10 bits leaves enough room for
-@@ -36,7 +48,7 @@ void *__builtin_alloca(size_t size);
- 	if (static_branch_maybe(CONFIG_RANDOMIZE_KSTACK_OFFSET_DEFAULT,	\
- 				&randomize_kstack_offset)) {		\
- 		u32 offset = raw_cpu_read(kstack_offset);		\
--		u8 *ptr = __builtin_alloca(KSTACK_OFFSET_MAX(offset));	\
-+		u8 *ptr = __kstack_alloca(KSTACK_OFFSET_MAX(offset));	\
- 		/* Keep allocation even after "ptr" loses scope. */	\
- 		asm volatile("" :: "r"(ptr) : "memory");		\
- 	}								\
+There is the issue that offb still bidns without a platform_dev, but
+that's not affected by this patch here.
+-Daniel
 -- 
-2.34.1
-
-
-
+Daniel Vetter
+Software Engineer, Intel Corporation
+http://blog.ffwll.ch
