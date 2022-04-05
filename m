@@ -2,108 +2,133 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A3FF2C35273
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 22:39:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D809EC43217
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 22:39:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1453366AbiDEWcy (ORCPT
+        id S1453508AbiDEWdK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 18:32:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39654 "EHLO
+        Tue, 5 Apr 2022 18:33:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53874 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349106AbiDEJtI (ORCPT
+        with ESMTP id S1353614AbiDEKIe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:49:08 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14E16AA024;
-        Tue,  5 Apr 2022 02:41:00 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E62A8615E5;
-        Tue,  5 Apr 2022 09:40:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F2F6FC385A4;
-        Tue,  5 Apr 2022 09:40:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649151659;
-        bh=S0tN8CdSkaCy2ANkjHijuGJLhnaB2fvJt27wInlegNs=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=iIDUQE4lkKFMDmDG4Oeja+DPRhBU1w6S3OKgcBOJqtPgy9wzFmkMMXqIYIR8t2E3/
-         ExAXhRZrDVKJJvpWU3l68RTLsBYSY/0wPQIakVEuc3c7p/c0mvVqLR/SPzMLYIWG8M
-         aagVzCroYmzuQXxXIxMCW3trDQphfI5BbiYkpEs8=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hersen Wu <hersenwu@amd.com>,
-        Jasdeep Dhillon <jdhillon@amd.com>,
-        Roman Li <Roman.Li@amd.com>,
-        Daniel Wheeler <daniel.wheeler@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 457/913] drm/amd/display: Add affected crtcs to atomic state for dsc mst unplug
-Date:   Tue,  5 Apr 2022 09:25:19 +0200
-Message-Id: <20220405070353.547555261@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 5 Apr 2022 06:08:34 -0400
+Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EAB0C3358
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 02:55:31 -0700 (PDT)
+Received: by mail-ej1-x632.google.com with SMTP id bh17so25558700ejb.8
+        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 02:55:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=c9bcsFTz7o1nm6T6sdAD3XwMAfi3610i3GxsLP1j6GY=;
+        b=bWkvwp9wKo7oK0PWO7l+fyV9iJKA01a9CrDr8gPEZrRYTMyPiW7uH0PnKGKYi/V2qO
+         8+wfTV2QScMQCc3WMmmmqbhUsW3o0XiKVmUddIdgEiKvHaiQw8RYSHt4WKn11X/jFTUu
+         ctH0fgMUoQ+98re9S7pbjyVRqKnlEY1uFtBFZLPfMszzjCJn8KgyCkYsa1NENh34dlPl
+         /w80buM+JoFVZQvayAM0w0MsuGRoCKDl064zYloABRjlWZ5G5nQRGMCPBuJnibxV4Ceu
+         Sj2s9pXXsj9PwGVlnRUxP2pE96TGF/O5f287B225fOlHhvR5u6BgXEJEy9c5Fn1/+Fep
+         /Kzg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=c9bcsFTz7o1nm6T6sdAD3XwMAfi3610i3GxsLP1j6GY=;
+        b=pJg88aOrClXaLoetQO2nLSFNSyH1jwfmn+Z7dLo0Z/IgOv66A7p3uBL/esvupYvu9/
+         IuccWqGSPf/rDBo2lRsxDxAP7IkX/CivyycobVjIBNfh/JOaPv3lHgdq4HO0MMUMOdhu
+         Vu5wXRt6DP0taL3OX8m1wLEH/JbwD40cdzcuuhekWWMlidDO5Qlilw1bjUchqnNhXjOX
+         RFP0GV4URZMpoQ3Rf9rktuWqsagWCfy+rqiD1v2Yd7HD8rW+zTQMOX0QO5Ev36QvVmp/
+         vYKYYjHaoh0t6Dta69TNTR02Qtvu0izY9rNibe+RxZCvA+Ia3/5tG+Q+tjjaglrnJD4y
+         TJag==
+X-Gm-Message-State: AOAM532OsCud0HBXXz+B/7lhMB43GSbvfEtpKbRR0UvtI+ntXLeFOkMS
+        ulicltMCN9WJFNuhGYl9o7ObFZPZ+P+7+/AaICg=
+X-Google-Smtp-Source: ABdhPJxqX58QBB/FJLa4jq5hUa9Gru6wPvY57zbPfPCDS76TiHrgDvbMWpCcLLa+fN7M0ssz08RmFGqaUq6S5QWTMNg=
+X-Received: by 2002:a17:906:7714:b0:6ba:8a6a:b464 with SMTP id
+ q20-20020a170906771400b006ba8a6ab464mr2587437ejm.613.1649152529642; Tue, 05
+ Apr 2022 02:55:29 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <20211120193916.1309236-1-aford173@gmail.com> <319e976acb0a686e596b88520dbcda59c78afe9e.camel@pengutronix.de>
+ <CAHCN7x+5HXJEdRKbm80trpNwxZRAMhX12+FQ0JeVvrqKpKf+BA@mail.gmail.com> <20220405064458.GA129381@dragon>
+In-Reply-To: <20220405064458.GA129381@dragon>
+From:   Adam Ford <aford173@gmail.com>
+Date:   Tue, 5 Apr 2022 04:55:18 -0500
+Message-ID: <CAHCN7xKShNswT2JDZFZ9vSQ9_Kk1T+Ow3+=9as8sZ7mDQ6E1Vg@mail.gmail.com>
+Subject: Re: [PATCH] soc: imx: gpcv2: keep i.MX8MM VPU-H1 bus clock active
+To:     Shawn Guo <shawnguo@kernel.org>
+Cc:     Lucas Stach <l.stach@pengutronix.de>,
+        arm-soc <linux-arm-kernel@lists.infradead.org>,
+        Tim Harvey <tharvey@gateworks.com>,
+        Adam Ford-BE <aford@beaconembedded.com>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Peng Fan <peng.fan@nxp.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Roman Li <Roman.Li@amd.com>
+On Tue, Apr 5, 2022 at 1:45 AM Shawn Guo <shawnguo@kernel.org> wrote:
+>
+> On Thu, Mar 31, 2022 at 06:32:13AM -0500, Adam Ford wrote:
+> > On Thu, Mar 31, 2022 at 4:28 AM Lucas Stach <l.stach@pengutronix.de> wrote:
+> > >
+> > > Hi Adam, hi Shawn,
+> > >
+> > > Am Samstag, dem 20.11.2021 um 13:39 -0600 schrieb Adam Ford:
+> > > > Enable the vpu-h1 clock when the domain is active because reading
+> > > > or writing to the VPU-H1 IP block cause the system to hang.
+> > > >
+> > > > Fixes: 656ade7aa42a ("soc: imx: gpcv2: keep i.MX8M* bus clocks enabled")
+> > > > Signed-off-by: Adam Ford <aford173@gmail.com>
+> > > >
+> > > > diff --git a/drivers/soc/imx/gpcv2.c b/drivers/soc/imx/gpcv2.c
+> > > > index b8d52d8d29db..7b6dfa33dcb9 100644
+> > > > --- a/drivers/soc/imx/gpcv2.c
+> > > > +++ b/drivers/soc/imx/gpcv2.c
+> > > > @@ -734,6 +734,7 @@ static const struct imx_pgc_domain imx8mm_pgc_domains[] = {
+> > > >                       .map = IMX8MM_VPUH1_A53_DOMAIN,
+> > > >               },
+> > > >               .pgc   = BIT(IMX8MM_PGC_VPUH1),
+> > > > +             .keep_clocks = true,
+> > > >       },
+> > > >
+> > > I missed this patch and just stumbled across it when looking at the git
+> > > history. I don't think this patch is correct. The H1 GPC domain does
+> > > not even have clocks assigned in the DT, so there is nothing to keep
+> > > active. Also H1 is not a MIX domain, so it should not keep any bus
+> > > clocks active, that is the job of the VPUMIX domain.
+> > >
+> > > While this patch is a no-op, as far as I can see, it still seems wrong
+> > > and I think it should be reverted.
+> >
+> > At the time I sent this, I was working with some people in the media
+> > group to split the G1 and G2 up in the imx8mq and add G1 and G2
+> > support in the imx8mm.  I had inquired about the feasibility of using
+> > the H1 encoder on the imx8mm, but I needed to read some registers from
+> > the IP block to see which features were fused out.  I tried several
+> > different options to get the H1 to not hang when reading registers,
+> > and that was the only solution I found that worked.  I thought it odd
+> > as well since the G1 and G2 decoders didn't appear to need this.
+> > However, during the course of my investigation, I learned that the
+> > JPEG encoder was fused out of the imx8mm, and there wasn't a plan to
+> > add VP8 or H.264 encodering any time soon.   Since it is, as you put
+> > it, a no-op, I have no objections to reverting it.
+>
+> I do not quite follow.  You claimed that the change fixes a system hang.
+> Are we getting the hang back if we revert the change?
 
-[ Upstream commit 128f8ed5902a287a6bb4afe0ffdae8a80b2a64ec ]
+It was hanging when I has trying to use the H1 VPU, and this did fix
+it, but it seemed weird to me.  Unfortunately, Hantro H1 driver that
+is currently in Linux only supports JPEG, and the H1 VPU in the imx8mm
+has JPEG fused out.  As of right now, there is no H1 VPU consumer, so
+there is nobody attempting to enable the H1 power domain, so it
+remains a no-op.  If it's reverted, we'll have to revisit the issue in
+the future to prevent the hanging, but that will also require a new
+Hantro driver.
 
-[Why]
-When display topology changed on DSC hub we add all crtcs with dsc support to
-atomic state.
-Refer to patch:"drm/amd/display: Trigger modesets on MST DSC connectors"
-However the original implementation may skip crtc if the topology change
-caused by unplug.
-That potentially could lead to no-lightup or corruption on DSC hub after
-unplug event on one of the connectors.
-
-[How]
-Update add_affected_mst_dsc_crtcs() to use old connector state
-if new connector state has no crtc (undergoes modeset due to unplug)
-
-Fixes: 44be939ff7ac58 ("drm/amd/display: Trigger modesets on MST DSC connectors")
-
-Reviewed-by: Hersen Wu <hersenwu@amd.com>
-Acked-by: Jasdeep Dhillon <jdhillon@amd.com>
-Signed-off-by: Roman Li <Roman.Li@amd.com>
-Tested-by: Daniel Wheeler <daniel.wheeler@amd.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c | 7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
-index 7983c01c007d..b9859e52ad92 100644
---- a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
-+++ b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
-@@ -10226,10 +10226,13 @@ static int dm_check_crtc_cursor(struct drm_atomic_state *state,
- static int add_affected_mst_dsc_crtcs(struct drm_atomic_state *state, struct drm_crtc *crtc)
- {
- 	struct drm_connector *connector;
--	struct drm_connector_state *conn_state;
-+	struct drm_connector_state *conn_state, *old_conn_state;
- 	struct amdgpu_dm_connector *aconnector = NULL;
- 	int i;
--	for_each_new_connector_in_state(state, connector, conn_state, i) {
-+	for_each_oldnew_connector_in_state(state, connector, old_conn_state, conn_state, i) {
-+		if (!conn_state->crtc)
-+			conn_state = old_conn_state;
-+
- 		if (conn_state->crtc != crtc)
- 			continue;
- 
--- 
-2.34.1
-
-
-
+adam
+>
+> Shawn
