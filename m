@@ -2,161 +2,67 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B19E1C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 05:30:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B8C99C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 05:36:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229872AbiDEFcs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 01:32:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37566 "EHLO
+        id S229889AbiDEFiB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 01:38:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59748 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229730AbiDEFcq (ORCPT
+        with ESMTP id S229708AbiDEFhz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 01:32:46 -0400
-Received: from mga06.intel.com (mga06.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42E3011E
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 22:30:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649136648; x=1680672648;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=wr0t0OxiTw1dr3KGDsnSLL5RHoD0HJbe/XDmPV7OUWw=;
-  b=QFNK06xf7GsSvQR/4xKVn3UFtwYp2fsv7/MVdGITIftLF9qCf6KtF+By
-   3E5zqGo3jtLEidC6Hl8bWOkUQTj20IlSxAdE7f8e8FrSH2ID78mw5yB3Y
-   NUPGfNDtc61dwfZ8yRH7NK1ikHbVTfoyRhjbiw9wxcCXpdk3SXv/TenD9
-   iWxwfEbb27t6CTyE091ONNgj0zxauFuMSPWbCytPSTgfDd/slThiqnk+N
-   CjV0Ugt/M9nqxnNeKk4HD4a4wTDZHcPTBYeD36QoR3KUCuEO4KOHWXXcP
-   qolcrrH9lsFGyYoFPrEyDCEAMn5VDJlQm2+fkq925pG74tgETX8snBDu0
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10307"; a="321361832"
-X-IronPort-AV: E=Sophos;i="5.90,235,1643702400"; 
-   d="scan'208";a="321361832"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Apr 2022 22:30:47 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,235,1643702400"; 
-   d="scan'208";a="721914924"
-Received: from lkp-server02.sh.intel.com (HELO a44fdfb70b94) ([10.239.97.151])
-  by orsmga005.jf.intel.com with ESMTP; 04 Apr 2022 22:30:46 -0700
-Received: from kbuild by a44fdfb70b94 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nbbm9-0002gF-Fu;
-        Tue, 05 Apr 2022 05:30:45 +0000
-Date:   Tue, 5 Apr 2022 13:30:19 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     David Howells <dhowells@redhat.com>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
-        linux-kernel@vger.kernel.org
-Subject: [ammarfaizi2-block:dhowells/linux-fs/netfs-maple 26/40]
- fs/netfs/crypto.c:76:10: warning: comparison of distinct pointer types
- ('typeof (len) *' (aka 'unsigned int *') and 'typeof (((1UL) << 12) -
- offset) *' (aka 'unsigned long *'))
-Message-ID: <202204051324.imdBXJD9-lkp@intel.com>
+        Tue, 5 Apr 2022 01:37:55 -0400
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 908166C90A;
+        Mon,  4 Apr 2022 22:35:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
+        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=3b3CGMEtvbbiWr5yzpB1vkgXknPZ0unzkS2usWuM5zQ=; b=oprcixATceNR1lvr6wPiAeAep8
+        9zCOtNH/nU1hogoIN80xVbrqnlQoEfQVvq7Bn35n7AX6HZ7xYdG3NZeHRdaP+dlWiBobrhoTmG9Qg
+        HsTTBXyOtCN2ceRV76QybHMHpF/a0FPihgyb0BpCzLcXL3osENOfMq2vB/7W4q0QwCUN5G2lSJopz
+        c/mT2S458mCRhSxI54khZkQ7lr20mNUpjOp+6nX1gO4DR933XIb3HXhI4JZYIxUwfpSH2Ys01vnwG
+        hHHs2tI7mkc07epLdb2K6Rh+C8nB2oLfQuoaln8JY4m66vJ4pfBIsuqyT+Qg29P4THEvEnbFOYiuk
+        MaFb58XQ==;
+Received: from hch by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nbbr6-00HAqV-45; Tue, 05 Apr 2022 05:35:52 +0000
+Date:   Mon, 4 Apr 2022 22:35:52 -0700
+From:   Christoph Hellwig <hch@infradead.org>
+To:     Arnd Bergmann <arnd@arndb.de>
+Cc:     Christoph Hellwig <hch@infradead.org>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
+        linux-arch <linux-arch@vger.kernel.org>
+Subject: Re: [PATCH 8/8] virtio_ring.h: do not include <stdint.h> from
+ exported header
+Message-ID: <YkvVOLj/Rv4yPf5K@infradead.org>
+References: <20220404061948.2111820-1-masahiroy@kernel.org>
+ <20220404061948.2111820-9-masahiroy@kernel.org>
+ <Ykqh3mEy5uY8spe8@infradead.org>
+ <CAK8P3a07ZdqA0UBC_qkqzMsZWLUK=Rti3AkFe2VVEWLivuZAqA@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <CAK8P3a07ZdqA0UBC_qkqzMsZWLUK=Rti3AkFe2VVEWLivuZAqA@mail.gmail.com>
+X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/ammarfaizi2/linux-block dhowells/linux-fs/netfs-maple
-head:   674eea41fc70a740ff83ec590f9833f805852464
-commit: fc693b2e39df6567a0312f21bb9004e1d7983286 [26/40] netfs: Perform content encryption
-config: i386-randconfig-a015 (https://download.01.org/0day-ci/archive/20220405/202204051324.imdBXJD9-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project c4a1b07d0979e7ff20d7d541af666d822d66b566)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/ammarfaizi2/linux-block/commit/fc693b2e39df6567a0312f21bb9004e1d7983286
-        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
-        git fetch --no-tags ammarfaizi2-block dhowells/linux-fs/netfs-maple
-        git checkout fc693b2e39df6567a0312f21bb9004e1d7983286
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=i386 SHELL=/bin/bash fs/afs/ fs/netfs/
+On Mon, Apr 04, 2022 at 10:04:02AM +0200, Arnd Bergmann wrote:
+> The header is shared between kernel and other projects using virtio, such as
+> qemu and any boot loaders booting from virtio devices. It's not technically a
+> /kernel/ ABI, but it is an ABI and for practical reasons the kernel version is
+> maintained as the master copy if I understand it correctly.
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+Besides that fact that as you correctly states these are not a UAPI at
+all, qemu and bootloades are not specific to Linux and can't require a
+specific kernel version.  So the same thing we do for file system
+formats or network protocols applies here:  just copy the damn header.
+And as stated above any reasonably portable userspace needs to have a
+copy anyway.
 
-All warnings (new ones prefixed by >>):
-
->> fs/netfs/crypto.c:76:10: warning: comparison of distinct pointer types ('typeof (len) *' (aka 'unsigned int *') and 'typeof (((1UL) << 12) - offset) *' (aka 'unsigned long *')) [-Wcompare-distinct-pointer-types]
-                           seg = min(len, PAGE_SIZE - offset);
-                                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   include/linux/minmax.h:45:19: note: expanded from macro 'min'
-   #define min(x, y)       __careful_cmp(x, y, <)
-                           ^~~~~~~~~~~~~~~~~~~~~~
-   include/linux/minmax.h:36:24: note: expanded from macro '__careful_cmp'
-           __builtin_choose_expr(__safe_cmp(x, y), \
-                                 ^~~~~~~~~~~~~~~~
-   include/linux/minmax.h:26:4: note: expanded from macro '__safe_cmp'
-                   (__typecheck(x, y) && __no_side_effects(x, y))
-                    ^~~~~~~~~~~~~~~~~
-   include/linux/minmax.h:20:28: note: expanded from macro '__typecheck'
-           (!!(sizeof((typeof(x) *)1 == (typeof(y) *)1)))
-                      ~~~~~~~~~~~~~~ ^  ~~~~~~~~~~~~~~
-   1 warning generated.
-
-
-vim +76 fs/netfs/crypto.c
-
-    45	
-    46	/*
-    47	 * Populate a scatterlist from folios in an xarray.
-    48	 */
-    49	static int netfs_xarray_to_sglist(struct xarray *xa, loff_t pos, size_t len,
-    50					  struct scatterlist *sg, unsigned int n_sg)
-    51	{
-    52		struct scatterlist *p = sg;
-    53		struct folio *folio = NULL;
-    54		size_t seg, offset, skip = 0;
-    55		loff_t start = pos;
-    56		pgoff_t index = start >> PAGE_SHIFT;
-    57		int j;
-    58	
-    59		XA_STATE(xas, xa, index);
-    60	
-    61		sg_init_table(sg, n_sg);
-    62	
-    63		rcu_read_lock();
-    64	
-    65		xas_for_each(&xas, folio, ULONG_MAX) {
-    66			if (xas_retry(&xas, folio))
-    67				continue;
-    68			if (WARN_ON(xa_is_value(folio)) || WARN_ON(folio_test_hugetlb(folio)))
-    69				break;
-    70			for (j = (folio_index(folio) < index) ? index - folio_index(folio) : 0;
-    71			     j < folio_nr_pages(folio); j++
-    72			     ) {
-    73				struct page *subpage = folio_file_page(folio, j);
-    74	
-    75				offset = (pos + skip) & ~PAGE_MASK;
-  > 76				seg = min(len, PAGE_SIZE - offset);
-    77	
-    78				sg_set_page(p++, subpage, seg, offset);
-    79	
-    80				len -= seg;
-    81				skip += seg;
-    82				if (len == 0)
-    83					break;
-    84			}
-    85			if (len == 0)
-    86				break;
-    87		}
-    88	
-    89		rcu_read_unlock();
-    90		if (len > 0) {
-    91			kdebug("*** Insufficient source (%zx)", len);
-    92			//WARN_ON(len > 0);
-    93			return -EIO;
-    94		}
-    95	
-    96		sg_mark_end(p - 1);
-    97		return p - sg;
-    98	}
-    99	
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+If it is just as a "master copy" it can live in drivers/virtio/, just
+like we do for other formats.
