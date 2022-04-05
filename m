@@ -2,91 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EA877C41535
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:00:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 59811C35296
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:00:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1581843AbiDEXlM (ORCPT
+        id S1581879AbiDEXlR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 19:41:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50692 "EHLO
+        Tue, 5 Apr 2022 19:41:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40560 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358046AbiDEK15 (ORCPT
+        with ESMTP id S1377046AbiDENMq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:27:57 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C18091EEC6;
-        Tue,  5 Apr 2022 03:13:44 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5FC9961562;
-        Tue,  5 Apr 2022 10:13:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 70706C385A1;
-        Tue,  5 Apr 2022 10:13:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649153623;
-        bh=LeY3wKEwutDULuXR8eL2wPBlS4V4lm2KrlpDBv17W8M=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=c6PaARNI1SAfAURk22Vpe5WPpUA/LJc50YkyjUcG0Nfu3JzTj2psU/OEn7oOKVMkc
-         bY20sSO1+lIdkD7iPmzo0L8lBqp7zEMhdsUgNNeYMBEsACrUdhR5jMvtJ8k5NOxucS
-         D/Vrage8NWHmxOitwgVwkeOqOiWmP4p2F1WzfDQ0=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 250/599] ASoC: mxs: Fix error handling in mxs_sgtl5000_probe
-Date:   Tue,  5 Apr 2022 09:29:04 +0200
-Message-Id: <20220405070306.279287250@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 5 Apr 2022 09:12:46 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C65A2120DA3;
+        Tue,  5 Apr 2022 05:12:51 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id 81BE01F7AE;
+        Tue,  5 Apr 2022 12:12:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1649160770;
+        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
+         cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=/iIK4IU6j3+Uo5l6+7LzbpsQLqXq+AMjHPYQVXiK+s0=;
+        b=nyDFnzsydFaAJRoydrXbuGhbN1CuPAs6b94/8t/8QhRfZOBjATR/JtQEr0PKFcwYWnCVVP
+        vVHRRuPcTKMWtOjKUkYxStbCyI7lJAidHB7/BKugFEOBxmY8G7GSVqzmlrrxdy7pQC9IOy
+        sOR0SQyVSaNtgdZBZlCjtjgGpwoGu68=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1649160770;
+        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
+         cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=/iIK4IU6j3+Uo5l6+7LzbpsQLqXq+AMjHPYQVXiK+s0=;
+        b=PRDmohv2bqg2SiWHds2qJ7AS5EgCW6hoUEYX9gRBElZsIqcxpo8xCIJKDnhYBPyDVBx7Lu
+        mnmQbDvljuT36RCQ==
+Received: from ds.suse.cz (ds.suse.cz [10.100.12.205])
+        by relay2.suse.de (Postfix) with ESMTP id 7921BA3B92;
+        Tue,  5 Apr 2022 12:12:50 +0000 (UTC)
+Received: by ds.suse.cz (Postfix, from userid 10065)
+        id 4ECCDDA80E; Tue,  5 Apr 2022 14:08:49 +0200 (CEST)
+Date:   Tue, 5 Apr 2022 14:08:48 +0200
+From:   David Sterba <dsterba@suse.cz>
+To:     Matthew Wilcox <willy@infradead.org>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        linux-fsdevel@vger.kernel.org
+Subject: Re: [GIT PULL] Folio fixes for 5.18
+Message-ID: <20220405120848.GV15609@twin.jikos.cz>
+Reply-To: dsterba@suse.cz
+Mail-Followup-To: dsterba@suse.cz, Matthew Wilcox <willy@infradead.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        linux-fsdevel@vger.kernel.org
+References: <YkdKgzil38iyc7rX@casper.infradead.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YkdKgzil38iyc7rX@casper.infradead.org>
+User-Agent: Mutt/1.5.23.1-rc1 (2014-03-12)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+On Fri, Apr 01, 2022 at 07:54:59PM +0100, Matthew Wilcox wrote:
+> A mixture of odd changes that didn't quite make it into the original
+> pull and fixes for things that did.  Also the readpages changes had to
+> wait for the NFS tree to be pulled first.
+> 
+> The following changes since commit d888c83fcec75194a8a48ccd283953bdba7b2550:
+> 
+>   fs: fix fd table size alignment properly (2022-03-29 23:29:18 -0700)
+> 
+> are available in the Git repository at:
+> 
+>   git://git.infradead.org/users/willy/pagecache.git tags/folio-5.18d
+> 
+> for you to fetch changes up to 5a60542c61f3cce6e5dff2a38c8fb08a852a517b:
+> 
+>   btrfs: Remove a use of PAGE_SIZE in btrfs_invalidate_folio() (2022-04-01 14:40:44 -0400)
 
-[ Upstream commit 6ae0a4d8fec551ec581d620f0eb1fe31f755551c ]
-
-This function only calls of_node_put() in the regular path.
-And it will cause refcount leak in error paths.
-For example, when codec_np is NULL, saif_np[0] and saif_np[1]
-are not NULL, it will cause leaks.
-
-of_node_put() will check if the node pointer is NULL, so we can
-call it directly to release the refcount of regular pointers.
-
-Fixes: e968194b45c4 ("ASoC: mxs: add device tree support for mxs-sgtl5000")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Link: https://lore.kernel.org/r/20220308020146.26496-1-linmq006@gmail.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- sound/soc/mxs/mxs-sgtl5000.c | 3 +++
- 1 file changed, 3 insertions(+)
-
-diff --git a/sound/soc/mxs/mxs-sgtl5000.c b/sound/soc/mxs/mxs-sgtl5000.c
-index a6407f4388de..fb721bc49949 100644
---- a/sound/soc/mxs/mxs-sgtl5000.c
-+++ b/sound/soc/mxs/mxs-sgtl5000.c
-@@ -118,6 +118,9 @@ static int mxs_sgtl5000_probe(struct platform_device *pdev)
- 	codec_np = of_parse_phandle(np, "audio-codec", 0);
- 	if (!saif_np[0] || !saif_np[1] || !codec_np) {
- 		dev_err(&pdev->dev, "phandle missing or invalid\n");
-+		of_node_put(codec_np);
-+		of_node_put(saif_np[0]);
-+		of_node_put(saif_np[1]);
- 		return -EINVAL;
- 	}
- 
--- 
-2.34.1
-
-
-
+Matthew, can you please always CC linux-btrfs@vger.kernel.org for any
+patches that touch code under fs/btrfs? I've only noticed your folio
+updates in this pull request. Some of the changes are plain API switch,
+that's fine but I want to know about that, some changes seem to slightly
+modify logic that I'd really like to review and there are several missed
+opportunities to fix coding style. Thanks.
