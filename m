@@ -2,123 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 96AE9C4707A
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:09:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6BA43C352AA
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:09:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344196AbiDEXnv (ORCPT
+        id S1347574AbiDEXpN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 19:43:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39370 "EHLO
+        Tue, 5 Apr 2022 19:45:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34590 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349166AbiDEJtW (ORCPT
+        with ESMTP id S1384116AbiDEM1L (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:49:22 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0006164D6;
-        Tue,  5 Apr 2022 02:41:57 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 909E86164D;
-        Tue,  5 Apr 2022 09:41:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9E50EC385A1;
-        Tue,  5 Apr 2022 09:41:56 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649151717;
-        bh=jYK5sFnekXCxVL58RTzjeUc9TcSXOqyPwQlvV9P1BcY=;
+        Tue, 5 Apr 2022 08:27:11 -0400
+Received: from conuserg-12.nifty.com (conuserg-12.nifty.com [210.131.2.79])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB444574B2;
+        Tue,  5 Apr 2022 04:35:17 -0700 (PDT)
+Received: from grover.. (133-32-177-133.west.xps.vectant.ne.jp [133.32.177.133]) (authenticated)
+        by conuserg-12.nifty.com with ESMTP id 235BYCGw000464;
+        Tue, 5 Apr 2022 20:34:19 +0900
+DKIM-Filter: OpenDKIM Filter v2.10.3 conuserg-12.nifty.com 235BYCGw000464
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
+        s=dec2015msa; t=1649158459;
+        bh=gVdAU8NgX5021NtvHRpFHdYK2UvqDo2vrSD9W1vtAMA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vHYZXIAK1tkF/d5N1ks0pF+yE15AtpZlLteVT4QuLR4oL7A16O6gNIlXpQ6OERy6A
-         ssLUVQ7ihEu5bokL1s1MeFiezSgheMuJsNfTp8ttO7MCZUZk3adCVvDHZ4eWEcsRyv
-         QrPwF+xBn6tNs6IHpjz0UvRh/pJkH+7va8GmgdgY=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yajun Deng <yajun.deng@linux.dev>,
-        Leon Romanovsky <leonro@nvidia.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 516/913] RDMA/core: Fix ib_qp_usecnt_dec() called when error
-Date:   Tue,  5 Apr 2022 09:26:18 +0200
-Message-Id: <20220405070355.320834170@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
-User-Agent: quilt/0.66
+        b=HMNX5DFw87nSaiwE1Oo5QFT6reR50jBMkjc3VpbZqaffBYJ707hRf11BYqrmfG7Si
+         OEk8mucbkGCcabxfxTRYnhJtTam4qTUT0s+rlYH4AU6zu91BXOwblHaJB9nlWRMK3k
+         PX/WMesC5umLhTDADPVcsa4/ZIv4Kj3w8rFt4xrVERsnrvYxY+BDQgLVMUyk6hzw6g
+         lxKidVH1fL6pbLHsXTrO+a7YdLlT0lwmsw4LrDPb29fj6n+ifhxZPUky7uYD27diBB
+         nnXV2AUwL6PUhndQZvDnRnOxKOX4jvZ9CTxiJDFL7xaFK1QuE4+e+NdZ8iGSvrtY1k
+         rjviBygrWfAdg==
+X-Nifty-SrcIP: [133.32.177.133]
+From:   Masahiro Yamada <masahiroy@kernel.org>
+To:     linux-kbuild@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Michal Marek <michal.lkml@markovi.net>,
+        Nick Desaulniers <ndesaulniers@google.com>
+Subject: [PATCH v2 10/10] kbuild: refactor cmd_modversions_S
+Date:   Tue,  5 Apr 2022 20:33:58 +0900
+Message-Id: <20220405113359.2880241-11-masahiroy@kernel.org>
+X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20220405113359.2880241-1-masahiroy@kernel.org>
+References: <20220405113359.2880241-1-masahiroy@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yajun Deng <yajun.deng@linux.dev>
+Split the code into two macros, cmd_gen_symversions_S for running
+genksyms, and cmd_modversions for running $(LD) to update the object
+with CRCs.
 
-[ Upstream commit 7c4a539ec38f4ce400a0f3fcb5ff6c940fcd67bb ]
-
-ib_destroy_qp() would called by ib_create_qp_user() if error, the former
-contains ib_qp_usecnt_dec(), but ib_qp_usecnt_inc() was not called before.
-
-So move ib_qp_usecnt_inc() into create_qp().
-
-Fixes: d2b10794fc13 ("RDMA/core: Create clean QP creations interface for uverbs")
-Link: https://lore.kernel.org/r/20220303024232.2847388-1-yajun.deng@linux.dev
-Signed-off-by: Yajun Deng <yajun.deng@linux.dev>
-Reviewed-by: Leon Romanovsky <leonro@nvidia.com>
-Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
 ---
- drivers/infiniband/core/uverbs_cmd.c          | 1 -
- drivers/infiniband/core/uverbs_std_types_qp.c | 1 -
- drivers/infiniband/core/verbs.c               | 3 +--
- 3 files changed, 1 insertion(+), 4 deletions(-)
 
-diff --git a/drivers/infiniband/core/uverbs_cmd.c b/drivers/infiniband/core/uverbs_cmd.c
-index d1345d76d9b1..5a99e31df5f5 100644
---- a/drivers/infiniband/core/uverbs_cmd.c
-+++ b/drivers/infiniband/core/uverbs_cmd.c
-@@ -1438,7 +1438,6 @@ static int create_qp(struct uverbs_attr_bundle *attrs,
- 		ret = PTR_ERR(qp);
- 		goto err_put;
- 	}
--	ib_qp_usecnt_inc(qp);
+Changes in v2:
+  - new
+
+ scripts/Makefile.build | 15 ++++-----------
+ 1 file changed, 4 insertions(+), 11 deletions(-)
+
+diff --git a/scripts/Makefile.build b/scripts/Makefile.build
+index ba2be555f942..58be0997c5dd 100644
+--- a/scripts/Makefile.build
++++ b/scripts/Makefile.build
+@@ -274,7 +274,8 @@ define rule_as_o_S
+ 	$(call cmd_and_fixdep,as_o_S)
+ 	$(call cmd,gen_ksymdeps)
+ 	$(call cmd,gen_objtooldep)
+-	$(call cmd,modversions_S)
++	$(call cmd,gen_symversions_S)
++	$(call cmd,modversions)
+ endef
  
- 	obj->uevent.uobject.object = qp;
- 	obj->uevent.event_file = READ_ONCE(attrs->ufile->default_async_file);
-diff --git a/drivers/infiniband/core/uverbs_std_types_qp.c b/drivers/infiniband/core/uverbs_std_types_qp.c
-index dd1075466f61..75353e09c6fe 100644
---- a/drivers/infiniband/core/uverbs_std_types_qp.c
-+++ b/drivers/infiniband/core/uverbs_std_types_qp.c
-@@ -254,7 +254,6 @@ static int UVERBS_HANDLER(UVERBS_METHOD_QP_CREATE)(
- 		ret = PTR_ERR(qp);
- 		goto err_put;
- 	}
--	ib_qp_usecnt_inc(qp);
+ # Built-in and composite module parts
+@@ -366,16 +367,8 @@ ifdef CONFIG_ASM_MODVERSIONS
+ # versioning matches the C process described above, with difference that
+ # we parse asm-prototypes.h C header to get function definitions.
  
- 	if (attr.qp_type == IB_QPT_XRC_TGT) {
- 		obj->uxrcd = container_of(xrcd_uobj, struct ib_uxrcd_object,
-diff --git a/drivers/infiniband/core/verbs.c b/drivers/infiniband/core/verbs.c
-index 59e20936b800..b78cd65d20a6 100644
---- a/drivers/infiniband/core/verbs.c
-+++ b/drivers/infiniband/core/verbs.c
-@@ -1253,6 +1253,7 @@ static struct ib_qp *create_qp(struct ib_device *dev, struct ib_pd *pd,
- 	if (ret)
- 		goto err_security;
+-cmd_modversions_S =								\
+-	if $(OBJDUMP) -h $@ | grep -q __ksymtab; then				\
+-		$(call cmd_gensymtypes_S,$(KBUILD_SYMTYPES),$(@:.o=.symtypes))	\
+-		    > $(@D)/.tmp_$(@F:.o=.ver);					\
+-										\
+-		$(LD) $(KBUILD_LDFLAGS) -r -o $(@D)/.tmp_$(@F) $@ 		\
+-			-T $(@D)/.tmp_$(@F:.o=.ver);				\
+-		mv -f $(@D)/.tmp_$(@F) $@;					\
+-		rm -f $(@D)/.tmp_$(@F:.o=.ver);					\
+-	fi
++cmd_gen_symversions_S = $(call gen_symversions,S)
++
+ endif
  
-+	ib_qp_usecnt_inc(qp);
- 	rdma_restrack_add(&qp->res);
- 	return qp;
- 
-@@ -1353,8 +1354,6 @@ struct ib_qp *ib_create_qp_kernel(struct ib_pd *pd,
- 	if (IS_ERR(qp))
- 		return qp;
- 
--	ib_qp_usecnt_inc(qp);
--
- 	if (qp_init_attr->cap.max_rdma_ctxs) {
- 		ret = rdma_rw_init_mrs(qp, qp_init_attr);
- 		if (ret)
+ $(obj)/%.o: $(src)/%.S FORCE
 -- 
-2.34.1
-
-
+2.32.0
 
