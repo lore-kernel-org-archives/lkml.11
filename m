@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 12605C43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4FD95C433FE
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:28:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357912AbiDEUXu (ORCPT
+        id S1359102AbiDEUYB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 16:23:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43776 "EHLO
+        Tue, 5 Apr 2022 16:24:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36200 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354754AbiDEKPd (ORCPT
+        with ESMTP id S1354450AbiDEKOQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:15:33 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C2DD6C4A1;
-        Tue,  5 Apr 2022 03:02:33 -0700 (PDT)
+        Tue, 5 Apr 2022 06:14:16 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32BE76A010;
+        Tue,  5 Apr 2022 03:00:11 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DCCB061676;
-        Tue,  5 Apr 2022 10:02:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EE996C385A2;
-        Tue,  5 Apr 2022 10:02:31 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 63D65CE0B18;
+        Tue,  5 Apr 2022 10:00:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7B977C385A1;
+        Tue,  5 Apr 2022 10:00:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649152952;
-        bh=yrOpRFVVR1OsNePMDd/6AbHCRObGltdPhjNrhMNQIVY=;
+        s=korg; t=1649152808;
+        bh=KbcFA6Q3yLM52ALUUVmwuNRPyePwNo0MqRUxe/NNLCA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fdNHs+QnRGSHXkBJl09wZCIULH5wowUFhRhr3SH+6Vde2mb/R6XHNz+udbbc5xppy
-         UrCDE3ArzdGFXRN8tyl8hVCx32hz0HMLCNY/rEGqRYWaPsjnOumOnm24GwWC8PL+Wg
-         ZF4glYuKj6bwHvWLi7rRLMXpdzIPFiQCZ+VoDcmM=
+        b=My4WcbdphqvY4aecczTqtxcpeWdoOZHUhRrTxzT9gIV6TQxgnffgYueAiC2J5+ihN
+         PGIppOILZOrflMHKPKXwyyHhv3y9fEXfTP9TXNimaLQDXiRmVGaRppQg1kP80pTAvE
+         4oB7k5hnF57uWxd4PFmWMc2oKKyUt10exKp2eDNo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Juhyung Park <qkrwngud825@gmail.com>,
-        Chao Yu <chao@kernel.org>, Jaegeuk Kim <jaegeuk@kernel.org>
-Subject: [PATCH 5.10 049/599] f2fs: quota: fix loop condition at f2fs_quota_sync()
-Date:   Tue,  5 Apr 2022 09:25:43 +0200
-Message-Id: <20220405070300.288062825@linuxfoundation.org>
+        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 5.15 871/913] net: add skb_set_end_offset() helper
+Date:   Tue,  5 Apr 2022 09:32:13 +0200
+Message-Id: <20220405070405.932435069@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,95 +49,97 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Juhyung Park <qkrwngud825@gmail.com>
+From: Eric Dumazet <edumazet@google.com>
 
-commit 680af5b824a52faa819167628665804a14f0e0df upstream.
+commit 763087dab97547230a6807c865a6a5ae53a59247 upstream.
 
-cnt should be passed to sb_has_quota_active() instead of type to check
-active quota properly.
+We have multiple places where this helper is convenient,
+and plan using it in the following patch.
 
-Moreover, when the type is -1, the compiler with enough inline knowledge
-can discard sb_has_quota_active() check altogether, causing a NULL pointer
-dereference at the following inode_lock(dqopt->files[cnt]):
-
-[    2.796010] Unable to handle kernel NULL pointer dereference at virtual address 00000000000000a0
-[    2.796024] Mem abort info:
-[    2.796025]   ESR = 0x96000005
-[    2.796028]   EC = 0x25: DABT (current EL), IL = 32 bits
-[    2.796029]   SET = 0, FnV = 0
-[    2.796031]   EA = 0, S1PTW = 0
-[    2.796032] Data abort info:
-[    2.796034]   ISV = 0, ISS = 0x00000005
-[    2.796035]   CM = 0, WnR = 0
-[    2.796046] user pgtable: 4k pages, 39-bit VAs, pgdp=00000003370d1000
-[    2.796048] [00000000000000a0] pgd=0000000000000000, pud=0000000000000000
-[    2.796051] Internal error: Oops: 96000005 [#1] PREEMPT SMP
-[    2.796056] CPU: 7 PID: 640 Comm: f2fs_ckpt-259:7 Tainted: G S                5.4.179-arter97-r8-64666-g2f16e087f9d8 #1
-[    2.796057] Hardware name: Qualcomm Technologies, Inc. Lahaina MTP lemonadep (DT)
-[    2.796059] pstate: 80c00005 (Nzcv daif +PAN +UAO)
-[    2.796065] pc : down_write+0x28/0x70
-[    2.796070] lr : f2fs_quota_sync+0x100/0x294
-[    2.796071] sp : ffffffa3f48ffc30
-[    2.796073] x29: ffffffa3f48ffc30 x28: 0000000000000000
-[    2.796075] x27: ffffffa3f6d718b8 x26: ffffffa415fe9d80
-[    2.796077] x25: ffffffa3f7290048 x24: 0000000000000001
-[    2.796078] x23: 0000000000000000 x22: ffffffa3f7290000
-[    2.796080] x21: ffffffa3f72904a0 x20: ffffffa3f7290110
-[    2.796081] x19: ffffffa3f77a9800 x18: ffffffc020aae038
-[    2.796083] x17: ffffffa40e38e040 x16: ffffffa40e38e6d0
-[    2.796085] x15: ffffffa40e38e6cc x14: ffffffa40e38e6d0
-[    2.796086] x13: 00000000000004f6 x12: 00162c44ff493000
-[    2.796088] x11: 0000000000000400 x10: ffffffa40e38c948
-[    2.796090] x9 : 0000000000000000 x8 : 00000000000000a0
-[    2.796091] x7 : 0000000000000000 x6 : 0000d1060f00002a
-[    2.796093] x5 : ffffffa3f48ff718 x4 : 000000000000000d
-[    2.796094] x3 : 00000000060c0000 x2 : 0000000000000001
-[    2.796096] x1 : 0000000000000000 x0 : 00000000000000a0
-[    2.796098] Call trace:
-[    2.796100]  down_write+0x28/0x70
-[    2.796102]  f2fs_quota_sync+0x100/0x294
-[    2.796104]  block_operations+0x120/0x204
-[    2.796106]  f2fs_write_checkpoint+0x11c/0x520
-[    2.796107]  __checkpoint_and_complete_reqs+0x7c/0xd34
-[    2.796109]  issue_checkpoint_thread+0x6c/0xb8
-[    2.796112]  kthread+0x138/0x414
-[    2.796114]  ret_from_fork+0x10/0x18
-[    2.796117] Code: aa0803e0 aa1f03e1 52800022 aa0103e9 (c8e97d02)
-[    2.796120] ---[ end trace 96e942e8eb6a0b53 ]---
-[    2.800116] Kernel panic - not syncing: Fatal exception
-[    2.800120] SMP: stopping secondary CPUs
-
-Fixes: 9de71ede81e6 ("f2fs: quota: fix potential deadlock")
-Cc: <stable@vger.kernel.org> # v5.15+
-Signed-off-by: Juhyung Park <qkrwngud825@gmail.com>
-Reviewed-by: Chao Yu <chao@kernel.org>
-Signed-off-by: Jaegeuk Kim <jaegeuk@kernel.org>
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/f2fs/super.c |    6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ include/linux/skbuff.h |   10 ++++++++++
+ net/core/skbuff.c      |   19 +++++--------------
+ 2 files changed, 15 insertions(+), 14 deletions(-)
 
---- a/fs/f2fs/super.c
-+++ b/fs/f2fs/super.c
-@@ -2278,7 +2278,7 @@ int f2fs_quota_sync(struct super_block *
- 	struct f2fs_sb_info *sbi = F2FS_SB(sb);
- 	struct quota_info *dqopt = sb_dqopt(sb);
- 	int cnt;
--	int ret;
-+	int ret = 0;
+--- a/include/linux/skbuff.h
++++ b/include/linux/skbuff.h
+@@ -1436,6 +1436,11 @@ static inline unsigned int skb_end_offse
+ {
+ 	return skb->end;
+ }
++
++static inline void skb_set_end_offset(struct sk_buff *skb, unsigned int offset)
++{
++	skb->end = offset;
++}
+ #else
+ static inline unsigned char *skb_end_pointer(const struct sk_buff *skb)
+ {
+@@ -1446,6 +1451,11 @@ static inline unsigned int skb_end_offse
+ {
+ 	return skb->end - skb->head;
+ }
++
++static inline void skb_set_end_offset(struct sk_buff *skb, unsigned int offset)
++{
++	skb->end = skb->head + offset;
++}
+ #endif
  
- 	/*
- 	 * Now when everything is written we can discard the pagecache so
-@@ -2289,8 +2289,8 @@ int f2fs_quota_sync(struct super_block *
- 		if (type != -1 && cnt != type)
- 			continue;
+ /* Internal */
+--- a/net/core/skbuff.c
++++ b/net/core/skbuff.c
+@@ -203,7 +203,7 @@ static void __build_skb_around(struct sk
+ 	skb->head = data;
+ 	skb->data = data;
+ 	skb_reset_tail_pointer(skb);
+-	skb->end = skb->tail + size;
++	skb_set_end_offset(skb, size);
+ 	skb->mac_header = (typeof(skb->mac_header))~0U;
+ 	skb->transport_header = (typeof(skb->transport_header))~0U;
  
--		if (!sb_has_quota_active(sb, type))
--			return 0;
-+		if (!sb_has_quota_active(sb, cnt))
-+			continue;
- 
- 		inode_lock(dqopt->files[cnt]);
- 
+@@ -1738,11 +1738,10 @@ int pskb_expand_head(struct sk_buff *skb
+ 	skb->head     = data;
+ 	skb->head_frag = 0;
+ 	skb->data    += off;
++
++	skb_set_end_offset(skb, size);
+ #ifdef NET_SKBUFF_DATA_USES_OFFSET
+-	skb->end      = size;
+ 	off           = nhead;
+-#else
+-	skb->end      = skb->head + size;
+ #endif
+ 	skb->tail	      += off;
+ 	skb_headers_offset_update(skb, nhead);
+@@ -6159,11 +6158,7 @@ static int pskb_carve_inside_header(stru
+ 	skb->head = data;
+ 	skb->data = data;
+ 	skb->head_frag = 0;
+-#ifdef NET_SKBUFF_DATA_USES_OFFSET
+-	skb->end = size;
+-#else
+-	skb->end = skb->head + size;
+-#endif
++	skb_set_end_offset(skb, size);
+ 	skb_set_tail_pointer(skb, skb_headlen(skb));
+ 	skb_headers_offset_update(skb, 0);
+ 	skb->cloned = 0;
+@@ -6301,11 +6296,7 @@ static int pskb_carve_inside_nonlinear(s
+ 	skb->head = data;
+ 	skb->head_frag = 0;
+ 	skb->data = data;
+-#ifdef NET_SKBUFF_DATA_USES_OFFSET
+-	skb->end = size;
+-#else
+-	skb->end = skb->head + size;
+-#endif
++	skb_set_end_offset(skb, size);
+ 	skb_reset_tail_pointer(skb);
+ 	skb_headers_offset_update(skb, 0);
+ 	skb->cloned   = 0;
 
 
