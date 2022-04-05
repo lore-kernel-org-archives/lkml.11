@@ -2,47 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CCE7BC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 22:12:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B0A5AC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 22:23:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239004AbiDEWOD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 18:14:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60904 "EHLO
+        id S1349800AbiDEWP1 (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 18:15:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56134 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356216AbiDEKXa (ORCPT
+        with ESMTP id S1353989AbiDEKKR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:23:30 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE0E3BAB87;
-        Tue,  5 Apr 2022 03:07:50 -0700 (PDT)
+        Tue, 5 Apr 2022 06:10:17 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08650C55B1;
+        Tue,  5 Apr 2022 02:56:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6757AB81C88;
-        Tue,  5 Apr 2022 10:07:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D1EA2C385A1;
-        Tue,  5 Apr 2022 10:07:47 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8AB81616D7;
+        Tue,  5 Apr 2022 09:56:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 94D7FC385A2;
+        Tue,  5 Apr 2022 09:56:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649153268;
-        bh=5SKEbDrLT6+O1PlKgj+zrudt8PadU0+bYVvcmroswKE=;
+        s=korg; t=1649152581;
+        bh=5tdNro4II/wrfglmzV0p3T7ojcbQueE/a/9FwOwLUUE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=wl1HRdf2VkrSjNrSj//IE136964rDpZFCpYYzHMkoO0ykx80IaUPFaIODYSeCzsJF
-         74S/Qkb4c0q5qKJ2TMQSJQnwKybyBRO/DnlowTxOaMG4h8gw8WnFlOUOTyOVEDlmjH
-         JIyhM/hp5nQi+sjiwvpAaiwAvHullvmCGgpVCSQ0=
+        b=1Lau261GiuWD7K5xoqM0m19VeqIhFmVEU2SjL9llPMZYErrS+Btjikzb52QwgQszG
+         vCxqTXVkjJqwI/SxEiRudqrqwygIVKV4NaTHKIMh3Fdqvp/NIWbDPDdIjx/n515QHd
+         NfAowGxFkmlTVbckiKVRSX3BPGRM2PoC5UQ1syp0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Ville=20Syrj=C3=A4l=C3=A4?= 
-        <ville.syrjala@linux.intel.com>,
-        Lucas De Marchi <lucas.demarchi@intel.com>,
-        Jani Nikula <jani.nikula@intel.com>
-Subject: [PATCH 5.10 124/599] drm/i915/opregion: check port number bounds for SWSCI display power state
-Date:   Tue,  5 Apr 2022 09:26:58 +0200
-Message-Id: <20220405070302.527802109@linuxfoundation.org>
+        stable@vger.kernel.org, Abdul Haleem <abdhalee@linux.vnet.ibm.com>,
+        Himanshu Madhani <himanshu.madhani@oracle.com>,
+        Quinn Tran <qutran@marvell.com>,
+        Nilesh Javali <njavali@marvell.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>
+Subject: [PATCH 5.15 790/913] scsi: qla2xxx: Fix warning message due to adisc being flushed
+Date:   Tue,  5 Apr 2022 09:30:52 +0200
+Message-Id: <20220405070403.514693618@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,57 +52,84 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jani Nikula <jani.nikula@intel.com>
+From: Quinn Tran <qutran@marvell.com>
 
-commit 24a644ebbfd3b13cda702f98907f9dd123e34bf9 upstream.
+commit 64f24af75b79cba3b86b0760e27e0fa904db570f upstream.
 
-The mapping from enum port to whatever port numbering scheme is used by
-the SWSCI Display Power State Notification is odd, and the memory of it
-has faded. In any case, the parameter only has space for ports numbered
-[0..4], and UBSAN reports bit shift beyond it when the platform has port
-F or more.
+Fix warning message due to adisc being flushed.  Linux kernel triggered a
+warning message where a different error code type is not matching up with
+the expected type. Add additional translation of one error code type to
+another.
 
-Since the SWSCI functionality is supposed to be obsolete for new
-platforms (i.e. ones that might have port F or more), just bail out
-early if the mapped and mangled port number is beyond what the Display
-Power State Notification can support.
+WARNING: CPU: 2 PID: 1131623 at drivers/scsi/qla2xxx/qla_init.c:498
+qla2x00_async_adisc_sp_done+0x294/0x2b0 [qla2xxx]
+CPU: 2 PID: 1131623 Comm: drmgr Not tainted 5.13.0-rc1-autotest #1
+..
+GPR28: c000000aaa9c8890 c0080000079ab678 c00000140a104800 c00000002bd19000
+NIP [c00800000790857c] qla2x00_async_adisc_sp_done+0x294/0x2b0 [qla2xxx]
+LR [c008000007908578] qla2x00_async_adisc_sp_done+0x290/0x2b0 [qla2xxx]
+Call Trace:
+[c00000001cdc3620] [c008000007908578] qla2x00_async_adisc_sp_done+0x290/0x2b0 [qla2xxx] (unreliable)
+[c00000001cdc3710] [c0080000078f3080] __qla2x00_abort_all_cmds+0x1b8/0x580 [qla2xxx]
+[c00000001cdc3840] [c0080000078f589c] qla2x00_abort_all_cmds+0x34/0xd0 [qla2xxx]
+[c00000001cdc3880] [c0080000079153d8] qla2x00_abort_isp_cleanup+0x3f0/0x570 [qla2xxx]
+[c00000001cdc3920] [c0080000078fb7e8] qla2x00_remove_one+0x3d0/0x480 [qla2xxx]
+[c00000001cdc39b0] [c00000000071c274] pci_device_remove+0x64/0x120
+[c00000001cdc39f0] [c0000000007fb818] device_release_driver_internal+0x168/0x2a0
+[c00000001cdc3a30] [c00000000070e304] pci_stop_bus_device+0xb4/0x100
+[c00000001cdc3a70] [c00000000070e4f0] pci_stop_and_remove_bus_device+0x20/0x40
+[c00000001cdc3aa0] [c000000000073940] pci_hp_remove_devices+0x90/0x130
+[c00000001cdc3b30] [c0080000070704d0] disable_slot+0x38/0x90 [rpaphp] [
+c00000001cdc3b60] [c00000000073eb4c] power_write_file+0xcc/0x180
+[c00000001cdc3be0] [c0000000007354bc] pci_slot_attr_store+0x3c/0x60
+[c00000001cdc3c00] [c00000000055f820] sysfs_kf_write+0x60/0x80 [c00000001cdc3c20]
+[c00000000055df10] kernfs_fop_write_iter+0x1a0/0x290
+[c00000001cdc3c70] [c000000000447c4c] new_sync_write+0x14c/0x1d0
+[c00000001cdc3d10] [c00000000044b134] vfs_write+0x224/0x330
+[c00000001cdc3d60] [c00000000044b3f4] ksys_write+0x74/0x130
+[c00000001cdc3db0] [c00000000002df70] system_call_exception+0x150/0x2d0
+[c00000001cdc3e10] [c00000000000d45c] system_call_common+0xec/0x278
 
-Fixes: 9c4b0a683193 ("drm/i915: add opregion function to notify bios of encoder enable/disable")
-Cc: <stable@vger.kernel.org> # v3.13+
-Cc: Ville Syrjälä <ville.syrjala@linux.intel.com>
-Cc: Lucas De Marchi <lucas.demarchi@intel.com>
-Closes: https://gitlab.freedesktop.org/drm/intel/-/issues/4800
-Signed-off-by: Jani Nikula <jani.nikula@intel.com>
-Reviewed-by: Ville Syrjälä <ville.syrjala@linux.intel.com>
-Link: https://patchwork.freedesktop.org/patch/msgid/cc363f42d6b5a5932b6d218fefcc8bdfb15dbbe5.1644489329.git.jani.nikula@intel.com
+Link: https://lore.kernel.org/r/20220110050218.3958-5-njavali@marvell.com
+Cc: stable@vger.kernel.org
+Reported-by: Abdul Haleem <abdhalee@linux.vnet.ibm.com>
+Reviewed-by: Himanshu Madhani <himanshu.madhani@oracle.com>
+Signed-off-by: Quinn Tran <qutran@marvell.com>
+Signed-off-by: Nilesh Javali <njavali@marvell.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/i915/display/intel_opregion.c |   15 +++++++++++++++
- 1 file changed, 15 insertions(+)
+ drivers/scsi/qla2xxx/qla_init.c |    6 ++++++
+ 1 file changed, 6 insertions(+)
 
---- a/drivers/gpu/drm/i915/display/intel_opregion.c
-+++ b/drivers/gpu/drm/i915/display/intel_opregion.c
-@@ -376,6 +376,21 @@ int intel_opregion_notify_encoder(struct
- 		return -EINVAL;
+--- a/drivers/scsi/qla2xxx/qla_init.c
++++ b/drivers/scsi/qla2xxx/qla_init.c
+@@ -295,6 +295,8 @@ static void qla2x00_async_login_sp_done(
+ 		ea.iop[0] = lio->u.logio.iop[0];
+ 		ea.iop[1] = lio->u.logio.iop[1];
+ 		ea.sp = sp;
++		if (res)
++			ea.data[0] = MBS_COMMAND_ERROR;
+ 		qla24xx_handle_plogi_done_event(vha, &ea);
  	}
  
-+	/*
-+	 * The port numbering and mapping here is bizarre. The now-obsolete
-+	 * swsci spec supports ports numbered [0..4]. Port E is handled as a
-+	 * special case, but port F and beyond are not. The functionality is
-+	 * supposed to be obsolete for new platforms. Just bail out if the port
-+	 * number is out of bounds after mapping.
-+	 */
-+	if (port > 4) {
-+		drm_dbg_kms(&dev_priv->drm,
-+			    "[ENCODER:%d:%s] port %c (index %u) out of bounds for display power state notification\n",
-+			    intel_encoder->base.base.id, intel_encoder->base.name,
-+			    port_name(intel_encoder->port), port);
-+		return -EINVAL;
-+	}
-+
- 	if (!enable)
- 		parm |= 4 << 8;
+@@ -558,6 +560,8 @@ static void qla2x00_async_adisc_sp_done(
+ 	ea.iop[1] = lio->u.logio.iop[1];
+ 	ea.fcport = sp->fcport;
+ 	ea.sp = sp;
++	if (res)
++		ea.data[0] = MBS_COMMAND_ERROR;
  
+ 	qla24xx_handle_adisc_event(vha, &ea);
+ 	/* ref: INIT */
+@@ -1238,6 +1242,8 @@ static void qla2x00_async_prli_sp_done(s
+ 		ea.sp = sp;
+ 		if (res == QLA_OS_TIMER_EXPIRED)
+ 			ea.data[0] = QLA_OS_TIMER_EXPIRED;
++		else if (res)
++			ea.data[0] = MBS_COMMAND_ERROR;
+ 
+ 		qla24xx_handle_prli_done_event(vha, &ea);
+ 	}
 
 
