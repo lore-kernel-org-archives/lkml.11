@@ -2,46 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 33AD5C4707E
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 07:50:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A827C43219
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 07:50:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233269AbiDEHwR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 03:52:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47340 "EHLO
+        id S233045AbiDEHwX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 03:52:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47094 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233067AbiDEHrY (ORCPT
+        with ESMTP id S233039AbiDEHrX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 03:47:24 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 424AB9E9E8;
-        Tue,  5 Apr 2022 00:43:36 -0700 (PDT)
+        Tue, 5 Apr 2022 03:47:23 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 380C4972DE;
+        Tue,  5 Apr 2022 00:43:32 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C5257616D7;
-        Tue,  5 Apr 2022 07:43:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CAB90C340EE;
-        Tue,  5 Apr 2022 07:43:34 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D214AB81B18;
+        Tue,  5 Apr 2022 07:43:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 32D73C340EE;
+        Tue,  5 Apr 2022 07:43:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649144615;
-        bh=aX9aeIuXYr50nURfh1LmmIau+LRWouTMztlGYS+gtMg=;
+        s=korg; t=1649144609;
+        bh=wrhu+Pa4xRRjIwk3rJFBWHur0faEmRIv7fVBB++ZX+o=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=yWLzw84XaLcrHMziX1hIWhxEAH50vTlXCB3xqGA4EnMUas/IQNzK0c6B0rHi3MP8U
-         N0VOcuXjnjePjzC7ik45sE9VJho8ckFH2KMPtnMfn0uf/oAMSjqTbLHiEyvw0u2ZDL
-         OO05ldh6Fya+23whetyIuPzV0tzlEUN5MOfyhKHQ=
+        b=HlWDeMIMNZHMjVtuKpyEDBaicWdf3GWkhl+VxAhph/KxDbvL/nq9GYPTZ6YgHGVjL
+         MnJVRSwhJfJWrQR2r4/B3VWD7MOf56POLXB7OQUZsNINIF+xKlAIqVPM8hiVvx6AE3
+         pMJkm2/AQnM+JdH3xrcWcud0LSka2ETyLVhP1QIg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Oscar Salvador <osalvador@suse.de>,
-        Baolin Wang <baolin.wang@linux.alibaba.com>,
-        Abhishek Goel <huntbag@linux.vnet.ibm.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "Huang, Ying" <ying.huang@intel.com>,
+        stable@vger.kernel.org,
+        Charan Teja Kalla <quic_charante@quicinc.com>,
+        Michal Hocko <mhocko@suse.com>,
+        Suren Baghdasaryan <surenb@google.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        David Rientjes <rientjes@google.com>,
+        Nadav Amit <nadav.amit@gmail.com>,
         Andrew Morton <akpm@linux-foundation.org>,
         Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [PATCH 5.17 0109/1126] mm: only re-generate demotion targets when a numa node changes its N_CPU state
-Date:   Tue,  5 Apr 2022 09:14:16 +0200
-Message-Id: <20220405070410.770232844@linuxfoundation.org>
+Subject: [PATCH 5.17 0107/1126] Revert "mm: madvise: skip unmapped vma holes passed to process_madvise"
+Date:   Tue,  5 Apr 2022 09:14:14 +0200
+Message-Id: <20220405070410.710963361@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -53,183 +55,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Oscar Salvador <osalvador@suse.de>
+From: Charan Teja Kalla <quic_charante@quicinc.com>
 
-commit 734c15700cdf9062ae98d8b131c6fe873dfad26d upstream.
+commit e6b0a7b357659c332231621e4315658d062c23ee upstream.
 
-Abhishek reported that after patch [1], hotplug operations are taking
-roughly double the expected time.  [2]
+This reverts commit 08095d6310a7 ("mm: madvise: skip unmapped vma holes
+passed to process_madvise") as process_madvise() fails to return the
+exact processed bytes in other cases too.
 
-The reason behind is that the CPU callbacks that
-migrate_on_reclaim_init() sets always call set_migration_target_nodes()
-whenever a CPU is brought up/down.
+As an example: if process_madvise() hits mlocked pages after processing
+some initial bytes passed in [start, end), it just returns EINVAL
+although some bytes are processed.  Thus making an exception only for
+ENOMEM is partially fixing the problem of returning the proper advised
+bytes.
 
-But we only care about numa nodes going from having cpus to become
-cpuless, and vice versa, as that influences the demotion_target order.
+Thus revert this patch and return proper bytes advised.
 
-We do already have two CPU callbacks (vmstat_cpu_online() and
-vmstat_cpu_dead()) that check exactly that, so get rid of the CPU
-callbacks in migrate_on_reclaim_init() and only call
-set_migration_target_nodes() from vmstat_cpu_{dead,online}() whenever a
-numa node change its N_CPU state.
-
-[1] https://lore.kernel.org/linux-mm/20210721063926.3024591-2-ying.huang@intel.com/
-[2] https://lore.kernel.org/linux-mm/eb438ddd-2919-73d4-bd9f-b7eecdd9577a@linux.vnet.ibm.com/
-
-[osalvador@suse.de: add feedback from Huang Ying]
-  Link: https://lkml.kernel.org/r/20220314150945.12694-1-osalvador@suse.de
-
-Link: https://lkml.kernel.org/r/20220310120749.23077-1-osalvador@suse.de
-Fixes: 884a6e5d1f93b ("mm/migrate: update node demotion order on hotplug events")
-Signed-off-by: Oscar Salvador <osalvador@suse.de>
-Reviewed-by: Baolin Wang <baolin.wang@linux.alibaba.com>
-Tested-by: Baolin Wang <baolin.wang@linux.alibaba.com>
-Reported-by: Abhishek Goel <huntbag@linux.vnet.ibm.com>
-Cc: Dave Hansen <dave.hansen@linux.intel.com>
-Cc: "Huang, Ying" <ying.huang@intel.com>
-Cc: Abhishek Goel <huntbag@linux.vnet.ibm.com>
+Link: https://lkml.kernel.org/r/e73da1304a88b6a8a11907045117cccf4c2b8374.1648046642.git.quic_charante@quicinc.com
+Fixes: 08095d6310a7ce ("mm: madvise: skip unmapped vma holes passed to process_madvise")
+Signed-off-by: Charan Teja Kalla <quic_charante@quicinc.com>
+Acked-by: Michal Hocko <mhocko@suse.com>
+Cc: Suren Baghdasaryan <surenb@google.com>
+Cc: Vlastimil Babka <vbabka@suse.cz>
+Cc: David Rientjes <rientjes@google.com>
+Cc: Nadav Amit <nadav.amit@gmail.com>
 Cc: <stable@vger.kernel.org>
 Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
 Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- include/linux/migrate.h |    8 ++++++++
- mm/migrate.c            |   47 ++++++++++-------------------------------------
- mm/vmstat.c             |   13 ++++++++++++-
- 3 files changed, 30 insertions(+), 38 deletions(-)
+ mm/madvise.c |    9 +--------
+ 1 file changed, 1 insertion(+), 8 deletions(-)
 
---- a/include/linux/migrate.h
-+++ b/include/linux/migrate.h
-@@ -48,7 +48,15 @@ int folio_migrate_mapping(struct address
- 		struct folio *newfolio, struct folio *folio, int extra_count);
+--- a/mm/madvise.c
++++ b/mm/madvise.c
+@@ -1426,16 +1426,9 @@ SYSCALL_DEFINE5(process_madvise, int, pi
  
- extern bool numa_demotion_enabled;
-+extern void migrate_on_reclaim_init(void);
-+#ifdef CONFIG_HOTPLUG_CPU
-+extern void set_migration_target_nodes(void);
- #else
-+static inline void set_migration_target_nodes(void) {}
-+#endif
-+#else
-+
-+static inline void set_migration_target_nodes(void) {}
- 
- static inline void putback_movable_pages(struct list_head *l) {}
- static inline int migrate_pages(struct list_head *l, new_page_t new,
---- a/mm/migrate.c
-+++ b/mm/migrate.c
-@@ -3190,7 +3190,7 @@ again:
- /*
-  * For callers that do not hold get_online_mems() already.
-  */
--static void set_migration_target_nodes(void)
-+void set_migration_target_nodes(void)
- {
- 	get_online_mems();
- 	__set_migration_target_nodes();
-@@ -3254,51 +3254,24 @@ static int __meminit migrate_on_reclaim_
- 	return notifier_from_errno(0);
- }
- 
--/*
-- * React to hotplug events that might affect the migration targets
-- * like events that online or offline NUMA nodes.
-- *
-- * The ordering is also currently dependent on which nodes have
-- * CPUs.  That means we need CPU on/offline notification too.
-- */
--static int migration_online_cpu(unsigned int cpu)
--{
--	set_migration_target_nodes();
--	return 0;
--}
--
--static int migration_offline_cpu(unsigned int cpu)
--{
--	set_migration_target_nodes();
--	return 0;
--}
--
--static int __init migrate_on_reclaim_init(void)
-+void __init migrate_on_reclaim_init(void)
- {
--	int ret;
--
- 	node_demotion = kmalloc_array(nr_node_ids,
- 				      sizeof(struct demotion_nodes),
- 				      GFP_KERNEL);
- 	WARN_ON(!node_demotion);
- 
--	ret = cpuhp_setup_state_nocalls(CPUHP_MM_DEMOTION_DEAD, "mm/demotion:offline",
--					NULL, migration_offline_cpu);
-+	hotplug_memory_notifier(migrate_on_reclaim_callback, 100);
- 	/*
--	 * In the unlikely case that this fails, the automatic
--	 * migration targets may become suboptimal for nodes
--	 * where N_CPU changes.  With such a small impact in a
--	 * rare case, do not bother trying to do anything special.
-+	 * At this point, all numa nodes with memory/CPus have their state
-+	 * properly set, so we can build the demotion order now.
-+	 * Let us hold the cpu_hotplug lock just, as we could possibily have
-+	 * CPU hotplug events during boot.
- 	 */
--	WARN_ON(ret < 0);
--	ret = cpuhp_setup_state(CPUHP_AP_MM_DEMOTION_ONLINE, "mm/demotion:online",
--				migration_online_cpu, NULL);
--	WARN_ON(ret < 0);
--
--	hotplug_memory_notifier(migrate_on_reclaim_callback, 100);
--	return 0;
-+	cpus_read_lock();
-+	set_migration_target_nodes();
-+	cpus_read_unlock();
- }
--late_initcall(migrate_on_reclaim_init);
- #endif /* CONFIG_HOTPLUG_CPU */
- 
- bool numa_demotion_enabled = false;
---- a/mm/vmstat.c
-+++ b/mm/vmstat.c
-@@ -28,6 +28,7 @@
- #include <linux/mm_inline.h>
- #include <linux/page_ext.h>
- #include <linux/page_owner.h>
-+#include <linux/migrate.h>
- 
- #include "internal.h"
- 
-@@ -2043,7 +2044,12 @@ static void __init init_cpu_node_state(v
- static int vmstat_cpu_online(unsigned int cpu)
- {
- 	refresh_zone_stat_thresholds();
--	node_set_state(cpu_to_node(cpu), N_CPU);
-+
-+	if (!node_state(cpu_to_node(cpu), N_CPU)) {
-+		node_set_state(cpu_to_node(cpu), N_CPU);
-+		set_migration_target_nodes();
-+	}
-+
- 	return 0;
- }
- 
-@@ -2066,6 +2072,8 @@ static int vmstat_cpu_dead(unsigned int
- 		return 0;
- 
- 	node_clear_state(node, N_CPU);
-+	set_migration_target_nodes();
-+
- 	return 0;
- }
- 
-@@ -2097,6 +2105,9 @@ void __init init_mm_internals(void)
- 
- 	start_shepherd_timer();
- #endif
-+#if defined(CONFIG_MIGRATION) && defined(CONFIG_HOTPLUG_CPU)
-+	migrate_on_reclaim_init();
-+#endif
- #ifdef CONFIG_PROC_FS
- 	proc_create_seq("buddyinfo", 0444, NULL, &fragmentation_op);
- 	proc_create_seq("pagetypeinfo", 0400, NULL, &pagetypeinfo_op);
+ 	while (iov_iter_count(&iter)) {
+ 		iovec = iov_iter_iovec(&iter);
+-		/*
+-		 * do_madvise returns ENOMEM if unmapped holes are present
+-		 * in the passed VMA. process_madvise() is expected to skip
+-		 * unmapped holes passed to it in the 'struct iovec' list
+-		 * and not fail because of them. Thus treat -ENOMEM return
+-		 * from do_madvise as valid and continue processing.
+-		 */
+ 		ret = do_madvise(mm, (unsigned long)iovec.iov_base,
+ 					iovec.iov_len, behavior);
+-		if (ret < 0 && ret != -ENOMEM)
++		if (ret < 0)
+ 			break;
+ 		iov_iter_advance(&iter, iovec.iov_len);
+ 	}
 
 
