@@ -2,107 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4257DC433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5602BC4167D
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 22:04:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1390483AbiDEWDr (ORCPT
+        id S1390525AbiDEWDu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 18:03:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55074 "EHLO
+        Tue, 5 Apr 2022 18:03:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55600 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357971AbiDEK1g (ORCPT
+        with ESMTP id S1572996AbiDERna (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:27:36 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A1D3C74B2;
-        Tue,  5 Apr 2022 03:11:50 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 36CC8617AC;
-        Tue,  5 Apr 2022 10:11:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 475E3C385A1;
-        Tue,  5 Apr 2022 10:11:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649153509;
-        bh=ZRS2hcKHXOZ9Z/uxbsKNo77SLe2c5OqQQnovn31c8O8=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LK43r9KRkGwIZ/Ei+iEO+Zi/x9VAkPj4oJfNMZYHKt1kzUBy86GxfHJwS5P5BaORd
-         POgu/6HY0nontQwe/8dbO0xMSgpCU6qpkLw/mLR2RK7SiKh8x27Bt6TJsl1L6Vvuc6
-         YbuvBHWBKl8Ick7zjV36aak7rU5TW4lgZfCuN6Sk=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, David Heidelberg <david@ixit.cz>,
-        Steev Klimaszewski <steev@kali.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 208/599] arm64: dts: qcom: sdm845: fix microphone bias properties and values
-Date:   Tue,  5 Apr 2022 09:28:22 +0200
-Message-Id: <20220405070305.030760308@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 5 Apr 2022 13:43:30 -0400
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D588CB91AE;
+        Tue,  5 Apr 2022 10:41:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649180491; x=1680716491;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=d1uggptIEOdH6XP927KXNMIpnt0NmVSeFNANlHp6nPQ=;
+  b=AAU/kxUvSzhEcigPIu96Y5JOYZY+9iUEM5gmtvyLnr/EgIUHoRqgIMVL
+   BavdfY7ZpHp8edoItMSoePA6XqIbSSedbYkl2DHp6SXFh07fTp+1BeYDl
+   cci9CTb7dnCJ4f3Cy8loJAhXcM3UFYGv01juWngneu93ybSolfD0/ISVH
+   bjs0jCMFNY8C90VmQx6wD4CDeCk+FBgx3VRcQn4X2/c9+l5Ip+LBB8bAu
+   FXwUc33/EIhiko6V2mvYdLP4GFb4v6LHTncVR4y+Fe7El3uHeTz9fJMwS
+   WQDv3JTHyo+MWeNsdoW7Zw6XW08FgyfQh7hMLiSYsIpM0YJbQxX/VapKM
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10308"; a="259651073"
+X-IronPort-AV: E=Sophos;i="5.90,236,1643702400"; 
+   d="scan'208";a="259651073"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2022 10:41:30 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,236,1643702400"; 
+   d="scan'208";a="523555238"
+Received: from lkp-server02.sh.intel.com (HELO a44fdfb70b94) ([10.239.97.151])
+  by orsmga002.jf.intel.com with ESMTP; 05 Apr 2022 10:41:25 -0700
+Received: from kbuild by a44fdfb70b94 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nbnBE-0003dj-Br;
+        Tue, 05 Apr 2022 17:41:24 +0000
+Date:   Wed, 6 Apr 2022 01:40:38 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Masami Hiramatsu <mhiramat@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>
+Cc:     kbuild-all@lists.01.org, Daniel Borkmann <daniel@iogearbox.net>,
+        Shubham Bansal <illusionist.neo@gmail.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Masami Hiramatsu <mhiramat@kernel.org>, bpf@vger.kernel.org,
+        kernel-team@fb.com, Jiri Olsa <jolsa@kernel.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        "Naveen N . Rao" <naveen.n.rao@linux.ibm.com>,
+        Anil S Keshavamurthy <anil.s.keshavamurthy@intel.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        linux-kernel@vger.kernel.org, Mark Rutland <mark.rutland@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Russell King <linux@armlinux.org.uk>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH bpf 4/4] arm64: rethook: Replace kretprobe trampoline
+ with rethook
+Message-ID: <202204060119.lme7uoGl-lkp@intel.com>
+References: <164915126392.982637.10302202550404803304.stgit@devnote2>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <164915126392.982637.10302202550404803304.stgit@devnote2>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: David Heidelberg <david@ixit.cz>
+Hi Masami,
 
-[ Upstream commit 625c24460dbbc3b6c9a148c0a30f0830893fc909 ]
+I love your patch! Perhaps something to improve:
 
-replace millivolt with correct microvolt and adjust value to
-the minimal value allowed by documentation.
+[auto build test WARNING on bpf/master]
 
-Found with `make qcom/sdm845-oneplus-fajita.dtb`.
+url:    https://github.com/intel-lab-lkp/linux/commits/Masami-Hiramatsu/kprobes-rethook-ARM-arm64-Replace-kretprobe-trampoline-with-rethook/20220405-195153
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf.git master
+config: arm64-allyesconfig (https://download.01.org/0day-ci/archive/20220406/202204060119.lme7uoGl-lkp@intel.com/config)
+compiler: aarch64-linux-gcc (GCC) 11.2.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/intel-lab-lkp/linux/commit/74084aa7903f112b1c3df1f864d49b15d8aba270
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Masami-Hiramatsu/kprobes-rethook-ARM-arm64-Replace-kretprobe-trampoline-with-rethook/20220405-195153
+        git checkout 74084aa7903f112b1c3df1f864d49b15d8aba270
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=arm64 SHELL=/bin/bash arch/arm64/kernel/
 
-Fixes:
-arch/arm64/boot/dts/qcom/sdm845-oneplus-fajita.dt.yaml: codec@1: 'qcom,micbias1-microvolt' is a required property
-        From schema: Documentation/devicetree/bindings/sound/qcom,wcd934x.yaml
-arch/arm64/boot/dts/qcom/sdm845-oneplus-fajita.dt.yaml: codec@1: 'qcom,micbias2-microvolt' is a required property
-        From schema: Documentation/devicetree/bindings/sound/qcom,wcd934x.yaml
-arch/arm64/boot/dts/qcom/sdm845-oneplus-fajita.dt.yaml: codec@1: 'qcom,micbias3-microvolt' is a required property
-        From schema: Documentation/devicetree/bindings/sound/qcom,wcd934x.yaml
-arch/arm64/boot/dts/qcom/sdm845-oneplus-fajita.dt.yaml: codec@1: 'qcom,micbias4-microvolt' is a required property
-        From schema: Documentation/devicetree/bindings/sound/qcom,wcd934x.yaml
-arch/arm64/boot/dts/qcom/sdm845-oneplus-fajita.dt.yaml: codec@1: 'qcom,micbias1-millivolt', 'qcom,micbias2-millivolt', 'qcom,micbias3-millivolt', 'qcom,micbias4-millivolt' do not match any of the regexes: '^.*@[0-9a-f]+$', 'pinctrl-[0-9]+'
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-Fixes: 27ca1de07dc3 ("arm64: dts: qcom: sdm845: add slimbus nodes")
+All warnings (new ones prefixed by >>):
 
-Signed-off-by: David Heidelberg <david@ixit.cz>
-Tested-by: Steev Klimaszewski <steev@kali.org>
-Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Link: https://lore.kernel.org/r/20211213195105.114596-1-david@ixit.cz
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- arch/arm64/boot/dts/qcom/sdm845.dtsi | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+>> arch/arm64/kernel/rethook.c:11:22: warning: no previous prototype for 'arch_rethook_trampoline_callback' [-Wmissing-prototypes]
+      11 | unsigned long __used arch_rethook_trampoline_callback(struct pt_regs *regs)
+         |                      ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-diff --git a/arch/arm64/boot/dts/qcom/sdm845.dtsi b/arch/arm64/boot/dts/qcom/sdm845.dtsi
-index ea6e3a11e641..9beb3c34fcdb 100644
---- a/arch/arm64/boot/dts/qcom/sdm845.dtsi
-+++ b/arch/arm64/boot/dts/qcom/sdm845.dtsi
-@@ -3406,10 +3406,10 @@
- 					#clock-cells = <0>;
- 					clock-frequency = <9600000>;
- 					clock-output-names = "mclk";
--					qcom,micbias1-millivolt = <1800>;
--					qcom,micbias2-millivolt = <1800>;
--					qcom,micbias3-millivolt = <1800>;
--					qcom,micbias4-millivolt = <1800>;
-+					qcom,micbias1-microvolt = <1800000>;
-+					qcom,micbias2-microvolt = <1800000>;
-+					qcom,micbias3-microvolt = <1800000>;
-+					qcom,micbias4-microvolt = <1800000>;
- 
- 					#address-cells = <1>;
- 					#size-cells = <1>;
+
+vim +/arch_rethook_trampoline_callback +11 arch/arm64/kernel/rethook.c
+
+     9	
+    10	/* This is called from arch_rethook_trampoline() */
+  > 11	unsigned long __used arch_rethook_trampoline_callback(struct pt_regs *regs)
+    12	{
+    13		return rethook_trampoline_handler(regs, regs->regs[29]);
+    14	}
+    15	NOKPROBE_SYMBOL(arch_rethook_trampoline_callback);
+    16	
+
 -- 
-2.34.1
-
-
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
