@@ -2,91 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 259BCC433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E0FAC4707F
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:09:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1582021AbiDEXlq (ORCPT
+        id S1582050AbiDEXlw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 19:41:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58512 "EHLO
+        Tue, 5 Apr 2022 19:41:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51882 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352509AbiDEKEk (ORCPT
+        with ESMTP id S1358047AbiDEK15 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:04:40 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F9CFBABBC;
-        Tue,  5 Apr 2022 02:53:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649152401; x=1680688401;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=VDvK04o8caLp/soQY/A5TNib+Od/eTs0oaHnfnSXUpM=;
-  b=FrsnyGkAIkTD0AcRxqYLFSi5XIyq4VA/CIf89Obgl//h2vsoLi/xhh2g
-   SAgjvBUlouH1ZvsXf8HNqP7Uzgcb0TcMjODl/6MFr+ZOZirLvrqhzZ0ar
-   20qo7NfGr24hf5YnYTyXGnT2C/eD/wkIFEz2lHuxBq9NoKdFzd9yOvNY9
-   KN51ujmKxnh1b/63bCh4mtorwdWaj4D58EQa3gvF90FaMds+Fcd6UQQae
-   aci5/ocdnsn+Zh4pHTGKHj0eUFwK21+8BVdNbbhk0SpLk220FZr/8X9/X
-   /w/P42AcL1Wa8wh4JI2/Kcd75w75diqetS21XAAoBrFLvM7efYeT2wDg5
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10307"; a="323883734"
-X-IronPort-AV: E=Sophos;i="5.90,236,1643702400"; 
-   d="scan'208";a="323883734"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2022 02:53:21 -0700
-X-IronPort-AV: E=Sophos;i="5.90,236,1643702400"; 
-   d="scan'208";a="505219314"
-Received: from lahna.fi.intel.com (HELO lahna) ([10.237.72.162])
-  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2022 02:53:18 -0700
-Received: by lahna (sSMTP sendmail emulation); Tue, 05 Apr 2022 12:53:16 +0300
-Date:   Tue, 5 Apr 2022 12:53:16 +0300
-From:   Mika Westerberg <mika.westerberg@linux.intel.com>
-To:     "Rafael J. Wysocki" <rjw@rjwysocki.net>
-Cc:     Linux PCI <linux-pci@vger.kernel.org>,
-        Linux PM <linux-pm@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Bjorn Helgaas <helgaas@kernel.org>
-Subject: Re: [PATCH v1 1/2] PCI: PM: Avoid leaving devices in
- D0-uninitialized in pci_power_up()
-Message-ID: <YkwRjI0KvpmiJjvK@lahna>
-References: <4198163.ejJDZkT8p0@kreacher>
- <3623886.MHq7AAxBmi@kreacher>
+        Tue, 5 Apr 2022 06:27:57 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D12C46640;
+        Tue,  5 Apr 2022 03:13:49 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D3DC4B81C6C;
+        Tue,  5 Apr 2022 10:13:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 45179C385A1;
+        Tue,  5 Apr 2022 10:13:46 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649153626;
+        bh=GDqglo8yZ0C0FcfzITCC3M2c4Tvp8oSLHW16T1/TXls=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=nbK52h5VPZ97sS6cMJRGk+jCbU+b+Pa8cFCK+lHOheYXkLmFKwPP6d35FJnimga6z
+         i76JExOAemsl7mseccPUG0MIMFX+6F1XltdZ28LseLHX96YZSH5T9xxDXpwTGsNOMW
+         FZadQ6kR4NAyAx0d4OOyscdaMPS2uS6mZMkmd6W0=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
+        Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 241/599] ASoC: fsi: Add check for clk_enable
+Date:   Tue,  5 Apr 2022 09:28:55 +0200
+Message-Id: <20220405070306.012540248@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
+References: <20220405070258.802373272@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <3623886.MHq7AAxBmi@kreacher>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Apr 04, 2022 at 05:41:13PM +0200, Rafael J. Wysocki wrote:
-> From: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
-> 
-> In theory, pci_power_up() may leave a device in D0-uninitialized
-> during a transition from D3cold to D0.
-> 
-> Say, a PCIe device depending on some ACPI power resources is put into
-> D3cold, so the power resources in question are all turned off.  Then,
-> pci_power_up() is called to put it into D0.
-> 
-> It first calls pci_platform_power_transition() which invokes
-> platform_pci_set_power_state() to turn on the ACPI power resources
-> depended on by the device and, if that is successful, it calls
-> pci_update_current_state() to update the current_state field of
-> the PCI device object.  If the device's configuration space is
-> accessible at this point, which is the case if
-> platform_pci_set_power_state() leaves it in D0-uninitialized (and
-> there's nothing to prevent it from doing so), current_state will be
-> set to PCI_D0 and the pci_raw_set_power_state() called subsequently
-> will notice that the device is in D0 already and do nothing.
-> However, that is not correct, because it may be still necessary to
-> restore the device's BARs at this point.
-> 
-> To address this issue, set current_state temporarily to PCI_D3hot
-> in the cases in which pci_raw_set_power_state() may need to do more
-> than just changing the power state of the device.
-> 
-> Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
 
-Reviewed-by: Mika Westerberg <mika.westerberg@linux.intel.com>
+[ Upstream commit 405afed8a728f23cfaa02f75bbc8bdd6b7322123 ]
+
+As the potential failure of the clk_enable(),
+it should be better to check it and return error
+if fails.
+
+Fixes: ab6f6d85210c ("ASoC: fsi: add master clock control functions")
+Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Link: https://lore.kernel.org/r/20220302062844.46869-1-jiasheng@iscas.ac.cn
+Signed-off-by: Mark Brown <broonie@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ sound/soc/sh/fsi.c | 19 ++++++++++++++++---
+ 1 file changed, 16 insertions(+), 3 deletions(-)
+
+diff --git a/sound/soc/sh/fsi.c b/sound/soc/sh/fsi.c
+index 3c574792231b..0fa72907d5bf 100644
+--- a/sound/soc/sh/fsi.c
++++ b/sound/soc/sh/fsi.c
+@@ -816,14 +816,27 @@ static int fsi_clk_enable(struct device *dev,
+ 			return ret;
+ 		}
+ 
+-		clk_enable(clock->xck);
+-		clk_enable(clock->ick);
+-		clk_enable(clock->div);
++		ret = clk_enable(clock->xck);
++		if (ret)
++			goto err;
++		ret = clk_enable(clock->ick);
++		if (ret)
++			goto disable_xck;
++		ret = clk_enable(clock->div);
++		if (ret)
++			goto disable_ick;
+ 
+ 		clock->count++;
+ 	}
+ 
+ 	return ret;
++
++disable_ick:
++	clk_disable(clock->ick);
++disable_xck:
++	clk_disable(clock->xck);
++err:
++	return ret;
+ }
+ 
+ static int fsi_clk_disable(struct device *dev,
+-- 
+2.34.1
+
+
+
