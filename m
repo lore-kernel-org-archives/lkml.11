@@ -2,206 +2,164 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2FE91C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:44:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E12FC4167B
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:44:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376762AbiDFAlo (ORCPT
+        id S1391261AbiDFAmL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 20:41:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35152 "EHLO
+        Tue, 5 Apr 2022 20:42:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48860 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346901AbiDENew (ORCPT
+        with ESMTP id S1443755AbiDEPkP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 09:34:52 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 56A07108776
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 05:42:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1649162529;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=H0APKANmrEG8YzfakBH1QUxjkhifm2uURbUzbSfC/2c=;
-        b=dl95sNI/DYBgflPJJrIdnfY/iVyWoE5gqgDqOEfIAcZwmV9AHcNbMDsnMvaoWHGLg6u1H+
-        fYUP65or1QHW2qLIw+84qn5OsE+9r4bcZUDLRMrzAvelf5+Lx3ymx+aCAII21kAUjhoLuW
-        Lf68VlDR7j+tFAibFEMAFdkXpxT8y68=
-Received: from mail-wr1-f71.google.com (mail-wr1-f71.google.com
- [209.85.221.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-536-X_td8bD7NEWvpSJ2fUUXmQ-1; Tue, 05 Apr 2022 08:42:08 -0400
-X-MC-Unique: X_td8bD7NEWvpSJ2fUUXmQ-1
-Received: by mail-wr1-f71.google.com with SMTP id p18-20020adfba92000000b001e8f7697cc7so2428813wrg.20
-        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 05:42:07 -0700 (PDT)
+        Tue, 5 Apr 2022 11:40:15 -0400
+Received: from mail-pl1-x629.google.com (mail-pl1-x629.google.com [IPv6:2607:f8b0:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69D7836E02
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 06:59:07 -0700 (PDT)
+Received: by mail-pl1-x629.google.com with SMTP id n8so3993709plh.1
+        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 06:59:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=FlDX9fQV9YwI2F2bsF/EhT89ZCpPX/Uxw6NOPcG/zWs=;
+        b=vpfHXe2NKDpDlZOUubw/epseFWJYmzTK8I77LrHDUtVgVvNxWJLYVFm4Nw6VlN9whs
+         Kxln9wEZ2CRA8FsH9PU5mi95PNoHoP4GWEapJH4Xc4U/PGwzruUl1h93BQlSvnQcdyPe
+         y0YtQEVbBngqi2TDqoSexbidaWxDM8Tp8ht1yMXLHWsIdRZdcPv1QdnlYuo9c8FCPE89
+         Nn/SFJmJKbIQuh5k/DtqmvQKF/kJWgO7D2kdmy6w7w0ZBqO7VrPBkMBEttF6JVVKhmG7
+         QLUOVZxVU0YbWzDp6ydW7J8xT6qUkJeLpVIponOsgiyiBbqFyvaEEcoibQcBj1xbqbJ/
+         fj5w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=H0APKANmrEG8YzfakBH1QUxjkhifm2uURbUzbSfC/2c=;
-        b=TJijJ3oI8iy7CONE/MlbU0qDQvziigaAoY/MufKfM/6QRPBzi3KSRMd9dzAVDdEchq
-         c9CWlwO5mciVVIdWyl73dvvp/nEvcsxg58EQYfyypEW3R/sBoJUkrVCfrqV0YycptLzf
-         7LU8UZ80rVMJmZOrp6hXy3TohlnoBUNm29TFwy+jXIk9qLdUGLXIqnjmAI+eDftUPLcJ
-         Hd2RacqKXNoqZ8XgyMr2kynqfVTUSONnvhti7JEzKNT9M1GjiFz/1AL2zPxqlaSeJwoK
-         iZkwE1ShzfGcy/R9VhYuroh72qHF31wfsZVcTtWydIjibJgtY8X7g+k8hsSQMGEUjrFF
-         uvQw==
-X-Gm-Message-State: AOAM533za8jTHfu007J7y/zWlPFeeiYYKdANMzWps6fDtU20ARE/u7uM
-        kLBQF4Or6ZjuWoGPmqpzfqSMj8pnnhT7T65RRGVFlQNsgt3C4GTiN6LmMRklj+zW4xGTSEbLdZt
-        NQwgSGM0AiemP4kOpkOg3s3py
-X-Received: by 2002:a05:600c:190e:b0:38c:b1ea:f4ac with SMTP id j14-20020a05600c190e00b0038cb1eaf4acmr2938053wmq.70.1649162526870;
-        Tue, 05 Apr 2022 05:42:06 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzE8lOSJsC1vu9YrVZ8kWphJzexS1UEyH2gUdxXfFYpfE6UWb3J1TmoORH/TfcRQQNlqZoBNw==
-X-Received: by 2002:a05:600c:190e:b0:38c:b1ea:f4ac with SMTP id j14-20020a05600c190e00b0038cb1eaf4acmr2938035wmq.70.1649162526641;
-        Tue, 05 Apr 2022 05:42:06 -0700 (PDT)
-Received: from [10.32.181.87] (nat-pool-mxp-t.redhat.com. [149.6.153.186])
-        by smtp.googlemail.com with ESMTPSA id n20-20020a05600c4f9400b0038cbd13e06esm2196316wmq.2.2022.04.05.05.42.05
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 05 Apr 2022 05:42:05 -0700 (PDT)
-Message-ID: <80029ed6-a276-16f6-710e-9d9d642a54fd@redhat.com>
-Date:   Tue, 5 Apr 2022 14:42:04 +0200
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=FlDX9fQV9YwI2F2bsF/EhT89ZCpPX/Uxw6NOPcG/zWs=;
+        b=3JKdqAgsR62ytSWw7Fiadhqeqt16D+cYyz9QV+C/lGxMNDuin0t3Ma6WiCHbJRUmnD
+         ZOE9ooMc9PpPTqFQMK0Ff69QybICtM8y9vuRaPl/YQX+E0dmytH64omdQRa3Hx2+bxO9
+         Yh3/Nykxv1fXxCiS2ubMu1JRx5tKIR12Ly/B0VhzuWnywMoZXv4LNdaFs5vFL9P2tEu6
+         ZcFKnVT5L3vZgHQlhX2Hj4u03UjMplTgMF1tUwTuZGq81tgZDST/BqxrxgtgUFdKgC4f
+         1FMT/5I8D/zQNKGZEwni/eKbdUR1ZOZs3DFHgxIwZGw+SlaPy4yiBtllgTF/1QBfu8s2
+         9CIw==
+X-Gm-Message-State: AOAM5330CUiJF26pw7ss0z6cMVoPGmIsIrj+LtJ7OXVf7KOlwAolfCPE
+        h/+k4TiZYA6KFD/MwTfH54wC+57xEVEu
+X-Google-Smtp-Source: ABdhPJx9jXnVCoeYIBfz9Q4nYaydHk89UYiMnWdYdSATjinvEhEEvVQ+jncDXj6i4vUE9kjQAl0gmA==
+X-Received: by 2002:a17:903:40c7:b0:156:8b56:5fa1 with SMTP id t7-20020a17090340c700b001568b565fa1mr3657852pld.108.1649167146927;
+        Tue, 05 Apr 2022 06:59:06 -0700 (PDT)
+Received: from localhost.localdomain ([59.92.98.98])
+        by smtp.gmail.com with ESMTPSA id u14-20020a056a00124e00b004fab8f3245fsm16785402pfi.149.2022.04.05.06.59.02
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 05 Apr 2022 06:59:06 -0700 (PDT)
+From:   Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+To:     gregkh@linuxfoundation.org
+Cc:     linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        elder@linaro.org, mhi@lists.linux.dev, quic_hemantk@quicinc.com,
+        quic_bbhatt@quicinc.com, quic_jhugo@quicinc.com,
+        bjorn.andersson@linaro.org, dmitry.baryshkov@linaro.org,
+        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+Subject: [PATCH 12/18] bus: mhi: ep: Add support for handling SYS_ERR condition
+Date:   Tue,  5 Apr 2022 19:27:48 +0530
+Message-Id: <20220405135754.6622-13-manivannan.sadhasivam@linaro.org>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220405135754.6622-1-manivannan.sadhasivam@linaro.org>
+References: <20220405135754.6622-1-manivannan.sadhasivam@linaro.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [RFC PATCH v5 022/104] KVM: Add max_vcpus field in common 'struct
- kvm'
-Content-Language: en-US
-To:     isaku.yamahata@intel.com, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     isaku.yamahata@gmail.com, Jim Mattson <jmattson@google.com>,
-        erdemaktas@google.com, Connor Kuehl <ckuehl@redhat.com>,
-        Sean Christopherson <seanjc@google.com>
-References: <cover.1646422845.git.isaku.yamahata@intel.com>
- <e53234cdee6a92357d06c80c03d77c19cdefb804.1646422845.git.isaku.yamahata@intel.com>
-From:   Paolo Bonzini <pbonzini@redhat.com>
-In-Reply-To: <e53234cdee6a92357d06c80c03d77c19cdefb804.1646422845.git.isaku.yamahata@intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 3/4/22 20:48, isaku.yamahata@intel.com wrote:
-> From: Sean Christopherson <sean.j.christopherson@intel.com>
-> 
-> For TDX guests, the maximum number of vcpus needs to be specified when the
-> TDX guest VM is initialized (creating the TDX data corresponding to TDX
-> guest) before creating vcpu.  It needs to record the maximum number of
-> vcpus on VM creation (KVM_CREATE_VM) and return error if the number of
-> vcpus exceeds it
-> 
-> Because there is already max_vcpu member in arm64 struct kvm_arch, move it
-> to common struct kvm and initialize it to KVM_MAX_VCPUS before
-> kvm_arch_init_vm() instead of adding it to x86 struct kvm_arch.
-> 
-> Signed-off-by: Sean Christopherson <sean.j.christopherson@intel.com>
-> Signed-off-by: Isaku Yamahata <isaku.yamahata@intel.com>
-> ---
->   arch/arm64/include/asm/kvm_host.h | 3 ---
->   arch/arm64/kvm/arm.c              | 6 +++---
->   arch/arm64/kvm/vgic/vgic-init.c   | 6 +++---
->   include/linux/kvm_host.h          | 1 +
->   virt/kvm/kvm_main.c               | 3 ++-
->   5 files changed, 9 insertions(+), 10 deletions(-)
-> 
-> diff --git a/arch/arm64/include/asm/kvm_host.h b/arch/arm64/include/asm/kvm_host.h
-> index 5bc01e62c08a..27249d634605 100644
-> --- a/arch/arm64/include/asm/kvm_host.h
-> +++ b/arch/arm64/include/asm/kvm_host.h
-> @@ -107,9 +107,6 @@ struct kvm_arch {
->   	/* VTCR_EL2 value for this VM */
->   	u64    vtcr;
->   
-> -	/* The maximum number of vCPUs depends on the used GIC model */
-> -	int max_vcpus;
-> -
->   	/* Interrupt controller */
->   	struct vgic_dist	vgic;
->   
-> diff --git a/arch/arm64/kvm/arm.c b/arch/arm64/kvm/arm.c
-> index ecc5958e27fe..defec2cd94bd 100644
-> --- a/arch/arm64/kvm/arm.c
-> +++ b/arch/arm64/kvm/arm.c
-> @@ -153,7 +153,7 @@ int kvm_arch_init_vm(struct kvm *kvm, unsigned long type)
->   	kvm_vgic_early_init(kvm);
->   
->   	/* The maximum number of VCPUs is limited by the host's GIC model */
-> -	kvm->arch.max_vcpus = kvm_arm_default_max_vcpus();
-> +	kvm->max_vcpus = kvm_arm_default_max_vcpus();
->   
->   	set_default_spectre(kvm);
->   
-> @@ -229,7 +229,7 @@ int kvm_vm_ioctl_check_extension(struct kvm *kvm, long ext)
->   	case KVM_CAP_MAX_VCPUS:
->   	case KVM_CAP_MAX_VCPU_ID:
->   		if (kvm)
-> -			r = kvm->arch.max_vcpus;
-> +			r = kvm->max_vcpus;
->   		else
->   			r = kvm_arm_default_max_vcpus();
->   		break;
-> @@ -305,7 +305,7 @@ int kvm_arch_vcpu_precreate(struct kvm *kvm, unsigned int id)
->   	if (irqchip_in_kernel(kvm) && vgic_initialized(kvm))
->   		return -EBUSY;
->   
-> -	if (id >= kvm->arch.max_vcpus)
-> +	if (id >= kvm->max_vcpus)
->   		return -EINVAL;
->   
->   	return 0;
-> diff --git a/arch/arm64/kvm/vgic/vgic-init.c b/arch/arm64/kvm/vgic/vgic-init.c
-> index fc00304fe7d8..77feafd5c0e3 100644
-> --- a/arch/arm64/kvm/vgic/vgic-init.c
-> +++ b/arch/arm64/kvm/vgic/vgic-init.c
-> @@ -98,11 +98,11 @@ int kvm_vgic_create(struct kvm *kvm, u32 type)
->   	ret = 0;
->   
->   	if (type == KVM_DEV_TYPE_ARM_VGIC_V2)
-> -		kvm->arch.max_vcpus = VGIC_V2_MAX_CPUS;
-> +		kvm->max_vcpus = VGIC_V2_MAX_CPUS;
->   	else
-> -		kvm->arch.max_vcpus = VGIC_V3_MAX_CPUS;
-> +		kvm->max_vcpus = VGIC_V3_MAX_CPUS;
->   
-> -	if (atomic_read(&kvm->online_vcpus) > kvm->arch.max_vcpus) {
-> +	if (atomic_read(&kvm->online_vcpus) > kvm->max_vcpus) {
->   		ret = -E2BIG;
->   		goto out_unlock;
->   	}
-> diff --git a/include/linux/kvm_host.h b/include/linux/kvm_host.h
-> index f11039944c08..a56044a31bc6 100644
-> --- a/include/linux/kvm_host.h
-> +++ b/include/linux/kvm_host.h
-> @@ -715,6 +715,7 @@ struct kvm {
->   	 * and is accessed atomically.
->   	 */
->   	atomic_t online_vcpus;
-> +	int max_vcpus;
->   	int created_vcpus;
->   	int last_boosted_vcpu;
->   	struct list_head vm_list;
-> diff --git a/virt/kvm/kvm_main.c b/virt/kvm/kvm_main.c
-> index 52f72a366beb..3adee9c6b370 100644
-> --- a/virt/kvm/kvm_main.c
-> +++ b/virt/kvm/kvm_main.c
-> @@ -1075,6 +1075,7 @@ static struct kvm *kvm_create_vm(unsigned long type)
->   	spin_lock_init(&kvm->gpc_lock);
->   
->   	INIT_LIST_HEAD(&kvm->devices);
-> +	kvm->max_vcpus = KVM_MAX_VCPUS;
->   
->   	BUILD_BUG_ON(KVM_MEM_SLOTS_NUM > SHRT_MAX);
->   
-> @@ -3718,7 +3719,7 @@ static int kvm_vm_ioctl_create_vcpu(struct kvm *kvm, u32 id)
->   		return -EINVAL;
->   
->   	mutex_lock(&kvm->lock);
-> -	if (kvm->created_vcpus == KVM_MAX_VCPUS) {
-> +	if (kvm->created_vcpus >= kvm->max_vcpus) {
->   		mutex_unlock(&kvm->lock);
->   		return -EINVAL;
->   	}
+Add support for handling SYS_ERR (System Error) condition in the MHI
+endpoint stack. The SYS_ERR flag will be asserted by the endpoint device
+when it detects an internal error. The host will then issue reset and
+reinitializes MHI to recover from the error state.
 
-Queued this one already, thanks.
+Reviewed-by: Alex Elder <elder@linaro.org>
+Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+---
+ drivers/bus/mhi/ep/internal.h |  1 +
+ drivers/bus/mhi/ep/main.c     | 20 ++++++++++++++++++++
+ drivers/bus/mhi/ep/sm.c       | 11 +++++++++--
+ 3 files changed, 30 insertions(+), 2 deletions(-)
 
-Paolo
+diff --git a/drivers/bus/mhi/ep/internal.h b/drivers/bus/mhi/ep/internal.h
+index 4f2e26841702..d201d755560c 100644
+--- a/drivers/bus/mhi/ep/internal.h
++++ b/drivers/bus/mhi/ep/internal.h
+@@ -211,5 +211,6 @@ int mhi_ep_set_mhi_state(struct mhi_ep_cntrl *mhi_cntrl, enum mhi_state mhi_stat
+ int mhi_ep_set_m0_state(struct mhi_ep_cntrl *mhi_cntrl);
+ int mhi_ep_set_m3_state(struct mhi_ep_cntrl *mhi_cntrl);
+ int mhi_ep_set_ready_state(struct mhi_ep_cntrl *mhi_cntrl);
++void mhi_ep_handle_syserr(struct mhi_ep_cntrl *mhi_cntrl);
+ 
+ #endif
+diff --git a/drivers/bus/mhi/ep/main.c b/drivers/bus/mhi/ep/main.c
+index d36708d43eb6..706473ea4918 100644
+--- a/drivers/bus/mhi/ep/main.c
++++ b/drivers/bus/mhi/ep/main.c
+@@ -516,6 +516,26 @@ static void mhi_ep_reset_worker(struct work_struct *work)
+ 	}
+ }
+ 
++/*
++ * We don't need to do anything special other than setting the MHI SYS_ERR
++ * state. The host will reset all contexts and issue MHI RESET so that we
++ * could also recover from error state.
++ */
++void mhi_ep_handle_syserr(struct mhi_ep_cntrl *mhi_cntrl)
++{
++	struct device *dev = &mhi_cntrl->mhi_dev->dev;
++	int ret;
++
++	ret = mhi_ep_set_mhi_state(mhi_cntrl, MHI_STATE_SYS_ERR);
++	if (ret)
++		return;
++
++	/* Signal host that the device went to SYS_ERR state */
++	ret = mhi_ep_send_state_change_event(mhi_cntrl, MHI_STATE_SYS_ERR);
++	if (ret)
++		dev_err(dev, "Failed sending SYS_ERR state change event: %d\n", ret);
++}
++
+ int mhi_ep_power_up(struct mhi_ep_cntrl *mhi_cntrl)
+ {
+ 	struct device *dev = &mhi_cntrl->mhi_dev->dev;
+diff --git a/drivers/bus/mhi/ep/sm.c b/drivers/bus/mhi/ep/sm.c
+index ffc02f5d0a0d..e3865b85399d 100644
+--- a/drivers/bus/mhi/ep/sm.c
++++ b/drivers/bus/mhi/ep/sm.c
+@@ -68,8 +68,10 @@ int mhi_ep_set_m0_state(struct mhi_ep_cntrl *mhi_cntrl)
+ 	ret = mhi_ep_set_mhi_state(mhi_cntrl, MHI_STATE_M0);
+ 	spin_unlock_bh(&mhi_cntrl->state_lock);
+ 
+-	if (ret)
++	if (ret) {
++		mhi_ep_handle_syserr(mhi_cntrl);
+ 		return ret;
++	}
+ 
+ 	/* Signal host that the device moved to M0 */
+ 	ret = mhi_ep_send_state_change_event(mhi_cntrl, MHI_STATE_M0);
+@@ -99,8 +101,10 @@ int mhi_ep_set_m3_state(struct mhi_ep_cntrl *mhi_cntrl)
+ 	ret = mhi_ep_set_mhi_state(mhi_cntrl, MHI_STATE_M3);
+ 	spin_unlock_bh(&mhi_cntrl->state_lock);
+ 
+-	if (ret)
++	if (ret) {
++		mhi_ep_handle_syserr(mhi_cntrl);
+ 		return ret;
++	}
+ 
+ 	/* Signal host that the device moved to M3 */
+ 	ret = mhi_ep_send_state_change_event(mhi_cntrl, MHI_STATE_M3);
+@@ -132,5 +136,8 @@ int mhi_ep_set_ready_state(struct mhi_ep_cntrl *mhi_cntrl)
+ 	ret = mhi_ep_set_mhi_state(mhi_cntrl, MHI_STATE_READY);
+ 	spin_unlock_bh(&mhi_cntrl->state_lock);
+ 
++	if (ret)
++		mhi_ep_handle_syserr(mhi_cntrl);
++
+ 	return ret;
+ }
+-- 
+2.25.1
 
