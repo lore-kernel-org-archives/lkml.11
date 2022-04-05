@@ -2,105 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 39A0BC433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 63C0EC35276
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 01:30:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1842450AbiDFBbl (ORCPT
+        id S1842532AbiDFBbv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 21:31:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35306 "EHLO
+        Tue, 5 Apr 2022 21:31:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57544 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354637AbiDEKO5 (ORCPT
+        with ESMTP id S1382121AbiDEMAo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:14:57 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DC554993C;
-        Tue,  5 Apr 2022 03:01:53 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 43AEFB81B7A;
-        Tue,  5 Apr 2022 10:01:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 821A1C385A2;
-        Tue,  5 Apr 2022 10:01:50 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649152910;
-        bh=9bImAcmj4A53oHrgEvLh7UEsskyu85oh1R6Ve/FzEG0=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=zNTwFzyUdTp7MGc07TaZbR5mBuvM3mulhAexXPM0i+nEW6a5AHSzFkpW72VfLPrB4
-         6cy2sW8XzgeDDqG0fzyYSTBheIFHV+aS4ozK6WTMqTQvHpM8ZDqbXUd27hRHhWmHIR
-         x+82wREYBNjFoh3unUW3Fi++fUqEtvl/S4rsWfcw=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, James Clark <james.clark@arm.com>,
-        Mike Leach <mike.leach@linaro.org>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        Suzuki K Poulose <suzuki.poulose@arm.com>
-Subject: [PATCH 5.10 032/599] coresight: Fix TRCCONFIGR.QE sysfs interface
-Date:   Tue,  5 Apr 2022 09:25:26 +0200
-Message-Id: <20220405070259.777351752@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 5 Apr 2022 08:00:44 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F9073527C;
+        Tue,  5 Apr 2022 04:20:02 -0700 (PDT)
+From:   Kurt Kanzenbach <kurt@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1649157600;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=w4wC13cgxgcXdHBjki817aUc/ec42N1KzUxtBLjVtcc=;
+        b=BXekPsXOfwzgvSZEi1DNEsjRtwJF0K2+Ym69LE7AzzCOz6c6EDroh6V53dcfxypNprCC0d
+        YBFF2R/ezJFkE9rB7iVyyKZ8SYyHRVBqmuM5QklN/QI7wl4PEJJ0Cb9XyqvB1Dv4oy24or
+        MzIIX/3GpyT+caqjrEh4pIYQWLIdEH8/kE4bTIivLQA8XNtANVDV2Bq8gdcYuwS4pQT/Gi
+        D/GGmH3tGhmJFJ0Zv9eWT831GVM2ieebbNU7RUrjUORtauVt9kvbkal3GukcA204CeGChT
+        rP3fKPX713//p6S0+RTeyWBc5mcKaKQ0eWX6VcH5A+mylWf25pYwVJyDki7arg==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1649157600;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=w4wC13cgxgcXdHBjki817aUc/ec42N1KzUxtBLjVtcc=;
+        b=oFyO70rtb6aZDlRGxSJ/Boi/0eCighJ6RPnZX8oziT2T0rpTuut40ZLJItQ2sbiszjbdVZ
+        5vTHHVc+8eFc27Dg==
+To:     Michael Walle <michael@walle.cc>
+Cc:     Andrew Lunn <andrew@lunn.ch>, richardcochran@gmail.com,
+        davem@davemloft.net, grygorii.strashko@ti.com, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, linux@armlinux.org.uk,
+        mlichvar@redhat.com, netdev@vger.kernel.org,
+        qiangqing.zhang@nxp.com, vladimir.oltean@nxp.com
+Subject: Re: [PATCH RFC V1 net-next 3/4] net: Let the active time stamping
+ layer be selectable.
+In-Reply-To: <ad4a8d3efbeaacf241a19bfbca5976f9@walle.cc>
+References: <20220104014215.GA20062@hoboy.vegasvil.org>
+ <20220404150508.3945833-1-michael@walle.cc> <YksMvHgXZxA+YZci@lunn.ch>
+ <e5a6f6193b86388ed7a081939b8745be@walle.cc> <877d83rjjc.fsf@kurt>
+ <ad4a8d3efbeaacf241a19bfbca5976f9@walle.cc>
+Date:   Tue, 05 Apr 2022 13:19:58 +0200
+Message-ID: <87wng3pyjl.fsf@kurt>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; boundary="=-=-=";
+        micalg=pgp-sha512; protocol="application/pgp-signature"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: James Clark <james.clark@arm.com>
+--=-=-=
+Content-Type: text/plain
+Content-Transfer-Encoding: quoted-printable
 
-commit ea75a342aed5ed72c87f38fbe0df2f5df7eae374 upstream.
+On Tue Apr 05 2022, Michael Walle wrote:
+> Am 2022-04-05 11:01, schrieb Kurt Kanzenbach:
+>> On Mon Apr 04 2022, Michael Walle wrote:
+>>> That would make sense. I guess what bothers me with the current
+>>> mechanism is that a feature addition to the PHY in the *future* (the
+>>> timestamping support) might break a board - or at least changes the
+>>> behavior by suddenly using PHY timestamping.
+>>=20
+>> Currently PHY timestamping is hidden behind a configuration option
+>> (NETWORK_PHY_TIMESTAMPING). By disabling this option the default
+>> behavior should stay at MAC timestamping even if additional features
+>> are added on top of the PHY drivers at later stages. Or not?
+>
+> That is correct. But a Kconfig option has several drawbacks:
+> (1) Doesn't work with boards where I might want PHY timestamping
+>      on *some* ports, thus I need to enable it and then stumple
+>      across the same problem.
+> (2) Doesn't work with generic distro support, which is what is
+>      ARM pushing right now with their SystemReady stuff (among other
+>      things also for embeddem system). Despite that, I have two boards
+>      which are already ready for booting debian out of the box for
+>      example. While I might convince Debian to enable that option
+>      (as I see it, that option is there to disable the additional
+>      overhead) it certainly won't be on a per board basis.
+>      Actually for keeping the MAC timestamping as is, you'd need to
+>      convince a distribution to never enable the PHY timestamping
+>      kconfig option.
+>
+> So yes, I agree it will work when you have control over your
+> kconfig options, after all (1) might be more academic. But I'm
+> really concerned about (2).
 
-It's impossible to program a valid value for TRCCONFIGR.QE
-when TRCIDR0.QSUPP==0b10. In that case the following is true:
+Yes, the limitations described above are exactly one of the reasons to
+make the timestamping layer configurable at run time as done by these
+patches.
 
-  Q element support is implemented, and only supports Q elements without
-  instruction counts. TRCCONFIGR.QE can only take the values 0b00 or 0b11.
+Thanks,
+Kurt
 
-Currently the low bit of QSUPP is checked to see if the low bit of QE can
-be written to, but as you can see when QSUPP==0b10 the low bit is cleared
-making it impossible to ever write the only valid value of 0b11 to QE.
-0b10 would be written instead, which is a reserved QE value even for all
-values of QSUPP.
+--=-=-=
+Content-Type: application/pgp-signature; name="signature.asc"
 
-The fix is to allow writing the low bit of QE for any non zero value of
-QSUPP.
+-----BEGIN PGP SIGNATURE-----
 
-This change also ensures that the low bit is always set, even when the
-user attempts to only set the high bit.
-
-Signed-off-by: James Clark <james.clark@arm.com>
-Reviewed-by: Mike Leach <mike.leach@linaro.org>
-Fixes: d8c66962084f ("coresight-etm4x: Controls pertaining to the reset, mode, pe and events")
-Cc: stable@vger.kernel.org
-Link: https://lore.kernel.org/r/20220120113047.2839622-2-james.clark@arm.com
-Signed-off-by: Mathieu Poirier <mathieu.poirier@linaro.org>
-Signed-off-by: Suzuki K Poulose <suzuki.poulose@arm.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- drivers/hwtracing/coresight/coresight-etm4x-sysfs.c |    8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
-
---- a/drivers/hwtracing/coresight/coresight-etm4x-sysfs.c
-+++ b/drivers/hwtracing/coresight/coresight-etm4x-sysfs.c
-@@ -364,8 +364,12 @@ static ssize_t mode_store(struct device
- 	mode = ETM_MODE_QELEM(config->mode);
- 	/* start by clearing QE bits */
- 	config->cfg &= ~(BIT(13) | BIT(14));
--	/* if supported, Q elements with instruction counts are enabled */
--	if ((mode & BIT(0)) && (drvdata->q_support & BIT(0)))
-+	/*
-+	 * if supported, Q elements with instruction counts are enabled.
-+	 * Always set the low bit for any requested mode. Valid combos are
-+	 * 0b00, 0b01 and 0b11.
-+	 */
-+	if (mode && drvdata->q_support)
- 		config->cfg |= BIT(13);
- 	/*
- 	 * if supported, Q elements with and without instruction
-
-
+iQJHBAEBCgAxFiEEvLm/ssjDfdPf21mSwZPR8qpGc4IFAmJMJd4THGt1cnRAbGlu
+dXRyb25peC5kZQAKCRDBk9HyqkZzgtOtD/9duBdOcHsfImUfY/KkCXEDs8Floeju
++xKhay38ecgGiVhCd3dVKjfmcN7mHjQ5bTDVQdNaVk/pAhWSiT0YLzKlaJ0aqWqy
+XAcO67YWR2tv4WS9oXKCZjKhpbcFyX5FWo54U0TDcuyNwU/37lxN68tJnYISbjK8
+Fgj0UG0YIG3xEU25hETK2ECwaczPbPfONiil96tN6G1GIfy7zWFmGCTGx3h7qc1X
+JSJ5wtbprxvOdzvgV+SI3B3lgJbaG4l0sbrQsl0VZcueBAdtec8nKQg5ktnGRAiG
+JV84i4bwpf9D/6xRNNky8G3VLLCm1m5DPr08JZqkow7ikZxum9VhNF3IdnwiyCnN
+5wvw5yoDo9mNw4OS8zD7l5iDHPQZT7lLyXU25JERuPj/jRnR0NPpcC9BUbon97ED
+ESA/usK4aWFOCvapU9MJvgARbr+OkwzjhUJfK51HpbvG72FCELlMzGVKbaLtP3Ut
+GtoEl7WfWzeEKsv/Y8kazK2RNfTF/ew0z9aLfjJg5qvZPb3ZVBe+mXj/vn9R0zO6
+N5VQY1XtIlruFC6nPfG29+r8QptX1ovC5C8x/p/BejQ+vf3YnTMNDT80DL+agjp5
+zzDvvRuoIOqeyrEf+/I2F/WivLiyNOkheTZYM70MmIGu9f0ITa02d6ooLzkLFwle
+RQ2ARFGqWSJ7VA==
+=+pav
+-----END PGP SIGNATURE-----
+--=-=-=--
