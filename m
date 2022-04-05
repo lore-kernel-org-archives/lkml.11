@@ -2,46 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D1B4AC4321E
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:15:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 18868C4167B
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:15:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1392411AbiDEUG4 (ORCPT
+        id S1441946AbiDEUHM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 16:06:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50790 "EHLO
+        Tue, 5 Apr 2022 16:07:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54798 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358184AbiDEK2F (ORCPT
+        with ESMTP id S1354034AbiDEKLD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:28:05 -0400
+        Tue, 5 Apr 2022 06:11:03 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 458D69E9D5;
-        Tue,  5 Apr 2022 03:16:27 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DDA54BBA5;
+        Tue,  5 Apr 2022 02:56:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id EDE62B81B7A;
-        Tue,  5 Apr 2022 10:16:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 68454C385A0;
-        Tue,  5 Apr 2022 10:16:24 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4168DB817D3;
+        Tue,  5 Apr 2022 09:56:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9A581C385A1;
+        Tue,  5 Apr 2022 09:56:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649153784;
-        bh=vC3HpaQC66yZXonEgmL5Uq5YOTH5rq+MgVEPdR036Wo=;
+        s=korg; t=1649152606;
+        bh=IS0LmQcQrqxmwm4rURgQy707TCHc6pQBCukr7IiT28Q=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RPsQraQ7SNI3hcqDJ6P+JEBa54aV+IfT8u3m5VB9JI+v0JcfX2EBCd4Xa0s0vjM1e
-         sNvSLQWfXySg8QqSdiY1ItobycgkT+vUAd0iNiVqD0RZlqusbPAA8YmwGmtTn3Ft6W
-         R39qvUfPzfqoyZ4mVABjTY5pzpgFDk40whuPkRi8=
+        b=jGybfjeodl4rp0U4xj9vIrZ1YLiMjO0rhSd93VhyLIb8c1wf7oo5aDoLC+gpl/u4q
+         Z2yyjx8XuLxzVjmd29u1eOVXLdX5S35O/EHPi7F0hUSBXymRm47piG3OsKcbpsUMSN
+         xp6ufrDje66aBsHViHBOWvIWTqDcupUtqrmlnYq8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Felix Maurer <fmaurer@redhat.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 346/599] selftests/bpf: Make test_lwt_ip_encap more stable and faster
-Date:   Tue,  5 Apr 2022 09:30:40 +0200
-Message-Id: <20220405070309.124744738@linuxfoundation.org>
+        stable@vger.kernel.org, Andreas Gruenbacher <agruenba@redhat.com>
+Subject: [PATCH 5.15 838/913] gfs2: gfs2_setattr_size error path fix
+Date:   Tue,  5 Apr 2022 09:31:40 +0200
+Message-Id: <20220405070404.949894656@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,75 +48,109 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Felix Maurer <fmaurer@redhat.com>
+From: Andreas Gruenbacher <agruenba@redhat.com>
 
-[ Upstream commit d23a8720327d33616f584d76c80824bfa4699be6 ]
+commit 7336905a89f19173bf9301cd50a24421162f417c upstream.
 
-In test_lwt_ip_encap, the ingress IPv6 encap test failed from time to
-time. The failure occured when an IPv4 ping through the IPv6 GRE
-encapsulation did not receive a reply within the timeout. The IPv4 ping
-and the IPv6 ping in the test used different timeouts (1 sec for IPv4
-and 6 sec for IPv6), probably taking into account that IPv6 might need
-longer to successfully complete. However, when IPv4 pings (with the
-short timeout) are encapsulated into the IPv6 tunnel, the delays of IPv6
-apply.
+When gfs2_setattr_size() fails, it calls gfs2_rs_delete(ip, NULL) to get
+rid of any reservations the inode may have.  Instead, it should pass in
+the inode's write count as the second parameter to allow
+gfs2_rs_delete() to figure out if the inode has any writers left.
 
-The actual reason for the long delays with IPv6 was that the IPv6
-neighbor discovery sometimes did not complete in time. This was caused
-by the outgoing interface only having a tentative link local address,
-i.e., not having completed DAD for that lladdr. The ND was successfully
-retried after 1 sec but that was too late for the ping timeout.
+In a next step, there are two instances of gfs2_rs_delete(ip, NULL) left
+where we know that there can be no other users of the inode.  Replace
+those with gfs2_rs_deltree(&ip->i_res) to avoid the unnecessary write
+count check.
 
-The IPv6 addresses for the test were already added with nodad. However,
-for the lladdrs, DAD was still performed. We now disable DAD in the test
-netns completely and just assume that the two lladdrs on each veth pair
-do not collide. This removes all the delays for IPv6 traffic in the
-test.
+With that, gfs2_rs_delete() is only called with the inode's actual write
+count, so get rid of the second parameter.
 
-Without the delays, we can now also reduce the delay of the IPv6 ping to
-1 sec. This makes the whole test complete faster because we don't need
-to wait for the excessive timeout for each IPv6 ping that is supposed
-to fail.
-
-Fixes: 0fde56e4385b0 ("selftests: bpf: add test_lwt_ip_encap selftest")
-Signed-off-by: Felix Maurer <fmaurer@redhat.com>
-Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
-Link: https://lore.kernel.org/bpf/4987d549d48b4e316cd5b3936de69c8d4bc75a4f.1646305899.git.fmaurer@redhat.com
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: a097dc7e24cb ("GFS2: Make rgrp reservations part of the gfs2_inode structure")
+Signed-off-by: Andreas Gruenbacher <agruenba@redhat.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- tools/testing/selftests/bpf/test_lwt_ip_encap.sh | 10 +++++++++-
- 1 file changed, 9 insertions(+), 1 deletion(-)
+ fs/gfs2/bmap.c  |    2 +-
+ fs/gfs2/file.c  |    2 +-
+ fs/gfs2/inode.c |    2 +-
+ fs/gfs2/rgrp.c  |    7 ++++---
+ fs/gfs2/rgrp.h  |    2 +-
+ fs/gfs2/super.c |    2 +-
+ 6 files changed, 9 insertions(+), 8 deletions(-)
 
-diff --git a/tools/testing/selftests/bpf/test_lwt_ip_encap.sh b/tools/testing/selftests/bpf/test_lwt_ip_encap.sh
-index b497bb85b667..6c69c42b1d60 100755
---- a/tools/testing/selftests/bpf/test_lwt_ip_encap.sh
-+++ b/tools/testing/selftests/bpf/test_lwt_ip_encap.sh
-@@ -120,6 +120,14 @@ setup()
- 	ip netns exec ${NS2} sysctl -wq net.ipv4.conf.default.rp_filter=0
- 	ip netns exec ${NS3} sysctl -wq net.ipv4.conf.default.rp_filter=0
+--- a/fs/gfs2/bmap.c
++++ b/fs/gfs2/bmap.c
+@@ -2204,7 +2204,7 @@ int gfs2_setattr_size(struct inode *inod
  
-+	# disable IPv6 DAD because it sometimes takes too long and fails tests
-+	ip netns exec ${NS1} sysctl -wq net.ipv6.conf.all.accept_dad=0
-+	ip netns exec ${NS2} sysctl -wq net.ipv6.conf.all.accept_dad=0
-+	ip netns exec ${NS3} sysctl -wq net.ipv6.conf.all.accept_dad=0
-+	ip netns exec ${NS1} sysctl -wq net.ipv6.conf.default.accept_dad=0
-+	ip netns exec ${NS2} sysctl -wq net.ipv6.conf.default.accept_dad=0
-+	ip netns exec ${NS3} sysctl -wq net.ipv6.conf.default.accept_dad=0
+ 	ret = do_shrink(inode, newsize);
+ out:
+-	gfs2_rs_delete(ip, NULL);
++	gfs2_rs_delete(ip);
+ 	gfs2_qa_put(ip);
+ 	return ret;
+ }
+--- a/fs/gfs2/file.c
++++ b/fs/gfs2/file.c
+@@ -713,7 +713,7 @@ static int gfs2_release(struct inode *in
+ 
+ 	if (file->f_mode & FMODE_WRITE) {
+ 		if (gfs2_rs_active(&ip->i_res))
+-			gfs2_rs_delete(ip, &inode->i_writecount);
++			gfs2_rs_delete(ip);
+ 		gfs2_qa_put(ip);
+ 	}
+ 	return 0;
+--- a/fs/gfs2/inode.c
++++ b/fs/gfs2/inode.c
+@@ -811,7 +811,7 @@ fail_free_inode:
+ 		if (free_vfs_inode) /* else evict will do the put for us */
+ 			gfs2_glock_put(ip->i_gl);
+ 	}
+-	gfs2_rs_delete(ip, NULL);
++	gfs2_rs_deltree(&ip->i_res);
+ 	gfs2_qa_put(ip);
+ fail_free_acls:
+ 	posix_acl_release(default_acl);
+--- a/fs/gfs2/rgrp.c
++++ b/fs/gfs2/rgrp.c
+@@ -680,13 +680,14 @@ void gfs2_rs_deltree(struct gfs2_blkrese
+ /**
+  * gfs2_rs_delete - delete a multi-block reservation
+  * @ip: The inode for this reservation
+- * @wcount: The inode's write count, or NULL
+  *
+  */
+-void gfs2_rs_delete(struct gfs2_inode *ip, atomic_t *wcount)
++void gfs2_rs_delete(struct gfs2_inode *ip)
+ {
++	struct inode *inode = &ip->i_inode;
 +
- 	ip link add veth1 type veth peer name veth2
- 	ip link add veth3 type veth peer name veth4
- 	ip link add veth5 type veth peer name veth6
-@@ -289,7 +297,7 @@ test_ping()
- 		ip netns exec ${NS1} ping  -c 1 -W 1 -I veth1 ${IPv4_DST} 2>&1 > /dev/null
- 		RET=$?
- 	elif [ "${PROTO}" == "IPv6" ] ; then
--		ip netns exec ${NS1} ping6 -c 1 -W 6 -I veth1 ${IPv6_DST} 2>&1 > /dev/null
-+		ip netns exec ${NS1} ping6 -c 1 -W 1 -I veth1 ${IPv6_DST} 2>&1 > /dev/null
- 		RET=$?
- 	else
- 		echo "    test_ping: unknown PROTO: ${PROTO}"
--- 
-2.34.1
-
+ 	down_write(&ip->i_rw_mutex);
+-	if ((wcount == NULL) || (atomic_read(wcount) <= 1))
++	if (atomic_read(&inode->i_writecount) <= 1)
+ 		gfs2_rs_deltree(&ip->i_res);
+ 	up_write(&ip->i_rw_mutex);
+ }
+--- a/fs/gfs2/rgrp.h
++++ b/fs/gfs2/rgrp.h
+@@ -45,7 +45,7 @@ extern int gfs2_alloc_blocks(struct gfs2
+ 			     bool dinode, u64 *generation);
+ 
+ extern void gfs2_rs_deltree(struct gfs2_blkreserv *rs);
+-extern void gfs2_rs_delete(struct gfs2_inode *ip, atomic_t *wcount);
++extern void gfs2_rs_delete(struct gfs2_inode *ip);
+ extern void __gfs2_free_blocks(struct gfs2_inode *ip, struct gfs2_rgrpd *rgd,
+ 			       u64 bstart, u32 blen, int meta);
+ extern void gfs2_free_meta(struct gfs2_inode *ip, struct gfs2_rgrpd *rgd,
+--- a/fs/gfs2/super.c
++++ b/fs/gfs2/super.c
+@@ -1398,7 +1398,7 @@ out:
+ 	truncate_inode_pages_final(&inode->i_data);
+ 	if (ip->i_qadata)
+ 		gfs2_assert_warn(sdp, ip->i_qadata->qa_ref == 0);
+-	gfs2_rs_delete(ip, NULL);
++	gfs2_rs_deltree(&ip->i_res);
+ 	gfs2_ordered_del_inode(ip);
+ 	clear_inode(inode);
+ 	gfs2_dir_hash_inval(ip);
 
 
