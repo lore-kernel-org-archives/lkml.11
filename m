@@ -2,84 +2,180 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EEC93C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 21:18:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3CFA7C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 21:18:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359383AbiDEVPu (ORCPT
+        id S1359765AbiDEVPy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 17:15:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51118 "EHLO
+        Tue, 5 Apr 2022 17:15:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47756 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1444550AbiDEPlj (ORCPT
+        with ESMTP id S1443710AbiDEPkL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 11:41:39 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0375AF8EE6
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 07:05:46 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id AF3ABB81DD6
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 14:05:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0AD7CC385A6;
-        Tue,  5 Apr 2022 14:05:42 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649167543;
-        bh=Mm6htJ9QXhibJuptol/3kgU+rb9dRyr5kKvhCP6Pey8=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=g2hVE6drCRXDZpJo5aLZ3PO7bKakIRz5fw4e83rgXNb5uBxju8zGTTiUzRTH8lgS9
-         Iq7ghmIJuzpN8xeZbxYgpMTOlppvJEhiAOIxGukPf9nC17SKRcnEAsccOLHkjL+iQe
-         blc/mkonzw/Fp5HSjjQlmAf2RhNlOO9+KVcsdO3Q=
-Date:   Tue, 5 Apr 2022 16:05:40 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Sevinj Aghayeva <sevinj.aghayeva@gmail.com>
-Cc:     linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
-        outreachy@lists.linux.dev
-Subject: Re: [PATCH 4/5] staging: rtl8723bs: fix indentation
-Message-ID: <YkxMtPimZLxAlkgg@kroah.com>
-References: <cover.1649128267.git.sevinj.aghayeva@gmail.com>
- <3bb9687a1057619334d95832f803c9b8d7e7fa63.1649128267.git.sevinj.aghayeva@gmail.com>
+        Tue, 5 Apr 2022 11:40:11 -0400
+Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2153185001
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 06:58:18 -0700 (PDT)
+Received: by mail-pj1-x102d.google.com with SMTP id o5-20020a17090ad20500b001ca8a1dc47aso2625620pju.1
+        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 06:58:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=o7h/xULvdyEDh2cXrTeUDNp6mCbC3SZGRAjjX+CJOmc=;
+        b=dX0TBgiFesGZPye+ce1FhcnwVtnDLeUGtAPAJXbw/QgVQ8VZTPFXJ5JUdy5/PWkCXT
+         KZ/WEiTSd0AI2vEcTxCUGe3Z9yDE4v8BshFb0/gQEpSZiSysL7rKri+BqcstrvDUVzlz
+         CfHonLoXFbyqRHwTdCRpIXmdCfo9p1/+ubusexSSGDoqnV5k+62M85RKjm4ibgQvc28F
+         IWv0B2m60eJn8o3I6yKgeJFn1Bvyytg+yiEyWzI6xkwvplFHw/rHqQKG8n78L3p3qau9
+         vJKrFLoVpav4beD21/hofdoax1BBoZ4xMihQfCdY6MUTfQaZaOLGsrnZmvUXEX0L5fTN
+         tD1g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=o7h/xULvdyEDh2cXrTeUDNp6mCbC3SZGRAjjX+CJOmc=;
+        b=5moFFSpVfO+jvT73mMTqKPWHOM2GYB0jSqWA8zqABsXUUMyaV0ZvOHJDXvtRqdWsF+
+         rV7YH1z8TPPlA/aJLMHFVQvlCDkz/BiK4JowDOJ3n5+4dodqaGGCAZQka0v19qvwieKg
+         WF0pgLgWFAuMZjI4hje5uCTBxuv6c036B5+YqdCPBgYyvxcZRU1P4JUpLuExTPf5QrTp
+         fmcHAMpPj5Bz3icjHpZhP+h7xzO/7CQa2l1Xi5IskTRhkzVYI32YB3GkVkBg2q8Lfrl0
+         rYC8A21Cm9YdtaNgZUG7Xw6Qr8Dv2ze/tau3yHHNGWV9j5Yf7rQKbeKCCQJhrdozFCfu
+         fmlQ==
+X-Gm-Message-State: AOAM532DtYpEYTriqK/5geWoOUN6wtNl7pvu885+pDPm808gQRiRwQ+/
+        xDHYKeDSDHyA0qGMxDM945VH
+X-Google-Smtp-Source: ABdhPJwHDO18XPklWopbOJZUuwxh8xW73IX9pwkmyAAdLbfexOBpzjvC11TSQLRT14t90ZQHDwrrZA==
+X-Received: by 2002:a17:90a:454a:b0:1ca:91c7:df66 with SMTP id r10-20020a17090a454a00b001ca91c7df66mr4265256pjm.186.1649167098090;
+        Tue, 05 Apr 2022 06:58:18 -0700 (PDT)
+Received: from localhost.localdomain ([59.92.98.98])
+        by smtp.gmail.com with ESMTPSA id u14-20020a056a00124e00b004fab8f3245fsm16785402pfi.149.2022.04.05.06.58.13
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 05 Apr 2022 06:58:17 -0700 (PDT)
+From:   Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+To:     gregkh@linuxfoundation.org
+Cc:     linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        elder@linaro.org, mhi@lists.linux.dev, quic_hemantk@quicinc.com,
+        quic_bbhatt@quicinc.com, quic_jhugo@quicinc.com,
+        bjorn.andersson@linaro.org, dmitry.baryshkov@linaro.org,
+        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+Subject: [PATCH 03/18] bus: mhi: ep: Add support for creating and destroying MHI EP devices
+Date:   Tue,  5 Apr 2022 19:27:39 +0530
+Message-Id: <20220405135754.6622-4-manivannan.sadhasivam@linaro.org>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220405135754.6622-1-manivannan.sadhasivam@linaro.org>
+References: <20220405135754.6622-1-manivannan.sadhasivam@linaro.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <3bb9687a1057619334d95832f803c9b8d7e7fa63.1649128267.git.sevinj.aghayeva@gmail.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Apr 04, 2022 at 11:16:11PM -0400, Sevinj Aghayeva wrote:
-> Adhere to Linux kernel coding style.
-> 
-> Reported by checkpatch:
-> 
-> WARNING: suspect code indent for conditional statements
-> 
-> Signed-off-by: Sevinj Aghayeva <sevinj.aghayeva@gmail.com>
-> ---
->  drivers/staging/rtl8723bs/core/rtw_mlme_ext.c | 8 ++++----
->  1 file changed, 4 insertions(+), 4 deletions(-)
-> 
-> diff --git a/drivers/staging/rtl8723bs/core/rtw_mlme_ext.c b/drivers/staging/rtl8723bs/core/rtw_mlme_ext.c
-> index c06be65b45cf..5eddff488f27 100644
-> --- a/drivers/staging/rtl8723bs/core/rtw_mlme_ext.c
-> +++ b/drivers/staging/rtl8723bs/core/rtw_mlme_ext.c
-> @@ -5145,9 +5145,9 @@ void link_timer_hdl(struct timer_list *t)
->  		if (++pmlmeinfo->reauth_count > REAUTH_LIMIT) {
->  			/* if (pmlmeinfo->auth_algo != dot11AuthAlgrthm_Auto) */
->  			/*  */
-> -				pmlmeinfo->state = 0;
-> -				report_join_res(padapter, -1);
-> -				return;
-> +			pmlmeinfo->state = 0;
-> +			report_join_res(padapter, -1);
-> +			return;
->  			/*  */
->  			/* else */
->  			/*  */
+This commit adds support for creating and destroying MHI endpoint devices.
+The MHI endpoint devices binds to the MHI endpoint channels and are used
+to transfer data between MHI host and endpoint device.
 
-Please remove these comments around here at the same time, as the
-indentation did make sense with those there, but now it's really messy.
+There is a single MHI EP device for each channel pair. The devices will be
+created when the corresponding channels has been started by the host and
+will be destroyed during MHI EP power down and reset.
 
-thanks,
+Reviewed-by: Alex Elder <elder@linaro.org>
+Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+---
+ drivers/bus/mhi/ep/main.c | 83 +++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 83 insertions(+)
 
-greg k-h
+diff --git a/drivers/bus/mhi/ep/main.c b/drivers/bus/mhi/ep/main.c
+index f7d5f75fc083..6c64745e8a06 100644
+--- a/drivers/bus/mhi/ep/main.c
++++ b/drivers/bus/mhi/ep/main.c
+@@ -68,6 +68,89 @@ static struct mhi_ep_device *mhi_ep_alloc_device(struct mhi_ep_cntrl *mhi_cntrl,
+ 	return mhi_dev;
+ }
+ 
++/*
++ * MHI channels are always defined in pairs with UL as the even numbered
++ * channel and DL as odd numbered one. This function gets UL channel (primary)
++ * as the ch_id and always looks after the next entry in channel list for
++ * the corresponding DL channel (secondary).
++ */
++static int mhi_ep_create_device(struct mhi_ep_cntrl *mhi_cntrl, u32 ch_id)
++{
++	struct mhi_ep_chan *mhi_chan = &mhi_cntrl->mhi_chan[ch_id];
++	struct device *dev = mhi_cntrl->cntrl_dev;
++	struct mhi_ep_device *mhi_dev;
++	int ret;
++
++	/* Check if the channel name is same for both UL and DL */
++	if (strcmp(mhi_chan->name, mhi_chan[1].name)) {
++		dev_err(dev, "UL and DL channel names are not same: (%s) != (%s)\n",
++			mhi_chan->name, mhi_chan[1].name);
++		return -EINVAL;
++	}
++
++	mhi_dev = mhi_ep_alloc_device(mhi_cntrl, MHI_DEVICE_XFER);
++	if (IS_ERR(mhi_dev))
++		return PTR_ERR(mhi_dev);
++
++	/* Configure primary channel */
++	mhi_dev->ul_chan = mhi_chan;
++	get_device(&mhi_dev->dev);
++	mhi_chan->mhi_dev = mhi_dev;
++
++	/* Configure secondary channel as well */
++	mhi_chan++;
++	mhi_dev->dl_chan = mhi_chan;
++	get_device(&mhi_dev->dev);
++	mhi_chan->mhi_dev = mhi_dev;
++
++	/* Channel name is same for both UL and DL */
++	mhi_dev->name = mhi_chan->name;
++	dev_set_name(&mhi_dev->dev, "%s_%s",
++		     dev_name(&mhi_cntrl->mhi_dev->dev),
++		     mhi_dev->name);
++
++	ret = device_add(&mhi_dev->dev);
++	if (ret)
++		put_device(&mhi_dev->dev);
++
++	return ret;
++}
++
++static int mhi_ep_destroy_device(struct device *dev, void *data)
++{
++	struct mhi_ep_device *mhi_dev;
++	struct mhi_ep_cntrl *mhi_cntrl;
++	struct mhi_ep_chan *ul_chan, *dl_chan;
++
++	if (dev->bus != &mhi_ep_bus_type)
++		return 0;
++
++	mhi_dev = to_mhi_ep_device(dev);
++	mhi_cntrl = mhi_dev->mhi_cntrl;
++
++	/* Only destroy devices created for channels */
++	if (mhi_dev->dev_type == MHI_DEVICE_CONTROLLER)
++		return 0;
++
++	ul_chan = mhi_dev->ul_chan;
++	dl_chan = mhi_dev->dl_chan;
++
++	if (ul_chan)
++		put_device(&ul_chan->mhi_dev->dev);
++
++	if (dl_chan)
++		put_device(&dl_chan->mhi_dev->dev);
++
++	dev_dbg(&mhi_cntrl->mhi_dev->dev, "Destroying device for chan:%s\n",
++		 mhi_dev->name);
++
++	/* Notify the client and remove the device from MHI bus */
++	device_del(dev);
++	put_device(dev);
++
++	return 0;
++}
++
+ static int mhi_ep_chan_init(struct mhi_ep_cntrl *mhi_cntrl,
+ 			    const struct mhi_ep_cntrl_config *config)
+ {
+-- 
+2.25.1
+
