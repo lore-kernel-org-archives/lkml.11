@@ -2,114 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C390C4332F
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 15:22:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B7DA4C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 15:22:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245496AbiDEPX0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 11:23:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55206 "EHLO
+        id S1350951AbiDEPYV (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 11:24:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54030 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347190AbiDEJqI (ORCPT
+        with ESMTP id S1347159AbiDEJqD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:46:08 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E39ECDD95A;
-        Tue,  5 Apr 2022 02:32:34 -0700 (PDT)
+        Tue, 5 Apr 2022 05:46:03 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEE30DCE2B;
+        Tue,  5 Apr 2022 02:32:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5BDFA616C1;
-        Tue,  5 Apr 2022 09:32:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 67B84C385A0;
-        Tue,  5 Apr 2022 09:32:33 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649151153;
-        bh=+sX6eT4etelquzx7SDWaJwJw7R7+rWeSw+xS7cKPHDI=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Kj8sRnDRvMrIbie7VNBhBviXQM74RGLgPqAzsHPLF9E99cKdSRShoy9tIwCwwkHn/
-         d+ggeRXX8iFh98Ov4//SFFwr5leUN4GXog0mYJqdJaTNd1JioriL5Jenef6tFeq4AV
-         FWkzlXZ4RSOis402KEwwKg/ykzBQq6XgqoWHZngY=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, syzkaller <syzkaller@googlegroups.com>,
-        Dongliang Mu <mudongliangabcd@gmail.com>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 313/913] media: em28xx: initialize refcount before kref_get
-Date:   Tue,  5 Apr 2022 09:22:55 +0200
-Message-Id: <20220405070349.235758782@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
-User-Agent: quilt/0.66
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 98173615E5;
+        Tue,  5 Apr 2022 09:32:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 014EDC385AC;
+        Tue,  5 Apr 2022 09:32:30 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649151152;
+        bh=JncMrmfzGwPQjE8v5Pu7YmvmRGLYwvdId2BOQWsQm3g=;
+        h=From:To:Cc:In-Reply-To:References:Subject:Date:From;
+        b=Lwe2vorGKyGz1bl2S5iuUkKHrbRH7fJipkVD/5CprU9IVf1St+0vLejwdA5JNej4E
+         2TC2gE/DAVvJijHf6f7ncy2/3gEaLoHAFsKOEMM/kJcoGijA1Sth6yuHjqq91Rwqf+
+         a+I311V25B6/YKfySaEQMlVHnDJYeGHiwn/5zvQ29TLp13jMHvPBmA2SjSVWgIx/sC
+         R31xZuDvm8NqXlplbULmp0BI6pXvcUTJyGpEcw8HxQsPBbPfUps8N8ltJIm8vsLyjS
+         KmwSwVK3BXUHZAmyMVJVTBhvJy7fNRutKOlxp+JPb10YAYlr7ZgF/VB9Wbb5O0n5Vx
+         9J/T+CMQJqRNQ==
+From:   Mark Brown <broonie@kernel.org>
+To:     miquel.raynal@bootlin.com, christophe.jaillet@wanadoo.fr
+Cc:     linux-kernel@vger.kernel.org, linux-spi@vger.kernel.org,
+        kernel-janitors@vger.kernel.org
+In-Reply-To: <09c81f751241f6ec0bac7a48d4ec814a742e0d17.1648980664.git.christophe.jaillet@wanadoo.fr>
+References: <09c81f751241f6ec0bac7a48d4ec814a742e0d17.1648980664.git.christophe.jaillet@wanadoo.fr>
+Subject: Re: [PATCH] spi: mxic: Fix an error handling path in mxic_spi_probe()
+Message-Id: <164915115073.276894.2017003822406152149.b4-ty@kernel.org>
+Date:   Tue, 05 Apr 2022 10:32:30 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dongliang Mu <mudongliangabcd@gmail.com>
+On Sun, 3 Apr 2022 12:11:13 +0200, Christophe JAILLET wrote:
+> If spi_register_master() fails, we must undo a previous
+> mxic_spi_mem_ecc_probe() call, as already done in the remove function.
+> 
+> 
 
-[ Upstream commit c08eadca1bdfa099e20a32f8fa4b52b2f672236d ]
+Applied to
 
-The commit 47677e51e2a4("[media] em28xx: Only deallocate struct
-em28xx after finishing all extensions") adds kref_get to many init
-functions (e.g., em28xx_audio_init). However, kref_init is called too
-late in em28xx_usb_probe, since em28xx_init_dev before will invoke
-those init functions and call kref_get function. Then refcount bug
-occurs in my local syzkaller instance.
+   https://git.kernel.org/pub/scm/linux/kernel/git/broonie/spi.git for-next
 
-Fix it by moving kref_init before em28xx_init_dev. This issue occurs
-not only in dev but also dev->dev_next.
+Thanks!
 
-Fixes: 47677e51e2a4 ("[media] em28xx: Only deallocate struct em28xx after finishing all extensions")
-Reported-by: syzkaller <syzkaller@googlegroups.com>
-Signed-off-by: Dongliang Mu <mudongliangabcd@gmail.com>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/media/usb/em28xx/em28xx-cards.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+[1/1] spi: mxic: Fix an error handling path in mxic_spi_probe()
+      commit: 35d516bdcd92fde46202d06b68df1166760208fd
 
-diff --git a/drivers/media/usb/em28xx/em28xx-cards.c b/drivers/media/usb/em28xx/em28xx-cards.c
-index ebc430b05f21..c415b1d195c4 100644
---- a/drivers/media/usb/em28xx/em28xx-cards.c
-+++ b/drivers/media/usb/em28xx/em28xx-cards.c
-@@ -3931,6 +3931,8 @@ static int em28xx_usb_probe(struct usb_interface *intf,
- 		goto err_free;
- 	}
- 
-+	kref_init(&dev->ref);
-+
- 	dev->devno = nr;
- 	dev->model = id->driver_info;
- 	dev->alt   = -1;
-@@ -4031,6 +4033,8 @@ static int em28xx_usb_probe(struct usb_interface *intf,
- 	}
- 
- 	if (dev->board.has_dual_ts && em28xx_duplicate_dev(dev) == 0) {
-+		kref_init(&dev->dev_next->ref);
-+
- 		dev->dev_next->ts = SECONDARY_TS;
- 		dev->dev_next->alt   = -1;
- 		dev->dev_next->is_audio_only = has_vendor_audio &&
-@@ -4085,12 +4089,8 @@ static int em28xx_usb_probe(struct usb_interface *intf,
- 			em28xx_write_reg(dev, 0x0b, 0x82);
- 			mdelay(100);
- 		}
--
--		kref_init(&dev->dev_next->ref);
- 	}
- 
--	kref_init(&dev->ref);
--
- 	request_modules(dev);
- 
- 	/*
--- 
-2.34.1
+All being well this means that it will be integrated into the linux-next
+tree (usually sometime in the next 24 hours) and sent to Linus during
+the next merge window (or sooner if it is a bug fix), however if
+problems are discovered then the patch may be dropped or reverted.
 
+You may get further e-mails resulting from automated or manual testing
+and review of the tree, please engage with people reporting problems and
+send followup patches addressing any issues that are reported if needed.
 
+If any updates are required or you are submitting further changes they
+should be sent as incremental updates against current git, existing
+patches will not be replaced.
 
+Please add any relevant lists and maintainers to the CCs when replying
+to this mail.
+
+Thanks,
+Mark
