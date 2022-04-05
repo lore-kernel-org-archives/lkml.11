@@ -2,45 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B525C43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6CC79C4167D
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 10:30:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356562AbiDEKYK (ORCPT
+        id S1356604AbiDEKYk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 06:24:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48850 "EHLO
+        Tue, 5 Apr 2022 06:24:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58686 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241290AbiDEIdL (ORCPT
+        with ESMTP id S241242AbiDEIc5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:33:11 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31069C4;
-        Tue,  5 Apr 2022 01:31:13 -0700 (PDT)
+        Tue, 5 Apr 2022 04:32:57 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2194B60C0;
+        Tue,  5 Apr 2022 01:30:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B318CB81C13;
-        Tue,  5 Apr 2022 08:31:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2342CC385A0;
-        Tue,  5 Apr 2022 08:31:09 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B5469609D0;
+        Tue,  5 Apr 2022 08:30:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C60E7C385A2;
+        Tue,  5 Apr 2022 08:30:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649147470;
-        bh=8/YNMu7+LX6RHTLGnnonVq5mzG5eSceZVaeyn/2kX5Q=;
+        s=korg; t=1649147421;
+        bh=1Y2tJszXJ8mM7Vg/4Mf9uvXQFr8vz3unAZ/gygB5MPE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NEKEYyENUwUNHvub+wWekDVAUWzh+hGRvecg0uOWKHuDMuAfam+p+iUnS5DLuzGxv
-         FAReWQn4rSrI4dbEyx3yDnEhMJoi4mEFkhM8QqeG/tJsVrkWDYVpiBrwCrbXyZdSju
-         P34HVUweHGcBKTSgaisB6gfPb9pnfSYJBYFcPS7k=
+        b=u8O0iZ6HwKLwArFzvZpIADIFG7eABKrKMmn0CkYYH3ula8pQT7Mxd0NvIqG9sSavJ
+         G+dOZP0TfsFswDO4uCbqWEvn0FVQBED0wT7QZenlgEkUbatQ0kmLD6DvKKtWDF+tKO
+         4JO3NHPKt1OMW25Q/tTxSIO5j9S6ebA5jZQ/YOuw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Daniel Palmer <daniel@0x0f.com>,
-        Arnd Bergmann <arnd@arndb.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0010/1017] ARM: mstar: Select HAVE_ARM_ARCH_TIMER
-Date:   Tue,  5 Apr 2022 09:15:23 +0200
-Message-Id: <20220405070354.477448879@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Martin Varghese <martin.varghese@nokia.com>,
+        Paolo Abeni <pabeni@redhat.com>
+Subject: [PATCH 5.17 1117/1126] openvswitch: Fixed nd target mask field in the flow dump.
+Date:   Tue,  5 Apr 2022 09:31:04 +0200
+Message-Id: <20220405070440.216919630@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
-References: <20220405070354.155796697@linuxfoundation.org>
+In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
+References: <20220405070407.513532867@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,36 +50,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Daniel Palmer <daniel@0x0f.com>
+From: Martin Varghese <martin.varghese@nokia.com>
 
-[ Upstream commit ea49432d184a6a09f84461604b7711a4e9f5ec9c ]
+commit f19c44452b58a84d95e209b847f5495d91c9983a upstream.
 
-The mstar SoCs have an arch timer but HAVE_ARM_ARCH_TIMER wasn't
-selected. If MSC313E_TIMER isn't selected then the kernel gets
-stuck at boot because there are no timers available.
+IPv6 nd target mask was not getting populated in flow dump.
 
-Signed-off-by: Daniel Palmer <daniel@0x0f.com>
-Link: https://lore.kernel.org/r/20220301104349.3040422-1-daniel@0x0f.com'
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+In the function __ovs_nla_put_key the icmp code mask field was checked
+instead of icmp code key field to classify the flow as neighbour discovery.
+
+ufid:bdfbe3e5-60c2-43b0-a5ff-dfcac1c37328, recirc_id(0),dp_hash(0/0),
+skb_priority(0/0),in_port(ovs-nm1),skb_mark(0/0),ct_state(0/0),
+ct_zone(0/0),ct_mark(0/0),ct_label(0/0),
+eth(src=00:00:00:00:00:00/00:00:00:00:00:00,
+dst=00:00:00:00:00:00/00:00:00:00:00:00),
+eth_type(0x86dd),
+ipv6(src=::/::,dst=::/::,label=0/0,proto=58,tclass=0/0,hlimit=0/0,frag=no),
+icmpv6(type=135,code=0),
+nd(target=2001::2/::,
+sll=00:00:00:00:00:00/00:00:00:00:00:00,
+tll=00:00:00:00:00:00/00:00:00:00:00:00),
+packets:10, bytes:860, used:0.504s, dp:ovs, actions:ovs-nm2
+
+Fixes: e64457191a25 (openvswitch: Restructure datapath.c and flow.c)
+Signed-off-by: Martin Varghese <martin.varghese@nokia.com>
+Link: https://lore.kernel.org/r/20220328054148.3057-1-martinvarghesenokia@gmail.com
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm/mach-mstar/Kconfig | 1 +
- 1 file changed, 1 insertion(+)
+ net/openvswitch/flow_netlink.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/arch/arm/mach-mstar/Kconfig b/arch/arm/mach-mstar/Kconfig
-index cd300eeedc20..0bf4d312bcfd 100644
---- a/arch/arm/mach-mstar/Kconfig
-+++ b/arch/arm/mach-mstar/Kconfig
-@@ -3,6 +3,7 @@ menuconfig ARCH_MSTARV7
- 	depends on ARCH_MULTI_V7
- 	select ARM_GIC
- 	select ARM_HEAVY_MB
-+	select HAVE_ARM_ARCH_TIMER
- 	select MST_IRQ
- 	select MSTAR_MSC313_MPLL
- 	help
--- 
-2.34.1
-
+--- a/net/openvswitch/flow_netlink.c
++++ b/net/openvswitch/flow_netlink.c
+@@ -2201,8 +2201,8 @@ static int __ovs_nla_put_key(const struc
+ 			icmpv6_key->icmpv6_type = ntohs(output->tp.src);
+ 			icmpv6_key->icmpv6_code = ntohs(output->tp.dst);
+ 
+-			if (icmpv6_key->icmpv6_type == NDISC_NEIGHBOUR_SOLICITATION ||
+-			    icmpv6_key->icmpv6_type == NDISC_NEIGHBOUR_ADVERTISEMENT) {
++			if (swkey->tp.src == htons(NDISC_NEIGHBOUR_SOLICITATION) ||
++			    swkey->tp.src == htons(NDISC_NEIGHBOUR_ADVERTISEMENT)) {
+ 				struct ovs_key_nd *nd_key;
+ 
+ 				nla = nla_reserve(skb, OVS_KEY_ATTR_ND, sizeof(*nd_key));
 
 
