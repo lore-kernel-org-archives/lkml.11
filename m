@@ -2,50 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 256CFC4167E
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 11:09:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 18F17C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 11:16:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352475AbiDELKs (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 07:10:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45582 "EHLO
+        id S236332AbiDELLP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 07:11:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33756 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238554AbiDEIoP (ORCPT
+        with ESMTP id S238589AbiDEIan (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:44:15 -0400
+        Tue, 5 Apr 2022 04:30:43 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 422BA1EEF7;
-        Tue,  5 Apr 2022 01:35:58 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C10272A27A;
+        Tue,  5 Apr 2022 01:22:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BE8AFB81C69;
-        Tue,  5 Apr 2022 08:35:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EE745C385A4;
-        Tue,  5 Apr 2022 08:35:54 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 13257B81BCF;
+        Tue,  5 Apr 2022 08:22:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5872DC385A1;
+        Tue,  5 Apr 2022 08:22:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649147755;
-        bh=k04tRHaCCcaSw16B5b4zqxD/SIoqsMzrPWW5b4SpaUY=;
+        s=korg; t=1649146946;
+        bh=jpH1FFqHwA9Rcvx435BbU8+Ijry2x5lxT/g9E4on9Sg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OGfH+9jzC5HqMF5zcAi7Ggqn0CPkaNBR2Uj1Hh9GblLN76StgJCyJTL9uH9qJm8OC
-         +hE9A2gw7DeGko5Xpni2NW6XpAu9yePF7TXGQR/euTcR4Q1MnXYvOu+t6L4PttGos+
-         oZ/CVY4jGlUyPwGCaMSOgZ624ZoS34h9GGeFR2j0=
+        b=vObiavCGUMdxkujrd/VhXWB69noFD1jH2FZylWo/ryqyLq/THPoHtsIPP6Zeo6TRG
+         VB3bGBKzGWFYlUEZkP6DLKDMrGtlUhHPrLFrILnA+tdfrxbzxlK3Li9HkdSciqA7Sv
+         7Q/z6kOrFIabcF2ysBly+t2hYzvKBfvCWTjBVz60=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Alistair Delva <adelva@google.com>,
-        Rishabh Bhatnagar <rishabhb@codeaurora.org>,
-        Ohad Ben-Cohen <ohad@wizery.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        Sibi Sankar <sibis@codeaurora.org>,
-        linux-remoteproc@vger.kernel.org, kernel-team@android.com
-Subject: [PATCH 5.16 0073/1017] remoteproc: Fix count check in rproc_coredump_write()
-Date:   Tue,  5 Apr 2022 09:16:26 +0200
-Message-Id: <20220405070356.357754401@linuxfoundation.org>
+        stable@vger.kernel.org, Ulf Hansson <ulf.hansson@linaro.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 0946/1126] mmc: host: Return an error when ->enable_sdio_irq() ops is missing
+Date:   Tue,  5 Apr 2022 09:28:13 +0200
+Message-Id: <20220405070435.274860005@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
-References: <20220405070354.155796697@linuxfoundation.org>
+In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
+References: <20220405070407.513532867@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -54,41 +48,60 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alistair Delva <adelva@google.com>
+From: Ulf Hansson <ulf.hansson@linaro.org>
 
-commit f89672cc3681952f2d06314981a6b45f8b0045d1 upstream.
+[ Upstream commit d6c9219ca1139b74541b2a98cee47a3426d754a9 ]
 
-Check count for 0, to avoid a potential underflow. Make the check the
-same as the one in rproc_recovery_write().
+Even if the current WARN() notifies the user that something is severely
+wrong, we can still end up in a PANIC() when trying to invoke the missing
+->enable_sdio_irq() ops. Therefore, let's also return an error code and
+prevent the host from being added.
 
-Fixes: 3afdc59e4390 ("remoteproc: Add coredump debugfs entry")
-Signed-off-by: Alistair Delva <adelva@google.com>
-Cc: Rishabh Bhatnagar <rishabhb@codeaurora.org>
-Cc: stable@vger.kernel.org
-Cc: Ohad Ben-Cohen <ohad@wizery.com>
-Cc: Bjorn Andersson <bjorn.andersson@linaro.org>
-Cc: Mathieu Poirier <mathieu.poirier@linaro.org>
-Cc: Sibi Sankar <sibis@codeaurora.org>
-Cc: linux-remoteproc@vger.kernel.org
-Cc: kernel-team@android.com
-Reviewed-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Link: https://lore.kernel.org/r/20220119232139.1125908-1-adelva@google.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+While at it, move the code into a separate function to prepare for
+subsequent changes and for further host caps validations.
+
+Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
+Link: https://lore.kernel.org/r/20220303165142.129745-1-ulf.hansson@linaro.org
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/remoteproc/remoteproc_debugfs.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/mmc/core/host.c | 15 +++++++++++++--
+ 1 file changed, 13 insertions(+), 2 deletions(-)
 
---- a/drivers/remoteproc/remoteproc_debugfs.c
-+++ b/drivers/remoteproc/remoteproc_debugfs.c
-@@ -76,7 +76,7 @@ static ssize_t rproc_coredump_write(stru
- 	int ret, err = 0;
- 	char buf[20];
+diff --git a/drivers/mmc/core/host.c b/drivers/mmc/core/host.c
+index cf140f4ec864..d739e2b631fe 100644
+--- a/drivers/mmc/core/host.c
++++ b/drivers/mmc/core/host.c
+@@ -588,6 +588,16 @@ struct mmc_host *mmc_alloc_host(int extra, struct device *dev)
  
--	if (count > sizeof(buf))
-+	if (count < 1 || count > sizeof(buf))
- 		return -EINVAL;
+ EXPORT_SYMBOL(mmc_alloc_host);
  
- 	ret = copy_from_user(buf, user_buf, count);
++static int mmc_validate_host_caps(struct mmc_host *host)
++{
++	if (host->caps & MMC_CAP_SDIO_IRQ && !host->ops->enable_sdio_irq) {
++		dev_warn(host->parent, "missing ->enable_sdio_irq() ops\n");
++		return -EINVAL;
++	}
++
++	return 0;
++}
++
+ /**
+  *	mmc_add_host - initialise host hardware
+  *	@host: mmc host
+@@ -600,8 +610,9 @@ int mmc_add_host(struct mmc_host *host)
+ {
+ 	int err;
+ 
+-	WARN_ON((host->caps & MMC_CAP_SDIO_IRQ) &&
+-		!host->ops->enable_sdio_irq);
++	err = mmc_validate_host_caps(host);
++	if (err)
++		return err;
+ 
+ 	err = device_add(&host->class_dev);
+ 	if (err)
+-- 
+2.34.1
+
 
 
