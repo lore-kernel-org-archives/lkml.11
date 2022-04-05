@@ -2,93 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8BABEC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 02:55:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F2C5FC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 03:07:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230487AbiDEC5F (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 22:57:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50314 "EHLO
+        id S231361AbiDEDIz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 4 Apr 2022 23:08:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46746 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231501AbiDEC4n (ORCPT
+        with ESMTP id S231435AbiDEDIs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 22:56:43 -0400
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64CDD4096BA
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 19:06:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649124390; x=1680660390;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=YzdBJ3M54EZS3crIo7do3ZbrEz3YRHCmFK7qH0ZuUxM=;
-  b=IwwzzoyXn80GJ444Db9Yzhr63G++BeTfUBAxkNiqr+aE+SgMqG8xRWxL
-   x8Yc6gGXNoyWwet46LhuLJFqLbPQaNwzVLXydcndrdhcge+2DHXikOrxg
-   X3HeZFhyA8U57mhL9m9f5GkmJbdHn9n16kcXfysUxShJP8t1u0b9Ll1lT
-   G6w0Tfal/+3W53buKNHghdEcyvLM5MwKLWm83Nn2eJ9iWLdbKvdN2+9z8
-   7v6UAyU3iNuH7YfeLA82lXYwFHiO1lX5qt+x6joc8gZ6d+OH9JeBs/rYa
-   VzbYatm8hiUwCZB9S/dv54l5YGtlWbDDbuuAw5cPqARm8BmlZejehyEMP
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10307"; a="347084589"
-X-IronPort-AV: E=Sophos;i="5.90,235,1643702400"; 
-   d="scan'208";a="347084589"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Apr 2022 18:38:10 -0700
-X-IronPort-AV: E=Sophos;i="5.90,235,1643702400"; 
-   d="scan'208";a="569645614"
-Received: from blu2-mobl3.ccr.corp.intel.com (HELO [10.254.211.208]) ([10.254.211.208])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Apr 2022 18:38:08 -0700
-Message-ID: <806562e6-04b0-9ad9-e3cc-45e0bc12335e@linux.intel.com>
-Date:   Tue, 5 Apr 2022 09:38:05 +0800
+        Mon, 4 Apr 2022 23:08:48 -0400
+Received: from mail-io1-xd33.google.com (mail-io1-xd33.google.com [IPv6:2607:f8b0:4864:20::d33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FBF1137B37;
+        Mon,  4 Apr 2022 19:56:03 -0700 (PDT)
+Received: by mail-io1-xd33.google.com with SMTP id z7so13697536iom.1;
+        Mon, 04 Apr 2022 19:56:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=p3yv5M0ISj3OX+DOMKzeUfYigLUei4YvBEe35BUC17o=;
+        b=Iby+H9vRR0KxP8wmPtDjQoteNOmv+p844+8qA1h05FUmIW6offZ4WiuaCgWKkD5786
+         2K4vaN0cJBuUjjSWl4P0i7kOAFoRFmzBZi5iSeXJNLZhQJ3vSph+J4pah8CZ+AOrTlkH
+         K6D3s7I0Pct4kOQo8T4buUuUp2vy2MPMFLRUC809BtNucg4JQdP/qpNuzDgELI0QAjLu
+         W16Lj6UvH+BhREZ+6vlIy+yeM6/n3URXWQHaPOxA99v5Ly9x09pe/og6JFll6Anhcefo
+         hTxxzRcRxVlPUKvgeIw9jynwNv3OaL0dT6bLAoipXA2R/wXCgPjSBtEJHg3OtHVO3jGS
+         AcpA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=p3yv5M0ISj3OX+DOMKzeUfYigLUei4YvBEe35BUC17o=;
+        b=4Sm/31DR26C+DCb7aHc64fa3d1tZ0QUl7xtx+3IFfoXXniTLdwDMIbOhO2+XwLzChC
+         CXEFtwR5bBgszOUtTnS8hV6jB9JyAhbd8RGaGgkXFqp0qtYaCrUyEkpiudo/ORINswwu
+         IWxWlnEGarDMIJCIoCPygN+HeAAijXdEHgs2dtil/s5W8CNzdrGGj1f+s+nkEFhvIHpi
+         rB9+h1jDBtED0DbjRiKiNFaiYmiBiGQJEz6i/YtLURORUoCwqGbnuw3UGuCbcJUKMPNA
+         ITDRidph+Tav7avHzcL6tLB9PMnzkZfBA470xlb4nxm5AKn/Sc70qJf0MPbCRqMquMWk
+         ujtw==
+X-Gm-Message-State: AOAM531auA+VsD57DbWjKSry3QicDwK+ufDcaikgIegrwmgzpFQMNlUO
+        gByYMpLpo/lz1/RyzyJA0y788pZIoIZ4J133vIk=
+X-Google-Smtp-Source: ABdhPJw5IPJXC5+wEEp+ZE5Rd8BQ1UNxzVXfXqR1Eu2OFd1PaDiIVCwKZaHIurGuhLQhMFWhAJtYSP96dKLBe+/HEWo=
+X-Received: by 2002:a05:6638:d16:b0:323:63cd:c144 with SMTP id
+ q22-20020a0566380d1600b0032363cdc144mr841464jaj.76.1649127362523; Mon, 04 Apr
+ 2022 19:56:02 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Cc:     baolu.lu@linux.intel.com, kernel@collabora.com,
-        iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iommu/vt-d: remove unneeded validity check on dev
-Content-Language: en-US
-To:     Muhammad Usama Anjum <usama.anjum@collabora.com>,
-        David Woodhouse <dwmw2@infradead.org>,
-        Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>
-References: <20220313150337.593650-1-usama.anjum@collabora.com>
- <ace47a96-4e43-697a-4cfe-04544f014940@collabora.com>
-From:   Lu Baolu <baolu.lu@linux.intel.com>
-In-Reply-To: <ace47a96-4e43-697a-4cfe-04544f014940@collabora.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+References: <20220404131818.1817794-1-gch981213@gmail.com> <20220404131818.1817794-5-gch981213@gmail.com>
+ <1649088538.050456.1436949.nullmailer@robh.at.kernel.org>
+In-Reply-To: <1649088538.050456.1436949.nullmailer@robh.at.kernel.org>
+From:   Chuanhong Guo <gch981213@gmail.com>
+Date:   Tue, 5 Apr 2022 10:55:51 +0800
+Message-ID: <CAJsYDVLaXAoL=TcPun6rckcA_cdUS-zFy_7M6uCpfzX+jbQEag@mail.gmail.com>
+Subject: Re: [PATCH v3 4/5] dt-bindings: spi: add binding doc for spi-mtk-snfi
+To:     Rob Herring <robh@kernel.org>
+Cc:     Rob Herring <robh+dt@kernel.org>, linux-spi@vger.kernel.org,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Wolfram Sang <wsa+renesas@sang-engineering.com>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Richard Weinberger <richard@nod.at>,
+        Pratyush Yadav <p.yadav@ti.com>,
+        linux-arm-kernel@lists.infradead.org,
+        Cai Huoqing <cai.huoqing@linux.dev>,
+        Roger Quadros <rogerq@kernel.org>,
+        Yu Kuai <yukuai3@huawei.com>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        linux-mediatek@lists.infradead.org,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        devicetree@vger.kernel.org, Mark Brown <broonie@kernel.org>,
+        linux-kernel@vger.kernel.org, Paul Cercueil <paul@crapouillou.net>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Colin Ian King <colin.king@intel.com>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        linux-mtd@lists.infradead.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022/4/4 15:52, Muhammad Usama Anjum wrote:
-> Any thoughts?
+Hi Rob!
 
-It looks good to me. I will queue it for v5.19.
+On Tue, Apr 5, 2022 at 12:09 AM Rob Herring <robh@kernel.org> wrote:
+> [...]
+> My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
+> on your patch (DT_CHECKER_FLAGS is new in v5.13):
+>
+> yamllint warnings/errors:
+>
+> dtschema/dtc warnings/errors:
+> /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/spi/mediatek,spi-mtk-snfi.example.dt.yaml: spi@1100d000: 'ecc-engine' is a required property
+>         From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/spi/mediatek,spi-mtk-snfi.yaml
+> Documentation/devicetree/bindings/spi/mediatek,spi-mtk-snfi.example.dt.yaml:0:0: /example-0/soc/spi@1100d000/flash@0: failed to match any schema with compatible: ['spi-nand']
 
-Best regards,
-baolu
+I ran the tests myself and it's only complaining about the ecc-engine name:
 
-> 
-> On 3/13/22 8:03 PM, Muhammad Usama Anjum wrote:
->> dev_iommu_priv_get() is being used at the top of this function which
->> dereferences dev. Dev cannot be NULL after this. Remove the validity
->> check on dev and simplify the code.
->>
->> Signed-off-by: Muhammad Usama Anjum <usama.anjum@collabora.com>
->> ---
->>   drivers/iommu/intel/iommu.c | 2 +-
->>   1 file changed, 1 insertion(+), 1 deletion(-)
->>
->> diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
->> index df5c62ecf942b..f79edbbd651a4 100644
->> --- a/drivers/iommu/intel/iommu.c
->> +++ b/drivers/iommu/intel/iommu.c
->> @@ -2502,7 +2502,7 @@ static struct dmar_domain *dmar_insert_one_dev_info(struct intel_iommu *iommu,
->>   		}
->>   	}
->>   
->> -	if (dev && domain_context_mapping(domain, dev)) {
->> +	if (domain_context_mapping(domain, dev)) {
->>   		dev_err(dev, "Domain context map failed\n");
->>   		dmar_remove_one_dev_info(dev);
->>   		return NULL;
-> 
+/home/user/src/kernels/linux/Documentation/devicetree/bindings/spi/mediatek,spi-mtk-snfi.example.dtb:
+spi@1100d000: 'ecc-engine' is a required property
+From schema: /home/user/src/kernels/linux/Documentation/devicetree/bindings/spi/mediatek,spi-mtk-snfi.yaml
+
+It says nothing about the spi-nand part.
+I'd like to keep the flash@0 node in the example to demonstrate the
+nand-ecc-engine usage. What should I do?
+-- 
+Regards,
+Chuanhong Guo
