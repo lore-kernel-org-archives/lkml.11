@@ -2,84 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E86FC35273
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D9F7C41535
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 22:55:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347085AbiDEWmf (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 18:42:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39768 "EHLO
+        id S241193AbiDEWl6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 18:41:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59276 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349420AbiDEJtu (ORCPT
+        with ESMTP id S1384347AbiDEOSB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:49:50 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F1581EAE0;
-        Tue,  5 Apr 2022 02:45:18 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3CB6861368;
-        Tue,  5 Apr 2022 09:45:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 49882C385A2;
-        Tue,  5 Apr 2022 09:45:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649151917;
-        bh=qSaTGiySKFFr1e9/bvAwdPYGh0SluH4gytxj95+oIgQ=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nSh0bQ6NThfBZKRfitK4wpGPJeRtfe4vkmjCaftcYM2y/KL7is/AoP2QhnEGgRb9R
-         EQBvE+yKi3yIu8A4nxeCnflA8kRcJX6N1wz0rh/QKAJPfMWQbCKUx36gmaEDefC9rl
-         NYpRca7tG7yIY32TGa+eZca0CKn9zpxzDac0+srk=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dave Jiang <dave.jiang@intel.com>,
-        Vinod Koul <vkoul@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 589/913] dmaengine: idxd: check GENCAP config support for gencfg register
-Date:   Tue,  5 Apr 2022 09:27:31 +0200
-Message-Id: <20220405070357.499184808@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 5 Apr 2022 10:18:01 -0400
+Received: from smtp1.axis.com (smtp1.axis.com [195.60.68.17])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFF392E09E;
+        Tue,  5 Apr 2022 06:03:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=axis.com; q=dns/txt; s=axis-central1; t=1649163839;
+  x=1680699839;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=LB9Z91H4lxNWiHmnPf+yOrh5/8wfRKj1DRyzVPm5Z0s=;
+  b=WUZj+nhNaQk+plWanfhUOe+OsLv68D/+hZsmIxc3F7IhlWxRaDIg81Jf
+   mrV7Rnur5M93c1gfVtOZTNZaynpnE35xTtz1zCyWQXhS3rH1Xm7JpVBoQ
+   HVHmPp81CxvwmrKQS33lkypf1dXHcVlwg5EQvCsE3+g6eHejF/KHcx0Q+
+   BkiiMWRNIZWp4bbF/Ruwn/wKI6YmehfD/JZiaS+WPYPYQwEm4IT0UFRW/
+   PJv5G4CbGoGi99GyNdIsPXxbemScV3FTTH/u3U6FZCoBJCqKTJKuMdTgN
+   eay7AyS3hki5eMrm76CcDIIR71yaYJQsSQm4za/tYVRsfbcZxnINxwDtg
+   A==;
+From:   Vincent Whitchurch <vincent.whitchurch@axis.com>
+To:     <vigneshr@ti.com>, <richard@nod.at>, <miquel.raynal@bootlin.com>,
+        <joern@lazybastard.org>
+CC:     <kernel@axis.com>,
+        Vincent Whitchurch <vincent.whitchurch@axis.com>,
+        <linux-mtd@lists.infradead.org>, <devicetree@vger.kernel.org>,
+        <robh+dt@kernel.org>, <krzk+dt@kernel.org>,
+        <frowand.list@gmail.com>, <linux-kernel@vger.kernel.org>
+Subject: [PATCH v2 0/4] mtd: phram improvements
+Date:   Tue, 5 Apr 2022 15:03:46 +0200
+Message-ID: <20220405130350.1640985-1-vincent.whitchurch@axis.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dave Jiang <dave.jiang@intel.com>
+v2:
+- Add note on what "phram" means in binding.
+- Use /schemas/mtd/mtd.yaml instead of relative pathUse /schemas/mtd/mtd.yaml
+  instead of relative path in binding.
 
-[ Upstream commit 79c4c3db7d86b9bec94562275efc82e58f3d0132 ]
+The phram driver in the MTD subsystem can be used to allow the kernel to use an
+MTD or (via mtdblock) a block device in RAM (with the contents loaded by a
+bootloader for example).  This series has some improvements to make it more
+usable by adding device tree support and to significantly improve its
+performance by using cached mappings when possible.
 
-DSA spec 1.2 has moved the GENCFG register under the GENCAP configuration
-support with respect to writability. Add check in driver before writing to
-GENCFG register.
+I use this feature to pass the rootfs to the kernel when booting from RAM.  The
+boot is much faster and requires less memory than initrd (which is on top of
+that being deprecated), and it allows the same disk images to be used when
+booting from RAM, unlike initramfs.
 
-Signed-off-by: Dave Jiang <dave.jiang@intel.com>
-Link: https://lore.kernel.org/r/163406171896.1303830.11217958011385656998.stgit@djiang5-desk3.ch.intel.com
-Signed-off-by: Vinod Koul <vkoul@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/dma/idxd/device.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Cc: linux-mtd@lists.infradead.org
 
-diff --git a/drivers/dma/idxd/device.c b/drivers/dma/idxd/device.c
-index b468ca36d3a0..3cda1c5faf3c 100644
---- a/drivers/dma/idxd/device.c
-+++ b/drivers/dma/idxd/device.c
-@@ -801,7 +801,7 @@ static int idxd_groups_config_write(struct idxd_device *idxd)
- 	struct device *dev = &idxd->pdev->dev;
- 
- 	/* Setup bandwidth token limit */
--	if (idxd->token_limit) {
-+	if (idxd->hw.gen_cap.config_en && idxd->token_limit) {
- 		reg.bits = ioread32(idxd->reg_base + IDXD_GENCFG_OFFSET);
- 		reg.token_limit = idxd->token_limit;
- 		iowrite32(reg.bits, idxd->reg_base + IDXD_GENCFG_OFFSET);
+Cc: devicetree@vger.kernel.org
+Cc: robh+dt@kernel.org
+Cc: krzk+dt@kernel.org
+Cc: frowand.list@gmail.com
+
+Cc: linux-kernel@vger.kernel.org
+
+Vincent Whitchurch (4):
+  mtd: core: Check devicetree alias for index
+  dt-bindings: reserved-memory: Add phram
+  mtd: phram: Allow probing via reserved-memory
+  mtd: phram: Allow cached mappings
+
+ .../bindings/reserved-memory/phram.yaml       | 47 +++++++++++
+ drivers/mtd/devices/phram.c                   | 78 +++++++++++++++++--
+ drivers/mtd/mtdcore.c                         | 11 ++-
+ drivers/of/platform.c                         |  1 +
+ 4 files changed, 129 insertions(+), 8 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/reserved-memory/phram.yaml
+
 -- 
 2.34.1
-
-
 
