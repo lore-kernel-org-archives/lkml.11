@@ -2,175 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 79320C35296
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BC244C352A8
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 21:37:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382234AbiDEVim (ORCPT
+        id S1382577AbiDEVi7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 17:38:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43464 "EHLO
+        Tue, 5 Apr 2022 17:38:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60252 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1573696AbiDETnG (ORCPT
+        with ESMTP id S1356149AbiDEKXA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 15:43:06 -0400
-Received: from mail-pf1-x431.google.com (mail-pf1-x431.google.com [IPv6:2607:f8b0:4864:20::431])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92DB5208
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 12:41:07 -0700 (PDT)
-Received: by mail-pf1-x431.google.com with SMTP id b13so468607pfv.0
-        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 12:41:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=mSWn+bwJl0JXyj3IYwZGhRTiDd7qYXvMXLFtGw/g+rg=;
-        b=AlCCPq+JKrSyY6/MdAWK+LJuFWEhXLOG2iRM8eu949iBowZOgYJpjjEZpvcwItS8+d
-         FEsIJdYmNNMsbMLSdUVjIs4nmz5vT7bZ7g0IC7PS/W33SVLgyOhPMKVc1hrkM/ybgdzd
-         i2jtISpWLxcxVWQR/Nn5bREeHtnuDwJpw37LvO7wCQo11vKt0AwUemLOuwYj1VFxKVXR
-         hMIICCbOonqXvUjzSbqP4umdws0neDr1awH1mbCXQOE1HRfpfmMRHUA++iIBc/IcROVl
-         uvLnKsuTqIOV5nEgg1TUvo47C8T7k/JqnB0mapIqQiPSvV58KN+OHoUlSQjUoTb3h1mP
-         6oAw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=mSWn+bwJl0JXyj3IYwZGhRTiDd7qYXvMXLFtGw/g+rg=;
-        b=k9c29M0/t8QfwwIzqkN/4HhpiJK/Kr9fvnqIqOz/2p5Ul7AiE+u5ebVzVvr6aSwGxK
-         yU0sY+DdE4bSO+anJvtjyVw20oERSvKXShjWG9JdWMUcQecPNBCJhBMSUS1yiSXIHFSD
-         +2019J/j/aXzgENRNrVxP+byZixfQIvcZvvl94UJ46O4RZWvDrQd6nULF8WbQj6/+t2Z
-         J1iWq1jlo76BAzdMqyizKkFWt13x0OqnyDsYd1tTlEqxZm1ilcaD5GVPy+vrxbCuvggk
-         Zzk2gRnGFQiCoP+U+ZagKDGmRdmic9gUAMWY80xo3KffPLPwDdMqQZ1ld6GgRE/T9Ipv
-         kqDQ==
-X-Gm-Message-State: AOAM530HFTelENtMezat/Dgegyr2vVQSmBXIoekjwpbjIGvpsa5LlGhb
-        vbl/Irnxes7qDUG7nJ9sivwqAFR7kB/+eA==
-X-Google-Smtp-Source: ABdhPJwz4yMK7s1pjudVER/qr9fFsGeQA/N/GsijRhlaiArSrhqko6pULldJx680awQe2eXzGIRGzw==
-X-Received: by 2002:a05:6a00:1828:b0:4fd:e0e5:6115 with SMTP id y40-20020a056a00182800b004fde0e56115mr5257368pfa.52.1649187666833;
-        Tue, 05 Apr 2022 12:41:06 -0700 (PDT)
-Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
-        by smtp.gmail.com with ESMTPSA id j9-20020aa78009000000b004fde2dd78b0sm11969754pfi.109.2022.04.05.12.41.05
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 05 Apr 2022 12:41:06 -0700 (PDT)
-Date:   Tue, 5 Apr 2022 19:41:02 +0000
-From:   Sean Christopherson <seanjc@google.com>
-To:     Brijesh Singh <brijesh.singh@amd.com>
-Cc:     x86@kernel.org, linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
-        linux-efi@vger.kernel.org, platform-driver-x86@vger.kernel.org,
-        linux-coco@lists.linux.dev, linux-mm@kvack.org,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Joerg Roedel <jroedel@suse.de>,
-        Tom Lendacky <thomas.lendacky@amd.com>,
-        "H. Peter Anvin" <hpa@zytor.com>, Ard Biesheuvel <ardb@kernel.org>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Jim Mattson <jmattson@google.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Sergio Lopez <slp@redhat.com>, Peter Gonda <pgonda@google.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
-        David Rientjes <rientjes@google.com>,
-        Dov Murik <dovmurik@linux.ibm.com>,
-        Tobin Feldman-Fitzthum <tobin@ibm.com>,
-        Borislav Petkov <bp@alien8.de>,
-        Michael Roth <michael.roth@amd.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
-        Andi Kleen <ak@linux.intel.com>,
-        "Dr . David Alan Gilbert" <dgilbert@redhat.com>,
-        brijesh.ksingh@gmail.com, tony.luck@intel.com, marcorr@google.com,
-        sathyanarayanan.kuppuswamy@linux.intel.com
-Subject: Re: [PATCH v12 22/46] x86/sev: Use SEV-SNP AP creation to start
- secondary CPUs
-Message-ID: <YkybTnVYBKZ1zvz6@google.com>
-References: <20220307213356.2797205-1-brijesh.singh@amd.com>
- <20220307213356.2797205-23-brijesh.singh@amd.com>
- <YkuMTdckSgSB9M6f@google.com>
- <f4369605-7c8d-1a89-bd0e-b82710d0772a@amd.com>
+        Tue, 5 Apr 2022 06:23:00 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0105EBA30E;
+        Tue,  5 Apr 2022 03:07:03 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id ABB87B81C98;
+        Tue,  5 Apr 2022 10:07:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F2968C385A2;
+        Tue,  5 Apr 2022 10:07:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649153221;
+        bh=twS32qAeCTY/7ABgIeeyA6EBH7JxCA+yeGiHVh5MOYc=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=uaNMzYDgnuf28LSll95TeeNj95U2saQFV/hfSDEKJLXvZ/XfXbJMCWpJlXoiw2OIw
+         7MyQXIbPk6vYXt9Pfn/Wpva1TnnRQ0+bNRL6tZtmhZKYM1GgSHldfek1hhtEH28u0B
+         KL7p10L7b3RiulQTvwW+UrLX29t7lWKXfxx9PIbY=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Guenter Roeck <linux@roeck-us.net>,
+        Armin Wolf <W_Armin@gmx.de>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 145/599] hwmon: (sch56xx-common) Replace WDOG_ACTIVE with WDOG_HW_RUNNING
+Date:   Tue,  5 Apr 2022 09:27:19 +0200
+Message-Id: <20220405070303.157959665@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
+References: <20220405070258.802373272@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <f4369605-7c8d-1a89-bd0e-b82710d0772a@amd.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 05, 2022, Brijesh Singh wrote:
-> Hi Sean,
->
-> On 4/4/22 19:24, Sean Christopherson wrote:
->
-> > > +static void snp_cleanup_vmsa(struct sev_es_save_area *vmsa)
-> > > +{
-> > > + int err;
-> > > +
-> > > + err = snp_set_vmsa(vmsa, false);
-> >
-> > Uh, so what happens if a malicious guest does RMPADJUST to convert a VMSA page
-> > back to a "normal" page while the host is trying to VMRUN that VMSA?  Does VMRUN
-> > fault?
->
-> When SEV-SNP is enabled, the VMRUN instruction performs an additional
-> security checks on various memory pages. In the case of VMSA page, hardware
-> enforce that page is marked as "VMSA" in the RMP table. If not,  VMRUN will
-> fail with VMEXIT_INVALID.
->
-> After the VMRUN is successful, the VMSA page is marked IN_USE by the
-> hardware, any attempt to modify the RMP entries will result in FAIL_INUSE
-> error. The IN_USE marking is automatically cleared by the hardware after the
-> #VMEXIT.
->
-> Please see the APM vol2 section 15.36.12 for additional information.
+From: Armin Wolf <W_Armin@gmx.de>
 
-Thanks!
+[ Upstream commit 647d6f09bea7dacf4cdb6d4ea7e3051883955297 ]
 
-> > Can Linux refuse to support this madness and instead require the ACPI MP wakeup
-> > protocol being proposed/implemented for TDX?  That would allow KVM to have at
->
-> My two cents
->
-> In the current architecture, the HV track VMSAs by their SPA and guest
-> controls when they are runnable. It provides flexibility to the guest, which
-> can add and remove the VMSA. This flexibility may come in handy to support
-> the kexec and reboot use cases.
+If the watchdog was already enabled by the BIOS after booting, the
+watchdog infrastructure needs to regularly send keepalives to
+prevent a unexpected reset.
+WDOG_ACTIVE only serves as an status indicator for userspace,
+we want to use WDOG_HW_RUNNING instead.
 
-I understand it provides the guest flexibility, but IMO it completely inverts the
-separation of concerns between host and guest.  The host should have control of
-when a vCPU is added/removed and with what state, and the guest should be able to
-verify/acknowledge any changes.  This scheme gives the guest the bulk of the control,
-and doesn't even let the host verify much at all since the VMSA is opaque.
+Since my Fujitsu Esprimo P720 does not support the watchdog,
+this change is compile-tested only.
 
-That the guest can yank the rug out from the host at any time just adds to the pain.
-VMEXIT_INVALID isn't the end of the world, but it breaks the assumption that such
-errors are host bugs.  To guard against such behavior, the host would have to unmap
-the VMSA page in order to prevent unwanted RMPADJUST, and that gets ugly fast if a
-VMSA can be any arbitrary guest page.
+Suggested-by: Guenter Roeck <linux@roeck-us.net>
+Fixes: fb551405c0f8 (watchdog: sch56xx: Use watchdog core)
+Signed-off-by: Armin Wolf <W_Armin@gmx.de>
+Link: https://lore.kernel.org/r/20220131211935.3656-5-W_Armin@gmx.de
+Reviewed-by: Hans de Goede <hdegoede@redhat.com>
+Signed-off-by: Guenter Roeck <linux@roeck-us.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/hwmon/sch56xx-common.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Another example is the 2mb alignment erratum.  Technically, the guest can't workaround
-the erratum with 100% certainty because there's no guarantee that the host uses the
-same alignment for gfns and pfns.  I don't actually expect a host to use unaligned
-mappings, just pointing out how backwards this is.
+diff --git a/drivers/hwmon/sch56xx-common.c b/drivers/hwmon/sch56xx-common.c
+index 6c84780e358e..066b12990fbf 100644
+--- a/drivers/hwmon/sch56xx-common.c
++++ b/drivers/hwmon/sch56xx-common.c
+@@ -424,7 +424,7 @@ struct sch56xx_watchdog_data *sch56xx_watchdog_register(struct device *parent,
+ 	if (nowayout)
+ 		set_bit(WDOG_NO_WAY_OUT, &data->wddev.status);
+ 	if (output_enable & SCH56XX_WDOG_OUTPUT_ENABLE)
+-		set_bit(WDOG_ACTIVE, &data->wddev.status);
++		set_bit(WDOG_HW_RUNNING, &data->wddev.status);
+ 
+ 	/* Since the watchdog uses a downcounter there is no register to read
+ 	   the BIOS set timeout from (if any was set at all) ->
+-- 
+2.34.1
 
-I fully realize there's basically zero chance of getting any of this changed in
-hardware/firmware, but I'm hoping we can concoct a software/GHCB solution to the
-worst issues.
 
-I don't see an way easy to address the guest getting to shove state directly into
-the VMSA, but the location of the VMSA gfn/pfn is a very solvable problem.  E.g.
-the host gets full control over each vCPU's VMSA, and the host-provided VMSA is
-discoverable in the guest.  That allows the guest to change vCPU state, e.g. for AP
-bringup, kexec, etc..., but gives the host the ability to protect itself without
-having to support arbitrary VMSA pages.  E.g. the host can dynamically map/unmap the
-VMSA from the guest: map on fault, unmap on AP "creation", refuse to run the vCPU if
-its VMSA isn't in the unmap state.  The VMSA pfn is fully host controlled, so
-there's no need for the guest to be aware of the 2mb alignment erratum.
 
-Requiring such GHCB extensions in the guest would make Linux incompatible with
-hypervisors that aren't updated, but IMO that's not a ridiculous ask given that
-it would be in the best interested of any hypervisor that isn't running a fully
-trusted, paravirt VMPL0.
-
-> The current approach does not depend on
-> ACPI; it will also come in handy to support microvm (minimalist machine type
-> without PCI nor ACPI support).
-
-Eh, a microvm really shouldn't need AP bringup in the first place, just run all
-APs from time zero and route them to where they need to be.
