@@ -2,46 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A5293C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 14:56:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 33DDBC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 14:58:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352262AbiDEO4J (ORCPT
+        id S1355308AbiDEO4c (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 10:56:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50230 "EHLO
+        Tue, 5 Apr 2022 10:56:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50288 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244300AbiDEJlO (ORCPT
+        with ESMTP id S1344477AbiDEJmF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:41:14 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FDC2BB0A2;
-        Tue,  5 Apr 2022 02:25:59 -0700 (PDT)
+        Tue, 5 Apr 2022 05:42:05 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7F16BE9C7;
+        Tue,  5 Apr 2022 02:27:46 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A20A261659;
-        Tue,  5 Apr 2022 09:25:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AC9ECC385A2;
-        Tue,  5 Apr 2022 09:25:57 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E0CB2B81C6E;
+        Tue,  5 Apr 2022 09:27:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 37BB6C385A0;
+        Tue,  5 Apr 2022 09:27:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649150758;
-        bh=yLqCQ/yDofoNM+R1v/S2XzyU18h6zpV4FD22rA3bSP0=;
+        s=korg; t=1649150863;
+        bh=XQzzdibhL0otRHSkdbIMNyKyXU70t8rbk4JAHgEy2QE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jS+ceeIetBdYbMmNjRmPZgXy/24tQ35YVB90feSll7KX4NDAKB8kUcNdS/HjOG9Rx
-         lUO4bp4cJVVvuq10GiXiImPuALuY+olmBcJcTFpVLiEY/qJKAS3hPq53MgzEuG3g3q
-         HWfVhjiVYUl+0JWJ1Y5mMoC9UmfmXaHwdgwAEGgI=
+        b=ZhvooKbzbUQx943pCD5TtNdk8IXIAiys6v0E3/Db5nvZn2lP49jKJcHb0pAa8V2S4
+         1UXayNxAygKWbAbeUmPWjTbmQU7EhVuP8aM1xRstVdGlqUJGke2WUTBgdQDx+DaNIr
+         WlfYWRxj+YE/FNilEO7u6l1YG6Nhr14mJE/ynt0A=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, stable@kernel.org,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ritesh Harjani <riteshh@linux.ibm.com>,
-        Jan Kara <jack@suse.cz>,
-        Harshad Shirwadkar <harshadshirwadkar@gmail.com>,
-        Theodore Tso <tytso@mit.edu>
-Subject: [PATCH 5.15 132/913] ext4: fix ext4_fc_stats trace point
-Date:   Tue,  5 Apr 2022 09:19:54 +0200
-Message-Id: <20220405070343.788373049@linuxfoundation.org>
+        stable@vger.kernel.org, Lyude Paul <lyude@redhat.com>,
+        Karol Herbst <kherbst@redhat.com>
+Subject: [PATCH 5.15 176/913] drm/nouveau/backlight: Fix LVDS backlight detection on some laptops
+Date:   Tue,  5 Apr 2022 09:20:38 +0200
+Message-Id: <20220405070345.127736150@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
 References: <20220405070339.801210740@linuxfoundation.org>
@@ -53,136 +49,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ritesh Harjani <riteshh@linux.ibm.com>
+From: Lyude Paul <lyude@redhat.com>
 
-commit 7af1974af0a9ba8a8ed2e3e947d87dd4d9a78d27 upstream.
+commit 6b0076540faffd47f5a899bf12f3528c4f0e726b upstream.
 
-ftrace's __print_symbolic() requires that any enum values used in the
-symbol to string translation table be wrapped in a TRACE_DEFINE_ENUM
-so that the enum value can be decoded from the ftrace ring buffer by
-user space tooling.
+It seems that some laptops will report having both an eDP and LVDS
+connector, even though only the LVDS connector is actually hooked up. This
+can lead to issues with backlight registration if the eDP connector ends up
+getting registered before the LVDS connector, as the backlight device will
+then be registered to the eDP connector instead of the LVDS connector.
 
-This patch also fixes few other problems found in this trace point.
-e.g. dereferencing structures in TP_printk which should not be done
-at any cost.
+So, fix this by only registering the backlight on connectors that are
+reported as being connected.
 
-Also to avoid checkpatch warnings, this patch removes those
-whitespaces/tab stops issues.
-
-Cc: stable@kernel.org
-Fixes: aa75f4d3daae ("ext4: main fast-commit commit path")
-Reported-by: Steven Rostedt <rostedt@goodmis.org>
-Signed-off-by: Ritesh Harjani <riteshh@linux.ibm.com>
-Reviewed-by: Jan Kara <jack@suse.cz>
-Reviewed-by: Steven Rostedt (Google) <rostedt@goodmis.org>
-Reviewed-by: Harshad Shirwadkar <harshadshirwadkar@gmail.com>
-Link: https://lore.kernel.org/r/b4b9691414c35c62e570b723e661c80674169f9a.1647057583.git.riteshh@linux.ibm.com
-Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+Signed-off-by: Lyude Paul <lyude@redhat.com>
+Fixes: 6eca310e8924 ("drm/nouveau/kms/nv50-: Add basic DPCD backlight support for nouveau")
+Bugzilla: https://gitlab.freedesktop.org/drm/nouveau/-/issues/137
+Cc: <stable@vger.kernel.org> # v5.15+
+Reviewed-by: Karol Herbst <kherbst@redhat.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220204180504.328999-1-lyude@redhat.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- include/trace/events/ext4.h |   80 +++++++++++++++++++++++++++-----------------
- 1 file changed, 50 insertions(+), 30 deletions(-)
+ drivers/gpu/drm/nouveau/nouveau_backlight.c |    3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
---- a/include/trace/events/ext4.h
-+++ b/include/trace/events/ext4.h
-@@ -95,6 +95,17 @@ TRACE_DEFINE_ENUM(ES_REFERENCED_B);
- 	{ FALLOC_FL_COLLAPSE_RANGE,	"COLLAPSE_RANGE"},	\
- 	{ FALLOC_FL_ZERO_RANGE,		"ZERO_RANGE"})
+--- a/drivers/gpu/drm/nouveau/nouveau_backlight.c
++++ b/drivers/gpu/drm/nouveau/nouveau_backlight.c
+@@ -294,7 +294,8 @@ nv50_backlight_init(struct nouveau_backl
+ 	struct nouveau_drm *drm = nouveau_drm(nv_encoder->base.base.dev);
+ 	struct nvif_object *device = &drm->client.device.object;
  
-+TRACE_DEFINE_ENUM(EXT4_FC_REASON_XATTR);
-+TRACE_DEFINE_ENUM(EXT4_FC_REASON_CROSS_RENAME);
-+TRACE_DEFINE_ENUM(EXT4_FC_REASON_JOURNAL_FLAG_CHANGE);
-+TRACE_DEFINE_ENUM(EXT4_FC_REASON_NOMEM);
-+TRACE_DEFINE_ENUM(EXT4_FC_REASON_SWAP_BOOT);
-+TRACE_DEFINE_ENUM(EXT4_FC_REASON_RESIZE);
-+TRACE_DEFINE_ENUM(EXT4_FC_REASON_RENAME_DIR);
-+TRACE_DEFINE_ENUM(EXT4_FC_REASON_FALLOC_RANGE);
-+TRACE_DEFINE_ENUM(EXT4_FC_REASON_INODE_JOURNAL_DATA);
-+TRACE_DEFINE_ENUM(EXT4_FC_REASON_MAX);
-+
- #define show_fc_reason(reason)						\
- 	__print_symbolic(reason,					\
- 		{ EXT4_FC_REASON_XATTR,		"XATTR"},		\
-@@ -2723,41 +2734,50 @@ TRACE_EVENT(ext4_fc_commit_stop,
+-	if (!nvif_rd32(device, NV50_PDISP_SOR_PWM_CTL(ffs(nv_encoder->dcb->or) - 1)))
++	if (!nvif_rd32(device, NV50_PDISP_SOR_PWM_CTL(ffs(nv_encoder->dcb->or) - 1)) ||
++	    nv_conn->base.status != connector_status_connected)
+ 		return -ENODEV;
  
- #define FC_REASON_NAME_STAT(reason)					\
- 	show_fc_reason(reason),						\
--	__entry->sbi->s_fc_stats.fc_ineligible_reason_count[reason]
-+	__entry->fc_ineligible_rc[reason]
- 
- TRACE_EVENT(ext4_fc_stats,
--	    TP_PROTO(struct super_block *sb),
-+	TP_PROTO(struct super_block *sb),
-+
-+	TP_ARGS(sb),
-+
-+	TP_STRUCT__entry(
-+		__field(dev_t, dev)
-+		__array(unsigned int, fc_ineligible_rc, EXT4_FC_REASON_MAX)
-+		__field(unsigned long, fc_commits)
-+		__field(unsigned long, fc_ineligible_commits)
-+		__field(unsigned long, fc_numblks)
-+	),
- 
--	    TP_ARGS(sb),
-+	TP_fast_assign(
-+		int i;
- 
--	    TP_STRUCT__entry(
--		    __field(dev_t, dev)
--		    __field(struct ext4_sb_info *, sbi)
--		    __field(int, count)
--		    ),
--
--	    TP_fast_assign(
--		    __entry->dev = sb->s_dev;
--		    __entry->sbi = EXT4_SB(sb);
--		    ),
--
--	    TP_printk("dev %d:%d fc ineligible reasons:\n"
--		      "%s:%d, %s:%d, %s:%d, %s:%d, %s:%d, %s:%d, %s:%d, %s:%d, %s:%d; "
--		      "num_commits:%ld, ineligible: %ld, numblks: %ld",
--		      MAJOR(__entry->dev), MINOR(__entry->dev),
--		      FC_REASON_NAME_STAT(EXT4_FC_REASON_XATTR),
--		      FC_REASON_NAME_STAT(EXT4_FC_REASON_CROSS_RENAME),
--		      FC_REASON_NAME_STAT(EXT4_FC_REASON_JOURNAL_FLAG_CHANGE),
--		      FC_REASON_NAME_STAT(EXT4_FC_REASON_NOMEM),
--		      FC_REASON_NAME_STAT(EXT4_FC_REASON_SWAP_BOOT),
--		      FC_REASON_NAME_STAT(EXT4_FC_REASON_RESIZE),
--		      FC_REASON_NAME_STAT(EXT4_FC_REASON_RENAME_DIR),
--		      FC_REASON_NAME_STAT(EXT4_FC_REASON_FALLOC_RANGE),
--		      FC_REASON_NAME_STAT(EXT4_FC_REASON_INODE_JOURNAL_DATA),
--		      __entry->sbi->s_fc_stats.fc_num_commits,
--		      __entry->sbi->s_fc_stats.fc_ineligible_commits,
--		      __entry->sbi->s_fc_stats.fc_numblks)
-+		__entry->dev = sb->s_dev;
-+		for (i = 0; i < EXT4_FC_REASON_MAX; i++) {
-+			__entry->fc_ineligible_rc[i] =
-+				EXT4_SB(sb)->s_fc_stats.fc_ineligible_reason_count[i];
-+		}
-+		__entry->fc_commits = EXT4_SB(sb)->s_fc_stats.fc_num_commits;
-+		__entry->fc_ineligible_commits =
-+			EXT4_SB(sb)->s_fc_stats.fc_ineligible_commits;
-+		__entry->fc_numblks = EXT4_SB(sb)->s_fc_stats.fc_numblks;
-+	),
- 
-+	TP_printk("dev %d,%d fc ineligible reasons:\n"
-+		  "%s:%u, %s:%u, %s:%u, %s:%u, %s:%u, %s:%u, %s:%u, %s:%u, %s:%u "
-+		  "num_commits:%lu, ineligible: %lu, numblks: %lu",
-+		  MAJOR(__entry->dev), MINOR(__entry->dev),
-+		  FC_REASON_NAME_STAT(EXT4_FC_REASON_XATTR),
-+		  FC_REASON_NAME_STAT(EXT4_FC_REASON_CROSS_RENAME),
-+		  FC_REASON_NAME_STAT(EXT4_FC_REASON_JOURNAL_FLAG_CHANGE),
-+		  FC_REASON_NAME_STAT(EXT4_FC_REASON_NOMEM),
-+		  FC_REASON_NAME_STAT(EXT4_FC_REASON_SWAP_BOOT),
-+		  FC_REASON_NAME_STAT(EXT4_FC_REASON_RESIZE),
-+		  FC_REASON_NAME_STAT(EXT4_FC_REASON_RENAME_DIR),
-+		  FC_REASON_NAME_STAT(EXT4_FC_REASON_FALLOC_RANGE),
-+		  FC_REASON_NAME_STAT(EXT4_FC_REASON_INODE_JOURNAL_DATA),
-+		  __entry->fc_commits, __entry->fc_ineligible_commits,
-+		  __entry->fc_numblks)
- );
- 
- #define DEFINE_TRACE_DENTRY_EVENT(__type)				\
+ 	if (nv_conn->type == DCB_CONNECTOR_eDP) {
 
 
