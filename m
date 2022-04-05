@@ -2,52 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E1125C4332F
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:16:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 78EE9C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:16:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239320AbiDEUMQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 16:12:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36676 "EHLO
+        id S1442610AbiDEUHW (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 16:07:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57788 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354826AbiDEKQJ (ORCPT
+        with ESMTP id S1349809AbiDEJvg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:16:09 -0400
+        Tue, 5 Apr 2022 05:51:36 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CAF596C95A;
-        Tue,  5 Apr 2022 03:03:07 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3BCC1FCD2;
+        Tue,  5 Apr 2022 02:49:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 77177B81BC0;
-        Tue,  5 Apr 2022 10:03:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B9184C385A2;
-        Tue,  5 Apr 2022 10:03:04 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 85005B81B14;
+        Tue,  5 Apr 2022 09:49:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D7576C385A1;
+        Tue,  5 Apr 2022 09:49:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649152985;
-        bh=7T3V9Ql41ZXUXe2eHr5kADkK5LhNNXoQgf53a89Czf8=;
+        s=korg; t=1649152175;
+        bh=02vN4Sxu3Mspd3SCD/KExVELM6QtsTgtq7JitGYxUVE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XoKYqACQi5ksIOTFMur+8DnXtj5FM7/y6D5345l+RubAeqz/+rNP70fgslsOakE2x
-         PmqMXDTaRBRFvloGrW+kvNEm2ndh/5njpPzktJRIvGO9V/DhR9yYlAMwvqycvXqLiB
-         RfCjUovO3aUB8/aVxLGYBNL4N5umklNdd2uOlv8Y=
+        b=qgbuDT+i39whwRO6a4SJLh3AbdDHtwCl9KVRtVzjm+UvLxghLGyr/rkNd01iNqti9
+         LA1mXYFm0JeK8Oetc8xPHuOY/TY9wft/Z3c8kBsI9KFtV6rG3MsLpcgKkHEQhokbyI
+         V8wD4bduJ0mPryD9ixSwgGQ4S671MOaWX3aB5QYY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Rik van Riel <riel@surriel.com>,
-        Miaohe Lin <linmiaohe@huawei.com>,
-        Naoya Horiguchi <naoya.horiguchi@nec.com>,
-        Oscar Salvador <osalvador@suse.de>,
-        John Hubbard <jhubbard@nvidia.com>,
-        Mel Gorman <mgorman@suse.de>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Matthew Wilcox <willy@infradead.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [PATCH 5.10 060/599] mm: invalidate hwpoison page cache page in fault path
-Date:   Tue,  5 Apr 2022 09:25:54 +0200
-Message-Id: <20220405070300.613828921@linuxfoundation.org>
+        stable@vger.kernel.org,
+        syzbot+d1e3b1d92d25abf97943@syzkaller.appspotmail.com,
+        Casey Schaufler <casey@schaufler-ca.com>,
+        James Morris <jamorris@linux.microsoft.com>,
+        Paul Moore <paul@paul-moore.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 682/913] LSM: general protection fault in legacy_parse_param
+Date:   Tue,  5 Apr 2022 09:29:04 +0200
+Message-Id: <20220405070400.278041421@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -56,63 +53,79 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Rik van Riel <riel@surriel.com>
+From: Casey Schaufler <casey@schaufler-ca.com>
 
-commit e53ac7374e64dede04d745ff0e70ff5048378d1f upstream.
+[ Upstream commit ecff30575b5ad0eda149aadad247b7f75411fd47 ]
 
-Sometimes the page offlining code can leave behind a hwpoisoned clean
-page cache page.  This can lead to programs being killed over and over
-and over again as they fault in the hwpoisoned page, get killed, and
-then get re-spawned by whatever wanted to run them.
+The usual LSM hook "bail on fail" scheme doesn't work for cases where
+a security module may return an error code indicating that it does not
+recognize an input.  In this particular case Smack sees a mount option
+that it recognizes, and returns 0. A call to a BPF hook follows, which
+returns -ENOPARAM, which confuses the caller because Smack has processed
+its data.
 
-This is particularly embarrassing when the page was offlined due to
-having too many corrected memory errors.  Now we are killing tasks due
-to them trying to access memory that probably isn't even corrupted.
+The SELinux hook incorrectly returns 1 on success. There was a time
+when this was correct, however the current expectation is that it
+return 0 on success. This is repaired.
 
-This problem can be avoided by invalidating the page from the page fault
-handler, which already has a branch for dealing with these kinds of
-pages.  With this patch we simply pretend the page fault was successful
-if the page was invalidated, return to userspace, incur another page
-fault, read in the file from disk (to a new memory page), and then
-everything works again.
-
-Link: https://lkml.kernel.org/r/20220212213740.423efcea@imladris.surriel.com
-Signed-off-by: Rik van Riel <riel@surriel.com>
-Reviewed-by: Miaohe Lin <linmiaohe@huawei.com>
-Acked-by: Naoya Horiguchi <naoya.horiguchi@nec.com>
-Reviewed-by: Oscar Salvador <osalvador@suse.de>
-Cc: John Hubbard <jhubbard@nvidia.com>
-Cc: Mel Gorman <mgorman@suse.de>
-Cc: Johannes Weiner <hannes@cmpxchg.org>
-Cc: Matthew Wilcox <willy@infradead.org>
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Reported-by: syzbot+d1e3b1d92d25abf97943@syzkaller.appspotmail.com
+Signed-off-by: Casey Schaufler <casey@schaufler-ca.com>
+Acked-by: James Morris <jamorris@linux.microsoft.com>
+Signed-off-by: Paul Moore <paul@paul-moore.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- mm/memory.c |    9 +++++++--
- 1 file changed, 7 insertions(+), 2 deletions(-)
+ security/security.c      | 17 +++++++++++++++--
+ security/selinux/hooks.c |  5 ++---
+ 2 files changed, 17 insertions(+), 5 deletions(-)
 
---- a/mm/memory.c
-+++ b/mm/memory.c
-@@ -3676,11 +3676,16 @@ static vm_fault_t __do_fault(struct vm_f
- 		return ret;
+diff --git a/security/security.c b/security/security.c
+index 67264cb08fb3..da631339e969 100644
+--- a/security/security.c
++++ b/security/security.c
+@@ -884,9 +884,22 @@ int security_fs_context_dup(struct fs_context *fc, struct fs_context *src_fc)
+ 	return call_int_hook(fs_context_dup, 0, fc, src_fc);
+ }
  
- 	if (unlikely(PageHWPoison(vmf->page))) {
--		if (ret & VM_FAULT_LOCKED)
-+		vm_fault_t poisonret = VM_FAULT_HWPOISON;
-+		if (ret & VM_FAULT_LOCKED) {
-+			/* Retry if a clean page was removed from the cache. */
-+			if (invalidate_inode_page(vmf->page))
-+				poisonret = 0;
- 			unlock_page(vmf->page);
-+		}
- 		put_page(vmf->page);
- 		vmf->page = NULL;
--		return VM_FAULT_HWPOISON;
-+		return poisonret;
- 	}
+-int security_fs_context_parse_param(struct fs_context *fc, struct fs_parameter *param)
++int security_fs_context_parse_param(struct fs_context *fc,
++				    struct fs_parameter *param)
+ {
+-	return call_int_hook(fs_context_parse_param, -ENOPARAM, fc, param);
++	struct security_hook_list *hp;
++	int trc;
++	int rc = -ENOPARAM;
++
++	hlist_for_each_entry(hp, &security_hook_heads.fs_context_parse_param,
++			     list) {
++		trc = hp->hook.fs_context_parse_param(fc, param);
++		if (trc == 0)
++			rc = 0;
++		else if (trc != -ENOPARAM)
++			return trc;
++	}
++	return rc;
+ }
  
- 	if (unlikely(!(ret & VM_FAULT_LOCKED)))
+ int security_sb_alloc(struct super_block *sb)
+diff --git a/security/selinux/hooks.c b/security/selinux/hooks.c
+index f3c8acf45ed9..9a89e456d378 100644
+--- a/security/selinux/hooks.c
++++ b/security/selinux/hooks.c
+@@ -2915,10 +2915,9 @@ static int selinux_fs_context_parse_param(struct fs_context *fc,
+ 		return opt;
+ 
+ 	rc = selinux_add_opt(opt, param->string, &fc->security);
+-	if (!rc) {
++	if (!rc)
+ 		param->string = NULL;
+-		rc = 1;
+-	}
++
+ 	return rc;
+ }
+ 
+-- 
+2.34.1
+
 
 
