@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6CE60C4167D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CCAC9C46467
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 11:04:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345055AbiDELAQ (ORCPT
+        id S1345352AbiDELAc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 07:00:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52830 "EHLO
+        Tue, 5 Apr 2022 07:00:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45542 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242277AbiDEIhS (ORCPT
+        with ESMTP id S234501AbiDEIjT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:37:18 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A0A51C928;
-        Tue,  5 Apr 2022 01:32:37 -0700 (PDT)
+        Tue, 5 Apr 2022 04:39:19 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6686D21E3F;
+        Tue,  5 Apr 2022 01:33:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id AABB260FF5;
-        Tue,  5 Apr 2022 08:32:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B75C9C385A0;
-        Tue,  5 Apr 2022 08:32:35 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1BB40B81B92;
+        Tue,  5 Apr 2022 08:33:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8AAA4C385A1;
+        Tue,  5 Apr 2022 08:33:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649147556;
-        bh=JAcNIEr1LPWrk+L53Ncmi4AbV1sJxXCTFWiNjxRRQuQ=;
+        s=korg; t=1649147591;
+        bh=Hxo4l3G3ezXXxyeir2RGiMkhpL4xQTk/wS0+4Y5M1K8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FpkoPBDob5ySX1D74Kb+uQIQrtrFKO6+3b2e2YjHOXO86aRTJJMm7bH0gCWCHHVYe
-         0FLixkoiZjJXZ8EqxH5p1M+QGcRaUUgOIsd1bGkFaXMEc46NcMHp3wQdn6djIJRgx+
-         nTIYdvGJvxLJZGLqZ7EkUhSKdhwPQSZYev+MCLDI=
+        b=kQ34fV7LJPq/dVQMYnoTsb8UizHxgrXRPHiFNGsHl/3+VfwT5AK2RBJWkrG+ayWWD
+         BbV/+g3usMlhmugEO7vSSzoBOl95WLQeLgihtB76IWjMyOLjdgShTqyJru7OjiNq+P
+         UOMm4adpzq0lc6AEQQa9EXmb7WFEUhJ3guMSysAI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Alexander Usyskin <alexander.usyskin@intel.com>,
-        Tomas Winkler <tomas.winkler@intel.com>
-Subject: [PATCH 5.16 0039/1017] mei: me: add Alder Lake N device id.
-Date:   Tue,  5 Apr 2022 09:15:52 +0200
-Message-Id: <20220405070355.339716085@linuxfoundation.org>
+        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
+        Johan Hovold <johan@kernel.org>
+Subject: [PATCH 5.16 0051/1017] greybus: svc: fix an error handling bug in gb_svc_hello()
+Date:   Tue,  5 Apr 2022 09:16:04 +0200
+Message-Id: <20220405070355.699128328@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -50,41 +49,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alexander Usyskin <alexander.usyskin@intel.com>
+From: Dan Carpenter <dan.carpenter@oracle.com>
 
-commit 7bbbd0845818cffa9fa8ccfe52fa1cad58e7e4f2 upstream.
+commit 5f8583a3b7552092582a92e7bbd2153319929ad7 upstream.
 
-Add Alder Lake N device ID.
+Cleanup if gb_svc_queue_deferred_request() fails.
 
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Alexander Usyskin <alexander.usyskin@intel.com>
-Signed-off-by: Tomas Winkler <tomas.winkler@intel.com>
-Link: https://lore.kernel.org/r/20220301071115.96145-1-tomas.winkler@intel.com
+Link: https://lore.kernel.org/r/20220202072016.GA6748@kili
+Fixes: ee2f2074fdb2 ("greybus: svc: reconfig APBridgeA-Switch link to handle required load")
+Cc: stable@vger.kernel.org      # 4.9
+[johan: fix commit summary prefix and rename label ]
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+Signed-off-by: Johan Hovold <johan@kernel.org>
+Link: https://lore.kernel.org/r/20220202113347.1288-2-johan@kernel.org
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/misc/mei/hw-me-regs.h |    1 +
- drivers/misc/mei/pci-me.c     |    1 +
- 2 files changed, 2 insertions(+)
+ drivers/greybus/svc.c |    8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
 
---- a/drivers/misc/mei/hw-me-regs.h
-+++ b/drivers/misc/mei/hw-me-regs.h
-@@ -107,6 +107,7 @@
- #define MEI_DEV_ID_ADP_S      0x7AE8  /* Alder Lake Point S */
- #define MEI_DEV_ID_ADP_LP     0x7A60  /* Alder Lake Point LP */
- #define MEI_DEV_ID_ADP_P      0x51E0  /* Alder Lake Point P */
-+#define MEI_DEV_ID_ADP_N      0x54E0  /* Alder Lake Point N */
+--- a/drivers/greybus/svc.c
++++ b/drivers/greybus/svc.c
+@@ -866,8 +866,14 @@ static int gb_svc_hello(struct gb_operat
  
- /*
-  * MEI HW Section
---- a/drivers/misc/mei/pci-me.c
-+++ b/drivers/misc/mei/pci-me.c
-@@ -113,6 +113,7 @@ static const struct pci_device_id mei_me
- 	{MEI_PCI_DEVICE(MEI_DEV_ID_ADP_S, MEI_ME_PCH15_CFG)},
- 	{MEI_PCI_DEVICE(MEI_DEV_ID_ADP_LP, MEI_ME_PCH15_CFG)},
- 	{MEI_PCI_DEVICE(MEI_DEV_ID_ADP_P, MEI_ME_PCH15_CFG)},
-+	{MEI_PCI_DEVICE(MEI_DEV_ID_ADP_N, MEI_ME_PCH15_CFG)},
+ 	gb_svc_debugfs_init(svc);
  
- 	/* required last entry */
- 	{0, }
+-	return gb_svc_queue_deferred_request(op);
++	ret = gb_svc_queue_deferred_request(op);
++	if (ret)
++		goto err_remove_debugfs;
+ 
++	return 0;
++
++err_remove_debugfs:
++	gb_svc_debugfs_exit(svc);
+ err_unregister_device:
+ 	gb_svc_watchdog_destroy(svc);
+ 	device_del(&svc->dev);
 
 
