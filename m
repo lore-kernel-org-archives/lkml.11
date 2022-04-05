@@ -2,89 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 20F72C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 14:18:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D94EC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 14:20:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379342AbiDEOPc (ORCPT
+        id S1380004AbiDEOPx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 10:15:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38670 "EHLO
+        Tue, 5 Apr 2022 10:15:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47472 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238449AbiDEJci (ORCPT
+        with ESMTP id S238400AbiDEJcc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:32:38 -0400
-Received: from ssl.serverraum.org (ssl.serverraum.org [176.9.125.105])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3207D6C;
-        Tue,  5 Apr 2022 02:19:29 -0700 (PDT)
-Received: from ssl.serverraum.org (web.serverraum.org [172.16.0.2])
+        Tue, 5 Apr 2022 05:32:32 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73D1AB64;
+        Tue,  5 Apr 2022 02:19:20 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id E1FF7221D4;
-        Tue,  5 Apr 2022 11:19:27 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1649150368;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=BOvj4u69nnl0MRspeEi8s3JMbY/tCVXYqntAM7FXoYM=;
-        b=m3RUG0UMPDNFyI4gv+Ph23UcaiROlA2mhed7gN+Xme7uDlxgUwIZtiS2q3oJgilsF5toFx
-        pHqXmbcoIlcQ6mNT9wgqyLFnA/NUyTxsASJRXOzUDrJgBRhSY3g6QlwFVEpdkUMvNFVx9p
-        /nuXiThKwOhvWNzhZC9D6WKUNayp138=
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 10D326144D;
+        Tue,  5 Apr 2022 09:19:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 276AFC385A0;
+        Tue,  5 Apr 2022 09:19:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649150359;
+        bh=1fG89xdKOt8ET6oufH5VJwXYBoTv7beuzBJOrhMCqqA=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=RHB+L6X0dSZVyceRSRobiVfCfJh+xJEnJqXXsb60cj9h8y3qpvl8aSEVNSdCF5tjC
+         NKiumy08zcGgrxzak4h/MR2sf0YiaCX67uFyHcdYVzcIPny0uYmvEkTBPzoXZgFeHq
+         5GMkHx0ZiNB8KtN1rOkfQ4u4zPjO4YtWpVYCZoBk=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Xie Yongji <xieyongji@bytedance.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Jens Axboe <axboe@kernel.dk>, Lee Jones <lee.jones@linaro.org>
+Subject: [PATCH 5.15 029/913] virtio-blk: Use blk_validate_block_size() to validate block size
+Date:   Tue,  5 Apr 2022 09:18:11 +0200
+Message-Id: <20220405070340.689812747@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
-Date:   Tue, 05 Apr 2022 11:19:27 +0200
-From:   Michael Walle <michael@walle.cc>
-To:     Kurt Kanzenbach <kurt@linutronix.de>
-Cc:     Andrew Lunn <andrew@lunn.ch>, richardcochran@gmail.com,
-        davem@davemloft.net, grygorii.strashko@ti.com, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, linux@armlinux.org.uk,
-        mlichvar@redhat.com, netdev@vger.kernel.org,
-        qiangqing.zhang@nxp.com, vladimir.oltean@nxp.com
-Subject: Re: [PATCH RFC V1 net-next 3/4] net: Let the active time stamping
- layer be selectable.
-In-Reply-To: <877d83rjjc.fsf@kurt>
-References: <20220104014215.GA20062@hoboy.vegasvil.org>
- <20220404150508.3945833-1-michael@walle.cc> <YksMvHgXZxA+YZci@lunn.ch>
- <e5a6f6193b86388ed7a081939b8745be@walle.cc> <877d83rjjc.fsf@kurt>
-User-Agent: Roundcube Webmail/1.4.13
-Message-ID: <ad4a8d3efbeaacf241a19bfbca5976f9@walle.cc>
-X-Sender: michael@walle.cc
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Am 2022-04-05 11:01, schrieb Kurt Kanzenbach:
-> On Mon Apr 04 2022, Michael Walle wrote:
->> That would make sense. I guess what bothers me with the current
->> mechanism is that a feature addition to the PHY in the *future* (the
->> timestamping support) might break a board - or at least changes the
->> behavior by suddenly using PHY timestamping.
-> 
-> Currently PHY timestamping is hidden behind a configuration option
-> (NETWORK_PHY_TIMESTAMPING). By disabling this option the default
-> behavior should stay at MAC timestamping even if additional features
-> are added on top of the PHY drivers at later stages. Or not?
+From: Xie Yongji <xieyongji@bytedance.com>
 
-That is correct. But a Kconfig option has several drawbacks:
-(1) Doesn't work with boards where I might want PHY timestamping
-     on *some* ports, thus I need to enable it and then stumple
-     across the same problem.
-(2) Doesn't work with generic distro support, which is what is
-     ARM pushing right now with their SystemReady stuff (among other
-     things also for embeddem system). Despite that, I have two boards
-     which are already ready for booting debian out of the box for
-     example. While I might convince Debian to enable that option
-     (as I see it, that option is there to disable the additional
-     overhead) it certainly won't be on a per board basis.
-     Actually for keeping the MAC timestamping as is, you'd need to
-     convince a distribution to never enable the PHY timestamping
-     kconfig option.
+commit 57a13a5b8157d9a8606490aaa1b805bafe6c37e1 upstream.
 
-So yes, I agree it will work when you have control over your
-kconfig options, after all (1) might be more academic. But I'm
-really concerned about (2).
+The block layer can't support a block size larger than
+page size yet. And a block size that's too small or
+not a power of two won't work either. If a misconfigured
+device presents an invalid block size in configuration space,
+it will result in the kernel crash something like below:
 
--michael
+[  506.154324] BUG: kernel NULL pointer dereference, address: 0000000000000008
+[  506.160416] RIP: 0010:create_empty_buffers+0x24/0x100
+[  506.174302] Call Trace:
+[  506.174651]  create_page_buffers+0x4d/0x60
+[  506.175207]  block_read_full_page+0x50/0x380
+[  506.175798]  ? __mod_lruvec_page_state+0x60/0xa0
+[  506.176412]  ? __add_to_page_cache_locked+0x1b2/0x390
+[  506.177085]  ? blkdev_direct_IO+0x4a0/0x4a0
+[  506.177644]  ? scan_shadow_nodes+0x30/0x30
+[  506.178206]  ? lru_cache_add+0x42/0x60
+[  506.178716]  do_read_cache_page+0x695/0x740
+[  506.179278]  ? read_part_sector+0xe0/0xe0
+[  506.179821]  read_part_sector+0x36/0xe0
+[  506.180337]  adfspart_check_ICS+0x32/0x320
+[  506.180890]  ? snprintf+0x45/0x70
+[  506.181350]  ? read_part_sector+0xe0/0xe0
+[  506.181906]  bdev_disk_changed+0x229/0x5c0
+[  506.182483]  blkdev_get_whole+0x6d/0x90
+[  506.183013]  blkdev_get_by_dev+0x122/0x2d0
+[  506.183562]  device_add_disk+0x39e/0x3c0
+[  506.184472]  virtblk_probe+0x3f8/0x79b [virtio_blk]
+[  506.185461]  virtio_dev_probe+0x15e/0x1d0 [virtio]
+
+So let's use a block layer helper to validate the block size.
+
+Signed-off-by: Xie Yongji <xieyongji@bytedance.com>
+Acked-by: Michael S. Tsirkin <mst@redhat.com>
+Link: https://lore.kernel.org/r/20211026144015.188-5-xieyongji@bytedance.com
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Signed-off-by: Lee Jones <lee.jones@linaro.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ drivers/block/virtio_blk.c |   12 ++++++++++--
+ 1 file changed, 10 insertions(+), 2 deletions(-)
+
+--- a/drivers/block/virtio_blk.c
++++ b/drivers/block/virtio_blk.c
+@@ -815,9 +815,17 @@ static int virtblk_probe(struct virtio_d
+ 	err = virtio_cread_feature(vdev, VIRTIO_BLK_F_BLK_SIZE,
+ 				   struct virtio_blk_config, blk_size,
+ 				   &blk_size);
+-	if (!err)
++	if (!err) {
++		err = blk_validate_block_size(blk_size);
++		if (err) {
++			dev_err(&vdev->dev,
++				"virtio_blk: invalid block size: 0x%x\n",
++				blk_size);
++			goto out_cleanup_disk;
++		}
++
+ 		blk_queue_logical_block_size(q, blk_size);
+-	else
++	} else
+ 		blk_size = queue_logical_block_size(q);
+ 
+ 	/* Use topology information if available */
+
+
