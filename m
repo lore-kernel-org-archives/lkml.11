@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 33FC2C4332F
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 13:32:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7FB28C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 13:32:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382827AbiDENaI (ORCPT
+        id S1382945AbiDENaV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 09:30:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44330 "EHLO
+        Tue, 5 Apr 2022 09:30:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60884 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345335AbiDEJW2 (ORCPT
+        with ESMTP id S1345350AbiDEJW3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:22:28 -0400
+        Tue, 5 Apr 2022 05:22:29 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E3AE46167;
-        Tue,  5 Apr 2022 02:10:36 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F6A72BB3D;
+        Tue,  5 Apr 2022 02:10:44 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id AE29961577;
-        Tue,  5 Apr 2022 09:10:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BE0F9C385A2;
-        Tue,  5 Apr 2022 09:10:34 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CEEFC61527;
+        Tue,  5 Apr 2022 09:10:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E3553C385A4;
+        Tue,  5 Apr 2022 09:10:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649149835;
-        bh=KBBEiaudzNuttpozFnSTnTmfgA9wXGUFOKNx4lDwuv0=;
+        s=korg; t=1649149843;
+        bh=SoTsVxUNgArb3KGJBW6jLzurc7grDCBVMz9x6nnfNFA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LYPqW2tfsb+qhmgyPqSW7NKz9tHo30OGI1uTfgr/8FMj/Qf3CwMVFnKcJeF4GnuZ9
-         XyDSMwEnev9yK3IJw1eWuXjvRnj+b7YjO1GwRC4d/2t2MwJUr0ypCMPAmeFOuCvyQU
-         fAF7oi2ti6uwwXP1rkbtNdllN0rbebCmBkd7t0Ck=
+        b=zN1ke6gwoyNM8LLVnMuMgWkmV3eVeBRfh+o/hYmDv7fIw7KctqKKk9LAuzEklUL91
+         oRMZu8UmN0Fuob9O4rF3kxn8AVN4FhLGX9CF2Gytk/SpGQAwzxjQerFZ5bzBrm5bS2
+         216varebq9VdWQn8XOnPIpjysp/UMfCBKK/1fSzU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sean Christopherson <seanjc@google.com>,
+        stable@vger.kernel.org, Ben Gardon <bgardon@google.com>,
+        Sean Christopherson <seanjc@google.com>,
         Paolo Bonzini <pbonzini@redhat.com>
-Subject: [PATCH 5.16 0858/1017] KVM: x86/mmu: Use common TDP MMU zap helper for MMU notifier unmap hook
-Date:   Tue,  5 Apr 2022 09:29:31 +0200
-Message-Id: <20220405070419.703621984@linuxfoundation.org>
+Subject: [PATCH 5.16 0861/1017] KVM: x86/mmu: Check for present SPTE when clearing dirty bit in TDP MMU
+Date:   Tue,  5 Apr 2022 09:29:34 +0200
+Message-Id: <20220405070419.791276787@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -51,42 +52,37 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Sean Christopherson <seanjc@google.com>
 
-commit 83b83a02073ec8d18c77a9bbe0881d710f7a9d32 upstream.
+commit 3354ef5a592d219364cf442c2f784ce7ad7629fd upstream.
 
-Use the common TDP MMU zap helper when handling an MMU notifier unmap
-event, the two flows are semantically identical.  Consolidate the code in
-preparation for a future bug fix, as both kvm_tdp_mmu_unmap_gfn_range()
-and __kvm_tdp_mmu_zap_gfn_range() are guilty of not zapping SPTEs in
-invalid roots.
+Explicitly check for present SPTEs when clearing dirty bits in the TDP
+MMU.  This isn't strictly required for correctness, as setting the dirty
+bit in a defunct SPTE will not change the SPTE from !PRESENT to PRESENT.
+However, the guarded MMU_WARN_ON() in spte_ad_need_write_protect() would
+complain if anyone actually turned on KVM's MMU debugging.
 
-No functional change intended.
-
-Cc: stable@vger.kernel.org
+Fixes: a6a0b05da9f3 ("kvm: x86/mmu: Support dirty logging for the TDP MMU")
+Cc: Ben Gardon <bgardon@google.com>
 Signed-off-by: Sean Christopherson <seanjc@google.com>
-Message-Id: <20211215011557.399940-2-seanjc@google.com>
+Reviewed-by: Ben Gardon <bgardon@google.com>
+Message-Id: <20220226001546.360188-3-seanjc@google.com>
+Cc: stable@vger.kernel.org
 Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/kvm/mmu/tdp_mmu.c |    9 ++-------
- 1 file changed, 2 insertions(+), 7 deletions(-)
+ arch/x86/kvm/mmu/tdp_mmu.c |    3 +++
+ 1 file changed, 3 insertions(+)
 
 --- a/arch/x86/kvm/mmu/tdp_mmu.c
 +++ b/arch/x86/kvm/mmu/tdp_mmu.c
-@@ -1032,13 +1032,8 @@ int kvm_tdp_mmu_map(struct kvm_vcpu *vcp
- bool kvm_tdp_mmu_unmap_gfn_range(struct kvm *kvm, struct kvm_gfn_range *range,
- 				 bool flush)
- {
--	struct kvm_mmu_page *root;
--
--	for_each_tdp_mmu_root_yield_safe(kvm, root, range->slot->as_id, false)
--		flush = zap_gfn_range(kvm, root, range->start, range->end,
--				      range->may_block, flush, false);
--
--	return flush;
-+	return __kvm_tdp_mmu_zap_gfn_range(kvm, range->slot->as_id, range->start,
-+					   range->end, range->may_block, flush);
- }
+@@ -1261,6 +1261,9 @@ retry:
+ 		if (tdp_mmu_iter_cond_resched(kvm, &iter, false, true))
+ 			continue;
  
- typedef bool (*tdp_handler_t)(struct kvm *kvm, struct tdp_iter *iter,
++		if (!is_shadow_present_pte(iter.old_spte))
++			continue;
++
+ 		if (spte_ad_need_write_protect(iter.old_spte)) {
+ 			if (is_writable_pte(iter.old_spte))
+ 				new_spte = iter.old_spte & ~PT_WRITABLE_MASK;
 
 
