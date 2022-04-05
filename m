@@ -2,122 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 90319C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AB5D9C4167D
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 10:30:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356876AbiDEKZB (ORCPT
+        id S1357592AbiDEK0h (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 06:25:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44590 "EHLO
+        Tue, 5 Apr 2022 06:26:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34412 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241211AbiDEIcy (ORCPT
+        with ESMTP id S241101AbiDEIct (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:32:54 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5676E17A9B;
-        Tue,  5 Apr 2022 01:29:39 -0700 (PDT)
-Date:   Tue, 05 Apr 2022 08:29:36 -0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1649147378;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=rVp4aRHgsclhL8EJ9iZFPn/4+bvKhNrDLh1shDagL2c=;
-        b=zMlfh/PxrJOZ8vGaMmjA4p2/ZaPgx5r3H0AbHeZgRL4TIdsXUpNL+jY6SyJ07jSg/j2y/u
-        88x2iZ9oRzVP10AEyJ5biBeq8J2fusLom50Rk0fuRJaf1f8gWnUICBqsrlQK4E65H6xuW8
-        XLGg6mH+me+vOvEfct+IcRNicAQtnWHe1SbmPnNhzBAzIEEqqukCpyr5wpRKOCGlvD3XEC
-        qidd4D5Us92VNhSDN4oif6qwp8vQhfxzQhfw+U3jYpj+5u3hCxLLFjxTKy6ZvXr7KKJbiV
-        pLGFqNnfXgr6sbLdpFmS19fFTt1BkdFK2OrKn3hPHGftJc83ZAzl43y1+VyEwg==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1649147378;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=rVp4aRHgsclhL8EJ9iZFPn/4+bvKhNrDLh1shDagL2c=;
-        b=yaKJS7IpU3azwEtJ/GCcjVDTMoQMwXqhXPoCYVFBp11Ife3vzblPjEQ4gomMOEZmX9CK7d
-        pVzumFGcjVOvjDBA==
-From:   "tip-bot2 for Peter Zijlstra" <tip-bot2@linutronix.de>
-Sender: tip-bot2@linutronix.de
-Reply-to: linux-kernel@vger.kernel.org
-To:     linux-tip-commits@vger.kernel.org
-Subject: [tip: x86/urgent] objtool: Fix SLS validation for kcov tail-call replacement
-Cc:     "Peter Zijlstra (Intel)" <peterz@infradead.org>, x86@kernel.org,
-        linux-kernel@vger.kernel.org
-In-Reply-To: <20220323230712.GA8939@worktop.programming.kicks-ass.net>
-References: <20220323230712.GA8939@worktop.programming.kicks-ass.net>
+        Tue, 5 Apr 2022 04:32:49 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A22D6140FF;
+        Tue,  5 Apr 2022 01:27:31 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3F3F260AFB;
+        Tue,  5 Apr 2022 08:27:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 53143C385A1;
+        Tue,  5 Apr 2022 08:27:30 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649147250;
+        bh=4djunoAxJHOaDgEd2iZ0RMBXmqeYYQMugjYVYuIJyBs=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=KPruNiIRmoarrl99l1ry/OYZpVdOzE4OyInA/trRXd+1hvntmF5U4jxRPK1G+9399
+         ppfDjy/CaoBfV7Uhf0xdp8kA4dzTaYauFuZ7cjOrOyZEGsBM0WmLkVkKUCQYkk/yLr
+         /pY/40z86ZCvsKp/cQEzIO2LBXQe2iQ+2ePQ8LZI=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Nathan Chancellor <nathan@kernel.org>,
+        Fangrui Song <maskray@google.com>,
+        Palmer Dabbelt <palmer@rivosinc.com>
+Subject: [PATCH 5.17 1057/1126] riscv module: remove (NOLOAD)
+Date:   Tue,  5 Apr 2022 09:30:04 +0200
+Message-Id: <20220405070438.489563417@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
+References: <20220405070407.513532867@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Message-ID: <164914737698.389.9382250857229759152.tip-bot2@tip-bot2>
-Robot-ID: <tip-bot2@linutronix.de>
-Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The following commit has been merged into the x86/urgent branch of tip:
+From: Fangrui Song <maskray@google.com>
 
-Commit-ID:     7a53f408902d913cd541b4f8ad7dbcd4961f5b82
-Gitweb:        https://git.kernel.org/tip/7a53f408902d913cd541b4f8ad7dbcd4961f5b82
-Author:        Peter Zijlstra <peterz@infradead.org>
-AuthorDate:    Wed, 23 Mar 2022 23:35:01 +01:00
-Committer:     Peter Zijlstra <peterz@infradead.org>
-CommitterDate: Tue, 05 Apr 2022 10:24:40 +02:00
+commit 60210a3d86dc57ce4a76a366e7841dda746a33f7 upstream.
 
-objtool: Fix SLS validation for kcov tail-call replacement
+On ELF, (NOLOAD) sets the section type to SHT_NOBITS[1]. It is conceptually
+inappropriate for .plt, .got, and .got.plt sections which are always
+SHT_PROGBITS.
 
-Since not all compilers have a function attribute to disable KCOV
-instrumentation, objtool can rewrite KCOV instrumentation in noinstr
-functions as per commit:
+In GNU ld, if PLT entries are needed, .plt will be SHT_PROGBITS anyway
+and (NOLOAD) will be essentially ignored. In ld.lld, since
+https://reviews.llvm.org/D118840 ("[ELF] Support (TYPE=<value>) to
+customize the output section type"), ld.lld will report a `section type
+mismatch` error (later changed to a warning). Just remove (NOLOAD) to
+fix the warning.
 
-  f56dae88a81f ("objtool: Handle __sanitize_cov*() tail calls")
+[1] https://lld.llvm.org/ELF/linker_script.html As of today, "The
+section should be marked as not loadable" on
+https://sourceware.org/binutils/docs/ld/Output-Section-Type.html is
+outdated for ELF.
 
-However, this has subtle interaction with the SLS validation from
-commit:
-
-  1cc1e4c8aab4 ("objtool: Add straight-line-speculation validation")
-
-In that when a tail-call instrucion is replaced with a RET an
-additional INT3 instruction is also written, but is not represented in
-the decoded instruction stream.
-
-This then leads to false positive missing INT3 objtool warnings in
-noinstr code.
-
-Instead of adding additional struct instruction objects, mark the RET
-instruction with retpoline_safe to suppress the warning (since we know
-there really is an INT3).
-
-Fixes: 1cc1e4c8aab4 ("objtool: Add straight-line-speculation validation")
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Link: https://lkml.kernel.org/r/20220323230712.GA8939@worktop.programming.kicks-ass.net
+Link: https://github.com/ClangBuiltLinux/linux/issues/1597
+Fixes: ab1ef68e5401 ("RISC-V: Add sections of PLT and GOT for kernel module")
+Reported-by: Nathan Chancellor <nathan@kernel.org>
+Signed-off-by: Fangrui Song <maskray@google.com>
+Signed-off-by: Palmer Dabbelt <palmer@rivosinc.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- tools/objtool/check.c | 11 +++++++++++
- 1 file changed, 11 insertions(+)
+ arch/riscv/include/asm/module.lds.h |    6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/tools/objtool/check.c b/tools/objtool/check.c
-index b848e1d..bd0c2c8 100644
---- a/tools/objtool/check.c
-+++ b/tools/objtool/check.c
-@@ -1155,6 +1155,17 @@ static void annotate_call_site(struct objtool_file *file,
- 			               : arch_nop_insn(insn->len));
- 
- 		insn->type = sibling ? INSN_RETURN : INSN_NOP;
-+
-+		if (sibling) {
-+			/*
-+			 * We've replaced the tail-call JMP insn by two new
-+			 * insn: RET; INT3, except we only have a single struct
-+			 * insn here. Mark it retpoline_safe to avoid the SLS
-+			 * warning, instead of adding another insn.
-+			 */
-+			insn->retpoline_safe = true;
-+		}
-+
- 		return;
- 	}
- 
+--- a/arch/riscv/include/asm/module.lds.h
++++ b/arch/riscv/include/asm/module.lds.h
+@@ -2,8 +2,8 @@
+ /* Copyright (C) 2017 Andes Technology Corporation */
+ #ifdef CONFIG_MODULE_SECTIONS
+ SECTIONS {
+-	.plt (NOLOAD) : { BYTE(0) }
+-	.got (NOLOAD) : { BYTE(0) }
+-	.got.plt (NOLOAD) : { BYTE(0) }
++	.plt : { BYTE(0) }
++	.got : { BYTE(0) }
++	.got.plt : { BYTE(0) }
+ }
+ #endif
+
+
