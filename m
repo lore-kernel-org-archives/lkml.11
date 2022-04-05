@@ -2,47 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F200CC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 22:55:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 40C16C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 22:55:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1454844AbiDEWjd (ORCPT
+        id S1454933AbiDEWjr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 18:39:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39654 "EHLO
+        Tue, 5 Apr 2022 18:39:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33786 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349197AbiDEJt0 (ORCPT
+        with ESMTP id S1354877AbiDEKQ1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:49:26 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 948A5222B4;
-        Tue,  5 Apr 2022 02:42:35 -0700 (PDT)
+        Tue, 5 Apr 2022 06:16:27 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99E4E6CA4F;
+        Tue,  5 Apr 2022 03:03:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 39F32B818F3;
-        Tue,  5 Apr 2022 09:42:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7CD48C385A1;
-        Tue,  5 Apr 2022 09:42:32 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 35D2161673;
+        Tue,  5 Apr 2022 10:03:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 40820C385A3;
+        Tue,  5 Apr 2022 10:03:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649151752;
-        bh=fcPtDvDT8Ft1Afq4K2jhGPG0nrBzmkGQ6/6ppmfMs/4=;
+        s=korg; t=1649152996;
+        bh=Hxo4l3G3ezXXxyeir2RGiMkhpL4xQTk/wS0+4Y5M1K8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2VF7JqAVOcF2OHxDTEg1pyYBTSBg/BGwnOV25NalmZCm9Mcp7+K6bYGQYyabBOqOi
-         QGB28JyzDEWXBYZCQKA0wdu1DElOhGL1wW5GEYSweVdna6XXmQokUFYogFDBNblkYv
-         5p/1OFS3lAOtmRNchp6fHzdT4nKscmtpw0O5idog=
+        b=m2QAZQfFMEE34Ce4A49xmE+/fRUDU4rD45RYMdr1rjV1dchP7GQTBV4vYI+WgXHqT
+         h/J3U7WUt+8/AbwQH/mJxqC+8QZysIr7UZXf+JKESGniMYr9Co1LLdLjI8B8myxnlB
+         ilNN8klUVUgtvWce+UEh2CzU/QuiqTRtr3CMIePE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Sreekanth Reddy <sreekanth.reddy@broadcom.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 528/913] scsi: mpt3sas: Fix incorrect 4GB boundary check
-Date:   Tue,  5 Apr 2022 09:26:30 +0200
-Message-Id: <20220405070355.678353611@linuxfoundation.org>
+        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
+        Johan Hovold <johan@kernel.org>
+Subject: [PATCH 5.10 037/599] greybus: svc: fix an error handling bug in gb_svc_hello()
+Date:   Tue,  5 Apr 2022 09:25:31 +0200
+Message-Id: <20220405070259.928010789@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
+References: <20220405070258.802373272@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,112 +49,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sreekanth Reddy <sreekanth.reddy@broadcom.com>
+From: Dan Carpenter <dan.carpenter@oracle.com>
 
-[ Upstream commit 208cc9fe6f21112b5cc6cb87065fb8ab66e79316 ]
+commit 5f8583a3b7552092582a92e7bbd2153319929ad7 upstream.
 
-The driver must perform its 4GB boundary check using the pool's DMA address
-instead of using the virtual address.
+Cleanup if gb_svc_queue_deferred_request() fails.
 
-Link: https://lore.kernel.org/r/20220303140230.13098-1-sreekanth.reddy@broadcom.com
-Fixes: d6adc251dd2f ("scsi: mpt3sas: Force PCIe scatterlist allocations to be within same 4 GB region")
-Signed-off-by: Sreekanth Reddy <sreekanth.reddy@broadcom.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Link: https://lore.kernel.org/r/20220202072016.GA6748@kili
+Fixes: ee2f2074fdb2 ("greybus: svc: reconfig APBridgeA-Switch link to handle required load")
+Cc: stable@vger.kernel.org      # 4.9
+[johan: fix commit summary prefix and rename label ]
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+Signed-off-by: Johan Hovold <johan@kernel.org>
+Link: https://lore.kernel.org/r/20220202113347.1288-2-johan@kernel.org
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/scsi/mpt3sas/mpt3sas_base.c | 25 ++++++++++++-------------
- 1 file changed, 12 insertions(+), 13 deletions(-)
+ drivers/greybus/svc.c |    8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/scsi/mpt3sas/mpt3sas_base.c b/drivers/scsi/mpt3sas/mpt3sas_base.c
-index 0d37c4aca175..c38e68943205 100644
---- a/drivers/scsi/mpt3sas/mpt3sas_base.c
-+++ b/drivers/scsi/mpt3sas/mpt3sas_base.c
-@@ -5737,14 +5737,13 @@ _base_release_memory_pools(struct MPT3SAS_ADAPTER *ioc)
-  */
+--- a/drivers/greybus/svc.c
++++ b/drivers/greybus/svc.c
+@@ -866,8 +866,14 @@ static int gb_svc_hello(struct gb_operat
  
- static int
--mpt3sas_check_same_4gb_region(long reply_pool_start_address, u32 pool_sz)
-+mpt3sas_check_same_4gb_region(dma_addr_t start_address, u32 pool_sz)
- {
--	long reply_pool_end_address;
-+	dma_addr_t end_address;
+ 	gb_svc_debugfs_init(svc);
  
--	reply_pool_end_address = reply_pool_start_address + pool_sz;
-+	end_address = start_address + pool_sz - 1;
+-	return gb_svc_queue_deferred_request(op);
++	ret = gb_svc_queue_deferred_request(op);
++	if (ret)
++		goto err_remove_debugfs;
  
--	if (upper_32_bits(reply_pool_start_address) ==
--		upper_32_bits(reply_pool_end_address))
-+	if (upper_32_bits(start_address) == upper_32_bits(end_address))
- 		return 1;
- 	else
- 		return 0;
-@@ -5805,7 +5804,7 @@ _base_allocate_pcie_sgl_pool(struct MPT3SAS_ADAPTER *ioc, u32 sz)
- 		}
- 
- 		if (!mpt3sas_check_same_4gb_region(
--		    (long)ioc->pcie_sg_lookup[i].pcie_sgl, sz)) {
-+		    ioc->pcie_sg_lookup[i].pcie_sgl_dma, sz)) {
- 			ioc_err(ioc, "PCIE SGLs are not in same 4G !! pcie sgl (0x%p) dma = (0x%llx)\n",
- 			    ioc->pcie_sg_lookup[i].pcie_sgl,
- 			    (unsigned long long)
-@@ -5860,8 +5859,8 @@ _base_allocate_chain_dma_pool(struct MPT3SAS_ADAPTER *ioc, u32 sz)
- 			    GFP_KERNEL, &ctr->chain_buffer_dma);
- 			if (!ctr->chain_buffer)
- 				return -EAGAIN;
--			if (!mpt3sas_check_same_4gb_region((long)
--			    ctr->chain_buffer, ioc->chain_segment_sz)) {
-+			if (!mpt3sas_check_same_4gb_region(
-+			    ctr->chain_buffer_dma, ioc->chain_segment_sz)) {
- 				ioc_err(ioc,
- 				    "Chain buffers are not in same 4G !!! Chain buff (0x%p) dma = (0x%llx)\n",
- 				    ctr->chain_buffer,
-@@ -5897,7 +5896,7 @@ _base_allocate_sense_dma_pool(struct MPT3SAS_ADAPTER *ioc, u32 sz)
- 	    GFP_KERNEL, &ioc->sense_dma);
- 	if (!ioc->sense)
- 		return -EAGAIN;
--	if (!mpt3sas_check_same_4gb_region((long)ioc->sense, sz)) {
-+	if (!mpt3sas_check_same_4gb_region(ioc->sense_dma, sz)) {
- 		dinitprintk(ioc, pr_err(
- 		    "Bad Sense Pool! sense (0x%p) sense_dma = (0x%llx)\n",
- 		    ioc->sense, (unsigned long long) ioc->sense_dma));
-@@ -5930,7 +5929,7 @@ _base_allocate_reply_pool(struct MPT3SAS_ADAPTER *ioc, u32 sz)
- 	    &ioc->reply_dma);
- 	if (!ioc->reply)
- 		return -EAGAIN;
--	if (!mpt3sas_check_same_4gb_region((long)ioc->reply_free, sz)) {
-+	if (!mpt3sas_check_same_4gb_region(ioc->reply_dma, sz)) {
- 		dinitprintk(ioc, pr_err(
- 		    "Bad Reply Pool! Reply (0x%p) Reply dma = (0x%llx)\n",
- 		    ioc->reply, (unsigned long long) ioc->reply_dma));
-@@ -5965,7 +5964,7 @@ _base_allocate_reply_free_dma_pool(struct MPT3SAS_ADAPTER *ioc, u32 sz)
- 	    GFP_KERNEL, &ioc->reply_free_dma);
- 	if (!ioc->reply_free)
- 		return -EAGAIN;
--	if (!mpt3sas_check_same_4gb_region((long)ioc->reply_free, sz)) {
-+	if (!mpt3sas_check_same_4gb_region(ioc->reply_free_dma, sz)) {
- 		dinitprintk(ioc,
- 		    pr_err("Bad Reply Free Pool! Reply Free (0x%p) Reply Free dma = (0x%llx)\n",
- 		    ioc->reply_free, (unsigned long long) ioc->reply_free_dma));
-@@ -6004,7 +6003,7 @@ _base_allocate_reply_post_free_array(struct MPT3SAS_ADAPTER *ioc,
- 	    GFP_KERNEL, &ioc->reply_post_free_array_dma);
- 	if (!ioc->reply_post_free_array)
- 		return -EAGAIN;
--	if (!mpt3sas_check_same_4gb_region((long)ioc->reply_post_free_array,
-+	if (!mpt3sas_check_same_4gb_region(ioc->reply_post_free_array_dma,
- 	    reply_post_free_array_sz)) {
- 		dinitprintk(ioc, pr_err(
- 		    "Bad Reply Free Pool! Reply Free (0x%p) Reply Free dma = (0x%llx)\n",
-@@ -6069,7 +6068,7 @@ base_alloc_rdpq_dma_pool(struct MPT3SAS_ADAPTER *ioc, int sz)
- 			 * resources and set DMA mask to 32 and allocate.
- 			 */
- 			if (!mpt3sas_check_same_4gb_region(
--				(long)ioc->reply_post[i].reply_post_free, sz)) {
-+				ioc->reply_post[i].reply_post_free_dma, sz)) {
- 				dinitprintk(ioc,
- 				    ioc_err(ioc, "bad Replypost free pool(0x%p)"
- 				    "reply_post_free_dma = (0x%llx)\n",
--- 
-2.34.1
-
++	return 0;
++
++err_remove_debugfs:
++	gb_svc_debugfs_exit(svc);
+ err_unregister_device:
+ 	gb_svc_watchdog_destroy(svc);
+ 	device_del(&svc->dev);
 
 
