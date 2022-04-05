@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A408C38A2C
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C8952C38A2D
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 10:08:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351467AbiDEKC2 (ORCPT
+        id S1351621AbiDEKDB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 06:02:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34810 "EHLO
+        Tue, 5 Apr 2022 06:03:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59102 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237865AbiDEIS2 (ORCPT
+        with ESMTP id S235512AbiDEI0r (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:18:28 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1634B7C53;
-        Tue,  5 Apr 2022 01:07:41 -0700 (PDT)
+        Tue, 5 Apr 2022 04:26:47 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D2A715719;
+        Tue,  5 Apr 2022 01:20:58 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 69D586167D;
-        Tue,  5 Apr 2022 08:07:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 77BCFC385A1;
-        Tue,  5 Apr 2022 08:07:40 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C4EE0B81BAC;
+        Tue,  5 Apr 2022 08:20:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1B98DC385A0;
+        Tue,  5 Apr 2022 08:20:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649146060;
-        bh=x8e3y/VMMWTKGFja9YZi+iTh0PRvryetCxFkEUBsjgI=;
+        s=korg; t=1649146855;
+        bh=WK14gTrMY4mrdBoN5dGYoL3uKdyenRH+qI/k85oo9S8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OQ8uydqCOAtpWCN5gfRHWrHfynxcKgiB8qiwWMjBK64Lk8cdlC27krUz1QI1YvK+N
-         oVw4pmg6jNtVAJBe/n73WgLS3MU2N8D2ZIY/CFwTaYCicA6SsnasP32X+vsNH1Rn1P
-         xoJa5yt3csKqKHIUNWEBYPb1VyXqk+ZONG0tuk+g=
+        b=nqTQKRCQa8vTNyOIzT9KTOW5LWghj2QfXiUdfk7fC3KxyH8yJnHyYEiiC+qljEyeC
+         DoYB96dBj0cS7jqQkCcvr2OY9UkQVRgt4TlF0VD2NFjXolSTTbZ4IuEijmf6AOvIm3
+         7h9/szdcFJb1kGvZRTiTbyqaYWxxyecicBGK3Wyo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Robert Hancock <robert.hancock@calian.com>,
-        Michal Simek <michal.simek@xilinx.com>,
-        Wolfram Sang <wsa@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0627/1126] i2c: xiic: Make bus names unique
-Date:   Tue,  5 Apr 2022 09:22:54 +0200
-Message-Id: <20220405070426.040705011@linuxfoundation.org>
+        stable@vger.kernel.org, Alexander Sergeyev <sergeev917@gmail.com>,
+        Takashi Iwai <tiwai@suse.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 0912/1126] ALSA: hda: Fix driver index handling at re-binding
+Date:   Tue,  5 Apr 2022 09:27:39 +0200
+Message-Id: <20220405070434.293398267@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -50,47 +49,83 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Robert Hancock <robert.hancock@calian.com>
+From: Takashi Iwai <tiwai@suse.de>
 
-[ Upstream commit 1d366c2f9df8279df2adbb60471f86fc40a1c39e ]
+[ Upstream commit 69458e2c27800da7697c87ed908b65323ef3f3bd ]
 
-This driver is for an FPGA logic core, so there can be arbitrarily many
-instances of the bus on a given system. Previously all of the I2C bus
-names were "xiic-i2c" which caused issues with lm_sensors when trying to
-map human-readable names to sensor inputs because it could not properly
-distinguish the busses, for example. Append the platform device name to
-the I2C bus name so it is unique between different instances.
+HD-audio driver handles the multiple instances and keeps the static
+index that is incremented at each probe.  This becomes a problem when
+user tries to re-bind the device via sysfs multiple times; as the
+device index isn't cleared unlike rmmod case, it points to the next
+element at re-binding, and eventually later you can't probe any more
+when it reaches to SNDRV_CARDS_MAX (usually 32).
 
-Fixes: e1d5b6598cdc ("i2c: Add support for Xilinx XPS IIC Bus Interface")
-Signed-off-by: Robert Hancock <robert.hancock@calian.com>
-Tested-by: Michal Simek <michal.simek@xilinx.com>
-Signed-off-by: Wolfram Sang <wsa@kernel.org>
+This patch is an attempt to improve the handling at rebinding.
+Instead of a static device index, now we keep a bitmap and assigns to
+the first zero bit position.  At the driver remove, in return, the
+bitmap slot is cleared again, so that it'll be available for the next
+probe.
+
+Reported-by: Alexander Sergeyev <sergeev917@gmail.com>
+Link: https://lore.kernel.org/r/20220209081912.20687-1-tiwai@suse.de
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/i2c/busses/i2c-xiic.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ sound/pci/hda/hda_intel.c | 10 +++++++---
+ 1 file changed, 7 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/i2c/busses/i2c-xiic.c b/drivers/i2c/busses/i2c-xiic.c
-index eb789cfb9973..ffefe3c482e9 100644
---- a/drivers/i2c/busses/i2c-xiic.c
-+++ b/drivers/i2c/busses/i2c-xiic.c
-@@ -734,7 +734,6 @@ static const struct i2c_adapter_quirks xiic_quirks = {
+diff --git a/sound/pci/hda/hda_intel.c b/sound/pci/hda/hda_intel.c
+index 572ff0d1fafe..8eff25d2d9e6 100644
+--- a/sound/pci/hda/hda_intel.c
++++ b/sound/pci/hda/hda_intel.c
+@@ -2066,14 +2066,16 @@ static const struct hda_controller_ops pci_hda_ops = {
+ 	.position_check = azx_position_check,
+ };
  
- static const struct i2c_adapter xiic_adapter = {
- 	.owner = THIS_MODULE,
--	.name = DRIVER_NAME,
- 	.class = I2C_CLASS_DEPRECATED,
- 	.algo = &xiic_algorithm,
- 	.quirks = &xiic_quirks,
-@@ -771,6 +770,8 @@ static int xiic_i2c_probe(struct platform_device *pdev)
- 	i2c_set_adapdata(&i2c->adap, i2c);
- 	i2c->adap.dev.parent = &pdev->dev;
- 	i2c->adap.dev.of_node = pdev->dev.of_node;
-+	snprintf(i2c->adap.name, sizeof(i2c->adap.name),
-+		 DRIVER_NAME " %s", pdev->name);
++static DECLARE_BITMAP(probed_devs, SNDRV_CARDS);
++
+ static int azx_probe(struct pci_dev *pci,
+ 		     const struct pci_device_id *pci_id)
+ {
+-	static int dev;
+ 	struct snd_card *card;
+ 	struct hda_intel *hda;
+ 	struct azx *chip;
+ 	bool schedule_probe;
++	int dev;
+ 	int err;
  
- 	mutex_init(&i2c->lock);
+ 	if (pci_match_id(driver_denylist, pci)) {
+@@ -2081,10 +2083,11 @@ static int azx_probe(struct pci_dev *pci,
+ 		return -ENODEV;
+ 	}
  
++	dev = find_first_zero_bit(probed_devs, SNDRV_CARDS);
+ 	if (dev >= SNDRV_CARDS)
+ 		return -ENODEV;
+ 	if (!enable[dev]) {
+-		dev++;
++		set_bit(dev, probed_devs);
+ 		return -ENOENT;
+ 	}
+ 
+@@ -2151,7 +2154,7 @@ static int azx_probe(struct pci_dev *pci,
+ 	if (schedule_probe)
+ 		schedule_delayed_work(&hda->probe_work, 0);
+ 
+-	dev++;
++	set_bit(dev, probed_devs);
+ 	if (chip->disabled)
+ 		complete_all(&hda->probe_wait);
+ 	return 0;
+@@ -2374,6 +2377,7 @@ static void azx_remove(struct pci_dev *pci)
+ 		cancel_delayed_work_sync(&hda->probe_work);
+ 		device_lock(&pci->dev);
+ 
++		clear_bit(chip->dev_index, probed_devs);
+ 		pci_set_drvdata(pci, NULL);
+ 		snd_card_free(card);
+ 	}
 -- 
 2.34.1
 
