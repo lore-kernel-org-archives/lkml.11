@@ -2,121 +2,75 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 417D3C43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CEF2C433EF
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 02:08:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1573434AbiDFCHL (ORCPT
+        id S1445657AbiDFCGS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 22:07:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50238 "EHLO
+        Tue, 5 Apr 2022 22:06:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50674 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242993AbiDEKfX (ORCPT
+        with ESMTP id S1457633AbiDEQWq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:35:23 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2C614A90D;
-        Tue,  5 Apr 2022 03:21:35 -0700 (PDT)
+        Tue, 5 Apr 2022 12:22:46 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8823366FA4;
+        Tue,  5 Apr 2022 09:20:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id AABFEB81B18;
-        Tue,  5 Apr 2022 10:21:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 17C8CC385A2;
-        Tue,  5 Apr 2022 10:21:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649154093;
-        bh=pNGC9iaIzki56+oLL+F2pcsDvere2XFtbUd5KkGa3fg=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=F0kV+ljTQo0plebwB6mwvg9jaVAGYEEFyQqgeXozxOseeBnad/CMU9e0CJp/olMfF
-         YzuCHEGlVnq7ARFdq4MZEfU6WLUgyAx/FV9AXes6e2l2CwHThf8vke0JwYv61R0b/E
-         wKj8tfUAdFpP1qSGscmKlifSZig5dxtMmmpqLyA8=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Chaitanya Kulkarni <kch@nvidia.com>,
-        Himanshu Madhani <himanshu.madhani@oracle.com>,
-        Jens Axboe <axboe@kernel.dk>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 456/599] loop: use sysfs_emit() in the sysfs xxx show()
-Date:   Tue,  5 Apr 2022 09:32:30 +0200
-Message-Id: <20220405070312.399091793@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
-User-Agent: quilt/0.66
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 242656181D;
+        Tue,  5 Apr 2022 16:20:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2C7BDC385A0;
+        Tue,  5 Apr 2022 16:20:47 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649175647;
+        bh=HeFS7lEAWZqOwBk9QGxbfXzbnQohh/dOySuSdkYeJ2s=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=YkK+L2CHvDG+MpJnr4NtEJT6GXQT49oMpvk9f3EO/SOMI8HOUBJZVYQxh1NfaN/KS
+         dsL4dpf7Is/fDx7mz6qfLycZH/CsKvO1bQZYo8qlXPvBoBWv7smYddYteBzdB5O+La
+         XRHXXPlKqPw0Uiqg7iII4sRmrs1gbzrPbB6TLAXio+2EOoZH/sZBg9LydmI0NXqFCX
+         gmrAEZUmwj+imCb4oqkea27jm01Hven5RFZ6dLmKFLhoT5J9vjCWVdHArmmnfqYsPh
+         UU9sGY8uEBDg4LfcyuNSItLPEvMaNsZ+iXw3vWFOvSFVyFc/e1eEpuU0CW5Q+9zMVB
+         x2A++9nRvvV6w==
+Date:   Tue, 5 Apr 2022 09:20:46 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Kalle Valo <kvalo@kernel.org>
+Cc:     =?UTF-8?B?SsOpcsO0bWU=?= Pouiller <jerome.pouiller@silabs.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        devel@driverdev.osuosl.org, linux-kernel@vger.kernel.org,
+        "David S . Miller" <davem@davemloft.net>
+Subject: Re: [PATCH v10 0/1] wfx: get out from the staging area
+Message-ID: <20220405092046.465ff7e5@kernel.org>
+In-Reply-To: <878rskrod1.fsf@kernel.org>
+References: <20220226092142.10164-1-Jerome.Pouiller@silabs.com>
+        <YhojjHGp4EfsTpnG@kroah.com>
+        <87wnhhsr9m.fsf@kernel.org>
+        <5830958.DvuYhMxLoT@pc-42>
+        <878rslt975.fsf@tynnyri.adurom.net>
+        <20220404232247.01cc6567@kernel.org>
+        <20220404232930.05dd49cf@kernel.org>
+        <878rskrod1.fsf@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chaitanya Kulkarni <kch@nvidia.com>
+On Tue, 05 Apr 2022 10:16:58 +0300 Kalle Valo wrote:
+> Sure, that would technically work. But I just think it's cleaner to use
+> -rc1 (or later) as the baseline for an immutable branch. If the baseline
+> is an arbitrary commit somewhere within merge windows commits, it's more
+> work for everyone to verify the branch is suitable.
+> 
+> Also in general I would also prefer to base -next trees to -rc1 or newer
+> to make the bisect cleaner. The less we need to test kernels from the
+> merge window (ie. commits after the final release and before -rc1) the
+> better.
+> 
+> But this is just a small wish from me, I fully understand that it might
+> be too much changes to your process. Wanted to point out this anyway.
 
-[ Upstream commit b27824d31f09ea7b4a6ba2c1b18bd328df3e8bed ]
-
-sprintf does not know the PAGE_SIZE maximum of the temporary buffer
-used for outputting sysfs content and it's possible to overrun the
-PAGE_SIZE buffer length.
-
-Use a generic sysfs_emit function that knows the size of the
-temporary buffer and ensures that no overrun is done for offset
-attribute in
-loop_attr_[offset|sizelimit|autoclear|partscan|dio]_show() callbacks.
-
-Signed-off-by: Chaitanya Kulkarni <kch@nvidia.com>
-Reviewed-by: Himanshu Madhani <himanshu.madhani@oracle.com>
-Link: https://lore.kernel.org/r/20220215213310.7264-2-kch@nvidia.com
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/block/loop.c | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
-
-diff --git a/drivers/block/loop.c b/drivers/block/loop.c
-index ee537a9f1d1a..e4517d483bdc 100644
---- a/drivers/block/loop.c
-+++ b/drivers/block/loop.c
-@@ -797,33 +797,33 @@ static ssize_t loop_attr_backing_file_show(struct loop_device *lo, char *buf)
- 
- static ssize_t loop_attr_offset_show(struct loop_device *lo, char *buf)
- {
--	return sprintf(buf, "%llu\n", (unsigned long long)lo->lo_offset);
-+	return sysfs_emit(buf, "%llu\n", (unsigned long long)lo->lo_offset);
- }
- 
- static ssize_t loop_attr_sizelimit_show(struct loop_device *lo, char *buf)
- {
--	return sprintf(buf, "%llu\n", (unsigned long long)lo->lo_sizelimit);
-+	return sysfs_emit(buf, "%llu\n", (unsigned long long)lo->lo_sizelimit);
- }
- 
- static ssize_t loop_attr_autoclear_show(struct loop_device *lo, char *buf)
- {
- 	int autoclear = (lo->lo_flags & LO_FLAGS_AUTOCLEAR);
- 
--	return sprintf(buf, "%s\n", autoclear ? "1" : "0");
-+	return sysfs_emit(buf, "%s\n", autoclear ? "1" : "0");
- }
- 
- static ssize_t loop_attr_partscan_show(struct loop_device *lo, char *buf)
- {
- 	int partscan = (lo->lo_flags & LO_FLAGS_PARTSCAN);
- 
--	return sprintf(buf, "%s\n", partscan ? "1" : "0");
-+	return sysfs_emit(buf, "%s\n", partscan ? "1" : "0");
- }
- 
- static ssize_t loop_attr_dio_show(struct loop_device *lo, char *buf)
- {
- 	int dio = (lo->lo_flags & LO_FLAGS_DIRECT_IO);
- 
--	return sprintf(buf, "%s\n", dio ? "1" : "0");
-+	return sysfs_emit(buf, "%s\n", dio ? "1" : "0");
- }
- 
- LOOP_ATTR_RO(backing_file);
--- 
-2.34.1
-
-
-
+Forwarded!
