@@ -2,109 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 50409C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6FB2CC433EF
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:43:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349451AbiDEX2m (ORCPT
+        id S1457506AbiDEX3s (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 19:28:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59146 "EHLO
+        Tue, 5 Apr 2022 19:29:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39330 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1386287AbiDEOTT (ORCPT
+        with ESMTP id S1348760AbiDEJsb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 10:19:19 -0400
-Received: from gateway22.websitewelcome.com (gateway22.websitewelcome.com [192.185.47.228])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6666512758
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 06:08:47 -0700 (PDT)
-Received: from cm14.websitewelcome.com (cm14.websitewelcome.com [100.42.49.7])
-        by gateway22.websitewelcome.com (Postfix) with ESMTP id 246C6115946
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 08:08:47 -0500 (CDT)
-Received: from 162-215-252-75.unifiedlayer.com ([208.91.199.152])
-        by cmsmtp with SMTP
-        id bivOn93CTHnotbivOnsOwH; Tue, 05 Apr 2022 08:08:47 -0500
-X-Authority-Reason: nr=8
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=roeck-us.net; s=default; h=Content-Transfer-Encoding:Content-Type:
-        In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender
-        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
-        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
-        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=xz6VufNI4MnHhml5UwvXhoCvcF0yDshQWHa/HM/YqoA=; b=GqIHGIW2UMCJm1lZnmUjI7G1KT
-        5236zPjF59olbyzrTlyR57lC81eHcbU4XrSyA4o67ts9zDsg+y9lxc7tc/bcl4C+YIva53hNcLIMp
-        dSFv785YbqteL/2ibwlp7W3Z6qgFfEcGOTlrH7tsUxhAh33G+7iGE04TOABvusVHyQMebpb5f8hfZ
-        IhQ6I2QD3YFezPkSA5AGGTHMxruDvPqYQcBf4NGKno7TQVKkhcRHWUn8oE/NjBfe/5mvsCQiNwtFt
-        J6tPe7l6QiZOuObL2N4eKAb/MFi1Lpsxu8zj+IrSp0BQcgD4WYPUIRwZiEBmVgLUGPQgNElDMD2qe
-        rLqeUkQQ==;
-Received: from 108-223-40-66.lightspeed.sntcca.sbcglobal.net ([108.223.40.66]:54728)
-        by bh-25.webhostbox.net with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@roeck-us.net>)
-        id 1nbivO-002i6Y-7O; Tue, 05 Apr 2022 13:08:46 +0000
-Message-ID: <e80a3eb4-335c-5f8c-dc22-e33176b225da@roeck-us.net>
-Date:   Tue, 5 Apr 2022 06:08:44 -0700
+        Tue, 5 Apr 2022 05:48:31 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37CC85C855;
+        Tue,  5 Apr 2022 02:34:56 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BE764B81C98;
+        Tue,  5 Apr 2022 09:34:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1AD3CC385A3;
+        Tue,  5 Apr 2022 09:34:52 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649151293;
+        bh=LeY3wKEwutDULuXR8eL2wPBlS4V4lm2KrlpDBv17W8M=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=qB6H0NNsyHV4XY7Ewzg/UP15V8ZUB2M5a+B0zOdP5eXHJh2TnX5XdoJODYxY5yEnp
+         8uH6PAL+wCv3PLGdJX0uACgAA1z8I9hCM5h40VaVD0Ztp7jRFxWGVJ8NhPTkt3TSIK
+         KoTzyEy6S3lTDlaOGEizEf8UwOMbO46xzsbuKU1M=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 362/913] ASoC: mxs: Fix error handling in mxs_sgtl5000_probe
+Date:   Tue,  5 Apr 2022 09:23:44 +0200
+Message-Id: <20220405070350.696344335@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH 5.10 000/599] 5.10.110-rc1 review
-Content-Language: en-US
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org
-Cc:     stable@vger.kernel.org, torvalds@linux-foundation.org,
-        akpm@linux-foundation.org, shuah@kernel.org, patches@kernelci.org,
-        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
-        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
-        slade@sladewatkins.com
-References: <20220405070258.802373272@linuxfoundation.org>
-From:   Guenter Roeck <linux@roeck-us.net>
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - bh-25.webhostbox.net
-X-AntiAbuse: Original Domain - vger.kernel.org
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - roeck-us.net
-X-BWhitelist: no
-X-Source-IP: 108.223.40.66
-X-Source-L: No
-X-Exim-ID: 1nbivO-002i6Y-7O
-X-Source: 
-X-Source-Args: 
-X-Source-Dir: 
-X-Source-Sender: 108-223-40-66.lightspeed.sntcca.sbcglobal.net [108.223.40.66]:54728
-X-Source-Auth: linux@roeck-us.net
-X-Email-Count: 12
-X-Source-Cap: cm9lY2s7YWN0aXZzdG07YmgtMjUud2ViaG9zdGJveC5uZXQ=
-X-Local-Domain: yes
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 4/5/22 00:24, Greg Kroah-Hartman wrote:
-> This is the start of the stable review cycle for the 5.10.110 release.
-> There are 599 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
-> 
-> Responses should be made by Thu, 07 Apr 2022 07:01:33 +0000.
-> Anything received after that time might be too late.
-> 
+From: Miaoqian Lin <linmq006@gmail.com>
 
-Building um:defconfig ... failed
-Building csky:defconfig ... failed
-Building microblaze:mmu_defconfig ... failed
-------
-Error log:
+[ Upstream commit 6ae0a4d8fec551ec581d620f0eb1fe31f755551c ]
 
-fs/binfmt_elf.c: In function 'fill_note_info':
-fs/binfmt_elf.c:2050:45: error: 'siginfo' undeclared (first use in this function)
-  2050 |                 sz = elf_dump_thread_status(siginfo->si_signo, ets);
-       |                                             ^~~~~~~
-fs/binfmt_elf.c:2050:45: note: each undeclared identifier is reported only once for each function it appears in
-fs/binfmt_elf.c:2056:53: error: 'regs' undeclared (first use in this function)
-  2056 |         elf_core_copy_regs(&info->prstatus->pr_reg, regs);
-       |                                                     ^~~~
+This function only calls of_node_put() in the regular path.
+And it will cause refcount leak in error paths.
+For example, when codec_np is NULL, saif_np[0] and saif_np[1]
+are not NULL, it will cause leaks.
 
-Build just started, so there are likely going to be more failures.
+of_node_put() will check if the node pointer is NULL, so we can
+call it directly to release the refcount of regular pointers.
 
-Guenter
+Fixes: e968194b45c4 ("ASoC: mxs: add device tree support for mxs-sgtl5000")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Link: https://lore.kernel.org/r/20220308020146.26496-1-linmq006@gmail.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ sound/soc/mxs/mxs-sgtl5000.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/sound/soc/mxs/mxs-sgtl5000.c b/sound/soc/mxs/mxs-sgtl5000.c
+index a6407f4388de..fb721bc49949 100644
+--- a/sound/soc/mxs/mxs-sgtl5000.c
++++ b/sound/soc/mxs/mxs-sgtl5000.c
+@@ -118,6 +118,9 @@ static int mxs_sgtl5000_probe(struct platform_device *pdev)
+ 	codec_np = of_parse_phandle(np, "audio-codec", 0);
+ 	if (!saif_np[0] || !saif_np[1] || !codec_np) {
+ 		dev_err(&pdev->dev, "phandle missing or invalid\n");
++		of_node_put(codec_np);
++		of_node_put(saif_np[0]);
++		of_node_put(saif_np[1]);
+ 		return -EINVAL;
+ 	}
+ 
+-- 
+2.34.1
+
+
+
