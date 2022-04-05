@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A9B7FC4167B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C2770C41535
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 13:48:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239965AbiDENjo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 09:39:44 -0400
+        id S238544AbiDENnz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 09:43:55 -0400
 Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60098 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345198AbiDEJWV (ORCPT
+        with ESMTP id S1346499AbiDEJXy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:22:21 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3838D2CE13;
-        Tue,  5 Apr 2022 02:09:35 -0700 (PDT)
+        Tue, 5 Apr 2022 05:23:54 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 560AADAFEF;
+        Tue,  5 Apr 2022 02:13:45 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CD23661577;
-        Tue,  5 Apr 2022 09:09:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DF27FC385A0;
-        Tue,  5 Apr 2022 09:09:33 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AB611B81C19;
+        Tue,  5 Apr 2022 09:13:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 05EBBC385A3;
+        Tue,  5 Apr 2022 09:13:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649149774;
-        bh=dfwslQshdOGJvbL0tDsFD7rVh7X7+dHJBiQvqfoAksw=;
+        s=korg; t=1649150022;
+        bh=ordbT1ol/NytMCy2eDm57yDhNZz58uR1lbLYcHMG7BA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ebmFm1tILaLHhl2FprVv+5sMHi1WeeeXZ5xiCPBblmhxxpIEZmRWHsmZVGt8aAjyE
-         KI7itjlB1udBHKRibY4lWf1Ok1QmjS/4ZAHNy1Zhn7C315uaOsf1TV5NW59bMchOMs
-         Ey9hYthMTv8R8S+HKzIcCWNMeSvBF0vg7lWMj+M4=
+        b=Aw4VdKdnC7VhVF5uBurfFp6MOliTWsq2Arw7lmDzI5EJIrVpck4e7q+CNroYc/0Dz
+         AfvhfLV4XdJ23KQ9uZ3DDqghWFdCpL1aRGoiLI4ZApIkAk1y00kqIUKkXctvltWg3A
+         vyxOFEk3Q2nnIJ7YTkpZOPdef0ZwInW1fdvzhfjM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Boris Burkov <boris@bur.io>,
-        Josef Bacik <josef@toxicpanda.com>,
-        David Sterba <dsterba@suse.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0798/1017] btrfs: do not clean up repair bio if submit fails
-Date:   Tue,  5 Apr 2022 09:28:31 +0200
-Message-Id: <20220405070417.937994199@linuxfoundation.org>
+        stable@vger.kernel.org, Masahiro Yamada <masahiroy@kernel.org>,
+        Mark Brown <broonie@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>
+Subject: [PATCH 5.16 0927/1017] modpost: restore the warning message for missing symbol versions
+Date:   Tue,  5 Apr 2022 09:30:40 +0200
+Message-Id: <20220405070421.732807647@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -50,61 +49,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Josef Bacik <josef@toxicpanda.com>
+From: Masahiro Yamada <masahiroy@kernel.org>
 
-[ Upstream commit 8cbc3001a3264d998d6b6db3e23f935c158abd4d ]
+commit bf5c0c2231bcab677e5cdfb7f73e6c79f6d8c2d4 upstream.
 
-The submit helper will always run bio_endio() on the bio if it fails to
-submit, so cleaning up the bio just leads to a variety of use-after-free
-and NULL pointer dereference bugs because we race with the endio
-function that is cleaning up the bio.  Instead just return BLK_STS_OK as
-the repair function has to continue to process the rest of the pages,
-and the endio for the repair bio will do the appropriate cleanup for the
-page that it was given.
+This log message was accidentally chopped off.
 
-Reviewed-by: Boris Burkov <boris@bur.io>
-Signed-off-by: Josef Bacik <josef@toxicpanda.com>
-Signed-off-by: David Sterba <dsterba@suse.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+I was wondering why this happened, but checking the ML log, Mark
+precisely followed my suggestion [1].
+
+I just used "..." because I was too lazy to type the sentence fully.
+Sorry for the confusion.
+
+[1]: https://lore.kernel.org/all/CAK7LNAR6bXXk9-ZzZYpTqzFqdYbQsZHmiWspu27rtsFxvfRuVA@mail.gmail.com/
+
+Fixes: 4a6795933a89 ("kbuild: modpost: Explicitly warn about unprototyped symbols")
+Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+Acked-by: Mark Brown <broonie@kernel.org>
+Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/btrfs/extent_io.c | 15 +++++++--------
- 1 file changed, 7 insertions(+), 8 deletions(-)
+ scripts/mod/modpost.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/fs/btrfs/extent_io.c b/fs/btrfs/extent_io.c
-index c3f466362103..ced0195f3390 100644
---- a/fs/btrfs/extent_io.c
-+++ b/fs/btrfs/extent_io.c
-@@ -2640,7 +2640,6 @@ int btrfs_repair_one_sector(struct inode *inode,
- 	const int icsum = bio_offset >> fs_info->sectorsize_bits;
- 	struct bio *repair_bio;
- 	struct btrfs_bio *repair_bbio;
--	blk_status_t status;
+--- a/scripts/mod/modpost.c
++++ b/scripts/mod/modpost.c
+@@ -669,7 +669,7 @@ static void handle_modversion(const stru
+ 	unsigned int crc;
  
- 	btrfs_debug(fs_info,
- 		   "repair read error: read error at %llu", start);
-@@ -2679,13 +2678,13 @@ int btrfs_repair_one_sector(struct inode *inode,
- 		    "repair read error: submitting new read to mirror %d",
- 		    failrec->this_mirror);
- 
--	status = submit_bio_hook(inode, repair_bio, failrec->this_mirror,
--				 failrec->bio_flags);
--	if (status) {
--		free_io_failure(failure_tree, tree, failrec);
--		bio_put(repair_bio);
--	}
--	return blk_status_to_errno(status);
-+	/*
-+	 * At this point we have a bio, so any errors from submit_bio_hook()
-+	 * will be handled by the endio on the repair_bio, so we can't return an
-+	 * error here.
-+	 */
-+	submit_bio_hook(inode, repair_bio, failrec->this_mirror, failrec->bio_flags);
-+	return BLK_STS_OK;
- }
- 
- static void end_page_read(struct page *page, bool uptodate, u64 start, u32 len)
--- 
-2.34.1
-
+ 	if (sym->st_shndx == SHN_UNDEF) {
+-		warn("EXPORT symbol \"%s\" [%s%s] version ...\n"
++		warn("EXPORT symbol \"%s\" [%s%s] version generation failed, symbol will not be versioned.\n"
+ 		     "Is \"%s\" prototyped in <asm/asm-prototypes.h>?\n",
+ 		     symname, mod->name, mod->is_vmlinux ? "" : ".ko",
+ 		     symname);
 
 
