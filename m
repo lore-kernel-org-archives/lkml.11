@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DD965C4167D
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 09:08:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 89A33C352AA
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 09:08:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236912AbiDEJDq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 05:03:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33834 "EHLO
+        id S236971AbiDEJDw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 05:03:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34762 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237390AbiDEIR6 (ORCPT
+        with ESMTP id S237382AbiDEIR6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Apr 2022 04:17:58 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74BD4B53F5;
-        Tue,  5 Apr 2022 01:06:12 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE88CB53DC;
+        Tue,  5 Apr 2022 01:06:09 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id EEE39B81A32;
-        Tue,  5 Apr 2022 08:06:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 51451C385A0;
-        Tue,  5 Apr 2022 08:06:09 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3B0C4B81B14;
+        Tue,  5 Apr 2022 08:06:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 906DBC385A1;
+        Tue,  5 Apr 2022 08:06:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649145969;
-        bh=yjGmY8fE2gNy+34hXTdeIbHMJGLxylssHADL0OpCWeI=;
+        s=korg; t=1649145966;
+        bh=U56hZjD4S/pEnKF2LuvYVCgeLMT6KTmLGPDAPE1EpZU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qhBgsmoWPJERMB6X/yeTRW3GyMQpPFMNnZd+qlJzfJbJ6bPcasV3L/+rIUp1EtQM1
-         r6VGS1IZvjxygSbhnKV6m8eOvld2BQAUXhipWQ4osZ63KO2DjQLiFpVaqTbp0rSLN2
-         9+h5xc71huE6ciCegk6WLmKuOHOPl/esDNzZyd40=
+        b=iNiySDHWAnFNIzRUTPS1ZqZVREptSqIaBsLOSal6AQa12nDfiZeUHJm23ynaoJcXH
+         X7DeAgB8rGSRuEs8lFqwH8bUNLykrBqp7PVsZt5NKshyy3vmBBEA8AE/dRoGForRq9
+         EBExSQ1HfCFp9TDYhl6QxZ0poWq/XVEHXQ2jUpJM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yinjun Zhang <yinjun.zhang@corigine.com>,
-        Simon Horman <simon.horman@corigine.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        =?UTF-8?q?Niklas=20S=C3=B6derlund?= <niklas.soderlund@corigine.com>,
-        Jiri Olsa <jolsa@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0547/1126] bpftool: Fix the error when lookup in no-btf maps
-Date:   Tue,  5 Apr 2022 09:21:34 +0200
-Message-Id: <20220405070423.688699213@linuxfoundation.org>
+        stable@vger.kernel.org, Geliang Tang <geliang.tang@suse.com>,
+        Mat Martineau <mathew.j.martineau@linux.intel.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 0556/1126] selftests: mptcp: add csum mib check for mptcp_connect
+Date:   Tue,  5 Apr 2022 09:21:43 +0200
+Message-Id: <20220405070423.953672524@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -51,51 +50,70 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yinjun Zhang <yinjun.zhang@corigine.com>
+From: Geliang Tang <geliang.tang@suse.com>
 
-[ Upstream commit edc21dc909c6c133a2727f063eadd7907af51f94 ]
+[ Upstream commit 24720d7452df2dff2e539d9dff28904e25bb1c6d ]
 
-When reworking btf__get_from_id() in commit a19f93cfafdf the error
-handling when calling bpf_btf_get_fd_by_id() changed. Before the rework
-if bpf_btf_get_fd_by_id() failed the error would not be propagated to
-callers of btf__get_from_id(), after the rework it is. This lead to a
-change in behavior in print_key_value() that now prints an error when
-trying to lookup keys in maps with no btf available.
+This patch added the data checksum error mib counters check for the
+script mptcp_connect.sh when the data checksum is enabled.
 
-Fix this by following the way used in dumping maps to allow to look up
-keys in no-btf maps, by which it decides whether and where to get the
-btf info according to the btf value type.
+In do_transfer(), got the mib counters twice, before and after running
+the mptcp_connect commands. The latter minus the former is the actual
+number of the data checksum mib counter.
 
-Fixes: a19f93cfafdf ("libbpf: Add internal helper to load BTF data by FD")
-Signed-off-by: Yinjun Zhang <yinjun.zhang@corigine.com>
-Signed-off-by: Simon Horman <simon.horman@corigine.com>
-Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
-Reviewed-by: Niklas Söderlund <niklas.soderlund@corigine.com>
-Acked-by: Jiri Olsa <jolsa@kernel.org>
-Link: https://lore.kernel.org/bpf/1644249625-22479-1-git-send-email-yinjun.zhang@corigine.com
+The output looks like this:
+
+ns1 MPTCP -> ns2 (dead:beef:1::2:10007) MPTCP   (duration    86ms) [ OK ]
+ns1 MPTCP -> ns2 (10.0.2.1:10008      ) MPTCP   (duration    66ms) [ FAIL ]
+server got 1 data checksum error[s]
+
+Fixes: 94d66ba1d8e48 ("selftests: mptcp: enable checksum in mptcp_connect.sh")
+Closes: https://github.com/multipath-tcp/mptcp_net-next/issues/255
+Signed-off-by: Geliang Tang <geliang.tang@suse.com>
+Signed-off-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/bpf/bpftool/map.c | 6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
+ .../selftests/net/mptcp/mptcp_connect.sh      | 19 +++++++++++++++++++
+ 1 file changed, 19 insertions(+)
 
-diff --git a/tools/bpf/bpftool/map.c b/tools/bpf/bpftool/map.c
-index c66a3c979b7a..7a341a472ea4 100644
---- a/tools/bpf/bpftool/map.c
-+++ b/tools/bpf/bpftool/map.c
-@@ -1054,11 +1054,9 @@ static void print_key_value(struct bpf_map_info *info, void *key,
- 	json_writer_t *btf_wtr;
- 	struct btf *btf;
+diff --git a/tools/testing/selftests/net/mptcp/mptcp_connect.sh b/tools/testing/selftests/net/mptcp/mptcp_connect.sh
+index f0f4ab96b8f3..621af6895f4d 100755
+--- a/tools/testing/selftests/net/mptcp/mptcp_connect.sh
++++ b/tools/testing/selftests/net/mptcp/mptcp_connect.sh
+@@ -432,6 +432,8 @@ do_transfer()
+ 	local stat_ackrx_last_l=$(get_mib_counter "${listener_ns}" "MPTcpExtMPCapableACKRX")
+ 	local stat_cookietx_last=$(get_mib_counter "${listener_ns}" "TcpExtSyncookiesSent")
+ 	local stat_cookierx_last=$(get_mib_counter "${listener_ns}" "TcpExtSyncookiesRecv")
++	local stat_csum_err_s=$(get_mib_counter "${listener_ns}" "MPTcpExtDataCsumErr")
++	local stat_csum_err_c=$(get_mib_counter "${connector_ns}" "MPTcpExtDataCsumErr")
  
--	btf = btf__load_from_kernel_by_id(info->btf_id);
--	if (libbpf_get_error(btf)) {
--		p_err("failed to get btf");
-+	btf = get_map_kv_btf(info);
-+	if (libbpf_get_error(btf))
- 		return;
--	}
+ 	timeout ${timeout_test} \
+ 		ip netns exec ${listener_ns} \
+@@ -524,6 +526,23 @@ do_transfer()
+ 		fi
+ 	fi
  
- 	if (json_output) {
- 		print_entry_json(info, key, value, btf);
++	if $checksum; then
++		local csum_err_s=$(get_mib_counter "${listener_ns}" "MPTcpExtDataCsumErr")
++		local csum_err_c=$(get_mib_counter "${connector_ns}" "MPTcpExtDataCsumErr")
++
++		local csum_err_s_nr=$((csum_err_s - stat_csum_err_s))
++		if [ $csum_err_s_nr -gt 0 ]; then
++			printf "[ FAIL ]\nserver got $csum_err_s_nr data checksum error[s]"
++			rets=1
++		fi
++
++		local csum_err_c_nr=$((csum_err_c - stat_csum_err_c))
++		if [ $csum_err_c_nr -gt 0 ]; then
++			printf "[ FAIL ]\nclient got $csum_err_c_nr data checksum error[s]"
++			retc=1
++		fi
++	fi
++
+ 	if [ $retc -eq 0 ] && [ $rets -eq 0 ]; then
+ 		printf "[ OK ]"
+ 	fi
 -- 
 2.34.1
 
