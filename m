@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F062C38A2C
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:01:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EFCADC47090
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:01:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235043AbiDEH7V (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 03:59:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48370 "EHLO
+        id S236491AbiDEIDP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 04:03:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57246 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233567AbiDEHr6 (ORCPT
+        with ESMTP id S232681AbiDEHvi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 03:47:58 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 086F51D9;
-        Tue,  5 Apr 2022 00:45:52 -0700 (PDT)
+        Tue, 5 Apr 2022 03:51:38 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B4129729C;
+        Tue,  5 Apr 2022 00:47:35 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id EE3C0CE1BEB;
-        Tue,  5 Apr 2022 07:45:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 13D77C340EE;
-        Tue,  5 Apr 2022 07:45:48 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id F27E2B81B18;
+        Tue,  5 Apr 2022 07:47:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5D598C36AE7;
+        Tue,  5 Apr 2022 07:47:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649144749;
-        bh=rMKBD1koYZ8J49XDOyG6OKlNOGIa8Bmni21RPT14hTI=;
+        s=korg; t=1649144852;
+        bh=x/BbDqLS16fO//8ZLAlr4JSJFLAy2lcDbX54ZoBLp9w=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=r2HLIxESjk3vZR5bft4eTm9AZ88ACHu2LewaK7y/Q9SToFbOkSWGmG5z541SMsTL9
-         fghbGUWamYqYP/cqnzHi2qV8EFZXrdVG+IKQ12SBnAiFq76X8SIoomti0YF3SPtV7N
-         lq/V9f4jQbTaRGw4i0ch/BvGMxdGqc2m7TEsLe6I=
+        b=sBccwMeJ6Nt+mj+LTwrHoPAc5Yk8oVt9wzHeMGKat01SH5LRvGzVFibDghHqVmrGu
+         +H3jdol0n4ieBmuWT866TafeopimcHNaSwdZEN/20YlH8TbXxXhzuk9tOi+EqLDvXH
+         uRR8L8aAChNqg75hfOI8Uw5wdEhkmYAd3FnH1lBs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
-Subject: [PATCH 5.17 0157/1126] thermal: int340x: Increase bitmap size
-Date:   Tue,  5 Apr 2022 09:15:04 +0200
-Message-Id: <20220405070412.196481744@linuxfoundation.org>
+        Liguang Zhang <zhangliguang@linux.alibaba.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Lukas Wunner <lukas@wunner.de>
+Subject: [PATCH 5.17 0195/1126] PCI: pciehp: Clear cmd_busy bit in polling mode
+Date:   Tue,  5 Apr 2022 09:15:42 +0200
+Message-Id: <20220405070413.330742303@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -49,35 +50,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+From: Liguang Zhang <zhangliguang@linux.alibaba.com>
 
-commit 668f69a5f863b877bc3ae129efe9a80b6f055141 upstream.
+commit 92912b175178c7e895f5e5e9f1e30ac30319162b upstream.
 
-The number of policies are 10, so can't be supported by the bitmap size
-of u8.
+Writes to a Downstream Port's Slot Control register are PCIe hotplug
+"commands."  If the Port supports Command Completed events, software must
+wait for a command to complete before writing to Slot Control again.
 
-Even though there are no platfoms with these many policies, but
-for correctness increase to u32.
+pcie_do_write_cmd() sets ctrl->cmd_busy when it writes to Slot Control.  If
+software notification is enabled, i.e., PCI_EXP_SLTCTL_HPIE and
+PCI_EXP_SLTCTL_CCIE are set, ctrl->cmd_busy is cleared by pciehp_isr().
 
-Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-Fixes: 16fc8eca1975 ("thermal/int340x_thermal: Add additional UUIDs")
-Cc: 5.1+ <stable@vger.kernel.org> # 5.1+
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+But when software notification is disabled, as it is when pcie_init()
+powers off an empty slot, pcie_wait_cmd() uses pcie_poll_cmd() to poll for
+command completion, and it neglects to clear ctrl->cmd_busy, which leads to
+spurious timeouts:
+
+  pcieport 0000:00:03.0: pciehp: Timeout on hotplug command 0x01c0 (issued 2264 msec ago)
+  pcieport 0000:00:03.0: pciehp: Timeout on hotplug command 0x05c0 (issued 2288 msec ago)
+
+Clear ctrl->cmd_busy in pcie_poll_cmd() when it detects a Command Completed
+event (PCI_EXP_SLTSTA_CC).
+
+[bhelgaas: commit log]
+Fixes: a5dd4b4b0570 ("PCI: pciehp: Wait for hotplug command completion where necessary")
+Link: https://lore.kernel.org/r/20211111054258.7309-1-zhangliguang@linux.alibaba.com
+Link: https://bugzilla.kernel.org/show_bug.cgi?id=215143
+Link: https://lore.kernel.org/r/20211126173309.GA12255@wunner.de
+Signed-off-by: Liguang Zhang <zhangliguang@linux.alibaba.com>
+Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
+Reviewed-by: Lukas Wunner <lukas@wunner.de>
+Cc: stable@vger.kernel.org	# v4.19+
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/thermal/intel/int340x_thermal/int3400_thermal.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/pci/hotplug/pciehp_hpc.c |    2 ++
+ 1 file changed, 2 insertions(+)
 
---- a/drivers/thermal/intel/int340x_thermal/int3400_thermal.c
-+++ b/drivers/thermal/intel/int340x_thermal/int3400_thermal.c
-@@ -53,7 +53,7 @@ struct int3400_thermal_priv {
- 	struct art *arts;
- 	int trt_count;
- 	struct trt *trts;
--	u8 uuid_bitmap;
-+	u32 uuid_bitmap;
- 	int rel_misc_dev_res;
- 	int current_uuid_index;
- 	char *data_vault;
+--- a/drivers/pci/hotplug/pciehp_hpc.c
++++ b/drivers/pci/hotplug/pciehp_hpc.c
+@@ -98,6 +98,8 @@ static int pcie_poll_cmd(struct controll
+ 		if (slot_status & PCI_EXP_SLTSTA_CC) {
+ 			pcie_capability_write_word(pdev, PCI_EXP_SLTSTA,
+ 						   PCI_EXP_SLTSTA_CC);
++			ctrl->cmd_busy = 0;
++			smp_mb();
+ 			return 1;
+ 		}
+ 		msleep(10);
 
 
