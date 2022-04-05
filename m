@@ -2,90 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7AA5CC4167E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A5DAFC41535
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:28:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359649AbiDEU1i (ORCPT
+        id S1378129AbiDEU1y (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 16:27:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57134 "EHLO
+        Tue, 5 Apr 2022 16:27:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60008 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349770AbiDEJvU (ORCPT
+        with ESMTP id S1573499AbiDETNH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:51:20 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 869D8186EE;
-        Tue,  5 Apr 2022 02:49:22 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 163D6615E3;
-        Tue,  5 Apr 2022 09:49:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 27828C385A2;
-        Tue,  5 Apr 2022 09:49:20 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649152161;
-        bh=7YUnPeYxarf7zslWpL73PYpMwLDUnxnQZtWx1wJq5pg=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=sj+hbsOKAl5ULzyawmXlNOuLNlcQPvNQM4jx/Xd5MLJpxxHfwz5rkQgxtaDyxqNj1
-         SKUt9Lx4RJNQcoQxhliQgQ1JaMrePK/3Au232hZF4lAu48hW4XrPp2YOADb9Ok37eV
-         N7isNp5upyPHfWB3qId05oMmp+8sMXa8+N4expzI=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 660/913] net: enetc: report software timestamping via SO_TIMESTAMPING
-Date:   Tue,  5 Apr 2022 09:28:42 +0200
-Message-Id: <20220405070359.621564833@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 5 Apr 2022 15:13:07 -0400
+Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97E3EE885A;
+        Tue,  5 Apr 2022 12:11:08 -0700 (PDT)
+Received: by mail-pj1-x102a.google.com with SMTP id u14so432180pjj.0;
+        Tue, 05 Apr 2022 12:11:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=nm9jptV3WzpDy4GnIltCgi8NKxkU/H5D+wxVFeqH508=;
+        b=W1DTLDIV2ru+DUhUkWNcBevZsjAmQlciF2Ojz9VRCB1J8LZJBSqXvJCEgi+lQXStoT
+         2e+BTYZi6ECv6oyu6x4fWHCCp3GVhbSzY8M0365tvfg2WWBSSIU/wYi/SEuLbS4fXewq
+         heKLhNJ7d4xXLA52PGaFLKrnyTZIonnsDST+fGNIUxrIfML4B3Ya2gFtU+YQcBt5VNBB
+         L3UDmMYyIZ7+RXy3eJ+2iXMPdKZ0w8X4VabdIOGCVNIv9zEyeN040vzh8piTt1JhON4D
+         dXOkrPzvndu21x4UhE2MK0ju96OE3cGlAxrNuhvkKvP4rljA7LQZ258UgHTGcPE0YAtF
+         KoCg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=nm9jptV3WzpDy4GnIltCgi8NKxkU/H5D+wxVFeqH508=;
+        b=F4wabNnxseVAaRTuEbtA3YLheKLwnslVnioyxmL0lrwMX5nB9kYDEKT9W6OyJo8Vod
+         pBEGwmdADaurHPQsV4OcLHAzQTxAxMpscC1Na86Dvhx1GnT6FwYvxOicwxSR5KIAiR4k
+         40aj78Eh1dKBtRv7KSQTM7ndDVpqnAw8dBWaqPwTePdAtgwKQ94QFuC01D5B+3G31sGZ
+         IHGQM6XTRIzBCjlhXh4WAAMO7/KbllE49xLxEZaewMlr8PhCFOZE09o7lpy2cadmPmL8
+         w65awfsxXqzB0vLQyI0U44GrdX5oNo4RLJGg7t7yD2lmkKbUlAKH7NDGUwbj3mfb3tOk
+         S2AQ==
+X-Gm-Message-State: AOAM5319/FAD56D5OJsBdj1fWfs3EZ/sWVtls/rmLNOr7hEzwtNlslCf
+        h3nUFwV8xMbemVj4Z+FLExI=
+X-Google-Smtp-Source: ABdhPJzpwCZtruVdAqWgIZpc+SFgn5A5HZe0HSZhnpA3P6/0Nk5mvpUf5WMxNPuZIi5ENOo5CUziDQ==
+X-Received: by 2002:a17:90b:4b89:b0:1c8:105a:2262 with SMTP id lr9-20020a17090b4b8900b001c8105a2262mr5740653pjb.225.1649185868049;
+        Tue, 05 Apr 2022 12:11:08 -0700 (PDT)
+Received: from [10.67.48.245] ([192.19.223.252])
+        by smtp.googlemail.com with ESMTPSA id q28-20020a656a9c000000b00372f7ecfcecsm14616686pgu.37.2022.04.05.12.11.03
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 05 Apr 2022 12:11:07 -0700 (PDT)
+Message-ID: <b44fd7cb-018d-3258-7367-f92f7a46427a@gmail.com>
+Date:   Tue, 5 Apr 2022 12:11:00 -0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH 5.16 0000/1017] 5.16.19-rc1 review
+Content-Language: en-US
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org
+Cc:     stable@vger.kernel.org, torvalds@linux-foundation.org,
+        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
+        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
+        jonathanh@nvidia.com, sudipm.mukherjee@gmail.com,
+        slade@sladewatkins.com
+References: <20220405070354.155796697@linuxfoundation.org>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vladimir Oltean <vladimir.oltean@nxp.com>
+On 4/5/22 00:15, Greg Kroah-Hartman wrote:
+> This is the start of the stable review cycle for the 5.16.19 release.
+> There are 1017 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
+> 
+> Responses should be made by Thu, 07 Apr 2022 07:01:33 +0000.
+> Anything received after that time might be too late.
+> 
+> The whole patch series can be found in one patch at:
+> 	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.16.19-rc1.gz
+> or in the git tree and branch at:
+> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.16.y
+> and the diffstat can be found below.
+> 
+> thanks,
+> 
+> greg k-h
 
-[ Upstream commit feb13dcb1818b775fbd9191f797be67cd605f03e ]
+On ARCH_BRCMSTB using 32-bit and 64-bit ARM kernels:
 
-Let user space properly determine that the enetc driver provides
-software timestamps.
-
-Fixes: 4caefbce06d1 ("enetc: add software timestamping")
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-Reviewed-by: Claudiu Manoil <claudiu.manoil@nxp.com>
-Link: https://lore.kernel.org/r/20220324161210.4122281-1-vladimir.oltean@nxp.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/net/ethernet/freescale/enetc/enetc_ethtool.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/net/ethernet/freescale/enetc/enetc_ethtool.c b/drivers/net/ethernet/freescale/enetc/enetc_ethtool.c
-index 910b9f722504..d62c188c8748 100644
---- a/drivers/net/ethernet/freescale/enetc/enetc_ethtool.c
-+++ b/drivers/net/ethernet/freescale/enetc/enetc_ethtool.c
-@@ -672,7 +672,10 @@ static int enetc_get_ts_info(struct net_device *ndev,
- #ifdef CONFIG_FSL_ENETC_PTP_CLOCK
- 	info->so_timestamping = SOF_TIMESTAMPING_TX_HARDWARE |
- 				SOF_TIMESTAMPING_RX_HARDWARE |
--				SOF_TIMESTAMPING_RAW_HARDWARE;
-+				SOF_TIMESTAMPING_RAW_HARDWARE |
-+				SOF_TIMESTAMPING_TX_SOFTWARE |
-+				SOF_TIMESTAMPING_RX_SOFTWARE |
-+				SOF_TIMESTAMPING_SOFTWARE;
- 
- 	info->tx_types = (1 << HWTSTAMP_TX_OFF) |
- 			 (1 << HWTSTAMP_TX_ON) |
+Tested-by: Florian Fainelli <f.fainelli@gmail.com>
 -- 
-2.34.1
-
-
-
+Florian
