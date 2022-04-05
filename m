@@ -2,108 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D2BCC43219
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:26:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 54FEFC43217
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:26:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1448842AbiDEXGQ (ORCPT
+        id S1451049AbiDEXGi (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 19:06:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55736 "EHLO
+        Tue, 5 Apr 2022 19:06:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60398 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1573174AbiDESHn (ORCPT
+        with ESMTP id S1455464AbiDEQAE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 14:07:43 -0400
-Received: from mail-lf1-x12c.google.com (mail-lf1-x12c.google.com [IPv6:2a00:1450:4864:20::12c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5A7A1F623
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 11:05:41 -0700 (PDT)
-Received: by mail-lf1-x12c.google.com with SMTP id 5so24729928lfp.1
-        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 11:05:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=X0ND6VwIEZwinAToHYv1JdQDzPnywveE91KVWFTQSKU=;
-        b=RBo9gfw+D1FKrMZUzQe7qcOB2qaHge7l/8AZd+/yufIzV5iTwW+v7Gjmkr/gKOAcNR
-         I2VGdF2YwGb7Zle/dZok5Yyl2CtHHebkp9lEYidiaJhOvNRNDTRQVF7A8nfj401cpygQ
-         FO2NhbyaeDO4GmHuxCFSiKMxVLVZMBk0GflYWXitt5FIktd0zIcCKMjhsaq2+XV96aWQ
-         ynP4oGJx6nvLzcrAbZ7wzwjeuf2QjqP3JYzssIEKsY4U3nzMObksFK1B2lE2y5EpJaSQ
-         fBPtz7EBAjtN5TKpS5F13PNhDk+urTpeI9xzG4SuKlQa2s11FC4PGryTK0PeQ5RBbjZ/
-         u4AA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=X0ND6VwIEZwinAToHYv1JdQDzPnywveE91KVWFTQSKU=;
-        b=0Zr5YG2W6njDKKW/7BfqVUUybvOxSf9NA8Fq8nBwrny793FgtjyM7+Jv4GZFEqBAft
-         Bbhsva8ovqH10w4wdMaAsdP5qB6i8J/vPu6RMYPsUlGF/SXDV76LLgC2RoOoeZH1g//b
-         y8sjG+PqjNO0RBnx01tpcx5mNMzUJhjzd4N3jtWIJ4F7VGkrTkoiK1jNUvTShZv1s4jt
-         ++IQWizwvRWibQiWSRQRBb9nkSLD1f5F2FTreMdktXwh1tfuzieqUnEvOj3kQz5+p/Nl
-         X70Q5j7qp/hscvVrpV+M03hkBwntaBMOCPhTiYKFPlTkuh2ITMwV+y1zb1ESt6H4MCqD
-         K55g==
-X-Gm-Message-State: AOAM530xf4N/O/zVsrGSmQpDHfNVOvFg5uEaDrTwqr9FSeeXVpnH/NdK
-        MKoJ7Hq7FFc7dOWyG25QHDbIJGClMceHivRWYFQ3BNweJZpQvQ==
-X-Google-Smtp-Source: ABdhPJz8Ob2IFSJ2xU2SEyque7PyMmTt1CuxsFgqOZW+PCOTKSh0Ys9Ztyvr9JrHOENxXbwRXkEU1ITLIiTlI2b9UYE=
-X-Received: by 2002:ac2:5223:0:b0:448:5100:e427 with SMTP id
- i3-20020ac25223000000b004485100e427mr3474419lfl.87.1649181939752; Tue, 05 Apr
- 2022 11:05:39 -0700 (PDT)
+        Tue, 5 Apr 2022 12:00:04 -0400
+Received: from mail.skyhub.de (mail.skyhub.de [IPv6:2a01:4f8:190:11c2::b:1457])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 613DB56754;
+        Tue,  5 Apr 2022 08:15:43 -0700 (PDT)
+Received: from zn.tnic (p2e55dff8.dip0.t-ipconnect.de [46.85.223.248])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id ED80F1EC0518;
+        Tue,  5 Apr 2022 17:15:37 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
+        t=1649171738;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=luB7TMkZKRRM3TEoQ4R8/NjdvmPgDZy3QgqEge4f+08=;
+        b=mp7uj8rh+qT1te6TN78hfnAl+SEVUwh/XB6GJNWc9jjOTScA1pWHFhh0ZXTQuN19oWTHAt
+        ZluQq13l01mFQlgLyrWKpDwy3POmPE8l05L0o16f1Nvi6ehaoKMst91nom7Kkc4rFaJxvW
+        nawuUPZxoz7+MBEmTz91CYxRmPaboIg=
+From:   Borislav Petkov <bp@alien8.de>
+To:     LKML <linux-kernel@vger.kernel.org>
+Cc:     Ariel Elior <aelior@marvell.com>,
+        Sudarsana Kalluru <skalluru@marvell.com>,
+        Manish Chopra <manishc@marvell.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org
+Subject: [PATCH 03/11] bnx2x: Fix undefined behavior due to shift overflowing the constant
+Date:   Tue,  5 Apr 2022 17:15:09 +0200
+Message-Id: <20220405151517.29753-4-bp@alien8.de>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405151517.29753-1-bp@alien8.de>
+References: <20220405151517.29753-1-bp@alien8.de>
 MIME-Version: 1.0
-References: <20220402131546.3383578-1-trix@redhat.com>
-In-Reply-To: <20220402131546.3383578-1-trix@redhat.com>
-From:   Nick Desaulniers <ndesaulniers@google.com>
-Date:   Tue, 5 Apr 2022 11:05:28 -0700
-Message-ID: <CAKwvOdnVcXgJtJsVujXpEVOLrY_BU5BPHN4tW_ziXNB-xnZPkw@mail.gmail.com>
-Subject: Re: [PATCH] lib: remove back_str initialization
-To:     Tom Rix <trix@redhat.com>,
-        Andrew Morton <akpm@linux-foundation.org>
-Cc:     nathan@kernel.org, linux-kernel@vger.kernel.org,
-        llvm@lists.linux.dev
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Apr 2, 2022 at 6:16 AM Tom Rix <trix@redhat.com> wrote:
->
-> Clang static analysis reports this false positive
-> glob.c:48:32: warning: Assigned value is garbage
->   or undefined
->   char const *back_pat = NULL, *back_str = back_str;
->                                 ^~~~~~~~   ~~~~~~~~
->
-> back_str is set after back_pat and it's use is
-> protected by the !back_pat check.  It is not
-> necessary to initialize back_str, so remove
-> the initialization.
->
+From: Borislav Petkov <bp@suse.de>
 
-Thanks for the patch!
-Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
+Fix:
 
-Andrew, would you mind picking this up for us, please?
+  drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c: In function ‘bnx2x_check_blocks_with_parity3’:
+  drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c:4917:4: error: case label does not reduce to an integer constant
+      case AEU_INPUTS_ATTN_BITS_MCP_LATCHED_SCPAD_PARITY:
+      ^~~~
 
-> Signed-off-by: Tom Rix <trix@redhat.com>
-> ---
->  lib/glob.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/lib/glob.c b/lib/glob.c
-> index 85ecbda45cd8..15b73f490720 100644
-> --- a/lib/glob.c
-> +++ b/lib/glob.c
-> @@ -45,7 +45,7 @@ bool __pure glob_match(char const *pat, char const *str)
->          * (no exception for /), it can be easily proved that there's
->          * never a need to backtrack multiple levels.
->          */
-> -       char const *back_pat = NULL, *back_str = back_str;
-> +       char const *back_pat = NULL, *back_str;
->
->         /*
->          * Loop over each token (character or class) in pat, matching
-> --
-> 2.27.0
->
+See https://lore.kernel.org/r/YkwQ6%2BtIH8GQpuct@zn.tnic for the gory
+details as to why it triggers with older gccs only.
 
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Cc: Ariel Elior <aelior@marvell.com>
+Cc: Sudarsana Kalluru <skalluru@marvell.com>
+Cc: Manish Chopra <manishc@marvell.com>
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: Jakub Kicinski <kuba@kernel.org>
+Cc: Paolo Abeni <pabeni@redhat.com>
+Cc: netdev@vger.kernel.org
+---
+ drivers/net/ethernet/broadcom/bnx2x/bnx2x_reg.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
+diff --git a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_reg.h b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_reg.h
+index 5caa75b41b73..881ac33fe914 100644
+--- a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_reg.h
++++ b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_reg.h
+@@ -6218,7 +6218,7 @@
+ #define AEU_INPUTS_ATTN_BITS_GPIO0_FUNCTION_0			 (0x1<<2)
+ #define AEU_INPUTS_ATTN_BITS_IGU_PARITY_ERROR			 (0x1<<12)
+ #define AEU_INPUTS_ATTN_BITS_MCP_LATCHED_ROM_PARITY		 (0x1<<28)
+-#define AEU_INPUTS_ATTN_BITS_MCP_LATCHED_SCPAD_PARITY		 (0x1<<31)
++#define AEU_INPUTS_ATTN_BITS_MCP_LATCHED_SCPAD_PARITY		 (0x1U<<31)
+ #define AEU_INPUTS_ATTN_BITS_MCP_LATCHED_UMP_RX_PARITY		 (0x1<<29)
+ #define AEU_INPUTS_ATTN_BITS_MCP_LATCHED_UMP_TX_PARITY		 (0x1<<30)
+ #define AEU_INPUTS_ATTN_BITS_MISC_HW_INTERRUPT			 (0x1<<15)
 -- 
-Thanks,
-~Nick Desaulniers
+2.35.1
+
