@@ -2,70 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 987D9C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:10:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A0323C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:17:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1582627AbiDEXs6 (ORCPT
+        id S1582674AbiDEXtN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 19:48:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57894 "EHLO
+        Tue, 5 Apr 2022 19:49:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47304 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1389781AbiDEP0q (ORCPT
+        with ESMTP id S1356743AbiDEKYx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 11:26:46 -0400
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28AE1EEA43;
-        Tue,  5 Apr 2022 06:37:32 -0700 (PDT)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: kholk11)
-        with ESMTPSA id C01181F4512B
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1649165850;
-        bh=plGTTyi7O6qDtXxCe+h/xQcs9ltHnMhWtxjOqkuVZDA=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=c7CbAeTNu93R+wac0xUo8wYt5JHYwVPd64SEqW/SDwK8otS4ZmnyP2OT8Zetat059
-         odFY4s7LLMRKdZx+u9DgJ+6R76/bmNzUrxwpPJMv+KYldaKtX0rVOinXvHBuewmHCd
-         GPiHBfHg9bzOyApLYuAlAGJ54YI1ZvRFGvvu31CzQMNaPh7/FpmEf6WgCoWWVghk0v
-         n7+V4pbW+bbDbiuVhQ74MTamguMKsNtXVYQJBaVZkV4tM1g6haDmp3nJBTJhcq+6me
-         SGNpIoCdUfJATVmysl7Ianu9MVm7k8Y6RobJ0fX1h6SE+SehjaHHxv8XRMMnf90Yif
-         lU13kvmJsV8CA==
-Message-ID: <9999f731-1e95-ef51-4b09-c88222320696@collabora.com>
-Date:   Tue, 5 Apr 2022 15:37:26 +0200
+        Tue, 5 Apr 2022 06:24:53 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FB38BF038;
+        Tue,  5 Apr 2022 03:08:56 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E06FB616E7;
+        Tue,  5 Apr 2022 10:08:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B811CC385A1;
+        Tue,  5 Apr 2022 10:08:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649153335;
+        bh=/kvIRSziW0x3o2dd/pwWaUBnYSKR0XEkNQf4oUXD/mg=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=MfcGJ4pqJaIKfGYf4/to/RLNrrfk9oMRUmP5s8ctSVmxncZeycQ53YXiWzidZlk8X
+         kimZ7UM0Lahtogi5Kztl96MF5QTELoyt48mOStaUd5uKX/E6lBfxZ9E1Trk3ogXnpD
+         H4fhwVbVVLWsPrHATT7j2NprzMtO7aGp+LNQSITo=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Peng Liu <liupeng256@huawei.com>,
+        Marco Elver <elver@google.com>,
+        Daniel Latypov <dlatypov@google.com>,
+        Brendan Higgins <brendanhiggins@google.com>,
+        Alexander Potapenko <glider@google.com>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        Wang Kefeng <wangkefeng.wang@huawei.com>,
+        David Gow <davidgow@google.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 186/599] kunit: make kunit_test_timeout compatible with comment
+Date:   Tue,  5 Apr 2022 09:28:00 +0200
+Message-Id: <20220405070304.377083259@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
+References: <20220405070258.802373272@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH] remoteproc: mtk_scp: Fix a potential double free
-Content-Language: en-US
-To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>
-Cc:     linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
-        linux-remoteproc@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org
-References: <1d15923b4ffb94531435c48482fef276a11b9a67.1648981531.git.christophe.jaillet@wanadoo.fr>
-From:   AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>
-In-Reply-To: <1d15923b4ffb94531435c48482fef276a11b9a67.1648981531.git.christophe.jaillet@wanadoo.fr>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Il 03/04/22 12:25, Christophe JAILLET ha scritto:
-> 'scp->rproc' is allocated using devm_rproc_alloc(), so there is no need
-> to free it explicitly in the remove function.
-> 
-> Fixes: c1407ac1099a ("remoteproc: mtk_scp: Use devm variant of rproc_alloc()")
+From: Peng Liu <liupeng256@huawei.com>
 
-Hello Cristophe,
-thanks for the patch!
+[ Upstream commit bdd015f7b71b92c2e4ecabac689642cc72553e04 ]
 
-I agree with what you're doing here, but you forgot to add your Signed-off-by.
-Please resend it with your signoff, then I will give you my R-b.
-Also, please make sure to add me to the Ccs so that I can see your v2 sooner!
+In function kunit_test_timeout, it is declared "300 * MSEC_PER_SEC"
+represent 5min.  However, it is wrong when dealing with arm64 whose
+default HZ = 250, or some other situations.  Use msecs_to_jiffies to fix
+this, and kunit_test_timeout will work as desired.
 
-Thanks,
-Angelo
+Link: https://lkml.kernel.org/r/20220309083753.1561921-3-liupeng256@huawei.com
+Fixes: 5f3e06208920 ("kunit: test: add support for test abort")
+Signed-off-by: Peng Liu <liupeng256@huawei.com>
+Reviewed-by: Marco Elver <elver@google.com>
+Reviewed-by: Daniel Latypov <dlatypov@google.com>
+Reviewed-by: Brendan Higgins <brendanhiggins@google.com>
+Tested-by: Brendan Higgins <brendanhiggins@google.com>
+Cc: Alexander Potapenko <glider@google.com>
+Cc: Dmitry Vyukov <dvyukov@google.com>
+Cc: Wang Kefeng <wangkefeng.wang@huawei.com>
+Cc: David Gow <davidgow@google.com>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ lib/kunit/try-catch.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/lib/kunit/try-catch.c b/lib/kunit/try-catch.c
+index 0dd434e40487..71e5c5853099 100644
+--- a/lib/kunit/try-catch.c
++++ b/lib/kunit/try-catch.c
+@@ -52,7 +52,7 @@ static unsigned long kunit_test_timeout(void)
+ 	 * If tests timeout due to exceeding sysctl_hung_task_timeout_secs,
+ 	 * the task will be killed and an oops generated.
+ 	 */
+-	return 300 * MSEC_PER_SEC; /* 5 min */
++	return 300 * msecs_to_jiffies(MSEC_PER_SEC); /* 5 min */
+ }
+ 
+ void kunit_try_catch_run(struct kunit_try_catch *try_catch, void *context)
+-- 
+2.34.1
+
+
+
