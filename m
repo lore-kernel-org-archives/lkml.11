@@ -2,46 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EB981C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 10:08:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B141C4321E
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 10:08:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352594AbiDEKEq (ORCPT
+        id S1353001AbiDEKF0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 06:04:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34412 "EHLO
+        Tue, 5 Apr 2022 06:05:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32936 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238239AbiDEIa0 (ORCPT
+        with ESMTP id S239361AbiDEIbT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:30:26 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26AD322BF1;
-        Tue,  5 Apr 2022 01:22:00 -0700 (PDT)
+        Tue, 5 Apr 2022 04:31:19 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5466692A2;
+        Tue,  5 Apr 2022 01:23:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A988361477;
-        Tue,  5 Apr 2022 08:21:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B8A2BC385A9;
-        Tue,  5 Apr 2022 08:21:58 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9F400B81BD1;
+        Tue,  5 Apr 2022 08:23:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EA238C385A5;
+        Tue,  5 Apr 2022 08:23:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649146919;
-        bh=RMc2It4dGYVyP7I6bfOhhGG9ID4xvoJkIC5CZ+LRjz8=;
+        s=korg; t=1649147004;
+        bh=kDKQLtxdtubo8cbSoy0C0473dnGZFJuLtrEEafSBCiw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KGLvcWaoom+KLUeUvlsIXnkSNTEDF7EsYUxguIyBvq1Q/rCGcu7KlIKX5i1Nl8rXe
-         1V2WSnIlUIQQxlZJmxx0geRCPpUMMyDcP/ygna3oWEopwqBhlbRo+Krc4ea6TPs/M6
-         UT7xfvT+YAB9HawCEeXod/zPMYjp6JzGBPWXwL80=
+        b=GqMABZMWp1Bctf/WN69fWNjNvu3vDYwzTarfVxAcHmeq3S3xO3C4PbUg7D/qNO+nx
+         hM+zr51jSsWn6TnqkSNe/ElTVwiej6jgTcPLIBXT9E4vAtZXwBGhAbcBYDOO5H1HbV
+         OZo65Ly8wSDJ4JIkVtfzGb4SCle3KtIanSWhocRg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
-        Bard Liao <yung-chuan.liao@linux.intel.com>,
-        =?UTF-8?q?P=C3=A9ter=20Ujfalusi?= <peter.ujfalusi@linux.intel.com>,
+        stable@vger.kernel.org, Shengjiu Wang <shengjiu.wang@nxp.com>,
         Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0937/1126] ASoC: SOF: Intel: hda: retrieve DMIC number for I2S boards
-Date:   Tue,  5 Apr 2022 09:28:04 +0200
-Message-Id: <20220405070435.015903073@linuxfoundation.org>
+Subject: [PATCH 5.17 0919/1126] ASoC: soc-core: skip zero num_dai component in searching dai name
+Date:   Tue,  5 Apr 2022 09:27:46 +0200
+Message-Id: <20220405070434.496106186@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -53,115 +50,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+From: Shengjiu Wang <shengjiu.wang@nxp.com>
 
-[ Upstream commit 92c1b7c0f780f0084f7b114be316ae4e182676e5 ]
+[ Upstream commit f7d344a2bd5ec81fbd1ce76928fd059e57ec9bea ]
 
-We currently extract the DMIC number only for HDaudio or SoundWire
-platforms. For I2S/TDM platforms, this wasn't necessary until now, but
-with devices with ES8336 we need to find a solution to detect dmics
-more reliably than with a DMI quirk.
+In the case like dmaengine which's not a dai but as a component, the
+num_dai is zero, dmaengine component has the same component_of_node
+as cpu dai, when cpu dai component is not ready, but dmaengine component
+is ready, try to get cpu dai name, the snd_soc_get_dai_name() return
+-EINVAL, not -EPROBE_DEFER, that cause below error:
 
-Signed-off-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
-Reviewed-by: Bard Liao <yung-chuan.liao@linux.intel.com>
-Reviewed-by: Péter Ujfalusi <peter.ujfalusi@linux.intel.com>
-Link: https://lore.kernel.org/r/20220308192610.392950-4-pierre-louis.bossart@linux.intel.com
+asoc-simple-card <card name>: parse error -22
+asoc-simple-card: probe of <card name> failed with error -22
+
+The sound card failed to probe.
+
+So this patch fixes the issue above by skipping the zero num_dai
+component in searching dai name.
+
+Signed-off-by: Shengjiu Wang <shengjiu.wang@nxp.com>
+Link: https://lore.kernel.org/r/1644491952-7457-1-git-send-email-shengjiu.wang@nxp.com
 Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/sof/intel/hda.c | 46 +++++++++++++++++++++------------------
- 1 file changed, 25 insertions(+), 21 deletions(-)
+ sound/soc/soc-core.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/sound/soc/sof/intel/hda.c b/sound/soc/sof/intel/hda.c
-index 848d1d563170..028751549f6d 100644
---- a/sound/soc/sof/intel/hda.c
-+++ b/sound/soc/sof/intel/hda.c
-@@ -432,11 +432,9 @@ static char *hda_model;
- module_param(hda_model, charp, 0444);
- MODULE_PARM_DESC(hda_model, "Use the given HDA board model.");
+diff --git a/sound/soc/soc-core.c b/sound/soc/soc-core.c
+index 434e61b46983..a088bc9f7dd7 100644
+--- a/sound/soc/soc-core.c
++++ b/sound/soc/soc-core.c
+@@ -3233,7 +3233,7 @@ int snd_soc_get_dai_name(const struct of_phandle_args *args,
+ 	for_each_component(pos) {
+ 		struct device_node *component_of_node = soc_component_to_node(pos);
  
--#if IS_ENABLED(CONFIG_SND_SOC_SOF_HDA) || IS_ENABLED(CONFIG_SND_SOC_SOF_INTEL_SOUNDWIRE)
--static int hda_dmic_num = -1;
--module_param_named(dmic_num, hda_dmic_num, int, 0444);
-+static int dmic_num_override = -1;
-+module_param_named(dmic_num, dmic_num_override, int, 0444);
- MODULE_PARM_DESC(dmic_num, "SOF HDA DMIC number");
--#endif
+-		if (component_of_node != args->np)
++		if (component_of_node != args->np || !pos->num_dai)
+ 			continue;
  
- #if IS_ENABLED(CONFIG_SND_SOC_SOF_HDA)
- static bool hda_codec_use_common_hdmi = IS_ENABLED(CONFIG_SND_HDA_CODEC_HDMI);
-@@ -644,24 +642,35 @@ static int hda_init(struct snd_sof_dev *sdev)
- 	return ret;
- }
- 
--#if IS_ENABLED(CONFIG_SND_SOC_SOF_HDA) || IS_ENABLED(CONFIG_SND_SOC_SOF_INTEL_SOUNDWIRE)
--
--static int check_nhlt_dmic(struct snd_sof_dev *sdev)
-+static int check_dmic_num(struct snd_sof_dev *sdev)
- {
- 	struct nhlt_acpi_table *nhlt;
--	int dmic_num;
-+	int dmic_num = 0;
- 
- 	nhlt = intel_nhlt_init(sdev->dev);
- 	if (nhlt) {
- 		dmic_num = intel_nhlt_get_dmic_geo(sdev->dev, nhlt);
- 		intel_nhlt_free(nhlt);
--		if (dmic_num >= 1 && dmic_num <= 4)
--			return dmic_num;
- 	}
- 
--	return 0;
-+	/* allow for module parameter override */
-+	if (dmic_num_override != -1) {
-+		dev_dbg(sdev->dev,
-+			"overriding DMICs detected in NHLT tables %d by kernel param %d\n",
-+			dmic_num, dmic_num_override);
-+		dmic_num = dmic_num_override;
-+	}
-+
-+	if (dmic_num < 0 || dmic_num > 4) {
-+		dev_dbg(sdev->dev, "invalid dmic_number %d\n", dmic_num);
-+		dmic_num = 0;
-+	}
-+
-+	return dmic_num;
- }
- 
-+#if IS_ENABLED(CONFIG_SND_SOC_SOF_HDA) || IS_ENABLED(CONFIG_SND_SOC_SOF_INTEL_SOUNDWIRE)
-+
- static const char *fixup_tplg_name(struct snd_sof_dev *sdev,
- 				   const char *sof_tplg_filename,
- 				   const char *idisp_str,
-@@ -697,16 +706,8 @@ static int dmic_topology_fixup(struct snd_sof_dev *sdev,
- 	const char *dmic_str;
- 	int dmic_num;
- 
--	/* first check NHLT for DMICs */
--	dmic_num = check_nhlt_dmic(sdev);
--
--	/* allow for module parameter override */
--	if (hda_dmic_num != -1) {
--		dev_dbg(sdev->dev,
--			"overriding DMICs detected in NHLT tables %d by kernel param %d\n",
--			dmic_num, hda_dmic_num);
--		dmic_num = hda_dmic_num;
--	}
-+	/* first check for DMICs (using NHLT or module parameter) */
-+	dmic_num = check_dmic_num(sdev);
- 
- 	switch (dmic_num) {
- 	case 1:
-@@ -1392,6 +1393,9 @@ struct snd_soc_acpi_mach *hda_machine_select(struct snd_sof_dev *sdev)
- 		if (!sof_pdata->tplg_filename)
- 			sof_pdata->tplg_filename = mach->sof_tplg_filename;
- 
-+		/* report to machine driver if any DMICs are found */
-+		mach->mach_params.dmic_num = check_dmic_num(sdev);
-+
- 		if (mach->link_mask) {
- 			mach->mach_params.links = mach->links;
- 			mach->mach_params.link_mask = mach->link_mask;
+ 		ret = snd_soc_component_of_xlate_dai_name(pos, args, dai_name);
 -- 
 2.34.1
 
