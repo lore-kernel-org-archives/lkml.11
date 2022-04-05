@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F1F1C43217
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 13:23:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 788ABC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 13:23:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349625AbiDENGE (ORCPT
+        id S1349934AbiDENGI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 09:06:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38304 "EHLO
+        Tue, 5 Apr 2022 09:06:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34674 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343980AbiDEJQo (ORCPT
+        with ESMTP id S1344004AbiDEJQo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Apr 2022 05:16:44 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BBD79C7B;
-        Tue,  5 Apr 2022 02:03:04 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65679101FE;
+        Tue,  5 Apr 2022 02:02:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 62D71B818F3;
-        Tue,  5 Apr 2022 09:03:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A4A9DC385A1;
-        Tue,  5 Apr 2022 09:03:01 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 01BD061564;
+        Tue,  5 Apr 2022 09:02:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 17C37C385A1;
+        Tue,  5 Apr 2022 09:02:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649149382;
-        bh=HJdEqjir6i4ZoPfHna7exWzCgYiLB24dyPugU8scUp0=;
+        s=korg; t=1649149368;
+        bh=Uei5z8hVMTTP/ef+TzfjM7pNOY5Pj1gxvZnvJmGs/1Y=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cY05PNdQ3VNlhMz8MLEP2pFRU6Mdi2vtKS5QQ1MSZ/zeIbRmlFOIKRdla7Ak03A7g
-         iX06Ok3soOXLc4tRvCLbotyCipkS+PqpkQ6BAJZzOld9/YEKOwZyw6UeelwDt/rS5T
-         RltH9rcSxZBFTl1cXB7Xi7ZhGe8r2WMt9K8eVinM=
+        b=sIkKJzXwVB/kaHmKzUi8HxpwsS+7ZOKh+RLIaBTshTtOJIopYs/6xbz2ufZyH3YTC
+         Dxugq6iyXnxY6ELCpJAHepKRJ6FyUwAah99ewwgLidXK3dQqWQ9Lde1ElrXV9yNH1+
+         NObaWFNIhsTUEc9wlUKvusTUE/AzODtqNOsCLDRU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Sergio Paracuellos <sergio.paracuellos@gmail.com>,
-        =?UTF-8?q?Ar=C4=B1n=C3=A7=20=C3=9CNAL?= <arinc.unal@arinc9.com>,
+        stable@vger.kernel.org, Pavel Skripkin <paskripkin@gmail.com>,
+        Martin Kaiser <martin@kaiser.cx>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0694/1017] staging: mt7621-dts: fix pinctrl properties for ethernet
-Date:   Tue,  5 Apr 2022 09:26:47 +0200
-Message-Id: <20220405070414.873195068@linuxfoundation.org>
+Subject: [PATCH 5.16 0672/1017] staging: r8188eu: fix endless loop in recv_func
+Date:   Tue,  5 Apr 2022 09:26:25 +0200
+Message-Id: <20220405070414.227866929@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -51,91 +50,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Arınç ÜNAL <arinc.unal@arinc9.com>
+From: Martin Kaiser <martin@kaiser.cx>
 
-[ Upstream commit 0a93c0d75809582893e82039143591b9265b520e ]
+[ Upstream commit 1327fcf175fa63d3b7a058b8148ed7714acdc035 ]
 
-Add pinctrl properties with rgmii1 & mdio pins under ethernet node which
-was wrongfully put under an external phy node.
-GMAC1 will start working with this fix.
+Fix an endless loop in recv_func. If pending_frame is not NULL, we're
+stuck in the while loop forever. We have to call rtw_alloc_recvframe
+each time we loop.
 
-Link: https://lore.kernel.org/netdev/02ecce91-7aad-4392-c9d7-f45ca1b31e0b@arinc9.com/T/
-
-Move GB-PC2 specific phy_external node to its own device tree.
-
-Reviewed-by: Sergio Paracuellos <sergio.paracuellos@gmail.com>
-Signed-off-by: Arınç ÜNAL <arinc.unal@arinc9.com>
-Link: https://lore.kernel.org/r/20220125153903.1469-5-arinc.unal@arinc9.com
+Fixes: 15865124feed ("staging: r8188eu: introduce new core dir for RTL8188eu driver")
+Reported-by: Pavel Skripkin <paskripkin@gmail.com>
+Signed-off-by: Martin Kaiser <martin@kaiser.cx>
+Link: https://lore.kernel.org/r/20220226181457.1138035-4-martin@kaiser.cx
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/staging/mt7621-dts/gbpc2.dts   | 16 +++++++++++-----
- drivers/staging/mt7621-dts/mt7621.dtsi | 13 +++----------
- 2 files changed, 14 insertions(+), 15 deletions(-)
+ drivers/staging/r8188eu/core/rtw_recv.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/drivers/staging/mt7621-dts/gbpc2.dts b/drivers/staging/mt7621-dts/gbpc2.dts
-index 6fe603c7711d..03d6bb6735ac 100644
---- a/drivers/staging/mt7621-dts/gbpc2.dts
-+++ b/drivers/staging/mt7621-dts/gbpc2.dts
-@@ -13,10 +13,16 @@
- 	function = "gpio";
- };
+diff --git a/drivers/staging/r8188eu/core/rtw_recv.c b/drivers/staging/r8188eu/core/rtw_recv.c
+index 51a13262a226..d120d61454a3 100644
+--- a/drivers/staging/r8188eu/core/rtw_recv.c
++++ b/drivers/staging/r8188eu/core/rtw_recv.c
+@@ -1853,8 +1853,7 @@ static int recv_func(struct adapter *padapter, struct recv_frame *rframe)
+ 		struct recv_frame *pending_frame;
+ 		int cnt = 0;
  
--&gmac1 {
--	status = "ok";
--};
-+&ethernet {
-+	gmac1: mac@1 {
-+		status = "ok";
-+		phy-handle = <&phy_external>;
-+	};
- 
--&phy_external {
--	status = "ok";
-+	mdio-bus {
-+		phy_external: ethernet-phy@5 {
-+			reg = <5>;
-+			phy-mode = "rgmii-rxid";
-+		};
-+	};
- };
-diff --git a/drivers/staging/mt7621-dts/mt7621.dtsi b/drivers/staging/mt7621-dts/mt7621.dtsi
-index 25687f4fa671..7b75e4a92b2a 100644
---- a/drivers/staging/mt7621-dts/mt7621.dtsi
-+++ b/drivers/staging/mt7621-dts/mt7621.dtsi
-@@ -363,6 +363,9 @@
- 
- 		mediatek,ethsys = <&sysc>;
- 
-+		pinctrl-names = "default";
-+		pinctrl-0 = <&rgmii1_pins &rgmii2_pins &mdio_pins>;
-+
- 		gmac0: mac@0 {
- 			compatible = "mediatek,eth-mac";
- 			reg = <0>;
-@@ -380,22 +383,12 @@
- 			reg = <1>;
- 			status = "off";
- 			phy-mode = "rgmii-rxid";
--			phy-handle = <&phy_external>;
- 		};
- 
- 		mdio-bus {
- 			#address-cells = <1>;
- 			#size-cells = <0>;
- 
--			phy_external: ethernet-phy@5 {
--				status = "off";
--				reg = <5>;
--				phy-mode = "rgmii-rxid";
--
--				pinctrl-names = "default";
--				pinctrl-0 = <&rgmii2_pins>;
--			};
--
- 			switch0: switch0@0 {
- 				compatible = "mediatek,mt7621";
- 				#address-cells = <1>;
+-		pending_frame = rtw_alloc_recvframe(&padapter->recvpriv.uc_swdec_pending_queue);
+-		while (pending_frame) {
++		while ((pending_frame = rtw_alloc_recvframe(&padapter->recvpriv.uc_swdec_pending_queue))) {
+ 			cnt++;
+ 			recv_func_posthandle(padapter, pending_frame);
+ 		}
 -- 
 2.34.1
 
