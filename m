@@ -2,79 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 560F5C43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 73692C4321E
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:23:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231940AbiDEURK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 16:17:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34086 "EHLO
+        id S232349AbiDEURW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 16:17:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44784 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1572961AbiDERay (ORCPT
+        with ESMTP id S1384276AbiDEPOy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 13:30:54 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 563392314E
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 10:28:54 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 12DEFB81B7F
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 17:28:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 58A89C385A0;
-        Tue,  5 Apr 2022 17:28:50 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649179731;
-        bh=L8ClCNYpz04MaTli/xpItx9BnEYHOLA4v0sIEqu/EAg=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=bY2k9fQO79NHBStJp71FuYLswa7OgZhHbdUW7I4unHsaM7ubItkEmGv6UZ0PRG2yn
-         40zZju1eH7/erRO9y6Q9ONjCcXDkbyr7SOuBlodGHc3oUoyVqnWStQLjZv0TpjzGWU
-         T8Vy5VyqNZMc4PMBtKsT9NHxvw8jYvS603xJ6OWVx0cWr/5QaXMUsbSiPgoUHnyWIv
-         qqL6rBGhKQFF+mchiamUwtfin1E8HgI2u+whM/uhUHQPPDw/4fMgxoc/Uhc5IQyCiK
-         g9uubCv4ZhMEmfUtGER5ug8ZYTaPoXrngnPzw8j2KZNn8/29oW/JIB9v+qprY0e+V8
-         9YOdwRAwIaXVQ==
-Date:   Tue, 5 Apr 2022 18:28:47 +0100
-From:   Mark Brown <broonie@kernel.org>
-To:     Stephen Kitt <steve@sk2.org>
-Cc:     Liam Girdwood <lgirdwood@gmail.com>, patches@opensource.cirrus.com,
-        Wolfram Sang <wsa@kernel.org>, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] ASoC: wm8731: use simple i2c probe function
-Message-ID: <Ykx8T4KFmEiAFyH8@sirena.org.uk>
-References: <20220405123236.2099063-1-steve@sk2.org>
+        Tue, 5 Apr 2022 11:14:54 -0400
+Received: from gnuweeb.org (gnuweeb.org [51.81.211.47])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D18320F58
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 06:29:17 -0700 (PDT)
+Received: from [192.168.137.80] (unknown [182.2.74.86])
+        by gnuweeb.org (Postfix) with ESMTPSA id 817617E342;
+        Tue,  5 Apr 2022 13:29:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gnuweeb.org;
+        s=default; t=1649165356;
+        bh=uhjmyqCr5OwOhwtddzDczmaKyd1OpK7B0pVdY6yUzsU=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=Xv/VvDq1G5l3g+F4JGca9f8EyByl27s/3e+PX1uX1km0gUENZt8pBz9XjfERXQJ4h
+         Pp0ipO6MfXvr9NL94dhv6mGiAlV0ocA6NLUH6uPKfBwiRy5Tf00a475qYPhglDEiJW
+         8xGBDRVOQLRCiv4UAZMLnZCwzpS/204A0zEz9Q0QGGxx+iqM3v+yTyxOrh6OAN9145
+         y9g/HsPoH3+9qAhlQn7dSJ+5zFJzcVqcGkrDkjmCraDoBnaJYqTQacmQpUE/2maBJ/
+         s8fXummwbYsvgENLZEkY7FQR/wEz7NOYhM/FfexN56gSHS9m6DxbPyIddEzuzifoab
+         xR52iQQyA0bEw==
+Message-ID: <df464935-9743-0f4c-1edb-e0204bab938e@gnuweeb.org>
+Date:   Tue, 5 Apr 2022 20:29:08 +0700
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="Tw76BVguT/8hAA+z"
-Content-Disposition: inline
-In-Reply-To: <20220405123236.2099063-1-steve@sk2.org>
-X-Cookie: I don't get no respect.
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [Linux 5.18-rc1] WARNING: CPU: 1 PID: 0 at
+ kernel/sched/fair.c:3355 update_blocked_averages
+Content-Language: en-US
+To:     Dietmar Eggemann <dietmar.eggemann@arm.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Cc:     Ben Segall <bsegall@google.com>,
+        Daniel Bristot de Oliveira <bristot@redhat.com>,
+        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Juri Lelli <juri.lelli@redhat.com>,
+        Mel Gorman <mgorman@suse.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Vincent Guittot <vincent.guittot@linaro.org>
+References: <b86541ea-7d96-5a24-1b65-37c24c70d3ff@gnuweeb.org>
+ <f71d132d-02a0-918c-ab2b-3234d0d492a4@arm.com>
+From:   Ammar Faizi <ammarfaizi2@gnuweeb.org>
+In-Reply-To: <f71d132d-02a0-918c-ab2b-3234d0d492a4@arm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On 4/5/22 7:21 PM, Dietmar Eggemann wrote:
+> Maybe you could split the SCHED_WARN_ON so we know which signal causes this?
+> 
+> diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
+> index d4bd299d67ab..0d45e09e5bfc 100644
+> --- a/kernel/sched/fair.c
+> +++ b/kernel/sched/fair.c
+> @@ -3350,9 +3350,9 @@ static inline bool cfs_rq_is_decayed(struct cfs_rq
+> *cfs_rq)
+>           * Make sure that rounding and/or propagation of PELT values never
+>           * break this.
+>           */
+> -       SCHED_WARN_ON(cfs_rq->avg.load_avg ||
+> -                     cfs_rq->avg.util_avg ||
+> -                     cfs_rq->avg.runnable_avg);
+> +       SCHED_WARN_ON(cfs_rq->avg.load_avg);
+> +       SCHED_WARN_ON(cfs_rq->avg.util_avg);
+> +       SCHED_WARN_ON(cfs_rq->avg.runnable_avg);
+> 
+>          return true;
+>   }
 
---Tw76BVguT/8hAA+z
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+error: corrupt patch at line 6
 
-On Tue, Apr 05, 2022 at 02:32:36PM +0200, Stephen Kitt wrote:
-> The i2c probe functions here don't use the id information provided in
-> their second argument, so the single-parameter i2c probe function
-> ("probe_new") can be used instead.
+Trivial enough, fixed it. Compiling now...
 
-This doesn't apply against current code, please check and resend.
+ammarfaizi2@integral2:~/work/linux.work$ git log -n1
+commit 3123109284176b1532874591f7c81f3837bbdc17 (HEAD -> master, tag: v5.18-rc1, @torvalds/linux/master)
+Author: Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Sun Apr 3 14:08:21 2022 -0700
 
---Tw76BVguT/8hAA+z
-Content-Type: application/pgp-signature; name="signature.asc"
+     Linux 5.18-rc1
+ammarfaizi2@integral2:~/work/linux.work$ git diff
+diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
+index d4bd299d67ab..0d45e09e5bfc 100644
+--- a/kernel/sched/fair.c
++++ b/kernel/sched/fair.c
+@@ -3350,9 +3350,9 @@ static inline bool cfs_rq_is_decayed(struct cfs_rq *cfs_rq)
+  	 * Make sure that rounding and/or propagation of PELT values never
+  	 * break this.
+  	 */
+-	SCHED_WARN_ON(cfs_rq->avg.load_avg ||
+-		      cfs_rq->avg.util_avg ||
+-		      cfs_rq->avg.runnable_avg);
++	SCHED_WARN_ON(cfs_rq->avg.load_avg);
++	SCHED_WARN_ON(cfs_rq->avg.util_avg);
++	SCHED_WARN_ON(cfs_rq->avg.runnable_avg);
+  
+  	return true;
+  }
+ammarfaizi2@integral2:~/work/linux.work$
 
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmJMfE4ACgkQJNaLcl1U
-h9Cagwf/dFd/lprBIZy7kHMoCBkAKqQEWj5zaLFLoLdAR1N3s4F3JEp67KyokBJg
-jewr8uF+n1PsUHlB0qTZEk0BnvIFCGdHbVJhW2anYpDXR4owxvuZ8U3aW0kXK064
-P8lQARnT2SHKvGZuPU0hzOSaiZF2vLaQRDIHUCG746aB8Xo8A/Lff0qzdH7gJv0K
-x8PXepAm5v98sccDmIlG5/VOIw85quNfKU0uA2aaejCpR7ABM2WvtuEXCSgyoMfZ
-/ez/ctEdXSctPKGVPMSQIo4FyXsCuJJYjQ9Sl11RbP2VUv/9NiEL/pCg91AXRqUv
-cQlLkekXrx6Rwy/DptIOQAndK8evzw==
-=F8D2
------END PGP SIGNATURE-----
-
---Tw76BVguT/8hAA+z--
+-- 
+Ammar Faizi
