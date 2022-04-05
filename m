@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 83D2BC433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 95AFAC433FE
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:56:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356481AbiDEMud (ORCPT
+        id S1356649AbiDEMuk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 08:50:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51010 "EHLO
+        Tue, 5 Apr 2022 08:50:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48008 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243352AbiDEJIy (ORCPT
+        with ESMTP id S243646AbiDEJJJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:08:54 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0E42A94DA;
-        Tue,  5 Apr 2022 01:57:59 -0700 (PDT)
+        Tue, 5 Apr 2022 05:09:09 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5FBE1C6823;
+        Tue,  5 Apr 2022 01:58:20 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1241561562;
-        Tue,  5 Apr 2022 08:57:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2A6D7C385A3;
-        Tue,  5 Apr 2022 08:57:57 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C79C9B81A22;
+        Tue,  5 Apr 2022 08:58:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 36C6AC385A0;
+        Tue,  5 Apr 2022 08:58:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649149078;
-        bh=fcPtDvDT8Ft1Afq4K2jhGPG0nrBzmkGQ6/6ppmfMs/4=;
+        s=korg; t=1649149097;
+        bh=jEutgea3U4C5itwXwH/873Vfcxssgwvd1LxznxgCUKU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GbLTdrtqxoRxdxEONMtrelNpPBjDBjegqdqSVqGIO5Sv9vqN897kO70B3mZB6wfUL
-         wt3+vgZfoKlvbyFjkwrru1imVPqAz4pHLGHZlnfCi+H0NzgC0YKXS5+p1WcY9algzE
-         UCcgXzgKTSWsUVtWmGEuUH2hNWDF+LYB4Imc4a60=
+        b=2LhBBqtdMz2wc78kwKJowJUFKh1KYT1Unyi6I/GojP7gMdR3pKWm9M1WI+obOYCm9
+         Hg2BERRRWtK0x++jqKAYe1M95bJiJufjeIBD/0ShPRFYeO6kM+OZTsg+w1iYaBBWsN
+         +G+tWEzEm7738RhbvB4gi0Eca0s0LFMIw0NLJwSQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Sreekanth Reddy <sreekanth.reddy@broadcom.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        stable@vger.kernel.org, Elza Mathew <elza.mathew@intel.com>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0585/1017] scsi: mpt3sas: Fix incorrect 4GB boundary check
-Date:   Tue,  5 Apr 2022 09:24:58 +0200
-Message-Id: <20220405070411.644251399@linuxfoundation.org>
+Subject: [PATCH 5.16 0555/1017] xsk: Fix race at socket teardown
+Date:   Tue,  5 Apr 2022 09:24:28 +0200
+Message-Id: <20220405070410.757137935@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -51,110 +52,241 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sreekanth Reddy <sreekanth.reddy@broadcom.com>
+From: Magnus Karlsson <magnus.karlsson@intel.com>
 
-[ Upstream commit 208cc9fe6f21112b5cc6cb87065fb8ab66e79316 ]
+[ Upstream commit 18b1ab7aa76bde181bdb1ab19a87fa9523c32f21 ]
 
-The driver must perform its 4GB boundary check using the pool's DMA address
-instead of using the virtual address.
+Fix a race in the xsk socket teardown code that can lead to a NULL pointer
+dereference splat. The current xsk unbind code in xsk_unbind_dev() starts by
+setting xs->state to XSK_UNBOUND, sets xs->dev to NULL and then waits for any
+NAPI processing to terminate using synchronize_net(). After that, the release
+code starts to tear down the socket state and free allocated memory.
 
-Link: https://lore.kernel.org/r/20220303140230.13098-1-sreekanth.reddy@broadcom.com
-Fixes: d6adc251dd2f ("scsi: mpt3sas: Force PCIe scatterlist allocations to be within same 4 GB region")
-Signed-off-by: Sreekanth Reddy <sreekanth.reddy@broadcom.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+  BUG: kernel NULL pointer dereference, address: 00000000000000c0
+  PGD 8000000932469067 P4D 8000000932469067 PUD 0
+  Oops: 0000 [#1] PREEMPT SMP PTI
+  CPU: 25 PID: 69132 Comm: grpcpp_sync_ser Tainted: G          I       5.16.0+ #2
+  Hardware name: Dell Inc. PowerEdge R730/0599V5, BIOS 1.2.10 03/09/2015
+  RIP: 0010:__xsk_sendmsg+0x2c/0x690
+  [...]
+  RSP: 0018:ffffa2348bd13d50 EFLAGS: 00010246
+  RAX: 0000000000000000 RBX: 0000000000000040 RCX: ffff8d5fc632d258
+  RDX: 0000000000400000 RSI: ffffa2348bd13e10 RDI: ffff8d5fc5489800
+  RBP: ffffa2348bd13db0 R08: 0000000000000000 R09: 00007ffffffff000
+  R10: 0000000000000000 R11: 0000000000000000 R12: ffff8d5fc5489800
+  R13: ffff8d5fcb0f5140 R14: ffff8d5fcb0f5140 R15: 0000000000000000
+  FS:  00007f991cff9400(0000) GS:ffff8d6f1f700000(0000) knlGS:0000000000000000
+  CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+  CR2: 00000000000000c0 CR3: 0000000114888005 CR4: 00000000001706e0
+  Call Trace:
+  <TASK>
+  ? aa_sk_perm+0x43/0x1b0
+  xsk_sendmsg+0xf0/0x110
+  sock_sendmsg+0x65/0x70
+  __sys_sendto+0x113/0x190
+  ? debug_smp_processor_id+0x17/0x20
+  ? fpregs_assert_state_consistent+0x23/0x50
+  ? exit_to_user_mode_prepare+0xa5/0x1d0
+  __x64_sys_sendto+0x29/0x30
+  do_syscall_64+0x3b/0xc0
+  entry_SYSCALL_64_after_hwframe+0x44/0xae
+
+There are two problems with the current code. First, setting xs->dev to NULL
+before waiting for all users to stop using the socket is not correct. The
+entry to the data plane functions xsk_poll(), xsk_sendmsg(), and xsk_recvmsg()
+are all guarded by a test that xs->state is in the state XSK_BOUND and if not,
+it returns right away. But one process might have passed this test but still
+have not gotten to the point in which it uses xs->dev in the code. In this
+interim, a second process executing xsk_unbind_dev() might have set xs->dev to
+NULL which will lead to a crash for the first process. The solution here is
+just to get rid of this NULL assignment since it is not used anymore. Before
+commit 42fddcc7c64b ("xsk: use state member for socket synchronization"),
+xs->dev was the gatekeeper to admit processes into the data plane functions,
+but it was replaced with the state variable xs->state in the aforementioned
+commit.
+
+The second problem is that synchronize_net() does not wait for any process in
+xsk_poll(), xsk_sendmsg(), or xsk_recvmsg() to complete, which means that the
+state they rely on might be cleaned up prematurely. This can happen when the
+notifier gets called (at driver unload for example) as it uses xsk_unbind_dev().
+Solve this by extending the RCU critical region from just the ndo_xsk_wakeup
+to the whole functions mentioned above, so that both the test of xs->state ==
+XSK_BOUND and the last use of any member of xs is covered by the RCU critical
+section. This will guarantee that when synchronize_net() completes, there will
+be no processes left executing xsk_poll(), xsk_sendmsg(), or xsk_recvmsg() and
+state can be cleaned up safely. Note that we need to drop the RCU lock for the
+skb xmit path as it uses functions that might sleep. Due to this, we have to
+retest the xs->state after we grab the mutex that protects the skb xmit code
+from, among a number of things, an xsk_unbind_dev() being executed from the
+notifier at the same time.
+
+Fixes: 42fddcc7c64b ("xsk: use state member for socket synchronization")
+Reported-by: Elza Mathew <elza.mathew@intel.com>
+Signed-off-by: Magnus Karlsson <magnus.karlsson@intel.com>
+Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+Acked-by: Björn Töpel <bjorn@kernel.org>
+Link: https://lore.kernel.org/bpf/20220228094552.10134-1-magnus.karlsson@gmail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/mpt3sas/mpt3sas_base.c | 25 ++++++++++++-------------
- 1 file changed, 12 insertions(+), 13 deletions(-)
+ net/xdp/xsk.c | 69 +++++++++++++++++++++++++++++++++++++--------------
+ 1 file changed, 50 insertions(+), 19 deletions(-)
 
-diff --git a/drivers/scsi/mpt3sas/mpt3sas_base.c b/drivers/scsi/mpt3sas/mpt3sas_base.c
-index 0d37c4aca175..c38e68943205 100644
---- a/drivers/scsi/mpt3sas/mpt3sas_base.c
-+++ b/drivers/scsi/mpt3sas/mpt3sas_base.c
-@@ -5737,14 +5737,13 @@ _base_release_memory_pools(struct MPT3SAS_ADAPTER *ioc)
-  */
- 
- static int
--mpt3sas_check_same_4gb_region(long reply_pool_start_address, u32 pool_sz)
-+mpt3sas_check_same_4gb_region(dma_addr_t start_address, u32 pool_sz)
+diff --git a/net/xdp/xsk.c b/net/xdp/xsk.c
+index f16074eb53c7..468e9b7e3edf 100644
+--- a/net/xdp/xsk.c
++++ b/net/xdp/xsk.c
+@@ -403,18 +403,8 @@ EXPORT_SYMBOL(xsk_tx_peek_release_desc_batch);
+ static int xsk_wakeup(struct xdp_sock *xs, u8 flags)
  {
--	long reply_pool_end_address;
-+	dma_addr_t end_address;
+ 	struct net_device *dev = xs->dev;
+-	int err;
+-
+-	rcu_read_lock();
+-	err = dev->netdev_ops->ndo_xsk_wakeup(dev, xs->queue_id, flags);
+-	rcu_read_unlock();
+-
+-	return err;
+-}
  
--	reply_pool_end_address = reply_pool_start_address + pool_sz;
-+	end_address = start_address + pool_sz - 1;
+-static int xsk_zc_xmit(struct xdp_sock *xs)
+-{
+-	return xsk_wakeup(xs, XDP_WAKEUP_TX);
++	return dev->netdev_ops->ndo_xsk_wakeup(dev, xs->queue_id, flags);
+ }
  
--	if (upper_32_bits(reply_pool_start_address) ==
--		upper_32_bits(reply_pool_end_address))
-+	if (upper_32_bits(start_address) == upper_32_bits(end_address))
- 		return 1;
- 	else
- 		return 0;
-@@ -5805,7 +5804,7 @@ _base_allocate_pcie_sgl_pool(struct MPT3SAS_ADAPTER *ioc, u32 sz)
- 		}
+ static void xsk_destruct_skb(struct sk_buff *skb)
+@@ -533,6 +523,12 @@ static int xsk_generic_xmit(struct sock *sk)
  
- 		if (!mpt3sas_check_same_4gb_region(
--		    (long)ioc->pcie_sg_lookup[i].pcie_sgl, sz)) {
-+		    ioc->pcie_sg_lookup[i].pcie_sgl_dma, sz)) {
- 			ioc_err(ioc, "PCIE SGLs are not in same 4G !! pcie sgl (0x%p) dma = (0x%llx)\n",
- 			    ioc->pcie_sg_lookup[i].pcie_sgl,
- 			    (unsigned long long)
-@@ -5860,8 +5859,8 @@ _base_allocate_chain_dma_pool(struct MPT3SAS_ADAPTER *ioc, u32 sz)
- 			    GFP_KERNEL, &ctr->chain_buffer_dma);
- 			if (!ctr->chain_buffer)
- 				return -EAGAIN;
--			if (!mpt3sas_check_same_4gb_region((long)
--			    ctr->chain_buffer, ioc->chain_segment_sz)) {
-+			if (!mpt3sas_check_same_4gb_region(
-+			    ctr->chain_buffer_dma, ioc->chain_segment_sz)) {
- 				ioc_err(ioc,
- 				    "Chain buffers are not in same 4G !!! Chain buff (0x%p) dma = (0x%llx)\n",
- 				    ctr->chain_buffer,
-@@ -5897,7 +5896,7 @@ _base_allocate_sense_dma_pool(struct MPT3SAS_ADAPTER *ioc, u32 sz)
- 	    GFP_KERNEL, &ioc->sense_dma);
- 	if (!ioc->sense)
- 		return -EAGAIN;
--	if (!mpt3sas_check_same_4gb_region((long)ioc->sense, sz)) {
-+	if (!mpt3sas_check_same_4gb_region(ioc->sense_dma, sz)) {
- 		dinitprintk(ioc, pr_err(
- 		    "Bad Sense Pool! sense (0x%p) sense_dma = (0x%llx)\n",
- 		    ioc->sense, (unsigned long long) ioc->sense_dma));
-@@ -5930,7 +5929,7 @@ _base_allocate_reply_pool(struct MPT3SAS_ADAPTER *ioc, u32 sz)
- 	    &ioc->reply_dma);
- 	if (!ioc->reply)
- 		return -EAGAIN;
--	if (!mpt3sas_check_same_4gb_region((long)ioc->reply_free, sz)) {
-+	if (!mpt3sas_check_same_4gb_region(ioc->reply_dma, sz)) {
- 		dinitprintk(ioc, pr_err(
- 		    "Bad Reply Pool! Reply (0x%p) Reply dma = (0x%llx)\n",
- 		    ioc->reply, (unsigned long long) ioc->reply_dma));
-@@ -5965,7 +5964,7 @@ _base_allocate_reply_free_dma_pool(struct MPT3SAS_ADAPTER *ioc, u32 sz)
- 	    GFP_KERNEL, &ioc->reply_free_dma);
- 	if (!ioc->reply_free)
- 		return -EAGAIN;
--	if (!mpt3sas_check_same_4gb_region((long)ioc->reply_free, sz)) {
-+	if (!mpt3sas_check_same_4gb_region(ioc->reply_free_dma, sz)) {
- 		dinitprintk(ioc,
- 		    pr_err("Bad Reply Free Pool! Reply Free (0x%p) Reply Free dma = (0x%llx)\n",
- 		    ioc->reply_free, (unsigned long long) ioc->reply_free_dma));
-@@ -6004,7 +6003,7 @@ _base_allocate_reply_post_free_array(struct MPT3SAS_ADAPTER *ioc,
- 	    GFP_KERNEL, &ioc->reply_post_free_array_dma);
- 	if (!ioc->reply_post_free_array)
- 		return -EAGAIN;
--	if (!mpt3sas_check_same_4gb_region((long)ioc->reply_post_free_array,
-+	if (!mpt3sas_check_same_4gb_region(ioc->reply_post_free_array_dma,
- 	    reply_post_free_array_sz)) {
- 		dinitprintk(ioc, pr_err(
- 		    "Bad Reply Free Pool! Reply Free (0x%p) Reply Free dma = (0x%llx)\n",
-@@ -6069,7 +6068,7 @@ base_alloc_rdpq_dma_pool(struct MPT3SAS_ADAPTER *ioc, int sz)
- 			 * resources and set DMA mask to 32 and allocate.
- 			 */
- 			if (!mpt3sas_check_same_4gb_region(
--				(long)ioc->reply_post[i].reply_post_free, sz)) {
-+				ioc->reply_post[i].reply_post_free_dma, sz)) {
- 				dinitprintk(ioc,
- 				    ioc_err(ioc, "bad Replypost free pool(0x%p)"
- 				    "reply_post_free_dma = (0x%llx)\n",
+ 	mutex_lock(&xs->mutex);
+ 
++	/* Since we dropped the RCU read lock, the socket state might have changed. */
++	if (unlikely(!xsk_is_bound(xs))) {
++		err = -ENXIO;
++		goto out;
++	}
++
+ 	if (xs->queue_id >= xs->dev->real_num_tx_queues)
+ 		goto out;
+ 
+@@ -596,16 +592,26 @@ static int xsk_generic_xmit(struct sock *sk)
+ 	return err;
+ }
+ 
+-static int __xsk_sendmsg(struct sock *sk)
++static int xsk_xmit(struct sock *sk)
+ {
+ 	struct xdp_sock *xs = xdp_sk(sk);
++	int ret;
+ 
+ 	if (unlikely(!(xs->dev->flags & IFF_UP)))
+ 		return -ENETDOWN;
+ 	if (unlikely(!xs->tx))
+ 		return -ENOBUFS;
+ 
+-	return xs->zc ? xsk_zc_xmit(xs) : xsk_generic_xmit(sk);
++	if (xs->zc)
++		return xsk_wakeup(xs, XDP_WAKEUP_TX);
++
++	/* Drop the RCU lock since the SKB path might sleep. */
++	rcu_read_unlock();
++	ret = xsk_generic_xmit(sk);
++	/* Reaquire RCU lock before going into common code. */
++	rcu_read_lock();
++
++	return ret;
+ }
+ 
+ static bool xsk_no_wakeup(struct sock *sk)
+@@ -619,7 +625,7 @@ static bool xsk_no_wakeup(struct sock *sk)
+ #endif
+ }
+ 
+-static int xsk_sendmsg(struct socket *sock, struct msghdr *m, size_t total_len)
++static int __xsk_sendmsg(struct socket *sock, struct msghdr *m, size_t total_len)
+ {
+ 	bool need_wait = !(m->msg_flags & MSG_DONTWAIT);
+ 	struct sock *sk = sock->sk;
+@@ -639,11 +645,22 @@ static int xsk_sendmsg(struct socket *sock, struct msghdr *m, size_t total_len)
+ 
+ 	pool = xs->pool;
+ 	if (pool->cached_need_wakeup & XDP_WAKEUP_TX)
+-		return __xsk_sendmsg(sk);
++		return xsk_xmit(sk);
+ 	return 0;
+ }
+ 
+-static int xsk_recvmsg(struct socket *sock, struct msghdr *m, size_t len, int flags)
++static int xsk_sendmsg(struct socket *sock, struct msghdr *m, size_t total_len)
++{
++	int ret;
++
++	rcu_read_lock();
++	ret = __xsk_sendmsg(sock, m, total_len);
++	rcu_read_unlock();
++
++	return ret;
++}
++
++static int __xsk_recvmsg(struct socket *sock, struct msghdr *m, size_t len, int flags)
+ {
+ 	bool need_wait = !(flags & MSG_DONTWAIT);
+ 	struct sock *sk = sock->sk;
+@@ -669,6 +686,17 @@ static int xsk_recvmsg(struct socket *sock, struct msghdr *m, size_t len, int fl
+ 	return 0;
+ }
+ 
++static int xsk_recvmsg(struct socket *sock, struct msghdr *m, size_t len, int flags)
++{
++	int ret;
++
++	rcu_read_lock();
++	ret = __xsk_recvmsg(sock, m, len, flags);
++	rcu_read_unlock();
++
++	return ret;
++}
++
+ static __poll_t xsk_poll(struct file *file, struct socket *sock,
+ 			     struct poll_table_struct *wait)
+ {
+@@ -679,8 +707,11 @@ static __poll_t xsk_poll(struct file *file, struct socket *sock,
+ 
+ 	sock_poll_wait(file, sock, wait);
+ 
+-	if (unlikely(!xsk_is_bound(xs)))
++	rcu_read_lock();
++	if (unlikely(!xsk_is_bound(xs))) {
++		rcu_read_unlock();
+ 		return mask;
++	}
+ 
+ 	pool = xs->pool;
+ 
+@@ -689,7 +720,7 @@ static __poll_t xsk_poll(struct file *file, struct socket *sock,
+ 			xsk_wakeup(xs, pool->cached_need_wakeup);
+ 		else
+ 			/* Poll needs to drive Tx also in copy mode */
+-			__xsk_sendmsg(sk);
++			xsk_xmit(sk);
+ 	}
+ 
+ 	if (xs->rx && !xskq_prod_is_empty(xs->rx))
+@@ -697,6 +728,7 @@ static __poll_t xsk_poll(struct file *file, struct socket *sock,
+ 	if (xs->tx && xsk_tx_writeable(xs))
+ 		mask |= EPOLLOUT | EPOLLWRNORM;
+ 
++	rcu_read_unlock();
+ 	return mask;
+ }
+ 
+@@ -728,7 +760,6 @@ static void xsk_unbind_dev(struct xdp_sock *xs)
+ 
+ 	/* Wait for driver to stop using the xdp socket. */
+ 	xp_del_xsk(xs->pool, xs);
+-	xs->dev = NULL;
+ 	synchronize_net();
+ 	dev_put(dev);
+ }
 -- 
 2.34.1
 
