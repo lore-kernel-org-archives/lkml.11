@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 37B6AC4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CBF77C4167E
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:26:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355827AbiDEMW7 (ORCPT
+        id S1358395AbiDEMXW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 08:22:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46618 "EHLO
+        Tue, 5 Apr 2022 08:23:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52234 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244564AbiDEIw0 (ORCPT
+        with ESMTP id S245052AbiDEIxE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:52:26 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7F0FD760D;
-        Tue,  5 Apr 2022 01:41:20 -0700 (PDT)
+        Tue, 5 Apr 2022 04:53:04 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74AD5F0E;
+        Tue,  5 Apr 2022 01:50:41 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8BF33B81C82;
-        Tue,  5 Apr 2022 08:41:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 09237C385A0;
-        Tue,  5 Apr 2022 08:41:11 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0F3DB60FFC;
+        Tue,  5 Apr 2022 08:50:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 20845C385A1;
+        Tue,  5 Apr 2022 08:50:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649148072;
-        bh=fA6jlSOTDUzNe8YCEepk5YnDTbZKLllnbhM2A2nSFIA=;
+        s=korg; t=1649148640;
+        bh=f0i/LJ/rej/qlGXRfE9/Nw2sVL0swZ4PvX3YV1//QE0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=prq6vFwMJCSr8OGmrng7Lqip6LhZNl/VoiHJGtU+0TqYoC1t+o5Gh4ostj1yhFxs9
-         IB4ZaHG3hVjNuVOeh+JKlh3gNLH6RZB+fjUAzGZ2cnXBO0R0DBbagJ/lEU3PM5/8CW
-         IGxXHKorWjchEkF5hXoXyAAWdXAPJFsg+SNJHdrs=
+        b=hUi3GzexxHoKWF0mwAYBk3rUpnStU+2o56xsl/bwgVSBKFSDlCmxddH2aciHwTrCO
+         rxNJVzNs8oh8l84M5fVrNKxdVHd00Nd58SbRPsqwwjR+ZNApzMQxM4o92ExxXuPquN
+         /lY3znX73PhM5rxIRXCi8pe1hYrcru6CNlDmhHp8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Linus Walleij <linus.walleij@linaro.org>,
-        Arend van Spriel <arend.vanspriel@broadcom.com>,
-        Hector Martin <marcan@marcan.st>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Kalle Valo <kvalo@kernel.org>
-Subject: [PATCH 5.16 0191/1017] brcmfmac: pcie: Release firmwares in the brcmf_pcie_setup error path
-Date:   Tue,  5 Apr 2022 09:18:24 +0200
-Message-Id: <20220405070359.912338013@linuxfoundation.org>
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 0389/1017] ASoC: msm8916-wcd-digital: Fix missing clk_disable_unprepare() in msm8916_wcd_digital_probe
+Date:   Tue,  5 Apr 2022 09:21:42 +0200
+Message-Id: <20220405070405.832556221@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -52,36 +50,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hector Martin <marcan@marcan.st>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-commit 5e90f0f3ead014867dade7a22f93958119f5efab upstream.
+[ Upstream commit 375a347da4889f64d86e1ab7f4e6702b6e9bf299 ]
 
-This avoids leaking memory if brcmf_chip_get_raminfo fails. Note that
-the CLM blob is released in the device remove path.
+Fix the missing clk_disable_unprepare() before return
+from msm8916_wcd_digital_probe in the error handling case.
 
-Fixes: 82f93cf46d60 ("brcmfmac: get chip's default RAM info during PCIe setup")
-Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
-Reviewed-by: Arend van Spriel <arend.vanspriel@broadcom.com>
-Cc: stable@vger.kernel.org
-Signed-off-by: Hector Martin <marcan@marcan.st>
-Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
-Signed-off-by: Kalle Valo <kvalo@kernel.org>
-Link: https://lore.kernel.org/r/20220131160713.245637-2-marcan@marcan.st
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 150db8c5afa1 ("ASoC: codecs: Add msm8916-wcd digital codec")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Link: https://lore.kernel.org/r/20220307084523.28687-1-linmq006@gmail.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c |    2 ++
- 1 file changed, 2 insertions(+)
+ sound/soc/codecs/msm8916-wcd-digital.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
---- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c
-+++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c
-@@ -1777,6 +1777,8 @@ static void brcmf_pcie_setup(struct devi
- 	ret = brcmf_chip_get_raminfo(devinfo->ci);
- 	if (ret) {
- 		brcmf_err(bus, "Failed to get RAM info\n");
-+		release_firmware(fw);
-+		brcmf_fw_nvram_free(nvram);
- 		goto fail;
+diff --git a/sound/soc/codecs/msm8916-wcd-digital.c b/sound/soc/codecs/msm8916-wcd-digital.c
+index fcc10c8bc625..9ad7fc0baf07 100644
+--- a/sound/soc/codecs/msm8916-wcd-digital.c
++++ b/sound/soc/codecs/msm8916-wcd-digital.c
+@@ -1201,7 +1201,7 @@ static int msm8916_wcd_digital_probe(struct platform_device *pdev)
+ 	ret = clk_prepare_enable(priv->mclk);
+ 	if (ret < 0) {
+ 		dev_err(dev, "failed to enable mclk %d\n", ret);
+-		return ret;
++		goto err_clk;
  	}
  
+ 	dev_set_drvdata(dev, priv);
+@@ -1209,6 +1209,9 @@ static int msm8916_wcd_digital_probe(struct platform_device *pdev)
+ 	return devm_snd_soc_register_component(dev, &msm8916_wcd_digital,
+ 				      msm8916_wcd_digital_dai,
+ 				      ARRAY_SIZE(msm8916_wcd_digital_dai));
++err_clk:
++	clk_disable_unprepare(priv->ahbclk);
++	return ret;
+ }
+ 
+ static int msm8916_wcd_digital_remove(struct platform_device *pdev)
+-- 
+2.34.1
+
 
 
