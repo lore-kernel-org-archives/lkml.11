@@ -2,174 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 225F7C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 03:33:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4CD5BC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 03:34:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230299AbiDEDfq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 23:35:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56398 "EHLO
+        id S230293AbiDEDgg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 4 Apr 2022 23:36:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58694 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229510AbiDEDff (ORCPT
+        with ESMTP id S229510AbiDEDgd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 23:35:35 -0400
-X-Greylist: delayed 447 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 04 Apr 2022 20:33:35 PDT
-Received: from chinatelecom.cn (prt-mail.chinatelecom.cn [42.123.76.228])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 69BC0281;
-        Mon,  4 Apr 2022 20:33:32 -0700 (PDT)
-HMM_SOURCE_IP: 172.18.0.188:46720.1605257624
-HMM_ATTACHE_NUM: 0000
-HMM_SOURCE_TYPE: SMTP
-Received: from clientip-202.80.192.39 (unknown [172.18.0.188])
-        by chinatelecom.cn (HERMES) with SMTP id 5FA6A2800D7;
-        Tue,  5 Apr 2022 11:25:51 +0800 (CST)
-X-189-SAVE-TO-SEND: +liuxp11@chinatelecom.cn
-Received: from  ([172.18.0.188])
-        by app0023 with ESMTP id 1f7cdf5bef094fc198f9b56acf9e3014 for keescook@chromium.org;
-        Tue, 05 Apr 2022 11:26:00 CST
-X-Transaction-ID: 1f7cdf5bef094fc198f9b56acf9e3014
-X-Real-From: liuxp11@chinatelecom.cn
-X-Receive-IP: 172.18.0.188
-X-MEDUSA-Status: 0
-Sender: liuxp11@chinatelecom.cn
-From:   Liu Xinpeng <liuxp11@chinatelecom.cn>
-To:     keescook@chromium.org, anton@enomsg.org, ccross@android.com,
-        tony.luck@intel.com, enb@kernel.org, ames.morse@arm.com,
-        bp@alien8.de, linux-kernel@vger.kernel.org,
-        linux-acpi@vger.kernel.org
-Cc:     Liu Xinpeng <liuxp11@chinatelecom.cn>
-Subject: [PATCH] ACPI: APEI: fix missing erst record id
-Date:   Tue,  5 Apr 2022 11:25:33 +0800
-Message-Id: <1649129133-24777-1-git-send-email-liuxp11@chinatelecom.cn>
-X-Mailer: git-send-email 1.8.3.1
+        Mon, 4 Apr 2022 23:36:33 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B874A1CE
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 20:34:32 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id C3ECED6E;
+        Mon,  4 Apr 2022 20:34:31 -0700 (PDT)
+Received: from [192.168.0.146] (unknown [172.31.20.19])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id CBFD83F718;
+        Mon,  4 Apr 2022 20:34:25 -0700 (PDT)
+Message-ID: <ac9d171b-9995-13a8-8359-12291c835bec@arm.com>
+Date:   Tue, 5 Apr 2022 09:04:53 +0530
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v4 2/2] arm64: mm: hugetlb: Enable
+ HUGETLB_PAGE_FREE_VMEMMAP for arm64
+Content-Language: en-US
+To:     Muchun Song <songmuchun@bytedance.com>
+Cc:     Will Deacon <will@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        David Hildenbrand <david@redhat.com>,
+        "Bodeddula, Balasubramaniam" <bodeddub@amazon.com>,
+        Oscar Salvador <osalvador@suse.de>,
+        Mike Kravetz <mike.kravetz@oracle.com>,
+        David Rientjes <rientjes@google.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Catalin Marinas <catalin.marinas@arm.com>, james.morse@arm.com,
+        Barry Song <21cnbao@gmail.com>,
+        LAK <linux-arm-kernel@lists.infradead.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Linux Memory Management List <linux-mm@kvack.org>,
+        Xiongchun duan <duanxiongchun@bytedance.com>,
+        Fam Zheng <fam.zheng@bytedance.com>,
+        Muchun Song <smuchun@gmail.com>
+References: <20220331065640.5777-1-songmuchun@bytedance.com>
+ <20220331065640.5777-2-songmuchun@bytedance.com>
+ <dd980687-a1ef-f4b5-bb29-da14f89c087e@arm.com>
+ <CAMZfGtX5NXudeAsYKU8mDtPn0+bw_3FhCsAW0PMBTqTTkp-fQQ@mail.gmail.com>
+From:   Anshuman Khandual <anshuman.khandual@arm.com>
+In-Reply-To: <CAMZfGtX5NXudeAsYKU8mDtPn0+bw_3FhCsAW0PMBTqTTkp-fQQ@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-record_id is in the erst_record_id_cache but not in storage,so erst_read will
-return -ENOENT, and then goto retry_next, erst_get_record_id_next skip a
-record_id. This can result in printing the records just in the cache.
 
-A reproducer of the problem(retry many times):
 
-[root@localhost erst-inject]# ./erst-inject -c 0xaaaaa00011
-[root@localhost erst-inject]# ./erst-inject -p
-rc: 273
-rcd sig: CPER
-rcd id: 0xaaaaa00012
-rc: 273
-rcd sig: CPER
-rcd id: 0xaaaaa00013
-rc: 273
-rcd sig: CPER
-rcd id: 0xaaaaa00014
-[root@localhost erst-inject]# ./erst-inject -i 0xaaaaa000006
-[root@localhost erst-inject]# ./erst-inject -i 0xaaaaa000007
-[root@localhost erst-inject]# ./erst-inject -i 0xaaaaa000008
-[root@localhost erst-inject]# ./erst-inject -p
-rc: 273
-rcd sig: CPER
-rcd id: 0xaaaaa00012
-rc: 273
-rcd sig: CPER
-rcd id: 0xaaaaa00013
-rc: 273
-rcd sig: CPER
-rcd id: 0xaaaaa00014
-[root@localhost erst-inject]# ./erst-inject -n
-total error record count: 6
+On 4/4/22 17:31, Muchun Song wrote:
+> On Mon, Apr 4, 2022 at 5:25 PM Anshuman Khandual
+> <anshuman.khandual@arm.com> wrote:
+>>
+>> Hello Muchun,
+>>
+>> On 3/31/22 12:26, Muchun Song wrote:
+>>> The feature of minimizing overhead of struct page associated with each
+>>> HugeTLB page aims to free its vmemmap pages (used as struct page) to
+>>> save memory, where is ~14GB/16GB per 1TB HugeTLB pages (2MB/1GB type).
+>>
+>> Enabling this feature saves us around 1.4/1.6 % memory but looking from
+>> other way around, unavailability of vmemmap backing pages (~1.4GB) when
+>> freeing up a corresponding HugeTLB page, could prevent ~1TB memory from
+>> being used as normal page form (requiring their own struct pages), thus
+>> forcing the HugeTLB page to remain as such ? Is not this problematic ?
+>>
+>> These additional 1TB memory in normal pages, from a HugeTLB dissolution
+>> could have eased the system's memory pressure without this feature being
+>> enabled.
+> 
+> You are right. If the system is already under heavy memory pressure, it could
+> prevent the user from freeing HugeTLB pages to the buddy allocator. If the
+> HugeTLB page are allocated from non-movable zone, this scenario may be
+> not problematic since once a HugeTLB page is freed, then the system will
 
-Signed-off-by: Liu Xinpeng <liuxp11@chinatelecom.cn>
----
- drivers/acpi/apei/erst-dbg.c |  4 +++-
- drivers/acpi/apei/erst.c     | 34 +++++++++++++++++++++++++++++++---
- include/acpi/apei.h          |  1 +
- 3 files changed, 35 insertions(+), 4 deletions(-)
+But how can even the first HugeTLB page be freed without vmemmmap which is
+throttled due to lack of sufficient memory ?
 
-diff --git a/drivers/acpi/apei/erst-dbg.c b/drivers/acpi/apei/erst-dbg.c
-index c740f0faad39..1b94d5e2eaf3 100644
---- a/drivers/acpi/apei/erst-dbg.c
-+++ b/drivers/acpi/apei/erst-dbg.c
-@@ -113,8 +113,10 @@ static ssize_t erst_dbg_read(struct file *filp, char __user *ubuf,
- retry:
- 	rc = len = erst_read(id, erst_dbg_buf, erst_dbg_buf_len);
- 	/* The record may be cleared by others, try read next record */
--	if (rc == -ENOENT)
-+	if (rc == -ENOENT){
-+		erst_clear_cache(id);
- 		goto retry_next;
-+	}
- 	if (rc < 0)
- 		goto out;
- 	if (len > ERST_DBG_RECORD_LEN_MAX) {
-diff --git a/drivers/acpi/apei/erst.c b/drivers/acpi/apei/erst.c
-index 698d67cee052..dcf08e24bab3 100644
---- a/drivers/acpi/apei/erst.c
-+++ b/drivers/acpi/apei/erst.c
-@@ -856,6 +856,31 @@ ssize_t erst_read(u64 record_id, struct cper_record_header *record,
- }
- EXPORT_SYMBOL_GPL(erst_read);
- 
-+int erst_clear_cache(u64 record_id)
-+{
-+	int rc, i;
-+	u64 *entries;
-+
-+	if (erst_disable)
-+		return -ENODEV;
-+
-+	rc = mutex_lock_interruptible(&erst_record_id_cache.lock);
-+	if (rc)
-+		return rc;
-+
-+	entries = erst_record_id_cache.entries;
-+	for (i = 0; i < erst_record_id_cache.len; i++) {
-+		if (entries[i] == record_id)
-+			entries[i] = APEI_ERST_INVALID_RECORD_ID;
-+	}
-+	__erst_record_id_cache_compact();
-+
-+	mutex_unlock(&erst_record_id_cache.lock);
-+
-+	return rc;
-+}
-+EXPORT_SYMBOL_GPL(erst_clear_cache);
-+
- int erst_clear(u64 record_id)
- {
- 	int rc, i;
-@@ -998,14 +1023,17 @@ static ssize_t erst_reader(struct pstore_record *record)
- 
- 	len = erst_read(record_id, &rcd->hdr, rcd_len);
- 	/* The record may be cleared by others, try read next record */
--	if (len == -ENOENT)
-+	if (len == -ENOENT){
-+		erst_clear_cache(record_id);
- 		goto skip;
--	else if (len < 0 || len < sizeof(*rcd)) {
-+	} else if (len < 0 || len < sizeof(*rcd)) {
- 		rc = -EIO;
- 		goto out;
- 	}
--	if (!guid_equal(&rcd->hdr.creator_id, &CPER_CREATOR_PSTORE))
-+	if (!guid_equal(&rcd->hdr.creator_id, &CPER_CREATOR_PSTORE)){
-+		erst_clear_cache(record_id);
- 		goto skip;
-+	}
- 
- 	record->buf = kmalloc(len, GFP_KERNEL);
- 	if (record->buf == NULL) {
-diff --git a/include/acpi/apei.h b/include/acpi/apei.h
-index afaca3a075e8..f8c11ff4115a 100644
---- a/include/acpi/apei.h
-+++ b/include/acpi/apei.h
-@@ -47,6 +47,7 @@ void erst_get_record_id_end(void);
- ssize_t erst_read(u64 record_id, struct cper_record_header *record,
- 		  size_t buflen);
- int erst_clear(u64 record_id);
-+int erst_clear_cache(u64 record_id);
- 
- int arch_apei_enable_cmcff(struct acpi_hest_header *hest_hdr, void *data);
- void arch_apei_report_mem_error(int sev, struct cper_sec_mem_err *mem_err);
--- 
-2.23.0
+> have memory to be allocated to be used as vmemmap pages, subsequent
+> freeing of HugeTLB pages may be getting easier.  However, if the HUgeTLB
+> pages are allocated from the movable zone, then the thing becomes terrible,
+> which is documented in Documentation/admin-guide/mm/memory-hotplug.rst.
+> 
+> So there is a cmdline "hugetlb_free_vmemmap" to control if enabling this
+> feature.  The user should enable/disable this depending on their workload.
 
+Should there also be a sysfs interface for this knob as well ? Perhaps the
+system usage might change on the way, without requiring a reboot.
