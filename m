@@ -2,47 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 23DF0C4321E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F160C3527A
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:03:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244892AbiDEMBi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 08:01:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43776 "EHLO
+        id S244942AbiDEMCB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 08:02:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38350 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243076AbiDEItu (ORCPT
+        with ESMTP id S243058AbiDEItt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:49:50 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7396FA94D0;
-        Tue,  5 Apr 2022 01:38:15 -0700 (PDT)
+        Tue, 5 Apr 2022 04:49:49 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 112859A981;
+        Tue,  5 Apr 2022 01:38:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 57B4661509;
-        Tue,  5 Apr 2022 08:37:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6312CC385AC;
-        Tue,  5 Apr 2022 08:37:57 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DE9D7B81C14;
+        Tue,  5 Apr 2022 08:37:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 34611C385AC;
+        Tue,  5 Apr 2022 08:37:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649147877;
-        bh=Hcv7hpxBTXNT5KDamtWALuQY6m8S/r++O0XYpSU4cWI=;
+        s=korg; t=1649147869;
+        bh=Z7Iazl7/bScHJMF92CdAuqvWcfVT7b/g3XtcPxhvL6M=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=owpMjEMqa0ocLJSii0WGjeVmluFM+hALbjmB3xiDf+aVYagEWAp0kTwFBkvWA7udh
-         EBkAAAIAboILcxNj2Pbrv5hkBd3NRJwnERjdj/PahJWh5/sf7GZrYMaZi5oNp6VaiP
-         BPCRvK3P+1wiJARBd9wcO9edrvw7ekkrTlTQfk9M=
+        b=S5FU2F/qchRc1AHfUc+KyAtindXZSi/5NYJ9Hfn9CWr1XazsWzi74HJoQ7xS1sDCU
+         lMoedHX2lOcrPaFY/bnzU0lws/KlkQYNU621GYUdZmgkFpumYzoGU/fely7EKlNva8
+         M8T5c9yxXlDdZ7o+xgFu5i2TxVfxJ4B/B4ZYO0H8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Rik van Riel <riel@surriel.com>,
-        Miaohe Lin <linmiaohe@huawei.com>,
-        Naoya Horiguchi <naoya.horiguchi@nec.com>,
-        Oscar Salvador <osalvador@suse.de>,
-        Mel Gorman <mgorman@suse.de>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [PATCH 5.16 0116/1017] mm,hwpoison: unmap poisoned page before invalidation
-Date:   Tue,  5 Apr 2022 09:17:09 +0200
-Message-Id: <20220405070357.640814747@linuxfoundation.org>
+        stable@vger.kernel.org, Thomas Zimmermann <tzimmermann@suse.de>,
+        Zack Rusin <zackr@vmware.com>,
+        Javier Martinez Canillas <javierm@redhat.com>,
+        Hans de Goede <hdegoede@redhat.com>
+Subject: [PATCH 5.16 0150/1017] fbdev: Hot-unplug firmware fb devices on forced removal
+Date:   Tue,  5 Apr 2022 09:17:43 +0200
+Message-Id: <20220405070358.660297344@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -54,67 +50,119 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Rik van Riel <riel@surriel.com>
+From: Thomas Zimmermann <tzimmermann@suse.de>
 
-commit 3149c79f3cb0e2e3bafb7cfadacec090cbd250d3 upstream.
+commit 27599aacbaefcbf2af7b06b0029459bbf682000d upstream.
 
-In some cases it appears the invalidation of a hwpoisoned page fails
-because the page is still mapped in another process.  This can cause a
-program to be continuously restarted and die when it page faults on the
-page that was not invalidated.  Avoid that problem by unmapping the
-hwpoisoned page when we find it.
+Hot-unplug all firmware-framebuffer devices as part of removing
+them via remove_conflicting_framebuffers() et al. Releases all
+memory regions to be acquired by native drivers.
 
-Another issue is that sometimes we end up oopsing in finish_fault, if
-the code tries to do something with the now-NULL vmf->page.  I did not
-hit this error when submitting the previous patch because there are
-several opportunities for alloc_set_pte to bail out before accessing
-vmf->page, and that apparently happened on those systems, and most of
-the time on other systems, too.
+Firmware, such as EFI, install a framebuffer while posting the
+computer. After removing the firmware-framebuffer device from fbdev,
+a native driver takes over the hardware and the firmware framebuffer
+becomes invalid.
 
-However, across several million systems that error does occur a handful
-of times a day.  It can be avoided by returning VM_FAULT_NOPAGE which
-will cause do_read_fault to return before calling finish_fault.
+Firmware-framebuffer drivers, specifically simplefb, don't release
+their device from Linux' device hierarchy. It still owns the firmware
+framebuffer and blocks the native drivers from loading. This has been
+observed in the vmwgfx driver. [1]
 
-Link: https://lkml.kernel.org/r/20220325161428.5068d97e@imladris.surriel.com
-Fixes: e53ac7374e64 ("mm: invalidate hwpoison page cache page in fault path")
-Signed-off-by: Rik van Riel <riel@surriel.com>
-Reviewed-by: Miaohe Lin <linmiaohe@huawei.com>
-Tested-by: Naoya Horiguchi <naoya.horiguchi@nec.com>
-Reviewed-by: Oscar Salvador <osalvador@suse.de>
-Cc: Mel Gorman <mgorman@suse.de>
-Cc: Johannes Weiner <hannes@cmpxchg.org>
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Initiating a device removal (i.e., hot unplug) as part of
+remove_conflicting_framebuffers() removes the underlying device and
+returns the memory range to the system.
+
+[1] https://lore.kernel.org/dri-devel/20220117180359.18114-1-zack@kde.org/
+
+v2:
+	* rename variable 'dev' to 'device' (Javier)
+
+Signed-off-by: Thomas Zimmermann <tzimmermann@suse.de>
+Reported-by: Zack Rusin <zackr@vmware.com>
+Reviewed-by: Javier Martinez Canillas <javierm@redhat.com>
+Reviewed-by: Zack Rusin <zackr@vmware.com>
+Reviewed-by: Hans de Goede <hdegoede@redhat.com>
+CC: stable@vger.kernel.org # v5.11+
+Link: https://patchwork.freedesktop.org/patch/msgid/20220125091222.21457-2-tzimmermann@suse.de
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- mm/memory.c |   12 ++++++++----
- 1 file changed, 8 insertions(+), 4 deletions(-)
+ drivers/video/fbdev/core/fbmem.c |   29 ++++++++++++++++++++++++++---
+ include/linux/fb.h               |    1 +
+ 2 files changed, 27 insertions(+), 3 deletions(-)
 
---- a/mm/memory.c
-+++ b/mm/memory.c
-@@ -3888,14 +3888,18 @@ static vm_fault_t __do_fault(struct vm_f
- 		return ret;
+--- a/drivers/video/fbdev/core/fbmem.c
++++ b/drivers/video/fbdev/core/fbmem.c
+@@ -25,6 +25,7 @@
+ #include <linux/init.h>
+ #include <linux/linux_logo.h>
+ #include <linux/proc_fs.h>
++#include <linux/platform_device.h>
+ #include <linux/seq_file.h>
+ #include <linux/console.h>
+ #include <linux/kmod.h>
+@@ -1557,18 +1558,36 @@ static void do_remove_conflicting_frameb
+ 	/* check all firmware fbs and kick off if the base addr overlaps */
+ 	for_each_registered_fb(i) {
+ 		struct apertures_struct *gen_aper;
++		struct device *device;
  
- 	if (unlikely(PageHWPoison(vmf->page))) {
-+		struct page *page = vmf->page;
- 		vm_fault_t poisonret = VM_FAULT_HWPOISON;
- 		if (ret & VM_FAULT_LOCKED) {
-+			if (page_mapped(page))
-+				unmap_mapping_pages(page_mapping(page),
-+						    page->index, 1, false);
- 			/* Retry if a clean page was removed from the cache. */
--			if (invalidate_inode_page(vmf->page))
--				poisonret = 0;
--			unlock_page(vmf->page);
-+			if (invalidate_inode_page(page))
-+				poisonret = VM_FAULT_NOPAGE;
-+			unlock_page(page);
+ 		if (!(registered_fb[i]->flags & FBINFO_MISC_FIRMWARE))
+ 			continue;
+ 
+ 		gen_aper = registered_fb[i]->apertures;
++		device = registered_fb[i]->device;
+ 		if (fb_do_apertures_overlap(gen_aper, a) ||
+ 			(primary && gen_aper && gen_aper->count &&
+ 			 gen_aper->ranges[0].base == VGA_FB_PHYS)) {
+ 
+ 			printk(KERN_INFO "fb%d: switching to %s from %s\n",
+ 			       i, name, registered_fb[i]->fix.id);
+-			do_unregister_framebuffer(registered_fb[i]);
++
++			/*
++			 * If we kick-out a firmware driver, we also want to remove
++			 * the underlying platform device, such as simple-framebuffer,
++			 * VESA, EFI, etc. A native driver will then be able to
++			 * allocate the memory range.
++			 *
++			 * If it's not a platform device, at least print a warning. A
++			 * fix would add code to remove the device from the system.
++			 */
++			if (dev_is_platform(device)) {
++				registered_fb[i]->forced_out = true;
++				platform_device_unregister(to_platform_device(device));
++			} else {
++				pr_warn("fb%d: cannot remove device\n", i);
++				do_unregister_framebuffer(registered_fb[i]);
++			}
  		}
--		put_page(vmf->page);
-+		put_page(page);
- 		vmf->page = NULL;
- 		return poisonret;
  	}
+ }
+@@ -1898,9 +1917,13 @@ EXPORT_SYMBOL(register_framebuffer);
+ void
+ unregister_framebuffer(struct fb_info *fb_info)
+ {
+-	mutex_lock(&registration_lock);
++	bool forced_out = fb_info->forced_out;
++
++	if (!forced_out)
++		mutex_lock(&registration_lock);
+ 	do_unregister_framebuffer(fb_info);
+-	mutex_unlock(&registration_lock);
++	if (!forced_out)
++		mutex_unlock(&registration_lock);
+ }
+ EXPORT_SYMBOL(unregister_framebuffer);
+ 
+--- a/include/linux/fb.h
++++ b/include/linux/fb.h
+@@ -502,6 +502,7 @@ struct fb_info {
+ 	} *apertures;
+ 
+ 	bool skip_vt_switch; /* no VT switch on suspend/resume required */
++	bool forced_out; /* set when being removed by another driver */
+ };
+ 
+ static inline struct apertures_struct *alloc_apertures(unsigned int max_num) {
 
 
