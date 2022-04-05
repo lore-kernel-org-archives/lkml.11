@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BD687C3527A
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E1E13C35276
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 09:52:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229691AbiDEJpN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 05:45:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34710 "EHLO
+        id S1346738AbiDEJpY (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 05:45:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34706 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238926AbiDEITa (ORCPT
+        with ESMTP id S238902AbiDEIT3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:19:30 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8265675610;
-        Tue,  5 Apr 2022 01:09:46 -0700 (PDT)
+        Tue, 5 Apr 2022 04:19:29 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B20AA75224;
+        Tue,  5 Apr 2022 01:09:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1DEAA6062B;
-        Tue,  5 Apr 2022 08:09:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 244B8C385A0;
-        Tue,  5 Apr 2022 08:09:44 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 509F4B81A37;
+        Tue,  5 Apr 2022 08:09:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 98D33C385A0;
+        Tue,  5 Apr 2022 08:09:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649146185;
-        bh=wOn7QX1/m4DzuyweVm803LERQRTqej3v3Nwq2rnjmVg=;
+        s=korg; t=1649146180;
+        bh=L6R+J0LD9oqPr/GMoUdF+rh68PuAhKpNLIeYgwFQZmI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=t1YP/SjVsFUDLZxSCic2sRUimsFY0X6m37XMUaeKNA5ybYqPi2ktmY0R2i/+CSkEB
-         Di1iziiGYgkTNLhUff/IiKmsCSAfKPJLV4xqIFPC/sixXgbSw+aqan8+1TDD+weCRD
-         jn6vMqsjeHDxmE5mVWG/xTsjGnAfyuIrF5t4HKIo=
+        b=PtmyJ0hD+FaLnZwMMBiNdgtoUrCBn0jaIxPg4JuuSst7+PGnrDAzjSt6dAkuUHzAI
+         AvGphtbRP0SVMp6hZOoLclYOBo2awyhh1A2zGf2GZeuKSdWP/TGuGzFEe48tRe3TtE
+         QYf9Z4wEhLV89P6UrO8i6JC18O+zTMXir1myPAa4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yajun Deng <yajun.deng@linux.dev>,
-        Leon Romanovsky <leonro@nvidia.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0634/1126] RDMA/core: Fix ib_qp_usecnt_dec() called when error
-Date:   Tue,  5 Apr 2022 09:23:01 +0200
-Message-Id: <20220405070426.246693756@linuxfoundation.org>
+        stable@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
+        =?UTF-8?q?C=C3=A9dric=20Le=20Goater?= <clg@kaod.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Sasha Levin <sashal@kernel.org>,
+        Igor Zhbanov <i.zhbanov@omprussia.ru>
+Subject: [PATCH 5.17 0669/1126] powerpc/xive: fix return value of __setup handler
+Date:   Tue,  5 Apr 2022 09:23:36 +0200
+Message-Id: <20220405070427.262809860@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -50,72 +52,62 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yajun Deng <yajun.deng@linux.dev>
+From: Randy Dunlap <rdunlap@infradead.org>
 
-[ Upstream commit 7c4a539ec38f4ce400a0f3fcb5ff6c940fcd67bb ]
+[ Upstream commit d64e3eab75a8e1e900c0fda2410a2df8893d8f85 ]
 
-ib_destroy_qp() would called by ib_create_qp_user() if error, the former
-contains ib_qp_usecnt_dec(), but ib_qp_usecnt_inc() was not called before.
+__setup() handlers should return 1 to obsolete_checksetup() in
+init/main.c to indicate that the boot option has been handled.
 
-So move ib_qp_usecnt_inc() into create_qp().
+A return of 0 causes the boot option/value to be listed as an Unknown
+kernel parameter and added to init's (limited) argument or environment
+strings.
 
-Fixes: d2b10794fc13 ("RDMA/core: Create clean QP creations interface for uverbs")
-Link: https://lore.kernel.org/r/20220303024232.2847388-1-yajun.deng@linux.dev
-Signed-off-by: Yajun Deng <yajun.deng@linux.dev>
-Reviewed-by: Leon Romanovsky <leonro@nvidia.com>
-Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+Also, error return codes don't mean anything to obsolete_checksetup() --
+only non-zero (usually 1) or zero. So return 1 from xive_off() and
+xive_store_eoi_cmdline().
+
+Fixes: 243e25112d06 ("powerpc/xive: Native exploitation of the XIVE interrupt controller")
+Fixes: c21ee04f11ae ("powerpc/xive: Add a kernel parameter for StoreEOI")
+[lore.kernel.org/r/64644a2f-4a20-bab3-1e15-3b2cdd0defe3@omprussia.ru]
+Reported-by: Igor Zhbanov <i.zhbanov@omprussia.ru>:
+Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+Reviewed-by: Cédric Le Goater <clg@kaod.org>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/20220313065936.4363-1-rdunlap@infradead.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/infiniband/core/uverbs_cmd.c          | 1 -
- drivers/infiniband/core/uverbs_std_types_qp.c | 1 -
- drivers/infiniband/core/verbs.c               | 3 +--
- 3 files changed, 1 insertion(+), 4 deletions(-)
+ arch/powerpc/sysdev/xive/common.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/infiniband/core/uverbs_cmd.c b/drivers/infiniband/core/uverbs_cmd.c
-index 6b6393176b3c..4437f834c0a7 100644
---- a/drivers/infiniband/core/uverbs_cmd.c
-+++ b/drivers/infiniband/core/uverbs_cmd.c
-@@ -1437,7 +1437,6 @@ static int create_qp(struct uverbs_attr_bundle *attrs,
- 		ret = PTR_ERR(qp);
- 		goto err_put;
+diff --git a/arch/powerpc/sysdev/xive/common.c b/arch/powerpc/sysdev/xive/common.c
+index 1ca5564bda9d..89c86f32aff8 100644
+--- a/arch/powerpc/sysdev/xive/common.c
++++ b/arch/powerpc/sysdev/xive/common.c
+@@ -1708,20 +1708,20 @@ __be32 *xive_queue_page_alloc(unsigned int cpu, u32 queue_shift)
+ static int __init xive_off(char *arg)
+ {
+ 	xive_cmdline_disabled = true;
+-	return 0;
++	return 1;
+ }
+ __setup("xive=off", xive_off);
+ 
+ static int __init xive_store_eoi_cmdline(char *arg)
+ {
+ 	if (!arg)
+-		return -EINVAL;
++		return 1;
+ 
+ 	if (strncmp(arg, "off", 3) == 0) {
+ 		pr_info("StoreEOI disabled on kernel command line\n");
+ 		xive_store_eoi = false;
  	}
--	ib_qp_usecnt_inc(qp);
+-	return 0;
++	return 1;
+ }
+ __setup("xive.store-eoi=", xive_store_eoi_cmdline);
  
- 	obj->uevent.uobject.object = qp;
- 	obj->uevent.event_file = READ_ONCE(attrs->ufile->default_async_file);
-diff --git a/drivers/infiniband/core/uverbs_std_types_qp.c b/drivers/infiniband/core/uverbs_std_types_qp.c
-index dd1075466f61..75353e09c6fe 100644
---- a/drivers/infiniband/core/uverbs_std_types_qp.c
-+++ b/drivers/infiniband/core/uverbs_std_types_qp.c
-@@ -254,7 +254,6 @@ static int UVERBS_HANDLER(UVERBS_METHOD_QP_CREATE)(
- 		ret = PTR_ERR(qp);
- 		goto err_put;
- 	}
--	ib_qp_usecnt_inc(qp);
- 
- 	if (attr.qp_type == IB_QPT_XRC_TGT) {
- 		obj->uxrcd = container_of(xrcd_uobj, struct ib_uxrcd_object,
-diff --git a/drivers/infiniband/core/verbs.c b/drivers/infiniband/core/verbs.c
-index e821dc94a43e..961055eb330d 100644
---- a/drivers/infiniband/core/verbs.c
-+++ b/drivers/infiniband/core/verbs.c
-@@ -1253,6 +1253,7 @@ static struct ib_qp *create_qp(struct ib_device *dev, struct ib_pd *pd,
- 	if (ret)
- 		goto err_security;
- 
-+	ib_qp_usecnt_inc(qp);
- 	rdma_restrack_add(&qp->res);
- 	return qp;
- 
-@@ -1353,8 +1354,6 @@ struct ib_qp *ib_create_qp_kernel(struct ib_pd *pd,
- 	if (IS_ERR(qp))
- 		return qp;
- 
--	ib_qp_usecnt_inc(qp);
--
- 	if (qp_init_attr->cap.max_rdma_ctxs) {
- 		ret = rdma_rw_init_mrs(qp, qp_init_attr);
- 		if (ret)
 -- 
 2.34.1
 
