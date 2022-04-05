@@ -2,93 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 54FEFC43217
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:26:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 277E3C43219
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:26:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1451049AbiDEXGi (ORCPT
+        id S1454771AbiDEXHB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 19:06:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60398 "EHLO
+        Tue, 5 Apr 2022 19:07:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43868 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1455464AbiDEQAE (ORCPT
+        with ESMTP id S1443184AbiDEPjI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 12:00:04 -0400
-Received: from mail.skyhub.de (mail.skyhub.de [IPv6:2a01:4f8:190:11c2::b:1457])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 613DB56754;
-        Tue,  5 Apr 2022 08:15:43 -0700 (PDT)
-Received: from zn.tnic (p2e55dff8.dip0.t-ipconnect.de [46.85.223.248])
+        Tue, 5 Apr 2022 11:39:08 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9EA1614751F;
+        Tue,  5 Apr 2022 06:55:03 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id ED80F1EC0518;
-        Tue,  5 Apr 2022 17:15:37 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
-        t=1649171738;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=luB7TMkZKRRM3TEoQ4R8/NjdvmPgDZy3QgqEge4f+08=;
-        b=mp7uj8rh+qT1te6TN78hfnAl+SEVUwh/XB6GJNWc9jjOTScA1pWHFhh0ZXTQuN19oWTHAt
-        ZluQq13l01mFQlgLyrWKpDwy3POmPE8l05L0o16f1Nvi6ehaoKMst91nom7Kkc4rFaJxvW
-        nawuUPZxoz7+MBEmTz91CYxRmPaboIg=
-From:   Borislav Petkov <bp@alien8.de>
-To:     LKML <linux-kernel@vger.kernel.org>
-Cc:     Ariel Elior <aelior@marvell.com>,
-        Sudarsana Kalluru <skalluru@marvell.com>,
-        Manish Chopra <manishc@marvell.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org
-Subject: [PATCH 03/11] bnx2x: Fix undefined behavior due to shift overflowing the constant
-Date:   Tue,  5 Apr 2022 17:15:09 +0200
-Message-Id: <20220405151517.29753-4-bp@alien8.de>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405151517.29753-1-bp@alien8.de>
-References: <20220405151517.29753-1-bp@alien8.de>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 179A16187A;
+        Tue,  5 Apr 2022 13:55:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7A647C385A1;
+        Tue,  5 Apr 2022 13:55:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649166902;
+        bh=734Ww1lhb6yXzwvS5Q/fYydkFrT3wJNGgskJNRm7z/U=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=aggaKz7TshzGrHY8ajlnsspAZDhiSDUvH7+gKKiUYvIOYkIaeNqG5TWmNDCrmPo+c
+         hg6cr1Tx3xRi1MhdEcYDeuFz2bHIBkCikwFOyX1ucVnWbxvOxfxE4R4FO18pr+XGT2
+         h2lDvAJiEfu9KBhaC7tIijqW8PIoeTy/NR8SGX8+iIiZcMRsT76V28Qqof0FXt6U8J
+         Z2V3spmmImApENwehbpzWFiwZ7LhBKRicrHsuJBgYbU0ZyYlQsGoSC3jYVBTPljLtS
+         8QHTqfOAkXsxbaK5wRj0Ikd7VdPZ969UcGsvNmCMpOR/xhxQZW5yo7bCXfCUGdWacS
+         RIhZ8XlF5puzg==
+Received: from sofa.misterjones.org ([185.219.108.64] helo=why.lan)
+        by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <maz@kernel.org>)
+        id 1nbje8-001q4g-2E; Tue, 05 Apr 2022 14:55:00 +0100
+From:   Marc Zyngier <maz@kernel.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Linus Walleij <linus.walleij@linaro.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Joey Gouly <joey.gouly@arm.com>,
+        Jonathan Hunter <jonathanh@nvidia.com>,
+        Hector Martin <marcan@marcan.st>,
+        Sven Peter <sven@svenpeter.dev>,
+        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Andy Gross <agross@kernel.org>,
+        Jeffrey Hugo <jeffrey.l.hugo@gmail.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Basavaraj Natikar <Basavaraj.Natikar@amd.com>,
+        Shyam Sundar S K <Shyam-sundar.S-k@amd.com>,
+        linux-gpio@vger.kernel.org, linux-tegra@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-arm-msm@vger.kernel.org, kernel-team@android.com
+Subject: [PATCH v2 03/10] gpio: Add helpers to ease the transition towards immutable irq_chip
+Date:   Tue,  5 Apr 2022 14:54:37 +0100
+Message-Id: <20220405135444.199295-4-maz@kernel.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220405135444.199295-1-maz@kernel.org>
+References: <20220405135444.199295-1-maz@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 185.219.108.64
+X-SA-Exim-Rcpt-To: linux-kernel@vger.kernel.org, linus.walleij@linaro.org, brgl@bgdev.pl, thierry.reding@gmail.com, joey.gouly@arm.com, jonathanh@nvidia.com, marcan@marcan.st, sven@svenpeter.dev, alyssa@rosenzweig.io, bjorn.andersson@linaro.org, agross@kernel.org, jeffrey.l.hugo@gmail.com, tglx@linutronix.de, Basavaraj.Natikar@amd.com, Shyam-sundar.S-k@amd.com, linux-gpio@vger.kernel.org, linux-tegra@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-arm-msm@vger.kernel.org, kernel-team@android.com
+X-SA-Exim-Mail-From: maz@kernel.org
+X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Borislav Petkov <bp@suse.de>
+Add a couple of new helpers to make it slightly simpler to convert
+drivers to immutable irq_chip structures:
 
-Fix:
+- GPIOCHIP_IRQ_RESOURCE_HELPERS populates the irq_chip structure
+  with the resource management callbacks
 
-  drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c: In function ‘bnx2x_check_blocks_with_parity3’:
-  drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c:4917:4: error: case label does not reduce to an integer constant
-      case AEU_INPUTS_ATTN_BITS_MCP_LATCHED_SCPAD_PARITY:
-      ^~~~
+- gpio_irq_chip_set_chip() populates the gpio_irq_chip.chip
+  structure, avoiding the proliferation of ugly casts
 
-See https://lore.kernel.org/r/YkwQ6%2BtIH8GQpuct@zn.tnic for the gory
-details as to why it triggers with older gccs only.
-
-Signed-off-by: Borislav Petkov <bp@suse.de>
-Cc: Ariel Elior <aelior@marvell.com>
-Cc: Sudarsana Kalluru <skalluru@marvell.com>
-Cc: Manish Chopra <manishc@marvell.com>
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: Paolo Abeni <pabeni@redhat.com>
-Cc: netdev@vger.kernel.org
+Signed-off-by: Marc Zyngier <maz@kernel.org>
 ---
- drivers/net/ethernet/broadcom/bnx2x/bnx2x_reg.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ include/linux/gpio/driver.h | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
 
-diff --git a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_reg.h b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_reg.h
-index 5caa75b41b73..881ac33fe914 100644
---- a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_reg.h
-+++ b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_reg.h
-@@ -6218,7 +6218,7 @@
- #define AEU_INPUTS_ATTN_BITS_GPIO0_FUNCTION_0			 (0x1<<2)
- #define AEU_INPUTS_ATTN_BITS_IGU_PARITY_ERROR			 (0x1<<12)
- #define AEU_INPUTS_ATTN_BITS_MCP_LATCHED_ROM_PARITY		 (0x1<<28)
--#define AEU_INPUTS_ATTN_BITS_MCP_LATCHED_SCPAD_PARITY		 (0x1<<31)
-+#define AEU_INPUTS_ATTN_BITS_MCP_LATCHED_SCPAD_PARITY		 (0x1U<<31)
- #define AEU_INPUTS_ATTN_BITS_MCP_LATCHED_UMP_RX_PARITY		 (0x1<<29)
- #define AEU_INPUTS_ATTN_BITS_MCP_LATCHED_UMP_TX_PARITY		 (0x1<<30)
- #define AEU_INPUTS_ATTN_BITS_MISC_HW_INTERRUPT			 (0x1<<15)
+diff --git a/include/linux/gpio/driver.h b/include/linux/gpio/driver.h
+index 066bcfdf878d..832990099097 100644
+--- a/include/linux/gpio/driver.h
++++ b/include/linux/gpio/driver.h
+@@ -583,6 +583,18 @@ void gpiochip_enable_irq(struct gpio_chip *gc, unsigned int offset);
+ int gpiochip_irq_reqres(struct irq_data *data);
+ void gpiochip_irq_relres(struct irq_data *data);
+ 
++/* Paste this in your irq_chip structure  */
++#define	GPIOCHIP_IRQ_RESOURCE_HELPERS					\
++		.irq_request_resources  = gpiochip_irq_reqres,		\
++		.irq_release_resources  = gpiochip_irq_relres
++
++static inline void gpio_irq_chip_set_chip(struct gpio_irq_chip *girq,
++					  const struct irq_chip *chip)
++{
++	/* Yes, dropping const is ugly, but it isn't like we have a choice */
++	girq->chip = (struct irq_chip *)chip;
++}
++
+ /* Line status inquiry for drivers */
+ bool gpiochip_line_is_open_drain(struct gpio_chip *gc, unsigned int offset);
+ bool gpiochip_line_is_open_source(struct gpio_chip *gc, unsigned int offset);
 -- 
-2.35.1
+2.34.1
 
