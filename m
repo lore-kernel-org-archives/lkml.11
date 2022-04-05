@@ -2,42 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 00676C388F3
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:36:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F2458C35280
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:36:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238599AbiDEIao (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 04:30:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50276 "EHLO
+        id S240592AbiDEIcL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 04:32:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55578 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236011AbiDEIBG (ORCPT
+        with ESMTP id S234123AbiDEH6B (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:01:06 -0400
+        Tue, 5 Apr 2022 03:58:01 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F328D4B1F7;
-        Tue,  5 Apr 2022 00:59:06 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFE5199685;
+        Tue,  5 Apr 2022 00:51:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8F2D761748;
-        Tue,  5 Apr 2022 07:59:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9B936C340EE;
-        Tue,  5 Apr 2022 07:59:05 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0582E61728;
+        Tue,  5 Apr 2022 07:51:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D4D7DC340EE;
+        Tue,  5 Apr 2022 07:51:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649145546;
-        bh=zazOJ9lM/Dvj6CJxUo215DlrE669HBaoTJDJ7TEdNHA=;
+        s=korg; t=1649145113;
+        bh=PLJgfYpKDlA2T43Zuce5R0J0Mw2MAn5KvOTzShVlfyU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=v6E0Jad1vNBhCJ6/iIic+iQHFAsLbUJqF8u/C+lhptHbhZaOxNx6InoXEf4SF35IB
-         eyEe1ZlbnjRAxGoN9bhvHuP3KEkgrPYn8L2C0aushSV/gE1PL5fu0XxaAofbFF4wN+
-         +xdW5L/WKL/byli6jfff9/OF5UV2WBiTQ07BALGY=
+        b=oxC8uSG2V51wNG3f32zzbtsONwLsJpsZI7IDDzjsEcMnHbAn4rCH2ezoxaVmSRfc4
+         a7vUEdDTOQvK60ldoAlssbffqpCxMws6bDqzFv4OvfDtCaIjUGAh6+Pog4pxO0c9Zc
+         jv9FSbUrZXPqOw/O+imn54N6D2KhByWd/E6cjNLo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tedd Ho-Jeong An <tedd.an@intel.com>,
-        Marcel Holtmann <marcel@holtmann.org>,
+        stable@vger.kernel.org,
+        Guillaume Tucker <guillaume.tucker@collabora.com>,
+        "kernelci.org bot" <bot@kernelci.org>,
+        Guenter Roeck <groeck@google.com>,
+        Shuah Khan <shuah@kernel.org>, Borislav Petkov <bp@suse.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0444/1126] Bluetooth: btintel: Fix WBS setting for Intel legacy ROM products
-Date:   Tue,  5 Apr 2022 09:19:51 +0200
-Message-Id: <20220405070420.656476328@linuxfoundation.org>
+Subject: [PATCH 5.17 0288/1126] selftests, x86: fix how check_cc.sh is being invoked
+Date:   Tue,  5 Apr 2022 09:17:15 +0200
+Message-Id: <20220405070416.067193531@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -49,92 +55,71 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tedd Ho-Jeong An <tedd.an@intel.com>
+From: Guillaume Tucker <guillaume.tucker@collabora.com>
 
-[ Upstream commit 55235304c2560d4a94ccfff2a47ea927b4114064 ]
+[ Upstream commit ef696f93ed9778d570bd5ac58414421cdd4f1aab ]
 
-This patch adds the flag to identify the Intel legacy ROM products that
-don't support WBS like WP and StP.
+The $(CC) variable used in Makefiles could contain several arguments
+such as "ccache gcc".  These need to be passed as a single string to
+check_cc.sh, otherwise only the first argument will be used as the
+compiler command.  Without quotes, the $(CC) variable is passed as
+distinct arguments which causes the script to fail to build trivial
+programs.
 
-Fixes: 3df4dfbec0f29 ("Bluetooth: btintel: Move hci quirks to setup routine")
-Signed-off-by: Tedd Ho-Jeong An <tedd.an@intel.com>
-Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
+Fix this by adding quotes around $(CC) when calling check_cc.sh to pass
+the whole string as a single argument to the script even if it has
+several words such as "ccache gcc".
+
+Link: https://lkml.kernel.org/r/d0d460d7be0107a69e3c52477761a6fe694c1840.1646991629.git.guillaume.tucker@collabora.com
+Fixes: e9886ace222e ("selftests, x86: Rework x86 target architecture detection")
+Signed-off-by: Guillaume Tucker <guillaume.tucker@collabora.com>
+Tested-by: "kernelci.org bot" <bot@kernelci.org>
+Reviewed-by: Guenter Roeck <groeck@google.com>
+Cc: Shuah Khan <shuah@kernel.org>
+Cc: Borislav Petkov <bp@suse.de>
+Cc: Dave Hansen <dave.hansen@linux.intel.com>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/bluetooth/btintel.c | 11 ++++++++---
- drivers/bluetooth/btintel.h |  1 +
- drivers/bluetooth/btusb.c   |  6 ++++++
- 3 files changed, 15 insertions(+), 3 deletions(-)
+ tools/testing/selftests/vm/Makefile  | 6 +++---
+ tools/testing/selftests/x86/Makefile | 6 +++---
+ 2 files changed, 6 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/bluetooth/btintel.c b/drivers/bluetooth/btintel.c
-index 1a4f8b227eac..06514ed66022 100644
---- a/drivers/bluetooth/btintel.c
-+++ b/drivers/bluetooth/btintel.c
-@@ -2428,10 +2428,15 @@ static int btintel_setup_combined(struct hci_dev *hdev)
+diff --git a/tools/testing/selftests/vm/Makefile b/tools/testing/selftests/vm/Makefile
+index a14b5b800897..1530c3e0242e 100644
+--- a/tools/testing/selftests/vm/Makefile
++++ b/tools/testing/selftests/vm/Makefile
+@@ -51,9 +51,9 @@ TEST_GEN_FILES += split_huge_page_test
+ TEST_GEN_FILES += ksm_tests
  
- 			/* Apply the device specific HCI quirks
- 			 *
--			 * WBS for SdP - SdP and Stp have a same hw_varaint but
--			 * different fw_variant
-+			 * WBS for SdP - For the Legacy ROM products, only SdP
-+			 * supports the WBS. But the version information is not
-+			 * enough to use here because the StP2 and SdP have same
-+			 * hw_variant and fw_variant. So, this flag is set by
-+			 * the transport driver (btusb) based on the HW info
-+			 * (idProduct)
- 			 */
--			if (ver.hw_variant == 0x08 && ver.fw_variant == 0x22)
-+			if (!btintel_test_flag(hdev,
-+					       INTEL_ROM_LEGACY_NO_WBS_SUPPORT))
- 				set_bit(HCI_QUIRK_WIDEBAND_SPEECH_SUPPORTED,
- 					&hdev->quirks);
+ ifeq ($(MACHINE),x86_64)
+-CAN_BUILD_I386 := $(shell ./../x86/check_cc.sh $(CC) ../x86/trivial_32bit_program.c -m32)
+-CAN_BUILD_X86_64 := $(shell ./../x86/check_cc.sh $(CC) ../x86/trivial_64bit_program.c)
+-CAN_BUILD_WITH_NOPIE := $(shell ./../x86/check_cc.sh $(CC) ../x86/trivial_program.c -no-pie)
++CAN_BUILD_I386 := $(shell ./../x86/check_cc.sh "$(CC)" ../x86/trivial_32bit_program.c -m32)
++CAN_BUILD_X86_64 := $(shell ./../x86/check_cc.sh "$(CC)" ../x86/trivial_64bit_program.c)
++CAN_BUILD_WITH_NOPIE := $(shell ./../x86/check_cc.sh "$(CC)" ../x86/trivial_program.c -no-pie)
  
-diff --git a/drivers/bluetooth/btintel.h b/drivers/bluetooth/btintel.h
-index c9b24e9299e2..e0060e58573c 100644
---- a/drivers/bluetooth/btintel.h
-+++ b/drivers/bluetooth/btintel.h
-@@ -152,6 +152,7 @@ enum {
- 	INTEL_BROKEN_INITIAL_NCMD,
- 	INTEL_BROKEN_SHUTDOWN_LED,
- 	INTEL_ROM_LEGACY,
-+	INTEL_ROM_LEGACY_NO_WBS_SUPPORT,
+ TARGETS := protection_keys
+ BINARIES_32 := $(TARGETS:%=%_32)
+diff --git a/tools/testing/selftests/x86/Makefile b/tools/testing/selftests/x86/Makefile
+index 8a1f62ab3c8e..53df7d3893d3 100644
+--- a/tools/testing/selftests/x86/Makefile
++++ b/tools/testing/selftests/x86/Makefile
+@@ -6,9 +6,9 @@ include ../lib.mk
+ .PHONY: all all_32 all_64 warn_32bit_failure clean
  
- 	__INTEL_NUM_FLAGS,
- };
-diff --git a/drivers/bluetooth/btusb.c b/drivers/bluetooth/btusb.c
-index 19d5686f8a2a..2afbd87d77c9 100644
---- a/drivers/bluetooth/btusb.c
-+++ b/drivers/bluetooth/btusb.c
-@@ -62,6 +62,7 @@ static struct usb_driver btusb_driver;
- #define BTUSB_QCA_WCN6855	0x1000000
- #define BTUSB_INTEL_BROKEN_SHUTDOWN_LED	0x2000000
- #define BTUSB_INTEL_BROKEN_INITIAL_NCMD 0x4000000
-+#define BTUSB_INTEL_NO_WBS_SUPPORT	0x8000000
+ UNAME_M := $(shell uname -m)
+-CAN_BUILD_I386 := $(shell ./check_cc.sh $(CC) trivial_32bit_program.c -m32)
+-CAN_BUILD_X86_64 := $(shell ./check_cc.sh $(CC) trivial_64bit_program.c)
+-CAN_BUILD_WITH_NOPIE := $(shell ./check_cc.sh $(CC) trivial_program.c -no-pie)
++CAN_BUILD_I386 := $(shell ./check_cc.sh "$(CC)" trivial_32bit_program.c -m32)
++CAN_BUILD_X86_64 := $(shell ./check_cc.sh "$(CC)" trivial_64bit_program.c)
++CAN_BUILD_WITH_NOPIE := $(shell ./check_cc.sh "$(CC)" trivial_program.c -no-pie)
  
- static const struct usb_device_id btusb_table[] = {
- 	/* Generic Bluetooth USB device */
-@@ -385,9 +386,11 @@ static const struct usb_device_id blacklist_table[] = {
- 	{ USB_DEVICE(0x8087, 0x0033), .driver_info = BTUSB_INTEL_COMBINED },
- 	{ USB_DEVICE(0x8087, 0x07da), .driver_info = BTUSB_CSR },
- 	{ USB_DEVICE(0x8087, 0x07dc), .driver_info = BTUSB_INTEL_COMBINED |
-+						     BTUSB_INTEL_NO_WBS_SUPPORT |
- 						     BTUSB_INTEL_BROKEN_INITIAL_NCMD |
- 						     BTUSB_INTEL_BROKEN_SHUTDOWN_LED },
- 	{ USB_DEVICE(0x8087, 0x0a2a), .driver_info = BTUSB_INTEL_COMBINED |
-+						     BTUSB_INTEL_NO_WBS_SUPPORT |
- 						     BTUSB_INTEL_BROKEN_SHUTDOWN_LED },
- 	{ USB_DEVICE(0x8087, 0x0a2b), .driver_info = BTUSB_INTEL_COMBINED },
- 	{ USB_DEVICE(0x8087, 0x0aa7), .driver_info = BTUSB_INTEL_COMBINED |
-@@ -3743,6 +3746,9 @@ static int btusb_probe(struct usb_interface *intf,
- 		hdev->send = btusb_send_frame_intel;
- 		hdev->cmd_timeout = btusb_intel_cmd_timeout;
- 
-+		if (id->driver_info & BTUSB_INTEL_NO_WBS_SUPPORT)
-+			btintel_set_flag(hdev, INTEL_ROM_LEGACY_NO_WBS_SUPPORT);
-+
- 		if (id->driver_info & BTUSB_INTEL_BROKEN_INITIAL_NCMD)
- 			btintel_set_flag(hdev, INTEL_BROKEN_INITIAL_NCMD);
- 
+ TARGETS_C_BOTHBITS := single_step_syscall sysret_ss_attrs syscall_nt test_mremap_vdso \
+ 			check_initial_reg_state sigreturn iopl ioperm \
 -- 
 2.34.1
 
