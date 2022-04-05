@@ -2,46 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E70DC43217
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:35:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B36EC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:35:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384269AbiDEM1S (ORCPT
+        id S1384325AbiDEM1V (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 08:27:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34702 "EHLO
+        Tue, 5 Apr 2022 08:27:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59316 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235508AbiDEIQP (ORCPT
+        with ESMTP id S245196AbiDEIyN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:16:15 -0400
+        Tue, 5 Apr 2022 04:54:13 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6AAFB62;
-        Tue,  5 Apr 2022 01:03:29 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5739F114E;
+        Tue,  5 Apr 2022 01:52:01 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 25BF561748;
-        Tue,  5 Apr 2022 08:03:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 33D24C385A0;
-        Tue,  5 Apr 2022 08:03:28 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E9A89614E5;
+        Tue,  5 Apr 2022 08:52:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 02641C385A1;
+        Tue,  5 Apr 2022 08:51:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649145808;
-        bh=DIdp1vSjSwVJv7qS7zn+yQYfahWFNcAaLdLqOMQ+MGs=;
+        s=korg; t=1649148720;
+        bh=xZqW6bhmtjzrBnDxdcWjv2+8BAXwYVWbAoDYitT4kk0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZIZi5CI2mfsa8v6uZZIP6qwsOM7NX/qBlB2bK15EUBRUaOcsIdkQINQZ+Awyg7E/Y
-         J3BJrmnzijPZltgrid/kJ1PlHyNhigtGHO8UaAP5KbQf3uFhKJJVW7sBbh36+y/Uc6
-         uOU1jnLeAB9Eje3jz4U+VM8aJdv3CmUioM5Dra6U=
+        b=GNQl/O/Q1rb71iRzTPSfOggBECPh+YvTQfcQOATymqBFYOZFn7ldiYJfB6x7wAzx6
+         ZKT0tGKaCKr6WzjM9CaSXABZxBphulJJ5HXKEytVipy+imNF+jwk1fCwX26RJFJa12
+         OMXJw1W9qdR9p58flyjUxwNGijqAzKqGlBsDTUqo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
-        Ping-Ke Shih <pkshih@realtek.com>,
-        Kalle Valo <kvalo@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0536/1126] rtw88: fix use after free in rtw_hw_scan_update_probe_req()
-Date:   Tue,  5 Apr 2022 09:21:23 +0200
-Message-Id: <20220405070423.364503407@linuxfoundation.org>
+        stable@vger.kernel.org, Lorenzo Bianconi <lorenzo@kernel.org>,
+        Felix Fietkau <nbd@nbd.name>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 0456/1017] mt76: mt7921: do not always disable fw runtime-pm
+Date:   Tue,  5 Apr 2022 09:22:49 +0200
+Message-Id: <20220405070407.834793000@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
-References: <20220405070407.513532867@linuxfoundation.org>
+In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
+References: <20220405070354.155796697@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,54 +49,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dan Carpenter <dan.carpenter@oracle.com>
+From: Lorenzo Bianconi <lorenzo@kernel.org>
 
-[ Upstream commit a954f29aea5d2cf58feedf83235edf3367229a37 ]
+[ Upstream commit b44eeb8cbdf2b88f2844f11e4f263b0abed5b5b0 ]
 
-This code needs to use skb_queue_walk_safe() instead of skb_queue_walk()
-because it frees the list iterator.
+After commit 'd430dffbe9dd ("mt76: mt7921: fix a possible race
+enabling/disabling runtime-pm")', runtime-pm is always disabled in the
+fw even if the user requests to enable it toggling debugfs node since
+mt7921_pm_interface_iter routine will use pm->enable to configure the fw.
+Fix the issue moving enable variable configuration before running
+mt7921_pm_interface_iter routine.
 
-Fixes: d95984b5580d ("rtw88: fix memory overrun and memory leak during hw_scan")
-Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
-Acked-by: Ping-Ke Shih <pkshih@realtek.com>
-Signed-off-by: Kalle Valo <kvalo@kernel.org>
-Link: https://lore.kernel.org/r/20220203082532.GA25151@kili
+Fixes: d430dffbe9dd ("mt76: mt7921: fix a possible race enabling/disabling runtime-pm")
+Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+Signed-off-by: Felix Fietkau <nbd@nbd.name>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/realtek/rtw88/fw.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/net/wireless/mediatek/mt76/mt7921/debugfs.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/drivers/net/wireless/realtek/rtw88/fw.c b/drivers/net/wireless/realtek/rtw88/fw.c
-index ce9535cce723..4c8e5ea5d069 100644
---- a/drivers/net/wireless/realtek/rtw88/fw.c
-+++ b/drivers/net/wireless/realtek/rtw88/fw.c
-@@ -1853,7 +1853,7 @@ static int _rtw_hw_scan_update_probe_req(struct rtw_dev *rtwdev, u8 num_probes,
- 	rtwdev->scan_info.probe_pg_size = page_offset;
+diff --git a/drivers/net/wireless/mediatek/mt76/mt7921/debugfs.c b/drivers/net/wireless/mediatek/mt76/mt7921/debugfs.c
+index 86fd7292b229..45a393070e46 100644
+--- a/drivers/net/wireless/mediatek/mt76/mt7921/debugfs.c
++++ b/drivers/net/wireless/mediatek/mt76/mt7921/debugfs.c
+@@ -291,13 +291,12 @@ mt7921_pm_set(void *data, u64 val)
+ 	pm->enable = false;
+ 	mt76_connac_pm_wake(&dev->mphy, pm);
+ 
++	pm->enable = val;
+ 	ieee80211_iterate_active_interfaces(mt76_hw(dev),
+ 					    IEEE80211_IFACE_ITER_RESUME_ALL,
+ 					    mt7921_pm_interface_iter, dev);
+ 
+ 	mt76_connac_mcu_set_deep_sleep(&dev->mt76, pm->ds_enable);
+-
+-	pm->enable = val;
+ 	mt76_connac_power_save_sched(&dev->mphy, pm);
  out:
- 	kfree(buf);
--	skb_queue_walk(probe_req_list, skb)
-+	skb_queue_walk_safe(probe_req_list, skb, tmp)
- 		kfree_skb(skb);
- 
- 	return ret;
-@@ -1864,7 +1864,7 @@ static int rtw_hw_scan_update_probe_req(struct rtw_dev *rtwdev,
- {
- 	struct cfg80211_scan_request *req = rtwvif->scan_req;
- 	struct sk_buff_head list;
--	struct sk_buff *skb;
-+	struct sk_buff *skb, *tmp;
- 	u8 num = req->n_ssids, i, bands = 0;
- 	int ret;
- 
-@@ -1889,7 +1889,7 @@ static int rtw_hw_scan_update_probe_req(struct rtw_dev *rtwdev,
- 	return _rtw_hw_scan_update_probe_req(rtwdev, num * bands, &list);
- 
- out:
--	skb_queue_walk(&list, skb)
-+	skb_queue_walk_safe(&list, skb, tmp)
- 		kfree_skb(skb);
- 
- 	return ret;
+ 	mutex_unlock(&dev->mt76.mutex);
 -- 
 2.34.1
 
