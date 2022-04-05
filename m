@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A2616C35295
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 68240C47082
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 14:06:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358215AbiDEODh (ORCPT
+        id S1357485AbiDEODU (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 10:03:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45890 "EHLO
+        Tue, 5 Apr 2022 10:03:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46088 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235497AbiDEJap (ORCPT
+        with ESMTP id S234999AbiDEJap (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Apr 2022 05:30:45 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B12A1E7F61;
-        Tue,  5 Apr 2022 02:17:50 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78F40E7F7E;
+        Tue,  5 Apr 2022 02:17:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 65D25B818F3;
-        Tue,  5 Apr 2022 09:17:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C99F0C385A0;
-        Tue,  5 Apr 2022 09:17:47 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2482CB81B14;
+        Tue,  5 Apr 2022 09:17:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 84304C385A0;
+        Tue,  5 Apr 2022 09:17:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649150268;
-        bh=vK/yrbUh/EhxBu261dRYQfC4zTET2FQj/zRa7+VU4/c=;
+        s=korg; t=1649150270;
+        bh=+XNFu5tzAZ28lpUNmFeUfsDI3/CgFwn+nRal1GCbe9E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WfwqLLvWRrCPUW6IHd1/uXjD/Zw64AEsNMTj4AhHlwwnBZgMjVkBphebj9ORQV779
-         bzOj8w92iNowf2m1LdROI7Cbf7zPdcpX9GytYlzbd145YxXHiU+3ajBjC/5z7BsZOl
-         IAmX60X2BkV0T/hco9sTBvlhoZve2Kl/I4vcC4Vg=
+        b=EzN9KwGNM4+JrS2szXpFysM0PUKRAmewnnEuSlHy9ANFSWctl/LsgpLNP0wcSHiNt
+         pASG8m3kEp41z37X99VYO3Gypy+z/cg0RtRXKBArdBzVQU+XeJwcqSJWhNmzm9sOQy
+         3Zxgoyg57jEJUph+YfdW4AKAV0V3z8kEimpl/tZk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Jann Horn <jannh@google.com>,
         Kees Cook <keescook@chromium.org>,
         "Eric W. Biederman" <ebiederm@xmission.com>
-Subject: [PATCH 5.16 1015/1017] coredump: Remove the WARN_ON in dump_vma_snapshot
-Date:   Tue,  5 Apr 2022 09:32:08 +0200
-Message-Id: <20220405070424.324180474@linuxfoundation.org>
+Subject: [PATCH 5.16 1016/1017] coredump/elf: Pass coredump_params into fill_note_info
+Date:   Tue,  5 Apr 2022 09:32:09 +0200
+Message-Id: <20220405070424.353492195@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -52,39 +52,105 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Eric W. Biederman <ebiederm@xmission.com>
 
-commit 49c1866348f364478a0c4d3dd13fd08bb82d3a5b upstream.
+commit 9ec7d3230717b4fe9b6c7afeb4811909c23fa1d7 upstream.
 
-The condition is impossible and to the best of my knowledge has never
-triggered.
+Instead of individually passing cprm->siginfo and cprm->regs
+into fill_note_info pass all of struct coredump_params.
 
-We are in deep trouble if that conditions happens and we walk past
-the end of our allocated array.
-
-So delete the WARN_ON and the code that makes it look like the kernel
-can handle the case of walking past the end of it's vma_meta array.
+This is preparation to allow fill_files_note to use the existing
+vma snapshot.
 
 Reviewed-by: Jann Horn <jannh@google.com>
 Reviewed-by: Kees Cook <keescook@chromium.org>
 Signed-off-by: "Eric W. Biederman" <ebiederm@xmission.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/coredump.c |    6 ------
- 1 file changed, 6 deletions(-)
+ fs/binfmt_elf.c |   22 +++++++++++-----------
+ 1 file changed, 11 insertions(+), 11 deletions(-)
 
---- a/fs/coredump.c
-+++ b/fs/coredump.c
-@@ -1085,12 +1085,6 @@ static bool dump_vma_snapshot(struct cor
+--- a/fs/binfmt_elf.c
++++ b/fs/binfmt_elf.c
+@@ -1823,7 +1823,7 @@ static int fill_thread_core_info(struct
  
- 	mmap_write_unlock(mm);
+ static int fill_note_info(struct elfhdr *elf, int phdrs,
+ 			  struct elf_note_info *info,
+-			  const kernel_siginfo_t *siginfo, struct pt_regs *regs)
++			  struct coredump_params *cprm)
+ {
+ 	struct task_struct *dump_task = current;
+ 	const struct user_regset_view *view = task_user_regset_view(dump_task);
+@@ -1895,7 +1895,7 @@ static int fill_note_info(struct elfhdr
+ 	 * Now fill in each thread's information.
+ 	 */
+ 	for (t = info->thread; t != NULL; t = t->next)
+-		if (!fill_thread_core_info(t, view, siginfo->si_signo, &info->size))
++		if (!fill_thread_core_info(t, view, cprm->siginfo->si_signo, &info->size))
+ 			return 0;
  
--	if (WARN_ON(i != cprm->vma_count)) {
--		kvfree(cprm->vma_meta);
--		return false;
--	}
--
--
- 	for (i = 0; i < cprm->vma_count; i++) {
- 		struct core_vma_metadata *m = cprm->vma_meta + i;
+ 	/*
+@@ -1904,7 +1904,7 @@ static int fill_note_info(struct elfhdr
+ 	fill_psinfo(psinfo, dump_task->group_leader, dump_task->mm);
+ 	info->size += notesize(&info->psinfo);
  
+-	fill_siginfo_note(&info->signote, &info->csigdata, siginfo);
++	fill_siginfo_note(&info->signote, &info->csigdata, cprm->siginfo);
+ 	info->size += notesize(&info->signote);
+ 
+ 	fill_auxv_note(&info->auxv, current->mm);
+@@ -2052,7 +2052,7 @@ static int elf_note_info_init(struct elf
+ 
+ static int fill_note_info(struct elfhdr *elf, int phdrs,
+ 			  struct elf_note_info *info,
+-			  const kernel_siginfo_t *siginfo, struct pt_regs *regs)
++			  struct coredump_params *cprm)
+ {
+ 	struct core_thread *ct;
+ 	struct elf_thread_status *ets;
+@@ -2073,13 +2073,13 @@ static int fill_note_info(struct elfhdr
+ 	list_for_each_entry(ets, &info->thread_list, list) {
+ 		int sz;
+ 
+-		sz = elf_dump_thread_status(siginfo->si_signo, ets);
++		sz = elf_dump_thread_status(cprm->siginfo->si_signo, ets);
+ 		info->thread_status_size += sz;
+ 	}
+ 	/* now collect the dump for the current */
+ 	memset(info->prstatus, 0, sizeof(*info->prstatus));
+-	fill_prstatus(&info->prstatus->common, current, siginfo->si_signo);
+-	elf_core_copy_regs(&info->prstatus->pr_reg, regs);
++	fill_prstatus(&info->prstatus->common, current, cprm->siginfo->si_signo);
++	elf_core_copy_regs(&info->prstatus->pr_reg, cprm->regs);
+ 
+ 	/* Set up header */
+ 	fill_elf_header(elf, phdrs, ELF_ARCH, ELF_CORE_EFLAGS);
+@@ -2095,7 +2095,7 @@ static int fill_note_info(struct elfhdr
+ 	fill_note(info->notes + 1, "CORE", NT_PRPSINFO,
+ 		  sizeof(*info->psinfo), info->psinfo);
+ 
+-	fill_siginfo_note(info->notes + 2, &info->csigdata, siginfo);
++	fill_siginfo_note(info->notes + 2, &info->csigdata, cprm->siginfo);
+ 	fill_auxv_note(info->notes + 3, current->mm);
+ 	info->numnote = 4;
+ 
+@@ -2105,8 +2105,8 @@ static int fill_note_info(struct elfhdr
+ 	}
+ 
+ 	/* Try to dump the FPU. */
+-	info->prstatus->pr_fpvalid = elf_core_copy_task_fpregs(current, regs,
+-							       info->fpu);
++	info->prstatus->pr_fpvalid =
++		elf_core_copy_task_fpregs(current, cprm->regs, info->fpu);
+ 	if (info->prstatus->pr_fpvalid)
+ 		fill_note(info->notes + info->numnote++,
+ 			  "CORE", NT_PRFPREG, sizeof(*info->fpu), info->fpu);
+@@ -2219,7 +2219,7 @@ static int elf_core_dump(struct coredump
+ 	 * Collect all the non-memory information about the process for the
+ 	 * notes.  This also sets up the file header.
+ 	 */
+-	if (!fill_note_info(&elf, e_phnum, &info, cprm->siginfo, cprm->regs))
++	if (!fill_note_info(&elf, e_phnum, &info, cprm))
+ 		goto end_coredump;
+ 
+ 	has_dumped = 1;
 
 
