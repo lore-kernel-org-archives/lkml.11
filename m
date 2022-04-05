@@ -2,95 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9BA64C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 86B6BC433EF
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 01:13:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1573368AbiDFBMd (ORCPT
+        id S1448930AbiDFBMU (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 21:12:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44248 "EHLO
+        Tue, 5 Apr 2022 21:12:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55080 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348820AbiDEJsj (ORCPT
+        with ESMTP id S1457877AbiDEQzF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:48:39 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5CAA3AFAC8;
-        Tue,  5 Apr 2022 02:36:18 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EC71561680;
-        Tue,  5 Apr 2022 09:36:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F0CF8C385A2;
-        Tue,  5 Apr 2022 09:36:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649151377;
-        bh=xZFlO/Ssj0ilwMz4LbbFsHCf7q/ubFY/jXMHM64j43U=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pCBJjGAQuM+YAd+I5Vh8jCSDeV3J91J2lxmUYLjc8i2UW0DcI8YugfdHPRjt/BzG/
-         tKm74q69LCXn/qDlTiYjDU8CZTYifBMuCGYqpk/yU1MtMuxFxKPR3QuVhWdx77Tmni
-         0IoM1TWQR7TItR1Y84XtW1NRgoQqZbKegjgeT5rw=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 393/913] mtd: onenand: Check for error irq
-Date:   Tue,  5 Apr 2022 09:24:15 +0200
-Message-Id: <20220405070351.628038201@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 5 Apr 2022 12:55:05 -0400
+Received: from 14.mo581.mail-out.ovh.net (14.mo581.mail-out.ovh.net [178.33.251.19])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 586BC326E9
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 09:53:06 -0700 (PDT)
+Received: from player734.ha.ovh.net (unknown [10.110.171.5])
+        by mo581.mail-out.ovh.net (Postfix) with ESMTP id E660823BE0
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 16:35:42 +0000 (UTC)
+Received: from sk2.org (82-65-25-201.subs.proxad.net [82.65.25.201])
+        (Authenticated sender: steve@sk2.org)
+        by player734.ha.ovh.net (Postfix) with ESMTPSA id 85D1D28FEBF99;
+        Tue,  5 Apr 2022 16:35:36 +0000 (UTC)
+Authentication-Results: garm.ovh; auth=pass (GARM-102R004d61553c7-e202-4547-945e-565ecbb11848,
+                    8AF55017BACD44284FC599BC4826E0280D36FCC4) smtp.auth=steve@sk2.org
+X-OVh-ClientIp: 82.65.25.201
+From:   Stephen Kitt <steve@sk2.org>
+To:     M R Swami Reddy <mr.swami.reddy@ti.com>,
+        Vishwas A Deshpande <vishwas.a.deshpande@ti.com>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>
+Cc:     Wolfram Sang <wsa@kernel.org>, linux-kernel@vger.kernel.org,
+        Stephen Kitt <steve@sk2.org>
+Subject: [PATCH] ASoC: lm49xxx: use simple i2c probe function
+Date:   Tue,  5 Apr 2022 18:35:33 +0200
+Message-Id: <20220405163533.2157401-1-steve@sk2.org>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+X-Ovh-Tracer-Id: 8060880383069685382
+X-VR-SPAMSTATE: OK
+X-VR-SPAMSCORE: -100
+X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvvddrudejgedgleelucetufdoteggodetrfdotffvucfrrhhofhhilhgvmecuqfggjfdpvefjgfevmfevgfenuceurghilhhouhhtmecuhedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmnecujfgurhephffvufffkffoggfgsedtkeertdertddtnecuhfhrohhmpefuthgvphhhvghnucfmihhtthcuoehsthgvvhgvsehskhdvrdhorhhgqeenucggtffrrghtthgvrhhnpeetgedugfelkeeikeetgeegteevfeeufeetuefgudeiiedthfehtdeffeekvdeffeenucfkpheptddrtddrtddrtddpkedvrdeihedrvdehrddvtddunecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmohguvgepshhmthhpohhuthdphhgvlhhopehplhgrhigvrhejfeegrdhhrgdrohhvhhdrnhgvthdpihhnvghtpedtrddtrddtrddtpdhmrghilhhfrhhomhepshhtvghvvgesshhkvddrohhrghdpnhgspghrtghpthhtohepuddprhgtphhtthhopehlihhnuhigqdhkvghrnhgvlhesvhhgvghrrdhkvghrnhgvlhdrohhrgh
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+The i2c probe functions here don't use the id information provided in
+their second argument, so the single-parameter i2c probe function
+("probe_new") can be used instead.
 
-[ Upstream commit 3e68f331c8c759c0daa31cc92c3449b23119a215 ]
+This avoids scanning the identifier tables during probes.
 
-For the possible failure of the platform_get_irq(), the returned irq
-could be error number and will finally cause the failure of the
-request_irq().
-Consider that platform_get_irq() can now in certain cases return
--EPROBE_DEFER, and the consequences of letting request_irq() effectively
-convert that into -EINVAL, even at probe time rather than later on.
-So it might be better to check just now.
-
-Fixes: 2c22120fbd01 ("MTD: OneNAND: interrupt based wait support")
-Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-Link: https://lore.kernel.org/linux-mtd/20220104162658.1988142-1-jiasheng@iscas.ac.cn
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Stephen Kitt <steve@sk2.org>
 ---
- drivers/mtd/nand/onenand/generic.c | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
+ sound/soc/codecs/isabelle.c | 5 ++---
+ sound/soc/codecs/lm49453.c  | 5 ++---
+ 2 files changed, 4 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/mtd/nand/onenand/generic.c b/drivers/mtd/nand/onenand/generic.c
-index 8b6f4da5d720..a4b8b65fe15f 100644
---- a/drivers/mtd/nand/onenand/generic.c
-+++ b/drivers/mtd/nand/onenand/generic.c
-@@ -53,7 +53,12 @@ static int generic_onenand_probe(struct platform_device *pdev)
- 	}
+diff --git a/sound/soc/codecs/isabelle.c b/sound/soc/codecs/isabelle.c
+index 1d86b6a0eb9d..39be31e1282e 100644
+--- a/sound/soc/codecs/isabelle.c
++++ b/sound/soc/codecs/isabelle.c
+@@ -1108,8 +1108,7 @@ static const struct regmap_config isabelle_regmap_config = {
+ 	.cache_type = REGCACHE_RBTREE,
+ };
  
- 	info->onenand.mmcontrol = pdata ? pdata->mmcontrol : NULL;
--	info->onenand.irq = platform_get_irq(pdev, 0);
-+
-+	err = platform_get_irq(pdev, 0);
-+	if (err < 0)
-+		goto out_iounmap;
-+
-+	info->onenand.irq = err;
+-static int isabelle_i2c_probe(struct i2c_client *i2c,
+-			      const struct i2c_device_id *id)
++static int isabelle_i2c_probe(struct i2c_client *i2c)
+ {
+ 	struct regmap *isabelle_regmap;
+ 	int ret = 0;
+@@ -1144,7 +1143,7 @@ static struct i2c_driver isabelle_i2c_driver = {
+ 	.driver = {
+ 		.name = "isabelle",
+ 	},
+-	.probe = isabelle_i2c_probe,
++	.probe_new = isabelle_i2c_probe,
+ 	.id_table = isabelle_i2c_id,
+ };
  
- 	info->mtd.dev.parent = &pdev->dev;
- 	info->mtd.priv = &info->onenand;
+diff --git a/sound/soc/codecs/lm49453.c b/sound/soc/codecs/lm49453.c
+index 973d781b4b6a..bd0078e4499b 100644
+--- a/sound/soc/codecs/lm49453.c
++++ b/sound/soc/codecs/lm49453.c
+@@ -1412,8 +1412,7 @@ static const struct regmap_config lm49453_regmap_config = {
+ 	.cache_type = REGCACHE_RBTREE,
+ };
+ 
+-static int lm49453_i2c_probe(struct i2c_client *i2c,
+-			     const struct i2c_device_id *id)
++static int lm49453_i2c_probe(struct i2c_client *i2c)
+ {
+ 	struct lm49453_priv *lm49453;
+ 	int ret = 0;
+@@ -1458,7 +1457,7 @@ static struct i2c_driver lm49453_i2c_driver = {
+ 	.driver = {
+ 		.name = "lm49453",
+ 	},
+-	.probe = lm49453_i2c_probe,
++	.probe_new = lm49453_i2c_probe,
+ 	.remove = lm49453_i2c_remove,
+ 	.id_table = lm49453_i2c_id,
+ };
 -- 
-2.34.1
-
-
+2.27.0
 
