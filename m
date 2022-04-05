@@ -2,101 +2,142 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2ABE5C43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 05460C4332F
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 21:38:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383294AbiDEVje (ORCPT
+        id S1383056AbiDEVjU (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 17:39:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58502 "EHLO
+        Tue, 5 Apr 2022 17:39:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39370 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1444564AbiDEPlk (ORCPT
+        with ESMTP id S1349477AbiDEJtz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 11:41:40 -0400
-Received: from mail.skyhub.de (mail.skyhub.de [IPv6:2a01:4f8:190:11c2::b:1457])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E168F73077
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 07:05:53 -0700 (PDT)
-Received: from zn.tnic (p2e55dff8.dip0.t-ipconnect.de [46.85.223.248])
+        Tue, 5 Apr 2022 05:49:55 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C99EC10B6;
+        Tue,  5 Apr 2022 02:47:09 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 196ED1EC04D6;
-        Tue,  5 Apr 2022 16:05:48 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
-        t=1649167548;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
-        bh=ABkgJ7WZFU27xa+T6ghR5OktxwYJzWigVN97vtpvhqU=;
-        b=QGvnVdS+Rakt7j93ycaMpKSdeoZxsBAHpOHJJqCChN7wRLawTlCq2gVLBvyFvbu/roQEko
-        JupxNxuGnSWL/xPOfK2J774LQyyQPvcf6YsYrjdKAiPfyO1vWaWHuZkw1Er3brGa117u11
-        8js4ySSQOPHOjY4+0Y3y8i2mCWIY8zA=
-Date:   Tue, 5 Apr 2022 16:05:43 +0200
-From:   Borislav Petkov <bp@alien8.de>
-To:     Wyes Karny <wyes.karny@amd.com>
-Cc:     linux-kernel@vger.kernel.org, Lewis.Carroll@amd.com,
-        Mario.Limonciello@amd.com, gautham.shenoy@amd.com,
-        Ananth.Narayan@amd.com, bharata@amd.com, len.brown@intel.com,
-        x86@kernel.org, tglx@linutronix.de, mingo@redhat.com,
-        dave.hansen@linux.intel.com, hpa@zytor.com, peterz@infradead.org,
-        chang.seok.bae@intel.com, keescook@chromium.org, metze@samba.org,
-        zhengqi.arch@bytedance.com, mark.rutland@arm.com
-Subject: Re: [PATCH] x86: Prefer MWAIT over HALT on AMD processors
-Message-ID: <YkxMtx9zdk+nH33r@zn.tnic>
-References: <20220405130021.557880-1-wyes.karny@amd.com>
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8A961B81B14;
+        Tue,  5 Apr 2022 09:47:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D91D9C385A1;
+        Tue,  5 Apr 2022 09:47:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649152027;
+        bh=oYKkbZrm7pxnfDKheAyX3y1/Hm+QiAx86q2QPbVeBdo=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=QV5g18gKkeW3IxWjsFhy2eLXmP+fzKJYgjLpYzPnBvVpevPQVxnVoZgEGXIo6jwPw
+         uyd3l61nZSmHjMi46Q2x2y5E/0OZPdorq8W+yaEwnsLgV1sxt5ctc3E7NgG2pCNqIj
+         eyfTqYtTAapWARbAgAeowKauH7haz/drs/Dz0AuY=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        Sergio Paracuellos <sergio.paracuellos@gmail.com>,
+        =?UTF-8?q?Ar=C4=B1n=C3=A7=20=C3=9CNAL?= <arinc.unal@arinc9.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 629/913] staging: mt7621-dts: fix pinctrl properties for ethernet
+Date:   Tue,  5 Apr 2022 09:28:11 +0200
+Message-Id: <20220405070358.692961623@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20220405130021.557880-1-wyes.karny@amd.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 05, 2022 at 06:30:21PM +0530, Wyes Karny wrote:
-> From: Lewis Caroll <lewis.carroll@amd.com>
-> 
-> Currently in the absence of the cpuidle driver (eg: when global
-> C-States are disabled in the BIOS or when cpuidle is driver is not
-> compiled in),
+From: Arınç ÜNAL <arinc.unal@arinc9.com>
 
-When does that ever happen?
+[ Upstream commit 0a93c0d75809582893e82039143591b9265b520e ]
 
-Sounds like a very very niche situation to me...
+Add pinctrl properties with rgmii1 & mdio pins under ethernet node which
+was wrongfully put under an external phy node.
+GMAC1 will start working with this fix.
 
-> Here we enable MWAIT instruction as the default idle call for AMD
-> Zen processors which support MWAIT. We retain the existing behaviour
-> for older processors which depend on HALT.
+Link: https://lore.kernel.org/netdev/02ecce91-7aad-4392-c9d7-f45ca1b31e0b@arinc9.com/T/
 
-Please use passive voice in your commit message: no "we" or "I", etc,
-and describe your changes in imperative mood.
+Move GB-PC2 specific phy_external node to its own device tree.
 
-Also, pls read section "2) Describe your changes" in
-Documentation/process/submitting-patches.rst for more details.
+Reviewed-by: Sergio Paracuellos <sergio.paracuellos@gmail.com>
+Signed-off-by: Arınç ÜNAL <arinc.unal@arinc9.com>
+Link: https://lore.kernel.org/r/20220125153903.1469-5-arinc.unal@arinc9.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/staging/mt7621-dts/gbpc2.dts   | 16 +++++++++++-----
+ drivers/staging/mt7621-dts/mt7621.dtsi | 13 +++----------
+ 2 files changed, 14 insertions(+), 15 deletions(-)
 
-Also, see section "Changelog" in
-Documentation/process/maintainer-tip.rst
-
-Bottom line is: personal pronouns are ambiguous in text, especially with
-so many parties/companies/etc developing the kernel so let's avoid them
-please.
-
->  static int prefer_mwait_c1_over_halt(const struct cpuinfo_x86 *c)
->  {
-> -	if (c->x86_vendor != X86_VENDOR_INTEL)
-> +	if (!early_mwait_supported(c))
-
-Isn't it enough to simply do here:
-
-	if (cpu_has(c, X86_FEATURE_ZEN))
-		return 1;
-
-        if (c->x86_vendor != X86_VENDOR_INTEL)
-                return 0;
-
-	...
-
-
+diff --git a/drivers/staging/mt7621-dts/gbpc2.dts b/drivers/staging/mt7621-dts/gbpc2.dts
+index 52760e7351f6..f9b69091bfc0 100644
+--- a/drivers/staging/mt7621-dts/gbpc2.dts
++++ b/drivers/staging/mt7621-dts/gbpc2.dts
+@@ -12,10 +12,16 @@
+ 	function = "gpio";
+ };
+ 
+-&gmac1 {
+-	status = "ok";
+-};
++&ethernet {
++	gmac1: mac@1 {
++		status = "ok";
++		phy-handle = <&phy_external>;
++	};
+ 
+-&phy_external {
+-	status = "ok";
++	mdio-bus {
++		phy_external: ethernet-phy@5 {
++			reg = <5>;
++			phy-mode = "rgmii-rxid";
++		};
++	};
+ };
+diff --git a/drivers/staging/mt7621-dts/mt7621.dtsi b/drivers/staging/mt7621-dts/mt7621.dtsi
+index eca384cdec39..99b0eef1f3e2 100644
+--- a/drivers/staging/mt7621-dts/mt7621.dtsi
++++ b/drivers/staging/mt7621-dts/mt7621.dtsi
+@@ -391,6 +391,9 @@
+ 
+ 		mediatek,ethsys = <&sysc>;
+ 
++		pinctrl-names = "default";
++		pinctrl-0 = <&rgmii1_pins &rgmii2_pins &mdio_pins>;
++
+ 		gmac0: mac@0 {
+ 			compatible = "mediatek,eth-mac";
+ 			reg = <0>;
+@@ -408,22 +411,12 @@
+ 			reg = <1>;
+ 			status = "off";
+ 			phy-mode = "rgmii-rxid";
+-			phy-handle = <&phy_external>;
+ 		};
+ 
+ 		mdio-bus {
+ 			#address-cells = <1>;
+ 			#size-cells = <0>;
+ 
+-			phy_external: ethernet-phy@5 {
+-				status = "off";
+-				reg = <5>;
+-				phy-mode = "rgmii-rxid";
+-
+-				pinctrl-names = "default";
+-				pinctrl-0 = <&rgmii2_pins>;
+-			};
+-
+ 			switch0: switch0@0 {
+ 				compatible = "mediatek,mt7621";
+ 				#address-cells = <1>;
 -- 
-Regards/Gruss,
-    Boris.
+2.34.1
 
-https://people.kernel.org/tglx/notes-about-netiquette
+
+
