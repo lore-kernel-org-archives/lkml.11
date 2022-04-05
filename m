@@ -2,50 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 68CC8C43217
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:35:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 533ACC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:35:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1835862AbiDFAdq (ORCPT
+        id S1835877AbiDFAdx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 20:33:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50694 "EHLO
+        Tue, 5 Apr 2022 20:33:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39398 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358036AbiDEK14 (ORCPT
+        with ESMTP id S1348782AbiDEJsf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:27:56 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81EE4694B4;
-        Tue,  5 Apr 2022 03:13:26 -0700 (PDT)
+        Tue, 5 Apr 2022 05:48:35 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3256473058;
+        Tue,  5 Apr 2022 02:35:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3B0DFB81BC5;
-        Tue,  5 Apr 2022 10:13:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A07B2C385A0;
-        Tue,  5 Apr 2022 10:13:23 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B7E2361675;
+        Tue,  5 Apr 2022 09:35:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C709CC385A2;
+        Tue,  5 Apr 2022 09:35:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649153604;
-        bh=90d+GGgfuvveDttGu7IroOu8aqlCrJGjh/c9SDHvU0g=;
+        s=korg; t=1649151314;
+        bh=xn5XjbNCQIGn7W+2fCIddx6tTuzdQS5XIwMYVgOCU0w=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HcY2asybvu1n1cOomDXYOd24yFx9WvGp2UpqKOQw7SbNAymLNlKdDr/gu11TizKTM
-         InvG0mFV5qaJ4TW/YqRKbVkBkFIV5U8WKzI8NfXcd9fnlB6xcSP1cG2qexc1i7u5iq
-         pCnnrhZA5/8utguY2ycmTu0GwmjylO7A0E2b90aU=
+        b=0IuXw6qZSsdnSt6iEWypFIfgh4DLwnFserwqf3NgZBHDTIAdWvDHYmTw7EetC0zSr
+         DrJj2295IN8xS3QwqJtg4fZyxoToYsgZi2B9wMd86Hhxwezs3rI2/LMkrgZY+6WojN
+         hR7OJKlVx/v/P9dDa5lc4WZMQvqwnIHx1Fh/Iqyo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Alexander Lobakin <alexandr.lobakin@intel.com>,
-        Michal Swiatkowski <michal.swiatkowski@linux.intel.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Kiran Bhandare <kiranx.bhandare@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        stable@vger.kernel.org, Aswath Govindraju <a-govindraju@ti.com>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 280/599] i40e: dont reserve excessive XDP_PACKET_HEADROOM on XSK Rx to skb
-Date:   Tue,  5 Apr 2022 09:29:34 +0200
-Message-Id: <20220405070307.167560968@linuxfoundation.org>
+Subject: [PATCH 5.15 332/913] mmc: sdhci_am654: Fix the driver data of AM64 SoC
+Date:   Tue,  5 Apr 2022 09:23:14 +0200
+Message-Id: <20220405070349.800417908@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -54,51 +50,68 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alexander Lobakin <alexandr.lobakin@intel.com>
+From: Aswath Govindraju <a-govindraju@ti.com>
 
-[ Upstream commit bc97f9c6f988b31b728eb47a94ca825401dbeffe ]
+[ Upstream commit 3b7340f1c89cc488e4df0b033bf7ae502ebbf5b2 ]
 
-{__,}napi_alloc_skb() allocates and reserves additional NET_SKB_PAD
-+ NET_IP_ALIGN for any skb.
-OTOH, i40e_construct_skb_zc() currently allocates and reserves
-additional `xdp->data - xdp->data_hard_start`, which is
-XDP_PACKET_HEADROOM for XSK frames.
-There's no need for that at all as the frame is post-XDP and will
-go only to the networking stack core.
-Pass the size of the actual data only to __napi_alloc_skb() and
-don't reserve anything. This will give enough headroom for stack
-processing.
+The MMCSD IPs used in AM64 are the same as the ones used in J721E.
+Therefore, fix this by using the driver data from J721E for AM64 too, for
+both 8 and 4 bit instances.
 
-Fixes: 0a714186d3c0 ("i40e: add AF_XDP zero-copy Rx support")
-Signed-off-by: Alexander Lobakin <alexandr.lobakin@intel.com>
-Reviewed-by: Michal Swiatkowski <michal.swiatkowski@linux.intel.com>
-Acked-by: Jesper Dangaard Brouer <brouer@redhat.com>
-Tested-by: Kiran Bhandare <kiranx.bhandare@intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+Fixes: 754b7f2f7d2a ("mmc: sdhci_am654: Add Support for TI's AM64 SoC")
+Signed-off-by: Aswath Govindraju <a-govindraju@ti.com>
+Link: https://lore.kernel.org/r/20220211075056.26179-1-a-govindraju@ti.com
+Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/intel/i40e/i40e_xsk.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+ drivers/mmc/host/sdhci_am654.c | 24 ++----------------------
+ 1 file changed, 2 insertions(+), 22 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/i40e/i40e_xsk.c b/drivers/net/ethernet/intel/i40e/i40e_xsk.c
-index 86c79f71c685..d444e38360c1 100644
---- a/drivers/net/ethernet/intel/i40e/i40e_xsk.c
-+++ b/drivers/net/ethernet/intel/i40e/i40e_xsk.c
-@@ -252,13 +252,11 @@ static struct sk_buff *i40e_construct_skb_zc(struct i40e_ring *rx_ring,
- 	struct sk_buff *skb;
+diff --git a/drivers/mmc/host/sdhci_am654.c b/drivers/mmc/host/sdhci_am654.c
+index f654afbe8e83..b4891bb26648 100644
+--- a/drivers/mmc/host/sdhci_am654.c
++++ b/drivers/mmc/host/sdhci_am654.c
+@@ -514,26 +514,6 @@ static const struct sdhci_am654_driver_data sdhci_j721e_4bit_drvdata = {
+ 	.flags = IOMUX_PRESENT,
+ };
  
- 	/* allocate a skb to store the frags */
--	skb = __napi_alloc_skb(&rx_ring->q_vector->napi,
--			       xdp->data_end - xdp->data_hard_start,
-+	skb = __napi_alloc_skb(&rx_ring->q_vector->napi, datasize,
- 			       GFP_ATOMIC | __GFP_NOWARN);
- 	if (unlikely(!skb))
- 		return NULL;
- 
--	skb_reserve(skb, xdp->data - xdp->data_hard_start);
- 	memcpy(__skb_put(skb, datasize), xdp->data, datasize);
- 	if (metasize)
- 		skb_metadata_set(skb, metasize);
+-static const struct sdhci_pltfm_data sdhci_am64_8bit_pdata = {
+-	.ops = &sdhci_j721e_8bit_ops,
+-	.quirks2 = SDHCI_QUIRK2_PRESET_VALUE_BROKEN,
+-};
+-
+-static const struct sdhci_am654_driver_data sdhci_am64_8bit_drvdata = {
+-	.pdata = &sdhci_am64_8bit_pdata,
+-	.flags = DLL_PRESENT | DLL_CALIB,
+-};
+-
+-static const struct sdhci_pltfm_data sdhci_am64_4bit_pdata = {
+-	.ops = &sdhci_j721e_4bit_ops,
+-	.quirks2 = SDHCI_QUIRK2_PRESET_VALUE_BROKEN,
+-};
+-
+-static const struct sdhci_am654_driver_data sdhci_am64_4bit_drvdata = {
+-	.pdata = &sdhci_am64_4bit_pdata,
+-	.flags = IOMUX_PRESENT,
+-};
+-
+ static const struct soc_device_attribute sdhci_am654_devices[] = {
+ 	{ .family = "AM65X",
+ 	  .revision = "SR1.0",
+@@ -759,11 +739,11 @@ static const struct of_device_id sdhci_am654_of_match[] = {
+ 	},
+ 	{
+ 		.compatible = "ti,am64-sdhci-8bit",
+-		.data = &sdhci_am64_8bit_drvdata,
++		.data = &sdhci_j721e_8bit_drvdata,
+ 	},
+ 	{
+ 		.compatible = "ti,am64-sdhci-4bit",
+-		.data = &sdhci_am64_4bit_drvdata,
++		.data = &sdhci_j721e_4bit_drvdata,
+ 	},
+ 	{ /* sentinel */ }
+ };
 -- 
 2.34.1
 
