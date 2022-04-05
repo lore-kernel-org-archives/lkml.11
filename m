@@ -2,92 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 85E29C35294
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:17:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 90535C43219
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:17:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1583130AbiDEXvV (ORCPT
+        id S1583187AbiDEXv3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 19:51:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33808 "EHLO
+        Tue, 5 Apr 2022 19:51:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58568 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242763AbiDEKfQ (ORCPT
+        with ESMTP id S1444216AbiDEPlC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:35:16 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4B3427CDB;
-        Tue,  5 Apr 2022 03:20:00 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 647D961562;
-        Tue,  5 Apr 2022 10:20:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 75524C385A1;
-        Tue,  5 Apr 2022 10:19:59 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649153999;
-        bh=hU7IAzgSohg8OgB98cEtIW0zSlPV5Cpe9Y4qKRpwVsw=;
+        Tue, 5 Apr 2022 11:41:02 -0400
+Received: from conuserg-09.nifty.com (conuserg-09.nifty.com [210.131.2.76])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C9A99FC0;
+        Tue,  5 Apr 2022 07:03:31 -0700 (PDT)
+Received: from grover.. (133-32-177-133.west.xps.vectant.ne.jp [133.32.177.133]) (authenticated)
+        by conuserg-09.nifty.com with ESMTP id 235E2k8P021295;
+        Tue, 5 Apr 2022 23:02:51 +0900
+DKIM-Filter: OpenDKIM Filter v2.10.3 conuserg-09.nifty.com 235E2k8P021295
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
+        s=dec2015msa; t=1649167371;
+        bh=14THH7OGjq9Th9kYojci8epMYGgACRtH/hVpWkrrFWI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=aXE4ZYAYXimQ1AsXV6eHd0uH/MULTeo/nzlx6Gv10pfkDDj1KQIjLoSFTpVG++VUw
-         VSdepAWvpDB4qHCxhvMC87pzcUsi6aYhQomMQFXFfKkWPikxFVwgzF/hhhkVawHWRE
-         z22aFUw8Z/x3LlxpJ2HMra7hpMC2qJRhXwMTKF6Y=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Chen-Yu Tsai <wenst@chromium.org>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 422/599] pinctrl: mediatek: paris: Skip custom extra pin config dump for virtual GPIOs
-Date:   Tue,  5 Apr 2022 09:31:56 +0200
-Message-Id: <20220405070311.391652110@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
-User-Agent: quilt/0.66
+        b=AHRXWSvHIn/Itms1OHzLnWPnfTi6I6ES3+aHFhkhJubI1sS1fK3FasYxAuNHMLJrF
+         38F+0OVJBLrIP2I5SdD9IRatQGXP97wfzqXYQdWLenhQHbuRrGf3CdVF7ILZnNrteW
+         rBOamsiDr4mp+D6FXARE37JjaJZRwZDXKwst0g45RJZczTi7G2kmCPce/buFAY0BKy
+         AB3vP1gDmM2TeOJLDcR/3smwqHJZ/+1QL7+XIXUwk6C9twrGiZRTB/o0GKWpvSX5j7
+         jj8rY8Og4fpFXR1YTj2XfyUw+8005VX5j/IiHTpik52FNhFwrj3X9Y6kX3IzcMTrLT
+         Dj2BKi9Jchreg==
+X-Nifty-SrcIP: [133.32.177.133]
+From:   Masahiro Yamada <masahiroy@kernel.org>
+To:     linux-kbuild@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Michal Marek <michal.lkml@markovi.net>,
+        Nick Desaulniers <ndesaulniers@google.com>
+Subject: [PATCH v2 07/10] kbuild: get rid of duplication in the first line of *.mod files
+Date:   Tue,  5 Apr 2022 23:02:26 +0900
+Message-Id: <20220405140229.2895394-8-masahiroy@kernel.org>
+X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20220405140229.2895394-1-masahiroy@kernel.org>
+References: <20220405140229.2895394-1-masahiroy@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chen-Yu Tsai <wenst@chromium.org>
+The first line of *.mod lists the object files that consist of the
+module. This may contain duplication if the same object is added
+multiple times, like this:
 
-[ Upstream commit 1763933d377ecb05454f8d20e3c8922480db2ac0 ]
+  obj-m := foo.o
+  foo-$(CONFIG_FOO1_X) += foo1.o
+  foo-$(CONFIG_FOO1_Y) += foo1.o
+  foo-$(CONFIG_FOO2_X) += foo2.o
+  foo-$(CONFIG_FOO2_Y) += foo2.o
 
-Virtual GPIOs do not have any hardware state associated with them. Any
-attempt to read back hardware state for these pins result in error
-codes.
+This is probably not a big deal. As far as I know, the only small
+problem is scripts/mod/sumversion.c parses the same file over again.
+This can be avoided by adding $(sort ...). It has a side-effect that
+sorts the objects alphabetically, but it is not a big deal, either.
 
-Skip dumping extra pin config information for these virtual GPIOs.
-
-Fixes: 184d8e13f9b1 ("pinctrl: mediatek: Add support for pin configuration dump via debugfs.")
-Signed-off-by: Chen-Yu Tsai <wenst@chromium.org>
-Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-Link: https://lore.kernel.org/r/20220308100956.2750295-7-wenst@chromium.org
-Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
 ---
- drivers/pinctrl/mediatek/pinctrl-paris.c | 3 +++
- 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/pinctrl/mediatek/pinctrl-paris.c b/drivers/pinctrl/mediatek/pinctrl-paris.c
-index 2f3c65265e23..d0a4ebbe1e7e 100644
---- a/drivers/pinctrl/mediatek/pinctrl-paris.c
-+++ b/drivers/pinctrl/mediatek/pinctrl-paris.c
-@@ -580,6 +580,9 @@ ssize_t mtk_pctrl_show_one_pin(struct mtk_pinctrl *hw,
- 	if (gpio >= hw->soc->npins)
- 		return -EINVAL;
+Changes in v2:
+  - new
+
+ scripts/Makefile.build | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/scripts/Makefile.build b/scripts/Makefile.build
+index 3ef2373f0a57..63625877aeae 100644
+--- a/scripts/Makefile.build
++++ b/scripts/Makefile.build
+@@ -307,8 +307,10 @@ $(obj)/%.prelink.o: $(obj)/%.o FORCE
+ 	$(call if_changed,cc_prelink_modules)
+ endif
  
-+	if (mtk_is_virt_gpio(hw, gpio))
-+		return -EINVAL;
++multi-m-prereqs = $(sort $(addprefix $(obj)/, $($*-objs) $($*-y) $($*-m)))
 +
- 	desc = (const struct mtk_pin_desc *)&hw->soc->pins[gpio];
- 	pinmux = mtk_pctrl_get_pinmux(hw, gpio);
- 	if (pinmux >= hw->soc->nfuncs)
+ cmd_mod = { \
+-	echo $(if $($*-objs)$($*-y)$($*-m), $(addprefix $(obj)/, $($*-objs) $($*-y) $($*-m)), $(@:.mod=.o)); \
++	echo $(if $(multi-m-prereqs), $(multi-m-prereqs), $(@:.mod=.o)); \
+ 	$(undefined_syms) echo; \
+ 	} > $@
+ 
 -- 
-2.34.1
-
-
+2.32.0
 
