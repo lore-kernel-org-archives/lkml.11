@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DF294C35296
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 13:41:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C6BC8C352A8
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 13:41:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347079AbiDENkU (ORCPT
+        id S1385156AbiDENlx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 09:40:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54460 "EHLO
+        Tue, 5 Apr 2022 09:41:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42830 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345182AbiDEJWU (ORCPT
+        with ESMTP id S1345264AbiDEJWX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:22:20 -0400
+        Tue, 5 Apr 2022 05:22:23 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0BC422A705;
-        Tue,  5 Apr 2022 02:09:29 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DED2D3FBFC;
+        Tue,  5 Apr 2022 02:10:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 46CC361576;
-        Tue,  5 Apr 2022 09:09:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 57194C385A2;
-        Tue,  5 Apr 2022 09:09:28 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DB0FB61576;
+        Tue,  5 Apr 2022 09:10:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EB561C385A2;
+        Tue,  5 Apr 2022 09:10:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649149768;
-        bh=ptLm1CuAHPAby5gzcyPilmATb+VXBfPZiFpNkxN4WFw=;
+        s=korg; t=1649149804;
+        bh=zDnDnqnkUnkvRiU0Bpg3UFg6AFN8i60eOTOfhbTGywk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cxCSNsGmcnkaXlV+R1IlU3RZEG28t0W611oGfBTEQyXoapoyIL9LJa9yTDSbx1Cur
-         dydAtfp6e1BjYxZxE/JmUSaTfGsV4s9OPzYQGD1aYbGOA0plxhC9V8jOfwhqlZp+tV
-         r2BLh6XB7CJI/S+/IAD+zSSZRXf5sXkenutBXzNg=
+        b=gNWlgUft0Pfa0IYpiY3nbrX0zcWgfc4nx0pqX/uqsUnBc8xvAqoE5VSDJ4PdIpw2M
+         BZkpdEs+iBIGEl+vnepW1cNAi3CPZwLUNx+UuloGe13sFkur30Db4ew2x8hJZgAMCJ
+         o2xLRM4EzyufMDh6D+TvYE3lBF1lyiHKfZAljPJA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Josef Bacik <josef@toxicpanda.com>,
-        David Sterba <dsterba@suse.com>,
+        stable@vger.kernel.org, Rander Wang <rander.wang@intel.com>,
+        Anthony I Gilea <i@cpp.in>,
+        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0797/1017] btrfs: do not double complete bio on errors during compressed reads
-Date:   Tue,  5 Apr 2022 09:28:30 +0200
-Message-Id: <20220405070417.908377432@linuxfoundation.org>
+Subject: [PATCH 5.16 0848/1017] ASoC: Intel: sof_sdw: fix quirks for 2022 HP Spectre x360 13"
+Date:   Tue,  5 Apr 2022 09:29:21 +0200
+Message-Id: <20220405070419.410977809@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -50,128 +52,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Josef Bacik <josef@toxicpanda.com>
+From: Anthony I Gilea <i@cpp.in>
 
-[ Upstream commit f9f15de85d74e7eef021af059ca53a15f041cdd8 ]
+[ Upstream commit ce73ef6ec67104d1fcc4c5911d77ce83288a0998 ]
 
-I hit some weird panics while fixing up the error handling from
-btrfs_lookup_bio_sums().  Turns out the compression path will complete
-the bio we use if we set up any of the compression bios and then return
-an error, and then btrfs_submit_data_bio() will also call bio_endio() on
-the bio.
+HP changed the DMI identification for 2022 devices:
+Product Name: HP Spectre x360 Conv 13-ap0001na
+Product Name: 8709
+This patch relaxes the DMI_MATCH criterion to work with all versions of this product.
 
-Fix this by making btrfs_submit_compressed_read() responsible for
-calling bio_endio() on the bio if there are any errors.  Currently it
-was only doing it if we created the compression bios, otherwise it was
-depending on btrfs_submit_data_bio() to do the right thing.  This
-creates the above problem, so fix up btrfs_submit_compressed_read() to
-always call bio_endio() in case of an error, and then simply return from
-btrfs_submit_data_bio() if we had to call
-btrfs_submit_compressed_read().
-
-Signed-off-by: Josef Bacik <josef@toxicpanda.com>
-Reviewed-by: David Sterba <dsterba@suse.com>
-Signed-off-by: David Sterba <dsterba@suse.com>
+Reviewed-by: Rander Wang <rander.wang@intel.com>
+Signed-off-by: Anthony I Gilea <i@cpp.in>
+Signed-off-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+Link: https://lore.kernel.org/r/20220304204532.54675-4-pierre-louis.bossart@linux.intel.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/btrfs/compression.c | 20 ++++++++++++++------
- fs/btrfs/inode.c       |  8 +++++++-
- 2 files changed, 21 insertions(+), 7 deletions(-)
+ drivers/soundwire/dmi-quirks.c   | 2 +-
+ sound/soc/intel/boards/sof_sdw.c | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/fs/btrfs/compression.c b/fs/btrfs/compression.c
-index 32da97c3c19d..66d6a414b2ca 100644
---- a/fs/btrfs/compression.c
-+++ b/fs/btrfs/compression.c
-@@ -807,7 +807,7 @@ blk_status_t btrfs_submit_compressed_read(struct inode *inode, struct bio *bio,
- 	u64 em_len;
- 	u64 em_start;
- 	struct extent_map *em;
--	blk_status_t ret = BLK_STS_RESOURCE;
-+	blk_status_t ret;
- 	int faili = 0;
- 	u8 *sums;
- 
-@@ -820,14 +820,18 @@ blk_status_t btrfs_submit_compressed_read(struct inode *inode, struct bio *bio,
- 	read_lock(&em_tree->lock);
- 	em = lookup_extent_mapping(em_tree, file_offset, fs_info->sectorsize);
- 	read_unlock(&em_tree->lock);
--	if (!em)
--		return BLK_STS_IOERR;
-+	if (!em) {
-+		ret = BLK_STS_IOERR;
-+		goto out;
-+	}
- 
- 	ASSERT(em->compress_type != BTRFS_COMPRESS_NONE);
- 	compressed_len = em->block_len;
- 	cb = kmalloc(compressed_bio_size(fs_info, compressed_len), GFP_NOFS);
--	if (!cb)
-+	if (!cb) {
-+		ret = BLK_STS_RESOURCE;
- 		goto out;
-+	}
- 
- 	refcount_set(&cb->pending_sectors, compressed_len >> fs_info->sectorsize_bits);
- 	cb->errors = 0;
-@@ -850,8 +854,10 @@ blk_status_t btrfs_submit_compressed_read(struct inode *inode, struct bio *bio,
- 	nr_pages = DIV_ROUND_UP(compressed_len, PAGE_SIZE);
- 	cb->compressed_pages = kcalloc(nr_pages, sizeof(struct page *),
- 				       GFP_NOFS);
--	if (!cb->compressed_pages)
-+	if (!cb->compressed_pages) {
-+		ret = BLK_STS_RESOURCE;
- 		goto fail1;
-+	}
- 
- 	for (pg_index = 0; pg_index < nr_pages; pg_index++) {
- 		cb->compressed_pages[pg_index] = alloc_page(GFP_NOFS);
-@@ -937,7 +943,7 @@ blk_status_t btrfs_submit_compressed_read(struct inode *inode, struct bio *bio,
- 			comp_bio = NULL;
- 		}
- 	}
--	return 0;
-+	return BLK_STS_OK;
- 
- fail2:
- 	while (faili >= 0) {
-@@ -950,6 +956,8 @@ blk_status_t btrfs_submit_compressed_read(struct inode *inode, struct bio *bio,
- 	kfree(cb);
- out:
- 	free_extent_map(em);
-+	bio->bi_status = ret;
-+	bio_endio(bio);
- 	return ret;
- finish_cb:
- 	if (comp_bio) {
-diff --git a/fs/btrfs/inode.c b/fs/btrfs/inode.c
-index cc957cce23a1..68f5a94c82b7 100644
---- a/fs/btrfs/inode.c
-+++ b/fs/btrfs/inode.c
-@@ -2536,10 +2536,15 @@ blk_status_t btrfs_submit_data_bio(struct inode *inode, struct bio *bio,
- 			goto out;
- 
- 		if (bio_flags & EXTENT_BIO_COMPRESSED) {
-+			/*
-+			 * btrfs_submit_compressed_read will handle completing
-+			 * the bio if there were any errors, so just return
-+			 * here.
-+			 */
- 			ret = btrfs_submit_compressed_read(inode, bio,
- 							   mirror_num,
- 							   bio_flags);
--			goto out;
-+			goto out_no_endio;
- 		} else {
- 			/*
- 			 * Lookup bio sums does extra checks around whether we
-@@ -2573,6 +2578,7 @@ blk_status_t btrfs_submit_data_bio(struct inode *inode, struct bio *bio,
- 		bio->bi_status = ret;
- 		bio_endio(bio);
- 	}
-+out_no_endio:
- 	return ret;
- }
- 
+diff --git a/drivers/soundwire/dmi-quirks.c b/drivers/soundwire/dmi-quirks.c
+index 0ca2a3e3a02e..747983743a14 100644
+--- a/drivers/soundwire/dmi-quirks.c
++++ b/drivers/soundwire/dmi-quirks.c
+@@ -59,7 +59,7 @@ static const struct dmi_system_id adr_remap_quirk_table[] = {
+ 	{
+ 		.matches = {
+ 			DMI_MATCH(DMI_SYS_VENDOR, "HP"),
+-			DMI_MATCH(DMI_PRODUCT_NAME, "HP Spectre x360 Convertible"),
++			DMI_MATCH(DMI_PRODUCT_NAME, "HP Spectre x360 Conv"),
+ 		},
+ 		.driver_data = (void *)intel_tgl_bios,
+ 	},
+diff --git a/sound/soc/intel/boards/sof_sdw.c b/sound/soc/intel/boards/sof_sdw.c
+index 54eefaff62a7..182e23bc2f34 100644
+--- a/sound/soc/intel/boards/sof_sdw.c
++++ b/sound/soc/intel/boards/sof_sdw.c
+@@ -184,7 +184,7 @@ static const struct dmi_system_id sof_sdw_quirk_table[] = {
+ 		.callback = sof_sdw_quirk_cb,
+ 		.matches = {
+ 			DMI_MATCH(DMI_SYS_VENDOR, "HP"),
+-			DMI_MATCH(DMI_PRODUCT_NAME, "HP Spectre x360 Convertible"),
++			DMI_MATCH(DMI_PRODUCT_NAME, "HP Spectre x360 Conv"),
+ 		},
+ 		.driver_data = (void *)(SOF_SDW_TGL_HDMI |
+ 					SOF_SDW_PCH_DMIC |
 -- 
 2.34.1
 
