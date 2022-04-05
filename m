@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6483AC4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A9FF3C4167B
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 11:07:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351776AbiDELFH (ORCPT
+        id S1351889AbiDELF2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 07:05:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52916 "EHLO
+        Tue, 5 Apr 2022 07:05:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45578 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238859AbiDEIbA (ORCPT
+        with ESMTP id S237664AbiDEInE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:31:00 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BB2A46172;
-        Tue,  5 Apr 2022 01:23:01 -0700 (PDT)
+        Tue, 5 Apr 2022 04:43:04 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48BFA17E3E;
+        Tue,  5 Apr 2022 01:35:35 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id AF6C260FF5;
-        Tue,  5 Apr 2022 08:23:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C1B23C385A0;
-        Tue,  5 Apr 2022 08:22:59 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 08F08B81A32;
+        Tue,  5 Apr 2022 08:35:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 633A9C385A0;
+        Tue,  5 Apr 2022 08:35:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649146980;
-        bh=PZl1d28eh0Ml/HfchsyAPM7MC3+Qu8D9oVwD+5p1AIY=;
+        s=korg; t=1649147732;
+        bh=MCow+EIfs9h55hYNTV4RqMgF0B+/1q8tBPB3QDPDfrY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dXo51zu+3rXAr+AVmgr6HINASR4kG4hJPXWdw+bNTwGKB4PcRpoQL98rFjuA0m2lk
-         NlqhWPkhFE4MA2b6Q/1aL9O7oDQMCbf6Rr0c/0YubewqHlJgb4r94iQRbC/BGMofRl
-         XBpiecTMhq0h1z9XsKwCF8zXhfQ+vd958JAGDjD4=
+        b=j2RtNzokccjlzS/JYEGVf7jePVnvthzTrI0/I64rpkn1tTKVa4NQFDbHLHTHYlDtA
+         ddv5SReSF+nW3CuwzaWuzhqxTN/TU+mtbp0hKLoM37SxGIyyHS5RldiUb3ru2FCUlh
+         RZi3acsaGhndGhTWiI4WnwFcoRuUT4NW/lbGHAFw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Paolo Bonzini <pbonzini@redhat.com>
-Subject: [PATCH 5.17 0957/1126] KVM: x86: hyper-v: Drop redundant ex parameter from kvm_hv_flush_tlb()
-Date:   Tue,  5 Apr 2022 09:28:24 +0200
-Message-Id: <20220405070435.594294002@linuxfoundation.org>
+        stable@vger.kernel.org, "Paulo Alcantara (SUSE)" <pc@cjr.nz>,
+        Steve French <stfrench@microsoft.com>
+Subject: [PATCH 5.16 0101/1017] cifs: do not skip link targets when an I/O fails
+Date:   Tue,  5 Apr 2022 09:16:54 +0200
+Message-Id: <20220405070357.194710436@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
-References: <20220405070407.513532867@linuxfoundation.org>
+In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
+References: <20220405070354.155796697@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,80 +49,63 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vitaly Kuznetsov <vkuznets@redhat.com>
+From: Paulo Alcantara <pc@cjr.nz>
 
-commit 82c1ead0d678af31e5d883656c12096a0004178b upstream.
+commit 5d7e282541fc91b831a5c4477c5d72881c623df9 upstream.
 
-'struct kvm_hv_hcall' has all the required information already,
-there's no need to pass 'ex' additionally.
+When I/O fails in one of the currently connected DFS targets, retry it
+from other targets as specified in MS-DFSC "3.1.5.2 I/O Operation to
++Target Fails with an Error Other Than STATUS_PATH_NOT_COVERED."
 
-No functional change intended.
-
-Cc: stable@vger.kernel.org # 5.14.x
-Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
-Message-Id: <20220222154642.684285-3-vkuznets@redhat.com>
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+Signed-off-by: Paulo Alcantara (SUSE) <pc@cjr.nz>
+Cc: stable@vger.kernel.org
+Signed-off-by: Steve French <stfrench@microsoft.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/kvm/hyperv.c |   23 ++++++-----------------
- 1 file changed, 6 insertions(+), 17 deletions(-)
+ fs/cifs/connect.c |   14 +++++++++++---
+ 1 file changed, 11 insertions(+), 3 deletions(-)
 
---- a/arch/x86/kvm/hyperv.c
-+++ b/arch/x86/kvm/hyperv.c
-@@ -1750,7 +1750,7 @@ struct kvm_hv_hcall {
- 	sse128_t xmm[HV_HYPERCALL_MAX_XMM_REGISTERS];
- };
+--- a/fs/cifs/connect.c
++++ b/fs/cifs/connect.c
+@@ -3401,6 +3401,9 @@ static int connect_dfs_target(struct mou
+ 	struct cifs_sb_info *cifs_sb = mnt_ctx->cifs_sb;
+ 	char *oldmnt = cifs_sb->ctx->mount_options;
  
--static u64 kvm_hv_flush_tlb(struct kvm_vcpu *vcpu, struct kvm_hv_hcall *hc, bool ex)
-+static u64 kvm_hv_flush_tlb(struct kvm_vcpu *vcpu, struct kvm_hv_hcall *hc)
- {
- 	int i;
- 	gpa_t gpa;
-@@ -1765,7 +1765,8 @@ static u64 kvm_hv_flush_tlb(struct kvm_v
- 	int sparse_banks_len;
- 	bool all_cpus;
++	cifs_dbg(FYI, "%s: full_path=%s ref_path=%s target=%s\n", __func__, full_path, ref_path,
++		 dfs_cache_get_tgt_name(tit));
++
+ 	rc = dfs_cache_get_tgt_referral(ref_path, tit, &ref);
+ 	if (rc)
+ 		goto out;
+@@ -3499,13 +3502,18 @@ static int __follow_dfs_link(struct moun
+ 	if (rc)
+ 		goto out;
  
--	if (!ex) {
-+	if (hc->code == HVCALL_FLUSH_VIRTUAL_ADDRESS_LIST ||
-+	    hc->code == HVCALL_FLUSH_VIRTUAL_ADDRESS_SPACE) {
- 		if (hc->fast) {
- 			flush.address_space = hc->ingpa;
- 			flush.flags = hc->outgpa;
-@@ -2247,32 +2248,20 @@ int kvm_hv_hypercall(struct kvm_vcpu *vc
- 				kvm_hv_hypercall_complete_userspace;
- 		return 0;
- 	case HVCALL_FLUSH_VIRTUAL_ADDRESS_LIST:
--		if (unlikely(!hc.rep_cnt || hc.rep_idx)) {
--			ret = HV_STATUS_INVALID_HYPERCALL_INPUT;
+-	/* Try all dfs link targets */
++	/* Try all dfs link targets.  If an I/O fails from currently connected DFS target with an
++	 * error other than STATUS_PATH_NOT_COVERED (-EREMOTE), then retry it from other targets as
++	 * specified in MS-DFSC "3.1.5.2 I/O Operation to Target Fails with an Error Other Than
++	 * STATUS_PATH_NOT_COVERED."
++	 */
+ 	for (rc = -ENOENT, tit = dfs_cache_get_tgt_iterator(&tl);
+ 	     tit; tit = dfs_cache_get_next_tgt(&tl, tit)) {
+ 		rc = connect_dfs_target(mnt_ctx, full_path, mnt_ctx->leaf_fullpath + 1, tit);
+ 		if (!rc) {
+ 			rc = is_path_remote(mnt_ctx);
 -			break;
--		}
--		ret = kvm_hv_flush_tlb(vcpu, &hc, false);
--		break;
--	case HVCALL_FLUSH_VIRTUAL_ADDRESS_SPACE:
--		if (unlikely(hc.rep)) {
--			ret = HV_STATUS_INVALID_HYPERCALL_INPUT;
--			break;
--		}
--		ret = kvm_hv_flush_tlb(vcpu, &hc, false);
--		break;
- 	case HVCALL_FLUSH_VIRTUAL_ADDRESS_LIST_EX:
- 		if (unlikely(!hc.rep_cnt || hc.rep_idx)) {
- 			ret = HV_STATUS_INVALID_HYPERCALL_INPUT;
- 			break;
++			if (!rc || rc == -EREMOTE)
++				break;
  		}
--		ret = kvm_hv_flush_tlb(vcpu, &hc, true);
-+		ret = kvm_hv_flush_tlb(vcpu, &hc);
- 		break;
-+	case HVCALL_FLUSH_VIRTUAL_ADDRESS_SPACE:
- 	case HVCALL_FLUSH_VIRTUAL_ADDRESS_SPACE_EX:
- 		if (unlikely(hc.rep)) {
- 			ret = HV_STATUS_INVALID_HYPERCALL_INPUT;
- 			break;
- 		}
--		ret = kvm_hv_flush_tlb(vcpu, &hc, true);
-+		ret = kvm_hv_flush_tlb(vcpu, &hc);
- 		break;
- 	case HVCALL_SEND_IPI:
- 		if (unlikely(hc.rep)) {
+ 	}
+ 
+@@ -3579,7 +3587,7 @@ int cifs_mount(struct cifs_sb_info *cifs
+ 		goto error;
+ 
+ 	rc = is_path_remote(&mnt_ctx);
+-	if (rc == -EREMOTE)
++	if (rc)
+ 		rc = follow_dfs_link(&mnt_ctx);
+ 	if (rc)
+ 		goto error;
 
 
