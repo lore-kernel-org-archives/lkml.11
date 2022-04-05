@@ -2,137 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7725DC4321E
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:57:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 41547C43217
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:57:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1838734AbiDFA4h (ORCPT
+        id S1838765AbiDFA4q (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 20:56:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57942 "EHLO
+        Tue, 5 Apr 2022 20:56:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45886 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1573269AbiDESlE (ORCPT
+        with ESMTP id S1457662AbiDEQ2k (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 14:41:04 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9848B20BEF
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 11:39:05 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        Tue, 5 Apr 2022 12:28:40 -0400
+Received: from ms.lwn.net (ms.lwn.net [IPv6:2600:3c01:e000:3a1::42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5BB287C166;
+        Tue,  5 Apr 2022 09:26:42 -0700 (PDT)
+Received: from localhost (unknown [IPv6:2601:281:8300:35:2589:2a93:190d:b787])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 34DC3618D9
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 18:39:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8BF6DC385A1;
-        Tue,  5 Apr 2022 18:39:04 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649183944;
-        bh=YINtmfTLrtIkESCqMaszau4vpZeKcCuTh9FLwNMrA9Q=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=N4ia9nAZLyBw36K8gMDvcjYTjFJeMJB8dxuZ+h2NiUNDSRvtJAtuJpEFt6FVMB0il
-         H3se+4jn2KzM6dycekuoXB2uV/pcCrsAeNESTlnrcvem82qc2o7TSLc/vOj/cjmdKb
-         ib/a/iruIVYL3qZ45UT8kp6GhlUjprNi7RG/07e6S4hlWc9fLMU3ucJ3LacWOGHP5c
-         sHFkc6j9oPSkcb2Z7ISJ237XBRv+X9myzzxuvhsHN8/d3HXpGGe+IVwcXb7KdHQt7S
-         p1Cxm/KVGXYsgjZ4R0y4ITMUYWr2lU+PGzsyd+U77uP1YpydUDkd+vnh/ORIlVJdVr
-         UlnHL9w1EoqHQ==
-Received: from sofa.misterjones.org ([185.219.108.64] helo=why.lan)
-        by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <maz@kernel.org>)
-        id 1nbo50-001tkq-F6; Tue, 05 Apr 2022 19:39:02 +0100
-From:   Marc Zyngier <maz@kernel.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Andre Przywara <andre.przywara@arm.com>,
+        by ms.lwn.net (Postfix) with ESMTPSA id DA08F608;
+        Tue,  5 Apr 2022 16:26:41 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 ms.lwn.net DA08F608
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=lwn.net; s=20201203;
+        t=1649176002; bh=hdowXzq/NUai0/4J9T9jKyuof812l1GFSJ0ykV3EZkg=;
+        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
+        b=nktbmN+5YYLHdx1ydR8Midr+mqkwl9GMf76yqvmv1uQerX1B+W/BGdR2toWFXiCOb
+         qzH0Lsa3/sMI7VqKP65V8hfYGSTWhsB+s1XkwESyXV3plSKUxgPIq7/BM4S56fnocJ
+         RxJAXwsjS6M38bq7g688zWIzY9/vo+rARpE7EpiellJ+MRTMeCFIC5FbdLK3WgutVV
+         5M22JeWazCuQO+HoZ7E4P7zkMXCu38VIwE+O4Gg9NFTsN2GcskHMRtw9puTl5hkZ3B
+         E7fJCiNJb0n1Rdmaap7B5c3yTWjh+aR/GbcPRQ01xwiSXbRufB6tixq4+H7u0dB2uJ
+         d7rMR5z6VyoEw==
+From:   Jonathan Corbet <corbet@lwn.net>
+To:     Akihiko Odaki <akihiko.odaki@gmail.com>
+Cc:     linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org,
+        linux-efi@vger.kernel.org, x86@kernel.org,
         Thomas Gleixner <tglx@linutronix.de>,
-        Eric Auger <eric.auger@redhat.com>
-Subject: [PATCH v2 2/3] irqchip/gic-v3: Detect LPI invalidation MMIO registers
-Date:   Tue,  5 Apr 2022 19:38:56 +0100
-Message-Id: <20220405183857.205960-3-maz@kernel.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220405183857.205960-1-maz@kernel.org>
-References: <20220405183857.205960-1-maz@kernel.org>
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        "H . Peter Anvin" <hpa@zytor.com>,
+        Akihiko Odaki <akihiko.odaki@gmail.com>,
+        Ard Biesheuvel <ardb@kernel.org>
+Subject: Re: [PATCH] x86/efi: Remove references of EFI earlyprintk from
+ documentation
+In-Reply-To: <20220321045853.3324-1-akihiko.odaki@gmail.com>
+References: <20220321045853.3324-1-akihiko.odaki@gmail.com>
+Date:   Tue, 05 Apr 2022 10:26:41 -0600
+Message-ID: <87bkxfebsu.fsf@meer.lwn.net>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 185.219.108.64
-X-SA-Exim-Rcpt-To: linux-kernel@vger.kernel.org, lorenzo.pieralisi@arm.com, andre.przywara@arm.com, tglx@linutronix.de, eric.auger@redhat.com
-X-SA-Exim-Mail-From: maz@kernel.org
-X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Since GICv4.1, an implementation can offer the same MMIO-based
-implementation as DirectLPI, only with an ITS. Given that this
-can be hugely beneficial for workloads that are very LPI masking
-heavy (although these workloads are admitedly a bit odd).
+Akihiko Odaki <akihiko.odaki@gmail.com> writes:
 
-Interestingly, this is independent of RVPEI, which only *implies*
-the functionnality.
+> x86 EFI earlyprink was removed with commit 69c1f396f25b ("efi/x86:
+> Convert x86 EFI earlyprintk into generic earlycon implementation").
 
-So let's detect whether the implementation has GICR_CTLR.IR set,
-and propagate this as DirectLPI to the ITS driver.
+So I will confess that I don't know this area well enough to know
+whether this patch makes sense or not.  To help with that, it would have
+been good to CC Ard, who is the author of the patch you cite above.
+Adding him now.
 
-While we're at it, repaint the GICv3 banner so that we advertise
-the various capabilities at boot time to be slightly less invasive.
+Ard, do you agree with this change (preserved below)?
 
-Signed-off-by: Marc Zyngier <maz@kernel.org>
----
- drivers/irqchip/irq-gic-v3.c | 20 ++++++++++++++++----
- 1 file changed, 16 insertions(+), 4 deletions(-)
+Thanks,
 
-diff --git a/drivers/irqchip/irq-gic-v3.c b/drivers/irqchip/irq-gic-v3.c
-index 0efe1a9a9f3b..4d8517232f1e 100644
---- a/drivers/irqchip/irq-gic-v3.c
-+++ b/drivers/irqchip/irq-gic-v3.c
-@@ -919,6 +919,7 @@ static int __gic_update_rdist_properties(struct redist_region *region,
- 					 void __iomem *ptr)
- {
- 	u64 typer = gic_read_typer(ptr + GICR_TYPER);
-+	u32 ctlr = readl_relaxed(ptr + GICR_CTLR);
- 
- 	/* Boot-time cleanip */
- 	if ((typer & GICR_TYPER_VLPIS) && (typer & GICR_TYPER_RVPEID)) {
-@@ -938,9 +939,18 @@ static int __gic_update_rdist_properties(struct redist_region *region,
- 
- 	gic_data.rdists.has_vlpis &= !!(typer & GICR_TYPER_VLPIS);
- 
--	/* RVPEID implies some form of DirectLPI, no matter what the doc says... :-/ */
-+	/*
-+	 * TYPER.RVPEID implies some form of DirectLPI, no matter what the
-+	 * doc says... :-/ And CTLR.IR implies another subset of DirectLPI
-+	 * that the ITS driver can make use of for LPIs (and not VLPIs).
-+	 *
-+	 * These are 3 different ways to express the same thing, depending
-+	 * on the revision of the architecture and its relaxations over
-+	 * time. Just group them under the 'direct_lpi' banner.
-+	 */
- 	gic_data.rdists.has_rvpeid &= !!(typer & GICR_TYPER_RVPEID);
- 	gic_data.rdists.has_direct_lpi &= (!!(typer & GICR_TYPER_DirectLPIS) |
-+					   !!(ctlr & GICR_CTLR_IR) |
- 					   gic_data.rdists.has_rvpeid);
- 	gic_data.rdists.has_vpend_valid_dirty &= !!(typer & GICR_TYPER_DIRTY);
- 
-@@ -962,7 +972,11 @@ static void gic_update_rdist_properties(void)
- 	gic_iterate_rdists(__gic_update_rdist_properties);
- 	if (WARN_ON(gic_data.ppi_nr == UINT_MAX))
- 		gic_data.ppi_nr = 0;
--	pr_info("%d PPIs implemented\n", gic_data.ppi_nr);
-+	pr_info("GICv3 features: %d PPIs%s%s\n",
-+		gic_data.ppi_nr,
-+		gic_data.has_rss ? ", RSS" : "",
-+		gic_data.rdists.has_direct_lpi ? ", DirectLPI" : "");
-+	
- 	if (gic_data.rdists.has_vlpis)
- 		pr_info("GICv4 features: %s%s%s\n",
- 			gic_data.rdists.has_direct_lpi ? "DirectLPI " : "",
-@@ -1797,8 +1811,6 @@ static int __init gic_init_bases(void __iomem *dist_base,
- 	irq_domain_update_bus_token(gic_data.domain, DOMAIN_BUS_WIRED);
- 
- 	gic_data.has_rss = !!(typer & GICD_TYPER_RSS);
--	pr_info("Distributor has %sRange Selector support\n",
--		gic_data.has_rss ? "" : "no ");
- 
- 	if (typer & GICD_TYPER_MBIS) {
- 		err = mbi_init(handle, gic_data.domain);
--- 
-2.34.1
+jon
 
+> Signed-off-by: Akihiko Odaki <akihiko.odaki@gmail.com>
+> ---
+>  Documentation/admin-guide/kernel-parameters.txt | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+>
+> diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
+> index f5a27f067db9..fb39337f4123 100644
+> --- a/Documentation/admin-guide/kernel-parameters.txt
+> +++ b/Documentation/admin-guide/kernel-parameters.txt
+> @@ -1252,7 +1252,7 @@
+>  			Append ",keep" to not disable it when the real console
+>  			takes over.
+>  
+> -			Only one of vga, efi, serial, or usb debug port can
+> +			Only one of vga, serial, or usb debug port can
+>  			be used at a time.
+>  
+>  			Currently only ttyS0 and ttyS1 may be specified by
+> @@ -1267,7 +1267,7 @@
+>  			Interaction with the standard serial driver is not
+>  			very good.
+>  
+> -			The VGA and EFI output is eventually overwritten by
+> +			The VGA output is eventually overwritten by
+>  			the real console.
+>  
+>  			The xen option can only be used in Xen domains.
+> -- 
+> 2.35.1
