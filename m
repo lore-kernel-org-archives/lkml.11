@@ -2,113 +2,136 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DDD8DC433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BE3D0C433EF
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:28:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356009AbiDEUXd (ORCPT
+        id S1355267AbiDEUXY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 16:23:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43876 "EHLO
+        Tue, 5 Apr 2022 16:23:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48138 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1443197AbiDEPjJ (ORCPT
+        with ESMTP id S1573704AbiDETqW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 11:39:09 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3197147AE3;
-        Tue,  5 Apr 2022 06:55:05 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 60F6AB81C6D;
-        Tue,  5 Apr 2022 13:55:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 109E2C385A8;
-        Tue,  5 Apr 2022 13:55:04 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649166904;
-        bh=t8pTv4fue03rDbmW0c2vFERKy3L8DUcOeDN48ij1fxs=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=flP9kT021gG4aSMIHS2JnxoXJiVwTz6Iy6PYbfItKeTEaEJLs/X4FSzl3/T7l3d3b
-         TZLzN8JBylLtsg7zih/IWefEfixHHNkyHIdsBmJlxa1N7uva7JIMx+5hD+R8rG7NMy
-         TSw0vo82sfIOY7r7olBbRXsErixaEMktVaZj9hf8NpOy/USUXOM4910eE98E6Xqlv0
-         dIUwMvhzGEt6GwF4SqMoaZ2MPDgXo57dxaaGIJXO4flUS3dcZefpNNOM/vAlcVLGyw
-         jWQe8aydmCs3ogiiyh9/PB5rSbNddZyQ5kGxmF0xx2XY0Frf9RLVXOUS3N2ZLgFzxD
-         hg+JeeiTZVpjw==
-Received: from sofa.misterjones.org ([185.219.108.64] helo=why.lan)
-        by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <maz@kernel.org>)
-        id 1nbjeA-001q4g-0J; Tue, 05 Apr 2022 14:55:02 +0100
-From:   Marc Zyngier <maz@kernel.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Linus Walleij <linus.walleij@linaro.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Joey Gouly <joey.gouly@arm.com>,
-        Jonathan Hunter <jonathanh@nvidia.com>,
-        Hector Martin <marcan@marcan.st>,
-        Sven Peter <sven@svenpeter.dev>,
-        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Andy Gross <agross@kernel.org>,
-        Jeffrey Hugo <jeffrey.l.hugo@gmail.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Basavaraj Natikar <Basavaraj.Natikar@amd.com>,
-        Shyam Sundar S K <Shyam-sundar.S-k@amd.com>,
-        linux-gpio@vger.kernel.org, linux-tegra@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-arm-msm@vger.kernel.org, kernel-team@android.com
-Subject: [PATCH v2 09/10] gpio: Update TODO to mention immutable irq_chip structures
-Date:   Tue,  5 Apr 2022 14:54:43 +0100
-Message-Id: <20220405135444.199295-10-maz@kernel.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220405135444.199295-1-maz@kernel.org>
-References: <20220405135444.199295-1-maz@kernel.org>
+        Tue, 5 Apr 2022 15:46:22 -0400
+Received: from mout.gmx.net (mout.gmx.net [212.227.17.21])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C96E414087;
+        Tue,  5 Apr 2022 12:44:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1649187852;
+        bh=BXQ8G9Dr8k3xNyKxt7GcxOAd7iGTbrc+JOzLOV5RqvU=;
+        h=X-UI-Sender-Class:Date:From:To:Cc:Subject:In-Reply-To:References;
+        b=c/J3VEbnYefBqbKhuaYmSYCRtp8LljUH7n9dOo4nnNZyr/chN6HnyRR2f7h7wSXjd
+         CCp6+n1Djb2DYTiMbm/j3bRU3URtxO9YD6n/ciZOTT68EN/kgQNE6G+qO8BuwVF+Aa
+         Z/BG5CoNCMGhSTKZv6KKnZlFy+Hu9peAKDBI8yaw=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from mir ([94.31.89.21]) by mail.gmx.net (mrgmx104 [212.227.17.168])
+ with ESMTPSA (Nemesis) id 1MFsYx-1nmYTr0qh5-00HMCU; Tue, 05 Apr 2022 21:44:12
+ +0200
+Date:   Tue, 5 Apr 2022 21:44:09 +0200
+From:   Stefan Lippers-Hollmann <s.l-h@gmx.de>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
+        Bard Liao <yung-chuan.liao@linux.intel.com>,
+        =?UTF-8?B?UMOpdGVy?= Ujfalusi <peter.ujfalusi@linux.intel.com>,
+        Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: Re: [PATCH 5.17 0943/1126] ASoC: Intel: sof_es8336: use NHLT
+ information to set dmic and SSP
+Message-ID: <20220405214409.52f3ede7@mir>
+In-Reply-To: <20220405070435.188697055@linuxfoundation.org>
+References: <20220405070407.513532867@linuxfoundation.org>
+        <20220405070435.188697055@linuxfoundation.org>
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 185.219.108.64
-X-SA-Exim-Rcpt-To: linux-kernel@vger.kernel.org, linus.walleij@linaro.org, brgl@bgdev.pl, thierry.reding@gmail.com, joey.gouly@arm.com, jonathanh@nvidia.com, marcan@marcan.st, sven@svenpeter.dev, alyssa@rosenzweig.io, bjorn.andersson@linaro.org, agross@kernel.org, jeffrey.l.hugo@gmail.com, tglx@linutronix.de, Basavaraj.Natikar@amd.com, Shyam-sundar.S-k@amd.com, linux-gpio@vger.kernel.org, linux-tegra@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-arm-msm@vger.kernel.org, kernel-team@android.com
-X-SA-Exim-Mail-From: maz@kernel.org
-X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
+X-Provags-ID: V03:K1:txWOjwm3T5sVY1g/TCsV7PEFAamF3HDYlLhAeFzUJWIJ8Pwmk8M
+ Yt3AvXEPy9GHynICk1Yh/J6Msry5YqwlQrOi2fcr1AwEav8kKYSogYOJaTYDorYt/+6loHb
+ 1xCxhatseXMziahVddnYk6k3/iubRVPwGEhZerCXuvtYXznBZs3YA5fWnR+pOEo9Z9Jz+jm
+ fTMANNVCFSnFWl4d6Me/Q==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:FkulZaLFO2w=:lgROdH3sTkvRRwtkQck4b0
+ ZxEZsJDNtb9vh3Eubsth9tr5TxFyv/YTVXYheb5gUZIkzoasomNcj2jvkbZRy9lZZJQxbThkt
+ Rkmnba/483239EKOSqKSPk8hQfoqdbuuRC+NtOjpMbQV03ZOhVe6WANX+WrwDW9XhbSsRAOgY
+ aeAv98p5g8Q/llH3ywfhuuJ0c65qiPGtUu3pRDeh6TDV/V7LLCmH89v6qvrf5OaXog0jSHU6X
+ gu8XliQMMBtc9k5hQ8WPDQhsVw8XFqG5D8pIhjvPJWJ76fZzPh76iAnVxG5Jmg+ggao+8KumA
+ /lqQF593U6wRfDwvks+sBu1f8Z/BAU/DQApgizJYgvdUdN5Hlpss3lv3BWaoJZhGuJaK9mfLd
+ P1jCrENw50lVraP30dR1rjSQeKr2sZ0RURocuRZhx7jWWv0gykHT2zFHDZD3S8SZGJ/wL5UDK
+ WwOimnlSdWvDVSOLTLSOBVfBYkQuXWBa/kdH8aXv+haxtpX4VH2ZEmHW289r/ZpAWuX9+uivn
+ XqCzgUIvvId6F+iCQyIEGBUQYWnKgqYiP2BFhoZYJe9+KhIoKzvuKalRRGjok5M+ftMce8xC+
+ Yc6WQTpPaw6tr9is9UnhvBKVGkutL+HZT3aDgEUI73baLtQFj1icEbTFIrEUSRlgnyjSO1bcO
+ pym0uXuR0HHYV9WHMHllMCSeBHQWljl9qfDI0a5fvhf8uO9fHej52wTL0WR9a68pnGkjuWSMN
+ rg5Vew7SLUhjI+XTyVZ2fDf9Ds/9qmDdCTKdDJvSXYTp2homdssG7lXvi5fMnasJY/TyB2Z+F
+ MyrZ0X1ClimOk/g9jq37r4lX4loLhMIxeXmajO6XLesEAE/ds3FPLndc3aYQxHsQE+ox2HOUj
+ klqYvT43Hkm5iITxZrRdqqQHE6U0lTWrvH0Lb5FRaebn0pH463CJrFcMPlZxX2zuxF7hI6nvo
+ kZyXRP3Ch9etZZ4WwxI7A1rOnhDWcWJ3zxCwsLhyyRGykwVUdgJ4suQu8ILhqxYHKeMKImfUy
+ iqQIBMXOU6QLKrnjwBNmk3SXosNXy6RQdw8NHNWKHXmR9a20Wlm+MKCqchTz9fKbA5Oij+Jae
+ xVcIxNv7OQiY/A=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-5 drivers are converted, a few hundred to go. Definitely worth of
-a TODO entry, in the hope that someone will notice it and do
-a bulk update.
+Hi
 
-Signed-off-by: Marc Zyngier <maz@kernel.org>
----
- drivers/gpio/TODO | 19 +++++++++++++++++++
- 1 file changed, 19 insertions(+)
+On 2022-04-05, Greg Kroah-Hartman wrote:
+> From: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+>
+> [ Upstream commit 651c304df7f6e3fbb4779527efa3eb128ef91329 ]
+>
+> Since we see a proliferation of devices with various configurations,
+> we want to automatically set the DMIC and SSP information. This patch
+> relies on the information extracted from NHLT and partially reverts
+> existing DMI quirks added by commit a164137ce91a ("ASoC: Intel: add
+> machine driver for SOF+ES8336")
+>
+> Note that NHLT can report multiple SSPs, choosing from the
+> ssp_link_mask in an MSB-first manner was found experimentally to work
+> fine.
+>
+> The only thing that cannot be detected is the GPIO type, and users may
+> want to use the quirk override parameter if the 'wrong' solution is
+> provided.
+[...]
 
-diff --git a/drivers/gpio/TODO b/drivers/gpio/TODO
-index b8b1473a5b1e..f87ff3fa8a53 100644
---- a/drivers/gpio/TODO
-+++ b/drivers/gpio/TODO
-@@ -178,3 +178,22 @@ discussed but the idea is to provide a low-level access point
- for debugging and hacking and to expose all lines without the
- need of any exporting. Also provide ample ammunition to shoot
- oneself in the foot, because this is debugfs after all.
-+
-+
-+Moving over to immutable irq_chip structures
-+
-+Most of the gpio chips implementing interrupt support rely on gpiolib
-+intercepting some of the irq_chip callbacks, preventing the structures
-+from being made read-only and forcing duplication of structures that
-+should otherwise be unique.
-+
-+The solution is to call into the gpiolib code when needed (resource
-+management, enable/disable or unmask/mask callbacks), and to let the
-+core code know about that by exposing a flag (IRQCHIP_IMMUTABLE) in
-+the irq_chip structure. The irq_chip structure can then be made unique
-+and const.
-+
-+A small number of drivers have been converted (pl061, tegra186, msm,
-+amd, apple), and can be used as examples of how to proceed with this
-+conversion. Note that drivers using the generic irqchip framework
-+cannot be converted yet, but watch this space!
--- 
-2.34.1
+This patch, as part of v5.17.2-rc1 seems to introduce a build failure
+on x86_64 (with CONFIG_SND_SOC_INTEL_SOF_ES8336_MACH=3Dm):
 
+  LD [M]  sound/soc/intel/boards/snd-soc-sof_rt5682.o
+  LD [M]  sound/soc/intel/boards/snd-soc-sof_cs42l42.o
+  CC [M]  sound/soc/intel/boards/sof_es8336.o
+/build/linux-5.17/sound/soc/intel/boards/sof_es8336.c: In function 'sof_es=
+8336_probe':
+/build/linux-5.17/sound/soc/intel/boards/sof_es8336.c:482:32: error: 'stru=
+ct snd_soc_acpi_mach_params' has no member named 'i2s_link_mask'; did you =
+mean 'link_mask'?
+  482 |         if (!mach->mach_params.i2s_link_mask) {
+      |                                ^~~~~~~~~~~~~
+      |                                link_mask
+/build/linux-5.17/sound/soc/intel/boards/sof_es8336.c:494:39: error: 'stru=
+ct snd_soc_acpi_mach_params' has no member named 'i2s_link_mask'; did you =
+mean 'link_mask'?
+  494 |                 if (mach->mach_params.i2s_link_mask & BIT(2))
+      |                                       ^~~~~~~~~~~~~
+      |                                       link_mask
+/build/linux-5.17/sound/soc/intel/boards/sof_es8336.c:496:44: error: 'stru=
+ct snd_soc_acpi_mach_params' has no member named 'i2s_link_mask'; did you =
+mean 'link_mask'?
+  496 |                 else if (mach->mach_params.i2s_link_mask & BIT(1))
+      |                                            ^~~~~~~~~~~~~
+      |                                            link_mask
+/build/linux-5.17/sound/soc/intel/boards/sof_es8336.c:498:45: error: 'stru=
+ct snd_soc_acpi_mach_params' has no member named 'i2s_link_mask'; did you =
+mean 'link_mask'?
+  498 |                 else  if (mach->mach_params.i2s_link_mask & BIT(0)=
+)
+      |                                             ^~~~~~~~~~~~~
+      |                                             link_mask
+make[4]: *** [/build/linux-5.17/scripts/Makefile.build:288: sound/soc/inte=
+l/boards/sof_es8336.o] Error 1
+
+Reverting just this patch lets the build, using the same buildconfig,
+succeed again.
+
+Regards
+	Stefan Lippers-Hollmann
