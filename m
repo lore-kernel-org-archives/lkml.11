@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D8FFC3527E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E1A2C35280
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 13:23:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357064AbiDENIa (ORCPT
+        id S1352444AbiDENHB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 09:08:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40112 "EHLO
+        Tue, 5 Apr 2022 09:07:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34664 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344035AbiDEJQ6 (ORCPT
+        with ESMTP id S1343998AbiDEJQo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:16:58 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64E171834D;
-        Tue,  5 Apr 2022 02:03:51 -0700 (PDT)
+        Tue, 5 Apr 2022 05:16:44 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BBEF4DB8;
+        Tue,  5 Apr 2022 02:03:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 190DFB80DA1;
-        Tue,  5 Apr 2022 09:03:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 804D1C385A1;
-        Tue,  5 Apr 2022 09:03:48 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5937D61564;
+        Tue,  5 Apr 2022 09:03:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 69A93C385A0;
+        Tue,  5 Apr 2022 09:03:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649149428;
-        bh=nHOg9kX+MbvlIgN8jRKrk4EKwtzKb7SaZy1WfCamDGo=;
+        s=korg; t=1649149384;
+        bh=rVa3BtFeEck8HSKqg/KNTVHLzOTPHwtgBXWwdUtOjjk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FKzXbLRZOyortw+h+cgyCaL6XEavxfPqbZqLKNJv/FZPG+i/92P8AiYFcP/YAk6C5
-         sMBsHHencq4Yq3tsTX9Sj8g97/B3oEHBpYFnKmL973qNrwk5vxPCnnkSsd4hLM1gH5
-         ppuZEDFUv+CP9p8F4T+xG48qQTyOuVaSXyb2/vFo=
+        b=A0ZCRtTsKKdQ77w8kaAR1ODM5nZWZ93JDeiTJW0UqkbhnC1f4yUnQKNoekiXrXSUI
+         aaQkU4MZY0/TOqwlFA6ksjuLiXnU+0gfcPA1hMK1Z6ZcaP4FkH3fjP9X/Gw6s/iIoY
+         /5qGxrjrKrtqEGoJ53K6eaCqr3Zw4SIowbPOeNb4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, David Wolfe <david.wolfe@nxp.com>,
-        Abel Vesa <abel.vesa@nxp.com>, Peng Fan <peng.fan@nxp.com>,
+        stable@vger.kernel.org,
+        Sergio Paracuellos <sergio.paracuellos@gmail.com>,
+        =?UTF-8?q?Ar=C4=B1n=C3=A7=20=C3=9CNAL?= <arinc.unal@arinc9.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0674/1017] clk: imx7d: Remove audio_mclk_root_clk
-Date:   Tue,  5 Apr 2022 09:26:27 +0200
-Message-Id: <20220405070414.286804465@linuxfoundation.org>
+Subject: [PATCH 5.16 0695/1017] staging: mt7621-dts: fix GB-PC2 devicetree
+Date:   Tue,  5 Apr 2022 09:26:48 +0200
+Message-Id: <20220405070414.902137791@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -50,36 +51,167 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Abel Vesa <abel.vesa@nxp.com>
+From: Arınç ÜNAL <arinc.unal@arinc9.com>
 
-[ Upstream commit eccac77ede3946c90143447cdc785dc16aec4b24 ]
+[ Upstream commit 5bc148649cf358d0cccf525452a4efbd4bc89a0f ]
 
-The audio_mclk_root_clk was added as a gate with the CCGR121 (0x4790),
-but according to the reference manual, there is no such gate. The
-CCGR121 belongs to ECSPI2 and it is not shared.
+Fix the GB-PC2 devicetree. Refer to the schematics of the device for more
+information.
 
-Fixes: 8f6d8094b215b57 ("ARM: imx: add imx7d clk tree support")
-Reported-by: David Wolfe <david.wolfe@nxp.com>
-Signed-off-by: Abel Vesa <abel.vesa@nxp.com>
-Reviewed-by: Peng Fan <peng.fan@nxp.com>
-Link: https://lore.kernel.org/r/20220127141052.1900174-2-abel.vesa@nxp.com
+GB-PC2 devicetree fixes:
+- Include mt7621.dtsi instead of gbpc1.dts. Add the missing definitions.
+- Remove gpio-leds node as the system LED is not wired to anywhere on
+the board and the power LED is directly wired to GND.
+- Remove uart3 pin group from gpio-pinmux node as it's not used as GPIO.
+- Use reg 7 for the external phy to be on par with
+Documentation/devicetree/bindings/net/dsa/mt7530.txt.
+- Use the status value "okay".
+
+Link: https://github.com/ngiger/GnuBee_Docs/blob/master/GB-PCx/Documents/GB-PC2_V1.1_schematic.pdf
+Reviewed-by: Sergio Paracuellos <sergio.paracuellos@gmail.com>
+Signed-off-by: Arınç ÜNAL <arinc.unal@arinc9.com>
+Link: https://lore.kernel.org/r/20220311090320.3068-2-arinc.unal@arinc9.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/clk/imx/clk-imx7d.c | 1 -
- 1 file changed, 1 deletion(-)
+ drivers/staging/mt7621-dts/gbpc2.dts | 110 +++++++++++++++++++++++++--
+ 1 file changed, 102 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/clk/imx/clk-imx7d.c b/drivers/clk/imx/clk-imx7d.c
-index c4e0f1c07192..3f6fd7ef2a68 100644
---- a/drivers/clk/imx/clk-imx7d.c
-+++ b/drivers/clk/imx/clk-imx7d.c
-@@ -849,7 +849,6 @@ static void __init imx7d_clocks_init(struct device_node *ccm_node)
- 	hws[IMX7D_WDOG4_ROOT_CLK] = imx_clk_hw_gate4("wdog4_root_clk", "wdog_post_div", base + 0x49f0, 0);
- 	hws[IMX7D_KPP_ROOT_CLK] = imx_clk_hw_gate4("kpp_root_clk", "ipg_root_clk", base + 0x4aa0, 0);
- 	hws[IMX7D_CSI_MCLK_ROOT_CLK] = imx_clk_hw_gate4("csi_mclk_root_clk", "csi_mclk_post_div", base + 0x4490, 0);
--	hws[IMX7D_AUDIO_MCLK_ROOT_CLK] = imx_clk_hw_gate4("audio_mclk_root_clk", "audio_mclk_post_div", base + 0x4790, 0);
- 	hws[IMX7D_WRCLK_ROOT_CLK] = imx_clk_hw_gate4("wrclk_root_clk", "wrclk_post_div", base + 0x47a0, 0);
- 	hws[IMX7D_USB_CTRL_CLK] = imx_clk_hw_gate4("usb_ctrl_clk", "ahb_root_clk", base + 0x4680, 0);
- 	hws[IMX7D_USB_PHY1_CLK] = imx_clk_hw_gate4("usb_phy1_clk", "pll_usb1_main_clk", base + 0x46a0, 0);
+diff --git a/drivers/staging/mt7621-dts/gbpc2.dts b/drivers/staging/mt7621-dts/gbpc2.dts
+index 03d6bb6735ac..a7fce8de6147 100644
+--- a/drivers/staging/mt7621-dts/gbpc2.dts
++++ b/drivers/staging/mt7621-dts/gbpc2.dts
+@@ -1,28 +1,122 @@
+ // SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+ /dts-v1/;
+ 
+-#include "gbpc1.dts"
++#include "mt7621.dtsi"
++
++#include <dt-bindings/gpio/gpio.h>
++#include <dt-bindings/input/input.h>
+ 
+ / {
+ 	compatible = "gnubee,gb-pc2", "mediatek,mt7621-soc";
+ 	model = "GB-PC2";
++
++	memory@0 {
++		device_type = "memory";
++		reg = <0x00000000 0x1c000000>,
++		      <0x20000000 0x04000000>;
++	};
++
++	chosen {
++		bootargs = "console=ttyS0,57600";
++	};
++
++	palmbus: palmbus@1e000000 {
++		i2c@900 {
++			status = "okay";
++		};
++	};
++
++	gpio-keys {
++		compatible = "gpio-keys";
++
++		reset {
++			label = "reset";
++			gpios = <&gpio 18 GPIO_ACTIVE_HIGH>;
++			linux,code = <KEY_RESTART>;
++		};
++	};
+ };
+ 
+-&default_gpio {
+-	groups = "wdt", "uart3";
+-	function = "gpio";
++&sdhci {
++	status = "okay";
++};
++
++&spi0 {
++	status = "okay";
++
++	m25p80@0 {
++		#address-cells = <1>;
++		#size-cells = <1>;
++		compatible = "jedec,spi-nor";
++		reg = <0>;
++		spi-max-frequency = <50000000>;
++		broken-flash-reset;
++
++		partition@0 {
++			label = "u-boot";
++			reg = <0x0 0x30000>;
++			read-only;
++		};
++
++		partition@30000 {
++			label = "u-boot-env";
++			reg = <0x30000 0x10000>;
++			read-only;
++		};
++
++		factory: partition@40000 {
++			label = "factory";
++			reg = <0x40000 0x10000>;
++			read-only;
++		};
++
++		partition@50000 {
++			label = "firmware";
++			reg = <0x50000 0x1fb0000>;
++		};
++	};
++};
++
++&pcie {
++	status = "okay";
++};
++
++&pinctrl {
++	pinctrl-names = "default";
++	pinctrl-0 = <&state_default>;
++
++	state_default: state-default {
++		gpio-pinmux {
++			groups = "wdt";
++			function = "gpio";
++		};
++	};
+ };
+ 
+ &ethernet {
+ 	gmac1: mac@1 {
+-		status = "ok";
+-		phy-handle = <&phy_external>;
++		status = "okay";
++		phy-handle = <&ethphy7>;
+ 	};
+ 
+ 	mdio-bus {
+-		phy_external: ethernet-phy@5 {
+-			reg = <5>;
++		ethphy7: ethernet-phy@7 {
++			reg = <7>;
+ 			phy-mode = "rgmii-rxid";
+ 		};
+ 	};
+ };
++
++&switch0 {
++	ports {
++		port@0 {
++			status = "okay";
++			label = "ethblack";
++		};
++
++		port@4 {
++			status = "okay";
++			label = "ethblue";
++		};
++	};
++};
 -- 
 2.34.1
 
