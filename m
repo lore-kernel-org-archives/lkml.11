@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C176C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5CAA2C433F5
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:21:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1586893AbiDFAGT (ORCPT
+        id S1455954AbiDFAGE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 20:06:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54284 "EHLO
+        Tue, 5 Apr 2022 20:06:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34414 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349570AbiDEJuX (ORCPT
+        with ESMTP id S1354128AbiDEKLw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:50:23 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E76589B;
-        Tue,  5 Apr 2022 02:48:24 -0700 (PDT)
+        Tue, 5 Apr 2022 06:11:52 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68C754AE36;
+        Tue,  5 Apr 2022 02:57:32 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 745F961576;
-        Tue,  5 Apr 2022 09:48:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7C3E8C385A2;
-        Tue,  5 Apr 2022 09:48:23 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 18003B817D3;
+        Tue,  5 Apr 2022 09:57:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 678B5C385A1;
+        Tue,  5 Apr 2022 09:57:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649152103;
-        bh=Z2fRyKtO0unBo5yv4F+hHOmM6Dx9c+nDJFB8oxsdOnA=;
+        s=korg; t=1649152649;
+        bh=5+9KDAL48H0XGF+RquqS/qTbpGXDPw4MvNTSaXTNd/0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=N0spG58nshJfnsrudYxBalgtAtQwAoVgs2fJbMP6ausnuZC1UlTnI2WVX8emW9MZ0
-         /Jb4lwAbsf9fPo8RcLMnzu8WeD3TGhUAuqAHUVowZigCv0cU95MzZoqK8IfMxMngkX
-         UC1zw3+aWzn0s8ijZKg7A/Uw9mJY9od3r7aL3hWk=
+        b=L76Yh/ekbaYVCUipuD6idhmMB2a8libl7+W+iTplLa3bsE3yt/42avPULxs+xxXLh
+         EcarYSdHl4BosA5RKJ7TiBv7UbewdOxdF36bq4EirxC5Ysy2a96gYAILH0zss67xa6
+         YRaKkxLpgo1ijMNpm4Kd384AS7Wr1A1SyV3lUaiY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, "Michael S. Tsirkin" <mst@redhat.com>,
-        Stefano Garzarella <sgarzare@redhat.com>,
-        Stefan Hajnoczi <stefanha@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 655/913] vsock/virtio: initialize vdev->priv before using VQs
-Date:   Tue,  5 Apr 2022 09:28:37 +0200
-Message-Id: <20220405070359.472381602@linuxfoundation.org>
+        stable@vger.kernel.org, Sungup Moon <sungup.moon@samsung.com>,
+        Christoph Hellwig <hch@lst.de>,
+        Sagi Grimberg <sagi@grimberg.me>
+Subject: [PATCH 5.15 826/913] nvme: allow duplicate NSIDs for private namespaces
+Date:   Tue,  5 Apr 2022 09:31:28 +0200
+Message-Id: <20220405070404.589654084@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
 References: <20220405070339.801210740@linuxfoundation.org>
@@ -52,48 +50,127 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Stefano Garzarella <sgarzare@redhat.com>
+From: Sungup Moon <sungup.moon@samsung.com>
 
-[ Upstream commit 4b5f1ad5566ada230aaa2ce861b28d1895f1ea68 ]
+commit 5974ea7ce0f9a5987fc8cf5e08ad6e3e70bb542e upstream.
 
-When we fill VQs with empty buffers and kick the host, it may send
-an interrupt. `vdev->priv` must be initialized before this since it
-is used in the virtqueue callbacks.
+A NVMe subsystem with multiple controller can have private namespaces
+that use the same NSID under some conditions:
 
-Fixes: 0deab087b16a ("vsock/virtio: use RCU to avoid use-after-free on the_virtio_vsock")
-Suggested-by: Michael S. Tsirkin <mst@redhat.com>
-Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
-Acked-by: Michael S. Tsirkin <mst@redhat.com>
-Reviewed-by: Stefan Hajnoczi <stefanha@redhat.com>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+ "If Namespace Management, ANA Reporting, or NVM Sets are supported, the
+  NSIDs shall be unique within the NVM subsystem. If the Namespace
+  Management, ANA Reporting, and NVM Sets are not supported, then NSIDs:
+   a) for shared namespace shall be unique; and
+   b) for private namespace are not required to be unique."
+
+Reference: Section 6.1.6 NSID and Namespace Usage; NVM Express 1.4c spec.
+
+Make sure this specific setup is supported in Linux.
+
+Fixes: 9ad1927a3bc2 ("nvme: always search for namespace head")
+Signed-off-by: Sungup Moon <sungup.moon@samsung.com>
+[hch: refactored and fixed the controller vs subsystem based naming
+      conflict]
+Signed-off-by: Christoph Hellwig <hch@lst.de>
+Reviewed-by: Sagi Grimberg <sagi@grimberg.me>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/vmw_vsock/virtio_transport.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/nvme/host/core.c      |   15 ++++++++++-----
+ drivers/nvme/host/multipath.c |    7 ++++---
+ drivers/nvme/host/nvme.h      |   19 +++++++++++++++++++
+ include/linux/nvme.h          |    1 +
+ 4 files changed, 34 insertions(+), 8 deletions(-)
 
-diff --git a/net/vmw_vsock/virtio_transport.c b/net/vmw_vsock/virtio_transport.c
-index dad9ca65f4f9..fb1b8f99f679 100644
---- a/net/vmw_vsock/virtio_transport.c
-+++ b/net/vmw_vsock/virtio_transport.c
-@@ -622,6 +622,8 @@ static int virtio_vsock_probe(struct virtio_device *vdev)
- 	INIT_WORK(&vsock->event_work, virtio_transport_event_work);
- 	INIT_WORK(&vsock->send_pkt_work, virtio_transport_send_pkt_work);
+--- a/drivers/nvme/host/core.c
++++ b/drivers/nvme/host/core.c
+@@ -3510,15 +3510,20 @@ static const struct attribute_group *nvm
+ 	NULL,
+ };
  
-+	vdev->priv = vsock;
+-static struct nvme_ns_head *nvme_find_ns_head(struct nvme_subsystem *subsys,
++static struct nvme_ns_head *nvme_find_ns_head(struct nvme_ctrl *ctrl,
+ 		unsigned nsid)
+ {
+ 	struct nvme_ns_head *h;
+ 
+-	lockdep_assert_held(&subsys->lock);
++	lockdep_assert_held(&ctrl->subsys->lock);
+ 
+-	list_for_each_entry(h, &subsys->nsheads, entry) {
+-		if (h->ns_id != nsid)
++	list_for_each_entry(h, &ctrl->subsys->nsheads, entry) {
++		/*
++		 * Private namespaces can share NSIDs under some conditions.
++		 * In that case we can't use the same ns_head for namespaces
++		 * with the same NSID.
++		 */
++		if (h->ns_id != nsid || !nvme_is_unique_nsid(ctrl, h))
+ 			continue;
+ 		if (!list_empty(&h->list) && nvme_tryget_ns_head(h))
+ 			return h;
+@@ -3686,7 +3691,7 @@ static int nvme_init_ns_head(struct nvme
+ 	int ret = 0;
+ 
+ 	mutex_lock(&ctrl->subsys->lock);
+-	head = nvme_find_ns_head(ctrl->subsys, nsid);
++	head = nvme_find_ns_head(ctrl, nsid);
+ 	if (!head) {
+ 		head = nvme_alloc_ns_head(ctrl, nsid, ids);
+ 		if (IS_ERR(head)) {
+--- a/drivers/nvme/host/multipath.c
++++ b/drivers/nvme/host/multipath.c
+@@ -462,10 +462,11 @@ int nvme_mpath_alloc_disk(struct nvme_ct
+ 
+ 	/*
+ 	 * Add a multipath node if the subsystems supports multiple controllers.
+-	 * We also do this for private namespaces as the namespace sharing data could
+-	 * change after a rescan.
++	 * We also do this for private namespaces as the namespace sharing flag
++	 * could change after a rescan.
+ 	 */
+-	if (!(ctrl->subsys->cmic & NVME_CTRL_CMIC_MULTI_CTRL) || !multipath)
++	if (!(ctrl->subsys->cmic & NVME_CTRL_CMIC_MULTI_CTRL) ||
++	    !nvme_is_unique_nsid(ctrl, head) || !multipath)
+ 		return 0;
+ 
+ 	head->disk = blk_alloc_disk(ctrl->numa_node);
+--- a/drivers/nvme/host/nvme.h
++++ b/drivers/nvme/host/nvme.h
+@@ -693,6 +693,25 @@ static inline bool nvme_check_ready(stru
+ 		return true;
+ 	return __nvme_check_ready(ctrl, rq, queue_live);
+ }
 +
- 	mutex_lock(&vsock->tx_lock);
- 	vsock->tx_run = true;
- 	mutex_unlock(&vsock->tx_lock);
-@@ -639,7 +641,6 @@ static int virtio_vsock_probe(struct virtio_device *vdev)
- 	if (virtio_has_feature(vdev, VIRTIO_VSOCK_F_SEQPACKET))
- 		vsock->seqpacket_allow = true;
- 
--	vdev->priv = vsock;
- 	rcu_assign_pointer(the_virtio_vsock, vsock);
- 
- 	mutex_unlock(&the_virtio_vsock_mutex);
--- 
-2.34.1
-
++/*
++ * NSID shall be unique for all shared namespaces, or if at least one of the
++ * following conditions is met:
++ *   1. Namespace Management is supported by the controller
++ *   2. ANA is supported by the controller
++ *   3. NVM Set are supported by the controller
++ *
++ * In other case, private namespace are not required to report a unique NSID.
++ */
++static inline bool nvme_is_unique_nsid(struct nvme_ctrl *ctrl,
++		struct nvme_ns_head *head)
++{
++	return head->shared ||
++		(ctrl->oacs & NVME_CTRL_OACS_NS_MNGT_SUPP) ||
++		(ctrl->subsys->cmic & NVME_CTRL_CMIC_ANA) ||
++		(ctrl->ctratt & NVME_CTRL_CTRATT_NVM_SETS);
++}
++
+ int nvme_submit_sync_cmd(struct request_queue *q, struct nvme_command *cmd,
+ 		void *buf, unsigned bufflen);
+ int __nvme_submit_sync_cmd(struct request_queue *q, struct nvme_command *cmd,
+--- a/include/linux/nvme.h
++++ b/include/linux/nvme.h
+@@ -322,6 +322,7 @@ enum {
+ 	NVME_CTRL_ONCS_TIMESTAMP		= 1 << 6,
+ 	NVME_CTRL_VWC_PRESENT			= 1 << 0,
+ 	NVME_CTRL_OACS_SEC_SUPP                 = 1 << 0,
++	NVME_CTRL_OACS_NS_MNGT_SUPP		= 1 << 3,
+ 	NVME_CTRL_OACS_DIRECTIVES		= 1 << 5,
+ 	NVME_CTRL_OACS_DBBUF_SUPP		= 1 << 8,
+ 	NVME_CTRL_LPA_CMD_EFFECTS_LOG		= 1 << 1,
 
 
