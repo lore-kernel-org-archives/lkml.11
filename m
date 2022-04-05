@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4FE3DC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:37:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 69AFCC4332F
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:37:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242106AbiDEIgp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 04:36:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57656 "EHLO
+        id S242140AbiDEIhA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 04:37:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43990 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235449AbiDEH7o (ORCPT
+        with ESMTP id S235509AbiDEH7s (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 03:59:44 -0400
+        Tue, 5 Apr 2022 03:59:48 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF28F5A156;
-        Tue,  5 Apr 2022 00:54:29 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B59266F9A;
+        Tue,  5 Apr 2022 00:54:58 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 395E3B81B18;
-        Tue,  5 Apr 2022 07:54:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 83E36C340EE;
-        Tue,  5 Apr 2022 07:54:27 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AF676B81A32;
+        Tue,  5 Apr 2022 07:54:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1BF8CC340EE;
+        Tue,  5 Apr 2022 07:54:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649145267;
-        bh=IsYGMWcOLC2kDDO8OFJfhbKJ+skf8w8cVCluqFXU9Jw=;
+        s=korg; t=1649145295;
+        bh=FNWouC3CoH6+dXI5kygOzexAVVRXN9qg89YVmFU1Dbg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Ujv09Viq89SpK2Xe542aS4UoP4bXqOj9ZOR63ketVMRAHouZckWOv7deBgoBsCN0v
-         JWyIc05I1di1X4PJkirVVmmDVQohDGDvwxWv6m4X4/PacNLH23AvFyJqCE3rg+fEiu
-         qlC4ByBAYKF0U1W8M4Sgxr8lss+MQIoy3y+yT/Ps=
+        b=Nj/CB5fL/1sxCXzU1DyGvcauNdbJgpM5DJNJhQfva7/YbekeeNF1YRG4yhEl31zE0
+         WA0tJOrGHvbqVoYOKe14vkL8VvCtk/4PfVfmKOWKY09FXfvUaAS0aK8SXnpYAIhCUR
+         brmUk+ssOURpjQF1TcWaKsJX465uUgMSWCaVZH/k=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Robert Hancock <robert.hancock@calian.com>,
-        Mark Brown <broonie@kernel.org>,
+        stable@vger.kernel.org, Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0306/1126] ASoC: xilinx: xlnx_formatter_pcm: Handle sysclk setting
-Date:   Tue,  5 Apr 2022 09:17:33 +0200
-Message-Id: <20220405070416.596209885@linuxfoundation.org>
+Subject: [PATCH 5.17 0356/1126] media: cedrus: h264: Fix neighbour info buffer size
+Date:   Tue,  5 Apr 2022 09:18:23 +0200
+Message-Id: <20220405070418.078301947@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -49,90 +49,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Robert Hancock <robert.hancock@calian.com>
+From: Jernej Skrabec <jernej.skrabec@gmail.com>
 
-[ Upstream commit 1c5091fbe7e0d0804158200b7feac5123f7b4fbd ]
+[ Upstream commit fecd363ae2d5042553370b0adf60c47e35c34a83 ]
 
-This driver did not set the MM2S Fs Multiplier Register to the proper
-value for playback streams. This needs to be set to the sample rate to
-MCLK multiplier, or random stream underflows can occur on the downstream
-I2S transmitter.
+According to BSP library source, H264 neighbour info buffer size needs
+to be 32 kiB for H6. This is similar to H265 decoding, which also needs
+double buffer size in comparison to older Cedrus core generations.
 
-Store the sysclk value provided via the set_sysclk callback and use that
-in conjunction with the sample rate in the hw_params callback to calculate
-the proper value to set for this register.
+Increase buffer size to cover H6 needs. Since increase is not that big
+in absolute numbers, it doesn't make sense to complicate logic for older
+generations.
 
-Fixes: 6f6c3c36f091 ("ASoC: xlnx: add pcm formatter platform driver")
-Signed-off-by: Robert Hancock <robert.hancock@calian.com>
-Link: https://lore.kernel.org/r/20220120195832.1742271-2-robert.hancock@calian.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Issue was discovered using iommu and cross checked with BSP library
+source.
+
+Fixes: 6eb9b758e307 ("media: cedrus: Add H264 decoding support")
+Signed-off-by: Jernej Skrabec <jernej.skrabec@gmail.com>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/xilinx/xlnx_formatter_pcm.c | 25 +++++++++++++++++++++++++
- 1 file changed, 25 insertions(+)
+ drivers/staging/media/sunxi/cedrus/cedrus_h264.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/sound/soc/xilinx/xlnx_formatter_pcm.c b/sound/soc/xilinx/xlnx_formatter_pcm.c
-index ce19a6058b27..5c4158069a5a 100644
---- a/sound/soc/xilinx/xlnx_formatter_pcm.c
-+++ b/sound/soc/xilinx/xlnx_formatter_pcm.c
-@@ -84,6 +84,7 @@ struct xlnx_pcm_drv_data {
- 	struct snd_pcm_substream *play_stream;
- 	struct snd_pcm_substream *capture_stream;
- 	struct clk *axi_clk;
-+	unsigned int sysclk;
- };
+diff --git a/drivers/staging/media/sunxi/cedrus/cedrus_h264.c b/drivers/staging/media/sunxi/cedrus/cedrus_h264.c
+index b4173a8926d6..d8fb93035470 100644
+--- a/drivers/staging/media/sunxi/cedrus/cedrus_h264.c
++++ b/drivers/staging/media/sunxi/cedrus/cedrus_h264.c
+@@ -38,7 +38,7 @@ struct cedrus_h264_sram_ref_pic {
  
- /*
-@@ -314,6 +315,15 @@ static irqreturn_t xlnx_s2mm_irq_handler(int irq, void *arg)
- 	return IRQ_NONE;
- }
+ #define CEDRUS_H264_FRAME_NUM		18
  
-+static int xlnx_formatter_set_sysclk(struct snd_soc_component *component,
-+				     int clk_id, int source, unsigned int freq, int dir)
-+{
-+	struct xlnx_pcm_drv_data *adata = dev_get_drvdata(component->dev);
-+
-+	adata->sysclk = freq;
-+	return 0;
-+}
-+
- static int xlnx_formatter_pcm_open(struct snd_soc_component *component,
- 				   struct snd_pcm_substream *substream)
- {
-@@ -450,11 +460,25 @@ static int xlnx_formatter_pcm_hw_params(struct snd_soc_component *component,
- 	u64 size;
- 	struct snd_pcm_runtime *runtime = substream->runtime;
- 	struct xlnx_pcm_stream_param *stream_data = runtime->private_data;
-+	struct xlnx_pcm_drv_data *adata = dev_get_drvdata(component->dev);
+-#define CEDRUS_NEIGHBOR_INFO_BUF_SIZE	(16 * SZ_1K)
++#define CEDRUS_NEIGHBOR_INFO_BUF_SIZE	(32 * SZ_1K)
+ #define CEDRUS_MIN_PIC_INFO_BUF_SIZE       (130 * SZ_1K)
  
- 	active_ch = params_channels(params);
- 	if (active_ch > stream_data->ch_limit)
- 		return -EINVAL;
- 
-+	if (substream->stream == SNDRV_PCM_STREAM_PLAYBACK &&
-+	    adata->sysclk) {
-+		unsigned int mclk_fs = adata->sysclk / params_rate(params);
-+
-+		if (adata->sysclk % params_rate(params) != 0) {
-+			dev_warn(component->dev, "sysclk %u not divisible by rate %u\n",
-+				 adata->sysclk, params_rate(params));
-+			return -EINVAL;
-+		}
-+
-+		writel(mclk_fs, stream_data->mmio + XLNX_AUD_FS_MULTIPLIER);
-+	}
-+
- 	if (substream->stream == SNDRV_PCM_STREAM_CAPTURE &&
- 	    stream_data->xfer_mode == AES_TO_PCM) {
- 		val = readl(stream_data->mmio + XLNX_AUD_STS);
-@@ -552,6 +576,7 @@ static int xlnx_formatter_pcm_new(struct snd_soc_component *component,
- 
- static const struct snd_soc_component_driver xlnx_asoc_component = {
- 	.name		= DRV_NAME,
-+	.set_sysclk	= xlnx_formatter_set_sysclk,
- 	.open		= xlnx_formatter_pcm_open,
- 	.close		= xlnx_formatter_pcm_close,
- 	.hw_params	= xlnx_formatter_pcm_hw_params,
+ static void cedrus_h264_write_sram(struct cedrus_dev *dev,
 -- 
 2.34.1
 
