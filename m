@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C13DCC352A8
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:21:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B99AC47084
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:21:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239686AbiDEIU3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 04:20:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44016 "EHLO
+        id S239861AbiDEIVM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 04:21:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43840 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235662AbiDEH77 (ORCPT
+        with ESMTP id S235572AbiDEH7v (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 03:59:59 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FFA51CB01;
-        Tue,  5 Apr 2022 00:57:00 -0700 (PDT)
+        Tue, 5 Apr 2022 03:59:51 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F46A40E7B;
+        Tue,  5 Apr 2022 00:55:44 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A1C16615CD;
-        Tue,  5 Apr 2022 07:56:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AAFDAC340EE;
-        Tue,  5 Apr 2022 07:56:58 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 52999B81B90;
+        Tue,  5 Apr 2022 07:55:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A0DEDC3410F;
+        Tue,  5 Apr 2022 07:55:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649145419;
-        bh=kTf509aGxUC2L+Qqne7LOHBXyNCvMcSwY5mKQwAKabs=;
+        s=korg; t=1649145342;
+        bh=3lJ3J/Hn5KmINnLVJmAiRUoqx4L93qq6dyLbb8I1oE8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ou4HJmEr6GzE3lXpzTc+7WAZ2DK0l62D0dnQLsrWYDTTpbx4kYHo5uwRRGOf4umcB
-         lVLmt3iXBkg0blcFJrf0y4eRwIW/aDWlwiuEhD6EZzvB/CdN5lkaASLiuoQVKuybog
-         Is0ARflPHB9PD4glcvaWtjJDEFgsRIzInZjANcM4=
+        b=afjn+/O7YrBHlvPNrGb25wZz48olqEbzzpwdzS/8PuXsST4sL8YIfCYLrdsF8gZ3L
+         TzNjW9LoPkf5VRTezh+KFTDAu9ua++KgtXKk+gNi7TegKFXEZ5jogh2N8gEVNzPYkh
+         1FiX+SIbqIFZJlnswLIIjRmIoRebd1xSqKlo9ztg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jakob Koschel <jakobkoschel@gmail.com>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        stable@vger.kernel.org,
+        Paul Kocialkowski <paul.kocialkowski@bootlin.com>,
+        Maxime Ripard <maxime@cerno.tech>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0399/1126] media: saa7134: fix incorrect use to determine if list is empty
-Date:   Tue,  5 Apr 2022 09:19:06 +0200
-Message-Id: <20220405070419.338997022@linuxfoundation.org>
+Subject: [PATCH 5.17 0343/1126] ARM: dts: sun8i: v3s: Move the csi1 block to follow address order
+Date:   Tue,  5 Apr 2022 09:18:10 +0200
+Message-Id: <20220405070417.683974050@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -49,47 +50,62 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jakob Koschel <jakobkoschel@gmail.com>
+From: Paul Kocialkowski <paul.kocialkowski@bootlin.com>
 
-[ Upstream commit 9f1f4b642451d35667a4dc6a9c0a89d954b530a3 ]
+[ Upstream commit c4af51698c4fb4fc683f2ac67f482cdf9ba2cd13 ]
 
-'dev' will *always* be set by list_for_each_entry().
-It is incorrect to assume that the iterator value will be NULL if the
-list is empty.
+The csi1 block node was mistakenly added before the gic node, although
+its address comes after the gic's. Move the node to its correct
+position.
 
-Instead of checking the pointer it should be checked if
-the list is empty.
-
-Fixes: 79dd0c69f05f ("V4L: 925: saa7134 alsa is now a standalone module")
-Signed-off-by: Jakob Koschel <jakobkoschel@gmail.com>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Fixes: 90e048101fa1 ("ARM: dts: sun8i: V3/V3s/S3/S3L: add CSI1 device node")
+Signed-off-by: Paul Kocialkowski <paul.kocialkowski@bootlin.com>
+Signed-off-by: Maxime Ripard <maxime@cerno.tech>
+Link: https://lore.kernel.org/r/20220205185429.2278860-2-paul.kocialkowski@bootlin.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/pci/saa7134/saa7134-alsa.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ arch/arm/boot/dts/sun8i-v3s.dtsi | 22 +++++++++++-----------
+ 1 file changed, 11 insertions(+), 11 deletions(-)
 
-diff --git a/drivers/media/pci/saa7134/saa7134-alsa.c b/drivers/media/pci/saa7134/saa7134-alsa.c
-index fb24d2ed3621..d3cde05a6eba 100644
---- a/drivers/media/pci/saa7134/saa7134-alsa.c
-+++ b/drivers/media/pci/saa7134/saa7134-alsa.c
-@@ -1214,7 +1214,7 @@ static int alsa_device_exit(struct saa7134_dev *dev)
+diff --git a/arch/arm/boot/dts/sun8i-v3s.dtsi b/arch/arm/boot/dts/sun8i-v3s.dtsi
+index b30bc1a25ebb..084323d5c61c 100644
+--- a/arch/arm/boot/dts/sun8i-v3s.dtsi
++++ b/arch/arm/boot/dts/sun8i-v3s.dtsi
+@@ -593,6 +593,17 @@
+ 			#size-cells = <0>;
+ 		};
  
- static int saa7134_alsa_init(void)
- {
--	struct saa7134_dev *dev = NULL;
-+	struct saa7134_dev *dev;
- 
- 	saa7134_dmasound_init = alsa_device_init;
- 	saa7134_dmasound_exit = alsa_device_exit;
-@@ -1229,7 +1229,7 @@ static int saa7134_alsa_init(void)
- 			alsa_device_init(dev);
- 	}
- 
--	if (dev == NULL)
-+	if (list_empty(&saa7134_devlist))
- 		pr_info("saa7134 ALSA: no saa7134 cards found\n");
- 
- 	return 0;
++		gic: interrupt-controller@1c81000 {
++			compatible = "arm,gic-400";
++			reg = <0x01c81000 0x1000>,
++			      <0x01c82000 0x2000>,
++			      <0x01c84000 0x2000>,
++			      <0x01c86000 0x2000>;
++			interrupt-controller;
++			#interrupt-cells = <3>;
++			interrupts = <GIC_PPI 9 (GIC_CPU_MASK_SIMPLE(4) | IRQ_TYPE_LEVEL_HIGH)>;
++		};
++
+ 		csi1: camera@1cb4000 {
+ 			compatible = "allwinner,sun8i-v3s-csi";
+ 			reg = <0x01cb4000 0x3000>;
+@@ -604,16 +615,5 @@
+ 			resets = <&ccu RST_BUS_CSI>;
+ 			status = "disabled";
+ 		};
+-
+-		gic: interrupt-controller@1c81000 {
+-			compatible = "arm,gic-400";
+-			reg = <0x01c81000 0x1000>,
+-			      <0x01c82000 0x2000>,
+-			      <0x01c84000 0x2000>,
+-			      <0x01c86000 0x2000>;
+-			interrupt-controller;
+-			#interrupt-cells = <3>;
+-			interrupts = <GIC_PPI 9 (GIC_CPU_MASK_SIMPLE(4) | IRQ_TYPE_LEVEL_HIGH)>;
+-		};
+ 	};
+ };
 -- 
 2.34.1
 
