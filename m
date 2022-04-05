@@ -2,96 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AE488C35280
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 946C0C43219
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:57:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386520AbiDEMyo (ORCPT
+        id S1381274AbiDEMy3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 08:54:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40106 "EHLO
+        Tue, 5 Apr 2022 08:54:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40108 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343886AbiDEJOt (ORCPT
+        with ESMTP id S1343893AbiDEJOv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:14:49 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7EB5752E06;
-        Tue,  5 Apr 2022 02:01:14 -0700 (PDT)
-From:   Kurt Kanzenbach <kurt@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1649149273;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=Rh9iNBZn1TytrAMYCuDnnKJmAsEgHeZEynUJiMvsZOk=;
-        b=LqXhRsdwDnx50slIXYLrlXIl752amZvkIUa+s95z9opK0k7PBcMaDQEyDtbPGUTQc7zuKp
-        Oi1YamAS9fyv758WO/F8pHuu7KLe5taH9kVzXq8z9W/3ma+zIYv1V/wrsQgsyFuBFx8XRp
-        eDOKdiMFG9Mv0qenCxkSSN+y/739o2C39H5qdpKNEjQZdtILXtju9C0VZB7Hz2/w7ROoF/
-        0m8DkPKMK1mEs3BEfkqAdfdbhp7orXEO06I9hLjm7oe8FcxcSdH4rMffV2h/p9GjTfSo3K
-        JQ9wI2a6AWgnY7zANYUy1bCQepfqCFYazHgkAiUF6iLRg9rA7qQVdtxIlz8H7Q==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1649149273;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=Rh9iNBZn1TytrAMYCuDnnKJmAsEgHeZEynUJiMvsZOk=;
-        b=cjAF5UHNewgoGCOyWlqrCBrRJ8eRcQ9tFo8q1TaB6DLMNlhycV8uzT4L1UijpRYZBi4czh
-        SuAsh9qDhvhk8sAQ==
-To:     Michael Walle <michael@walle.cc>, Andrew Lunn <andrew@lunn.ch>
-Cc:     richardcochran@gmail.com, davem@davemloft.net,
-        grygorii.strashko@ti.com, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, linux@armlinux.org.uk,
-        mlichvar@redhat.com, netdev@vger.kernel.org,
-        qiangqing.zhang@nxp.com, vladimir.oltean@nxp.com
-Subject: Re: [PATCH RFC V1 net-next 3/4] net: Let the active time stamping
- layer be selectable.
-In-Reply-To: <e5a6f6193b86388ed7a081939b8745be@walle.cc>
-References: <20220104014215.GA20062@hoboy.vegasvil.org>
- <20220404150508.3945833-1-michael@walle.cc> <YksMvHgXZxA+YZci@lunn.ch>
- <e5a6f6193b86388ed7a081939b8745be@walle.cc>
-Date:   Tue, 05 Apr 2022 11:01:11 +0200
-Message-ID: <877d83rjjc.fsf@kurt>
+        Tue, 5 Apr 2022 05:14:51 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC7DA546BD;
+        Tue,  5 Apr 2022 02:01:17 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7683EB818F3;
+        Tue,  5 Apr 2022 09:01:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DE6C2C385A1;
+        Tue,  5 Apr 2022 09:01:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649149275;
+        bh=W7azgFtB3eoyPbKVCXYneVHCBwwIMZA4peV6ACtcEis=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=oG1CeNHnLVcmuCoFRG8uAEpvcFGkmegC5AYOtDp30ogPRj+o6QLVTR6RpHTCzehcr
+         bt44RoC8SemlfQa2DHDvr8hCurgT6r4xbl0JEzQfF6R7xIBrTL2YK9SJVeyAr1KbnA
+         fENP1K0KgjRnnKhpxxdbncoz/qOHy6kNbXa/Kmos=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Hangyu Hua <hbh25y@gmail.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 0657/1017] staging: qlge: add unregister_netdev in qlge_probe
+Date:   Tue,  5 Apr 2022 09:26:10 +0200
+Message-Id: <20220405070413.785253661@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
+References: <20220405070354.155796697@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="=-=-=";
-        micalg=pgp-sha512; protocol="application/pgp-signature"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
---=-=-=
-Content-Type: text/plain
+From: Hangyu Hua <hbh25y@gmail.com>
 
-On Mon Apr 04 2022, Michael Walle wrote:
-> That would make sense. I guess what bothers me with the current
-> mechanism is that a feature addition to the PHY in the *future* (the
-> timestamping support) might break a board - or at least changes the
-> behavior by suddenly using PHY timestamping.
+[ Upstream commit 4fcc0c275e3f59cd68f977c57953783f8014ed15 ]
 
-Currently PHY timestamping is hidden behind a configuration option
-(NETWORK_PHY_TIMESTAMPING). By disabling this option the default
-behavior should stay at MAC timestamping even if additional features
-are added on top of the PHY drivers at later stages. Or not?
+unregister_netdev need to be called when register_netdev succeeds
+qlge_health_create_reporters fails.
 
-Thanks,
-Kurt
+Fixes: d8827ae8e22b ("staging: qlge: deal with the case that devlink_health_reporter_create fails")
+Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
+Link: https://lore.kernel.org/r/20220221085552.93561-1-hbh25y@gmail.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/staging/qlge/qlge_main.c | 11 +++++++----
+ 1 file changed, 7 insertions(+), 4 deletions(-)
 
---=-=-=
-Content-Type: application/pgp-signature; name="signature.asc"
+diff --git a/drivers/staging/qlge/qlge_main.c b/drivers/staging/qlge/qlge_main.c
+index 9873bb2a9ee4..113a3efd12e9 100644
+--- a/drivers/staging/qlge/qlge_main.c
++++ b/drivers/staging/qlge/qlge_main.c
+@@ -4605,14 +4605,12 @@ static int qlge_probe(struct pci_dev *pdev,
+ 	err = register_netdev(ndev);
+ 	if (err) {
+ 		dev_err(&pdev->dev, "net device registration failed.\n");
+-		qlge_release_all(pdev);
+-		pci_disable_device(pdev);
+-		goto netdev_free;
++		goto cleanup_pdev;
+ 	}
+ 
+ 	err = qlge_health_create_reporters(qdev);
+ 	if (err)
+-		goto netdev_free;
++		goto unregister_netdev;
+ 
+ 	/* Start up the timer to trigger EEH if
+ 	 * the bus goes dead
+@@ -4626,6 +4624,11 @@ static int qlge_probe(struct pci_dev *pdev,
+ 	devlink_register(devlink);
+ 	return 0;
+ 
++unregister_netdev:
++	unregister_netdev(ndev);
++cleanup_pdev:
++	qlge_release_all(pdev);
++	pci_disable_device(pdev);
+ netdev_free:
+ 	free_netdev(ndev);
+ devlink_free:
+-- 
+2.34.1
 
------BEGIN PGP SIGNATURE-----
 
-iQJHBAEBCgAxFiEEvLm/ssjDfdPf21mSwZPR8qpGc4IFAmJMBVcTHGt1cnRAbGlu
-dXRyb25peC5kZQAKCRDBk9HyqkZzgsMiEACJ6hgiPJnF7jCixnXIaxDdO+mW5fZI
-JPBCVnKJsrETFpGY2/cSr0aFN2KeNvF9S15jw36a+Tabnv6wNnYWnhqOdsyGBtE4
-wQUfJrNCJ6BHx9qUmgY+WbLdUEvXMnEx+ko/co9FCFWijd94M4ctaEdBbxq3WfQS
-3fzMpHssQfITgfgeaf+j+k+zR2i7UotKvQ7nTTZDiBgbQ1xn+4cDbR7uZZNPIKqj
-IC+R8BcOJENXkm8HwB/JvcRhOynsPFCJjHoHqM8N4v2DXFRnV8pfzceyZO6Lr5XF
-BEpaWfAHjcmnbzhC91oASXE5usbEqpQE5tAYK43m872DaHh+s1p4d4b3IzZU5uwt
-rx8zheaRta4gqUdaJo5qQkvKdD2CAYyK9O3v0rQMJRrTCK3Z3sZM/IMWNsEOqdVP
-QP1GxPByDHwwOsTJB4/v4DanuF39hSrZ4Ym2mi/PX76LmMZoL10JDzaU0rdg56nf
-Vg0EkwnCDxYSZJpB3r+6zFMNKDQyA6uOJAeKpaEB4kpLUMjZsRfZOgP1FJW1Ndgc
-Cggk0EckGKx5+zjTcHnVpr7VEVrSfeBGFnujzUx3TlduYJ8XBxLv7saUUlpE0O1O
-TkXxhxodllu2X4eis/5mIctYGgWl2XL/KZUD3Uws9a0PLLVZwuTxsEcS6ov00eKM
-NfqGdBj8KceuNg==
-=dVoz
------END PGP SIGNATURE-----
---=-=-=--
+
