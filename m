@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 30C87C35280
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 13:24:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CABE8C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 13:24:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344282AbiDENXP (ORCPT
+        id S1356336AbiDENH7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 09:23:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54460 "EHLO
+        Tue, 5 Apr 2022 09:07:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43856 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344999AbiDEJWH (ORCPT
+        with ESMTP id S1344022AbiDEJQu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:22:07 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C4DBE45;
-        Tue,  5 Apr 2022 02:08:58 -0700 (PDT)
+        Tue, 5 Apr 2022 05:16:50 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 876A71D310;
+        Tue,  5 Apr 2022 02:03:41 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C7F6BB80DA1;
-        Tue,  5 Apr 2022 09:08:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 27140C385A0;
-        Tue,  5 Apr 2022 09:08:54 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 246E961571;
+        Tue,  5 Apr 2022 09:03:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 34940C385A1;
+        Tue,  5 Apr 2022 09:03:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649149735;
-        bh=FeVBirWUDsSNdHRMTaN1D2cMhlAoxiuriyc5vJocNC0=;
+        s=korg; t=1649149420;
+        bh=AvslXiiGZCRFOeGrGZqo2rx705V5+cRos00EJU0PUxc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=O5cJD3KGXaOMmrLoVqBVS/FoqZAqQ9QPL05tKyMFQvXONqWR+aMlPG/Avwz3w1ySh
-         YDZYNpFnCIkSEena8hZG+O3pautJlSWSD/HGKsnbn2qhGAwcYMIHYUVDu4nDfkjR7P
-         C1ls6oHpA3IcjgoV8ZJEDiOn4UwlA1d1D7yBfY4A=
+        b=La0oRFO6sY0rwoVZlTpeCpU+cWJnjQTxqnQXwv21ba4nVoYsdlxqqI5Yw3f2zlZDv
+         MJ8EsiAAG1g8JykV86MrUPidrFaF03SvbSicFhiG/q4fbsrrs+WxQdvDPCsl50uwKx
+         0RYVQzE6ZopHFyKbMh8mA31H8VW+22ofhH3V149I=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mark Brown <broonie@kernel.org>,
-        Charles Keepax <ckeepax@opensource.cirrus.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0822/1017] ASoC: madera: Add dependencies on MFD
-Date:   Tue,  5 Apr 2022 09:28:55 +0200
-Message-Id: <20220405070418.646923318@linuxfoundation.org>
+        stable@vger.kernel.org, Yonghua Huang <yonghua.huang@intel.com>,
+        Fei Li <fei1.li@intel.com>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 0707/1017] virt: acrn: obtain pa from VMA with PFNMAP flag
+Date:   Tue,  5 Apr 2022 09:27:00 +0200
+Message-Id: <20220405070415.256927941@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -50,58 +49,66 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Charles Keepax <ckeepax@opensource.cirrus.com>
+From: Yonghua Huang <yonghua.huang@intel.com>
 
-[ Upstream commit ec29170c724ca30305fc3a19ba2ee73ecac65509 ]
+[ Upstream commit 8a6e85f75a83d16a71077e41f2720c691f432002 ]
 
-The Madera CODECs use regmap_irq functions but nothing ensures that
-regmap_irq is built into the kernel. Add dependencies on the ASoC
-symbols for the relevant MFD component. There is no point in building
-the ASoC driver if the MFD doesn't support it and the MFD part contains
-the necessary dependencies to ensure everything is built into the
-kernel.
+ acrn_vm_ram_map can't pin the user pages with VM_PFNMAP flag
+ by calling get_user_pages_fast(), the PA(physical pages)
+ may be mapped by kernel driver and set PFNMAP flag.
 
-Reported-by: Mark Brown <broonie@kernel.org>
-Signed-off-by: Charles Keepax <ckeepax@opensource.cirrus.com>
-Link: https://lore.kernel.org/r/20220203115025.16464-1-ckeepax@opensource.cirrus.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+ This patch fixes logic to setup EPT mapping for PFN mapped RAM region
+ by checking the memory attribute before adding EPT mapping for them.
+
+Fixes: 88f537d5e8dd ("virt: acrn: Introduce EPT mapping management")
+Signed-off-by: Yonghua Huang <yonghua.huang@intel.com>
+Signed-off-by: Fei Li <fei1.li@intel.com>
+Link: https://lore.kernel.org/r/20220228022212.419406-1-yonghua.huang@intel.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/codecs/Kconfig | 5 +++++
- 1 file changed, 5 insertions(+)
+ drivers/virt/acrn/mm.c | 24 ++++++++++++++++++++++++
+ 1 file changed, 24 insertions(+)
 
-diff --git a/sound/soc/codecs/Kconfig b/sound/soc/codecs/Kconfig
-index 3a610ba183ff..0d4e1fb9befc 100644
---- a/sound/soc/codecs/Kconfig
-+++ b/sound/soc/codecs/Kconfig
-@@ -707,6 +707,7 @@ config SND_SOC_CS4349
+diff --git a/drivers/virt/acrn/mm.c b/drivers/virt/acrn/mm.c
+index c4f2e15c8a2b..3b1b1e7a844b 100644
+--- a/drivers/virt/acrn/mm.c
++++ b/drivers/virt/acrn/mm.c
+@@ -162,10 +162,34 @@ int acrn_vm_ram_map(struct acrn_vm *vm, struct acrn_vm_memmap *memmap)
+ 	void *remap_vaddr;
+ 	int ret, pinned;
+ 	u64 user_vm_pa;
++	unsigned long pfn;
++	struct vm_area_struct *vma;
  
- config SND_SOC_CS47L15
- 	tristate
-+	depends on MFD_CS47L15
+ 	if (!vm || !memmap)
+ 		return -EINVAL;
  
- config SND_SOC_CS47L24
- 	tristate
-@@ -714,15 +715,19 @@ config SND_SOC_CS47L24
- 
- config SND_SOC_CS47L35
- 	tristate
-+	depends on MFD_CS47L35
- 
- config SND_SOC_CS47L85
- 	tristate
-+	depends on MFD_CS47L85
- 
- config SND_SOC_CS47L90
- 	tristate
-+	depends on MFD_CS47L90
- 
- config SND_SOC_CS47L92
- 	tristate
-+	depends on MFD_CS47L92
- 
- # Cirrus Logic Quad-Channel ADC
- config SND_SOC_CS53L30
++	mmap_read_lock(current->mm);
++	vma = vma_lookup(current->mm, memmap->vma_base);
++	if (vma && ((vma->vm_flags & VM_PFNMAP) != 0)) {
++		if ((memmap->vma_base + memmap->len) > vma->vm_end) {
++			mmap_read_unlock(current->mm);
++			return -EINVAL;
++		}
++
++		ret = follow_pfn(vma, memmap->vma_base, &pfn);
++		mmap_read_unlock(current->mm);
++		if (ret < 0) {
++			dev_dbg(acrn_dev.this_device,
++				"Failed to lookup PFN at VMA:%pK.\n", (void *)memmap->vma_base);
++			return ret;
++		}
++
++		return acrn_mm_region_add(vm, memmap->user_vm_pa,
++			 PFN_PHYS(pfn), memmap->len,
++			 ACRN_MEM_TYPE_WB, memmap->attr);
++	}
++	mmap_read_unlock(current->mm);
++
+ 	/* Get the page number of the map region */
+ 	nr_pages = memmap->len >> PAGE_SHIFT;
+ 	pages = vzalloc(nr_pages * sizeof(struct page *));
 -- 
 2.34.1
 
