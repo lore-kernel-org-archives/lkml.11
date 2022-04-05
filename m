@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 37322C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 09:52:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C19EFC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 09:52:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344655AbiDEJmJ (ORCPT
+        id S1344678AbiDEJmT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 05:42:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34686 "EHLO
+        Tue, 5 Apr 2022 05:42:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34716 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237519AbiDEISG (ORCPT
+        with ESMTP id S238708AbiDEITT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:18:06 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1AEDD6A420;
-        Tue,  5 Apr 2022 01:06:36 -0700 (PDT)
+        Tue, 5 Apr 2022 04:19:19 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BE7A6D3AD;
+        Tue,  5 Apr 2022 01:09:21 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id ABBDD617EF;
-        Tue,  5 Apr 2022 08:06:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B4464C385A1;
-        Tue,  5 Apr 2022 08:06:34 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 159EA60B06;
+        Tue,  5 Apr 2022 08:09:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1D931C385A2;
+        Tue,  5 Apr 2022 08:09:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649145995;
-        bh=7zvBWExM6E7wGUN2CnyFqTl4XInbH/pTOt36VeMid5U=;
+        s=korg; t=1649146160;
+        bh=vZCYosMR3xAeEcqaIxxhaQzuSAuF9vWSVdw/VukUcbY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bCiVPFonjTSvK+vkOhDDOi24c0XQsAyQgNjQ1BSeYUzxG+K8d3BUY0lmoB/xsM7D/
-         ETM5q0rEm0de7BH4j5qvJ45evZtcHv6MW9ZFvh0BcWMDNLZqcJFfuclRKEiVlxFyur
-         LdDsGAe0qZxiYGAhL0iLg01/Kq5YCRe7SAcq0kQM=
+        b=0So8eeVsKQyiFH4OnMOYBHKsVC12LQ2ou22cSexmHZP8aWAD36KlaWTJ8q3uwEP3G
+         e+sn4Bbex8Xp7gECpVWw42Otc9/jAiOmQVX0AAaSbhOT15j/ClMuksN2cBqQZobPYp
+         9HyoeHVEeywQ9w0bwdkeH42N8+5QT6hcVcvwBNYI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zhang Yi <yi.zhang@huawei.com>,
-        Jan Kara <jack@suse.cz>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0605/1126] ext2: correct max file size computing
-Date:   Tue,  5 Apr 2022 09:22:32 +0200
-Message-Id: <20220405070425.393255998@linuxfoundation.org>
+        stable@vger.kernel.org, Wang Yufen <wangyufen@huawei.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 0663/1126] bpf, sockmap: Fix double uncharge the mem of sk_msg
+Date:   Tue,  5 Apr 2022 09:23:30 +0200
+Message-Id: <20220405070427.088369394@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -49,56 +51,70 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zhang Yi <yi.zhang@huawei.com>
+From: Wang Yufen <wangyufen@huawei.com>
 
-[ Upstream commit 50b3a818991074177a56c87124c7a7bdf5fa4f67 ]
+[ Upstream commit 2486ab434b2c2a14e9237296db00b1e1b7ae3273 ]
 
-We need to calculate the max file size accurately if the total blocks
-that can address by block tree exceed the upper_limit. But this check is
-not correct now, it only compute the total data blocks but missing
-metadata blocks are needed. So in the case of "data blocks < upper_limit
-&& total blocks > upper_limit", we will get wrong result. Fortunately,
-this case could not happen in reality, but it's confused and better to
-correct the computing.
+If tcp_bpf_sendmsg is running during a tear down operation, psock may be
+freed.
 
-  bits   data blocks   metadatablocks   upper_limit
-  10        16843020            66051    2147483647
-  11       134480396           263171    1073741823
-  12      1074791436          1050627     536870911 (*)
-  13      8594130956          4198403     268435455 (*)
-  14     68736258060         16785411     134217727 (*)
-  15    549822930956         67125251      67108863 (*)
-  16   4398314962956        268468227      33554431 (*)
+tcp_bpf_sendmsg()
+ tcp_bpf_send_verdict()
+  sk_msg_return()
+  tcp_bpf_sendmsg_redir()
+   unlikely(!psock))
+     sk_msg_free()
 
-  [*] Need to calculate in depth.
+The mem of msg has been uncharged in tcp_bpf_send_verdict() by
+sk_msg_return(), and would be uncharged by sk_msg_free() again. When psock
+is null, we can simply returning an error code, this would then trigger
+the sk_msg_free_nocharge in the error path of __SK_REDIRECT and would have
+the side effect of throwing an error up to user space. This would be a
+slight change in behavior from user side but would look the same as an
+error if the redirect on the socket threw an error.
 
-Fixes: 1c2d14212b15 ("ext2: Fix underflow in ext2_max_size()")
-Link: https://lore.kernel.org/r/20220212050532.179055-1-yi.zhang@huawei.com
-Signed-off-by: Zhang Yi <yi.zhang@huawei.com>
-Signed-off-by: Jan Kara <jack@suse.cz>
+This issue can cause the following info:
+WARNING: CPU: 0 PID: 2136 at net/ipv4/af_inet.c:155 inet_sock_destruct+0x13c/0x260
+Call Trace:
+ <TASK>
+ __sk_destruct+0x24/0x1f0
+ sk_psock_destroy+0x19b/0x1c0
+ process_one_work+0x1b3/0x3c0
+ worker_thread+0x30/0x350
+ ? process_one_work+0x3c0/0x3c0
+ kthread+0xe6/0x110
+ ? kthread_complete_and_exit+0x20/0x20
+ ret_from_fork+0x22/0x30
+ </TASK>
+
+Fixes: 604326b41a6f ("bpf, sockmap: convert to generic sk_msg interface")
+Signed-off-by: Wang Yufen <wangyufen@huawei.com>
+Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+Acked-by: John Fastabend <john.fastabend@gmail.com>
+Link: https://lore.kernel.org/bpf/20220304081145.2037182-5-wangyufen@huawei.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/ext2/super.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+ net/ipv4/tcp_bpf.c | 7 +++----
+ 1 file changed, 3 insertions(+), 4 deletions(-)
 
-diff --git a/fs/ext2/super.c b/fs/ext2/super.c
-index 94f1fbd7d3ac..6d4f5ef74766 100644
---- a/fs/ext2/super.c
-+++ b/fs/ext2/super.c
-@@ -753,8 +753,12 @@ static loff_t ext2_max_size(int bits)
- 	res += 1LL << (bits-2);
- 	res += 1LL << (2*(bits-2));
- 	res += 1LL << (3*(bits-2));
-+	/* Compute how many metadata blocks are needed */
-+	meta_blocks = 1;
-+	meta_blocks += 1 + ppb;
-+	meta_blocks += 1 + ppb + ppb * ppb;
- 	/* Does block tree limit file size? */
--	if (res < upper_limit)
-+	if (res + meta_blocks <= upper_limit)
- 		goto check_lfs;
+diff --git a/net/ipv4/tcp_bpf.c b/net/ipv4/tcp_bpf.c
+index 304800c60427..1cdcb4df0eb7 100644
+--- a/net/ipv4/tcp_bpf.c
++++ b/net/ipv4/tcp_bpf.c
+@@ -138,10 +138,9 @@ int tcp_bpf_sendmsg_redir(struct sock *sk, struct sk_msg *msg,
+ 	struct sk_psock *psock = sk_psock_get(sk);
+ 	int ret;
  
- 	res = upper_limit;
+-	if (unlikely(!psock)) {
+-		sk_msg_free(sk, msg);
+-		return 0;
+-	}
++	if (unlikely(!psock))
++		return -EPIPE;
++
+ 	ret = ingress ? bpf_tcp_ingress(sk, psock, msg, bytes, flags) :
+ 			tcp_bpf_push_locked(sk, msg, bytes, flags, false);
+ 	sk_psock_put(sk, psock);
 -- 
 2.34.1
 
