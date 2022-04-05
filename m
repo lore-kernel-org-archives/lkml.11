@@ -2,111 +2,74 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AAEC7C352A8
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9632FC47081
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:19:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234290AbiDEIMr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 04:12:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57598 "EHLO
+        id S234270AbiDEIMn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 04:12:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49250 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233829AbiDEH5q (ORCPT
+        with ESMTP id S233812AbiDEH5p (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 03:57:46 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB92B522FA;
-        Tue,  5 Apr 2022 00:51:31 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 16D91B81B9C;
-        Tue,  5 Apr 2022 07:51:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 586E7C340EE;
-        Tue,  5 Apr 2022 07:51:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649145085;
-        bh=dO3M0HpD6K1VgvkxLUeUlcOZFqCcXETf1sgvAHlNr/M=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kXnv2K+rKzfM33/NofFptZ9Ta2N+aUyT2opZ88aonR5DBsX0bLDfAqfeu6mRBmJXm
-         iOgAsTTceysEkZs2xbIJOpgrLYDdTi7jA5+/trioolRw0ygVO7TL/q8errCf1HzXiz
-         ixCbtUWCsYaMzzTPKBPNZvGIrS2ZitZbpdDR1N+U=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jeff Layton <jlayton@kernel.org>,
-        Amir Goldstein <amir73il@gmail.com>,
-        Chuck Lever <chuck.lever@oracle.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0279/1126] nfsd: more robust allocation failure handling in nfsd_file_cache_init
-Date:   Tue,  5 Apr 2022 09:17:06 +0200
-Message-Id: <20220405070415.799417870@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
-References: <20220405070407.513532867@linuxfoundation.org>
-User-Agent: quilt/0.66
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+        Tue, 5 Apr 2022 03:57:45 -0400
+Received: from mx.socionext.com (mx.socionext.com [202.248.49.38])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 70DFF5159C;
+        Tue,  5 Apr 2022 00:51:29 -0700 (PDT)
+Received: from unknown (HELO iyokan2-ex.css.socionext.com) ([172.31.9.54])
+  by mx.socionext.com with ESMTP; 05 Apr 2022 16:51:17 +0900
+Received: from mail.mfilter.local (m-filter-1 [10.213.24.61])
+        by iyokan2-ex.css.socionext.com (Postfix) with ESMTP id 39C472058B50;
+        Tue,  5 Apr 2022 16:51:17 +0900 (JST)
+Received: from 172.31.9.51 (172.31.9.51) by m-FILTER with ESMTP; Tue, 5 Apr 2022 16:51:17 +0900
+Received: from plum.e01.socionext.com (unknown [10.212.243.119])
+        by kinkan2.css.socionext.com (Postfix) with ESMTP id CDAE7B6389;
+        Tue,  5 Apr 2022 16:51:16 +0900 (JST)
+From:   Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
+To:     Jingoo Han <jingoohan1@gmail.com>,
+        Gustavo Pimentel <gustavo.pimentel@synopsys.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>
+Cc:     Masami Hiramatsu <mhiramat@kernel.org>, linux-pci@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org,
+        Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
+Subject: [PATCH 3/3] ARM: dts: uniphier: Remove compatible "snps,dw-pcie-ep" from Pro5 pcie-ep node
+Date:   Tue,  5 Apr 2022 16:51:02 +0900
+Message-Id: <1649145062-29833-4-git-send-email-hayashi.kunihiko@socionext.com>
+X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1649145062-29833-1-git-send-email-hayashi.kunihiko@socionext.com>
+References: <1649145062-29833-1-git-send-email-hayashi.kunihiko@socionext.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Amir Goldstein <amir73il@gmail.com>
+UniPhier PCIe endpoint controller doesn't use "snps,dw-pcie-ep" compatible,
+so this is no longer needed. Remove the compatible string from the pcie-ep
+node to fix the following warning.
 
-[ Upstream commit 4d2eeafecd6c83b4444db3dc0ada201c89b1aa44 ]
+  uniphier-pro5-epcore.dtb: pcie@66000000: compatible: ['socionext,uniphier-pro5-pcie-ep', 'snps,dw-pcie-ep'] is too long
+      From schema: Documentation/devicetree/bindings/pci/socionext,uniphier-pcie-ep.yaml
 
-The nfsd file cache table can be pretty large and its allocation
-may require as many as 80 contigious pages.
-
-Employ the same fix that was employed for similar issue that was
-reported for the reply cache hash table allocation several years ago
-by commit 8f97514b423a ("nfsd: more robust allocation failure handling
-in nfsd_reply_cache_init").
-
-Fixes: 65294c1f2c5e ("nfsd: add a new struct file caching facility to nfsd")
-Link: https://lore.kernel.org/linux-nfs/e3cdaeec85a6cfec980e87fc294327c0381c1778.camel@kernel.org/
-Suggested-by: Jeff Layton <jlayton@kernel.org>
-Signed-off-by: Amir Goldstein <amir73il@gmail.com>
-Reviewed-by: Jeff Layton <jlayton@kernel.org>
-Signed-off-by: Chuck Lever <chuck.lever@oracle.com>
-Tested-by: Amir Goldstein <amir73il@gmail.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
 ---
- fs/nfsd/filecache.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ arch/arm/boot/dts/uniphier-pro5.dtsi | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/fs/nfsd/filecache.c b/fs/nfsd/filecache.c
-index 8bc807c5fea4..cc2831cec669 100644
---- a/fs/nfsd/filecache.c
-+++ b/fs/nfsd/filecache.c
-@@ -632,7 +632,7 @@ nfsd_file_cache_init(void)
- 	if (!nfsd_filecache_wq)
- 		goto out;
+diff --git a/arch/arm/boot/dts/uniphier-pro5.dtsi b/arch/arm/boot/dts/uniphier-pro5.dtsi
+index 3525125832dd..d79f94689ca2 100644
+--- a/arch/arm/boot/dts/uniphier-pro5.dtsi
++++ b/arch/arm/boot/dts/uniphier-pro5.dtsi
+@@ -614,8 +614,7 @@ usb1_ssphy0: ss-phy@380 {
+ 		};
  
--	nfsd_file_hashtbl = kcalloc(NFSD_FILE_HASH_SIZE,
-+	nfsd_file_hashtbl = kvcalloc(NFSD_FILE_HASH_SIZE,
- 				sizeof(*nfsd_file_hashtbl), GFP_KERNEL);
- 	if (!nfsd_file_hashtbl) {
- 		pr_err("nfsd: unable to allocate nfsd_file_hashtbl\n");
-@@ -700,7 +700,7 @@ nfsd_file_cache_init(void)
- 	nfsd_file_slab = NULL;
- 	kmem_cache_destroy(nfsd_file_mark_slab);
- 	nfsd_file_mark_slab = NULL;
--	kfree(nfsd_file_hashtbl);
-+	kvfree(nfsd_file_hashtbl);
- 	nfsd_file_hashtbl = NULL;
- 	destroy_workqueue(nfsd_filecache_wq);
- 	nfsd_filecache_wq = NULL;
-@@ -811,7 +811,7 @@ nfsd_file_cache_shutdown(void)
- 	fsnotify_wait_marks_destroyed();
- 	kmem_cache_destroy(nfsd_file_mark_slab);
- 	nfsd_file_mark_slab = NULL;
--	kfree(nfsd_file_hashtbl);
-+	kvfree(nfsd_file_hashtbl);
- 	nfsd_file_hashtbl = NULL;
- 	destroy_workqueue(nfsd_filecache_wq);
- 	nfsd_filecache_wq = NULL;
+ 		pcie_ep: pcie-ep@66000000 {
+-			compatible = "socionext,uniphier-pro5-pcie-ep",
+-				     "snps,dw-pcie-ep";
++			compatible = "socionext,uniphier-pro5-pcie-ep";
+ 			status = "disabled";
+ 			reg-names = "dbi", "dbi2", "link", "addr_space";
+ 			reg = <0x66000000 0x1000>, <0x66001000 0x1000>,
 -- 
-2.34.1
-
-
+2.25.1
 
