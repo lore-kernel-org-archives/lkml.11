@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1EBF0C46467
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 35EB7C433F5
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 13:48:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1391181AbiDENrf (ORCPT
+        id S1391200AbiDENrj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 09:47:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37936 "EHLO
+        Tue, 5 Apr 2022 09:47:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59666 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347306AbiDEJZ1 (ORCPT
+        with ESMTP id S1347301AbiDEJZ1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Apr 2022 05:25:27 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F404DCE13;
-        Tue,  5 Apr 2022 02:15:05 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F323DCE11;
+        Tue,  5 Apr 2022 02:15:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A79DA61654;
-        Tue,  5 Apr 2022 09:14:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B087EC385A2;
-        Tue,  5 Apr 2022 09:14:31 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3E298B81B75;
+        Tue,  5 Apr 2022 09:14:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 86375C385A3;
+        Tue,  5 Apr 2022 09:14:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649150072;
-        bh=AxMd18gbofm6w4krU29ftLJswZhLQ32cx6ujG2KM8Xk=;
+        s=korg; t=1649150074;
+        bh=EnA4E1E6YC+Ts/nEjs3dxfm5+HpqhwGpXCsmYHQ1Iew=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Fw8oO0fsz2uQ1q/dBEMfdDK1q0MJ+2J1im659AG+RJm+wguNOJ9f7EN4md9l/4jSq
-         +CSSfd1koPMryixI8EC+CcHsFn1e/Bc2UxZVg3IsrVjnOCcfwo6Dy0McMARE/NFj2D
-         Al41tIWTOpgSKF9szOqPzTHV/uR1MGZTqowfCyyw=
+        b=m1qiZ13RiF/lnyOwHEuCM3XeUnqPZzuh2Cp4qnt8E0SKLL+OOsPNtc8NLokr+1gfr
+         806yKNCR9QNt6rwVFdD62EVLP7UJq5VPYH6aSF8/mjQ/xyaX8C8Qx/q09hyEU5mTtr
+         WQpeF9J6/3xvEiA/gLGl6Vi6/6WwyfFKqi0iovh4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
-        =?UTF-8?q?Jonathan=20Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Linus Walleij <linus.walleij@linaro.org>
-Subject: [PATCH 5.16 0944/1017] pinctrl: nuvoton: npcm7xx: Use %zu printk format for ARRAY_SIZE()
-Date:   Tue,  5 Apr 2022 09:30:57 +0200
-Message-Id: <20220405070422.235009253@linuxfoundation.org>
+        stable@vger.kernel.org, Meng Tang <tangmeng@uniontech.com>,
+        Mark Brown <broonie@kernel.org>
+Subject: [PATCH 5.16 0945/1017] ASoC: rockchip: i2s_tdm: Fixup config for SND_SOC_DAIFMT_DSP_A/B
+Date:   Tue,  5 Apr 2022 09:30:58 +0200
+Message-Id: <20220405070422.264642051@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -51,35 +49,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jonathan Neuschäfer <j.neuschaefer@gmx.net>
+From: Meng Tang <tangmeng@uniontech.com>
 
-commit 9d0f18bca3b557ae5d2128661ac06d33b3f45c0a upstream.
+commit 2f45a4e2897793cc6ae25f5fe78b485ce7fd01d0 upstream.
 
-When compile-testing on 64-bit architectures, GCC complains about the
-mismatch of types between the %d format specifier and value returned by
-ARRAY_LENGTH(). Use %zu, which is correct everywhere.
+SND_SOC_DAIFMT_DSP_A: PCM delay 1 bit mode, L data MSB after FRM LRC
+SND_SOC_DAIFMT_DSP_B: PCM no delay mode, L data MSB during FRM LRC
 
-Reported-by: kernel test robot <lkp@intel.com>
-Fixes: 3b588e43ee5c7 ("pinctrl: nuvoton: add NPCM7xx pinctrl and GPIO driver")
-Signed-off-by: Jonathan Neuschäfer <j.neuschaefer@gmx.net>
-Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
-Link: https://lore.kernel.org/r/20220205155332.1308899-2-j.neuschaefer@gmx.net
-Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+Fixes: 081068fd64140 (ASoC: rockchip: add support for i2s-tdm controller)
+
+Signed-off-by: Meng Tang <tangmeng@uniontech.com>
+Link: https://lore.kernel.org/r/20220318100146.23991-1-tangmeng@uniontech.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/pinctrl/nuvoton/pinctrl-npcm7xx.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ sound/soc/rockchip/rockchip_i2s_tdm.c |   10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
---- a/drivers/pinctrl/nuvoton/pinctrl-npcm7xx.c
-+++ b/drivers/pinctrl/nuvoton/pinctrl-npcm7xx.c
-@@ -1560,7 +1560,7 @@ static int npcm7xx_get_groups_count(stru
- {
- 	struct npcm7xx_pinctrl *npcm = pinctrl_dev_get_drvdata(pctldev);
- 
--	dev_dbg(npcm->dev, "group size: %d\n", ARRAY_SIZE(npcm7xx_groups));
-+	dev_dbg(npcm->dev, "group size: %zu\n", ARRAY_SIZE(npcm7xx_groups));
- 	return ARRAY_SIZE(npcm7xx_groups);
- }
- 
+--- a/sound/soc/rockchip/rockchip_i2s_tdm.c
++++ b/sound/soc/rockchip/rockchip_i2s_tdm.c
+@@ -469,14 +469,14 @@ static int rockchip_i2s_tdm_set_fmt(stru
+ 		txcr_val = I2S_TXCR_IBM_NORMAL;
+ 		rxcr_val = I2S_RXCR_IBM_NORMAL;
+ 		break;
+-	case SND_SOC_DAIFMT_DSP_A: /* PCM no delay mode */
+-		txcr_val = I2S_TXCR_TFS_PCM;
+-		rxcr_val = I2S_RXCR_TFS_PCM;
+-		break;
+-	case SND_SOC_DAIFMT_DSP_B: /* PCM delay 1 mode */
++	case SND_SOC_DAIFMT_DSP_A: /* PCM delay 1 mode */
+ 		txcr_val = I2S_TXCR_TFS_PCM | I2S_TXCR_PBM_MODE(1);
+ 		rxcr_val = I2S_RXCR_TFS_PCM | I2S_RXCR_PBM_MODE(1);
+ 		break;
++	case SND_SOC_DAIFMT_DSP_B: /* PCM no delay mode */
++		txcr_val = I2S_TXCR_TFS_PCM;
++		rxcr_val = I2S_RXCR_TFS_PCM;
++		break;
+ 	default:
+ 		ret = -EINVAL;
+ 		goto err_pm_put;
 
 
