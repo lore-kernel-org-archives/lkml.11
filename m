@@ -2,44 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A6E1C43219
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 09:13:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 95DB2C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 09:13:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233206AbiDEJNi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 05:13:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43530 "EHLO
+        id S238399AbiDEJOG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 05:14:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46264 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239609AbiDEIUQ (ORCPT
+        with ESMTP id S239604AbiDEIUP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:20:16 -0400
+        Tue, 5 Apr 2022 04:20:15 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D8E318B;
-        Tue,  5 Apr 2022 01:17:35 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29A72EE;
+        Tue,  5 Apr 2022 01:17:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9EBB860AFB;
-        Tue,  5 Apr 2022 08:17:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AE633C385A0;
-        Tue,  5 Apr 2022 08:17:33 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BADB260B0A;
+        Tue,  5 Apr 2022 08:17:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 99CE5C385A2;
+        Tue,  5 Apr 2022 08:17:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649146654;
-        bh=BVIi+g5L5Dz9dt7BVtq5eeYnywyB95u7wznEa12hTnY=;
+        s=korg; t=1649146635;
+        bh=jtVxs2/hq/y5QxVuTF5k0i9kpJhhrLCB8KzwTJnND0Y=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=h7dLGZB8nlbxJILkSQztV2VG0WHeoNG5oss9wzHxPpAOCFmBfpw2kq2RuJsGN/BXk
-         QeFe/NwMS/DdyGn929CHgYmSeg2zBiYq3QgIN6ZNP1PfT0LdsHJfahOpADN0XOlyyv
-         ADIhq552R+WfsS3bSElrp7E5pltotCasN2EL1M5k=
+        b=dL+2vHMU+sfc2jClK98oQhTHehfLFC9ad9kuNzdBX4zNvMy3xEzu0T5UW1IBowMV9
+         64oS71VBVPTa+Bu2t2yisAi/bNBmFyLQ9/9sNP9SdnfzjbP6atlrJOWmbOZFCakf1H
+         MtCMO64NK2A0cM7zBNB5Ki9XFLtvhK9j8FuzLUIY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, "Michael S. Tsirkin" <mst@redhat.com>,
-        Stefano Garzarella <sgarzare@redhat.com>,
-        Stefan Hajnoczi <stefanha@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>,
+        stable@vger.kernel.org, Thomas Richter <tmricht@linux.ibm.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Sumanth Korikkar <sumanthk@linux.ibm.com>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Sven Schnelle <svens@linux.ibm.com>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Arnaldo Carvalho de Melo <acme@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0801/1126] vsock/virtio: initialize vdev->priv before using VQs
-Date:   Tue,  5 Apr 2022 09:25:48 +0200
-Message-Id: <20220405070431.081221777@linuxfoundation.org>
+Subject: [PATCH 5.17 0798/1126] perf stat: Fix forked applications enablement of counters
+Date:   Tue,  5 Apr 2022 09:25:45 +0200
+Message-Id: <20220405070430.995275597@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -51,46 +55,97 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Stefano Garzarella <sgarzare@redhat.com>
+From: Thomas Richter <tmricht@linux.ibm.com>
 
-[ Upstream commit 4b5f1ad5566ada230aaa2ce861b28d1895f1ea68 ]
+[ Upstream commit d0a0a511493d269514fcbd852481cdca32c95350 ]
 
-When we fill VQs with empty buffers and kick the host, it may send
-an interrupt. `vdev->priv` must be initialized before this since it
-is used in the virtqueue callbacks.
+I have run into the following issue:
 
-Fixes: 0deab087b16a ("vsock/virtio: use RCU to avoid use-after-free on the_virtio_vsock")
-Suggested-by: Michael S. Tsirkin <mst@redhat.com>
-Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
-Acked-by: Michael S. Tsirkin <mst@redhat.com>
-Reviewed-by: Stefan Hajnoczi <stefanha@redhat.com>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+ # perf stat -a -e new_pmu/INSTRUCTION_7/ --  mytest -c1 7
+
+ Performance counter stats for 'system wide':
+
+                 0      new_pmu/INSTRUCTION_7/
+
+       0.000366428 seconds time elapsed
+ #
+
+The new PMU for s390 counts the execution of certain CPU instructions.
+The root cause is the extremely small run time of the mytest program. It
+just executes some assembly instructions and then exits.
+
+In above invocation the instruction is executed exactly one time (-c1
+option). The PMU is expected to report this one time execution by a
+counter value of one, but fails to do so in some cases, not all.
+
+Debugging reveals the invocation of the child process is done
+*before* the counter events are installed and enabled.
+
+Tracing reveals that sometimes the child process starts and exits before
+the event is installed on all CPUs. The more CPUs the machine has, the
+more often this miscount happens.
+
+Fix this by reversing the start of the work load after the events have
+been installed on the specified CPUs. Now the comment also matches the
+code.
+
+Output after:
+
+ # perf stat -a -e new_pmu/INSTRUCTION_7/ --  mytest -c1 7
+
+ Performance counter stats for 'system wide':
+
+                 1      new_pmu/INSTRUCTION_7/
+
+       0.000366428 seconds time elapsed
+ #
+
+Now the correct result is reported rock solid all the time regardless
+how many CPUs are online.
+
+Reviewers notes:
+
+Jiri:
+
+Right, without -a the event has enable_on_exec so the race does not
+matter, but it's a problem for system wide with fork.
+
+Namhyung:
+
+Agreed. Also we may move the enable_counters() and the clock code out of
+the if block to be shared with the else block.
+
+Fixes: acf2892270dcc428 ("perf stat: Use perf_evlist__prepare/start_workload()")
+Signed-off-by: Thomas Richter <tmricht@linux.ibm.com>
+Acked-by: Jiri Olsa <jolsa@kernel.org>
+Acked-by: Namhyung Kim <namhyung@kernel.org>
+Acked-by: Sumanth Korikkar <sumanthk@linux.ibm.com>
+Cc: Heiko Carstens <hca@linux.ibm.com>
+Cc: Sven Schnelle <svens@linux.ibm.com>
+Cc: Vasily Gorbik <gor@linux.ibm.com>
+Link: https://lore.kernel.org/r/20220317155346.577384-1-tmricht@linux.ibm.com
+Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/vmw_vsock/virtio_transport.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ tools/perf/builtin-stat.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/vmw_vsock/virtio_transport.c b/net/vmw_vsock/virtio_transport.c
-index 5afc194a58bb..3e5513934c9f 100644
---- a/net/vmw_vsock/virtio_transport.c
-+++ b/net/vmw_vsock/virtio_transport.c
-@@ -622,6 +622,8 @@ static int virtio_vsock_probe(struct virtio_device *vdev)
- 	INIT_WORK(&vsock->event_work, virtio_transport_event_work);
- 	INIT_WORK(&vsock->send_pkt_work, virtio_transport_send_pkt_work);
+diff --git a/tools/perf/builtin-stat.c b/tools/perf/builtin-stat.c
+index 3f98689dd687..60baa3dadc4b 100644
+--- a/tools/perf/builtin-stat.c
++++ b/tools/perf/builtin-stat.c
+@@ -955,10 +955,10 @@ static int __run_perf_stat(int argc, const char **argv, int run_idx)
+ 	 * Enable counters and exec the command:
+ 	 */
+ 	if (forks) {
+-		evlist__start_workload(evsel_list);
+ 		err = enable_counters();
+ 		if (err)
+ 			return -1;
++		evlist__start_workload(evsel_list);
  
-+	vdev->priv = vsock;
-+
- 	mutex_lock(&vsock->tx_lock);
- 	vsock->tx_run = true;
- 	mutex_unlock(&vsock->tx_lock);
-@@ -639,7 +641,6 @@ static int virtio_vsock_probe(struct virtio_device *vdev)
- 	if (virtio_has_feature(vdev, VIRTIO_VSOCK_F_SEQPACKET))
- 		vsock->seqpacket_allow = true;
- 
--	vdev->priv = vsock;
- 	rcu_assign_pointer(the_virtio_vsock, vsock);
- 
- 	mutex_unlock(&the_virtio_vsock_mutex);
+ 		t0 = rdclock();
+ 		clock_gettime(CLOCK_MONOTONIC, &ref_time);
 -- 
 2.34.1
 
