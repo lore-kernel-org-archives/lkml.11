@@ -2,77 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B033C4167D
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:34:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B3C5C43219
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:34:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1575554AbiDEXIO (ORCPT
+        id S1575608AbiDEXIX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 19:08:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56720 "EHLO
+        Tue, 5 Apr 2022 19:08:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58594 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1457669AbiDEQcQ (ORCPT
+        with ESMTP id S1443699AbiDEPkK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 12:32:16 -0400
-Received: from ms.lwn.net (ms.lwn.net [45.79.88.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79B47BF00A;
-        Tue,  5 Apr 2022 09:30:17 -0700 (PDT)
-Received: from localhost (unknown [IPv6:2601:281:8300:35:2589:2a93:190d:b787])
+        Tue, 5 Apr 2022 11:40:10 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5DB8184B54
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 06:58:06 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ms.lwn.net (Postfix) with ESMTPSA id B8E77608;
-        Tue,  5 Apr 2022 16:30:16 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 ms.lwn.net B8E77608
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=lwn.net; s=20201203;
-        t=1649176216; bh=yij2fHsXTf4G+j5va51uVCSzBxLR4AmBmwSualkA3To=;
-        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
-        b=Re3UZ78E/X9xogYjhRmUCeC4BE4weHRkssFjQKYLpcfQMFb08YPhHw7SiVat969tp
-         UIIIuQKlsW7Lrhae31WV/th451Jr1Lqxm3qrFHIYtujgvKBS1CFKjupfE5eLVgRKz4
-         t2zS2kqzcqqQIzL/zFeM/7UYBWQ7rH0edgWhAtgFRUdVEIj/3NQXEP+aMONZbzxcdF
-         EbDlooIGHHxn+vlhyTkxxNfDtOrp7dmAkzfrPQ6Qclz1RA3w+ibWAR3eqAb9orpp11
-         DDdm7FUr4OJcewWt1TyeSmV2blaPxifx/D2W6BkGs04A9OL6h+0BC/CXD0CLNNts94
-         dETfHvbBpCP9Q==
-From:   Jonathan Corbet <corbet@lwn.net>
-To:     Chin En Lin <shiyn.lin@gmail.com>
-Cc:     tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
-        dave.hansen@linux.intel.com, x86@kernel.org, hpa@zytor.com,
-        linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org,
-        Chin En Lin <shiyn.lin@gmail.com>
-Subject: Re: [PATCH v2] Documentation: x86: Fix obsolete name of page fault
- handler
-In-Reply-To: <20220318142536.116761-1-shiyn.lin@gmail.com>
-References: <20220318142536.116761-1-shiyn.lin@gmail.com>
-Date:   Tue, 05 Apr 2022 10:30:16 -0600
-Message-ID: <878rsjebmv.fsf@meer.lwn.net>
+        by ams.source.kernel.org (Postfix) with ESMTPS id 46B55B81C9B
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 13:58:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E608EC385A4;
+        Tue,  5 Apr 2022 13:58:00 +0000 (UTC)
+From:   Catalin Marinas <catalin.marinas@arm.com>
+To:     Will Deacon <will@kernel.org>, Marc Zyngier <maz@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     linux-mm@kvack.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S. Miller" <davem@davemloft.net>,
+        Mark Brown <broonie@kernel.org>,
+        Alasdair Kergon <agk@redhat.com>,
+        Mike Snitzer <snitzer@kernel.org>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        "Rafael J. Wysocki" <rafael@kernel.org>
+Subject: [PATCH 00/10] mm, arm64: Reduce ARCH_KMALLOC_MINALIGN below the cache line size
+Date:   Tue,  5 Apr 2022 14:57:48 +0100
+Message-Id: <20220405135758.774016-1-catalin.marinas@arm.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Chin En Lin <shiyn.lin@gmail.com> writes:
+Hi,
 
-> Since commit 91eeafea1e4b ("x86/entry: Switch page fault exception to
-> IDTENTRY_RAW"), the function name of the page fault handler is out of date.
-> And because of commit aa37c51b9421 ("x86/mm: Break out user address space
-> handling"), the description of search_exception_table is not correct
-> anymore. It may mislead the user who wants to use the documentation to
-> figure out the page fault handler.
->
-> Also, fix typo and add the parentheses after function and macro name.
+On arm64 ARCH_DMA_MINALIGN (and therefore ARCH_KMALLOC_MINALIGN) is 128.
+While the majority of arm64 SoCs have a 64-byte cache line size (or
+rather CWG - cache writeback granule), we chose a less than optimal
+value in order to support all SoCs in a single kernel image.
 
-"Also" in a changelog like this is an indication that you've moved on to
-an independent change that should be done as its own patch.  That is
-certainly true of typo fixes and such, which should be separated out
-from more substantive changes.
+The aim of this series is to allow smaller default ARCH_KMALLOC_MINALIGN
+with kmalloc() caches configured at boot time to be safe when an SoC has
+a larger DMA alignment requirement.
 
-> Signed-off-by: Chin En Lin <shiyn.lin@gmail.com>
-> ---
->  Documentation/x86/exception-tables.rst | 23 +++++++++++++----------
->  1 file changed, 13 insertions(+), 10 deletions(-)
+The first patch decouples ARCH_KMALLOC_MINALIGN from ARCH_DMA_MINALIGN
+with the aim to only use the latter in DMA-specific compile-time
+annotations. ARCH_KMALLOC_MINALIGN becomes the minimum (static)
+guaranteed kmalloc() alignment but not necessarily safe for non-coherent
+DMA. Patches 2-7 change some drivers/ code to use ARCH_DMA_MINALIGN
+instead of ARCH_KMALLOC_MINALIGN.
 
-Nonetheless, the patch seems clear enough and nobody has objected, so
-I've applied it.
+Patch 8 introduces the dynamic arch_kmalloc_minalign() and the slab code
+changes to set the corresponding minimum alignment on the newly created
+kmalloc() caches. Patch 10 defines arch_kmalloc_minalign() for arm64
+returning cache_line_size() together with reducing ARCH_KMALLOC_MINALIGN
+to 64. ARCH_DMA_MINALIGN remains 128 on arm64.
 
-Thanks,
+I don't have access to it but there's the Fujitsu A64FX with a CWG of
+256 (the arm64 cache_line_size() returns 256). This series will bump the
+smallest kmalloc cache to kmalloc-256. The platform is known to be fully
+cache coherent (or so I think) and we decided long ago not to bump
+ARCH_DMA_MINALIGN to 256. If problematic, we could make the dynamic
+kmalloc() alignment on arm64 min(ARCH_DMA_MINALIGN, cache_line_size()).
 
-jon
+This series is beneficial to arm64 even if it's only reducing the
+kmalloc() minimum alignment to 64. While it would be nice to reduce this
+further to 8 (or 16) on SoCs known to be fully DMA coherent, detecting
+this is via arch_setup_dma_ops() is problematic, especially with late
+probed devices. I'd leave it for an additional RFC series on top of
+this (there are ideas like bounce buffering for non-coherent devices if
+the SoC was deemed coherent).
+
+Thanks.
+
+Catalin Marinas (10):
+  mm/slab: Decouple ARCH_KMALLOC_MINALIGN from ARCH_DMA_MINALIGN
+  drivers/base: Use ARCH_DMA_MINALIGN instead of ARCH_KMALLOC_MINALIGN
+  drivers/gpu: Use ARCH_DMA_MINALIGN instead of ARCH_KMALLOC_MINALIGN
+  drivers/md: Use ARCH_DMA_MINALIGN instead of ARCH_KMALLOC_MINALIGN
+  drivers/spi: Use ARCH_DMA_MINALIGN instead of ARCH_KMALLOC_MINALIGN
+  drivers/usb: Use ARCH_DMA_MINALIGN instead of ARCH_KMALLOC_MINALIGN
+  crypto: Use ARCH_DMA_MINALIGN instead of ARCH_KMALLOC_MINALIGN
+  mm/slab: Allow dynamic kmalloc() minimum alignment
+  mm/slab: Simplify create_kmalloc_cache() args and make it static
+  arm64: Enable dynamic kmalloc() minimum alignment
+
+ arch/arm64/include/asm/cache.h |  1 +
+ arch/arm64/kernel/cacheinfo.c  |  7 ++++++
+ drivers/base/devres.c          |  4 ++--
+ drivers/gpu/drm/drm_managed.c  |  4 ++--
+ drivers/md/dm-crypt.c          |  2 +-
+ drivers/spi/spidev.c           |  2 +-
+ drivers/usb/core/buffer.c      |  8 +++----
+ drivers/usb/misc/usbtest.c     |  2 +-
+ include/linux/crypto.h         |  2 +-
+ include/linux/slab.h           | 25 ++++++++++++++++-----
+ mm/slab.c                      |  6 +----
+ mm/slab.h                      |  5 ++---
+ mm/slab_common.c               | 40 ++++++++++++++++++++++------------
+ 13 files changed, 69 insertions(+), 39 deletions(-)
+
