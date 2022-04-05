@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 23427C4321E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 472A5C4167D
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 15:15:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344100AbiDEPKr (ORCPT
+        id S1344809AbiDEPLF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 11:10:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56990 "EHLO
+        Tue, 5 Apr 2022 11:11:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54750 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345706AbiDEJnt (ORCPT
+        with ESMTP id S1345832AbiDEJoH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:43:49 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FD22C4E2F;
-        Tue,  5 Apr 2022 02:28:58 -0700 (PDT)
+        Tue, 5 Apr 2022 05:44:07 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C065C6242;
+        Tue,  5 Apr 2022 02:29:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E98AEB81CAE;
-        Tue,  5 Apr 2022 09:28:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 60471C385A3;
-        Tue,  5 Apr 2022 09:28:55 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1AAB5B81C9E;
+        Tue,  5 Apr 2022 09:29:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 80D0DC385A0;
+        Tue,  5 Apr 2022 09:29:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649150935;
-        bh=KRNK4njVsHVBRUVwoLTSxSdSTi/Wg8AxT7cHVB6pSlE=;
+        s=korg; t=1649150973;
+        bh=m9IdsWkhwEHDsIk1mPp3Sw2dqcl6n6tF8/nLt+2Yvdk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ENaom5YincphP6p+n+kSZE9DVY9YJibAf4zuO77HBWXEDnZaBpnR+F0SveK9syKk9
-         MVaRxFnpVqpOTrmVE96tkwGmJ8E00ERF2RHCfohBQMyJWFCYP/Gfwdyve7ZWkmfuQw
-         aLvaBMWK2sk4zGz2D/vBIJnewgW0IwHwPO7TTMDY=
+        b=c0AYjJ6DtN6k3tFX58MNkvHzE4Ewf/850iadsGpWOGeLVwwZg7wAJhbkTs6CpDyjA
+         0gnBUSDbb7iy9QAY7DjhxgCbX8BxaO433cadL/AEMQMWMbcmpUrHN2AGNd9TcYQV4I
+         PDtjxaSqkCVA/J5Qo13yhgBysSrVBlbWIAG3o27o=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jarkko Sakkinen <jarkko@kernel.org>,
-        Ahmad Fatoum <a.fatoum@pengutronix.de>,
-        Sumit Garg <sumit.garg@linaro.org>,
-        Andreas Rammhold <andreas@rammhold.de>,
+        stable@vger.kernel.org, Gilad Ben-Yossef <gilad@benyossef.com>,
+        Corentin Labbe <clabbe.montjoie@gmail.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 234/913] KEYS: trusted: Fix trusted key backends when building as module
-Date:   Tue,  5 Apr 2022 09:21:36 +0200
-Message-Id: <20220405070346.869676721@linuxfoundation.org>
+Subject: [PATCH 5.15 211/913] crypto: ccree - dont attempt 0 len DMA mappings
+Date:   Tue,  5 Apr 2022 09:21:13 +0200
+Message-Id: <20220405070346.183125799@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
 References: <20220405070339.801210740@linuxfoundation.org>
@@ -52,49 +51,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Andreas Rammhold <andreas@rammhold.de>
+From: Gilad Ben-Yossef <gilad@benyossef.com>
 
-[ Upstream commit 969a26446bcd142faedfe8c6f41cd7668596c1fa ]
+[ Upstream commit 1fb37b5692c915edcc2448a6b37255738c7c77e0 ]
 
-Before this commit the kernel could end up with no trusted key sources
-even though both of the currently supported backends (TPM and TEE) were
-compiled as modules. This manifested in the trusted key type not being
-registered at all.
+Refuse to try mapping zero bytes as this may cause a fault
+on some configurations / platforms and it seems the prev.
+attempt is not enough and we need to be more explicit.
 
-When checking if a CONFIG_… preprocessor variable is defined we only
-test for the builtin (=y) case and not the module (=m) case. By using
-the IS_REACHABLE() macro we do test for both cases.
-
-Fixes: 5d0682be3189 ("KEYS: trusted: Add generic trusted keys framework")
-Reviewed-by: Jarkko Sakkinen <jarkko@kernel.org>
-Reviewed-by: Ahmad Fatoum <a.fatoum@pengutronix.de>
-Reviewed-by: Sumit Garg <sumit.garg@linaro.org>
-Signed-off-by: Andreas Rammhold <andreas@rammhold.de>
-Tested-by: Ahmad Fatoum <a.fatoum@pengutronix.de>
-Signed-off-by: Ahmad Fatoum <a.fatoum@pengutronix.de>
-Signed-off-by: Jarkko Sakkinen <jarkko@kernel.org>
+Signed-off-by: Gilad Ben-Yossef <gilad@benyossef.com>
+Reported-by: Corentin Labbe <clabbe.montjoie@gmail.com>
+Fixes: ce0fc6db38de ("crypto: ccree - protect against empty or NULL
+scatterlists")
+Tested-by: Corentin Labbe <clabbe.montjoie@gmail.com>
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- security/keys/trusted-keys/trusted_core.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/crypto/ccree/cc_buffer_mgr.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-diff --git a/security/keys/trusted-keys/trusted_core.c b/security/keys/trusted-keys/trusted_core.c
-index d5c891d8d353..5b35f1b87644 100644
---- a/security/keys/trusted-keys/trusted_core.c
-+++ b/security/keys/trusted-keys/trusted_core.c
-@@ -27,10 +27,10 @@ module_param_named(source, trusted_key_source, charp, 0);
- MODULE_PARM_DESC(source, "Select trusted keys source (tpm or tee)");
+diff --git a/drivers/crypto/ccree/cc_buffer_mgr.c b/drivers/crypto/ccree/cc_buffer_mgr.c
+index a5e041d9d2cf..11e0278c8631 100644
+--- a/drivers/crypto/ccree/cc_buffer_mgr.c
++++ b/drivers/crypto/ccree/cc_buffer_mgr.c
+@@ -258,6 +258,13 @@ static int cc_map_sg(struct device *dev, struct scatterlist *sg,
+ {
+ 	int ret = 0;
  
- static const struct trusted_key_source trusted_key_sources[] = {
--#if defined(CONFIG_TCG_TPM)
-+#if IS_REACHABLE(CONFIG_TCG_TPM)
- 	{ "tpm", &trusted_key_tpm_ops },
- #endif
--#if defined(CONFIG_TEE)
-+#if IS_REACHABLE(CONFIG_TEE)
- 	{ "tee", &trusted_key_tee_ops },
- #endif
- };
++	if (!nbytes) {
++		*mapped_nents = 0;
++		*lbytes = 0;
++		*nents = 0;
++		return 0;
++	}
++
+ 	*nents = cc_get_sgl_nents(dev, sg, nbytes, lbytes);
+ 	if (*nents > max_sg_nents) {
+ 		*nents = 0;
 -- 
 2.34.1
 
