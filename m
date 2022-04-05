@@ -2,87 +2,131 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C7A05C35276
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 998B9C41535
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:56:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384629AbiDEU4I (ORCPT
+        id S1384429AbiDEUzv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 16:56:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42166 "EHLO
+        Tue, 5 Apr 2022 16:55:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42458 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356675AbiDEKYq (ORCPT
+        with ESMTP id S1383966AbiDEPOv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:24:46 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72604BF024;
-        Tue,  5 Apr 2022 03:08:49 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 25A25B81C88;
-        Tue,  5 Apr 2022 10:08:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 85AF0C385A1;
-        Tue,  5 Apr 2022 10:08:46 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649153326;
-        bh=n3jyOXKYxe6u5mjO/HkPB5eTqSSy5dyknXVWnH6VdXU=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Eq2aZJor10n/KTYECP5bi8N52CL0uCz7kf11Qz3g5h6POmdhyzn80WeVpmcEoQ5ZD
-         H4ksBUWwbrD14w6TFMppKWM9QxmeDTDZSX2ITX06Lu0/ngP3KR0200nab3RLIe82YA
-         /asQ46WZIuNknsN0l94KUmd5ep2BsP3yk/cGaKN0=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Fengnan Chang <changfengnan@vivo.com>,
-        Chao Yu <yuchao0@huawei.com>, Jaegeuk Kim <jaegeuk@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 183/599] f2fs: compress: remove unneeded read when rewrite whole cluster
-Date:   Tue,  5 Apr 2022 09:27:57 +0200
-Message-Id: <20220405070304.287127761@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 5 Apr 2022 11:14:51 -0400
+Received: from relay2-d.mail.gandi.net (relay2-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::222])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CCB157B08;
+        Tue,  5 Apr 2022 06:28:32 -0700 (PDT)
+Received: (Authenticated sender: clement.leger@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id 709324000D;
+        Tue,  5 Apr 2022 13:28:29 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1649165311;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=qnhE1fGjUafmBC+KaTBnXvOD8ef7wgKM3WFEC0Tf58Q=;
+        b=PNZNMPwtfLbDvJj2rr5VXgbxaCGxcXBVC+gZHBtIAYoLT4hU6bhMpirHr8gz34mNJXLwRO
+        6LDLtXVpQnIuL7joOzxx9Ymx88UJvXp25mqd5+1fwpkfq9LPc28eaU0N05kaOwcWtbuWmk
+        GiTNuRJji7YMiyuTKfkrzQ+z3IpmfDY/JtMPHS4AI82mAnxjTgra4Kc/vf8XNy2XPyhn4G
+        +R377fFgzWK/qsqrQV4FhwQeZHFkMf9ok4VSgKwai8hmm2ocIWz0Z7N3wOY3gDfIsP4wdc
+        1+jboRxEU1Fhwg8JYtN+22rUVhqpabxaS2J78OFowBUg/dKrZYmIvsQQdPdskw==
+Date:   Tue, 5 Apr 2022 15:27:02 +0200
+From:   =?UTF-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>
+To:     "Rafael J. Wysocki" <rafael@kernel.org>
+Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Daniel Scally <djrscally@gmail.com>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Wolfram Sang <wsa@kernel.org>, Peter Rosin <peda@axentia.se>,
+        Rob Herring <robh+dt@kernel.org>,
+        Frank Rowand <frowand.list@gmail.com>,
+        Len Brown <lenb@kernel.org>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Allan Nielsen <allan.nielsen@microchip.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+        linux-i2c <linux-i2c@vger.kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>
+Subject: Re: [PATCH v3 3/9] device property: add index argument to
+ property_read_string_array() callback
+Message-ID: <20220405152702.50ba516d@fixe.home>
+In-Reply-To: <CAJZ5v0hOjaOCUxbFzKG90Db0bgfdb3q988oAvLB4kmD3-HS8sQ@mail.gmail.com>
+References: <20220325113148.588163-1-clement.leger@bootlin.com>
+        <20220325113148.588163-4-clement.leger@bootlin.com>
+        <Yj3SFYdUQ4r7GXqs@smile.fi.intel.com>
+        <20220328162812.16deac92@fixe.home>
+        <CAJZ5v0hOjaOCUxbFzKG90Db0bgfdb3q988oAvLB4kmD3-HS8sQ@mail.gmail.com>
+Organization: Bootlin
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.31; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Fengnan Chang <changfengnan@vivo.com>
+Le Tue, 5 Apr 2022 15:22:51 +0200,
+"Rafael J. Wysocki" <rafael@kernel.org> a =C3=A9crit :
 
-[ Upstream commit 7eab7a6968278c735b1ca6387056a408f7960265 ]
+> On Mon, Mar 28, 2022 at 4:29 PM Cl=C3=A9ment L=C3=A9ger <clement.leger@bo=
+otlin.com> wrote:
+> >
+> > Le Fri, 25 Mar 2022 16:30:45 +0200,
+> > Andy Shevchenko <andriy.shevchenko@linux.intel.com> a =C3=A9crit :
+> > =20
+> > > >     pointer =3D property_entry_find(props, propname, length);
+> > > >     if (IS_ERR(pointer))
+> > > >             return PTR_ERR(pointer); =20
+> > > =20
+> > > > +   if (index >=3D array_len)
+> > > > +           return -ENODATA; =20
+> > >
+> > > I was about to ask if we can check this before the
+> > > property_entry_find() call, but realized that in such case it will
+> > > shadow possible errors due to wrong or absent property. =20
+> >
+> > I think you are actually right, the check can be done after
+> > property_entry_count_elems_of_size() since it already checks for the
+> > property to be present. I'll move that check.
+> > =20
+> > >
+> > > ...
+> > > =20
+> > > > -           of_property_read_string_array(node, propname, val,
+> > > > nval) :
+> > > > +           of_property_read_string_array_index(node,
+> > > > propname, val, nval,
+> > > > +                                               index) : =20
+> > >
+> > > Dunno about the style there, but I think it can be one line. =20
+> >
+> > Seems like the complete file is strictly applying the 80 columns rules
+> > so I thought it was better to keep it like this. However, I think the
+> > ternary oeprator is not really readable with such split. =20
+>=20
+> So FWIW I would entirely change it to
+>=20
+> if (!val)
+>         return of_property_count_strings(node, propname);
+>=20
+> return of_property_read_string_array_index(node, propname, val,
+>=20
+> nval, index);
+>=20
+> which IMO would be way easier to read.
 
-when we overwrite the whole page in cluster, we don't need read original
-data before write, because after write_end(), writepages() can help to
-load left data in that cluster.
+Hi Rafael,
 
-Signed-off-by: Fengnan Chang <changfengnan@vivo.com>
-Signed-off-by: Chao Yu <yuchao0@huawei.com>
-Acked-by: Chao Yu <yuchao0@huawei.com>
-Signed-off-by: Jaegeuk Kim <jaegeuk@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- fs/f2fs/data.c | 3 +++
- 1 file changed, 3 insertions(+)
+Agreed, this is way more readable. I'll modify that.
 
-diff --git a/fs/f2fs/data.c b/fs/f2fs/data.c
-index d27a92a54447..04e980c58319 100644
---- a/fs/f2fs/data.c
-+++ b/fs/f2fs/data.c
-@@ -3461,6 +3461,9 @@ static int f2fs_write_begin(struct file *file, struct address_space *mapping,
- 
- 		*fsdata = NULL;
- 
-+		if (len == PAGE_SIZE)
-+			goto repeat;
-+
- 		ret = f2fs_prepare_compress_overwrite(inode, pagep,
- 							index, fsdata);
- 		if (ret < 0) {
--- 
-2.34.1
+Thanks,
 
-
-
+--=20
+Cl=C3=A9ment L=C3=A9ger,
+Embedded Linux and Kernel engineer at Bootlin
+https://bootlin.com
