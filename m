@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E34DC4167B
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 11:06:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 45FE0C4167D
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 11:07:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349231AbiDELDb (ORCPT
+        id S1350116AbiDELDm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 07:03:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53434 "EHLO
+        Tue, 5 Apr 2022 07:03:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45584 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236927AbiDEIlX (ORCPT
+        with ESMTP id S236588AbiDEIlX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Apr 2022 04:41:23 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57FE3111C;
-        Tue,  5 Apr 2022 01:34:13 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AEBBAE70;
+        Tue,  5 Apr 2022 01:33:45 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E5E0D60B0A;
-        Tue,  5 Apr 2022 08:34:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ED0FDC385A2;
-        Tue,  5 Apr 2022 08:34:11 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4AA45609D0;
+        Tue,  5 Apr 2022 08:33:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 56096C385A1;
+        Tue,  5 Apr 2022 08:33:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649147652;
-        bh=tv6arKi6rzEnPZRRIbINOvlsb8nTYzIr7Tyyr02e010=;
+        s=korg; t=1649147624;
+        bh=AIwGneCgQREljoh3n2S10EY9Q3wkZzrK2N0v2FayM6A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Q5WO8Pnwcb3Yv63DSeEXIzZRM+3uDundALUQ+zibrZq50JjMufdfx92LlkgpDSpQW
-         ePFZG0iEzgyz4bZaaVNVbzx/PxSA1Rg0odhu/IcKu17Jd6gPh/PFgKbE7cWTqUxgEe
-         KU69HTc9LDhSrl4kyKTHj6rq5scEEXHGowFzCHBs=
+        b=VvKrbTE7t3CBNOFYSKc0hh2vwpVjTjM12bSud2p1/A3kc5vPPuEnL3yi6hKhZRWZJ
+         R/JYj8ADtLZr/GNHdBZvyLz5b/g9oVgtqPntK0HC8xBG+Kbrv4jU/8tHOwwjv06+kc
+         5LYKnY6qSH9pKIpm6pZQDqw5ziOs0m8OGpZrYhNo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Henry Lin <henryl@nvidia.com>,
-        Mathias Nyman <mathias.nyman@linux.intel.com>
-Subject: [PATCH 5.16 0035/1017] xhci: fix runtime PM imbalance in USB2 resume
-Date:   Tue,  5 Apr 2022 09:15:48 +0200
-Message-Id: <20220405070355.221652878@linuxfoundation.org>
+        stable@vger.kernel.org, Ang Tien Sung <tien.sung.ang@intel.com>,
+        Dinh Nguyen <dinguyen@kernel.org>
+Subject: [PATCH 5.16 0062/1017] firmware: stratix10-svc: add missing callback parameter on RSU
+Date:   Tue,  5 Apr 2022 09:16:15 +0200
+Message-Id: <20220405070356.026249360@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -49,41 +49,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Henry Lin <henryl@nvidia.com>
+From: Ang Tien Sung <tien.sung.ang@intel.com>
 
-commit 70c05e4cf63054cd755ca66c1819327b22cb085f upstream.
+commit b850b7a8b369322adf699ef48ceff4d902525c8c upstream.
 
-A race between system resume and device-initiated resume may result in
-runtime PM imbalance on USB2 root hub. If a device-initiated resume
-starts and system resume xhci_bus_resume() directs U0 before hub driver
-sees the resuming device in RESUME state, device-initiated resume will
-not be finished in xhci_handle_usb2_port_link_resume(). In this case,
-usb_hcd_end_port_resume() call is missing.
+Fix a bug whereby, the return response of parameter a1 from an
+SMC call is not properly set to the callback data during an
+INTEL_SIP_SMC_RSU_ERROR command.
 
-This changes calls usb_hcd_end_port_resume() if resuming device reaches
-U0 to keep runtime PM balance.
-
-Fixes: a231ec41e6f6 ("xhci: refactor U0 link state handling in get_port_status")
+Link: https://lore.kernel.org/lkml/20220216081513.28319-1-tien.sung.ang@intel.com
+Fixes: 6b50d882d38d ("firmware: add remote status update client support")
 Cc: stable@vger.kernel.org
-Signed-off-by: Henry Lin <henryl@nvidia.com>
-Signed-off-by: Mathias Nyman <mathias.nyman@linux.intel.com>
-Link: https://lore.kernel.org/r/20220303110903.1662404-5-mathias.nyman@linux.intel.com
+Signed-off-by: Ang Tien Sung <tien.sung.ang@intel.com>
+Signed-off-by: Dinh Nguyen <dinguyen@kernel.org>
+Link: https://lore.kernel.org/r/20220223144146.399263-1-dinguyen@kernel.org
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/usb/host/xhci-hub.c |    3 +++
- 1 file changed, 3 insertions(+)
+ drivers/firmware/stratix10-svc.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/usb/host/xhci-hub.c
-+++ b/drivers/usb/host/xhci-hub.c
-@@ -1088,6 +1088,9 @@ static void xhci_get_usb2_port_status(st
- 		if (link_state == XDEV_U2)
- 			*status |= USB_PORT_STAT_L1;
- 		if (link_state == XDEV_U0) {
-+			if (bus_state->resume_done[portnum])
-+				usb_hcd_end_port_resume(&port->rhub->hcd->self,
-+							portnum);
- 			bus_state->resume_done[portnum] = 0;
- 			clear_bit(portnum, &bus_state->resuming_ports);
- 			if (bus_state->suspended_ports & (1 << portnum)) {
+--- a/drivers/firmware/stratix10-svc.c
++++ b/drivers/firmware/stratix10-svc.c
+@@ -477,7 +477,7 @@ static int svc_normal_to_secure_thread(v
+ 		case INTEL_SIP_SMC_RSU_ERROR:
+ 			pr_err("%s: STATUS_ERROR\n", __func__);
+ 			cbdata->status = BIT(SVC_STATUS_ERROR);
+-			cbdata->kaddr1 = NULL;
++			cbdata->kaddr1 = &res.a1;
+ 			cbdata->kaddr2 = NULL;
+ 			cbdata->kaddr3 = NULL;
+ 			pdata->chan->scl->receive_cb(pdata->chan->scl, cbdata);
 
 
