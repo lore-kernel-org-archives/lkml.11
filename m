@@ -2,117 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A74BC3527E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A9328C4707F
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:28:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380693AbiDEU2u (ORCPT
+        id S1380836AbiDEU2x (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 16:28:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50652 "EHLO
+        Tue, 5 Apr 2022 16:28:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48376 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358135AbiDEK2B (ORCPT
+        with ESMTP id S1384326AbiDEM1V (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:28:01 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E68E29AE6E;
-        Tue,  5 Apr 2022 03:15:50 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        Tue, 5 Apr 2022 08:27:21 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89A0B65A7;
+        Tue,  5 Apr 2022 04:41:10 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id 46F141F745;
+        Tue,  5 Apr 2022 11:41:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1649158869; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=XRRxg6udnXTabhP4kMhtiuHHu5+YdylTuzhfgNh5DT0=;
+        b=0wtAiHZ2XsShXe7cIptTg3k8X+4oHApryJqVK5hd+8cqRZjLseNjHnoZcQcoQxyD1OWXot
+        1ZeREICduo8y7r8BsKPU1y+qehLHwuE7pWYzuzwgfIeWIUC4Eykm5wBfzxrxDHVkTCnZCN
+        OIrZG9eU4ycjps7xaIJr/M1NryFB5rU=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1649158869;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=XRRxg6udnXTabhP4kMhtiuHHu5+YdylTuzhfgNh5DT0=;
+        b=9+UNg7nWIBJgpgt0CtdlOpv95TMNTWHUt1bUOVG/Ue0N2y64KaP0ZmC0jpV692HZP1gqMa
+        YEUb3/5QV6AuxfCw==
+Received: from murzim.suse.de (murzim.suse.de [10.160.4.192])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9AAC1B81C88;
-        Tue,  5 Apr 2022 10:15:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 134FAC385A1;
-        Tue,  5 Apr 2022 10:15:47 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649153748;
-        bh=4imunOY0aHzERC4UsQvyYo5x70zlw1ErYihHvlIFqGQ=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Wl2/m7m6FOqp3H82MnCyJk59f0C7O6Ez3kS4IWFXPBqCMCln11aIvErfs2Ay3KDtL
-         0x0XBIJ6Xt1pUJbvWIZQ+bwdhXpNS7N0T1dmmnyU6G2YJFOtCVLSjGebPLzm8tK2PR
-         y0MOjE9dyqRUplSU2kW/RiVIwkqVl8H6+3YdCI5g=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sean Christopherson <seanjc@google.com>,
-        Hou Wenlong <houwenlong.hwl@antgroup.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 334/599] KVM: x86/emulator: Defer not-present segment check in __load_segment_descriptor()
-Date:   Tue,  5 Apr 2022 09:30:28 +0200
-Message-Id: <20220405070308.772326353@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
-User-Agent: quilt/0.66
+        by relay2.suse.de (Postfix) with ESMTPS id 3FB16A3B94;
+        Tue,  5 Apr 2022 11:41:09 +0000 (UTC)
+Date:   Tue, 5 Apr 2022 13:41:09 +0200 (CEST)
+From:   Richard Biener <rguenther@suse.de>
+To:     Borislav Petkov <bp@alien8.de>
+cc:     linux-toolchains@vger.kernel.org, Michael Matz <matz@suse.de>,
+        lkml <linux-kernel@vger.kernel.org>
+Subject: Re: older gccs and case labels producing integer constants
+In-Reply-To: <YkwdtxNCpiERLFGW@zn.tnic>
+Message-ID: <rppnr36-25n9-nors-3p6-3oos06219s8@fhfr.qr>
+References: <YkwQ6+tIH8GQpuct@zn.tnic> <7o5nn52-nqn1-oo13-s6o9-59r85r91o768@fhfr.qr> <onrq8p1-582o-6rs9-r682-rs9sqoq7sq6p@fhfr.qr> <YkwbygWj/C3XooMV@zn.tnic> <YkwdtxNCpiERLFGW@zn.tnic>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/mixed; boundary="-1609908220-1777648094-1649158869=:27745"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hou Wenlong <houwenlong.hwl@antgroup.com>
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
 
-[ Upstream commit ca85f002258fdac3762c57d12d5e6e401b6a41af ]
+---1609908220-1777648094-1649158869=:27745
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8BIT
 
-Per Intel's SDM on the "Instruction Set Reference", when
-loading segment descriptor, not-present segment check should
-be after all type and privilege checks. But the emulator checks
-it first, then #NP is triggered instead of #GP if privilege fails
-and segment is not present. Put not-present segment check after
-type and privilege checks in __load_segment_descriptor().
+On Tue, 5 Apr 2022, Borislav Petkov wrote:
 
-Fixes: 38ba30ba51a00 (KVM: x86 emulator: Emulate task switch in emulator.c)
-Reviewed-by: Sean Christopherson <seanjc@google.com>
-Signed-off-by: Hou Wenlong <houwenlong.hwl@antgroup.com>
-Message-Id: <52573c01d369f506cadcf7233812427cf7db81a7.1644292363.git.houwenlong.hwl@antgroup.com>
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- arch/x86/kvm/emulate.c | 14 +++++++++-----
- 1 file changed, 9 insertions(+), 5 deletions(-)
+> On Tue, Apr 05, 2022 at 12:36:58PM +0200, Borislav Petkov wrote:
+> > On Tue, Apr 05, 2022 at 12:06:45PM +0200, Richard Biener wrote:
+> > > Wird auch mit gcc 11 rejected.  Kanns sein dass mit gcc 7 andere
+> > > compiler flags genommen werden?
+> > 
+> > Found it:
+> > 
+> > $ gcc -fsanitize=shift -c switch.c
+> > switch.c: In function ‘foo’:
+> > switch.c:10:7: error: case label does not reduce to an integer constant
+> >        case (((0xfc08) << 16) | (0x0101)):;
+> > 
+> > $ gcc --version
+> > gcc (SUSE Linux) 7.4.1 20190905 [gcc-7-branch revision 275407]
+> > Copyright (C) 2017 Free Software Foundation, Inc.
+> > 
+> > Something not fully backported?
+> 
+> Ok, not really:
+> 
+> gcc-10 -fsanitize=shift -c switch.c
+> switch.c: In function ‘foo’:
+> switch.c:10:7: error: case label does not reduce to an integer constant
+>    10 |       case (((0xfc08) << 16) | (0x0101)):;
+>       |       ^~~~
+> 
+> BUT!
+> 
+> when more switches are set with gcc-10 (full gcc cmdline from a kernel
+> build), then that passes.
+> 
+> But it doesn't pass with gcc-7.
+> 
+> Weird...
 
-diff --git a/arch/x86/kvm/emulate.c b/arch/x86/kvm/emulate.c
-index e82151ba95c0..a63df19ef4da 100644
---- a/arch/x86/kvm/emulate.c
-+++ b/arch/x86/kvm/emulate.c
-@@ -1718,11 +1718,6 @@ static int __load_segment_descriptor(struct x86_emulate_ctxt *ctxt,
- 		goto exception;
- 	}
- 
--	if (!seg_desc.p) {
--		err_vec = (seg == VCPU_SREG_SS) ? SS_VECTOR : NP_VECTOR;
--		goto exception;
--	}
--
- 	dpl = seg_desc.dpl;
- 
- 	switch (seg) {
-@@ -1762,6 +1757,10 @@ static int __load_segment_descriptor(struct x86_emulate_ctxt *ctxt,
- 	case VCPU_SREG_TR:
- 		if (seg_desc.s || (seg_desc.type != 1 && seg_desc.type != 9))
- 			goto exception;
-+		if (!seg_desc.p) {
-+			err_vec = NP_VECTOR;
-+			goto exception;
-+		}
- 		old_desc = seg_desc;
- 		seg_desc.type |= 2; /* busy */
- 		ret = ctxt->ops->cmpxchg_emulated(ctxt, desc_addr, &old_desc, &seg_desc,
-@@ -1786,6 +1785,11 @@ static int __load_segment_descriptor(struct x86_emulate_ctxt *ctxt,
- 		break;
- 	}
- 
-+	if (!seg_desc.p) {
-+		err_vec = (seg == VCPU_SREG_SS) ? SS_VECTOR : NP_VECTOR;
-+		goto exception;
-+	}
-+
- 	if (seg_desc.s) {
- 		/* mark segment as accessed */
- 		if (!(seg_desc.type & 1)) {
--- 
-2.34.1
+As was noted in https://gcc.gnu.org/bugzilla/show_bug.cgi?id=66880
+this is invalid C99+ but compilers are not required to diagnose that
+(you get it diagnosed with -pedantic).  -fsanitize=shift exposes
+it though since the non-integral-constant gets instrumented.
 
-
-
+Richard.
+---1609908220-1777648094-1649158869=:27745--
