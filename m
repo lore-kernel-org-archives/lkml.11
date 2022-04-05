@@ -2,46 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3BBDBC4167E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A85CC35273
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 01:33:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1842806AbiDFBex (ORCPT
+        id S1842821AbiDFBfC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 21:34:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44802 "EHLO
+        Tue, 5 Apr 2022 21:35:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39826 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348493AbiDEKrQ (ORCPT
+        with ESMTP id S1349261AbiDEJtb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:47:16 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 301B33B56B;
-        Tue,  5 Apr 2022 03:27:12 -0700 (PDT)
+        Tue, 5 Apr 2022 05:49:31 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 169B1237C6;
+        Tue,  5 Apr 2022 02:43:21 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D6EFAB81C98;
-        Tue,  5 Apr 2022 10:27:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2462DC385A1;
-        Tue,  5 Apr 2022 10:27:08 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B84A9B817D3;
+        Tue,  5 Apr 2022 09:43:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 05D38C385A2;
+        Tue,  5 Apr 2022 09:43:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649154429;
-        bh=4djunoAxJHOaDgEd2iZ0RMBXmqeYYQMugjYVYuIJyBs=;
+        s=korg; t=1649151798;
+        bh=7Xpp+cKNrQRxV2DdvRzJyaHKgKrhq2oSnuOB1NF+8JU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LTPxtBwWPsh8pE0vSIuV7d3j2OfY1E5LzRsChnK5BSjnuR8QXhxf1BcljSsZSlIAE
-         ibKAY7CMZX7herKRh+b5ZU0hJk55wxaDmB8VQstht6XAqYuHGlckifByj58LlfBCug
-         jgo63DXMBEGU3n49MuWIpsfPbLPqy3RKFLgLsoHw=
+        b=Yjwe2PJvCuy+q/CmP+Qw7WYmjGUJzuPNJXSALxybpVny87Sdwn0N8w/gMsIs3Qbb7
+         6YuwYQA6lDtCAxpky32JtkTi5BNxw+LO/Op5LBT9/rsmQrry2BKO0FdXufsi+IqfWZ
+         siPpifPnChl8+SIo9VS+MjJL/vvepeOhOHfH6660=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Nathan Chancellor <nathan@kernel.org>,
-        Fangrui Song <maskray@google.com>,
-        Palmer Dabbelt <palmer@rivosinc.com>
-Subject: [PATCH 5.10 568/599] riscv module: remove (NOLOAD)
-Date:   Tue,  5 Apr 2022 09:34:22 +0200
-Message-Id: <20220405070315.744480047@linuxfoundation.org>
+        stable@vger.kernel.org, Anshuman Gupta <anshuman.gupta@intel.com>,
+        Jani Nikula <jani.nikula@intel.com>,
+        Uma Shankar <uma.shankar@intel.com>,
+        =?UTF-8?q?Ville=20Syrj=C3=A4l=C3=A4?= 
+        <ville.syrjala@linux.intel.com>,
+        =?UTF-8?q?Jos=C3=A9=20Roberto=20de=20Souza?= <jose.souza@intel.com>,
+        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 546/913] drm/i915/display: Fix HPD short pulse handling for eDP
+Date:   Tue,  5 Apr 2022 09:26:48 +0200
+Message-Id: <20220405070356.214980113@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,49 +55,94 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Fangrui Song <maskray@google.com>
+From: José Roberto de Souza <jose.souza@intel.com>
 
-commit 60210a3d86dc57ce4a76a366e7841dda746a33f7 upstream.
+[ Upstream commit 3a84fd1ed53582b31e843a152ee3219e9e4ccb8c ]
 
-On ELF, (NOLOAD) sets the section type to SHT_NOBITS[1]. It is conceptually
-inappropriate for .plt, .got, and .got.plt sections which are always
-SHT_PROGBITS.
+Commit 13ea6db2cf24 ("drm/i915/edp: Ignore short pulse when panel
+powered off") completely broke short pulse handling for eDP as it is
+usually generated by sink when it is displaying image and there is
+some error or status that source needs to handle.
 
-In GNU ld, if PLT entries are needed, .plt will be SHT_PROGBITS anyway
-and (NOLOAD) will be essentially ignored. In ld.lld, since
-https://reviews.llvm.org/D118840 ("[ELF] Support (TYPE=<value>) to
-customize the output section type"), ld.lld will report a `section type
-mismatch` error (later changed to a warning). Just remove (NOLOAD) to
-fix the warning.
+When power panel is enabled, this state is enough to power aux
+transactions and VDD override is disabled, so intel_pps_have_power()
+is always returning false causing short pulses to be ignored.
 
-[1] https://lld.llvm.org/ELF/linker_script.html As of today, "The
-section should be marked as not loadable" on
-https://sourceware.org/binutils/docs/ld/Output-Section-Type.html is
-outdated for ELF.
+So here better naming this function that intends to check if aux
+lines are powered to avoid the endless cycle mentioned in the commit
+being fixed and fixing the check for what it is intended.
 
-Link: https://github.com/ClangBuiltLinux/linux/issues/1597
-Fixes: ab1ef68e5401 ("RISC-V: Add sections of PLT and GOT for kernel module")
-Reported-by: Nathan Chancellor <nathan@kernel.org>
-Signed-off-by: Fangrui Song <maskray@google.com>
-Signed-off-by: Palmer Dabbelt <palmer@rivosinc.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+v2:
+- renamed to intel_pps_have_panel_power_or_vdd()
+- fixed indentation
+
+Fixes: 13ea6db2cf24 ("drm/i915/edp: Ignore short pulse when panel powered off")
+Cc: Anshuman Gupta <anshuman.gupta@intel.com>
+Cc: Jani Nikula <jani.nikula@intel.com>
+Cc: Uma Shankar <uma.shankar@intel.com>
+Cc: Ville Syrjälä <ville.syrjala@linux.intel.com>
+Reviewed-by: Ville Syrjälä <ville.syrjala@linux.intel.com>
+Signed-off-by: José Roberto de Souza <jose.souza@intel.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220311185149.110527-1-jose.souza@intel.com
+(cherry picked from commit 8f0c1c0949b609acfad62b8d5f742a3b5e7b05ab)
+Signed-off-by: Joonas Lahtinen <joonas.lahtinen@linux.intel.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/riscv/include/asm/module.lds.h |    6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/gpu/drm/i915/display/intel_dp.c  | 2 +-
+ drivers/gpu/drm/i915/display/intel_pps.c | 6 +++---
+ drivers/gpu/drm/i915/display/intel_pps.h | 2 +-
+ 3 files changed, 5 insertions(+), 5 deletions(-)
 
---- a/arch/riscv/include/asm/module.lds.h
-+++ b/arch/riscv/include/asm/module.lds.h
-@@ -2,8 +2,8 @@
- /* Copyright (C) 2017 Andes Technology Corporation */
- #ifdef CONFIG_MODULE_SECTIONS
- SECTIONS {
--	.plt (NOLOAD) : { BYTE(0) }
--	.got (NOLOAD) : { BYTE(0) }
--	.got.plt (NOLOAD) : { BYTE(0) }
-+	.plt : { BYTE(0) }
-+	.got : { BYTE(0) }
-+	.got.plt : { BYTE(0) }
+diff --git a/drivers/gpu/drm/i915/display/intel_dp.c b/drivers/gpu/drm/i915/display/intel_dp.c
+index dbff4b6aa22b..631cf7d4323c 100644
+--- a/drivers/gpu/drm/i915/display/intel_dp.c
++++ b/drivers/gpu/drm/i915/display/intel_dp.c
+@@ -4599,7 +4599,7 @@ intel_dp_hpd_pulse(struct intel_digital_port *dig_port, bool long_hpd)
+ 	struct intel_dp *intel_dp = &dig_port->dp;
+ 
+ 	if (dig_port->base.type == INTEL_OUTPUT_EDP &&
+-	    (long_hpd || !intel_pps_have_power(intel_dp))) {
++	    (long_hpd || !intel_pps_have_panel_power_or_vdd(intel_dp))) {
+ 		/*
+ 		 * vdd off can generate a long/short pulse on eDP which
+ 		 * would require vdd on to handle it, and thus we
+diff --git a/drivers/gpu/drm/i915/display/intel_pps.c b/drivers/gpu/drm/i915/display/intel_pps.c
+index a36ec4a818ff..466bf6820641 100644
+--- a/drivers/gpu/drm/i915/display/intel_pps.c
++++ b/drivers/gpu/drm/i915/display/intel_pps.c
+@@ -1074,14 +1074,14 @@ static void intel_pps_vdd_sanitize(struct intel_dp *intel_dp)
+ 	edp_panel_vdd_schedule_off(intel_dp);
  }
- #endif
+ 
+-bool intel_pps_have_power(struct intel_dp *intel_dp)
++bool intel_pps_have_panel_power_or_vdd(struct intel_dp *intel_dp)
+ {
+ 	intel_wakeref_t wakeref;
+ 	bool have_power = false;
+ 
+ 	with_intel_pps_lock(intel_dp, wakeref) {
+-		have_power = edp_have_panel_power(intel_dp) &&
+-						  edp_have_panel_vdd(intel_dp);
++		have_power = edp_have_panel_power(intel_dp) ||
++			     edp_have_panel_vdd(intel_dp);
+ 	}
+ 
+ 	return have_power;
+diff --git a/drivers/gpu/drm/i915/display/intel_pps.h b/drivers/gpu/drm/i915/display/intel_pps.h
+index fbbcca782e7b..9fe7be4fe867 100644
+--- a/drivers/gpu/drm/i915/display/intel_pps.h
++++ b/drivers/gpu/drm/i915/display/intel_pps.h
+@@ -36,7 +36,7 @@ void intel_pps_vdd_on(struct intel_dp *intel_dp);
+ void intel_pps_on(struct intel_dp *intel_dp);
+ void intel_pps_off(struct intel_dp *intel_dp);
+ void intel_pps_vdd_off_sync(struct intel_dp *intel_dp);
+-bool intel_pps_have_power(struct intel_dp *intel_dp);
++bool intel_pps_have_panel_power_or_vdd(struct intel_dp *intel_dp);
+ void intel_pps_wait_power_cycle(struct intel_dp *intel_dp);
+ 
+ void intel_pps_init(struct intel_dp *intel_dp);
+-- 
+2.34.1
+
 
 
