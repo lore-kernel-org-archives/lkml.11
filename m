@@ -2,83 +2,205 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CD6EAC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:21:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7136CC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:21:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1587013AbiDFAHC (ORCPT
+        id S1587029AbiDFAHJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 20:07:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53350 "EHLO
+        Tue, 5 Apr 2022 20:07:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58412 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380267AbiDENOA (ORCPT
+        with ESMTP id S1358150AbiDEK2C (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 09:14:00 -0400
-Received: from smtp2.axis.com (smtp2.axis.com [195.60.68.18])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 307D312343F;
-        Tue,  5 Apr 2022 05:16:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=axis.com; q=dns/txt; s=axis-central1; t=1649160997;
-  x=1680696997;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=IQbFdsIycaKMPC2WtqAU6bZcJ0n+YEHMU/Uu+zlGT7I=;
-  b=ae7dSkD7GoCDc2NTaNCq3XgDrTcm4p7/80S49gpON3AX+mYkUIK84gnr
-   jnK5D2akK5XnMwxmSBJSt231FFA755yUKQmY1aQUTnPi9SeTtJHyHSeH6
-   oGk/xBHyVyz1j12hQ7Xp41SzTa4gGfwUDk4nfaHC+xxEfhzwM2A7ypP6T
-   6wdpGzTOU+WO5QoCummNdb2bJR8dtJBVNjeRYBNMFuJ6VEpDF8P/yP8We
-   qLCVY+WiFMpZq2DdG73QIP4oDnbwP9A56lVtoP0WpqP3jcnKcndsP7d01
-   R4wu1f2NXr88o+GsfnvzlQRc6npEroX8psnY3nyn8gyebdVTuznsxNq+T
-   Q==;
-From:   Vincent Whitchurch <vincent.whitchurch@axis.com>
-To:     <wsa@kernel.org>
-CC:     <kernel@axis.com>,
-        Vincent Whitchurch <vincent.whitchurch@axis.com>,
-        <linux-i2c@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <krzk+dt@kernel.org>, <robh+dt@kernel.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: [PATCH 1/2] i2c: add binding to prevent device detection
-Date:   Tue, 5 Apr 2022 14:16:26 +0200
-Message-ID: <20220405121627.1560949-2-vincent.whitchurch@axis.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220405121627.1560949-1-vincent.whitchurch@axis.com>
-References: <20220405121627.1560949-1-vincent.whitchurch@axis.com>
+        Tue, 5 Apr 2022 06:28:02 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C48349D0D5;
+        Tue,  5 Apr 2022 03:15:57 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6120161562;
+        Tue,  5 Apr 2022 10:15:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6EBB3C385A0;
+        Tue,  5 Apr 2022 10:15:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649153756;
+        bh=/5m4K9ozsZZSGdZVBC2IAddKC+Vx7f/VTOYfoh6haRo=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=aPpg2ZZYeZwK6PqVtzEg6YQQ/Hw8rlIZN4WqM4hpPitxxn0YLvUUlXz16qow1PK4x
+         OQNlrXuGYn/DtjdZHPHpOatcWFLBoSNLQaqgnnc0ZLC6TNd7T90V/2EZ5sDTRUy6d+
+         VOyZKKNcVOp9B516X0iVHoUufRxOtEJeA9bJV1tE=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
+        Charles Keepax <ckeepax@opensource.cirrus.com>,
+        Sebastian Reichel <sebastian.reichel@collabora.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 337/599] power: supply: wm8350-power: Handle error for wm8350_register_irq
+Date:   Tue,  5 Apr 2022 09:30:31 +0200
+Message-Id: <20220405070308.861046944@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
+References: <20220405070258.802373272@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When drivers with ->detect callbacks are loaded, the I2C core does a
-bunch of transactions to try to probe for these devices, regardless of
-whether they are specified in the devicetree or not.  (This only happens
-on I2C controllers whose drivers enable the I2C_CLASS* flags, but this
-is the case for generic drivers like i2c-gpio.)
+From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
 
-These kinds of transactions are unnecessary on systems where the
-devicetree specifies all the devices on the I2C bus, so add a property
-to allow them to be disabled.
+[ Upstream commit b0b14b5ba11bec56fad344a4a0b2e16449cc8b94 ]
 
-Signed-off-by: Vincent Whitchurch <vincent.whitchurch@axis.com>
+As the potential failure of the wm8350_register_irq(),
+it should be better to check it and return error if fails.
+Also, use 'free_' in order to avoid same code.
+
+Fixes: 14431aa0c5a4 ("power_supply: Add support for WM8350 PMU")
+Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Acked-by: Charles Keepax <ckeepax@opensource.cirrus.com>
+Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- Documentation/devicetree/bindings/i2c/i2c.txt | 4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/power/supply/wm8350_power.c | 96 ++++++++++++++++++++++++-----
+ 1 file changed, 82 insertions(+), 14 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/i2c/i2c.txt b/Documentation/devicetree/bindings/i2c/i2c.txt
-index fc3dd7ec0445..5f7bdf4851e8 100644
---- a/Documentation/devicetree/bindings/i2c/i2c.txt
-+++ b/Documentation/devicetree/bindings/i2c/i2c.txt
-@@ -72,6 +72,10 @@ wants to support one of the below features, it should adapt these bindings.
- 	this information to adapt power management to keep the arbitration awake
- 	all the time, for example. Can not be combined with 'single-master'.
+diff --git a/drivers/power/supply/wm8350_power.c b/drivers/power/supply/wm8350_power.c
+index e05cee457471..9c46c48dccb1 100644
+--- a/drivers/power/supply/wm8350_power.c
++++ b/drivers/power/supply/wm8350_power.c
+@@ -408,44 +408,112 @@ static const struct power_supply_desc wm8350_usb_desc = {
+  *		Initialisation
+  *********************************************************************/
  
-+- no-detect
-+	states that the system should not attempt to automatically detect
-+	devices which are not explicitly specified as child nodes.
+-static void wm8350_init_charger(struct wm8350 *wm8350)
++static int wm8350_init_charger(struct wm8350 *wm8350)
+ {
++	int ret;
 +
- - pinctrl
- 	add extra pinctrl to configure SCL/SDA pins to GPIO function for bus
- 	recovery, call it "gpio" or "recovery" (deprecated) state
+ 	/* register our interest in charger events */
+-	wm8350_register_irq(wm8350, WM8350_IRQ_CHG_BAT_HOT,
++	ret = wm8350_register_irq(wm8350, WM8350_IRQ_CHG_BAT_HOT,
+ 			    wm8350_charger_handler, 0, "Battery hot", wm8350);
+-	wm8350_register_irq(wm8350, WM8350_IRQ_CHG_BAT_COLD,
++	if (ret)
++		goto err;
++
++	ret = wm8350_register_irq(wm8350, WM8350_IRQ_CHG_BAT_COLD,
+ 			    wm8350_charger_handler, 0, "Battery cold", wm8350);
+-	wm8350_register_irq(wm8350, WM8350_IRQ_CHG_BAT_FAIL,
++	if (ret)
++		goto free_chg_bat_hot;
++
++	ret = wm8350_register_irq(wm8350, WM8350_IRQ_CHG_BAT_FAIL,
+ 			    wm8350_charger_handler, 0, "Battery fail", wm8350);
+-	wm8350_register_irq(wm8350, WM8350_IRQ_CHG_TO,
++	if (ret)
++		goto free_chg_bat_cold;
++
++	ret = wm8350_register_irq(wm8350, WM8350_IRQ_CHG_TO,
+ 			    wm8350_charger_handler, 0,
+ 			    "Charger timeout", wm8350);
+-	wm8350_register_irq(wm8350, WM8350_IRQ_CHG_END,
++	if (ret)
++		goto free_chg_bat_fail;
++
++	ret = wm8350_register_irq(wm8350, WM8350_IRQ_CHG_END,
+ 			    wm8350_charger_handler, 0,
+ 			    "Charge end", wm8350);
+-	wm8350_register_irq(wm8350, WM8350_IRQ_CHG_START,
++	if (ret)
++		goto free_chg_to;
++
++	ret = wm8350_register_irq(wm8350, WM8350_IRQ_CHG_START,
+ 			    wm8350_charger_handler, 0,
+ 			    "Charge start", wm8350);
+-	wm8350_register_irq(wm8350, WM8350_IRQ_CHG_FAST_RDY,
++	if (ret)
++		goto free_chg_end;
++
++	ret = wm8350_register_irq(wm8350, WM8350_IRQ_CHG_FAST_RDY,
+ 			    wm8350_charger_handler, 0,
+ 			    "Fast charge ready", wm8350);
+-	wm8350_register_irq(wm8350, WM8350_IRQ_CHG_VBATT_LT_3P9,
++	if (ret)
++		goto free_chg_start;
++
++	ret = wm8350_register_irq(wm8350, WM8350_IRQ_CHG_VBATT_LT_3P9,
+ 			    wm8350_charger_handler, 0,
+ 			    "Battery <3.9V", wm8350);
+-	wm8350_register_irq(wm8350, WM8350_IRQ_CHG_VBATT_LT_3P1,
++	if (ret)
++		goto free_chg_fast_rdy;
++
++	ret = wm8350_register_irq(wm8350, WM8350_IRQ_CHG_VBATT_LT_3P1,
+ 			    wm8350_charger_handler, 0,
+ 			    "Battery <3.1V", wm8350);
+-	wm8350_register_irq(wm8350, WM8350_IRQ_CHG_VBATT_LT_2P85,
++	if (ret)
++		goto free_chg_vbatt_lt_3p9;
++
++	ret = wm8350_register_irq(wm8350, WM8350_IRQ_CHG_VBATT_LT_2P85,
+ 			    wm8350_charger_handler, 0,
+ 			    "Battery <2.85V", wm8350);
++	if (ret)
++		goto free_chg_vbatt_lt_3p1;
+ 
+ 	/* and supply change events */
+-	wm8350_register_irq(wm8350, WM8350_IRQ_EXT_USB_FB,
++	ret = wm8350_register_irq(wm8350, WM8350_IRQ_EXT_USB_FB,
+ 			    wm8350_charger_handler, 0, "USB", wm8350);
+-	wm8350_register_irq(wm8350, WM8350_IRQ_EXT_WALL_FB,
++	if (ret)
++		goto free_chg_vbatt_lt_2p85;
++
++	ret = wm8350_register_irq(wm8350, WM8350_IRQ_EXT_WALL_FB,
+ 			    wm8350_charger_handler, 0, "Wall", wm8350);
+-	wm8350_register_irq(wm8350, WM8350_IRQ_EXT_BAT_FB,
++	if (ret)
++		goto free_ext_usb_fb;
++
++	ret = wm8350_register_irq(wm8350, WM8350_IRQ_EXT_BAT_FB,
+ 			    wm8350_charger_handler, 0, "Battery", wm8350);
++	if (ret)
++		goto free_ext_wall_fb;
++
++	return 0;
++
++free_ext_wall_fb:
++	wm8350_free_irq(wm8350, WM8350_IRQ_EXT_WALL_FB, wm8350);
++free_ext_usb_fb:
++	wm8350_free_irq(wm8350, WM8350_IRQ_EXT_USB_FB, wm8350);
++free_chg_vbatt_lt_2p85:
++	wm8350_free_irq(wm8350, WM8350_IRQ_CHG_VBATT_LT_2P85, wm8350);
++free_chg_vbatt_lt_3p1:
++	wm8350_free_irq(wm8350, WM8350_IRQ_CHG_VBATT_LT_3P1, wm8350);
++free_chg_vbatt_lt_3p9:
++	wm8350_free_irq(wm8350, WM8350_IRQ_CHG_VBATT_LT_3P9, wm8350);
++free_chg_fast_rdy:
++	wm8350_free_irq(wm8350, WM8350_IRQ_CHG_FAST_RDY, wm8350);
++free_chg_start:
++	wm8350_free_irq(wm8350, WM8350_IRQ_CHG_START, wm8350);
++free_chg_end:
++	wm8350_free_irq(wm8350, WM8350_IRQ_CHG_END, wm8350);
++free_chg_to:
++	wm8350_free_irq(wm8350, WM8350_IRQ_CHG_TO, wm8350);
++free_chg_bat_fail:
++	wm8350_free_irq(wm8350, WM8350_IRQ_CHG_BAT_FAIL, wm8350);
++free_chg_bat_cold:
++	wm8350_free_irq(wm8350, WM8350_IRQ_CHG_BAT_COLD, wm8350);
++free_chg_bat_hot:
++	wm8350_free_irq(wm8350, WM8350_IRQ_CHG_BAT_HOT, wm8350);
++err:
++	return ret;
+ }
+ 
+ static void free_charger_irq(struct wm8350 *wm8350)
 -- 
 2.34.1
+
+
 
