@@ -2,47 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7773EC43217
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:16:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AED35C4332F
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:16:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1451027AbiDEUKr (ORCPT
+        id S1453321AbiDEULN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 16:10:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36848 "EHLO
+        Tue, 5 Apr 2022 16:11:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50688 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1455446AbiDEQAC (ORCPT
+        with ESMTP id S241245AbiDEK25 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 12:00:02 -0400
-Received: from mail.skyhub.de (mail.skyhub.de [5.9.137.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE2D837A0D;
-        Tue,  5 Apr 2022 08:15:33 -0700 (PDT)
-Received: from zn.tnic (p2e55dff8.dip0.t-ipconnect.de [46.85.223.248])
+        Tue, 5 Apr 2022 06:28:57 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D022DCA87;
+        Tue,  5 Apr 2022 03:18:12 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id A17AB1EC0502;
-        Tue,  5 Apr 2022 17:15:28 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
-        t=1649171728;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=eiC67LvkcRptZ4vBTwfJLFk18efdkgw7h4pbP4PEKXY=;
-        b=hEUAFCh5v61AOluFcbWJkVxBkYfuIDLTWZWTaNKwVuVmu8wc+ckaad77AK2YlaNTKYaKYr
-        PFWhwwmQ9gQeF8jRu3SmcKDmXrgnwAArO/a7S61IZhA6h2tlUYrDO9pU2nhCnoYP+GqDpb
-        1jWA7ewvTWjdwVvE2eQxHNCiexjNsnM=
-From:   Borislav Petkov <bp@alien8.de>
-To:     LKML <linux-kernel@vger.kernel.org>
-Cc:     Adaptec OEM Raid Solutions <aacraid@microsemi.com>,
-        "James E.J. Bottomley" <jejb@linux.ibm.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        linux-scsi@vger.kernel.org
-Subject: [PATCH 01/11] scsi: aacraid: Fix undefined behavior due to shift overflowing the constant
-Date:   Tue,  5 Apr 2022 17:15:07 +0200
-Message-Id: <20220405151517.29753-2-bp@alien8.de>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8B867617CE;
+        Tue,  5 Apr 2022 10:18:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 98975C385A1;
+        Tue,  5 Apr 2022 10:18:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649153891;
+        bh=faqY+AXvpbMhVT1szSwVM98pjikIjwm3hnilT/iR77Y=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=Hf6SIC8lCAL/jpmkMpaA1E/PhFUfOKIC06CNOqX4HxI3p3xcJL//3o7BXSU6SLluH
+         4Se5AB0aiV00pjtPGCro0v6TZRDiqr2rGUxrqBm6F/4t8PMoDIJ7YfVEY/W3etIhzE
+         GOn2Fjd4v2TDr+2ha+e+1B7uMgfAgcNk5FEoPzRg=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Libin Yang <libin.yang@intel.com>,
+        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
+        Rander Wang <rander.wang@intel.com>,
+        Bard Liao <yung-chuan.liao@linux.intel.com>,
+        Vinod Koul <vkoul@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 384/599] soundwire: intel: fix wrong register name in intel_shim_wake
+Date:   Tue,  5 Apr 2022 09:31:18 +0200
+Message-Id: <20220405070310.257483324@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405151517.29753-1-bp@alien8.de>
-References: <20220405151517.29753-1-bp@alien8.de>
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
+References: <20220405070258.802373272@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -50,40 +52,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Borislav Petkov <bp@suse.de>
+From: Libin Yang <libin.yang@intel.com>
 
-Fix
+[ Upstream commit 3957db3ae3dae6f8b8168791f154567fe49e1fd7 ]
 
-  drivers/scsi/aacraid/commsup.c: In function ‘aac_handle_sa_aif’:
-  drivers/scsi/aacraid/commsup.c:1983:2: error: case label does not reduce to an integer constant
-    case SA_AIF_BPCFG_CHANGE:
-    ^~~~
+When clearing the sdw wakests status, we should use SDW_SHIM_WAKESTS.
 
-See https://lore.kernel.org/r/YkwQ6%2BtIH8GQpuct@zn.tnic for the gory
-details as to why it triggers with older gccs only.
-
-Signed-off-by: Borislav Petkov <bp@suse.de>
-Cc: Adaptec OEM Raid Solutions <aacraid@microsemi.com>
-Cc: "James E.J. Bottomley" <jejb@linux.ibm.com>
-Cc: "Martin K. Petersen" <martin.petersen@oracle.com>
-Cc: linux-scsi@vger.kernel.org
+Fixes: 4a17c441c7cb ("soundwire: intel: revisit SHIM programming sequences.")
+Signed-off-by: Libin Yang <libin.yang@intel.com>
+Reviewed-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+Reviewed-by: Rander Wang <rander.wang@intel.com>
+Signed-off-by: Bard Liao <yung-chuan.liao@linux.intel.com>
+Link: https://lore.kernel.org/r/20220126011451.27853-1-yung-chuan.liao@linux.intel.com
+Signed-off-by: Vinod Koul <vkoul@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/aacraid/aacraid.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/soundwire/intel.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/scsi/aacraid/aacraid.h b/drivers/scsi/aacraid/aacraid.h
-index f849e7c9d428..5e115e8b2ba4 100644
---- a/drivers/scsi/aacraid/aacraid.h
-+++ b/drivers/scsi/aacraid/aacraid.h
-@@ -121,7 +121,7 @@ enum {
- #define SA_AIF_PDEV_CHANGE		(1<<4)
- #define SA_AIF_LDEV_CHANGE		(1<<5)
- #define SA_AIF_BPSTAT_CHANGE		(1<<30)
--#define SA_AIF_BPCFG_CHANGE		(1<<31)
-+#define SA_AIF_BPCFG_CHANGE		(1U<<31)
+diff --git a/drivers/soundwire/intel.c b/drivers/soundwire/intel.c
+index dad4326a2a71..824d9f900aca 100644
+--- a/drivers/soundwire/intel.c
++++ b/drivers/soundwire/intel.c
+@@ -521,8 +521,8 @@ static void intel_shim_wake(struct sdw_intel *sdw, bool wake_enable)
  
- #define HBA_MAX_SG_EMBEDDED		28
- #define HBA_MAX_SG_SEPARATE		90
+ 		/* Clear wake status */
+ 		wake_sts = intel_readw(shim, SDW_SHIM_WAKESTS);
+-		wake_sts |= (SDW_SHIM_WAKEEN_ENABLE << link_id);
+-		intel_writew(shim, SDW_SHIM_WAKESTS_STATUS, wake_sts);
++		wake_sts |= (SDW_SHIM_WAKESTS_STATUS << link_id);
++		intel_writew(shim, SDW_SHIM_WAKESTS, wake_sts);
+ 	}
+ 	mutex_unlock(sdw->link_res->shim_lock);
+ }
 -- 
-2.35.1
+2.34.1
+
+
 
