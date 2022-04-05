@@ -2,80 +2,67 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DC6BDC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:23:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A54FAC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:23:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344667AbiDEUVr (ORCPT
+        id S1347671AbiDEUWP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 16:21:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43936 "EHLO
+        Tue, 5 Apr 2022 16:22:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60098 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1391747AbiDEPfH (ORCPT
+        with ESMTP id S1443711AbiDEPkL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 11:35:07 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D04E139AC1
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 06:42:50 -0700 (PDT)
+        Tue, 5 Apr 2022 11:40:11 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DBF5185005
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 06:58:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2EAC9B81D73
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 13:42:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 993CAC385A0;
-        Tue,  5 Apr 2022 13:42:47 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649166168;
-        bh=Bo1TLmFRPzMx504oGz1+72EDqWUNnp44Jv6KtOwHkao=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=AAbBEiS56WV11mH8SJIEcCt/I/TPqKCtXjUnCImEkrEFFr5/+H0tUw/jiorz9dep+
-         9v/+YdKdktiakuYU4InzvCB238HyBjVW9g3a1xRQDtrEpNlxSTLTR44tTiSDvBsAhn
-         TPkR7hMHg3Trp747EATc8qicj8cgF/B1XblEqms8=
-Date:   Tue, 5 Apr 2022 15:42:45 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Michael Ellerman <mpe@ellerman.id.au>
-Cc:     linuxppc-dev@lists.ozlabs.org,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>,
-        Haren Myneni <haren@linux.ibm.com>,
-        Nicholas Piggin <npiggin@gmail.com>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] powerpc/pseries/vas: use default_groups in kobj_type
-Message-ID: <YkxHVS3kwXY12KSL@kroah.com>
-References: <20220329142552.558339-1-gregkh@linuxfoundation.org>
- <87h77efg8e.fsf@mpe.ellerman.id.au>
+        by ams.source.kernel.org (Postfix) with ESMTPS id AD062B81C9B
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 13:58:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5E544C385A1;
+        Tue,  5 Apr 2022 13:58:14 +0000 (UTC)
+From:   Catalin Marinas <catalin.marinas@arm.com>
+To:     Will Deacon <will@kernel.org>, Marc Zyngier <maz@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     linux-mm@kvack.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, Mark Brown <broonie@kernel.org>
+Subject: [PATCH 05/10] drivers/spi: Use ARCH_DMA_MINALIGN instead of ARCH_KMALLOC_MINALIGN
+Date:   Tue,  5 Apr 2022 14:57:53 +0100
+Message-Id: <20220405135758.774016-6-catalin.marinas@arm.com>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220405135758.774016-1-catalin.marinas@arm.com>
+References: <20220405135758.774016-1-catalin.marinas@arm.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <87h77efg8e.fsf@mpe.ellerman.id.au>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Mar 31, 2022 at 11:39:45PM +1100, Michael Ellerman wrote:
-> Greg Kroah-Hartman <gregkh@linuxfoundation.org> writes:
-> > There are currently 2 ways to create a set of sysfs files for a
-> > kobj_type, through the default_attrs field, and the default_groups
-> > field.  Move the pseries vas sysfs code to use default_groups field
-> > which has been the preferred way since aa30f47cf666 ("kobject: Add
-> > support for default attribute groups to kobj_type") so that we can soon
-> > get rid of the obsolete default_attrs field.
-> >
-> > Cc: Michael Ellerman <mpe@ellerman.id.au>
-> > Cc: Benjamin Herrenschmidt <benh@kernel.crashing.org>
-> > Cc: Paul Mackerras <paulus@samba.org>
-> > Cc: Haren Myneni <haren@linux.ibm.com>
-> > Cc: Nicholas Piggin <npiggin@gmail.com>
-> > Cc: linuxppc-dev@lists.ozlabs.org
-> > Cc: linux-kernel@vger.kernel.org
-> > Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> > ---
-> >
-> > Note, I would like to take this through my driver-core tree for 5.18-rc2
-> > as this is the last hold-out of the default_attrs field.  It "snuck" in
-> > as new code for 5.18-rc1, any objection to me taking it?
-> 
-> No objection, please take it via your tree.
+ARCH_DMA_MINALIGN represents the minimum (static) alignment for safe DMA
+operations while ARCH_KMALLOC_MINALIGN is the minimum kmalloc() objects
+alignment.
 
-Thanks, now queued up.
+Signed-off-by: Catalin Marinas <catalin.marinas@arm.com>
+Cc: Mark Brown <broonie@kernel.org>
+---
+ drivers/spi/spidev.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-greg k-h
+diff --git a/drivers/spi/spidev.c b/drivers/spi/spidev.c
+index 53a551714265..4baea157949b 100644
+--- a/drivers/spi/spidev.c
++++ b/drivers/spi/spidev.c
+@@ -227,7 +227,7 @@ static int spidev_message(struct spidev_data *spidev,
+ 		/* Ensure that also following allocations from rx_buf/tx_buf will meet
+ 		 * DMA alignment requirements.
+ 		 */
+-		unsigned int len_aligned = ALIGN(u_tmp->len, ARCH_KMALLOC_MINALIGN);
++		unsigned int len_aligned = ALIGN(u_tmp->len, ARCH_DMA_MINALIGN);
+ 
+ 		k_tmp->len = u_tmp->len;
+ 
