@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 60B62C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 09:11:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B51EC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 09:11:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238094AbiDEJEj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 05:04:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54448 "EHLO
+        id S238155AbiDEJEo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 05:04:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56482 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237574AbiDEISH (ORCPT
+        with ESMTP id S237643AbiDEISJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:18:07 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 120586B086;
-        Tue,  5 Apr 2022 01:06:59 -0700 (PDT)
+        Tue, 5 Apr 2022 04:18:09 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 588D4B6E48;
+        Tue,  5 Apr 2022 01:07:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2FCB2B81BB4;
-        Tue,  5 Apr 2022 08:06:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9350DC385A5;
-        Tue,  5 Apr 2022 08:06:56 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CEF91B81B92;
+        Tue,  5 Apr 2022 08:07:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 27DEAC385A0;
+        Tue,  5 Apr 2022 08:07:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649146016;
-        bh=r5eGLFvN469NiipfhO0xeqg25JAcHBq1j/s3GFnELEI=;
+        s=korg; t=1649146030;
+        bh=sEdwyZKytQP93J9LHq4NnHXmmYIPENRb0QN6Cpzyh2M=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=R3uxSRDpRQ+iSTDI0mJmzTYPWK4o1pg68/E8NE8GsOZAQFgWKrcVgNkFtLjOP4C1w
-         jmaVz/6ob/ZYaNqiOIFyX+hhvmngN65iscEWaYyxzNrbRE8WhB5PP7DsynpWnaL8Rz
-         PGW/DSQ0WOr/z42xEuwQAd/7XtKS5EqrD0HqQFEQ=
+        b=c/v6ca9vWi6OABXqPhSNR4k7JqABXdw7LJsggmQfI2n2fWmRzHgVDxxOHj2UQByrL
+         Rz0yEYUBrM8QqZf9xOruyw+6XaBO9Ti/2tTTaXoZuHYJg0VRSBp/vgSAgN8WzmMyXk
+         KSisvj+wu/rIcGoYOYaZ4aAN+IXc0I2MWJ0dxu1s=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Elza Mathew <elza.mathew@intel.com>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn@kernel.org>,
+        stable@vger.kernel.org,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Thierry Reding <treding@nvidia.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0612/1126] xsk: Fix race at socket teardown
-Date:   Tue,  5 Apr 2022 09:22:39 +0200
-Message-Id: <20220405070425.598295151@linuxfoundation.org>
+Subject: [PATCH 5.17 0617/1126] gpu: host1x: Fix an error handling path in host1x_probe()
+Date:   Tue,  5 Apr 2022 09:22:44 +0200
+Message-Id: <20220405070425.745515467@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -51,240 +50,58 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Magnus Karlsson <magnus.karlsson@intel.com>
+From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 
-[ Upstream commit 18b1ab7aa76bde181bdb1ab19a87fa9523c32f21 ]
+[ Upstream commit e5d5db1a79a5929b9ced99472f9a748a243d6a69 ]
 
-Fix a race in the xsk socket teardown code that can lead to a NULL pointer
-dereference splat. The current xsk unbind code in xsk_unbind_dev() starts by
-setting xs->state to XSK_UNBOUND, sets xs->dev to NULL and then waits for any
-NAPI processing to terminate using synchronize_net(). After that, the release
-code starts to tear down the socket state and free allocated memory.
+Add the missing 'host1x_bo_cache_destroy()' call in the error handling
+path of the probe, as already done in the remove function.
 
-  BUG: kernel NULL pointer dereference, address: 00000000000000c0
-  PGD 8000000932469067 P4D 8000000932469067 PUD 0
-  Oops: 0000 [#1] PREEMPT SMP PTI
-  CPU: 25 PID: 69132 Comm: grpcpp_sync_ser Tainted: G          I       5.16.0+ #2
-  Hardware name: Dell Inc. PowerEdge R730/0599V5, BIOS 1.2.10 03/09/2015
-  RIP: 0010:__xsk_sendmsg+0x2c/0x690
-  [...]
-  RSP: 0018:ffffa2348bd13d50 EFLAGS: 00010246
-  RAX: 0000000000000000 RBX: 0000000000000040 RCX: ffff8d5fc632d258
-  RDX: 0000000000400000 RSI: ffffa2348bd13e10 RDI: ffff8d5fc5489800
-  RBP: ffffa2348bd13db0 R08: 0000000000000000 R09: 00007ffffffff000
-  R10: 0000000000000000 R11: 0000000000000000 R12: ffff8d5fc5489800
-  R13: ffff8d5fcb0f5140 R14: ffff8d5fcb0f5140 R15: 0000000000000000
-  FS:  00007f991cff9400(0000) GS:ffff8d6f1f700000(0000) knlGS:0000000000000000
-  CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-  CR2: 00000000000000c0 CR3: 0000000114888005 CR4: 00000000001706e0
-  Call Trace:
-  <TASK>
-  ? aa_sk_perm+0x43/0x1b0
-  xsk_sendmsg+0xf0/0x110
-  sock_sendmsg+0x65/0x70
-  __sys_sendto+0x113/0x190
-  ? debug_smp_processor_id+0x17/0x20
-  ? fpregs_assert_state_consistent+0x23/0x50
-  ? exit_to_user_mode_prepare+0xa5/0x1d0
-  __x64_sys_sendto+0x29/0x30
-  do_syscall_64+0x3b/0xc0
-  entry_SYSCALL_64_after_hwframe+0x44/0xae
+In order to simplify the error handling, move the 'host1x_bo_cache_init()'
+call after all the devm_ function.
 
-There are two problems with the current code. First, setting xs->dev to NULL
-before waiting for all users to stop using the socket is not correct. The
-entry to the data plane functions xsk_poll(), xsk_sendmsg(), and xsk_recvmsg()
-are all guarded by a test that xs->state is in the state XSK_BOUND and if not,
-it returns right away. But one process might have passed this test but still
-have not gotten to the point in which it uses xs->dev in the code. In this
-interim, a second process executing xsk_unbind_dev() might have set xs->dev to
-NULL which will lead to a crash for the first process. The solution here is
-just to get rid of this NULL assignment since it is not used anymore. Before
-commit 42fddcc7c64b ("xsk: use state member for socket synchronization"),
-xs->dev was the gatekeeper to admit processes into the data plane functions,
-but it was replaced with the state variable xs->state in the aforementioned
-commit.
-
-The second problem is that synchronize_net() does not wait for any process in
-xsk_poll(), xsk_sendmsg(), or xsk_recvmsg() to complete, which means that the
-state they rely on might be cleaned up prematurely. This can happen when the
-notifier gets called (at driver unload for example) as it uses xsk_unbind_dev().
-Solve this by extending the RCU critical region from just the ndo_xsk_wakeup
-to the whole functions mentioned above, so that both the test of xs->state ==
-XSK_BOUND and the last use of any member of xs is covered by the RCU critical
-section. This will guarantee that when synchronize_net() completes, there will
-be no processes left executing xsk_poll(), xsk_sendmsg(), or xsk_recvmsg() and
-state can be cleaned up safely. Note that we need to drop the RCU lock for the
-skb xmit path as it uses functions that might sleep. Due to this, we have to
-retest the xs->state after we grab the mutex that protects the skb xmit code
-from, among a number of things, an xsk_unbind_dev() being executed from the
-notifier at the same time.
-
-Fixes: 42fddcc7c64b ("xsk: use state member for socket synchronization")
-Reported-by: Elza Mathew <elza.mathew@intel.com>
-Signed-off-by: Magnus Karlsson <magnus.karlsson@intel.com>
-Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
-Acked-by: Björn Töpel <bjorn@kernel.org>
-Link: https://lore.kernel.org/bpf/20220228094552.10134-1-magnus.karlsson@gmail.com
+Fixes: 1f39b1dfa53c ("drm/tegra: Implement buffer object cache")
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Signed-off-by: Thierry Reding <treding@nvidia.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/xdp/xsk.c | 69 +++++++++++++++++++++++++++++++++++++--------------
- 1 file changed, 50 insertions(+), 19 deletions(-)
+ drivers/gpu/host1x/dev.c | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
-diff --git a/net/xdp/xsk.c b/net/xdp/xsk.c
-index 28ef3f4465ae..ac343cd8ff3f 100644
---- a/net/xdp/xsk.c
-+++ b/net/xdp/xsk.c
-@@ -403,18 +403,8 @@ EXPORT_SYMBOL(xsk_tx_peek_release_desc_batch);
- static int xsk_wakeup(struct xdp_sock *xs, u8 flags)
- {
- 	struct net_device *dev = xs->dev;
--	int err;
--
--	rcu_read_lock();
--	err = dev->netdev_ops->ndo_xsk_wakeup(dev, xs->queue_id, flags);
--	rcu_read_unlock();
--
--	return err;
--}
+diff --git a/drivers/gpu/host1x/dev.c b/drivers/gpu/host1x/dev.c
+index 6994f8c0e02e..9605495f001a 100644
+--- a/drivers/gpu/host1x/dev.c
++++ b/drivers/gpu/host1x/dev.c
+@@ -447,7 +447,6 @@ static int host1x_probe(struct platform_device *pdev)
+ 	if (syncpt_irq < 0)
+ 		return syncpt_irq;
  
--static int xsk_zc_xmit(struct xdp_sock *xs)
--{
--	return xsk_wakeup(xs, XDP_WAKEUP_TX);
-+	return dev->netdev_ops->ndo_xsk_wakeup(dev, xs->queue_id, flags);
- }
+-	host1x_bo_cache_init(&host->cache);
+ 	mutex_init(&host->devices_lock);
+ 	INIT_LIST_HEAD(&host->devices);
+ 	INIT_LIST_HEAD(&host->list);
+@@ -489,10 +488,12 @@ static int host1x_probe(struct platform_device *pdev)
+ 	if (err)
+ 		return err;
  
- static void xsk_destruct_skb(struct sk_buff *skb)
-@@ -533,6 +523,12 @@ static int xsk_generic_xmit(struct sock *sk)
- 
- 	mutex_lock(&xs->mutex);
- 
-+	/* Since we dropped the RCU read lock, the socket state might have changed. */
-+	if (unlikely(!xsk_is_bound(xs))) {
-+		err = -ENXIO;
-+		goto out;
-+	}
++	host1x_bo_cache_init(&host->cache);
 +
- 	if (xs->queue_id >= xs->dev->real_num_tx_queues)
- 		goto out;
- 
-@@ -596,16 +592,26 @@ static int xsk_generic_xmit(struct sock *sk)
- 	return err;
- }
- 
--static int __xsk_sendmsg(struct sock *sk)
-+static int xsk_xmit(struct sock *sk)
- {
- 	struct xdp_sock *xs = xdp_sk(sk);
-+	int ret;
- 
- 	if (unlikely(!(xs->dev->flags & IFF_UP)))
- 		return -ENETDOWN;
- 	if (unlikely(!xs->tx))
- 		return -ENOBUFS;
- 
--	return xs->zc ? xsk_zc_xmit(xs) : xsk_generic_xmit(sk);
-+	if (xs->zc)
-+		return xsk_wakeup(xs, XDP_WAKEUP_TX);
-+
-+	/* Drop the RCU lock since the SKB path might sleep. */
-+	rcu_read_unlock();
-+	ret = xsk_generic_xmit(sk);
-+	/* Reaquire RCU lock before going into common code. */
-+	rcu_read_lock();
-+
-+	return ret;
- }
- 
- static bool xsk_no_wakeup(struct sock *sk)
-@@ -619,7 +625,7 @@ static bool xsk_no_wakeup(struct sock *sk)
- #endif
- }
- 
--static int xsk_sendmsg(struct socket *sock, struct msghdr *m, size_t total_len)
-+static int __xsk_sendmsg(struct socket *sock, struct msghdr *m, size_t total_len)
- {
- 	bool need_wait = !(m->msg_flags & MSG_DONTWAIT);
- 	struct sock *sk = sock->sk;
-@@ -639,11 +645,22 @@ static int xsk_sendmsg(struct socket *sock, struct msghdr *m, size_t total_len)
- 
- 	pool = xs->pool;
- 	if (pool->cached_need_wakeup & XDP_WAKEUP_TX)
--		return __xsk_sendmsg(sk);
-+		return xsk_xmit(sk);
- 	return 0;
- }
- 
--static int xsk_recvmsg(struct socket *sock, struct msghdr *m, size_t len, int flags)
-+static int xsk_sendmsg(struct socket *sock, struct msghdr *m, size_t total_len)
-+{
-+	int ret;
-+
-+	rcu_read_lock();
-+	ret = __xsk_sendmsg(sock, m, total_len);
-+	rcu_read_unlock();
-+
-+	return ret;
-+}
-+
-+static int __xsk_recvmsg(struct socket *sock, struct msghdr *m, size_t len, int flags)
- {
- 	bool need_wait = !(flags & MSG_DONTWAIT);
- 	struct sock *sk = sock->sk;
-@@ -669,6 +686,17 @@ static int xsk_recvmsg(struct socket *sock, struct msghdr *m, size_t len, int fl
- 	return 0;
- }
- 
-+static int xsk_recvmsg(struct socket *sock, struct msghdr *m, size_t len, int flags)
-+{
-+	int ret;
-+
-+	rcu_read_lock();
-+	ret = __xsk_recvmsg(sock, m, len, flags);
-+	rcu_read_unlock();
-+
-+	return ret;
-+}
-+
- static __poll_t xsk_poll(struct file *file, struct socket *sock,
- 			     struct poll_table_struct *wait)
- {
-@@ -679,8 +707,11 @@ static __poll_t xsk_poll(struct file *file, struct socket *sock,
- 
- 	sock_poll_wait(file, sock, wait);
- 
--	if (unlikely(!xsk_is_bound(xs)))
-+	rcu_read_lock();
-+	if (unlikely(!xsk_is_bound(xs))) {
-+		rcu_read_unlock();
- 		return mask;
-+	}
- 
- 	pool = xs->pool;
- 
-@@ -689,7 +720,7 @@ static __poll_t xsk_poll(struct file *file, struct socket *sock,
- 			xsk_wakeup(xs, pool->cached_need_wakeup);
- 		else
- 			/* Poll needs to drive Tx also in copy mode */
--			__xsk_sendmsg(sk);
-+			xsk_xmit(sk);
+ 	err = host1x_iommu_init(host);
+ 	if (err < 0) {
+ 		dev_err(&pdev->dev, "failed to setup IOMMU: %d\n", err);
+-		return err;
++		goto destroy_cache;
  	}
  
- 	if (xs->rx && !xskq_prod_is_empty(xs->rx))
-@@ -697,6 +728,7 @@ static __poll_t xsk_poll(struct file *file, struct socket *sock,
- 	if (xs->tx && xsk_tx_writeable(xs))
- 		mask |= EPOLLOUT | EPOLLWRNORM;
+ 	err = host1x_channel_list_init(&host->channel_list,
+@@ -553,6 +554,8 @@ static int host1x_probe(struct platform_device *pdev)
+ 	host1x_channel_list_free(&host->channel_list);
+ iommu_exit:
+ 	host1x_iommu_exit(host);
++destroy_cache:
++	host1x_bo_cache_destroy(&host->cache);
  
-+	rcu_read_unlock();
- 	return mask;
- }
- 
-@@ -728,7 +760,6 @@ static void xsk_unbind_dev(struct xdp_sock *xs)
- 
- 	/* Wait for driver to stop using the xdp socket. */
- 	xp_del_xsk(xs->pool, xs);
--	xs->dev = NULL;
- 	synchronize_net();
- 	dev_put(dev);
+ 	return err;
  }
 -- 
 2.34.1
