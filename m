@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8915BC35274
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 60025C35273
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:35:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384007AbiDEM04 (ORCPT
+        id S1383905AbiDEM0i (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 08:26:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59264 "EHLO
+        Tue, 5 Apr 2022 08:26:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59258 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245173AbiDEIyM (ORCPT
+        with ESMTP id S245169AbiDEIyM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Apr 2022 04:54:12 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 693E0113E;
-        Tue,  5 Apr 2022 01:51:47 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D14FCBC4;
+        Tue,  5 Apr 2022 01:51:44 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 076FE61504;
-        Tue,  5 Apr 2022 08:51:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 19AB3C385A0;
-        Tue,  5 Apr 2022 08:51:45 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5EA12614FD;
+        Tue,  5 Apr 2022 08:51:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 73D4AC385A0;
+        Tue,  5 Apr 2022 08:51:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649148706;
-        bh=YupnqndCtkR3vV2ScBcqo7c4sEwMK9OisE3c80HtMlU=;
+        s=korg; t=1649148703;
+        bh=37lqvQPyinwbCCp2ar0m3TNP26kNwrsR/IosoubA5O8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rmJn8Msne5ku2e4sftIl93YnHiHxqaS0irG+YkCYwwJiM5cgX0pz2T3tEIYPEEALA
-         wmbxmAcNLs7E/zgG8cED7rHN8o/QfLopUMofJvk083ha6Vtfprj0Ipeuy8SHMhRetg
-         j6OSuxa25ryTu2dcEA0qxfZfyEl1v0yg/lVL4b4s=
+        b=uyWTQeBxIKDzpZrXB2yIMiF7zTbbEIH8v2EKgsHoxHdpyNtrcXU+dUub7Y3kzMD8K
+         JjRAHxhBFqqoa96lpW1bJL74DBgQNANozSa0PhdRrk7DLOrxY2ud5B1cvPprFOALOe
+         lUZH74c7QBssg6qwjNDUBkPja8zwpSdTyJASBuCc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Lorenzo Bianconi <lorenzo@kernel.org>,
         Felix Fietkau <nbd@nbd.name>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0452/1017] mt76: mt7915: use proper aid value in mt7915_mcu_wtbl_generic_tlv in sta mode
-Date:   Tue,  5 Apr 2022 09:22:45 +0200
-Message-Id: <20220405070407.715907378@linuxfoundation.org>
+Subject: [PATCH 5.16 0451/1017] mt76: connac: fix sta_rec_wtbl tag len
+Date:   Tue,  5 Apr 2022 09:22:44 +0200
+Message-Id: <20220405070407.686436090@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -51,37 +51,32 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Lorenzo Bianconi <lorenzo@kernel.org>
 
-[ Upstream commit a56b1b0f145ef2d6bb9312dedf3ab8558ef50a5b ]
+[ Upstream commit 74c337ec0905d99111fc63a15f2e0784b9ed5503 ]
 
-mac80211 provides aid in vif->bss_conf.aid for sta mode and not in
-sta->aid. Fix mt7915_mcu_wtbl_generic_tlv routine using proper value for
-aid in sta mode.
+Similar to mt7915 driver, fix tag len error for sta_rec_wtbl, which
+causes fw parsing error for the tags placed behind it.
 
-Fixes: e57b7901469fc ("mt76: add mac80211 driver for MT7915 PCIe-based chipsets")
+Fixes: d0e274af2f2e4 ("mt76: mt76_connac: create mcu library")
 Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
 Signed-off-by: Felix Fietkau <nbd@nbd.name>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/mediatek/mt76/mt7915/mcu.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ drivers/net/wireless/mediatek/mt76/mt76_connac_mcu.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/wireless/mediatek/mt76/mt7915/mcu.c b/drivers/net/wireless/mediatek/mt76/mt7915/mcu.c
-index 8215b3d79bbd..8cdf689b383e 100644
---- a/drivers/net/wireless/mediatek/mt76/mt7915/mcu.c
-+++ b/drivers/net/wireless/mediatek/mt76/mt7915/mcu.c
-@@ -1263,8 +1263,11 @@ mt7915_mcu_wtbl_generic_tlv(struct sk_buff *skb, struct ieee80211_vif *vif,
- 	generic = (struct wtbl_generic *)tlv;
+diff --git a/drivers/net/wireless/mediatek/mt76/mt76_connac_mcu.c b/drivers/net/wireless/mediatek/mt76/mt76_connac_mcu.c
+index 1fb8432aa27c..6235ed3a332b 100644
+--- a/drivers/net/wireless/mediatek/mt76/mt76_connac_mcu.c
++++ b/drivers/net/wireless/mediatek/mt76/mt76_connac_mcu.c
+@@ -313,7 +313,7 @@ mt76_connac_mcu_alloc_wtbl_req(struct mt76_dev *dev, struct mt76_wcid *wcid,
+ 	}
  
- 	if (sta) {
-+		if (vif->type == NL80211_IFTYPE_STATION)
-+			generic->partial_aid = cpu_to_le16(vif->bss_conf.aid);
-+		else
-+			generic->partial_aid = cpu_to_le16(sta->aid);
- 		memcpy(generic->peer_addr, sta->addr, ETH_ALEN);
--		generic->partial_aid = cpu_to_le16(sta->aid);
- 		generic->muar_idx = mvif->omac_idx;
- 		generic->qos = sta->wme;
- 	} else {
+ 	if (sta_hdr)
+-		sta_hdr->len = cpu_to_le16(sizeof(hdr));
++		le16_add_cpu(&sta_hdr->len, sizeof(hdr));
+ 
+ 	return skb_put_data(nskb, &hdr, sizeof(hdr));
+ }
 -- 
 2.34.1
 
