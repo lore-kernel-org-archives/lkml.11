@@ -2,161 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B4BDC43219
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:50:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 171EDC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:51:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1838203AbiDFAuj (ORCPT
+        id S1838222AbiDFAun (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 20:50:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41314 "EHLO
+        Tue, 5 Apr 2022 20:50:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54838 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1573067AbiDERvM (ORCPT
+        with ESMTP id S1349620AbiDEJui (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 13:51:12 -0400
-Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE451D9EB8
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 10:49:11 -0700 (PDT)
-Received: by mail-ed1-x530.google.com with SMTP id x20so7942422edi.12
-        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 10:49:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=RXCW1evSnb4oJ88sHTAFEYTq0HTuOW2ocRpwnA3InQ4=;
-        b=DFediYf4lKdcEGd6wHnf3P2A1rH9d97LcubT3QP6yRNY6vUA82uDkOevPceh0sN/Wl
-         AzNDVgFuK6V76WaqpSYAiG2hRF9Re4Ov3xlC/Ms7hpW9uCTQ7y898MEv8Ijbqhc6SxXo
-         QvfpY4jywVuV6j8Ii/P3vkQXreEU44Hlqin6E5RTxZAap0ziUpyUXuD83coag22gB7nJ
-         kP94eXAsBC1cr7hK8pVNGZaStSW21SliZd84A/wTh+8QK9KZdm23HHaRa8zC2IVlp4fq
-         sk905jrtMt/I2FOoTaeCu/ArrkOR8UVb6SsiWhRhquLKZ90pI6vt79FBY7MRBMWLMUZ2
-         L8SQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=RXCW1evSnb4oJ88sHTAFEYTq0HTuOW2ocRpwnA3InQ4=;
-        b=SsWYY3LHiAgB5n6iewp+EpnvTqRfWNMZ9c4ROH88N1VFQLWB3nF/hsCV6qAHH54j4+
-         QMW9MHMFW/cTyvHLvXy2BnLnl54Qvq6HM2WWeOUXAIlNxpaXlRQavgqmHf1dDj6KbUNB
-         DVA2qkD03a3JfCRFfeYdzc7A5UwhpXuY/myKHECW/BOY4/1EXVTkRPgMgjpvUFBz5kU6
-         elIaYCy4qtsNUVVFBHev2DalV0gHS9wE7/ZvywMeritvPTmyBnbqNCqGUNdT7XE67Zyv
-         Xf2Q+4TkitrJfGodRYNeExnTe/hN8G2+SYTqUE8ZCERkEGCZNEJS2M8KTZok3MPEBBHD
-         ONgg==
-X-Gm-Message-State: AOAM531YXDNjjh1vDbhFIU4zskYmyaiPmAZJxIgERF9kwKmokd/M4ksh
-        iBq1ClEsg1VR07Rf698wzt6QMmVgo3hUmlzZIY5+1w==
-X-Google-Smtp-Source: ABdhPJy3kLISS/qYYRzMDmjCuhPu7OU3AJeQfL+t2mEx7NkNwMYgXC85KD1rOoe+vR5iNyCwy95ZqCXnaDcme/ng0CI=
-X-Received: by 2002:aa7:d98f:0:b0:41c:bf0f:4c45 with SMTP id
- u15-20020aa7d98f000000b0041cbf0f4c45mr4818393eds.379.1649180950052; Tue, 05
- Apr 2022 10:49:10 -0700 (PDT)
+        Tue, 5 Apr 2022 05:50:38 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72734DCF;
+        Tue,  5 Apr 2022 02:48:38 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0E789615E3;
+        Tue,  5 Apr 2022 09:48:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1E430C385A2;
+        Tue,  5 Apr 2022 09:48:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649152117;
+        bh=3A6/wr4Ruqir6XPiFN7OjrQqY55f8efY1tUO+dql6NQ=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=b+HKeB8+DJ4Afqy7UN0ygX/EUcE8h6l58o/aEkFCoGn5R1gmqjdS6ubXVsvwpcBmV
+         SnXVlrGXjdEglDXP6z/6bueWIxCqUAb3owCMzFzd7E6xoqXQCU1ohMvoGzfW1mGOZ8
+         LWNTmXq0u+fZSHNssWTaQz/EBL282UHVg7/PLFYQ=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        =?UTF-8?q?Jonathan=20Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 622/913] clk: clps711x: Terminate clk_div_table with sentinel element
+Date:   Tue,  5 Apr 2022 09:28:04 +0200
+Message-Id: <20220405070358.484596010@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-References: <20220328035951.1817417-1-tjmercier@google.com>
- <20220328035951.1817417-6-tjmercier@google.com> <20220329152142.GA15794@blackbody.suse.cz>
- <CABdmKX2874NdYCBzpKLnqWhZQDkC2wKz4ZL_aFNqrec6iAutpQ@mail.gmail.com> <20220405121245.GA30368@blackbody.suse.cz>
-In-Reply-To: <20220405121245.GA30368@blackbody.suse.cz>
-From:   "T.J. Mercier" <tjmercier@google.com>
-Date:   Tue, 5 Apr 2022 10:48:58 -0700
-Message-ID: <CABdmKX0aF5zXozbb7npcEq3PgaeDE=gaGLf+jYY4oRKW9N+46g@mail.gmail.com>
-Subject: Re: [RFC v4 5/8] dmabuf: Add gpu cgroup charge transfer function
-To:     =?UTF-8?Q?Michal_Koutn=C3=BD?= <mkoutny@suse.com>
-Cc:     David Airlie <airlied@linux.ie>, Daniel Vetter <daniel@ffwll.ch>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        =?UTF-8?B?QXJ2ZSBIasO4bm5ldsOlZw==?= <arve@android.com>,
-        Todd Kjos <tkjos@android.com>,
-        Martijn Coenen <maco@android.com>,
-        Joel Fernandes <joel@joelfernandes.org>,
-        Christian Brauner <brauner@kernel.org>,
-        Hridya Valsaraju <hridya@google.com>,
-        Suren Baghdasaryan <surenb@google.com>,
-        Sumit Semwal <sumit.semwal@linaro.org>,
-        =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>,
-        Benjamin Gaignard <benjamin.gaignard@linaro.org>,
-        Liam Mark <lmark@codeaurora.org>,
-        Laura Abbott <labbott@redhat.com>,
-        Brian Starkey <Brian.Starkey@arm.com>,
-        John Stultz <john.stultz@linaro.org>,
-        Tejun Heo <tj@kernel.org>, Zefan Li <lizefan.x@bytedance.com>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Kalesh Singh <kaleshsingh@google.com>, Kenny.Ho@amd.com,
-        Shuah Khan <skhan@linuxfoundation.org>,
-        dri-devel@lists.freedesktop.org, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-media@vger.kernel.org,
-        linaro-mm-sig@lists.linaro.org, cgroups@vger.kernel.org,
-        linux-kselftest@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 5, 2022 at 5:12 AM Michal Koutn=C3=BD <mkoutny@suse.com> wrote:
->
-> On Fri, Apr 01, 2022 at 11:41:36AM -0700, "T.J. Mercier" <tjmercier@googl=
-e.com> wrote:
-> > This link doesn't work for me, but I think you're referring to the
-> > discussion about your "RAM_backed_buffers" comment from March 23rd.
->
-> (Oops, it's a non-public message. But yes, you guessed it right ;-))
->
-> > Anyway the test I did goes like this: enable memcg and gpu cgoups
-> > tracking and run a process that allocates 100MiB of dmabufs. Observe
-> > memcg and gpu accounting values before and after the allocation.
->
-> Thanks for this measurement/dem/demoo.
->
-> > Before
-> > # cat memory.current gpu.memory.current
-> > 14909440
-> > system 0
-> >
-> > <Test program does the allocation of 100MiB of dmabufs>
-> >
-> > After
-> > # cat memory.current gpu.memory.current
-> > 48025600
-> > system 104857600
-> >
-> > So the memcg value increases by about 30 MiB while the gpu values
-> > increases by 100 MiB.
->
-> > This is with kmem enabled, and the /proc/maps
-> > file for this process indicates that the majority of that 30 MiB is
-> > kernel memory.
->
-> > I think this result shows that neither the kernel nor process memory
-> > overlap with the gpu cgroup tracking of these allocations.
->
-> It depends how the semantics of the 'system' entry is defined, no?
-> As I grasped from other thread, the 'total' is going to be removed, so
-> 'system' represents exclusively device memory?
->
-That's right. The system charges (soon to be renamed "system-heap")
-result only from an allocator (in this case the system heap) deciding
-to call gpucg_try_charge for the buffer which is entirely device
-memory.
->
-> > So despite the fact that these buffers are in main memory, they are
-> > allocated in a way that does not result in memcg attribution. (It
-> > looks to me like __GFP_ACCOUNT is not set for these.)
->
-> (I thought you knew what dmabufs your program used :-p)
->
-I'm coming up to speed on a lot of new-to-me code here. :)
-Just for completeness, these buffers were allocated with
-libdmabufheap's AllocSystem.
+From: Jonathan Neuschäfer <j.neuschaefer@gmx.net>
 
-> So, the goal is to do the tracking and migrations only via the gpu cg
-> layer, regardless how memcg charges it (or not).
->
-> (I have no opinion on that, I'm just summing it so that we're on the
-> same page.)
->
-Yes, this reflects my intention and current state of the code in this serie=
-s.
+[ Upstream commit 8bed4ed5aa3431085d9d27afc35d684856460eda ]
 
-> Michal
+In order that the end of a clk_div_table can be detected, it must be
+terminated with a sentinel element (.div = 0).
 
-Thanks,
-T.J.
+Fixes: 631c53478973d ("clk: Add CLPS711X clk driver")
+Signed-off-by: Jonathan Neuschäfer <j.neuschaefer@gmx.net>
+Link: https://lore.kernel.org/r/20220218000922.134857-5-j.neuschaefer@gmx.net
+Signed-off-by: Stephen Boyd <sboyd@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/clk/clk-clps711x.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/drivers/clk/clk-clps711x.c b/drivers/clk/clk-clps711x.c
+index a2c6486ef170..f8417ee2961a 100644
+--- a/drivers/clk/clk-clps711x.c
++++ b/drivers/clk/clk-clps711x.c
+@@ -28,11 +28,13 @@ static const struct clk_div_table spi_div_table[] = {
+ 	{ .val = 1, .div = 8, },
+ 	{ .val = 2, .div = 2, },
+ 	{ .val = 3, .div = 1, },
++	{ /* sentinel */ }
+ };
+ 
+ static const struct clk_div_table timer_div_table[] = {
+ 	{ .val = 0, .div = 256, },
+ 	{ .val = 1, .div = 1, },
++	{ /* sentinel */ }
+ };
+ 
+ struct clps711x_clk {
+-- 
+2.34.1
+
+
+
