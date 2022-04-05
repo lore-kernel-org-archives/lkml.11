@@ -2,47 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EA172C43217
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 09:53:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 952EFC4332F
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 09:52:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346850AbiDEJpi (ORCPT
+        id S1346479AbiDEJpG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 05:45:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54492 "EHLO
+        Tue, 5 Apr 2022 05:45:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37238 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235552AbiDEIVa (ORCPT
+        with ESMTP id S239038AbiDEITo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:21:30 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7D9321AD;
-        Tue,  5 Apr 2022 01:19:16 -0700 (PDT)
+        Tue, 5 Apr 2022 04:19:44 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5601A75E6D;
+        Tue,  5 Apr 2022 01:10:04 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 21DACB81BAC;
-        Tue,  5 Apr 2022 08:19:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6B586C385A0;
-        Tue,  5 Apr 2022 08:19:13 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 46588B81A32;
+        Tue,  5 Apr 2022 08:10:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 82191C385A1;
+        Tue,  5 Apr 2022 08:10:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649146753;
-        bh=bk9cWPr/wjcvI1DpKgD6lGJ0CQY4X1di6UU/QY0bodk=;
+        s=korg; t=1649146201;
+        bh=40R9kc5aBeoKOIfKNAfHBDLpStxymn0Zg5mTScWioOs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ns6nLuv4FC89rNcFAZ5gO9qGBwX5AmS9/jMNA0ZX0ncDiOcjCoiGIuylBIPk7UiTf
-         oypR3M4/hivbw/vRO3LaDU4HATKJ54r5lJ9MSQEjdVoVV41ook+HnidrCM2cgsqtlG
-         dlEiQLMOY+cMYCP2mBWyKOfxPZ8hhEZtxtdcSTFs=
+        b=zcUWbMk5AX0W6L7wXYL8IKTQjcUJq05un+KZO0G+dNtXXlyoBFY3S6qA62tWYBinI
+         6kTLCkw2qGXOKayynDmQuiIldf9vhice1jlQWkaFhBjo72hcAkYsaitsB/KoYBK9nw
+         x9WeQaVuY5B7bETAKWfrZz2IWFunGssJ0H4WKhK4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>,
-        Valentin Schneider <valentin.schneider@arm.com>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        "Steven Rostedt (Google)" <rostedt@goodmis.org>,
+        Khaled Almahallawy <khaled.almahallawy@intel.com>,
+        Charlton Lin <charlton.lin@intel.com>,
+        =?UTF-8?q?Jouni=20H=C3=B6gander?= <jouni.hogander@intel.com>,
+        =?UTF-8?q?Jos=C3=A9=20Roberto=20de=20Souza?= <jose.souza@intel.com>,
+        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0875/1126] sched/tracing: Report TASK_RTLOCK_WAIT tasks as TASK_UNINTERRUPTIBLE
-Date:   Tue,  5 Apr 2022 09:27:02 +0200
-Message-Id: <20220405070433.219535150@linuxfoundation.org>
+Subject: [PATCH 5.17 0672/1126] drm/i915/display: Do not re-enable PSR after it was marked as not reliable
+Date:   Tue,  5 Apr 2022 09:23:39 +0200
+Message-Id: <20220405070427.351205777@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -54,53 +54,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Valentin Schneider <valentin.schneider@arm.com>
+From: José Roberto de Souza <jose.souza@intel.com>
 
-[ Upstream commit 25795ef6299f07ce3838f3253a9cb34f64efcfae ]
+[ Upstream commit 278da06c03655c2bb9bc36ebdf45b90a079b3bfd ]
 
-TASK_RTLOCK_WAIT currently isn't part of TASK_REPORT, thus a task blocking
-on an rtlock will appear as having a task state == 0, IOW TASK_RUNNING.
+If a error happens and sink_not_reliable is set, PSR should be disabled
+for good but that is not happening.
+It would be disabled by the function handling the PSR error but then
+on the next fastset it would be enabled again in
+_intel_psr_post_plane_update().
+It would only be disabled for good in the next modeset where has_psr
+will be set false.
 
-The actual state is saved in p->saved_state, but reading it after reading
-p->__state has a few issues:
-o that could still be TASK_RUNNING in the case of e.g. rt_spin_lock
-o ttwu_state_match() might have changed that to TASK_RUNNING
+v2:
+- release psr lock before continue
 
-As pointed out by Eric, adding TASK_RTLOCK_WAIT to TASK_REPORT implies
-exposing a new state to userspace tools which way not know what to do with
-them. The only information that needs to be conveyed here is that a task is
-waiting on an rt_mutex, which matches TASK_UNINTERRUPTIBLE - there's no
-need for a new state.
-
-Reported-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
-Signed-off-by: Valentin Schneider <valentin.schneider@arm.com>
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Reviewed-by: Steven Rostedt (Google) <rostedt@goodmis.org>
-Link: https://lore.kernel.org/r/20220120162520.570782-3-valentin.schneider@arm.com
+Fixes: 9ce5884e5139 ("drm/i915/display: Only keep PSR enabled if there is active planes")
+Reported-by: Khaled Almahallawy <khaled.almahallawy@intel.com>
+Reported-by: Charlton Lin <charlton.lin@intel.com>
+Cc: Jouni Högander <jouni.hogander@intel.com>
+Signed-off-by: José Roberto de Souza <jose.souza@intel.com>
+Reviewed-by: Jouni Högander <jouni.hogander@intel.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220311185149.110527-2-jose.souza@intel.com
+(cherry picked from commit 15f26bdc81f7f03561aaea5a10d87bd6638e1459)
+Signed-off-by: Joonas Lahtinen <joonas.lahtinen@linux.intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/linux/sched.h | 8 ++++++++
- 1 file changed, 8 insertions(+)
+ drivers/gpu/drm/i915/display/intel_psr.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/include/linux/sched.h b/include/linux/sched.h
-index a76a178f8eb6..36e38434391c 100644
---- a/include/linux/sched.h
-+++ b/include/linux/sched.h
-@@ -1630,6 +1630,14 @@ static inline unsigned int __task_state_index(unsigned int tsk_state,
- 	if (tsk_state == TASK_IDLE)
- 		state = TASK_REPORT_IDLE;
+diff --git a/drivers/gpu/drm/i915/display/intel_psr.c b/drivers/gpu/drm/i915/display/intel_psr.c
+index 00279e8c2775..b00de57cc957 100644
+--- a/drivers/gpu/drm/i915/display/intel_psr.c
++++ b/drivers/gpu/drm/i915/display/intel_psr.c
+@@ -1816,6 +1816,9 @@ static void _intel_psr_post_plane_update(const struct intel_atomic_state *state,
  
-+	/*
-+	 * We're lying here, but rather than expose a completely new task state
-+	 * to userspace, we can make this appear as if the task has gone through
-+	 * a regular rt_mutex_lock() call.
-+	 */
-+	if (tsk_state == TASK_RTLOCK_WAIT)
-+		state = TASK_UNINTERRUPTIBLE;
+ 		mutex_lock(&psr->lock);
+ 
++		if (psr->sink_not_reliable)
++			goto exit;
 +
- 	return fls(state);
- }
+ 		drm_WARN_ON(&dev_priv->drm, psr->enabled && !crtc_state->active_planes);
  
+ 		/* Only enable if there is active planes */
+@@ -1826,6 +1829,7 @@ static void _intel_psr_post_plane_update(const struct intel_atomic_state *state,
+ 		if (crtc_state->crc_enabled && psr->enabled)
+ 			psr_force_hw_tracking_exit(intel_dp);
+ 
++exit:
+ 		mutex_unlock(&psr->lock);
+ 	}
+ }
 -- 
 2.34.1
 
