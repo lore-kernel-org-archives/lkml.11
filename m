@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C2F97C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:08:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BC17BC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:08:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233687AbiDEIKL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 04:10:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57446 "EHLO
+        id S233833AbiDEIKN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 04:10:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48772 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232745AbiDEHyO (ORCPT
+        with ESMTP id S232583AbiDEHy6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 03:54:14 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B835033A30;
-        Tue,  5 Apr 2022 00:50:16 -0700 (PDT)
+        Tue, 5 Apr 2022 03:54:58 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1217234B9B;
+        Tue,  5 Apr 2022 00:50:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 442CBB81BAD;
-        Tue,  5 Apr 2022 07:50:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8B4BBC340EE;
-        Tue,  5 Apr 2022 07:50:13 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 788B361727;
+        Tue,  5 Apr 2022 07:50:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8B497C340EE;
+        Tue,  5 Apr 2022 07:50:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649145013;
-        bh=L6p9n9Yb6I50Kgerajj1lRR+36C/t8bXwjz8d07YcoQ=;
+        s=korg; t=1649145021;
+        bh=Uwt47Ip3jWUUgwjQHlGnYd0Q6dgvd27pSYPE/tifCbU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Qwgq4uFLCmpRzLK5aBiSM1yIgf/I6gxVz9FXIRs9FwY9yBESa3zJVxYMvS9OEgOvp
-         xOISt9SHR7LrpZAnHp33jzjouf5aqOhpuNkdSR8wChG8ptT0eK7DZ46Lta32UZYN68
-         eN4cS/YahiMe8LkUQnaVfm3cizkn33JWqXhADoIs=
+        b=VTThBMspY87qlLqEF+HwU6CZhgyku6LI/m8cMktddZoXDdrlGL13bVpy2oNVgQ6Dd
+         L2Cz4axUm54DN0rIrhwsN6VYjrnjkqezVL6i9xgqlOaOXj5Swp3hNqN2F6LszSeseW
+         mUO/OEE2lidLtMkISnPiFmrT2nN8R9iOG0a0cB4A=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Robin Murphy <robin.murphy@arm.com>,
-        Will Deacon <will@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0252/1126] perf/arm-cmn: Hide XP PUB events for CMN-600
-Date:   Tue,  5 Apr 2022 09:16:39 +0200
-Message-Id: <20220405070415.006985895@linuxfoundation.org>
+        stable@vger.kernel.org, Marco Elver <elver@google.com>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Kees Cook <keescook@chromium.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 0219/1126] stack: Constrain and fix stack offset randomization with Clang builds
+Date:   Tue,  5 Apr 2022 09:16:06 +0200
+Message-Id: <20220405070414.037918720@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -48,36 +50,104 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Robin Murphy <robin.murphy@arm.com>
+From: Marco Elver <elver@google.com>
 
-[ Upstream commit 205295c7e1abba9c1db1f9fe075f22f71351887f ]
+[ Upstream commit efa90c11f62e6b7252fb75efe2787056872a627c ]
 
-CMN-600 doesn't have XP events for the PUB channel, but we missed
-the appropriate check to avoid exposing them.
+All supported versions of Clang perform auto-init of __builtin_alloca()
+when stack auto-init is on (CONFIG_INIT_STACK_ALL_{ZERO,PATTERN}).
 
-Fixes: 60d1504070c2 ("perf/arm-cmn: Support new IP features")
-Signed-off-by: Robin Murphy <robin.murphy@arm.com>
-Link: https://lore.kernel.org/r/4c108d39a0513def63acccf09ab52b328f242aeb.1645727871.git.robin.murphy@arm.com
-Signed-off-by: Will Deacon <will@kernel.org>
+add_random_kstack_offset() uses __builtin_alloca() to add a stack
+offset. This means, when CONFIG_INIT_STACK_ALL_{ZERO,PATTERN} is
+enabled, add_random_kstack_offset() will auto-init that unused portion
+of the stack used to add an offset.
+
+There are several problems with this:
+
+	1. These offsets can be as large as 1023 bytes. Performing
+	   memset() on them isn't exactly cheap, and this is done on
+	   every syscall entry.
+
+	2. Architectures adding add_random_kstack_offset() to syscall
+	   entry implemented in C require them to be 'noinstr' (e.g. see
+	   x86 and s390). The potential problem here is that a call to
+	   memset may occur, which is not noinstr.
+
+A x86_64 defconfig kernel with Clang 11 and CONFIG_VMLINUX_VALIDATION shows:
+
+ | vmlinux.o: warning: objtool: do_syscall_64()+0x9d: call to memset() leaves .noinstr.text section
+ | vmlinux.o: warning: objtool: do_int80_syscall_32()+0xab: call to memset() leaves .noinstr.text section
+ | vmlinux.o: warning: objtool: __do_fast_syscall_32()+0xe2: call to memset() leaves .noinstr.text section
+ | vmlinux.o: warning: objtool: fixup_bad_iret()+0x2f: call to memset() leaves .noinstr.text section
+
+Clang 14 (unreleased) will introduce a way to skip alloca initialization
+via __builtin_alloca_uninitialized() (https://reviews.llvm.org/D115440).
+
+Constrain RANDOMIZE_KSTACK_OFFSET to only be enabled if no stack
+auto-init is enabled, the compiler is GCC, or Clang is version 14+. Use
+__builtin_alloca_uninitialized() if the compiler provides it, as is done
+by Clang 14.
+
+Link: https://lkml.kernel.org/r/YbHTKUjEejZCLyhX@elver.google.com
+Fixes: 39218ff4c625 ("stack: Optionally randomize kernel stack offset each syscall")
+Signed-off-by: Marco Elver <elver@google.com>
+Reviewed-by: Nathan Chancellor <nathan@kernel.org>
+Acked-by: Kees Cook <keescook@chromium.org>
+Signed-off-by: Kees Cook <keescook@chromium.org>
+Link: https://lore.kernel.org/r/20220131090521.1947110-2-elver@google.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/perf/arm-cmn.c | 3 +++
- 1 file changed, 3 insertions(+)
+ arch/Kconfig                     |  1 +
+ include/linux/randomize_kstack.h | 16 ++++++++++++++--
+ 2 files changed, 15 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/perf/arm-cmn.c b/drivers/perf/arm-cmn.c
-index 0e48adce57ef..d45e8c17e1f8 100644
---- a/drivers/perf/arm-cmn.c
-+++ b/drivers/perf/arm-cmn.c
-@@ -595,6 +595,9 @@ static umode_t arm_cmn_event_attr_is_visible(struct kobject *kobj,
- 		if ((intf & 4) && !(cmn->ports_used & BIT(intf & 3)))
- 			return 0;
- 
-+		if (chan == 4 && cmn->model == CMN600)
-+			return 0;
+diff --git a/arch/Kconfig b/arch/Kconfig
+index 678a80713b21..5e88237f84d2 100644
+--- a/arch/Kconfig
++++ b/arch/Kconfig
+@@ -1162,6 +1162,7 @@ config HAVE_ARCH_RANDOMIZE_KSTACK_OFFSET
+ config RANDOMIZE_KSTACK_OFFSET_DEFAULT
+ 	bool "Randomize kernel stack offset on syscall entry"
+ 	depends on HAVE_ARCH_RANDOMIZE_KSTACK_OFFSET
++	depends on INIT_STACK_NONE || !CC_IS_CLANG || CLANG_VERSION >= 140000
+ 	help
+ 	  The kernel stack offset can be randomized (after pt_regs) by
+ 	  roughly 5 bits of entropy, frustrating memory corruption
+diff --git a/include/linux/randomize_kstack.h b/include/linux/randomize_kstack.h
+index bebc911161b6..d373f1bcbf7c 100644
+--- a/include/linux/randomize_kstack.h
++++ b/include/linux/randomize_kstack.h
+@@ -16,8 +16,20 @@ DECLARE_PER_CPU(u32, kstack_offset);
+  * alignment. Also, since this use is being explicitly masked to a max of
+  * 10 bits, stack-clash style attacks are unlikely. For more details see
+  * "VLAs" in Documentation/process/deprecated.rst
++ *
++ * The normal __builtin_alloca() is initialized with INIT_STACK_ALL (currently
++ * only with Clang and not GCC). Initializing the unused area on each syscall
++ * entry is expensive, and generating an implicit call to memset() may also be
++ * problematic (such as in noinstr functions). Therefore, if the compiler
++ * supports it (which it should if it initializes allocas), always use the
++ * "uninitialized" variant of the builtin.
+  */
+-void *__builtin_alloca(size_t size);
++#if __has_builtin(__builtin_alloca_uninitialized)
++#define __kstack_alloca __builtin_alloca_uninitialized
++#else
++#define __kstack_alloca __builtin_alloca
++#endif
 +
- 		if ((chan == 5 && cmn->rsp_vc_num < 2) ||
- 		    (chan == 6 && cmn->dat_vc_num < 2))
- 			return 0;
+ /*
+  * Use, at most, 10 bits of entropy. We explicitly cap this to keep the
+  * "VLA" from being unbounded (see above). 10 bits leaves enough room for
+@@ -36,7 +48,7 @@ void *__builtin_alloca(size_t size);
+ 	if (static_branch_maybe(CONFIG_RANDOMIZE_KSTACK_OFFSET_DEFAULT,	\
+ 				&randomize_kstack_offset)) {		\
+ 		u32 offset = raw_cpu_read(kstack_offset);		\
+-		u8 *ptr = __builtin_alloca(KSTACK_OFFSET_MAX(offset));	\
++		u8 *ptr = __kstack_alloca(KSTACK_OFFSET_MAX(offset));	\
+ 		/* Keep allocation even after "ptr" loses scope. */	\
+ 		asm volatile("" :: "r"(ptr) : "memory");		\
+ 	}								\
 -- 
 2.34.1
 
