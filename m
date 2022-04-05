@@ -2,163 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B1A47C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 986BDC433F5
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:42:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1578558AbiDEXYA (ORCPT
+        id S1578534AbiDEXXu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 19:24:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47756 "EHLO
+        Tue, 5 Apr 2022 19:23:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51882 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1443187AbiDEPjI (ORCPT
+        with ESMTP id S1357914AbiDEK10 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 11:39:08 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B21B14753F;
-        Tue,  5 Apr 2022 06:55:04 -0700 (PDT)
+        Tue, 5 Apr 2022 06:27:26 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9426522DE;
+        Tue,  5 Apr 2022 03:11:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9A75261939;
-        Tue,  5 Apr 2022 13:55:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 651D4C385A1;
-        Tue,  5 Apr 2022 13:55:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649166903;
-        bh=m+etiDUzlrD/ZjwQQ1/4Tq58JAfeCm/GvOnttdLupCY=;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 34BC1B81C88;
+        Tue,  5 Apr 2022 10:11:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A498BC385A1;
+        Tue,  5 Apr 2022 10:11:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649153474;
+        bh=+vNkrn4fO5sUcF7UdHE0tr717ptuDd7aFb+5A8RKrkE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ehAYsnaS4ot2a/yM8CADZcHdFj5Xx6gcFtqlMuXCtiYkdVkHnRvMIr8WDkDtDxhoA
-         N326Rpr3WuiOV+YOAi0TIClg1oCQTrQwGRZu5uAzna5D98cVs3j/4IQPFxtUDG7yNI
-         M4m4AsnPhoMOwcEkHdY7I1bGWpm+daJRNzAodYpPH1WFRowy5BRjUIpZ+z7CDWr8Qe
-         VMXz9bVYjUxUEgOeP5Xq3tRr30KtfPdxCxHZuo0bnDs3y2aXbNez/PDnEHa5xjm7mx
-         4a+JXuSRTHv4KwhESYU9geN2E0gQH1p/ZGFbbRUiMU1e5ugk8As7hslYWn+j+dfuXX
-         FXShywqNKartQ==
-Received: from sofa.misterjones.org ([185.219.108.64] helo=why.lan)
-        by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <maz@kernel.org>)
-        id 1nbje9-001q4g-5n; Tue, 05 Apr 2022 14:55:01 +0100
-From:   Marc Zyngier <maz@kernel.org>
+        b=1pfB0kNJy8qm2XTNKjSSq50DSaCo6cGBeXtvj2LhZ2zz6IbRmBF1+cTwR8lc/bh/B
+         +vF4TpGXGx7vIG8xUPJhzrOVtkh4olU91UQX2Cr37gaH5Ufz6YTYtCpfMP4ahZ4UUa
+         2HDjR0AkIn6eOZoSE3o07Giru4kh7jpswC7n9/l0=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
-Cc:     Linus Walleij <linus.walleij@linaro.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Joey Gouly <joey.gouly@arm.com>,
-        Jonathan Hunter <jonathanh@nvidia.com>,
-        Hector Martin <marcan@marcan.st>,
-        Sven Peter <sven@svenpeter.dev>,
-        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Andy Gross <agross@kernel.org>,
-        Jeffrey Hugo <jeffrey.l.hugo@gmail.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Basavaraj Natikar <Basavaraj.Natikar@amd.com>,
-        Shyam Sundar S K <Shyam-sundar.S-k@amd.com>,
-        linux-gpio@vger.kernel.org, linux-tegra@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-arm-msm@vger.kernel.org, kernel-team@android.com
-Subject: [PATCH v2 06/10] pinctrl: apple-gpio: Make the irqchip immutable
-Date:   Tue,  5 Apr 2022 14:54:40 +0100
-Message-Id: <20220405135444.199295-7-maz@kernel.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220405135444.199295-1-maz@kernel.org>
-References: <20220405135444.199295-1-maz@kernel.org>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Jia-Ju Bai <baijiaju1990@gmail.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 233/599] memory: emif: check the pointer temp in get_device_details()
+Date:   Tue,  5 Apr 2022 09:28:47 +0200
+Message-Id: <20220405070305.774722704@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
+References: <20220405070258.802373272@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 185.219.108.64
-X-SA-Exim-Rcpt-To: linux-kernel@vger.kernel.org, linus.walleij@linaro.org, brgl@bgdev.pl, thierry.reding@gmail.com, joey.gouly@arm.com, jonathanh@nvidia.com, marcan@marcan.st, sven@svenpeter.dev, alyssa@rosenzweig.io, bjorn.andersson@linaro.org, agross@kernel.org, jeffrey.l.hugo@gmail.com, tglx@linutronix.de, Basavaraj.Natikar@amd.com, Shyam-sundar.S-k@amd.com, linux-gpio@vger.kernel.org, linux-tegra@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-arm-msm@vger.kernel.org, kernel-team@android.com
-X-SA-Exim-Mail-From: maz@kernel.org
-X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Prevent gpiolib from messing with the irqchip by advertising
-the irq_chip structure as immutable, making it const, and adding
-the various calls that gpiolib relies upon.
+From: Jia-Ju Bai <baijiaju1990@gmail.com>
 
-Signed-off-by: Marc Zyngier <maz@kernel.org>
+[ Upstream commit 5b5ab1bfa1898c6d52936a57c25c5ceba2cb2f87 ]
+
+The pointer temp is allocated by devm_kzalloc(), so it should be
+checked for error handling.
+
+Fixes: 7ec944538dde ("memory: emif: add basic infrastructure for EMIF driver")
+Signed-off-by: Jia-Ju Bai <baijiaju1990@gmail.com>
+Link: https://lore.kernel.org/r/20220225132552.27894-1-baijiaju1990@gmail.com
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pinctrl/pinctrl-apple-gpio.c | 29 +++++++++++++++-------------
- 1 file changed, 16 insertions(+), 13 deletions(-)
+ drivers/memory/emif.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/pinctrl/pinctrl-apple-gpio.c b/drivers/pinctrl/pinctrl-apple-gpio.c
-index 72f4dd2466e1..5e610849dfc3 100644
---- a/drivers/pinctrl/pinctrl-apple-gpio.c
-+++ b/drivers/pinctrl/pinctrl-apple-gpio.c
-@@ -36,7 +36,6 @@ struct apple_gpio_pinctrl {
+diff --git a/drivers/memory/emif.c b/drivers/memory/emif.c
+index 55d4c842fcd9..5a059be3516c 100644
+--- a/drivers/memory/emif.c
++++ b/drivers/memory/emif.c
+@@ -1403,7 +1403,7 @@ static struct emif_data *__init_or_module get_device_details(
+ 	temp	= devm_kzalloc(dev, sizeof(*pd), GFP_KERNEL);
+ 	dev_info = devm_kzalloc(dev, sizeof(*dev_info), GFP_KERNEL);
  
- 	struct pinctrl_desc pinctrl_desc;
- 	struct gpio_chip gpio_chip;
--	struct irq_chip irq_chip;
- 	u8 irqgrps[];
- };
- 
-@@ -275,17 +274,21 @@ static unsigned int apple_gpio_irq_type(unsigned int type)
- 
- static void apple_gpio_irq_mask(struct irq_data *data)
- {
--	struct apple_gpio_pinctrl *pctl = gpiochip_get_data(irq_data_get_irq_chip_data(data));
-+	struct gpio_chip *gc = irq_data_get_irq_chip_data(data);
-+	struct apple_gpio_pinctrl *pctl = gpiochip_get_data(gc);
- 
- 	apple_gpio_set_reg(pctl, data->hwirq, REG_GPIOx_MODE,
- 	                   FIELD_PREP(REG_GPIOx_MODE, REG_GPIOx_IN_IRQ_OFF));
-+	gpiochip_disable_irq(gc, data->hwirq);
- }
- 
- static void apple_gpio_irq_unmask(struct irq_data *data)
- {
--	struct apple_gpio_pinctrl *pctl = gpiochip_get_data(irq_data_get_irq_chip_data(data));
-+	struct gpio_chip *gc = irq_data_get_irq_chip_data(data);
-+	struct apple_gpio_pinctrl *pctl = gpiochip_get_data(gc);
- 	unsigned int irqtype = apple_gpio_irq_type(irqd_get_trigger_type(data));
- 
-+	gpiochip_enable_irq(gc, data->hwirq);
- 	apple_gpio_set_reg(pctl, data->hwirq, REG_GPIOx_MODE,
- 	                   FIELD_PREP(REG_GPIOx_MODE, irqtype));
- }
-@@ -343,13 +346,15 @@ static void apple_gpio_irq_handler(struct irq_desc *desc)
- 	chained_irq_exit(chip, desc);
- }
- 
--static struct irq_chip apple_gpio_irqchip = {
--	.name		= "Apple-GPIO",
--	.irq_startup	= apple_gpio_irq_startup,
--	.irq_ack	= apple_gpio_irq_ack,
--	.irq_mask	= apple_gpio_irq_mask,
--	.irq_unmask	= apple_gpio_irq_unmask,
--	.irq_set_type	= apple_gpio_irq_set_type,
-+static const struct irq_chip apple_gpio_irqchip = {
-+	.name			= "Apple-GPIO",
-+	.irq_startup		= apple_gpio_irq_startup,
-+	.irq_ack		= apple_gpio_irq_ack,
-+	.irq_mask		= apple_gpio_irq_mask,
-+	.irq_unmask		= apple_gpio_irq_unmask,
-+	.irq_set_type		= apple_gpio_irq_set_type,
-+	.flags			= IRQCHIP_IMMUTABLE,
-+	GPIOCHIP_IRQ_RESOURCE_HELPERS,
- };
- 
- /* Probe & register */
-@@ -360,8 +365,6 @@ static int apple_gpio_register(struct apple_gpio_pinctrl *pctl)
- 	void **irq_data = NULL;
- 	int ret;
- 
--	pctl->irq_chip = apple_gpio_irqchip;
--
- 	pctl->gpio_chip.label = dev_name(pctl->dev);
- 	pctl->gpio_chip.request = gpiochip_generic_request;
- 	pctl->gpio_chip.free = gpiochip_generic_free;
-@@ -377,7 +380,7 @@ static int apple_gpio_register(struct apple_gpio_pinctrl *pctl)
- 	if (girq->num_parents) {
- 		int i;
- 
--		girq->chip = &pctl->irq_chip;
-+		gpio_irq_chip_set_chip(girq, &apple_gpio_irqchip);
- 		girq->parent_handler = apple_gpio_irq_handler;
- 
- 		girq->parents = kmalloc_array(girq->num_parents,
+-	if (!emif || !pd || !dev_info) {
++	if (!emif || !temp || !dev_info) {
+ 		dev_err(dev, "%s:%d: allocation error\n", __func__, __LINE__);
+ 		goto error;
+ 	}
 -- 
 2.34.1
+
+
 
