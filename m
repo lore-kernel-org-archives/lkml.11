@@ -2,120 +2,154 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CCF5C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B9A89C4321E
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:21:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1583800AbiDEX4q (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 19:56:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44248 "EHLO
+        id S241938AbiDFADG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 20:03:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54660 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348919AbiDEJsq (ORCPT
+        with ESMTP id S1457566AbiDEQKu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:48:46 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B3A7EE4EB;
-        Tue,  5 Apr 2022 02:37:29 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Tue, 5 Apr 2022 12:10:50 -0400
+Received: from ssl.serverraum.org (ssl.serverraum.org [IPv6:2a01:4f8:151:8464::1:2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A081FDFA0;
+        Tue,  5 Apr 2022 09:08:51 -0700 (PDT)
+Received: from mwalle01.kontron.local. (unknown [213.135.10.150])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3BAA6B81C82;
-        Tue,  5 Apr 2022 09:37:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 91F5FC385A4;
-        Tue,  5 Apr 2022 09:37:26 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649151446;
-        bh=jMa5vKX+IK/TdveRuGnDnVQhQTMh4DJUkiqPggtNSi8=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Oi4OYppbXDxcbTtDUSD4c37ZrrAk+ZIWX5a2BLmBevitYnv4mhaZSqv4FxtE6ZL6M
-         RaMjaKLi3UR9enPEpXlzOlZrivAkv7Py8fv/o9E7x9rdB2kFfCMf4HMjZLWa+WmrQH
-         u1+o/rHhMrGseuAX0xmwNIC9brukb0qYwAGV2a+c=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jesper Dangaard Brouer <brouer@redhat.com>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        Alexander Lobakin <alexandr.lobakin@intel.com>,
-        Michal Swiatkowski <michal.swiatkowski@linux.intel.com>,
-        Kiran Bhandare <kiranx.bhandare@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 411/913] i40e: respect metadata on XSK Rx to skb
-Date:   Tue,  5 Apr 2022 09:24:33 +0200
-Message-Id: <20220405070352.165820389@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
-User-Agent: quilt/0.66
+        by ssl.serverraum.org (Postfix) with ESMTPSA id 85B5422255;
+        Tue,  5 Apr 2022 18:08:49 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
+        t=1649174929;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=yOxddNobkG29CG4y5YoXQEAGgvfg9n1rTfCuIDFre0A=;
+        b=cZzpRljaNUvDJAkqSLGiEmVvdluyyTyNu0gChI6jqsE3XcgxAXjbhf1opHhFNeisVVYRu7
+        RIOdf5WvHvJb2UQ+qnPVNgi98dmJnu2teE+HeBvrl3pKZ06KQZRswxe9dhGyTOVoan6JUU
+        Lj5evrmR0hUhB2gk/7w6YTIj/y0KcJ0=
+From:   Michael Walle <michael@walle.cc>
+To:     Kavyasree Kotagiri <kavyasree.kotagiri@microchip.com>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>
+Cc:     Arnd Bergmann <arnd@arndb.de>, Olof Johansson <olof@lixom.net>,
+        soc@kernel.org, linux-arm-kernel@lists.infradead.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>,
+        Tudor.Ambarus@microchip.com, Michael Walle <michael@walle.cc>
+Subject: [PATCH v3 4/7] ARM: dts: lan966x: add all flexcom usart nodes
+Date:   Tue,  5 Apr 2022 18:08:34 +0200
+Message-Id: <20220405160837.4093563-5-michael@walle.cc>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220405160837.4093563-1-michael@walle.cc>
+References: <20220405160837.4093563-1-michael@walle.cc>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alexander Lobakin <alexandr.lobakin@intel.com>
+Add all the remaining usart nodes for the flexcom block. Although the
+DMA channels are specified, DMA is not enabled by default because break
+detection doesn't work with DMA.
 
-[ Upstream commit 6dba29537c0f639b482bd8f8bbd50ab4ae74b48d ]
+Keep the nodes disabled by default.
 
-For now, if the XDP prog returns XDP_PASS on XSK, the metadata will
-be lost as it doesn't get copied to the skb.
-
-Copy it along with the frame headers. Account its size on skb
-allocation, and when copying just treat it as a part of the frame
-and do a pull after to "move" it to the "reserved" zone.
-
-net_prefetch() xdp->data_meta and align the copy size to speed-up
-memcpy() a little and better match i40e_construct_skb().
-
-Fixes: 0a714186d3c0 ("i40e: add AF_XDP zero-copy Rx support")
-Suggested-by: Jesper Dangaard Brouer <brouer@redhat.com>
-Suggested-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-Signed-off-by: Alexander Lobakin <alexandr.lobakin@intel.com>
-Reviewed-by: Michal Swiatkowski <michal.swiatkowski@linux.intel.com>
-Tested-by: Kiran Bhandare <kiranx.bhandare@intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Michael Walle <michael@walle.cc>
+Reviewed-by: Claudiu Beznea <claudiu.beznea@microchip.com>
 ---
- drivers/net/ethernet/intel/i40e/i40e_xsk.c | 14 ++++++++++----
- 1 file changed, 10 insertions(+), 4 deletions(-)
+ arch/arm/boot/dts/lan966x.dtsi | 52 ++++++++++++++++++++++++++++++++++
+ 1 file changed, 52 insertions(+)
 
-diff --git a/drivers/net/ethernet/intel/i40e/i40e_xsk.c b/drivers/net/ethernet/intel/i40e/i40e_xsk.c
-index 48f5319a3d41..3f27a8ebe2ec 100644
---- a/drivers/net/ethernet/intel/i40e/i40e_xsk.c
-+++ b/drivers/net/ethernet/intel/i40e/i40e_xsk.c
-@@ -243,19 +243,25 @@ bool i40e_alloc_rx_buffers_zc(struct i40e_ring *rx_ring, u16 count)
- static struct sk_buff *i40e_construct_skb_zc(struct i40e_ring *rx_ring,
- 					     struct xdp_buff *xdp)
- {
-+	unsigned int totalsize = xdp->data_end - xdp->data_meta;
- 	unsigned int metasize = xdp->data - xdp->data_meta;
--	unsigned int datasize = xdp->data_end - xdp->data;
- 	struct sk_buff *skb;
- 
-+	net_prefetch(xdp->data_meta);
+diff --git a/arch/arm/boot/dts/lan966x.dtsi b/arch/arm/boot/dts/lan966x.dtsi
+index e9d6c16d04cf..ae3ac08cfc3b 100644
+--- a/arch/arm/boot/dts/lan966x.dtsi
++++ b/arch/arm/boot/dts/lan966x.dtsi
+@@ -92,6 +92,19 @@ flx0: flexcom@e0040000 {
+ 			#size-cells = <1>;
+ 			ranges = <0x0 0xe0040000 0x800>;
+ 			status = "disabled";
 +
- 	/* allocate a skb to store the frags */
--	skb = __napi_alloc_skb(&rx_ring->q_vector->napi, datasize,
-+	skb = __napi_alloc_skb(&rx_ring->q_vector->napi, totalsize,
- 			       GFP_ATOMIC | __GFP_NOWARN);
- 	if (unlikely(!skb))
- 		goto out;
++			usart0: serial@200 {
++				compatible = "atmel,at91sam9260-usart";
++				reg = <0x200 0x200>;
++				interrupts = <GIC_SPI 48 IRQ_TYPE_LEVEL_HIGH>;
++				dmas = <&dma0 AT91_XDMAC_DT_PERID(3)>,
++				       <&dma0 AT91_XDMAC_DT_PERID(2)>;
++				dma-names = "tx", "rx";
++				clocks = <&nic_clk>;
++				clock-names = "usart";
++				atmel,fifo-size = <32>;
++				status = "disabled";
++			};
+ 		};
  
--	memcpy(__skb_put(skb, datasize), xdp->data, datasize);
--	if (metasize)
-+	memcpy(__skb_put(skb, totalsize), xdp->data_meta,
-+	       ALIGN(totalsize, sizeof(long)));
+ 		flx1: flexcom@e0044000 {
+@@ -102,6 +115,19 @@ flx1: flexcom@e0044000 {
+ 			#size-cells = <1>;
+ 			ranges = <0x0 0xe0044000 0x800>;
+ 			status = "disabled";
 +
-+	if (metasize) {
- 		skb_metadata_set(skb, metasize);
-+		__skb_pull(skb, metasize);
-+	}
++			usart1: serial@200 {
++				compatible = "atmel,at91sam9260-usart";
++				reg = <0x200 0x200>;
++				interrupts = <GIC_SPI 49 IRQ_TYPE_LEVEL_HIGH>;
++				dmas = <&dma0 AT91_XDMAC_DT_PERID(5)>,
++				       <&dma0 AT91_XDMAC_DT_PERID(4)>;
++				dma-names = "tx", "rx";
++				clocks = <&nic_clk>;
++				clock-names = "usart";
++				atmel,fifo-size = <32>;
++				status = "disabled";
++			};
+ 		};
  
- out:
- 	xsk_buff_free(xdp);
+ 		trng: rng@e0048000 {
+@@ -129,6 +155,19 @@ flx2: flexcom@e0060000 {
+ 			#size-cells = <1>;
+ 			ranges = <0x0 0xe0060000 0x800>;
+ 			status = "disabled";
++
++			usart2: serial@200 {
++				compatible = "atmel,at91sam9260-usart";
++				reg = <0x200 0x200>;
++				interrupts = <GIC_SPI 50 IRQ_TYPE_LEVEL_HIGH>;
++				dmas = <&dma0 AT91_XDMAC_DT_PERID(7)>,
++				       <&dma0 AT91_XDMAC_DT_PERID(6)>;
++				dma-names = "tx", "rx";
++				clocks = <&nic_clk>;
++				clock-names = "usart";
++				atmel,fifo-size = <32>;
++				status = "disabled";
++			};
+ 		};
+ 
+ 		flx3: flexcom@e0064000 {
+@@ -181,6 +220,19 @@ flx4: flexcom@e0070000 {
+ 			#size-cells = <1>;
+ 			ranges = <0x0 0xe0070000 0x800>;
+ 			status = "disabled";
++
++			usart4: serial@200 {
++				compatible = "atmel,at91sam9260-usart";
++				reg = <0x200 0x200>;
++				interrupts = <GIC_SPI 52 IRQ_TYPE_LEVEL_HIGH>;
++				dmas = <&dma0 AT91_XDMAC_DT_PERID(11)>,
++				       <&dma0 AT91_XDMAC_DT_PERID(10)>;
++				dma-names = "tx", "rx";
++				clocks = <&nic_clk>;
++				clock-names = "usart";
++				atmel,fifo-size = <32>;
++				status = "disabled";
++			};
+ 		};
+ 
+ 		timer0: timer@e008c000 {
 -- 
-2.34.1
-
-
+2.30.2
 
