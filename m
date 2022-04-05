@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 81355C3527D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2236BC35276
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:40:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358836AbiDEUkH (ORCPT
+        id S1353966AbiDEUjb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 16:40:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50696 "EHLO
+        Tue, 5 Apr 2022 16:39:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34750 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358130AbiDEK2B (ORCPT
+        with ESMTP id S1344429AbiDEKjs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:28:01 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92EE49A984;
-        Tue,  5 Apr 2022 03:15:46 -0700 (PDT)
+        Tue, 5 Apr 2022 06:39:48 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 259932BB21;
+        Tue,  5 Apr 2022 03:25:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 312A261777;
-        Tue,  5 Apr 2022 10:15:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3CBD7C385A0;
-        Tue,  5 Apr 2022 10:15:45 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D216FB81C8A;
+        Tue,  5 Apr 2022 10:25:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3E94CC385A0;
+        Tue,  5 Apr 2022 10:25:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649153745;
-        bh=DIFTMCPXsgpdHYBOX23Zvyn6jtUPrJpSC7F/t+KYY2Q=;
+        s=korg; t=1649154311;
+        bh=bsogIIyNX9MIbiSags7L1UOyBmoamMHwJ1JzvDC/GJI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=a/ADCe/NSKzoo9KPRbHjSl0n1ssQARdQZDDFMRTRysgN41QGAnrqT50t0gdxW5zqM
-         /38dRRsm2eetnojemfCScWPYjqpzWa/fujGObNRjrxds8r0uZ4FIxVYa1u7wCrDeV0
-         GN6SFxCX8nc2EL8N9HWG8ttJsMiXoZ9NgLI8a2fU=
+        b=ate5Wuxhcylp5fu6r5WuFheK2l0qRte9F1kODSp8dXaLAzYGUWN66AptqlTjeAoZY
+         ZEj+NFevfvMJWNb6jTPUYGjjI45uOIaseTUeWRVqa1gPe5ajaU4GFAiIUD+1w4aRgm
+         u5qRWEejOxatRsR30Tva6EVOYL+Yk3BNJIdHdI04=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zhenzhong Duan <zhenzhong.duan@intel.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 333/599] KVM: x86: Fix emulation in writing cr8
-Date:   Tue,  5 Apr 2022 09:30:27 +0200
-Message-Id: <20220405070308.741380143@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Himanshu Madhani <himanshu.madhani@oracle.com>,
+        Quinn Tran <qutran@marvell.com>,
+        Nilesh Javali <njavali@marvell.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>
+Subject: [PATCH 5.10 527/599] scsi: qla2xxx: Fix hang due to session stuck
+Date:   Tue,  5 Apr 2022 09:33:41 +0200
+Message-Id: <20220405070314.522972647@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
 References: <20220405070258.802373272@linuxfoundation.org>
@@ -51,65 +52,78 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zhenzhong Duan <zhenzhong.duan@intel.com>
+From: Quinn Tran <qutran@marvell.com>
 
-[ Upstream commit f66af9f222f08d5b11ea41c1bd6c07a0f12daa07 ]
+commit c02aada06d19a215c8291bd968a99a270e96f734 upstream.
 
-In emulation of writing to cr8, one of the lowest four bits in TPR[3:0]
-is kept.
+User experienced device lost. The log shows Get port data base command was
+queued up, failed, and requeued again. Every time it is requeued, it set
+the FCF_ASYNC_ACTIVE. This prevents any recovery code from occurring
+because driver thinks a recovery is in progress for this session. In
+essence, this session is hung.  The reason it gets into this place is the
+session deletion got in front of this call due to link perturbation.
 
-According to Intel SDM 10.8.6.1(baremetal scenario):
-"APIC.TPR[bits 7:4] = CR8[bits 3:0], APIC.TPR[bits 3:0] = 0";
+Break the requeue cycle and exit.  The session deletion code will trigger a
+session relogin.
 
-and SDM 28.3(use TPR shadow):
-"MOV to CR8. The instruction stores bits 3:0 of its source operand into
-bits 7:4 of VTPR; the remainder of VTPR (bits 3:0 and bits 31:8) are
-cleared.";
-
-and AMD's APM 16.6.4:
-"Task Priority Sub-class (TPS)-Bits 3 : 0. The TPS field indicates the
-current sub-priority to be used when arbitrating lowest-priority messages.
-This field is written with zero when TPR is written using the architectural
-CR8 register.";
-
-so in KVM emulated scenario, clear TPR[3:0] to make a consistent behavior
-as in other scenarios.
-
-This doesn't impact evaluation and delivery of pending virtual interrupts
-because processor does not use the processor-priority sub-class to
-determine which interrupts to delivery and which to inhibit.
-
-Sub-class is used by hardware to arbitrate lowest priority interrupts,
-but KVM just does a round-robin style delivery.
-
-Fixes: b93463aa59d6 ("KVM: Accelerated apic support")
-Signed-off-by: Zhenzhong Duan <zhenzhong.duan@intel.com>
-Reviewed-by: Sean Christopherson <seanjc@google.com>
-Message-Id: <20220210094506.20181-1-zhenzhong.duan@intel.com>
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Link: https://lore.kernel.org/r/20220310092604.22950-8-njavali@marvell.com
+Fixes: 726b85487067 ("qla2xxx: Add framework for async fabric discovery")
+Cc: stable@vger.kernel.org
+Reviewed-by: Himanshu Madhani <himanshu.madhani@oracle.com>
+Signed-off-by: Quinn Tran <qutran@marvell.com>
+Signed-off-by: Nilesh Javali <njavali@marvell.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/kvm/lapic.c | 5 +----
- 1 file changed, 1 insertion(+), 4 deletions(-)
+ drivers/scsi/qla2xxx/qla_def.h  |    4 ++++
+ drivers/scsi/qla2xxx/qla_init.c |   19 +++++++++++++++++--
+ 2 files changed, 21 insertions(+), 2 deletions(-)
 
-diff --git a/arch/x86/kvm/lapic.c b/arch/x86/kvm/lapic.c
-index 677d21082454..de11149e28e0 100644
---- a/arch/x86/kvm/lapic.c
-+++ b/arch/x86/kvm/lapic.c
-@@ -2227,10 +2227,7 @@ void kvm_set_lapic_tscdeadline_msr(struct kvm_vcpu *vcpu, u64 data)
+--- a/drivers/scsi/qla2xxx/qla_def.h
++++ b/drivers/scsi/qla2xxx/qla_def.h
+@@ -5175,4 +5175,8 @@ struct sff_8247_a0 {
+ #include "qla_gbl.h"
+ #include "qla_dbg.h"
+ #include "qla_inline.h"
++
++#define IS_SESSION_DELETED(_fcport) (_fcport->disc_state == DSC_DELETE_PEND || \
++				      _fcport->disc_state == DSC_DELETED)
++
+ #endif
+--- a/drivers/scsi/qla2xxx/qla_init.c
++++ b/drivers/scsi/qla2xxx/qla_init.c
+@@ -570,6 +570,14 @@ qla2x00_async_adisc(struct scsi_qla_host
+ 	struct srb_iocb *lio;
+ 	int rval = QLA_FUNCTION_FAILED;
  
- void kvm_lapic_set_tpr(struct kvm_vcpu *vcpu, unsigned long cr8)
- {
--	struct kvm_lapic *apic = vcpu->arch.apic;
--
--	apic_set_tpr(apic, ((cr8 & 0x0f) << 4)
--		     | (kvm_lapic_get_reg(apic, APIC_TASKPRI) & 4));
-+	apic_set_tpr(vcpu->arch.apic, (cr8 & 0x0f) << 4);
- }
++	if (IS_SESSION_DELETED(fcport)) {
++		ql_log(ql_log_warn, vha, 0xffff,
++		       "%s: %8phC is being delete - not sending command.\n",
++		       __func__, fcport->port_name);
++		fcport->flags &= ~FCF_ASYNC_ACTIVE;
++		return rval;
++	}
++
+ 	if (!vha->flags.online || (fcport->flags & FCF_ASYNC_SENT))
+ 		return rval;
  
- u64 kvm_lapic_get_cr8(struct kvm_vcpu *vcpu)
--- 
-2.34.1
-
+@@ -1316,8 +1324,15 @@ int qla24xx_async_gpdb(struct scsi_qla_h
+ 	struct port_database_24xx *pd;
+ 	struct qla_hw_data *ha = vha->hw;
+ 
+-	if (!vha->flags.online || (fcport->flags & FCF_ASYNC_SENT) ||
+-	    fcport->loop_id == FC_NO_LOOP_ID) {
++	if (IS_SESSION_DELETED(fcport)) {
++		ql_log(ql_log_warn, vha, 0xffff,
++		       "%s: %8phC is being delete - not sending command.\n",
++		       __func__, fcport->port_name);
++		fcport->flags &= ~FCF_ASYNC_ACTIVE;
++		return rval;
++	}
++
++	if (!vha->flags.online || fcport->flags & FCF_ASYNC_SENT) {
+ 		ql_log(ql_log_warn, vha, 0xffff,
+ 		    "%s: %8phC online %d flags %x - not sending command.\n",
+ 		    __func__, fcport->port_name, vha->flags.online, fcport->flags);
 
 
