@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C600C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:18:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CF0C1C4321E
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:18:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382567AbiDEMP4 (ORCPT
+        id S1382597AbiDEMQG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 08:15:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47862 "EHLO
+        Tue, 5 Apr 2022 08:16:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49668 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244908AbiDEIwq (ORCPT
+        with ESMTP id S244905AbiDEIwq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Apr 2022 04:52:46 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68D5924948;
-        Tue,  5 Apr 2022 01:46:07 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C83824596;
+        Tue,  5 Apr 2022 01:46:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0BBDBB81BAE;
-        Tue,  5 Apr 2022 08:46:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6D2B9C385A0;
-        Tue,  5 Apr 2022 08:46:04 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9C0F7614E4;
+        Tue,  5 Apr 2022 08:45:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A406DC385A0;
+        Tue,  5 Apr 2022 08:45:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649148364;
-        bh=dzWhcPIWdsa4A39sNEcEVgjZ6v05Z816/SN2s+i6y/Y=;
+        s=korg; t=1649148359;
+        bh=7PbildU4fVy2AP3yvxFY7nRP8gtRqmn3F61F8jyqIRQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZVCRmowKLwLrBY87p5mixckWL7fYWuoVuoj6ckBlFu6uu/0c8RSujwuJ3Yer5PQR9
-         whkO6hgeApiwRhbhI9SWULPX6p3xDFnZeVdU4fJX5rB2F5pRQ1XkigvYhr9+iBaKFj
-         uLirsO1bea443rxigRvNyyQRJYZWMIWN8b2HL8U0=
+        b=wUGGQ4QPs1B2nRaLUaY5XTS7QhIzSbkvKS/JEg16nkVqcn5tmf46/a1/7Vv83DP5I
+         4ME7RbiSqT40Yb7hV0wVl9/qjXZIosyiwm5+x/sTU+QvET2iA2vKPWknLBLiZU82pl
+         mOQGgtVa7ncpeTDdUi6hmlhdiEDH9SCd5/Z6e00A=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Marek Vasut <marex@denx.de>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
+        stable@vger.kernel.org, Ard Biesheuvel <ardb@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        "Steven Rostedt (Google)" <rostedt@goodmis.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0330/1017] ARM: dts: imx: Add missing LVDS decoder on M53Menlo
-Date:   Tue,  5 Apr 2022 09:20:43 +0200
-Message-Id: <20220405070404.077109510@linuxfoundation.org>
+Subject: [PATCH 5.16 0328/1017] ARM: ftrace: ensure that ADR takes the Thumb bit into account
+Date:   Tue,  5 Apr 2022 09:20:41 +0200
+Message-Id: <20220405070404.017836188@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -52,79 +52,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Marek Vasut <marex@denx.de>
+From: Ard Biesheuvel <ardb@kernel.org>
 
-[ Upstream commit 0c6f71176ea43d6f4003a4d57f7bb518c5ad6145 ]
+[ Upstream commit dd88b03ff0c84f4bcbe1419b93a4bed429fed3be ]
 
-The M53Menlo display unit uses an LVDS-to-DPI bridge, TI DS90CF364A.
-Describe this bridge in DT, otherwise the DT incorrectly describes
-DPI panel attached directly to LVDS source.
+Using ADR to take the address of 'ftrace_stub' via a local label
+produces an address that has the Thumb bit cleared, which means the
+subsequent comparison is guaranteed to fail. Instead, use the badr
+macro, which forces the Thumb bit to be set.
 
-Fixes: 716be61d1869 ("ARM: dts: imx53: Add Menlosystems M53 board")
-Signed-off-by: Marek Vasut <marex@denx.de>
-Cc: Shawn Guo <shawnguo@kernel.org>
-Cc: Fabio Estevam <festevam@gmail.com>
-Cc: NXP Linux Team <linux-imx@nxp.com>
-Signed-off-by: Shawn Guo <shawnguo@kernel.org>
+Fixes: a3ba87a61499 ("ARM: 6316/1: ftrace: add Thumb-2 support")
+Signed-off-by: Ard Biesheuvel <ardb@kernel.org>
+Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
+Reviewed-by: Steven Rostedt (Google) <rostedt@goodmis.org>
+Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/boot/dts/imx53-m53menlo.dts | 29 ++++++++++++++++++++++++++--
- 1 file changed, 27 insertions(+), 2 deletions(-)
+ arch/arm/kernel/entry-ftrace.S | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/arm/boot/dts/imx53-m53menlo.dts b/arch/arm/boot/dts/imx53-m53menlo.dts
-index 4f88e96d81dd..d5c68d1ea707 100644
---- a/arch/arm/boot/dts/imx53-m53menlo.dts
-+++ b/arch/arm/boot/dts/imx53-m53menlo.dts
-@@ -53,6 +53,31 @@
- 		};
- 	};
+diff --git a/arch/arm/kernel/entry-ftrace.S b/arch/arm/kernel/entry-ftrace.S
+index a74289ebc803..f4886fb6e9ba 100644
+--- a/arch/arm/kernel/entry-ftrace.S
++++ b/arch/arm/kernel/entry-ftrace.S
+@@ -40,7 +40,7 @@
+ 	mcount_enter
+ 	ldr	r0, =ftrace_trace_function
+ 	ldr	r2, [r0]
+-	adr	r0, .Lftrace_stub
++	badr	r0, .Lftrace_stub
+ 	cmp	r0, r2
+ 	bne	1f
  
-+	lvds-decoder {
-+		compatible = "ti,ds90cf364a", "lvds-decoder";
-+
-+		ports {
-+			#address-cells = <1>;
-+			#size-cells = <0>;
-+
-+			port@0 {
-+				reg = <0>;
-+
-+				lvds_decoder_in: endpoint {
-+					remote-endpoint = <&lvds0_out>;
-+				};
-+			};
-+
-+			port@1 {
-+				reg = <1>;
-+
-+				lvds_decoder_out: endpoint {
-+					remote-endpoint = <&panel_in>;
-+				};
-+			};
-+		};
-+	};
-+
- 	panel {
- 		compatible = "edt,etm0700g0dh6";
- 		pinctrl-0 = <&pinctrl_display_gpio>;
-@@ -61,7 +86,7 @@
- 
- 		port {
- 			panel_in: endpoint {
--				remote-endpoint = <&lvds0_out>;
-+				remote-endpoint = <&lvds_decoder_out>;
- 			};
- 		};
- 	};
-@@ -450,7 +475,7 @@
- 			reg = <2>;
- 
- 			lvds0_out: endpoint {
--				remote-endpoint = <&panel_in>;
-+				remote-endpoint = <&lvds_decoder_in>;
- 			};
- 		};
- 	};
 -- 
 2.34.1
 
