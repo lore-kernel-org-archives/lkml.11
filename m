@@ -2,45 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C3C1AC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 15:20:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 750BCC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 15:21:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1388465AbiDEPUh (ORCPT
+        id S1389009AbiDEPVA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 11:20:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53874 "EHLO
+        Tue, 5 Apr 2022 11:21:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39194 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346955AbiDEJpq (ORCPT
+        with ESMTP id S1346982AbiDEJps (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:45:46 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CF5CDBD37
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 02:32:09 -0700 (PDT)
+        Tue, 5 Apr 2022 05:45:48 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E947ADCA84;
+        Tue,  5 Apr 2022 02:32:12 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 76788B81CBE
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 09:32:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4F4C5C385A2;
-        Tue,  5 Apr 2022 09:32:07 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6E39A616D9;
+        Tue,  5 Apr 2022 09:32:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 71231C385A6;
+        Tue,  5 Apr 2022 09:32:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649151128;
-        bh=C5+ZhnmgvPcUlTaO5vUVt+eMJ/8dgp+chszAlxRRhQw=;
-        h=From:To:Cc:In-Reply-To:References:Subject:Date:From;
-        b=a816CQqQWSlIOGDg5RzBeTqTBrdmIlfwEIPnLW3ltLQDhAbZjJnT2yDAUoz2reV3s
-         YjNtmQGvl3+I3mh+Q6F67GZNu9Ybww0iljQKvxaXmTDAKd8FUrIKXTyvLW+l1qdOlp
-         FSwMH7oTxTFrtwujcHqGgdLRJp7mOKOSMJszralyE6XGyBXI5lhXTbKq7CrusuhHD9
-         /RcVH+DkOMfUxuugMSnJni3LxB9La2Fea/9ZQa9PMZ8bJpCMTIA1HjcDGX/5YIbIGq
-         U+rj7FMsJVsESLhyy9pZCW76Fri1TT7yww1Twt8LdQkRW11SF+uZlQz4gF2aCXJUiu
-         //jMO22X7vS7A==
+        s=k20201202; t=1649151131;
+        bh=Go6Z5f/W2tjhRUO6APCSVvZp9thB6QaQP0llR9z2jKo=;
+        h=From:To:In-Reply-To:References:Subject:Date:From;
+        b=hdsFI/q/QvQQgJTabRoqDsscN7FDlRBQbb5rEDsIwQT389IMRr5Vcrq7MnX0zCSXo
+         e4TwiVVhB/Qg/SmKJrpCxDg6oVJxnW16Zn2dCtAJQkl3/wpo2FafjYygnY+r4IYZZp
+         w7G7/274oFfHviHe4Kfv9/xUkx6MRAmwf6ouhLkiLloFXnWd2IvR3+CuIeowXI4E3X
+         cW3A4G/W23mqabqTYz/vKQNE1zuwUyyLlMlODDC/gXwdRheg1XHP9P08pwFT8bTFEM
+         xTeAP11kXG8PMs4ArP84n8ak/5vx/AG+opRv7nV/ra+MVD5Z5PzfOslAtnyFoC4xes
+         5yX+LBhnFaKFQ==
 From:   Mark Brown <broonie@kernel.org>
-To:     xc-racer2@live.ca, lgirdwood@gmail.com
-Cc:     patches@opensource.cirrus.com, linux-kernel@vger.kernel.org
-In-Reply-To: <CY4PR04MB056771CFB80DC447C30D5A31CB1D9@CY4PR04MB0567.namprd04.prod.outlook.com>
-References: <YkDpozx+ZmSWwwH0@sirena.org.uk> <CY4PR04MB056771CFB80DC447C30D5A31CB1D9@CY4PR04MB0567.namprd04.prod.outlook.com>
-Subject: Re: [PATCH v2] regulator: wm8994: Add an off-on delay for WM8994 variant
-Message-Id: <164915112704.276837.5262967047212269778.b4-ty@kernel.org>
-Date:   Tue, 05 Apr 2022 10:32:07 +0100
+To:     Rob Herring <robh+dt@kernel.org>, lgirdwood@gmail.com,
+        krzysztof.kozlowski@linaro.org, cy_huang@richtek.com,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        krzk+dt@kernel.org
+In-Reply-To: <20220401153711.1057853-1-krzysztof.kozlowski@linaro.org>
+References: <20220401153711.1057853-1-krzysztof.kozlowski@linaro.org>
+Subject: Re: [PATCH v2] regulator: dt-bindings: richtek,rt4801: minor comments adjustments
+Message-Id: <164915113019.276837.6765844554684988945.b4-ty@kernel.org>
+Date:   Tue, 05 Apr 2022 10:32:10 +0100
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
@@ -48,18 +50,11 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, 27 Mar 2022 18:01:54 -0700, Jonathan Bakker wrote:
-> As per Table 130 of the wm8994 datasheet at [1], there is an off-on
-> delay for LDO1 and LDO2.  In the wm8958 datasheet [2], I could not
-> find any reference to it.  I could not find a wm1811 datasheet to
-> double-check there, but as no one has complained presumably it works
-> without it.
+On Fri, 1 Apr 2022 17:37:11 +0200, Krzysztof Kozlowski wrote:
+> Correct grammar in 'enable-gpios' description and remove useless comment
+> about regulator nodes, because these are obvious from patternProperties.
 > 
-> This solves the issue on Samsung Aries boards with a wm8994 where
-> register writes fail when the device is powered off and back-on
-> quickly.
 > 
-> [...]
 
 Applied to
 
@@ -67,8 +62,8 @@ Applied to
 
 Thanks!
 
-[1/1] regulator: wm8994: Add an off-on delay for WM8994 variant
-      commit: 92d96b603738ec4f35cde7198c303ae264dd47cb
+[1/1] regulator: dt-bindings: richtek,rt4801: minor comments adjustments
+      commit: 41812783057c01e4e5f1eec649607e4773124dba
 
 All being well this means that it will be integrated into the linux-next
 tree (usually sometime in the next 24 hours) and sent to Linus during
