@@ -2,45 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 719D1C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C917BC43219
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:39:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351705AbiDEM34 (ORCPT
+        id S1384997AbiDEMao (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 08:29:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34732 "EHLO
+        Tue, 5 Apr 2022 08:30:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55452 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235378AbiDEIQG (ORCPT
+        with ESMTP id S235003AbiDEIOp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:16:06 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA565A7777;
-        Tue,  5 Apr 2022 01:03:21 -0700 (PDT)
+        Tue, 5 Apr 2022 04:14:45 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 288439BAEF;
+        Tue,  5 Apr 2022 01:03:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 00A1F6167A;
-        Tue,  5 Apr 2022 08:03:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 03905C385A2;
-        Tue,  5 Apr 2022 08:03:19 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8978AB81B18;
+        Tue,  5 Apr 2022 08:03:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C551BC385A1;
+        Tue,  5 Apr 2022 08:03:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649145800;
-        bh=KcU+EvvaMKoeSHmjbknNqjk35HVV6Awi9HeF5EHSL7E=;
+        s=korg; t=1649145792;
+        bh=seiBGHh9QwPdT6SoSG5DhIi5R0FVf3d1hYryzIDXDX4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Cl0+KfxBKRDu4z54sQBrLWI2HrNZKEPVWdwDEs7pbJVyIbCFWUO2MnTbiz1IzGncK
-         E2cIDg4m+lixweG7Mj/z6JELgvB9nCXazs8eKLLKfFzn9mJ2CzeafIpMhyDCIZi3r9
-         oOIf30w0EtbKOp9LnnCV85JfEpOpXLewRLywg61c=
+        b=iAsBoB94yFeQpt6uslWyXpq78Vcfk6PhO+3SAu++cvAmRndDtFaoKbHryLW+5wf55
+         xehN4NvSnLrKbIs3DmuBC0+FjdtXJJ26CT6e0lDiYFr/aYvA9N/HowQHZ+ZggV7UL3
+         7yRbXPM6cQdxN+1pNV+FR9QQtw3jNCBA2HsDl4nI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Tim Gardner <tim.gardner@canonical.com>,
-        Po Liu <po.liu@nxp.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org, Dan Williams <dan.j.williams@intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0534/1126] net:enetc: allocate CBD ring data memory using DMA coherent methods
-Date:   Tue,  5 Apr 2022 09:21:21 +0200
-Message-Id: <20220405070423.305247382@linuxfoundation.org>
+Subject: [PATCH 5.17 0531/1126] tools/testing/cxl: Fix root port to host bridge assignment
+Date:   Tue,  5 Apr 2022 09:21:18 +0200
+Message-Id: <20220405070423.217388650@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -52,281 +49,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Po Liu <po.liu@nxp.com>
+From: Dan Williams <dan.j.williams@intel.com>
 
-[ Upstream commit b3a723dbc94a6e38f67669d03b521edd766ad895 ]
+[ Upstream commit a4a0ce242fcd7022349212c4e2f795762e6ff050 ]
 
-To replace the dma_map_single() stream DMA mapping with DMA coherent
-method dma_alloc_coherent() which is more simple.
+Mocked root-ports are meant to be round-robin assigned to host-bridges.
 
-dma_map_single() found by Tim Gardner not proper. Suggested by Claudiu
-Manoil and Jakub Kicinski to use dma_alloc_coherent(). Discussion at:
-
-https://lore.kernel.org/netdev/AM9PR04MB8397F300DECD3C44D2EBD07796BD9@AM9PR04MB8397.eurprd04.prod.outlook.com/t/
-
-Fixes: 888ae5a3952ba ("net: enetc: add tc flower psfp offload driver")
-cc: Claudiu Manoil <claudiu.manoil@nxp.com>
-Reported-by: Tim Gardner <tim.gardner@canonical.com>
-Signed-off-by: Po Liu <po.liu@nxp.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Fixes: 67dcdd4d3b83 ("tools/testing/cxl: Introduce a mocked-up CXL port hierarchy")
+Link: https://lore.kernel.org/r/164298431629.3018233.14004377108116384485.stgit@dwillia2-desk3.amr.corp.intel.com
+Signed-off-by: Dan Williams <dan.j.williams@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../net/ethernet/freescale/enetc/enetc_qos.c  | 128 +++++++++---------
- 1 file changed, 64 insertions(+), 64 deletions(-)
+ tools/testing/cxl/test/cxl.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/freescale/enetc/enetc_qos.c b/drivers/net/ethernet/freescale/enetc/enetc_qos.c
-index 3555c12edb45..d3d7172e0fcc 100644
---- a/drivers/net/ethernet/freescale/enetc/enetc_qos.c
-+++ b/drivers/net/ethernet/freescale/enetc/enetc_qos.c
-@@ -45,6 +45,7 @@ void enetc_sched_speed_set(struct enetc_ndev_priv *priv, int speed)
- 		      | pspeed);
- }
+diff --git a/tools/testing/cxl/test/cxl.c b/tools/testing/cxl/test/cxl.c
+index 736d99006fb7..f0a410962af0 100644
+--- a/tools/testing/cxl/test/cxl.c
++++ b/tools/testing/cxl/test/cxl.c
+@@ -511,7 +511,7 @@ static __init int cxl_test_init(void)
  
-+#define ENETC_QOS_ALIGN	64
- static int enetc_setup_taprio(struct net_device *ndev,
- 			      struct tc_taprio_qopt_offload *admin_conf)
- {
-@@ -52,10 +53,11 @@ static int enetc_setup_taprio(struct net_device *ndev,
- 	struct enetc_cbd cbd = {.cmd = 0};
- 	struct tgs_gcl_conf *gcl_config;
- 	struct tgs_gcl_data *gcl_data;
-+	dma_addr_t dma, dma_align;
- 	struct gce *gce;
--	dma_addr_t dma;
- 	u16 data_size;
- 	u16 gcl_len;
-+	void *tmp;
- 	u32 tge;
- 	int err;
- 	int i;
-@@ -82,9 +84,16 @@ static int enetc_setup_taprio(struct net_device *ndev,
- 	gcl_config = &cbd.gcl_conf;
+ 	for (i = 0; i < ARRAY_SIZE(cxl_root_port); i++) {
+ 		struct platform_device *bridge =
+-			cxl_host_bridge[i / NR_CXL_ROOT_PORTS];
++			cxl_host_bridge[i % ARRAY_SIZE(cxl_host_bridge)];
+ 		struct platform_device *pdev;
  
- 	data_size = struct_size(gcl_data, entry, gcl_len);
--	gcl_data = kzalloc(data_size, __GFP_DMA | GFP_KERNEL);
--	if (!gcl_data)
-+	tmp = dma_alloc_coherent(&priv->si->pdev->dev,
-+				 data_size + ENETC_QOS_ALIGN,
-+				 &dma, GFP_KERNEL);
-+	if (!tmp) {
-+		dev_err(&priv->si->pdev->dev,
-+			"DMA mapping of taprio gate list failed!\n");
- 		return -ENOMEM;
-+	}
-+	dma_align = ALIGN(dma, ENETC_QOS_ALIGN);
-+	gcl_data = (struct tgs_gcl_data *)PTR_ALIGN(tmp, ENETC_QOS_ALIGN);
- 
- 	gce = (struct gce *)(gcl_data + 1);
- 
-@@ -110,16 +119,8 @@ static int enetc_setup_taprio(struct net_device *ndev,
- 	cbd.length = cpu_to_le16(data_size);
- 	cbd.status_flags = 0;
- 
--	dma = dma_map_single(&priv->si->pdev->dev, gcl_data,
--			     data_size, DMA_TO_DEVICE);
--	if (dma_mapping_error(&priv->si->pdev->dev, dma)) {
--		netdev_err(priv->si->ndev, "DMA mapping failed!\n");
--		kfree(gcl_data);
--		return -ENOMEM;
--	}
--
--	cbd.addr[0] = cpu_to_le32(lower_32_bits(dma));
--	cbd.addr[1] = cpu_to_le32(upper_32_bits(dma));
-+	cbd.addr[0] = cpu_to_le32(lower_32_bits(dma_align));
-+	cbd.addr[1] = cpu_to_le32(upper_32_bits(dma_align));
- 	cbd.cls = BDCR_CMD_PORT_GCL;
- 	cbd.status_flags = 0;
- 
-@@ -132,8 +133,8 @@ static int enetc_setup_taprio(struct net_device *ndev,
- 			 ENETC_QBV_PTGCR_OFFSET,
- 			 tge & (~ENETC_QBV_TGE));
- 
--	dma_unmap_single(&priv->si->pdev->dev, dma, data_size, DMA_TO_DEVICE);
--	kfree(gcl_data);
-+	dma_free_coherent(&priv->si->pdev->dev, data_size + ENETC_QOS_ALIGN,
-+			  tmp, dma);
- 
- 	return err;
- }
-@@ -463,8 +464,9 @@ static int enetc_streamid_hw_set(struct enetc_ndev_priv *priv,
- 	struct enetc_cbd cbd = {.cmd = 0};
- 	struct streamid_data *si_data;
- 	struct streamid_conf *si_conf;
-+	dma_addr_t dma, dma_align;
- 	u16 data_size;
--	dma_addr_t dma;
-+	void *tmp;
- 	int port;
- 	int err;
- 
-@@ -485,21 +487,20 @@ static int enetc_streamid_hw_set(struct enetc_ndev_priv *priv,
- 	cbd.status_flags = 0;
- 
- 	data_size = sizeof(struct streamid_data);
--	si_data = kzalloc(data_size, __GFP_DMA | GFP_KERNEL);
--	if (!si_data)
-+	tmp = dma_alloc_coherent(&priv->si->pdev->dev,
-+				 data_size + ENETC_QOS_ALIGN,
-+				 &dma, GFP_KERNEL);
-+	if (!tmp) {
-+		dev_err(&priv->si->pdev->dev,
-+			"DMA mapping of stream identify failed!\n");
- 		return -ENOMEM;
--	cbd.length = cpu_to_le16(data_size);
--
--	dma = dma_map_single(&priv->si->pdev->dev, si_data,
--			     data_size, DMA_FROM_DEVICE);
--	if (dma_mapping_error(&priv->si->pdev->dev, dma)) {
--		netdev_err(priv->si->ndev, "DMA mapping failed!\n");
--		err = -ENOMEM;
--		goto out;
- 	}
-+	dma_align = ALIGN(dma, ENETC_QOS_ALIGN);
-+	si_data = (struct streamid_data *)PTR_ALIGN(tmp, ENETC_QOS_ALIGN);
- 
--	cbd.addr[0] = cpu_to_le32(lower_32_bits(dma));
--	cbd.addr[1] = cpu_to_le32(upper_32_bits(dma));
-+	cbd.length = cpu_to_le16(data_size);
-+	cbd.addr[0] = cpu_to_le32(lower_32_bits(dma_align));
-+	cbd.addr[1] = cpu_to_le32(upper_32_bits(dma_align));
- 	eth_broadcast_addr(si_data->dmac);
- 	si_data->vid_vidm_tg = (ENETC_CBDR_SID_VID_MASK
- 			       + ((0x3 << 14) | ENETC_CBDR_SID_VIDM));
-@@ -539,8 +540,8 @@ static int enetc_streamid_hw_set(struct enetc_ndev_priv *priv,
- 
- 	cbd.length = cpu_to_le16(data_size);
- 
--	cbd.addr[0] = cpu_to_le32(lower_32_bits(dma));
--	cbd.addr[1] = cpu_to_le32(upper_32_bits(dma));
-+	cbd.addr[0] = cpu_to_le32(lower_32_bits(dma_align));
-+	cbd.addr[1] = cpu_to_le32(upper_32_bits(dma_align));
- 
- 	/* VIDM default to be 1.
- 	 * VID Match. If set (b1) then the VID must match, otherwise
-@@ -561,10 +562,8 @@ static int enetc_streamid_hw_set(struct enetc_ndev_priv *priv,
- 
- 	err = enetc_send_cmd(priv->si, &cbd);
- out:
--	if (!dma_mapping_error(&priv->si->pdev->dev, dma))
--		dma_unmap_single(&priv->si->pdev->dev, dma, data_size, DMA_FROM_DEVICE);
--
--	kfree(si_data);
-+	dma_free_coherent(&priv->si->pdev->dev, data_size + ENETC_QOS_ALIGN,
-+			  tmp, dma);
- 
- 	return err;
- }
-@@ -633,8 +632,9 @@ static int enetc_streamcounter_hw_get(struct enetc_ndev_priv *priv,
- {
- 	struct enetc_cbd cbd = { .cmd = 2 };
- 	struct sfi_counter_data *data_buf;
--	dma_addr_t dma;
-+	dma_addr_t dma, dma_align;
- 	u16 data_size;
-+	void *tmp;
- 	int err;
- 
- 	cbd.index = cpu_to_le16((u16)index);
-@@ -643,19 +643,19 @@ static int enetc_streamcounter_hw_get(struct enetc_ndev_priv *priv,
- 	cbd.status_flags = 0;
- 
- 	data_size = sizeof(struct sfi_counter_data);
--	data_buf = kzalloc(data_size, __GFP_DMA | GFP_KERNEL);
--	if (!data_buf)
-+	tmp = dma_alloc_coherent(&priv->si->pdev->dev,
-+				 data_size + ENETC_QOS_ALIGN,
-+				 &dma, GFP_KERNEL);
-+	if (!tmp) {
-+		dev_err(&priv->si->pdev->dev,
-+			"DMA mapping of stream counter failed!\n");
- 		return -ENOMEM;
--
--	dma = dma_map_single(&priv->si->pdev->dev, data_buf,
--			     data_size, DMA_FROM_DEVICE);
--	if (dma_mapping_error(&priv->si->pdev->dev, dma)) {
--		netdev_err(priv->si->ndev, "DMA mapping failed!\n");
--		err = -ENOMEM;
--		goto exit;
- 	}
--	cbd.addr[0] = cpu_to_le32(lower_32_bits(dma));
--	cbd.addr[1] = cpu_to_le32(upper_32_bits(dma));
-+	dma_align = ALIGN(dma, ENETC_QOS_ALIGN);
-+	data_buf = (struct sfi_counter_data *)PTR_ALIGN(tmp, ENETC_QOS_ALIGN);
-+
-+	cbd.addr[0] = cpu_to_le32(lower_32_bits(dma_align));
-+	cbd.addr[1] = cpu_to_le32(upper_32_bits(dma_align));
- 
- 	cbd.length = cpu_to_le16(data_size);
- 
-@@ -684,7 +684,9 @@ static int enetc_streamcounter_hw_get(struct enetc_ndev_priv *priv,
- 				data_buf->flow_meter_dropl;
- 
- exit:
--	kfree(data_buf);
-+	dma_free_coherent(&priv->si->pdev->dev, data_size + ENETC_QOS_ALIGN,
-+			  tmp, dma);
-+
- 	return err;
- }
- 
-@@ -723,9 +725,10 @@ static int enetc_streamgate_hw_set(struct enetc_ndev_priv *priv,
- 	struct sgcl_conf *sgcl_config;
- 	struct sgcl_data *sgcl_data;
- 	struct sgce *sgce;
--	dma_addr_t dma;
-+	dma_addr_t dma, dma_align;
- 	u16 data_size;
- 	int err, i;
-+	void *tmp;
- 	u64 now;
- 
- 	cbd.index = cpu_to_le16(sgi->index);
-@@ -772,24 +775,20 @@ static int enetc_streamgate_hw_set(struct enetc_ndev_priv *priv,
- 	sgcl_config->acl_len = (sgi->num_entries - 1) & 0x3;
- 
- 	data_size = struct_size(sgcl_data, sgcl, sgi->num_entries);
--
--	sgcl_data = kzalloc(data_size, __GFP_DMA | GFP_KERNEL);
--	if (!sgcl_data)
--		return -ENOMEM;
--
--	cbd.length = cpu_to_le16(data_size);
--
--	dma = dma_map_single(&priv->si->pdev->dev,
--			     sgcl_data, data_size,
--			     DMA_FROM_DEVICE);
--	if (dma_mapping_error(&priv->si->pdev->dev, dma)) {
--		netdev_err(priv->si->ndev, "DMA mapping failed!\n");
--		kfree(sgcl_data);
-+	tmp = dma_alloc_coherent(&priv->si->pdev->dev,
-+				 data_size + ENETC_QOS_ALIGN,
-+				 &dma, GFP_KERNEL);
-+	if (!tmp) {
-+		dev_err(&priv->si->pdev->dev,
-+			"DMA mapping of stream counter failed!\n");
- 		return -ENOMEM;
- 	}
-+	dma_align = ALIGN(dma, ENETC_QOS_ALIGN);
-+	sgcl_data = (struct sgcl_data *)PTR_ALIGN(tmp, ENETC_QOS_ALIGN);
- 
--	cbd.addr[0] = cpu_to_le32(lower_32_bits(dma));
--	cbd.addr[1] = cpu_to_le32(upper_32_bits(dma));
-+	cbd.length = cpu_to_le16(data_size);
-+	cbd.addr[0] = cpu_to_le32(lower_32_bits(dma_align));
-+	cbd.addr[1] = cpu_to_le32(upper_32_bits(dma_align));
- 
- 	sgce = &sgcl_data->sgcl[0];
- 
-@@ -844,7 +843,8 @@ static int enetc_streamgate_hw_set(struct enetc_ndev_priv *priv,
- 	err = enetc_send_cmd(priv->si, &cbd);
- 
- exit:
--	kfree(sgcl_data);
-+	dma_free_coherent(&priv->si->pdev->dev, data_size + ENETC_QOS_ALIGN,
-+			  tmp, dma);
- 
- 	return err;
- }
+ 		pdev = platform_device_alloc("cxl_root_port", i);
 -- 
 2.34.1
 
