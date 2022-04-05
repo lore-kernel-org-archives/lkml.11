@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2BFD8C4707A
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:01:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E08E3C35273
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:01:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235461AbiDEH7p (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 03:59:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47090 "EHLO
+        id S235131AbiDEH7Z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 03:59:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47094 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233344AbiDEHrn (ORCPT
+        with ESMTP id S233575AbiDEHsA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 03:47:43 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8628E18348;
-        Tue,  5 Apr 2022 00:43:58 -0700 (PDT)
+        Tue, 5 Apr 2022 03:48:00 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C128C281;
+        Tue,  5 Apr 2022 00:46:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DB703616C4;
-        Tue,  5 Apr 2022 07:43:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E1829C34110;
-        Tue,  5 Apr 2022 07:43:56 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5486BB81BA4;
+        Tue,  5 Apr 2022 07:46:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B4A52C3410F;
+        Tue,  5 Apr 2022 07:45:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649144637;
-        bh=Vzkuek3OGudFGGEQmXnCuyUEkLDe9dutJWVZUZbctRc=;
+        s=korg; t=1649144760;
+        bh=jLJHdncUYIgkXzg4FNI//hgrXP1ygYahSZ/ZDNplSPI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=uN6XLtaoKoIX5H8zgkENG5dD9EpMjuAirJVrm1kgcfKPvRtc+wlfIt4f2SDjjABXB
-         OXDaQXtY/OdM+260gA7mtftMcJ9/lIYhNkCHcFdVLp4C7H5IJGqHin29XnxL2ARaat
-         RUhtXbA69jycG2Avp7S/CWTWSfGIwcsrHAyMVmZ8=
+        b=lfPnZZzE9L01obbt4bCXJrRUyUVhENl0f/IiDBiEpVVjQURWnPziIzh0uMFHpZI0t
+         dUasT5zfA5IZfMwL6Wh3qoCxUzbgGTpyDlxk0sH2r/z8kAOiCrTTxeLpQVAIn9DJ2k
+         zb1/DC3hNkBBsBJfAVKIGeHa/mDQtS0klwN72SRM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Brian Foster <bfoster@redhat.com>,
-        "Steven Rostedt (Google)" <rostedt@goodmis.org>
-Subject: [PATCH 5.17 0116/1126] tracing: Have trace event string test handle zero length strings
-Date:   Tue,  5 Apr 2022 09:14:23 +0200
-Message-Id: <20220405070410.976791998@linuxfoundation.org>
+        stable@vger.kernel.org, Vitaly Chikunov <vt@altlinux.org>,
+        Eric Biggers <ebiggers@google.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>
+Subject: [PATCH 5.17 0161/1126] crypto: rsa-pkcs1pad - correctly get hash from source scatterlist
+Date:   Tue,  5 Apr 2022 09:15:08 +0200
+Message-Id: <20220405070412.318064223@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -48,62 +49,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Steven Rostedt (Google) <rostedt@goodmis.org>
+From: Eric Biggers <ebiggers@google.com>
 
-commit eca344a7362e0f34f179298fd8366bcd556eede1 upstream.
+commit e316f7179be22912281ce6331d96d7c121fb2b17 upstream.
 
-If a trace event has in its TP_printk():
+Commit c7381b012872 ("crypto: akcipher - new verify API for public key
+algorithms") changed akcipher_alg::verify to take in both the signature
+and the actual hash and do the signature verification, rather than just
+return the hash expected by the signature as was the case before.  To do
+this, it implemented a hack where the signature and hash are
+concatenated with each other in one scatterlist.
 
- "%*.s", len, len ? __get_str(string) : NULL
+Obviously, for this to work correctly, akcipher_alg::verify needs to
+correctly extract the two items from the scatterlist it is given.
+Unfortunately, it doesn't correctly extract the hash in the case where
+the signature is longer than the RSA key size, as it assumes that the
+signature's length is equal to the RSA key size.  This causes a prefix
+of the hash, or even the entire hash, to be taken from the *signature*.
 
-It is perfectly valid if len is zero and passing in the NULL.
-Unfortunately, the runtime string check at time of reading the trace sees
-the NULL and flags it as a bad string and produces a WARN_ON().
+(Note, the case of a signature longer than the RSA key size should not
+be allowed in the first place; a separate patch will fix that.)
 
-Handle this case by passing into the test function if the format has an
-asterisk (star) and if so, if the length is zero, then mark it as safe.
+It is unclear whether the resulting scheme has any useful security
+properties.
 
-Link: https://lore.kernel.org/all/YjsWzuw5FbWPrdqq@bfoster/
+Fix this by correctly extracting the hash from the scatterlist.
 
-Cc: stable@vger.kernel.org
-Reported-by: Brian Foster <bfoster@redhat.com>
-Tested-by: Brian Foster <bfoster@redhat.com>
-Fixes: 9a6944fee68e2 ("tracing: Add a verifier to check string pointers for trace events")
-Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
+Fixes: c7381b012872 ("crypto: akcipher - new verify API for public key algorithms")
+Cc: <stable@vger.kernel.org> # v5.2+
+Reviewed-by: Vitaly Chikunov <vt@altlinux.org>
+Signed-off-by: Eric Biggers <ebiggers@google.com>
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- kernel/trace/trace.c |    9 +++++++--
- 1 file changed, 7 insertions(+), 2 deletions(-)
+ crypto/rsa-pkcs1pad.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/kernel/trace/trace.c
-+++ b/kernel/trace/trace.c
-@@ -3663,12 +3663,17 @@ static char *trace_iter_expand_format(st
- }
- 
- /* Returns true if the string is safe to dereference from an event */
--static bool trace_safe_str(struct trace_iterator *iter, const char *str)
-+static bool trace_safe_str(struct trace_iterator *iter, const char *str,
-+			   bool star, int len)
- {
- 	unsigned long addr = (unsigned long)str;
- 	struct trace_event *trace_event;
- 	struct trace_event_call *event;
- 
-+	/* Ignore strings with no length */
-+	if (star && !len)
-+		return true;
-+
- 	/* OK if part of the event data */
- 	if ((addr >= (unsigned long)iter->ent) &&
- 	    (addr < (unsigned long)iter->ent + iter->ent_size))
-@@ -3854,7 +3859,7 @@ void trace_check_vprintf(struct trace_it
- 		 * instead. See samples/trace_events/trace-events-sample.h
- 		 * for reference.
- 		 */
--		if (WARN_ONCE(!trace_safe_str(iter, str),
-+		if (WARN_ONCE(!trace_safe_str(iter, str, star, len),
- 			      "fmt: '%s' current_buffer: '%s'",
- 			      fmt, show_buffer(&iter->seq))) {
- 			int ret;
+--- a/crypto/rsa-pkcs1pad.c
++++ b/crypto/rsa-pkcs1pad.c
+@@ -495,7 +495,7 @@ static int pkcs1pad_verify_complete(stru
+ 			   sg_nents_for_len(req->src,
+ 					    req->src_len + req->dst_len),
+ 			   req_ctx->out_buf + ctx->key_size,
+-			   req->dst_len, ctx->key_size);
++			   req->dst_len, req->src_len);
+ 	/* Do the actual verification step. */
+ 	if (memcmp(req_ctx->out_buf + ctx->key_size, out_buf + pos,
+ 		   req->dst_len) != 0)
 
 
