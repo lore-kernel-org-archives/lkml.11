@@ -2,100 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 453E3C352A8
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 02:02:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F0B0CC352A1
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 02:02:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1846013AbiDFCCT (ORCPT
+        id S1845940AbiDFCCD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 22:02:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55810 "EHLO
+        Tue, 5 Apr 2022 22:02:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37166 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345065AbiDEKki (ORCPT
+        with ESMTP id S1457461AbiDEQDP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:40:38 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9C7A2D1EB;
-        Tue,  5 Apr 2022 03:25:45 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DB4B261514;
-        Tue,  5 Apr 2022 10:25:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E8B1BC385A1;
-        Tue,  5 Apr 2022 10:25:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649154344;
-        bh=5zlb1hptJ2v/BAudDlnKXkagzh8LBcBz6czfaqR09DE=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WqK7KXCXlwdwamB9DolS1kjiDFF5LEZkIF75Cr0Y1b4X7JsVlO2cpCZYF5LVfktLV
-         L4lPbRTnAPiDb0y3JjxPlwcjvTNmIvpPSRnsWZRVkoijyAOiT80KOhrkeBwDp62lMs
-         HmX3Z5KiyyETzTj0mDQt2xnO+6KDWtLqMej1jS80=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Wang Hai <wanghai38@huawei.com>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.10 546/599] wireguard: socket: free skb in send6 when ipv6 is disabled
-Date:   Tue,  5 Apr 2022 09:34:00 +0200
-Message-Id: <20220405070315.090264849@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 5 Apr 2022 12:03:15 -0400
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B7A7A6E2A
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 08:47:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649173639; x=1680709639;
+  h=message-id:date:mime-version:to:cc:references:from:
+   subject:in-reply-to:content-transfer-encoding;
+  bh=A+rkSrQ9YlVDO5qD3GUl3Wuak+sW+zKmsgvd5IM6ge8=;
+  b=NYB3pXXTDZK/WpSPr6wEqyRaJrN+RExEawEAxS50vvT3g9++v++SCfb4
+   RSh+WZtL1oL1yCqkMV6aDPNd+QKvrbkxWsDUl378stQbFgBCCwWMgj0Jp
+   CBtwtF6k0y2I8G68WbtfvGRZLg0d1Ta4qODgYMrbdfCEmJgUQ7tgVNnEV
+   C4yQ8Pd3ETB5PqRnv2fzkZXqRD6zCf4EywhAJCUUoJTO/+ROWBfHlRfLY
+   D+ohX+B+Mbi/PBUbjcLOIeuwnJECxCDUF6UgyDBCcLg1lQfzhKKA4NXJn
+   2G0ygZEKtjds1Hd9G1cJ3lKrL+X4qvQKBxkfhOb1chlpP9MnM5kyDBZNg
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10308"; a="240718958"
+X-IronPort-AV: E=Sophos;i="5.90,236,1643702400"; 
+   d="scan'208";a="240718958"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2022 08:47:18 -0700
+X-IronPort-AV: E=Sophos;i="5.90,236,1643702400"; 
+   d="scan'208";a="549107626"
+Received: from nldesimo-desk1.amr.corp.intel.com (HELO [10.212.148.3]) ([10.212.148.3])
+  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2022 08:47:17 -0700
+Message-ID: <5873a444-bb32-f0d5-27f1-173f469baf21@intel.com>
+Date:   Tue, 5 Apr 2022 08:47:20 -0700
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Content-Language: en-US
+To:     "Limonciello, Mario" <Mario.Limonciello@amd.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        "Karny, Wyes" <Wyes.Karny@amd.com>
+Cc:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "Carroll, Lewis" <Lewis.Carroll@amd.com>,
+        "Shenoy, Gautham Ranjal" <gautham.shenoy@amd.com>,
+        "Narayan, Ananth" <Ananth.Narayan@amd.com>,
+        "Rao, Bharata Bhasker" <bharata@amd.com>,
+        "len.brown@intel.com" <len.brown@intel.com>,
+        "x86@kernel.org" <x86@kernel.org>,
+        "tglx@linutronix.de" <tglx@linutronix.de>,
+        "mingo@redhat.com" <mingo@redhat.com>,
+        "bp@alien8.de" <bp@alien8.de>,
+        "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
+        "hpa@zytor.com" <hpa@zytor.com>,
+        "chang.seok.bae@intel.com" <chang.seok.bae@intel.com>,
+        "keescook@chromium.org" <keescook@chromium.org>,
+        "metze@samba.org" <metze@samba.org>,
+        "zhengqi.arch@bytedance.com" <zhengqi.arch@bytedance.com>,
+        "mark.rutland@arm.com" <mark.rutland@arm.com>
+References: <20220405130021.557880-1-wyes.karny@amd.com>
+ <YkxNFyXqC12nXyfM@hirez.programming.kicks-ass.net>
+ <7cdc2103-c6d4-e1b6-9804-6739112eee4d@intel.com>
+ <BL1PR12MB515745615F4C92627033CD5BE2E49@BL1PR12MB5157.namprd12.prod.outlook.com>
+From:   Dave Hansen <dave.hansen@intel.com>
+Subject: Re: [PATCH] x86: Prefer MWAIT over HALT on AMD processors
+In-Reply-To: <BL1PR12MB515745615F4C92627033CD5BE2E49@BL1PR12MB5157.namprd12.prod.outlook.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Wang Hai <wanghai38@huawei.com>
+On 4/5/22 08:34, Limonciello, Mario wrote:
+>>>         if (!static_cpu_has(X86_FEATURE_ZEN)) {
+>>>                 msr |= ssbd_tif_to_amd_ls_cfg(tifn);
+>>>                 wrmsrl(MSR_AMD64_LS_CFG, msr);
+>>>                 return;
+>>>         }
+>> This seem _bit_ at odds with the commit message (and the AMD SSBD
+>> whitepaper):
+>>
+>>>     Add the necessary synchronization logic for AMD family 17H.
+>> So, is X86_FEATURE_ZEN for family==0x17, or family>=0x17?
+> There are Zen family CPUs and APUs from family 0x19.  Perhaps at the
+> time of the whitepaper there weren't yet though.
 
-commit bbbf962d9460194993ee1943a793a0a0af4a7fbf upstream.
+Is this a gap in the documentation, then?  Is there some documentation
+of the availability of SSBD mitigations on family 0x19?
 
-I got a memory leak report:
-
-unreferenced object 0xffff8881191fc040 (size 232):
-  comm "kworker/u17:0", pid 23193, jiffies 4295238848 (age 3464.870s)
-  hex dump (first 32 bytes):
-    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
-    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
-  backtrace:
-    [<ffffffff814c3ef4>] slab_post_alloc_hook+0x84/0x3b0
-    [<ffffffff814c8977>] kmem_cache_alloc_node+0x167/0x340
-    [<ffffffff832974fb>] __alloc_skb+0x1db/0x200
-    [<ffffffff82612b5d>] wg_socket_send_buffer_to_peer+0x3d/0xc0
-    [<ffffffff8260e94a>] wg_packet_send_handshake_initiation+0xfa/0x110
-    [<ffffffff8260ec81>] wg_packet_handshake_send_worker+0x21/0x30
-    [<ffffffff8119c558>] process_one_work+0x2e8/0x770
-    [<ffffffff8119ca2a>] worker_thread+0x4a/0x4b0
-    [<ffffffff811a88e0>] kthread+0x120/0x160
-    [<ffffffff8100242f>] ret_from_fork+0x1f/0x30
-
-In function wg_socket_send_buffer_as_reply_to_skb() or wg_socket_send_
-buffer_to_peer(), the semantics of send6() is required to free skb. But
-when CONFIG_IPV6 is disable, kfree_skb() is missing. This patch adds it
-to fix this bug.
-
-Signed-off-by: Wang Hai <wanghai38@huawei.com>
-Fixes: e7096c131e51 ("net: WireGuard secure network tunnel")
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- drivers/net/wireguard/socket.c |    1 +
- 1 file changed, 1 insertion(+)
-
---- a/drivers/net/wireguard/socket.c
-+++ b/drivers/net/wireguard/socket.c
-@@ -160,6 +160,7 @@ out:
- 	rcu_read_unlock_bh();
- 	return ret;
- #else
-+	kfree_skb(skb);
- 	return -EAFNOSUPPORT;
- #endif
- }
-
-
+Anyway, back to MWAIT...  It would be really great to include the
+assumptions about what X86_FEATURE_ZEN means in the context of this
+patch.  Does this patch *really* mean "Zen microarchitecture" only?
