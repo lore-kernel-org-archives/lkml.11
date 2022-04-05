@@ -2,44 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CABC8C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 11:34:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 52719C4321E
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 11:34:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377511AbiDEL3i (ORCPT
+        id S1377561AbiDEL3r (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 07:29:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41308 "EHLO
+        Tue, 5 Apr 2022 07:29:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41306 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243799AbiDEIvE (ORCPT
+        with ESMTP id S243810AbiDEIvF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:51:04 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 242A3C74A2;
-        Tue,  5 Apr 2022 01:39:25 -0700 (PDT)
+        Tue, 5 Apr 2022 04:51:05 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A36E5C9B4E;
+        Tue,  5 Apr 2022 01:39:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 790A060FFC;
-        Tue,  5 Apr 2022 08:38:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8840BC385A0;
-        Tue,  5 Apr 2022 08:38:47 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 188FA61516;
+        Tue,  5 Apr 2022 08:39:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 21342C385A4;
+        Tue,  5 Apr 2022 08:39:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649147927;
-        bh=68aLZg2k8y7k/NuHYgwWso1X6n6Cr9BCaz8zPh9HeQ0=;
+        s=korg; t=1649147941;
+        bh=5Z78gfGHfHm7csyWYfRHlrzotpJOLnNIrOIF5IitPrY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=EX1ilCiye4FL31aWMuYIgPzb/bLdb1D7P1FpP7YjFKHP2O/Q3YkdZHREsKRGZIOuO
-         5h+yGPCa5CcIDN5fvpS47jyVV/8PSEntfKxOmGX//Ec2oafbzZ1a6E+l6jEK/V0b46
-         QQOWkhyAeIZkZ4/4Vu5H49vVwoOrQled+PdYWOOg=
+        b=EbEzlGxdXU+PKmONZaUxC+IWCWbekAtmIMhowka+SPmhhyHVBRKWkKsGIxIX0dk7R
+         scLpxat6IM3lga8YQK5mYIY4Q7oQrzq11T9s0yP/AifKR5M/PyC3mcLi9VCxU4Tlcg
+         w/FSotpSHaOWqCI1L1UAdrwoD8xBlFql7TS28eL0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        =?UTF-8?q?=D0=9C=D0=B8=D1=85=D0=B0=D0=B8=D0=BB?= 
-        <vrserver1@gmail.com>, Sean Young <sean@mess.org>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>
-Subject: [PATCH 5.16 0172/1017] media: gpio-ir-tx: fix transmit with long spaces on Orange Pi PC
-Date:   Tue,  5 Apr 2022 09:18:05 +0200
-Message-Id: <20220405070359.334460978@linuxfoundation.org>
+        "Lad, Prabhakar" <prabhakar.csengg@gmail.com>,
+        Johan Hovold <johan@kernel.org>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Lad@vger.kernel.org
+Subject: [PATCH 5.16 0177/1017] media: davinci: vpif: fix unbalanced runtime PM get
+Date:   Tue,  5 Apr 2022 09:18:10 +0200
+Message-Id: <20220405070359.486183704@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -51,76 +53,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sean Young <sean@mess.org>
+From: Johan Hovold <johan@kernel.org>
 
-commit 5ad05ecad4326ddaa26a83ba2233a67be24c1aaa upstream.
+commit 4a321de239213300a714fa0353a5f1272d381a44 upstream.
 
-Calling udelay for than 1000us does not always yield the correct
-results.
+Make sure to balance the runtime PM usage counter on driver unbind.
 
-Cc: stable@vger.kernel.org
-Reported-by: Михаил <vrserver1@gmail.com>
-Signed-off-by: Sean Young <sean@mess.org>
+Fixes: 407ccc65bfd2 ("[media] davinci: vpif: add pm_runtime support")
+Cc: stable@vger.kernel.org      # 3.9
+Cc: Lad, Prabhakar <prabhakar.csengg@gmail.com>
+Signed-off-by: Johan Hovold <johan@kernel.org>
+Reviewed-by: Lad Prabhakar <prabhakar.csengg@gmail.com>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
 Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/media/rc/gpio-ir-tx.c |   28 +++++++++++++++++++++-------
- 1 file changed, 21 insertions(+), 7 deletions(-)
+ drivers/media/platform/davinci/vpif.c |    1 +
+ 1 file changed, 1 insertion(+)
 
---- a/drivers/media/rc/gpio-ir-tx.c
-+++ b/drivers/media/rc/gpio-ir-tx.c
-@@ -48,11 +48,29 @@ static int gpio_ir_tx_set_carrier(struct
+--- a/drivers/media/platform/davinci/vpif.c
++++ b/drivers/media/platform/davinci/vpif.c
+@@ -495,6 +495,7 @@ static int vpif_probe(struct platform_de
+ 
+ static int vpif_remove(struct platform_device *pdev)
+ {
++	pm_runtime_put(&pdev->dev);
+ 	pm_runtime_disable(&pdev->dev);
  	return 0;
  }
- 
-+static void delay_until(ktime_t until)
-+{
-+	/*
-+	 * delta should never exceed 0.5 seconds (IR_MAX_DURATION) and on
-+	 * m68k ndelay(s64) does not compile; so use s32 rather than s64.
-+	 */
-+	s32 delta;
-+
-+	while (true) {
-+		delta = ktime_us_delta(until, ktime_get());
-+		if (delta <= 0)
-+			return;
-+
-+		/* udelay more than 1ms may not work */
-+		delta = min(delta, 1000);
-+		udelay(delta);
-+	}
-+}
-+
- static void gpio_ir_tx_unmodulated(struct gpio_ir *gpio_ir, uint *txbuf,
- 				   uint count)
- {
- 	ktime_t edge;
--	s32 delta;
- 	int i;
- 
- 	local_irq_disable();
-@@ -63,9 +81,7 @@ static void gpio_ir_tx_unmodulated(struc
- 		gpiod_set_value(gpio_ir->gpio, !(i % 2));
- 
- 		edge = ktime_add_us(edge, txbuf[i]);
--		delta = ktime_us_delta(edge, ktime_get());
--		if (delta > 0)
--			udelay(delta);
-+		delay_until(edge);
- 	}
- 
- 	gpiod_set_value(gpio_ir->gpio, 0);
-@@ -97,9 +113,7 @@ static void gpio_ir_tx_modulated(struct
- 		if (i % 2) {
- 			// space
- 			edge = ktime_add_us(edge, txbuf[i]);
--			delta = ktime_us_delta(edge, ktime_get());
--			if (delta > 0)
--				udelay(delta);
-+			delay_until(edge);
- 		} else {
- 			// pulse
- 			ktime_t last = ktime_add_us(edge, txbuf[i]);
 
 
