@@ -2,86 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C6BBC4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CD100C4321E
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:40:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380547AbiDEUlC (ORCPT
+        id S1381434AbiDEUlP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 16:41:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50990 "EHLO
+        Tue, 5 Apr 2022 16:41:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43366 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1572990AbiDERmY (ORCPT
+        with ESMTP id S1348746AbiDEJsa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 13:42:24 -0400
+        Tue, 5 Apr 2022 05:48:30 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1FD0CB91A9;
-        Tue,  5 Apr 2022 10:40:25 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28CF0443E3;
+        Tue,  5 Apr 2022 02:34:39 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C87B2B81EE4;
-        Tue,  5 Apr 2022 17:40:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2DE80C385A5;
-        Tue,  5 Apr 2022 17:40:22 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="l5nk+/So"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1649180419;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=g0RO67IsWiIRaN00UqFYvLKhwvI+fUHEG0ABd2diEis=;
-        b=l5nk+/SosryNFeCI8Q3/zfn/1LKLIZ8iHNi0rWYpFF9VVP95xzSuUSaCeLdoYQkJEAW0tE
-        kVmXmGeXBm9MymcZj9wHJdPoluQWl0OlJ0/plpBuDm6i+bOD2Xw0QNgqAXdr7H3fH6QB/T
-        ELTGJJRAbEbfoYJuQprLKzX4+XLRzWg=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 06d65d9d (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
-        Tue, 5 Apr 2022 17:40:19 +0000 (UTC)
-Received: by mail-yw1-f178.google.com with SMTP id 00721157ae682-2eb3db5b172so98410467b3.6;
-        Tue, 05 Apr 2022 10:40:18 -0700 (PDT)
-X-Gm-Message-State: AOAM5329HlC9en2GZtJvQeYFLDdjfNZrykRp3x2o7tlluQxm5HqFxtaO
-        z1r6Sw5l0lTxaIBWZkQB0qAFMwgYYKFU1a0NDG4=
-X-Google-Smtp-Source: ABdhPJxggra8RefXSrqyMfsPxHjGbqamYdiF4pGdnuRqzip50DYJhkIIVyQbHYUw3VWFO95SfIXgZtdOlibRkkfvs9I=
-X-Received: by 2002:a81:f00c:0:b0:2e9:d949:c189 with SMTP id
- p12-20020a81f00c000000b002e9d949c189mr3637965ywm.2.1649180418428; Tue, 05 Apr
- 2022 10:40:18 -0700 (PDT)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C82F5B81B75;
+        Tue,  5 Apr 2022 09:34:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2405FC385A0;
+        Tue,  5 Apr 2022 09:34:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649151276;
+        bh=1H+HbGkoLOkTW0gUFqba98LuOxAX3kAuQ/zUrUQtR5Q=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=jl4Qo7DFIbzXcx1NxuwpJkv1dH/21Gp/Ly98T9AI4roHSayyWEYu8V02ocjhLkaS5
+         tEJhuGNYLaG4FZka1PEq99/KgzQ2FCJC4EOUme66NHMlOlpHFzz2g3opRbZAqiwROh
+         pFkZyLnGlg2oBcMUCNOBFuJ/MAsKmybIUOB1JR/g=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, TOTE Robot <oslab@tsinghua.edu.cn>,
+        Jia-Ju Bai <baijiaju1990@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 330/913] ASoC: rt5663: check the return value of devm_kzalloc() in rt5663_parse_dp()
+Date:   Tue,  5 Apr 2022 09:23:12 +0200
+Message-Id: <20220405070349.741440475@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Received: by 2002:a05:7110:470c:b0:173:a80b:3ec5 with HTTP; Tue, 5 Apr 2022
- 10:40:17 -0700 (PDT)
-In-Reply-To: <202204051016.4E9DD89@keescook>
-References: <CAHmME9otYi4pCzZwSGnK40dp1QMRVPxp+DBysVuLXUKkXinAxg@mail.gmail.com>
- <20220403204036.1269562-1-Jason@zx2c4.com> <202204041144.96FC64A8@keescook>
- <Ykt1cj0wPKEsHL2q@zx2c4.com> <202204041953.D7E0BA15@keescook>
- <CAHmME9rC-pmi3K=w06-bOsHP5=tPv9CS51hr69P1C5tmvHf_mA@mail.gmail.com> <202204051016.4E9DD89@keescook>
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-Date:   Tue, 5 Apr 2022 19:40:17 +0200
-X-Gmail-Original-Message-ID: <CAHmME9pV4SdoSyMq4kax3w3Vu1nPxjO3faCZKq8d0RDo8t731g@mail.gmail.com>
-Message-ID: <CAHmME9pV4SdoSyMq4kax3w3Vu1nPxjO3faCZKq8d0RDo8t731g@mail.gmail.com>
-Subject: Re: [PATCH v2] gcc-plugins: latent_entropy: use /dev/urandom
-To:     Kees Cook <keescook@chromium.org>
-Cc:     linux-hardening@vger.kernel.org, linux-kernel@vger.kernel.org,
-        stable@vger.kernel.org, PaX Team <pageexec@freemail.hu>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Kees,
+From: Jia-Ju Bai <baijiaju1990@gmail.com>
 
-On 4/5/22, Kees Cook <keescook@chromium.org> wrote:
-> v3 uses a different check for the -f option, though? Isn't that
-> preferred over the v2 method?
+[ Upstream commit 4d06f92f38b799295ae22c98be7a20cac3e2a1a7 ]
 
-Based on the code comments, I assume this is gcc upstream's intended
-method. It strikes me as worse, though, because that variable, when
-it's not set to -1, is set to: `local_tick = (unsigned) tv.tv_sec *
-1000 + tv.tv_usec / 1000;` which is on occasion unlucky and hits -1
-too. But maybe that's a bug in gcc that should be fixed instead? I
-don't know really. But anyway that's why I'm /also/ more into that
-aspect of v2.
+The function devm_kzalloc() in rt5663_parse_dp() can fail, so its return
+value should be checked.
 
-> Also, I did some quick benchmarking, and any difference in runtime is
-> completely lost in the noise, so that's good.
+Fixes: 457c25efc592 ("ASoC: rt5663: Add the function of impedance sensing")
+Reported-by: TOTE Robot <oslab@tsinghua.edu.cn>
+Signed-off-by: Jia-Ju Bai <baijiaju1990@gmail.com>
+Link: https://lore.kernel.org/r/20220225131030.27248-1-baijiaju1990@gmail.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ sound/soc/codecs/rt5663.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-Oh good to hear. So my 2k buffer is fine then.
+diff --git a/sound/soc/codecs/rt5663.c b/sound/soc/codecs/rt5663.c
+index ee09ccd448dc..4aba6e106ee4 100644
+--- a/sound/soc/codecs/rt5663.c
++++ b/sound/soc/codecs/rt5663.c
+@@ -3478,6 +3478,8 @@ static int rt5663_parse_dp(struct rt5663_priv *rt5663, struct device *dev)
+ 		table_size = sizeof(struct impedance_mapping_table) *
+ 			rt5663->pdata.impedance_sensing_num;
+ 		rt5663->imp_table = devm_kzalloc(dev, table_size, GFP_KERNEL);
++		if (!rt5663->imp_table)
++			return -ENOMEM;
+ 		ret = device_property_read_u32_array(dev,
+ 			"realtek,impedance_sensing_table",
+ 			(u32 *)rt5663->imp_table, table_size);
+-- 
+2.34.1
 
-Jason
+
+
