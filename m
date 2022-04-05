@@ -2,126 +2,141 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A39CAC4167B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B26E6C4167D
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:35:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383581AbiDEM0K (ORCPT
+        id S1383663AbiDEM0T (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 08:26:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38486 "EHLO
+        Tue, 5 Apr 2022 08:26:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38376 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241052AbiDEIsZ (ORCPT
+        with ESMTP id S241039AbiDEIsZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Apr 2022 04:48:25 -0400
-Received: from mail-ej1-x643.google.com (mail-ej1-x643.google.com [IPv6:2a00:1450:4864:20::643])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F02A2286DA
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 01:36:39 -0700 (PDT)
-Received: by mail-ej1-x643.google.com with SMTP id bq8so25094661ejb.10
-        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 01:36:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ffwll.ch; s=google;
-        h=date:from:to:cc:subject:message-id:mail-followup-to:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=mJA2lhSAjBvIdBD6ROp3kAhgwFUlfyK4RHs6V3CcZqc=;
-        b=CoDDZytP68BFexlTIPRQI8kK37R3nkDSnUvaKkmrkNmy4gvuhmA1JNDkNuSgkZWq1B
-         SPVXZnfmJ1KZ2BcMTxTfOn8NWJRZBSQFcRh33LIG1mXQk1fprvTxxxWhJlo1JRRTupfp
-         NYRI5YI0Mx8QJ9eR4E1LndjI8q21tuCQaKLHc=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id
-         :mail-followup-to:references:mime-version:content-disposition
-         :in-reply-to;
-        bh=mJA2lhSAjBvIdBD6ROp3kAhgwFUlfyK4RHs6V3CcZqc=;
-        b=6tGknwhPQ2p/12ZlbrEwwQBkZKUVqunAjqoRZ8PZNcyBDgticRKcgFP3hyJm8dRBfW
-         41Eum4xR/MBZfL7aAlXU6+yR6LXKnEY28OSZjTBs48jyH4cXy01IWWhdgMSyJnIs9wNw
-         vvQTfZ+llO1Uhy+EpqgjzkVOjHFkyYcDCgg2Nol3OWBxhw7MBTZTqYFY4VAxoarcroyl
-         2oZLTWRskhadhBmbjLDQVkNwTearrc6weGzKe3PQ5M952ye/Ytsw/ctAuDXMjp4Tn7Fp
-         +ZUEeL8nhmTJVoRnIW/LAAgqrTflPntZtrSq7qae6Fe1pQeCHRmR78w52XemqbHup4eR
-         oTIQ==
-X-Gm-Message-State: AOAM5329Cqb7+LbjAp6vkQBtv5abH6fmVszEQuY4IhSn78mdleO95Mte
-        J/MkdMaJOJ/THMI3AOocHJX8MA==
-X-Google-Smtp-Source: ABdhPJx4CvLt4qnid/daWeAwD8jdaiFdmc1pOY90sZa/ptwTWKFAv9S6pqBc7QGu5+ZIghApbsrfYw==
-X-Received: by 2002:a17:907:c309:b0:6e8:4e5:6504 with SMTP id tl9-20020a170907c30900b006e804e56504mr2322280ejc.706.1649147797582;
-        Tue, 05 Apr 2022 01:36:37 -0700 (PDT)
-Received: from phenom.ffwll.local ([2a02:168:57f4:0:efd0:b9e5:5ae6:c2fa])
-        by smtp.gmail.com with ESMTPSA id h30-20020a056402095e00b00412b81dd96esm6220634edz.29.2022.04.05.01.36.36
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 05 Apr 2022 01:36:37 -0700 (PDT)
-Date:   Tue, 5 Apr 2022 10:36:35 +0200
-From:   Daniel Vetter <daniel@ffwll.ch>
-To:     Javier Martinez Canillas <javierm@redhat.com>
-Cc:     Daniel Vetter <daniel.vetter@ffwll.ch>,
-        DRI Development <dri-devel@lists.freedesktop.org>,
-        Intel Graphics Development <intel-gfx@lists.freedesktop.org>,
-        linux-fbdev@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Zack Rusin <zackr@vmware.com>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Ilya Trukhanov <lahvuun@gmail.com>,
-        Daniel Vetter <daniel.vetter@intel.com>,
-        Peter Jones <pjones@redhat.com>
-Subject: Re: [PATCH v2 18/19] Revert "fbdev: Prevent probing generic drivers
- if a FB is already registered"
-Message-ID: <Ykv/k/WoVemoCJJA@phenom.ffwll.local>
-Mail-Followup-To: Javier Martinez Canillas <javierm@redhat.com>,
-        DRI Development <dri-devel@lists.freedesktop.org>,
-        Intel Graphics Development <intel-gfx@lists.freedesktop.org>,
-        linux-fbdev@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Zack Rusin <zackr@vmware.com>, Hans de Goede <hdegoede@redhat.com>,
-        Ilya Trukhanov <lahvuun@gmail.com>,
-        Daniel Vetter <daniel.vetter@intel.com>,
-        Peter Jones <pjones@redhat.com>
-References: <20220208210824.2238981-1-daniel.vetter@ffwll.ch>
- <20220208210824.2238981-19-daniel.vetter@ffwll.ch>
- <4ae20b63-f452-fdb4-ced6-d4968a8d69f0@redhat.com>
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5071F289B2;
+        Tue,  5 Apr 2022 01:36:40 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5955CB81B92;
+        Tue,  5 Apr 2022 08:36:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 99903C385A5;
+        Tue,  5 Apr 2022 08:36:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649147798;
+        bh=oQCCMyAG9uXwmvosH2y0DN3mABh0AUvwuzkV1JR0Ik0=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=weBbHu5sJWaFagx72a3oQgFJ/TkcCuFSZTfCfsmorGq3M1XXTBTf7VNhVX6HJXBT5
+         JHs/5UvLGuA+O5kcF4kZLS/tCbfCs1qg28NOyw//AQt/JuFoBCKuxGq7ihr8ZqBUQ2
+         B0ge9Z1KDy++m/nVqP2XN6EMh5Bb8FW0fdc5pWl4=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Ben Dooks <ben.dooks@codethink.co.uk>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Palmer Dabbelt <palmer@rivosinc.com>,
+        Dimitri John Ledkov <dimitri.ledkov@canonical.com>
+Subject: [PATCH 5.16 0126/1017] PCI: fu740: Force 2.5GT/s for initial device probe
+Date:   Tue,  5 Apr 2022 09:17:19 +0200
+Message-Id: <20220405070357.939710531@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
+References: <20220405070354.155796697@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <4ae20b63-f452-fdb4-ced6-d4968a8d69f0@redhat.com>
-X-Operating-System: Linux phenom 5.10.0-8-amd64 
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Feb 09, 2022 at 01:19:26AM +0100, Javier Martinez Canillas wrote:
-> On 2/8/22 22:08, Daniel Vetter wrote:
-> > This reverts commit fb561bf9abde49f7e00fdbf9ed2ccf2d86cac8ee.
-> > 
-> > With
-> > 
-> > commit 27599aacbaefcbf2af7b06b0029459bbf682000d
-> > Author: Thomas Zimmermann <tzimmermann@suse.de>
-> > Date:   Tue Jan 25 10:12:18 2022 +0100
-> > 
-> >     fbdev: Hot-unplug firmware fb devices on forced removal
-> > 
-> > this should be fixed properly and we can remove this somewhat hackish
-> > check here (e.g. this won't catch drm drivers if fbdev emulation isn't
-> > enabled).
-> >
-> 
-> Unfortunately this hack can't be reverted yet. Thomas' patch solves the issue
-> of platform devices matched with fbdev drivers to be properly unregistered if
-> a DRM driver attempts to remove all the conflicting framebuffers.
-> 
-> But the problem that fb561bf9abde ("fbdev: Prevent probing generic drivers if
-> a FB is already registered") worked around is different. It happens when the
-> DRM driver is probed before the {efi,simple}fb and other fbdev drivers, the
-> kicking out of conflicting framebuffers already happened and these drivers
-> will be allowed to probe even when a DRM driver is already present.
-> 
-> We need a clearer way to prevent it, but can't revert fb561bf9abde until that.
+From: Ben Dooks <ben.dooks@codethink.co.uk>
 
-Yeah that entire area is a mess still, ideally we'd have something else
-creating the platform devices, and efifb/offb and all these would just
-bind against them.
+commit a382c757ec5ef83137a86125f43a4c43dc2ab50b upstream.
 
-Hm one idea that just crossed my mind: Could we have a flag in fb_info for
-fw drivers, and check this in framebuffer_register? Then at least all the
-logic would be in the fbdev core.
--Daniel
--- 
-Daniel Vetter
-Software Engineer, Intel Corporation
-http://blog.ffwll.ch
+The fu740 PCIe core does not probe any devices on the SiFive Unmatched
+board without this fix (or having U-Boot explicitly start the PCIe via
+either boot-script or user command). The fix is to start the link at
+2.5GT/s speeds and once the link is up then change the maximum speed back
+to the default.
+
+The U-Boot driver claims to set the link-speed to 2.5GT/s to get the probe
+to work (and U-Boot does print link up at 2.5GT/s) in the following code:
+https://source.denx.de/u-boot/u-boot/-/blob/master/drivers/pci/pcie_dw_sifive.c?id=v2022.01#L271
+
+Link: https://lore.kernel.org/r/20220318152430.526320-1-ben.dooks@codethink.co.uk
+Signed-off-by: Ben Dooks <ben.dooks@codethink.co.uk>
+Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
+Acked-by: Palmer Dabbelt <palmer@rivosinc.com>
+Signed-off-by: Dimitri John Ledkov <dimitri.ledkov@canonical.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ drivers/pci/controller/dwc/pcie-fu740.c |   51 +++++++++++++++++++++++++++++++-
+ 1 file changed, 50 insertions(+), 1 deletion(-)
+
+--- a/drivers/pci/controller/dwc/pcie-fu740.c
++++ b/drivers/pci/controller/dwc/pcie-fu740.c
+@@ -181,10 +181,59 @@ static int fu740_pcie_start_link(struct
+ {
+ 	struct device *dev = pci->dev;
+ 	struct fu740_pcie *afp = dev_get_drvdata(dev);
++	u8 cap_exp = dw_pcie_find_capability(pci, PCI_CAP_ID_EXP);
++	int ret;
++	u32 orig, tmp;
++
++	/*
++	 * Force 2.5GT/s when starting the link, due to some devices not
++	 * probing at higher speeds. This happens with the PCIe switch
++	 * on the Unmatched board when U-Boot has not initialised the PCIe.
++	 * The fix in U-Boot is to force 2.5GT/s, which then gets cleared
++	 * by the soft reset done by this driver.
++	 */
++	dev_dbg(dev, "cap_exp at %x\n", cap_exp);
++	dw_pcie_dbi_ro_wr_en(pci);
++
++	tmp = dw_pcie_readl_dbi(pci, cap_exp + PCI_EXP_LNKCAP);
++	orig = tmp & PCI_EXP_LNKCAP_SLS;
++	tmp &= ~PCI_EXP_LNKCAP_SLS;
++	tmp |= PCI_EXP_LNKCAP_SLS_2_5GB;
++	dw_pcie_writel_dbi(pci, cap_exp + PCI_EXP_LNKCAP, tmp);
+ 
+ 	/* Enable LTSSM */
+ 	writel_relaxed(0x1, afp->mgmt_base + PCIEX8MGMT_APP_LTSSM_ENABLE);
+-	return 0;
++
++	ret = dw_pcie_wait_for_link(pci);
++	if (ret) {
++		dev_err(dev, "error: link did not start\n");
++		goto err;
++	}
++
++	tmp = dw_pcie_readl_dbi(pci, cap_exp + PCI_EXP_LNKCAP);
++	if ((tmp & PCI_EXP_LNKCAP_SLS) != orig) {
++		dev_dbg(dev, "changing speed back to original\n");
++
++		tmp &= ~PCI_EXP_LNKCAP_SLS;
++		tmp |= orig;
++		dw_pcie_writel_dbi(pci, cap_exp + PCI_EXP_LNKCAP, tmp);
++
++		tmp = dw_pcie_readl_dbi(pci, PCIE_LINK_WIDTH_SPEED_CONTROL);
++		tmp |= PORT_LOGIC_SPEED_CHANGE;
++		dw_pcie_writel_dbi(pci, PCIE_LINK_WIDTH_SPEED_CONTROL, tmp);
++
++		ret = dw_pcie_wait_for_link(pci);
++		if (ret) {
++			dev_err(dev, "error: link did not start at new speed\n");
++			goto err;
++		}
++	}
++
++	ret = 0;
++err:
++	WARN_ON(ret);	/* we assume that errors will be very rare */
++	dw_pcie_dbi_ro_wr_dis(pci);
++	return ret;
+ }
+ 
+ static int fu740_pcie_host_init(struct pcie_port *pp)
+
+
