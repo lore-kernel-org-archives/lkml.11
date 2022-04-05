@@ -2,46 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F95FC4167D
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:17:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 54ED8C35276
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:17:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1583245AbiDEXvy (ORCPT
+        id S1583353AbiDEXw3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 19:51:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55164 "EHLO
+        Tue, 5 Apr 2022 19:52:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53588 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354111AbiDEKLs (ORCPT
+        with ESMTP id S1355429AbiDEKTm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:11:48 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C504506DE;
-        Tue,  5 Apr 2022 02:57:18 -0700 (PDT)
+        Tue, 5 Apr 2022 06:19:42 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 835646EC77;
+        Tue,  5 Apr 2022 03:04:55 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4F0F2B81B13;
-        Tue,  5 Apr 2022 09:57:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9947AC385A1;
-        Tue,  5 Apr 2022 09:57:15 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id F291EB81BC0;
+        Tue,  5 Apr 2022 10:04:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 40DF3C385A1;
+        Tue,  5 Apr 2022 10:04:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649152636;
-        bh=M22wOKUpekKpognQbIgFpkF7FL2nVQ5DecRYMgd2GuI=;
+        s=korg; t=1649153092;
+        bh=EUPH0vkDEVeXCVAVBEpenWoJnK05JcGiufawvmrh8I0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Lw+ck9sZa/GaKHUCH0u/WWNn0OITLc8JPCHWofrBCyBd5hHjmBJI1KgTNR9Gqawvf
-         aovUm+LT4+nPMOzjrWdHjJFAYCWfPWcLZt+b3tXUwJPq8E7/HlocZBiHXLWj7pj46I
-         3GN5wjLHbehx0S82eJxUc27k9oMIVyChT1cVQJfo=
+        b=lm5bWzJ2ZqWsN2FKXn/Aic1kq2nBzWDrD0rwllJmEUOiZKQ44BsQsNXbqUwwBtVtd
+         urBXn0ZiVEN4aqbZz5r171VVtosGUxB5SZAGV8cDuWxP1MrLB8tosApcQsm4PvYj/a
+         hbcCN4tfqXBw5816iFX41KE/WaMwQMd+8tPKohKs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Wim Van Sebroeck <wim@linux-watchdog.org>
-Subject: [PATCH 5.15 848/913] watchdog: rti-wdt: Add missing pm_runtime_disable() in probe function
-Date:   Tue,  5 Apr 2022 09:31:50 +0200
-Message-Id: <20220405070405.247995032@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Tudor Ambarus <tudor.ambarus@microchip.com>,
+        Alexander Dahl <ada@thorsis.com>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>
+Subject: [PATCH 5.10 099/599] ARM: dts: at91: sama5d2: Fix PMERRLOC resource size
+Date:   Tue,  5 Apr 2022 09:26:33 +0200
+Message-Id: <20220405070301.778257710@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
+References: <20220405070258.802373272@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,33 +51,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Tudor Ambarus <tudor.ambarus@microchip.com>
 
-commit d055ef3a2c6919cff504ae3b710c96318d545fd2 upstream.
+commit 0fb578a529ac7aca326a9fa475b4a6f58a756fda upstream.
 
-If the probe fails, we should use pm_runtime_disable() to balance
-pm_runtime_enable().
+PMERRLOC resource size was set to 0x100, which resulted in HSMC_ERRLOCx
+register being truncated to offset x = 21, causing error correction to
+fail if more than 22 bit errors and if 24 or 32 bit error correction
+was supported.
 
-Fixes: 2d63908bdbfb ("watchdog: Add K3 RTI watchdog support")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Reviewed-by: Guenter Roeck <linux@roeck-us.net>
-Link: https://lore.kernel.org/r/20220105092114.23932-1-linmq006@gmail.com
-Signed-off-by: Guenter Roeck <linux@roeck-us.net>
-Signed-off-by: Wim Van Sebroeck <wim@linux-watchdog.org>
+Fixes: d9c41bf30cf8 ("ARM: dts: at91: Declare EBI/NAND controllers")
+Signed-off-by: Tudor Ambarus <tudor.ambarus@microchip.com>
+Cc: <stable@vger.kernel.org> # 4.13.x
+Acked-by: Alexander Dahl <ada@thorsis.com>
+Signed-off-by: Nicolas Ferre <nicolas.ferre@microchip.com>
+Link: https://lore.kernel.org/r/20220111132301.906712-1-tudor.ambarus@microchip.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/watchdog/rti_wdt.c |    1 +
- 1 file changed, 1 insertion(+)
+ arch/arm/boot/dts/sama5d2.dtsi |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/watchdog/rti_wdt.c
-+++ b/drivers/watchdog/rti_wdt.c
-@@ -229,6 +229,7 @@ static int rti_wdt_probe(struct platform
- 	ret = pm_runtime_get_sync(dev);
- 	if (ret) {
- 		pm_runtime_put_noidle(dev);
-+		pm_runtime_disable(&pdev->dev);
- 		return dev_err_probe(dev, ret, "runtime pm failed\n");
- 	}
+--- a/arch/arm/boot/dts/sama5d2.dtsi
++++ b/arch/arm/boot/dts/sama5d2.dtsi
+@@ -413,7 +413,7 @@
+ 				pmecc: ecc-engine@f8014070 {
+ 					compatible = "atmel,sama5d2-pmecc";
+ 					reg = <0xf8014070 0x490>,
+-					      <0xf8014500 0x100>;
++					      <0xf8014500 0x200>;
+ 				};
+ 			};
  
 
 
