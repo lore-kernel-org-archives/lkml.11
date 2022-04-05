@@ -2,98 +2,79 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 32D25C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 560F5C43219
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:23:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377350AbiDEURC (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 16:17:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58790 "EHLO
+        id S231940AbiDEURK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 16:17:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34086 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357947AbiDEK1b (ORCPT
+        with ESMTP id S1572961AbiDERay (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:27:31 -0400
+        Tue, 5 Apr 2022 13:30:54 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C016095A1B;
-        Tue,  5 Apr 2022 03:11:32 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 563392314E
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 10:28:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 71B20B81C8A;
-        Tue,  5 Apr 2022 10:11:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D5F27C385A0;
-        Tue,  5 Apr 2022 10:11:29 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649153490;
-        bh=W+a99i5Wl/XzyKPPltPn1bV3BI04D47hfqhWXnPVblE=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Eb2MH+VAWtQbMHrXUxsEN4wxV0nGcVssYdXsa5d14pl+FjA/+XvU2tY8YuG8dpPtB
-         dPQPugsX7G5fMyM3NjWktbNR4l/Tfj7cdwuaGcRI8LGIYxiDInEpqRPVS4sRWMZXND
-         pHwwqO0V+8pobrhcItrKy8qSOaoWo8KD84J3D7eo=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Marijn Suijten <marijn.suijten@somainline.org>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@somainline.org>,
-        Alex Elder <elder@linaro.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 203/599] firmware: qcom: scm: Remove reassignment to desc following initializer
-Date:   Tue,  5 Apr 2022 09:28:17 +0200
-Message-Id: <20220405070304.882155120@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
-User-Agent: quilt/0.66
+        by ams.source.kernel.org (Postfix) with ESMTPS id 12DEFB81B7F
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 17:28:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 58A89C385A0;
+        Tue,  5 Apr 2022 17:28:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649179731;
+        bh=L8ClCNYpz04MaTli/xpItx9BnEYHOLA4v0sIEqu/EAg=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=bY2k9fQO79NHBStJp71FuYLswa7OgZhHbdUW7I4unHsaM7ubItkEmGv6UZ0PRG2yn
+         40zZju1eH7/erRO9y6Q9ONjCcXDkbyr7SOuBlodGHc3oUoyVqnWStQLjZv0TpjzGWU
+         T8Vy5VyqNZMc4PMBtKsT9NHxvw8jYvS603xJ6OWVx0cWr/5QaXMUsbSiPgoUHnyWIv
+         qqL6rBGhKQFF+mchiamUwtfin1E8HgI2u+whM/uhUHQPPDw/4fMgxoc/Uhc5IQyCiK
+         g9uubCv4ZhMEmfUtGER5ug8ZYTaPoXrngnPzw8j2KZNn8/29oW/JIB9v+qprY0e+V8
+         9YOdwRAwIaXVQ==
+Date:   Tue, 5 Apr 2022 18:28:47 +0100
+From:   Mark Brown <broonie@kernel.org>
+To:     Stephen Kitt <steve@sk2.org>
+Cc:     Liam Girdwood <lgirdwood@gmail.com>, patches@opensource.cirrus.com,
+        Wolfram Sang <wsa@kernel.org>, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] ASoC: wm8731: use simple i2c probe function
+Message-ID: <Ykx8T4KFmEiAFyH8@sirena.org.uk>
+References: <20220405123236.2099063-1-steve@sk2.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="Tw76BVguT/8hAA+z"
+Content-Disposition: inline
+In-Reply-To: <20220405123236.2099063-1-steve@sk2.org>
+X-Cookie: I don't get no respect.
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Marijn Suijten <marijn.suijten@somainline.org>
 
-[ Upstream commit 7823e5aa5d1dd9ed5849923c165eb8f29ad23c54 ]
+--Tw76BVguT/8hAA+z
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-Member assignments to qcom_scm_desc were moved into struct initializers
-in 57d3b816718c ("firmware: qcom_scm: Remove thin wrappers") including
-the case in qcom_scm_iommu_secure_ptbl_init, except that the - now
-duplicate - assignment to desc was left in place. While not harmful,
-remove this unnecessary extra reassignment.
+On Tue, Apr 05, 2022 at 02:32:36PM +0200, Stephen Kitt wrote:
+> The i2c probe functions here don't use the id information provided in
+> their second argument, so the single-parameter i2c probe function
+> ("probe_new") can be used instead.
 
-Fixes: 57d3b816718c ("firmware: qcom_scm: Remove thin wrappers")
-Signed-off-by: Marijn Suijten <marijn.suijten@somainline.org>
-Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@somainline.org>
-Reviewed-by: Alex Elder <elder@linaro.org>
-Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Link: https://lore.kernel.org/r/20211208083423.22037-2-marijn.suijten@somainline.org
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/firmware/qcom_scm.c | 6 ------
- 1 file changed, 6 deletions(-)
+This doesn't apply against current code, please check and resend.
 
-diff --git a/drivers/firmware/qcom_scm.c b/drivers/firmware/qcom_scm.c
-index e10a99860ca4..d417199f8fe9 100644
---- a/drivers/firmware/qcom_scm.c
-+++ b/drivers/firmware/qcom_scm.c
-@@ -749,12 +749,6 @@ int qcom_scm_iommu_secure_ptbl_init(u64 addr, u32 size, u32 spare)
- 	};
- 	int ret;
- 
--	desc.args[0] = addr;
--	desc.args[1] = size;
--	desc.args[2] = spare;
--	desc.arginfo = QCOM_SCM_ARGS(3, QCOM_SCM_RW, QCOM_SCM_VAL,
--				     QCOM_SCM_VAL);
--
- 	ret = qcom_scm_call(__scm->dev, &desc, NULL);
- 
- 	/* the pg table has been initialized already, ignore the error */
--- 
-2.34.1
+--Tw76BVguT/8hAA+z
+Content-Type: application/pgp-signature; name="signature.asc"
 
+-----BEGIN PGP SIGNATURE-----
 
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmJMfE4ACgkQJNaLcl1U
+h9Cagwf/dFd/lprBIZy7kHMoCBkAKqQEWj5zaLFLoLdAR1N3s4F3JEp67KyokBJg
+jewr8uF+n1PsUHlB0qTZEk0BnvIFCGdHbVJhW2anYpDXR4owxvuZ8U3aW0kXK064
+P8lQARnT2SHKvGZuPU0hzOSaiZF2vLaQRDIHUCG746aB8Xo8A/Lff0qzdH7gJv0K
+x8PXepAm5v98sccDmIlG5/VOIw85quNfKU0uA2aaejCpR7ABM2WvtuEXCSgyoMfZ
+/ez/ctEdXSctPKGVPMSQIo4FyXsCuJJYjQ9Sl11RbP2VUv/9NiEL/pCg91AXRqUv
+cQlLkekXrx6Rwy/DptIOQAndK8evzw==
+=F8D2
+-----END PGP SIGNATURE-----
 
+--Tw76BVguT/8hAA+z--
