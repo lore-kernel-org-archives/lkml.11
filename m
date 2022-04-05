@@ -2,42 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C57D1C43219
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:20:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B8C89C352A7
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:20:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235282AbiDEIPu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 04:15:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55580 "EHLO
+        id S236616AbiDEIQw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 04:16:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43934 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235492AbiDEH7r (ORCPT
+        with ESMTP id S235604AbiDEH7x (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 03:59:47 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D79A764BC7;
-        Tue,  5 Apr 2022 00:54:49 -0700 (PDT)
+        Tue, 5 Apr 2022 03:59:53 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBF661AD9A;
+        Tue,  5 Apr 2022 00:55:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 86FAFB81B90;
-        Tue,  5 Apr 2022 07:54:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DCD84C340EE;
-        Tue,  5 Apr 2022 07:54:46 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9DADFB81B9C;
+        Tue,  5 Apr 2022 07:55:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 011EAC34110;
+        Tue,  5 Apr 2022 07:55:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649145287;
-        bh=8l5CpaMsFM/qAf0WeE9Yt+fxkhGsxjEKQq74YjGI75g=;
+        s=korg; t=1649145355;
+        bh=5xwjSXGcSyCL53TkO5UFu25SunMdXeXVvL0B5LJR5IY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=j4pYhEbaDvRIin3/DLWkKw9zqkRmEojP2JOYoKWDaItwSLY8SB6gzD3BrQBq4zGV6
-         XPxyALfqGsaWyzU3oamAyqNcY28uGfSnVATRPofTvOYkJfAT4Lun9wFL9L7fy/peY1
-         zBx9a2mLZRLq2eAOYB1FaDigRDDyS4MI+ZhPgASQ=
+        b=F1dM78z34Q7RiP2bPtcenYKB0Ne0tpO7WWEV1g1IlqgXK8BE6bTpsI8j3xBHhcssX
+         oTFRO9uedGb7tRsrvNtasf/pmHFsLE0MKPsxWoICgF4GCe5AEJgfgMUXBC79tASiJd
+         mifi5L1CJJduPPag58ywMz2kKA68aCC0s2hbhhqY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yunfei Dong <yunfei.dong@mediatek.com>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        stable@vger.kernel.org, Chun-Jie Chen <chun-jie.chen@mediatek.com>,
+        Chen-Yu Tsai <wenst@chromium.org>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0353/1126] media: uapi: Init VP9 stateless decode params
-Date:   Tue,  5 Apr 2022 09:18:20 +0200
-Message-Id: <20220405070417.991187300@linuxfoundation.org>
+Subject: [PATCH 5.17 0374/1126] soc: mediatek: pm-domains: Add wakeup capacity support in power domain
+Date:   Tue,  5 Apr 2022 09:18:41 +0200
+Message-Id: <20220405070418.604360890@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -49,46 +52,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yunfei Dong <yunfei.dong@mediatek.com>
+From: Chun-Jie Chen <chun-jie.chen@mediatek.com>
 
-[ Upstream commit f15799b7b796dfaea63a86913246202d64762941 ]
+[ Upstream commit ac0ca395543af061f7ad77afcda0afb323d82468 ]
 
-Init some of VP9 frame decode params to default value.
+Due to some power domain needs to keep on for wakeup in system suspend,
+so add GENPD_FLAG_ACTIVE_WAKEUP support in Mediatek power domain driver.
 
-Fixes: b88dbe38dca8 ("media: uapi: Add VP9 stateless decoder controls")
-Signed-off-by: Yunfei Dong <yunfei.dong@mediatek.com>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Fixes: 59b644b01cf4 ("soc: mediatek: Add MediaTek SCPSYS power domains")
+Signed-off-by: Chun-Jie Chen <chun-jie.chen@mediatek.com>
+Reviewed-by: Chen-Yu Tsai <wenst@chromium.org>
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+Link: https://lore.kernel.org/r/20220130012104.5292-3-chun-jie.chen@mediatek.com
+Signed-off-by: Matthias Brugger <matthias.bgg@gmail.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/v4l2-core/v4l2-ctrls-core.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
+ drivers/soc/mediatek/mtk-pm-domains.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/media/v4l2-core/v4l2-ctrls-core.c b/drivers/media/v4l2-core/v4l2-ctrls-core.c
-index 54abe5245dcc..b25c77b8a445 100644
---- a/drivers/media/v4l2-core/v4l2-ctrls-core.c
-+++ b/drivers/media/v4l2-core/v4l2-ctrls-core.c
-@@ -112,6 +112,7 @@ static void std_init_compound(const struct v4l2_ctrl *ctrl, u32 idx,
- 	struct v4l2_ctrl_mpeg2_picture *p_mpeg2_picture;
- 	struct v4l2_ctrl_mpeg2_quantisation *p_mpeg2_quant;
- 	struct v4l2_ctrl_vp8_frame *p_vp8_frame;
-+	struct v4l2_ctrl_vp9_frame *p_vp9_frame;
- 	struct v4l2_ctrl_fwht_params *p_fwht_params;
- 	void *p = ptr.p + idx * ctrl->elem_size;
+diff --git a/drivers/soc/mediatek/mtk-pm-domains.c b/drivers/soc/mediatek/mtk-pm-domains.c
+index b762bc40f56b..afd2fd74802d 100644
+--- a/drivers/soc/mediatek/mtk-pm-domains.c
++++ b/drivers/soc/mediatek/mtk-pm-domains.c
+@@ -443,6 +443,9 @@ generic_pm_domain *scpsys_add_one_domain(struct scpsys *scpsys, struct device_no
+ 	pd->genpd.power_off = scpsys_power_off;
+ 	pd->genpd.power_on = scpsys_power_on;
  
-@@ -152,6 +153,13 @@ static void std_init_compound(const struct v4l2_ctrl *ctrl, u32 idx,
- 		p_vp8_frame = p;
- 		p_vp8_frame->num_dct_parts = 1;
- 		break;
-+	case V4L2_CTRL_TYPE_VP9_FRAME:
-+		p_vp9_frame = p;
-+		p_vp9_frame->profile = 0;
-+		p_vp9_frame->bit_depth = 8;
-+		p_vp9_frame->flags |= V4L2_VP9_FRAME_FLAG_X_SUBSAMPLING |
-+			V4L2_VP9_FRAME_FLAG_Y_SUBSAMPLING;
-+		break;
- 	case V4L2_CTRL_TYPE_FWHT_PARAMS:
- 		p_fwht_params = p;
- 		p_fwht_params->version = V4L2_FWHT_VERSION;
++	if (MTK_SCPD_CAPS(pd, MTK_SCPD_ACTIVE_WAKEUP))
++		pd->genpd.flags |= GENPD_FLAG_ACTIVE_WAKEUP;
++
+ 	if (MTK_SCPD_CAPS(pd, MTK_SCPD_KEEP_DEFAULT_OFF))
+ 		pm_genpd_init(&pd->genpd, NULL, true);
+ 	else
 -- 
 2.34.1
 
