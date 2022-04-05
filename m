@@ -2,107 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 11D5BC3527A
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8AA58C433EF
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:40:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1836692AbiDFAix (ORCPT
+        id S1836842AbiDFAkX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 20:38:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49574 "EHLO
+        Tue, 5 Apr 2022 20:40:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52342 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350266AbiDEJ4z (ORCPT
+        with ESMTP id S1359011AbiDELRs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:56:55 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 590504FC62;
-        Tue,  5 Apr 2022 02:51:02 -0700 (PDT)
+        Tue, 5 Apr 2022 07:17:48 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E5A8AD118;
+        Tue,  5 Apr 2022 03:50:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D3EFC616D1;
-        Tue,  5 Apr 2022 09:51:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E03ACC385BB;
-        Tue,  5 Apr 2022 09:51:00 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649152261;
-        bh=EEzSTtJhiB4vfmd+xlsYP6HL/LckkspU9kimszDf3zY=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=M29knTvPq33BvaPksmPv9gNO7nQOJekSCStI8AEZcWr5L0cF+0/Qj/AKssM7Gj+LK
-         8yKYHk7LiQqli6x9eQ19qv1RaC9JEM0x8Cf7SNGNbXFwJ3tH5rDQxYjR56teTggh4F
-         dZRdOUP2vo2M0FN6CFoVCIBQ8yQ6wCXGWWwo0Jgk=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>,
-        Valentin Schneider <valentin.schneider@arm.com>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        "Steven Rostedt (Google)" <rostedt@goodmis.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 714/913] sched/tracing: Report TASK_RTLOCK_WAIT tasks as TASK_UNINTERRUPTIBLE
-Date:   Tue,  5 Apr 2022 09:29:36 +0200
-Message-Id: <20220405070401.236850024@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
-User-Agent: quilt/0.66
+        by sin.source.kernel.org (Postfix) with ESMTPS id C6DEECE1CAC;
+        Tue,  5 Apr 2022 10:50:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 2E845C385B5;
+        Tue,  5 Apr 2022 10:50:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649155811;
+        bh=uhc8Mlmd78pDEdVosg25RAR+DdaTCNKDnxuM3nRitqw=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=QIhnGmFojr4ml3n9dwy4WrYyN4OSyOOn+QhMMGvsj6T3yGOpwnaCN893cBn8NETwb
+         26KRF5YhoYiD4BTg153rL43CQz6TP8jXlT390biCwaSLgb+LUNE/btinZdrshgvy1n
+         eTI/gypYWT15+dkGnn5AW2ormaahDTc2oM8HN5IvqAZwKvscAXRH2lwASkcGYm0H2t
+         AmaAROjraCapSVgSV6LcuOxgziCWTXkIVNUPPJJ4u9HEfhZ7bFRE9+mLSTaZGcurSI
+         1JQRGADYVvqC1mObMFNaRT7Abcmu81JF7RYyzOeI4uuGZGBVeutjOJDDPadkAa1aaZ
+         IYKzFK9ISBYbA==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 12FACE85BCB;
+        Tue,  5 Apr 2022 10:50:11 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH] dpaa2-ptp: Fix refcount leak in dpaa2_ptp_probe
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <164915581107.22283.18195294133753582239.git-patchwork-notify@kernel.org>
+Date:   Tue, 05 Apr 2022 10:50:11 +0000
+References: <20220404125336.13427-1-linmq006@gmail.com>
+In-Reply-To: <20220404125336.13427-1-linmq006@gmail.com>
+To:     Miaoqian Lin <linmq006@gmail.com>
+Cc:     yangbo.lu@nxp.com, davem@davemloft.net, kuba@kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Valentin Schneider <valentin.schneider@arm.com>
+Hello:
 
-[ Upstream commit 25795ef6299f07ce3838f3253a9cb34f64efcfae ]
+This patch was applied to netdev/net.git (master)
+by Paolo Abeni <pabeni@redhat.com>:
 
-TASK_RTLOCK_WAIT currently isn't part of TASK_REPORT, thus a task blocking
-on an rtlock will appear as having a task state == 0, IOW TASK_RUNNING.
+On Mon,  4 Apr 2022 12:53:36 +0000 you wrote:
+> This node pointer is returned by of_find_compatible_node() with
+> refcount incremented. Calling of_node_put() to aovid the refcount leak.
+> 
+> Fixes: d346c9e86d86 ("dpaa2-ptp: reuse ptp_qoriq driver")
+> Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+> ---
+>  drivers/net/ethernet/freescale/dpaa2/dpaa2-ptp.c | 4 +++-
+>  1 file changed, 3 insertions(+), 1 deletion(-)
 
-The actual state is saved in p->saved_state, but reading it after reading
-p->__state has a few issues:
-o that could still be TASK_RUNNING in the case of e.g. rt_spin_lock
-o ttwu_state_match() might have changed that to TASK_RUNNING
+Here is the summary with links:
+  - dpaa2-ptp: Fix refcount leak in dpaa2_ptp_probe
+    https://git.kernel.org/netdev/net/c/2b04bd4f03bb
 
-As pointed out by Eric, adding TASK_RTLOCK_WAIT to TASK_REPORT implies
-exposing a new state to userspace tools which way not know what to do with
-them. The only information that needs to be conveyed here is that a task is
-waiting on an rt_mutex, which matches TASK_UNINTERRUPTIBLE - there's no
-need for a new state.
-
-Reported-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
-Signed-off-by: Valentin Schneider <valentin.schneider@arm.com>
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Reviewed-by: Steven Rostedt (Google) <rostedt@goodmis.org>
-Link: https://lore.kernel.org/r/20220120162520.570782-3-valentin.schneider@arm.com
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- include/linux/sched.h | 8 ++++++++
- 1 file changed, 8 insertions(+)
-
-diff --git a/include/linux/sched.h b/include/linux/sched.h
-index 8fcf76fed984..031588cd2ccb 100644
---- a/include/linux/sched.h
-+++ b/include/linux/sched.h
-@@ -1626,6 +1626,14 @@ static inline unsigned int __task_state_index(unsigned int tsk_state,
- 	if (tsk_state == TASK_IDLE)
- 		state = TASK_REPORT_IDLE;
- 
-+	/*
-+	 * We're lying here, but rather than expose a completely new task state
-+	 * to userspace, we can make this appear as if the task has gone through
-+	 * a regular rt_mutex_lock() call.
-+	 */
-+	if (tsk_state == TASK_RTLOCK_WAIT)
-+		state = TASK_UNINTERRUPTIBLE;
-+
- 	return fls(state);
- }
- 
+You are awesome, thank you!
 -- 
-2.34.1
-
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
 
