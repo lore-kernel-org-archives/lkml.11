@@ -2,90 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E3723C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 21:50:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E5739C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 21:50:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384657AbiDEVrs (ORCPT
+        id S1384704AbiDEVr7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 17:47:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55056 "EHLO
+        Tue, 5 Apr 2022 17:47:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50518 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382409AbiDEMPE (ORCPT
+        with ESMTP id S1357968AbiDEK1g (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 08:15:04 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DD7DC4E1D;
-        Tue,  5 Apr 2022 04:25:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1649157943; x=1680693943;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=1Bi4lSLV0zLBBZOD2CzxtM5qbY8InuCSGS8Woi7tp1Q=;
-  b=L8NfEh774dW5TBxyXsxY6kV9rCtgnx0rfklyQ7/6V5YR9iwhHKS/LXDZ
-   OMyFWy/u1RALQmtl+PSevSyTWk9XW63rY9Ao1OOE/veBsmye5SCO6NhyK
-   cdtfKsiOKnX5QbLx2kaLygw+ct8XQtn9W/QDgiOut1EaHJlDqymlYG/ev
-   W14B/Ag+MDH5y0pX0YaWXsua1CpVH7O5m/bzkYzIDuRZvDlhQmJJSLen2
-   YG9KPz6RegyN9J9NW0f9PlWgrzDqeaL59vkd2Q0jEefdgsaCqGiEwDl6c
-   gBHohyIYWp+HAax2jX0/NXtMUC4lzilVVD/UDBH6IJmWF4Df5ElFakCwS
-   A==;
-X-IronPort-AV: E=Sophos;i="5.90,236,1643698800"; 
-   d="scan'208";a="159346924"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 05 Apr 2022 04:25:42 -0700
-Received: from chn-vm-ex02.mchp-main.com (10.10.87.72) by
- chn-vm-ex02.mchp-main.com (10.10.87.72) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Tue, 5 Apr 2022 04:25:42 -0700
-Received: from localhost.localdomain (10.10.115.15) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Tue, 5 Apr 2022 04:25:40 -0700
-From:   Claudiu Beznea <claudiu.beznea@microchip.com>
-To:     <robh+dt@kernel.org>, <nicolas.ferre@microchip.com>,
-        <alexandre.belloni@bootlin.com>, <p.zabel@pengutronix.de>,
-        <sre@kernel.org>
-CC:     <linux-arm-kernel@lists.infradead.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-pm@vger.kernel.org>,
-        Claudiu Beznea <claudiu.beznea@microchip.com>
-Subject: [PATCH 8/8] ARM: dts: at91: sama7g5: add reset-controller node
-Date:   Tue, 5 Apr 2022 14:27:24 +0300
-Message-ID: <20220405112724.2760905-9-claudiu.beznea@microchip.com>
-X-Mailer: git-send-email 2.33.0
-In-Reply-To: <20220405112724.2760905-1-claudiu.beznea@microchip.com>
-References: <20220405112724.2760905-1-claudiu.beznea@microchip.com>
+        Tue, 5 Apr 2022 06:27:36 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D061ECB00B;
+        Tue,  5 Apr 2022 03:11:54 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 82384B81C88;
+        Tue,  5 Apr 2022 10:11:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EA6BAC385A0;
+        Tue,  5 Apr 2022 10:11:51 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649153512;
+        bh=Znaktkp0TlhhTmv22siN8VXYQMsR80xwUmAM0j+apdc=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=CnyOuAtL2xBcOf0U0J2pIhSUz5MS+n1O0Edld8Pyti/LWVURCeNjtLQl/VByFfvif
+         FJmdNS+oCpv8pboOhLt1yDB/Id28suRLjxRteBZn9hCENUoP9mWlVZkvX2wjug3vSB
+         EhUv6MlPw9I1OnHAGlJI2Twas9jJU/naheFx1Cok=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, YueHaibing <yuehaibing@huawei.com>,
+        Helge Deller <deller@gmx.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 199/599] video: fbdev: controlfb: Fix COMPILE_TEST build
+Date:   Tue,  5 Apr 2022 09:28:13 +0200
+Message-Id: <20220405070304.761692227@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
+References: <20220405070258.802373272@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add reset controller node.
+From: YueHaibing <yuehaibing@huawei.com>
 
-Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
+[ Upstream commit 567e44fb51b4f909ae58038a7301352eecea8426 ]
+
+If PPC_BOOK3S, PPC_PMAC and PPC32 is n, COMPILE_TEST build fails:
+
+drivers/video/fbdev/controlfb.c:70:0: error: "pgprot_cached_wthru" redefined [-Werror]
+ #define pgprot_cached_wthru(prot) (prot)
+
+In file included from ./arch/powerpc/include/asm/pgtable.h:20:0,
+                 from ./include/linux/pgtable.h:6,
+                 from ./include/linux/mm.h:33,
+                 from drivers/video/fbdev/controlfb.c:37:
+./arch/powerpc/include/asm/nohash/pgtable.h:243:0: note: this is the location of the previous definition
+ #define pgprot_cached_wthru(prot) (__pgprot((pgprot_val(prot) & ~_PAGE_CACHE_CTL) | \
+
+Fixes: a07a63b0e24d ("video: fbdev: controlfb: add COMPILE_TEST support")
+Signed-off-by: YueHaibing <yuehaibing@huawei.com>
+Signed-off-by: Helge Deller <deller@gmx.de>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/boot/dts/sama7g5.dtsi | 7 +++++++
- 1 file changed, 7 insertions(+)
+ drivers/video/fbdev/controlfb.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/arch/arm/boot/dts/sama7g5.dtsi b/arch/arm/boot/dts/sama7g5.dtsi
-index eddcfbf4d223..aa0e72d4d2d5 100644
---- a/arch/arm/boot/dts/sama7g5.dtsi
-+++ b/arch/arm/boot/dts/sama7g5.dtsi
-@@ -122,6 +122,13 @@ pmc: pmc@e0018000 {
- 			clock-names = "td_slck", "md_slck", "main_xtal";
- 		};
- 
-+		reset_controller: reset-controller@e001d000 {
-+			compatible = "microchip,sama7g5-rstc";
-+			reg = <0xe001d000 0xc>, <0xe001d0e4 0x4>;
-+			#reset-cells = <1>;
-+			clocks = <&clk32k 0>;
-+		};
-+
- 		shdwc: shdwc@e001d010 {
- 			compatible = "microchip,sama7g5-shdwc", "syscon";
- 			reg = <0xe001d010 0x10>;
+diff --git a/drivers/video/fbdev/controlfb.c b/drivers/video/fbdev/controlfb.c
+index 509311471d51..bd59e7b11ed5 100644
+--- a/drivers/video/fbdev/controlfb.c
++++ b/drivers/video/fbdev/controlfb.c
+@@ -67,7 +67,9 @@
+ #define out_8(addr, val)	(void)(val)
+ #define in_le32(addr)		0
+ #define out_le32(addr, val)	(void)(val)
++#ifndef pgprot_cached_wthru
+ #define pgprot_cached_wthru(prot) (prot)
++#endif
+ #else
+ static void invalid_vram_cache(void __force *addr)
+ {
 -- 
-2.32.0
+2.34.1
+
+
 
