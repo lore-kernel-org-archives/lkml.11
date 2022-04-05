@@ -2,100 +2,79 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 43EACC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 01:54:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A88DC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 01:54:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1845248AbiDFByI (ORCPT
+        id S1845365AbiDFByW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 21:54:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37682 "EHLO
+        Tue, 5 Apr 2022 21:54:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60370 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1573588AbiDETXK (ORCPT
+        with ESMTP id S1446406AbiDEPof (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 15:23:10 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2AC14BB9E;
-        Tue,  5 Apr 2022 12:21:10 -0700 (PDT)
+        Tue, 5 Apr 2022 11:44:35 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5AB42F55F0
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 07:15:12 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5AB8761899;
-        Tue,  5 Apr 2022 19:21:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1FD4CC385A0;
-        Tue,  5 Apr 2022 19:21:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649186469;
-        bh=PDf3viSS4Mrr2b1LxuraoL8yqmsI0zQ6OYJs90Hla08=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=oHkKb0zOXEGuXDRiw+PFtURhv5EVKSUUB/pEPOSwoTvrDKMMkparT8Yo9oxfzEdL7
-         bvqrG7PYDMEL/jj4n/I1QjdBPH5Iz5sKnujn5kmgM+FsE1GbkM4ubK5HYbiB5i5GRt
-         2GcheSsP2jMI0mhKOO25nWlz8HuwFSYd4XZYRKqNMBMfZji8WIC2CWZPrnd+ZW5RDK
-         4Pr63v2KKhS0GKMKuMiM7gSXx76ok2+wQrXigURfS7r4uJ3XEuk8lChHl/M0dM9RFe
-         lBusEbXaxGN9jNBzLuuXFfJasFxbyPQbDFs7VY/qr/PCYY6ZIgcswU24BwK29WyORq
-         YTE1HezVsEIQQ==
-From:   Jeff Layton <jlayton@kernel.org>
-To:     idryomov@gmail.com, xiubli@redhat.com
-Cc:     ceph-devel@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        linux-fscrypt@vger.kernel.org, linux-kernel@vger.kernel.org,
-        lhenriques@suse.de
-Subject: [PATCH v13 41/59] ceph: get file size from fscrypt_file when present in inode traces
-Date:   Tue,  5 Apr 2022 15:20:12 -0400
-Message-Id: <20220405192030.178326-42-jlayton@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405192030.178326-1-jlayton@kernel.org>
-References: <20220405192030.178326-1-jlayton@kernel.org>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EAB3560AF3
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 14:15:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 065EEC385A1;
+        Tue,  5 Apr 2022 14:15:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649168111;
+        bh=9snd2J+IFOny+x+vO6FjBRT2ONIjM/C5Zx5DF6aGf3Q=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=it+8FRw91Co+V+C46WDIbd4XicXEtbW66WkyVLbmmeKIfLREQlcs4iN8815gsav5W
+         WJsq9j51Kv2NZvE+OcGaQVfQ3bjVN5yMH58fDTzPEQmcRn3iSfR10Rb0iicccG6CMh
+         VbKyQ4L5eBRkEuX7BLifd/ZtECVTnuUR6wuTk9j0=
+Date:   Tue, 5 Apr 2022 16:15:08 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     xkernel.wang@foxmail.com
+Cc:     Larry.Finger@lwfinger.net, florian.c.schilhabel@googlemail.com,
+        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] staging: rtl8712: fix a potential memory leak in
+ r871xu_drv_init()
+Message-ID: <YkxO7HPTsF4CvPe6@kroah.com>
+References: <tencent_B8048C592777830380A23A7C4409F9DF1305@qq.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <tencent_B8048C592777830380A23A7C4409F9DF1305@qq.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When we get an inode trace from the MDS, grab the fscrypt_file field if
-the inode is encrypted, and use it to populate the i_size field instead
-of the regular inode size field.
+On Tue, Apr 05, 2022 at 12:43:07PM +0800, xkernel.wang@foxmail.com wrote:
+> From: Xiaoke Wang <xkernel.wang@foxmail.com>
+> 
+> In r871xu_drv_init(), if r8712_init_drv_sw() fails, then the memory
+> allocated by r8712_alloc_io_queue() in r8712_usb_dvobj_init() is not
+> properly released as there is no action will be performed by
+> r8712_usb_dvobj_deinit().
+> To properly release it, we should call r8712_free_io_queue() in
+> r8712_usb_dvobj_deinit().
+> 
+> Besides, in r871xu_dev_remove(), r8712_usb_dvobj_deinit() will be called
+> by r871x_dev_unload() under condition `padapter->bup` and
+> r8712_free_io_queue() is called by r8712_free_drv_sw().
+> However, r8712_usb_dvobj_deinit() does not rely on `padapter->bup` and
+> calling r8712_free_io_queue() in r8712_free_drv_sw() is negative for
+> better understading the code.
+> So I move r8712_usb_dvobj_deinit() into r871xu_dev_remove(), and remove
+> r8712_free_io_queue() from r8712_free_drv_sw().
+> 
+> Signed-off-by: Xiaoke Wang <xkernel.wang@foxmail.com>
+> ---
+>  drivers/staging/rtl8712/os_intfs.c | 1 -
+>  drivers/staging/rtl8712/usb_intf.c | 6 +++---
+>  2 files changed, 3 insertions(+), 4 deletions(-)
 
-Signed-off-by: Jeff Layton <jlayton@kernel.org>
----
- fs/ceph/inode.c | 18 +++++++++++++++---
- 1 file changed, 15 insertions(+), 3 deletions(-)
+I've applied this patch, but dropped all of your other pending ones.
+Please fix up the remaining ones like this and resend.
 
-diff --git a/fs/ceph/inode.c b/fs/ceph/inode.c
-index b9454721c976..f2a59306e4a6 100644
---- a/fs/ceph/inode.c
-+++ b/fs/ceph/inode.c
-@@ -1024,6 +1024,7 @@ int ceph_fill_inode(struct inode *inode, struct page *locked_page,
- 
- 	if (new_version ||
- 	    (new_issued & (CEPH_CAP_ANY_FILE_RD | CEPH_CAP_ANY_FILE_WR))) {
-+		u64 size = le64_to_cpu(info->size);
- 		s64 old_pool = ci->i_layout.pool_id;
- 		struct ceph_string *old_ns;
- 
-@@ -1037,10 +1038,21 @@ int ceph_fill_inode(struct inode *inode, struct page *locked_page,
- 
- 		pool_ns = old_ns;
- 
-+		if (IS_ENCRYPTED(inode) && size && (iinfo->fscrypt_file_len == sizeof(__le64))) {
-+			u64 fsize = __le64_to_cpu(*(__le64 *)iinfo->fscrypt_file);
-+
-+			if (size == round_up(fsize, CEPH_FSCRYPT_BLOCK_SIZE)) {
-+				size = fsize;
-+			} else {
-+				pr_warn("fscrypt size mismatch: size=%llu fscrypt_file=%llu, discarding fscrypt_file size.\n",
-+					info->size, size);
-+			}
-+		}
-+
- 		queue_trunc = ceph_fill_file_size(inode, issued,
--					le32_to_cpu(info->truncate_seq),
--					le64_to_cpu(info->truncate_size),
--					le64_to_cpu(info->size));
-+						  le32_to_cpu(info->truncate_seq),
-+						  le64_to_cpu(info->truncate_size),
-+						  size);
- 		/* only update max_size on auth cap */
- 		if ((info->cap.flags & CEPH_CAP_FLAG_AUTH) &&
- 		    ci->i_max_size != le64_to_cpu(info->max_size)) {
--- 
-2.35.1
+thanks,
 
+greg k-h
