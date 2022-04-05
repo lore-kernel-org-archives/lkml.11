@@ -2,48 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E7AAC41535
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1DFB1C4167E
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:21:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1445885AbiDFAEf (ORCPT
+        id S1448204AbiDFAE5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 20:04:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53682 "EHLO
+        Tue, 5 Apr 2022 20:04:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44178 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358073AbiDEK16 (ORCPT
+        with ESMTP id S1348817AbiDEJsj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:27:58 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90C3D5B3F3;
-        Tue,  5 Apr 2022 03:14:38 -0700 (PDT)
+        Tue, 5 Apr 2022 05:48:39 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7AFC0AC938;
+        Tue,  5 Apr 2022 02:36:11 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 50FC4B81B7A;
-        Tue,  5 Apr 2022 10:14:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BF6B4C385A0;
-        Tue,  5 Apr 2022 10:14:35 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2D22BB81B75;
+        Tue,  5 Apr 2022 09:36:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 923A9C385A0;
+        Tue,  5 Apr 2022 09:36:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649153676;
-        bh=gcxRcMIWuy/WcYJVeWiXBtdqDfARAfyZtJzAbaM2jHw=;
+        s=korg; t=1649151368;
+        bh=K6geJeEW5QaOD+aLW/HKf6IJ3et2Chj97ahJ/fcGf9U=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SSR1NxH3HN4vULtxSDYZCOceATWPbovbL2wwgtApiX7eGnjHsBvD0Uwf62krnriEb
-         kVPH+qTbLutVtY+WxRT7b7rpMaEooHav9+uGGQUnSenYMGfgS2o62TjmA93eyO5Dkj
-         qBtDg4ihLSRLJW9WFMJsqq+tguVaGjBx3YmpFAuA=
+        b=KDuPES/2QE5aL6JRMbKTCG28nac+T6vQmZ/Z/ye4VvB/gjb2+JK16kg53k9Bu29dr
+         DphVKwG4SvBeuS68qiBlkMQ3JBU1Q8AyGRfq8kOlAEQ2Y6g+f8PKxyUup042OEYTSo
+         P5vUb+Uip+CQSq75LK7GJ5BFbIG6l8uii+2U2H88=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Abhinav Kumar <quic_abhinavk@quicinc.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Stephen Boyd <swboyd@chromium.org>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        stable@vger.kernel.org, Felix Maurer <fmaurer@redhat.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Jakub Sitnicki <jakub@cloudflare.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 307/599] drm/msm/dpu: fix dp audio condition
-Date:   Tue,  5 Apr 2022 09:30:01 +0200
-Message-Id: <20220405070307.970466395@linuxfoundation.org>
+Subject: [PATCH 5.15 390/913] selftests: bpf: Fix bind on used port
+Date:   Tue,  5 Apr 2022 09:24:12 +0200
+Message-Id: <20220405070351.537975626@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -52,39 +51,71 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+From: Felix Maurer <fmaurer@redhat.com>
 
-[ Upstream commit 1e0505a5a7a2fea243f8e6d7e13fcde65f9e41bc ]
+[ Upstream commit 8c0be0631d81e48f77d0ebf0534c86e32bef5f89 ]
 
-DP audio enablement code which is comparing intf_type,
-DRM_MODE_ENCODER_TMDS (= 2) with DRM_MODE_CONNECTOR_DisplayPort (= 10).
-Which would never succeed. Fix it to check for DRM_MODE_ENCODER_TMDS.
+The bind_perm BPF selftest failed when port 111/tcp was already in use
+during the test. To fix this, the test now runs in its own network name
+space.
 
-Fixes: d13e36d7d222 ("drm/msm/dp: add audio support for Display Port on MSM")
-Reviewed-by: Abhinav Kumar <quic_abhinavk@quicinc.com>
-Reviewed-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Reviewed-by: Stephen Boyd <swboyd@chromium.org>
-Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Link: https://lore.kernel.org/r/20220217035358.465904-2-dmitry.baryshkov@linaro.org
-Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+To use unshare, it is necessary to reorder the includes. The style of
+the includes is adapted to be consistent with the other prog_tests.
+
+v2: Replace deprecated CHECK macro with ASSERT_OK
+
+Fixes: 8259fdeb30326 ("selftests/bpf: Verify that rebinding to port < 1024 from BPF works")
+Signed-off-by: Felix Maurer <fmaurer@redhat.com>
+Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
+Reviewed-by: Jakub Sitnicki <jakub@cloudflare.com>
+Link: https://lore.kernel.org/bpf/551ee65533bb987a43f93d88eaf2368b416ccd32.1642518457.git.fmaurer@redhat.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ .../selftests/bpf/prog_tests/bind_perm.c      | 20 ++++++++++++++++---
+ 1 file changed, 17 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c b/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c
-index f7f5c258b553..a0274fcfe9c9 100644
---- a/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c
-+++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c
-@@ -1113,7 +1113,7 @@ static void _dpu_encoder_virt_enable_helper(struct drm_encoder *drm_enc)
- 	}
+diff --git a/tools/testing/selftests/bpf/prog_tests/bind_perm.c b/tools/testing/selftests/bpf/prog_tests/bind_perm.c
+index d0f06e40c16d..eac71fbb24ce 100644
+--- a/tools/testing/selftests/bpf/prog_tests/bind_perm.c
++++ b/tools/testing/selftests/bpf/prog_tests/bind_perm.c
+@@ -1,13 +1,24 @@
+ // SPDX-License-Identifier: GPL-2.0
+-#include <test_progs.h>
+-#include "bind_perm.skel.h"
+-
++#define _GNU_SOURCE
++#include <sched.h>
++#include <stdlib.h>
+ #include <sys/types.h>
+ #include <sys/socket.h>
+ #include <sys/capability.h>
  
++#include "test_progs.h"
++#include "bind_perm.skel.h"
++
+ static int duration;
  
--	if (dpu_enc->disp_info.intf_type == DRM_MODE_CONNECTOR_DisplayPort &&
-+	if (dpu_enc->disp_info.intf_type == DRM_MODE_ENCODER_TMDS &&
- 		dpu_enc->cur_master->hw_mdptop &&
- 		dpu_enc->cur_master->hw_mdptop->ops.intf_audio_select)
- 		dpu_enc->cur_master->hw_mdptop->ops.intf_audio_select(
++static int create_netns(void)
++{
++	if (!ASSERT_OK(unshare(CLONE_NEWNET), "create netns"))
++		return -1;
++
++	return 0;
++}
++
+ void try_bind(int family, int port, int expected_errno)
+ {
+ 	struct sockaddr_storage addr = {};
+@@ -75,6 +86,9 @@ void test_bind_perm(void)
+ 	struct bind_perm *skel;
+ 	int cgroup_fd;
+ 
++	if (create_netns())
++		return;
++
+ 	cgroup_fd = test__join_cgroup("/bind_perm");
+ 	if (CHECK(cgroup_fd < 0, "cg-join", "errno %d", errno))
+ 		return;
 -- 
 2.34.1
 
