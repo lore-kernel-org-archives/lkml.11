@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B337AC433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A176C4332F
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:39:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384982AbiDEMae (ORCPT
+        id S1384927AbiDEMaW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 08:30:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59362 "EHLO
+        Tue, 5 Apr 2022 08:30:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59240 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245755AbiDEI4z (ORCPT
+        with ESMTP id S245555AbiDEI4O (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:56:55 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41BDF1BE9B;
-        Tue,  5 Apr 2022 01:52:45 -0700 (PDT)
+        Tue, 5 Apr 2022 04:56:14 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 004B013D37;
+        Tue,  5 Apr 2022 01:52:26 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id EA3B8B81B92;
-        Tue,  5 Apr 2022 08:52:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 49D60C385A1;
-        Tue,  5 Apr 2022 08:52:42 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5B6D9614E4;
+        Tue,  5 Apr 2022 08:52:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6BA57C385A1;
+        Tue,  5 Apr 2022 08:52:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649148762;
-        bh=Y/7jtSn6aGrN/v5wrkJVEW1vqMuG+HkgxYZMWRO9Hik=;
+        s=korg; t=1649148745;
+        bh=PPQHcw8zJqTr3jpRENRDER2k9QokLWlw2f/fw3Behus=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Qs00FsyB0Y6acc1U2/wm3RSPE05CPVQaHX4ov4/OG+1tzarPy6mPWtODUqB1m9rRk
-         K8lSIisxqJVR40Oc6wYm1Sk2vOyr5LdMq/wmKEBU3O5ndWcetw3oVH9xT/leZi1a04
-         zrCdHw+6waCPGwjyr5vaZRTDYW2XFj2+qOQ66usI=
+        b=F4lPgFFFe67ofhUIHn2ijjQwyf4r/fUxR6S2nWWC8ctRTbAfYAoLVTXz7V/3n0oEi
+         Sl3Kn2nXkrmP0JwT7c5zReXijVWsd55U2QOYkMZLaQh9oxBHJaI5EFjGqARySLMGJM
+         Or501agY7ROQOsUJbxfJdRNM0kBUvRR4t60wewpM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Wen Gong <quic_wgong@quicinc.com>,
-        Kalle Valo <quic_kvalo@quicinc.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0434/1017] ath11k: set WMI_PEER_40MHZ while peer assoc for 6 GHz
-Date:   Tue,  5 Apr 2022 09:22:27 +0200
-Message-Id: <20220405070407.177413831@linuxfoundation.org>
+        stable@vger.kernel.org, Lorenzo Bianconi <lorenzo@kernel.org>,
+        Felix Fietkau <nbd@nbd.name>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 0465/1017] mt76: mt7915: fix possible memory leak in mt7915_mcu_add_sta
+Date:   Tue,  5 Apr 2022 09:22:58 +0200
+Message-Id: <20220405070408.102735996@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -50,39 +49,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Wen Gong <quic_wgong@quicinc.com>
+From: Lorenzo Bianconi <lorenzo@kernel.org>
 
-[ Upstream commit 1cb747192de2edb7e55920af8c458e4792908486 ]
+[ Upstream commit a43736cd12d82913102eb49cb56787a5553e028f ]
 
-When station connect to AP of 6 GHz with 40 MHz bandwidth, the TX is
-always stay 20 MHz, it is because the flag WMI_PEER_40MHZ is not set
-while peer assoc. Add the flag if remote peer is 40 MHz bandwidth.
+Free allocated skb in mt7915_mcu_add_sta routine in case of failures.
 
-Tested-on: WCN6855 hw2.0 PCI WLAN.HSP.1.1-03003-QCAHSPSWPL_V1_V2_SILICONZ_LITE-2
-
-Fixes: c3a7d7eb4c98 ("ath11k: add 6 GHz params in peer assoc command")
-Signed-off-by: Wen Gong <quic_wgong@quicinc.com>
-Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
-Link: https://lore.kernel.org/r/20220119034211.28622-1-quic_wgong@quicinc.com
+Fixes: 89bbd3730f382 ("mt76: mt7915: rework starec TLV tags")
+Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+Signed-off-by: Felix Fietkau <nbd@nbd.name>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/ath/ath11k/mac.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/net/wireless/mediatek/mt76/mt7915/mcu.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/wireless/ath/ath11k/mac.c b/drivers/net/wireless/ath/ath11k/mac.c
-index a7400ade7a0c..8d8eae438567 100644
---- a/drivers/net/wireless/ath/ath11k/mac.c
-+++ b/drivers/net/wireless/ath/ath11k/mac.c
-@@ -2039,6 +2039,9 @@ static void ath11k_peer_assoc_h_he_6ghz(struct ath11k *ar,
- 	if (!arg->he_flag || band != NL80211_BAND_6GHZ || !sta->he_6ghz_capa.capa)
- 		return;
+diff --git a/drivers/net/wireless/mediatek/mt76/mt7915/mcu.c b/drivers/net/wireless/mediatek/mt76/mt7915/mcu.c
+index abc798536a81..0b6fecc8b3b6 100644
+--- a/drivers/net/wireless/mediatek/mt76/mt7915/mcu.c
++++ b/drivers/net/wireless/mediatek/mt76/mt7915/mcu.c
+@@ -2397,8 +2397,10 @@ int mt7915_mcu_add_sta(struct mt7915_dev *dev, struct ieee80211_vif *vif,
+ 	}
  
-+	if (sta->bandwidth == IEEE80211_STA_RX_BW_40)
-+		arg->bw_40 = true;
-+
- 	if (sta->bandwidth == IEEE80211_STA_RX_BW_80)
- 		arg->bw_80 = true;
+ 	ret = mt7915_mcu_sta_wtbl_tlv(dev, skb, vif, sta);
+-	if (ret)
++	if (ret) {
++		dev_kfree_skb(skb);
+ 		return ret;
++	}
  
+ 	if (sta && sta->ht_cap.ht_supported) {
+ 		/* starec amsdu */
+@@ -2412,8 +2414,10 @@ int mt7915_mcu_add_sta(struct mt7915_dev *dev, struct ieee80211_vif *vif,
+ 	}
+ 
+ 	ret = mt7915_mcu_add_group(dev, vif, sta);
+-	if (ret)
++	if (ret) {
++		dev_kfree_skb(skb);
+ 		return ret;
++	}
+ out:
+ 	return mt76_mcu_skb_send_msg(&dev->mt76, skb,
+ 				     MCU_EXT_CMD(STA_REC_UPDATE), true);
 -- 
 2.34.1
 
