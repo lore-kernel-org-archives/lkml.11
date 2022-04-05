@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4485CC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 09:12:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C598C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 09:12:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243219AbiDEJIu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 05:08:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34694 "EHLO
+        id S243359AbiDEJIy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 05:08:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45382 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239468AbiDEIUG (ORCPT
+        with ESMTP id S239467AbiDEIUG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Apr 2022 04:20:06 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91ACF98F6C;
-        Tue,  5 Apr 2022 01:13:52 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70EA6AD13B;
+        Tue,  5 Apr 2022 01:13:58 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CAE37B81A37;
-        Tue,  5 Apr 2022 08:13:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 22BFEC385A0;
-        Tue,  5 Apr 2022 08:13:48 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3277AB81A37;
+        Tue,  5 Apr 2022 08:13:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9C1F5C385A1;
+        Tue,  5 Apr 2022 08:13:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649146429;
-        bh=2valnc8op0vBurNY+QIL/EnW2wscb8NHYd9VGwj8E/o=;
+        s=korg; t=1649146436;
+        bh=qiK0weLjao+YDrkp59GAaIyu4ORKfbpYpuGgEkMlLEk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=N8KxXoPAjYI0bZ7w4Ihy5TfKg+Ix3fJLx1asa4VDcCi0mw+/2Gm7zi+l22cFlr8km
-         1EiY0vM7rk8yYT00k4410kClEcWl44KUtcb6DcOcvSzPtT5XTab/xeKvE1Vvf0EGna
-         4ZLmIOimp0jamC7St2msDhdYo8On1FoyIvwBSF/E=
+        b=TEcR2gHOIS7LbamHE4YPpR5HY1HaAfEKzZkSEf0dvfASBjJyfIwU52t56e35jjrF2
+         UpYqHoV43cI9gnOHXCeyfLoyR8c9T2OTPqT52G+JO5RG2YjSo43i4oPbAWRSDVL2B7
+         WgmeJ88j0x1L0rb9VmjirtSb9DCAN3W+X5zbraZY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Christoph Hellwig <hch@lst.de>,
-        Dan Williams <dan.j.williams@intel.com>,
+        stable@vger.kernel.org,
+        Sergio Paracuellos <sergio.paracuellos@gmail.com>,
+        =?UTF-8?q?Ar=C4=B1n=C3=A7=20=C3=9CNAL?= <arinc.unal@arinc9.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0754/1126] nvdimm/region: Fix default alignment for small regions
-Date:   Tue,  5 Apr 2022 09:25:01 +0200
-Message-Id: <20220405070429.716466121@linuxfoundation.org>
+Subject: [PATCH 5.17 0764/1126] staging: mt7621-dts: fix formatting
+Date:   Tue,  5 Apr 2022 09:25:11 +0200
+Message-Id: <20220405070430.008345348@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -49,39 +50,109 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dan Williams <dan.j.williams@intel.com>
+From: Arınç ÜNAL <arinc.unal@arinc9.com>
 
-[ Upstream commit d9d290d7e659e9db3e4518040cc18b97f5535f4a ]
+[ Upstream commit 7eeec44d33f6be7caca4fe9ca4e653cf315a36c1 ]
 
-In preparation for removing BLK aperture support the NVDIMM unit tests
-discovered that the default alignment can be set higher than the
-capacity of the region. Fall back to PAGE_SIZE in that case.
+Fix formatting on mt7621.dtsi.
 
-Given this has not been seen in the wild, elide notifying -stable.
-
-Fixes: 2522afb86a8c ("libnvdimm/region: Introduce an 'align' attribute")
-Reviewed-by: Christoph Hellwig <hch@lst.de>
-Link: https://lore.kernel.org/r/164688416128.2879318.17890707310125575258.stgit@dwillia2-desk3.amr.corp.intel.com
-Signed-off-by: Dan Williams <dan.j.williams@intel.com>
+Reviewed-by: Sergio Paracuellos <sergio.paracuellos@gmail.com>
+Signed-off-by: Arınç ÜNAL <arinc.unal@arinc9.com>
+Link: https://lore.kernel.org/r/20220125153903.1469-2-arinc.unal@arinc9.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/nvdimm/region_devs.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/staging/mt7621-dts/mt7621.dtsi | 15 ++++++++++++---
+ 1 file changed, 12 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/nvdimm/region_devs.c b/drivers/nvdimm/region_devs.c
-index 9ccf3d608799..70ad891a76ba 100644
---- a/drivers/nvdimm/region_devs.c
-+++ b/drivers/nvdimm/region_devs.c
-@@ -1025,6 +1025,9 @@ static unsigned long default_align(struct nd_region *nd_region)
- 		}
- 	}
+diff --git a/drivers/staging/mt7621-dts/mt7621.dtsi b/drivers/staging/mt7621-dts/mt7621.dtsi
+index 644a65d1a6a1..d120e5872165 100644
+--- a/drivers/staging/mt7621-dts/mt7621.dtsi
++++ b/drivers/staging/mt7621-dts/mt7621.dtsi
+@@ -44,9 +44,9 @@
+ 		regulator-max-microvolt = <3300000>;
+ 		enable-active-high;
+ 		regulator-always-on;
+-	  };
++	};
  
-+	if (nd_region->ndr_size < MEMREMAP_COMPAT_ALIGN_MAX)
-+		align = PAGE_SIZE;
+-	  mmc_fixed_1v8_io: fixedregulator@1 {
++	mmc_fixed_1v8_io: fixedregulator@1 {
+ 		compatible = "regulator-fixed";
+ 		regulator-name = "mmc_io";
+ 		regulator-min-microvolt = <1800000>;
+@@ -325,17 +325,18 @@
+ 
+ 		mediatek,ethsys = <&sysc>;
+ 
+-
+ 		gmac0: mac@0 {
+ 			compatible = "mediatek,eth-mac";
+ 			reg = <0>;
+ 			phy-mode = "rgmii";
 +
- 	mappings = max_t(u16, 1, nd_region->ndr_mappings);
- 	div_u64_rem(align, mappings, &remainder);
- 	if (remainder)
+ 			fixed-link {
+ 				speed = <1000>;
+ 				full-duplex;
+ 				pause;
+ 			};
+ 		};
++
+ 		gmac1: mac@1 {
+ 			compatible = "mediatek,eth-mac";
+ 			reg = <1>;
+@@ -343,6 +344,7 @@
+ 			phy-mode = "rgmii-rxid";
+ 			phy-handle = <&phy_external>;
+ 		};
++
+ 		mdio-bus {
+ 			#address-cells = <1>;
+ 			#size-cells = <0>;
+@@ -373,36 +375,43 @@
+ 					#address-cells = <1>;
+ 					#size-cells = <0>;
+ 					reg = <0>;
++
+ 					port@0 {
+ 						status = "off";
+ 						reg = <0>;
+ 						label = "lan0";
+ 					};
++
+ 					port@1 {
+ 						status = "off";
+ 						reg = <1>;
+ 						label = "lan1";
+ 					};
++
+ 					port@2 {
+ 						status = "off";
+ 						reg = <2>;
+ 						label = "lan2";
+ 					};
++
+ 					port@3 {
+ 						status = "off";
+ 						reg = <3>;
+ 						label = "lan3";
+ 					};
++
+ 					port@4 {
+ 						status = "off";
+ 						reg = <4>;
+ 						label = "lan4";
+ 					};
++
+ 					port@6 {
+ 						reg = <6>;
+ 						label = "cpu";
+ 						ethernet = <&gmac0>;
+ 						phy-mode = "trgmii";
++
+ 						fixed-link {
+ 							speed = <1000>;
+ 							full-duplex;
 -- 
 2.34.1
 
