@@ -2,93 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E5739C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 21:50:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 064D5C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 21:50:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384704AbiDEVr7 (ORCPT
+        id S1384766AbiDEVsN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 17:47:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50518 "EHLO
+        Tue, 5 Apr 2022 17:48:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54258 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357968AbiDEK1g (ORCPT
+        with ESMTP id S1380313AbiDENOB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:27:36 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D061ECB00B;
-        Tue,  5 Apr 2022 03:11:54 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 82384B81C88;
-        Tue,  5 Apr 2022 10:11:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EA6BAC385A0;
-        Tue,  5 Apr 2022 10:11:51 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649153512;
-        bh=Znaktkp0TlhhTmv22siN8VXYQMsR80xwUmAM0j+apdc=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CnyOuAtL2xBcOf0U0J2pIhSUz5MS+n1O0Edld8Pyti/LWVURCeNjtLQl/VByFfvif
-         FJmdNS+oCpv8pboOhLt1yDB/Id28suRLjxRteBZn9hCENUoP9mWlVZkvX2wjug3vSB
-         EhUv6MlPw9I1OnHAGlJI2Twas9jJU/naheFx1Cok=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, YueHaibing <yuehaibing@huawei.com>,
-        Helge Deller <deller@gmx.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 199/599] video: fbdev: controlfb: Fix COMPILE_TEST build
-Date:   Tue,  5 Apr 2022 09:28:13 +0200
-Message-Id: <20220405070304.761692227@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 5 Apr 2022 09:14:01 -0400
+Received: from smtp2.axis.com (smtp2.axis.com [195.60.68.18])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0895E123BE0;
+        Tue,  5 Apr 2022 05:16:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=axis.com; q=dns/txt; s=axis-central1; t=1649160999;
+  x=1680696999;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=WGpnRbO3Pa93kFXTsPdsfO2hw74rogk5OdNNNdqKnyo=;
+  b=qBNyGDzTr2KIP+FVoBPdK+IqSRK2y+sHO88HSPrcQTJTpYPYrRlKZA3A
+   4i7oPzidll0KBp2wGYQb+Tv1dM80IqygUG0/WaRADq4JzvPENKFKoZ4f2
+   XN4D+tU6A2MmuaJX3tTPh9o4Nkv7zxa4Wo+VHW35zfjsGqbQEph+QwLJB
+   7PFdbZKiT/8BgSe58LXHBENUnis4zXxsV872CbSEaEFqkKO1Sv7WBiV3N
+   Car90Lx0JUmT0tISW6w2mRWKbK1U6diWhVx4UuoVXwv5Fcuxk+mbQ+rDZ
+   ukD48Fn8NRIDZjHCxjfk43o/2BtMh4QkAKtX/8foY/BAWHUu4m/xqIxqv
+   A==;
+From:   Vincent Whitchurch <vincent.whitchurch@axis.com>
+To:     <wsa@kernel.org>
+CC:     <kernel@axis.com>,
+        Vincent Whitchurch <vincent.whitchurch@axis.com>,
+        <linux-i2c@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <krzk+dt@kernel.org>, <robh+dt@kernel.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: [PATCH 0/2] i2c: Allow disabling auto detection via devicetree
+Date:   Tue, 5 Apr 2022 14:16:25 +0200
+Message-ID: <20220405121627.1560949-1-vincent.whitchurch@axis.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: YueHaibing <yuehaibing@huawei.com>
+When a driver with a ->detect callback (such as lm75) is loaded, the i2c core
+performs I2C transactions on the bus to all the addresses listed in that
+driver's address_list.  This kind of probing wastes time and as
+Documentation/i2c/instantiating-devices.rst says, this method is not
+recommended and it is instead advised to list all devices in the devicetree.
 
-[ Upstream commit 567e44fb51b4f909ae58038a7301352eecea8426 ]
+However, even if all the devices are listed in the devicetree, there is
+currently no way to prevent the core from attempting auto detection short of
+patching controller drivers to not pass the I2C_CLASS* bits in adap->class.
+The latter is not always possible since generic drivers like i2c-gpio set these
+bits.
 
-If PPC_BOOK3S, PPC_PMAC and PPC32 is n, COMPILE_TEST build fails:
+To avoid this unnecessary probing and reduce boot time, this series adds a
+property to the devicetree and support in the I2C core to allow this feature to
+be disabled.
 
-drivers/video/fbdev/controlfb.c:70:0: error: "pgprot_cached_wthru" redefined [-Werror]
- #define pgprot_cached_wthru(prot) (prot)
+Cc: linux-i2c@vger.kernel.org
 
-In file included from ./arch/powerpc/include/asm/pgtable.h:20:0,
-                 from ./include/linux/pgtable.h:6,
-                 from ./include/linux/mm.h:33,
-                 from drivers/video/fbdev/controlfb.c:37:
-./arch/powerpc/include/asm/nohash/pgtable.h:243:0: note: this is the location of the previous definition
- #define pgprot_cached_wthru(prot) (__pgprot((pgprot_val(prot) & ~_PAGE_CACHE_CTL) | \
+Cc: devicetree@vger.kernel.org
+Cc: krzk+dt@kernel.org
+Cc: robh+dt@kernel.org
 
-Fixes: a07a63b0e24d ("video: fbdev: controlfb: add COMPILE_TEST support")
-Signed-off-by: YueHaibing <yuehaibing@huawei.com>
-Signed-off-by: Helge Deller <deller@gmx.de>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/video/fbdev/controlfb.c | 2 ++
- 1 file changed, 2 insertions(+)
+Cc: linux-kernel@vger.kernel.org
 
-diff --git a/drivers/video/fbdev/controlfb.c b/drivers/video/fbdev/controlfb.c
-index 509311471d51..bd59e7b11ed5 100644
---- a/drivers/video/fbdev/controlfb.c
-+++ b/drivers/video/fbdev/controlfb.c
-@@ -67,7 +67,9 @@
- #define out_8(addr, val)	(void)(val)
- #define in_le32(addr)		0
- #define out_le32(addr, val)	(void)(val)
-+#ifndef pgprot_cached_wthru
- #define pgprot_cached_wthru(prot) (prot)
-+#endif
- #else
- static void invalid_vram_cache(void __force *addr)
- {
+Vincent Whitchurch (2):
+  i2c: add binding to prevent device detection
+  i2c: core: support no-detect property
+
+ Documentation/devicetree/bindings/i2c/i2c.txt | 4 ++++
+ drivers/i2c/i2c-core-base.c                   | 8 +++++++-
+ include/linux/i2c.h                           | 1 +
+ 3 files changed, 12 insertions(+), 1 deletion(-)
+
 -- 
 2.34.1
-
-
 
