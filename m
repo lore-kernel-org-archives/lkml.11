@@ -2,81 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 26CE0C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4500EC433FE
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:03:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359365AbiDEL5A (ORCPT
+        id S1382142AbiDEMAs (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 07:57:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46566 "EHLO
+        Tue, 5 Apr 2022 08:00:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42516 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244976AbiDEIww (ORCPT
+        with ESMTP id S241829AbiDEIsh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:52:52 -0400
-Received: from ssl.serverraum.org (ssl.serverraum.org [176.9.125.105])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E55C1D0DD;
-        Tue,  5 Apr 2022 01:48:24 -0700 (PDT)
-Received: from ssl.serverraum.org (web.serverraum.org [172.16.0.2])
+        Tue, 5 Apr 2022 04:48:37 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C03DC2ED4E;
+        Tue,  5 Apr 2022 01:36:58 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id D943E221D4;
-        Tue,  5 Apr 2022 10:48:21 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1649148502;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=x/+zyXUcDmdndIIui1WDqypJvYDMYDrXZERNBQ0ecKk=;
-        b=aveEuHEhPZQK2Uwn++JVqUY23++YtQ2Iog5KE9xDadFiSBB9b3U5iB3yh8MN6rQH3Ij9Jq
-        W4neXVvnU1lja2kSQ35ur8KKaEpcANmZUPVFd3h1XfmeGmmaenwP4aZ/Jaw3UgCKWoM+A7
-        hJOlxIxVSNwizXEPqxE9Sj9Sd59uUbo=
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5AE56B81BC0;
+        Tue,  5 Apr 2022 08:36:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B3AD8C385A1;
+        Tue,  5 Apr 2022 08:36:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649147817;
+        bh=La6UeLC9pU0YR/nd2zxsp4eY/JmzDSkVGJeVw5h4l44=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=w1l40Be9kzRQE13A3EUSVSLdrWxKcNICvtwXFwLUN7tB79yx7zoVWrQFpsXew1+DP
+         66wlnHzHPC5VdEmYXCiGtq1T1sYwZH+EuEB/Eci8mDP7mOfubFFbBETPGOAV4Bj5tn
+         4bVw55DxeLF0w/32SmnAaokCa6gYyBFzNOoOOXgs=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Marc Zyngier <maz@kernel.org>,
+        Nishanth Menon <nm@ti.com>
+Subject: [PATCH 5.16 0132/1017] arm64: dts: ti: k3-j7200: Fix gic-v3 compatible regs
+Date:   Tue,  5 Apr 2022 09:17:25 +0200
+Message-Id: <20220405070358.120317330@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
+References: <20220405070354.155796697@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
-Date:   Tue, 05 Apr 2022 10:48:21 +0200
-From:   Michael Walle <michael@walle.cc>
-To:     Richard Cochran <richardcochran@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>, davem@davemloft.net,
-        grygorii.strashko@ti.com, kuba@kernel.org, kurt@linutronix.de,
-        linux-kernel@vger.kernel.org, linux@armlinux.org.uk,
-        mlichvar@redhat.com, netdev@vger.kernel.org,
-        qiangqing.zhang@nxp.com, vladimir.oltean@nxp.com,
-        Horatiu Vultur <horatiu.vultur@microchip.com>
-Subject: Re: [PATCH RFC V1 net-next 3/4] net: Let the active time stamping
- layer be selectable.
-In-Reply-To: <20220405055954.GB91955@hoboy.vegasvil.org>
-References: <20220104014215.GA20062@hoboy.vegasvil.org>
- <20220404150508.3945833-1-michael@walle.cc> <YksMvHgXZxA+YZci@lunn.ch>
- <e5a6f6193b86388ed7a081939b8745be@walle.cc>
- <20220405055954.GB91955@hoboy.vegasvil.org>
-User-Agent: Roundcube Webmail/1.4.13
-Message-ID: <d38744cbe67474b3c83b84547ec3cb4f@walle.cc>
-X-Sender: michael@walle.cc
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Am 2022-04-05 07:59, schrieb Richard Cochran:
-> On Mon, Apr 04, 2022 at 07:12:11PM +0200, Michael Walle wrote:
-> 
->> That would make sense. I guess what bothers me with the current
->> mechanism is that a feature addition to the PHY in the *future* (the
->> timestamping support) might break a board - or at least changes the
->> behavior by suddenly using PHY timestamping.
-> 
-> That is a good point, but then something will break in any case.
+From: Nishanth Menon <nm@ti.com>
 
-Can the ethernet driver select the default one? So any current
-driver which has "if phy_has_hwtstamp() forward_ioctl;" can set
-it to PHY while newer drivers can (or should actually) leave it as
-MAC.
+commit 1a307cc299430dd7139d351a3b8941f493dfa885 upstream.
 
-This doesn't really fix the problem per se. But at least new
-drivers won't be affected. For my problem at hand, I'd need to
-convince Microchip to default to MAC although the driver is
-already in the tree (but there is no user of it in mainline
-right now).
+Though GIC ARE option is disabled for no GIC-v2 compatibility,
+Cortex-A72 is free to implement the CPU interface as long as it
+communicates with the GIC using the stream protocol. This requires
+that the SoC integration mark out the PERIPHBASE[1] as reserved area
+within the SoC. See longer discussion in [2] for further information.
 
--michael
+Update the GIC register map to indicate offsets from PERIPHBASE based
+on [3]. Without doing this, systems like kvm will not function with
+gic-v2 emulation.
+
+[1] https://developer.arm.com/documentation/100095/0002/system-control/aarch64-register-descriptions/configuration-base-address-register--el1
+[2] https://lore.kernel.org/all/87k0e0tirw.wl-maz@kernel.org/
+[3] https://developer.arm.com/documentation/100095/0002/way1382452674438
+
+Cc: stable@vger.kernel.org
+Fixes: d361ed88455f ("arm64: dts: ti: Add support for J7200 SoC")
+Reported-by: Marc Zyngier <maz@kernel.org>
+Signed-off-by: Nishanth Menon <nm@ti.com>
+Acked-by: Marc Zyngier <maz@kernel.org>
+Link: https://lore.kernel.org/r/20220215201008.15235-4-nm@ti.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ arch/arm64/boot/dts/ti/k3-j7200-main.dtsi |    5 ++++-
+ arch/arm64/boot/dts/ti/k3-j7200.dtsi      |    1 +
+ 2 files changed, 5 insertions(+), 1 deletion(-)
+
+--- a/arch/arm64/boot/dts/ti/k3-j7200-main.dtsi
++++ b/arch/arm64/boot/dts/ti/k3-j7200-main.dtsi
+@@ -54,7 +54,10 @@
+ 		#interrupt-cells = <3>;
+ 		interrupt-controller;
+ 		reg = <0x00 0x01800000 0x00 0x10000>,	/* GICD */
+-		      <0x00 0x01900000 0x00 0x100000>;	/* GICR */
++		      <0x00 0x01900000 0x00 0x100000>,	/* GICR */
++		      <0x00 0x6f000000 0x00 0x2000>,	/* GICC */
++		      <0x00 0x6f010000 0x00 0x1000>,	/* GICH */
++		      <0x00 0x6f020000 0x00 0x2000>;	/* GICV */
+ 
+ 		/* vcpumntirq: virtual CPU interface maintenance interrupt */
+ 		interrupts = <GIC_PPI 9 IRQ_TYPE_LEVEL_HIGH>;
+--- a/arch/arm64/boot/dts/ti/k3-j7200.dtsi
++++ b/arch/arm64/boot/dts/ti/k3-j7200.dtsi
+@@ -129,6 +129,7 @@
+ 			 <0x00 0x00a40000 0x00 0x00a40000 0x00 0x00000800>, /* timesync router */
+ 			 <0x00 0x01000000 0x00 0x01000000 0x00 0x0d000000>, /* Most peripherals */
+ 			 <0x00 0x30000000 0x00 0x30000000 0x00 0x0c400000>, /* MAIN NAVSS */
++			 <0x00 0x6f000000 0x00 0x6f000000 0x00 0x00310000>, /* A72 PERIPHBASE */
+ 			 <0x00 0x70000000 0x00 0x70000000 0x00 0x00800000>, /* MSMC RAM */
+ 			 <0x00 0x18000000 0x00 0x18000000 0x00 0x08000000>, /* PCIe1 DAT0 */
+ 			 <0x41 0x00000000 0x41 0x00000000 0x01 0x00000000>, /* PCIe1 DAT1 */
+
+
