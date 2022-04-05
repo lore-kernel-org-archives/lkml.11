@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AC4B0C3527A
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D69C1C433EF
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 03:16:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2359613AbiDFDRE (ORCPT
+        id S2359651AbiDFDRX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 23:17:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36940 "EHLO
+        Tue, 5 Apr 2022 23:17:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38720 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1384958AbiDFCOb (ORCPT
+        with ESMTP id S1445542AbiDFCOx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 22:14:31 -0400
-Received: from mga06.intel.com (mga06.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 135F71B2566
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 16:35:17 -0700 (PDT)
+        Tue, 5 Apr 2022 22:14:53 -0400
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5612B1B0BCF
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 16:35:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649201717; x=1680737717;
+  t=1649201720; x=1680737720;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=5fa58IG6IkoYlTr3b12lt1ElQz5ZUgXZHAh5KeLMD4U=;
-  b=Ku9Bw49/mVml5GAHuo574bTiG8Sngs0EgR50rTbDTkWGEbpqPvw8CRBn
-   avqXA1fjSGoWzhlSTR3WPCexY6QEDdTQLieG7NizO45xFlMVgbbTEjETl
-   pm5G3ld+Hvyt93ac5I7QHkVKz/oMVXJx7/jHrxw3k9I0SoBOjbkKm38BO
-   ZfC0ar3q2ffr71fqeqqKkNBH929a7oNHPLzDmXAS9vhxb2Myph41bxm3t
-   R6UXOrEcXijfi00ttYczLo3vbfaaRy30PE16DHGvae2/5ed3PCJXG08wT
-   ZHjx0hea/QSe4oZLql37kO09XKQwo1790T2LWoep314jdpxBdciaOXls6
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10308"; a="321586049"
+  bh=FB/8/9NOxqY8pFkshQ5QcHU4jTbXJdjhkrb4LcnkmDo=;
+  b=e32+08aBDQK99iKZm47c4/gMZ3WqIf3DP/EzMy0rnyVLgEYxpZL1EuL5
+   Cva7VZd21uDH92KDFXc6EO6f6rFuKVscl+J3CDIPr5IufisjbukMTVlJw
+   zN7yUegBFtsMvgi/YvxOnx1yDLvu7/Tscv+QjhJrNIdU7NQ2bnJiQ7cWn
+   c0xIr4ckodR3E1qEMrpaXgsBzmCDFcth6o33+84sn1bHH6RTXXI5kAo7V
+   F6ercnn0WQtmNHsFHRIsRiJTC+GjoqW0PUclHodWmuBFsERpbQt2k/lWm
+   CnyCNx7l9urTDEl6UShh3BWR2ZAJLIZKaYq7+jMqR5fUaapwL6v+iJ9mQ
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10308"; a="261065416"
 X-IronPort-AV: E=Sophos;i="5.90,238,1643702400"; 
-   d="scan'208";a="321586049"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2022 16:34:48 -0700
+   d="scan'208";a="261065416"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2022 16:34:47 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.90,238,1643702400"; 
-   d="scan'208";a="652106922"
+   d="scan'208";a="697135306"
 Received: from black.fi.intel.com ([10.237.72.28])
-  by fmsmga002.fm.intel.com with ESMTP; 05 Apr 2022 16:34:41 -0700
+  by fmsmga001.fm.intel.com with ESMTP; 05 Apr 2022 16:34:40 -0700
 Received: by black.fi.intel.com (Postfix, from userid 1000)
-        id DFF83655; Wed,  6 Apr 2022 02:29:45 +0300 (EEST)
+        id AA2515AA; Wed,  6 Apr 2022 02:29:45 +0300 (EEST)
 From:   "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
 To:     tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
         dave.hansen@intel.com, luto@kernel.org, peterz@infradead.org
@@ -52,11 +52,10 @@ Cc:     sathyanarayanan.kuppuswamy@linux.intel.com, aarcange@redhat.com,
         tony.luck@intel.com, vkuznets@redhat.com, wanpengli@tencent.com,
         thomas.lendacky@amd.com, brijesh.singh@amd.com, x86@kernel.org,
         linux-kernel@vger.kernel.org,
-        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>
-Subject: [PATCHv8 09/30] x86/tdx: Add MSR support for TDX guests
-Date:   Wed,  6 Apr 2022 02:29:18 +0300
-Message-Id: <20220405232939.73860-10-kirill.shutemov@linux.intel.com>
+        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
+Subject: [PATCHv8 05/30] x86/tdx: Exclude shared bit from __PHYSICAL_MASK
+Date:   Wed,  6 Apr 2022 02:29:14 +0300
+Message-Id: <20220405232939.73860-6-kirill.shutemov@linux.intel.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405232939.73860-1-kirill.shutemov@linux.intel.com>
 References: <20220405232939.73860-1-kirill.shutemov@linux.intel.com>
@@ -66,104 +65,61 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Use hypercall to emulate MSR read/write for the TDX platform.
+In TDX guests, by default memory is protected from host access. If a
+guest needs to communicate with the VMM (like the I/O use case), it uses
+a single bit in the physical address to communicate the protected/shared
+attribute of the given page.
 
-There are two viable approaches for doing MSRs in a TD guest:
+In the x86 ARCH code, __PHYSICAL_MASK macro represents the width of the
+physical address in the given architecture. It is used in creating
+physical PAGE_MASK for address bits in the kernel. Since in TDX guest,
+a single bit is used as metadata, it needs to be excluded from valid
+physical address bits to avoid using incorrect addresses bits in the
+kernel.
 
-1. Execute the RDMSR/WRMSR instructions like most VMs and bare metal
-   do. Some will succeed, others will cause a #VE. All of those that
-   cause a #VE will be handled with a TDCALL.
-2. Use paravirt infrastructure.  The paravirt hook has to keep a list
-   of which MSRs would cause a #VE and use a TDCALL.  All other MSRs
-   execute RDMSR/WRMSR instructions directly.
-
-The second option can be ruled out because the list of MSRs was
-challenging to maintain. That leaves option #1 as the only viable
-solution for the minimal TDX support.
-
-Kernel relies on the exception fixup machinery to handle MSR access
-errors. #VE handler uses the same exception fixup code as #GP. It
-covers MSR accesses along with other types of fixups.
-
-For performance-critical MSR writes (like TSC_DEADLINE), future patches
-will replace the WRMSR/#VE sequence with the direct TDCALL.
-
-RDMSR and WRMSR specification details can be found in
-Guest-Host-Communication Interface (GHCI) for Intel Trust Domain
-Extensions (Intel TDX) specification, sec titled "TDG.VP.
-VMCALL<Instruction.RDMSR>" and "TDG.VP.VMCALL<Instruction.WRMSR>".
+Enable DYNAMIC_PHYSICAL_MASK to support updating the __PHYSICAL_MASK.
 
 Co-developed-by: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
 Signed-off-by: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
 Reviewed-by: Andi Kleen <ak@linux.intel.com>
 Reviewed-by: Tony Luck <tony.luck@intel.com>
 Signed-off-by: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
-Reviewed-by: Dave Hansen <dave.hansen@linux.intel.com>
 Reviewed-by: Thomas Gleixner <tglx@linutronix.de>
 ---
- arch/x86/coco/tdx/tdx.c | 42 +++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 42 insertions(+)
+ arch/x86/Kconfig        | 1 +
+ arch/x86/coco/tdx/tdx.c | 8 ++++++++
+ 2 files changed, 9 insertions(+)
 
+diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
+index 984315ca0275..aea4cc404c31 100644
+--- a/arch/x86/Kconfig
++++ b/arch/x86/Kconfig
+@@ -883,6 +883,7 @@ config INTEL_TDX_GUEST
+ 	depends on X86_64 && CPU_SUP_INTEL
+ 	depends on X86_X2APIC
+ 	select ARCH_HAS_CC_PLATFORM
++	select DYNAMIC_PHYSICAL_MASK
+ 	help
+ 	  Support running as a guest under Intel TDX.  Without this support,
+ 	  the guest kernel can not boot or run under TDX.
 diff --git a/arch/x86/coco/tdx/tdx.c b/arch/x86/coco/tdx/tdx.c
-index ed7302581cc7..00ff0a830970 100644
+index 96b2611baac5..e84f6dd3ed2a 100644
 --- a/arch/x86/coco/tdx/tdx.c
 +++ b/arch/x86/coco/tdx/tdx.c
-@@ -142,6 +142,44 @@ void __cpuidle tdx_safe_halt(void)
- 		WARN_ONCE(1, "HLT instruction emulation failed\n");
- }
+@@ -89,5 +89,13 @@ void __init tdx_early_init(void)
+ 	cc_mask = get_cc_mask();
+ 	cc_set_mask(cc_mask);
  
-+static bool read_msr(struct pt_regs *regs)
-+{
-+	struct tdx_hypercall_args args = {
-+		.r10 = TDX_HYPERCALL_STANDARD,
-+		.r11 = hcall_func(EXIT_REASON_MSR_READ),
-+		.r12 = regs->cx,
-+	};
-+
 +	/*
-+	 * Emulate the MSR read via hypercall. More info about ABI
-+	 * can be found in TDX Guest-Host-Communication Interface
-+	 * (GHCI), section titled "TDG.VP.VMCALL<Instruction.RDMSR>".
++	 * All bits above GPA width are reserved and kernel treats shared bit
++	 * as flag, not as part of physical address.
++	 *
++	 * Adjust physical mask to only cover valid GPA bits.
 +	 */
-+	if (__tdx_hypercall(&args, TDX_HCALL_HAS_OUTPUT))
-+		return false;
++	physical_mask &= cc_mask - 1;
 +
-+	regs->ax = lower_32_bits(args.r11);
-+	regs->dx = upper_32_bits(args.r11);
-+	return true;
-+}
-+
-+static bool write_msr(struct pt_regs *regs)
-+{
-+	struct tdx_hypercall_args args = {
-+		.r10 = TDX_HYPERCALL_STANDARD,
-+		.r11 = hcall_func(EXIT_REASON_MSR_WRITE),
-+		.r12 = regs->cx,
-+		.r13 = (u64)regs->dx << 32 | regs->ax,
-+	};
-+
-+	/*
-+	 * Emulate the MSR write via hypercall. More info about ABI
-+	 * can be found in TDX Guest-Host-Communication Interface
-+	 * (GHCI) section titled "TDG.VP.VMCALL<Instruction.WRMSR>".
-+	 */
-+	return !__tdx_hypercall(&args, 0);
-+}
-+
- void tdx_get_ve_info(struct ve_info *ve)
- {
- 	struct tdx_module_output out;
-@@ -178,6 +216,10 @@ static bool virt_exception_kernel(struct pt_regs *regs, struct ve_info *ve)
- 	switch (ve->exit_reason) {
- 	case EXIT_REASON_HLT:
- 		return handle_halt();
-+	case EXIT_REASON_MSR_READ:
-+		return read_msr(regs);
-+	case EXIT_REASON_MSR_WRITE:
-+		return write_msr(regs);
- 	default:
- 		pr_warn("Unexpected #VE: %lld\n", ve->exit_reason);
- 		return false;
+ 	pr_info("Guest detected\n");
+ }
 -- 
 2.35.1
 
