@@ -2,45 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F4053C4167B
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:17:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 50A95C3527A
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:17:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1583513AbiDEXxD (ORCPT
+        id S1583335AbiDEXwX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 19:53:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54572 "EHLO
+        Tue, 5 Apr 2022 19:52:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57674 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354018AbiDEKKs (ORCPT
+        with ESMTP id S242159AbiDEKfQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:10:48 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F21E04F443;
-        Tue,  5 Apr 2022 02:56:40 -0700 (PDT)
+        Tue, 5 Apr 2022 06:35:16 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C894B36B49;
+        Tue,  5 Apr 2022 03:20:41 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 49E49CE1C6C;
-        Tue,  5 Apr 2022 09:56:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 616F6C385A3;
-        Tue,  5 Apr 2022 09:56:37 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 652E2616D7;
+        Tue,  5 Apr 2022 10:20:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 745DAC385A1;
+        Tue,  5 Apr 2022 10:20:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649152597;
-        bh=ddMf/Q2OYNRAJxNBRf3ZcvSR2v8ceJNOuWDRf7eIQjU=;
+        s=korg; t=1649154040;
+        bh=HQpRMrAehDtWeCK0JY9A9/XHa20QiNq1aSYK6C2zu8A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=iTnc6SzYNdai+QAmdWC4u8lN2ex6qLtx++U/nZKkXgtor9+jWe2uTJDqlzO+x5FcL
-         GidiEL90btim7thYXKxTz6ZireQFK2MMMbYVJDk2ahbrEdeFKWwd0BpV9jYh3ScnHh
-         +39PB56n3pyBAEnu9yX3nxNfTQxROLCgDt11/GPo=
+        b=rkOnGlKWBwSJKrjDCSefmzxS8FQWRIi2nKo0p5GZb4twQriwTPBJptxG0ms9714uq
+         DBfibbxkbhYBLGpffn45NDe9ZJBv9PFwAN/FP3OXqDHo2P9jthA2Li03ER0ZANsTfC
+         ryIwb/sqyajIglb0agmjlonB6yASmJPUuBPD4B/k=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hugh Dickins <hughd@google.com>,
-        "Matthew Wilcox (Oracle)" <willy@infradead.org>
-Subject: [PATCH 5.15 835/913] XArray: Update the LRU list in xas_split()
-Date:   Tue,  5 Apr 2022 09:31:37 +0200
-Message-Id: <20220405070404.859282803@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Petr Vorel <petr.vorel@gmail.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 435/599] clk: qcom: gcc-msm8994: Fix gpll4 width
+Date:   Tue,  5 Apr 2022 09:32:09 +0200
+Message-Id: <20220405070311.777210676@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
+References: <20220405070258.802373272@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,44 +52,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Matthew Wilcox (Oracle) <willy@infradead.org>
+From: Konrad Dybcio <konrad.dybcio@somainline.org>
 
-commit 3ed4bb77156da0bc732847c8c9df92454c1fbeea upstream.
+[ Upstream commit 71021db1c532c2545ae53b9ee85b37b7154f51d4 ]
 
-When splitting a value entry, we may need to add the new nodes to the LRU
-list and remove the parent node from the LRU list.  The WARN_ON checks
-in shadow_lru_isolate() catch this oversight.  This bug was latent
-until we stopped splitting folios in shrink_page_list() with commit
-820c4e2e6f51 ("mm/vmscan: Free non-shmem folios without splitting them").
-That allows the creation of large shadow entries, and subsequently when
-trying to page in a small page, we will split the large shadow entry
-in __filemap_add_folio().
+The gpll4 postdiv is actually a div4, so make sure that Linux is aware of
+this.
 
-Fixes: 8fc75643c5e1 ("XArray: add xas_split")
-Reported-by: Hugh Dickins <hughd@google.com>
-Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+This fixes the following error messages:
+
+ mmc1: Card appears overclocked; req 200000000 Hz, actual 343999999 Hz
+ mmc1: Card appears overclocked; req 400000000 Hz, actual 687999999 Hz
+
+Fixes: aec89f78cf01 ("clk: qcom: Add support for msm8994 global clock controller")
+Signed-off-by: Konrad Dybcio <konrad.dybcio@somainline.org>
+Link: https://lore.kernel.org/r/20220319174940.341137-1-konrad.dybcio@somainline.org
+Tested-by: Petr Vorel <petr.vorel@gmail.com>
+Reviewed-by: Petr Vorel <petr.vorel@gmail.com>
+Signed-off-by: Stephen Boyd <sboyd@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- lib/xarray.c |    2 ++
- 1 file changed, 2 insertions(+)
+ drivers/clk/qcom/gcc-msm8994.c | 1 +
+ 1 file changed, 1 insertion(+)
 
---- a/lib/xarray.c
-+++ b/lib/xarray.c
-@@ -1081,6 +1081,7 @@ void xas_split(struct xa_state *xas, voi
- 					xa_mk_node(child));
- 			if (xa_is_value(curr))
- 				values--;
-+			xas_update(xas, child);
- 		} else {
- 			unsigned int canon = offset - xas->xa_sibs;
+diff --git a/drivers/clk/qcom/gcc-msm8994.c b/drivers/clk/qcom/gcc-msm8994.c
+index 144d2ba7a9be..463a444c8a7e 100644
+--- a/drivers/clk/qcom/gcc-msm8994.c
++++ b/drivers/clk/qcom/gcc-msm8994.c
+@@ -108,6 +108,7 @@ static struct clk_alpha_pll gpll4_early = {
  
-@@ -1095,6 +1096,7 @@ void xas_split(struct xa_state *xas, voi
- 	} while (offset-- > xas->xa_offset);
- 
- 	node->nr_values += values;
-+	xas_update(xas, node);
- }
- EXPORT_SYMBOL_GPL(xas_split);
- #endif
+ static struct clk_alpha_pll_postdiv gpll4 = {
+ 	.offset = 0x1dc0,
++	.width = 4,
+ 	.regs = clk_alpha_pll_regs[CLK_ALPHA_PLL_TYPE_DEFAULT],
+ 	.clkr.hw.init = &(struct clk_init_data)
+ 	{
+-- 
+2.34.1
+
 
 
