@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 345FBC46467
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0770DC41535
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 14:20:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384419AbiDEOSE (ORCPT
+        id S1384136AbiDEORs (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 10:18:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41000 "EHLO
+        Tue, 5 Apr 2022 10:17:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41250 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239053AbiDEJdU (ORCPT
+        with ESMTP id S239054AbiDEJdX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:33:20 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70092255AF;
-        Tue,  5 Apr 2022 02:21:49 -0700 (PDT)
+        Tue, 5 Apr 2022 05:33:23 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3CE2B275EF;
+        Tue,  5 Apr 2022 02:21:52 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 33C5FB81B14;
-        Tue,  5 Apr 2022 09:21:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9E352C385A2;
-        Tue,  5 Apr 2022 09:21:46 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EB7E1B81B14;
+        Tue,  5 Apr 2022 09:21:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 42B99C385A3;
+        Tue,  5 Apr 2022 09:21:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649150507;
-        bh=At1UesPDyrj7Hc0srkOAfgHwX+i2Zb0Kf4bxoVvgIc0=;
+        s=korg; t=1649150509;
+        bh=g4fyN2qoHyGpxXNxZZ707m4eEwBL7Q2b400w2aH4EFg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Xo6Xyd9QX9DRnkIOkGtaDVKtL4srGAiS30gsUc9vBnhFymjMSEs/mPEftcUkLhRrY
-         HDGkDWEENrkXoZoi0Sp9Q135KHp8bqnIUMKvq5Uv4VRPDThFvumZleEgapAQm64Ymx
-         mPqgTclKgH7RBhb9tcZ7dAc3Q5WTqQ4ZX669Pz9c=
+        b=dURWKHzZlzLC19DAJQz/F+fk19qQF3BLgOek6D1HfbmELcikUsKUXT8Df09EqPN/+
+         Cs9iWIQ3XQAKjPYQVQMZ4SiOV9GF83tNwofUMSof7yDSShu49Ehjc3ouXwamiZa7tz
+         OEXd8qPW/MdExSOoj3qvHF+FzM0zsNtVaJU96JAo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hangyu Hua <hbh25y@gmail.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>
-Subject: [PATCH 5.15 079/913] can: usb_8dev: usb_8dev_start_xmit(): fix double dev_kfree_skb() in error path
-Date:   Tue,  5 Apr 2022 09:19:01 +0200
-Message-Id: <20220405070342.191836700@linuxfoundation.org>
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Suzuki K Poulose <suzuki.poulose@arm.com>
+Subject: [PATCH 5.15 044/913] coresight: syscfg: Fix memleak on registration failure in cscfg_create_device
+Date:   Tue,  5 Apr 2022 09:18:26 +0200
+Message-Id: <20220405070341.139176454@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
 References: <20220405070339.801210740@linuxfoundation.org>
@@ -49,69 +50,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hangyu Hua <hbh25y@gmail.com>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-commit 3d3925ff6433f98992685a9679613a2cc97f3ce2 upstream.
+commit cfa5dbcdd7aece76f3415284569f2f384aff0253 upstream.
 
-There is no need to call dev_kfree_skb() when usb_submit_urb() fails
-because can_put_echo_skb() deletes original skb and
-can_free_echo_skb() deletes the cloned skb.
+device_register() calls device_initialize(),
+according to doc of device_initialize:
 
-Fixes: 0024d8ad1639 ("can: usb_8dev: Add support for USB2CAN interface from 8 devices")
-Link: https://lore.kernel.org/all/20220311080614.45229-1-hbh25y@gmail.com
+    Use put_device() to give up your reference instead of freeing
+    * @dev directly once you have called this function.
+
+To prevent potential memleak, use put_device() for error handling.
+
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Fixes: 85e2414c518a ("coresight: syscfg: Initial coresight system configuration")
 Cc: stable@vger.kernel.org
-Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
-Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
+Link: https://lore.kernel.org/r/20220124124121.8888-1-linmq006@gmail.com
+Signed-off-by: Mathieu Poirier <mathieu.poirier@linaro.org>
+Signed-off-by: Suzuki K Poulose <suzuki.poulose@arm.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/can/usb/usb_8dev.c |   30 ++++++++++++++----------------
- 1 file changed, 14 insertions(+), 16 deletions(-)
+ drivers/hwtracing/coresight/coresight-syscfg.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/net/can/usb/usb_8dev.c
-+++ b/drivers/net/can/usb/usb_8dev.c
-@@ -670,9 +670,20 @@ static netdev_tx_t usb_8dev_start_xmit(s
- 	atomic_inc(&priv->active_tx_urbs);
+--- a/drivers/hwtracing/coresight/coresight-syscfg.c
++++ b/drivers/hwtracing/coresight/coresight-syscfg.c
+@@ -791,7 +791,7 @@ static int cscfg_create_device(void)
  
- 	err = usb_submit_urb(urb, GFP_ATOMIC);
--	if (unlikely(err))
--		goto failed;
--	else if (atomic_read(&priv->active_tx_urbs) >= MAX_TX_URBS)
-+	if (unlikely(err)) {
-+		can_free_echo_skb(netdev, context->echo_index, NULL);
-+
-+		usb_unanchor_urb(urb);
-+		usb_free_coherent(priv->udev, size, buf, urb->transfer_dma);
-+
-+		atomic_dec(&priv->active_tx_urbs);
-+
-+		if (err == -ENODEV)
-+			netif_device_detach(netdev);
-+		else
-+			netdev_warn(netdev, "failed tx_urb %d\n", err);
-+		stats->tx_dropped++;
-+	} else if (atomic_read(&priv->active_tx_urbs) >= MAX_TX_URBS)
- 		/* Slow down tx path */
- 		netif_stop_queue(netdev);
+ 	err = device_register(dev);
+ 	if (err)
+-		cscfg_dev_release(dev);
++		put_device(dev);
  
-@@ -691,19 +702,6 @@ nofreecontext:
- 
- 	return NETDEV_TX_BUSY;
- 
--failed:
--	can_free_echo_skb(netdev, context->echo_index, NULL);
--
--	usb_unanchor_urb(urb);
--	usb_free_coherent(priv->udev, size, buf, urb->transfer_dma);
--
--	atomic_dec(&priv->active_tx_urbs);
--
--	if (err == -ENODEV)
--		netif_device_detach(netdev);
--	else
--		netdev_warn(netdev, "failed tx_urb %d\n", err);
--
- nomembuf:
- 	usb_free_urb(urb);
- 
+ create_dev_exit_unlock:
+ 	mutex_unlock(&cscfg_mutex);
 
 
