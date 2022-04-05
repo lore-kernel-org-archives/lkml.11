@@ -2,48 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CDA10C38162
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 14:06:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D7CBC38A02
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 14:06:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243852AbiDEN7l (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 09:59:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44490 "EHLO
+        id S1344165AbiDEOGJ (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 10:06:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58978 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347855AbiDEJ2f (ORCPT
+        with ESMTP id S236143AbiDEJbN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:28:35 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C520DFF89;
-        Tue,  5 Apr 2022 02:15:54 -0700 (PDT)
+        Tue, 5 Apr 2022 05:31:13 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCE0EBE0;
+        Tue,  5 Apr 2022 02:18:34 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CBC0061654;
-        Tue,  5 Apr 2022 09:15:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DB49FC385A0;
-        Tue,  5 Apr 2022 09:15:52 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 72308B81B14;
+        Tue,  5 Apr 2022 09:18:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DDFF7C385A0;
+        Tue,  5 Apr 2022 09:18:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649150153;
-        bh=izMv/LMDq16sbMxK8dWa52dHpvXUUl3PEqt/CPB1xl4=;
+        s=korg; t=1649150312;
+        bh=1g8eCzgu/OGociPE2sozsSHPP9L8Oqh9mcIymAC8SkM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=T9T8slOBOyGail8HzDa60Wf65zy8k9kaIwYW2abAmKYXbvjCKIOvG48BWwebwPe4f
-         OZg4xS+mdtTgVzjnxq+voFyN/2hfo4/fLz3OWAesT1HtWQNm6JKDO7cHP5QuAWsQ5y
-         JpPJgh7wfMJxJDUTnFe4YpqMG210+51dmgN0KYTU=
+        b=M9woBp0Bgl/HerPTvQv7v2O5JC6B/ZLp2y60IAVy/d40Wd+0yyRYPmykLhoe9VIcW
+         CScBCBS4ZsCz6djRTAgzHwGyZd1uPopzw7/OSlm206cNXshZPbJY0tpjSreUgPvOao
+         cQaRQhoGOp5VJp36H1BWUaiXPfwR/+0CbsFYTjNY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
-        Igor Zhbanov <i.zhbanov@omprussia.ru>,
-        Chris von Recklinghausen <crecklin@redhat.com>,
-        Kees Cook <keescook@chromium.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [PATCH 5.16 0974/1017] mm/usercopy: return 1 from hardened_usercopy __setup() handler
-Date:   Tue,  5 Apr 2022 09:31:27 +0200
-Message-Id: <20220405070423.116995604@linuxfoundation.org>
+        stable@vger.kernel.org, Si-Wei Liu <si-wei.liu@oracle.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>, Eli Cohen <elic@nvidia.com>,
+        Jason Wang <jasowang@redhat.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 013/913] vdpa/mlx5: should verify CTRL_VQ feature exists for MQ
+Date:   Tue,  5 Apr 2022 09:17:55 +0200
+Message-Id: <20220405070340.212037135@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
-References: <20220405070354.155796697@linuxfoundation.org>
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -52,63 +51,81 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Randy Dunlap <rdunlap@infradead.org>
+From: Si-Wei Liu <si-wei.liu@oracle.com>
 
-commit 05fe3c103f7e6b8b4fca8a7001dfc9ed4628085b upstream.
+[ Upstream commit 30c22f3816ffef8aa21a000e93c4ee1402a6ea65 ]
 
-__setup() handlers should return 1 if the command line option is handled
-and 0 if not (or maybe never return 0; it just pollutes init's
-environment).  This prevents:
+Per VIRTIO v1.1 specification, section 5.1.3.1 Feature bit requirements:
+"VIRTIO_NET_F_MQ Requires VIRTIO_NET_F_CTRL_VQ".
 
-  Unknown kernel command line parameters \
-  "BOOT_IMAGE=/boot/bzImage-517rc5 hardened_usercopy=off", will be \
-  passed to user space.
+There's assumption in the mlx5_vdpa multiqueue code that MQ must come
+together with CTRL_VQ. However, there's nowhere in the upper layer to
+guarantee this assumption would hold. Were there an untrusted driver
+sending down MQ without CTRL_VQ, it would compromise various spots for
+e.g. is_index_valid() and is_ctrl_vq_idx(). Although this doesn't end
+up with immediate panic or security loophole as of today's code, the
+chance for this to be taken advantage of due to future code change is
+not zero.
 
-  Run /sbin/init as init process
-   with arguments:
-     /sbin/init
-   with environment:
-     HOME=/
-     TERM=linux
-     BOOT_IMAGE=/boot/bzImage-517rc5
-     hardened_usercopy=off
-or
-     hardened_usercopy=on
-but when "hardened_usercopy=foo" is used, there is no Unknown kernel
-command line parameter.
+Harden the crispy assumption by failing the set_driver_features() call
+when seeing (MQ && !CTRL_VQ). For that end, verify_min_features() is
+renamed to verify_driver_features() to reflect the fact that it now does
+more than just validate the minimum features. verify_driver_features()
+is now used to accommodate various checks against the driver features
+for set_driver_features().
 
-Return 1 to indicate that the boot option has been handled.
-Print a warning if strtobool() returns an error on the option string,
-but do not mark this as in unknown command line option and do not cause
-init's environment to be polluted with this string.
-
-Link: https://lkml.kernel.org/r/20220222034249.14795-1-rdunlap@infradead.org
-Link: lore.kernel.org/r/64644a2f-4a20-bab3-1e15-3b2cdd0defe3@omprussia.ru
-Fixes: b5cb15d9372ab ("usercopy: Allow boot cmdline disabling of hardening")
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Reported-by: Igor Zhbanov <i.zhbanov@omprussia.ru>
-Acked-by: Chris von Recklinghausen <crecklin@redhat.com>
-Cc: Kees Cook <keescook@chromium.org>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Si-Wei Liu <si-wei.liu@oracle.com>
+Link: https://lore.kernel.org/r/1642206481-30721-3-git-send-email-si-wei.liu@oracle.com
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+Reviewed-by: Eli Cohen <elic@nvidia.com>
+Acked-by: Jason Wang <jasowang@redhat.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- mm/usercopy.c |    5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ drivers/vdpa/mlx5/net/mlx5_vnet.c | 18 ++++++++++++++++--
+ 1 file changed, 16 insertions(+), 2 deletions(-)
 
---- a/mm/usercopy.c
-+++ b/mm/usercopy.c
-@@ -294,7 +294,10 @@ static bool enable_checks __initdata = t
- 
- static int __init parse_hardened_usercopy(char *str)
- {
--	return strtobool(str, &enable_checks);
-+	if (strtobool(str, &enable_checks))
-+		pr_warn("Invalid option string for hardened_usercopy: '%s'\n",
-+			str);
-+	return 1;
+diff --git a/drivers/vdpa/mlx5/net/mlx5_vnet.c b/drivers/vdpa/mlx5/net/mlx5_vnet.c
+index 902aad29456f..f77a611f592f 100644
+--- a/drivers/vdpa/mlx5/net/mlx5_vnet.c
++++ b/drivers/vdpa/mlx5/net/mlx5_vnet.c
+@@ -1873,11 +1873,25 @@ static u64 mlx5_vdpa_get_features(struct vdpa_device *vdev)
+ 	return ndev->mvdev.mlx_features;
  }
  
- __setup("hardened_usercopy=", parse_hardened_usercopy);
+-static int verify_min_features(struct mlx5_vdpa_dev *mvdev, u64 features)
++static int verify_driver_features(struct mlx5_vdpa_dev *mvdev, u64 features)
+ {
++	/* Minimum features to expect */
+ 	if (!(features & BIT_ULL(VIRTIO_F_ACCESS_PLATFORM)))
+ 		return -EOPNOTSUPP;
+ 
++	/* Double check features combination sent down by the driver.
++	 * Fail invalid features due to absence of the depended feature.
++	 *
++	 * Per VIRTIO v1.1 specification, section 5.1.3.1 Feature bit
++	 * requirements: "VIRTIO_NET_F_MQ Requires VIRTIO_NET_F_CTRL_VQ".
++	 * By failing the invalid features sent down by untrusted drivers,
++	 * we're assured the assumption made upon is_index_valid() and
++	 * is_ctrl_vq_idx() will not be compromised.
++	 */
++	if ((features & (BIT_ULL(VIRTIO_NET_F_MQ) | BIT_ULL(VIRTIO_NET_F_CTRL_VQ))) ==
++            BIT_ULL(VIRTIO_NET_F_MQ))
++		return -EINVAL;
++
+ 	return 0;
+ }
+ 
+@@ -1953,7 +1967,7 @@ static int mlx5_vdpa_set_features(struct vdpa_device *vdev, u64 features)
+ 
+ 	print_features(mvdev, features, true);
+ 
+-	err = verify_min_features(mvdev, features);
++	err = verify_driver_features(mvdev, features);
+ 	if (err)
+ 		return err;
+ 
+-- 
+2.34.1
+
 
 
