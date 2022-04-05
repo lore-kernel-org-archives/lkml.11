@@ -2,43 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6CB71C43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E952C43217
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 09:12:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240614AbiDEJGO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 05:06:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34686 "EHLO
+        id S240261AbiDEJGD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 05:06:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34712 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238663AbiDEITR (ORCPT
+        with ESMTP id S238418AbiDEITF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:19:17 -0400
+        Tue, 5 Apr 2022 04:19:05 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DAB46D1B3;
-        Tue,  5 Apr 2022 01:09:18 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3A19AE47;
+        Tue,  5 Apr 2022 01:08:50 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 42D6F60B01;
-        Tue,  5 Apr 2022 08:09:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 46598C385A1;
-        Tue,  5 Apr 2022 08:09:17 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id F1C5060919;
+        Tue,  5 Apr 2022 08:08:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DA073C385A3;
+        Tue,  5 Apr 2022 08:08:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649146157;
-        bh=bMpDvhUZHs/Rk+rEvjrWU1xOX5yG+D1BVOcQTkPZsC8=;
+        s=korg; t=1649146129;
+        bh=KYXEhnswZ9GlBv57VQWGUAbK4dX9BNkHI4d1xHGhTd8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DxD2/8NwNH+MiSWmIagK+1YrZlSnnztnHumnkmb17SOkXWQJbCUkNZEs2Pk3NVXHE
-         bk+S7Y0vFpuNtwqE7PcG7XSNWcimDAP96Yu4PUzhr829iREUBNeptUEBLVu/zLbyNH
-         +d3/v55ExHYx/kbFGYB5rBS/vjwWypwq4yKLnTxQ=
+        b=cvrjZRdXtN0/DPLyPj6DFe14/nNS+FGHNrW3UndPDO+9ILva1LxQf6qfcnAdCT2wv
+         0dfYKc2SjCCS2Fnq48ozG/nYsGdEJAhn98NFkcH8FFljq+cWr339yQXHpf4NxSge3o
+         yNTGFIKWI8nXX5XSvtsoKaKDzx8mICIyAHXJ5Ahk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Wang Yufen <wangyufen@huawei.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        John Fastabend <john.fastabend@gmail.com>,
+        stable@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        linux-mips@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Phil Sutter <n0-1@freewrt.org>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Ralf Baechle <ralf@linux-mips.org>,
+        Daniel Walter <dwalter@google.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0662/1126] bpf, sockmap: Fix more uncharged while msg has more_data
-Date:   Tue,  5 Apr 2022 09:23:29 +0200
-Message-Id: <20220405070427.059457951@linuxfoundation.org>
+Subject: [PATCH 5.17 0653/1126] MIPS: RB532: fix return value of __setup handler
+Date:   Tue,  5 Apr 2022 09:23:20 +0200
+Message-Id: <20220405070426.797315131@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -50,98 +56,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Wang Yufen <wangyufen@huawei.com>
+From: Randy Dunlap <rdunlap@infradead.org>
 
-[ Upstream commit 84472b436e760ba439e1969a9e3c5ae7c86de39d ]
+[ Upstream commit 8755d57ba1ff910666572fab9e32890e8cc6ed3b ]
 
-In tcp_bpf_send_verdict(), if msg has more data after
-tcp_bpf_sendmsg_redir():
+__setup() handlers should return 1 to obsolete_checksetup() in
+init/main.c to indicate that the boot option has been handled.
+A return of 0 causes the boot option/value to be listed as an Unknown
+kernel parameter and added to init's (limited) argument or environment
+strings. Also, error return codes don't mean anything to
+obsolete_checksetup() -- only non-zero (usually 1) or zero.
+So return 1 from setup_kmac().
 
-tcp_bpf_send_verdict()
- tosend = msg->sg.size  //msg->sg.size = 22220
- case __SK_REDIRECT:
-  sk_msg_return()  //uncharged msg->sg.size(22220) sk->sk_forward_alloc
-  tcp_bpf_sendmsg_redir() //after tcp_bpf_sendmsg_redir, msg->sg.size=11000
- goto more_data;
- tosend = msg->sg.size  //msg->sg.size = 11000
- case __SK_REDIRECT:
-  sk_msg_return()  //uncharged msg->sg.size(11000) to sk->sk_forward_alloc
-
-The msg->sg.size(11000) has been uncharged twice, to fix we can charge the
-remaining msg->sg.size before goto more data.
-
-This issue can cause the following info:
-WARNING: CPU: 0 PID: 9860 at net/core/stream.c:208 sk_stream_kill_queues+0xd4/0x1a0
-Call Trace:
- <TASK>
- inet_csk_destroy_sock+0x55/0x110
- __tcp_close+0x279/0x470
- tcp_close+0x1f/0x60
- inet_release+0x3f/0x80
- __sock_release+0x3d/0xb0
- sock_close+0x11/0x20
- __fput+0x92/0x250
- task_work_run+0x6a/0xa0
- do_exit+0x33b/0xb60
- do_group_exit+0x2f/0xa0
- get_signal+0xb6/0x950
- arch_do_signal_or_restart+0xac/0x2a0
- ? vfs_write+0x237/0x290
- exit_to_user_mode_prepare+0xa9/0x200
- syscall_exit_to_user_mode+0x12/0x30
- do_syscall_64+0x46/0x80
- entry_SYSCALL_64_after_hwframe+0x44/0xae
- </TASK>
-
-WARNING: CPU: 0 PID: 2136 at net/ipv4/af_inet.c:155 inet_sock_destruct+0x13c/0x260
-Call Trace:
- <TASK>
- __sk_destruct+0x24/0x1f0
- sk_psock_destroy+0x19b/0x1c0
- process_one_work+0x1b3/0x3c0
- worker_thread+0x30/0x350
- ? process_one_work+0x3c0/0x3c0
- kthread+0xe6/0x110
- ? kthread_complete_and_exit+0x20/0x20
- ret_from_fork+0x22/0x30
- </TASK>
-
-Fixes: 604326b41a6f ("bpf, sockmap: convert to generic sk_msg interface")
-Signed-off-by: Wang Yufen <wangyufen@huawei.com>
-Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
-Acked-by: John Fastabend <john.fastabend@gmail.com>
-Link: https://lore.kernel.org/bpf/20220304081145.2037182-4-wangyufen@huawei.com
+Fixes: 9e21c7e40b7e ("MIPS: RB532: Replace parse_mac_addr() with mac_pton().")
+Fixes: 73b4390fb234 ("[MIPS] Routerboard 532: Support for base system")
+Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+From: Igor Zhbanov <i.zhbanov@omprussia.ru>
+Link: lore.kernel.org/r/64644a2f-4a20-bab3-1e15-3b2cdd0defe3@omprussia.ru
+Cc: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+Cc: linux-mips@vger.kernel.org
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: Jakub Kicinski <kuba@kernel.org>
+Cc: Phil Sutter <n0-1@freewrt.org>
+Cc: Florian Fainelli <f.fainelli@gmail.com>
+Cc: Ralf Baechle <ralf@linux-mips.org>
+Cc: Daniel Walter <dwalter@google.com>
+Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/ipv4/tcp_bpf.c | 7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
+ arch/mips/rb532/devices.c | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
 
-diff --git a/net/ipv4/tcp_bpf.c b/net/ipv4/tcp_bpf.c
-index 9b9b02052fd3..304800c60427 100644
---- a/net/ipv4/tcp_bpf.c
-+++ b/net/ipv4/tcp_bpf.c
-@@ -335,7 +335,7 @@ static int tcp_bpf_send_verdict(struct sock *sk, struct sk_psock *psock,
- 			cork = true;
- 			psock->cork = NULL;
- 		}
--		sk_msg_return(sk, msg, tosend);
-+		sk_msg_return(sk, msg, msg->sg.size);
- 		release_sock(sk);
- 
- 		ret = tcp_bpf_sendmsg_redir(sk_redir, msg, tosend, flags);
-@@ -375,8 +375,11 @@ static int tcp_bpf_send_verdict(struct sock *sk, struct sk_psock *psock,
- 		}
- 		if (msg &&
- 		    msg->sg.data[msg->sg.start].page_link &&
--		    msg->sg.data[msg->sg.start].length)
-+		    msg->sg.data[msg->sg.start].length) {
-+			if (eval == __SK_REDIRECT)
-+				sk_mem_charge(sk, msg->sg.size);
- 			goto more_data;
-+		}
- 	}
- 	return ret;
+diff --git a/arch/mips/rb532/devices.c b/arch/mips/rb532/devices.c
+index 04684990e28e..b7f6f782d9a1 100644
+--- a/arch/mips/rb532/devices.c
++++ b/arch/mips/rb532/devices.c
+@@ -301,11 +301,9 @@ static int __init plat_setup_devices(void)
+ static int __init setup_kmac(char *s)
+ {
+ 	printk(KERN_INFO "korina mac = %s\n", s);
+-	if (!mac_pton(s, korina_dev0_data.mac)) {
++	if (!mac_pton(s, korina_dev0_data.mac))
+ 		printk(KERN_ERR "Invalid mac\n");
+-		return -EINVAL;
+-	}
+-	return 0;
++	return 1;
  }
+ 
+ __setup("kmac=", setup_kmac);
 -- 
 2.34.1
 
