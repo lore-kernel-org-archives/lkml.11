@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B649DC43219
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:02:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 105B3C41535
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:02:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381758AbiDEL7d (ORCPT
+        id S1381808AbiDEL7m (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 07:59:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46572 "EHLO
+        Tue, 5 Apr 2022 07:59:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47622 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245057AbiDEIxE (ORCPT
+        with ESMTP id S245056AbiDEIxE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Apr 2022 04:53:04 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4F74F76;
-        Tue,  5 Apr 2022 01:50:53 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B21F1031;
+        Tue,  5 Apr 2022 01:50:55 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7A006B81BBF;
-        Tue,  5 Apr 2022 08:50:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DE210C385A0;
-        Tue,  5 Apr 2022 08:50:50 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9BC3F61509;
+        Tue,  5 Apr 2022 08:50:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AAF50C385A0;
+        Tue,  5 Apr 2022 08:50:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649148651;
-        bh=RuudkV80NbnUWQJ3ZBBUJ5p0VXcyoR2tIBAnss2jxn8=;
+        s=korg; t=1649148654;
+        bh=c5hPHAtu+iRvo8QtoMFfl/ahmvxhhouRZErc52MWFNw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=y+5HSTldipMgndUHybpyArCf1H8eEkbTfjbGyxf/ZS+3W/xAxQRqmNoH3hYgCzgJw
-         sO6f6aJLraM82JIcwzOTGlqSlOoXumgjK5AWOjcufdPTXwec0r35TgSTkwJ/poMXCV
-         gytzNH+UcPDsvI5C28jIX+RnSmmuWHDMJT2BWKHo=
+        b=FDnWt9nGxHd6PKcFYaMhMn+rgoUFpvnZ19Il/6an17TdD1mqSrGY4p4EYXjYpmZLg
+         oXhUytI1jo+I1MEM6hR2bg4Sgt9kj85cLFPrw4ONG5WobaIc/KQKnKQc4WZ+p8eRd7
+         DzAgjYwDgdlGeHwScq4BRcexZE6JC6EHPqUxx4gA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        stable@vger.kernel.org,
+        Codrin Ciubotariu <codrin.ciubotariu@microchip.com>,
         Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0393/1017] ASoC: msm8916-wcd-analog: Fix error handling in pm8916_wcd_analog_spmi_probe
-Date:   Tue,  5 Apr 2022 09:21:46 +0200
-Message-Id: <20220405070405.951366644@linuxfoundation.org>
+Subject: [PATCH 5.16 0384/1017] ASoC: dmaengine: do not use a NULL prepare_slave_config() callback
+Date:   Tue,  5 Apr 2022 09:21:37 +0200
+Message-Id: <20220405070405.684346400@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -50,77 +51,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Codrin Ciubotariu <codrin.ciubotariu@microchip.com>
 
-[ Upstream commit 9ebd62d60edcd4d9c75485e5ccd0b79581ad3c49 ]
+[ Upstream commit 9a1e13440a4f2e7566fd4c5eae6a53e6400e08a4 ]
 
-In the error handling path, the clk_prepare_enable() function
-call should be balanced by a corresponding 'clk_disable_unprepare()'
-call , as already done in the remove function.
+Even if struct snd_dmaengine_pcm_config is used, prepare_slave_config()
+callback might not be set. Check if this callback is set before using it.
 
-Fixes: de66b3455023 ("ASoC: codecs: msm8916-wcd-analog: add MBHC support")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Link: https://lore.kernel.org/r/20220316041924.17560-1-linmq006@gmail.com
+Fixes: fa654e085300 ("ASoC: dmaengine-pcm: Provide default config")
+Signed-off-by: Codrin Ciubotariu <codrin.ciubotariu@microchip.com>
+Link: https://lore.kernel.org/r/20220307122202.2251639-2-codrin.ciubotariu@microchip.com
 Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/codecs/msm8916-wcd-analog.c | 22 ++++++++++++++++------
- 1 file changed, 16 insertions(+), 6 deletions(-)
+ sound/soc/soc-generic-dmaengine-pcm.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/sound/soc/codecs/msm8916-wcd-analog.c b/sound/soc/codecs/msm8916-wcd-analog.c
-index 3ddd822240e3..971b8360b5b1 100644
---- a/sound/soc/codecs/msm8916-wcd-analog.c
-+++ b/sound/soc/codecs/msm8916-wcd-analog.c
-@@ -1221,8 +1221,10 @@ static int pm8916_wcd_analog_spmi_probe(struct platform_device *pdev)
- 	}
+diff --git a/sound/soc/soc-generic-dmaengine-pcm.c b/sound/soc/soc-generic-dmaengine-pcm.c
+index c54c8ca8d715..359987bf76d1 100644
+--- a/sound/soc/soc-generic-dmaengine-pcm.c
++++ b/sound/soc/soc-generic-dmaengine-pcm.c
+@@ -86,10 +86,10 @@ static int dmaengine_pcm_hw_params(struct snd_soc_component *component,
  
- 	irq = platform_get_irq_byname(pdev, "mbhc_switch_int");
--	if (irq < 0)
--		return irq;
-+	if (irq < 0) {
-+		ret = irq;
-+		goto err_disable_clk;
-+	}
+ 	memset(&slave_config, 0, sizeof(slave_config));
  
- 	ret = devm_request_threaded_irq(dev, irq, NULL,
- 			       pm8916_mbhc_switch_irq_handler,
-@@ -1234,8 +1236,10 @@ static int pm8916_wcd_analog_spmi_probe(struct platform_device *pdev)
+-	if (!pcm->config)
+-		prepare_slave_config = snd_dmaengine_pcm_prepare_slave_config;
+-	else
++	if (pcm->config && pcm->config->prepare_slave_config)
+ 		prepare_slave_config = pcm->config->prepare_slave_config;
++	else
++		prepare_slave_config = snd_dmaengine_pcm_prepare_slave_config;
  
- 	if (priv->mbhc_btn_enabled) {
- 		irq = platform_get_irq_byname(pdev, "mbhc_but_press_det");
--		if (irq < 0)
--			return irq;
-+		if (irq < 0) {
-+			ret = irq;
-+			goto err_disable_clk;
-+		}
- 
- 		ret = devm_request_threaded_irq(dev, irq, NULL,
- 				       mbhc_btn_press_irq_handler,
-@@ -1246,8 +1250,10 @@ static int pm8916_wcd_analog_spmi_probe(struct platform_device *pdev)
- 			dev_err(dev, "cannot request mbhc button press irq\n");
- 
- 		irq = platform_get_irq_byname(pdev, "mbhc_but_rel_det");
--		if (irq < 0)
--			return irq;
-+		if (irq < 0) {
-+			ret = irq;
-+			goto err_disable_clk;
-+		}
- 
- 		ret = devm_request_threaded_irq(dev, irq, NULL,
- 				       mbhc_btn_release_irq_handler,
-@@ -1264,6 +1270,10 @@ static int pm8916_wcd_analog_spmi_probe(struct platform_device *pdev)
- 	return devm_snd_soc_register_component(dev, &pm8916_wcd_analog,
- 				      pm8916_wcd_analog_dai,
- 				      ARRAY_SIZE(pm8916_wcd_analog_dai));
-+
-+err_disable_clk:
-+	clk_disable_unprepare(priv->mclk);
-+	return ret;
- }
- 
- static int pm8916_wcd_analog_spmi_remove(struct platform_device *pdev)
+ 	if (prepare_slave_config) {
+ 		int ret = prepare_slave_config(substream, params, &slave_config);
 -- 
 2.34.1
 
