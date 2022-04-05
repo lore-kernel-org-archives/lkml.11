@@ -2,50 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0FD11C4707A
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 23F89C35276
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 21:53:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1387396AbiDEVvI (ORCPT
+        id S1387477AbiDEVvL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 17:51:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43898 "EHLO
+        Tue, 5 Apr 2022 17:51:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48484 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349358AbiDEJtn (ORCPT
+        with ESMTP id S1348559AbiDEKr0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:49:43 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47A04A187;
-        Tue,  5 Apr 2022 02:44:26 -0700 (PDT)
+        Tue, 5 Apr 2022 06:47:26 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 454C752E44;
+        Tue,  5 Apr 2022 03:27:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D823261675;
-        Tue,  5 Apr 2022 09:44:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E1D3DC385A2;
-        Tue,  5 Apr 2022 09:44:24 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id A8ED8CE0B18;
+        Tue,  5 Apr 2022 10:27:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9A68FC385A0;
+        Tue,  5 Apr 2022 10:27:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649151865;
-        bh=C2yKtcHDtTIJB8VULrw6ebgViiHV2Kg1nkqwJGh5kjE=;
+        s=korg; t=1649154432;
+        bh=oHWJVGZerJimRvn7YMHPGhT+6D1L6vxaa4SWJ8iflK4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=iII4sSTRqP+YifhowUO2pdIpIJZvl40z2S8dDAwpbxhwxJ/X+atFYmtzogw4AHYla
-         aTNZV+iCOGIkYCLsg8kf9OG2I9/v+A1cb0U4Wn4N4cj1wAhggLLJ9tYFk4Tvu0AT51
-         CEL2gWvVXbMYlROq6fsEh6XdnG1n49vDVngOoyDk=
+        b=TfOk944POWLq+1CAZO8AjyBQ9TQDw/Ppi+FpQg2nYj5qQgyQEreXnJY2KvLJQJhkU
+         xnuZY+sym+6U4nzW1jnMFXjv/ckQ1yzNiRQmRQ0kfaIZ89OGeEF9kDVVQK9eZ7aMHK
+         Yr0KNhEQqkomkT1siiGPKWfeVR5KfqGseH2bw0AA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Andre Nash <alnash@fb.com>,
-        Neil Spring <ntspring@fb.com>, Wei Wang <weiwan@google.com>,
-        Yuchung Cheng <ycheng@google.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 568/913] tcp: ensure PMTU updates are processed during fastopen
-Date:   Tue,  5 Apr 2022 09:27:10 +0200
-Message-Id: <20220405070356.870224598@linuxfoundation.org>
+        stable@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
+        Ben Dooks <ben-linux@fluff.org>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        Alim Akhtar <alim.akhtar@samsung.com>,
+        linux-arm-kernel@lists.infradead.org,
+        linux-samsung-soc@vger.kernel.org, patches@armlinux.org.uk,
+        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
+Subject: [PATCH 5.10 577/599] ARM: 9187/1: JIVE: fix return value of __setup handler
+Date:   Tue,  5 Apr 2022 09:34:31 +0200
+Message-Id: <20220405070316.013498415@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
+References: <20220405070258.802373272@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -54,68 +54,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jakub Kicinski <kuba@kernel.org>
+From: Randy Dunlap <rdunlap@infradead.org>
 
-[ Upstream commit ed0c99dc0f499ff8b6e75b5ae6092ab42be1ad39 ]
+commit 8b2360c7157b462c4870d447d1e65d30ef31f9aa upstream.
 
-tp->rx_opt.mss_clamp is not populated, yet, during TFO send so we
-rise it to the local MSS. tp->mss_cache is not updated, however:
+__setup() handlers should return 1 to obsolete_checksetup() in
+init/main.c to indicate that the boot option has been handled.
+A return of 0 causes the boot option/value to be listed as an Unknown
+kernel parameter and added to init's (limited) argument or environment
+strings. Also, error return codes don't mean anything to
+obsolete_checksetup() -- only non-zero (usually 1) or zero.
+So return 1 from jive_mtdset().
 
-tcp_v6_connect():
-  tp->rx_opt.mss_clamp = IPV6_MIN_MTU - headers;
-  tcp_connect():
-     tcp_connect_init():
-       tp->mss_cache = min(mtu, tp->rx_opt.mss_clamp)
-     tcp_send_syn_data():
-       tp->rx_opt.mss_clamp = tp->advmss
-
-After recent fixes to ICMPv6 PTB handling we started dropping
-PMTU updates higher than tp->mss_cache. Because of the stale
-tp->mss_cache value PMTU updates during TFO are always dropped.
-
-Thanks to Wei for helping zero in on the problem and the fix!
-
-Fixes: c7bb4b89033b ("ipv6: tcp: drop silly ICMPv6 packet too big messages")
-Reported-by: Andre Nash <alnash@fb.com>
-Reported-by: Neil Spring <ntspring@fb.com>
-Reviewed-by: Wei Wang <weiwan@google.com>
-Acked-by: Yuchung Cheng <ycheng@google.com>
-Acked-by: Martin KaFai Lau <kafai@fb.com>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Reviewed-by: Eric Dumazet <edumazet@google.com>
-Link: https://lore.kernel.org/r/20220321165957.1769954-1-kuba@kernel.org
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 9db829f485c5 ("[ARM] JIVE: Initial machine support for Logitech Jive")
+Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+Cc: Ben Dooks <ben-linux@fluff.org>
+Cc: Krzysztof Kozlowski <krzk@kernel.org>
+Cc: Alim Akhtar <alim.akhtar@samsung.com>
+Cc: linux-arm-kernel@lists.infradead.org
+Cc: linux-samsung-soc@vger.kernel.org
+Cc: patches@armlinux.org.uk
+Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/ipv4/tcp_output.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ arch/arm/mach-s3c/mach-jive.c |    6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
-index 0492f6942778..369752f5f676 100644
---- a/net/ipv4/tcp_output.c
-+++ b/net/ipv4/tcp_output.c
-@@ -3734,6 +3734,7 @@ static void tcp_connect_queue_skb(struct sock *sk, struct sk_buff *skb)
-  */
- static int tcp_send_syn_data(struct sock *sk, struct sk_buff *syn)
- {
-+	struct inet_connection_sock *icsk = inet_csk(sk);
- 	struct tcp_sock *tp = tcp_sk(sk);
- 	struct tcp_fastopen_request *fo = tp->fastopen_req;
- 	int space, err = 0;
-@@ -3748,8 +3749,10 @@ static int tcp_send_syn_data(struct sock *sk, struct sk_buff *syn)
- 	 * private TCP options. The cost is reduced data space in SYN :(
- 	 */
- 	tp->rx_opt.mss_clamp = tcp_mss_clamp(tp, tp->rx_opt.mss_clamp);
-+	/* Sync mss_cache after updating the mss_clamp */
-+	tcp_sync_mss(sk, icsk->icsk_pmtu_cookie);
+--- a/arch/arm/mach-s3c/mach-jive.c
++++ b/arch/arm/mach-s3c/mach-jive.c
+@@ -236,11 +236,11 @@ static int __init jive_mtdset(char *opti
+ 	unsigned long set;
  
--	space = __tcp_mtu_to_mss(sk, inet_csk(sk)->icsk_pmtu_cookie) -
-+	space = __tcp_mtu_to_mss(sk, icsk->icsk_pmtu_cookie) -
- 		MAX_TCP_OPTION_SPACE;
+ 	if (options == NULL || options[0] == '\0')
+-		return 0;
++		return 1;
  
- 	space = min_t(size_t, space, fo->size);
--- 
-2.34.1
-
+ 	if (kstrtoul(options, 10, &set)) {
+ 		printk(KERN_ERR "failed to parse mtdset=%s\n", options);
+-		return 0;
++		return 1;
+ 	}
+ 
+ 	switch (set) {
+@@ -255,7 +255,7 @@ static int __init jive_mtdset(char *opti
+ 		       "using default.", set);
+ 	}
+ 
+-	return 0;
++	return 1;
+ }
+ 
+ /* parse the mtdset= option given to the kernel command line */
 
 
