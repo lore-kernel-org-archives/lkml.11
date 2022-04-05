@@ -2,121 +2,79 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CF494C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E3A4FC433FE
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:16:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1448032AbiDEUJo (ORCPT
+        id S1448116AbiDEUJs (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 16:09:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35054 "EHLO
+        Tue, 5 Apr 2022 16:09:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48642 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351878AbiDEKD2 (ORCPT
+        with ESMTP id S1442575AbiDEPhw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:03:28 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 423AF90FE4;
-        Tue,  5 Apr 2022 02:52:33 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 34412B81BAE;
-        Tue,  5 Apr 2022 09:52:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 89FC2C385A1;
-        Tue,  5 Apr 2022 09:52:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649152342;
-        bh=xm9x/FZCEUK/x/FQ/b38Amq5e9rRH5/BKJxWdvbog6E=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HpW8q0NakENo6VPBU4lYGa61UblongfTdWnDll/k/M4KxIsolxDFlNwSw19MACYX7
-         a9kql096w08UCcK9Db5FN/STqerwHqLTlDf3BGzOIocgwzeuGgSx8nTrq63CU/0hxj
-         eiEWkZMyVf7YYPu18o5ApnDAdE/zpqc8xhufXLjo=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Darren Hart <darren@os.amperecomputing.com>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 704/913] ACPI/APEI: Limit printable size of BERT table data
-Date:   Tue,  5 Apr 2022 09:29:26 +0200
-Message-Id: <20220405070400.937974988@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 5 Apr 2022 11:37:52 -0400
+Received: from mx0b-001ae601.pphosted.com (mx0b-001ae601.pphosted.com [67.231.152.168])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0113514D020;
+        Tue,  5 Apr 2022 06:52:16 -0700 (PDT)
+Received: from pps.filterd (m0077474.ppops.net [127.0.0.1])
+        by mx0b-001ae601.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 2356WHiA029192;
+        Tue, 5 Apr 2022 08:52:00 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cirrus.com; h=subject : from : to :
+ cc : references : message-id : date : mime-version : in-reply-to :
+ content-type : content-transfer-encoding; s=PODMain02222019;
+ bh=qdlWSFWox8pqXhYTtt1fv3TfdyVH568avS9AMQTckt4=;
+ b=PKbbBxLzsWnf3sZ3Gb91O1NnBu3X2FULdZyghJt+k/ySFZWpnEJbBhbq3OGlAckgvwzj
+ GSY32edVAbCt+8WDbEuthhPwyhh2VLkwRz7eC7+wj9z0mXrj0Nqit67eYGvis5eK9qtD
+ xmXrhvWrLiUnjygcvGcULUAX++Jv6U5i5hjIx3B6mUT4z9RzQao796w8nGlH0Wv+9A0e
+ VQSVnANh6o6STWuVZEYWgUNYi8EWGYSyHqamITND2wrQENPTL3CWb9s2DlX6vkN92/An
+ QcsFqq5zfOSs9WlKVqrekcZaRQ/0XCP28EhXuIcEADfYJanV/5toBpTefgsqZJjh+Wph EA== 
+Received: from ediex02.ad.cirrus.com ([84.19.233.68])
+        by mx0b-001ae601.pphosted.com (PPS) with ESMTPS id 3f6jwnujw8-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Tue, 05 Apr 2022 08:51:59 -0500
+Received: from EDIEX01.ad.cirrus.com (198.61.84.80) by EDIEX02.ad.cirrus.com
+ (198.61.84.81) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Tue, 5 Apr
+ 2022 14:51:49 +0100
+Received: from ediswmail.ad.cirrus.com (198.61.86.93) by EDIEX01.ad.cirrus.com
+ (198.61.84.80) with Microsoft SMTP Server id 15.1.2375.24 via Frontend
+ Transport; Tue, 5 Apr 2022 14:51:49 +0100
+Received: from [10.0.2.15] (AUSNPC0LSNW1.ad.cirrus.com [198.61.65.88])
+        by ediswmail.ad.cirrus.com (Postfix) with ESMTP id EFB40458;
+        Tue,  5 Apr 2022 13:51:48 +0000 (UTC)
+Subject: Re: [PATCH 5/5] ASoC: cs35l45: Add driver for Cirrus Logic CS35L45
+ Smart Amp
+From:   Richard Fitzgerald <rf@opensource.cirrus.com>
+To:     <broonie@kernel.org>, <robh+dt@kernel.org>
+CC:     <devicetree@vger.kernel.org>, <alsa-devel@alsa-project.org>,
+        <linux-kernel@vger.kernel.org>, <patches@opensource.cirrus.com>
+References: <20220318162943.1578102-1-rf@opensource.cirrus.com>
+ <20220318162943.1578102-6-rf@opensource.cirrus.com>
+Message-ID: <b9059240-fe6b-6549-d22d-de4bc2ab0c85@opensource.cirrus.com>
+Date:   Tue, 5 Apr 2022 14:51:48 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220318162943.1578102-6-rf@opensource.cirrus.com>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Proofpoint-ORIG-GUID: 1Q4LWg2XrZQXUi0dgcuoSCeoh3Ub3r62
+X-Proofpoint-GUID: 1Q4LWg2XrZQXUi0dgcuoSCeoh3Ub3r62
+X-Proofpoint-Spam-Reason: safe
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Darren Hart <darren@os.amperecomputing.com>
+On 18/03/2022 16:29, Richard Fitzgerald wrote:
 
-[ Upstream commit 3f8dec116210ca649163574ed5f8df1e3b837d07 ]
+> +static int cs35l45_i2c_probe(struct i2c_client *client,
+> +			     const struct i2c_device_id *id)
+> +{
 
-Platforms with large BERT table data can trigger soft lockup errors
-while attempting to print the entire BERT table data to the console at
-boot:
+Use the new .probe_new callback
 
-  watchdog: BUG: soft lockup - CPU#160 stuck for 23s! [swapper/0:1]
+> +static int cs35l45_spi_remove(struct spi_device *spi)
+> +{
 
-Observed on Ampere Altra systems with a single BERT record of ~250KB.
-
-The original bert driver appears to have assumed relatively small table
-data. Since it is impractical to reassemble large table data from
-interwoven console messages, and the table data is available in
-
-  /sys/firmware/acpi/tables/data/BERT
-
-limit the size for tables printed to the console to 1024 (for no reason
-other than it seemed like a good place to kick off the discussion, would
-appreciate feedback from existing users in terms of what size would
-maintain their current usage model).
-
-Alternatively, we could make printing a CONFIG option, use the
-bert_disable boot arg (or something similar), or use a debug log level.
-However, all those solutions require extra steps or change the existing
-behavior for small table data. Limiting the size preserves existing
-behavior on existing platforms with small table data, and eliminates the
-soft lockups for platforms with large table data, while still making it
-available.
-
-Signed-off-by: Darren Hart <darren@os.amperecomputing.com>
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/acpi/apei/bert.c | 8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/acpi/apei/bert.c b/drivers/acpi/apei/bert.c
-index 86211422f4ee..598fd19b65fa 100644
---- a/drivers/acpi/apei/bert.c
-+++ b/drivers/acpi/apei/bert.c
-@@ -29,6 +29,7 @@
- 
- #undef pr_fmt
- #define pr_fmt(fmt) "BERT: " fmt
-+#define ACPI_BERT_PRINT_MAX_LEN 1024
- 
- static int bert_disable;
- 
-@@ -58,8 +59,11 @@ static void __init bert_print_all(struct acpi_bert_region *region,
- 		}
- 
- 		pr_info_once("Error records from previous boot:\n");
--
--		cper_estatus_print(KERN_INFO HW_ERR, estatus);
-+		if (region_len < ACPI_BERT_PRINT_MAX_LEN)
-+			cper_estatus_print(KERN_INFO HW_ERR, estatus);
-+		else
-+			pr_info_once("Max print length exceeded, table data is available at:\n"
-+				     "/sys/firmware/acpi/tables/data/BERT");
- 
- 		/*
- 		 * Because the boot error source is "one-time polled" type,
--- 
-2.34.1
-
-
-
+This is now a void return
