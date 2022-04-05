@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 78106C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 13:24:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D902C43219
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 13:24:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353146AbiDENLA (ORCPT
+        id S1377560AbiDENND (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 09:11:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34656 "EHLO
+        Tue, 5 Apr 2022 09:13:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53732 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344194AbiDEJSh (ORCPT
+        with ESMTP id S1344206AbiDEJSi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:18:37 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 301AB9BADE;
-        Tue,  5 Apr 2022 02:05:19 -0700 (PDT)
+        Tue, 5 Apr 2022 05:18:38 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 075FBA0BD3;
+        Tue,  5 Apr 2022 02:05:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D3838B818F3;
-        Tue,  5 Apr 2022 09:05:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2E542C385A3;
-        Tue,  5 Apr 2022 09:05:16 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 984E6614E4;
+        Tue,  5 Apr 2022 09:05:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A4F75C385A0;
+        Tue,  5 Apr 2022 09:05:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649149516;
-        bh=H+wrthQDzaXAAOeIRN9O2lru9UGFfZdwB03CMg1HSOs=;
+        s=korg; t=1649149536;
+        bh=P3NtWkh9h3XTIlElB6Qko8BGssaTAw2AjqJ3aVe94Us=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hMWuAaqAWt9rQN92LpAvNUQ+4t7U33QAMWv2sZAc7SpXW0wsXVcdPFz41UPqqXmrC
-         r+3KQKBU7WUC2iSE7P+abOka1raME5QNGShOb51EX08UcWzfPRyWFdds+jk2x7VWGK
-         26cPmReklCRylZPq1h4NQb1bGAADKXsOdj/op8So=
+        b=gZGzocD7msL+90XsfgPs2yHG/4Mnt3nToZPCAhkUdxovaCXvDHWnXvY/jrg4TfMAf
+         BpDlVxvuKgHp2pUziQGNXg42MbqCaNbSNC+/RWzmwAIhRTOgLFCb1P2/KFYJxTlc9M
+         JSlqS6GpfFBJua/8do8NtY++Anm+yPM8gkPE+o6M=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tom Rix <trix@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
+        Luis Chamberlain <mcgrof@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0742/1017] octeontx2-af: initialize action variable
-Date:   Tue,  5 Apr 2022 09:27:35 +0200
-Message-Id: <20220405070416.288510791@linuxfoundation.org>
+Subject: [PATCH 5.16 0749/1017] lib/test: use after free in register_test_dev_kmod()
+Date:   Tue,  5 Apr 2022 09:27:42 +0200
+Message-Id: <20220405070416.493713880@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -50,107 +50,32 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tom Rix <trix@redhat.com>
+From: Dan Carpenter <dan.carpenter@oracle.com>
 
-[ Upstream commit 33b5bc9e703383e396f275d51fc4bafa48dbae5a ]
+[ Upstream commit dc0ce6cc4b133f5f2beb8b47dacae13a7d283c2c ]
 
-Clang static analysis reports this representative issue
-rvu_npc.c:898:15: warning: Assigned value is garbage
-  or undefined
-  req.match_id = action.match_id;
-               ^ ~~~~~~~~~~~~~~~
+The "test_dev" pointer is freed but then returned to the caller.
 
-The initial setting of action is conditional on
- if (is_mcam_entry_enabled(...))
-The later check of action.op will sometimes be garbage.
-So initialize action.
-
-Reduce setting of
-  *(u64 *)&action = 0x00;
-to
-  *(u64 *)&action = 0;
-
-Fixes: 967db3529eca ("octeontx2-af: add support for multicast/promisc packet replication feature")
-Signed-off-by: Tom Rix <trix@redhat.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Fixes: d9c6a72d6fa2 ("kmod: add test driver to stress test the module loader")
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+Signed-off-by: Luis Chamberlain <mcgrof@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../net/ethernet/marvell/octeontx2/af/rvu_npc.c   | 15 +++++++--------
- 1 file changed, 7 insertions(+), 8 deletions(-)
+ lib/test_kmod.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_npc.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu_npc.c
-index 91f86d77cd41..3a31fb8cc155 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_npc.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_npc.c
-@@ -605,7 +605,7 @@ void rvu_npc_install_ucast_entry(struct rvu *rvu, u16 pcifunc,
- 	struct npc_install_flow_req req = { 0 };
- 	struct npc_install_flow_rsp rsp = { 0 };
- 	struct npc_mcam *mcam = &rvu->hw->mcam;
--	struct nix_rx_action action;
-+	struct nix_rx_action action = { 0 };
- 	int blkaddr, index;
- 
- 	/* AF's and SDP VFs work in promiscuous mode */
-@@ -626,7 +626,6 @@ void rvu_npc_install_ucast_entry(struct rvu *rvu, u16 pcifunc,
- 		*(u64 *)&action = npc_get_mcam_action(rvu, mcam,
- 						      blkaddr, index);
- 	} else {
--		*(u64 *)&action = 0x00;
- 		action.op = NIX_RX_ACTIONOP_UCAST;
- 		action.pf_func = pcifunc;
- 	}
-@@ -657,7 +656,7 @@ void rvu_npc_install_promisc_entry(struct rvu *rvu, u16 pcifunc,
- 	struct npc_mcam *mcam = &rvu->hw->mcam;
- 	struct rvu_hwinfo *hw = rvu->hw;
- 	int blkaddr, ucast_idx, index;
--	struct nix_rx_action action;
-+	struct nix_rx_action action = { 0 };
- 	u64 relaxed_mask;
- 
- 	if (!hw->cap.nix_rx_multicast && is_cgx_vf(rvu, pcifunc))
-@@ -685,14 +684,14 @@ void rvu_npc_install_promisc_entry(struct rvu *rvu, u16 pcifunc,
- 						      blkaddr, ucast_idx);
- 
- 	if (action.op != NIX_RX_ACTIONOP_RSS) {
--		*(u64 *)&action = 0x00;
-+		*(u64 *)&action = 0;
- 		action.op = NIX_RX_ACTIONOP_UCAST;
+diff --git a/lib/test_kmod.c b/lib/test_kmod.c
+index ce1589391413..cb800b1d0d99 100644
+--- a/lib/test_kmod.c
++++ b/lib/test_kmod.c
+@@ -1149,6 +1149,7 @@ static struct kmod_test_device *register_test_dev_kmod(void)
+ 	if (ret) {
+ 		pr_err("could not register misc device: %d\n", ret);
+ 		free_test_dev_kmod(test_dev);
++		test_dev = NULL;
+ 		goto out;
  	}
  
- 	/* RX_ACTION set to MCAST for CGX PF's */
- 	if (hw->cap.nix_rx_multicast && pfvf->use_mce_list &&
- 	    is_pf_cgxmapped(rvu, rvu_get_pf(pcifunc))) {
--		*(u64 *)&action = 0x00;
-+		*(u64 *)&action = 0;
- 		action.op = NIX_RX_ACTIONOP_MCAST;
- 		pfvf = rvu_get_pfvf(rvu, pcifunc & ~RVU_PFVF_FUNC_MASK);
- 		action.index = pfvf->promisc_mce_idx;
-@@ -832,7 +831,7 @@ void rvu_npc_install_allmulti_entry(struct rvu *rvu, u16 pcifunc, int nixlf,
- 	struct rvu_hwinfo *hw = rvu->hw;
- 	int blkaddr, ucast_idx, index;
- 	u8 mac_addr[ETH_ALEN] = { 0 };
--	struct nix_rx_action action;
-+	struct nix_rx_action action = { 0 };
- 	struct rvu_pfvf *pfvf;
- 	u16 vf_func;
- 
-@@ -861,14 +860,14 @@ void rvu_npc_install_allmulti_entry(struct rvu *rvu, u16 pcifunc, int nixlf,
- 							blkaddr, ucast_idx);
- 
- 	if (action.op != NIX_RX_ACTIONOP_RSS) {
--		*(u64 *)&action = 0x00;
-+		*(u64 *)&action = 0;
- 		action.op = NIX_RX_ACTIONOP_UCAST;
- 		action.pf_func = pcifunc;
- 	}
- 
- 	/* RX_ACTION set to MCAST for CGX PF's */
- 	if (hw->cap.nix_rx_multicast && pfvf->use_mce_list) {
--		*(u64 *)&action = 0x00;
-+		*(u64 *)&action = 0;
- 		action.op = NIX_RX_ACTIONOP_MCAST;
- 		action.index = pfvf->mcast_mce_idx;
- 	}
 -- 
 2.34.1
 
