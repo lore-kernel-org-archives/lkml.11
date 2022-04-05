@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 54872C4707E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 95522C3527D
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:01:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235696AbiDEIAC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 04:00:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52976 "EHLO
+        id S235751AbiDEIAR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 04:00:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34264 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233668AbiDEHsZ (ORCPT
+        with ESMTP id S232178AbiDEHpp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 03:48:25 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D079C4;
-        Tue,  5 Apr 2022 00:46:28 -0700 (PDT)
+        Tue, 5 Apr 2022 03:45:45 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43A4498592;
+        Tue,  5 Apr 2022 00:41:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BFE9EB81B98;
-        Tue,  5 Apr 2022 07:46:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1186DC340EE;
-        Tue,  5 Apr 2022 07:46:24 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C26C6B81B75;
+        Tue,  5 Apr 2022 07:41:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3625EC340EE;
+        Tue,  5 Apr 2022 07:41:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649144785;
-        bh=9hCBRRhKdCVoieEBBCzN/gKOJEsz/ukjx7l7GEHMlns=;
+        s=korg; t=1649144490;
+        bh=6A9UA5U7G9iRpRC1UBSpjmRYtdP73I5SljYYhYL/gGo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kuULiJawDXFHSHsxcOmldLrVGhlqdhokUFxnqPkKTWgB/eD2JE7m4qn8xg5owFIg3
-         rArj2VGuj2XL8e/hnkxO6YV364U7IaJuxzy649K966jOHCEtNs8Svt3L78pF91XhZw
-         rQO7jPJg4ORTJJYEPu7LHCefKbh1OZrvS1GNLzvY=
+        b=MUyY7iGYXJ04Ld+WdwJDdYiW15hPdWdG2h5Mc3s3O7ecOKYmgCanEKG0Z7zKcrn9o
+         D+n8fPrt4U7ZcTiBzVGZc5A7WKFManAASXVDlmDbKYuAlAwao5+Pwd+AS3cU76UA9d
+         cu9wp73cPj9lQtAkN5VvhBwzvK35PqdqxOexyfqA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ameer Hamza <amhamza.mgc@gmail.com>,
-        Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>,
-        Stanimir Varbanov <stanimir.varbanov@linaro.org>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>
-Subject: [PATCH 5.17 0169/1126] media: venus: vdec: fixed possible memory leak issue
-Date:   Tue,  5 Apr 2022 09:15:16 +0200
-Message-Id: <20220405070412.559862423@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Aidan MacDonald <aidanmacdonald.0x0@gmail.com>,
+        Paul Cercueil <paul@crapouillou.net>,
+        Linus Walleij <linus.walleij@linaro.org>
+Subject: [PATCH 5.17 0064/1126] pinctrl: ingenic: Fix regmap on X series SoCs
+Date:   Tue,  5 Apr 2022 09:13:31 +0200
+Message-Id: <20220405070409.448866509@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -50,48 +50,148 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ameer Hamza <amhamza.mgc@gmail.com>
+From: Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
 
-commit 8403fdd775858a7bf04868d43daea0acbe49ddfc upstream.
+commit 9279c00fa40250e5cb23a8423dce7dbc6516a0ea upstream.
 
-The venus_helper_alloc_dpb_bufs() implementation allows an early return
-on an error path when checking the id from ida_alloc_min() which would
-not release the earlier buffer allocation.
+The X series Ingenic SoCs have a shadow GPIO group which is at a higher
+offset than the other groups, and is used for all GPIO configuration.
+The regmap did not take this offset into account and set max_register
+too low, so the regmap API blocked writes to the shadow group, which
+made the pinctrl driver unable to configure any pins.
 
-Move the direct kfree() from the error checking of dma_alloc_attrs() to
-the common fail path to ensure that allocations are released on all
-error paths in this function.
+Fix this by adding regmap access tables to the chip info. The way that
+max_register was computed was also off by one, since max_register is an
+inclusive bound, not an exclusive bound; this has been fixed.
 
-Addresses-Coverity: 1494120 ("Resource leak")
-
-cc: stable@vger.kernel.org # 5.16+
-Fixes: 40d87aafee29 ("media: venus: vdec: decoded picture buffer handling during reconfig sequence")
-Signed-off-by: Ameer Hamza <amhamza.mgc@gmail.com>
-Reviewed-by: Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>
-Signed-off-by: Stanimir Varbanov <stanimir.varbanov@linaro.org>
-Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+Cc: stable@vger.kernel.org
+Signed-off-by: Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
+Fixes: 6626a76ef857 ("pinctrl: ingenic: Add .max_register in  regmap_config")
+Reviewed-by: Paul Cercueil <paul@crapouillou.net>
+Link: https://lore.kernel.org/r/20220317000740.1045204-1-aidanmacdonald.0x0@gmail.com
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/media/platform/qcom/venus/helpers.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/pinctrl/pinctrl-ingenic.c |   46 +++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 45 insertions(+), 1 deletion(-)
 
---- a/drivers/media/platform/qcom/venus/helpers.c
-+++ b/drivers/media/platform/qcom/venus/helpers.c
-@@ -189,7 +189,6 @@ int venus_helper_alloc_dpb_bufs(struct v
- 		buf->va = dma_alloc_attrs(dev, buf->size, &buf->da, GFP_KERNEL,
- 					  buf->attrs);
- 		if (!buf->va) {
--			kfree(buf);
- 			ret = -ENOMEM;
- 			goto fail;
- 		}
-@@ -209,6 +208,7 @@ int venus_helper_alloc_dpb_bufs(struct v
- 	return 0;
+--- a/drivers/pinctrl/pinctrl-ingenic.c
++++ b/drivers/pinctrl/pinctrl-ingenic.c
+@@ -119,6 +119,8 @@ struct ingenic_chip_info {
+ 	unsigned int num_functions;
  
- fail:
-+	kfree(buf);
- 	venus_helper_free_dpb_bufs(inst);
- 	return ret;
- }
+ 	const u32 *pull_ups, *pull_downs;
++
++	const struct regmap_access_table *access_table;
+ };
+ 
+ struct ingenic_pinctrl {
+@@ -2179,6 +2181,17 @@ static const struct function_desc x1000_
+ 	{ "mac", x1000_mac_groups, ARRAY_SIZE(x1000_mac_groups), },
+ };
+ 
++static const struct regmap_range x1000_access_ranges[] = {
++	regmap_reg_range(0x000, 0x400 - 4),
++	regmap_reg_range(0x700, 0x800 - 4),
++};
++
++/* shared with X1500 */
++static const struct regmap_access_table x1000_access_table = {
++	.yes_ranges = x1000_access_ranges,
++	.n_yes_ranges = ARRAY_SIZE(x1000_access_ranges),
++};
++
+ static const struct ingenic_chip_info x1000_chip_info = {
+ 	.num_chips = 4,
+ 	.reg_offset = 0x100,
+@@ -2189,6 +2202,7 @@ static const struct ingenic_chip_info x1
+ 	.num_functions = ARRAY_SIZE(x1000_functions),
+ 	.pull_ups = x1000_pull_ups,
+ 	.pull_downs = x1000_pull_downs,
++	.access_table = &x1000_access_table,
+ };
+ 
+ static int x1500_uart0_data_pins[] = { 0x4a, 0x4b, };
+@@ -2300,6 +2314,7 @@ static const struct ingenic_chip_info x1
+ 	.num_functions = ARRAY_SIZE(x1500_functions),
+ 	.pull_ups = x1000_pull_ups,
+ 	.pull_downs = x1000_pull_downs,
++	.access_table = &x1000_access_table,
+ };
+ 
+ static const u32 x1830_pull_ups[4] = {
+@@ -2506,6 +2521,16 @@ static const struct function_desc x1830_
+ 	{ "mac", x1830_mac_groups, ARRAY_SIZE(x1830_mac_groups), },
+ };
+ 
++static const struct regmap_range x1830_access_ranges[] = {
++	regmap_reg_range(0x0000, 0x4000 - 4),
++	regmap_reg_range(0x7000, 0x8000 - 4),
++};
++
++static const struct regmap_access_table x1830_access_table = {
++	.yes_ranges = x1830_access_ranges,
++	.n_yes_ranges = ARRAY_SIZE(x1830_access_ranges),
++};
++
+ static const struct ingenic_chip_info x1830_chip_info = {
+ 	.num_chips = 4,
+ 	.reg_offset = 0x1000,
+@@ -2516,6 +2541,7 @@ static const struct ingenic_chip_info x1
+ 	.num_functions = ARRAY_SIZE(x1830_functions),
+ 	.pull_ups = x1830_pull_ups,
+ 	.pull_downs = x1830_pull_downs,
++	.access_table = &x1830_access_table,
+ };
+ 
+ static const u32 x2000_pull_ups[5] = {
+@@ -2969,6 +2995,17 @@ static const struct function_desc x2000_
+ 	{ "otg", x2000_otg_groups, ARRAY_SIZE(x2000_otg_groups), },
+ };
+ 
++static const struct regmap_range x2000_access_ranges[] = {
++	regmap_reg_range(0x000, 0x500 - 4),
++	regmap_reg_range(0x700, 0x800 - 4),
++};
++
++/* shared with X2100 */
++static const struct regmap_access_table x2000_access_table = {
++	.yes_ranges = x2000_access_ranges,
++	.n_yes_ranges = ARRAY_SIZE(x2000_access_ranges),
++};
++
+ static const struct ingenic_chip_info x2000_chip_info = {
+ 	.num_chips = 5,
+ 	.reg_offset = 0x100,
+@@ -2979,6 +3016,7 @@ static const struct ingenic_chip_info x2
+ 	.num_functions = ARRAY_SIZE(x2000_functions),
+ 	.pull_ups = x2000_pull_ups,
+ 	.pull_downs = x2000_pull_downs,
++	.access_table = &x2000_access_table,
+ };
+ 
+ static const u32 x2100_pull_ups[5] = {
+@@ -3189,6 +3227,7 @@ static const struct ingenic_chip_info x2
+ 	.num_functions = ARRAY_SIZE(x2100_functions),
+ 	.pull_ups = x2100_pull_ups,
+ 	.pull_downs = x2100_pull_downs,
++	.access_table = &x2000_access_table,
+ };
+ 
+ static u32 ingenic_gpio_read_reg(struct ingenic_gpio_chip *jzgc, u8 reg)
+@@ -4168,7 +4207,12 @@ static int __init ingenic_pinctrl_probe(
+ 		return PTR_ERR(base);
+ 
+ 	regmap_config = ingenic_pinctrl_regmap_config;
+-	regmap_config.max_register = chip_info->num_chips * chip_info->reg_offset;
++	if (chip_info->access_table) {
++		regmap_config.rd_table = chip_info->access_table;
++		regmap_config.wr_table = chip_info->access_table;
++	} else {
++		regmap_config.max_register = chip_info->num_chips * chip_info->reg_offset - 4;
++	}
+ 
+ 	jzpc->map = devm_regmap_init_mmio(dev, base, &regmap_config);
+ 	if (IS_ERR(jzpc->map)) {
 
 
