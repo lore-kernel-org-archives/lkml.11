@@ -2,47 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 784A5C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B975FC43217
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 02:08:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1846701AbiDFCIO (ORCPT
+        id S1846751AbiDFCIe (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 22:08:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44248 "EHLO
+        Tue, 5 Apr 2022 22:08:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59182 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349425AbiDEJtu (ORCPT
+        with ESMTP id S1356255AbiDEKXc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:49:50 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58AD822BFD;
-        Tue,  5 Apr 2022 02:45:34 -0700 (PDT)
+        Tue, 5 Apr 2022 06:23:32 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3B32BABBF;
+        Tue,  5 Apr 2022 03:08:04 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 068D8B818F3;
-        Tue,  5 Apr 2022 09:45:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6F8FCC385A1;
-        Tue,  5 Apr 2022 09:45:31 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8CAD8B81B7A;
+        Tue,  5 Apr 2022 10:08:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CFEE7C385A1;
+        Tue,  5 Apr 2022 10:08:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649151931;
-        bh=MMP6k/LNUR1jVifTaiPGoAePLM2M7XdwQlkDS3TOkuU=;
+        s=korg; t=1649153282;
+        bh=xMuBtpSMi0tR4uqVjAuMkRQrPn1kVymN+i1l75YiSig=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Ahvqw/D85LTq4YZpIhKbGjbec1BZfBKVRTXX/zOnXq72fH9BPihDCn7qdJOPaqQlF
-         ofBROGXliKuFT0KaKnEC1CAOD1H3eVX8SYQhKcza7GU1WlY4bsGlJCBPEhu8TTVNP2
-         VeQllPDy5Cbpr3x2DrsmuSGWQHIsEGR3XHPDSQ+Y=
+        b=0qIRl9cLfbPXOCUdA2UgUzcK9y3DNd4cokvmPuApIPvvrA4G+3pTjODJihlc4nTzD
+         UVP6EgLS6BYuiQF3RbujKKl0k/01AmJxAEeojrvnMbd/e9R5YnsxLkuFNLv6J5L10F
+         ItchsbGdB/OC5re4zgjM1jjqdF/xEQNZo+Ro34ds=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Marcelo Schmitt <marcelo.schmitt1@gmail.com>,
+        stable@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
+        Igor Zhbanov <i.zhbanov@omprussia.ru>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 594/913] staging:iio:adc:ad7280a: Fix handing of device address bit reversing.
-Date:   Tue,  5 Apr 2022 09:27:36 +0200
-Message-Id: <20220405070357.647708324@linuxfoundation.org>
+Subject: [PATCH 5.10 168/599] clocksource: acpi_pm: fix return value of __setup handler
+Date:   Tue,  5 Apr 2022 09:27:42 +0200
+Message-Id: <20220405070303.841916069@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
+References: <20220405070258.802373272@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,42 +51,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+From: Randy Dunlap <rdunlap@infradead.org>
 
-[ Upstream commit f281e4ddbbc0b60f061bc18a2834e9363ba85f9f ]
+[ Upstream commit 6a861abceecb68497dd82a324fee45a5332dcece ]
 
-The bit reversal was wrong for bits 1 and 3 of the 5 bits.
-Result is driver failure to probe if you have more than 2 daisy-chained
-devices.  Discovered via QEMU based device emulation.
+__setup() handlers should return 1 to obsolete_checksetup() in
+init/main.c to indicate that the boot option has been handled.
+A return of 0 causes the boot option/value to be listed as an Unknown
+kernel parameter and added to init's (limited) environment strings.
 
-Fixes tag is for when this moved from a macro to a function, but it
-was broken before that.
+The __setup() handler interface isn't meant to handle negative return
+values -- they are non-zero, so they mean "handled" (like a return
+value of 1 does), but that's just a quirk. So return 1 from
+parse_pmtmr(). Also print a warning message if kstrtouint() returns
+an error.
 
-Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Fixes: 065a7c0b1fec ("Staging: iio: adc: ad7280a.c: Fixed Macro argument reuse")
-Reviewed-by: Marcelo Schmitt <marcelo.schmitt1@gmail.com>
-Link: https://lore.kernel.org/r/20220206190328.333093-2-jic23@kernel.org
+Fixes: 6b148507d3d0 ("pmtmr: allow command line override of ioport")
+Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+Reported-by: Igor Zhbanov <i.zhbanov@omprussia.ru>
+Link: lore.kernel.org/r/64644a2f-4a20-bab3-1e15-3b2cdd0defe3@omprussia.ru
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/staging/iio/adc/ad7280a.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/clocksource/acpi_pm.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/staging/iio/adc/ad7280a.c b/drivers/staging/iio/adc/ad7280a.c
-index fef0055b8990..20183b2ea127 100644
---- a/drivers/staging/iio/adc/ad7280a.c
-+++ b/drivers/staging/iio/adc/ad7280a.c
-@@ -107,9 +107,9 @@
- static unsigned int ad7280a_devaddr(unsigned int addr)
- {
- 	return ((addr & 0x1) << 4) |
--	       ((addr & 0x2) << 3) |
-+	       ((addr & 0x2) << 2) |
- 	       (addr & 0x4) |
--	       ((addr & 0x8) >> 3) |
-+	       ((addr & 0x8) >> 2) |
- 	       ((addr & 0x10) >> 4);
- }
+diff --git a/drivers/clocksource/acpi_pm.c b/drivers/clocksource/acpi_pm.c
+index eb596ff9e7bb..279ddff81ab4 100644
+--- a/drivers/clocksource/acpi_pm.c
++++ b/drivers/clocksource/acpi_pm.c
+@@ -229,8 +229,10 @@ static int __init parse_pmtmr(char *arg)
+ 	int ret;
  
+ 	ret = kstrtouint(arg, 16, &base);
+-	if (ret)
+-		return ret;
++	if (ret) {
++		pr_warn("PMTMR: invalid 'pmtmr=' value: '%s'\n", arg);
++		return 1;
++	}
+ 
+ 	pr_info("PMTMR IOPort override: 0x%04x -> 0x%04x\n", pmtmr_ioport,
+ 		base);
 -- 
 2.34.1
 
