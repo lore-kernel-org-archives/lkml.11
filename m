@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C45E1C352B6
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F422C352AA
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:56:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379905AbiDEMx1 (ORCPT
+        id S1379703AbiDEMxV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 08:53:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58014 "EHLO
+        Tue, 5 Apr 2022 08:53:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41988 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343509AbiDEJM1 (ORCPT
+        with ESMTP id S243306AbiDEJIx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:12:27 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A4CE2714B;
-        Tue,  5 Apr 2022 02:00:18 -0700 (PDT)
+        Tue, 5 Apr 2022 05:08:53 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F06EF9F6F6;
+        Tue,  5 Apr 2022 01:57:56 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D0A5DB81A12;
-        Tue,  5 Apr 2022 09:00:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2B01DC385A0;
-        Tue,  5 Apr 2022 09:00:15 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 66F62615BB;
+        Tue,  5 Apr 2022 08:57:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 784E2C385A5;
+        Tue,  5 Apr 2022 08:57:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649149216;
-        bh=765nafgncPzYKlYm6M6NLm/ZoKn9hQoPlzRpDgfuRZE=;
+        s=korg; t=1649149075;
+        bh=qQkG5DprhOohE/vv7FqAicjZ5OSnoUow72LwglFkNNY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0HeO2xG6wp6DYPLumhY/tCslnJY0wbS/IVUAZyt3uzh5gDSNb74kQSQVSvauaJ1Na
-         RKJ55Qu2JqbjfB8F1OHXVi20UKSceakyKoozRsZjNM4KIGn6AUFCFydHO0egXbR9Rb
-         0Y1euWt5dxfHihN9gqfbnkpqs3oiJ9nVf9Z7NKi8=
+        b=A8d+imwd02nQSix9ptaml37ORnduFW2HwAIGjyiAPidEgaMxZQssu+KU2EBykAJt7
+         XGcPTFxXmNEmV3wPDZ4zPIT2rMz/itrmYpk1CsZtuuBWbZUa2E/KBayTAzTzIivmFf
+         PipxGL2vVIDkKi949wE11t3pxUo/oG2+RPrKux4A=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Oliver Hartkopp <socketcan@hartkopp.net>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
+        stable@vger.kernel.org, TOTE Robot <oslab@tsinghua.edu.cn>,
+        Jia-Ju Bai <baijiaju1990@gmail.com>,
+        Hans de Goede <hdegoede@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0589/1017] vxcan: enable local echo for sent CAN frames
-Date:   Tue,  5 Apr 2022 09:25:02 +0200
-Message-Id: <20220405070411.762861475@linuxfoundation.org>
+Subject: [PATCH 5.16 0584/1017] platform/x86: huawei-wmi: check the return value of device_create_file()
+Date:   Tue,  5 Apr 2022 09:24:57 +0200
+Message-Id: <20220405070411.615032299@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -50,44 +51,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Oliver Hartkopp <socketcan@hartkopp.net>
+From: Jia-Ju Bai <baijiaju1990@gmail.com>
 
-[ Upstream commit 259bdba27e32368b4404f69d613b1c1014c07cbf ]
+[ Upstream commit c91a5b1c221a58d008485cf7d02ccce73108b119 ]
 
-The vxcan driver provides a pair of virtual CAN interfaces to exchange
-CAN traffic between different namespaces - analogue to veth.
+The function device_create_file() in huawei_wmi_battery_add() can fail,
+so its return value should be checked.
 
-In opposite to the vcan driver the local sent CAN traffic on this interface
-is not echo'ed back but only sent to the remote peer. This is unusual and
-can be easily fixed by removing IFF_ECHO from the netdevice flags that
-are set for vxcan interfaces by default at startup.
-
-Without IFF_ECHO set on driver level, the local sent CAN frames are echo'ed
-in af_can.c in can_send(). This patch makes vxcan interfaces adopt the
-same local echo behavior and procedures as known from the vcan interfaces.
-
-Fixes: a8f820a380a2 ("can: add Virtual CAN Tunnel driver (vxcan)")
-Link: https://lore.kernel.org/all/20220309120416.83514-5-socketcan@hartkopp.net
-Signed-off-by: Oliver Hartkopp <socketcan@hartkopp.net>
-Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
+Fixes: 355a070b09ab ("platform/x86: huawei-wmi: Add battery charging thresholds")
+Reported-by: TOTE Robot <oslab@tsinghua.edu.cn>
+Signed-off-by: Jia-Ju Bai <baijiaju1990@gmail.com>
+Link: https://lore.kernel.org/r/20220303022421.313-1-baijiaju1990@gmail.com
+Reviewed-by: Hans de Goede <hdegoede@redhat.com>
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/can/vxcan.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/platform/x86/huawei-wmi.c | 13 ++++++++++---
+ 1 file changed, 10 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/can/vxcan.c b/drivers/net/can/vxcan.c
-index 8861a7d875e7..be5566168d0f 100644
---- a/drivers/net/can/vxcan.c
-+++ b/drivers/net/can/vxcan.c
-@@ -148,7 +148,7 @@ static void vxcan_setup(struct net_device *dev)
- 	dev->hard_header_len	= 0;
- 	dev->addr_len		= 0;
- 	dev->tx_queue_len	= 0;
--	dev->flags		= (IFF_NOARP|IFF_ECHO);
-+	dev->flags		= IFF_NOARP;
- 	dev->netdev_ops		= &vxcan_netdev_ops;
- 	dev->needs_free_netdev	= true;
+diff --git a/drivers/platform/x86/huawei-wmi.c b/drivers/platform/x86/huawei-wmi.c
+index a2d846c4a7ee..eac3e6b4ea11 100644
+--- a/drivers/platform/x86/huawei-wmi.c
++++ b/drivers/platform/x86/huawei-wmi.c
+@@ -470,10 +470,17 @@ static DEVICE_ATTR_RW(charge_control_thresholds);
  
+ static int huawei_wmi_battery_add(struct power_supply *battery)
+ {
+-	device_create_file(&battery->dev, &dev_attr_charge_control_start_threshold);
+-	device_create_file(&battery->dev, &dev_attr_charge_control_end_threshold);
++	int err = 0;
+ 
+-	return 0;
++	err = device_create_file(&battery->dev, &dev_attr_charge_control_start_threshold);
++	if (err)
++		return err;
++
++	err = device_create_file(&battery->dev, &dev_attr_charge_control_end_threshold);
++	if (err)
++		device_remove_file(&battery->dev, &dev_attr_charge_control_start_threshold);
++
++	return err;
+ }
+ 
+ static int huawei_wmi_battery_remove(struct power_supply *battery)
 -- 
 2.34.1
 
