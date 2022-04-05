@@ -2,46 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 841F8C4167D
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 22:55:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D0ED8C4167B
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 22:55:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1456846AbiDEWqr (ORCPT
+        id S1456695AbiDEWqj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 18:46:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59208 "EHLO
+        Tue, 5 Apr 2022 18:46:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50640 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349898AbiDEJv6 (ORCPT
+        with ESMTP id S1357877AbiDEK1W (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:51:58 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B95372E08C;
-        Tue,  5 Apr 2022 02:50:00 -0700 (PDT)
+        Tue, 5 Apr 2022 06:27:22 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2AA746B0C;
+        Tue,  5 Apr 2022 03:10:55 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 56C1F61577;
-        Tue,  5 Apr 2022 09:50:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6E6D9C385A1;
-        Tue,  5 Apr 2022 09:49:59 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8A7BA6167E;
+        Tue,  5 Apr 2022 10:10:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9F65DC385A0;
+        Tue,  5 Apr 2022 10:10:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649152199;
-        bh=4iVXIPkT3ePxCznX2ZMKrI8so8HKS+0aauaqn24SB9c=;
+        s=korg; t=1649153455;
+        bh=zEeKefMZYRslSx40JLS5O+6+t08QoeqPa7ZuL/Iyqg4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=yAuVgwe53/xlbGYREHj6tplk0C8A2Yh3HJXFgDQd6PTbbemsAe3CuK5HuGvC1tHG4
-         V47jSh0V0liNk3j49+IE1djrr1ImaNIcxZMMuWVEpM/+h0O2n5ajR0rRb/GBArvZ07
-         g4+9FZh834EWr/yNJJ5VkN7hnrLlN0AluFwyH7+Q=
+        b=NWQWj0hk9T11gq278HViXNu44Fixv6L+nd+vwZcTjvB63Kr9JbeFxyR4c2q8MfgEk
+         4KuIlWXVPoDBN+SAR50SzUquqO2pKkeQmtFf619Ba0QL3Smm4RbVEYtBK7jIwtpTCV
+         obdRGLpSqLxg11LM5cDro8OBM3AF1fakTz0lyEYw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kai Ye <yekai13@huawei.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 690/913] crypto: hisilicon/sec - not need to enable sm4 extra mode at HW V3
-Date:   Tue,  5 Apr 2022 09:29:12 +0200
-Message-Id: <20220405070400.517367958@linuxfoundation.org>
+        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
+        Helge Deller <deller@gmx.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 202/599] video: fbdev: fbcvt.c: fix printing in fb_cvt_print_name()
+Date:   Tue,  5 Apr 2022 09:28:16 +0200
+Message-Id: <20220405070304.852492027@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
+References: <20220405070258.802373272@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,38 +49,109 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kai Ye <yekai13@huawei.com>
+From: Dan Carpenter <dan.carpenter@oracle.com>
 
-[ Upstream commit f8a2652826444d13181061840b96a5d975d5b6c6 ]
+[ Upstream commit 78482af095abd9f4f29f1aa3fe575d25c6ae3028 ]
 
-It is not need to enable sm4 extra mode in at HW V3. Here is fix it.
+This code has two bugs:
+1) "cnt" is 255 but the size of the buffer is 256 so the last byte is
+   not used.
+2) If we try to print more than 255 characters then "cnt" will be
+   negative and that will trigger a WARN() in snprintf(). The fix for
+   this is to use scnprintf() instead of snprintf().
 
-Signed-off-by: Kai Ye <yekai13@huawei.com>
-Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+We can re-write this code to be cleaner:
+1) Rename "offset" to "off" because that's shorter.
+2) Get rid of the "cnt" variable and just use "size - off" directly.
+3) Get rid of the "read" variable and just increment "off" directly.
+
+Fixes: 96fe6a2109db ("fbdev: Add VESA Coordinated Video Timings (CVT) support")
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+Signed-off-by: Helge Deller <deller@gmx.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/crypto/hisilicon/sec2/sec_main.c | 8 +++++---
- 1 file changed, 5 insertions(+), 3 deletions(-)
+ drivers/video/fbdev/core/fbcvt.c | 53 +++++++++++++-------------------
+ 1 file changed, 21 insertions(+), 32 deletions(-)
 
-diff --git a/drivers/crypto/hisilicon/sec2/sec_main.c b/drivers/crypto/hisilicon/sec2/sec_main.c
-index 90551bf38b52..03d239cfdf8c 100644
---- a/drivers/crypto/hisilicon/sec2/sec_main.c
-+++ b/drivers/crypto/hisilicon/sec2/sec_main.c
-@@ -443,9 +443,11 @@ static int sec_engine_init(struct hisi_qm *qm)
+diff --git a/drivers/video/fbdev/core/fbcvt.c b/drivers/video/fbdev/core/fbcvt.c
+index 55d2bd0ce5c0..64843464c661 100644
+--- a/drivers/video/fbdev/core/fbcvt.c
++++ b/drivers/video/fbdev/core/fbcvt.c
+@@ -214,9 +214,11 @@ static u32 fb_cvt_aspect_ratio(struct fb_cvt_data *cvt)
+ static void fb_cvt_print_name(struct fb_cvt_data *cvt)
+ {
+ 	u32 pixcount, pixcount_mod;
+-	int cnt = 255, offset = 0, read = 0;
+-	u8 *buf = kzalloc(256, GFP_KERNEL);
++	int size = 256;
++	int off = 0;
++	u8 *buf;
  
- 	writel(SEC_SAA_ENABLE, qm->io_base + SEC_SAA_EN_REG);
++	buf = kzalloc(size, GFP_KERNEL);
+ 	if (!buf)
+ 		return;
  
--	/* Enable sm4 extra mode, as ctr/ecb */
--	writel_relaxed(SEC_BD_ERR_CHK_EN0,
--		       qm->io_base + SEC_BD_ERR_CHK_EN_REG0);
-+	/* HW V2 enable sm4 extra mode, as ctr/ecb */
-+	if (qm->ver < QM_HW_V3)
-+		writel_relaxed(SEC_BD_ERR_CHK_EN0,
-+			       qm->io_base + SEC_BD_ERR_CHK_EN_REG0);
+@@ -224,43 +226,30 @@ static void fb_cvt_print_name(struct fb_cvt_data *cvt)
+ 	pixcount_mod = (cvt->xres * (cvt->yres/cvt->interlace)) % 1000000;
+ 	pixcount_mod /= 1000;
+ 
+-	read = snprintf(buf+offset, cnt, "fbcvt: %dx%d@%d: CVT Name - ",
+-			cvt->xres, cvt->yres, cvt->refresh);
+-	offset += read;
+-	cnt -= read;
++	off += scnprintf(buf + off, size - off, "fbcvt: %dx%d@%d: CVT Name - ",
++			    cvt->xres, cvt->yres, cvt->refresh);
+ 
+-	if (cvt->status)
+-		snprintf(buf+offset, cnt, "Not a CVT standard - %d.%03d Mega "
+-			 "Pixel Image\n", pixcount, pixcount_mod);
+-	else {
+-		if (pixcount) {
+-			read = snprintf(buf+offset, cnt, "%d", pixcount);
+-			cnt -= read;
+-			offset += read;
+-		}
++	if (cvt->status) {
++		off += scnprintf(buf + off, size - off,
++				 "Not a CVT standard - %d.%03d Mega Pixel Image\n",
++				 pixcount, pixcount_mod);
++	} else {
++		if (pixcount)
++			off += scnprintf(buf + off, size - off, "%d", pixcount);
+ 
+-		read = snprintf(buf+offset, cnt, ".%03dM", pixcount_mod);
+-		cnt -= read;
+-		offset += read;
++		off += scnprintf(buf + off, size - off, ".%03dM", pixcount_mod);
+ 
+ 		if (cvt->aspect_ratio == 0)
+-			read = snprintf(buf+offset, cnt, "3");
++			off += scnprintf(buf + off, size - off, "3");
+ 		else if (cvt->aspect_ratio == 3)
+-			read = snprintf(buf+offset, cnt, "4");
++			off += scnprintf(buf + off, size - off, "4");
+ 		else if (cvt->aspect_ratio == 1 || cvt->aspect_ratio == 4)
+-			read = snprintf(buf+offset, cnt, "9");
++			off += scnprintf(buf + off, size - off, "9");
+ 		else if (cvt->aspect_ratio == 2)
+-			read = snprintf(buf+offset, cnt, "A");
+-		else
+-			read = 0;
+-		cnt -= read;
+-		offset += read;
+-
+-		if (cvt->flags & FB_CVT_FLAG_REDUCED_BLANK) {
+-			read = snprintf(buf+offset, cnt, "-R");
+-			cnt -= read;
+-			offset += read;
+-		}
++			off += scnprintf(buf + off, size - off, "A");
 +
- 	/* Enable sm4 xts mode multiple iv */
- 	writel_relaxed(SEC_BD_ERR_CHK_EN1,
- 		       qm->io_base + SEC_BD_ERR_CHK_EN_REG1);
++		if (cvt->flags & FB_CVT_FLAG_REDUCED_BLANK)
++			off += scnprintf(buf + off, size - off, "-R");
+ 	}
+ 
+ 	printk(KERN_INFO "%s\n", buf);
 -- 
 2.34.1
 
