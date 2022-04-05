@@ -2,125 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 24C23C4332F
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:23:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DC6BDC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:23:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346816AbiDEUWK (ORCPT
+        id S1344667AbiDEUVr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 16:22:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32912 "EHLO
+        Tue, 5 Apr 2022 16:21:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43936 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1457787AbiDEQtQ (ORCPT
+        with ESMTP id S1391747AbiDEPfH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 12:49:16 -0400
-Received: from mail-lf1-x129.google.com (mail-lf1-x129.google.com [IPv6:2a00:1450:4864:20::129])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C155EF7B7
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 09:47:17 -0700 (PDT)
-Received: by mail-lf1-x129.google.com with SMTP id b17so16620816lfv.3
-        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 09:47:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=UEhM/YV2YdBzzmeRnY7JhZnKZDh2nVlggSS8Y2uY7lI=;
-        b=sUVpCDJQ8J/CRA8PR7PPY48C1InS+CQhJSLs1znkm7e//MzZx9EXf2LdEMJsgySE3X
-         Y8yxY0zXSYvL37Y/zNyAFZTYibEv8PqrpTwowl0xMd7/zBmORHLrvr41WRd83ZkSdD4o
-         e1sQVHSRRQmyx7w9vUVqaBe27zEFh616QD5fSO6hNEt0/0ownUdzSGXXrK6GKyNF5I/3
-         hTsLFm9HbeGonYTzD9z9irJeAfu1Th/QWskdyJ6P0ysm/PVhc2BC+IZifkws8aNTKJZA
-         wjcNCK8Nt6GGzIVo2gAti0iJSH5ytX7DUJQc6A3NnlxRQz0Udzg+BOyLgUXRgnYDlQUQ
-         60IQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=UEhM/YV2YdBzzmeRnY7JhZnKZDh2nVlggSS8Y2uY7lI=;
-        b=6KPU0EtgSjCncZ6w0a2mDrMZmeS9wrFpC6ivgDj4S2LAskUVm9lCP5kCTEO8H71lIy
-         f6lNac84H4iJjLZbjEBIl4jrKWZgYvVJE9JzLrrW26AmC+zHOVs114zem0CTTWbDbRd7
-         jfJQxNaEGlfIvuQsPyctEJd1wZsgxmOJhiJ69lQlCCwlI4z+0JQxQJQGKH20bx+GpbHL
-         wnfPkVNqXSUAD0RwhiPpiSGr3XM3gHQ8zcL0fGW1jQNVsNpNJaiehbm2mN+LYbeBYxex
-         h+0ptx21kcg/z3DSgjUZzU5dFKBT+8XRhvYrUxaiJb9VtoUHOLL4lRVmi8wYYuPWukhU
-         4aPg==
-X-Gm-Message-State: AOAM533nvbjYwKrF6Y9Tg7RaeAQVVQ1lGGb1bLzMkiTMqGOroKLaDdFe
-        7CGpySrvDJfk0MpUy13yDv/j9C84VTkTrjjDyXb4eQ==
-X-Google-Smtp-Source: ABdhPJyKkxCjonnx/UVgfMj7EGt2uj4XEQygSAlfsJv6l51yF47d09NTJ20QL1Rq0QmtacVYXuZbQrURhJ4NW2FaMn0=
-X-Received: by 2002:a05:6512:33d4:b0:44a:9971:de48 with SMTP id
- d20-20020a05651233d400b0044a9971de48mr3211524lfg.392.1649177235321; Tue, 05
- Apr 2022 09:47:15 -0700 (PDT)
+        Tue, 5 Apr 2022 11:35:07 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D04E139AC1
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 06:42:50 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2EAC9B81D73
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 13:42:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 993CAC385A0;
+        Tue,  5 Apr 2022 13:42:47 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649166168;
+        bh=Bo1TLmFRPzMx504oGz1+72EDqWUNnp44Jv6KtOwHkao=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=AAbBEiS56WV11mH8SJIEcCt/I/TPqKCtXjUnCImEkrEFFr5/+H0tUw/jiorz9dep+
+         9v/+YdKdktiakuYU4InzvCB238HyBjVW9g3a1xRQDtrEpNlxSTLTR44tTiSDvBsAhn
+         TPkR7hMHg3Trp747EATc8qicj8cgF/B1XblEqms8=
+Date:   Tue, 5 Apr 2022 15:42:45 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Michael Ellerman <mpe@ellerman.id.au>
+Cc:     linuxppc-dev@lists.ozlabs.org,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>,
+        Haren Myneni <haren@linux.ibm.com>,
+        Nicholas Piggin <npiggin@gmail.com>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] powerpc/pseries/vas: use default_groups in kobj_type
+Message-ID: <YkxHVS3kwXY12KSL@kroah.com>
+References: <20220329142552.558339-1-gregkh@linuxfoundation.org>
+ <87h77efg8e.fsf@mpe.ellerman.id.au>
 MIME-Version: 1.0
-References: <20220405113359.2880241-1-masahiroy@kernel.org> <20220405113359.2880241-11-masahiroy@kernel.org>
-In-Reply-To: <20220405113359.2880241-11-masahiroy@kernel.org>
-From:   Nick Desaulniers <ndesaulniers@google.com>
-Date:   Tue, 5 Apr 2022 09:47:04 -0700
-Message-ID: <CAKwvOd=cEDiS-XUpGFiF=7uaJSKPmkxK4bv37cr5uHgwC_M3TQ@mail.gmail.com>
-Subject: Re: [PATCH v2 10/10] kbuild: refactor cmd_modversions_S
-To:     Masahiro Yamada <masahiroy@kernel.org>
-Cc:     linux-kbuild@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Michal Marek <michal.lkml@markovi.net>,
-        Sami Tolvanen <samitolvanen@google.com>,
-        Kees Cook <keescook@chromium.org>,
-        Nathan Chancellor <nathan@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <87h77efg8e.fsf@mpe.ellerman.id.au>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 5, 2022 at 4:34 AM Masahiro Yamada <masahiroy@kernel.org> wrote:
->
-> Split the code into two macros, cmd_gen_symversions_S for running
-> genksyms, and cmd_modversions for running $(LD) to update the object
-> with CRCs.
->
-> Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+On Thu, Mar 31, 2022 at 11:39:45PM +1100, Michael Ellerman wrote:
+> Greg Kroah-Hartman <gregkh@linuxfoundation.org> writes:
+> > There are currently 2 ways to create a set of sysfs files for a
+> > kobj_type, through the default_attrs field, and the default_groups
+> > field.  Move the pseries vas sysfs code to use default_groups field
+> > which has been the preferred way since aa30f47cf666 ("kobject: Add
+> > support for default attribute groups to kobj_type") so that we can soon
+> > get rid of the obsolete default_attrs field.
+> >
+> > Cc: Michael Ellerman <mpe@ellerman.id.au>
+> > Cc: Benjamin Herrenschmidt <benh@kernel.crashing.org>
+> > Cc: Paul Mackerras <paulus@samba.org>
+> > Cc: Haren Myneni <haren@linux.ibm.com>
+> > Cc: Nicholas Piggin <npiggin@gmail.com>
+> > Cc: linuxppc-dev@lists.ozlabs.org
+> > Cc: linux-kernel@vger.kernel.org
+> > Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> > ---
+> >
+> > Note, I would like to take this through my driver-core tree for 5.18-rc2
+> > as this is the last hold-out of the default_attrs field.  It "snuck" in
+> > as new code for 5.18-rc1, any objection to me taking it?
+> 
+> No objection, please take it via your tree.
 
-Thanks for the patch!
-Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
+Thanks, now queued up.
 
-> ---
->
-> Changes in v2:
->   - new
->
->  scripts/Makefile.build | 15 ++++-----------
->  1 file changed, 4 insertions(+), 11 deletions(-)
->
-> diff --git a/scripts/Makefile.build b/scripts/Makefile.build
-> index ba2be555f942..58be0997c5dd 100644
-> --- a/scripts/Makefile.build
-> +++ b/scripts/Makefile.build
-> @@ -274,7 +274,8 @@ define rule_as_o_S
->         $(call cmd_and_fixdep,as_o_S)
->         $(call cmd,gen_ksymdeps)
->         $(call cmd,gen_objtooldep)
-> -       $(call cmd,modversions_S)
-> +       $(call cmd,gen_symversions_S)
-> +       $(call cmd,modversions)
->  endef
->
->  # Built-in and composite module parts
-> @@ -366,16 +367,8 @@ ifdef CONFIG_ASM_MODVERSIONS
->  # versioning matches the C process described above, with difference that
->  # we parse asm-prototypes.h C header to get function definitions.
->
-> -cmd_modversions_S =                                                            \
-> -       if $(OBJDUMP) -h $@ | grep -q __ksymtab; then                           \
-> -               $(call cmd_gensymtypes_S,$(KBUILD_SYMTYPES),$(@:.o=.symtypes))  \
-> -                   > $(@D)/.tmp_$(@F:.o=.ver);                                 \
-> -                                                                               \
-> -               $(LD) $(KBUILD_LDFLAGS) -r -o $(@D)/.tmp_$(@F) $@               \
-> -                       -T $(@D)/.tmp_$(@F:.o=.ver);                            \
-> -               mv -f $(@D)/.tmp_$(@F) $@;                                      \
-> -               rm -f $(@D)/.tmp_$(@F:.o=.ver);                                 \
-> -       fi
-> +cmd_gen_symversions_S = $(call gen_symversions,S)
-> +
->  endif
->
->  $(obj)/%.o: $(src)/%.S FORCE
-> --
-> 2.32.0
->
-
-
--- 
-Thanks,
-~Nick Desaulniers
+greg k-h
