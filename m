@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 542C4C4167E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 784B2C41535
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:42:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385956AbiDEMjk (ORCPT
+        id S1385985AbiDEMjs (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 08:39:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52812 "EHLO
+        Tue, 5 Apr 2022 08:39:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52802 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237341AbiDEJEN (ORCPT
+        with ESMTP id S237090AbiDEJDz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:04:13 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4921C13D1C;
-        Tue,  5 Apr 2022 01:55:49 -0700 (PDT)
+        Tue, 5 Apr 2022 05:03:55 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 126D812A90;
+        Tue,  5 Apr 2022 01:55:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CA470B81C19;
-        Tue,  5 Apr 2022 08:55:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3F414C385A0;
-        Tue,  5 Apr 2022 08:55:46 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 67048CE1B55;
+        Tue,  5 Apr 2022 08:55:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7C028C385A1;
+        Tue,  5 Apr 2022 08:55:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649148946;
-        bh=CPlsjDJOEy9qPjg0ZKQmIWv0aTqA76GJ7JNdR05L9zQ=;
+        s=korg; t=1649148943;
+        bh=AAsSEO1J1nJ9LSk7knoQKpupQl5T0r4xnEirrlezuzk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dZkOWT30GNKQXmqCelTBlYYXrggUpku5jQOEZtlBQWsraM29bduc2NChIR3n3W63T
-         XRdNMC364dy0p7XymmOFoQvi/z4fd2bAB/eO6+BXpTKtdmZyZG3QzjJ2U9u7JRvfYZ
-         EQzFIHAKQroBAM+Tnozas9T8BqNPFF/jmj3CxoaQ=
+        b=Dlghe8vhjlKEwPFCywNLCpWmRoxkxbnmCfnPeZrod7Ppu1yzqMPtE+ByR2pnLs64d
+         2rMaKRjaNPuzgBiTswFR4SohMXoqReRfea/8t9LDNTm1xF1DvVgxIXorKOEuzIO3+p
+         SkYSKFxGuwx3qiKymAsCxdi0Hc96Ik5AuSj7j6No=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Rotem Saado <rotem.saado@intel.com>,
-        Luca Coelho <luciano.coelho@intel.com>,
+        stable@vger.kernel.org, Jack Wang <jinpu.wang@ionos.com>,
+        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0511/1017] iwlwifi: yoyo: remove DBGI_SRAM address reset writing
-Date:   Tue,  5 Apr 2022 09:23:44 +0200
-Message-Id: <20220405070409.467578617@linuxfoundation.org>
+Subject: [PATCH 5.16 0537/1017] scsi: pm8001: Fix NCQ NON DATA command task initialization
+Date:   Tue,  5 Apr 2022 09:24:10 +0200
+Message-Id: <20220405070410.230977141@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -50,53 +51,99 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Rotem Saado <rotem.saado@intel.com>
+From: Damien Le Moal <damien.lemoal@opensource.wdc.com>
 
-[ Upstream commit ce014c9861544bb4e789323d0d8956a5ad262e25 ]
+[ Upstream commit aa028141ab0bc62c44a84d42f09db35d82df82a2 ]
 
-Due to preg protection we cannot write to this register
-while FW is running (when FW in Halt it is ok).
-since we have some cases that we need to dump this
-region while FW is running remove this writing from DRV.
-FW will do this writing.
+In the pm8001_chip_sata_req() and pm80xx_chip_sata_req() functions, all
+tasks with a DMA direction of DMA_NONE (no data transfer) are initialized
+using the ATAP value 0x04. However, NCQ NON DATA commands, while being
+DMA_NONE commands are NCQ commands and need to be initialized using the
+value 0x07 for ATAP, similarly to other NCQ commands.
 
-Signed-off-by: Rotem Saado <rotem.saado@intel.com>
-Fixes: 89639e06d0f3 ("iwlwifi: yoyo: support for new DBGI_SRAM region")
-Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
-Link: https://lore.kernel.org/r/iwlwifi.20220129105618.209f3078bc74.I463530bd2f40daedb39f6d9df987bb7cee209033@changeid
-Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
+Make sure that NCQ NON DATA command tasks are initialized similarly to
+other NCQ commands by also testing the task "use_ncq" field in addition to
+the DMA direction. While at it, reorganize the code into a chain of if -
+else if - else to avoid useless affectations and debug messages.
+
+Link: https://lore.kernel.org/r/20220220031810.738362-15-damien.lemoal@opensource.wdc.com
+Fixes: dbf9bfe61571 ("[SCSI] pm8001: add SAS/SATA HBA driver")
+Reviewed-by: Jack Wang <jinpu.wang@ionos.com>
+Signed-off-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/intel/iwlwifi/fw/dbg.c   | 2 --
- drivers/net/wireless/intel/iwlwifi/iwl-prph.h | 2 --
- 2 files changed, 4 deletions(-)
+ drivers/scsi/pm8001/pm8001_hwi.c | 14 +++++++-------
+ drivers/scsi/pm8001/pm80xx_hwi.c | 13 ++++++-------
+ 2 files changed, 13 insertions(+), 14 deletions(-)
 
-diff --git a/drivers/net/wireless/intel/iwlwifi/fw/dbg.c b/drivers/net/wireless/intel/iwlwifi/fw/dbg.c
-index a39013c401c9..e2001e88a4b4 100644
---- a/drivers/net/wireless/intel/iwlwifi/fw/dbg.c
-+++ b/drivers/net/wireless/intel/iwlwifi/fw/dbg.c
-@@ -1562,8 +1562,6 @@ iwl_dump_ini_dbgi_sram_iter(struct iwl_fw_runtime *fwrt,
- 		return -EBUSY;
+diff --git a/drivers/scsi/pm8001/pm8001_hwi.c b/drivers/scsi/pm8001/pm8001_hwi.c
+index eca1ab198314..183c72547229 100644
+--- a/drivers/scsi/pm8001/pm8001_hwi.c
++++ b/drivers/scsi/pm8001/pm8001_hwi.c
+@@ -4282,22 +4282,22 @@ static int pm8001_chip_sata_req(struct pm8001_hba_info *pm8001_ha,
+ 	u32  opc = OPC_INB_SATA_HOST_OPSTART;
+ 	memset(&sata_cmd, 0, sizeof(sata_cmd));
+ 	circularQ = &pm8001_ha->inbnd_q_tbl[0];
+-	if (task->data_dir == DMA_NONE) {
++
++	if (task->data_dir == DMA_NONE && !task->ata_task.use_ncq) {
+ 		ATAP = 0x04;  /* no data*/
+ 		pm8001_dbg(pm8001_ha, IO, "no data\n");
+ 	} else if (likely(!task->ata_task.device_control_reg_update)) {
+-		if (task->ata_task.dma_xfer) {
++		if (task->ata_task.use_ncq &&
++		    dev->sata_dev.class != ATA_DEV_ATAPI) {
++			ATAP = 0x07; /* FPDMA */
++			pm8001_dbg(pm8001_ha, IO, "FPDMA\n");
++		} else if (task->ata_task.dma_xfer) {
+ 			ATAP = 0x06; /* DMA */
+ 			pm8001_dbg(pm8001_ha, IO, "DMA\n");
+ 		} else {
+ 			ATAP = 0x05; /* PIO*/
+ 			pm8001_dbg(pm8001_ha, IO, "PIO\n");
+ 		}
+-		if (task->ata_task.use_ncq &&
+-			dev->sata_dev.class != ATA_DEV_ATAPI) {
+-			ATAP = 0x07; /* FPDMA */
+-			pm8001_dbg(pm8001_ha, IO, "FPDMA\n");
+-		}
+ 	}
+ 	if (task->ata_task.use_ncq && pm8001_get_ncq_tag(task, &hdr_tag)) {
+ 		task->ata_task.fis.sector_count |= (u8) (hdr_tag << 3);
+diff --git a/drivers/scsi/pm8001/pm80xx_hwi.c b/drivers/scsi/pm8001/pm80xx_hwi.c
+index 93a5af907856..8eef2c51e432 100644
+--- a/drivers/scsi/pm8001/pm80xx_hwi.c
++++ b/drivers/scsi/pm8001/pm80xx_hwi.c
+@@ -4560,22 +4560,21 @@ static int pm80xx_chip_sata_req(struct pm8001_hba_info *pm8001_ha,
+ 	q_index = (u32) (cpu_id) % (pm8001_ha->max_q_num);
+ 	circularQ = &pm8001_ha->inbnd_q_tbl[q_index];
  
- 	range->range_data_size = reg->dev_addr.size;
--	iwl_write_prph_no_grab(fwrt->trans, DBGI_SRAM_TARGET_ACCESS_CFG,
--			       DBGI_SRAM_TARGET_ACCESS_CFG_RESET_ADDRESS_MSK);
- 	for (i = 0; i < (le32_to_cpu(reg->dev_addr.size) / 4); i++) {
- 		prph_data = iwl_read_prph(fwrt->trans, (i % 2) ?
- 					  DBGI_SRAM_TARGET_ACCESS_RDATA_MSB :
-diff --git a/drivers/net/wireless/intel/iwlwifi/iwl-prph.h b/drivers/net/wireless/intel/iwlwifi/iwl-prph.h
-index a84ab02cf9d7..7d3fedfdb348 100644
---- a/drivers/net/wireless/intel/iwlwifi/iwl-prph.h
-+++ b/drivers/net/wireless/intel/iwlwifi/iwl-prph.h
-@@ -356,8 +356,6 @@
- #define WFPM_GP2			0xA030B4
- 
- /* DBGI SRAM Register details */
--#define DBGI_SRAM_TARGET_ACCESS_CFG			0x00A2E14C
--#define DBGI_SRAM_TARGET_ACCESS_CFG_RESET_ADDRESS_MSK	0x10000
- #define DBGI_SRAM_TARGET_ACCESS_RDATA_LSB		0x00A2E154
- #define DBGI_SRAM_TARGET_ACCESS_RDATA_MSB		0x00A2E158
- 
+-	if (task->data_dir == DMA_NONE) {
++	if (task->data_dir == DMA_NONE && !task->ata_task.use_ncq) {
+ 		ATAP = 0x04; /* no data*/
+ 		pm8001_dbg(pm8001_ha, IO, "no data\n");
+ 	} else if (likely(!task->ata_task.device_control_reg_update)) {
+-		if (task->ata_task.dma_xfer) {
++		if (task->ata_task.use_ncq &&
++		    dev->sata_dev.class != ATA_DEV_ATAPI) {
++			ATAP = 0x07; /* FPDMA */
++			pm8001_dbg(pm8001_ha, IO, "FPDMA\n");
++		} else if (task->ata_task.dma_xfer) {
+ 			ATAP = 0x06; /* DMA */
+ 			pm8001_dbg(pm8001_ha, IO, "DMA\n");
+ 		} else {
+ 			ATAP = 0x05; /* PIO*/
+ 			pm8001_dbg(pm8001_ha, IO, "PIO\n");
+ 		}
+-		if (task->ata_task.use_ncq &&
+-		    dev->sata_dev.class != ATA_DEV_ATAPI) {
+-			ATAP = 0x07; /* FPDMA */
+-			pm8001_dbg(pm8001_ha, IO, "FPDMA\n");
+-		}
+ 	}
+ 	if (task->ata_task.use_ncq && pm8001_get_ncq_tag(task, &hdr_tag)) {
+ 		task->ata_task.fis.sector_count |= (u8) (hdr_tag << 3);
 -- 
 2.34.1
 
