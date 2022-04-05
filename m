@@ -2,46 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B00D0C4321E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E26D5C35273
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:48:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242275AbiDEUq2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 16:46:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53684 "EHLO
+        id S244100AbiDEUrQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 16:47:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46430 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358090AbiDEK16 (ORCPT
+        with ESMTP id S229778AbiDEKax (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:27:58 -0400
+        Tue, 5 Apr 2022 06:30:53 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C31CA66FB6;
-        Tue,  5 Apr 2022 03:15:18 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C809ADD95C;
+        Tue,  5 Apr 2022 03:18:25 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5CE036179E;
-        Tue,  5 Apr 2022 10:15:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6F78FC385A0;
-        Tue,  5 Apr 2022 10:15:17 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 29EBB6176C;
+        Tue,  5 Apr 2022 10:18:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3D6B3C385A1;
+        Tue,  5 Apr 2022 10:18:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649153717;
-        bh=7Vx2WvST/3UetrRUM4JsvOUg6Uksvk+kePktchHbQIc=;
+        s=korg; t=1649153904;
+        bh=NvZ6XiU6CdBZxHhjPV1gh5NK0assn0TT6y0lGrOHRPw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hvFgmS9Q/wbc/nEA0ZbcDBMTCuLpm6SJa92St1uyQMj/jpOxmJ7SYuRoWsqQZPZeb
-         BS/UvrIMlQ9kKeyRLxVNie7MccJDHr+DJ+VemAPZXCC+W+V73foGePp4RU6+fn8sNA
-         hS1HjLfHi3KCOUlKXh047NmgL25OAutkae55PQfM=
+        b=ZHkpCQcPAzwDF6s3eeRgOOGx1kiamOp/gWMzgFqKc3Ayr0vDuPhAlQKeJMv1oAqao
+         hOrvBeQlqiTPQy+2y5N2X8PA04//m2NH/gerCW3vuKBxpdM78mPU54fpWt1xwK9lDW
+         5WWfbwY388ARnRD98dh1lw4G849UXUNz4Oca6oLU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
-        Igor Zhbanov <i.zhbanov@omprussia.ru>,
-        James Morris <jmorris@namei.org>,
-        Kentaro Takeda <takedakn@nttdata.co.jp>,
-        tomoyo-dev-en@lists.osdn.me, "Serge E. Hallyn" <serge@hallyn.com>,
-        Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>,
+        stable@vger.kernel.org,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 321/599] TOMOYO: fix __setup handlers return values
-Date:   Tue,  5 Apr 2022 09:30:15 +0200
-Message-Id: <20220405070308.385669891@linuxfoundation.org>
+Subject: [PATCH 5.10 389/599] pinctrl: renesas: checker: Fix miscalculation of number of states
+Date:   Tue,  5 Apr 2022 09:31:23 +0200
+Message-Id: <20220405070310.407053245@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
 References: <20220405070258.802373272@linuxfoundation.org>
@@ -53,70 +49,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Randy Dunlap <rdunlap@infradead.org>
+From: Geert Uytterhoeven <geert+renesas@glider.be>
 
-[ Upstream commit 39844b7e3084baecef52d1498b5fa81afa2cefa9 ]
+[ Upstream commit de9b861018d46af27a5edff8b6baef35c0c0ad4f ]
 
-__setup() handlers should return 1 if the parameter is handled.
-Returning 0 causes the entire string to be added to init's
-environment strings (limited to 32 strings), unnecessarily polluting it.
+The checker failed to validate all enum IDs in the description of a
+register with fixed-width register fields, due to a miscalculation of
+the number of described states: each register field of n bits can have
+"1 << n" possible states, not "1".
 
-Using the documented strings "TOMOYO_loader=string1" and
-"TOMOYO_trigger=string2" causes an Unknown parameter message:
-  Unknown kernel command line parameters
-    "BOOT_IMAGE=/boot/bzImage-517rc5 TOMOYO_loader=string1 \
-     TOMOYO_trigger=string2", will be passed to user space.
+Increase SH_PFC_MAX_ENUMS accordingly, now more enum IDs are checked
+(SH-Mobile AG5 has more than 4000 enum IDs defined).
 
-and these strings are added to init's environment string space:
-  Run /sbin/init as init process
-    with arguments:
-     /sbin/init
-    with environment:
-     HOME=/
-     TERM=linux
-     BOOT_IMAGE=/boot/bzImage-517rc5
-     TOMOYO_loader=string1
-     TOMOYO_trigger=string2
-
-With this change, these __setup handlers act as expected,
-and init's environment is not polluted with these strings.
-
-Fixes: 0e4ae0e0dec63 ("TOMOYO: Make several options configurable.")
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Reported-by: Igor Zhbanov <i.zhbanov@omprussia.ru>
-Link: https://lore.kernel.org/r/64644a2f-4a20-bab3-1e15-3b2cdd0defe3@omprussia.ru
-Cc: James Morris <jmorris@namei.org>
-Cc: Kentaro Takeda <takedakn@nttdata.co.jp>
-Cc: tomoyo-dev-en@lists.osdn.me
-Cc: "Serge E. Hallyn" <serge@hallyn.com>
-Signed-off-by: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
+Fixes: 12d057bad683b1c6 ("pinctrl: sh-pfc: checker: Add check for enum ID conflicts")
+Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+Link: https://lore.kernel.org/r/6d8a6a05564f38f9d20464c1c17f96e52740cf6a.1645460429.git.geert+renesas@glider.be
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- security/tomoyo/load_policy.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/pinctrl/renesas/core.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/security/tomoyo/load_policy.c b/security/tomoyo/load_policy.c
-index 3445ae6fd479..363b65be87ab 100644
---- a/security/tomoyo/load_policy.c
-+++ b/security/tomoyo/load_policy.c
-@@ -24,7 +24,7 @@ static const char *tomoyo_loader;
- static int __init tomoyo_loader_setup(char *str)
- {
- 	tomoyo_loader = str;
--	return 0;
-+	return 1;
- }
+diff --git a/drivers/pinctrl/renesas/core.c b/drivers/pinctrl/renesas/core.c
+index 9d168b90cd28..258972672eda 100644
+--- a/drivers/pinctrl/renesas/core.c
++++ b/drivers/pinctrl/renesas/core.c
+@@ -739,7 +739,7 @@ static int sh_pfc_suspend_init(struct sh_pfc *pfc) { return 0; }
  
- __setup("TOMOYO_loader=", tomoyo_loader_setup);
-@@ -64,7 +64,7 @@ static const char *tomoyo_trigger;
- static int __init tomoyo_trigger_setup(char *str)
- {
- 	tomoyo_trigger = str;
--	return 0;
-+	return 1;
- }
+ #ifdef DEBUG
+ #define SH_PFC_MAX_REGS		300
+-#define SH_PFC_MAX_ENUMS	3000
++#define SH_PFC_MAX_ENUMS	5000
  
- __setup("TOMOYO_trigger=", tomoyo_trigger_setup);
+ static unsigned int sh_pfc_errors __initdata = 0;
+ static unsigned int sh_pfc_warnings __initdata = 0;
+@@ -851,7 +851,8 @@ static void __init sh_pfc_check_cfg_reg(const char *drvname,
+ 	sh_pfc_check_reg(drvname, cfg_reg->reg);
+ 
+ 	if (cfg_reg->field_width) {
+-		n = cfg_reg->reg_width / cfg_reg->field_width;
++		fw = cfg_reg->field_width;
++		n = (cfg_reg->reg_width / fw) << fw;
+ 		/* Skip field checks (done at build time) */
+ 		goto check_enum_ids;
+ 	}
 -- 
 2.34.1
 
