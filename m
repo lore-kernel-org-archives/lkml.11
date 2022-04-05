@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C771C43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D61FDC4167B
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 14:06:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350999AbiDEOBi (ORCPT
+        id S1351806AbiDEOBq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 10:01:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55408 "EHLO
+        Tue, 5 Apr 2022 10:01:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44562 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348017AbiDEJ3E (ORCPT
+        with ESMTP id S235785AbiDEJ3t (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:29:04 -0400
+        Tue, 5 Apr 2022 05:29:49 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C10DE0981;
-        Tue,  5 Apr 2022 02:16:06 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4B55E338C;
+        Tue,  5 Apr 2022 02:17:03 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8D7C3B818F3;
-        Tue,  5 Apr 2022 09:16:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0476EC385A0;
-        Tue,  5 Apr 2022 09:16:03 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 69C3BB81B75;
+        Tue,  5 Apr 2022 09:17:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C65C1C385A2;
+        Tue,  5 Apr 2022 09:17:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649150164;
-        bh=957SGL9KQznzdENY4XdnryY6MFqclkMVRwcwl8CH+qQ=;
+        s=korg; t=1649150221;
+        bh=X6T2snebmWEcnXJQljGOMzXWVyReWVIddhiBFGO9dm4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2phdhIITogJ0hrOUyoTyJIL0k+MnCyxfCLdled4Xy/lqqrU1O0clzr9nzu2ge4C6x
-         gcdmAnVLTsf4ceFrr6Q+jglIU0mnJaIx729vr4P26IqUpiSe6X7KAIIGoeFSlut37f
-         aNEB+2SOOQFMEULYeXCk1DJMPiwA3jruWCcd2PMo=
+        b=i6ouc6xUOfeGS8G0UOELZxRwWQrY72tmI279Ys/3c3DLrgHNDrzpYVi4aKzS8U+NQ
+         UgrJLY3OSEItDdpiZvR00c9Zalml4Cya2cJm7aflfwfnyijIHRbd7ZE3dVKpz0c+tl
+         unQnxbWQRUr53Yuq/n7tjFfir1NZ6SpWF1XQMy60=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Masami Hiramatsu <mhiramat@kernel.org>,
-        Zeal Robot <zealci@zte.com.cn>, Lv Ruyi <lv.ruyi@zte.com.cn>,
-        "Steven Rostedt (Google)" <rostedt@goodmis.org>
-Subject: [PATCH 5.16 0960/1017] proc: bootconfig: Add null pointer check
-Date:   Tue,  5 Apr 2022 09:31:13 +0200
-Message-Id: <20220405070422.704281964@linuxfoundation.org>
+        stable@vger.kernel.org, Guodong Liu <guodong.liu@mediatek.com>,
+        Linus Walleij <linus.walleij@linaro.org>
+Subject: [PATCH 5.16 0996/1017] pinctrl: canonical rsel resistance selection property
+Date:   Tue,  5 Apr 2022 09:31:49 +0200
+Message-Id: <20220405070423.766937642@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -50,36 +49,31 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lv Ruyi <lv.ruyi@zte.com.cn>
+From: Guodong Liu <guodong.liu@mediatek.com>
 
-commit bed5b60bf67ccd8957b8c0558fead30c4a3f5d3f upstream.
+commit 7966c5051fc7d52425155ab30ad568d9d97f3b02 upstream.
 
-kzalloc is a memory allocation function which can return NULL when some
-internal memory errors happen. It is safer to add null pointer check.
+Change "mediatek,rsel_resistance_in_si_unit" to "mediatek,rsel-resistance-in-si-unit"
 
-Link: https://lkml.kernel.org/r/20220329104004.2376879-1-lv.ruyi@zte.com.cn
-
-Cc: stable@vger.kernel.org
-Fixes: c1a3c36017d4 ("proc: bootconfig: Add /proc/bootconfig to show boot config list")
-Acked-by: Masami Hiramatsu <mhiramat@kernel.org>
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: Lv Ruyi <lv.ruyi@zte.com.cn>
-Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
+Fixes: fb34a9ae383a ("pinctrl: mediatek: support rsel feature")
+Signed-off-by: Guodong Liu <guodong.liu@mediatek.com>
+Link: https://lore.kernel.org/r/20220216032124.28067-4-guodong.liu@mediatek.com
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/proc/bootconfig.c |    2 ++
- 1 file changed, 2 insertions(+)
+ drivers/pinctrl/mediatek/pinctrl-paris.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/fs/proc/bootconfig.c
-+++ b/fs/proc/bootconfig.c
-@@ -32,6 +32,8 @@ static int __init copy_xbc_key_value_lis
- 	int ret = 0;
+--- a/drivers/pinctrl/mediatek/pinctrl-paris.c
++++ b/drivers/pinctrl/mediatek/pinctrl-paris.c
+@@ -985,7 +985,7 @@ int mtk_paris_pinctrl_probe(struct platf
+ 	hw->nbase = hw->soc->nbase_names;
  
- 	key = kzalloc(XBC_KEYLEN_MAX, GFP_KERNEL);
-+	if (!key)
-+		return -ENOMEM;
- 
- 	xbc_for_each_key_value(leaf, val) {
- 		ret = xbc_node_compose_key(leaf, key, XBC_KEYLEN_MAX);
+ 	if (of_find_property(hw->dev->of_node,
+-			     "mediatek,rsel_resistance_in_si_unit", NULL))
++			     "mediatek,rsel-resistance-in-si-unit", NULL))
+ 		hw->rsel_si_unit = true;
+ 	else
+ 		hw->rsel_si_unit = false;
 
 
