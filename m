@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C058C47084
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 10:08:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A161C352B6
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 10:08:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350801AbiDEJ7w (ORCPT
+        id S1350943AbiDEKA3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 05:59:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56978 "EHLO
+        Tue, 5 Apr 2022 06:00:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56808 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233878AbiDEIXY (ORCPT
+        with ESMTP id S240070AbiDEIWf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:23:24 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 154BAFD1C;
-        Tue,  5 Apr 2022 01:19:54 -0700 (PDT)
+        Tue, 5 Apr 2022 04:22:35 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFBD5DEC2;
+        Tue,  5 Apr 2022 01:19:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5BDA6B81BB1;
-        Tue,  5 Apr 2022 08:19:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BFB6EC385A1;
-        Tue,  5 Apr 2022 08:19:51 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AFB7EB81B92;
+        Tue,  5 Apr 2022 08:19:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 17FC2C385A1;
+        Tue,  5 Apr 2022 08:19:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649146792;
-        bh=uUJYm2DMJgRHxMsCLngTuCvWIqzlzl8WGEzEuzZdEK0=;
+        s=korg; t=1649146781;
+        bh=YtG+6EI3+FgkaM6u4nXFTkoCNBD5iXHVpVD+KDag51A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XQrvJWrzsGrc3eEUVcXpbQF85Ayr4geon3JILwdTqRkLxrN/s4lplUwmTDvvwKBox
-         zjg4GjSvDYyP4Ybt1JkiWNbd4wHNkwWmSaftBAEo2wEJ6Y+5+kVPlrRnsmNxkvmNpq
-         mjDoTm6uvbT9KkNDi3jtl2Vw1sG0kW+d55lLyco4=
+        b=zP91NtjvYnsyZjgOjno+6xe0nAT/S3kJqAS4m+GWoyFbeXq/9jTqBf3vcoQ4RgfHf
+         +EBlOkLvxV+3cgFVHwCVSlIBM7Lhz17F0OA6Qf+xsOCz/eUhr6KbTq/xKuff/0m/H0
+         qGeNssODTuaet0Mv3+i1a7Tazvni0YoyJYKRjZ/w=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Corentin Labbe <clabbe@baylibre.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        stable@vger.kernel.org, Rohith Surabattula <rohiths@microsoft.com>,
+        "Paulo Alcantara (SUSE)" <pc@cjr.nz>,
+        Steve French <stfrench@microsoft.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0891/1126] media: staging: media: zoran: fix various V4L2 compliance errors
-Date:   Tue,  5 Apr 2022 09:27:18 +0200
-Message-Id: <20220405070433.679382637@linuxfoundation.org>
+Subject: [PATCH 5.17 0887/1126] Adjust cifssb maximum read size
+Date:   Tue,  5 Apr 2022 09:27:14 +0200
+Message-Id: <20220405070433.564945778@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -51,100 +51,69 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+From: Rohith Surabattula <rohiths@microsoft.com>
 
-[ Upstream commit 914941827aad5ecddf9bf3a6dee67fbec1af1fff ]
+[ Upstream commit 06a466565d54a1a42168f9033a062a3f5c40e73b ]
 
-This fixes several issues found with 'v4l2-compliance -s':
+When session gets reconnected during mount then read size in super block fs context
+gets set to zero and after negotiate, rsize is not modified which results in
+incorrect read with requested bytes as zero. Fixes intermittent failure
+of xfstest generic/240
 
-1) read()/write() is supported, but not reported in the capabilities
-2) S_STD(G_STD()) failed: setting the same standard should just return 0.
-3) G_PARM failed to set readbuffers.
-4) different field values in the format vs. what v4l2_buffer reported.
-5) zero the sequence number when starting streaming.
-6) drop VB_USERPTR: makes no sense with dma_contig streaming.
+Note that stable requires a different version of this patch which will be
+sent to the stable mailing list.
 
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Corentin Labbe <clabbe@baylibre.com>
-Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+Signed-off-by: Rohith Surabattula <rohiths@microsoft.com>
+Acked-by: Paulo Alcantara (SUSE) <pc@cjr.nz>
+Signed-off-by: Steve French <stfrench@microsoft.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/staging/media/zoran/zoran_card.c   |  2 +-
- drivers/staging/media/zoran/zoran_driver.c | 13 ++++++++++---
- 2 files changed, 11 insertions(+), 4 deletions(-)
+ fs/cifs/cifsfs.c |  3 +++
+ fs/cifs/file.c   | 10 ++++++++++
+ 2 files changed, 13 insertions(+)
 
-diff --git a/drivers/staging/media/zoran/zoran_card.c b/drivers/staging/media/zoran/zoran_card.c
-index a83314b16548..11d415c0c05d 100644
---- a/drivers/staging/media/zoran/zoran_card.c
-+++ b/drivers/staging/media/zoran/zoran_card.c
-@@ -811,7 +811,7 @@ static int zoran_init_video_device(struct zoran *zr, struct video_device *video_
- 	*video_dev = zoran_template;
- 	video_dev->v4l2_dev = &zr->v4l2_dev;
- 	video_dev->lock = &zr->lock;
--	video_dev->device_caps = V4L2_CAP_STREAMING | dir;
-+	video_dev->device_caps = V4L2_CAP_STREAMING | V4L2_CAP_READWRITE | dir;
+diff --git a/fs/cifs/cifsfs.c b/fs/cifs/cifsfs.c
+index 4691b2706ddf..6e5246122ee2 100644
+--- a/fs/cifs/cifsfs.c
++++ b/fs/cifs/cifsfs.c
+@@ -210,6 +210,9 @@ cifs_read_super(struct super_block *sb)
+ 	if (rc)
+ 		goto out_no_root;
+ 	/* tune readahead according to rsize if readahead size not set on mount */
++	if (cifs_sb->ctx->rsize == 0)
++		cifs_sb->ctx->rsize =
++			tcon->ses->server->ops->negotiate_rsize(tcon, cifs_sb->ctx);
+ 	if (cifs_sb->ctx->rasize)
+ 		sb->s_bdi->ra_pages = cifs_sb->ctx->rasize / PAGE_SIZE;
+ 	else
+diff --git a/fs/cifs/file.c b/fs/cifs/file.c
+index e7af802dcfa6..a2723f7cb5e9 100644
+--- a/fs/cifs/file.c
++++ b/fs/cifs/file.c
+@@ -3740,6 +3740,11 @@ cifs_send_async_read(loff_t offset, size_t len, struct cifsFileInfo *open_file,
+ 				break;
+ 		}
  
- 	strscpy(video_dev->name, ZR_DEVNAME(zr), sizeof(video_dev->name));
- 	/*
-diff --git a/drivers/staging/media/zoran/zoran_driver.c b/drivers/staging/media/zoran/zoran_driver.c
-index 551db338c7f7..84665637ebb7 100644
---- a/drivers/staging/media/zoran/zoran_driver.c
-+++ b/drivers/staging/media/zoran/zoran_driver.c
-@@ -255,8 +255,6 @@ static int zoran_querycap(struct file *file, void *__fh, struct v4l2_capability
- 	strscpy(cap->card, ZR_DEVNAME(zr), sizeof(cap->card));
- 	strscpy(cap->driver, "zoran", sizeof(cap->driver));
- 	snprintf(cap->bus_info, sizeof(cap->bus_info), "PCI:%s", pci_name(zr->pci_dev));
--	cap->device_caps = zr->video_dev->device_caps;
--	cap->capabilities = cap->device_caps | V4L2_CAP_DEVICE_CAPS;
- 	return 0;
- }
- 
-@@ -582,6 +580,9 @@ static int zoran_s_std(struct file *file, void *__fh, v4l2_std_id std)
- 	struct zoran *zr = video_drvdata(file);
- 	int res = 0;
- 
-+	if (zr->norm == std)
-+		return 0;
++		if (cifs_sb->ctx->rsize == 0)
++			cifs_sb->ctx->rsize =
++				server->ops->negotiate_rsize(tlink_tcon(open_file->tlink),
++							     cifs_sb->ctx);
 +
- 	if (zr->running != ZORAN_MAP_MODE_NONE)
- 		return -EBUSY;
+ 		rc = server->ops->wait_mtu_credits(server, cifs_sb->ctx->rsize,
+ 						   &rsize, credits);
+ 		if (rc)
+@@ -4474,6 +4479,11 @@ static void cifs_readahead(struct readahead_control *ractl)
+ 			}
+ 		}
  
-@@ -739,6 +740,7 @@ static int zoran_g_parm(struct file *file, void *priv, struct v4l2_streamparm *p
- 	if (parm->type != V4L2_BUF_TYPE_VIDEO_CAPTURE)
- 		return -EINVAL;
- 
-+	parm->parm.capture.readbuffers = 9;
- 	return 0;
- }
- 
-@@ -869,6 +871,10 @@ int zr_set_buf(struct zoran *zr)
- 		vbuf = &buf->vbuf;
- 
- 		buf->vbuf.field = V4L2_FIELD_INTERLACED;
-+		if (BUZ_MAX_HEIGHT < (zr->v4l_settings.height * 2))
-+			buf->vbuf.field = V4L2_FIELD_INTERLACED;
-+		else
-+			buf->vbuf.field = V4L2_FIELD_TOP;
- 		vb2_set_plane_payload(&buf->vbuf.vb2_buf, 0, zr->buffer_size);
- 		vb2_buffer_done(&buf->vbuf.vb2_buf, VB2_BUF_STATE_DONE);
- 		zr->inuse[0] = NULL;
-@@ -928,6 +934,7 @@ static int zr_vb2_start_streaming(struct vb2_queue *vq, unsigned int count)
- 		zr->stat_com[j] = cpu_to_le32(1);
- 		zr->inuse[j] = NULL;
- 	}
-+	zr->vbseq = 0;
- 
- 	if (zr->map_mode != ZORAN_MAP_MODE_RAW) {
- 		pci_info(zr->pci_dev, "START JPG\n");
-@@ -1018,7 +1025,7 @@ int zoran_queue_init(struct zoran *zr, struct vb2_queue *vq, int dir)
- 	vq->dev = &zr->pci_dev->dev;
- 	vq->type = dir;
- 
--	vq->io_modes = VB2_USERPTR | VB2_DMABUF | VB2_MMAP | VB2_READ | VB2_WRITE;
-+	vq->io_modes = VB2_DMABUF | VB2_MMAP | VB2_READ | VB2_WRITE;
- 	vq->drv_priv = zr;
- 	vq->buf_struct_size = sizeof(struct zr_buffer);
- 	vq->ops = &zr_video_qops;
++		if (cifs_sb->ctx->rsize == 0)
++			cifs_sb->ctx->rsize =
++				server->ops->negotiate_rsize(tlink_tcon(open_file->tlink),
++							     cifs_sb->ctx);
++
+ 		rc = server->ops->wait_mtu_credits(server, cifs_sb->ctx->rsize,
+ 						   &rsize, credits);
+ 		if (rc)
 -- 
 2.34.1
 
