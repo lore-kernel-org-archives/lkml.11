@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D5C74C352A1
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 11:58:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 797E5C47084
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 11:59:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346903AbiDELw2 (ORCPT
+        id S1348174AbiDELwu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 07:52:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46812 "EHLO
+        Tue, 5 Apr 2022 07:52:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46120 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244830AbiDEIwm (ORCPT
+        with ESMTP id S244835AbiDEIwm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Apr 2022 04:52:42 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D718420181;
-        Tue,  5 Apr 2022 01:44:28 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B9F822515;
+        Tue,  5 Apr 2022 01:44:32 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 54A52CE1C2B;
-        Tue,  5 Apr 2022 08:44:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 69639C385A0;
-        Tue,  5 Apr 2022 08:44:25 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 05FC360FFC;
+        Tue,  5 Apr 2022 08:44:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 18895C385A1;
+        Tue,  5 Apr 2022 08:44:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649148265;
-        bh=TPCF7FNC549IoZjbuzVa2jdZC+2gUwVM/9YzXRdmpE0=;
+        s=korg; t=1649148271;
+        bh=9sSnzbb/dMgrhrea6qtEXkp2a8QMuyd/2mldhGyCdqw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JdIKJ3D5OcGAX0nMV2V3NwBjPEh1SfN8tMrUHgdOEg9/Vipmf3DvZXzIkIGNFm+Ce
-         81KsN9GQ5W+Y8TL4jt6XsAwBk0UX/XPWJbfG0NpwL6d/WbAiAsOFI3spt7Ncr/78JI
-         lZRPz6E20Ytlf69FNdnvpGHge0K1fmA2vcXao5So=
+        b=VzK1y+Jh229rqSmHj7JPAlg+qYm4x0BEb2+u6oxQQLX7GZR4vsRqt4BKX5rx60ZKk
+         97fqUcjgzYPDPGyKOCDAeufusMkTyNrWowtXlYHYW4P76lWy4zlqYKtAWA8Q8i8bdh
+         Y4BwaPCykaytbh+7d0jLTZXlvwpCnuDKOIH7VRHY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Robert Hancock <robert.hancock@calian.com>,
-        Kuninori Morimoto <kuninori.morimoto.gx@renesas.com>,
-        Mark Brown <broonie@kernel.org>,
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0293/1017] ASoC: simple-card-utils: Set sysclk on all components
-Date:   Tue,  5 Apr 2022 09:20:06 +0200
-Message-Id: <20220405070402.971354550@linuxfoundation.org>
+Subject: [PATCH 5.16 0295/1017] media: coda: Fix missing put_device() call in coda_get_vdoa_data
+Date:   Tue,  5 Apr 2022 09:20:08 +0200
+Message-Id: <20220405070403.030896549@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -51,76 +51,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Robert Hancock <robert.hancock@calian.com>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit ce2f7b8d4290c22e462e465d1da38a1c113ae66a ]
+[ Upstream commit ca85d271531a1e1c86f24b892f57b7d0a3ddb5a6 ]
 
-If an mclk-fs value was provided in the device tree configuration, the
-calculated MCLK was fed into the downstream codec DAI and CPU DAI,
-however set_sysclk was not being called on the platform device. Some
-platform devices such as the Xilinx Audio Formatter need to know the MCLK
-as well.
+The reference taken by 'of_find_device_by_node()' must be released when
+not needed anymore.
+Add the corresponding 'put_device()' in the error handling path.
 
-Call snd_soc_component_set_sysclk on each component in the stream to set
-the proper sysclk value in addition to the existing call of
-snd_soc_dai_set_sysclk on the codec DAI and CPU DAI. This may end up
-resulting in redundant calls if one of the snd_soc_dai_set_sysclk calls
-ends up calling snd_soc_component_set_sysclk itself, but that isn't
-expected to cause any significant harm.
-
-Fixes: f48dcbb6d47d ("ASoC: simple-card-utils: share asoc_simple_hw_param()")
-Signed-off-by: Robert Hancock <robert.hancock@calian.com>
-Reviewed-by: Kuninori Morimoto <kuninori.morimoto.gx@renesas.com>
-Link: https://lore.kernel.org/r/20220120195832.1742271-5-robert.hancock@calian.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Fixes: e7f3c5481035 ("[media] coda: use VDOA for un-tiling custom macroblock format")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/generic/simple-card-utils.c | 15 +++++++++++++++
- 1 file changed, 15 insertions(+)
+ drivers/media/platform/coda/coda-common.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/sound/soc/generic/simple-card-utils.c b/sound/soc/generic/simple-card-utils.c
-index 850e968677f1..7d8c9843ad53 100644
---- a/sound/soc/generic/simple-card-utils.c
-+++ b/sound/soc/generic/simple-card-utils.c
-@@ -275,6 +275,7 @@ int asoc_simple_hw_params(struct snd_pcm_substream *substream,
- 		mclk_fs = props->mclk_fs;
+diff --git a/drivers/media/platform/coda/coda-common.c b/drivers/media/platform/coda/coda-common.c
+index 9a2640a9c75c..4a553f42ff0a 100644
+--- a/drivers/media/platform/coda/coda-common.c
++++ b/drivers/media/platform/coda/coda-common.c
+@@ -408,6 +408,7 @@ static struct vdoa_data *coda_get_vdoa_data(void)
+ 	if (!vdoa_data)
+ 		vdoa_data = ERR_PTR(-EPROBE_DEFER);
  
- 	if (mclk_fs) {
-+		struct snd_soc_component *component;
- 		mclk = params_rate(params) * mclk_fs;
++	put_device(&vdoa_pdev->dev);
+ out:
+ 	of_node_put(vdoa_node);
  
- 		for_each_prop_dai_codec(props, i, pdai) {
-@@ -282,16 +283,30 @@ int asoc_simple_hw_params(struct snd_pcm_substream *substream,
- 			if (ret < 0)
- 				return ret;
- 		}
-+
- 		for_each_prop_dai_cpu(props, i, pdai) {
- 			ret = asoc_simple_set_clk_rate(pdai, mclk);
- 			if (ret < 0)
- 				return ret;
- 		}
-+
-+		/* Ensure sysclk is set on all components in case any
-+		 * (such as platform components) are missed by calls to
-+		 * snd_soc_dai_set_sysclk.
-+		 */
-+		for_each_rtd_components(rtd, i, component) {
-+			ret = snd_soc_component_set_sysclk(component, 0, 0,
-+							   mclk, SND_SOC_CLOCK_IN);
-+			if (ret && ret != -ENOTSUPP)
-+				return ret;
-+		}
-+
- 		for_each_rtd_codec_dais(rtd, i, sdai) {
- 			ret = snd_soc_dai_set_sysclk(sdai, 0, mclk, SND_SOC_CLOCK_IN);
- 			if (ret && ret != -ENOTSUPP)
- 				return ret;
- 		}
-+
- 		for_each_rtd_cpu_dais(rtd, i, sdai) {
- 			ret = snd_soc_dai_set_sysclk(sdai, 0, mclk, SND_SOC_CLOCK_OUT);
- 			if (ret && ret != -ENOTSUPP)
 -- 
 2.34.1
 
