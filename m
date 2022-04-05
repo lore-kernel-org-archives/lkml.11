@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BEA0CC433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EB66FC43217
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 11:06:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347156AbiDELBz (ORCPT
+        id S1347349AbiDELCB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 07:01:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45536 "EHLO
+        Tue, 5 Apr 2022 07:02:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45572 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234119AbiDEIjT (ORCPT
+        with ESMTP id S234768AbiDEIjT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Apr 2022 04:39:19 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 558101EAFF;
-        Tue,  5 Apr 2022 01:32:55 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A02D821802;
+        Tue,  5 Apr 2022 01:33:03 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E4E9BB81A32;
-        Tue,  5 Apr 2022 08:32:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5C9C7C385A1;
-        Tue,  5 Apr 2022 08:32:52 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 36FADB81A32;
+        Tue,  5 Apr 2022 08:33:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6F263C385A0;
+        Tue,  5 Apr 2022 08:33:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649147572;
-        bh=g4fyN2qoHyGpxXNxZZ707m4eEwBL7Q2b400w2aH4EFg=;
+        s=korg; t=1649147580;
+        bh=aFHFFMUipHtG2lH2cH1iKH9i2DXXPKMIpLsnTSvrAjc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kAV2iUaYkedzOrwRNN5/fD0F6BkCMJTIPWMnMheQSmhenUoA7jz8oG3ndlHUMgBAH
-         9JDd/xzYpCzzC1rHlBcdjiIRqkORLuU4NPPSf1TIXLaQtoJdKVVeLOWrFKFiXbUilI
-         fz5HlzN1RYF83I6mcbX91In2XMkr6qSKvXgsFQus=
+        b=Ea+Em23vH2+LlNZg6SuEIUl/C4kE9sgPEk0iHIeJ60CLZNpcoYSiNHUl0eZGxDAvK
+         W67coiOw2dMiRkntxYueSpXRi6sHzCUU4RMs6VIEQ1VRwGaPOgOkf7imLHJFJM8801
+         oQS7YHln+QaDpxObdHf5Inwt0Sn8JGcV67h67f4U=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        Suzuki K Poulose <suzuki.poulose@arm.com>
-Subject: [PATCH 5.16 0045/1017] coresight: syscfg: Fix memleak on registration failure in cscfg_create_device
-Date:   Tue,  5 Apr 2022 09:15:58 +0200
-Message-Id: <20220405070355.520237785@linuxfoundation.org>
+        stable@vger.kernel.org, Song Liu <songliubraving@fb.com>,
+        Jens Axboe <axboe@kernel.dk>, Song Liu <song@kernel.org>
+Subject: [PATCH 5.16 0030/1017] block: ensure plug merging checks the correct queue at least once
+Date:   Tue,  5 Apr 2022 09:15:43 +0200
+Message-Id: <20220405070355.072987835@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -50,39 +49,62 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Jens Axboe <axboe@kernel.dk>
 
-commit cfa5dbcdd7aece76f3415284569f2f384aff0253 upstream.
+commit 5b2050718d095cd3242d1f42aaaea3a2fec8e6f0 upstream.
 
-device_register() calls device_initialize(),
-according to doc of device_initialize:
+Song reports that a RAID rebuild workload runs much slower recently,
+and it is seeing a lot less merging than it did previously. The reason
+is that a previous commit reduced the amount of work we do for plug
+merging. RAID rebuild interleaves requests between disks, so a last-entry
+check in plug merging always misses a merge opportunity since we always
+find a different disk than what we are looking for.
 
-    Use put_device() to give up your reference instead of freeing
-    * @dev directly once you have called this function.
+Modify the logic such that it's still a one-hit cache, but ensure that
+we check enough to find the right target before giving up.
 
-To prevent potential memleak, use put_device() for error handling.
-
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Fixes: 85e2414c518a ("coresight: syscfg: Initial coresight system configuration")
-Cc: stable@vger.kernel.org
-Link: https://lore.kernel.org/r/20220124124121.8888-1-linmq006@gmail.com
-Signed-off-by: Mathieu Poirier <mathieu.poirier@linaro.org>
-Signed-off-by: Suzuki K Poulose <suzuki.poulose@arm.com>
+Fixes: d38a9c04c0d5 ("block: only check previous entry for plug merge attempt")
+Reported-and-tested-by: Song Liu <song@kernel.org>
+Reviewed-by: Song Liu <songliubraving@fb.com>
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/hwtracing/coresight/coresight-syscfg.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ block/blk-merge.c |   23 +++++++++++++----------
+ 1 file changed, 13 insertions(+), 10 deletions(-)
 
---- a/drivers/hwtracing/coresight/coresight-syscfg.c
-+++ b/drivers/hwtracing/coresight/coresight-syscfg.c
-@@ -791,7 +791,7 @@ static int cscfg_create_device(void)
+--- a/block/blk-merge.c
++++ b/block/blk-merge.c
+@@ -1093,18 +1093,21 @@ bool blk_attempt_plug_merge(struct reque
+ 	if (!plug || rq_list_empty(plug->mq_list))
+ 		return false;
  
- 	err = device_register(dev);
- 	if (err)
--		cscfg_dev_release(dev);
-+		put_device(dev);
- 
- create_dev_exit_unlock:
- 	mutex_unlock(&cscfg_mutex);
+-	/* check the previously added entry for a quick merge attempt */
+-	rq = rq_list_peek(&plug->mq_list);
+-	if (rq->q == q) {
++	rq_list_for_each(&plug->mq_list, rq) {
++		if (rq->q == q) {
++			*same_queue_rq = true;
++			if (blk_attempt_bio_merge(q, rq, bio, nr_segs, false) ==
++			    BIO_MERGE_OK)
++				return true;
++			break;
++		}
++
+ 		/*
+-		 * Only blk-mq multiple hardware queues case checks the rq in
+-		 * the same queue, there should be only one such rq in a queue
++		 * Only keep iterating plug list for merges if we have multiple
++		 * queues
+ 		 */
+-		*same_queue_rq = true;
+-
+-		if (blk_attempt_bio_merge(q, rq, bio, nr_segs, false) ==
+-				BIO_MERGE_OK)
+-			return true;
++		if (!plug->multiple_queues)
++			break;
+ 	}
+ 	return false;
+ }
 
 
