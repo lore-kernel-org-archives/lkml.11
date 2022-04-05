@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E1625C4167D
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 21:04:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 38E2EC41535
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 21:04:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346715AbiDEVDj (ORCPT
+        id S1346270AbiDEVDV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 17:03:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52168 "EHLO
+        Tue, 5 Apr 2022 17:03:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44278 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351709AbiDEKKO (ORCPT
+        with ESMTP id S1348920AbiDEJsr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:10:14 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A31AFC4E35;
-        Tue,  5 Apr 2022 02:55:58 -0700 (PDT)
+        Tue, 5 Apr 2022 05:48:47 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CC42EE4EC;
+        Tue,  5 Apr 2022 02:37:30 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 449D9B81BAE;
-        Tue,  5 Apr 2022 09:55:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A2CEDC385A1;
-        Tue,  5 Apr 2022 09:55:55 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2925961368;
+        Tue,  5 Apr 2022 09:37:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 39A09C385A2;
+        Tue,  5 Apr 2022 09:37:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649152556;
-        bh=a+MHGXrE9l2xWYFXD1289kkTt6Go+YOma3QrXK/HrhQ=;
+        s=korg; t=1649151449;
+        bh=ksj7NaMP7Eh/EV7FFmcfWjOot3c2gY7+vG8k34T7j4o=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=a1T+P189sdPr9rvmWsEL9EalNHx1KgCVrDI1wrlo2RfZZrUS7J6zxMdYDo+mAxyFz
-         NSBfrEOlykoILsYxwdlP89mVMyU+MFWyG8+znUzcUYtLDyP1Qmhdpzej5jmFX2CEtE
-         ZUBPNEHt6wlxAoYdfjoST4vG457CLSMcPD2MvUXg=
+        b=Gj6422Wb9976BZXx8dytej13MlfV/NY/kv48UuXqTi3J1+KNMhTXXxc4FWrpoPt3S
+         qIy4Iv5+2yiXEEF3GIoPJiFUrPNtssQ4YMGTxJvdK+9JWIq9Kq8iFyc1ty+crU0Dqg
+         gysFOl8Opwdgwute6G+HTFLl4SKLDhbzTbwUm1x4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zhihao Cheng <chengzhihao1@huawei.com>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Richard Weinberger <richard@nod.at>
-Subject: [PATCH 5.15 818/913] ubifs: Add missing iput if do_tmpfile() failed in rename whiteout
-Date:   Tue,  5 Apr 2022 09:31:20 +0200
-Message-Id: <20220405070404.350568393@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Athira Rajeev <atrajeev@linux.vnet.ibm.com>,
+        Madhavan Srinivasan <maddy@linux.vnet.ibm.com>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 420/913] powerpc/perf: Dont use perf_hw_context for trace IMC PMU
+Date:   Tue,  5 Apr 2022 09:24:42 +0200
+Message-Id: <20220405070352.435852317@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
 References: <20220405070339.801210740@linuxfoundation.org>
@@ -50,35 +52,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zhihao Cheng <chengzhihao1@huawei.com>
+From: Athira Rajeev <atrajeev@linux.vnet.ibm.com>
 
-commit 716b4573026bcbfa7b58ed19fe15554bac66b082 upstream.
+[ Upstream commit 0198322379c25215b2778482bf1221743a76e2b5 ]
 
-whiteout inode should be put when do_tmpfile() failed if inode has been
-initialized. Otherwise we will get following warning during umount:
-  UBIFS error (ubi0:0 pid 1494): ubifs_assert_failed [ubifs]: UBIFS
-  assert failed: c->bi.dd_growth == 0, in fs/ubifs/super.c:1930
-  VFS: Busy inodes after unmount of ubifs. Self-destruct in 5 seconds.
+Trace IMC (In-Memory collection counters) in powerpc is useful for
+application level profiling.
 
-Fixes: 9e0a1fff8db56ea ("ubifs: Implement RENAME_WHITEOUT")
-Signed-off-by: Zhihao Cheng <chengzhihao1@huawei.com>
-Suggested-by: Sascha Hauer <s.hauer@pengutronix.de>
-Signed-off-by: Richard Weinberger <richard@nod.at>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+For trace_imc, presently task context (task_ctx_nr) is set to
+perf_hw_context. But perf_hw_context should only be used for CPU PMU.
+See commit 26657848502b ("perf/core: Verify we have a single
+perf_hw_context PMU").
+
+So for trace_imc, even though it is per thread PMU, it is preferred to
+use sw_context in order to be able to do application level monitoring.
+Hence change the task_ctx_nr to use perf_sw_context.
+
+Fixes: 012ae244845f ("powerpc/perf: Trace imc PMU functions")
+Signed-off-by: Athira Rajeev <atrajeev@linux.vnet.ibm.com>
+Reviewed-by: Madhavan Srinivasan <maddy@linux.vnet.ibm.com>
+[mpe: Update subject & incorporate notes into change log, reflow comment]
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/20220202041837.65968-1-atrajeev@linux.vnet.ibm.com
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/ubifs/dir.c |    2 ++
- 1 file changed, 2 insertions(+)
+ arch/powerpc/perf/imc-pmu.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
---- a/fs/ubifs/dir.c
-+++ b/fs/ubifs/dir.c
-@@ -432,6 +432,8 @@ out_inode:
- 	make_bad_inode(inode);
- 	if (!instantiated)
- 		iput(inode);
-+	else if (whiteout)
-+		iput(*whiteout);
- out_budg:
- 	ubifs_release_budget(c, &req);
- 	if (!instantiated)
+diff --git a/arch/powerpc/perf/imc-pmu.c b/arch/powerpc/perf/imc-pmu.c
+index e106909ff9c3..e7583fbcc8fa 100644
+--- a/arch/powerpc/perf/imc-pmu.c
++++ b/arch/powerpc/perf/imc-pmu.c
+@@ -1457,7 +1457,11 @@ static int trace_imc_event_init(struct perf_event *event)
+ 
+ 	event->hw.idx = -1;
+ 
+-	event->pmu->task_ctx_nr = perf_hw_context;
++	/*
++	 * There can only be a single PMU for perf_hw_context events which is assigned to
++	 * core PMU. Hence use "perf_sw_context" for trace_imc.
++	 */
++	event->pmu->task_ctx_nr = perf_sw_context;
+ 	event->destroy = reset_global_refc;
+ 	return 0;
+ }
+-- 
+2.34.1
+
 
 
