@@ -2,202 +2,201 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DAED1C4167E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CC514C41535
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 22:09:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231459AbiDEWFi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 18:05:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43808 "EHLO
+        id S1391478AbiDEWFc (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 18:05:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45068 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354395AbiDEKOA (ORCPT
+        with ESMTP id S1357361AbiDELQV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:14:00 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27124692BA;
-        Tue,  5 Apr 2022 03:00:00 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DB6D8B81C83;
-        Tue,  5 Apr 2022 09:59:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 33ABEC385A1;
-        Tue,  5 Apr 2022 09:59:57 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649152797;
-        bh=/UGrkgR647QQXM3GQRZYQjVcQ6Z9E8jtvWs6yNBcuDQ=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BX1m9XbmmB419nYHNUW4m5KTWdjex61iBKouzFiCuK7NaGBZgG6oKOSKN1denDwcs
-         Gluv6MhqYPP1NpLGOsLH1X6+SAVxuZ+Ix/395/bvYjmWK0RlmKbs5BvgJHwXxpGm/T
-         u3j3IwUb1OxV20eIMw5de9ZG5nA8toDxhTYEnneI=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Qiuhao Li <qiuhao@sysec.org>,
-        Gaoning Pan <pgn@zju.edu.cn>, Yongkang Jia <kangel@zju.edu.cn>,
-        syzbot+6cde2282daa792c49ab8@syzkaller.appspotmail.com,
-        Maxim Levitsky <mlevitsk@redhat.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Tadeusz Struk <tadeusz.struk@linaro.org>
-Subject: [PATCH 5.15 904/913] KVM: x86/mmu: do compare-and-exchange of gPTE via the user address
-Date:   Tue,  5 Apr 2022 09:32:46 +0200
-Message-Id: <20220405070406.915680217@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 5 Apr 2022 07:16:21 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B2CE22DAA9;
+        Tue,  5 Apr 2022 03:41:16 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 7FB7FD6E;
+        Tue,  5 Apr 2022 03:41:16 -0700 (PDT)
+Received: from e121345-lin.cambridge.arm.com (e121345-lin.cambridge.arm.com [10.1.196.40])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 180CA3F5A1;
+        Tue,  5 Apr 2022 03:41:14 -0700 (PDT)
+From:   Robin Murphy <robin.murphy@arm.com>
+To:     joro@8bytes.org, baolu.lu@linux.intel.com,
+        andreas.noever@gmail.com, michael.jamet@intel.com,
+        mika.westerberg@linux.intel.com, YehezkelShB@gmail.com
+Cc:     iommu@lists.linux-foundation.org, linux-usb@vger.kernel.org,
+        linux-kernel@vger.kernel.org, mario.limonciello@amd.com, hch@lst.de
+Subject: [PATCH v3 3/4] thunderbolt: Make iommu_dma_protection more accurate
+Date:   Tue,  5 Apr 2022 11:41:03 +0100
+Message-Id: <b1f89ea2ad38221e0b75783357b9afb53087061d.1649089693.git.robin.murphy@arm.com>
+X-Mailer: git-send-email 2.28.0.dirty
+In-Reply-To: <cover.1649089693.git.robin.murphy@arm.com>
+References: <cover.1649089693.git.robin.murphy@arm.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Paolo Bonzini <pbonzini@redhat.com>
+Between me trying to get rid of iommu_present() and Mario wanting to
+support the AMD equivalent of DMAR_PLATFORM_OPT_IN, scrutiny has shown
+that the iommu_dma_protection attribute is being far too optimistic.
+Even if an IOMMU might be present for some PCI segment in the system,
+that doesn't necessarily mean it provides translation for the device(s)
+we care about. Furthermore, all that DMAR_PLATFORM_OPT_IN really does
+is tell us that memory was protected before the kernel was loaded, and
+prevent the user from disabling the intel-iommu driver entirely. While
+that lets us assume kernel integrity, what matters for actual runtime
+DMA protection is whether we trust individual devices, based on the
+"external facing" property that we expect firmware to describe for
+Thunderbolt ports.
 
-commit 2a8859f373b0a86f0ece8ec8312607eacf12485d upstream.
+It's proven challenging to determine the appropriate ports accurately
+given the variety of possible topologies, so while still not getting a
+perfect answer, by putting enough faith in firmware we can at least get
+a good bit closer. If we can see that any device near a Thunderbolt NHI
+has all the requisites for Kernel DMA Protection, chances are that it
+*is* a relevant port, but moreover that implies that firmware is playing
+the game overall, so we'll use that to assume that all Thunderbolt ports
+should be correctly marked and thus will end up fully protected.
 
-FNAME(cmpxchg_gpte) is an inefficient mess.  It is at least decent if it
-can go through get_user_pages_fast(), but if it cannot then it tries to
-use memremap(); that is not just terribly slow, it is also wrong because
-it assumes that the VM_PFNMAP VMA is contiguous.
-
-The right way to do it would be to do the same thing as
-hva_to_pfn_remapped() does since commit add6a0cd1c5b ("KVM: MMU: try to
-fix up page faults before giving up", 2016-07-05), using follow_pte()
-and fixup_user_fault() to determine the correct address to use for
-memremap().  To do this, one could for example extract hva_to_pfn()
-for use outside virt/kvm/kvm_main.c.  But really there is no reason to
-do that either, because there is already a perfectly valid address to
-do the cmpxchg() on, only it is a userspace address.  That means doing
-user_access_begin()/user_access_end() and writing the code in assembly
-to handle exceptions correctly.  Worse, the guest PTE can be 8-byte
-even on i686 so there is the extra complication of using cmpxchg8b to
-account for.  But at least it is an efficient mess.
-
-(Thanks to Linus for suggesting improvement on the inline assembly).
-
-Reported-by: Qiuhao Li <qiuhao@sysec.org>
-Reported-by: Gaoning Pan <pgn@zju.edu.cn>
-Reported-by: Yongkang Jia <kangel@zju.edu.cn>
-Reported-by: syzbot+6cde2282daa792c49ab8@syzkaller.appspotmail.com
-Debugged-by: Tadeusz Struk <tadeusz.struk@linaro.org>
-Tested-by: Maxim Levitsky <mlevitsk@redhat.com>
-Cc: stable@vger.kernel.org
-Fixes: bd53cb35a3e9 ("X86/KVM: Handle PFNs outside of kernel reach when touching GPTEs")
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+CC: Mario Limonciello <mario.limonciello@amd.com>
+Reviewed-by: Christoph Hellwig <hch@lst.de>
+Signed-off-by: Robin Murphy <robin.murphy@arm.com>
 ---
- arch/x86/kvm/mmu/paging_tmpl.h |   77 +++++++++++++++++++----------------------
- 1 file changed, 37 insertions(+), 40 deletions(-)
 
---- a/arch/x86/kvm/mmu/paging_tmpl.h
-+++ b/arch/x86/kvm/mmu/paging_tmpl.h
-@@ -34,9 +34,8 @@
- 	#define PT_HAVE_ACCESSED_DIRTY(mmu) true
- 	#ifdef CONFIG_X86_64
- 	#define PT_MAX_FULL_LEVELS PT64_ROOT_MAX_LEVEL
--	#define CMPXCHG cmpxchg
-+	#define CMPXCHG "cmpxchgq"
- 	#else
--	#define CMPXCHG cmpxchg64
- 	#define PT_MAX_FULL_LEVELS 2
- 	#endif
- #elif PTTYPE == 32
-@@ -52,7 +51,7 @@
- 	#define PT_GUEST_DIRTY_SHIFT PT_DIRTY_SHIFT
- 	#define PT_GUEST_ACCESSED_SHIFT PT_ACCESSED_SHIFT
- 	#define PT_HAVE_ACCESSED_DIRTY(mmu) true
--	#define CMPXCHG cmpxchg
-+	#define CMPXCHG "cmpxchgl"
- #elif PTTYPE == PTTYPE_EPT
- 	#define pt_element_t u64
- 	#define guest_walker guest_walkerEPT
-@@ -65,7 +64,9 @@
- 	#define PT_GUEST_DIRTY_SHIFT 9
- 	#define PT_GUEST_ACCESSED_SHIFT 8
- 	#define PT_HAVE_ACCESSED_DIRTY(mmu) ((mmu)->ept_ad)
--	#define CMPXCHG cmpxchg64
-+	#ifdef CONFIG_X86_64
-+	#define CMPXCHG "cmpxchgq"
-+	#endif
- 	#define PT_MAX_FULL_LEVELS PT64_ROOT_MAX_LEVEL
- #else
- 	#error Invalid PTTYPE value
-@@ -147,43 +148,39 @@ static int FNAME(cmpxchg_gpte)(struct kv
- 			       pt_element_t __user *ptep_user, unsigned index,
- 			       pt_element_t orig_pte, pt_element_t new_pte)
- {
--	int npages;
--	pt_element_t ret;
--	pt_element_t *table;
--	struct page *page;
--
--	npages = get_user_pages_fast((unsigned long)ptep_user, 1, FOLL_WRITE, &page);
--	if (likely(npages == 1)) {
--		table = kmap_atomic(page);
--		ret = CMPXCHG(&table[index], orig_pte, new_pte);
--		kunmap_atomic(table);
--
--		kvm_release_page_dirty(page);
--	} else {
--		struct vm_area_struct *vma;
--		unsigned long vaddr = (unsigned long)ptep_user & PAGE_MASK;
--		unsigned long pfn;
--		unsigned long paddr;
--
--		mmap_read_lock(current->mm);
--		vma = find_vma_intersection(current->mm, vaddr, vaddr + PAGE_SIZE);
--		if (!vma || !(vma->vm_flags & VM_PFNMAP)) {
--			mmap_read_unlock(current->mm);
--			return -EFAULT;
--		}
--		pfn = ((vaddr - vma->vm_start) >> PAGE_SHIFT) + vma->vm_pgoff;
--		paddr = pfn << PAGE_SHIFT;
--		table = memremap(paddr, PAGE_SIZE, MEMREMAP_WB);
--		if (!table) {
--			mmap_read_unlock(current->mm);
--			return -EFAULT;
--		}
--		ret = CMPXCHG(&table[index], orig_pte, new_pte);
--		memunmap(table);
--		mmap_read_unlock(current->mm);
--	}
-+	int r = -EFAULT;
-+
-+	if (!user_access_begin(ptep_user, sizeof(pt_element_t)))
-+		return -EFAULT;
-+
-+#ifdef CMPXCHG
-+	asm volatile("1:" LOCK_PREFIX CMPXCHG " %[new], %[ptr]\n"
-+		     "mov $0, %[r]\n"
-+		     "setnz %b[r]\n"
-+		     "2:"
-+		     _ASM_EXTABLE_UA(1b, 2b)
-+		     : [ptr] "+m" (*ptep_user),
-+		       [old] "+a" (orig_pte),
-+		       [r] "+q" (r)
-+		     : [new] "r" (new_pte)
-+		     : "memory");
-+#else
-+	asm volatile("1:" LOCK_PREFIX "cmpxchg8b %[ptr]\n"
-+		     "movl $0, %[r]\n"
-+		     "jz 2f\n"
-+		     "incl %[r]\n"
-+		     "2:"
-+		     _ASM_EXTABLE_UA(1b, 2b)
-+		     : [ptr] "+m" (*ptep_user),
-+		       [old] "+A" (orig_pte),
-+		       [r] "+rm" (r)
-+		     : [new_lo] "b" ((u32)new_pte),
-+		       [new_hi] "c" ((u32)(new_pte >> 32))
-+		     : "memory");
-+#endif
+v3: Check for correct external_facing property, add debug message.
+
+ drivers/thunderbolt/domain.c | 12 +++-------
+ drivers/thunderbolt/nhi.c    | 44 ++++++++++++++++++++++++++++++++++++
+ include/linux/thunderbolt.h  |  2 ++
+ 3 files changed, 49 insertions(+), 9 deletions(-)
+
+diff --git a/drivers/thunderbolt/domain.c b/drivers/thunderbolt/domain.c
+index 7018d959f775..2889a214dadc 100644
+--- a/drivers/thunderbolt/domain.c
++++ b/drivers/thunderbolt/domain.c
+@@ -7,9 +7,7 @@
+  */
  
--	return (ret != orig_pte);
-+	user_access_end();
-+	return r;
+ #include <linux/device.h>
+-#include <linux/dmar.h>
+ #include <linux/idr.h>
+-#include <linux/iommu.h>
+ #include <linux/module.h>
+ #include <linux/pm_runtime.h>
+ #include <linux/slab.h>
+@@ -257,13 +255,9 @@ static ssize_t iommu_dma_protection_show(struct device *dev,
+ 					 struct device_attribute *attr,
+ 					 char *buf)
+ {
+-	/*
+-	 * Kernel DMA protection is a feature where Thunderbolt security is
+-	 * handled natively using IOMMU. It is enabled when IOMMU is
+-	 * enabled and ACPI DMAR table has DMAR_PLATFORM_OPT_IN set.
+-	 */
+-	return sprintf(buf, "%d\n",
+-		       iommu_present(&pci_bus_type) && dmar_platform_optin());
++	struct tb *tb = container_of(dev, struct tb, dev);
++
++	return sysfs_emit(buf, "%d\n", tb->nhi->iommu_dma_protection);
+ }
+ static DEVICE_ATTR_RO(iommu_dma_protection);
+ 
+diff --git a/drivers/thunderbolt/nhi.c b/drivers/thunderbolt/nhi.c
+index 4a582183f675..4bc87b0f003a 100644
+--- a/drivers/thunderbolt/nhi.c
++++ b/drivers/thunderbolt/nhi.c
+@@ -15,9 +15,11 @@
+ #include <linux/pci.h>
+ #include <linux/dma-mapping.h>
+ #include <linux/interrupt.h>
++#include <linux/iommu.h>
+ #include <linux/module.h>
+ #include <linux/delay.h>
+ #include <linux/property.h>
++#include <linux/string_helpers.h>
+ 
+ #include "nhi.h"
+ #include "nhi_regs.h"
+@@ -1103,6 +1105,47 @@ static void nhi_check_quirks(struct tb_nhi *nhi)
+ 		nhi->quirks |= QUIRK_AUTO_CLEAR_INT;
  }
  
- static bool FNAME(prefetch_invalid_gpte)(struct kvm_vcpu *vcpu,
-
++static int nhi_check_iommu_pdev(struct pci_dev *pdev, void *data)
++{
++	if (!pdev->external_facing ||
++	    !device_iommu_capable(&pdev->dev, IOMMU_CAP_PRE_BOOT_PROTECTION))
++		return 0;
++	*(bool *)data = true;
++	return 1; /* Stop walking */
++}
++
++static void nhi_check_iommu(struct tb_nhi *nhi)
++{
++	struct pci_bus *bus = nhi->pdev->bus;
++	bool port_ok = false;
++
++	/*
++	 * Ideally what we'd do here is grab every PCI device that
++	 * represents a tunnelling adapter for this NHI and check their
++	 * status directly, but unfortunately USB4 seems to make it
++	 * obnoxiously difficult to reliably make any correlation.
++	 *
++	 * So for now we'll have to bodge it... Hoping that the system
++	 * is at least sane enough that an adapter is in the same PCI
++	 * segment as its NHI, if we can find *something* on that segment
++	 * which meets the requirements for Kernel DMA Protection, we'll
++	 * take that to imply that firmware is aware and has (hopefully)
++	 * done the right thing in general. We need to know that the PCI
++	 * layer has seen the ExternalFacingPort property which will then
++	 * inform the IOMMU layer to enforce the complete "untrusted DMA"
++	 * flow, but also that the IOMMU driver itself can be trusted not
++	 * to have been subverted by a pre-boot DMA attack.
++	 */
++	while (bus->parent)
++		bus = bus->parent;
++
++	pci_walk_bus(bus, nhi_check_iommu_pdev, &port_ok);
++
++	nhi->iommu_dma_protection = port_ok;
++	dev_dbg(&nhi->pdev->dev, "IOMMU DMA protection is %s\n",
++		str_enabled_disabled(port_ok));
++}
++
+ static int nhi_init_msi(struct tb_nhi *nhi)
+ {
+ 	struct pci_dev *pdev = nhi->pdev;
+@@ -1220,6 +1263,7 @@ static int nhi_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+ 		return -ENOMEM;
+ 
+ 	nhi_check_quirks(nhi);
++	nhi_check_iommu(nhi);
+ 
+ 	res = nhi_init_msi(nhi);
+ 	if (res) {
+diff --git a/include/linux/thunderbolt.h b/include/linux/thunderbolt.h
+index 124e13cb1469..7a8ad984e651 100644
+--- a/include/linux/thunderbolt.h
++++ b/include/linux/thunderbolt.h
+@@ -465,6 +465,7 @@ static inline struct tb_xdomain *tb_service_parent(struct tb_service *svc)
+  * @msix_ida: Used to allocate MSI-X vectors for rings
+  * @going_away: The host controller device is about to disappear so when
+  *		this flag is set, avoid touching the hardware anymore.
++ * @iommu_dma_protection: An IOMMU will isolate external-facing ports.
+  * @interrupt_work: Work scheduled to handle ring interrupt when no
+  *		    MSI-X is used.
+  * @hop_count: Number of rings (end point hops) supported by NHI.
+@@ -479,6 +480,7 @@ struct tb_nhi {
+ 	struct tb_ring **rx_rings;
+ 	struct ida msix_ida;
+ 	bool going_away;
++	bool iommu_dma_protection;
+ 	struct work_struct interrupt_work;
+ 	u32 hop_count;
+ 	unsigned long quirks;
+-- 
+2.28.0.dirty
 
