@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C2770C41535
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 96D5DC4167D
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 13:48:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238544AbiDENnz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 09:43:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60098 "EHLO
+        id S1390858AbiDENnq (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 09:43:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37840 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346499AbiDEJXy (ORCPT
+        with ESMTP id S1346252AbiDEJXk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:23:54 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 560AADAFEF;
-        Tue,  5 Apr 2022 02:13:45 -0700 (PDT)
+        Tue, 5 Apr 2022 05:23:40 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD8FBCA0E1;
+        Tue,  5 Apr 2022 02:13:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id AB611B81C19;
-        Tue,  5 Apr 2022 09:13:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 05EBBC385A3;
-        Tue,  5 Apr 2022 09:13:41 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 15A5B61672;
+        Tue,  5 Apr 2022 09:13:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2388FC385A0;
+        Tue,  5 Apr 2022 09:13:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649150022;
-        bh=ordbT1ol/NytMCy2eDm57yDhNZz58uR1lbLYcHMG7BA=;
+        s=korg; t=1649149992;
+        bh=SdJxWAh9cn5SWer6yPvtQ51y31r12iq2Iow3hSkJTFM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Aw4VdKdnC7VhVF5uBurfFp6MOliTWsq2Arw7lmDzI5EJIrVpck4e7q+CNroYc/0Dz
-         AfvhfLV4XdJ23KQ9uZ3DDqghWFdCpL1aRGoiLI4ZApIkAk1y00kqIUKkXctvltWg3A
-         vyxOFEk3Q2nnIJ7YTkpZOPdef0ZwInW1fdvzhfjM=
+        b=x4xoX4MfNcGpFt4FsZR2+5P2GJUmvS3Fnp5K7R9qusg+3G+WZRWlc90b6pbdd1iwN
+         96z1h82w2t38gjTp4f7/ieoLpy5X7pQQ9vThRnFQvh8x3jwdw6cbgoSUUZO/DgIjeI
+         wFJ26fHUVnOIwjwnEYKbqG+mKPiAGOAtCYV/224Y=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Masahiro Yamada <masahiroy@kernel.org>,
-        Mark Brown <broonie@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>
-Subject: [PATCH 5.16 0927/1017] modpost: restore the warning message for missing symbol versions
-Date:   Tue,  5 Apr 2022 09:30:40 +0200
-Message-Id: <20220405070421.732807647@linuxfoundation.org>
+        stable@vger.kernel.org, Chengsong Ke <kechengsong@huawei.com>,
+        Zhihao Cheng <chengzhihao1@huawei.com>,
+        Richard Weinberger <richard@nod.at>
+Subject: [PATCH 5.16 0914/1017] ubifs: Fix read out-of-bounds in ubifs_wbuf_write_nolock()
+Date:   Tue,  5 Apr 2022 09:30:27 +0200
+Message-Id: <20220405070421.351725476@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -49,39 +50,109 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Masahiro Yamada <masahiroy@kernel.org>
+From: Zhihao Cheng <chengzhihao1@huawei.com>
 
-commit bf5c0c2231bcab677e5cdfb7f73e6c79f6d8c2d4 upstream.
+commit 4f2262a334641e05f645364d5ade1f565c85f20b upstream.
 
-This log message was accidentally chopped off.
+Function ubifs_wbuf_write_nolock() may access buf out of bounds in
+following process:
 
-I was wondering why this happened, but checking the ML log, Mark
-precisely followed my suggestion [1].
+ubifs_wbuf_write_nolock():
+  aligned_len = ALIGN(len, 8);   // Assume len = 4089, aligned_len = 4096
+  if (aligned_len <= wbuf->avail) ... // Not satisfy
+  if (wbuf->used) {
+    ubifs_leb_write()  // Fill some data in avail wbuf
+    len -= wbuf->avail;   // len is still not 8-bytes aligned
+    aligned_len -= wbuf->avail;
+  }
+  n = aligned_len >> c->max_write_shift;
+  if (n) {
+    n <<= c->max_write_shift;
+    err = ubifs_leb_write(c, wbuf->lnum, buf + written,
+                          wbuf->offs, n);
+    // n > len, read out of bounds less than 8(n-len) bytes
+  }
 
-I just used "..." because I was too lazy to type the sentence fully.
-Sorry for the confusion.
+, which can be catched by KASAN:
+  =========================================================
+  BUG: KASAN: slab-out-of-bounds in ecc_sw_hamming_calculate+0x1dc/0x7d0
+  Read of size 4 at addr ffff888105594ff8 by task kworker/u8:4/128
+  Workqueue: writeback wb_workfn (flush-ubifs_0_0)
+  Call Trace:
+    kasan_report.cold+0x81/0x165
+    nand_write_page_swecc+0xa9/0x160
+    ubifs_leb_write+0xf2/0x1b0 [ubifs]
+    ubifs_wbuf_write_nolock+0x421/0x12c0 [ubifs]
+    write_head+0xdc/0x1c0 [ubifs]
+    ubifs_jnl_write_inode+0x627/0x960 [ubifs]
+    wb_workfn+0x8af/0xb80
 
-[1]: https://lore.kernel.org/all/CAK7LNAR6bXXk9-ZzZYpTqzFqdYbQsZHmiWspu27rtsFxvfRuVA@mail.gmail.com/
+Function ubifs_wbuf_write_nolock() accepts that parameter 'len' is not 8
+bytes aligned, the 'len' represents the true length of buf (which is
+allocated in 'ubifs_jnl_xxx', eg. ubifs_jnl_write_inode), so
+ubifs_wbuf_write_nolock() must handle the length read from 'buf' carefully
+to write leb safely.
 
-Fixes: 4a6795933a89 ("kbuild: modpost: Explicitly warn about unprototyped symbols")
-Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
-Acked-by: Mark Brown <broonie@kernel.org>
-Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
+Fetch a reproducer in [Link].
+
+Fixes: 1e51764a3c2ac0 ("UBIFS: add new flash file system")
+Link: https://bugzilla.kernel.org/show_bug.cgi?id=214785
+Reported-by: Chengsong Ke <kechengsong@huawei.com>
+Signed-off-by: Zhihao Cheng <chengzhihao1@huawei.com>
+Signed-off-by: Richard Weinberger <richard@nod.at>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- scripts/mod/modpost.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ fs/ubifs/io.c |   34 ++++++++++++++++++++++++++++++----
+ 1 file changed, 30 insertions(+), 4 deletions(-)
 
---- a/scripts/mod/modpost.c
-+++ b/scripts/mod/modpost.c
-@@ -669,7 +669,7 @@ static void handle_modversion(const stru
- 	unsigned int crc;
+--- a/fs/ubifs/io.c
++++ b/fs/ubifs/io.c
+@@ -833,16 +833,42 @@ int ubifs_wbuf_write_nolock(struct ubifs
+ 	 */
+ 	n = aligned_len >> c->max_write_shift;
+ 	if (n) {
+-		n <<= c->max_write_shift;
++		int m = n - 1;
++
+ 		dbg_io("write %d bytes to LEB %d:%d", n, wbuf->lnum,
+ 		       wbuf->offs);
+-		err = ubifs_leb_write(c, wbuf->lnum, buf + written,
+-				      wbuf->offs, n);
++
++		if (m) {
++			/* '(n-1)<<c->max_write_shift < len' is always true. */
++			m <<= c->max_write_shift;
++			err = ubifs_leb_write(c, wbuf->lnum, buf + written,
++					      wbuf->offs, m);
++			if (err)
++				goto out;
++			wbuf->offs += m;
++			aligned_len -= m;
++			len -= m;
++			written += m;
++		}
++
++		/*
++		 * The non-written len of buf may be less than 'n' because
++		 * parameter 'len' is not 8 bytes aligned, so here we read
++		 * min(len, n) bytes from buf.
++		 */
++		n = 1 << c->max_write_shift;
++		memcpy(wbuf->buf, buf + written, min(len, n));
++		if (n > len) {
++			ubifs_assert(c, n - len < 8);
++			ubifs_pad(c, wbuf->buf + len, n - len);
++		}
++
++		err = ubifs_leb_write(c, wbuf->lnum, wbuf->buf, wbuf->offs, n);
+ 		if (err)
+ 			goto out;
+ 		wbuf->offs += n;
+ 		aligned_len -= n;
+-		len -= n;
++		len -= min(len, n);
+ 		written += n;
+ 	}
  
- 	if (sym->st_shndx == SHN_UNDEF) {
--		warn("EXPORT symbol \"%s\" [%s%s] version ...\n"
-+		warn("EXPORT symbol \"%s\" [%s%s] version generation failed, symbol will not be versioned.\n"
- 		     "Is \"%s\" prototyped in <asm/asm-prototypes.h>?\n",
- 		     symname, mod->name, mod->is_vmlinux ? "" : ".ko",
- 		     symname);
 
 
