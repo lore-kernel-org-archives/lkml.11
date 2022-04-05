@@ -2,106 +2,161 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C90CC433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C6A03C3527D
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:15:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1444522AbiDEUIP (ORCPT
+        id S1445061AbiDEUI2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 16:08:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37040 "EHLO
+        Tue, 5 Apr 2022 16:08:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50042 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352019AbiDEPLv (ORCPT
+        with ESMTP id S1358068AbiDEK15 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 11:11:51 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4393B108740
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 06:25:40 -0700 (PDT)
-From:   John Ogness <john.ogness@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1649165138;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=w6/o/PjZ0Qpg9L4OKIrmGvdcvR+21LH+ujrVsqfiSt0=;
-        b=vTX9PptTisS4B8CBAJwM/Vt3Innqkp0IOmP3EfSf0o3TJbgWvw4uMWAXno+zj0xKS5gmXm
-        h48mChyV9dtz3Jz+PUjBqAIWm+5xr/bE775UIcJkQjBvty+w9Tk0I5/9sqEH0kwnyODRro
-        7FTymDUVvdch6af6pTAZCTfsqn8FqEVHa7yrbunD0TvHo/5lOCx0tAFOMR0JJ6BKRrWjWX
-        ruP9k94SLnEvFsGA2hD1gI6Ehm6aTpED92hEW41AbPzpatkFRH6C+RxFbhU16BwYR/tdQv
-        NaoQtQOysaW8oB4AjBIvCCxCwn43dhNyN7pvPSbYR0s54N4JDQA4MPs1YgLdkg==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1649165138;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=w6/o/PjZ0Qpg9L4OKIrmGvdcvR+21LH+ujrVsqfiSt0=;
-        b=VIRHzr2fjG0CztJXCAS8nOaDklkaoRPnvTp89xiTp/mEeqw8+0obiAxx9udA4gnOMwZUk2
-        ejEvSeO1bAJYNNBw==
-To:     Petr Mladek <pmladek@suse.com>
-Cc:     Sergey Senozhatsky <senozhatsky@chromium.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH printk v2 02/12] printk: cpu sync always disable interrupts
-Date:   Tue,  5 Apr 2022 15:31:25 +0206
-Message-Id: <20220405132535.649171-3-john.ogness@linutronix.de>
-In-Reply-To: <20220405132535.649171-1-john.ogness@linutronix.de>
-References: <20220405132535.649171-1-john.ogness@linutronix.de>
+        Tue, 5 Apr 2022 06:27:57 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 603C13BBEC;
+        Tue,  5 Apr 2022 03:14:22 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0C4DCB81C6C;
+        Tue,  5 Apr 2022 10:14:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5ADE2C385A0;
+        Tue,  5 Apr 2022 10:14:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649153659;
+        bh=D9I+rGgfR4xsdgyZ9tEUcIy10T7OjvR2xyL8W/yW+GE=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=POtDXnvmlg3r2a7Oq1Z4h9Z8l5rsi14UKuh35Sd4A46YMMM/RIft13OV69t6RHXPg
+         C9VykEwgbmA1ONHJoDAuXnclt4POJj9XkW+M0JUImFAl8YHPGTUsAgSA1iwRwf75Jx
+         4H8HYvqLMxKqQReqWp8Uclm4c6eRukW9QskDClRM=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Maxim Kiselev <bigunclemax@gmail.com>,
+        Maxim Kochetkov <fido_max@inbox.ru>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 284/599] powerpc: dts: t1040rdb: fix ports names for Seville Ethernet switch
+Date:   Tue,  5 Apr 2022 09:29:38 +0200
+Message-Id: <20220405070307.287328947@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
+References: <20220405070258.802373272@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The CPU sync functions are a NOP for !CONFIG_SMP. But for
-!CONFIG_SMP they still need to disable interrupts in order to
-preserve context within the CPU sync sections.
+From: Maxim Kiselev <bigunclemax@gmail.com>
 
-Signed-off-by: John Ogness <john.ogness@linutronix.de>
-Reviewed-by: Petr Mladek <pmladek@suse.com>
-Reviewed-by: Sergey Senozhatsky <senozhatsky@chromium.org>
+[ Upstream commit 5ebb74749202a25da4b3cc2eb15470225a05527c ]
+
+On board rev A, the network interface labels for the switch ports
+written on the front panel are different than on rev B and later.
+
+This patch fixes network interface names for the switch ports according
+to labels that are written on the front panel of the board rev B.
+They start from ETH3 and end at ETH10.
+
+This patch also introduces a separate device tree for rev A.
+The main device tree is supposed to cover rev B and later.
+
+Fixes: e69eb0824d8c ("powerpc: dts: t1040rdb: add ports for Seville Ethernet switch")
+Signed-off-by: Maxim Kiselev <bigunclemax@gmail.com>
+Reviewed-by: Maxim Kochetkov <fido_max@inbox.ru>
+Reviewed-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/20220121091447.3412907-1-bigunclemax@gmail.com
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/linux/printk.h | 18 +++++++++---------
- 1 file changed, 9 insertions(+), 9 deletions(-)
+ arch/powerpc/boot/dts/fsl/t1040rdb-rev-a.dts | 30 ++++++++++++++++++++
+ arch/powerpc/boot/dts/fsl/t1040rdb.dts       |  8 +++---
+ 2 files changed, 34 insertions(+), 4 deletions(-)
+ create mode 100644 arch/powerpc/boot/dts/fsl/t1040rdb-rev-a.dts
 
-diff --git a/include/linux/printk.h b/include/linux/printk.h
-index 859323a52985..b70a42f94031 100644
---- a/include/linux/printk.h
-+++ b/include/linux/printk.h
-@@ -281,9 +281,16 @@ extern int __printk_cpu_sync_try_get(void);
- extern void __printk_cpu_sync_wait(void);
- extern void __printk_cpu_sync_put(void);
- 
-+#else
+diff --git a/arch/powerpc/boot/dts/fsl/t1040rdb-rev-a.dts b/arch/powerpc/boot/dts/fsl/t1040rdb-rev-a.dts
+new file mode 100644
+index 000000000000..73f8c998c64d
+--- /dev/null
++++ b/arch/powerpc/boot/dts/fsl/t1040rdb-rev-a.dts
+@@ -0,0 +1,30 @@
++// SPDX-License-Identifier: GPL-2.0-or-later
++/*
++ * T1040RDB-REV-A Device Tree Source
++ *
++ * Copyright 2014 - 2015 Freescale Semiconductor Inc.
++ *
++ */
 +
-+#define __printk_cpu_sync_try_get() true
-+#define __printk_cpu_sync_wait()
-+#define __printk_cpu_sync_put()
-+#endif /* CONFIG_SMP */
++#include "t1040rdb.dts"
 +
- /**
-- * printk_cpu_sync_get_irqsave() - Acquire the printk cpu-reentrant spinning
-- *                                 lock and disable interrupts.
-+ * printk_cpu_sync_get_irqsave() - Disable interrupts and acquire the printk
-+ *                                 cpu-reentrant spinning lock.
-  * @flags: Stack-allocated storage for saving local interrupt state,
-  *         to be passed to printk_cpu_sync_put_irqrestore().
-  *
-@@ -322,13 +329,6 @@ extern void __printk_cpu_sync_put(void);
- 		local_irq_restore(flags);	\
- 	} while (0)
++/ {
++	model = "fsl,T1040RDB-REV-A";
++	compatible = "fsl,T1040RDB-REV-A";
++};
++
++&seville_port0 {
++	label = "ETH5";
++};
++
++&seville_port2 {
++	label = "ETH7";
++};
++
++&seville_port4 {
++	label = "ETH9";
++};
++
++&seville_port6 {
++	label = "ETH11";
++};
+diff --git a/arch/powerpc/boot/dts/fsl/t1040rdb.dts b/arch/powerpc/boot/dts/fsl/t1040rdb.dts
+index af0c8a6f5613..b6733e7e6580 100644
+--- a/arch/powerpc/boot/dts/fsl/t1040rdb.dts
++++ b/arch/powerpc/boot/dts/fsl/t1040rdb.dts
+@@ -119,7 +119,7 @@
+ 	managed = "in-band-status";
+ 	phy-handle = <&phy_qsgmii_0>;
+ 	phy-mode = "qsgmii";
+-	label = "ETH5";
++	label = "ETH3";
+ 	status = "okay";
+ };
  
--#else
--
--#define printk_cpu_sync_get_irqsave(flags) ((void)flags)
--#define printk_cpu_sync_put_irqrestore(flags) ((void)flags)
--
--#endif /* CONFIG_SMP */
--
- extern int kptr_restrict;
+@@ -135,7 +135,7 @@
+ 	managed = "in-band-status";
+ 	phy-handle = <&phy_qsgmii_2>;
+ 	phy-mode = "qsgmii";
+-	label = "ETH7";
++	label = "ETH5";
+ 	status = "okay";
+ };
  
- /**
+@@ -151,7 +151,7 @@
+ 	managed = "in-band-status";
+ 	phy-handle = <&phy_qsgmii_4>;
+ 	phy-mode = "qsgmii";
+-	label = "ETH9";
++	label = "ETH7";
+ 	status = "okay";
+ };
+ 
+@@ -167,7 +167,7 @@
+ 	managed = "in-band-status";
+ 	phy-handle = <&phy_qsgmii_6>;
+ 	phy-mode = "qsgmii";
+-	label = "ETH11";
++	label = "ETH9";
+ 	status = "okay";
+ };
+ 
 -- 
-2.30.2
+2.34.1
+
+
 
