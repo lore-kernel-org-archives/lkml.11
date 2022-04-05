@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9DDEEC46467
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 10:08:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D5C7AC352A1
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 10:08:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351027AbiDEKAx (ORCPT
+        id S1352650AbiDEKEv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 06:00:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56974 "EHLO
+        Tue, 5 Apr 2022 06:04:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51880 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234323AbiDEIYv (ORCPT
+        with ESMTP id S238294AbiDEIa1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:24:51 -0400
+        Tue, 5 Apr 2022 04:30:27 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA45213CE4;
-        Tue,  5 Apr 2022 01:20:31 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 059D5255A3;
+        Tue,  5 Apr 2022 01:22:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 76B2D60B12;
-        Tue,  5 Apr 2022 08:20:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 813BDC385A0;
-        Tue,  5 Apr 2022 08:20:30 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3AD3760B5E;
+        Tue,  5 Apr 2022 08:22:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 49174C385A0;
+        Tue,  5 Apr 2022 08:22:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649146830;
-        bh=xuNZMXifvmTGhpPgK2BkPkaKp82sCR/h9SV2ylyFzog=;
+        s=korg; t=1649146924;
+        bh=14VW2dm/D52DxBIO4T4GRlDqW5MH7hZuDbtQnnwcWvc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=aCPwRPIKA98xNCVygWgF08zf5KW/JXTyXJj+AgTBZpFdKCWUUyE5k6CU2vxDamCjB
-         D00/advRjqD/PCi3yj7gRthsHY+OV6DmmdpfYA4zHOsjP8V0QJEdR6eJPLrJOCzE+7
-         o9JJJjaFqcyvHbiOWs7fACqBemEqXx/f6iah3+SI=
+        b=V7NJfpZoHxVu+jMICV5SdnccgaUJSOHKFCdb+U5mkMwqOtTfoDCC7yzkWPc8yRLPI
+         C4xPgiVlVUJQFk0C/Ll0VP/GcQhvlPNLMNNMYPc8rAFATyYrrJoCGxl861ckhUHGJe
+         /mbJcJE72mYD1SJgLdynN2sm/BOJQlExDY0NCNMg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, George Kennedy <george.kennedy@oracle.com>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Helge Deller <deller@gmx.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0904/1126] video: fbdev: cirrusfb: check pixclock to avoid divide by zero
-Date:   Tue,  5 Apr 2022 09:27:31 +0200
-Message-Id: <20220405070434.064194492@linuxfoundation.org>
+        stable@vger.kernel.org, Ming Qian <ming.qian@nxp.com>,
+        Mirela Rabulea <mirela.rabulea@nxp.com>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 0921/1126] media: imx-jpeg: fix a bug of accessing array out of bounds
+Date:   Tue,  5 Apr 2022 09:27:48 +0200
+Message-Id: <20220405070434.553612448@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -50,81 +51,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: George Kennedy <george.kennedy@oracle.com>
+From: Ming Qian <ming.qian@nxp.com>
 
-[ Upstream commit 5c6f402bdcf9e7239c6bc7087eda71ac99b31379 ]
+[ Upstream commit 97558d170a1236280407e8d29a7d095d2c2ed554 ]
 
-Do a sanity check on pixclock value to avoid divide by zero.
+When error occurs in parsing jpeg, the slot isn't acquired yet, it may
+be the default value MXC_MAX_SLOTS.
+If the driver access the slot using the incorrect slot number, it will
+access array out of bounds.
+The result is the driver will change num_domains, which follows
+slot_data in struct mxc_jpeg_dev.
+Then the driver won't detach the pm domain at rmmod, which will lead to
+kernel panic when trying to insmod again.
 
-If the pixclock value is zero, the cirrusfb driver will round up
-pixclock to get the derived frequency as close to maxclock as
-possible.
-
-Syzkaller reported a divide error in cirrusfb_check_pixclock.
-
-divide error: 0000 [#1] SMP KASAN PTI
-CPU: 0 PID: 14938 Comm: cirrusfb_test Not tainted 5.15.0-rc6 #1
-Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.11.0-2
-RIP: 0010:cirrusfb_check_var+0x6f1/0x1260
-
-Call Trace:
- fb_set_var+0x398/0xf90
- do_fb_ioctl+0x4b8/0x6f0
- fb_ioctl+0xeb/0x130
- __x64_sys_ioctl+0x19d/0x220
- do_syscall_64+0x3a/0x80
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-
-Signed-off-by: George Kennedy <george.kennedy@oracle.com>
-Reviewed-by: Geert Uytterhoeven <geert@linux-m68k.org>
-Signed-off-by: Helge Deller <deller@gmx.de>
+Signed-off-by: Ming Qian <ming.qian@nxp.com>
+Reviewed-by: Mirela Rabulea <mirela.rabulea@nxp.com>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/video/fbdev/cirrusfb.c | 16 ++++++++--------
- 1 file changed, 8 insertions(+), 8 deletions(-)
+ drivers/media/platform/imx-jpeg/mxc-jpeg.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/drivers/video/fbdev/cirrusfb.c b/drivers/video/fbdev/cirrusfb.c
-index 93802abbbc72..3d47c347b897 100644
---- a/drivers/video/fbdev/cirrusfb.c
-+++ b/drivers/video/fbdev/cirrusfb.c
-@@ -469,7 +469,7 @@ static int cirrusfb_check_mclk(struct fb_info *info, long freq)
- 	return 0;
- }
- 
--static int cirrusfb_check_pixclock(const struct fb_var_screeninfo *var,
-+static int cirrusfb_check_pixclock(struct fb_var_screeninfo *var,
- 				   struct fb_info *info)
- {
- 	long freq;
-@@ -478,9 +478,7 @@ static int cirrusfb_check_pixclock(const struct fb_var_screeninfo *var,
- 	unsigned maxclockidx = var->bits_per_pixel >> 3;
- 
- 	/* convert from ps to kHz */
--	freq = PICOS2KHZ(var->pixclock);
--
--	dev_dbg(info->device, "desired pixclock: %ld kHz\n", freq);
-+	freq = PICOS2KHZ(var->pixclock ? : 1);
- 
- 	maxclock = cirrusfb_board_info[cinfo->btype].maxclock[maxclockidx];
- 	cinfo->multiplexing = 0;
-@@ -488,11 +486,13 @@ static int cirrusfb_check_pixclock(const struct fb_var_screeninfo *var,
- 	/* If the frequency is greater than we can support, we might be able
- 	 * to use multiplexing for the video mode */
- 	if (freq > maxclock) {
--		dev_err(info->device,
--			"Frequency greater than maxclock (%ld kHz)\n",
--			maxclock);
--		return -EINVAL;
-+		var->pixclock = KHZ2PICOS(maxclock);
-+
-+		while ((freq = PICOS2KHZ(var->pixclock)) > maxclock)
-+			var->pixclock++;
+diff --git a/drivers/media/platform/imx-jpeg/mxc-jpeg.c b/drivers/media/platform/imx-jpeg/mxc-jpeg.c
+index b249c1bbfac8..83a2b4d13bad 100644
+--- a/drivers/media/platform/imx-jpeg/mxc-jpeg.c
++++ b/drivers/media/platform/imx-jpeg/mxc-jpeg.c
+@@ -954,7 +954,6 @@ static void mxc_jpeg_device_run(void *priv)
+ 		jpeg_src_buf->jpeg_parse_error = true;
  	}
-+	dev_dbg(info->device, "desired pixclock: %ld kHz\n", freq);
-+
- 	/*
- 	 * Additional constraint: 8bpp uses DAC clock doubling to allow maximum
- 	 * pixel clock
+ 	if (jpeg_src_buf->jpeg_parse_error) {
+-		jpeg->slot_data[ctx->slot].used = false;
+ 		v4l2_m2m_src_buf_remove(ctx->fh.m2m_ctx);
+ 		v4l2_m2m_dst_buf_remove(ctx->fh.m2m_ctx);
+ 		v4l2_m2m_buf_done(src_buf, VB2_BUF_STATE_ERROR);
 -- 
 2.34.1
 
