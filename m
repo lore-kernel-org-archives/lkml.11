@@ -2,136 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BE3D0C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:28:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2FDC8C43219
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:28:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355267AbiDEUXY (ORCPT
+        id S1358323AbiDEUXz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 16:23:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48138 "EHLO
+        Tue, 5 Apr 2022 16:23:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47618 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1573704AbiDETqW (ORCPT
+        with ESMTP id S1349457AbiDEJtx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 15:46:22 -0400
-Received: from mout.gmx.net (mout.gmx.net [212.227.17.21])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C96E414087;
-        Tue,  5 Apr 2022 12:44:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1649187852;
-        bh=BXQ8G9Dr8k3xNyKxt7GcxOAd7iGTbrc+JOzLOV5RqvU=;
-        h=X-UI-Sender-Class:Date:From:To:Cc:Subject:In-Reply-To:References;
-        b=c/J3VEbnYefBqbKhuaYmSYCRtp8LljUH7n9dOo4nnNZyr/chN6HnyRR2f7h7wSXjd
-         CCp6+n1Djb2DYTiMbm/j3bRU3URtxO9YD6n/ciZOTT68EN/kgQNE6G+qO8BuwVF+Aa
-         Z/BG5CoNCMGhSTKZv6KKnZlFy+Hu9peAKDBI8yaw=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from mir ([94.31.89.21]) by mail.gmx.net (mrgmx104 [212.227.17.168])
- with ESMTPSA (Nemesis) id 1MFsYx-1nmYTr0qh5-00HMCU; Tue, 05 Apr 2022 21:44:12
- +0200
-Date:   Tue, 5 Apr 2022 21:44:09 +0200
-From:   Stefan Lippers-Hollmann <s.l-h@gmx.de>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
-        Bard Liao <yung-chuan.liao@linux.intel.com>,
-        =?UTF-8?B?UMOpdGVy?= Ujfalusi <peter.ujfalusi@linux.intel.com>,
-        Mark Brown <broonie@kernel.org>,
+        Tue, 5 Apr 2022 05:49:53 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3F3225FE;
+        Tue,  5 Apr 2022 02:46:31 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 605E9B81B7A;
+        Tue,  5 Apr 2022 09:46:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B1A02C385A2;
+        Tue,  5 Apr 2022 09:46:28 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649151989;
+        bh=jQPU+iVWdRJO/Zf9E9j5Fx4xuwiHUlqhxnNThXYz8Sc=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=PEW259Ll+fAMDXZNdNeH4P14pwjN3tK5lQRp7cQqSbKYpga1YH5zlqqnaQ7VlBD/u
+         6V+SHLDGeVff5mVaUbLCl5vdHVg+SSBMBX3k6y33KRe3R/sVpPQanXKk6NfCcUrPpl
+         Pt65z9snhqvtZh5Vcnxv5ITCYnzkshBGFwJryxkA=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Taniya Das <tdas@codeaurora.org>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: Re: [PATCH 5.17 0943/1126] ASoC: Intel: sof_es8336: use NHLT
- information to set dmic and SSP
-Message-ID: <20220405214409.52f3ede7@mir>
-In-Reply-To: <20220405070435.188697055@linuxfoundation.org>
-References: <20220405070407.513532867@linuxfoundation.org>
-        <20220405070435.188697055@linuxfoundation.org>
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.33; x86_64-pc-linux-gnu)
+Subject: [PATCH 5.15 613/913] clk: qcom: clk-rcg2: Update the frac table for pixel clock
+Date:   Tue,  5 Apr 2022 09:27:55 +0200
+Message-Id: <20220405070358.215951115@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:txWOjwm3T5sVY1g/TCsV7PEFAamF3HDYlLhAeFzUJWIJ8Pwmk8M
- Yt3AvXEPy9GHynICk1Yh/J6Msry5YqwlQrOi2fcr1AwEav8kKYSogYOJaTYDorYt/+6loHb
- 1xCxhatseXMziahVddnYk6k3/iubRVPwGEhZerCXuvtYXznBZs3YA5fWnR+pOEo9Z9Jz+jm
- fTMANNVCFSnFWl4d6Me/Q==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:FkulZaLFO2w=:lgROdH3sTkvRRwtkQck4b0
- ZxEZsJDNtb9vh3Eubsth9tr5TxFyv/YTVXYheb5gUZIkzoasomNcj2jvkbZRy9lZZJQxbThkt
- Rkmnba/483239EKOSqKSPk8hQfoqdbuuRC+NtOjpMbQV03ZOhVe6WANX+WrwDW9XhbSsRAOgY
- aeAv98p5g8Q/llH3ywfhuuJ0c65qiPGtUu3pRDeh6TDV/V7LLCmH89v6qvrf5OaXog0jSHU6X
- gu8XliQMMBtc9k5hQ8WPDQhsVw8XFqG5D8pIhjvPJWJ76fZzPh76iAnVxG5Jmg+ggao+8KumA
- /lqQF593U6wRfDwvks+sBu1f8Z/BAU/DQApgizJYgvdUdN5Hlpss3lv3BWaoJZhGuJaK9mfLd
- P1jCrENw50lVraP30dR1rjSQeKr2sZ0RURocuRZhx7jWWv0gykHT2zFHDZD3S8SZGJ/wL5UDK
- WwOimnlSdWvDVSOLTLSOBVfBYkQuXWBa/kdH8aXv+haxtpX4VH2ZEmHW289r/ZpAWuX9+uivn
- XqCzgUIvvId6F+iCQyIEGBUQYWnKgqYiP2BFhoZYJe9+KhIoKzvuKalRRGjok5M+ftMce8xC+
- Yc6WQTpPaw6tr9is9UnhvBKVGkutL+HZT3aDgEUI73baLtQFj1icEbTFIrEUSRlgnyjSO1bcO
- pym0uXuR0HHYV9WHMHllMCSeBHQWljl9qfDI0a5fvhf8uO9fHej52wTL0WR9a68pnGkjuWSMN
- rg5Vew7SLUhjI+XTyVZ2fDf9Ds/9qmDdCTKdDJvSXYTp2homdssG7lXvi5fMnasJY/TyB2Z+F
- MyrZ0X1ClimOk/g9jq37r4lX4loLhMIxeXmajO6XLesEAE/ds3FPLndc3aYQxHsQE+ox2HOUj
- klqYvT43Hkm5iITxZrRdqqQHE6U0lTWrvH0Lb5FRaebn0pH463CJrFcMPlZxX2zuxF7hI6nvo
- kZyXRP3Ch9etZZ4WwxI7A1rOnhDWcWJ3zxCwsLhyyRGykwVUdgJ4suQu8ILhqxYHKeMKImfUy
- iqQIBMXOU6QLKrnjwBNmk3SXosNXy6RQdw8NHNWKHXmR9a20Wlm+MKCqchTz9fKbA5Oij+Jae
- xVcIxNv7OQiY/A=
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi
+From: Taniya Das <tdas@codeaurora.org>
 
-On 2022-04-05, Greg Kroah-Hartman wrote:
-> From: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
->
-> [ Upstream commit 651c304df7f6e3fbb4779527efa3eb128ef91329 ]
->
-> Since we see a proliferation of devices with various configurations,
-> we want to automatically set the DMIC and SSP information. This patch
-> relies on the information extracted from NHLT and partially reverts
-> existing DMI quirks added by commit a164137ce91a ("ASoC: Intel: add
-> machine driver for SOF+ES8336")
->
-> Note that NHLT can report multiple SSPs, choosing from the
-> ssp_link_mask in an MSB-first manner was found experimentally to work
-> fine.
->
-> The only thing that cannot be detected is the GPIO type, and users may
-> want to use the quirk override parameter if the 'wrong' solution is
-> provided.
-[...]
+[ Upstream commit b527358cb4cd58a8279c9062b0786f1fab628fdc ]
 
-This patch, as part of v5.17.2-rc1 seems to introduce a build failure
-on x86_64 (with CONFIG_SND_SOC_INTEL_SOF_ES8336_MACH=3Dm):
+Support the new numerator and denominator for pixel clock on SM8350 and
+support rgb101010, RGB888 use cases on SM8450.
 
-  LD [M]  sound/soc/intel/boards/snd-soc-sof_rt5682.o
-  LD [M]  sound/soc/intel/boards/snd-soc-sof_cs42l42.o
-  CC [M]  sound/soc/intel/boards/sof_es8336.o
-/build/linux-5.17/sound/soc/intel/boards/sof_es8336.c: In function 'sof_es=
-8336_probe':
-/build/linux-5.17/sound/soc/intel/boards/sof_es8336.c:482:32: error: 'stru=
-ct snd_soc_acpi_mach_params' has no member named 'i2s_link_mask'; did you =
-mean 'link_mask'?
-  482 |         if (!mach->mach_params.i2s_link_mask) {
-      |                                ^~~~~~~~~~~~~
-      |                                link_mask
-/build/linux-5.17/sound/soc/intel/boards/sof_es8336.c:494:39: error: 'stru=
-ct snd_soc_acpi_mach_params' has no member named 'i2s_link_mask'; did you =
-mean 'link_mask'?
-  494 |                 if (mach->mach_params.i2s_link_mask & BIT(2))
-      |                                       ^~~~~~~~~~~~~
-      |                                       link_mask
-/build/linux-5.17/sound/soc/intel/boards/sof_es8336.c:496:44: error: 'stru=
-ct snd_soc_acpi_mach_params' has no member named 'i2s_link_mask'; did you =
-mean 'link_mask'?
-  496 |                 else if (mach->mach_params.i2s_link_mask & BIT(1))
-      |                                            ^~~~~~~~~~~~~
-      |                                            link_mask
-/build/linux-5.17/sound/soc/intel/boards/sof_es8336.c:498:45: error: 'stru=
-ct snd_soc_acpi_mach_params' has no member named 'i2s_link_mask'; did you =
-mean 'link_mask'?
-  498 |                 else  if (mach->mach_params.i2s_link_mask & BIT(0)=
-)
-      |                                             ^~~~~~~~~~~~~
-      |                                             link_mask
-make[4]: *** [/build/linux-5.17/scripts/Makefile.build:288: sound/soc/inte=
-l/boards/sof_es8336.o] Error 1
+Fixes: 99cbd064b059f ("clk: qcom: Support display RCG clocks")
+Signed-off-by: Taniya Das <tdas@codeaurora.org>
+Reviewed-by: Stephen Boyd <sboyd@kernel.org>
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Link: https://lore.kernel.org/r/20220227175536.3131-2-tdas@codeaurora.org
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/clk/qcom/clk-rcg2.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-Reverting just this patch lets the build, using the same buildconfig,
-succeed again.
+diff --git a/drivers/clk/qcom/clk-rcg2.c b/drivers/clk/qcom/clk-rcg2.c
+index b831975a9606..f675fd969c4d 100644
+--- a/drivers/clk/qcom/clk-rcg2.c
++++ b/drivers/clk/qcom/clk-rcg2.c
+@@ -729,6 +729,7 @@ static const struct frac_entry frac_table_pixel[] = {
+ 	{ 2, 9 },
+ 	{ 4, 9 },
+ 	{ 1, 1 },
++	{ 2, 3 },
+ 	{ }
+ };
+ 
+-- 
+2.34.1
 
-Regards
-	Stefan Lippers-Hollmann
+
+
