@@ -2,173 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 02A6FC3527E
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:17:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 25148C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:21:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1583464AbiDEXww (ORCPT
+        id S1583528AbiDEXxH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 19:52:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58504 "EHLO
+        Tue, 5 Apr 2022 19:53:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45552 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349852AbiDEJvr (ORCPT
+        with ESMTP id S1392301AbiDENtq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:51:47 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3DB227FF7;
-        Tue,  5 Apr 2022 02:49:48 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 68BB4B818F3;
-        Tue,  5 Apr 2022 09:49:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C6318C385A2;
-        Tue,  5 Apr 2022 09:49:45 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649152186;
-        bh=GtXm7TP4FiF7Hh17CXHOhSXHFwXsRaUDFmn/WhLxqg0=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DgWvQTkWN+Fi9SEMPKe0QmQ9NlysP/RN+h8FIUVXQp1PK3PL2bNNasdNjMFAp5bDP
-         8VH1xF3DmZPi7uGcrUAO/VTLoAiZqdnrnwLM+cHnP03AR1mPeVM57cPfub5Uhw6t4x
-         FmcpGQWAaCzIQp26Zn37JxpT0PVksFUgW1uv10no=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Marc Zyngier <maz@kernel.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 686/913] pinctrl: npcm: Fix broken references to chip->parent_device
-Date:   Tue,  5 Apr 2022 09:29:08 +0200
-Message-Id: <20220405070400.397942302@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 5 Apr 2022 09:49:46 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 21E4811177E
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 05:52:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1649163155;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=iuSjdFs27sBmSFtBNQcfSgEVjf1hmX+hk7DMTekqxb8=;
+        b=VlzU6C+sB/1eKhzYAZPNvLMGjwj29JMdvQQHeE56JAN1pidwUAfGSaRAGfjrJjc1N9WH5j
+        E7mDuktAkpddDoqOZV/ddLA69sSwqYumIvCQpqCuBaaJPoLW6XO+sfwgubzCMEzbgdfGvu
+        jvV9I7+5UID5dfHNYcwiHDNUl9oJf6E=
+Received: from mail-qt1-f198.google.com (mail-qt1-f198.google.com
+ [209.85.160.198]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-568-bql5SGCHNWGPqIoQMvOeyg-1; Tue, 05 Apr 2022 08:52:34 -0400
+X-MC-Unique: bql5SGCHNWGPqIoQMvOeyg-1
+Received: by mail-qt1-f198.google.com with SMTP id y23-20020ac85257000000b002e06697f2ebso8745350qtn.16
+        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 05:52:34 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=iuSjdFs27sBmSFtBNQcfSgEVjf1hmX+hk7DMTekqxb8=;
+        b=6zbILJob9N2U4HP/cqV2lPTiyVnbOcWVluy7Hjx12bSQO4qFat0JubxI5egQBK2coB
+         HiUQZTLfyk2Be3DGjF1ur5t6lnLRwjYqGbwQWXX3+STgqgxB5x2doRosALJdvnLWODzO
+         ApvlLLrW/ybXYdaINcMiAjarxFf+mJVz/uuMZWCsE7KjepuJ3NO1c3R8iOfrClD9bQwX
+         ZEueOsaR77S4y9SW2/AODp2aBLlNHcxeklUNUY8yU9BgnNlKlgSTiWmTb8LbtNBrP/Yz
+         xDoOFKNmJ+a4mT4IZrH/0NizHKD0UM0HDoaDYwBpnDnKrOWyizlQG14caqzCTwWXP72Y
+         ELeQ==
+X-Gm-Message-State: AOAM5306v8KpXirMyM/wGcT2I2+yy3XHK1U+TqkvIZiHn6zOkIwDn871
+        FJE7kvWfq9rj38FaJfaqTBV8aupXbN91Jw4ts3qx7+NAKEdqnaeloSRE493BSt1Yadv08tjKURt
+        7EUZaFobyLgPKQbS8vKHP9kLJ
+X-Received: by 2002:ad4:5aa3:0:b0:443:9ba7:3f27 with SMTP id u3-20020ad45aa3000000b004439ba73f27mr2768353qvg.63.1649163153774;
+        Tue, 05 Apr 2022 05:52:33 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJw+DHckKgCo4PomCz5tT74b9OII0g4hXHShOTcpaeQjClTAlXuwMZZykBkAFfOfWWQXnZb1aQ==
+X-Received: by 2002:ad4:5aa3:0:b0:443:9ba7:3f27 with SMTP id u3-20020ad45aa3000000b004439ba73f27mr2768343qvg.63.1649163153551;
+        Tue, 05 Apr 2022 05:52:33 -0700 (PDT)
+Received: from [10.32.181.87] (nat-pool-mxp-t.redhat.com. [149.6.153.186])
+        by smtp.googlemail.com with ESMTPSA id 21-20020ac85715000000b002e1ce9605ffsm11295736qtw.65.2022.04.05.05.52.31
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 05 Apr 2022 05:52:33 -0700 (PDT)
+Message-ID: <586be87a-4f81-ea43-2078-a6004b4aba08@redhat.com>
+Date:   Tue, 5 Apr 2022 14:52:30 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [RFC PATCH v5 026/104] KVM: TDX: x86: Add vm ioctl to get TDX
+ systemwide parameters
+Content-Language: en-US
+To:     isaku.yamahata@intel.com, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     isaku.yamahata@gmail.com, Jim Mattson <jmattson@google.com>,
+        erdemaktas@google.com, Connor Kuehl <ckuehl@redhat.com>,
+        Sean Christopherson <seanjc@google.com>
+References: <cover.1646422845.git.isaku.yamahata@intel.com>
+ <5ff08ce32be458581afe59caa05d813d0e4a1ef0.1646422845.git.isaku.yamahata@intel.com>
+From:   Paolo Bonzini <pbonzini@redhat.com>
+In-Reply-To: <5ff08ce32be458581afe59caa05d813d0e4a1ef0.1646422845.git.isaku.yamahata@intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Marc Zyngier <maz@kernel.org>
+On 3/4/22 20:48, isaku.yamahata@intel.com wrote:
+> Implement a VM-scoped subcomment to get system-wide parameters.  Although
+> this is system-wide parameters not per-VM, this subcomand is VM-scoped
+> because
+> - Device model needs TDX system-wide parameters after creating KVM VM.
+> - This subcommands requires to initialize TDX module.  For lazy
+>    initialization of the TDX module, vm-scope ioctl is better.
 
-[ Upstream commit f7e53e2255808ca3abcc8f38d18ad0823425e771 ]
+Since there was agreement to install the TDX module on load, please 
+place this ioctl on the /dev/kvm file descriptor.
 
-The npcm driver has a bunch of references to the irq_chip parent_device
-field, but never sets it.
+At least for SEV, there were cases where the system-wide parameters are 
+needed outside KVM, so it's better to avoid requiring a VM file descriptor.
 
-Fix it by fishing that reference from somewhere else, but it is
-obvious that these debug statements were never used. Also remove
-an unused field in a local data structure.
+Thanks,
 
-Signed-off-by: Marc Zyngier <maz@kernel.org>
-Acked-by: Bartosz Golaszewski <brgl@bgdev.pl>
-Link: https://lore.kernel.org/r/20220201120310.878267-11-maz@kernel.org
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/pinctrl/nuvoton/pinctrl-npcm7xx.c | 25 +++++++++++------------
- 1 file changed, 12 insertions(+), 13 deletions(-)
-
-diff --git a/drivers/pinctrl/nuvoton/pinctrl-npcm7xx.c b/drivers/pinctrl/nuvoton/pinctrl-npcm7xx.c
-index 4d81908d6725..ba536fd4d674 100644
---- a/drivers/pinctrl/nuvoton/pinctrl-npcm7xx.c
-+++ b/drivers/pinctrl/nuvoton/pinctrl-npcm7xx.c
-@@ -78,7 +78,6 @@ struct npcm7xx_gpio {
- 	struct gpio_chip	gc;
- 	int			irqbase;
- 	int			irq;
--	void			*priv;
- 	struct irq_chip		irq_chip;
- 	u32			pinctrl_id;
- 	int (*direction_input)(struct gpio_chip *chip, unsigned offset);
-@@ -226,7 +225,7 @@ static void npcmgpio_irq_handler(struct irq_desc *desc)
- 	chained_irq_enter(chip, desc);
- 	sts = ioread32(bank->base + NPCM7XX_GP_N_EVST);
- 	en  = ioread32(bank->base + NPCM7XX_GP_N_EVEN);
--	dev_dbg(chip->parent_device, "==> got irq sts %.8x %.8x\n", sts,
-+	dev_dbg(bank->gc.parent, "==> got irq sts %.8x %.8x\n", sts,
- 		en);
- 
- 	sts &= en;
-@@ -241,33 +240,33 @@ static int npcmgpio_set_irq_type(struct irq_data *d, unsigned int type)
- 		gpiochip_get_data(irq_data_get_irq_chip_data(d));
- 	unsigned int gpio = BIT(d->hwirq);
- 
--	dev_dbg(d->chip->parent_device, "setirqtype: %u.%u = %u\n", gpio,
-+	dev_dbg(bank->gc.parent, "setirqtype: %u.%u = %u\n", gpio,
- 		d->irq, type);
- 	switch (type) {
- 	case IRQ_TYPE_EDGE_RISING:
--		dev_dbg(d->chip->parent_device, "edge.rising\n");
-+		dev_dbg(bank->gc.parent, "edge.rising\n");
- 		npcm_gpio_clr(&bank->gc, bank->base + NPCM7XX_GP_N_EVBE, gpio);
- 		npcm_gpio_clr(&bank->gc, bank->base + NPCM7XX_GP_N_POL, gpio);
- 		break;
- 	case IRQ_TYPE_EDGE_FALLING:
--		dev_dbg(d->chip->parent_device, "edge.falling\n");
-+		dev_dbg(bank->gc.parent, "edge.falling\n");
- 		npcm_gpio_clr(&bank->gc, bank->base + NPCM7XX_GP_N_EVBE, gpio);
- 		npcm_gpio_set(&bank->gc, bank->base + NPCM7XX_GP_N_POL, gpio);
- 		break;
- 	case IRQ_TYPE_EDGE_BOTH:
--		dev_dbg(d->chip->parent_device, "edge.both\n");
-+		dev_dbg(bank->gc.parent, "edge.both\n");
- 		npcm_gpio_set(&bank->gc, bank->base + NPCM7XX_GP_N_EVBE, gpio);
- 		break;
- 	case IRQ_TYPE_LEVEL_LOW:
--		dev_dbg(d->chip->parent_device, "level.low\n");
-+		dev_dbg(bank->gc.parent, "level.low\n");
- 		npcm_gpio_set(&bank->gc, bank->base + NPCM7XX_GP_N_POL, gpio);
- 		break;
- 	case IRQ_TYPE_LEVEL_HIGH:
--		dev_dbg(d->chip->parent_device, "level.high\n");
-+		dev_dbg(bank->gc.parent, "level.high\n");
- 		npcm_gpio_clr(&bank->gc, bank->base + NPCM7XX_GP_N_POL, gpio);
- 		break;
- 	default:
--		dev_dbg(d->chip->parent_device, "invalid irq type\n");
-+		dev_dbg(bank->gc.parent, "invalid irq type\n");
- 		return -EINVAL;
- 	}
- 
-@@ -289,7 +288,7 @@ static void npcmgpio_irq_ack(struct irq_data *d)
- 		gpiochip_get_data(irq_data_get_irq_chip_data(d));
- 	unsigned int gpio = d->hwirq;
- 
--	dev_dbg(d->chip->parent_device, "irq_ack: %u.%u\n", gpio, d->irq);
-+	dev_dbg(bank->gc.parent, "irq_ack: %u.%u\n", gpio, d->irq);
- 	iowrite32(BIT(gpio), bank->base + NPCM7XX_GP_N_EVST);
- }
- 
-@@ -301,7 +300,7 @@ static void npcmgpio_irq_mask(struct irq_data *d)
- 	unsigned int gpio = d->hwirq;
- 
- 	/* Clear events */
--	dev_dbg(d->chip->parent_device, "irq_mask: %u.%u\n", gpio, d->irq);
-+	dev_dbg(bank->gc.parent, "irq_mask: %u.%u\n", gpio, d->irq);
- 	iowrite32(BIT(gpio), bank->base + NPCM7XX_GP_N_EVENC);
- }
- 
-@@ -313,7 +312,7 @@ static void npcmgpio_irq_unmask(struct irq_data *d)
- 	unsigned int gpio = d->hwirq;
- 
- 	/* Enable events */
--	dev_dbg(d->chip->parent_device, "irq_unmask: %u.%u\n", gpio, d->irq);
-+	dev_dbg(bank->gc.parent, "irq_unmask: %u.%u\n", gpio, d->irq);
- 	iowrite32(BIT(gpio), bank->base + NPCM7XX_GP_N_EVENS);
- }
- 
-@@ -323,7 +322,7 @@ static unsigned int npcmgpio_irq_startup(struct irq_data *d)
- 	unsigned int gpio = d->hwirq;
- 
- 	/* active-high, input, clear interrupt, enable interrupt */
--	dev_dbg(d->chip->parent_device, "startup: %u.%u\n", gpio, d->irq);
-+	dev_dbg(gc->parent, "startup: %u.%u\n", gpio, d->irq);
- 	npcmgpio_direction_input(gc, gpio);
- 	npcmgpio_irq_ack(d);
- 	npcmgpio_irq_unmask(d);
--- 
-2.34.1
-
-
+Paolo
 
