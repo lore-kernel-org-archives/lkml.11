@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6ECB4C47082
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5FA26C352A1
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:36:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241303AbiDEIdN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 04:33:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51766 "EHLO
+        id S241262AbiDEIdA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 04:33:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52556 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233418AbiDEH5H (ORCPT
+        with ESMTP id S236210AbiDEIBl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 03:57:07 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF1D747AF4;
-        Tue,  5 Apr 2022 00:51:01 -0700 (PDT)
+        Tue, 5 Apr 2022 04:01:41 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3212949FB3;
+        Tue,  5 Apr 2022 00:59:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id ECE736172C;
-        Tue,  5 Apr 2022 07:50:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 07099C340EE;
-        Tue,  5 Apr 2022 07:50:57 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BCF64B81B18;
+        Tue,  5 Apr 2022 07:59:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 32E09C340EE;
+        Tue,  5 Apr 2022 07:59:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649145058;
-        bh=RSj97UFE//PTCX00jDoDuPMtwr11f/zKAjzxUqGW5EE=;
+        s=korg; t=1649145580;
+        bh=roUpomhs7nE5WIJcF0ANfjMJeu1LCnaHgO0hbkzrjco=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jjaeAQ1IxBq1bSM91jHdnHY9YZHWsCv7UBAb6ThPu9jjth10GhtonkDCgVw4nS+Wx
-         gpuRR2aTskttV96fErwv1zngs3EYt2KigMzPWr3EvrMplFp50AWXoQefoThjZ8C4Nj
-         GI/1jAfcocEmxA7HP6Kdq5eC6j5QU3y5CbhdNzOI=
+        b=xmVEfW2H2gmvmMH6a9AyA1VlNd5Cp3ambvAmu1C6p/Aa2HoAdckQ6CY7pfjPAkJQY
+         ezunOesX8Hm0rin6zCimRK89vBqP8Zk+XDLuwTWzkuiVOj1WEhwsooODy5As5+lbaE
+         Wu8AR2KN2hhKQSMUBFH3lCvijPdScczPB/zbyyc4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Qais Yousef <qais.yousef@arm.com>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0270/1126] sched/core: Export pelt_thermal_tp
-Date:   Tue,  5 Apr 2022 09:16:57 +0200
-Message-Id: <20220405070415.536147077@linuxfoundation.org>
+        stable@vger.kernel.org, Maxime Ripard <maxime@cerno.tech>,
+        =?UTF-8?q?Ville=20Syrj=C3=A4l=C3=A4?= 
+        <ville.syrjala@linux.intel.com>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 0454/1126] drm/edid: Dont clear formats if using deep color
+Date:   Tue,  5 Apr 2022 09:20:01 +0200
+Message-Id: <20220405070420.950450531@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -49,34 +49,71 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Qais Yousef <qais.yousef@arm.com>
+From: Maxime Ripard <maxime@cerno.tech>
 
-[ Upstream commit 77cf151b7bbdfa3577b3c3f3a5e267a6c60a263b ]
+[ Upstream commit 75478b3b393bcbdca4e6da76fe3a9f1a4133ec5d ]
 
-We can't use this tracepoint in modules without having the symbol
-exported first, fix that.
+The current code, when parsing the EDID Deep Color depths, that the
+YUV422 cannot be used, referring to the HDMI 1.3 Specification.
 
-Fixes: 765047932f15 ("sched/pelt: Add support to track thermal pressure")
-Signed-off-by: Qais Yousef <qais.yousef@arm.com>
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Link: https://lkml.kernel.org/r/20211028115005.873539-1-qais.yousef@arm.com
+This specification, in its section 6.2.4, indeed states:
+
+  For each supported Deep Color mode, RGB 4:4:4 shall be supported and
+  optionally YCBCR 4:4:4 may be supported.
+
+  YCBCR 4:2:2 is not permitted for any Deep Color mode.
+
+This indeed can be interpreted like the code does, but the HDMI 1.4
+specification further clarifies that statement in its section 6.2.4:
+
+  For each supported Deep Color mode, RGB 4:4:4 shall be supported and
+  optionally YCBCR 4:4:4 may be supported.
+
+  YCBCR 4:2:2 is also 36-bit mode but does not require the further use
+  of the Deep Color modes described in section 6.5.2 and 6.5.3.
+
+This means that, even though YUV422 can be used with 12 bit per color,
+it shouldn't be treated as a deep color mode.
+
+This is also broken with YUV444 if it's supported by the display, but
+DRM_EDID_HDMI_DC_Y444 isn't set. In such a case, the code will clear
+color_formats of the YUV444 support set previously in
+drm_parse_cea_ext(), but will not set it back.
+
+Since the formats supported are already setup properly in
+drm_parse_cea_ext(), let's just remove the code modifying the formats in
+drm_parse_hdmi_deep_color_info()
+
+Fixes: d0c94692e0a3 ("drm/edid: Parse and handle HDMI deep color modes.")
+Signed-off-by: Maxime Ripard <maxime@cerno.tech>
+Reviewed-by: Ville Syrjälä <ville.syrjala@linux.intel.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220120151625.594595-3-maxime@cerno.tech
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- kernel/sched/core.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/gpu/drm/drm_edid.c | 8 --------
+ 1 file changed, 8 deletions(-)
 
-diff --git a/kernel/sched/core.c b/kernel/sched/core.c
-index 9745613d531c..1620ae8535dc 100644
---- a/kernel/sched/core.c
-+++ b/kernel/sched/core.c
-@@ -36,6 +36,7 @@ EXPORT_TRACEPOINT_SYMBOL_GPL(pelt_rt_tp);
- EXPORT_TRACEPOINT_SYMBOL_GPL(pelt_dl_tp);
- EXPORT_TRACEPOINT_SYMBOL_GPL(pelt_irq_tp);
- EXPORT_TRACEPOINT_SYMBOL_GPL(pelt_se_tp);
-+EXPORT_TRACEPOINT_SYMBOL_GPL(pelt_thermal_tp);
- EXPORT_TRACEPOINT_SYMBOL_GPL(sched_cpu_capacity_tp);
- EXPORT_TRACEPOINT_SYMBOL_GPL(sched_overutilized_tp);
- EXPORT_TRACEPOINT_SYMBOL_GPL(sched_util_est_cfs_tp);
+diff --git a/drivers/gpu/drm/drm_edid.c b/drivers/gpu/drm/drm_edid.c
+index 32624217b8ee..86a7c4a5253f 100644
+--- a/drivers/gpu/drm/drm_edid.c
++++ b/drivers/gpu/drm/drm_edid.c
+@@ -5105,16 +5105,8 @@ static void drm_parse_hdmi_deep_color_info(struct drm_connector *connector,
+ 		  connector->name, dc_bpc);
+ 	info->bpc = dc_bpc;
+ 
+-	/*
+-	 * Deep color support mandates RGB444 support for all video
+-	 * modes and forbids YCRCB422 support for all video modes per
+-	 * HDMI 1.3 spec.
+-	 */
+-	info->color_formats = DRM_COLOR_FORMAT_RGB444;
+-
+ 	/* YCRCB444 is optional according to spec. */
+ 	if (hdmi[6] & DRM_EDID_HDMI_DC_Y444) {
+-		info->color_formats |= DRM_COLOR_FORMAT_YCRCB444;
+ 		DRM_DEBUG("%s: HDMI sink does YCRCB444 in deep color.\n",
+ 			  connector->name);
+ 	}
 -- 
 2.34.1
 
