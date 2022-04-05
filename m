@@ -2,42 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F83DC43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2732DC433EF
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 14:21:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377257AbiDEOPQ (ORCPT
+        id S1384882AbiDEOS3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 10:15:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55106 "EHLO
+        Tue, 5 Apr 2022 10:18:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53902 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238458AbiDEJci (ORCPT
+        with ESMTP id S240029AbiDEJeA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:32:38 -0400
+        Tue, 5 Apr 2022 05:34:00 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6457BE03;
-        Tue,  5 Apr 2022 02:19:37 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DBE37E0A1;
+        Tue,  5 Apr 2022 02:23:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E784C6144D;
-        Tue,  5 Apr 2022 09:19:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 05C69C385A2;
-        Tue,  5 Apr 2022 09:19:35 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AE69261654;
+        Tue,  5 Apr 2022 09:23:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BC04CC385A2;
+        Tue,  5 Apr 2022 09:23:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649150376;
-        bh=tv6arKi6rzEnPZRRIbINOvlsb8nTYzIr7Tyyr02e010=;
+        s=korg; t=1649150594;
+        bh=zJZvZVpLCc0e2RVJNQqJnkd54OH9Ak3/Lu4LUwktJeE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=b8h3X3SLd0DwQXZgE08UY+blwwxUpMIZOrlvsqNhRr90m76TgIv1H9QBzk33VHelh
-         HH06B6RYUgeIaMTq1c/Guow5VC0ARXHpti5Ii1ZbbH+WWA2c+2HrysGRGpUlvNijYg
-         65G5LvdBlpJrY9bLE8DVcwVgFweghed6Pyh5+cLY=
+        b=nuY88ZRK8Zb57NoxoALO1k8KHAyEICVprMnLrWip9evJIbndvBdTdEZVx3WyiBLOu
+         xyoxkx6miBnL+lEDdg++k6iKNHECkwiyQNn6ndyo9Rh8J22CmwsTTVcJrX48jWkBhu
+         eq6+/C6Wu9VsY8KrbVDKPEn9OzFKAcISB+/sUOms=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Henry Lin <henryl@nvidia.com>,
-        Mathias Nyman <mathias.nyman@linux.intel.com>
-Subject: [PATCH 5.15 034/913] xhci: fix runtime PM imbalance in USB2 resume
-Date:   Tue,  5 Apr 2022 09:18:16 +0200
-Message-Id: <20220405070340.839223799@linuxfoundation.org>
+        stable@vger.kernel.org, Rik van Riel <riel@surriel.com>,
+        Miaohe Lin <linmiaohe@huawei.com>,
+        Naoya Horiguchi <naoya.horiguchi@nec.com>,
+        Oscar Salvador <osalvador@suse.de>,
+        Mel Gorman <mgorman@suse.de>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Subject: [PATCH 5.15 110/913] mm,hwpoison: unmap poisoned page before invalidation
+Date:   Tue,  5 Apr 2022 09:19:32 +0200
+Message-Id: <20220405070343.124150095@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
 References: <20220405070339.801210740@linuxfoundation.org>
@@ -49,41 +55,67 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Henry Lin <henryl@nvidia.com>
+From: Rik van Riel <riel@surriel.com>
 
-commit 70c05e4cf63054cd755ca66c1819327b22cb085f upstream.
+commit 3149c79f3cb0e2e3bafb7cfadacec090cbd250d3 upstream.
 
-A race between system resume and device-initiated resume may result in
-runtime PM imbalance on USB2 root hub. If a device-initiated resume
-starts and system resume xhci_bus_resume() directs U0 before hub driver
-sees the resuming device in RESUME state, device-initiated resume will
-not be finished in xhci_handle_usb2_port_link_resume(). In this case,
-usb_hcd_end_port_resume() call is missing.
+In some cases it appears the invalidation of a hwpoisoned page fails
+because the page is still mapped in another process.  This can cause a
+program to be continuously restarted and die when it page faults on the
+page that was not invalidated.  Avoid that problem by unmapping the
+hwpoisoned page when we find it.
 
-This changes calls usb_hcd_end_port_resume() if resuming device reaches
-U0 to keep runtime PM balance.
+Another issue is that sometimes we end up oopsing in finish_fault, if
+the code tries to do something with the now-NULL vmf->page.  I did not
+hit this error when submitting the previous patch because there are
+several opportunities for alloc_set_pte to bail out before accessing
+vmf->page, and that apparently happened on those systems, and most of
+the time on other systems, too.
 
-Fixes: a231ec41e6f6 ("xhci: refactor U0 link state handling in get_port_status")
-Cc: stable@vger.kernel.org
-Signed-off-by: Henry Lin <henryl@nvidia.com>
-Signed-off-by: Mathias Nyman <mathias.nyman@linux.intel.com>
-Link: https://lore.kernel.org/r/20220303110903.1662404-5-mathias.nyman@linux.intel.com
+However, across several million systems that error does occur a handful
+of times a day.  It can be avoided by returning VM_FAULT_NOPAGE which
+will cause do_read_fault to return before calling finish_fault.
+
+Link: https://lkml.kernel.org/r/20220325161428.5068d97e@imladris.surriel.com
+Fixes: e53ac7374e64 ("mm: invalidate hwpoison page cache page in fault path")
+Signed-off-by: Rik van Riel <riel@surriel.com>
+Reviewed-by: Miaohe Lin <linmiaohe@huawei.com>
+Tested-by: Naoya Horiguchi <naoya.horiguchi@nec.com>
+Reviewed-by: Oscar Salvador <osalvador@suse.de>
+Cc: Mel Gorman <mgorman@suse.de>
+Cc: Johannes Weiner <hannes@cmpxchg.org>
+Cc: <stable@vger.kernel.org>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/usb/host/xhci-hub.c |    3 +++
- 1 file changed, 3 insertions(+)
+ mm/memory.c |   12 ++++++++----
+ 1 file changed, 8 insertions(+), 4 deletions(-)
 
---- a/drivers/usb/host/xhci-hub.c
-+++ b/drivers/usb/host/xhci-hub.c
-@@ -1088,6 +1088,9 @@ static void xhci_get_usb2_port_status(st
- 		if (link_state == XDEV_U2)
- 			*status |= USB_PORT_STAT_L1;
- 		if (link_state == XDEV_U0) {
-+			if (bus_state->resume_done[portnum])
-+				usb_hcd_end_port_resume(&port->rhub->hcd->self,
-+							portnum);
- 			bus_state->resume_done[portnum] = 0;
- 			clear_bit(portnum, &bus_state->resuming_ports);
- 			if (bus_state->suspended_ports & (1 << portnum)) {
+--- a/mm/memory.c
++++ b/mm/memory.c
+@@ -3861,14 +3861,18 @@ static vm_fault_t __do_fault(struct vm_f
+ 		return ret;
+ 
+ 	if (unlikely(PageHWPoison(vmf->page))) {
++		struct page *page = vmf->page;
+ 		vm_fault_t poisonret = VM_FAULT_HWPOISON;
+ 		if (ret & VM_FAULT_LOCKED) {
++			if (page_mapped(page))
++				unmap_mapping_pages(page_mapping(page),
++						    page->index, 1, false);
+ 			/* Retry if a clean page was removed from the cache. */
+-			if (invalidate_inode_page(vmf->page))
+-				poisonret = 0;
+-			unlock_page(vmf->page);
++			if (invalidate_inode_page(page))
++				poisonret = VM_FAULT_NOPAGE;
++			unlock_page(page);
+ 		}
+-		put_page(vmf->page);
++		put_page(page);
+ 		vmf->page = NULL;
+ 		return poisonret;
+ 	}
 
 
