@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 15777C4321E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B0CAC43219
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 09:52:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243955AbiDEJkw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 05:40:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34730 "EHLO
+        id S243971AbiDEJk6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 05:40:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45378 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239306AbiDEIT6 (ORCPT
+        with ESMTP id S239330AbiDEIT6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Apr 2022 04:19:58 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCA7381679;
-        Tue,  5 Apr 2022 01:11:00 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14CC385BEB;
+        Tue,  5 Apr 2022 01:11:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 844E3B81A32;
-        Tue,  5 Apr 2022 08:10:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E39D5C385A1;
-        Tue,  5 Apr 2022 08:10:57 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B18EDB81B92;
+        Tue,  5 Apr 2022 08:11:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F1F66C385A1;
+        Tue,  5 Apr 2022 08:11:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649146258;
-        bh=kyif2DLgMA6iqw9QlsLzO9GurCGw/kuOrr2fhzY+aLo=;
+        s=korg; t=1649146272;
+        bh=DbvDUCjs6PJjOYcbBZnASjkLrK3/Xw+n/fw/88LNon8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bFUmY6cVNGiDBk9UMiN5ueslaxa4c7Pe9KC+TNXzDgK8YKEBB7h279Ex2/9d5+EMA
-         bKg7F+DecqLksGhvvxcViBrIkLwote2DsMDy5DUI30f415/eSiWKPf8OWpLupEOX/K
-         1jfmee36diP0g3HcgQsmwmEMdoPBqSWQB3Jq0eSU=
+        b=v81NYQq11gaLjJZ7dJAAx9tWs1WI4wlYQdKqVlyhDtsJJ22YkFhDJV06GoTkehuWb
+         PiLmZ4fC7Kn4Shxl5UQWiqcfbFAdVVtbRW+mjcHv7jqUOXmDnt1wijrRkNN5n/aMcl
+         QJS7G/6ez8lGz9vMm95GHiooVnw/8CoSOT4uaBYI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mick Lorain <micklorain@protonmail.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
+        stable@vger.kernel.org, Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0699/1126] PCI: Avoid broken MSI on SB600 USB devices
-Date:   Tue,  5 Apr 2022 09:24:06 +0200
-Message-Id: <20220405070428.126008163@linuxfoundation.org>
+Subject: [PATCH 5.17 0703/1126] net: dsa: fix panic on shutdown if multi-chip tree failed to probe
+Date:   Tue,  5 Apr 2022 09:24:10 +0200
+Message-Id: <20220405070428.239374191@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -49,59 +49,62 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Bjorn Helgaas <bhelgaas@google.com>
+From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-[ Upstream commit 63cd736f449445edcd7f0bcc7d84453e9beec0aa ]
+[ Upstream commit 8fd36358ce82382519b50b05f437493e1e00c4a9 ]
 
-Some ATI SB600 USB adapters advertise MSI, but if INTx is disabled by
-setting PCI_COMMAND_INTX_DISABLE, MSI doesn't work either.  The PCI/PCIe
-specs do not require software to set PCI_COMMAND_INTX_DISABLE when enabling
-MSI, but Linux has done that for many years.
+DSA probing is atypical because a tree of devices must probe all at
+once, so out of N switches which call dsa_tree_setup_routing_table()
+during probe, for (N - 1) of them, "complete" will return false and they
+will exit probing early. The Nth switch will set up the whole tree on
+their behalf.
 
-Mick reported that 306c54d0edb6 ("usb: hcd: Try MSI interrupts on PCI
-devices") broke these devices.  Prior to 306c54d0edb6, they used INTx.
-Starting with 306c54d0edb6, they use MSI, and and the fact that Linux sets
-PCI_COMMAND_INTX_DISABLE means both INTx and MSI are disabled on these
-devices.
+The implication is that for (N - 1) switches, the driver binds to the
+device successfully, without doing anything. When the driver is bound,
+the ->shutdown() method may run. But if the Nth switch has failed to
+initialize the tree, there is nothing to do for the (N - 1) driver
+instances, since the slave devices have not been created, etc. Moreover,
+dsa_switch_shutdown() expects that the calling @ds has been in fact
+initialized, so it jumps at dereferencing the various data structures,
+which is incorrect.
 
-Avoid this SB600 defect by disabling MSI so we use INTx as before.
+Avoid the ensuing NULL pointer dereferences by simply checking whether
+the Nth switch has previously set "ds->setup = true" for the switch
+which is currently shutting down. The entire setup is serialized under
+dsa2_mutex which we already hold.
 
-Fixes: 306c54d0edb6 ("usb: hcd: Try MSI interrupts on PCI devices")
-Link: https://lore.kernel.org/r/20220321183446.1108325-1-helgaas@kernel.org
-Link: https://bugzilla.kernel.org/show_bug.cgi?id=215690
-Link: https://lore.kernel.org/all/PxIByDyBRcsbpcmVhGSNDFAoUcMmb78ctXCkw6fbpx25TGlCHvA6SJjjFkNr1FfQZMntYPTNyvEnblxzAZ8a6jP9ddLpKeCN6Chi_2FuexU=@protonmail.com/
-Link: https://lore.kernel.org/r/20220314101448.90074-1-andriy.shevchenko@linux.intel.com
-BugLink: https://lore.kernel.org/all/20200702143045.23429-1-andriy.shevchenko@linux.intel.com/
-Reported-by: Mick Lorain <micklorain@protonmail.com>
-Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
+Fixes: 0650bf52b31f ("net: dsa: be compatible with masters which unregister on shutdown")
+Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+Link: https://lore.kernel.org/r/20220318195443.275026-1-vladimir.oltean@nxp.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pci/quirks.c | 12 ++++++++++++
- 1 file changed, 12 insertions(+)
+ net/dsa/dsa2.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
-index 65f7f6b0576c..da829274fc66 100644
---- a/drivers/pci/quirks.c
-+++ b/drivers/pci/quirks.c
-@@ -1811,6 +1811,18 @@ static void quirk_alder_ioapic(struct pci_dev *pdev)
- DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL,	PCI_DEVICE_ID_INTEL_EESSC,	quirk_alder_ioapic);
- #endif
+diff --git a/net/dsa/dsa2.c b/net/dsa/dsa2.c
+index 88e2808019b4..a39bbed77f87 100644
+--- a/net/dsa/dsa2.c
++++ b/net/dsa/dsa2.c
+@@ -1722,6 +1722,10 @@ void dsa_switch_shutdown(struct dsa_switch *ds)
+ 	struct dsa_port *dp;
  
-+static void quirk_no_msi(struct pci_dev *dev)
-+{
-+	pci_info(dev, "avoiding MSI to work around a hardware defect\n");
-+	dev->no_msi = 1;
-+}
-+DECLARE_PCI_FIXUP_FINAL(PCI_VENDOR_ID_ATI, 0x4386, quirk_no_msi);
-+DECLARE_PCI_FIXUP_FINAL(PCI_VENDOR_ID_ATI, 0x4387, quirk_no_msi);
-+DECLARE_PCI_FIXUP_FINAL(PCI_VENDOR_ID_ATI, 0x4388, quirk_no_msi);
-+DECLARE_PCI_FIXUP_FINAL(PCI_VENDOR_ID_ATI, 0x4389, quirk_no_msi);
-+DECLARE_PCI_FIXUP_FINAL(PCI_VENDOR_ID_ATI, 0x438a, quirk_no_msi);
-+DECLARE_PCI_FIXUP_FINAL(PCI_VENDOR_ID_ATI, 0x438b, quirk_no_msi);
+ 	mutex_lock(&dsa2_mutex);
 +
- static void quirk_pcie_mch(struct pci_dev *pdev)
- {
- 	pdev->no_msi = 1;
++	if (!ds->setup)
++		goto out;
++
+ 	rtnl_lock();
+ 
+ 	dsa_switch_for_each_user_port(dp, ds) {
+@@ -1738,6 +1742,7 @@ void dsa_switch_shutdown(struct dsa_switch *ds)
+ 		dp->master->dsa_ptr = NULL;
+ 
+ 	rtnl_unlock();
++out:
+ 	mutex_unlock(&dsa2_mutex);
+ }
+ EXPORT_SYMBOL_GPL(dsa_switch_shutdown);
 -- 
 2.34.1
 
