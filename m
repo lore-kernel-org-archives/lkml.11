@@ -2,95 +2,202 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 715D8C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 88D2AC433FE
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:56:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381148AbiDEUyq (ORCPT
+        id S1382422AbiDEUyy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 16:54:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48156 "EHLO
+        Tue, 5 Apr 2022 16:54:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58536 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1457938AbiDERAj (ORCPT
+        with ESMTP id S1347981AbiDEKpe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 13:00:39 -0400
-Received: from mail-pf1-x436.google.com (mail-pf1-x436.google.com [IPv6:2607:f8b0:4864:20::436])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E1DEBC0B;
-        Tue,  5 Apr 2022 09:58:40 -0700 (PDT)
-Received: by mail-pf1-x436.google.com with SMTP id x16so7269171pfa.10;
-        Tue, 05 Apr 2022 09:58:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=ZAVOxKCn1rSRBeHkGZiJCt2gkjQ/XAx8tCfYXVtiNfE=;
-        b=BCmXM1EPbsht9Le2RBBahOAvfdS8skESRKaGokKX4zH1mid2b3gkPH+7yeaMUotIkX
-         NbGdGgZUpeiJ3gcEyuIX9YmL6aKRHI0Ro2BaiZ6XjqRP2m7CKlHSuUHTMLX2NSIG2dm5
-         HsJwWqgby3b4336TPjsBa5UN9sDUtcgVUND+DX6y7CTnOXnjiuvnfz0xyouIucQQx+EI
-         nXE6toJv/NMiDw3WCfZ71mrl7R7Bvu+SZDhsJUQUr2Zwo+xGSeq99721WuG2hKNGZbNe
-         wmZS8BuxXvE1kG9ToDalW5HUMb0OuCMOkXO0tPwEiirJb0Sipb6N3gnGMjvO1qWAdbK8
-         GaQw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=ZAVOxKCn1rSRBeHkGZiJCt2gkjQ/XAx8tCfYXVtiNfE=;
-        b=TX6DxWo/6bmRXGnKmJ/u8tK9QHEfnhjVJO5PNn5VogMbLjcTyDntaKwu8/caN7Qnw7
-         fUNkb9SWRwiACWr+99Ranss199s8VtRfTYwxJNCuEbb/M/wMd85KL15Tz/x408goKWKM
-         6FRiasGcT+UIVAGsFhFSghTH/i9TEmbcDsfDuBUP2tPRz+Nd1J7oIAs67pIwlvzVKfR/
-         8UaoRe8ahSoKnOFWRe4aXj/7BeSLhra53pnEP82jbJMCHjnOoFuc7uCkmYYU6nQOXBWN
-         QMItESM4oaAfKMsHwoHIyHvDAKJW94zQqTT+R8fzeNxqWF240BG7710y7NF8Y2F2F0YG
-         yUHQ==
-X-Gm-Message-State: AOAM530fJhgg7s6Zl5HjUu7cKXtMISkAMDqJ0FaZZ/AdZ9LaoUfbc79T
-        0p4zBQ+lcxFrk+SMJ77Lb1dopikzFK9HWB4TskK52FJ2
-X-Google-Smtp-Source: ABdhPJyU0FDyxgvY/9mKwmMNiabrAzWrvWBv7HU1olSNnJVsJwHglQaOPHoTBWnW8V0XuaupQcIHHAgWxERG2jXlLBk=
-X-Received: by 2002:a05:6a00:1c9e:b0:4fa:d946:378b with SMTP id
- y30-20020a056a001c9e00b004fad946378bmr4548697pfw.46.1649177919721; Tue, 05
- Apr 2022 09:58:39 -0700 (PDT)
+        Tue, 5 Apr 2022 06:45:34 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C767C344F4;
+        Tue,  5 Apr 2022 03:26:52 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7B7A2B81C99;
+        Tue,  5 Apr 2022 10:26:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C0DC0C385A1;
+        Tue,  5 Apr 2022 10:26:49 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649154410;
+        bh=LuZ72yR3zA8xYuhPdNlrC+HdmP3HwSUgVvw+BOohrac=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=QQxF43XpD3if1GQccsYlxpqhYcqyJt4SDUMwEyCcT88aO9hzDU0cTprBPZKBhbq+O
+         fGctYjf+4414BWX14yiqeFdx2/qa85CxbmFY5H/W87lRUB8FjjgMydwuZ+EgKDU3Iz
+         og8h2hIPL6t4B9labvi0VccW/UIlEP6AsexQl7Dg=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Marc Zyngier <maz@kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Vladimir Murzin <vladimir.murzin@arm.com>
+Subject: [PATCH 5.10 566/599] ARM: iop32x: offset IRQ numbers by 1
+Date:   Tue,  5 Apr 2022 09:34:20 +0200
+Message-Id: <20220405070315.684775495@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
+References: <20220405070258.802373272@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-References: <20220405075531.GB30877@worktop.programming.kicks-ass.net>
-In-Reply-To: <20220405075531.GB30877@worktop.programming.kicks-ass.net>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Tue, 5 Apr 2022 09:58:28 -0700
-Message-ID: <CAADnVQJ1_9sBqRngG_J+84whx9j7d7qOSzMaJvhc0evDBQfE3w@mail.gmail.com>
-Subject: Re: [PATCH] x86,bpf: Avoid IBT objtool warning
-To:     Peter Zijlstra <peterz@infradead.org>, bpf <bpf@vger.kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>
-Cc:     X86 ML <x86@kernel.org>, LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 5, 2022 at 12:55 AM Peter Zijlstra <peterz@infradead.org> wrote:
->
->
-> Clang can inline emit_indirect_jump() and then folds constants, which
-> results in:
->
->   | vmlinux.o: warning: objtool: emit_bpf_dispatcher()+0x6a4: relocation to !ENDBR: .text.__x86.indirect_thunk+0x40
->   | vmlinux.o: warning: objtool: emit_bpf_dispatcher()+0x67d: relocation to !ENDBR: .text.__x86.indirect_thunk+0x40
->   | vmlinux.o: warning: objtool: emit_bpf_tail_call_indirect()+0x386: relocation to !ENDBR: .text.__x86.indirect_thunk+0x20
->   | vmlinux.o: warning: objtool: emit_bpf_tail_call_indirect()+0x35d: relocation to !ENDBR: .text.__x86.indirect_thunk+0x20
->
-> Suppress the optimization such that it must emit a code reference to
-> the __x86_indirect_thunk_array[] base.
->
-> Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-> ---
->  arch/x86/net/bpf_jit_comp.c |    1 +
->  1 file changed, 1 insertion(+)
->
-> --- a/arch/x86/net/bpf_jit_comp.c
-> +++ b/arch/x86/net/bpf_jit_comp.c
-> @@ -412,6 +412,7 @@ static void emit_indirect_jump(u8 **ppro
->                 EMIT_LFENCE();
->                 EMIT2(0xFF, 0xE0 + reg);
->         } else if (cpu_feature_enabled(X86_FEATURE_RETPOLINE)) {
-> +               OPTIMIZER_HIDE_VAR(reg);
->                 emit_jump(&prog, &__x86_indirect_thunk_array[reg], ip);
->         } else
->  #endif
+From: Arnd Bergmann <arnd@arndb.de>
 
-Looks good. Please cc bpf@vger and all bpf maintainers in the future.
-We can take it through the bpf tree if you prefer.
+commit 9d67412f24cc3a2c05f35f7c856addb07a2960ce upstream.
+
+iop32x is one of the last platforms to use IRQ 0, and this has apparently
+stopped working in a 2014 cleanup without anyone noticing. This interrupt
+is used for the DMA engine, so most likely this has not actually worked
+in the past 7 years, but it's also not essential for using this board.
+
+I'm splitting out this change from my GENERIC_IRQ_MULTI_HANDLER
+conversion so it can be backported if anyone cares.
+
+Fixes: a71b092a9c68 ("ARM: Convert handle_IRQ to use __handle_domain_irq")
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+[ardb: take +1 offset into account in mask/unmask and init as well]
+Signed-off-by: Ard Biesheuvel <ardb@kernel.org>
+Tested-by: Marc Zyngier <maz@kernel.org>
+Tested-by: Vladimir Murzin <vladimir.murzin@arm.com> # ARMv7M
+Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ arch/arm/mach-iop32x/include/mach/entry-macro.S |    2 
+ arch/arm/mach-iop32x/include/mach/irqs.h        |    2 
+ arch/arm/mach-iop32x/irq.c                      |    6 +-
+ arch/arm/mach-iop32x/irqs.h                     |   60 ++++++++++++------------
+ 4 files changed, 37 insertions(+), 33 deletions(-)
+
+--- a/arch/arm/mach-iop32x/include/mach/entry-macro.S
++++ b/arch/arm/mach-iop32x/include/mach/entry-macro.S
+@@ -20,7 +20,7 @@
+ 	mrc     p6, 0, \irqstat, c8, c0, 0	@ Read IINTSRC
+ 	cmp     \irqstat, #0
+ 	clzne   \irqnr, \irqstat
+-	rsbne   \irqnr, \irqnr, #31
++	rsbne   \irqnr, \irqnr, #32
+ 	.endm
+ 
+ 	.macro arch_ret_to_user, tmp1, tmp2
+--- a/arch/arm/mach-iop32x/include/mach/irqs.h
++++ b/arch/arm/mach-iop32x/include/mach/irqs.h
+@@ -9,6 +9,6 @@
+ #ifndef __IRQS_H
+ #define __IRQS_H
+ 
+-#define NR_IRQS			32
++#define NR_IRQS			33
+ 
+ #endif
+--- a/arch/arm/mach-iop32x/irq.c
++++ b/arch/arm/mach-iop32x/irq.c
+@@ -32,14 +32,14 @@ static void intstr_write(u32 val)
+ static void
+ iop32x_irq_mask(struct irq_data *d)
+ {
+-	iop32x_mask &= ~(1 << d->irq);
++	iop32x_mask &= ~(1 << (d->irq - 1));
+ 	intctl_write(iop32x_mask);
+ }
+ 
+ static void
+ iop32x_irq_unmask(struct irq_data *d)
+ {
+-	iop32x_mask |= 1 << d->irq;
++	iop32x_mask |= 1 << (d->irq - 1);
+ 	intctl_write(iop32x_mask);
+ }
+ 
+@@ -65,7 +65,7 @@ void __init iop32x_init_irq(void)
+ 	    machine_is_em7210())
+ 		*IOP3XX_PCIIRSR = 0x0f;
+ 
+-	for (i = 0; i < NR_IRQS; i++) {
++	for (i = 1; i < NR_IRQS; i++) {
+ 		irq_set_chip_and_handler(i, &ext_chip, handle_level_irq);
+ 		irq_clear_status_flags(i, IRQ_NOREQUEST | IRQ_NOPROBE);
+ 	}
+--- a/arch/arm/mach-iop32x/irqs.h
++++ b/arch/arm/mach-iop32x/irqs.h
+@@ -7,36 +7,40 @@
+ #ifndef __IOP32X_IRQS_H
+ #define __IOP32X_IRQS_H
+ 
++/* Interrupts in Linux start at 1, hardware starts at 0 */
++
++#define IOP_IRQ(x) ((x) + 1)
++
+ /*
+  * IOP80321 chipset interrupts
+  */
+-#define IRQ_IOP32X_DMA0_EOT	0
+-#define IRQ_IOP32X_DMA0_EOC	1
+-#define IRQ_IOP32X_DMA1_EOT	2
+-#define IRQ_IOP32X_DMA1_EOC	3
+-#define IRQ_IOP32X_AA_EOT	6
+-#define IRQ_IOP32X_AA_EOC	7
+-#define IRQ_IOP32X_CORE_PMON	8
+-#define IRQ_IOP32X_TIMER0	9
+-#define IRQ_IOP32X_TIMER1	10
+-#define IRQ_IOP32X_I2C_0	11
+-#define IRQ_IOP32X_I2C_1	12
+-#define IRQ_IOP32X_MESSAGING	13
+-#define IRQ_IOP32X_ATU_BIST	14
+-#define IRQ_IOP32X_PERFMON	15
+-#define IRQ_IOP32X_CORE_PMU	16
+-#define IRQ_IOP32X_BIU_ERR	17
+-#define IRQ_IOP32X_ATU_ERR	18
+-#define IRQ_IOP32X_MCU_ERR	19
+-#define IRQ_IOP32X_DMA0_ERR	20
+-#define IRQ_IOP32X_DMA1_ERR	21
+-#define IRQ_IOP32X_AA_ERR	23
+-#define IRQ_IOP32X_MSG_ERR	24
+-#define IRQ_IOP32X_SSP		25
+-#define IRQ_IOP32X_XINT0	27
+-#define IRQ_IOP32X_XINT1	28
+-#define IRQ_IOP32X_XINT2	29
+-#define IRQ_IOP32X_XINT3	30
+-#define IRQ_IOP32X_HPI		31
++#define IRQ_IOP32X_DMA0_EOT	IOP_IRQ(0)
++#define IRQ_IOP32X_DMA0_EOC	IOP_IRQ(1)
++#define IRQ_IOP32X_DMA1_EOT	IOP_IRQ(2)
++#define IRQ_IOP32X_DMA1_EOC	IOP_IRQ(3)
++#define IRQ_IOP32X_AA_EOT	IOP_IRQ(6)
++#define IRQ_IOP32X_AA_EOC	IOP_IRQ(7)
++#define IRQ_IOP32X_CORE_PMON	IOP_IRQ(8)
++#define IRQ_IOP32X_TIMER0	IOP_IRQ(9)
++#define IRQ_IOP32X_TIMER1	IOP_IRQ(10)
++#define IRQ_IOP32X_I2C_0	IOP_IRQ(11)
++#define IRQ_IOP32X_I2C_1	IOP_IRQ(12)
++#define IRQ_IOP32X_MESSAGING	IOP_IRQ(13)
++#define IRQ_IOP32X_ATU_BIST	IOP_IRQ(14)
++#define IRQ_IOP32X_PERFMON	IOP_IRQ(15)
++#define IRQ_IOP32X_CORE_PMU	IOP_IRQ(16)
++#define IRQ_IOP32X_BIU_ERR	IOP_IRQ(17)
++#define IRQ_IOP32X_ATU_ERR	IOP_IRQ(18)
++#define IRQ_IOP32X_MCU_ERR	IOP_IRQ(19)
++#define IRQ_IOP32X_DMA0_ERR	IOP_IRQ(20)
++#define IRQ_IOP32X_DMA1_ERR	IOP_IRQ(21)
++#define IRQ_IOP32X_AA_ERR	IOP_IRQ(23)
++#define IRQ_IOP32X_MSG_ERR	IOP_IRQ(24)
++#define IRQ_IOP32X_SSP		IOP_IRQ(25)
++#define IRQ_IOP32X_XINT0	IOP_IRQ(27)
++#define IRQ_IOP32X_XINT1	IOP_IRQ(28)
++#define IRQ_IOP32X_XINT2	IOP_IRQ(29)
++#define IRQ_IOP32X_XINT3	IOP_IRQ(30)
++#define IRQ_IOP32X_HPI		IOP_IRQ(31)
+ 
+ #endif
+
+
